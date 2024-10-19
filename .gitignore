@@ -2,6 +2,10 @@
 /dist
 /node_modules
 /build
+/tmp
+/out-tsc
+/bazel-out
+
 
 # Logs
 logs
@@ -51,6 +55,15 @@ pids
 *.pid
 *.seed
 *.pid.lock
+
+# Miscellaneous
+/.angular/cache
+.sass-cache/
+/connect.lock
+/libpeerconnection.log
+testem.log
+/typings
+
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
