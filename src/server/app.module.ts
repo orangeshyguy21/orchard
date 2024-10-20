@@ -12,7 +12,7 @@ import { config } from './config/configuration';
         ConfigModule.forRoot({
             isGlobal: true,
             load: [config],
-            envFilePath: ['.env.development.local', '.env'],
+            envFilePath: ['.env.local', '.env'],
         }),
     ],
     controllers: [AppController],
