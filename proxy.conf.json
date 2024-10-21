@@ -1,7 +1,7 @@
 {
-    "/api": {
-        "target": "http://127.0.0.1:3321",
-        "pathRewrite": {"^/api": ""},
-        "recure": false
-    }
+  "/api": {
+    "target": "http://127.0.0.1:3321",
+    "pathRewrite": {"^/api": ""},
+    "recure": false
+  }
 }
