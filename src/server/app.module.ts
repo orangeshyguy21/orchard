@@ -8,14 +8,14 @@ import { AppService } from './app.service';
 import { config } from './config/configuration';
 
 @Module({
-    imports: [
-        ConfigModule.forRoot({
-            isGlobal: true,
-            load: [config],
-            envFilePath: ['.env.local', '.env'],
-        }),
-    ],
-    controllers: [AppController],
-    providers: [AppService],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [config],
+      envFilePath: ['.env.local', '.env'],
+    }),
+  ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

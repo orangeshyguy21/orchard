@@ -4,7 +4,7 @@
   "extends": "./tsconfig.client.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": []
+    "types": ["node"]
   },
   "files": [
     "src/client/main.ts"

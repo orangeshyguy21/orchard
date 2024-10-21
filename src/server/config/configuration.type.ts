@@ -1,6 +1,6 @@
 export type Config = {
-    server : {
-        host: string;
-        port: string;
-    }
+  server : {
+    host: string;
+    port: string;
+  }
 };

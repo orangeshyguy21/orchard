@@ -1,7 +1,21 @@
-export const environment = {
-    production: import.meta.env['PRODUCTION'] || false,
-    // host: import.meta.env['SERVER_HOST']
-    host: import.meta.env['SERVER_HOST']
+import { Config } from "./configuration.type";
+
+const mode = {
+  production: extractBooleanValue(process.env["PRODUCTION"]) || false,
+};
+
+const api = {
+  path: (mode.production) ? '' : '/api',
+};
+
+export const environment : Config = {
+  mode,
+  api,
 }
 
-// import.meta.env.NG_APP_BRANCH_NAME; 
+function extractBooleanValue(env_val:string|undefined) : boolean|undefined {
+  if( env_val === undefined ) return env_val;
+  if( env_val === 'false' ) return false;
+  if( env_val === 'true' ) return true;
+  return undefined;
+}

@@ -1,8 +1,13 @@
+/* Core Dependencies */
 import { Injectable } from '@nestjs/common';
+/* Type Dependencies */
+import { ServerStatus } from './app.types';
 
 @Injectable()
 export class AppService {
-  getStatus(): string {
-    return 'Orchard Server Online...';
+  getStatus(): ServerStatus {
+    return {
+      message: 'Orchard Server Online...',
+    }
   }
 }

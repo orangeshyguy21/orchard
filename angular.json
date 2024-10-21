@@ -15,11 +15,14 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular-builders/custom-webpack:browser",
           "options": {
+            "customWebpackConfig": {
+              "path": "src/client/webpack.config.ts"
+            },
             "outputPath": "dist/client",
             "index": "src/client/index.html",
-            "browser": "src/client/main.ts",
+            "main": "src/client/main.ts",
             "polyfills": [
               "zone.js"
             ],
@@ -61,7 +64,7 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular-builders/custom-webpack:dev-server",
           "configurations": {
             "production": {
               "buildTarget": "client:build:production"
