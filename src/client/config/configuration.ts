@@ -5,7 +5,7 @@ const mode = {
 };
 
 const api = {
-  path: (mode.production) ? '' : '/api',
+  path: (mode.production) ? '' : '/proxy',
 };
 
 export const environment : Config = {

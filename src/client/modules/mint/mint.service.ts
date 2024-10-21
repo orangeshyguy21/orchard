@@ -17,7 +17,7 @@ export class MintService {
 
   public test() : any {
     console.log('fetching ', environment.api.path);
-    return this.http.get(`${environment.api.path}/` )
+    return this.http.get(`${environment.api.path}/api` )
       .pipe(
         map( (response:any) => {
           console.log(response);
