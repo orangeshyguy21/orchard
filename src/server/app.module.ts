@@ -1,10 +1,11 @@
 /* Core Dependencies */
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 /* Application Dependencies */
 import { WebserverModule } from './modules/webserver/webserver.module';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ApiModule } from './modules/api/api.module';
 /* Application Configuration */
 import { config } from './config/configuration';
 
@@ -15,9 +16,19 @@ import { config } from './config/configuration';
       load: [config],
       envFilePath: ['.env.local', '.env'],
     }),
+    GraphQLModule.forRootAsync<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      inject: [ConfigService],
+      useFactory: (
+        configService: ConfigService,
+      ) => ({
+        autoSchemaFile: configService.get('mode.production') ? true : 'schema.gql',
+        sortSchema: true,
+        path: configService.get('server.path'),
+      }),
+    }),
+    ApiModule,
     WebserverModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

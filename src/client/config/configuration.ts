@@ -1,7 +1,7 @@
 import { Config } from "./configuration.type";
 
 const mode = {
-  production: extractBooleanValue(process.env["PRODUCTION"]) || false,
+  production: process.env["PRODUCTION"] === 'true',
 };
 
 const api = {
@@ -13,9 +13,9 @@ export const environment : Config = {
   api,
 }
 
-function extractBooleanValue(env_val:string|undefined) : boolean|undefined {
-  if( env_val === undefined ) return env_val;
-  if( env_val === 'false' ) return false;
-  if( env_val === 'true' ) return true;
-  return undefined;
-}
+// function extractBooleanValue(env_val:string|undefined) : boolean|undefined {
+//   if( env_val === undefined ) return env_val;
+//   if( env_val === 'false' ) return false;
+//   if( env_val === 'true' ) return true;
+//   return undefined;
+// }

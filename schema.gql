@@ -1,0 +1,35 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Keyset {
+  active: Boolean!
+  derivation_path: String!
+  encrypted_seed: String
+  first_seen: Int!
+  id: ID!
+  input_fee_ppk: Int!
+  seed: String!
+  seed_encryption_method: String
+  unit: String!
+  valid_from: Int!
+  valid_to: Int!
+  version: String!
+}
+
+type Liabilities {
+  total_issued: Int!
+  total_outstanding: Int!
+  total_redeemed: Int!
+}
+
+type Query {
+  keysets: [Keyset!]!
+  liabilities: Liabilities!
+  status: Status!
+}
+
+type Status {
+  online: Boolean!
+  title: String!
+}
