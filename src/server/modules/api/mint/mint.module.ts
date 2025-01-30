@@ -2,16 +2,16 @@
 import { Module } from "@nestjs/common";
 /* Application Dependencies */
 import { CashuModule } from "../../cashu/cashu.module";
-import { LiabilitiesResolver } from "./liabilities.resolver";
-import { LiabilitiesService } from "./liabilities.service";
+import { MintService } from "./mint.service";
+import { MintResolver } from "./mint.resolver";
 
 @Module({
   imports: [
     CashuModule,
   ],
   providers: [
-    LiabilitiesResolver,
-    LiabilitiesService,
-  ],
+    MintResolver,
+    MintService,
+  ]
 })
-export class LiabilitiesModule {}
+export class MintModule {}

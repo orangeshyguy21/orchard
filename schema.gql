@@ -2,30 +2,65 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Keyset {
-  active: Boolean!
-  derivation_path: String!
-  encrypted_seed: String
-  first_seen: Int!
-  id: ID!
-  input_fee_ppk: Int!
-  seed: String!
-  seed_encryption_method: String
-  unit: String!
-  valid_from: Int!
-  valid_to: Int!
-  version: String!
-}
-
-type Liabilities {
+type Balance {
   total_issued: Int!
   total_outstanding: Int!
   total_redeemed: Int!
 }
 
+type Keyset {
+  active: Boolean!
+  derivation_path: String!
+  encrypted_seed: String
+  first_seen: UnixTimestamp!
+  id: ID!
+  input_fee_ppk: Int!
+  seed: String!
+  seed_encryption_method: String
+  unit: String!
+  valid_from: UnixTimestamp!
+  valid_to: UnixTimestamp!
+  version: String!
+}
+
+type Mint {
+  contact: [String!]!
+  description: String!
+  description_long: String!
+  icon_url: String!
+  name: String!
+  nuts: [Nut!]!
+  pubkey: String!
+  time: UnixTimestamp!
+  urls: [String!]!
+  version: String!
+}
+
+type Nut {
+  disabled: Boolean
+  methods: [NutMethod!]
+  nut: ID!
+  supported: [NutSupported!]
+}
+
+type NutMethod {
+  description: Boolean
+  id: ID!
+  method: String!
+  unit: String!
+}
+
+type NutSupported {
+  commands: [String!]!
+  id: ID!
+  method: String!
+  unit: String!
+}
+
 type Query {
   keysets: [Keyset!]!
-  liabilities: Liabilities!
+  liabilities: Balance!
+  mint: Mint!
   status: Status!
 }
 
@@ -33,3 +68,6 @@ type Status {
   online: Boolean!
   title: String!
 }
+
+"""A Unix timestamp"""
+scalar UnixTimestamp

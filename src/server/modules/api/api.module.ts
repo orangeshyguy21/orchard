@@ -2,13 +2,15 @@
 import { Module } from "@nestjs/common";
 /* Application Dependencies */
 import { StatusModule } from "./status/status.module";
-import { LiabilitiesModule } from "./liabilities/liabilities.module";
+import { MintModule } from "./mint/mint.module";
+import { BalanceModule } from "./balance/balance.module";
 import { KeysetModule } from './keyset/keyset.module';
 
 @Module({
   imports: [
     StatusModule,
-    LiabilitiesModule,
+    MintModule,
+    BalanceModule,
     KeysetModule,
   ],
 })

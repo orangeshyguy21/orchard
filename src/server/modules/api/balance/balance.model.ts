@@ -2,7 +2,7 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
-export class Liabilities {
+export class Balance {
 
   @Field(type => Int)
   total_outstanding: number;
