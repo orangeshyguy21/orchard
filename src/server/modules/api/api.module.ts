@@ -2,16 +2,16 @@
 import { Module } from "@nestjs/common";
 /* Application Dependencies */
 import { StatusModule } from "./status/status.module";
-import { MintModule } from "./mint/mint.module";
-import { BalanceModule } from "./balance/balance.module";
-import { KeysetModule } from './keyset/keyset.module';
+import { MintInfoModule } from "./mintinfo/mintinfo.module";
+import { MintBalanceModule } from "./mintbalance/mintbalance.module";
+import { MintKeysetModule } from './mintkeyset/mintkeyset.module';
 
 @Module({
   imports: [
     StatusModule,
-    MintModule,
-    BalanceModule,
-    KeysetModule,
+    MintInfoModule,
+    MintBalanceModule,
+    MintKeysetModule,
   ],
 })
 export class ApiModule {}

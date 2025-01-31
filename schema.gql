@@ -2,13 +2,26 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Balance {
+type OrchardMintBalance {
   total_issued: Int!
   total_outstanding: Int!
   total_redeemed: Int!
 }
 
-type Keyset {
+type OrchardMintInfo {
+  contact: [String!]!
+  description: String!
+  description_long: String!
+  icon_url: String!
+  name: String!
+  nuts: [OrchardNut!]!
+  pubkey: String!
+  time: UnixTimestamp!
+  urls: [String!]!
+  version: String!
+}
+
+type OrchardMintKeyset {
   active: Boolean!
   derivation_path: String!
   encrypted_seed: String
@@ -23,50 +36,36 @@ type Keyset {
   version: String!
 }
 
-type Mint {
-  contact: [String!]!
-  description: String!
-  description_long: String!
-  icon_url: String!
-  name: String!
-  nuts: [Nut!]!
-  pubkey: String!
-  time: UnixTimestamp!
-  urls: [String!]!
-  version: String!
-}
-
-type Nut {
+type OrchardNut {
   disabled: Boolean
-  methods: [NutMethod!]
-  nut: ID!
-  supported: [NutSupported!]
+  methods: [OrchardNutMethod!]
+  nut: Float!
+  supported: Boolean
+  supported_meta: [OrchardNutSupported!]
 }
 
-type NutMethod {
+type OrchardNutMethod {
   description: Boolean
-  id: ID!
   method: String!
   unit: String!
 }
 
-type NutSupported {
+type OrchardNutSupported {
   commands: [String!]!
-  id: ID!
   method: String!
   unit: String!
+}
+
+type OrchardStatus {
+  online: Boolean!
+  title: String!
 }
 
 type Query {
-  keysets: [Keyset!]!
-  liabilities: Balance!
-  mint: Mint!
-  status: Status!
-}
-
-type Status {
-  online: Boolean!
-  title: String!
+  mint_balances: [OrchardMintBalance!]!
+  mint_info: OrchardMintInfo!
+  mint_keysets: [OrchardMintKeyset!]!
+  status: OrchardStatus!
 }
 
 """A Unix timestamp"""

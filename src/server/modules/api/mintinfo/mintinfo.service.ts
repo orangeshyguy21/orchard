@@ -1,71 +1,21 @@
 import { Injectable } from '@nestjs/common';
 /* Application Dependencies */
-import { CashuService } from '../../cashu/cashu.service';
-/* Application Models */
-import { Mint, Nut, NutMethod, NutSupported } from './mint.model';
-import { CashuInfo, CashuNut, CashuNutMethod } from '../../cashu/cashu.types';
+import { CashuMintApiService } from '../../cashumintapi/cashumintapi.service';
+import { CashuMintInfo } from '../../cashumintapi/cashumintapi.types';
+/* Internal Dependencies */
+import { OrchardMintInfo, OrchardNutMethod, OrchardNutSupported } from './mintinfo.model';
 
 @Injectable()
-export class MintService {
+export class MintInfoService {
 
   constructor(
-    private cashuService: CashuService,
+    private cashuMintApiService: CashuMintApiService,
   ) {}
 
-  async getMint() : Promise<Mint> {
+  async getMintInfo() : Promise<OrchardMintInfo> {
     try {
-      const cashu_info : CashuInfo = await this.cashuService.getInfo();
-      let mint = new Mint(cashu_info);
-      // let nuts = 
-      Object.assign(mint, cashu_info);
-
-      const nuts_array = Object.keys(mint.nuts).map(key => ({
-        nut: parseInt(key),
-        ...mint.nuts[key]
-      }));
-      mint.nuts = nuts_array;
-
-      mint.nuts.forEach( nut => {
-
-        if( !nut.methods ){
-          nut.methods = null;
-          return;
-        }
-
-        const methods_array = Object.keys(nut.methods).map( key => ({
-          id: parseInt(key),
-          ...nut.methods[key]
-        }));
-        nut.methods = methods_array as [NutMethod];
-      });
-
-      mint.nuts.forEach( nut => {
-
-        if( !nut.supported ){
-          nut.supported = null;
-          return;
-        }
-
-        if( nut.supported ){
-          nut.supported = [];
-          return;
-        }
-
-        const supported_array = Object.keys(nut.supported).map( key => ({
-          id: parseInt(key),  
-          ...nut.supported[key]
-        }));
-        nut.supported = supported_array as [NutSupported];
-
-      });
-      
-
-      // console.log(mint);
-      // flatten mint.nuts and add the keys to the nuts array
-      
-
-      // map info onto mind and flatten some stuff
-      return mint;
+      const cashu_info : CashuMintInfo = await this.cashuMintApiService.getMintInfo();
+      return new OrchardMintInfo(cashu_info);
     } catch (err) {
       console.log('caught err', err);
     }

@@ -1,3 +1,4 @@
+/* Core Dependencies */
 import { Kind, ValueNode } from 'graphql';
 import { GraphQLScalarType } from 'graphql';
 

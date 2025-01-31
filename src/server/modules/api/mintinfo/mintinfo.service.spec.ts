@@ -1,17 +1,17 @@
 /* Core Dependencies */
 import { Test, TestingModule } from '@nestjs/testing';
 /* Internal Dependencies */
-import { StatusService } from './status.service';
+import { MintInfoService } from './mintinfo.service';
 
-describe('StatusService', () => {
-  let service: StatusService;
+describe('MintInfoService', () => {
+  let service: MintInfoService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [StatusService],
+      providers: [MintInfoService],
     }).compile();
 
-    service = module.get<StatusService>(StatusService);
+    service = module.get<MintInfoService>(MintInfoService);
   });
 
   it('should be defined', () => {

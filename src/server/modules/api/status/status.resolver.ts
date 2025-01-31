@@ -2,17 +2,17 @@
 import { Resolver, Query } from "@nestjs/graphql";
 /* Application Dependencies */
 import { StatusService } from "./status.service";
-import { Status } from "./status.model";
+import { OrchardStatus } from "./status.model";
 
 
-@Resolver(() => Status)
+@Resolver(() => OrchardStatus)
 export class StatusResolver {
   constructor(
     private statusService: StatusService,
   ) {}
 
-  @Query(() => Status)
-  status() : Status {
+  @Query(() => OrchardStatus)
+  status() : OrchardStatus {
     return this.statusService.getStatus();
   }
 }
