@@ -63,7 +63,7 @@ type OrchardStatus {
 }
 
 type Query {
-  mint_balance: OrchardMintBalance!
+  mint_balances: [OrchardMintBalance!]!
   mint_info: OrchardMintInfo!
   mint_keysets: [OrchardMintKeyset!]!
   status: OrchardStatus!
