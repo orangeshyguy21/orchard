@@ -4,7 +4,7 @@ import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { UnixTimestamp } from '../../graphql/types/unixtimestamp';
 
 @ObjectType()
-export class Mint {
+export class OrchardMintInfo {
 
   @Field()
   name: string;
@@ -22,27 +22,24 @@ export class Mint {
   description_long: string;
 
   @Field(() => [String!])
-  contact: [string];
+  contact: string[];
 
   @Field()
   icon_url: string;
 
   @Field(() => [String!])
-  urls: [string];
+  urls: string[];
 
   @Field(type => UnixTimestamp)
   time: number;
 
-  @Field(() => [Nut])
-  nuts: Nut[];
-
-  constructor(cashumint:any) {
-    console.log('THIS WORKS');
-  }
+  @Field(() => [OrchardNut])
+  nuts: OrchardNut[];
+  
 }
 
 @ObjectType()
-export class Nut {
+export class OrchardNut {
 
   @Field(type => ID)
   nut: number;
@@ -50,16 +47,16 @@ export class Nut {
   @Field({ nullable: true })
   disabled?: boolean;
 
-  @Field(() => [NutMethod!], { nullable: true })
-  methods?: [NutMethod];
+  @Field(() => [OrchardNutMethod!], { nullable: true })
+  methods?: OrchardNutMethod[];
 
-  @Field(() => [NutSupported!], { nullable: true })
-  supported?: [NutSupported] | [];
+  @Field(() => [OrchardNutSupported!], { nullable: true })
+  supported?: OrchardNutSupported[];
 
 }
 
 @ObjectType()
-export class NutMethod {
+export class OrchardNutMethod {
 
   @Field(type => ID)
   id: number;
@@ -76,7 +73,7 @@ export class NutMethod {
 }
 
 @ObjectType()
-export class NutSupported {
+export class OrchardNutSupported {
 
   @Field(type => ID)
   id: number;
@@ -88,7 +85,7 @@ export class NutSupported {
   unit: string;
 
   @Field(() => [String!])
-  commands: [string];
+  commands: string[];
   
 }
 

@@ -1,21 +1,22 @@
 import { Injectable } from '@nestjs/common';
 /* Application Dependencies */
-import { CashuService } from '../../cashu/cashu.service';
-/* Application Models */
-import { Mint, Nut, NutMethod, NutSupported } from './mint.model';
-import { CashuInfo, CashuNut, CashuNutMethod } from '../../cashu/cashu.types';
+import { CashuMintApiService } from '../../cashumintapi/cashumintapi.service';
+import { CashuMintInfo } from '../../cashumintapi/cashumintapi.types';
+/* Internal Dependencies */
+import { OrchardMintInfo, OrchardNutMethod, OrchardNutSupported } from './mintinfo.model';
 
 @Injectable()
-export class MintService {
+export class MintInfoService {
 
   constructor(
-    private cashuService: CashuService,
+    private cashuMintApiService: CashuMintApiService,
   ) {}
 
-  async getMint() : Promise<Mint> {
+  async getMintInfo() : Promise<OrchardMintInfo> {
     try {
-      const cashu_info : CashuInfo = await this.cashuService.getInfo();
-      let mint = new Mint(cashu_info);
+      const cashu_info : CashuMintInfo = await this.cashuMintApiService.getMintInfo();
+      let mint = new OrchardMintInfo();
+      // const 
       // let nuts = 
       Object.assign(mint, cashu_info);
 
@@ -36,7 +37,7 @@ export class MintService {
           id: parseInt(key),
           ...nut.methods[key]
         }));
-        nut.methods = methods_array as [NutMethod];
+        nut.methods = methods_array as [OrchardNutMethod];
       });
 
       mint.nuts.forEach( nut => {
@@ -55,7 +56,7 @@ export class MintService {
           id: parseInt(key),  
           ...nut.supported[key]
         }));
-        nut.supported = supported_array as [NutSupported];
+        nut.supported = supported_array as [OrchardNutSupported];
 
       });
       

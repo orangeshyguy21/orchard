@@ -4,7 +4,7 @@ import { Field, Int, ID, ObjectType } from '@nestjs/graphql';
 import { UnixTimestamp } from '../../graphql/types/unixtimestamp';
 
 @ObjectType()
-export class Keyset {
+export class OrchardMintKeyset {
   @Field(type => ID)
   id: string;
 

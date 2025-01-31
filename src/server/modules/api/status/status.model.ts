@@ -2,7 +2,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
-export class Status {
+export class OrchardStatus {
   @Field()
   title: string;
 

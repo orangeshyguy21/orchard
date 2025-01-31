@@ -1,16 +1,15 @@
 /* Core Dependencies */
 import { Injectable } from '@nestjs/common';
-/* Application Dependencies */
-import { Status } from './status.model';
+/* Internal Dependencies */
+import { OrchardStatus } from './status.model';
 
 @Injectable()
 export class StatusService {
 
-  getStatus() : Status {
+  getStatus() : OrchardStatus {
     return {
       title: 'Orchard Graphql Server',
       online: true,
     }
   }
-  
 }
