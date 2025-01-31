@@ -17,27 +17,11 @@ export class MintBalanceService {
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
   ) {}
 
-  async getTest() : Promise<OrchardMintBalance[]> {
-    const db = this.cashuMintDatabaseService.getMintDatabase();
-    try {
-      const cashu_mint_balances : CashuMintBalance[] = await this.cashuMintDatabaseService.getMintBalances(db);
-      return cashu_mint_balances.map( cmb => new OrchardMintBalance());
-    } catch (error) {
-      this.logger.error('Error getting outstanding mint balance', { error });
-    } finally {
-      db.close();
-    }
-  }
-
   async getOutstandingMintBalances() : Promise<OrchardMintBalance['total_outstanding'][]> {
     const db = this.cashuMintDatabaseService.getMintDatabase();
     try {
       const cashu_mint_balances : CashuMintBalance[] = await this.cashuMintDatabaseService.getMintBalances(db);
-      return cashu_mint_balances.map( cmb => {
-        const mint_balance = new OrchardMintBalance();
-        mint_balance.total_outstanding = cmb['s_issued - s_used'];
-        return mint_balance.total_outstanding;
-      });
+      return cashu_mint_balances.map( cmb => new OrchardMintBalance(cmb['s_issued - s_used']).total_outstanding );
     } catch (error) {
       this.logger.error('Error getting outstanding mint balance', { error });
     } finally {
@@ -49,15 +33,7 @@ export class MintBalanceService {
     const db = this.cashuMintDatabaseService.getMintDatabase();
     try {
       const cashu_mint_balances_issued : CashuMintBalanceIssued[] = await this.cashuMintDatabaseService.getMintBalancesIssued(db);
-      return cashu_mint_balances_issued.map( cmbi => {
-        const mint_balance = new OrchardMintBalance();
-        mint_balance.total_issued = cmbi['balance'];
-        return mint_balance.total_issued;
-      });
-      // const primary_balance_index = 0;
-      // const balance = new OrchardMintBalance();
-      // balance.total_issued = balances[primary_balance_index]['balance'];
-      // return balance.total_issued;
+      return cashu_mint_balances_issued.map( cmbi => new OrchardMintBalance(null, cmbi['balance']).total_issued );
     } catch (error) {
       this.logger.error('Error getting issued mint balance', { error });
     } finally {
@@ -69,15 +45,7 @@ export class MintBalanceService {
     const db = this.cashuMintDatabaseService.getMintDatabase();
     try {
       const cashu_mint_balances_redeemed : CashuMintBalanceRedeemed[] = await this.cashuMintDatabaseService.getMintBalancesRedeemed(db);
-      return cashu_mint_balances_redeemed.map( cmbr => {
-        const mint_balance = new OrchardMintBalance();
-        mint_balance.total_redeemed = cmbr['balance'];
-        return mint_balance.total_redeemed;
-      });
-      // const primary_balance_index = 0;
-      // const balance = new OrchardMintBalance();
-      // balance.total_redeemed = balances[primary_balance_index]['balance'];
-      // return balance.total_redeemed;
+      return cashu_mint_balances_redeemed.map( cmbr => new OrchardMintBalance(null, null, cmbr['balance']).total_redeemed );
     } catch (error) {
       this.logger.error('Error getting redeemed  mint balance', { error });
     } finally {

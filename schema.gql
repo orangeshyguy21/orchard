@@ -39,20 +39,19 @@ type OrchardMintKeyset {
 type OrchardNut {
   disabled: Boolean
   methods: [OrchardNutMethod!]
-  nut: ID!
-  supported: [OrchardNutSupported!]
+  nut: Float!
+  supported: Boolean
+  supported_meta: [OrchardNutSupported!]
 }
 
 type OrchardNutMethod {
   description: Boolean
-  id: ID!
   method: String!
   unit: String!
 }
 
 type OrchardNutSupported {
   commands: [String!]!
-  id: ID!
   method: String!
   unit: String!
 }

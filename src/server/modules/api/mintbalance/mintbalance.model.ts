@@ -13,12 +13,9 @@ export class OrchardMintBalance {
   @Field(type => Int)
   total_redeemed: number;
 
+  constructor(total_outstanding?: number, total_issued?: number, total_redeemed?: number) {
+    this.total_outstanding = total_outstanding;
+    this.total_issued = total_issued;
+    this.total_redeemed = total_redeemed;
+  }
 }
-
-  // public setTotalOutstanding(value: number) {
-  //   this.total_outstanding = value;
-  // }
-
-// const primary_balance_index = 0;
-// const balance = new OrchardMintBalance();
-// balance.total_outstanding = balances[primary_balance_index]['s_issued - s_used'];

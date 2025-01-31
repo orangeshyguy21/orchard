@@ -15,58 +15,7 @@ export class MintInfoService {
   async getMintInfo() : Promise<OrchardMintInfo> {
     try {
       const cashu_info : CashuMintInfo = await this.cashuMintApiService.getMintInfo();
-      let mint = new OrchardMintInfo();
-      // const 
-      // let nuts = 
-      Object.assign(mint, cashu_info);
-
-      const nuts_array = Object.keys(mint.nuts).map(key => ({
-        nut: parseInt(key),
-        ...mint.nuts[key]
-      }));
-      mint.nuts = nuts_array;
-
-      mint.nuts.forEach( nut => {
-
-        if( !nut.methods ){
-          nut.methods = null;
-          return;
-        }
-
-        const methods_array = Object.keys(nut.methods).map( key => ({
-          id: parseInt(key),
-          ...nut.methods[key]
-        }));
-        nut.methods = methods_array as [OrchardNutMethod];
-      });
-
-      mint.nuts.forEach( nut => {
-
-        if( !nut.supported ){
-          nut.supported = null;
-          return;
-        }
-
-        if( nut.supported ){
-          nut.supported = [];
-          return;
-        }
-
-        const supported_array = Object.keys(nut.supported).map( key => ({
-          id: parseInt(key),  
-          ...nut.supported[key]
-        }));
-        nut.supported = supported_array as [OrchardNutSupported];
-
-      });
-      
-
-      // console.log(mint);
-      // flatten mint.nuts and add the keys to the nuts array
-      
-
-      // map info onto mind and flatten some stuff
-      return mint;
+      return new OrchardMintInfo(cashu_info);
     } catch (err) {
       console.log('caught err', err);
     }

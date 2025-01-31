@@ -16,12 +16,7 @@ export class MintKeysetService {
     const db = this.cashuMintDatabaseService.getMintDatabase();
     try {
       const cashu_keysets : CashuMintKeyset[] = await this.cashuMintDatabaseService.getMintKeysets(db);
-      return cashu_keysets.map( ck => {
-        const keyset = new OrchardMintKeyset();
-        Object.assign(keyset, ck);
-        if( 'active' in keyset ) !!keyset.active;
-        return keyset;
-      });
+      return cashu_keysets.map( ck => new OrchardMintKeyset(ck));
     } catch (err) {
       console.log('caught err', err);
     } finally {
