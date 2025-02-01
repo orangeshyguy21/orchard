@@ -1,5 +1,8 @@
 /* Core Dependencies */
 import { Resolver, Query } from "@nestjs/graphql";
+import { GraphQLError } from "graphql";
+/* Application Dependencies */
+import { OrchardApiErrors } from "../../graphql/errors/orchard.errors";
 /* Application Dependencies */
 import { MintKeysetService } from "./mintkeyset.service";
 import { OrchardMintKeyset } from "./mintkeyset.model";
@@ -12,6 +15,10 @@ export class MintKeysetResolver {
 
   @Query(() => [OrchardMintKeyset])
   async mint_keysets() : Promise<OrchardMintKeyset[]> {
-    return this.mintKeysetService.getMintKeysets();
+    try {
+      return this.mintKeysetService.getMintKeysets();
+    } catch (error) {
+      throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
+    } 
   }
 }

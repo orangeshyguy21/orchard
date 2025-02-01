@@ -11,7 +11,7 @@ import { ApiModule } from './modules/api/api.module';
 import { FetchModule } from './modules/fetch/fetch.module';
 import { WebserverModule } from './modules/webserver/webserver.module';
 /* Custom Graphql Type Definitions */
-import { UnixTimestamp } from './modules/graphql/types/unixtimestamp';
+import { UnixTimestamp } from './modules/graphql/scalars/unixtimestamp.scalar';
 /* Application Configuration */
 import { config } from './config/configuration';
 

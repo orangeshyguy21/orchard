@@ -8,6 +8,11 @@ type OrchardMintBalance {
   total_redeemed: Int!
 }
 
+type OrchardMintDatabase {
+  db: String!
+  version: Int!
+}
+
 type OrchardMintInfo {
   contact: [String!]!
   description: String!
@@ -63,6 +68,7 @@ type OrchardStatus {
 
 type Query {
   mint_balances: [OrchardMintBalance!]!
+  mint_databases: [OrchardMintDatabase!]!
   mint_info: OrchardMintInfo!
   mint_keysets: [OrchardMintKeyset!]!
   status: OrchardStatus!

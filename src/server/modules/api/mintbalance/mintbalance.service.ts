@@ -24,6 +24,7 @@ export class MintBalanceService {
       return cashu_mint_balances.map( cmb => new OrchardMintBalance(cmb['s_issued - s_used']).total_outstanding );
     } catch (error) {
       this.logger.error('Error getting outstanding mint balance', { error });
+      throw new Error(error);
     } finally {
       db.close();
     }
@@ -36,6 +37,7 @@ export class MintBalanceService {
       return cashu_mint_balances_issued.map( cmbi => new OrchardMintBalance(null, cmbi['balance']).total_issued );
     } catch (error) {
       this.logger.error('Error getting issued mint balance', { error });
+      throw new Error(error);
     } finally {
       db.close();
     }
@@ -48,6 +50,7 @@ export class MintBalanceService {
       return cashu_mint_balances_redeemed.map( cmbr => new OrchardMintBalance(null, null, cmbr['balance']).total_redeemed );
     } catch (error) {
       this.logger.error('Error getting redeemed  mint balance', { error });
+      throw new Error(error);
     } finally {
       db.close();
     }

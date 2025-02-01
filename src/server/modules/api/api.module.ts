@@ -5,6 +5,7 @@ import { StatusModule } from "./status/status.module";
 import { MintInfoModule } from "./mintinfo/mintinfo.module";
 import { MintBalanceModule } from "./mintbalance/mintbalance.module";
 import { MintKeysetModule } from './mintkeyset/mintkeyset.module';
+import { MintDatabaseModule } from "./mintdatabase/mintdatabase.module";
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { MintKeysetModule } from './mintkeyset/mintkeyset.module';
     MintInfoModule,
     MintBalanceModule,
     MintKeysetModule,
+    MintDatabaseModule,
   ],
 })
 export class ApiModule {}
