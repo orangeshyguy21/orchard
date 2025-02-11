@@ -1,7 +1,7 @@
 <h1 align="center">Orchard</h1>
 
 <p align="center">
-  <img src="src/client/public/assets/orchard-logo-color-v2.svg" alt="orchard-logo" width="220px"/>
+  <img src="src/client/public/assets/orchard-logo-color-v2.svg" alt="orchard-logo" width="150px" style="padding: 20px"/>
   <br>
   <em>A super application for cashu mints and
     <br> taproot asset lightning nodes.</em>
@@ -34,26 +34,26 @@
 
 <hr>
 
-## Development Setup
+# Development Setup
 
-### Prerequisites
+## Prerequisites
 
 - Install [Node.js] which includes [Node Package Manager][npm]
 
-### Run the application
+## Run the application
 
-# Client
+### Client
 ```
 npm run start:client
 ```
 
-# Server
+### Server
 ```
 npm run start:server
 ```
 
 
-### Production Setup
+# Production Setup
 
 ```
 npm run build
