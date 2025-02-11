@@ -6,10 +6,14 @@
   <img src="src/client/public/assets/orchard-logo-color-v2.svg" alt="orchard-logo" width="150px"/>
   <br>
   <br>
-  <em>A super application for cashu mints and
-    <br> taproot asset lightning nodes.</em>
+  <em>A super application for cashu mints</em>
   <br>
 </p>
+
+### Implementation support
+
+- Bitcoin Lightning support (LND)
+- Cashu mint support (nutshell)
 
 <hr>
 
@@ -21,20 +25,27 @@
 
 ## Run the application
 
-### Client
+### Configuration
+```bash
+mv .env.example .env.local
+# edit .env file
+vim .env
 ```
+
+### Client
+```bash
 npm run start:client
 ```
 
 ### Server
-```
+```bash
 npm run start:server
 ```
 
 
 # Production Setup
 
-```
+```bash
 npm run build
 npm run start
 ```
