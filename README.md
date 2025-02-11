@@ -28,7 +28,7 @@
 ```bash
 mv .env.example .env.local
 # edit .env file
-vim .env
+nano .env.local
 ```
 
 ### Client
