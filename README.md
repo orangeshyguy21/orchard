@@ -10,12 +10,12 @@
   <br>
 </p>
 
+<hr>
+
 ### Implementation support
 
 - Bitcoin Lightning support (LND)
 - Cashu mint support (nutshell)
-
-<hr>
 
 # Development Setup
 
