@@ -41,6 +41,24 @@ type OrchardMintKeyset {
   version: String!
 }
 
+type OrchardMintMeltQuote {
+  amount: Int!
+  change: String
+  checking_id: String!
+  created_time: UnixTimestamp
+  expiry: UnixTimestamp
+  fee_paid: Int
+  fee_reserve: Int
+  method: String!
+  paid: Boolean!
+  paid_time: UnixTimestamp
+  proof: String
+  quote: ID!
+  request: String!
+  state: String
+  unit: String!
+}
+
 type OrchardNut {
   disabled: Boolean
   methods: [OrchardNutMethod!]
@@ -71,6 +89,7 @@ type Query {
   mint_databases: [OrchardMintDatabase!]!
   mint_info: OrchardMintInfo!
   mint_keysets: [OrchardMintKeyset!]!
+  mint_melt_quotes: [OrchardMintMeltQuote!]!
   status: OrchardStatus!
 }
 

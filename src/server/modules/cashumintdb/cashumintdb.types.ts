@@ -27,3 +27,21 @@ export type CashuMintDatabaseVersion = {
   db: string;
   version: number;
 }
+
+export type CashuMintMeltQuote = {
+  quote: string;
+  method: string;
+  request: string;
+  checking_id: string;
+  unit: string;
+  amount: number;
+  fee_reserve: number;
+  paid: boolean;
+  created_time: number;
+  paid_time: number;
+  fee_paid: number;
+  proof: string;
+  state: string;
+  change: string;
+  expiry: number;
+}

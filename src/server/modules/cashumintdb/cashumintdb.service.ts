@@ -4,15 +4,15 @@ import { ConfigService } from '@nestjs/config';
 /* Vendor Dependencies */
 import sqlite3 from "sqlite3";
 const sqlite3d = require('sqlite3').verbose();
-/* Internal Dependencies  */
+/* Local Dependencies  */  // this is a better version than Internal - todo rename the old ones
 import { 
   CashuMintBalance,
   CashuMintBalanceIssued,
   CashuMintBalanceRedeemed,
   CashuMintKeyset,
   CashuMintDatabaseVersion,
+  CashuMintMeltQuote,
 } from './cashumintdb.types';
-
 
 @Injectable()
 export class CashuMintDatabaseService {
@@ -69,6 +69,16 @@ export class CashuMintDatabaseService {
     const sql = 'SELECT * FROM dbversions;';
     return new Promise((resolve, reject) => {
       db.all(sql, (err, rows:CashuMintDatabaseVersion[]) => {
+        if (err) reject(err);
+        resolve(rows);
+      });
+    });
+  }
+
+  public async getMintMeltQuotes(db:sqlite3.Database) : Promise<CashuMintMeltQuote[]> {
+    const sql = 'SELECT * FROM melt_quotes;';
+    return new Promise((resolve, reject) => {
+      db.all(sql, (err, rows:CashuMintMeltQuote[]) => {
         if (err) reject(err);
         resolve(rows);
       });

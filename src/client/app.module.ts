@@ -6,9 +6,7 @@ import { provideHttpClient } from '@angular/common/http';
 /* Application Modules */
 import { RoutingModule } from './modules/routing/routing.module';
 /* Application Components */
-import { AppComponent } from './/app.component';
-
-console.log('APP LOADED');
+import { AppComponent } from './app.component';
 
 @NgModule({
     declarations: [
