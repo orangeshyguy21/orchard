@@ -5,7 +5,7 @@
   <img src="src/client/public/assets/orchard-logo-color-v2.svg" alt="orchard-logo" width="150px"/>
   <br>
   <br>
-  <em>A super application for cashu mints</em>
+  <em>A Bitcoin super application</em>
   <br>
 </p>
 
