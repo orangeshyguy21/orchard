@@ -9,5 +9,9 @@ export class OrchardStatus {
 
   @Field()
   online: boolean;
-  
+
+  constructor(status:OrchardStatus) {
+    this.title = status.title;
+    this.online = status.online;
+  }
 }

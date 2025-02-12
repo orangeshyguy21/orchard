@@ -36,7 +36,7 @@ export type CashuMintMeltQuote = {
   unit: string;
   amount: number;
   fee_reserve: number;
-  paid: boolean;
+  paid: number;
   created_time: number;
   paid_time: number;
   fee_paid: number;
