@@ -5,25 +5,25 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 /* Application Dependencies */
 import { CashuMintDatabaseService } from '../../cashumintdb/cashumintdb.service';
-import { CashuMintMeltQuote } from '../../cashumintdb/cashumintdb.types';
+import { CashuMintPromise } from '../../cashumintdb/cashumintdb.types';
 /* Local Dependencies */
-import { OrchardMintMeltQuote } from './mintmeltquote.model';
+import { OrchardMintPromise } from './mintpromise.model';
 
 @Injectable()
-export class MintMeltQuoteService {
+export class MintPromiseService {
 
   constructor(
     private cashuMintDatabaseService: CashuMintDatabaseService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
   ) {}
 
-  async getMintMeltQuotes() : Promise<OrchardMintMeltQuote[]> {
+  async getMintPromises() : Promise<OrchardMintPromise[]> {
     const db = this.cashuMintDatabaseService.getMintDatabase();
     try {
-      const cashu_melt_quotes : CashuMintMeltQuote[] = await this.cashuMintDatabaseService.getMintMeltQuotes(db);
-      return cashu_melt_quotes.map( cmq => new OrchardMintMeltQuote(cmq));
+      const cashu_mint_promises : CashuMintPromise[] = await this.cashuMintDatabaseService.getMintPromises(db);
+      return cashu_mint_promises.map( cmp => new OrchardMintPromise(cmp));
     } catch (error) {
-      this.logger.error('Error getting melt quotes from mint database', { error });
+      this.logger.error('Error getting mint promises from mint database', { error });
       throw new Error(error);
     } finally {
       db.close();

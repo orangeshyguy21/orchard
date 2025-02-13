@@ -7,9 +7,9 @@ import { OrchardStatus } from './status.model';
 export class StatusService {
 
   getStatus() : OrchardStatus {
-    return {
+    return new OrchardStatus({
       title: 'Orchard Graphql Server',
       online: true,
-    }
+    });
   }
 }
