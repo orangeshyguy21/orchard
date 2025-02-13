@@ -17,7 +17,7 @@ console.log('HOME LOADED');
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-class HomeRoutingModule { }
+export class HomeRoutingModule { }
 
 @NgModule({
   imports: [
