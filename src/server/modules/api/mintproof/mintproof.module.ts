@@ -3,16 +3,16 @@ import { Module } from "@nestjs/common";
 /* Application Dependencies */
 import { CashuMintDatabaseModule } from "../../cashumintdb/cashumintdb.module";
 /* Local Dependencies */
-import { MintKeysetService } from "./mintkeyset.service";
-import { MintKeysetResolver } from "./mintkeyset.resolver";
-
+import { MintProofService } from "./mintproof.service";
+import { MintProofResolver } from "./mintproof.resolver";
+ 
 @Module({
   imports: [
     CashuMintDatabaseModule,
   ],
   providers: [
-    MintKeysetResolver,
-    MintKeysetService,
+    MintProofResolver,
+    MintProofService,
   ]
 })
-export class MintKeysetModule {}
+export class MintProofModule {}

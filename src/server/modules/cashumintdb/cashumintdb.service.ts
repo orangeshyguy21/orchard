@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 /* Vendor Dependencies */
 import sqlite3 from "sqlite3";
 const sqlite3d = require('sqlite3').verbose();
-/* Local Dependencies  */  // this is a better version than Internal - todo rename the old ones
+/* Local Dependencies */
 import { 
   CashuMintBalance,
   CashuMintBalanceIssued,
@@ -12,6 +12,9 @@ import {
   CashuMintKeyset,
   CashuMintDatabaseVersion,
   CashuMintMeltQuote,
+  CashuMintMintQuote,
+  CashuMintPromise,
+  CashuMintProof,
 } from './cashumintdb.types';
 
 @Injectable()
@@ -79,6 +82,46 @@ export class CashuMintDatabaseService {
     const sql = 'SELECT * FROM melt_quotes;';
     return new Promise((resolve, reject) => {
       db.all(sql, (err, rows:CashuMintMeltQuote[]) => {
+        if (err) reject(err);
+        resolve(rows);
+      });
+    });
+  }
+
+  public async getMintMintQuotes(db:sqlite3.Database) : Promise<CashuMintMintQuote[]> {
+    const sql = 'SELECT * FROM mint_quotes;';
+    return new Promise((resolve, reject) => {
+      db.all(sql, (err, rows:CashuMintMintQuote[]) => {
+        if (err) reject(err);
+        resolve(rows);
+      });
+    });
+  }
+
+  public async getMintPromises(db:sqlite3.Database) : Promise<CashuMintPromise[]> {
+    const sql = 'SELECT * FROM promises;';
+    return new Promise((resolve, reject) => {
+      db.all(sql, (err, rows:CashuMintPromise[]) => {
+        if (err) reject(err);
+        resolve(rows);
+      });
+    });
+  }
+
+  public async getMintProofsPending(db:sqlite3.Database) : Promise<CashuMintProof[]> {
+    const sql = 'SELECT * FROM proofs_pending;';
+    return new Promise((resolve, reject) => {
+      db.all(sql, (err, rows:CashuMintProof[]) => {
+        if (err) reject(err);
+        resolve(rows);
+      });
+    });
+  }
+
+  public async getMintProofsUsed(db:sqlite3.Database) : Promise<CashuMintProof[]> {
+    const sql = 'SELECT * FROM proofs_used;';
+    return new Promise((resolve, reject) => {
+      db.all(sql, (err, rows:CashuMintProof[]) => {
         if (err) reject(err);
         resolve(rows);
       });

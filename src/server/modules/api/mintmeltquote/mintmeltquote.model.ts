@@ -8,9 +8,7 @@ import { CashuMintMeltQuote } from '../../cashumintdb/cashumintdb.types';
 export class OrchardMintMeltQuote {
 
   @Field(type => ID)
-  get quote(): string { return this._quote; }
-  private _quote: string;
-  set quote(quote:CashuMintMeltQuote['quote']) { this._quote = quote; } // TODO: is this worth persuing? can we autoset these?
+  quote:string;
 
   @Field()
   method: string;

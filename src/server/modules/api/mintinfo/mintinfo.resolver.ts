@@ -3,7 +3,7 @@ import { Resolver, Query } from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
 /* Application Dependencies */
 import { OrchardApiErrors } from "../../graphql/errors/orchard.errors";
-/* Internal Dependencies */
+/* Local Dependencies */
 import { MintInfoService } from "./mintinfo.service";
 import { OrchardMintInfo } from "./mintinfo.model";
 

@@ -45,3 +45,41 @@ export type CashuMintMeltQuote = {
   change: string;
   expiry: number;
 }
+
+export type CashuMintMintQuote = {
+  quote: string;
+  method: string;
+  request: string;
+  checking_id: string;
+  unit: string;
+  amount: number;
+  paid: number;
+  issued: number;
+  created_time: number;
+  paid_time: number;
+  state: string;
+  pubkey: string;
+}
+
+export type CashuMintPromise = {
+  amount: number;
+  id: string;
+  b_: string;
+  c_: string;
+  dleq_e: string;
+  dleq_s: string;
+  created: number;
+  mint_quote: string;
+  swap_id: string;
+}
+
+export type CashuMintProof = {
+  amount: number;
+  id: string;
+  c: string;
+  secret: string;
+  y: string;
+  witness: string;
+  created: number;
+  melt_quote: string;
+}

@@ -6,7 +6,10 @@ import { MintInfoModule } from "./mintinfo/mintinfo.module";
 import { MintBalanceModule } from "./mintbalance/mintbalance.module";
 import { MintKeysetModule } from './mintkeyset/mintkeyset.module';
 import { MintDatabaseModule } from "./mintdatabase/mintdatabase.module";
-import { MintMeltQuoteModule } from "./mintmeltquote/mintmeltquote.rmodule";
+import { MintMeltQuoteModule } from "./mintmeltquote/mintmeltquote.module";
+import { MintMintQuoteModule } from "./mintmintquote/mintmintquote.module";
+import { MintPromiseModule } from "./mintpromise/mintpromise.module";
+import { MintProofModule } from "./mintproof/mintproof.module";
 
 @Module({
   imports: [
@@ -16,6 +19,9 @@ import { MintMeltQuoteModule } from "./mintmeltquote/mintmeltquote.rmodule";
     MintKeysetModule,
     MintDatabaseModule,
     MintMeltQuoteModule,
+    MintMintQuoteModule,
+    MintPromiseModule,
+    MintProofModule,
   ],
 })
 export class ApiModule {}

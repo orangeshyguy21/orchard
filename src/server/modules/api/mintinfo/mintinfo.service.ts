@@ -6,7 +6,7 @@ import { Logger } from 'winston';
 /* Application Dependencies */
 import { CashuMintApiService } from '../../cashumintapi/cashumintapi.service';
 import { CashuMintInfo } from '../../cashumintapi/cashumintapi.types';
-/* Internal Dependencies */
+/* Local Dependencies */
 import { OrchardMintInfo } from './mintinfo.model';
 
 @Injectable()
