@@ -2,8 +2,8 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 /* Application Dependencies */
-import { FetchService } from '../fetch/fetch.service';
-/* Internal Dependencies  */
+import { FetchService } from '@server/modules/fetch/fetch.service';
+/* Local Dependencies  */
 import { CashuMintInfo } from './cashumintapi.types';
 
 @Injectable()

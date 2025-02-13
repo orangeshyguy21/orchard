@@ -1,6 +1,6 @@
 /* Core Dependencies */
 import { Resolver, Query } from "@nestjs/graphql";
-/* Application Dependencies */
+/* Local Dependencies */
 import { StatusService } from "./status.service";
 import { OrchardStatus } from "./status.model";
 

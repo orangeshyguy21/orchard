@@ -19,6 +19,11 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "ES2022",
+    "baseUrl": "./",
+    "paths": {
+      "@client/*": ["src/client/*"],
+      "@shared/*": ["src/shared/*"],
+    },
     "lib": [
       "ES2022",
       "dom"

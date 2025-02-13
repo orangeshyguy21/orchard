@@ -4,9 +4,9 @@ import { Injectable, Inject } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 /* Application Dependencies */
-import { CashuMintDatabaseService } from '../../cashumintdb/cashumintdb.service';
-import { CashuMintDatabaseVersion } from '../../cashumintdb/cashumintdb.types';
-/* Internal Dependencies */
+import { CashuMintDatabaseService } from '@server/modules/cashumintdb/cashumintdb.service';
+import { CashuMintDatabaseVersion } from '@server/modules/cashumintdb/cashumintdb.types';
+/* Local Dependencies */
 import { OrchardMintDatabase } from './mintdatabase.model';
 
 @Injectable()

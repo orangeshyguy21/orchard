@@ -2,7 +2,7 @@
 import { Module } from '@nestjs/common';
 /* Application Dependencies */
 import { FetchModule } from '@server/modules/fetch/fetch.module';
-/* Internal Dependencies */
+/* Local Dependencies */
 import { CashuMintApiService } from './cashumintapi.service';
 
 @Module({

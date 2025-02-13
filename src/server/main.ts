@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 /* Vendor Dependencies */
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
-/* Application Dependencies */
+/* Application */
 import { AppModule } from './app.module';
 
 async function bootstrap() {

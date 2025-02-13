@@ -2,8 +2,8 @@
 import { Resolver, Query } from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
 /* Application Dependencies */
-import { OrchardApiErrors } from "../../graphql/errors/orchard.errors";
-/* Internal Dependencies */
+import { OrchardApiErrors } from "@server/modules/graphql/errors/orchard.errors";
+/* Local Dependencies */
 import { MintDatabaseService } from "./mintdatabase.service";
 import { OrchardMintDatabase } from "./mintdatabase.model";
 

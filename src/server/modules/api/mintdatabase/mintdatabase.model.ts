@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 /* Application Dependencies */
-import { CashuMintDatabaseVersion } from '../../cashumintdb/cashumintdb.types';
+import { CashuMintDatabaseVersion } from '@server/modules/cashumintdb/cashumintdb.types';
 
 @ObjectType()
 export class OrchardMintDatabase {

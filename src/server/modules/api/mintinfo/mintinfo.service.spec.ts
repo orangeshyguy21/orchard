@@ -1,6 +1,6 @@
 /* Core Dependencies */
 import { Test, TestingModule } from '@nestjs/testing';
-/* Internal Dependencies */
+/* Local Dependencies */
 import { MintInfoService } from './mintinfo.service';
 
 describe('MintInfoService', () => {
