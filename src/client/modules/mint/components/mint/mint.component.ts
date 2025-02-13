@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
-  selector: 'app-mint',
-  standalone: true,
-  imports: [],
+  selector: 'orc-mint',
   templateUrl: './mint.component.html',
-  styleUrl: './mint.component.scss'
+  styleUrl: './mint.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
 })
 export class MintComponent {
 

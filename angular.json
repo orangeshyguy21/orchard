@@ -7,12 +7,14 @@
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
-          "style": "scss"
+          "style": "scss",
+          "changeDetection": "OnPush",
+          "standalone": false
         }
       },
       "root": "",
       "sourceRoot": "src/client",
-      "prefix": "app",
+      "prefix": "orc",
       "architect": {
         "build": {
           "builder": "@angular-builders/custom-webpack:browser",

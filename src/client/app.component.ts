@@ -1,11 +1,11 @@
 /* Core Dependencies */
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
-  selector: 'app-root',
+  selector: 'orc-root',
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrl: './app.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
-export class AppComponent {
-  title = 'client';
-}
+export class AppComponent {}
