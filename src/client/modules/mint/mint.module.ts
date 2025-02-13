@@ -2,26 +2,24 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 /* Local Dependencies */
-import { HomeComponent } from './components/home/home.component';
+import { MintComponent } from './components/mint/mint.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: HomeComponent
+    component: MintComponent
   }
 ];
-
-console.log('HOME LOADED');
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class HomeRoutingModule { }
+export class MintRoutingModule { }
 
 @NgModule({
   imports: [
-    HomeRoutingModule
+    MintRoutingModule
   ],
 })
-export class HomeModule { }
+export class MintModule { }
