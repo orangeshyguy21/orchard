@@ -1,3 +1,4 @@
+/* Core Dependencies */
 import { Component } from '@angular/core';
 
 @Component({

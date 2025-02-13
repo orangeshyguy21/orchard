@@ -1,6 +1,6 @@
 /* Core Dependencies */
 import { Test, TestingModule } from '@nestjs/testing';
-/* Internal Dependencies */
+/* Local Dependencies */
 import { MintKeysetService } from './mintkeyset.service';
 
 describe('MintKeysetService', () => {

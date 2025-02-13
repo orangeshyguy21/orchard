@@ -1,6 +1,6 @@
 /* Core Dependencies */
 import { Module } from '@nestjs/common';
-/* Internal Dependencies */
+/* Local Dependencies */
 import { CashuMintDatabaseService } from './cashumintdb.service';
 
 @Module({

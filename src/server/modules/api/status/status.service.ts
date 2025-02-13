@@ -1,6 +1,6 @@
 /* Core Dependencies */
 import { Injectable } from '@nestjs/common';
-/* Internal Dependencies */
+/* Local Dependencies */
 import { OrchardStatus } from './status.model';
 
 @Injectable()

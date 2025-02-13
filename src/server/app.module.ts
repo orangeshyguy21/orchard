@@ -6,7 +6,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 /* Vendor Dependencies */
 import { WinstonModule } from 'nest-winston';
 import { transports, format } from 'winston';
-/* Application Dependencies */
+/* Application Modules */
 import { ApiModule } from './modules/api/api.module';
 import { FetchModule } from './modules/fetch/fetch.module';
 import { WebserverModule } from './modules/webserver/webserver.module';

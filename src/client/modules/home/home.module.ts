@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-/* Application Components */
+/* Local Dependencies */
 import { HomeComponent } from './components/home/home.component';
 
 const routes: Routes = [
@@ -17,7 +17,7 @@ console.log('HOME LOADED');
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-class HomeRoutingModule { }
+export class HomeRoutingModule { }
 
 @NgModule({
   imports: [

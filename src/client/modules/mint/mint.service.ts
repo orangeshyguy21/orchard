@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 /* Vendor Dependencies */
 import { map } from 'rxjs';
-/* Application Configuration */
-import { environment } from '../../config/configuration';
+/* Application Dependencies */
+import { environment } from '@client/config/configuration';
 
 @Injectable({
   providedIn: 'root'
@@ -25,5 +25,4 @@ export class MintService {
         })
       )
   }
-
 }

@@ -1,5 +1,6 @@
+/* Core Dependencies */
 import { TestBed } from '@angular/core/testing';
-
+/* Local Dependencies */
 import { MintService } from './mint.service';
 
 describe('MintService', () => {

@@ -1,8 +1,7 @@
+/* Core Dependencies */
 import { Component, OnInit } from '@angular/core';
-import { MintService } from '../../../mint/mint.service';
-
-// import { OrchardMintProof } from '../../../../../server/modules/api/mintproof/mintproof.model';
-import { OrchardMintProof } from '../../../../../shared/generated.types';
+/* Application Dependencies */
+import { MintService } from '@client/modules/mint/mint.service';
 
 @Component({
   selector: 'app-home',
@@ -17,12 +16,10 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() : void {
     console.log('HOME COMP INIT');
-    // console.log('mint proofs pending', OrchardMintProof);
     this.mintService.test().subscribe(
       (data:any) => {
         console.log('returned data', data);
       }
     )
   }
-
 }

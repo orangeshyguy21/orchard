@@ -4,8 +4,8 @@ import { Injectable, Inject } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 /* Application Dependencies */
-import { CashuMintApiService } from '../../cashumintapi/cashumintapi.service';
-import { CashuMintInfo } from '../../cashumintapi/cashumintapi.types';
+import { CashuMintApiService } from '@server/modules/cashumintapi/cashumintapi.service';
+import { CashuMintInfo } from '@server/modules/cashumintapi/cashumintapi.types';
 /* Local Dependencies */
 import { OrchardMintInfo } from './mintinfo.model';
 
