@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { Field, Int, ID, ObjectType } from '@nestjs/graphql';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
 /* Application Dependencies */
 import { UnixTimestamp } from '../../graphql/scalars/unixtimestamp.scalar';
 import { CashuMintProof } from '../../cashumintdb/cashumintdb.types';
