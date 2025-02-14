@@ -1,11 +1,16 @@
 @use '@angular/material' as mat;
+// @use './theme' as orchard-theme;
+@use './_theme-colors' as orchard-theme;
 
 html {
   color-scheme: light dark;
   @include mat.theme((
-    color: mat.$violet-palette,
-    typography:  Bai Jamjuree,
-    density: 0
+    color: (
+      primary: orchard-theme.$primary-palette,
+      tertiary: orchard-theme.$tertiary-palette,
+    ),
+    typography: Bai Jamjuree,
+    density: 0,
   ));
 }
 
