@@ -1,7 +1,7 @@
 @use '@angular/material' as mat;
 
 html {
-  color-scheme: light;
+  color-scheme: light dark;
   @include mat.theme((
     color: mat.$violet-palette,
     typography:  Bai Jamjuree,
@@ -16,5 +16,9 @@ body {
 
   &.dark-mode {
     color-scheme: dark;
+  }
+
+  &.light-mode {
+    color-scheme: light;
   }
 }
