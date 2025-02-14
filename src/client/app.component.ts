@@ -1,6 +1,8 @@
 /* Core Dependencies */
 import { Component, ChangeDetectionStrategy } from '@angular/core';
+
 import { MatIconRegistry } from '@angular/material/icon';
+
 
 @Component({
   selector: 'orc-root',
