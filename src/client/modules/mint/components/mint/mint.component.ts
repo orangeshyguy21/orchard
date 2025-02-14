@@ -5,7 +5,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
   templateUrl: './mint.component.html',
   styleUrl: './mint.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
+  standalone: false,
 })
 export class MintComponent {
 
