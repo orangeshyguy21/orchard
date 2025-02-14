@@ -13,6 +13,6 @@ import { MatIconRegistry } from '@angular/material/icon';
 })
 export class AppComponent {
   constructor(private matIconRegistry: MatIconRegistry) {
-    this.matIconRegistry.setDefaultFontSetClass('material-symbols-rounded');
+    this.matIconRegistry.setDefaultFontSetClass('mat-symbol');
   }
 }
