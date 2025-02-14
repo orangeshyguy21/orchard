@@ -1,6 +1,9 @@
 /* Core Dependencies */
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 
+import { MatIconRegistry } from '@angular/material/icon';
+
+
 @Component({
   selector: 'orc-root',
   templateUrl: './app.component.html',
@@ -8,4 +11,8 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: false,
 })
-export class AppComponent {}
+export class AppComponent {
+  constructor(private matIconRegistry: MatIconRegistry) {
+    this.matIconRegistry.setDefaultFontSetClass('material-symbols-rounded');
+  }
+}
