@@ -1,6 +1,6 @@
 @use '@angular/material' as mat;
-// @use './theme' as orchard-theme;
-@use './_theme-colors' as orchard-theme;
+@use './theme' as orchard-theme;
+
 
 html {
   color-scheme: light dark;
@@ -10,6 +10,8 @@ html {
       tertiary: orchard-theme.$tertiary-palette,
     ),
     density: 0,
+  ), $overrides: (
+    // surface: light-dark(#fff8f5, #110000), not going here yet
   ));
 }
 
