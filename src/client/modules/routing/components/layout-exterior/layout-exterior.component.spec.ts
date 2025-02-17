@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HomeComponent } from './home.component';
+import { LayoutExteriorComponent } from './layout-exterior.component';
 
-describe('HomeComponent', () => {
-  let component: HomeComponent;
-  let fixture: ComponentFixture<HomeComponent>;
+describe('LayoutExteriorComponent', () => {
+  let component: LayoutExteriorComponent;
+  let fixture: ComponentFixture<LayoutExteriorComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HomeComponent]
+      declarations: [LayoutExteriorComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(HomeComponent);
+    fixture = TestBed.createComponent(LayoutExteriorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

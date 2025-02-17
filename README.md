@@ -2,7 +2,7 @@
 
 <p align="center">
   <br>
-  <img src="src/client/public/assets/orchard-logo-color-v2.svg" alt="orchard-logo" width="150px"/>
+  <img src="src/client/public/img/orchard-logo.svg" alt="orchard-logo" width="150px"/>
   <br>
   <br>
   <em>A Bitcoin super application</em>
