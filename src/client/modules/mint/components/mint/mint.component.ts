@@ -1,4 +1,7 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+/* Core Dependencies */
+import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
+/* Application Dependencies */
+import { MintService } from '@client/modules/mint/services/mint.service';
 
 @Component({
   selector: 'orc-mint',
@@ -7,6 +10,15 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: false,
 })
-export class MintComponent {
+export class MintComponent implements OnInit {
 
+  constructor(
+    private mintService: MintService
+  ) { }
+
+  ngOnInit(): void {
+    this.mintService.getStatus().subscribe((res:any) => {
+      console.log(res);
+    });
+  }
 }

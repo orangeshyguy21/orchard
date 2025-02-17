@@ -10,10 +10,10 @@ import { MintComponent } from './components/mint/mint.component';
 const routes: Routes = [
   {
     path: '',
-    component: MintComponent
+    component: MintComponent,
+    title: 'Orchard | Mint'
   }
 ];
-
 
 @NgModule({
   imports: [
