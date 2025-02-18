@@ -1,5 +1,6 @@
 /* Core Dependencies */
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 /* Vendor Dependencies */
 import { MatButtonModule } from '@angular/material/button';
@@ -31,6 +32,7 @@ export class MintRoutingModule { }
     MintComponent
   ],
   imports: [
+    CommonModule,
     MintRoutingModule,
     MatIconModule,
     MatButtonModule,

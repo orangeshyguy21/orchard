@@ -5,7 +5,8 @@ const mode = {
 };
 
 const api = {
-  path: (mode.production) ? '' : '/proxy',
+  proxy: (mode.production) ? '' : '/proxy',
+  path: process.env["BASE_PATH"] || 'api',
 };
 
 export const environment : Config = {

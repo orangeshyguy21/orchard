@@ -10,7 +10,8 @@ module.exports = {
   },
   plugins: [
     new EnvironmentPlugin([
-      'PRODUCTION'
+      'PRODUCTION',
+      'BASE_PATH'
     ])
   ]
 }

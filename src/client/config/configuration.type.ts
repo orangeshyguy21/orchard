@@ -3,6 +3,7 @@ export type Config = {
     production: boolean;
   },
   api : {
+    proxy: string;
     path: string;
   }
 };
