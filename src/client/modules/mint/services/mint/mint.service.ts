@@ -10,7 +10,7 @@ import { api, getApiQuery } from '@client/modules/api/helpers/api.helpers';
 import { GQLResponse } from '@client/modules/api/types/api.types';
 import { MintInfoResponse } from '@client/modules/mint/types/mint.types';
 import { CacheService } from '@client/modules/cache/services/cache/cache.service';
-
+import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 @Injectable({
   providedIn: 'root'
 })
@@ -26,7 +26,6 @@ export class MintService {
 
   private mint_info_subject: BehaviorSubject<OrchardMintInfo | null>;
   public mint_info$: Observable<OrchardMintInfo | null>;
-
 
   constructor(
     public http: HttpClient,
@@ -75,8 +74,9 @@ export class MintService {
 
     return this.http.post<GQLResponse<MintInfoResponse>>(api, query).pipe(
       map((response) => response.data.mint_info),
-      tap((mintInfo) => {
-        this.cache.updateCache(this.CACHE_KEYS.MINT_INFO, mintInfo);
+      map((mint_info) => new MintInfo(mint_info)),
+      tap((mint_info) => {
+        this.cache.updateCache(this.CACHE_KEYS.MINT_INFO, mint_info);
       }),
       catchError((error) => {
         console.error('Error loading mint info:', error);
