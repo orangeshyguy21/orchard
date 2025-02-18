@@ -1,7 +1,0 @@
-{
-  "/proxy": {
-    "target": "http://127.0.0.1:3321",
-    "pathRewrite": {"^/proxy": ""},
-    "recure": false
-  }
-}
