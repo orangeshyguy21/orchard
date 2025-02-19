@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 /* Application Dependencies */
 import { GraphicModule } from '@client/modules/graphic/graphic.module';
 /* Local Dependencies */
-import { PrimaryNavComponent } from '@client/modules/nav/components/primary/primary-nav.component';
+import { PrimaryNavComponent } from '@client/modules/nav/components/primary-nav/primary-nav.component';
 
 @NgModule({
   declarations: [

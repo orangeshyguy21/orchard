@@ -10,5 +10,6 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 export class GraphicOrchardLogoComponent {
 
     @Input() height:string = '40px';
+	@Input() surface:boolean = false;
 	
 }

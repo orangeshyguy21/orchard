@@ -1,22 +1,8 @@
-// Orchard Background Colors
-
-.orc-surface-primary-bg {
-    background-color: var(--mat-sys-surface-primary);
+:root {
+    --orc-sys-brand-lightest: #fffd9f;
+    --orc-sys-brand-light: #ffd61f;
+    --orc-sys-brand-medium: #f58f22;
+    --orc-sys-brand-dark: #f3651d;
+    --orc-sys-brand-darkest: #9c2222;
+    --orc-sys-brand-surface: #100;
 }
-.orc-surface-primary-container-bg {
-    background-color: var(--mat-sys-surface-primary-container);
-}
-.orc-surface-container-low-bg {
-    background-color: var(--mat-sys-surface-container-low);
-}
-
-// Orchard Text Colors
-
-.orc-on-primary-color {
-    color: var(--mat-sys-on-primary);
-}
-.orc-on-primary-container-color {
-    color: var(--mat-sys-on-primary-container);
-}
-
-
