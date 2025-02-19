@@ -1,5 +1,5 @@
 /* Application Configuration */
-import { environment } from '@client/config/configuration';
+import { environment } from '@client/configs/configuration';
 
 export const api = `${environment.api.proxy}/${environment.api.path}`;
 

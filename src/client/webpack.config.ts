@@ -12,7 +12,8 @@ module.exports = {
   },
   resolve: {
     alias: {
-      '@style': path.resolve(__dirname, './style'),
+      '@styles': path.resolve(__dirname, './styles'),
+      '@assets': path.resolve(__dirname, './assets'),
     }
   },
   plugins: [
