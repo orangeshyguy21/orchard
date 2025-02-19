@@ -1,3 +1,13 @@
-.test {
-    background-color: var(--mat-sys-surface-container-low);
-  }
+@use '../../../../style/molecules/molecules';
+
+.primary-nav-container{
+    @extend .orc-surface-container-low-bg;
+    @extend .flex;
+    @extend .flex-column;
+    @extend .flex-items-center;
+    @extend .h-full;
+}
+
+.primary-nav-items{
+    @extend .flex-grow;
+}

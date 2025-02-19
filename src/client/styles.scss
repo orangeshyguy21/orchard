@@ -1,3 +1,4 @@
-@use './style/font';
-@use './style/icon';
-@use './style/body';
+/* Base Styles */
+@use './style/base/base';
+/* Molecules */
+@use './style/molecules/molecules';

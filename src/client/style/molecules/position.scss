@@ -1,0 +1,31 @@
+/* Flexbox Definitions */
+.flex{
+    display: flex;
+}
+.flex-row{
+    flex-direction: row;
+}
+.flex-column{
+    flex-direction: column;
+}
+.flex-items-center{
+    align-items: center;
+}
+.flex-justify-center{
+    justify-content: center;
+}
+.flex-grow{
+    flex-grow: 1;
+}
+
+/* Height Definitions */
+.h-full{
+    height: 100%;
+}
+
+/* Width Definitions */
+.w-full{
+    width: 100%;
+}
+
+/* Margin Definitions */

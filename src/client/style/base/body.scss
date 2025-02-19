@@ -19,6 +19,8 @@ body {
   background: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
   font-family: 'Bai Jamjuree', sans-serif;
+  height: 100dvh;
+  margin: 0;
 
   &.dark-mode {
     color-scheme: dark;
