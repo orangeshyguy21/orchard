@@ -1,8 +1,8 @@
 /* Core Dependencies */
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-/* Vendor Dependencies */
-import { MatCardModule } from '@angular/material/card';
+/* Application Dependencies */
+import { GraphicModule } from '@client/modules/graphic/graphic.module';
 /* Local Dependencies */
 import { PrimaryNavComponent } from '@client/modules/nav/components/primary/primary-nav.component';
 
@@ -12,7 +12,7 @@ import { PrimaryNavComponent } from '@client/modules/nav/components/primary/prim
   ],
   imports: [
     CommonModule,
-    MatCardModule
+    GraphicModule,
   ],
   exports: [
     PrimaryNavComponent
