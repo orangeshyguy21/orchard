@@ -1,4 +1,6 @@
 /* Base Styles */
-@use './style/base/base';
+@use '@style/base/base';
 /* Molecules */
-@use './style/molecules/molecules';
+// @use './style/molecules/molecules';
+
+@use '@style/molecules/molecules';

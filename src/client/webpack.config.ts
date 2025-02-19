@@ -1,3 +1,5 @@
+import path from "path";
+
 const { EnvironmentPlugin } = require('webpack');
 
 require('dotenv').config({
@@ -7,6 +9,11 @@ require('dotenv').config({
 module.exports = {
   output: {
     crossOriginLoading: 'anonymous'
+  },
+  resolve: {
+    alias: {
+      '@style': path.resolve(__dirname, './style'),
+    }
   },
   plugins: [
     new EnvironmentPlugin([
