@@ -22,6 +22,9 @@
 .h-full{
     height: 100%;
 }
+.h-1-5{
+    height: 1.5rem;
+}
 .h-2{
     height: 2rem;
 }
@@ -29,6 +32,9 @@
 /* Width Definitions */
 .w-full{
     width: 100%;
+}
+.w-1-5{
+    width: 1.5rem;
 }
 .w-2{
     width: 2rem;
@@ -40,6 +46,11 @@
 }
 
 /* Margin Definitions */
+.m-v-0-5{
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
 
 /* Padding Definitions */
 .p-v-1-5{
