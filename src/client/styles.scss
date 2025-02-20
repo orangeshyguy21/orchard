@@ -1,6 +1,6 @@
 /* Base Styles */
-@use '@styles/base/base';
-/* Molecules */
-// @use './style/molecules/molecules';
-
+@use '@styles/atom/atom';
+/* Building Blocks */
 @use '@styles/molecule/molecule';
+/* Complex Layouts */
+@use '@styles/organism/organism';
