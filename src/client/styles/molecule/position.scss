@@ -17,6 +17,9 @@
 .flex-grow{
     flex-grow: 1;
 }
+.flex-gap-1{
+    gap: 1rem;
+}
 
 /* Height Definitions */
 .h-full{
@@ -28,6 +31,9 @@
 .h-2{
     height: 2rem;
 }
+.h-2-5{
+    height: 2.5rem;
+}
 
 /* Width Definitions */
 .w-full{
@@ -38,6 +44,12 @@
 }
 .w-2{
     width: 2rem;
+}
+.w-3{
+    width: 3rem;
+}
+.w-4{
+    width: 4rem;
 }
 
 /* Minimum Width Definitions */
@@ -56,6 +68,10 @@
 .p-v-1-5{
     padding-top: 1.5rem;
     padding-bottom: 1.5rem;
+}
+.p-h-1{
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 
 .p-b-0-5{
