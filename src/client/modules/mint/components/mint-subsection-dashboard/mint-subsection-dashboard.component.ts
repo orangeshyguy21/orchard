@@ -3,17 +3,16 @@ import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
 /* Application Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { OrchardMintInfo } from '@shared/generated.types';
-import { firstValueFrom, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Component({
-  selector: 'orc-mint',
-  templateUrl: './mint.component.html',
-  styleUrl: './mint.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'orc-mint-subsection-dashboard',
   standalone: false,
+  templateUrl: './mint-subsection-dashboard.component.html',
+  styleUrl: './mint-subsection-dashboard.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MintComponent implements OnInit {
-
+export class MintSubsectionDashboardComponent {
   public mint_info$: Observable<OrchardMintInfo | null>;
 
   constructor(
@@ -30,3 +29,4 @@ export class MintComponent implements OnInit {
     });
   }
 }
+

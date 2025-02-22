@@ -6,10 +6,10 @@ import { RouterModule, Routes } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 /* Local Dependencies */
-import { MintComponent } from './components/mint/mint.component';
 import { MintNavComponent } from './components/mint-nav/mint-nav.component';
 import { MintSectionComponent } from './components/mint-section/mint-section.component';
-import { MintConfigComponent } from './components/mint-config/mint-config.component';
+import { MintSubsectionDashboardComponent } from './components/mint-subsection-dashboard/mint-subsection-dashboard.component';
+import { MintSubsectionConfigComponent } from './components/mint-subsection-config/mint-subsection-config.component';
 
 const routes: Routes = [
 	{
@@ -18,7 +18,7 @@ const routes: Routes = [
 		children: [
 			{
 				path: '',
-				component: MintComponent,
+				component: MintSubsectionDashboardComponent,
 				title: 'Orchard | Mint',
 				data: {
 					section: 'mint',
@@ -27,7 +27,7 @@ const routes: Routes = [
 			},
 			{
 				path: 'configuration',
-				component: MintConfigComponent,
+				component: MintSubsectionConfigComponent,
 				title: 'Orchard | Mint Configuration',
 				data: {
 					section: 'mint',
@@ -51,10 +51,10 @@ export class MintRoutingModule { }
 
 @NgModule({
 	declarations: [
-		MintComponent,
 		MintNavComponent,
 		MintSectionComponent,
-		MintConfigComponent
+		MintSubsectionDashboardComponent,
+		MintSubsectionConfigComponent,
 	],
 	imports: [
 		CommonModule,
