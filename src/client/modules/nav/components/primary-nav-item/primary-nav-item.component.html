@@ -2,7 +2,8 @@
     class="primary-nav-item-container" 
     [class.primary-nav-item-highlight]="highlight"
     (mouseover)="onMouseOver()"
-    (mouseout)="onMouseOut()">
+    (mouseout)="onMouseOut()"
+    (click)="onClick()">
     <div class="primary-nav-item-icon">
         <div *ngIf="mode === 'default'" class="font-size-xxl">
             <mat-icon [class.mat-symbol-outline]="!highlight" [inline]="true">{{ icon }}</mat-icon>
