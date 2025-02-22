@@ -8,13 +8,13 @@ import { MatIconModule } from '@angular/material/icon';
 /* Local Dependencies */
 import { MintComponent } from './components/mint/mint.component';
 import { MintNavComponent } from './components/mint-nav/mint-nav.component';
-import { MintLayoutComponent } from './components/mint-layout/mint-layout.component';
+import { MintSectionComponent } from './components/mint-section/mint-section.component';
 import { MintConfigComponent } from './components/mint-config/mint-config.component';
 
 const routes: Routes = [
 	{
 		path: '',
-		component: MintLayoutComponent,
+		component: MintSectionComponent,
 		children: [
 			{
 				path: '',
@@ -45,18 +45,16 @@ const routes: Routes = [
 	exports: [
 		RouterModule,
 	],
-	declarations: [
-		MintNavComponent,
-		MintLayoutComponent,
-  MintConfigComponent
-	]
 })
 export class MintRoutingModule { }
 
 
 @NgModule({
 	declarations: [
-		MintComponent
+		MintComponent,
+		MintNavComponent,
+		MintSectionComponent,
+		MintConfigComponent
 	],
 	imports: [
 		CommonModule,

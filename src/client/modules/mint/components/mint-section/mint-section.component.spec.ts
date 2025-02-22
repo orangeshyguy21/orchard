@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MintLayoutComponent } from './mint-layout.component';
+import { MintSectionComponent } from './mint-section.component';
 
-describe('MintLayoutComponent', () => {
-  let component: MintLayoutComponent;
-  let fixture: ComponentFixture<MintLayoutComponent>;
+describe('MintSectionComponent', () => {
+  let component: MintSectionComponent;
+  let fixture: ComponentFixture<MintSectionComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [MintLayoutComponent]
+      declarations: [MintSectionComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(MintLayoutComponent);
+    fixture = TestBed.createComponent(MintSectionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
