@@ -14,7 +14,8 @@ export class PrimaryNavItemComponent {
 	@Input() name!: string;
 	@Input() mode: 'default' | 'svg' = 'default';
 	@Input() navroute!: string;
-	public active = false;
+	@Input() active : boolean = false;
+
 	public moused = false;
 
 	public get highlight(){ return this.active || this.moused; }
@@ -24,17 +25,14 @@ export class PrimaryNavItemComponent {
 	constructor(
 		private changeDetectorRef: ChangeDetectorRef,
 		private router: Router
-	) {
+	) { }
 
-	}
-
-	public onMouseOver(){
+	public onMouseEnter(){
 		this.moused = true;
 		this.changeDetectorRef.detectChanges();
 	}
 
-	public onMouseOut(){
-		if(this.active) return;
+	public onMouseLeave(){
 		this.moused = false;
 		this.changeDetectorRef.detectChanges();
 	}

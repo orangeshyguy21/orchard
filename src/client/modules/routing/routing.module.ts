@@ -15,16 +15,10 @@ const routes: Routes = [
 			{
 				path: 'lightning',
 				loadChildren: () => import('../lightning/lightning.module').then(m => m.LightningModule),
-				data: {
-					tester: 'mint',
-				}
 			},
 			{
 				path: 'mint',
 				loadChildren: () => import('../mint/mint.module').then(m => m.MintModule),
-				data: {
-					tester: 'lightning',
-				}
 			}
 		]
 	},

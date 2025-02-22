@@ -1,8 +1,8 @@
 <div 
     class="primary-nav-item-container" 
     [class.primary-nav-item-highlight]="highlight"
-    (mouseover)="onMouseOver()"
-    (mouseout)="onMouseOut()"
+    (mouseenter)="onMouseEnter()"
+    (mouseleave)="onMouseLeave()"
     (click)="onClick()">
     <div class="primary-nav-item-icon">
         <div *ngIf="mode === 'default'" class="font-size-xxl">
