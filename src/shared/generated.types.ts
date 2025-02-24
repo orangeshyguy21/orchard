@@ -16,6 +16,12 @@ export type Scalars = {
   UnixTimestamp: { input: any; output: any; }
 };
 
+export type OrchardContact = {
+  __typename?: 'OrchardContact';
+  info: Scalars['String']['output'];
+  method: Scalars['String']['output'];
+};
+
 export type OrchardMintBalance = {
   __typename?: 'OrchardMintBalance';
   total_issued: Scalars['Int']['output'];
@@ -31,7 +37,7 @@ export type OrchardMintDatabase = {
 
 export type OrchardMintInfo = {
   __typename?: 'OrchardMintInfo';
-  contact: Array<Scalars['String']['output']>;
+  contact: Array<OrchardContact>;
   description: Scalars['String']['output'];
   description_long: Scalars['String']['output'];
   icon_url: Scalars['String']['output'];

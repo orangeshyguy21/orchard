@@ -50,7 +50,10 @@ export class MintService {
         version
         description
         description_long
-        contact
+        contact{
+          method
+          info
+        }
         icon_url
         urls
         time

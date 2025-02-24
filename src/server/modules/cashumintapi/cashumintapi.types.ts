@@ -4,7 +4,7 @@ export type CashuMintInfo = {
   version: string;
   description: string;
   description_long: string;
-  contact: string[];
+  contact: CashuContact[];
   motd: string;
   icon_url: string;
   urls: string[];
@@ -12,6 +12,11 @@ export type CashuMintInfo = {
   nuts: {
     [nut: string]: CashuNut;
   };
+}
+
+export type CashuContact = {
+  method: string;
+  info: string;
 }
 
 export type CashuNut = {

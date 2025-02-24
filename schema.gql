@@ -2,6 +2,11 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type OrchardContact {
+  info: String!
+  method: String!
+}
+
 type OrchardMintBalance {
   total_issued: Int!
   total_outstanding: Int!
@@ -14,7 +19,7 @@ type OrchardMintDatabase {
 }
 
 type OrchardMintInfo {
-  contact: [String!]!
+  contact: [OrchardContact!]!
   description: String!
   description_long: String!
   icon_url: String!

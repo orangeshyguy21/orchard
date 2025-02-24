@@ -2,7 +2,7 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 /* Application Dependencies */
 import { UnixTimestamp } from '@server/modules/graphql/scalars/unixtimestamp.scalar';
-import { CashuMintInfo, CashuNut, CashuNutMethod, CashuNutSupported } from '@server/modules/cashumintapi/cashumintapi.types';
+import { CashuContact, CashuMintInfo, CashuNut, CashuNutMethod, CashuNutSupported } from '@server/modules/cashumintapi/cashumintapi.types';
 
 @ObjectType()
 export class OrchardMintInfo {
@@ -22,8 +22,8 @@ export class OrchardMintInfo {
   @Field()
   description_long: string;
 
-  @Field(() => [String!])
-  contact: string[];
+  @Field(() => [OrchardContact!])
+  contact: OrchardContact[];
 
   @Field()
   icon_url: string;
@@ -48,6 +48,21 @@ export class OrchardMintInfo {
     this.urls = cashu_info.urls;
     this.time = cashu_info.time;
     this.nuts = Object.keys(cashu_info.nuts).map( nut_id => new OrchardNut(nut_id, cashu_info.nuts[nut_id]) );
+  }
+}
+
+@ObjectType()
+export class OrchardContact {
+
+  @Field()
+  method: string;
+
+  @Field()
+  info: string;
+
+  constructor(contact: CashuContact) {
+    this.method = contact.method;
+    this.info = contact.info;
   }
 }
 

@@ -1,6 +1,9 @@
 <div class="mint-section-container">
-    <div>mint nav</div>
+    <div class="flex flex-row flex-items-center flex-gap-1 orc-surface-container-low-bg">
+		<img [src]="mint_info?.icon_url" alt="Mint Logo" class="h-2-5">
+		<div class="text-2xl font-bold">{{ mint_info?.name }}</div>
+	</div>
     <div class="mint-subsection-container">
-      <router-outlet></router-outlet>
+      	<router-outlet></router-outlet>
     </div>
-  </div>
+</div>

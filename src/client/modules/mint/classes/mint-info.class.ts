@@ -1,4 +1,4 @@
-import { OrchardNut, OrchardMintInfo } from "@shared/generated.types";
+import { OrchardContact, OrchardNut, OrchardMintInfo } from "@shared/generated.types";
 
 export class MintInfo implements OrchardMintInfo {
 
@@ -7,7 +7,7 @@ export class MintInfo implements OrchardMintInfo {
   version: string;
   description: string;
   description_long: string;
-  contact: string[];
+  contact: OrchardContact[];
   icon_url: string;
   urls: string[];
   time: number;
