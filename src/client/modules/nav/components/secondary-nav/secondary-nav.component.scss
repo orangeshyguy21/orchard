@@ -1,0 +1,27 @@
+@use '@styles/molecule/molecule';
+
+.secondary-nav-container{
+    @extend .flex;
+    @extend .flex-row;
+    @extend .flex-items-center;   
+    @extend .orc-surface-container-low-bg;
+    @extend .h-3;
+}
+
+.secondary-nav-header{}
+
+::ng-deep [secondary-nav-header] {
+    @extend .w-min-18;
+}
+
+
+.secondary-nav-items{
+    @extend .flex-grow;
+    @extend .h-full;
+}
+
+::ng-deep [secondary-nav-items] {
+    @extend .flex;
+    @extend .flex-row;
+    @extend .h-full;
+}

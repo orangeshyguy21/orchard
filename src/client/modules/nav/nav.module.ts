@@ -10,13 +10,17 @@ import { PrimaryNavComponent } from '@client/modules/nav/components/primary-nav/
 import { PrimaryNavHeaderComponent } from './components/primary-nav-header/primary-nav-header.component';
 import { PrimaryNavItemsComponent } from './components/primary-nav-items/primary-nav-items.component';
 import { PrimaryNavItemComponent } from './components/primary-nav-item/primary-nav-item.component';
+import { SecondaryNavComponent } from './components/secondary-nav/secondary-nav.component';
+import { SecondaryNavItemComponent } from './components/secondary-nav-item/secondary-nav-item.component';
 
 @NgModule({
   declarations: [
     PrimaryNavComponent,
     PrimaryNavHeaderComponent,
     PrimaryNavItemsComponent,
-    PrimaryNavItemComponent
+    PrimaryNavItemComponent,
+    SecondaryNavComponent,
+    SecondaryNavItemComponent
   ],
   imports: [
     CommonModule,
@@ -24,7 +28,9 @@ import { PrimaryNavItemComponent } from './components/primary-nav-item/primary-n
     GraphicModule,
   ],
   exports: [
-    PrimaryNavComponent
+    PrimaryNavComponent,
+    SecondaryNavComponent,
+    SecondaryNavItemComponent
   ]
 })
 export class NavModule { }

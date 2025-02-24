@@ -1,0 +1,46 @@
+@use '@styles/molecule/molecule';
+
+.secondary-nav-item-container{
+    @extend .flex;
+    @extend .flex-items-center;
+    @extend .flex-justify-center;
+    @extend .h-full;
+    @extend .cursor-pointer;
+    @extend .m-h-1;
+    @extend .w-min-5;
+    @extend .relative;
+
+    &.secondary-nav-item-highlight{
+
+        &::after {
+            @extend .pseudo-element;
+            @extend .absolute;
+            bottom: 0;
+            left: 0;
+
+            @extend .w-full;
+            @extend .h-0-5;
+
+            @extend .orc-primary-container-bg;
+            @extend .orc-corner-extra-large-top;
+            
+            animation: highlight-fade 0.3s ease-in-out;
+            transform-origin: center bottom;
+        }
+    }
+}
+
+.secondary-nav-item-name{
+    @extend .font-size-s;
+}
+
+@keyframes highlight-fade {
+    0% {
+        opacity: 0;
+        transform: scaleX(0.5) scaleY(0);
+    }
+    100% {
+        opacity: 1;
+        transform: scaleX(1) scaleY(1);
+    }
+}

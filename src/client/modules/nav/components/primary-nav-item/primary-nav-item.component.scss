@@ -27,6 +27,7 @@
 .primary-nav-item-highlight{
     .primary-nav-item-icon{
         @extend .orc-primary-container-bg;
+        @extend .orc-on-primary-container-color;
     }
     .primary-nav-item-name{
         @extend .font-weight-semi-bold;

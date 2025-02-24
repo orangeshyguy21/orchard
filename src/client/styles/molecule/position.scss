@@ -1,3 +1,11 @@
+/* Position Definitions */
+.relative{
+    position: relative;
+}
+.absolute{
+    position: absolute;
+}
+
 /* Flexbox Definitions */
 .flex{
     display: flex;
@@ -25,6 +33,12 @@
 .h-full{
     height: 100%;
 }
+.h-0-5{
+    height: 0.5rem;
+}
+.h-1{
+    height: 1rem;
+}
 .h-1-5{
     height: 1.5rem;
 }
@@ -33,6 +47,12 @@
 }
 .h-2-5{
     height: 2.5rem;
+}
+.h-3{
+    height: 3rem;
+}
+.h-4{
+    height: 4rem;
 }
 
 /* Width Definitions */
@@ -53,14 +73,24 @@
 }
 
 /* Minimum Width Definitions */
+.w-min-5{
+    min-width: 5rem;
+}
 .w-min-7{
     min-width: 7rem;
+}
+.w-min-18{
+    min-width: 18rem;
 }
 
 /* Margin Definitions */
 .m-v-0-5{
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
+}
+.m-h-1{
+    margin-left: 1rem;
+    margin-right: 1rem;
 }
 
 
