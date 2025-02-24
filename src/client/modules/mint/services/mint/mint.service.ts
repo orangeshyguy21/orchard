@@ -71,6 +71,11 @@ export class MintService {
             unit
             commands
           }
+          ttl
+          cached_endpoints{
+            method
+            path
+          }
         }
       }
     }`);

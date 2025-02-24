@@ -2,6 +2,11 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type OrchardCachedEndpoint {
+  method: String!
+  path: String!
+}
+
 type OrchardContact {
   info: String!
   method: String!
@@ -103,11 +108,13 @@ type OrchardMintProof {
 }
 
 type OrchardNut {
+  cached_endpoints: [OrchardCachedEndpoint!]
   disabled: Boolean
   methods: [OrchardNutMethod!]
   nut: Float!
   supported: Boolean
   supported_meta: [OrchardNutSupported!]
+  ttl: Float
 }
 
 type OrchardNutMethod {

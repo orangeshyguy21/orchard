@@ -21,8 +21,10 @@ export type CashuContact = {
 
 export type CashuNut = {
   disabled?: boolean;
+  ttl?: number;
   methods?: CashuNutMethod[];
   supported?: boolean | CashuNutSupported[];
+  cached_endpoints?: CashuCachedEndpoint[];
 }
 
 export type CashuNutMethod = {
@@ -35,4 +37,9 @@ export type CashuNutSupported = {
   method: string;
   unit: string;
   commands?: string[];
+}
+
+export type CashuCachedEndpoint = {
+  method: string;
+  path: string;
 }

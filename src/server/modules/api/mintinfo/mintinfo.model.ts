@@ -2,7 +2,7 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 /* Application Dependencies */
 import { UnixTimestamp } from '@server/modules/graphql/scalars/unixtimestamp.scalar';
-import { CashuContact, CashuMintInfo, CashuNut, CashuNutMethod, CashuNutSupported } from '@server/modules/cashumintapi/cashumintapi.types';
+import { CashuCachedEndpoint, CashuContact, CashuMintInfo, CashuNut, CashuNutMethod, CashuNutSupported } from '@server/modules/cashumintapi/cashumintapi.types';
 
 @ObjectType()
 export class OrchardMintInfo {
@@ -84,12 +84,20 @@ export class OrchardNut {
   @Field(() => [OrchardNutSupported!], { nullable: true })
   supported_meta?: OrchardNutSupported[];
 
+  @Field({nullable: true})
+  ttl?: number;
+
+  @Field(() => [OrchardCachedEndpoint!], { nullable: true })
+  cached_endpoints?: OrchardCachedEndpoint[];
+
   constructor(nut_id:string, cashu_nut: CashuNut) {
     this.nut = parseInt(nut_id);
     this.disabled = cashu_nut.disabled;
     this.methods = (cashu_nut.methods) ? cashu_nut.methods.map((method) => new OrchardNutMethod(method)) : null;
     this.supported = (cashu_nut.supported) ? true : null;
     this.supported_meta = (Array.isArray(cashu_nut.supported)) ? cashu_nut.supported.map((supported) => new OrchardNutSupported(supported)) : null;
+    this.ttl = cashu_nut.ttl;
+    this.cached_endpoints = (cashu_nut.cached_endpoints) ? cashu_nut.cached_endpoints.map((cached_endpoint) => new OrchardCachedEndpoint(cached_endpoint)) : null;
   }
 }
 
@@ -128,5 +136,20 @@ export class OrchardNutSupported {
     this.method = supported.method;
     this.unit = supported.unit;
     this.commands = supported.commands;
+  }
+}
+
+@ObjectType()
+export class OrchardCachedEndpoint {
+
+  @Field()
+  method: string;
+
+  @Field()
+  path: string;
+
+  constructor(cached_endpoint: CashuCachedEndpoint) {
+    this.method = cached_endpoint.method;
+    this.path = cached_endpoint.path;
   }
 }
