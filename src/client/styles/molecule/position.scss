@@ -36,6 +36,9 @@
 }
 
 /* Height Definitions */
+.h-0{
+    height: 0;
+}
 .h-dvh{
     height: 100dvh;
 }
@@ -72,6 +75,9 @@
 }
 
 /* Width Definitions */
+.w-0{
+    width: 0;
+}
 .w-full{
     width: 100%;
 }
@@ -131,4 +137,16 @@
 
 .p-b-0-5{
     padding-bottom: 0.5rem;
+}
+
+/* Absolute Position Definitions */
+.bottom-0{
+    bottom: 0;
+}
+.left-0{
+    left: 0;
+}
+
+.left-half{
+    left: 50%;
 }

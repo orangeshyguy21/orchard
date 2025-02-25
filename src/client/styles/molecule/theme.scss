@@ -75,6 +75,9 @@
 .orc-corner-small {
     border-radius: var(--mat-sys-corner-small);
 }
+.orc-corner-small-top {
+    border-radius: 0.5rem 0.5rem 0 0;
+}
 
 // Orchard Border Colors
 .orc-surface-tint-border{
