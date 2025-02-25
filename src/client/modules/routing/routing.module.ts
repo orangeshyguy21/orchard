@@ -19,6 +19,10 @@ const routes: Routes = [
 			{
 				path: 'mint',
 				loadChildren: () => import('../mint/mint.module').then(m => m.MintModule),
+			},
+			{
+				path: 'settings',
+				loadChildren: () => import('../settings/settings.module').then(m => m.SettingsModule),
 			}
 		]
 	},
