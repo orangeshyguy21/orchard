@@ -12,6 +12,8 @@ import { PrimaryNavItemsComponent } from './components/primary-nav-items/primary
 import { PrimaryNavItemComponent } from './components/primary-nav-item/primary-nav-item.component';
 import { SecondaryNavComponent } from './components/secondary-nav/secondary-nav.component';
 import { SecondaryNavItemComponent } from './components/secondary-nav-item/secondary-nav-item.component';
+import { PrimaryNavFooterComponent } from './components/primary-nav-footer/primary-nav-footer.component';
+import { PrimaryNavToolComponent } from './components/primary-nav-tool/primary-nav-tool.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +22,9 @@ import { SecondaryNavItemComponent } from './components/secondary-nav-item/secon
     PrimaryNavItemsComponent,
     PrimaryNavItemComponent,
     SecondaryNavComponent,
-    SecondaryNavItemComponent
+    SecondaryNavItemComponent,
+    PrimaryNavFooterComponent,
+    PrimaryNavToolComponent
   ],
   imports: [
     CommonModule,
