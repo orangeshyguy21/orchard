@@ -12,7 +12,7 @@
 .primary-nav-item-icon{
     @extend .orc-corner-extra-large;
     @extend .w-4;
-    @extend .h-2-5;
+    @extend .h-2;
     @extend .trans-bg-fast;
     @extend .flex;
     @extend .flex-items-center;
@@ -20,6 +20,7 @@
 }
 
 .primary-nav-item-name{
+    margin-top: 0.125rem;
     @extend .trans-font-weight-fast;
     @extend .trans-color-fast;
 }
