@@ -30,9 +30,8 @@ export type OrchardContact = {
 
 export type OrchardMintBalance = {
   __typename?: 'OrchardMintBalance';
-  total_issued: Scalars['Int']['output'];
-  total_outstanding: Scalars['Int']['output'];
-  total_redeemed: Scalars['Int']['output'];
+  balance: Scalars['Int']['output'];
+  keyset: Scalars['String']['output'];
 };
 
 export type OrchardMintDatabase = {
@@ -165,6 +164,8 @@ export type OrchardStatus = {
 export type Query = {
   __typename?: 'Query';
   mint_balances: Array<OrchardMintBalance>;
+  mint_balances_issued: Array<OrchardMintBalance>;
+  mint_balances_redeemed: Array<OrchardMintBalance>;
   mint_databases: Array<OrchardMintDatabase>;
   mint_info: OrchardMintInfo;
   mint_keysets: Array<OrchardMintKeyset>;

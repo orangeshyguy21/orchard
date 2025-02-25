@@ -1,10 +1,11 @@
 /* Core Dependencies */
 import { Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Router, Event, ActivatedRoute } from '@angular/router';
+/* Vendor Dependencies */
+import { filter, Subscription } from 'rxjs';
 /* Application Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
-import { OrchardMintInfo } from '@shared/generated.types';
-import { filter, Subscription } from 'rxjs';
+import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 
 @Component({
 	selector: 'orc-mint-section',
@@ -15,7 +16,7 @@ import { filter, Subscription } from 'rxjs';
 })
 export class MintSectionComponent implements OnInit, OnDestroy {
 
-	public mint_info: OrchardMintInfo | null = null;
+	public mint_info: MintInfo | null = null;
 	public active_sub_section = '';
 	private subscription: Subscription;
 
@@ -30,8 +31,9 @@ export class MintSectionComponent implements OnInit, OnDestroy {
   
 	ngOnInit(): void {
 		this.mintService.loadMintInfo().subscribe({
-			next: (info:OrchardMintInfo) => {
+			next: (info:MintInfo) => {
 				this.mint_info = info;
+				this.changeDetectorRef.detectChanges();
 			},
 			error: (error) => {
 				console.error('Error loading mint info:', error); // TODO: handle error
