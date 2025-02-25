@@ -1,12 +1,7 @@
 export type CashuMintBalance = {
-  's_issued - s_used': number;
+  keyset: string;
+  balance: number;
 }   
-
-export type CashuMintBalanceIssued = {
-  'balance': number;
-}
-
-export type CashuMintBalanceRedeemed = CashuMintBalanceIssued;
 
 export type CashuMintKeyset = {
   id: string;

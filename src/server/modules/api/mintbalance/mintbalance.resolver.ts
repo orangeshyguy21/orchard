@@ -15,12 +15,26 @@ export class MintBalanceResolver {
 
   @Query(() => [OrchardMintBalance])
   async mint_balances() : Promise<OrchardMintBalance[]> {
-    // @TODO : find a way so that the calls only fire if their respective field is requested.
     try {
-      const outstanding = await this.mintBalanceService.getOutstandingMintBalances();
-      const issued = await this.mintBalanceService.getIssuedMintBalances();
-      const redeemed = await this.mintBalanceService.getRedeemedMintBalances();
-      return outstanding.map( (balance, index) => new OrchardMintBalance(balance, issued[index], redeemed[index] ));   
+      return this.mintBalanceService.getMintBalances();
+    } catch (error) {
+      throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
+    } 
+  }
+
+  @Query(() => [OrchardMintBalance])
+  async mint_balances_issued() : Promise<OrchardMintBalance[]> {
+    try {
+      return this.mintBalanceService.getIssuedMintBalances();
+    } catch (error) {
+      throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
+    } 
+  }
+
+  @Query(() => [OrchardMintBalance])
+  async mint_balances_redeemed() : Promise<OrchardMintBalance[]> {
+    try {
+      return this.mintBalanceService.getRedeemedMintBalances();
     } catch (error) {
       throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
     } 
