@@ -1,0 +1,15 @@
+@use '@styles/molecule/molecule';
+
+.section-container {
+    @extend .flex;
+    @extend .flex-column;
+    @extend .h-dvh;
+    @extend .w-full;
+    @extend .relative;
+}
+  
+.subsection-container {
+    @extend .overlfow-y-auto;
+    @extend .relative;
+    @extend .h-min-0;
+}

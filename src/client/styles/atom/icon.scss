@@ -3,7 +3,7 @@
   font-family: 'Material Symbols Rounded';
   font-style: normal;
   font-weight: 300;
-  src: url('../assets/font/material-symbols.woff2') format('woff2');
+  src: url('../../assets/font/material-symbols.woff2') format('woff2');
 }
 
 .mat-symbol {
@@ -12,6 +12,8 @@
   font-style: normal;
   font-size: 24px;
   line-height: 1;
+  height: 100%;
+  width: 100%;
   letter-spacing: normal;
   text-transform: none;
   display: inline-block;

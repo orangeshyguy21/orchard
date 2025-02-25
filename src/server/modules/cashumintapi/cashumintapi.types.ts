@@ -4,7 +4,7 @@ export type CashuMintInfo = {
   version: string;
   description: string;
   description_long: string;
-  contact: string[];
+  contact: CashuContact[];
   motd: string;
   icon_url: string;
   urls: string[];
@@ -14,10 +14,17 @@ export type CashuMintInfo = {
   };
 }
 
+export type CashuContact = {
+  method: string;
+  info: string;
+}
+
 export type CashuNut = {
   disabled?: boolean;
+  ttl?: number;
   methods?: CashuNutMethod[];
   supported?: boolean | CashuNutSupported[];
+  cached_endpoints?: CashuCachedEndpoint[];
 }
 
 export type CashuNutMethod = {
@@ -30,4 +37,9 @@ export type CashuNutSupported = {
   method: string;
   unit: string;
   commands?: string[];
+}
+
+export type CashuCachedEndpoint = {
+  method: string;
+  path: string;
 }

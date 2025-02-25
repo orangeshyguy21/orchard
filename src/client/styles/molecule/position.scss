@@ -1,0 +1,152 @@
+/* Position Definitions */
+.relative{
+    position: relative;
+}
+.absolute{
+    position: absolute;
+}
+
+/* Flexbox Definitions */
+.flex{
+    display: flex;
+}
+.flex-row{
+    flex-direction: row;
+}
+.flex-column{
+    flex-direction: column;
+}
+.flex-items-center{
+    align-items: center;
+}
+.flex-justify-center{
+    justify-content: center;
+}
+.flex-grow{
+    flex-grow: 1;
+}
+.flex-gap-1{
+    gap: 1rem;
+}
+.flex-gap-1-5{
+    gap: 1.5rem;
+}
+.flex-gap-2{
+    gap: 2rem;
+}
+
+/* Height Definitions */
+.h-0{
+    height: 0;
+}
+.h-dvh{
+    height: 100dvh;
+}
+.h-full{
+    height: 100%;
+}
+.h-0-5{
+    height: 0.5rem;
+}
+.h-1{
+    height: 1rem;
+}
+.h-1-5{
+    height: 1.5rem;
+}
+.h-1-75{
+    height: 1.75rem;
+}
+.h-2{
+    height: 2rem;
+}
+.h-2-5{
+    height: 2.5rem;
+}
+.h-3{
+    height: 3rem;
+}
+.h-4{
+    height: 4rem;
+}
+/* Minimum Height Definitions */
+.h-min-0{
+    min-height: 0;
+}
+
+/* Width Definitions */
+.w-0{
+    width: 0;
+}
+.w-full{
+    width: 100%;
+}
+.w-1-5{
+    width: 1.5rem;
+}
+.w-1-75{
+    width: 1.75rem;
+}
+.w-2{
+    width: 2rem;
+}
+.w-2-5{
+    width: 2.5rem;
+}
+.w-3{
+    width: 3rem;
+}
+.w-4{
+    width: 4rem;
+}
+
+/* Minimum Width Definitions */
+.w-min-5{
+    min-width: 5rem;
+}
+.w-min-7{
+    min-width: 7rem;
+}
+.w-min-18{
+    min-width: 18rem;
+}
+
+/* Margin Definitions */
+.m-v-0-5{
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+.m-h-1{
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
+
+/* Padding Definitions */
+.p-0-125{
+    padding: 0.125rem;
+}
+.p-v-1-5{
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+}
+.p-h-1{
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.p-b-0-5{
+    padding-bottom: 0.5rem;
+}
+
+/* Absolute Position Definitions */
+.bottom-0{
+    bottom: 0;
+}
+.left-0{
+    left: 0;
+}
+
+.left-half{
+    left: 50%;
+}

@@ -1,0 +1,14 @@
+<div 
+    class="primary-nav-item-container" 
+    [class.primary-nav-item-highlight]="highlight"
+    (mouseenter)="onMouseEnter()"
+    (mouseleave)="onMouseLeave()"
+    (click)="onClick()">
+    <div class="primary-nav-item-icon">
+        <mat-icon *ngIf="mode === 'default'" [class.mat-symbol-outline]="!highlight" class="icon-md">{{ icon }}</mat-icon>
+        <mat-icon *ngIf="mode === 'svg'" class="w-1-5 h-1-5" [svgIcon]="active_svg_icon"></mat-icon>
+    </div>
+    <div class="primary-nav-item-name">
+        {{ name }}
+    </div>
+</div>

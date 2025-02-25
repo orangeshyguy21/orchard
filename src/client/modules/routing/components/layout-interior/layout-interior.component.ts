@@ -1,3 +1,4 @@
+/* Core Dependencies */
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({

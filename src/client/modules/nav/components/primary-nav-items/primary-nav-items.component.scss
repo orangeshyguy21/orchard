@@ -1,0 +1,12 @@
+@use '@styles/molecule/molecule';
+
+:host {
+    @extend .flex-grow;
+}
+
+.primary-nav-items {
+    @extend .flex;
+    @extend .flex-column;
+    @extend .flex-items-center;
+    @extend .flex-gap-1-5;
+}

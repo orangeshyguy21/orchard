@@ -1,0 +1,10 @@
+@use '@styles/molecule/molecule';
+
+.primary-nav-container{
+    @extend .orc-surface-container-low-bg;
+    @extend .flex;
+    @extend .flex-column;
+    @extend .flex-items-center;
+    @extend .h-full;
+    @extend .w-min-7;
+}

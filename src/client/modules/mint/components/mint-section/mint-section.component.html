@@ -1,0 +1,28 @@
+<div class="section-container">
+
+	<orc-secondary-nav>
+		<div secondary-nav-header class="secondary-nav-header">	
+			<img [src]="mint_info?.icon_url" alt="Mint Logo" class="h-2">
+			<div class="font-size-s">{{ mint_info?.name }}</div>
+		</div>
+		<div secondary-nav-items>
+			<orc-secondary-nav-item 
+				name="Dashboard"
+				navroute="mint"
+				[active]="active_sub_section === 'dashboard'">
+			</orc-secondary-nav-item>
+			<orc-secondary-nav-item
+				name="Info"
+				navroute="mint/info"
+				[active]="active_sub_section === 'info'">
+			</orc-secondary-nav-item>
+		</div>
+		<!-- <div secondary-nav-toolbar>
+			tools
+		</div> -->
+	</orc-secondary-nav>
+
+    <div class="subsection-container">
+      	<router-outlet></router-outlet>
+    </div>
+</div>

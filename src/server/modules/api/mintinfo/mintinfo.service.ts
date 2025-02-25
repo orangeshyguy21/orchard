@@ -20,6 +20,7 @@ export class MintInfoService {
   async getMintInfo() : Promise<OrchardMintInfo> {
     try {
       const cashu_info : CashuMintInfo = await this.cashuMintApiService.getMintInfo();
+      console.log('cashu_info', cashu_info);
       return new OrchardMintInfo(cashu_info);
     } catch (error) {
       this.logger.error('Error getting mint information from mint api', { error });

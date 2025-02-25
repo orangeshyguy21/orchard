@@ -1,0 +1,9 @@
+@use '@styles/molecule/molecule';
+
+.mat-symbol{
+    &.icon-md{
+        @extend .font-size-xxl;
+        @extend .h-1-75;
+        @extend .w-1-75;
+    }
+}

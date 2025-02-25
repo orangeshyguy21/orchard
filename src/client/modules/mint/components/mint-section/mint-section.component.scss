@@ -1,0 +1,8 @@
+@use '@styles/molecule/molecule';
+
+.secondary-nav-header {
+    @extend .flex;
+    @extend .flex-row;
+    @extend .flex-items-center;
+    @extend .flex-gap-1;
+}

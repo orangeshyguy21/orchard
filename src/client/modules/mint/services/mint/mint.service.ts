@@ -50,7 +50,10 @@ export class MintService {
         version
         description
         description_long
-        contact
+        contact{
+          method
+          info
+        }
         icon_url
         urls
         time
@@ -67,6 +70,11 @@ export class MintService {
             method
             unit
             commands
+          }
+          ttl
+          cached_endpoints{
+            method
+            path
           }
         }
       }

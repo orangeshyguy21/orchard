@@ -1,0 +1,15 @@
+.trans-bg-fast {
+    transition: background-color 0.15s ease;
+}
+
+.trans-color-fast {
+    transition: color 0.15s ease;
+}
+
+.trans-font-weight-fast {
+    transition: font-weight 0.15s ease;
+}
+
+.transform-translate-50-50 {
+    transform: translate(-50%, 50%);
+}

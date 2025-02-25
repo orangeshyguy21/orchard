@@ -1,0 +1,114 @@
+// Orchard Background Colors
+
+.orc-primary-container-bg {
+    background-color: var(--mat-sys-primary-container);
+}
+.orc-surface-container-low-bg {
+    background-color: var(--mat-sys-surface-container-low);
+}
+
+// Orchard Text Colors
+
+.orc-on-primary-color {
+    color: var(--mat-sys-on-primary);
+}
+.orc-on-primary-container-color {
+    color: var(--mat-sys-on-primary-container);
+}
+
+// Orchard Fill Colors
+
+.orc-brand-lightest-fill {
+    fill: var(--orc-sys-brand-lightest);
+}
+.orc-brand-light-fill {
+    fill: var(--orc-sys-brand-light);
+}
+.orc-brand-medium-fill {
+    fill: var(--orc-sys-brand-medium);
+}
+.orc-brand-dark-fill {
+    fill: var(--orc-sys-brand-dark);
+}
+.orc-brand-darkest-fill {
+    fill: var(--orc-sys-brand-darkest);
+}
+.orc-brand-surface-fill {
+    fill: var(--orc-sys-brand-surface);
+}
+
+// Orchard Corner Radius
+
+.orc-corner-extra-large {
+    border-radius: var(--mat-sys-corner-extra-large);
+}
+.orc-corner-extra-large-top {
+    border-radius: var(--mat-sys-corner-extra-large-top);
+}
+.orc-corner-extra-small {
+    border-radius: var(--mat-sys-corner-extra-small);
+}
+.orc-corner-extra-small-top {
+    border-radius: var(--mat-sys-corner-extra-small-top);
+}
+.orc-corner-full {
+    border-radius: var(--mat-sys-corner-full);
+}
+.orc-corner-large {
+    border-radius: var(--mat-sys-corner-large);
+}
+.orc-corner-large-end {
+    border-radius: var(--mat-sys-corner-large-end);
+}
+.orc-corner-large-start {
+    border-radius: var(--mat-sys-corner-large-start);
+}
+.orc-corner-large-top {
+    border-radius: var(--mat-sys-corner-large-top);
+}
+.orc-corner-medium {
+    border-radius: var(--mat-sys-corner-medium);
+}
+.orc-corner-none {
+    border-radius: var(--mat-sys-corner-none);
+}
+.orc-corner-small {
+    border-radius: var(--mat-sys-corner-small);
+}
+.orc-corner-small-top {
+    border-radius: 0.5rem 0.5rem 0 0;
+}
+
+// Orchard Border Colors
+.orc-surface-tint-border{
+    border-color: var(--mat-sys-surface-tint);
+}
+
+.orc-surface-variant-border{
+    border-color: var(--mat-sys-surface-variant);
+}
+
+.orc-outline{
+    border: 1px solid var(--mat-sys-outline);
+}
+
+// Orchard Elevation Levels
+
+.orc-level0 {
+    box-shadow: var(--mat-sys-level0);
+}
+.orc-level1 {
+    box-shadow: var(--mat-sys-level1);
+}
+.orc-level2 {
+    box-shadow: var(--mat-sys-level2);
+}
+.orc-level3 {
+    box-shadow: var(--mat-sys-level3);
+}
+.orc-level4 {
+    box-shadow: var(--mat-sys-level4);
+}
+.orc-level5 {
+    box-shadow: var(--mat-sys-level5);
+}

@@ -1,3 +1,6 @@
-@use './style/font';
-@use './style/icon';
-@use './style/body';
+/* Base Styles */
+@use '@styles/atom/atom';
+/* Building Blocks */
+@use '@styles/molecule/molecule';
+/* Complex Layouts */
+@use '@styles/organism/organism';

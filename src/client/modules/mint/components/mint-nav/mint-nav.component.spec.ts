@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MintComponent } from './mint.component';
+import { MintNavComponent } from './mint-nav.component';
 
-describe('MintComponent', () => {
-  let component: MintComponent;
-  let fixture: ComponentFixture<MintComponent>;
+describe('MintNavComponent', () => {
+  let component: MintNavComponent;
+  let fixture: ComponentFixture<MintNavComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MintComponent]
+      declarations: [MintNavComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(MintComponent);
+    fixture = TestBed.createComponent(MintNavComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
