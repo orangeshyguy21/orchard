@@ -13,12 +13,20 @@ const routes: Routes = [
 		component: LayoutInteriorComponent,
 		children: [
 			{
+				path: 'bitcoin',
+				loadChildren: () => import('../bitcoin/bitcoin.module').then(m => m.BitcoinModule),
+			},
+			{
 				path: 'lightning',
 				loadChildren: () => import('../lightning/lightning.module').then(m => m.LightningModule),
 			},
 			{
 				path: 'mint',
 				loadChildren: () => import('../mint/mint.module').then(m => m.MintModule),
+			},
+			{
+				path: 'ecash',
+				loadChildren: () => import('../ecash/ecash.module').then(m => m.EcashModule),
 			},
 			{
 				path: 'settings',

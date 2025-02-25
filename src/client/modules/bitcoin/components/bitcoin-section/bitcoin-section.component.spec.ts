@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LightningComponent } from './lightning.component';
+import { BitcoinSectionComponent } from './bitcoin-section.component';
 
-describe('LightningComponent', () => {
-  let component: LightningComponent;
-  let fixture: ComponentFixture<LightningComponent>;
+describe('BitcoinSectionComponent', () => {
+  let component: BitcoinSectionComponent;
+  let fixture: ComponentFixture<BitcoinSectionComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [LightningComponent]
+      declarations: [BitcoinSectionComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(LightningComponent);
+    fixture = TestBed.createComponent(BitcoinSectionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -2,16 +2,13 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
-/* Vendor Dependencies */
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 /* Local Dependencies */
-import { LightningComponent } from './components/lightning/lightning.component';
+import { LightningSectionComponent } from './components/lightning-section/lightning-section.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: LightningComponent,
+    component: LightningSectionComponent,
     title: 'Orchard | Lightning',
     data: {
       section: 'lightning',
@@ -33,13 +30,11 @@ export class LightningRoutingModule { }
 
 @NgModule({
   declarations: [
-    LightningComponent
+    LightningSectionComponent
   ],
   imports: [
     CommonModule,
     LightningRoutingModule,
-    MatIconModule,
-    MatButtonModule,
   ],
 
 })
