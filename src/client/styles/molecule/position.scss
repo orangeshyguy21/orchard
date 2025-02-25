@@ -30,6 +30,9 @@
 }
 
 /* Height Definitions */
+.h-dvh{
+    height: 100dvh;
+}
 .h-full{
     height: 100%;
 }
@@ -53,6 +56,10 @@
 }
 .h-4{
     height: 4rem;
+}
+/* Minimum Height Definitions */
+.h-min-0{
+    min-height: 0;
 }
 
 /* Width Definitions */

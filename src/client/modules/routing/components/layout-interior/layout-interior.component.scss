@@ -1,6 +1,12 @@
+@use '@styles/molecule/molecule';
+
 .interior-container{
-    display: flex;
-    flex-direction: row;
-    height: 100%;
-    width: 100%;
+    @extend .flex;
+    @extend .flex-row;
+    @extend .h-full;
+    @extend .w-full;
+}
+
+.interior-section-container{
+    @extend .flex-grow;
 }
