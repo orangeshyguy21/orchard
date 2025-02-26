@@ -1,6 +1,3 @@
-/* Vendor Dependencies */
-import { GraphQLResolveInfo } from "graphql";
-
 /**
    * Builds a dynamic SQL query with parameters based on provided arguments
    * @param table_name The database table to query
