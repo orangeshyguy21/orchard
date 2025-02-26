@@ -59,23 +59,9 @@ export const MINT_KEYSETS_QUERY = `{
     }
 }`;
 
-// export const MINT_PROMISES_QUERY = `{
-//     mint_promises{
-//         amount
-// 		id
-// 		b_
-// 		c_
-// 		dleq_e
-// 		dleq_s
-// 		created
-// 		mint_quote
-// 		swap_id
-//     }
-// }`;
-
-export const MINT_PROMISES_QUERY = `{
-    mint_promises(id_keysets: ["008ae94bfbc6d57e", "00583d89ceb3086d"]) {
-        amount
+export const MINT_PROMISES_QUERY = `query MintPromises($id_keysets: [String!]) {
+	mint_promises(id_keysets: $id_keysets) {
+		amount
 		id
 		b_
 		c_
@@ -84,5 +70,5 @@ export const MINT_PROMISES_QUERY = `{
 		created
 		mint_quote
 		swap_id
-    }
+	}
 }`;

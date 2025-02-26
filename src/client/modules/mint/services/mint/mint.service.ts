@@ -6,7 +6,7 @@ import { BehaviorSubject, catchError, map, Observable, of, tap, throwError } fro
 /* Application Dependencies */
 import { api, getApiQuery } from '@client/modules/api/helpers/api.helpers';
 import { GQLResponse } from '@client/modules/api/types/api.types';
-import { MintInfoResponse, MintBalancesResponse, MintKeysetsResponse, MintPromisesResponse } from '@client/modules/mint/types/mint.types';
+import { MintInfoResponse, MintBalancesResponse, MintKeysetsResponse, MintPromisesResponse, MintPromisesArgs } from '@client/modules/mint/types/mint.types';
 import { CacheService } from '@client/modules/cache/services/cache/cache.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 import { MintBalance } from '@client/modules/mint/classes/mint-balance.class';
@@ -133,12 +133,12 @@ export class MintService {
 	}
 
 
-	public loadMintPromises(): Observable<MintPromise[]> {
-		if ( this.mint_promises_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.MINT_PROMISES) ) {
+	public loadMintPromises(args:MintPromisesArgs): Observable<MintPromise[]> {
+		if (this.mint_promises_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.MINT_PROMISES)) {
 			return of(this.mint_promises_subject.value);
 		}
 
-		const query = getApiQuery(MINT_PROMISES_QUERY);
+		const query = getApiQuery(MINT_PROMISES_QUERY, args);
 
 		return this.http.post<GQLResponse<MintPromisesResponse>>(api, query).pipe(
 			map((response) => response.data.mint_promises),
@@ -150,6 +150,6 @@ export class MintService {
 				console.error('Error loading mint promises:', error);
 				return throwError(() => error);
 			})
-		);	
+		);
 	}
 }
