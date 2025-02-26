@@ -176,3 +176,10 @@ export type Query = {
   mint_proofs_used: Array<OrchardMintProof>;
   status: OrchardStatus;
 };
+
+
+export type QueryMint_PromisesArgs = {
+  date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  id_keysets?: InputMaybe<Array<Scalars['String']['input']>>;
+};

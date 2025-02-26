@@ -1,4 +1,4 @@
-import { OrchardMintBalance, OrchardMintInfo, OrchardMintKeyset } from "@shared/generated.types";
+import { OrchardMintBalance, OrchardMintInfo, OrchardMintKeyset, OrchardMintPromise } from "@shared/generated.types";
 
 export type MintInfoResponse = {
   	mint_info: OrchardMintInfo;
@@ -10,4 +10,8 @@ export type MintBalancesResponse = {
 
 export type MintKeysetsResponse = {
   	mint_keysets: OrchardMintKeyset[];
+}
+
+export type MintPromisesResponse = {
+  	mint_promises: OrchardMintPromise[];
 }

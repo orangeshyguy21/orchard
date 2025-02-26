@@ -4,11 +4,10 @@ import { ConfigService } from '@nestjs/config';
 /* Vendor Dependencies */
 import sqlite3 from "sqlite3";
 const sqlite3d = require('sqlite3').verbose();
+import { GraphQLResolveInfo } from 'graphql';
 /* Local Dependencies */
 import { 
   CashuMintBalance,
-  CashuMintBalanceIssued,
-  CashuMintBalanceRedeemed,
   CashuMintKeyset,
   CashuMintDatabaseVersion,
   CashuMintMeltQuote,
@@ -16,6 +15,8 @@ import {
   CashuMintPromise,
   CashuMintProof,
 } from './cashumintdb.types';
+import { CashuMintPromisesArgs } from './cashumintdb.interfaces';
+import { buildDynamicQuery } from './cashumintdb.helpers';
 
 @Injectable()
 export class CashuMintDatabaseService {
@@ -38,20 +39,20 @@ export class CashuMintDatabaseService {
     });
   }
 
-  public async getMintBalancesIssued(db:sqlite3.Database) : Promise<CashuMintBalanceIssued[]> {
+  public async getMintBalancesIssued(db:sqlite3.Database) : Promise<CashuMintBalance[]> {
     const sql = 'SELECT * FROM balance_issued;';
     return new Promise((resolve, reject) => {
-      db.all(sql, (err, rows:CashuMintBalanceIssued[]) => {
+      db.all(sql, (err, rows:CashuMintBalance[]) => {
         if (err) reject(err);
         resolve(rows);
       });
     });
   }
 
-  public async getMintBalancesRedeemed(db:sqlite3.Database) : Promise<CashuMintBalanceRedeemed[]> {
+  public async getMintBalancesRedeemed(db:sqlite3.Database) : Promise<CashuMintBalance[]> {
     const sql = 'SELECT * FROM balance_redeemed;';
     return new Promise((resolve, reject) => {
-      db.all(sql, (err, rows:CashuMintBalanceRedeemed[]) => {
+      db.all(sql, (err, rows:CashuMintBalance[]) => {
         if (err) reject(err);
         resolve(rows);
       });
@@ -98,10 +99,18 @@ export class CashuMintDatabaseService {
     });
   }
 
-  public async getMintPromises(db:sqlite3.Database) : Promise<CashuMintPromise[]> {
-    const sql = 'SELECT * FROM promises;';
+  public async getMintPromises(db:sqlite3.Database, field_selection?: GraphQLResolveInfo, args?: CashuMintPromisesArgs) : Promise<CashuMintPromise[]> {
+
+    const field_mappings = {
+      id_keysets: 'id',
+      date_start: 'created_at',
+      date_end: 'created_at'
+    };
+
+    const { sql, params } = buildDynamicQuery('promises', field_selection, args, field_mappings);
+
     return new Promise((resolve, reject) => {
-      db.all(sql, (err, rows:CashuMintPromise[]) => {
+      db.all(sql, params, (err, rows:CashuMintPromise[]) => {
         if (err) reject(err);
         resolve(rows);
       });

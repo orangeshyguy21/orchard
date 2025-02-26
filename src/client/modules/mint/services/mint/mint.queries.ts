@@ -58,3 +58,31 @@ export const MINT_KEYSETS_QUERY = `{
 		version
     }
 }`;
+
+// export const MINT_PROMISES_QUERY = `{
+//     mint_promises{
+//         amount
+// 		id
+// 		b_
+// 		c_
+// 		dleq_e
+// 		dleq_s
+// 		created
+// 		mint_quote
+// 		swap_id
+//     }
+// }`;
+
+export const MINT_PROMISES_QUERY = `{
+    mint_promises(id_keysets: ["008ae94bfbc6d57e", "00583d89ceb3086d"]) {
+        amount
+		id
+		b_
+		c_
+		dleq_e
+		dleq_s
+		created
+		mint_quote
+		swap_id
+    }
+}`;

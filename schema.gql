@@ -142,7 +142,7 @@ type Query {
   mint_keysets: [OrchardMintKeyset!]!
   mint_melt_quotes: [OrchardMintMeltQuote!]!
   mint_mint_quotes: [OrchardMintMintQuote!]!
-  mint_promises: [OrchardMintPromise!]!
+  mint_promises(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!]): [OrchardMintPromise!]!
   mint_proofs_pending: [OrchardMintProof!]!
   mint_proofs_used: [OrchardMintProof!]!
   status: OrchardStatus!

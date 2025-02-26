@@ -5,6 +5,7 @@ import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { MintBalance } from '@client/modules/mint/classes/mint-balance.class';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
+import { MintPromise } from '../../classes/mint-promise.class';
 
 @Component({
 	selector: 'orc-mint-subsection-dashboard',
@@ -18,6 +19,7 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	public mint_info: MintInfo | null = null;
 	public mint_balances: MintBalance[] = [];
 	public mint_keysets: MintKeyset[] = [];
+	public mint_promises: MintPromise[] = [];
 
 	constructor(
 		private mintService: MintService,
@@ -58,8 +60,16 @@ export class MintSubsectionDashboardComponent implements OnInit {
 			}
 		});
 
-		// loading proofs and stuff should be on some kind of filter
-		// date, unit, etc.
+		this.mintService.loadMintPromises().subscribe({
+			next: (promises:MintPromise[]) => {
+				this.mint_promises = promises;
+				this.changeDetectorRef.detectChanges();
+				console.log('promises', promises);
+			},
+			error: (error) => {
+				console.error('Error loading mint promises:', error);
+			}
+		});
   	}
 }
 
