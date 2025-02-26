@@ -1,6 +1,6 @@
 /* Core Dependencies */
-import { Resolver, Query, Args, Info } from "@nestjs/graphql";
-import { GraphQLError, GraphQLResolveInfo } from "graphql";
+import { Resolver, Query, Args } from "@nestjs/graphql";
+import { GraphQLError } from "graphql";
 /* Application Dependencies */
 import { OrchardApiErrors } from "@server/modules/graphql/errors/orchard.errors";
 /* Local Dependencies */
@@ -19,10 +19,9 @@ export class MintPromiseResolver {
     @Args('id_keysets', { type: () => [String], nullable: true }) id_keysets?: string[],
     @Args('date_start', { type: () => UnixTimestamp, nullable: true }) date_start?: number,
     @Args('date_end', { type: () => UnixTimestamp, nullable: true }) date_end?: number,
-    @Info() field_selection?: GraphQLResolveInfo,
   ) : Promise<OrchardMintPromise[]> {
     try {
-      return this.mintPromiseService.getMintPromises(field_selection, { id_keysets, date_start, date_end });
+      return this.mintPromiseService.getMintPromises({ id_keysets, date_start, date_end });
     } catch (error) {
       throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
     } 

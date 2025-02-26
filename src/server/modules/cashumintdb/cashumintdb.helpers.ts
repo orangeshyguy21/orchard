@@ -11,11 +11,12 @@ import { GraphQLResolveInfo } from "graphql";
    */
 export function buildDynamicQuery(
     table_name: string, 
-    field_selection?: GraphQLResolveInfo,
     args?: Record<string, any>,
     field_mappings?: Record<string, string>
-): { sql: string; params: any[] } {
-	console.log('field_selection!!!!', field_selection);
+) : {
+	sql: string;
+	params: any[]
+} {
     let sql = `SELECT * FROM ${table_name}`;
     const conditions: string[] = [];
     const params: any[] = [];

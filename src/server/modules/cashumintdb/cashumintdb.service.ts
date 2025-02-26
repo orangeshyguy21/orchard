@@ -99,7 +99,7 @@ export class CashuMintDatabaseService {
     });
   }
 
-  public async getMintPromises(db:sqlite3.Database, field_selection?: GraphQLResolveInfo, args?: CashuMintPromisesArgs) : Promise<CashuMintPromise[]> {
+  public async getMintPromises(db:sqlite3.Database, args?: CashuMintPromisesArgs) : Promise<CashuMintPromise[]> {
 
     const field_mappings = {
       id_keysets: 'id',
@@ -107,7 +107,7 @@ export class CashuMintDatabaseService {
       date_end: 'created_at'
     };
 
-    const { sql, params } = buildDynamicQuery('promises', field_selection, args, field_mappings);
+    const { sql, params } = buildDynamicQuery('promises', args, field_mappings);
 
     return new Promise((resolve, reject) => {
       db.all(sql, params, (err, rows:CashuMintPromise[]) => {
