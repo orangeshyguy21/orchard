@@ -1,5 +1,5 @@
-import { MintUnit } from '@server/modules/graphql/enums/mintunit.enum';
-import { MintQuoteStatus } from '@server/modules/graphql/enums/mintquotestatus.enum';
+/* Local Dependencies */
+import { MintUnit, MintQuoteStatus, MintAnalyticsInterval } from './cashumintdb.enums';
 
 export interface CashuMintPromisesArgs {
     id_keysets?: string[];
@@ -12,4 +12,11 @@ export interface CashuMintMintQuotesArgs {
     date_start?: number;
     date_end?: number;
     status?: MintQuoteStatus[];
+}
+
+export interface CashuMintAnalyticsArgs {
+    unit?: MintUnit[];
+    date_start?: number;
+    date_end?: number;
+    interval?: MintAnalyticsInterval;
 }

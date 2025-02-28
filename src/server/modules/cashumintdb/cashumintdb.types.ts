@@ -78,3 +78,10 @@ export type CashuMintProof = {
   created: number;
   melt_quote: string;
 }
+
+export type CashuMintAnalytics = {
+  unit: string;
+  amount: number;
+  created_time: string;
+  operation_count: number;
+}

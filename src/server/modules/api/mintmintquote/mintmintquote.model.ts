@@ -2,6 +2,7 @@
 import { Field, Int, ID, ObjectType } from '@nestjs/graphql';
 /* Application Dependencies */
 import { UnixTimestamp } from '@server/modules/graphql/scalars/unixtimestamp.scalar';
+import { MintUnit } from '@server/modules/cashumintdb/cashumintdb.enums';
 import { CashuMintMintQuote } from '@server/modules/cashumintdb/cashumintdb.types';
 
 @ObjectType()
@@ -19,7 +20,7 @@ export class OrchardMintMintQuote {
   @Field()
   checking_id: string;
   
-  @Field()
+  @Field(type => MintUnit)
   unit: string;
 
   @Field(type => Int)

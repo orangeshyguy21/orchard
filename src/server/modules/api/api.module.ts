@@ -10,7 +10,7 @@ import { MintMeltQuoteModule } from "./mintmeltquote/mintmeltquote.module";
 import { MintMintQuoteModule } from "./mintmintquote/mintmintquote.module";
 import { MintPromiseModule } from "./mintpromise/mintpromise.module";
 import { MintProofModule } from "./mintproof/mintproof.module";
-
+import { MintAnalyticsModule } from "./mintanalytics/mintanalytics.module";
 @Module({
   imports: [
     StatusModule,
@@ -22,6 +22,7 @@ import { MintProofModule } from "./mintproof/mintproof.module";
     MintMintQuoteModule,
     MintPromiseModule,
     MintProofModule,
-  ],
+    MintAnalyticsModule,
+  ]
 })
 export class ApiModule {}

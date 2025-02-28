@@ -28,6 +28,13 @@ type OrchardContact {
   method: String!
 }
 
+type OrchardMintAnalytics {
+  amount: Int!
+  created_time: UnixTimestamp!
+  operation_count: Int!
+  unit: MintUnit!
+}
+
 type OrchardMintBalance {
   balance: Int!
   keyset: String!
@@ -81,7 +88,7 @@ type OrchardMintMeltQuote {
   quote: ID!
   request: String!
   state: String
-  unit: String!
+  unit: MintUnit!
 }
 
 type OrchardMintMintQuote {
@@ -96,7 +103,7 @@ type OrchardMintMintQuote {
   quote: ID!
   request: String!
   state: String
-  unit: String!
+  unit: MintUnit!
 }
 
 type OrchardMintPromise {
@@ -150,6 +157,7 @@ type OrchardStatus {
 }
 
 type Query {
+  mint_analytics_balances: [OrchardMintAnalytics!]!
   mint_balances: [OrchardMintBalance!]!
   mint_balances_issued: [OrchardMintBalance!]!
   mint_balances_redeemed: [OrchardMintBalance!]!

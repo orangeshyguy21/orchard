@@ -12,9 +12,7 @@ import { FetchModule } from './modules/fetch/fetch.module';
 import { WebserverModule } from './modules/webserver/webserver.module';
 /* Custom Graphql Type Definitions */
 import { UnixTimestamp } from './modules/graphql/scalars/unixtimestamp.scalar';
-import { MintUnit } from './modules/graphql/enums/mintunit.enum';
-import { MintQuoteStatus } from './modules/graphql/enums/mintquotestatus.enum';
-import { MeltQuoteStatus } from './modules/graphql/enums/meltquotestatus.enum';
+import { MintUnit, MintQuoteStatus, MeltQuoteStatus } from './modules/cashumintdb/cashumintdb.enums';
 /* Application Configuration */
 import { config } from './config/configuration';
 
