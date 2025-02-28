@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { GraphQLModule } from '@nestjs/graphql';
+import { GraphQLModule, registerEnumType } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 /* Vendor Dependencies */
 import { WinstonModule } from 'nest-winston';
@@ -12,6 +12,9 @@ import { FetchModule } from './modules/fetch/fetch.module';
 import { WebserverModule } from './modules/webserver/webserver.module';
 /* Custom Graphql Type Definitions */
 import { UnixTimestamp } from './modules/graphql/scalars/unixtimestamp.scalar';
+import { MintUnit } from './modules/graphql/enums/mintunit.enum';
+import { MintQuoteStatus } from './modules/graphql/enums/mintquotestatus.enum';
+import { MeltQuoteStatus } from './modules/graphql/enums/meltquotestatus.enum';
 /* Application Configuration */
 import { config } from './config/configuration';
 
@@ -52,3 +55,13 @@ const { combine, timestamp, prettyPrint } = format;
   ],
 })
 export class AppModule {}
+
+registerEnumType( MintUnit, {
+  name: 'MintUnit',
+});
+registerEnumType( MintQuoteStatus, {
+  name: 'MintQuoteStatus',
+});
+registerEnumType( MeltQuoteStatus, {
+  name: 'MeltQuoteStatus',
+});

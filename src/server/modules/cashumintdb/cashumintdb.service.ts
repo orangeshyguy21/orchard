@@ -15,7 +15,7 @@ import {
   CashuMintPromise,
   CashuMintProof,
 } from './cashumintdb.types';
-import { CashuMintPromisesArgs } from './cashumintdb.interfaces';
+import { CashuMintMintQuotesArgs, CashuMintPromisesArgs } from './cashumintdb.interfaces';
 import { buildDynamicQuery } from './cashumintdb.helpers';
 
 @Injectable()
@@ -89,10 +89,16 @@ export class CashuMintDatabaseService {
     });
   }
 
-  public async getMintMintQuotes(db:sqlite3.Database) : Promise<CashuMintMintQuote[]> {
-    const sql = 'SELECT * FROM mint_quotes;';
+  public async getMintMintQuotes(db:sqlite3.Database, args?: CashuMintMintQuotesArgs) : Promise<CashuMintMintQuote[]> {
+    const field_mappings = {
+      unit: 'unit',
+      date_start: 'created_time',
+      date_end: 'created_time',
+      status: 'status'
+    };
+    const { sql, params } = buildDynamicQuery('mint_quotes', args, field_mappings);
     return new Promise((resolve, reject) => {
-      db.all(sql, (err, rows:CashuMintMintQuote[]) => {
+      db.all(sql, params, (err, rows:CashuMintMintQuote[]) => {
         if (err) reject(err);
         resolve(rows);
       });
@@ -100,15 +106,12 @@ export class CashuMintDatabaseService {
   }
 
   public async getMintPromises(db:sqlite3.Database, args?: CashuMintPromisesArgs) : Promise<CashuMintPromise[]> {
-
     const field_mappings = {
       id_keysets: 'id',
-      date_start: 'created_at',
-      date_end: 'created_at'
+      date_start: 'created',
+      date_end: 'created'
     };
-
     const { sql, params } = buildDynamicQuery('promises', args, field_mappings);
-
     return new Promise((resolve, reject) => {
       db.all(sql, params, (err, rows:CashuMintPromise[]) => {
         if (err) reject(err);

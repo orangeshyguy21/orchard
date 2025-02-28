@@ -2,6 +2,22 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+enum MintQuoteStatus {
+  ISSUED
+  PAID
+  PENDING
+  UNPAID
+}
+
+enum MintUnit {
+  auth
+  btc
+  eur
+  msat
+  sat
+  usd
+}
+
 type OrchardCachedEndpoint {
   method: String!
   path: String!
@@ -141,7 +157,7 @@ type Query {
   mint_info: OrchardMintInfo!
   mint_keysets: [OrchardMintKeyset!]!
   mint_melt_quotes: [OrchardMintMeltQuote!]!
-  mint_mint_quotes: [OrchardMintMintQuote!]!
+  mint_mint_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, status: [MintQuoteStatus!], unit: [MintUnit!]): [OrchardMintMintQuote!]!
   mint_promises(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!]): [OrchardMintPromise!]!
   mint_proofs_pending: [OrchardMintProof!]!
   mint_proofs_used: [OrchardMintProof!]!
