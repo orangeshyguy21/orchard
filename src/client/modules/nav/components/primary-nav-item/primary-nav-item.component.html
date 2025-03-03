@@ -5,8 +5,11 @@
     (mouseleave)="onMouseLeave()"
     (click)="onClick()">
     <div class="primary-nav-item-icon">
-        <mat-icon *ngIf="mode === 'default'" [class.mat-symbol-outline]="!highlight" class="icon-md">{{ icon }}</mat-icon>
-        <mat-icon *ngIf="mode === 'svg'" class="w-1-5 h-1-5" [svgIcon]="active_svg_icon"></mat-icon>
+        @if (mode === 'default') {
+            <mat-icon [class.mat-symbol-outline]="!highlight" class="icon-md">{{ icon }}</mat-icon>
+        } @else if (mode === 'svg') {
+            <mat-icon class="w-1-5 h-1-5" [svgIcon]="active_svg_icon"></mat-icon>
+        }
     </div>
     <div class="primary-nav-item-name">
         {{ name }}

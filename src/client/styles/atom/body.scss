@@ -9,7 +9,7 @@ html {
       primary: orchard-theme.$primary-palette,
       tertiary: orchard-theme.$tertiary-palette,
     ),
-    density: 0,
+    density: -4,
   ), $overrides: (
     // surface: light-dark(#fff8f5, #110000), not going here yet
   ));

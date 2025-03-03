@@ -2,17 +2,17 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 /* Native Module Dependencies */
-import { GraphicOrchardLogoComponent } from './components/orchard-logo/graphic-orchard-logo.component';
+import { TimePipe } from './pipes/time/time.pipe';
 
 @NgModule({
 	declarations: [
-		GraphicOrchardLogoComponent
+		TimePipe
 	],
 	imports: [
 		CommonModule,
 	],
 	exports: [
-		GraphicOrchardLogoComponent
+		TimePipe
 	]
 })
-export class GraphicModule { }
+export class LocalModule { }

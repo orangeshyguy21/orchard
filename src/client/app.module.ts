@@ -3,6 +3,8 @@ import { NgModule } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { BrowserModule } from '@angular/platform-browser'; 
 import { provideHttpClient } from '@angular/common/http';
+import { provideAnimations } from '@angular/platform-browser/animations';
+
 /* Application Modules */
 import { RoutingModule } from './modules/routing/routing.module';
 /* Application Components */
@@ -18,7 +20,8 @@ import { AppComponent } from './app.component';
         RoutingModule
     ],
     providers: [
-      provideHttpClient()
+      provideHttpClient(),
+      provideAnimations(),
     ],
     bootstrap: [
       AppComponent

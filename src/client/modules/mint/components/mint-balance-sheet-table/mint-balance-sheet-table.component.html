@@ -24,12 +24,11 @@
 		<ng-container matColumnDef="Keyset Expiration">
 			<th mat-header-cell *matHeaderCellDef> Keyset Expiration </th>
 			<td mat-cell *matCellDef="let row">
-				<div *ngIf="row.keyset_expiration === null else expiration">
-					no expiration
-				</div>
-				<ng-template #expiration>
-					{{ row.keyset_expiration }}
-				</ng-template>
+				@if (row.keyset_expiration === null) {
+					<div>no expiration</div>
+				} @else {
+					<div>{{ row.keyset_expiration }}</div>
+				}
 			</td>
 		</ng-container>
 	

@@ -1,0 +1,46 @@
+<div>
+    <div class="p-b-0-5">Timezone</div>
+    <div class="flex">
+        <form class="flex-grow flex flex-items-center flex-gap-1">
+            <div>
+                <mat-form-field>
+                    <mat-label>Number</mat-label>
+                    <input type="text"
+                        placeholder="Pick one"
+                        aria-label="Number"
+                        matInput
+                        [formControl]="timezone_control"
+                        [matAutocomplete]="auto">
+                    <mat-autocomplete #auto="matAutocomplete">
+                        @for (option of filtered_options | async; track option) {
+                            <mat-option [value]="option">{{option}}</mat-option>
+                        }
+                    </mat-autocomplete>
+                    @if( timezone_control.invalid ) {
+                        <mat-error class="font-size-xs">{{ timezone_control_error() }}</mat-error>
+                    }
+                </mat-form-field>
+            </div>
+            
+            <div class="m-b-1-25">
+                <mat-checkbox 
+                    [formControl]="system_default_control"
+                    (change)="onSystemDefaultChange($event)">
+                    System default
+                </mat-checkbox>
+            </div>
+        </form>
+
+        <div class="w-max-36">
+            <div>
+                {{ unix_timestamp_seconds | time }}
+            </div>
+            <br>
+            <div>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+                sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                Ut enim ad minim veniam, quis nostrud
+            </div>
+        </div>
+    </div>
+</div>
