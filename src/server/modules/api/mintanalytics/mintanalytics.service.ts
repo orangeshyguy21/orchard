@@ -21,7 +21,6 @@ export class MintAnalyticsService {
 		const db = this.cashuMintDatabaseService.getMintDatabase();
 		try {
 			const cashu_mint_analytics : CashuMintAnalytics[] = await this.cashuMintDatabaseService.getMintAnalyticsBalances(db);
-			console.log('cashu_mint_analytics', cashu_mint_analytics);
 			return cashu_mint_analytics.map( cma => new OrchardMintAnalytics(cma) );
 		} catch (error) {
 			this.logger.error('Error getting mint analytics', { error });

@@ -38,8 +38,8 @@ export class MintSubsectionDashboardComponent implements OnInit {
 		try {
 			await this.loadStaticData();
 			this.selected_id_keysets = this.initSelectedKeysets();
+			// prep balance table data, do we need to do this? vars are set at the same time, not async
 			await this.loadMintPromises();
-			console.log('promises', this.mint_promises);
 		} catch (error) {
 			console.error('Error in initialization sequence:', error);
 		}
@@ -60,16 +60,6 @@ export class MintSubsectionDashboardComponent implements OnInit {
 		this.changeDetectorRef.detectChanges();
 	}
 
-	private initSelectedKeysets(): string[] {
-		return this.mint_keysets.map(keyset => keyset.id);
-	}
-
-	private initSelectedDateStart(): number {
-		const three_months_ago = new Date();
-		three_months_ago.setMonth(three_months_ago.getMonth() - 3);
-		return Math.floor(three_months_ago.getTime() / 1000);
-	}
-	
 	private async loadMintPromises(): Promise<void> {
 		const promises = await lastValueFrom(this.mintService.loadMintPromises({
 			id_keysets: this.selected_id_keysets,
@@ -78,6 +68,16 @@ export class MintSubsectionDashboardComponent implements OnInit {
 		}));
 		this.mint_promises = promises;
 		this.changeDetectorRef.detectChanges();
+	}
+
+	private initSelectedKeysets(): string[] {
+		return this.mint_keysets.map(keyset => keyset.id);
+	}
+
+	private initSelectedDateStart(): number {
+		const three_months_ago = new Date();
+		three_months_ago.setMonth(three_months_ago.getMonth() - 3);
+		return Math.floor(three_months_ago.getTime() / 1000);
 	}
 }
 

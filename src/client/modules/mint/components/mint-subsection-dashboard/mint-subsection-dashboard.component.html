@@ -1,31 +1,6 @@
-<div>
-	{{ mint_balances | json }}
+<div class="subsection-container">
+	<orc-mint-balance-table 
+		[balances]="mint_balances"
+		[keysets]="mint_keysets">
+	</orc-mint-balance-table>
 </div>
-  
-  <!-- <div *ngIf="mint_info$">
-    {{ mint_info$ | async | json }}
-  </div>
-  
-  <div *ngIf="mint_info$">
-    {{ mint_info$ | async | json }}
-  </div>
-  
-  <div *ngIf="mint_info$">
-    {{ mint_info$ | async | json }}
-  </div>
-
-  <div *ngIf="mint_info$">
-    {{ mint_info$ | async | json }}
-  </div>
-
-  <div *ngIf="mint_info$">
-    {{ mint_info$ | async | json }}
-  </div>
-
-  <div *ngIf="mint_info$">
-    {{ mint_info$ | async | json }}
-  </div>
-
-  <div *ngIf="mint_info$">
-    {{ mint_info$ | async | json }}
-  </div> -->

@@ -13,6 +13,10 @@ const routes: Routes = [
 		component: LayoutInteriorComponent,
 		children: [
 			{
+				path: '',
+				loadChildren: () => import('../index/index.module').then(m => m.IndexModule),
+			},
+			{
 				path: 'bitcoin',
 				loadChildren: () => import('../bitcoin/bitcoin.module').then(m => m.BitcoinModule),
 			},
@@ -38,11 +42,6 @@ const routes: Routes = [
 		path: 'login',
 		component: LayoutExteriorComponent,
 		loadChildren: () => import('../login/login.module').then(m => m.LoginModule)
-	},
-	{
-		path: '',
-		redirectTo: 'mint',
-		pathMatch: 'full'
 	},
 ];
 

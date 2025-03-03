@@ -5,12 +5,14 @@ import { RouterModule, Routes } from '@angular/router';
 /* Vendor Dependencies */
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTableModule } from '@angular/material/table'; 
 /* Application Dependencies */
 import { NavModule } from '@client/modules/nav/nav.module';
 /* Local Dependencies */
 import { MintSectionComponent } from './components/mint-section/mint-section.component';
 import { MintSubsectionDashboardComponent } from './components/mint-subsection-dashboard/mint-subsection-dashboard.component';
 import { MintSubsectionInfoComponent } from './components/mint-subsection-info/mint-subsection-info.component';
+import { MintBalanceTableComponent } from './components/mint-balance-table/mint-balance-table.component';
 
 const routes: Routes = [
 	{
@@ -55,12 +57,14 @@ export class MintRoutingModule { }
 		MintSectionComponent,
 		MintSubsectionDashboardComponent,
 		MintSubsectionInfoComponent,
+		MintBalanceTableComponent,
 	],
 	imports: [
 		CommonModule,
 		MintRoutingModule,
 		MatIconModule,
 		MatButtonModule,
+		MatTableModule,
 		NavModule,
 	],
 })
