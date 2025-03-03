@@ -19,7 +19,8 @@ module.exports = {
   plugins: [
     new EnvironmentPlugin([
       'PRODUCTION',
-      'BASE_PATH'
+      'BASE_PATH',
+      'npm_package_version'
     ])
   ]
 }
