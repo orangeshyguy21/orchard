@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table'; 
 /* Application Dependencies */
 import { NavModule } from '@client/modules/nav/nav.module';
+import { LocalModule } from '@client/modules/local/local.module';
 /* Local Dependencies */
 import { MintSectionComponent } from './components/mint-section/mint-section.component';
 import { MintSubsectionDashboardComponent } from './components/mint-subsection-dashboard/mint-subsection-dashboard.component';
@@ -66,6 +67,7 @@ export class MintRoutingModule { }
 		MatButtonModule,
 		MatTableModule,
 		NavModule,
+		LocalModule,
 	],
 })
 export class MintModule { }

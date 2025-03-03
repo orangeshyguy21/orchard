@@ -1,19 +1,11 @@
 <div>
-  <!-- <div>
-    {{ balances | json }}
-  </div>
-  <div>
-    {{ keysets | json }}
-  </div> -->
-
-  <!-- public displayed_columns: string[] = ['liabilities', 'assets', 'expiration']; -->
-  <!-- public displayed_columns: string[] = ['Balance', 'Reserve Ratio', 'Keyset Expiration']; -->
-
 	<table mat-table [dataSource]="rows" class="mat-elevation-z8">
 
 		<ng-container matColumnDef="Balance">
 			<th mat-header-cell *matHeaderCellDef> Balance </th>
-			<td mat-cell *matCellDef="let row"> {{ row.liabilities }} </td>
+			<td mat-cell *matCellDef="let row"> 
+				<div [innerHTML]="row.liabilities | amount:row.unit:'mint'"></div>
+			</td>
 		</ng-container>
 	
 		<ng-container matColumnDef="Reserve Ratio">
