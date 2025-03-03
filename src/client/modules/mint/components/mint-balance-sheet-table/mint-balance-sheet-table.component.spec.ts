@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MintBalanceTableComponent } from './mint-balance-table.component';
+import { MintBalanceSheetTableComponent } from './mint-balance-sheet-table.component';
 
 describe('MintBalanceTableComponent', () => {
-  let component: MintBalanceTableComponent;
-  let fixture: ComponentFixture<MintBalanceTableComponent>;
+  let component: MintBalanceSheetTableComponent;
+  let fixture: ComponentFixture<MintBalanceSheetTableComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [MintBalanceTableComponent]
+      declarations: [MintBalanceSheetTableComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(MintBalanceTableComponent);
+    fixture = TestBed.createComponent(MintBalanceSheetTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -12,7 +12,7 @@ import { NavModule } from '@client/modules/nav/nav.module';
 import { MintSectionComponent } from './components/mint-section/mint-section.component';
 import { MintSubsectionDashboardComponent } from './components/mint-subsection-dashboard/mint-subsection-dashboard.component';
 import { MintSubsectionInfoComponent } from './components/mint-subsection-info/mint-subsection-info.component';
-import { MintBalanceTableComponent } from './components/mint-balance-table/mint-balance-table.component';
+import { MintBalanceSheetTableComponent } from './components/mint-balance-sheet-table/mint-balance-sheet-table.component';
 
 const routes: Routes = [
 	{
@@ -57,7 +57,7 @@ export class MintRoutingModule { }
 		MintSectionComponent,
 		MintSubsectionDashboardComponent,
 		MintSubsectionInfoComponent,
-		MintBalanceTableComponent,
+		MintBalanceSheetTableComponent,
 	],
 	imports: [
 		CommonModule,
