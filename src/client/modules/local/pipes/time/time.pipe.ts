@@ -18,6 +18,7 @@ export class TimePipe implements PipeTransform {
 		if (!unix_timestamp) return '';
 		const date = new Date(unix_timestamp * 1000);
 		const timezone = this.localStorageService.getTimezone().tz ?? Intl.DateTimeFormat().resolvedOptions().timeZone; 
+		const locale = this.localStorageService.getLocale().code ?? Intl.DateTimeFormat().resolvedOptions().locale;
 		const options: Intl.DateTimeFormatOptions = {
 			timeZone: timezone
 		};
@@ -47,6 +48,6 @@ export class TimePipe implements PipeTransform {
 			break;
 		}
 		
-		return new Intl.DateTimeFormat(navigator.language, options).format(date);
+		return new Intl.DateTimeFormat(locale, options).format(date);
   	}
 }

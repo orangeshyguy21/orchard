@@ -9,6 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete'; 
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSelectModule } from '@angular/material/select';
 /* Application Dependencies */
 import { NavModule } from '@client/modules/nav/nav.module';
 import { LocalModule } from '@client/modules/local/local.module';
@@ -16,6 +17,7 @@ import { LocalModule } from '@client/modules/local/local.module';
 import { SettingsSectionComponent } from './components/settings-section/settings-section.component';
 import { SettingsTimeComponent } from './components/settings-time/settings-time.component';
 import { SettingsTimeTimezoneComponent } from './components/settings-time-timezone/settings-time-timezone.component';
+import { SettingsTimeLocaleComponent } from './components/settings-time-locale/settings-time-locale.component';
 
 const routes: Routes = [
 	{
@@ -44,6 +46,7 @@ export class SettingsRoutingModule { }
 		SettingsSectionComponent,
 		SettingsTimeComponent,
 		SettingsTimeTimezoneComponent,
+		SettingsTimeLocaleComponent,
 	],
 	imports: [
 		CommonModule,
@@ -54,6 +57,7 @@ export class SettingsRoutingModule { }
 		MatInputModule,
 		MatAutocompleteModule,
 		MatCheckboxModule,
+		MatSelectModule,
 		NavModule,
 		LocalModule,
 	],

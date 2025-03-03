@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import { Injectable } from '@angular/core';
 /* Local Dependencies */
-import { Timezone } from './local-storage.types';
+import { Timezone, Locale } from './local-storage.types';
 
 @Injectable({
   	providedIn: 'root'
@@ -9,7 +9,8 @@ import { Timezone } from './local-storage.types';
 export class LocalStorageService {
 
 	private readonly STORAGE_KEYS = {
-		TIMEZONE_KEY: 'v0.timezone',
+		TIMEZONE_KEY: 'v0.setting.timezone',
+		LOCALE_KEY: 'v0.setting.locale',
 	};
 
   	constructor() { }
@@ -49,9 +50,17 @@ export class LocalStorageService {
 		if (!timezone) return { tz: null };
 		return timezone;
 	}
+	getLocale(): Locale {
+		const locale = this.getItem<Locale>(this.STORAGE_KEYS.LOCALE_KEY);
+		if (!locale) return { code: null };
+		return locale;
+	}
 
 	setTimezone(timezone: Timezone): void {
 		this.setItem(this.STORAGE_KEYS.TIMEZONE_KEY, timezone);
+	}
+	setLocale(locale: Locale): void {
+		this.setItem(this.STORAGE_KEYS.LOCALE_KEY, locale);
 	}
   
 	/**
