@@ -10,12 +10,13 @@ export class MintBalanceTableRow {
     active: boolean;
     keyset_expiration: number|null;
     reserve_ratio: string;
-
+    assets: number;
     constructor(balance: MintBalance, keyset: MintKeyset) {
         this.unit = keyset.unit;
         this.liabilities = balance.balance;
         this.fee = keyset.input_fee_ppk;
         this.active = keyset.active;
+        this.assets = 1000;
         this.keyset_expiration = this.setKeysetExpiration(keyset);
         this.reserve_ratio = this.setReserveRatio(); // @todo need ln data here
     }

@@ -1,41 +1,53 @@
 <div>
-	<table mat-table [dataSource]="rows" class="mat-elevation-z8">
+	<div class="title-l p-b-0-5">Balance Sheet</div>
+	<mat-card appearance="outlined" class="overflow-hidden">
+        <!-- <mat-card-content> -->
+            <table mat-table [dataSource]="rows" class="mat-elevation-z8">
 
-		<ng-container matColumnDef="Balance">
-			<th mat-header-cell *matHeaderCellDef> Balance </th>
-			<td mat-cell *matCellDef="let row"> 
-				<div class="flex flex-items-center">
-					<orc-graphic-asset [unit]="row.unit" [height]="'1.5rem'"></orc-graphic-asset>
-					<span [innerHTML]="row.liabilities | amount : row.unit : 'mint'"></span>
-					
-					
+				<ng-container matColumnDef="Liabilities">
+					<th mat-header-cell *matHeaderCellDef> Liabilities </th>
+					<td mat-cell *matCellDef="let row"> 
+						<div class="flex flex-items-center flex-gap-1 p-v-0-5">
+							<orc-graphic-asset [unit]="row.unit" [height]="'1.75rem'"></orc-graphic-asset>
+							<span class="font-size-m" [innerHTML]="row.liabilities | amount : row.unit : 'mint'"></span>
+						</div>
+					</td>
+				</ng-container>
+			
+				<ng-container matColumnDef="Assets">
+					<th mat-header-cell *matHeaderCellDef> Assets </th>
+					<td mat-cell *matCellDef="let row">
+						<div class="flex flex-items-center flex-gap-1 p-v-0-5">
+							<orc-graphic-asset [unit]="row.unit" [height]="'1.75rem'"></orc-graphic-asset>
+							<span class="font-size-m" [innerHTML]="row.assets | amount : row.unit : 'mint'"></span>
+							<span class="font-size-m">{{ row.reserve_ratio }}</span>
+						</div>
+					</td>
+				</ng-container>
 
-				</div>
-			</td>
-		</ng-container>
-	
-		<ng-container matColumnDef="Reserve Ratio">
-			<th mat-header-cell *matHeaderCellDef> Reserve Ratio </th>
-			<td mat-cell *matCellDef="let row"> {{ row.reserve_ratio }} </td>
-		</ng-container>
-	
-		<ng-container matColumnDef="Keyset Expiration">
-			<th mat-header-cell *matHeaderCellDef> Keyset Expiration </th>
-			<td mat-cell *matCellDef="let row">
-				@if (row.keyset_expiration === null) {
-					<div>no expiration</div>
-				} @else {
-					<div>{{ row.keyset_expiration }}</div>
-				}
-			</td>
-		</ng-container>
-	
-		<tr mat-header-row *matHeaderRowDef="displayed_columns"></tr>
-		<tr mat-row *matRowDef="let row; columns: displayed_columns;"></tr>
-	
-		<!-- Row shown when there is no matching data. -->
-		<!-- <tr class="mat-row" *matNoDataRow>
-			<td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
-		</tr> -->
-	</table>
+				<ng-container matColumnDef="Fee">
+					<th mat-header-cell *matHeaderCellDef> Fee Rate </th>
+					<td mat-cell *matCellDef="let row">
+						<span class="font-size-m">{{ row.fee }}%</span>
+					</td>
+				</ng-container>
+			
+				<ng-container matColumnDef="Keyset Expiration">
+					<th mat-header-cell *matHeaderCellDef> Keyset Expiration </th>
+					<td mat-cell *matCellDef="let row">
+						@if (row.keyset_expiration === null) {
+							<div>-</div>
+						} @else {
+							<div>{{ row.keyset_expiration }}</div>
+						}
+					</td>
+				</ng-container>
+			
+				<tr mat-header-row *matHeaderRowDef="displayed_columns"></tr>
+				<tr mat-row *matRowDef="let row; columns: displayed_columns;"></tr>
+			
+			</table>
+        <!-- </mat-card-content> -->
+    </mat-card>
 </div>
+

@@ -6,6 +6,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table'; 
+import { MatCardModule } from '@angular/material/card';
 /* Application Dependencies */
 import { NavModule } from '@client/modules/nav/nav.module';
 import { LocalModule } from '@client/modules/local/local.module';
@@ -67,6 +68,7 @@ export class MintRoutingModule { }
 		MatIconModule,
 		MatButtonModule,
 		MatTableModule,
+		MatCardModule,
 		NavModule,
 		LocalModule,
 		GraphicModule,

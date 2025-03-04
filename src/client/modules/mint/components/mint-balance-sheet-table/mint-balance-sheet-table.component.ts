@@ -20,7 +20,7 @@ export class MintBalanceSheetTableComponent implements OnChanges {
 
 	public loading: boolean = true;
 	public rows: MintBalanceTableRow[] = [];
-	public displayed_columns: string[] = ['Balance', 'Reserve Ratio', 'Keyset Expiration'];
+	public displayed_columns: string[] = ['Liabilities', 'Assets', 'Fee', 'Keyset Expiration'];
 
 	constructor() {}
 
