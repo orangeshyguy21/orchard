@@ -2,7 +2,7 @@
 import { MintBalance } from "@client/modules/mint/classes/mint-balance.class";
 import { MintKeyset } from "@client/modules/mint/classes/mint-keyset.class";
 
-export class MintBalanceTableRow {
+export class MintBalanceRow {
 
     unit: string;
     liabilities: number;

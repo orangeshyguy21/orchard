@@ -4,22 +4,22 @@ import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } f
 import { MintBalance } from '@client/modules/mint/classes/mint-balance.class';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 /* Local Dependencies */
-import { MintBalanceTableRow } from './mint-balance-sheet-table-row.class';
+import { MintBalanceRow } from './mint-balance-row.class';
 
 @Component({
-	selector: 'orc-mint-balance-sheet-table',
+	selector: 'orc-mint-balance-sheet',
 	standalone: false,
-	templateUrl: './mint-balance-sheet-table.component.html',
-	styleUrl: './mint-balance-sheet-table.component.scss',
+	templateUrl: './mint-balance-sheet.component.html',
+	styleUrl: './mint-balance-sheet.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MintBalanceSheetTableComponent implements OnChanges {
+export class MintBalanceSheetComponent implements OnChanges {
 
 	@Input() balances!: MintBalance[];
 	@Input() keysets!: MintKeyset[];
 
 	public loading: boolean = true;
-	public rows: MintBalanceTableRow[] = [];
+	public rows: MintBalanceRow[] = [];
 	public displayed_columns: string[] = ['Liabilities', 'Assets', 'Fee', 'Keyset Expiration'];
 
 	constructor() {}
@@ -36,11 +36,11 @@ export class MintBalanceSheetTableComponent implements OnChanges {
 		this.rows = this.getRows();
 	}
 
-	private getRows(): MintBalanceTableRow[] {
+	private getRows(): MintBalanceRow[] {
 		return this.balances.map( balance => {
 			const keyset = this.keysets.find(keyset => keyset.id === balance.keyset);
 			if( !keyset ) return null;
-			return new MintBalanceTableRow(balance, keyset);
+			return new MintBalanceRow(balance, keyset);
 		}).filter(row => row !== null);
 	}
 }
