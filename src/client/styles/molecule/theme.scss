@@ -1,5 +1,7 @@
 // Orchard Background Colors
-
+.orc-surface-bg {
+    background-color: var(--mat-sys-surface);
+}
 .orc-primary-container-bg {
     background-color: var(--mat-sys-primary-container);
 }
@@ -15,6 +17,10 @@
 .orc-on-primary-container-color {
     color: var(--mat-sys-on-primary-container);
 }
+.orc-outline-color{
+    color: var(--mat-sys-outline);
+}
+
 
 // Orchard Fill Colors
 

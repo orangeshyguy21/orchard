@@ -1,0 +1,13 @@
+@use '@styles/molecule/molecule';
+
+.graphic-asset-location{
+    @extend .absolute;
+    @extend .top-half;
+    @extend .left-half;
+    @extend .orc-corner-full;
+    @extend .orc-surface-bg;
+    @extend .flex;
+    @extend .flex-items-center;
+    @extend .flex-justify-center;
+    @extend .p-0-125;
+}
