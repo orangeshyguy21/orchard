@@ -1,0 +1,7 @@
+<div>
+    @if (lower_unit() === 'btc' || lower_unit() === 'sat') {
+        <orc-graphic-bitcoin [height]="height"></orc-graphic-bitcoin>
+    } @else {
+        unknown
+    }
+</div>

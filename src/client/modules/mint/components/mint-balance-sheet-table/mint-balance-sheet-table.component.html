@@ -4,7 +4,13 @@
 		<ng-container matColumnDef="Balance">
 			<th mat-header-cell *matHeaderCellDef> Balance </th>
 			<td mat-cell *matCellDef="let row"> 
-				<div [innerHTML]="row.liabilities | amount:row.unit:'mint'"></div>
+				<div class="flex flex-items-center">
+					<orc-graphic-asset [unit]="row.unit" [height]="'1.5rem'"></orc-graphic-asset>
+					<span [innerHTML]="row.liabilities | amount : row.unit : 'mint'"></span>
+					
+					
+
+				</div>
 			</td>
 		</ng-container>
 	
