@@ -3,7 +3,7 @@ import path from "path";
 const { EnvironmentPlugin } = require('webpack');
 
 require('dotenv').config({
-  path: '.env.local'
+  path: '.env'
 });
 
 module.exports = {
