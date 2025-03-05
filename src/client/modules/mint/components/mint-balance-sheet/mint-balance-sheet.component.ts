@@ -32,8 +32,8 @@ export class MintBalanceSheetComponent implements OnChanges {
 	}
 
 	private init(): void {
-		this.loading = false;
 		this.rows = this.getRows();
+		this.loading = false;
 	}
 
 	private getRows(): MintBalanceRow[] {
@@ -41,6 +41,13 @@ export class MintBalanceSheetComponent implements OnChanges {
 			const keyset = this.keysets.find(keyset => keyset.id === balance.keyset);
 			if( !keyset ) return null;
 			return new MintBalanceRow(balance, keyset);
-		}).filter(row => row !== null);
+		})
+		.filter(row => row !== null)
+		.sort((a, b) => {
+			const currency_order: {[key: string]: number} = { 'sat': 1, 'usd': 2, 'eur': 3 };
+			const a_order = currency_order[a.unit.toLowerCase()] || 999; // Default high value for unknown currencies
+			const b_order = currency_order[b.unit.toLowerCase()] || 999;
+			return a_order - b_order;
+		});
 	}
 }

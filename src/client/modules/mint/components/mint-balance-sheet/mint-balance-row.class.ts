@@ -11,14 +11,15 @@ export class MintBalanceRow {
     keyset_expiration: number|null;
     reserve_ratio: string;
     assets: number;
+    
     constructor(balance: MintBalance, keyset: MintKeyset) {
         this.unit = keyset.unit;
         this.liabilities = balance.balance;
         this.fee = keyset.input_fee_ppk;
         this.active = keyset.active;
-        this.assets = 1000;
+        this.assets = 150000;
         this.keyset_expiration = this.setKeysetExpiration(keyset);
-        this.reserve_ratio = this.setReserveRatio(); // @todo need ln data here
+        this.reserve_ratio = this.setReserveRatio(this.assets); // @todo need ln data here
     }
 
     private setKeysetExpiration(keyset: MintKeyset): number|null {
@@ -28,7 +29,7 @@ export class MintBalanceRow {
 
     private setReserveRatio(assets: number = 1000): string {
         const ratio = assets / this.liabilities;
-        const formatted_ratio = Number.isInteger(ratio) ? ratio.toString() : ratio.toFixed(1);
+        const formatted_ratio = Number.isInteger(ratio) ? ratio.toString() : (ratio.toFixed(1).endsWith('.0') ? Math.floor(ratio).toString() : ratio.toFixed(1));
         return `${formatted_ratio} : 1`;
     }
 }
