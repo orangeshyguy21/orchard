@@ -7,14 +7,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { GraphicOrchardLogoComponent } from './components/graphic-orchard-logo/graphic-orchard-logo.component';
 import { GraphicBitcoinComponent } from './components/graphic-bitcoin/graphic-bitcoin.component';
 import { GraphicAssetComponent } from './components/graphic-asset/graphic-asset.component';
-import { GraphicUsdComponent } from './components/graphic-usd/graphic-usd.component';
 
 @NgModule({
 	declarations: [
 		GraphicOrchardLogoComponent,
   		GraphicBitcoinComponent,
     	GraphicAssetComponent,
-     	GraphicUsdComponent
 	],
 	imports: [
 		CommonModule,

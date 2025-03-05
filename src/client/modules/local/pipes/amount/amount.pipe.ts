@@ -3,7 +3,6 @@ import { Pipe, PipeTransform } from '@angular/core';
 /* Application Dependencies */
 import { LocalStorageService } from '@client/modules/cache/services/local-storage/local-storage.service';
 
-
 @Pipe({
 	name: 'amount',
 	standalone: false,

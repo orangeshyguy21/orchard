@@ -13,7 +13,28 @@ export class GraphicAssetComponent {
 	@Input() height : string = '2rem';
 	@Input() custody!: 'ecash' | 'lightning' | 'hot' | 'cold';
 
-	public icon_name = computed(() => {
+	public lower_unit = computed(() => {
+		return this.unit.toLowerCase();
+	});
+
+	public unit_icon = computed(() => {
+		if( this.lower_unit() === 'usd' ) return 'attach_money';
+		if( this.lower_unit() === 'eur' ) return 'euro';
+		return 'currency_bitcoin';
+	});
+
+	public unit_icon_size = computed(() => {
+		const height_value = parseFloat(this.height);
+		return (isNaN(height_value) ? 2 : height_value) * 0.75 + 'rem';
+	});
+
+	public unit_class = computed(() => {
+		if( this.lower_unit() === 'usd' ) return 'graphic-asset-usd';
+		if( this.lower_unit() === 'eur' ) return 'graphic-asset-eur';
+		return 'graphic-asset-btc';
+	});
+
+	public custody_icon = computed(() => {
 		if( !this.custody ) return 'payments';
 		if( this.custody === 'ecash' ) return 'payments';
 		if( this.custody === 'lightning' ) return 'bolt';
@@ -22,11 +43,7 @@ export class GraphicAssetComponent {
 		return 'payments';
 	});
 
-	public lower_unit = computed(() => {
-		return this.unit.toLowerCase();
-	});
-
-	public icon_size = computed(() => {
+	public custody_icon_size = computed(() => {
 		const height_value = parseFloat(this.height);
 		return (isNaN(height_value) ? 2 : height_value) * 0.7 + 'rem';
 	});

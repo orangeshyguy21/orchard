@@ -8,6 +8,16 @@
 .orc-surface-container-low-bg {
     background-color: var(--mat-sys-surface-container-low);
 }
+.orc-asset-btc-bg {
+    background-color: var(--orc-asset-btc);
+}
+.orc-asset-usd-bg {
+    background-color: var(--orc-asset-usd);
+}
+.orc-asset-eur-bg {
+    background-color: var(--orc-asset-eur);
+}
+
 
 // Orchard Text Colors
 
@@ -19,6 +29,9 @@
 }
 .orc-outline-color{
     color: var(--mat-sys-outline);
+}
+.orc-surface-color {
+    color: var(--mat-sys-surface);
 }
 
 

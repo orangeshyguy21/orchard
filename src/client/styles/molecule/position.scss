@@ -171,3 +171,12 @@
 .top-half{
     top: 50%;
 }
+
+/* Transform Definitions */
+.transform-translate-50-50 {
+    transform: translate(-50%, 50%);
+}
+
+.transform-rotate-15 {
+    transform: rotate(15deg);
+}

@@ -1,6 +1,31 @@
 @use '@styles/molecule/molecule';
 
-.graphic-asset-location{
+.graphic-asset-unit{
+    @extend .flex;
+    @extend .flex-items-center;
+    @extend .flex-justify-center;
+    @extend .orc-corner-full;
+}
+
+.graphic-asset-unit-icon{
+    @extend .orc-surface-color;
+    @extend .mat-symbol-bold;
+}
+
+.graphic-asset-btc{
+    @extend .orc-asset-btc-bg;
+    @extend .transform-rotate-15;
+}
+
+.graphic-asset-usd{
+    @extend .orc-asset-usd-bg;
+}
+
+.graphic-asset-eur{
+    @extend .orc-asset-eur-bg;
+}
+
+.graphic-asset-custody{
     @extend .absolute;
     @extend .top-half;
     @extend .left-half;

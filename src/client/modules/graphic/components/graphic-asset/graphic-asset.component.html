@@ -1,14 +1,22 @@
 <div>
     <div class="relative">
-        @if (lower_unit() === 'btc' || lower_unit() === 'sat') {
-            <orc-graphic-bitcoin [height]="height"></orc-graphic-bitcoin>
-        } @else if (lower_unit() === 'usd') {
-            <orc-graphic-usd [height]="height"></orc-graphic-usd>
-        } @else {
-            unknown
-        }
-        <div class="graphic-asset-location">
-            <mat-icon [style.font-size]="icon_size()" [style.height]="icon_size()" [style.width]="icon_size()">{{ icon_name() }}</mat-icon>
+        <div class="graphic-asset-unit" [class]="unit_class()" [style.height]="height" [style.width]="height">
+            <mat-icon 
+                class="graphic-asset-unit-icon"
+                [style.font-size]="unit_icon_size()"
+                [style.height]="unit_icon_size()"
+                [style.width]="unit_icon_size()">
+                {{ unit_icon() }}
+            </mat-icon>
+        </div>
+        <div class="graphic-asset-custody">
+            <mat-icon 
+                class="graphic-asset-custody-icon"
+                [style.font-size]="custody_icon_size()"
+                [style.height]="custody_icon_size()"
+                [style.width]="custody_icon_size()">
+                {{ custody_icon() }}
+            </mat-icon>
         </div>
     </div>
 </div>
