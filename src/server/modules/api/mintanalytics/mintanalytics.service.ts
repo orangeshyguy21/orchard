@@ -1,8 +1,5 @@
 /* Core Dependencies */
-import { Injectable, Inject } from '@nestjs/common';
-/* Vendor Dependencies */
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { Logger } from 'winston';
+import { Injectable, Logger } from '@nestjs/common';
 /* Application Dependencies */
 import { CashuMintDatabaseService } from '@server/modules/cashumintdb/cashumintdb.service';
 import { CashuMintAnalytics } from '@server/modules/cashumintdb/cashumintdb.types';
@@ -12,9 +9,10 @@ import { OrchardMintAnalytics } from './mintanalytics.model';
 @Injectable()
 export class MintAnalyticsService {
 
+	private readonly logger = new Logger(MintAnalyticsService.name);
+
 	constructor(
 		private cashuMintDatabaseService: CashuMintDatabaseService,
-		@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
 	) {}
 
 	async getMintAnalyticsBalances() : Promise<OrchardMintAnalytics[]> {
