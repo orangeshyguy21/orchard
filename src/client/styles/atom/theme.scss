@@ -2,7 +2,14 @@
 
 /* Application Level Overrides */
 :root {
-  @include mat.table-overrides((
-    row-item-outline-color: var(--mat-sys-outline-variant),
-  ));
+	@include mat.table-overrides((
+		row-item-outline-color: var(--mat-sys-outline-variant),
+	));
+}
+
+/* Specific Table Overrides */
+.orc-feature-table {
+	@include mat.table-overrides((
+		row-item-container-height: 3.5rem,
+	));
 }
