@@ -1,4 +1,5 @@
 /* Core Dependencies */
+import { Logger } from '@nestjs/common';
 import { Resolver, Query } from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
 /* Application Dependencies */
@@ -9,16 +10,20 @@ import { OrchardMintDatabase } from "./mintdatabase.model";
 
 @Resolver(() => [OrchardMintDatabase])
 export class MintDatabaseResolver {
-  constructor(
-    private mintDatabaseService: MintDatabaseService,
-  ) {}
 
-  @Query(() => [OrchardMintDatabase])
-  async mint_databases() : Promise<OrchardMintDatabase[]> {
-    try {
-      return this.mintDatabaseService.getMintDatabases();
-    } catch (error) {
-      throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
-    } 
-  }
+	private readonly logger = new Logger(MintDatabaseResolver.name);
+
+	constructor(
+		private mintDatabaseService: MintDatabaseService,
+	) {}
+
+	@Query(() => [OrchardMintDatabase])
+	async mint_databases() : Promise<OrchardMintDatabase[]> {
+		try {
+			this.logger.debug('GET { mint_databases }');
+			return this.mintDatabaseService.getMintDatabases();
+		} catch (error) {
+			throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
+		} 
+	}
 }
