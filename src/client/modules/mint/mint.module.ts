@@ -16,6 +16,7 @@ import { MintSectionComponent } from './components/mint-section/mint-section.com
 import { MintSubsectionDashboardComponent } from './components/mint-subsection-dashboard/mint-subsection-dashboard.component';
 import { MintSubsectionInfoComponent } from './components/mint-subsection-info/mint-subsection-info.component';
 import { MintBalanceSheetComponent } from './components/mint-balance-sheet/mint-balance-sheet.component';
+import { MintConnectionsComponent } from './components/mint-connections/mint-connections.component';
 
 const routes: Routes = [
 	{
@@ -61,6 +62,7 @@ export class MintRoutingModule { }
 		MintSubsectionDashboardComponent,
 		MintSubsectionInfoComponent,
 		MintBalanceSheetComponent,
+		MintConnectionsComponent,
 	],
 	imports: [
 		CommonModule,

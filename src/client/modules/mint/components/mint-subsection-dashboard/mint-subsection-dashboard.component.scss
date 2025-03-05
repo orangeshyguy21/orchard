@@ -1,0 +1,6 @@
+@use '@styles/molecule/molecule';
+
+.mint-dashboard-header{
+    @extend .flex;
+    @extend .flex-gap-2;
+}

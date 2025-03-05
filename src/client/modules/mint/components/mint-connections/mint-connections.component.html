@@ -1,0 +1,14 @@
+<div class="mint-connections-container">
+    <div class="title-l p-b-0-5">Connections</div>
+    <div>
+        <!-- {{ info | json }} -->
+        @for (url of info?.urls; track url) {
+            <div class="connection-item">
+                <a [href]="url" target="_blank">{{ url }}</a>
+            </div>
+        }
+        @empty {
+            <div class="no-connections">No connections available</div>
+        }
+    </div>
+</div>

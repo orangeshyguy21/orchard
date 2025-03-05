@@ -1,6 +1,10 @@
 <div class="subsection-container">
-	<orc-mint-balance-sheet 
-		[balances]="mint_balances"
-		[keysets]="mint_keysets">
-	</orc-mint-balance-sheet>
+	<div class="mint-dashboard-header">
+		<orc-mint-balance-sheet 
+			[balances]="mint_balances"
+			[keysets]="mint_keysets">
+		</orc-mint-balance-sheet>
+		<orc-mint-connections [info]="mint_info">
+		</orc-mint-connections>
+	</div>
 </div>
