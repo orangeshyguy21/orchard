@@ -1,11 +1,14 @@
 /* Core Dependencies */
-import { Resolver, Query } from "@nestjs/graphql";
+import { Resolver, Query, Args } from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
 /* Application Dependencies */
 import { OrchardApiErrors } from "@server/modules/graphql/errors/orchard.errors";
+import { UnixTimestamp } from "@server/modules/graphql/scalars/unixtimestamp.scalar";
+import { MintUnit, MintQuoteStatus } from "@server/modules/cashumintdb/cashumintdb.enums";
 /* Local Dependencies */
 import { MintMintQuoteService } from "./mintmintquote.service";
 import { OrchardMintMintQuote } from "./mintmintquote.model";
+
 
 @Resolver(() => [OrchardMintMintQuote])
 export class MintMintQuoteResolver {
@@ -14,9 +17,14 @@ export class MintMintQuoteResolver {
   ) {}
 
   @Query(() => [OrchardMintMintQuote])
-  async mint_mint_quotes() : Promise<OrchardMintMintQuote[]> {
+  async mint_mint_quotes(
+    @Args('unit', { type: () => [MintUnit], nullable: true }) unit?: MintUnit[],
+    @Args('status', { type: () => [MintQuoteStatus], nullable: true }) status?: MintQuoteStatus[],
+    @Args('date_start', { type: () => UnixTimestamp, nullable: true }) date_start?: number,
+    @Args('date_end', { type: () => UnixTimestamp, nullable: true }) date_end?: number,
+  ) : Promise<OrchardMintMintQuote[]> {
     try {
-      return this.mintMintQuoteService.getMintMintQuotes();
+      return this.mintMintQuoteService.getMintMintQuotes({ unit, status, date_start, date_end });
     } catch (error) {
       throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
     } 

@@ -3,8 +3,9 @@
   font-family: 'Material Symbols Rounded';
   font-style: normal;
   font-weight: 300;
-  src: url('../../assets/font/material-symbols.woff2') format('woff2');
+  src: url('../../assets/font/material-symbols-all-variations.woff2') format('woff2');
 }
+
 
 .mat-symbol {
   font-family: 'Material Symbols Rounded';
@@ -23,8 +24,12 @@
   font-variation-settings: 'FILL' 1;
   -moz-font-feature-settings: 'liga';
   -moz-osx-font-smoothing: grayscale;
-
+  
   &.mat-symbol-outline {
-    font-variation-settings: 'FILL' 0;
+    font-variation-settings:
+    'FILL' 0,
+    'wght' 300,
+    'GRAD' 0,
+    'opsz' 48;
   }
 }

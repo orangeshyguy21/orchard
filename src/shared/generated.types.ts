@@ -16,6 +16,22 @@ export type Scalars = {
   UnixTimestamp: { input: any; output: any; }
 };
 
+export enum MintQuoteStatus {
+  Issued = 'ISSUED',
+  Paid = 'PAID',
+  Pending = 'PENDING',
+  Unpaid = 'UNPAID'
+}
+
+export enum MintUnit {
+  Auth = 'auth',
+  Btc = 'btc',
+  Eur = 'eur',
+  Msat = 'msat',
+  Sat = 'sat',
+  Usd = 'usd'
+}
+
 export type OrchardCachedEndpoint = {
   __typename?: 'OrchardCachedEndpoint';
   method: Scalars['String']['output'];
@@ -28,11 +44,18 @@ export type OrchardContact = {
   method: Scalars['String']['output'];
 };
 
+export type OrchardMintAnalytics = {
+  __typename?: 'OrchardMintAnalytics';
+  amount: Scalars['Int']['output'];
+  created_time: Scalars['UnixTimestamp']['output'];
+  operation_count: Scalars['Int']['output'];
+  unit: MintUnit;
+};
+
 export type OrchardMintBalance = {
   __typename?: 'OrchardMintBalance';
-  total_issued: Scalars['Int']['output'];
-  total_outstanding: Scalars['Int']['output'];
-  total_redeemed: Scalars['Int']['output'];
+  balance: Scalars['Int']['output'];
+  keyset: Scalars['String']['output'];
 };
 
 export type OrchardMintDatabase = {
@@ -87,7 +110,7 @@ export type OrchardMintMeltQuote = {
   quote: Scalars['ID']['output'];
   request: Scalars['String']['output'];
   state?: Maybe<Scalars['String']['output']>;
-  unit: Scalars['String']['output'];
+  unit: MintUnit;
 };
 
 export type OrchardMintMintQuote = {
@@ -103,7 +126,7 @@ export type OrchardMintMintQuote = {
   quote: Scalars['ID']['output'];
   request: Scalars['String']['output'];
   state?: Maybe<Scalars['String']['output']>;
-  unit: Scalars['String']['output'];
+  unit: MintUnit;
 };
 
 export type OrchardMintPromise = {
@@ -164,7 +187,10 @@ export type OrchardStatus = {
 
 export type Query = {
   __typename?: 'Query';
+  mint_analytics_balances: Array<OrchardMintAnalytics>;
   mint_balances: Array<OrchardMintBalance>;
+  mint_balances_issued: Array<OrchardMintBalance>;
+  mint_balances_redeemed: Array<OrchardMintBalance>;
   mint_databases: Array<OrchardMintDatabase>;
   mint_info: OrchardMintInfo;
   mint_keysets: Array<OrchardMintKeyset>;
@@ -174,4 +200,19 @@ export type Query = {
   mint_proofs_pending: Array<OrchardMintProof>;
   mint_proofs_used: Array<OrchardMintProof>;
   status: OrchardStatus;
+};
+
+
+export type QueryMint_Mint_QuotesArgs = {
+  date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  status?: InputMaybe<Array<MintQuoteStatus>>;
+  unit?: InputMaybe<Array<MintUnit>>;
+};
+
+
+export type QueryMint_PromisesArgs = {
+  date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  id_keysets?: InputMaybe<Array<Scalars['String']['input']>>;
 };

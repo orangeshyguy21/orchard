@@ -1,11 +1,23 @@
 // Orchard Background Colors
-
+.orc-surface-bg {
+    background-color: var(--mat-sys-surface);
+}
 .orc-primary-container-bg {
     background-color: var(--mat-sys-primary-container);
 }
 .orc-surface-container-low-bg {
     background-color: var(--mat-sys-surface-container-low);
 }
+.orc-asset-btc-bg {
+    background-color: var(--orc-asset-btc);
+}
+.orc-asset-usd-bg {
+    background-color: var(--orc-asset-usd);
+}
+.orc-asset-eur-bg {
+    background-color: var(--orc-asset-eur);
+}
+
 
 // Orchard Text Colors
 
@@ -15,6 +27,13 @@
 .orc-on-primary-container-color {
     color: var(--mat-sys-on-primary-container);
 }
+.orc-outline-color{
+    color: var(--mat-sys-outline);
+}
+.orc-surface-color {
+    color: var(--mat-sys-surface);
+}
+
 
 // Orchard Fill Colors
 

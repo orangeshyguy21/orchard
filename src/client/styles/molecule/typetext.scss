@@ -25,6 +25,9 @@
 .font-size-s {
     font-size: 0.875rem;
 }
+.font-size-m {
+    font-size: 1rem;
+}
 .font-size-l {
     font-size: 1.25rem;
 }
@@ -36,4 +39,9 @@
 }
 .font-size-xxxl {
     font-size: 2rem;
+}
+
+/* Icon Settings Definitions */
+.mat-symbol-bold{
+    font-variation-settings: 'FILL' 0, 'wght' 700, 'GRAD' 0, 'opsz' 20;
 }

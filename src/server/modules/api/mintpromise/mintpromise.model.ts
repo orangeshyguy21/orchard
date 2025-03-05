@@ -7,42 +7,42 @@ import { CashuMintPromise } from '@server/modules/cashumintdb/cashumintdb.types'
 @ObjectType()
 export class OrchardMintPromise {
 
-  @Field(type => Int)
-  amount: number;
+	@Field(type => Int)
+	amount: number;
 
-  @Field({ nullable: true })
-  id: string;
+	@Field({ nullable: true })
+	id: string;
 
-  @Field(type => ID)
-  b_: string;
+	@Field(type => ID)
+	b_: string;
 
-  @Field()
-  c_: string;
+	@Field()
+	c_: string;
 
-  @Field({ nullable: true })
-  dleq_e: string;
+	@Field({ nullable: true })
+	dleq_e: string;
 
-  @Field({ nullable: true })
-  dleq_s: string;
+	@Field({ nullable: true })
+	dleq_s: string;
 
-  @Field(type => UnixTimestamp, { nullable: true })
-  created: number;
+	@Field(type => UnixTimestamp, { nullable: true })
+	created: number;
 
-  @Field({ nullable: true })
-  mint_quote: string;
+	@Field({ nullable: true })
+	mint_quote: string;
 
-  @Field({ nullable: true })
-  swap_id: string;
+	@Field({ nullable: true })
+	swap_id: string;
 
-  constructor(cashu_mint_promise: CashuMintPromise) {
-    this.amount = cashu_mint_promise.amount;
-    this.id = cashu_mint_promise.id;
-    this.b_ = cashu_mint_promise.b_;
-    this.c_ = cashu_mint_promise.c_;
-    this.dleq_e = cashu_mint_promise.dleq_e;
-    this.dleq_s = cashu_mint_promise.dleq_s;
-    this.created = cashu_mint_promise.created;
-    this.mint_quote = cashu_mint_promise.mint_quote;
-    this.swap_id = cashu_mint_promise.swap_id;
-  }
+	constructor(cashu_mint_promise: CashuMintPromise) {
+		this.amount = cashu_mint_promise.amount;
+		this.id = cashu_mint_promise.id;
+		this.b_ = cashu_mint_promise.b_;
+		this.c_ = cashu_mint_promise.c_;
+		this.dleq_e = cashu_mint_promise.dleq_e;
+		this.dleq_s = cashu_mint_promise.dleq_s;
+		this.created = cashu_mint_promise.created;
+		this.mint_quote = cashu_mint_promise.mint_quote;
+		this.swap_id = cashu_mint_promise.swap_id;
+	}
 }

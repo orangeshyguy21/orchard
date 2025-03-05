@@ -1,0 +1,6 @@
+@use '@styles/molecule/molecule';
+
+.title-l {
+    @extend .font-size-l;
+    @extend .orc-on-primary-container-color;
+}

@@ -111,6 +111,11 @@
     min-width: 18rem;
 }
 
+/* Maximum Width Definitions */
+.w-max-36{
+    max-width: 36rem;
+}
+
 /* Margin Definitions */
 .m-v-0-5{
     margin-top: 0.5rem;
@@ -120,16 +125,28 @@
     margin-left: 1rem;
     margin-right: 1rem;
 }
+.m-b-1-25{
+    margin-bottom: 1.25rem;
+}
 
 
 /* Padding Definitions */
 .p-0-125{
     padding: 0.125rem;
 }
+.p-1{
+    padding: 1rem;
+}
+
+.p-v-0-5{
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
 .p-v-1-5{
     padding-top: 1.5rem;
     padding-bottom: 1.5rem;
 }
+
 .p-h-1{
     padding-left: 1rem;
     padding-right: 1rem;
@@ -143,10 +160,23 @@
 .bottom-0{
     bottom: 0;
 }
+
 .left-0{
     left: 0;
 }
-
 .left-half{
     left: 50%;
+}
+
+.top-half{
+    top: 50%;
+}
+
+/* Transform Definitions */
+.transform-translate-50-50 {
+    transform: translate(-50%, 50%);
+}
+
+.transform-rotate-15 {
+    transform: rotate(15deg);
 }

@@ -35,7 +35,6 @@ export class SecondaryNavItemComponent {
 	}
 
 	public onClick(){
-		console.log('clicked', this.navroute);
 		this.router.navigate([this.navroute]);
 	}
 }

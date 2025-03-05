@@ -2,6 +2,22 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+enum MintQuoteStatus {
+  ISSUED
+  PAID
+  PENDING
+  UNPAID
+}
+
+enum MintUnit {
+  auth
+  btc
+  eur
+  msat
+  sat
+  usd
+}
+
 type OrchardCachedEndpoint {
   method: String!
   path: String!
@@ -12,10 +28,16 @@ type OrchardContact {
   method: String!
 }
 
+type OrchardMintAnalytics {
+  amount: Int!
+  created_time: UnixTimestamp!
+  operation_count: Int!
+  unit: MintUnit!
+}
+
 type OrchardMintBalance {
-  total_issued: Int!
-  total_outstanding: Int!
-  total_redeemed: Int!
+  balance: Int!
+  keyset: String!
 }
 
 type OrchardMintDatabase {
@@ -66,7 +88,7 @@ type OrchardMintMeltQuote {
   quote: ID!
   request: String!
   state: String
-  unit: String!
+  unit: MintUnit!
 }
 
 type OrchardMintMintQuote {
@@ -81,7 +103,7 @@ type OrchardMintMintQuote {
   quote: ID!
   request: String!
   state: String
-  unit: String!
+  unit: MintUnit!
 }
 
 type OrchardMintPromise {
@@ -135,13 +157,16 @@ type OrchardStatus {
 }
 
 type Query {
+  mint_analytics_balances: [OrchardMintAnalytics!]!
   mint_balances: [OrchardMintBalance!]!
+  mint_balances_issued: [OrchardMintBalance!]!
+  mint_balances_redeemed: [OrchardMintBalance!]!
   mint_databases: [OrchardMintDatabase!]!
   mint_info: OrchardMintInfo!
   mint_keysets: [OrchardMintKeyset!]!
   mint_melt_quotes: [OrchardMintMeltQuote!]!
-  mint_mint_quotes: [OrchardMintMintQuote!]!
-  mint_promises: [OrchardMintPromise!]!
+  mint_mint_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, status: [MintQuoteStatus!], unit: [MintUnit!]): [OrchardMintMintQuote!]!
+  mint_promises(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!]): [OrchardMintPromise!]!
   mint_proofs_pending: [OrchardMintProof!]!
   mint_proofs_used: [OrchardMintProof!]!
   status: OrchardStatus!

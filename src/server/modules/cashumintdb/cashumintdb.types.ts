@@ -1,12 +1,7 @@
 export type CashuMintBalance = {
-  's_issued - s_used': number;
+  keyset: string;
+  balance: number;
 }   
-
-export type CashuMintBalanceIssued = {
-  'balance': number;
-}
-
-export type CashuMintBalanceRedeemed = CashuMintBalanceIssued;
 
 export type CashuMintKeyset = {
   id: string;
@@ -82,4 +77,11 @@ export type CashuMintProof = {
   witness: string;
   created: number;
   melt_quote: string;
+}
+
+export type CashuMintAnalytics = {
+  unit: string;
+  amount: number;
+  created_time: string;
+  operation_count: number;
 }

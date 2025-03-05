@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MintNavComponent } from './mint-nav.component';
+import { IndexSectionComponent } from './index-section.component';
 
-describe('MintNavComponent', () => {
-  let component: MintNavComponent;
-  let fixture: ComponentFixture<MintNavComponent>;
+describe('IndexSectionComponent', () => {
+  let component: IndexSectionComponent;
+  let fixture: ComponentFixture<IndexSectionComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [MintNavComponent]
+      declarations: [IndexSectionComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(MintNavComponent);
+    fixture = TestBed.createComponent(IndexSectionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

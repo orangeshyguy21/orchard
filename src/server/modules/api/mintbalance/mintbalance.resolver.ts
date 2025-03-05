@@ -1,6 +1,10 @@
 /* Core Dependencies */
-import { Resolver, Query} from "@nestjs/graphql";
+import { Inject } from '@nestjs/common';
+import { Resolver, Query } from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
+/* Vendor Dependencies */
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 /* Application Dependencies */
 import { OrchardApiErrors } from "@server/modules/graphql/errors/orchard.errors";
 /* Internal Dependencies */
@@ -11,16 +15,34 @@ import { OrchardMintBalance } from "./mintbalance.model";
 export class MintBalanceResolver {
   constructor(
     private mintBalanceService: MintBalanceService,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
   ) {}
 
   @Query(() => [OrchardMintBalance])
   async mint_balances() : Promise<OrchardMintBalance[]> {
-    // @TODO : find a way so that the calls only fire if their respective field is requested.
     try {
-      const outstanding = await this.mintBalanceService.getOutstandingMintBalances();
-      const issued = await this.mintBalanceService.getIssuedMintBalances();
-      const redeemed = await this.mintBalanceService.getRedeemedMintBalances();
-      return outstanding.map( (balance, index) => new OrchardMintBalance(balance, issued[index], redeemed[index] ));   
+      this.logger.debug('GET { mint_balances }', { context: this.constructor.name }); // @todo add this everywhere
+      return this.mintBalanceService.getMintBalances();
+    } catch (error) {
+      throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
+    } 
+  }
+
+  @Query(() => [OrchardMintBalance])
+  async mint_balances_issued() : Promise<OrchardMintBalance[]> {
+    try {
+      this.logger.debug('GET { mint_balances_issued }', { context: this.constructor.name });
+      return this.mintBalanceService.getIssuedMintBalances();
+    } catch (error) {
+      throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
+    } 
+  }
+
+  @Query(() => [OrchardMintBalance])
+  async mint_balances_redeemed() : Promise<OrchardMintBalance[]> {
+    try {
+      this.logger.debug('GET { mint_balances_redeemed }', { context: this.constructor.name });
+      return this.mintBalanceService.getRedeemedMintBalances();
     } catch (error) {
       throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
     } 

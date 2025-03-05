@@ -1,0 +1,39 @@
+<div>
+    <div class="p-b-0-5">Locale</div>
+    <div class="flex">
+        <form class="flex-grow flex flex-items-center flex-gap-1">
+            <div>
+				<mat-form-field class="primary-form-field">
+					<mat-label>Locale</mat-label>
+					<mat-select [formControl]="locale_control" name="locale">
+						<mat-select-trigger>
+							{{locale_control.value}}
+						</mat-select-trigger>
+						@for (locale of locale_options; track locale) {
+							<mat-option [value]="locale.code">{{locale.code}} - {{locale.country}}</mat-option>
+						}
+					</mat-select>
+				</mat-form-field>
+            </div>
+			<div class="m-b-1-25">
+                <mat-checkbox 
+                    [formControl]="system_default_control"
+                    (change)="onSystemDefaultChange($event)">
+                    System default
+                </mat-checkbox>
+            </div>
+        </form>
+
+        <div class="w-max-36">
+            <div>
+                {{ unix_timestamp_seconds | time:'short' }}
+            </div>
+            <br>
+            <div>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+                sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                Ut enim ad minim veniam, quis nostrud
+            </div>
+        </div>
+    </div>
+</div>

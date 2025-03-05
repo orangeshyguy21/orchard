@@ -7,9 +7,19 @@
     @extend .w-full;
     @extend .relative;
 }
+
+.section-implementation{
+    @extend .font-size-xs;
+    @extend .font-weight-light;
+}
   
 .subsection-container {
     @extend .overlfow-y-auto;
     @extend .relative;
     @extend .h-min-0;
 }
+
+.subsection-container{
+    @extend .p-1;
+}
+
