@@ -20,7 +20,6 @@ export class MintBalanceService {
   async getMintBalances() : Promise<OrchardMintBalance[]> {
     const db = this.cashuMintDatabaseService.getMintDatabase();
     try {
-      this.logger.debug('Getting outstanding mint balance');
       const cashu_mint_balances : CashuMintBalance[] = await this.cashuMintDatabaseService.getMintBalances(db);
       return cashu_mint_balances.map( cmb => new OrchardMintBalance(cmb) );
     } catch (error) {

@@ -43,8 +43,17 @@ const { combine, timestamp, prettyPrint } = format;
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         level: configService.get('server.log'),
-        transports: [new transports.Console()],
-        format: combine(timestamp(), prettyPrint()),
+        transports: [new transports.Console({
+          format: format.combine(
+            format.timestamp({
+              format: 'MM/DD/YYYY, h:mm:ss A',
+            }),
+            format.printf((info) => {
+              const pid = process.pid;
+              return `[Orch] ${pid}  - ${info.timestamp}     ${info.level.toUpperCase()} [${info.context || 'Application'}] ${info.message}`;
+            }),
+          ),
+        })],
       }),
     }),
     ApiModule,
