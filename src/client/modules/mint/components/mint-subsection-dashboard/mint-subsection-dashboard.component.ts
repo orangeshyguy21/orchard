@@ -46,6 +46,7 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	}
 
 	private async loadStaticData(): Promise<void> {
+		
 		const info_obs = this.mintService.loadMintInfo();
 		const balances_obs = this.mintService.loadMintBalances();
 		const keysets_obs = this.mintService.loadMintKeysets();

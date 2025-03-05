@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 /* Vendor Dependencies */
-import { BehaviorSubject, catchError, map, Observable, of, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, of, shareReplay, tap, throwError } from 'rxjs';
 /* Application Dependencies */
 import { api, getApiQuery } from '@client/modules/api/helpers/api.helpers';
 import { GQLResponse } from '@client/modules/api/types/api.types';
@@ -34,14 +34,14 @@ export class MintService {
 		[this.CACHE_KEYS.MINT_PROMISES]: 5 * 60 * 1000, // 5 minutes
 	};
 
+	/* Subjects for caching */
 	private readonly mint_info_subject: BehaviorSubject<MintInfo | null>;
-	public readonly mint_info$: Observable<MintInfo | null>;
 	private readonly mint_balances_subject: BehaviorSubject<MintBalance[] | null>;
-	public readonly mint_balances$: Observable<MintBalance[] | null>;
 	private readonly mint_keysets_subject: BehaviorSubject<MintKeyset[] | null>;
-	public readonly mint_keysets$: Observable<MintKeyset[] | null>;
 	private readonly mint_promises_subject: BehaviorSubject<MintPromise[] | null>;
-	public readonly mint_promises$: Observable<MintPromise[] | null>;
+
+	/* Observables for caching (rapid request caching) */
+	private mint_info_observable!: Observable<MintInfo> | null;
 
 	constructor(
 		public http: HttpClient,
@@ -51,45 +51,43 @@ export class MintService {
 			this.CACHE_KEYS.MINT_INFO,
 			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_INFO]
 		);
-		this.mint_info$ = this.mint_info_subject.asObservable();
-
 		this.mint_balances_subject = this.cache.createCache<MintBalance[]>(
 			this.CACHE_KEYS.MINT_BALANCES,
 			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_BALANCES]
 		);
-		this.mint_balances$ = this.mint_balances_subject.asObservable();
-
 		this.mint_keysets_subject = this.cache.createCache<MintKeyset[]>(
 			this.CACHE_KEYS.MINT_KEYSETS,
 			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_KEYSETS]
 		);
-		this.mint_keysets$ = this.mint_keysets_subject.asObservable();
-
 		this.mint_promises_subject = this.cache.createCache<MintPromise[]>(
 			this.CACHE_KEYS.MINT_PROMISES,
 			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_PROMISES]
 		);
-		this.mint_promises$ = this.mint_promises_subject.asObservable();
 	}
 
 	public loadMintInfo(): Observable<MintInfo> {
-		if ( this.mint_info_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.MINT_INFO) ) {
-			return of(this.mint_info_subject.value);
-		}
-		
-		const query = getApiQuery(MINT_INFO_QUERY);
+		if ( this.mint_info_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.MINT_INFO) ) return of(this.mint_info_subject.value);
+		if ( this.mint_info_observable ) return this.mint_info_observable;
 
-		return this.http.post<GQLResponse<MintInfoResponse>>(api, query).pipe(
+		const query = getApiQuery(MINT_INFO_QUERY);
+	
+		this.mint_info_observable = this.http.post<GQLResponse<MintInfoResponse>>(api, query).pipe(
 			map((response) => response.data.mint_info),
-			map((mint_info) => new MintInfo(mint_info)),
-			tap((mint_info) => {
-				this.cache.updateCache(this.CACHE_KEYS.MINT_INFO, mint_info);
+			map((mintInfo) => new MintInfo(mintInfo)),
+			tap((mintInfo) => {
+				this.cache.updateCache(this.CACHE_KEYS.MINT_INFO, mintInfo);
+				this.mint_info_subject.next(mintInfo);
+				this.mint_info_observable = null;
 			}),
+			shareReplay(1),
 			catchError((error) => {
 				console.error('Error loading mint info:', error);
+				this.mint_info_observable = null;
 				return throwError(() => error);
 			})
 		);
+		
+		return this.mint_info_observable;
 	}
 
 	public loadMintBalances(): Observable<MintBalance[]> {
