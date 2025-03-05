@@ -23,7 +23,7 @@ const { combine, timestamp, prettyPrint } = format;
     ConfigModule.forRoot({
       isGlobal: true,
       load: [config],
-      envFilePath: ['.env.local', '.env'],
+      envFilePath: ['.env'],
     }),
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,

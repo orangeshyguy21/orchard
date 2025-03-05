@@ -26,9 +26,9 @@
 
 ### Configuration
 ```bash
-mv .env.example .env.local
+mv .env.example .env
 # edit .env file
-nano .env.local
+nano .env
 ```
 
 ### Client
