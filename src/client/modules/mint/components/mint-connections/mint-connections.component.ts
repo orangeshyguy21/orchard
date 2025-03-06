@@ -1,6 +1,7 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, SimpleChanges, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 /* Vendor Dependencies */
 import QRCodeStyling from 'qr-code-styling';
 /* Application Dependencies */
@@ -13,7 +14,19 @@ import { Connection } from './mint-connections.classes';
 	standalone: false,
 	templateUrl: './mint-connections.component.html',
 	styleUrl: './mint-connections.component.scss',
-	changeDetection: ChangeDetectionStrategy.OnPush
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	animations: [
+		trigger('fadeInOut', [
+			state('visible', style({
+				opacity: 1
+			})),
+			state('hidden', style({
+				opacity: 0
+			})),
+			transition('visible => hidden', animate('150ms ease-out')),
+			transition('hidden => visible', animate('150ms ease-in'))
+		])
+	]
 })
 export class MintConnectionsComponent {
 
@@ -27,6 +40,7 @@ export class MintConnectionsComponent {
 	public qr_data: FormControl = new FormControl('tester');
 	public qr_code!: QRCodeStyling;
 	public connections: Connection[] = [];
+	public qr_animation_state: 'visible' | 'hidden' = 'visible';
 
 	constructor(
 		private changeDetectorRef: ChangeDetectorRef,
@@ -104,9 +118,16 @@ export class MintConnectionsComponent {
 	}
 
 	private updateQRCode(): void {
-		this.qr_code.update({
-			data: this.qr_data.value
-		});
+		this.qr_animation_state = 'hidden';
+		this.changeDetectorRef.detectChanges();
+		
+		setTimeout(() => {
+			this.qr_code.update({
+				data: this.qr_data.value
+			});
+			this.qr_animation_state = 'visible';
+			this.changeDetectorRef.detectChanges();
+		}, 150);
 	}
 
 	public onSelectConnection(connection: Connection): void {

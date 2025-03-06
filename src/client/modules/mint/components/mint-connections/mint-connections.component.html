@@ -10,22 +10,7 @@
             }
         </div>
         <div class="mint-connection-qr">
-            <div #qr_canvas></div>
+            <div #qr_canvas [@fadeInOut]="qr_animation_state"></div>
         </div>
     </div>
-
-    <!-- <div>
-        @for (url of urls; track url) {
-            <div class="connection-item">
-                <a [href]="url" target="_blank">{{ url }}</a>
-            </div>
-        }
-        @empty {
-            <div class="no-connections">No connections available</div>
-        }
-    </div>
-
-    <div>
-        <div #qr_canvas></div>
-    </div> -->
 </div>
