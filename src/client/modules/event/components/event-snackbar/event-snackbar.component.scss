@@ -1,0 +1,33 @@
+@use '@styles/molecule/molecule';
+
+.primary-nav-tool-container{
+    @extend .orc-outline;
+    @extend .orc-corner-full;
+    @extend .p-0-125;
+
+    &:hover{
+        .primary-nav-tool-switch{
+            @extend .orc-primary-container-bg;
+        }
+    }
+}
+
+.primary-nav-tool-switch{
+    @extend .cursor-pointer;
+    @extend .flex;
+    @extend .flex-items-center;
+    @extend .flex-justify-center;
+    @extend .w-2-5;
+    @extend .h-2-5;
+    @extend .orc-corner-full;
+    @extend .trans-bg-fast;
+    @extend .border-solid;
+    @extend .border-0-125;
+    @extend .border-transparent;
+}
+
+.primary-nav-tool-highlight{
+    .primary-nav-tool-switch{
+        @extend .orc-primary-container-bg;
+    }
+}

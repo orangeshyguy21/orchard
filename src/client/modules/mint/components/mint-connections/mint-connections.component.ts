@@ -6,6 +6,8 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import QRCodeStyling from 'qr-code-styling';
 /* Application Dependencies */
 import { ThemeService } from '@client/modules/settings/services/theme/theme.service';
+import { EventService } from '@client/modules/event/services/event/event.service';
+import { EventData } from '@client/modules/event/classes/event-data.class';
 /* Local Dependencies */
 import { Connection } from './mint-connections.classes';
 
@@ -44,7 +46,8 @@ export class MintConnectionsComponent {
 
 	constructor(
 		private changeDetectorRef: ChangeDetectorRef,
-		private themeService: ThemeService
+		private themeService: ThemeService,
+		private eventService: EventService
 	) {}
 
 	ngOnChanges(changes: SimpleChanges): void {
@@ -132,6 +135,11 @@ export class MintConnectionsComponent {
 
 	public onSelectConnection(connection: Connection): void {
 		this.qr_data.setValue(connection.url);
+		navigator.clipboard.writeText(connection.url);
+		this.eventService.emitEvent(new EventData({
+			icon: 'copy_all',
+			message: 'Copied to clipboard'
+		}));
 		this.updateQRCode();
 	}
 }

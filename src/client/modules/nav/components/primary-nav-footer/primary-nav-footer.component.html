@@ -4,12 +4,14 @@
         navroute="settings"
         [active]="active_section === 'settings'">
     </orc-primary-nav-tool>
-    <orc-primary-nav-tool 
-        icon="fingerprint"
-        navroute="history"
-        [active]="active_section === 'history'">
-    </orc-primary-nav-tool>
+    <div class="relative">
+        <orc-primary-nav-tool 
+            icon="fingerprint"
+            navroute="history"
+            [active]="active_section === 'history'">
+        </orc-primary-nav-tool>
+        <div class="absolute top-0 left-0 w-full h-full">
+            <orc-event-snackbar [event]="active_event"></orc-event-snackbar>
+        </div>
+    </div>
 </div>
-
-
-<!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=fingerprint" /> -->
