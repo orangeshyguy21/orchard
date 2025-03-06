@@ -2,10 +2,9 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, SimpleChanges, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 /* Vendor Dependencies */
-// import QRCodeStyling, { Extension } from 'qr-code-styling';
 import QRCodeStyling from 'qr-code-styling';
-/* Native Dependencies */
-import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
+/* Application Dependencies */
+import { ThemeService } from '@client/modules/settings/services/theme/theme.service';
 /* Local Dependencies */
 import { Connection } from './mint-connections.classes';
 
@@ -30,7 +29,8 @@ export class MintConnectionsComponent {
 	public connections: Connection[] = [];
 
 	constructor(
-		private changeDetectorRef: ChangeDetectorRef
+		private changeDetectorRef: ChangeDetectorRef,
+		private themeService: ThemeService
 	) {}
 
 	ngOnChanges(changes: SimpleChanges): void {
@@ -61,9 +61,8 @@ export class MintConnectionsComponent {
 	}
 
 	private initQR(): void {
-		const computed_style = getComputedStyle(document.documentElement);
-		const primary_color = computed_style.getPropertyValue('--mat-sys-surface').trim() || '#BD022D';
-		const inverse_tertiary_color = computed_style.getPropertyValue('--mat-sys-tertiary-container').trim() || '#BD022D';
+		const primary_color = this.themeService.getOrchardSurface() || '#000000';
+		const corder_dot_color = this.themeService.getOrchardTertiaryContainer() || '#000000';
 		
 		this.qr_code = new QRCodeStyling({
 			width: 195,
@@ -96,7 +95,7 @@ export class MintConnectionsComponent {
 			  type: 'extra-rounded',
 			},
 			cornersDotOptions: {
-			  color: inverse_tertiary_color,
+			  color: corder_dot_color,
 			  type: 'dot',
 			}
 		  });
