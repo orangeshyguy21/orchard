@@ -2,4 +2,9 @@
 
 .primary-nav-footer-container{
     @extend .p-v-1-5;
+    @extend .flex;
+    @extend .flex-column;
+    @extend .flex-items-center;
+    @extend .flex-justify-center;
+    @extend .flex-gap-0-5;
 }

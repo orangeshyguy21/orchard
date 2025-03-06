@@ -110,7 +110,7 @@ export class MintConnectionsComponent {
 			},
 			cornersDotOptions: {
 			  color: corder_dot_color,
-			  type: 'dot',
+			  type: 'square',
 			}
 		  });
 	  
