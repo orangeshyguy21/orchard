@@ -1,0 +1,6 @@
+@use '@styles/molecule/molecule';
+
+.orc-text-button {
+    @extend .orc-on-primary-container-color;
+    @extend .cursor-pointer;
+}

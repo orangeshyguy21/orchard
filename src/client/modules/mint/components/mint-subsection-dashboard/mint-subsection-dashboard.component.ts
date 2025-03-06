@@ -23,6 +23,9 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	public mint_keysets: MintKeyset[] = [];
 	public mint_promises: MintPromise[] = [];
 
+	public loading_static_data: boolean = true;
+	// public loading_dynamic_data: boolean = true;
+
 	public selected_id_keysets: string[] = [];
 	public selected_date_start: number;
 	public selected_date_end!: number;
@@ -58,6 +61,7 @@ export class MintSubsectionDashboardComponent implements OnInit {
 		this.mint_info = info;
 		this.mint_balances = balances;
 		this.mint_keysets = keysets;
+		this.loading_static_data = false;
 		this.changeDetectorRef.detectChanges();
 	}
 

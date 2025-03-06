@@ -1,8 +1,21 @@
 <div class="mint-connections-container">
     <div class="title-l p-b-0-5">Connections</div>
-    <div>
-        <!-- {{ info | json }} -->
-        @for (url of info?.urls; track url) {
+
+    <div class="mint-connections-form">
+        <div class="mint-connection-urls">
+            @for (connection of connections; track connection) {
+                <div class="orc-text-button" (click)="onSelectConnection(connection)">
+                    {{ connection.displayed_url }}
+                </div>
+            }
+        </div>
+        <div class="mint-connection-qr">
+            <div #qr_canvas></div>
+        </div>
+    </div>
+
+    <!-- <div>
+        @for (url of urls; track url) {
             <div class="connection-item">
                 <a [href]="url" target="_blank">{{ url }}</a>
             </div>
@@ -11,4 +24,8 @@
             <div class="no-connections">No connections available</div>
         }
     </div>
+
+    <div>
+        <div #qr_canvas></div>
+    </div> -->
 </div>

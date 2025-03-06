@@ -1,0 +1,19 @@
+@use '@styles/molecule/molecule';
+
+.mint-connections-form{
+    @extend .flex;
+    @extend .flex-gap-1;
+}
+
+.mint-connection-urls{
+    @extend .flex;
+    @extend .flex-column;
+    @extend .flex-gap-1;
+}
+
+.mint-connection-qr{
+    @extend .orc-corner-large;
+    @extend .overflow-hidden;
+    @extend .orc-on-secondary-container-bg;
+    // @extend .p-0-5;
+}

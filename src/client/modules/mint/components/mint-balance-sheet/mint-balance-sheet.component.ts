@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnChanges } from '@angular/core';
 /* Native Module Dependencies */
 import { MintBalance } from '@client/modules/mint/classes/mint-balance.class';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
@@ -17,23 +17,19 @@ export class MintBalanceSheetComponent implements OnChanges {
 
 	@Input() balances!: MintBalance[];
 	@Input() keysets!: MintKeyset[];
+	@Input() loading!: boolean;
 
-	public loading: boolean = true;
 	public rows: MintBalanceRow[] = [];
 	public displayed_columns: string[] = ['Liabilities', 'Assets', 'Fee', 'Keyset Expiration'];
 
 	constructor() {}
 
-	ngOnChanges(changes: SimpleChanges): void {
-		if(changes['balances'] || changes['keysets']) {
-			if( !this.balances || !this.keysets ) return;
-			this.init();
-		}
+	ngOnChanges(): void {
+		if( this.loading === false ) this.init();
 	}
 
 	private init(): void {
 		this.rows = this.getRows();
-		this.loading = false;
 	}
 
 	private getRows(): MintBalanceRow[] {

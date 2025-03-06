@@ -2,9 +2,14 @@
 	<div class="mint-dashboard-header">
 		<orc-mint-balance-sheet 
 			[balances]="mint_balances"
-			[keysets]="mint_keysets">
+			[keysets]="mint_keysets"
+			[loading]="loading_static_data">
 		</orc-mint-balance-sheet>
-		<orc-mint-connections [info]="mint_info">
+		<orc-mint-connections 
+			[urls]="mint_info?.urls"
+			[icon_url]="mint_info?.icon_url"
+			[time]="mint_info?.time"
+			[loading]="loading_static_data">
 		</orc-mint-connections>
 	</div>
 </div>

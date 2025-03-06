@@ -8,6 +8,13 @@
 .orc-surface-container-low-bg {
     background-color: var(--mat-sys-surface-container-low);
 }
+.orc-on-secondary-container-bg {
+    background-color: var(--mat-sys-on-secondary-container);
+}
+// .orc-inverse-tertiary-bg {
+//     background-color: var(--mat-sys-inverse-tertiary);
+// }
+
 .orc-asset-btc-bg {
     background-color: var(--orc-asset-btc);
 }
@@ -32,6 +39,9 @@
 }
 .orc-surface-color {
     color: var(--mat-sys-surface);
+}
+.orc-on-surface-variant-color {
+    color: var(--mat-sys-on-surface-variant);
 }
 
 

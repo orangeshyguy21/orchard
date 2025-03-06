@@ -43,6 +43,7 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/serve-static": "^4.0.2",
     "graphql": "^16.9.0",
+    "qr-code-styling": "^1.9.1",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
     "socks-proxy-agent": "^8.0.5",
