@@ -28,5 +28,4 @@ export class ThemeService {
 		const [light_value, dark_value] = content.split(',').map(val => val.trim());
 		return theme === 'light' ? light_value : dark_value;
 	}
-	
 }
