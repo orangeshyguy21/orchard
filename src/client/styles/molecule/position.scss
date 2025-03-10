@@ -22,8 +22,14 @@
 .flex-justify-center{
     justify-content: center;
 }
+.flex-justify-between{
+    justify-content: space-between;
+}
 .flex-grow{
     flex-grow: 1;
+}
+.flex-gap-0-25{
+    gap: 0.25rem;
 }
 .flex-gap-0-5{
     gap: 0.5rem;
@@ -83,6 +89,9 @@
 }
 .w-full{
     width: 100%;
+}
+.w-1{
+    width: 1rem;
 }
 .w-1-5{
     width: 1.5rem;
@@ -176,6 +185,9 @@
 
 .top-0{
     top: 0;
+}
+.top-1{
+    top: 1rem;
 }
 .top-half{
     top: 50%;

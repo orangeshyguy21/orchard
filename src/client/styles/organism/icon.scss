@@ -6,4 +6,9 @@
         @extend .h-1-75;
         @extend .w-1-75;
     }
+    &.icon-sm{
+        @extend .font-size-m;
+        @extend .h-1;
+        @extend .w-1;
+    }
 }

@@ -1,0 +1,10 @@
+<h2 mat-dialog-title>{{ data.connection.displayed_url }}</h2>
+
+<mat-dialog-content>  
+    <div #qr_canvas></div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close (click)="download()">Download</button>
+    <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>

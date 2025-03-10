@@ -2,15 +2,32 @@
     <div class="title-l p-b-0-5">Connections</div>
 
     <div class="mint-connections-form">
-        <div class="mint-connection-urls">
-            @for (connection of connections; track connection) {
-                <div class="orc-text-button" (click)="onSelectConnection(connection)">
-                    {{ connection.displayed_url }}
+        <div>
+            <div class="mint-connection-urls">
+                @for (connection of connections; track connection) {
+                    <div class="orc-text-button" (click)="onSelectConnection(connection)">
+                        {{ connection.displayed_url }}
+                    </div>
+                }
+            </div>
+            <div class="relative">
+                <div  class="absolute top-1 flex flex-gap-0-25 flex-row flex-align-center orc-outline-color" [@copyAnimation]="copy_animation_state">
+                    <div class="font-size-s">URL copied</div>
+                    <mat-icon class="icon-sm">content_copy</mat-icon>
                 </div>
-            }
+            </div>
+            
         </div>
         <div class="mint-connection-qr">
-            <div #qr_canvas [@fadeInOut]="qr_animation_state"></div>
+            <div 
+                #qr_canvas 
+                matRipple
+                [@fadeInOut]="qr_animation_state"
+                [matRippleCentered]="false"
+                [matRippleDisabled]="false"
+                [matRippleUnbounded]="false"
+                (click)="onQRClick()">
+            </div>
         </div>
     </div>
 </div>

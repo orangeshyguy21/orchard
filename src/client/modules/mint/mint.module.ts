@@ -7,6 +7,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table'; 
 import { MatCardModule } from '@angular/material/card';
+import { MatRippleModule } from '@angular/material/core';
+import { MatDialogModule } from '@angular/material/dialog';
 /* Application Dependencies */
 import { NavModule } from '@client/modules/nav/nav.module';
 import { LocalModule } from '@client/modules/local/local.module';
@@ -17,6 +19,7 @@ import { MintSubsectionDashboardComponent } from './components/mint-subsection-d
 import { MintSubsectionInfoComponent } from './components/mint-subsection-info/mint-subsection-info.component';
 import { MintBalanceSheetComponent } from './components/mint-balance-sheet/mint-balance-sheet.component';
 import { MintConnectionsComponent } from './components/mint-connections/mint-connections.component';
+import { MintQrcodeDialogComponent } from './components/mint-qrcode-dialog/mint-qrcode-dialog.component';
 
 const routes: Routes = [
 	{
@@ -63,6 +66,7 @@ export class MintRoutingModule { }
 		MintSubsectionInfoComponent,
 		MintBalanceSheetComponent,
 		MintConnectionsComponent,
+		MintQrcodeDialogComponent,
 	],
 	imports: [
 		CommonModule,
@@ -71,6 +75,8 @@ export class MintRoutingModule { }
 		MatButtonModule,
 		MatTableModule,
 		MatCardModule,
+		MatRippleModule,
+		MatDialogModule,
 		NavModule,
 		LocalModule,
 		GraphicModule,

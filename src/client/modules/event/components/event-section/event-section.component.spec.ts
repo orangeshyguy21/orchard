@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EventSnackbarComponent } from './event-snackbar.component';
+import { EventSectionComponent } from './event-section.component';
 
-describe('EventSnackbarComponent', () => {
-  let component: EventSnackbarComponent;
-  let fixture: ComponentFixture<EventSnackbarComponent>;
+describe('EventSectionComponent', () => {
+  let component: EventSectionComponent;
+  let fixture: ComponentFixture<EventSectionComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [EventSnackbarComponent]
+      declarations: [EventSectionComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(EventSnackbarComponent);
+    fixture = TestBed.createComponent(EventSectionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

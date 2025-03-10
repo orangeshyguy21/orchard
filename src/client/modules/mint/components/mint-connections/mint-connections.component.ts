@@ -4,10 +4,11 @@ import { FormControl } from '@angular/forms';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 /* Vendor Dependencies */
 import QRCodeStyling from 'qr-code-styling';
+import { MatDialog } from '@angular/material/dialog';
 /* Application Dependencies */
 import { ThemeService } from '@client/modules/settings/services/theme/theme.service';
-import { EventService } from '@client/modules/event/services/event/event.service';
-import { EventData } from '@client/modules/event/classes/event-data.class';
+/* Native Dependencies */
+import { MintQrcodeDialogComponent } from '../mint-qrcode-dialog/mint-qrcode-dialog.component';
 /* Local Dependencies */
 import { Connection } from './mint-connections.classes';
 
@@ -27,6 +28,18 @@ import { Connection } from './mint-connections.classes';
 			})),
 			transition('visible => hidden', animate('150ms ease-out')),
 			transition('hidden => visible', animate('150ms ease-in'))
+		]),
+		trigger('copyAnimation', [
+			state('visible', style({
+				opacity: 1,
+				transform: 'translateY(0)'
+			})),
+			state('hidden', style({
+				opacity: 0,
+				transform: 'translateY(-0.5rem)'
+			})),
+			transition('hidden => visible', animate('100ms ease-out')),
+			transition('visible => hidden', animate('100ms ease-in', style({ opacity: 0 })))
 		])
 	]
 })
@@ -35,6 +48,7 @@ export class MintConnectionsComponent {
 	@Input() urls: string[] | undefined;
 	@Input() icon_url: string | undefined;
 	@Input() time: number | undefined; // mint genesis time
+	@Input() mint_name: string | undefined;
 	@Input() loading!: boolean;
 
 	@ViewChild('qr_canvas', { static: true }) qr_canvas!: ElementRef;
@@ -43,12 +57,20 @@ export class MintConnectionsComponent {
 	public qr_code!: QRCodeStyling;
 	public connections: Connection[] = [];
 	public qr_animation_state: 'visible' | 'hidden' = 'visible';
+	public copy_animation_state: 'visible' | 'hidden' = 'hidden';
+
+	private copy_timeout: any;
+	private qr_primary_color: string;
+	private qr_corder_dot_color: string;
 
 	constructor(
 		private changeDetectorRef: ChangeDetectorRef,
 		private themeService: ThemeService,
-		private eventService: EventService
-	) {}
+		private dialog: MatDialog
+	) {
+		this.qr_primary_color = this.themeService.getThemeColor('--mat-sys-surface') || '#000000';
+		this.qr_corder_dot_color = this.themeService.getThemeColor('--mat-sys-surface-container-highest') || '#000000';
+	}
 
 	ngOnChanges(changes: SimpleChanges): void {
 		if( this.loading !== false ) return;
@@ -78,9 +100,6 @@ export class MintConnectionsComponent {
 	}
 
 	private initQR(): void {
-		const primary_color = this.themeService.getOrchardSurface() || '#000000';
-		const corder_dot_color = this.themeService.getOrchardTertiaryContainer() || '#000000';
-		
 		this.qr_code = new QRCodeStyling({
 			width: 195,
 			height: 195,
@@ -90,30 +109,30 @@ export class MintConnectionsComponent {
 			shape: 'square',
 			margin: 0,
 			qrOptions: {
-			  typeNumber: 0,
-			  mode: 'Byte',
-			  errorCorrectionLevel: 'Q'
+				typeNumber: 0,
+				mode: 'Byte',
+				errorCorrectionLevel: 'Q'
 			},
 			imageOptions: {
-			  hideBackgroundDots: false,
-			  imageSize: 0.3,
-			  margin: 5,
-			  crossOrigin: 'anonymous',
+				hideBackgroundDots: true,
+				imageSize: 0.3,
+				margin: 5,
+				crossOrigin: 'anonymous',
 			},
 			dotsOptions: {
-			  color: primary_color,
-			  type: 'extra-rounded'
+				color: this.qr_primary_color,
+				type: 'extra-rounded'
 			},
 			backgroundOptions: {
 				color: undefined,
 			},
 			cornersSquareOptions: {
-			  color: primary_color,
-			  type: 'extra-rounded',
+				color: this.qr_primary_color,
+				type: 'extra-rounded',
 			},
 			cornersDotOptions: {
-			  color: corder_dot_color,
-			  type: 'square',
+				color: this.qr_corder_dot_color,
+			 	type: 'square',
 			}
 		  });
 	  
@@ -133,13 +152,30 @@ export class MintConnectionsComponent {
 		}, 150);
 	}
 
+	// maybe two methods for this?
 	public onSelectConnection(connection: Connection): void {
 		this.qr_data.setValue(connection.url);
 		navigator.clipboard.writeText(connection.url);
-		this.eventService.emitEvent(new EventData({
-			icon: 'copy_all',
-			message: 'Copied to clipboard'
-		}));
 		this.updateQRCode();
+
+		if (this.copy_timeout) clearTimeout(this.copy_timeout);
+		this.copy_animation_state = 'visible';
+		this.changeDetectorRef.detectChanges();
+		this.copy_timeout = setTimeout(() => {
+			this.copy_animation_state = 'hidden';
+			this.changeDetectorRef.detectChanges();
+		}, 1000);		
+	}
+
+	public onQRClick(): void {
+		this.dialog.open(MintQrcodeDialogComponent, {
+			data: {
+				connection: this.connections.find(connection => connection.url === this.qr_data.value),
+				primary_color: this.qr_primary_color,
+				corder_dot_color: this.qr_corder_dot_color,
+				icon_url: this.icon_url,
+				mint_name: this.mint_name
+			}
+		});
 	}
 }

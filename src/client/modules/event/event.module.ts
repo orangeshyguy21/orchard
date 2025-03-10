@@ -1,21 +1,43 @@
 /* Core Dependencies */
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule, Routes } from '@angular/router';
 /* Vendor Dependencies */
 import { MatIconModule } from '@angular/material/icon';
 /* Native Dependencies */
-import { EventSnackbarComponent } from './components/event-snackbar/event-snackbar.component';
+import { EventSectionComponent } from './components/event-section/event-section.component';
+
+const routes: Routes = [
+	{
+		path: '',
+		component: EventSectionComponent,
+		title: 'Orchard | Event Log',
+		data: {
+			section: 'event',
+		}
+	}
+];
+
+@NgModule({
+	imports: [
+		RouterModule.forChild(routes),
+	],
+	exports: [
+		RouterModule,
+	],
+})
+export class EventRoutingModule { }
+
 
 @NgModule({
 	declarations: [
-		EventSnackbarComponent
+  		EventSectionComponent
 	],
 	imports: [
 		CommonModule,
-		MatIconModule
+		MatIconModule,
+		EventRoutingModule
 	],
-	exports: [
-		EventSnackbarComponent
-	]
+	exports: []
 })
 export class EventModule { }

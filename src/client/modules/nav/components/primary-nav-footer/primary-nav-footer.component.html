@@ -1,17 +1,12 @@
 <div class="primary-nav-footer-container">
     <orc-primary-nav-tool 
+        icon="schedule"
+        navroute="event"
+        [active]="active_section === 'event'">
+    </orc-primary-nav-tool>
+    <orc-primary-nav-tool 
         icon="settings"
         navroute="settings"
         [active]="active_section === 'settings'">
     </orc-primary-nav-tool>
-    <div class="relative">
-        <orc-primary-nav-tool 
-            icon="fingerprint"
-            navroute="history"
-            [active]="active_section === 'history'">
-        </orc-primary-nav-tool>
-        <div class="absolute top-0 left-0 w-full h-full">
-            <orc-event-snackbar [event]="active_event"></orc-event-snackbar>
-        </div>
-    </div>
 </div>
