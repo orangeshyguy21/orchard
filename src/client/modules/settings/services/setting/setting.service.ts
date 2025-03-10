@@ -15,20 +15,21 @@ export class SettingService {
 		private localStorageService: LocalStorageService,
 	) { }
 
-	getLocale(): string {
+	public getLocale(): string {
 		return this.localStorageService.getLocale().code ?? Intl.DateTimeFormat().resolvedOptions().locale;
 	}
 
-	getTimezone(): string {
+	public getTimezone(): string {
 		return this.localStorageService.getTimezone().tz ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
 	}
 
-	async setLocale(locale: string): Promise<void> {
-		const local_module = await this.importLocale(locale);
+	public async setLocale(locale: string): Promise<void> {
+		const local_module = await this.getLocaleModule(locale);
 		this.dateAdapter.setLocale(local_module);
 	}
 
-	private async importLocale(locale_key: string): Promise<any> {
+	public async getLocaleModule(locale_key?: string): Promise<any> {
+		locale_key = (locale_key ?? this.getLocale());
 		try {
 			const module = await import(`date-fns/locale/${locale_key}`);
 			return module.default;

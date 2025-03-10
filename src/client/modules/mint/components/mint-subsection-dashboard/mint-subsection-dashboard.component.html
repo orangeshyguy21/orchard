@@ -17,6 +17,10 @@
 		<orc-mint-analytic-control-panel></orc-mint-analytic-control-panel>
 	</div>
 	<div class="mint-dashboard-analytics">
-		{{ mint_analytics_balances | json }}
+		<!-- {{ mint_analytics_balances | json }} -->
+		<orc-mint-balance-chart
+			[analytic_balances]="mint_analytics_balances"
+			[loading]="loading_dynamic_data">
+		</orc-mint-balance-chart>
 	</div>
 </div>

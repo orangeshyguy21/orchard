@@ -6,6 +6,9 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 /* Vendor Dependencies */
 import { provideDateFnsAdapter } from '@angular/material-date-fns-adapter';
+import { provideCharts } from 'ng2-charts';
+import { LineController, LinearScale, CategoryScale, PointElement, LineElement } from 'chart.js';
+import 'chartjs-adapter-date-fns';
 /* Application Dependencies */
 import { RoutingModule } from './modules/routing/routing.module';
 /* Native Dependencies */
@@ -24,6 +27,7 @@ import { AppComponent } from './app.component';
       provideHttpClient(),
       provideAnimations(),
       provideDateFnsAdapter(),
+      provideCharts({ registerables: [LineController, LinearScale, CategoryScale, PointElement, LineElement] }),
     ],
     bootstrap: [
       AppComponent

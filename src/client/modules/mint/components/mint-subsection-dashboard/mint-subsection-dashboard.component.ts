@@ -26,9 +26,9 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	public mint_analytics_balances: MintAnalytic[] = [];
 
 	public loading_static_data: boolean = true;
-	// public loading_dynamic_data: boolean = true;
+	public loading_dynamic_data: boolean = true;
 
-	public selected_id_keysets: string[] = [];
+	public selected_units: MintUnit[] = [];
 	public selected_date_start: number;
 	public selected_date_end!: number;
 	public selected_interval: MintAnalyticsInterval = MintAnalyticsInterval.Day;
@@ -37,18 +37,14 @@ export class MintSubsectionDashboardComponent implements OnInit {
 		private mintService: MintService,
 		private changeDetectorRef: ChangeDetectorRef
 	) {
-		this.selected_date_start = this.initSelectedDateStart();
-		this.selected_date_end = this.initSelectedDateEnd();
+		this.selected_date_start = this.getSelectedDateStart();
+		this.selected_date_end = this.getSelectedDateEnd();
 	}
 
 	async ngOnInit(): Promise<void> {
 		try {
 			await this.loadStaticData();
-			this.selected_id_keysets = this.initSelectedKeysets();
-			console.log('selected_date_start', this.selected_date_start);
-			console.log('selected_date_end', this.selected_date_end);
-			console.log('selected_interval', this.selected_interval);
-			// prep balance table data, do we need to do this? vars are set at the same time, not async
+			this.selected_units = this.getSelectedUnits();
 			await this.loadMintAnalyticsBalances();
 		} catch (error) {
 			console.error('Error in initialization sequence:', error);
@@ -74,28 +70,29 @@ export class MintSubsectionDashboardComponent implements OnInit {
 
 	private async loadMintAnalyticsBalances(): Promise<void> {
 		const analytics_balances = await lastValueFrom(this.mintService.loadMintAnalyticsBalances({
-			units: [MintUnit.Sat],
+			units: this.selected_units,
 			date_start: this.selected_date_start,
 			date_end: this.selected_date_end,
 			interval: this.selected_interval
 		}));
 		this.mint_analytics_balances = analytics_balances;
 		console.log('mint_analytics_balances', this.mint_analytics_balances);
+		this.loading_dynamic_data = false;
 		this.changeDetectorRef.detectChanges();
 	}
 
-	private initSelectedKeysets(): string[] {
-		return this.mint_keysets.map(keyset => keyset.id);
+	private getSelectedUnits(): MintUnit[] {
+		return this.mint_keysets.map(keyset => keyset.unit);
 	}
 
-	private initSelectedDateStart(): number {
+	private getSelectedDateStart(): number {
 		const three_months_ago = new Date();
 		three_months_ago.setMonth(three_months_ago.getMonth() - 3);
 		three_months_ago.setUTCHours(0, 0, 0, 0);
 		return Math.floor(three_months_ago.getTime() / 1000);
 	}
 
-	private initSelectedDateEnd(): number {
+	private getSelectedDateEnd(): number {
 		const today = new Date();
 		today.setUTCHours(23, 59, 59, 999);
 		return Math.floor(today.getTime() / 1000);

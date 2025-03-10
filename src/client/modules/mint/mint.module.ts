@@ -13,6 +13,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { BaseChartDirective } from 'ng2-charts';
 /* Application Dependencies */
 import { NavModule } from '@client/modules/nav/nav.module';
 import { LocalModule } from '@client/modules/local/local.module';
@@ -25,6 +26,7 @@ import { MintBalanceSheetComponent } from './components/mint-balance-sheet/mint-
 import { MintConnectionsComponent } from './components/mint-connections/mint-connections.component';
 import { MintQrcodeDialogComponent } from './components/mint-qrcode-dialog/mint-qrcode-dialog.component';
 import { MintAnalyticControlPanelComponent } from './components/mint-analytic-control-panel/mint-analytic-control-panel.component';
+import { MintBalanceChartComponent } from './components/mint-balance-chart/mint-balance-chart.component';
 
 const routes: Routes = [
 	{
@@ -73,6 +75,7 @@ export class MintRoutingModule { }
 		MintConnectionsComponent,
 		MintQrcodeDialogComponent,
 		MintAnalyticControlPanelComponent,
+		MintBalanceChartComponent,
 	],
 	imports: [
 		CommonModule,
@@ -87,6 +90,7 @@ export class MintRoutingModule { }
 		MatDatepickerModule,
 		MatFormFieldModule,
 		MatInputModule,
+		BaseChartDirective,
 		NavModule,
 		LocalModule,
 		GraphicModule,

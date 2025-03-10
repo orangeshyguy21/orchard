@@ -3,6 +3,7 @@ import { Field, Int, ID, ObjectType } from '@nestjs/graphql';
 /* Application Dependencies */
 import { UnixTimestamp } from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 import { CashuMintKeyset } from '@server/modules/cashumintdb/cashumintdb.types';
+import { MintUnit } from '@server/modules/cashumintdb/cashumintdb.enums';
 
 @ObjectType()
 export class OrchardMintKeyset {
@@ -31,7 +32,7 @@ export class OrchardMintKeyset {
   version: string;
 
   @Field()
-  unit: string;
+  unit: MintUnit;
 
   @Field({ nullable: true })
   encrypted_seed: string;
