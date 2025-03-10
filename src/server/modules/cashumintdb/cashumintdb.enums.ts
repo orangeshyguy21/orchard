@@ -21,7 +21,7 @@ export enum MintUnit {
 }
 
 export enum MintAnalyticsInterval {
-    DAY = 'day',
-    WEEK = 'week',
-    MONTH = 'month',
+    day = 'day',
+    week = 'week',
+    month = 'month',
 }

@@ -13,4 +13,10 @@
 			[loading]="loading_static_data">
 		</orc-mint-connections>
 	</div>
+	<div class="mint-dashboard-charts">
+		<orc-mint-analytic-control-panel></orc-mint-analytic-control-panel>
+	</div>
+	<div class="mint-dashboard-analytics">
+		{{ mint_analytics_balances | json }}
+	</div>
 </div>

@@ -1,5 +1,11 @@
 @use '@styles/molecule/molecule';
 
+.subsection-container{
+    @extend .flex;
+    @extend .flex-column;
+    @extend .flex-gap-2;
+}
+
 .mint-dashboard-header{
     @extend .flex;
     @extend .flex-gap-2;

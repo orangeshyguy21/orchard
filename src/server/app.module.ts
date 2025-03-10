@@ -9,7 +9,7 @@ import { FetchModule } from './modules/fetch/fetch.module';
 import { WebserverModule } from './modules/webserver/webserver.module';
 /* Custom Graphql Type Definitions */
 import { UnixTimestamp } from './modules/graphql/scalars/unixtimestamp.scalar';
-import { MintUnit, MintQuoteStatus, MeltQuoteStatus } from './modules/cashumintdb/cashumintdb.enums';
+import { MintUnit, MintQuoteStatus, MeltQuoteStatus, MintAnalyticsInterval } from './modules/cashumintdb/cashumintdb.enums';
 /* Application Configuration */
 import { config } from './config/configuration';
 
@@ -50,4 +50,7 @@ registerEnumType( MintQuoteStatus, {
 });
 registerEnumType( MeltQuoteStatus, {
   name: 'MeltQuoteStatus',
+});
+registerEnumType( MintAnalyticsInterval, {
+  name: 'MintAnalyticsInterval',
 });

@@ -179,10 +179,10 @@ export class CashuMintDatabaseService {
       params.push(args.date_end);
     }
     
-    if (args?.unit && args.unit.length > 0) {
-      const unit_placeholders = args.unit.map(() => '?').join(',');
+    if (args?.units && args.units.length > 0) {
+      const unit_placeholders = args.units.map(() => '?').join(',');
       where_conditions.push(`mq.unit IN (${unit_placeholders})`);
-      params.push(...args.unit);
+      params.push(...args.units);
     }
     
     // Construct the WHERE clause

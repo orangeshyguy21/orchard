@@ -7,7 +7,9 @@ import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { MintBalance } from '@client/modules/mint/classes/mint-balance.class';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
-import { MintPromise } from '../../classes/mint-promise.class';
+import { MintAnalytic } from '@client/modules/mint/classes/mint-analytic.class';
+/* Shared Dependencies */
+import { MintAnalyticsInterval, MintUnit } from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-subsection-dashboard',
@@ -21,7 +23,7 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	public mint_info: MintInfo | null = null;
 	public mint_balances: MintBalance[] = [];
 	public mint_keysets: MintKeyset[] = [];
-	public mint_promises: MintPromise[] = [];
+	public mint_analytics_balances: MintAnalytic[] = [];
 
 	public loading_static_data: boolean = true;
 	// public loading_dynamic_data: boolean = true;
@@ -29,20 +31,25 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	public selected_id_keysets: string[] = [];
 	public selected_date_start: number;
 	public selected_date_end!: number;
+	public selected_interval: MintAnalyticsInterval = MintAnalyticsInterval.Day;
 
 	constructor(
 		private mintService: MintService,
 		private changeDetectorRef: ChangeDetectorRef
 	) {
 		this.selected_date_start = this.initSelectedDateStart();
+		this.selected_date_end = this.initSelectedDateEnd();
 	}
 
 	async ngOnInit(): Promise<void> {
 		try {
 			await this.loadStaticData();
 			this.selected_id_keysets = this.initSelectedKeysets();
+			console.log('selected_date_start', this.selected_date_start);
+			console.log('selected_date_end', this.selected_date_end);
+			console.log('selected_interval', this.selected_interval);
 			// prep balance table data, do we need to do this? vars are set at the same time, not async
-			await this.loadMintPromises();
+			await this.loadMintAnalyticsBalances();
 		} catch (error) {
 			console.error('Error in initialization sequence:', error);
 		}
@@ -65,13 +72,15 @@ export class MintSubsectionDashboardComponent implements OnInit {
 		this.changeDetectorRef.detectChanges();
 	}
 
-	private async loadMintPromises(): Promise<void> {
-		const promises = await lastValueFrom(this.mintService.loadMintPromises({
-			id_keysets: this.selected_id_keysets,
+	private async loadMintAnalyticsBalances(): Promise<void> {
+		const analytics_balances = await lastValueFrom(this.mintService.loadMintAnalyticsBalances({
+			units: [MintUnit.Sat],
 			date_start: this.selected_date_start,
-			date_end: this.selected_date_end
+			date_end: this.selected_date_end,
+			interval: this.selected_interval
 		}));
-		this.mint_promises = promises;
+		this.mint_analytics_balances = analytics_balances;
+		console.log('mint_analytics_balances', this.mint_analytics_balances);
 		this.changeDetectorRef.detectChanges();
 	}
 
@@ -82,7 +91,14 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	private initSelectedDateStart(): number {
 		const three_months_ago = new Date();
 		three_months_ago.setMonth(three_months_ago.getMonth() - 3);
+		three_months_ago.setUTCHours(0, 0, 0, 0);
 		return Math.floor(three_months_ago.getTime() / 1000);
+	}
+
+	private initSelectedDateEnd(): number {
+		const today = new Date();
+		today.setUTCHours(23, 59, 59, 999);
+		return Math.floor(today.getTime() / 1000);
 	}
 }
 

@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import { Pipe, PipeTransform } from '@angular/core';
 /* Application Dependencies */
-import { LocalStorageService } from '@client/modules/cache/services/local-storage/local-storage.service';
+import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 
 @Pipe({
 	name: 'time',
@@ -11,14 +11,14 @@ import { LocalStorageService } from '@client/modules/cache/services/local-storag
 export class TimePipe implements PipeTransform {
 
 	constructor(
-		private localStorageService: LocalStorageService
+		private settingService: SettingService
 	) {}
 	
 	transform(unix_timestamp: number, format: string = 'medium'): string {
 		if (!unix_timestamp) return '';
 		const date = new Date(unix_timestamp * 1000);
-		const timezone = this.localStorageService.getTimezone().tz ?? Intl.DateTimeFormat().resolvedOptions().timeZone; 
-		const locale = this.localStorageService.getLocale().code ?? Intl.DateTimeFormat().resolvedOptions().locale;
+		const timezone = this.settingService.getTimezone();
+		const locale = this.settingService.getLocale();
 		const options: Intl.DateTimeFormatOptions = {
 			timeZone: timezone
 		};

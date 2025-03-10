@@ -15,7 +15,7 @@ export interface CashuMintMintQuotesArgs {
 }
 
 export interface CashuMintAnalyticsArgs {
-    unit?: MintUnit[];
+    units?: MintUnit[];
     date_start?: number;
     date_end?: number;
     interval?: MintAnalyticsInterval;

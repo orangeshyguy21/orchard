@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import { Pipe, PipeTransform } from '@angular/core';
 /* Application Dependencies */
-import { LocalStorageService } from '@client/modules/cache/services/local-storage/local-storage.service';
+import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 
 @Pipe({
 	name: 'amount',
@@ -11,12 +11,12 @@ import { LocalStorageService } from '@client/modules/cache/services/local-storag
 export class AmountPipe implements PipeTransform {
 
 	constructor(
-		private localStorageService: LocalStorageService
+		private settingService: SettingService
 	) {}
 
 	transform(amount: number, unit: string, section?: string): string {
 		if (amount === null || amount === undefined) return '';
-		const locale = this.localStorageService.getLocale().code ?? Intl.DateTimeFormat().resolvedOptions().locale;
+		const locale = this.settingService.getLocale();
 		const unit_lower = unit.toLowerCase();
 		
 		switch (unit_lower) {

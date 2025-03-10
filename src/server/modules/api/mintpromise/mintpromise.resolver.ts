@@ -4,10 +4,11 @@ import { Resolver, Query, Args } from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
 /* Application Dependencies */
 import { OrchardApiErrors } from "@server/modules/graphql/errors/orchard.errors";
+import { UnixTimestamp } from "@server/modules/graphql/scalars/unixtimestamp.scalar";
 /* Local Dependencies */
 import { MintPromiseService } from "./mintpromise.service";
 import { OrchardMintPromise } from "./mintpromise.model";
-import { UnixTimestamp } from "@server/modules/graphql/scalars/unixtimestamp.scalar";
+
 
 @Resolver(() => [OrchardMintPromise])
 export class MintPromiseResolver {

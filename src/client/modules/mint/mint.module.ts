@@ -1,6 +1,7 @@
 /* Core Dependencies */
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 /* Vendor Dependencies */
 import { MatButtonModule } from '@angular/material/button';
@@ -9,6 +10,9 @@ import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 /* Application Dependencies */
 import { NavModule } from '@client/modules/nav/nav.module';
 import { LocalModule } from '@client/modules/local/local.module';
@@ -20,6 +24,7 @@ import { MintSubsectionInfoComponent } from './components/mint-subsection-info/m
 import { MintBalanceSheetComponent } from './components/mint-balance-sheet/mint-balance-sheet.component';
 import { MintConnectionsComponent } from './components/mint-connections/mint-connections.component';
 import { MintQrcodeDialogComponent } from './components/mint-qrcode-dialog/mint-qrcode-dialog.component';
+import { MintAnalyticControlPanelComponent } from './components/mint-analytic-control-panel/mint-analytic-control-panel.component';
 
 const routes: Routes = [
 	{
@@ -67,9 +72,11 @@ export class MintRoutingModule { }
 		MintBalanceSheetComponent,
 		MintConnectionsComponent,
 		MintQrcodeDialogComponent,
+		MintAnalyticControlPanelComponent,
 	],
 	imports: [
 		CommonModule,
+		ReactiveFormsModule,
 		MintRoutingModule,
 		MatIconModule,
 		MatButtonModule,
@@ -77,6 +84,9 @@ export class MintRoutingModule { }
 		MatCardModule,
 		MatRippleModule,
 		MatDialogModule,
+		MatDatepickerModule,
+		MatFormFieldModule,
+		MatInputModule,
 		NavModule,
 		LocalModule,
 		GraphicModule,

@@ -1,10 +1,11 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, OnInit, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 /* Application Dependencies */
 import { LocalStorageService } from '@client/modules/cache/services/local-storage/local-storage.service';
 /* Vendor Dependencies */
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { DateAdapter } from '@angular/material/core';
 
 @Component({
 	selector: 'orc-settings-time-locale',
@@ -72,6 +73,7 @@ export class SettingsTimeLocaleComponent implements OnInit {
 
 	constructor(
 		public localStorageService: LocalStorageService,
+		private dateAdapter: DateAdapter<Date>,
 	) { }
 
 	ngOnInit() {
@@ -112,6 +114,7 @@ export class SettingsTimeLocaleComponent implements OnInit {
 	}
 
 	public saveLocale(code: string|null) {
+		this.dateAdapter.setLocale(code);
 		this.localStorageService.setLocale({ code: code });
 	}
 

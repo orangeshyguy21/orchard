@@ -10,8 +10,6 @@ export class ThemeService {
 	public getThemeColor(color: string, theme?: 'light' | 'dark'): string {
 		const computed_style = getComputedStyle(document.documentElement);
 		const value = computed_style.getPropertyValue(color).trim();
-		console.log('value', value);
-		console.log('theme', theme);
 		if( theme ) return this.extractThemeColor(value, theme);
 		return value;
 	}

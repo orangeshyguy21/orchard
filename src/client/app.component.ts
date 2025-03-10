@@ -1,8 +1,10 @@
 /* Core Dependencies */
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
 /* Vendor Dependencies */
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
+/* Application Dependencies */
+import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 
 @Component({
 	selector: 'orc-root',
@@ -11,17 +13,29 @@ import { DomSanitizer } from '@angular/platform-browser';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	standalone: false,
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
 	constructor(
 		private matIconRegistry: MatIconRegistry,
-		private domSanitizer: DomSanitizer
-	) {
-		this.matIconRegistry.setDefaultFontSetClass('mat-symbol');
+		private domSanitizer: DomSanitizer,
+		private settingService: SettingService,
+	) { }
+
+	ngOnInit(): void {
+		this.initIcons();
+		this.initLocale();
+	}
+
+	private initIcons(): void {
+		this.matIconRegistry
+			.setDefaultFontSetClass('mat-symbol');
 		
-		// Register bitcoin icon
 		this.matIconRegistry
 			.addSvgIcon('bitcoin', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/bitcoin.svg'))
 			.addSvgIcon('bitcoin_outline', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/bitcoin-outline.svg'))
+	}
 
+	private initLocale(): void {
+		const locale = this.settingService.getLocale();
+		this.settingService.setLocale(locale);
 	}
 }

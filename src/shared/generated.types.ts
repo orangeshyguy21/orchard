@@ -16,6 +16,12 @@ export type Scalars = {
   UnixTimestamp: { input: any; output: any; }
 };
 
+export enum MintAnalyticsInterval {
+  Day = 'day',
+  Month = 'month',
+  Week = 'week'
+}
+
 export enum MintQuoteStatus {
   Issued = 'ISSUED',
   Paid = 'PAID',
@@ -200,6 +206,14 @@ export type Query = {
   mint_proofs_pending: Array<OrchardMintProof>;
   mint_proofs_used: Array<OrchardMintProof>;
   status: OrchardStatus;
+};
+
+
+export type QueryMint_Analytics_BalancesArgs = {
+  date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  interval?: InputMaybe<MintAnalyticsInterval>;
+  units?: InputMaybe<Array<MintUnit>>;
 };
 
 

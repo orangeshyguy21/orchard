@@ -4,10 +4,11 @@ import { RouterOutlet } from '@angular/router';
 import { BrowserModule } from '@angular/platform-browser'; 
 import { provideHttpClient } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
-
-/* Application Modules */
+/* Vendor Dependencies */
+import { provideDateFnsAdapter } from '@angular/material-date-fns-adapter';
+/* Application Dependencies */
 import { RoutingModule } from './modules/routing/routing.module';
-/* Application Components */
+/* Native Dependencies */
 import { AppComponent } from './app.component';
 
 @NgModule({
@@ -22,6 +23,7 @@ import { AppComponent } from './app.component';
     providers: [
       provideHttpClient(),
       provideAnimations(),
+      provideDateFnsAdapter(),
     ],
     bootstrap: [
       AppComponent
