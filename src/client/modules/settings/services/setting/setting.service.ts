@@ -24,19 +24,7 @@ export class SettingService {
 	}
 
 	public async setLocale(locale: string): Promise<void> {
-		const local_module = await this.getLocaleModule(locale);
-		this.dateAdapter.setLocale(local_module);
-	}
-
-	public async getLocaleModule(locale_key?: string): Promise<any> {
-		locale_key = (locale_key ?? this.getLocale());
-		try {
-			const module = await import(`date-fns/locale/${locale_key}`);
-			return module.default;
-		} catch (error) {
-			const fallback = await import('date-fns/locale/en-US');
-			return fallback.default;
-		}
+		this.dateAdapter.setLocale(locale);
 	}
 }
 

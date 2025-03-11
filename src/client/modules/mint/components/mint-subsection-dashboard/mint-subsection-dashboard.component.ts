@@ -2,8 +2,10 @@
 import { Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef } from '@angular/core';
 /* Vendor Dependencies */
 import { forkJoin, lastValueFrom } from 'rxjs';
+import { DateTime } from 'luxon';
 /* Application Dependencies */
 import { CacheService } from '@client/modules/cache/services/cache/cache.service';
+import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 /* Native Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { MintBalance } from '@client/modules/mint/classes/mint-balance.class';
@@ -34,25 +36,27 @@ export class MintSubsectionDashboardComponent implements OnInit {
 
 	public selected_units: MintUnit[] = [];
 	public selected_date_start!: number;
-	public selected_date_end: number;
+	public selected_date_end!: number;
 	public selected_interval: MintAnalyticsInterval = MintAnalyticsInterval.Day;
 	public selected_type!: ChartType;
 
 	constructor(
 		private mintService: MintService,
 		private cacheService: CacheService,
+		private settingService: SettingService,
 		private changeDetectorRef: ChangeDetectorRef
 	) {
-		this.selected_date_end = this.getSelectedDateEnd();
 		this.selected_type = ChartType.Summary;
 	}
 
 	async ngOnInit(): Promise<void> {
 		try {
+			const timezone = this.settingService.getTimezone();
 			await this.loadStaticData();
 			this.mint_genesis_time = this.getMintGenesisTime();
 			this.selected_units = this.getSelectedUnits();
-			this.selected_date_start = this.getSelectedDateStart();
+			this.selected_date_start = this.getSelectedDateStart(timezone);
+			this.selected_date_end = this.getSelectedDateEnd(timezone);
 			this.loading_static_data = false;
 			this.changeDetectorRef.detectChanges();
 			await this.loadMintAnalyticsBalances();
@@ -91,18 +95,20 @@ export class MintSubsectionDashboardComponent implements OnInit {
 		return this.mint_keysets.map(keyset => keyset.unit);
 	}
 
-	private getSelectedDateStart(): number {
-		const three_months_ago = new Date();
-		three_months_ago.setMonth(three_months_ago.getMonth() - 3);
-		three_months_ago.setUTCHours(0, 0, 0, 0);
-		const three_months_ago_timestamp = Math.floor(three_months_ago.getTime() / 1000);
+	private getSelectedDateStart(timezone: string): number {
+		const three_months_ago = DateTime.now()
+			.setZone(timezone)
+			.minus({ months: 3 })
+			.startOf('day');
+		const three_months_ago_timestamp = Math.floor(three_months_ago.toSeconds());
 		return Math.max(three_months_ago_timestamp, this.mint_genesis_time);
 	}
 
-	private getSelectedDateEnd(): number {
-		const today = new Date();
-		today.setUTCHours(23, 59, 59, 999);
-		return Math.floor(today.getTime() / 1000);
+	private getSelectedDateEnd(timezone: string): number {
+		const today = DateTime.now()
+			.setZone(timezone)
+			.endOf('day');
+		return Math.floor(today.toSeconds());
 	}
 
 	private getMintGenesisTime(): number {

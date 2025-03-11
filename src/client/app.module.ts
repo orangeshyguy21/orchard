@@ -5,7 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { provideHttpClient } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 /* Vendor Dependencies */
-import { provideDateFnsAdapter } from '@angular/material-date-fns-adapter';
+import { provideLuxonDateAdapter } from '@angular/material-luxon-adapter';
 import { provideCharts } from 'ng2-charts';
 import { 
 	LineController,
@@ -18,7 +18,7 @@ import {
 	Filler,
 	Legend,
 } from 'chart.js';
-import 'chartjs-adapter-date-fns';
+import 'chartjs-adapter-luxon';
 /* Application Dependencies */
 import { RoutingModule } from './modules/routing/routing.module';
 /* Native Dependencies */
@@ -36,7 +36,7 @@ import { AppComponent } from './app.component';
     providers: [
 		provideHttpClient(),
 		provideAnimations(),
-		provideDateFnsAdapter(),
+		provideLuxonDateAdapter(),
 		provideCharts({ 
 			registerables: [
 				LineController,

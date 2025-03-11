@@ -40,7 +40,7 @@ export class MintBalanceChartComponent implements OnChanges {
 
 	private async init(): Promise<void> {
 		// should probably check if data is available
-		this.locale = await this.settingService.getLocaleModule();
+		this.locale = await this.settingService.getLocale();
 		this.chart_data = this.getChartData();
 		this.chart_options = this.getChartOptions();
 		this.changeDetectorRef.detectChanges();
