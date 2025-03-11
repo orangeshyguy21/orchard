@@ -72,6 +72,14 @@ export class MintQrcodeDialogComponent implements OnInit {
 		this.qr_code.append(this.qr_canvas.nativeElement);
 	}
 
+	// public formatLabel(value: number): string {
+	// 	if (value >= 1000) {
+	// 	  return Math.round(value / 1000) + 'k';
+	// 	}
+	
+	// 	return `${value}`;
+	// }
+
 	public download(): void {
 		this.qr_code.download({ name: `${this.data.mint_name} QR`, extension: "png" });
 	}
