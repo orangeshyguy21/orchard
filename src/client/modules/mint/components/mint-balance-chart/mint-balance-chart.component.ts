@@ -69,8 +69,6 @@ export class MintBalanceChartComponent implements OnChanges {
 			return acc;
 		}, {} as Record<string, MintAnalytic[]>);
 
-		console.log('grouped_by_unit', grouped_by_unit);
-
 		// Get all unique timestamps and sort them
 		const all_timestamps = Array.from(new Set(this.analytic_balances.map(item => item.created_time))).sort();
 		
@@ -137,6 +135,8 @@ export class MintBalanceChartComponent implements OnChanges {
 			};
 		});
 
+		console.log('datasets', datasets);
+
 		return {
 			datasets,
 			labels: [] // Not needed when using time scale with x/y point format
@@ -164,7 +164,10 @@ export class MintBalanceChartComponent implements OnChanges {
 					unit: 'day',
 					displayFormats: {
 						day: 'MMM d'
-					}
+					},
+					tooltipFormat: 'MMM d, yyyy',
+					// Force Chart.js to use UTC for all date operations
+					timezone: 'UTC'
 				}
 			},
 			y: {
@@ -209,11 +212,14 @@ export class MintBalanceChartComponent implements OnChanges {
 					callbacks: {
 						title: (tooltipItems: any) => {
 							if (tooltipItems.length > 0) {
+								// Create date in UTC and format it
 								const date = new Date(tooltipItems[0].parsed.x);
-								return date.toLocaleDateString(this.locale?.code || 'en-US', {
+								// Use toUTCString or format manually to ensure UTC display
+								return new Date(date.getTime()).toLocaleDateString(this.locale?.code || 'en-US', {
 									year: 'numeric',
 									month: 'short',
-									day: 'numeric'
+									day: 'numeric',
+									timeZone: 'UTC' // Force UTC timezone for date formatting
 								});
 							}
 							return '';

@@ -84,7 +84,6 @@ export class MintSubsectionDashboardComponent implements OnInit {
 			date_end: this.selected_date_end,
 			interval: this.selected_interval
 		}));
-		console.log('analytics_balances', analytics_balances);
 		this.mint_analytics_balances = analytics_balances;
 	}
 
