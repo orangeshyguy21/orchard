@@ -1,8 +1,7 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy, SimpleChanges, Output, EventEmitter } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 /* Vendor Dependencies */
-import { Subscription } from 'rxjs';
 import { MatSelectChange } from '@angular/material/select';
 import { DateTime } from 'luxon';
 /* Native Dependencies */
@@ -31,7 +30,7 @@ type TypeOption = {
 	styleUrl: './mint-analytic-control-panel.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MintAnalyticControlPanelComponent implements OnChanges, OnDestroy {
+export class MintAnalyticControlPanelComponent implements OnChanges {
 	
 	@Input() selected_date_start!: number;
 	@Input() selected_date_end!: number;
@@ -68,16 +67,7 @@ export class MintAnalyticControlPanelComponent implements OnChanges, OnDestroy {
 		{ label: 'Volume', value: ChartType.Volume },
 	];
 
-	private readonly subscriptions: Subscription;
-
-	constructor() { 
-		this.subscriptions = this.panel.valueChanges
-			.subscribe(formValue => {
-				// console.log('Form values changed:', formValue);
-				// translate
-				// Handle form changes
-			});
-	}
+	constructor() {}
 
 	ngOnChanges(changes: SimpleChanges): void {			
 		if(changes['loading'] && !this.loading) this.initForm();
@@ -142,9 +132,5 @@ export class MintAnalyticControlPanelComponent implements OnChanges, OnDestroy {
 		if( this.panel.controls.interval.value !== this.selected_interval ) return true;
 		if( this.panel.controls.type.value !== this.selected_type ) return true;
 		return false;
-	}
-
-	ngOnDestroy(): void {
-		this.subscriptions.unsubscribe();
 	}
 }
