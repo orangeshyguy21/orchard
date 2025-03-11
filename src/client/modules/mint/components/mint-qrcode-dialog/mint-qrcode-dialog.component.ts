@@ -1,10 +1,13 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, Component , Inject, ViewChild, ElementRef, OnInit } from '@angular/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 /* Vendor Dependencies */
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import QRCodeStyling from 'qr-code-styling';
+import QRCodeStyling, { DotType, CornerSquareType } from 'qr-code-styling';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 /* Application Dependencies */
 import { ThemeService } from '@client/modules/settings/services/theme/theme.service';
+
 
 @Component({
 	selector: 'orc-mint-qrcode-dialog',
@@ -18,6 +21,24 @@ export class MintQrcodeDialogComponent implements OnInit {
 	@ViewChild('qr_canvas', { static: true }) qr_canvas!: ElementRef;
 
 	public qr_code!: QRCodeStyling;
+
+	public readonly qr_options = new FormGroup({
+		style: new FormControl<string | null>('0', [Validators.required]),
+		image: new FormControl<boolean | null>(true, [Validators.required]),
+	});
+
+	private readonly corner_squre_options: Record<string, CornerSquareType> = {
+		'0': 'extra-rounded',
+		'1': 'extra-rounded',
+		'2': 'square',
+		'3': 'square',
+	};
+	private readonly dot_options: Record<string, DotType> = {
+		'0': 'extra-rounded',
+		'1': 'rounded',
+		'2': 'classy',
+		'3': 'square',
+	};
 
 	constructor(
 		@Inject(MAT_DIALOG_DATA) public data: any,
@@ -70,6 +91,29 @@ export class MintQrcodeDialogComponent implements OnInit {
 		  });
 	  
 		this.qr_code.append(this.qr_canvas.nativeElement);
+	}
+
+	public onStyleChange(event: Event): void {
+		console.log(event);
+		console.log(this.qr_options.value.style);
+		if (this.qr_options.value.style === null || this.qr_options.value.style === undefined) return;
+		const style_value = this.qr_options.value.style;
+		this.qr_code.update({
+			dotsOptions: {
+				type: this.dot_options[style_value]
+			},
+			cornersSquareOptions: {
+				type: this.corner_squre_options[style_value]
+			}
+		});
+	}
+
+	public onImageChange(event: MatCheckboxChange): void {
+		console.log(event);
+		if( this.qr_options.value.image === null || this.qr_options.value.image === undefined ) return;
+		this.qr_code.update({
+			image: event.checked ? this.data.icon_url : null
+		});
 	}
 
 	// public formatLabel(value: number): string {
