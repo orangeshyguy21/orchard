@@ -5,6 +5,7 @@ import { GraphQLError } from "graphql";
 /* Application Dependencies */
 import { OrchardApiErrors } from "@server/modules/graphql/errors/orchard.errors";
 import { UnixTimestamp } from "@server/modules/graphql/scalars/unixtimestamp.scalar";
+import { Timezone, TimezoneType } from "@server/modules/graphql/scalars/timezone.scalar";
 import { MintUnit, MintAnalyticsInterval } from '@server/modules/cashumintdb/cashumintdb.enums';
 /* Internal Dependencies */
 import { OrchardMintAnalytics } from "./mintanalytics.model";
@@ -25,10 +26,11 @@ export class MintAnalyticsResolver {
 		@Args('date_start', { type: () => UnixTimestamp, nullable: true }) date_start?: number,
 		@Args('date_end', { type: () => UnixTimestamp, nullable: true }) date_end?: number,
 		@Args('interval', { type: () => MintAnalyticsInterval, nullable: true }) interval?: MintAnalyticsInterval,
+		@Args('timezone', { type: () => Timezone, nullable: true }) timezone?: TimezoneType,
 	) : Promise<OrchardMintAnalytics[]> {
 		try {
 			this.logger.debug('GET { mint_analytics_balances }');
-			return this.mintAnalyticsService.getMintAnalyticsBalances({ units, date_start, date_end, interval });
+			return this.mintAnalyticsService.getMintAnalyticsBalances({ units, date_start, date_end, interval, timezone });
 		} catch (error) {
 			throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
 		} 

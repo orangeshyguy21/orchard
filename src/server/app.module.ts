@@ -9,6 +9,7 @@ import { FetchModule } from './modules/fetch/fetch.module';
 import { WebserverModule } from './modules/webserver/webserver.module';
 /* Custom Graphql Type Definitions */
 import { UnixTimestamp } from './modules/graphql/scalars/unixtimestamp.scalar';
+import { Timezone } from './modules/graphql/scalars/timezone.scalar';
 import { MintUnit, MintQuoteStatus, MeltQuoteStatus, MintAnalyticsInterval } from './modules/cashumintdb/cashumintdb.enums';
 /* Application Configuration */
 import { config } from './config/configuration';
@@ -30,7 +31,8 @@ import { config } from './config/configuration';
         sortSchema: true,
         path: configService.get('server.path'),
         resolvers: { 
-          UnixTimestamp: UnixTimestamp
+          UnixTimestamp: UnixTimestamp,
+          Timezone: Timezone,
         },
       }),
     }),
