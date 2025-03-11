@@ -154,7 +154,7 @@ export class MintBalanceChartComponent implements OnChanges {
 		// Create scales configuration
 		const scales_config: any = {
 			x: {
-				type: 'time',
+				type: 'timeseries',
 				adapters: {
 					date: {
 						locale: this.locale

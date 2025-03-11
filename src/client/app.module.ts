@@ -10,7 +10,7 @@ import { provideCharts } from 'ng2-charts';
 import { 
 	LineController,
 	LinearScale,
-	TimeScale,
+	TimeSeriesScale,
 	CategoryScale,
 	PointElement,
 	LineElement,
@@ -41,7 +41,7 @@ import { AppComponent } from './app.component';
 			registerables: [
 				LineController,
 				LinearScale,
-				TimeScale,
+				TimeSeriesScale,
 				CategoryScale,
 				PointElement,
 				LineElement,
