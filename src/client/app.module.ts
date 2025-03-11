@@ -7,7 +7,16 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 /* Vendor Dependencies */
 import { provideDateFnsAdapter } from '@angular/material-date-fns-adapter';
 import { provideCharts } from 'ng2-charts';
-import { LineController, LinearScale, CategoryScale, PointElement, LineElement } from 'chart.js';
+import { 
+	LineController,
+	LinearScale,
+	TimeScale,
+	CategoryScale,
+	PointElement,
+	LineElement,
+	Tooltip,
+	Filler,
+} from 'chart.js';
 import 'chartjs-adapter-date-fns';
 /* Application Dependencies */
 import { RoutingModule } from './modules/routing/routing.module';
@@ -16,7 +25,7 @@ import { AppComponent } from './app.component';
 
 @NgModule({
     declarations: [
-      AppComponent,
+      	AppComponent,
     ],
     imports: [
         RouterOutlet,
@@ -24,13 +33,24 @@ import { AppComponent } from './app.component';
         RoutingModule
     ],
     providers: [
-      provideHttpClient(),
-      provideAnimations(),
-      provideDateFnsAdapter(),
-      provideCharts({ registerables: [LineController, LinearScale, CategoryScale, PointElement, LineElement] }),
+		provideHttpClient(),
+		provideAnimations(),
+		provideDateFnsAdapter(),
+		provideCharts({ 
+			registerables: [
+				LineController,
+				LinearScale,
+				TimeScale,
+				CategoryScale,
+				PointElement,
+				LineElement,
+				Tooltip,
+				Filler
+			]
+		}),
     ],
     bootstrap: [
-      AppComponent
+      	AppComponent
     ]
   })
   export class AppModule { }

@@ -73,18 +73,11 @@ export class MintBalanceChartComponent implements OnChanges {
 			return acc;
 		}, {} as Record<string, MintAnalytic[]>);
 
+		console.log('grouped_by_unit', grouped_by_unit);
+
 		// Get all unique timestamps and sort them
 		const all_timestamps = Array.from(new Set(this.analytic_balances.map(item => item.created_time))).sort();
 		
-		// Format dates for labels
-		const labels = all_timestamps.map(timestamp => {
-			const date = new Date(Number(timestamp) * 1000);
-			return date.toLocaleDateString(this.locale?.code || 'en-US', { 
-				month: 'short', 
-				day: 'numeric' 
-			});
-		});
-
 		// Create datasets for each unit
 		const datasets = Object.entries(grouped_by_unit).map(([unit, data], index) => {
 			// Create a map of timestamp to amount for this unit
@@ -93,31 +86,64 @@ export class MintBalanceChartComponent implements OnChanges {
 				return acc;
 			}, {} as Record<string, number>);
 
-			// Colors based on index
-			const colors = [
-				{ bg: 'rgba(148,159,177,0.2)', border: 'rgba(148,159,177,1)' },
-				{ bg: 'rgba(77,83,96,0.2)', border: 'rgba(77,83,96,1)' },
-				{ bg: 'rgba(255,0,0,0.3)', border: 'red' }
+			// Use asset-specific colors from token.scss
+			const asset_colors: Record<string, { bg: string, border: string }> = {
+				'sat': { 
+					bg: 'rgba(247, 147, 26, 0.3)', 
+					border: 'rgb(247, 147, 26)' 
+				},
+				'usd': { 
+					bg: 'rgba(132, 176, 141, 0.3)', 
+					border: 'rgb(132, 176, 141)' 
+				},
+				'eur': { 
+					bg: 'rgba(138, 170, 216, 0.3)', 
+					border: 'rgb(138, 170, 216)' 
+				},
+			};
+
+			// Fallback colors if the unit doesn't match known assets
+			const fallback_colors = [
+				{ bg: 'rgba(54, 162, 235, 0.3)', border: 'rgb(54, 162, 235)' },
+				{ bg: 'rgba(255, 99, 132, 0.3)', border: 'rgb(255, 99, 132)' },
+				{ bg: 'rgba(75, 192, 192, 0.3)', border: 'rgb(75, 192, 192)' }
 			];
-			const color_index = index % colors.length;
+
+			// Get color based on unit or use fallback
+			const unit_lower = unit.toLowerCase();
+			const color = asset_colors[unit_lower] || fallback_colors[index % fallback_colors.length];
+
+			// Calculate cumulative sum for each timestamp
+			let running_sum = 0;
+			const cumulative_data = all_timestamps.map(timestamp => {
+				running_sum += timestamp_to_amount[timestamp] || 0;
+				return {
+					x: Number(timestamp) * 1000,
+					y: running_sum
+				};
+			});
 
 			return {
-				data: all_timestamps.map(timestamp => timestamp_to_amount[timestamp] || 0),
+				data: cumulative_data,
 				label: unit.toUpperCase(),
-				backgroundColor: colors[color_index].bg,
-				borderColor: colors[color_index].border,
-				pointBackgroundColor: colors[color_index].border,
+				backgroundColor: color.bg,
+				borderColor: color.border,
+				pointBackgroundColor: color.border,
 				pointBorderColor: '#fff',
 				pointHoverBackgroundColor: '#fff',
-				pointHoverBorderColor: colors[color_index].border,
-				fill: 'origin',
+				pointHoverBorderColor: color.border,
+				fill: {
+					target: 'origin',
+					above: color.bg  // Area will be filled with the background color
+				},
+				tension: 0.4,
 				yAxisID: index === 0 ? 'y' : `y${index}`
 			};
 		});
 
 		return {
 			datasets,
-			labels
+			labels: [] // Not needed when using time scale with x/y point format
 		};
 	}
 
@@ -131,12 +157,27 @@ export class MintBalanceChartComponent implements OnChanges {
 		
 		// Create scales configuration
 		const scales_config: any = {
+			x: {
+				type: 'time',
+				adapters: {
+					date: {
+						locale: this.locale
+					}
+				},
+				time: {
+					unit: 'day',
+					displayFormats: {
+						day: 'MMM d'
+					}
+				}
+			},
 			y: {
 				position: 'left',
 				title: {
 					display: true,
 					text: unique_units[0]?.toUpperCase() || ''
-				}
+				},
+				beginAtZero: true
 			}
 		};
 
@@ -160,19 +201,43 @@ export class MintBalanceChartComponent implements OnChanges {
 			elements: {
 				line: {
 					tension: 0.5,
+					cubicInterpolationMode: 'monotone',
 				},
 			},
 			scales: scales_config,
 			plugins: {
 				tooltip: {
+					enabled: true,
+					mode: 'nearest',
+					intersect: true,
 					callbacks: {
+						title: (tooltipItems: any) => {
+							if (tooltipItems.length > 0) {
+								const date = new Date(tooltipItems[0].parsed.x);
+								return date.toLocaleDateString(this.locale?.code || 'en-US', {
+									year: 'numeric',
+									month: 'short',
+									day: 'numeric'
+								});
+							}
+							return '';
+						},
 						label: (context: any) => {
 							const label = context.dataset.label || '';
 							const value = context.parsed.y;
 							return `${label}: ${value.toLocaleString(this.locale?.code || 'en-US')}`;
 						}
 					}
+				},
+				legend: {
+					display: true,
+					position: 'top'
 				}
+			},
+			interaction: {
+				mode: 'nearest',
+				axis: 'x',
+				intersect: false
 			}
 		};
 	}
