@@ -40,7 +40,7 @@ export class MintBalanceChartComponent implements OnChanges {
 
 	private async init(): Promise<void> {
 		// should probably check if data is available
-		this.locale = await this.resolveLocale();
+		this.locale = await this.settingService.getLocaleModule();
 		this.chart_data = this.getChartData();
 		this.chart_options = this.getChartOptions();
 		this.changeDetectorRef.detectChanges();
@@ -50,10 +50,6 @@ export class MintBalanceChartComponent implements OnChanges {
 		this.chart_data = this.getChartData();
 		this.chart_options = this.getChartOptions();
 		this.changeDetectorRef.detectChanges();
-	}
-
-	private async resolveLocale(): Promise<any> {
-		return await this.settingService.getLocaleModule();
 	}
 
 	private getChartData(): ChartConfiguration['data'] {
@@ -208,8 +204,8 @@ export class MintBalanceChartComponent implements OnChanges {
 			plugins: {
 				tooltip: {
 					enabled: true,
-					mode: 'nearest',
-					intersect: true,
+					mode: 'index',
+					intersect: false,
 					callbacks: {
 						title: (tooltipItems: any) => {
 							if (tooltipItems.length > 0) {
@@ -235,7 +231,7 @@ export class MintBalanceChartComponent implements OnChanges {
 				}
 			},
 			interaction: {
-				mode: 'nearest',
+				mode: 'index',
 				axis: 'x',
 				intersect: false
 			}

@@ -16,6 +16,7 @@ import {
 	LineElement,
 	Tooltip,
 	Filler,
+	Legend,
 } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 /* Application Dependencies */
@@ -45,7 +46,8 @@ import { AppComponent } from './app.component';
 				PointElement,
 				LineElement,
 				Tooltip,
-				Filler
+				Filler,
+				Legend
 			]
 		}),
     ],
