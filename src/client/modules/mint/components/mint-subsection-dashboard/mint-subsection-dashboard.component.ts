@@ -3,11 +3,14 @@ import { Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef } from '@
 /* Vendor Dependencies */
 import { forkJoin, lastValueFrom } from 'rxjs';
 /* Application Dependencies */
+import { CacheService } from '@client/modules/cache/services/cache/cache.service';
+/* Native Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { MintBalance } from '@client/modules/mint/classes/mint-balance.class';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 import { MintAnalytic } from '@client/modules/mint/classes/mint-analytic.class';
+import { ChartType } from '@client/modules/mint/enums/chart-type.enum';
 /* Shared Dependencies */
 import { MintAnalyticsInterval, MintUnit } from '@shared/generated.types';
 
@@ -27,32 +30,40 @@ export class MintSubsectionDashboardComponent implements OnInit {
 
 	public loading_static_data: boolean = true;
 	public loading_dynamic_data: boolean = true;
+	public mint_genesis_time: number = 0;
 
 	public selected_units: MintUnit[] = [];
-	public selected_date_start: number;
-	public selected_date_end!: number;
+	public selected_date_start!: number;
+	public selected_date_end: number;
 	public selected_interval: MintAnalyticsInterval = MintAnalyticsInterval.Day;
+	public selected_type!: ChartType;
 
 	constructor(
 		private mintService: MintService,
+		private cacheService: CacheService,
 		private changeDetectorRef: ChangeDetectorRef
 	) {
-		this.selected_date_start = this.getSelectedDateStart();
 		this.selected_date_end = this.getSelectedDateEnd();
+		this.selected_type = ChartType.Summary;
 	}
 
 	async ngOnInit(): Promise<void> {
 		try {
 			await this.loadStaticData();
+			this.mint_genesis_time = this.getMintGenesisTime();
 			this.selected_units = this.getSelectedUnits();
+			this.selected_date_start = this.getSelectedDateStart();
+			this.loading_static_data = false;
+			this.changeDetectorRef.detectChanges();
 			await this.loadMintAnalyticsBalances();
+			this.loading_dynamic_data = false;
+			this.changeDetectorRef.detectChanges();
 		} catch (error) {
 			console.error('Error in initialization sequence:', error);
 		}
 	}
 
 	private async loadStaticData(): Promise<void> {
-		
 		const info_obs = this.mintService.loadMintInfo();
 		const balances_obs = this.mintService.loadMintBalances();
 		const keysets_obs = this.mintService.loadMintKeysets();
@@ -64,8 +75,6 @@ export class MintSubsectionDashboardComponent implements OnInit {
 		this.mint_info = info;
 		this.mint_balances = balances;
 		this.mint_keysets = keysets;
-		this.loading_static_data = false;
-		this.changeDetectorRef.detectChanges();
 	}
 
 	private async loadMintAnalyticsBalances(): Promise<void> {
@@ -75,10 +84,8 @@ export class MintSubsectionDashboardComponent implements OnInit {
 			date_end: this.selected_date_end,
 			interval: this.selected_interval
 		}));
+		console.log('analytics_balances', analytics_balances);
 		this.mint_analytics_balances = analytics_balances;
-		console.log('mint_analytics_balances', this.mint_analytics_balances);
-		this.loading_dynamic_data = false;
-		this.changeDetectorRef.detectChanges();
 	}
 
 	private getSelectedUnits(): MintUnit[] {
@@ -89,13 +96,58 @@ export class MintSubsectionDashboardComponent implements OnInit {
 		const three_months_ago = new Date();
 		three_months_ago.setMonth(three_months_ago.getMonth() - 3);
 		three_months_ago.setUTCHours(0, 0, 0, 0);
-		return Math.floor(three_months_ago.getTime() / 1000);
+		const three_months_ago_timestamp = Math.floor(three_months_ago.getTime() / 1000);
+		return Math.max(three_months_ago_timestamp, this.mint_genesis_time);
 	}
 
 	private getSelectedDateEnd(): number {
 		const today = new Date();
 		today.setUTCHours(23, 59, 59, 999);
 		return Math.floor(today.getTime() / 1000);
+	}
+
+	private getMintGenesisTime(): number {
+		if (!this.mint_keysets || this.mint_keysets.length === 0) return 0;
+		return this.mint_keysets.reduce((oldest_time, keyset) => {
+			return keyset.first_seen < oldest_time || oldest_time === 0 
+				? keyset.first_seen 
+				: oldest_time;
+		}, 0);
+	}
+
+	private async reloadDynamicData(): Promise<void> {
+		try {
+			const cache_key = this.mintService.CACHE_KEYS.MINT_ANALYTICS_BALANCES;
+			this.cacheService.clearCache(cache_key);
+			this.loading_dynamic_data = true;
+			this.changeDetectorRef.detectChanges();
+			await this.loadMintAnalyticsBalances();
+			this.loading_dynamic_data = false;
+			this.changeDetectorRef.detectChanges();
+		} catch (error) {
+			console.error('Error updating dynamic data:', error);
+		}
+	}
+
+	public onDateChange(event: number[]): void {
+		this.selected_date_start = event[0];
+		this.selected_date_end = event[1];
+		this.reloadDynamicData();
+	}
+
+	public onUnitsChange(event: MintUnit[]): void {
+		this.selected_units = event;
+		this.reloadDynamicData();
+	}
+
+	public onIntervalChange(event: MintAnalyticsInterval): void {
+		this.selected_interval = event;
+		this.reloadDynamicData();
+	}
+
+	public onTypeChange(event: ChartType): void {
+		this.selected_type = event;
+		this.changeDetectorRef.detectChanges();
 	}
 }
 

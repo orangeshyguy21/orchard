@@ -14,13 +14,30 @@
 		</orc-mint-connections>
 	</div>
 	<div class="mint-dashboard-charts">
-		<orc-mint-analytic-control-panel></orc-mint-analytic-control-panel>
-	</div>
-	<div class="mint-dashboard-analytics">
-		<!-- {{ mint_analytics_balances | json }} -->
-		<orc-mint-balance-chart
-			[analytic_balances]="mint_analytics_balances"
-			[loading]="loading_dynamic_data">
-		</orc-mint-balance-chart>
+		<div class="flex flex-justify-between flex-items-end">
+			<div class="title-l p-1">Mint Analytics</div>
+			<orc-mint-analytic-control-panel
+				[selected_date_start]="selected_date_start"
+				[selected_date_end]="selected_date_end"
+				[selected_units]="selected_units"
+				[selected_interval]="selected_interval"
+				[selected_type]="selected_type"
+				[keysets]="mint_keysets"
+				[loading]="loading_static_data"
+				(date_change)="onDateChange($event)"
+				(units_change)="onUnitsChange($event)"
+				(interval_change)="onIntervalChange($event)"
+				(type_change)="onTypeChange($event)">
+			</orc-mint-analytic-control-panel>
+		</div>
+		
+		<mat-card appearance="outlined" class="overflow-hidden">
+			<mat-card-content>	
+				<orc-mint-balance-chart
+					[analytic_balances]="mint_analytics_balances"
+					[loading]="loading_dynamic_data">
+				</orc-mint-balance-chart>
+			</mat-card-content>
+		</mat-card>
 	</div>
 </div>

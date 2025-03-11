@@ -19,6 +19,9 @@
 .flex-items-center{
     align-items: center;
 }
+.flex-items-end{
+    align-items: flex-end;
+}
 .flex-justify-center{
     justify-content: center;
 }
@@ -172,6 +175,13 @@
 
 .p-b-0-5{
     padding-bottom: 0.5rem;
+}
+.p-b-1{
+    padding-bottom: 1rem;
+}
+
+.p-l-1{
+    padding-left: 1rem;
 }
 
 /* Absolute Position Definitions */

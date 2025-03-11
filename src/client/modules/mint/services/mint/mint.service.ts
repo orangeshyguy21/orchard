@@ -22,7 +22,7 @@ import { MINT_INFO_QUERY, MINT_BALANCES_QUERY, MINT_KEYSETS_QUERY, MINT_PROMISES
 })
 export class MintService {
 
-	private readonly CACHE_KEYS = {
+	public readonly CACHE_KEYS = {
 		MINT_INFO: 'mint-info',
 		MINT_BALANCES: 'mint-balances',
 		MINT_KEYSETS: 'mint-keysets',

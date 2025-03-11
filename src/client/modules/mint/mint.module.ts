@@ -13,6 +13,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { BaseChartDirective } from 'ng2-charts';
 /* Application Dependencies */
 import { NavModule } from '@client/modules/nav/nav.module';
@@ -90,6 +91,7 @@ export class MintRoutingModule { }
 		MatDatepickerModule,
 		MatFormFieldModule,
 		MatInputModule,
+		MatSelectModule,
 		BaseChartDirective,
 		NavModule,
 		LocalModule,

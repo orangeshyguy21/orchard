@@ -34,13 +34,19 @@ export class MintBalanceChartComponent implements OnChanges {
 
 	public ngOnChanges(changes: SimpleChanges): void {
 		if(changes['loading'] && this.loading === false) {
-			this.init();
+			this.chart ? this.init() : this.reload();
 		}
 	}
 
 	private async init(): Promise<void> {
 		// should probably check if data is available
 		this.locale = await this.resolveLocale();
+		this.chart_data = this.getChartData();
+		this.chart_options = this.getChartOptions();
+		this.changeDetectorRef.detectChanges();
+	}
+
+	private async reload(): Promise<void> {
 		this.chart_data = this.getChartData();
 		this.chart_options = this.getChartOptions();
 		this.changeDetectorRef.detectChanges();

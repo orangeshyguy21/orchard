@@ -1,7 +1,27 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { enUS } from 'date-fns/locale';
+import { ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy, SimpleChanges, Output, EventEmitter } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+/* Vendor Dependencies */
+import { Subscription } from 'rxjs';
+import { MatSelectChange } from '@angular/material/select';
+/* Native Dependencies */
+import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
+import { ChartType } from '@client/modules/mint/enums/chart-type.enum';
+/* Shared Dependencies */
+import { MintAnalyticsInterval, MintUnit } from '@shared/generated.types';
+
+type UnitOption = {
+	label: string;
+	value: MintUnit;
+}
+type IntervalOption = {
+	label: string;
+	value: MintAnalyticsInterval;
+}
+type TypeOption = {
+	label: string;
+	value: ChartType;
+}
 
 @Component({
 	selector: 'orc-mint-analytic-control-panel',
@@ -10,16 +30,120 @@ import { enUS } from 'date-fns/locale';
 	styleUrl: './mint-analytic-control-panel.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MintAnalyticControlPanelComponent {
+export class MintAnalyticControlPanelComponent implements OnChanges, OnDestroy {
+	
+	@Input() selected_date_start!: number;
+	@Input() selected_date_end!: number;
+	@Input() selected_interval!: MintAnalyticsInterval;
+	@Input() selected_units!: MintUnit[];
+	@Input() selected_type!: ChartType;
+	@Input() keysets!: MintKeyset[]; // gotta make the options from the keysets
+	@Input() loading!: boolean;
 
-	constructor() {
-		// console.log('enUS', enUS);
-	}
+	@Output() date_change = new EventEmitter<number[]>();
+	@Output() units_change = new EventEmitter<MintUnit[]>();
+	@Output() interval_change = new EventEmitter<MintAnalyticsInterval>();
+	@Output() type_change = new EventEmitter<ChartType>();
 
-
-	readonly range = new FormGroup({
-		start: new FormControl<Date | null>(null),
-		end: new FormControl<Date | null>(null),
+	public readonly panel = new FormGroup({
+		daterange: new FormGroup({
+			date_start: new FormControl<Date | null>(null, [Validators.required]),
+			date_end: new FormControl<Date | null>(null, [Validators.required]),
+		}),
+		units: new FormControl<MintUnit[] | null>(null, [Validators.required]),
+		interval: new FormControl<MintAnalyticsInterval | null>(null, [Validators.required]),
+		type: new FormControl<ChartType | null>(null, [Validators.required]),
 	});
 
+	public unit_options!: UnitOption[]; 
+	public interval_options: IntervalOption[] = [
+		{ label: 'Day', value: MintAnalyticsInterval.Day },
+		{ label: 'Week', value: MintAnalyticsInterval.Week },
+		{ label: 'Month', value: MintAnalyticsInterval.Month },
+	];
+	public type_options: TypeOption[] = [
+		{ label: 'Summary', value: ChartType.Summary },
+		{ label: 'Operations', value: ChartType.Operations },
+		{ label: 'Volume', value: ChartType.Volume },
+	];
+
+	private readonly subscriptions: Subscription;
+
+	constructor() { 
+		this.subscriptions = this.panel.valueChanges
+			.subscribe(formValue => {
+				// console.log('Form values changed:', formValue);
+				// translate
+				// Handle form changes
+			});
+	}
+
+	ngOnChanges(changes: SimpleChanges): void {			
+		if(changes['loading'] && !this.loading) this.initForm();
+	}
+
+	initForm(): void {
+		this.unit_options = this.selected_units.map(unit => ({ label: unit.toString().toUpperCase(), value: unit }));
+		this.panel.controls.daterange.controls.date_start.setValue(new Date(this.selected_date_start * 1000));
+		this.panel.controls.daterange.controls.date_end.setValue(new Date(this.selected_date_end * 1000));
+		this.panel.controls.units.setValue(this.selected_units);
+		this.panel.controls.interval.setValue(this.selected_interval);
+		this.panel.controls.type.setValue(this.selected_type);
+	}
+
+	onDateChange(): void {
+		if(this.panel.invalid) return;
+		const is_valid = this.isValidChange();
+		if( !is_valid ) return;
+		if( this.panel.controls.daterange.controls.date_start.value === null ) return;
+		if( this.panel.controls.daterange.controls.date_end.value === null ) return;
+		const date_start = this.translateDateToTimestamp(this.panel.controls.daterange.controls.date_start.value);
+		const date_end = this.translateDateToTimestamp(this.panel.controls.daterange.controls.date_end.value);
+		this.date_change.emit([date_start, date_end]);
+	}
+
+	onUnitsChange(event: MatSelectChange): void {
+		if(this.panel.invalid) return;
+		const is_valid = this.isValidChange();
+		if( !is_valid ) return;
+		this.units_change.emit(event.value);
+	}
+
+	onIntervalChange(event: MatSelectChange): void {
+		if(this.panel.invalid) return;
+		const is_valid = this.isValidChange();
+		if( !is_valid ) return;
+		this.interval_change.emit(event.value);
+	}
+
+	onTypeChange(event: MatSelectChange): void {
+		if(this.panel.invalid) return;
+		const is_valid = this.isValidChange();
+		if( !is_valid ) return;
+		this.type_change.emit(event.value);
+	}
+
+	private translateDateToTimestamp(date: Date): number {
+		return Math.floor(date.getTime() / 1000);
+	}
+
+	private isValidChange(): boolean {
+		// validations
+		if( this.panel.controls.daterange.controls.date_start.value === null ) return false;
+		if( this.panel.controls.daterange.controls.date_end.value === null ) return false;
+		if( this.panel.controls.units.value === null ) return false;
+		if( this.panel.controls.interval.value === null ) return false;
+		if( this.panel.controls.type.value === null ) return false;
+		// change checks
+		if( this.translateDateToTimestamp(this.panel.controls.daterange.controls.date_start.value) !== this.selected_date_start ) return true;
+		if( this.translateDateToTimestamp(this.panel.controls.daterange.controls.date_end.value) !== this.selected_date_end ) return true;
+		if( this.panel.controls.units.value !== this.selected_units ) return true;
+		if( this.panel.controls.interval.value !== this.selected_interval ) return true;
+		if( this.panel.controls.type.value !== this.selected_type ) return true;
+		return false;
+	}
+
+	ngOnDestroy(): void {
+		this.subscriptions.unsubscribe();
+	}
 }

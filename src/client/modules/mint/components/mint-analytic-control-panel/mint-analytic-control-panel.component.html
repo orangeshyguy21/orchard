@@ -1,34 +1,51 @@
 <div class="mint-analytic-control-panel-container">
-	<mat-card appearance="outlined" class="overflow-hidden">
-        <mat-card-content>
-            
+	<!-- <mat-card appearance="outlined" class="overflow-hidden">
+        <mat-card-content> -->
+            <form [formGroup]="panel" class="flex flex-col flex-gap-1 p-h-1">
+                <div formGroupName="daterange">
+                    <mat-form-field hideRequiredMarker="true">
+                        <mat-label>Date range</mat-label>
+                        <mat-date-range-input [rangePicker]="picker">
+                            <input matStartDate formControlName="date_start" placeholder="Start date" (blur)="onDateChange()">
+                            <input matEndDate formControlName="date_end" placeholder="End date" (blur)="onDateChange()"> 
+                        </mat-date-range-input>
+                        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-date-range-picker #picker (closed)="onDateChange()"></mat-date-range-picker>
+                        @if (panel.get('daterange')?.invalid) {
+                            <mat-error class="font-size-xs">Invalid date range</mat-error>
+                        }
+                    </mat-form-field>
+                </div>
+                  
+                <mat-form-field hideRequiredMarker="true">
+                    <mat-label>Units</mat-label>
+                    <mat-select formControlName="units" multiple (selectionChange)="onUnitsChange($event)">
+                        @for (unit of unit_options; track unit.value) {
+                            <mat-option [value]="unit.value">{{unit.label}}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
 
 
-            <mat-form-field>
-                <mat-label>Enter a date range</mat-label>
-                <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
-                    <input matStartDate formControlName="start" placeholder="Start date">
-                    <input matEndDate formControlName="end" placeholder="End date">
-                </mat-date-range-input>
-                <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
-                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-date-range-picker #picker></mat-date-range-picker>
-              
-                @if (range.controls.start.hasError('matStartDateInvalid')) {
-                    <mat-error>Invalid start date</mat-error>
-                }
-                @if (range.controls.end.hasError('matEndDateInvalid')) {
-                    <mat-error>Invalid end date</mat-error>
-                }
-            </mat-form-field>
-              
-            <p>Selected range: {{range.value | json}}</p>
-              
+                <mat-form-field hideRequiredMarker="true">
+                    <mat-label>Interval</mat-label>
+                    <mat-select formControlName="interval" (selectionChange)="onIntervalChange($event)">
+                        @for (interval of interval_options; track interval.value) {
+                            <mat-option [value]="interval.value">{{interval.label}}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
 
-
-
-
-        </mat-card-content>
-    </mat-card>
+                <mat-form-field hideRequiredMarker="true">
+                    <mat-label>Type</mat-label>
+                    <mat-select formControlName="type" (selectionChange)="onTypeChange($event)">
+                        @for (type of type_options; track type.value) {
+                            <mat-option [value]="type.value">{{type.label}}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </form>
+        <!-- </mat-card-content>
+    </mat-card> -->
 </div>
 

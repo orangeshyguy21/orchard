@@ -8,7 +8,7 @@ html {
       primary: orchard-pallete.$primary-palette,
       tertiary: orchard-pallete.$tertiary-palette,
     ),
-    density: -5,
+    density: -1,
   ), $overrides: (
     // surface: light-dark(#fff8f5, #110000), not going here yet
   ));
