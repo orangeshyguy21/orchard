@@ -1,9 +1,10 @@
 /* Core Dependencies */
 import { Injectable } from '@angular/core';
-/* Application Dependencies */
-import { LocalStorageService } from '@client/modules/cache/services/local-storage/local-storage.service';
 /* Vendor Dependencies */
 import { DateAdapter } from '@angular/material/core';
+import { Settings } from 'luxon';
+/* Application Dependencies */
+import { LocalStorageService } from '@client/modules/cache/services/local-storage/local-storage.service';
 
 @Injectable({
 	providedIn: 'root'
@@ -23,8 +24,20 @@ export class SettingService {
 		return this.localStorageService.getTimezone().tz ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
 	}
 
-	public async setLocale(locale: string): Promise<void> {
+	public init(): void {
+		this.setLocale();
+		this.setTimezone();
+	}
+
+	public setLocale(): void {
+		const locale = this.getLocale();
 		this.dateAdapter.setLocale(locale);
+		Settings.defaultLocale = locale;
+	}
+
+	public setTimezone(): void {
+		const timezone = this.getTimezone();
+		Settings.defaultZone = timezone;
 	}
 }
 

@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, OnInit, computed } from '@angular/c
 import { FormControl, Validators } from '@angular/forms';
 /* Application Dependencies */
 import { LocalStorageService } from '@client/modules/cache/services/local-storage/local-storage.service';
+import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 /* Vendor Dependencies */
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { Observable } from 'rxjs';
@@ -33,6 +34,7 @@ export class SettingsTimeTimezoneComponent implements OnInit {
 
 	constructor(
 		public localStorageService: LocalStorageService,
+		public settingService: SettingService,
 	) { }
 
 	ngOnInit() {
@@ -83,5 +85,6 @@ export class SettingsTimeTimezoneComponent implements OnInit {
 
 	public saveTimezone(tz: string|null) {
 		this.localStorageService.setTimezone({ tz: tz });
+		this.settingService.setTimezone();
 	}
 }

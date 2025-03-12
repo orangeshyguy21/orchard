@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, Input, OnInit, OnChanges, SimpleCha
 /* Vendor Dependencies */
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartEvent, ChartType } from 'chart.js';
+import { DateTime } from 'luxon';
 /* Application Dependencies */
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 import { MintAnalytic } from '@client/modules/mint/classes/mint-analytic.class';
@@ -24,7 +25,8 @@ export class MintBalanceChartComponent implements OnChanges {
 	public chart_data!: ChartConfiguration['data'];
 	public chart_options!: ChartConfiguration['options'];
 
-	private locale: any;
+	private locale!: string;
+	private timezone!: string;
 
 	constructor(
 		private settingService: SettingService,
@@ -41,6 +43,8 @@ export class MintBalanceChartComponent implements OnChanges {
 	private async init(): Promise<void> {
 		// should probably check if data is available
 		this.locale = await this.settingService.getLocale();
+		this.timezone = await this.settingService.getTimezone();
+		console.log('TIMEZONE', this.timezone);
 		this.chart_data = this.getChartData();
 		this.chart_options = this.getChartOptions();
 		this.changeDetectorRef.detectChanges();
@@ -155,19 +159,25 @@ export class MintBalanceChartComponent implements OnChanges {
 		const scales_config: any = {
 			x: {
 				type: 'timeseries',
-				adapters: {
-					date: {
-						locale: this.locale
-					}
-				},
 				time: {
 					unit: 'day',
 					displayFormats: {
 						day: 'MMM d'
 					},
-					tooltipFormat: 'MMM d, yyyy',
-					// Force Chart.js to use UTC for all date operations
-					timezone: 'UTC'
+					tooltipFormat: 'MMM d, yyyy'
+				},
+				adapters: {
+					date: {
+						locale: this.locale
+					}
+				},
+				ticks: {
+					callback: (value: any) => {
+						// Convert timestamp to DateTime with proper timezone
+						return DateTime.fromMillis(value)
+							.setZone(this.timezone)
+							.toFormat('MMM d');
+					}
 				}
 			},
 			y: {
@@ -212,22 +222,22 @@ export class MintBalanceChartComponent implements OnChanges {
 					callbacks: {
 						title: (tooltipItems: any) => {
 							if (tooltipItems.length > 0) {
-								// Create date in UTC and format it
-								const date = new Date(tooltipItems[0].parsed.x);
-								// Use toUTCString or format manually to ensure UTC display
-								return new Date(date.getTime()).toLocaleDateString(this.locale?.code || 'en-US', {
-									year: 'numeric',
-									month: 'short',
-									day: 'numeric',
-									timeZone: 'UTC' // Force UTC timezone for date formatting
-								});
+								// Use Luxon to properly handle the date with timezone and locale
+								return DateTime.fromMillis(tooltipItems[0].parsed.x)
+									.setZone(this.timezone)
+									.setLocale(this.locale)
+									.toLocaleString({
+										year: 'numeric',
+										month: 'short',
+										day: 'numeric'
+									});
 							}
 							return '';
 						},
 						label: (context: any) => {
 							const label = context.dataset.label || '';
 							const value = context.parsed.y;
-							return `${label}: ${value.toLocaleString(this.locale?.code || 'en-US')}`;
+							return `${label}: ${value.toLocaleString(this.locale)}`;
 						}
 					}
 				},

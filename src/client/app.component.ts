@@ -22,7 +22,7 @@ export class AppComponent implements OnInit {
 
 	ngOnInit(): void {
 		this.initIcons();
-		this.initLocale();
+		this.initSettings();
 	}
 
 	private initIcons(): void {
@@ -34,8 +34,7 @@ export class AppComponent implements OnInit {
 			.addSvgIcon('bitcoin_outline', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/bitcoin-outline.svg'))
 	}
 
-	private initLocale(): void {
-		const locale = this.settingService.getLocale();
-		this.settingService.setLocale(locale);
+	private initSettings(): void {
+		this.settingService.init();
 	}
 }

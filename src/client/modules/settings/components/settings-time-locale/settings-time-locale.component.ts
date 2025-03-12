@@ -1,11 +1,15 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-/* Application Dependencies */
-import { LocalStorageService } from '@client/modules/cache/services/local-storage/local-storage.service';
 /* Vendor Dependencies */
 import { MatCheckboxChange } from '@angular/material/checkbox';
-import { DateAdapter } from '@angular/material/core';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
+/* Application Dependencies */
+import { SettingService } from '../../services/setting/setting.service';
+import { LocalStorageService } from '@client/modules/cache/services/local-storage/local-storage.service';
+/* Locale Dependencies */
+import { LocaleOption } from './settings-time-locale.types';
 
 @Component({
 	selector: 'orc-settings-time-locale',
@@ -19,7 +23,8 @@ export class SettingsTimeLocaleComponent implements OnInit {
 	public locale_control = new FormControl('', [Validators.required]);
 	public system_default_control = new FormControl(true);
 	public unix_timestamp_seconds = Math.floor(Date.now() / 1000);
-	public locale_options = [
+	public filtered_options!: Observable<LocaleOption[]>;
+	public locale_options: LocaleOption[] = [
 		// English Variants
 		{ code: 'en-US', country: 'English (United States)' },
 		{ code: 'en-GB', country: 'English (United Kingdom)' },
@@ -69,11 +74,17 @@ export class SettingsTimeLocaleComponent implements OnInit {
 		{ code: 'id-ID', country: 'Indonesian (Indonesia)' }
 	];
 
+	public locale_control_error = computed(() => {
+		if (this.locale_control.hasError('required')) return 'required';
+		if (this.locale_control.hasError('invalid_locale')) return 'invalid locale';
+		return '';
+	});
+
 	private system_locale = Intl.DateTimeFormat().resolvedOptions().locale;
 
 	constructor(
 		public localStorageService: LocalStorageService,
-		private dateAdapter: DateAdapter<Date>,
+		public settingService: SettingService,
 	) { }
 
 	ngOnInit() {
@@ -81,13 +92,21 @@ export class SettingsTimeLocaleComponent implements OnInit {
 		this.initLocale(locale.code);
 		this.initCheckbox(locale.code);
 
+		this.filtered_options = this.locale_control.valueChanges.pipe(
+			startWith(''),
+			map(value => this._filter(value || '')),
+		);
+
 		this.locale_control.valueChanges.subscribe(value => {
 			this.onLocaleChange(value);
 		});
 	}
 
+	private _filter(value: string): LocaleOption[] {
+		const filter_value = value.toLowerCase();
+		return this.locale_options.filter(option => option.country.toLowerCase().includes(filter_value));
+	}
 	
-
 	private initCheckbox(code: string|null) {
 		const is_system_default = (code === null) ? true : false;
 		this.system_default_control.setValue(is_system_default);
@@ -107,15 +126,15 @@ export class SettingsTimeLocaleComponent implements OnInit {
 		}
 	}
 
-
 	public onLocaleChange(value: string|null) : void {
+		if( value === null ) return this.locale_control.setErrors({ required: true });
+		if (!this.locale_options.some(option => option.code === value)) return this.locale_control.setErrors({ invalid_locale: true });
 		this.saveLocale(value);
 		if( value !== this.system_locale ) return this.system_default_control.setValue(false);
 	}
 
 	public saveLocale(code: string|null) {
-		this.dateAdapter.setLocale(code);
 		this.localStorageService.setLocale({ code: code });
+		this.settingService.setLocale();
 	}
-
 }
