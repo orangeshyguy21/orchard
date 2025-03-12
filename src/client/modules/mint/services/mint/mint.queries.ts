@@ -73,8 +73,9 @@ export const MINT_PROMISES_QUERY = `query MintPromises($id_keysets: [String!]) {
 	}
 }`;
 
-export const MINT_ANALYTICS_BALANCES_QUERY = `query MintAnalyticsBalances($units: [MintUnit!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $interval: MintAnalyticsInterval) {
-	mint_analytics_balances(units: $units, date_start: $date_start, date_end: $date_end, interval: $interval) {
+export const MINT_ANALYTICS_BALANCES_QUERY = `
+query MintAnalyticsBalances($units: [MintUnit!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $interval: MintAnalyticsInterval, $timezone: Timezone) {
+	mint_analytics_balances(units: $units, date_start: $date_start, date_end: $date_end, interval: $interval, timezone: $timezone) {
 		unit
 		amount
 		created_time

@@ -27,7 +27,7 @@ export class MintPromiseResolver {
 	) : Promise<OrchardMintPromise[]> {
 		try {
 			this.logger.debug('GET { mint_promises }');
-			return this.mintPromiseService.getMintPromises({ id_keysets, date_start, date_end });
+			return await this.mintPromiseService.getMintPromises({ id_keysets, date_start, date_end });
 		} catch (error) {
 			throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
 		} 

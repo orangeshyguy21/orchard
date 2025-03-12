@@ -28,7 +28,7 @@ export class MintMintQuoteResolver {
 	) : Promise<OrchardMintMintQuote[]> {
 		try {
 			this.logger.debug('GET { mint_mint_quotes }');
-			return this.mintMintQuoteService.getMintMintQuotes({ unit, status, date_start, date_end });
+			return await this.mintMintQuoteService.getMintMintQuotes({ unit, status, date_start, date_end });
 		} catch (error) {
 			throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
 		} 

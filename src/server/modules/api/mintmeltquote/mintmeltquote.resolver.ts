@@ -21,7 +21,7 @@ export class MintMeltQuoteResolver {
     async mint_melt_quotes() : Promise<OrchardMintMeltQuote[]> {
 		try {
 			this.logger.debug('GET { mint_melt_quotes }');
-			return this.mintMeltQuoteService.getMintMeltQuotes();
+			return await this.mintMeltQuoteService.getMintMeltQuotes();
 		} catch (error) {
 			throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
 		} 

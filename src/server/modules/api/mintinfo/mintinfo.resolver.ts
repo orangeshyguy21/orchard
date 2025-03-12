@@ -21,7 +21,7 @@ export class MintInfoResolver {
 	async mint_info() : Promise<OrchardMintInfo> {
 		try {
 			this.logger.debug('GET { mint_info }');
-			return this.mintInfoService.getMintInfo();
+			return await this.mintInfoService.getMintInfo();
 		} catch (error) {
 			throw new GraphQLError(OrchardApiErrors.MintApiError);
 		} 

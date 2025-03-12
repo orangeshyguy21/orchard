@@ -30,36 +30,9 @@ export class MintAnalyticsResolver {
 	) : Promise<OrchardMintAnalytics[]> {
 		try {
 			this.logger.debug('GET { mint_analytics_balances }');
-			return this.mintAnalyticsService.getMintAnalyticsBalances({ units, date_start, date_end, interval, timezone });
+			return await this.mintAnalyticsService.getMintAnalyticsBalances({ units, date_start, date_end, interval, timezone });
 		} catch (error) {
 			throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
 		} 
 	}
 }
-
-
-
-
-// @Resolver(() => [OrchardMintPromise])
-// export class MintPromiseResolver {
-
-// 	private readonly logger = new Logger(MintPromiseResolver.name);
-
-// 	constructor(
-// 		private mintPromiseService: MintPromiseService,
-// 	) {}
-
-// 	@Query(() => [OrchardMintPromise])
-// 	async mint_promises(
-// 		@Args('id_keysets', { type: () => [String], nullable: true }) id_keysets?: string[],
-// 		@Args('date_start', { type: () => UnixTimestamp, nullable: true }) date_start?: number,
-// 		@Args('date_end', { type: () => UnixTimestamp, nullable: true }) date_end?: number,
-// 	) : Promise<OrchardMintPromise[]> {
-// 		try {
-// 			this.logger.debug('GET { mint_promises }');
-// 			return this.mintPromiseService.getMintPromises({ id_keysets, date_start, date_end });
-// 		} catch (error) {
-// 			throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
-// 		} 
-// 	}
-// }

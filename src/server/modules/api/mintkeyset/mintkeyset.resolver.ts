@@ -21,7 +21,7 @@ export class MintKeysetResolver {
 	async mint_keysets() : Promise<OrchardMintKeyset[]> {
 		try {
 			this.logger.debug('GET { mint_keysets }');
-			return this.mintKeysetService.getMintKeysets();
+			return await this.mintKeysetService.getMintKeysets();
 		} catch (error) {
 			throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
 		} 

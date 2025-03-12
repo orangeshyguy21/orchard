@@ -21,7 +21,7 @@ export class MintBalanceResolver {
 	async mint_balances() : Promise<OrchardMintBalance[]> {
 		try {
 			this.logger.debug('GET { mint_balances }');
-			return this.mintBalanceService.getMintBalances();
+			return await this.mintBalanceService.getMintBalances();
 		} catch (error) {
 			throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
 		} 
@@ -31,7 +31,7 @@ export class MintBalanceResolver {
 	async mint_balances_issued() : Promise<OrchardMintBalance[]> {
 		try {
 			this.logger.debug('GET { mint_balances_issued }');
-			return this.mintBalanceService.getIssuedMintBalances();
+			return await this.mintBalanceService.getIssuedMintBalances();
 		} catch (error) {
 			throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
 		} 
@@ -41,7 +41,7 @@ export class MintBalanceResolver {
 	async mint_balances_redeemed() : Promise<OrchardMintBalance[]> {
 		try {
 			this.logger.debug('GET { mint_balances_redeemed }');
-			return this.mintBalanceService.getRedeemedMintBalances();
+			return await this.mintBalanceService.getRedeemedMintBalances();
 		} catch (error) {
 			throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
 		} 

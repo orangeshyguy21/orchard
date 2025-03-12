@@ -82,11 +82,13 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	}
 
 	private async loadMintAnalyticsBalances(): Promise<void> {
+		const timezone = await this.settingService.getTimezone();
 		const analytics_balances = await lastValueFrom(this.mintService.loadMintAnalyticsBalances({
 			units: this.selected_units,
 			date_start: this.selected_date_start,
 			date_end: this.selected_date_end,
-			interval: this.selected_interval
+			interval: this.selected_interval,
+			timezone: timezone
 		}));
 		this.mint_analytics_balances = analytics_balances;
 	}

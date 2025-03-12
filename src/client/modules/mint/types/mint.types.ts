@@ -31,4 +31,5 @@ export type MintAnalyticsArgs = {
     date_start?: number;
     date_end?: number;
     interval?: MintAnalyticsInterval;
+    timezone?: string;
 }

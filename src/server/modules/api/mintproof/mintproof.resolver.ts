@@ -21,7 +21,7 @@ export class MintProofResolver {
 	async mint_proofs_pending() : Promise<OrchardMintProof[]> {
 		try {
 			this.logger.debug('GET { mint_proofs_pending }');
-			return this.mintProofService.getMintProofsPending();
+			return await this.mintProofService.getMintProofsPending();
 		} catch (error) {
 			throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
 		} 
@@ -31,7 +31,7 @@ export class MintProofResolver {
 	async mint_proofs_used() : Promise<OrchardMintProof[]> {
 		try {
 			this.logger.debug('GET { mint_proofs_used }');
-			return this.mintProofService.getMintProofsUsed();
+			return await this.mintProofService.getMintProofsUsed();
 		} catch (error) {
 			throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
 		}

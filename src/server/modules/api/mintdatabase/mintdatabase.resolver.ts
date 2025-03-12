@@ -21,7 +21,7 @@ export class MintDatabaseResolver {
 	async mint_databases() : Promise<OrchardMintDatabase[]> {
 		try {
 			this.logger.debug('GET { mint_databases }');
-			return this.mintDatabaseService.getMintDatabases();
+			return await this.mintDatabaseService.getMintDatabases();
 		} catch (error) {
 			throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
 		} 

@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 /* Vendor Dependencies */
 import sqlite3 from "sqlite3";
 const sqlite3d = require('sqlite3').verbose();
+import { DateTime } from 'luxon';
 /* Local Dependencies */
 import { 
   CashuMintBalance,
@@ -145,23 +146,38 @@ export class CashuMintDatabaseService {
   public async getMintAnalyticsBalances(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
     // Default interval is daily if not specified
     const interval = args?.interval || 'day';
+    // Default timezone to UTC if not specified
+    const timezone = args?.timezone || 'UTC';
+    
+    // Calculate timezone offset in seconds
+    const now = DateTime.now().setZone(timezone);
+    const offset_seconds = now.offset * 60; // Convert minutes to seconds
     
     // Build the date format string based on interval
     let date_format = '';
     let group_by = '';
     
+    // Apply timezone offset to unix timestamps before formatting
+    const applyOffset = (sqlFragment: string) => {
+      // Replace the 'unixepoch' with 'unixepoch', '+offset' to adjust for timezone
+      return sqlFragment.replace(
+        "'unixepoch'", 
+        `'unixepoch', '${offset_seconds > 0 ? '+' : ''}${offset_seconds} seconds'`
+      );
+    };
+    
     switch(interval) {
       case 'day':
-        date_format = "strftime('%s', DATE(mq.created_time, 'unixepoch', 'localtime'))";
-        group_by = "DATE(mq.created_time, 'unixepoch', 'localtime')";
+        date_format = applyOffset("strftime('%s', DATE(mq.created_time, 'unixepoch'))");
+        group_by = applyOffset("DATE(mq.created_time, 'unixepoch')");
         break;
       case 'week':
-        date_format = "strftime('%s', DATE(mq.created_time, 'unixepoch', 'localtime', 'weekday 0', '-6 days'))";
-        group_by = "DATE(mq.created_time, 'unixepoch', 'localtime', 'weekday 0', '-6 days')";
+        date_format = applyOffset("strftime('%s', DATE(mq.created_time, 'unixepoch', 'weekday 0', '-6 days'))");
+        group_by = applyOffset("DATE(mq.created_time, 'unixepoch', 'weekday 0', '-6 days')");
         break;
       case 'month':
-        date_format = "strftime('%s', DATE(mq.created_time, 'unixepoch', 'localtime', 'start of month'))";
-        group_by = "strftime('%Y-%m', DATETIME(mq.created_time, 'unixepoch', 'localtime'))";
+        date_format = applyOffset("strftime('%s', DATE(mq.created_time, 'unixepoch', 'start of month'))");
+        group_by = applyOffset("strftime('%Y-%m', DATETIME(mq.created_time, 'unixepoch'))");
         break;
     }
     
@@ -190,6 +206,9 @@ export class CashuMintDatabaseService {
       ? `WHERE ${where_conditions.join(' AND ')}` 
       : '';
     
+    // Update the LEFT JOIN to use the same timezone formatting
+    const lq_date_format = applyOffset("DATE(lq.created_time, 'unixepoch')");
+    
     const sql = `SELECT 
       ${date_format} AS created_time,
       mq.unit,
@@ -198,7 +217,7 @@ export class CashuMintDatabaseService {
       COUNT(mq.quote) + COUNT(lq.quote) AS operation_count
     FROM 
       mint_quotes mq
-      LEFT JOIN melt_quotes lq ON ${group_by} = DATE(lq.created_time, 'unixepoch', 'localtime')
+      LEFT JOIN melt_quotes lq ON ${group_by} = ${lq_date_format}
       ${where_clause}
     GROUP BY 
       ${group_by}, mq.unit;`;
@@ -206,7 +225,18 @@ export class CashuMintDatabaseService {
     return new Promise((resolve, reject) => {
       db.all(sql, params, (err, rows:CashuMintAnalytics[]) => {
         if (err) reject(err);
-        resolve(rows);
+        
+        // Post-process the results to ensure proper timezone handling
+        const processed_rows = rows.map(row => {
+          // Convert the timestamp to a DateTime object in the specified timezone
+          if (row.created_time) {
+            const dt = DateTime.fromSeconds(Number(row.created_time)).setZone(timezone);
+            row.created_time = dt.toSeconds().toString();
+          }
+          return row;
+        });
+        
+        resolve(processed_rows);
       });
     });
   }
