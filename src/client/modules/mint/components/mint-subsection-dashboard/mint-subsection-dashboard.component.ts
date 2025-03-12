@@ -99,7 +99,6 @@ export class MintSubsectionDashboardComponent implements OnInit {
 
 	private getSelectedDateStart(timezone: string): number {
 		const three_months_ago = DateTime.now()
-			.setZone(timezone)
 			.minus({ months: 3 })
 			.startOf('day');
 		const three_months_ago_timestamp = Math.floor(three_months_ago.toSeconds());
@@ -108,7 +107,6 @@ export class MintSubsectionDashboardComponent implements OnInit {
 
 	private getSelectedDateEnd(timezone: string): number {
 		const today = DateTime.now()
-			.setZone(timezone)
 			.endOf('day');
 		return Math.floor(today.toSeconds());
 	}

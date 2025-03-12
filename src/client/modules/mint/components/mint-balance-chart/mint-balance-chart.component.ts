@@ -175,7 +175,6 @@ export class MintBalanceChartComponent implements OnChanges {
 					callback: (value: any) => {
 						// Convert timestamp to DateTime with proper timezone
 						return DateTime.fromMillis(value)
-							.setZone(this.timezone)
 							.toFormat('MMM d');
 					}
 				}
@@ -224,8 +223,6 @@ export class MintBalanceChartComponent implements OnChanges {
 							if (tooltipItems.length > 0) {
 								// Use Luxon to properly handle the date with timezone and locale
 								return DateTime.fromMillis(tooltipItems[0].parsed.x)
-									.setZone(this.timezone)
-									.setLocale(this.locale)
 									.toLocaleString({
 										year: 'numeric',
 										month: 'short',
