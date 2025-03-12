@@ -240,4 +240,88 @@ export class CashuMintDatabaseService {
       });
     });
   }
+
+  public async getMintAnalyticsBalanceSum(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
+    const timezone = args?.timezone || 'UTC';
+    const start_date = args?.date_start || 0;
+    const end_date = args?.date_end || Math.floor(Date.now() / 1000); // Default to current time if not specified
+    const units = args?.units || [];
+    
+    // Calculate timezone offset in seconds
+    const now = DateTime.now().setZone(timezone);
+    const offset_seconds = now.offset * 60; // Convert minutes to seconds
+    
+    // Apply timezone offset to unix timestamps
+    const applyOffset = (sqlFragment: string) => {
+      return sqlFragment.replace(
+        "'unixepoch'", 
+        `'unixepoch', '${offset_seconds > 0 ? '+' : ''}${offset_seconds} seconds'`
+      );
+    };
+    
+    // Get current timestamp with timezone adjustment
+    const current_time = applyOffset("strftime('%s', 'now', 'unixepoch')");
+
+    // Build the SQL query to calculate total balance for each unit
+    const sql = `SELECT 
+      ${current_time} AS created_time,
+      unit,
+      SUM(CASE WHEN state = 'ISSUED' THEN amount ELSE 0 END) - 
+      SUM(CASE WHEN state = 'PAID' THEN amount ELSE 0 END) AS amount,
+      COUNT(quote) AS operation_count
+    FROM (
+      SELECT 
+        unit, 
+        state, 
+        amount, 
+        quote 
+      FROM 
+        mint_quotes 
+      WHERE 
+        created_time >= ? AND created_time <= ?
+        ${units.length > 0 ? `AND unit IN (${units.map(() => '?').join(',')})` : ''}
+      UNION ALL
+      SELECT 
+        unit, 
+        state, 
+        amount, 
+        quote 
+      FROM 
+        melt_quotes 
+      WHERE 
+        created_time >= ? AND created_time <= ?
+        ${units.length > 0 ? `AND unit IN (${units.map(() => '?').join(',')})` : ''}
+    )
+    GROUP BY unit;`;
+
+    // Prepare parameters for the query
+    const params:any[] = [start_date, end_date];
+    if (units.length > 0) {
+      params.push(...units.map(unit => String(unit)));
+    }
+    // Add parameters for the melt_quotes part of the query
+    params.push(start_date, end_date);
+    if (units.length > 0) {
+      params.push(...units.map(unit => String(unit)));
+    }
+
+    return new Promise((resolve, reject) => {
+      db.all(sql, params, (err, rows:CashuMintAnalytics[]) => {
+        if (err) reject(err);
+        
+        // Post-process the results to ensure proper timezone handling
+        const processed_rows = rows.map(row => {
+          // Convert the timestamp to a DateTime object in the specified timezone
+          if (row.created_time) {
+            const dt = DateTime.fromSeconds(Number(row.created_time)).setZone(timezone);
+            row.created_time = dt.toSeconds().toString();
+          }
+          return row;
+        });
+        
+        resolve(processed_rows);
+      });
+    });
+  }
+  
 }

@@ -163,6 +163,7 @@ type OrchardStatus {
 }
 
 type Query {
+  mint_analytics_balance_sum(date_end: UnixTimestamp, date_start: UnixTimestamp, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
   mint_analytics_balances(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
   mint_balances: [OrchardMintBalance!]!
   mint_balances_issued: [OrchardMintBalance!]!
