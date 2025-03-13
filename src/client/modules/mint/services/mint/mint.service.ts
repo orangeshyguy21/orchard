@@ -13,6 +13,8 @@ import { MintBalance } from '@client/modules/mint/classes/mint-balance.class';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 import { MintPromise } from '@client/modules/mint/classes/mint-promise.class';
 import { MintAnalytic } from '@client/modules/mint/classes/mint-analytic.class';
+/* Shared Dependencies */
+import { MintAnalyticsInterval } from '@shared/generated.types';
 /* Local Dependencies */
 import { MINT_INFO_QUERY, MINT_BALANCES_QUERY, MINT_KEYSETS_QUERY, MINT_PROMISES_QUERY, MINT_ANALYTICS_BALANCES_QUERY } from './mint.queries';
 
@@ -28,6 +30,7 @@ export class MintService {
 		MINT_KEYSETS: 'mint-keysets',
 		MINT_PROMISES: 'mint-promises',
 		MINT_ANALYTICS_BALANCES: 'mint-analytics-balances',
+		MINT_ANALYTICS_PRE_BALANCES: 'mint-analytics-pre-balances',
 	};
 
 	private readonly CACHE_DURATIONS = {
@@ -36,6 +39,7 @@ export class MintService {
 		[this.CACHE_KEYS.MINT_KEYSETS]: 30 * 60 * 1000, // 30 minutes
 		[this.CACHE_KEYS.MINT_PROMISES]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.MINT_ANALYTICS_BALANCES]: 5 * 60 * 1000, // 5 minutes
+		[this.CACHE_KEYS.MINT_ANALYTICS_PRE_BALANCES]: 5 * 60 * 1000, // 5 minutes
 	};
 
 	/* Subjects for caching */
@@ -43,7 +47,9 @@ export class MintService {
 	private readonly mint_balances_subject: BehaviorSubject<MintBalance[] | null>;
 	private readonly mint_keysets_subject: BehaviorSubject<MintKeyset[] | null>;
 	private readonly mint_promises_subject: BehaviorSubject<MintPromise[] | null>;
+
 	private readonly mint_analytics_balances_subject: BehaviorSubject<MintAnalytic[] | null>;
+	private readonly mint_analytics_pre_balances_subject: BehaviorSubject<MintAnalytic[] | null>;
 
 	/* Observables for caching (rapid request caching) */
 	private mint_info_observable!: Observable<MintInfo> | null;
@@ -71,6 +77,10 @@ export class MintService {
 		this.mint_analytics_balances_subject = this.cache.createCache<MintAnalytic[]>(
 			this.CACHE_KEYS.MINT_ANALYTICS_BALANCES,
 			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_ANALYTICS_BALANCES]
+		);
+		this.mint_analytics_pre_balances_subject = this.cache.createCache<MintAnalytic[]>(
+			this.CACHE_KEYS.MINT_ANALYTICS_PRE_BALANCES,
+			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_ANALYTICS_PRE_BALANCES]
 		);
 	}
 
@@ -160,9 +170,17 @@ export class MintService {
 		);
 	}
 
-	public loadMintAnalyticsBalances(args:MintAnalyticsArgs): Observable<MintAnalytic[]> {
-		if (this.mint_analytics_balances_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.MINT_ANALYTICS_BALANCES)) {
-			return of(this.mint_analytics_balances_subject.value);
+	public loadMintAnalyticsBalances(args:MintAnalyticsArgs) {
+		if( args.interval === MintAnalyticsInterval.Custom ) {
+			return this.loadGenericMintAnalyticsBalances(args, this.mint_analytics_pre_balances_subject.value, this.CACHE_KEYS.MINT_ANALYTICS_PRE_BALANCES);
+		}else{
+			return this.loadGenericMintAnalyticsBalances(args, this.mint_analytics_balances_subject.value, this.CACHE_KEYS.MINT_ANALYTICS_BALANCES);
+		}
+	}
+
+	private loadGenericMintAnalyticsBalances(args:MintAnalyticsArgs, subject_value:MintAnalytic[] | null, cache_key:string): Observable<MintAnalytic[]> {
+		if (subject_value && this.cache.isCacheValid(cache_key)) {
+			return of(subject_value);
 		}
 
 		const query = getApiQuery(MINT_ANALYTICS_BALANCES_QUERY, args);
@@ -171,7 +189,7 @@ export class MintService {
 			map((response) => response.data.mint_analytics_balances),
 			map((mint_analytics_balances) => mint_analytics_balances.map((mint_analytic) => new MintAnalytic(mint_analytic))),
 			tap((mint_analytics_balances) => {
-				this.cache.updateCache(this.CACHE_KEYS.MINT_ANALYTICS_BALANCES, mint_analytics_balances);
+				this.cache.updateCache(cache_key, mint_analytics_balances);
 			}),
 			catchError((error) => {
 				console.error('Error loading mint analytics balances:', error);

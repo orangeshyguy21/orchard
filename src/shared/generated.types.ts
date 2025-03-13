@@ -19,6 +19,7 @@ export type Scalars = {
 };
 
 export enum MintAnalyticsInterval {
+  Custom = 'custom',
   Day = 'day',
   Month = 'month',
   Week = 'week'

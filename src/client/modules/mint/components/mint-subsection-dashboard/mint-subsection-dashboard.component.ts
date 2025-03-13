@@ -51,12 +51,11 @@ export class MintSubsectionDashboardComponent implements OnInit {
 
 	async ngOnInit(): Promise<void> {
 		try {
-			const timezone = this.settingService.getTimezone();
 			await this.loadStaticData();
 			this.mint_genesis_time = this.getMintGenesisTime();
 			this.selected_units = this.getSelectedUnits();
-			this.selected_date_start = this.getSelectedDateStart(timezone);
-			this.selected_date_end = this.getSelectedDateEnd(timezone);
+			this.selected_date_start = this.getSelectedDateStart();
+			this.selected_date_end = this.getSelectedDateEnd();
 			this.loading_static_data = false;
 			this.changeDetectorRef.detectChanges();
 			await this.loadMintAnalyticsBalances();
@@ -82,14 +81,27 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	}
 
 	private async loadMintAnalyticsBalances(): Promise<void> {
-		const timezone = await this.settingService.getTimezone();
-		const analytics_balances = await lastValueFrom(this.mintService.loadMintAnalyticsBalances({
+		const timezone = this.settingService.getTimezone();
+		const analytics_balances_obs = this.mintService.loadMintAnalyticsBalances({
 			units: this.selected_units,
 			date_start: this.selected_date_start,
 			date_end: this.selected_date_end,
 			interval: this.selected_interval,
 			timezone: timezone
-		}));
+		});
+		const preceeding_sums_obs = this.mintService.loadMintAnalyticsBalances({
+			units: this.selected_units,
+			date_start: 100000,
+			date_end: this.selected_date_start-1,
+			interval: MintAnalyticsInterval.Custom,
+			timezone: timezone
+		});
+		const [analytics_balances, preceeding_sums] = await lastValueFrom(
+			forkJoin([analytics_balances_obs, preceeding_sums_obs])
+		);
+
+		console.log('preceeding_sums', preceeding_sums);
+
 		this.mint_analytics_balances = analytics_balances;
 	}
 
@@ -97,17 +109,14 @@ export class MintSubsectionDashboardComponent implements OnInit {
 		return this.mint_keysets.map(keyset => keyset.unit);
 	}
 
-	private getSelectedDateStart(timezone: string): number {
-		const three_months_ago = DateTime.now()
-			.minus({ months: 3 })
-			.startOf('day');
+	private getSelectedDateStart(): number {
+		const three_months_ago = DateTime.now().minus({ months: 3 }).startOf('day');
 		const three_months_ago_timestamp = Math.floor(three_months_ago.toSeconds());
 		return Math.max(three_months_ago_timestamp, this.mint_genesis_time);
 	}
 
-	private getSelectedDateEnd(timezone: string): number {
-		const today = DateTime.now()
-			.endOf('day');
+	private getSelectedDateEnd(): number {
+		const today = DateTime.now().endOf('day');
 		return Math.floor(today.toSeconds());
 	}
 

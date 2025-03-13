@@ -148,14 +148,12 @@ export class CashuMintDatabaseService {
     const interval = args?.interval || 'day';
     // Default timezone to UTC if not specified
     const timezone = args?.timezone || 'UTC';
+
+    console.log('getMintAnalyticsBalances', args);
     
     // Calculate timezone offset in seconds
     const now = DateTime.now().setZone(timezone);
     const offset_seconds = now.offset * 60; // Convert minutes to seconds
-    
-    // Build the date format string based on interval
-    let date_format = '';
-    let group_by = '';
     
     // Apply timezone offset to unix timestamps before formatting
     const applyOffset = (sqlFragment: string) => {
@@ -165,21 +163,6 @@ export class CashuMintDatabaseService {
         `'unixepoch', '${offset_seconds > 0 ? '+' : ''}${offset_seconds} seconds'`
       );
     };
-    
-    switch(interval) {
-      case 'day':
-        date_format = applyOffset("strftime('%s', DATE(mq.created_time, 'unixepoch'))");
-        group_by = applyOffset("DATE(mq.created_time, 'unixepoch')");
-        break;
-      case 'week':
-        date_format = applyOffset("strftime('%s', DATE(mq.created_time, 'unixepoch', 'weekday 0', '-6 days'))");
-        group_by = applyOffset("DATE(mq.created_time, 'unixepoch', 'weekday 0', '-6 days')");
-        break;
-      case 'month':
-        date_format = applyOffset("strftime('%s', DATE(mq.created_time, 'unixepoch', 'start of month'))");
-        group_by = applyOffset("strftime('%Y-%m', DATETIME(mq.created_time, 'unixepoch'))");
-        break;
-    }
     
     // Build WHERE clause conditions
     const where_conditions = [];
@@ -206,8 +189,38 @@ export class CashuMintDatabaseService {
       ? `WHERE ${where_conditions.join(' AND ')}` 
       : '';
     
-    // Update the LEFT JOIN to use the same timezone formatting
-    const lq_date_format = applyOffset("DATE(lq.created_time, 'unixepoch')");
+    // Build the date format string based on interval
+    let date_format = '';
+    let group_by = '';
+    
+    switch(interval) {
+      case 'day':
+        date_format = applyOffset("strftime('%s', DATE(mq.created_time, 'unixepoch'))");
+        group_by = applyOffset("DATE(mq.created_time, 'unixepoch')");
+        break;
+      case 'week':
+        date_format = applyOffset("strftime('%s', DATE(mq.created_time, 'unixepoch', 'weekday 0', '-6 days'))");
+        group_by = applyOffset("DATE(mq.created_time, 'unixepoch', 'weekday 0', '-6 days')");
+        break;
+      case 'month':
+        date_format = applyOffset("strftime('%s', DATE(mq.created_time, 'unixepoch', 'start of month'))");
+        group_by = applyOffset("strftime('%Y-%m', DATETIME(mq.created_time, 'unixepoch'))");
+        break;
+      case 'custom':
+        date_format = applyOffset("strftime('%s', DATE(mq.created_time, 'unixepoch'))");
+        group_by = "mq.unit"; // Only group by unit, not by date
+        break;
+    }
+    
+    // Update the LEFT JOIN to use the same timezone formatting for non-custom intervals
+    let lq_join_condition = '';
+    
+    if (interval === 'custom') {
+      lq_join_condition = "lq.unit = mq.unit";
+    } else {
+      const lq_date_format = applyOffset("DATE(lq.created_time, 'unixepoch')");
+      lq_join_condition = `${group_by} = ${lq_date_format} AND lq.unit = mq.unit`;
+    }
     
     const sql = `SELECT 
       ${date_format} AS created_time,
@@ -217,10 +230,10 @@ export class CashuMintDatabaseService {
       COUNT(mq.quote) + COUNT(lq.quote) AS operation_count
     FROM 
       mint_quotes mq
-      LEFT JOIN melt_quotes lq ON ${group_by} = ${lq_date_format}
+      LEFT JOIN melt_quotes lq ON ${lq_join_condition}
       ${where_clause}
     GROUP BY 
-      ${group_by}, mq.unit;`;
+      ${interval === 'custom' ? 'mq.unit' : `${group_by}, mq.unit`};`;
 
     return new Promise((resolve, reject) => {
       db.all(sql, params, (err, rows:CashuMintAnalytics[]) => {
@@ -240,88 +253,4 @@ export class CashuMintDatabaseService {
       });
     });
   }
-
-  public async getMintAnalyticsBalanceSum(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
-    const timezone = args?.timezone || 'UTC';
-    const start_date = args?.date_start || 0;
-    const end_date = args?.date_end || Math.floor(Date.now() / 1000); // Default to current time if not specified
-    const units = args?.units || [];
-    
-    // Calculate timezone offset in seconds
-    const now = DateTime.now().setZone(timezone);
-    const offset_seconds = now.offset * 60; // Convert minutes to seconds
-    
-    // Apply timezone offset to unix timestamps
-    const applyOffset = (sqlFragment: string) => {
-      return sqlFragment.replace(
-        "'unixepoch'", 
-        `'unixepoch', '${offset_seconds > 0 ? '+' : ''}${offset_seconds} seconds'`
-      );
-    };
-    
-    // Get current timestamp with timezone adjustment
-    const current_time = applyOffset("strftime('%s', 'now', 'unixepoch')");
-
-    // Build the SQL query to calculate total balance for each unit
-    const sql = `SELECT 
-      ${current_time} AS created_time,
-      unit,
-      SUM(CASE WHEN state = 'ISSUED' THEN amount ELSE 0 END) - 
-      SUM(CASE WHEN state = 'PAID' THEN amount ELSE 0 END) AS amount,
-      COUNT(quote) AS operation_count
-    FROM (
-      SELECT 
-        unit, 
-        state, 
-        amount, 
-        quote 
-      FROM 
-        mint_quotes 
-      WHERE 
-        created_time >= ? AND created_time <= ?
-        ${units.length > 0 ? `AND unit IN (${units.map(() => '?').join(',')})` : ''}
-      UNION ALL
-      SELECT 
-        unit, 
-        state, 
-        amount, 
-        quote 
-      FROM 
-        melt_quotes 
-      WHERE 
-        created_time >= ? AND created_time <= ?
-        ${units.length > 0 ? `AND unit IN (${units.map(() => '?').join(',')})` : ''}
-    )
-    GROUP BY unit;`;
-
-    // Prepare parameters for the query
-    const params:any[] = [start_date, end_date];
-    if (units.length > 0) {
-      params.push(...units.map(unit => String(unit)));
-    }
-    // Add parameters for the melt_quotes part of the query
-    params.push(start_date, end_date);
-    if (units.length > 0) {
-      params.push(...units.map(unit => String(unit)));
-    }
-
-    return new Promise((resolve, reject) => {
-      db.all(sql, params, (err, rows:CashuMintAnalytics[]) => {
-        if (err) reject(err);
-        
-        // Post-process the results to ensure proper timezone handling
-        const processed_rows = rows.map(row => {
-          // Convert the timestamp to a DateTime object in the specified timezone
-          if (row.created_time) {
-            const dt = DateTime.fromSeconds(Number(row.created_time)).setZone(timezone);
-            row.created_time = dt.toSeconds().toString();
-          }
-          return row;
-        });
-        
-        resolve(processed_rows);
-      });
-    });
-  }
-  
 }

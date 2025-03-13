@@ -158,7 +158,7 @@ export class MintBalanceChartComponent implements OnChanges {
 		// Create scales configuration
 		const scales_config: any = {
 			x: {
-				type: 'timeseries',
+				type: 'time',
 				time: {
 					unit: 'day',
 					displayFormats: {
@@ -172,12 +172,15 @@ export class MintBalanceChartComponent implements OnChanges {
 					}
 				},
 				ticks: {
+					source: 'data',
 					callback: (value: any) => {
 						// Convert timestamp to DateTime with proper timezone
 						return DateTime.fromMillis(value)
 							.toFormat('MMM d');
 					}
-				}
+				},
+				distribution: 'linear',
+				bounds: 'data'
 			},
 			y: {
 				position: 'left',
@@ -251,3 +254,12 @@ export class MintBalanceChartComponent implements OnChanges {
 		};
 	}
 }
+
+
+
+// SUM (promises) - SUM (proofs used) = balance
+
+
+
+
+
