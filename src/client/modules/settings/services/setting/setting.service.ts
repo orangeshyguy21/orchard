@@ -18,15 +18,18 @@ export class SettingService {
 	) { }
 
 	public getLocale(): string {
-		return this.localStorageService.getLocale().code ?? Intl.DateTimeFormat().resolvedOptions().locale;
+		const system_locale = Intl.DateTimeFormat().resolvedOptions().locale;
+		return this.localStorageService.getLocale().code ?? system_locale;
 	}
 
 	public getTimezone(): string {
-		return this.localStorageService.getTimezone().tz ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+		const system_timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+		return this.localStorageService.getTimezone().tz ?? system_timezone;
 	}
 
-	public getTheme(): ThemeType | null {
-		return this.localStorageService.getTheme().type ?? null;
+	public getTheme(): ThemeType {
+		const system_theme = window.matchMedia('(prefers-color-scheme: light)').matches;
+		return this.localStorageService.getTheme().type ?? system_theme ? ThemeType.LIGHT_MODE : ThemeType.DARK_MODE;
 	}
 
 	public init(): void {

@@ -2,11 +2,15 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, ViewChild, ChangeDetectorRef } from '@angular/core';
 /* Vendor Dependencies */
 import { BaseChartDirective } from 'ng2-charts';
-import { ChartConfiguration, ChartEvent, ChartType } from 'chart.js';
+import { ChartConfiguration } from 'chart.js';
 import { DateTime } from 'luxon';
 /* Application Dependencies */
-import { MintAnalytic } from '@client/modules/mint/classes/mint-analytic.class';
 import { groupAnalyticsByUnit, addPreceedingData } from '@client/modules/chart/helpers/mint-chart.helpers';
+import { ChartService } from '@client/modules/chart/services/chart/chart.service';
+import { AmountPipe } from '@client/modules/local/pipes/amount/amount.pipe';
+/* Native Dependencies */
+import { MintAnalytic } from '@client/modules/mint/classes/mint-analytic.class';
+
 
 @Component({
 	selector: 'orc-mint-balance-chart',
@@ -28,6 +32,7 @@ export class MintBalanceChartComponent implements OnChanges {
 	public chart_options!: ChartConfiguration['options'];
 
 	constructor(
+		private chartService: ChartService,
 		private changeDetectorRef: ChangeDetectorRef
 	) { }
 
@@ -73,37 +78,12 @@ export class MintBalanceChartComponent implements OnChanges {
 
 			console.log('unit', unit, 'timestamp_to_amount', timestamp_to_amount);
 
-			// Use asset-specific colors from token.scss
-			const asset_colors: Record<string, { bg: string, border: string }> = {
-				'sat': { 
-					bg: 'rgba(247, 147, 26, 0.3)', 
-					border: 'rgb(247, 147, 26)' 
-				},
-				'usd': { 
-					bg: 'rgba(132, 176, 141, 0.3)', 
-					border: 'rgb(132, 176, 141)' 
-				},
-				'eur': { 
-					bg: 'rgba(138, 170, 216, 0.3)', 
-					border: 'rgb(138, 170, 216)' 
-				},
-			};
-
-			// Fallback colors if the unit doesn't match known assets
-			const fallback_colors = [
-				{ bg: 'rgba(54, 162, 235, 0.3)', border: 'rgb(54, 162, 235)' },
-				{ bg: 'rgba(255, 99, 132, 0.3)', border: 'rgb(255, 99, 132)' },
-				{ bg: 'rgba(75, 192, 192, 0.3)', border: 'rgb(75, 192, 192)' }
-			];
-
-			// Get color based on unit or use fallback
-			const unit_lower = unit.toLowerCase();
-			const color = asset_colors[unit_lower] || fallback_colors[index % fallback_colors.length];
+			const color = this.chartService.getAssetColor(unit, index);
 
 			// Calculate cumulative sum for each timestamp
 			let running_sum = 0;
 			const cumulative_data = all_timestamps.map(timestamp => {
-				running_sum += timestamp_to_amount[timestamp] || 0;
+				running_sum += AmountPipe.getConvertedAmount(unit, timestamp_to_amount[timestamp] || 0);
 				return {
 					x: Number(timestamp) * 1000,
 					y: running_sum

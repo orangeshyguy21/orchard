@@ -7,6 +7,7 @@ import QRCodeStyling, { DotType, CornerSquareType } from 'qr-code-styling';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 /* Application Dependencies */
 import { ThemeService } from '@client/modules/settings/services/theme/theme.service';
+import { ThemeType } from '@client/modules/cache/services/local-storage/local-storage.types';
 
 
 @Component({
@@ -50,9 +51,9 @@ export class MintQrcodeDialogComponent implements OnInit {
 	}
 
 	private initQR(): void {
-		let themeless_primary_color = this.themeService.extractThemeColor(this.data.primary_color, 'dark');
-		let themeless_corder_dot_color = this.themeService.extractThemeColor(this.data.corder_dot_color, 'dark');
-		let themeless_bg = this.themeService.getThemeColor('--mat-sys-on-secondary-container', 'dark');
+		let themeless_primary_color = this.themeService.extractThemeColor(this.data.primary_color, ThemeType.DARK_MODE);
+		let themeless_corder_dot_color = this.themeService.extractThemeColor(this.data.corder_dot_color, ThemeType.DARK_MODE);
+		let themeless_bg = this.themeService.getThemeColor('--mat-sys-on-secondary-container', ThemeType.DARK_MODE);
 
 		this.qr_code = new QRCodeStyling({
 			width: 395,

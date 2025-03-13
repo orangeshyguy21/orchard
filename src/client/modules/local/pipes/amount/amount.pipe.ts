@@ -47,7 +47,7 @@ export class AmountPipe implements PipeTransform {
 
 	private transformFiat(amount: number, unit: string, locale: string, section?: string): string {
 		let fiat_amount = amount;
-		if( section === 'mint' ) fiat_amount = amount/100;
+		if( section === 'mint' ) fiat_amount = AmountPipe.getConvertedAmount(unit, amount);
 		const fiat_amount_string = fiat_amount.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 		const suffix = unit.toUpperCase();
 		return this.transformToHtml(fiat_amount_string, suffix);
@@ -64,5 +64,20 @@ export class AmountPipe implements PipeTransform {
 				</span>
 			</span>
 		`;
+	}
+
+	public static getConvertedAmount(unit: string, amount: number): number {
+		switch (unit.toLowerCase()) {
+			case 'sat':
+				return amount;
+			case 'btc':
+				return amount;
+			case 'usd':
+				return amount/100;
+			case 'eur':
+				return amount/100;
+			default:
+				return amount;
+		}
 	}
 }
