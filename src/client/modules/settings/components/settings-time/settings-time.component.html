@@ -3,8 +3,16 @@
     <mat-card appearance="outlined">
         <mat-card-content>
             <div class="p-1 flex flex-column flex-gap-1">
-                <orc-settings-time-timezone></orc-settings-time-timezone>
-                <orc-settings-time-locale></orc-settings-time-locale>
+                <orc-settings-time-timezone
+					[timezone]="timezone"
+					[loading]="loading"
+                    (timezoneChange)="timezoneChange.emit($event)">
+				</orc-settings-time-timezone>
+                <orc-settings-time-locale
+					[locale]="locale"
+					[loading]="loading"
+                    (localeChange)="localeChange.emit($event)">
+				</orc-settings-time-locale>
             </div>
         </mat-card-content>
     </mat-card>
