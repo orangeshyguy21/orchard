@@ -7,7 +7,6 @@ import { LocalStorageService } from '@client/modules/cache/services/local-storag
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 import { Locale, Timezone } from '@client/modules/cache/services/local-storage/local-storage.types';
 
-
 @Component({
 	selector: 'orc-settings-section',
 	standalone: false,

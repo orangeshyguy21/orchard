@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import { Injectable } from '@angular/core';
 /* Local Dependencies */
-import { Timezone, Locale } from './local-storage.types';
+import { Timezone, Locale, MintAnalytics } from './local-storage.types';
 
 @Injectable({
   	providedIn: 'root'
@@ -9,8 +9,11 @@ import { Timezone, Locale } from './local-storage.types';
 export class LocalStorageService {
 
 	private readonly STORAGE_KEYS = {
+		/* User Settings */
 		TIMEZONE_KEY: 'v0.setting.timezone',
 		LOCALE_KEY: 'v0.setting.locale',
+		/* Mint Dashboard */
+		MINT_ANALYTICS_KEY: 'v0.mint.analytics',
 	};
 
   	constructor() { }
@@ -61,6 +64,9 @@ export class LocalStorageService {
 	}
 	setLocale(locale: Locale): void {
 		this.setItem(this.STORAGE_KEYS.LOCALE_KEY, locale);
+	}
+	setMintAnalytics(mintAnalytics: MintAnalytics): void {
+		this.setItem(this.STORAGE_KEYS.MINT_ANALYTICS_KEY, mintAnalytics);
 	}
   
 	/**

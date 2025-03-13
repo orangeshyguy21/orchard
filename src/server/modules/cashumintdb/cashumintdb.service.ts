@@ -207,7 +207,7 @@ export class CashuMintDatabaseService {
         group_by = applyOffset("strftime('%Y-%m', DATETIME(mq.created_time, 'unixepoch'))");
         break;
       case 'custom':
-        date_format = applyOffset("strftime('%s', DATE(mq.created_time, 'unixepoch'))");
+        date_format = applyOffset(`strftime('%s', DATE(${args.date_end} + 1, 'unixepoch'))`);
         group_by = "mq.unit"; // Only group by unit, not by date
         break;
     }

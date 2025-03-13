@@ -1,12 +1,12 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, OnInit, OnChanges, SimpleChanges, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, ViewChild, ChangeDetectorRef } from '@angular/core';
 /* Vendor Dependencies */
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartEvent, ChartType } from 'chart.js';
 import { DateTime } from 'luxon';
 /* Application Dependencies */
-import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 import { MintAnalytic } from '@client/modules/mint/classes/mint-analytic.class';
+import { groupAnalyticsByUnit, addPreceedingData } from '@client/modules/chart/helpers/mint-chart.helpers';
 
 @Component({
 	selector: 'orc-mint-balance-chart',
@@ -19,20 +19,17 @@ export class MintBalanceChartComponent implements OnChanges {
 
 	@ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
-	@Input() public analytic_balances!: MintAnalytic[];
+	@Input() public locale!: string;
+	@Input() public mint_balances!: MintAnalytic[];
+	@Input() public mint_balances_preceeding!: MintAnalytic[];
 	@Input() public loading!: boolean;
 
 	public chart_data!: ChartConfiguration['data'];
 	public chart_options!: ChartConfiguration['options'];
 
-	private locale!: string;
-	private timezone!: string;
-
 	constructor(
-		private settingService: SettingService,
 		private changeDetectorRef: ChangeDetectorRef
 	) { }
-
 
 	public ngOnChanges(changes: SimpleChanges): void {
 		if(changes['loading'] && this.loading === false) {
@@ -41,10 +38,6 @@ export class MintBalanceChartComponent implements OnChanges {
 	}
 
 	private async init(): Promise<void> {
-		// should probably check if data is available
-		this.locale = await this.settingService.getLocale();
-		this.timezone = await this.settingService.getTimezone();
-		console.log('TIMEZONE', this.timezone);
 		this.chart_data = this.getChartData();
 		this.chart_options = this.getChartOptions();
 		this.changeDetectorRef.detectChanges();
@@ -57,32 +50,28 @@ export class MintBalanceChartComponent implements OnChanges {
 	}
 
 	private getChartData(): ChartConfiguration['data'] {
-		if (!this.analytic_balances || this.analytic_balances.length === 0) {
+		if (!this.mint_balances || this.mint_balances.length === 0) {
 			return {
 				datasets: [],
-				labels: []
 			};
 		}
-
+		// Combine the balances and the preceding data for unique timestamps
+		const all_analytics = this.mint_balances.concat(this.mint_balances_preceeding);
 		// Group data by unit
-		const grouped_by_unit = this.analytic_balances.reduce((acc, item) => {
-			if (!acc[item.unit]) {
-				acc[item.unit] = [];
-			}
-			acc[item.unit].push(item);
-			return acc;
-		}, {} as Record<string, MintAnalytic[]>);
-
+		const grouped_by_unit = groupAnalyticsByUnit(this.mint_balances);
+		// Add preceding data to the grouped data
+		const grouped_by_unit_summary = addPreceedingData(grouped_by_unit, this.mint_balances_preceeding);
 		// Get all unique timestamps and sort them
-		const all_timestamps = Array.from(new Set(this.analytic_balances.map(item => item.created_time))).sort();
-		
+		const all_timestamps = Array.from(new Set(all_analytics.map(item => item.created_time))).sort();
 		// Create datasets for each unit
-		const datasets = Object.entries(grouped_by_unit).map(([unit, data], index) => {
+		const datasets = Object.entries(grouped_by_unit_summary).map(([unit, data], index) => {
 			// Create a map of timestamp to amount for this unit
 			const timestamp_to_amount = data.reduce((acc, item) => {
 				acc[item.created_time] = item.amount;
 				return acc;
 			}, {} as Record<string, number>);
+
+			console.log('unit', unit, 'timestamp_to_amount', timestamp_to_amount);
 
 			// Use asset-specific colors from token.scss
 			const asset_colors: Record<string, { bg: string, border: string }> = {
@@ -139,21 +128,18 @@ export class MintBalanceChartComponent implements OnChanges {
 			};
 		});
 
-		console.log('datasets', datasets);
-
 		return {
 			datasets,
-			labels: [] // Not needed when using time scale with x/y point format
 		};
 	}
 
 	private getChartOptions(): ChartConfiguration['options'] {
-		if (!this.analytic_balances || this.analytic_balances.length === 0) {
+		if (!this.mint_balances || this.mint_balances.length === 0) {
 			return {};
 		}
 
 		// Get unique units for axis labels
-		const unique_units = Array.from(new Set(this.analytic_balances.map(item => item.unit)));
+		const unique_units = Array.from(new Set(this.mint_balances.map(item => item.unit)));
 		
 		// Create scales configuration
 		const scales_config: any = {
@@ -162,9 +148,9 @@ export class MintBalanceChartComponent implements OnChanges {
 				time: {
 					unit: 'day',
 					displayFormats: {
-						day: 'MMM d'
+						day: 'short'
 					},
-					tooltipFormat: 'MMM d, yyyy'
+					tooltipFormat: 'full'
 				},
 				adapters: {
 					date: {

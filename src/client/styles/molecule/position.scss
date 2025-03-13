@@ -6,6 +6,8 @@
     position: absolute;
 }
 
+
+
 /* Flexbox Definitions */
 .flex{
     display: flex;
@@ -47,6 +49,8 @@
     gap: 2rem;
 }
 
+
+
 /* Height Definitions */
 .h-0{
     height: 0;
@@ -85,6 +89,8 @@
 .h-min-0{
     min-height: 0;
 }
+
+
 
 /* Width Definitions */
 .w-0{
@@ -129,10 +135,14 @@
     min-width: 18rem;
 }
 
+
+
 /* Maximum Width Definitions */
 .w-max-36{
     max-width: 36rem;
 }
+
+
 
 /* Margin Definitions */
 .m-v-0-5{
@@ -148,6 +158,7 @@
 }
 
 
+
 /* Padding Definitions */
 .p-0-125{
     padding: 0.125rem;
@@ -158,7 +169,7 @@
 .p-1{
     padding: 1rem;
 }
-
+/* Padding Vertical Definitions */
 .p-v-0-5{
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
@@ -167,29 +178,35 @@
     padding-top: 1.5rem;
     padding-bottom: 1.5rem;
 }
-
+/* Padding Horizontal Definitions */
 .p-h-1{
     padding-left: 1rem;
     padding-right: 1rem;
 }
-
+/* Padding Top Definitions */
 .p-t-0-5{
     padding-top: 0.5rem;
 }
 .p-t-1{
     padding-top: 1rem;
 }
-
+/* Padding Bottom Definitions */
 .p-b-0-5{
     padding-bottom: 0.5rem;
 }
 .p-b-1{
     padding-bottom: 1rem;
 }
-
+/* Padding Left Definitions */
 .p-l-1{
     padding-left: 1rem;
 }
+/* Padding Right Definitions */
+.p-r-1{
+    padding-right: 1rem;
+}
+
+
 
 /* Absolute Position Definitions */
 .bottom-0{
@@ -213,11 +230,12 @@
     top: 50%;
 }
 
+
+
 /* Transform Definitions */
 .transform-translate-50-50 {
     transform: translate(-50%, 50%);
 }
-
 .transform-rotate-15 {
     transform: rotate(15deg);
 }

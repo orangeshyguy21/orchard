@@ -29,6 +29,7 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	public mint_balances: MintBalance[] = [];
 	public mint_keysets: MintKeyset[] = [];
 	public mint_analytics_balances: MintAnalytic[] = [];
+	public mint_analytics_balances_preceeding: MintAnalytic[] = [];
 
 	public loading_static_data: boolean = true;
 	public loading_dynamic_data: boolean = true;
@@ -39,6 +40,8 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	public selected_date_end!: number;
 	public selected_interval: MintAnalyticsInterval = MintAnalyticsInterval.Day;
 	public selected_type!: ChartType;
+
+	public locale!: string;
 
 	constructor(
 		private mintService: MintService,
@@ -52,6 +55,7 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	async ngOnInit(): Promise<void> {
 		try {
 			await this.loadStaticData();
+			this.locale = await this.settingService.getLocale();
 			this.mint_genesis_time = this.getMintGenesisTime();
 			this.selected_units = this.getSelectedUnits();
 			this.selected_date_start = this.getSelectedDateStart();
@@ -99,10 +103,8 @@ export class MintSubsectionDashboardComponent implements OnInit {
 		const [analytics_balances, preceeding_sums] = await lastValueFrom(
 			forkJoin([analytics_balances_obs, preceeding_sums_obs])
 		);
-
-		console.log('preceeding_sums', preceeding_sums);
-
 		this.mint_analytics_balances = analytics_balances;
+		this.mint_analytics_balances_preceeding = preceeding_sums;
 	}
 
 	private getSelectedUnits(): MintUnit[] {
@@ -132,7 +134,9 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	private async reloadDynamicData(): Promise<void> {
 		try {
 			const cache_key = this.mintService.CACHE_KEYS.MINT_ANALYTICS_BALANCES;
+			const cache_key_preceeding = this.mintService.CACHE_KEYS.MINT_ANALYTICS_PRE_BALANCES;
 			this.cacheService.clearCache(cache_key);
+			this.cacheService.clearCache(cache_key_preceeding);
 			this.loading_dynamic_data = true;
 			this.changeDetectorRef.detectChanges();
 			await this.loadMintAnalyticsBalances();
@@ -142,6 +146,8 @@ export class MintSubsectionDashboardComponent implements OnInit {
 			console.error('Error updating dynamic data:', error);
 		}
 	}
+
+	// 1741132800
 
 	public onDateChange(event: number[]): void {
 		this.selected_date_start = event[0];

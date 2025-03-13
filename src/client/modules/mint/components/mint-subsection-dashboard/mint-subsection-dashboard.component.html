@@ -34,7 +34,9 @@
 		<mat-card appearance="outlined" class="overflow-hidden">
 			<mat-card-content>	
 				<orc-mint-balance-chart
-					[analytic_balances]="mint_analytics_balances"
+					[locale]="locale"
+					[mint_balances]="mint_analytics_balances"
+					[mint_balances_preceeding]="mint_analytics_balances_preceeding"
 					[loading]="loading_dynamic_data">
 				</orc-mint-balance-chart>
 			</mat-card-content>
