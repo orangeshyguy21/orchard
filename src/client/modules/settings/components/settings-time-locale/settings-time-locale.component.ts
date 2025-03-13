@@ -6,8 +6,6 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 /* Application Dependencies */
-import { SettingService } from '../../services/setting/setting.service';
-import { LocalStorageService } from '@client/modules/cache/services/local-storage/local-storage.service';
 import { Locale } from '@client/modules/cache/services/local-storage/local-storage.types';
 /* Locale Dependencies */
 import { LocaleOption } from './settings-time-locale.types';
@@ -88,10 +86,7 @@ export class SettingsTimeLocaleComponent implements OnChanges {
 
 	private system_locale = Intl.DateTimeFormat().resolvedOptions().locale;
 
-	constructor(
-		public localStorageService: LocalStorageService,
-		public settingService: SettingService,
-	) { }
+	constructor() { }
 
 	ngOnChanges(changes: SimpleChanges): void {
 		if(changes['loading'] && this.loading === false) this.init();

@@ -1,13 +1,11 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, computed } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 /* Vendor Dependencies */
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 /* Application Dependencies */
-import { LocalStorageService } from '@client/modules/cache/services/local-storage/local-storage.service';
-import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 import { Timezone } from '@client/modules/cache/services/local-storage/local-storage.types';
 
 @Component({
@@ -38,10 +36,7 @@ export class SettingsTimeTimezoneComponent implements OnChanges {
 		return '';
 	});
 
-	constructor(
-		public localStorageService: LocalStorageService,
-		public settingService: SettingService,
-	) { }
+	constructor() { }
 
 	ngOnChanges(changes: SimpleChanges): void {
 		if(changes['loading'] && this.loading === false) this.init();

@@ -25,6 +25,11 @@ todo: timezone (UTC - local)
 			(localeChange)="onLocaleChange($event)"
 			(timezoneChange)="onTimezoneChange($event)">
 		</orc-settings-time>
+		<orc-settings-theme
+			[theme]="theme"
+			[loading]="loading"
+			(themeChange)="onThemeChange($event)">
+		</orc-settings-theme>
     </div>
 	
 </section>
