@@ -5,7 +5,7 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { DateTime } from 'luxon';
 /* Application Dependencies */
-import { groupAnalyticsByUnit, addPreceedingData } from '@client/modules/chart/helpers/mint-chart.helpers';
+import { groupAnalyticsByUnit, addPreceedingData, getDataOrgainizedByTimestamp, getCumulativeData } from '@client/modules/chart/helpers/mint-chart.helpers';
 import { ChartService } from '@client/modules/chart/services/chart/chart.service';
 import { AmountPipe } from '@client/modules/local/pipes/amount/amount.pipe';
 /* Native Dependencies */
@@ -26,6 +26,8 @@ export class MintBalanceChartComponent implements OnChanges {
 	@Input() public locale!: string;
 	@Input() public mint_balances!: MintAnalytic[];
 	@Input() public mint_balances_preceeding!: MintAnalytic[];
+	@Input() public selected_date_start!: number;
+	@Input() public selected_date_end!: number;
 	@Input() public loading!: boolean;
 
 	public chart_data!: ChartConfiguration['data'];
@@ -55,11 +57,9 @@ export class MintBalanceChartComponent implements OnChanges {
 	}
 
 	private getChartData(): ChartConfiguration['data'] {
-		if (!this.mint_balances || this.mint_balances.length === 0) {
-			return {
-				datasets: [],
-			};
-		}
+		if (!this.mint_balances || this.mint_balances.length === 0) return { datasets: [] };
+		const first_timestamp = DateTime.fromSeconds(this.selected_date_start).startOf('day').toSeconds().toString();
+		const last_timestamp = DateTime.fromSeconds(this.selected_date_end).startOf('day').toSeconds().toString();
 		// Combine the balances and the preceding data for unique timestamps
 		const all_analytics = this.mint_balances.concat(this.mint_balances_preceeding);
 		// Group data by unit
@@ -67,28 +67,16 @@ export class MintBalanceChartComponent implements OnChanges {
 		// Add preceding data to the grouped data
 		const grouped_by_unit_summary = addPreceedingData(grouped_by_unit, this.mint_balances_preceeding);
 		// Get all unique timestamps and sort them
-		const all_timestamps = Array.from(new Set(all_analytics.map(item => item.created_time))).sort();
+		const all_timestamps = all_analytics.map(item => item.created_time).concat([first_timestamp, last_timestamp]);
+		const unqiue_timestamps = Array.from(new Set(all_timestamps)).sort();
 		// Create datasets for each unit
 		const datasets = Object.entries(grouped_by_unit_summary).map(([unit, data], index) => {
 			// Create a map of timestamp to amount for this unit
-			const timestamp_to_amount = data.reduce((acc, item) => {
-				acc[item.created_time] = item.amount;
-				return acc;
-			}, {} as Record<string, number>);
-
-			console.log('unit', unit, 'timestamp_to_amount', timestamp_to_amount);
-
+			const timestamp_to_amount = getDataOrgainizedByTimestamp(data, first_timestamp, last_timestamp);
+			// get unit color
 			const color = this.chartService.getAssetColor(unit, index);
-
 			// Calculate cumulative sum for each timestamp
-			let running_sum = 0;
-			const cumulative_data = all_timestamps.map(timestamp => {
-				running_sum += AmountPipe.getConvertedAmount(unit, timestamp_to_amount[timestamp] || 0);
-				return {
-					x: Number(timestamp) * 1000,
-					y: running_sum
-				};
-			});
+			const cumulative_data = getCumulativeData(unqiue_timestamps, timestamp_to_amount, unit);
 
 			return {
 				data: cumulative_data,
@@ -96,8 +84,8 @@ export class MintBalanceChartComponent implements OnChanges {
 				backgroundColor: color.bg,
 				borderColor: color.border,
 				pointBackgroundColor: color.border,
-				pointBorderColor: '#fff',
-				pointHoverBackgroundColor: '#fff',
+				pointBorderColor: '#fff', // todo theme this
+				pointHoverBackgroundColor: '#fff', // todo theme this
 				pointHoverBorderColor: color.border,
 				fill: {
 					target: 'origin',

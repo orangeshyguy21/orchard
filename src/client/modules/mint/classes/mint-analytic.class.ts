@@ -4,7 +4,7 @@ export class MintAnalytic implements OrchardMintAnalytics {
 
 	unit: MintUnit;
 	amount: number;
-	created_time: number;
+	created_time: string;
 	operation_count: number;
 
 	constructor(omba: OrchardMintAnalytics) {

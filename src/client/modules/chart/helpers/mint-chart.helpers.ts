@@ -1,4 +1,6 @@
+/* Application Dependencies */
 import { MintAnalytic } from '@client/modules/mint/classes/mint-analytic.class';
+import { AmountPipe } from '@client/modules/local/pipes/amount/amount.pipe';
 
 type AnalyticsGroup = Record<string, MintAnalytic[]>
 
@@ -28,4 +30,28 @@ export function addPreceedingData(analytics: AnalyticsGroup, preceding_data: Min
     }
 
     return analytics;
+}
+
+export function getDataOrgainizedByTimestamp(analytics: MintAnalytic[], first_timestamp: string, last_timestamp: string): Record<string, number> {
+    const records = analytics.reduce((acc, item) => {
+        acc[item.created_time] = item.amount;
+        return acc;
+    }, {} as Record<string, number>);
+    if( records[last_timestamp] === undefined ) records[last_timestamp] = 0;
+    if( records[first_timestamp] === undefined ) records[first_timestamp] = 0;
+    return records;
+}
+
+
+export function getCumulativeData(unqiue_timestamps:string[], timestamp_to_amount: Record<string, number>, unit: string): { x: number, y: number }[] { 
+    let running_sum = 0;
+    return unqiue_timestamps
+        .filter(timestamp => timestamp_to_amount[timestamp] !== undefined)
+        .map(timestamp => {
+            running_sum += AmountPipe.getConvertedAmount(unit, timestamp_to_amount[timestamp]);
+            return {
+                x: Number(timestamp) * 1000,
+                y: running_sum
+            };
+        });
 }

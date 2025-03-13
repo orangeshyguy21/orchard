@@ -148,21 +148,10 @@ export class CashuMintDatabaseService {
     const interval = args?.interval || 'day';
     // Default timezone to UTC if not specified
     const timezone = args?.timezone || 'UTC';
-
-    console.log('getMintAnalyticsBalances', args);
     
     // Calculate timezone offset in seconds
     const now = DateTime.now().setZone(timezone);
     const offset_seconds = now.offset * 60; // Convert minutes to seconds
-    
-    // Apply timezone offset to unix timestamps before formatting
-    const applyOffset = (sqlFragment: string) => {
-      // Replace the 'unixepoch' with 'unixepoch', '+offset' to adjust for timezone
-      return sqlFragment.replace(
-        "'unixepoch'", 
-        `'unixepoch', '${offset_seconds > 0 ? '+' : ''}${offset_seconds} seconds'`
-      );
-    };
     
     // Build WHERE clause conditions
     const where_conditions = [];
@@ -189,67 +178,90 @@ export class CashuMintDatabaseService {
       ? `WHERE ${where_conditions.join(' AND ')}` 
       : '';
     
-    // Build the date format string based on interval
-    let date_format = '';
-    let group_by = '';
-    
-    switch(interval) {
-      case 'day':
-        date_format = applyOffset("strftime('%s', DATE(mq.created_time, 'unixepoch'))");
-        group_by = applyOffset("DATE(mq.created_time, 'unixepoch')");
-        break;
-      case 'week':
-        date_format = applyOffset("strftime('%s', DATE(mq.created_time, 'unixepoch', 'weekday 0', '-6 days'))");
-        group_by = applyOffset("DATE(mq.created_time, 'unixepoch', 'weekday 0', '-6 days')");
-        break;
-      case 'month':
-        date_format = applyOffset("strftime('%s', DATE(mq.created_time, 'unixepoch', 'start of month'))");
-        group_by = applyOffset("strftime('%Y-%m', DATETIME(mq.created_time, 'unixepoch'))");
-        break;
-      case 'custom':
-        date_format = applyOffset(`strftime('%s', DATE(${args.date_end} + 1, 'unixepoch'))`);
-        group_by = "mq.unit"; // Only group by unit, not by date
-        break;
-    }
-    
-    // Update the LEFT JOIN to use the same timezone formatting for non-custom intervals
-    let lq_join_condition = '';
-    
-    if (interval === 'custom') {
-      lq_join_condition = "lq.unit = mq.unit";
-    } else {
-      const lq_date_format = applyOffset("DATE(lq.created_time, 'unixepoch')");
-      lq_join_condition = `${group_by} = ${lq_date_format} AND lq.unit = mq.unit`;
-    }
-    
+    // Instead of manipulating in SQL, we'll do date manipulation in JavaScript
+    // after getting the raw data
     const sql = `SELECT 
-      ${date_format} AS created_time,
+      mq.created_time,
       mq.unit,
       SUM(CASE WHEN mq.state = 'ISSUED' THEN mq.amount ELSE 0 END) - 
       SUM(CASE WHEN lq.state = 'PAID' THEN lq.amount ELSE 0 END) AS amount,
       COUNT(mq.quote) + COUNT(lq.quote) AS operation_count
     FROM 
       mint_quotes mq
-      LEFT JOIN melt_quotes lq ON ${lq_join_condition}
+      LEFT JOIN melt_quotes lq ON lq.unit = mq.unit
       ${where_clause}
     GROUP BY 
-      ${interval === 'custom' ? 'mq.unit' : `${group_by}, mq.unit`};`;
+      mq.created_time, mq.unit;`;
 
     return new Promise((resolve, reject) => {
-      db.all(sql, params, (err, rows:CashuMintAnalytics[]) => {
+      db.all(sql, params, (err, rows:any[]) => {
         if (err) reject(err);
+
+        // Process the raw data to group by the appropriate time interval in the specified timezone
+        const grouped_data = {};
         
-        // Post-process the results to ensure proper timezone handling
-        const processed_rows = rows.map(row => {
-          // Convert the timestamp to a DateTime object in the specified timezone
-          if (row.created_time) {
-            const dt = DateTime.fromSeconds(Number(row.created_time)).setZone(timezone);
-            row.created_time = dt.toSeconds().toString();
+        rows.forEach(row => {
+          // Convert UTC timestamp to the specified timezone
+          const dt = DateTime.fromSeconds(parseInt(row.created_time)).setZone(timezone);
+          
+          let interval_key;
+          let timestamp_key;
+          
+          switch(interval) {
+            case 'day':
+              // Get start of day in local timezone
+              interval_key = dt.startOf('day').toFormat('yyyy-MM-dd');
+              timestamp_key = dt.startOf('day').toSeconds();
+              break;
+            case 'week':
+              // Get start of week in local timezone (Monday as first day)
+              interval_key = dt.startOf('week').toFormat('yyyy-MM-dd');
+              timestamp_key = dt.startOf('week').toSeconds();
+              break;
+            case 'month':
+              // Get start of month in local timezone
+              interval_key = dt.startOf('month').toFormat('yyyy-MM-dd');
+              timestamp_key = dt.startOf('month').toSeconds();
+              break;
+            case 'custom':
+              // Just use the unit for custom interval
+              interval_key = row.unit;
+              timestamp_key = row.created_time;
+              break;
           }
-          return row;
+          
+          // Create compound key for grouping
+          const key = interval === 'custom' ? row.unit : `${interval_key}_${row.unit}`;
+          
+          if (!grouped_data[key]) {
+            grouped_data[key] = {
+              unit: row.unit,
+              amount: 0,
+              created_time: timestamp_key,
+              operation_count: 0
+            };
+          }
+          
+          grouped_data[key].amount += row.amount;
+          grouped_data[key].operation_count += row.operation_count;
         });
         
-        resolve(processed_rows);
+        // Convert grouped object to array
+        const result = Object.values(grouped_data as Record<string, {
+          unit: string;
+          amount: number;
+          created_time: number;
+          operation_count: number;
+        }>).map(item => {
+          return {
+            unit: item.unit,
+            amount: item.amount,
+            created_time: item.created_time.toString(),
+            operation_count: item.operation_count
+          };
+        });
+        
+        resolve(result as CashuMintAnalytics[]);
       });
     });
   }
