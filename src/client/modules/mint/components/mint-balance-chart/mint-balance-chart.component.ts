@@ -69,6 +69,9 @@ export class MintBalanceChartComponent implements OnChanges {
 		// Get all unique timestamps and sort them
 		const all_timestamps = all_analytics.map(item => item.created_time).concat([first_timestamp, last_timestamp]);
 		const unqiue_timestamps = Array.from(new Set(all_timestamps)).sort();
+		console.log('first_timestamp', first_timestamp);
+		console.log('last_timestamp', last_timestamp);
+		console.log('unqiue_timestamps', unqiue_timestamps);
 		// Create datasets for each unit
 		const datasets = Object.entries(grouped_by_unit_summary).map(([unit, data], index) => {
 			// Create a map of timestamp to amount for this unit
