@@ -84,6 +84,6 @@ export type CashuMintProof = {
 export type CashuMintAnalytics = {
   unit: string;
   amount: number;
-  created_time: string;
+  created_time: number;
   operation_count: number;
 }

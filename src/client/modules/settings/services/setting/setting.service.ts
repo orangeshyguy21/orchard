@@ -28,8 +28,10 @@ export class SettingService {
 	}
 
 	public getTheme(): ThemeType {
-		const system_theme = window.matchMedia('(prefers-color-scheme: light)').matches;
-		return this.localStorageService.getTheme().type ?? system_theme ? ThemeType.LIGHT_MODE : ThemeType.DARK_MODE;
+		const prefers_light_theme = window.matchMedia('(prefers-color-scheme: light)').matches;
+		const theme = this.localStorageService.getTheme();
+		if( theme.type === null ) return prefers_light_theme ? ThemeType.LIGHT_MODE : ThemeType.DARK_MODE;
+		return theme.type
 	}
 
 	public init(): void {

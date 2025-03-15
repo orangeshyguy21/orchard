@@ -33,8 +33,14 @@ export class ChartService {
         const color_var = this.asset_map[asset_lower];
         if( color_var === undefined ) return this.fallback_colors[data_index % this.fallback_colors.length];
         const colorhex = this.themeService.getThemeColor(color_var, theme);
-        const colorrgba = this.hexToRgba(colorhex, 0.3);
+        const colorrgba = this.hexToRgba(colorhex, 0.15);
         return { bg: colorrgba, border: colorhex };
+    }
+
+    public getPointHoverBackgroundColor(): string {
+        const theme = this.settingService.getTheme();
+        const colorhex = this.themeService.getThemeColor('--mat-sys-surface', theme);
+        return colorhex;
     }
 
     /**

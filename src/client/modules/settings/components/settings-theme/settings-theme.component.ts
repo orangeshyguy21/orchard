@@ -24,7 +24,7 @@ export class SettingsThemeComponent {
 	public theme_control = new FormControl<boolean>(false);
 	public system_default_control = new FormControl<boolean>(true);
 
-	private system_theme = window.matchMedia('(prefers-color-scheme: light)').matches;
+	private prefers_light_theme = window.matchMedia('(prefers-color-scheme: light)').matches;
 
 	constructor() { }
 
@@ -33,7 +33,6 @@ export class SettingsThemeComponent {
 	}
 
 	private init() {
-		console.log('THEME VAL ON COMPONENT INIT', this.theme);
 		if( this.theme === null ) return;
 		this.initCheckbox(this.theme?.type);
 		this.initTheme(this.theme?.type);
@@ -45,20 +44,20 @@ export class SettingsThemeComponent {
 	}
 
 	private initTheme(type: ThemeType|null) {
-		const display_type = (type === null) ? this.system_theme : this.translateThemeToChecked(type);
+		const display_type = (type === null) ? this.prefers_light_theme : this.translateThemeToChecked(type);
 		this.theme_control.setValue(display_type);
 	}
 	public onThemeChange(event: MatSlideToggleChange) {
 		const value = this.translateCheckedToTheme(event.checked);
 		this.themeChange.emit(value);
-		if( event.checked !== this.system_theme ) return this.system_default_control.setValue(false);
+		if( event.checked !== this.prefers_light_theme ) return this.system_default_control.setValue(false);
 	}
 
 
 	public onSystemDefaultChange(event: MatCheckboxChange) {
 		if( event.checked ) {
 			this.themeChange.emit(null);
-			this.theme_control.setValue(this.system_theme, { emitEvent: false });
+			this.theme_control.setValue(this.prefers_light_theme, { emitEvent: false });
 		}else{
 			if( this.theme_control.value === null ) return;
 			const type = this.translateCheckedToTheme(this.theme_control.value);

@@ -234,7 +234,7 @@ export class CashuMintDatabaseService {
           return {
             unit: row.unit,
             amount: row.amount,
-            created_time: timestamp.toString(),
+            created_time: timestamp,
             operation_count: row.operation_count,
           };
         });

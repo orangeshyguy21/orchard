@@ -1,6 +1,8 @@
 /* Application Dependencies */
 import { MintAnalytic } from '@client/modules/mint/classes/mint-analytic.class';
 import { AmountPipe } from '@client/modules/local/pipes/amount/amount.pipe';
+/* Shared Dependencies */
+import { MintAnalyticsInterval } from '@shared/generated.types';
 
 type AnalyticsGroup = Record<string, MintAnalytic[]>
 
@@ -13,9 +15,8 @@ export function groupAnalyticsByUnit(analytics: MintAnalytic[]): AnalyticsGroup 
     }, {} as Record<string, MintAnalytic[]>);
 }
 
-export function addPreceedingData(analytics: AnalyticsGroup, preceding_data: MintAnalytic[]): AnalyticsGroup {
+export function prependData(analytics: AnalyticsGroup, preceding_data: MintAnalytic[]): AnalyticsGroup {
     if( preceding_data.length === 0 )  return analytics;
-
     for (const unit in analytics) {
         const analytics_for_unit = analytics[unit];
         const preceding_data_for_unit = preceding_data.find(p => p.unit === unit);
@@ -28,29 +29,45 @@ export function addPreceedingData(analytics: AnalyticsGroup, preceding_data: Min
             matching_datapoint.amount = matching_datapoint.amount + preceding_data_for_unit.amount;
         }
     }
-
     return analytics;
 }
 
-export function getDataOrgainizedByTimestamp(analytics: MintAnalytic[], first_timestamp: string, last_timestamp: string): Record<string, number> {
-    const records = analytics.reduce((acc, item) => {
+export function getDataKeyedByTimestamp(analytics: MintAnalytic[]): Record<string, number> {
+    return analytics.reduce((acc, item) => {
         acc[item.created_time] = item.amount;
         return acc;
     }, {} as Record<string, number>);
-    if( records[last_timestamp] === undefined ) records[last_timestamp] = 0;
-    if( records[first_timestamp] === undefined ) records[first_timestamp] = 0;
-    return records;
 }
 
+export function getAllPossibleTimestamps(first_timestamp: number, last_timestamp: number, interval: MintAnalyticsInterval): number[] {
+    const all_possible_timestamps = [];
+    const interval_seconds = getIntervalSeconds(interval);
+    let current_time = first_timestamp;
+    while (current_time <= last_timestamp) {
+        all_possible_timestamps.push(current_time);
+        current_time += interval_seconds;
+    }
+    if (!all_possible_timestamps.includes(last_timestamp)) {
+        all_possible_timestamps.push(last_timestamp);
+    }
+    return all_possible_timestamps;
+}
 
-export function getCumulativeData(unqiue_timestamps:string[], timestamp_to_amount: Record<string, number>, unit: string): { x: number, y: number }[] { 
+function getIntervalSeconds(interval: MintAnalyticsInterval): number {
+    if (interval === MintAnalyticsInterval.Day) return 86400;
+    if (interval === MintAnalyticsInterval.Week) return 604800;
+    if (interval === MintAnalyticsInterval.Month) return 2592000;
+    return 86400;
+}
+
+export function getCumulativeData(unqiue_timestamps:number[], timestamp_to_amount: Record<number, number>, unit: string): { x: number, y: number }[] { 
     let running_sum = 0;
     return unqiue_timestamps
-        .filter(timestamp => timestamp_to_amount[timestamp] !== undefined)
         .map(timestamp => {
-            running_sum += AmountPipe.getConvertedAmount(unit, timestamp_to_amount[timestamp]);
+            const val = timestamp_to_amount[timestamp] || 0;
+            running_sum += AmountPipe.getConvertedAmount(unit, val);
             return {
-                x: Number(timestamp) * 1000,
+                x: timestamp * 1000,
                 y: running_sum
             };
         });

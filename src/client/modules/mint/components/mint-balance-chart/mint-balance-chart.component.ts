@@ -5,11 +5,18 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { DateTime } from 'luxon';
 /* Application Dependencies */
-import { groupAnalyticsByUnit, addPreceedingData, getDataOrgainizedByTimestamp, getCumulativeData } from '@client/modules/chart/helpers/mint-chart.helpers';
+import { 
+	groupAnalyticsByUnit,
+	prependData,
+	getDataKeyedByTimestamp,
+	getCumulativeData,
+	getAllPossibleTimestamps
+} from '@client/modules/chart/helpers/mint-chart.helpers';
 import { ChartService } from '@client/modules/chart/services/chart/chart.service';
-import { AmountPipe } from '@client/modules/local/pipes/amount/amount.pipe';
 /* Native Dependencies */
 import { MintAnalytic } from '@client/modules/mint/classes/mint-analytic.class';
+/* Shared Dependencies */
+import { MintAnalyticsInterval } from '@shared/generated.types';
 
 
 @Component({
@@ -28,6 +35,7 @@ export class MintBalanceChartComponent implements OnChanges {
 	@Input() public mint_balances_preceeding!: MintAnalytic[];
 	@Input() public selected_date_start!: number;
 	@Input() public selected_date_end!: number;
+	@Input() public selected_interval!: MintAnalyticsInterval;
 	@Input() public loading!: boolean;
 
 	public chart_data!: ChartConfiguration['data'];
@@ -58,37 +66,24 @@ export class MintBalanceChartComponent implements OnChanges {
 
 	private getChartData(): ChartConfiguration['data'] {
 		if (!this.mint_balances || this.mint_balances.length === 0) return { datasets: [] };
-		const first_timestamp = DateTime.fromSeconds(this.selected_date_start).startOf('day').toSeconds().toString();
-		const last_timestamp = DateTime.fromSeconds(this.selected_date_end).startOf('day').toSeconds().toString();
-		// Combine the balances and the preceding data for unique timestamps
-		const all_analytics = this.mint_balances.concat(this.mint_balances_preceeding);
-		// Group data by unit
-		const grouped_by_unit = groupAnalyticsByUnit(this.mint_balances);
-		// Add preceding data to the grouped data
-		const grouped_by_unit_summary = addPreceedingData(grouped_by_unit, this.mint_balances_preceeding);
-		// Get all unique timestamps and sort them
-		const all_timestamps = all_analytics.map(item => item.created_time).concat([first_timestamp, last_timestamp]);
-		const unqiue_timestamps = Array.from(new Set(all_timestamps)).sort();
-		console.log('first_timestamp', first_timestamp);
-		console.log('last_timestamp', last_timestamp);
-		console.log('unqiue_timestamps', unqiue_timestamps);
-		// Create datasets for each unit
-		const datasets = Object.entries(grouped_by_unit_summary).map(([unit, data], index) => {
-			// Create a map of timestamp to amount for this unit
-			const timestamp_to_amount = getDataOrgainizedByTimestamp(data, first_timestamp, last_timestamp);
-			// get unit color
+		const timestamp_first = DateTime.fromSeconds(this.selected_date_start).startOf('day').toSeconds();
+		const timestamp_last = DateTime.fromSeconds(this.selected_date_end).startOf('day').toSeconds();
+		const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.selected_interval);
+		const data_unit_groups = groupAnalyticsByUnit(this.mint_balances);
+		const data_unit_groups_prepended = prependData(data_unit_groups, this.mint_balances_preceeding);
+		const datasets = Object.entries(data_unit_groups_prepended).map(([unit, data], index) => {
+			const data_keyed_by_timestamp = getDataKeyedByTimestamp(data);
 			const color = this.chartService.getAssetColor(unit, index);
-			// Calculate cumulative sum for each timestamp
-			const cumulative_data = getCumulativeData(unqiue_timestamps, timestamp_to_amount, unit);
+			const data_rel = getCumulativeData(timestamp_range, data_keyed_by_timestamp, unit);
 
 			return {
-				data: cumulative_data,
+				data: data_rel,
 				label: unit.toUpperCase(),
 				backgroundColor: color.bg,
 				borderColor: color.border,
 				pointBackgroundColor: color.border,
-				pointBorderColor: '#fff', // todo theme this
-				pointHoverBackgroundColor: '#fff', // todo theme this
+				pointBorderColor: color.border,
+				pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
 				pointHoverBorderColor: color.border,
 				fill: {
 					target: 'origin',

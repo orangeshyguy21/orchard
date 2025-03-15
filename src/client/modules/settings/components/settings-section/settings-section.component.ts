@@ -50,7 +50,7 @@ export class SettingsSectionComponent implements OnInit {
 	}
 
 	public onThemeChange(theme: ThemeType|null) {
-		console.log(theme);
+		console.log('theme change received', theme);
 		this.localStorageService.setTheme({ type: theme });
 		this.settingService.setTheme();
 		this.theme = this.localStorageService.getTheme();
