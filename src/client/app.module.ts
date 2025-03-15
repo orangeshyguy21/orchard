@@ -9,11 +9,13 @@ import { provideLuxonDateAdapter } from '@angular/material-luxon-adapter';
 import { provideCharts } from 'ng2-charts';
 import { 
 	LineController,
+	BarController,
 	LinearScale,
 	TimeSeriesScale,
 	CategoryScale,
 	PointElement,
 	LineElement,
+	BarElement,
 	Tooltip,
 	Filler,
 	Legend,
@@ -40,11 +42,13 @@ import { AppComponent } from './app.component';
 		provideCharts({ 
 			registerables: [
 				LineController,
+				BarController,
 				LinearScale,
 				TimeSeriesScale,
 				CategoryScale,
 				PointElement,
 				LineElement,
+				BarElement,
 				Tooltip,
 				Filler,
 				Legend

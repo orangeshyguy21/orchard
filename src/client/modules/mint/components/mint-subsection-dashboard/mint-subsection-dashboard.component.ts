@@ -166,6 +166,7 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	}
 
 	public onTypeChange(event: ChartType): void {
+		console.log('onTypeChange', event);
 		this.selected_type = event;
 		this.changeDetectorRef.detectChanges();
 	}

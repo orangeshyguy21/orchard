@@ -1,5 +1,5 @@
 /* Vendor Dependencies */
-import { TimeUnit } from 'chart.js';
+import { TimeUnit, TimeScaleOptions } from 'chart.js';
 import { DateTime } from 'luxon';
 /* Shared Dependencies */
 import { MintAnalyticsInterval } from '@shared/generated.types';
@@ -58,20 +58,6 @@ export function getTooltipLabel(context: any, locale: string): string {
     const value = context.parsed.y;
     return `${label}: ${value.toLocaleString(locale)}`;
 }
-
-//             .toLocaleString({
-//                 year: 'numeric',
-//                 month: 'short',
-//                 day: 'numeric'
-//             });
-//     }
-//     return '';
-// },
-// label: (context: any) => {
-//     const label = context.dataset.label || '';
-//     const value = context.parsed.y;
-//     return `${label}: ${value.toLocaleString(this.locale)}`;
-// }
 
 export function getXAxisConfig(selected_interval: MintAnalyticsInterval, locale: string): any {
     const timeunit = convertIntervalToTimeUnit(selected_interval);

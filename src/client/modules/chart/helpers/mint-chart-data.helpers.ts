@@ -34,11 +34,11 @@ export function prependData(analytics: AnalyticsGroup, preceding_data: MintAnaly
     return analytics;
 }
 
-export function getDataKeyedByTimestamp(analytics: MintAnalytic[]): Record<string, number> {
+export function getDataKeyedByTimestamp(analytics: MintAnalytic[], metric: string): Record<string, number> {
     return analytics.reduce((acc, item) => {
-        acc[item.created_time] = item.amount;
+        acc[item.created_time] = item[metric as keyof MintAnalytic];
         return acc;
-    }, {} as Record<string, number>);
+    }, {} as Record<string, any>);
 }
 
 export function getAllPossibleTimestamps(first_timestamp: number, last_timestamp: number, interval: MintAnalyticsInterval): number[] {
@@ -69,21 +69,28 @@ function getNextTimestamp(timestamp: number, interval: MintAnalyticsInterval): n
     return DateTime.fromSeconds(timestamp).plus({ days: 1 }).toSeconds();
 }
 
-export function getCumulativeData(unqiue_timestamps:number[], data_keyed_by_timestamp: Record<number, number>, unit: string): { x: number, y: number }[] { 
-    console.log('UNIT', unit);
-    console.log('DATA KEYED BY TIMESTAMP', data_keyed_by_timestamp);
-    console.log('UNQIUE TIMESTAMPS', unqiue_timestamps);
+export function getAmountData(unqiue_timestamps:number[], data_keyed_by_timestamp: Record<number, number>, unit: string, cumulative: boolean): { x: number, y: number }[] { 
     let running_sum = 0;
-    return unqiue_timestamps
-        .map(timestamp => {
-            const val = data_keyed_by_timestamp[timestamp] || 0;
-            running_sum += AmountPipe.getConvertedAmount(unit, val);
-            return {
-                x: timestamp * 1000,
-                y: running_sum
-            };
-        });
+    return unqiue_timestamps.map(timestamp => {
+        const val = data_keyed_by_timestamp[timestamp] || 0;
+        running_sum += AmountPipe.getConvertedAmount(unit, val);
+        return {
+            x: timestamp * 1000,
+            y: cumulative ? running_sum : AmountPipe.getConvertedAmount(unit, val)
+        };
+    });
 }
+
+export function getRawData(unqiue_timestamps:number[], data_keyed_by_timestamp: Record<number, number>, unit: string): { x: number, y: number }[] { 
+    return unqiue_timestamps.map(timestamp => {
+        const val = data_keyed_by_timestamp[timestamp] || 0;
+        return {
+            x: timestamp * 1000,
+            y: val
+        };
+    });
+}
+
 
 export function getYAxisId(unit: string): string {
     if( unit === 'usd' ) return 'yfiat';
