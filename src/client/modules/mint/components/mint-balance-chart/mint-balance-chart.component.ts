@@ -110,11 +110,11 @@ export class MintBalanceChartComponent implements OnChanges {
 		if (!this.chart_data || this.chart_data.datasets.length === 0) return {}
 		const units = this.chart_data.datasets.map(item => item.label);
 		const y_axis = getYAxis(units);
-		const scales: any = {};
+		const scales: ScaleChartOptions<'line'>['scales'] = {};
 		scales['x'] = getXAxisConfig(this.selected_interval, this.locale);
 		if( y_axis.includes('ybtc') ) scales['ybtc'] = getBtcYAxisConfig();
 		if( y_axis.includes('yfiat') ) scales['yfiat'] = getFiatYAxisConfig(units);
-		
+
 		return {
 			responsive: true,
 			elements: {
