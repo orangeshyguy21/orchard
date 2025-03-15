@@ -186,7 +186,7 @@ export class CashuMintDatabaseService {
     } else if (interval === 'day') {
       time_group_sql = `strftime('%Y-%m-%d', datetime(mq.created_time + ${offset_seconds}, 'unixepoch')) AS time_group`;
     } else if (interval === 'week') {
-      time_group_sql = `strftime('%Y-%m-%d', datetime(mq.created_time + ${offset_seconds}, 'unixepoch'), 'weekday 1') AS time_group`;
+      time_group_sql = `strftime('%Y-%m-%d', datetime(mq.created_time + ${offset_seconds} - (strftime('%w', datetime(mq.created_time + ${offset_seconds}, 'unixepoch')) - 1) * 86400, 'unixepoch')) AS time_group`;
     } else if (interval === 'month') {
       time_group_sql = `strftime('%Y-%m-01', datetime(mq.created_time + ${offset_seconds}, 'unixepoch')) AS time_group`;
     }
@@ -211,13 +211,10 @@ export class CashuMintDatabaseService {
     return new Promise((resolve, reject) => {
       db.all(sql, params, (err, rows:any[]) => {
         if (err) {
-          console.error('Database error:', err);
           reject(err);
           return;
         }
-        
-        console.log('Result rows:', rows?.length);
-        
+                
         const result = rows.map(row => {
           let timestamp;
           

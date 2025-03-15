@@ -2,7 +2,7 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, ViewChild, ChangeDetectorRef } from '@angular/core';
 /* Vendor Dependencies */
 import { BaseChartDirective } from 'ng2-charts';
-import { ChartConfiguration } from 'chart.js';
+import { ChartConfiguration, ScaleChartOptions } from 'chart.js';
 import { DateTime } from 'luxon';
 /* Application Dependencies */
 import { 
@@ -10,14 +10,22 @@ import {
 	prependData,
 	getDataKeyedByTimestamp,
 	getCumulativeData,
-	getAllPossibleTimestamps
-} from '@client/modules/chart/helpers/mint-chart.helpers';
+	getAllPossibleTimestamps,
+	getYAxisId,
+} from '@client/modules/chart/helpers/mint-chart-data.helpers';
+import { 
+	getXAxisConfig,
+	getYAxis,
+	getBtcYAxisConfig,
+	getFiatYAxisConfig,
+	getTooltipTitle,
+	getTooltipLabel,
+} from '@client/modules/chart/helpers/mint-chart-options.helpers';
 import { ChartService } from '@client/modules/chart/services/chart/chart.service';
 /* Native Dependencies */
 import { MintAnalytic } from '@client/modules/mint/classes/mint-analytic.class';
 /* Shared Dependencies */
 import { MintAnalyticsInterval } from '@shared/generated.types';
-
 
 @Component({
 	selector: 'orc-mint-balance-chart',
@@ -75,7 +83,7 @@ export class MintBalanceChartComponent implements OnChanges {
 			const data_keyed_by_timestamp = getDataKeyedByTimestamp(data);
 			const color = this.chartService.getAssetColor(unit, index);
 			const data_rel = getCumulativeData(timestamp_range, data_keyed_by_timestamp, unit);
-			const yAxisID = (unit === 'sat') ? 'ybtc' : `yfiat`;
+			const yAxisID = getYAxisId(unit);
 
 			return {
 				data: data_rel,
@@ -94,83 +102,19 @@ export class MintBalanceChartComponent implements OnChanges {
 				yAxisID: yAxisID,
 			};
 		});
-
-		return {
-			datasets,
-		};
+		
+		return { datasets };
 	}
 
 	private getChartOptions(): ChartConfiguration['options'] {
-		if (!this.mint_balances || this.mint_balances.length === 0) return {}
-
-		// Find which fiat currencies are present
-		const has_usd = this.mint_balances.some(item => item.unit === 'usd');
-		const has_eur = this.mint_balances.some(item => item.unit === 'eur');
-
-		// Set the appropriate axis label
-		let fiat_axis_label = '';
-		if (has_usd && has_eur) {
-		fiat_axis_label = 'USD / EUR';
-		} else if (has_usd) {
-		fiat_axis_label = 'USD';
-		} else if (has_eur) {
-		fiat_axis_label = 'EUR';
-		} else {
-		fiat_axis_label = 'FIAT'; // Default fallback if neither USD nor EUR is present
-		}
+		if (!this.chart_data || this.chart_data.datasets.length === 0) return {}
+		const units = this.chart_data.datasets.map(item => item.label);
+		const y_axis = getYAxis(units);
+		const scales: any = {};
+		scales['x'] = getXAxisConfig(this.selected_interval, this.locale);
+		if( y_axis.includes('ybtc') ) scales['ybtc'] = getBtcYAxisConfig();
+		if( y_axis.includes('yfiat') ) scales['yfiat'] = getFiatYAxisConfig(units);
 		
-		// Create scales configuration
-		const scales_config: any = {
-			x: {
-				type: 'time',
-				time: {
-					unit: this.selected_interval,
-					displayFormats: {
-						day: 'short'
-					},
-					tooltipFormat: 'full'
-				},
-				adapters: {
-					date: {
-						locale: this.locale
-					}
-				},
-				ticks: {
-					source: 'data',
-					callback: (value: any) => {
-						// Convert timestamp to DateTime with locale-aware formatting
-						return DateTime.fromMillis(value)
-							.toLocaleString({
-								month: 'short',
-								day: 'numeric'
-							});
-					}
-				},
-				distribution: 'linear',
-				bounds: 'data'
-			},
-			ybtc: {
-				position: 'left',
-				title: {
-					display: true,
-					text: 'SATS'
-				},
-				beginAtZero: false,
-				grid: {
-					display: true, // Enable gridlines for ybtc axis
-					color: 'rgba(255, 255, 255, 0.1)'
-				},
-			},
-			yfiat: {
-				position: 'right',
-				title: {
-					display: true,
-					text: fiat_axis_label
-				},
-				beginAtZero: false
-			}
-		};
-
 		return {
 			responsive: true,
 			elements: {
@@ -179,30 +123,15 @@ export class MintBalanceChartComponent implements OnChanges {
 					cubicInterpolationMode: 'monotone',
 				},
 			},
-			scales: scales_config,
+			scales: scales,
 			plugins: {
 				tooltip: {
 					enabled: true,
 					mode: 'index',
 					intersect: false,
 					callbacks: {
-						title: (tooltipItems: any) => {
-							if (tooltipItems.length > 0) {
-								// Use Luxon to properly handle the date with timezone and locale
-								return DateTime.fromMillis(tooltipItems[0].parsed.x)
-									.toLocaleString({
-										year: 'numeric',
-										month: 'short',
-										day: 'numeric'
-									});
-							}
-							return '';
-						},
-						label: (context: any) => {
-							const label = context.dataset.label || '';
-							const value = context.parsed.y;
-							return `${label}: ${value.toLocaleString(this.locale)}`;
-						}
+						title: getTooltipTitle,
+						label: (context: any) => getTooltipLabel(context, this.locale),
 					}
 				},
 				legend: {

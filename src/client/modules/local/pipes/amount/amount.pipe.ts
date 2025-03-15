@@ -21,7 +21,7 @@ export class AmountPipe implements PipeTransform {
 		
 		switch (unit_lower) {
 			case 'sat':
-				return this.transformSat(amount);
+				return this.transformSat(amount, locale);
 			case 'btc':
 				return this.transformBtc(amount, unit, locale);
 			case 'usd':
@@ -33,9 +33,9 @@ export class AmountPipe implements PipeTransform {
 		}
 	}
 
-	private transformSat(amount: number): string {
+	private transformSat(amount: number, locale: string): string {
 		const suffix = (amount === 1) ? 'sat' : 'sats';
-		const sat_string = amount.toLocaleString();
+		const sat_string = amount.toLocaleString(locale);
 		return this.transformToHtml(sat_string, suffix);
 	}
 

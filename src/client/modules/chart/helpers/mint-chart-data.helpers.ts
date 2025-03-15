@@ -1,6 +1,8 @@
 /* Application Dependencies */
 import { MintAnalytic } from '@client/modules/mint/classes/mint-analytic.class';
 import { AmountPipe } from '@client/modules/local/pipes/amount/amount.pipe';
+/* Vendor Dependencies */
+import { DateTime } from 'luxon';
 /* Shared Dependencies */
 import { MintAnalyticsInterval } from '@shared/generated.types';
 
@@ -41,34 +43,50 @@ export function getDataKeyedByTimestamp(analytics: MintAnalytic[]): Record<strin
 
 export function getAllPossibleTimestamps(first_timestamp: number, last_timestamp: number, interval: MintAnalyticsInterval): number[] {
     const all_possible_timestamps = [];
-    const interval_seconds = getIntervalSeconds(interval);
-    let current_time = first_timestamp;
+    let current_time = getValidTimestamp(first_timestamp, interval);
+    const last_valid_timestamp = getValidTimestamp(last_timestamp, interval);
     while (current_time <= last_timestamp) {
         all_possible_timestamps.push(current_time);
-        current_time += interval_seconds;
+        current_time = getNextTimestamp(current_time, interval);
     }
-    if (!all_possible_timestamps.includes(last_timestamp)) {
-        all_possible_timestamps.push(last_timestamp);
+    if (!all_possible_timestamps.includes(last_valid_timestamp)) {
+        all_possible_timestamps.push(last_valid_timestamp);
     }
     return all_possible_timestamps;
 }
 
-function getIntervalSeconds(interval: MintAnalyticsInterval): number {
-    if (interval === MintAnalyticsInterval.Day) return 86400;
-    if (interval === MintAnalyticsInterval.Week) return 604800;
-    if (interval === MintAnalyticsInterval.Month) return 2592000;
-    return 86400;
+function getValidTimestamp(timestamp: number, interval: MintAnalyticsInterval): number {
+    if (interval === MintAnalyticsInterval.Day) return DateTime.fromSeconds(timestamp).startOf('day').toSeconds();
+    if (interval === MintAnalyticsInterval.Week) return DateTime.fromSeconds(timestamp).startOf('week').toSeconds();
+    if (interval === MintAnalyticsInterval.Month) return DateTime.fromSeconds(timestamp).startOf('month').toSeconds();
+    return DateTime.fromSeconds(timestamp).startOf('day').toSeconds(); // Default to day
 }
 
-export function getCumulativeData(unqiue_timestamps:number[], timestamp_to_amount: Record<number, number>, unit: string): { x: number, y: number }[] { 
+function getNextTimestamp(timestamp: number, interval: MintAnalyticsInterval): number {
+    if (interval === MintAnalyticsInterval.Day) return DateTime.fromSeconds(timestamp).plus({ days: 1 }).toSeconds();
+    if (interval === MintAnalyticsInterval.Week) return DateTime.fromSeconds(timestamp).plus({ weeks: 1 }).toSeconds();
+    if (interval === MintAnalyticsInterval.Month) return DateTime.fromSeconds(timestamp).plus({ months: 1 }).toSeconds();
+    return DateTime.fromSeconds(timestamp).plus({ days: 1 }).toSeconds();
+}
+
+export function getCumulativeData(unqiue_timestamps:number[], data_keyed_by_timestamp: Record<number, number>, unit: string): { x: number, y: number }[] { 
+    console.log('UNIT', unit);
+    console.log('DATA KEYED BY TIMESTAMP', data_keyed_by_timestamp);
+    console.log('UNQIUE TIMESTAMPS', unqiue_timestamps);
     let running_sum = 0;
     return unqiue_timestamps
         .map(timestamp => {
-            const val = timestamp_to_amount[timestamp] || 0;
+            const val = data_keyed_by_timestamp[timestamp] || 0;
             running_sum += AmountPipe.getConvertedAmount(unit, val);
             return {
                 x: timestamp * 1000,
                 y: running_sum
             };
         });
+}
+
+export function getYAxisId(unit: string): string {
+    if( unit === 'usd' ) return 'yfiat';
+    if( unit === 'eur' ) return 'yfiat';
+    return 'ybtc';
 }
