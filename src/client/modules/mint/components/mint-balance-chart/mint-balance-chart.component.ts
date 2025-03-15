@@ -75,6 +75,7 @@ export class MintBalanceChartComponent implements OnChanges {
 			const data_keyed_by_timestamp = getDataKeyedByTimestamp(data);
 			const color = this.chartService.getAssetColor(unit, index);
 			const data_rel = getCumulativeData(timestamp_range, data_keyed_by_timestamp, unit);
+			const yAxisID = (unit === 'sat') ? 'ybtc' : `yfiat`;
 
 			return {
 				data: data_rel,
@@ -87,10 +88,10 @@ export class MintBalanceChartComponent implements OnChanges {
 				pointHoverBorderColor: color.border,
 				fill: {
 					target: 'origin',
-					above: color.bg  // Area will be filled with the background color
+					above: color.bg,
 				},
 				tension: 0.4,
-				yAxisID: index === 0 ? 'y' : `y${index}`
+				yAxisID: yAxisID,
 			};
 		});
 
@@ -100,19 +101,30 @@ export class MintBalanceChartComponent implements OnChanges {
 	}
 
 	private getChartOptions(): ChartConfiguration['options'] {
-		if (!this.mint_balances || this.mint_balances.length === 0) {
-			return {};
-		}
+		if (!this.mint_balances || this.mint_balances.length === 0) return {}
 
-		// Get unique units for axis labels
-		const unique_units = Array.from(new Set(this.mint_balances.map(item => item.unit)));
+		// Find which fiat currencies are present
+		const has_usd = this.mint_balances.some(item => item.unit === 'usd');
+		const has_eur = this.mint_balances.some(item => item.unit === 'eur');
+
+		// Set the appropriate axis label
+		let fiat_axis_label = '';
+		if (has_usd && has_eur) {
+		fiat_axis_label = 'USD / EUR';
+		} else if (has_usd) {
+		fiat_axis_label = 'USD';
+		} else if (has_eur) {
+		fiat_axis_label = 'EUR';
+		} else {
+		fiat_axis_label = 'FIAT'; // Default fallback if neither USD nor EUR is present
+		}
 		
 		// Create scales configuration
 		const scales_config: any = {
 			x: {
 				type: 'time',
 				time: {
-					unit: 'day',
+					unit: this.selected_interval,
 					displayFormats: {
 						day: 'short'
 					},
@@ -126,38 +138,38 @@ export class MintBalanceChartComponent implements OnChanges {
 				ticks: {
 					source: 'data',
 					callback: (value: any) => {
-						// Convert timestamp to DateTime with proper timezone
+						// Convert timestamp to DateTime with locale-aware formatting
 						return DateTime.fromMillis(value)
-							.toFormat('MMM d');
+							.toLocaleString({
+								month: 'short',
+								day: 'numeric'
+							});
 					}
 				},
 				distribution: 'linear',
 				bounds: 'data'
 			},
-			y: {
+			ybtc: {
 				position: 'left',
 				title: {
 					display: true,
-					text: unique_units[0]?.toUpperCase() || ''
+					text: 'SATS'
 				},
-				beginAtZero: true
-			}
-		};
-
-		// Add additional y-axes for other units
-		unique_units.slice(1).forEach((unit, index) => {
-			const axis_id = `y${index + 1}`;
-			scales_config[axis_id] = {
-				position: index % 2 === 0 ? 'right' : 'left',
+				beginAtZero: false,
 				grid: {
-					drawOnChartArea: false
+					display: true, // Enable gridlines for ybtc axis
+					color: 'rgba(255, 255, 255, 0.1)'
 				},
+			},
+			yfiat: {
+				position: 'right',
 				title: {
 					display: true,
-					text: unit.toUpperCase()
-				}
-			};
-		});
+					text: fiat_axis_label
+				},
+				beginAtZero: false
+			}
+		};
 
 		return {
 			responsive: true,
@@ -206,12 +218,3 @@ export class MintBalanceChartComponent implements OnChanges {
 		};
 	}
 }
-
-
-
-// SUM (promises) - SUM (proofs used) = balance
-
-
-
-
-
