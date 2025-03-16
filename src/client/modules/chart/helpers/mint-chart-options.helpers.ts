@@ -79,11 +79,18 @@ export function getXAxisConfig(selected_interval: MintAnalyticsInterval, locale:
             source: 'data',
             callback: getTimeTicks
         },
-        bounds: 'data'
+        bounds: 'data',
+        grid: {
+            display: false
+        }
     };
 }
 
-export function getBtcYAxisConfig(): any {
+export function getBtcYAxisConfig({
+    grid_color
+}: {
+    grid_color: string
+}): any {
     return {
         position: 'left',
         title: {
@@ -93,18 +100,30 @@ export function getBtcYAxisConfig(): any {
         beginAtZero: false,
         grid: {
             display: true, // Enable gridlines for ybtc axis
-            color: 'rgba(255, 255, 255, 0.05)'
+            color: grid_color
         },
     };
 }
 
-export function getFiatYAxisConfig(units: (string | undefined)[]): any {
+export function getFiatYAxisConfig({
+    units,
+    show_grid,
+    grid_color
+}: {
+    units: (string | undefined)[],
+    show_grid: boolean,
+    grid_color: string
+}): any {
     return {
         position: 'right',
         title: {
             display: true,
             text: getFiatAxisLabel(units)
         },
-        beginAtZero: false
+        beginAtZero: false,
+        grid: {
+            display: show_grid,
+            color: grid_color
+        },
     }
 }

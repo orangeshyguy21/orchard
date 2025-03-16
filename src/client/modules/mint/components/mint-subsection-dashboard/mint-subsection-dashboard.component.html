@@ -14,15 +14,15 @@
 		</orc-mint-connections>
 	</div>
 	<div class="mint-dashboard-charts">
-		<div class="title-l p-1">Mint Metrics</div>	
+		<div class="title-l p-1">Nutalytics</div>	
 		<mat-card appearance="outlined" class="overflow-hidden">
 			<mat-card-content>	
 				<orc-mint-analytic-control-panel
-					[selected_date_start]="selected_date_start"
-					[selected_date_end]="selected_date_end"
-					[selected_units]="selected_units"
-					[selected_interval]="selected_interval"
-					[selected_type]="selected_type"
+					[selected_date_start]="chart_settings.date_start"
+					[selected_date_end]="chart_settings.date_end"
+					[selected_units]="chart_settings.units"
+					[selected_interval]="chart_settings.interval"
+					[selected_type]="chart_settings.type"
 					[keysets]="mint_keysets"
 					[loading]="loading_static_data"
 					(date_change)="onDateChange($event)"
@@ -35,10 +35,10 @@
 					[locale]="locale"
 					[mint_balances]="mint_analytics_balances"
 					[mint_balances_preceeding]="mint_analytics_balances_preceeding"
-					[selected_date_start]="selected_date_start"
-					[selected_date_end]="selected_date_end"
-					[selected_interval]="selected_interval"
-					[selected_type]="selected_type"
+					[selected_date_start]="chart_settings.date_start"
+					[selected_date_end]="chart_settings.date_end"
+					[selected_interval]="chart_settings.interval"
+					[selected_type]="chart_settings.type"
 					[loading]="loading_dynamic_data">
 				</orc-mint-balance-chart>
 			</mat-card-content>
