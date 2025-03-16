@@ -1,3 +1,5 @@
+import { MintUnit } from "./cashumintdb.enums";
+
 export type CashuMintBalance = {
   keyset: string;
   balance: number;
@@ -12,7 +14,7 @@ export type CashuMintKeyset = {
   first_seen: number;
   active: number;
   version: string;
-  unit: string;
+  unit: MintUnit;
   encrypted_seed: string|null;
   seed_encryption_method: string|null;
   input_fee_ppk: number;
@@ -82,6 +84,6 @@ export type CashuMintProof = {
 export type CashuMintAnalytics = {
   unit: string;
   amount: number;
-  created_time: string;
+  created_time: number;
   operation_count: number;
 }

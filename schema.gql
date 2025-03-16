@@ -2,6 +2,13 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+enum MintAnalyticsInterval {
+  custom
+  day
+  month
+  week
+}
+
 enum MintQuoteStatus {
   ISSUED
   PAID
@@ -157,7 +164,7 @@ type OrchardStatus {
 }
 
 type Query {
-  mint_analytics_balances: [OrchardMintAnalytics!]!
+  mint_analytics_balances(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
   mint_balances: [OrchardMintBalance!]!
   mint_balances_issued: [OrchardMintBalance!]!
   mint_balances_redeemed: [OrchardMintBalance!]!
@@ -172,5 +179,8 @@ type Query {
   status: OrchardStatus!
 }
 
-"""A Unix timestamp"""
+"""Timezone custom scalar type based on IANA timezone database"""
+scalar Timezone
+
+"""A Unix timestamp in seconds"""
 scalar UnixTimestamp

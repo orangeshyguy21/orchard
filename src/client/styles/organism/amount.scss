@@ -1,25 +1,9 @@
-// return `
-// <span class="orc-amount-container">
-//     <span class="orc-amount">
-//         ${amount_string}
-//     </span>
-//     <span class="orc-unit">
-//         ${unit}
-//     </span>
-// </span>
-// `;
-
 @use '@styles/molecule/molecule';
 
 .orc-amount-container{
-    // @extend .flex;
-    // @extend .flex-row;
-    // @extend .align-items-center;
-    // @extend .justify-content-center;
-
     .orc-unit{
         font-size: 80%;
         // font-weight: 500;
-        opacity: 0.8; // maybe?
+        opacity: 0.8; // maybe? @todo clean this up
     }
 }

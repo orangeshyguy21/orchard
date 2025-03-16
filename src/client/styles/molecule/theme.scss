@@ -8,6 +8,13 @@
 .orc-surface-container-low-bg {
     background-color: var(--mat-sys-surface-container-low);
 }
+.orc-on-secondary-container-bg {
+    background-color: var(--mat-sys-on-secondary-container);
+}
+.orc-secondary-bg {
+    background-color: var(--mat-sys-secondary);
+}
+
 .orc-asset-btc-bg {
     background-color: var(--orc-asset-btc);
 }
@@ -17,7 +24,6 @@
 .orc-asset-eur-bg {
     background-color: var(--orc-asset-eur);
 }
-
 
 // Orchard Text Colors
 
@@ -32,6 +38,12 @@
 }
 .orc-surface-color {
     color: var(--mat-sys-surface);
+}
+.orc-on-surface-variant-color {
+    color: var(--mat-sys-on-surface-variant);
+}
+.orc-primary-fixed-dim-color {
+    color: var(--mat-sys-primary-fixed-dim);
 }
 
 
@@ -102,13 +114,14 @@
 .orc-surface-tint-border{
     border-color: var(--mat-sys-surface-tint);
 }
-
 .orc-surface-variant-border{
     border-color: var(--mat-sys-surface-variant);
 }
-
-.orc-outline{
+.orc-outline-border{
     border: 1px solid var(--mat-sys-outline);
+}
+.orc-outline-variant-border{
+    border-color: var(--mat-sys-outline-variant);
 }
 
 // Orchard Elevation Levels

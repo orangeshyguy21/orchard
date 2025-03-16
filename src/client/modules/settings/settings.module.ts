@@ -10,6 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete'; 
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 /* Application Dependencies */
 import { NavModule } from '@client/modules/nav/nav.module';
 import { LocalModule } from '@client/modules/local/local.module';
@@ -18,6 +19,7 @@ import { SettingsSectionComponent } from './components/settings-section/settings
 import { SettingsTimeComponent } from './components/settings-time/settings-time.component';
 import { SettingsTimeTimezoneComponent } from './components/settings-time-timezone/settings-time-timezone.component';
 import { SettingsTimeLocaleComponent } from './components/settings-time-locale/settings-time-locale.component';
+import { SettingsThemeComponent } from './components/settings-theme/settings-theme.component';
 
 const routes: Routes = [
 	{
@@ -47,6 +49,7 @@ export class SettingsRoutingModule { }
 		SettingsTimeComponent,
 		SettingsTimeTimezoneComponent,
 		SettingsTimeLocaleComponent,
+		SettingsThemeComponent,
 	],
 	imports: [
 		CommonModule,
@@ -58,6 +61,7 @@ export class SettingsRoutingModule { }
 		MatAutocompleteModule,
 		MatCheckboxModule,
 		MatSelectModule,
+		MatSlideToggleModule,
 		NavModule,
 		LocalModule,
 	],

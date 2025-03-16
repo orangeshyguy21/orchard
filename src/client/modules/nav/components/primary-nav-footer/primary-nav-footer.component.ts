@@ -1,4 +1,7 @@
+/* Core Dependencies */
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+/* Application Dependencies */
+import { EventData } from '@client/modules/event/classes/event-data.class';
 
 @Component({
 	selector: 'orc-primary-nav-footer',
@@ -10,5 +13,6 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 export class PrimaryNavFooterComponent {
   
   	@Input() active_section: string = '';
+	@Input() active_event!: EventData | null;
 
 }

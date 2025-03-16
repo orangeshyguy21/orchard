@@ -4,6 +4,10 @@ import { Router, Event, ActivatedRoute } from '@angular/router';
 /* Vendor Dependencies */
 import { Subscription } from 'rxjs';
 import { filter} from 'rxjs/operators';
+/* Application Dependencies */
+import { EventService } from 'src/client/modules/event/services/event/event.service';
+import { EventData } from 'src/client/modules/event/classes/event-data.class';
+
 
 @Component({
 	selector: 'orc-primary-nav',
@@ -13,25 +17,41 @@ import { filter} from 'rxjs/operators';
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PrimaryNavComponent {
-	public active_section = '';
-	private subscription: Subscription;
+
+	public active_section! : string;
+	public active_event!: EventData | null;
+
+
+	private subscriptions: Subscription;
 
 	constructor(
 		private router: Router,
 		private activatedRoute: ActivatedRoute,
-		private changeDetectorRef: ChangeDetectorRef
+		private changeDetectorRef: ChangeDetectorRef,
+		private eventService: EventService
 	) {
-		this.subscription = new Subscription();
+		this.subscriptions = new Subscription();
 	}
 
 	ngOnInit(): void {
-		this.subscription = this.router.events
+		// Subscribe to router events
+		const router_subscription = this.router.events
 			.pipe(
 				filter((event: Event) => 'routerEvent' in event || 'type' in event)
 			)
 			.subscribe(event => {
 				this.setSection(event);
 			});
+		
+		// Subscribe to navigation events from the event service
+		const event_subscription = this.eventService.getActiveEvent()
+			.subscribe((event_data: EventData | null) => {
+				this.manageEvent(event_data);
+			});
+		
+		// Add both subscriptions to the main subscription
+		this.subscriptions.add(router_subscription);
+		this.subscriptions.add(event_subscription);
 
 	}
 
@@ -46,8 +66,13 @@ export class PrimaryNavComponent {
 		this.active_section = route.snapshot.data['section'] || '';
 		this.changeDetectorRef.detectChanges();
 	}
+
+	private manageEvent(event: EventData | null): void {
+		this.active_event = event;
+		this.changeDetectorRef.detectChanges();
+	}	
 	
 	ngOnDestroy(): void {
-		this.subscription.unsubscribe();
+		this.subscriptions.unsubscribe();
 	}
 }

@@ -1,12 +1,12 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, OnInit, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, computed } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-/* Application Dependencies */
-import { LocalStorageService } from '@client/modules/cache/services/local-storage/local-storage.service';
 /* Vendor Dependencies */
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
+/* Application Dependencies */
+import { Timezone } from '@client/modules/cache/services/local-storage/local-storage.types';
 
 @Component({
 	selector: 'orc-settings-time-timezone',
@@ -15,7 +15,12 @@ import { map, startWith } from 'rxjs/operators';
 	styleUrl: './settings-time-timezone.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SettingsTimeTimezoneComponent implements OnInit {
+export class SettingsTimeTimezoneComponent implements OnChanges {
+
+	@Input() timezone!: Timezone | null;
+	@Input() loading!: boolean;
+
+	@Output() timezoneChange = new EventEmitter<string|null>();
 
 	public timezone_control = new FormControl('', [Validators.required]);
 	public system_default_control = new FormControl(true);
@@ -31,14 +36,16 @@ export class SettingsTimeTimezoneComponent implements OnInit {
 		return '';
 	});
 
-	constructor(
-		public localStorageService: LocalStorageService,
-	) { }
+	constructor() { }
 
-	ngOnInit() {
-		const timezone = this.localStorageService.getTimezone();
-		this.initCheckbox(timezone.tz);
-		this.initTimezone(timezone.tz);
+	ngOnChanges(changes: SimpleChanges): void {
+		if(changes['loading'] && this.loading === false) this.init();
+	}
+
+	private init() {
+		if( this.timezone === null ) return;
+		this.initCheckbox(this.timezone?.tz);
+		this.initTimezone(this.timezone?.tz);
 		
 		this.filtered_options = this.timezone_control.valueChanges.pipe(
 			startWith(''),
@@ -67,21 +74,17 @@ export class SettingsTimeTimezoneComponent implements OnInit {
 
 	public onSystemDefaultChange(event: MatCheckboxChange) {
 		if( event.checked ) {
-			this.saveTimezone(null);
+			this.timezoneChange.emit(null);
 			this.timezone_control.setValue(this.system_timezone, { emitEvent: false });
 		}else{
-			this.saveTimezone(this.timezone_control.value);
+			this.timezoneChange.emit(this.timezone_control.value);
 		}
 	}
 
 	public onTimezoneChange(value: string|null) : void {
 		if( value === null ) return this.timezone_control.setErrors({ required: true });
 		if (!this.timezone_options.includes(value)) return this.timezone_control.setErrors({ invalid_timezone: true });
-		this.saveTimezone(value);
+		this.timezoneChange.emit(value);
 		if( value !== this.system_timezone ) return this.system_default_control.setValue(false);
-	}
-
-	public saveTimezone(tz: string|null) {
-		this.localStorageService.setTimezone({ tz: tz });
 	}
 }

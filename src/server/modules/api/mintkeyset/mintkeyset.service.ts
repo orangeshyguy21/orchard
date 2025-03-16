@@ -1,8 +1,5 @@
 /* Core Dependencies */
-import { Injectable, Inject } from '@nestjs/common';
-/* Vendor Dependencies */
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { Logger } from 'winston';
+import { Injectable, Logger } from '@nestjs/common';
 /* Application Dependencies */
 import { CashuMintDatabaseService } from '@server/modules/cashumintdb/cashumintdb.service';
 import { CashuMintKeyset } from '@server/modules/cashumintdb/cashumintdb.types';
@@ -12,21 +9,22 @@ import { OrchardMintKeyset } from './mintkeyset.model';
 @Injectable()
 export class MintKeysetService {
 
-  constructor(
-    private cashuMintDatabaseService: CashuMintDatabaseService,
-    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
-  ) {}
+	private readonly logger = new Logger(MintKeysetService.name);
 
-  async getMintKeysets() : Promise<OrchardMintKeyset[]> {
-    const db = this.cashuMintDatabaseService.getMintDatabase();
-    try {
-      const cashu_keysets : CashuMintKeyset[] = await this.cashuMintDatabaseService.getMintKeysets(db);
-      return cashu_keysets.map( ck => new OrchardMintKeyset(ck));
-    } catch (error) {
-      this.logger.error('Error getting keysets from mint database', { error });
-      throw new Error(error);
-    } finally {
-      db.close();
-    }
-  }
+	constructor(
+		private cashuMintDatabaseService: CashuMintDatabaseService,
+	) {}
+
+	async getMintKeysets() : Promise<OrchardMintKeyset[]> {
+		const db = this.cashuMintDatabaseService.getMintDatabase();
+		try {
+			const cashu_keysets : CashuMintKeyset[] = await this.cashuMintDatabaseService.getMintKeysets(db);
+			return cashu_keysets.map( ck => new OrchardMintKeyset(ck));
+		} catch (error) {
+			this.logger.error('Error getting keysets from mint database', { error });
+			throw new Error(error);
+		} finally {
+			db.close();
+		}
+	}
 }

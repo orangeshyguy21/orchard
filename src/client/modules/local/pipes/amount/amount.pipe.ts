@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import { Pipe, PipeTransform } from '@angular/core';
 /* Application Dependencies */
-import { LocalStorageService } from '@client/modules/cache/services/local-storage/local-storage.service';
+import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 
 @Pipe({
 	name: 'amount',
@@ -11,17 +11,17 @@ import { LocalStorageService } from '@client/modules/cache/services/local-storag
 export class AmountPipe implements PipeTransform {
 
 	constructor(
-		private localStorageService: LocalStorageService
+		private settingService: SettingService
 	) {}
 
 	transform(amount: number, unit: string, section?: string): string {
 		if (amount === null || amount === undefined) return '';
-		const locale = this.localStorageService.getLocale().code ?? Intl.DateTimeFormat().resolvedOptions().locale;
+		const locale = this.settingService.getLocale();
 		const unit_lower = unit.toLowerCase();
 		
 		switch (unit_lower) {
 			case 'sat':
-				return this.transformSat(amount);
+				return this.transformSat(amount, locale);
 			case 'btc':
 				return this.transformBtc(amount, unit, locale);
 			case 'usd':
@@ -33,9 +33,9 @@ export class AmountPipe implements PipeTransform {
 		}
 	}
 
-	private transformSat(amount: number): string {
+	private transformSat(amount: number, locale: string): string {
 		const suffix = (amount === 1) ? 'sat' : 'sats';
-		const sat_string = amount.toLocaleString();
+		const sat_string = amount.toLocaleString(locale);
 		return this.transformToHtml(sat_string, suffix);
 	}
 
@@ -47,7 +47,7 @@ export class AmountPipe implements PipeTransform {
 
 	private transformFiat(amount: number, unit: string, locale: string, section?: string): string {
 		let fiat_amount = amount;
-		if( section === 'mint' ) fiat_amount = amount/100;
+		if( section === 'mint' ) fiat_amount = AmountPipe.getConvertedAmount(unit, amount);
 		const fiat_amount_string = fiat_amount.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 		const suffix = unit.toUpperCase();
 		return this.transformToHtml(fiat_amount_string, suffix);
@@ -64,5 +64,20 @@ export class AmountPipe implements PipeTransform {
 				</span>
 			</span>
 		`;
+	}
+
+	public static getConvertedAmount(unit: string, amount: number): number {
+		switch (unit.toLowerCase()) {
+			case 'sat':
+				return amount;
+			case 'btc':
+				return amount;
+			case 'usd':
+				return amount/100;
+			case 'eur':
+				return amount/100;
+			default:
+				return amount;
+		}
 	}
 }

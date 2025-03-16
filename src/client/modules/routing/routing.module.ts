@@ -31,6 +31,10 @@ const interior_routes = [
 	{
 		path: 'settings',
 		loadChildren: () => import('@client/modules/settings/settings.module').then(m => m.SettingsModule),
+	},
+	{
+		path: 'event',
+		loadChildren: () => import('@client/modules/event/event.module').then(m => m.EventModule),
 	}
 ]
 

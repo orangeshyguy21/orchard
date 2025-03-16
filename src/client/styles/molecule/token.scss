@@ -8,7 +8,8 @@
     --orc-sys-brand-surface: #100;
 
     // asset colors
-    --orc-asset-btc: #f7931a;
-    --orc-asset-usd: #84B08D;
-    --orc-asset-eur: #8AAAD8;
+    --orc-asset-btc: light-dark(#f7931a, #f7931a);
+    --orc-asset-usd: light-dark(#84B08D, #84B08D);
+    --orc-asset-eur: light-dark(#8AAAD8, #8AAAD8);
+
 }

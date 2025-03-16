@@ -12,9 +12,18 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  /** A Unix timestamp */
+  /** Timezone custom scalar type based on IANA timezone database */
+  Timezone: { input: any; output: any; }
+  /** A Unix timestamp in seconds */
   UnixTimestamp: { input: any; output: any; }
 };
+
+export enum MintAnalyticsInterval {
+  Custom = 'custom',
+  Day = 'day',
+  Month = 'month',
+  Week = 'week'
+}
 
 export enum MintQuoteStatus {
   Issued = 'ISSUED',
@@ -200,6 +209,15 @@ export type Query = {
   mint_proofs_pending: Array<OrchardMintProof>;
   mint_proofs_used: Array<OrchardMintProof>;
   status: OrchardStatus;
+};
+
+
+export type QueryMint_Analytics_BalancesArgs = {
+  date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  interval?: InputMaybe<MintAnalyticsInterval>;
+  timezone?: InputMaybe<Scalars['Timezone']['input']>;
+  units?: InputMaybe<Array<MintUnit>>;
 };
 
 

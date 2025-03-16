@@ -1,0 +1,35 @@
+<div class="p-1">
+    <div class="title-l p-b-1 p-l-1">Theme</div>
+    <mat-card appearance="outlined">
+        <mat-card-content>
+            <div class="p-l-1 p-r-1 p-t-1 flex flex-column flex-gap-1">
+
+                <div class="flex flex-items-center">
+                    <form class="flex-grow flex flex-items-center flex-gap-1">
+                        <div class="w-min-18 m-b-1-25">
+                            <mat-slide-toggle
+                                [formControl]="theme_control"
+                                (change)="onThemeChange($event)"
+                                name="theme">dark or light
+                            </mat-slide-toggle>
+                        </div>
+                        <div class="m-b-1-25">
+                            <mat-checkbox 
+                                [formControl]="system_default_control"
+                                (change)="onSystemDefaultChange($event)">
+                                System default
+                            </mat-checkbox>
+                        </div>
+                    </form>
+            
+                    <div class="w-max-36 m-b-1-25">
+                        <div>
+                            todo
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </mat-card-content>
+    </mat-card>
+</div>

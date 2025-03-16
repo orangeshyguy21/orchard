@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 /* Vendor Dependencies */
 import sqlite3 from "sqlite3";
 const sqlite3d = require('sqlite3').verbose();
+import { DateTime } from 'luxon';
 /* Local Dependencies */
 import { 
   CashuMintBalance,
@@ -143,27 +144,15 @@ export class CashuMintDatabaseService {
   /* Analytics */
 
   public async getMintAnalyticsBalances(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
+    console.log('getMintAnalyticsBalances', args);
     // Default interval is daily if not specified
     const interval = args?.interval || 'day';
+    // Default timezone to UTC if not specified
+    const timezone = args?.timezone || 'UTC';
     
-    // Build the date format string based on interval
-    let date_format = '';
-    let group_by = '';
-    
-    switch(interval) {
-      case 'day':
-        date_format = "strftime('%s', DATE(mq.created_time, 'unixepoch', 'localtime'))";
-        group_by = "DATE(mq.created_time, 'unixepoch', 'localtime')";
-        break;
-      case 'week':
-        date_format = "strftime('%s', DATE(mq.created_time, 'unixepoch', 'localtime', 'weekday 0', '-6 days'))";
-        group_by = "DATE(mq.created_time, 'unixepoch', 'localtime', 'weekday 0', '-6 days')";
-        break;
-      case 'month':
-        date_format = "strftime('%s', DATE(mq.created_time, 'unixepoch', 'localtime', 'start of month'))";
-        group_by = "strftime('%Y-%m', DATETIME(mq.created_time, 'unixepoch', 'localtime'))";
-        break;
-    }
+    // Calculate timezone offset in seconds
+    const now = DateTime.now().setZone(timezone);
+    const offset_seconds = now.offset * 60; // Convert minutes to seconds
     
     // Build WHERE clause conditions
     const where_conditions = [];
@@ -179,10 +168,10 @@ export class CashuMintDatabaseService {
       params.push(args.date_end);
     }
     
-    if (args?.unit && args.unit.length > 0) {
-      const unit_placeholders = args.unit.map(() => '?').join(',');
+    if (args?.units && args.units.length > 0) {
+      const unit_placeholders = args.units.map(() => '?').join(',');
       where_conditions.push(`mq.unit IN (${unit_placeholders})`);
-      params.push(...args.unit);
+      params.push(...args.units);
     }
     
     // Construct the WHERE clause
@@ -190,23 +179,64 @@ export class CashuMintDatabaseService {
       ? `WHERE ${where_conditions.join(' AND ')}` 
       : '';
     
-    const sql = `SELECT 
-      ${date_format} AS created_time,
-      mq.unit,
-      SUM(CASE WHEN mq.state = 'ISSUED' THEN mq.amount ELSE 0 END) - 
-      SUM(CASE WHEN lq.state = 'PAID' THEN lq.amount ELSE 0 END) AS amount,
-      COUNT(mq.quote) + COUNT(lq.quote) AS operation_count
-    FROM 
-      mint_quotes mq
-      LEFT JOIN melt_quotes lq ON ${group_by} = DATE(lq.created_time, 'unixepoch', 'localtime')
-      ${where_clause}
-    GROUP BY 
-      ${group_by}, mq.unit;`;
-
+    let time_group_sql;
+    
+    if (interval === 'custom') {
+      time_group_sql = "mq.unit AS time_group";
+    } else if (interval === 'day') {
+      time_group_sql = `strftime('%Y-%m-%d', datetime(mq.created_time + ${offset_seconds}, 'unixepoch')) AS time_group`;
+    } else if (interval === 'week') {
+      time_group_sql = `strftime('%Y-%m-%d', datetime(mq.created_time + ${offset_seconds} - (strftime('%w', datetime(mq.created_time + ${offset_seconds}, 'unixepoch')) - 1) * 86400, 'unixepoch')) AS time_group`;
+    } else if (interval === 'month') {
+      time_group_sql = `strftime('%Y-%m-01', datetime(mq.created_time + ${offset_seconds}, 'unixepoch')) AS time_group`;
+    }
+    
+    const sql = `
+      SELECT 
+        ${time_group_sql},
+        mq.unit,
+        SUM(CASE WHEN mq.state = 'ISSUED' THEN mq.amount ELSE 0 END) - 
+        SUM(CASE WHEN lq.state = 'PAID' THEN lq.amount ELSE 0 END) AS amount,
+        COUNT(DISTINCT mq.quote) + COUNT(DISTINCT lq.quote) AS operation_count,
+        MIN(mq.created_time) as min_created_time
+      FROM 
+        mint_quotes mq
+        LEFT JOIN melt_quotes lq ON lq.unit = mq.unit
+        ${where_clause}
+      GROUP BY 
+        time_group, mq.unit
+      ORDER BY 
+        min_created_time;`;
+    
     return new Promise((resolve, reject) => {
-      db.all(sql, params, (err, rows:CashuMintAnalytics[]) => {
-        if (err) reject(err);
-        resolve(rows);
+      db.all(sql, params, (err, rows:any[]) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+                
+        const result = rows.map(row => {
+          let timestamp;
+          
+          if (interval === 'custom') {
+            // For custom interval, use the original timestamp
+            timestamp = row.min_created_time;
+          } else {
+            // Get the date from the time_group using the proper timezone
+            // Important: Use startOf('day') to ensure we're getting midnight in the target timezone
+            const dt = DateTime.fromFormat(row.time_group, 'yyyy-MM-dd', {zone: timezone}).startOf('day');
+            timestamp = Math.floor(dt.toSeconds());
+          }
+          
+          return {
+            unit: row.unit,
+            amount: row.amount,
+            created_time: timestamp,
+            operation_count: row.operation_count,
+          };
+        });
+        
+        resolve(result as CashuMintAnalytics[]);
       });
     });
   }

@@ -18,6 +18,18 @@ todo: timezone (UTC - local)
 	</orc-secondary-nav>
 
     <div class="subsection-container">
-      	<orc-settings-time></orc-settings-time>
+      	<orc-settings-time
+			[locale]="locale"
+			[timezone]="timezone"
+			[loading]="loading"
+			(localeChange)="onLocaleChange($event)"
+			(timezoneChange)="onTimezoneChange($event)">
+		</orc-settings-time>
+		<orc-settings-theme
+			[theme]="theme"
+			[loading]="loading"
+			(themeChange)="onThemeChange($event)">
+		</orc-settings-theme>
     </div>
+	
 </section>

@@ -3,8 +3,9 @@ import { Kind, ValueNode } from 'graphql';
 import { GraphQLScalarType } from 'graphql';
 
 export const UnixTimestamp = new GraphQLScalarType({
+
   name: 'UnixTimestamp',
-  description: 'A Unix timestamp',
+  description: 'A Unix timestamp in seconds',
 
   parseValue(value: number): number {
     return value;

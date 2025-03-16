@@ -17,7 +17,7 @@ export class OrchardMintAnalytics {
 	amount: number;
 
 	@Field(type => UnixTimestamp)
-	created_time: string;
+	created_time: number;
 
 	@Field(type => Int)
 	operation_count: number;

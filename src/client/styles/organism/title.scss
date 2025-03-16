@@ -2,5 +2,10 @@
 
 .title-l {
     @extend .font-size-l;
-    @extend .orc-on-primary-container-color;
+    @extend .orc-on-surface-variant-color;
+}
+
+.title-m {
+    @extend .font-size-m;
+    @extend .orc-outline-color;
 }

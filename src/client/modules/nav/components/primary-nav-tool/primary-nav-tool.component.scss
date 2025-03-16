@@ -1,7 +1,7 @@
 @use '@styles/molecule/molecule';
 
 .primary-nav-tool-container{
-    @extend .orc-outline;
+    @extend .orc-outline-border;
     @extend .orc-corner-full;
     @extend .p-0-125;
 }

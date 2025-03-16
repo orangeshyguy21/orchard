@@ -4,15 +4,31 @@ import { RouterOutlet } from '@angular/router';
 import { BrowserModule } from '@angular/platform-browser'; 
 import { provideHttpClient } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
-
-/* Application Modules */
+/* Vendor Dependencies */
+import { provideLuxonDateAdapter } from '@angular/material-luxon-adapter';
+import { provideCharts } from 'ng2-charts';
+import { 
+	LineController,
+	BarController,
+	LinearScale,
+	TimeSeriesScale,
+	CategoryScale,
+	PointElement,
+	LineElement,
+	BarElement,
+	Tooltip,
+	Filler,
+	Legend,
+} from 'chart.js';
+import 'chartjs-adapter-luxon';
+/* Application Dependencies */
 import { RoutingModule } from './modules/routing/routing.module';
-/* Application Components */
+/* Native Dependencies */
 import { AppComponent } from './app.component';
 
 @NgModule({
     declarations: [
-      AppComponent,
+      	AppComponent,
     ],
     imports: [
         RouterOutlet,
@@ -20,11 +36,27 @@ import { AppComponent } from './app.component';
         RoutingModule
     ],
     providers: [
-      provideHttpClient(),
-      provideAnimations(),
+		provideHttpClient(),
+		provideAnimations(),
+		provideLuxonDateAdapter(),
+		provideCharts({ 
+			registerables: [
+				LineController,
+				BarController,
+				LinearScale,
+				TimeSeriesScale,
+				CategoryScale,
+				PointElement,
+				LineElement,
+				BarElement,
+				Tooltip,
+				Filler,
+				Legend
+			]
+		}),
     ],
     bootstrap: [
-      AppComponent
+      	AppComponent
     ]
   })
   export class AppModule { }

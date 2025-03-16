@@ -1,11 +1,11 @@
 <div>
-    <div class="p-b-0-5">Timezone</div>
-    <div class="flex">
+    <div class="flex flex-items-center">
         <form class="flex-grow flex flex-items-center flex-gap-1">
             <div>
-                <mat-form-field class="primary-form-field">
-                    <mat-label>Number</mat-label>
-                    <input type="text"
+                <mat-form-field hideRequiredMarker="true" class="primary-form-field">
+                    <mat-label>Timezone</mat-label>
+                    <input 
+                        type="text"
                         placeholder="Pick one"
                         aria-label="Number"
                         matInput
@@ -31,15 +31,9 @@
             </div>
         </form>
 
-        <div class="w-max-36">
+        <div class="w-max-36 m-b-1-25">
             <div>
                 {{ unix_timestamp_seconds | time }}
-            </div>
-            <br>
-            <div>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
-                sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                Ut enim ad minim veniam, quis nostrud
             </div>
         </div>
     </div>

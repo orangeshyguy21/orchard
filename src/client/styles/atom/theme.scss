@@ -10,6 +10,7 @@
 /* Specific Table Overrides */
 .orc-feature-table {
 	@include mat.table-overrides((
-		row-item-container-height: 3.5rem,
+		header-container-height: 2.5rem,
+		row-item-container-height: 3.0rem,
 	));
 }
