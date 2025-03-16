@@ -25,7 +25,6 @@
     background-color: var(--orc-asset-eur);
 }
 
-
 // Orchard Text Colors
 
 .orc-on-primary-color {
@@ -111,17 +110,19 @@
     border-radius: 0.5rem 0.5rem 0 0;
 }
 
+// var(--mdc-outlined-card-outline-color, var(--mat-sys-outline-variant))
 // Orchard Border Colors
 .orc-surface-tint-border{
     border-color: var(--mat-sys-surface-tint);
 }
-
 .orc-surface-variant-border{
     border-color: var(--mat-sys-surface-variant);
 }
-
-.orc-outline{
+.orc-outline-border{
     border: 1px solid var(--mat-sys-outline);
+}
+.orc-outline-variant-border{
+    border-color: var(--mat-sys-outline-variant);
 }
 
 // Orchard Elevation Levels

@@ -16,6 +16,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { BaseChartDirective } from 'ng2-charts';
 /* Application Dependencies */
 import { NavModule } from '@client/modules/nav/nav.module';
@@ -96,6 +97,7 @@ export class MintRoutingModule { }
 		MatSelectModule,
 		MatSliderModule,
 		MatCheckboxModule,
+		MatSlideToggleModule,
 		BaseChartDirective,
 		NavModule,
 		LocalModule,

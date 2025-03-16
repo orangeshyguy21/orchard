@@ -106,12 +106,14 @@ export class MintBalanceChartComponent implements OnChanges {
 				label: unit.toUpperCase(),
 				backgroundColor: color.bg,
 				borderColor: color.border,
-				borderWidth: 1,
+				borderWidth: 2,
 				borderRadius: 3,
 				pointBackgroundColor: color.border,
 				pointBorderColor: color.border,
 				pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
 				pointHoverBorderColor: color.border,
+				pointRadius: 0, // Add point size (radius in pixels)
+				pointHoverRadius: 4, // Optional: size when hovered
 				fill: {
 					target: 'origin',
 					above: color.bg,

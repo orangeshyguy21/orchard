@@ -4,7 +4,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 /* Vendor Dependencies */
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import QRCodeStyling, { DotType, CornerSquareType } from 'qr-code-styling';
-import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 /* Application Dependencies */
 import { ThemeService } from '@client/modules/settings/services/theme/theme.service';
 import { ThemeType } from '@client/modules/cache/services/local-storage/local-storage.types';
@@ -109,7 +109,7 @@ export class MintQrcodeDialogComponent implements OnInit {
 		});
 	}
 
-	public onImageChange(event: MatCheckboxChange): void {
+	public onImageChange(event: MatSlideToggleChange): void {
 		console.log(event);
 		if( this.qr_options.value.image === null || this.qr_options.value.image === undefined ) return;
 		this.qr_code.update({
