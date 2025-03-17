@@ -6,7 +6,18 @@ import { BehaviorSubject, catchError, map, Observable, of, shareReplay, tap, thr
 /* Application Dependencies */
 import { api, getApiQuery } from '@client/modules/api/helpers/api.helpers';
 import { GQLResponse } from '@client/modules/api/types/api.types';
-import { MintInfoResponse, MintBalancesResponse, MintKeysetsResponse, MintPromisesResponse, MintPromisesArgs, MintAnalyticsArgs, MintAnalyticsBalancesResponse } from '@client/modules/mint/types/mint.types';
+import { 
+	MintInfoResponse,
+	MintBalancesResponse,
+	MintKeysetsResponse,
+	MintPromisesResponse,
+	MintPromisesArgs,
+	MintAnalyticsArgs,
+	MintAnalyticsBalancesResponse,
+	MintAnalyticsMintsResponse,
+	MintAnalyticsMeltsResponse,
+	MintAnalyticsTransfersResponse,
+} from '@client/modules/mint/types/mint.types';
 import { CacheService } from '@client/modules/cache/services/cache/cache.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 import { MintBalance } from '@client/modules/mint/classes/mint-balance.class';
@@ -16,7 +27,16 @@ import { MintAnalytic } from '@client/modules/mint/classes/mint-analytic.class';
 /* Shared Dependencies */
 import { MintAnalyticsInterval } from '@shared/generated.types';
 /* Local Dependencies */
-import { MINT_INFO_QUERY, MINT_BALANCES_QUERY, MINT_KEYSETS_QUERY, MINT_PROMISES_QUERY, MINT_ANALYTICS_BALANCES_QUERY } from './mint.queries';
+import { 
+	MINT_INFO_QUERY, 
+	MINT_BALANCES_QUERY, 
+	MINT_KEYSETS_QUERY, 
+	MINT_PROMISES_QUERY, 
+	MINT_ANALYTICS_BALANCES_QUERY, 
+	MINT_ANALYTICS_MINTS_QUERY,
+	MINT_ANALYTICS_MELTS_QUERY,
+	MINT_ANALYTICS_TRANSFERS_QUERY,
+} from './mint.queries';
 
 
 @Injectable({
@@ -31,6 +51,12 @@ export class MintService {
 		MINT_PROMISES: 'mint-promises',
 		MINT_ANALYTICS_BALANCES: 'mint-analytics-balances',
 		MINT_ANALYTICS_PRE_BALANCES: 'mint-analytics-pre-balances',
+		MINT_ANALYTICS_MINTS: 'mint-analytics-mints',
+		MINT_ANALYTICS_PRE_MINTS: 'mint-analytics-pre-mints',
+		MINT_ANALYTICS_MELTS: 'mint-analytics-melts',
+		MINT_ANALYTICS_PRE_MELTS: 'mint-analytics-pre-melts',
+		MINT_ANALYTICS_TRANSFERS: 'mint-analytics-transfers',
+		MINT_ANALYTICS_PRE_TRANSFERS: 'mint-analytics-pre-transfers',
 	};
 
 	private readonly CACHE_DURATIONS = {
@@ -40,6 +66,12 @@ export class MintService {
 		[this.CACHE_KEYS.MINT_PROMISES]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.MINT_ANALYTICS_BALANCES]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.MINT_ANALYTICS_PRE_BALANCES]: 5 * 60 * 1000, // 5 minutes
+		[this.CACHE_KEYS.MINT_ANALYTICS_MINTS]: 5 * 60 * 1000, // 5 minutes
+		[this.CACHE_KEYS.MINT_ANALYTICS_PRE_MINTS]: 5 * 60 * 1000, // 5 minutes
+		[this.CACHE_KEYS.MINT_ANALYTICS_MELTS]: 5 * 60 * 1000, // 5 minutes
+		[this.CACHE_KEYS.MINT_ANALYTICS_PRE_MELTS]: 5 * 60 * 1000, // 5 minutes
+		[this.CACHE_KEYS.MINT_ANALYTICS_TRANSFERS]: 5 * 60 * 1000, // 5 minutes
+		[this.CACHE_KEYS.MINT_ANALYTICS_PRE_TRANSFERS]: 5 * 60 * 1000, // 5 minutes
 	};
 
 	/* Subjects for caching */
@@ -50,6 +82,12 @@ export class MintService {
 
 	private readonly mint_analytics_balances_subject: BehaviorSubject<MintAnalytic[] | null>;
 	private readonly mint_analytics_pre_balances_subject: BehaviorSubject<MintAnalytic[] | null>;
+	private readonly mint_analytics_mints_subject: BehaviorSubject<MintAnalytic[] | null>;
+	private readonly mint_analytics_pre_mints_subject: BehaviorSubject<MintAnalytic[] | null>;
+	private readonly mint_analytics_melts_subject: BehaviorSubject<MintAnalytic[] | null>;
+	private readonly mint_analytics_pre_melts_subject: BehaviorSubject<MintAnalytic[] | null>;
+	private readonly mint_analytics_transfers_subject: BehaviorSubject<MintAnalytic[] | null>;
+	private readonly mint_analytics_pre_transfers_subject: BehaviorSubject<MintAnalytic[] | null>;
 
 	/* Observables for caching (rapid request caching) */
 	private mint_info_observable!: Observable<MintInfo> | null;
@@ -82,6 +120,41 @@ export class MintService {
 			this.CACHE_KEYS.MINT_ANALYTICS_PRE_BALANCES,
 			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_ANALYTICS_PRE_BALANCES]
 		);
+		this.mint_analytics_mints_subject = this.cache.createCache<MintAnalytic[]>(
+			this.CACHE_KEYS.MINT_ANALYTICS_MINTS,
+			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_ANALYTICS_MINTS]
+		);
+		this.mint_analytics_pre_mints_subject = this.cache.createCache<MintAnalytic[]>(
+			this.CACHE_KEYS.MINT_ANALYTICS_PRE_MINTS,
+			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_ANALYTICS_PRE_MINTS]
+		);
+		this.mint_analytics_melts_subject = this.cache.createCache<MintAnalytic[]>(
+			this.CACHE_KEYS.MINT_ANALYTICS_MELTS,
+			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_ANALYTICS_MELTS]
+		);
+		this.mint_analytics_pre_melts_subject = this.cache.createCache<MintAnalytic[]>(
+			this.CACHE_KEYS.MINT_ANALYTICS_PRE_MELTS,
+			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_ANALYTICS_PRE_MELTS]
+		);
+		this.mint_analytics_transfers_subject = this.cache.createCache<MintAnalytic[]>(
+			this.CACHE_KEYS.MINT_ANALYTICS_TRANSFERS,
+			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_ANALYTICS_TRANSFERS]
+		);
+		this.mint_analytics_pre_transfers_subject = this.cache.createCache<MintAnalytic[]>(
+			this.CACHE_KEYS.MINT_ANALYTICS_PRE_TRANSFERS,
+			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_ANALYTICS_PRE_TRANSFERS]
+		);
+	}
+
+	public clearAnalyticsCache() {
+		this.cache.clearCache(this.CACHE_KEYS.MINT_ANALYTICS_BALANCES);
+		this.cache.clearCache(this.CACHE_KEYS.MINT_ANALYTICS_PRE_BALANCES);
+		this.cache.clearCache(this.CACHE_KEYS.MINT_ANALYTICS_MINTS);
+		this.cache.clearCache(this.CACHE_KEYS.MINT_ANALYTICS_PRE_MINTS);
+		this.cache.clearCache(this.CACHE_KEYS.MINT_ANALYTICS_MELTS);
+		this.cache.clearCache(this.CACHE_KEYS.MINT_ANALYTICS_PRE_MELTS);
+		this.cache.clearCache(this.CACHE_KEYS.MINT_ANALYTICS_TRANSFERS);
+		this.cache.clearCache(this.CACHE_KEYS.MINT_ANALYTICS_PRE_TRANSFERS);
 	}
 
 	public loadMintInfo(): Observable<MintInfo> {
@@ -193,6 +266,90 @@ export class MintService {
 			}),
 			catchError((error) => {
 				console.error('Error loading mint analytics balances:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public loadMintAnalyticsMints(args:MintAnalyticsArgs) {
+		if( args.interval === MintAnalyticsInterval.Custom ) {
+			return this.loadGenericMintAnalyticsMints(args, this.mint_analytics_pre_mints_subject.value, this.CACHE_KEYS.MINT_ANALYTICS_PRE_MINTS);
+		}else{
+			return this.loadGenericMintAnalyticsMints(args, this.mint_analytics_mints_subject.value, this.CACHE_KEYS.MINT_ANALYTICS_MINTS);
+		}
+	}
+
+	private loadGenericMintAnalyticsMints(args:MintAnalyticsArgs, subject_value:MintAnalytic[] | null, cache_key:string): Observable<MintAnalytic[]> {
+		if (subject_value && this.cache.isCacheValid(cache_key)) {
+			return of(subject_value);
+		}
+
+		const query = getApiQuery(MINT_ANALYTICS_MINTS_QUERY, args);
+
+		return this.http.post<GQLResponse<MintAnalyticsMintsResponse>>(api, query).pipe(
+			map((response) => response.data.mint_analytics_mints),
+			map((mint_analytics_mints) => mint_analytics_mints.map((mint_analytic) => new MintAnalytic(mint_analytic))),
+			tap((mint_analytics_mints) => {
+				this.cache.updateCache(cache_key, mint_analytics_mints);
+			}),
+			catchError((error) => {
+				console.error('Error loading mint analytics mints:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public loadMintAnalyticsMelts(args:MintAnalyticsArgs) {
+		if( args.interval === MintAnalyticsInterval.Custom ) {
+			return this.loadGenericMintAnalyticsMelts(args, this.mint_analytics_pre_melts_subject.value, this.CACHE_KEYS.MINT_ANALYTICS_PRE_MELTS);
+		}else{
+			return this.loadGenericMintAnalyticsMelts(args, this.mint_analytics_melts_subject.value, this.CACHE_KEYS.MINT_ANALYTICS_MELTS);
+		}
+	}
+
+	private loadGenericMintAnalyticsMelts(args:MintAnalyticsArgs, subject_value:MintAnalytic[] | null, cache_key:string): Observable<MintAnalytic[]> {
+		if (subject_value && this.cache.isCacheValid(cache_key)) {
+			return of(subject_value);
+		}
+
+		const query = getApiQuery(MINT_ANALYTICS_MELTS_QUERY, args);
+
+		return this.http.post<GQLResponse<MintAnalyticsMeltsResponse>>(api, query).pipe(
+			map((response) => response.data.mint_analytics_melts),
+			map((mint_analytics_melts) => mint_analytics_melts.map((mint_analytic) => new MintAnalytic(mint_analytic))),
+			tap((mint_analytics_melts) => {
+				this.cache.updateCache(cache_key, mint_analytics_melts);
+			}),
+			catchError((error) => {
+				console.error('Error loading mint analytics melts:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public loadMintAnalyticsTransfers(args:MintAnalyticsArgs) {
+		if( args.interval === MintAnalyticsInterval.Custom ) {
+			return this.loadGenericMintAnalyticsTransfers(args, this.mint_analytics_pre_transfers_subject.value, this.CACHE_KEYS.MINT_ANALYTICS_PRE_TRANSFERS);
+		}else{
+			return this.loadGenericMintAnalyticsTransfers(args, this.mint_analytics_transfers_subject.value, this.CACHE_KEYS.MINT_ANALYTICS_TRANSFERS);
+		}
+	}
+
+	private loadGenericMintAnalyticsTransfers(args:MintAnalyticsArgs, subject_value:MintAnalytic[] | null, cache_key:string): Observable<MintAnalytic[]> {
+		if (subject_value && this.cache.isCacheValid(cache_key)) {
+			return of(subject_value);
+		}
+
+		const query = getApiQuery(MINT_ANALYTICS_TRANSFERS_QUERY, args);
+
+		return this.http.post<GQLResponse<MintAnalyticsTransfersResponse>>(api, query).pipe(
+			map((response) => response.data.mint_analytics_transfers),
+			map((mint_analytics_transfers) => mint_analytics_transfers.map((mint_analytic) => new MintAnalytic(mint_analytic))),
+			tap((mint_analytics_transfers) => {
+				this.cache.updateCache(cache_key, mint_analytics_transfers);
+			}),
+			catchError((error) => {
+				console.error('Error loading mint analytics transfers:', error);
 				return throwError(() => error);
 			})
 		);

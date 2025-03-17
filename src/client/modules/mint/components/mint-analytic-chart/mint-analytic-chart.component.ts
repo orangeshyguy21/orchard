@@ -5,6 +5,7 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ScaleChartOptions, ChartType as ChartJsType } from 'chart.js';
 import { DateTime } from 'luxon';
 /* Application Dependencies */
+import { NonNullableMintChartSettings } from '@client/modules/chart/services/chart/chart.types';
 import { 
 	groupAnalyticsByUnit,
 	prependData,
@@ -26,27 +27,24 @@ import { ChartService } from '@client/modules/chart/services/chart/chart.service
 /* Native Dependencies */
 import { MintAnalytic } from '@client/modules/mint/classes/mint-analytic.class';
 import { ChartType } from '@client/modules/mint/enums/chart-type.enum';
-/* Shared Dependencies */
-import { MintAnalyticsInterval } from '@shared/generated.types';
 
 @Component({
-	selector: 'orc-mint-balance-chart',
+	selector: 'orc-mint-analytic-chart',
 	standalone: false,
-	templateUrl: './mint-balance-chart.component.html',
-	styleUrl: './mint-balance-chart.component.scss',
+	templateUrl: './mint-analytic-chart.component.html',
+	styleUrl: './mint-analytic-chart.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MintBalanceChartComponent implements OnChanges {
+export class MintAnalyticChartComponent implements OnChanges {
 
 	@ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
+	@Input() public title!: string;
 	@Input() public locale!: string;
-	@Input() public mint_balances!: MintAnalytic[];
-	@Input() public mint_balances_preceeding!: MintAnalytic[];
-	@Input() public selected_date_start!: number;
-	@Input() public selected_date_end!: number;
-	@Input() public selected_interval!: MintAnalyticsInterval;
-	@Input() public selected_type!: ChartType;
+	@Input() public mint_analytics!: MintAnalytic[];
+	@Input() public mint_analytics_pre!: MintAnalytic[];
+	@Input() public chart_settings!: NonNullableMintChartSettings;
+	@Input() public selected_type!: ChartType | undefined;
 	@Input() public loading!: boolean;
 
 	public chart_type!: ChartJsType;
@@ -88,12 +86,12 @@ export class MintBalanceChartComponent implements OnChanges {
 	}
 
 	private getAmountChartData(): ChartConfiguration['data'] {
-		if (!this.mint_balances || this.mint_balances.length === 0) return { datasets: [] };
-		const timestamp_first = DateTime.fromSeconds(this.selected_date_start).startOf('day').toSeconds();
-		const timestamp_last = DateTime.fromSeconds(this.selected_date_end).startOf('day').toSeconds();
-		const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.selected_interval);
-		const data_unit_groups = groupAnalyticsByUnit(this.mint_balances);
-		const data_unit_groups_prepended = prependData(data_unit_groups, this.mint_balances_preceeding);
+		if (!this.mint_analytics || this.mint_analytics.length === 0) return { datasets: [] };
+		const timestamp_first = DateTime.fromSeconds(this.chart_settings.date_start).startOf('day').toSeconds();
+		const timestamp_last = DateTime.fromSeconds(this.chart_settings.date_end).startOf('day').toSeconds();
+		const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.chart_settings.interval);
+		const data_unit_groups = groupAnalyticsByUnit(this.mint_analytics);
+		const data_unit_groups_prepended = prependData(data_unit_groups, this.mint_analytics_pre);
 		const datasets = Object.entries(data_unit_groups_prepended).map(([unit, data], index) => {
 			const data_keyed_by_timestamp = getDataKeyedByTimestamp(data, 'amount');
 			const color = this.chartService.getAssetColor(unit, index);
@@ -131,7 +129,7 @@ export class MintBalanceChartComponent implements OnChanges {
 		const units = this.chart_data.datasets.map(item => item.label);
 		const y_axis = getYAxis(units);
 		const scales: ScaleChartOptions<'line'>['scales'] = {};
-		scales['x'] = getXAxisConfig(this.selected_interval, this.locale);
+		scales['x'] = getXAxisConfig(this.chart_settings.interval, this.locale);
 		if( y_axis.includes('ybtc') ) scales['ybtc'] = getBtcYAxisConfig({
 			grid_color: this.chartService.getGridColor()
 		});
@@ -174,12 +172,12 @@ export class MintBalanceChartComponent implements OnChanges {
 	}
 
 	private getOperationsChartData(): ChartConfiguration['data'] {
-		if (!this.mint_balances || this.mint_balances.length === 0) return { datasets: [] };
-		const timestamp_first = DateTime.fromSeconds(this.selected_date_start).startOf('day').toSeconds();
-		const timestamp_last = DateTime.fromSeconds(this.selected_date_end).startOf('day').toSeconds();
-		const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.selected_interval);
-		const data_unit_groups = groupAnalyticsByUnit(this.mint_balances);
-		const data_unit_groups_prepended = prependData(data_unit_groups, this.mint_balances_preceeding);
+		if (!this.mint_analytics || this.mint_analytics.length === 0) return { datasets: [] };
+		const timestamp_first = DateTime.fromSeconds(this.chart_settings.date_start).startOf('day').toSeconds();
+		const timestamp_last = DateTime.fromSeconds(this.chart_settings.date_end).startOf('day').toSeconds();
+		const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.chart_settings.interval);
+		const data_unit_groups = groupAnalyticsByUnit(this.mint_analytics);
+		const data_unit_groups_prepended = prependData(data_unit_groups, this.mint_analytics_pre);
 		const datasets = Object.entries(data_unit_groups_prepended).map(([unit, data], index) => {
 			const data_keyed_by_timestamp = getDataKeyedByTimestamp(data, 'operation_count');
 			const color = this.chartService.getAssetColor(unit, index);
@@ -214,7 +212,7 @@ export class MintBalanceChartComponent implements OnChanges {
 			responsive: true,
 			scales: {
 				x: { 
-					...getXAxisConfig(this.selected_interval, this.locale),
+					...getXAxisConfig(this.chart_settings.interval, this.locale),
 					stacked: true 
 				},
 				y: {

@@ -197,6 +197,8 @@ export type OrchardStatus = {
 export type Query = {
   __typename?: 'Query';
   mint_analytics_balances: Array<OrchardMintAnalytics>;
+  mint_analytics_melts: Array<OrchardMintAnalytics>;
+  mint_analytics_mints: Array<OrchardMintAnalytics>;
   mint_balances: Array<OrchardMintBalance>;
   mint_balances_issued: Array<OrchardMintBalance>;
   mint_balances_redeemed: Array<OrchardMintBalance>;
@@ -213,6 +215,24 @@ export type Query = {
 
 
 export type QueryMint_Analytics_BalancesArgs = {
+  date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  interval?: InputMaybe<MintAnalyticsInterval>;
+  timezone?: InputMaybe<Scalars['Timezone']['input']>;
+  units?: InputMaybe<Array<MintUnit>>;
+};
+
+
+export type QueryMint_Analytics_MeltsArgs = {
+  date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  interval?: InputMaybe<MintAnalyticsInterval>;
+  timezone?: InputMaybe<Scalars['Timezone']['input']>;
+  units?: InputMaybe<Array<MintUnit>>;
+};
+
+
+export type QueryMint_Analytics_MintsArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   interval?: InputMaybe<MintAnalyticsInterval>;

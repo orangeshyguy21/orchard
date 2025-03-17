@@ -36,18 +36,51 @@ export class MintAnalyticsResolver {
 		} 
 	}
 
-	// @Query(() => [OrchardMintAnalytics])
-	// async mint_analytics_balance_sum(
-	// 	@Args('units', { type: () => [MintUnit], nullable: true }) units?: MintUnit[],
-	// 	@Args('date_start', { type: () => UnixTimestamp, nullable: true }) date_start?: number,
-	// 	@Args('date_end', { type: () => UnixTimestamp, nullable: true }) date_end?: number,
-	// 	@Args('timezone', { type: () => Timezone, nullable: true }) timezone?: TimezoneType,
-	// ) : Promise<OrchardMintAnalytics[]> {
-	// 	try {
-	// 		this.logger.debug('GET { mint_analytics_balance_sum }');
-	// 		return await this.mintAnalyticsService.getMintAnalyticsBalanceSum({ units, date_start, date_end, timezone });
-	// 	} catch (error) {
-	// 		throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
-	// 	}
-	// }
+	@Query(() => [OrchardMintAnalytics])
+	async mint_analytics_mints(
+		@Args('units', { type: () => [MintUnit], nullable: true }) units?: MintUnit[],
+		@Args('date_start', { type: () => UnixTimestamp, nullable: true }) date_start?: number,
+		@Args('date_end', { type: () => UnixTimestamp, nullable: true }) date_end?: number,
+		@Args('interval', { type: () => MintAnalyticsInterval, nullable: true }) interval?: MintAnalyticsInterval,
+		@Args('timezone', { type: () => Timezone, nullable: true }) timezone?: TimezoneType,
+	) : Promise<OrchardMintAnalytics[]> {
+		try {
+			this.logger.debug('GET { mint_analytics_mints }');
+			return await this.mintAnalyticsService.getMintAnalyticsMints({ units, date_start, date_end, interval, timezone });
+		} catch (error) {
+			throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
+		} 
+	}	
+
+	@Query(() => [OrchardMintAnalytics])
+	async mint_analytics_melts(
+		@Args('units', { type: () => [MintUnit], nullable: true }) units?: MintUnit[],
+		@Args('date_start', { type: () => UnixTimestamp, nullable: true }) date_start?: number,
+		@Args('date_end', { type: () => UnixTimestamp, nullable: true }) date_end?: number,
+		@Args('interval', { type: () => MintAnalyticsInterval, nullable: true }) interval?: MintAnalyticsInterval,
+		@Args('timezone', { type: () => Timezone, nullable: true }) timezone?: TimezoneType,
+	) : Promise<OrchardMintAnalytics[]> {
+		try {
+			this.logger.debug('GET { mint_analytics_melts }');
+			return await this.mintAnalyticsService.getMintAnalyticsMelts({ units, date_start, date_end, interval, timezone });
+		} catch (error) {
+			throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
+		} 
+	}
+
+	@Query(() => [OrchardMintAnalytics])
+	async mint_analytics_transfers(
+		@Args('units', { type: () => [MintUnit], nullable: true }) units?: MintUnit[],
+		@Args('date_start', { type: () => UnixTimestamp, nullable: true }) date_start?: number,
+		@Args('date_end', { type: () => UnixTimestamp, nullable: true }) date_end?: number,
+		@Args('interval', { type: () => MintAnalyticsInterval, nullable: true }) interval?: MintAnalyticsInterval,
+		@Args('timezone', { type: () => Timezone, nullable: true }) timezone?: TimezoneType,
+	) : Promise<OrchardMintAnalytics[]> {
+		try {
+			this.logger.debug('GET { mint_analytics_transfers }');
+			return await this.mintAnalyticsService.getMintAnalyticsTransfers({ units, date_start, date_end, interval, timezone });
+		} catch (error) {
+			throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
+		} 
+	}
 }

@@ -1,11 +1,16 @@
+/* Vendor Dependencies */
+import { DateTime } from 'luxon';
+/* Local Dependencies */
+import { CashuMintAnalyticsArgs } from './cashumintdb.interfaces';
+
 /**
-   * Builds a dynamic SQL query with parameters based on provided arguments
-   * @param table_name The database table to query
-   * @param args Optional filtering arguments
-   * @param field_mappings Maps argument fields to database columns
-   * @param select_fields Optional fields to select (defaults to *)
-   * @returns Object containing SQL query string and parameters array
-   */
+ * Builds a dynamic SQL query with parameters based on provided arguments
+ * @param table_name The database table to query
+ * @param args Optional filtering arguments
+ * @param field_mappings Maps argument fields to database columns
+ * @param select_fields Optional fields to select (defaults to *)
+ * @returns Object containing SQL query string and parameters array
+ */
 export function buildDynamicQuery(
     table_name: string, 
     args?: Record<string, any>,
@@ -73,4 +78,66 @@ export function processQueryArgument(
 		conditions.push(`${db_field} = ?`);
 		params.push(arg_value);
 	}
+}
+
+
+export function getAnalyticsConditions({
+    args,
+    time_column
+}: {
+    args: CashuMintAnalyticsArgs;
+    time_column: string;
+}) : {
+    where_conditions: string[];
+    params: any[];
+} {
+    const where_conditions = [];
+    const params = [];
+    if (args?.date_start) {
+        where_conditions.push(`${time_column} >= ?`);
+        params.push(args.date_start);
+    }
+    if (args?.date_end) {
+        where_conditions.push(`${time_column} <= ?`);
+        params.push(args.date_end);
+    }
+    if (args?.units && args.units.length > 0) {
+        const unit_placeholders = args.units.map(() => '?').join(',');
+        where_conditions.push(`unit IN (${unit_placeholders})`);
+        params.push(...args.units);
+    }
+    return { where_conditions, params };
+}
+
+export function getAnalyticsTimeGroupSql({
+    interval,
+    timezone,
+    time_column
+}: {
+    interval: CashuMintAnalyticsArgs['interval'];
+    timezone: CashuMintAnalyticsArgs['timezone'];
+    time_column: string;
+}) : string {
+    const now = DateTime.now().setZone(timezone);
+	const offset_seconds = now.offset * 60; // Convert minutes to seconds
+    if( interval === 'day' ) return `strftime('%Y-%m-%d', datetime(${time_column} + ${offset_seconds}, 'unixepoch'))`;
+    if( interval === 'week' ) return `strftime('%Y-%m-%d', datetime(${time_column} + ${offset_seconds} - (strftime('%w', datetime(${time_column} + ${offset_seconds}, 'unixepoch')) - 1) * 86400, 'unixepoch'))`;
+    if( interval === 'month' ) return `strftime('%Y-%m-01', datetime(${time_column} + ${offset_seconds}, 'unixepoch'))`;
+    return `unit`;
+}
+
+export function getAnalyticsTimeGroupStamp({
+    min_created_time,
+    time_group,
+    interval,
+    timezone
+}: {
+    min_created_time: number;
+    time_group: string;
+    interval: CashuMintAnalyticsArgs['interval'];
+    timezone: CashuMintAnalyticsArgs['timezone'];
+}) : number {
+    if( interval === 'custom' ) return min_created_time;
+    const datetime = DateTime.fromFormat(time_group, 'yyyy-MM-dd', {zone: timezone}).startOf('day');
+    return Math.floor(datetime.toSeconds());
 }
