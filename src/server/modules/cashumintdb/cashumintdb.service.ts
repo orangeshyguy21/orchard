@@ -25,6 +25,7 @@ import {
 	buildDynamicQuery,
 	getAnalyticsTimeGroupStamp,
 	getAnalyticsConditions,
+	getAnalyticsTimeGroupSql,
 } from './cashumintdb.helpers';
 import { MintAnalyticsInterval } from './cashumintdb.enums';
 
@@ -155,35 +156,21 @@ export class CashuMintDatabaseService {
   	public async getMintAnalyticsBalances(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
 		const interval = args?.interval || MintAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
-		const now = DateTime.now().setZone(timezone);
-		const offset_seconds = now.offset * 60; // Convert minutes to seconds
 		const { where_conditions, params } = getAnalyticsConditions(args);
 		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
-
-		let time_group;
-
-		switch (interval) {
-			case 'day':
-				time_group = `strftime('%Y-%m-%d', datetime(created_time + ${offset_seconds}, 'unixepoch'))`;
-				break;
-			case 'week':
-				time_group = `strftime('%Y-%m-%d', datetime(created_time + ${offset_seconds} - (strftime('%w', datetime(created_time + ${offset_seconds}, 'unixepoch')) - 1) * 86400, 'unixepoch'))`;
-				break;
-			case 'month':
-				time_group = `strftime('%Y-%m-01', datetime(created_time + ${offset_seconds}, 'unixepoch'))`;
-				break;
-			default: // custom interval
-				time_group = "unit";
-				break;
-		}
+		const time_group_sql = getAnalyticsTimeGroupSql({
+			interval: interval,
+			timezone: timezone,
+			table_name: '',
+		});
 		
 		const sqlite_sql = `
 			WITH mint_data AS (
 				SELECT 
-					${time_group} AS time_group,
+					${time_group_sql} AS time_group,
 					unit,
 					SUM(CASE WHEN state = 'ISSUED' THEN amount ELSE 0 END) AS mint_amount,
-					COUNT(DISTINCT quote) AS mint_count,
+					COUNT(DISTINCT CASE WHEN state = 'ISSUED' THEN quote ELSE NULL END) AS mint_count,
 					MIN(created_time) as min_created_time
 				FROM 
 					mint_quotes
@@ -193,10 +180,10 @@ export class CashuMintDatabaseService {
 			),
 			melt_data AS (
 				SELECT 
-					${time_group} AS time_group,
+					${time_group_sql} AS time_group,
 					unit,
 					SUM(CASE WHEN state = 'PAID' THEN amount ELSE 0 END) AS melt_amount,
-					COUNT(DISTINCT quote) AS melt_count,
+					COUNT(DISTINCT CASE WHEN state = 'PAID' THEN quote ELSE NULL END) AS melt_count,
 					MIN(created_time) as min_created_time
 				FROM 
 					melt_quotes
@@ -255,33 +242,19 @@ export class CashuMintDatabaseService {
 	public async getMintAnalyticsMints(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
 		const interval = args?.interval || MintAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
-		const now = DateTime.now().setZone(timezone);
-		const offset_seconds = now.offset * 60; // Convert minutes to seconds
 		const { where_conditions, params } = getAnalyticsConditions(args);
 		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
-		let time_group_sql;
-    
-		switch (interval) {
-			case 'day':
-				time_group_sql = `strftime('%Y-%m-%d', datetime(mq.created_time + ${offset_seconds}, 'unixepoch')) AS time_group`;
-				break;
-			case 'week':
-				time_group_sql = `strftime('%Y-%m-%d', datetime(mq.created_time + ${offset_seconds} - (strftime('%w', datetime(mq.created_time + ${offset_seconds}, 'unixepoch')) - 1) * 86400, 'unixepoch')) AS time_group`;
-				break;
-			case 'month':
-				time_group_sql = `strftime('%Y-%m-01', datetime(mq.created_time + ${offset_seconds}, 'unixepoch')) AS time_group`;
-				break;
-			default: // custom interval
-				time_group_sql = "mq.unit AS time_group";
-				break;
-		}
-    
+		const time_group_sql = getAnalyticsTimeGroupSql({
+			interval: interval,
+			timezone: timezone,
+			table_name: 'mq.',
+		});
 		const sql = `
 			SELECT 
-				${time_group_sql},
+				${time_group_sql} AS time_group,
 				mq.unit,
 				SUM(CASE WHEN mq.state = 'ISSUED' THEN mq.amount ELSE 0 END) AS amount,
-				COUNT(DISTINCT mq.quote) AS operation_count,
+				COUNT(DISTINCT CASE WHEN mq.state = 'ISSUED' THEN mq.quote ELSE NULL END) AS operation_count,
 				MIN(mq.created_time) as min_created_time
 			FROM 
 				mint_quotes mq
@@ -318,33 +291,19 @@ export class CashuMintDatabaseService {
 	 public async getMintAnalyticsMelts(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
 		const interval = args?.interval || MintAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
-		const now = DateTime.now().setZone(timezone);
-		const offset_seconds = now.offset * 60; // Convert minutes to seconds
 		const { where_conditions, params } = getAnalyticsConditions(args);
 		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
-		let time_group_sql;
-    
-		switch (interval) {
-			case 'day':
-				time_group_sql = `strftime('%Y-%m-%d', datetime(lq.created_time + ${offset_seconds}, 'unixepoch')) AS time_group`;
-				break;
-			case 'week':
-				time_group_sql = `strftime('%Y-%m-%d', datetime(lq.created_time + ${offset_seconds} - (strftime('%w', datetime(lq.created_time + ${offset_seconds}, 'unixepoch')) - 1) * 86400, 'unixepoch')) AS time_group`;
-				break;
-			case 'month':
-				time_group_sql = `strftime('%Y-%m-01', datetime(lq.created_time + ${offset_seconds}, 'unixepoch')) AS time_group`;
-				break;
-			default: // custom interval
-				time_group_sql = "lq.unit AS time_group";
-				break;
-		}
-    
+		const time_group_sql = getAnalyticsTimeGroupSql({
+			interval: interval,
+			timezone: timezone,
+			table_name: 'lq.',
+		});
 		const sql = `
 			SELECT 
-				${time_group_sql},
+				${time_group_sql} AS time_group,
 				lq.unit,
 				SUM(CASE WHEN lq.state = 'PAID' THEN lq.amount ELSE 0 END) AS amount,
-				COUNT(DISTINCT lq.quote) AS operation_count,
+				COUNT(DISTINCT CASE WHEN lq.state = 'PAID' THEN lq.quote ELSE NULL END) AS operation_count,
 				MIN(lq.created_time) as min_created_time
 			FROM 
 				melt_quotes lq

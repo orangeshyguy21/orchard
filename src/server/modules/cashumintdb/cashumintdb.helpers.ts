@@ -105,29 +105,19 @@ export function getAnalyticsConditions(args:CashuMintAnalyticsArgs) : {
 
 export function getAnalyticsTimeGroupSql({
     interval,
-    timezone
+    timezone,
+    table_name,
 }: {
     interval: CashuMintAnalyticsArgs['interval'];
     timezone: CashuMintAnalyticsArgs['timezone'];
-}) {
+    table_name: string;
+}) : string {
     const now = DateTime.now().setZone(timezone);
 	const offset_seconds = now.offset * 60; // Convert minutes to seconds
-    if( interval === 'custom' ) return 'unit';
-    
-    // switch (interval) {
-    //     case 'day':
-    //         time_group = `strftime('%Y-%m-%d', datetime(created_time + ${offset_seconds}, 'unixepoch'))`;
-    //         break;
-    //     case 'week':
-    //         time_group = `strftime('%Y-%m-%d', datetime(created_time + ${offset_seconds} - (strftime('%w', datetime(created_time + ${offset_seconds}, 'unixepoch')) - 1) * 86400, 'unixepoch'))`;
-    //         break;
-    //     case 'month':
-    //         time_group = `strftime('%Y-%m-01', datetime(created_time + ${offset_seconds}, 'unixepoch'))`;
-    //         break;
-    //     default: // custom interval
-    //         time_group = "unit";
-    //         break;
-    // }
+    if( interval === 'day' ) return `strftime('%Y-%m-%d', datetime( ${table_name}created_time + ${offset_seconds}, 'unixepoch'))`;
+    if( interval === 'week' ) return `strftime('%Y-%m-%d', datetime( ${table_name}created_time + ${offset_seconds} - (strftime('%w', datetime( ${table_name}created_time + ${offset_seconds}, 'unixepoch')) - 1) * 86400, 'unixepoch'))`;
+    if( interval === 'month' ) return `strftime('%Y-%m-01', datetime( ${table_name}created_time + ${offset_seconds}, 'unixepoch'))`;
+    return `${table_name}unit`;
 }
 
 export function getAnalyticsTimeGroupStamp({
