@@ -1,0 +1,32 @@
+@use '@styles/molecule/molecule';
+
+.mint-keyset-container{
+    @extend .flex;
+}
+
+.mint-keyset-pill{
+    @extend .orc-surface-container-low-bg;
+    @extend .orc-corner-full;
+    @extend .flex;
+    @extend .flex-items-center;
+    @extend .flex-gap-1;
+    @extend .p-h-1;
+    @extend .p-v-0-5;
+}
+
+.keyset-active{
+    @extend .orc-status-active-color;
+}
+
+.keyset-inactive{
+    @extend .orc-status-inactive-color;
+}
+
+.mint-keyset-generation{
+    @extend .orc-on-primary-container-color;
+}
+
+.mint-keyset-fee{
+    @extend .font-weight-light;
+    @extend .orc-outline-color;
+}

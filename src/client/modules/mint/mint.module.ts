@@ -31,6 +31,7 @@ import { MintConnectionsComponent } from './components/mint-connections/mint-con
 import { MintQrcodeDialogComponent } from './components/mint-qrcode-dialog/mint-qrcode-dialog.component';
 import { MintAnalyticControlPanelComponent } from './components/mint-analytic-control-panel/mint-analytic-control-panel.component';
 import { MintBalanceChartComponent } from './components/mint-balance-chart/mint-balance-chart.component';
+import { MintKeysetComponent } from './components/mint-keyset/mint-keyset.component';
 
 const routes: Routes = [
 	{
@@ -80,6 +81,7 @@ export class MintRoutingModule { }
 		MintQrcodeDialogComponent,
 		MintAnalyticControlPanelComponent,
 		MintBalanceChartComponent,
+		MintKeysetComponent,
 	],
 	imports: [
 		CommonModule,

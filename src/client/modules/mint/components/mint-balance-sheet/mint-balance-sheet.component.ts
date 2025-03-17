@@ -20,7 +20,7 @@ export class MintBalanceSheetComponent implements OnChanges {
 	@Input() loading!: boolean;
 
 	public rows: MintBalanceRow[] = [];
-	public displayed_columns: string[] = ['Liabilities', 'Assets', 'Fee', 'Keyset'];
+	public displayed_columns: string[] = ['Liabilities', 'Assets', 'Keyset'];
 
 	constructor() {}
 

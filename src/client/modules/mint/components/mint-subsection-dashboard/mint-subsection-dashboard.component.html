@@ -18,11 +18,7 @@
 		<mat-card appearance="outlined" class="overflow-hidden">
 			<mat-card-content>	
 				<orc-mint-analytic-control-panel
-					[selected_date_start]="chart_settings.date_start"
-					[selected_date_end]="chart_settings.date_end"
-					[selected_units]="chart_settings.units"
-					[selected_interval]="chart_settings.interval"
-					[selected_type]="chart_settings.type"
+					[chart_settings]="chart_settings"
 					[keysets]="mint_keysets"
 					[loading]="loading_static_data"
 					(date_change)="onDateChange($event)"
@@ -30,15 +26,12 @@
 					(interval_change)="onIntervalChange($event)"
 					(type_change)="onTypeChange($event)">
 				</orc-mint-analytic-control-panel>
-				<!-- <hr class="orc-outline-variant-border"> -->
 				<orc-mint-balance-chart
 					[locale]="locale"
 					[mint_balances]="mint_analytics_balances"
 					[mint_balances_preceeding]="mint_analytics_balances_preceeding"
-					[selected_date_start]="chart_settings.date_start"
-					[selected_date_end]="chart_settings.date_end"
-					[selected_interval]="chart_settings.interval"
-					[selected_type]="chart_settings.type"
+					[chart_settings]="chart_settings"
+					[selected_type]="chart_settings?.type"
 					[loading]="loading_dynamic_data">
 				</orc-mint-balance-chart>
 			</mat-card-content>

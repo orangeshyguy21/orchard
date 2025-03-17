@@ -4,6 +4,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 /* Vendor Dependencies */
 import { MatSelectChange } from '@angular/material/select';
 import { DateTime } from 'luxon';
+/* Application Dependencies */
+import { NonNullableMintChartSettings } from '@client/modules/chart/services/chart/chart.types';
 /* Native Dependencies */
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 import { ChartType } from '@client/modules/mint/enums/chart-type.enum';
@@ -48,11 +50,12 @@ type TypeOption = {
 })
 export class MintAnalyticControlPanelComponent implements OnChanges {
 	
-	@Input() selected_date_start!: number;
-	@Input() selected_date_end!: number;
-	@Input() selected_interval!: MintAnalyticsInterval;
-	@Input() selected_units!: MintUnit[];
-	@Input() selected_type!: ChartType;
+	// @Input() selected_date_start!: number;
+	// @Input() selected_date_end!: number;
+	// @Input() selected_interval!: MintAnalyticsInterval;
+	// @Input() selected_units!: MintUnit[];
+	// @Input() selected_type!: ChartType;
+	@Input() chart_settings!: NonNullableMintChartSettings;
 	@Input() keysets!: MintKeyset[]; // gotta make the options from the keysets
 	@Input() loading!: boolean;
 
@@ -93,16 +96,16 @@ export class MintAnalyticControlPanelComponent implements OnChanges {
 		if(changes['loading'] && !this.loading) this.initForm();
 	}
 
-	initForm(): void {
+	private initForm(): void {
 		this.unit_options = this.keysets.map( keyset => ({ label: keyset.unit.toUpperCase(), value: keyset.unit }));
-		this.panel.controls.daterange.controls.date_start.setValue(DateTime.fromSeconds(this.selected_date_start));
-		this.panel.controls.daterange.controls.date_end.setValue(DateTime.fromSeconds(this.selected_date_end));
-		this.panel.controls.units.setValue(this.selected_units);
-		this.panel.controls.interval.setValue(this.selected_interval);
-		this.panel.controls.type.setValue(this.selected_type);
+		this.panel.controls.daterange.controls.date_start.setValue(DateTime.fromSeconds(this.chart_settings.date_start));
+		this.panel.controls.daterange.controls.date_end.setValue(DateTime.fromSeconds(this.chart_settings.date_end));
+		this.panel.controls.units.setValue(this.chart_settings.units);
+		this.panel.controls.interval.setValue(this.chart_settings.interval);
+		this.panel.controls.type.setValue(this.chart_settings.type);
 	}
 
-	onDateChange(): void {
+	public onDateChange(): void {
 		if(this.panel.invalid) return;
 		const is_valid = this.isValidChange();
 		if( !is_valid ) return;
@@ -113,25 +116,30 @@ export class MintAnalyticControlPanelComponent implements OnChanges {
 		this.date_change.emit([date_start, date_end]);
 	}
 
-	onUnitsChange(event: MatSelectChange): void {
+	public onUnitsChange(event: MatSelectChange): void {
 		if(this.panel.invalid) return;
 		const is_valid = this.isValidChange();
 		if( !is_valid ) return;
 		this.units_change.emit(event.value);
 	}
 
-	onIntervalChange(event: MatSelectChange): void {
+	public onIntervalChange(event: MatSelectChange): void {
 		if(this.panel.invalid) return;
 		const is_valid = this.isValidChange();
 		if( !is_valid ) return;
 		this.interval_change.emit(event.value);
 	}
 
-	onTypeChange(event: MatSelectChange): void {
+	public onTypeChange(event: MatSelectChange): void {
 		if(this.panel.invalid) return;
 		const is_valid = this.isValidChange();
 		if( !is_valid ) return;
 		this.type_change.emit(event.value);
+	}
+
+	public onUnitRemoved(unit: any): void {
+		// this.units_change.emit(this.panel.controls.units.value.filter(u => u.value !== unit.value));
+		console.log(unit);
 	}
 
 	private translateDateToTimestamp(date: Date): number {
@@ -146,11 +154,11 @@ export class MintAnalyticControlPanelComponent implements OnChanges {
 		if( this.panel.controls.interval.value === null ) return false;
 		if( this.panel.controls.type.value === null ) return false;
 		// change checks
-		if( this.panel.controls.daterange.controls.date_start.value.toSeconds() !== this.selected_date_start ) return true;
-		if( this.panel.controls.daterange.controls.date_end.value.toSeconds() !== this.selected_date_end ) return true;
-		if( this.panel.controls.units.value !== this.selected_units ) return true;
-		if( this.panel.controls.interval.value !== this.selected_interval ) return true;
-		if( this.panel.controls.type.value !== this.selected_type ) return true;
+		if( this.panel.controls.daterange.controls.date_start.value.toSeconds() !== this.chart_settings.date_start ) return true;
+		if( this.panel.controls.daterange.controls.date_end.value.toSeconds() !== this.chart_settings.date_end ) return true;
+		if( this.panel.controls.units.value !== this.chart_settings.units ) return true;
+		if( this.panel.controls.interval.value !== this.chart_settings.interval ) return true;
+		if( this.panel.controls.type.value !== this.chart_settings.type ) return true;
 		return false;
 	}
 }

@@ -5,6 +5,9 @@
 .orc-primary-container-bg {
     background-color: var(--mat-sys-primary-container);
 }
+.orc-surface-container-bg {
+    background-color: var(--mat-sys-surface-container);
+}
 .orc-surface-container-low-bg {
     background-color: var(--mat-sys-surface-container-low);
 }
@@ -44,6 +47,18 @@
 }
 .orc-primary-fixed-dim-color {
     color: var(--mat-sys-primary-fixed-dim);
+}
+.orc-tertiary-container-color {
+    color: var(--mat-sys-tertiary-container);
+}
+.orc-error-container-color {
+    color: var(--mat-sys-error-container);
+}
+.orc-status-active-color {
+    color: var(--orc-status-active);
+}
+.orc-status-inactive-color {
+    color: var(--orc-status-inactive);
 }
 
 
