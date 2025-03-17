@@ -4,7 +4,6 @@ import { Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef } from '@
 import { forkJoin, lastValueFrom } from 'rxjs';
 import { DateTime } from 'luxon';
 /* Application Dependencies */
-import { CacheService } from '@client/modules/cache/services/cache/cache.service';
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 import { ChartService } from '@client/modules/chart/services/chart/chart.service';
 import { NonNullableMintChartSettings } from '@client/modules/chart/services/chart/chart.types';
@@ -48,7 +47,6 @@ export class MintSubsectionDashboardComponent implements OnInit {
 
 	constructor(
 		private mintService: MintService,
-		private cacheService: CacheService,
 		private settingService: SettingService,
 		private chartService: ChartService,
 		private changeDetectorRef: ChangeDetectorRef
@@ -85,6 +83,9 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	}
 
 	private async loadMintAnalytics(): Promise<void> {
+		console.log( 'loading mint analytics', this.chart_settings );
+		// on load 1742277599
+		// selectged is 1742191200
 		const timezone = this.settingService.getTimezone();
 		const analytics_balances_obs = this.mintService.loadMintAnalyticsBalances({
 			units: this.chart_settings.units,
@@ -145,6 +146,14 @@ export class MintSubsectionDashboardComponent implements OnInit {
 				analytics_melts_pre_obs
 			])
 		);
+
+		// console.log( 'analytics_balances', analytics_balances);
+		// console.log( 'analytics_balances_pre', analytics_balances_pre);
+		// console.log( 'analytics_mints', analytics_mints);
+		// console.log( 'analytics_mints_pre', analytics_mints_pre);
+		// console.log( 'analytics_melts', analytics_melts);
+		// console.log( 'analytics_melts_pre', analytics_melts_pre);
+
 		this.mint_analytics_balances = analytics_balances;
 		this.mint_analytics_balances_pre = analytics_balances_pre;
 		this.mint_analytics_mints = analytics_mints;
@@ -190,10 +199,7 @@ export class MintSubsectionDashboardComponent implements OnInit {
 
 	private async reloadDynamicData(): Promise<void> {
 		try {
-			const cache_key = this.mintService.CACHE_KEYS.MINT_ANALYTICS_BALANCES;
-			const cache_key_pre = this.mintService.CACHE_KEYS.MINT_ANALYTICS_PRE_BALANCES;
-			this.cacheService.clearCache(cache_key);
-			this.cacheService.clearCache(cache_key_pre);
+			this.mintService.clearAnalyticsCache();
 			this.loading_dynamic_data = true;
 			this.changeDetectorRef.detectChanges();
 			await this.loadMintAnalytics();

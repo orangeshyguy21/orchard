@@ -81,7 +81,56 @@ export function processQueryArgument(
 }
 
 
-export function getTimeGroupStamp({
+export function getAnalyticsConditions(args:CashuMintAnalyticsArgs) : {
+    where_conditions: string[];
+    params: any[];
+} {
+    const where_conditions = [];
+    const params = [];
+    if (args?.date_start) {
+        where_conditions.push("created_time >= ?");
+        params.push(args.date_start);
+    }
+    if (args?.date_end) {
+        where_conditions.push("created_time <= ?");
+        params.push(args.date_end);
+    }
+    if (args?.units && args.units.length > 0) {
+        const unit_placeholders = args.units.map(() => '?').join(',');
+        where_conditions.push(`unit IN (${unit_placeholders})`);
+        params.push(...args.units);
+    }
+    return { where_conditions, params };
+}
+
+export function getAnalyticsTimeGroupSql({
+    interval,
+    timezone
+}: {
+    interval: CashuMintAnalyticsArgs['interval'];
+    timezone: CashuMintAnalyticsArgs['timezone'];
+}) {
+    const now = DateTime.now().setZone(timezone);
+	const offset_seconds = now.offset * 60; // Convert minutes to seconds
+    if( interval === 'custom' ) return 'unit';
+    
+    // switch (interval) {
+    //     case 'day':
+    //         time_group = `strftime('%Y-%m-%d', datetime(created_time + ${offset_seconds}, 'unixepoch'))`;
+    //         break;
+    //     case 'week':
+    //         time_group = `strftime('%Y-%m-%d', datetime(created_time + ${offset_seconds} - (strftime('%w', datetime(created_time + ${offset_seconds}, 'unixepoch')) - 1) * 86400, 'unixepoch'))`;
+    //         break;
+    //     case 'month':
+    //         time_group = `strftime('%Y-%m-01', datetime(created_time + ${offset_seconds}, 'unixepoch'))`;
+    //         break;
+    //     default: // custom interval
+    //         time_group = "unit";
+    //         break;
+    // }
+}
+
+export function getAnalyticsTimeGroupStamp({
     min_created_time,
     time_group,
     interval,
@@ -91,7 +140,7 @@ export function getTimeGroupStamp({
     time_group: string;
     interval: CashuMintAnalyticsArgs['interval'];
     timezone: CashuMintAnalyticsArgs['timezone'];
-}) {
+}) : number {
     if( interval === 'custom' ) return min_created_time;
     const datetime = DateTime.fromFormat(time_group, 'yyyy-MM-dd', {zone: timezone}).startOf('day');
     return Math.floor(datetime.toSeconds());

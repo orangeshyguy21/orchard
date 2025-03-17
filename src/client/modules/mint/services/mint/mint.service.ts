@@ -129,6 +129,16 @@ export class MintService {
 			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_ANALYTICS_PRE_MELTS]
 		);
 	}
+
+	public clearAnalyticsCache() {
+		this.cache.clearCache(this.CACHE_KEYS.MINT_ANALYTICS_BALANCES);
+		this.cache.clearCache(this.CACHE_KEYS.MINT_ANALYTICS_PRE_BALANCES);
+		this.cache.clearCache(this.CACHE_KEYS.MINT_ANALYTICS_MINTS);
+		this.cache.clearCache(this.CACHE_KEYS.MINT_ANALYTICS_PRE_MINTS);
+		this.cache.clearCache(this.CACHE_KEYS.MINT_ANALYTICS_MELTS);
+		this.cache.clearCache(this.CACHE_KEYS.MINT_ANALYTICS_PRE_MELTS);
+	}
+
 	public loadMintInfo(): Observable<MintInfo> {
 		if ( this.mint_info_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.MINT_INFO) ) return of(this.mint_info_subject.value);
 		if ( this.mint_info_observable ) return this.mint_info_observable;

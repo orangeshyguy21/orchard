@@ -16,8 +16,16 @@ import {
 	CashuMintProof,
 	CashuMintAnalytics,
 } from './cashumintdb.types';
-import { CashuMintAnalyticsArgs, CashuMintMintQuotesArgs, CashuMintPromisesArgs } from './cashumintdb.interfaces';
-import { buildDynamicQuery, getTimeGroupStamp } from './cashumintdb.helpers';
+import { 
+	CashuMintAnalyticsArgs,
+	CashuMintMintQuotesArgs,
+	CashuMintPromisesArgs,
+} from './cashumintdb.interfaces';
+import {
+	buildDynamicQuery,
+	getAnalyticsTimeGroupStamp,
+	getAnalyticsConditions,
+} from './cashumintdb.helpers';
 import { MintAnalyticsInterval } from './cashumintdb.enums';
 
 @Injectable()
@@ -149,25 +157,9 @@ export class CashuMintDatabaseService {
 		const timezone = args?.timezone || 'UTC';
 		const now = DateTime.now().setZone(timezone);
 		const offset_seconds = now.offset * 60; // Convert minutes to seconds
-		const where_conditions = [];
-		const params = [];
-		
-		if (args?.date_start) {
-			where_conditions.push("created_time >= ?");
-			params.push(args.date_start);
-		}
-		if (args?.date_end) {
-			where_conditions.push("created_time <= ?");
-			params.push(args.date_end);
-		}
-		if (args?.units && args.units.length > 0) {
-			const unit_placeholders = args.units.map(() => '?').join(',');
-			where_conditions.push(`unit IN (${unit_placeholders})`);
-			params.push(...args.units);
-		}
-
+		const { where_conditions, params } = getAnalyticsConditions(args);
 		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
-		
+
 		let time_group;
 
 		switch (interval) {
@@ -241,7 +233,7 @@ export class CashuMintDatabaseService {
 				if (err) return reject(err);
 						
 				const result = rows.map(row => {
-					const timestamp = getTimeGroupStamp({
+					const timestamp = getAnalyticsTimeGroupStamp({
 						min_created_time: row.min_created_time,
 						time_group: row.time_group,
 						interval: interval,
@@ -265,23 +257,7 @@ export class CashuMintDatabaseService {
 		const timezone = args?.timezone || 'UTC';
 		const now = DateTime.now().setZone(timezone);
 		const offset_seconds = now.offset * 60; // Convert minutes to seconds
-		const where_conditions = [];
-		const params = [];
-		
-		if (args?.date_start) {
-			where_conditions.push("mq.created_time >= ?");
-			params.push(args.date_start);
-		}
-		if (args?.date_end) {
-			where_conditions.push("mq.created_time <= ?");
-			params.push(args.date_end);
-		}
-		if (args?.units && args.units.length > 0) {
-			const unit_placeholders = args.units.map(() => '?').join(',');
-			where_conditions.push(`mq.unit IN (${unit_placeholders})`);
-			params.push(...args.units);
-		}
-
+		const { where_conditions, params } = getAnalyticsConditions(args);
 		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
 		let time_group_sql;
     
@@ -320,7 +296,7 @@ export class CashuMintDatabaseService {
 				if (err) return reject(err);
 						
 				const result = rows.map(row => {
-					const timestamp = getTimeGroupStamp({
+					const timestamp = getAnalyticsTimeGroupStamp({
 						min_created_time: row.min_created_time,
 						time_group: row.time_group,
 						interval: interval,
@@ -344,23 +320,7 @@ export class CashuMintDatabaseService {
 		const timezone = args?.timezone || 'UTC';
 		const now = DateTime.now().setZone(timezone);
 		const offset_seconds = now.offset * 60; // Convert minutes to seconds
-		const where_conditions = [];
-		const params = [];
-		
-		if (args?.date_start) {
-			where_conditions.push("lq.created_time >= ?");
-			params.push(args.date_start);
-		}
-		if (args?.date_end) {
-			where_conditions.push("lq.created_time <= ?");
-			params.push(args.date_end);
-		}
-		if (args?.units && args.units.length > 0) {
-			const unit_placeholders = args.units.map(() => '?').join(',');
-			where_conditions.push(`lq.unit IN (${unit_placeholders})`);
-			params.push(...args.units);
-		}
-
+		const { where_conditions, params } = getAnalyticsConditions(args);
 		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
 		let time_group_sql;
     
@@ -399,7 +359,7 @@ export class CashuMintDatabaseService {
 				if (err) return reject(err);
 						
 				const result = rows.map(row => {
-					const timestamp = getTimeGroupStamp({
+					const timestamp = getAnalyticsTimeGroupStamp({
 						min_created_time: row.min_created_time,
 						time_group: row.time_group,
 						interval: interval,

@@ -112,7 +112,7 @@ export class MintAnalyticControlPanelComponent implements OnChanges {
 		if( this.panel.controls.daterange.controls.date_start.value === null ) return;
 		if( this.panel.controls.daterange.controls.date_end.value === null ) return;
 		const date_start = this.panel.controls.daterange.controls.date_start.value.toSeconds();
-		const date_end = this.panel.controls.daterange.controls.date_end.value.toSeconds();
+		const date_end = this.panel.controls.daterange.controls.date_end.value.endOf('day').toSeconds();
 		this.date_change.emit([date_start, date_end]);
 	}
 
@@ -135,15 +135,6 @@ export class MintAnalyticControlPanelComponent implements OnChanges {
 		const is_valid = this.isValidChange();
 		if( !is_valid ) return;
 		this.type_change.emit(event.value);
-	}
-
-	public onUnitRemoved(unit: any): void {
-		// this.units_change.emit(this.panel.controls.units.value.filter(u => u.value !== unit.value));
-		console.log(unit);
-	}
-
-	private translateDateToTimestamp(date: Date): number {
-		return Math.floor(date.getTime() / 1000);
 	}
 
 	private isValidChange(): boolean {
