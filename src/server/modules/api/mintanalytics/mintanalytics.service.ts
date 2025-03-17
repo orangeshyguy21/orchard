@@ -54,4 +54,17 @@ export class MintAnalyticsService {
 			db.close();
 		}
 	}
+
+	async getMintAnalyticsTransfers(args:CashuMintAnalyticsArgs) : Promise<OrchardMintAnalytics[]> {
+		const db = this.cashuMintDatabaseService.getMintDatabase();
+		try {
+			const cashu_mint_analytics : CashuMintAnalytics[] = await this.cashuMintDatabaseService.getMintAnalyticsTransfers(db, args);
+			return cashu_mint_analytics.map( cma => new OrchardMintAnalytics(cma) );
+		} catch (error) {
+			this.logger.error('Error getting mint analytics', error);
+			throw error;
+		} finally {
+			db.close();
+		}
+	}
 }

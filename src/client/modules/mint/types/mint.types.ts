@@ -28,6 +28,10 @@ export type MintAnalyticsMeltsResponse = {
 	mint_analytics_melts: OrchardMintAnalytics[];
 }
 
+export type MintAnalyticsTransfersResponse = {
+	mint_analytics_transfers: OrchardMintAnalytics[];
+}
+
 export type MintPromisesArgs ={
     id_keysets?: string[];
     date_start?: number;

@@ -102,3 +102,13 @@ query MintAnalyticsMelts($units: [MintUnit!], $date_start: UnixTimestamp, $date_
 		operation_count
 	}
 }`;
+
+export const MINT_ANALYTICS_TRANSFERS_QUERY = `
+query MintAnalyticsTransfers($units: [MintUnit!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $interval: MintAnalyticsInterval, $timezone: Timezone) {
+	mint_analytics_transfers(units: $units, date_start: $date_start, date_end: $date_end, interval: $interval, timezone: $timezone) {
+		unit
+		amount
+		created_time
+		operation_count
+	}
+}`;

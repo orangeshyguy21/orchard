@@ -81,18 +81,24 @@ export function processQueryArgument(
 }
 
 
-export function getAnalyticsConditions(args:CashuMintAnalyticsArgs) : {
+export function getAnalyticsConditions({
+    args,
+    time_column
+}: {
+    args: CashuMintAnalyticsArgs;
+    time_column: string;
+}) : {
     where_conditions: string[];
     params: any[];
 } {
     const where_conditions = [];
     const params = [];
     if (args?.date_start) {
-        where_conditions.push("created_time >= ?");
+        where_conditions.push(`${time_column} >= ?`);
         params.push(args.date_start);
     }
     if (args?.date_end) {
-        where_conditions.push("created_time <= ?");
+        where_conditions.push(`${time_column} <= ?`);
         params.push(args.date_end);
     }
     if (args?.units && args.units.length > 0) {
@@ -106,18 +112,18 @@ export function getAnalyticsConditions(args:CashuMintAnalyticsArgs) : {
 export function getAnalyticsTimeGroupSql({
     interval,
     timezone,
-    table_name,
+    time_column
 }: {
     interval: CashuMintAnalyticsArgs['interval'];
     timezone: CashuMintAnalyticsArgs['timezone'];
-    table_name: string;
+    time_column: string;
 }) : string {
     const now = DateTime.now().setZone(timezone);
 	const offset_seconds = now.offset * 60; // Convert minutes to seconds
-    if( interval === 'day' ) return `strftime('%Y-%m-%d', datetime( ${table_name}created_time + ${offset_seconds}, 'unixepoch'))`;
-    if( interval === 'week' ) return `strftime('%Y-%m-%d', datetime( ${table_name}created_time + ${offset_seconds} - (strftime('%w', datetime( ${table_name}created_time + ${offset_seconds}, 'unixepoch')) - 1) * 86400, 'unixepoch'))`;
-    if( interval === 'month' ) return `strftime('%Y-%m-01', datetime( ${table_name}created_time + ${offset_seconds}, 'unixepoch'))`;
-    return `${table_name}unit`;
+    if( interval === 'day' ) return `strftime('%Y-%m-%d', datetime(${time_column} + ${offset_seconds}, 'unixepoch'))`;
+    if( interval === 'week' ) return `strftime('%Y-%m-%d', datetime(${time_column} + ${offset_seconds} - (strftime('%w', datetime(${time_column} + ${offset_seconds}, 'unixepoch')) - 1) * 86400, 'unixepoch'))`;
+    if( interval === 'month' ) return `strftime('%Y-%m-01', datetime(${time_column} + ${offset_seconds}, 'unixepoch'))`;
+    return `unit`;
 }
 
 export function getAnalyticsTimeGroupStamp({

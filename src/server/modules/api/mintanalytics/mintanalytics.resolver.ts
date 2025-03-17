@@ -67,4 +67,20 @@ export class MintAnalyticsResolver {
 			throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
 		} 
 	}
+
+	@Query(() => [OrchardMintAnalytics])
+	async mint_analytics_transfers(
+		@Args('units', { type: () => [MintUnit], nullable: true }) units?: MintUnit[],
+		@Args('date_start', { type: () => UnixTimestamp, nullable: true }) date_start?: number,
+		@Args('date_end', { type: () => UnixTimestamp, nullable: true }) date_end?: number,
+		@Args('interval', { type: () => MintAnalyticsInterval, nullable: true }) interval?: MintAnalyticsInterval,
+		@Args('timezone', { type: () => Timezone, nullable: true }) timezone?: TimezoneType,
+	) : Promise<OrchardMintAnalytics[]> {
+		try {
+			this.logger.debug('GET { mint_analytics_transfers }');
+			return await this.mintAnalyticsService.getMintAnalyticsTransfers({ units, date_start, date_end, interval, timezone });
+		} catch (error) {
+			throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
+		} 
+	}
 }

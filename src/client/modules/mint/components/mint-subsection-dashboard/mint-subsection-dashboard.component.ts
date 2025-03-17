@@ -36,6 +36,8 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	public mint_analytics_mints_pre: MintAnalytic[] = [];
 	public mint_analytics_melts: MintAnalytic[] = [];
 	public mint_analytics_melts_pre: MintAnalytic[] = [];
+	public mint_analytics_transfers: MintAnalytic[] = [];
+	public mint_analytics_transfers_pre: MintAnalytic[] = [];
 	public locale!: string;
 	// derived data
 	public mint_genesis_time: number = 0;
@@ -129,6 +131,20 @@ export class MintSubsectionDashboardComponent implements OnInit {
 			interval: MintAnalyticsInterval.Custom,
 			timezone: timezone
 		});
+		const analytics_transfers_obs = this.mintService.loadMintAnalyticsTransfers({
+			units: this.chart_settings.units,
+			date_start: this.chart_settings.date_start,
+			date_end: this.chart_settings.date_end,
+			interval: this.chart_settings.interval,
+			timezone: timezone
+		});
+		const analytics_transfers_pre_obs = this.mintService.loadMintAnalyticsTransfers({
+			units: this.chart_settings.units,
+			date_start: 100000,
+			date_end: this.chart_settings.date_start-1,
+			interval: MintAnalyticsInterval.Custom,
+			timezone: timezone
+		});
 		const [
 			analytics_balances, 
 			analytics_balances_pre,
@@ -136,6 +152,8 @@ export class MintSubsectionDashboardComponent implements OnInit {
 			analytics_mints_pre,
 			analytics_melts,
 			analytics_melts_pre,
+			analytics_transfers,
+			analytics_transfers_pre,
 		] = await lastValueFrom(
 			forkJoin([
 				analytics_balances_obs, 
@@ -143,7 +161,9 @@ export class MintSubsectionDashboardComponent implements OnInit {
 				analytics_mints_obs,
 				analytics_mints_pre_obs,
 				analytics_melts_obs,
-				analytics_melts_pre_obs
+				analytics_melts_pre_obs,
+				analytics_transfers_obs,
+				analytics_transfers_pre_obs,
 			])
 		);
 
@@ -160,6 +180,8 @@ export class MintSubsectionDashboardComponent implements OnInit {
 		this.mint_analytics_mints_pre = analytics_mints_pre;
 		this.mint_analytics_melts = analytics_melts;
 		this.mint_analytics_melts_pre = analytics_melts_pre;
+		this.mint_analytics_transfers = analytics_transfers;
+		this.mint_analytics_transfers_pre = analytics_transfers_pre;
 	}
 
 	private getChartSettings(): NonNullableMintChartSettings {

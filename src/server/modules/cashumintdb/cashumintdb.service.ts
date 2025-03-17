@@ -151,17 +151,20 @@ export class CashuMintDatabaseService {
 		});
 	}
 
-  /* Analytics */
+  	/* Analytics */
 
   	public async getMintAnalyticsBalances(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
 		const interval = args?.interval || MintAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
-		const { where_conditions, params } = getAnalyticsConditions(args);
+		const { where_conditions, params } = getAnalyticsConditions({
+			args: args,
+			time_column: 'created_time'
+		});
 		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
 		const time_group_sql = getAnalyticsTimeGroupSql({
 			interval: interval,
 			timezone: timezone,
-			table_name: '',
+			time_column: 'created_time'
 		});
 		
 		const sqlite_sql = `
@@ -242,25 +245,28 @@ export class CashuMintDatabaseService {
 	public async getMintAnalyticsMints(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
 		const interval = args?.interval || MintAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
-		const { where_conditions, params } = getAnalyticsConditions(args);
+		const { where_conditions, params } = getAnalyticsConditions({
+			args: args,
+			time_column: 'created_time'
+		});
 		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
 		const time_group_sql = getAnalyticsTimeGroupSql({
 			interval: interval,
 			timezone: timezone,
-			table_name: 'mq.',
+			time_column: 'created_time'
 		});
 		const sql = `
 			SELECT 
 				${time_group_sql} AS time_group,
-				mq.unit,
-				SUM(CASE WHEN mq.state = 'ISSUED' THEN mq.amount ELSE 0 END) AS amount,
-				COUNT(DISTINCT CASE WHEN mq.state = 'ISSUED' THEN mq.quote ELSE NULL END) AS operation_count,
-				MIN(mq.created_time) as min_created_time
+				unit,
+				SUM(CASE WHEN state = 'ISSUED' THEN amount ELSE 0 END) AS amount,
+				COUNT(DISTINCT CASE WHEN state = 'ISSUED' THEN quote ELSE NULL END) AS operation_count,
+				MIN(created_time) as min_created_time
 			FROM 
-				mint_quotes mq
+				mint_quotes
 				${where_clause}
 			GROUP BY 
-				time_group, mq.unit
+				time_group, unit
 			ORDER BY 
 				min_created_time;`;
     
@@ -288,28 +294,31 @@ export class CashuMintDatabaseService {
 		});
  	}
 
-	 public async getMintAnalyticsMelts(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
+	public async getMintAnalyticsMelts(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
 		const interval = args?.interval || MintAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
-		const { where_conditions, params } = getAnalyticsConditions(args);
+		const { where_conditions, params } = getAnalyticsConditions({
+			args: args,
+			time_column: 'created_time'
+		});
 		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
 		const time_group_sql = getAnalyticsTimeGroupSql({
 			interval: interval,
 			timezone: timezone,
-			table_name: 'lq.',
+			time_column: 'created_time'
 		});
 		const sql = `
 			SELECT 
 				${time_group_sql} AS time_group,
-				lq.unit,
-				SUM(CASE WHEN lq.state = 'PAID' THEN lq.amount ELSE 0 END) AS amount,
-				COUNT(DISTINCT CASE WHEN lq.state = 'PAID' THEN lq.quote ELSE NULL END) AS operation_count,
-				MIN(lq.created_time) as min_created_time
+				unit,
+				SUM(CASE WHEN state = 'PAID' THEN amount ELSE 0 END) AS amount,
+				COUNT(DISTINCT CASE WHEN state = 'PAID' THEN quote ELSE NULL END) AS operation_count,
+				MIN(created_time) as min_created_time
 			FROM 
-				melt_quotes lq
+				melt_quotes
 				${where_clause}
 			GROUP BY 
-				time_group, lq.unit
+				time_group, unit
 			ORDER BY 
 				min_created_time;`;
     
@@ -337,5 +346,57 @@ export class CashuMintDatabaseService {
 		});
  	}
 
-
+	public async getMintAnalyticsTransfers(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
+		const interval = args?.interval || MintAnalyticsInterval.day;
+		const timezone = args?.timezone || 'UTC';
+		const { where_conditions, params } = getAnalyticsConditions({
+			args: args,
+			time_column: 'created'
+		});
+		where_conditions.push('melt_quote IS NULL');
+		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
+		const time_group_sql = getAnalyticsTimeGroupSql({
+			interval: interval,
+			timezone: timezone,
+			time_column: 'created'
+		});
+		const sql = `
+			SELECT 
+				${time_group_sql} AS time_group,
+				unit,
+				SUM(amount) AS amount,
+				COUNT(DISTINCT secret) AS operation_count,
+				MIN(created) as min_created_time
+			FROM 
+				proofs_used
+				LEFT JOIN keysets k ON k.id = proofs_used.id
+				${where_clause}
+			GROUP BY 
+				time_group, unit
+			ORDER BY
+				min_created_time;`;
+    
+		return new Promise((resolve, reject) => {
+			db.all(sql, params, (err, rows:any[]) => {
+				if (err) return reject(err);
+						
+				const result = rows.map(row => {
+					const timestamp = getAnalyticsTimeGroupStamp({
+						min_created_time: row.min_created_time,
+						time_group: row.time_group,
+						interval: interval,
+						timezone: timezone
+					});
+					return {
+						unit: row.unit,
+						amount: row.amount,
+						created_time: timestamp,
+						operation_count: row.operation_count,
+					};
+				});
+				
+				resolve(result);
+			});
+		});
+	}
 }
