@@ -132,8 +132,14 @@ export class MintBalanceChartComponent implements OnChanges {
 		const y_axis = getYAxis(units);
 		const scales: ScaleChartOptions<'line'>['scales'] = {};
 		scales['x'] = getXAxisConfig(this.selected_interval, this.locale);
-		if( y_axis.includes('ybtc') ) scales['ybtc'] = getBtcYAxisConfig();
-		if( y_axis.includes('yfiat') ) scales['yfiat'] = getFiatYAxisConfig(units);
+		if( y_axis.includes('ybtc') ) scales['ybtc'] = getBtcYAxisConfig({
+			grid_color: this.chartService.getGridColor()
+		});
+		if( y_axis.includes('yfiat') ) scales['yfiat'] = getFiatYAxisConfig({
+			units,
+			show_grid: !y_axis.includes('ybtc'),
+			grid_color: this.chartService.getGridColor()
+		});
 
 		return {
 			responsive: true,

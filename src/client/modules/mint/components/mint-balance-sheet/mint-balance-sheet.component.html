@@ -1,7 +1,6 @@
 <div>
 	<div class="title-l p-b-1 p-l-1">Balance Sheet</div>
 	<mat-card appearance="outlined" class="overflow-hidden">
-        <!-- <mat-card-content> -->
 		<div class="p-h-1">
             <table mat-table [dataSource]="rows" class="orc-feature-table">
 
@@ -51,12 +50,18 @@
 						}
 					</td>
 				</ng-container>
-			
+
+				<ng-container matColumnDef="Keyset">
+					<th mat-header-cell *matHeaderCellDef> Keyset </th>
+					<td mat-cell *matCellDef="let row">
+						<span class="font-size-m">Gen {{ row.generation }}</span>
+					</td>
+				</ng-container>
+
 				<tr mat-header-row *matHeaderRowDef="displayed_columns"></tr>
 				<tr mat-row *matRowDef="let row; columns: displayed_columns;"></tr>
 			
 			</table>
-        <!-- </mat-card-content> -->
 	    </div>
     </mat-card>
 </div>

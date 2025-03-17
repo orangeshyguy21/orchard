@@ -9,6 +9,7 @@ import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 import { ChartType } from '@client/modules/mint/enums/chart-type.enum';
 /* Shared Dependencies */
 import { MintAnalyticsInterval, MintUnit } from '@shared/generated.types';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 
 type UnitOption = {
 	label: string;
@@ -28,7 +29,22 @@ type TypeOption = {
 	standalone: false,
 	templateUrl: './mint-analytic-control-panel.component.html',
 	styleUrl: './mint-analytic-control-panel.component.scss',
-	changeDetection: ChangeDetectionStrategy.OnPush
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	animations: [
+		trigger('formStateReaction', [
+			state('valid', style({
+				height: '52px',
+				overflow: 'hidden'
+			})),
+			state('invalid', style({
+				height: '71px',
+				overflow: 'hidden'
+			})),
+			transition('valid <=> invalid', [
+				animate('300ms ease-in-out')
+			])
+		])
+	]
 })
 export class MintAnalyticControlPanelComponent implements OnChanges {
 	
@@ -67,6 +83,10 @@ export class MintAnalyticControlPanelComponent implements OnChanges {
 		{ label: 'Volume', value: ChartType.Volume },
 	];
 
+	public get height_state(): string {
+		return this.panel?.invalid ? 'invalid' : 'valid';
+	}
+
 	constructor() {}
 
 	ngOnChanges(changes: SimpleChanges): void {			
@@ -74,7 +94,7 @@ export class MintAnalyticControlPanelComponent implements OnChanges {
 	}
 
 	initForm(): void {
-		this.unit_options = this.selected_units.map(unit => ({ label: unit.toString().toUpperCase(), value: unit }));
+		this.unit_options = this.keysets.map( keyset => ({ label: keyset.unit.toUpperCase(), value: keyset.unit }));
 		this.panel.controls.daterange.controls.date_start.setValue(DateTime.fromSeconds(this.selected_date_start));
 		this.panel.controls.daterange.controls.date_end.setValue(DateTime.fromSeconds(this.selected_date_end));
 		this.panel.controls.units.setValue(this.selected_units);

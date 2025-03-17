@@ -6,6 +6,8 @@ import { DateTime } from 'luxon';
 /* Application Dependencies */
 import { CacheService } from '@client/modules/cache/services/cache/cache.service';
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
+import { ChartService } from '@client/modules/chart/services/chart/chart.service';
+import { NonNullableMintChartSettings } from '@client/modules/chart/services/chart/chart.types';
 /* Native Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { MintBalance } from '@client/modules/mint/classes/mint-balance.class';
@@ -25,41 +27,35 @@ import { MintAnalyticsInterval, MintUnit } from '@shared/generated.types';
 })
 export class MintSubsectionDashboardComponent implements OnInit {
 
+	// data
 	public mint_info: MintInfo | null = null;
 	public mint_balances: MintBalance[] = [];
 	public mint_keysets: MintKeyset[] = [];
 	public mint_analytics_balances: MintAnalytic[] = [];
 	public mint_analytics_balances_preceeding: MintAnalytic[] = [];
-
+	public locale!: string;
+	// derived data
+	public mint_genesis_time: number = 0;
+	// state
 	public loading_static_data: boolean = true;
 	public loading_dynamic_data: boolean = true;
-	public mint_genesis_time: number = 0;
-
-	public selected_units: MintUnit[] = [];
-	public selected_date_start!: number;
-	public selected_date_end!: number;
-	public selected_interval: MintAnalyticsInterval = MintAnalyticsInterval.Day;
-	public selected_type!: ChartType;
-
-	public locale!: string;
+	// chart settings
+	public chart_settings!: NonNullableMintChartSettings;
 
 	constructor(
 		private mintService: MintService,
 		private cacheService: CacheService,
 		private settingService: SettingService,
+		private chartService: ChartService,
 		private changeDetectorRef: ChangeDetectorRef
-	) {
-		this.selected_type = ChartType.Summary;
-	}
+	) {}
 
 	async ngOnInit(): Promise<void> {
 		try {
 			await this.loadStaticData();
 			this.locale = await this.settingService.getLocale();
 			this.mint_genesis_time = this.getMintGenesisTime();
-			this.selected_units = this.getSelectedUnits();
-			this.selected_date_start = this.getSelectedDateStart();
-			this.selected_date_end = this.getSelectedDateEnd();
+			this.chart_settings = this.getChartSettings();
 			this.loading_static_data = false;
 			this.changeDetectorRef.detectChanges();
 			await this.loadMintAnalyticsBalances();
@@ -87,16 +83,16 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	private async loadMintAnalyticsBalances(): Promise<void> {
 		const timezone = this.settingService.getTimezone();
 		const analytics_balances_obs = this.mintService.loadMintAnalyticsBalances({
-			units: this.selected_units,
-			date_start: this.selected_date_start,
-			date_end: this.selected_date_end,
-			interval: this.selected_interval,
+			units: this.chart_settings.units,
+			date_start: this.chart_settings.date_start,
+			date_end: this.chart_settings.date_end,
+			interval: this.chart_settings.interval,
 			timezone: timezone
 		});
 		const preceeding_sums_obs = this.mintService.loadMintAnalyticsBalances({
-			units: this.selected_units,
+			units: this.chart_settings.units,
 			date_start: 100000,
-			date_end: this.selected_date_start-1,
+			date_end: this.chart_settings.date_start-1,
 			interval: MintAnalyticsInterval.Custom,
 			timezone: timezone
 		});
@@ -105,6 +101,17 @@ export class MintSubsectionDashboardComponent implements OnInit {
 		);
 		this.mint_analytics_balances = analytics_balances;
 		this.mint_analytics_balances_preceeding = preceeding_sums;
+	}
+
+	private getChartSettings(): NonNullableMintChartSettings {
+		const settings = this.chartService.getMintChartSettings();
+		return {
+			type: settings.type ?? ChartType.Summary,
+			interval: settings.interval ?? MintAnalyticsInterval.Day,
+			units: settings.units ?? this.getSelectedUnits(), // @todo there will be bugs here if a unit is not in the keysets (audit active keysets)
+			date_start: settings.date_start ?? this.getSelectedDateStart(),
+			date_end: settings.date_end ?? this.getSelectedDateEnd()
+		};
 	}
 
 	private getSelectedUnits(): MintUnit[] {
@@ -147,28 +154,29 @@ export class MintSubsectionDashboardComponent implements OnInit {
 		}
 	}
 
-	// 1741132800
-
 	public onDateChange(event: number[]): void {
-		this.selected_date_start = event[0];
-		this.selected_date_end = event[1];
+		this.chart_settings.date_start = event[0];
+		this.chart_settings.date_end = event[1];
+		this.chartService.setMintChartShortSettings(this.chart_settings);
 		this.reloadDynamicData();
 	}
 
 	public onUnitsChange(event: MintUnit[]): void {
-		this.selected_units = event;
+		this.chart_settings.units = event;
+		this.chartService.setMintChartSettings(this.chart_settings);
 		this.reloadDynamicData();
 	}
 
 	public onIntervalChange(event: MintAnalyticsInterval): void {
-		this.selected_interval = event;
+		this.chart_settings.interval = event;
+		this.chartService.setMintChartSettings(this.chart_settings);
 		this.reloadDynamicData();
 	}
 
 	public onTypeChange(event: ChartType): void {
-		console.log('onTypeChange', event);
-		this.selected_type = event;
-		this.changeDetectorRef.detectChanges();
+		this.chart_settings.type = event;
+		this.chartService.setMintChartSettings(this.chart_settings);
+		this.reloadDynamicData();
 	}
 }
 
