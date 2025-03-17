@@ -30,7 +30,7 @@ import { MintBalanceSheetComponent } from './components/mint-balance-sheet/mint-
 import { MintConnectionsComponent } from './components/mint-connections/mint-connections.component';
 import { MintQrcodeDialogComponent } from './components/mint-qrcode-dialog/mint-qrcode-dialog.component';
 import { MintAnalyticControlPanelComponent } from './components/mint-analytic-control-panel/mint-analytic-control-panel.component';
-import { MintBalanceChartComponent } from './components/mint-balance-chart/mint-balance-chart.component';
+import { MintAnalyticChartComponent } from './components/mint-analytic-chart/mint-analytic-chart.component';
 import { MintKeysetComponent } from './components/mint-keyset/mint-keyset.component';
 
 const routes: Routes = [
@@ -80,7 +80,7 @@ export class MintRoutingModule { }
 		MintConnectionsComponent,
 		MintQrcodeDialogComponent,
 		MintAnalyticControlPanelComponent,
-		MintBalanceChartComponent,
+		MintAnalyticChartComponent,
 		MintKeysetComponent,
 	],
 	imports: [

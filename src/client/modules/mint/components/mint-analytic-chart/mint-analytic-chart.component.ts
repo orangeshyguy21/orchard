@@ -29,19 +29,20 @@ import { MintAnalytic } from '@client/modules/mint/classes/mint-analytic.class';
 import { ChartType } from '@client/modules/mint/enums/chart-type.enum';
 
 @Component({
-	selector: 'orc-mint-balance-chart',
+	selector: 'orc-mint-analytic-chart',
 	standalone: false,
-	templateUrl: './mint-balance-chart.component.html',
-	styleUrl: './mint-balance-chart.component.scss',
+	templateUrl: './mint-analytic-chart.component.html',
+	styleUrl: './mint-analytic-chart.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MintBalanceChartComponent implements OnChanges {
+export class MintAnalyticChartComponent implements OnChanges {
 
 	@ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
+	@Input() public title!: string;
 	@Input() public locale!: string;
-	@Input() public mint_balances!: MintAnalytic[];
-	@Input() public mint_balances_pre!: MintAnalytic[];
+	@Input() public mint_analytics!: MintAnalytic[];
+	@Input() public mint_analytics_pre!: MintAnalytic[];
 	@Input() public chart_settings!: NonNullableMintChartSettings;
 	@Input() public selected_type!: ChartType | undefined;
 	@Input() public loading!: boolean;
@@ -85,12 +86,12 @@ export class MintBalanceChartComponent implements OnChanges {
 	}
 
 	private getAmountChartData(): ChartConfiguration['data'] {
-		if (!this.mint_balances || this.mint_balances.length === 0) return { datasets: [] };
+		if (!this.mint_analytics || this.mint_analytics.length === 0) return { datasets: [] };
 		const timestamp_first = DateTime.fromSeconds(this.chart_settings.date_start).startOf('day').toSeconds();
 		const timestamp_last = DateTime.fromSeconds(this.chart_settings.date_end).startOf('day').toSeconds();
 		const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.chart_settings.interval);
-		const data_unit_groups = groupAnalyticsByUnit(this.mint_balances);
-		const data_unit_groups_prepended = prependData(data_unit_groups, this.mint_balances_pre);
+		const data_unit_groups = groupAnalyticsByUnit(this.mint_analytics);
+		const data_unit_groups_prepended = prependData(data_unit_groups, this.mint_analytics_pre);
 		const datasets = Object.entries(data_unit_groups_prepended).map(([unit, data], index) => {
 			const data_keyed_by_timestamp = getDataKeyedByTimestamp(data, 'amount');
 			const color = this.chartService.getAssetColor(unit, index);
@@ -171,12 +172,12 @@ export class MintBalanceChartComponent implements OnChanges {
 	}
 
 	private getOperationsChartData(): ChartConfiguration['data'] {
-		if (!this.mint_balances || this.mint_balances.length === 0) return { datasets: [] };
+		if (!this.mint_analytics || this.mint_analytics.length === 0) return { datasets: [] };
 		const timestamp_first = DateTime.fromSeconds(this.chart_settings.date_start).startOf('day').toSeconds();
 		const timestamp_last = DateTime.fromSeconds(this.chart_settings.date_end).startOf('day').toSeconds();
 		const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.chart_settings.interval);
-		const data_unit_groups = groupAnalyticsByUnit(this.mint_balances);
-		const data_unit_groups_prepended = prependData(data_unit_groups, this.mint_balances_pre);
+		const data_unit_groups = groupAnalyticsByUnit(this.mint_analytics);
+		const data_unit_groups_prepended = prependData(data_unit_groups, this.mint_analytics_pre);
 		const datasets = Object.entries(data_unit_groups_prepended).map(([unit, data], index) => {
 			const data_keyed_by_timestamp = getDataKeyedByTimestamp(data, 'operation_count');
 			const color = this.chartService.getAssetColor(unit, index);

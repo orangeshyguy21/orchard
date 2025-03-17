@@ -28,30 +28,33 @@
 				</orc-mint-analytic-control-panel>
 				
 				<div class="flex flex-column flex-gap-2">
-					<orc-mint-balance-chart
+					<orc-mint-analytic-chart
+						[title]="'Balance Sheet'"
 						[locale]="locale"
-						[mint_balances]="mint_analytics_balances"
-						[mint_balances_pre]="mint_analytics_balances_pre"
+						[mint_analytics]="mint_analytics_balances"
+						[mint_analytics_pre]="mint_analytics_balances_pre"
 						[chart_settings]="chart_settings"
 						[selected_type]="chart_settings?.type"
 						[loading]="loading_dynamic_data">
-					</orc-mint-balance-chart>
-					<orc-mint-balance-chart
+					</orc-mint-analytic-chart>
+					<orc-mint-analytic-chart
+						[title]="'Mints'"
 						[locale]="locale"
-						[mint_balances]="mint_analytics_mints"
-						[mint_balances_pre]="mint_analytics_mints_pre"
+						[mint_analytics]="mint_analytics_mints"
+						[mint_analytics_pre]="mint_analytics_mints_pre"
 						[chart_settings]="chart_settings"
 						[selected_type]="chart_settings?.type"
 						[loading]="loading_dynamic_data">
-					</orc-mint-balance-chart>
-					<orc-mint-balance-chart
+					</orc-mint-analytic-chart>
+					<orc-mint-analytic-chart
+						[title]="'Melts'"
 						[locale]="locale"
-						[mint_balances]="mint_analytics_melts"
-						[mint_balances_pre]="mint_analytics_melts_pre"
+						[mint_analytics]="mint_analytics_melts"
+						[mint_analytics_pre]="mint_analytics_melts_pre"
 						[chart_settings]="chart_settings"
 						[selected_type]="chart_settings?.type"
 						[loading]="loading_dynamic_data">
-					</orc-mint-balance-chart>
+					</orc-mint-analytic-chart>
 				</div>
 				
 			</mat-card-content>
