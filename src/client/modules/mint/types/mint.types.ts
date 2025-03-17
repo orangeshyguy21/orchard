@@ -20,6 +20,14 @@ export type MintAnalyticsBalancesResponse = {
 	mint_analytics_balances: OrchardMintAnalytics[];
 }
 
+export type MintAnalyticsMintsResponse = {
+	mint_analytics_mints: OrchardMintAnalytics[];
+}
+
+export type MintAnalyticsMeltsResponse = {
+	mint_analytics_melts: OrchardMintAnalytics[];
+}
+
 export type MintPromisesArgs ={
     id_keysets?: string[];
     date_start?: number;

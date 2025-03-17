@@ -10,9 +10,6 @@ export class OrchardMintAnalytics {
 	@Field(type => MintUnit)
 	unit: string;
 
-	// @Field()
-	// unit: string;
-
 	@Field(type => Int)
 	amount: number;
 

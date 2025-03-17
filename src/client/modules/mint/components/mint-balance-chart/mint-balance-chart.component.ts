@@ -41,7 +41,7 @@ export class MintBalanceChartComponent implements OnChanges {
 
 	@Input() public locale!: string;
 	@Input() public mint_balances!: MintAnalytic[];
-	@Input() public mint_balances_preceeding!: MintAnalytic[];
+	@Input() public mint_balances_pre!: MintAnalytic[];
 	@Input() public chart_settings!: NonNullableMintChartSettings;
 	@Input() public selected_type!: ChartType | undefined;
 	@Input() public loading!: boolean;
@@ -90,7 +90,7 @@ export class MintBalanceChartComponent implements OnChanges {
 		const timestamp_last = DateTime.fromSeconds(this.chart_settings.date_end).startOf('day').toSeconds();
 		const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.chart_settings.interval);
 		const data_unit_groups = groupAnalyticsByUnit(this.mint_balances);
-		const data_unit_groups_prepended = prependData(data_unit_groups, this.mint_balances_preceeding);
+		const data_unit_groups_prepended = prependData(data_unit_groups, this.mint_balances_pre);
 		const datasets = Object.entries(data_unit_groups_prepended).map(([unit, data], index) => {
 			const data_keyed_by_timestamp = getDataKeyedByTimestamp(data, 'amount');
 			const color = this.chartService.getAssetColor(unit, index);
@@ -176,7 +176,7 @@ export class MintBalanceChartComponent implements OnChanges {
 		const timestamp_last = DateTime.fromSeconds(this.chart_settings.date_end).startOf('day').toSeconds();
 		const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.chart_settings.interval);
 		const data_unit_groups = groupAnalyticsByUnit(this.mint_balances);
-		const data_unit_groups_prepended = prependData(data_unit_groups, this.mint_balances_preceeding);
+		const data_unit_groups_prepended = prependData(data_unit_groups, this.mint_balances_pre);
 		const datasets = Object.entries(data_unit_groups_prepended).map(([unit, data], index) => {
 			const data_keyed_by_timestamp = getDataKeyedByTimestamp(data, 'operation_count');
 			const color = this.chartService.getAssetColor(unit, index);

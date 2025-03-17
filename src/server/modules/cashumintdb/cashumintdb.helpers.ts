@@ -1,11 +1,16 @@
+/* Vendor Dependencies */
+import { DateTime } from 'luxon';
+/* Local Dependencies */
+import { CashuMintAnalyticsArgs } from './cashumintdb.interfaces';
+
 /**
-   * Builds a dynamic SQL query with parameters based on provided arguments
-   * @param table_name The database table to query
-   * @param args Optional filtering arguments
-   * @param field_mappings Maps argument fields to database columns
-   * @param select_fields Optional fields to select (defaults to *)
-   * @returns Object containing SQL query string and parameters array
-   */
+ * Builds a dynamic SQL query with parameters based on provided arguments
+ * @param table_name The database table to query
+ * @param args Optional filtering arguments
+ * @param field_mappings Maps argument fields to database columns
+ * @param select_fields Optional fields to select (defaults to *)
+ * @returns Object containing SQL query string and parameters array
+ */
 export function buildDynamicQuery(
     table_name: string, 
     args?: Record<string, any>,
@@ -73,4 +78,21 @@ export function processQueryArgument(
 		conditions.push(`${db_field} = ?`);
 		params.push(arg_value);
 	}
+}
+
+
+export function getTimeGroupStamp({
+    min_created_time,
+    time_group,
+    interval,
+    timezone
+}: {
+    min_created_time: number;
+    time_group: string;
+    interval: CashuMintAnalyticsArgs['interval'];
+    timezone: CashuMintAnalyticsArgs['timezone'];
+}) {
+    if( interval === 'custom' ) return min_created_time;
+    const datetime = DateTime.fromFormat(time_group, 'yyyy-MM-dd', {zone: timezone}).startOf('day');
+    return Math.floor(datetime.toSeconds());
 }
