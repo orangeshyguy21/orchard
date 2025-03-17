@@ -1,8 +1,8 @@
 <div class="mint-analytic-control-panel-container">
-    <form [formGroup]="panel" class="flex flex-justify-between flex-items-center p-h-1">
+    <form [formGroup]="panel" class="flex flex-justify-between flex-items-start">
         <div class="flex flex-col flex-gap-1">
             <div formGroupName="daterange">
-                <mat-form-field hideRequiredMarker="true" class="mint-analytic-daterange">
+                <mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic" class="mint-analytic-daterange">
                     <mat-label>Date range</mat-label>
                     <mat-date-range-input [rangePicker]="picker">
                         <input matStartDate formControlName="date_start" placeholder="Start date" (blur)="onDateChange()">
@@ -16,39 +16,47 @@
                 </mat-form-field>
             </div>
                 
-            <mat-form-field hideRequiredMarker="true">
-                <mat-label>Units</mat-label>
-                <mat-select formControlName="units" multiple (selectionChange)="onUnitsChange($event)">
-                    @for (unit of unit_options; track unit.value) {
-                        <mat-option [value]="unit.value">{{unit.label}}</mat-option>
-                    }
-                </mat-select>
-            </mat-form-field>
+            <div>
+                <mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
+                    <mat-label>Units</mat-label>
+                    <mat-select formControlName="units" multiple (selectionChange)="onUnitsChange($event)">
+                        @for (unit of unit_options; track unit.value) {
+                            <mat-option [value]="unit.value">{{unit.label}}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </div>
 
+            <div>
+                <mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
+                    <mat-label>Interval</mat-label>
+                    <mat-select formControlName="interval" (selectionChange)="onIntervalChange($event)">
+                        @for (interval of interval_options; track interval.value) {
+                            <mat-option [value]="interval.value">{{interval.label}}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </div>
 
-            <mat-form-field hideRequiredMarker="true">
-                <mat-label>Interval</mat-label>
-                <mat-select formControlName="interval" (selectionChange)="onIntervalChange($event)">
-                    @for (interval of interval_options; track interval.value) {
-                        <mat-option [value]="interval.value">{{interval.label}}</mat-option>
-                    }
-                </mat-select>
-            </mat-form-field>
-
-            <mat-form-field hideRequiredMarker="true">
-                <mat-label>Type</mat-label>
-                <mat-select formControlName="type" (selectionChange)="onTypeChange($event)">
-                    @for (type of type_options; track type.value) {
-                        <mat-option [value]="type.value">{{type.label}}</mat-option>
-                    }
-                </mat-select>
-            </mat-form-field>
+            <div>
+                <mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
+                    <mat-label>Type</mat-label>
+                    <mat-select formControlName="type" (selectionChange)="onTypeChange($event)">
+                        @for (type of type_options; track type.value) {
+                            <mat-option [value]="type.value">{{type.label}}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </div>
         </div>
-        <div class="m-b-1-25">
+        <div class="p-t-0-5">
             <button mat-icon-button aria-label="Example icon button with a vertical three dot icon">
                 <mat-icon>more_vert</mat-icon>
             </button>
         </div>
     </form>
+    <hr class="orc-outline-variant-border m-t-1">
+    <!-- What if this hr was smart and maried with the form that removed the margin below it's form elements in an 
+    intentional way. THis way space could be saved and errors could be shown with a slide down animation - slick -->
 </div>
 
