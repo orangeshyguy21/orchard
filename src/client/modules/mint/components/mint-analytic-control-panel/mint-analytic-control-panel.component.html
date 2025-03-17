@@ -1,5 +1,5 @@
 <div class="mint-analytic-control-panel-container">
-    <form [formGroup]="panel" class="flex flex-justify-between flex-items-start">
+    <form [formGroup]="panel" class="panel-form" [@formStateReaction]="height_state">
         <div class="flex flex-col flex-gap-1">
             <div formGroupName="daterange">
                 <mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic" class="mint-analytic-daterange">
@@ -56,7 +56,5 @@
         </div>
     </form>
     <hr class="orc-outline-variant-border m-t-1">
-    <!-- What if this hr was smart and maried with the form that removed the margin below it's form elements in an 
-    intentional way. THis way space could be saved and errors could be shown with a slide down animation - slick -->
 </div>
 
