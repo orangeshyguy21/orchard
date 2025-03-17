@@ -153,56 +153,91 @@ export class CashuMintDatabaseService {
 		const params = [];
 		
 		if (args?.date_start) {
-			where_conditions.push("mq.created_time >= ?");
+			where_conditions.push("created_time >= ?");
 			params.push(args.date_start);
 		}
 		if (args?.date_end) {
-			where_conditions.push("mq.created_time <= ?");
+			where_conditions.push("created_time <= ?");
 			params.push(args.date_end);
 		}
 		if (args?.units && args.units.length > 0) {
 			const unit_placeholders = args.units.map(() => '?').join(',');
-			where_conditions.push(`mq.unit IN (${unit_placeholders})`);
+			where_conditions.push(`unit IN (${unit_placeholders})`);
 			params.push(...args.units);
 		}
 
 		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
-		let time_group_sql;
-    
+		
+		let time_group;
+
 		switch (interval) {
 			case 'day':
-				time_group_sql = `strftime('%Y-%m-%d', datetime(mq.created_time + ${offset_seconds}, 'unixepoch')) AS time_group`;
+				time_group = `strftime('%Y-%m-%d', datetime(created_time + ${offset_seconds}, 'unixepoch'))`;
 				break;
 			case 'week':
-				time_group_sql = `strftime('%Y-%m-%d', datetime(mq.created_time + ${offset_seconds} - (strftime('%w', datetime(mq.created_time + ${offset_seconds}, 'unixepoch')) - 1) * 86400, 'unixepoch')) AS time_group`;
+				time_group = `strftime('%Y-%m-%d', datetime(created_time + ${offset_seconds} - (strftime('%w', datetime(created_time + ${offset_seconds}, 'unixepoch')) - 1) * 86400, 'unixepoch'))`;
 				break;
 			case 'month':
-				time_group_sql = `strftime('%Y-%m-01', datetime(mq.created_time + ${offset_seconds}, 'unixepoch')) AS time_group`;
+				time_group = `strftime('%Y-%m-01', datetime(created_time + ${offset_seconds}, 'unixepoch'))`;
 				break;
 			default: // custom interval
-				time_group_sql = "mq.unit AS time_group";
+				time_group = "unit";
 				break;
 		}
-    
-		const sql = `
+		
+		const sqlite_sql = `
+			WITH mint_data AS (
+				SELECT 
+					${time_group} AS time_group,
+					unit,
+					SUM(CASE WHEN state = 'ISSUED' THEN amount ELSE 0 END) AS mint_amount,
+					COUNT(DISTINCT quote) AS mint_count,
+					MIN(created_time) as min_created_time
+				FROM 
+					mint_quotes
+					${where_clause}
+				GROUP BY 
+					time_group, unit
+			),
+			melt_data AS (
+				SELECT 
+					${time_group} AS time_group,
+					unit,
+					SUM(CASE WHEN state = 'PAID' THEN amount ELSE 0 END) AS melt_amount,
+					COUNT(DISTINCT quote) AS melt_count,
+					MIN(created_time) as min_created_time
+				FROM 
+					melt_quotes
+					${where_clause}
+				GROUP BY 
+					time_group, unit
+			)
 			SELECT 
-				${time_group_sql},
-				mq.unit,
-				SUM(CASE WHEN mq.state = 'ISSUED' THEN mq.amount ELSE 0 END) - 
-				SUM(CASE WHEN lq.state = 'PAID' THEN lq.amount ELSE 0 END) AS amount,
-				COUNT(DISTINCT mq.quote) + COUNT(DISTINCT lq.quote) AS operation_count,
-				MIN(mq.created_time) as min_created_time
+				COALESCE(m.time_group, l.time_group) AS time_group,
+				COALESCE(m.unit, l.unit) AS unit,
+				COALESCE(m.mint_amount, 0) - COALESCE(l.melt_amount, 0) AS amount,
+				COALESCE(m.mint_count, 0) + COALESCE(l.melt_count, 0) AS operation_count,
+				COALESCE(m.min_created_time, l.min_created_time) AS min_created_time
 			FROM 
-				mint_quotes mq
-				LEFT JOIN melt_quotes lq ON lq.unit = mq.unit
-				${where_clause}
-			GROUP BY 
-				time_group, mq.unit
+				mint_data m
+				LEFT JOIN melt_data l ON m.time_group = l.time_group AND m.unit = l.unit
+			UNION ALL
+			SELECT 
+				l.time_group,
+				l.unit,
+				-l.melt_amount AS amount,
+				l.melt_count AS operation_count,
+				l.min_created_time
+			FROM 
+				melt_data l
+				LEFT JOIN mint_data m ON l.time_group = m.time_group AND l.unit = m.unit
+			WHERE 
+				m.time_group IS NULL
 			ORDER BY 
 				min_created_time;`;
-    
+		
 		return new Promise((resolve, reject) => {
-			db.all(sql, params, (err, rows:any[]) => {
+			db.all(sqlite_sql, [...params, ...params], (err, rows:any[]) => {
 				if (err) return reject(err);
 						
 				const result = rows.map(row => {
@@ -223,7 +258,7 @@ export class CashuMintDatabaseService {
 				resolve(result);
 			});
 		});
- 	}
+	}
 
 	public async getMintAnalyticsMints(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
 		const interval = args?.interval || MintAnalyticsInterval.day;
