@@ -1,5 +1,6 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, SimpleChanges, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 /* Vendor Dependencies */
@@ -66,7 +67,8 @@ export class MintConnectionsComponent {
 	constructor(
 		private changeDetectorRef: ChangeDetectorRef,
 		private themeService: ThemeService,
-		private dialog: MatDialog
+		private dialog: MatDialog,
+		private router: Router
 	) {
 		this.qr_primary_color = this.themeService.getThemeColor('--mat-sys-surface') || '#000000';
 		this.qr_corner_dot_color = this.themeService.getThemeColor('--mat-sys-surface-container-highest') || '#000000';
@@ -84,6 +86,18 @@ export class MintConnectionsComponent {
 		this.changeDetectorRef.detectChanges();
 	}
 
+	private test(): Connection[] {
+		return [
+			{
+				url: 'https://www.google.com',
+				displayed_url: 'https://www.google.com'
+			},
+			{
+				url: 'https://www.google.com',
+				displayed_url: 'https://www.goooo...oooogle.com'
+			}
+		]
+	}
 	private getDisplayedUrl(url: string): string {
 		const last_dot_index = url.lastIndexOf('.');
 		if (last_dot_index === -1) return url;
@@ -100,6 +114,7 @@ export class MintConnectionsComponent {
 	}
 
 	private initQR(): void {
+		if( this.connections.length === 0 ) return;
 		const icon_url = this.icon_url ?? '/mint-icon-placeholder.png'; // @ todo placeholder icon
 		this.qr_code = new QRCodeStyling({
 			width: 195,
@@ -178,5 +193,9 @@ export class MintConnectionsComponent {
 				mint_name: this.mint_name
 			}
 		});
+	}
+
+	public onAddConnection(): void {
+		this.router.navigate(['mint', 'info']);
 	}
 }

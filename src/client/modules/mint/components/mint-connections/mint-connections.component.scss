@@ -22,3 +22,21 @@
         @extend .orc-secondary-bg;
     }
 }
+
+.mint-add-connection{
+    @extend .h-8;
+    @extend .w-8;
+    @extend .flex;
+    @extend .flex-items-center;
+    @extend .flex-justify-center;
+    @extend .orc-corner-full;
+    @extend .border;
+    @extend .border-dashed;
+    @extend .orc-outline-border;
+    @extend .cursor-pointer;
+    @extend .trans-bg-fast;
+
+    &:hover{
+        @extend .orc-surface-container-bg;
+    }
+}

@@ -11,4 +11,9 @@
         @extend .h-1;
         @extend .w-1;
     }
+    &.icon-lg{
+        @extend .font-size-3;
+        @extend .h-3;
+        @extend .w-3;
+    }
 }
