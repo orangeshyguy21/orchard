@@ -63,6 +63,7 @@ export class MintConnectionsComponent {
 	private copy_timeout: any;
 	private qr_primary_color: string;
 	private qr_corner_dot_color: string;
+	private placeholder_icon_url: string = '/mint-icon-placeholder.png';
 
 	constructor(
 		private changeDetectorRef: ChangeDetectorRef,
@@ -103,7 +104,7 @@ export class MintConnectionsComponent {
 
 	private initQR(): void {
 		if( this.connections.length === 0 ) return;
-		const icon_url = this.icon_url ?? '/mint-icon-placeholder.png'; // @ todo placeholder icon
+		const icon_url = this.icon_url ?? this.placeholder_icon_url; // @ todo placeholder icon
 		this.qr_code = new QRCodeStyling({
 			width: 195,
 			height: 195,
@@ -177,7 +178,7 @@ export class MintConnectionsComponent {
 				connection: this.connections.find(connection => connection.url === this.qr_data.value),
 				primary_color: this.qr_primary_color,
 				corner_dot_color: this.qr_corner_dot_color,
-				icon_url: this.icon_url,
+				icon_url: this.icon_url ?? this.placeholder_icon_url,
 				mint_name: this.mint_name
 			}
 		});

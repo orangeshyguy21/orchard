@@ -95,8 +95,6 @@ export class MintQrcodeDialogComponent implements OnInit {
 	}
 
 	public onStyleChange(event: Event): void {
-		console.log(event);
-		console.log(this.qr_options.value.style);
 		if (this.qr_options.value.style === null || this.qr_options.value.style === undefined) return;
 		const style_value = this.qr_options.value.style;
 		this.qr_code.update({
