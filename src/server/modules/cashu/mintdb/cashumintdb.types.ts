@@ -1,4 +1,5 @@
-import { MintUnit } from "./cashumintdb.enums";
+/* Native Dependencies */
+import { MintUnit } from "@server/modules/cashu/cashu.enums";
 
 export type CashuMintBalance = {
   keyset: string;

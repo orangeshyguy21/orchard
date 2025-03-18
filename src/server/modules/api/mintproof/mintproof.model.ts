@@ -2,7 +2,7 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 /* Application Dependencies */
 import { UnixTimestamp } from '@server/modules/graphql/scalars/unixtimestamp.scalar';
-import { CashuMintProof } from '@server/modules/cashumintdb/cashumintdb.types';
+import { CashuMintProof } from '@server/modules/cashu/mintdb/cashumintdb.types';
 
 @ObjectType()
 export class OrchardMintProof {

@@ -1,9 +1,9 @@
 /* Core Dependencies */
 import { Injectable, Logger } from '@nestjs/common';
 /* Application Dependencies */
-import { CashuMintDatabaseService } from '@server/modules/cashumintdb/cashumintdb.service';
-import { CashuMintPromise } from '@server/modules/cashumintdb/cashumintdb.types';
-import { CashuMintPromisesArgs } from '@server/modules/cashumintdb/cashumintdb.interfaces';
+import { CashuMintDatabaseService } from '@server/modules/cashu/mintdb/cashumintdb.service';
+import { CashuMintPromise } from '@server/modules/cashu/mintdb/cashumintdb.types';
+import { CashuMintPromisesArgs } from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
 /* Local Dependencies */
 import { OrchardMintPromise } from './mintpromise.model';
 

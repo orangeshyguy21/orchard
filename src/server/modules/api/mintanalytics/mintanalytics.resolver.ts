@@ -6,7 +6,8 @@ import { GraphQLError } from "graphql";
 import { OrchardApiErrors } from "@server/modules/graphql/errors/orchard.errors";
 import { UnixTimestamp } from "@server/modules/graphql/scalars/unixtimestamp.scalar";
 import { Timezone, TimezoneType } from "@server/modules/graphql/scalars/timezone.scalar";
-import { MintUnit, MintAnalyticsInterval } from '@server/modules/cashumintdb/cashumintdb.enums';
+import { MintAnalyticsInterval } from '@server/modules/cashu/mintdb/cashumintdb.enums';
+import { MintUnit } from '@server/modules/cashu/cashu.enums';
 /* Internal Dependencies */
 import { OrchardMintAnalytics } from "./mintanalytics.model";
 import { MintAnalyticsService } from "./mintanalytics.service";

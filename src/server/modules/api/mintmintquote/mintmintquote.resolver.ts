@@ -5,7 +5,7 @@ import { GraphQLError } from "graphql";
 /* Application Dependencies */
 import { OrchardApiErrors } from "@server/modules/graphql/errors/orchard.errors";
 import { UnixTimestamp } from "@server/modules/graphql/scalars/unixtimestamp.scalar";
-import { MintUnit, MintQuoteStatus } from "@server/modules/cashumintdb/cashumintdb.enums";
+import { MintUnit, MintQuoteStatus } from "@server/modules/cashu/cashu.enums";
 /* Local Dependencies */
 import { MintMintQuoteService } from "./mintmintquote.service";
 import { OrchardMintMintQuote } from "./mintmintquote.model";
