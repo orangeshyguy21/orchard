@@ -1,8 +1,11 @@
 /* Core Dependencies */
 import { Injectable, Logger } from '@nestjs/common';
+/* Vendor Dependencies */
+import sqlite3 from "sqlite3";
 /* Application Dependencies */
 import { CashuMintDatabaseService } from '@server/modules/cashu/mintdb/cashumintdb.service';
 import { CashuMintBalance } from '@server/modules/cashu/mintdb/cashumintdb.types';
+import { OrchardApiErrors } from "@server/modules/graphql/errors/orchard.errors";
 /* Local Dependencies */
 import { OrchardMintBalance } from './mintbalance.model';
 
@@ -16,15 +19,22 @@ export class MintBalanceService {
 	) {}
 
 	async getMintBalances() : Promise<OrchardMintBalance[]> {
-		const db = this.cashuMintDatabaseService.getMintDatabase();
+		let db: sqlite3.Database;
 		try {
-			const cashu_mint_balances : CashuMintBalance[] = await this.cashuMintDatabaseService.getMintBalances(db);
-			return cashu_mint_balances.map( cmb => new OrchardMintBalance(cmb) );
+			db = await this.cashuMintDatabaseService.getMintDatabaseAsync();
+		} catch (error) {
+			this.logger.error('Error connecting to sqlite database', { error });
+			throw OrchardApiErrors.MintDatabaseConnectionError;
+		}
+
+		try {
+			const cashu_mint_balances: CashuMintBalance[] = await this.cashuMintDatabaseService.getMintBalances(db);
+			return cashu_mint_balances.map(cmb => new OrchardMintBalance(cmb));
 		} catch (error) {
 			this.logger.error('Error getting outstanding mint balance', { error });
-			throw new Error(error);
+			throw OrchardApiErrors.MintDatabaseSelectError;
 		} finally {
-			db.close();
+			if (db) db.close();
 		}
 	}
 

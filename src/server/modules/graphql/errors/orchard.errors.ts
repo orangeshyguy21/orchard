@@ -1,5 +1,6 @@
 export enum OrchardApiErrors {
-  MintDatabaseSelectError = "MintDatabaseSelectError",
-  MintApiError = "MintApiError",
-  StatusError = "StatusError",
+	MintDatabaseConnectionError = "MintDatabaseConnectionError",
+	MintDatabaseSelectError = "MintDatabaseSelectError",
+	MintApiError = "MintApiError",
+	StatusError = "StatusError",
 };

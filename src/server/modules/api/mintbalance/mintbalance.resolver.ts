@@ -23,7 +23,7 @@ export class MintBalanceResolver {
 			this.logger.debug('GET { mint_balances }');
 			return await this.mintBalanceService.getMintBalances();
 		} catch (error) {
-			throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
+			throw new GraphQLError(error);
 		} 
 	}
 
