@@ -6,8 +6,8 @@
 			[loading]="loading_static_data">
 		</orc-mint-balance-sheet>
 		<orc-mint-connections 
-			[urls]="mint_info?.urls"
-			[icon_url]="mint_info?.icon_url ?? null"
+			[urls]="mint_info ? mint_info.urls : null"
+			[icon_url]="mint_info ? mint_info.icon_url : null"
 			[time]="mint_info?.time"
 			[mint_name]="mint_info?.name"
 			[loading]="loading_static_data">

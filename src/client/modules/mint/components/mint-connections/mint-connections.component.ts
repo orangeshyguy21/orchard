@@ -45,9 +45,9 @@ import { Connection } from './mint-connections.classes';
 })
 export class MintConnectionsComponent {
 
-	@Input() urls: string[] | undefined;
+	@Input() urls!: string[] | null;
 	@Input() icon_url!: string | null;
-	@Input() time: number | undefined; // mint genesis time
+	@Input() time: number | undefined;
 	@Input() mint_name: string | undefined;
 	@Input() loading!: boolean;
 

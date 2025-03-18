@@ -1,0 +1,9 @@
+<div class="mint-icon-container" (click)="onClick()">
+    @if (icon_url) {
+        <img [src]="icon_url" alt="Mint Icon" class="h-2">
+    }@else{
+        <div class="mint-icon-placeholder" matRipple>
+            <mat-icon>add</mat-icon>
+        </div>
+    }
+</div>
