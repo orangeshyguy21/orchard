@@ -78,7 +78,7 @@ export type OrchardMintInfo = {
   contact: Array<OrchardContact>;
   description: Scalars['String']['output'];
   description_long: Scalars['String']['output'];
-  icon_url: Scalars['String']['output'];
+  icon_url?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   nuts: Array<OrchardNut>;
   pubkey: Scalars['String']['output'];
@@ -199,6 +199,7 @@ export type Query = {
   mint_analytics_balances: Array<OrchardMintAnalytics>;
   mint_analytics_melts: Array<OrchardMintAnalytics>;
   mint_analytics_mints: Array<OrchardMintAnalytics>;
+  mint_analytics_transfers: Array<OrchardMintAnalytics>;
   mint_balances: Array<OrchardMintBalance>;
   mint_balances_issued: Array<OrchardMintBalance>;
   mint_balances_redeemed: Array<OrchardMintBalance>;
@@ -233,6 +234,15 @@ export type QueryMint_Analytics_MeltsArgs = {
 
 
 export type QueryMint_Analytics_MintsArgs = {
+  date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  interval?: InputMaybe<MintAnalyticsInterval>;
+  timezone?: InputMaybe<Scalars['Timezone']['input']>;
+  units?: InputMaybe<Array<MintUnit>>;
+};
+
+
+export type QueryMint_Analytics_TransfersArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   interval?: InputMaybe<MintAnalyticsInterval>;

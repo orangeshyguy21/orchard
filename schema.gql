@@ -56,7 +56,7 @@ type OrchardMintInfo {
   contact: [OrchardContact!]!
   description: String!
   description_long: String!
-  icon_url: String!
+  icon_url: String
   name: String!
   nuts: [OrchardNut!]!
   pubkey: String!

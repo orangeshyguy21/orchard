@@ -46,7 +46,7 @@ import { Connection } from './mint-connections.classes';
 export class MintConnectionsComponent {
 
 	@Input() urls: string[] | undefined;
-	@Input() icon_url: string | undefined;
+	@Input() icon_url!: string | null;
 	@Input() time: number | undefined; // mint genesis time
 	@Input() mint_name: string | undefined;
 	@Input() loading!: boolean;
@@ -61,7 +61,7 @@ export class MintConnectionsComponent {
 
 	private copy_timeout: any;
 	private qr_primary_color: string;
-	private qr_corder_dot_color: string;
+	private qr_corner_dot_color: string;
 
 	constructor(
 		private changeDetectorRef: ChangeDetectorRef,
@@ -69,7 +69,7 @@ export class MintConnectionsComponent {
 		private dialog: MatDialog
 	) {
 		this.qr_primary_color = this.themeService.getThemeColor('--mat-sys-surface') || '#000000';
-		this.qr_corder_dot_color = this.themeService.getThemeColor('--mat-sys-surface-container-highest') || '#000000';
+		this.qr_corner_dot_color = this.themeService.getThemeColor('--mat-sys-surface-container-highest') || '#000000';
 	}
 
 	ngOnChanges(changes: SimpleChanges): void {
@@ -100,12 +100,13 @@ export class MintConnectionsComponent {
 	}
 
 	private initQR(): void {
+		const icon_url = this.icon_url ?? '/mint-icon-placeholder.png'; // @ todo placeholder icon
 		this.qr_code = new QRCodeStyling({
 			width: 195,
 			height: 195,
 			type: 'svg',
 			data: this.qr_data.value,
-			image: this.icon_url,
+			image: icon_url,
 			shape: 'square',
 			margin: 0,
 			qrOptions: {
@@ -131,7 +132,7 @@ export class MintConnectionsComponent {
 				type: 'extra-rounded',
 			},
 			cornersDotOptions: {
-				color: this.qr_corder_dot_color,
+				color: this.qr_corner_dot_color,
 			 	type: 'square',
 			}
 		  });
@@ -172,7 +173,7 @@ export class MintConnectionsComponent {
 			data: {
 				connection: this.connections.find(connection => connection.url === this.qr_data.value),
 				primary_color: this.qr_primary_color,
-				corder_dot_color: this.qr_corder_dot_color,
+				corner_dot_color: this.qr_corner_dot_color,
 				icon_url: this.icon_url,
 				mint_name: this.mint_name
 			}

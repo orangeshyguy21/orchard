@@ -25,7 +25,7 @@ export class OrchardMintInfo {
   @Field(() => [OrchardContact!])
   contact: OrchardContact[];
 
-  @Field()
+  @Field({ nullable: true })
   icon_url: string;
 
   @Field(() => [String!])
