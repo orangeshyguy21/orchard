@@ -52,7 +52,7 @@ export class MintConnectionsComponent {
 	@Input() mint_name: string | undefined;
 	@Input() loading!: boolean;
 
-	@ViewChild('qr_canvas', { static: true }) qr_canvas!: ElementRef;
+	@ViewChild('qr_canvas', { static: false }) qr_canvas!: ElementRef;
 
 	public qr_data: FormControl = new FormControl('tester');
 	public qr_code!: QRCodeStyling;
@@ -86,18 +86,6 @@ export class MintConnectionsComponent {
 		this.changeDetectorRef.detectChanges();
 	}
 
-	private test(): Connection[] {
-		return [
-			{
-				url: 'https://www.google.com',
-				displayed_url: 'https://www.google.com'
-			},
-			{
-				url: 'https://www.google.com',
-				displayed_url: 'https://www.goooo...oooogle.com'
-			}
-		]
-	}
 	private getDisplayedUrl(url: string): string {
 		const last_dot_index = url.lastIndexOf('.');
 		if (last_dot_index === -1) return url;

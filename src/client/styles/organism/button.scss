@@ -9,3 +9,12 @@
         @extend .orc-primary-fixed-dim-color;
     }
 }
+
+.orc-text-button-subtle {
+    @extend .cursor-pointer;
+    @extend .trans-color-fast;
+
+    &:hover {
+        @extend .orc-primary-fixed-dim-color;
+    }
+}
