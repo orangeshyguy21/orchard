@@ -5,6 +5,10 @@
 .orc-primary-container-bg {
     background-color: var(--mat-sys-primary-container);
 }
+
+.orc-surface-container-high-bg {
+    background-color: var(--mat-sys-surface-container-high);
+}
 .orc-surface-container-bg {
     background-color: var(--mat-sys-surface-container);
 }
@@ -137,6 +141,9 @@
 }
 .orc-outline-variant-border{
     border-color: var(--mat-sys-outline-variant);
+}
+.orc-outline-border{
+    border: 1px solid var(--mat-sys-outline);
 }
 
 // Orchard Elevation Levels

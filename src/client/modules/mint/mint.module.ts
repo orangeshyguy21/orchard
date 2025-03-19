@@ -26,12 +26,14 @@ import { GraphicModule } from '@client/modules/graphic/graphic.module';
 import { MintSectionComponent } from './components/mint-section/mint-section.component';
 import { MintSubsectionDashboardComponent } from './components/mint-subsection-dashboard/mint-subsection-dashboard.component';
 import { MintSubsectionInfoComponent } from './components/mint-subsection-info/mint-subsection-info.component';
+import { MintSubsectionConfigComponent } from './components/mint-subsection-config/mint-subsection-config.component';
 import { MintBalanceSheetComponent } from './components/mint-balance-sheet/mint-balance-sheet.component';
 import { MintConnectionsComponent } from './components/mint-connections/mint-connections.component';
 import { MintQrcodeDialogComponent } from './components/mint-qrcode-dialog/mint-qrcode-dialog.component';
 import { MintAnalyticControlPanelComponent } from './components/mint-analytic-control-panel/mint-analytic-control-panel.component';
 import { MintAnalyticChartComponent } from './components/mint-analytic-chart/mint-analytic-chart.component';
 import { MintKeysetComponent } from './components/mint-keyset/mint-keyset.component';
+import { MintIconComponent } from './components/mint-icon/mint-icon.component';
 
 const routes: Routes = [
 	{
@@ -56,6 +58,15 @@ const routes: Routes = [
 					sub_section: 'info'
 				}
 			},
+			{
+				path: 'config',
+				component: MintSubsectionConfigComponent,
+				title: 'Orchard | Mint Config',
+				data: {
+					section: 'mint',
+					sub_section: 'config'
+				}
+			},
 		]
 	}
 ];
@@ -76,12 +87,14 @@ export class MintRoutingModule { }
 		MintSectionComponent,
 		MintSubsectionDashboardComponent,
 		MintSubsectionInfoComponent,
+		MintSubsectionConfigComponent,
 		MintBalanceSheetComponent,
 		MintConnectionsComponent,
 		MintQrcodeDialogComponent,
 		MintAnalyticControlPanelComponent,
 		MintAnalyticChartComponent,
 		MintKeysetComponent,
+		MintIconComponent,
 	],
 	imports: [
 		CommonModule,

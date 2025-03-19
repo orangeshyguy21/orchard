@@ -36,8 +36,25 @@ export class CashuMintDatabaseService {
 		private configService: ConfigService,
 	) {}
 
+	public async getMintDatabaseAsync() : Promise<sqlite3.Database> {
+		const db_path = this.configService.get('cashu.database');
+		if (!db_path) throw new Error('Database path not configured');
+		return new Promise((resolve, reject) => {
+			const db = new sqlite3d.Database(db_path, (err) => {
+				if (err) reject(err);
+				resolve(db);
+			});
+		});
+	}
+
 	public getMintDatabase() : sqlite3.Database {
-		return new sqlite3d.Database(this.configService.get('cashu.database'));
+		const db_path = this.configService.get('cashu.database');
+		if (!db_path) throw new Error('Database path not configured');
+		const db = new sqlite3d.Database(db_path, (err) => {
+			if (err) throw new Error(`Could not connect to database: ${err.message}`);
+		});
+		return db;
+
 	}
 
 	public async getMintBalances(db:sqlite3.Database) : Promise<CashuMintBalance[]> {

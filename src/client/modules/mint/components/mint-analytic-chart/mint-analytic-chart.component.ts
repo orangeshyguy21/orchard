@@ -43,7 +43,7 @@ export class MintAnalyticChartComponent implements OnChanges {
 	@Input() public locale!: string;
 	@Input() public mint_analytics!: MintAnalytic[];
 	@Input() public mint_analytics_pre!: MintAnalytic[];
-	@Input() public chart_settings!: NonNullableMintChartSettings;
+	@Input() public chart_settings!: NonNullableMintChartSettings | undefined;
 	@Input() public selected_type!: ChartType | undefined;
 	@Input() public loading!: boolean;
 
@@ -86,7 +86,7 @@ export class MintAnalyticChartComponent implements OnChanges {
 	}
 
 	private getAmountChartData(): ChartConfiguration['data'] {
-		if (!this.mint_analytics || this.mint_analytics.length === 0) return { datasets: [] };
+		if ( !this.mint_analytics || this.mint_analytics.length === 0 || !this.chart_settings ) return { datasets: [] };
 		const timestamp_first = DateTime.fromSeconds(this.chart_settings.date_start).startOf('day').toSeconds();
 		const timestamp_last = DateTime.fromSeconds(this.chart_settings.date_end).startOf('day').toSeconds();
 		const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.chart_settings.interval);
@@ -125,7 +125,7 @@ export class MintAnalyticChartComponent implements OnChanges {
 	}
 
 	private getAmountChartOptions(): ChartConfiguration['options'] {
-		if (!this.chart_data || this.chart_data.datasets.length === 0) return {}
+		if ( !this.chart_data || this.chart_data.datasets.length === 0 || !this.chart_settings ) return {}
 		const units = this.chart_data.datasets.map(item => item.label);
 		const y_axis = getYAxis(units);
 		const scales: ScaleChartOptions<'line'>['scales'] = {};
@@ -172,7 +172,7 @@ export class MintAnalyticChartComponent implements OnChanges {
 	}
 
 	private getOperationsChartData(): ChartConfiguration['data'] {
-		if (!this.mint_analytics || this.mint_analytics.length === 0) return { datasets: [] };
+		if ( !this.mint_analytics || this.mint_analytics.length === 0 || !this.chart_settings ) return { datasets: [] };
 		const timestamp_first = DateTime.fromSeconds(this.chart_settings.date_start).startOf('day').toSeconds();
 		const timestamp_last = DateTime.fromSeconds(this.chart_settings.date_end).startOf('day').toSeconds();
 		const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.chart_settings.interval);
@@ -206,7 +206,7 @@ export class MintAnalyticChartComponent implements OnChanges {
 	}
 
 	private getOperationsChartOptions(): ChartConfiguration['options'] {
-		if (!this.chart_data || this.chart_data.datasets.length === 0) return {}
+		if ( !this.chart_data || this.chart_data.datasets.length === 0 || !this.chart_settings ) return {}
 
 		return {
 			responsive: true,

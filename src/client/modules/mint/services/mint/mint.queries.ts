@@ -13,23 +13,62 @@ export const MINT_INFO_QUERY = `{
 			info
         }
         nuts{
-			nut
-			disabled
-			ttl
-			supported
-			methods{
-				method
-				unit
-				description
+			nut4{
+				disabled
+				methods{
+					method
+					unit
+					description
+					min_amount
+					max_amount
+				}
 			}
-			supported_meta{
-				method
-				unit
-				commands
+			nut5{
+				disabled
+				methods{
+					method
+					unit
+					min_amount
+					max_amount
+				}
 			}
-			cached_endpoints{
-				method
-				path
+			nut7{
+				supported
+			}
+			nut8{
+				supported
+			}
+			nut9{
+				supported
+			}
+			nut10{
+				supported
+			}
+			nut11{
+				supported
+			}
+			nut12{
+				supported
+			}
+			nut14{
+				supported
+			}
+			nut17{
+				supported{
+					method
+					unit
+					commands
+				}
+			}
+			nut19{
+				cached_endpoints{
+					method
+					path
+				}
+				ttl
+			}
+			nut20{
+				supported
 			}
         }
   	}

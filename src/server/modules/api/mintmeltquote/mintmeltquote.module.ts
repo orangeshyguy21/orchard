@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import { Module } from "@nestjs/common";
 /* Application Dependencies */
-import { CashuMintDatabaseModule } from "@server/modules/cashumintdb/cashumintdb.module";
+import { CashuMintDatabaseModule } from "@server/modules/cashu/mintdb/cashumintdb.module";
 /* Local Dependencies */
 import { MintMeltQuoteService } from "./mintmeltquote.service";
 import { MintMeltQuoteResolver } from "./mintmeltquote.resolver";

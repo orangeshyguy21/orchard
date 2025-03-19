@@ -19,10 +19,3 @@ export enum MintUnit {
     btc = "btc",
     auth = "auth"
 }
-
-export enum MintAnalyticsInterval {
-    day = 'day',
-    week = 'week',
-    month = 'month',
-    custom = 'custom'
-}

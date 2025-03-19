@@ -1,8 +1,8 @@
 /* Core Dependencies */
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 /* Application Dependencies */
-import { MintUnit } from '@server/modules/cashumintdb/cashumintdb.enums';
-import { CashuMintAnalytics } from '@server/modules/cashumintdb/cashumintdb.types';
+import { MintUnit } from '@server/modules/cashu/cashu.enums';
+import { CashuMintAnalytics } from '@server/modules/cashu/mintdb/cashumintdb.types';
 import { UnixTimestamp } from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 @ObjectType()
 export class OrchardMintAnalytics {

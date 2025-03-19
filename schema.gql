@@ -54,14 +54,14 @@ type OrchardMintDatabase {
 
 type OrchardMintInfo {
   contact: [OrchardContact!]!
-  description: String!
-  description_long: String!
-  icon_url: String!
+  description: String
+  description_long: String
+  icon_url: String
   name: String!
-  nuts: [OrchardNut!]!
+  nuts: OrchardNuts!
   pubkey: String!
   time: UnixTimestamp!
-  urls: [String!]!
+  urls: [String!]
   version: String!
 }
 
@@ -136,26 +136,63 @@ type OrchardMintProof {
   y: String
 }
 
-type OrchardNut {
-  cached_endpoints: [OrchardCachedEndpoint!]
-  disabled: Boolean
-  methods: [OrchardNutMethod!]
-  nut: Float!
-  supported: Boolean
-  supported_meta: [OrchardNutSupported!]
-  ttl: Float
+type OrchardNut4 {
+  disabled: Boolean!
+  methods: [OrchardNut4Method!]!
 }
 
-type OrchardNutMethod {
+type OrchardNut4Method {
   description: Boolean
+  max_amount: Float
   method: String!
+  min_amount: Float
   unit: String!
 }
 
-type OrchardNutSupported {
+type OrchardNut5 {
+  disabled: Boolean!
+  methods: [OrchardNut5Method!]!
+}
+
+type OrchardNut5Method {
+  max_amount: Float
+  method: String!
+  min_amount: Float
+  unit: String!
+}
+
+type OrchardNut17 {
+  supported: [OrchardNut17Supported!]!
+}
+
+type OrchardNut17Supported {
   commands: [String!]!
   method: String!
   unit: String!
+}
+
+type OrchardNut19 {
+  cached_endpoints: [OrchardCachedEndpoint!]!
+  ttl: Float!
+}
+
+type OrchardNutSupported {
+  supported: Boolean!
+}
+
+type OrchardNuts {
+  nut4: OrchardNut4!
+  nut5: OrchardNut5!
+  nut7: OrchardNutSupported!
+  nut8: OrchardNutSupported!
+  nut9: OrchardNutSupported!
+  nut10: OrchardNutSupported!
+  nut11: OrchardNutSupported!
+  nut12: OrchardNutSupported!
+  nut14: OrchardNutSupported!
+  nut17: OrchardNut17!
+  nut19: OrchardNut19!
+  nut20: OrchardNutSupported!
 }
 
 type OrchardStatus {

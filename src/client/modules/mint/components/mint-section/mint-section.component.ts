@@ -61,6 +61,10 @@ export class MintSectionComponent implements OnInit, OnDestroy {
 		this.changeDetectorRef.detectChanges();
 	}
 
+	public onClickMintName(): void {
+		this.router.navigate(['mint', 'info']);
+	}
+
 	ngOnDestroy(): void {
 		this.subscription.unsubscribe();
 	}

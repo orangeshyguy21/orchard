@@ -2,8 +2,6 @@
 import { Logger } from '@nestjs/common';
 import { Resolver, Query } from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
-/* Application Dependencies */
-import { OrchardApiErrors } from "@server/modules/graphql/errors/orchard.errors";
 /* Internal Dependencies */
 import { MintBalanceService } from "./mintbalance.service";
 import { OrchardMintBalance } from "./mintbalance.model";
@@ -23,7 +21,7 @@ export class MintBalanceResolver {
 			this.logger.debug('GET { mint_balances }');
 			return await this.mintBalanceService.getMintBalances();
 		} catch (error) {
-			throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
+			throw new GraphQLError(error);
 		} 
 	}
 
@@ -33,7 +31,7 @@ export class MintBalanceResolver {
 			this.logger.debug('GET { mint_balances_issued }');
 			return await this.mintBalanceService.getIssuedMintBalances();
 		} catch (error) {
-			throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
+			throw new GraphQLError(error);
 		} 
 	}
 
@@ -43,7 +41,7 @@ export class MintBalanceResolver {
 			this.logger.debug('GET { mint_balances_redeemed }');
 			return await this.mintBalanceService.getRedeemedMintBalances();
 		} catch (error) {
-			throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
+			throw new GraphQLError(error);
 		} 
 	}
 }

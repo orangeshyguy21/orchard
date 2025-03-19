@@ -47,6 +47,10 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	// chart settings
 	public chart_settings!: NonNullableMintChartSettings;
 
+	public get active_keysets(): MintKeyset[] {
+		return this.mint_keysets.filter(keyset => keyset.active);
+	}
+
 	constructor(
 		private mintService: MintService,
 		private settingService: SettingService,
@@ -85,9 +89,6 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	}
 
 	private async loadMintAnalytics(): Promise<void> {
-		console.log( 'loading mint analytics', this.chart_settings );
-		// on load 1742277599
-		// selectged is 1742191200
 		const timezone = this.settingService.getTimezone();
 		const analytics_balances_obs = this.mintService.loadMintAnalyticsBalances({
 			units: this.chart_settings.units,

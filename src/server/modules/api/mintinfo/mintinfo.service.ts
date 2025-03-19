@@ -1,8 +1,8 @@
 /* Core Dependencies */
 import { Injectable, Logger } from '@nestjs/common';
 /* Application Dependencies */
-import { CashuMintApiService } from '@server/modules/cashumintapi/cashumintapi.service';
-import { CashuMintInfo } from '@server/modules/cashumintapi/cashumintapi.types';
+import { CashuMintApiService } from '@server/modules/cashu/mintapi/cashumintapi.service';
+import { CashuMintInfo } from '@server/modules/cashu/mintapi/cashumintapi.types';
 /* Local Dependencies */
 import { OrchardMintInfo } from './mintinfo.model';
 

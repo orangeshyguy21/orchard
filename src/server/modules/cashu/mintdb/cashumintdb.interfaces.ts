@@ -1,6 +1,9 @@
-/* Local Dependencies */
-import { MintUnit, MintQuoteStatus, MintAnalyticsInterval } from './cashumintdb.enums';
+/* Application Dependencies */
 import { TimezoneType } from '@server/modules/graphql/scalars/timezone.scalar';
+/* Native Dependencies */
+import { MintUnit, MintQuoteStatus } from '@server/modules/cashu/cashu.enums';
+/* Local Dependencies */
+import { MintAnalyticsInterval } from './cashumintdb.enums';
 
 export interface CashuMintPromisesArgs {
     id_keysets?: string[];

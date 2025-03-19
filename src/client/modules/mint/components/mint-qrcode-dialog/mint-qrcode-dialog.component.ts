@@ -52,7 +52,7 @@ export class MintQrcodeDialogComponent implements OnInit {
 
 	private initQR(): void {
 		let themeless_primary_color = this.themeService.extractThemeColor(this.data.primary_color, ThemeType.DARK_MODE);
-		let themeless_corder_dot_color = this.themeService.extractThemeColor(this.data.corder_dot_color, ThemeType.DARK_MODE);
+		let themeless_corner_dot_color = this.themeService.extractThemeColor(this.data.corner_dot_color, ThemeType.DARK_MODE);
 		let themeless_bg = this.themeService.getThemeColor('--mat-sys-on-secondary-container', ThemeType.DARK_MODE);
 
 		this.qr_code = new QRCodeStyling({
@@ -86,7 +86,7 @@ export class MintQrcodeDialogComponent implements OnInit {
 				type: 'extra-rounded',
 			},
 			cornersDotOptions: {
-				color: themeless_corder_dot_color,
+				color: themeless_corner_dot_color,
 			 	type: 'square',
 			}
 		  });
@@ -95,8 +95,6 @@ export class MintQrcodeDialogComponent implements OnInit {
 	}
 
 	public onStyleChange(event: Event): void {
-		console.log(event);
-		console.log(this.qr_options.value.style);
 		if (this.qr_options.value.style === null || this.qr_options.value.style === undefined) return;
 		const style_value = this.qr_options.value.style;
 		this.qr_code.update({
@@ -117,16 +115,7 @@ export class MintQrcodeDialogComponent implements OnInit {
 		});
 	}
 
-	// public formatLabel(value: number): string {
-	// 	if (value >= 1000) {
-	// 	  return Math.round(value / 1000) + 'k';
-	// 	}
-	
-	// 	return `${value}`;
-	// }
-
 	public download(): void {
 		this.qr_code.download({ name: `${this.data.mint_name} QR`, extension: "png" });
 	}
-
 }

@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 /* Application Dependencies */
-import { CashuMintBalance } from '@server/modules/cashumintdb/cashumintdb.types';
+import { CashuMintBalance } from '@server/modules/cashu/mintdb/cashumintdb.types';
 
 @ObjectType()
 export class OrchardMintBalance {

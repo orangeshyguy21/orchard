@@ -50,11 +50,6 @@ type TypeOption = {
 })
 export class MintAnalyticControlPanelComponent implements OnChanges {
 	
-	// @Input() selected_date_start!: number;
-	// @Input() selected_date_end!: number;
-	// @Input() selected_interval!: MintAnalyticsInterval;
-	// @Input() selected_units!: MintUnit[];
-	// @Input() selected_type!: ChartType;
 	@Input() chart_settings!: NonNullableMintChartSettings;
 	@Input() keysets!: MintKeyset[]; // gotta make the options from the keysets
 	@Input() loading!: boolean;

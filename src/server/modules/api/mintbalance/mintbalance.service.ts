@@ -1,8 +1,11 @@
 /* Core Dependencies */
 import { Injectable, Logger } from '@nestjs/common';
+/* Vendor Dependencies */
+import sqlite3 from "sqlite3";
 /* Application Dependencies */
-import { CashuMintDatabaseService } from '@server/modules/cashumintdb/cashumintdb.service';
-import { CashuMintBalance } from '@server/modules/cashumintdb/cashumintdb.types';
+import { CashuMintDatabaseService } from '@server/modules/cashu/mintdb/cashumintdb.service';
+import { CashuMintBalance } from '@server/modules/cashu/mintdb/cashumintdb.types';
+import { OrchardApiErrors } from "@server/modules/graphql/errors/orchard.errors";
 /* Local Dependencies */
 import { OrchardMintBalance } from './mintbalance.model';
 
@@ -15,42 +18,55 @@ export class MintBalanceService {
 		private cashuMintDatabaseService: CashuMintDatabaseService,
 	) {}
 
-	async getMintBalances() : Promise<OrchardMintBalance[]> {
-		const db = this.cashuMintDatabaseService.getMintDatabase();
+	private async withDb<T>(action: (db: sqlite3.Database) => Promise<T>): Promise<T> {
+		let db: sqlite3.Database;
 		try {
-			const cashu_mint_balances : CashuMintBalance[] = await this.cashuMintDatabaseService.getMintBalances(db);
-			return cashu_mint_balances.map( cmb => new OrchardMintBalance(cmb) );
+			db = await this.cashuMintDatabaseService.getMintDatabaseAsync();
 		} catch (error) {
-			this.logger.error('Error getting outstanding mint balance', { error });
-			throw new Error(error);
+			this.logger.error('Error connecting to sqlite database', { error });
+			throw OrchardApiErrors.MintDatabaseConnectionError;
+		}
+
+		try {
+			return await action(db);
 		} finally {
-			db.close();
+			if (db) db.close();
 		}
 	}
 
-	async getIssuedMintBalances() : Promise<OrchardMintBalance[]> {
-		const db = this.cashuMintDatabaseService.getMintDatabase();
-		try {
-			const cashu_mint_balances_issued : CashuMintBalance[] = await this.cashuMintDatabaseService.getMintBalancesIssued(db);
-			return cashu_mint_balances_issued.map( cmb => new OrchardMintBalance(cmb));
-		} catch (error) {
-			this.logger.error('Error getting issued mint balance', { error });
-			throw new Error(error);
-		} finally {
-			db.close();
-		}
+	async getMintBalances(): Promise<OrchardMintBalance[]> {
+		return this.withDb(async (db) => {
+			try {
+				const cashu_mint_balances: CashuMintBalance[] = await this.cashuMintDatabaseService.getMintBalances(db);
+				return cashu_mint_balances.map(cmb => new OrchardMintBalance(cmb));
+			} catch (error) {
+				this.logger.error('Error getting outstanding mint balance', { error });
+				throw OrchardApiErrors.MintDatabaseSelectError;
+			}
+		});
 	}
 
-	async getRedeemedMintBalances() : Promise<OrchardMintBalance[]> {
-		const db = this.cashuMintDatabaseService.getMintDatabase();
-		try {
-			const cashu_mint_balances_redeemed : CashuMintBalance[] = await this.cashuMintDatabaseService.getMintBalancesRedeemed(db);
-			return cashu_mint_balances_redeemed.map( cmb => new OrchardMintBalance(cmb) );
-		} catch (error) {
-			this.logger.error('Error getting redeemed  mint balance', { error });
-			throw new Error(error);
-		} finally {
-			db.close();
-		}
+	async getIssuedMintBalances(): Promise<OrchardMintBalance[]> {
+		return this.withDb(async (db) => {
+			try {
+				const cashu_mint_balances_issued: CashuMintBalance[] = await this.cashuMintDatabaseService.getMintBalancesIssued(db);
+				return cashu_mint_balances_issued.map(cmb => new OrchardMintBalance(cmb));
+			} catch (error) {
+				this.logger.error('Error getting issued mint balance', { error });
+				throw OrchardApiErrors.MintDatabaseSelectError;
+			}
+		});
+	}
+
+	async getRedeemedMintBalances(): Promise<OrchardMintBalance[]> {
+		return this.withDb(async (db) => {
+			try {
+				const cashu_mint_balances_redeemed: CashuMintBalance[] = await this.cashuMintDatabaseService.getMintBalancesRedeemed(db);
+				return cashu_mint_balances_redeemed.map(cmb => new OrchardMintBalance(cmb));
+			} catch (error) {
+				this.logger.error('Error getting redeemed mint balance', { error });
+				throw OrchardApiErrors.MintDatabaseSelectError;
+			}
+		});
 	}
 }
