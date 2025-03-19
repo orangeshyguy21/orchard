@@ -1,9 +1,7 @@
 /* Core Dependencies */
 import { Logger } from '@nestjs/common';
 import { Resolver, Query, Args } from "@nestjs/graphql";
-import { GraphQLError } from "graphql";
 /* Application Dependencies */
-import { OrchardApiErrors } from "@server/modules/graphql/errors/orchard.errors";
 import { UnixTimestamp } from "@server/modules/graphql/scalars/unixtimestamp.scalar";
 import { Timezone, TimezoneType } from "@server/modules/graphql/scalars/timezone.scalar";
 import { MintAnalyticsInterval } from '@server/modules/cashu/mintdb/cashumintdb.enums';
@@ -29,12 +27,8 @@ export class MintAnalyticsResolver {
 		@Args('interval', { type: () => MintAnalyticsInterval, nullable: true }) interval?: MintAnalyticsInterval,
 		@Args('timezone', { type: () => Timezone, nullable: true }) timezone?: TimezoneType,
 	) : Promise<OrchardMintAnalytics[]> {
-		try {
-			this.logger.debug('GET { mint_analytics_balances }');
-			return await this.mintAnalyticsService.getMintAnalyticsBalances({ units, date_start, date_end, interval, timezone });
-		} catch (error) {
-			throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
-		} 
+		this.logger.debug('GET { mint_analytics_balances }');
+		return await this.mintAnalyticsService.getMintAnalyticsBalances({ units, date_start, date_end, interval, timezone });
 	}
 
 	@Query(() => [OrchardMintAnalytics])
@@ -45,12 +39,8 @@ export class MintAnalyticsResolver {
 		@Args('interval', { type: () => MintAnalyticsInterval, nullable: true }) interval?: MintAnalyticsInterval,
 		@Args('timezone', { type: () => Timezone, nullable: true }) timezone?: TimezoneType,
 	) : Promise<OrchardMintAnalytics[]> {
-		try {
-			this.logger.debug('GET { mint_analytics_mints }');
-			return await this.mintAnalyticsService.getMintAnalyticsMints({ units, date_start, date_end, interval, timezone });
-		} catch (error) {
-			throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
-		} 
+		this.logger.debug('GET { mint_analytics_mints }');
+		return await this.mintAnalyticsService.getMintAnalyticsMints({ units, date_start, date_end, interval, timezone });
 	}	
 
 	@Query(() => [OrchardMintAnalytics])
@@ -61,12 +51,8 @@ export class MintAnalyticsResolver {
 		@Args('interval', { type: () => MintAnalyticsInterval, nullable: true }) interval?: MintAnalyticsInterval,
 		@Args('timezone', { type: () => Timezone, nullable: true }) timezone?: TimezoneType,
 	) : Promise<OrchardMintAnalytics[]> {
-		try {
-			this.logger.debug('GET { mint_analytics_melts }');
-			return await this.mintAnalyticsService.getMintAnalyticsMelts({ units, date_start, date_end, interval, timezone });
-		} catch (error) {
-			throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
-		} 
+		this.logger.debug('GET { mint_analytics_melts }');
+		return await this.mintAnalyticsService.getMintAnalyticsMelts({ units, date_start, date_end, interval, timezone });
 	}
 
 	@Query(() => [OrchardMintAnalytics])
@@ -77,11 +63,7 @@ export class MintAnalyticsResolver {
 		@Args('interval', { type: () => MintAnalyticsInterval, nullable: true }) interval?: MintAnalyticsInterval,
 		@Args('timezone', { type: () => Timezone, nullable: true }) timezone?: TimezoneType,
 	) : Promise<OrchardMintAnalytics[]> {
-		try {
-			this.logger.debug('GET { mint_analytics_transfers }');
-			return await this.mintAnalyticsService.getMintAnalyticsTransfers({ units, date_start, date_end, interval, timezone });
-		} catch (error) {
-			throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
-		} 
+		this.logger.debug('GET { mint_analytics_transfers }');
+		return await this.mintAnalyticsService.getMintAnalyticsTransfers({ units, date_start, date_end, interval, timezone });
 	}
 }

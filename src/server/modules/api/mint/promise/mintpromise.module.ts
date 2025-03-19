@@ -2,6 +2,7 @@
 import { Module } from "@nestjs/common";
 /* Application Dependencies */
 import { CashuMintDatabaseModule } from "@server/modules/cashu/mintdb/cashumintdb.module";
+import { MintService } from "@server/modules/api/mint/mint.service";
 /* Local Dependencies */
 import { MintPromiseService } from "./mintpromise.service";
 import { MintPromiseResolver } from "./mintpromise.resolver";
@@ -13,6 +14,7 @@ import { MintPromiseResolver } from "./mintpromise.resolver";
   providers: [
     MintPromiseResolver,
     MintPromiseService,
+    MintService,
   ]
 })
 export class MintPromiseModule {}

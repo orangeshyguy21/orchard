@@ -92,7 +92,8 @@ export class MintAnalyticControlPanelComponent implements OnChanges {
 	}
 
 	private initForm(): void {
-		this.unit_options = this.keysets.map( keyset => ({ label: keyset.unit.toUpperCase(), value: keyset.unit }));
+		const unique_units = Array.from(new Set(this.keysets.map(keyset => keyset.unit)));
+		this.unit_options = unique_units.map(unit => ({ label: unit.toUpperCase(), value: unit }));
 		this.panel.controls.daterange.controls.date_start.setValue(DateTime.fromSeconds(this.chart_settings.date_start));
 		this.panel.controls.daterange.controls.date_end.setValue(DateTime.fromSeconds(this.chart_settings.date_end));
 		this.panel.controls.units.setValue(this.chart_settings.units);
