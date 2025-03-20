@@ -6,6 +6,7 @@ export type MintInfoResponse = {
 
 export type MintBalancesResponse = {
   	mint_balances: OrchardMintBalance[];
+      errors?: string[];
 }
 
 export type MintKeysetsResponse = {

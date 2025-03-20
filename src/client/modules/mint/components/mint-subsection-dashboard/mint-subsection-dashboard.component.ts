@@ -59,8 +59,37 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	) {}
 
 	async ngOnInit(): Promise<void> {
+		await this.loadMintInfo(); // @todo do we need to wait for this to load balance sheet?
+		await this.loadBalanceSheet(); // @todo same as above
+		await this.initMintAnalytics();
+	}
+
+	private async loadMintInfo(): Promise<void> {
 		try {
-			await this.loadStaticData();
+			this.mint_info = await lastValueFrom(this.mintService.loadMintInfo());
+		} catch (error) {
+			console.log('ERROR IN MINT INFO:', error);
+			// look for a specific error, this would be like, api down or grpc unavailable
+		}
+	}
+	private async loadBalanceSheet(): Promise<void> {
+		try {
+			const balances_obs = this.mintService.loadMintBalances();
+			const keysets_obs = this.mintService.loadMintKeysets();
+			const [balances, keysets] = await lastValueFrom(forkJoin([balances_obs, keysets_obs]));
+			this.mint_balances = balances;
+			this.mint_keysets = keysets;
+		} catch (error) {
+			console.log('ERROR IN LOAD BALANCE SHEET:', error);
+			// we can watch for mintconnection errors - if that is the case
+			/// shoot ^^ maybe we should load this data in the route resolver? - then we can catch errors and modify the view...
+			/// we should consider this ^^ since its a litmas for if the mint is configured properly
+			/// argument agaisnt is that this is more UI work and an operator could just look at the server logs
+			// we can watch for mint select errors 
+		}
+	}
+	private async initMintAnalytics(): Promise<void> {
+		try {
 			this.locale = await this.settingService.getLocale();
 			this.mint_genesis_time = this.getMintGenesisTime();
 			this.chart_settings = this.getChartSettings();
@@ -70,22 +99,9 @@ export class MintSubsectionDashboardComponent implements OnInit {
 			this.loading_dynamic_data = false;
 			this.changeDetectorRef.detectChanges();
 		} catch (error) {
-			console.error('Error in initialization sequence:', error);
+			console.log('ERROR IN INIT MINT ANALYTICS:', error);
+			// 
 		}
-	}
-
-	private async loadStaticData(): Promise<void> {
-		const info_obs = this.mintService.loadMintInfo();
-		const balances_obs = this.mintService.loadMintBalances();
-		const keysets_obs = this.mintService.loadMintKeysets();
-
-		const [info, balances, keysets] = await lastValueFrom(
-			forkJoin([info_obs, balances_obs, keysets_obs])
-		);
-		
-		this.mint_info = info;
-		this.mint_balances = balances;
-		this.mint_keysets = keysets;
 	}
 
 	private async loadMintAnalytics(): Promise<void> {
@@ -113,7 +129,7 @@ export class MintSubsectionDashboardComponent implements OnInit {
 		});
 		const analytics_mints_pre_obs = this.mintService.loadMintAnalyticsMints({
 			units: this.chart_settings.units,
-			date_start: 100000,
+			date_start: 100000, // @todo make this bitcoin genesis time for the fans
 			date_end: this.chart_settings.date_start-1,
 			interval: MintAnalyticsInterval.Custom,
 			timezone: timezone
@@ -167,13 +183,6 @@ export class MintSubsectionDashboardComponent implements OnInit {
 				analytics_transfers_pre_obs,
 			])
 		);
-
-		// console.log( 'analytics_balances', analytics_balances);
-		// console.log( 'analytics_balances_pre', analytics_balances_pre);
-		// console.log( 'analytics_mints', analytics_mints);
-		// console.log( 'analytics_mints_pre', analytics_mints_pre);
-		// console.log( 'analytics_melts', analytics_melts);
-		// console.log( 'analytics_melts_pre', analytics_melts_pre);
 
 		this.mint_analytics_balances = analytics_balances;
 		this.mint_analytics_balances_pre = analytics_balances_pre;

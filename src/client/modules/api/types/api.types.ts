@@ -1,9 +1,10 @@
 import { OrchardStatus } from "@shared/generated.types";
 
-export type GQLResponse<T> = {
-  data: T;
+export type OrchardRes<T> = {
+	data: T;
+	errors?: { message: string; }[];
 }
 
 export type StatusResponse = {
-  status: OrchardStatus;
+  	status: OrchardStatus;
 }
