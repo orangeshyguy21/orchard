@@ -20,6 +20,7 @@ export class MintInfoService {
 
 	async getMintInfo() : Promise<OrchardMintInfo> {
 		try {
+			throw new GraphQLError(OrchardApiErrors.MintApiError);
 			const cashu_info : CashuMintInfo = await this.cashuMintApiService.getMintInfo();
 			return new OrchardMintInfo(cashu_info);
 		} catch (error) {

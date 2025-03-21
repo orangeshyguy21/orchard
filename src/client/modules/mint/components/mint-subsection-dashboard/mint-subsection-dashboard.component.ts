@@ -1,5 +1,6 @@
 /* Core Dependencies */
 import { Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 /* Vendor Dependencies */
 import { forkJoin, lastValueFrom } from 'rxjs';
 import { DateTime } from 'luxon';
@@ -55,39 +56,47 @@ export class MintSubsectionDashboardComponent implements OnInit {
 		private mintService: MintService,
 		private settingService: SettingService,
 		private chartService: ChartService,
+		private route: ActivatedRoute,
 		private changeDetectorRef: ChangeDetectorRef
 	) {}
 
 	async ngOnInit(): Promise<void> {
-		await this.loadMintInfo(); // @todo do we need to wait for this to load balance sheet?
-		await this.loadBalanceSheet(); // @todo same as above
+		this.mint_info = this.route.snapshot.data['mint_info'];
+		this.mint_balances = this.route.snapshot.data['mint_balances'];
+		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
 		await this.initMintAnalytics();
 	}
 
-	private async loadMintInfo(): Promise<void> {
-		try {
-			this.mint_info = await lastValueFrom(this.mintService.loadMintInfo());
-		} catch (error) {
-			console.log('ERROR IN MINT INFO:', error);
-			// look for a specific error, this would be like, api down or grpc unavailable
-		}
-	}
-	private async loadBalanceSheet(): Promise<void> {
-		try {
-			const balances_obs = this.mintService.loadMintBalances();
-			const keysets_obs = this.mintService.loadMintKeysets();
-			const [balances, keysets] = await lastValueFrom(forkJoin([balances_obs, keysets_obs]));
-			this.mint_balances = balances;
-			this.mint_keysets = keysets;
-		} catch (error) {
-			console.log('ERROR IN LOAD BALANCE SHEET:', error);
-			// we can watch for mintconnection errors - if that is the case
-			/// shoot ^^ maybe we should load this data in the route resolver? - then we can catch errors and modify the view...
-			/// we should consider this ^^ since its a litmas for if the mint is configured properly
-			/// argument agaisnt is that this is more UI work and an operator could just look at the server logs
-			// we can watch for mint select errors 
-		}
-	}
+	// private async loadMintInfo(): Promise<void> {
+	// 	// try {
+	// 	// 	this.mint_info = await lastValueFrom(this.mintService.loadMintInfo());
+	// 	// } catch (error) {
+	// 	// 	console.log('ERROR IN MINT INFO:', error);
+	// 	// 	// look for a specific error, this would be like, api down or grpc unavailable
+	// 	// }
+	// 	await new Promise<void>(resolve => {
+	// 		this.route.parent?.data.subscribe(data => {
+	// 			this.mint_info = data['mint_info'];
+	// 			resolve();
+	// 		});
+	// 	});
+	// }
+	// private async loadBalanceSheet(): Promise<void> {
+	// 	try {
+	// 		const balances_obs = this.mintService.loadMintBalances();
+	// 		const keysets_obs = this.mintService.loadMintKeysets();
+	// 		const [balances, keysets] = await lastValueFrom(forkJoin([balances_obs, keysets_obs]));
+	// 		this.mint_balances = balances;
+	// 		this.mint_keysets = keysets;
+	// 	} catch (error) {
+	// 		console.log('ERROR IN LOAD BALANCE SHEET:', error);
+	// 		// we can watch for mintconnection errors - if that is the case
+	// 		/// shoot ^^ maybe we should load this data in the route resolver? - then we can catch errors and modify the view...
+	// 		/// we should consider this ^^ since its a litmas for if the mint is configured properly
+	// 		/// argument agaisnt is that this is more UI work and an operator could just look at the server logs
+	// 		// we can watch for mint select errors 
+	// 	}
+	// }
 	private async initMintAnalytics(): Promise<void> {
 		try {
 			this.locale = await this.settingService.getLocale();

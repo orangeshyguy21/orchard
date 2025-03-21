@@ -21,10 +21,10 @@ export class MintSectionComponent implements OnInit, OnDestroy {
 	private subscription: Subscription;
 
 	constructor(
-	  private mintService: MintService,
-	  private router: Router,
-	  private activatedRoute: ActivatedRoute,
-	  private changeDetectorRef: ChangeDetectorRef
+		private router: Router,
+		private route: ActivatedRoute,
+		private changeDetectorRef: ChangeDetectorRef,
+		private mintService: MintService
 	) {
 		this.subscription = new Subscription();
 	}
@@ -36,10 +36,9 @@ export class MintSectionComponent implements OnInit, OnDestroy {
 				this.changeDetectorRef.detectChanges();
 			},
 			error: (error) => {
-				console.error('Error loading mint info:', error); // TODO: handle error
+				// TODO: handle error
 			}
 		});
-
 		this.subscription = this.router.events
 			.pipe(
 				filter((event: Event) => 'routerEvent' in event || 'type' in event)
@@ -52,7 +51,7 @@ export class MintSectionComponent implements OnInit, OnDestroy {
 	private setSubSection(event: Event): void {
 		const router_event = 'routerEvent' in event ? event.routerEvent : event;
 		if( router_event.type !== 1 ) return;
-		let route = this.activatedRoute.root;
+		let route = this.route.root;
 		while (route.firstChild) {
 			route = route.firstChild;
 		}

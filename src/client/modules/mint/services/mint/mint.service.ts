@@ -165,7 +165,10 @@ export class MintService {
 		const query = getApiQuery(MINT_INFO_QUERY);
 	
 		this.mint_info_observable = this.http.post<OrchardRes<MintInfoResponse>>(api, query).pipe(
-			map((response) => response.data.mint_info),
+			map((response) => {
+				if (response.errors) throw new OrchardErr(response.errors);
+				return response.data.mint_info;
+			}),
 			map((mintInfo) => new MintInfo(mintInfo)),
 			tap((mintInfo) => {
 				this.cache.updateCache(this.CACHE_KEYS.MINT_INFO, mintInfo);
