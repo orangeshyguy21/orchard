@@ -36,7 +36,7 @@ export class MintSectionComponent implements OnInit, OnDestroy {
 				this.changeDetectorRef.detectChanges();
 			},
 			error: (error) => {
-				// TODO: handle error
+				// TODO: handle error (if mintapi error show erros in nav)
 			}
 		});
 		this.subscription = this.router.events
