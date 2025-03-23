@@ -3,9 +3,9 @@
 .section-container {
     @extend .flex;
     @extend .flex-column;
-    // @extend .h-dvh;
     @extend .w-full;
     @extend .relative;
+    @extend .flex-grow;
 }
 
 .section-implementation{
@@ -17,5 +17,8 @@
     @extend .overlfow-y-auto;
     @extend .relative;
     @extend .h-min-0;
+    @extend .flex;
+    @extend .flex-column;
+    @extend .flex-grow;
 }
 
