@@ -5,7 +5,6 @@
 .orc-primary-container-bg {
     background-color: var(--mat-sys-primary-container);
 }
-
 .orc-surface-container-high-bg {
     background-color: var(--mat-sys-surface-container-high);
 }
@@ -20,6 +19,12 @@
 }
 .orc-secondary-bg {
     background-color: var(--mat-sys-secondary);
+}
+.orc-on-error-bg {
+    background-color: var(--mat-sys-on-error);
+}
+.orc-error-bg {
+    background-color: var(--mat-sys-error);
 }
 
 .orc-asset-btc-bg {
@@ -63,6 +68,15 @@
 }
 .orc-status-inactive-color {
     color: var(--orc-status-inactive);
+}
+.orc-on-error-color {
+    color: var(--mat-sys-on-error);
+}
+.orc-error-color {
+    color: var(--mat-sys-error);
+}
+.orc-on-error-container-color {
+    color: var(--mat-sys-on-error-container);
 }
 
 

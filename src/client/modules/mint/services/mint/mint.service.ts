@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, catchError, map, Observable, of, shareReplay, tap, throwError } from 'rxjs';
 /* Application Dependencies */
 import { api, getApiQuery } from '@client/modules/api/helpers/api.helpers';
-import { OrchardErrors } from '@client/modules/api/classes/error.class';
+import { OrchardErrors } from '@client/modules/error/classes/error.class';
 import { OrchardRes } from '@client/modules/api/types/api.types';
 import { 
 	MintInfoResponse,

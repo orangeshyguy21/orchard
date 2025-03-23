@@ -33,5 +33,11 @@
     // background-color: rgba(orange, 0.25);
 
     // color: #FFC499;
-    color: #FFC499;
+    // color: #FFC499;
+    // @extend .orc-error-color;
+    // @extend .orc-on-error-color;
+
+    // @extend .orc-error-color;
+    @extend .orc-on-error-container-color;
+    @extend .orc-on-error-bg;
 }

@@ -21,6 +21,7 @@ import { BaseChartDirective } from 'ng2-charts';
 import { NavModule } from '@client/modules/nav/nav.module';
 import { LocalModule } from '@client/modules/local/local.module';
 import { GraphicModule } from '@client/modules/graphic/graphic.module';
+import { ErrorModule } from '@client/modules/error/error.module';
 /* Local Dependencies */
 import { MintRoutingModule } from './mint.router';
 /* Native Dependencies */
@@ -75,6 +76,7 @@ import { MintNameComponent } from './components/mint-name/mint-name.component';
 		NavModule,
 		LocalModule,
 		GraphicModule,
+		ErrorModule,
 	],
 })
 export class MintModule { }

@@ -1,0 +1,22 @@
+@use '@styles/molecule/molecule';
+
+
+.error-resolve-content {
+    @extend .flex;
+    @extend .flex-row;
+}
+
+.error-resolve-icon{
+    @extend .flex;
+    @extend .flex-items-center;
+    @extend .flex-justify-center;
+    @extend .orc-on-error-container-color;
+    @extend .orc-on-error-bg;
+    @extend .p-0-5;
+}
+
+.error-resolve-info{
+    @extend .p-1;
+    @extend .w-min-36;
+    @extend .orc-on-error-container-color;
+}

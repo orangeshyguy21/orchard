@@ -1,6 +1,5 @@
 /* Core Dependencies */
-import { Injectable, Logger } from '@nestjs/common';
-/* Application Dependencies */
+import { Injectable, Logger } from '@nestjs/common';/* Application Dependencies */
 import { CashuMintDatabaseService } from '@server/modules/cashu/mintdb/cashumintdb.service';
 import { CashuMintAnalytics } from '@server/modules/cashu/mintdb/cashumintdb.types';
 import { CashuMintAnalyticsArgs } from '@server/modules/cashu/mintdb/cashumintdb.interfaces';

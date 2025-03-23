@@ -5,11 +5,6 @@ export type OrchardRes<T> = {
 	errors?: { message: string; extensions: { code: number } }[];
 }
 
-export type OrchardErr = {
-	message: string;
-	code: number;
-}
-
 export type StatusResponse = {
   	status: OrchardStatus;
 }
