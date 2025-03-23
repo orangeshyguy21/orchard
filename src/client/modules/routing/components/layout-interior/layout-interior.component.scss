@@ -9,4 +9,10 @@
 
 .interior-section-container{
     @extend .flex-grow;
+    @extend .flex;
+    @extend .flex-column;
+}
+
+.interior-router-outlet-container{
+    @extend .flex-grow;
 }

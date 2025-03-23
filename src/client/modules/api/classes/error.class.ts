@@ -1,10 +1,10 @@
 import { OrchardRes } from "@client/modules/api/types/api.types";
 
-export class OrchardErr {
+export class OrchardErrors {
 
-    public errors: string[];
+	public errors: { message: string, code: number }[];
 
 	constructor(errors:OrchardRes<any>['errors']) {
-		this.errors = errors ? errors.map((error) => error.message) : [];
+		this.errors = errors ? errors.map((error) => ({ message: error.message, code: error.extensions.code })) : [];
 	}
 }

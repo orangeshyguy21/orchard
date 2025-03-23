@@ -3,22 +3,22 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
-    selector: 'orc-mint-icon',
-    standalone: false,
-    templateUrl: './mint-icon.component.html',
-    styleUrl: './mint-icon.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush
+	selector: 'orc-mint-name',
+	standalone: false,
+	templateUrl: './mint-name.component.html',
+	styleUrl: './mint-name.component.scss',
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MintIconComponent {
+export class MintNameComponent {
 
-    @Input() icon_url!: string | null;
+	@Input() name!: string | null;
     @Input() loading!: boolean;
     @Input() error!: boolean;
 
-    public get state(): 'loading' | 'error' | 'icon' | 'unset' {
+    public get state(): 'loading' | 'error' | 'name' | 'unset' {
         if( this.loading ) return 'loading';
         if( this.error ) return 'error';
-        if( this.icon_url ) return 'icon';
+        if( this.name ) return 'name';
         return 'unset';
     }
 

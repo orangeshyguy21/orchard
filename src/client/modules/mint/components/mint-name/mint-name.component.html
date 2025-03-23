@@ -1,0 +1,16 @@
+<div class="mint-name-container">
+    @switch (state) {
+        @case ('loading') {
+            loading...
+        }
+        @case ('error') {
+            <div>Mint Info Error</div>
+        }
+        @case ('name') {
+            <div class="orc-text-button-subtle" (click)="onClick()">{{ name }}</div>
+        }
+        @case ('unset') {
+            <div>No Name</div>
+        }
+    }
+</div>

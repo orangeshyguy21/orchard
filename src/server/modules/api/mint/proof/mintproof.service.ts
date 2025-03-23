@@ -1,11 +1,10 @@
 /* Core Dependencies */
 import { Injectable, Logger } from '@nestjs/common';
-/* Vendor Dependencies */
-import { GraphQLError } from 'graphql';
 /* Application Dependencies */
 import { CashuMintDatabaseService } from '@server/modules/cashu/mintdb/cashumintdb.service';
 import { CashuMintProof } from '@server/modules/cashu/mintdb/cashumintdb.types';
-import { OrchardApiErrors } from "@server/modules/graphql/errors/orchard.errors";
+import { OrchardApiErrorCode } from "@server/modules/graphql/errors/orchard.errors";
+import { OrchardApiError } from "@server/modules/graphql/classes/orchard-error.class";
 import { MintService } from '@server/modules/api/mint/mint.service';
 /* Local Dependencies */
 import { OrchardMintProof } from './mintproof.model';
@@ -28,7 +27,7 @@ export class MintProofService {
 			} catch (error) {
 				this.logger.error('Error getting mint pending proofs from database');
 				this.logger.debug(`Error getting mint pending proofs from database: ${error}`);
-				throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
+				throw new OrchardApiError(OrchardApiErrorCode.MintDatabaseSelectError);
 			}
 		});
 	}
@@ -41,7 +40,7 @@ export class MintProofService {
 			} catch (error) {
 				this.logger.error('Error getting mint used proofs from database');
 				this.logger.debug(`Error getting mint used proofs from database: ${error}`);
-				throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
+				throw new OrchardApiError(OrchardApiErrorCode.MintDatabaseSelectError);
 			}
 		});
 	}

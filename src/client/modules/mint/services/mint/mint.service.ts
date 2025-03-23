@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, catchError, map, Observable, of, shareReplay, tap, throwError } from 'rxjs';
 /* Application Dependencies */
 import { api, getApiQuery } from '@client/modules/api/helpers/api.helpers';
-import { OrchardErr } from '@client/modules/api/classes/error.class';
+import { OrchardErrors } from '@client/modules/api/classes/error.class';
 import { OrchardRes } from '@client/modules/api/types/api.types';
 import { 
 	MintInfoResponse,
@@ -166,7 +166,7 @@ export class MintService {
 	
 		this.mint_info_observable = this.http.post<OrchardRes<MintInfoResponse>>(api, query).pipe(
 			map((response) => {
-				if (response.errors) throw new OrchardErr(response.errors);
+				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.mint_info;
 			}),
 			map((mintInfo) => new MintInfo(mintInfo)),
@@ -195,7 +195,7 @@ export class MintService {
 
 		return this.http.post<OrchardRes<MintBalancesResponse>>(api, query).pipe(
 			map((response) => {
-				if (response.errors) throw new OrchardErr(response.errors);
+				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.mint_balances;
 			}),
 			map((mint_balances) => mint_balances.map((mint_balance) => new MintBalance(mint_balance))),
@@ -218,7 +218,7 @@ export class MintService {
 
 		return this.http.post<OrchardRes<MintKeysetsResponse>>(api, query).pipe(
 			map((response) => {
-				if (response.errors) throw new OrchardErr(response.errors);
+				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.mint_keysets;
 			}),
 			map((mint_keysets) => mint_keysets.map((mint_keyset) => new MintKeyset(mint_keyset))),
@@ -242,7 +242,7 @@ export class MintService {
 
 		return this.http.post<OrchardRes<MintPromisesResponse>>(api, query).pipe(
 			map((response) => {
-				if (response.errors) throw new OrchardErr(response.errors);
+				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.mint_promises;
 			}),
 			map((mint_promises) => mint_promises.map((mint_promise) => new MintPromise(mint_promise))),
@@ -273,7 +273,7 @@ export class MintService {
 
 		return this.http.post<OrchardRes<MintAnalyticsBalancesResponse>>(api, query).pipe(
 			map((response) => {
-				if (response.errors) throw new OrchardErr(response.errors);
+				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.mint_analytics_balances;
 			}),
 			map((mint_analytics_balances) => mint_analytics_balances.map((mint_analytic) => new MintAnalytic(mint_analytic))),
@@ -304,7 +304,7 @@ export class MintService {
 
 		return this.http.post<OrchardRes<MintAnalyticsMintsResponse>>(api, query).pipe(
 			map((response) => {
-				if (response.errors) throw new OrchardErr(response.errors);
+				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.mint_analytics_mints;
 			}),
 			map((mint_analytics_mints) => mint_analytics_mints.map((mint_analytic) => new MintAnalytic(mint_analytic))),
@@ -335,7 +335,7 @@ export class MintService {
 
 		return this.http.post<OrchardRes<MintAnalyticsMeltsResponse>>(api, query).pipe(
 			map((response) => {
-				if (response.errors) throw new OrchardErr(response.errors);
+				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.mint_analytics_melts;
 			}),
 			map((mint_analytics_melts) => mint_analytics_melts.map((mint_analytic) => new MintAnalytic(mint_analytic))),
@@ -366,7 +366,7 @@ export class MintService {
 
 		return this.http.post<OrchardRes<MintAnalyticsTransfersResponse>>(api, query).pipe(
 			map((response) => {
-				if (response.errors) throw new OrchardErr(response.errors);
+				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.mint_analytics_transfers;
 			}),
 			map((mint_analytics_transfers) => mint_analytics_transfers.map((mint_analytic) => new MintAnalytic(mint_analytic))),

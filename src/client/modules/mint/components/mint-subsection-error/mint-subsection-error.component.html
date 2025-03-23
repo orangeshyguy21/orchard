@@ -1,6 +1,11 @@
-<div class="subsection-container">
-	<div class="flex flex-column flex-items-center flex-justify-center h-full">
-		<mat-icon>error</mat-icon>
-		<div>{{ error_data | json }} </div>
-	</div>        
+<div class="mint-subsection-error-container">
+	@if( has_public_api_error ) {
+		<div class="flex flex-column flex-items-center flex-justify-center">
+			<div>
+				<h2>Public API Error</h2>
+				<mat-icon>error</mat-icon>
+				<p>The public API is currently experiencing issues. Please try again later.</p>
+			</div>
+		</div>
+	}
 </div>

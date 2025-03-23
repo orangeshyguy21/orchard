@@ -1,6 +1,7 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { OrchardErr } from '@client/modules/api/types/api.types';
 
 @Component({
 	selector: 'orc-mint-subsection-error',
@@ -11,13 +12,28 @@ import { Router } from '@angular/router';
 })
 export class MintSubsectionErrorComponent {
 
-	error_data: any;
+	// errors!: OrchardErr[];
 
-	constructor(private router: Router) { }
+	public has_public_api_error: boolean = false;
+	public has_database_error: boolean = false;
+	// public has_rpc_error: boolean = false;
+
+
+	constructor(
+		private router: Router,
+		private changeDetectorRef: ChangeDetectorRef,
+	) { }
 
 	ngOnInit(): void {
-		this.error_data = (history.state) ? history.state['errors'] : [];
-		console.log('ERROR DATA:', this.error_data);
+		const errors = (history.state) ? history.state['errors'] : [];
+
+		errors.forEach((error: OrchardErr) => {
+			if (error.code === 40001) this.has_public_api_error = true;
+			if (error.code === 40002) this.has_database_error = true;
+		});
+
+		this.changeDetectorRef.detectChanges();
+
 		// here we look for 
 		// RPC errors (api rn...)
 			// show a truncated nav

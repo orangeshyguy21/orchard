@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 /* Application Dependencies */
 import { NavModule } from '@client/modules/nav/nav.module';
+import { AiModule } from '@client/modules/ai/ai.module';
 /* Local Dependencies */
 import { LayoutExteriorComponent } from './components/layout-exterior/layout-exterior.component';
 import { LayoutInteriorComponent } from './components/layout-interior/layout-interior.component';
@@ -54,7 +55,8 @@ const routes: Routes = [
 @NgModule({
 	imports: [
 		RouterModule.forRoot(routes),
-		NavModule
+		NavModule,
+		AiModule,
 	],
 	exports: [
 		RouterModule

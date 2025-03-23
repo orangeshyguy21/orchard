@@ -2,10 +2,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 /* Vendor Dependencies */
 import sqlite3 from "sqlite3";
-import { GraphQLError } from 'graphql';
 /* Application Dependencies */
 import { CashuMintDatabaseService } from '@server/modules/cashu/mintdb/cashumintdb.service';
-import { OrchardApiErrors } from "@server/modules/graphql/errors/orchard.errors";
+import { OrchardApiErrorCode } from "@server/modules/graphql/errors/orchard.errors";
+import { OrchardApiError } from "@server/modules/graphql/classes/orchard-error.class";
 
 @Injectable()
 export class MintService {
@@ -23,7 +23,7 @@ export class MintService {
 		} catch (error) {
 			this.logger.error('Error connecting to mint database');
 			this.logger.debug(`Error connecting to mint database: ${error}`);
-			throw new GraphQLError(OrchardApiErrors.MintDatabaseConnectionError);
+			throw new OrchardApiError(OrchardApiErrorCode.MintDatabaseConnectionError);
 		}
 
 		try {

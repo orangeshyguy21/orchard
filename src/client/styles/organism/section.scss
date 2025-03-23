@@ -3,7 +3,7 @@
 .section-container {
     @extend .flex;
     @extend .flex-column;
-    @extend .h-dvh;
+    // @extend .h-dvh;
     @extend .w-full;
     @extend .relative;
 }
@@ -17,9 +17,5 @@
     @extend .overlfow-y-auto;
     @extend .relative;
     @extend .h-min-0;
-}
-
-.subsection-container{
-    @extend .p-1;
 }
 

@@ -36,7 +36,7 @@ import { MintAnalyticControlPanelComponent } from './components/mint-analytic-co
 import { MintAnalyticChartComponent } from './components/mint-analytic-chart/mint-analytic-chart.component';
 import { MintKeysetComponent } from './components/mint-keyset/mint-keyset.component';
 import { MintIconComponent } from './components/mint-icon/mint-icon.component';
-
+import { MintNameComponent } from './components/mint-name/mint-name.component';
 
 @NgModule({
 	declarations: [
@@ -52,6 +52,7 @@ import { MintIconComponent } from './components/mint-icon/mint-icon.component';
 		MintAnalyticChartComponent,
 		MintKeysetComponent,
 		MintIconComponent,
+  		MintNameComponent,
 	],
 	imports: [
 		CommonModule,

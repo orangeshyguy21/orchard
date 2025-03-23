@@ -17,26 +17,30 @@ import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 export class MintSectionComponent implements OnInit, OnDestroy {
 
 	public mint_info: MintInfo | null = null;
-	public active_sub_section = '';
-	private subscription: Subscription;
+	public active_sub_section:string = '';
+	public loading:boolean = true;
+	public error:boolean = false;
+
+	private subscription: Subscription = new Subscription();
 
 	constructor(
 		private router: Router,
 		private route: ActivatedRoute,
 		private changeDetectorRef: ChangeDetectorRef,
 		private mintService: MintService
-	) {
-		this.subscription = new Subscription();
-	}
+	) {}
   
 	ngOnInit(): void {
 		this.mintService.loadMintInfo().subscribe({
 			next: (info:MintInfo) => {
 				this.mint_info = info;
+				this.loading = false;
 				this.changeDetectorRef.detectChanges();
 			},
 			error: (error) => {
-				// TODO: handle error (if mintapi error show erros in nav)
+				this.error = true;
+				this.loading = false;
+				this.changeDetectorRef.detectChanges();
 			}
 		});
 		this.subscription = this.router.events

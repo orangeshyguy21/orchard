@@ -1,11 +1,10 @@
 /* Core Dependencies */
 import { Injectable, Logger } from '@nestjs/common';
-/* Vendor Dependencies */
-import { GraphQLError } from 'graphql';
 /* Application Dependencies */
 import { CashuMintDatabaseService } from '@server/modules/cashu/mintdb/cashumintdb.service';
 import { CashuMintBalance } from '@server/modules/cashu/mintdb/cashumintdb.types';
-import { OrchardApiErrors } from "@server/modules/graphql/errors/orchard.errors";
+import { OrchardApiErrorCode } from "@server/modules/graphql/errors/orchard.errors";
+import { OrchardApiError } from "@server/modules/graphql/classes/orchard-error.class";
 import { MintService } from '@server/modules/api/mint/mint.service';
 /* Local Dependencies */
 import { OrchardMintBalance } from './mintbalance.model';
@@ -28,7 +27,7 @@ export class MintBalanceService {
 			} catch (error) {
 				this.logger.error('Error getting mint balances');
 				this.logger.debug(`Error getting mint balances: ${error}`);
-				throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
+				throw new OrchardApiError(OrchardApiErrorCode.MintDatabaseSelectError);
 			}
 		});
 	}
@@ -41,7 +40,7 @@ export class MintBalanceService {
 			} catch (error) {
 				this.logger.error('Error getting issued mint balances');
 				this.logger.debug(`Error getting issued mint balances: ${error}`);
-				throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
+				throw new OrchardApiError(OrchardApiErrorCode.MintDatabaseSelectError);
 			}
 		});
 	}
@@ -54,7 +53,7 @@ export class MintBalanceService {
 			} catch (error) {
 				this.logger.error('Error getting redeemed mint balances');
 				this.logger.debug(`Error getting redeemed mint balances: ${error}`);
-				throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
+				throw new OrchardApiError(OrchardApiErrorCode.MintDatabaseSelectError);
 			}
 		});
 	}

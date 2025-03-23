@@ -1,12 +1,11 @@
 /* Core Dependencies */
 import { Injectable, Logger } from '@nestjs/common';
-/* Vendor Dependencies */
-import { GraphQLError } from 'graphql';
 /* Application Dependencies */
 import { CashuMintDatabaseService } from '@server/modules/cashu/mintdb/cashumintdb.service';
 import { CashuMintPromise } from '@server/modules/cashu/mintdb/cashumintdb.types';
 import { CashuMintPromisesArgs } from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
-import { OrchardApiErrors } from "@server/modules/graphql/errors/orchard.errors";
+import { OrchardApiErrorCode } from "@server/modules/graphql/errors/orchard.errors";
+import { OrchardApiError } from "@server/modules/graphql/classes/orchard-error.class";
 import { MintService } from '@server/modules/api/mint/mint.service';
 /* Local Dependencies */
 import { OrchardMintPromise } from './mintpromise.model';
@@ -28,9 +27,9 @@ export class MintPromiseService {
 				const cashu_mint_promises : CashuMintPromise[] = await this.cashuMintDatabaseService.getMintPromises(db, args);
 				return cashu_mint_promises.map( cmp => new OrchardMintPromise(cmp));
 			} catch (error) {
-				this.logger.error('Error getting mint mint promises from database');
-				this.logger.debug(`Error getting mint mint promises from database: ${error}`);
-				throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
+				this.logger.error('Error getting mint promises from database');
+				this.logger.debug(`Error getting mint promises from database: ${error}`);
+				throw new OrchardApiError(OrchardApiErrorCode.MintDatabaseSelectError);
 			}
 		});
 	}

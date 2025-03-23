@@ -1,12 +1,11 @@
 /* Core Dependencies */
 import { Injectable, Logger } from '@nestjs/common';
-/* Vendor Dependencies */
-import { GraphQLError } from 'graphql';
 /* Application Dependencies */
 import { CashuMintDatabaseService } from '@server/modules/cashu/mintdb/cashumintdb.service';
 import { CashuMintAnalytics } from '@server/modules/cashu/mintdb/cashumintdb.types';
 import { CashuMintAnalyticsArgs } from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
-import { OrchardApiErrors } from "@server/modules/graphql/errors/orchard.errors";
+import { OrchardApiErrorCode } from "@server/modules/graphql/errors/orchard.errors";
+import { OrchardApiError } from "@server/modules/graphql/classes/orchard-error.class";
 import { MintService } from '@server/modules/api/mint/mint.service';
 /* Local Dependencies */
 import { OrchardMintAnalytics } from './mintanalytics.model';
@@ -29,7 +28,7 @@ export class MintAnalyticsService {
 			} catch (error) {
 				this.logger.error('Error getting mint analytics');
 				this.logger.debug(`Error getting mint analytics: ${error}`);
-				throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
+				throw new OrchardApiError(OrchardApiErrorCode.MintDatabaseSelectError);
 			}
 		});
 	}
@@ -42,7 +41,7 @@ export class MintAnalyticsService {
 			} catch (error) {
 				this.logger.error('Error getting mint analytics');
 				this.logger.debug(`Error getting mint analytics: ${error}`);
-				throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
+				throw new OrchardApiError(OrchardApiErrorCode.MintDatabaseSelectError);
 			}
 		});
 	}
@@ -55,7 +54,7 @@ export class MintAnalyticsService {
 			} catch (error) {
 				this.logger.error('Error getting mint analytics');
 				this.logger.debug(`Error getting mint analytics: ${error}`);
-				throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
+				throw new OrchardApiError(OrchardApiErrorCode.MintDatabaseSelectError);
 			}
 		});
 	}
@@ -68,7 +67,7 @@ export class MintAnalyticsService {
 			} catch (error) {
 				this.logger.error('Error getting mint analytics');
 				this.logger.debug(`Error getting mint analytics: ${error}`);
-				throw new GraphQLError(OrchardApiErrors.MintDatabaseSelectError);
+				throw new OrchardApiError(OrchardApiErrorCode.MintDatabaseSelectError);
 			}
 		});
 	}
