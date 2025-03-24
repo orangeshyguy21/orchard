@@ -1,5 +1,9 @@
 @use '@styles/molecule/molecule';
 
+:host {
+    flex-shrink: 0;
+}
+
 .secondary-nav-container{
     @extend .flex;
     @extend .flex-row;

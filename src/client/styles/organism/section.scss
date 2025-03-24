@@ -14,11 +14,12 @@
 }
   
 .subsection-container {
-    @extend .overlfow-y-auto;
+    @extend .overflow-y-auto;
     @extend .relative;
     @extend .h-min-0;
     @extend .flex;
     @extend .flex-column;
     @extend .flex-grow;
+    @extend .h-1;
 }
 

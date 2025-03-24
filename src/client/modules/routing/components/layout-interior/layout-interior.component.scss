@@ -11,10 +11,12 @@
     @extend .flex-grow;
     @extend .flex;
     @extend .flex-column;
+    @extend .h-dvh;
 }
 
 .interior-router-outlet-container{
     @extend .flex-grow;
     @extend .flex;
     @extend .flex-column;
+    // @extend .overflow-y-auto;
 }
