@@ -35,10 +35,9 @@ export class MintBalanceSheetComponent implements OnChanges {
 	private getRows(): MintBalanceRow[] {
 		const rows_by_unit: Record<string, MintBalanceRow> = {};
 
-		this.balances
-			.map(balance => {
-				const keyset = this.keysets.find(keyset => keyset.id === balance.keyset);
-				if (!keyset) return null;
+		this.keysets
+			.map( keyset => {
+				const balance = this.balances.find( balance => balance.keyset === keyset.id);
 				return new MintBalanceRow(balance, keyset);
 			})
 			.filter(row => row !== null)
@@ -51,6 +50,23 @@ export class MintBalanceSheetComponent implements OnChanges {
 				}
 				rows_by_unit[unit].liabilities += row.liabilities;
 			});
+
+		// this.balances
+		// 	.map(balance => {
+		// 		const keyset = this.keysets.find(keyset => keyset.id === balance.keyset);
+		// 		if (!keyset) return null;
+		// 		return new MintBalanceRow(balance, keyset);
+		// 	})
+		// 	.filter(row => row !== null)
+		// 	.sort((a, b) => b.first_seen - a.first_seen)
+		// 	.forEach( row => {
+		// 		const unit = row.unit.toLowerCase();
+		// 		if (!rows_by_unit[unit]) {
+		// 			rows_by_unit[unit] = row;
+		// 			return;
+		// 		}
+		// 		rows_by_unit[unit].liabilities += row.liabilities;
+		// 	});
 		
 		return Object.values(rows_by_unit).sort((a, b) => {
 			const currency_order: Record<string, number> = { 'btc': 1, 'sat': 2, 'msat': 3, 'usd': 4, 'eur': 5 };

@@ -17,9 +17,9 @@ export class MintBalanceRow {
     reserve_ratio: string;
     assets: number;
 
-    constructor(balance: MintBalance, keyset: MintKeyset) {
+    constructor(balance: MintBalance | undefined, keyset: MintKeyset) {
         this.unit = keyset.unit;
-        this.liabilities = balance.balance;
+        this.liabilities = balance?.balance ?? 0;
         this.fee = keyset.input_fee_ppk;
         this.active = keyset.active;
         this.assets = this.tempSetAssets();
@@ -44,6 +44,7 @@ export class MintBalanceRow {
     private setReserveRatio(assets: number = 1000): string {
         const ratio = assets / AmountPipe.getConvertedAmount(this.unit, this.liabilities);
         const formatted_ratio = Number.isInteger(ratio) ? ratio.toString() : (ratio.toFixed(1).endsWith('.0') ? Math.floor(ratio).toString() : ratio.toFixed(1));
+        if (!isFinite(ratio))return '∞ : 1';
         return `${formatted_ratio} : 1`;
     }
 }

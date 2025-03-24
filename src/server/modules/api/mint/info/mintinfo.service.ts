@@ -19,7 +19,7 @@ export class MintInfoService {
 
 	async getMintInfo() : Promise<OrchardMintInfo> {
 		try {
-			throw new OrchardApiError(OrchardApiErrorCode.MintPublicApiError);
+			// throw new OrchardApiError(OrchardApiErrorCode.MintPublicApiError);
 			const cashu_info : CashuMintInfo = await this.cashuMintApiService.getMintInfo();
 			return new OrchardMintInfo(cashu_info);
 		} catch (error) {

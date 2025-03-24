@@ -1,6 +1,6 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
-import { Router } from '@angular/router';
+/* Application Dependencies */
 import { OrchardError } from '@client/modules/error/types/error.types';
 
 @Component({
@@ -15,19 +15,11 @@ export class MintSubsectionErrorComponent {
 	errors!: OrchardError[];
 
 	constructor(
-		private router: Router,
 		private changeDetectorRef: ChangeDetectorRef,
 	) { }
 
 	ngOnInit(): void {
-		this.errors = (history.state) ? history.state['errors'] : [];
+		this.errors = (history.state) ? history.state?.error?.errors : [];
 		this.changeDetectorRef.detectChanges();
-		// here we look for 
-		// RPC errors (api rn...)
-			// show a truncated nav
-			// tell the user the mint is unreachable
-		
-		// mint database errors (connection issues)
-			// tell the user the mint database is unreachable
 	}
 }
