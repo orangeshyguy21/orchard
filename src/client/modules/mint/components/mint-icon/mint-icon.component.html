@@ -1,9 +1,20 @@
-<div class="mint-icon-container" (click)="onClick()">
-    @if (icon_url) {
-        <img [src]="icon_url" alt="Mint Icon" class="h-2">
-    }@else{
-        <div class="mint-icon-placeholder" matRipple>
-            <mat-icon>add</mat-icon>
-        </div>
+<div class="mint-icon-container">
+    @switch (state) {
+        @case ('loading') {
+            loading...
+        }
+        @case ('error') {
+            <div class="mint-icon-error">
+                <mat-icon class="mat-symbol-outline">error</mat-icon>
+            </div>
+        }
+        @case ('icon') {
+            <img [src]="icon_url" alt="Mint Icon" class="h-2 cursor-pointer" (click)="onClick()">
+        }
+        @case ('unset') {
+            <div class="mint-icon-placeholder" matRipple (click)="onClick()">
+                <mat-icon>add</mat-icon>
+            </div>
+        }
     }
 </div>

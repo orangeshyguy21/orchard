@@ -2,7 +2,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-import { RouterModule, Routes } from '@angular/router';
 /* Vendor Dependencies */
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -22,8 +21,12 @@ import { BaseChartDirective } from 'ng2-charts';
 import { NavModule } from '@client/modules/nav/nav.module';
 import { LocalModule } from '@client/modules/local/local.module';
 import { GraphicModule } from '@client/modules/graphic/graphic.module';
+import { ErrorModule } from '@client/modules/error/error.module';
 /* Local Dependencies */
+import { MintRoutingModule } from './mint.router';
+/* Native Dependencies */
 import { MintSectionComponent } from './components/mint-section/mint-section.component';
+import { MintSubsectionErrorComponent } from './components/mint-subsection-error/mint-subsection-error.component';
 import { MintSubsectionDashboardComponent } from './components/mint-subsection-dashboard/mint-subsection-dashboard.component';
 import { MintSubsectionInfoComponent } from './components/mint-subsection-info/mint-subsection-info.component';
 import { MintSubsectionConfigComponent } from './components/mint-subsection-config/mint-subsection-config.component';
@@ -34,57 +37,12 @@ import { MintAnalyticControlPanelComponent } from './components/mint-analytic-co
 import { MintAnalyticChartComponent } from './components/mint-analytic-chart/mint-analytic-chart.component';
 import { MintKeysetComponent } from './components/mint-keyset/mint-keyset.component';
 import { MintIconComponent } from './components/mint-icon/mint-icon.component';
-
-const routes: Routes = [
-	{
-		path: '',
-		component: MintSectionComponent,
-		children: [
-			{
-				path: '',
-				component: MintSubsectionDashboardComponent,
-				title: 'Orchard | Mint',
-				data: {
-					section: 'mint',
-					sub_section: 'dashboard'
-				}
-			},
-			{
-				path: 'info',
-				component: MintSubsectionInfoComponent,
-				title: 'Orchard | Mint Info',
-				data: {
-					section: 'mint',
-					sub_section: 'info'
-				}
-			},
-			{
-				path: 'config',
-				component: MintSubsectionConfigComponent,
-				title: 'Orchard | Mint Config',
-				data: {
-					section: 'mint',
-					sub_section: 'config'
-				}
-			},
-		]
-	}
-];
-
-@NgModule({
-	imports: [
-		RouterModule.forChild(routes),
-	],
-	exports: [
-		RouterModule,
-	],
-})
-export class MintRoutingModule { }
-
+import { MintNameComponent } from './components/mint-name/mint-name.component';
 
 @NgModule({
 	declarations: [
 		MintSectionComponent,
+		MintSubsectionErrorComponent,
 		MintSubsectionDashboardComponent,
 		MintSubsectionInfoComponent,
 		MintSubsectionConfigComponent,
@@ -95,6 +53,7 @@ export class MintRoutingModule { }
 		MintAnalyticChartComponent,
 		MintKeysetComponent,
 		MintIconComponent,
+  		MintNameComponent,
 	],
 	imports: [
 		CommonModule,
@@ -117,6 +76,7 @@ export class MintRoutingModule { }
 		NavModule,
 		LocalModule,
 		GraphicModule,
+		ErrorModule,
 	],
 })
 export class MintModule { }

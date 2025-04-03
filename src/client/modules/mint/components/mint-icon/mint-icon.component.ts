@@ -11,7 +11,16 @@ import { Router } from '@angular/router';
 })
 export class MintIconComponent {
 
-   @Input() icon_url!: string | null;
+    @Input() icon_url!: string | null;
+    @Input() loading!: boolean;
+    @Input() error!: boolean;
+
+    public get state(): 'loading' | 'error' | 'icon' | 'unset' {
+        if( this.loading ) return 'loading';
+        if( this.error ) return 'error';
+        if( this.icon_url ) return 'icon';
+        return 'unset';
+    }
 
 	constructor(
 		private router: Router

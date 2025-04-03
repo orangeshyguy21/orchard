@@ -35,10 +35,9 @@ export class MintBalanceSheetComponent implements OnChanges {
 	private getRows(): MintBalanceRow[] {
 		const rows_by_unit: Record<string, MintBalanceRow> = {};
 
-		this.balances
-			.map(balance => {
-				const keyset = this.keysets.find(keyset => keyset.id === balance.keyset);
-				if (!keyset) return null;
+		this.keysets
+			.map( keyset => {
+				const balance = this.balances.find( balance => balance.keyset === keyset.id);
 				return new MintBalanceRow(balance, keyset);
 			})
 			.filter(row => row !== null)

@@ -1,8 +1,16 @@
 <section class="section-container">
 	<orc-secondary-nav>
 		<div secondary-nav-header class="secondary-nav-header">	
-			<orc-mint-icon [icon_url]="mint_info ? mint_info.icon_url : null"></orc-mint-icon>
-			<div class="font-size-s orc-text-button-subtle" (click)="onClickMintName()">{{ mint_info?.name }}</div>
+			<orc-mint-icon 
+				[icon_url]="mint_info ? mint_info.icon_url : null"
+				[loading]="loading"
+				[error]="error">
+			</orc-mint-icon>
+			<orc-mint-name
+				[name]="mint_info ? mint_info.name : null"
+				[loading]="loading"
+				[error]="error">
+			</orc-mint-name>
 		</div>
 		<div secondary-nav-items>
 			<orc-secondary-nav-item 

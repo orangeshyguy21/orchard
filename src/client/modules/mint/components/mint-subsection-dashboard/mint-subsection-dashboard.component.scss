@@ -1,6 +1,6 @@
 @use '@styles/molecule/molecule';
 
-.subsection-container{
+.mint-dashboard-container{
     @extend .flex;
     @extend .flex-column;
     @extend .flex-gap-2;
@@ -9,4 +9,8 @@
 .mint-dashboard-header{
     @extend .flex;
     @extend .flex-gap-2;
+}
+
+.test{
+    min-height: 450px;
 }

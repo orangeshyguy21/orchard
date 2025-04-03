@@ -1,5 +1,11 @@
 @use '@styles/molecule/molecule';
 
+:host {
+    @extend .flex;
+    @extend .flex-column;
+    @extend .flex-grow;
+}
+
 .secondary-nav-header {
     @extend .flex;
     @extend .flex-row;

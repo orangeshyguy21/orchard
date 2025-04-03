@@ -1,0 +1,25 @@
+<div class="error-resolve-container">
+    <mat-card appearance="outlined" class="overflow-hidden"> 
+        <div class="error-resolve-content">
+            <div class="error-resolve-icon">
+                <mat-icon class="mat-symbol-outline">error</mat-icon>
+            </div>
+            <div class="error-resolve-info">
+                @switch (error.code) {
+                    @case (40001) {
+                        <h3>MINT PUBLIC API ERROR</h3>
+                        <p>Orchard was unable to access the mint public API</p>
+                    }
+                    @case (40002) {
+                        <h3>MINT DATABASE ERROR</h3>
+                        <p>Orchard was unable to connect to the mint database</p>
+                    }
+                    @default {
+                        <h3>UNKNOWN ERROR</h3>
+                        <p>{{ error.code }} : {{ error.message }}</p>
+                    }
+                }
+            </div>
+        </div>
+    </mat-card>
+</div>

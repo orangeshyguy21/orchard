@@ -1,4 +1,4 @@
-<div class="subsection-container">
+<div class="mint-dashboard-container p-1">
 	<div class="mint-dashboard-header">
 		<orc-mint-balance-sheet 
 			[balances]="mint_balances"
@@ -28,6 +28,49 @@
 				</orc-mint-analytic-control-panel>
 				
 				<div class="flex flex-column flex-gap-2">
+					<!-- @if( mint_analytics_balances.length === 0 && mint_analytics_mints.length === 0 && mint_analytics_melts.length === 0 ) {
+						<div class="flex flex-column flex-items-center flex-justify-center test">
+							<mat-icon class="mat-symbol-outline icon-lg">bar_chart_off</mat-icon>
+							<div class="font-size-m">no data</div>
+						</div>
+					}@else {
+						<orc-mint-analytic-chart
+							[title]="'Balance Sheet'"
+							[locale]="locale"
+							[mint_analytics]="mint_analytics_balances"
+							[mint_analytics_pre]="mint_analytics_balances_pre"
+							[chart_settings]="chart_settings"
+							[selected_type]="chart_settings ? chart_settings.type : undefined"
+							[loading]="loading_dynamic_data">
+						</orc-mint-analytic-chart>
+						<orc-mint-analytic-chart
+							[title]="'Mints'"
+							[locale]="locale"
+							[mint_analytics]="mint_analytics_mints"
+							[mint_analytics_pre]="mint_analytics_mints_pre"
+							[chart_settings]="chart_settings"
+							[selected_type]="chart_settings ? chart_settings.type : undefined"
+							[loading]="loading_dynamic_data">
+						</orc-mint-analytic-chart>
+						<orc-mint-analytic-chart
+							[title]="'Melts'"
+							[locale]="locale"
+							[mint_analytics]="mint_analytics_melts"
+							[mint_analytics_pre]="mint_analytics_melts_pre"
+							[chart_settings]="chart_settings"
+							[selected_type]="chart_settings ? chart_settings.type : undefined"
+							[loading]="loading_dynamic_data">
+						</orc-mint-analytic-chart>
+						<orc-mint-analytic-chart
+							[title]="'Transfers'"
+							[locale]="locale"
+							[mint_analytics]="mint_analytics_transfers"
+							[mint_analytics_pre]="mint_analytics_transfers_pre"
+							[chart_settings]="chart_settings"
+							[selected_type]="chart_settings ? chart_settings.type : undefined"
+							[loading]="loading_dynamic_data">
+						</orc-mint-analytic-chart>
+					} -->
 					<orc-mint-analytic-chart
 						[title]="'Balance Sheet'"
 						[locale]="locale"

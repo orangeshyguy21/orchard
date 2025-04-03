@@ -5,7 +5,8 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, catchError, map, Observable, of, shareReplay, tap, throwError } from 'rxjs';
 /* Application Dependencies */
 import { api, getApiQuery } from '@client/modules/api/helpers/api.helpers';
-import { GQLResponse } from '@client/modules/api/types/api.types';
+import { OrchardErrors } from '@client/modules/error/classes/error.class';
+import { OrchardRes } from '@client/modules/api/types/api.types';
 import { 
 	MintInfoResponse,
 	MintBalancesResponse,
@@ -163,8 +164,11 @@ export class MintService {
 
 		const query = getApiQuery(MINT_INFO_QUERY);
 	
-		this.mint_info_observable = this.http.post<GQLResponse<MintInfoResponse>>(api, query).pipe(
-			map((response) => response.data.mint_info),
+		this.mint_info_observable = this.http.post<OrchardRes<MintInfoResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.mint_info;
+			}),
 			map((mintInfo) => new MintInfo(mintInfo)),
 			tap((mintInfo) => {
 				this.cache.updateCache(this.CACHE_KEYS.MINT_INFO, mintInfo);
@@ -189,8 +193,11 @@ export class MintService {
 		
 		const query = getApiQuery(MINT_BALANCES_QUERY);
 
-		return this.http.post<GQLResponse<MintBalancesResponse>>(api, query).pipe(
-			map((response) => response.data.mint_balances),
+		return this.http.post<OrchardRes<MintBalancesResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.mint_balances;
+			}),
 			map((mint_balances) => mint_balances.map((mint_balance) => new MintBalance(mint_balance))),
 			tap((mint_balances) => {
 				this.cache.updateCache(this.CACHE_KEYS.MINT_BALANCES, mint_balances);
@@ -209,8 +216,11 @@ export class MintService {
 
 		const query = getApiQuery(MINT_KEYSETS_QUERY);
 
-		return this.http.post<GQLResponse<MintKeysetsResponse>>(api, query).pipe(
-			map((response) => response.data.mint_keysets),
+		return this.http.post<OrchardRes<MintKeysetsResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.mint_keysets;
+			}),
 			map((mint_keysets) => mint_keysets.map((mint_keyset) => new MintKeyset(mint_keyset))),
 			tap((mint_keysets) => {
 				this.cache.updateCache(this.CACHE_KEYS.MINT_KEYSETS, mint_keysets);
@@ -230,8 +240,11 @@ export class MintService {
 
 		const query = getApiQuery(MINT_PROMISES_QUERY, args);
 
-		return this.http.post<GQLResponse<MintPromisesResponse>>(api, query).pipe(
-			map((response) => response.data.mint_promises),
+		return this.http.post<OrchardRes<MintPromisesResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.mint_promises;
+			}),
 			map((mint_promises) => mint_promises.map((mint_promise) => new MintPromise(mint_promise))),
 			tap((mint_promises) => {
 				this.cache.updateCache(this.CACHE_KEYS.MINT_PROMISES, mint_promises);
@@ -258,8 +271,11 @@ export class MintService {
 
 		const query = getApiQuery(MINT_ANALYTICS_BALANCES_QUERY, args);
 
-		return this.http.post<GQLResponse<MintAnalyticsBalancesResponse>>(api, query).pipe(
-			map((response) => response.data.mint_analytics_balances),
+		return this.http.post<OrchardRes<MintAnalyticsBalancesResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.mint_analytics_balances;
+			}),
 			map((mint_analytics_balances) => mint_analytics_balances.map((mint_analytic) => new MintAnalytic(mint_analytic))),
 			tap((mint_analytics_balances) => {
 				this.cache.updateCache(cache_key, mint_analytics_balances);
@@ -286,8 +302,11 @@ export class MintService {
 
 		const query = getApiQuery(MINT_ANALYTICS_MINTS_QUERY, args);
 
-		return this.http.post<GQLResponse<MintAnalyticsMintsResponse>>(api, query).pipe(
-			map((response) => response.data.mint_analytics_mints),
+		return this.http.post<OrchardRes<MintAnalyticsMintsResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.mint_analytics_mints;
+			}),
 			map((mint_analytics_mints) => mint_analytics_mints.map((mint_analytic) => new MintAnalytic(mint_analytic))),
 			tap((mint_analytics_mints) => {
 				this.cache.updateCache(cache_key, mint_analytics_mints);
@@ -314,8 +333,11 @@ export class MintService {
 
 		const query = getApiQuery(MINT_ANALYTICS_MELTS_QUERY, args);
 
-		return this.http.post<GQLResponse<MintAnalyticsMeltsResponse>>(api, query).pipe(
-			map((response) => response.data.mint_analytics_melts),
+		return this.http.post<OrchardRes<MintAnalyticsMeltsResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.mint_analytics_melts;
+			}),
 			map((mint_analytics_melts) => mint_analytics_melts.map((mint_analytic) => new MintAnalytic(mint_analytic))),
 			tap((mint_analytics_melts) => {
 				this.cache.updateCache(cache_key, mint_analytics_melts);
@@ -342,8 +364,11 @@ export class MintService {
 
 		const query = getApiQuery(MINT_ANALYTICS_TRANSFERS_QUERY, args);
 
-		return this.http.post<GQLResponse<MintAnalyticsTransfersResponse>>(api, query).pipe(
-			map((response) => response.data.mint_analytics_transfers),
+		return this.http.post<OrchardRes<MintAnalyticsTransfersResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.mint_analytics_transfers;
+			}),
 			map((mint_analytics_transfers) => mint_analytics_transfers.map((mint_analytic) => new MintAnalytic(mint_analytic))),
 			tap((mint_analytics_transfers) => {
 				this.cache.updateCache(cache_key, mint_analytics_transfers);
