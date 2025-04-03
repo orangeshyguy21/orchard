@@ -75,13 +75,13 @@ export type OrchardMintDatabase = {
 
 export type OrchardMintInfo = {
   __typename?: 'OrchardMintInfo';
-  contact: Array<OrchardContact>;
+  contact?: Maybe<Array<OrchardContact>>;
   description?: Maybe<Scalars['String']['output']>;
   description_long?: Maybe<Scalars['String']['output']>;
   icon_url?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   nuts: OrchardNuts;
-  pubkey: Scalars['String']['output'];
+  pubkey?: Maybe<Scalars['String']['output']>;
   time: Scalars['UnixTimestamp']['output'];
   urls?: Maybe<Array<Scalars['String']['output']>>;
   version: Scalars['String']['output'];

@@ -9,4 +9,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 })
 export class EventSectionComponent {
 
+	constructor() { }
+
 }

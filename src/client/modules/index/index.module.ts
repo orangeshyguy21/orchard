@@ -9,6 +9,10 @@ const routes: Routes = [
 	{
 		path: '',
 		component: IndexSectionComponent,
+		title: 'Orchard',
+		data: {
+			section: 'index',
+		}
 	}
 ];
 

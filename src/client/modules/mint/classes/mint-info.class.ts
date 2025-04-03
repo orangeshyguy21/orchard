@@ -3,11 +3,11 @@ import { OrchardContact, OrchardMintInfo, OrchardNuts } from "@shared/generated.
 export class MintInfo implements OrchardMintInfo {
 
 	name: string;
-	pubkey: string;
+	pubkey: string | null;
 	version: string;
 	description: string | null;
 	description_long: string | null;
-	contact: OrchardContact[];
+	contact: OrchardContact[] | null;
 	icon_url: string | null;
 	urls: string[] | null;
 	time: number;
@@ -15,11 +15,11 @@ export class MintInfo implements OrchardMintInfo {
 
 	constructor(omi: OrchardMintInfo) {
 		this.name = omi.name;
-		this.pubkey = omi.pubkey;
+		this.pubkey = omi.pubkey ?? null;
 		this.version = omi.version;
 		this.description = omi.description ?? null;
 		this.description_long = omi.description_long ?? null;
-		this.contact = omi.contact;
+		this.contact = omi.contact ?? null;
 		this.icon_url = omi.icon_url ?? null;
 		this.urls = omi.urls ?? null;
 		this.time = omi.time;
