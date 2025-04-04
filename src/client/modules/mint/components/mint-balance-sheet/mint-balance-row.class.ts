@@ -29,7 +29,7 @@ export class MintBalanceRow {
         this.active = keyset.active;
         this.assets = this.tempSetAssets();
         this.derivation_path = keyset.derivation_path;
-        this.first_seen = keyset.first_seen;
+        this.first_seen = keyset.valid_from;
     }
 
     private tempSetAssets(): number {

@@ -232,8 +232,8 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	private getMintGenesisTime(): number {
 		if (!this.mint_keysets || this.mint_keysets.length === 0) return 0;
 		return this.mint_keysets.reduce((oldest_time, keyset) => {
-			return keyset.first_seen < oldest_time || oldest_time === 0 
-				? keyset.first_seen 
+			return keyset.valid_from < oldest_time || oldest_time === 0 
+				? keyset.valid_from 
 				: oldest_time;
 		}, 0);
 	}

@@ -63,9 +63,20 @@ export class NutshellService {
 
 	public async getMintKeysets(db:sqlite3.Database) : Promise<CashuMintKeyset[]> {
 		const sql = 'SELECT * FROM keysets;';
+		// return new Promise((resolve, reject) => {
+		// 	db.all(sql, (err, rows:CashuMintKeyset[]) => {
+		// 		if (err) reject(err);
+		// 		//
+		// 		resolve(rows);
+		// 	});
+		// });
 		return new Promise((resolve, reject) => {
 			db.all(sql, (err, rows:CashuMintKeyset[]) => {
 				if (err) reject(err);
+				rows.forEach(row => {
+					const match = row.derivation_path?.match(/\/(\d+)'?$/);
+					row.derivation_path_index = match ? parseInt(match[1], 10) : null;
+				});
 				resolve(rows);
 			});
 		});

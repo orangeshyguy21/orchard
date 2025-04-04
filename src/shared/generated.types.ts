@@ -91,16 +91,12 @@ export type OrchardMintKeyset = {
   __typename?: 'OrchardMintKeyset';
   active: Scalars['Boolean']['output'];
   derivation_path: Scalars['String']['output'];
-  encrypted_seed?: Maybe<Scalars['String']['output']>;
-  first_seen: Scalars['UnixTimestamp']['output'];
+  derivation_path_index: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   input_fee_ppk: Scalars['Int']['output'];
-  seed: Scalars['String']['output'];
-  seed_encryption_method?: Maybe<Scalars['String']['output']>;
   unit: Scalars['String']['output'];
   valid_from: Scalars['UnixTimestamp']['output'];
-  valid_to: Scalars['UnixTimestamp']['output'];
-  version: Scalars['String']['output'];
+  valid_to?: Maybe<Scalars['UnixTimestamp']['output']>;
 };
 
 export type OrchardMintMeltQuote = {

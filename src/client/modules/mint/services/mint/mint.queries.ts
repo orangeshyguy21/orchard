@@ -85,16 +85,12 @@ export const MINT_KEYSETS_QUERY = `{
     mint_keysets{
         active
 		derivation_path
-		encrypted_seed
-		first_seen
+		derivation_path_index
 		id
 		input_fee_ppk
-		seed
-		seed_encryption_method
 		unit
 		valid_from
 		valid_to
-		version
     }
 }`;
 
