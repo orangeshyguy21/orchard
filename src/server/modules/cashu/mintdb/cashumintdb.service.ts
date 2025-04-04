@@ -1,10 +1,12 @@
 /* Core Dependencies */
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 /* Vendor Dependencies */
 import sqlite3 from "sqlite3";
 const sqlite3d = require('sqlite3').verbose();
-import { DateTime } from 'luxon';
+/* Application Dependencies */
+import { NutshellService } from '@server/modules/cashu/nutshell/nutshell.service';
+import { CdkService } from '@server/modules/cashu/cdk/cdk.service';
 /* Local Dependencies */
 import { 
 	CashuMintBalance,
@@ -21,399 +23,116 @@ import {
 	CashuMintMintQuotesArgs,
 	CashuMintPromisesArgs,
 } from './cashumintdb.interfaces';
-import {
-	buildDynamicQuery,
-	getAnalyticsTimeGroupStamp,
-	getAnalyticsConditions,
-	getAnalyticsTimeGroupSql,
-} from './cashumintdb.helpers';
-import { MintAnalyticsInterval } from './cashumintdb.enums';
 
 @Injectable()
-export class CashuMintDatabaseService {
+export class CashuMintDatabaseService implements OnModuleInit {
+
+	private backend: 'cdk' | 'nutshell';
+	private database: string;
 
 	constructor(
 		private configService: ConfigService,
+		private nutshellService: NutshellService,
+		private cdkService: CdkService,
 	) {}
 
-	public async getMintDatabaseAsync() : Promise<sqlite3.Database> {
-		const db_path = this.configService.get('cashu.database');
-		if (!db_path) throw new Error('Database path not configured');
+	public async onModuleInit() {
+		this.backend = this.configService.get('cashu.backend');
+		this.database = this.configService.get('cashu.database');
+	}
+
+	public async getMintDatabase() : Promise<sqlite3.Database> {
 		return new Promise((resolve, reject) => {
-			const db = new sqlite3d.Database(db_path, (err) => {
+			const db = new sqlite3d.Database(this.database, (err) => {
 				if (err) reject(err);
 				resolve(db);
 			});
 		});
 	}
 
-	public getMintDatabase() : sqlite3.Database {
-		const db_path = this.configService.get('cashu.database');
-		if (!db_path) throw new Error('Database path not configured');
-		const db = new sqlite3d.Database(db_path, (err) => {
-			if (err) throw new Error(`Could not connect to database: ${err.message}`);
-		});
-		return db;
-
-	}
-
 	public async getMintBalances(db:sqlite3.Database) : Promise<CashuMintBalance[]> {
-		const sql = 'SELECT * FROM balance;';
-		return new Promise((resolve, reject) => {
-			db.all(sql, (err, rows:CashuMintBalance[]) => {
-				if (err) reject(err);
-				resolve(rows);
-			});
-		});
+		if( this.backend === 'nutshell' ) return this.nutshellService.getMintBalances(db);
+		if( this.backend === 'cdk' ) return this.cdkService.getMintBalances(db);
+		throw new Error('Invalid MINT_BACKEND');
 	}
 
 	public async getMintBalancesIssued(db:sqlite3.Database) : Promise<CashuMintBalance[]> {
-		const sql = 'SELECT * FROM balance_issued;';
-		return new Promise((resolve, reject) => {
-			db.all(sql, (err, rows:CashuMintBalance[]) => {
-				if (err) reject(err);
-				resolve(rows);
-			});
-		});
+		if( this.backend === 'nutshell' ) return this.nutshellService.getMintBalancesIssued(db);
+		if( this.backend === 'cdk' ) return this.cdkService.getMintBalancesIssued(db);
+		throw new Error('Invalid MINT_BACKEND');
 	}
 
 	public async getMintBalancesRedeemed(db:sqlite3.Database) : Promise<CashuMintBalance[]> {
-		const sql = 'SELECT * FROM balance_redeemed;';
-		return new Promise((resolve, reject) => {
-			db.all(sql, (err, rows:CashuMintBalance[]) => {
-				if (err) reject(err);
-				resolve(rows);
-			});
-		});
+		if( this.backend === 'nutshell' ) return this.nutshellService.getMintBalancesRedeemed(db);
+		if( this.backend === 'cdk' ) return  this.cdkService.getMintBalancesRedeemed(db);
+		throw new Error('Invalid MINT_BACKEND');
 	}
 
 	public async getMintKeysets(db:sqlite3.Database) : Promise<CashuMintKeyset[]> {
-		const sql = 'SELECT * FROM keysets;';
-		return new Promise((resolve, reject) => {
-			db.all(sql, (err, rows:CashuMintKeyset[]) => {
-				if (err) reject(err);
-				resolve(rows);
-			});
-		});
+		if( this.backend === 'nutshell' ) return this.nutshellService.getMintKeysets(db);
+		if( this.backend === 'cdk' ) return this.cdkService.getMintKeysets(db);
+		throw new Error('Invalid MINT_BACKEND');
 	}
 
 	public async getMintDatabaseVersions(db:sqlite3.Database) : Promise<CashuMintDatabaseVersion[]> {
-		const sql = 'SELECT * FROM dbversions;';
-		return new Promise((resolve, reject) => {
-			db.all(sql, (err, rows:CashuMintDatabaseVersion[]) => {
-				if (err) reject(err);
-				resolve(rows);
-			});
-		});
+		if( this.backend === 'nutshell' ) return this.nutshellService.getMintDatabaseVersions(db);
+		if( this.backend === 'cdk' ) throw new Error('CDK MINT_BACKEND not implemented');
+		throw new Error('Invalid MINT_BACKEND');
 	}
 
 	public async getMintMeltQuotes(db:sqlite3.Database) : Promise<CashuMintMeltQuote[]> {
-		const sql = 'SELECT * FROM melt_quotes;';
-		return new Promise((resolve, reject) => {
-			db.all(sql, (err, rows:CashuMintMeltQuote[]) => {
-				if (err) reject(err);
-				resolve(rows);
-			});
-		});
+		if( this.backend === 'nutshell' ) return this.nutshellService.getMintMeltQuotes(db);
+		if( this.backend === 'cdk' ) throw new Error('CDK MINT_BACKEND not implemented');
+		throw new Error('Invalid MINT_BACKEND');
 	}
 
   	public async getMintMintQuotes(db:sqlite3.Database, args?: CashuMintMintQuotesArgs) : Promise<CashuMintMintQuote[]> {
-		const field_mappings = {
-			unit: 'unit',
-			date_start: 'created_time',
-			date_end: 'created_time',
-			status: 'status'
-		};
-		const { sql, params } = buildDynamicQuery('mint_quotes', args, field_mappings);
-		return new Promise((resolve, reject) => {
-			db.all(sql, params, (err, rows:CashuMintMintQuote[]) => {
-				if (err) reject(err);
-				resolve(rows);
-			});
-		});
+		if( this.backend === 'nutshell' ) return this.nutshellService.getMintMintQuotes(db, args);
+		if( this.backend === 'cdk' ) throw new Error('CDK MINT_BACKEND not implemented');
+		throw new Error('Invalid MINT_BACKEND');
     }
 
 	public async getMintPromises(db:sqlite3.Database, args?: CashuMintPromisesArgs) : Promise<CashuMintPromise[]> {
-		const field_mappings = {
-			id_keysets: 'id',
-			date_start: 'created',
-			date_end: 'created'
-		};
-		const { sql, params } = buildDynamicQuery('promises', args, field_mappings);
-		return new Promise((resolve, reject) => {
-			db.all(sql, params, (err, rows:CashuMintPromise[]) => {
-				if (err) reject(err);
-				resolve(rows);
-			});
-		});
+		if( this.backend === 'nutshell' ) return this.nutshellService.getMintPromises(db, args);
+		if( this.backend === 'cdk' ) throw new Error('CDK MINT_BACKEND not implemented');
+		throw new Error('Invalid MINT_BACKEND');
 	}
 
 	public async getMintProofsPending(db:sqlite3.Database) : Promise<CashuMintProof[]> {
-		const sql = 'SELECT * FROM proofs_pending;';
-		return new Promise((resolve, reject) => {
-			db.all(sql, (err, rows:CashuMintProof[]) => {
-				if (err) reject(err);
-				resolve(rows);
-			});
-		});
+		if( this.backend === 'nutshell' ) return this.nutshellService.getMintProofsPending(db);
+		if( this.backend === 'cdk' ) throw new Error('CDK MINT_BACKEND not implemented');
+		throw new Error('Invalid MINT_BACKEND');
 	}
 
 	public async getMintProofsUsed(db:sqlite3.Database) : Promise<CashuMintProof[]> {
-		const sql = 'SELECT * FROM proofs_used;';
-		return new Promise((resolve, reject) => {
-			db.all(sql, (err, rows:CashuMintProof[]) => {
-				if (err) reject(err);
-				resolve(rows);
-			});
-		});
+		if( this.backend === 'nutshell' ) return this.nutshellService.getMintProofsUsed(db);
+		if( this.backend === 'cdk' ) throw new Error('CDK MINT_BACKEND not implemented');
+		throw new Error('Invalid MINT_BACKEND');
 	}
 
   	/* Analytics */
 
   	public async getMintAnalyticsBalances(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
-		const interval = args?.interval || MintAnalyticsInterval.day;
-		const timezone = args?.timezone || 'UTC';
-		const { where_conditions, params } = getAnalyticsConditions({
-			args: args,
-			time_column: 'created_time'
-		});
-		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
-		const time_group_sql = getAnalyticsTimeGroupSql({
-			interval: interval,
-			timezone: timezone,
-			time_column: 'created_time'
-		});
-		
-		const sqlite_sql = `
-			WITH mint_data AS (
-				SELECT 
-					${time_group_sql} AS time_group,
-					unit,
-					SUM(CASE WHEN state = 'ISSUED' THEN amount ELSE 0 END) AS mint_amount,
-					COUNT(DISTINCT CASE WHEN state = 'ISSUED' THEN quote ELSE NULL END) AS mint_count,
-					MIN(created_time) as min_created_time
-				FROM 
-					mint_quotes
-					${where_clause}
-				GROUP BY 
-					time_group, unit
-			),
-			melt_data AS (
-				SELECT 
-					${time_group_sql} AS time_group,
-					unit,
-					SUM(CASE WHEN state = 'PAID' THEN amount ELSE 0 END) AS melt_amount,
-					COUNT(DISTINCT CASE WHEN state = 'PAID' THEN quote ELSE NULL END) AS melt_count,
-					MIN(created_time) as min_created_time
-				FROM 
-					melt_quotes
-					${where_clause}
-				GROUP BY 
-					time_group, unit
-			)
-			SELECT 
-				COALESCE(m.time_group, l.time_group) AS time_group,
-				COALESCE(m.unit, l.unit) AS unit,
-				COALESCE(m.mint_amount, 0) - COALESCE(l.melt_amount, 0) AS amount,
-				COALESCE(m.mint_count, 0) + COALESCE(l.melt_count, 0) AS operation_count,
-				COALESCE(m.min_created_time, l.min_created_time) AS min_created_time
-			FROM 
-				mint_data m
-				LEFT JOIN melt_data l ON m.time_group = l.time_group AND m.unit = l.unit
-			UNION ALL
-			SELECT 
-				l.time_group,
-				l.unit,
-				-l.melt_amount AS amount,
-				l.melt_count AS operation_count,
-				l.min_created_time
-			FROM 
-				melt_data l
-				LEFT JOIN mint_data m ON l.time_group = m.time_group AND l.unit = m.unit
-			WHERE 
-				m.time_group IS NULL
-			ORDER BY 
-				min_created_time;`;
-		
-		return new Promise((resolve, reject) => {
-			db.all(sqlite_sql, [...params, ...params], (err, rows:any[]) => {
-				if (err) return reject(err);
-						
-				const result = rows.map(row => {
-					const timestamp = getAnalyticsTimeGroupStamp({
-						min_created_time: row.min_created_time,
-						time_group: row.time_group,
-						interval: interval,
-						timezone: timezone
-					});
-					return {
-						unit: row.unit,
-						amount: row.amount,
-						created_time: timestamp,
-						operation_count: row.operation_count,
-					};
-				});
-				
-				resolve(result);
-			});
-		});
+		if( this.backend === 'nutshell' ) return this.nutshellService.getMintAnalyticsBalances(db, args);
+		if( this.backend === 'cdk' ) throw new Error('CDK MINT_BACKEND not implemented');
+		throw new Error('Invalid MINT_BACKEND');
 	}
 
 	public async getMintAnalyticsMints(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
-		const interval = args?.interval || MintAnalyticsInterval.day;
-		const timezone = args?.timezone || 'UTC';
-		const { where_conditions, params } = getAnalyticsConditions({
-			args: args,
-			time_column: 'created_time'
-		});
-		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
-		const time_group_sql = getAnalyticsTimeGroupSql({
-			interval: interval,
-			timezone: timezone,
-			time_column: 'created_time'
-		});
-		const sql = `
-			SELECT 
-				${time_group_sql} AS time_group,
-				unit,
-				SUM(CASE WHEN state = 'ISSUED' THEN amount ELSE 0 END) AS amount,
-				COUNT(DISTINCT CASE WHEN state = 'ISSUED' THEN quote ELSE NULL END) AS operation_count,
-				MIN(created_time) as min_created_time
-			FROM 
-				mint_quotes
-				${where_clause}
-			GROUP BY 
-				time_group, unit
-			ORDER BY 
-				min_created_time;`;
-    
-		return new Promise((resolve, reject) => {
-			db.all(sql, params, (err, rows:any[]) => {
-				if (err) return reject(err);
-						
-				const result = rows.map(row => {
-					const timestamp = getAnalyticsTimeGroupStamp({
-						min_created_time: row.min_created_time,
-						time_group: row.time_group,
-						interval: interval,
-						timezone: timezone
-					});
-					return {
-						unit: row.unit,
-						amount: row.amount,
-						created_time: timestamp,
-						operation_count: row.operation_count,
-					};
-				});
-				
-				resolve(result);
-			});
-		});
+		if( this.backend === 'nutshell' ) return this.nutshellService.getMintAnalyticsMints(db, args);
+		if( this.backend === 'cdk' ) throw new Error('CDK MINT_BACKEND not implemented');
+		throw new Error('Invalid MINT_BACKEND');
  	}
 
 	public async getMintAnalyticsMelts(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
-		const interval = args?.interval || MintAnalyticsInterval.day;
-		const timezone = args?.timezone || 'UTC';
-		const { where_conditions, params } = getAnalyticsConditions({
-			args: args,
-			time_column: 'created_time'
-		});
-		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
-		const time_group_sql = getAnalyticsTimeGroupSql({
-			interval: interval,
-			timezone: timezone,
-			time_column: 'created_time'
-		});
-		const sql = `
-			SELECT 
-				${time_group_sql} AS time_group,
-				unit,
-				SUM(CASE WHEN state = 'PAID' THEN amount ELSE 0 END) AS amount,
-				COUNT(DISTINCT CASE WHEN state = 'PAID' THEN quote ELSE NULL END) AS operation_count,
-				MIN(created_time) as min_created_time
-			FROM 
-				melt_quotes
-				${where_clause}
-			GROUP BY 
-				time_group, unit
-			ORDER BY 
-				min_created_time;`;
-    
-		return new Promise((resolve, reject) => {
-			db.all(sql, params, (err, rows:any[]) => {
-				if (err) return reject(err);
-						
-				const result = rows.map(row => {
-					const timestamp = getAnalyticsTimeGroupStamp({
-						min_created_time: row.min_created_time,
-						time_group: row.time_group,
-						interval: interval,
-						timezone: timezone
-					});
-					return {
-						unit: row.unit,
-						amount: row.amount,
-						created_time: timestamp,
-						operation_count: row.operation_count,
-					};
-				});
-				
-				resolve(result);
-			});
-		});
+		if( this.backend === 'nutshell' ) return this.nutshellService.getMintAnalyticsMelts(db, args);
+		if( this.backend === 'cdk' ) throw new Error('CDK MINT_BACKEND not implemented');
+		throw new Error('Invalid MINT_BACKEND');
  	}
 
 	public async getMintAnalyticsTransfers(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
-		const interval = args?.interval || MintAnalyticsInterval.day;
-		const timezone = args?.timezone || 'UTC';
-		const { where_conditions, params } = getAnalyticsConditions({
-			args: args,
-			time_column: 'created'
-		});
-		where_conditions.push('melt_quote IS NULL');
-		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
-		const time_group_sql = getAnalyticsTimeGroupSql({
-			interval: interval,
-			timezone: timezone,
-			time_column: 'created'
-		});
-		const sql = `
-			SELECT 
-				${time_group_sql} AS time_group,
-				unit,
-				SUM(amount) AS amount,
-				COUNT(DISTINCT secret) AS operation_count,
-				MIN(created) as min_created_time
-			FROM 
-				proofs_used
-				LEFT JOIN keysets k ON k.id = proofs_used.id
-				${where_clause}
-			GROUP BY 
-				time_group, unit
-			ORDER BY
-				min_created_time;`;
-    
-		return new Promise((resolve, reject) => {
-			db.all(sql, params, (err, rows:any[]) => {
-				if (err) return reject(err);
-						
-				const result = rows.map(row => {
-					const timestamp = getAnalyticsTimeGroupStamp({
-						min_created_time: row.min_created_time,
-						time_group: row.time_group,
-						interval: interval,
-						timezone: timezone
-					});
-					return {
-						unit: row.unit,
-						amount: row.amount,
-						created_time: timestamp,
-						operation_count: row.operation_count,
-					};
-				});
-				
-				resolve(result);
-			});
-		});
+		if( this.backend === 'nutshell' ) return this.nutshellService.getMintAnalyticsTransfers(db, args);
+		if( this.backend === 'cdk' ) throw new Error('CDK MINT_BACKEND not implemented');
+		throw new Error('Invalid MINT_BACKEND');
 	}
 }

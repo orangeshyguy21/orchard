@@ -19,7 +19,7 @@ export class MintService {
 	public async withDb<T>(action: (db: sqlite3.Database) => Promise<T>): Promise<T> {
 		let db: sqlite3.Database;
 		try {
-			db = await this.cashuMintDatabaseService.getMintDatabaseAsync();
+			db = await this.cashuMintDatabaseService.getMintDatabase();
 		} catch (error) {
 			this.logger.error('Error connecting to mint database');
 			this.logger.debug(`Error connecting to mint database: ${error}`);
