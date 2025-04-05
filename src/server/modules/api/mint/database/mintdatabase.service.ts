@@ -3,9 +3,10 @@ import { Injectable, Logger } from '@nestjs/common';
 /* Application Dependencies */
 import { CashuMintDatabaseService } from '@server/modules/cashu/mintdb/cashumintdb.service';
 import { CashuMintDatabaseVersion } from '@server/modules/cashu/mintdb/cashumintdb.types';
-import { OrchardApiErrorCode } from "@server/modules/graphql/errors/orchard.errors";
+import { OrchardErrorCode } from "@server/modules/error/error.types";
 import { OrchardApiError } from "@server/modules/graphql/classes/orchard-error.class";
 import { MintService } from '@server/modules/api/mint/mint.service';
+import { ErrorService } from '@server/modules/error/error.service';
 /* Local Dependencies */
 import { OrchardMintDatabase } from './mintdatabase.model';
 
@@ -17,6 +18,7 @@ export class MintDatabaseService {
 	constructor(
 		private cashuMintDatabaseService: CashuMintDatabaseService,
 		private mintService: MintService,
+		private errorService: ErrorService,
 	) {}
 
 	async getMintDatabases() : Promise<OrchardMintDatabase[]> {
@@ -25,9 +27,11 @@ export class MintDatabaseService {
 				const cashu_databases : CashuMintDatabaseVersion[] = await this.cashuMintDatabaseService.getMintDatabaseVersions(db);
 				return cashu_databases.map( cd => new OrchardMintDatabase(cd));
 			} catch (error) {
-				this.logger.error('Error getting mint db versions from database');
-				this.logger.debug(`Error getting mint db versions from database: ${error}`);
-				throw new OrchardApiError(OrchardApiErrorCode.MintDatabaseSelectError);
+				const error_code = this.errorService.resolveError({ logger: this.logger, error,
+					errord: OrchardErrorCode.MintDatabaseSelectError,
+					msg: 'Error getting mint db versions from database',
+				});
+				throw new OrchardApiError(error_code);
 			}
 		});
 	}

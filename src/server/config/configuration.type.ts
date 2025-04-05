@@ -10,6 +10,7 @@ export type Config = {
     log: string;
   },
   cashu : {
+    backend : string;
     api: string;
     database : string;
   }

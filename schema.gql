@@ -53,13 +53,13 @@ type OrchardMintDatabase {
 }
 
 type OrchardMintInfo {
-  contact: [OrchardContact!]!
+  contact: [OrchardContact!]
   description: String
   description_long: String
   icon_url: String
   name: String!
   nuts: OrchardNuts!
-  pubkey: String!
+  pubkey: String
   time: UnixTimestamp!
   urls: [String!]
   version: String!
@@ -68,16 +68,12 @@ type OrchardMintInfo {
 type OrchardMintKeyset {
   active: Boolean!
   derivation_path: String!
-  encrypted_seed: String
-  first_seen: UnixTimestamp!
+  derivation_path_index: Int!
   id: ID!
   input_fee_ppk: Int!
-  seed: String!
-  seed_encryption_method: String
   unit: String!
   valid_from: UnixTimestamp!
-  valid_to: UnixTimestamp!
-  version: String!
+  valid_to: UnixTimestamp
 }
 
 type OrchardMintMeltQuote {

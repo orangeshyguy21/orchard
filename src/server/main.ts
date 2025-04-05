@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
-import { Logger, ConsoleLogger, LogLevel } from '@nestjs/common';
+import { Logger, ConsoleLogger, LogLevel, INestApplication } from '@nestjs/common';
 /* Application */
 import { AppModule } from './app.module';
 
@@ -28,7 +28,25 @@ async function bootstrap() {
 	app.setGlobalPrefix(path);
 	await app.listen(port);
 	const logger = new Logger('OrchardApplication');
+	validation(app, configService, logger);
 	logger.log(`Application is running on: ${host}:${port}/${path}`);
 }
+
+function validation(app: INestApplication, configService: ConfigService, logger: Logger) : void {
+	// validate MINT_BACKEND
+	const mint_backend = configService.get<string>('cashu.backend');
+	if( !mint_backend ) shutdown(app, logger, 'MINT_BACKEND not configured');
+	const valid_backends = ['nutshell', 'cdk'];
+	if( !valid_backends.includes(mint_backend) ) shutdown(app, logger, `Invalid MINT_BACKEND: ${mint_backend}`);
+	// validate MINT_DATABASE
+	const mint_database = configService.get<string>('cashu.database');
+	if( !mint_database ) shutdown(app, logger, 'MINT_DATABASE not configured');
+}
+
+function shutdown(app: INestApplication, logger: Logger, error: string) : void {
+	logger.error(error);
+	app.close();
+}
+
 
 bootstrap();

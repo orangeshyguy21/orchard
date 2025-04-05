@@ -9,15 +9,16 @@ export type CashuMintBalance = {
 export type CashuMintKeyset = {
   id: string;
   derivation_path: string;
-  seed: string;
+  derivation_path_index: number;
+  // seed: string;
   valid_from: number;
   valid_to: number;
-  first_seen: number;
+  // first_seen: number;
   active: number;
-  version: string;
+  // version: string;
   unit: MintUnit;
-  encrypted_seed: string|null;
-  seed_encryption_method: string|null;
+  // encrypted_seed: string|null;
+  // seed_encryption_method: string|null;
   input_fee_ppk: number;
 }
 

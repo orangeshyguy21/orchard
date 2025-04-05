@@ -147,7 +147,7 @@ export class OrchardMintInfo {
 	@Field()
 	name: string;
 
-	@Field()
+	@Field({ nullable: true })
 	pubkey: string;
 
 	@Field()
@@ -159,7 +159,7 @@ export class OrchardMintInfo {
 	@Field({ nullable: true })
 	description_long: string;
 
-	@Field(() => [OrchardContact!])
+	@Field(() => [OrchardContact!], { nullable: true })
 	contact: OrchardContact[];
 
 	@Field({ nullable: true })
