@@ -3,7 +3,7 @@ import { Injectable, Logger } from '@nestjs/common';
 /* Application Dependencies */
 import { CashuMintDatabaseService } from '@server/modules/cashu/mintdb/cashumintdb.service';
 import { CashuMintMeltQuote } from '@server/modules/cashu/mintdb/cashumintdb.types';
-import { OrchardApiErrorCode } from "@server/modules/graphql/errors/orchard.errors";
+import { OrchardErrorCode } from "@server/modules/error/orchard.errors";
 import { OrchardApiError } from "@server/modules/graphql/classes/orchard-error.class";
 import { MintService } from '@server/modules/api/mint/mint.service';
 /* Local Dependencies */
@@ -27,7 +27,9 @@ export class MintMeltQuoteService {
 			} catch (error) {
 				this.logger.error('Error getting mint melt quotes from database');
 				this.logger.debug(`Error getting mint melt quotes from database: ${error}`);
-				throw new OrchardApiError(OrchardApiErrorCode.MintDatabaseSelectError);
+				let error_code = OrchardErrorCode.MintDatabaseSelectError;
+				if( error === OrchardErrorCode.MintSupportError ) error_code = OrchardErrorCode.MintSupportError;
+				throw new OrchardApiError(error_code);
 			}
 		});
 	}
