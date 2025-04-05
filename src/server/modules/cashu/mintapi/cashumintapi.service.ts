@@ -9,20 +9,19 @@ import { CashuMintInfo } from './cashumintapi.types';
 @Injectable()
 export class CashuMintApiService {
 
-  constructor(
-    private configService: ConfigService,
-    private fetchService: FetchService,
-  ) {}
+	constructor(
+		private configService: ConfigService,
+		private fetchService: FetchService,
+	) {}
 
-  async getMintInfo() : Promise<CashuMintInfo> {
-    // @TODO : should we be error handling here?
-    const response = await this.fetchService.fetchWithProxy(
-      `${this.configService.get('cashu.api')}/v1/info`,
-      {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
-    return response.json();
-  }
+	async getMintInfo() : Promise<CashuMintInfo> {
+		const response = await this.fetchService.fetchWithProxy(
+		`${this.configService.get('cashu.api')}/v1/info`,
+			{
+				method: 'GET',
+				headers: { 'Content-Type': 'application/json' },
+			},
+		);
+		return response.json();
+	}
 }
