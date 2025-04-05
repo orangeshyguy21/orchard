@@ -4,9 +4,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import sqlite3 from "sqlite3";
 /* Application Dependencies */
 import { CashuMintDatabaseService } from '@server/modules/cashu/mintdb/cashumintdb.service';
-import { OrchardErrorCode } from "@server/modules/error/orchard.errors";
+import { OrchardErrorCode } from "@server/modules/error/error.types";
 import { OrchardApiError } from "@server/modules/graphql/classes/orchard-error.class";
-
+import { ErrorService } from '@server/modules/error/error.service';
 @Injectable()
 export class MintService {
 
@@ -14,17 +14,20 @@ export class MintService {
 
 	constructor(
 		private cashuMintDatabaseService: CashuMintDatabaseService,
+		private errorService: ErrorService,
 	) {}
 
 	public async withDb<T>(action: (db: sqlite3.Database) => Promise<T>): Promise<T> {
 		let db: sqlite3.Database;
-		
+
 		try {
 			db = await this.cashuMintDatabaseService.getMintDatabase();
 		} catch (error) {
-			this.logger.error('Error connecting to mint database');
-			this.logger.debug(`Error connecting to mint database: ${error}`);
-			throw new OrchardApiError(OrchardErrorCode.MintDatabaseConnectionError);
+			const error_code = this.errorService.resolveError({ logger: this.logger, error,
+				errord: OrchardErrorCode.MintDatabaseConnectionError,
+				msg: 'Error connecting to mint database',
+			});
+			throw new OrchardApiError(error_code);
 		}
 
 		try {

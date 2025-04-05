@@ -1,4 +1,3 @@
-// this needs to be in an error module or something...
 export enum OrchardErrorCode {
 	// Orchard Level Errors
 	StatusError = 10001,

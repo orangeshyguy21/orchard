@@ -7,7 +7,7 @@ const sqlite3d = require('sqlite3').verbose();
 /* Application Dependencies */
 import { NutshellService } from '@server/modules/cashu/nutshell/nutshell.service';
 import { CdkService } from '@server/modules/cashu/cdk/cdk.service';
-import { OrchardErrorCode } from '@server/modules/error/orchard.errors';
+import { OrchardErrorCode } from '@server/modules/error/error.types';
 /* Local Dependencies */
 import { 
 	CashuMintBalance,

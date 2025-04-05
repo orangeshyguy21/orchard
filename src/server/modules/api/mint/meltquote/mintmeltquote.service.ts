@@ -3,9 +3,10 @@ import { Injectable, Logger } from '@nestjs/common';
 /* Application Dependencies */
 import { CashuMintDatabaseService } from '@server/modules/cashu/mintdb/cashumintdb.service';
 import { CashuMintMeltQuote } from '@server/modules/cashu/mintdb/cashumintdb.types';
-import { OrchardErrorCode } from "@server/modules/error/orchard.errors";
+import { OrchardErrorCode } from "@server/modules/error/error.types";
 import { OrchardApiError } from "@server/modules/graphql/classes/orchard-error.class";
 import { MintService } from '@server/modules/api/mint/mint.service';
+import { ErrorService } from '@server/modules/error/error.service';
 /* Local Dependencies */
 import { OrchardMintMeltQuote } from './mintmeltquote.model';
 
@@ -17,6 +18,7 @@ export class MintMeltQuoteService {
 	constructor(
 		private cashuMintDatabaseService: CashuMintDatabaseService,
 		private mintService: MintService,
+		private errorService: ErrorService,
 	) {}
 
 	async getMintMeltQuotes() : Promise<OrchardMintMeltQuote[]> {
@@ -25,10 +27,10 @@ export class MintMeltQuoteService {
 				const cashu_melt_quotes : CashuMintMeltQuote[] = await this.cashuMintDatabaseService.getMintMeltQuotes(db);
 				return cashu_melt_quotes.map( cmq => new OrchardMintMeltQuote(cmq));
 			} catch (error) {
-				this.logger.error('Error getting mint melt quotes from database');
-				this.logger.debug(`Error getting mint melt quotes from database: ${error}`);
-				let error_code = OrchardErrorCode.MintDatabaseSelectError;
-				if( error === OrchardErrorCode.MintSupportError ) error_code = OrchardErrorCode.MintSupportError;
+				const error_code = this.errorService.resolveError({ logger: this.logger, error,
+					errord: OrchardErrorCode.MintDatabaseSelectError,
+					msg: 'Error getting melt quotes from database',
+				});
 				throw new OrchardApiError(error_code);
 			}
 		});

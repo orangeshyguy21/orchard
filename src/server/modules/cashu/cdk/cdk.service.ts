@@ -6,7 +6,6 @@ import sqlite3 from "sqlite3";
 import { 
 	CashuMintBalance,
 	CashuMintKeyset,
-	CashuMintDatabaseVersion,
 	CashuMintMeltQuote,
 	CashuMintMintQuote,
 	CashuMintPromise,
@@ -176,7 +175,7 @@ export class CdkService {
 
 	public async getMintPromises(db:sqlite3.Database, args?: CashuMintPromisesArgs) : Promise<CashuMintPromise[]> {
 		const field_mappings = {
-			id_keysets: 'id',
+			id_keysets: 'keyset_id',
 			date_start: 'created',
 			date_end: 'created'
 		};
