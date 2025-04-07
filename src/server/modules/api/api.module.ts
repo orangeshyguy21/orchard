@@ -11,6 +11,7 @@ import { MintMintQuoteModule } from "./mint/mintquote/mintmintquote.module";
 import { MintPromiseModule } from "./mint/promise/mintpromise.module";
 import { MintProofModule } from "./mint/proof/mintproof.module";
 import { MintAnalyticsModule } from "./mint/analytics/mintanalytics.module";
+import { BitcoinBlockCountModule } from "./bitcoin/blockcount/blockcount.module";
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { MintAnalyticsModule } from "./mint/analytics/mintanalytics.module";
     MintPromiseModule,
     MintProofModule,
     MintAnalyticsModule,
+    BitcoinBlockCountModule,
   ]
 })
 export class ApiModule {}

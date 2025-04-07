@@ -1,6 +1,8 @@
 export enum OrchardErrorCode {
 	// Orchard Level Errors
 	StatusError = 10001,
+	// Bitcoin Level Errors
+	BitcoinRPCError = 20001,
 	// Mint Level Errors
 	MintPublicApiError = 40001,
 	MintDatabaseConnectionError = 40002,

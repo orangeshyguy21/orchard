@@ -15,6 +15,13 @@ export const config = (): Config => {
 		log   : process.env.LOG_LEVEL || 'info',
 	};
 
+	const bitcoin = {
+		host : process.env.BITCOIN_RPC_HOST || 'http://localhost',
+		port : process.env.BITCOIN_RPC_PORT || '8332',
+		user : process.env.BITCOIN_RPC_USER,
+		pass : process.env.BITCOIN_RPC_PASSWORD,
+	};
+
 	const cashu = {
 		backend : process.env.MINT_BACKEND,
 		api : process.env.MINT_API,
@@ -22,8 +29,9 @@ export const config = (): Config => {
 	};
 
 	const config = {
-		server,
 		mode,
+		server,
+		bitcoin,
 		cashu,
 	};
 
