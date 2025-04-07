@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 /* Application Dependencies */
 import { FetchService } from '@server/modules/fetch/fetch.service';
+import { OrchardErrorCode } from '@server/modules/error/error.types';
 
 @Injectable()
 export class BitcoinService {
@@ -13,6 +14,7 @@ export class BitcoinService {
 	) {}
 
     async getBlockCount(): Promise<number> {
+
         const data_string = JSON.stringify({
             jsonrpc: "1.0",
             id: "curltext",
@@ -24,18 +26,23 @@ export class BitcoinService {
         const pass = this.configService.get('bitcoin.pass');
         const host = this.configService.get('bitcoin.host');
         const port = this.configService.get('bitcoin.port');
-        
-        const response = await this.fetchService.fetchWithProxy(
-            `http://${user}:${pass}@${host}:${port}/`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: data_string
+        const clean_host = host.replace(/^https?:\/\//, '');
+        const url = `http://${clean_host}:${port}/`;
+        const auth_string = Buffer.from(`${user}:${pass}`).toString('base64');
+        const options = {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Basic ${auth_string}`
             },
-        );
-        
-        const result = await response.json();
-        return result.result;
+            body: data_string
+        }
+        try {
+            const response = await this.fetchService.fetchWithProxy(url, options);
+            const result = await response.json();
+            return result.result;
+        } catch (error) {
+            throw OrchardErrorCode.BitcoinRPCError;
+        }
     }
-
 }

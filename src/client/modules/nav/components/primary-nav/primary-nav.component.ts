@@ -7,6 +7,7 @@ import { filter} from 'rxjs/operators';
 /* Application Dependencies */
 import { EventService } from 'src/client/modules/event/services/event/event.service';
 import { EventData } from 'src/client/modules/event/classes/event-data.class';
+import { BitcoinService } from '@client/modules/bitcoin/services/bitcoin.service';
 
 
 @Component({
@@ -28,7 +29,8 @@ export class PrimaryNavComponent {
 		private router: Router,
 		private activatedRoute: ActivatedRoute,
 		private changeDetectorRef: ChangeDetectorRef,
-		private eventService: EventService
+		private eventService: EventService,
+		private bitcoinService: BitcoinService,
 	) {
 		this.subscriptions = new Subscription();
 	}
@@ -48,6 +50,8 @@ export class PrimaryNavComponent {
 			.subscribe((event_data: EventData | null) => {
 				this.manageEvent(event_data);
 			});
+		
+		this.bitcoinService.streamBlockHeight();
 		
 		// Add both subscriptions to the main subscription
 		this.subscriptions.add(router_subscription);
