@@ -9,8 +9,8 @@ import {
 	CashuNut4Method,
 	CashuNut5Method,
 	CashuNutSupported,
-	CashuMintInfoRpc,
 } from '@server/modules/cashu/mintapi/cashumintapi.types';
+import { CashuMintInfoRpc } from '@server/modules/cashu/mintrpc/cashumintrpc.types';
 
 @ObjectType()
 export class OrchardNutSupported {

@@ -3,12 +3,14 @@ import { Injectable, Logger } from '@nestjs/common';
 /* Application Dependencies */
 import { CashuMintApiService } from '@server/modules/cashu/mintapi/cashumintapi.service';
 import { CashuMintRpcService } from '@server/modules/cashu/mintrpc/cashumintrpc.service';
-import { CashuMintInfo, CashuMintInfoRpc } from '@server/modules/cashu/mintapi/cashumintapi.types';
+import { CashuMintInfo } from '@server/modules/cashu/mintapi/cashumintapi.types';
+import { CashuMintInfoRpc } from '@server/modules/cashu/mintrpc/cashumintrpc.types';
 import { OrchardErrorCode } from "@server/modules/error/error.types";
 import { OrchardApiError } from "@server/modules/graphql/classes/orchard-error.class";
 import { ErrorService } from '@server/modules/error/error.service';
 /* Local Dependencies */
 import { OrchardMintInfo, OrchardMintInfoRpc } from './mintinfo.model';
+import { UpdateMintNameInput } from './mintinfo.resolver';
 
 @Injectable()
 export class MintInfoService {
@@ -37,7 +39,6 @@ export class MintInfoService {
 	async getMintInfoRpc() : Promise<OrchardMintInfoRpc> {
 		try {
 			const cashu_info : CashuMintInfoRpc = await this.cashuMintRpcService.getMintInfo();
-			this.logger.log('INFO COMING FROM RPC TO API SERVICE:', cashu_info);
 			return new OrchardMintInfoRpc(cashu_info);
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error,
@@ -48,10 +49,10 @@ export class MintInfoService {
 		}
 	}
 
-	async mutateMintName(name: string) {
+	async updateMintName(updateMintNameInput: UpdateMintNameInput) : Promise<boolean> {
 		try {
-			const test = await this.cashuMintRpcService.updateName(name);
-			return test;
+			const update_response = await this.cashuMintRpcService.updateName(updateMintNameInput.name);
+			return ( update_response ) ? true : false;
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error,
 				errord: OrchardErrorCode.MintRpcError,

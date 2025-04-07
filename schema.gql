@@ -25,6 +25,10 @@ enum MintUnit {
   usd
 }
 
+type Mutation {
+  update_mint_name(updateMintNameInput: UpdateMintNameInput!): Boolean!
+}
+
 type OrchardBitcoinBlockCount {
   height: Int!
 }
@@ -243,3 +247,7 @@ scalar Timezone
 
 """A Unix timestamp in seconds"""
 scalar UnixTimestamp
+
+input UpdateMintNameInput {
+  name: String!
+}

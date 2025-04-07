@@ -1,90 +1,61 @@
 /* Core Dependencies */
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as grpc from '@grpc/grpc-js';
-import * as protoLoader from '@grpc/proto-loader';
-import * as fs from 'fs';
-import * as path from 'path';
+/* Application Dependencies */
+import { CdkService } from '@server/modules/cashu/cdk/cdk.service';
+import { OrchardErrorCode } from '@server/modules/error/error.types';
+/* Local Dependencies */
+import { CashuMintInfoRpc } from './cashumintrpc.types';
 
 @Injectable()
-export class CashuMintRpcService {
+export class CashuMintRpcService implements OnModuleInit {
+
     private readonly logger = new Logger(CashuMintRpcService.name);
     private grpc_client: any = null;
+    private backend: 'cdk' | 'nutshell';
 
     constructor(
         private configService: ConfigService,
-    ) {
+        private cdkService: CdkService,
+    ) {}
+
+    public async onModuleInit() {
+		this.backend = this.configService.get('cashu.backend');
         this.initializeGrpcClient();
-    }
+	}
     
     private initializeGrpcClient() {
-        this.logger.log('Initializing gRPC client for Cashu mint');
-        const rpc_key = this.configService.get('cashu.rpc_key');
-        const rpc_cert = this.configService.get('cashu.rpc_cert');
-        const rpc_ca = this.configService.get('cashu.rpc_ca');
-        const rpc_host = this.configService.get('cashu.rpc_host');
-        const rpc_port = this.configService.get('cashu.rpc_port');
-        const rpc_url = `${rpc_host}:${rpc_port}`;
+        if( this.backend === 'nutshell' ) this.logger.warn('Nutshell backend does not support gRPC');
+        if( this.backend === 'cdk' ) this.grpc_client = this.cdkService.initializeGrpcClient();
+    }
 
-
-        if (!rpc_key || !rpc_cert || !rpc_url) {
-            this.logger.warn('Missing RPC credentials or mint URL, secure connection cannot be established');
-            return;
-        }
+    private makeGrpcRequest(method: string, request: any): Promise<any> {
+        if (!this.grpc_client) throw OrchardErrorCode.MintRpcError;
         
-        try {
-            // Load the protocol buffer definition
-            const proto_path = path.resolve(__dirname, '../../../../proto/cdk-mint-rpc.proto');
-            
-            const package_definition = protoLoader.loadSync(proto_path, {
-                keepCase: true,
-                longs: String,
-                enums: String,
-                defaults: true,
-                oneofs: true
-            });
-            
-            // The package and service names from the proto file
-            const mint_proto: any = grpc.loadPackageDefinition(package_definition).cdk_mint_rpc;
-            
-            // Read SSL/TLS certificates
-            const key_content = fs.readFileSync(rpc_key);
-            const cert_content = fs.readFileSync(rpc_cert);
-            const ca_content = rpc_ca ? fs.readFileSync(rpc_ca) : undefined;
-            
-            // Create SSL credentials
-            const ssl_credentials = grpc.credentials.createSsl(
-                ca_content,
-                key_content,
-                cert_content
-            );
-            
-            // Create gRPC client with the correct service name: CdkMint
-            this.grpc_client = new mint_proto.CdkMint(
-                rpc_url,
-                ssl_credentials
-            );
-            
-            this.logger.log('gRPC client initialized with TLS certificate authentication');
-        } catch (error) {
-            this.logger.error(`Failed to initialize gRPC client: ${error.message}`);
-            if (error.stack) {
-                this.logger.debug(error.stack);
+        return new Promise((resolve, reject) => {
+            if (!(method in this.grpc_client)) {
+                reject(OrchardErrorCode.MintSupportError);
+                return;
             }
-        }
+            
+            this.grpc_client[method](request, (error: Error | null, response: any) => {
+                if (error) reject(error);
+                resolve(response);
+            });
+        });
     }
     
     /**
      * Get mint information
      */
-    async getMintInfo() {
+    async getMintInfo() : Promise<CashuMintInfoRpc> {
         return this.makeGrpcRequest('GetInfo', {});
     }
     
     /**
      * Update mint name
      */
-    async updateName(name: string) {
+    async updateName(name: string) : Promise<{}> {
         return this.makeGrpcRequest('UpdateName', { name });
     }
     
@@ -153,41 +124,5 @@ export class CashuMintRpcService {
         if (input_fee_ppk !== undefined) request.input_fee_ppk = input_fee_ppk;
         
         return this.makeGrpcRequest('RotateNextKeyset', request);
-    }
-    
-    /**
-     * Make a gRPC request to the mint
-     */
-    private makeGrpcRequest(method: string, request: any): Promise<any> {
-        if (!this.grpc_client) {
-            throw new Error('gRPC client not properly initialized');
-        }
-        
-        return new Promise((resolve, reject) => {
-            if (!(method in this.grpc_client)) {
-                reject(new Error(`Method ${method} not found in gRPC client`));
-                return;
-            }
-            
-            this.logger.debug(`Making gRPC call: ${method}`, request);
-            
-            this.grpc_client[method](request, (error: Error | null, response: any) => {
-                if (error) {
-                    this.logger.error(`gRPC request failed: ${error.message}`);
-                    reject(error);
-                    return;
-                }
-                
-                this.logger.debug(`gRPC response for ${method}:`, response);
-                resolve(response);
-            });
-        });
-    }
-    
-    /**
-     * Check if the client is connected
-     */
-    isConnected(): boolean {
-        return !!this.grpc_client;
     }
 }
