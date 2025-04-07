@@ -41,6 +41,11 @@ export enum MintUnit {
   Usd = 'usd'
 }
 
+export type OrchardBitcoinBlockCount = {
+  __typename?: 'OrchardBitcoinBlockCount';
+  height: Scalars['Int']['output'];
+};
+
 export type OrchardCachedEndpoint = {
   __typename?: 'OrchardCachedEndpoint';
   method: Scalars['String']['output'];
@@ -235,6 +240,7 @@ export type OrchardStatus = {
 
 export type Query = {
   __typename?: 'Query';
+  bitcoin_blockcount: OrchardBitcoinBlockCount;
   mint_analytics_balances: Array<OrchardMintAnalytics>;
   mint_analytics_melts: Array<OrchardMintAnalytics>;
   mint_analytics_mints: Array<OrchardMintAnalytics>;
@@ -302,4 +308,9 @@ export type QueryMint_PromisesArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   id_keysets?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  blockCount: OrchardBitcoinBlockCount;
 };

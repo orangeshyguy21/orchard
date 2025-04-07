@@ -8,7 +8,7 @@ import { filter} from 'rxjs/operators';
 import { EventService } from 'src/client/modules/event/services/event/event.service';
 import { EventData } from 'src/client/modules/event/classes/event-data.class';
 import { BitcoinService } from '@client/modules/bitcoin/services/bitcoin.service';
-
+import { BitcoinBlockCount } from '@client/modules/bitcoin/classes/bitcoin-blockcount.class';
 
 @Component({
 	selector: 'orc-primary-nav',
@@ -21,7 +21,7 @@ export class PrimaryNavComponent {
 
 	public active_section! : string;
 	public active_event!: EventData | null;
-
+	public block_count!: number;
 
 	private subscriptions: Subscription;
 
@@ -50,8 +50,12 @@ export class PrimaryNavComponent {
 			.subscribe((event_data: EventData | null) => {
 				this.manageEvent(event_data);
 			});
-		
-		this.bitcoinService.streamBlockHeight();
+
+		this.bitcoinService.getBlockCount()
+			.subscribe((block_count: BitcoinBlockCount) => {
+				this.block_count = block_count.height;
+				this.changeDetectorRef.detectChanges();
+			});
 		
 		// Add both subscriptions to the main subscription
 		this.subscriptions.add(router_subscription);
