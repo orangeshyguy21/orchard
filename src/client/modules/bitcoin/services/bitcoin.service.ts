@@ -38,14 +38,4 @@ export class BitcoinService {
 			})
 		);
 	}
-
-	public subscribeBlockCount() {
-		console.log('Streaming block height');
-		const eventSource = new EventSource(`${api}/events/blockheight`);
-		
-		eventSource.onmessage = (event) => {
-			const data = JSON.parse(event.data);
-			console.log('Received data:', data);
-		};
-	}
 }
