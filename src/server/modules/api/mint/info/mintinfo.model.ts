@@ -9,6 +9,7 @@ import {
 	CashuNut4Method,
 	CashuNut5Method,
 	CashuNutSupported,
+	CashuMintInfoRpc,
 } from '@server/modules/cashu/mintapi/cashumintapi.types';
 
 @ObjectType()
@@ -285,5 +286,52 @@ export class OrchardCachedEndpoint {
 	constructor(cached_endpoint: CashuCachedEndpoint) {
 		this.method = cached_endpoint.method;
 		this.path = cached_endpoint.path;
+	}
+}
+
+@ObjectType()
+export class OrchardMintInfoRpc {
+
+	@Field()
+	name: string;
+
+	@Field()
+	version: string;
+	
+	@Field()
+	description: string;
+
+	@Field({ nullable: true })
+	motd: string;
+
+	@Field()
+	total_issued: string;
+
+	@Field()
+	total_redeemed: string;
+
+	@Field({ nullable: true })
+	description_long: string;
+
+	@Field(() => [OrchardContact!])
+	contact: OrchardContact[];
+
+	@Field({ nullable: true })
+	icon_url: string;
+
+	@Field(() => [String!])
+	urls: string[];
+
+	constructor(cashu_info:CashuMintInfoRpc) {
+		this.name = cashu_info.name;
+		this.version = cashu_info.version;
+		this.description = cashu_info.description;
+		this.description_long = cashu_info.description_long;
+		this.motd = cashu_info.motd;
+		this.total_issued = cashu_info.total_issued;
+		this.total_redeemed = cashu_info.total_redeemed;
+		this.contact = cashu_info.contact;
+		this.icon_url = cashu_info.icon_url;
+		this.urls = cashu_info.urls;
 	}
 }

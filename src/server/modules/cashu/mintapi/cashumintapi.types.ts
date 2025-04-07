@@ -87,3 +87,8 @@ export type CashuCachedEndpoint = {
   method: string;
   path: string;
 }
+
+export type CashuMintInfoRpc = Omit<CashuMintInfo, 'pubkey' | 'time' | 'nuts'> & {
+	total_issued: string;
+	total_redeemed: string;
+}

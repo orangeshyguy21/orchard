@@ -11,7 +11,7 @@ import { BitcoinBlockCountService } from './blockcount.service';
 const pubSub = new PubSub();
 
 @Resolver(() => OrchardBitcoinBlockCount)
-export class BitcoinBlockCountResolver implements OnModuleInit, OnModuleDestroy {
+export class BitcoinBlockCountResolver {
 
 	private readonly logger = new Logger(BitcoinBlockCountResolver.name);
 	
@@ -19,17 +19,17 @@ export class BitcoinBlockCountResolver implements OnModuleInit, OnModuleDestroy 
 		private bitcoinBlockCountService: BitcoinBlockCountService,
 	) {}
 	
-	onModuleInit() {
-		this.bitcoinBlockCountService.startBlockCountPolling();
-		this.bitcoinBlockCountService.onBlockCountUpdate((block_count) => {
-			this.logger.debug(`New Block Found!: ${block_count}`);
-			pubSub.publish('bitcoin.blockcount', { blockCount: { block_count } });
-		});
-	}
+	// onModuleInit() {
+	// 	this.bitcoinBlockCountService.startBlockCountPolling();
+	// 	this.bitcoinBlockCountService.onBlockCountUpdate((block_count) => {
+	// 		this.logger.debug(`New Block Found!: ${block_count}`);
+	// 		pubSub.publish('bitcoin.blockcount', { blockCount: { block_count } });
+	// 	});
+	// }
 	
-	onModuleDestroy() {
-		this.bitcoinBlockCountService.stopBlockCountPolling();
-	}
+	// onModuleDestroy() {
+	// 	this.bitcoinBlockCountService.stopBlockCountPolling();
+	// }
 
 	@Query(() => OrchardBitcoinBlockCount)
 	async bitcoin_blockcount() : Promise<OrchardBitcoinBlockCount> {

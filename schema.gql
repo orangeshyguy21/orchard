@@ -69,6 +69,19 @@ type OrchardMintInfo {
   version: String!
 }
 
+type OrchardMintInfoRpc {
+  contact: [OrchardContact!]!
+  description: String!
+  description_long: String
+  icon_url: String
+  motd: String
+  name: String!
+  total_issued: String!
+  total_redeemed: String!
+  urls: [String!]!
+  version: String!
+}
+
 type OrchardMintKeyset {
   active: Boolean!
   derivation_path: String!
@@ -211,6 +224,7 @@ type Query {
   mint_balances_redeemed: [OrchardMintBalance!]!
   mint_databases: [OrchardMintDatabase!]!
   mint_info: OrchardMintInfo!
+  mint_info_rpc: OrchardMintInfoRpc!
   mint_keysets: [OrchardMintKeyset!]!
   mint_melt_quotes: [OrchardMintMeltQuote!]!
   mint_mint_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, status: [MintQuoteStatus!], unit: [MintUnit!]): [OrchardMintMintQuote!]!

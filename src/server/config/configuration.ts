@@ -26,6 +26,11 @@ export const config = (): Config => {
 		backend : process.env.MINT_BACKEND,
 		api : process.env.MINT_API,
 		database : process.env.MINT_DATABASE,
+		rpc_host : process.env.MINT_RPC_HOST,
+		rpc_port : process.env.MINT_RPC_PORT,
+		rpc_key : process.env.MINT_RPC_KEY,
+		rpc_cert : process.env.MINT_RPC_CERT,
+		rpc_ca : process.env.MINT_RPC_CA,
 	};
 
 	const config = {

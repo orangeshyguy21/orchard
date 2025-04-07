@@ -6,7 +6,6 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 /* Application Modules */
 import { ApiModule } from './modules/api/api.module';
 import { FetchModule } from './modules/fetch/fetch.module';
-// import { SseModule } from './modules/sse/sse.module';
 import { WebserverModule } from './modules/webserver/webserver.module';
 /* Custom Graphql Type Definitions */
 import { UnixTimestamp } from './modules/graphql/scalars/unixtimestamp.scalar';
