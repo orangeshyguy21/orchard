@@ -98,8 +98,3 @@ export class MintInfoResolver {
 		return await this.mintInfoService.removeMintContact(updateContactInput);
 	}
 }
-
-// Questions
-// 1) i think there may be an issue with add_url 
-// 2) The mint does not seem to restrict unit and method values for update_mint_nut04 and update_mint_nut05 (should something be enforced at the application level?	)
-// 3) for update_mint_quote_ttl, is this information exposed in anyway? if not are the in the database? need this for read before issuing updates
