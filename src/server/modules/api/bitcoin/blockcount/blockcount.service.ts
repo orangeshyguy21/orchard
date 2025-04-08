@@ -73,19 +73,3 @@ export class BitcoinBlockCountService implements OnModuleDestroy {
 		this.event_emitter.on('bitcoin.blockcount.update', callback);
 	}
 }
-
-
-// async getMintBalances(): Promise<OrchardMintBalance[]> {
-// 	return this.mintService.withDb(async (db) => {
-// 		try {
-// 			const cashu_mint_balances: CashuMintBalance[] = await this.cashuMintDatabaseService.getMintBalances(db);
-// 			return cashu_mint_balances.map(cmb => new OrchardMintBalance(cmb));
-// 		} catch (error) {
-// 			const error_code = this.errorService.resolveError({ logger: this.logger, error,
-// 				errord: OrchardErrorCode.MintDatabaseSelectError,
-// 				msg: 'Error getting mint balances',
-// 			});
-// 			throw new OrchardApiError(error_code);
-// 		}
-// 	});
-// }

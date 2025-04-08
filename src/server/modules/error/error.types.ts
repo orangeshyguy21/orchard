@@ -8,12 +8,15 @@ export enum OrchardErrorCode {
 	MintDatabaseConnectionError = 40002,
 	MintDatabaseSelectError = 40003,
 	MintSupportError = 40004,
+	MintRpcError = 40005,
 };
 
 export const OrchardErrorMessages: Record<string, string> = {
+	[OrchardErrorCode.StatusError]: "StatusError",
+	[OrchardErrorCode.BitcoinRPCError]: "BitcoinRPCError",
 	[OrchardErrorCode.MintPublicApiError]: "MintPublicApiError",
 	[OrchardErrorCode.MintDatabaseConnectionError]: "MintDatabaseConnectionError",
 	[OrchardErrorCode.MintDatabaseSelectError]: "MintDatabaseSelectError",
 	[OrchardErrorCode.MintSupportError]: "MintSupportError",
-	[OrchardErrorCode.StatusError]: "StatusError",
+	[OrchardErrorCode.MintRpcError]: "MintRpcError",
 };

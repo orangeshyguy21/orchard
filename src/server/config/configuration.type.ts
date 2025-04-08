@@ -19,5 +19,10 @@ export type Config = {
 		backend : string;
 		api: string;
 		database : string;
+		rpc_host : string;
+		rpc_port : string;
+		rpc_key : string;
+		rpc_cert : string;
+		rpc_ca : string;
 	}
 };

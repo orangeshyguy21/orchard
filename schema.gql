@@ -25,6 +25,23 @@ enum MintUnit {
   usd
 }
 
+type Mutation {
+  add_mint_contact(updateContactInput: UpdateContactInput!): UpdateContactOutput!
+  add_mint_url(updateUrlInput: UpdateUrlInput!): UpdateMintUrlOutput!
+  remove_mint_contact(updateContactInput: UpdateContactInput!): UpdateContactOutput!
+  remove_mint_url(updateUrlInput: UpdateUrlInput!): UpdateMintUrlOutput!
+  rotate_next_keyset(rotateNextKeysetInput: RotateNextKeysetInput!): RotateNextKeysetOutput!
+  update_mint_icon(updateMintIconInput: UpdateMintIconInput!): UpdateMintIconOutput!
+  update_mint_long_description(updateMintDescriptionInput: UpdateMintDescriptionInput!): UpdateMintDescriptionOutput!
+  update_mint_motd(updateMotdInput: UpdateMotdInput!): UpdateMintMotdOutput!
+  update_mint_name(updateMintNameInput: UpdateMintNameInput!): UpdateMintNameOutput!
+  update_mint_nut04(updateNut04Input: UpdateNut04Input!): UpdateNut04Output!
+  update_mint_nut04_quote(updateNut04QuoteInput: UpdateNut04QuoteInput!): UpdateNut04QuoteOutput!
+  update_mint_nut05(updateNut05Input: UpdateNut05Input!): UpdateNut05Output!
+  update_mint_quote_ttl(updateQuoteTtlInput: UpdateQuoteTtlInput!): UpdateQuoteTtlOutput!
+  update_mint_short_description(updateMintDescriptionInput: UpdateMintDescriptionInput!): UpdateMintDescriptionOutput!
+}
+
 type OrchardBitcoinBlockCount {
   height: Int!
 }
@@ -66,6 +83,19 @@ type OrchardMintInfo {
   pubkey: String
   time: UnixTimestamp!
   urls: [String!]
+  version: String!
+}
+
+type OrchardMintInfoRpc {
+  contact: [OrchardContact!]!
+  description: String!
+  description_long: String
+  icon_url: String
+  motd: String
+  name: String!
+  total_issued: String!
+  total_redeemed: String!
+  urls: [String!]!
   version: String!
 }
 
@@ -211,6 +241,7 @@ type Query {
   mint_balances_redeemed: [OrchardMintBalance!]!
   mint_databases: [OrchardMintDatabase!]!
   mint_info: OrchardMintInfo!
+  mint_info_rpc: OrchardMintInfoRpc!
   mint_keysets: [OrchardMintKeyset!]!
   mint_melt_quotes: [OrchardMintMeltQuote!]!
   mint_mint_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, status: [MintQuoteStatus!], unit: [MintUnit!]): [OrchardMintMintQuote!]!
@@ -218,6 +249,19 @@ type Query {
   mint_proofs_pending: [OrchardMintProof!]!
   mint_proofs_used: [OrchardMintProof!]!
   status: OrchardStatus!
+}
+
+input RotateNextKeysetInput {
+  input_fee_ppk: Int
+  max_order: Int
+  unit: String!
+}
+
+type RotateNextKeysetOutput {
+  id: String!
+  input_fee_ppk: Int
+  max_order: Int
+  unit: String!
 }
 
 type Subscription {
@@ -229,3 +273,107 @@ scalar Timezone
 
 """A Unix timestamp in seconds"""
 scalar UnixTimestamp
+
+input UpdateContactInput {
+  info: String!
+  method: String!
+}
+
+type UpdateContactOutput {
+  info: String!
+  method: String!
+}
+
+input UpdateMintDescriptionInput {
+  description: String!
+}
+
+type UpdateMintDescriptionOutput {
+  description: String!
+}
+
+input UpdateMintIconInput {
+  icon_url: String!
+}
+
+type UpdateMintIconOutput {
+  icon_url: String!
+}
+
+type UpdateMintMotdOutput {
+  motd: String!
+}
+
+input UpdateMintNameInput {
+  name: String!
+}
+
+type UpdateMintNameOutput {
+  name: String!
+}
+
+type UpdateMintUrlOutput {
+  url: String!
+}
+
+input UpdateMotdInput {
+  motd: String!
+}
+
+input UpdateNut04Input {
+  description: Boolean
+  disabled: Boolean
+  max: Int
+  method: String!
+  min: Int
+  unit: String!
+}
+
+type UpdateNut04Output {
+  description: Boolean
+  disabled: Boolean
+  max: Int
+  method: String!
+  min: Int
+  unit: String!
+}
+
+input UpdateNut04QuoteInput {
+  quote_id: String!
+  state: String!
+}
+
+type UpdateNut04QuoteOutput {
+  quote_id: String!
+  state: String!
+}
+
+input UpdateNut05Input {
+  disabled: Boolean
+  max: Int
+  method: String!
+  min: Int
+  unit: String!
+}
+
+type UpdateNut05Output {
+  disabled: Boolean
+  max: Int
+  method: String!
+  min: Int
+  unit: String!
+}
+
+input UpdateQuoteTtlInput {
+  melt_ttl: Int
+  mint_ttl: Int
+}
+
+type UpdateQuoteTtlOutput {
+  melt_ttl: Int
+  mint_ttl: Int
+}
+
+input UpdateUrlInput {
+  url: String!
+}
