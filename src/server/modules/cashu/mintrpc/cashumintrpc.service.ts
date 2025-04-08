@@ -45,84 +45,113 @@ export class CashuMintRpcService implements OnModuleInit {
         });
     }
     
-    /**
-     * Get mint information
-     */
     async getMintInfo() : Promise<CashuMintInfoRpc> {
         return this.makeGrpcRequest('GetInfo', {});
     }
-    
-    /**
-     * Update mint name
-     */
-    async updateName(name: string) : Promise<{}> {
+
+    async updateName({ name }: { name: string }) : Promise<{}> {
         return this.makeGrpcRequest('UpdateName', { name });
     }
-    
-    /**
-     * Update mint message of the day
-     */
-    async updateMotd(motd: string) {
+
+    async updateMotd({ motd }: { motd: string }) : Promise<{}> {
         return this.makeGrpcRequest('UpdateMotd', { motd });
     }
-    
-    /**
-     * Update mint short description
-     */
-    async updateShortDescription(description: string) {
+
+    async updateShortDescription({ description }: { description: string }) : Promise<{}> {
         return this.makeGrpcRequest('UpdateShortDescription', { description });
     }
-    
-    /**
-     * Update mint long description
-     */
-    async updateLongDescription(description: string) {
+
+    async updateLongDescription({ description }: { description: string }) : Promise<{}> {
         return this.makeGrpcRequest('UpdateLongDescription', { description });
     }
-    
-    /**
-     * Update mint icon URL
-     */
-    async updateIconUrl(icon_url: string) {
+
+    async updateIconUrl({ icon_url }: { icon_url: string }) : Promise<{}> {
         return this.makeGrpcRequest('UpdateIconUrl', { icon_url });
     }
     
-    /**
-     * Add a URL to the mint
-     */
-    async addUrl(url: string) {
+    async addUrl({ url }: { url: string }) : Promise<{}> {
         return this.makeGrpcRequest('AddUrl', { url });
     }
     
-    /**
-     * Remove a URL from the mint
-     */
-    async removeUrl(url: string) {
+    async removeUrl({ url }: { url: string }) : Promise<{}> {
         return this.makeGrpcRequest('RemoveUrl', { url });
     }
-    
-    /**
-     * Add a contact method to the mint
-     */
-    async addContact(method: string, info: string) {
+
+    async addContact({ method, info }: { method: string, info: string }) : Promise<{}> {
         return this.makeGrpcRequest('AddContact', { method, info });
     }
-    
-    /**
-     * Remove a contact method from the mint
-     */
-    async removeContact(method: string, info: string) {
+
+    async removeContact({ method, info }: { method: string, info: string }) : Promise<{}> {
         return this.makeGrpcRequest('RemoveContact', { method, info });
     }
-    
-    /**
-     * Rotate to the next keyset
-     */
-    async rotateNextKeyset(unit: string, max_order?: number, input_fee_ppk?: number) {
+
+    async updateNut04({ 
+        unit,
+        method,
+        disabled,
+        min,
+        max,
+        description
+    }: {
+        unit: string,
+        method: string,
+        disabled?: boolean,
+        min?: number,
+        max?: number,
+        description?: boolean 
+    }) : Promise<{}> {
+        const request: any = { unit, method };
+        if (disabled !== undefined) request.disabled = disabled;
+        if (min !== undefined) request.min = min;
+        if (max !== undefined) request.max = max;
+        if (description !== undefined) request.description = description;
+        console.log('gRPC request: ', request);
+        return this.makeGrpcRequest('UpdateNut04', request);
+    }
+
+    async updateNut05({
+        unit,
+        method,
+        disabled,
+        min,
+        max
+    }: {
+        unit: string,
+        method: string,
+        disabled?: boolean,
+        min?: number,
+        max?: number 
+    }) : Promise<{}> {
+        const request: any = { unit, method };
+        if (disabled !== undefined) request.disabled = disabled;
+        if (min !== undefined) request.min = min;
+        if (max !== undefined) request.max = max;
+        return this.makeGrpcRequest('UpdateNut05', request);
+    }
+
+    async updateQuoteTtl({ mint_ttl, melt_ttl }: { mint_ttl?: number, melt_ttl?: number }) : Promise<{}> {
+        const request: any = {};
+        if (mint_ttl !== undefined) request.mint_ttl = mint_ttl;
+        if (melt_ttl !== undefined) request.melt_ttl = melt_ttl;
+        return this.makeGrpcRequest('UpdateQuoteTtl', request);
+    }
+
+    async updateNut04Quote({ quote_id, state }: { quote_id: string, state: string }) : Promise<{ quote_id: string, state: string }> {
+        return this.makeGrpcRequest('UpdateNut04Quote', { quote_id, state });
+    }
+
+    async rotateNextKeyset({
+        unit,
+        max_order,
+        input_fee_ppk
+    }: {
+        unit: string,
+        max_order?: number,
+        input_fee_ppk?: number 
+    }) : Promise<{ id: string, unit: string, max_order: number, input_fee_ppk: number }> {
         const request: any = { unit };
         if (max_order !== undefined) request.max_order = max_order;
         if (input_fee_ppk !== undefined) request.input_fee_ppk = input_fee_ppk;
-        
         return this.makeGrpcRequest('RotateNextKeyset', request);
     }
 }

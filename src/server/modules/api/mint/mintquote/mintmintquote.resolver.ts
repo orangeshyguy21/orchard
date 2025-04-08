@@ -1,12 +1,14 @@
 /* Core Dependencies */
 import { Logger } from '@nestjs/common';
-import { Resolver, Query, Args } from "@nestjs/graphql";
+import { Resolver, Query, Args, Mutation } from "@nestjs/graphql";
 /* Application Dependencies */
 import { UnixTimestamp } from "@server/modules/graphql/scalars/unixtimestamp.scalar";
 import { MintUnit, MintQuoteStatus } from "@server/modules/cashu/cashu.enums";
 /* Local Dependencies */
 import { MintMintQuoteService } from "./mintmintquote.service";
 import { OrchardMintMintQuote } from "./mintmintquote.model";
+import { UpdateNut04Input, UpdateQuoteTtlInput, UpdateNut04QuoteInput } from "./mintmintquote.input";
+import { UpdateNut04Output, UpdateQuoteTtlOutput, UpdateNut04QuoteOutput } from "./mintmintquote.model";
 
 @Resolver(() => [OrchardMintMintQuote])
 export class MintMintQuoteResolver {
@@ -26,5 +28,24 @@ export class MintMintQuoteResolver {
 	) : Promise<OrchardMintMintQuote[]> {
 		this.logger.debug('GET { mint_mint_quotes }');
 		return await this.mintMintQuoteService.getMintMintQuotes({ unit, status, date_start, date_end });
+	}
+
+
+	@Mutation(() => UpdateNut04Output)
+	async update_mint_nut04(@Args('updateNut04Input') updateNut04Input: UpdateNut04Input): Promise<UpdateNut04Output> {
+		this.logger.debug(`MUTATION { update_mint_nut04 }`);
+		return await this.mintMintQuoteService.updateMintNut04(updateNut04Input);
+	}
+
+	@Mutation(() => UpdateQuoteTtlOutput)
+	async update_mint_quote_ttl(@Args('updateQuoteTtlInput') updateQuoteTtlInput: UpdateQuoteTtlInput): Promise<UpdateQuoteTtlOutput> {
+		this.logger.debug(`MUTATION { update_mint_quote_ttl }`);
+		return await this.mintMintQuoteService.updateMintQuoteTtl(updateQuoteTtlInput);
+	}
+
+	@Mutation(() => UpdateNut04QuoteOutput)
+	async update_mint_nut04_quote(@Args('updateNut04QuoteInput') updateNut04QuoteInput: UpdateNut04QuoteInput): Promise<UpdateNut04QuoteOutput> {
+		this.logger.debug(`MUTATION { update_mint_nut04_quote }`);
+		return await this.mintMintQuoteService.updateMintNut04Quote(updateNut04QuoteInput);
 	}
 }

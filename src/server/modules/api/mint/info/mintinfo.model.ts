@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType, Int } from '@nestjs/graphql';
 /* Application Dependencies */
 import { UnixTimestamp } from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 import { 
@@ -334,4 +334,44 @@ export class OrchardMintInfoRpc {
 		this.icon_url = cashu_info.icon_url;
 		this.urls = cashu_info.urls;
 	}
+}
+
+
+@ObjectType()
+export class UpdateMintNameOutput {
+	@Field()
+	name: string;
+}
+
+@ObjectType()
+export class UpdateMintIconOutput {
+	@Field()
+	icon_url: string;
+}
+
+@ObjectType()
+export class UpdateMintDescriptionOutput {
+	@Field()
+	description: string;
+}
+
+@ObjectType()
+export class UpdateMintMotdOutput {
+	@Field()
+	motd: string;
+}
+
+@ObjectType()
+export class UpdateMintUrlOutput {
+	@Field()
+	url: string;
+}
+
+@ObjectType()
+export class UpdateContactOutput {
+	@Field()
+	method: string;
+
+	@Field()
+	info: string;
 }

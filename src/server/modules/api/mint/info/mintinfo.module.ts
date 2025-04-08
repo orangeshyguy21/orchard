@@ -9,14 +9,14 @@ import { MintInfoService } from "./mintinfo.service";
 import { MintInfoResolver } from "./mintinfo.resolver";
 
 @Module({
-  imports: [
-    CashuMintApiModule,
-    CashuMintRpcModule,
-    ErrorModule,
-  ],
-  providers: [
-    MintInfoResolver,
-    MintInfoService,
-  ]
+	imports: [
+		CashuMintApiModule,
+		CashuMintRpcModule,
+		ErrorModule,
+	],
+	providers: [
+		MintInfoResolver,
+		MintInfoService,
+	]
 })
 export class MintInfoModule {}
