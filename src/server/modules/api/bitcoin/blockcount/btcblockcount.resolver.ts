@@ -5,8 +5,8 @@ import { OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 /* Vendor Dependencies */
 import { PubSub } from 'graphql-subscriptions';
 /* Local Dependencies */
-import { OrchardBitcoinBlockCount } from './blockcount.model';
-import { BitcoinBlockCountService } from './blockcount.service';
+import { OrchardBitcoinBlockCount } from './btcblockcount.model';
+import { BitcoinBlockCountService } from './btcblockcount.service';
 
 const pubSub = new PubSub();
 

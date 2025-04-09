@@ -48,5 +48,4 @@ function shutdown(app: INestApplication, logger: Logger, error: string) : void {
 	app.close();
 }
 
-
 bootstrap();

@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 /* Application Dependencies */
 import { FetchService } from '@server/modules/fetch/fetch.service';
-import { OrchardErrorCode } from '@server/modules/error/error.types';
 
 @Injectable()
 export class BitcoinService {
@@ -37,12 +36,8 @@ export class BitcoinService {
             },
             body: data_string
         }
-        try {
-            const response = await this.fetchService.fetchWithProxy(url, options);
-            const result = await response.json();
-            return result.result;
-        } catch (error) {
-            throw OrchardErrorCode.BitcoinRPCError;
-        }
+        const response = await this.fetchService.fetchWithProxy(url, options);
+        const result = await response.json();
+        return result.result;
     }
 }

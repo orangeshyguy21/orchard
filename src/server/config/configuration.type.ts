@@ -24,5 +24,8 @@ export type Config = {
 		rpc_key : string;
 		rpc_cert : string;
 		rpc_ca : string;
+	},
+	ai : {
+		api : string;
 	}
 };

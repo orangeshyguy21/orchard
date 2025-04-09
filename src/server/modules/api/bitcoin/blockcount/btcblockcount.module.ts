@@ -4,8 +4,8 @@ import { Module } from "@nestjs/common";
 import { ErrorModule } from "@server/modules/error/error.module";
 import { BitcoinModule } from "@server/modules/bitcoin/bitcoin.module";
 /* Internal Dependencies */
-import { BitcoinBlockCountResolver } from "./blockcount.resolver";
-import { BitcoinBlockCountService } from "./blockcount.service";
+import { BitcoinBlockCountResolver } from "./btcblockcount.resolver";
+import { BitcoinBlockCountService } from "./btcblockcount.service";
 
 @Module({
 	imports: [

@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { InputType, Field, Int } from "@nestjs/graphql";
+import { InputType, Field } from "@nestjs/graphql";
 
 @InputType()
 export class UpdateMintNameInput {
