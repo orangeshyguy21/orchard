@@ -9,4 +9,11 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 })
 export class AiInputComponent {
 
+	constructor() {}
+
+	public onSubmit(event?: any): void {
+		if( event ) event.preventDefault();
+		console.log(event);
+	}
+
 }
