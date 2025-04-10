@@ -1,6 +1,7 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, Component, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { trigger, state, style, animate, transition } from '@angular/animations';
 /* Vendor Dependencies */
 import { Subscription } from 'rxjs';
 /* Application Dependencies */
@@ -13,7 +14,15 @@ import { OrchardAiChatChunk } from '@shared/generated.types';
 	standalone: false,
 	templateUrl: './ai-input.component.html',
 	styleUrl: './ai-input.component.scss',
-	changeDetection: ChangeDetectionStrategy.OnPush
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	animations: [
+		trigger('iconAnimation', [
+			transition('* => *', [
+				style({ transform: 'scale(0.8)', opacity: 0.5 }),
+				animate('200ms ease-out', style({ transform: 'scale(1)', opacity: 1 }))
+			])
+		])
+	]
 })
 export class AiInputComponent implements OnDestroy {
 

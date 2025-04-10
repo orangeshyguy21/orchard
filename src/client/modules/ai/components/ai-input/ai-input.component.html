@@ -18,6 +18,7 @@
                 class="ai-input-action"
                 [class.ai-active]="action_available"
                 [class.mat-symbol-outline]="!action_available"
+                [@iconAnimation]="aiService.active"
             >{{ aiService.active ? 'stop' : 'send' }}</mat-icon>
         </button>
     </form>
