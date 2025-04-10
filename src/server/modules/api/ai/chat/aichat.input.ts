@@ -12,6 +12,10 @@ export class AiChatMessageInput {
 
 @InputType()
 export class AiChatInput {
+
+	@Field()
+	id: string;
+
     @Field()
 	model: string;
 
@@ -20,4 +24,10 @@ export class AiChatInput {
 
 	@Field(() => [AiChatMessageInput])
 	messages: AiChatMessageInput[];
+}
+
+@InputType()
+export class AiChatAbortInput {
+	@Field()
+	id: string;
 }

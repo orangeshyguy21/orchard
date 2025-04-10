@@ -12,6 +12,8 @@ export enum OrchardErrorCode {
 	MintRpcError = 40005,
 	// Ecash Level Errors (50001 - 59999)
 	AiError = 50001,
+	AiStreamError = 50002,
+	AiStreamParseError = 50003,
 };
 
 export const OrchardErrorMessages: Record<string, string> = {
@@ -23,4 +25,6 @@ export const OrchardErrorMessages: Record<string, string> = {
 	[OrchardErrorCode.MintSupportError]: "MintSupportError",
 	[OrchardErrorCode.MintRpcError]: "MintRpcError",
 	[OrchardErrorCode.AiError]: "AiError",
+	[OrchardErrorCode.AiStreamError]: "AiStreamError",
+	[OrchardErrorCode.AiStreamParseError]: "AiStreamParseError",
 };

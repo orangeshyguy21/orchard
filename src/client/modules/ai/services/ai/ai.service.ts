@@ -62,6 +62,7 @@ export class AiService {
 					query: AI_CHAT_SUBSCRIPTION,
 					variables: {
 						aiChatInput: {
+							id: subscription_id,
 							messages: [{ role: 'user', content }],
 							model: 'llama3.2:latest',
 							agent: 'orc'

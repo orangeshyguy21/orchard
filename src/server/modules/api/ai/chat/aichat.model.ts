@@ -14,6 +14,9 @@ export class OrchardAiChatMessage {
 export class OrchardAiChatChunk {
 
     @Field()
+    id: string;
+
+    @Field()
     model: string;
 
     @Field(type => Int)
@@ -46,7 +49,8 @@ export class OrchardAiChatChunk {
     @Field({ nullable: true })
     eval_duration: number;
 
-    constructor(chunk_json: any) {
+    constructor(chunk_json: any, id: string) {
+        this.id = id;
         this.model = chunk_json.model;
         this.created_at = Math.floor(new Date(chunk_json.created_at).getTime() / 1000);
         this.message = chunk_json.message;
@@ -60,3 +64,9 @@ export class OrchardAiChatChunk {
         this.eval_duration = chunk_json.eval_duration;
     }
 }   
+
+@ObjectType()
+export class OrchardAiChatStream {
+    @Field()
+    id: string;
+}

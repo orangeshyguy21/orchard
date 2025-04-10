@@ -34,6 +34,9 @@ export class AiService {
     async streamChat(model: string, agent: string, messages: AiMessage[], signal?: AbortSignal) {
         // based on the agent, get the tools
         // and the system prompt
+        const timeout_signal = AbortSignal.timeout(this.chat_timeout);
+        const combined_signal = signal ? AbortSignal.any([signal, timeout_signal]) : timeout_signal;
+        
         const response = await this.fetchService.fetchWithProxy(
             `${this.base_url}/api/chat`,
             {
@@ -44,7 +47,7 @@ export class AiService {
                     messages: messages,
                     tools: [],
                 }),
-                signal: signal || AbortSignal.timeout(this.chat_timeout),
+                signal: combined_signal,
             },
         );
         return response.body;

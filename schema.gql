@@ -2,8 +2,13 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+input AiChatAbortInput {
+  id: String!
+}
+
 input AiChatInput {
   agent: String!
+  id: String!
   messages: [AiChatMessageInput!]!
   model: String!
 }
@@ -39,6 +44,7 @@ enum MintUnit {
 type Mutation {
   add_mint_contact(updateContactInput: UpdateContactInput!): UpdateContactOutput!
   add_mint_url(updateUrlInput: UpdateUrlInput!): UpdateMintUrlOutput!
+  ai_chat_abort(aiChatAbortInput: AiChatAbortInput!): OrchardAiChatStream!
   remove_mint_contact(updateContactInput: UpdateContactInput!): UpdateContactOutput!
   remove_mint_url(updateUrlInput: UpdateUrlInput!): UpdateMintUrlOutput!
   rotate_next_keyset(rotateNextKeysetInput: RotateNextKeysetInput!): RotateNextKeysetOutput!
@@ -59,6 +65,7 @@ type OrchardAiChatChunk {
   done_reason: String
   eval_count: Float
   eval_duration: Float
+  id: String!
   load_duration: Float
   message: OrchardAiChatMessage!
   model: String!
@@ -70,6 +77,10 @@ type OrchardAiChatChunk {
 type OrchardAiChatMessage {
   content: String!
   role: String!
+}
+
+type OrchardAiChatStream {
+  id: String!
 }
 
 type OrchardAiModel {

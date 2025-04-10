@@ -1,13 +1,13 @@
 /* Core Dependencies */
 import { Logger } from '@nestjs/common';
-import { Resolver, Subscription, Args } from '@nestjs/graphql';
+import { Resolver, Subscription, Args, Mutation } from '@nestjs/graphql';
 import { OnModuleInit } from '@nestjs/common';
 /* Vendor Dependencies */
 import { PubSub } from 'graphql-subscriptions';
 /* Local Dependencies */
 import { AiChatService } from './aichat.service';
-import { OrchardAiChatChunk } from './aichat.model';
-import { AiChatInput } from './aichat.input';
+import { OrchardAiChatChunk, OrchardAiChatStream } from './aichat.model';
+import { AiChatInput, AiChatAbortInput } from './aichat.input';
 
 const pubSub = new PubSub();
 
@@ -30,8 +30,16 @@ export class AiChatResolver implements OnModuleInit {
     ai_chat(
         @Args('aiChatInput') aiChatInput: AiChatInput
     ) {
-        this.logger.debug(`SUBSCRIPTION { ai_chat }`);
+        this.logger.debug(`SUBSCRIPTION { ai_chat } for stream ${aiChatInput.id}`);
         this.aiChatService.streamChat(aiChatInput);
         return pubSub.asyncIterableIterator('ai_chat');
+    }
+
+    @Mutation(() => OrchardAiChatStream)
+    async ai_chat_abort(
+        @Args('aiChatAbortInput') aiChatAbortInput: AiChatAbortInput
+    ): Promise<OrchardAiChatStream> {
+        this.logger.debug(`MUTATION { ai_chat_abort } for stream ${aiChatAbortInput.id}`);
+        return this.aiChatService.abortStream(aiChatAbortInput.id);
     }
 }
