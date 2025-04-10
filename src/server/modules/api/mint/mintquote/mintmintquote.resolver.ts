@@ -7,8 +7,8 @@ import { MintUnit, MintQuoteStatus } from "@server/modules/cashu/cashu.enums";
 /* Local Dependencies */
 import { MintMintQuoteService } from "./mintmintquote.service";
 import { OrchardMintMintQuote } from "./mintmintquote.model";
-import { UpdateNut04Input, UpdateQuoteTtlInput, UpdateNut04QuoteInput } from "./mintmintquote.input";
-import { UpdateNut04Output, UpdateQuoteTtlOutput, UpdateNut04QuoteOutput } from "./mintmintquote.model";
+import { UpdateNut04Input, UpdateNut04QuoteInput } from "./mintmintquote.input";
+import { UpdateNut04Output, UpdateNut04QuoteOutput } from "./mintmintquote.model";
 
 @Resolver(() => [OrchardMintMintQuote])
 export class MintMintQuoteResolver {
@@ -35,12 +35,6 @@ export class MintMintQuoteResolver {
 	async update_mint_nut04(@Args('updateNut04Input') updateNut04Input: UpdateNut04Input): Promise<UpdateNut04Output> {
 		this.logger.debug(`MUTATION { update_mint_nut04 }`);
 		return await this.mintMintQuoteService.updateMintNut04(updateNut04Input);
-	}
-
-	@Mutation(() => UpdateQuoteTtlOutput)
-	async update_mint_quote_ttl(@Args('updateQuoteTtlInput') updateQuoteTtlInput: UpdateQuoteTtlInput): Promise<UpdateQuoteTtlOutput> {
-		this.logger.debug(`MUTATION { update_mint_quote_ttl }`);
-		return await this.mintMintQuoteService.updateMintQuoteTtl(updateQuoteTtlInput);
 	}
 
 	@Mutation(() => UpdateNut04QuoteOutput)

@@ -18,8 +18,13 @@ export type Scalars = {
   UnixTimestamp: { input: any; output: any; }
 };
 
+export type AiChatAbortInput = {
+  id: Scalars['String']['input'];
+};
+
 export type AiChatInput = {
   agent: Scalars['String']['input'];
+  id: Scalars['String']['input'];
   messages: Array<AiChatMessageInput>;
   model: Scalars['String']['input'];
 };
@@ -56,6 +61,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   add_mint_contact: UpdateContactOutput;
   add_mint_url: UpdateMintUrlOutput;
+  ai_chat_abort: OrchardAiChatStream;
   remove_mint_contact: UpdateContactOutput;
   remove_mint_url: UpdateMintUrlOutput;
   rotate_next_keyset: RotateNextKeysetOutput;
@@ -78,6 +84,11 @@ export type MutationAdd_Mint_ContactArgs = {
 
 export type MutationAdd_Mint_UrlArgs = {
   updateUrlInput: UpdateUrlInput;
+};
+
+
+export type MutationAi_Chat_AbortArgs = {
+  aiChatAbortInput: AiChatAbortInput;
 };
 
 
@@ -147,6 +158,7 @@ export type OrchardAiChatChunk = {
   done_reason?: Maybe<Scalars['String']['output']>;
   eval_count?: Maybe<Scalars['Float']['output']>;
   eval_duration?: Maybe<Scalars['Float']['output']>;
+  id: Scalars['String']['output'];
   load_duration?: Maybe<Scalars['Float']['output']>;
   message: OrchardAiChatMessage;
   model: Scalars['String']['output'];
@@ -159,6 +171,11 @@ export type OrchardAiChatMessage = {
   __typename?: 'OrchardAiChatMessage';
   content: Scalars['String']['output'];
   role: Scalars['String']['output'];
+};
+
+export type OrchardAiChatStream = {
+  __typename?: 'OrchardAiChatStream';
+  id: Scalars['String']['output'];
 };
 
 export type OrchardAiModel = {
