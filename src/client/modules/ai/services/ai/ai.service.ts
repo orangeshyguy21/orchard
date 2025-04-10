@@ -14,26 +14,27 @@ import { AI_CHAT_SUBSCRIPTION } from './ai.queries';
 	providedIn: 'root'
 })
 export class AiService {
-	private current_subscription_id: string | null = null;
+
+	public subscription_id: string | null = null;
 
 	constructor(
 		private apiService: ApiService
 	) {}
 
-	public stopChatGeneration(): void {
-		if (this.current_subscription_id) {
+	public unsubscribeFromAiChat(): void {
+		if (this.subscription_id) {
 			this.apiService.gql_socket.next({
-				id: this.current_subscription_id,
+				id: this.subscription_id,
 				type: 'stop'
 			});
-			this.current_subscription_id = null;
+			this.subscription_id = null;
 		}
 	}
 
 	public subscribeToAiChat(content: string|null): Observable<any> {
 		return new Observable(observer => {
 			const subscription_id = crypto.randomUUID();
-			this.current_subscription_id = subscription_id;
+			this.subscription_id = subscription_id;
 
 			// Setup socket subscription to handle responses
 			const socket_subscription = this.apiService.gql_socket.subscribe({
@@ -43,13 +44,13 @@ export class AiService {
 						observer.next(response.payload?.data.ai_chat);
 					} else if (response.type === 'complete') {
 						observer.complete();
-						this.current_subscription_id = null;
+						this.subscription_id = null;
 					}
 				},
 				error: (error) => {
 					console.error('Socket error:', error);
 					observer.error(error);
-					this.current_subscription_id = null;
+					this.subscription_id = null;
 				}
 			});
 
@@ -73,8 +74,7 @@ export class AiService {
 
 			// Return cleanup function
 			return () => {
-				console.log('UNSUBSCRIBING');
-				this.stopChatGeneration();
+				this.unsubscribeFromAiChat();
 				socket_subscription.unsubscribe();
 			};
 		}).pipe(

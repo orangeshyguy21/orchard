@@ -10,10 +10,9 @@
             [autogrow]="true"
         ></textarea>
         <button mat-icon-button>
-            <mat-icon class="mat-symbol-outline orc-outline-color">send</mat-icon>
+            <mat-icon class="mat-symbol-outline orc-outline-color">{{ aiService.subscription_id ? 'stop' : 'send' }}</mat-icon>
         </button>
     </form>
-   
 </div>
 
 
