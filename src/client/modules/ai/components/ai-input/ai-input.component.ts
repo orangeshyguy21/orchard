@@ -1,4 +1,8 @@
+/* Core Dependencies */
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { FormControl } from '@angular/forms';
+/* Application Dependencies */
+import { AiService } from '@client/modules/ai/services/ai/ai.service';
 
 @Component({
 	selector: 'orc-ai-input',
@@ -9,11 +13,25 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 })
 export class AiInputComponent {
 
-	constructor() {}
+	public content = new FormControl('');
+
+	constructor(
+		public aiService: AiService
+	) {}
 
 	public onSubmit(event?: any): void {
 		if( event ) event.preventDefault();
-		console.log(event);
+		this.startChat();
 	}
+
+	startChat() {
+		this.aiService.subscribeToAiChat(this.content.value).subscribe({
+			next: (message) => {
+				console.log('MESSAGE RECEIVED IN COMPONENT', message);
+			},
+			error: (error) => console.error('Chat error:', error)
+		});
+	}
+
 
 }

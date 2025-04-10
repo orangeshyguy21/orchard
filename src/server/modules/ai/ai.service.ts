@@ -10,6 +10,7 @@ import { AiModel, AiMessage, AiTool } from './ai.types';
 export class AiService {
 
     private base_url: string;
+    private chat_timeout: number = 60000;
 
 	constructor(
 		private configService: ConfigService,
@@ -30,7 +31,7 @@ export class AiService {
         return data.models;
     }
 
-    async streamChat(model: string, agent: string, messages: AiMessage[]) {
+    async streamChat(model: string, agent: string, messages: AiMessage[], signal?: AbortSignal) {
         // based on the agent, get the tools
         // and the system prompt
         const response = await this.fetchService.fetchWithProxy(
@@ -43,6 +44,7 @@ export class AiService {
                     messages: messages,
                     tools: [],
                 }),
+                signal: signal || AbortSignal.timeout(this.chat_timeout),
             },
         );
         return response.body;

@@ -28,11 +28,6 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 		sortSchema: true,
 		path: path,
 		installSubscriptionHandlers: true,
-		// subscriptions: {
-		// 	'graphql-ws': {
-		// 		path: path
-		// 	}
-		// },
 		resolvers: { 
 			UnixTimestamp: UnixTimestamp,
 			Timezone: Timezone,

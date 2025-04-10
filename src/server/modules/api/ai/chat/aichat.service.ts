@@ -16,7 +16,8 @@ export class AiChatService {
 
 	private readonly logger = new Logger(AiChatService.name);
 	private event_emitter = new EventEmitter();
-	
+
+
 	constructor(
 		private aiService: AiService,
 		private errorService: ErrorService,

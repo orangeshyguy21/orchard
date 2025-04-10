@@ -3,31 +3,36 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 /* Vendor Dependencies */
 import { map, Observable } from 'rxjs';
+import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 /* Shared Dependencies */
 import { OrchardStatus } from '@shared/generated.types';
 /* Application Dependencies */
 import { api, getApiQuery } from '@client/modules/api/helpers/api.helpers';
-import { GQLResponse, StatusResponse } from '@client/modules/api/types/api.types';
+import { OrchardRes, StatusResponse } from '@client/modules/api/types/api.types';
+/* Local Dependencies */
+import { STATUS_QUERY } from './api.queries';
 
 @Injectable({
-  providedIn: 'root'
+	providedIn: 'root'
 })
 export class ApiService {
 
-  constructor(
-    public http: HttpClient,
-  ) { }
+	public gql_socket: WebSocketSubject<any>;
 
-  public getStatus(): Observable<OrchardStatus> {
-    const query = getApiQuery(`{
-      status {
-        online
-      }
-    }`);
+	constructor(
+		public http: HttpClient,
+	) {
+		this.gql_socket = webSocket({
+			url: `ws://${window.location.host}${api}`,
+			protocol: 'graphql-ws'
+		})
+	}
 
-    return this.http.post<GQLResponse<StatusResponse>>(api, query)
-      .pipe(
-        map((response) => response.data.status)
-      );
-  }
+	public getStatus(): Observable<OrchardStatus> {
+		const query = getApiQuery(STATUS_QUERY);
+		return this.http.post<OrchardRes<StatusResponse>>(api, query)
+			.pipe(
+				map((response) => response.data.status)
+			);
+	}
 }
