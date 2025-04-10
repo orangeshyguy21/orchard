@@ -21,13 +21,13 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 	registerEnumType( MeltQuoteStatus, { name: 'MeltQuoteStatus' });
 	registerEnumType( MintAnalyticsInterval, { name: 'MintAnalyticsInterval' });
 
+	const path = configService.get('server.path');
+	
 	return {
 		autoSchemaFile: configService.get('mode.production') ? true : 'schema.gql',
 		sortSchema: true,
-		path: configService.get('server.path'),
-		subscriptions: {
-			'graphql-ws': true
-		},
+		path: path,
+		installSubscriptionHandlers: true,
 		resolvers: { 
 			UnixTimestamp: UnixTimestamp,
 			Timezone: Timezone,

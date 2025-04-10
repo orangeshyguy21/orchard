@@ -8,7 +8,7 @@ import { ErrorService } from '@server/modules/error/error.service';
 import { OrchardErrorCode } from '@server/modules/error/error.types';
 import { OrchardApiError } from '@server/modules/graphql/classes/orchard-error.class';
 /* Local Dependencies */
-import { OrchardBitcoinBlockCount } from './blockcount.model';
+import { OrchardBitcoinBlockCount } from './btcblockcount.model';
 
 @Injectable()
 export class BitcoinBlockCountService implements OnModuleDestroy {

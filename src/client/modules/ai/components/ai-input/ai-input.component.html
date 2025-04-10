@@ -1,4 +1,25 @@
-
-<div class="ai-input-container p-l-1">
-    <div class="font-size-s orc-outline-color">message agent...</div>
+<div class="ai-input-container">
+    <form 
+        class="ai-input-form"
+        (keydown.enter)="onSubmit($event)"
+        (ngSubmit)="onSubmit()">
+        <textarea 
+            rows="1" 
+            matInput 
+            [placeholder]="placeholder" 
+            class="ai-input"
+            [class.ai-input-empty]="!content.value"
+            [formControl]="content"
+            [style.fontSize]="'smaller'"
+            [autogrow]="true"
+        ></textarea>
+        <button mat-icon-button type="button" (click)="onAction()">
+            <mat-icon 
+                class="ai-input-action"
+                [class.ai-active]="action_available"
+                [class.mat-symbol-outline]="!action_available"
+                [@iconAnimation]="aiService.active"
+            >{{ aiService.active ? 'stop' : 'send' }}</mat-icon>
+        </button>
+    </form>
 </div>

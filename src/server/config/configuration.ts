@@ -33,11 +33,16 @@ export const config = (): Config => {
 		rpc_ca : process.env.MINT_RPC_CA,
 	};
 
+	const ai = {
+		api : process.env.AI_API,
+	};
+
 	const config = {
 		mode,
 		server,
 		bitcoin,
 		cashu,
+		ai,
 	};
 
 	return config;

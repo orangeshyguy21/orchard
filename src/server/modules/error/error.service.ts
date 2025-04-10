@@ -8,17 +8,17 @@ export class ErrorService {
 
 	constructor() {}
 
-        public resolveError({
-            logger,
-            error,
-            errord,
-            msg,
-        }: {
-            logger: Logger,
-            error: any,
-            errord: OrchardErrorCode,
-            msg: string,
-        }) {
+    public resolveError({
+        logger,
+        error,
+        errord,
+        msg,
+    }: {
+        logger: Logger,
+        error: any,
+        errord: OrchardErrorCode,
+        msg: string,
+    }) {
         logger.error(msg);
         logger.debug(`${msg}: ${error}`);
         let error_code = errord;
