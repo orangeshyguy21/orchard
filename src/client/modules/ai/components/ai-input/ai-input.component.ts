@@ -17,8 +17,18 @@ import { OrchardAiChatChunk } from '@shared/generated.types';
 })
 export class AiInputComponent implements OnDestroy {
 
-	public content = new FormControl('');
 	private chat_subscription: Subscription | null = null;
+
+	public content = new FormControl('');
+
+	public get placeholder(): string {
+		return this.aiService.active ? 'Generating...' : 'Message agent...';
+	}
+	public get action_available(): boolean {
+		if( this.aiService.active ) return true;
+		if( this.content.value ) return true;
+		return false;
+	}
 
 	constructor(
 		public aiService: AiService,
@@ -31,9 +41,9 @@ export class AiInputComponent implements OnDestroy {
 	}
 
 	private startChat() {
+		if( !this.content.value ) return;
 		this.chat_subscription = this.aiService.subscribeToAiChat(this.content.value).subscribe({
 			next: (ai_chat: OrchardAiChatChunk) => {
-				console.log('MESSAGE RECEIVED IN COMPONENT', ai_chat);
 				if (ai_chat.done) this.stopChat();
 			},
 			error: (error) => {
@@ -41,6 +51,7 @@ export class AiInputComponent implements OnDestroy {
 				this.stopChat();
 			}
 		});
+		this.content.reset();
 	}
 
 	public stopChat(): void {
@@ -49,6 +60,10 @@ export class AiInputComponent implements OnDestroy {
 		this.chat_subscription.unsubscribe();
 		this.chat_subscription = null;
 		this.cdr.detectChanges();
+	}
+
+	public onAction(): void {
+		this.aiService.active ? this.stopChat() : this.startChat();
 	}
 
 	ngOnDestroy(): void {

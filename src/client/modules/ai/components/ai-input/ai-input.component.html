@@ -1,66 +1,24 @@
 <div class="ai-input-container">
-    <form class="flex flex-row flex-items-center w-full" (keydown.enter)="onSubmit($event)" (ngSubmit)="onSubmit()">
+    <form 
+        class="ai-input-form"
+        (keydown.enter)="onSubmit($event)"
+        (ngSubmit)="onSubmit()">
         <textarea 
             rows="1" 
             matInput 
-            placeholder="Message agent..." 
-            class="transparent-input flex-grow"
+            [placeholder]="placeholder" 
+            class="ai-input"
+            [class.ai-input-empty]="!content.value"
             [formControl]="content"
             [style.fontSize]="'smaller'"
             [autogrow]="true"
         ></textarea>
-        <button mat-icon-button>
-            <mat-icon class="mat-symbol-outline orc-outline-color">{{ aiService.subscription_id ? 'stop' : 'send' }}</mat-icon>
+        <button mat-icon-button type="button" (click)="onAction()">
+            <mat-icon 
+                class="ai-input-action"
+                [class.ai-active]="action_available"
+                [class.mat-symbol-outline]="!action_available"
+            >{{ aiService.active ? 'stop' : 'send' }}</mat-icon>
         </button>
     </form>
 </div>
-
-
-<!-- 
-<div class="chat-input-wrapper">
-    <form class="chat-input-form" [formGroup]="chat_input_form" #trigger_form="ngForm" (keydown.enter)="onSubmit($event)" (ngSubmit)="onSubmit()">
-        <mat-form-field class="chat-input-formfield chat-input-text" appearance="outline">
-            <mat-label>Send a message</mat-label>
-            <textarea 
-                #textarea
-                matInput
-                rows="1" 
-                placeholder="@ to select a field, / to select an agent profile"
-                formControlName="content"
-                [matAutocomplete]="auto"
-                [matAutocompleteDisabled]="!(textarea.value && textarea.value.length>0 && filtered_entity_count>0)"
-                [autogrow]="true"
-                (paste)="onPaste($event)"
-                (keyup)="onKeyUp($event)"
-                (click)="onTextareaClick($event)">
-            </textarea>
-            <mat-autocomplete #auto="matAutocomplete" [autoActiveFirstOption]="true" (optionSelected)="selectOption($event)">
-                <div [ngSwitch]="autocomplete_mode">
-                    <div *ngSwitchCase="'column'">
-                        <mat-option *ngFor="let column of filterted_columns | async" [value]="column.textarea_value" class="option-dataset-container" [attr.data-option]="column | json">
-                            <div class="option-schema-column-container">
-                                <div class="option-schema-column-source">
-                                    <app-dataset-icon 
-                                        [source_class]="column.source_class"
-                                        [source_type]="column.source_type" 
-                                        height="18">
-                                    </app-dataset-icon>
-                                </div>
-                                <div class="option-schema-column-name" [innerHTML]="column.name | autocompleteHighlight: column.to_highlight">{{ column.name }}</div>
-                            </div>
-                        </mat-option>
-                    </div>
-                    <div *ngSwitchCase="'agent'">
-                        <mat-option *ngFor="let agent of filtered_agents | async" [value]="agent.textarea_value" class="option-dataset-container" [attr.data-option]="agent | json">
-                            <div class="option-dataset-tablename">{{ agent.title }}</div>
-                            <div class="option-dataset-desc">{{ agent.prompt }}</div>
-                        </mat-option>
-                    </div>
-                </div>
-            </mat-autocomplete>
-        </mat-form-field>
-        <button class="chat-input-submit" mat-icon-button [color]="stream_open ? 'default' :  'primary'" [class.suspended]="stream_open">
-            <mat-icon>send</mat-icon>
-        </button>
-    </form>
-</div> -->

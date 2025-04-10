@@ -38,7 +38,9 @@
 }
 
 // Orchard Text Colors
-
+.orc-on-surface-color {
+    color: var(--mat-sys-on-surface);
+}
 .orc-on-primary-color {
     color: var(--mat-sys-on-primary);
 }

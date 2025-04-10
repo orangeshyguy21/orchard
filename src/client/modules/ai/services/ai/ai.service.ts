@@ -17,6 +17,8 @@ export class AiService {
 
 	public subscription_id: string | null = null;
 
+	public get active(): boolean { return !!this.subscription_id; }
+
 	constructor(
 		private apiService: ApiService
 	) {}
@@ -36,10 +38,8 @@ export class AiService {
 			const subscription_id = crypto.randomUUID();
 			this.subscription_id = subscription_id;
 
-			// Setup socket subscription to handle responses
 			const socket_subscription = this.apiService.gql_socket.subscribe({
 				next: (response: OrchardWsRes<AiChatResponse>) => {
-					console.log('RESPONSE', response);
 					if (response.type === 'data') {
 						observer.next(response.payload?.data.ai_chat);
 					} else if (response.type === 'complete') {
@@ -54,7 +54,6 @@ export class AiService {
 				}
 			});
 
-			// Initialize connection and start subscription
 			this.apiService.gql_socket.next({ type: 'connection_init', payload: {} });
 			this.apiService.gql_socket.next({
 				id: subscription_id,
@@ -78,7 +77,6 @@ export class AiService {
 				socket_subscription.unsubscribe();
 			};
 		}).pipe(
-			retry(3),
 			catchError(error => {
 				console.error('Subscription error:', error);
 				throw error;
