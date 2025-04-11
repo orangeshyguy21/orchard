@@ -1,0 +1,27 @@
+<div class="mint-info-form-icon-container">
+    <div class="mint-info-id-card">
+        <div class="mint-icon-display" (click)="onIconClick()">
+            <img [src]="display_icon" alt="Mint Icon" class="h-8 cursor-pointer">
+        </div>
+        <div class="flex flex-grow flex-column gap-2">
+            <ng-content></ng-content>
+        </div>
+    </div>
+
+    @if (show_url_input) {
+        <div>
+            <form>
+                <mat-form-field class="w-full">
+                    <mat-label>Icon Url</mat-label>
+                    <textarea type="url" matInput [formControl]="form_icon_url" placeholder="Ex. https://example.com/icon.png"></textarea>
+                    <!-- @if (iconUrlFormControl.hasError('url') && !iconUrlFormControl.hasError('required')) {
+                        <mat-error>Please enter a valid URL</mat-error>
+                    }
+                    @if (emailFormControl.hasError('required')) {
+                        <mat-error>Email is <strong>required</strong></mat-error>
+                    } -->
+                </mat-form-field>
+              </form>              
+        </div>
+    }
+</div>

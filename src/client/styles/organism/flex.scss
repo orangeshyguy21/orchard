@@ -1,0 +1,7 @@
+@use '@styles/molecule/molecule';
+
+.flex-1{
+    @extend .flex-grow;
+    flex-shrink: 1;
+    flex-basis: 0;
+}

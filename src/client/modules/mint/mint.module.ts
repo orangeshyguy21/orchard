@@ -38,6 +38,9 @@ import { MintAnalyticChartComponent } from './components/mint-analytic-chart/min
 import { MintKeysetComponent } from './components/mint-keyset/mint-keyset.component';
 import { MintIconComponent } from './components/mint-icon/mint-icon.component';
 import { MintNameComponent } from './components/mint-name/mint-name.component';
+import { MintInfoFormIconComponent } from './components/mint-info-form-icon/mint-info-form-icon.component';
+import { MintInfoFormNameComponent } from './components/mint-info-form-name/mint-info-form-name.component';
+import { MintInfoFormDescriptionComponent } from './components/mint-info-form-description/mint-info-form-description.component';
 
 @NgModule({
 	declarations: [
@@ -54,6 +57,9 @@ import { MintNameComponent } from './components/mint-name/mint-name.component';
 		MintKeysetComponent,
 		MintIconComponent,
   		MintNameComponent,
+    	MintInfoFormIconComponent,
+     MintInfoFormNameComponent,
+     MintInfoFormDescriptionComponent,
 	],
 	imports: [
 		CommonModule,
