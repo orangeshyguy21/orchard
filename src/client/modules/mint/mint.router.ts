@@ -53,6 +53,20 @@ const mintKeysetsResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, stat
 	);
 };
 
+const mintInfoRpcResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+	const mintService = inject(MintService);
+	const router = inject(Router);
+	const errorService = inject(ErrorService);
+	return mintService.getMintInfo().pipe(
+		catchError(error => {
+			errorService.resolve_errors.push(error);
+			router.navigate(['mint', 'error'], { state: { error, target: state.url } });
+            return of([]);
+		})
+	);
+};
+
+
 const routes: Routes = [
 	{
 		path: '',
@@ -79,6 +93,9 @@ const routes: Routes = [
 				path: 'info',
 				component: MintSubsectionInfoComponent,
 				title: 'Orchard | Mint Info',
+				resolve: {
+					mint_info_rpc: mintInfoRpcResolver,
+				},
 				data: {
 					section: 'mint',
 					sub_section: 'info'

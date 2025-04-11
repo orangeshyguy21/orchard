@@ -47,7 +47,7 @@ export class MintMintQuoteService {
 			return updateNut04Input;
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error,
-				errord: OrchardErrorCode.MintRpcError,
+				errord: OrchardErrorCode.MintRpcActionError,
 				msg: 'Error updating mint nut04',
 			});
 			throw new OrchardApiError(error_code);
@@ -59,7 +59,7 @@ export class MintMintQuoteService {
 			return await this.cashuMintRpcService.updateNut04Quote(updateNut04QuoteInput);
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error,
-				errord: OrchardErrorCode.MintRpcError,
+				errord: OrchardErrorCode.MintRpcActionError,
 				msg: 'Error updating mint nut04 quote',
 			});
 			throw new OrchardApiError(error_code);

@@ -24,7 +24,7 @@ export class MintQuoteService {
 			return await this.cashuMintRpcService.getQuoteTtl();
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error,
-				errord: OrchardErrorCode.MintRpcError,
+				errord: OrchardErrorCode.MintRpcActionError,
 				msg: 'Error getting mint quote ttl from mint rpc',
 			});
 			throw new OrchardApiError(error_code);
@@ -37,7 +37,7 @@ export class MintQuoteService {
 			return updateQuoteTtlInput;
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error,
-				errord: OrchardErrorCode.MintRpcError,
+				errord: OrchardErrorCode.MintRpcActionError,
 				msg: 'Error updating mint quote ttl',
 			});
 			throw new OrchardApiError(error_code);

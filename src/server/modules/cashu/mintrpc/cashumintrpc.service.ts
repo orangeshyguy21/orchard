@@ -30,15 +30,14 @@ export class CashuMintRpcService implements OnModuleInit {
     }
 
     private makeGrpcRequest(method: string, request: any): Promise<any> {
-        if (!this.grpc_client) throw OrchardErrorCode.MintRpcError;
+        if (!this.grpc_client) throw OrchardErrorCode.MintRpcConnectionError;
         
         return new Promise((resolve, reject) => {
-            if (!(method in this.grpc_client)) {
-                reject(OrchardErrorCode.MintSupportError);
-                return;
-            }
-            
+            if (!(method in this.grpc_client)) reject(OrchardErrorCode.MintSupportError);
             this.grpc_client[method](request, (error: Error | null, response: any) => {
+                console.log('gRPC response: ', response);
+                console.log('gRPC error: ', error);
+                if (error && error?.message?.includes('14 UNAVAILABLE')) reject(OrchardErrorCode.MintRpcConnectionError);
                 if (error) reject(error);
                 resolve(response);
             });
@@ -159,3 +158,21 @@ export class CashuMintRpcService implements OnModuleInit {
         return this.makeGrpcRequest('RotateNextKeyset', request);
     }
 }
+
+
+// // ... existing code ...
+// this.grpc_client[method](request, (error: Error | null, response: any) => {
+//     console.log('gRPC response: ', response);
+//     console.log('gRPC error: ', error);
+    
+//     if (error) {
+//         // Check specifically for UNAVAILABLE error (code 14)
+//         if (error.message.includes('14 UNAVAILABLE')) {
+//             reject(OrchardErrorCode.MintRpcConnectionError);
+//             return;
+//         }
+//         reject(error);
+//     }
+//     resolve(response);
+// });
+// // ... existing code ...

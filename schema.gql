@@ -152,7 +152,7 @@ type OrchardMintInfo {
 
 type OrchardMintInfoRpc {
   contact: [OrchardContact!]!
-  description: String!
+  description: String
   description_long: String
   icon_url: String
   motd: String

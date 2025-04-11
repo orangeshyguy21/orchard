@@ -8,7 +8,7 @@
                 @switch (error.code) {
                     @case (40001) {
                         <h3>MINT PUBLIC API ERROR</h3>
-                        <p>Orchard was unable to access the mint public API</p>
+                        <p>Orchard was unable to connect to the public mint API</p>
                     }
                     @case (40002) {
                         <h3>MINT DATABASE ERROR</h3>
@@ -17,6 +17,10 @@
                     @case (40003) {
                         <h3>MINT DATABASE SELECT ERROR</h3>
                         <p>Orchard was unable to retrieve data from the mint database</p>
+                    }
+                    @case (40005) {
+                        <h3>MINT RPC ERROR</h3>
+                        <p>Orchard was unable to make an RPC connection to the mint</p>
                     }
                     @default {
                         <h3>UNKNOWN ERROR</h3>

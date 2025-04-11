@@ -11,7 +11,7 @@ export class MintInfo implements OrchardMintInfo {
 	icon_url: string | null;
 	urls: string[] | null;
 	time: number;
-	nuts: OrchardNuts
+	nuts: OrchardNuts;
 
 	constructor(omi: OrchardMintInfo) {
 		this.name = omi.name;

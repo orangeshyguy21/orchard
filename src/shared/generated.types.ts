@@ -48,6 +48,12 @@ export enum MintQuoteStatus {
   Unpaid = 'UNPAID'
 }
 
+export type MintQuoteTtlOutput = {
+  __typename?: 'MintQuoteTtlOutput';
+  melt_ttl?: Maybe<Scalars['Int']['output']>;
+  mint_ttl?: Maybe<Scalars['Int']['output']>;
+};
+
 export enum MintUnit {
   Auth = 'auth',
   Btc = 'btc',
@@ -72,7 +78,7 @@ export type Mutation = {
   update_mint_nut04: UpdateNut04Output;
   update_mint_nut04_quote: UpdateNut04QuoteOutput;
   update_mint_nut05: UpdateNut05Output;
-  update_mint_quote_ttl: UpdateQuoteTtlOutput;
+  update_mint_quote_ttl: MintQuoteTtlOutput;
   update_mint_short_description: UpdateMintDescriptionOutput;
 };
 
@@ -252,7 +258,7 @@ export type OrchardMintInfo = {
 export type OrchardMintInfoRpc = {
   __typename?: 'OrchardMintInfoRpc';
   contact: Array<OrchardContact>;
-  description: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
   description_long?: Maybe<Scalars['String']['output']>;
   icon_url?: Maybe<Scalars['String']['output']>;
   motd?: Maybe<Scalars['String']['output']>;
@@ -429,6 +435,7 @@ export type Query = {
   mint_promises: Array<OrchardMintPromise>;
   mint_proofs_pending: Array<OrchardMintProof>;
   mint_proofs_used: Array<OrchardMintProof>;
+  mint_quote_ttl: MintQuoteTtlOutput;
   status: OrchardStatus;
 };
 
@@ -610,12 +617,6 @@ export type UpdateNut05Output = {
 export type UpdateQuoteTtlInput = {
   melt_ttl?: InputMaybe<Scalars['Int']['input']>;
   mint_ttl?: InputMaybe<Scalars['Int']['input']>;
-};
-
-export type UpdateQuoteTtlOutput = {
-  __typename?: 'UpdateQuoteTtlOutput';
-  melt_ttl?: Maybe<Scalars['Int']['output']>;
-  mint_ttl?: Maybe<Scalars['Int']['output']>;
 };
 
 export type UpdateUrlInput = {

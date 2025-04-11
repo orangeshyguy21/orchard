@@ -1,7 +1,11 @@
-import { OrchardMintBalance, OrchardMintInfo, OrchardMintKeyset, OrchardMintPromise, OrchardMintAnalytics, MintUnit, MintAnalyticsInterval } from "@shared/generated.types";
+import { OrchardMintBalance, OrchardMintInfo, OrchardMintKeyset, OrchardMintPromise, OrchardMintAnalytics, MintUnit, MintAnalyticsInterval, OrchardMintInfoRpc } from "@shared/generated.types";
 
 export type MintInfoResponse = {
   	mint_info: OrchardMintInfo;
+}
+
+export type MintInfoRpcResponse = {
+	mint_info_rpc: OrchardMintInfoRpc;
 }
 
 export type MintBalancesResponse = {

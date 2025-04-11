@@ -58,7 +58,7 @@ export class MintInfoService {
 			return new OrchardMintInfoRpc(cashu_info);
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error,
-				errord: OrchardErrorCode.MintRpcError,
+				errord: OrchardErrorCode.MintRpcActionError,
 				msg: 'Error getting mint information from mint rpc',
 			});
 			throw new OrchardApiError(error_code);
@@ -71,7 +71,7 @@ export class MintInfoService {
 			return updateMintNameInput;
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error,
-				errord: OrchardErrorCode.MintRpcError,
+				errord: OrchardErrorCode.MintRpcActionError,
 				msg: 'Error updating mint name',
 			});
 			throw new OrchardApiError(error_code);
@@ -84,7 +84,7 @@ export class MintInfoService {
 			return updateMintIconInput;
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error,
-				errord: OrchardErrorCode.MintRpcError,
+				errord: OrchardErrorCode.MintRpcActionError,
 				msg: 'Error updating mint icon',
 			});
 			throw new OrchardApiError(error_code);
@@ -97,7 +97,7 @@ export class MintInfoService {
 			return updateMintDescriptionInput;
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error,
-				errord: OrchardErrorCode.MintRpcError,
+				errord: OrchardErrorCode.MintRpcActionError,
 				msg: 'Error updating mint short description',
 			});
 			throw new OrchardApiError(error_code);
@@ -110,7 +110,7 @@ export class MintInfoService {
 			return updateMintDescriptionInput;
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error,
-				errord: OrchardErrorCode.MintRpcError,
+				errord: OrchardErrorCode.MintRpcActionError,
 				msg: 'Error updating mint long description',
 			});
 			throw new OrchardApiError(error_code);
@@ -123,7 +123,7 @@ export class MintInfoService {
 			return updateMotdInput;
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error,
-				errord: OrchardErrorCode.MintRpcError,
+				errord: OrchardErrorCode.MintRpcActionError,
 				msg: 'Error updating mint motd',
 			});
 			throw new OrchardApiError(error_code);
@@ -136,7 +136,7 @@ export class MintInfoService {
 			return updateUrlInput;
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error,
-				errord: OrchardErrorCode.MintRpcError,
+				errord: OrchardErrorCode.MintRpcActionError,
 				msg: 'Error adding mint url',
 			});
 			throw new OrchardApiError(error_code);
@@ -149,7 +149,7 @@ export class MintInfoService {
 			return updateUrlInput;
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error,
-				errord: OrchardErrorCode.MintRpcError,
+				errord: OrchardErrorCode.MintRpcActionError,
 				msg: 'Error removing mint url',
 			});
 			throw new OrchardApiError(error_code);
@@ -162,7 +162,7 @@ export class MintInfoService {
 			return updateContactInput;
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error,
-				errord: OrchardErrorCode.MintRpcError,
+				errord: OrchardErrorCode.MintRpcActionError,
 				msg: 'Error adding mint contact',
 			});
 			throw new OrchardApiError(error_code);
@@ -175,7 +175,7 @@ export class MintInfoService {
 			return updateContactInput;
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error,
-				errord: OrchardErrorCode.MintRpcError,
+				errord: OrchardErrorCode.MintRpcActionError,
 				msg: 'Error removing mint contact',
 			});
 			throw new OrchardApiError(error_code);
