@@ -23,7 +23,7 @@ import { LocalModule } from '@client/modules/local/local.module';
 import { GraphicModule } from '@client/modules/graphic/graphic.module';
 import { ErrorModule } from '@client/modules/error/error.module';
 /* Local Dependencies */
-import { MintRoutingModule } from './mint.router';
+import { MintAppRoutingModule } from './mint-app.router';
 /* Native Dependencies */
 import { MintSectionComponent } from './components/mint-section/mint-section.component';
 import { MintSubsectionErrorComponent } from './components/mint-subsection-error/mint-subsection-error.component';
@@ -64,7 +64,7 @@ import { MintInfoFormDescriptionComponent } from './components/mint-info-form-de
 	imports: [
 		CommonModule,
 		ReactiveFormsModule,
-		MintRoutingModule,
+		MintAppRoutingModule,
 		MatIconModule,
 		MatButtonModule,
 		MatTableModule,
@@ -85,4 +85,4 @@ import { MintInfoFormDescriptionComponent } from './components/mint-info-form-de
 		ErrorModule,
 	],
 })
-export class MintModule { }
+export class MintAppModule { }

@@ -3,15 +3,15 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 /* Local Dependencies */
-import { EcashSectionComponent } from './components/ecash-section/ecash-section.component';
+import { BitcoinSectionComponent } from './components/bitcoin-section/bitcoin-section.component';
 
 const routes: Routes = [
 	{
 		path: '',
-		component: EcashSectionComponent,
-		title: 'Orchard | Ecash',
+		component: BitcoinSectionComponent,
+		title: 'Orchard | Bitcoin',
 		data: {
-			section: 'ecash',
+			section: 'bitcoin',
 			sub_section: 'dashboard'
 		}
 	}
@@ -25,16 +25,16 @@ const routes: Routes = [
 		RouterModule,
 	],
 })
-export class EcashRoutingModule { }
+export class BitcoinRoutingModule { }
 
 
 @NgModule({
 	declarations: [
-		EcashSectionComponent
+		BitcoinSectionComponent
 	],
 	imports: [
 		CommonModule,
-		EcashRoutingModule,
+		BitcoinRoutingModule,
 	],
 })
-export class EcashModule { }
+export class BitcoinAppModule { }

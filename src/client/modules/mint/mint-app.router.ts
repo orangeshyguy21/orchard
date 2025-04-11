@@ -132,4 +132,4 @@ const routes: Routes = [
 		RouterModule,
 	],
 })
-export class MintRoutingModule { }
+export class MintAppRoutingModule { }
