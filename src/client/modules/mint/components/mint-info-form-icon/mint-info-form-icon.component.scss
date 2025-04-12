@@ -2,6 +2,6 @@
 
 
 .mint-info-id-card{
-    @extend .flex;
-    @extend .flex-gap-1;
+    @extend %flex;
+    @extend %flex-gap-1;
 }

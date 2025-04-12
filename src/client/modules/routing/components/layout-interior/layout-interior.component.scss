@@ -1,22 +1,21 @@
 @use '@styles/molecule/molecule';
 
 .interior-container{
-    @extend .flex;
-    @extend .flex-row;
-    @extend .h-full;
-    @extend .w-full;
+    @extend %flex;
+    @extend %flex-row;
+    @extend %h-full;
+    @extend %w-full;
 }
 
 .interior-section-container{
-    @extend .flex-grow;
-    @extend .flex;
-    @extend .flex-column;
-    @extend .h-dvh;
+    @extend %flex-grow;
+    @extend %flex;
+    @extend %flex-column;
+    @extend %h-dvh;
 }
 
 .interior-router-outlet-container{
-    @extend .flex-grow;
-    @extend .flex;
-    @extend .flex-column;
-    // @extend .overflow-y-auto;
+    @extend %flex-grow;
+    @extend %flex;
+    @extend %flex-column;
 }

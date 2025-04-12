@@ -1,4 +1,3 @@
-@use './token';
 @use './theme';
 @use './position';
 @use './typetext';
@@ -6,3 +5,13 @@
 @use './animations';
 @use './pseudo';
 @use './border';
+
+$molecule-styles: (
+    'theme': theme.$theme-styles,
+    'position': position.$position-styles,
+    'typetext': typetext.$typetext-styles,
+    'properties': properties.$properties-styles,
+    'animations': animations.$animations-styles,
+    'pseudo': pseudo.$pseudo-styles,
+    'border': border.$border-styles,
+);

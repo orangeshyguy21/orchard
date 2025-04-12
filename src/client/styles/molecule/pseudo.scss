@@ -1,3 +1,14 @@
-.pseudo-element{
-    content: '';
+@use 'sass:map';
+
+$pseudo-styles: (
+    'pseudo-element': (
+        property: content,
+        value: ''
+    )
+);
+
+@each $name, $style in $pseudo-styles {
+    %#{$name} {
+        #{map.get($style, 'property')}: map.get($style, 'value');
+    }
 }

@@ -1,7 +1,7 @@
 @use '@styles/molecule/molecule';
 
 :host {
-    @extend .flex;
-    @extend .flex-column;
-    @extend .flex-grow;
+    @extend %flex;
+    @extend %flex-column;
+    @extend %flex-grow;
 }

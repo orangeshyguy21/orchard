@@ -1,6 +1,17 @@
+@use 'sass:map';
 /* Base Styles */
 @use '@styles/atom/atom';
 /* Building Blocks */
 @use '@styles/molecule/molecule';
+/* Classes using only building blocks */
+@use '@styles/nucleus/nucleus';
 /* Complex Layouts */
 @use '@styles/organism/organism';
+
+@each $name, $style in molecule.$molecule-styles {
+    @each $name, $style in $style {
+        .#{$name} {
+            #{map.get($style, 'property')}: map.get($style, 'value');
+        }
+    }
+}

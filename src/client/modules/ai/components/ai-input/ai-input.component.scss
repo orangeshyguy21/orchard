@@ -1,14 +1,14 @@
 @use '@styles/molecule/molecule';
 
 :host {
-    @extend .flex-grow;
+    @extend %flex-grow;
 }
 
 .ai-input-form{
-    @extend .flex;
-    @extend .flex-row;
-    @extend .flex-items-center;
-    @extend .w-full;
+    @extend %flex;
+    @extend %flex-row;
+    @extend %flex-items-center;
+    @extend %w-full;
 }
 
 .ai-input {
@@ -19,23 +19,23 @@
     width: 100%;
     font-family: inherit;
     font-size: inherit;
-    @extend .font-size-s;
-    @extend .flex-grow;
+    @extend %font-size-s;
+    @extend %flex-grow;
 }
 
 .ai-input-action{
-    @extend .trans-color-fast;
-    @extend .orc-outline-color;
+    @extend %trans-color-fast;
+    @extend %orc-outline-color;
 }
 
 .ai-input-empty{
     &.ai-input {
-        @extend .orc-outline-color;
+        @extend %orc-outline-color;
     }
 }
 
 .ai-active{
     &.ai-input-action{
-        @extend .orc-on-surface-color;
+        @extend %orc-on-surface-color;
     }
 }

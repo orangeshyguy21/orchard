@@ -1,7 +1,6 @@
 @use '@styles/molecule/molecule';
 
-
 .mint-qrcode-dialog-title{
-    @extend .flex;
-    @extend .flex-justify-between;
+    @extend %flex;
+    @extend %flex-justify-between;
 }

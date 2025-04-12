@@ -5,30 +5,30 @@
 }
 
 .mint-icon-placeholder{
-    @extend .h-2;
-    @extend .w-2;
-    @extend .flex;
-    @extend .flex-items-center;
-    @extend .flex-justify-center;
-    @extend .orc-corner-full;
-    @extend .border;
-    @extend .border-dashed;
-    @extend .orc-outline-border;
-    @extend .trans-bg-fast;
-    @extend .cursor-pointer;
+    @extend %h-2;
+    @extend %w-2;
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-justify-center;
+    @extend %orc-corner-full;
+    @extend %border;
+    @extend %border-dashed;
+    @extend %orc-outline-border;
+    @extend %trans-bg-fast;
+    @extend %cursor-pointer;
 
     &:hover{
-        @extend .orc-surface-container-high-bg;
+        @extend %orc-surface-container-high-bg;
     }
 }
 
 .mint-icon-error{
-    @extend .h-2;
-    @extend .w-2;
-    @extend .flex;
-    @extend .flex-items-center;
-    @extend .flex-justify-center;
-    @extend .orc-corner-full;
+    @extend %h-2;
+    @extend %w-2;
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-justify-center;
+    @extend %orc-corner-full;
     // color: rgba(orange, 0.75);
     // background-color: rgba(orange, 0.25);
 
@@ -38,6 +38,6 @@
     // @extend .orc-on-error-color;
 
     // @extend .orc-error-color;
-    @extend .orc-on-error-container-color;
-    @extend .orc-on-error-bg;
+    @extend %orc-on-error-container-color;
+    @extend %orc-on-error-bg;
 }

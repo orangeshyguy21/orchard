@@ -1,253 +1,282 @@
-/* Position Definitions */
-.relative{
-    position: relative;
-}
-.absolute{
-    position: absolute;
-}
+@use 'sass:map';
 
+$position-styles: (
+    'relative': (
+        property: position,
+        value: relative
+    ),
+    'absolute': (
+        property: position,
+        value: absolute
+    ),
+    'flex': (
+        property: display,
+        value: flex
+    ),
+    'flex-row': (
+        property: flex-direction,
+        value: row
+    ),
+    'flex-column': (
+        property: flex-direction,
+        value: column
+    ),
+    'flex-items-center': (
+        property: align-items,
+        value: center
+    ),
+    'flex-items-end': (
+        property: align-items,
+        value: flex-end
+    ),
+    'flex-justify-center': (
+        property: justify-content,
+        value: center
+    ),
+    'flex-justify-between': (
+        property: justify-content,
+        value: space-between
+    ),
+    'flex-grow': (
+        property: flex-grow,
+        value: 1
+    ),
+    'flex-gap-0-25': (
+        property: gap,
+        value: 0.25rem
+    ),
+    'flex-gap-0-5': (
+        property: gap,
+        value: 0.5rem
+    ),
+    'flex-gap-1': (
+        property: gap,
+        value: 1rem
+    ),
+    'flex-gap-1-5': (
+        property: gap,
+        value: 1.5rem
+    ),
+    'flex-gap-2': (
+        property: gap,
+        value: 2rem
+    ),
+    'h-0': (
+        property: height,
+        value: 0
+    ),
+    'h-dvh': (
+        property: height,
+        value: 100dvh
+    ),
+    'h-full': (
+        property: height,
+        value: 100%
+    ),
+    'h-0-5': (
+        property: height,
+        value: 0.5rem
+    ),
+    'h-1': (
+        property: height,
+        value: 1rem
+    ),
+    'h-1-5': (
+        property: height,
+        value: 1.5rem
+    ),
+    'h-1-75': (
+        property: height,
+        value: 1.75rem
+    ),
+    'h-2': (
+        property: height,
+        value: 2rem
+    ),
+    'h-2-5': (
+        property: height,
+        value: 2.5rem
+    ),
+    'h-3': (
+        property: height,
+        value: 3rem
+    ),
+    'h-4': (
+        property: height,
+        value: 4rem
+    ),
+    'h-8': (
+        property: height,
+        value: 8rem
+    ),
+    'h-min-0': (
+        property: min-height,
+        value: 0
+    ),
+    'w-0': (
+        property: width,
+        value: 0
+    ),
+    'w-full': (
+        property: width,
+        value: 100%
+    ),
+    'w-1': (
+        property: width,
+        value: 1rem
+    ),
+    'w-1-5': (
+        property: width,
+        value: 1.5rem
+    ),
+    'w-1-75': (
+        property: width,
+        value: 1.75rem
+    ),
+    'w-2': (
+        property: width,
+        value: 2rem
+    ),
+    'w-2-5': (
+        property: width,
+        value: 2.5rem
+    ),
+    'w-3': (
+        property: width,
+        value: 3rem
+    ),
+    'w-4': (
+        property: width,
+        value: 4rem
+    ),
+    'w-8': (
+        property: width,
+        value: 8rem
+    ),
+    'w-min-5': (
+        property: min-width,
+        value: 5rem
+    ),
+    'w-min-7': (
+        property: min-width,
+        value: 7rem
+    ),
+    'w-min-10': (
+        property: min-width,
+        value: 10rem
+    ),
+    'w-min-18': (
+        property: min-width,
+        value: 18rem
+    ),
+    'w-min-36': (
+        property: min-width,
+        value: 36rem
+    ),
+    'w-max-36': (
+        property: max-width,
+        value: 36rem
+    ),
+    'm-v-0-5': (
+        property: margin,
+        value: 0.5rem 0
+    ),
+    'm-h-1': (
+        property: margin,
+        value: 0 1rem
+    ),
+    'm-b-1-25': (
+        property: margin-bottom,
+        value: 1.25rem
+    ),
+    'p-0-125': (
+        property: padding,
+        value: 0.125rem
+    ),
+    'p-0-5': (
+        property: padding,
+        value: 0.5rem
+    ),
+    'p-1': (
+        property: padding,
+        value: 1rem
+    ),
+    'p-v-0-5': (
+        property: padding,
+        value: 0.5rem 0
+    ),
+    'p-v-1-5': (
+        property: padding,
+        value: 1.5rem 0
+    ),
+    'p-h-1': (
+        property: padding,
+        value: 0 1rem
+    ),
+    'p-t-0-5': (
+        property: padding-top,
+        value: 0.5rem
+    ),
+    'p-t-1': (
+        property: padding-top,
+        value: 1rem
+    ),
+    'p-b-0-5': (
+        property: padding-bottom,
+        value: 0.5rem
+    ),
+    'p-b-1': (
+        property: padding-bottom,
+        value: 1rem
+    ),
+    'p-l-1': (
+        property: padding-left,
+        value: 1rem
+    ),
+    'p-r-1': (
+        property: padding-right,
+        value: 1rem
+    ),
+    'm-t-1': (
+        property: margin-top,
+        value: 1rem
+    ),
+    'bottom-0': (
+        property: bottom,
+        value: 0
+    ),
+    'left-0': (
+        property: left,
+        value: 0
+    ),
+    'left-half': (
+        property: left,
+        value: 50%
+    ),
+    'top-0': (
+        property: top,
+        value: 0
+    ),
+    'top-1': (
+        property: top,
+        value: 1rem
+    ),
+    'top-half': (
+        property: top,
+        value: 50%
+    ),
+    'transform-translate-50-50': (
+        property: transform,
+        value: translate(-50%, 50%)
+    ),
+    'transform-rotate-15': (
+        property: transform,
+        value: rotate(15deg)
+    )
+);
 
-
-/* Flexbox Definitions */
-.flex{
-    display: flex;
-}
-.flex-row{
-    flex-direction: row;
-}
-.flex-column{
-    flex-direction: column;
-}
-.flex-items-center{
-    align-items: center;
-}
-.flex-items-end{
-    align-items: flex-end;
-}
-.flex-justify-center{
-    justify-content: center;
-}
-.flex-justify-between{
-    justify-content: space-between;
-}
-.flex-grow{
-    flex-grow: 1;
-}
-.flex-gap-0-25{
-    gap: 0.25rem;
-}
-.flex-gap-0-5{
-    gap: 0.5rem;
-}
-.flex-gap-1{
-    gap: 1rem;
-}
-.flex-gap-1-5{
-    gap: 1.5rem;
-}
-.flex-gap-2{
-    gap: 2rem;
-}
-
-
-
-/* Height Definitions */
-.h-0{
-    height: 0;
-}
-.h-dvh{
-    height: 100dvh;
-}
-.h-full{
-    height: 100%;
-}
-.h-0-5{
-    height: 0.5rem;
-}
-.h-1{
-    height: 1rem;
-}
-.h-1-5{
-    height: 1.5rem;
-}
-.h-1-75{
-    height: 1.75rem;
-}
-.h-2{
-    height: 2rem;
-}
-.h-2-5{
-    height: 2.5rem;
-}
-.h-3{
-    height: 3rem;
-}
-.h-4{
-    height: 4rem;
-}
-.h-8{
-    height: 8rem;
-}
-/* Minimum Height Definitions */
-.h-min-0{
-    min-height: 0;
-}
-
-
-
-/* Width Definitions */
-.w-0{
-    width: 0;
-}
-.w-full{
-    width: 100%;
-}
-.w-1{
-    width: 1rem;
-}
-.w-1-5{
-    width: 1.5rem;
-}
-.w-1-75{
-    width: 1.75rem;
-}
-.w-2{
-    width: 2rem;
-}
-.w-2-5{
-    width: 2.5rem;
-}
-.w-3{
-    width: 3rem;
-}
-.w-4{
-    width: 4rem;
-}
-.w-8{
-    width: 8rem;
-}
-
-/* Minimum Width Definitions */
-.w-min-5{
-    min-width: 5rem;
-}
-.w-min-7{
-    min-width: 7rem;
-}
-.w-min-10{
-    min-width: 10rem;
-}
-.w-min-18{
-    min-width: 18rem;
-}
-.w-min-36{
-    min-width: 36rem;
-}
-
-
-/* Maximum Width Definitions */
-.w-max-36{
-    max-width: 36rem;
-}
-
-
-
-/* Margin Definitions */
-.m-v-0-5{
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
-}
-.m-h-1{
-    margin-left: 1rem;
-    margin-right: 1rem;
-}
-.m-b-1-25{
-    margin-bottom: 1.25rem;
-}
-
-
-
-/* Padding Definitions */
-.p-0-125{
-    padding: 0.125rem;
-}
-.p-0-5{
-    padding: 0.5rem;
-}
-.p-1{
-    padding: 1rem;
-}
-/* Padding Vertical Definitions */
-.p-v-0-5{
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-}
-.p-v-1-5{
-    padding-top: 1.5rem;
-    padding-bottom: 1.5rem;
-}
-/* Padding Horizontal Definitions */
-.p-h-1{
-    padding-left: 1rem;
-    padding-right: 1rem;
-}
-/* Padding Top Definitions */
-.p-t-0-5{
-    padding-top: 0.5rem;
-}
-.p-t-1{
-    padding-top: 1rem;
-}
-/* Padding Bottom Definitions */
-.p-b-0-5{
-    padding-bottom: 0.5rem;
-}
-.p-b-1{
-    padding-bottom: 1rem;
-}
-/* Padding Left Definitions */
-.p-l-1{
-    padding-left: 1rem;
-}
-/* Padding Right Definitions */
-.p-r-1{
-    padding-right: 1rem;
-}
-
-/* Margin Definitions */
-.m-t-1{
-    margin-top: 1rem;
-}
-
-
-/* Absolute Position Definitions */
-.bottom-0{
-    bottom: 0;
-}
-
-.left-0{
-    left: 0;
-}
-.left-half{
-    left: 50%;
-}
-
-.top-0{
-    top: 0;
-}
-.top-1{
-    top: 1rem;
-}
-.top-half{
-    top: 50%;
-}
-
-
-
-/* Transform Definitions */
-.transform-translate-50-50 {
-    transform: translate(-50%, 50%);
-}
-.transform-rotate-15 {
-    transform: rotate(15deg);
+@each $name, $style in $position-styles {
+    %#{$name} {
+        #{map.get($style, 'property')}: map.get($style, 'value');
+    }
 }

@@ -1,27 +1,38 @@
-/* Border Size Definitions */
-.border{
-    border-width: 1px;
-}
-.border-0-125{
-    border-width: 0.125rem;
-}
+@use 'sass:map';
 
-/* Border Style Definitions */
-.border-solid{
-    border-style: solid;
-}
-.border-dashed{
-    border-style: dashed;
-}
+$border-styles: (
+    'border': (
+        property: border-width,
+        value: 1px
+    ),
+    'border-0-125': (
+        property: border-width,
+        value: 0.125rem
+    ),
+    'border-solid': (
+        property: border-style,
+        value: solid
+    ),
+    'border-dashed': (
+        property: border-style,
+        value: dashed
+    ),
+    'border-white': (
+        property: border-color,
+        value: white
+    ),
+    'border-transparent': (
+        property: border-color,
+        value: transparent
+    ),
+    'border-radius-4': (
+        property: border-radius,
+        value: 4rem
+    )
+);  
 
-/* Border Color Definitions */
-.border-white{
-    border-color: white;
-}
-.border-transparent{
-    border-color: transparent;
-}
-
-.border-radius-4{
-    border-radius: 4rem;
+@each $name, $style in $border-styles {
+    %#{$name} {
+        #{map.get($style, 'property')}: map.get($style, 'value');
+    }
 }

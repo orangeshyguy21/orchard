@@ -1,184 +1,230 @@
-// Orchard Background Colors
-.orc-surface-bg {
-    background-color: var(--mat-sys-surface);
-}
-.orc-primary-container-bg {
-    background-color: var(--mat-sys-primary-container);
-}
-.orc-surface-container-high-bg {
-    background-color: var(--mat-sys-surface-container-high);
-}
-.orc-surface-container-bg {
-    background-color: var(--mat-sys-surface-container);
-}
-.orc-surface-container-low-bg {
-    background-color: var(--mat-sys-surface-container-low);
-}
-.orc-on-secondary-container-bg {
-    background-color: var(--mat-sys-on-secondary-container);
-}
-.orc-secondary-bg {
-    background-color: var(--mat-sys-secondary);
-}
-.orc-on-error-bg {
-    background-color: var(--mat-sys-on-error);
-}
-.orc-error-bg {
-    background-color: var(--mat-sys-error);
-}
+@use 'sass:map';
 
-.orc-asset-btc-bg {
-    background-color: var(--orc-asset-btc);
-}
-.orc-asset-usd-bg {
-    background-color: var(--orc-asset-usd);
-}
-.orc-asset-eur-bg {
-    background-color: var(--orc-asset-eur);
-}
+$theme-styles: (
+    'orc-surface-bg': (
+        property: background-color,
+        value: var(--mat-sys-surface)
+    ),
+    'orc-primary-container-bg': (
+        property: background-color,
+        value: var(--mat-sys-primary-container)
+    ),
+    'orc-surface-container-high-bg': (
+        property: background-color,
+        value: var(--mat-sys-surface-container-high)
+    ),
+    'orc-surface-container-bg': (
+        property: background-color,
+        value: var(--mat-sys-surface-container)
+    ),
+    'orc-surface-container-low-bg': (
+        property: background-color,
+        value: var(--mat-sys-surface-container-low)
+    ),
+    'orc-on-secondary-container-bg': (
+        property: background-color,
+        value: var(--mat-sys-on-secondary-container)
+    ),
+    'orc-secondary-bg': (
+        property: background-color,
+        value: var(--mat-sys-secondary)
+    ),
+    'orc-on-error-bg': (
+        property: background-color,
+        value: var(--mat-sys-on-error)
+    ),
+    'orc-error-bg': (
+        property: background-color,
+        value: var(--mat-sys-error)
+    ),
+    'orc-asset-btc-bg': (
+        property: background-color,
+        value: var(--orc-asset-btc)
+    ),
+    'orc-asset-usd-bg': (
+        property: background-color,
+        value: var(--orc-asset-usd)
+    ),
+    'orc-asset-eur-bg': (
+        property: background-color,
+        value: var(--orc-asset-eur)
+    ),
+    'orc-on-surface-color': (
+        property: color,
+        value: var(--mat-sys-on-surface)
+    ),
+    'orc-on-primary-color': (
+        property: color,
+        value: var(--mat-sys-on-primary)
+    ),
+    'orc-on-primary-container-color': (
+        property: color,
+        value: var(--mat-sys-on-primary-container)
+    ),
+    'orc-outline-color': (
+        property: color,
+        value: var(--mat-sys-outline)
+    ),
+    'orc-surface-color': (
+        property: color,
+        value: var(--mat-sys-surface)
+    ),
+    'orc-on-surface-variant-color': (
+        property: color,
+        value: var(--mat-sys-on-surface-variant)
+    ),
+    'orc-primary-fixed-dim-color': (
+        property: color,
+        value: var(--mat-sys-primary-fixed-dim)
+    ),
+    'orc-tertiary-container-color': (
+        property: color,
+        value: var(--mat-sys-tertiary-container)
+    ),
+    'orc-error-container-color': (
+        property: color,
+        value: var(--mat-sys-error-container)
+    ),
+    'orc-status-active-color': (
+        property: color,
+        value: var(--orc-status-active)
+    ),
+    'orc-status-inactive-color': (
+        property: color,
+        value: var(--orc-status-inactive)
+    ),
+    'orc-on-error-color': (
+        property: color,
+        value: var(--mat-sys-on-error)
+    ),
+    'orc-error-color': (
+        property: color,
+        value: var(--mat-sys-error)
+    ),
+    'orc-on-error-container-color': (
+        property: color,
+        value: var(--mat-sys-on-error-container)
+    ),
+    'orc-brand-lightest-fill': (
+        property: fill,
+        value: var(--orc-sys-brand-lightest)
+    ),
+    'orc-brand-light-fill': (
+        property: fill,
+        value: var(--orc-sys-brand-light)
+    ),
+    'orc-brand-medium-fill': (
+        property: fill,
+        value: var(--orc-sys-brand-medium)
+    ),
+    'orc-brand-dark-fill': (
+        property: fill,
+        value: var(--orc-sys-brand-dark)
+    ),
+    'orc-brand-darkest-fill': (
+        property: fill,
+        value: var(--orc-sys-brand-darkest)
+    ),
+    'orc-brand-surface-fill': (
+        property: fill,
+        value: var(--orc-sys-brand-surface)
+    ),
+    'orc-corner-extra-large': (
+        property: border-radius,
+        value: var(--mat-sys-corner-extra-large)
+    ),
+    'orc-corner-extra-large-top': (
+        property: border-radius,
+        value: var(--mat-sys-corner-extra-large-top)
+    ),
+    'orc-corner-extra-small': (
+        property: border-radius,
+        value: var(--mat-sys-corner-extra-small)
+    ),
+    'orc-corner-extra-small-top': (
+        property: border-radius,
+        value: var(--mat-sys-corner-extra-small-top)
+    ),
+    'orc-corner-full': (
+        property: border-radius,
+        value: var(--mat-sys-corner-full)
+    ),
+    'orc-corner-large': (
+        property: border-radius,
+        value: var(--mat-sys-corner-large)
+    ),
+    'orc-corner-large-end': (
+        property: border-radius,
+        value: var(--mat-sys-corner-large-end)
+    ),
+    'orc-corner-large-start': (
+        property: border-radius,
+        value: var(--mat-sys-corner-large-start)
+    ),
+    'orc-corner-large-top': (
+        property: border-radius,
+        value: var(--mat-sys-corner-large-top)
+    ),
+    'orc-corner-medium': (
+        property: border-radius,
+        value: var(--mat-sys-corner-medium)
+    ),
+    'orc-corner-none': (
+        property: border-radius,
+        value: var(--mat-sys-corner-none)
+    ),
+    'orc-corner-small': (
+        property: border-radius,
+        value: var(--mat-sys-corner-small)
+    ),
+    'orc-corner-small-top': (
+        property: border-radius,
+        value: 0.5rem 0.5rem 0 0
+    ),
+    'orc-surface-tint-border': (
+        property: border-color,
+        value: var(--mat-sys-surface-tint)
+    ),
+    'orc-surface-variant-border': (
+        property: border-color,
+        value: var(--mat-sys-surface-variant)
+    ),
+    'orc-outline-border': (
+        property: border,
+        value: 1px solid var(--mat-sys-outline)
+    ),
+    'orc-outline-variant-border': (
+        property: border-color,
+        value: var(--mat-sys-outline-variant)
+    ),
+    'orc-level0': (
+        property: box-shadow,
+        value: var(--mat-sys-level0)
+    ),
+    'orc-level1': (
+        property: box-shadow,
+        value: var(--mat-sys-level1)
+    ),
+    'orc-level2': (
+        property: box-shadow,
+        value: var(--mat-sys-level2)
+    ),
+    'orc-level3': (
+        property: box-shadow,
+        value: var(--mat-sys-level3)
+    ),
+    'orc-level4': (
+        property: box-shadow,
+        value: var(--mat-sys-level4)
+    ),
+    'orc-level5': (
+        property: box-shadow,
+        value: var(--mat-sys-level5)
+    )
+);
 
-// Orchard Text Colors
-.orc-on-surface-color {
-    color: var(--mat-sys-on-surface);
-}
-.orc-on-primary-color {
-    color: var(--mat-sys-on-primary);
-}
-.orc-on-primary-container-color {
-    color: var(--mat-sys-on-primary-container);
-}
-.orc-outline-color{
-    color: var(--mat-sys-outline);
-}
-.orc-surface-color {
-    color: var(--mat-sys-surface);
-}
-.orc-on-surface-variant-color {
-    color: var(--mat-sys-on-surface-variant);
-}
-.orc-primary-fixed-dim-color {
-    color: var(--mat-sys-primary-fixed-dim);
-}
-.orc-tertiary-container-color {
-    color: var(--mat-sys-tertiary-container);
-}
-.orc-error-container-color {
-    color: var(--mat-sys-error-container);
-}
-.orc-status-active-color {
-    color: var(--orc-status-active);
-}
-.orc-status-inactive-color {
-    color: var(--orc-status-inactive);
-}
-.orc-on-error-color {
-    color: var(--mat-sys-on-error);
-}
-.orc-error-color {
-    color: var(--mat-sys-error);
-}
-.orc-on-error-container-color {
-    color: var(--mat-sys-on-error-container);
-}
-
-
-// Orchard Fill Colors
-
-.orc-brand-lightest-fill {
-    fill: var(--orc-sys-brand-lightest);
-}
-.orc-brand-light-fill {
-    fill: var(--orc-sys-brand-light);
-}
-.orc-brand-medium-fill {
-    fill: var(--orc-sys-brand-medium);
-}
-.orc-brand-dark-fill {
-    fill: var(--orc-sys-brand-dark);
-}
-.orc-brand-darkest-fill {
-    fill: var(--orc-sys-brand-darkest);
-}
-.orc-brand-surface-fill {
-    fill: var(--orc-sys-brand-surface);
-}
-
-// Orchard Corner Radius
-
-.orc-corner-extra-large {
-    border-radius: var(--mat-sys-corner-extra-large);
-}
-.orc-corner-extra-large-top {
-    border-radius: var(--mat-sys-corner-extra-large-top);
-}
-.orc-corner-extra-small {
-    border-radius: var(--mat-sys-corner-extra-small);
-}
-.orc-corner-extra-small-top {
-    border-radius: var(--mat-sys-corner-extra-small-top);
-}
-.orc-corner-full {
-    border-radius: var(--mat-sys-corner-full);
-}
-.orc-corner-large {
-    border-radius: var(--mat-sys-corner-large);
-}
-.orc-corner-large-end {
-    border-radius: var(--mat-sys-corner-large-end);
-}
-.orc-corner-large-start {
-    border-radius: var(--mat-sys-corner-large-start);
-}
-.orc-corner-large-top {
-    border-radius: var(--mat-sys-corner-large-top);
-}
-.orc-corner-medium {
-    border-radius: var(--mat-sys-corner-medium);
-}
-.orc-corner-none {
-    border-radius: var(--mat-sys-corner-none);
-}
-.orc-corner-small {
-    border-radius: var(--mat-sys-corner-small);
-}
-.orc-corner-small-top {
-    border-radius: 0.5rem 0.5rem 0 0;
-}
-
-// Orchard Border Colors
-.orc-surface-tint-border{
-    border-color: var(--mat-sys-surface-tint);
-}
-.orc-surface-variant-border{
-    border-color: var(--mat-sys-surface-variant);
-}
-.orc-outline-border{
-    border: 1px solid var(--mat-sys-outline);
-}
-.orc-outline-variant-border{
-    border-color: var(--mat-sys-outline-variant);
-}
-.orc-outline-border{
-    border: 1px solid var(--mat-sys-outline);
-}
-
-// Orchard Elevation Levels
-
-.orc-level0 {
-    box-shadow: var(--mat-sys-level0);
-}
-.orc-level1 {
-    box-shadow: var(--mat-sys-level1);
-}
-.orc-level2 {
-    box-shadow: var(--mat-sys-level2);
-}
-.orc-level3 {
-    box-shadow: var(--mat-sys-level3);
-}
-.orc-level4 {
-    box-shadow: var(--mat-sys-level4);
-}
-.orc-level5 {
-    box-shadow: var(--mat-sys-level5);
+@each $name, $style in $theme-styles {
+    %#{$name} {
+        #{map.get($style, 'property')}: map.get($style, 'value');
+    }
 }

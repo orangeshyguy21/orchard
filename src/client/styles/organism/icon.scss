@@ -2,18 +2,18 @@
 
 .mat-symbol{
     &.icon-md{
-        @extend .font-size-xxl;
-        @extend .h-1-75;
-        @extend .w-1-75;
+        @extend %font-size-xxl;
+        @extend %h-1-75;
+        @extend %w-1-75;
     }
     &.icon-sm{
-        @extend .font-size-m;
-        @extend .h-1;
-        @extend .w-1;
+        @extend %font-size-m;
+        @extend %h-1;
+        @extend %w-1;
     }
     &.icon-lg{
-        @extend .font-size-3;
-        @extend .h-3;
-        @extend .w-3;
+        @extend %font-size-3;
+        @extend %h-3;
+        @extend %w-3;
     }
 }

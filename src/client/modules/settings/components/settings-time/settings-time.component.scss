@@ -1,5 +1,5 @@
 @use '@styles/molecule/molecule';
 
 .settings-time-container{
-    @extend .p-1;
+    @extend %p-1;
 }
