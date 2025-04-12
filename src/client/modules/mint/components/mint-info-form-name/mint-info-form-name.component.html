@@ -1,8 +1,13 @@
 <div>
     <form>
-        <mat-form-field [appearance]="form_name.dirty ? 'fill' : 'outline'">
-            <mat-label>Mint name</mat-label>
-            <input type="text" matInput [formControl]="form_name" placeholder="Ex. My Mint">
+        <mat-form-field [appearance]="appearance" class="primary-form-field">
+            <mat-label>Name</mat-label>
+            <input 
+                type="text" 
+                matInput 
+                [formControl]="form_name" 
+                placeholder="Ex. My Mint"
+                #element_name>
         </mat-form-field>
     </form>
 </div>

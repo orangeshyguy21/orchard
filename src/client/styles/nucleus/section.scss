@@ -1,7 +1,7 @@
 @use '@styles/molecule/molecule';
 
-@mixin prefixStyles($char) {
-    #{$char}section-container {
+@mixin prefixStyles($c) {
+    #{$c}section-container {
         @extend %flex;
         @extend %flex-column;
         @extend %w-full;
@@ -9,12 +9,12 @@
         @extend %flex-grow;
     }
 
-    #{$char}section-implementation {
+    #{$c}section-implementation {
         @extend %font-size-xs;
         @extend %font-weight-light;
     }
 
-    #{$char}subsection-container {
+    #{$c}subsection-container {
         @extend %overflow-y-auto;
         @extend %relative;
         @extend %h-min-0;
@@ -24,7 +24,7 @@
         @extend %h-1;
     }
 
-    #{$char}secondary-nav-header {
+    #{$c}secondary-nav-header {
         @extend %flex;
         @extend %flex-row;
         @extend %flex-items-center;

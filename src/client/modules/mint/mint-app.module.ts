@@ -22,6 +22,7 @@ import { NavModule } from '@client/modules/nav/nav.module';
 import { LocalModule } from '@client/modules/local/local.module';
 import { GraphicModule } from '@client/modules/graphic/graphic.module';
 import { ErrorModule } from '@client/modules/error/error.module';
+import { FormModule } from '@client/modules/form/form.module';
 /* Local Dependencies */
 import { MintAppRoutingModule } from './mint-app.router';
 /* Native Dependencies */
@@ -83,6 +84,7 @@ import { MintInfoFormDescriptionComponent } from './components/mint-info-form-de
 		LocalModule,
 		GraphicModule,
 		ErrorModule,
+		FormModule,
 	],
 })
 export class MintAppModule { }

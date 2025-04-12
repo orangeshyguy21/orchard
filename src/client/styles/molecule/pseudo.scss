@@ -1,3 +1,3 @@
-@mixin prefixStyles($char) {
-    #{$char}pseudo-element { content: ''; }
+@mixin prefixStyles($c) {
+    #{$c}pseudo-element { content: ''; }
 }

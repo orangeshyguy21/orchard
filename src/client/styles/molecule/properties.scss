@@ -1,7 +1,8 @@
-@mixin prefixStyles($char) {
-    #{$char}cursor-pointer { cursor: pointer; }
-    #{$char}opacity-0 { opacity: 0; }
-    #{$char}opacity-1 { opacity: 1; }
-    #{$char}overflow-hidden { overflow: hidden; }
-    #{$char}overflow-y-auto { overflow-y: auto; }
+@mixin prefixStyles($c) {
+    #{$c}cursor-pointer { cursor: pointer; }
+    #{$c}opacity-0 { opacity: 0; }
+    #{$c}opacity-1 { opacity: 1; }
+    #{$c}overflow-hidden { overflow: hidden; }
+    #{$c}overflow-y-auto { overflow-y: auto; }
+    #{$c}transparent-bg { background-color: transparent; }
 }

@@ -2,8 +2,8 @@
 @use './section' as section;
 @use './title' as title;
 
-@mixin prefixModule($char) {
-    @include flex.prefixStyles($char);
-    @include section.prefixStyles($char);
-    @include title.prefixStyles($char);
+@mixin prefixModule($c) {
+    @include flex.prefixStyles($c);
+    @include section.prefixStyles($c);
+    @include title.prefixStyles($c);
 }

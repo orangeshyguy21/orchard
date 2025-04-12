@@ -12,14 +12,13 @@
 }
 
 .ai-input {
-    background-color: transparent;
-    border: none;
-    outline: none;
-    resize: none;
-    width: 100%;
-    font-family: inherit;
-    font-size: inherit;
-    @extend %font-size-s;
+    @extend %transparent-bg;
+    @extend %border-none;
+    @extend %outline-none;
+    @extend %resize-none;
+    @extend %w-full;
+    @extend %font-family-inherit;
+    @extend %font-size-inherit;
     @extend %flex-grow;
 }
 

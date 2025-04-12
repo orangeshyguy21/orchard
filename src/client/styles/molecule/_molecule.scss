@@ -1,19 +1,21 @@
 @use './animations' as animations;
 @use './border' as border;
+@use './form' as form;
 @use './position' as position;
 @use './properties' as properties;
 @use './pseudo' as pseudo;
 @use './theme' as theme;
 @use './typetext' as typetext;
 
-@mixin prefixModule($char) {
-    @include animations.prefixStyles($char);
-    @include border.prefixStyles($char);
-    @include position.prefixStyles($char);
-    @include properties.prefixStyles($char);
-    @include pseudo.prefixStyles($char);
-    @include theme.prefixStyles($char);
-    @include typetext.prefixStyles($char);
+@mixin prefixModule($c) {
+    @include animations.prefixStyles($c);
+    @include border.prefixStyles($c);
+    @include form.prefixStyles($c);
+    @include position.prefixStyles($c);
+    @include properties.prefixStyles($c);
+    @include pseudo.prefixStyles($c);
+    @include theme.prefixStyles($c);
+    @include typetext.prefixStyles($c);
 }
 
 @include prefixModule('%');
