@@ -1,7 +1,9 @@
 @use '@styles/molecule/molecule';
 
-.flex-1{
-    @extend %flex-grow;
-    flex-shrink: 1;
-    flex-basis: 0;
+@mixin prefixStyles($char) {
+    #{$char}flex-1 {
+        @extend %flex-grow;
+        @extend %flex-shrink;
+        @extend %flex-basis-0;
+    }
 }

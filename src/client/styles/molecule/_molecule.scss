@@ -1,17 +1,19 @@
-@use './theme';
-@use './position';
-@use './typetext';
-@use './properties';
-@use './animations';
-@use './pseudo';
-@use './border';
+@use './animations' as animations;
+@use './border' as border;
+@use './position' as position;
+@use './properties' as properties;
+@use './pseudo' as pseudo;
+@use './theme' as theme;
+@use './typetext' as typetext;
 
-$molecule-styles: (
-    'theme': theme.$theme-styles,
-    'position': position.$position-styles,
-    'typetext': typetext.$typetext-styles,
-    'properties': properties.$properties-styles,
-    'animations': animations.$animations-styles,
-    'pseudo': pseudo.$pseudo-styles,
-    'border': border.$border-styles,
-);
+@mixin prefixModule($char) {
+    @include animations.prefixStyles($char);
+    @include border.prefixStyles($char);
+    @include position.prefixStyles($char);
+    @include properties.prefixStyles($char);
+    @include pseudo.prefixStyles($char);
+    @include theme.prefixStyles($char);
+    @include typetext.prefixStyles($char);
+}
+
+@include prefixModule('%');

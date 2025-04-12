@@ -1,3 +1,9 @@
-@use './flex';
-@use './section';
-@use './title';
+@use './flex' as flex;
+@use './section' as section;
+@use './title' as title;
+
+@mixin prefixModule($char) {
+    @include flex.prefixStyles($char);
+    @include section.prefixStyles($char);
+    @include title.prefixStyles($char);
+}

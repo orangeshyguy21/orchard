@@ -1,31 +1,33 @@
 @use '@styles/molecule/molecule';
 
-.section-container {
-    @extend %flex;
-    @extend %flex-column;
-    @extend %w-full;
-    @extend %relative;
-    @extend %flex-grow;
-}
+@mixin prefixStyles($char) {
+    #{$char}section-container {
+        @extend %flex;
+        @extend %flex-column;
+        @extend %w-full;
+        @extend %relative;
+        @extend %flex-grow;
+    }
 
-.section-implementation{
-    @extend %font-size-xs;
-    @extend %font-weight-light;
-}
-  
-.subsection-container {
-    @extend %overflow-y-auto;
-    @extend %relative;
-    @extend %h-min-0;
-    @extend %flex;
-    @extend %flex-column;
-    @extend %flex-grow;
-    @extend %h-1;
-}
+    #{$char}section-implementation {
+        @extend %font-size-xs;
+        @extend %font-weight-light;
+    }
 
-.secondary-nav-header{
-    @extend %flex;
-    @extend %flex-row;
-    @extend %flex-items-center;
-    @extend %flex-gap-1;
+    #{$char}subsection-container {
+        @extend %overflow-y-auto;
+        @extend %relative;
+        @extend %h-min-0;
+        @extend %flex;
+        @extend %flex-column;
+        @extend %flex-grow;
+        @extend %h-1;
+    }
+
+    #{$char}secondary-nav-header {
+        @extend %flex;
+        @extend %flex-row;
+        @extend %flex-items-center;
+        @extend %flex-gap-1;
+    }
 }
