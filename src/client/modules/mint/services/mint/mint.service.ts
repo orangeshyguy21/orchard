@@ -18,9 +18,11 @@ import {
 	MintAnalyticsMintsResponse,
 	MintAnalyticsMeltsResponse,
 	MintAnalyticsTransfersResponse,
+	MintInfoRpcResponse,
 } from '@client/modules/mint/types/mint.types';
 import { CacheService } from '@client/modules/cache/services/cache/cache.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
+import { MintInfoRpc } from '@client/modules/mint/classes/mint-info-rpc.class';
 import { MintBalance } from '@client/modules/mint/classes/mint-balance.class';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 import { MintPromise } from '@client/modules/mint/classes/mint-promise.class';
@@ -30,6 +32,7 @@ import { MintAnalyticsInterval } from '@shared/generated.types';
 /* Local Dependencies */
 import { 
 	MINT_INFO_QUERY, 
+	MINT_INFO_RPC_QUERY,
 	MINT_BALANCES_QUERY, 
 	MINT_KEYSETS_QUERY, 
 	MINT_PROMISES_QUERY, 
@@ -177,13 +180,28 @@ export class MintService {
 			}),
 			shareReplay(1),
 			catchError((error) => {
-				console.error('Error loading mint info:', error);
+				console.error('Error loading mint info (public):', error);
 				this.mint_info_observable = null;
 				return throwError(() => error);
-			})
+			}),
 		);
 		
 		return this.mint_info_observable;
+	}
+
+	public getMintInfo(): Observable<MintInfoRpc> {
+		const query = getApiQuery(MINT_INFO_RPC_QUERY);
+		return this.http.post<OrchardRes<MintInfoRpcResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.mint_info_rpc;
+			}),
+			map((mintInfoRpc) => new MintInfoRpc(mintInfoRpc)),
+			catchError((error) => {
+				console.error('Error loading mint info (rpc):', error);
+				return throwError(() => error);
+			}),
+		);
 	}
 
 	public loadMintBalances(): Observable<MintBalance[]> {

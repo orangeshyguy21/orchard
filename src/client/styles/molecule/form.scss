@@ -1,0 +1,3 @@
+@mixin prefixStyles($c) {
+    #{$c}resize-none { resize: none; }
+}

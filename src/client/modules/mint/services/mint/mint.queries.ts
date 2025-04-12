@@ -74,6 +74,24 @@ export const MINT_INFO_QUERY = `{
   	}
 }`;
 
+export const MINT_INFO_RPC_QUERY = `{
+	mint_info_rpc{
+		name
+		description
+		description_long
+		icon_url
+		motd
+		total_issued
+		total_redeemed
+		urls
+		version
+		contact{
+			info
+			method
+		}
+	}
+}`;
+
 export const MINT_BALANCES_QUERY = `{
     mint_balances{
         balance

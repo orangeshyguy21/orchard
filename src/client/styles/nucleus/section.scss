@@ -1,0 +1,33 @@
+@use '@styles/molecule/molecule';
+
+@mixin prefixStyles($c) {
+    #{$c}section-container {
+        @extend %flex;
+        @extend %flex-column;
+        @extend %w-full;
+        @extend %relative;
+        @extend %flex-grow;
+    }
+
+    #{$c}section-implementation {
+        @extend %font-size-xs;
+        @extend %font-weight-light;
+    }
+
+    #{$c}subsection-container {
+        @extend %overflow-y-auto;
+        @extend %relative;
+        @extend %h-min-0;
+        @extend %flex;
+        @extend %flex-column;
+        @extend %flex-grow;
+        @extend %h-1;
+    }
+
+    #{$c}secondary-nav-header {
+        @extend %flex;
+        @extend %flex-row;
+        @extend %flex-items-center;
+        @extend %flex-gap-1;
+    }
+}

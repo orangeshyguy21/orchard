@@ -18,8 +18,13 @@ export type Scalars = {
   UnixTimestamp: { input: any; output: any; }
 };
 
+export type AiChatAbortInput = {
+  id: Scalars['String']['input'];
+};
+
 export type AiChatInput = {
   agent: Scalars['String']['input'];
+  id: Scalars['String']['input'];
   messages: Array<AiChatMessageInput>;
   model: Scalars['String']['input'];
 };
@@ -43,6 +48,12 @@ export enum MintQuoteStatus {
   Unpaid = 'UNPAID'
 }
 
+export type MintQuoteTtlOutput = {
+  __typename?: 'MintQuoteTtlOutput';
+  melt_ttl?: Maybe<Scalars['Int']['output']>;
+  mint_ttl?: Maybe<Scalars['Int']['output']>;
+};
+
 export enum MintUnit {
   Auth = 'auth',
   Btc = 'btc',
@@ -56,6 +67,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   add_mint_contact: UpdateContactOutput;
   add_mint_url: UpdateMintUrlOutput;
+  ai_chat_abort: OrchardAiChatStream;
   remove_mint_contact: UpdateContactOutput;
   remove_mint_url: UpdateMintUrlOutput;
   rotate_next_keyset: RotateNextKeysetOutput;
@@ -66,7 +78,7 @@ export type Mutation = {
   update_mint_nut04: UpdateNut04Output;
   update_mint_nut04_quote: UpdateNut04QuoteOutput;
   update_mint_nut05: UpdateNut05Output;
-  update_mint_quote_ttl: UpdateQuoteTtlOutput;
+  update_mint_quote_ttl: MintQuoteTtlOutput;
   update_mint_short_description: UpdateMintDescriptionOutput;
 };
 
@@ -78,6 +90,11 @@ export type MutationAdd_Mint_ContactArgs = {
 
 export type MutationAdd_Mint_UrlArgs = {
   updateUrlInput: UpdateUrlInput;
+};
+
+
+export type MutationAi_Chat_AbortArgs = {
+  aiChatAbortInput: AiChatAbortInput;
 };
 
 
@@ -147,6 +164,7 @@ export type OrchardAiChatChunk = {
   done_reason?: Maybe<Scalars['String']['output']>;
   eval_count?: Maybe<Scalars['Float']['output']>;
   eval_duration?: Maybe<Scalars['Float']['output']>;
+  id: Scalars['String']['output'];
   load_duration?: Maybe<Scalars['Float']['output']>;
   message: OrchardAiChatMessage;
   model: Scalars['String']['output'];
@@ -159,6 +177,11 @@ export type OrchardAiChatMessage = {
   __typename?: 'OrchardAiChatMessage';
   content: Scalars['String']['output'];
   role: Scalars['String']['output'];
+};
+
+export type OrchardAiChatStream = {
+  __typename?: 'OrchardAiChatStream';
+  id: Scalars['String']['output'];
 };
 
 export type OrchardAiModel = {
@@ -235,7 +258,7 @@ export type OrchardMintInfo = {
 export type OrchardMintInfoRpc = {
   __typename?: 'OrchardMintInfoRpc';
   contact: Array<OrchardContact>;
-  description: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
   description_long?: Maybe<Scalars['String']['output']>;
   icon_url?: Maybe<Scalars['String']['output']>;
   motd?: Maybe<Scalars['String']['output']>;
@@ -412,6 +435,7 @@ export type Query = {
   mint_promises: Array<OrchardMintPromise>;
   mint_proofs_pending: Array<OrchardMintProof>;
   mint_proofs_used: Array<OrchardMintProof>;
+  mint_quote_ttl: MintQuoteTtlOutput;
   status: OrchardStatus;
 };
 
@@ -593,12 +617,6 @@ export type UpdateNut05Output = {
 export type UpdateQuoteTtlInput = {
   melt_ttl?: InputMaybe<Scalars['Int']['input']>;
   mint_ttl?: InputMaybe<Scalars['Int']['input']>;
-};
-
-export type UpdateQuoteTtlOutput = {
-  __typename?: 'UpdateQuoteTtlOutput';
-  melt_ttl?: Maybe<Scalars['Int']['output']>;
-  mint_ttl?: Maybe<Scalars['Int']['output']>;
 };
 
 export type UpdateUrlInput = {

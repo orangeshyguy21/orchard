@@ -11,31 +11,31 @@ import { LayoutInteriorComponent } from './components/layout-interior/layout-int
 const interior_routes = [
 	{
 		path: '',
-		loadChildren: () => import('@client/modules/index/index.module').then(m => m.IndexModule),
+		loadChildren: () => import('@client/modules/index/index-app.module').then(m => m.IndexAppModule),
 	},
 	{
 		path: 'bitcoin',
-		loadChildren: () => import('@client/modules/bitcoin/bitcoin.module').then(m => m.BitcoinModule),
+		loadChildren: () => import('@client/modules/bitcoin/bitcoin-app.module').then(m => m.BitcoinAppModule),
 	},
 	{
 		path: 'lightning',
-		loadChildren: () => import('@client/modules/lightning/lightning.module').then(m => m.LightningModule),
+		loadChildren: () => import('@client/modules/lightning/lightning-app.module').then(m => m.LightningAppModule),
 	},
 	{
 		path: 'mint',
-		loadChildren: () => import('@client/modules/mint/mint.module').then(m => m.MintModule),
+		loadChildren: () => import('@client/modules/mint/mint-app.module').then(m => m.MintAppModule),
 	},
 	{
 		path: 'ecash',
-		loadChildren: () => import('@client/modules/ecash/ecash.module').then(m => m.EcashModule),
+		loadChildren: () => import('@client/modules/ecash/ecash-app.module').then(m => m.EcashAppModule),
 	},
 	{
 		path: 'settings',
-		loadChildren: () => import('@client/modules/settings/settings.module').then(m => m.SettingsModule),
+		loadChildren: () => import('@client/modules/settings/settings-app.module').then(m => m.SettingsAppModule),
 	},
 	{
 		path: 'event',
-		loadChildren: () => import('@client/modules/event/event.module').then(m => m.EventModule),
+		loadChildren: () => import('@client/modules/event/event-app.module').then(m => m.EventAppModule),
 	}
 ]
 
@@ -48,7 +48,7 @@ const routes: Routes = [
 	{
 		path: 'login',
 		component: LayoutExteriorComponent,
-		loadChildren: () => import('@client/modules/login/login.module').then(m => m.LoginModule)
+		loadChildren: () => import('@client/modules/login/login-app.module').then(m => m.LoginAppModule)
 	},
 ];
 

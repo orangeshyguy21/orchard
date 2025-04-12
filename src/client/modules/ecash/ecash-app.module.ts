@@ -3,15 +3,16 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 /* Local Dependencies */
-import { IndexSectionComponent } from './components/index-section/index-section.component';
+import { EcashSectionComponent } from './components/ecash-section/ecash-section.component';
 
 const routes: Routes = [
 	{
 		path: '',
-		component: IndexSectionComponent,
-		title: 'Orchard',
+		component: EcashSectionComponent,
+		title: 'Orchard | Ecash',
 		data: {
-			section: 'index',
+			section: 'ecash',
+			sub_section: 'dashboard'
 		}
 	}
 ];
@@ -24,16 +25,16 @@ const routes: Routes = [
 		RouterModule,
 	],
 })
-export class IndexRoutingModule { }
+export class EcashAppRoutingModule { }
 
 
 @NgModule({
 	declarations: [
-		IndexSectionComponent,
+		EcashSectionComponent
 	],
 	imports: [
 		CommonModule,
-		IndexRoutingModule,
+		EcashAppRoutingModule,
 	],
 })
-export class IndexModule { }
+export class EcashAppModule { }

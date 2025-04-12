@@ -1,52 +1,28 @@
-/* Font Weight Definitions */
-.font-weight-extra-light{
-    font-weight: 200;
-}
-.font-weight-light{
-    font-weight: 300;
-}
-.font-weight-regular{
-    font-weight: 400;
-}
-.font-weight-medium{
-    font-weight: 500;
-}
-.font-weight-semi-bold{
-    font-weight: 600;
-}
-.font-weight-bold{
-    font-weight: 700;
-}
+@mixin prefixStyles($c) {
+    // Font Weights
+    #{$c}font-weight-extra-light { font-weight: 200; }
+    #{$c}font-weight-light { font-weight: 300; }
+    #{$c}font-weight-regular { font-weight: 400; }
+    #{$c}font-weight-medium { font-weight: 500; }
+    #{$c}font-weight-semi-bold { font-weight: 600; }
+    #{$c}font-weight-bold { font-weight: 700; }
 
-/* Font Size Definitions */
-.font-size-xs {
-    font-size: 0.75rem;
-}
-.font-size-s {
-    font-size: 0.875rem;
-}
-.font-size-m {
-    font-size: 1rem;
-}
-.font-size-l {
-    font-size: 1.25rem;
-}
-.font-size-xl {
-    font-size: 1.5rem;
-}
-.font-size-xxl {
-    font-size: 1.75rem;
-}
-.font-size-3 {
-    font-size: 3rem;
-}
+    // Font Sizes
+    #{$c}font-size-inherit { font-size: inherit; }
+    #{$c}font-size-xs { font-size: 0.75rem; }
+    #{$c}font-size-s { font-size: 0.875rem; }
+    #{$c}font-size-m { font-size: 1rem; }
+    #{$c}font-size-l { font-size: 1.25rem; }
+    #{$c}font-size-xl { font-size: 1.5rem; }
+    #{$c}font-size-xxl { font-size: 1.75rem; }
+    #{$c}font-size-3 { font-size: 3rem; }
 
+    // Font Family
+    #{$c}font-family-inherit { font-family: inherit; }
 
-.text-center{
-    text-align: center;
-}
+    // Text Alignment
+    #{$c}text-center { text-align: center; }
 
-/* Icon Settings Definitions */
-.mat-symbol-bold{
-    font-variation-settings: 'FILL' 0, 'wght' 700, 'GRAD' 0, 'opsz' 20;
+    // Material Symbols
+    #{$c}mat-symbol-bold { font-variation-settings: "FILL 0, wght 700, GRAD 0, opsz 20"; }
 }

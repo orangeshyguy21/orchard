@@ -1,8 +1,21 @@
-@use './token';
-@use './theme';
-@use './position';
-@use './typetext';
-@use './properties';
-@use './animations';
-@use './pseudo';
-@use './border';
+@use './animations' as animations;
+@use './border' as border;
+@use './form' as form;
+@use './position' as position;
+@use './properties' as properties;
+@use './pseudo' as pseudo;
+@use './theme' as theme;
+@use './typetext' as typetext;
+
+@mixin prefixModule($c) {
+    @include animations.prefixStyles($c);
+    @include border.prefixStyles($c);
+    @include form.prefixStyles($c);
+    @include position.prefixStyles($c);
+    @include properties.prefixStyles($c);
+    @include pseudo.prefixStyles($c);
+    @include theme.prefixStyles($c);
+    @include typetext.prefixStyles($c);
+}
+
+@include prefixModule('%');

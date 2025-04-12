@@ -1,27 +1,14 @@
-/* Border Size Definitions */
-.border{
-    border-width: 1px;
-}
-.border-0-125{
-    border-width: 0.125rem;
-}
+@mixin prefixStyles($c) {
+    // Border
+    #{$c}border { border-width: 1px; }
+    #{$c}border-none { border: none; }
+    #{$c}border-0-125 { border-width: 0.125rem; }
+    #{$c}border-solid { border-style: solid; }
+    #{$c}border-dashed { border-style: dashed; }
+    #{$c}border-white { border-color: white; }
+    #{$c}border-transparent { border-color: transparent; }
+    #{$c}border-radius-4 { border-radius: 4rem; }
 
-/* Border Style Definitions */
-.border-solid{
-    border-style: solid;
-}
-.border-dashed{
-    border-style: dashed;
-}
-
-/* Border Color Definitions */
-.border-white{
-    border-color: white;
-}
-.border-transparent{
-    border-color: transparent;
-}
-
-.border-radius-4{
-    border-radius: 4rem;
+    // Outline
+    #{$c}outline-none { outline: none; }
 }

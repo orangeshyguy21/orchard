@@ -45,7 +45,7 @@ export class MintMeltQuoteService {
 			return updateNut05Input;
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error,
-				errord: OrchardErrorCode.MintRpcError,
+				errord: OrchardErrorCode.MintRpcActionError,
 				msg: 'Error updating mint nut05',
 			});
 			throw new OrchardApiError(error_code);

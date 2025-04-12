@@ -23,15 +23,6 @@ export class UpdateNut04Input {
 }
 
 @InputType()
-export class UpdateQuoteTtlInput {
-	@Field(() => Int, { nullable: true })
-	mint_ttl: number;
-
-	@Field(() => Int, { nullable: true })
-	melt_ttl: number;
-}
-
-@InputType()
 export class UpdateNut04QuoteInput {
 	@Field()
 	quote_id: string;

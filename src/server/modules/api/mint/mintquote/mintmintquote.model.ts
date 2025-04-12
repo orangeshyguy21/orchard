@@ -83,15 +83,6 @@ export class UpdateNut04Output {
 }
 
 @ObjectType()
-export class UpdateQuoteTtlOutput {
-	@Field(() => Int, { nullable: true })
-	mint_ttl: number;
-
-	@Field(() => Int, { nullable: true })
-	melt_ttl: number;
-}
-
-@ObjectType()
 export class UpdateNut04QuoteOutput {
 	@Field()
 	quote_id: string;

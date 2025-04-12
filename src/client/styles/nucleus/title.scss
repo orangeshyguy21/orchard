@@ -1,0 +1,13 @@
+@use '@styles/molecule/molecule';
+
+@mixin prefixStyles($c) {
+    #{$c}title-l {
+        @extend %font-size-l;
+        @extend %orc-on-surface-variant-color;
+    }
+
+    #{$c}title-m {
+        @extend %font-size-m;
+        @extend %orc-outline-color;
+    }
+}

@@ -298,7 +298,7 @@ export class OrchardMintInfoRpc {
 	@Field()
 	version: string;
 	
-	@Field()
+	@Field({ nullable: true })
 	description: string;
 
 	@Field({ nullable: true })
@@ -326,7 +326,7 @@ export class OrchardMintInfoRpc {
 		this.name = cashu_info.name;
 		this.version = cashu_info.version;
 		this.description = cashu_info.description;
-		this.description_long = cashu_info.description_long;
+		this.description_long = cashu_info.long_description;
 		this.motd = cashu_info.motd;
 		this.total_issued = cashu_info.total_issued;
 		this.total_redeemed = cashu_info.total_redeemed;
@@ -335,7 +335,6 @@ export class OrchardMintInfoRpc {
 		this.urls = cashu_info.urls;
 	}
 }
-
 
 @ObjectType()
 export class UpdateMintNameOutput {

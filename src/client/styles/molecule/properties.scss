@@ -1,27 +1,8 @@
-/* Cursor Properties */
-.cursor-pointer{
-    cursor: pointer;
+@mixin prefixStyles($c) {
+    #{$c}cursor-pointer { cursor: pointer; }
+    #{$c}opacity-0 { opacity: 0; }
+    #{$c}opacity-1 { opacity: 1; }
+    #{$c}overflow-hidden { overflow: hidden; }
+    #{$c}overflow-y-auto { overflow-y: auto; }
+    #{$c}transparent-bg { background-color: transparent; }
 }
-
-/* Opacity Properties */
-
-.opacity-0{
-    opacity: 0;
-}
-
-.opacity-1{
-    opacity: 1;
-}
-
-
-/* Overflow Properties */
-
-.overflow-hidden{
-    overflow: hidden;
-}
-
-.overflow-y-auto{
-    overflow-y: auto;
-}
-
-

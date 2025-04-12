@@ -25,7 +25,7 @@ const routes: Routes = [
     RouterModule,
   ],
 })
-export class LightningRoutingModule { }
+export class LightningAppRoutingModule { }
 
 
 @NgModule({
@@ -34,8 +34,8 @@ export class LightningRoutingModule { }
   ],
   imports: [
     CommonModule,
-    LightningRoutingModule,
+    LightningAppRoutingModule,
   ],
 
 })
-export class LightningModule { }
+export class LightningAppModule { }

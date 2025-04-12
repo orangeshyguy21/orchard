@@ -22,8 +22,9 @@ import { NavModule } from '@client/modules/nav/nav.module';
 import { LocalModule } from '@client/modules/local/local.module';
 import { GraphicModule } from '@client/modules/graphic/graphic.module';
 import { ErrorModule } from '@client/modules/error/error.module';
+import { FormModule } from '@client/modules/form/form.module';
 /* Local Dependencies */
-import { MintRoutingModule } from './mint.router';
+import { MintAppRoutingModule } from './mint-app.router';
 /* Native Dependencies */
 import { MintSectionComponent } from './components/mint-section/mint-section.component';
 import { MintSubsectionErrorComponent } from './components/mint-subsection-error/mint-subsection-error.component';
@@ -38,6 +39,9 @@ import { MintAnalyticChartComponent } from './components/mint-analytic-chart/min
 import { MintKeysetComponent } from './components/mint-keyset/mint-keyset.component';
 import { MintIconComponent } from './components/mint-icon/mint-icon.component';
 import { MintNameComponent } from './components/mint-name/mint-name.component';
+import { MintInfoFormIconComponent } from './components/mint-info-form-icon/mint-info-form-icon.component';
+import { MintInfoFormNameComponent } from './components/mint-info-form-name/mint-info-form-name.component';
+import { MintInfoFormDescriptionComponent } from './components/mint-info-form-description/mint-info-form-description.component';
 
 @NgModule({
 	declarations: [
@@ -54,11 +58,14 @@ import { MintNameComponent } from './components/mint-name/mint-name.component';
 		MintKeysetComponent,
 		MintIconComponent,
   		MintNameComponent,
+    	MintInfoFormIconComponent,
+     MintInfoFormNameComponent,
+     MintInfoFormDescriptionComponent,
 	],
 	imports: [
 		CommonModule,
 		ReactiveFormsModule,
-		MintRoutingModule,
+		MintAppRoutingModule,
 		MatIconModule,
 		MatButtonModule,
 		MatTableModule,
@@ -77,6 +84,7 @@ import { MintNameComponent } from './components/mint-name/mint-name.component';
 		LocalModule,
 		GraphicModule,
 		ErrorModule,
+		FormModule,
 	],
 })
-export class MintModule { }
+export class MintAppModule { }

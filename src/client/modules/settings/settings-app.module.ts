@@ -40,7 +40,7 @@ const routes: Routes = [
 		RouterModule,
 	],
 })
-export class SettingsRoutingModule { }
+export class SettingsAppRoutingModule { }
 
 
 @NgModule({
@@ -54,7 +54,7 @@ export class SettingsRoutingModule { }
 	imports: [
 		CommonModule,
 		ReactiveFormsModule,
-		SettingsRoutingModule,
+		SettingsAppRoutingModule,
 		MatCardModule,
 		MatFormFieldModule,
 		MatInputModule,
@@ -66,4 +66,4 @@ export class SettingsRoutingModule { }
 		LocalModule,
 	],
 })
-export class SettingsModule { }
+export class SettingsAppModule { }

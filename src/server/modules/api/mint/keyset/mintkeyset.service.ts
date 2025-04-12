@@ -44,7 +44,7 @@ export class MintKeysetService {
 			return await this.cashuMintRpcService.rotateNextKeyset(rotateNextKeysetInput);
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error,
-				errord: OrchardErrorCode.MintRpcError,
+				errord: OrchardErrorCode.MintRpcActionError,
 				msg: 'Error rotating next keyset',
 			});
 			throw new OrchardApiError(error_code);

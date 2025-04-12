@@ -1,6 +1,12 @@
+@use 'sass:map';
 /* Base Styles */
 @use '@styles/atom/atom';
 /* Building Blocks */
-@use '@styles/molecule/molecule';
+@use '@styles/molecule/molecule' as molecule;
+/* Stacked Building Blocks */
+@use '@styles/nucleus/nucleus' as nucleus;
 /* Complex Layouts */
 @use '@styles/organism/organism';
+
+@include molecule.prefixModule('.');
+@include nucleus.prefixModule('.');

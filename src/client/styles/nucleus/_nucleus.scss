@@ -1,0 +1,9 @@
+@use './flex' as flex;
+@use './section' as section;
+@use './title' as title;
+
+@mixin prefixModule($c) {
+    @include flex.prefixStyles($c);
+    @include section.prefixStyles($c);
+    @include title.prefixStyles($c);
+}

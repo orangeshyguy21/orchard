@@ -1,20 +1,20 @@
 @use '@styles/molecule/molecule';
 
 .orc-text-button {
-    @extend .orc-on-primary-container-color;
-    @extend .cursor-pointer;
-    @extend .trans-color-fast;
+    @extend %orc-on-primary-container-color;
+    @extend %cursor-pointer;
+    @extend %trans-color-fast;
 
     &:hover {
-        @extend .orc-primary-fixed-dim-color;
+        @extend %orc-primary-fixed-dim-color;
     }
 }
 
 .orc-text-button-subtle {
-    @extend .cursor-pointer;
-    @extend .trans-color-fast;
+    @extend %cursor-pointer;
+    @extend %trans-color-fast;
 
     &:hover {
-        @extend .orc-primary-fixed-dim-color;
+        @extend %orc-primary-fixed-dim-color;
     }
 }

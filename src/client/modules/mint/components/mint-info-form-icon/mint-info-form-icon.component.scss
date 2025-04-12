@@ -1,0 +1,7 @@
+@use '@styles/molecule/molecule';
+
+
+.mint-info-id-card{
+    @extend %flex;
+    @extend %flex-gap-1;
+}

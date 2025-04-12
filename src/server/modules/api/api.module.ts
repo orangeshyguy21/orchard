@@ -10,6 +10,7 @@ import { MintInfoModule } from "./mint/info/mintinfo.module";
 import { MintBalanceModule } from "./mint/balance/mintbalance.module";
 import { MintKeysetModule } from './mint/keyset/mintkeyset.module';
 import { MintDatabaseModule } from "./mint/database/mintdatabase.module";
+import { MintQuoteModule } from "./mint/quote/mintquote.module";
 import { MintMeltQuoteModule } from "./mint/meltquote/mintmeltquote.module";
 import { MintMintQuoteModule } from "./mint/mintquote/mintmintquote.module";
 import { MintPromiseModule } from "./mint/promise/mintpromise.module";
@@ -27,6 +28,7 @@ import { AiChatModule } from "./ai/chat/aichat.module";
 		MintBalanceModule,
 		MintKeysetModule,
 		MintDatabaseModule,
+		MintQuoteModule,
 		MintMeltQuoteModule,
 		MintMintQuoteModule,
 		MintPromiseModule,

@@ -26,7 +26,7 @@ const routes: Routes = [
 		RouterModule,
 	],
 })
-export class EventRoutingModule { }
+export class EventAppRoutingModule { }
 
 
 @NgModule({
@@ -36,8 +36,8 @@ export class EventRoutingModule { }
 	imports: [
 		CommonModule,
 		MatIconModule,
-		EventRoutingModule
+		EventAppRoutingModule
 	],
 	exports: []
 })
-export class EventModule { }
+export class EventAppModule { }

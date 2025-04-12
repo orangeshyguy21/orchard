@@ -32,6 +32,11 @@ enum MintQuoteStatus {
   UNPAID
 }
 
+type MintQuoteTtlOutput {
+  melt_ttl: Int
+  mint_ttl: Int
+}
+
 enum MintUnit {
   auth
   btc
@@ -55,7 +60,7 @@ type Mutation {
   update_mint_nut04(updateNut04Input: UpdateNut04Input!): UpdateNut04Output!
   update_mint_nut04_quote(updateNut04QuoteInput: UpdateNut04QuoteInput!): UpdateNut04QuoteOutput!
   update_mint_nut05(updateNut05Input: UpdateNut05Input!): UpdateNut05Output!
-  update_mint_quote_ttl(updateQuoteTtlInput: UpdateQuoteTtlInput!): UpdateQuoteTtlOutput!
+  update_mint_quote_ttl(updateQuoteTtlInput: UpdateQuoteTtlInput!): MintQuoteTtlOutput!
   update_mint_short_description(updateMintDescriptionInput: UpdateMintDescriptionInput!): UpdateMintDescriptionOutput!
 }
 
@@ -147,7 +152,7 @@ type OrchardMintInfo {
 
 type OrchardMintInfoRpc {
   contact: [OrchardContact!]!
-  description: String!
+  description: String
   description_long: String
   icon_url: String
   motd: String
@@ -308,6 +313,7 @@ type Query {
   mint_promises(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!]): [OrchardMintPromise!]!
   mint_proofs_pending: [OrchardMintProof!]!
   mint_proofs_used: [OrchardMintProof!]!
+  mint_quote_ttl: MintQuoteTtlOutput!
   status: OrchardStatus!
 }
 
@@ -426,11 +432,6 @@ type UpdateNut05Output {
 }
 
 input UpdateQuoteTtlInput {
-  melt_ttl: Int
-  mint_ttl: Int
-}
-
-type UpdateQuoteTtlOutput {
   melt_ttl: Int
   mint_ttl: Int
 }
