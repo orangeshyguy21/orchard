@@ -12,6 +12,7 @@ import { FormControl } from '@angular/forms';
 export class MintInfoFormNameComponent implements OnChanges {
 
 	@Input() name!: string;
+    @Input() agent_name!: string | null;
 
     @Output() update = new EventEmitter<string>();
 
@@ -28,6 +29,9 @@ export class MintInfoFormNameComponent implements OnChanges {
 		if (changes['name']) {
 			this.form_name.setValue(this.name);
 		}
+        if (changes['agent_name'] && !changes['agent_name'].firstChange) {
+            this.onAgentUpdate(this.agent_name);
+        }
 	}
 
     public onSubmit(event: Event): void {
@@ -41,5 +45,10 @@ export class MintInfoFormNameComponent implements OnChanges {
         this.element_name.nativeElement.blur();
         this.form_name.setValue(this.name);
         this.form_name.markAsPristine();
+    }
+
+    private onAgentUpdate(agent_name: string | null): void {
+        this.form_name.setValue(agent_name);
+        this.form_name.markAsDirty();
     }
 }

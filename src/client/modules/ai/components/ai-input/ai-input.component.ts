@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { trigger, state, style, animate, transition } from '@angular/animations';
+import { trigger, style, animate, transition } from '@angular/animations';
 /* Vendor Dependencies */
 import { Subscription } from 'rxjs';
 /* Application Dependencies */
@@ -47,7 +47,11 @@ export class AiInputComponent implements OnInit, OnDestroy {
 	ngOnInit(): void {
 		this.chat_subscription = this.aiService.messages
 			.subscribe((chunk: AiChatChunk) => {
-				// console.log('chunk', chunk);
+				if( chunk.done ){
+					setTimeout(() => {
+						this.cdr.detectChanges();
+					});
+				}
 			});
 	}
 

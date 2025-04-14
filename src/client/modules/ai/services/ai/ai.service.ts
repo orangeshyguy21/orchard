@@ -40,7 +40,6 @@ export class AiService {
 			id: this.subscription_id,
 			type: 'stop'
 		});
-		this.apiService.gql_socket.complete();
 		this.subscription_id = null;
 	}
 

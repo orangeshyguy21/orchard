@@ -24,7 +24,7 @@ export class ApiService {
 	) {
 		this.gql_socket = webSocket({
 			url: `ws://${window.location.host}${api}`,
-			protocol: 'graphql-ws'
+			protocol: 'graphql-ws',
 		})
 	}
 
