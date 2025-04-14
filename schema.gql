@@ -2,12 +2,17 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+enum AiAgent {
+  DEFAULT
+  MINT_INFO
+}
+
 input AiChatAbortInput {
   id: String!
 }
 
 input AiChatInput {
-  agent: String!
+  agent: AiAgent
   id: String!
   messages: [AiChatMessageInput!]!
   model: String!
@@ -15,7 +20,18 @@ input AiChatInput {
 
 input AiChatMessageInput {
   content: String!
-  role: String!
+  role: AiMessageRole!
+}
+
+enum AiFunctionName {
+  MINT_NAME_UPDATE
+}
+
+enum AiMessageRole {
+  ASSISTANT
+  FUNCTION
+  SYSTEM
+  USER
 }
 
 enum MintAnalyticsInterval {
@@ -79,13 +95,23 @@ type OrchardAiChatChunk {
   total_duration: Float
 }
 
+type OrchardAiChatFunction {
+  arguments: String!
+  name: AiFunctionName!
+}
+
 type OrchardAiChatMessage {
   content: String!
-  role: String!
+  role: AiMessageRole!
+  tool_calls: [OrchardAiChatToolCall!]
 }
 
 type OrchardAiChatStream {
   id: String!
+}
+
+type OrchardAiChatToolCall {
+  function: OrchardAiChatFunction!
 }
 
 type OrchardAiModel {

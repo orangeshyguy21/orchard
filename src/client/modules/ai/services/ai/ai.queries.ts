@@ -5,6 +5,12 @@ export const AI_CHAT_SUBSCRIPTION = `
             message {
                 role
                 content
+                tool_calls {
+                    function {
+                        name
+                        arguments
+                    }
+                }
             }
             done
             done_reason

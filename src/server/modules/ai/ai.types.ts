@@ -1,3 +1,7 @@
+/* Local Dependencies */
+import { UpdateMintNameTool } from './ai.tools';
+import { AiMessageRole, AiFunctionName } from './ai.enums';
+
 export type AiModel = {
     name: string;
     model: string;
@@ -17,8 +21,9 @@ export type AiModelDetails = {
 }   
 
 export type AiMessage = {
-    role: string;
+    role: AiMessageRole;
     content: string;
+    tool_calls?: AiToolCall[];
 }
 
 export type AiTool = {
@@ -29,5 +34,12 @@ export type AiTool = {
 export type AiToolFunction = {
     name: string;
     description: string;
-    parameters: any;
+    parameters: typeof UpdateMintNameTool['function']['parameters'];
+}
+
+export type AiToolCall = {
+    function: {
+        name: AiFunctionName;
+        arguments:typeof UpdateMintNameTool['function']['parameters'];
+    };
 }

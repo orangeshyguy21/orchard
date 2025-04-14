@@ -1,6 +1,6 @@
 <div>
-    <form>
-        <mat-form-field [appearance]="appearance" class="primary-form-field">
+    <form class="flex flex-items-center flex-gap-1" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)" (keydown.escape)="onCancel()">
+        <mat-form-field [appearance]="form_hot ? 'fill' : 'outline'" class="primary-form-field">
             <mat-label>Name</mat-label>
             <input 
                 type="text" 
@@ -9,6 +9,15 @@
                 placeholder="Ex. My Mint"
                 #element_name>
         </mat-form-field>
+        @if (form_hot) {
+            <div class="flex flex-items-center">
+                <button type="button" mat-icon-button aria-label="Example icon button with a vertical three dot icon" class="m-b-1-25" (click)="onSubmit($event)">
+                    <mat-icon class="mat-symbol-outline">check_circle</mat-icon>
+                </button>
+                <button type="button" mat-icon-button aria-label="Example icon button with a vertical three dot icon" class="m-b-1-25" (click)="onCancel()">
+                    <mat-icon class="mat-symbol-outline">cancel</mat-icon>
+                </button>
+            </div>
+        }
     </form>
 </div>
-

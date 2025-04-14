@@ -5,6 +5,8 @@ import { ConfigService } from '@nestjs/config';
 import { FetchService } from '../fetch/fetch.service';
 /* Local Dependencies */
 import { AiModel, AiMessage, AiTool } from './ai.types';
+import { AI_AGENTS } from './ai.agents';
+import { AiAgent } from './ai.enums';
 
 @Injectable()
 export class AiService {
@@ -31,9 +33,10 @@ export class AiService {
         return data.models;
     }
 
-    async streamChat(model: string, agent: string, messages: AiMessage[], signal?: AbortSignal) {
-        // based on the agent, get the tools
-        // and the system prompt
+    async streamChat(model: string, agent: AiAgent | null, messages: AiMessage[], signal?: AbortSignal) {
+        if( !agent ) agent = AiAgent.DEFAULT;
+        const tools = AI_AGENTS[agent].tools;
+        const system_message = AI_AGENTS[agent].system_message;
         const timeout_signal = AbortSignal.timeout(this.chat_timeout);
         const combined_signal = signal ? AbortSignal.any([signal, timeout_signal]) : timeout_signal;
         
@@ -44,8 +47,8 @@ export class AiService {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     model: model,
-                    messages: messages,
-                    tools: [],
+                    messages: [system_message, ...messages],
+                    tools: tools,
                 }),
                 signal: combined_signal,
             },

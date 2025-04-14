@@ -10,11 +10,11 @@
 
     @if (show_url_input) {
         <div>
-            <form>
+            <form (ngSubmit)="$event.preventDefault()">
                 <mat-form-field class="w-full">
                     <mat-label>Icon Url</mat-label>
                     <textarea 
-                        type="url" 
+                        type="text" 
                         matInput 
                         [formControl]="form_icon_url" 
                         [autogrow]="true"
@@ -27,7 +27,7 @@
                         <mat-error>Email is <strong>required</strong></mat-error>
                     } -->
                 </mat-form-field>
-              </form>              
+            </form>              
         </div>
     }
 </div>

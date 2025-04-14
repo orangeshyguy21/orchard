@@ -18,12 +18,17 @@ export type Scalars = {
   UnixTimestamp: { input: any; output: any; }
 };
 
+export enum AiAgent {
+  Default = 'DEFAULT',
+  MintInfo = 'MINT_INFO'
+}
+
 export type AiChatAbortInput = {
   id: Scalars['String']['input'];
 };
 
 export type AiChatInput = {
-  agent: Scalars['String']['input'];
+  agent?: InputMaybe<AiAgent>;
   id: Scalars['String']['input'];
   messages: Array<AiChatMessageInput>;
   model: Scalars['String']['input'];
@@ -31,8 +36,19 @@ export type AiChatInput = {
 
 export type AiChatMessageInput = {
   content: Scalars['String']['input'];
-  role: Scalars['String']['input'];
+  role: AiMessageRole;
 };
+
+export enum AiFunctionName {
+  MintNameUpdate = 'MINT_NAME_UPDATE'
+}
+
+export enum AiMessageRole {
+  Assistant = 'ASSISTANT',
+  Function = 'FUNCTION',
+  System = 'SYSTEM',
+  User = 'USER'
+}
 
 export enum MintAnalyticsInterval {
   Custom = 'custom',
@@ -173,15 +189,27 @@ export type OrchardAiChatChunk = {
   total_duration?: Maybe<Scalars['Float']['output']>;
 };
 
+export type OrchardAiChatFunction = {
+  __typename?: 'OrchardAiChatFunction';
+  arguments: Scalars['String']['output'];
+  name: AiFunctionName;
+};
+
 export type OrchardAiChatMessage = {
   __typename?: 'OrchardAiChatMessage';
   content: Scalars['String']['output'];
-  role: Scalars['String']['output'];
+  role: AiMessageRole;
+  tool_calls?: Maybe<Array<OrchardAiChatToolCall>>;
 };
 
 export type OrchardAiChatStream = {
   __typename?: 'OrchardAiChatStream';
   id: Scalars['String']['output'];
+};
+
+export type OrchardAiChatToolCall = {
+  __typename?: 'OrchardAiChatToolCall';
+  function: OrchardAiChatFunction;
 };
 
 export type OrchardAiModel = {
