@@ -19,6 +19,7 @@ import {
 	MintAnalyticsMeltsResponse,
 	MintAnalyticsTransfersResponse,
 	MintInfoRpcResponse,
+	MintNameUpdateResponse,
 } from '@client/modules/mint/types/mint.types';
 import { CacheService } from '@client/modules/cache/services/cache/cache.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
@@ -40,6 +41,7 @@ import {
 	MINT_ANALYTICS_MINTS_QUERY,
 	MINT_ANALYTICS_MELTS_QUERY,
 	MINT_ANALYTICS_TRANSFERS_QUERY,
+	MINT_NAME_MUTATION,
 } from './mint.queries';
 
 
@@ -148,6 +150,10 @@ export class MintService {
 			this.CACHE_KEYS.MINT_ANALYTICS_PRE_TRANSFERS,
 			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_ANALYTICS_PRE_TRANSFERS]
 		);
+	}
+
+	public clearInfoCache() {
+		this.cache.clearCache(this.CACHE_KEYS.MINT_INFO);
 	}
 
 	public clearAnalyticsCache() {
@@ -393,6 +399,20 @@ export class MintService {
 			}),
 			catchError((error) => {
 				console.error('Error loading mint analytics transfers:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public updateMintName(name:string) {
+		const query = getApiQuery(MINT_NAME_MUTATION,  { mint_name_update: { name } });
+		return this.http.post<OrchardRes<MintNameUpdateResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error updating mint name:', error);
 				return throwError(() => error);
 			})
 		);

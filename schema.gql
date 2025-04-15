@@ -41,6 +41,27 @@ enum MintAnalyticsInterval {
   week
 }
 
+input MintContactUpdateInput {
+  info: String!
+  method: String!
+}
+
+input MintDescriptionUpdateInput {
+  description: String!
+}
+
+input MintIconUpdateInput {
+  icon_url: String!
+}
+
+input MintMotdUpdateInput {
+  motd: String!
+}
+
+input MintNameUpdateInput {
+  name: String!
+}
+
 enum MintQuoteStatus {
   ISSUED
   PAID
@@ -62,22 +83,26 @@ enum MintUnit {
   usd
 }
 
+input MintUrlUpdateInput {
+  url: String!
+}
+
 type Mutation {
-  add_mint_contact(updateContactInput: UpdateContactInput!): UpdateContactOutput!
-  add_mint_url(updateUrlInput: UpdateUrlInput!): UpdateMintUrlOutput!
-  ai_chat_abort(aiChatAbortInput: AiChatAbortInput!): OrchardAiChatStream!
-  remove_mint_contact(updateContactInput: UpdateContactInput!): UpdateContactOutput!
-  remove_mint_url(updateUrlInput: UpdateUrlInput!): UpdateMintUrlOutput!
+  ai_chat_abort(ai_chat_abort: AiChatAbortInput!): OrchardAiChatStream!
+  mint_contact_add(mint_contact_update: MintContactUpdateInput!): OrchardMintContactUpdate!
+  mint_contact_remove(mint_contact_update: MintContactUpdateInput!): OrchardMintContactUpdate!
+  mint_icon_update(mint_icon_update: MintIconUpdateInput!): OrchardMintIconUpdate!
+  mint_long_description_update(mint_desc_update: MintDescriptionUpdateInput!): OrchardMintDescriptionUpdate!
+  mint_motd_update(mint_motd_update: MintMotdUpdateInput!): OrchardMintMotdUpdate!
+  mint_name_update(mint_name_update: MintNameUpdateInput!): OrchardMintNameUpdate!
+  mint_short_description_update(mint_desc_update: MintDescriptionUpdateInput!): OrchardMintDescriptionUpdate!
+  mint_url_add(mint_url_update: MintUrlUpdateInput!): OrchardMintUrlUpdate!
+  mint_url_remove(mint_url_update: MintUrlUpdateInput!): OrchardMintUrlUpdate!
   rotate_next_keyset(rotateNextKeysetInput: RotateNextKeysetInput!): RotateNextKeysetOutput!
-  update_mint_icon(updateMintIconInput: UpdateMintIconInput!): UpdateMintIconOutput!
-  update_mint_long_description(updateMintDescriptionInput: UpdateMintDescriptionInput!): UpdateMintDescriptionOutput!
-  update_mint_motd(updateMotdInput: UpdateMotdInput!): UpdateMintMotdOutput!
-  update_mint_name(updateMintNameInput: UpdateMintNameInput!): UpdateMintNameOutput!
   update_mint_nut04(updateNut04Input: UpdateNut04Input!): UpdateNut04Output!
   update_mint_nut04_quote(updateNut04QuoteInput: UpdateNut04QuoteInput!): UpdateNut04QuoteOutput!
   update_mint_nut05(updateNut05Input: UpdateNut05Input!): UpdateNut05Output!
   update_mint_quote_ttl(updateQuoteTtlInput: UpdateQuoteTtlInput!): MintQuoteTtlOutput!
-  update_mint_short_description(updateMintDescriptionInput: UpdateMintDescriptionInput!): UpdateMintDescriptionOutput!
 }
 
 type OrchardAiChatChunk {
@@ -158,9 +183,22 @@ type OrchardMintBalance {
   keyset: String!
 }
 
+type OrchardMintContactUpdate {
+  info: String!
+  method: String!
+}
+
 type OrchardMintDatabase {
   db: String!
   version: Int!
+}
+
+type OrchardMintDescriptionUpdate {
+  description: String!
+}
+
+type OrchardMintIconUpdate {
+  icon_url: String!
 }
 
 type OrchardMintInfo {
@@ -233,6 +271,14 @@ type OrchardMintMintQuote {
   unit: MintUnit!
 }
 
+type OrchardMintMotdUpdate {
+  motd: String!
+}
+
+type OrchardMintNameUpdate {
+  name: String!
+}
+
 type OrchardMintPromise {
   amount: Int!
   b_: ID!
@@ -254,6 +300,10 @@ type OrchardMintProof {
   secret: String!
   witness: String
   y: String
+}
+
+type OrchardMintUrlUpdate {
+  url: String!
 }
 
 type OrchardNut4 {
@@ -357,7 +407,7 @@ type RotateNextKeysetOutput {
 }
 
 type Subscription {
-  ai_chat(aiChatInput: AiChatInput!): OrchardAiChatChunk!
+  ai_chat(ai_chat: AiChatInput!): OrchardAiChatChunk!
   blockCount: OrchardBitcoinBlockCount!
 }
 
@@ -366,52 +416,6 @@ scalar Timezone
 
 """A Unix timestamp in seconds"""
 scalar UnixTimestamp
-
-input UpdateContactInput {
-  info: String!
-  method: String!
-}
-
-type UpdateContactOutput {
-  info: String!
-  method: String!
-}
-
-input UpdateMintDescriptionInput {
-  description: String!
-}
-
-type UpdateMintDescriptionOutput {
-  description: String!
-}
-
-input UpdateMintIconInput {
-  icon_url: String!
-}
-
-type UpdateMintIconOutput {
-  icon_url: String!
-}
-
-type UpdateMintMotdOutput {
-  motd: String!
-}
-
-input UpdateMintNameInput {
-  name: String!
-}
-
-type UpdateMintNameOutput {
-  name: String!
-}
-
-type UpdateMintUrlOutput {
-  url: String!
-}
-
-input UpdateMotdInput {
-  motd: String!
-}
 
 input UpdateNut04Input {
   description: Boolean
@@ -460,8 +464,4 @@ type UpdateNut05Output {
 input UpdateQuoteTtlInput {
   melt_ttl: Int
   mint_ttl: Int
-}
-
-input UpdateUrlInput {
-  url: String!
 }

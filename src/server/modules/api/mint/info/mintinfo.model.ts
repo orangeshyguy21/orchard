@@ -337,37 +337,37 @@ export class OrchardMintInfoRpc {
 }
 
 @ObjectType()
-export class UpdateMintNameOutput {
+export class OrchardMintNameUpdate {
 	@Field()
 	name: string;
 }
 
 @ObjectType()
-export class UpdateMintIconOutput {
+export class OrchardMintIconUpdate {
 	@Field()
 	icon_url: string;
 }
 
 @ObjectType()
-export class UpdateMintDescriptionOutput {
+export class OrchardMintDescriptionUpdate {
 	@Field()
 	description: string;
 }
 
 @ObjectType()
-export class UpdateMintMotdOutput {
+export class OrchardMintMotdUpdate {
 	@Field()
 	motd: string;
 }
 
 @ObjectType()
-export class UpdateMintUrlOutput {
+export class OrchardMintUrlUpdate {
 	@Field()
 	url: string;
 }
 
 @ObjectType()
-export class UpdateContactOutput {
+export class OrchardMintContactUpdate {
 	@Field()
 	method: string;
 

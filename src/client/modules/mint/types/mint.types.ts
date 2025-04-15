@@ -1,4 +1,19 @@
-import { OrchardMintBalance, OrchardMintInfo, OrchardMintKeyset, OrchardMintPromise, OrchardMintAnalytics, MintUnit, MintAnalyticsInterval, OrchardMintInfoRpc } from "@shared/generated.types";
+import { 
+    OrchardMintBalance,
+    OrchardMintInfo,
+    OrchardMintKeyset,
+    OrchardMintPromise,
+    OrchardMintAnalytics,
+    MintUnit,
+    MintAnalyticsInterval,
+    OrchardMintInfoRpc,
+    OrchardMintNameUpdate, 
+    OrchardMintIconUpdate,
+    OrchardMintDescriptionUpdate,
+    OrchardMintMotdUpdate,
+    OrchardMintUrlUpdate,
+    OrchardMintContactUpdate,
+} from "@shared/generated.types";
 
 export type MintInfoResponse = {
   	mint_info: OrchardMintInfo;
@@ -49,4 +64,8 @@ export type MintAnalyticsArgs = {
     date_end?: number;
     interval?: MintAnalyticsInterval;
     timezone?: string;
+}
+
+export type MintNameUpdateResponse = {
+	mint_name_update: OrchardMintNameUpdate;
 }

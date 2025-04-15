@@ -50,7 +50,7 @@ export class CashuMintRpcService implements OnModuleInit {
         return this.makeGrpcRequest('GetQuoteTtl', {});
     }
 
-    async updateName({ name }: { name: string }) : Promise<{}> {
+    async updateName({ name }: { name: string|null }) : Promise<{}> {
         return this.makeGrpcRequest('UpdateName', { name });
     }
 

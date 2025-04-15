@@ -48,7 +48,6 @@ export class AiService {
 		this.subscription_id = subscription_id;
 		this.subscription = this.apiService.gql_socket.subscribe({
 			next: (response: OrchardWsRes<AiChatResponse>) => {
-				console.log('response', response);
 				if (response.type === 'data' && response?.payload?.data?.ai_chat) {
 					const chunk = new AiChatChunk(response.payload.data.ai_chat);
 					this.message_subject.next( chunk );
@@ -69,7 +68,7 @@ export class AiService {
 			payload: {
 				query: AI_CHAT_SUBSCRIPTION,
 				variables: {
-					aiChatInput: {
+					ai_chat: {
 						id: subscription_id,
 						messages: [{ role: AiMessageRole.User, content }],
 						model: 'llama3.2:latest',

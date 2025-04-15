@@ -6,20 +6,20 @@ import { MintInfoService } from "./mintinfo.service";
 import { 
 	OrchardMintInfo, 
 	OrchardMintInfoRpc, 
-	UpdateMintNameOutput, 
-	UpdateMintIconOutput, 
-	UpdateMintDescriptionOutput, 
-	UpdateMintMotdOutput,
-	UpdateMintUrlOutput,
-	UpdateContactOutput,
+	OrchardMintNameUpdate, 
+	OrchardMintIconUpdate, 
+	OrchardMintDescriptionUpdate, 
+	OrchardMintMotdUpdate,
+	OrchardMintUrlUpdate,
+	OrchardMintContactUpdate,
 } from "./mintinfo.model";
 import { 
-	UpdateMintNameInput,
-	UpdateMintIconInput,
-	UpdateMintDescriptionInput,
-	UpdateMotdInput,
-	UpdateUrlInput,
-	UpdateContactInput,
+	MintNameUpdateInput,
+	MintIconUpdateInput,
+	MintDescriptionUpdateInput,
+	MintMotdUpdateInput,
+	MintUrlUpdateInput,
+	MintContactUpdateInput,
 } from "./mintinfo.input";
 
 
@@ -44,57 +44,57 @@ export class MintInfoResolver {
 		return await this.mintInfoService.getMintInfoRpc();
 	}
 	
-	@Mutation(() => UpdateMintNameOutput)
-	async update_mint_name(@Args('updateMintNameInput') updateMintNameInput: UpdateMintNameInput): Promise<UpdateMintNameOutput> {
-		this.logger.debug(`MUTATION { update_mint_name }`);
-		return await this.mintInfoService.updateMintName(updateMintNameInput);
+	@Mutation(() => OrchardMintNameUpdate)
+	async mint_name_update(@Args('mint_name_update') mint_name_update: MintNameUpdateInput): Promise<OrchardMintNameUpdate> {
+		this.logger.debug(`MUTATION { mint_name_update }`);
+		return await this.mintInfoService.updateMintName(mint_name_update);
 	}
 
-	@Mutation(() => UpdateMintIconOutput)
-	async update_mint_icon(@Args('updateMintIconInput') updateMintIconInput: UpdateMintIconInput): Promise<UpdateMintIconOutput> {
-		this.logger.debug(`MUTATION { update_mint_icon }`);
-		return await this.mintInfoService.updateMintIcon(updateMintIconInput);
+	@Mutation(() => OrchardMintIconUpdate)
+	async mint_icon_update(@Args('mint_icon_update') mint_icon_update: MintIconUpdateInput): Promise<OrchardMintIconUpdate> {
+		this.logger.debug(`MUTATION { mint_icon_update }`);
+		return await this.mintInfoService.updateMintIcon(mint_icon_update);
 	}
 
-	@Mutation(() => UpdateMintDescriptionOutput)
-	async update_mint_short_description(@Args('updateMintDescriptionInput') updateMintDescriptionInput: UpdateMintDescriptionInput): Promise<UpdateMintDescriptionOutput> {
-		this.logger.debug(`MUTATION { update_mint_short_description }`);
-		return await this.mintInfoService.updateMintShortDescription(updateMintDescriptionInput);
+	@Mutation(() => OrchardMintDescriptionUpdate)
+	async mint_short_description_update(@Args('mint_desc_update') mint_desc_update: MintDescriptionUpdateInput): Promise<OrchardMintDescriptionUpdate> {
+		this.logger.debug(`MUTATION { mint_short_description_update }`);
+		return await this.mintInfoService.updateMintShortDescription(mint_desc_update);
 	}
 
-	@Mutation(() => UpdateMintDescriptionOutput)
-	async update_mint_long_description(@Args('updateMintDescriptionInput') updateMintDescriptionInput: UpdateMintDescriptionInput): Promise<UpdateMintDescriptionOutput> {
-		this.logger.debug(`MUTATION { update_mint_long_description }`);
-		return await this.mintInfoService.updateMintLongDescription(updateMintDescriptionInput);
+	@Mutation(() => OrchardMintDescriptionUpdate)
+	async mint_long_description_update(@Args('mint_desc_update') mint_desc_update: MintDescriptionUpdateInput): Promise<OrchardMintDescriptionUpdate> {
+		this.logger.debug(`MUTATION { mint_long_description_update }`);
+		return await this.mintInfoService.updateMintLongDescription(mint_desc_update);
 	}
 
-	@Mutation(() => UpdateMintMotdOutput)
-	async update_mint_motd(@Args('updateMotdInput') updateMotdInput: UpdateMotdInput): Promise<UpdateMintMotdOutput> {
-		this.logger.debug(`MUTATION { update_mint_motd }`);
-		return await this.mintInfoService.updateMintMotd(updateMotdInput);
+	@Mutation(() => OrchardMintMotdUpdate)
+	async mint_motd_update(@Args('mint_motd_update') mint_motd_update: MintMotdUpdateInput): Promise<OrchardMintMotdUpdate> {
+		this.logger.debug(`MUTATION { mint_motd_update }`);
+		return await this.mintInfoService.updateMintMotd(mint_motd_update);
 	}
 
-	@Mutation(() => UpdateMintUrlOutput)
-	async add_mint_url(@Args('updateUrlInput') updateUrlInput: UpdateUrlInput): Promise<UpdateMintUrlOutput> {
-		this.logger.debug(`MUTATION { add_mint_url }`);
-		return await this.mintInfoService.addMintUrl(updateUrlInput);
+	@Mutation(() => OrchardMintUrlUpdate)
+	async mint_url_add(@Args('mint_url_update') mint_url_update: MintUrlUpdateInput): Promise<OrchardMintUrlUpdate> {
+		this.logger.debug(`MUTATION { mint_url_add }`);
+		return await this.mintInfoService.addMintUrl(mint_url_update);
 	}
 
-	@Mutation(() => UpdateMintUrlOutput)
-	async remove_mint_url(@Args('updateUrlInput') updateUrlInput: UpdateUrlInput): Promise<UpdateMintUrlOutput> {
-		this.logger.debug(`MUTATION { remove_mint_url }`);
-		return await this.mintInfoService.removeMintUrl(updateUrlInput);
+	@Mutation(() => OrchardMintUrlUpdate)
+	async mint_url_remove(@Args('mint_url_update') mint_url_update: MintUrlUpdateInput): Promise<OrchardMintUrlUpdate> {
+		this.logger.debug(`MUTATION { mint_url_remove }`);
+		return await this.mintInfoService.removeMintUrl(mint_url_update);
 	}
 
-	@Mutation(() => UpdateContactOutput)
-	async add_mint_contact(@Args('updateContactInput') updateContactInput: UpdateContactInput): Promise<UpdateContactOutput> {
-		this.logger.debug(`MUTATION { add_mint_contact }`);
-		return await this.mintInfoService.addMintContact(updateContactInput);
+	@Mutation(() => OrchardMintContactUpdate)
+	async mint_contact_add(@Args('mint_contact_update') mint_contact_update: MintContactUpdateInput): Promise<OrchardMintContactUpdate> {
+		this.logger.debug(`MUTATION { mint_contact_add }`);
+		return await this.mintInfoService.addMintContact(mint_contact_update);
 	}
 
-	@Mutation(() => UpdateContactOutput)
-	async remove_mint_contact(@Args('updateContactInput') updateContactInput: UpdateContactInput): Promise<UpdateContactOutput> {
-		this.logger.debug(`MUTATION { remove_mint_contact }`);
-		return await this.mintInfoService.removeMintContact(updateContactInput);
+	@Mutation(() => OrchardMintContactUpdate)
+	async mint_contact_remove(@Args('mint_contact_update') mint_contact_update: MintContactUpdateInput): Promise<OrchardMintContactUpdate> {
+		this.logger.debug(`MUTATION { mint_contact_remove }`);
+		return await this.mintInfoService.removeMintContact(mint_contact_update);
 	}
 }

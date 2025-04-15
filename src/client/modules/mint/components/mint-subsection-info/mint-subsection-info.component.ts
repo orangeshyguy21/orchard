@@ -54,8 +54,15 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 	}
 
 	public onNameUpdate(name: string|null): void {
-		// this.agent_info.name = name;
-		// this.cdr.detectChanges();
+		if(!name) return;
+		this.mintService.updateMintName(name).subscribe((response) => {
+			this.init_info.name = response.mint_name_update.name;
+			this.mintService.clearInfoCache();
+			this.mintService.loadMintInfo().subscribe((response) => {
+				// this.init_info = response;
+				this.cdr.detectChanges();
+			});
+		});
 	}
 
 	ngOnDestroy(): void {

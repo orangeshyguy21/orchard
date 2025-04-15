@@ -57,6 +57,27 @@ export enum MintAnalyticsInterval {
   Week = 'week'
 }
 
+export type MintContactUpdateInput = {
+  info: Scalars['String']['input'];
+  method: Scalars['String']['input'];
+};
+
+export type MintDescriptionUpdateInput = {
+  description: Scalars['String']['input'];
+};
+
+export type MintIconUpdateInput = {
+  icon_url: Scalars['String']['input'];
+};
+
+export type MintMotdUpdateInput = {
+  motd: Scalars['String']['input'];
+};
+
+export type MintNameUpdateInput = {
+  name: Scalars['String']['input'];
+};
+
 export enum MintQuoteStatus {
   Issued = 'ISSUED',
   Paid = 'PAID',
@@ -79,73 +100,82 @@ export enum MintUnit {
   Usd = 'usd'
 }
 
+export type MintUrlUpdateInput = {
+  url: Scalars['String']['input'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
-  add_mint_contact: UpdateContactOutput;
-  add_mint_url: UpdateMintUrlOutput;
   ai_chat_abort: OrchardAiChatStream;
-  remove_mint_contact: UpdateContactOutput;
-  remove_mint_url: UpdateMintUrlOutput;
+  mint_contact_add: OrchardMintContactUpdate;
+  mint_contact_remove: OrchardMintContactUpdate;
+  mint_icon_update: OrchardMintIconUpdate;
+  mint_long_description_update: OrchardMintDescriptionUpdate;
+  mint_motd_update: OrchardMintMotdUpdate;
+  mint_name_update: OrchardMintNameUpdate;
+  mint_short_description_update: OrchardMintDescriptionUpdate;
+  mint_url_add: OrchardMintUrlUpdate;
+  mint_url_remove: OrchardMintUrlUpdate;
   rotate_next_keyset: RotateNextKeysetOutput;
-  update_mint_icon: UpdateMintIconOutput;
-  update_mint_long_description: UpdateMintDescriptionOutput;
-  update_mint_motd: UpdateMintMotdOutput;
-  update_mint_name: UpdateMintNameOutput;
   update_mint_nut04: UpdateNut04Output;
   update_mint_nut04_quote: UpdateNut04QuoteOutput;
   update_mint_nut05: UpdateNut05Output;
   update_mint_quote_ttl: MintQuoteTtlOutput;
-  update_mint_short_description: UpdateMintDescriptionOutput;
-};
-
-
-export type MutationAdd_Mint_ContactArgs = {
-  updateContactInput: UpdateContactInput;
-};
-
-
-export type MutationAdd_Mint_UrlArgs = {
-  updateUrlInput: UpdateUrlInput;
 };
 
 
 export type MutationAi_Chat_AbortArgs = {
-  aiChatAbortInput: AiChatAbortInput;
+  ai_chat_abort: AiChatAbortInput;
 };
 
 
-export type MutationRemove_Mint_ContactArgs = {
-  updateContactInput: UpdateContactInput;
+export type MutationMint_Contact_AddArgs = {
+  mintContactUpdateInput: MintContactUpdateInput;
 };
 
 
-export type MutationRemove_Mint_UrlArgs = {
-  updateUrlInput: UpdateUrlInput;
+export type MutationMint_Contact_RemoveArgs = {
+  mintContactUpdateInput: MintContactUpdateInput;
+};
+
+
+export type MutationMint_Icon_UpdateArgs = {
+  mintIconUpdateInput: MintIconUpdateInput;
+};
+
+
+export type MutationMint_Long_Description_UpdateArgs = {
+  mintDescriptionUpdateInput: MintDescriptionUpdateInput;
+};
+
+
+export type MutationMint_Motd_UpdateArgs = {
+  mintMotdUpdateInput: MintMotdUpdateInput;
+};
+
+
+export type MutationMint_Name_UpdateArgs = {
+  mint_name_update: MintNameUpdateInput;
+};
+
+
+export type MutationMint_Short_Description_UpdateArgs = {
+  mintDescriptionUpdateInput: MintDescriptionUpdateInput;
+};
+
+
+export type MutationMint_Url_AddArgs = {
+  mintUrlUpdateInput: MintUrlUpdateInput;
+};
+
+
+export type MutationMint_Url_RemoveArgs = {
+  mintUrlUpdateInput: MintUrlUpdateInput;
 };
 
 
 export type MutationRotate_Next_KeysetArgs = {
   rotateNextKeysetInput: RotateNextKeysetInput;
-};
-
-
-export type MutationUpdate_Mint_IconArgs = {
-  updateMintIconInput: UpdateMintIconInput;
-};
-
-
-export type MutationUpdate_Mint_Long_DescriptionArgs = {
-  updateMintDescriptionInput: UpdateMintDescriptionInput;
-};
-
-
-export type MutationUpdate_Mint_MotdArgs = {
-  updateMotdInput: UpdateMotdInput;
-};
-
-
-export type MutationUpdate_Mint_NameArgs = {
-  updateMintNameInput: UpdateMintNameInput;
 };
 
 
@@ -166,11 +196,6 @@ export type MutationUpdate_Mint_Nut05Args = {
 
 export type MutationUpdate_Mint_Quote_TtlArgs = {
   updateQuoteTtlInput: UpdateQuoteTtlInput;
-};
-
-
-export type MutationUpdate_Mint_Short_DescriptionArgs = {
-  updateMintDescriptionInput: UpdateMintDescriptionInput;
 };
 
 export type OrchardAiChatChunk = {
@@ -263,10 +288,26 @@ export type OrchardMintBalance = {
   keyset: Scalars['String']['output'];
 };
 
+export type OrchardMintContactUpdate = {
+  __typename?: 'OrchardMintContactUpdate';
+  info: Scalars['String']['output'];
+  method: Scalars['String']['output'];
+};
+
 export type OrchardMintDatabase = {
   __typename?: 'OrchardMintDatabase';
   db: Scalars['String']['output'];
   version: Scalars['Int']['output'];
+};
+
+export type OrchardMintDescriptionUpdate = {
+  __typename?: 'OrchardMintDescriptionUpdate';
+  description: Scalars['String']['output'];
+};
+
+export type OrchardMintIconUpdate = {
+  __typename?: 'OrchardMintIconUpdate';
+  icon_url: Scalars['String']['output'];
 };
 
 export type OrchardMintInfo = {
@@ -344,6 +385,16 @@ export type OrchardMintMintQuote = {
   unit: MintUnit;
 };
 
+export type OrchardMintMotdUpdate = {
+  __typename?: 'OrchardMintMotdUpdate';
+  motd: Scalars['String']['output'];
+};
+
+export type OrchardMintNameUpdate = {
+  __typename?: 'OrchardMintNameUpdate';
+  name: Scalars['String']['output'];
+};
+
 export type OrchardMintPromise = {
   __typename?: 'OrchardMintPromise';
   amount: Scalars['Int']['output'];
@@ -367,6 +418,11 @@ export type OrchardMintProof = {
   secret: Scalars['String']['output'];
   witness?: Maybe<Scalars['String']['output']>;
   y?: Maybe<Scalars['String']['output']>;
+};
+
+export type OrchardMintUrlUpdate = {
+  __typename?: 'OrchardMintUrlUpdate';
+  url: Scalars['String']['output'];
 };
 
 export type OrchardNut4 = {
@@ -540,59 +596,7 @@ export type Subscription = {
 
 
 export type SubscriptionAi_ChatArgs = {
-  aiChatInput: AiChatInput;
-};
-
-export type UpdateContactInput = {
-  info: Scalars['String']['input'];
-  method: Scalars['String']['input'];
-};
-
-export type UpdateContactOutput = {
-  __typename?: 'UpdateContactOutput';
-  info: Scalars['String']['output'];
-  method: Scalars['String']['output'];
-};
-
-export type UpdateMintDescriptionInput = {
-  description: Scalars['String']['input'];
-};
-
-export type UpdateMintDescriptionOutput = {
-  __typename?: 'UpdateMintDescriptionOutput';
-  description: Scalars['String']['output'];
-};
-
-export type UpdateMintIconInput = {
-  icon_url: Scalars['String']['input'];
-};
-
-export type UpdateMintIconOutput = {
-  __typename?: 'UpdateMintIconOutput';
-  icon_url: Scalars['String']['output'];
-};
-
-export type UpdateMintMotdOutput = {
-  __typename?: 'UpdateMintMotdOutput';
-  motd: Scalars['String']['output'];
-};
-
-export type UpdateMintNameInput = {
-  name: Scalars['String']['input'];
-};
-
-export type UpdateMintNameOutput = {
-  __typename?: 'UpdateMintNameOutput';
-  name: Scalars['String']['output'];
-};
-
-export type UpdateMintUrlOutput = {
-  __typename?: 'UpdateMintUrlOutput';
-  url: Scalars['String']['output'];
-};
-
-export type UpdateMotdInput = {
-  motd: Scalars['String']['input'];
+  ai_chat: AiChatInput;
 };
 
 export type UpdateNut04Input = {
@@ -645,8 +649,4 @@ export type UpdateNut05Output = {
 export type UpdateQuoteTtlInput = {
   melt_ttl?: InputMaybe<Scalars['Int']['input']>;
   mint_ttl?: InputMaybe<Scalars['Int']['input']>;
-};
-
-export type UpdateUrlInput = {
-  url: Scalars['String']['input'];
 };

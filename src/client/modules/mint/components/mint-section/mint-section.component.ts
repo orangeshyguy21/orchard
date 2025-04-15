@@ -33,6 +33,7 @@ export class MintSectionComponent implements OnInit, OnDestroy {
 	ngOnInit(): void {
 		this.mintService.loadMintInfo().subscribe({
 			next: (info:MintInfo) => {
+				console.log('mint_info INSIDE MINT SECTION', info);
 				this.mint_info = info;
 				this.loading = false;
 				this.changeDetectorRef.detectChanges();

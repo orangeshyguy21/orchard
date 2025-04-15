@@ -112,7 +112,8 @@ export const MINT_KEYSETS_QUERY = `{
     }
 }`;
 
-export const MINT_PROMISES_QUERY = `query MintPromises($id_keysets: [String!]) {
+export const MINT_PROMISES_QUERY = `
+query MintPromises($id_keysets: [String!]) {
 	mint_promises(id_keysets: $id_keysets) {
 		amount
 		id
@@ -166,6 +167,10 @@ query MintAnalyticsTransfers($units: [MintUnit!], $date_start: UnixTimestamp, $d
 	}
 }`;
 
-// export const U
-
-// update_mint_name
+export const MINT_NAME_MUTATION = `
+mutation MintName($mint_name_update: MintNameUpdateInput!) {
+	mint_name_update(mint_name_update: $mint_name_update) {
+		name
+	}
+}
+`;
