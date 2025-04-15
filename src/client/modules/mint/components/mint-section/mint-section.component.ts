@@ -7,6 +7,30 @@ import { filter, Subscription } from 'rxjs';
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 
+
+
+// private subscriptions: Subscription;
+
+// constructor(
+// 	private router: Router,
+// 	private activatedRoute: ActivatedRoute,
+// 	private changeDetectorRef: ChangeDetectorRef,
+// 	private eventService: EventService,
+// 	private bitcoinService: BitcoinService,
+// ) {
+// 	this.subscriptions = new Subscription();
+// }
+
+// ngOnInit(): void {
+// 	const router_subscription = this.getRouterSubscription();
+// 	const event_subscription = this.getEventSubscription();
+// 	const bitcoin_subscription = this.getBitcoinSubscription();
+// 	this.subscriptions.add(router_subscription);
+// 	this.subscriptions.add(event_subscription);
+// 	this.subscriptions.add(bitcoin_subscription);
+// }
+
+
 @Component({
 	selector: 'orc-mint-section',
 	standalone: false,
@@ -21,7 +45,7 @@ export class MintSectionComponent implements OnInit, OnDestroy {
 	public loading:boolean = true;
 	public error:boolean = false;
 
-	private subscription: Subscription = new Subscription();
+	private subscriptions: Subscription = new Subscription();
 
 	constructor(
 		private router: Router,
@@ -32,19 +56,33 @@ export class MintSectionComponent implements OnInit, OnDestroy {
   
 	ngOnInit(): void {
 		this.mintService.loadMintInfo().subscribe({
-			next: (info:MintInfo) => {
-				console.log('mint_info INSIDE MINT SECTION', info);
-				this.mint_info = info;
-				this.loading = false;
-				this.changeDetectorRef.detectChanges();
-			},
 			error: (error) => {
 				this.error = true;
 				this.loading = false;
 				this.changeDetectorRef.detectChanges();
 			}
 		});
-		this.subscription = this.router.events
+
+		const mint_info_subscription = this.getMintInfoSubscription();
+		const router_subscription = this.getRouterSubscription();
+
+		this.subscriptions.add(mint_info_subscription);
+		this.subscriptions.add(router_subscription);
+	}
+
+	private getMintInfoSubscription(): Subscription {
+		return this.mintService.mint_info$.subscribe(
+            (info:MintInfo | null) => {
+				if( !info ) return;
+				this.mint_info = info;
+				this.loading = false;
+				this.changeDetectorRef.detectChanges();
+            }
+        );
+	}
+
+	private getRouterSubscription(): Subscription {
+		return this.router.events
 			.pipe(
 				filter((event: Event) => 'routerEvent' in event || 'type' in event)
 			)
@@ -70,6 +108,6 @@ export class MintSectionComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnDestroy(): void {
-		this.subscription.unsubscribe();
+		this.subscriptions.unsubscribe();
 	}
 }

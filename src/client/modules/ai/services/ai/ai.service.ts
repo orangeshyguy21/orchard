@@ -21,8 +21,8 @@ export class AiService {
 	public active_agent: AiAgent | null = null;
 
 	public get active(): boolean { return !!this.subscription_id; }
-	public get messages(): Observable<AiChatChunk> { return this.message_subject.asObservable(); }
-    public get tool_calls(): Observable<AiChatToolCall> { return this.toolcall_subject.asObservable(); }
+	public get messages$(): Observable<AiChatChunk> { return this.message_subject.asObservable(); }
+    public get tool_calls$(): Observable<AiChatToolCall> { return this.toolcall_subject.asObservable(); }
 
 	private subscription?: Subscription;
 	private subscription_id?: string | null;

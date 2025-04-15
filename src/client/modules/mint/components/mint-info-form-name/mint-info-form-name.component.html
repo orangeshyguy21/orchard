@@ -11,13 +11,28 @@
         </mat-form-field>
         @if (form_hot) {
             <div class="flex flex-items-center">
-                <button type="button" mat-icon-button aria-label="Example icon button with a vertical three dot icon" class="m-b-1-25" (click)="onSubmit($event)">
-                    <mat-icon class="mat-symbol-outline">check_circle</mat-icon>
+                <button 
+                    type="button"
+                    mat-icon-button
+                    class="m-b-1-25"
+                    (mouseenter)="active_accept = true"
+                    (mouseleave)="active_accept = false"
+                    (click)="onSubmit($event)">
+                    <mat-icon [class.mat-symbol-outline]="!active_accept">check_circle</mat-icon>
                 </button>
-                <button type="button" mat-icon-button aria-label="Example icon button with a vertical three dot icon" class="m-b-1-25" (click)="onCancel()">
-                    <mat-icon class="mat-symbol-outline">cancel</mat-icon>
+                <button 
+                    type="button" 
+                    mat-icon-button 
+                    class="m-b-1-25 tester" 
+                    (mouseenter)="active_cancel = true"
+                    (mouseleave)="active_cancel = false"
+                    (click)="onCancel()">
+                    <mat-icon [class.mat-symbol-outline]="!active_cancel">cancel</mat-icon>
                 </button>
             </div>
         }
     </form>
 </div>
+
+
+<!-- <mat-icon [class.mat-symbol-outline]="!highlight" class="icon-md">{{ icon }}</mat-icon> -->

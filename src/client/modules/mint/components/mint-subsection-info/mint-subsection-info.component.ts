@@ -39,7 +39,7 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 	async ngOnInit(): Promise<void> {
 		this.aiService.active_agent = AiAgent.MintInfo;
 		this.init_info = this.route.snapshot.data['mint_info_rpc'];
-		this.tool_subscription = this.aiService.tool_calls
+		this.tool_subscription = this.aiService.tool_calls$
 			.subscribe((tool_call: AiChatToolCall) => {
 				this.executeAgentFunction(tool_call);
 			});
@@ -58,10 +58,7 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		this.mintService.updateMintName(name).subscribe((response) => {
 			this.init_info.name = response.mint_name_update.name;
 			this.mintService.clearInfoCache();
-			this.mintService.loadMintInfo().subscribe((response) => {
-				// this.init_info = response;
-				this.cdr.detectChanges();
-			});
+			this.mintService.loadMintInfo().subscribe();
 		});
 	}
 

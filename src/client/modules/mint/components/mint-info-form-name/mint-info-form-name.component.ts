@@ -19,7 +19,8 @@ export class MintInfoFormNameComponent implements OnChanges {
     @ViewChild('element_name') element_name!: ElementRef<HTMLInputElement>;
 
     public form_name: FormControl = new FormControl('');
-
+    public active_cancel: boolean = false;
+    public active_accept: boolean = false;
     public get form_hot(): boolean {
         if( document.activeElement === this.element_name?.nativeElement ) return true;
         return this.form_name.dirty ? true : false;

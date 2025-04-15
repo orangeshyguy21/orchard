@@ -1,33 +1,44 @@
 <div class="mint-info-form-icon-container">
     <div class="mint-info-id-card">
         <div class="mint-icon-display" (click)="onIconClick()">
-            <img [src]="display_icon" alt="Mint Icon" class="h-8 cursor-pointer">
+            <img [src]="display_icon_url" alt="Mint Icon" class="h-8 cursor-pointer mint-icon-url">
         </div>
         <div class="flex flex-grow flex-column gap-2">
             <ng-content></ng-content>
         </div>
     </div>
 
-    @if (show_url_input) {
-        <div>
-            <form (ngSubmit)="$event.preventDefault()">
-                <mat-form-field class="w-full">
-                    <mat-label>Icon Url</mat-label>
-                    <textarea 
-                        type="text" 
-                        matInput 
-                        [formControl]="form_icon_url" 
-                        [autogrow]="true"
-                        placeholder="Ex. https://example.com/icon.png"
-                    ></textarea>
-                    <!-- @if (iconUrlFormControl.hasError('url') && !iconUrlFormControl.hasError('required')) {
-                        <mat-error>Please enter a valid URL</mat-error>
-                    }
-                    @if (emailFormControl.hasError('required')) {
-                        <mat-error>Email is <strong>required</strong></mat-error>
-                    } -->
-                </mat-form-field>
-            </form>              
-        </div>
-    }
+
+    <div>
+        <form (ngSubmit)="$event.preventDefault()" class="flex flex-items-center flex-gap-1">
+            <mat-form-field class="w-full" [appearance]="form_hot ? 'fill' : 'outline'">
+                <mat-label>Icon Url</mat-label>
+                <textarea 
+                    type="text" 
+                    #element_icon_url
+                    matInput 
+                    [formControl]="form_icon_url" 
+                    [autogrow]="true"
+                    placeholder="Ex. https://example.com/icon.png"
+                ></textarea>
+                <!-- @if (iconUrlFormControl.hasError('url') && !iconUrlFormControl.hasError('required')) {
+                    <mat-error>Please enter a valid URL</mat-error>
+                }
+                @if (emailFormControl.hasError('required')) {
+                    <mat-error>Email is <strong>required</strong></mat-error>
+                } -->
+            </mat-form-field>
+            @if (form_hot) {
+                <div class="flex flex-items-center">
+                    <button type="button" mat-icon-button aria-label="Example icon button with a vertical three dot icon" class="m-b-1-25" (click)="onSubmit($event)">
+                        <mat-icon class="mat-symbol-outline">check_circle</mat-icon>
+                    </button>
+                    <button type="button" mat-icon-button aria-label="Example icon button with a vertical three dot icon" class="m-b-1-25" (click)="onCancel()">
+                        <mat-icon class="mat-symbol-outline">cancel</mat-icon>
+                    </button>
+                </div>
+            }
+        </form>              
+    </div>
+    
 </div>

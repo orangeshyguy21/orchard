@@ -9,7 +9,7 @@
             </div>
         }
         @case ('icon') {
-            <img [src]="icon_url" alt="Mint Icon" class="h-2 cursor-pointer" (click)="onClick()">
+            <img [src]="icon_url" alt="Mint Icon" class="h-2 cursor-pointer mint-icon-url" (click)="onClick()">
         }
         @case ('unset') {
             <div class="mint-icon-placeholder" matRipple (click)="onClick()">

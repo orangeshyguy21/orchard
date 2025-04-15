@@ -45,7 +45,7 @@ export class AiInputComponent implements OnInit, OnDestroy {
 	) {}
 
 	ngOnInit(): void {
-		this.chat_subscription = this.aiService.messages
+		this.chat_subscription = this.aiService.messages$
 			.subscribe((chunk: AiChatChunk) => {
 				if( chunk.done ){
 					setTimeout(() => {

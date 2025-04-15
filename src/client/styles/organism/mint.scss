@@ -1,0 +1,6 @@
+@use '@styles/molecule/molecule';
+
+.mint-icon-url{
+    @extend %orc-corner-full;
+    @extend %overflow-hidden;
+}

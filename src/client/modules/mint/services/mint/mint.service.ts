@@ -50,6 +50,8 @@ import {
 })
 export class MintService {
 
+	public get mint_info$(): Observable<MintInfo | null> { return this.mint_info_subject.asObservable(); }
+
 	public readonly CACHE_KEYS = {
 		MINT_INFO: 'mint-info',
 		MINT_BALANCES: 'mint-balances',
