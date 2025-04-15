@@ -130,27 +130,27 @@ export type MutationAi_Chat_AbortArgs = {
 
 
 export type MutationMint_Contact_AddArgs = {
-  mintContactUpdateInput: MintContactUpdateInput;
+  mint_contact_update: MintContactUpdateInput;
 };
 
 
 export type MutationMint_Contact_RemoveArgs = {
-  mintContactUpdateInput: MintContactUpdateInput;
+  mint_contact_update: MintContactUpdateInput;
 };
 
 
 export type MutationMint_Icon_UpdateArgs = {
-  mintIconUpdateInput: MintIconUpdateInput;
+  mint_icon_update: MintIconUpdateInput;
 };
 
 
 export type MutationMint_Long_Description_UpdateArgs = {
-  mintDescriptionUpdateInput: MintDescriptionUpdateInput;
+  mint_desc_update: MintDescriptionUpdateInput;
 };
 
 
 export type MutationMint_Motd_UpdateArgs = {
-  mintMotdUpdateInput: MintMotdUpdateInput;
+  mint_motd_update: MintMotdUpdateInput;
 };
 
 
@@ -160,17 +160,17 @@ export type MutationMint_Name_UpdateArgs = {
 
 
 export type MutationMint_Short_Description_UpdateArgs = {
-  mintDescriptionUpdateInput: MintDescriptionUpdateInput;
+  mint_desc_update: MintDescriptionUpdateInput;
 };
 
 
 export type MutationMint_Url_AddArgs = {
-  mintUrlUpdateInput: MintUrlUpdateInput;
+  mint_url_update: MintUrlUpdateInput;
 };
 
 
 export type MutationMint_Url_RemoveArgs = {
-  mintUrlUpdateInput: MintUrlUpdateInput;
+  mint_url_update: MintUrlUpdateInput;
 };
 
 

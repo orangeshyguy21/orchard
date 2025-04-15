@@ -1,6 +1,8 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, Input, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+/* Application Dependencies */
+import { MintInfoRpc } from '@client/modules/mint/classes/mint-info-rpc.class';
 
 @Component({
     selector: 'orc-mint-info-form-name',
@@ -9,47 +11,32 @@ import { FormControl } from '@angular/forms';
     styleUrl: './mint-info-form-name.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MintInfoFormNameComponent implements OnChanges {
+export class MintInfoFormNameComponent {
 
-	@Input() name!: string;
-    @Input() agent_name!: string | null;
+    @Input() form_group!: FormGroup;
+    @Input() control_name!: keyof MintInfoRpc;
 
     @Output() update = new EventEmitter<string>();
+    @Output() cancel = new EventEmitter<keyof MintInfoRpc>();
 
     @ViewChild('element_name') element_name!: ElementRef<HTMLInputElement>;
 
-    public form_name: FormControl = new FormControl('');
     public active_cancel: boolean = false;
     public active_accept: boolean = false;
+
     public get form_hot(): boolean {
         if( document.activeElement === this.element_name?.nativeElement ) return true;
-        return this.form_name.dirty ? true : false;
+        return this.form_group.get(this.control_name)?.dirty ? true : false;
     }
-
-	ngOnChanges(changes: SimpleChanges): void {
-		if (changes['name']) {
-			this.form_name.setValue(this.name);
-		}
-        if (changes['agent_name'] && !changes['agent_name'].firstChange) {
-            this.onAgentUpdate(this.agent_name);
-        }
-	}
 
     public onSubmit(event: Event): void {
         event.preventDefault();
-        this.update.emit(this.form_name.value);
+        this.update.emit(this.control_name);
         this.element_name.nativeElement.blur();
-        this.form_name.markAsPristine();
     }
 
     public onCancel() {
+        this.cancel.emit(this.control_name);
         this.element_name.nativeElement.blur();
-        this.form_name.setValue(this.name);
-        this.form_name.markAsPristine();
-    }
-
-    private onAgentUpdate(agent_name: string | null): void {
-        this.form_name.setValue(agent_name);
-        this.form_name.markAsDirty();
     }
 }

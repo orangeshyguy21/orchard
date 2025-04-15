@@ -1,6 +1,7 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { FormGroup, FormControl } from '@angular/forms';
 /* Vendor Dependencies */
 import { Subscription } from 'rxjs';
 /* Application Dependencies */
@@ -21,11 +22,11 @@ import { AiAgent, AiFunctionName } from '@shared/generated.types';
 export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 
 	public init_info!: MintInfoRpc;
-	public agent_info: {
-		name: string | null;
-	} = {
-		name: null
-	};
+	public form_info: FormGroup = new FormGroup({
+		name: new FormControl(),
+		description: new FormControl(),
+		icon_url: new FormControl(),
+	});
 
 	private tool_subscription?: Subscription;
 
@@ -39,6 +40,11 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 	async ngOnInit(): Promise<void> {
 		this.aiService.active_agent = AiAgent.MintInfo;
 		this.init_info = this.route.snapshot.data['mint_info_rpc'];
+		this.form_info.setValue({
+			name: this.init_info.name,
+			description: this.init_info.description,
+			icon_url: this.init_info.icon_url,
+		});
 		this.tool_subscription = this.aiService.tool_calls$
 			.subscribe((tool_call: AiChatToolCall) => {
 				this.executeAgentFunction(tool_call);
@@ -47,19 +53,27 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 
 	private executeAgentFunction(tool_call: AiChatToolCall): void {
 		if( tool_call.function.name === AiFunctionName.MintNameUpdate ) {
-			this.agent_info.name = tool_call.function.arguments.name;
-			console.log('agent_info', this.agent_info);
+			this.form_info.get('name')?.setValue(tool_call.function.arguments.name);
+			this.form_info.get('name')?.markAsDirty();
 			this.cdr.detectChanges();
 		}
 	}
 
-	public onNameUpdate(name: string|null): void {
-		if(!name) return;
-		this.mintService.updateMintName(name).subscribe((response) => {
+	public onControlUpdate(control_name: string): void {
+		if(!control_name) return;
+		this.form_info.get(control_name)?.markAsPristine();
+		const control_value = this.form_info.get(control_name)?.value;
+		this.mintService.updateMintName(control_value).subscribe((response) => {
 			this.init_info.name = response.mint_name_update.name;
 			this.mintService.clearInfoCache();
 			this.mintService.loadMintInfo().subscribe();
 		});
+	}
+
+	public onControlCancel(control_name: keyof MintInfoRpc): void {
+		if(!control_name) return;
+		this.form_info.get(control_name)?.markAsPristine();
+		this.form_info.get(control_name)?.setValue(this.init_info[control_name]);
 	}
 
 	ngOnDestroy(): void {

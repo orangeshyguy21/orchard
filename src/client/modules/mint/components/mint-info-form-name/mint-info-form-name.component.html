@@ -1,11 +1,11 @@
 <div>
-    <form class="flex flex-items-center flex-gap-1" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)" (keydown.escape)="onCancel()">
+    <form class="flex flex-items-center flex-gap-0-5" [formGroup]="form_group" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)" (keydown.escape)="onCancel()">
         <mat-form-field [appearance]="form_hot ? 'fill' : 'outline'" class="primary-form-field">
             <mat-label>Name</mat-label>
             <input 
                 type="text" 
                 matInput 
-                [formControl]="form_name" 
+                [formControlName]="control_name" 
                 placeholder="Ex. My Mint"
                 #element_name>
         </mat-form-field>
@@ -33,6 +33,3 @@
         }
     </form>
 </div>
-
-
-<!-- <mat-icon [class.mat-symbol-outline]="!highlight" class="icon-md">{{ icon }}</mat-icon> -->

@@ -2,9 +2,10 @@
     <div class="flex-1">
         <orc-mint-info-form-icon [icon_url]="init_info.icon_url">
             <orc-mint-info-form-name 
-                [name]="init_info.name"
-                [agent_name]="agent_info.name"
-                (update)="onNameUpdate($event)">
+                [form_group]="form_info"
+                [control_name]="'name'"
+                (update)="onControlUpdate($event)"
+                (cancel)="onControlCancel($event)">
             </orc-mint-info-form-name>
             <orc-mint-info-form-description [description]="init_info.description"></orc-mint-info-form-description>
         </orc-mint-info-form-icon>
