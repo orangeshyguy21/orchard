@@ -1,7 +1,8 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, ChangeDetectorRef, WritableSignal, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormGroup, FormControl } from '@angular/forms';
+import { toObservable } from '@angular/core/rxjs-interop';
 /* Vendor Dependencies */
 import { Subscription } from 'rxjs';
 /* Application Dependencies */
@@ -9,6 +10,8 @@ import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { MintInfoRpc } from '@client/modules/mint/classes/mint-info-rpc.class';
 import { AiService } from '@client/modules/ai/services/ai/ai.service';
 import { AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
+import { EventService } from '@client/modules/event/services/event/event.service';
+import { EventData } from '@client/modules/event/classes/event-data.class';
 /* Shared Dependencies */
 import { AiAgent, AiFunctionName } from '@shared/generated.types';
 
@@ -28,12 +31,16 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		icon_url: new FormControl(),
 	});
 
-	private tool_subscription?: Subscription;
+	private subscriptions: Subscription = new Subscription();
+	private active_event: EventData | null = null;
+	private dirty_count: WritableSignal<number> = signal(0);
+	private dirty_count$ = toObservable(this.dirty_count);
 
 	constructor(
 		public mintService: MintService,
 		public route: ActivatedRoute,
 		public aiService: AiService,
+		public eventService: EventService,
 		public cdr: ChangeDetectorRef
 	) {}
 
@@ -45,10 +52,43 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 			description: this.init_info.description,
 			icon_url: this.init_info.icon_url,
 		});
-		this.tool_subscription = this.aiService.tool_calls$
+		const tool_subscription = this.getToolSubscription();
+		const event_subscription = this.getEventSubscription();
+		const form_subscription = this.getFormSubscription();
+		const dirty_count_subscription = this.getDirtyCountSubscription();
+		this.subscriptions.add(tool_subscription);	
+		this.subscriptions.add(event_subscription);
+		this.subscriptions.add(form_subscription);
+		this.subscriptions.add(dirty_count_subscription);
+	}
+
+	private getToolSubscription(): Subscription {
+		return this.aiService.tool_calls$
 			.subscribe((tool_call: AiChatToolCall) => {
 				this.executeAgentFunction(tool_call);
 			});
+	}
+
+	private getEventSubscription(): Subscription {
+		return this.eventService.getActiveEvent()
+			.subscribe((event_data: EventData | null) => {
+				this.active_event = event_data;
+				if( event_data?.confirmed ) this.onConfirmedEvent();
+			});
+	}
+
+	private getFormSubscription(): Subscription {
+		return this.form_info.valueChanges.subscribe(() => {
+			const count = Object.keys(this.form_info.controls).filter(key => this.form_info.get(key)?.dirty).length;
+			this.dirty_count.set(count);
+			this.cdr.detectChanges();
+		});
+	}
+
+	private getDirtyCountSubscription(): Subscription {
+		return this.dirty_count$.subscribe((count) => {
+			this.createPendingEvent(count);
+		});
 	}
 
 	private executeAgentFunction(tool_call: AiChatToolCall): void {
@@ -59,15 +99,43 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	public onControlUpdate(control_name: string): void {
-		if(!control_name) return;
+	private createPendingEvent(count: number): void {
+		if( count === 0 && this.active_event?.type !== 'PENDING' ) return;
+		if( count === 0 ) return this.eventService.registerEvent(null);
+		this.eventService.registerEvent(new EventData({
+			type: 'PENDING',
+			message: count.toString(),
+		}));
+	}
+
+	public onControlUpdate(control_name: keyof MintInfoRpc): void {
 		this.form_info.get(control_name)?.markAsPristine();
 		const control_value = this.form_info.get(control_name)?.value;
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		this.mintService.updateMintName(control_value).subscribe((response) => {
 			this.init_info.name = response.mint_name_update.name;
 			this.mintService.clearInfoCache();
 			this.mintService.loadMintInfo().subscribe();
+			this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
+			this.resetForm();
 		});
+	}
+
+	private onConfirmedEvent(): void {
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		this.form_info.get('name')?.markAsPristine();
+		this.mintService.updateMintName(this.form_info.get('name')?.value).subscribe((response) => {
+			this.init_info.name = response.mint_name_update.name;
+			this.mintService.clearInfoCache();
+			this.mintService.loadMintInfo().subscribe();
+			this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
+			this.resetForm();
+		});
+	}
+
+	private resetForm(): void {
+		this.form_info.markAsPristine();
+		this.dirty_count.set(0);
 	}
 
 	public onControlCancel(control_name: keyof MintInfoRpc): void {
@@ -77,6 +145,6 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnDestroy(): void {
-		this.tool_subscription?.unsubscribe();
+		this.subscriptions.unsubscribe();
 	}
 }

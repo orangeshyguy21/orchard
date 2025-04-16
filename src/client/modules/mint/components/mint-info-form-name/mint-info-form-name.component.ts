@@ -16,7 +16,7 @@ export class MintInfoFormNameComponent {
     @Input() form_group!: FormGroup;
     @Input() control_name!: keyof MintInfoRpc;
 
-    @Output() update = new EventEmitter<string>();
+    @Output() update = new EventEmitter<keyof MintInfoRpc>();
     @Output() cancel = new EventEmitter<keyof MintInfoRpc>();
 
     @ViewChild('element_name') element_name!: ElementRef<HTMLInputElement>;

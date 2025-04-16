@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 /* Application Dependencies */
 import { GraphicModule } from '@client/modules/graphic/graphic.module';
 import { BitcoinModule } from '@client/modules/bitcoin/bitcoin.module';
+import { EventModule } from '@client/modules/event/event.module';
 /* Local Dependencies */
 import { PrimaryNavComponent } from '@client/modules/nav/components/primary-nav/primary-nav.component';
 import { PrimaryNavHeaderComponent } from './components/primary-nav-header/primary-nav-header.component';
@@ -31,7 +32,8 @@ import { PrimaryNavToolComponent } from './components/primary-nav-tool/primary-n
     CommonModule,
     MatIconModule,
     GraphicModule,
-    BitcoinModule
+    BitcoinModule,
+    EventModule
   ],
   exports: [
     PrimaryNavComponent,

@@ -91,6 +91,11 @@ export class PrimaryNavComponent {
 		this.active_event = event;
 		this.changeDetectorRef.detectChanges();
 	}	
+
+	public onSave(): void {
+		this.active_event!.confirmed = true;
+		this.eventService.registerEvent(this.active_event);
+	}
 	
 	ngOnDestroy(): void {
 		this.subscriptions.unsubscribe();
