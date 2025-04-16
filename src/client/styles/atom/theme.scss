@@ -31,10 +31,27 @@
 		&:hover .mdc-notched-outline__trailing {
 		  	border-color: var(--mat-sys-on-primary-container) !important;
 		}
+
+		&.mat-form-field-hide-placeholder{
+			.mdc-notched-outline__leading{
+				border-top-style: dashed;
+				border-left-style: dashed;
+				border-bottom-style: dashed;
+			}
+			.mdc-notched-outline__notch{
+				border-top-style: dashed;
+				border-bottom-style: dashed;
+			}
+			.mdc-notched-outline__trailing{
+				border-top-style: dashed;
+				border-right-style: dashed;
+				border-bottom-style: dashed;
+			}
+		}
 	}
 }
 
-// Add this new section for icon buttons
+// Add this new section for icon buttons (todo)
 // .mat-mdc-icon-button {
 // 	&.orc-icon-button {
 // 		.mdc-icon-button__ripple {

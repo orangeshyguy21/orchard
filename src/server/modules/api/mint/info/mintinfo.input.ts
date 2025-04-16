@@ -3,7 +3,7 @@ import { InputType, Field } from "@nestjs/graphql";
 
 @InputType()
 export class MintNameUpdateInput {
-	@Field()
+	@Field({ nullable: true })
 	name: string;
 }
 

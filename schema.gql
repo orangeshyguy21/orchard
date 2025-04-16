@@ -59,7 +59,7 @@ input MintMotdUpdateInput {
 }
 
 input MintNameUpdateInput {
-  name: String!
+  name: String
 }
 
 enum MintQuoteStatus {
@@ -276,7 +276,7 @@ type OrchardMintMotdUpdate {
 }
 
 type OrchardMintNameUpdate {
-  name: String!
+  name: String
 }
 
 type OrchardMintPromise {
