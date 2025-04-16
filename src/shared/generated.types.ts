@@ -75,7 +75,7 @@ export type MintMotdUpdateInput = {
 };
 
 export type MintNameUpdateInput = {
-  name: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export enum MintQuoteStatus {
@@ -331,7 +331,7 @@ export type OrchardMintInfoRpc = {
   description_long?: Maybe<Scalars['String']['output']>;
   icon_url?: Maybe<Scalars['String']['output']>;
   motd?: Maybe<Scalars['String']['output']>;
-  name: Scalars['String']['output'];
+  name?: Maybe<Scalars['String']['output']>;
   total_issued: Scalars['String']['output'];
   total_redeemed: Scalars['String']['output'];
   urls: Array<Scalars['String']['output']>;

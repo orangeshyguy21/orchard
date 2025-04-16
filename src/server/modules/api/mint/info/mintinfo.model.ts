@@ -292,7 +292,7 @@ export class OrchardCachedEndpoint {
 @ObjectType()
 export class OrchardMintInfoRpc {
 
-	@Field()
+	@Field({ nullable: true })
 	name: string;
 
 	@Field()
@@ -338,8 +338,8 @@ export class OrchardMintInfoRpc {
 
 @ObjectType()
 export class OrchardMintNameUpdate {
-	@Field({ nullable: true })
-	name: string;
+	@Field()
+	name: string | null;
 }
 
 @ObjectType()

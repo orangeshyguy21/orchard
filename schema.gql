@@ -220,7 +220,7 @@ type OrchardMintInfoRpc {
   description_long: String
   icon_url: String
   motd: String
-  name: String!
+  name: String
   total_issued: String!
   total_redeemed: String!
   urls: [String!]!
@@ -276,7 +276,7 @@ type OrchardMintMotdUpdate {
 }
 
 type OrchardMintNameUpdate {
-  name: String
+  name: String!
 }
 
 type OrchardMintPromise {

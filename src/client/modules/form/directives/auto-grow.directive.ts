@@ -20,6 +20,20 @@ export class AutoGrowDirective {
 	){}
 
 	/**
+	 * On initialization, run the grow method
+	 * exit if autogrow is set to false
+	 * @returns void
+	 */
+	ngOnInit(){
+		this.el.nativeElement.classList.add('orc-autogrow');
+		if( this._autogrow === false ) return;
+		setTimeout(() => {
+			this.grow();
+		});
+		this.el.nativeElement.style.overflow = 'hidden';
+	}
+
+	/**
 	 * Listen for keyevents and grow if the textarea is overflowing
 	 */
 	@HostListener('document:keydown', ['$event'])
@@ -39,19 +53,6 @@ export class AutoGrowDirective {
 		setTimeout(() => {
 			this.grow();
 		});
-	}
-
-	/**
-	 * On initialization, run the grow method
-	 * exit if autogrow is set to false
-	 * @returns void
-	 */
-	ngOnInit(){
-		if( this._autogrow === false ) return;
-		setTimeout(() => {
-			this.grow();
-		});
-		this.el.nativeElement.style.overflow = 'hidden';
 	}
  
 	/**

@@ -1,0 +1,19 @@
+<div class="dynamic-form-field-container">
+    <ng-content></ng-content>
+    <div class="dynamic-actions" [class.form-hot]="hot">
+        <button 
+            type="button"
+            mat-icon-button
+            class="m-b-1-25 orc-icon-button"
+            (click)="submit.emit($event)">
+            <mat-icon>check_circle</mat-icon>
+        </button>
+        <button 
+            type="button" 
+            mat-icon-button 
+            class="m-b-1-25 orc-icon-button" 
+            (click)="cancel.emit($event)">
+            <mat-icon>cancel</mat-icon>
+        </button>
+    </div>
+</div>

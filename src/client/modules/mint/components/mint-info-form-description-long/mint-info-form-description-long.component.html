@@ -1,4 +1,4 @@
-<div class="mint-info-form-name-container">
+<div>
     <form
         [formGroup]="form_group"
         (ngSubmit)="onSubmit($event)"
@@ -8,14 +8,17 @@
             [hot]="form_hot"
             (submit)="onSubmit($event)"
             (cancel)="onCancel($event)">
-            <mat-form-field [appearance]="form_hot ? 'fill' : 'outline'" class="mint-name-form-field orc-dynamic-form-field">
-                <mat-label>Name</mat-label>
-                <input 
+            <mat-form-field [appearance]="form_hot ? 'fill' : 'outline'" class="w-full orc-dynamic-form-field">
+                <mat-label>Description Long</mat-label>
+                <textarea 
                     type="text" 
+                    rows="1"
+                    #element_description_long
                     matInput 
-                    [formControlName]="control_name" 
-                    placeholder="Ex. My Mint"
-                    #element_name>
+                    [formControlName]="control_name"
+                    [autogrow]="true"
+                    placeholder="Ex. Describe your mint more"
+                ></textarea>
             </mat-form-field>
         </orc-dynamic-form-field>
     </form>

@@ -8,37 +8,26 @@
         </div>
     </div>
 
-
-    <div>
-        <form (ngSubmit)="$event.preventDefault()" class="flex flex-items-center flex-gap-1">
-            <mat-form-field class="w-full" [appearance]="form_hot ? 'fill' : 'outline'">
-                <mat-label>Icon Url</mat-label>
+    <form
+        [formGroup]="form_group"
+        (ngSubmit)="onSubmit($event)"
+        (keydown.enter)="onSubmit($event)"
+        (keydown.escape)="onCancel($event)">        
+        <orc-dynamic-form-field
+            [hot]="form_hot"
+            (submit)="onSubmit($event)"
+            (cancel)="onCancel($event)">
+            <mat-form-field [appearance]="form_hot ? 'fill' : 'outline'" class="w-full orc-dynamic-form-field">
+                <mat-label>Icon URL</mat-label>
                 <textarea 
                     type="text" 
                     #element_icon_url
                     matInput 
-                    [formControl]="form_icon_url" 
+                    [formControlName]="control_name"
                     [autogrow]="true"
                     placeholder="Ex. https://example.com/icon.png"
                 ></textarea>
-                <!-- @if (iconUrlFormControl.hasError('url') && !iconUrlFormControl.hasError('required')) {
-                    <mat-error>Please enter a valid URL</mat-error>
-                }
-                @if (emailFormControl.hasError('required')) {
-                    <mat-error>Email is <strong>required</strong></mat-error>
-                } -->
             </mat-form-field>
-            @if (form_hot) {
-                <div class="flex flex-items-center">
-                    <button type="button" mat-icon-button aria-label="Example icon button with a vertical three dot icon" class="m-b-1-25" (click)="onSubmit($event)">
-                        <mat-icon class="mat-symbol-outline">check_circle</mat-icon>
-                    </button>
-                    <button type="button" mat-icon-button aria-label="Example icon button with a vertical three dot icon" class="m-b-1-25" (click)="onCancel()">
-                        <mat-icon class="mat-symbol-outline">cancel</mat-icon>
-                    </button>
-                </div>
-            }
-        </form>              
-    </div>
-    
+        </orc-dynamic-form-field>
+    </form>
 </div>

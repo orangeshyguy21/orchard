@@ -34,7 +34,8 @@ export class MintInfoFormNameComponent {
         this.element_name.nativeElement.blur();
     }
 
-    public onCancel() {
+    public onCancel(event: Event): void {
+        event.preventDefault();
         this.cancel.emit(this.control_name);
         this.element_name.nativeElement.blur();
     }

@@ -51,6 +51,12 @@
 	}
 }
 
+.mat-mdc-form-field-textarea-control {
+	&.orc-autogrow{
+		resize: none;
+	}
+}
+
 // Add this new section for icon buttons (todo)
 // .mat-mdc-icon-button {
 // 	&.orc-icon-button {

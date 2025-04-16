@@ -29,6 +29,7 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		name: new FormControl(),
 		description: new FormControl(),
 		icon_url: new FormControl(),
+		description_long: new FormControl(),
 	});
 
 	private subscriptions: Subscription = new Subscription();
@@ -51,6 +52,7 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 			name: this.init_info.name,
 			description: this.init_info.description,
 			icon_url: this.init_info.icon_url,
+			description_long: this.init_info.description_long,
 		});
 		const tool_subscription = this.getToolSubscription();
 		const event_subscription = this.getEventSubscription();

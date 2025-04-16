@@ -1,6 +1,8 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, Input, ViewChild, ElementRef, Output, EventEmitter, OnInit } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+/* Application Dependencies */
+import { MintInfoRpc } from '@client/modules/mint/classes/mint-info-rpc.class';
 
 @Component({
 	selector: 'orc-mint-info-form-icon',
@@ -9,26 +11,34 @@ import { FormControl } from '@angular/forms';
 	styleUrl: './mint-info-form-icon.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MintInfoFormIconComponent implements OnChanges {
+export class MintInfoFormIconComponent implements OnInit {
 
-	@Input() icon_url!: string | null;
+	@Input() form_group!: FormGroup;
+    @Input() control_name!: keyof MintInfoRpc;
+	@Input() icon_url: string | null = null;
 
-	@ViewChild('element_icon_url') element_icon_url!: ElementRef<HTMLTextAreaElement>;
+    @Output() update = new EventEmitter<keyof MintInfoRpc>();
+    @Output() cancel = new EventEmitter<keyof MintInfoRpc>();
 
-	public display_icon_url: string = '';
-	public form_icon_url: FormControl = new FormControl('');
+	@ViewChild('element_icon_url') element_icon_url!: ElementRef<HTMLInputElement>;
 
-	public get form_hot(): boolean {
-        if( document.activeElement === this.element_icon_url?.nativeElement ) return true;
-        return this.form_icon_url.dirty ? true : false;
-    }
-
-	ngOnChanges(changes: SimpleChanges): void {
-		if (changes['icon_url']) {
-			this.display_icon_url = this.icon_url ?? '';
-			this.form_icon_url.setValue(this.icon_url);
-		}
+	public get display_icon_url(): string {
+		return this.icon_url || '';
 	}
+	
+    constructor(){}
+
+	ngOnInit(): void {
+		this.form_group.get(this.control_name)?.valueChanges.subscribe(value => {
+			console.log('value', value);
+            // this.display_icon_url = value || '';
+        });
+	}
+
+    public get form_hot(): boolean {
+        if( document.activeElement === this.element_icon_url?.nativeElement ) return true;
+        return this.form_group.get(this.control_name)?.dirty ? true : false;
+    }
 
 	public onIconClick(): void {
 		this.element_icon_url.nativeElement.focus();
@@ -36,71 +46,14 @@ export class MintInfoFormIconComponent implements OnChanges {
 
 	public onSubmit(event: Event): void {
         event.preventDefault();
-        // this.update.emit(this.form_name.value);
-        // this.element_name.nativeElement.blur();
-        // this.form_name.markAsPristine();
+        this.update.emit(this.control_name);
+        this.element_icon_url.nativeElement.blur();
     }
 
-    public onCancel() {
-        // this.element_name.nativeElement.blur();
-        // this.form_name.setValue(this.name);
-        // this.form_name.markAsPristine();
+    public onCancel(event: Event): void {
+        event.preventDefault();
+        this.cancel.emit(this.control_name);
+        this.element_icon_url.nativeElement.blur();
     }
 }
 
-
-
-// /* Core Dependencies */
-// import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
-// import { FormControl } from '@angular/forms';
-
-// @Component({
-//     selector: 'orc-mint-info-form-name',
-//     standalone: false,
-//     templateUrl: './mint-info-form-name.component.html',
-//     styleUrl: './mint-info-form-name.component.scss',
-//     changeDetection: ChangeDetectionStrategy.OnPush
-// })
-// export class MintInfoFormNameComponent implements OnChanges {
-
-// 	@Input() name!: string;
-//     @Input() agent_name!: string | null;
-
-//     @Output() update = new EventEmitter<string>();
-
-//     @ViewChild('element_name') element_name!: ElementRef<HTMLInputElement>;
-
-//     public form_name: FormControl = new FormControl('');
-
-//     public get form_hot(): boolean {
-//         if( document.activeElement === this.element_name?.nativeElement ) return true;
-//         return this.form_name.dirty ? true : false;
-//     }
-
-// 	ngOnChanges(changes: SimpleChanges): void {
-// 		if (changes['name']) {
-// 			this.form_name.setValue(this.name);
-// 		}
-//         if (changes['agent_name'] && !changes['agent_name'].firstChange) {
-//             this.onAgentUpdate(this.agent_name);
-//         }
-// 	}
-
-//     public onSubmit(event: Event): void {
-//         event.preventDefault();
-//         this.update.emit(this.form_name.value);
-//         this.element_name.nativeElement.blur();
-//         this.form_name.markAsPristine();
-//     }
-
-//     public onCancel() {
-//         this.element_name.nativeElement.blur();
-//         this.form_name.setValue(this.name);
-//         this.form_name.markAsPristine();
-//     }
-
-//     private onAgentUpdate(agent_name: string | null): void {
-//         this.form_name.setValue(agent_name);
-//         this.form_name.markAsDirty();
-//     }
-// }
