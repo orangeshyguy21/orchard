@@ -1,6 +1,11 @@
 <div>
-    <form class="flex flex-items-center flex-gap-0-5" [formGroup]="form_group" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)" (keydown.escape)="onCancel()">
-        <mat-form-field [appearance]="form_hot ? 'fill' : 'outline'" class="primary-form-field">
+    <form 
+        class="flex flex-items-center flex-gap-0-5"
+        [formGroup]="form_group"
+        (ngSubmit)="onSubmit($event)"
+        (keydown.enter)="onSubmit($event)"
+        (keydown.escape)="onCancel()">        
+        <mat-form-field [appearance]="form_hot ? 'fill' : 'outline'" class="mint-name-form-field orc-display-form-field">
             <mat-label>Name</mat-label>
             <input 
                 type="text" 
@@ -9,25 +14,22 @@
                 placeholder="Ex. My Mint"
                 #element_name>
         </mat-form-field>
+
         @if (form_hot) {
             <div class="flex flex-items-center">
                 <button 
                     type="button"
                     mat-icon-button
-                    class="m-b-1-25"
-                    (mouseenter)="active_accept = true"
-                    (mouseleave)="active_accept = false"
+                    class="m-b-1-25 orc-icon-button"
                     (click)="onSubmit($event)">
-                    <mat-icon [class.mat-symbol-outline]="!active_accept">check_circle</mat-icon>
+                    <mat-icon class="icon-dynamic-fill">check_circle</mat-icon>
                 </button>
                 <button 
                     type="button" 
                     mat-icon-button 
-                    class="m-b-1-25 tester" 
-                    (mouseenter)="active_cancel = true"
-                    (mouseleave)="active_cancel = false"
+                    class="m-b-1-25 orc-icon-button" 
                     (click)="onCancel()">
-                    <mat-icon [class.mat-symbol-outline]="!active_cancel">cancel</mat-icon>
+                    <mat-icon>cancel</mat-icon>
                 </button>
             </div>
         }

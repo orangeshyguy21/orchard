@@ -21,8 +21,7 @@ export class MintInfoFormNameComponent {
 
     @ViewChild('element_name') element_name!: ElementRef<HTMLInputElement>;
 
-    public active_cancel: boolean = false;
-    public active_accept: boolean = false;
+    constructor(){}
 
     public get form_hot(): boolean {
         if( document.activeElement === this.element_name?.nativeElement ) return true;
