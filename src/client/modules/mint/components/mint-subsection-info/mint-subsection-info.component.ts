@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, ChangeDetectorRef, WritableSignal, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { toObservable } from '@angular/core/rxjs-interop';
 /* Vendor Dependencies */
 import { Subscription } from 'rxjs';
@@ -26,7 +26,7 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 
 	public init_info!: MintInfoRpc;
 	public form_info: FormGroup = new FormGroup({
-		name: new FormControl(),
+		name: new FormControl(null, Validators.maxLength(200)),
 		description: new FormControl(),
 		icon_url: new FormControl(),
 		description_long: new FormControl(),
@@ -111,11 +111,12 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 	}
 
 	public onControlUpdate(control_name: keyof MintInfoRpc): void {
+		if( this.form_info.get(control_name)?.invalid ) return;
 		this.form_info.get(control_name)?.markAsPristine();
 		const control_value = this.form_info.get(control_name)?.value;
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		this.mintService.updateMintName(control_value).subscribe((response) => {
-			this.init_info.name = response.mint_name_update.name;
+			this.init_info.name = response.mint_name_update.name ?? null;
 			this.mintService.clearInfoCache();
 			this.mintService.loadMintInfo().subscribe();
 			this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
@@ -124,10 +125,11 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 	}
 
 	private onConfirmedEvent(): void {
+		if( this.form_info.invalid ) return;
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		this.form_info.get('name')?.markAsPristine();
 		this.mintService.updateMintName(this.form_info.get('name')?.value).subscribe((response) => {
-			this.init_info.name = response.mint_name_update.name;
+			this.init_info.name = response.mint_name_update.name ?? null;
 			this.mintService.clearInfoCache();
 			this.mintService.loadMintInfo().subscribe();
 			this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));

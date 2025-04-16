@@ -276,7 +276,7 @@ type OrchardMintMotdUpdate {
 }
 
 type OrchardMintNameUpdate {
-  name: String!
+  name: String
 }
 
 type OrchardMintPromise {

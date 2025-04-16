@@ -392,7 +392,7 @@ export type OrchardMintMotdUpdate = {
 
 export type OrchardMintNameUpdate = {
   __typename?: 'OrchardMintNameUpdate';
-  name: Scalars['String']['output'];
+  name?: Maybe<Scalars['String']['output']>;
 };
 
 export type OrchardMintPromise = {

@@ -338,8 +338,8 @@ export class OrchardMintInfoRpc {
 
 @ObjectType()
 export class OrchardMintNameUpdate {
-	@Field()
-	name: string | null;
+	@Field({ nullable: true })
+	name: string;
 }
 
 @ObjectType()

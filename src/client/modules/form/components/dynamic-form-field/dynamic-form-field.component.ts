@@ -10,6 +10,7 @@ import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter } from 
 export class DynamicFormFieldComponent {
 
 	@Input() hot!: boolean;
+	@Input() invalid!: boolean;
 
 	@Output() submit = new EventEmitter<Event>();
 	@Output() cancel = new EventEmitter<Event>();

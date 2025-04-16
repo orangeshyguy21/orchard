@@ -2,6 +2,7 @@
     <ng-content></ng-content>
     <div class="dynamic-actions" [class.form-hot]="hot">
         <button 
+            [disabled]="invalid"
             type="button"
             mat-icon-button
             class="m-b-1-25 orc-icon-button"

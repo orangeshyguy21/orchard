@@ -1,7 +1,12 @@
 @use '@styles/molecule/molecule';
 
+.mint-info-form-icon-container{
+    @extend %flex;
+    @extend %flex-column;
+    @extend %flex-gap-1;
+}
 
 .mint-info-id-card{
     @extend %flex;
-    @extend %flex-gap-1;
+    @extend %flex-gap-2;
 }
