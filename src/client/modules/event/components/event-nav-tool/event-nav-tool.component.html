@@ -12,11 +12,11 @@
     (click)="onClick()">
     <div class="event-nav-tool-switch">
         @if( !saving ) {
-            <div [@scaleAnimation] class="h-1-75 w-1-75">
+            <div [@enterAnimation] class="h-1-75 w-1-75">
                 <mat-icon [class.mat-symbol-outline]="!highlight" class="icon-md" [@iconAnimation]="icon">{{ icon }}</mat-icon>
             </div>
         } @else {
-            <mat-spinner [diameter]="25" [@scaleAnimation]></mat-spinner>
+            <mat-spinner [diameter]="25" [@enterAnimation]></mat-spinner>
         }
     </div>
 </div>

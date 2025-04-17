@@ -48,3 +48,27 @@
     @extend %orc-surface-container-lowest-border;
     @extend %cursor-pointer;
 }
+
+.set-icon-interior{
+    @extend %relative;
+
+    &:hover{
+        .set-icon-update{
+            @extend %opacity-1;
+        }
+    }
+}
+
+.set-icon-update{
+    @extend %absolute;
+    @extend %top-0;
+    @extend %left-0;
+    @extend %w-full;
+    @extend %h-full;
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-justify-center;
+    @extend %opacity-0;
+    @extend %trans-opacity-fast;
+    @extend %orc-shadow-bg;
+}

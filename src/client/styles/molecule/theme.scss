@@ -1,5 +1,8 @@
 @mixin prefixStyles($c) {
     // Background Colors
+    #{$c}orc-asset-btc-bg { background-color: var(--orc-asset-btc); }
+    #{$c}orc-asset-usd-bg { background-color: var(--orc-asset-usd); }
+    #{$c}orc-asset-eur-bg { background-color: var(--orc-asset-eur); }
     #{$c}orc-surface-bg { background-color: var(--mat-sys-surface); }
     #{$c}orc-primary-container-bg { background-color: var(--mat-sys-primary-container); }
     #{$c}orc-surface-container-high-bg { background-color: var(--mat-sys-surface-container-high); }
@@ -10,9 +13,8 @@
     #{$c}orc-secondary-bg { background-color: var(--mat-sys-secondary); }
     #{$c}orc-on-error-bg { background-color: var(--mat-sys-on-error); }
     #{$c}orc-error-bg { background-color: var(--mat-sys-error); }
-    #{$c}orc-asset-btc-bg { background-color: var(--orc-asset-btc); }
-    #{$c}orc-asset-usd-bg { background-color: var(--orc-asset-usd); }
-    #{$c}orc-asset-eur-bg { background-color: var(--orc-asset-eur); }
+    // Background Colors (with transparency)
+    #{$c}orc-shadow-bg { background-color: color-mix(in srgb, var(--mat-sys-shadow), transparent 50%); }
 
     // Text Colors
     #{$c}orc-on-surface-color { color: var(--mat-sys-on-surface); }

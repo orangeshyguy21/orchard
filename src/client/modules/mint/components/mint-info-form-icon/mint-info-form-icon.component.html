@@ -1,7 +1,7 @@
 <div class="mint-info-form-icon-container">
     <div class="mint-info-id-card">
         <div class="mint-icon-display" (click)="onIconClick()">
-            @switch (icon_state) {
+            <!-- @switch (icon_state) {
                 @case ('loading') {
                     <div class="mint-info-icon-display load-icon">
                         <mat-spinner [diameter]="35"></mat-spinner>
@@ -22,7 +22,38 @@
                         <img [src]="display_icon_url" class="h-8 mint-icon-url">
                     </div>
                 }
-            }
+            } -->
+
+            <div 
+                class="mint-info-icon-display"
+                [@.disabled]="!form_ready"
+                matRipple
+                [ngClass]="{
+                    'load-icon': icon_state === 'loading',
+                    'error-icon': icon_state === 'error',
+                    'set-icon': icon_state === 'set',
+                    'add-icon orc-icon-button': icon_state === 'empty',
+                }">
+                @switch (icon_state) {
+                    @case ('loading') {
+                        <mat-spinner [@enterScaleAnimation] [diameter]="35"></mat-spinner>
+                    }
+                    @case ('error') {
+                        <mat-icon [@enterScaleAnimation] class="icon-lg mat-symbol-outline">error</mat-icon>
+                    }
+                    @case ('empty') {
+                        <mat-icon [@enterScaleAnimation] class="icon-lg mat-symbol-outline">add_photo_alternate</mat-icon>
+                    }
+                    @default {
+                        <div [@enterAnimation] class="set-icon-interior">
+                            <div class="set-icon-update">
+                                <mat-icon class="icon-lg">edit</mat-icon>
+                            </div>
+                            <img [src]="display_icon_url" class="h-8 mint-icon-url">
+                        </div>
+                    }
+                }
+            </div>
         </div>
         <div class="flex flex-grow flex-column flex-gap-1">
             <ng-content></ng-content>

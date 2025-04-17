@@ -18,7 +18,7 @@ import { EventData } from '@client/modules/event/classes/event-data.class';
 				animate('200ms ease-out', style({ transform: 'scale(1)', opacity: 1 }))
 			])
 		]),
-		trigger('scaleAnimation', [
+		trigger('enterAnimation', [
             transition(':enter', [
                 style({ transform: 'scale(0.8)', opacity: 0.5 }),
                 animate('200ms ease-out', style({ transform: 'scale(1)', opacity: 1 }))

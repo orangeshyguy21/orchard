@@ -1,5 +1,6 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, Component, Input, ViewChild, ElementRef, Output, EventEmitter, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { trigger, style, animate, transition } from '@angular/animations';
 import { FormGroup } from '@angular/forms';
 import { Subject, debounceTime, takeUntil } from 'rxjs';
 /* Application Dependencies */
@@ -10,7 +11,21 @@ import { MintInfoRpc } from '@client/modules/mint/classes/mint-info-rpc.class';
 	standalone: false,
 	templateUrl: './mint-info-form-icon.component.html',
 	styleUrl: './mint-info-form-icon.component.scss',
-	changeDetection: ChangeDetectionStrategy.OnPush
+	changeDetection: ChangeDetectionStrategy.OnPush,
+    animations: [
+		trigger('enterScaleAnimation', [
+            transition(':enter', [
+                style({ transform: 'scale(0.8)', opacity: 0.5 }),
+                animate('150ms ease-out', style({ transform: 'scale(1)', opacity: 1 }))
+            ]),
+        ]),
+        trigger('enterAnimation', [
+            transition(':enter', [
+                style({ opacity: 0 }),
+                animate('150ms ease-out', style({ opacity: 1 }))
+            ]),
+        ])
+	]
 })
 export class MintInfoFormIconComponent implements OnInit, OnDestroy {
 
@@ -23,13 +38,16 @@ export class MintInfoFormIconComponent implements OnInit, OnDestroy {
 
 	@ViewChild('element_icon_url') element_icon_url!: ElementRef<HTMLInputElement>;
 
+    public form_ready: boolean = false;
+
     private url_loading: boolean = false;
     private url_valid: boolean = true;
     private form_url!: string;
     private destroy$ = new Subject<void>();
 
 	public get display_icon_url(): string {
-		return this.form_url || this.icon_url || '';
+        if( this.form_url !== undefined ) return this.form_url;
+        return this.icon_url || '';
 	}
 
     public get icon_state(): string {
@@ -43,6 +61,10 @@ export class MintInfoFormIconComponent implements OnInit, OnDestroy {
     ){}
 
 	ngOnInit(): void {
+        setTimeout(() => {
+            this.form_ready = true;
+            this.cdr.detectChanges();
+        });
         this.form_group.get(this.control_name)?.valueChanges
             .pipe(
                 debounceTime(1000),
@@ -77,8 +99,9 @@ export class MintInfoFormIconComponent implements OnInit, OnDestroy {
     }
 
     private renderIconUrl(url: string): void {
-        if(!url) return;
         this.form_url = url;
+        this.cdr.detectChanges();
+        if(!url) return;
         this.url_loading = true;
         this.cdr.detectChanges();
         const img = new Image();
