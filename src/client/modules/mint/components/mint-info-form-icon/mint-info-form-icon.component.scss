@@ -22,7 +22,7 @@
     @extend %trans-bg-border-color-fast;
 }
 
-.add-icon{
+.unset-icon{
     @extend %border-dashed;
     @extend %orc-outline-variant-border;
     @extend %cursor-pointer;

@@ -21,7 +21,9 @@ import {
 	MintInfoRpcResponse,
 	MintNameUpdateResponse,
 	MintDescriptionUpdateResponse,
+	MintDescriptionLongUpdateResponse,
 	MintIconUrlUpdateResponse,
+	MintMotdUpdateResponse,
 } from '@client/modules/mint/types/mint.types';
 import { CacheService } from '@client/modules/cache/services/cache/cache.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
@@ -45,7 +47,9 @@ import {
 	MINT_ANALYTICS_TRANSFERS_QUERY,
 	MINT_NAME_MUTATION,
 	MINT_DESCRIPTION_MUTATION,
+	MINT_DESCRIPTION_LONG_MUTATION,
 	MINT_ICON_MUTATION,
+	MINT_MOTD_MUTATION,
 } from './mint.queries';
 
 
@@ -438,6 +442,20 @@ export class MintService {
 		);
 	}
 
+	public updateMintDescriptionLong(description:string) {
+		const query = getApiQuery(MINT_DESCRIPTION_LONG_MUTATION,  { mint_desc_update: { description } });
+		return this.http.post<OrchardRes<MintDescriptionLongUpdateResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error updating mint long description:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
 	public updateMintIcon(icon_url:string) {
 		const query = getApiQuery(MINT_ICON_MUTATION,  { mint_icon_update: { icon_url } });
 		return this.http.post<OrchardRes<MintIconUrlUpdateResponse>>(api, query).pipe(
@@ -451,4 +469,19 @@ export class MintService {
 			})
 		);
 	}
+
+	public updateMintMotd(motd:string) {
+		const query = getApiQuery(MINT_MOTD_MUTATION,  { mint_motd_update: { motd } });
+		return this.http.post<OrchardRes<MintMotdUpdateResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error updating mint motd:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+	
 }

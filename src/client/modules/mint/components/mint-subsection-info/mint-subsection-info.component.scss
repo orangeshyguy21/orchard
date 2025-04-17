@@ -1,0 +1,14 @@
+@use '@styles/molecule/molecule';
+
+:host {
+    @extend %flex;
+    @extend %flex-column;
+    @extend %flex-grow;
+}
+
+.mint-subsection-info-container{
+    @extend %p-2;
+    @extend %flex;
+    @extend %flex-column;
+    @extend %flex-grow;
+}

@@ -52,7 +52,7 @@ export class MintInfoFormIconComponent implements OnInit, OnDestroy {
 
     public get icon_state(): string {
         if (this.url_loading) return 'loading';
-        if (!this.display_icon_url) return 'empty';
+        if (!this.display_icon_url) return 'unset';
         return this.url_valid ? 'set' : 'error';
     }
 	

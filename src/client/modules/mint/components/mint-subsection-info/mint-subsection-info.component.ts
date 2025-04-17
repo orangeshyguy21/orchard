@@ -30,6 +30,7 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		description: new FormControl(),
 		icon_url: new FormControl(),
 		description_long: new FormControl(),
+		motd: new FormControl(),
 	});
 
 	private subscriptions: Subscription = new Subscription();
@@ -53,6 +54,7 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 			description: this.init_info.description,
 			icon_url: this.init_info.icon_url,
 			description_long: this.init_info.description_long,
+			motd: this.init_info.motd,
 		});
 		const tool_subscription = this.getToolSubscription();
 		const event_subscription = this.getEventSubscription();
@@ -117,7 +119,9 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		if( control_name === 'name' ) return this.updateMintName(control_value);
 		if( control_name === 'description' ) return this.updateMintDescription(control_value);
+		if( control_name === 'description_long' ) return this.updateMintDescriptionLong(control_value);
 		if( control_name === 'icon_url' ) return this.updateMintIcon(control_value);
+		if( control_name === 'motd' ) return this.updateMintMotd(control_value);
 	}
 
 	private onConfirmedEvent(): void {
@@ -171,6 +175,17 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		});
 	}
 
+	public updateMintDescriptionLong(control_value: string): void {
+		this.mintService.updateMintDescriptionLong(control_value).subscribe({
+			next: (response) => {
+				this.init_info.description_long = response.mint_long_description_update.description ?? null;
+				this.onSuccess();
+			},
+			error: (error) => {
+				this.onError(error.message);
+			}
+		});
+	}
 	private updateMintIcon(control_value: string): void {
 		this.mintService.updateMintIcon(control_value).subscribe({
 			next: (response) => {
@@ -183,6 +198,20 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 			}
 		});
 	}
+
+	private updateMintMotd(control_value: string): void {
+		this.mintService.updateMintMotd(control_value).subscribe({
+			next: (response) => {
+				this.init_info.motd = response.mint_motd_update.motd ?? null;
+				this.cdr.detectChanges();
+				this.onSuccess();
+			},
+			error: (error) => {
+				this.onError(error.message);
+			}
+		});
+	}
+
 
 	private onSuccess(): void {
 		this.mintService.clearInfoCache();

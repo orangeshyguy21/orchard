@@ -5,14 +5,16 @@
             [disabled]="invalid"
             type="button"
             mat-icon-button
-            class="m-b-1-25 orc-icon-button"
+            [class.m-b-1-25]="subscript_sizing === 'default'"
+            class="orc-icon-button"
             (click)="submit.emit($event)">
             <mat-icon>check_circle</mat-icon>
         </button>
         <button 
             type="button" 
             mat-icon-button 
-            class="m-b-1-25 orc-icon-button" 
+            [class.m-b-1-25]="subscript_sizing === 'default'"
+            class="orc-icon-button" 
             (click)="cancel.emit($event)">
             <mat-icon>cancel</mat-icon>
         </button>

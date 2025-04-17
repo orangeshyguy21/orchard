@@ -11,6 +11,7 @@ export class DynamicFormFieldComponent {
 
 	@Input() hot!: boolean;
 	@Input() invalid!: boolean;
+	@Input() subscript_sizing: 'default' | 'dynamic' = 'default';
 
 	@Output() submit = new EventEmitter<Event>();
 	@Output() cancel = new EventEmitter<Event>();

@@ -71,7 +71,7 @@ export type MintIconUpdateInput = {
 };
 
 export type MintMotdUpdateInput = {
-  motd: Scalars['String']['input'];
+  motd?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type MintNameUpdateInput = {
@@ -387,7 +387,7 @@ export type OrchardMintMintQuote = {
 
 export type OrchardMintMotdUpdate = {
   __typename?: 'OrchardMintMotdUpdate';
-  motd: Scalars['String']['output'];
+  motd?: Maybe<Scalars['String']['output']>;
 };
 
 export type OrchardMintNameUpdate = {

@@ -35,6 +35,7 @@
     #{$c}h-4 { height: 4rem; }
     #{$c}h-8 { height: 8rem; }
     #{$c}h-min-0 { min-height: 0; }
+    #{$c}h-min-6 { min-height: 6rem; }
 
     // Width
     #{$c}w-0 { width: 0; }
@@ -53,6 +54,7 @@
     #{$c}w-min-18 { min-width: 18rem; }
     #{$c}w-min-36 { min-width: 36rem; }
     #{$c}w-max-36 { max-width: 36rem; }
+    #{$c}w-max-54 { max-width: 54rem; }
 
     // Margins
     #{$c}m-v-0-5 { margin: 0.5rem 0; }

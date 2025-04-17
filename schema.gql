@@ -55,7 +55,7 @@ input MintIconUpdateInput {
 }
 
 input MintMotdUpdateInput {
-  motd: String!
+  motd: String
 }
 
 input MintNameUpdateInput {
@@ -272,7 +272,7 @@ type OrchardMintMintQuote {
 }
 
 type OrchardMintMotdUpdate {
-  motd: String!
+  motd: String
 }
 
 type OrchardMintNameUpdate {

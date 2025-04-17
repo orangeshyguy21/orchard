@@ -74,6 +74,14 @@ export type MintDescriptionUpdateResponse = {
 	mint_short_description_update: OrchardMintDescriptionUpdate;
 }
 
+export type MintDescriptionLongUpdateResponse = {
+	mint_long_description_update: OrchardMintDescriptionUpdate;
+}
+
 export type MintIconUrlUpdateResponse = {
 	mint_icon_update: OrchardMintIconUpdate;
+}
+
+export type MintMotdUpdateResponse = {
+	mint_motd_update: OrchardMintMotdUpdate;
 }

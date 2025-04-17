@@ -181,9 +181,23 @@ mutation MintDescription($mint_desc_update: MintDescriptionUpdateInput!) {
 	}
 }`;
 
+export const MINT_DESCRIPTION_LONG_MUTATION = `
+mutation MintDescriptionLong($mint_desc_update: MintDescriptionUpdateInput!) {
+	mint_long_description_update(mint_desc_update: $mint_desc_update) {
+		description
+	}
+}`;
+
 export const MINT_ICON_MUTATION = `
 mutation MintIcon($mint_icon_update: MintIconUpdateInput!) {
 	mint_icon_update(mint_icon_update: $mint_icon_update) {
 		icon_url
+	}
+}`;
+
+export const MINT_MOTD_MUTATION = `
+mutation MintMotd($mint_motd_update: MintMotdUpdateInput!) {
+	mint_motd_update(mint_motd_update: $mint_motd_update) {
+		motd
 	}
 }`;

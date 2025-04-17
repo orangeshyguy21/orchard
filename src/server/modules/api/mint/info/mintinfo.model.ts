@@ -356,7 +356,7 @@ export class OrchardMintDescriptionUpdate {
 
 @ObjectType()
 export class OrchardMintMotdUpdate {
-	@Field()
+	@Field({ nullable: true })
 	motd: string;
 }
 

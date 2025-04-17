@@ -21,7 +21,7 @@ export class MintDescriptionUpdateInput {
 
 @InputType()
 export class MintMotdUpdateInput {
-	@Field()
+	@Field({ nullable: true })
 	motd: string;
 }
 
