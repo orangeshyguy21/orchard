@@ -1,7 +1,28 @@
 <div class="mint-info-form-icon-container">
     <div class="mint-info-id-card">
         <div class="mint-icon-display" (click)="onIconClick()">
-            <img [src]="display_icon_url" alt="Mint Icon" class="h-8 cursor-pointer mint-icon-url">
+            @switch (icon_state) {
+                @case ('loading') {
+                    <div class="mint-info-icon-display load-icon">
+                        <mat-spinner [diameter]="35"></mat-spinner>
+                    </div>
+                }
+                @case ('error') {
+                    <div class="mint-info-icon-display error-icon">
+                        <mat-icon class="icon-lg mat-symbol-outline">error</mat-icon>
+                    </div>
+                }
+                @case ('empty') {
+                    <div class="mint-info-icon-display add-icon orc-icon-button" matRipple>
+                        <mat-icon class="icon-lg mat-symbol-outline">add_photo_alternate</mat-icon>
+                    </div>
+                }
+                @default {
+                    <div class="mint-info-icon-display set-icon">
+                        <img [src]="display_icon_url" class="h-8 mint-icon-url">
+                    </div>
+                }
+            }
         </div>
         <div class="flex flex-grow flex-column flex-gap-1">
             <ng-content></ng-content>
@@ -21,6 +42,7 @@
                 <mat-label>Icon URL</mat-label>
                 <textarea 
                     type="text" 
+                    rows="1"
                     #element_icon_url
                     matInput 
                     [formControlName]="control_name"

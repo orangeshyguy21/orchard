@@ -172,5 +172,18 @@ mutation MintName($mint_name_update: MintNameUpdateInput!) {
 	mint_name_update(mint_name_update: $mint_name_update) {
 		name
 	}
-}
-`;
+}`;
+
+export const MINT_DESCRIPTION_MUTATION = `
+mutation MintDescription($mint_desc_update: MintDescriptionUpdateInput!) {
+	mint_short_description_update(mint_desc_update: $mint_desc_update) {
+		description
+	}
+}`;
+
+export const MINT_ICON_MUTATION = `
+mutation MintIcon($mint_icon_update: MintIconUpdateInput!) {
+	mint_icon_update(mint_icon_update: $mint_icon_update) {
+		icon_url
+	}
+}`;

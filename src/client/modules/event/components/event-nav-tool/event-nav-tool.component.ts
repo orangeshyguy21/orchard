@@ -68,12 +68,14 @@ export class EventNavToolComponent implements OnChanges {
 		}
 		if( this.active_event?.type === 'PENDING' ) {
 			this.icon = 'save';
-			this.changeDetectorRef.detectChanges();
 		}
 		if( this.active_event?.type === 'SUCCESS' ) {
 			this.icon = 'check';
-			this.changeDetectorRef.detectChanges();
 		}
+		if( this.active_event?.type === 'ERROR' ) {
+			this.icon = 'error';
+		}
+		this.changeDetectorRef.detectChanges();
 	}
 
 	public onMouseEnter(){

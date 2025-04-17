@@ -1,6 +1,7 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, ViewChild, ElementRef, Output, EventEmitter, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, ViewChild, ElementRef, Output, EventEmitter, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { Subject, debounceTime, takeUntil } from 'rxjs';
 /* Application Dependencies */
 import { MintInfoRpc } from '@client/modules/mint/classes/mint-info-rpc.class';
 
@@ -11,7 +12,7 @@ import { MintInfoRpc } from '@client/modules/mint/classes/mint-info-rpc.class';
 	styleUrl: './mint-info-form-icon.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MintInfoFormIconComponent implements OnInit {
+export class MintInfoFormIconComponent implements OnInit, OnDestroy {
 
 	@Input() form_group!: FormGroup;
     @Input() control_name!: keyof MintInfoRpc;
@@ -22,17 +23,34 @@ export class MintInfoFormIconComponent implements OnInit {
 
 	@ViewChild('element_icon_url') element_icon_url!: ElementRef<HTMLInputElement>;
 
+    private url_loading: boolean = false;
+    private url_valid: boolean = true;
+    private form_url!: string;
+    private destroy$ = new Subject<void>();
+
 	public get display_icon_url(): string {
-		return this.icon_url || '';
+		return this.form_url || this.icon_url || '';
 	}
+
+    public get icon_state(): string {
+        if (this.url_loading) return 'loading';
+        if (!this.display_icon_url) return 'empty';
+        return this.url_valid ? 'set' : 'error';
+    }
 	
-    constructor(){}
+    constructor(
+        private cdr: ChangeDetectorRef
+    ){}
 
 	ngOnInit(): void {
-		this.form_group.get(this.control_name)?.valueChanges.subscribe(value => {
-			console.log('value', value);
-            // this.display_icon_url = value || '';
-        });
+        this.form_group.get(this.control_name)?.valueChanges
+            .pipe(
+                debounceTime(1000),
+                takeUntil(this.destroy$),
+            )
+            .subscribe(value => {
+                this.renderIconUrl(value);
+            });
 	}
 
     public get form_hot(): boolean {
@@ -54,6 +72,37 @@ export class MintInfoFormIconComponent implements OnInit {
         event.preventDefault();
         this.cancel.emit(this.control_name);
         this.element_icon_url.nativeElement.blur();
+        this.form_url = this.icon_url || '';
+        this.cdr.detectChanges();
+    }
+
+    private renderIconUrl(url: string): void {
+        if(!url) return;
+        this.form_url = url;
+        this.url_loading = true;
+        this.cdr.detectChanges();
+        const img = new Image();
+        img.src = url;
+
+        img.onload = () => {
+            setTimeout(() => {
+                this.url_loading = false;
+                this.url_valid = true;
+                this.cdr.detectChanges();
+            }, 1000);
+        };
+        img.onerror = () => {
+            setTimeout(() => {
+                this.url_loading = false;
+                this.url_valid = false;
+                this.form_group.get(this.control_name)?.setErrors({ error: 'Invalid URL' }); // todo this doesn't go until blur...
+                this.cdr.detectChanges();
+            }, 1000);
+        };
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 }
-

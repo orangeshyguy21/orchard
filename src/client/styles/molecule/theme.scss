@@ -58,6 +58,8 @@
     #{$c}orc-surface-variant-border { border-color: var(--mat-sys-surface-variant); }
     #{$c}orc-outline-border { border-color: var(--mat-sys-outline); }
     #{$c}orc-outline-variant-border { border-color: var(--mat-sys-outline-variant); }
+    #{$c}orc-on-primary-container-border { border-color: var(--mat-sys-on-primary-container); }
+    #{$c}orc-surface-container-lowest-border { border-color: var(--mat-sys-surface-container-lowest); }
 
     // Shadows
     #{$c}orc-level0 { box-shadow: var(--mat-sys-level0); }

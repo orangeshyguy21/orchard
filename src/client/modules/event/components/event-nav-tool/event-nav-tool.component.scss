@@ -28,7 +28,7 @@
 
     &.nav-tool-error{
         .event-nav-tool-switch{
-            background-color: red;
+            @extend %orc-on-error-bg;
         }
     }
 

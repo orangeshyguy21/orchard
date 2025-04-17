@@ -4,4 +4,6 @@
     #{$c}trans-font-weight-fast { transition: font-weight 0.15s ease; }
     #{$c}trans-bg-medium { transition: background-color 0.3s ease; }
     #{$c}trans-border-radius-fast { transition: border-radius 0.15s ease; }
+    #{$c}trans-bg-border-radius-fast { transition: background-color 0.15s ease, border-radius 0.15s ease; }
+    #{$c}trans-bg-border-color-fast { transition: background-color 0.15s ease, border-color 0.15s ease; }
 }

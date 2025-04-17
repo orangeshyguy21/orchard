@@ -16,6 +16,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BaseChartDirective } from 'ng2-charts';
 /* Application Dependencies */
 import { NavModule } from '@client/modules/nav/nav.module';
@@ -81,6 +82,7 @@ import { MintInfoFormDescriptionLongComponent } from './components/mint-info-for
 		MatSliderModule,
 		MatCheckboxModule,
 		MatSlideToggleModule,
+		MatProgressSpinnerModule,
 		BaseChartDirective,
 		NavModule,
 		LocalModule,

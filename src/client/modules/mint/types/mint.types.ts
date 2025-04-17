@@ -69,3 +69,11 @@ export type MintAnalyticsArgs = {
 export type MintNameUpdateResponse = {
 	mint_name_update: OrchardMintNameUpdate;
 }
+
+export type MintDescriptionUpdateResponse = {
+	mint_short_description_update: OrchardMintDescriptionUpdate;
+}
+
+export type MintIconUrlUpdateResponse = {
+	mint_icon_update: OrchardMintIconUpdate;
+}

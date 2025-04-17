@@ -115,31 +115,88 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		this.form_info.get(control_name)?.markAsPristine();
 		const control_value = this.form_info.get(control_name)?.value;
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		this.mintService.updateMintName(control_value).subscribe((response) => {
-			this.init_info.name = response.mint_name_update.name ?? null;
-			this.mintService.clearInfoCache();
-			this.mintService.loadMintInfo().subscribe();
-			this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
-			this.resetForm();
-		});
+		if( control_name === 'name' ) return this.updateMintName(control_value);
+		if( control_name === 'description' ) return this.updateMintDescription(control_value);
+		if( control_name === 'icon_url' ) return this.updateMintIcon(control_value);
 	}
 
 	private onConfirmedEvent(): void {
 		if( this.form_info.invalid ) return;
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		this.form_info.get('name')?.markAsPristine();
-		this.mintService.updateMintName(this.form_info.get('name')?.value).subscribe((response) => {
-			this.init_info.name = response.mint_name_update.name ?? null;
-			this.mintService.clearInfoCache();
-			this.mintService.loadMintInfo().subscribe();
-			this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
-			this.resetForm();
+
+		// loop every dirty control
+		// for( const control_name of Object.keys(this.form_info.controls) ) {
+		// 	if( this.form_info.get(control_name)?.dirty ) {
+		// 		this.updateMintName(this.form_info.get(control_name)?.value);
+		// 	}
+		// }
+
+
+
+		// this.form_info.get('name')?.markAsPristine();
+		// this.mintService.updateMintName(this.form_info.get('name')?.value).subscribe((response) => {
+		// 	this.init_info.name = response.mint_name_update.name ?? null;
+		// 	this.mintService.clearInfoCache();
+		// 	this.mintService.loadMintInfo().subscribe();
+		// 	this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
+		// 	this.resetForm();
+		// });
+	}
+
+	private updateMintInfo() : void {
+		// todo
+	}
+
+	private updateMintName(control_value: string): void {
+		this.mintService.updateMintName(control_value).subscribe({
+			next: (response) => {
+				this.init_info.name = response.mint_name_update.name ?? null;
+				this.onSuccess();
+			},
+			error: (error) => {
+				this.onError(error.message);
+			}
 		});
 	}
 
-	private resetForm(): void {
+	private updateMintDescription(control_value: string): void {
+		this.mintService.updateMintDescription(control_value).subscribe({
+			next: (response) => {
+				this.init_info.description = response.mint_short_description_update.description ?? null;
+				this.onSuccess();
+			},
+			error: (error) => {
+				this.onError(error.message);
+			}
+		});
+	}
+
+	private updateMintIcon(control_value: string): void {
+		this.mintService.updateMintIcon(control_value).subscribe({
+			next: (response) => {
+				this.init_info.icon_url = response.mint_icon_update.icon_url ?? null;
+				this.cdr.detectChanges();
+				this.onSuccess();
+			},
+			error: (error) => {
+				this.onError(error.message);
+			}
+		});
+	}
+
+	private onSuccess(): void {
+		this.mintService.clearInfoCache();
+		this.mintService.loadMintInfo().subscribe();
+		this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
 		this.form_info.markAsPristine();
 		this.dirty_count.set(0);
+	}
+
+	private onError(error: string): void {
+		this.eventService.registerEvent(new EventData({
+			type: 'ERROR',
+			message: error
+		}));
 	}
 
 	public onControlCancel(control_name: keyof MintInfoRpc): void {

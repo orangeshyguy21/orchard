@@ -20,6 +20,8 @@ import {
 	MintAnalyticsTransfersResponse,
 	MintInfoRpcResponse,
 	MintNameUpdateResponse,
+	MintDescriptionUpdateResponse,
+	MintIconUrlUpdateResponse,
 } from '@client/modules/mint/types/mint.types';
 import { CacheService } from '@client/modules/cache/services/cache/cache.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
@@ -42,6 +44,8 @@ import {
 	MINT_ANALYTICS_MELTS_QUERY,
 	MINT_ANALYTICS_TRANSFERS_QUERY,
 	MINT_NAME_MUTATION,
+	MINT_DESCRIPTION_MUTATION,
+	MINT_ICON_MUTATION,
 } from './mint.queries';
 
 
@@ -415,6 +419,34 @@ export class MintService {
 			}),
 			catchError((error) => {
 				console.error('Error updating mint name:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public updateMintDescription(description:string) {
+		const query = getApiQuery(MINT_DESCRIPTION_MUTATION,  { mint_desc_update: { description } });
+		return this.http.post<OrchardRes<MintDescriptionUpdateResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error updating mint description:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public updateMintIcon(icon_url:string) {
+		const query = getApiQuery(MINT_ICON_MUTATION,  { mint_icon_update: { icon_url } });
+		return this.http.post<OrchardRes<MintIconUrlUpdateResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error updating mint icon:', error);
 				return throwError(() => error);
 			})
 		);

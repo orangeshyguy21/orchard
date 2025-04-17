@@ -10,3 +10,41 @@
     @extend %flex;
     @extend %flex-gap-2;
 }
+
+.mint-info-icon-display{
+    @extend %h-8;
+    @extend %w-8;
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-justify-center;
+    @extend %orc-corner-full;
+    @extend %border;
+    @extend %trans-bg-border-color-fast;
+}
+
+.add-icon{
+    @extend %border-dashed;
+    @extend %orc-outline-variant-border;
+    @extend %cursor-pointer;
+
+    &:hover{
+        @extend %orc-surface-container-bg;
+        @extend %orc-on-primary-container-border;
+    }
+}
+
+.load-icon{
+    @extend %border-solid;
+    @extend %orc-outline-variant-border;
+}
+
+.error-icon{
+    @extend %border-solid;
+    @extend %orc-error-color;
+}
+
+.set-icon{
+    @extend %border-solid;
+    @extend %orc-surface-container-lowest-border;
+    @extend %cursor-pointer;
+}
