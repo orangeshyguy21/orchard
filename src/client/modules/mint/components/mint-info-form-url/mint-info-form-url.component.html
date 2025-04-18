@@ -6,33 +6,39 @@
         (keydown.escape)="onCancel($event)">    
         <ng-container [formArrayName]="array_name">
             <div class="flex flex-items-center flex-gap-1">
-                <mat-icon class="orc-outline-color">language</mat-icon>
-                <orc-dynamic-form-field
-                    [hot]="form_hot"
-                    [invalid]="form_array.at(control_index).invalid || false"
-                    [subscript_sizing]="'dynamic'"
-                    (submit)="onSubmit($event)"
-                    (cancel)="onCancel($event)">
-                    <mat-form-field 
-                        [appearance]="form_hot ? 'fill' : 'outline'"
-                        subscriptSizing="dynamic"
-                        class="orc-dynamic-form-field orc-array-form-field mint-url-form-field">
-                        <input 
-                            type="text" 
-                            matInput 
-                            [formControlName]="control_index" 
-                            placeholder="Ex. https://my-mint.com"
-                            #element_url>
-                        <button
-                            type="button" 
-                            mat-icon-button 
-                            matSuffix
-                            class="orc-icon-button"
-                            (click)="onRemove($event)">
-                            <mat-icon>delete_forever</mat-icon>
-                        </button>
-                    </mat-form-field>
-                </orc-dynamic-form-field>
+                @if( url_icon === 'tor' ) {
+                    <mat-icon class="orc-outline-color" [svgIcon]="url_icon"></mat-icon>
+                } @else {
+                    <mat-icon class="orc-outline-color">{{ url_icon }}</mat-icon>
+                }
+                <div class="flex-grow">
+                    <orc-dynamic-form-field
+                        [hot]="form_hot"
+                        [invalid]="form_array.at(control_index).invalid || false"
+                        [subscript_sizing]="'dynamic'"
+                        (submit)="onSubmit($event)"
+                        (cancel)="onCancel($event)">
+                        <mat-form-field 
+                            [appearance]="form_hot ? 'fill' : 'outline'"
+                            subscriptSizing="dynamic"
+                            class="orc-dynamic-form-field orc-array-form-field w-full">
+                            <input 
+                                type="text" 
+                                matInput 
+                                [formControlName]="control_index" 
+                                placeholder="Ex. https://my-mint.com"
+                                #element_url>
+                            <button
+                                type="button" 
+                                mat-icon-button 
+                                matSuffix
+                                class="orc-icon-button"
+                                (click)="onRemove($event)">
+                                <mat-icon>delete_forever</mat-icon>
+                            </button>
+                        </mat-form-field>
+                    </orc-dynamic-form-field>
+                </div>
             </div>
         </ng-container>
     </form>

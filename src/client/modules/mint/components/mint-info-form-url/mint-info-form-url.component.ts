@@ -1,6 +1,8 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, ViewChild, ElementRef, Output, EventEmitter, AfterViewInit, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { FormGroup, FormArray } from '@angular/forms';
+/* Vendor Dependencies */
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'orc-mint-info-form-url',
@@ -9,11 +11,13 @@ import { FormGroup, FormArray } from '@angular/forms';
     styleUrl: './mint-info-form-url.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MintInfoFormUrlComponent {
+export class MintInfoFormUrlComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	@Input() form_group!: FormGroup;
+    @Input() form_array!: FormArray;
 	@Input() array_name!: string;
     @Input() control_index!: number;
+    @Input() focused!: boolean;
 
     @Output() update = new EventEmitter<number>();
     @Output() cancel = new EventEmitter<number>();
@@ -21,16 +25,37 @@ export class MintInfoFormUrlComponent {
 
 	@ViewChild('element_url') element_url!: ElementRef<HTMLInputElement>;
 
+    public url_icon: string = 'language';
+
 	public get form_hot(): boolean {
         if( document.activeElement === this.element_url?.nativeElement ) return true;
         return this.form_array.at(this.control_index)?.dirty ? true : false;
     }
 
-	public get form_array(): FormArray {
-		return this.form_group.get(this.array_name) as FormArray;
-	}
-	
-    constructor(){}
+    private subscription: Subscription = new Subscription();
+
+    constructor(
+        private cdr: ChangeDetectorRef
+    ){}
+
+    ngOnInit(): void {
+        this.subscription.add(
+            this.form_array.valueChanges.subscribe((value) => {
+                this.url_icon = this.getUrlIcon();
+                this.cdr.detectChanges();
+            })
+        );
+    }
+
+    ngAfterViewInit(): void {
+        this.url_icon = this.getUrlIcon();
+        this.cdr.detectChanges();
+        if( this.focused ){
+            setTimeout(() => {
+                this.element_url.nativeElement.focus();
+            });
+        }
+    }
 
     public onSubmit(event: Event): void {
         event.preventDefault();
@@ -49,5 +74,17 @@ export class MintInfoFormUrlComponent {
         event.stopPropagation();
         this.remove.emit(this.control_index);
         this.element_url.nativeElement.blur();
+    }
+
+    private getUrlIcon(): string {
+        const url = this.form_array.at(this.control_index).value;
+        if( !url ) return 'language';
+        if( url.slice(0, 5) === 'https' ) return 'vpn_lock_2';
+        if( url.slice(-6) === '.onion' ) return 'tor';
+        return 'language';
+    }
+
+    ngOnDestroy(): void {
+        this.subscription.unsubscribe();
     }
 }

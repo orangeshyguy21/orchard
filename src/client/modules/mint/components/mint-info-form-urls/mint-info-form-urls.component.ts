@@ -22,11 +22,14 @@ export class MintInfoFormUrlsComponent {
     @Output() remove = new EventEmitter<{control_name: keyof MintInfoRpc, control_index: number}>();
     @Output() addControl = new EventEmitter<void>();
 
-	// public get urls_array(): FormArray {
-	// 	return this.form_group?.get(this.control_name) as FormArray;
-	// }
+	public added_index!: number;
 
     constructor(){}
+
+    public onAddControl(): void {
+        this.added_index = this.form_array.length;
+        this.addControl.emit();
+    }
 
     public onControlUpdate(index: number): void {
         this.update.emit({

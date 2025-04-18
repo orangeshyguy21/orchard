@@ -7,8 +7,10 @@
         @for (url_control of form_array.controls; track $index) {
             <orc-mint-info-form-url 
                 [form_group]="form_group"
+                [form_array]="form_array"
                 [array_name]="'urls'"
                 [control_index]="$index"
+                [focused]="added_index === $index"
                 (update)="onControlUpdate($event)"
                 (cancel)="onControlCancel($event)"
                 (remove)="onControlRemove($event)">
@@ -16,8 +18,8 @@
         }
 
         <div class="flex flex-items-center flex-gap-1">
-            <mat-icon class="orc-outline-color cursor-pointer" (click)="addControl.emit()">add</mat-icon>
-            <div class="orc-form-array-add-item" (click)="addControl.emit()" matRipple>
+            <mat-icon class="orc-outline-color cursor-pointer" (click)="onAddControl()">add</mat-icon>
+            <div class="orc-form-array-add-item" (click)="onAddControl()" matRipple>
                 <div class="orc-form-array-add-item-action">
                     <div class="orc-form-array-add-item-inner">
                         New URL

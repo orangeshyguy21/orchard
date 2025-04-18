@@ -32,6 +32,7 @@ export class AppComponent implements OnInit {
 		this.matIconRegistry
 			.addSvgIcon('bitcoin', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/bitcoin.svg'))
 			.addSvgIcon('bitcoin_outline', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/bitcoin-outline.svg'))
+			.addSvgIcon('tor', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/tor.svg'))
 	}
 
 	private initSettings(): void {
