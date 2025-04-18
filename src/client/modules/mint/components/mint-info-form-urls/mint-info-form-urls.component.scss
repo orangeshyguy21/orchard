@@ -1,0 +1,27 @@
+@use '@styles/molecule/molecule';
+
+.mint-info-form-urls-title{
+    color: rgb(235, 225, 213);
+    font-size: 12px;
+    font-weight: 300;
+}
+
+.add-url-action{
+    @extend %border;
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-gap-0-5;
+    @extend %p-0-5;
+    @extend %w-max-36;
+
+    @extend %border-dashed;
+    @extend %orc-outline-border;
+    @extend %cursor-pointer;
+    @extend %border-radius-4;
+    @extend %trans-bg-border-radius-fast;
+
+    &:hover{
+        @extend %orc-surface-container-bg;
+        @extend %orc-corner-small;
+    }
+}

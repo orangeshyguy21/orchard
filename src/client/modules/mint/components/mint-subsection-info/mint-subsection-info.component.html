@@ -27,8 +27,13 @@
                 (cancel)="onControlCancel($event)">
             </orc-mint-info-form-description-long>
         </div>
-        <div class="flex-1">
-            Coming Soon...
+        <div class="flex-1 flex flex-column flex-gap-1">
+            <orc-mint-info-form-urls
+                [form_group]="form_info"
+                [control_name]="'urls'"
+                (update)="onControlUpdate($event)"
+                (cancel)="onControlCancel($event)">
+            </orc-mint-info-form-urls>
         </div>
     </div>
     <orc-mint-info-form-motd

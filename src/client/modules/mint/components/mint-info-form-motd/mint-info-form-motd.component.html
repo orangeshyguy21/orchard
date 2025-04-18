@@ -20,12 +20,8 @@
                 class="message-of-the-day"
                 (click)="onClick($event)"
                 matRipple>
-                @if (motd_state === 'unset') {
-                    <mat-icon class="icon-lg">add</mat-icon>
-                }@else {
-                    <mat-icon class="icon-lg mat-symbol-outline">info</mat-icon>
-                }
-                <div class="flex-grow flex flex-column flex-gap-0-5">
+                <mat-icon class="icon-lg" [class.mat-symbol-outline]="motd_state !== 'unset'">{{motd_state === 'unset' ? 'add' : 'info'}}</mat-icon>
+                <div class="flex-grow flex flex-column flex-gap-0-5 p-v-1">
                     <div>Message of the Day</div>
                     <textarea 
                         type="text" 
@@ -38,14 +34,13 @@
                         placeholder="message displayed to mint members"
                     ></textarea>
                 </div>
-
                 @if (motd) {
                     <button 
                         type="button" 
                         mat-icon-button 
                         (click)="onDelete($event)"
                         class="orc-icon-button">
-                        <mat-icon>delete</mat-icon>
+                        <mat-icon>delete_forever</mat-icon>
                     </button>
                 }
             </div>

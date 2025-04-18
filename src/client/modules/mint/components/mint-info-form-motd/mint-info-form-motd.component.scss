@@ -23,19 +23,16 @@
 
 .set-motd{
     @extend %orc-corner-large;
-    // @extend %orc-surface-container-lowest-border;
-    // @extend %orc-surface-container-lowest-border;
-    // @extend %orc-primary-container-bg;
-    // @extend %border-solid;
-    @extend %orc-on-primary-container-border;
+    @extend %orc-surface-container-lowest-border;
     @extend %orc-on-primary-container-color;
     @extend %cursor-pointer;
+    @extend %orc-primary-container-bg;
 }
 
 .hot-motd{
     @extend %orc-corner-large;
     @extend %orc-surface-container-lowest-border;
-    @extend %orc-primary-container-bg;
+    @extend %orc-surface-variant-bg;
     @extend %orc-on-primary-container-color;
     @extend %cursor-pointer;
 }
@@ -53,16 +50,13 @@
 
 .unset-motd{
     @extend %border-dashed;
-    // @extend %orc-outline-variant-border;
     @extend %orc-outline-border;
     @extend %cursor-pointer;
-    // @extend %orc-corner-extra-large;
     @extend %border-radius-4;
     @extend %trans-bg-border-radius-fast;
 
     &:hover{
         @extend %orc-surface-container-bg;
         @extend %orc-corner-large;
-        // @extend %orc-on-primary-container-border;
     }
 }

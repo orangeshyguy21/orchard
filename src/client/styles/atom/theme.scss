@@ -1,5 +1,9 @@
 @use '@angular/material' as mat;
 
+/****************************************
+* Angular Material Supported Overrides
+****************************************/
+
 /* Application Level Overrides */
 :root {
 	@include mat.table-overrides((
@@ -17,35 +21,56 @@
 
 // still needs work, can we get the importants out of here?
 // also need special classes for these setryles - and need one for dashed and solid (add or update)
-.mat-mdc-form-field{
-	&.orc-dynamic-form-field {
-		.mdc-notched-outline__leading,
-		.mdc-notched-outline__notch,
-		.mdc-notched-outline__trailing {
-		  	border-color: var(--mat-sys-outline-variant) !important;
-			transition: border-color 0.1s ease-in-out;
-		}
-	  
-		&:hover .mdc-notched-outline__leading,
-		&:hover .mdc-notched-outline__notch,
-		&:hover .mdc-notched-outline__trailing {
-		  	border-color: var(--mat-sys-on-primary-container) !important;
-		}
 
-		&.mat-form-field-hide-placeholder{
-			.mdc-notched-outline__leading{
-				border-top-style: dashed;
-				border-left-style: dashed;
-				border-bottom-style: dashed;
+/****************************************
+* Angular Material Unsupported Overrides
+****************************************/
+
+/* Specific Form Field Overrides */
+:root {
+	.mat-mdc-form-field{
+		&.orc-dynamic-form-field {
+			.mdc-notched-outline__leading,
+			.mdc-notched-outline__notch,
+			.mdc-notched-outline__trailing {
+				border-color: var(--mat-sys-outline-variant);
+				transition: border-color 0.1s ease-in-out;
 			}
-			.mdc-notched-outline__notch{
-				border-top-style: dashed;
-				border-bottom-style: dashed;
+		  
+			&:hover .mdc-notched-outline__leading,
+			&:hover .mdc-notched-outline__notch,
+			&:hover .mdc-notched-outline__trailing {
+				border-color: var(--mat-sys-on-primary-container);
 			}
-			.mdc-notched-outline__trailing{
-				border-top-style: dashed;
-				border-right-style: dashed;
-				border-bottom-style: dashed;
+	
+			&.mat-form-field-hide-placeholder{
+				.mdc-notched-outline__leading{
+					border-top-style: dashed;
+					border-left-style: dashed;
+					border-bottom-style: dashed;
+				}
+				.mdc-notched-outline__notch{
+					border-top-style: dashed;
+					border-bottom-style: dashed;
+				}
+				.mdc-notched-outline__trailing{
+					border-top-style: dashed;
+					border-right-style: dashed;
+					border-bottom-style: dashed;
+				}
+				.mdc-notched-outline__leading,
+				.mdc-notched-outline__notch,
+				.mdc-notched-outline__trailing {
+					border-color: var(--mat-sys-outline);
+					transition: border-color 0.1s ease-in-out;
+				}
+
+				&:hover .mdc-notched-outline__leading,
+				&:hover .mdc-notched-outline__notch,
+				&:hover .mdc-notched-outline__trailing {
+					border-color: var(--mat-sys-on-primary-container);
+					background-color: var(--mat-sys-surface-container);
+				}
 			}
 		}
 	}

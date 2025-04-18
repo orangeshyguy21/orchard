@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, ChangeDetectorRef, WritableSignal, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { toObservable } from '@angular/core/rxjs-interop';
 /* Vendor Dependencies */
 import { Subscription } from 'rxjs';
@@ -31,6 +31,7 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		icon_url: new FormControl(),
 		description_long: new FormControl(),
 		motd: new FormControl(),
+		urls: new FormArray([]),
 	});
 
 	private subscriptions: Subscription = new Subscription();
@@ -48,14 +49,19 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 
 	async ngOnInit(): Promise<void> {
 		this.aiService.active_agent = AiAgent.MintInfo;
-		this.init_info = this.route.snapshot.data['mint_info_rpc'];
-		this.form_info.setValue({
+		this.init_info = this.route.snapshot.data['mint_info_rpc'];		
+		this.form_info.patchValue({
 			name: this.init_info.name,
 			description: this.init_info.description,
 			icon_url: this.init_info.icon_url,
 			description_long: this.init_info.description_long,
 			motd: this.init_info.motd,
 		});
+		if (this.init_info.urls && Array.isArray(this.init_info.urls)) {
+			const url_controls = this.init_info.urls.map(url => new FormControl(url));
+			const urls_array = this.form_info.get('urls') as FormArray;
+			url_controls.forEach(control => urls_array.push(control));
+		}
 		const tool_subscription = this.getToolSubscription();
 		const event_subscription = this.getEventSubscription();
 		const form_subscription = this.getFormSubscription();

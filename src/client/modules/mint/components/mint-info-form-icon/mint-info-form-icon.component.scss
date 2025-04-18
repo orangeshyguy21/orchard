@@ -24,7 +24,7 @@
 
 .unset-icon{
     @extend %border-dashed;
-    @extend %orc-outline-variant-border;
+    @extend %orc-outline-border;
     @extend %cursor-pointer;
 
     &:hover{

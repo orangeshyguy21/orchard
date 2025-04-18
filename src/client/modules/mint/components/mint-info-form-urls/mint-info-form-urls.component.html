@@ -1,0 +1,22 @@
+<div class="mint-info-form-urls-container">
+    <div class="mint-info-form-urls-title">
+        Connection URLs
+    </div>
+
+    @for (url_control of urls_array.controls; track $index) {
+        <!-- {{ url_control.value }} -->
+        <orc-mint-info-form-url 
+            [form_group]="form_group"
+            [array_name]="'urls'"
+            [control_index]="$index"
+            (update)="onIndexUpdate($event)"
+            (cancel)="onIndexCancel($event)">
+        </orc-mint-info-form-url>
+    }
+
+    <div class="add-url-action">
+        <mat-icon>add</mat-icon>
+        <div>New URL</div>
+    </div>
+
+</div>
