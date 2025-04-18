@@ -4,24 +4,30 @@
     color: rgb(235, 225, 213);
     font-size: 12px;
     font-weight: 300;
+    padding-bottom: 1rem;
 }
 
 .add-url-action{
     @extend %border;
     @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-gap-0-5;
-    @extend %p-0-5;
-    @extend %w-max-36;
+    @extend %h-3;
+    width: 18rem;
 
     @extend %border-dashed;
     @extend %orc-outline-border;
     @extend %cursor-pointer;
-    @extend %border-radius-4;
+    @extend %orc-corner-small;
     @extend %trans-bg-border-radius-fast;
 
     &:hover{
         @extend %orc-surface-container-bg;
         @extend %orc-corner-small;
     }
+}
+
+.testing{
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-gap-0-5;
+    @extend %p-h-1;
 }

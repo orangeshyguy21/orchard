@@ -5,28 +5,48 @@
         (keydown.enter)="onSubmit($event)"
         (keydown.escape)="onCancel($event)">    
         <ng-container [formArrayName]="array_name">
-            <orc-dynamic-form-field
-                [hot]="form_hot"
-                [invalid]="form_array.at(control_index).invalid || false"
-                (submit)="onSubmit($event)"
-                (cancel)="onCancel($event)">
-                <mat-form-field [appearance]="form_hot ? 'fill' : 'outline'" class="orc-dynamic-form-field flex">
-                    <div class="flex flex-gap-0-5">
+            <div class="flex flex-items-center flex-gap-1">
+                <mat-icon class="orc-outline-color">language</mat-icon>
+                <orc-dynamic-form-field
+                    [hot]="form_hot"
+                    [invalid]="form_array.at(control_index).invalid || false"
+                    [subscript_sizing]="'dynamic'"
+                    (submit)="onSubmit($event)"
+                    (cancel)="onCancel($event)">
+                    <mat-form-field 
+                        [appearance]="form_hot ? 'fill' : 'outline'"
+                        subscriptSizing="dynamic"
+                        class="orc-dynamic-form-field orc-array-form-field mint-url-form-field">
                         <input 
                             type="text" 
                             matInput 
                             [formControlName]="control_index" 
                             placeholder="Ex. https://my-mint.com"
                             #element_url>
-                        <button 
+                        <button
                             type="button" 
                             mat-icon-button 
+                            matSuffix
                             class="orc-icon-button">
                             <mat-icon>delete_forever</mat-icon>
                         </button>
-                   </div>
-                </mat-form-field>
-            </orc-dynamic-form-field>
+                        <!-- <div class="flex flex-gap-0-5">
+                            <input 
+                                type="text" 
+                                matInput 
+                                [formControlName]="control_index" 
+                                placeholder="Ex. https://my-mint.com"
+                                #element_url>
+                            <button 
+                                type="button" 
+                                mat-icon-button 
+                                class="orc-icon-button">
+                                <mat-icon>delete_forever</mat-icon>
+                            </button>
+                       </div> -->
+                    </mat-form-field>
+                </orc-dynamic-form-field>
+            </div>
         </ng-container>
     </form>
 </div>

@@ -1,0 +1,6 @@
+@use '@styles/molecule/molecule';
+
+.mint-url-form-field{
+    @extend %w-min-18;
+    @extend %flex;
+}
