@@ -1,4 +1,5 @@
 @use '@styles/molecule/molecule';
+@use '@styles/nucleus/nucleus';
 
 .primary-nav-item-container{
     @extend %font-size-xs;
