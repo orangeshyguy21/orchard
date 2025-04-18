@@ -1,32 +1,30 @@
 @use '@styles/molecule/molecule';
 @use '@styles/nucleus/nucleus';
 
-.mint-info-form-urls-title{
-    color: rgb(235, 225, 213);
-    font-size: 12px;
-    font-weight: 300;
-    padding-bottom: 1rem;
-}
-
-.add-url-action{
-    @extend %border;
+.orc-form-array-add-item{
     @extend %flex;
     @extend %h-3;
-    width: 18rem;
+    @extend %w-min-18;
+}
 
+.orc-form-array-add-item-action{
+    @extend %border;
+    @extend %flex-grow;
+    @extend %flex;
     @extend %border-dashed;
     @extend %orc-outline-border;
     @extend %cursor-pointer;
-    @extend %orc-corner-small;
-    @extend %trans-bg-border-radius-fast;
+    @extend %orc-corner-extra-small;
+    @extend %trans-bg-fast;
+    @extend %orc-on-surface-variant-color;
+    @extend %font-weight-extra-light;
 
     &:hover{
         @extend %orc-surface-container-bg;
-        @extend %orc-corner-small;
     }
 }
 
-.testing{
+.orc-form-array-add-item-inner{
     @extend %flex;
     @extend %flex-items-center;
     @extend %flex-gap-0-5;

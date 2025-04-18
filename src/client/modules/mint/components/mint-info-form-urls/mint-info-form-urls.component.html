@@ -1,40 +1,29 @@
 <div class="mint-info-form-urls-container">
-    <div class="mint-info-form-urls-title">
+    <div class="title-form-section p-b-1">
         Connection URLs
     </div>
 
     <div class="flex flex-column flex-gap-1">
-        @for (url_control of urls_array.controls; track $index) {
+        @for (url_control of form_array.controls; track $index) {
             <orc-mint-info-form-url 
                 [form_group]="form_group"
                 [array_name]="'urls'"
                 [control_index]="$index"
-                (update)="onIndexUpdate($event)"
-                (cancel)="onIndexCancel($event)">
+                (update)="onControlUpdate($event)"
+                (cancel)="onControlCancel($event)"
+                (remove)="onControlRemove($event)">
             </orc-mint-info-form-url>
         }
 
         <div class="flex flex-items-center flex-gap-1">
-            <!-- <button 
-                type="button" 
-                mat-icon-button 
-                class="orc-icon-button">
-                <mat-icon>add</mat-icon>
-            </button> -->
-            <mat-icon class="orc-outline-color cursor-pointer" (click)="$event.preventDefault()">add</mat-icon>
-            <div class="add-url-action" (click)="$event.preventDefault()">
-                <div class="testing">
-                    <div>New URL</div>
+            <mat-icon class="orc-outline-color cursor-pointer" (click)="addControl.emit()">add</mat-icon>
+            <div class="orc-form-array-add-item" (click)="addControl.emit()" matRipple>
+                <div class="orc-form-array-add-item-action">
+                    <div class="orc-form-array-add-item-inner">
+                        New URL
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- <div class="add-url-action">
-        <div class="testing">
-            <mat-icon>add</mat-icon>
-            <div>New URL</div>
-        </div>
-    </div> -->
-
 </div>

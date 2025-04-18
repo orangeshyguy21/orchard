@@ -201,3 +201,27 @@ mutation MintMotd($mint_motd_update: MintMotdUpdateInput!) {
 		motd
 	}
 }`;
+
+export const MINT_URL_UPDATE_MUTATIONS = `
+mutation MintUrlOperations($url_add: MintUrlUpdateInput!, $url_remove: MintUrlUpdateInput!) {
+	mint_url_add(mint_url_update: $url_add) {
+		url
+	}
+	mint_url_remove(mint_url_update: $url_remove) {
+		url
+	}
+}`;
+
+export const MINT_URL_ADD_MUTATION = `
+mutation MintUrlAdd($mint_url_update: MintUrlUpdateInput!) {
+	mint_url_add(mint_url_update: $mint_url_update) {
+		url
+	}
+}`;
+
+export const MINT_URL_REMOVE_MUTATION = `
+mutation MintUrlRemove($mint_url_update: MintUrlUpdateInput!) {
+	mint_url_remove(mint_url_update: $mint_url_update) {
+		url
+	}
+}`;

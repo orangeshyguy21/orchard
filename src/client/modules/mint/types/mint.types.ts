@@ -85,3 +85,16 @@ export type MintIconUrlUpdateResponse = {
 export type MintMotdUpdateResponse = {
 	mint_motd_update: OrchardMintMotdUpdate;
 }
+
+export type MintUrlUpdateResponse = {
+	mint_url_add: OrchardMintUrlUpdate;
+	mint_url_remove: OrchardMintUrlUpdate;
+}
+
+export type MintUrlAddResponse = {
+	mint_url_add: OrchardMintUrlUpdate;
+}
+
+export type MintUrlRemoveResponse = {
+	mint_url_remove: OrchardMintUrlUpdate;
+}

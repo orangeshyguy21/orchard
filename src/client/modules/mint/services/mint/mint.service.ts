@@ -24,6 +24,9 @@ import {
 	MintDescriptionLongUpdateResponse,
 	MintIconUrlUpdateResponse,
 	MintMotdUpdateResponse,
+	MintUrlUpdateResponse,
+	MintUrlAddResponse,
+	MintUrlRemoveResponse,
 } from '@client/modules/mint/types/mint.types';
 import { CacheService } from '@client/modules/cache/services/cache/cache.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
@@ -50,6 +53,9 @@ import {
 	MINT_DESCRIPTION_LONG_MUTATION,
 	MINT_ICON_MUTATION,
 	MINT_MOTD_MUTATION,
+	MINT_URL_UPDATE_MUTATIONS,
+	MINT_URL_ADD_MUTATION,
+	MINT_URL_REMOVE_MUTATION,
 } from './mint.queries';
 
 
@@ -483,5 +489,46 @@ export class MintService {
 			})
 		);
 	}
-	
+
+	public updateMintUrl(url_add:string, url_remove:string) {
+		const query = getApiQuery(MINT_URL_UPDATE_MUTATIONS,  { url_add: { url: url_add }, url_remove: { url: url_remove } });
+		return this.http.post<OrchardRes<MintUrlUpdateResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error updating mint url:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public addMintUrl(url:string) {
+		const query = getApiQuery(MINT_URL_ADD_MUTATION,  { mint_url_update: { url } });
+		return this.http.post<OrchardRes<MintUrlAddResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error adding mint url:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public removeMintUrl(url:string) {
+		const query = getApiQuery(MINT_URL_REMOVE_MUTATION,  { mint_url_update: { url } });
+		return this.http.post<OrchardRes<MintUrlRemoveResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error removing mint url:', error);
+				return throwError(() => error);
+			})
+		);
+	}
 }

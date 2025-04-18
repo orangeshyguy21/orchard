@@ -17,6 +17,7 @@ export class MintInfoFormUrlComponent {
 
     @Output() update = new EventEmitter<number>();
     @Output() cancel = new EventEmitter<number>();
+    @Output() remove = new EventEmitter<number>();
 
 	@ViewChild('element_url') element_url!: ElementRef<HTMLInputElement>;
 
@@ -40,6 +41,13 @@ export class MintInfoFormUrlComponent {
     public onCancel(event: Event): void {
         event.preventDefault();
         this.cancel.emit(this.control_index);
+        this.element_url.nativeElement.blur();
+    }
+
+    public onRemove(event: Event): void {
+        event.preventDefault();
+        event.stopPropagation();
+        this.remove.emit(this.control_index);
         this.element_url.nativeElement.blur();
     }
 }

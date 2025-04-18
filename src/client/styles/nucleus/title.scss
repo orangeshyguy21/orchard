@@ -10,4 +10,10 @@
         @extend %font-size-m;
         @extend %orc-outline-color;
     }
+
+    #{$c}title-form-section {
+        @extend %font-size-xs;
+        @extend %orc-on-surface-variant-color;
+        @extend %font-weight-light;
+    }
 }

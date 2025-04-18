@@ -30,9 +30,13 @@
         <div class="flex-1 flex flex-column flex-gap-1">
             <orc-mint-info-form-urls
                 [form_group]="form_info"
+                [form_array]="form_array_urls"
                 [control_name]="'urls'"
-                (update)="onControlUpdate($event)"
-                (cancel)="onControlCancel($event)">
+                [array_length]="form_array_urls.length"
+                (addControl)="onAddUrlControl()"
+                (update)="onArrayControlUpdate($event)"
+                (cancel)="onArrayControlCancel($event)"
+                (remove)="onArrayControlRemove($event)">
             </orc-mint-info-form-urls>
         </div>
     </div>

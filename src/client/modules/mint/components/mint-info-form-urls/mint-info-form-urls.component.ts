@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormArray } from '@angular/forms';
 /* Application Dependencies */
 import { MintInfoRpc } from '@client/modules/mint/classes/mint-info-rpc.class';
@@ -13,35 +13,39 @@ import { MintInfoRpc } from '@client/modules/mint/classes/mint-info-rpc.class';
 })
 export class MintInfoFormUrlsComponent {
 	@Input() form_group!: FormGroup;
+    @Input() form_array!: FormArray;
     @Input() control_name!: keyof MintInfoRpc;
+    @Input() array_length!: number;
 
-    @Output() update = new EventEmitter<keyof MintInfoRpc>();
-    @Output() cancel = new EventEmitter<keyof MintInfoRpc>();
+    @Output() update = new EventEmitter<{control_name: keyof MintInfoRpc, control_index: number}>();
+    @Output() cancel = new EventEmitter<{control_name: keyof MintInfoRpc, control_index: number}>();
+    @Output() remove = new EventEmitter<{control_name: keyof MintInfoRpc, control_index: number}>();
+    @Output() addControl = new EventEmitter<void>();
 
-    // @ViewChild('element_name') element_name!: ElementRef<HTMLInputElement>;
-
-	public get urls_array(): FormArray {
-		return this.form_group?.get(this.control_name) as FormArray;
-	}
+	// public get urls_array(): FormArray {
+	// 	return this.form_group?.get(this.control_name) as FormArray;
+	// }
 
     constructor(){}
 
-    // public get form_hot(): boolean {
-    //     if( document.activeElement === this.element_name?.nativeElement ) return true;
-    //     return this.form_group.get(this.control_name)?.dirty ? true : false;
-    // }
-
-    public onIndexUpdate(index: number): void {
-        console.log('onIndexUpdate', index);
+    public onControlUpdate(index: number): void {
+        this.update.emit({
+            control_name: this.control_name,
+            control_index: index
+        });
     }
 
-    public onIndexCancel(index: number): void {
-        console.log('onIndexCancel', index);
+    public onControlCancel(index: number): void {
+        this.cancel.emit({
+            control_name: this.control_name,
+            control_index: index
+        });
     }
 
-    // public onCancel(event: Event): void {
-    //     event.preventDefault();
-    //     this.cancel.emit(this.control_name);
-    //     this.element_name.nativeElement.blur();
-    // }
+    public onControlRemove(index: number): void {
+        this.remove.emit({
+            control_name: this.control_name,
+            control_index: index
+        });
+    }
 }
