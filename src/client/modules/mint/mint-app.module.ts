@@ -47,6 +47,8 @@ import { MintInfoFormDescriptionLongComponent } from './components/mint-info-for
 import { MintInfoFormMotdComponent } from './components/mint-info-form-motd/mint-info-form-motd.component';
 import { MintInfoFormUrlsComponent } from './components/mint-info-form-urls/mint-info-form-urls.component';
 import { MintInfoFormUrlComponent } from './components/mint-info-form-url/mint-info-form-url.component';
+import { MintInfoFormContactsComponent } from './components/mint-info-form-contacts/mint-info-form-contacts.component';
+import { MintInfoFormContactComponent } from './components/mint-info-form-contact/mint-info-form-contact.component';
 
 @NgModule({
 	declarations: [
@@ -70,6 +72,8 @@ import { MintInfoFormUrlComponent } from './components/mint-info-form-url/mint-i
   		MintInfoFormMotdComponent,
     	MintInfoFormUrlsComponent,
      	MintInfoFormUrlComponent,
+     	MintInfoFormContactsComponent,
+      MintInfoFormContactComponent,
 	],
 	imports: [
 		CommonModule,

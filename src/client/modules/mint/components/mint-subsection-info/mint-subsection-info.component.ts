@@ -32,10 +32,15 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		description_long: new FormControl(),
 		motd: new FormControl(),
 		urls: new FormArray([]),
+		contact: new FormArray([]),
 	});
 
 	public get form_array_urls(): FormArray {
 		return this.form_info.get('urls') as FormArray;
+	}
+
+	public get form_array_contacts(): FormArray {
+		return this.form_info.get('contact') as FormArray;
 	}
 
 	private subscriptions: Subscription = new Subscription();
@@ -64,6 +69,13 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		if (this.init_info.urls && Array.isArray(this.init_info.urls)) {
 			const url_controls = this.init_info.urls.map(url => new FormControl(url));
 			url_controls.forEach(control => this.form_array_urls.push(control));
+		}
+		if (this.init_info.contact && Array.isArray(this.init_info.contact)) {
+			const contact_controls = this.init_info.contact.map(contact => new FormGroup({
+				method: new FormControl(contact.method),
+				info: new FormControl(contact.info),
+			}));
+			contact_controls.forEach(control => this.form_array_contacts.push(control));
 		}
 		const tool_subscription = this.getToolSubscription();
 		const event_subscription = this.getEventSubscription();
@@ -122,7 +134,14 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 	}
 
 	public onAddUrlControl(): void {
-		this.form_array_urls.push(new FormControl());
+		this.form_array_urls.push(new FormControl(null, [Validators.required]));
+	}
+
+	public onAddContactControl(): void {
+		this.form_array_contacts.push(new FormGroup({
+			method: new FormControl(null, [Validators.required]),
+			info: new FormControl(null, [Validators.required]),
+		}));
 	}
 
 	public onControlUpdate(control_name: keyof MintInfoRpc): void {
@@ -137,26 +156,26 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		if( control_name === 'motd' ) return this.updateMintMotd(control_value);
 	}
 
-	public onArrayControlUpdate({control_name, control_index}: {control_name: keyof MintInfoRpc, control_index: number}): void {
-		const array_group = this.form_info.get(control_name) as FormArray;
+	public onArrayControlUpdate({array_name, control_index}: {array_name: keyof MintInfoRpc, control_index: number}): void {
+		const array_group = this.form_info.get(array_name) as FormArray;
 		if( array_group.at(control_index).invalid ) return;
 		array_group.at(control_index).markAsPristine();
-		const original_value = (this.init_info[control_name] && Array.isArray(this.init_info[control_name])) ? this.init_info[control_name][control_index] : null;
+		const original_value = (this.init_info[array_name] && Array.isArray(this.init_info[array_name])) ? this.init_info[array_name][control_index] : null;
 		const control_value = array_group.at(control_index).value;
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		if( control_name === 'urls' ){
+		if( array_name === 'urls' ){
 			if( original_value ) return this.updateMintUrl(control_index, control_value, original_value);
 			return this.addMintUrl(control_value);
 		}
 	}
 
-	public onArrayControlRemove({control_name, control_index}: {control_name: keyof MintInfoRpc, control_index: number}): void {
-		const array_group = this.form_info.get(control_name) as FormArray;
+	public onArrayControlRemove({array_name, control_index}: {array_name: keyof MintInfoRpc, control_index: number}): void {
+		const array_group = this.form_info.get(array_name) as FormArray;
 		const control_value = array_group.at(control_index).value;
-		const original_value = (this.init_info[control_name] && Array.isArray(this.init_info[control_name])) ? this.init_info[control_name][control_index] : null;
+		const original_value = (this.init_info[array_name] && Array.isArray(this.init_info[array_name])) ? this.init_info[array_name][control_index] : null;
 		if( !original_value ) return array_group.removeAt(control_index);
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		if( control_name === 'urls' ) return this.removeMintUrl(control_index, control_value);
+		if( array_name === 'urls' ) return this.removeMintUrl(control_index, control_value);
 	}
 
 	private onConfirmedEvent(): void {
@@ -306,10 +325,10 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		this.form_info.get(control_name)?.setValue(this.init_info[control_name]);
 	}
 
-	public onArrayControlCancel({control_name, control_index}: {control_name: keyof MintInfoRpc, control_index: number}): void {
-		if(!control_name) return;
-		const array_group = this.form_info.get(control_name) as FormArray;
-		const original_value = (this.init_info[control_name] && Array.isArray(this.init_info[control_name])) ? this.init_info[control_name][control_index] : null;
+	public onArrayControlCancel({array_name, control_index}: {array_name: keyof MintInfoRpc, control_index: number}): void {
+		if(!array_name) return;
+		const array_group = this.form_info.get(array_name) as FormArray;
+		const original_value = (this.init_info[array_name] && Array.isArray(this.init_info[array_name])) ? this.init_info[array_name][control_index] : null;
 		array_group.at(control_index).markAsPristine();
 		array_group.at(control_index).setValue(original_value);
 	}

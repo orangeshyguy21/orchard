@@ -1,0 +1,76 @@
+<div class="mint-info-form-contact-container">
+    <form
+        [formGroup]="form_group"
+        (ngSubmit)="onSubmit($event)"
+        (keydown.enter)="onSubmit($event)"
+        (keydown.escape)="onCancel($event)">    
+        <ng-container [formArrayName]="array_name">      
+            <!-- <div [formGroupName]="subgroup_index">
+
+                <mat-form-field>
+                    <mat-select formControlName="method">
+                        <mat-option [value]="'email'">Email</mat-option>
+                        <mat-option [value]="'phone'">Phone</mat-option>
+                        <mat-option [value]="'nostr'">Nostr</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+
+                <mat-form-field>
+                    <input 
+                        type="text" 
+                        matInput 
+                        formControlName="info">
+                </mat-form-field>
+            </div>           -->
+            <div [formGroupName]="subgroup_index" class="flex flex-items-center flex-gap-1">
+                <div class="flex-grow">
+                    <orc-dynamic-form-field
+                        [hot]="form_hot"
+                        [invalid]="form_array.at(subgroup_index).invalid || false"
+                        [subscript_sizing]="'dynamic'"
+                        (submit)="onSubmit($event)"
+                        (cancel)="onCancel($event)">
+                        <mat-form-field 
+                            [appearance]="form_hot ? 'fill' : 'outline'"
+                            subscriptSizing="dynamic"
+                            class="orc-dynamic-form-field orc-array-form-field w-full">
+                            <mat-select formControlName="method">
+                                <mat-option [value]="'email'">Email</mat-option>
+                                <mat-option [value]="'phone'">Phone</mat-option>
+                                <mat-option [value]="'nostr'">Nostr</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field 
+                            [appearance]="form_hot ? 'fill' : 'outline'"
+                            subscriptSizing="dynamic"
+                            class="orc-dynamic-form-field orc-array-form-field w-full">
+                            <input 
+                                type="text" 
+                                matInput 
+                                formControlName="info" 
+                                #element_contact>
+                            <button
+                                type="button" 
+                                mat-icon-button 
+                                matSuffix
+                                class="orc-icon-button"
+                                (click)="onRemove($event)">
+                                <mat-icon>delete_forever</mat-icon>
+                            </button>
+                            @if (form_array.at(subgroup_index)?.invalid && (form_array.at(subgroup_index)?.dirty || form_array.at(subgroup_index)?.touched)) {
+                                <mat-error class="font-size-xs">
+                                    @if (form_array.at(subgroup_index)?.hasError('required')) {
+                                        Contact is required
+                                    } @else {
+                                        Invalid contact
+                                    }
+                                </mat-error>
+                            }
+                        </mat-form-field>
+                    </orc-dynamic-form-field>
+                </div>
+            </div>
+        </ng-container>
+    </form>
+</div>

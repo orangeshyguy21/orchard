@@ -27,17 +27,27 @@
                 (cancel)="onControlCancel($event)">
             </orc-mint-info-form-description-long>
         </div>
-        <div class="flex-1 flex flex-column flex-gap-1">
+        <div class="flex-1 flex flex-column flex-gap-2">
             <orc-mint-info-form-urls
                 [form_group]="form_info"
                 [form_array]="form_array_urls"
-                [control_name]="'urls'"
+                [array_name]="'urls'"
                 [array_length]="form_array_urls.length"
                 (addControl)="onAddUrlControl()"
                 (update)="onArrayControlUpdate($event)"
                 (cancel)="onArrayControlCancel($event)"
                 (remove)="onArrayControlRemove($event)">
             </orc-mint-info-form-urls>
+            <orc-mint-info-form-contacts
+                [form_group]="form_info"
+                [form_array]="form_array_contacts"
+                [array_name]="'contact'"
+                [array_length]="form_array_contacts.length"
+                (addControl)="onAddContactControl()"
+                (update)="onArrayControlUpdate($event)"
+                (cancel)="onArrayControlCancel($event)"
+                (remove)="onArrayControlRemove($event)">
+            </orc-mint-info-form-contacts>
         </div>
     </div>
     <orc-mint-info-form-motd

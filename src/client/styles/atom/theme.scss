@@ -28,17 +28,14 @@
 
 
 /****************************************
-* Angular Material Unsupported Overrides
+* Angular Material Unsupported Overrides (todo these are supported, messed this up)
 ****************************************/
 
 /* Specific Form Field Overrides */
-// orc-dynamic-form-fiel
+// orc-dynamic-form-field 
 :root {
 	.mat-mdc-form-field{
 		&.orc-dynamic-form-field {
-			// .mdc-text-field{
-			// 	transition: background-color 0.15s ease-out; // not sure i like this
-			// }
 
 			.mdc-notched-outline__leading,
 			.mdc-notched-outline__notch,

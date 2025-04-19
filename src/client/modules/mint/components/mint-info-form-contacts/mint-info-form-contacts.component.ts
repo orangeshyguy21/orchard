@@ -5,17 +5,17 @@ import { FormGroup, FormArray } from '@angular/forms';
 import { MintInfoRpc } from '@client/modules/mint/classes/mint-info-rpc.class';
 
 @Component({
-	selector: 'orc-mint-info-form-urls',
+	selector: 'orc-mint-info-form-contacts',
 	standalone: false,
-	templateUrl: './mint-info-form-urls.component.html',
-	styleUrl: './mint-info-form-urls.component.scss',
+	templateUrl: './mint-info-form-contacts.component.html',
+	styleUrl: './mint-info-form-contacts.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MintInfoFormUrlsComponent {
+export class MintInfoFormContactsComponent {
 	@Input() form_group!: FormGroup;
     @Input() form_array!: FormArray;
     @Input() array_name!: keyof MintInfoRpc;
-    @Input() array_length!: number; // forces update on array length change
+    @Input() array_length!: number;
 
     @Output() update = new EventEmitter<{array_name: keyof MintInfoRpc, control_index: number}>();
     @Output() cancel = new EventEmitter<{array_name: keyof MintInfoRpc, control_index: number}>();

@@ -26,7 +26,6 @@
                                 type="text" 
                                 matInput 
                                 [formControlName]="control_index" 
-                                placeholder="Ex. https://my-mint.com"
                                 #element_url>
                             <button
                                 type="button" 
@@ -36,6 +35,15 @@
                                 (click)="onRemove($event)">
                                 <mat-icon>delete_forever</mat-icon>
                             </button>
+                            @if (form_array.at(control_index)?.invalid && (form_array.at(control_index)?.dirty || form_array.at(control_index)?.touched)) {
+                                <mat-error class="font-size-xs">
+                                    @if (form_array.at(control_index)?.hasError('required')) {
+                                        URL is required
+                                    } @else {
+                                        Invalid URL
+                                    }
+                                </mat-error>
+                            }
                         </mat-form-field>
                     </orc-dynamic-form-field>
                 </div>

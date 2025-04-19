@@ -8,11 +8,13 @@ import { MatIconModule } from '@angular/material/icon';
 /* Native Dependencies */
 import { AutoGrowDirective } from '@client/modules/form/directives/auto-grow.directive';
 import { DynamicFormFieldComponent } from './components/dynamic-form-field/dynamic-form-field.component';
+import { AddFormArrayItemComponent } from './components/add-form-array-item/add-form-array-item.component';
 
 @NgModule({
 	declarations: [
 		AutoGrowDirective,
   		DynamicFormFieldComponent,
+    	AddFormArrayItemComponent,
 	],
 	imports: [
 		CommonModule,
@@ -23,6 +25,7 @@ import { DynamicFormFieldComponent } from './components/dynamic-form-field/dynam
 	exports: [
 		AutoGrowDirective,
 		DynamicFormFieldComponent,
+		AddFormArrayItemComponent,
 	]
 })
 export class FormModule { }
