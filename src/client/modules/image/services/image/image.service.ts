@@ -13,8 +13,6 @@ import { Image } from '@client/modules/image/classes/image.class';
 import { ImageResponse } from '@client/modules/image/types/image.types';
 /* Local Dependencies */
 import { IMAGE_GET_QUERY } from './image.queries';
-/* Shared Dependencies */
-import { OrchardImage } from '@shared/generated.types';
 
 @Injectable({
     providedIn: 'root'
@@ -25,8 +23,7 @@ export class ImageService {
         public http: HttpClient,
     ) {}
 
-    getImageData(image_url: string): Observable<OrchardImage> {
-        console.log('service image_url', image_url);
+    getImageData(image_url: string): Observable<Image> {
         const query = getApiQuery(IMAGE_GET_QUERY, { image_url });
         return this.http.post<OrchardRes<ImageResponse>>(api, query).pipe(
 			map((response) => {

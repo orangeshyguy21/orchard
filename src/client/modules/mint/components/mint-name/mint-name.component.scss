@@ -1,5 +1,12 @@
 @use '@styles/molecule/molecule';
 
+.mint-name-loading{
+    @extend %orc-surface-container-high-bg;
+    @extend %orc-corner-large;
+    @extend %h-1;
+    @extend %w-4;
+}
+
 .mint-name-container{
     @extend %font-size-s;
 }

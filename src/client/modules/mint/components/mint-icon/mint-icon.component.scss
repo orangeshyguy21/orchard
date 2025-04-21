@@ -1,16 +1,19 @@
 @use '@styles/molecule/molecule';
 
-.mint-icon-container{
-    // @extend .cursor-pointer;
-}
-
-.mint-icon-placeholder{
+.mint-icon{
     @extend %h-2;
     @extend %w-2;
     @extend %flex;
     @extend %flex-items-center;
     @extend %flex-justify-center;
     @extend %orc-corner-full;
+}
+
+.mint-icon-loading{
+    @extend %orc-surface-container-high-bg;
+}
+
+.mint-icon-placeholder{
     @extend %border;
     @extend %border-dashed;
     @extend %orc-outline-border;
@@ -23,12 +26,6 @@
 }
 
 .mint-icon-error{
-    @extend %h-2;
-    @extend %w-2;
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-justify-center;
-    @extend %orc-corner-full;
     @extend %orc-on-error-container-color;
     @extend %orc-on-error-bg;
 }
