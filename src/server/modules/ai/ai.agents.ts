@@ -1,6 +1,6 @@
 /* Local Dependencies */
 import { AiAgent } from "./ai.enums";
-import { UpdateMintNameTool } from "./ai.tools";
+import { UpdateMintNameTool, UpdateMintMotdTool } from "./ai.tools";
 
 export const AI_AGENTS = {
     [AiAgent.DEFAULT]: {
@@ -19,6 +19,6 @@ export const AI_AGENTS = {
             role: 'system',
             content: 'You are a helpful assistant that can answer questions and help with tasks.',
         },
-        tools: [UpdateMintNameTool],
+        tools: [UpdateMintNameTool, UpdateMintMotdTool],
     },
 };

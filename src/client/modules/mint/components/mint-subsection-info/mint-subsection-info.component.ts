@@ -122,6 +122,11 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 			this.form_info.get('name')?.markAsDirty();
 			this.cdr.detectChanges();
 		}
+		if( tool_call.function.name === AiFunctionName.MintMotdUpdate ) {
+			this.form_info.get('motd')?.setValue(tool_call.function.arguments.motd);
+			this.form_info.get('motd')?.markAsDirty();
+			this.cdr.detectChanges();
+		}
 	}
 
 	private createPendingEvent(count: number): void {

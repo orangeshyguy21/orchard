@@ -12,4 +12,5 @@ export enum AiMessageRole {
 
 export enum AiFunctionName {
     MINT_NAME_UPDATE = 'MINT_NAME_UPDATE',
+    MINT_MOTD_UPDATE = 'MINT_MOTD_UPDATE',
 }

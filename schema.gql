@@ -24,6 +24,7 @@ input AiChatMessageInput {
 }
 
 enum AiFunctionName {
+  MINT_MOTD_UPDATE
   MINT_NAME_UPDATE
 }
 

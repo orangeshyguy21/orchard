@@ -40,6 +40,7 @@ export type AiChatMessageInput = {
 };
 
 export enum AiFunctionName {
+  MintMotdUpdate = 'MINT_MOTD_UPDATE',
   MintNameUpdate = 'MINT_NAME_UPDATE'
 }
 
