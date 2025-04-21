@@ -79,8 +79,8 @@ export class MintInfoFormUrlComponent implements OnInit, AfterViewInit, OnDestro
     private getUrlIcon(): string {
         const url = this.form_array.at(this.control_index).value;
         if( !url ) return 'language';
-        if( url.slice(0, 5) === 'https' ) return 'vpn_lock_2';
         if( url.slice(-6) === '.onion' ) return 'tor';
+        if( url.slice(0, 5) === 'https' ) return 'vpn_lock_2';
         return 'language';
     }
 
