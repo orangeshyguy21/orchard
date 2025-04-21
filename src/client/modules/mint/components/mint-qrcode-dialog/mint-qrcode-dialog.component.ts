@@ -60,7 +60,7 @@ export class MintQrcodeDialogComponent implements OnInit {
 			height: 395,
 			type: 'svg',
 			data: this.data.connection.url,
-			image: this.data.icon_url,
+			image: this.data.icon_data,
 			shape: 'square',
 			margin: 0,
 			qrOptions: {
@@ -108,10 +108,9 @@ export class MintQrcodeDialogComponent implements OnInit {
 	}
 
 	public onImageChange(event: MatSlideToggleChange): void {
-		console.log(event);
 		if( this.qr_options.value.image === null || this.qr_options.value.image === undefined ) return;
 		this.qr_code.update({
-			image: event.checked ? this.data.icon_url : null
+			image: event.checked ? this.data.icon_data : null
 		});
 	}
 

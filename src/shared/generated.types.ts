@@ -274,6 +274,12 @@ export type OrchardContact = {
   method: Scalars['String']['output'];
 };
 
+export type OrchardImage = {
+  __typename?: 'OrchardImage';
+  data?: Maybe<Scalars['String']['output']>;
+  type: Scalars['String']['output'];
+};
+
 export type OrchardMintAnalytics = {
   __typename?: 'OrchardMintAnalytics';
   amount: Scalars['Int']['output'];
@@ -503,6 +509,7 @@ export type Query = {
   __typename?: 'Query';
   ai_models: Array<OrchardAiModel>;
   bitcoin_blockcount: OrchardBitcoinBlockCount;
+  image: OrchardImage;
   mint_analytics_balances: Array<OrchardMintAnalytics>;
   mint_analytics_melts: Array<OrchardMintAnalytics>;
   mint_analytics_mints: Array<OrchardMintAnalytics>;
@@ -521,6 +528,11 @@ export type Query = {
   mint_proofs_used: Array<OrchardMintProof>;
   mint_quote_ttl: MintQuoteTtlOutput;
   status: OrchardStatus;
+};
+
+
+export type QueryImageArgs = {
+  image_url: Scalars['String']['input'];
 };
 
 

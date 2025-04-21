@@ -171,6 +171,11 @@ type OrchardContact {
   method: String!
 }
 
+type OrchardImage {
+  data: String
+  type: String!
+}
+
 type OrchardMintAnalytics {
   amount: Int!
   created_time: UnixTimestamp!
@@ -373,6 +378,7 @@ type OrchardStatus {
 type Query {
   ai_models: [OrchardAiModel!]!
   bitcoin_blockcount: OrchardBitcoinBlockCount!
+  image(image_url: String!): OrchardImage!
   mint_analytics_balances(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
   mint_analytics_melts(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
   mint_analytics_mints(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!

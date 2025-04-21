@@ -4,10 +4,12 @@ import { Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 /* Vendor Dependencies */
+import { firstValueFrom } from 'rxjs';
 import QRCodeStyling from 'qr-code-styling';
 import { MatDialog } from '@angular/material/dialog';
 /* Application Dependencies */
 import { ThemeService } from '@client/modules/settings/services/theme/theme.service';
+import { ImageService } from '@client/modules/image/services/image/image.service';
 /* Native Dependencies */
 import { MintQrcodeDialogComponent } from '../mint-qrcode-dialog/mint-qrcode-dialog.component';
 /* Local Dependencies */
@@ -64,10 +66,12 @@ export class MintConnectionsComponent {
 	private qr_primary_color: string;
 	private qr_corner_dot_color: string;
 	private placeholder_icon_url: string = '/mint-icon-placeholder.png';
+	private icon_data: string | undefined = undefined;
 
 	constructor(
 		private changeDetectorRef: ChangeDetectorRef,
 		private themeService: ThemeService,
+		private imageService: ImageService,
 		private dialog: MatDialog,
 		private router: Router
 	) {
@@ -79,6 +83,7 @@ export class MintConnectionsComponent {
 		if( this.loading !== false ) return;
 		this.init();
 		this.initQR();
+		this.loadImage();
 	}
 
 	private init(): void {
@@ -104,14 +109,14 @@ export class MintConnectionsComponent {
 
 	private initQR(): void {
 		if( this.connections.length === 0 ) return;
-		const icon_url = this.icon_url || this.placeholder_icon_url;
+		// const icon_url = this.icon_url || this.placeholder_icon_url;
 
 		this.qr_code = new QRCodeStyling({
 			width: 195,
 			height: 195,
 			type: 'svg',
 			data: this.qr_data.value,
-			image: icon_url,
+			image: undefined,
 			shape: 'square',
 			margin: 0,
 			qrOptions: {
@@ -143,6 +148,15 @@ export class MintConnectionsComponent {
 		  });
 	  
 		  this.qr_code.append(this.qr_canvas.nativeElement);
+	}
+
+	private async loadImage(): Promise<void> {
+		if( !this.icon_url ) return;
+		const image = await firstValueFrom(this.imageService.getImageData(this.icon_url));
+		this.icon_data = image?.data ?? undefined;
+		this.qr_code.update({
+			image: this.icon_data ?? undefined,
+		});
 	}
 
 	private updateQRCode(): void {
@@ -179,7 +193,7 @@ export class MintConnectionsComponent {
 				connection: this.connections.find(connection => connection.url === this.qr_data.value),
 				primary_color: this.qr_primary_color,
 				corner_dot_color: this.qr_corner_dot_color,
-				icon_url: this.icon_url ?? this.placeholder_icon_url,
+				icon_data: this.icon_data ?? this.placeholder_icon_url,
 				mint_name: this.mint_name
 			}
 		});
