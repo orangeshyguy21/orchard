@@ -15,7 +15,6 @@ export class ImageService {
         const response = await this.fetch_service.fetchWithProxy(image_url);
         const content_type = response.headers.get('content-type');
         const buffer = Buffer.from(await response.arrayBuffer());
-        console.log('BUFFER:::::', buffer);
         return new OrchardImage(buffer, content_type || 'image/jpeg');
     }
 }
