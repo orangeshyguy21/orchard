@@ -21,17 +21,19 @@
                         [subscript_sizing]="'dynamic'"
                         (submit)="onSubmit($event)"
                         (cancel)="onCancel($event)">
-                        <div class="flex flex-gap-1 flex-items-center flex-grow">
-                            <mat-form-field 
-                                [appearance]="'fill'"
-                                subscriptSizing="dynamic"
-                                class="orc-dynamic-form-field orc-array-form-field">
-                                <mat-select formControlName="method" #element_method>
-                                    <mat-option [value]="'email'">Email</mat-option>
-                                    <mat-option [value]="'twitter'">X</mat-option>
-                                    <mat-option [value]="'nostr'">Nostr</mat-option>
-                                </mat-select>
-                            </mat-form-field>
+                        <div class="flex flex-items-center flex-grow">           
+                            <div class="method-select-container" [@methodSelectState]="form_hot ? 'open' : 'closed'">
+                                <mat-form-field 
+                                    [appearance]="'fill'"
+                                    subscriptSizing="dynamic"
+                                    class="orc-dynamic-form-field orc-array-form-field overflow-hidden w-full">
+                                    <mat-select formControlName="method" #element_method>
+                                        <mat-option [value]="'email'">Email</mat-option>
+                                        <mat-option [value]="'twitter'">X</mat-option>
+                                        <mat-option [value]="'nostr'">Nostr</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
 
                             <mat-form-field 
                                 [appearance]="form_hot ? 'fill' : 'outline'"
