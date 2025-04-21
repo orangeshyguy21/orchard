@@ -151,7 +151,9 @@ export class MintConnectionsComponent {
 	}
 
 	private async loadImage(): Promise<void> {
-		if( !this.icon_url ) return;
+		if( !this.icon_url ) return this.qr_code.update({
+			image: this.placeholder_icon_url
+		});
 		const image = await firstValueFrom(this.imageService.getImageData(this.icon_url));
 		this.icon_data = image?.data ?? undefined;
 		this.qr_code.update({
