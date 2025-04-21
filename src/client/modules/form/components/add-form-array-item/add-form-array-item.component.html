@@ -1,10 +1,11 @@
 <div class="add-form-array-item-container">
     @if( prefix_icon ) {
-        <mat-icon class="orc-outline-color cursor-pointer" (click)="addControl.emit()">{{ prefix_icon }}</mat-icon>
+        <mat-icon class="orc-outline-color"></mat-icon>
     }
     <div class="orc-form-array-add-item" (click)="addControl.emit()" matRipple>
         <div class="orc-form-array-add-item-action">
             <div class="orc-form-array-add-item-inner">
+                <mat-icon class="orc-outline-color">{{ prefix_icon }}</mat-icon>
                 {{ label }}
             </div>
         </div>

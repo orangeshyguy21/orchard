@@ -27,6 +27,9 @@ import {
 	MintUrlUpdateResponse,
 	MintUrlAddResponse,
 	MintUrlRemoveResponse,
+	MintContactUpdateResponse,
+	MintContactRemoveResponse,
+	MintContactAddResponse,
 } from '@client/modules/mint/types/mint.types';
 import { CacheService } from '@client/modules/cache/services/cache/cache.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
@@ -36,7 +39,7 @@ import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 import { MintPromise } from '@client/modules/mint/classes/mint-promise.class';
 import { MintAnalytic } from '@client/modules/mint/classes/mint-analytic.class';
 /* Shared Dependencies */
-import { MintAnalyticsInterval } from '@shared/generated.types';
+import { MintAnalyticsInterval, OrchardContact } from '@shared/generated.types';
 /* Local Dependencies */
 import { 
 	MINT_INFO_QUERY, 
@@ -56,6 +59,9 @@ import {
 	MINT_URL_UPDATE_MUTATIONS,
 	MINT_URL_ADD_MUTATION,
 	MINT_URL_REMOVE_MUTATION,
+	MINT_CONTACT_UPDATE_MUTATIONS,
+	MINT_CONTACT_REMOVE_MUTATION,
+	MINT_CONTACT_ADD_MUTATION,
 } from './mint.queries';
 
 
@@ -527,6 +533,57 @@ export class MintService {
 			}),
 			catchError((error) => {
 				console.error('Error removing mint url:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public updateMintContact(contact_add:OrchardContact, contact_remove:OrchardContact) {
+		const query = getApiQuery(MINT_CONTACT_UPDATE_MUTATIONS,  { 
+			contact_add: {
+				'method': contact_add.method,
+				'info': contact_add.info
+			},
+			contact_remove: {
+				'method': contact_remove.method,
+				'info': contact_remove.info
+			}
+		});
+		return this.http.post<OrchardRes<MintContactUpdateResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error updating mint contact:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public removeMintContact(contact:OrchardContact) {
+		const query = getApiQuery(MINT_CONTACT_REMOVE_MUTATION,  { contact_remove: { method: contact.method, info: contact.info } });
+		return this.http.post<OrchardRes<MintContactRemoveResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error removing mint contact:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public addMintContact(contact:OrchardContact) {
+		const query = getApiQuery(MINT_CONTACT_ADD_MUTATION,  { contact_add: { method: contact.method, info: contact.info } });
+		return this.http.post<OrchardRes<MintContactAddResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error adding mint contact:', error);
 				return throwError(() => error);
 			})
 		);

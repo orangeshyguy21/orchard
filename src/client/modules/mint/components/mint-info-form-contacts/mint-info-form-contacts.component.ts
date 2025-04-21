@@ -12,6 +12,7 @@ import { MintInfoRpc } from '@client/modules/mint/classes/mint-info-rpc.class';
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MintInfoFormContactsComponent {
+	
 	@Input() form_group!: FormGroup;
     @Input() form_array!: FormArray;
     @Input() array_name!: keyof MintInfoRpc;
@@ -23,11 +24,13 @@ export class MintInfoFormContactsComponent {
     @Output() addControl = new EventEmitter<void>();
 
 	public added_index!: number;
+	public added_method!: string;
 
     constructor(){}
 
     public onAddControl(): void {
         this.added_index = this.form_array.length;
+		this.added_method = this.getAddedMethod();
         this.addControl.emit();
     }
 
@@ -51,4 +54,12 @@ export class MintInfoFormContactsComponent {
             control_index: index
         });
     }
+
+	private getAddedMethod(): string {
+		const all_methods = ['email', 'twitter', 'nostr'];
+		const used_methods = this.form_array.controls.map(control => control.get('method')?.value );
+		const remaining_methods = all_methods.filter(method => !used_methods.includes(method));
+		if (remaining_methods.length > 0) return remaining_methods[0];
+		return 'email';
+	}
 }

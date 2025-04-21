@@ -203,7 +203,7 @@ mutation MintMotd($mint_motd_update: MintMotdUpdateInput!) {
 }`;
 
 export const MINT_URL_UPDATE_MUTATIONS = `
-mutation MintUrlOperations($url_add: MintUrlUpdateInput!, $url_remove: MintUrlUpdateInput!) {
+mutation MintUrlUpdate($url_add: MintUrlUpdateInput!, $url_remove: MintUrlUpdateInput!) {
 	mint_url_add(mint_url_update: $url_add) {
 		url
 	}
@@ -223,5 +223,33 @@ export const MINT_URL_REMOVE_MUTATION = `
 mutation MintUrlRemove($mint_url_update: MintUrlUpdateInput!) {
 	mint_url_remove(mint_url_update: $mint_url_update) {
 		url
+	}
+}`;
+
+export const MINT_CONTACT_UPDATE_MUTATIONS = `
+mutation MintContactUpdate($contact_add: MintContactUpdateInput!, $contact_remove: MintContactUpdateInput!) {
+	mint_contact_add(mint_contact_update: $contact_add) {
+		method
+		info
+	}
+	mint_contact_remove(mint_contact_update: $contact_remove) {
+		method
+		info
+	}
+}`;
+
+export const MINT_CONTACT_REMOVE_MUTATION = `
+mutation MintContactRemove($contact_remove: MintContactUpdateInput!) {
+	mint_contact_remove(mint_contact_update: $contact_remove) {
+		method
+		info
+	}
+}`;
+
+export const MINT_CONTACT_ADD_MUTATION = `
+mutation MintContactAdd($contact_add: MintContactUpdateInput!) {
+	mint_contact_add(mint_contact_update: $contact_add) {
+		method
+		info
 	}
 }`;

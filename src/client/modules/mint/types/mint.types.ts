@@ -98,3 +98,16 @@ export type MintUrlAddResponse = {
 export type MintUrlRemoveResponse = {
 	mint_url_remove: OrchardMintUrlUpdate;
 }
+
+export type MintContactUpdateResponse = {
+	mint_contact_add: OrchardMintContactUpdate;
+	mint_contact_remove: OrchardMintContactUpdate;
+}
+
+export type MintContactRemoveResponse = {
+	mint_contact_remove: OrchardMintContactUpdate;
+}
+
+export type MintContactAddResponse = {
+	mint_contact_add: OrchardMintContactUpdate;
+}

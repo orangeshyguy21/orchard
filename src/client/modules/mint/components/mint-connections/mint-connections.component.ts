@@ -104,7 +104,8 @@ export class MintConnectionsComponent {
 
 	private initQR(): void {
 		if( this.connections.length === 0 ) return;
-		const icon_url = this.icon_url ?? this.placeholder_icon_url; // @ todo placeholder icon
+		const icon_url = this.icon_url || this.placeholder_icon_url;
+
 		this.qr_code = new QRCodeStyling({
 			width: 195,
 			height: 195,

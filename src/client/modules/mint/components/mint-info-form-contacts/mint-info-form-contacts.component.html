@@ -11,6 +11,7 @@
                 [array_name]="'contact'"
                 [subgroup_index]="$index"
                 [focused]="added_index === $index"
+                [init_method]="added_method"
                 (update)="onControlUpdate($event)"
                 (cancel)="onControlCancel($event)"
                 (remove)="onControlRemove($event)">

@@ -35,9 +35,9 @@
                                 (click)="onRemove($event)">
                                 <mat-icon>delete_forever</mat-icon>
                             </button>
-                            @if (form_array.at(control_index)?.invalid && (form_array.at(control_index)?.dirty || form_array.at(control_index)?.touched)) {
+                            @if (form_array.at(control_index).invalid && (form_array.at(control_index).dirty || form_array.at(control_index).touched)) {
                                 <mat-error class="font-size-xs">
-                                    @if (form_array.at(control_index)?.hasError('required')) {
+                                    @if (form_array.at(control_index).hasError('required')) {
                                         URL is required
                                     } @else {
                                         Invalid URL

@@ -13,7 +13,7 @@ import { AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
 import { EventService } from '@client/modules/event/services/event/event.service';
 import { EventData } from '@client/modules/event/classes/event-data.class';
 /* Shared Dependencies */
-import { AiAgent, AiFunctionName } from '@shared/generated.types';
+import { AiAgent, AiFunctionName, OrchardContact } from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-subsection-info',
@@ -167,6 +167,10 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 			if( original_value ) return this.updateMintUrl(control_index, control_value, original_value);
 			return this.addMintUrl(control_value);
 		}
+		if( array_name === 'contact' ){
+			if( original_value ) return this.updateMintContact(control_index, control_value, original_value);
+			return this.addMintContact(control_value);
+		}
 	}
 
 	public onArrayControlRemove({array_name, control_index}: {array_name: keyof MintInfoRpc, control_index: number}): void {
@@ -176,7 +180,9 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		if( !original_value ) return array_group.removeAt(control_index);
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		if( array_name === 'urls' ) return this.removeMintUrl(control_index, control_value);
+		if( array_name === 'contact' ) return this.removeMintContact(control_index, control_value);
 	}
+	
 
 	private onConfirmedEvent(): void {
 		if( this.form_info.invalid ) return;
@@ -303,6 +309,42 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		});
 	}
 
+	private updateMintContact(control_index: number, control_value: OrchardContact, original_value: OrchardContact): void {
+		this.mintService.updateMintContact(control_value, original_value).subscribe({
+			next: (response) => {
+				this.init_info.contact[control_index] = control_value;
+				this.onSuccess();
+			},
+			error: (error) => {
+				this.onError(error.message);
+			}
+		});
+	}
+
+	private removeMintContact(control_index: number, control_value: OrchardContact): void {
+		this.mintService.removeMintContact(control_value).subscribe({
+			next: (response) => {
+				this.init_info.contact.splice(control_index, 1);
+				this.form_array_contacts.removeAt(control_index);
+				this.onSuccess();
+			},
+			error: (error) => {
+				this.onError(error.message);
+			}
+		});
+	}
+
+	private addMintContact(control_value: OrchardContact): void {
+		this.mintService.addMintContact(control_value).subscribe({
+			next: (response) => {
+				this.init_info.contact.push(control_value);
+				this.onSuccess();
+			},
+			error: (error) => {
+				this.onError(error.message);
+			}
+		});
+	}
 
 	private onSuccess(): void {
 		this.mintService.clearInfoCache();
