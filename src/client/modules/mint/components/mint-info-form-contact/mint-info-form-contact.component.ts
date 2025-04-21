@@ -55,6 +55,7 @@ export class MintInfoFormContactComponent implements AfterViewInit, OnDestroy {
 	}
 
 	public get form_hot(): boolean {
+		if( this.form_canceled ) return false;
 		if( this.method_opened || this.info_focused ) return true;
         return this.form_array.at(this.subgroup_index)?.dirty ? true : false;
     }
@@ -62,6 +63,7 @@ export class MintInfoFormContactComponent implements AfterViewInit, OnDestroy {
 	private subscriptions: Subscription = new Subscription();
 	private method_opened: boolean = false;
 	private info_focused: boolean = false;
+	private form_canceled: boolean = false;
 	
 	constructor(
 		private cdr: ChangeDetectorRef
@@ -70,6 +72,7 @@ export class MintInfoFormContactComponent implements AfterViewInit, OnDestroy {
     ngAfterViewInit(): void {
 		this.subscriptions.add(
 			this.element_method.openedChange.subscribe(opened => {
+				if( opened ) this.form_canceled = false;
 				this.method_opened = opened;
 				this.cdr.detectChanges();
 			})
@@ -82,6 +85,7 @@ export class MintInfoFormContactComponent implements AfterViewInit, OnDestroy {
 			).subscribe((event: Event) => {
 				if (event.type === 'focus') {
 					this.info_focused = true;
+					this.form_canceled = false;
 					this.cdr.detectChanges();
 				} else {
 					setTimeout(() => {
@@ -109,6 +113,8 @@ export class MintInfoFormContactComponent implements AfterViewInit, OnDestroy {
 
     public onCancel(event: Event): void {
         event.preventDefault();
+		this.form_canceled = true;
+		this.cdr.detectChanges();
         this.cancel.emit(this.subgroup_index);
         this.element_info.nativeElement.blur();
 		this.element_method.close();
