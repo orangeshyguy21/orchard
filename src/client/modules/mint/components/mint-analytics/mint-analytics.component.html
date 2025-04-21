@@ -1,19 +1,24 @@
 <div class="mint-dashboard-charts">
-    <div class="title-l p-1">Nutalytics</div>	
-    <mat-card appearance="outlined" class="overflow-hidden">
+    <div class="title-l p-1" #title_element>Nutalytics</div>	
+    <mat-card 
+        appearance="outlined"
+        class="overflow-hidden"
+        [class.control-panel-sticky]="sticky">
         <mat-card-content>	
-            <orc-mint-analytic-control-panel
-                #control_panel
-                [chart_settings]="chart_settings"
-                [keysets]="keysets"
-                [loading]="loading_static_data"
-                (date_change)="date_change.emit($event)"
-                (units_change)="units_change.emit($event)"
-                (interval_change)="interval_change.emit($event)"
-                (type_change)="type_change.emit($event)">
-            </orc-mint-analytic-control-panel>
+            <div class="control-container">
+                <orc-mint-analytic-control-panel
+                    [chart_settings]="chart_settings"
+                    [keysets]="keysets"
+                    [loading]="loading_static_data"
+                    (date_change)="date_change.emit($event)"
+                    (units_change)="units_change.emit($event)"
+                    (interval_change)="interval_change.emit($event)"
+                    (type_change)="type_change.emit($event)">
+                </orc-mint-analytic-control-panel>
+            </div>
             
-            <div class="flex flex-column flex-gap-2">
+            
+            <div class="flex flex-column flex-gap-2 chart-container">
                 <orc-mint-analytic-chart
                     [title]="'Balance Sheet'"
                     [locale]="locale"

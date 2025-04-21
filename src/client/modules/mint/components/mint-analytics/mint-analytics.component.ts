@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, ViewChild, AfterViewInit, ElementRef, ChangeDetectorRef } from '@angular/core';
 /* Application Dependencies */
 import { NonNullableMintChartSettings } from '@client/modules/chart/services/chart/chart.types';
 /* Native Dependencies */
@@ -39,10 +39,13 @@ export class MintAnalyticsComponent implements AfterViewInit {
 	@Output() interval_change = new EventEmitter<MintAnalyticsInterval>();
 	@Output() type_change = new EventEmitter<ChartType>();
 
-	@ViewChild(MintAnalyticControlPanelComponent) control_panel!: MintAnalyticControlPanelComponent;
-	@ViewChild(MintAnalyticControlPanelComponent, { read: ElementRef }) control_panel_element!: ElementRef;
+	@ViewChild('title_element', { read: ElementRef }) title_element!: ElementRef;
+
+	public sticky: boolean = false;
 
 	private intersection_observer!: IntersectionObserver;
+
+	constructor(private cdr: ChangeDetectorRef) {}
 
 	ngAfterViewInit() {
 		this.setupIntersectionObserver();
@@ -64,16 +67,20 @@ export class MintAnalyticsComponent implements AfterViewInit {
 			});
 		}, options);
 
-		if (this.control_panel_element) {
-			this.intersection_observer.observe(this.control_panel_element.nativeElement);
+		if (this.title_element) {
+			this.intersection_observer.observe(this.title_element.nativeElement);
 		}
 	}
 
 	private handleControlPanelVisible(): void {
-		console.log('Control panel is now visible in viewport');
+		// this.sticky = false;
+		// this.cdr.detectChanges();
+		// console.log('Control panel is now visible in viewport');
 	}
 
 	private handleControlPanelHidden(): void {
+		this.sticky = true;
+		this.cdr.detectChanges();
 		console.log('Control panel is now hidden from viewport');
 	}
 
