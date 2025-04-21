@@ -105,21 +105,21 @@ export class CashuMintDatabaseService implements OnModuleInit {
 
   	public async getMintAnalyticsBalances(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
 		if( this.backend === 'nutshell' ) return this.nutshellService.getMintAnalyticsBalances(db, args);
-		if( this.backend === 'cdk' ) throw OrchardErrorCode.MintSupportError;
+		if( this.backend === 'cdk' ) return this.cdkService.getMintAnalyticsBalances(db, args);
 	}
 
 	public async getMintAnalyticsMints(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
 		if( this.backend === 'nutshell' ) return this.nutshellService.getMintAnalyticsMints(db, args);
-		if( this.backend === 'cdk' ) throw OrchardErrorCode.MintSupportError;
+		if( this.backend === 'cdk' ) return this.cdkService.getMintAnalyticsMints(db, args);
  	}
 
 	public async getMintAnalyticsMelts(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
 		if( this.backend === 'nutshell' ) return this.nutshellService.getMintAnalyticsMelts(db, args);
-		if( this.backend === 'cdk' ) throw OrchardErrorCode.MintSupportError;
+		if( this.backend === 'cdk' ) return this.cdkService.getMintAnalyticsMelts(db, args);
  	}
 
 	public async getMintAnalyticsTransfers(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
 		if( this.backend === 'nutshell' ) return this.nutshellService.getMintAnalyticsTransfers(db, args);
-		if( this.backend === 'cdk' ) throw OrchardErrorCode.MintSupportError;
+		if( this.backend === 'cdk' ) return this.cdkService.getMintAnalyticsTransfers(db, args);
 	}
 }
