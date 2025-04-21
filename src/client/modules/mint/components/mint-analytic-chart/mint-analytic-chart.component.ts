@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 /* Vendor Dependencies */
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ScaleChartOptions, ChartType as ChartJsType } from 'chart.js';
@@ -53,7 +53,6 @@ export class MintAnalyticChartComponent implements OnChanges {
 
 	constructor(
 		private chartService: ChartService,
-		private changeDetectorRef: ChangeDetectorRef
 	) { }
 
 	public ngOnChanges(changes: SimpleChanges): void {
