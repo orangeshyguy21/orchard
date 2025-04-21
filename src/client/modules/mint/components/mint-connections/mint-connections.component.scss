@@ -34,8 +34,7 @@
     @extend %border-dashed;
     @extend %orc-outline-border;
     @extend %cursor-pointer;
-    @extend %trans-bg-fast;
-    @extend %trans-border-radius-fast;
+    @extend %trans-bg-border-radius-fast;
 
     &:hover{
         @extend %orc-surface-container-bg;

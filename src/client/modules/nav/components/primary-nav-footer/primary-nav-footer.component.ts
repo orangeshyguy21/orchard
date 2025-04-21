@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 /* Application Dependencies */
 import { EventData } from '@client/modules/event/classes/event-data.class';
 
@@ -14,5 +14,7 @@ export class PrimaryNavFooterComponent {
   
   	@Input() active_section: string = '';
 	@Input() active_event!: EventData | null;
+
+	@Output() save : EventEmitter<void> = new EventEmitter();
 
 }

@@ -1,11 +1,11 @@
 // core
-import { Directive, ElementRef, Input, HostListener } from '@angular/core';
+import { Directive, ElementRef, Input, HostListener, DoCheck, OnInit } from '@angular/core';
 
 @Directive({
   	selector: '[autogrow]',
 	standalone: false
 })
-export class AutoGrowDirective {
+export class AutoGrowDirective implements OnInit, DoCheck {
 
 	private _autogrow! : boolean; // whether or not to autogrow (this can be set using an input)
 	private MAX_HEIGHT = 250; // the max height of the textarea
@@ -18,6 +18,28 @@ export class AutoGrowDirective {
 	constructor(
 		private el: ElementRef
 	){}
+
+	/**
+	 * On initialization, run the grow method
+	 * exit if autogrow is set to false
+	 * @returns void
+	 */
+	ngOnInit(){
+		this.el.nativeElement.classList.add('orc-autogrow');
+		if( this._autogrow === false ) return;
+		setTimeout(() => {
+			this.grow();
+		});
+		this.el.nativeElement.style.overflow = 'hidden';
+	}
+
+	 /**
+     * Detect programmatic changes through the ngDoCheck lifecycle hook
+     */
+	 ngDoCheck() {
+        if (this._autogrow === false) return;
+        this.grow();
+    }
 
 	/**
 	 * Listen for keyevents and grow if the textarea is overflowing
@@ -39,19 +61,6 @@ export class AutoGrowDirective {
 		setTimeout(() => {
 			this.grow();
 		});
-	}
-
-	/**
-	 * On initialization, run the grow method
-	 * exit if autogrow is set to false
-	 * @returns void
-	 */
-	ngOnInit(){
-		if( this._autogrow === false ) return;
-		setTimeout(() => {
-			this.grow();
-		});
-		this.el.nativeElement.style.overflow = 'hidden';
 	}
  
 	/**

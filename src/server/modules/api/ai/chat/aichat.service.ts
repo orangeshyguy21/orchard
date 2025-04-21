@@ -23,12 +23,12 @@ export class AiChatService {
 		private errorService: ErrorService,
 	) {}
 
-    public async streamChat(aiChatInput: AiChatInput) {
+    public async streamChat(ai_chat: AiChatInput) {
         try {
             const controller = new AbortController();
-            this.active_streams.set(aiChatInput.id, controller);
+            this.active_streams.set(ai_chat.id, controller);
             const signal = controller.signal;
-            const body = await this.aiService.streamChat(aiChatInput.model, aiChatInput.agent, aiChatInput.messages, signal);
+            const body = await this.aiService.streamChat(ai_chat.model, ai_chat.agent, ai_chat.messages, signal);
             if (!body)throw new OrchardApiError(OrchardErrorCode.AiError);
             const reader = body.getReader();
             const decoder = new TextDecoder();
@@ -48,20 +48,20 @@ export class AiChatService {
                     })
                     .filter(chunk_json => chunk_json !== null)
                     .forEach(chunk_json => {
-                        this.event_emitter.emit('ai.chat.update', new OrchardAiChatChunk(chunk_json, aiChatInput.id));
+                        this.event_emitter.emit('ai.chat.update', new OrchardAiChatChunk(chunk_json, ai_chat.id));
                     });
             }
             
-            this.active_streams.delete(aiChatInput.id);
+            this.active_streams.delete(ai_chat.id);
             return true;
         } catch (error) {
-            this.active_streams.delete(aiChatInput.id);
+            this.active_streams.delete(ai_chat.id);
             if (error instanceof DOMException && error.name === 'AbortError') {
-                this.logger.debug(`Chat was aborted for stream ${aiChatInput.id}`);
+                this.logger.debug(`Chat was aborted for stream ${ai_chat.id}`);
                 return false;
             }
             if (error instanceof DOMException && error.name === 'TimeoutError') {
-                this.logger.debug(`Chat timed out for stream ${aiChatInput.id}`);
+                this.logger.debug(`Chat timed out for stream ${ai_chat.id}`);
                 return false;
             }
             this.logger.debug(`Error streaming chat`, error);

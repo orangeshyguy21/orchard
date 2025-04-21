@@ -1,9 +1,10 @@
 <div class="primary-nav-footer-container">
-    <orc-primary-nav-tool 
-        icon="eco"
+    <orc-event-nav-tool
         navroute="event"
-        [active]="active_section === 'event'">
-    </orc-primary-nav-tool>
+        [active_event]="active_event"
+        [active]="active_section === 'event'"
+        (save)="save.emit()">
+    </orc-event-nav-tool>
     <orc-primary-nav-tool 
         icon="settings"
         navroute="settings"

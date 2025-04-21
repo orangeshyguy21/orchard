@@ -1,0 +1,26 @@
+<div class="mint-info-form-urls-container">
+    <div class="title-form-section p-b-1">
+        Connection URLs
+    </div>
+
+    <div class="flex flex-column flex-gap-1">
+        @for (url_control of form_array.controls; track $index) {
+            <orc-mint-info-form-url 
+                [form_group]="form_group"
+                [form_array]="form_array"
+                [array_name]="'urls'"
+                [control_index]="$index"
+                [focused]="added_index === $index"
+                (update)="onControlUpdate($event)"
+                (cancel)="onControlCancel($event)"
+                (remove)="onControlRemove($event)">
+            </orc-mint-info-form-url>
+        }
+
+        <orc-add-form-array-item
+            [prefix_icon]="'add'"
+            [label]="'New URL'"
+            (addControl)="onAddControl()">
+        </orc-add-form-array-item>
+    </div>
+</div>

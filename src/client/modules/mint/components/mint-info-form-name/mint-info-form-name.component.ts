@@ -1,6 +1,8 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, Input, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+/* Application Dependencies */
+import { MintInfoRpc } from '@client/modules/mint/classes/mint-info-rpc.class';
 
 @Component({
     selector: 'orc-mint-info-form-name',
@@ -9,54 +11,32 @@ import { FormControl } from '@angular/forms';
     styleUrl: './mint-info-form-name.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MintInfoFormNameComponent implements OnChanges {
+export class MintInfoFormNameComponent {
 
-	@Input() name!: string;
+    @Input() form_group!: FormGroup;
+    @Input() control_name!: keyof MintInfoRpc;
+
+    @Output() update = new EventEmitter<keyof MintInfoRpc>();
+    @Output() cancel = new EventEmitter<keyof MintInfoRpc>();
 
     @ViewChild('element_name') element_name!: ElementRef<HTMLInputElement>;
 
-    public form_name: FormControl = new FormControl('');
+    constructor(){}
 
-    public get appearance(): 'fill' | 'outline' {
-        if( !this.element_name?.nativeElement ) return 'outline';
-        if( document.activeElement === this.element_name.nativeElement ) return 'fill';
-        return this.form_name.dirty ? 'fill' : 'outline';
+    public get form_hot(): boolean {
+        if( document.activeElement === this.element_name?.nativeElement ) return true;
+        return this.form_group.get(this.control_name)?.dirty ? true : false;
     }
 
-	ngOnChanges(changes: SimpleChanges): void {
-		if (changes['name']) {
-			this.form_name.setValue(this.name);
-		}
-	}
+    public onSubmit(event: Event): void {
+        event.preventDefault();
+        this.update.emit(this.control_name);
+        this.element_name.nativeElement.blur();
+    }
+
+    public onCancel(event: Event): void {
+        event.preventDefault();
+        this.cancel.emit(this.control_name);
+        this.element_name.nativeElement.blur();
+    }
 }
-
-
-
-// /* Core Dependencies */
-// import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
-// import { FormControl } from '@angular/forms';
-
-// @Component({
-//     selector: 'orc-mint-info-form-name',
-//     standalone: false,
-//     templateUrl: './mint-info-form-name.component.html',
-//     styleUrl: './mint-info-form-name.component.scss',
-//     changeDetection: ChangeDetectionStrategy.OnPush
-// })
-// export class MintInfoFormNameComponent implements OnChanges {
-
-//     @Input() name!: string;
-//     @ViewChild('name_input') name_input!: ElementRef<HTMLInputElement>;
-
-//     public form_name: FormControl = new FormControl('');
-
-//     ngOnChanges(changes: SimpleChanges): void {
-//         if (changes['name']) {
-//             this.form_name.setValue(this.name);
-//         }
-//     }
-
-//     public isInputFocused(): boolean {
-//         return document.activeElement === this.name_input.nativeElement;
-//     }
-// }

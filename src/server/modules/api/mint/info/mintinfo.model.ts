@@ -292,7 +292,7 @@ export class OrchardCachedEndpoint {
 @ObjectType()
 export class OrchardMintInfoRpc {
 
-	@Field()
+	@Field({ nullable: true })
 	name: string;
 
 	@Field()
@@ -337,37 +337,37 @@ export class OrchardMintInfoRpc {
 }
 
 @ObjectType()
-export class UpdateMintNameOutput {
-	@Field()
+export class OrchardMintNameUpdate {
+	@Field({ nullable: true })
 	name: string;
 }
 
 @ObjectType()
-export class UpdateMintIconOutput {
+export class OrchardMintIconUpdate {
 	@Field()
 	icon_url: string;
 }
 
 @ObjectType()
-export class UpdateMintDescriptionOutput {
+export class OrchardMintDescriptionUpdate {
 	@Field()
 	description: string;
 }
 
 @ObjectType()
-export class UpdateMintMotdOutput {
-	@Field()
+export class OrchardMintMotdUpdate {
+	@Field({ nullable: true })
 	motd: string;
 }
 
 @ObjectType()
-export class UpdateMintUrlOutput {
+export class OrchardMintUrlUpdate {
 	@Field()
 	url: string;
 }
 
 @ObjectType()
-export class UpdateContactOutput {
+export class OrchardMintContactUpdate {
 	@Field()
 	method: string;
 

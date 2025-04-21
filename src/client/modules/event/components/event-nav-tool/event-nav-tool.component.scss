@@ -1,0 +1,56 @@
+@use '@styles/molecule/molecule';
+
+.event-nav-tool-container{
+    @extend %border;
+    @extend %border-solid;
+    @extend %orc-outline-border;
+    @extend %orc-corner-full;
+    @extend %p-0-125;
+
+    &.nav-tool-saving{
+        .event-nav-tool-switch{
+            @extend %orc-primary-container-bg;
+            cursor: default;
+        }
+    }
+
+    &.nav-tool-success{
+        .event-nav-tool-switch{
+            @extend %orc-tertiary-container-bg;
+        }
+    }
+
+    &.nav-tool-highlight{
+        .event-nav-tool-switch{
+            @extend %orc-primary-container-bg;
+        }
+    }
+
+    &.nav-tool-error{
+        .event-nav-tool-switch{
+            @extend %orc-on-error-bg;
+        }
+    }
+
+    &.action-nav-tool-highlight{
+        .event-nav-tool-switch{
+            @extend %orc-primary-container-bg;
+        }
+    }
+}
+
+.event-nav-tool-switch{
+    @extend %cursor-pointer;
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-justify-center;
+    @extend %w-2-5;
+    @extend %h-2-5;
+    @extend %orc-corner-full;
+    @extend %trans-bg-fast;
+    @extend %border-solid;
+    @extend %border-0-125;
+    @extend %border-transparent;
+    @extend %orc-on-surface-variant-color;
+
+}

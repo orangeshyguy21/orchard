@@ -1,13 +1,49 @@
 /* Core Dependencies */
 import { Field, Int, ObjectType } from '@nestjs/graphql';
+/* Application Dependencies */
+import { AiToolCall, AiMessage } from '@server/modules/ai/ai.types';
+import { AiMessageRole, AiFunctionName } from '@server/modules/ai/ai.enums';
+
+@ObjectType()
+export class OrchardAiChatFunction {
+    @Field(() => AiFunctionName)
+    name: AiFunctionName;
+
+    @Field()
+    arguments: string;
+
+    constructor(funct: AiToolCall['function']) {
+        this.name = funct.name;
+        this.arguments = JSON.stringify(funct.arguments);
+    }
+}
+
+@ObjectType()
+export class OrchardAiChatToolCall {
+    @Field(() => OrchardAiChatFunction)
+    function: OrchardAiChatFunction;
+
+    constructor(tool_call: any) {
+        this.function = new OrchardAiChatFunction(tool_call.function);
+    }
+}
 
 @ObjectType()
 export class OrchardAiChatMessage {
-    @Field()
-    role: string;
+    @Field(() => AiMessageRole)
+    role: AiMessageRole;
 
     @Field()
     content: string;
+
+    @Field(() => [OrchardAiChatToolCall], { nullable: true })
+    tool_calls: OrchardAiChatToolCall[];
+
+    constructor(message: AiMessage) {
+        this.role = message.role;
+        this.content = message.content;
+        this.tool_calls = message.tool_calls?.map((tool_call: any) => new OrchardAiChatToolCall(tool_call));
+    }
 }
 
 @ObjectType()
@@ -53,7 +89,7 @@ export class OrchardAiChatChunk {
         this.id = id;
         this.model = chunk_json.model;
         this.created_at = Math.floor(new Date(chunk_json.created_at).getTime() / 1000);
-        this.message = chunk_json.message;
+        this.message = new OrchardAiChatMessage(chunk_json.message);
         this.done = chunk_json.done;
         this.done_reason = chunk_json.done_reason;
         this.total_duration = chunk_json.total_duration;

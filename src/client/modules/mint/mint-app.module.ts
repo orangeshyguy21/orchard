@@ -16,6 +16,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BaseChartDirective } from 'ng2-charts';
 /* Application Dependencies */
 import { NavModule } from '@client/modules/nav/nav.module';
@@ -42,6 +43,12 @@ import { MintNameComponent } from './components/mint-name/mint-name.component';
 import { MintInfoFormIconComponent } from './components/mint-info-form-icon/mint-info-form-icon.component';
 import { MintInfoFormNameComponent } from './components/mint-info-form-name/mint-info-form-name.component';
 import { MintInfoFormDescriptionComponent } from './components/mint-info-form-description/mint-info-form-description.component';
+import { MintInfoFormDescriptionLongComponent } from './components/mint-info-form-description-long/mint-info-form-description-long.component';
+import { MintInfoFormMotdComponent } from './components/mint-info-form-motd/mint-info-form-motd.component';
+import { MintInfoFormUrlsComponent } from './components/mint-info-form-urls/mint-info-form-urls.component';
+import { MintInfoFormUrlComponent } from './components/mint-info-form-url/mint-info-form-url.component';
+import { MintInfoFormContactsComponent } from './components/mint-info-form-contacts/mint-info-form-contacts.component';
+import { MintInfoFormContactComponent } from './components/mint-info-form-contact/mint-info-form-contact.component';
 
 @NgModule({
 	declarations: [
@@ -59,8 +66,14 @@ import { MintInfoFormDescriptionComponent } from './components/mint-info-form-de
 		MintIconComponent,
   		MintNameComponent,
     	MintInfoFormIconComponent,
-     MintInfoFormNameComponent,
-     MintInfoFormDescriptionComponent,
+		MintInfoFormNameComponent,
+		MintInfoFormDescriptionComponent,
+		MintInfoFormDescriptionLongComponent,
+  		MintInfoFormMotdComponent,
+    	MintInfoFormUrlsComponent,
+     	MintInfoFormUrlComponent,
+     	MintInfoFormContactsComponent,
+      MintInfoFormContactComponent,
 	],
 	imports: [
 		CommonModule,
@@ -79,6 +92,7 @@ import { MintInfoFormDescriptionComponent } from './components/mint-info-form-de
 		MatSliderModule,
 		MatCheckboxModule,
 		MatSlideToggleModule,
+		MatProgressSpinnerModule,
 		BaseChartDirective,
 		NavModule,
 		LocalModule,

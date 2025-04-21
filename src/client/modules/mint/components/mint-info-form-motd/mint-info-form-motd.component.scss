@@ -1,0 +1,63 @@
+@use '@styles/molecule/molecule';
+@use '@styles/nucleus/nucleus';
+
+.mint-info-form-motd-container{
+    @extend %flex;
+    @extend %flex-justify-center;
+}
+
+.mint-info-form-motd-form{
+    @extend %flex-grow;
+    @extend %w-max-54;
+}
+
+.message-of-the-day {
+    @extend %border;
+    @extend %border-solid;
+    @extend %h-min-6;
+    @extend %flex;
+    @extend %flex-grow;
+    @extend %flex-items-center;
+    @extend %flex-gap-1;
+    @extend %p-h-1;
+}
+
+.set-motd{
+    @extend %orc-corner-large;
+    @extend %orc-surface-container-lowest-border;
+    @extend %orc-on-primary-container-color;
+    @extend %cursor-pointer;
+    @extend %orc-primary-container-bg;
+}
+
+.hot-motd{
+    @extend %orc-corner-large;
+    @extend %orc-surface-container-lowest-border;
+    @extend %orc-surface-variant-bg;
+    @extend %orc-on-primary-container-color;
+    @extend %cursor-pointer;
+}
+
+.motd-input {
+    @extend %transparent-bg;
+    @extend %border-none;
+    @extend %outline-none;
+    @extend %resize-none;
+    @extend %w-full;
+    @extend %font-family-inherit;
+    @extend %font-size-inherit;
+    @extend %flex-grow;
+}
+
+.unset-motd{
+    @extend %border-dashed;
+    @extend %orc-outline-border;
+    @extend %cursor-pointer;
+    @extend %border-radius-4;
+    @extend %trans-bg-border-radius-fast;
+
+    &:hover{
+        @extend %orc-surface-container-bg;
+        @extend %orc-corner-large;
+    }
+}

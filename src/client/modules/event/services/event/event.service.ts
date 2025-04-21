@@ -11,36 +11,42 @@ import { EventData } from 'src/client/modules/event/classes/event-data.class';
 })
 export class EventService {
 
-	private event_subject = new Subject<EventData>();
 	private event_history: EventData[] = [];
 	private active_event_subject = new Subject<EventData | null>();
+	private active_event!: EventData;
+	private saving_time!: number;
 
-	emitEvent(event_data: EventData): void {
-		event_data.created_at = Math.floor(Date.now() / 1000);
-		this.event_history.push(new EventData(event_data));
-		this.event_subject.next(event_data);
-		this.active_event_subject.next(event_data);
-		
-		setTimeout(() => {
-			this.active_event_subject.next(null);
-		}, event_data.duration);
+	public registerEvent(event_data: EventData | null): void {
+		if( !event_data ) return this.active_event_subject.next(null);
+		if( event_data.type === 'SAVING') this.saving_time = Date.now();
+		if( this.active_event?.type === 'SAVING' && event_data.type === 'SUCCESS' ) {
+			const time_remaining = 1000 + this.saving_time - Date.now();
+			const delay = time_remaining > 0 ? time_remaining : 0;
+			setTimeout(() => this.emitEvent(event_data), delay);
+			return;
+		}
+		this.emitEvent(event_data);
 	}
 
-	getEventHistory(): EventData[] {
+	private emitEvent(event_data: EventData): void {
+		this.active_event = event_data;
+		event_data.created_at = Math.floor(Date.now() / 1000);
+		this.event_history.push(new EventData(event_data));
+		this.active_event_subject.next(event_data);
+		if( event_data.type !== 'PENDING' ) this.clearEvent(event_data);
+	}
+
+	public getEventHistory(): EventData[] {
 		return [...this.event_history];
 	}
 
-	getEvents(): Observable<EventData> {
-		return this.event_subject.asObservable();
-	}
-
-	getActiveEvent(): Observable<EventData | null> {
+	public getActiveEvent(): Observable<EventData | null> {
 		return this.active_event_subject.asObservable();
 	}
 
-	getEventsByType(type: string): Observable<EventData> {
-		return this.event_subject.asObservable().pipe(
-			filter(event => event.type === type)
-		);
+	private clearEvent(event_data: EventData): void {
+		setTimeout(() => {
+			this.active_event_subject.next(null);
+		}, event_data.duration);
 	}
 }

@@ -19,6 +19,17 @@ import {
 	MintAnalyticsMeltsResponse,
 	MintAnalyticsTransfersResponse,
 	MintInfoRpcResponse,
+	MintNameUpdateResponse,
+	MintDescriptionUpdateResponse,
+	MintDescriptionLongUpdateResponse,
+	MintIconUrlUpdateResponse,
+	MintMotdUpdateResponse,
+	MintUrlUpdateResponse,
+	MintUrlAddResponse,
+	MintUrlRemoveResponse,
+	MintContactUpdateResponse,
+	MintContactRemoveResponse,
+	MintContactAddResponse,
 } from '@client/modules/mint/types/mint.types';
 import { CacheService } from '@client/modules/cache/services/cache/cache.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
@@ -28,7 +39,7 @@ import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 import { MintPromise } from '@client/modules/mint/classes/mint-promise.class';
 import { MintAnalytic } from '@client/modules/mint/classes/mint-analytic.class';
 /* Shared Dependencies */
-import { MintAnalyticsInterval } from '@shared/generated.types';
+import { MintAnalyticsInterval, OrchardContact } from '@shared/generated.types';
 /* Local Dependencies */
 import { 
 	MINT_INFO_QUERY, 
@@ -40,6 +51,17 @@ import {
 	MINT_ANALYTICS_MINTS_QUERY,
 	MINT_ANALYTICS_MELTS_QUERY,
 	MINT_ANALYTICS_TRANSFERS_QUERY,
+	MINT_NAME_MUTATION,
+	MINT_DESCRIPTION_MUTATION,
+	MINT_DESCRIPTION_LONG_MUTATION,
+	MINT_ICON_MUTATION,
+	MINT_MOTD_MUTATION,
+	MINT_URL_UPDATE_MUTATIONS,
+	MINT_URL_ADD_MUTATION,
+	MINT_URL_REMOVE_MUTATION,
+	MINT_CONTACT_UPDATE_MUTATIONS,
+	MINT_CONTACT_REMOVE_MUTATION,
+	MINT_CONTACT_ADD_MUTATION,
 } from './mint.queries';
 
 
@@ -47,6 +69,8 @@ import {
   	providedIn: 'root'
 })
 export class MintService {
+
+	public get mint_info$(): Observable<MintInfo | null> { return this.mint_info_subject.asObservable(); }
 
 	public readonly CACHE_KEYS = {
 		MINT_INFO: 'mint-info',
@@ -148,6 +172,10 @@ export class MintService {
 			this.CACHE_KEYS.MINT_ANALYTICS_PRE_TRANSFERS,
 			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_ANALYTICS_PRE_TRANSFERS]
 		);
+	}
+
+	public clearInfoCache() {
+		this.cache.clearCache(this.CACHE_KEYS.MINT_INFO);
 	}
 
 	public clearAnalyticsCache() {
@@ -393,6 +421,169 @@ export class MintService {
 			}),
 			catchError((error) => {
 				console.error('Error loading mint analytics transfers:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public updateMintName(name:string) {
+		const query = getApiQuery(MINT_NAME_MUTATION,  { mint_name_update: { name } });
+		return this.http.post<OrchardRes<MintNameUpdateResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error updating mint name:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public updateMintDescription(description:string) {
+		const query = getApiQuery(MINT_DESCRIPTION_MUTATION,  { mint_desc_update: { description } });
+		return this.http.post<OrchardRes<MintDescriptionUpdateResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error updating mint description:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public updateMintDescriptionLong(description:string) {
+		const query = getApiQuery(MINT_DESCRIPTION_LONG_MUTATION,  { mint_desc_update: { description } });
+		return this.http.post<OrchardRes<MintDescriptionLongUpdateResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error updating mint long description:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public updateMintIcon(icon_url:string) {
+		const query = getApiQuery(MINT_ICON_MUTATION,  { mint_icon_update: { icon_url } });
+		return this.http.post<OrchardRes<MintIconUrlUpdateResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error updating mint icon:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public updateMintMotd(motd:string) {
+		const query = getApiQuery(MINT_MOTD_MUTATION,  { mint_motd_update: { motd } });
+		return this.http.post<OrchardRes<MintMotdUpdateResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error updating mint motd:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public updateMintUrl(url_add:string, url_remove:string) {
+		const query = getApiQuery(MINT_URL_UPDATE_MUTATIONS,  { url_add: { url: url_add }, url_remove: { url: url_remove } });
+		return this.http.post<OrchardRes<MintUrlUpdateResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error updating mint url:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public addMintUrl(url:string) {
+		const query = getApiQuery(MINT_URL_ADD_MUTATION,  { mint_url_update: { url } });
+		return this.http.post<OrchardRes<MintUrlAddResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error adding mint url:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public removeMintUrl(url:string) {
+		const query = getApiQuery(MINT_URL_REMOVE_MUTATION,  { mint_url_update: { url } });
+		return this.http.post<OrchardRes<MintUrlRemoveResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error removing mint url:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public updateMintContact(contact_add:OrchardContact, contact_remove:OrchardContact) {
+		const query = getApiQuery(MINT_CONTACT_UPDATE_MUTATIONS,  { 
+			contact_add: {
+				'method': contact_add.method,
+				'info': contact_add.info
+			},
+			contact_remove: {
+				'method': contact_remove.method,
+				'info': contact_remove.info
+			}
+		});
+		return this.http.post<OrchardRes<MintContactUpdateResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error updating mint contact:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public removeMintContact(contact:OrchardContact) {
+		const query = getApiQuery(MINT_CONTACT_REMOVE_MUTATION,  { contact_remove: { method: contact.method, info: contact.info } });
+		return this.http.post<OrchardRes<MintContactRemoveResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error removing mint contact:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public addMintContact(contact:OrchardContact) {
+		const query = getApiQuery(MINT_CONTACT_ADD_MUTATION,  { contact_add: { method: contact.method, info: contact.info } });
+		return this.http.post<OrchardRes<MintContactAddResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error adding mint contact:', error);
 				return throwError(() => error);
 			})
 		);

@@ -23,7 +23,7 @@ export class PrimaryNavComponent {
 	public active_event!: EventData | null;
 	public block_count!: number;
 
-	private subscriptions: Subscription;
+	private subscriptions: Subscription = new Subscription();
 
 	constructor(
 		private router: Router,
@@ -31,9 +31,7 @@ export class PrimaryNavComponent {
 		private changeDetectorRef: ChangeDetectorRef,
 		private eventService: EventService,
 		private bitcoinService: BitcoinService,
-	) {
-		this.subscriptions = new Subscription();
-	}
+	) {}
 
 	ngOnInit(): void {
 		const router_subscription = this.getRouterSubscription();
@@ -93,6 +91,11 @@ export class PrimaryNavComponent {
 		this.active_event = event;
 		this.changeDetectorRef.detectChanges();
 	}	
+
+	public onSave(): void {
+		this.active_event!.confirmed = true;
+		this.eventService.registerEvent(this.active_event);
+	}
 	
 	ngOnDestroy(): void {
 		this.subscriptions.unsubscribe();

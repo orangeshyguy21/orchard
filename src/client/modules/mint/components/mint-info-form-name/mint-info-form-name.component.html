@@ -1,14 +1,32 @@
-<div>
-    <form>
-        <mat-form-field [appearance]="appearance" class="primary-form-field">
-            <mat-label>Name</mat-label>
-            <input 
-                type="text" 
-                matInput 
-                [formControl]="form_name" 
-                placeholder="Ex. My Mint"
-                #element_name>
-        </mat-form-field>
+<div class="mint-info-form-name-container">
+    <form
+        [formGroup]="form_group"
+        (ngSubmit)="onSubmit($event)"
+        (keydown.enter)="onSubmit($event)"
+        (keydown.escape)="onCancel($event)">        
+        <orc-dynamic-form-field
+            [hot]="form_hot"
+            [invalid]="form_group.get(control_name)?.invalid || false"
+            (submit)="onSubmit($event)"
+            (cancel)="onCancel($event)">
+            <mat-form-field [appearance]="form_hot ? 'fill' : 'outline'" class="mint-name-form-field orc-dynamic-form-field">
+                <mat-label>Name</mat-label>
+                <input 
+                    type="text" 
+                    matInput 
+                    [formControlName]="control_name" 
+                    placeholder="Ex. My Mint"
+                    #element_name>
+                @if (form_group.get(control_name)?.invalid && (form_group.get(control_name)?.dirty || form_group.get(control_name)?.touched)) {
+                    <mat-error class="font-size-xs">
+                        @if (form_group.get(control_name)?.hasError('maxlength')) {
+                            Name cannot exceed {{form_group.get(control_name)?.getError('maxlength')?.requiredLength}} characters
+                        } @else {
+                            Invalid name
+                        }
+                    </mat-error>
+                }
+            </mat-form-field>
+        </orc-dynamic-form-field>
     </form>
 </div>
-

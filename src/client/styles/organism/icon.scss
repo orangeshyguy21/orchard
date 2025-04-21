@@ -16,4 +16,11 @@
         @extend %h-3;
         @extend %w-3;
     }
+
+    &.icon-dynamic-fill{
+        @extend %mat-symbol-outline;
+        &:hover{
+            @extend %mat-symbol-fill;
+        }
+    }
 }

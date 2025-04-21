@@ -35,6 +35,7 @@
     #{$c}h-4 { height: 4rem; }
     #{$c}h-8 { height: 8rem; }
     #{$c}h-min-0 { min-height: 0; }
+    #{$c}h-min-6 { min-height: 6rem; }
 
     // Width
     #{$c}w-0 { width: 0; }
@@ -53,6 +54,7 @@
     #{$c}w-min-18 { min-width: 18rem; }
     #{$c}w-min-36 { min-width: 36rem; }
     #{$c}w-max-36 { max-width: 36rem; }
+    #{$c}w-max-54 { max-width: 54rem; }
 
     // Margins
     #{$c}m-v-0-5 { margin: 0.5rem 0; }
@@ -69,13 +71,12 @@
     #{$c}p-0-5 { padding: 0.5rem; }
     #{$c}p-1 { padding: 1rem; }
     #{$c}p-2 { padding: 2rem; }
-    #{$c}p-v-0-5 { padding: 0.5rem 0; }
-    #{$c}p-v-1-5 { padding: 1.5rem 0; }
-    #{$c}p-h-1 { padding: 0 1rem; }
     #{$c}p-t-0-5 { padding-top: 0.5rem; }
     #{$c}p-t-1 { padding-top: 1rem; }
+    #{$c}p-t-1-5 { padding-top: 1.5rem; }
     #{$c}p-b-0-5 { padding-bottom: 0.5rem; }
     #{$c}p-b-1 { padding-bottom: 1rem; }
+    #{$c}p-b-1-5 { padding-bottom: 1.5rem; }
     #{$c}p-l-1 { padding-left: 1rem; }
     #{$c}p-r-1 { padding-right: 1rem; }
 

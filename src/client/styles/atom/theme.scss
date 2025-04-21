@@ -1,5 +1,9 @@
 @use '@angular/material' as mat;
 
+/****************************************
+* Angular Material Supported Overrides
+****************************************/
+
 /* Application Level Overrides */
 :root {
 	@include mat.table-overrides((
@@ -14,3 +18,97 @@
 		row-item-container-height: 3.0rem,
 	));
 }
+
+/* Specific Form Field Overrides */
+.orc-array-form-field {
+	@include mat.form-field-overrides((
+		container-height: 2rem,
+	));
+}
+
+
+/****************************************
+* Angular Material Unsupported Overrides (todo these are supported, messed this up)
+****************************************/
+
+/* Specific Form Field Overrides */
+// orc-dynamic-form-field 
+:root {
+	.mat-mdc-form-field{
+		&.orc-dynamic-form-field {
+
+			.mdc-notched-outline__leading,
+			.mdc-notched-outline__notch,
+			.mdc-notched-outline__trailing {
+				border-color: var(--mat-sys-outline-variant);
+				transition: border-color 0.15s ease-in-out;
+			}
+		  
+			&:hover .mdc-notched-outline__leading,
+			&:hover .mdc-notched-outline__notch,
+			&:hover .mdc-notched-outline__trailing {
+				border-color: var(--mat-sys-on-primary-container);
+			}
+	
+			&.mat-form-field-hide-placeholder{
+				.mdc-notched-outline__leading{
+					border-top-style: dashed;
+					border-left-style: dashed;
+					border-bottom-style: dashed;
+				}
+				.mdc-notched-outline__notch{
+					border-top-style: dashed;
+					border-bottom-style: dashed;
+				}
+				.mdc-notched-outline__trailing{
+					border-top-style: dashed;
+					border-right-style: dashed;
+					border-bottom-style: dashed;
+				}
+				.mdc-notched-outline__leading,
+				.mdc-notched-outline__notch,
+				.mdc-notched-outline__trailing {
+					border-color: var(--mat-sys-outline);
+					transition: border-color 0.15s ease-in-out;
+				}
+
+				&:hover .mdc-notched-outline__leading,
+				&:hover .mdc-notched-outline__notch,
+				&:hover .mdc-notched-outline__trailing {
+					border-color: var(--mat-sys-on-primary-container);
+					background-color: var(--mat-sys-surface-container);
+				}
+			}
+		}
+	}
+}
+// orc-array-form-field
+:root {
+	.orc-array-form-field{
+		.mat-mdc-form-field-flex {
+			margin-right: 0.25rem;
+		}
+	}
+}
+
+.mat-mdc-form-field-textarea-control {
+	&.orc-autogrow{
+		resize: none;
+	}
+}
+
+// :root {
+// 	.mat-mdc-icon-button {
+// 		&.orc-icon-button {
+// 			.mdc-icon-button__ripple {
+// 				&:before {
+// 					transition: background-color 0.1s ease-in-out;
+// 				}
+// 			}
+
+// 			// &:hover .mdc-icon-button__ripple {
+// 			// 	background-color: var(--mat-sys-primary-container);
+// 			// }
+// 		}
+// 	}
+// }

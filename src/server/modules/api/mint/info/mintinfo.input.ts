@@ -2,37 +2,37 @@
 import { InputType, Field } from "@nestjs/graphql";
 
 @InputType()
-export class UpdateMintNameInput {
-	@Field()
+export class MintNameUpdateInput {
+	@Field({ nullable: true })
 	name: string;
 }
 
 @InputType()
-export class UpdateMintIconInput {
+export class MintIconUpdateInput {
 	@Field()
 	icon_url: string;
 }
 
 @InputType()
-export class UpdateMintDescriptionInput {
+export class MintDescriptionUpdateInput {
 	@Field()
 	description: string;
 }
 
 @InputType()
-export class UpdateMotdInput {
-	@Field()
+export class MintMotdUpdateInput {
+	@Field({ nullable: true })
 	motd: string;
 }
 
 @InputType()
-export class UpdateUrlInput {
+export class MintUrlUpdateInput {
 	@Field()
 	url: string;
 }
 
 @InputType()
-export class UpdateContactInput {
+export class MintContactUpdateInput {
 	@Field()
 	method: string;
 

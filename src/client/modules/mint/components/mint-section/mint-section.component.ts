@@ -5,7 +5,9 @@ import { Router, Event, ActivatedRoute } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
 /* Application Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
+import { ImageService } from '@client/modules/image/services/image/image.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
+import { Image } from '@client/modules/image/classes/image.class';
 
 @Component({
 	selector: 'orc-mint-section',
@@ -17,33 +19,48 @@ import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 export class MintSectionComponent implements OnInit, OnDestroy {
 
 	public mint_info: MintInfo | null = null;
+	public icon_data: string | null = null;
 	public active_sub_section:string = '';
 	public loading:boolean = true;
 	public error:boolean = false;
 
-	private subscription: Subscription = new Subscription();
+	private subscriptions: Subscription = new Subscription();
 
 	constructor(
 		private router: Router,
 		private route: ActivatedRoute,
-		private changeDetectorRef: ChangeDetectorRef,
-		private mintService: MintService
+		private cdr: ChangeDetectorRef,
+		private mintService: MintService,
+		private imageService: ImageService
 	) {}
   
 	ngOnInit(): void {
 		this.mintService.loadMintInfo().subscribe({
-			next: (info:MintInfo) => {
-				this.mint_info = info;
-				this.loading = false;
-				this.changeDetectorRef.detectChanges();
-			},
 			error: (error) => {
 				this.error = true;
 				this.loading = false;
-				this.changeDetectorRef.detectChanges();
+				this.cdr.detectChanges();
 			}
 		});
-		this.subscription = this.router.events
+
+		const mint_info_subscription = this.getMintInfoSubscription();
+		const router_subscription = this.getRouterSubscription();
+
+		this.subscriptions.add(mint_info_subscription);
+		this.subscriptions.add(router_subscription);
+	}
+
+	private getMintInfoSubscription(): Subscription {
+		return this.mintService.mint_info$.subscribe(
+            (info:MintInfo | null) => {
+				if( info ) this.mint_info = info;
+				this.loadImageData(info?.icon_url);
+            }
+        );
+	}
+
+	private getRouterSubscription(): Subscription {
+		return this.router.events
 			.pipe(
 				filter((event: Event) => 'routerEvent' in event || 'type' in event)
 			)
@@ -61,7 +78,23 @@ export class MintSectionComponent implements OnInit, OnDestroy {
 		}
 		if( !route.snapshot.data ) return;
 		this.active_sub_section = route.snapshot.data['sub_section'] || '';
-		this.changeDetectorRef.detectChanges();
+		this.cdr.detectChanges();
+	}
+
+	private loadImageData(image_url: string|null|undefined): void {
+		if( !image_url ){
+			this.icon_data = null;
+			this.loading = false;
+			this.cdr.detectChanges();
+			return;
+		}
+		this.imageService.getImageData(image_url).subscribe(
+			(image:Image) => {
+				this.loading = false;
+				this.icon_data = image.data;
+				this.cdr.detectChanges();
+			}
+		);
 	}
 
 	public onClickMintName(): void {
@@ -69,6 +102,6 @@ export class MintSectionComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnDestroy(): void {
-		this.subscription.unsubscribe();
+		this.subscriptions.unsubscribe();
 	}
 }

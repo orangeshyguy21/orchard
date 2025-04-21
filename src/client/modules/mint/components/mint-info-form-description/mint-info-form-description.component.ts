@@ -1,6 +1,8 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+/* Application Dependencies */
+import { MintInfoRpc } from '@client/modules/mint/classes/mint-info-rpc.class';
 
 @Component({
 	selector: 'orc-mint-info-form-description',
@@ -9,15 +11,32 @@ import { FormControl } from '@angular/forms';
 	styleUrl: './mint-info-form-description.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MintInfoFormDescriptionComponent implements OnChanges {
+export class MintInfoFormDescriptionComponent {
 
-	@Input() description!: string | null;
+	@Input() form_group!: FormGroup;
+    @Input() control_name!: keyof MintInfoRpc;
 
-	public form_description: FormControl = new FormControl('');
+    @Output() update = new EventEmitter<keyof MintInfoRpc>();
+    @Output() cancel = new EventEmitter<keyof MintInfoRpc>();
 
-	ngOnChanges(changes: SimpleChanges): void {
-		if (changes['description']) {
-			this.form_description.setValue(this.description);
-		}
-	}
+	@ViewChild('element_description') element_description!: ElementRef<HTMLInputElement>;
+	
+    constructor(){}
+
+    public get form_hot(): boolean {
+        if( document.activeElement === this.element_description?.nativeElement ) return true;
+        return this.form_group.get(this.control_name)?.dirty ? true : false;
+    }
+
+    public onSubmit(event: Event): void {
+        event.preventDefault();
+        this.update.emit(this.control_name);
+        this.element_description.nativeElement.blur();
+    }
+
+    public onCancel(event: Event): void {
+        event.preventDefault();
+        this.cancel.emit(this.control_name);
+        this.element_description.nativeElement.blur();
+    }
 }

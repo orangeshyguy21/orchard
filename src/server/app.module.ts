@@ -12,6 +12,7 @@ import { UnixTimestamp } from './modules/graphql/scalars/unixtimestamp.scalar';
 import { Timezone } from './modules/graphql/scalars/timezone.scalar';
 import { MintAnalyticsInterval } from './modules/cashu/mintdb/cashumintdb.enums';
 import { MintUnit, MintQuoteStatus, MeltQuoteStatus } from './modules/cashu/cashu.enums';
+import { AiAgent, AiMessageRole, AiFunctionName } from './modules/ai/ai.enums';
 /* Application Configuration */
 import { config } from './config/configuration';
 
@@ -20,7 +21,10 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 	registerEnumType( MintQuoteStatus, { name: 'MintQuoteStatus' });
 	registerEnumType( MeltQuoteStatus, { name: 'MeltQuoteStatus' });
 	registerEnumType( MintAnalyticsInterval, { name: 'MintAnalyticsInterval' });
-
+	registerEnumType( AiAgent, { name: 'AiAgent' });
+	registerEnumType( AiMessageRole, { name: 'AiMessageRole' });
+	registerEnumType( AiFunctionName, { name: 'AiFunctionName' });
+	
 	const path = configService.get('server.path');
 	
 	return {

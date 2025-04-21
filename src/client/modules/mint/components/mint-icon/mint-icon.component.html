@@ -1,18 +1,18 @@
 <div class="mint-icon-container">
     @switch (state) {
         @case ('loading') {
-            loading...
+            <div class="mint-icon mint-icon-loading"></div>
         }
         @case ('error') {
-            <div class="mint-icon-error">
+            <div class="mint-icon mint-icon-error" @fadeIn>
                 <mat-icon class="mat-symbol-outline">error</mat-icon>
             </div>
         }
         @case ('icon') {
-            <img [src]="icon_url" alt="Mint Icon" class="h-2 cursor-pointer" (click)="onClick()">
+            <img [src]="icon_data" alt="Mint Icon" class="h-2 cursor-pointer mint-icon-url" (click)="onClick()" @fadeIn>
         }
         @case ('unset') {
-            <div class="mint-icon-placeholder" matRipple (click)="onClick()">
+            <div class="mint-icon mint-icon-placeholder" matRipple (click)="onClick()" @fadeIn>
                 <mat-icon>add</mat-icon>
             </div>
         }

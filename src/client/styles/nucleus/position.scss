@@ -1,0 +1,20 @@
+@use '@styles/molecule/molecule';
+
+@mixin prefixStyles($c) {
+    #{$c}p-v-0-5 {
+        @extend %p-t-0-5;
+        @extend %p-b-0-5;
+    }
+    #{$c}p-v-1 {
+        @extend %p-t-1;
+        @extend %p-b-1;
+    }
+    #{$c}p-v-1-5 {
+        @extend %p-t-1-5;
+        @extend %p-b-1-5;
+    }
+    #{$c}p-h-1 {
+        @extend %p-l-1;
+        @extend %p-r-1; }
+}
+

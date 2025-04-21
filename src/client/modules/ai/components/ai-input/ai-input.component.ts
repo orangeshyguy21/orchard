@@ -1,13 +1,13 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { trigger, state, style, animate, transition } from '@angular/animations';
+import { trigger, style, animate, transition } from '@angular/animations';
 /* Vendor Dependencies */
 import { Subscription } from 'rxjs';
 /* Application Dependencies */
 import { AiService } from '@client/modules/ai/services/ai/ai.service';
 /* Shared Dependencies */
-import { OrchardAiChatChunk } from '@shared/generated.types';
+import { AiChatChunk } from '@client/modules/ai/classes/ai-chat-chunk.class';
 
 @Component({
 	selector: 'orc-ai-input',
@@ -24,7 +24,7 @@ import { OrchardAiChatChunk } from '@shared/generated.types';
 		])
 	]
 })
-export class AiInputComponent implements OnDestroy {
+export class AiInputComponent implements OnInit, OnDestroy {
 
 	private chat_subscription: Subscription | null = null;
 
@@ -44,6 +44,17 @@ export class AiInputComponent implements OnDestroy {
 		private cdr: ChangeDetectorRef
 	) {}
 
+	ngOnInit(): void {
+		this.chat_subscription = this.aiService.messages$
+			.subscribe((chunk: AiChatChunk) => {
+				if( chunk.done ){
+					setTimeout(() => {
+						this.cdr.detectChanges();
+					});
+				}
+			});
+	}
+
 	public onSubmit(event?: any): void {
 		if( event ) event.preventDefault();
 		this.startChat();
@@ -51,23 +62,12 @@ export class AiInputComponent implements OnDestroy {
 
 	private startChat() {
 		if( !this.content.value ) return;
-		this.chat_subscription = this.aiService.subscribeToAiChat(this.content.value).subscribe({
-			next: (ai_chat: OrchardAiChatChunk) => {
-				if (ai_chat.done) this.stopChat();
-			},
-			error: (error) => {
-				console.error('ERROR IN COMPONENT', error);
-				this.stopChat();
-			}
-		});
+		this.aiService.openAiSocket(this.content.value);
 		this.content.reset();
 	}
 
 	public stopChat(): void {
-		this.aiService.unsubscribeFromAiChat();
-		if( !this.chat_subscription ) return;
-		this.chat_subscription.unsubscribe();
-		this.chat_subscription = null;
+		this.aiService.closeAiSocket();
 		this.cdr.detectChanges();
 	}
 
@@ -76,6 +76,6 @@ export class AiInputComponent implements OnDestroy {
 	}
 
 	ngOnDestroy(): void {
-		this.stopChat();
+		this.chat_subscription?.unsubscribe();
 	}
 }

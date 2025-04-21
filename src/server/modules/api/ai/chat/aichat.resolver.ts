@@ -28,18 +28,18 @@ export class AiChatResolver implements OnModuleInit {
 
     @Subscription(() => OrchardAiChatChunk)
     ai_chat(
-        @Args('aiChatInput') aiChatInput: AiChatInput
+        @Args('ai_chat') ai_chat: AiChatInput
     ) {
-        this.logger.debug(`SUBSCRIPTION { ai_chat } for stream ${aiChatInput.id}`);
-        this.aiChatService.streamChat(aiChatInput);
+        this.logger.debug(`SUBSCRIPTION { ai_chat } for stream ${ai_chat.id}`);
+        this.aiChatService.streamChat(ai_chat);
         return pubSub.asyncIterableIterator('ai_chat');
     }
 
     @Mutation(() => OrchardAiChatStream)
     async ai_chat_abort(
-        @Args('aiChatAbortInput') aiChatAbortInput: AiChatAbortInput
+        @Args('ai_chat_abort') ai_chat_abort: AiChatAbortInput
     ): Promise<OrchardAiChatStream> {
-        this.logger.debug(`MUTATION { ai_chat_abort } for stream ${aiChatAbortInput.id}`);
-        return this.aiChatService.abortStream(aiChatAbortInput.id);
+        this.logger.debug(`MUTATION { ai_chat_abort } for stream ${ai_chat_abort.id}`);
+        return this.aiChatService.abortStream(ai_chat_abort.id);
     }
 }

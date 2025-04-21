@@ -18,3 +18,16 @@
         @extend %orc-primary-fixed-dim-color;
     }
 }
+
+.orc-icon-button{
+    mat-icon{
+        @extend %mat-symbol-outline;
+    }
+
+    &:hover {
+        mat-icon{
+            @extend %mat-symbol-fill;
+        }
+    }
+}
+

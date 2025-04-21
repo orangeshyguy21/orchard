@@ -1,4 +1,19 @@
-import { OrchardMintBalance, OrchardMintInfo, OrchardMintKeyset, OrchardMintPromise, OrchardMintAnalytics, MintUnit, MintAnalyticsInterval, OrchardMintInfoRpc } from "@shared/generated.types";
+import { 
+    OrchardMintBalance,
+    OrchardMintInfo,
+    OrchardMintKeyset,
+    OrchardMintPromise,
+    OrchardMintAnalytics,
+    MintUnit,
+    MintAnalyticsInterval,
+    OrchardMintInfoRpc,
+    OrchardMintNameUpdate, 
+    OrchardMintIconUpdate,
+    OrchardMintDescriptionUpdate,
+    OrchardMintMotdUpdate,
+    OrchardMintUrlUpdate,
+    OrchardMintContactUpdate,
+} from "@shared/generated.types";
 
 export type MintInfoResponse = {
   	mint_info: OrchardMintInfo;
@@ -49,4 +64,50 @@ export type MintAnalyticsArgs = {
     date_end?: number;
     interval?: MintAnalyticsInterval;
     timezone?: string;
+}
+
+export type MintNameUpdateResponse = {
+	mint_name_update: OrchardMintNameUpdate;
+}
+
+export type MintDescriptionUpdateResponse = {
+	mint_short_description_update: OrchardMintDescriptionUpdate;
+}
+
+export type MintDescriptionLongUpdateResponse = {
+	mint_long_description_update: OrchardMintDescriptionUpdate;
+}
+
+export type MintIconUrlUpdateResponse = {
+	mint_icon_update: OrchardMintIconUpdate;
+}
+
+export type MintMotdUpdateResponse = {
+	mint_motd_update: OrchardMintMotdUpdate;
+}
+
+export type MintUrlUpdateResponse = {
+	mint_url_add: OrchardMintUrlUpdate;
+	mint_url_remove: OrchardMintUrlUpdate;
+}
+
+export type MintUrlAddResponse = {
+	mint_url_add: OrchardMintUrlUpdate;
+}
+
+export type MintUrlRemoveResponse = {
+	mint_url_remove: OrchardMintUrlUpdate;
+}
+
+export type MintContactUpdateResponse = {
+	mint_contact_add: OrchardMintContactUpdate;
+	mint_contact_remove: OrchardMintContactUpdate;
+}
+
+export type MintContactRemoveResponse = {
+	mint_contact_remove: OrchardMintContactUpdate;
+}
+
+export type MintContactAddResponse = {
+	mint_contact_add: OrchardMintContactUpdate;
 }
