@@ -49,7 +49,6 @@ import { MintInfoFormUrlsComponent } from './components/mint-info-form-urls/mint
 import { MintInfoFormUrlComponent } from './components/mint-info-form-url/mint-info-form-url.component';
 import { MintInfoFormContactsComponent } from './components/mint-info-form-contacts/mint-info-form-contacts.component';
 import { MintInfoFormContactComponent } from './components/mint-info-form-contact/mint-info-form-contact.component';
-import { MintAnalyticsComponent } from './components/mint-analytics/mint-analytics.component';
 
 @NgModule({
 	declarations: [
@@ -75,7 +74,6 @@ import { MintAnalyticsComponent } from './components/mint-analytics/mint-analyti
      	MintInfoFormUrlComponent,
      	MintInfoFormContactsComponent,
 		MintInfoFormContactComponent,
-		MintAnalyticsComponent,
 	],
 	imports: [
 		CommonModule,
