@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 /* Vendor Dependencies */
 import { forkJoin, lastValueFrom } from 'rxjs';
@@ -25,7 +25,7 @@ import { MintAnalyticsInterval, MintUnit } from '@shared/generated.types';
 	styleUrl: './mint-subsection-dashboard.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MintSubsectionDashboardComponent implements OnInit, AfterViewInit {
+export class MintSubsectionDashboardComponent implements OnInit {
 
 	// data
 	public mint_info: MintInfo | null = null;
@@ -66,16 +66,6 @@ export class MintSubsectionDashboardComponent implements OnInit, AfterViewInit {
 		this.mint_balances = this.route.snapshot.data['mint_balances'];
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
 		await this.initMintAnalytics();
-	}
-
-	ngAfterViewInit(): void {
-
-
-		// window.addEventListener('scroll', () => {
-		// 	console.log('scroll', window.scrollY);
-		// 	// this.should_move_control = window.scrollY > 0;
-		// 	// this.changeDetectorRef.detectChanges();
-		// });
 	}
 	
 	private async initMintAnalytics(): Promise<void> {

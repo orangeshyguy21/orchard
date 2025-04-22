@@ -44,6 +44,7 @@ export class MintInfoFormIconComponent implements OnInit, OnDestroy {
     private url_valid: boolean = true;
     private form_url!: string;
     private destroy$ = new Subject<void>();
+    private LOAD_ICON_SLEEP: number = 500;
 
 	public get display_icon_url(): string {
         if( this.form_url !== undefined ) return this.form_url;
@@ -67,7 +68,7 @@ export class MintInfoFormIconComponent implements OnInit, OnDestroy {
         });
         this.form_group.get(this.control_name)?.valueChanges
             .pipe(
-                debounceTime(1000),
+                debounceTime(this.LOAD_ICON_SLEEP),
                 takeUntil(this.destroy$),
             )
             .subscribe(value => {
@@ -112,7 +113,7 @@ export class MintInfoFormIconComponent implements OnInit, OnDestroy {
                 this.url_loading = false;
                 this.url_valid = true;
                 this.cdr.detectChanges();
-            }, 1000);
+            }, this.LOAD_ICON_SLEEP);
         };
         img.onerror = () => {
             setTimeout(() => {
@@ -120,7 +121,7 @@ export class MintInfoFormIconComponent implements OnInit, OnDestroy {
                 this.url_valid = false;
                 this.form_group.get(this.control_name)?.setErrors({ error: 'Invalid URL' }); // todo this doesn't go until blur...
                 this.cdr.detectChanges();
-            }, 1000);
+            }, this.LOAD_ICON_SLEEP);
         };
     }
 
