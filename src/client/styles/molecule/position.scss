@@ -3,6 +3,7 @@
     // Position
     #{$c}relative { position: relative; }
     #{$c}absolute { position: absolute; }    
+    #{$c}sticky { position: sticky; }
 
     // Flexbox
     #{$c}flex { display: flex; }
@@ -77,8 +78,12 @@
     #{$c}p-b-0-5 { padding-bottom: 0.5rem; }
     #{$c}p-b-1 { padding-bottom: 1rem; }
     #{$c}p-b-1-5 { padding-bottom: 1.5rem; }
+    #{$c}p-b-2 { padding-bottom: 2rem; }
     #{$c}p-l-1 { padding-left: 1rem; }
     #{$c}p-r-1 { padding-right: 1rem; }
+
+    // Z-Index
+    #{$c}z-index-1 { z-index: 1; }
 
     // Absolute Positioning
     #{$c}bottom-0 { bottom: 0; }

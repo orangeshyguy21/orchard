@@ -73,7 +73,7 @@ import { MintInfoFormContactComponent } from './components/mint-info-form-contac
     	MintInfoFormUrlsComponent,
      	MintInfoFormUrlComponent,
      	MintInfoFormContactsComponent,
-      MintInfoFormContactComponent,
+		MintInfoFormContactComponent,
 	],
 	imports: [
 		CommonModule,

@@ -45,6 +45,7 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	// state
 	public loading_static_data: boolean = true;
 	public loading_dynamic_data: boolean = true;
+	public should_move_control: boolean = false;  // Controls where the panel renders
 	// chart settings
 	public chart_settings!: NonNullableMintChartSettings;
 
@@ -66,37 +67,7 @@ export class MintSubsectionDashboardComponent implements OnInit {
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
 		await this.initMintAnalytics();
 	}
-
-	// private async loadMintInfo(): Promise<void> {
-	// 	// try {
-	// 	// 	this.mint_info = await lastValueFrom(this.mintService.loadMintInfo());
-	// 	// } catch (error) {
-	// 	// 	console.log('ERROR IN MINT INFO:', error);
-	// 	// 	// look for a specific error, this would be like, api down or grpc unavailable
-	// 	// }
-	// 	await new Promise<void>(resolve => {
-	// 		this.route.parent?.data.subscribe(data => {
-	// 			this.mint_info = data['mint_info'];
-	// 			resolve();
-	// 		});
-	// 	});
-	// }
-	// private async loadBalanceSheet(): Promise<void> {
-	// 	try {
-	// 		const balances_obs = this.mintService.loadMintBalances();
-	// 		const keysets_obs = this.mintService.loadMintKeysets();
-	// 		const [balances, keysets] = await lastValueFrom(forkJoin([balances_obs, keysets_obs]));
-	// 		this.mint_balances = balances;
-	// 		this.mint_keysets = keysets;
-	// 	} catch (error) {
-	// 		console.log('ERROR IN LOAD BALANCE SHEET:', error);
-	// 		// we can watch for mintconnection errors - if that is the case
-	// 		/// shoot ^^ maybe we should load this data in the route resolver? - then we can catch errors and modify the view...
-	// 		/// we should consider this ^^ since its a litmas for if the mint is configured properly
-	// 		/// argument agaisnt is that this is more UI work and an operator could just look at the server logs
-	// 		// we can watch for mint select errors 
-	// 	}
-	// }
+	
 	private async initMintAnalytics(): Promise<void> {
 		try {
 			this.locale = await this.settingService.getLocale();
