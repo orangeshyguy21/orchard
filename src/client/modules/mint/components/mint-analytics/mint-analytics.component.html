@@ -2,9 +2,8 @@
     <div class="title-l p-1" #title_element>Nutalytics</div>	
     <mat-card 
         appearance="outlined"
-        class="overflow-hidden"
-        [class.control-panel-sticky]="sticky">
-        <mat-card-content>	
+        class="overflow-hidden">
+        <mat-card-content #scroll_container>	
             <div class="control-container">
                 <orc-mint-analytic-control-panel
                     [chart_settings]="chart_settings"
@@ -16,7 +15,6 @@
                     (type_change)="type_change.emit($event)">
                 </orc-mint-analytic-control-panel>
             </div>
-            
             
             <div class="flex flex-column flex-gap-2 chart-container">
                 <orc-mint-analytic-chart
