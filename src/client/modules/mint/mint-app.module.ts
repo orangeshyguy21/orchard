@@ -49,6 +49,7 @@ import { MintInfoFormUrlsComponent } from './components/mint-info-form-urls/mint
 import { MintInfoFormUrlComponent } from './components/mint-info-form-url/mint-info-form-url.component';
 import { MintInfoFormContactsComponent } from './components/mint-info-form-contacts/mint-info-form-contacts.component';
 import { MintInfoFormContactComponent } from './components/mint-info-form-contact/mint-info-form-contact.component';
+import { MintSubsectionKeysetsComponent } from './components/mint-subsection-keysets/mint-subsection-keysets.component';
 
 @NgModule({
 	declarations: [
@@ -74,6 +75,7 @@ import { MintInfoFormContactComponent } from './components/mint-info-form-contac
      	MintInfoFormUrlComponent,
      	MintInfoFormContactsComponent,
 		MintInfoFormContactComponent,
+  		MintSubsectionKeysetsComponent,
 	],
 	imports: [
 		CommonModule,
