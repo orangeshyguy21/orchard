@@ -20,7 +20,8 @@ import { MintAnalyticsModule } from "./mint/analytics/mintanalytics.module";
 import { AiModelModule } from "./ai/model/aimodel.module";
 import { AiChatModule } from "./ai/chat/aichat.module";
 // Image Endpoints
-import { ImageModule } from "./image/image.module";
+import { PublicImageModule } from "./public/image/image.module";
+import { PublicUrlModule } from "./public/url/url.module";
 
 @Module({
 	imports: [
@@ -38,7 +39,8 @@ import { ImageModule } from "./image/image.module";
 		MintAnalyticsModule,
 		AiModelModule,
 		AiChatModule,
-		ImageModule,
+		PublicImageModule,
+		PublicUrlModule,
 	],
 })
 export class ApiModule {}

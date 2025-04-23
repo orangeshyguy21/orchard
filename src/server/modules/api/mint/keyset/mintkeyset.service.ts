@@ -9,8 +9,8 @@ import { OrchardApiError } from "@server/modules/graphql/classes/orchard-error.c
 import { MintService } from '@server/modules/api/mint/mint.service';
 import { ErrorService } from '@server/modules/error/error.service';
 /* Local Dependencies */
-import { OrchardMintKeyset, RotateNextKeysetOutput } from './mintkeyset.model';
-import { RotateNextKeysetInput } from './mintkeyset.input';
+import { OrchardMintKeyset, MintRotateKeysetOutput } from './mintkeyset.model';
+import { MintRotateKeysetInput } from './mintkeyset.input';
 
 @Injectable()
 export class MintKeysetService {
@@ -39,9 +39,9 @@ export class MintKeysetService {
 		});
 	}
 
-	async rotateNextKeyset(rotateNextKeysetInput: RotateNextKeysetInput) : Promise<RotateNextKeysetOutput> {
+	async mintRotateKeyset(mint_rotate_keyset: MintRotateKeysetInput) : Promise<MintRotateKeysetOutput> {
 		try {
-			return await this.cashuMintRpcService.rotateNextKeyset(rotateNextKeysetInput);
+			return await this.cashuMintRpcService.rotateNextKeyset(mint_rotate_keyset);
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error,
 				errord: OrchardErrorCode.MintRpcActionError,

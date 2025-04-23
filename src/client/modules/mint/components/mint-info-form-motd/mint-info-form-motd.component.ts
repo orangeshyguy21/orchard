@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, Input, ViewChild, ElementRef, Outpu
 import { FormGroup } from '@angular/forms';
 /* Application Dependencies */
 import { MintInfoRpc } from '@client/modules/mint/classes/mint-info-rpc.class';
+import { AutoGrowDirective } from '@client/modules/form/directives/auto-grow.directive';
 
 @Component({
 	selector: 'orc-mint-info-form-motd',
@@ -21,6 +22,7 @@ export class MintInfoFormMotdComponent {
     @Output() cancel = new EventEmitter<keyof MintInfoRpc>();
 
     @ViewChild('element_motd') element_motd!: ElementRef<HTMLInputElement>;
+    @ViewChild(AutoGrowDirective) autogrow!: AutoGrowDirective;
 
     public get form_hot(): boolean {
         if( document.activeElement === this.element_motd?.nativeElement ) return true;
@@ -43,6 +45,7 @@ export class MintInfoFormMotdComponent {
     public onSubmit(event: Event): void {
         event.preventDefault();
         this.update.emit(this.control_name);
+        setTimeout(() => { this.autogrow.grow(); }, 10);
         this.element_motd.nativeElement.blur();
     }
 

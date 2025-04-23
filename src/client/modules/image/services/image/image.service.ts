@@ -23,12 +23,12 @@ export class ImageService {
         public http: HttpClient,
     ) {}
 
-    getImageData(image_url: string): Observable<Image> {
-        const query = getApiQuery(IMAGE_GET_QUERY, { image_url });
+    getImageData(url: string): Observable<Image> {
+        const query = getApiQuery(IMAGE_GET_QUERY, { url });
         return this.http.post<OrchardRes<ImageResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
-				return response.data.image;
+				return response.data.public_image;
 			}),
 			map((image) => new Image(image)),
 			catchError((error) => {

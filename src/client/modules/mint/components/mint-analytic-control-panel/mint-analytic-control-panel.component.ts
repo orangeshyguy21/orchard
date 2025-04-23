@@ -77,8 +77,8 @@ export class MintAnalyticControlPanelComponent implements OnChanges {
 	];
 	public type_options: TypeOption[] = [
 		{ label: 'Summary', value: ChartType.Summary },
-		{ label: 'Operations', value: ChartType.Operations },
 		{ label: 'Volume', value: ChartType.Volume },
+		{ label: 'Operations', value: ChartType.Operations },
 	];
 
 	public get height_state(): string {

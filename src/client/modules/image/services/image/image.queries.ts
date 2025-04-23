@@ -7,8 +7,8 @@
 // }`;
 
 export const IMAGE_GET_QUERY = `
-query ImageGet($image_url: String!) {
-	image(image_url: $image_url) {
+query ImageGet($url: String!) {
+	public_image(url: $url) {
 		data
 	}
 }`;

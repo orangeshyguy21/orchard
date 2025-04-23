@@ -92,6 +92,20 @@ export type MintQuoteTtlOutput = {
   mint_ttl?: Maybe<Scalars['Int']['output']>;
 };
 
+export type MintRotateKeysetInput = {
+  input_fee_ppk?: InputMaybe<Scalars['Int']['input']>;
+  max_order?: InputMaybe<Scalars['Int']['input']>;
+  unit: Scalars['String']['input'];
+};
+
+export type MintRotateKeysetOutput = {
+  __typename?: 'MintRotateKeysetOutput';
+  id: Scalars['String']['output'];
+  input_fee_ppk?: Maybe<Scalars['Int']['output']>;
+  max_order?: Maybe<Scalars['Int']['output']>;
+  unit: Scalars['String']['output'];
+};
+
 export enum MintUnit {
   Auth = 'auth',
   Btc = 'btc',
@@ -114,10 +128,10 @@ export type Mutation = {
   mint_long_description_update: OrchardMintDescriptionUpdate;
   mint_motd_update: OrchardMintMotdUpdate;
   mint_name_update: OrchardMintNameUpdate;
+  mint_rotate_keyset: MintRotateKeysetOutput;
   mint_short_description_update: OrchardMintDescriptionUpdate;
   mint_url_add: OrchardMintUrlUpdate;
   mint_url_remove: OrchardMintUrlUpdate;
-  rotate_next_keyset: RotateNextKeysetOutput;
   update_mint_nut04: UpdateNut04Output;
   update_mint_nut04_quote: UpdateNut04QuoteOutput;
   update_mint_nut05: UpdateNut05Output;
@@ -160,6 +174,11 @@ export type MutationMint_Name_UpdateArgs = {
 };
 
 
+export type MutationMint_Rotate_KeysetArgs = {
+  mint_rotate_keyset: MintRotateKeysetInput;
+};
+
+
 export type MutationMint_Short_Description_UpdateArgs = {
   mint_desc_update: MintDescriptionUpdateInput;
 };
@@ -172,11 +191,6 @@ export type MutationMint_Url_AddArgs = {
 
 export type MutationMint_Url_RemoveArgs = {
   mint_url_update: MintUrlUpdateInput;
-};
-
-
-export type MutationRotate_Next_KeysetArgs = {
-  rotateNextKeysetInput: RotateNextKeysetInput;
 };
 
 
@@ -273,12 +287,6 @@ export type OrchardContact = {
   __typename?: 'OrchardContact';
   info: Scalars['String']['output'];
   method: Scalars['String']['output'];
-};
-
-export type OrchardImage = {
-  __typename?: 'OrchardImage';
-  data?: Maybe<Scalars['String']['output']>;
-  type: Scalars['String']['output'];
 };
 
 export type OrchardMintAnalytics = {
@@ -500,6 +508,18 @@ export type OrchardNuts = {
   nut20: OrchardNutSupported;
 };
 
+export type OrchardPublicImage = {
+  __typename?: 'OrchardPublicImage';
+  data?: Maybe<Scalars['String']['output']>;
+  type: Scalars['String']['output'];
+};
+
+export type OrchardPublicUrl = {
+  __typename?: 'OrchardPublicUrl';
+  ip_address?: Maybe<Scalars['String']['output']>;
+  status: Scalars['Int']['output'];
+};
+
 export type OrchardStatus = {
   __typename?: 'OrchardStatus';
   online: Scalars['Boolean']['output'];
@@ -510,7 +530,6 @@ export type Query = {
   __typename?: 'Query';
   ai_models: Array<OrchardAiModel>;
   bitcoin_blockcount: OrchardBitcoinBlockCount;
-  image: OrchardImage;
   mint_analytics_balances: Array<OrchardMintAnalytics>;
   mint_analytics_melts: Array<OrchardMintAnalytics>;
   mint_analytics_mints: Array<OrchardMintAnalytics>;
@@ -528,12 +547,9 @@ export type Query = {
   mint_proofs_pending: Array<OrchardMintProof>;
   mint_proofs_used: Array<OrchardMintProof>;
   mint_quote_ttl: MintQuoteTtlOutput;
+  public_image: OrchardPublicImage;
+  public_url: OrchardPublicUrl;
   status: OrchardStatus;
-};
-
-
-export type QueryImageArgs = {
-  image_url: Scalars['String']['input'];
 };
 
 
@@ -587,18 +603,14 @@ export type QueryMint_PromisesArgs = {
   id_keysets?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
-export type RotateNextKeysetInput = {
-  input_fee_ppk?: InputMaybe<Scalars['Int']['input']>;
-  max_order?: InputMaybe<Scalars['Int']['input']>;
-  unit: Scalars['String']['input'];
+
+export type QueryPublic_ImageArgs = {
+  url: Scalars['String']['input'];
 };
 
-export type RotateNextKeysetOutput = {
-  __typename?: 'RotateNextKeysetOutput';
-  id: Scalars['String']['output'];
-  input_fee_ppk?: Maybe<Scalars['Int']['output']>;
-  max_order?: Maybe<Scalars['Int']['output']>;
-  unit: Scalars['String']['output'];
+
+export type QueryPublic_UrlArgs = {
+  url: Scalars['String']['input'];
 };
 
 export type Subscription = {

@@ -2,7 +2,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
-export class OrchardImage {
+export class OrchardPublicImage {
 
     @Field(() => String, { nullable: true })
     data: string;

@@ -1,11 +1,11 @@
 /* Shared Dependencies */
-import { OrchardImage } from '@shared/generated.types';
+import { OrchardPublicImage } from '@shared/generated.types';
 
-export class Image implements OrchardImage {
+export class Image implements OrchardPublicImage {
     data: string | null;
     type: string;
 
-    constructor(data: OrchardImage) {
+    constructor(data: OrchardPublicImage) {
         this.data = data.data || null;
         this.type = data.type;
     }

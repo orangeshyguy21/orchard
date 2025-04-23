@@ -3,18 +3,19 @@ import { Injectable } from '@nestjs/common';
 /* Application Dependencies */
 import { FetchService } from '@server/modules/fetch/fetch.service';
 /* Local Dependencies */
-import { OrchardImage } from './image.model';
+import { OrchardPublicImage } from './image.model';
 
 @Injectable()
-export class ImageService {
+export class PublicImageService {
+    
     constructor(
         private fetch_service: FetchService
     ) {}
 
-    async getImageData(image_url: string): Promise<OrchardImage> {
-        const response = await this.fetch_service.fetchWithProxy(image_url);
+    async getImageData(url: string): Promise<OrchardPublicImage> {
+        const response = await this.fetch_service.fetchWithProxy(url);
         const content_type = response.headers.get('content-type');
         const buffer = Buffer.from(await response.arrayBuffer());
-        return new OrchardImage(buffer, content_type || 'image/jpeg');
+        return new OrchardPublicImage(buffer, content_type || 'image/jpeg');
     }
 }
