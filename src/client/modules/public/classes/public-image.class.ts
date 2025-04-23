@@ -1,7 +1,7 @@
 /* Shared Dependencies */
 import { OrchardPublicImage } from '@shared/generated.types';
 
-export class Image implements OrchardPublicImage {
+export class PublicImage implements OrchardPublicImage {
     data: string | null;
     type: string;
 

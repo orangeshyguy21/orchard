@@ -417,7 +417,7 @@ type Query {
   mint_proofs_used: [OrchardMintProof!]!
   mint_quote_ttl: MintQuoteTtlOutput!
   public_image(url: String!): OrchardPublicImage!
-  public_url(url: String!): OrchardPublicUrl!
+  public_urls(urls: [String!]!): [OrchardPublicUrl!]!
   status: OrchardStatus!
 }
 

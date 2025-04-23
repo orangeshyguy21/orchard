@@ -6,8 +6,8 @@
 // 	}
 // }`;
 
-export const IMAGE_GET_QUERY = `
-query ImageGet($url: String!) {
+export const PUBLIC_IMAGE_GET_QUERY = `
+query PublicImageGet($url: String!) {
 	public_image(url: $url) {
 		data
 	}

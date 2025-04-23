@@ -1,6 +1,6 @@
 /* Shared Dependencies */
 import { OrchardPublicImage } from '@shared/generated.types';
 
-export type ImageResponse = {
+export type PublicImageResponse = {
 	public_image: OrchardPublicImage;
 }

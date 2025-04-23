@@ -15,18 +15,24 @@ export class PublicUrlService {
     private readonly logger = new Logger(PublicUrlService.name);
 
     constructor(
-        private fetch_service: FetchService
+        private fetchService: FetchService
     ) {}
 
-    async getUrlData(url: string): Promise<OrchardPublicUrl> {
+    public async getUrlsData(urls: string[]): Promise<OrchardPublicUrl[]> {
+        const promises = urls.map((url) => this.getUrlData(url));
+        return await Promise.all(promises);
+    }
+
+    private async getUrlData(url: string): Promise<OrchardPublicUrl> {
         let response: any;
         let parsed_url: URL;
         let ip_address: string | null;
         let has_data: boolean = false;
 
         try {
-            response = await this.fetch_service.fetchWithProxy(url);
+            response = await this.fetchService.fetchWithProxy(url);
         } catch (error) {
+            console.error('getUrlData', error);
             throw new OrchardApiError(OrchardErrorCode.PublicUrlError);
         }
 
