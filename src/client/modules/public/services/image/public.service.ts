@@ -10,9 +10,10 @@ import { OrchardErrors } from '@client/modules/error/classes/error.class';
 import { OrchardRes } from '@client/modules/api/types/api.types';
 /* Native Dependencies */
 import { PublicImage } from '@client/modules/public/classes/public-image.class';
-import { PublicImageResponse } from '@client/modules/public/types/public.types';
+import { PublicUrl } from '@client/modules/public/classes/public-url.class';
+import { PublicImageResponse, PublicUrlResponse } from '@client/modules/public/types/public.types';
 /* Local Dependencies */
-import { PUBLIC_IMAGE_GET_QUERY } from './public.queries';
+import { PUBLIC_IMAGE_GET_QUERY, PUBLIC_URLS_GET_QUERY } from './public.queries';
 
 @Injectable({
     providedIn: 'root'
@@ -32,9 +33,25 @@ export class PublicService {
 			}),
 			map((image) => new PublicImage(image)),
 			catchError((error) => {
-				console.error('Error loading image:', error);
+				console.error('Error loading public image:', error);
 				return throwError(() => error);
 			}),
 		);
     }
+
+	getPublicUrlsData(urls: string[]): Observable<PublicUrl[]> {
+		const query = getApiQuery(PUBLIC_URLS_GET_QUERY, { urls });
+		return this.http.post<OrchardRes<PublicUrlResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.public_urls;
+			}),
+			map((urls) => urls.map((url) => new PublicUrl(url))),
+			catchError((error) => {
+				console.error('Error loading public urls:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+	
 }

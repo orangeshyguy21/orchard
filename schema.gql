@@ -387,8 +387,8 @@ type OrchardPublicImage {
 type OrchardPublicUrl {
   has_data: Boolean!
   ip_address: String
-  status: Int!
-  url: String!
+  status: Int
+  url: String
 }
 
 type OrchardStatus {

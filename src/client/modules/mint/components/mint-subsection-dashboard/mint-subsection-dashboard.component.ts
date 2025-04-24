@@ -4,10 +4,14 @@ import { ActivatedRoute } from '@angular/router';
 /* Vendor Dependencies */
 import { forkJoin, lastValueFrom } from 'rxjs';
 import { DateTime } from 'luxon';
+/* Application Configuration */
+import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 import { ChartService } from '@client/modules/chart/services/chart/chart.service';
+import { PublicService } from '@client/modules/public/services/image/public.service';
 import { NonNullableMintChartSettings } from '@client/modules/chart/services/chart/chart.types';
+import { PublicUrl } from '@client/modules/public/classes/public-url.class';
 /* Native Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { MintBalance } from '@client/modules/mint/classes/mint-balance.class';
@@ -39,6 +43,7 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	public mint_analytics_melts_pre: MintAnalytic[] = [];
 	public mint_analytics_transfers: MintAnalytic[] = [];
 	public mint_analytics_transfers_pre: MintAnalytic[] = [];
+	public mint_connections: PublicUrl[] = []
 	public locale!: string;
 	// derived data
 	public mint_genesis_time: number = 0;
@@ -57,6 +62,7 @@ export class MintSubsectionDashboardComponent implements OnInit {
 		private mintService: MintService,
 		private settingService: SettingService,
 		private chartService: ChartService,
+		private publicService: PublicService,
 		private route: ActivatedRoute,
 		private changeDetectorRef: ChangeDetectorRef
 	) {}
@@ -65,7 +71,22 @@ export class MintSubsectionDashboardComponent implements OnInit {
 		this.mint_info = this.route.snapshot.data['mint_info'];
 		this.mint_balances = this.route.snapshot.data['mint_balances'];
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
+		this.initMintConnections();
 		await this.initMintAnalytics();
+
+	}
+
+	private async initMintConnections(): Promise<void> {
+		if( !this.mint_info?.urls ) return;
+		if( this.mint_info.urls.length === 0 ) return;
+		const test_urls = this.mint_info.urls.map((url) => {
+			return `${url.replace(/\/$/, '')}${environment.cashu.critical_path}`;
+		});
+		this.publicService.getPublicUrlsData(test_urls)
+			.subscribe((urls) => {
+				this.mint_connections = urls;
+				this.changeDetectorRef.detectChanges();
+			});
 	}
 	
 	private async initMintAnalytics(): Promise<void> {

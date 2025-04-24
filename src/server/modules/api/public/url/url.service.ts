@@ -32,14 +32,13 @@ export class PublicUrlService {
         try {
             response = await this.fetchService.fetchWithProxy(url);
         } catch (error) {
-            console.error('getUrlData', error);
-            throw new OrchardApiError(OrchardErrorCode.PublicUrlError);
+            return new OrchardPublicUrl(null, null, null, has_data);
         }
 
         try {
             parsed_url = new URL(url);
         } catch (error) {
-            throw new OrchardApiError(OrchardErrorCode.PublicUrlParseError);
+            return new OrchardPublicUrl(null, null, null, has_data);
         }
         
         try {

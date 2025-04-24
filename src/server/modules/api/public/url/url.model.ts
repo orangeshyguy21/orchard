@@ -4,10 +4,10 @@ import { Field, Int, ObjectType } from '@nestjs/graphql';
 @ObjectType()
 export class OrchardPublicUrl {
 
-    @Field(() => String)
+    @Field(() => String, { nullable: true })
     url: string;
 
-    @Field(() => Int)
+    @Field(() => Int, { nullable: true })
     status: number;
 
     @Field(() => String, { nullable: true })

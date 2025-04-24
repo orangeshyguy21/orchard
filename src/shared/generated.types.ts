@@ -516,8 +516,10 @@ export type OrchardPublicImage = {
 
 export type OrchardPublicUrl = {
   __typename?: 'OrchardPublicUrl';
+  has_data: Scalars['Boolean']['output'];
   ip_address?: Maybe<Scalars['String']['output']>;
-  status: Scalars['Int']['output'];
+  status?: Maybe<Scalars['Int']['output']>;
+  url?: Maybe<Scalars['String']['output']>;
 };
 
 export type OrchardStatus = {
@@ -548,7 +550,7 @@ export type Query = {
   mint_proofs_used: Array<OrchardMintProof>;
   mint_quote_ttl: MintQuoteTtlOutput;
   public_image: OrchardPublicImage;
-  public_url: OrchardPublicUrl;
+  public_urls: Array<OrchardPublicUrl>;
   status: OrchardStatus;
 };
 
@@ -609,8 +611,8 @@ export type QueryPublic_ImageArgs = {
 };
 
 
-export type QueryPublic_UrlArgs = {
-  url: Scalars['String']['input'];
+export type QueryPublic_UrlsArgs = {
+  urls: Array<Scalars['String']['input']>;
 };
 
 export type Subscription = {

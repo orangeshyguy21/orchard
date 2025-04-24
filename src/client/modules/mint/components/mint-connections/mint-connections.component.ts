@@ -10,6 +10,7 @@ import { MatDialog } from '@angular/material/dialog';
 /* Application Dependencies */
 import { ThemeService } from '@client/modules/settings/services/theme/theme.service';
 import { PublicService } from '@client/modules/public/services/image/public.service';
+import { PublicUrl } from '@client/modules/public/classes/public-url.class';
 /* Native Dependencies */
 import { MintQrcodeDialogComponent } from '../mint-qrcode-dialog/mint-qrcode-dialog.component';
 /* Local Dependencies */
@@ -53,6 +54,7 @@ export class MintConnectionsComponent {
 	@Input() time: number | undefined;
 	@Input() mint_name: string | undefined;
 	@Input() loading!: boolean;
+	@Input() mint_connections!: PublicUrl[];
 
 	@ViewChild('qr_canvas', { static: false }) qr_canvas!: ElementRef;
 
@@ -81,6 +83,7 @@ export class MintConnectionsComponent {
 
 	ngOnChanges(changes: SimpleChanges): void {
 		if( this.loading !== false ) return;
+		if( this.qr_code ) return;
 		this.init();
 		this.initQR();
 		this.loadImage();
