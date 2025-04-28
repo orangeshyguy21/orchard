@@ -3,7 +3,6 @@
 .mint-dashboard-container{
     @extend %flex;
     @extend %flex-column;
-    // @extend %flex-gap-2;
 }
 
 .mint-dashboard-header{
@@ -17,4 +16,10 @@
     @extend %sticky;
     @extend %top-0;
     @extend %z-index-1;
+}
+
+.mint-analytics-rule{
+    @extend %border;
+    @extend %border-solid;
+    @extend %orc-outline-variant-border;
 }

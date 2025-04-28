@@ -9,7 +9,7 @@
                         <input matEndDate formControlName="date_end" placeholder="End date" (blur)="onDateChange()"> 
                     </mat-date-range-input>
                     <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-date-range-picker #picker (closed)="onDateChange()"></mat-date-range-picker>
+                    <mat-date-range-picker #picker [dateClass]="genesis_class" (closed)="onDateChange()"></mat-date-range-picker>
                     @if (panel.get('daterange')?.invalid) {
                         <mat-error class="font-size-xs">Invalid date range</mat-error>
                     }

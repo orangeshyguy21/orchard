@@ -44,6 +44,7 @@ export class MintAnalyticChartComponent implements OnChanges {
 	@Input() public mint_analytics!: MintAnalytic[];
 	@Input() public mint_analytics_pre!: MintAnalytic[];
 	@Input() public chart_settings!: NonNullableMintChartSettings | undefined;
+	@Input() public mint_genesis_time!: number;
 	@Input() public selected_type!: ChartType | undefined;
 	@Input() public loading!: boolean;
 
@@ -70,6 +71,7 @@ export class MintAnalyticChartComponent implements OnChanges {
 				this.chart_type = 'line';
 				this.chart_data = this.getAmountChartData();
 				this.chart_options = this.getAmountChartOptions();
+				if(this.chart_options?.plugins) this.chart_options.plugins.annotation = this.getAnnotations();
 				break;
 			case ChartType.Operations:
 				this.chart_type = 'bar';
@@ -160,7 +162,7 @@ export class MintAnalyticChartComponent implements OnChanges {
 				legend: {
 					display: true,
 					position: 'top'
-				}
+				},
 			},
 			interaction: {
 				mode: 'index',
@@ -248,5 +250,39 @@ export class MintAnalyticChartComponent implements OnChanges {
 				intersect: false
 			}
 		};
+	}
+
+	private getAnnotations(): any {
+		const min_x_value = this.findMinimumXValue(this.chart_data);
+		const milli_genesis_time = this.mint_genesis_time*1000;
+		const display = (milli_genesis_time >= min_x_value) ? true : false;
+		return {
+			annotations: {
+				annotation : {
+					type: 'line',
+					borderColor: this.chartService.getAnnotationBorderColor(),
+					borderWidth: 1,
+					display: display,
+					label: {
+						display:  true,
+						content: 'Genesis',
+						position: 'start',
+						backgroundColor: 'rgb(29, 27, 26)',
+						borderColor: this.chartService.getAnnotationBorderColor(),
+						borderWidth: 1,
+					},
+					scaleID: 'x',
+					value: milli_genesis_time
+				}
+			}
+		}
+	}
+
+	private findMinimumXValue(chartData: ChartConfiguration['data']): number {
+		if (!chartData?.datasets || chartData.datasets.length === 0) return 0;
+		const all_x_values = chartData.datasets.flatMap(dataset => 
+		  	dataset.data.map((point: any) => point.x)
+		);
+		return Math.min(...all_x_values);
 	}
 }
