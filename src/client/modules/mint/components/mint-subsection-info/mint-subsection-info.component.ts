@@ -190,15 +190,141 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 	
 
 	private onConfirmedEvent(): void {
-		if( this.form_info.invalid ) return this.eventService.registerEvent(new EventData({
-			type: 'WARNING',
-			message: 'Invalid info data',
-		}));
+		if (this.form_info.invalid) {
+			return this.eventService.registerEvent(new EventData({
+				type: 'WARNING',
+				message: 'Invalid info data',
+			}));
+		}
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-	}
+		const mutation_parts: string[] = [];
+		const mutation_variables: Record<string, any> = {};
+		if (this.form_info.get('name')?.dirty) {
+			mutation_parts.push(`
+				mint_name_update(mint_name_update: { name: $name }) {
+					name
+				}
+			`);
+			mutation_variables['name'] = this.form_info.get('name')?.value;
+		}
+		if (this.form_info.get('description')?.dirty) {
+			mutation_parts.push(`
+				mint_short_description_update(mint_desc_update: { description: $description }) {
+					description
+				}
+			`);
+			mutation_variables['description'] = this.form_info.get('description')?.value;
+		}
+		if (this.form_info.get('description_long')?.dirty) {
+			mutation_parts.push(`
+				mint_long_description_update(mint_desc_update: { description: $description_long }) {
+					description
+				}
+			`);
+			mutation_variables['description_long'] = this.form_info.get('description_long')?.value;
+		}
+		if (this.form_info.get('icon_url')?.dirty) {
+			mutation_parts.push(`
+				mint_icon_update(mint_icon_update: { icon_url: $icon_url }) {
+					icon_url
+				}
+			`);
+			mutation_variables['icon_url'] = this.form_info.get('icon_url')?.value;
+		}
+		if (this.form_info.get('motd')?.dirty) {
+			mutation_parts.push(`
+				mint_motd_update(mint_motd_update: { motd: $motd }) {
+					motd
+				}
+			`);
+			mutation_variables['motd'] = this.form_info.get('motd')?.value;
+		}
 
-	private updateMintInfo() : void {
-		// todo
+		const urls_array = this.form_info.get('urls') as FormArray;
+		if (urls_array?.dirty) {
+			const new_urls = urls_array.value.filter(Boolean);
+			const old_urls = this.init_info.urls || [];
+			const urls_to_add = new_urls.filter((url: string) => !old_urls.includes(url));
+			urls_to_add.forEach((url: string, index: number) => {
+				const mutation_var = `url_add_${index}`;
+				mutation_parts.push(`
+					url_add_${index}: mint_url_add(mint_url_update: { url: $${mutation_var} }) {
+						url
+					}
+				`);
+				mutation_variables[`${mutation_var}`] = url;
+			});
+			const urls_to_remove = old_urls.filter(url => !new_urls.includes(url));
+			urls_to_remove.forEach((url: string, index: number) => {
+				const mutation_var = `url_remove_${index}`;
+				mutation_parts.push(`
+					url_remove_${index}: mint_url_remove(mint_url_update: { url: $${mutation_var} }) {
+						url
+					}
+				`);
+				mutation_variables[`${mutation_var}`] = url;
+			});
+		}
+
+		const contacts_array = this.form_info.get('contact') as FormArray;
+		if (contacts_array?.dirty) {
+			const new_contacts = contacts_array.value.filter((c: OrchardContact) => c.method && c.info);
+			const old_contacts = this.init_info.contact || [];
+			const contacts_to_add = new_contacts.filter((contact: OrchardContact) => 
+				!old_contacts.some(old => old.method === contact.method && old.info === contact.info)
+			);
+			contacts_to_add.forEach((contact: OrchardContact, index: number) => {
+				const mutation_var = `contact_add_${index}`;
+				mutation_parts.push(`
+					contact_add_${index}: mint_contact_add(mint_contact_update: { method: $${mutation_var}_method, info: $${mutation_var}_info }) {
+						method
+						info
+					}
+				`);
+				mutation_variables[`${mutation_var}_method`] = contact.method;
+				mutation_variables[`${mutation_var}_info`] = contact.info;
+			});
+			const contacts_to_remove = old_contacts.filter(old => 
+				!new_contacts.some((contact:OrchardContact) => contact.method === old.method && contact.info === old.info)
+			);
+			contacts_to_remove.forEach((contact: OrchardContact, index: number) => {
+				const mutation_var = `contact_remove_${index}`;
+				mutation_parts.push(`
+					contact_remove_${index}: mint_contact_remove(mint_contact_update: { method: $${mutation_var}_method, info: $${mutation_var}_info }) {
+						method
+						info
+					}
+				`);
+				mutation_variables[`${mutation_var}_method`] = contact.method;
+				mutation_variables[`${mutation_var}_info`] = contact.info;
+			});
+		}
+
+		if (mutation_parts.length === 0) return;
+
+		const mutation = `
+			mutation BulkMintUpdate(${
+				Object.keys(mutation_variables)
+					.map(key => `$${key}: String!`)
+					.join(', ')
+			}) {
+				${mutation_parts.join('\n')}
+			}
+		`;
+
+		this.mintService.updateMint(mutation, mutation_variables).subscribe({
+			next: (response) => {
+				console.log('response', response);
+				this.mintService.getMintInfo().subscribe((mint_info: MintInfoRpc) => {
+					this.init_info = mint_info;
+					this.cdr.detectChanges();
+				});
+				this.onSuccess();
+			},
+			error: (error) => {
+				this.onError(error.message);
+			}
+		});
 	}
 
 	private updateMintName(control_value: string): void {
