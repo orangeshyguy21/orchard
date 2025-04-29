@@ -14,6 +14,8 @@
     #{$c}orc-secondary-bg { background-color: var(--mat-sys-secondary); }
     #{$c}orc-on-error-bg { background-color: var(--mat-sys-on-error); }
     #{$c}orc-error-bg { background-color: var(--mat-sys-error); }
+    #{$c}orc-warning-bg { background-color: var(--orc-status-warning); }
+    #{$c}orc-on-warning-bg { background-color: var(--orc-on-warning-bg); }
     // Background Colors (with transparency)
     #{$c}orc-shadow-bg { background-color: color-mix(in srgb, var(--mat-sys-shadow), transparent 50%); }
 
