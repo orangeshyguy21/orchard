@@ -24,7 +24,8 @@
                         <div class="flex flex-items-center flex-grow">           
                             <div class="method-select-container" [@methodSelectState]="form_hot ? 'open' : 'closed'">
                                 <mat-form-field 
-                                    [appearance]="'fill'"
+                                    appearance="fill"
+                                    [ngClass]="form_hot ? 'orc-hot-form-field' : 'orc-cold-form-field'"
                                     subscriptSizing="dynamic"
                                     class="orc-dynamic-form-field orc-array-form-field overflow-hidden w-full">
                                     <mat-select formControlName="method" #element_method>
@@ -36,7 +37,8 @@
                             </div>
 
                             <mat-form-field 
-                                [appearance]="form_hot ? 'fill' : 'outline'"
+                                appearance="fill"
+                                [ngClass]="form_hot ? 'orc-hot-form-field' : 'orc-cold-form-field'"
                                 subscriptSizing="dynamic"
                                 class="orc-dynamic-form-field orc-array-form-field w-full">
                                 <input 

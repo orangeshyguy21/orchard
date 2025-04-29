@@ -28,7 +28,7 @@
 
 .orc-cold-form-field{
 	@include mat.form-field-overrides((
-		filled-label-text-weight: 600,
+		// filled-label-text-weight: 600,
 		filled-container-color: transparent,
 	));
 }
@@ -96,53 +96,53 @@
 		}
 	}
 
-	.mat-mdc-form-field{
-		&.orc-dynamic-form-field {
+	// .mat-mdc-form-field{
+	// 	&.orc-dynamic-form-field {
 
-			.mdc-notched-outline__leading,
-			.mdc-notched-outline__notch,
-			.mdc-notched-outline__trailing {
-				border-color: var(--mat-sys-outline-variant);
-				transition: border-color 0.15s ease-in-out;
-			}
+	// 		.mdc-notched-outline__leading,
+	// 		.mdc-notched-outline__notch,
+	// 		.mdc-notched-outline__trailing {
+	// 			border-color: var(--mat-sys-outline-variant);
+	// 			transition: border-color 0.15s ease-in-out;
+	// 		}
 		  
-			&:hover .mdc-notched-outline__leading,
-			&:hover .mdc-notched-outline__notch,
-			&:hover .mdc-notched-outline__trailing {
-				border-color: var(--mat-sys-on-primary-container);
-			}
+	// 		&:hover .mdc-notched-outline__leading,
+	// 		&:hover .mdc-notched-outline__notch,
+	// 		&:hover .mdc-notched-outline__trailing {
+	// 			border-color: var(--mat-sys-on-primary-container);
+	// 		}
 	
-			&.mat-form-field-hide-placeholder{
-				.mdc-notched-outline__leading{
-					border-top-style: dashed;
-					border-left-style: dashed;
-					border-bottom-style: dashed;
-				}
-				.mdc-notched-outline__notch{
-					border-top-style: dashed;
-					border-bottom-style: dashed;
-				}
-				.mdc-notched-outline__trailing{
-					border-top-style: dashed;
-					border-right-style: dashed;
-					border-bottom-style: dashed;
-				}
-				.mdc-notched-outline__leading,
-				.mdc-notched-outline__notch,
-				.mdc-notched-outline__trailing {
-					border-color: var(--mat-sys-outline);
-					transition: border-color 0.15s ease-in-out;
-				}
+	// 		&.mat-form-field-hide-placeholder{
+	// 			.mdc-notched-outline__leading{
+	// 				border-top-style: dashed;
+	// 				border-left-style: dashed;
+	// 				border-bottom-style: dashed;
+	// 			}
+	// 			.mdc-notched-outline__notch{
+	// 				border-top-style: dashed;
+	// 				border-bottom-style: dashed;
+	// 			}
+	// 			.mdc-notched-outline__trailing{
+	// 				border-top-style: dashed;
+	// 				border-right-style: dashed;
+	// 				border-bottom-style: dashed;
+	// 			}
+	// 			.mdc-notched-outline__leading,
+	// 			.mdc-notched-outline__notch,
+	// 			.mdc-notched-outline__trailing {
+	// 				border-color: var(--mat-sys-outline);
+	// 				transition: border-color 0.15s ease-in-out;
+	// 			}
 
-				&:hover .mdc-notched-outline__leading,
-				&:hover .mdc-notched-outline__notch,
-				&:hover .mdc-notched-outline__trailing {
-					border-color: var(--mat-sys-on-primary-container);
-					background-color: var(--mat-sys-surface-container);
-				}
-			}
-		}
-	}
+	// 			&:hover .mdc-notched-outline__leading,
+	// 			&:hover .mdc-notched-outline__notch,
+	// 			&:hover .mdc-notched-outline__trailing {
+	// 				border-color: var(--mat-sys-on-primary-container);
+	// 				background-color: var(--mat-sys-surface-container);
+	// 			}
+	// 		}
+	// 	}
+	// }
 }
 // orc-array-form-field
 :root {

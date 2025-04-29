@@ -8,7 +8,7 @@
             [hot]="form_hot"
             (submit)="onSubmit($event)"
             (cancel)="onCancel($event)">
-            <mat-form-field [appearance]="form_hot ? 'fill' : 'outline'" class="w-full orc-dynamic-form-field">
+            <mat-form-field appearance="fill" [ngClass]="form_hot ? 'orc-hot-form-field' : 'orc-cold-form-field'" class="w-full orc-dynamic-form-field">
                 <mat-label>Description</mat-label>
                 <textarea 
                     type="text" 

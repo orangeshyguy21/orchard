@@ -19,7 +19,8 @@
                         (submit)="onSubmit($event)"
                         (cancel)="onCancel($event)">
                         <mat-form-field 
-                            [appearance]="form_hot ? 'fill' : 'outline'"
+                            appearance="fill"
+                            [ngClass]="form_hot ? 'orc-hot-form-field' : 'orc-cold-form-field'"
                             subscriptSizing="dynamic"
                             class="orc-dynamic-form-field orc-array-form-field w-full">
                             <input 
