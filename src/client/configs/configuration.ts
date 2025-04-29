@@ -10,6 +10,10 @@ const api = {
 	path: process.env["BASE_PATH"] || 'api',
 };
 
+const cashu = {
+	critical_path: "/v1/info"
+}
+
 const ai = {
 	api: process.env["AI_API"],
 };
@@ -17,5 +21,6 @@ const ai = {
 export const environment : Config = {
 	mode,
 	api,
+	cashu,
 	ai,
 }

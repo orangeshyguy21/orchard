@@ -1,10 +1,15 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, ViewChild, ElementRef, Output, EventEmitter, AfterViewInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, ViewChild, ElementRef, Output, EventEmitter, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { FormGroup, FormArray } from '@angular/forms';
-import { animate, state, style, transition, trigger } from '@angular/animations';
 /* Vendor Dependencies */
-import { fromEvent, merge, Subscription } from 'rxjs';
 import { MatSelect } from '@angular/material/select';
+
+type ContactOption = {
+	label: string;
+	method: string;
+	icon: string;
+	svg: string;
+}
 
 @Component({
 	selector: 'orc-mint-info-form-contact',
@@ -12,25 +17,8 @@ import { MatSelect } from '@angular/material/select';
 	templateUrl: './mint-info-form-contact.component.html',
 	styleUrl: './mint-info-form-contact.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	animations: [
-        trigger('methodSelectState', [
-            state('closed', style({
-                width: '0',
-                opacity: '0',
-                overflow: 'hidden'
-            })),
-            state('open', style({
-                width: '10rem',
-                opacity: '1',
-				marginRight: '1rem'
-            })),
-            transition('closed <=> open', [
-                animate('200ms ease-in-out')
-            ])
-        ])
-    ]
 })
-export class MintInfoFormContactComponent implements AfterViewInit, OnDestroy {
+export class MintInfoFormContactComponent implements AfterViewInit {
 
 	@Input() form_group!: FormGroup;
     @Input() form_array!: FormArray;
@@ -46,56 +34,52 @@ export class MintInfoFormContactComponent implements AfterViewInit, OnDestroy {
 	@ViewChild('element_method') element_method!: MatSelect;
 	@ViewChild('element_info') element_info!: ElementRef<HTMLInputElement>;
 
-	public get contact_icon(): string {
+	public options: ContactOption[] = [
+		{
+			label: 'Email',
+			method: 'email',
+			icon: 'mail',
+			svg: '',
+		},
+		{
+			label: 'X',
+			method: 'twitter',
+			icon: '',
+			svg: 'x',
+		},
+		{
+			label: 'Nostr',
+			method: 'nostr',
+			icon: '',
+			svg: 'nostr',
+		}
+	];
+
+	public get method_option(): ContactOption | undefined {
 		const method = this.form_array.at(this.subgroup_index).get('method')?.value;
-		if( method === 'email' ) return 'mail';
-		if( method === 'nostr' ) return 'nostr';
-		if( method === 'twitter' ) return 'x';
-		return 'mail';
+		const selected_option = this.options.find(option => option.method === method);
+		return selected_option;
 	}
 
-	public get form_hot(): boolean {
-		if( this.form_canceled ) return false;
-		if( this.method_opened || this.info_focused ) return true;
-        return this.form_array.at(this.subgroup_index)?.dirty ? true : false;
+	public get method_form_hot(): boolean {
+        if( this.element_method?.focused ) return true;
+        return this.form_array.at(this.subgroup_index).get('method')?.dirty ? true : false;
     }
 
-	private subscriptions: Subscription = new Subscription();
-	private method_opened: boolean = false;
-	private info_focused: boolean = false;
-	private form_canceled: boolean = false;
+	public get info_form_hot(): boolean {
+        if( document.activeElement === this.element_info?.nativeElement ) return true;
+		return this.form_array.at(this.subgroup_index).get('info')?.dirty ? true : false;
+    }
+
+	public get group_invalid(): boolean {
+		return this.form_array.at(this.subgroup_index).invalid && (this.form_array.at(this.subgroup_index).dirty || this.form_array.at(this.subgroup_index).touched) || false;
+	}
 	
 	constructor(
 		private cdr: ChangeDetectorRef
 	){}
 
     ngAfterViewInit(): void {
-		this.subscriptions.add(
-			this.element_method.openedChange.subscribe(opened => {
-				if( opened ) this.form_canceled = false;
-				this.method_opened = opened;
-				this.cdr.detectChanges();
-			})
-		);
-		
-		this.subscriptions.add(
-			merge(
-				fromEvent(this.element_info.nativeElement, 'focus'),
-				fromEvent(this.element_info.nativeElement, 'blur')
-			).subscribe((event: Event) => {
-				if (event.type === 'focus') {
-					this.info_focused = true;
-					this.form_canceled = false;
-					this.cdr.detectChanges();
-				} else {
-					setTimeout(() => {
-						this.info_focused = false;
-						this.cdr.detectChanges();
-					},250);
-				}
-			})
-		);
-
         if( this.focused ){
             setTimeout(() => {
                 this.element_info.nativeElement.focus();
@@ -113,7 +97,6 @@ export class MintInfoFormContactComponent implements AfterViewInit, OnDestroy {
 
     public onCancel(event: Event): void {
         event.preventDefault();
-		this.form_canceled = true;
 		this.cdr.detectChanges();
         this.cancel.emit(this.subgroup_index);
         this.element_info.nativeElement.blur();
@@ -127,8 +110,4 @@ export class MintInfoFormContactComponent implements AfterViewInit, OnDestroy {
         this.element_info.nativeElement.blur();
 		this.element_method.close();
     }
-
-	ngOnDestroy(): void {
-		this.subscriptions.unsubscribe();
-	}
 }

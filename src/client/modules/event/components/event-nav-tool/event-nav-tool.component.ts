@@ -45,12 +45,13 @@ export class EventNavToolComponent implements OnChanges {
 		if( this.active_event?.type === 'PENDING' ) return 'highlight';
 		if( this.active_event?.type === 'SAVING' ) return 'saving';
 		if( this.active_event?.type === 'SUCCESS' ) return 'success';
+		if( this.active_event?.type === 'WARNING' ) return 'warning';
 		if( this.active_event?.type === 'ERROR' ) return 'error';
 		return 'default';
 	}
 
 	constructor(
-		private changeDetectorRef: ChangeDetectorRef,
+		private cdr: ChangeDetectorRef,
 		private router: Router
 	) { }
 
@@ -63,7 +64,7 @@ export class EventNavToolComponent implements OnChanges {
 	private onEventUpdate(): void {
 		if( !this.active_event ) {
 			this.icon = 'save_clock';
-			this.changeDetectorRef.detectChanges();
+			this.cdr.detectChanges();
 			return;
 		}
 		if( this.active_event?.type === 'PENDING' ) {
@@ -72,20 +73,23 @@ export class EventNavToolComponent implements OnChanges {
 		if( this.active_event?.type === 'SUCCESS' ) {
 			this.icon = 'check';
 		}
+		if( this.active_event?.type === 'WARNING' ) {
+			this.icon = 'warning';
+		}
 		if( this.active_event?.type === 'ERROR' ) {
 			this.icon = 'error';
 		}
-		this.changeDetectorRef.detectChanges();
+		this.cdr.detectChanges();
 	}
 
 	public onMouseEnter(){
 		this.moused = true;
-		this.changeDetectorRef.detectChanges();
+		this.cdr.detectChanges();
 	}
 
 	public onMouseLeave(){
 		this.moused = false;
-		this.changeDetectorRef.detectChanges();
+		this.cdr.detectChanges();
 	}
 
 	public onClick(){

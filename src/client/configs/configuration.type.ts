@@ -7,6 +7,9 @@ export type Config = {
 		proxy: string;
 		path: string;
 	},
+	cashu : {
+		critical_path: string;
+	},
 	ai : {
 		api: string | undefined;
 	}

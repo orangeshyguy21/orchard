@@ -14,6 +14,8 @@
     #{$c}orc-secondary-bg { background-color: var(--mat-sys-secondary); }
     #{$c}orc-on-error-bg { background-color: var(--mat-sys-on-error); }
     #{$c}orc-error-bg { background-color: var(--mat-sys-error); }
+    #{$c}orc-warning-bg { background-color: var(--orc-status-warning); }
+    #{$c}orc-on-warning-bg { background-color: var(--orc-on-warning-bg); }
     // Background Colors (with transparency)
     #{$c}orc-shadow-bg { background-color: color-mix(in srgb, var(--mat-sys-shadow), transparent 50%); }
 
@@ -23,11 +25,13 @@
     #{$c}orc-on-primary-container-color { color: var(--mat-sys-on-primary-container); }
     #{$c}orc-outline-color { color: var(--mat-sys-outline); }
     #{$c}orc-surface-color { color: var(--mat-sys-surface); }
+    #{$c}orc-surface-container-high-color { color: var(--mat-sys-surface-container-high); }
     #{$c}orc-on-surface-variant-color { color: var(--mat-sys-on-surface-variant); }
     #{$c}orc-primary-fixed-dim-color { color: var(--mat-sys-primary-fixed-dim); }
     #{$c}orc-tertiary-container-color { color: var(--mat-sys-tertiary-container); }
     #{$c}orc-error-container-color { color: var(--mat-sys-error-container); }
     #{$c}orc-status-active-color { color: var(--orc-status-active); }
+    #{$c}orc-status-warning-color { color: var(--orc-status-warning); }
     #{$c}orc-status-inactive-color { color: var(--orc-status-inactive); }
     #{$c}orc-on-error-color { color: var(--mat-sys-on-error); }
     #{$c}orc-error-color { color: var(--mat-sys-error); }

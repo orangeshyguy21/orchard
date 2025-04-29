@@ -2,7 +2,7 @@
 import { InputType, Field, Int } from "@nestjs/graphql";
 
 @InputType()
-export class RotateNextKeysetInput {
+export class MintRotateKeysetInput {
 	@Field()
 	unit: string;
 

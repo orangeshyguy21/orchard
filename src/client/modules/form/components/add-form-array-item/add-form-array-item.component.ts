@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Output, EventEmitter } from '@angular/core';
 
 @Component({
 	selector: 'orc-add-form-array-item',
@@ -8,9 +8,6 @@ import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter } from 
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AddFormArrayItemComponent {
-
-	@Input() prefix_icon!: string;
-	@Input() label!: string;
 
 	@Output() addControl = new EventEmitter<void>();
 

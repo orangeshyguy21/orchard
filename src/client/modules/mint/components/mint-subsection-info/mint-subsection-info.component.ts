@@ -67,13 +67,13 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 			motd: this.init_info.motd,
 		});
 		if (this.init_info.urls && Array.isArray(this.init_info.urls)) {
-			const url_controls = this.init_info.urls.map(url => new FormControl(url));
+			const url_controls = this.init_info.urls.map(url => new FormControl(url, [Validators.required]));
 			url_controls.forEach(control => this.form_array_urls.push(control));
 		}
 		if (this.init_info.contact && Array.isArray(this.init_info.contact)) {
 			const contact_controls = this.init_info.contact.map(contact => new FormGroup({
-				method: new FormControl(contact.method),
-				info: new FormControl(contact.info),
+				method: new FormControl(contact.method, [Validators.required]),
+				info: new FormControl(contact.info, [Validators.required]),
 			}));
 			contact_controls.forEach(control => this.form_array_contacts.push(control));
 		}
@@ -190,26 +190,11 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 	
 
 	private onConfirmedEvent(): void {
-		if( this.form_info.invalid ) return;
+		if( this.form_info.invalid ) return this.eventService.registerEvent(new EventData({
+			type: 'WARNING',
+			message: 'Invalid info data',
+		}));
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-
-		// loop every dirty control
-		// for( const control_name of Object.keys(this.form_info.controls) ) {
-		// 	if( this.form_info.get(control_name)?.dirty ) {
-		// 		this.updateMintName(this.form_info.get(control_name)?.value);
-		// 	}
-		// }
-
-
-
-		// this.form_info.get('name')?.markAsPristine();
-		// this.mintService.updateMintName(this.form_info.get('name')?.value).subscribe((response) => {
-		// 	this.init_info.name = response.mint_name_update.name ?? null;
-		// 	this.mintService.clearInfoCache();
-		// 	this.mintService.loadMintInfo().subscribe();
-		// 	this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
-		// 	this.resetForm();
-		// });
 	}
 
 	private updateMintInfo() : void {
@@ -280,7 +265,7 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 	private updateMintUrl(control_index: number, control_value: string, original_value: string): void {
 		this.mintService.updateMintUrl(control_value, original_value).subscribe({
 			next: (response) => {
-				this.init_info.urls[control_index] = control_value;
+				this.init_info.urls[control_index] = response.mint_url_add.url ?? null;
 				this.onSuccess();
 			},
 			error: (error) => {
@@ -292,7 +277,7 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 	private addMintUrl(control_value: string): void {
 		this.mintService.addMintUrl(control_value).subscribe({
 			next: (response) => {
-				this.init_info.urls.push(control_value);
+				this.init_info.urls.push(response.mint_url_add.url ?? null);
 				this.onSuccess();
 			},
 			error: (error) => {
@@ -317,7 +302,11 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 	private updateMintContact(control_index: number, control_value: OrchardContact, original_value: OrchardContact): void {
 		this.mintService.updateMintContact(control_value, original_value).subscribe({
 			next: (response) => {
-				this.init_info.contact[control_index] = control_value;
+				const contact = response.mint_contact_add;
+				this.init_info.contact[control_index] = {
+					method: contact.method,
+					info: contact.info,
+				};
 				this.onSuccess();
 			},
 			error: (error) => {
@@ -342,7 +331,11 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 	private addMintContact(control_value: OrchardContact): void {
 		this.mintService.addMintContact(control_value).subscribe({
 			next: (response) => {
-				this.init_info.contact.push(control_value);
+				const contact = response.mint_contact_add;
+				this.init_info.contact.push({
+					method: contact.method,
+					info: contact.info,
+				});
 				this.onSuccess();
 			},
 			error: (error) => {

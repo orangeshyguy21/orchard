@@ -9,7 +9,8 @@ import QRCodeStyling from 'qr-code-styling';
 import { MatDialog } from '@angular/material/dialog';
 /* Application Dependencies */
 import { ThemeService } from '@client/modules/settings/services/theme/theme.service';
-import { ImageService } from '@client/modules/image/services/image/image.service';
+import { PublicService } from '@client/modules/public/services/image/public.service';
+import { PublicUrl } from '@client/modules/public/classes/public-url.class';
 /* Native Dependencies */
 import { MintQrcodeDialogComponent } from '../mint-qrcode-dialog/mint-qrcode-dialog.component';
 /* Local Dependencies */
@@ -53,6 +54,7 @@ export class MintConnectionsComponent {
 	@Input() time: number | undefined;
 	@Input() mint_name: string | undefined;
 	@Input() loading!: boolean;
+	@Input() mint_connections!: PublicUrl[];
 
 	@ViewChild('qr_canvas', { static: false }) qr_canvas!: ElementRef;
 
@@ -71,7 +73,7 @@ export class MintConnectionsComponent {
 	constructor(
 		private changeDetectorRef: ChangeDetectorRef,
 		private themeService: ThemeService,
-		private imageService: ImageService,
+		private publicService: PublicService,
 		private dialog: MatDialog,
 		private router: Router
 	) {
@@ -81,6 +83,7 @@ export class MintConnectionsComponent {
 
 	ngOnChanges(changes: SimpleChanges): void {
 		if( this.loading !== false ) return;
+		if( this.qr_code ) return;
 		this.init();
 		this.initQR();
 		this.loadImage();
@@ -109,7 +112,6 @@ export class MintConnectionsComponent {
 
 	private initQR(): void {
 		if( this.connections.length === 0 ) return;
-		// const icon_url = this.icon_url || this.placeholder_icon_url;
 
 		this.qr_code = new QRCodeStyling({
 			width: 195,
@@ -154,7 +156,7 @@ export class MintConnectionsComponent {
 		if( !this.icon_url ) return this.qr_code.update({
 			image: this.placeholder_icon_url
 		});
-		const image = await firstValueFrom(this.imageService.getImageData(this.icon_url));
+		const image = await firstValueFrom(this.publicService.getPublicImageData(this.icon_url));
 		this.icon_data = image?.data ?? undefined;
 		this.qr_code.update({
 			image: this.icon_data ?? undefined,

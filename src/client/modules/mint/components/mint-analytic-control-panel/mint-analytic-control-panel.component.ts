@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, Ou
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 /* Vendor Dependencies */
 import { MatSelectChange } from '@angular/material/select';
+import { MatCalendarCellClassFunction } from '@angular/material/datepicker';
 import { DateTime } from 'luxon';
 /* Application Dependencies */
 import { NonNullableMintChartSettings } from '@client/modules/chart/services/chart/chart.types';
@@ -53,6 +54,7 @@ export class MintAnalyticControlPanelComponent implements OnChanges {
 	@Input() chart_settings!: NonNullableMintChartSettings;
 	@Input() keysets!: MintKeyset[]; // gotta make the options from the keysets
 	@Input() loading!: boolean;
+	@Input() mint_genesis_time!: number;
 
 	@Output() date_change = new EventEmitter<number[]>();
 	@Output() units_change = new EventEmitter<MintUnit[]>();
@@ -77,9 +79,16 @@ export class MintAnalyticControlPanelComponent implements OnChanges {
 	];
 	public type_options: TypeOption[] = [
 		{ label: 'Summary', value: ChartType.Summary },
-		{ label: 'Operations', value: ChartType.Operations },
 		{ label: 'Volume', value: ChartType.Volume },
+		{ label: 'Operations', value: ChartType.Operations },
 	];
+	public genesis_class: MatCalendarCellClassFunction<DateTime> = (cellDate, view) => {
+		if( view !== 'month' ) return '';
+		const unix_seconds = cellDate.toSeconds();
+		const unix_next_day = unix_seconds + 86400 - 1;
+		if( unix_seconds <= this.mint_genesis_time && unix_next_day >= this.mint_genesis_time ) return 'mint-genesis-date-class';
+		return '';
+	};
 
 	public get height_state(): string {
 		return this.panel?.invalid ? 'invalid' : 'valid';

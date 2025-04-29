@@ -26,6 +26,12 @@
         }
     }
 
+    &.nav-tool-warning{
+        .event-nav-tool-switch{
+            @extend %orc-on-warning-bg;
+        }
+    }
+
     &.nav-tool-error{
         .event-nav-tool-switch{
             @extend %orc-on-error-bg;
@@ -52,5 +58,4 @@
     @extend %border-0-125;
     @extend %border-transparent;
     @extend %orc-on-surface-variant-color;
-
 }

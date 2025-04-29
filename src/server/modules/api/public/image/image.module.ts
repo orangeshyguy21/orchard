@@ -3,16 +3,16 @@ import { Module } from "@nestjs/common";
 /* Application Dependencies */
 import { FetchModule } from "@server/modules/fetch/fetch.module";
 /* Local Dependencies */
-import { ImageResolver } from "./image.resolver";
-import { ImageService } from './image.service';
+import { PublicImageResolver } from "./image.resolver";
+import { PublicImageService } from './image.service';
 
 @Module({
     imports: [
         FetchModule,
     ],
     providers: [
-        ImageResolver,
-        ImageService
+        PublicImageResolver,
+        PublicImageService
     ],
 })
-export class ImageModule {}
+export class PublicImageModule {}

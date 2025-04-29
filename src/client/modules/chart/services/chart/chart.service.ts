@@ -58,6 +58,12 @@ export class ChartService {
         return colorhex;
     }
 
+    public getAnnotationBorderColor(): string {
+        const theme = this.settingService.getTheme();
+        const colorhex = this.themeService.getThemeColor('--mat-sys-outline', theme);
+        return colorhex;
+    }
+
     public getMintChartSettings(): AllMintChartSettings {
         const long_term_settings = this.localStorageService.getMintChartSettings();
         return {

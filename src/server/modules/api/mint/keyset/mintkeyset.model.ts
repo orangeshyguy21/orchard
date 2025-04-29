@@ -44,7 +44,7 @@ export class OrchardMintKeyset {
 }
 
 @ObjectType()
-export class RotateNextKeysetOutput {
+export class MintRotateKeysetOutput {
 	@Field()
 	id: string;
 	

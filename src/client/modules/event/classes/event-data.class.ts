@@ -1,12 +1,12 @@
 interface EventDataSeed {
-    type: 'PENDING' | 'SAVING' | 'SUCCESS' | 'ERROR';
+    type: 'PENDING' | 'SAVING' | 'SUCCESS' | 'WARNING' | 'ERROR';
     message?: string;
     duration?: number;
 }
 
 export class EventData {
 
-    type: 'PENDING' | 'SAVING' | 'SUCCESS' | 'ERROR';
+    type: 'PENDING' | 'SAVING' | 'SUCCESS' | 'WARNING' | 'ERROR';
     message?: string;
     created_at: number;
     duration: number;

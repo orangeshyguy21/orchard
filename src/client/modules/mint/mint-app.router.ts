@@ -12,6 +12,7 @@ import { MintSubsectionErrorComponent } from './components/mint-subsection-error
 import { MintSubsectionDashboardComponent } from './components/mint-subsection-dashboard/mint-subsection-dashboard.component';
 import { MintSubsectionInfoComponent } from './components/mint-subsection-info/mint-subsection-info.component';
 import { MintSubsectionConfigComponent } from './components/mint-subsection-config/mint-subsection-config.component';
+import { MintSubsectionKeysetsComponent } from './components/mint-subsection-keysets/mint-subsection-keysets.component';
 import { MintService } from './services/mint/mint.service';
 
 const mintInfoResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
@@ -108,6 +109,15 @@ const routes: Routes = [
 				data: {
 					section: 'mint',
 					sub_section: 'config'
+				}
+			},
+			{
+				path: 'keysets',
+				component: MintSubsectionKeysetsComponent,
+				title: 'Orchard | Mint Keysets',
+				data: {
+					section: 'mint',
+					sub_section: 'keysets'
 				}
 			},
 			{

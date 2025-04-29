@@ -5,9 +5,9 @@ import { Router, Event, ActivatedRoute } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
 /* Application Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
-import { ImageService } from '@client/modules/image/services/image/image.service';
+import { PublicService } from '@client/modules/public/services/image/public.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
-import { Image } from '@client/modules/image/classes/image.class';
+import { PublicImage } from '@client/modules/public/classes/public-image.class';
 
 @Component({
 	selector: 'orc-mint-section',
@@ -31,7 +31,7 @@ export class MintSectionComponent implements OnInit, OnDestroy {
 		private route: ActivatedRoute,
 		private cdr: ChangeDetectorRef,
 		private mintService: MintService,
-		private imageService: ImageService
+		private publicService: PublicService
 	) {}
   
 	ngOnInit(): void {
@@ -88,8 +88,8 @@ export class MintSectionComponent implements OnInit, OnDestroy {
 			this.cdr.detectChanges();
 			return;
 		}
-		this.imageService.getImageData(image_url).subscribe(
-			(image:Image) => {
+		this.publicService.getPublicImageData(image_url).subscribe(
+			(image:PublicImage) => {
 				this.loading = false;
 				this.icon_data = image.data;
 				this.cdr.detectChanges();
