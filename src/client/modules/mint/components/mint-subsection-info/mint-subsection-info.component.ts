@@ -67,13 +67,13 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 			motd: this.init_info.motd,
 		});
 		if (this.init_info.urls && Array.isArray(this.init_info.urls)) {
-			const url_controls = this.init_info.urls.map(url => new FormControl(url));
+			const url_controls = this.init_info.urls.map(url => new FormControl(url, [Validators.required]));
 			url_controls.forEach(control => this.form_array_urls.push(control));
 		}
 		if (this.init_info.contact && Array.isArray(this.init_info.contact)) {
 			const contact_controls = this.init_info.contact.map(contact => new FormGroup({
-				method: new FormControl(contact.method),
-				info: new FormControl(contact.info),
+				method: new FormControl(contact.method, [Validators.required]),
+				info: new FormControl(contact.info, [Validators.required]),
 			}));
 			contact_controls.forEach(control => this.form_array_contacts.push(control));
 		}

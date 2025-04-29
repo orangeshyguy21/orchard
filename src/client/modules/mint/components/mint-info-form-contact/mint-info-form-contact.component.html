@@ -5,68 +5,77 @@
         (keydown.enter)="onSubmit($event)"
         (keydown.escape)="onCancel($event)">    
         <ng-container [formArrayName]="array_name">      
-            <div [formGroupName]="subgroup_index" class="flex flex-items-center flex-gap-1">
-                <div class="flex-grow flex flex-items-center flex-gap-1">
-                    @if( !form_hot ) {
-                        <mat-icon 
-                            class="orc-outline-color" 
-                            [class.mat-symbol-outline]="contact_icon === 'mail'"
-                            [svgIcon]="contact_icon !== 'mail' ? contact_icon : ''">{{ contact_icon }}
-                        </mat-icon>
-                    }
-                    <orc-dynamic-form-field
-                        class="flex-grow"
-                        [hot]="form_hot"
-                        [invalid]="form_array.at(subgroup_index).invalid || false"
-                        [subscript_sizing]="'dynamic'"
-                        (submit)="onSubmit($event)"
-                        (cancel)="onCancel($event)">
-                        <div class="flex flex-items-center flex-grow">           
-                            <div class="method-select-container" [@methodSelectState]="form_hot ? 'open' : 'closed'">
-                                <mat-form-field 
-                                    appearance="fill"
-                                    [ngClass]="form_hot ? 'orc-hot-form-field' : 'orc-cold-form-field'"
-                                    subscriptSizing="dynamic"
-                                    class="orc-dynamic-form-field orc-array-form-field overflow-hidden w-full">
-                                    <mat-select formControlName="method" #element_method>
-                                        <mat-option [value]="'email'">Email</mat-option>
-                                        <mat-option [value]="'twitter'">X</mat-option>
-                                        <mat-option [value]="'nostr'">Nostr</mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                            </div>
-
+            <div [formGroupName]="subgroup_index">
+                <orc-dynamic-form-field
+                    [hot]="method_form_hot || info_form_hot"
+                    [invalid]="group_invalid"
+                    [subscript_sizing]="'dynamic'"
+                    (submit)="onSubmit($event)"
+                    (cancel)="onCancel($event)">
+                    <div class="flex flex-items-top flex-grow flex-gap-1">           
+                        <div class="method-select-container">
                             <mat-form-field 
                                 appearance="fill"
-                                [ngClass]="form_hot ? 'orc-hot-form-field' : 'orc-cold-form-field'"
+                                [ngClass]="method_form_hot ? 'orc-hot-form-field' : 'orc-cold-form-field'"
                                 subscriptSizing="dynamic"
-                                class="orc-dynamic-form-field orc-array-form-field w-full">
-                                <input 
-                                    type="text" 
-                                    matInput 
-                                    formControlName="info" 
-                                    #element_info>
-                                <button
-                                    type="button" 
-                                    mat-icon-button 
-                                    matSuffix
-                                    class="orc-icon-button"
-                                    (click)="onRemove($event)">
-                                    <mat-icon>delete_forever</mat-icon>
-                                </button>
-                                @if (form_array.at(subgroup_index).invalid && (form_array.at(subgroup_index).dirty || form_array.at(subgroup_index).touched)) {
-                                    <mat-error class="font-size-xs">
-                                        @if (form_array.at(subgroup_index).hasError('required')) {
-                                            Contact is required
-                                        } @else {
-                                            Invalid contact
-                                        }
-                                    </mat-error>
-                                }
+                                class="orc-dynamic-form-field orc-array-select w-6">
+                                <mat-select 
+                                    formControlName="method"
+                                    panelClass="w-min-10"
+                                    class="w-3"
+                                    #element_method>
+                                    <mat-select-trigger>
+                                        <div class="flex flex-items-center">
+                                            @if (method_option && method_option.svg) {
+                                                <mat-icon 
+                                                    class="orc-outline-color" 
+                                                    [svgIcon]="method_option.svg">
+                                                </mat-icon>
+                                            } @else {
+                                                <mat-icon 
+                                                    class="orc-outline-color mat-symbol-outline">
+                                                    {{ method_option?.icon }}
+                                                </mat-icon>
+                                            }
+                                        </div>
+                                    </mat-select-trigger>
+                                    @for (option of options; track option.method) {
+                                        <mat-option [value]="option.method"> {{ option.label }} </mat-option>
+                                    }
+                                </mat-select>
                             </mat-form-field>
                         </div>
-                    </orc-dynamic-form-field>
-                </div>
+
+                        <mat-form-field 
+                            appearance="fill"
+                            [ngClass]="info_form_hot ? 'orc-hot-form-field' : 'orc-cold-form-field'"
+                            subscriptSizing="dynamic"
+                            class="orc-dynamic-form-field orc-array-form-field w-full">
+                            <input 
+                                type="text" 
+                                matInput 
+                                formControlName="info" 
+                                #element_info>
+                            <button
+                                type="button" 
+                                mat-icon-button 
+                                matSuffix
+                                class="orc-icon-button"
+                                (click)="onRemove($event)">
+                                <mat-icon>delete_forever</mat-icon>
+                            </button>
+                            @if (group_invalid) {
+                                <mat-error class="font-size-xs">
+                                    @if (form_array.at(subgroup_index).get('info')?.hasError('required')) {
+                                        Contact is required
+                                    } @else {
+                                        Invalid contact
+                                    }
+                                </mat-error>
+                            }
+                        </mat-form-field>
+                    </div>
+                </orc-dynamic-form-field>
             </div>
         </ng-container>
     </form>

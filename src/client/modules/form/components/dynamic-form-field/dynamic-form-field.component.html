@@ -1,6 +1,6 @@
 <div class="dynamic-form-field-container">
     <ng-content></ng-content>
-    <div class="dynamic-actions" [class.form-hot]="hot">
+    <div class="dynamic-actions" [class.form-hot]="hot" [class.form-invalid]="invalid && subscript_sizing === 'dynamic'">
         <button 
             [disabled]="invalid"
             type="button"

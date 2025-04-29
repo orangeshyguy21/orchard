@@ -17,10 +17,12 @@
             </orc-mint-info-form-url>
         }
 
-        <orc-add-form-array-item
-            [prefix_icon]="'add'"
-            [label]="'New URL'"
-            (addControl)="onAddControl()">
-        </orc-add-form-array-item>
+        <div class="flex flex-row flex-gap-1">
+            <mat-icon class="orc-outline-color"></mat-icon>
+            <orc-add-form-array-item (addControl)="onAddControl()">
+                <mat-icon class="orc-outline-color">add</mat-icon>
+                <span>New URL</span>
+            </orc-add-form-array-item>
+        </div>
     </div>
 </div>

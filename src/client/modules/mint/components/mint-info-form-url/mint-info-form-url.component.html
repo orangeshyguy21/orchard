@@ -6,15 +6,17 @@
         (keydown.escape)="onCancel($event)">    
         <ng-container [formArrayName]="array_name">
             <div class="flex flex-items-center flex-gap-1">
-                @if( url_icon === 'tor' ) {
-                    <mat-icon class="orc-outline-color" [svgIcon]="url_icon"></mat-icon>
-                } @else {
-                    <mat-icon class="orc-outline-color">{{ url_icon }}</mat-icon>
-                }
+                <div [class.m-b-1-25]="form_array.at(control_index).invalid && (form_array.at(control_index).dirty || form_array.at(control_index).touched) || false" class="flex flex-items-center">
+                    @if( url_icon === 'tor' ) {
+                        <mat-icon class="orc-outline-color" [svgIcon]="url_icon"></mat-icon>
+                    } @else {
+                        <mat-icon class="orc-outline-color">{{ url_icon }}</mat-icon>
+                    }
+                </div>
                 <div class="flex-grow">
                     <orc-dynamic-form-field
                         [hot]="form_hot"
-                        [invalid]="form_array.at(control_index).invalid || false"
+                        [invalid]="form_array.at(control_index).invalid && (form_array.at(control_index).dirty || form_array.at(control_index).touched) || false"
                         [subscript_sizing]="'dynamic'"
                         (submit)="onSubmit($event)"
                         (cancel)="onCancel($event)">

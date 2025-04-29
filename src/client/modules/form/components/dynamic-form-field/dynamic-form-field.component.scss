@@ -14,4 +14,8 @@
     &.form-hot{
         @extend %visible;
     }
+
+    &.form-invalid{
+        @extend %m-b-1-25;
+    }
 }

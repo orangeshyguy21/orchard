@@ -18,10 +18,9 @@
             </orc-mint-info-form-contact>
         }
 
-        <orc-add-form-array-item
-            [prefix_icon]="'add'"
-            [label]="'New Contact'"
-            (addControl)="onAddControl()">
+        <orc-add-form-array-item (addControl)="onAddControl()">
+            <mat-icon class="orc-outline-color">add</mat-icon>
+            <span>New Contact</span>
         </orc-add-form-array-item>
     </div>
 </div>

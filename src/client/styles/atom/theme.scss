@@ -25,6 +25,12 @@
 		container-height: 2rem,
 	));
 }
+.orc-array-select{
+	@include mat.form-field-overrides((
+		container-vertical-padding: 0.65rem,
+		container-height: 1rem,
+	));
+}
 
 .orc-cold-form-field{
 	@include mat.form-field-overrides((
