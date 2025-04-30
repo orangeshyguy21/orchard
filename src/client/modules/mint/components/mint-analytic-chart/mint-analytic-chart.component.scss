@@ -1,4 +1,8 @@
+@use '@styles/molecule/molecule';
+
 .mint-balance-chart-container{
+    @extend %p-b-1;
+
     canvas{
         max-height: min(calc(100vh - 530px), 800px);
         min-height: 300px;

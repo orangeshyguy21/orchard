@@ -1,4 +1,5 @@
 @use '@styles/molecule/molecule';
+@use '@styles/nucleus/nucleus';
 
 .mint-dashboard-container{
     @extend %flex;
@@ -22,4 +23,17 @@
     @extend %border;
     @extend %border-solid;
     @extend %orc-outline-variant-border;
+}
+
+.mint-analytic-header{
+    @extend %sticky;
+    @extend %title-m;
+    @extend %flex;
+    top: 86px;
+}
+
+.mint-analytic-title{
+    @extend %orc-surface-bg;
+    @extend %p-1;
+    @extend %orc-corner-full;
 }
