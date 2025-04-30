@@ -3,17 +3,18 @@ export const UpdateMintAnalyticsDateRangeTool = {
     'type': 'function',
     'function': {
         'name': 'MINT_ANALYTICS_DATE_RANGE_UPDATE',
-        'description': 'This tool allows you to update the date range of the mint analytics.',
+        'description': `This tool allows you to update the date range over which the mint analytics are calculated.
+        Use this when asked for the last x days of data, or the last x weeks of data, or the first week of May for example.`,
         'parameters': {
             "type": "object",
             "properties": {
                 "date_start": {
-                    "type": "number",
-                    "description": "The start date of the mint analytics in unix time in seconds"
+                    "type": "string",
+                    "description": "The start date to calculate the mint analytics. You must provide the date in the format YYYY-MM-DD"
                 },
                 "date_end": {
-                    "type": "number",
-                    "description": "The end date of the mint analytics in unix time in seconds"
+                    "type": "string",
+                    "description": "The end date to calculate the mint analytics. You must provide the date in the format YYYY-MM-DD"
                 },
             },
             "required": ["date_start", "date_end"]
@@ -24,7 +25,7 @@ export const UpdateMintAnalyticsUnitsTool = {
     'type': 'function',
     'function': {
         'name': 'MINT_ANALYTICS_UNITS_UPDATE',
-        'description': 'This tool allows you to update the units of the mint analytics.',
+        'description': 'This tool allows you to update the units displayed in the mint analytics.',
         'parameters': {
             "type": "object",
             "properties": {
@@ -45,7 +46,7 @@ export const UpdateMintAnalyticsIntervalTool = {
     'type': 'function',
     'function': {
         'name': 'MINT_ANALYTICS_INTERVAL_UPDATE',
-        'description': 'This tool allows you to update the interval of the mint analytics.',
+        'description': 'This tool allows you to update the interval of the mint analytics. Only use this when asked to change the interval of the mint analytics.',
         'parameters': {
             "type": "object",
             "properties": {

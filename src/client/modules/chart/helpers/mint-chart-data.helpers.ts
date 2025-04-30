@@ -18,7 +18,9 @@ export function groupAnalyticsByUnit(analytics: MintAnalytic[]): AnalyticsGroup 
 }
 
 export function prependData(analytics: AnalyticsGroup, preceding_data: MintAnalytic[]): AnalyticsGroup {
-    if( preceding_data.length === 0 )  return analytics;
+    console.log('PREPEND DATA:', preceding_data);
+    console.log('ANALYTICS:', analytics);
+    if( preceding_data.length === 0 ) return analytics;
     for (const unit in analytics) {
         const analytics_for_unit = analytics[unit];
         const preceding_data_for_unit = preceding_data.find(p => p.unit === unit);

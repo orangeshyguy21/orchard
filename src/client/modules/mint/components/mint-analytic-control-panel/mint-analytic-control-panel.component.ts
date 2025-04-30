@@ -52,6 +52,11 @@ type TypeOption = {
 export class MintAnalyticControlPanelComponent implements OnChanges {
 	
 	@Input() chart_settings!: NonNullableMintChartSettings;
+	@Input() date_start?: number;
+	@Input() date_end?: number;
+	@Input() units?: MintUnit[];
+	@Input() interval?: MintAnalyticsInterval;
+	@Input() type?: ChartType;
 	@Input() keysets!: MintKeyset[]; // gotta make the options from the keysets
 	@Input() loading!: boolean;
 	@Input() mint_genesis_time!: number;
@@ -97,8 +102,23 @@ export class MintAnalyticControlPanelComponent implements OnChanges {
 	constructor() {}
 
 	ngOnChanges(changes: SimpleChanges): void {
-		console.log('changes', changes);
 		if(changes['loading'] && !this.loading) this.initForm();
+		if(changes['date_start'] && this.date_start && this.panel.controls.daterange.get('date_start')?.value?.toSeconds() !== this.date_start) {
+			console.log('date_start changed', this.date_start);
+			this.panel.controls.daterange.get('date_start')?.setValue(DateTime.fromSeconds(this.date_start));
+		}
+		if(changes['date_end'] && this.date_end && this.panel.controls.daterange.get('date_end')?.value?.toSeconds() !== this.date_end) {
+			this.panel.controls.daterange.get('date_end')?.setValue(DateTime.fromSeconds(this.date_end));
+		}
+		if(changes['units'] && this.units && this.panel.controls.units.value !== this.units) {
+			this.panel.controls.units.setValue(this.units);
+		}
+		if(changes['interval'] && this.interval && this.panel.controls.interval.value !== this.interval) {
+			this.panel.controls.interval.setValue(this.interval);
+		}
+		if(changes['type'] && this.type && this.panel.controls.type.value !== this.type) {
+			this.panel.controls.type.setValue(this.type);
+		}
 	}
 
 	private initForm(): void {
@@ -117,8 +137,8 @@ export class MintAnalyticControlPanelComponent implements OnChanges {
 		if( !is_valid ) return;
 		if( this.panel.controls.daterange.controls.date_start.value === null ) return;
 		if( this.panel.controls.daterange.controls.date_end.value === null ) return;
-		const date_start = this.panel.controls.daterange.controls.date_start.value.toSeconds();
-		const date_end = this.panel.controls.daterange.controls.date_end.value.endOf('day').toSeconds();
+		const date_start = Math.floor(this.panel.controls.daterange.controls.date_start.value.toSeconds());
+		const date_end = Math.floor(this.panel.controls.daterange.controls.date_end.value.endOf('day').toSeconds());
 		this.date_change.emit([date_start, date_end]);
 	}
 

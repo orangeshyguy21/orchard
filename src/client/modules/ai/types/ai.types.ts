@@ -27,8 +27,8 @@ AiFunctionRemoveMintContact;
 export type AiFunctionUpdateMintAnalyticsDateRange = {
 	name: AiFunctionName.MintAnalyticsDateRangeUpdate;
 	arguments: {
-		date_start: number;
-		date_end: number;
+		date_start: string;
+		date_end: string;
 	}
 }
 

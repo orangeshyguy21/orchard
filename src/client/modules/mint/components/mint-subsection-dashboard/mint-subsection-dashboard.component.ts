@@ -88,8 +88,14 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	private getAgentSubscription(): Subscription {
 		return this.aiService.agent_requests$
 			.subscribe(({ agent, content }) => {
-				const form_string = JSON.stringify(this.chart_settings);
-				this.aiService.openAiSocket(agent, content, form_string);
+				let context = `Current Date: ${DateTime.now().toFormat('yyyy-MM-dd')}\n`;
+				context += `Current Date Start: ${DateTime.fromSeconds(this.chart_settings.date_start).toFormat('yyyy-MM-dd')}\n`;
+				context += `Current Date End: ${DateTime.fromSeconds(this.chart_settings.date_end).toFormat('yyyy-MM-dd')}\n`;
+				context += `Current Interval: ${this.chart_settings.interval}\n`;
+				context += `Current Units: ${this.chart_settings.units}\n`;
+				context += `Current Type: ${this.chart_settings.type}`;
+				console.log('CONTEXT:', context);
+				this.aiService.openAiSocket(agent, content, context);
 			});
 	}
 
@@ -118,7 +124,6 @@ export class MintSubsectionDashboardComponent implements OnInit {
 			this.locale = await this.settingService.getLocale();
 			this.mint_genesis_time = this.getMintGenesisTime();
 			this.chart_settings = this.getChartSettings();
-			console.log('CHART SETTINGS:', this.chart_settings);
 			this.loading_static_data = false;
 			this.changeDetectorRef.detectChanges();
 			await this.loadMintAnalytics();
@@ -126,7 +131,6 @@ export class MintSubsectionDashboardComponent implements OnInit {
 			this.changeDetectorRef.detectChanges();
 		} catch (error) {
 			console.log('ERROR IN INIT MINT ANALYTICS:', error);
-			// 
 		}
 	}
 
@@ -269,9 +273,11 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	}
 
 	private executeAgentFunction(tool_call: AiChatToolCall): void {
-		console.log('TOOL CALL HEARD:', tool_call);
 		if( tool_call.function.name === AiFunctionName.MintAnalyticsDateRangeUpdate ) {
-			const range = [ tool_call.function.arguments.date_start, tool_call.function.arguments.date_end ];
+			const range = [
+				DateTime.fromFormat(tool_call.function.arguments.date_start, 'yyyy-MM-dd').toSeconds(),
+				DateTime.fromFormat(tool_call.function.arguments.date_end, 'yyyy-MM-dd').toSeconds()
+			];
 			this.onDateChange(range);
 		}
 		if( tool_call.function.name === AiFunctionName.MintAnalyticsUnitsUpdate ) {
