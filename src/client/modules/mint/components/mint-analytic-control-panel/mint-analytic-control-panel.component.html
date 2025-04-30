@@ -1,5 +1,5 @@
 <div class="mint-analytic-control-panel-container">
-    <form [formGroup]="panel" class="panel-form">
+    <form [formGroup]="panel" [@formStateReaction]="height_state" class="panel-form">
         <div class="flex flex-col flex-gap-1">
             <div formGroupName="daterange">
                 <mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic" class="mint-analytic-daterange">

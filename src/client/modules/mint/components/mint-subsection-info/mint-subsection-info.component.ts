@@ -135,7 +135,6 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 	}
 
 	private executeAgentFunction(tool_call: AiChatToolCall): void {
-		console.log('TOOL CALL HEARD:', tool_call);
 		if( tool_call.function.name === AiFunctionName.MintNameUpdate ) {
 			this.form_info.get('name')?.setValue(tool_call.function.arguments.name);
 			this.form_info.get('name')?.markAsDirty();

@@ -1,4 +1,85 @@
+/* Mint Dashboard Tools */
+export const UpdateMintAnalyticsDateRangeTool = {
+    'type': 'function',
+    'function': {
+        'name': 'MINT_ANALYTICS_DATE_RANGE_UPDATE',
+        'description': `This tool allows you to update the date range over which the mint analytics are calculated.
+        Use this when asked for the last x days of data, or the last x weeks of data, or the first week of May for example.`,
+        'parameters': {
+            "type": "object",
+            "properties": {
+                "date_start": {
+                    "type": "string",
+                    "description": "The start date to calculate the mint analytics. You must provide the date in the format YYYY-MM-DD"
+                },
+                "date_end": {
+                    "type": "string",
+                    "description": "The end date to calculate the mint analytics. You must provide the date in the format YYYY-MM-DD"
+                },
+            },
+            "required": ["date_start", "date_end"]
+        },
+    },
+};
+export const UpdateMintAnalyticsUnitsTool = {
+    'type': 'function',
+    'function': {
+        'name': 'MINT_ANALYTICS_UNITS_UPDATE',
+        'description': 'This tool allows you to update the units displayed in the mint analytics.',
+        'parameters': {
+            "type": "object",
+            "properties": {
+                "units": {
+                    "type": "array",
+                    "description": "The units of the mint analytics",
+                    "items": {
+                        "type": "string",
+                        "enum": ["sat", "usd", "eur"]
+                    }
+                },
+            },
+            "required": ["units"]
+        },
+    },
+};
+export const UpdateMintAnalyticsIntervalTool = {
+    'type': 'function',
+    'function': {
+        'name': 'MINT_ANALYTICS_INTERVAL_UPDATE',
+        'description': 'This tool allows you to update the interval of the mint analytics. Only use this when asked to change the interval of the mint analytics.',
+        'parameters': {
+            "type": "object",
+            "properties": {
+                "interval": {
+                    "type": "string",
+                    "description": "The interval of the mint analytics",
+                    "enum": ["day", "week", "month"]
+                },
+            },
+            "required": ["interval"]
+        },
+    },
+};
+export const UpdateMintAnalyticsTypeTool = {
+    'type': 'function',
+    'function': {
+        'name': 'MINT_ANALYTICS_TYPE_UPDATE',
+        'description': 'This tool allows you to update the type of the mint analytics.',
+        'parameters': {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "description": "The type of the mint analytics",
+                    "enum": ["summary", "volume", "operations"]
+                },
+            },
+            "required": ["type"]
+        },  
+    },
+};
 
+/* Mint Info Tools */
 export const UpdateMintNameTool = {
     'type': 'function',
     'function': {
@@ -16,7 +97,6 @@ export const UpdateMintNameTool = {
         },
     },
 };
-
 export const UpdateMintDescriptionTool = {
     'type': 'function',
     'function': {
@@ -34,7 +114,6 @@ export const UpdateMintDescriptionTool = {
         },
     },
 };
-
 export const UpdateMintIconUrlTool = {
     'type': 'function',
     'function': {
@@ -52,7 +131,6 @@ export const UpdateMintIconUrlTool = {
         },
     },
 };
-
 export const UpdateMintDescriptionLongTool = {
     'type': 'function',
     'function': {
@@ -70,7 +148,6 @@ export const UpdateMintDescriptionLongTool = {
         },
     },
 };
-
 export const UpdateMintMotdTool = {
     'type': 'function',
     'function': {
@@ -88,7 +165,6 @@ export const UpdateMintMotdTool = {
         },
     },
 };
-
 export const AddMintUrlTool = {
     'type': 'function',
     'function': {
@@ -106,7 +182,6 @@ export const AddMintUrlTool = {
         },
     },
 };
-
 export const UpdateMintUrlTool = {
     'type': 'function',
     'function': {
@@ -128,7 +203,6 @@ export const UpdateMintUrlTool = {
         },
     },
 };
-
 export const RemoveMintUrlTool = {
     'type': 'function',
     'function': {
@@ -146,7 +220,6 @@ export const RemoveMintUrlTool = {
         },
     },
 };
-
 export const AddMintContactTool = {
     'type': 'function',
     'function': {
@@ -169,7 +242,6 @@ export const AddMintContactTool = {
         },
     },
 };
-
 export const UpdateMintContactTool = {
     'type': 'function',
     'function': {
@@ -201,7 +273,6 @@ export const UpdateMintContactTool = {
         },
     },
 };
-
 export const RemoveMintContactTool = {
     'type': 'function',
     'function': {

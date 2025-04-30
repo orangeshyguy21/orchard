@@ -2,16 +2,18 @@
 import { Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 /* Vendor Dependencies */
-import { forkJoin, lastValueFrom } from 'rxjs';
+import { forkJoin, lastValueFrom, Subscription } from 'rxjs';
 import { DateTime } from 'luxon';
 /* Application Configuration */
 import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
+import { AiService } from '@client/modules/ai/services/ai/ai.service';
 import { ChartService } from '@client/modules/chart/services/chart/chart.service';
 import { PublicService } from '@client/modules/public/services/image/public.service';
 import { NonNullableMintChartSettings } from '@client/modules/chart/services/chart/chart.types';
 import { PublicUrl } from '@client/modules/public/classes/public-url.class';
+import { AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
 /* Native Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { MintBalance } from '@client/modules/mint/classes/mint-balance.class';
@@ -20,7 +22,7 @@ import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 import { MintAnalytic } from '@client/modules/mint/classes/mint-analytic.class';
 import { ChartType } from '@client/modules/mint/enums/chart-type.enum';
 /* Shared Dependencies */
-import { MintAnalyticsInterval, MintUnit } from '@shared/generated.types';
+import { AiFunctionName, MintAnalyticsInterval, MintUnit } from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-subsection-dashboard',
@@ -58,11 +60,14 @@ export class MintSubsectionDashboardComponent implements OnInit {
 		return this.mint_keysets.filter(keyset => keyset.active);
 	}
 
+	private subscriptions: Subscription = new Subscription();
+
 	constructor(
 		private mintService: MintService,
 		private settingService: SettingService,
 		private chartService: ChartService,
 		private publicService: PublicService,
+		private aiService: AiService,
 		private route: ActivatedRoute,
 		private changeDetectorRef: ChangeDetectorRef
 	) {}
@@ -72,8 +77,33 @@ export class MintSubsectionDashboardComponent implements OnInit {
 		this.mint_balances = this.route.snapshot.data['mint_balances'];
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
 		this.initMintConnections();
+		const agent_subscription = this.getAgentSubscription();
+		const tool_subscription = this.getToolSubscription();
+		this.subscriptions.add(agent_subscription);
+		this.subscriptions.add(tool_subscription);
 		await this.initMintAnalytics();
 
+	}
+
+	private getAgentSubscription(): Subscription {
+		return this.aiService.agent_requests$
+			.subscribe(({ agent, content }) => {
+				let context = `Current Date: ${DateTime.now().toFormat('yyyy-MM-dd')}\n`;
+				context += `Current Date Start: ${DateTime.fromSeconds(this.chart_settings.date_start).toFormat('yyyy-MM-dd')}\n`;
+				context += `Current Date End: ${DateTime.fromSeconds(this.chart_settings.date_end).toFormat('yyyy-MM-dd')}\n`;
+				context += `Current Interval: ${this.chart_settings.interval}\n`;
+				context += `Current Units: ${this.chart_settings.units}\n`;
+				context += `Current Type: ${this.chart_settings.type}`;
+				console.log('CONTEXT:', context);
+				this.aiService.openAiSocket(agent, content, context);
+			});
+	}
+
+	private getToolSubscription(): Subscription {
+		return this.aiService.tool_calls$
+			.subscribe((tool_call: AiChatToolCall) => {
+				this.executeAgentFunction(tool_call);
+			});
 	}
 
 	private async initMintConnections(): Promise<void> {
@@ -101,7 +131,6 @@ export class MintSubsectionDashboardComponent implements OnInit {
 			this.changeDetectorRef.detectChanges();
 		} catch (error) {
 			console.log('ERROR IN INIT MINT ANALYTICS:', error);
-			// 
 		}
 	}
 
@@ -240,6 +269,25 @@ export class MintSubsectionDashboardComponent implements OnInit {
 			this.changeDetectorRef.detectChanges();
 		} catch (error) {
 			console.error('Error updating dynamic data:', error);
+		}
+	}
+
+	private executeAgentFunction(tool_call: AiChatToolCall): void {
+		if( tool_call.function.name === AiFunctionName.MintAnalyticsDateRangeUpdate ) {
+			const range = [
+				DateTime.fromFormat(tool_call.function.arguments.date_start, 'yyyy-MM-dd').toSeconds(),
+				DateTime.fromFormat(tool_call.function.arguments.date_end, 'yyyy-MM-dd').toSeconds()
+			];
+			this.onDateChange(range);
+		}
+		if( tool_call.function.name === AiFunctionName.MintAnalyticsUnitsUpdate ) {
+			this.onUnitsChange(tool_call.function.arguments.units);
+		}
+		if( tool_call.function.name === AiFunctionName.MintAnalyticsIntervalUpdate ) {
+			this.onIntervalChange(tool_call.function.arguments.interval);
+		}
+		if( tool_call.function.name === AiFunctionName.MintAnalyticsTypeUpdate ) {
+			this.onTypeChange(tool_call.function.arguments.type);
 		}
 	}
 
