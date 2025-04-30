@@ -20,6 +20,7 @@ export type Scalars = {
 
 export enum AiAgent {
   Default = 'DEFAULT',
+  MintDashboard = 'MINT_DASHBOARD',
   MintInfo = 'MINT_INFO'
 }
 
@@ -40,6 +41,10 @@ export type AiChatMessageInput = {
 };
 
 export enum AiFunctionName {
+  MintAnalyticsDateRangeUpdate = 'MINT_ANALYTICS_DATE_RANGE_UPDATE',
+  MintAnalyticsIntervalUpdate = 'MINT_ANALYTICS_INTERVAL_UPDATE',
+  MintAnalyticsTypeUpdate = 'MINT_ANALYTICS_TYPE_UPDATE',
+  MintAnalyticsUnitsUpdate = 'MINT_ANALYTICS_UNITS_UPDATE',
   MintContactAdd = 'MINT_CONTACT_ADD',
   MintContactRemove = 'MINT_CONTACT_REMOVE',
   MintContactUpdate = 'MINT_CONTACT_UPDATE',

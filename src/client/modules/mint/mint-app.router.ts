@@ -90,6 +90,7 @@ const routes: Routes = [
 				data: {
 					section: 'mint',
 					sub_section: 'dashboard',
+					agent: AiAgent.MintDashboard
 				}
 			},
 			{

@@ -96,7 +96,8 @@ export class MintAnalyticControlPanelComponent implements OnChanges {
 
 	constructor() {}
 
-	ngOnChanges(changes: SimpleChanges): void {			
+	ngOnChanges(changes: SimpleChanges): void {
+		console.log('changes', changes);
 		if(changes['loading'] && !this.loading) this.initForm();
 	}
 

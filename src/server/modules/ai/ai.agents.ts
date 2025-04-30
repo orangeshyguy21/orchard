@@ -1,6 +1,10 @@
 /* Local Dependencies */
 import { AiAgent } from "./ai.enums";
 import { 
+    UpdateMintAnalyticsDateRangeTool,
+    UpdateMintAnalyticsUnitsTool,
+    UpdateMintAnalyticsIntervalTool,
+    UpdateMintAnalyticsTypeTool,
     UpdateMintNameTool,
     UpdateMintDescriptionTool, 
     UpdateMintIconUrlTool, 
@@ -23,6 +27,20 @@ export const AI_AGENTS = {
             content: 'You are a helpful assistant that can answer questions and help with tasks.',
         },
         tools: [],
+    },
+    [AiAgent.MINT_DASHBOARD]: {
+        name: 'Mint Dashboard',
+        description: 'Mint dashboard agent',
+        system_message: {
+            role: 'system',
+            content: 'You are an agent designed to help adjust parameters used to explore mint analytics.',
+        },
+        tools: [
+            UpdateMintAnalyticsDateRangeTool,
+            UpdateMintAnalyticsUnitsTool,
+            UpdateMintAnalyticsIntervalTool,
+            UpdateMintAnalyticsTypeTool,
+        ],
     },
     [AiAgent.MINT_INFO]: {
         name: 'Mint Info',

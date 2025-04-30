@@ -1,10 +1,17 @@
-import { OrchardAiChatChunk, AiFunctionName } from "@shared/generated.types";
+/* Application Dependencies */
+import { ChartType } from "@client/modules/mint/enums/chart-type.enum";
+/* Shared Dependencies */
+import { OrchardAiChatChunk, AiFunctionName, MintUnit, MintAnalyticsInterval } from "@shared/generated.types";
 
 export type AiChatResponse = {
   	ai_chat: OrchardAiChatChunk;
 }
 
 export type AiFunction = 
+AiFunctionUpdateMintAnalyticsDateRange |
+AiFunctionUpdateMintAnalyticsUnits |
+AiFunctionUpdateMintAnalyticsInterval |
+AiFunctionUpdateMintAnalyticsType |
 AiFunctionUpdateMintName | 
 AiFunctionUpdateMintDescription | 
 AiFunctionUpdateMintIconUrl | 
@@ -16,6 +23,35 @@ AiFunctionUpdateMintUrlRemove |
 AiFunctionAddMintContact |
 AiFunctionUpdateMintContact |
 AiFunctionRemoveMintContact;
+
+export type AiFunctionUpdateMintAnalyticsDateRange = {
+	name: AiFunctionName.MintAnalyticsDateRangeUpdate;
+	arguments: {
+		date_start: number;
+		date_end: number;
+	}
+}
+
+export type AiFunctionUpdateMintAnalyticsUnits = {
+	name: AiFunctionName.MintAnalyticsUnitsUpdate;
+	arguments: {
+		units: MintUnit[];
+	}
+}
+
+export type AiFunctionUpdateMintAnalyticsInterval = {
+	name: AiFunctionName.MintAnalyticsIntervalUpdate;
+	arguments: {
+		interval: MintAnalyticsInterval;
+	}
+}
+
+export type AiFunctionUpdateMintAnalyticsType = {
+	name: AiFunctionName.MintAnalyticsTypeUpdate;
+	arguments: {
+		type: ChartType;
+	}
+}
 
 export type AiFunctionUpdateMintName = {
 	name: AiFunctionName.MintNameUpdate;
