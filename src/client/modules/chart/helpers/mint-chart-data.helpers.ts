@@ -17,14 +17,20 @@ export function groupAnalyticsByUnit(analytics: MintAnalytic[]): AnalyticsGroup 
     }, {} as Record<string, MintAnalytic[]>);
 }
 
-export function prependData(analytics: AnalyticsGroup, preceding_data: MintAnalytic[]): AnalyticsGroup {
-    console.log('PREPEND DATA:', preceding_data);
-    console.log('ANALYTICS:', analytics);
+export function prependData(analytics: AnalyticsGroup, preceding_data: MintAnalytic[], timestamp_first: number): AnalyticsGroup {
     if( preceding_data.length === 0 ) return analytics;
+    if( Object.keys(analytics).length === 0 ) return preceding_data.reduce((groups, analytic) => {
+        analytic.created_time = timestamp_first;
+        groups[analytic.unit] = groups[analytic.unit] || [];
+        groups[analytic.unit].push(analytic);
+        return groups;
+    }, {} as Record<string, MintAnalytic[]>);
+
     for (const unit in analytics) {
         const analytics_for_unit = analytics[unit];
         const preceding_data_for_unit = preceding_data.find(p => p.unit === unit);
         if( !preceding_data_for_unit ) continue;
+        preceding_data_for_unit.created_time = timestamp_first;
         const matching_datapoint = analytics_for_unit.find(a => a.created_time === preceding_data_for_unit.created_time);
         preceding_data_for_unit.operation_count = 0;
         if( !matching_datapoint ) {
