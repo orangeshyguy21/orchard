@@ -41,6 +41,8 @@ export type AiChatMessageInput = {
 
 export enum AiFunctionName {
   MintContactAdd = 'MINT_CONTACT_ADD',
+  MintContactRemove = 'MINT_CONTACT_REMOVE',
+  MintContactUpdate = 'MINT_CONTACT_UPDATE',
   MintDescriptionLongUpdate = 'MINT_DESCRIPTION_LONG_UPDATE',
   MintDescriptionUpdate = 'MINT_DESCRIPTION_UPDATE',
   MintIconUrlUpdate = 'MINT_ICON_URL_UPDATE',

@@ -13,7 +13,9 @@ AiFunctionUpdateMintMotd |
 AiFunctionUpdateMintUrlAdd | 
 AiFunctionUpdateMintUrlUpdate | 
 AiFunctionUpdateMintUrlRemove |
-AiFunctionAddMintContact;
+AiFunctionAddMintContact |
+AiFunctionUpdateMintContact |
+AiFunctionRemoveMintContact;
 
 export type AiFunctionUpdateMintName = {
 	name: AiFunctionName.MintNameUpdate;
@@ -74,6 +76,24 @@ export type AiFunctionUpdateMintUrlRemove = {
 
 export type AiFunctionAddMintContact = {
 	name: AiFunctionName.MintContactAdd;
+	arguments: {
+		method: 'email' | 'nostr' | 'twitter';
+		info: string;
+	}
+}
+
+export type AiFunctionUpdateMintContact = {
+	name: AiFunctionName.MintContactUpdate;
+	arguments: {
+		old_method: 'email' | 'nostr' | 'twitter';
+		old_info: string;
+		method: 'email' | 'nostr' | 'twitter';
+		info: string;
+	}
+}
+
+export type AiFunctionRemoveMintContact = {
+	name: AiFunctionName.MintContactRemove;
 	arguments: {
 		method: 'email' | 'nostr' | 'twitter';
 		info: string;

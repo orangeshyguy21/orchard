@@ -174,6 +174,32 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 			this.form_info.get('urls')?.markAsDirty();
 			this.form_array_urls.removeAt(index);
 		}
+		if( tool_call.function.name === AiFunctionName.MintContactAdd ) {
+			this.form_info.get('contact')?.markAsDirty();
+			this.onAddContactControl(tool_call.function.arguments.method, tool_call.function.arguments.info);
+			this.form_array_contacts.at(-1).markAsDirty();
+		}
+		if( tool_call.function.name === AiFunctionName.MintContactUpdate ) {
+			const old_method = tool_call.function.arguments.old_method;
+			const old_info = tool_call.function.arguments.old_info;
+			const index = this.init_info.contact.findIndex(contact => contact.method === old_method && contact.info === old_info);
+			if( index === -1 ) return;
+			this.form_info.get('contact')?.markAsDirty();
+			this.form_array_contacts.at(index).setValue({
+				method: tool_call.function.arguments.method,
+				info: tool_call.function.arguments.info,
+			});
+			this.form_array_contacts.at(index).get('method')?.markAsDirty();
+			this.form_array_contacts.at(index).get('info')?.markAsDirty();
+		}
+		if( tool_call.function.name === AiFunctionName.MintContactRemove ) {
+			const method = tool_call.function.arguments.method;
+			const info = tool_call.function.arguments.info;
+			const index = this.init_info.contact.findIndex(contact => contact.method === method && contact.info === info);
+			if( index === -1 ) return;
+			this.form_info.get('contact')?.markAsDirty();
+			this.form_array_contacts.removeAt(index);
+		}
 		this.cdr.detectChanges();
 	}
 
@@ -190,10 +216,10 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		this.form_array_urls.push(new FormControl(url, [Validators.required]));
 	}
 
-	public onAddContactControl(): void {
+	public onAddContactControl(method: string|null = null, info: string|null = null): void {
 		this.form_array_contacts.push(new FormGroup({
-			method: new FormControl(null, [Validators.required]),
-			info: new FormControl(null, [Validators.required]),
+			method: new FormControl(method, [Validators.required]),
+			info: new FormControl(info, [Validators.required]),
 		}));
 	}
 

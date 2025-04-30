@@ -10,6 +10,8 @@ import {
     UpdateMintUrlTool,
     RemoveMintUrlTool,
     AddMintContactTool,
+    UpdateMintContactTool,
+    RemoveMintContactTool,
 } from "./ai.tools";
 
 export const AI_AGENTS = {
@@ -40,6 +42,8 @@ export const AI_AGENTS = {
             UpdateMintUrlTool,
             RemoveMintUrlTool,
             AddMintContactTool,
+            UpdateMintContactTool,
+            RemoveMintContactTool,
         ],
     },
 };

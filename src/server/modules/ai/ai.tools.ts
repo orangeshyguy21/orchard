@@ -169,3 +169,58 @@ export const AddMintContactTool = {
         },
     },
 };
+
+export const UpdateMintContactTool = {
+    'type': 'function',
+    'function': {
+        'name': 'MINT_CONTACT_UPDATE',
+        'description': 'This tool allows you to update one of the contacts from the mint. You must provide the old method and info before the update.',
+        'parameters': {
+            "type": "object",
+            "properties": {
+                "old_method": {
+                    "type": "string",
+                    "enum": ["email", "nostr", "twitter"],
+                    "description": "The method of contact before the update"
+                },
+                "old_info": {
+                    "type": "string",
+                    "description": "The information of the contact before the update"
+                },
+                "method": {
+                    "type": "string",
+                    "enum": ["email", "nostr", "twitter"],
+                    "description": "The new method of contact"
+                },
+                "info": {
+                    "type": "string",
+                    "description": "The new information needed to contact the mint via the new method specified"
+                },
+            },
+            "required": ["old_method", "old_info", "method", "info"]
+        },
+    },
+};
+
+export const RemoveMintContactTool = {
+    'type': 'function',
+    'function': {
+        'name': 'MINT_CONTACT_REMOVE',
+        'description': 'This tool allows you to remove one of the contacts from the mint.',
+        'parameters': {
+            "type": "object",
+            "properties": {
+                "method": {
+                    "type": "string",
+                    "enum": ["email", "nostr", "twitter"],
+                    "description": "The method of contact"
+                },
+                "info": {
+                    "type": "string",
+                    "description": "The information needed to contact the mint via the method specified"
+                },
+            },
+            "required": ["method", "info"]
+        },
+    },
+};
