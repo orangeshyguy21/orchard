@@ -1,6 +1,6 @@
 .mint-balance-chart-container{
     canvas{
-        max-height: 500px;
-        max-width: 100%;
+        max-height: min(calc(100vh - 530px), 800px);
+        min-height: 300px;
     }
 }
