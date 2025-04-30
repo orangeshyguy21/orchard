@@ -32,6 +32,10 @@ export class MintInfoFormUrlComponent implements OnInit, AfterViewInit, OnDestro
         return this.form_array.at(this.control_index)?.dirty ? true : false;
     }
 
+    public get control_invalid(): boolean {
+		return this.form_array.at(this.control_index)?.invalid && (this.form_array.at(this.control_index)?.dirty || this.form_array.at(this.control_index)?.touched) || false;
+	}
+
     private subscription: Subscription = new Subscription();
 
     constructor(
@@ -77,7 +81,7 @@ export class MintInfoFormUrlComponent implements OnInit, AfterViewInit, OnDestro
     }
 
     private getUrlIcon(): string {
-        const url = this.form_array.at(this.control_index).value;
+        const url = this.form_array.at(this.control_index)?.value;
         if( !url ) return 'language';
         if( url.slice(-6) === '.onion' ) return 'tor';
         if( url.slice(0, 5) === 'https' ) return 'vpn_lock_2';

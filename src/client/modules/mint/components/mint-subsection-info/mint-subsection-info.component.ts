@@ -13,7 +13,7 @@ import { AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
 import { EventService } from '@client/modules/event/services/event/event.service';
 import { EventData } from '@client/modules/event/classes/event-data.class';
 /* Shared Dependencies */
-import { AiAgent, AiFunctionName, OrchardContact } from '@shared/generated.types';
+import { AiFunctionName, OrchardContact } from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-subsection-info',
@@ -57,7 +57,6 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 	) {}
 
 	async ngOnInit(): Promise<void> {
-		this.aiService.active_agent = AiAgent.MintInfo;
 		this.init_info = this.route.snapshot.data['mint_info_rpc'];		
 		this.form_info.patchValue({
 			name: this.init_info.name,
@@ -77,14 +76,24 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 			}));
 			contact_controls.forEach(control => this.form_array_contacts.push(control));
 		}
+		const agent_subscription = this.getAgentSubscription();
 		const tool_subscription = this.getToolSubscription();
 		const event_subscription = this.getEventSubscription();
 		const form_subscription = this.getFormSubscription();
 		const dirty_count_subscription = this.getDirtyCountSubscription();
+		this.subscriptions.add(agent_subscription);
 		this.subscriptions.add(tool_subscription);	
 		this.subscriptions.add(event_subscription);
 		this.subscriptions.add(form_subscription);
 		this.subscriptions.add(dirty_count_subscription);
+	}
+
+	private getAgentSubscription(): Subscription {
+		return this.aiService.agent_requests$
+			.subscribe(({ agent, content }) => {
+				const form_string = this.stringifyForm();
+				this.aiService.openAiSocket(agent, content, form_string);
+			});
 	}
 
 	private getToolSubscription(): Subscription {
@@ -99,15 +108,20 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 			.subscribe((event_data: EventData | null) => {
 				this.active_event = event_data;
 				if( event_data?.confirmed ) this.onConfirmedEvent();
+				if( event_data === null ) this.evaluateDirtyCount();
 			});
 	}
 
 	private getFormSubscription(): Subscription {
 		return this.form_info.valueChanges.subscribe(() => {
-			const count = Object.keys(this.form_info.controls).filter(key => this.form_info.get(key)?.dirty).length;
-			this.dirty_count.set(count);
-			this.cdr.detectChanges();
+			this.evaluateDirtyCount();
 		});
+	}
+
+	private evaluateDirtyCount(): void {
+		const count = Object.keys(this.form_info.controls).filter(key => this.form_info.get(key)?.dirty).length;
+		this.dirty_count.set(count);
+		this.cdr.detectChanges();
 	}
 
 	private getDirtyCountSubscription(): Subscription {
@@ -116,17 +130,77 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		});
 	}
 
+	private stringifyForm(): string {
+		return JSON.stringify(this.form_info.value);
+	}
+
 	private executeAgentFunction(tool_call: AiChatToolCall): void {
+		console.log('TOOL CALL HEARD:', tool_call);
 		if( tool_call.function.name === AiFunctionName.MintNameUpdate ) {
 			this.form_info.get('name')?.setValue(tool_call.function.arguments.name);
 			this.form_info.get('name')?.markAsDirty();
-			this.cdr.detectChanges();
+		}
+		if( tool_call.function.name === AiFunctionName.MintDescriptionUpdate ) {
+			this.form_info.get('description')?.setValue(tool_call.function.arguments.description);
+			this.form_info.get('description')?.markAsDirty();
+		}
+		if( tool_call.function.name === AiFunctionName.MintIconUrlUpdate ) {
+			this.form_info.get('icon_url')?.setValue(tool_call.function.arguments.icon_url);
+			this.form_info.get('icon_url')?.markAsDirty();
+		}
+		if( tool_call.function.name === AiFunctionName.MintDescriptionLongUpdate ) {
+			this.form_info.get('description_long')?.setValue(tool_call.function.arguments.description_long);
+			this.form_info.get('description_long')?.markAsDirty();
 		}
 		if( tool_call.function.name === AiFunctionName.MintMotdUpdate ) {
 			this.form_info.get('motd')?.setValue(tool_call.function.arguments.motd);
 			this.form_info.get('motd')?.markAsDirty();
-			this.cdr.detectChanges();
 		}
+		if( tool_call.function.name === AiFunctionName.MintUrlAdd ) {
+			this.form_info.get('urls')?.markAsDirty();
+			this.onAddUrlControl(tool_call.function.arguments.url);
+			this.form_array_urls.at(-1).markAsDirty();
+		}
+		if( tool_call.function.name === AiFunctionName.MintUrlUpdate ) {
+			const index = this.init_info.urls.indexOf(tool_call.function.arguments.old_url);
+			if( index === -1 ) return;
+			this.form_info.get('urls')?.markAsDirty();
+			this.form_array_urls.at(index).setValue(tool_call.function.arguments.url);
+			this.form_array_urls.at(index).markAsDirty();
+		}
+		if( tool_call.function.name === AiFunctionName.MintUrlRemove ) {
+			const index = this.init_info.urls.indexOf(tool_call.function.arguments.url);
+			if( index === -1 ) return;
+			this.form_info.get('urls')?.markAsDirty();
+			this.form_array_urls.removeAt(index);
+		}
+		if( tool_call.function.name === AiFunctionName.MintContactAdd ) {
+			this.form_info.get('contact')?.markAsDirty();
+			this.onAddContactControl(tool_call.function.arguments.method, tool_call.function.arguments.info);
+			this.form_array_contacts.at(-1).markAsDirty();
+		}
+		if( tool_call.function.name === AiFunctionName.MintContactUpdate ) {
+			const old_method = tool_call.function.arguments.old_method;
+			const old_info = tool_call.function.arguments.old_info;
+			const index = this.init_info.contact.findIndex(contact => contact.method === old_method && contact.info === old_info);
+			if( index === -1 ) return;
+			this.form_info.get('contact')?.markAsDirty();
+			this.form_array_contacts.at(index).setValue({
+				method: tool_call.function.arguments.method,
+				info: tool_call.function.arguments.info,
+			});
+			this.form_array_contacts.at(index).get('method')?.markAsDirty();
+			this.form_array_contacts.at(index).get('info')?.markAsDirty();
+		}
+		if( tool_call.function.name === AiFunctionName.MintContactRemove ) {
+			const method = tool_call.function.arguments.method;
+			const info = tool_call.function.arguments.info;
+			const index = this.init_info.contact.findIndex(contact => contact.method === method && contact.info === info);
+			if( index === -1 ) return;
+			this.form_info.get('contact')?.markAsDirty();
+			this.form_array_contacts.removeAt(index);
+		}
+		this.cdr.detectChanges();
 	}
 
 	private createPendingEvent(count: number): void {
@@ -138,14 +212,14 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		}));
 	}
 
-	public onAddUrlControl(): void {
-		this.form_array_urls.push(new FormControl(null, [Validators.required]));
+	public onAddUrlControl(url: string|null = null): void {
+		this.form_array_urls.push(new FormControl(url, [Validators.required]));
 	}
 
-	public onAddContactControl(): void {
+	public onAddContactControl(method: string|null = null, info: string|null = null): void {
 		this.form_array_contacts.push(new FormGroup({
-			method: new FormControl(null, [Validators.required]),
-			info: new FormControl(null, [Validators.required]),
+			method: new FormControl(method, [Validators.required]),
+			info: new FormControl(info, [Validators.required]),
 		}));
 	}
 
@@ -190,15 +264,141 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 	
 
 	private onConfirmedEvent(): void {
-		if( this.form_info.invalid ) return this.eventService.registerEvent(new EventData({
-			type: 'WARNING',
-			message: 'Invalid info data',
-		}));
+		if (this.form_info.invalid) {
+			return this.eventService.registerEvent(new EventData({
+				type: 'WARNING',
+				message: 'Invalid info data',
+			}));
+		}
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-	}
+		const mutation_parts: string[] = [];
+		const mutation_variables: Record<string, any> = {};
+		if (this.form_info.get('name')?.dirty) {
+			mutation_parts.push(`
+				mint_name_update(mint_name_update: { name: $name }) {
+					name
+				}
+			`);
+			mutation_variables['name'] = this.form_info.get('name')?.value;
+		}
+		if (this.form_info.get('description')?.dirty) {
+			mutation_parts.push(`
+				mint_short_description_update(mint_desc_update: { description: $description }) {
+					description
+				}
+			`);
+			mutation_variables['description'] = this.form_info.get('description')?.value;
+		}
+		if (this.form_info.get('description_long')?.dirty) {
+			mutation_parts.push(`
+				mint_long_description_update(mint_desc_update: { description: $description_long }) {
+					description
+				}
+			`);
+			mutation_variables['description_long'] = this.form_info.get('description_long')?.value;
+		}
+		if (this.form_info.get('icon_url')?.dirty) {
+			mutation_parts.push(`
+				mint_icon_update(mint_icon_update: { icon_url: $icon_url }) {
+					icon_url
+				}
+			`);
+			mutation_variables['icon_url'] = this.form_info.get('icon_url')?.value;
+		}
+		if (this.form_info.get('motd')?.dirty) {
+			mutation_parts.push(`
+				mint_motd_update(mint_motd_update: { motd: $motd }) {
+					motd
+				}
+			`);
+			mutation_variables['motd'] = this.form_info.get('motd')?.value;
+		}
 
-	private updateMintInfo() : void {
-		// todo
+		const urls_array = this.form_info.get('urls') as FormArray;
+		if (urls_array?.dirty) {
+			const new_urls = urls_array.value.filter(Boolean);
+			const old_urls = this.init_info.urls || [];
+			const urls_to_add = new_urls.filter((url: string) => !old_urls.includes(url));
+			urls_to_add.forEach((url: string, index: number) => {
+				const mutation_var = `url_add_${index}`;
+				mutation_parts.push(`
+					url_add_${index}: mint_url_add(mint_url_update: { url: $${mutation_var} }) {
+						url
+					}
+				`);
+				mutation_variables[`${mutation_var}`] = url;
+			});
+			const urls_to_remove = old_urls.filter(url => !new_urls.includes(url));
+			urls_to_remove.forEach((url: string, index: number) => {
+				const mutation_var = `url_remove_${index}`;
+				mutation_parts.push(`
+					url_remove_${index}: mint_url_remove(mint_url_update: { url: $${mutation_var} }) {
+						url
+					}
+				`);
+				mutation_variables[`${mutation_var}`] = url;
+			});
+		}
+
+		const contacts_array = this.form_info.get('contact') as FormArray;
+		if (contacts_array?.dirty) {
+			const new_contacts = contacts_array.value.filter((c: OrchardContact) => c.method && c.info);
+			const old_contacts = this.init_info.contact || [];
+			const contacts_to_add = new_contacts.filter((contact: OrchardContact) => 
+				!old_contacts.some(old => old.method === contact.method && old.info === contact.info)
+			);
+			contacts_to_add.forEach((contact: OrchardContact, index: number) => {
+				const mutation_var = `contact_add_${index}`;
+				mutation_parts.push(`
+					contact_add_${index}: mint_contact_add(mint_contact_update: { method: $${mutation_var}_method, info: $${mutation_var}_info }) {
+						method
+						info
+					}
+				`);
+				mutation_variables[`${mutation_var}_method`] = contact.method;
+				mutation_variables[`${mutation_var}_info`] = contact.info;
+			});
+			const contacts_to_remove = old_contacts.filter(old => 
+				!new_contacts.some((contact:OrchardContact) => contact.method === old.method && contact.info === old.info)
+			);
+			contacts_to_remove.forEach((contact: OrchardContact, index: number) => {
+				const mutation_var = `contact_remove_${index}`;
+				mutation_parts.push(`
+					contact_remove_${index}: mint_contact_remove(mint_contact_update: { method: $${mutation_var}_method, info: $${mutation_var}_info }) {
+						method
+						info
+					}
+				`);
+				mutation_variables[`${mutation_var}_method`] = contact.method;
+				mutation_variables[`${mutation_var}_info`] = contact.info;
+			});
+		}
+
+		if (mutation_parts.length === 0) return;
+
+		const mutation = `
+			mutation BulkMintUpdate(${
+				Object.keys(mutation_variables)
+					.map(key => `$${key}: String!`)
+					.join(', ')
+			}) {
+				${mutation_parts.join('\n')}
+			}
+		`;
+
+		this.mintService.updateMint(mutation, mutation_variables).subscribe({
+			next: (response) => {
+				console.log('response', response);
+				this.mintService.getMintInfo().subscribe((mint_info: MintInfoRpc) => {
+					this.init_info = mint_info;
+					this.cdr.detectChanges();
+				});
+				this.onSuccess(true);
+			},
+			error: (error) => {
+				this.onError(error.message);
+			}
+		});
 	}
 
 	private updateMintName(control_value: string): void {
@@ -206,6 +406,7 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 			next: (response) => {
 				this.init_info.name = response.mint_name_update.name ?? null;
 				this.onSuccess();
+				this.form_info.get('name')?.markAsPristine();
 			},
 			error: (error) => {
 				this.onError(error.message);
@@ -218,6 +419,7 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 			next: (response) => {
 				this.init_info.description = response.mint_short_description_update.description ?? null;
 				this.onSuccess();
+				this.form_info.get('description')?.markAsPristine();
 			},
 			error: (error) => {
 				this.onError(error.message);
@@ -225,23 +427,25 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	public updateMintDescriptionLong(control_value: string): void {
-		this.mintService.updateMintDescriptionLong(control_value).subscribe({
+	private updateMintIcon(control_value: string): void {
+		this.mintService.updateMintIcon(control_value).subscribe({
 			next: (response) => {
-				this.init_info.description_long = response.mint_long_description_update.description ?? null;
+				this.init_info.icon_url = response.mint_icon_update.icon_url ?? null;
 				this.onSuccess();
+				this.form_info.get('icon_url')?.markAsPristine();
 			},
 			error: (error) => {
 				this.onError(error.message);
 			}
 		});
 	}
-	private updateMintIcon(control_value: string): void {
-		this.mintService.updateMintIcon(control_value).subscribe({
+
+	private updateMintDescriptionLong(control_value: string): void {
+		this.mintService.updateMintDescriptionLong(control_value).subscribe({
 			next: (response) => {
-				this.init_info.icon_url = response.mint_icon_update.icon_url ?? null;
-				this.cdr.detectChanges();
+				this.init_info.description_long = response.mint_long_description_update.description ?? null;
 				this.onSuccess();
+				this.form_info.get('description_long')?.markAsPristine();
 			},
 			error: (error) => {
 				this.onError(error.message);
@@ -253,20 +457,8 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		this.mintService.updateMintMotd(control_value).subscribe({
 			next: (response) => {
 				this.init_info.motd = response.mint_motd_update.motd ?? null;
-				this.cdr.detectChanges();
 				this.onSuccess();
-			},
-			error: (error) => {
-				this.onError(error.message);
-			}
-		});
-	}
-
-	private updateMintUrl(control_index: number, control_value: string, original_value: string): void {
-		this.mintService.updateMintUrl(control_value, original_value).subscribe({
-			next: (response) => {
-				this.init_info.urls[control_index] = response.mint_url_add.url ?? null;
-				this.onSuccess();
+				this.form_info.get('motd')?.markAsPristine();
 			},
 			error: (error) => {
 				this.onError(error.message);
@@ -279,6 +471,20 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 			next: (response) => {
 				this.init_info.urls.push(response.mint_url_add.url ?? null);
 				this.onSuccess();
+				this.form_array_urls.at(-1).markAsPristine();
+			},
+			error: (error) => {
+				this.onError(error.message);
+			}
+		});
+	}
+
+	private updateMintUrl(control_index: number, control_value: string, original_value: string): void {
+		this.mintService.updateMintUrl(control_value, original_value).subscribe({
+			next: (response) => {
+				this.init_info.urls[control_index] = response.mint_url_add.url ?? null;
+				this.onSuccess();
+				this.form_array_urls.at(control_index).markAsPristine();
 			},
 			error: (error) => {
 				this.onError(error.message);
@@ -299,6 +505,23 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		});
 	}
 
+	private addMintContact(control_value: OrchardContact): void {
+		this.mintService.addMintContact(control_value).subscribe({
+			next: (response) => {
+				const contact = response.mint_contact_add;
+				this.init_info.contact.push({
+					method: contact.method,
+					info: contact.info,
+				});
+				this.onSuccess();
+				this.form_array_contacts.at(-1).markAsPristine();
+			},
+			error: (error) => {
+				this.onError(error.message);
+			}
+		});
+	}
+
 	private updateMintContact(control_index: number, control_value: OrchardContact, original_value: OrchardContact): void {
 		this.mintService.updateMintContact(control_value, original_value).subscribe({
 			next: (response) => {
@@ -308,6 +531,7 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 					info: contact.info,
 				};
 				this.onSuccess();
+				this.form_array_contacts.at(control_index).markAsPristine();
 			},
 			error: (error) => {
 				this.onError(error.message);
@@ -328,28 +552,13 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	private addMintContact(control_value: OrchardContact): void {
-		this.mintService.addMintContact(control_value).subscribe({
-			next: (response) => {
-				const contact = response.mint_contact_add;
-				this.init_info.contact.push({
-					method: contact.method,
-					info: contact.info,
-				});
-				this.onSuccess();
-			},
-			error: (error) => {
-				this.onError(error.message);
-			}
-		});
-	}
-
-	private onSuccess(): void {
+	private onSuccess(reset: boolean = false): void {
 		this.mintService.clearInfoCache();
 		this.mintService.loadMintInfo().subscribe();
 		this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
-		this.form_info.markAsPristine(); // @todo this is suss for a single update control
-		this.dirty_count.set(0); // @todo this is suss for a single update control
+		if( !reset ) return;
+		this.form_info.markAsPristine();
+		this.dirty_count.set(0);
 	}
 
 	private onError(error: string): void {

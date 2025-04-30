@@ -1,13 +1,14 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, ChangeDetectorRef, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { trigger, style, animate, transition } from '@angular/animations';
 /* Vendor Dependencies */
 import { Subscription } from 'rxjs';
-/* Application Dependencies */
+/* Native Dependencies */
 import { AiService } from '@client/modules/ai/services/ai/ai.service';
-/* Shared Dependencies */
 import { AiChatChunk } from '@client/modules/ai/classes/ai-chat-chunk.class';
+/* Shared Dependencies */
+import { AiAgent } from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-ai-input',
@@ -25,6 +26,8 @@ import { AiChatChunk } from '@client/modules/ai/classes/ai-chat-chunk.class';
 	]
 })
 export class AiInputComponent implements OnInit, OnDestroy {
+
+	@Input() active_agent!: AiAgent;
 
 	private chat_subscription: Subscription | null = null;
 
@@ -62,7 +65,8 @@ export class AiInputComponent implements OnInit, OnDestroy {
 
 	private startChat() {
 		if( !this.content.value ) return;
-		this.aiService.openAiSocket(this.content.value);
+		const agent = this.active_agent || AiAgent.Default;
+		this.aiService.requestAgent(agent, this.content.value);
 		this.content.reset();
 	}
 

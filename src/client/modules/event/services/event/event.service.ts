@@ -46,6 +46,7 @@ export class EventService {
 
 	private clearEvent(event_data: EventData): void {
 		setTimeout(() => {
+			if( this.active_event.type === 'PENDING' ) return;
 			this.active_event_subject.next(null);
 		}, event_data.duration);
 	}

@@ -6,7 +6,7 @@ import { Observable, catchError, Subscription, Subject } from 'rxjs';
 import { ApiService } from '@client/modules/api/services/api/api.service';
 import { OrchardWsRes } from '@client/modules/api/types/api.types';
 /* Shared Dependencies */
-import { AiAgent, AiMessageRole } from '@shared/generated.types';
+import { AiAgent, AiMessageRole, } from '@shared/generated.types';
 /* Native Dependencies */
 import { AiChatResponse } from '@client/modules/ai/types/ai.types';
 import { AiChatChunk, AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
@@ -18,16 +18,17 @@ import { AI_CHAT_SUBSCRIPTION } from './ai.queries';
 })
 export class AiService {
 
-	public active_agent: AiAgent | null = null;
-
 	public get active(): boolean { return !!this.subscription_id; }
 	public get messages$(): Observable<AiChatChunk> { return this.message_subject.asObservable(); }
     public get tool_calls$(): Observable<AiChatToolCall> { return this.toolcall_subject.asObservable(); }
+	public get agent_requests$(): Observable<{agent: AiAgent, content: string|null}> {return this.agent_subject.asObservable(); }
 
 	private subscription?: Subscription;
 	private subscription_id?: string | null;
 	private message_subject = new Subject<AiChatChunk>();
 	private toolcall_subject = new Subject<AiChatToolCall>();
+	private agent_subject = new Subject<{agent: AiAgent, content: string|null}>();
+
 
 	constructor(
 		private apiService: ApiService
@@ -43,11 +44,16 @@ export class AiService {
 		this.subscription_id = null;
 	}
 
-	public openAiSocket(content: string|null): void {
+	public requestAgent(agent: AiAgent, content: string|null): void {
+		this.agent_subject.next({ agent, content });
+	}
+
+	public openAiSocket(agent: AiAgent, content: string|null, context?: string): void {
 		const subscription_id = crypto.randomUUID();
 		this.subscription_id = subscription_id;
 		this.subscription = this.apiService.gql_socket.subscribe({
 			next: (response: OrchardWsRes<AiChatResponse>) => {
+				console.log('RESPONSE HEARD:', response);
 				if (response.type === 'data' && response?.payload?.data?.ai_chat) {
 					const chunk = new AiChatChunk(response.payload.data.ai_chat);
 					this.message_subject.next( chunk );
@@ -61,6 +67,15 @@ export class AiService {
 			}
 		});
 
+		const messages = [{
+			role: AiMessageRole.User,
+			content: content
+		}];
+		if( context ) messages.unshift({
+			role: AiMessageRole.System,
+			content: context
+		});
+
 		this.apiService.gql_socket.next({ type: 'connection_init', payload: {} });
 		this.apiService.gql_socket.next({
 			id: subscription_id,
@@ -70,9 +85,9 @@ export class AiService {
 				variables: {
 					ai_chat: {
 						id: subscription_id,
-						messages: [{ role: AiMessageRole.User, content }],
+						messages,
 						model: 'llama3.2:latest',
-						agent: this.active_agent
+						agent: agent
 					}
 				}
 			}

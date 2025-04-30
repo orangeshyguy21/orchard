@@ -14,6 +14,8 @@ import { MintSubsectionInfoComponent } from './components/mint-subsection-info/m
 import { MintSubsectionConfigComponent } from './components/mint-subsection-config/mint-subsection-config.component';
 import { MintSubsectionKeysetsComponent } from './components/mint-subsection-keysets/mint-subsection-keysets.component';
 import { MintService } from './services/mint/mint.service';
+/* Shared Dependencies */
+import { AiAgent } from '@shared/generated.types';
 
 const mintInfoResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
 	const mintService = inject(MintService);
@@ -87,7 +89,7 @@ const routes: Routes = [
 				},
 				data: {
 					section: 'mint',
-					sub_section: 'dashboard'
+					sub_section: 'dashboard',
 				}
 			},
 			{
@@ -99,7 +101,8 @@ const routes: Routes = [
 				},
 				data: {
 					section: 'mint',
-					sub_section: 'info'
+					sub_section: 'info',
+					agent: AiAgent.MintInfo
 				}
 			},
 			{
