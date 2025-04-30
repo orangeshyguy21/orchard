@@ -6,7 +6,7 @@
         (keydown.escape)="onCancel($event)">    
         <ng-container [formArrayName]="array_name">
             <div class="flex flex-items-center flex-gap-1">
-                <div [class.m-b-1-25]="form_array.at(control_index).invalid && (form_array.at(control_index).dirty || form_array.at(control_index).touched) || false" class="flex flex-items-center">
+                <div [class.m-b-1-25]="control_invalid" class="flex flex-items-center">
                     @if( url_icon === 'tor' ) {
                         <mat-icon class="orc-outline-color" [svgIcon]="url_icon"></mat-icon>
                     } @else {
@@ -16,7 +16,7 @@
                 <div class="flex-grow">
                     <orc-dynamic-form-field
                         [hot]="form_hot"
-                        [invalid]="form_array.at(control_index).invalid && (form_array.at(control_index).dirty || form_array.at(control_index).touched) || false"
+                        [invalid]="control_invalid"
                         [subscript_sizing]="'dynamic'"
                         (submit)="onSubmit($event)"
                         (cancel)="onCancel($event)">
@@ -38,7 +38,7 @@
                                 (click)="onRemove($event)">
                                 <mat-icon>delete_forever</mat-icon>
                             </button>
-                            @if (form_array.at(control_index).invalid && (form_array.at(control_index).dirty || form_array.at(control_index).touched)) {
+                            @if (control_invalid) {
                                 <mat-error class="font-size-xs">
                                     @if (form_array.at(control_index).hasError('required')) {
                                         URL is required

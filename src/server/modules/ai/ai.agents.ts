@@ -9,6 +9,7 @@ import {
     AddMintUrlTool,
     UpdateMintUrlTool,
     RemoveMintUrlTool,
+    AddMintContactTool,
 } from "./ai.tools";
 
 export const AI_AGENTS = {
@@ -26,7 +27,8 @@ export const AI_AGENTS = {
         description: 'Mint info agent',
         system_message: {
             role: 'system',
-            content: 'You are a helpful assistant that can answer questions and help with tasks.',
+            content: `You are an agent designed to help manage, update, and configure the public information of a cashu mint.
+            You will be provided with the current state of the form along with the users request for additions or changes`,
         },
         tools: [
             UpdateMintNameTool,
@@ -37,6 +39,7 @@ export const AI_AGENTS = {
             AddMintUrlTool,
             UpdateMintUrlTool,
             RemoveMintUrlTool,
+            AddMintContactTool,
         ],
     },
 };

@@ -4,7 +4,16 @@ export type AiChatResponse = {
   	ai_chat: OrchardAiChatChunk;
 }
 
-export type AiFunction = AiFunctionUpdateMintName | AiFunctionUpdateMintMotd;
+export type AiFunction = 
+AiFunctionUpdateMintName | 
+AiFunctionUpdateMintDescription | 
+AiFunctionUpdateMintIconUrl | 
+AiFunctionUpdateMintDescriptionLong |
+AiFunctionUpdateMintMotd |  
+AiFunctionUpdateMintUrlAdd | 
+AiFunctionUpdateMintUrlUpdate | 
+AiFunctionUpdateMintUrlRemove |
+AiFunctionAddMintContact;
 
 export type AiFunctionUpdateMintName = {
 	name: AiFunctionName.MintNameUpdate;
@@ -13,9 +22,60 @@ export type AiFunctionUpdateMintName = {
 	}
 }
 
+export type AiFunctionUpdateMintDescription = {
+	name: AiFunctionName.MintDescriptionUpdate;
+	arguments: {
+		description: string;
+	}
+}
+
+export type AiFunctionUpdateMintIconUrl = {
+	name: AiFunctionName.MintIconUrlUpdate;
+	arguments: {
+		icon_url: string;
+	}
+}
+
+export type AiFunctionUpdateMintDescriptionLong = {
+	name: AiFunctionName.MintDescriptionLongUpdate;
+	arguments: {
+		description_long: string;
+	}
+}
+
 export type AiFunctionUpdateMintMotd = {
 	name: AiFunctionName.MintMotdUpdate;
 	arguments: {
 		motd: string;
+	}
+}
+
+export type AiFunctionUpdateMintUrlAdd = {
+	name: AiFunctionName.MintUrlAdd;
+	arguments: {
+		url: string;
+	}
+}
+
+export type AiFunctionUpdateMintUrlUpdate = {
+	name: AiFunctionName.MintUrlUpdate;
+	arguments: {
+		old_url: string;
+		url: string;
+	}
+}
+
+export type AiFunctionUpdateMintUrlRemove = {
+	name: AiFunctionName.MintUrlRemove;
+	arguments: {
+		url: string;
+	}
+}
+
+export type AiFunctionAddMintContact = {
+	name: AiFunctionName.MintContactAdd;
+	arguments: {
+		method: 'email' | 'nostr' | 'twitter';
+		info: string;
 	}
 }

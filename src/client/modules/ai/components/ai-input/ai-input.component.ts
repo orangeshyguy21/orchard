@@ -66,7 +66,7 @@ export class AiInputComponent implements OnInit, OnDestroy {
 	private startChat() {
 		if( !this.content.value ) return;
 		const agent = this.active_agent || AiAgent.Default;
-		this.aiService.openAiSocket(agent, this.content.value);
+		this.aiService.requestAgent(agent, this.content.value);
 		this.content.reset();
 	}
 
