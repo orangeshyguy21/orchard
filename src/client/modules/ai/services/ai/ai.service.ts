@@ -18,7 +18,7 @@ import { AI_CHAT_SUBSCRIPTION } from './ai.queries';
 })
 export class AiService {
 
-	public active_agent: AiAgent | null = null;
+	// public active_agent: AiAgent | null = null;
 
 	public get active(): boolean { return !!this.subscription_id; }
 	public get messages$(): Observable<AiChatChunk> { return this.message_subject.asObservable(); }
@@ -43,7 +43,7 @@ export class AiService {
 		this.subscription_id = null;
 	}
 
-	public openAiSocket(content: string|null): void {
+	public openAiSocket(agent: AiAgent, content: string|null): void {
 		const subscription_id = crypto.randomUUID();
 		this.subscription_id = subscription_id;
 		this.subscription = this.apiService.gql_socket.subscribe({
@@ -72,7 +72,7 @@ export class AiService {
 						id: subscription_id,
 						messages: [{ role: AiMessageRole.User, content }],
 						model: 'llama3.2:latest',
-						agent: this.active_agent
+						agent: agent
 					}
 				}
 			}

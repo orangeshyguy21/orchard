@@ -13,7 +13,7 @@ import { AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
 import { EventService } from '@client/modules/event/services/event/event.service';
 import { EventData } from '@client/modules/event/classes/event-data.class';
 /* Shared Dependencies */
-import { AiAgent, AiFunctionName, OrchardContact } from '@shared/generated.types';
+import { AiFunctionName, OrchardContact } from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-subsection-info',
@@ -57,7 +57,6 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 	) {}
 
 	async ngOnInit(): Promise<void> {
-		this.aiService.active_agent = AiAgent.MintInfo;
 		this.init_info = this.route.snapshot.data['mint_info_rpc'];		
 		this.form_info.patchValue({
 			name: this.init_info.name,
