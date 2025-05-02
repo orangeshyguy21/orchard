@@ -56,10 +56,6 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	// chart settings
 	public chart_settings!: NonNullableMintChartSettings;
 
-	public get active_keysets(): MintKeyset[] {
-		return this.mint_keysets.filter(keyset => keyset.active);
-	}
-
 	private subscriptions: Subscription = new Subscription();
 
 	constructor(
@@ -236,7 +232,7 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	}
 
 	private getSelectedUnits(): MintUnit[] {
-		return this.mint_keysets.map(keyset => keyset.unit);
+		return Array.from(new Set(this.mint_keysets.map(keyset => keyset.unit)));
 	}
 
 	private getSelectedDateStart(): number {

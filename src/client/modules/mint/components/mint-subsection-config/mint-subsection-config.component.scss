@@ -7,9 +7,9 @@
 }
 
 .mint-subsection-config-container{
+    @extend %p-2;
     @extend %flex;
     @extend %flex-column;
     @extend %flex-grow;
-    @extend %flex-items-center;
-    @extend %flex-justify-center;
+    @extend %flex-gap-1;
 }
