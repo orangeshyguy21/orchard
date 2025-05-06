@@ -1,0 +1,15 @@
+<div class="mint-config-form-disabled-container">
+    <div class="flex flex-items-center flex-gap-1">
+        <div class="flex flex-items-center flex-grow">
+            <mat-slide-toggle
+                [checked]="form_group.get(control_name)?.value"
+                (change)="onChange($event)"
+                name="supported">
+            </mat-slide-toggle>
+            <div class="p-l-1 font-size-s">
+                Supported
+            </div>
+        </div>
+        <div class="font-size-xs w-max-18">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
+    </div>
+</div>

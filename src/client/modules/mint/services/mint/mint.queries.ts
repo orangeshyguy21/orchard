@@ -28,6 +28,7 @@ export const MINT_INFO_QUERY = `{
 				methods{
 					method
 					unit
+					amountless
 					min_amount
 					max_amount
 				}
@@ -89,6 +90,13 @@ export const MINT_INFO_RPC_QUERY = `{
 			info
 			method
 		}
+	}
+}`;
+
+export const MINT_QUOTE_TTLS_QUERY = `{
+	mint_quote_ttl{
+		melt_ttl
+		mint_ttl
 	}
 }`;
 

@@ -9,6 +9,7 @@ import { OrchardErrors } from '@client/modules/error/classes/error.class';
 import { OrchardRes } from '@client/modules/api/types/api.types';
 import { 
 	MintInfoResponse,
+	MintQuoteTtlsResponse,
 	MintBalancesResponse,
 	MintKeysetsResponse,
 	MintPromisesResponse,
@@ -33,6 +34,7 @@ import {
 } from '@client/modules/mint/types/mint.types';
 import { CacheService } from '@client/modules/cache/services/cache/cache.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
+import { MintQuoteTtls } from '@client/modules/mint/classes/mint-quote-ttls.class';
 import { MintInfoRpc } from '@client/modules/mint/classes/mint-info-rpc.class';
 import { MintBalance } from '@client/modules/mint/classes/mint-balance.class';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
@@ -44,6 +46,7 @@ import { MintAnalyticsInterval, OrchardContact } from '@shared/generated.types';
 import { 
 	MINT_INFO_QUERY, 
 	MINT_INFO_RPC_QUERY,
+	MINT_QUOTE_TTLS_QUERY,
 	MINT_BALANCES_QUERY, 
 	MINT_KEYSETS_QUERY, 
 	MINT_PROMISES_QUERY, 
@@ -227,6 +230,21 @@ export class MintService {
 			map((mintInfoRpc) => new MintInfoRpc(mintInfoRpc)),
 			catchError((error) => {
 				console.error('Error loading mint info (rpc):', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	public getMintQuoteTtls(): Observable<MintQuoteTtls> {
+		const query = getApiQuery(MINT_QUOTE_TTLS_QUERY);
+		return this.http.post<OrchardRes<MintQuoteTtlsResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.mint_quote_ttl;
+			}),
+			map((mintQuoteTtls) => new MintQuoteTtls(mintQuoteTtls)),
+			catchError((error) => {
+				console.error('Error loading mint quote ttls:', error);
 				return throwError(() => error);
 			}),
 		);

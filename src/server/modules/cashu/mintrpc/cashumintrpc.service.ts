@@ -126,6 +126,7 @@ export class CashuMintRpcService implements OnModuleInit {
         if (disabled !== undefined) request.disabled = disabled;
         if (min !== undefined) request.min = min;
         if (max !== undefined) request.max = max;
+        console.log(request);
         return this.makeGrpcRequest('UpdateNut05', request);
     }
 

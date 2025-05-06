@@ -9,14 +9,16 @@
                 {{ unit_icon() }}
             </mat-icon>
         </div>
-        <div class="graphic-asset-custody">
-            <mat-icon 
-                class="graphic-asset-custody-icon"
-                [style.font-size]="custody_icon_size()"
-                [style.height]="custody_icon_size()"
-                [style.width]="custody_icon_size()">
-                {{ custody_icon() }}
-            </mat-icon>
-        </div>
+        @if( custody ) {
+            <div class="graphic-asset-custody">
+                <mat-icon 
+                    class="graphic-asset-custody-icon"
+                    [style.font-size]="custody_icon_size()"
+                    [style.height]="custody_icon_size()"
+                    [style.width]="custody_icon_size()">
+                    {{ custody_icon() }}
+                </mat-icon>
+            </div>
+        }
     </div>
 </div>

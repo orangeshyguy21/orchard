@@ -100,12 +100,6 @@ export enum MintQuoteStatus {
   Unpaid = 'UNPAID'
 }
 
-export type MintQuoteTtlOutput = {
-  __typename?: 'MintQuoteTtlOutput';
-  melt_ttl?: Maybe<Scalars['Int']['output']>;
-  mint_ttl?: Maybe<Scalars['Int']['output']>;
-};
-
 export type MintRotateKeysetInput = {
   input_fee_ppk?: InputMaybe<Scalars['Int']['input']>;
   max_order?: InputMaybe<Scalars['Int']['input']>;
@@ -149,7 +143,7 @@ export type Mutation = {
   update_mint_nut04: UpdateNut04Output;
   update_mint_nut04_quote: UpdateNut04QuoteOutput;
   update_mint_nut05: UpdateNut05Output;
-  update_mint_quote_ttl: MintQuoteTtlOutput;
+  update_mint_quote_ttl: OrchardMintQuoteTtls;
 };
 
 
@@ -449,6 +443,12 @@ export type OrchardMintProof = {
   y?: Maybe<Scalars['String']['output']>;
 };
 
+export type OrchardMintQuoteTtls = {
+  __typename?: 'OrchardMintQuoteTtls';
+  melt_ttl?: Maybe<Scalars['Int']['output']>;
+  mint_ttl?: Maybe<Scalars['Int']['output']>;
+};
+
 export type OrchardMintUrlUpdate = {
   __typename?: 'OrchardMintUrlUpdate';
   url: Scalars['String']['output'];
@@ -477,6 +477,7 @@ export type OrchardNut5 = {
 
 export type OrchardNut5Method = {
   __typename?: 'OrchardNut5Method';
+  amountless?: Maybe<Scalars['Boolean']['output']>;
   max_amount?: Maybe<Scalars['Float']['output']>;
   method: Scalars['String']['output'];
   min_amount?: Maybe<Scalars['Float']['output']>;
@@ -562,7 +563,7 @@ export type Query = {
   mint_promises: Array<OrchardMintPromise>;
   mint_proofs_pending: Array<OrchardMintProof>;
   mint_proofs_used: Array<OrchardMintProof>;
-  mint_quote_ttl: MintQuoteTtlOutput;
+  mint_quote_ttl: OrchardMintQuoteTtls;
   public_image: OrchardPublicImage;
   public_urls: Array<OrchardPublicUrl>;
   status: OrchardStatus;

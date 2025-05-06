@@ -1,0 +1,7 @@
+@use '@styles/molecule/molecule';
+
+.mint-config-form-bolt11-container{
+    @extend %flex;
+    @extend %flex-column;
+    @extend %flex-gap-2;
+}

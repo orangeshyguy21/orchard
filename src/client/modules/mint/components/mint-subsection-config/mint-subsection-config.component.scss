@@ -13,3 +13,9 @@
     @extend %flex-grow;
     @extend %flex-gap-1;
 }
+
+.config-category-rule{
+    @extend %border;
+    @extend %border-solid;
+    @extend %orc-outline-variant-border;
+}

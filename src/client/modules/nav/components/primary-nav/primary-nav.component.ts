@@ -54,7 +54,7 @@ export class PrimaryNavComponent {
 				})
 			))
 		).subscribe({
-			next: (block_count: BitcoinBlockCount) => {
+			next: async (block_count: BitcoinBlockCount) => {
 				this.block_count = block_count.height;
 				this.changeDetectorRef.detectChanges();
 			}

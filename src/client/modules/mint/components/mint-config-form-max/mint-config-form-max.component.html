@@ -1,0 +1,39 @@
+<div class="mint-config-form-min-container">
+    <div class="flex flex-gap-1">
+        <form
+            class="flex-grow"
+            [formGroup]="form_group"
+            (ngSubmit)="onSubmit($event)"
+            (keydown.enter)="onSubmit($event)"
+            (keydown.escape)="onCancel($event)">        
+            <orc-dynamic-form-field
+                [hot]="form_hot"
+                [invalid]="form_group.get(control_name)?.invalid || false"
+                (submit)="onSubmit($event)"
+                (cancel)="onCancel($event)">
+                <mat-form-field appearance="fill" hideRequiredMarker="true" [ngClass]="form_hot ? 'orc-hot-form-field' : 'orc-cold-form-field'" class="mint-max-form-field orc-dynamic-form-field">
+                    <mat-label>Maximum Amount</mat-label>
+                    <input 
+                        type="number" 
+                        step="1"
+                        min="1"
+                        max="3600"
+                        matInput 
+                        [formControlName]="control_name" 
+                        placeholder="Ex. 30"
+                        #element_max>
+                    @if (form_group.get(control_name)?.invalid && (form_group.get(control_name)?.dirty || form_group.get(control_name)?.touched)) {
+                        <mat-error class="font-size-xs">
+                            @if (form_group.get(control_name)?.hasError('maxlength')) {
+                                Name cannot exceed {{form_group.get(control_name)?.getError('maxlength')?.requiredLength}} characters
+                            } @else {
+                                Invalid maximum amount
+                            }
+                        </mat-error>
+                    }
+                </mat-form-field>
+            </orc-dynamic-form-field>
+        </form>
+        <div class="font-size-xs w-max-18">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+    </div>
+</div>

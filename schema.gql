@@ -84,11 +84,6 @@ enum MintQuoteStatus {
   UNPAID
 }
 
-type MintQuoteTtlOutput {
-  melt_ttl: Int
-  mint_ttl: Int
-}
-
 input MintRotateKeysetInput {
   input_fee_ppk: Int
   max_order: Int
@@ -130,7 +125,7 @@ type Mutation {
   update_mint_nut04(updateNut04Input: UpdateNut04Input!): UpdateNut04Output!
   update_mint_nut04_quote(updateNut04QuoteInput: UpdateNut04QuoteInput!): UpdateNut04QuoteOutput!
   update_mint_nut05(updateNut05Input: UpdateNut05Input!): UpdateNut05Output!
-  update_mint_quote_ttl(updateQuoteTtlInput: UpdateQuoteTtlInput!): MintQuoteTtlOutput!
+  update_mint_quote_ttl(updateQuoteTtlInput: UpdateQuoteTtlInput!): OrchardMintQuoteTtls!
 }
 
 type OrchardAiChatChunk {
@@ -330,6 +325,11 @@ type OrchardMintProof {
   y: String
 }
 
+type OrchardMintQuoteTtls {
+  melt_ttl: Int
+  mint_ttl: Int
+}
+
 type OrchardMintUrlUpdate {
   url: String!
 }
@@ -353,6 +353,7 @@ type OrchardNut5 {
 }
 
 type OrchardNut5Method {
+  amountless: Boolean
   max_amount: Float
   method: String!
   min_amount: Float
@@ -429,7 +430,7 @@ type Query {
   mint_promises(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!]): [OrchardMintPromise!]!
   mint_proofs_pending: [OrchardMintProof!]!
   mint_proofs_used: [OrchardMintProof!]!
-  mint_quote_ttl: MintQuoteTtlOutput!
+  mint_quote_ttl: OrchardMintQuoteTtls!
   public_image(url: String!): OrchardPublicImage!
   public_urls(urls: [String!]!): [OrchardPublicUrl!]!
   status: OrchardStatus!

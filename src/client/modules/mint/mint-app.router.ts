@@ -69,6 +69,18 @@ const mintInfoRpcResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, stat
 	);
 };
 
+const mintQuoteTtlsResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+	const mintService = inject(MintService);
+	const router = inject(Router);
+	const errorService = inject(ErrorService);
+	return mintService.getMintQuoteTtls().pipe(
+		catchError(error => {
+			errorService.resolve_errors.push(error);
+			router.navigate(['mint', 'error'], { state: { error, target: state.url } });
+            return of([]);
+		})
+	);
+};
 
 const routes: Routes = [
 	{
@@ -85,7 +97,7 @@ const routes: Routes = [
 				resolve: {
 					mint_info: mintInfoResolver,
 					mint_balances: mintBalancesResolver,
-					mint_keysets: mintKeysetsResolver
+					mint_keysets: mintKeysetsResolver,
 				},
 				data: {
 					section: 'mint',
@@ -110,6 +122,10 @@ const routes: Routes = [
 				path: 'config',
 				component: MintSubsectionConfigComponent,
 				title: 'Orchard | Mint Config',
+				resolve: {
+					mint_info: mintInfoResolver,
+					mint_quote_ttl: mintQuoteTtlsResolver,
+				},
 				data: {
 					section: 'mint',
 					sub_section: 'config'

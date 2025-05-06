@@ -1,0 +1,53 @@
+<div class="mint-config-form-bolt11-container">
+    <div class="flex flex-items-center flex-gap-1">
+        <div class="flex-grow flex flex-items-center flex-gap-1">
+            @if( index === 0 ) {
+                <orc-graphic-asset 
+                    [unit]="unit" 
+                    [height]="'1.75rem'">
+                </orc-graphic-asset>
+                <div>{{ unit | titlecase }} Configuration</div>
+            }
+        </div>
+        <div>{{ method }}</div>
+    </div>
+
+    <div class="flex flex-column flex-gap-1">
+        <orc-mint-config-form-min
+            [form_group]="form_bolt11"
+            [control_name]="'min_amount'"
+            (update)="onUpdate($event)"
+            (cancel)="onCancel($event)"
+        ></orc-mint-config-form-min>
+        <orc-mint-config-form-max
+            [form_group]="form_bolt11"
+            [control_name]="'max_amount'"
+            (update)="onUpdate($event)"
+            (cancel)="onCancel($event)"
+        ></orc-mint-config-form-max>
+        <div class="flex flex-items-center flex-gap-1">
+            <div class="flex flex-items-center flex-grow">
+                <mat-slide-toggle
+                    [checked]="form_bolt11.get(this.toggle_options)?.value"
+                    name="description">
+                </mat-slide-toggle>
+                <div class="p-l-1 font-size-s">
+                    {{ this.toggle_control_name }}
+                </div>
+            </div>
+            <div class="font-size-xs w-max-18">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
+        </div>
+    </div>
+</div>
+
+<!-- 
+
+Set min and max
+
+{"name":"Nico's Nutters","version":"cdk-mintd/0.8.1","description":"The sand in your hair and the wind in your nuts","description_long":" Ut suscipit condimentum quam sit amet ornare. In faucibus aliquam risus. Integer id mollis ipsum. Curabitur sed libero sed diam eleifend tempor ut ac turpis. Quisque elementum ornare turpis quis molestie. \n\nNullam ac orci mi. Aenean sagittis, sapien sit amet lacinia dictum, purus ante congue tellus, ut viverra diam magna nec mauris. Nam convallis lorem augue. Praesent commodo nulla aliquet mattis pellentesque. \n\nTester","contact":[{"method":"nostr","info":"npub1mlnt5j0exa55qrtqr4cgl3mjd6ue8k7unaw5t87w5zg635ehdu9qw8jegj"},{"method":"twitter","info":"@niconuter"},{"method":"email","info":"nicosan@niconut.com"}],"nuts":{"4":{"methods":[{"method":"bolt11","unit":"sat","min_amount":1,"max_amount":500000,"description":true}],"disabled":false},"5":{"methods":[{"method":"bolt11","unit":"sat","min_amount":5,"max_amount":500,"amountless":false}],"disabled":false},"7":{"supported":true},"8":{"supported":true},"9":{"supported":true},"10":{"supported":true},"11":{"supported":true},"12":{"supported":true},"14":{"supported":true},"15":{"methods":[{"method":"bolt11","unit":"sat"}]},"17":{"supported":[{"method":"bolt11","unit":"sat","commands":[]}]},"19":{"ttl":60,"cached_endpoints":[{"method":"POST","path":"/v1/mint/bolt11"},{"method":"POST","path":"/v1/melt/bolt11"},{"method":"POST","path":"/v1/swap"}]},"20":{"supported":true}},"icon_url":"https://primaldata.s3.us-east-005.backblazeb2.com/cache/0/ba/15/0ba1555e9412711afd54afe773426645cca648843e61ab05556ca1300a0a830c.jpg","urls":["http://mintqfj44b66mqffbdfsl46tg3c3xcccbg5lfuhr73k7odfmw44uhdqd.onion","https://orchard.space","https://mint.nodenebula.com"],"motd":"Warning: The mint will be shutting down on July 4. Please make necessary arrangements for your account. update the mot d"}
+
+Null mins and maxes
+
+{"name":"Nico's Nutters","version":"cdk-mintd/0.8.1","description":"The sand in your hair and the wind in your nuts","description_long":" Ut suscipit condimentum quam sit amet ornare. In faucibus aliquam risus. Integer id mollis ipsum. Curabitur sed libero sed diam eleifend tempor ut ac turpis. Quisque elementum ornare turpis quis molestie. \n\nNullam ac orci mi. Aenean sagittis, sapien sit amet lacinia dictum, purus ante congue tellus, ut viverra diam magna nec mauris. Nam convallis lorem augue. Praesent commodo nulla aliquet mattis pellentesque. \n\nTester","contact":[{"method":"nostr","info":"npub1mlnt5j0exa55qrtqr4cgl3mjd6ue8k7unaw5t87w5zg635ehdu9qw8jegj"},{"method":"twitter","info":"@niconuter"},{"method":"email","info":"nicosan@niconut.com"}],"nuts":{"4":{"methods":[{"method":"bolt11","unit":"sat","description":true}],"disabled":false},"5":{"methods":[{"method":"bolt11","unit":"sat","min_amount":5,"max_amount":500,"amountless":false}],"disabled":false},"7":{"supported":true},"8":{"supported":true},"9":{"supported":true},"10":{"supported":true},"11":{"supported":true},"12":{"supported":true},"14":{"supported":true},"15":{"methods":[{"method":"bolt11","unit":"sat"}]},"17":{"supported":[{"method":"bolt11","unit":"sat","commands":[]}]},"19":{"ttl":60,"cached_endpoints":[{"method":"POST","path":"/v1/mint/bolt11"},{"method":"POST","path":"/v1/melt/bolt11"},{"method":"POST","path":"/v1/swap"}]},"20":{"supported":true}},"icon_url":"https://primaldata.s3.us-east-005.backblazeb2.com/cache/0/ba/15/0ba1555e9412711afd54afe773426645cca648843e61ab05556ca1300a0a830c.jpg","urls":["http://mintqfj44b66mqffbdfsl46tg3c3xcccbg5lfuhr73k7odfmw44uhdqd.onion","https://orchard.space","https://mint.nodenebula.com"],"motd":"Warning: The mint will be shutting down on July 4. Please make necessary arrangements for your account. update the mot d"} 
+
+-->

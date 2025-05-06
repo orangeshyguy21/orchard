@@ -1,6 +1,7 @@
 import { 
     OrchardMintBalance,
     OrchardMintInfo,
+    OrchardMintQuoteTtls,
     OrchardMintKeyset,
     OrchardMintPromise,
     OrchardMintAnalytics,
@@ -21,6 +22,10 @@ export type MintInfoResponse = {
 
 export type MintInfoRpcResponse = {
 	mint_info_rpc: OrchardMintInfoRpc;
+}
+
+export type MintQuoteTtlsResponse = {
+	mint_quote_ttl: OrchardMintQuoteTtls;
 }
 
 export type MintBalancesResponse = {

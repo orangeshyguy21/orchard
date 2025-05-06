@@ -241,6 +241,9 @@ export class OrchardNut5Method {
 	unit: string;
 
 	@Field({ nullable: true })
+	amountless?: boolean;
+
+	@Field({ nullable: true })
 	min_amount?: number;
 
 	@Field({ nullable: true })
@@ -249,6 +252,7 @@ export class OrchardNut5Method {
 	constructor(method: CashuNut5Method) {
 		this.method = method.method;
 		this.unit = method.unit;
+		this.amountless = method.amountless;
 		this.min_amount = method.min_amount;
 		this.max_amount = method.max_amount;
 	}
