@@ -11,10 +11,10 @@
                 </div>
                 <div class="config-category-rule"></div>
             </div>   
-            <orc-mint-config-form-disabled
+            <orc-mint-config-form-supported
                 [form_group]="form_minting"
                 [control_name]="'supported'"
-            ></orc-mint-config-form-disabled>
+            ></orc-mint-config-form-supported>
             <orc-mint-config-form-quote-ttl
                 [form_group]="form_minting"
                 [control_name]="'mint_ttl'"
@@ -42,10 +42,6 @@
             }
         </div>
         <div class="flex-1 flex flex-column flex-gap-2">    
-            <!-- <div>
-                <div class="title-l p-b-1">Melting &nbsp;&nbsp;<small>withdraws</small></div>
-                <div class="config-category-rule"></div>
-            </div> -->
             <div>
                 <div class="flex flex-items-center flex-gap-1 p-b-0-5">
                     <div class="protocol-spec">NUT 05</div>
@@ -56,10 +52,10 @@
                 </div>
                 <div class="config-category-rule"></div>
             </div>   
-            <orc-mint-config-form-disabled
+            <orc-mint-config-form-supported
                 [form_group]="form_melting"
                 [control_name]="'supported'"
-            ></orc-mint-config-form-disabled>
+            ></orc-mint-config-form-supported>
             <orc-mint-config-form-quote-ttl
                 [form_group]="form_melting"
                 [control_name]="'melt_ttl'"

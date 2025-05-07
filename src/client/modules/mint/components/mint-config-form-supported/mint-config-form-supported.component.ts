@@ -6,13 +6,13 @@ import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 
 
 @Component({
-	selector: 'orc-mint-config-form-disabled',
+	selector: 'orc-mint-config-form-supported',
 	standalone: false,
-	templateUrl: './mint-config-form-disabled.component.html',
-	styleUrl: './mint-config-form-disabled.component.scss',
+	templateUrl: './mint-config-form-supported.component.html',
+	styleUrl: './mint-config-form-supported.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MintConfigFormDisabledComponent {
+export class MintConfigFormSupportedComponent {
 
 	@Input() form_group!: FormGroup;
 	@Input() control_name!: string;
