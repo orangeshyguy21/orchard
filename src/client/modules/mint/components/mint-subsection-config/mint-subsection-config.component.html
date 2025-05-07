@@ -12,8 +12,9 @@
                 <div class="config-category-rule"></div>
             </div>   
             <orc-mint-config-form-supported
+                [nut]="'nut4'"
                 [form_group]="form_minting"
-                [control_name]="'supported'"
+                (update)="onSupportUpdate($event)"
             ></orc-mint-config-form-supported>
             <orc-mint-config-form-quote-ttl
                 [form_group]="form_minting"
@@ -53,8 +54,9 @@
                 <div class="config-category-rule"></div>
             </div>   
             <orc-mint-config-form-supported
+                [nut]="'nut5'"
                 [form_group]="form_melting"
-                [control_name]="'supported'"
+                (update)="onSupportUpdate($event)"
             ></orc-mint-config-form-supported>
             <orc-mint-config-form-quote-ttl
                 [form_group]="form_melting"

@@ -68,14 +68,19 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 	private patchStaticFormElements(): void {
 		this.form_config.patchValue({
 			minting: {
-				supported: !this.mint_info?.nuts.nut4.disabled,
+				supported: this.translateDisabled(this.mint_info?.nuts.nut4.disabled),
 				mint_ttl: this.translateQuoteTtl(this.quote_ttls.mint_ttl),
 			},
 			melting: {
-				supported: !this.mint_info?.nuts.nut5.disabled,
+				supported: this.translateDisabled(this.mint_info?.nuts.nut5.disabled),
 				melt_ttl: this.translateQuoteTtl(this.quote_ttls.melt_ttl),
 			},
 		});
+	}
+
+	private translateDisabled(status: boolean | undefined): boolean {
+		if(status === undefined) return false;
+		return !status;
 	}
 
 	private translateQuoteTtl(quote_ttl: number | null, to_seconds: boolean = true): number | null {
@@ -114,6 +119,24 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 					}));
 				});
 		});
+	}
+
+	public onSupportUpdate({
+		form_group,
+		nut
+	}: {
+		form_group: FormGroup,
+		nut: 'nut4' | 'nut5'
+	}): void {
+		if(form_group.get('supported')?.invalid) return;
+		form_group.get('supported')?.markAsPristine();
+		const control_value = this.translateDisabled(form_group.get('supported')?.value);
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		const unit = this.mint_info?.nuts[nut].methods[0].unit;
+		const method = this.mint_info?.nuts[nut].methods[0].method;
+		if( !unit || !method ) return this.eventService.registerEvent(new EventData({type: 'ERROR', message: 'No unit or method found'}));
+		if(nut === 'nut4') this.updateMintNut04(unit, method, 'disabled', control_value);
+		if(nut === 'nut5') this.updateMintNut05(unit, method, 'disabled', control_value);
 	}
 
 	public onTtlCancel(
@@ -199,7 +222,7 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		form_group.get(unit)?.get(method)?.get(control_name)?.setValue(old_val);
 	}
 
-	private updateMintNut04(unit:string, method:string, control_name:keyof OrchardNut4Method, control_value: any): void {
+	private updateMintNut04(unit:string, method:string, control_name:keyof OrchardNut4Method | 'disabled', control_value: any): void {
 		this.mintService.updateMintNut04(unit, method, control_name, control_value).subscribe({
 			next: (response) => {
 				const nut_method = this.mint_info?.nuts.nut4.methods.find( nut_method => nut_method.unit === unit && nut_method.method === method );
@@ -213,7 +236,7 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	private updateMintNut05(unit:string, method:string, control_name:keyof OrchardNut5Method, control_value: any): void {
+	private updateMintNut05(unit:string, method:string, control_name:keyof OrchardNut5Method | 'disabled', control_value: any): void {
 		this.mintService.updateMintNut05(unit, method, control_name, control_value).subscribe({
 			next: (response) => {
 				const nut_method = this.mint_info?.nuts.nut5.methods.find( nut_method => nut_method.unit === unit && nut_method.method === method );
