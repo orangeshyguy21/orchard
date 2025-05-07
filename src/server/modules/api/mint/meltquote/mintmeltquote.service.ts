@@ -9,8 +9,8 @@ import { OrchardApiError } from "@server/modules/graphql/classes/orchard-error.c
 import { MintService } from '@server/modules/api/mint/mint.service';
 import { ErrorService } from '@server/modules/error/error.service';
 /* Local Dependencies */
-import { OrchardMintMeltQuote, UpdateNut05Output } from './mintmeltquote.model';
-import { UpdateNut05Input } from './mintmeltquote.input';
+import { OrchardMintMeltQuote, OrchardMintNut05Update } from './mintmeltquote.model';
+import { MintNut05UpdateInput } from './mintmeltquote.input';
 
 @Injectable()
 export class MintMeltQuoteService {
@@ -39,10 +39,10 @@ export class MintMeltQuoteService {
 		});
 	}
 
-	async updateMintNut05(updateNut05Input: UpdateNut05Input) : Promise<UpdateNut05Output> {
+	async updateMintNut05(mint_nut05_update: MintNut05UpdateInput) : Promise<OrchardMintNut05Update> {
 		try {
-			await this.cashuMintRpcService.updateNut05(updateNut05Input);
-			return updateNut05Input;
+			await this.cashuMintRpcService.updateNut05(mint_nut05_update);
+			return mint_nut05_update;
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error,
 				errord: OrchardErrorCode.MintRpcActionError,

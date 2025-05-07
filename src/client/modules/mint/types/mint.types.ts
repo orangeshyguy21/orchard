@@ -14,6 +14,8 @@ import {
     OrchardMintMotdUpdate,
     OrchardMintUrlUpdate,
     OrchardMintContactUpdate,
+    OrchardMintNut04Update,
+    OrchardMintNut05Update,
 } from "@shared/generated.types";
 
 export type MintInfoResponse = {
@@ -119,4 +121,12 @@ export type MintContactAddResponse = {
 
 export type MintQuoteTtlUpdateResponse = {
 	mint_quote_ttl_update: OrchardMintQuoteTtls;
+}
+
+export type MintNut04UpdateResponse = {
+	mint_nut04_update: OrchardMintNut04Update;
+}
+
+export type MintNut05UpdateResponse = {
+	mint_nut05_update: OrchardMintNut05Update;
 }

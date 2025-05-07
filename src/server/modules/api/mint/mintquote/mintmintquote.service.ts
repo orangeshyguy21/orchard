@@ -11,8 +11,8 @@ import { MintService } from '@server/modules/api/mint/mint.service';
 import { ErrorService } from '@server/modules/error/error.service';
 /* Local Dependencies */
 import { OrchardMintMintQuote } from './mintmintquote.model';
-import { UpdateNut04Input, UpdateNut04QuoteInput } from './mintmintquote.input';
-import { UpdateNut04Output, UpdateNut04QuoteOutput } from './mintmintquote.model';
+import { MintNut04UpdateInput, MintNut04QuoteUpdateInput } from './mintmintquote.input';
+import { OrchardMintNut04Update, OrchardMintNut04QuoteUpdate } from './mintmintquote.model';
 
 @Injectable()
 export class MintMintQuoteService {
@@ -41,10 +41,10 @@ export class MintMintQuoteService {
 		});
 	}
 
-	async updateMintNut04(updateNut04Input: UpdateNut04Input) : Promise<UpdateNut04Output> {
+	async updateMintNut04(mint_nut04_update: MintNut04UpdateInput) : Promise<OrchardMintNut04Update> {
 		try {
-			await this.cashuMintRpcService.updateNut04(updateNut04Input);
-			return updateNut04Input;
+			await this.cashuMintRpcService.updateNut04(mint_nut04_update);
+			return mint_nut04_update;
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error,
 				errord: OrchardErrorCode.MintRpcActionError,
@@ -54,9 +54,9 @@ export class MintMintQuoteService {
 		}
 	}
 
-	async updateMintNut04Quote(updateNut04QuoteInput: UpdateNut04QuoteInput) : Promise<UpdateNut04QuoteOutput> {
+	async updateMintNut04Quote(mint_nut04_quote_update: MintNut04QuoteUpdateInput) : Promise<OrchardMintNut04QuoteUpdate> {
 		try {
-			return await this.cashuMintRpcService.updateNut04Quote(updateNut04QuoteInput);
+			return await this.cashuMintRpcService.updateNut04Quote(mint_nut04_quote_update);
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error,
 				errord: OrchardErrorCode.MintRpcActionError,

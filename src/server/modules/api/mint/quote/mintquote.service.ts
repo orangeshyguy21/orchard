@@ -7,7 +7,7 @@ import { OrchardApiError } from "@server/modules/graphql/classes/orchard-error.c
 import { ErrorService } from '@server/modules/error/error.service';
 /* Local Dependencies */
 import { OrchardMintQuoteTtls } from './mintquote.model';
-import { UpdateQuoteTtlInput } from './mintquote.input';
+import { MintQuoteTtlUpdateInput } from './mintquote.input';
 
 @Injectable()
 export class MintQuoteService {
@@ -31,7 +31,7 @@ export class MintQuoteService {
 		}
 	}
 
-	async updateMintQuoteTtl(mint_quote_ttl_update: UpdateQuoteTtlInput) : Promise<OrchardMintQuoteTtls> {
+	async updateMintQuoteTtl(mint_quote_ttl_update: MintQuoteTtlUpdateInput) : Promise<OrchardMintQuoteTtls> {
 		try {
 			await this.cashuMintRpcService.updateQuoteTtl(mint_quote_ttl_update);
 			return mint_quote_ttl_update;

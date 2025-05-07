@@ -1,6 +1,7 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 /* Application Dependencies */
 import { OrchardNut4Method, OrchardNut5Method } from '@shared/generated.types';
 
@@ -26,7 +27,7 @@ export class MintConfigFormBolt11Component {
 		return this.form_group.get(this.unit)?.get(this.method) as FormGroup;
 	}
 
-	public get toggle_options() : keyof OrchardNut4Method | keyof OrchardNut5Method {
+	public get toggle_control() : keyof OrchardNut4Method | keyof OrchardNut5Method {
 		return this.nut === 'nut4' ? 'description' : 'amountless';
 	}
 
@@ -43,6 +44,11 @@ export class MintConfigFormBolt11Component {
 			control_name: control_name,
 		});
     }
+
+	public onToggle(event: MatSlideToggleChange): void {
+		this.form_bolt11.get(this.toggle_control)?.setValue(event.checked);
+		this.onUpdate(this.toggle_control);
+	}
 
     public onCancel(control_name: keyof OrchardNut4Method | keyof OrchardNut5Method): void {
         this.cancel.emit({

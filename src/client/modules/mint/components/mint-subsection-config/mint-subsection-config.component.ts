@@ -140,23 +140,16 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		if(!control_name) return;
 		if(form_group.get(control_name)?.invalid) return;
 		form_group.get(control_name)?.markAsPristine();
-		const ttls: MintQuoteTtls = { mint_ttl: null, melt_ttl: null };
-		ttls[control_name] = this.translateQuoteTtl(form_group.get(control_name)?.value, false);
+		const control_value = this.translateQuoteTtl(form_group.get(control_name)?.value, false);
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		this.mintService.updateMintQuoteTtl(ttls.mint_ttl, ttls.melt_ttl).subscribe({
+		this.mintService.updateMintQuoteTtl(control_name, control_value).subscribe({
 			next: (response) => {
-				console.log(response);
 				this.quote_ttls[control_name] = this.translateQuoteTtl(response.mint_quote_ttl_update[control_name] ?? null, false);
 				this.onSuccess();
 				this.form_config.get(control_name)?.markAsPristine();
-
-				// this.quote_ttls[control_name] = 300;
-				// this.init_info.name = response.mint_name_update.name ?? null;
-				// this.onSuccess();
-				// this.form_info.get('name')?.markAsPristine();
 			},
 			error: (error) => {
-				// this.onError(error.message);
+				this.onError(error.message);
 			}
 		});
 	}
@@ -176,7 +169,13 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 			control_name: keyof OrchardNut4Method | keyof OrchardNut5Method
 		}
 	): void {
-		console.log(control_name);
+		if(!control_name) return;
+		if(form_group.get(unit)?.get(method)?.get(control_name)?.invalid) return;
+		form_group.get(unit)?.get(method)?.get(control_name)?.markAsPristine();
+		const control_value = form_group.get(unit)?.get(method)?.get(control_name)?.value;
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		if(nut === 'nut4') this.updateMintNut04(unit, method, control_name as keyof OrchardNut4Method, control_value);
+		if(nut === 'nut5') this.updateMintNut05(unit, method, control_name as keyof OrchardNut5Method, control_value);
 	}
 
 	public onMethodCancel(
@@ -200,6 +199,35 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		form_group.get(unit)?.get(method)?.get(control_name)?.setValue(old_val);
 	}
 
+	private updateMintNut04(unit:string, method:string, control_name:keyof OrchardNut4Method, control_value: any): void {
+		this.mintService.updateMintNut04(unit, method, control_name, control_value).subscribe({
+			next: (response) => {
+				const nut_method = this.mint_info?.nuts.nut4.methods.find( nut_method => nut_method.unit === unit && nut_method.method === method );
+				if( nut_method ) (nut_method as any)[control_name] = control_value;
+				this.onSuccess();
+				this.form_config.get(control_name)?.markAsPristine();
+			},
+			error: (error) => {
+				this.onError(error.message);
+			}
+		});
+	}
+
+	private updateMintNut05(unit:string, method:string, control_name:keyof OrchardNut5Method, control_value: any): void {
+		this.mintService.updateMintNut05(unit, method, control_name, control_value).subscribe({
+			next: (response) => {
+				const nut_method = this.mint_info?.nuts.nut5.methods.find( nut_method => nut_method.unit === unit && nut_method.method === method );
+				if( nut_method ) (nut_method as any)[control_name] = control_value;
+				this.onSuccess();
+				this.form_config.get(control_name)?.markAsPristine();
+			},
+			error: (error) => {
+				this.onError(error.message);
+			}
+		});
+	}
+
+
 	private onSuccess(reset: boolean = false): void {
 		this.mintService.clearInfoCache();
 		this.mintService.loadMintInfo().subscribe();
@@ -207,6 +235,13 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		if( !reset ) return;
 		this.form_config.markAsPristine();
 		this.dirty_count.set(0);
+	}
+
+	private onError(error: string): void {
+		this.eventService.registerEvent(new EventData({
+			type: 'ERROR',
+			message: error
+		}));
 	}
 
 	ngOnDestroy(): void {}

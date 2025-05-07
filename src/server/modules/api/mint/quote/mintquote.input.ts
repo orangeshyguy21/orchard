@@ -2,7 +2,7 @@
 import { InputType, Field, Int } from "@nestjs/graphql";
 
 @InputType()
-export class UpdateQuoteTtlInput {
+export class MintQuoteTtlUpdateInput {
 	@Field(() => Int, { nullable: true })
 	mint_ttl: number;
 

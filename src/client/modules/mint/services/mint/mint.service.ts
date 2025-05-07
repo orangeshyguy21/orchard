@@ -32,6 +32,8 @@ import {
 	MintContactRemoveResponse,
 	MintContactAddResponse,
 	MintQuoteTtlUpdateResponse,
+	MintNut04UpdateResponse,
+	MintNut05UpdateResponse,
 } from '@client/modules/mint/types/mint.types';
 import { CacheService } from '@client/modules/cache/services/cache/cache.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
@@ -67,6 +69,8 @@ import {
 	MINT_CONTACT_REMOVE_MUTATION,
 	MINT_CONTACT_ADD_MUTATION,
 	MINT_QUOTE_TTL_MUTATION,
+	MINT_NUT04_UPDATE_MUTATION,
+	MINT_NUT05_UPDATE_MUTATION,
 } from './mint.queries';
 
 
@@ -609,8 +613,8 @@ export class MintService {
 		);
 	}
 
-	public updateMintQuoteTtl(mint_ttl:number|null, melt_ttl:number|null) : Observable<MintQuoteTtlUpdateResponse> {
-		const query = getApiQuery(MINT_QUOTE_TTL_MUTATION,  { mint_quote_ttl_update: { mint_ttl, melt_ttl } });
+	public updateMintQuoteTtl(key:keyof MintQuoteTtls, value:number|null) : Observable<MintQuoteTtlUpdateResponse> {
+		const query = getApiQuery(MINT_QUOTE_TTL_MUTATION,  { mint_quote_ttl_update: { [key]: value } });
 		return this.http.post<OrchardRes<MintQuoteTtlUpdateResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
@@ -622,6 +626,36 @@ export class MintService {
 			})
 		);
 	}
+
+	public updateMintNut04(unit:string, method:string, key:string, value:any) : Observable<MintNut04UpdateResponse> {
+		const query = getApiQuery(MINT_NUT04_UPDATE_MUTATION, { mint_nut04_update: { unit, method, [key]: value } });
+		return this.http.post<OrchardRes<MintNut04UpdateResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error updating mint nut04:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public updateMintNut05(unit:string, method:string, key:string, value:any) : Observable<MintNut05UpdateResponse> {
+		const query = getApiQuery(MINT_NUT05_UPDATE_MUTATION, { mint_nut05_update: { unit, method, [key]: value } });
+		return this.http.post<OrchardRes<MintNut05UpdateResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error updating mint nut05:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+	
+	
 
 	public updateMint(mutation:string, variables:Record<string, any>) {
 		const query = getApiQuery(mutation, variables);

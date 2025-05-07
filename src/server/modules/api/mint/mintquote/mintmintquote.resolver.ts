@@ -7,8 +7,8 @@ import { MintUnit, MintQuoteStatus } from "@server/modules/cashu/cashu.enums";
 /* Local Dependencies */
 import { MintMintQuoteService } from "./mintmintquote.service";
 import { OrchardMintMintQuote } from "./mintmintquote.model";
-import { UpdateNut04Input, UpdateNut04QuoteInput } from "./mintmintquote.input";
-import { UpdateNut04Output, UpdateNut04QuoteOutput } from "./mintmintquote.model";
+import { MintNut04UpdateInput, MintNut04QuoteUpdateInput } from "./mintmintquote.input";
+import { OrchardMintNut04Update, OrchardMintNut04QuoteUpdate } from "./mintmintquote.model";
 
 @Resolver(() => [OrchardMintMintQuote])
 export class MintMintQuoteResolver {
@@ -31,15 +31,15 @@ export class MintMintQuoteResolver {
 	}
 
 
-	@Mutation(() => UpdateNut04Output)
-	async update_mint_nut04(@Args('updateNut04Input') updateNut04Input: UpdateNut04Input): Promise<UpdateNut04Output> {
-		this.logger.debug(`MUTATION { update_mint_nut04 }`);
-		return await this.mintMintQuoteService.updateMintNut04(updateNut04Input);
+	@Mutation(() => OrchardMintNut04Update)
+	async mint_nut04_update(@Args('mint_nut04_update') mint_nut04_update: MintNut04UpdateInput): Promise<OrchardMintNut04Update> {
+		this.logger.debug(`MUTATION { mint_nut04_update }`);
+		return await this.mintMintQuoteService.updateMintNut04(mint_nut04_update);
 	}
 
-	@Mutation(() => UpdateNut04QuoteOutput)
-	async update_mint_nut04_quote(@Args('updateNut04QuoteInput') updateNut04QuoteInput: UpdateNut04QuoteInput): Promise<UpdateNut04QuoteOutput> {
-		this.logger.debug(`MUTATION { update_mint_nut04_quote }`);
-		return await this.mintMintQuoteService.updateMintNut04Quote(updateNut04QuoteInput);
+	@Mutation(() => OrchardMintNut04QuoteUpdate)
+	async mint_nut04_quote_update(@Args('mint_nut04_quote_update') mint_nut04_quote_update: MintNut04QuoteUpdateInput): Promise<OrchardMintNut04QuoteUpdate> {
+		this.logger.debug(`MUTATION { mint_nut04_quote_update }`);
+		return await this.mintMintQuoteService.updateMintNut04Quote(mint_nut04_quote_update);
 	}
 }

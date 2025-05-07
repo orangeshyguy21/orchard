@@ -90,21 +90,21 @@ export class CashuMintRpcService implements OnModuleInit {
         unit,
         method,
         disabled,
-        min,
-        max,
+        min_amount,
+        max_amount,
         description
     }: {
         unit: string,
         method: string,
         disabled?: boolean,
-        min?: number,
-        max?: number,
+        min_amount?: number,
+        max_amount?: number,
         description?: boolean 
     }) : Promise<{}> {
         const request: any = { unit, method };
         if (disabled !== undefined) request.disabled = disabled;
-        if (min !== undefined) request.min = min;
-        if (max !== undefined) request.max = max;
+        if (min_amount !== undefined) request.min = min_amount;
+        if (max_amount !== undefined) request.max = max_amount;
         if (description !== undefined) request.description = description;
         return this.makeGrpcRequest('UpdateNut04', request);
     }
@@ -113,20 +113,22 @@ export class CashuMintRpcService implements OnModuleInit {
         unit,
         method,
         disabled,
-        min,
-        max
+        min_amount,
+        max_amount,
+        amountless
     }: {
         unit: string,
         method: string,
         disabled?: boolean,
-        min?: number,
-        max?: number 
+        min_amount?: number,
+        max_amount?: number,
+        amountless?: boolean 
     }) : Promise<{}> {
         const request: any = { unit, method };
         if (disabled !== undefined) request.disabled = disabled;
-        if (min !== undefined) request.min = min;
-        if (max !== undefined) request.max = max;
-        console.log(request);
+        if (min_amount !== undefined) request.min = min_amount;
+        if (max_amount !== undefined) request.max = max_amount;
+        if (amountless !== undefined) request.amountless = amountless;
         return this.makeGrpcRequest('UpdateNut05', request);
     }
 

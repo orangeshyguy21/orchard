@@ -73,6 +73,8 @@
                                     [unit]="unit"
                                     [method]="method.method"
                                     [form_group]="form_melting"
+                                    (update)="onMethodUpdate($event)"
+                                    (cancel)="onMethodCancel($event)"
                                 ></orc-mint-config-form-bolt11>
                             }
                         }

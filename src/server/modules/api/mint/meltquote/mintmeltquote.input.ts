@@ -2,7 +2,7 @@
 import { InputType, Field, Int } from "@nestjs/graphql";
 
 @InputType()
-export class UpdateNut05Input {
+export class MintNut05UpdateInput {
 	@Field()
 	unit: string;
 
@@ -13,8 +13,8 @@ export class UpdateNut05Input {
 	disabled: boolean;  
 
 	@Field(() => Int, { nullable: true })
-	min: number;
+	min_amount: number;
 
 	@Field(() => Int, { nullable: true })
-	max: number;
+	max_amount: number;
 }
