@@ -261,3 +261,31 @@ mutation MintContactAdd($contact_add: MintContactUpdateInput!) {
 		info
 	}
 }`;
+
+export const MINT_QUOTE_TTL_MUTATION = `
+mutation MintQuoteTtl($mint_quote_ttl_update: UpdateQuoteTtlInput!) {
+	mint_quote_ttl_update(mint_quote_ttl_update: $mint_quote_ttl_update) {
+		mint_ttl
+		melt_ttl
+	}
+}`;
+
+// export const MINT_NAME_MUTATION = `
+// mutation MintName($mint_name_update: MintNameUpdateInput!) {
+// 	mint_name_update(mint_name_update: $mint_name_update) {
+// 		name
+// 	}
+// }`;
+
+// # mutation{
+// 	# 	update_mint_quote_ttl(updateQuoteTtlInput:{mint_ttl:30000}){
+// 	#     mint_ttl
+// 	#   }
+// 	# }
+	
+
+// @Mutation(() => OrchardMintNameUpdate)
+// async mint_name_update(@Args('mint_name_update') mint_name_update: MintNameUpdateInput): Promise<OrchardMintNameUpdate> {
+// 	this.logger.debug(`MUTATION { mint_name_update }`);
+// 	return await this.mintInfoService.updateMintName(mint_name_update);
+// }

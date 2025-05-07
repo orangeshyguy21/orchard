@@ -116,3 +116,7 @@ export type MintContactRemoveResponse = {
 export type MintContactAddResponse = {
 	mint_contact_add: OrchardMintContactUpdate;
 }
+
+export type MintQuoteTtlUpdateResponse = {
+	mint_quote_ttl_update: OrchardMintQuoteTtls;
+}

@@ -118,6 +118,7 @@ type Mutation {
   mint_long_description_update(mint_desc_update: MintDescriptionUpdateInput!): OrchardMintDescriptionUpdate!
   mint_motd_update(mint_motd_update: MintMotdUpdateInput!): OrchardMintMotdUpdate!
   mint_name_update(mint_name_update: MintNameUpdateInput!): OrchardMintNameUpdate!
+  mint_quote_ttl_update(mint_quote_ttl_update: UpdateQuoteTtlInput!): OrchardMintQuoteTtls!
   mint_rotate_keyset(mint_rotate_keyset: MintRotateKeysetInput!): MintRotateKeysetOutput!
   mint_short_description_update(mint_desc_update: MintDescriptionUpdateInput!): OrchardMintDescriptionUpdate!
   mint_url_add(mint_url_update: MintUrlUpdateInput!): OrchardMintUrlUpdate!
@@ -125,7 +126,6 @@ type Mutation {
   update_mint_nut04(updateNut04Input: UpdateNut04Input!): UpdateNut04Output!
   update_mint_nut04_quote(updateNut04QuoteInput: UpdateNut04QuoteInput!): UpdateNut04QuoteOutput!
   update_mint_nut05(updateNut05Input: UpdateNut05Input!): UpdateNut05Output!
-  update_mint_quote_ttl(updateQuoteTtlInput: UpdateQuoteTtlInput!): OrchardMintQuoteTtls!
 }
 
 type OrchardAiChatChunk {

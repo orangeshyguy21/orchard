@@ -31,6 +31,7 @@ import {
 	MintContactUpdateResponse,
 	MintContactRemoveResponse,
 	MintContactAddResponse,
+	MintQuoteTtlUpdateResponse,
 } from '@client/modules/mint/types/mint.types';
 import { CacheService } from '@client/modules/cache/services/cache/cache.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
@@ -65,6 +66,7 @@ import {
 	MINT_CONTACT_UPDATE_MUTATIONS,
 	MINT_CONTACT_REMOVE_MUTATION,
 	MINT_CONTACT_ADD_MUTATION,
+	MINT_QUOTE_TTL_MUTATION,
 } from './mint.queries';
 
 
@@ -602,6 +604,20 @@ export class MintService {
 			}),
 			catchError((error) => {
 				console.error('Error adding mint contact:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public updateMintQuoteTtl(mint_ttl:number|null, melt_ttl:number|null) : Observable<MintQuoteTtlUpdateResponse> {
+		const query = getApiQuery(MINT_QUOTE_TTL_MUTATION,  { mint_quote_ttl_update: { mint_ttl, melt_ttl } });
+		return this.http.post<OrchardRes<MintQuoteTtlUpdateResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error updating mint quote ttl:', error);
 				return throwError(() => error);
 			})
 		);

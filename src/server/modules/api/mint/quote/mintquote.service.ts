@@ -31,10 +31,10 @@ export class MintQuoteService {
 		}
 	}
 
-	async updateMintQuoteTtl(updateQuoteTtlInput: UpdateQuoteTtlInput) : Promise<OrchardMintQuoteTtls> {
+	async updateMintQuoteTtl(mint_quote_ttl_update: UpdateQuoteTtlInput) : Promise<OrchardMintQuoteTtls> {
 		try {
-			await this.cashuMintRpcService.updateQuoteTtl(updateQuoteTtlInput);
-			return updateQuoteTtlInput;
+			await this.cashuMintRpcService.updateQuoteTtl(mint_quote_ttl_update);
+			return mint_quote_ttl_update;
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error,
 				errord: OrchardErrorCode.MintRpcActionError,

@@ -1,12 +1,16 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, WritableSignal, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { toObservable } from '@angular/core/rxjs-interop';
 /* Application Dependencies */
-import { MintService } from '@client/modules/mint/services/mint/mint.service';
-import { MintQuoteTtls } from '@client/modules/mint/classes/mint-quote-ttls.class';
-import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
+import { EventService } from '@client/modules/event/services/event/event.service';
 import { validateMicros } from '@client/modules/form/helpers/validate-micros';
+import { EventData } from '@client/modules/event/classes/event-data.class';
+/* Native Dependencies */
+import { MintService } from '@client/modules/mint/services/mint/mint.service';
+import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
+import { MintQuoteTtls } from '@client/modules/mint/classes/mint-quote-ttls.class';
 /* Shared Dependencies */
 import { OrchardNut4Method, OrchardNut5Method } from '@shared/generated.types';
 
@@ -43,48 +47,13 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		return this.form_config.get('melting') as FormGroup;
 	}
 
-	// private test: FormGroup = new FormGroup({
-	// 	minting: new FormGroup({
-	// 		disabled: new FormControl(),
-	// 		quote_ttl: new FormControl(),
-	// 		sat: new FormGroup({
-	// 			bolt11:  new FormGroup({
-	// 				max_amount: new FormControl(),
-	// 				min_amount: new FormControl(),
-	// 				description: new FormControl(),
-	// 			}),				
-	// 		}),
-	// 		usd: new FormGroup({
-	// 			bolt11:  new FormGroup({
-	// 				max_amount: new FormControl(),
-	// 				min_amount: new FormControl(),
-	// 				description: new FormControl(),
-	// 			}),
-	// 		}),
-	// 	}),
-	// 	melting: new FormGroup({
-	// 		disabled: new FormControl(),
-	// 		quote_ttl: new FormControl(),
-	// 		sat: new FormGroup({
-	// 			bolt11:  new FormGroup({
-	// 				max_amount: new FormControl(),
-	// 				min_amount: new FormControl(),
-	// 				amountless: new FormControl(),
-	// 			}),
-	// 		}),
-	// 		usd: new FormGroup({
-	// 			bolt11:  new FormGroup({
-	// 				max_amount: new FormControl(),
-	// 				min_amount: new FormControl(),
-	// 				amountless: new FormControl(),
-	// 			}),
-	// 		}),
-	// 	}),
-	// });
+	private dirty_count: WritableSignal<number> = signal(0);
+	private dirty_count$ = toObservable(this.dirty_count);
 
 	constructor(
 		public mintService: MintService,
 		public route: ActivatedRoute,
+		public eventService: EventService,
 	) {}
 
 	ngOnInit(): void {	
@@ -109,8 +78,9 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	private translateQuoteTtl(quote_ttl: number | null): number | null {
-		return (quote_ttl) ? (quote_ttl/1000) : null;
+	private translateQuoteTtl(quote_ttl: number | null, to_seconds: boolean = true): number | null {
+		const factor = to_seconds ? (1/1000) : 1000;
+		return (quote_ttl) ? (quote_ttl * factor) : null;
 	}
 
 	private getUniqueUnits(nut: 'nut4' | 'nut5'): string[] {
@@ -167,9 +137,28 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 			form_group: FormGroup,
 			control_name: keyof MintQuoteTtls
 		}): void {
-		// if(!control_name) return;
-		// form_group.get(control_name)?.markAsDirty();
-		// form_group.get(control_name)?.setValue(this.quote_ttls[control_name]);
+		if(!control_name) return;
+		if(form_group.get(control_name)?.invalid) return;
+		form_group.get(control_name)?.markAsPristine();
+		const ttls: MintQuoteTtls = { mint_ttl: null, melt_ttl: null };
+		ttls[control_name] = this.translateQuoteTtl(form_group.get(control_name)?.value, false);
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		this.mintService.updateMintQuoteTtl(ttls.mint_ttl, ttls.melt_ttl).subscribe({
+			next: (response) => {
+				console.log(response);
+				this.quote_ttls[control_name] = this.translateQuoteTtl(response.mint_quote_ttl_update[control_name] ?? null, false);
+				this.onSuccess();
+				this.form_config.get(control_name)?.markAsPristine();
+
+				// this.quote_ttls[control_name] = 300;
+				// this.init_info.name = response.mint_name_update.name ?? null;
+				// this.onSuccess();
+				// this.form_info.get('name')?.markAsPristine();
+			},
+			error: (error) => {
+				// this.onError(error.message);
+			}
+		});
 	}
 
 	public onMethodUpdate(
@@ -209,6 +198,15 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		const nut_method = this.mint_info?.nuts[nut].methods.find( nut_method => nut_method.unit === unit && nut_method.method === method );
 		let old_val = (nut === 'nut4') ? (nut_method as OrchardNut4Method)?.[control_name as keyof OrchardNut4Method] : (nut_method as OrchardNut5Method)?.[control_name as keyof OrchardNut5Method];
 		form_group.get(unit)?.get(method)?.get(control_name)?.setValue(old_val);
+	}
+
+	private onSuccess(reset: boolean = false): void {
+		this.mintService.clearInfoCache();
+		this.mintService.loadMintInfo().subscribe();
+		this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
+		if( !reset ) return;
+		this.form_config.markAsPristine();
+		this.dirty_count.set(0);
 	}
 
 	ngOnDestroy(): void {}
