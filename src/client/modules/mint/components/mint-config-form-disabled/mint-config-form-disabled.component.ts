@@ -23,7 +23,4 @@ export class MintConfigFormDisabledComponent {
 		console.log(event);
 		this.form_group.get(this.control_name)?.setValue(!event.checked);
 	}
-
-	// public supported = new FormControl(false);
-
 }

@@ -9,7 +9,8 @@
                 <div>{{ unit | titlecase }} Configuration</div>
             }
         </div>
-        <div>{{ method }}</div>
+        <!-- <div>{{ method }}</div> -->
+        <div class="protocol-spec">BOLT 11</div>
     </div>
 
     <div class="flex flex-column flex-gap-1">
@@ -25,8 +26,8 @@
             (update)="onUpdate($event)"
             (cancel)="onCancel($event)"
         ></orc-mint-config-form-max>
-        <div class="flex flex-items-center flex-gap-1">
-            <div class="flex flex-items-center flex-grow">
+        <div class="flex flex-items-center flex-gap-2">
+            <div class="flex-1 flex flex-items-center flex-grow">
                 <mat-slide-toggle
                     [checked]="form_bolt11.get(this.toggle_options)?.value"
                     name="description">
@@ -35,7 +36,11 @@
                     {{ this.toggle_control_name }}
                 </div>
             </div>
-            <div class="font-size-xs w-max-18">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
+            <div class="flex-1">
+                <orc-help-text>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                </orc-help-text>
+            </div>
         </div>
     </div>
 </div>

@@ -1,7 +1,7 @@
 <div class="mint-config-form-quote-ttl-container">
-    <div class="flex flex-gap-1">
+    <div class="flex flex-gap-2">
         <form
-            class="flex-grow"
+            class="flex-grow flex-1"
             [formGroup]="form_group"
             (ngSubmit)="onSubmit($event)"
             (keydown.enter)="onSubmit($event)"
@@ -34,6 +34,10 @@
                 </mat-form-field>
             </orc-dynamic-form-field>
         </form>
-        <div class="font-size-xs w-max-18">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+        <div class="flex-1">
+            <orc-help-text>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            </orc-help-text>
+        </div>
     </div>
 </div>

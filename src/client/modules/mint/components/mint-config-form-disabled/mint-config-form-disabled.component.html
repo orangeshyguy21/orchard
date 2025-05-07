@@ -1,6 +1,6 @@
 <div class="mint-config-form-disabled-container">
-    <div class="flex flex-items-center flex-gap-1">
-        <div class="flex flex-items-center flex-grow">
+    <div class="flex flex-items-center flex-gap-2">
+        <div class="flex-1 flex flex-items-center flex-grow">
             <mat-slide-toggle
                 [checked]="form_group.get(control_name)?.value"
                 (change)="onChange($event)"
@@ -10,6 +10,10 @@
                 Supported
             </div>
         </div>
-        <div class="font-size-xs w-max-18">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
+        <div class="flex-1">
+            <orc-help-text>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </orc-help-text>
+        </div>
     </div>
 </div>

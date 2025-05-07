@@ -9,12 +9,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { AutoGrowDirective } from '@client/modules/form/directives/auto-grow.directive';
 import { DynamicFormFieldComponent } from './components/dynamic-form-field/dynamic-form-field.component';
 import { AddFormArrayItemComponent } from './components/add-form-array-item/add-form-array-item.component';
+import { HelpTextComponent } from './components/help-text/help-text.component';
 
 @NgModule({
 	declarations: [
 		AutoGrowDirective,
   		DynamicFormFieldComponent,
     	AddFormArrayItemComponent,
+     	HelpTextComponent,
 	],
 	imports: [
 		CommonModule,
@@ -26,6 +28,7 @@ import { AddFormArrayItemComponent } from './components/add-form-array-item/add-
 		AutoGrowDirective,
 		DynamicFormFieldComponent,
 		AddFormArrayItemComponent,
+		HelpTextComponent,
 	]
 })
 export class FormModule { }

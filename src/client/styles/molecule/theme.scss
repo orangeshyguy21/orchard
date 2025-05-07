@@ -16,6 +16,8 @@
     #{$c}orc-error-bg { background-color: var(--mat-sys-error); }
     #{$c}orc-warning-bg { background-color: var(--orc-status-warning); }
     #{$c}orc-on-warning-bg { background-color: var(--orc-on-warning-bg); }
+    #{$c}orc-primary-fixed-dim-bg { background-color: var(--mat-sys-primary-fixed-dim); }
+    #{$c}orc-inverse-primary-bg { background-color: var(--mat-sys-inverse-primary); }
     // Background Colors (with transparency)
     #{$c}orc-shadow-bg { background-color: color-mix(in srgb, var(--mat-sys-shadow), transparent 50%); }
 
@@ -36,6 +38,7 @@
     #{$c}orc-on-error-color { color: var(--mat-sys-on-error); }
     #{$c}orc-error-color { color: var(--mat-sys-error); }
     #{$c}orc-on-error-container-color { color: var(--mat-sys-on-error-container); }
+    #{$c}orc-on-primary-fixed-color { color: var(--mat-sys-on-primary-fixed); }
 
     // Fill Colors
     #{$c}orc-brand-lightest-fill { fill: var(--orc-sys-brand-lightest); }
