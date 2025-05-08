@@ -5,13 +5,13 @@ import { FormGroup } from '@angular/forms';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 
 @Component({
-	selector: 'orc-mint-config-form-supported',
+	selector: 'orc-mint-config-form-enabled',
 	standalone: false,
-	templateUrl: './mint-config-form-supported.component.html',
-	styleUrl: './mint-config-form-supported.component.scss',
+	templateUrl: './mint-config-form-enabled.component.html',
+	styleUrl: './mint-config-form-enabled.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MintConfigFormSupportedComponent {
+export class MintConfigFormEnabledComponent {
 
 	@Input() nut!: 'nut4' | 'nut5';
 	@Input() form_group!: FormGroup;
@@ -21,7 +21,7 @@ export class MintConfigFormSupportedComponent {
 	constructor() {}
 
 	public onChange(event: MatSlideToggleChange): void {
-		this.form_group.get('supported')?.setValue(event.checked);
+		this.form_group.get('enabled')?.setValue(event.checked);
 		this.update.emit({form_group: this.form_group, nut: this.nut});
 	}
 }

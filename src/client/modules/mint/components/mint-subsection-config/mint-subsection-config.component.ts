@@ -30,11 +30,11 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 
 	public form_config: FormGroup = new FormGroup({
 		minting: new FormGroup({
-			supported: new FormControl(),
+			enabled: new FormControl(),
 			mint_ttl: new FormControl(null, [Validators.required, Validators.min(1), Validators.max(3600), validateMicros]),
 		}),
 		melting: new FormGroup({
-			supported: new FormControl(),
+			enabled: new FormControl(),
 			melt_ttl: new FormControl(null, [Validators.required, Validators.min(1), Validators.max(3600), validateMicros]),
 		}),
 	});
@@ -68,11 +68,11 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 	private patchStaticFormElements(): void {
 		this.form_config.patchValue({
 			minting: {
-				supported: this.translateDisabled(this.mint_info?.nuts.nut4.disabled),
+				enabled: this.translateDisabled(this.mint_info?.nuts.nut4.disabled),
 				mint_ttl: this.translateQuoteTtl(this.quote_ttls.mint_ttl),
 			},
 			melting: {
-				supported: this.translateDisabled(this.mint_info?.nuts.nut5.disabled),
+				enabled: this.translateDisabled(this.mint_info?.nuts.nut5.disabled),
 				melt_ttl: this.translateQuoteTtl(this.quote_ttls.melt_ttl),
 			},
 		});
@@ -121,16 +121,16 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	public onSupportUpdate({
+	public onEnabledUpdate({
 		form_group,
 		nut
 	}: {
 		form_group: FormGroup,
 		nut: 'nut4' | 'nut5'
 	}): void {
-		if(form_group.get('supported')?.invalid) return;
-		form_group.get('supported')?.markAsPristine();
-		const control_value = this.translateDisabled(form_group.get('supported')?.value);
+		if(form_group.get('enabled')?.invalid) return;
+		form_group.get('enabled')?.markAsPristine();
+		const control_value = this.translateDisabled(form_group.get('enabled')?.value);
 
 		(control_value) ? form_group.disable() : form_group.enable();
 

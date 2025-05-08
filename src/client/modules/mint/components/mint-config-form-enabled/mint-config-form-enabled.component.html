@@ -2,12 +2,12 @@
     <div class="flex flex-items-center flex-gap-2">
         <div class="flex-1 flex flex-items-center flex-grow">
             <mat-slide-toggle
-                [checked]="form_group.get('supported')?.value"
+                [checked]="form_group.get('enabled')?.value"
                 (change)="onChange($event)"
-                name="supported">
+                name="enabled">
             </mat-slide-toggle>
             <div class="p-l-1 font-size-s">
-                Supported
+                Enabled
             </div>
         </div>
         <div class="flex-1">

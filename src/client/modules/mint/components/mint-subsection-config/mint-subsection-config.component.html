@@ -11,11 +11,11 @@
                 </div>
                 <div class="config-category-rule"></div>
             </div>   
-            <orc-mint-config-form-supported
+            <orc-mint-config-form-enabled
                 [nut]="'nut4'"
                 [form_group]="form_minting"
-                (update)="onSupportUpdate($event)"
-            ></orc-mint-config-form-supported>
+                (update)="onEnabledUpdate($event)"
+            ></orc-mint-config-form-enabled>
             <orc-mint-config-form-quote-ttl
                 [form_group]="form_minting"
                 [control_name]="'mint_ttl'"
@@ -53,11 +53,11 @@
                 </div>
                 <div class="config-category-rule"></div>
             </div>   
-            <orc-mint-config-form-supported
+            <orc-mint-config-form-enabled
                 [nut]="'nut5'"
                 [form_group]="form_melting"
-                (update)="onSupportUpdate($event)"
-            ></orc-mint-config-form-supported>
+                (update)="onEnabledUpdate($event)"
+            ></orc-mint-config-form-enabled>
             <orc-mint-config-form-quote-ttl
                 [form_group]="form_melting"
                 [control_name]="'melt_ttl'"
