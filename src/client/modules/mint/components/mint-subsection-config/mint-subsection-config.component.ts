@@ -4,10 +4,14 @@ import { ActivatedRoute } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { trigger, transition, style, animate } from '@angular/animations';
+/* Vendor Dependencies */
+import { Subscription } from 'rxjs';
 /* Application Dependencies */
 import { EventService } from '@client/modules/event/services/event/event.service';
 import { OrchardValidators } from '@client/modules/form/validators';
 import { EventData } from '@client/modules/event/classes/event-data.class';
+import { AiService } from '@client/modules/ai/services/ai/ai.service';
+import { AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
 /* Native Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
@@ -59,6 +63,8 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		return this.form_config.get('melting') as FormGroup;
 	}
 
+	private subscriptions: Subscription = new Subscription();
+	private active_event: EventData | null = null;
 	private dirty_count: WritableSignal<number> = signal(0);
 	private dirty_count$ = toObservable(this.dirty_count);
 
@@ -66,6 +72,7 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		public mintService: MintService,
 		public route: ActivatedRoute,
 		public eventService: EventService,
+		public aiService: AiService,
 	) {}
 
 	ngOnInit(): void {	
@@ -79,6 +86,62 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 			const form_group = this.form_config.get(form_group_key) as FormGroup;
 			if( form_group.get('enabled')?.value === false ) form_group.disable();
 		});
+		const agent_subscription = this.getAgentSubscription();
+		const tool_subscription = this.getToolSubscription();
+		const event_subscription = this.getEventSubscription();
+		const form_subscription = this.getFormSubscription();
+		const dirty_count_subscription = this.getDirtyCountSubscription();
+		this.subscriptions.add(agent_subscription);
+		this.subscriptions.add(tool_subscription);	
+		this.subscriptions.add(event_subscription);
+		this.subscriptions.add(form_subscription);
+		this.subscriptions.add(dirty_count_subscription);
+	}
+
+	private getAgentSubscription(): Subscription {
+		return this.aiService.agent_requests$
+			.subscribe(({ agent, content }) => {
+				const form_string = JSON.stringify(this.form_config.value);
+				this.aiService.openAiSocket(agent, content, form_string);
+			});
+	}
+
+	private getToolSubscription(): Subscription {
+		return this.aiService.tool_calls$
+			.subscribe((tool_call: AiChatToolCall) => {
+				this.executeAgentFunction(tool_call);
+			});
+	}
+
+	private getEventSubscription(): Subscription {
+		return this.eventService.getActiveEvent()
+			.subscribe((event_data: EventData | null) => {
+				this.active_event = event_data;
+				if( event_data?.confirmed ) this.onConfirmedEvent();
+				if( event_data === null ) this.evaluateDirtyCount();
+			});
+	}
+
+	private getFormSubscription(): Subscription {
+		return this.form_config.valueChanges.subscribe(() => {
+			this.evaluateDirtyCount();
+		});
+	}
+
+	private evaluateDirtyCount(): void {
+		// const count = Object.keys(this.form_info.controls).filter(key => this.form_info.get(key)?.dirty).length;
+		// this.dirty_count.set(count);
+		// this.cdr.detectChanges();
+	}
+
+	private getDirtyCountSubscription(): Subscription {
+		return this.dirty_count$.subscribe((count) => {
+			this.createPendingEvent(count);
+		});
+	}
+
+	private executeAgentFunction(tool_call: AiChatToolCall): void {
+		// todo
 	}
 
 	private patchStaticFormElements(): void {
@@ -108,6 +171,15 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		const unit_set = new Set<string>();
 		this.mint_info?.nuts[nut].methods.forEach( method => unit_set.add(method.unit));
 		return Array.from(unit_set);
+	}
+
+	private createPendingEvent(count: number): void {
+		if( count === 0 && this.active_event?.type !== 'PENDING' ) return;
+		if( count === 0 ) return this.eventService.registerEvent(null);
+		this.eventService.registerEvent(new EventData({
+			type: 'PENDING',
+			message: count.toString(),
+		}));
 	}
 
 	private buildDynamicFormElements(): void {
@@ -190,16 +262,7 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		form_group.get(control_name)?.markAsPristine();
 		const control_value = this.translateQuoteTtl(form_group.get(control_name)?.value, false);
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		this.mintService.updateMintQuoteTtl(control_name, control_value).subscribe({
-			next: (response) => {
-				this.quote_ttls[control_name] = this.translateQuoteTtl(response.mint_quote_ttl_update[control_name] ?? null, false);
-				this.onSuccess();
-				this.form_config.get(control_name)?.markAsPristine();
-			},
-			error: (error) => {
-				this.onError(error.message);
-			}
-		});
+		this.updateMintTtl(control_name, control_value);
 	}
 
 	public onMethodUpdate(
@@ -245,6 +308,23 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		const nut_method = this.mint_info?.nuts[nut].methods.find( nut_method => nut_method.unit === unit && nut_method.method === method );
 		let old_val = (nut === 'nut4') ? (nut_method as OrchardNut4Method)?.[control_name as keyof OrchardNut4Method] : (nut_method as OrchardNut5Method)?.[control_name as keyof OrchardNut5Method];
 		form_group.get(unit)?.get(method)?.get(control_name)?.setValue(old_val);
+	}
+
+	private onConfirmedEvent(): void {
+		// @todo batch updates
+	}
+
+	private updateMintTtl(control_name: keyof MintQuoteTtls, control_value: any): void {
+		this.mintService.updateMintQuoteTtl(control_name, control_value).subscribe({
+			next: (response) => {
+				this.quote_ttls[control_name] = this.translateQuoteTtl(response.mint_quote_ttl_update[control_name] ?? null, false);
+				this.onSuccess();
+				this.form_config.get(control_name)?.markAsPristine();
+			},
+			error: (error) => {
+				this.onError(error.message);
+			}
+		});
 	}
 
 	private updateMintNut04(unit:string, method:string, control_name:keyof OrchardNut4Method | 'disabled', control_value: any): void {
