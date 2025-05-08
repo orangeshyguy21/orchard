@@ -21,7 +21,6 @@
                         type="number" 
                         step="1"
                         min="0"
-                        max="3600"
                         matInput 
                         [formControlName]="control_name" 
                         placeholder="Ex. 30"
@@ -30,13 +29,13 @@
                     @if (form_group.get(control_name)?.invalid && (form_group.get(control_name)?.dirty || form_group.get(control_name)?.touched)) {
                         <mat-error class="font-size-xs">
                             @if (form_group.get(control_name)?.hasError('required')) {
-                                TTL is required
+                                Required
                             } @else if (form_group.get(control_name)?.hasError('min')) {
-                                TTL must be at least {{form_group.get(control_name)?.getError('min')?.min}} second
+                                Must be at least {{form_group.get(control_name)?.getError('min')?.min}} second
                             } @else if (form_group.get(control_name)?.hasError('max')) {
-                                TTL cannot exceed {{form_group.get(control_name)?.getError('max')?.max}} seconds
+                                Cannot exceed {{form_group.get(control_name)?.getError('max')?.max}} seconds
                             } @else if (form_group.get(control_name)?.hasError('orchardMicros')) {
-                                Invalid TTL format
+                                Invalid format
                             } @else {
                                 Invalid TTL
                             }

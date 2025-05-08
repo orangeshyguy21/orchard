@@ -104,13 +104,13 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 			this.mint_info?.nuts.nut4.methods
 				.filter( method => method.unit === unit)
 				.forEach( method => {
+					const min_validators = [Validators.required, Validators.min(0)];
+					(method.unit === 'sat') ? min_validators.push(OrchardValidators.integer) : min_validators.push(OrchardValidators.cents);
+					const max_validators = [Validators.required, OrchardValidators.minGreaterThan('min_amount')];
+					(method.unit === 'sat') ? max_validators.push(OrchardValidators.integer) : max_validators.push(OrchardValidators.cents);
 					(this.form_minting.get(unit) as FormGroup).addControl(method.method, new FormGroup({
-						min_amount: new FormControl(method.min_amount, [Validators.required, Validators.min(0)]),
-						// max_amount: new FormControl(method.max_amount, [Validators.required, Validators.min(0)]),
-						max_amount: new FormControl(method.max_amount, [
-							Validators.required,
-							OrchardValidators.minGreaterThan('min_amount')
-						]),
+						min_amount: new FormControl(method.min_amount, min_validators),
+						max_amount: new FormControl(method.max_amount, max_validators),
 						description: new FormControl(method.description),
 					}));
 				});
@@ -120,13 +120,13 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 			this.mint_info?.nuts.nut5.methods
 				.filter( method => method.unit === unit)
 				.forEach( method => {
+					const min_validators = [Validators.required, Validators.min(0)];
+					(method.unit === 'sat') ? min_validators.push(OrchardValidators.integer) : min_validators.push(OrchardValidators.cents);
+					const max_validators = [Validators.required, OrchardValidators.minGreaterThan('min_amount')];
+					(method.unit === 'sat') ? max_validators.push(OrchardValidators.integer) : max_validators.push(OrchardValidators.cents);
 					(this.form_melting.get(unit) as FormGroup).addControl(method.method, new FormGroup({
-						min_amount: new FormControl(method.min_amount, [Validators.required, Validators.min(0)]),
-						// max_amount: new FormControl(method.max_amount, [Validators.required, Validators.min(0)]),
-						max_amount: new FormControl(method.max_amount, [
-							Validators.required,
-							OrchardValidators.minGreaterThan('min_amount')
-						]),
+						min_amount: new FormControl(method.min_amount, min_validators),
+						max_amount: new FormControl(method.max_amount, max_validators),
 						amountless: new FormControl({ value: method.amountless, disabled: true }),
 					}));
 				});
