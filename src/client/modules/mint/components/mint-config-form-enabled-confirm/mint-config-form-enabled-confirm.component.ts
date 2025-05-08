@@ -12,14 +12,14 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 })
 export class MintConfigFormEnabledConfirmComponent {
 
-	public get nut(): string {
-		return (this.data.nut === 'nut4') ? 'minting' : 'melting';
+	public get icon(): string {
+		return (this.data.nut === 'nut4') ? 'minting_disabled_outline' : 'melting_disabled_outline';
 	}
 
 	public get description(): string {
 		return (this.data.nut === 'nut4') ? 
-		'Disabled minting will freeze deposits into the mint.' : 
-		'Disabled melting will freeze withdrawals from the mint.';
+		'Disabling minting will freeze deposits into the mint.<br>Confirm to disable.' : 
+		'Disabling melting will freeze withdrawals from the mint.<br>Confirm to disable.';
 	}
 
 	constructor(

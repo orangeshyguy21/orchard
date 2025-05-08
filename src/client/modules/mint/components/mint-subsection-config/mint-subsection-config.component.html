@@ -23,7 +23,7 @@
                 (cancel)="onTtlCancel($event)"
             ></orc-mint-config-form-quote-ttl>
             @for (unit of minting_units; track unit) {
-                <mat-card appearance="outlined">
+                <mat-card appearance="outlined" class="relative overflow-hidden">
                     <mat-card-content>
                         @for (method of mint_info?.nuts?.nut4?.methods; track method; let i = $index) {
                             @if (method.unit === unit && method.method === 'bolt11') {
@@ -37,6 +37,12 @@
                                     (cancel)="onMethodCancel($event)"
                                 ></orc-mint-config-form-bolt11>
                             }
+                        }
+                        @if(form_minting.get('enabled')?.value === false) {
+                            <div class="disabled-overlay" @fadeInOut>
+                                <div class="orc-outline-color">Minting Disabled</div>
+                                <mat-icon class="mat-symbol-outline orc-outline-color icon-lg" svgIcon="minting_disabled_outline"></mat-icon>
+                            </div>
                         }
                     </mat-card-content>
                 </mat-card>
@@ -65,7 +71,7 @@
                 (cancel)="onTtlCancel($event)"
             ></orc-mint-config-form-quote-ttl>
             @for (unit of minting_units; track unit) {
-                <mat-card appearance="outlined">
+                <mat-card appearance="outlined" class="relative overflow-hidden">
                     <mat-card-content>
                         @for (method of mint_info?.nuts?.nut4?.methods; track method; let i = $index) {
                             @if (method.unit === unit && method.method === 'bolt11') {
@@ -80,6 +86,12 @@
                                     (cancel)="onMethodCancel($event)"
                                 ></orc-mint-config-form-bolt11>
                             }
+                        }
+                        @if(form_melting.get('enabled')?.value === false) {
+                            <div class="disabled-overlay" @fadeInOut>
+                                <div class="orc-outline-color">Melting Disabled</div>
+                                <mat-icon class="icon-lg mat-symbol-outline orc-outline-color" svgIcon="melting_disabled_outline"></mat-icon>
+                            </div>
                         }
                     </mat-card-content>
                 </mat-card>

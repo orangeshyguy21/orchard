@@ -19,3 +19,17 @@
     @extend %border-solid;
     @extend %orc-outline-variant-border;
 }
+
+.disabled-overlay{
+    @extend %absolute;
+    @extend %top-0;
+    @extend %left-0;
+    @extend %right-0;
+    @extend %bottom-0;
+    @extend %flex;
+    @extend %flex-column;
+    @extend %flex-gap-1;
+    @extend %flex-items-center;
+    @extend %flex-justify-center;
+    @extend %orc-shadow-bg;
+}

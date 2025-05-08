@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, WritableSignal, 
 import { ActivatedRoute } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { toObservable } from '@angular/core/rxjs-interop';
+import { trigger, transition, style, animate } from '@angular/animations';
 /* Application Dependencies */
 import { EventService } from '@client/modules/event/services/event/event.service';
 import { OrchardValidators } from '@client/modules/form/validators';
@@ -15,11 +16,22 @@ import { MintQuoteTtls } from '@client/modules/mint/classes/mint-quote-ttls.clas
 import { OrchardNut4Method, OrchardNut5Method } from '@shared/generated.types';
 
 @Component({
-  selector: 'orc-mint-subsection-config',
-  standalone: false,
-  templateUrl: './mint-subsection-config.component.html',
-  styleUrl: './mint-subsection-config.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+	selector: 'orc-mint-subsection-config',
+	standalone: false,
+	templateUrl: './mint-subsection-config.component.html',
+	styleUrl: './mint-subsection-config.component.scss',
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	animations: [
+		trigger('fadeInOut', [
+			transition(':enter', [
+				style({ opacity: 0 }),
+				animate('150ms ease-in', style({ opacity: 1 }))
+			]),
+			transition(':leave', [
+				animate('150ms ease-out', style({ opacity: 0 }))
+			])
+		])
+	]
 })
 export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 

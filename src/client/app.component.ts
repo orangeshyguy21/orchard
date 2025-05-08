@@ -38,7 +38,11 @@ export class AppComponent implements OnInit {
 			.addSvgIcon('bitcoin_outline', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/bitcoin-outline.svg'))
 			.addSvgIcon('tor', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/tor.svg'))
 			.addSvgIcon('nostr', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/nostr.svg'))
-			.addSvgIcon('x', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/x.svg'));
+			.addSvgIcon('x', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/x.svg'))
+			.addSvgIcon('minting_disabled_outline', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/minting-disabled-outline.svg'))
+			.addSvgIcon('melting_disabled_outline', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/melting-disabled-outline.svg'));
+
+
 	}
 
 	private initSettings(): void {
