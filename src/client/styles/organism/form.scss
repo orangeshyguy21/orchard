@@ -1,10 +1,12 @@
 @use '@styles/molecule/molecule';
-
-// .orc-array-form-field{
-//     @extend %m-r-0-25;
-// }
+@use '@styles/nucleus/nucleus';
 
 button.mint-genesis-date-class {
     outline: 1px solid var(--mat-sys-outline);
     border-radius: 50%;
+}
+
+.form-suffix-text{
+    @extend %font-size-xs;
+    @extend %p-h-0-5;
 }

@@ -16,12 +16,14 @@
         <orc-mint-config-form-min
             [form_group]="form_bolt11"
             [control_name]="'min_amount'"
+            [unit]="unit"
             (update)="onUpdate($event)"
             (cancel)="onCancel($event)"
         ></orc-mint-config-form-min>
         <orc-mint-config-form-max
             [form_group]="form_bolt11"
             [control_name]="'max_amount'"
+            [unit]="unit"
             (update)="onUpdate($event)"
             (cancel)="onCancel($event)"
         ></orc-mint-config-form-max>

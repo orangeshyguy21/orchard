@@ -16,7 +16,7 @@
                     hideRequiredMarker="true"
                     [ngClass]="form_hot ? 'orc-hot-form-field' : 'orc-cold-form-field'"
                     class="mint-quote-ttl-form-field orc-dynamic-form-field">
-                    <mat-label>Quote TTL (seconds)</mat-label>
+                    <mat-label>Quote TTL</mat-label>
                     <input 
                         type="number" 
                         step="1"
@@ -26,6 +26,7 @@
                         [formControlName]="control_name" 
                         placeholder="Ex. 30"
                         #element_quote_ttl>
+                    <span matSuffix class="form-suffix-text">seconds</span>
                     @if (form_group.get(control_name)?.invalid && (form_group.get(control_name)?.dirty || form_group.get(control_name)?.touched)) {
                         <mat-error class="font-size-xs">
                             @if (form_group.get(control_name)?.hasError('required')) {

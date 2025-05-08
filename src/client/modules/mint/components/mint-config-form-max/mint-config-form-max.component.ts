@@ -14,6 +14,7 @@ import { OrchardNut4Method, OrchardNut5Method } from '@shared/generated.types';
 export class MintConfigFormMaxComponent {
 	@Input() form_group!: FormGroup;
     @Input() control_name!: keyof OrchardNut4Method | keyof OrchardNut5Method;
+	@Input() unit!: string;
 
     @Output() update = new EventEmitter<keyof OrchardNut4Method | keyof OrchardNut5Method>();
     @Output() cancel = new EventEmitter<keyof OrchardNut4Method | keyof OrchardNut5Method>();

@@ -12,7 +12,7 @@
                 (submit)="onSubmit($event)"
                 (cancel)="onCancel($event)">
                 <mat-form-field appearance="fill" hideRequiredMarker="true" [ngClass]="form_hot ? 'orc-hot-form-field' : 'orc-cold-form-field'" class="mint-min-form-field orc-dynamic-form-field">
-                    <mat-label>Minimum Amount</mat-label>
+                    <mat-label>Min Amount</mat-label>
                     <input 
                         type="number" 
                         step="1"
@@ -21,14 +21,15 @@
                         [formControlName]="control_name" 
                         placeholder="Ex. 1"
                         #element_min>
+                    <span matSuffix class="form-suffix-text">{{ unit | unit }}</span>
                     @if (form_group.get(control_name)?.invalid && (form_group.get(control_name)?.dirty || form_group.get(control_name)?.touched)) {
                         <mat-error class="font-size-xs">
                             @if (form_group.get(control_name)?.hasError('required')) {
-                                Minimum amount is required
+                                Min amount is required
                             } @else if (form_group.get(control_name)?.hasError('min')) {
-                                Minimum amount must be at least {{form_group.get(control_name)?.getError('min')?.min}}
+                                Min amount must be at least {{form_group.get(control_name)?.getError('min')?.min}}
                             } @else {
-                                Invalid minimum amount
+                                Invalid min amount
                             }
                         </mat-error>
                     }
