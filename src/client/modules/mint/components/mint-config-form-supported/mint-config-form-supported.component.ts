@@ -3,9 +3,6 @@ import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter } from 
 import { FormGroup } from '@angular/forms';
 /* Vendor Dependencies */
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
-/* Shared Dependencies */
-import { OrchardNut4Method, OrchardNut5Method } from '@shared/generated.types';
-
 
 @Component({
 	selector: 'orc-mint-config-form-supported',

@@ -11,7 +11,11 @@
                 [invalid]="form_group.get(control_name)?.invalid || false"
                 (submit)="onSubmit($event)"
                 (cancel)="onCancel($event)">
-                <mat-form-field appearance="fill" hideRequiredMarker="true" [ngClass]="form_hot ? 'orc-hot-form-field' : 'orc-cold-form-field'" class="mint-quote-ttl-form-field orc-dynamic-form-field">
+                <mat-form-field 
+                    appearance="fill" 
+                    hideRequiredMarker="true"
+                    [ngClass]="form_hot ? 'orc-hot-form-field' : 'orc-cold-form-field'"
+                    class="mint-quote-ttl-form-field orc-dynamic-form-field">
                     <mat-label>Quote TTL (seconds)</mat-label>
                     <input 
                         type="number" 

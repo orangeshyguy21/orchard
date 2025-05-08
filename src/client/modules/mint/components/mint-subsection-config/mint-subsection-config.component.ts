@@ -131,6 +131,9 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		if(form_group.get('supported')?.invalid) return;
 		form_group.get('supported')?.markAsPristine();
 		const control_value = this.translateDisabled(form_group.get('supported')?.value);
+
+		(control_value) ? form_group.disable() : form_group.enable();
+
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		const unit = this.mint_info?.nuts[nut].methods[0].unit;
 		const method = this.mint_info?.nuts[nut].methods[0].method;
