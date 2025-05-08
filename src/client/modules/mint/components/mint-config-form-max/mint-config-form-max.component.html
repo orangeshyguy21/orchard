@@ -16,16 +16,17 @@
                     <input 
                         type="number" 
                         step="1"
-                        min="1"
-                        max="3600"
+                        min="0"
                         matInput 
                         [formControlName]="control_name" 
-                        placeholder="Ex. 30"
+                        placeholder="Ex. 300 000"
                         #element_max>
                     @if (form_group.get(control_name)?.invalid && (form_group.get(control_name)?.dirty || form_group.get(control_name)?.touched)) {
                         <mat-error class="font-size-xs">
-                            @if (form_group.get(control_name)?.hasError('maxlength')) {
-                                Name cannot exceed {{form_group.get(control_name)?.getError('maxlength')?.requiredLength}} characters
+                            @if (form_group.get(control_name)?.hasError('required')) {
+                                Maximum amount is required
+                            } @else if (form_group.get(control_name)?.hasError('min')) {
+                                Maximum amount must be at least {{form_group.get(control_name)?.getError('min')?.min}}
                             } @else {
                                 Invalid maximum amount
                             }

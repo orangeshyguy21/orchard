@@ -5,7 +5,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { toObservable } from '@angular/core/rxjs-interop';
 /* Application Dependencies */
 import { EventService } from '@client/modules/event/services/event/event.service';
-import { validateMicros } from '@client/modules/form/helpers/validate-micros';
+import { OrchardValidators } from '@client/modules/form/validators';
 import { EventData } from '@client/modules/event/classes/event-data.class';
 /* Native Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
@@ -31,11 +31,11 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 	public form_config: FormGroup = new FormGroup({
 		minting: new FormGroup({
 			enabled: new FormControl(),
-			mint_ttl: new FormControl(null, [Validators.required, Validators.min(1), Validators.max(3600), validateMicros]),
+			mint_ttl: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(3600), OrchardValidators.micros]),
 		}),
 		melting: new FormGroup({
 			enabled: new FormControl(),
-			melt_ttl: new FormControl(null, [Validators.required, Validators.min(1), Validators.max(3600), validateMicros]),
+			melt_ttl: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(3600), OrchardValidators.micros]),
 		}),
 	});
 
@@ -89,7 +89,7 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 
 	private translateQuoteTtl(quote_ttl: number | null, to_seconds: boolean = true): number | null {
 		const factor = to_seconds ? (1/1000) : 1000;
-		return (quote_ttl) ? (quote_ttl * factor) : null;
+		return (quote_ttl !== null) ? (quote_ttl * factor) : null;
 	}
 
 	private getUniqueUnits(nut: 'nut4' | 'nut5'): string[] {
@@ -105,8 +105,12 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 				.filter( method => method.unit === unit)
 				.forEach( method => {
 					(this.form_minting.get(unit) as FormGroup).addControl(method.method, new FormGroup({
-						min_amount: new FormControl(method.min_amount),
-						max_amount: new FormControl(method.max_amount),
+						min_amount: new FormControl(method.min_amount, [Validators.required, Validators.min(0)]),
+						// max_amount: new FormControl(method.max_amount, [Validators.required, Validators.min(0)]),
+						max_amount: new FormControl(method.max_amount, [
+							Validators.required,
+							OrchardValidators.minGreaterThan('min_amount')
+						]),
 						description: new FormControl(method.description),
 					}));
 				});
@@ -117,8 +121,12 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 				.filter( method => method.unit === unit)
 				.forEach( method => {
 					(this.form_melting.get(unit) as FormGroup).addControl(method.method, new FormGroup({
-						min_amount: new FormControl(method.min_amount),
-						max_amount: new FormControl(method.max_amount),
+						min_amount: new FormControl(method.min_amount, [Validators.required, Validators.min(0)]),
+						// max_amount: new FormControl(method.max_amount, [Validators.required, Validators.min(0)]),
+						max_amount: new FormControl(method.max_amount, [
+							Validators.required,
+							OrchardValidators.minGreaterThan('min_amount')
+						]),
 						amountless: new FormControl({ value: method.amountless, disabled: true }),
 					}));
 				});
