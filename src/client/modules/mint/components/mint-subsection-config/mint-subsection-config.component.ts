@@ -63,6 +63,10 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		this.minting_units = this.getUniqueUnits('nut4');
 		this.melting_units = this.getUniqueUnits('nut5');
 		this.buildDynamicFormElements();
+		Object.keys(this.form_config.controls).forEach(form_group_key => {
+			const form_group = this.form_config.get(form_group_key) as FormGroup;
+			if( form_group.get('enabled')?.value === false ) form_group.disable();
+		});
 	}
 
 	private patchStaticFormElements(): void {
@@ -115,7 +119,7 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 					(this.form_melting.get(unit) as FormGroup).addControl(method.method, new FormGroup({
 						min_amount: new FormControl(method.min_amount),
 						max_amount: new FormControl(method.max_amount),
-						amountless: new FormControl(method.amountless),
+						amountless: new FormControl({ value: method.amountless, disabled: true }),
 					}));
 				});
 		});
@@ -131,9 +135,7 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		if(form_group.get('enabled')?.invalid) return;
 		form_group.get('enabled')?.markAsPristine();
 		const control_value = this.translateDisabled(form_group.get('enabled')?.value);
-
 		(control_value) ? form_group.disable() : form_group.enable();
-
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		const unit = this.mint_info?.nuts[nut].methods[0].unit;
 		const method = this.mint_info?.nuts[nut].methods[0].method;

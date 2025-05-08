@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 /* Application Dependencies */
@@ -19,6 +19,7 @@ export class MintConfigFormBolt11Component {
 	@Input() unit!: string;
 	@Input() method!: string;
 	@Input() form_group!: FormGroup;
+	@Input() form_status!: boolean;
 
 	@Output() update = new EventEmitter<{nut: 'nut4' | 'nut5', unit: string, method: string, control_name: keyof OrchardNut4Method | keyof OrchardNut5Method, form_group: FormGroup}>();
 	@Output() cancel = new EventEmitter<{nut: 'nut4' | 'nut5', unit: string, method: string, control_name: keyof OrchardNut4Method | keyof OrchardNut5Method, form_group: FormGroup}>();
@@ -33,6 +34,14 @@ export class MintConfigFormBolt11Component {
 
 	public get toggle_control_name() : string {
 		return this.nut === 'nut4' ? 'Description' : 'Amountless';
+	}
+
+	constructor() {}
+
+	ngOnChanges(changes: SimpleChanges): void {
+		if( changes['form_status'] && this.form_status === true ) {
+			this.form_bolt11.get(this.toggle_control)?.disable();
+		}
 	}
 
 	public onUpdate(control_name: keyof OrchardNut4Method | keyof OrchardNut5Method): void {

@@ -75,6 +75,7 @@
                                     [unit]="unit"
                                     [method]="method.method"
                                     [form_group]="form_melting"
+                                    [form_status]="form_melting.get('enabled')?.value"
                                     (update)="onMethodUpdate($event)"
                                     (cancel)="onMethodCancel($event)"
                                 ></orc-mint-config-form-bolt11>

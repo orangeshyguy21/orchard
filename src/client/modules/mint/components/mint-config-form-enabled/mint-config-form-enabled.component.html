@@ -2,6 +2,7 @@
     <div class="flex flex-items-center flex-gap-2">
         <div class="flex-1 flex flex-items-center flex-grow">
             <mat-slide-toggle
+                #toggle
                 [checked]="form_group.get('enabled')?.value"
                 (change)="onChange($event)"
                 name="enabled">
