@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, WritableSignal, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, WritableSignal, signal, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { toObservable } from '@angular/core/rxjs-interop';
@@ -73,6 +73,7 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		public route: ActivatedRoute,
 		public eventService: EventService,
 		public aiService: AiService,
+		public cdr: ChangeDetectorRef
 	) {}
 
 	ngOnInit(): void {	
@@ -129,9 +130,19 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 	}
 
 	private evaluateDirtyCount(): void {
-		// const count = Object.keys(this.form_info.controls).filter(key => this.form_info.get(key)?.dirty).length;
-		// this.dirty_count.set(count);
-		// this.cdr.detectChanges();
+		let count = 0;
+		
+		const countDirtyControls = (group: FormGroup): number => {
+			return Object.keys(group.controls).reduce((acc, key) => {
+				const control = group.get(key);
+				if (control instanceof FormGroup) return acc + countDirtyControls(control);
+				return acc + (control?.dirty ? 1 : 0);
+			}, 0);
+		};
+		
+		count = countDirtyControls(this.form_config);
+		this.dirty_count.set(count);
+		this.cdr.detectChanges();
 	}
 
 	private getDirtyCountSubscription(): Subscription {
@@ -141,7 +152,7 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 	}
 
 	private executeAgentFunction(tool_call: AiChatToolCall): void {
-		// todo
+		console.log(tool_call);
 	}
 
 	private patchStaticFormElements(): void {
