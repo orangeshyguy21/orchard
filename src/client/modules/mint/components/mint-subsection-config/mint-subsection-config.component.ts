@@ -195,6 +195,7 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 	}
 
 	private createPendingEvent(count: number): void {
+		if( this.active_event?.type === 'SAVING' ) return;
 		if( count === 0 && this.active_event?.type !== 'PENDING' ) return;
 		if( count === 0 ) return this.eventService.registerEvent(null);
 		this.eventService.registerEvent(new EventData({
