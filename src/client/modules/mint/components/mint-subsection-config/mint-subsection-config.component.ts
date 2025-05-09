@@ -105,6 +105,8 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		return this.mintService.mint_info$.subscribe(
             (info:MintInfo | null) => {
 				if( info ) this.mint_info = info;
+				( this.mint_info?.nuts.nut4.disabled ) ? this.form_minting.disable() : this.form_minting.enable();
+				( this.mint_info?.nuts.nut5.disabled ) ? this.form_melting.disable() : this.form_melting.enable();
 				this.cdr.detectChanges();
             }
         );
@@ -480,8 +482,6 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 
 		this.mintService.updateMint(mutation, mutation_values).subscribe({
 			next: (response) => {
-				( this.mint_info?.nuts.nut4.disabled ) ? this.form_minting.disable() : this.form_minting.enable();
-				( this.mint_info?.nuts.nut5.disabled ) ? this.form_melting.disable() : this.form_melting.enable();
 				this.mintService.clearInfoCache();
 				this.mintService.loadMintInfo().subscribe();
 				this.mintService.getMintQuoteTtls().subscribe((quote_ttls: MintQuoteTtls) => {
