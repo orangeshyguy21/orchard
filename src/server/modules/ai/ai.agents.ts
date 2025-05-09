@@ -16,6 +16,7 @@ import {
     AddMintContactTool,
     UpdateMintContactTool,
     RemoveMintContactTool,
+    UpdateMintEnabledTool,
 } from "./ai.tools";
 
 export const AI_AGENTS = {
@@ -62,6 +63,18 @@ export const AI_AGENTS = {
             AddMintContactTool,
             UpdateMintContactTool,
             RemoveMintContactTool,
+        ],
+    },
+    [AiAgent.MINT_CONFIG]: {
+        name: 'Mint Config',
+        description: 'Mint config agent',
+        system_message: {
+            role: 'system',
+            content: `You are an agent designed to help configure the operational parameters of a cashu mint.
+            You will be provided with the current state of the form along with the users request for changes`,
+        },
+        tools: [
+            UpdateMintEnabledTool
         ],
     },
 };

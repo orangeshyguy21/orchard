@@ -20,6 +20,7 @@ export type Scalars = {
 
 export enum AiAgent {
   Default = 'DEFAULT',
+  MintConfig = 'MINT_CONFIG',
   MintDashboard = 'MINT_DASHBOARD',
   MintInfo = 'MINT_INFO'
 }
@@ -50,6 +51,7 @@ export enum AiFunctionName {
   MintContactUpdate = 'MINT_CONTACT_UPDATE',
   MintDescriptionLongUpdate = 'MINT_DESCRIPTION_LONG_UPDATE',
   MintDescriptionUpdate = 'MINT_DESCRIPTION_UPDATE',
+  MintEnabledUpdate = 'MINT_ENABLED_UPDATE',
   MintIconUrlUpdate = 'MINT_ICON_URL_UPDATE',
   MintMotdUpdate = 'MINT_MOTD_UPDATE',
   MintNameUpdate = 'MINT_NAME_UPDATE',

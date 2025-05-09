@@ -22,7 +22,8 @@ AiFunctionUpdateMintUrlUpdate |
 AiFunctionUpdateMintUrlRemove |
 AiFunctionAddMintContact |
 AiFunctionUpdateMintContact |
-AiFunctionRemoveMintContact;
+AiFunctionRemoveMintContact |
+AiFunctionUpdateMintEnabled;
 
 export type AiFunctionUpdateMintAnalyticsDateRange = {
 	name: AiFunctionName.MintAnalyticsDateRangeUpdate;
@@ -133,5 +134,13 @@ export type AiFunctionRemoveMintContact = {
 	arguments: {
 		method: 'email' | 'nostr' | 'twitter';
 		info: string;
+	}
+}
+
+export type AiFunctionUpdateMintEnabled = {
+	name: AiFunctionName.MintEnabledUpdate;
+	arguments: {
+		enabled: boolean;
+		operation: 'minting' | 'melting';
 	}
 }

@@ -295,3 +295,26 @@ export const RemoveMintContactTool = {
         },
     },
 };
+
+export const UpdateMintEnabledTool = {
+    'type': 'function',
+    'function': {
+        'name': 'MINT_ENABLED_UPDATE',
+        'description': 'This tool allows you to update the enabled status of the minting and melting operations.',
+        'parameters': {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "The enabled status of the chosen operation"
+                },
+                "operation": {
+                    "type": "string",
+                    "enum": ["minting", "melting"],
+                    "description": "The operation to update the enabled status of"
+                },
+            },
+            "required": ["enabled", "operation"]
+        },
+    },
+};

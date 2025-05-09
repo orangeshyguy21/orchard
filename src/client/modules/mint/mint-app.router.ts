@@ -128,7 +128,8 @@ const routes: Routes = [
 				},
 				data: {
 					section: 'mint',
-					sub_section: 'config'
+					sub_section: 'config',
+					agent: AiAgent.MintConfig
 				}
 			},
 			{

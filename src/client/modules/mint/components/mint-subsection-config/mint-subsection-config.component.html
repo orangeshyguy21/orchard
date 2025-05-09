@@ -13,6 +13,7 @@
             </div>   
             <orc-mint-config-form-enabled
                 [nut]="'nut4'"
+                [enabled]="form_minting.get('enabled')?.value"
                 [form_group]="form_minting"
                 (update)="onEnabledUpdate($event)"
             ></orc-mint-config-form-enabled>
@@ -38,7 +39,7 @@
                                 ></orc-mint-config-form-bolt11>
                             }
                         }
-                        @if(form_minting.get('enabled')?.value === false) {
+                        @if(mint_info?.nuts?.nut4?.disabled) {
                             <div class="disabled-overlay" @fadeInOut>
                                 <div class="orc-outline-color">Minting Disabled</div>
                                 <mat-icon class="mat-symbol-outline orc-outline-color icon-lg" svgIcon="minting_disabled_outline"></mat-icon>
@@ -87,7 +88,7 @@
                                 ></orc-mint-config-form-bolt11>
                             }
                         }
-                        @if(form_melting.get('enabled')?.value === false) {
+                        @if(mint_info?.nuts?.nut5?.disabled) {
                             <div class="disabled-overlay" @fadeInOut>
                                 <div class="orc-outline-color">Melting Disabled</div>
                                 <mat-icon class="icon-lg mat-symbol-outline orc-outline-color" svgIcon="melting_disabled_outline"></mat-icon>
