@@ -87,16 +87,26 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 			const form_group = this.form_config.get(form_group_key) as FormGroup;
 			if( form_group.get('enabled')?.value === false ) form_group.disable();
 		});
+		const mint_info_subscription = this.getMintInfoSubscription();
 		const agent_subscription = this.getAgentSubscription();
 		const tool_subscription = this.getToolSubscription();
 		const event_subscription = this.getEventSubscription();
 		const form_subscription = this.getFormSubscription();
 		const dirty_count_subscription = this.getDirtyCountSubscription();
+		this.subscriptions.add(mint_info_subscription);
 		this.subscriptions.add(agent_subscription);
 		this.subscriptions.add(tool_subscription);	
 		this.subscriptions.add(event_subscription);
 		this.subscriptions.add(form_subscription);
 		this.subscriptions.add(dirty_count_subscription);
+	}
+
+	private getMintInfoSubscription(): Subscription {
+		return this.mintService.mint_info$.subscribe(
+            (info:MintInfo | null) => {
+				if( info ) this.mint_info = info;
+            }
+        );
 	}
 
 	private getAgentSubscription(): Subscription {
@@ -322,13 +332,212 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 	}
 
 	private onConfirmedEvent(): void {
-		// @todo batch updates
+		if (this.form_config.invalid) {
+			return this.eventService.registerEvent(new EventData({
+				type: 'WARNING',
+				message: 'Invalid config data',
+			}));
+		}
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		const mutation_parts: string[] = [];
+		const mutation_variables: Record<string, { value: any, type: string }> = {};
+		const minting_group = this.form_minting;
+		const melting_group = this.form_melting;
+		const ttl_updates: Record<string, any> = {};
+		
+		if (minting_group.get('mint_ttl')?.dirty) {
+			ttl_updates['mint_ttl'] = this.translateQuoteTtl(minting_group.get('mint_ttl')?.value, false);
+		}
+		if (melting_group.get('melt_ttl')?.dirty) {
+			ttl_updates['melt_ttl'] = this.translateQuoteTtl(melting_group.get('melt_ttl')?.value, false);
+		}
+		
+		if (Object.keys(ttl_updates).length > 0) {
+			mutation_parts.push(`
+				mint_quote_ttl_update(mint_quote_ttl_update: $ttl_update) {
+					mint_ttl
+					melt_ttl
+				}
+			`);
+			mutation_variables['ttl_update'] = { 
+				value: ttl_updates, 
+				type: 'MintQuoteTtlUpdateInput!' 
+			};
+		}
+
+		// Handle NUT04 updates
+		if (minting_group.get('enabled')?.dirty) {
+			const enabled_value = this.translateDisabled(minting_group.get('enabled')?.value);
+			const unit = this.minting_units[0];
+			const method = this.mint_info?.nuts.nut4.methods.find(m => m.unit === unit)?.method;
+			if (unit && method) {
+				const var_name = `nut04_update_${unit}_${method}`;
+				mutation_parts.push(`
+					mint_nut04_update_${unit}_${method}: mint_nut04_update(mint_nut04_update: $${var_name}) {
+						unit
+						method
+						max_amount
+						min_amount
+						description
+						disabled
+					}
+				`);
+				mutation_variables[var_name] = { 
+					value: {
+						unit,
+						method,
+						disabled: enabled_value
+					}, 
+					type: 'MintNut04UpdateInput!' 
+				};
+			}
+		}
+
+		// Add method-specific NUT04 updates
+		this.minting_units.forEach(unit => {
+			const unit_group = minting_group.get(unit) as FormGroup;
+			if (!unit_group) return;
+
+			Object.keys(unit_group.controls).forEach(method => {
+				const method_group = unit_group.get(method) as FormGroup;
+				if (!method_group) return;
+
+				const method_update: Record<string, any> = {
+					unit,
+					method
+				};
+
+				if (method_group.get('min_amount')?.dirty) {
+					method_update['min_amount'] = method_group.get('min_amount')?.value;
+				}
+				if (method_group.get('max_amount')?.dirty) {
+					method_update['max_amount'] = method_group.get('max_amount')?.value;
+				}
+
+				if (Object.keys(method_update).length > 2) { // More than just unit and method
+					const var_name = `nut04_update_${unit}_${method}`;
+					mutation_parts.push(`
+						mint_nut04_update_${unit}_${method}: mint_nut04_update(mint_nut04_update: $${var_name}) {
+							unit
+							method
+							max_amount
+							min_amount
+							description
+							disabled
+						}
+					`);
+					mutation_variables[var_name] = { 
+						value: method_update, 
+						type: 'MintNut04UpdateInput!' 
+					};
+				}
+			});
+		});
+
+		// Handle NUT05 updates
+		if (melting_group.get('enabled')?.dirty) {
+			const enabled_value = this.translateDisabled(melting_group.get('enabled')?.value);
+			const unit = this.melting_units[0];
+			const method = this.mint_info?.nuts.nut5.methods.find(m => m.unit === unit)?.method;
+			if (unit && method) {
+				const var_name = `nut05_update_${unit}_${method}`;
+				mutation_parts.push(`
+					mint_nut05_update_${unit}_${method}: mint_nut05_update(mint_nut05_update: $${var_name}) {
+						unit
+						method
+						max_amount
+						min_amount
+						disabled
+					}
+				`);
+				mutation_variables[var_name] = { 
+					value: {
+						unit,
+						method,
+						disabled: enabled_value
+					}, 
+					type: 'MintNut05UpdateInput!' 
+				};
+			}
+		}
+
+		// Add method-specific NUT05 updates
+		this.melting_units.forEach(unit => {
+			const unit_group = melting_group.get(unit) as FormGroup;
+			if (!unit_group) return;
+
+			Object.keys(unit_group.controls).forEach(method => {
+				const method_group = unit_group.get(method) as FormGroup;
+				if (!method_group) return;
+
+				const method_update: Record<string, any> = {
+					unit,
+					method
+				};
+
+				if (method_group.get('min_amount')?.dirty) {
+					method_update['min_amount'] = method_group.get('min_amount')?.value;
+				}
+				if (method_group.get('max_amount')?.dirty) {
+					method_update['max_amount'] = method_group.get('max_amount')?.value;
+				}
+
+				if (Object.keys(method_update).length > 2) { // More than just unit and method
+					const var_name = `nut05_update_${unit}_${method}`;
+					mutation_parts.push(`
+						mint_nut05_update_${unit}_${method}: mint_nut05_update(mint_nut05_update: $${var_name}) {
+							unit
+							method
+							max_amount
+							min_amount
+							disabled
+						}
+					`);
+					mutation_variables[var_name] = { 
+						value: method_update, 
+						type: 'MintNut05UpdateInput!' 
+					};
+				}
+			});
+		});
+
+		if (mutation_parts.length === 0) return;
+
+		const mutation = `
+			mutation BulkMintUpdate(${
+				Object.entries(mutation_variables)
+					.map(([key, { type }]) => `$${key}: ${type}`)
+					.join(',\n            ')
+			}) {
+				${mutation_parts.join('\n')}
+			}
+		`;
+
+		// Extract just the values for the variables
+		const variables = Object.entries(mutation_variables)
+			.reduce((acc, [key, { value }]) => ({ ...acc, [key]: value }), {});
+
+		this.mintService.updateMint(mutation, variables).subscribe({
+			next: (response) => {
+				console.log('response', response);
+				this.mintService.clearInfoCache();
+				this.mintService.loadMintInfo().subscribe();
+				this.mintService.getMintQuoteTtls().subscribe((quote_ttls: MintQuoteTtls) => {
+					this.quote_ttls = quote_ttls;
+					this.cdr.detectChanges();
+				});
+				this.onSuccess(true);
+			},
+			error: (error) => {
+				this.onError(error.message);
+			}
+		});
 	}
 
 	private updateMintTtl(control_name: keyof MintQuoteTtls, control_value: any): void {
 		this.mintService.updateMintQuoteTtl(control_name, control_value).subscribe({
 			next: (response) => {
-				this.quote_ttls[control_name] = this.translateQuoteTtl(response.mint_quote_ttl_update[control_name] ?? null, false);
+				this.quote_ttls[control_name] = response.mint_quote_ttl_update[control_name] ?? null;
 				this.onSuccess();
 				this.form_config.get(control_name)?.markAsPristine();
 			},
@@ -368,8 +577,6 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 
 
 	private onSuccess(reset: boolean = false): void {
-		this.mintService.clearInfoCache();
-		this.mintService.loadMintInfo().subscribe();
 		this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
 		if( !reset ) return;
 		this.form_config.markAsPristine();
