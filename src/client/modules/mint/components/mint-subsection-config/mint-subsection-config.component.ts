@@ -340,17 +340,12 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		}
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		const mutation_parts: string[] = [];
-		const mutation_variables: Record<string, { value: any, type: string }> = {};
-		const minting_group = this.form_minting;
-		const melting_group = this.form_melting;
-		const ttl_updates: Record<string, any> = {};
-		
-		if (minting_group.get('mint_ttl')?.dirty) {
-			ttl_updates['mint_ttl'] = this.translateQuoteTtl(minting_group.get('mint_ttl')?.value, false);
-		}
-		if (melting_group.get('melt_ttl')?.dirty) {
-			ttl_updates['melt_ttl'] = this.translateQuoteTtl(melting_group.get('melt_ttl')?.value, false);
-		}
+		const mutation_types: Record<string, string> = {};
+		const mutation_values: Record<string, any> = {};
+		const ttl_updates: Record<string, (number|null)> = {};
+
+		if (this.form_minting.get('mint_ttl')?.dirty) ttl_updates['mint_ttl'] = this.translateQuoteTtl(this.form_minting.get('mint_ttl')?.value, false);
+		if (this.form_melting.get('melt_ttl')?.dirty) ttl_updates['melt_ttl'] = this.translateQuoteTtl(this.form_melting.get('melt_ttl')?.value, false);
 		
 		if (Object.keys(ttl_updates).length > 0) {
 			mutation_parts.push(`
@@ -359,15 +354,11 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 					melt_ttl
 				}
 			`);
-			mutation_variables['ttl_update'] = { 
-				value: ttl_updates, 
-				type: 'MintQuoteTtlUpdateInput!' 
-			};
+			mutation_types['ttl_update'] = 'MintQuoteTtlUpdateInput!';
+			mutation_values['ttl_update'] = ttl_updates;
 		}
 
-		// Handle NUT04 updates
-		if (minting_group.get('enabled')?.dirty) {
-			const enabled_value = this.translateDisabled(minting_group.get('enabled')?.value);
+		if (this.form_minting.get('enabled')?.dirty) {
 			const unit = this.minting_units[0];
 			const method = this.mint_info?.nuts.nut4.methods.find(m => m.unit === unit)?.method;
 			if (unit && method) {
@@ -378,43 +369,26 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 						method
 						max_amount
 						min_amount
-						description
-						disabled
 					}
 				`);
-				mutation_variables[var_name] = { 
-					value: {
-						unit,
-						method,
-						disabled: enabled_value
-					}, 
-					type: 'MintNut04UpdateInput!' 
+				mutation_types[var_name] = 'MintNut04UpdateInput!';
+				mutation_values[var_name] = {
+					unit,
+					method,
 				};
 			}
 		}
 
-		// Add method-specific NUT04 updates
 		this.minting_units.forEach(unit => {
-			const unit_group = minting_group.get(unit) as FormGroup;
+			const unit_group = this.form_minting.get(unit) as FormGroup;
 			if (!unit_group) return;
-
 			Object.keys(unit_group.controls).forEach(method => {
 				const method_group = unit_group.get(method) as FormGroup;
 				if (!method_group) return;
-
-				const method_update: Record<string, any> = {
-					unit,
-					method
-				};
-
-				if (method_group.get('min_amount')?.dirty) {
-					method_update['min_amount'] = method_group.get('min_amount')?.value;
-				}
-				if (method_group.get('max_amount')?.dirty) {
-					method_update['max_amount'] = method_group.get('max_amount')?.value;
-				}
-
-				if (Object.keys(method_update).length > 2) { // More than just unit and method
+				const method_update: Record<string, any> = { unit, method };
+				if (method_group.get('min_amount')?.dirty) method_update['min_amount'] = method_group.get('min_amount')?.value;
+				if (method_group.get('max_amount')?.dirty) method_update['max_amount'] = method_group.get('max_amount')?.value;
+				if (Object.keys(method_update).length > 2) {
 					const var_name = `nut04_update_${unit}_${method}`;
 					mutation_parts.push(`
 						mint_nut04_update_${unit}_${method}: mint_nut04_update(mint_nut04_update: $${var_name}) {
@@ -422,21 +396,15 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 							method
 							max_amount
 							min_amount
-							description
-							disabled
 						}
 					`);
-					mutation_variables[var_name] = { 
-						value: method_update, 
-						type: 'MintNut04UpdateInput!' 
-					};
+					mutation_types[var_name] = 'MintNut04UpdateInput!';
+					mutation_values[var_name] = method_update;
 				}
 			});
 		});
 
-		// Handle NUT05 updates
-		if (melting_group.get('enabled')?.dirty) {
-			const enabled_value = this.translateDisabled(melting_group.get('enabled')?.value);
+		if (this.form_melting.get('enabled')?.dirty) {
 			const unit = this.melting_units[0];
 			const method = this.mint_info?.nuts.nut5.methods.find(m => m.unit === unit)?.method;
 			if (unit && method) {
@@ -447,42 +415,26 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 						method
 						max_amount
 						min_amount
-						disabled
 					}
 				`);
-				mutation_variables[var_name] = { 
-					value: {
-						unit,
-						method,
-						disabled: enabled_value
-					}, 
-					type: 'MintNut05UpdateInput!' 
+				mutation_types[var_name] = 'MintNut05UpdateInput!';
+				mutation_values[var_name] = {
+					unit,
+					method,
 				};
 			}
 		}
 
-		// Add method-specific NUT05 updates
 		this.melting_units.forEach(unit => {
-			const unit_group = melting_group.get(unit) as FormGroup;
+			const unit_group = this.form_melting.get(unit) as FormGroup;
 			if (!unit_group) return;
-
 			Object.keys(unit_group.controls).forEach(method => {
 				const method_group = unit_group.get(method) as FormGroup;
 				if (!method_group) return;
-
-				const method_update: Record<string, any> = {
-					unit,
-					method
-				};
-
-				if (method_group.get('min_amount')?.dirty) {
-					method_update['min_amount'] = method_group.get('min_amount')?.value;
-				}
-				if (method_group.get('max_amount')?.dirty) {
-					method_update['max_amount'] = method_group.get('max_amount')?.value;
-				}
-
-				if (Object.keys(method_update).length > 2) { // More than just unit and method
+				const method_update: Record<string, any> = { unit, method };
+				if (method_group.get('min_amount')?.dirty) method_update['min_amount'] = method_group.get('min_amount')?.value;
+				if (method_group.get('max_amount')?.dirty) method_update['max_amount'] = method_group.get('max_amount')?.value;
+				if (Object.keys(method_update).length > 2) {
 					const var_name = `nut05_update_${unit}_${method}`;
 					mutation_parts.push(`
 						mint_nut05_update_${unit}_${method}: mint_nut05_update(mint_nut05_update: $${var_name}) {
@@ -493,10 +445,8 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 							disabled
 						}
 					`);
-					mutation_variables[var_name] = { 
-						value: method_update, 
-						type: 'MintNut05UpdateInput!' 
-					};
+					mutation_types[var_name] = 'MintNut05UpdateInput!';
+					mutation_values[var_name] = method_update;
 				}
 			});
 		});
@@ -505,21 +455,16 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 
 		const mutation = `
 			mutation BulkMintUpdate(${
-				Object.entries(mutation_variables)
-					.map(([key, { type }]) => `$${key}: ${type}`)
+				Object.entries(mutation_types)
+					.map(([key, type]) => `$${key}: ${type}`)
 					.join(',\n            ')
 			}) {
 				${mutation_parts.join('\n')}
 			}
 		`;
 
-		// Extract just the values for the variables
-		const variables = Object.entries(mutation_variables)
-			.reduce((acc, [key, { value }]) => ({ ...acc, [key]: value }), {});
-
-		this.mintService.updateMint(mutation, variables).subscribe({
+		this.mintService.updateMint(mutation, mutation_values).subscribe({
 			next: (response) => {
-				console.log('response', response);
 				this.mintService.clearInfoCache();
 				this.mintService.loadMintInfo().subscribe();
 				this.mintService.getMintQuoteTtls().subscribe((quote_ttls: MintQuoteTtls) => {
