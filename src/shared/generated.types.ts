@@ -53,8 +53,12 @@ export enum AiFunctionName {
   MintDescriptionUpdate = 'MINT_DESCRIPTION_UPDATE',
   MintEnabledUpdate = 'MINT_ENABLED_UPDATE',
   MintIconUrlUpdate = 'MINT_ICON_URL_UPDATE',
+  MintMethodDescriptionUpdate = 'MINT_METHOD_DESCRIPTION_UPDATE',
+  MintMethodMaxUpdate = 'MINT_METHOD_MAX_UPDATE',
+  MintMethodMinUpdate = 'MINT_METHOD_MIN_UPDATE',
   MintMotdUpdate = 'MINT_MOTD_UPDATE',
   MintNameUpdate = 'MINT_NAME_UPDATE',
+  MintQuoteTtlUpdate = 'MINT_QUOTE_TTL_UPDATE',
   MintUrlAdd = 'MINT_URL_ADD',
   MintUrlRemove = 'MINT_URL_REMOVE',
   MintUrlUpdate = 'MINT_URL_UPDATE'

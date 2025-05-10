@@ -170,8 +170,49 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 			const operation = tool_call.function.arguments.operation;
 			const enabled = tool_call.function.arguments.enabled;
 			const form_group = (operation === 'minting') ? this.form_minting : this.form_melting;
+			if( !form_group ) return;
 			form_group.get('enabled')?.markAsDirty();
 			form_group.get('enabled')?.setValue(enabled); 
+		}
+		if( tool_call.function.name === AiFunctionName.MintQuoteTtlUpdate ) {
+			const operation = tool_call.function.arguments.operation;
+			const ttl = tool_call.function.arguments.ttl;
+			const form_control = (operation === 'minting') ? this.form_minting.get('mint_ttl') : this.form_melting.get('melt_ttl');
+			if( !form_control ) return;
+			form_control?.markAsDirty();
+			form_control?.setValue(ttl);
+		}
+		if( tool_call.function.name === AiFunctionName.MintMethodMinUpdate ) {
+			const operation = tool_call.function.arguments.operation;
+			const method = tool_call.function.arguments.method;
+			const unit = tool_call.function.arguments.unit;
+			const min_amount = tool_call.function.arguments.min_amount;
+			const form_group = (operation === 'minting') ? this.form_minting : this.form_melting;
+			const form_control = form_group.get(unit)?.get(method)?.get('min_amount');
+			if( !form_control ) return;
+			form_control?.markAsDirty();
+			form_control?.setValue(min_amount);
+		}
+		if( tool_call.function.name === AiFunctionName.MintMethodMaxUpdate ) {
+			const operation = tool_call.function.arguments.operation;
+			const method = tool_call.function.arguments.method;
+			const unit = tool_call.function.arguments.unit;
+			const max_amount = tool_call.function.arguments.max_amount;
+			const form_group = (operation === 'minting') ? this.form_minting : this.form_melting;
+			const form_control = form_group.get(unit)?.get(method)?.get('max_amount');
+			if( !form_control ) return;
+			form_control?.markAsDirty();
+			form_control?.setValue(max_amount);
+		}
+		if( tool_call.function.name === AiFunctionName.MintMethodDescriptionUpdate ) {
+			const method = tool_call.function.arguments.method;
+			const unit = tool_call.function.arguments.unit;
+			const description = tool_call.function.arguments.description;
+			const form_control = this.form_minting.get(unit)?.get(method)?.get('description');
+			if( !form_control ) return;
+			form_control.markAsDirty();
+			if( typeof description === 'string' ) return form_control.setValue(JSON.parse((description as string).toLowerCase()));
+			form_control.setValue(description);
 		}
 	}
 
@@ -369,27 +410,6 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 			mutation_values['ttl_update'] = ttl_updates;
 		}
 
-		// if (this.form_minting.get('enabled')?.dirty) {
-		// 	const unit = this.minting_units[0];
-		// 	const method = this.mint_info?.nuts.nut4.methods.find(m => m.unit === unit)?.method;
-		// 	if (unit && method) {
-		// 		const var_name = `nut04_update_${unit}_${method}`;
-		// 		mutation_parts.push(`
-		// 			mint_nut04_update_${unit}_${method}: mint_nut04_update(mint_nut04_update: $${var_name}) {
-		// 				unit
-		// 				method
-		// 				max_amount
-		// 				min_amount
-		// 			}
-		// 		`);
-		// 		mutation_types[var_name] = 'MintNut04UpdateInput!';
-		// 		mutation_values[var_name] = {
-		// 			unit,
-		// 			method,
-		// 		};
-		// 	}
-		// }
-
 		this.minting_units.forEach(unit => {
 			const unit_group = this.form_minting.get(unit) as FormGroup;
 			if (!unit_group) return;
@@ -418,28 +438,6 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 				}
 			});
 		});
-
-		// if (this.form_melting.get('enabled')?.dirty) {
-		// 	const unit = this.melting_units[0];
-		// 	const method = this.mint_info?.nuts.nut5.methods.find(m => m.unit === unit)?.method;
-		// 	if (unit && method) {
-		// 		const var_name = `nut05_update_${unit}_${method}`;
-		// 		mutation_parts.push(`
-		// 			mint_nut05_update_${unit}_${method}: mint_nut05_update(mint_nut05_update: $${var_name}) {
-		// 				unit
-		// 				method
-		// 				max_amount
-		// 				min_amount
-		// 				disabled
-		// 			}
-		// 		`);
-		// 		mutation_types[var_name] = 'MintNut05UpdateInput!';
-		// 		mutation_values[var_name] = {
-		// 			unit,
-		// 			method,
-		// 		};
-		// 	}
-		// }
 
 		this.melting_units.forEach(unit => {
 			const unit_group = this.form_melting.get(unit) as FormGroup;

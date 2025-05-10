@@ -17,6 +17,10 @@ import {
     UpdateMintContactTool,
     RemoveMintContactTool,
     UpdateMintEnabledTool,
+    UpdateMintQuoteTtlTool,
+    UpdateMintMethodMinTool,
+    UpdateMintMethodMaxTool,
+    UpdateMintMethodDescriptionTool,
 } from "./ai.tools";
 
 export const AI_AGENTS = {
@@ -74,7 +78,11 @@ export const AI_AGENTS = {
             You will be provided with the current state of the form along with the users request for changes`,
         },
         tools: [
-            UpdateMintEnabledTool
+            UpdateMintEnabledTool,
+            UpdateMintQuoteTtlTool,
+            UpdateMintMethodMinTool,
+            UpdateMintMethodMaxTool,
+            UpdateMintMethodDescriptionTool,
         ],
     },
 };
