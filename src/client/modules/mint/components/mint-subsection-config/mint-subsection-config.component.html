@@ -41,8 +41,8 @@
                         }
                         @if(mint_info?.nuts?.nut4?.disabled) {
                             <div class="disabled-overlay" @fadeInOut>
-                                <div class="orc-outline-color">Minting Disabled</div>
-                                <mat-icon class="mat-symbol-outline orc-outline-color icon-lg" svgIcon="minting_disabled_outline"></mat-icon>
+                                <div class="orc-status-warning-color">MINTING DISABLED</div>
+                                <mat-icon class="mat-symbol-outline orc-status-warning-color icon-lg" svgIcon="minting_disabled_outline"></mat-icon>
                             </div>
                         }
                     </mat-card-content>
@@ -90,8 +90,8 @@
                         }
                         @if(mint_info?.nuts?.nut5?.disabled) {
                             <div class="disabled-overlay" @fadeInOut>
-                                <div class="orc-outline-color">Melting Disabled</div>
-                                <mat-icon class="icon-lg mat-symbol-outline orc-outline-color" svgIcon="melting_disabled_outline"></mat-icon>
+                                <div class="orc-status-warning-color">MELTING DISABLED</div>
+                                <mat-icon class="icon-lg orc-status-warning-color orc-outline-color" svgIcon="melting_disabled_outline"></mat-icon>
                             </div>
                         }
                     </mat-card-content>
@@ -100,7 +100,7 @@
         </div>
     </div>
 
-    <div>
+    <!-- <div>
         <div class="flex flex-items-center flex-gap-1 p-b-0-5">
             <div class="protocol-spec">NUT 07</div>
             <div>
@@ -109,6 +109,6 @@
             </div>
         </div>
         <div class="config-category-rule"></div>
-    </div>
+    </div> -->
     
 </div>
