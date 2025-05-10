@@ -39,7 +39,6 @@ export class MintAnalyticChartComponent implements OnChanges {
 
 	@ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
-	@Input() public title!: string;
 	@Input() public locale!: string;
 	@Input() public mint_analytics!: MintAnalytic[];
 	@Input() public mint_analytics_pre!: MintAnalytic[];

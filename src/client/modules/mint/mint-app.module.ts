@@ -51,6 +51,12 @@ import { MintInfoFormContactsComponent } from './components/mint-info-form-conta
 import { MintInfoFormContactComponent } from './components/mint-info-form-contact/mint-info-form-contact.component';
 import { MintSubsectionKeysetsComponent } from './components/mint-subsection-keysets/mint-subsection-keysets.component';
 import { MintConnectionStatusComponent } from './components/mint-connection-status/mint-connection-status.component';
+import { MintConfigFormEnabledComponent } from './components/mint-config-form-enabled/mint-config-form-enabled.component';
+import { MintConfigFormQuoteTtlComponent } from './components/mint-config-form-quote-ttl/mint-config-form-quote-ttl.component';
+import { MintConfigFormBolt11Component } from './components/mint-config-form-bolt11/mint-config-form-bolt11.component';
+import { MintConfigFormMinComponent } from './components/mint-config-form-min/mint-config-form-min.component';
+import { MintConfigFormMaxComponent } from './components/mint-config-form-max/mint-config-form-max.component';
+import { MintConfigFormEnabledConfirmComponent } from './components/mint-config-form-enabled-confirm/mint-config-form-enabled-confirm.component';
 
 @NgModule({
 	declarations: [
@@ -78,6 +84,12 @@ import { MintConnectionStatusComponent } from './components/mint-connection-stat
 		MintInfoFormContactComponent,
   		MintSubsectionKeysetsComponent,
     	MintConnectionStatusComponent,
+     	MintConfigFormEnabledComponent,
+      	MintConfigFormQuoteTtlComponent,
+       	MintConfigFormBolt11Component,
+        MintConfigFormMinComponent,
+        MintConfigFormMaxComponent,
+        MintConfigFormEnabledConfirmComponent,
 	],
 	imports: [
 		CommonModule,

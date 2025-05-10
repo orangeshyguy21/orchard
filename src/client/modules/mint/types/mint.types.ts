@@ -1,6 +1,7 @@
 import { 
     OrchardMintBalance,
     OrchardMintInfo,
+    OrchardMintQuoteTtls,
     OrchardMintKeyset,
     OrchardMintPromise,
     OrchardMintAnalytics,
@@ -13,6 +14,8 @@ import {
     OrchardMintMotdUpdate,
     OrchardMintUrlUpdate,
     OrchardMintContactUpdate,
+    OrchardMintNut04Update,
+    OrchardMintNut05Update,
 } from "@shared/generated.types";
 
 export type MintInfoResponse = {
@@ -21,6 +24,10 @@ export type MintInfoResponse = {
 
 export type MintInfoRpcResponse = {
 	mint_info_rpc: OrchardMintInfoRpc;
+}
+
+export type MintQuoteTtlsResponse = {
+	mint_quote_ttl: OrchardMintQuoteTtls;
 }
 
 export type MintBalancesResponse = {
@@ -110,4 +117,16 @@ export type MintContactRemoveResponse = {
 
 export type MintContactAddResponse = {
 	mint_contact_add: OrchardMintContactUpdate;
+}
+
+export type MintQuoteTtlUpdateResponse = {
+	mint_quote_ttl_update: OrchardMintQuoteTtls;
+}
+
+export type MintNut04UpdateResponse = {
+	mint_nut04_update: OrchardMintNut04Update;
+}
+
+export type MintNut05UpdateResponse = {
+	mint_nut05_update: OrchardMintNut05Update;
 }

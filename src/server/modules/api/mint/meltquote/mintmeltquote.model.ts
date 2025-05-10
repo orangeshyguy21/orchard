@@ -73,7 +73,7 @@ export class OrchardMintMeltQuote {
 }
 
 @ObjectType()
-export class UpdateNut05Output {
+export class OrchardMintNut05Update {
 	@Field()
 	unit: string;
 
@@ -84,8 +84,8 @@ export class UpdateNut05Output {
 	disabled: boolean;
 
 	@Field(() => Int, { nullable: true })
-	min: number;
+	min_amount: number;
 
 	@Field(() => Int, { nullable: true })
-	max: number;
+	max_amount: number;
 }

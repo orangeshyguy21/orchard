@@ -1,6 +1,6 @@
 /* Core Dependencies */
 import { Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { Router, Event, ActivatedRoute } from '@angular/router';
+import { Router, Event, ActivatedRoute, NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
 /* Vendor Dependencies */
 import { filter, Subscription } from 'rxjs';
 /* Application Dependencies */
@@ -66,6 +66,20 @@ export class MintSectionComponent implements OnInit, OnDestroy {
 			)
 			.subscribe(event => {
 				this.setSubSection(event);
+
+				// if (event instanceof NavigationStart) { @todo: account for resolvers loading
+				// 	// this.is_loading = true;
+				// 	console.log('LOADING START');
+				// }
+				// if (
+				// 	event instanceof NavigationEnd ||
+				// 	event instanceof NavigationCancel ||
+				// 	event instanceof NavigationError
+				// ) {
+				// 	// this.is_loading = false;
+				// 	console.log('LOADING END');
+				// }
+
 			});
 	}
 
@@ -92,6 +106,11 @@ export class MintSectionComponent implements OnInit, OnDestroy {
 			(image:PublicImage) => {
 				this.loading = false;
 				this.icon_data = image.data;
+				this.cdr.detectChanges();
+			}, (error) => {
+				console.log('ERROR HERE', error);
+				this.error = true;
+				this.loading = false;
 				this.cdr.detectChanges();
 			}
 		);

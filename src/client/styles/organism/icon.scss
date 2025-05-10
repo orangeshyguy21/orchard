@@ -1,6 +1,6 @@
 @use '@styles/molecule/molecule';
 
-.mat-symbol{
+.mat-symbol, .mat-icon{
     &.icon-md{
         @extend %font-size-xxl;
         @extend %h-1-75;

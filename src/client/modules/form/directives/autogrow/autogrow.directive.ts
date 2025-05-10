@@ -5,7 +5,7 @@ import { Directive, ElementRef, Input, HostListener, DoCheck, OnInit } from '@an
   	selector: '[autogrow]',
 	standalone: false
 })
-export class AutoGrowDirective implements OnInit, DoCheck {
+export class AutogrowDirective implements OnInit, DoCheck {
 
 	private _autogrow! : boolean; // whether or not to autogrow (this can be set using an input)
 	private MAX_HEIGHT = 250; // the max height of the textarea

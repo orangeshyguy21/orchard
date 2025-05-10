@@ -2,7 +2,6 @@
 import { Injectable } from '@angular/core';
 /* Vendor Dependencies */
 import { Subject, Observable } from 'rxjs';
-import { filter } from 'rxjs/operators';
 /* Native Dependencies */
 import { EventData } from 'src/client/modules/event/classes/event-data.class';
 

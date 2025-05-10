@@ -1,0 +1,14 @@
+@use '@styles/molecule/molecule';
+
+.help-text-container{
+    // @extend %w-max-18;
+}
+
+.help-text-content{
+    @extend %font-size-xs;
+
+    background-color: rgb(28, 27, 27);
+    color: var(--mat-sys-outline);
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+}

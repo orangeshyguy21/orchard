@@ -14,6 +14,7 @@
 			[loading]="loading_static_data">
 		</orc-mint-connections>
 	</div>	
+
 	<div class="mint-analytic-control-panel">
 		<div class="flex flex-justify-between flex-gap-1 flex-items-end">
 			<div class="title-l p-1">Nutalytics</div>
@@ -26,7 +27,7 @@
 					[units]="chart_settings.units"
 					[interval]="chart_settings.interval"
 					[type]="chart_settings.type"
-					[keysets]="active_keysets"
+					[keysets]="mint_keysets"
 					[loading]="loading_static_data"
 					[mint_genesis_time]="mint_genesis_time"
 					(date_change)="onDateChange($event)"
@@ -44,7 +45,58 @@
 		<div class="mint-analytics-rule"></div>
 	</div>
 
-	<div class="flex flex-column flex-gap-2">
+
+	<div class="mint-analytic-header z-index-1">
+		<div class="mint-analytic-title">Balance Sheet</div>
+	</div>
+	<orc-mint-analytic-chart
+		[locale]="locale"
+		[mint_analytics]="mint_analytics_balances"
+		[mint_analytics_pre]="mint_analytics_balances_pre"
+		[chart_settings]="chart_settings"
+		[mint_genesis_time]="mint_genesis_time"
+		[selected_type]="chart_settings ? chart_settings.type : undefined"
+		[loading]="loading_dynamic_data">
+	</orc-mint-analytic-chart>
+	<div class="mint-analytic-header z-index-2">
+		<div class="mint-analytic-title">Mints &nbsp;&nbsp;<small>deposits</small></div>
+	</div>
+	<orc-mint-analytic-chart
+		[locale]="locale"
+		[mint_analytics]="mint_analytics_mints"
+		[mint_analytics_pre]="mint_analytics_mints_pre"
+		[chart_settings]="chart_settings"
+		[mint_genesis_time]="mint_genesis_time"
+		[selected_type]="chart_settings ? chart_settings.type : undefined"
+		[loading]="loading_dynamic_data">
+	</orc-mint-analytic-chart>
+	<div class="mint-analytic-header z-index-3">
+		<div class="mint-analytic-title">Melts &nbsp;&nbsp;<small>withdrawals</small></div>
+	</div>
+	<orc-mint-analytic-chart
+		[locale]="locale"
+		[mint_analytics]="mint_analytics_melts"
+		[mint_analytics_pre]="mint_analytics_melts_pre"
+		[chart_settings]="chart_settings"
+		[mint_genesis_time]="mint_genesis_time"
+		[selected_type]="chart_settings ? chart_settings.type : undefined"
+		[loading]="loading_dynamic_data">
+	</orc-mint-analytic-chart>
+	<div class="mint-analytic-header z-index-4">
+		<div class="mint-analytic-title">Transfers</div>
+	</div>
+	<orc-mint-analytic-chart
+		[locale]="locale"
+		[mint_analytics]="mint_analytics_transfers"
+		[mint_analytics_pre]="mint_analytics_transfers_pre"
+		[chart_settings]="chart_settings"
+		[mint_genesis_time]="mint_genesis_time"
+		[selected_type]="chart_settings ? chart_settings.type : undefined"
+		[loading]="loading_dynamic_data">
+	</orc-mint-analytic-chart>
+
+
+	<!-- <div class="flex flex-column flex-gap-2">
 		<orc-mint-analytic-chart
 			[title]="'Balance Sheet'"
 			[locale]="locale"
@@ -85,5 +137,5 @@
 			[selected_type]="chart_settings ? chart_settings.type : undefined"
 			[loading]="loading_dynamic_data">
 		</orc-mint-analytic-chart>
-	</div>
+	</div> -->
 </div>

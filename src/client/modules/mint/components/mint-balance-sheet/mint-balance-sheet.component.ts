@@ -41,7 +41,6 @@ export class MintBalanceSheetComponent implements OnChanges {
 				return new MintBalanceRow(balance, keyset);
 			})
 			.filter(row => row !== null)
-			.filter(row => row.unit.toLowerCase() === 'sat')  
 			.sort((a, b) => b.first_seen - a.first_seen)
 			.forEach( row => {
 				const unit = row.unit.toLowerCase();

@@ -28,6 +28,7 @@ export const MINT_INFO_QUERY = `{
 				methods{
 					method
 					unit
+					amountless
 					min_amount
 					max_amount
 				}
@@ -89,6 +90,13 @@ export const MINT_INFO_RPC_QUERY = `{
 			info
 			method
 		}
+	}
+}`;
+
+export const MINT_QUOTE_TTLS_QUERY = `{
+	mint_quote_ttl{
+		melt_ttl
+		mint_ttl
 	}
 }`;
 
@@ -251,5 +259,36 @@ mutation MintContactAdd($contact_add: MintContactUpdateInput!) {
 	mint_contact_add(mint_contact_update: $contact_add) {
 		method
 		info
+	}
+}`;
+
+export const MINT_QUOTE_TTL_MUTATION = `
+mutation MintQuoteTtl($mint_quote_ttl_update: MintQuoteTtlUpdateInput!) {
+	mint_quote_ttl_update(mint_quote_ttl_update: $mint_quote_ttl_update) {
+		mint_ttl
+		melt_ttl
+	}
+}`;
+
+export const MINT_NUT04_UPDATE_MUTATION = `
+mutation MintNut04Update($mint_nut04_update: MintNut04UpdateInput!) {
+	mint_nut04_update(mint_nut04_update: $mint_nut04_update) {
+		unit
+		method
+		max_amount
+		min_amount
+		description
+		disabled
+	}
+}`;
+
+export const MINT_NUT05_UPDATE_MUTATION = `
+mutation MintNut05Update($mint_nut05_update: MintNut05UpdateInput!) {
+	mint_nut05_update(mint_nut05_update: $mint_nut05_update) {
+		unit
+		method
+		max_amount
+		min_amount
+		disabled
 	}
 }`;

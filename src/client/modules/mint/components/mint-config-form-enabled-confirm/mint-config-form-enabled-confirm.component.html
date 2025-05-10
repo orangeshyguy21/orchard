@@ -1,0 +1,10 @@
+<mat-dialog-content>
+    <div class="flex flex-column flex-gap-1 flex-items-center p-2">
+        <mat-icon class="mat-symbol-outline orc-status-warning-color icon-lg" [svgIcon]="icon"></mat-icon>
+        <div class="text-center" [innerHTML]="description"></div>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Confirm</button>
+</mat-dialog-actions>

@@ -55,6 +55,7 @@
     #{$c}w-min-10 { min-width: 10rem; }
     #{$c}w-min-18 { min-width: 18rem; }
     #{$c}w-min-36 { min-width: 36rem; }
+    #{$c}w-max-18 { max-width: 18rem; }
     #{$c}w-max-36 { max-width: 36rem; }
     #{$c}w-max-54 { max-width: 54rem; }
 
@@ -73,19 +74,28 @@
     #{$c}p-0-5 { padding: 0.5rem; }
     #{$c}p-1 { padding: 1rem; }
     #{$c}p-2 { padding: 2rem; }
+    #{$c}p-t-0-25 { padding-top: 0.25rem; }
     #{$c}p-t-0-5 { padding-top: 0.5rem; }
     #{$c}p-t-1 { padding-top: 1rem; }
     #{$c}p-t-1-5 { padding-top: 1.5rem; }
+    #{$c}p-b-0-25 { padding-bottom: 0.25rem; }
     #{$c}p-b-0-5 { padding-bottom: 0.5rem; }
     #{$c}p-b-1 { padding-bottom: 1rem; }
     #{$c}p-b-1-5 { padding-bottom: 1.5rem; }
     #{$c}p-b-2 { padding-bottom: 2rem; }
+    #{$c}p-l-0-5 { padding-left: 0.5rem; }
+    #{$c}p-l-0-75 { padding-left: 0.75rem; }
     #{$c}p-l-1 { padding-left: 1rem; }
+    #{$c}p-r-0-5 { padding-right: 0.5rem; }
+    #{$c}p-r-0-75 { padding-right: 0.75rem; }
     #{$c}p-r-1 { padding-right: 1rem; }
 
     // Z-Index
     #{$c}z-index-1 { z-index: 1; }
     #{$c}z-index-2 { z-index: 2; }
+    #{$c}z-index-3 { z-index: 3; }
+    #{$c}z-index-4 { z-index: 4; }
+    // #{$c}z-index-5 { z-index: 5; }
 
     // Absolute Positioning
     #{$c}bottom-0 { bottom: 0; }
@@ -94,6 +104,8 @@
     #{$c}top-0 { top: 0; }
     #{$c}top-1 { top: 1rem; }
     #{$c}top-half { top: 50%; }
+    #{$c}right-0 { right: 0; }
+    #{$c}left-0 { left: 0; }
 
     // Transforms
     #{$c}transform-translate-50-50 { transform: translate(-50%, 50%); }

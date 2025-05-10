@@ -2,7 +2,7 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
-export class MintQuoteTtlOutput {
+export class OrchardMintQuoteTtls {
 	@Field(() => Int, { nullable: true })
 	mint_ttl: number;
 

@@ -1,0 +1,48 @@
+<div class="mint-config-form-bolt11-container">
+    <div class="flex flex-items-center flex-gap-1">
+        <div class="flex-grow flex flex-items-center flex-gap-1">
+            @if( index === 0 ) {
+                <orc-graphic-asset 
+                    [unit]="unit" 
+                    [height]="'1.5rem'">
+                </orc-graphic-asset>
+                <div class="font-size-xs">{{ unit | titlecase }} Configuration</div>
+            }
+        </div>
+        <div class="font-size-xs">{{ method }}</div>
+    </div>
+
+    <div class="flex flex-column flex-gap-1">
+        <orc-mint-config-form-min
+            [form_group]="form_bolt11"
+            [control_name]="'min_amount'"
+            [unit]="unit"
+            (update)="onUpdate($event)"
+            (cancel)="onCancel($event)"
+        ></orc-mint-config-form-min>
+        <orc-mint-config-form-max
+            [form_group]="form_bolt11"
+            [control_name]="'max_amount'"
+            [unit]="unit"
+            (update)="onUpdate($event)"
+            (cancel)="onCancel($event)"
+        ></orc-mint-config-form-max>
+        <div class="flex flex-items-center flex-gap-2">
+            <form [formGroup]="form_bolt11" class="flex-1 flex flex-items-center flex-grow">
+                <mat-slide-toggle
+                    [formControlName]="this.toggle_control"
+                    (change)="onToggle($event)"
+                    [name]="this.toggle_control">
+                </mat-slide-toggle>
+                <div class="p-l-1 font-size-s">
+                    {{ this.toggle_control_name }}
+                </div>
+            </form>
+            <div class="flex-1">
+                <orc-help-text>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                </orc-help-text>
+            </div>
+        </div>
+    </div>
+</div>

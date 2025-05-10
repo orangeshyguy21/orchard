@@ -22,7 +22,12 @@ AiFunctionUpdateMintUrlUpdate |
 AiFunctionUpdateMintUrlRemove |
 AiFunctionAddMintContact |
 AiFunctionUpdateMintContact |
-AiFunctionRemoveMintContact;
+AiFunctionRemoveMintContact |
+AiFunctionUpdateMintEnabled |
+AiFunctionUpdateMintQuoteTtl |
+AiFunctionUpdateMintMethodMin |
+AiFunctionUpdateMintMethodMax |
+AiFunctionUpdateMintMethodDescription;
 
 export type AiFunctionUpdateMintAnalyticsDateRange = {
 	name: AiFunctionName.MintAnalyticsDateRangeUpdate;
@@ -133,5 +138,50 @@ export type AiFunctionRemoveMintContact = {
 	arguments: {
 		method: 'email' | 'nostr' | 'twitter';
 		info: string;
+	}
+}
+
+export type AiFunctionUpdateMintEnabled = {
+	name: AiFunctionName.MintEnabledUpdate;
+	arguments: {
+		enabled: boolean;
+		operation: 'minting' | 'melting';
+	}
+}
+
+export type AiFunctionUpdateMintQuoteTtl = {
+	name: AiFunctionName.MintQuoteTtlUpdate;
+	arguments: {
+		ttl: number;
+		operation: 'minting' | 'melting';
+	}
+}
+
+export type AiFunctionUpdateMintMethodMin = {
+	name: AiFunctionName.MintMethodMinUpdate;
+	arguments: {
+		min_amount: number;
+		operation: 'minting' | 'melting';
+		method: string;
+		unit: MintUnit;
+	}
+}
+
+export type AiFunctionUpdateMintMethodMax = {
+	name: AiFunctionName.MintMethodMaxUpdate;
+	arguments: {
+		max_amount: number;
+		operation: 'minting' | 'melting';
+		method: string;
+		unit: MintUnit;
+	}
+}
+
+export type AiFunctionUpdateMintMethodDescription = {
+	name: AiFunctionName.MintMethodDescriptionUpdate;
+	arguments: {
+		description: boolean;
+		method: string;
+		unit: MintUnit;
 	}
 }

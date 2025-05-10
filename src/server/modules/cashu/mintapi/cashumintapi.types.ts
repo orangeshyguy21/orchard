@@ -73,6 +73,7 @@ export type CashuNut4Method = {
 export type CashuNut5Method = {
   method: string;
   unit: MintUnit;
+  amountless?: boolean;
   min_amount?: number;
   max_amount?: number;  
 }

@@ -1,0 +1,15 @@
+@use '@styles/molecule/molecule';
+@use '@styles/nucleus/nucleus';
+
+.protocol-spec{
+    @extend %orc-corner-small;
+    @extend %font-size-s;
+    @extend %p-v-0-25;
+    @extend %p-h-0-75;
+    @extend %orc-primary-container-bg;
+    @extend %font-weight-semi-bold;
+    @extend %orc-on-primary-container-color;
+    
+    // color: black;
+    // @extend %font-weight-bold;
+}

@@ -1,0 +1,20 @@
+<div class="mint-config-form-disabled-container">
+    <div class="flex flex-items-center flex-gap-2">
+        <div class="flex-1 flex flex-items-center flex-grow">
+            <mat-slide-toggle
+                #toggle
+                [checked]="form_group.get('enabled')?.value"
+                (change)="onChange($event)"
+                name="enabled">
+            </mat-slide-toggle>
+            <div class="p-l-1 font-size-s">
+                Enabled
+            </div>
+        </div>
+        <div class="flex-1">
+            <orc-help-text>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </orc-help-text>
+        </div>
+    </div>
+</div>

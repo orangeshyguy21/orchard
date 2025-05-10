@@ -9,6 +9,7 @@ import { OrchardErrors } from '@client/modules/error/classes/error.class';
 import { OrchardRes } from '@client/modules/api/types/api.types';
 import { 
 	MintInfoResponse,
+	MintQuoteTtlsResponse,
 	MintBalancesResponse,
 	MintKeysetsResponse,
 	MintPromisesResponse,
@@ -30,9 +31,13 @@ import {
 	MintContactUpdateResponse,
 	MintContactRemoveResponse,
 	MintContactAddResponse,
+	MintQuoteTtlUpdateResponse,
+	MintNut04UpdateResponse,
+	MintNut05UpdateResponse,
 } from '@client/modules/mint/types/mint.types';
 import { CacheService } from '@client/modules/cache/services/cache/cache.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
+import { MintQuoteTtls } from '@client/modules/mint/classes/mint-quote-ttls.class';
 import { MintInfoRpc } from '@client/modules/mint/classes/mint-info-rpc.class';
 import { MintBalance } from '@client/modules/mint/classes/mint-balance.class';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
@@ -44,6 +49,7 @@ import { MintAnalyticsInterval, OrchardContact } from '@shared/generated.types';
 import { 
 	MINT_INFO_QUERY, 
 	MINT_INFO_RPC_QUERY,
+	MINT_QUOTE_TTLS_QUERY,
 	MINT_BALANCES_QUERY, 
 	MINT_KEYSETS_QUERY, 
 	MINT_PROMISES_QUERY, 
@@ -62,6 +68,9 @@ import {
 	MINT_CONTACT_UPDATE_MUTATIONS,
 	MINT_CONTACT_REMOVE_MUTATION,
 	MINT_CONTACT_ADD_MUTATION,
+	MINT_QUOTE_TTL_MUTATION,
+	MINT_NUT04_UPDATE_MUTATION,
+	MINT_NUT05_UPDATE_MUTATION,
 } from './mint.queries';
 
 
@@ -227,6 +236,21 @@ export class MintService {
 			map((mintInfoRpc) => new MintInfoRpc(mintInfoRpc)),
 			catchError((error) => {
 				console.error('Error loading mint info (rpc):', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	public getMintQuoteTtls(): Observable<MintQuoteTtls> {
+		const query = getApiQuery(MINT_QUOTE_TTLS_QUERY);
+		return this.http.post<OrchardRes<MintQuoteTtlsResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.mint_quote_ttl;
+			}),
+			map((mintQuoteTtls) => new MintQuoteTtls(mintQuoteTtls)),
+			catchError((error) => {
+				console.error('Error loading mint quote ttls:', error);
 				return throwError(() => error);
 			}),
 		);
@@ -588,6 +612,50 @@ export class MintService {
 			})
 		);
 	}
+
+	public updateMintQuoteTtl(key:keyof MintQuoteTtls, value:number|null) : Observable<MintQuoteTtlUpdateResponse> {
+		const query = getApiQuery(MINT_QUOTE_TTL_MUTATION,  { mint_quote_ttl_update: { [key]: value } });
+		return this.http.post<OrchardRes<MintQuoteTtlUpdateResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error updating mint quote ttl:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public updateMintNut04(unit:string, method:string, key:string, value:any) : Observable<MintNut04UpdateResponse> {
+		const query = getApiQuery(MINT_NUT04_UPDATE_MUTATION, { mint_nut04_update: { unit, method, [key]: value } });
+		return this.http.post<OrchardRes<MintNut04UpdateResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error updating mint nut04:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public updateMintNut05(unit:string, method:string, key:string, value:any) : Observable<MintNut05UpdateResponse> {
+		const query = getApiQuery(MINT_NUT05_UPDATE_MUTATION, { mint_nut05_update: { unit, method, [key]: value } });
+		return this.http.post<OrchardRes<MintNut05UpdateResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error updating mint nut05:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+	
+	
 
 	public updateMint(mutation:string, variables:Record<string, any>) {
 		const query = getApiQuery(mutation, variables);

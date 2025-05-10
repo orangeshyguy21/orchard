@@ -62,7 +62,7 @@ export class OrchardMintMintQuote {
 
 
 @ObjectType()
-export class UpdateNut04Output {
+export class  OrchardMintNut04Update {
 	@Field()
 	unit: string;
 
@@ -73,17 +73,17 @@ export class UpdateNut04Output {
 	disabled: boolean;
 
 	@Field(() => Int, { nullable: true })
-	min: number;
+	min_amount: number;
 
 	@Field(() => Int, { nullable: true })
-	max: number;
+	max_amount: number;
 
 	@Field({ nullable: true })
 	description: boolean;
 }
 
 @ObjectType()
-export class UpdateNut04QuoteOutput {
+export class OrchardMintNut04QuoteUpdate {
 	@Field()
 	quote_id: string;
 

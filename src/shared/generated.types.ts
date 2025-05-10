@@ -20,6 +20,7 @@ export type Scalars = {
 
 export enum AiAgent {
   Default = 'DEFAULT',
+  MintConfig = 'MINT_CONFIG',
   MintDashboard = 'MINT_DASHBOARD',
   MintInfo = 'MINT_INFO'
 }
@@ -50,9 +51,14 @@ export enum AiFunctionName {
   MintContactUpdate = 'MINT_CONTACT_UPDATE',
   MintDescriptionLongUpdate = 'MINT_DESCRIPTION_LONG_UPDATE',
   MintDescriptionUpdate = 'MINT_DESCRIPTION_UPDATE',
+  MintEnabledUpdate = 'MINT_ENABLED_UPDATE',
   MintIconUrlUpdate = 'MINT_ICON_URL_UPDATE',
+  MintMethodDescriptionUpdate = 'MINT_METHOD_DESCRIPTION_UPDATE',
+  MintMethodMaxUpdate = 'MINT_METHOD_MAX_UPDATE',
+  MintMethodMinUpdate = 'MINT_METHOD_MIN_UPDATE',
   MintMotdUpdate = 'MINT_MOTD_UPDATE',
   MintNameUpdate = 'MINT_NAME_UPDATE',
+  MintQuoteTtlUpdate = 'MINT_QUOTE_TTL_UPDATE',
   MintUrlAdd = 'MINT_URL_ADD',
   MintUrlRemove = 'MINT_URL_REMOVE',
   MintUrlUpdate = 'MINT_URL_UPDATE'
@@ -93,6 +99,28 @@ export type MintNameUpdateInput = {
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type MintNut04QuoteUpdateInput = {
+  quote_id: Scalars['String']['input'];
+  state: Scalars['String']['input'];
+};
+
+export type MintNut04UpdateInput = {
+  description?: InputMaybe<Scalars['Boolean']['input']>;
+  disabled?: InputMaybe<Scalars['Boolean']['input']>;
+  max_amount?: InputMaybe<Scalars['Int']['input']>;
+  method: Scalars['String']['input'];
+  min_amount?: InputMaybe<Scalars['Int']['input']>;
+  unit: Scalars['String']['input'];
+};
+
+export type MintNut05UpdateInput = {
+  disabled?: InputMaybe<Scalars['Boolean']['input']>;
+  max_amount?: InputMaybe<Scalars['Int']['input']>;
+  method: Scalars['String']['input'];
+  min_amount?: InputMaybe<Scalars['Int']['input']>;
+  unit: Scalars['String']['input'];
+};
+
 export enum MintQuoteStatus {
   Issued = 'ISSUED',
   Paid = 'PAID',
@@ -100,10 +128,9 @@ export enum MintQuoteStatus {
   Unpaid = 'UNPAID'
 }
 
-export type MintQuoteTtlOutput = {
-  __typename?: 'MintQuoteTtlOutput';
-  melt_ttl?: Maybe<Scalars['Int']['output']>;
-  mint_ttl?: Maybe<Scalars['Int']['output']>;
+export type MintQuoteTtlUpdateInput = {
+  melt_ttl?: InputMaybe<Scalars['Int']['input']>;
+  mint_ttl?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type MintRotateKeysetInput = {
@@ -142,14 +169,14 @@ export type Mutation = {
   mint_long_description_update: OrchardMintDescriptionUpdate;
   mint_motd_update: OrchardMintMotdUpdate;
   mint_name_update: OrchardMintNameUpdate;
+  mint_nut04_quote_update: OrchardMintNut04QuoteUpdate;
+  mint_nut04_update: OrchardMintNut04Update;
+  mint_nut05_update: OrchardMintNut05Update;
+  mint_quote_ttl_update: OrchardMintQuoteTtls;
   mint_rotate_keyset: MintRotateKeysetOutput;
   mint_short_description_update: OrchardMintDescriptionUpdate;
   mint_url_add: OrchardMintUrlUpdate;
   mint_url_remove: OrchardMintUrlUpdate;
-  update_mint_nut04: UpdateNut04Output;
-  update_mint_nut04_quote: UpdateNut04QuoteOutput;
-  update_mint_nut05: UpdateNut05Output;
-  update_mint_quote_ttl: MintQuoteTtlOutput;
 };
 
 
@@ -188,6 +215,26 @@ export type MutationMint_Name_UpdateArgs = {
 };
 
 
+export type MutationMint_Nut04_Quote_UpdateArgs = {
+  mint_nut04_quote_update: MintNut04QuoteUpdateInput;
+};
+
+
+export type MutationMint_Nut04_UpdateArgs = {
+  mint_nut04_update: MintNut04UpdateInput;
+};
+
+
+export type MutationMint_Nut05_UpdateArgs = {
+  mint_nut05_update: MintNut05UpdateInput;
+};
+
+
+export type MutationMint_Quote_Ttl_UpdateArgs = {
+  mint_quote_ttl_update: MintQuoteTtlUpdateInput;
+};
+
+
 export type MutationMint_Rotate_KeysetArgs = {
   mint_rotate_keyset: MintRotateKeysetInput;
 };
@@ -205,26 +252,6 @@ export type MutationMint_Url_AddArgs = {
 
 export type MutationMint_Url_RemoveArgs = {
   mint_url_update: MintUrlUpdateInput;
-};
-
-
-export type MutationUpdate_Mint_Nut04Args = {
-  updateNut04Input: UpdateNut04Input;
-};
-
-
-export type MutationUpdate_Mint_Nut04_QuoteArgs = {
-  updateNut04QuoteInput: UpdateNut04QuoteInput;
-};
-
-
-export type MutationUpdate_Mint_Nut05Args = {
-  updateNut05Input: UpdateNut05Input;
-};
-
-
-export type MutationUpdate_Mint_Quote_TtlArgs = {
-  updateQuoteTtlInput: UpdateQuoteTtlInput;
 };
 
 export type OrchardAiChatChunk = {
@@ -424,6 +451,31 @@ export type OrchardMintNameUpdate = {
   name?: Maybe<Scalars['String']['output']>;
 };
 
+export type OrchardMintNut04QuoteUpdate = {
+  __typename?: 'OrchardMintNut04QuoteUpdate';
+  quote_id: Scalars['String']['output'];
+  state: Scalars['String']['output'];
+};
+
+export type OrchardMintNut04Update = {
+  __typename?: 'OrchardMintNut04Update';
+  description?: Maybe<Scalars['Boolean']['output']>;
+  disabled?: Maybe<Scalars['Boolean']['output']>;
+  max_amount?: Maybe<Scalars['Int']['output']>;
+  method: Scalars['String']['output'];
+  min_amount?: Maybe<Scalars['Int']['output']>;
+  unit: Scalars['String']['output'];
+};
+
+export type OrchardMintNut05Update = {
+  __typename?: 'OrchardMintNut05Update';
+  disabled?: Maybe<Scalars['Boolean']['output']>;
+  max_amount?: Maybe<Scalars['Int']['output']>;
+  method: Scalars['String']['output'];
+  min_amount?: Maybe<Scalars['Int']['output']>;
+  unit: Scalars['String']['output'];
+};
+
 export type OrchardMintPromise = {
   __typename?: 'OrchardMintPromise';
   amount: Scalars['Int']['output'];
@@ -447,6 +499,12 @@ export type OrchardMintProof = {
   secret: Scalars['String']['output'];
   witness?: Maybe<Scalars['String']['output']>;
   y?: Maybe<Scalars['String']['output']>;
+};
+
+export type OrchardMintQuoteTtls = {
+  __typename?: 'OrchardMintQuoteTtls';
+  melt_ttl?: Maybe<Scalars['Int']['output']>;
+  mint_ttl?: Maybe<Scalars['Int']['output']>;
 };
 
 export type OrchardMintUrlUpdate = {
@@ -477,6 +535,7 @@ export type OrchardNut5 = {
 
 export type OrchardNut5Method = {
   __typename?: 'OrchardNut5Method';
+  amountless?: Maybe<Scalars['Boolean']['output']>;
   max_amount?: Maybe<Scalars['Float']['output']>;
   method: Scalars['String']['output'];
   min_amount?: Maybe<Scalars['Float']['output']>;
@@ -562,7 +621,7 @@ export type Query = {
   mint_promises: Array<OrchardMintPromise>;
   mint_proofs_pending: Array<OrchardMintProof>;
   mint_proofs_used: Array<OrchardMintProof>;
-  mint_quote_ttl: MintQuoteTtlOutput;
+  mint_quote_ttl: OrchardMintQuoteTtls;
   public_image: OrchardPublicImage;
   public_urls: Array<OrchardPublicUrl>;
   status: OrchardStatus;
@@ -638,56 +697,4 @@ export type Subscription = {
 
 export type SubscriptionAi_ChatArgs = {
   ai_chat: AiChatInput;
-};
-
-export type UpdateNut04Input = {
-  description?: InputMaybe<Scalars['Boolean']['input']>;
-  disabled?: InputMaybe<Scalars['Boolean']['input']>;
-  max?: InputMaybe<Scalars['Int']['input']>;
-  method: Scalars['String']['input'];
-  min?: InputMaybe<Scalars['Int']['input']>;
-  unit: Scalars['String']['input'];
-};
-
-export type UpdateNut04Output = {
-  __typename?: 'UpdateNut04Output';
-  description?: Maybe<Scalars['Boolean']['output']>;
-  disabled?: Maybe<Scalars['Boolean']['output']>;
-  max?: Maybe<Scalars['Int']['output']>;
-  method: Scalars['String']['output'];
-  min?: Maybe<Scalars['Int']['output']>;
-  unit: Scalars['String']['output'];
-};
-
-export type UpdateNut04QuoteInput = {
-  quote_id: Scalars['String']['input'];
-  state: Scalars['String']['input'];
-};
-
-export type UpdateNut04QuoteOutput = {
-  __typename?: 'UpdateNut04QuoteOutput';
-  quote_id: Scalars['String']['output'];
-  state: Scalars['String']['output'];
-};
-
-export type UpdateNut05Input = {
-  disabled?: InputMaybe<Scalars['Boolean']['input']>;
-  max?: InputMaybe<Scalars['Int']['input']>;
-  method: Scalars['String']['input'];
-  min?: InputMaybe<Scalars['Int']['input']>;
-  unit: Scalars['String']['input'];
-};
-
-export type UpdateNut05Output = {
-  __typename?: 'UpdateNut05Output';
-  disabled?: Maybe<Scalars['Boolean']['output']>;
-  max?: Maybe<Scalars['Int']['output']>;
-  method: Scalars['String']['output'];
-  min?: Maybe<Scalars['Int']['output']>;
-  unit: Scalars['String']['output'];
-};
-
-export type UpdateQuoteTtlInput = {
-  melt_ttl?: InputMaybe<Scalars['Int']['input']>;
-  mint_ttl?: InputMaybe<Scalars['Int']['input']>;
 };

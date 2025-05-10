@@ -91,7 +91,7 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 	private getAgentSubscription(): Subscription {
 		return this.aiService.agent_requests$
 			.subscribe(({ agent, content }) => {
-				const form_string = this.stringifyForm();
+				const form_string = JSON.stringify(this.form_info.value);
 				this.aiService.openAiSocket(agent, content, form_string);
 			});
 	}
@@ -128,10 +128,6 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		return this.dirty_count$.subscribe((count) => {
 			this.createPendingEvent(count);
 		});
-	}
-
-	private stringifyForm(): string {
-		return JSON.stringify(this.form_info.value);
 	}
 
 	private executeAgentFunction(tool_call: AiChatToolCall): void {
