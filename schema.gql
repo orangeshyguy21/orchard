@@ -105,7 +105,7 @@ input MintNut05UpdateInput {
   unit: String!
 }
 
-enum MintQuoteStatus {
+enum MintQuoteState {
   ISSUED
   PAID
   PENDING
@@ -314,16 +314,14 @@ type OrchardMintMeltQuote {
 
 type OrchardMintMintQuote {
   amount: Int!
-  checking_id: String!
   created_time: UnixTimestamp
-  issued: Boolean!
-  method: String!
-  paid: Boolean!
+  id: ID!
+  issued_time: UnixTimestamp
   paid_time: UnixTimestamp
-  pubkey: String
-  quote: ID!
+  pubkey: String!
   request: String!
-  state: String
+  request_lookup_id: String!
+  state: MintQuoteState!
   unit: MintUnit!
 }
 
@@ -481,7 +479,7 @@ type Query {
   mint_info_rpc: OrchardMintInfoRpc!
   mint_keysets: [OrchardMintKeyset!]!
   mint_melt_quotes: [OrchardMintMeltQuote!]!
-  mint_mint_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, status: [MintQuoteStatus!], unit: [MintUnit!]): [OrchardMintMintQuote!]!
+  mint_mint_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, state: [MintQuoteState!], timezone: Timezone, unit: [MintUnit!]): [OrchardMintMintQuote!]!
   mint_promises(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!]): [OrchardMintPromise!]!
   mint_proofs_pending: [OrchardMintProof!]!
   mint_proofs_used: [OrchardMintProof!]!

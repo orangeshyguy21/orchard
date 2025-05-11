@@ -78,12 +78,12 @@ export class CashuMintDatabaseService implements OnModuleInit {
 
 	public async getMintMeltQuotes(db:sqlite3.Database) : Promise<CashuMintMeltQuote[]> {
 		if( this.backend === 'nutshell' ) return this.nutshellService.getMintMeltQuotes(db);
-		if( this.backend === 'cdk' ) throw OrchardErrorCode.MintSupportError;
+		if( this.backend === 'cdk' ) return this.cdkService.getMintMeltQuotes(db);
 	}
 
   	public async getMintMintQuotes(db:sqlite3.Database, args?: CashuMintMintQuotesArgs) : Promise<CashuMintMintQuote[]> {
 		if( this.backend === 'nutshell' ) return this.nutshellService.getMintMintQuotes(db, args);
-		if( this.backend === 'cdk' ) throw OrchardErrorCode.MintSupportError;
+		if( this.backend === 'cdk' ) return this.cdkService.getMintMintQuotes(db, args);
     }
 
 	public async getMintPromises(db:sqlite3.Database, args?: CashuMintPromisesArgs) : Promise<CashuMintPromise[]> {

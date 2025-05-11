@@ -210,11 +210,11 @@ export class CdkService {
   	public async getMintMintQuotes(db:sqlite3.Database, args?: CashuMintMintQuotesArgs) : Promise<CashuMintMintQuote[]> {
 		const field_mappings = {
 			unit: 'unit',
-			date_start: 'expiry',
-			date_end: 'expiry',
-			status: 'state'
+			date_start: 'created_time',
+			date_end: 'created_time',
+			status: 'state',
 		};
-		const { sql, params } = buildDynamicQuery('mint_quote', args, field_mappings);
+		const { sql, params } = buildDynamicQuery('mint_quote', args, field_mappings, 500);
 		return new Promise((resolve, reject) => {
 			db.all(sql, params, (err, rows:CashuMintMintQuote[]) => {
 				if (err) reject(err);

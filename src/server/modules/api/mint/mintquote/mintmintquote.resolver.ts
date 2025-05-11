@@ -3,7 +3,8 @@ import { Logger } from '@nestjs/common';
 import { Resolver, Query, Args, Mutation } from "@nestjs/graphql";
 /* Application Dependencies */
 import { UnixTimestamp } from "@server/modules/graphql/scalars/unixtimestamp.scalar";
-import { MintUnit, MintQuoteStatus } from "@server/modules/cashu/cashu.enums";
+import { Timezone, TimezoneType } from "@server/modules/graphql/scalars/timezone.scalar";
+import { MintUnit, MintQuoteState } from "@server/modules/cashu/cashu.enums";
 /* Local Dependencies */
 import { MintMintQuoteService } from "./mintmintquote.service";
 import { OrchardMintMintQuote } from "./mintmintquote.model";
@@ -22,12 +23,13 @@ export class MintMintQuoteResolver {
 	@Query(() => [OrchardMintMintQuote])
 	async mint_mint_quotes(
 		@Args('unit', { type: () => [MintUnit], nullable: true }) unit?: MintUnit[],
-		@Args('status', { type: () => [MintQuoteStatus], nullable: true }) status?: MintQuoteStatus[],
+		@Args('state', { type: () => [MintQuoteState], nullable: true }) state?: MintQuoteState[],
 		@Args('date_start', { type: () => UnixTimestamp, nullable: true }) date_start?: number,
 		@Args('date_end', { type: () => UnixTimestamp, nullable: true }) date_end?: number,
+		@Args('timezone', { type: () => Timezone, nullable: true }) timezone?: TimezoneType,
 	) : Promise<OrchardMintMintQuote[]> {
 		this.logger.debug('GET { mint_mint_quotes }');
-		return await this.mintMintQuoteService.getMintMintQuotes({ unit, status, date_start, date_end });
+		return await this.mintMintQuoteService.getMintMintQuotes({ unit, state, date_start, date_end, timezone });
 	}
 
 

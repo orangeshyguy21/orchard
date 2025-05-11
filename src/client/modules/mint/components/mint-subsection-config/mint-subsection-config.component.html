@@ -1,6 +1,6 @@
 <div class="mint-subsection-config-container">
-    <div class="flex flex-gap-2 flex-grow">
-        <div class="flex-1 flex flex-column flex-gap-2"> 
+    <div class="flex flex-column flex-gap-4">
+        <div class="flex flex-column flex-gap-2"> 
             <div>
                 <div class="flex flex-items-center flex-gap-1 p-b-0-5">
                     <div class="protocol-spec">NUT 04</div>
@@ -11,44 +11,63 @@
                 </div>
                 <div class="config-category-rule"></div>
             </div>   
-            <orc-mint-config-form-enabled
-                [nut]="'nut4'"
-                [enabled]="form_minting.get('enabled')?.value"
-                [form_group]="form_minting"
-                (update)="onEnabledUpdate($event)"
-            ></orc-mint-config-form-enabled>
-            <orc-mint-config-form-quote-ttl
-                [form_group]="form_minting"
-                [control_name]="'mint_ttl'"
-                (update)="onTtlUpdate($event)"
-                (cancel)="onTtlCancel($event)"
-            ></orc-mint-config-form-quote-ttl>
+    
+            <div class="flex flex-gap-2">
+                <div class="flex-1 flex flex-column flex-gap-2">
+                    <orc-mint-config-form-enabled
+                        [nut]="'nut4'"
+                        [enabled]="form_minting.get('enabled')?.value"
+                        [form_group]="form_minting"
+                        (update)="onEnabledUpdate($event)"
+                    ></orc-mint-config-form-enabled>
+                    <orc-mint-config-form-quote-ttl
+                        [form_group]="form_minting"
+                        [control_name]="'mint_ttl'"
+                        (update)="onTtlUpdate($event)"
+                        (cancel)="onTtlCancel($event)"
+                    ></orc-mint-config-form-quote-ttl>
+                </div>
+                <div class="flex-1">
+                    <orc-mint-quote-ttl-chart 
+                        [loading]="data_loading"
+                        [mint_quotes]="mint_quotes"
+                    ></orc-mint-quote-ttl-chart>
+                    <!-- {{ mint_quotes | json }} -->
+                </div>
+            </div>
+    
             @for (unit of minting_units; track unit) {
-                <mat-card appearance="outlined" class="relative overflow-hidden">
-                    <mat-card-content>
-                        @for (method of mint_info?.nuts?.nut4?.methods; track method; let i = $index) {
-                            @if (method.unit === unit && method.method === 'bolt11') {
-                                <orc-mint-config-form-bolt11 
-                                    [nut]="'nut4'"
-                                    [index]="i"
-                                    [unit]="unit"
-                                    [method]="method.method"
-                                    [form_group]="form_minting"
-                                    (update)="onMethodUpdate($event)"
-                                    (cancel)="onMethodCancel($event)"
-                                ></orc-mint-config-form-bolt11>
+                <div class="flex flex-gap-2">
+                    <mat-card appearance="outlined" class="flex-1 relative overflow-hidden">
+                        <mat-card-content>
+                            @for (method of mint_info?.nuts?.nut4?.methods; track method; let i = $index) {
+                                @if (method.unit === unit && method.method === 'bolt11') {
+                                    <orc-mint-config-form-bolt11 
+                                        [nut]="'nut4'"
+                                        [index]="i"
+                                        [unit]="unit"
+                                        [method]="method.method"
+                                        [form_group]="form_minting"
+                                        (update)="onMethodUpdate($event)"
+                                        (cancel)="onMethodCancel($event)"
+                                    ></orc-mint-config-form-bolt11>
+                                }
                             }
-                        }
-                        @if(mint_info?.nuts?.nut4?.disabled) {
-                            <div class="disabled-overlay" @fadeInOut>
-                                <div class="orc-status-warning-color">MINTING DISABLED</div>
-                                <mat-icon class="mat-symbol-outline orc-status-warning-color icon-lg" svgIcon="minting_disabled_outline"></mat-icon>
-                            </div>
-                        }
-                    </mat-card-content>
-                </mat-card>
+                            @if(mint_info?.nuts?.nut4?.disabled) {
+                                <div class="disabled-overlay" @fadeInOut>
+                                    <div class="orc-status-warning-color">MINTING DISABLED</div>
+                                    <mat-icon class="mat-symbol-outline orc-status-warning-color icon-lg" svgIcon="minting_disabled_outline"></mat-icon>
+                                </div>
+                            }
+                        </mat-card-content>
+                    </mat-card>
+                    <div class="flex-1">
+                        chart
+                    </div>
+                </div>
             }
         </div>
+    
         <div class="flex-1 flex flex-column flex-gap-2">    
             <div>
                 <div class="flex flex-items-center flex-gap-1 p-b-0-5">
@@ -98,17 +117,16 @@
                 </mat-card>
             }
         </div>
-    </div>
-
-    <!-- <div>
-        <div class="flex flex-items-center flex-gap-1 p-b-0-5">
-            <div class="protocol-spec">NUT 07</div>
-            <div>
-                <div class="title-form-section">Token state check</div>
-                <div class="font-size-xs orc-outline-color">Lorem ipsum dolor sit amet, consectetur</div>
-            </div>
-        </div>
-        <div class="config-category-rule"></div>
-    </div> -->
     
+        <div>
+            <div class="flex flex-items-center flex-gap-1 p-b-0-5">
+                <div class="protocol-spec">NUT 07</div>
+                <div>
+                    <div class="title-form-section">Token state check</div>
+                    <div class="font-size-xs orc-outline-color">Lorem ipsum dolor sit amet, consectetur</div>
+                </div>
+            </div>
+            <div class="config-category-rule"></div>
+        </div>
+    </div>
 </div>

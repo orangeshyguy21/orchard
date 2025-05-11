@@ -121,7 +121,7 @@ export type MintNut05UpdateInput = {
   unit: Scalars['String']['input'];
 };
 
-export enum MintQuoteStatus {
+export enum MintQuoteState {
   Issued = 'ISSUED',
   Paid = 'PAID',
   Pending = 'PENDING',
@@ -428,16 +428,14 @@ export type OrchardMintMeltQuote = {
 export type OrchardMintMintQuote = {
   __typename?: 'OrchardMintMintQuote';
   amount: Scalars['Int']['output'];
-  checking_id: Scalars['String']['output'];
   created_time?: Maybe<Scalars['UnixTimestamp']['output']>;
-  issued: Scalars['Boolean']['output'];
-  method: Scalars['String']['output'];
-  paid: Scalars['Boolean']['output'];
+  id: Scalars['ID']['output'];
+  issued_time?: Maybe<Scalars['UnixTimestamp']['output']>;
   paid_time?: Maybe<Scalars['UnixTimestamp']['output']>;
-  pubkey?: Maybe<Scalars['String']['output']>;
-  quote: Scalars['ID']['output'];
+  pubkey: Scalars['String']['output'];
   request: Scalars['String']['output'];
-  state?: Maybe<Scalars['String']['output']>;
+  request_lookup_id: Scalars['String']['output'];
+  state: MintQuoteState;
   unit: MintUnit;
 };
 
@@ -667,7 +665,7 @@ export type QueryMint_Analytics_TransfersArgs = {
 export type QueryMint_Mint_QuotesArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
-  status?: InputMaybe<Array<MintQuoteStatus>>;
+  state?: InputMaybe<Array<MintQuoteState>>;
   unit?: InputMaybe<Array<MintUnit>>;
 };
 

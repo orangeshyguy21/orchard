@@ -2,7 +2,7 @@
 import { Injectable } from '@nestjs/common';
 /* Vendor Dependencies */
 import sqlite3 from "sqlite3";
-/* Local Dependencies */
+/* Native Dependencies */
 import { 
 	CashuMintBalance,
 	CashuMintKeyset,
@@ -25,6 +25,8 @@ import {
 	getAnalyticsTimeGroupSql,
 } from '@server/modules/cashu/mintdb/cashumintdb.helpers';
 import { MintAnalyticsInterval } from '@server/modules/cashu/mintdb/cashumintdb.enums';
+/* Local Dependencies */
+import { NutshellMintMintQuote } from './nutshell.types';
 
 @Injectable()
 export class NutshellService {
@@ -63,13 +65,6 @@ export class NutshellService {
 
 	public async getMintKeysets(db:sqlite3.Database) : Promise<CashuMintKeyset[]> {
 		const sql = 'SELECT * FROM keysets;';
-		// return new Promise((resolve, reject) => {
-		// 	db.all(sql, (err, rows:CashuMintKeyset[]) => {
-		// 		if (err) reject(err);
-		// 		//
-		// 		resolve(rows);
-		// 	});
-		// });
 		return new Promise((resolve, reject) => {
 			db.all(sql, (err, rows:CashuMintKeyset[]) => {
 				if (err) reject(err);
@@ -109,11 +104,17 @@ export class NutshellService {
 			date_end: 'created_time',
 			status: 'state'
 		};
-		const { sql, params } = buildDynamicQuery('mint_quotes', args, field_mappings);
+		const { sql, params } = buildDynamicQuery('mint_quotes', args, field_mappings, 500);
 		return new Promise((resolve, reject) => {
-			db.all(sql, params, (err, rows:CashuMintMintQuote[]) => {
+			db.all(sql, params, (err, rows:NutshellMintMintQuote[]) => {
 				if (err) reject(err);
-				resolve(rows);
+				const cashu_quote = (row: NutshellMintMintQuote): CashuMintMintQuote => ({
+					id: row.quote,
+					request_lookup_id: row.checking_id,
+					issued_time: null,
+					...row
+				});
+				resolve(rows.map(cashu_quote));
 			});
 		});
     }

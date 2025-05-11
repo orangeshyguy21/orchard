@@ -175,6 +175,22 @@ query MintAnalyticsTransfers($units: [MintUnit!], $date_start: UnixTimestamp, $d
 	}
 }`;
 
+export const MINT_MINT_QUOTES_QUERY = `
+query MintMintQuotes($unit: [MintUnit!], $state: [MintQuoteState!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $timezone: Timezone) {
+	mint_mint_quotes(unit: $unit, state: $state, date_start: $date_start, date_end: $date_end, timezone: $timezone) {
+		id
+		amount
+		unit
+		request
+		state
+		request_lookup_id
+		pubkey
+		issued_time
+		created_time
+		paid_time
+	}
+}`;	
+
 export const MINT_NAME_MUTATION = `
 mutation MintName($mint_name_update: MintNameUpdateInput!) {
 	mint_name_update(mint_name_update: $mint_name_update) {

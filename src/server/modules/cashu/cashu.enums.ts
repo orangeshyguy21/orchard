@@ -1,4 +1,4 @@
-export enum MintQuoteStatus {
+export enum MintQuoteState {
     UNPAID = 'UNPAID',
     PAID = 'PAID',
     PENDING = 'PENDING',

@@ -5,17 +5,19 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { trigger, transition, style, animate } from '@angular/animations';
 /* Vendor Dependencies */
-import { Subscription } from 'rxjs';
+import { Subscription, lastValueFrom, forkJoin } from 'rxjs';
 /* Application Dependencies */
 import { EventService } from '@client/modules/event/services/event/event.service';
 import { OrchardValidators } from '@client/modules/form/validators';
 import { EventData } from '@client/modules/event/classes/event-data.class';
 import { AiService } from '@client/modules/ai/services/ai/ai.service';
+import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 import { AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
 /* Native Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 import { MintQuoteTtls } from '@client/modules/mint/classes/mint-quote-ttls.class';
+import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
 /* Shared Dependencies */
 import { OrchardNut4Method, OrchardNut5Method, AiFunctionName } from '@shared/generated.types';
 
@@ -43,6 +45,9 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 	public quote_ttls!: MintQuoteTtls;
 	public minting_units: string[] = [];
 	public melting_units: string[] = [];
+	public locale!: string;
+	public data_loading: boolean = true;
+	public mint_quotes: MintMintQuote[] = [];
 
 	public form_config: FormGroup = new FormGroup({
 		minting: new FormGroup({
@@ -73,6 +78,7 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		public route: ActivatedRoute,
 		public eventService: EventService,
 		public aiService: AiService,
+		public settingService: SettingService,
 		public cdr: ChangeDetectorRef
 	) {}
 
@@ -83,6 +89,7 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		this.minting_units = this.getUniqueUnits('nut4');
 		this.melting_units = this.getUniqueUnits('nut5');
 		this.buildDynamicFormElements();
+		this.initChartData();
 		Object.keys(this.form_config.controls).forEach(form_group_key => {
 			const form_group = this.form_config.get(form_group_key) as FormGroup;
 			if( form_group.get('enabled')?.value === false ) form_group.disable();
@@ -165,7 +172,6 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 	}
 
 	private executeAgentFunction(tool_call: AiChatToolCall): void {
-		console.log('tool_call', tool_call);
 		if( tool_call.function.name === AiFunctionName.MintEnabledUpdate ) {
 			const operation = tool_call.function.arguments.operation;
 			const enabled = tool_call.function.arguments.enabled;
@@ -288,6 +294,136 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 					}));
 				});
 		});
+	}
+
+	// private async initMintAnalytics(): Promise<void> {
+	// 	try {
+	// 		this.locale = await this.settingService.getLocale();
+	// 		this.mint_genesis_time = this.getMintGenesisTime();
+	// 		this.chart_settings = this.getChartSettings();
+	// 		this.loading_static_data = false;
+	// 		this.changeDetectorRef.detectChanges();
+	// 		await this.loadMintAnalytics();
+	// 		this.loading_dynamic_data = false;
+	// 		this.changeDetectorRef.detectChanges();
+	// 	} catch (error) {
+	// 		console.log('ERROR IN INIT MINT ANALYTICS:', error);
+	// 	}
+	// }
+
+	// private async loadMintAnalytics(): Promise<void> {
+	// 	const timezone = this.settingService.getTimezone();
+	// 	const analytics_balances_obs = this.mintService.loadMintAnalyticsBalances({
+	// 		units: this.chart_settings.units,
+	// 		date_start: this.chart_settings.date_start,
+	// 		date_end: this.chart_settings.date_end,
+	// 		interval: this.chart_settings.interval,
+	// 		timezone: timezone
+	// 	});
+	// 	const analytics_balances_pre_obs = this.mintService.loadMintAnalyticsBalances({
+	// 		units: this.chart_settings.units,
+	// 		date_start: 100000,
+	// 		date_end: this.chart_settings.date_start-1,
+	// 		interval: MintAnalyticsInterval.Custom,
+	// 		timezone: timezone
+	// 	});
+	// 	const analytics_mints_obs = this.mintService.loadMintAnalyticsMints({
+	// 		units: this.chart_settings.units,
+	// 		date_start: this.chart_settings.date_start,
+	// 		date_end: this.chart_settings.date_end,
+	// 		interval: this.chart_settings.interval,
+	// 		timezone: timezone
+	// 	});
+	// 	const analytics_mints_pre_obs = this.mintService.loadMintAnalyticsMints({
+	// 		units: this.chart_settings.units,
+	// 		date_start: 100000, // @todo make this bitcoin genesis time for the fans
+	// 		date_end: this.chart_settings.date_start-1,
+	// 		interval: MintAnalyticsInterval.Custom,
+	// 		timezone: timezone
+	// 	});
+	// 	const analytics_melts_obs = this.mintService.loadMintAnalyticsMelts({
+	// 		units: this.chart_settings.units,
+	// 		date_start: this.chart_settings.date_start,
+	// 		date_end: this.chart_settings.date_end,
+	// 		interval: this.chart_settings.interval,
+	// 		timezone: timezone
+	// 	});
+	// 	const analytics_melts_pre_obs = this.mintService.loadMintAnalyticsMelts({
+	// 		units: this.chart_settings.units,
+	// 		date_start: 100000,
+	// 		date_end: this.chart_settings.date_start-1,
+	// 		interval: MintAnalyticsInterval.Custom,
+	// 		timezone: timezone
+	// 	});
+	// 	const analytics_transfers_obs = this.mintService.loadMintAnalyticsTransfers({
+	// 		units: this.chart_settings.units,
+	// 		date_start: this.chart_settings.date_start,
+	// 		date_end: this.chart_settings.date_end,
+	// 		interval: this.chart_settings.interval,
+	// 		timezone: timezone
+	// 	});
+	// 	const analytics_transfers_pre_obs = this.mintService.loadMintAnalyticsTransfers({
+	// 		units: this.chart_settings.units,
+	// 		date_start: 100000,
+	// 		date_end: this.chart_settings.date_start-1,
+	// 		interval: MintAnalyticsInterval.Custom,
+	// 		timezone: timezone
+	// 	});
+	// 	const [
+	// 		analytics_balances, 
+	// 		analytics_balances_pre,
+	// 		analytics_mints,
+	// 		analytics_mints_pre,
+	// 		analytics_melts,
+	// 		analytics_melts_pre,
+	// 		analytics_transfers,
+	// 		analytics_transfers_pre,
+	// 	] = await lastValueFrom(
+	// 		forkJoin([
+	// 			analytics_balances_obs, 
+	// 			analytics_balances_pre_obs,
+	// 			analytics_mints_obs,
+	// 			analytics_mints_pre_obs,
+	// 			analytics_melts_obs,
+	// 			analytics_melts_pre_obs,
+	// 			analytics_transfers_obs,
+	// 			analytics_transfers_pre_obs,
+	// 		])
+	// 	);
+
+	// 	this.mint_analytics_balances = analytics_balances;
+	// 	this.mint_analytics_balances_pre = analytics_balances_pre;
+	// 	this.mint_analytics_mints = analytics_mints;
+	// 	this.mint_analytics_mints_pre = analytics_mints_pre;
+	// 	this.mint_analytics_melts = analytics_melts;
+	// 	this.mint_analytics_melts_pre = analytics_melts_pre;
+	// 	this.mint_analytics_transfers = analytics_transfers;
+	// 	this.mint_analytics_transfers_pre = analytics_transfers_pre;
+	// }
+
+
+	private async initChartData(): Promise<void> {
+		this.locale = this.settingService.getLocale();
+		const timezone = this.settingService.getTimezone();
+		await this.loadChartData(timezone);
+		this.data_loading = false;
+		this.cdr.detectChanges();
+	}
+
+	private async loadChartData(timezone: string): Promise<void> {
+		const mint_quotes_obs = this.mintService.loadMintMintQuotes({
+			timezone: timezone
+		});
+
+		const [
+			mint_quotes,
+		] = await lastValueFrom(
+			forkJoin([
+				mint_quotes_obs,
+			])
+		);
+		
+		this.mint_quotes = mint_quotes;
 	}
 
 	public onEnabledUpdate({

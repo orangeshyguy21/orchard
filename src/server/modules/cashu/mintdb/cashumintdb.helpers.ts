@@ -14,7 +14,8 @@ import { CashuMintAnalyticsArgs } from './cashumintdb.interfaces';
 export function buildDynamicQuery(
     table_name: string, 
     args?: Record<string, any>,
-    field_mappings?: Record<string, string>
+    field_mappings?: Record<string, string>,
+    limit?: number
 ) : {
 	sql: string;
 	params: any[]
@@ -31,7 +32,11 @@ export function buildDynamicQuery(
     }
     
     if (conditions.length > 0) {
-      sql += ' WHERE ' + conditions.join(' AND ');
+        sql += ' WHERE ' + conditions.join(' AND ');
+    }
+
+    if (limit) {
+        sql += ` LIMIT ${limit}`;
     }
     
     return { sql: sql + ';', params };
