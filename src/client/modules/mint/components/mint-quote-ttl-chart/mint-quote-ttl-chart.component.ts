@@ -4,10 +4,14 @@ import { ChangeDetectionStrategy, Component, Input, ViewChild, OnChanges, Simple
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ScaleChartOptions, ChartType as ChartJsType } from 'chart.js';
 import { DateTime } from 'luxon';
+/* Application Dependencies */
+import { ChartService } from '@client/modules/chart/services/chart/chart.service';
+import { getAllPossibleTimestamps, getDataKeyedByTimestamp } from '@client/modules/chart/helpers/mint-chart-data.helpers';
 /* Native Dependencies */
 import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
 /* Shared Dependencies */
-import { MintQuoteState } from '@shared/generated.types';
+import { MintAnalyticsInterval, MintQuoteState } from '@shared/generated.types';
+import { getTooltipLabel, getTooltipTitle, getXAxisConfig } from '@client/modules/chart/helpers/mint-chart-options.helpers';
 
 @Component({
     selector: 'orc-mint-quote-ttl-chart',
@@ -22,9 +26,15 @@ export class MintQuoteTtlChartComponent implements OnChanges {
 
     @Input() mint_quotes: MintMintQuote[] = [];
     @Input() loading!: boolean;
+    @Input() locale!: string;
+
     public chart_type!: ChartJsType;
 	public chart_data!: ChartConfiguration['data'];
 	public chart_options!: ChartConfiguration['options'];
+
+    constructor(
+        private chartService: ChartService,
+    ) { }
 
     public ngOnChanges(changes: SimpleChanges): void {
 		if(changes['loading'] && this.loading === false) {
@@ -39,26 +49,153 @@ export class MintQuoteTtlChartComponent implements OnChanges {
 	}
 
 	private getChartData(): ChartConfiguration['data'] {
-        const valid_quotes = this.mint_quotes.filter(quote => (quote.state === MintQuoteState.Issued && quote.created_time && quote.created_time > 0));
+        if( this.mint_quotes.length === 0 ) return { datasets: [] };
+        const valid_quotes = this.mint_quotes
+            .filter(quote => (quote.state === MintQuoteState.Issued && quote.created_time && quote.created_time > 0))
+            .sort((a, b) => (a.created_time ?? 0) - (b.created_time ?? 0));
+        const timestamp_first = DateTime.fromSeconds(valid_quotes[0].created_time ?? 0 ).startOf('day').toSeconds();
+        const timestamp_last = DateTime.fromSeconds(valid_quotes[valid_quotes.length - 1].created_time ?? 0).startOf('day').toSeconds();
+        const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, MintAnalyticsInterval.Day);
         const deltas = valid_quotes.map(quote => {
             const created_time = quote.created_time ?? 0;
             const end_time = quote.issued_time ?? quote.paid_time ?? 0;
-            return end_time - created_time;
+            return {
+                created_time,
+                delta: end_time - created_time
+            }
         });
-        console.log(deltas);
-        
-		return {
-			labels: valid_quotes.map(quote => quote.id),
-			datasets: [{ data: deltas }]
-		};
+        const data_keyed_by_timestamp = deltas.reduce((acc, item) => {
+            acc[item.created_time] = item.delta;
+            return acc;
+        }, {} as Record<string, any>);
+        const color = this.chartService.getAssetColor('sat', 0);
+
+        const data_prepped = deltas.map(delta => ({
+            x: delta.created_time * 1000,
+            y: delta.delta
+        }));
+
+        console.log(data_prepped);
+        const dataset = {
+            data: data_prepped,
+            label: 'testing',
+            backgroundColor: color.bg,
+            borderColor: color.border,
+            borderWidth: 2,
+            borderRadius: 3,
+            pointBackgroundColor: color.border,
+            pointBorderColor: color.border,
+            pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
+            pointHoverBorderColor: color.border,
+            pointRadius: 0, // Add point size (radius in pixels)
+            pointHoverRadius: 4, // Optional: size when hovered
+            fill: {
+                target: 'origin',
+                above: color.bg,
+            },
+            tension: 0.4,
+        };
+
+        return { datasets: [dataset] };
 	}
 
-	private getChartOptions(): ChartConfiguration['options'] {
+    // private getAmountChartData(): ChartConfiguration['data'] {
+	// 	if( !this.chart_settings ) return { datasets: [] };
+	// 	if( (!this.mint_analytics || this.mint_analytics.length === 0) && (!this.mint_analytics_pre || this.mint_analytics_pre.length === 0) ) return { datasets: [] };
+	// 	const timestamp_first = DateTime.fromSeconds(this.chart_settings.date_start).startOf('day').toSeconds();
+	// 	const timestamp_last = DateTime.fromSeconds(this.chart_settings.date_end).startOf('day').toSeconds();
+	// 	const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.chart_settings.interval);
+	// 	const data_unit_groups = groupAnalyticsByUnit(this.mint_analytics);
+	// 	const data_unit_groups_prepended = prependData(data_unit_groups, this.mint_analytics_pre, timestamp_first);
+	// 	const datasets = Object.entries(data_unit_groups_prepended).map(([unit, data], index) => {
+	// 		const data_keyed_by_timestamp = getDataKeyedByTimestamp(data, 'amount');
+	// 		const color = this.chartService.getAssetColor(unit, index);
+	// 		const cumulative = this.chart_type === 'line';
+	// 		const data_prepped = getAmountData(timestamp_range, data_keyed_by_timestamp, unit, cumulative)
+	// 		const yAxisID = getYAxisId(unit);
+
+	// 		return {
+	// 			data: data_prepped,
+	// 			label: unit.toUpperCase(),
+	// 			backgroundColor: color.bg,
+	// 			borderColor: color.border,
+	// 			borderWidth: 2,
+	// 			borderRadius: 3,
+	// 			pointBackgroundColor: color.border,
+	// 			pointBorderColor: color.border,
+	// 			pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
+	// 			pointHoverBorderColor: color.border,
+	// 			pointRadius: 0, // Add point size (radius in pixels)
+	// 			pointHoverRadius: 4, // Optional: size when hovered
+	// 			fill: {
+	// 				target: 'origin',
+	// 				above: color.bg,
+	// 			},
+	// 			tension: 0.4,
+	// 			yAxisID: yAxisID,
+	// 		};
+	// 	});
+		
+	// 	return { datasets };
+	// }
+
+	// private getChartOptions(): ChartConfiguration['options'] {
+	// 	return {
+	// 		scales: {
+	// 			y: {
+	// 				beginAtZero: true
+	// 			}
+	// 		}
+	// 	};
+	// }
+
+    private getChartOptions(): ChartConfiguration['options'] {
+		if ( !this.chart_data || this.chart_data.datasets.length === 0 ) return {}
+		const y_axis = 'seconds';
+		// const scales: ScaleChartOptions<'bar'>['scales'] = {};
+        const scales: any = {};
+		scales['x'] = getXAxisConfig(MintAnalyticsInterval.Day, this.locale);
+        scales['y'] = {
+            position: 'left',
+            title: {
+                display: true,
+                text: 'seconds'
+            },
+            beginAtZero: true,
+            grid: {
+                display: true,
+                color: this.chartService.getGridColor()
+            },
+        }
+
 		return {
-			scales: {
-				y: {
-					beginAtZero: true
-				}
+			responsive: true,
+			elements: {
+				line: {
+					tension: 0.5,
+					cubicInterpolationMode: 'monotone',
+				},
+			},
+			scales: scales,
+			plugins: {
+				tooltip: {
+					enabled: true,
+					mode: 'index',
+					intersect: false,
+					callbacks: {
+						title: getTooltipTitle,
+						label: (context: any) => getTooltipLabel(context, this.locale),
+					}
+				},
+				legend: {
+					display: true,
+					position: 'top'
+				},
+			},
+			interaction: {
+				mode: 'index',
+				axis: 'x',
+				intersect: false
 			}
 		};
 	}
