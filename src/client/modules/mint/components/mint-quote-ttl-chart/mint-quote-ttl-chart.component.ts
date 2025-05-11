@@ -53,9 +53,6 @@ export class MintQuoteTtlChartComponent implements OnChanges {
         const valid_quotes = this.mint_quotes
             .filter(quote => (quote.state === MintQuoteState.Issued && quote.created_time && quote.created_time > 0))
             .sort((a, b) => (a.created_time ?? 0) - (b.created_time ?? 0));
-        const timestamp_first = DateTime.fromSeconds(valid_quotes[0].created_time ?? 0 ).startOf('day').toSeconds();
-        const timestamp_last = DateTime.fromSeconds(valid_quotes[valid_quotes.length - 1].created_time ?? 0).startOf('day').toSeconds();
-        const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, MintAnalyticsInterval.Day);
         const deltas = valid_quotes.map(quote => {
             const created_time = quote.created_time ?? 0;
             const end_time = quote.issued_time ?? quote.paid_time ?? 0;
@@ -64,21 +61,14 @@ export class MintQuoteTtlChartComponent implements OnChanges {
                 delta: end_time - created_time
             }
         });
-        const data_keyed_by_timestamp = deltas.reduce((acc, item) => {
-            acc[item.created_time] = item.delta;
-            return acc;
-        }, {} as Record<string, any>);
         const color = this.chartService.getAssetColor('sat', 0);
-
         const data_prepped = deltas.map(delta => ({
             x: delta.created_time * 1000,
             y: delta.delta
         }));
 
-        console.log(data_prepped);
         const dataset = {
             data: data_prepped,
-            label: 'testing',
             backgroundColor: color.bg,
             borderColor: color.border,
             borderWidth: 2,
@@ -98,56 +88,6 @@ export class MintQuoteTtlChartComponent implements OnChanges {
 
         return { datasets: [dataset] };
 	}
-
-    // private getAmountChartData(): ChartConfiguration['data'] {
-	// 	if( !this.chart_settings ) return { datasets: [] };
-	// 	if( (!this.mint_analytics || this.mint_analytics.length === 0) && (!this.mint_analytics_pre || this.mint_analytics_pre.length === 0) ) return { datasets: [] };
-	// 	const timestamp_first = DateTime.fromSeconds(this.chart_settings.date_start).startOf('day').toSeconds();
-	// 	const timestamp_last = DateTime.fromSeconds(this.chart_settings.date_end).startOf('day').toSeconds();
-	// 	const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.chart_settings.interval);
-	// 	const data_unit_groups = groupAnalyticsByUnit(this.mint_analytics);
-	// 	const data_unit_groups_prepended = prependData(data_unit_groups, this.mint_analytics_pre, timestamp_first);
-	// 	const datasets = Object.entries(data_unit_groups_prepended).map(([unit, data], index) => {
-	// 		const data_keyed_by_timestamp = getDataKeyedByTimestamp(data, 'amount');
-	// 		const color = this.chartService.getAssetColor(unit, index);
-	// 		const cumulative = this.chart_type === 'line';
-	// 		const data_prepped = getAmountData(timestamp_range, data_keyed_by_timestamp, unit, cumulative)
-	// 		const yAxisID = getYAxisId(unit);
-
-	// 		return {
-	// 			data: data_prepped,
-	// 			label: unit.toUpperCase(),
-	// 			backgroundColor: color.bg,
-	// 			borderColor: color.border,
-	// 			borderWidth: 2,
-	// 			borderRadius: 3,
-	// 			pointBackgroundColor: color.border,
-	// 			pointBorderColor: color.border,
-	// 			pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
-	// 			pointHoverBorderColor: color.border,
-	// 			pointRadius: 0, // Add point size (radius in pixels)
-	// 			pointHoverRadius: 4, // Optional: size when hovered
-	// 			fill: {
-	// 				target: 'origin',
-	// 				above: color.bg,
-	// 			},
-	// 			tension: 0.4,
-	// 			yAxisID: yAxisID,
-	// 		};
-	// 	});
-		
-	// 	return { datasets };
-	// }
-
-	// private getChartOptions(): ChartConfiguration['options'] {
-	// 	return {
-	// 		scales: {
-	// 			y: {
-	// 				beginAtZero: true
-	// 			}
-	// 		}
-	// 	};
-	// }
 
     private getChartOptions(): ChartConfiguration['options'] {
 		if ( !this.chart_data || this.chart_data.datasets.length === 0 ) return {}
@@ -188,8 +128,7 @@ export class MintQuoteTtlChartComponent implements OnChanges {
 					}
 				},
 				legend: {
-					display: true,
-					position: 'top'
+					display: false,
 				},
 			},
 			interaction: {
