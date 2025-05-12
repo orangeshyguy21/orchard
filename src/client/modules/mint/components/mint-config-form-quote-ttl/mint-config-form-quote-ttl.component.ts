@@ -3,7 +3,8 @@ import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, ViewCh
 import { FormGroup } from '@angular/forms';
 /* Application Dependencies */
 import { MintQuoteTtls } from '@client/modules/mint/classes/mint-quote-ttls.class';
-
+import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
+import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
 @Component({
 	selector: 'orc-mint-config-form-quote-ttl',
 	standalone: false,
@@ -13,8 +14,13 @@ import { MintQuoteTtls } from '@client/modules/mint/classes/mint-quote-ttls.clas
 })
 export class MintConfigFormQuoteTtlComponent {
 
+	@Input() nut!: 'nut4' | 'nut5';
 	@Input() form_group!: FormGroup;
     @Input() control_name!: keyof MintQuoteTtls;
+	@Input() disabled!: boolean | undefined;
+	@Input() locale!: string;
+	@Input() loading!: boolean;
+	@Input() quotes!: MintMintQuote[] | MintMeltQuote[];
 
     @Output() update = new EventEmitter<{form_group: FormGroup, control_name: keyof MintQuoteTtls}>();
     @Output() cancel = new EventEmitter<{form_group: FormGroup, control_name: keyof MintQuoteTtls}>();

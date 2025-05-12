@@ -50,44 +50,37 @@
     top: 57px;
 }
 
-.nut-spec{
-    @extend %orc-corner-small;
-    @extend %font-weight-bold;
-    @extend %p-h-1;
-    @extend %p-v-0-5;
-    max-width: 30rem;
+// .nut-spec{
+//     @extend %orc-corner-small;
+//     @extend %font-weight-bold;
+//     @extend %p-h-1;
+//     @extend %p-v-0-5;
+//     max-width: 30rem;
 
-    @extend %orc-primary-bg;
-    @extend %orc-on-primary-color;
-    font-size: 3rem;
+//     @extend %orc-primary-bg;
+//     @extend %orc-on-primary-color;
+//     font-size: 3rem;
 
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-justify-between;
+//     @extend %flex;
+//     @extend %flex-items-center;
+//     @extend %flex-justify-between;
 
-    &.disabled{
-        @extend %orc-outline-variant-bg;
-        @extend %orc-outline-color;
-    }
-}
+//     &.disabled{
+//         @extend %orc-outline-variant-bg;
+//         @extend %orc-outline-color;
+//     }
+// }
 
-.nut-icon-graphic{
-    // mat-icon{
-    //     // font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 200, 'opsz' 48;
-    //     font-variation-settings: 'wght' 600;
-    // }
+// .nut-icon-graphic{
+//     &.nut-icon-outline{
+//         mat-icon{
+//             font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 200, 'opsz' 48;
+//         }
+//     }
 
-    &.nut-icon-outline{
-        // @extend %mat-symbol-outline;
-        mat-icon{
-            font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 200, 'opsz' 48;
-        }
-    }
-
-    &.nut-icon-fill{
-        // @extend %mat-symbol-fill;
-        mat-icon{
-            font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 200, 'opsz' 48;
-        }
-    }
-}
+//     &.nut-icon-fill{
+//         mat-icon{
+//             font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 200, 'opsz' 48;
+//         }
+//     }
+// }

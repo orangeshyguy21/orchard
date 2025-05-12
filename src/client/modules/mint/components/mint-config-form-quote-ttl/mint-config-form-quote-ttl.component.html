@@ -1,53 +1,76 @@
-<div class="mint-config-form-quote-ttl-container">
-    <div class="flex flex-gap-2">
-        <form
-            class="flex-grow flex-1"
-            [formGroup]="form_group"
-            (ngSubmit)="onSubmit($event)"
-            (keydown.enter)="onSubmit($event)"
-            (keydown.escape)="onCancel($event)">        
-            <orc-dynamic-form-field
-                [hot]="form_hot"
-                [invalid]="form_group.get(control_name)?.invalid || false"
-                (submit)="onSubmit($event)"
-                (cancel)="onCancel($event)">
-                <mat-form-field 
-                    appearance="fill" 
-                    hideRequiredMarker="true"
-                    [ngClass]="form_hot ? 'orc-hot-form-field' : 'orc-cold-form-field'"
-                    class="mint-quote-ttl-form-field orc-dynamic-form-field">
-                    <mat-label>Quote TTL</mat-label>
-                    <input 
-                        type="number" 
-                        step="1"
-                        min="0"
-                        matInput 
-                        [formControlName]="control_name" 
-                        placeholder="Ex. 30"
-                        #element_quote_ttl>
-                    <span matSuffix class="form-suffix-text">seconds</span>
-                    @if (form_group.get(control_name)?.invalid && (form_group.get(control_name)?.dirty || form_group.get(control_name)?.touched)) {
-                        <mat-error class="font-size-xs">
-                            @if (form_group.get(control_name)?.hasError('required')) {
-                                Required
-                            } @else if (form_group.get(control_name)?.hasError('min')) {
-                                Must be at least {{form_group.get(control_name)?.getError('min')?.min}} second
-                            } @else if (form_group.get(control_name)?.hasError('max')) {
-                                Cannot exceed {{form_group.get(control_name)?.getError('max')?.max}} seconds
-                            } @else if (form_group.get(control_name)?.hasError('orchardMicros')) {
-                                Invalid format
-                            } @else {
-                                Invalid TTL
-                            }
-                        </mat-error>
-                    }
-                </mat-form-field>
-            </orc-dynamic-form-field>
-        </form>
-        <div class="flex-1">
-            <orc-help-text class="orc-surface-container-high-bg">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-            </orc-help-text>
-        </div>
-    </div>
+<div class="p-h-2 p-b-2"> 
+    <mat-card appearance="outlined" class="relative overflow-hidden">
+        <mat-card-content class="orc-surface-container-low-bg">
+            <div class="flex flex-gap-2">
+                <div class="flex-1 flex flex-column flex-gap-2">
+                    <div class="flex flex-gap-2">
+                        <form
+                            class="flex-grow flex-1"
+                            [formGroup]="form_group"
+                            (ngSubmit)="onSubmit($event)"
+                            (keydown.enter)="onSubmit($event)"
+                            (keydown.escape)="onCancel($event)">        
+                            <orc-dynamic-form-field
+                                [hot]="form_hot"
+                                [invalid]="form_group.get(control_name)?.invalid || false"
+                                (submit)="onSubmit($event)"
+                                (cancel)="onCancel($event)">
+                                <mat-form-field 
+                                    appearance="fill" 
+                                    hideRequiredMarker="true"
+                                    [ngClass]="form_hot ? 'orc-hot-form-field' : 'orc-cold-form-field'"
+                                    class="mint-quote-ttl-form-field orc-dynamic-form-field">
+                                    <mat-label>Quote TTL</mat-label>
+                                    <input 
+                                        type="number" 
+                                        step="1"
+                                        min="0"
+                                        matInput 
+                                        [formControlName]="control_name" 
+                                        placeholder="Ex. 30"
+                                        #element_quote_ttl>
+                                    <span matSuffix class="form-suffix-text">seconds</span>
+                                    @if (form_group.get(control_name)?.invalid && (form_group.get(control_name)?.dirty || form_group.get(control_name)?.touched)) {
+                                        <mat-error class="font-size-xs">
+                                            @if (form_group.get(control_name)?.hasError('required')) {
+                                                Required
+                                            } @else if (form_group.get(control_name)?.hasError('min')) {
+                                                Must be at least {{form_group.get(control_name)?.getError('min')?.min}} second
+                                            } @else if (form_group.get(control_name)?.hasError('max')) {
+                                                Cannot exceed {{form_group.get(control_name)?.getError('max')?.max}} seconds
+                                            } @else if (form_group.get(control_name)?.hasError('orchardMicros')) {
+                                                Invalid format
+                                            } @else {
+                                                Invalid TTL
+                                            }
+                                        </mat-error>
+                                    }
+                                </mat-form-field>
+                            </orc-dynamic-form-field>
+                        </form>
+                        <div class="flex-1">
+                            <orc-help-text class="orc-surface-container-high-bg">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                            </orc-help-text>
+                        </div>
+                    </div> 
+                </div>
+                <div class="flex-1">
+                    <orc-mint-config-chart-quote-ttl 
+                        [nut]="nut"
+                        [loading]="loading"
+                        [quotes]="quotes"
+                        [locale]="locale"
+                        [form_hot]="form_hot"
+                        [quote_ttl]="form_group.get(control_name)?.value"
+                    ></orc-mint-config-chart-quote-ttl>
+                </div>
+            </div>
+            @if(disabled) {
+                <div class="disabled-overlay" @fadeInOut>
+                    <div class="orc-outline-color font-weight-bold">MINTING DISABLED</div>
+                </div>
+            }
+        </mat-card-content>
+    </mat-card>
 </div>

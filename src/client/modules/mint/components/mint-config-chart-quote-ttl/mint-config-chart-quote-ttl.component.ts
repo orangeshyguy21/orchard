@@ -24,11 +24,12 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges {
     @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
     @Input() nut!: 'nut4' | 'nut5';
-    @Input() mint_quotes: MintMintQuote[] = [];
-    @Input() melt_quotes: MintMeltQuote[] = [];
+    @Input() quotes: MintMintQuote[] | MintMeltQuote[] = [];
+
     @Input() loading!: boolean;
     @Input() locale!: string;
     @Input() quote_ttl!: number;
+    @Input() form_hot!: boolean;
 
     public chart_type!: ChartJsType;
 	public chart_data!: ChartConfiguration['data'];
@@ -54,8 +55,10 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges {
 			this.init();
 		}
         if(changes['quote_ttl'] && !changes['quote_ttl'].firstChange) {
-            this.chart_options = this.getChartOptions();
-            if(this.chart_options?.plugins) this.chart_options.plugins.annotation = this.getAnnotations();           
+            this.initOptions();         
+        }
+        if(changes['form_hot'] && !changes['form_hot'].firstChange) {
+            this.initOptions();
         }
 	}
 
@@ -64,13 +67,17 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges {
         const deltas = this.getDeltas();
         this.metrics = this.getMetrics(deltas);
         this.chart_data = this.getChartData(deltas);	
-        this.chart_options = this.getChartOptions();
-        if(this.chart_options?.plugins) this.chart_options.plugins.annotation = this.getAnnotations();
+        this.initOptions();
 	}
 
+    private initOptions(): void {
+        this.chart_options = this.getChartOptions();
+        if(this.chart_options?.plugins) this.chart_options.plugins.annotation = this.getFormAnnotation();
+    }
+
     private getDeltas(): Record<string, number>[] {
-        if( this.mint_quotes.length === 0 && this.melt_quotes.length === 0 ) return [];
-        const quotes = this.nut === 'nut4' ? this.mint_quotes : this.melt_quotes;
+        if( this.quotes.length === 0 ) return [];
+        const quotes = this.nut === 'nut4' ? (this.quotes as MintMintQuote[]) : (this.quotes as MintMeltQuote[]);
         const valid_state = this.nut === 'nut4' ? MintQuoteState.Issued : MeltQuoteState.Paid;
         const valid_quotes = quotes
             .filter(quote => (quote.state === valid_state && quote.created_time && quote.created_time > 0))
@@ -182,28 +189,30 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges {
 		};
 	}
 
-    private getAnnotations(): any {
-		return {
+    private getFormAnnotation(): any {
+        const border_color = this.form_hot ? '#D5C4AC' : '#4c463d';
+        const border_width = this.form_hot ? 2 : 1;
+        const text_color = this.form_hot ? '#D5C4AC' : 'rgb(235, 225, 213)';
+        const label_bg_color = this.form_hot ? '#695D49' : 'rgb(29, 27, 26)';
+        const label_border_color = this.form_hot ? null : '#4c463d';
+        return {
 			annotations: {
                 ttl : {
 					type: 'line',
-					// borderColor: this.chartService.getAnnotationBorderColor(),
-                    borderColor: '#D5C4AC',
-					borderWidth: 2,
+                    borderColor: border_color,
+					borderWidth: border_width,
 					display: true,
 					label: {
 						display:  true,
 						content: 'Quote TTL',
 						position: 'start',
-						// backgroundColor: 'rgb(29, 27, 26)',
-                        backgroundColor: '#695D49',
-                        color: '#D5C4AC',
+                        backgroundColor: label_bg_color,
+                        color: text_color,
                         font: {
                             size: 12,
                             weight: '300'
                         },
-						// borderColor: this.chartService.getAnnotationBorderColor(),
-                        // borderColor: '#D5C4AC',
+                        borderColor: label_border_color,
 						borderWidth: 1,
 					},
 					scaleID: 'y',
