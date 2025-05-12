@@ -12,7 +12,7 @@ import { OrchardNut4Method, OrchardNut5Method } from '@shared/generated.types';
 	styleUrl: './mint-config-form-bolt11.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MintConfigFormBolt11Component {
+export class MintConfigFormBolt11Component implements OnChanges {
 
 	@Input() nut!: 'nut4' | 'nut5';
 	@Input() index!: number;
@@ -39,6 +39,7 @@ export class MintConfigFormBolt11Component {
 	constructor() {}
 
 	ngOnChanges(changes: SimpleChanges): void {
+		console.log(changes);
 		if( changes['form_status'] && this.form_status === true ) {
 			this.form_bolt11.get(this.toggle_control)?.disable();
 		}
