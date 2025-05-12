@@ -4,6 +4,7 @@
     #{$c}orc-asset-usd-bg { background-color: var(--orc-asset-usd); }
     #{$c}orc-asset-eur-bg { background-color: var(--orc-asset-eur); }
     #{$c}orc-surface-bg { background-color: var(--mat-sys-surface); }
+    #{$c}orc-primary-bg { background-color: var(--mat-sys-primary); }
     #{$c}orc-primary-container-bg { background-color: var(--mat-sys-primary-container); }
     #{$c}orc-surface-container-high-bg { background-color: var(--mat-sys-surface-container-high); }
     #{$c}orc-surface-container-bg { background-color: var(--mat-sys-surface-container); }
@@ -18,6 +19,7 @@
     #{$c}orc-on-warning-bg { background-color: var(--orc-on-warning-bg); }
     #{$c}orc-primary-fixed-dim-bg { background-color: var(--mat-sys-primary-fixed-dim); }
     #{$c}orc-inverse-primary-bg { background-color: var(--mat-sys-inverse-primary); }
+    #{$c}orc-outline-variant-bg { background-color: var(--mat-sys-outline-variant); }
     // Background Colors (with transparency)
     #{$c}orc-shadow-bg { background-color: color-mix(in srgb, var(--mat-sys-shadow), transparent 50%); }
     #{$c}orc-fog-bg { background-color: color-mix(in srgb, var(--mat-sys-surface-container), transparent 50%); }

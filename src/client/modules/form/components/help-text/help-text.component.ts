@@ -10,6 +10,6 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 })
 export class HelpTextComponent {
 
-	@Input() on: string = 'standard-help-text';
+	// @Input() on: string = 'standard-help-text';
 
 }

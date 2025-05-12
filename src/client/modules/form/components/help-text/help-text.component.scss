@@ -3,20 +3,20 @@
 
 .help-text-container{
     @extend %orc-corner-small;
+    @extend %inherit-bg;
 }
 
 .help-text-content{
     @extend %font-size-xs;
     @extend %p-h-1;
     @extend %p-v-0-5;
+    @extend %orc-outline-color;
 }
 
 .standard-help-text{
     @extend %orc-surface-container-low-bg;
-    @extend %orc-outline-color;
 }
 
 .light-help-text{
     @extend %orc-surface-container-high-bg;
-    @extend %orc-outline-color;
 }
