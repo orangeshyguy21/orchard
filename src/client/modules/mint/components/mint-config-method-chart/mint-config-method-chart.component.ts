@@ -11,21 +11,25 @@ import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.clas
 import { MintAnalyticsInterval, MintQuoteState } from '@shared/generated.types';
 import { getTooltipLabel, getTooltipTitle, getXAxisConfig } from '@client/modules/chart/helpers/mint-chart-options.helpers';
 
-@Component({
-    selector: 'orc-mint-quote-ttl-chart',
-    standalone: false,
-    templateUrl: './mint-quote-ttl-chart.component.html',
-    styleUrl: './mint-quote-ttl-chart.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush
-})
-export class MintQuoteTtlChartComponent implements OnChanges {
 
-    @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
+@Component({
+	selector: 'orc-mint-config-method-chart',
+	standalone: false,
+	templateUrl: './mint-config-method-chart.component.html',
+	styleUrl: './mint-config-method-chart.component.scss',
+	changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class MintConfigMethodChartComponent {
+
+	@ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
     @Input() mint_quotes: MintMintQuote[] = [];
     @Input() loading!: boolean;
     @Input() locale!: string;
-    @Input() quote_ttl!: number;
+    @Input() unit!: string;
+    @Input() method!: string;
+    @Input() min_amount!: number;
+    @Input() max_amount!: number;
 
     public chart_type!: ChartJsType;
 	public chart_data!: ChartConfiguration['data'];
@@ -39,10 +43,15 @@ export class MintQuoteTtlChartComponent implements OnChanges {
 		if(changes['loading'] && this.loading === false) {
 			this.init();
 		}
-        if(changes['quote_ttl'] && !changes['quote_ttl'].firstChange) {
+        if(changes['min_amount'] && !changes['min_amount'].firstChange) {
             this.chart_options = this.getChartOptions();
             if(this.chart_options?.plugins) this.chart_options.plugins.annotation = this.getAnnotations();
         }
+		if(changes['max_amount'] && !changes['max_amount'].firstChange) {
+            this.chart_options = this.getChartOptions();
+            if(this.chart_options?.plugins) this.chart_options.plugins.annotation = this.getAnnotations();
+        }
+
 	}
 
 	private async init(): Promise<void> {
@@ -54,21 +63,19 @@ export class MintQuoteTtlChartComponent implements OnChanges {
 
 	private getChartData(): ChartConfiguration['data'] {
         if( this.mint_quotes.length === 0 ) return { datasets: [] };
+		// @todo will need to filter by method as well
         const valid_quotes = this.mint_quotes
-            .filter(quote => (quote.state === MintQuoteState.Issued && quote.created_time && quote.created_time > 0))
+            .filter(quote => 
+				(quote.state === MintQuoteState.Issued
+				&& quote.created_time
+				&& quote.created_time > 0
+				&& quote.unit === this.unit)
+			)
             .sort((a, b) => (a.created_time ?? 0) - (b.created_time ?? 0));
-        const deltas = valid_quotes.map(quote => {
-            const created_time = quote.created_time ?? 0;
-            const end_time = quote.issued_time ?? quote.paid_time ?? 0;
-            return {
-                created_time,
-                delta: end_time - created_time
-            }
-        });
         const color = this.chartService.getAssetColor('sat', 0);
-        const data_prepped = deltas.map(delta => ({
-            x: delta.created_time * 1000,
-            y: delta.delta
+        const data_prepped = valid_quotes.map(quote => ({
+            x: (quote.created_time ?? 0) * 1000,
+            y: quote.amount
         }));
 
         const dataset = {
@@ -102,7 +109,7 @@ export class MintQuoteTtlChartComponent implements OnChanges {
             position: 'left',
             title: {
                 display: true,
-                text: 'seconds'
+                text: this.unit
             },
             beginAtZero: true,
             grid: {
@@ -145,21 +152,37 @@ export class MintQuoteTtlChartComponent implements OnChanges {
     private getAnnotations(): any {
 		return {
 			annotations: {
-                ttl : {
+                min : {
 					type: 'line',
 					borderColor: this.chartService.getAnnotationBorderColor(),
 					borderWidth: 1,
 					display: true,
 					label: {
 						display:  true,
-						content: 'Quote TTL',
+						content: 'Min Amount',
 						position: 'start',
 						backgroundColor: 'rgb(29, 27, 26)',
 						borderColor: this.chartService.getAnnotationBorderColor(),
 						borderWidth: 1,
 					},
 					scaleID: 'y',
-					value: this.quote_ttl
+					value: this.min_amount
+				},
+				max : {
+					type: 'line',
+					borderColor: this.chartService.getAnnotationBorderColor(),
+					borderWidth: 1,
+					display: true,
+					label: {
+						display:  true,
+						content: 'Max Amount',
+						position: 'start',
+						backgroundColor: 'rgb(29, 27, 26)',
+						borderColor: this.chartService.getAnnotationBorderColor(),
+						borderWidth: 1,
+					},
+					scaleID: 'y',
+					value: this.max_amount
 				}
 			}
 		}

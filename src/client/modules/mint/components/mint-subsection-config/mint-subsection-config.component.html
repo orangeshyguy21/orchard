@@ -1,17 +1,18 @@
 <div class="mint-subsection-config-container">
     <div class="flex flex-column flex-gap-4">
-        <div class="flex flex-column flex-gap-2"> 
-            <div>
-                <div class="flex flex-items-center flex-gap-1 p-b-0-5">
-                    <div class="protocol-spec">NUT 04</div>
-                    <div>
-                        <div class="title-form-section">Minting</div>
-                        <div class="font-size-xs orc-outline-color">Configure depositing to the mint</div>
-                    </div>
+
+        <div>
+            <div class="flex flex-items-center flex-gap-1 p-b-0-5">
+                <div class="protocol-spec">NUT 04</div>
+                <div>
+                    <div class="title-form-section">Minting</div>
+                    <div class="font-size-xs orc-outline-color">Configure depositing to the mint</div>
                 </div>
-                <div class="config-category-rule"></div>
-            </div>   
-    
+            </div>
+            <div class="config-category-rule"></div>
+        </div>  
+
+        <div class="flex flex-column flex-gap-2"> 
             <div class="flex flex-gap-2">
                 <div class="flex-1 flex flex-column flex-gap-2">
                     <orc-mint-config-form-enabled
@@ -32,18 +33,19 @@
                         [loading]="data_loading"
                         [mint_quotes]="mint_quotes"
                         [locale]="locale"
+                        [quote_ttl]="form_minting.get('mint_ttl')?.value"
                     ></orc-mint-quote-ttl-chart>
-                    <!-- {{ mint_quotes | json }} -->
                 </div>
             </div>
     
             @for (unit of minting_units; track unit) {
-                <div class="flex flex-gap-2">
-                    <mat-card appearance="outlined" class="flex-1 relative overflow-hidden">
-                        <mat-card-content>
-                            @for (method of mint_info?.nuts?.nut4?.methods; track method; let i = $index) {
+                <mat-card appearance="outlined" class="relative overflow-hidden">
+                    <mat-card-content>
+                        @for (method of mint_info?.nuts?.nut4?.methods; track method; let i = $index) {
+                            <div class="flex flex-gap-2">
                                 @if (method.unit === unit && method.method === 'bolt11') {
                                     <orc-mint-config-form-bolt11 
+                                        class="flex-1"
                                         [nut]="'nut4'"
                                         [index]="i"
                                         [unit]="unit"
@@ -53,19 +55,27 @@
                                         (cancel)="onMethodCancel($event)"
                                     ></orc-mint-config-form-bolt11>
                                 }
-                            }
-                            @if(mint_info?.nuts?.nut4?.disabled) {
-                                <div class="disabled-overlay" @fadeInOut>
-                                    <div class="orc-status-warning-color">MINTING DISABLED</div>
-                                    <mat-icon class="mat-symbol-outline orc-status-warning-color icon-lg" svgIcon="minting_disabled_outline"></mat-icon>
+                                <div class="flex-1">
+                                    <orc-mint-config-method-chart 
+                                        [loading]="data_loading"
+                                        [mint_quotes]="mint_quotes"
+                                        [locale]="locale"
+                                        [unit]="unit"
+                                        [method]="method.method"
+                                        [min_amount]="form_minting.get(unit)?.get(method.method)?.get('min_amount')?.value"
+                                        [max_amount]="form_minting.get(unit)?.get(method.method)?.get('max_amount')?.value"
+                                    ></orc-mint-config-method-chart>
                                 </div>
-                            }
-                        </mat-card-content>
-                    </mat-card>
-                    <div class="flex-1">
-                        chart
-                    </div>
-                </div>
+                            </div>
+                        }
+                        @if(mint_info?.nuts?.nut4?.disabled) {
+                            <div class="disabled-overlay" @fadeInOut>
+                                <div class="orc-status-warning-color">MINTING DISABLED</div>
+                                <mat-icon class="mat-symbol-outline orc-status-warning-color icon-lg" svgIcon="minting_disabled_outline"></mat-icon>
+                            </div>
+                        }
+                    </mat-card-content>
+                </mat-card>
             }
         </div>
     
