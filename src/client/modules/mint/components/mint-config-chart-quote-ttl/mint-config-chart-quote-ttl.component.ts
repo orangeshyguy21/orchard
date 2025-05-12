@@ -13,13 +13,13 @@ import { MintAnalyticsInterval, MintQuoteState, MeltQuoteState } from '@shared/g
 import { getTooltipLabel, getTooltipTitle, getXAxisConfig } from '@client/modules/chart/helpers/mint-chart-options.helpers';
 
 @Component({
-    selector: 'orc-mint-quote-ttl-chart',
+    selector: 'orc-mint-config-chart-quote-ttl',
     standalone: false,
-    templateUrl: './mint-quote-ttl-chart.component.html',
-    styleUrl: './mint-quote-ttl-chart.component.scss',
+    templateUrl: './mint-config-chart-quote-ttl.component.html',
+    styleUrl: './mint-config-chart-quote-ttl.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MintQuoteTtlChartComponent implements OnChanges {
+export class MintConfigChartQuoteTtlComponent implements OnChanges {
 
     @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 

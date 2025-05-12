@@ -14,13 +14,13 @@ import { getTooltipLabel, getTooltipTitle, getXAxisConfig } from '@client/module
 
 
 @Component({
-	selector: 'orc-mint-config-method-chart',
+	selector: 'orc-mint-config-chart-method',
 	standalone: false,
-	templateUrl: './mint-config-method-chart.component.html',
-	styleUrl: './mint-config-method-chart.component.scss',
+	templateUrl: './mint-config-chart-method.component.html',
+	styleUrl: './mint-config-chart-method.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MintConfigMethodChartComponent implements OnChanges {
+export class MintConfigChartMethodComponent implements OnChanges {
 
 	@ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 

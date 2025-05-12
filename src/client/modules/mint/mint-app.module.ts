@@ -57,8 +57,8 @@ import { MintConfigFormBolt11Component } from './components/mint-config-form-bol
 import { MintConfigFormMinComponent } from './components/mint-config-form-min/mint-config-form-min.component';
 import { MintConfigFormMaxComponent } from './components/mint-config-form-max/mint-config-form-max.component';
 import { MintConfigFormEnabledConfirmComponent } from './components/mint-config-form-enabled-confirm/mint-config-form-enabled-confirm.component';
-import { MintQuoteTtlChartComponent } from './components/mint-quote-ttl-chart/mint-quote-ttl-chart.component';
-import { MintConfigMethodChartComponent } from './components/mint-config-method-chart/mint-config-method-chart.component';
+import { MintConfigChartQuoteTtlComponent } from './components/mint-config-chart-quote-ttl/mint-config-chart-quote-ttl.component';
+import { MintConfigChartMethodComponent } from './components/mint-config-chart-method/mint-config-chart-method.component';
 
 @NgModule({
 	declarations: [
@@ -92,8 +92,8 @@ import { MintConfigMethodChartComponent } from './components/mint-config-method-
         MintConfigFormMinComponent,
         MintConfigFormMaxComponent,
         MintConfigFormEnabledConfirmComponent,
-        MintQuoteTtlChartComponent,
-        MintConfigMethodChartComponent,
+        MintConfigChartQuoteTtlComponent,
+        MintConfigChartMethodComponent,
 	],
 	imports: [
 		CommonModule,
