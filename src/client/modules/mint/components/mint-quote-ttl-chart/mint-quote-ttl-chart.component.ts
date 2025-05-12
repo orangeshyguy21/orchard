@@ -73,7 +73,9 @@ export class MintQuoteTtlChartComponent implements OnChanges {
 
         const dataset = {
             data: data_prepped,
-            backgroundColor: color.border,
+            backgroundColor: '#fffd9f',
+            // backgroundColor: '#9c2222',
+            // backgroundColor: '#ffd61f',
             // borderColor: color.border,
             borderWidth: 2,
             borderRadius: 3,

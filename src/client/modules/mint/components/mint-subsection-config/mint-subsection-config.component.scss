@@ -37,9 +37,16 @@
 .sticky-nut{
     @extend %orc-surface-bg;
     @extend %sticky;
-    // @extend %p-2;
     @extend %p-l-2;
     @extend %p-r-2;
     @extend %p-t-2;
     top: 0px;
+}
+
+.sticky-method{
+    @extend %orc-surface-bg;
+    @extend %sticky;
+    @extend %p-l-2;
+    @extend %p-r-2;
+    top: 57px;
 }
