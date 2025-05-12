@@ -39,7 +39,6 @@ export class MintConfigFormBolt11Component implements OnChanges {
 	constructor() {}
 
 	ngOnChanges(changes: SimpleChanges): void {
-		console.log(changes);
 		if( changes['form_status'] && this.form_status === true ) {
 			this.form_bolt11.get(this.toggle_control)?.disable();
 		}

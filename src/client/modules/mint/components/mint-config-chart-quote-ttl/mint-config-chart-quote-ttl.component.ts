@@ -55,7 +55,7 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges {
 		}
         if(changes['quote_ttl'] && !changes['quote_ttl'].firstChange) {
             this.chart_options = this.getChartOptions();
-            if(this.chart_options?.plugins) this.chart_options.plugins.annotation = this.getAnnotations();
+            if(this.chart_options?.plugins) this.chart_options.plugins.annotation = this.getAnnotations();           
         }
 	}
 
@@ -187,15 +187,23 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges {
 			annotations: {
                 ttl : {
 					type: 'line',
-					borderColor: this.chartService.getAnnotationBorderColor(),
-					borderWidth: 1,
+					// borderColor: this.chartService.getAnnotationBorderColor(),
+                    borderColor: '#D5C4AC',
+					borderWidth: 2,
 					display: true,
 					label: {
 						display:  true,
 						content: 'Quote TTL',
 						position: 'start',
-						backgroundColor: 'rgb(29, 27, 26)',
-						borderColor: this.chartService.getAnnotationBorderColor(),
+						// backgroundColor: 'rgb(29, 27, 26)',
+                        backgroundColor: '#695D49',
+                        color: '#D5C4AC',
+                        font: {
+                            size: 12,
+                            weight: '300'
+                        },
+						// borderColor: this.chartService.getAnnotationBorderColor(),
+                        // borderColor: '#D5C4AC',
 						borderWidth: 1,
 					},
 					scaleID: 'y',
