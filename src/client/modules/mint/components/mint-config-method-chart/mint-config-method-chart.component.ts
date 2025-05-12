@@ -72,7 +72,7 @@ export class MintConfigMethodChartComponent {
 				&& quote.unit === this.unit)
 			)
             .sort((a, b) => (a.created_time ?? 0) - (b.created_time ?? 0));
-        const color = this.chartService.getAssetColor('sat', 0);
+        const color = this.chartService.getAssetColor(this.unit, 0);
         const data_prepped = valid_quotes.map(quote => ({
             x: (quote.created_time ?? 0) * 1000,
             y: quote.amount
