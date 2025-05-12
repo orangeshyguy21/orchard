@@ -18,15 +18,24 @@ export class MintConfigFormMaxComponent {
 
     @Output() update = new EventEmitter<keyof OrchardNut4Method | keyof OrchardNut5Method>();
     @Output() cancel = new EventEmitter<keyof OrchardNut4Method | keyof OrchardNut5Method>();
+	@Output() hot = new EventEmitter<boolean>();
 
 	@ViewChild('element_max') element_max!: ElementRef<HTMLInputElement>;
 
-	constructor(){}
-
 	public get form_hot(): boolean {
-		if( document.activeElement === this.element_max?.nativeElement ) return true;
-		return this.form_group.get(this.control_name)?.dirty ? true : false;
+		if( document.activeElement === this.element_max?.nativeElement ){
+			this.hot.emit(true);
+			return true;
+		}
+		if( this.form_group?.get(this.control_name)?.dirty ){
+			this.hot.emit(true);
+			return true;
+		}
+		this.hot.emit(false);
+		return false;
 	}
+
+	constructor(){}
 
 	public onSubmit(event: Event): void {
         event.preventDefault();

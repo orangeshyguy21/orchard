@@ -64,6 +64,12 @@ export class MintConfigChartMethodComponent implements OnChanges {
 		if(changes['max_amount'] && !changes['max_amount'].firstChange) {
             this.initOptions();
         }
+		if(changes['min_hot'] && !changes['min_hot'].firstChange) {
+            this.initOptions();
+        }
+		if(changes['max_hot'] && !changes['max_hot'].firstChange) {
+            this.initOptions();
+        }
 	}
 
 	private async init(): Promise<void> {
