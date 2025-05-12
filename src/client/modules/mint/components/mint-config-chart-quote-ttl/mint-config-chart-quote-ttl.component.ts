@@ -33,6 +33,17 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges {
     public chart_type!: ChartJsType;
 	public chart_data!: ChartConfiguration['data'];
 	public chart_options!: ChartConfiguration['options'];
+    public metrics: {
+        avg: number;
+        median: number;
+        max: number;
+        min: number;
+    } = {
+        avg: 0,
+        median: 0,
+        max: 0,
+        min: 0
+    };
 
     constructor(
         private chartService: ChartService,
@@ -50,19 +61,21 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges {
 
 	private async init(): Promise<void> {
 		this.chart_type = 'bar';
-        this.chart_data = this.getChartData();	
+        const deltas = this.getDeltas();
+        this.metrics = this.getMetrics(deltas);
+        this.chart_data = this.getChartData(deltas);	
         this.chart_options = this.getChartOptions();
         if(this.chart_options?.plugins) this.chart_options.plugins.annotation = this.getAnnotations();
 	}
 
-	private getChartData(): ChartConfiguration['data'] {
-        if( this.mint_quotes.length === 0 && this.melt_quotes.length === 0 ) return { datasets: [] };
+    private getDeltas(): Record<string, number>[] {
+        if( this.mint_quotes.length === 0 && this.melt_quotes.length === 0 ) return [];
         const quotes = this.nut === 'nut4' ? this.mint_quotes : this.melt_quotes;
         const valid_state = this.nut === 'nut4' ? MintQuoteState.Issued : MeltQuoteState.Paid;
         const valid_quotes = quotes
             .filter(quote => (quote.state === valid_state && quote.created_time && quote.created_time > 0))
             .sort((a, b) => (a.created_time ?? 0) - (b.created_time ?? 0));
-        const deltas = valid_quotes.map(quote => {
+        return valid_quotes.map(quote => {
             const created_time = quote.created_time ?? 0;
             const end_time = (quote instanceof MintMintQuote) ? quote.issued_time ?? quote.paid_time ?? 0 : quote.paid_time ?? 0;
             return {
@@ -70,10 +83,29 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges {
                 delta: end_time - created_time
             }
         });
+    }
+
+    private getMetrics(deltas: Record<string, number>[]): {
+        avg: number;
+        median: number;
+        max: number;
+        min: number;
+    } {
+        const values = deltas.map(delta => delta['delta']);
+        return {
+            avg: values.reduce((a, b) => a + b, 0) / values.length,
+            median: values.sort((a, b) => a - b)[Math.floor(values.length / 2)],
+            max: Math.max(...values),
+            min: Math.min(...values)
+        };
+    }
+
+	private getChartData(deltas: Record<string, number>[]): ChartConfiguration['data'] {
+        if( deltas.length === 0 ) return { datasets: [] };
         const color = this.chartService.getAssetColor('sat', 0);
         const data_prepped = deltas.map(delta => ({
-            x: delta.created_time * 1000,
-            y: delta.delta
+            x: delta['created_time'] * 1000,
+            y: delta['delta']
         }));
 
         const dataset = {

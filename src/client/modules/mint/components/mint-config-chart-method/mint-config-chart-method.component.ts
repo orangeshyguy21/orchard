@@ -37,6 +37,17 @@ export class MintConfigChartMethodComponent implements OnChanges {
     public chart_type!: ChartJsType;
 	public chart_data!: ChartConfiguration['data'];
 	public chart_options!: ChartConfiguration['options'];
+	public metrics: {
+        avg: number;
+        median: number;
+        max: number;
+        min: number;
+    } = {
+        avg: 0,
+        median: 0,
+        max: 0,
+        min: 0
+    };
 
     constructor(
         private chartService: ChartService,
@@ -59,14 +70,15 @@ export class MintConfigChartMethodComponent implements OnChanges {
 
 	private async init(): Promise<void> {
 		this.chart_type = 'bar';
-        this.chart_data = this.getChartData();	
+		const amounts = this.getAmounts();
+		this.metrics = this.getMetrics(amounts);
+        this.chart_data = this.getChartData(amounts);	
         this.chart_options = this.getChartOptions();
         if(this.chart_options?.plugins) this.chart_options.plugins.annotation = this.getAnnotations();
 	}
 
-	private getChartData(): ChartConfiguration['data'] {
-        if( this.mint_quotes.length === 0 && this.melt_quotes.length === 0 ) return { datasets: [] };
-		// @todo will need to filter by method as well
+	private getAmounts(): Record<string, number>[] {
+		if( this.mint_quotes.length === 0 && this.melt_quotes.length === 0 ) return [];
 		const quotes = this.nut === 'nut4' ? this.mint_quotes : this.melt_quotes;
 		const valid_state = this.nut === 'nut4' ? MintQuoteState.Issued : MeltQuoteState.Paid;
         const valid_quotes = quotes
@@ -77,12 +89,35 @@ export class MintConfigChartMethodComponent implements OnChanges {
 				&& quote.unit === this.unit)
 			)
             .sort((a, b) => (a.created_time ?? 0) - (b.created_time ?? 0));
-        const color = this.chartService.getAssetColor(this.unit, 0);
-        const data_prepped = valid_quotes.map(quote => ({
-            x: (quote.created_time ?? 0) * 1000,
-            y: quote.amount
+       
+        return valid_quotes.map(quote => ({
+            created_time: quote.created_time ?? 0,
+            amount: quote.amount
         }));
+	}
 
+	private getMetrics(amounts: Record<string, number>[]): {
+        avg: number;
+        median: number;
+        max: number;
+        min: number;
+    } {
+        const values = amounts.map(amount => amount['amount']);
+        return {
+            avg: values.reduce((a, b) => a + b, 0) / values.length,
+            median: values.sort((a, b) => a - b)[Math.floor(values.length / 2)],
+            max: Math.max(...values),
+            min: Math.min(...values)
+        };
+    }
+
+	private getChartData(amounts: Record<string, number>[]): ChartConfiguration['data'] {
+        if( amounts.length === 0 ) return { datasets: [] };       
+        const data_prepped = amounts.map( amount => ({
+            x: amount['created_time'] * 1000,
+            y: amount['amount']
+        }));
+		const color = this.chartService.getAssetColor(this.unit, 0);
         const dataset = {
             data: data_prepped,
             backgroundColor: color.border,

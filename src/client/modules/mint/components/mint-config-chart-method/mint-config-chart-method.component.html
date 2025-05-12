@@ -1,5 +1,14 @@
-<!-- <div>title</div> -->
+<div class="flex flex-justify-center">
+    <div class="font-size-xs orc-outline-color">{{ nut === 'nut4' ? 'Mint' : 'Melt' }} Quote Amounts</div>
+</div>
 <div class="mint-quote-ttl-chart-container">
     <canvas baseChart [data]="chart_data" [options]="chart_options" [type]="chart_type"></canvas>
 </div>
-<!-- <div>avg:21, median:21, max:21</div> -->
+<div class="flex flex-justify-center">
+    <div class="flex flex-grow flex-justify-between w-max-18">
+        <div class="font-size-xs orc-outline-color">avg : {{ metrics.avg | number:'1.0-0' }}</div>
+        <div class="font-size-xs orc-outline-color">median : {{ metrics.median | number:'1.0-0' }}</div>
+        <div class="font-size-xs orc-outline-color">min : {{ metrics.min | number:'1.0-0' }}</div>
+        <div class="font-size-xs orc-outline-color">max : {{ metrics.max | number:'1.0-0' }}</div>
+    </div>    
+</div>
