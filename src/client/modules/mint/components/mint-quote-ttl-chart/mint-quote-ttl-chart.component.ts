@@ -22,6 +22,7 @@ export class MintQuoteTtlChartComponent implements OnChanges {
 
     @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
+    @Input() nut!: 'nut4' | 'nut5';
     @Input() mint_quotes: MintMintQuote[] = [];
     @Input() loading!: boolean;
     @Input() locale!: string;
@@ -73,7 +74,8 @@ export class MintQuoteTtlChartComponent implements OnChanges {
 
         const dataset = {
             data: data_prepped,
-            backgroundColor: '#fffd9f',
+            backgroundColor: (this.nut === 'nut4') ? '#fffd9f' : '#9c2222',
+            // backgroundColor: '#fffd9f',
             // backgroundColor: '#9c2222',
             // backgroundColor: '#ffd61f',
             // borderColor: color.border,
