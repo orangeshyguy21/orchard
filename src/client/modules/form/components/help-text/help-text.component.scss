@@ -1,14 +1,22 @@
 @use '@styles/molecule/molecule';
+@use '@styles/nucleus/nucleus';
 
 .help-text-container{
-    // @extend %w-max-18;
+    @extend %orc-corner-small;
 }
 
 .help-text-content{
     @extend %font-size-xs;
+    @extend %p-h-1;
+    @extend %p-v-0-5;
+}
 
-    background-color: rgb(28, 27, 27);
-    color: var(--mat-sys-outline);
-    border-radius: 0.5rem;
-    padding: 0.5rem 1rem;
+.standard-help-text{
+    @extend %orc-surface-container-low-bg;
+    @extend %orc-outline-color;
+}
+
+.light-help-text{
+    @extend %orc-surface-container-high-bg;
+    @extend %orc-outline-color;
 }

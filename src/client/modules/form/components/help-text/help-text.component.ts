@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+/* Core Dependencies */
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 @Component({
 	selector: 'orc-help-text',
@@ -8,5 +9,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HelpTextComponent {
+
+	@Input() on: string = 'standard-help-text';
 
 }
