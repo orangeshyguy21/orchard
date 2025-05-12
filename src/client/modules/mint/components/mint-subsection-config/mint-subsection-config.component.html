@@ -35,25 +35,34 @@
         </div>
 
         <div class="p-h-2 p-b-2"> 
-            <div class="flex flex-gap-2">
-                <div class="flex-1 flex flex-column flex-gap-2">
-                    <orc-mint-config-form-quote-ttl
-                        [form_group]="form_minting"
-                        [control_name]="'mint_ttl'"
-                        (update)="onTtlUpdate($event)"
-                        (cancel)="onTtlCancel($event)"
-                    ></orc-mint-config-form-quote-ttl>
-                </div>
-                <div class="flex-1">
-                    <orc-mint-quote-ttl-chart 
-                        [nut]="'nut4'"
-                        [loading]="data_loading"
-                        [mint_quotes]="mint_quotes"
-                        [locale]="locale"
-                        [quote_ttl]="form_minting.get('mint_ttl')?.value"
-                    ></orc-mint-quote-ttl-chart>
-                </div>
-            </div>
+            <mat-card appearance="outlined" class="relative overflow-hidden">
+                <mat-card-content class="orc-surface-container-low-bg">
+                    <div class="flex flex-gap-2">
+                        <div class="flex-1 flex flex-column flex-gap-2">
+                            <orc-mint-config-form-quote-ttl
+                                [form_group]="form_minting"
+                                [control_name]="'mint_ttl'"
+                                (update)="onTtlUpdate($event)"
+                                (cancel)="onTtlCancel($event)"
+                            ></orc-mint-config-form-quote-ttl>
+                        </div>
+                        <div class="flex-1">
+                            <orc-mint-config-chart-quote-ttl 
+                                [nut]="'nut4'"
+                                [loading]="data_loading"
+                                [mint_quotes]="mint_quotes"
+                                [locale]="locale"
+                                [quote_ttl]="form_minting.get('mint_ttl')?.value"
+                            ></orc-mint-config-chart-quote-ttl>
+                        </div>
+                    </div>
+                    @if(mint_info?.nuts?.nut4?.disabled) {
+                        <div class="disabled-overlay" @fadeInOut>
+                            <div class="orc-outline-color font-weight-bold">MINTING DISABLED</div>
+                        </div>
+                    }
+                </mat-card-content>
+            </mat-card>
         </div>
    
         @for (unit of minting_units; track unit) {
@@ -86,7 +95,7 @@
                                     ></orc-mint-config-form-bolt11>
                                 }
                                 <div class="flex-1">
-                                    <orc-mint-config-method-chart 
+                                    <orc-mint-config-chart-method 
                                         [nut]="'nut4'"
                                         [loading]="data_loading"
                                         [mint_quotes]="mint_quotes"
@@ -95,7 +104,7 @@
                                         [method]="method.method"
                                         [min_amount]="form_minting.get(unit)?.get(method.method)?.get('min_amount')?.value"
                                         [max_amount]="form_minting.get(unit)?.get(method.method)?.get('max_amount')?.value"
-                                    ></orc-mint-config-method-chart>
+                                    ></orc-mint-config-chart-method>
                                 </div>
                             </div>
                         }
@@ -154,13 +163,13 @@
                             ></orc-mint-config-form-quote-ttl>
                         </div>
                         <div class="flex-1">
-                            <orc-mint-quote-ttl-chart 
+                            <orc-mint-config-chart-quote-ttl 
                                 [nut]="'nut5'"
                                 [loading]="data_loading"
                                 [melt_quotes]="melt_quotes"
                                 [locale]="locale"
                                 [quote_ttl]="form_melting.get('melt_ttl')?.value"
-                            ></orc-mint-quote-ttl-chart>
+                            ></orc-mint-config-chart-quote-ttl>
                         </div>
                     </div>
                     @if(mint_info?.nuts?.nut5?.disabled) {
@@ -203,7 +212,7 @@
                                     ></orc-mint-config-form-bolt11>
                                 }
                                 <div class="flex-1">
-                                    <orc-mint-config-method-chart 
+                                    <orc-mint-config-chart-method 
                                         [nut]="'nut5'"
                                         [loading]="data_loading"
                                         [melt_quotes]="melt_quotes"
@@ -212,7 +221,7 @@
                                         [method]="method.method"
                                         [min_amount]="form_melting.get(unit)?.get(method.method)?.get('min_amount')?.value"
                                         [max_amount]="form_melting.get(unit)?.get(method.method)?.get('max_amount')?.value"
-                                    ></orc-mint-config-method-chart>
+                                    ></orc-mint-config-chart-method>
                                 </div>
                             </div>
                         }
