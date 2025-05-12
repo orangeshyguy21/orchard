@@ -14,9 +14,11 @@ import {
 	MintKeysetsResponse,
 	MintPromisesResponse,
 	MintMintQuotesResponse,
+	MintMeltQuotesResponse,
 	MintPromisesArgs,
 	MintAnalyticsArgs,
 	MintMintQuotesArgs,
+	MintMeltQuotesArgs,
 	MintAnalyticsBalancesResponse,
 	MintAnalyticsMintsResponse,
 	MintAnalyticsMeltsResponse,
@@ -45,6 +47,7 @@ import { MintBalance } from '@client/modules/mint/classes/mint-balance.class';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 import { MintPromise } from '@client/modules/mint/classes/mint-promise.class';
 import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
+import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
 import { MintAnalytic } from '@client/modules/mint/classes/mint-analytic.class';
 /* Shared Dependencies */
 import { MintAnalyticsInterval, OrchardContact } from '@shared/generated.types';
@@ -61,6 +64,7 @@ import {
 	MINT_ANALYTICS_MELTS_QUERY,
 	MINT_ANALYTICS_TRANSFERS_QUERY,
 	MINT_MINT_QUOTES_QUERY,
+	MINT_MELT_QUOTES_QUERY,
 	MINT_NAME_MUTATION,
 	MINT_DESCRIPTION_MUTATION,
 	MINT_DESCRIPTION_LONG_MUTATION,
@@ -99,6 +103,7 @@ export class MintService {
 		MINT_ANALYTICS_TRANSFERS: 'mint-analytics-transfers',
 		MINT_ANALYTICS_PRE_TRANSFERS: 'mint-analytics-pre-transfers',
 		MINT_MINT_QUOTES: 'mint-mint-quotes',
+		MINT_MELT_QUOTES: 'mint-melt-quotes',
 	};
 
 	private readonly CACHE_DURATIONS = {
@@ -115,6 +120,7 @@ export class MintService {
 		[this.CACHE_KEYS.MINT_ANALYTICS_TRANSFERS]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.MINT_ANALYTICS_PRE_TRANSFERS]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.MINT_MINT_QUOTES]: 5 * 60 * 1000, // 5 minutes
+		[this.CACHE_KEYS.MINT_MELT_QUOTES]: 5 * 60 * 1000, // 5 minutes
 	};
 
 	/* Subjects for caching */
@@ -131,7 +137,7 @@ export class MintService {
 	private readonly mint_analytics_transfers_subject: BehaviorSubject<MintAnalytic[] | null>;
 	private readonly mint_analytics_pre_transfers_subject: BehaviorSubject<MintAnalytic[] | null>;
 	private readonly mint_mint_quotes_subject: BehaviorSubject<MintMintQuote[] | null>;
-
+	private readonly mint_melt_quotes_subject: BehaviorSubject<MintMeltQuote[] | null>;
 
 	/* Observables for caching (rapid request caching) */
 	private mint_info_observable!: Observable<MintInfo> | null;
@@ -191,6 +197,10 @@ export class MintService {
 		this.mint_mint_quotes_subject = this.cache.createCache<MintMintQuote[]>(
 			this.CACHE_KEYS.MINT_MINT_QUOTES,
 			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_MINT_QUOTES]
+		);
+		this.mint_melt_quotes_subject = this.cache.createCache<MintMeltQuote[]>(
+			this.CACHE_KEYS.MINT_MELT_QUOTES,
+			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_MELT_QUOTES]
 		);
 	}
 
@@ -478,6 +488,28 @@ export class MintService {
 			}),
 			catchError((error) => {
 				console.error('Error loading mint mint quotes:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public loadMintMeltQuotes(args:MintMeltQuotesArgs) {
+		if (this.mint_melt_quotes_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.MINT_MELT_QUOTES)) {
+			return of(this.mint_melt_quotes_subject.value);
+		}
+
+		const query = getApiQuery(MINT_MELT_QUOTES_QUERY, args);
+		return this.http.post<OrchardRes<MintMeltQuotesResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.mint_melt_quotes;
+			}),
+			map((mint_melt_quotes) => mint_melt_quotes.map((mint_melt_quote) => new MintMeltQuote(mint_melt_quote))),
+			tap((mint_melt_quotes) => {
+				this.cache.updateCache(this.CACHE_KEYS.MINT_MELT_QUOTES, mint_melt_quotes);
+			}),
+			catchError((error) => {
+				console.error('Error loading mint melt quotes:', error);
 				return throwError(() => error);
 			})
 		);

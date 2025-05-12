@@ -2,23 +2,14 @@
 import { Field, Int, ID, ObjectType } from '@nestjs/graphql';
 /* Application Dependencies */
 import { UnixTimestamp } from '@server/modules/graphql/scalars/unixtimestamp.scalar';
-import { MintUnit } from '@server/modules/cashu/cashu.enums';
+import { MintUnit, MeltQuoteState } from '@server/modules/cashu/cashu.enums';
 import { CashuMintMeltQuote } from '@server/modules/cashu/mintdb/cashumintdb.types';
 
 @ObjectType()
 export class OrchardMintMeltQuote {
 
 	@Field(type => ID)
-	quote:string;
-
-	@Field()
-	method: string;
-
-	@Field()
-	request: string;
-
-	@Field()
-	checking_id: string;
+	id:string;
 
 	@Field(type => MintUnit)
 	unit: string;
@@ -26,11 +17,23 @@ export class OrchardMintMeltQuote {
 	@Field(type => Int)
 	amount: number;
 
-	@Field(type => Int, { nullable: true })
+	@Field()
+	request: string;
+
+	@Field(type => Int)
 	fee_reserve: number;
 
+	@Field(type => MeltQuoteState)
+	state: MeltQuoteState;
+
+	@Field({ nullable: true })
+	payment_preimage: string;
+
 	@Field()
-	paid: boolean;
+	request_lookup_id: string;
+
+	@Field(type => Int, { nullable: true })
+	msat_to_pay: number;
 
 	@Field(type => UnixTimestamp, { nullable: true })
 	created_time: number;
@@ -38,37 +41,18 @@ export class OrchardMintMeltQuote {
 	@Field(type => UnixTimestamp, { nullable: true })
 	paid_time: number;
 
-	@Field(type => Int, { nullable: true })
-	fee_paid: number;
-
-	@Field({ nullable: true })
-	proof: string;
-
-	@Field({ nullable: true })
-	state: string;
-
-	@Field({ nullable: true })
-	change: string;
-
-	@Field(type => UnixTimestamp, { nullable: true })
-	expiry: number;
-
 	constructor(cashu_mint_melt_quote: CashuMintMeltQuote) {
-		this.quote = cashu_mint_melt_quote.quote;
-		this.method = cashu_mint_melt_quote.method;
+		this.id = cashu_mint_melt_quote.id;
 		this.request = cashu_mint_melt_quote.request;
-		this.checking_id = cashu_mint_melt_quote.checking_id;
+		this.request_lookup_id = cashu_mint_melt_quote.request_lookup_id;
 		this.unit = cashu_mint_melt_quote.unit;
 		this.amount = cashu_mint_melt_quote.amount;
 		this.fee_reserve = cashu_mint_melt_quote.fee_reserve;
-		this.paid = !!cashu_mint_melt_quote.paid;
+		this.state = cashu_mint_melt_quote.state;
+		this.payment_preimage = cashu_mint_melt_quote.payment_preimage;
 		this.created_time = cashu_mint_melt_quote.created_time;
 		this.paid_time = cashu_mint_melt_quote.paid_time;
-		this.fee_paid = cashu_mint_melt_quote.fee_paid;
-		this.proof = cashu_mint_melt_quote.proof;
-		this.state = cashu_mint_melt_quote.state;
-		this.change = cashu_mint_melt_quote.change;
-		this.expiry = cashu_mint_melt_quote.expiry;
+		this.msat_to_pay = cashu_mint_melt_quote.msat_to_pay;
 	}
 }
 

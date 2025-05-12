@@ -55,6 +55,12 @@ enum AiMessageRole {
   USER
 }
 
+enum MeltQuoteState {
+  PAID
+  PENDING
+  UNPAID
+}
+
 enum MintAnalyticsInterval {
   custom
   day
@@ -296,19 +302,15 @@ type OrchardMintKeyset {
 
 type OrchardMintMeltQuote {
   amount: Int!
-  change: String
-  checking_id: String!
   created_time: UnixTimestamp
-  expiry: UnixTimestamp
-  fee_paid: Int
-  fee_reserve: Int
-  method: String!
-  paid: Boolean!
+  fee_reserve: Int!
+  id: ID!
+  msat_to_pay: Int
   paid_time: UnixTimestamp
-  proof: String
-  quote: ID!
+  payment_preimage: String
   request: String!
-  state: String
+  request_lookup_id: String!
+  state: MeltQuoteState!
   unit: MintUnit!
 }
 
@@ -478,7 +480,7 @@ type Query {
   mint_info: OrchardMintInfo!
   mint_info_rpc: OrchardMintInfoRpc!
   mint_keysets: [OrchardMintKeyset!]!
-  mint_melt_quotes: [OrchardMintMeltQuote!]!
+  mint_melt_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, state: [MeltQuoteState!], timezone: Timezone, unit: [MintUnit!]): [OrchardMintMeltQuote!]!
   mint_mint_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, state: [MintQuoteState!], timezone: Timezone, unit: [MintUnit!]): [OrchardMintMintQuote!]!
   mint_promises(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!]): [OrchardMintPromise!]!
   mint_proofs_pending: [OrchardMintProof!]!

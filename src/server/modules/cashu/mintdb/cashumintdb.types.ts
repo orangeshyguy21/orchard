@@ -1,5 +1,5 @@
 /* Native Dependencies */
-import { MintUnit, MintQuoteState } from "@server/modules/cashu/cashu.enums";
+import { MintUnit, MintQuoteState, MeltQuoteState } from "@server/modules/cashu/cashu.enums";
 
 export type CashuMintBalance = {
 	keyset: string;
@@ -10,15 +10,10 @@ export type CashuMintKeyset = {
 	id: string;
 	derivation_path: string;
 	derivation_path_index: number;
-	// seed: string;
 	valid_from: number;
 	valid_to: number;
-	// first_seen: number;
 	active: number;
-	// version: string;
 	unit: MintUnit;
-	// encrypted_seed: string|null;
-	// seed_encryption_method: string|null;
 	input_fee_ppk: number;
 }
 
@@ -28,21 +23,17 @@ export type CashuMintDatabaseVersion = {
 }
 
 export type CashuMintMeltQuote = {
-	quote: string;
-	method: string;
-	request: string;
-	checking_id: string;
-	unit: string;
+	id: string;
+	unit: MintUnit;
 	amount: number;
+	request: string;
 	fee_reserve: number;
-	paid: number;
+	state: MeltQuoteState;
+	payment_preimage: string | null;
+	request_lookup_id: string;
+	msat_to_pay: number | null;
 	created_time: number;
 	paid_time: number;
-	fee_paid: number;
-	proof: string;
-	state: string;
-	change: string;
-	expiry: number;
 }
 
 export type CashuMintMintQuote = {

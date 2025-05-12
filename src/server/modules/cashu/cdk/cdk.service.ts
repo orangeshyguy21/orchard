@@ -21,6 +21,7 @@ import {
 import { 
 	CashuMintMintQuotesArgs,
 	CashuMintAnalyticsArgs,
+	CashuMintMeltQuotesArgs,
 } from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
 import {
 	buildDynamicQuery,
@@ -197,10 +198,16 @@ export class CdkService {
 	// 	});
 	// }
 
-	public async getMintMeltQuotes(db:sqlite3.Database) : Promise<CashuMintMeltQuote[]> {
-		const sql = 'SELECT * FROM melt_quote;';
+	public async getMintMeltQuotes(db:sqlite3.Database, args?: CashuMintMeltQuotesArgs) : Promise<CashuMintMeltQuote[]> {
+		const field_mappings = {
+			unit: 'unit',
+			date_start: 'created_time',
+			date_end: 'created_time',
+			status: 'state',
+		};
+		const { sql, params } = buildDynamicQuery('melt_quote', args, field_mappings, 500);
 		return new Promise((resolve, reject) => {
-			db.all(sql, (err, rows:CashuMintMeltQuote[]) => {
+			db.all(sql, params, (err, rows:CashuMintMeltQuote[]) => {
 				if (err) reject(err);
 				resolve(rows);
 			});

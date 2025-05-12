@@ -7,8 +7,9 @@ import { ChartConfiguration, ChartType as ChartJsType } from 'chart.js';
 import { ChartService } from '@client/modules/chart/services/chart/chart.service';
 /* Native Dependencies */
 import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
+import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
 /* Shared Dependencies */
-import { MintAnalyticsInterval, MintQuoteState } from '@shared/generated.types';
+import { MintAnalyticsInterval, MintQuoteState, MeltQuoteState } from '@shared/generated.types';
 import { getTooltipLabel, getTooltipTitle, getXAxisConfig } from '@client/modules/chart/helpers/mint-chart-options.helpers';
 
 
@@ -19,11 +20,13 @@ import { getTooltipLabel, getTooltipTitle, getXAxisConfig } from '@client/module
 	styleUrl: './mint-config-method-chart.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MintConfigMethodChartComponent {
+export class MintConfigMethodChartComponent implements OnChanges {
 
 	@ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
+	@Input() nut!: 'nut4' | 'nut5';
     @Input() mint_quotes: MintMintQuote[] = [];
+	@Input() melt_quotes: MintMeltQuote[] = [];
     @Input() loading!: boolean;
     @Input() locale!: string;
     @Input() unit!: string;
@@ -62,11 +65,13 @@ export class MintConfigMethodChartComponent {
 	}
 
 	private getChartData(): ChartConfiguration['data'] {
-        if( this.mint_quotes.length === 0 ) return { datasets: [] };
+        if( this.mint_quotes.length === 0 && this.melt_quotes.length === 0 ) return { datasets: [] };
 		// @todo will need to filter by method as well
-        const valid_quotes = this.mint_quotes
+		const quotes = this.nut === 'nut4' ? this.mint_quotes : this.melt_quotes;
+		const valid_state = this.nut === 'nut4' ? MintQuoteState.Issued : MeltQuoteState.Paid;
+        const valid_quotes = quotes
             .filter(quote => 
-				(quote.state === MintQuoteState.Issued
+				(quote.state === valid_state
 				&& quote.created_time
 				&& quote.created_time > 0
 				&& quote.unit === this.unit)

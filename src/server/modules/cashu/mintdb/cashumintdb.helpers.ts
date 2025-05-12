@@ -25,20 +25,14 @@ export function buildDynamicQuery(
     const params: any[] = [];
     
     if (args && field_mappings) {
-        // Process each argument using the isolated method
         Object.entries(args).forEach(([arg_key, arg_value]) => {
             processQueryArgument(arg_key, arg_value, field_mappings, conditions, params);
         });
     }
     
-    if (conditions.length > 0) {
-        sql += ' WHERE ' + conditions.join(' AND ');
-    }
-
-    if (limit) {
-        sql += ` LIMIT ${limit}`;
-    }
-    
+    if (conditions.length > 0) sql += ` WHERE ${conditions.join(' AND ')}`;
+    sql += ` ORDER BY ${field_mappings?.date_start || 'created_time'} DESC`;
+    if (limit)  sql += ` LIMIT ${limit}`;
     return { sql: sql + ';', params };
 }
 

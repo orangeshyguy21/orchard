@@ -7,8 +7,9 @@ import { ChartConfiguration, ChartType as ChartJsType } from 'chart.js';
 import { ChartService } from '@client/modules/chart/services/chart/chart.service';
 /* Native Dependencies */
 import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
+import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
 /* Shared Dependencies */
-import { MintAnalyticsInterval, MintQuoteState } from '@shared/generated.types';
+import { MintAnalyticsInterval, MintQuoteState, MeltQuoteState } from '@shared/generated.types';
 import { getTooltipLabel, getTooltipTitle, getXAxisConfig } from '@client/modules/chart/helpers/mint-chart-options.helpers';
 
 @Component({
@@ -24,6 +25,7 @@ export class MintQuoteTtlChartComponent implements OnChanges {
 
     @Input() nut!: 'nut4' | 'nut5';
     @Input() mint_quotes: MintMintQuote[] = [];
+    @Input() melt_quotes: MintMeltQuote[] = [];
     @Input() loading!: boolean;
     @Input() locale!: string;
     @Input() quote_ttl!: number;
@@ -54,13 +56,15 @@ export class MintQuoteTtlChartComponent implements OnChanges {
 	}
 
 	private getChartData(): ChartConfiguration['data'] {
-        if( this.mint_quotes.length === 0 ) return { datasets: [] };
-        const valid_quotes = this.mint_quotes
-            .filter(quote => (quote.state === MintQuoteState.Issued && quote.created_time && quote.created_time > 0))
+        if( this.mint_quotes.length === 0 && this.melt_quotes.length === 0 ) return { datasets: [] };
+        const quotes = this.nut === 'nut4' ? this.mint_quotes : this.melt_quotes;
+        const valid_state = this.nut === 'nut4' ? MintQuoteState.Issued : MeltQuoteState.Paid;
+        const valid_quotes = quotes
+            .filter(quote => (quote.state === valid_state && quote.created_time && quote.created_time > 0))
             .sort((a, b) => (a.created_time ?? 0) - (b.created_time ?? 0));
         const deltas = valid_quotes.map(quote => {
             const created_time = quote.created_time ?? 0;
-            const end_time = quote.issued_time ?? quote.paid_time ?? 0;
+            const end_time = (quote instanceof MintMintQuote) ? quote.issued_time ?? quote.paid_time ?? 0 : quote.paid_time ?? 0;
             return {
                 created_time,
                 delta: end_time - created_time

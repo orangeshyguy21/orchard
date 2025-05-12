@@ -18,6 +18,7 @@ import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 import { MintQuoteTtls } from '@client/modules/mint/classes/mint-quote-ttls.class';
 import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
+import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
 /* Shared Dependencies */
 import { OrchardNut4Method, OrchardNut5Method, AiFunctionName } from '@shared/generated.types';
 
@@ -48,6 +49,7 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 	public locale!: string;
 	public data_loading: boolean = true;
 	public mint_quotes: MintMintQuote[] = [];
+	public melt_quotes: MintMeltQuote[] = [];
 
 	public form_config: FormGroup = new FormGroup({
 		minting: new FormGroup({
@@ -411,19 +413,21 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 	}
 
 	private async loadChartData(timezone: string): Promise<void> {
-		const mint_quotes_obs = this.mintService.loadMintMintQuotes({
-			timezone: timezone
-		});
+		const mint_quotes_obs = this.mintService.loadMintMintQuotes({ timezone: timezone });
+		const melt_quotes_obs = this.mintService.loadMintMeltQuotes({ timezone: timezone });
 
 		const [
 			mint_quotes,
+			melt_quotes,
 		] = await lastValueFrom(
 			forkJoin([
 				mint_quotes_obs,
+				melt_quotes_obs,
 			])
 		);
 		
 		this.mint_quotes = mint_quotes;
+		this.melt_quotes = melt_quotes;
 	}
 
 	public onEnabledUpdate({

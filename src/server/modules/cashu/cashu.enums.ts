@@ -5,7 +5,7 @@ export enum MintQuoteState {
     ISSUED = 'ISSUED'
 }
 
-export enum MeltQuoteStatus {
+export enum MeltQuoteState {
     UNPAID = 'UNPAID',
     PENDING = 'PENDING',
     PAID = 'PAID'

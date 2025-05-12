@@ -6,9 +6,11 @@ import {
     OrchardMintPromise,
     OrchardMintAnalytics,
     OrchardMintMintQuote,
+    OrchardMintMeltQuote,
     MintUnit,
     MintAnalyticsInterval,
     MintQuoteState,
+    MeltQuoteState,
     OrchardMintInfoRpc,
     OrchardMintNameUpdate, 
     OrchardMintIconUpdate,
@@ -65,6 +67,10 @@ export type MintMintQuotesResponse = {
 	mint_mint_quotes: OrchardMintMintQuote[];
 }
 
+export type MintMeltQuotesResponse = {
+	mint_melt_quotes: OrchardMintMeltQuote[];
+}
+
 export type MintPromisesArgs ={
     id_keysets?: string[];
     date_start?: number;
@@ -84,6 +90,14 @@ export type MintMintQuotesArgs = {
     date_start?: number;
     date_end?: number;
     state?: MintQuoteState;
+    timezone?: string;
+}
+
+export type MintMeltQuotesArgs = {
+    units?: MintUnit[];
+    date_start?: number;
+    date_end?: number;
+    state?: MeltQuoteState;
     timezone?: string;
 }
 

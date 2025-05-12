@@ -191,6 +191,24 @@ query MintMintQuotes($unit: [MintUnit!], $state: [MintQuoteState!], $date_start:
 	}
 }`;	
 
+export const MINT_MELT_QUOTES_QUERY = `
+query MintMeltQuotes($unit: [MintUnit!], $state: [MeltQuoteState!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $timezone: Timezone) {
+	mint_melt_quotes(unit: $unit, state: $state, date_start: $date_start, date_end: $date_end, timezone: $timezone) {
+		id
+		amount
+		unit
+		request
+		fee_reserve
+		state
+		payment_preimage
+		request_lookup_id
+		msat_to_pay
+		created_time
+		paid_time
+	}
+}`;
+
+
 export const MINT_NAME_MUTATION = `
 mutation MintName($mint_name_update: MintNameUpdateInput!) {
 	mint_name_update(mint_name_update: $mint_name_update) {

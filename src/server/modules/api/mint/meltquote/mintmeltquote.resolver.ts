@@ -1,6 +1,10 @@
 /* Core Dependencies */
 import { Logger } from '@nestjs/common';
 import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
+/* Application Dependencies */
+import { UnixTimestamp } from "@server/modules/graphql/scalars/unixtimestamp.scalar";
+import { Timezone, TimezoneType } from "@server/modules/graphql/scalars/timezone.scalar";
+import { MintUnit, MeltQuoteState } from "@server/modules/cashu/cashu.enums";
 /* Local Dependencies */
 import { MintMeltQuoteService } from "./mintmeltquote.service";
 import { OrchardMintMeltQuote } from "./mintmeltquote.model";
@@ -17,9 +21,15 @@ export class MintMeltQuoteResolver {
     ) {}
 
     @Query(() => [OrchardMintMeltQuote])
-    async mint_melt_quotes() : Promise<OrchardMintMeltQuote[]> {
+    async mint_melt_quotes(
+		@Args('unit', { type: () => [MintUnit], nullable: true }) unit?: MintUnit[],
+		@Args('state', { type: () => [MeltQuoteState], nullable: true }) state?: MeltQuoteState[],
+		@Args('date_start', { type: () => UnixTimestamp, nullable: true }) date_start?: number,
+		@Args('date_end', { type: () => UnixTimestamp, nullable: true }) date_end?: number,
+		@Args('timezone', { type: () => Timezone, nullable: true }) timezone?: TimezoneType,
+	) : Promise<OrchardMintMeltQuote[]> {
       	this.logger.debug('GET { mint_melt_quotes }');
-		return await this.mintMeltQuoteService.getMintMeltQuotes();
+		return await this.mintMeltQuoteService.getMintMeltQuotes({ unit, state, date_start, date_end, timezone });
     }
 
 	@Mutation(() => OrchardMintNut05Update)

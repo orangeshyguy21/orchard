@@ -23,6 +23,7 @@ import {
 	CashuMintAnalyticsArgs,
 	CashuMintMintQuotesArgs,
 	CashuMintPromisesArgs,
+	CashuMintMeltQuotesArgs,
 } from './cashumintdb.interfaces';
 
 @Injectable()
@@ -76,7 +77,7 @@ export class CashuMintDatabaseService implements OnModuleInit {
 		if( this.backend === 'cdk' ) throw OrchardErrorCode.MintSupportError;
 	}
 
-	public async getMintMeltQuotes(db:sqlite3.Database) : Promise<CashuMintMeltQuote[]> {
+	public async getMintMeltQuotes(db:sqlite3.Database, args?: CashuMintMeltQuotesArgs) : Promise<CashuMintMeltQuote[]> {
 		if( this.backend === 'nutshell' ) return this.nutshellService.getMintMeltQuotes(db);
 		if( this.backend === 'cdk' ) return this.cdkService.getMintMeltQuotes(db);
 	}
