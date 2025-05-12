@@ -25,14 +25,15 @@ export class MintConfigChartMethodComponent implements OnChanges {
 	@ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
 	@Input() nut!: 'nut4' | 'nut5';
-    @Input() mint_quotes: MintMintQuote[] = [];
-	@Input() melt_quotes: MintMeltQuote[] = [];
+	@Input() quotes!: MintMintQuote[] | MintMeltQuote[];
     @Input() loading!: boolean;
     @Input() locale!: string;
     @Input() unit!: string;
     @Input() method!: string;
     @Input() min_amount!: number;
     @Input() max_amount!: number;
+	@Input() min_hot!: boolean;
+	@Input() max_hot!: boolean;
 
     public chart_type!: ChartJsType;
 	public chart_data!: ChartConfiguration['data'];
@@ -58,14 +59,11 @@ export class MintConfigChartMethodComponent implements OnChanges {
 			this.init();
 		}
         if(changes['min_amount'] && !changes['min_amount'].firstChange) {
-            this.chart_options = this.getChartOptions();
-            if(this.chart_options?.plugins) this.chart_options.plugins.annotation = this.getAnnotations();
+            this.initOptions();
         }
 		if(changes['max_amount'] && !changes['max_amount'].firstChange) {
-            this.chart_options = this.getChartOptions();
-            if(this.chart_options?.plugins) this.chart_options.plugins.annotation = this.getAnnotations();
+            this.initOptions();
         }
-
 	}
 
 	private async init(): Promise<void> {
@@ -73,13 +71,17 @@ export class MintConfigChartMethodComponent implements OnChanges {
 		const amounts = this.getAmounts();
 		this.metrics = this.getMetrics(amounts);
         this.chart_data = this.getChartData(amounts);	
-        this.chart_options = this.getChartOptions();
-        if(this.chart_options?.plugins) this.chart_options.plugins.annotation = this.getAnnotations();
+        this.initOptions();
 	}
 
+	private initOptions(): void {
+        this.chart_options = this.getChartOptions();
+        if(this.chart_options?.plugins) this.chart_options.plugins.annotation = this.getFormAnnotation();
+    }
+
 	private getAmounts(): Record<string, number>[] {
-		if( this.mint_quotes.length === 0 && this.melt_quotes.length === 0 ) return [];
-		const quotes = this.nut === 'nut4' ? this.mint_quotes : this.melt_quotes;
+		if( this.quotes.length === 0 ) return [];
+		const quotes = this.nut === 'nut4' ? (this.quotes as MintMintQuote[]) : (this.quotes as MintMeltQuote[]);
 		const valid_state = this.nut === 'nut4' ? MintQuoteState.Issued : MeltQuoteState.Paid;
         const valid_quotes = quotes
             .filter(quote => 
@@ -189,20 +191,65 @@ export class MintConfigChartMethodComponent implements OnChanges {
 		};
 	}
 
-    private getAnnotations(): any {
+    private getFormAnnotation(): any {
+		const min_border_color = this.min_hot ? '#D5C4AC' : '#4c463d';
+        const min_border_width = this.min_hot ? 2 : 1;
+        const min_text_color = this.min_hot ? '#D5C4AC' : 'rgb(235, 225, 213)';
+        const min_label_bg_color = this.min_hot ? '#695D49' : 'rgb(29, 27, 26)';
+        const min_label_border_color = this.min_hot ? null : '#4c463d';
+
+		const max_border_color = this.max_hot ? '#D5C4AC' : '#4c463d';
+        const max_border_width = this.max_hot ? 2 : 1;
+        const max_text_color = this.max_hot ? '#D5C4AC' : 'rgb(235, 225, 213)';
+        const max_label_bg_color = this.max_hot ? '#695D49' : 'rgb(29, 27, 26)';
+        const max_label_border_color = this.max_hot ? null : '#4c463d';
+
+
+
+        // return {
+		// 	annotations: {
+        //         ttl : {
+		// 			type: 'line',
+        //             borderColor: border_color,
+		// 			borderWidth: border_width,
+		// 			display: true,
+		// 			label: {
+		// 				display:  true,
+		// 				content: 'Quote TTL',
+		// 				position: 'start',
+        //                 backgroundColor: label_bg_color,
+        //                 color: text_color,
+        //                 font: {
+        //                     size: 12,
+        //                     weight: '300'
+        //                 },
+        //                 borderColor: label_border_color,
+		// 				borderWidth: 1,
+		// 			},
+		// 			scaleID: 'y',
+		// 			value: this.quote_ttl
+		// 		}
+		// 	}
+		// }
+
 		return {
 			annotations: {
                 min : {
 					type: 'line',
-					borderColor: this.chartService.getAnnotationBorderColor(),
-					borderWidth: 1,
+					borderColor: min_border_color,
+					borderWidth: min_border_width,
 					display: true,
 					label: {
 						display:  true,
 						content: 'Min Amount',
 						position: 'start',
-						backgroundColor: 'rgb(29, 27, 26)',
-						borderColor: this.chartService.getAnnotationBorderColor(),
+						backgroundColor: min_label_bg_color,
+						color: min_text_color,
+						font: {
+							size: 12,
+							weight: '300'
+						},
+						borderColor: min_label_border_color,
 						borderWidth: 1,
 					},
 					scaleID: 'y',
@@ -210,15 +257,20 @@ export class MintConfigChartMethodComponent implements OnChanges {
 				},
 				max : {
 					type: 'line',
-					borderColor: this.chartService.getAnnotationBorderColor(),
-					borderWidth: 1,
+					borderColor: max_border_color,
+					borderWidth: max_border_width,
 					display: true,
 					label: {
 						display:  true,
 						content: 'Max Amount',
 						position: 'start',
-						backgroundColor: 'rgb(29, 27, 26)',
-						borderColor: this.chartService.getAnnotationBorderColor(),
+						backgroundColor: max_label_bg_color,
+						color: max_text_color,
+						font: {
+							size: 12,
+							weight: '300'
+						},
+						borderColor: max_label_border_color,
 						borderWidth: 1,
 					},
 					scaleID: 'y',

@@ -3,6 +3,9 @@ import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChan
 import { FormGroup } from '@angular/forms';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 /* Application Dependencies */
+import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
+import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
+/* Shared Dependencies */
 import { OrchardNut4Method, OrchardNut5Method } from '@shared/generated.types';
 
 @Component({
@@ -20,6 +23,10 @@ export class MintConfigFormBolt11Component implements OnChanges {
 	@Input() method!: string;
 	@Input() form_group!: FormGroup;
 	@Input() form_status!: boolean;
+	@Input() locale!: string;
+	@Input() loading!: boolean;
+	@Input() quotes!: MintMintQuote[] | MintMeltQuote[];
+
 
 	@Output() update = new EventEmitter<{nut: 'nut4' | 'nut5', unit: string, method: string, control_name: keyof OrchardNut4Method | keyof OrchardNut5Method, form_group: FormGroup}>();
 	@Output() cancel = new EventEmitter<{nut: 'nut4' | 'nut5', unit: string, method: string, control_name: keyof OrchardNut4Method | keyof OrchardNut5Method, form_group: FormGroup}>();

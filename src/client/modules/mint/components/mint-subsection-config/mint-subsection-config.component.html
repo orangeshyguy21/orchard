@@ -42,32 +42,21 @@
                 <mat-card appearance="outlined" class="relative overflow-hidden">
                     <mat-card-content class="orc-surface-container-low-bg">
                         @for (method of mint_info?.nuts?.nut4?.methods; track method; let i = $index) {
-                            <div class="flex flex-gap-2">
-                                @if (method.unit === unit && method.method === 'bolt11') {
-                                    <orc-mint-config-form-bolt11 
-                                        class="flex-1"
-                                        [nut]="'nut4'"
-                                        [index]="i"
-                                        [unit]="unit"
-                                        [method]="method.method"
-                                        [form_group]="form_minting"
-                                        (update)="onMethodUpdate($event)"
-                                        (cancel)="onMethodCancel($event)"
-                                    ></orc-mint-config-form-bolt11>
-                                }
-                                <div class="flex-1">
-                                    <orc-mint-config-chart-method 
-                                        [nut]="'nut4'"
-                                        [loading]="data_loading"
-                                        [mint_quotes]="mint_quotes"
-                                        [locale]="locale"
-                                        [unit]="unit"
-                                        [method]="method.method"
-                                        [min_amount]="form_minting.get(unit)?.get(method.method)?.get('min_amount')?.value"
-                                        [max_amount]="form_minting.get(unit)?.get(method.method)?.get('max_amount')?.value"
-                                    ></orc-mint-config-chart-method>
-                                </div>
-                            </div>
+                            @if (method.unit === unit && method.method === 'bolt11') {
+                                <orc-mint-config-form-bolt11 
+                                    class="flex-1"
+                                    [nut]="'nut4'"
+                                    [index]="i"
+                                    [unit]="unit"
+                                    [method]="method.method"
+                                    [form_group]="form_minting"
+                                    [locale]="locale"
+                                    [loading]="data_loading"
+                                    [quotes]="mint_quotes"
+                                    (update)="onMethodUpdate($event)"
+                                    (cancel)="onMethodCancel($event)"
+                                ></orc-mint-config-form-bolt11>
+                            }
                         }
                         @if(mint_info?.nuts?.nut4?.disabled) {
                             <div class="disabled-overlay" @fadeInOut>
@@ -120,33 +109,22 @@
                 <mat-card appearance="outlined" class="relative overflow-hidden">
                     <mat-card-content class="orc-surface-container-low-bg">
                         @for (method of mint_info?.nuts?.nut4?.methods; track method; let i = $index) {
-                            <div class="flex flex-gap-2">
-                                @if (method.unit === unit && method.method === 'bolt11') {
-                                    <orc-mint-config-form-bolt11 
-                                        class="flex-1"
-                                        [nut]="'nut5'"
-                                        [index]="i"
-                                        [unit]="unit"
-                                        [method]="method.method"
-                                        [form_group]="form_melting"
-                                        [form_status]="form_melting.get('enabled')?.value"
-                                        (update)="onMethodUpdate($event)"
-                                        (cancel)="onMethodCancel($event)"
-                                    ></orc-mint-config-form-bolt11>
-                                }
-                                <div class="flex-1">
-                                    <orc-mint-config-chart-method 
-                                        [nut]="'nut5'"
-                                        [loading]="data_loading"
-                                        [melt_quotes]="melt_quotes"
-                                        [locale]="locale"
-                                        [unit]="unit"
-                                        [method]="method.method"
-                                        [min_amount]="form_melting.get(unit)?.get(method.method)?.get('min_amount')?.value"
-                                        [max_amount]="form_melting.get(unit)?.get(method.method)?.get('max_amount')?.value"
-                                    ></orc-mint-config-chart-method>
-                                </div>
-                            </div>
+                            @if (method.unit === unit && method.method === 'bolt11') {
+                                <orc-mint-config-form-bolt11 
+                                    class="flex-1"
+                                    [nut]="'nut5'"
+                                    [index]="i"
+                                    [unit]="unit"
+                                    [method]="method.method"
+                                    [form_group]="form_melting"
+                                    [form_status]="form_melting.get('enabled')?.value"
+                                    [locale]="locale"
+                                    [loading]="data_loading"
+                                    [quotes]="melt_quotes"
+                                    (update)="onMethodUpdate($event)"
+                                    (cancel)="onMethodCancel($event)"
+                                ></orc-mint-config-form-bolt11>
+                            }
                         }
                         @if(mint_info?.nuts?.nut5?.disabled) {
                             <div class="disabled-overlay" @fadeInOut>
