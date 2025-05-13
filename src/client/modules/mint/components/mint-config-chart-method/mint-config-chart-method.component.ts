@@ -148,55 +148,6 @@ export class MintConfigChartMethodComponent implements OnChanges {
         return { datasets: [dataset] };
 	}
 
-    // private getChartOptions(): ChartConfiguration['options'] {
-	// 	if ( !this.chart_data || this.chart_data.datasets.length === 0 ) return {}
-	// 	// const scales: ScaleChartOptions<'bar'>['scales'] = {};
-    //     const scales: any = {};
-	// 	scales['x'] = getXAxisConfig(MintAnalyticsInterval.Day, this.locale);
-    //     scales['y'] = {
-    //         position: 'left',
-    //         title: {
-    //             display: true,
-    //             text: this.unit
-    //         },
-    //         beginAtZero: true,
-    //         grid: {
-    //             display: true,
-    //             color: this.chartService.getGridColor()
-    //         },
-    //     }
-
-	// 	return {
-	// 		responsive: true,
-	// 		elements: {
-	// 			line: {
-	// 				tension: 0.5,
-	// 				cubicInterpolationMode: 'monotone',
-	// 			},
-	// 		},
-	// 		scales: scales,
-	// 		plugins: {
-	// 			tooltip: {
-	// 				enabled: true,
-	// 				mode: 'index',
-	// 				intersect: false,
-	// 				callbacks: {
-	// 					title: getTooltipTitle,
-	// 					label: (context: any) => getTooltipLabel(context, this.locale),
-	// 				}
-	// 			},
-	// 			legend: {
-	// 				display: false,
-	// 			},
-	// 		},
-	// 		interaction: {
-	// 			mode: 'index',
-	// 			axis: 'x',
-	// 			intersect: false
-	// 		}
-	// 	};
-	// }
-
 	private getChartOptions(): ChartConfiguration['options'] {
 		if (!this.chart_data || this.chart_data.datasets.length === 0) return {};
 	
