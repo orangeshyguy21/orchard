@@ -73,7 +73,7 @@ export class MintConfigChartMethodComponent implements OnChanges {
 	}
 
 	private async init(): Promise<void> {
-		this.chart_type = 'bar';
+		this.chart_type = 'line';
 		const amounts = this.getAmounts();
 		this.metrics = this.getMetrics(amounts);
         this.chart_data = this.getChartData(amounts);	
@@ -129,8 +129,8 @@ export class MintConfigChartMethodComponent implements OnChanges {
         const dataset = {
             data: data_prepped,
             backgroundColor: color.border,
-            // borderColor: color.border,
-            borderWidth: 2,
+            borderColor: color.border,
+            borderWidth: 1,
             borderRadius: 3,
             pointBackgroundColor: color.border,
             pointBorderColor: color.border,

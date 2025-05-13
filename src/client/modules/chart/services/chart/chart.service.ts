@@ -24,10 +24,11 @@ export class ChartService {
         'eur': '--orc-asset-eur',
     };
     private fallback_colors = [
-        { bg: 'rgba(255, 226, 122, 0.3)', border: 'rgb(255, 226, 122)' },
-        { bg: 'rgba(249, 138, 86, 0.3)', border: 'rgb(249, 138, 86)' },
-        { bg: 'rgba(198, 104, 104, 0.3)', border: 'rgb(198, 104, 104)' },
-        { bg: 'rgba(246, 243, 160, 0.3)', border: 'rgb(246, 243, 160)' }
+        { bg: 'rgba(255, 253, 159, 0.15)', border: 'rgb(255, 253, 159)' },
+        { bg: 'rgba(255, 214, 31, 0.15)', border: 'rgb(255, 214, 31)' },
+        { bg: 'rgba(245, 143, 34, 0.15)', border: 'rgb(245, 143, 34)' },
+        { bg: 'rgba(243, 101, 29, 0.15)', border: 'rgb(243, 101, 29)' },
+        { bg: 'rgba(156, 34, 34, 0.15)', border: 'rgb(156, 34, 34)' }
     ];
 
     constructor(
@@ -44,6 +45,10 @@ export class ChartService {
         const colorhex = this.themeService.getThemeColor(color_var, theme);
         const colorrgba = this.hexToRgba(colorhex, 0.15);
         return { bg: colorrgba, border: colorhex };
+    }
+
+    public getThemeColor(index: number): { bg: string, border: string } {
+        return this.fallback_colors[index];
     }
 
     public getPointHoverBackgroundColor(): string {

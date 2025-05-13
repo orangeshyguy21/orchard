@@ -4,14 +4,6 @@
             <div class="font-size-xs orc-outline-color">Bolt 11 Settings</div>
         </div>
         <div class="flex flex-column flex-gap-1">
-            <orc-mint-config-form-min
-                [form_group]="form_bolt11"
-                [control_name]="'min_amount'"
-                [unit]="unit"
-                (update)="onUpdate($event)"
-                (cancel)="onCancel($event)"
-                (hot)="onMinHot($event)"
-            ></orc-mint-config-form-min>
             <orc-mint-config-form-max
                 [form_group]="form_bolt11"
                 [control_name]="'max_amount'"
@@ -20,6 +12,14 @@
                 (cancel)="onCancel($event)"
                 (hot)="onMaxHot($event)"
             ></orc-mint-config-form-max>
+            <orc-mint-config-form-min
+                [form_group]="form_bolt11"
+                [control_name]="'min_amount'"
+                [unit]="unit"
+                (update)="onUpdate($event)"
+                (cancel)="onCancel($event)"
+                (hot)="onMinHot($event)"
+            ></orc-mint-config-form-min>
             <div class="flex flex-items-center flex-gap-2">
                 <form [formGroup]="form_bolt11" class="flex-1 flex flex-items-center flex-grow">
                     <mat-slide-toggle

@@ -63,7 +63,7 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges {
 	}
 
 	private async init(): Promise<void> {
-		this.chart_type = 'bar';
+		this.chart_type = 'line';
         const deltas = this.getDeltas();
         this.metrics = this.getMetrics(deltas);
         this.chart_data = this.getChartData(deltas);	
@@ -109,7 +109,8 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges {
 
 	private getChartData(deltas: Record<string, number>[]): ChartConfiguration['data'] {
         if( deltas.length === 0 ) return { datasets: [] };
-        const color = this.chartService.getAssetColor('sat', 0);
+        const color_index = (this.nut === 'nut4') ? 0 : 4;
+        const color = this.chartService.getThemeColor(color_index);
         const data_prepped = deltas.map(delta => ({
             x: delta['created_time'] * 1000,
             y: delta['delta']
@@ -121,8 +122,8 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges {
             // backgroundColor: '#fffd9f',
             // backgroundColor: '#9c2222',
             // backgroundColor: '#ffd61f',
-            // borderColor: color.border,
-            borderWidth: 2,
+            borderColor: color.border,
+            borderWidth: 1,
             borderRadius: 3,
             pointBackgroundColor: color.border,
             pointBorderColor: color.border,
