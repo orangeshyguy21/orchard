@@ -441,7 +441,7 @@
             <div class="config-category-rule"></div>
         </div>  
 
-        <!-- <div class="p-2"> 
+        <div class="p-2"> 
             <mat-card appearance="outlined" class="relative overflow-hidden">
                 <mat-card-content class="orc-surface-container-low-bg">
                     <div class="flex flex-items-center flex-gap-2">
@@ -450,7 +450,7 @@
                                 <div class="flex-1 flex flex-items-center flex-grow">
                                     <mat-slide-toggle
                                         #toggle
-                                        [checked]="mint_info?.nuts?.nut15?.supported"
+                                        [checked]="mint_info?.nuts?.nut15?.methods?.length === 0 ? false : true"
                                         [disabled]="true"
                                         name="supported_15">
                                     </mat-slide-toggle>
@@ -476,6 +476,10 @@
                     </div>
                 </mat-card-content>
             </mat-card>
-        </div> -->
+        </div>
+
+        <div class="p-h-2">
+            list the methods?
+        </div>
     </div>
 </div>

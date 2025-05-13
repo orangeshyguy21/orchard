@@ -415,6 +415,15 @@ type OrchardNut5Method {
   unit: String!
 }
 
+type OrchardNut15 {
+  methods: [OrchardNut15Method!]!
+}
+
+type OrchardNut15Method {
+  method: String!
+  unit: MintUnit!
+}
+
 type OrchardNut17 {
   supported: [OrchardNut17Supported!]!
 }
@@ -444,6 +453,7 @@ type OrchardNuts {
   nut11: OrchardNutSupported!
   nut12: OrchardNutSupported!
   nut14: OrchardNutSupported!
+  nut15: OrchardNut15!
   nut17: OrchardNut17!
   nut19: OrchardNut19!
   nut20: OrchardNutSupported!

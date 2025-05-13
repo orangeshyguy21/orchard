@@ -542,6 +542,17 @@ export type OrchardNut5Method = {
   unit: Scalars['String']['output'];
 };
 
+export type OrchardNut15 = {
+  __typename?: 'OrchardNut15';
+  methods: Array<OrchardNut15Method>;
+};
+
+export type OrchardNut15Method = {
+  __typename?: 'OrchardNut15Method';
+  method: Scalars['String']['output'];
+  unit: MintUnit;
+};
+
 export type OrchardNut17 = {
   __typename?: 'OrchardNut17';
   supported: Array<OrchardNut17Supported>;
@@ -576,6 +587,7 @@ export type OrchardNuts = {
   nut11: OrchardNutSupported;
   nut12: OrchardNutSupported;
   nut14: OrchardNutSupported;
+  nut15: OrchardNut15;
   nut17: OrchardNut17;
   nut19: OrchardNut19;
   nut20: OrchardNutSupported;

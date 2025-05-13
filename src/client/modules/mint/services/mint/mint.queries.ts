@@ -54,6 +54,12 @@ export const MINT_INFO_QUERY = `{
 			nut14{
 				supported
 			}
+			nut15{
+				methods{
+					method
+					unit
+				}
+			}
 			nut17{
 				supported{
 					method
