@@ -22,6 +22,11 @@ import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.clas
 /* Shared Dependencies */
 import { OrchardNut4Method, OrchardNut5Method, AiFunctionName } from '@shared/generated.types';
 
+type Nut15Method = {
+	unit: string,
+	methods: string[]
+}
+
 @Component({
 	selector: 'orc-mint-subsection-config',
 	standalone: false,
@@ -50,6 +55,7 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 	public data_loading: boolean = true;
 	public mint_quotes: MintMintQuote[] = [];
 	public melt_quotes: MintMeltQuote[] = [];
+	public nut15_methods: Nut15Method[] = [];
 
 	public form_config: FormGroup = new FormGroup({
 		minting: new FormGroup({
@@ -91,6 +97,7 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		this.patchStaticFormElements();
 		this.minting_units = this.getUniqueUnits('nut4');
 		this.melting_units = this.getUniqueUnits('nut5');
+		this.nut15_methods = this.getNut15Methods();
 		this.buildDynamicFormElements();
 		this.initChartData();
 		Object.keys(this.form_config.controls).forEach(form_group_key => {
@@ -252,6 +259,15 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		const unit_set = new Set<string>();
 		this.mint_info?.nuts[nut].methods.forEach( method => unit_set.add(method.unit));
 		return Array.from(unit_set);
+	}
+
+	private getNut15Methods(): Nut15Method[] {
+		const all_units : string[] = this.mint_info?.nuts.nut15.methods.map(m => m.unit) || [];
+		const units = Array.from(new Set(all_units));
+		return units.map(unit => ({
+			unit,
+			methods: this.mint_info?.nuts.nut15.methods.filter(m => m.unit === unit).map(m => m.method) || []
+		}));
 	}
 
 	private createPendingEvent(count: number): void {

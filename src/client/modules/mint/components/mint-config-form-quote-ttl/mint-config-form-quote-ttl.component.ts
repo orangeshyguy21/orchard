@@ -1,6 +1,7 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { trigger, transition, style, animate } from '@angular/animations';
 /* Application Dependencies */
 import { MintQuoteTtls } from '@client/modules/mint/classes/mint-quote-ttls.class';
 import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
@@ -10,7 +11,18 @@ import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.clas
 	standalone: false,
 	templateUrl: './mint-config-form-quote-ttl.component.html',
 	styleUrl: './mint-config-form-quote-ttl.component.scss',
-	changeDetection: ChangeDetectionStrategy.OnPush
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	animations: [
+		trigger('fadeInOut', [
+			transition(':enter', [
+				style({ opacity: 0 }),
+				animate('150ms ease-in', style({ opacity: 1 }))
+			]),
+			transition(':leave', [
+				animate('150ms ease-out', style({ opacity: 0 }))
+			])
+		])
+	]
 })
 export class MintConfigFormQuoteTtlComponent {
 
