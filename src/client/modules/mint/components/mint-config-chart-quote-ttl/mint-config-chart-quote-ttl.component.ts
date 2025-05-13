@@ -2,7 +2,7 @@
 import { ChangeDetectionStrategy, Component, Input, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
 /* Vendor Dependencies */
 import { BaseChartDirective } from 'ng2-charts';
-import { ChartConfiguration, ChartType as ChartJsType } from 'chart.js';
+import { ChartConfiguration, ChartType as ChartJsType, ScaleChartOptions } from 'chart.js';
 /* Application Dependencies */
 import { ChartService } from '@client/modules/chart/services/chart/chart.service';
 /* Native Dependencies */
@@ -141,11 +141,102 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges {
         return { datasets: [dataset] };
 	}
 
+    // private getChartOptions(): ChartConfiguration['options'] {
+	// 	if ( !this.chart_data || this.chart_data.datasets.length === 0 ) return {}
+	// 	const scales: ScaleChartOptions<'line'>['scales'] = {};
+    //     // const scales: any = {};
+	// 	scales['x'] = getXAxisConfig(MintAnalyticsInterval.Day, this.locale);
+    //     scales['y'] = {
+    //         position: 'left',
+    //         title: {
+    //             display: true,
+    //             text: 'seconds'
+    //         },
+    //         beginAtZero: true,
+    //         grid: {
+    //             display: true,
+    //             color: this.chartService.getGridColor()
+    //         },
+    //     }
+
+	// 	return {
+	// 		responsive: true,
+	// 		elements: {
+	// 			line: {
+	// 				tension: 0.5,
+	// 				cubicInterpolationMode: 'monotone',
+	// 			},
+	// 		},
+	// 		scales: scales,
+	// 		plugins: {
+	// 			tooltip: {
+	// 				enabled: true,
+	// 				mode: 'index',
+	// 				intersect: false,
+	// 				callbacks: {
+	// 					title: getTooltipTitle,
+	// 					label: (context: any) => getTooltipLabel(context, this.locale),
+	// 				}
+	// 			},
+	// 			legend: {
+	// 				display: false,
+	// 			},
+	// 		},
+	// 		interaction: {
+	// 			mode: 'index',
+	// 			axis: 'x',
+	// 			intersect: false
+	// 		}
+	// 	};
+	// }
+
     private getChartOptions(): ChartConfiguration['options'] {
-		if ( !this.chart_data || this.chart_data.datasets.length === 0 ) return {}
-		// const scales: ScaleChartOptions<'bar'>['scales'] = {};
+        if (!this.chart_data || this.chart_data.datasets.length === 0) return {};
+    
+        // Calculate min/max dates from data
+        const data = this.chart_data.datasets[0]?.data as any[] || [];
+        const min_time = data.length ? Math.min(...data.map(d => d.x)) : Date.now();
+        const max_time = data.length ? Math.max(...data.map(d => d.x)) : Date.now();
+    
+        // Calculate span in days
+        const span_days = (max_time - min_time) / (1000 * 60 * 60 * 24);
+    
+        // Decide unit and step size
+        let time_unit: 'month' | 'week' | 'day' = 'day';
+        let step_size = 1;
+        if (span_days > 90) {
+            time_unit = 'month';
+        } else if (span_days > 21) {
+            time_unit = 'week';
+        } else {
+            time_unit = 'day';
+        }
+    
         const scales: any = {};
-		scales['x'] = getXAxisConfig(MintAnalyticsInterval.Day, this.locale);
+        scales['x'] = {
+            type: 'time',
+            time: {
+                unit: time_unit,
+                stepSize: step_size,
+                displayFormats: {
+                    month: 'MMM yyyy',
+                    week: 'MMM d',
+                    day: 'MMM d',
+                }
+            },
+            min: min_time,
+            max: max_time,
+            ticks: {
+                source: 'auto', // Ensures ticks are generated uniformly
+                autoSkip: false, // Show all ticks for the chosen unit
+                maxRotation: 0,
+                minRotation: 0,
+            },
+            grid: {
+                display: true,
+                color: this.chartService.getGridColor()
+            }
+        };
         scales['y'] = {
             position: 'left',
             title: {
@@ -157,38 +248,38 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges {
                 display: true,
                 color: this.chartService.getGridColor()
             },
-        }
-
-		return {
-			responsive: true,
-			elements: {
-				line: {
-					tension: 0.5,
-					cubicInterpolationMode: 'monotone',
-				},
-			},
-			scales: scales,
-			plugins: {
-				tooltip: {
-					enabled: true,
-					mode: 'index',
-					intersect: false,
-					callbacks: {
-						title: getTooltipTitle,
-						label: (context: any) => getTooltipLabel(context, this.locale),
-					}
-				},
-				legend: {
-					display: false,
-				},
-			},
-			interaction: {
-				mode: 'index',
-				axis: 'x',
-				intersect: false
-			}
-		};
-	}
+        };
+    
+        return {
+            responsive: true,
+            elements: {
+                line: {
+                    tension: 0.5,
+                    cubicInterpolationMode: 'monotone',
+                },
+            },
+            scales: scales,
+            plugins: {
+                tooltip: {
+                    enabled: true,
+                    mode: 'index',
+                    intersect: false,
+                    callbacks: {
+                        title: getTooltipTitle,
+                        label: (context: any) => getTooltipLabel(context, this.locale),
+                    }
+                },
+                legend: {
+                    display: false,
+                },
+            },
+            interaction: {
+                mode: 'index',
+                axis: 'x',
+                intersect: false
+            }
+        };
+    }
 
     private getFormAnnotation(): any {
         const border_color = this.form_hot ? '#D5C4AC' : '#4c463d';
