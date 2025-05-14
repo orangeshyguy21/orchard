@@ -239,26 +239,8 @@
 
             <div class="p-h-2 p-b-2">
                 <div class="flex flex-items-center flex-justify-evenly flex-gap-2">
-                    @for (unit of nut15_methods; track unit) {
-                        <div class="flex flex-column flex-items-center flex-gap-1">
-                            <div class="flex flex-items-center flex-gap-1">
-                                <orc-graphic-asset 
-                                    [unit]="unit.unit" 
-                                    [height]="'2rem'">
-                                </orc-graphic-asset>
-                                <div>{{ unit.unit | unit:true }}</div>
-                            </div>
-
-                            <mat-card appearance="outlined" class="w-min-18">
-                                <mat-card-content>
-                                    <div class="flex flex-items-center flex-justify-center flex-gap-2 p-0-5">
-                                        @for (method of unit.methods; track method) {
-                                            <div class="protocol-spec">{{ method }}</div>
-                                        }
-                                    </div>
-                                </mat-card-content>
-                            </mat-card>
-                        </div>
+                    @for (nut15_method of nut15_methods; track nut15_method.unit) {
+                        <orc-mint-config-form-nut15-method [nut15_method]="nut15_method"></orc-mint-config-form-nut15-method>
                     }
                 </div>
             </div>

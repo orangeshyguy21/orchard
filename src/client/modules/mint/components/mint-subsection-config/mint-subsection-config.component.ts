@@ -19,20 +19,9 @@ import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 import { MintQuoteTtls } from '@client/modules/mint/classes/mint-quote-ttls.class';
 import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
 import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
+import { Nut15Method, Nut17Commands } from '@client/modules/mint/types/nut.types';
 /* Shared Dependencies */
 import { OrchardNut4Method, OrchardNut5Method, AiFunctionName } from '@shared/generated.types';
-
-type Nut15Method = {
-	unit: string,
-	methods: string[]
-}
-type Nut17Commands = {
-	unit: string,
-	methods: {
-		method: string,
-		commands: string[]
-	}[]
-}
 
 @Component({
 	selector: 'orc-mint-subsection-config',

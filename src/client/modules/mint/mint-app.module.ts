@@ -60,6 +60,7 @@ import { MintConfigFormEnabledConfirmComponent } from './components/mint-config-
 import { MintConfigChartQuoteTtlComponent } from './components/mint-config-chart-quote-ttl/mint-config-chart-quote-ttl.component';
 import { MintConfigChartMethodComponent } from './components/mint-config-chart-method/mint-config-chart-method.component';
 import { MintConfigFormSupportedComponent } from './components/mint-config-form-supported/mint-config-form-supported.component';
+import { MintConfigFormNut15MethodComponent } from './components/mint-config-form-nut15-method/mint-config-form-nut15-method.component';
 
 @NgModule({
 	declarations: [
@@ -96,6 +97,7 @@ import { MintConfigFormSupportedComponent } from './components/mint-config-form-
         MintConfigChartQuoteTtlComponent,
         MintConfigChartMethodComponent,
         MintConfigFormSupportedComponent,
+        MintConfigFormNut15MethodComponent,
 	],
 	imports: [
 		CommonModule,
