@@ -42,7 +42,7 @@ export type CashuMintInfo = {
 			supported: boolean,
 		},
 		15: {
-			supported: boolean,
+			methods: Record<string, CashuNut15Method>,
 		},
 		17: {
 			supported: Record<string, CashuNutSupported>
@@ -58,33 +58,38 @@ export type CashuMintInfo = {
 }
 
 export type CashuContact = {
-  method: string;
-  info: string;
+	method: string;
+	info: string;
 }
 
 export type CashuNut4Method = {
-  method: string;
-  unit: MintUnit;
-  description: boolean;
-  min_amount?: number;
-  max_amount?: number;  
+	method: string;
+	unit: MintUnit;
+	description: boolean;
+	min_amount?: number;
+	max_amount?: number;  
 }
 
 export type CashuNut5Method = {
-  method: string;
-  unit: MintUnit;
-  amountless?: boolean;
-  min_amount?: number;
-  max_amount?: number;  
+	method: string;
+	unit: MintUnit;
+	amountless?: boolean;
+	min_amount?: number;
+	max_amount?: number;  
+}
+
+export type CashuNut15Method = {
+	method: string;
+	unit: MintUnit;
 }
 
 export type CashuNutSupported = {
-  method: string;
-  unit: MintUnit;
-  commands?: string[];
+	method: string;
+	unit: MintUnit;
+	commands?: string[];
 }
 
 export type CashuCachedEndpoint = {
-  method: string;
-  path: string;
+	method: string;
+	path: string;
 }

@@ -55,6 +55,12 @@ enum AiMessageRole {
   USER
 }
 
+enum MeltQuoteState {
+  PAID
+  PENDING
+  UNPAID
+}
+
 enum MintAnalyticsInterval {
   custom
   day
@@ -105,7 +111,7 @@ input MintNut05UpdateInput {
   unit: String!
 }
 
-enum MintQuoteStatus {
+enum MintQuoteState {
   ISSUED
   PAID
   PENDING
@@ -296,34 +302,28 @@ type OrchardMintKeyset {
 
 type OrchardMintMeltQuote {
   amount: Int!
-  change: String
-  checking_id: String!
   created_time: UnixTimestamp
-  expiry: UnixTimestamp
-  fee_paid: Int
-  fee_reserve: Int
-  method: String!
-  paid: Boolean!
+  fee_reserve: Int!
+  id: ID!
+  msat_to_pay: Int
   paid_time: UnixTimestamp
-  proof: String
-  quote: ID!
+  payment_preimage: String
   request: String!
-  state: String
+  request_lookup_id: String!
+  state: MeltQuoteState!
   unit: MintUnit!
 }
 
 type OrchardMintMintQuote {
   amount: Int!
-  checking_id: String!
   created_time: UnixTimestamp
-  issued: Boolean!
-  method: String!
-  paid: Boolean!
+  id: ID!
+  issued_time: UnixTimestamp
   paid_time: UnixTimestamp
-  pubkey: String
-  quote: ID!
+  pubkey: String!
   request: String!
-  state: String
+  request_lookup_id: String!
+  state: MintQuoteState!
   unit: MintUnit!
 }
 
@@ -415,6 +415,15 @@ type OrchardNut5Method {
   unit: String!
 }
 
+type OrchardNut15 {
+  methods: [OrchardNut15Method!]!
+}
+
+type OrchardNut15Method {
+  method: String!
+  unit: MintUnit!
+}
+
 type OrchardNut17 {
   supported: [OrchardNut17Supported!]!
 }
@@ -444,6 +453,7 @@ type OrchardNuts {
   nut11: OrchardNutSupported!
   nut12: OrchardNutSupported!
   nut14: OrchardNutSupported!
+  nut15: OrchardNut15!
   nut17: OrchardNut17!
   nut19: OrchardNut19!
   nut20: OrchardNutSupported!
@@ -480,8 +490,8 @@ type Query {
   mint_info: OrchardMintInfo!
   mint_info_rpc: OrchardMintInfoRpc!
   mint_keysets: [OrchardMintKeyset!]!
-  mint_melt_quotes: [OrchardMintMeltQuote!]!
-  mint_mint_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, status: [MintQuoteStatus!], unit: [MintUnit!]): [OrchardMintMintQuote!]!
+  mint_melt_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, state: [MeltQuoteState!], timezone: Timezone, unit: [MintUnit!]): [OrchardMintMeltQuote!]!
+  mint_mint_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, state: [MintQuoteState!], timezone: Timezone, unit: [MintUnit!]): [OrchardMintMintQuote!]!
   mint_promises(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!]): [OrchardMintPromise!]!
   mint_proofs_pending: [OrchardMintProof!]!
   mint_proofs_used: [OrchardMintProof!]!

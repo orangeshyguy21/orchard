@@ -71,6 +71,12 @@ export enum AiMessageRole {
   User = 'USER'
 }
 
+export enum MeltQuoteState {
+  Paid = 'PAID',
+  Pending = 'PENDING',
+  Unpaid = 'UNPAID'
+}
+
 export enum MintAnalyticsInterval {
   Custom = 'custom',
   Day = 'day',
@@ -121,7 +127,7 @@ export type MintNut05UpdateInput = {
   unit: Scalars['String']['input'];
 };
 
-export enum MintQuoteStatus {
+export enum MintQuoteState {
   Issued = 'ISSUED',
   Paid = 'PAID',
   Pending = 'PENDING',
@@ -409,35 +415,29 @@ export type OrchardMintKeyset = {
 export type OrchardMintMeltQuote = {
   __typename?: 'OrchardMintMeltQuote';
   amount: Scalars['Int']['output'];
-  change?: Maybe<Scalars['String']['output']>;
-  checking_id: Scalars['String']['output'];
   created_time?: Maybe<Scalars['UnixTimestamp']['output']>;
-  expiry?: Maybe<Scalars['UnixTimestamp']['output']>;
-  fee_paid?: Maybe<Scalars['Int']['output']>;
-  fee_reserve?: Maybe<Scalars['Int']['output']>;
-  method: Scalars['String']['output'];
-  paid: Scalars['Boolean']['output'];
+  fee_reserve: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
+  msat_to_pay?: Maybe<Scalars['Int']['output']>;
   paid_time?: Maybe<Scalars['UnixTimestamp']['output']>;
-  proof?: Maybe<Scalars['String']['output']>;
-  quote: Scalars['ID']['output'];
+  payment_preimage?: Maybe<Scalars['String']['output']>;
   request: Scalars['String']['output'];
-  state?: Maybe<Scalars['String']['output']>;
+  request_lookup_id: Scalars['String']['output'];
+  state: MeltQuoteState;
   unit: MintUnit;
 };
 
 export type OrchardMintMintQuote = {
   __typename?: 'OrchardMintMintQuote';
   amount: Scalars['Int']['output'];
-  checking_id: Scalars['String']['output'];
   created_time?: Maybe<Scalars['UnixTimestamp']['output']>;
-  issued: Scalars['Boolean']['output'];
-  method: Scalars['String']['output'];
-  paid: Scalars['Boolean']['output'];
+  id: Scalars['ID']['output'];
+  issued_time?: Maybe<Scalars['UnixTimestamp']['output']>;
   paid_time?: Maybe<Scalars['UnixTimestamp']['output']>;
-  pubkey?: Maybe<Scalars['String']['output']>;
-  quote: Scalars['ID']['output'];
+  pubkey: Scalars['String']['output'];
   request: Scalars['String']['output'];
-  state?: Maybe<Scalars['String']['output']>;
+  request_lookup_id: Scalars['String']['output'];
+  state: MintQuoteState;
   unit: MintUnit;
 };
 
@@ -542,6 +542,17 @@ export type OrchardNut5Method = {
   unit: Scalars['String']['output'];
 };
 
+export type OrchardNut15 = {
+  __typename?: 'OrchardNut15';
+  methods: Array<OrchardNut15Method>;
+};
+
+export type OrchardNut15Method = {
+  __typename?: 'OrchardNut15Method';
+  method: Scalars['String']['output'];
+  unit: MintUnit;
+};
+
 export type OrchardNut17 = {
   __typename?: 'OrchardNut17';
   supported: Array<OrchardNut17Supported>;
@@ -576,6 +587,7 @@ export type OrchardNuts = {
   nut11: OrchardNutSupported;
   nut12: OrchardNutSupported;
   nut14: OrchardNutSupported;
+  nut15: OrchardNut15;
   nut17: OrchardNut17;
   nut19: OrchardNut19;
   nut20: OrchardNutSupported;
@@ -664,10 +676,20 @@ export type QueryMint_Analytics_TransfersArgs = {
 };
 
 
+export type QueryMint_Melt_QuotesArgs = {
+  date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  state?: InputMaybe<Array<MeltQuoteState>>;
+  timezone?: InputMaybe<Scalars['Timezone']['input']>;
+  unit?: InputMaybe<Array<MintUnit>>;
+};
+
+
 export type QueryMint_Mint_QuotesArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
-  status?: InputMaybe<Array<MintQuoteStatus>>;
+  state?: InputMaybe<Array<MintQuoteState>>;
+  timezone?: InputMaybe<Scalars['Timezone']['input']>;
   unit?: InputMaybe<Array<MintUnit>>;
 };
 

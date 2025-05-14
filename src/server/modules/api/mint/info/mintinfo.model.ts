@@ -8,9 +8,11 @@ import {
 	CashuMintInfo,
 	CashuNut4Method,
 	CashuNut5Method,
+	CashuNut15Method,
 	CashuNutSupported,
 } from '@server/modules/cashu/mintapi/cashumintapi.types';
 import { CashuMintInfoRpc } from '@server/modules/cashu/mintrpc/cashumintrpc.types';
+import { MintUnit } from '@server/modules/cashu/cashu.enums';
 
 @ObjectType()
 export class OrchardNutSupported {
@@ -58,6 +60,17 @@ export class OrchardNut5 {
 	constructor(nut5: CashuMintInfo['nuts']['5']) {
 		this.methods = Object.values(nut5.methods).map((method) => new OrchardNut5Method(method));
 		this.disabled = nut5.disabled;
+	}
+}
+
+@ObjectType()
+export class OrchardNut15 {
+
+	@Field(() => [OrchardNut15Method!])
+	methods: OrchardNut15Method[];
+
+	constructor(nut15: CashuMintInfo['nuts']['15']) {
+		this.methods = Object.values(nut15.methods).map((method) => new OrchardNut15Method(method));
 	}
 }
 
@@ -118,6 +131,9 @@ export class OrchardNuts {
 	nut14: OrchardNutSupported;
 
 	@Field()
+	nut15: OrchardNut15;
+
+	@Field()
 	nut17: OrchardNut17;
 
 	@Field()
@@ -136,6 +152,7 @@ export class OrchardNuts {
 		this.nut11 = new OrchardNutSupported(nuts['11']);
 		this.nut12 = new OrchardNutSupported(nuts['12']);
 		this.nut14 = new OrchardNutSupported(nuts['14']);
+		this.nut15 = new OrchardNut15(nuts['15']);
 		this.nut17 = new OrchardNut17(nuts['17']);
 		this.nut19 = new OrchardNut19(nuts['19']);
 		this.nut20 = new OrchardNutSupported(nuts['20']);
@@ -255,6 +272,21 @@ export class OrchardNut5Method {
 		this.amountless = method.amountless;
 		this.min_amount = method.min_amount;
 		this.max_amount = method.max_amount;
+	}
+}
+
+@ObjectType()
+export class OrchardNut15Method {
+
+	@Field()
+	method: string;
+
+	@Field(() => MintUnit)
+	unit: MintUnit;
+
+	constructor(method: CashuNut15Method){
+		this.method = method.method;
+		this.unit = method.unit;
 	}
 }
 

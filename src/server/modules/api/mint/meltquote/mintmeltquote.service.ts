@@ -4,6 +4,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { CashuMintDatabaseService } from '@server/modules/cashu/mintdb/cashumintdb.service';
 import { CashuMintRpcService } from '@server/modules/cashu/mintrpc/cashumintrpc.service';
 import { CashuMintMeltQuote } from '@server/modules/cashu/mintdb/cashumintdb.types';
+import { CashuMintMeltQuotesArgs } from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
 import { OrchardErrorCode } from "@server/modules/error/error.types";
 import { OrchardApiError } from "@server/modules/graphql/classes/orchard-error.class";
 import { MintService } from '@server/modules/api/mint/mint.service';
@@ -24,10 +25,10 @@ export class MintMeltQuoteService {
 		private errorService: ErrorService,
 	) {}
 
-	async getMintMeltQuotes() : Promise<OrchardMintMeltQuote[]> {
+	async getMintMeltQuotes(args?: CashuMintMeltQuotesArgs) : Promise<OrchardMintMeltQuote[]> {
 		return this.mintService.withDb(async (db) => {
 			try {
-				const cashu_melt_quotes : CashuMintMeltQuote[] = await this.cashuMintDatabaseService.getMintMeltQuotes(db);
+				const cashu_melt_quotes : CashuMintMeltQuote[] = await this.cashuMintDatabaseService.getMintMeltQuotes(db, args);
 				return cashu_melt_quotes.map( cmq => new OrchardMintMeltQuote(cmq));
 			} catch (error) {
 				const error_code = this.errorService.resolveError({ logger: this.logger, error,

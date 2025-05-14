@@ -9,7 +9,28 @@
     @extend %orc-primary-container-bg;
     @extend %font-weight-semi-bold;
     @extend %orc-on-primary-container-color;
-    
-    // color: black;
-    // @extend %font-weight-bold;
+}
+
+.protocol-command{
+    @extend %orc-corner-small;
+    @extend %font-size-xs;
+    @extend %p-v-0-25;
+    @extend %p-h-0-75;
+    @extend %orc-surface-container-bg;
+    @extend %font-weight-light;
+    @extend %orc-error-color;
+}
+
+.nut-icon-graphic{
+    &.nut-icon-outline{
+        mat-icon{
+            font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 200, 'opsz' 48;
+        }
+    }
+
+    &.nut-icon-fill{
+        mat-icon{
+            font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 200, 'opsz' 48;
+        }
+    }
 }

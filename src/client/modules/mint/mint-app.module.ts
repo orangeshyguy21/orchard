@@ -57,6 +57,13 @@ import { MintConfigFormBolt11Component } from './components/mint-config-form-bol
 import { MintConfigFormMinComponent } from './components/mint-config-form-min/mint-config-form-min.component';
 import { MintConfigFormMaxComponent } from './components/mint-config-form-max/mint-config-form-max.component';
 import { MintConfigFormEnabledConfirmComponent } from './components/mint-config-form-enabled-confirm/mint-config-form-enabled-confirm.component';
+import { MintConfigChartQuoteTtlComponent } from './components/mint-config-chart-quote-ttl/mint-config-chart-quote-ttl.component';
+import { MintConfigChartMethodComponent } from './components/mint-config-chart-method/mint-config-chart-method.component';
+import { MintConfigFormSupportedComponent } from './components/mint-config-form-supported/mint-config-form-supported.component';
+import { MintConfigFormNut15MethodComponent } from './components/mint-config-form-nut15-method/mint-config-form-nut15-method.component';
+import { MintConfigFormNut17CommandsComponent } from './components/mint-config-form-nut17-commands/mint-config-form-nut17-commands.component';
+import { MintConfigFormNut19Component } from './components/mint-config-form-nut19/mint-config-form-nut19.component';
+import { MintNutComponent } from './components/mint-nut/mint-nut.component';
 
 @NgModule({
 	declarations: [
@@ -90,6 +97,13 @@ import { MintConfigFormEnabledConfirmComponent } from './components/mint-config-
         MintConfigFormMinComponent,
         MintConfigFormMaxComponent,
         MintConfigFormEnabledConfirmComponent,
+        MintConfigChartQuoteTtlComponent,
+        MintConfigChartMethodComponent,
+        MintConfigFormSupportedComponent,
+        MintConfigFormNut15MethodComponent,
+        MintConfigFormNut17CommandsComponent,
+        MintConfigFormNut19Component,
+        MintNutComponent,
 	],
 	imports: [
 		CommonModule,

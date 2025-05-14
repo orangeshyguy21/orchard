@@ -24,10 +24,11 @@ export class ChartService {
         'eur': '--orc-asset-eur',
     };
     private fallback_colors = [
-        { bg: 'rgba(255, 226, 122, 0.3)', border: 'rgb(255, 226, 122)' },
-        { bg: 'rgba(249, 138, 86, 0.3)', border: 'rgb(249, 138, 86)' },
-        { bg: 'rgba(198, 104, 104, 0.3)', border: 'rgb(198, 104, 104)' },
-        { bg: 'rgba(246, 243, 160, 0.3)', border: 'rgb(246, 243, 160)' }
+        { bg: 'rgba(255, 253, 159, 0.15)', border: 'rgb(255, 253, 159)' },
+        { bg: 'rgba(255, 214, 31, 0.15)', border: 'rgb(255, 214, 31)' },
+        { bg: 'rgba(245, 143, 34, 0.15)', border: 'rgb(245, 143, 34)' },
+        { bg: 'rgba(243, 101, 29, 0.15)', border: 'rgb(243, 101, 29)' },
+        { bg: 'rgba(156, 34, 34, 0.15)', border: 'rgb(156, 34, 34)' }
     ];
 
     constructor(
@@ -46,15 +47,19 @@ export class ChartService {
         return { bg: colorrgba, border: colorhex };
     }
 
+    public getThemeColor(index: number): { bg: string, border: string } {
+        return this.fallback_colors[index];
+    }
+
     public getPointHoverBackgroundColor(): string {
         const theme = this.settingService.getTheme();
         const colorhex = this.themeService.getThemeColor('--mat-sys-surface', theme);
         return colorhex;
     }
 
-    public getGridColor(): string {
+    public getGridColor(token: string = '--mat-sys-surface-container'): string {
         const theme = this.settingService.getTheme();
-        const colorhex = this.themeService.getThemeColor('--mat-sys-surface-container', theme);
+        const colorhex = this.themeService.getThemeColor(token, theme);
         return colorhex;
     }
 
@@ -70,6 +75,24 @@ export class ChartService {
             ...long_term_settings,
             ...this.mint_chart_short_settings
         } as AllMintChartSettings;
+    }
+
+    public getFormAnnotationConfig(hot: boolean): any {
+        const theme = this.settingService.getTheme();
+        if( hot ) return {
+            border_color: this.themeService.getThemeColor('--mat-sys-primary', theme),
+            border_width: 2,
+            text_color: this.themeService.getThemeColor('--mat-sys-primary', theme),
+            label_bg_color: this.themeService.getThemeColor('--mat-sys-inverse-primary', theme),
+            label_border_color: this.themeService.getThemeColor('--mat-sys-surface-container-low', theme),
+        }
+        return {
+            border_color: this.themeService.getThemeColor('--mat-sys-outline-variant', theme),
+            border_width: 1,
+            text_color: this.themeService.getThemeColor('--mat-sys-on-surface-variant', theme),
+            label_bg_color: this.themeService.getThemeColor('--mat-sys-surface-container-low', theme),
+            label_border_color: this.themeService.getThemeColor('--mat-sys-outline-variant', theme)
+        }
     }
 
     /**

@@ -7,10 +7,13 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class UnitPipe implements PipeTransform {
 
-	transform(unit: string): string {
+	transform(unit: string, title: boolean = false): string {
 		if (unit === null || unit === undefined) return '';
 		const unit_lower = unit.toLowerCase();
-		
+		return title ? this.titleUnit(unit_lower) : this.trailingUnit(unit_lower);
+	}
+
+	private trailingUnit(unit_lower: string): string {
 		switch (unit_lower) {
 			case 'sat':
 				return 'sats';
@@ -21,7 +24,22 @@ export class UnitPipe implements PipeTransform {
 			case 'eur':
 				return 'EUR';
 			default:
-				return unit;
+				return unit_lower;
+		}
+	}
+
+	private titleUnit(unit_lower: string): string {
+		switch (unit_lower) {
+			case 'sat':
+				return 'Sat';
+			case 'btc':
+				return 'BTC';
+			case 'usd':
+				return 'USD';
+			case 'eur':
+				return 'EUR';
+			default:
+				return unit_lower;
 		}
 	}
 }

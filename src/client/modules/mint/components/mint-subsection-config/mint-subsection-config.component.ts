@@ -5,17 +5,21 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { trigger, transition, style, animate } from '@angular/animations';
 /* Vendor Dependencies */
-import { Subscription } from 'rxjs';
+import { Subscription, lastValueFrom, forkJoin } from 'rxjs';
 /* Application Dependencies */
 import { EventService } from '@client/modules/event/services/event/event.service';
 import { OrchardValidators } from '@client/modules/form/validators';
 import { EventData } from '@client/modules/event/classes/event-data.class';
 import { AiService } from '@client/modules/ai/services/ai/ai.service';
+import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 import { AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
 /* Native Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 import { MintQuoteTtls } from '@client/modules/mint/classes/mint-quote-ttls.class';
+import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
+import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
+import { Nut15Method, Nut17Commands } from '@client/modules/mint/types/nut.types';
 /* Shared Dependencies */
 import { OrchardNut4Method, OrchardNut5Method, AiFunctionName } from '@shared/generated.types';
 
@@ -43,7 +47,12 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 	public quote_ttls!: MintQuoteTtls;
 	public minting_units: string[] = [];
 	public melting_units: string[] = [];
-
+	public locale!: string;
+	public data_loading: boolean = true;
+	public mint_quotes: MintMintQuote[] = [];
+	public melt_quotes: MintMeltQuote[] = [];
+	public nut15_methods: Nut15Method[] = [];
+	public nut17_commands: Nut17Commands[] = [];
 	public form_config: FormGroup = new FormGroup({
 		minting: new FormGroup({
 			enabled: new FormControl(),
@@ -73,16 +82,21 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		public route: ActivatedRoute,
 		public eventService: EventService,
 		public aiService: AiService,
+		public settingService: SettingService,
 		public cdr: ChangeDetectorRef
 	) {}
 
 	ngOnInit(): void {	
 		this.mint_info = this.route.snapshot.data['mint_info'];
+		console.log('mint_info', this.mint_info);
 		this.quote_ttls = this.route.snapshot.data['mint_quote_ttl'];
 		this.patchStaticFormElements();
 		this.minting_units = this.getUniqueUnits('nut4');
 		this.melting_units = this.getUniqueUnits('nut5');
+		this.nut15_methods = this.getNut15Methods();
+		this.nut17_commands = this.getNut17Commands();
 		this.buildDynamicFormElements();
+		this.initChartData();
 		Object.keys(this.form_config.controls).forEach(form_group_key => {
 			const form_group = this.form_config.get(form_group_key) as FormGroup;
 			if( form_group.get('enabled')?.value === false ) form_group.disable();
@@ -165,7 +179,6 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 	}
 
 	private executeAgentFunction(tool_call: AiChatToolCall): void {
-		console.log('tool_call', tool_call);
 		if( tool_call.function.name === AiFunctionName.MintEnabledUpdate ) {
 			const operation = tool_call.function.arguments.operation;
 			const enabled = tool_call.function.arguments.enabled;
@@ -245,6 +258,41 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		return Array.from(unit_set);
 	}
 
+	private getNut15Methods(): Nut15Method[] {
+		const all_units : string[] = this.mint_info?.nuts.nut15.methods.map(m => m.unit) || [];
+		const units = Array.from(new Set(all_units));
+		return units.map(unit => ({
+			unit,
+			methods: this.mint_info?.nuts.nut15.methods.filter(m => m.unit === unit).map(m => m.method) || []
+		}));
+	}
+
+	private getNut17Commands(): Nut17Commands[] {
+		const all_units : string[] = this.mint_info?.nuts.nut17.supported.map(m => m.unit) || [];
+		const units = Array.from(new Set(all_units));
+		const nut17_commands: Nut17Commands[] = [];
+		units.forEach(unit => {
+			const methods = this.mint_info?.nuts.nut17.supported.filter( supp => supp.unit === unit).map( supp => supp.method) || [];
+			const mcommands = methods.map(method => {
+				return {
+					method: method,
+					commands: []
+				}
+			});
+			nut17_commands.push({ unit, methods: mcommands })
+		});
+		nut17_commands.forEach( group => {
+			group.methods.forEach( method => {
+				this.mint_info?.nuts.nut17.supported.filter( supp => supp.unit === group.unit && supp.method === method.method).forEach( supp => {
+					supp.commands.forEach( command => {
+						method.commands.push(command);
+					});
+				});
+			});
+		});
+		return nut17_commands;
+	}
+
 	private createPendingEvent(count: number): void {
 		if( this.active_event?.type === 'SAVING' ) return;
 		if( count === 0 && this.active_event?.type !== 'PENDING' ) return;
@@ -288,6 +336,32 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 					}));
 				});
 		});
+	}
+
+	private async initChartData(): Promise<void> {
+		this.locale = this.settingService.getLocale();
+		const timezone = this.settingService.getTimezone();
+		await this.loadChartData(timezone);
+		this.data_loading = false;
+		this.cdr.detectChanges();
+	}
+
+	private async loadChartData(timezone: string): Promise<void> {
+		const mint_quotes_obs = this.mintService.loadMintMintQuotes({ timezone: timezone });
+		const melt_quotes_obs = this.mintService.loadMintMeltQuotes({ timezone: timezone });
+
+		const [
+			mint_quotes,
+			melt_quotes,
+		] = await lastValueFrom(
+			forkJoin([
+				mint_quotes_obs,
+				melt_quotes_obs,
+			])
+		);
+		
+		this.mint_quotes = mint_quotes;
+		this.melt_quotes = melt_quotes;
 	}
 
 	public onEnabledUpdate({

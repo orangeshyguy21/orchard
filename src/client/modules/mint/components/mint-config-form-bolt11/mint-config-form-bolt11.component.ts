@@ -1,8 +1,11 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 /* Application Dependencies */
+import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
+import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
+/* Shared Dependencies */
 import { OrchardNut4Method, OrchardNut5Method } from '@shared/generated.types';
 
 @Component({
@@ -12,7 +15,7 @@ import { OrchardNut4Method, OrchardNut5Method } from '@shared/generated.types';
 	styleUrl: './mint-config-form-bolt11.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MintConfigFormBolt11Component {
+export class MintConfigFormBolt11Component implements OnChanges {
 
 	@Input() nut!: 'nut4' | 'nut5';
 	@Input() index!: number;
@@ -20,9 +23,15 @@ export class MintConfigFormBolt11Component {
 	@Input() method!: string;
 	@Input() form_group!: FormGroup;
 	@Input() form_status!: boolean;
+	@Input() locale!: string;
+	@Input() loading!: boolean;
+	@Input() quotes!: MintMintQuote[] | MintMeltQuote[];
 
 	@Output() update = new EventEmitter<{nut: 'nut4' | 'nut5', unit: string, method: string, control_name: keyof OrchardNut4Method | keyof OrchardNut5Method, form_group: FormGroup}>();
 	@Output() cancel = new EventEmitter<{nut: 'nut4' | 'nut5', unit: string, method: string, control_name: keyof OrchardNut4Method | keyof OrchardNut5Method, form_group: FormGroup}>();
+
+	public min_hot : boolean = false;
+	public max_hot : boolean = false;
 
 	public get form_bolt11(): FormGroup {
 		return this.form_group.get(this.unit)?.get(this.method) as FormGroup;
@@ -36,12 +45,28 @@ export class MintConfigFormBolt11Component {
 		return this.nut === 'nut4' ? 'Description' : 'Amountless';
 	}
 
-	constructor() {}
+	constructor(
+		private cdr: ChangeDetectorRef
+	) {}
 
 	ngOnChanges(changes: SimpleChanges): void {
 		if( changes['form_status'] && this.form_status === true ) {
 			this.form_bolt11.get(this.toggle_control)?.disable();
 		}
+	}
+
+	public onMinHot(event: boolean): void {
+		setTimeout(() => {
+			this.min_hot = event;
+			this.cdr.markForCheck();
+		});
+	}
+
+	public onMaxHot(event: boolean): void {
+		setTimeout(() => {
+			this.max_hot = event;
+			this.cdr.markForCheck();
+		});
 	}
 
 	public onUpdate(control_name: keyof OrchardNut4Method | keyof OrchardNut5Method): void {
