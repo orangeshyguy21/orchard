@@ -1,19 +1,18 @@
 <div class="mint-subsection-config-container">
     <div class="flex flex-column">
 
+        <!-- NUT 04 -->
         <div class="sticky-nut z-index-1">
             <div class="title-l">Minting</div>
             <div class="font-size-xs orc-outline-color p-b-0-5">Configure depositing to the mint</div>
             <div class="config-category-rule"></div>
         </div>
-
         <orc-mint-config-form-enabled
             [nut]="'nut4'"
             [enabled]="form_minting.get('enabled')?.value"
             [form_group]="form_minting"
-            (update)="onEnabledUpdate($event)"
-        ></orc-mint-config-form-enabled>
-
+            (update)="onEnabledUpdate($event)">
+        </orc-mint-config-form-enabled>
         <orc-mint-config-form-quote-ttl
             [nut]="'nut4'"
             [form_group]="form_minting"
@@ -23,9 +22,8 @@
             [loading]="data_loading"
             [quotes]="mint_quotes"
             (update)="onTtlUpdate($event)"
-            (cancel)="onTtlCancel($event)"
-        ></orc-mint-config-form-quote-ttl>
-   
+            (cancel)="onTtlCancel($event)">
+        </orc-mint-config-form-quote-ttl>
         @for (unit of minting_units; track unit) {
             <div class="sticky-method z-index-1">
                 <div class="flex flex-items-center flex-gap-0-5 p-b-0-5">
@@ -36,7 +34,6 @@
                     </orc-graphic-asset>
                 </div>                
             </div>
-
             <div class="p-h-2 p-b-2">
                 <mat-card appearance="outlined" class="relative overflow-hidden">
                     <mat-card-content class="orc-surface-container-low-bg">
@@ -67,18 +64,17 @@
             </div>
         }
 
+        <!-- NUT 05 -->
         <div class="sticky-nut z-index-1">
             <div class="title-l">Melting</div>
             <div class="font-size-xs orc-outline-color p-b-0-5">Configure withdrawing from the mint</div>
             <div class="config-category-rule"></div>
         </div>  
-
         <orc-mint-config-form-enabled
             [nut]="'nut5'"
             [form_group]="form_melting"
-            (update)="onEnabledUpdate($event)"
-        ></orc-mint-config-form-enabled>
-
+            (update)="onEnabledUpdate($event)">
+        </orc-mint-config-form-enabled>
         <orc-mint-config-form-quote-ttl
             [nut]="'nut5'"
             [form_group]="form_melting"
@@ -88,10 +84,8 @@
             [loading]="data_loading"
             [quotes]="melt_quotes"
             (update)="onTtlUpdate($event)"
-            (cancel)="onTtlCancel($event)"
-        ></orc-mint-config-form-quote-ttl>
-        
-
+            (cancel)="onTtlCancel($event)">
+        </orc-mint-config-form-quote-ttl>
         @for (unit of melting_units; track unit) {
             <div class="sticky-method z-index-1">
                 <div class="flex flex-items-center flex-gap-0-5 p-b-0-5">
@@ -102,7 +96,6 @@
                     </orc-graphic-asset>
                 </div>                
             </div>
-
             <div class="p-h-2 p-b-2">
                 <mat-card appearance="outlined" class="relative overflow-hidden">
                     <mat-card-content class="orc-surface-container-low-bg">
@@ -134,351 +127,109 @@
             </div>
         }
 
+        <!-- NUT 07 -->
         <div class="sticky-nut z-index-1">
             <div class="title-l">Token state check</div>
             <div class="font-size-xs orc-outline-color p-b-0-5">Lorem ipsum dolor sit amet, consectetur</div>
             <div class="config-category-rule"></div>
-        </div>  
-
-        <div class="p-2"> 
-            <mat-card appearance="outlined" class="relative overflow-hidden">
-                <mat-card-content class="orc-surface-container-low-bg">
-                    <div class="flex flex-items-center flex-gap-2">
-                        <div class="flex-1">
-                            <div class="flex flex-items-center flex-gap-2">
-                                <div class="flex-1 flex flex-items-center flex-grow">
-                                    <mat-slide-toggle
-                                        #toggle
-                                        [checked]="mint_info?.nuts?.nut7?.supported"
-                                        [disabled]="true"
-                                        name="supported_07">
-                                    </mat-slide-toggle>
-                                    <div class="p-l-1 font-size-s">
-                                        Supported
-                                    </div>
-                                </div>
-                                <div class="flex-1">
-                                    <orc-help-text class="orc-surface-container-high-bg">
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                    </orc-help-text>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex-1 flex flex-justify-center">
-                             <div class="nut-spec flex-grow" [class.disabled]="!mint_info?.nuts?.nut7?.supported">
-                                <div>NUT 07</div>
-                                <div class="flex flex-gap-0-5 nut-icon-graphic" [ngClass]="mint_info?.nuts?.nut7?.supported ? 'nut-icon-fill' : 'nut-icon-outline'">
-                                    <mat-icon class="icon-lg">nature</mat-icon>
-                                </div>
-                             </div>
-                        </div>
-                    </div>
-                </mat-card-content>
-            </mat-card>
         </div>
+        <orc-mint-config-form-supported
+            [nut_index]="'07'"
+            [nut_icon]="'pageview'"
+            [supported]="mint_info?.nuts?.nut7?.supported">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </orc-mint-config-form-supported>
 
+        <!-- NUT 08 -->
         <div class="sticky-nut z-index-1">
             <div class="title-l">Lightning fee return</div>
             <div class="font-size-xs orc-outline-color p-b-0-5">Lorem ipsum dolor sit amet, consectetur</div>
             <div class="config-category-rule"></div>
         </div>  
+        <orc-mint-config-form-supported
+            [nut_index]="'08'"
+            [nut_icon]="'arrow_circle_left'"
+            [supported]="mint_info?.nuts?.nut8?.supported">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </orc-mint-config-form-supported>
 
-        <div class="p-2"> 
-            <mat-card appearance="outlined" class="relative overflow-hidden">
-                <mat-card-content class="orc-surface-container-low-bg">
-                    <div class="flex flex-items-center flex-gap-2">
-                        <div class="flex-1">
-                            <div class="flex flex-items-center flex-gap-2">
-                                <div class="flex-1 flex flex-items-center flex-grow">
-                                    <mat-slide-toggle
-                                        #toggle
-                                        [checked]="mint_info?.nuts?.nut8?.supported"
-                                        [disabled]="true"
-                                        name="supported_08">
-                                    </mat-slide-toggle>
-                                    <div class="p-l-1 font-size-s">
-                                        Supported
-                                    </div>
-                                </div>
-                                <div class="flex-1">
-                                    <orc-help-text class="orc-surface-container-high-bg">
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                    </orc-help-text>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex-1 flex flex-justify-center">
-                             <div class="nut-spec flex-grow" [class.disabled]="!mint_info?.nuts?.nut8?.supported">
-                                <div>NUT 08</div>
-                                <div class="flex flex-gap-0-5 nut-icon-graphic" [ngClass]="mint_info?.nuts?.nut8?.supported ? 'nut-icon-fill' : 'nut-icon-outline'">
-                                    <mat-icon class="icon-lg">nature</mat-icon>
-                                </div>
-                             </div>
-                        </div>
-                    </div>
-                </mat-card-content>
-            </mat-card>
-        </div>
-
+        <!-- NUT 09 -->
         <div class="sticky-nut z-index-1">
             <div class="title-l">Restore signatures</div>
             <div class="font-size-xs orc-outline-color p-b-0-5">Lorem ipsum dolor sit amet, consectetur</div>
             <div class="config-category-rule"></div>
         </div>  
+        <orc-mint-config-form-supported
+            [nut_index]="'09'"
+            [nut_icon]="'password'"
+            [supported]="mint_info?.nuts?.nut9?.supported">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </orc-mint-config-form-supported>
 
-        <div class="p-2"> 
-            <mat-card appearance="outlined" class="relative overflow-hidden">
-                <mat-card-content class="orc-surface-container-low-bg">
-                    <div class="flex flex-items-center flex-gap-2">
-                        <div class="flex-1">
-                            <div class="flex flex-items-center flex-gap-2">
-                                <div class="flex-1 flex flex-items-center flex-grow">
-                                    <mat-slide-toggle
-                                        #toggle
-                                        [checked]="mint_info?.nuts?.nut9?.supported"
-                                        [disabled]="true"
-                                        name="supported_09">
-                                    </mat-slide-toggle>
-                                    <div class="p-l-1 font-size-s">
-                                        Supported
-                                    </div>
-                                </div>
-                                <div class="flex-1">
-                                    <orc-help-text class="orc-surface-container-high-bg">
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                    </orc-help-text>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex-1 flex flex-justify-center">
-                             <div class="nut-spec flex-grow" [class.disabled]="!mint_info?.nuts?.nut9?.supported">
-                                <div>NUT 09</div>
-                                <div class="flex flex-gap-0-5 nut-icon-graphic" [ngClass]="mint_info?.nuts?.nut9?.supported ? 'nut-icon-fill' : 'nut-icon-outline'">
-                                    <mat-icon class="icon-lg">nature</mat-icon>
-                                </div>
-                             </div>
-                        </div>
-                    </div>
-                </mat-card-content>
-            </mat-card>
-        </div>
-
+        <!-- NUT 10 -->
         <div class="sticky-nut z-index-1">
             <div class="title-l">Spending conditions</div>
             <div class="font-size-xs orc-outline-color p-b-0-5">Lorem ipsum dolor sit amet, consectetur</div>
             <div class="config-category-rule"></div>
         </div>  
+        <orc-mint-config-form-supported
+            [nut_index]="'10'"
+            [nut_icon]="'flowsheet'"
+            [supported]="mint_info?.nuts?.nut10?.supported">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </orc-mint-config-form-supported>
 
-        <div class="p-2"> 
-            <mat-card appearance="outlined" class="relative overflow-hidden">
-                <mat-card-content class="orc-surface-container-low-bg">
-                    <div class="flex flex-items-center flex-gap-2">
-                        <div class="flex-1">
-                            <div class="flex flex-items-center flex-gap-2">
-                                <div class="flex-1 flex flex-items-center flex-grow">
-                                    <mat-slide-toggle
-                                        #toggle
-                                        [checked]="mint_info?.nuts?.nut10?.supported"
-                                        [disabled]="true"
-                                        name="supported_10">
-                                    </mat-slide-toggle>
-                                    <div class="p-l-1 font-size-s">
-                                        Supported
-                                    </div>
-                                </div>
-                                <div class="flex-1">
-                                    <orc-help-text class="orc-surface-container-high-bg">
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                    </orc-help-text>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex-1 flex flex-justify-center">
-                             <div class="nut-spec flex-grow" [class.disabled]="!mint_info?.nuts?.nut10?.supported">
-                                <div>NUT 10</div>
-                                <div class="flex flex-gap-0-5 nut-icon-graphic" [ngClass]="mint_info?.nuts?.nut10?.supported ? 'nut-icon-fill' : 'nut-icon-outline'">
-                                    <mat-icon class="icon-lg">nature</mat-icon>
-                                </div>
-                             </div>
-                        </div>
-                    </div>
-                </mat-card-content>
-            </mat-card>
-        </div>
-
+        <!-- NUT 11 -->
         <div class="sticky-nut z-index-1">
             <div class="title-l">Pay to Public Key (P2PK)</div>
             <div class="font-size-xs orc-outline-color p-b-0-5">Lorem ipsum dolor sit amet, consectetur</div>
             <div class="config-category-rule"></div>
         </div>  
+        <orc-mint-config-form-supported
+            [nut_index]="'11'"
+            [nut_icon]="'key'"
+            [supported]="mint_info?.nuts?.nut11?.supported">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </orc-mint-config-form-supported>
 
-        <div class="p-2"> 
-            <mat-card appearance="outlined" class="relative overflow-hidden">
-                <mat-card-content class="orc-surface-container-low-bg">
-                    <div class="flex flex-items-center flex-gap-2">
-                        <div class="flex-1">
-                            <div class="flex flex-items-center flex-gap-2">
-                                <div class="flex-1 flex flex-items-center flex-grow">
-                                    <mat-slide-toggle
-                                        #toggle
-                                        [checked]="mint_info?.nuts?.nut11?.supported"
-                                        [disabled]="true"
-                                        name="supported_11">
-                                    </mat-slide-toggle>
-                                    <div class="p-l-1 font-size-s">
-                                        Supported
-                                    </div>
-                                </div>
-                                <div class="flex-1">
-                                    <orc-help-text class="orc-surface-container-high-bg">
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                    </orc-help-text>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex-1 flex flex-justify-center">
-                             <div class="nut-spec flex-grow" [class.disabled]="!mint_info?.nuts?.nut11?.supported">
-                                <div>NUT 11</div>
-                                <div class="flex flex-gap-0-5 nut-icon-graphic" [ngClass]="mint_info?.nuts?.nut11?.supported ? 'nut-icon-fill' : 'nut-icon-outline'">
-                                    <mat-icon class="icon-lg">nature</mat-icon>
-                                </div>
-                             </div>
-                        </div>
-                    </div>
-                </mat-card-content>
-            </mat-card>
-        </div>
-
+        <!-- NUT 12 -->
         <div class="sticky-nut z-index-1">
             <div class="title-l">Offline ecash signature validation</div>
             <div class="font-size-xs orc-outline-color p-b-0-5">Lorem ipsum dolor sit amet, consectetur</div>
             <div class="config-category-rule"></div>
         </div>  
+        <orc-mint-config-form-supported
+            [nut_index]="'12'"
+            [nut_icon]="'wifi_off'"
+            [supported]="mint_info?.nuts?.nut12?.supported">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </orc-mint-config-form-supported>
 
-        <div class="p-2"> 
-            <mat-card appearance="outlined" class="relative overflow-hidden">
-                <mat-card-content class="orc-surface-container-low-bg">
-                    <div class="flex flex-items-center flex-gap-2">
-                        <div class="flex-1">
-                            <div class="flex flex-items-center flex-gap-2">
-                                <div class="flex-1 flex flex-items-center flex-grow">
-                                    <mat-slide-toggle
-                                        #toggle
-                                        [checked]="mint_info?.nuts?.nut12?.supported"
-                                        [disabled]="true"
-                                        name="supported_12">
-                                    </mat-slide-toggle>
-                                    <div class="p-l-1 font-size-s">
-                                        Supported
-                                    </div>
-                                </div>
-                                <div class="flex-1">
-                                    <orc-help-text class="orc-surface-container-high-bg">
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                    </orc-help-text>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex-1 flex flex-justify-center">
-                             <div class="nut-spec flex-grow" [class.disabled]="!mint_info?.nuts?.nut12?.supported">
-                                <div>NUT 12</div>
-                                <div class="flex flex-gap-0-5 nut-icon-graphic" [ngClass]="mint_info?.nuts?.nut12?.supported ? 'nut-icon-fill' : 'nut-icon-outline'">
-                                    <mat-icon class="icon-lg">nature</mat-icon>
-                                </div>
-                             </div>
-                        </div>
-                    </div>
-                </mat-card-content>
-            </mat-card>
-        </div>
-
+        <!-- NUT 14 -->
         <div class="sticky-nut z-index-1">
             <div class="title-l">Hashed Timelock Contracts (HTLCs)</div>
             <div class="font-size-xs orc-outline-color p-b-0-5">Lorem ipsum dolor sit amet, consectetur</div>
             <div class="config-category-rule"></div>
         </div>  
+        <orc-mint-config-form-supported
+            [nut_index]="'14'"
+            [nut_icon]="'lock_clock'"
+            [supported]="mint_info?.nuts?.nut14?.supported">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </orc-mint-config-form-supported>
 
-        <div class="p-2"> 
-            <mat-card appearance="outlined" class="relative overflow-hidden">
-                <mat-card-content class="orc-surface-container-low-bg">
-                    <div class="flex flex-items-center flex-gap-2">
-                        <div class="flex-1">
-                            <div class="flex flex-items-center flex-gap-2">
-                                <div class="flex-1 flex flex-items-center flex-grow">
-                                    <mat-slide-toggle
-                                        #toggle
-                                        [checked]="mint_info?.nuts?.nut14?.supported"
-                                        [disabled]="true"
-                                        name="supported_14">
-                                    </mat-slide-toggle>
-                                    <div class="p-l-1 font-size-s">
-                                        Supported
-                                    </div>
-                                </div>
-                                <div class="flex-1">
-                                    <orc-help-text class="orc-surface-container-high-bg">
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                    </orc-help-text>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="flex-1 flex flex-justify-center">
-                             <div class="nut-spec flex-grow" [class.disabled]="!mint_info?.nuts?.nut14?.supported">
-                                <div>NUT 14</div>
-                                <div class="flex flex-gap-0-5 nut-icon-graphic" [ngClass]="mint_info?.nuts?.nut14?.supported ? 'nut-icon-fill' : 'nut-icon-outline'">
-                                    <mat-icon class="icon-lg">nature</mat-icon>
-                                </div>
-                             </div>
-                        </div>
-                    </div>
-                </mat-card-content>
-            </mat-card>
-        </div>
-
+        <!-- NUT 15 -->
         <div class="sticky-nut z-index-1">
             <div class="title-l">Partial multi-path payments</div>
             <div class="font-size-xs orc-outline-color p-b-0-5">Lorem ipsum dolor sit amet, consectetur</div>
             <div class="config-category-rule"></div>
         </div>  
-
-        <div class="p-2"> 
-            <mat-card appearance="outlined" class="relative overflow-hidden">
-                <mat-card-content class="orc-surface-container-low-bg">
-                    <div class="flex flex-items-center flex-gap-2">
-                        <div class="flex-1">
-                            <div class="flex flex-items-center flex-gap-2">
-                                <div class="flex-1 flex flex-items-center flex-grow">
-                                    <mat-slide-toggle
-                                        #toggle
-                                        [checked]="mint_info?.nuts?.nut15?.methods?.length === 0 ? false : true"
-                                        [disabled]="true"
-                                        name="supported_15">
-                                    </mat-slide-toggle>
-                                    <div class="p-l-1 font-size-s">
-                                        Supported
-                                    </div>
-                                </div>
-                                <div class="flex-1">
-                                    <orc-help-text class="orc-surface-container-high-bg">
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                    </orc-help-text>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex-1 flex flex-justify-center">
-                             <div class="nut-spec flex-grow" [class.disabled]="mint_info?.nuts?.nut15?.methods?.length === 0 ? true : false">
-                                <div>NUT 15</div>
-                                <div class="flex flex-gap-0-5 nut-icon-graphic" [ngClass]="mint_info?.nuts?.nut15?.methods?.length === 0 ? 'nut-icon-outline' : 'nut-icon-fill'">
-                                    <mat-icon class="icon-lg">nature</mat-icon>
-                                </div>
-                             </div>
-                        </div>
-                    </div>
-                </mat-card-content>
-            </mat-card>
-        </div>
-
+        <orc-mint-config-form-supported
+            [nut_index]="'15'"
+            [nut_icon]="'thunderstorm'"
+            [supported]="mint_info?.nuts?.nut15?.methods?.length === 0 ? false : true">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </orc-mint-config-form-supported>
         @if( nut15_methods.length > 0 ) {
             <div class="sticky-method z-index-1">
                 <div class="flex flex-items-center flex-gap-0-5 p-b-0-5">
@@ -513,49 +264,18 @@
             </div>
         }
 
+        <!-- NUT 17 -->
         <div class="sticky-nut z-index-1">
             <div class="title-l">WebSockets</div>
             <div class="font-size-xs orc-outline-color p-b-0-5">Lorem ipsum dolor sit amet, consectetur</div>
             <div class="config-category-rule"></div>
         </div>  
-
-        <div class="p-2"> 
-            <mat-card appearance="outlined" class="relative overflow-hidden">
-                <mat-card-content class="orc-surface-container-low-bg">
-                    <div class="flex flex-items-center flex-gap-2">
-                        <div class="flex-1">
-                            <div class="flex flex-items-center flex-gap-2">
-                                <div class="flex-1 flex flex-items-center flex-grow">
-                                    <mat-slide-toggle
-                                        #toggle
-                                        [checked]="mint_info?.nuts?.nut17?.supported"
-                                        [disabled]="true"
-                                        name="supported_17">
-                                    </mat-slide-toggle>
-                                    <div class="p-l-1 font-size-s">
-                                        Supported
-                                    </div>
-                                </div>
-                                <div class="flex-1">
-                                    <orc-help-text class="orc-surface-container-high-bg">
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                    </orc-help-text>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex-1 flex flex-justify-center">
-                             <div class="nut-spec flex-grow" [class.disabled]="!mint_info?.nuts?.nut17?.supported">
-                                <div>NUT 17</div>
-                                <div class="flex flex-gap-0-5 nut-icon-graphic" [ngClass]="mint_info?.nuts?.nut17?.supported ? 'nut-icon-fill' : 'nut-icon-outline'">
-                                    <mat-icon class="icon-lg">nature</mat-icon>
-                                </div>
-                             </div>
-                        </div>
-                    </div>
-                </mat-card-content>
-            </mat-card>
-        </div>
-
+        <orc-mint-config-form-supported
+            [nut_index]="'17'"
+            [nut_icon]="'electrical_services'"
+            [supported]="mint_info?.nuts?.nut17?.supported ? true : false">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </orc-mint-config-form-supported>
         @if( nut17_commands.length > 0 ) {
             <div class="sticky-method z-index-1">
                 <div class="flex flex-items-center flex-gap-0-5 p-b-0-5">
@@ -609,48 +329,18 @@
             </div>
         }
 
+        <!-- NUT 19 -->
         <div class="sticky-nut z-index-1">
             <div class="title-l">Cached Responses</div>
             <div class="font-size-xs orc-outline-color p-b-0-5">Lorem ipsum dolor sit amet, consectetur</div>
             <div class="config-category-rule"></div>
         </div>  
-
-        <div class="p-2"> 
-            <mat-card appearance="outlined" class="relative overflow-hidden">
-                <mat-card-content class="orc-surface-container-low-bg">
-                    <div class="flex flex-items-center flex-gap-2">
-                        <div class="flex-1">
-                            <div class="flex flex-items-center flex-gap-2">
-                                <div class="flex-1 flex flex-items-center flex-grow">
-                                    <mat-slide-toggle
-                                        #toggle
-                                        [checked]="mint_info?.nuts?.nut19"
-                                        [disabled]="true"
-                                        name="supported_19">
-                                    </mat-slide-toggle>
-                                    <div class="p-l-1 font-size-s">
-                                        Supported
-                                    </div>
-                                </div>
-                                <div class="flex-1">
-                                    <orc-help-text class="orc-surface-container-high-bg">
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                    </orc-help-text>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex-1 flex flex-justify-center">
-                             <div class="nut-spec flex-grow" [class.disabled]="!mint_info?.nuts?.nut19">
-                                <div>NUT 19</div>
-                                <div class="flex flex-gap-0-5 nut-icon-graphic" [ngClass]="mint_info?.nuts?.nut19 ? 'nut-icon-fill' : 'nut-icon-outline'">
-                                    <mat-icon class="icon-lg">nature</mat-icon>
-                                </div>
-                             </div>
-                        </div>
-                    </div>
-                </mat-card-content>
-            </mat-card>
-        </div>
+        <orc-mint-config-form-supported
+            [nut_index]="'19'"
+            [nut_icon]="'download_for_offline'"
+            [supported]="mint_info?.nuts?.nut19 ? true : false">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </orc-mint-config-form-supported>
 
         @if( mint_info?.nuts?.nut19 ) {
             <div class="p-h-2 p-b-2"> 
@@ -699,47 +389,17 @@
             </div>
         }
 
+        <!-- NUT 20 -->
         <div class="sticky-nut z-index-1">
             <div class="title-l">Signature on Mint Quote</div>
             <div class="font-size-xs orc-outline-color p-b-0-5">Lorem ipsum dolor sit amet, consectetur</div>
             <div class="config-category-rule"></div>
         </div>  
-
-        <div class="p-2"> 
-            <mat-card appearance="outlined" class="relative overflow-hidden">
-                <mat-card-content class="orc-surface-container-low-bg">
-                    <div class="flex flex-items-center flex-gap-2">
-                        <div class="flex-1">
-                            <div class="flex flex-items-center flex-gap-2">
-                                <div class="flex-1 flex flex-items-center flex-grow">
-                                    <mat-slide-toggle
-                                        #toggle
-                                        [checked]="mint_info?.nuts?.nut20?.supported"
-                                        [disabled]="true"
-                                        name="supported_20">
-                                    </mat-slide-toggle>
-                                    <div class="p-l-1 font-size-s">
-                                        Supported
-                                    </div>
-                                </div>
-                                <div class="flex-1">
-                                    <orc-help-text class="orc-surface-container-high-bg">
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                    </orc-help-text>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex-1 flex flex-justify-center">
-                             <div class="nut-spec flex-grow" [class.disabled]="!mint_info?.nuts?.nut20?.supported">
-                                <div>NUT 20</div>
-                                <div class="flex flex-gap-0-5 nut-icon-graphic" [ngClass]="mint_info?.nuts?.nut20?.supported ? 'nut-icon-fill' : 'nut-icon-outline'">
-                                    <mat-icon class="icon-lg">nature</mat-icon>
-                                </div>
-                             </div>
-                        </div>
-                    </div>
-                </mat-card-content>
-            </mat-card>
-        </div>
+        <orc-mint-config-form-supported
+            [nut_index]="'20'"
+            [nut_icon]="'stylus_note'"
+            [supported]="mint_info?.nuts?.nut20?.supported">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </orc-mint-config-form-supported>
     </div>
 </div>
