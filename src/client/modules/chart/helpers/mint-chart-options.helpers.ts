@@ -53,6 +53,21 @@ export function getTooltipTitle(tooltipItems: any): string {
     return '';
 }
 
+export function getTooltipTitleExact(tooltipItems: any): string {
+    if (tooltipItems.length > 0) {
+        return DateTime.fromMillis(tooltipItems[0].parsed.x)
+            .toLocaleString({
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric'
+            });
+    }
+    return '';
+}
+
 export function getTooltipLabel(context: any, locale: string): string {
     const label = context.dataset.label || '';
     const value = context.parsed.y;
@@ -127,3 +142,26 @@ export function getFiatYAxisConfig({
         },
     }
 }
+
+// const border_color = this.form_hot ? '#D5C4AC' : '#4c463d';
+// const border_width = this.form_hot ? 2 : 1;
+// const text_color = this.form_hot ? '#D5C4AC' : 'rgb(235, 225, 213)';
+// const label_bg_color = this.form_hot ? '#695D49' : 'rgb(29, 27, 26)';
+// const label_border_color = this.form_hot ? null : '#4c463d';
+
+// export function getFormAnnotationConfig(hot: boolean): any {
+//     if( hot ) return {
+//         border_color: '#D5C4AC',
+//         border_width: 2,
+//         text_color: '#D5C4AC',
+//         label_bg_color: '#695D49',
+//         label_border_color: null
+//     }
+//     return {
+//         border_color: '#4c463d',
+//         border_width: 1,
+//         text_color: 'rgb(235, 225, 213)',
+//         label_bg_color: 'rgb(29, 27, 26)',
+//         label_border_color: '#4c463d'
+//     }
+// }
