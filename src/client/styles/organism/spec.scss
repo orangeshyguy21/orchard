@@ -26,7 +26,7 @@
     @extend %font-weight-bold;
     @extend %p-h-1;
     @extend %p-v-0-5;
-    max-width: 30rem;
+    @extend %w-max-18;
 
     @extend %orc-primary-bg;
     @extend %orc-on-primary-color;
