@@ -21,27 +21,6 @@
     @extend %orc-error-color;
 }
 
-.nut-spec{
-    @extend %orc-corner-small;
-    @extend %font-weight-bold;
-    @extend %p-h-1;
-    @extend %p-v-0-5;
-    @extend %w-max-18;
-
-    @extend %orc-primary-bg;
-    @extend %orc-on-primary-color;
-    font-size: 2.5rem;
-
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-justify-between;
-
-    &.disabled{
-        @extend %orc-outline-variant-bg;
-        @extend %orc-outline-color;
-    }
-}
-
 .nut-icon-graphic{
     &.nut-icon-outline{
         mat-icon{

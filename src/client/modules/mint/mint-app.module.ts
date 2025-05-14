@@ -63,6 +63,7 @@ import { MintConfigFormSupportedComponent } from './components/mint-config-form-
 import { MintConfigFormNut15MethodComponent } from './components/mint-config-form-nut15-method/mint-config-form-nut15-method.component';
 import { MintConfigFormNut17CommandsComponent } from './components/mint-config-form-nut17-commands/mint-config-form-nut17-commands.component';
 import { MintConfigFormNut19Component } from './components/mint-config-form-nut19/mint-config-form-nut19.component';
+import { MintNutComponent } from './components/mint-nut/mint-nut.component';
 
 @NgModule({
 	declarations: [
@@ -102,6 +103,7 @@ import { MintConfigFormNut19Component } from './components/mint-config-form-nut1
         MintConfigFormNut15MethodComponent,
         MintConfigFormNut17CommandsComponent,
         MintConfigFormNut19Component,
+        MintNutComponent,
 	],
 	imports: [
 		CommonModule,
