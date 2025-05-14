@@ -11,6 +11,16 @@
     @extend %orc-on-primary-container-color;
 }
 
+.protocol-command{
+    @extend %orc-corner-small;
+    @extend %font-size-xs;
+    @extend %p-v-0-25;
+    @extend %p-h-0-75;
+    @extend %orc-surface-container-bg;
+    @extend %font-weight-light;
+    @extend %orc-error-color;
+}
+
 .nut-spec{
     @extend %orc-corner-small;
     @extend %font-weight-bold;

@@ -26,6 +26,13 @@ type Nut15Method = {
 	unit: string,
 	methods: string[]
 }
+type Nut17Commands = {
+	unit: string,
+	methods: {
+		method: string,
+		commands: string[]
+	}[]
+}
 
 @Component({
 	selector: 'orc-mint-subsection-config',
@@ -56,7 +63,7 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 	public mint_quotes: MintMintQuote[] = [];
 	public melt_quotes: MintMeltQuote[] = [];
 	public nut15_methods: Nut15Method[] = [];
-
+	public nut17_commands: Nut17Commands[] = [];
 	public form_config: FormGroup = new FormGroup({
 		minting: new FormGroup({
 			enabled: new FormControl(),
@@ -98,6 +105,7 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		this.minting_units = this.getUniqueUnits('nut4');
 		this.melting_units = this.getUniqueUnits('nut5');
 		this.nut15_methods = this.getNut15Methods();
+		this.nut17_commands = this.getNut17Commands();
 		this.buildDynamicFormElements();
 		this.initChartData();
 		Object.keys(this.form_config.controls).forEach(form_group_key => {
@@ -270,6 +278,32 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		}));
 	}
 
+	private getNut17Commands(): Nut17Commands[] {
+		const all_units : string[] = this.mint_info?.nuts.nut17.supported.map(m => m.unit) || [];
+		const units = Array.from(new Set(all_units));
+		const nut17_commands: Nut17Commands[] = [];
+		units.forEach(unit => {
+			const methods = this.mint_info?.nuts.nut17.supported.filter( supp => supp.unit === unit).map( supp => supp.method) || [];
+			const mcommands = methods.map(method => {
+				return {
+					method: method,
+					commands: []
+				}
+			});
+			nut17_commands.push({ unit, methods: mcommands })
+		});
+		nut17_commands.forEach( group => {
+			group.methods.forEach( method => {
+				this.mint_info?.nuts.nut17.supported.filter( supp => supp.unit === group.unit && supp.method === method.method).forEach( supp => {
+					supp.commands.forEach( command => {
+						method.commands.push(command);
+					});
+				});
+			});
+		});
+		return nut17_commands;
+	}
+
 	private createPendingEvent(count: number): void {
 		if( this.active_event?.type === 'SAVING' ) return;
 		if( count === 0 && this.active_event?.type !== 'PENDING' ) return;
@@ -314,112 +348,6 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 				});
 		});
 	}
-
-	// private async initMintAnalytics(): Promise<void> {
-	// 	try {
-	// 		this.locale = await this.settingService.getLocale();
-	// 		this.mint_genesis_time = this.getMintGenesisTime();
-	// 		this.chart_settings = this.getChartSettings();
-	// 		this.loading_static_data = false;
-	// 		this.changeDetectorRef.detectChanges();
-	// 		await this.loadMintAnalytics();
-	// 		this.loading_dynamic_data = false;
-	// 		this.changeDetectorRef.detectChanges();
-	// 	} catch (error) {
-	// 		console.log('ERROR IN INIT MINT ANALYTICS:', error);
-	// 	}
-	// }
-
-	// private async loadMintAnalytics(): Promise<void> {
-	// 	const timezone = this.settingService.getTimezone();
-	// 	const analytics_balances_obs = this.mintService.loadMintAnalyticsBalances({
-	// 		units: this.chart_settings.units,
-	// 		date_start: this.chart_settings.date_start,
-	// 		date_end: this.chart_settings.date_end,
-	// 		interval: this.chart_settings.interval,
-	// 		timezone: timezone
-	// 	});
-	// 	const analytics_balances_pre_obs = this.mintService.loadMintAnalyticsBalances({
-	// 		units: this.chart_settings.units,
-	// 		date_start: 100000,
-	// 		date_end: this.chart_settings.date_start-1,
-	// 		interval: MintAnalyticsInterval.Custom,
-	// 		timezone: timezone
-	// 	});
-	// 	const analytics_mints_obs = this.mintService.loadMintAnalyticsMints({
-	// 		units: this.chart_settings.units,
-	// 		date_start: this.chart_settings.date_start,
-	// 		date_end: this.chart_settings.date_end,
-	// 		interval: this.chart_settings.interval,
-	// 		timezone: timezone
-	// 	});
-	// 	const analytics_mints_pre_obs = this.mintService.loadMintAnalyticsMints({
-	// 		units: this.chart_settings.units,
-	// 		date_start: 100000, // @todo make this bitcoin genesis time for the fans
-	// 		date_end: this.chart_settings.date_start-1,
-	// 		interval: MintAnalyticsInterval.Custom,
-	// 		timezone: timezone
-	// 	});
-	// 	const analytics_melts_obs = this.mintService.loadMintAnalyticsMelts({
-	// 		units: this.chart_settings.units,
-	// 		date_start: this.chart_settings.date_start,
-	// 		date_end: this.chart_settings.date_end,
-	// 		interval: this.chart_settings.interval,
-	// 		timezone: timezone
-	// 	});
-	// 	const analytics_melts_pre_obs = this.mintService.loadMintAnalyticsMelts({
-	// 		units: this.chart_settings.units,
-	// 		date_start: 100000,
-	// 		date_end: this.chart_settings.date_start-1,
-	// 		interval: MintAnalyticsInterval.Custom,
-	// 		timezone: timezone
-	// 	});
-	// 	const analytics_transfers_obs = this.mintService.loadMintAnalyticsTransfers({
-	// 		units: this.chart_settings.units,
-	// 		date_start: this.chart_settings.date_start,
-	// 		date_end: this.chart_settings.date_end,
-	// 		interval: this.chart_settings.interval,
-	// 		timezone: timezone
-	// 	});
-	// 	const analytics_transfers_pre_obs = this.mintService.loadMintAnalyticsTransfers({
-	// 		units: this.chart_settings.units,
-	// 		date_start: 100000,
-	// 		date_end: this.chart_settings.date_start-1,
-	// 		interval: MintAnalyticsInterval.Custom,
-	// 		timezone: timezone
-	// 	});
-	// 	const [
-	// 		analytics_balances, 
-	// 		analytics_balances_pre,
-	// 		analytics_mints,
-	// 		analytics_mints_pre,
-	// 		analytics_melts,
-	// 		analytics_melts_pre,
-	// 		analytics_transfers,
-	// 		analytics_transfers_pre,
-	// 	] = await lastValueFrom(
-	// 		forkJoin([
-	// 			analytics_balances_obs, 
-	// 			analytics_balances_pre_obs,
-	// 			analytics_mints_obs,
-	// 			analytics_mints_pre_obs,
-	// 			analytics_melts_obs,
-	// 			analytics_melts_pre_obs,
-	// 			analytics_transfers_obs,
-	// 			analytics_transfers_pre_obs,
-	// 		])
-	// 	);
-
-	// 	this.mint_analytics_balances = analytics_balances;
-	// 	this.mint_analytics_balances_pre = analytics_balances_pre;
-	// 	this.mint_analytics_mints = analytics_mints;
-	// 	this.mint_analytics_mints_pre = analytics_mints_pre;
-	// 	this.mint_analytics_melts = analytics_melts;
-	// 	this.mint_analytics_melts_pre = analytics_melts_pre;
-	// 	this.mint_analytics_transfers = analytics_transfers;
-	// 	this.mint_analytics_transfers_pre = analytics_transfers_pre;
-	// }
-
 
 	private async initChartData(): Promise<void> {
 		this.locale = this.settingService.getLocale();
