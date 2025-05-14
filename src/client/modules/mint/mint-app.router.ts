@@ -136,6 +136,9 @@ const routes: Routes = [
 				path: 'keysets',
 				component: MintSubsectionKeysetsComponent,
 				title: 'Orchard | Mint Keysets',
+				resolve: {
+					mint_keysets: mintKeysetsResolver,
+				},
 				data: {
 					section: 'mint',
 					sub_section: 'keysets'

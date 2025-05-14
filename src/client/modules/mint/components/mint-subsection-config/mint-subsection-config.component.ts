@@ -88,7 +88,6 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 
 	ngOnInit(): void {	
 		this.mint_info = this.route.snapshot.data['mint_info'];
-		console.log('mint_info', this.mint_info);
 		this.quote_ttls = this.route.snapshot.data['mint_quote_ttl'];
 		this.patchStaticFormElements();
 		this.minting_units = this.getUniqueUnits('nut4');
