@@ -26,14 +26,13 @@ export class MintSubsectionKeysetsComponent {
 
 	public mint_keysets: MintKeyset[] = [];
 	public locale!: string;
+	public interval!: MintAnalyticsInterval;
 	public mint_genesis_time: number = 0;
 	public chart_settings!: NonNullableMintKeysetsSettings;
 	public loading_static_data: boolean = true;
 	public loading_dynamic_data: boolean = true;
 	public keysets_analytics: MintAnalyticKeyset[] = [];
 	public keysets_analytics_pre: MintAnalyticKeyset[] = [];
-
-	
 
 	constructor(
 		public route: ActivatedRoute,
@@ -52,11 +51,11 @@ export class MintSubsectionKeysetsComponent {
 		this.locale = this.settingService.getLocale();
 		this.mint_genesis_time = this.getMintGenesisTime();
 		this.chart_settings = this.getChartSettings();
-		const interval = this.getAnalyticsInterval();
+		this.interval = this.getAnalyticsInterval();
 		const timezone = this.settingService.getTimezone();
 		this.loading_static_data = false;
 		this.cdr.detectChanges();
-		await this.loadKeysetsAnalytics(timezone, interval);
+		await this.loadKeysetsAnalytics(timezone, this.interval);
 		this.loading_dynamic_data = false;
 		this.cdr.detectChanges();
 	}

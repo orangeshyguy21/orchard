@@ -1,5 +1,6 @@
 /* Application Dependencies */
 import { MintAnalytic } from '@client/modules/mint/classes/mint-analytic.class';
+import { MintAnalyticKeyset } from '@client/modules/mint/classes/mint-analytic.class';
 import { AmountPipe } from '@client/modules/local/pipes/amount/amount.pipe';
 /* Vendor Dependencies */
 import { DateTime } from 'luxon';

@@ -1,6 +1,7 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 /* Vendor Dependencies */
 import { MatSelectChange } from '@angular/material/select';
 import { MatCalendarCellClassFunction } from '@angular/material/datepicker';
@@ -23,7 +24,22 @@ type UnitOption = {
 	standalone: false,
 	templateUrl: './mint-keyset-control.component.html',
 	styleUrl: './mint-keyset-control.component.scss',
-	changeDetection: ChangeDetectionStrategy.OnPush
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	animations: [
+		trigger('formStateReaction', [
+			state('valid', style({
+				height: '52px',
+				overflow: 'hidden'
+			})),
+			state('invalid', style({
+				height: '71px',
+				overflow: 'hidden'
+			})),
+			transition('valid <=> invalid', [
+				animate('300ms ease-in-out')
+			])
+		])
+	]
 })
 export class MintKeysetControlComponent implements OnChanges {
 
