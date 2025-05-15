@@ -300,6 +300,12 @@ type OrchardMintKeyset {
   valid_to: UnixTimestamp
 }
 
+type OrchardMintKeysetsAnalytics {
+  amount: Int!
+  created_time: UnixTimestamp!
+  keyset_id: String!
+}
+
 type OrchardMintMeltQuote {
   amount: Int!
   created_time: UnixTimestamp
@@ -480,6 +486,7 @@ type Query {
   ai_models: [OrchardAiModel!]!
   bitcoin_blockcount: OrchardBitcoinBlockCount!
   mint_analytics_balances(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
+  mint_analytics_keysets(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintKeysetsAnalytics!]!
   mint_analytics_melts(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
   mint_analytics_mints(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
   mint_analytics_transfers(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!

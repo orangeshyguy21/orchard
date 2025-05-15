@@ -18,6 +18,7 @@ import {
 	CashuMintPromise,
 	CashuMintProof,
 	CashuMintAnalytics,
+	CashuMintKeysetsAnalytics,
 } from './cashumintdb.types';
 import { 
 	CashuMintAnalyticsArgs,
@@ -122,5 +123,10 @@ export class CashuMintDatabaseService implements OnModuleInit {
 	public async getMintAnalyticsTransfers(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
 		if( this.backend === 'nutshell' ) return this.nutshellService.getMintAnalyticsTransfers(db, args);
 		if( this.backend === 'cdk' ) return this.cdkService.getMintAnalyticsTransfers(db, args);
+	}
+
+	public async getMintAnalyticsKeysets(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintKeysetsAnalytics[]> {
+		if( this.backend === 'nutshell' )  throw OrchardErrorCode.MintSupportError;
+		if( this.backend === 'cdk' ) return this.cdkService.getMintAnalyticsKeysets(db, args);
 	}
 }

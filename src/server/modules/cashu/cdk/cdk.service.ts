@@ -7,8 +7,6 @@ import * as path from 'path';
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import sqlite3 from "sqlite3";
-/* Application Dependencies */
-import { OrchardErrorCode } from '@server/modules/error/error.types';
 /* Native Dependencies */
 import { 
 	CashuMintBalance,
@@ -17,6 +15,7 @@ import {
 	CashuMintMintQuote,
 	CashuMintProof,
 	CashuMintAnalytics,
+	CashuMintKeysetsAnalytics,
 } from '@server/modules/cashu/mintdb/cashumintdb.types';
 import { 
 	CashuMintMintQuotesArgs,
@@ -81,62 +80,29 @@ export class CdkService {
         }
     }
 
-	public async getMintBalances(db:sqlite3.Database) : Promise<CashuMintBalance[]> {
+	public async getMintBalances(db: sqlite3.Database): Promise<CashuMintBalance[]> {
 		const sql = `
-		WITH issued_mint_sum AS (
+			WITH issued AS (
+				SELECT keyset_id, SUM(amount) AS issued_amount
+				FROM blind_signature
+				GROUP BY keyset_id
+			),
+			redeemed AS (
+				SELECT keyset_id, SUM(amount) AS redeemed_amount
+				FROM proof
+				WHERE state = 'SPENT'
+				GROUP BY keyset_id
+			)
 			SELECT 
-				bs.keyset_id AS keyset,
-				SUM(DISTINCT mq.amount) AS amount
-			FROM mint_quote mq
-			JOIN blind_signature bs ON bs.quote_id = mq.id
-			WHERE mq.state = 'ISSUED'
-			GROUP BY bs.keyset_id
-		),
-
-		all_proofs_sum AS (
-			SELECT 
-				keyset_id AS keyset,
-				SUM(amount) AS amount
-			FROM proof
-			GROUP BY keyset_id
-		),
-
-		blind_sig_sum AS (
-			SELECT 
-				keyset_id AS keyset,
-				SUM(amount) AS amount
-			FROM blind_signature
-			WHERE quote_id IS NULL
-			GROUP BY keyset_id
-		),
-
-		paid_melt_sum AS (
-			SELECT 
-				bs.keyset_id AS keyset,
-				SUM(DISTINCT mq.amount) AS amount
-			FROM melt_quote mq
-			JOIN blind_signature bs ON bs.quote_id = mq.id
-			WHERE mq.state = 'PAID'
-			GROUP BY bs.keyset_id
-		)
-
-		SELECT 
-			COALESCE(ims.keyset, aps.keyset, bss.keyset, pms.keyset) AS keyset,
-			COALESCE(ims.amount, 0) - 
-			COALESCE(aps.amount, 0) + 
-			COALESCE(bss.amount, 0) - 
-			COALESCE(pms.amount, 0) AS balance
-		FROM 
-			issued_mint_sum ims
-			FULL OUTER JOIN all_proofs_sum aps ON ims.keyset = aps.keyset
-			FULL OUTER JOIN blind_sig_sum bss ON COALESCE(ims.keyset, aps.keyset) = bss.keyset
-			FULL OUTER JOIN paid_melt_sum pms ON COALESCE(ims.keyset, aps.keyset, bss.keyset) = pms.keyset
-		WHERE 
-			COALESCE(ims.keyset, aps.keyset, bss.keyset, pms.keyset) IS NOT NULL
-		ORDER BY keyset;`;
-
+				COALESCE(i.keyset_id, r.keyset_id) AS keyset,
+				COALESCE(i.issued_amount, 0) - COALESCE(r.redeemed_amount, 0) AS balance
+			FROM issued i
+			FULL OUTER JOIN redeemed r ON i.keyset_id = r.keyset_id
+			ORDER BY keyset;
+		`;
+	
 		return new Promise((resolve, reject) => {
-			db.all(sql, (err, rows:CashuMintBalance[]) => {
+			db.all(sql, (err, rows: CashuMintBalance[]) => {
 				if (err) reject(err);
 				resolve(rows);
 			});
@@ -460,7 +426,7 @@ export class CdkService {
 		});
  	}
 
-	 public async getMintAnalyticsTransfers(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
+	public async getMintAnalyticsTransfers(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
 		const interval = args?.interval || MintAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
 		const { where_conditions, params } = getAnalyticsConditions({
@@ -506,6 +472,94 @@ export class CdkService {
 						amount: row.amount,
 						created_time: timestamp,
 						operation_count: row.operation_count,
+					};
+				});
+				
+				resolve(result);
+			});
+		});
+	}
+
+	public async getMintAnalyticsKeysets(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<any[]> {
+		const interval = args?.interval || MintAnalyticsInterval.day;
+		const timezone = args?.timezone || 'UTC';
+		const { where_conditions, params } = getAnalyticsConditions({
+			args: args,
+			time_column: 'created_time'
+		});
+		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
+		const time_group_sql = getAnalyticsTimeGroupSql({
+			interval: interval,
+			timezone: timezone,
+			time_column: 'created_time'
+		});
+		
+		const sqlite_sql = `
+			WITH mint_data AS (
+				SELECT 
+					${time_group_sql} AS time_group,
+					unit,
+					SUM(CASE WHEN state = 'ISSUED' THEN amount ELSE 0 END) AS mint_amount,
+					COUNT(DISTINCT CASE WHEN state = 'ISSUED' THEN id ELSE NULL END) AS mint_count,
+					MIN(created_time) as min_created_time
+				FROM 
+					mint_quote
+					${where_clause}
+				GROUP BY 
+					time_group, unit
+			),
+			melt_data AS (
+				SELECT 
+					${time_group_sql} AS time_group,
+					unit,
+					SUM(CASE WHEN state = 'PAID' THEN amount ELSE 0 END) AS melt_amount,
+					COUNT(DISTINCT CASE WHEN state = 'PAID' THEN id ELSE NULL END) AS melt_count,
+					MIN(created_time) as min_created_time
+				FROM 
+					melt_quote
+					${where_clause}
+				GROUP BY 
+					time_group, unit
+			)
+			SELECT 
+				COALESCE(m.time_group, l.time_group) AS time_group,
+				COALESCE(m.unit, l.unit) AS unit,
+				COALESCE(m.mint_amount, 0) - COALESCE(l.melt_amount, 0) AS amount,
+				COALESCE(m.mint_count, 0) + COALESCE(l.melt_count, 0) AS operation_count,
+				COALESCE(m.min_created_time, l.min_created_time) AS min_created_time
+			FROM 
+				mint_data m
+				LEFT JOIN melt_data l ON m.time_group = l.time_group AND m.unit = l.unit
+			UNION ALL
+			SELECT 
+				l.time_group,
+				l.unit,
+				-l.melt_amount AS amount,
+				l.melt_count AS operation_count,
+				l.min_created_time
+			FROM 
+				melt_data l
+				LEFT JOIN mint_data m ON l.time_group = m.time_group AND l.unit = m.unit
+			WHERE 
+				m.time_group IS NULL
+			ORDER BY 
+				min_created_time;`;
+		
+		return new Promise((resolve, reject) => {
+			db.all(sqlite_sql, [...params, ...params], (err, rows:any[]) => {
+				if (err) return reject(err);
+						
+				const result = rows.map(row => {
+					const timestamp = getAnalyticsTimeGroupStamp({
+						min_created_time: row.min_created_time,
+						time_group: row.time_group,
+						interval: interval,
+						timezone: timezone
+					});
+					return {
+						unit: row.unit,
+						amount: row.amount,
+						created_time: timestamp,
 					};
 				});
 				

@@ -412,6 +412,13 @@ export type OrchardMintKeyset = {
   valid_to?: Maybe<Scalars['UnixTimestamp']['output']>;
 };
 
+export type OrchardMintKeysetsAnalytics = {
+  __typename?: 'OrchardMintKeysetsAnalytics';
+  amount: Scalars['Int']['output'];
+  created_time: Scalars['UnixTimestamp']['output'];
+  keyset_id: Scalars['String']['output'];
+};
+
 export type OrchardMintMeltQuote = {
   __typename?: 'OrchardMintMeltQuote';
   amount: Scalars['Int']['output'];
@@ -618,6 +625,7 @@ export type Query = {
   ai_models: Array<OrchardAiModel>;
   bitcoin_blockcount: OrchardBitcoinBlockCount;
   mint_analytics_balances: Array<OrchardMintAnalytics>;
+  mint_analytics_keysets: Array<OrchardMintKeysetsAnalytics>;
   mint_analytics_melts: Array<OrchardMintAnalytics>;
   mint_analytics_mints: Array<OrchardMintAnalytics>;
   mint_analytics_transfers: Array<OrchardMintAnalytics>;
@@ -641,6 +649,15 @@ export type Query = {
 
 
 export type QueryMint_Analytics_BalancesArgs = {
+  date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  interval?: InputMaybe<MintAnalyticsInterval>;
+  timezone?: InputMaybe<Scalars['Timezone']['input']>;
+  units?: InputMaybe<Array<MintUnit>>;
+};
+
+
+export type QueryMint_Analytics_KeysetsArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   interval?: InputMaybe<MintAnalyticsInterval>;

@@ -78,3 +78,9 @@ export type CashuMintAnalytics = {
 	created_time: number;
 	operation_count: number;
 }
+
+export type CashuMintKeysetsAnalytics = {
+	keyset_id: string;
+	amount: number;
+	created_time: number;
+}

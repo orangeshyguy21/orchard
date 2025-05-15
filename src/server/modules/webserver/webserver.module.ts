@@ -4,16 +4,16 @@ import { ConfigService } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
-  imports: [
-    ServeStaticModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (
-        configService: ConfigService,
-      ) => [{
-        rootPath: 'dist/client',
-        exclude: [`/${configService.get('server.path')}/(.*)`],
-      }]
-    }),
-  ]
+	imports: [
+		ServeStaticModule.forRootAsync({
+			inject: [ConfigService],
+			useFactory: (
+				configService: ConfigService,
+			) => [{
+				rootPath: 'dist/client',
+				exclude: [`/${configService.get('server.path')}`],
+			}]
+		}),
+	]
 })
 export class WebserverModule {}
