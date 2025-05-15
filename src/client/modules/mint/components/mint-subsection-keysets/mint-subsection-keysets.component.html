@@ -1,5 +1,5 @@
-<div class="mint-subsection-keysets-container p-1">
-	<div class="mint-keyset-control">
+<div class="mint-subsection-keysets-container p-h-1">
+	<div class="mint-keyset-control p-t-1">
 		<div class="flex flex-justify-between flex-gap-1 flex-items-end">
 			<!-- <div class="title-l p-1">Keysets</div> -->
 			@if( chart_settings ) {
@@ -34,5 +34,8 @@
 		[loading]="loading_dynamic_data">
 	</orc-mint-keyset-chart>
 
-	<orc-mint-keyset-table></orc-mint-keyset-table>
+	<orc-mint-keyset-table
+		[keysets]="mint_keysets"
+		[loading]="loading_static_data">
+	</orc-mint-keyset-table>
 </div>

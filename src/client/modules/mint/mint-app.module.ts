@@ -6,6 +6,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table'; 
+import { MatSortModule } from '@angular/material/sort';
 import { MatCardModule } from '@angular/material/card';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -118,6 +119,7 @@ import { MintKeysetTableComponent } from './components/mint-keyset-table/mint-ke
 		MatIconModule,
 		MatButtonModule,
 		MatTableModule,
+		MatSortModule,
 		MatCardModule,
 		MatRippleModule,
 		MatDialogModule,

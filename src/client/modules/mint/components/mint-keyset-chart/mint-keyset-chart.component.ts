@@ -63,9 +63,6 @@ export class MintKeysetChartComponent {
 		if(changes['loading'] && this.loading === false) {
 			this.init();
 		}
-		if(changes['selected_type'] && !changes['selected_type'].firstChange ) {
-			this.init();
-		}
 	}
 
 	private async init(): Promise<void> {

@@ -1,24 +1,10 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-
-export interface PeriodicElement {
-	name: string;
-	position: number;
-	weight: number;
-	symbol: string;
-  }
-  
-  const ELEMENT_DATA: PeriodicElement[] = [
-	{position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H'},
-	{position: 2, name: 'Helium', weight: 4.0026, symbol: 'He'},
-	{position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
-	{position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
-	{position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
-	{position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'},
-	{position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N'},
-	{position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O'},
-	{position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F'},
-	{position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne'},
-  ];
+/* Core Dependencies */
+import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, ViewChild, AfterViewInit } from '@angular/core';
+/* Vendor Dependencies */
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+/* Native Dependencies */
+import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 
 @Component({
 	selector: 'orc-mint-keyset-table',
@@ -27,9 +13,32 @@ export interface PeriodicElement {
 	styleUrl: './mint-keyset-table.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MintKeysetTableComponent {
+export class MintKeysetTableComponent implements OnChanges, AfterViewInit {
 
-	displayedColumns = ['position', 'name', 'weight', 'symbol'];
-  	dataSource = ELEMENT_DATA;
+	@ViewChild(MatSort) sort!: MatSort;
+
+	@Input() public keysets!: MintKeyset[];
+	@Input() public loading!: boolean;
+
+	public displayed_columns = ['keyset', 'unit', 'id', 'input_fee_ppk', 'valid_from'];
+  	public data_source!: MatTableDataSource<MintKeyset>;
+
+	constructor() {}
+
+	public ngOnChanges(changes: SimpleChanges): void {
+		if(changes['loading'] && this.loading === false) {
+			this.init();
+		}
+	}
+
+	public ngAfterViewInit(): void {
+		this.data_source.sort = this.sort;
+	}
+
+	private init() : void {
+		console.log(this.keysets);
+		this.data_source = new MatTableDataSource(this.keysets);
+		this.data_source.sort = this.sort;
+	}
 
 }
