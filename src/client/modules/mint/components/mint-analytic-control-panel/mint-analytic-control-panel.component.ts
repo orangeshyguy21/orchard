@@ -6,7 +6,7 @@ import { MatSelectChange } from '@angular/material/select';
 import { MatCalendarCellClassFunction } from '@angular/material/datepicker';
 import { DateTime } from 'luxon';
 /* Application Dependencies */
-import { NonNullableMintChartSettings } from '@client/modules/chart/services/chart/chart.types';
+import { NonNullableMintDashboardSettings } from '@client/modules/chart/services/chart/chart.types';
 /* Native Dependencies */
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 import { ChartType } from '@client/modules/mint/enums/chart-type.enum';
@@ -51,7 +51,7 @@ type TypeOption = {
 })
 export class MintAnalyticControlPanelComponent implements OnChanges {
 	
-	@Input() chart_settings!: NonNullableMintChartSettings;
+	@Input() chart_settings!: NonNullableMintDashboardSettings;
 	@Input() date_start?: number;
 	@Input() date_end?: number;
 	@Input() units?: MintUnit[];

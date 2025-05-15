@@ -1,4 +1,4 @@
-import { OrchardMintAnalytics, MintUnit } from "@shared/generated.types";
+import { OrchardMintAnalytics, MintUnit, OrchardMintKeysetsAnalytics } from "@shared/generated.types";
 
 export class MintAnalytic implements OrchardMintAnalytics {
 
@@ -7,10 +7,23 @@ export class MintAnalytic implements OrchardMintAnalytics {
 	created_time: number;
 	operation_count: number;
 
-	constructor(omba: OrchardMintAnalytics) {
-		this.unit = omba.unit;
-		this.amount = omba.amount;
-		this.created_time = omba.created_time;
-		this.operation_count = omba.operation_count;
+	constructor(oma: OrchardMintAnalytics) {
+		this.unit = oma.unit;
+		this.amount = oma.amount;
+		this.created_time = oma.created_time;
+		this.operation_count = oma.operation_count;
+	}
+}
+
+export class MintAnalyticKeyset implements OrchardMintKeysetsAnalytics {
+
+	keyset_id: string;
+	amount: number;
+	created_time: number;
+
+	constructor(oma: OrchardMintKeysetsAnalytics) {
+		this.keyset_id = oma.keyset_id;
+		this.amount = oma.amount;
+		this.created_time = oma.created_time;
 	}
 }

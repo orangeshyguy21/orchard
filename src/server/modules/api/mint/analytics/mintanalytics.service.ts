@@ -90,7 +90,7 @@ export class MintAnalyticsService {
 			} catch (error) {
 				const error_code = this.errorService.resolveError({ logger: this.logger, error,
 					errord: OrchardErrorCode.MintDatabaseSelectError,
-					msg: 'Error getting mint analytics',
+					msg: 'Error getting mint keyset analytics',
 				});
 				throw new OrchardApiError(error_code);
 			}

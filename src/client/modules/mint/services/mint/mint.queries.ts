@@ -214,6 +214,14 @@ query MintMeltQuotes($unit: [MintUnit!], $state: [MeltQuoteState!], $date_start:
 	}
 }`;
 
+export const MINT_ANALYTICS_KEYSETS_QUERY = `
+query MintAnalyticsKeysets($date_start: UnixTimestamp, $date_end: UnixTimestamp, $interval: MintAnalyticsInterval, $timezone: Timezone) {
+	mint_analytics_keysets(date_start: $date_start, date_end: $date_end, interval: $interval, timezone: $timezone) {
+		amount
+		created_time
+		keyset_id
+	}
+}`;
 
 export const MINT_NAME_MUTATION = `
 mutation MintName($mint_name_update: MintNameUpdateInput!) {

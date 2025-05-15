@@ -167,7 +167,8 @@ export class NutshellService {
 		const time_group_sql = getAnalyticsTimeGroupSql({
 			interval: interval,
 			timezone: timezone,
-			time_column: 'created_time'
+			time_column: 'created_time',
+			group_by: 'unit'
 		});
 		
 		const sqlite_sql = `
@@ -256,7 +257,8 @@ export class NutshellService {
 		const time_group_sql = getAnalyticsTimeGroupSql({
 			interval: interval,
 			timezone: timezone,
-			time_column: 'created_time'
+			time_column: 'created_time',
+			group_by: 'unit'
 		});
 		const sql = `
 			SELECT 
@@ -308,7 +310,8 @@ export class NutshellService {
 		const time_group_sql = getAnalyticsTimeGroupSql({
 			interval: interval,
 			timezone: timezone,
-			time_column: 'created_time'
+			time_column: 'created_time',
+			group_by: 'unit'
 		});
 		const sql = `
 			SELECT 
@@ -361,7 +364,8 @@ export class NutshellService {
 		const time_group_sql = getAnalyticsTimeGroupSql({
 			interval: interval,
 			timezone: timezone,
-			time_column: 'created'
+			time_column: 'created',
+			group_by: 'unit'
 		});
 		const sql = `
 			SELECT 

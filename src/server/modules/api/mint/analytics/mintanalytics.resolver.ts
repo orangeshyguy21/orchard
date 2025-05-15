@@ -69,13 +69,12 @@ export class MintAnalyticsResolver {
 
 	@Query(() => [OrchardMintKeysetsAnalytics])
 	async mint_analytics_keysets(
-		@Args('units', { type: () => [MintUnit], nullable: true }) units?: MintUnit[],
 		@Args('date_start', { type: () => UnixTimestamp, nullable: true }) date_start?: number,
 		@Args('date_end', { type: () => UnixTimestamp, nullable: true }) date_end?: number,
 		@Args('interval', { type: () => MintAnalyticsInterval, nullable: true }) interval?: MintAnalyticsInterval,
 		@Args('timezone', { type: () => Timezone, nullable: true }) timezone?: TimezoneType,
 	) : Promise<OrchardMintKeysetsAnalytics[]> {
 		this.logger.debug('GET { mint_analytics_keysets }');
-		return await this.mintAnalyticsService.getMintAnalyticsKeysets({ units, date_start, date_end, interval, timezone });
+		return await this.mintAnalyticsService.getMintAnalyticsKeysets({ date_start, date_end, interval, timezone });
 	}
 }

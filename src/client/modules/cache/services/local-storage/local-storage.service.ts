@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import { Injectable } from '@angular/core';
 /* Local Dependencies */
-import { Timezone, Locale, Theme, MintChartSettings } from './local-storage.types';
+import { Timezone, Locale, Theme, MintDashboardSettings, MintKeysetsSettings } from './local-storage.types';
 
 @Injectable({
   	providedIn: 'root'
@@ -13,8 +13,9 @@ export class LocalStorageService {
 		TIMEZONE_KEY: 'v0.setting.timezone',
 		LOCALE_KEY: 'v0.setting.locale',
 		THEME_KEY: 'v0.setting.theme',
-		/* Chart Settings */
-		CHART_SETTINGS_KEY: 'v0.chart.mint.settings',
+		/* Mint Settings */
+		MINT_DASHBOARD_KEY: 'v0.mint.dashboard.settings',
+		MINT_KEYSETS_KEY: 'v0.mint.keysets.settings',
 	};
 
 
@@ -72,9 +73,14 @@ export class LocalStorageService {
 		if (!theme) return { type: null };
 		return theme;
 	}
-	getMintChartSettings(): MintChartSettings {
-		const settings = this.getItem<MintChartSettings>(this.STORAGE_KEYS.CHART_SETTINGS_KEY);
+	getMintDashboardSettings(): MintDashboardSettings {
+		const settings = this.getItem<MintDashboardSettings>(this.STORAGE_KEYS.MINT_DASHBOARD_KEY);
 		if (!settings) return { units: null, interval: null, type: null };
+		return settings;
+	}
+	getMintKeysetsSettings(): MintKeysetsSettings {
+		const settings = this.getItem<MintKeysetsSettings>(this.STORAGE_KEYS.MINT_KEYSETS_KEY);
+		if (!settings) return { units: null };
 		return settings;
 	}
 
@@ -88,8 +94,8 @@ export class LocalStorageService {
 	setTheme(theme: Theme): void {
 		this.setItem(this.STORAGE_KEYS.THEME_KEY, theme);
 	}
-	setMintChartSettings(settings: MintChartSettings): void {
-		this.setItem(this.STORAGE_KEYS.CHART_SETTINGS_KEY, settings);
+	setMintDashboardSettings(settings: MintDashboardSettings): void {
+		this.setItem(this.STORAGE_KEYS.MINT_DASHBOARD_KEY, settings);
 	}
   
 	/**

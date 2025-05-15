@@ -244,7 +244,8 @@ export class CdkService {
 		const time_group_sql = getAnalyticsTimeGroupSql({
 			interval: interval,
 			timezone: timezone,
-			time_column: 'created_time'
+			time_column: 'created_time',
+			group_by: 'unit'
 		});
 		
 		const sqlite_sql = `
@@ -333,7 +334,8 @@ export class CdkService {
 		const time_group_sql = getAnalyticsTimeGroupSql({
 			interval: interval,
 			timezone: timezone,
-			time_column: 'created_time'
+			time_column: 'created_time',
+			group_by: 'unit'
 		});
 		const sql = `
 			SELECT 
@@ -385,7 +387,8 @@ export class CdkService {
 		const time_group_sql = getAnalyticsTimeGroupSql({
 			interval: interval,
 			timezone: timezone,
-			time_column: 'created_time'
+			time_column: 'created_time',
+			group_by: 'unit'
 		});
 		const sql = `
 			SELECT 
@@ -438,7 +441,8 @@ export class CdkService {
 		const time_group_sql = getAnalyticsTimeGroupSql({
 			interval: interval,
 			timezone: timezone,
-			time_column: 'created_time'
+			time_column: 'created_time',
+			group_by: 'unit'
 		});
 		const sql = `
 			SELECT 
@@ -480,7 +484,8 @@ export class CdkService {
 		});
 	}
 
-	public async getMintAnalyticsKeysets(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<any[]> {
+	public async getMintAnalyticsKeysets(db: sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintKeysetsAnalytics[]> {
+		console.log('args', args);
 		const interval = args?.interval || MintAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
 		const { where_conditions, params } = getAnalyticsConditions({
@@ -491,62 +496,48 @@ export class CdkService {
 		const time_group_sql = getAnalyticsTimeGroupSql({
 			interval: interval,
 			timezone: timezone,
-			time_column: 'created_time'
+			time_column: 'created_time',
+			group_by: 'keyset_id'
 		});
-		
-		const sqlite_sql = `
-			WITH mint_data AS (
+
+		console.log('time_group_sql', time_group_sql);
+	
+		const sql = `
+			WITH issued AS (
 				SELECT 
 					${time_group_sql} AS time_group,
-					unit,
-					SUM(CASE WHEN state = 'ISSUED' THEN amount ELSE 0 END) AS mint_amount,
-					COUNT(DISTINCT CASE WHEN state = 'ISSUED' THEN id ELSE NULL END) AS mint_count,
+					keyset_id,
+					SUM(amount) AS issued_amount,
 					MIN(created_time) as min_created_time
-				FROM 
-					mint_quote
-					${where_clause}
-				GROUP BY 
-					time_group, unit
+				FROM blind_signature
+				${where_clause}
+				GROUP BY time_group, keyset_id
 			),
-			melt_data AS (
+			redeemed AS (
 				SELECT 
 					${time_group_sql} AS time_group,
-					unit,
-					SUM(CASE WHEN state = 'PAID' THEN amount ELSE 0 END) AS melt_amount,
-					COUNT(DISTINCT CASE WHEN state = 'PAID' THEN id ELSE NULL END) AS melt_count,
+					keyset_id,
+					SUM(amount) AS redeemed_amount,
 					MIN(created_time) as min_created_time
-				FROM 
-					melt_quote
-					${where_clause}
-				GROUP BY 
-					time_group, unit
+				FROM proof
+				${where_clause}
+				AND state = 'SPENT'
+				GROUP BY time_group, keyset_id
 			)
 			SELECT 
-				COALESCE(m.time_group, l.time_group) AS time_group,
-				COALESCE(m.unit, l.unit) AS unit,
-				COALESCE(m.mint_amount, 0) - COALESCE(l.melt_amount, 0) AS amount,
-				COALESCE(m.mint_count, 0) + COALESCE(l.melt_count, 0) AS operation_count,
-				COALESCE(m.min_created_time, l.min_created_time) AS min_created_time
-			FROM 
-				mint_data m
-				LEFT JOIN melt_data l ON m.time_group = l.time_group AND m.unit = l.unit
-			UNION ALL
-			SELECT 
-				l.time_group,
-				l.unit,
-				-l.melt_amount AS amount,
-				l.melt_count AS operation_count,
-				l.min_created_time
-			FROM 
-				melt_data l
-				LEFT JOIN mint_data m ON l.time_group = m.time_group AND l.unit = m.unit
-			WHERE 
-				m.time_group IS NULL
-			ORDER BY 
-				min_created_time;`;
-		
+				COALESCE(i.time_group, r.time_group) AS time_group,
+				COALESCE(i.keyset_id, r.keyset_id) AS keyset_id,
+				COALESCE(i.issued_amount, 0) - COALESCE(r.redeemed_amount, 0) AS amount,
+				COALESCE(i.min_created_time, r.min_created_time) AS min_created_time
+			FROM issued i
+			FULL OUTER JOIN redeemed r 
+				ON i.time_group = r.time_group 
+				AND i.keyset_id = r.keyset_id
+			ORDER BY min_created_time;
+		`;
+	
 		return new Promise((resolve, reject) => {
-			db.all(sqlite_sql, [...params, ...params], (err, rows:any[]) => {
+			db.all(sql, [...params, ...params], (err, rows: any[]) => {
 				if (err) return reject(err);
 						
 				const result = rows.map(row => {
@@ -557,7 +548,7 @@ export class CdkService {
 						timezone: timezone
 					});
 					return {
-						unit: row.unit,
+						keyset_id: row.keyset_id,
 						amount: row.amount,
 						created_time: timestamp,
 					};

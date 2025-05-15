@@ -64,6 +64,7 @@ import { MintConfigFormNut15MethodComponent } from './components/mint-config-for
 import { MintConfigFormNut17CommandsComponent } from './components/mint-config-form-nut17-commands/mint-config-form-nut17-commands.component';
 import { MintConfigFormNut19Component } from './components/mint-config-form-nut19/mint-config-form-nut19.component';
 import { MintNutComponent } from './components/mint-nut/mint-nut.component';
+import { MintKeysetChartComponent } from './components/mint-keyset-chart/mint-keyset-chart.component';
 
 @NgModule({
 	declarations: [
@@ -104,6 +105,7 @@ import { MintNutComponent } from './components/mint-nut/mint-nut.component';
         MintConfigFormNut17CommandsComponent,
         MintConfigFormNut19Component,
         MintNutComponent,
+        MintKeysetChartComponent,
 	],
 	imports: [
 		CommonModule,

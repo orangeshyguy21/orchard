@@ -1,11 +1,21 @@
 /* Application Dependencies */
-import { MintChartSettings } from '@client/modules/cache/services/local-storage/local-storage.types';
+import { MintDashboardSettings, MintKeysetsSettings } from '@client/modules/cache/services/local-storage/local-storage.types';
 
-export type AllMintChartSettings = MintChartSettings & {
+export type AllMintDashboardSettings = MintDashboardSettings & {
   date_start: number | null;
   date_end: number | null;
 }
 
-export type NonNullableMintChartSettings = {
-	[K in keyof AllMintChartSettings]: NonNullable<AllMintChartSettings[K]>;
+export type NonNullableMintDashboardSettings = {
+	[K in keyof AllMintDashboardSettings]: NonNullable<AllMintDashboardSettings[K]>;
+};
+
+export type AllMintKeysetsSettings = MintKeysetsSettings & {
+  date_start: number | null;
+  date_end: number | null;
+}
+
+
+export type NonNullableMintKeysetsSettings = {
+	[K in keyof AllMintKeysetsSettings]: NonNullable<AllMintKeysetsSettings[K]>;
 };

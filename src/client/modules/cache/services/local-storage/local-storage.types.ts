@@ -20,8 +20,12 @@ export enum ThemeType {
     LIGHT_MODE = 'light-mode',
 }
 
-export type MintChartSettings = {
+export type MintDashboardSettings = {
     units: MintUnit[] | null;
     interval: MintAnalyticsInterval | null;
     type: ChartType | null;
+}
+
+export type MintKeysetsSettings = {
+    units: MintUnit[] | null;
 }

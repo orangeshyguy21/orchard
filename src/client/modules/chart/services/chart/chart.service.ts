@@ -4,16 +4,19 @@ import { Injectable } from '@angular/core';
 import { ThemeService } from '@client/modules/settings/services/theme/theme.service';
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 import { LocalStorageService } from '@client/modules/cache/services/local-storage/local-storage.service';
-import { MintChartSettings } from '@client/modules/cache/services/local-storage/local-storage.types';
 /* Local Dependencies */
-import { AllMintChartSettings } from './chart.types';
+import { AllMintDashboardSettings, AllMintKeysetsSettings } from './chart.types';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ChartService {
 
-    public mint_chart_short_settings: Record<string, number | null> = {
+    public mint_dashboard_short_settings: Record<string, number | null> = {
+        date_start: null,
+        date_end: null,
+    }
+    public mint_keysets_short_settings: Record<string, number | null> = {
         date_start: null,
         date_end: null,
     }
@@ -69,12 +72,20 @@ export class ChartService {
         return colorhex;
     }
 
-    public getMintChartSettings(): AllMintChartSettings {
-        const long_term_settings = this.localStorageService.getMintChartSettings();
+    public getMintDashboardSettings(): AllMintDashboardSettings {
+        const long_term_settings = this.localStorageService.getMintDashboardSettings();
         return {
             ...long_term_settings,
-            ...this.mint_chart_short_settings
-        } as AllMintChartSettings;
+            ...this.mint_dashboard_short_settings
+        } as AllMintDashboardSettings;
+    }
+    
+    public getMintKeysetsSettings(): AllMintKeysetsSettings {
+        const long_term_settings = this.localStorageService.getMintKeysetsSettings();
+        return {
+            ...long_term_settings,
+            ...this.mint_keysets_short_settings
+        } as AllMintKeysetsSettings;
     }
 
     public getFormAnnotationConfig(hot: boolean): any {
@@ -113,10 +124,10 @@ export class ChartService {
         return `rgba(${r}, ${g}, ${b}, ${opacity})`;
     }
 
-    public setMintChartShortSettings(settings: { date_start: number, date_end: number }): void {
-        this.mint_chart_short_settings = settings;
+    public setMintDashboardShortSettings(settings: { date_start: number, date_end: number }): void {
+        this.mint_dashboard_short_settings = settings;
     }
-    public setMintChartSettings(settings: AllMintChartSettings): void {
-        this.localStorageService.setMintChartSettings(settings);
+    public setMintDashboardSettings(settings: AllMintDashboardSettings): void {
+        this.localStorageService.setMintDashboardSettings(settings);
     }
 }

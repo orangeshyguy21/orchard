@@ -11,7 +11,7 @@ import { SettingService } from '@client/modules/settings/services/setting/settin
 import { AiService } from '@client/modules/ai/services/ai/ai.service';
 import { ChartService } from '@client/modules/chart/services/chart/chart.service';
 import { PublicService } from '@client/modules/public/services/image/public.service';
-import { NonNullableMintChartSettings } from '@client/modules/chart/services/chart/chart.types';
+import { NonNullableMintDashboardSettings } from '@client/modules/chart/services/chart/chart.types';
 import { PublicUrl } from '@client/modules/public/classes/public-url.class';
 import { AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
 /* Native Dependencies */
@@ -54,7 +54,7 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	public loading_dynamic_data: boolean = true;
 	public should_move_control: boolean = false;  // Controls where the panel renders
 	// chart settings
-	public chart_settings!: NonNullableMintChartSettings;
+	public chart_settings!: NonNullableMintDashboardSettings;
 
 	private subscriptions: Subscription = new Subscription();
 
@@ -220,8 +220,8 @@ export class MintSubsectionDashboardComponent implements OnInit {
 		this.mint_analytics_transfers_pre = analytics_transfers_pre;
 	}
 
-	private getChartSettings(): NonNullableMintChartSettings {
-		const settings = this.chartService.getMintChartSettings();
+	private getChartSettings(): NonNullableMintDashboardSettings {
+		const settings = this.chartService.getMintDashboardSettings();
 		return {
 			type: settings.type ?? ChartType.Summary,
 			interval: settings.interval ?? MintAnalyticsInterval.Day,
@@ -257,7 +257,7 @@ export class MintSubsectionDashboardComponent implements OnInit {
 
 	private async reloadDynamicData(): Promise<void> {
 		try {
-			this.mintService.clearAnalyticsCache();
+			this.mintService.clearDasbhoardCache();
 			this.loading_dynamic_data = true;
 			this.changeDetectorRef.detectChanges();
 			await this.loadMintAnalytics();
@@ -290,25 +290,25 @@ export class MintSubsectionDashboardComponent implements OnInit {
 	public onDateChange(event: number[]): void {
 		this.chart_settings.date_start = event[0];
 		this.chart_settings.date_end = event[1];
-		this.chartService.setMintChartShortSettings(this.chart_settings);
+		this.chartService.setMintDashboardShortSettings(this.chart_settings);
 		this.reloadDynamicData();
 	}
 
 	public onUnitsChange(event: MintUnit[]): void {
 		this.chart_settings.units = event;
-		this.chartService.setMintChartSettings(this.chart_settings);
+		this.chartService.setMintDashboardSettings(this.chart_settings);
 		this.reloadDynamicData();
 	}
 
 	public onIntervalChange(event: MintAnalyticsInterval): void {
 		this.chart_settings.interval = event;
-		this.chartService.setMintChartSettings(this.chart_settings);
+		this.chartService.setMintDashboardSettings(this.chart_settings);
 		this.reloadDynamicData();
 	}
 
 	public onTypeChange(event: ChartType): void {
 		this.chart_settings.type = event;
-		this.chartService.setMintChartSettings(this.chart_settings);
+		this.chartService.setMintDashboardSettings(this.chart_settings);
 		this.reloadDynamicData();
 	}
 }

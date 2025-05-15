@@ -6,7 +6,7 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ScaleChartOptions, ChartType as ChartJsType } from 'chart.js';
 import { DateTime } from 'luxon';
 /* Application Dependencies */
-import { NonNullableMintChartSettings } from '@client/modules/chart/services/chart/chart.types';
+import { NonNullableMintDashboardSettings } from '@client/modules/chart/services/chart/chart.types';
 import { 
 	groupAnalyticsByUnit,
 	prependData,
@@ -54,7 +54,7 @@ export class MintAnalyticChartComponent implements OnChanges {
 	@Input() public locale!: string;
 	@Input() public mint_analytics!: MintAnalytic[];
 	@Input() public mint_analytics_pre!: MintAnalytic[];
-	@Input() public chart_settings!: NonNullableMintChartSettings | undefined;
+	@Input() public chart_settings!: NonNullableMintDashboardSettings | undefined;
 	@Input() public mint_genesis_time!: number;
 	@Input() public selected_type!: ChartType | undefined;
 	@Input() public loading!: boolean;
