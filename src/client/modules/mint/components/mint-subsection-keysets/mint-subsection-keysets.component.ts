@@ -28,7 +28,8 @@ export class MintSubsectionKeysetsComponent {
 	public locale!: string;
 	public mint_genesis_time: number = 0;
 	public chart_settings!: NonNullableMintKeysetsSettings;
-	public data_loading: boolean = true;
+	public loading_static_data: boolean = true;
+	public loading_dynamic_data: boolean = true;
 	public keysets_analytics: MintAnalyticKeyset[] = [];
 	public keysets_analytics_pre: MintAnalyticKeyset[] = [];
 
@@ -45,7 +46,6 @@ export class MintSubsectionKeysetsComponent {
 	ngOnInit(): void {		
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
 		this.initKeysetsAnalytics();
-		console.log('keysets', this.mint_keysets);
 	}
 
 	private async initKeysetsAnalytics(): Promise<void> {
@@ -54,8 +54,10 @@ export class MintSubsectionKeysetsComponent {
 		this.chart_settings = this.getChartSettings();
 		const interval = this.getAnalyticsInterval();
 		const timezone = this.settingService.getTimezone();
+		this.loading_static_data = false;
+		this.cdr.detectChanges();
 		await this.loadKeysetsAnalytics(timezone, interval);
-		this.data_loading = false;
+		this.loading_dynamic_data = false;
 		this.cdr.detectChanges();
 	}
 
