@@ -1,8 +1,10 @@
-// .example-container {
-//     height: 400px;
-//     overflow: auto;
-//   }
-  
-//   table {
-//     width: 100%;
-//   }
+@use '@styles/molecule/molecule';
+@use '@styles/nucleus/nucleus';
+
+.mint-keyset-table-container{
+    @extend %p-b-1;
+}
+
+.keyset-table-sticky-header{
+    top:86px !important;
+}

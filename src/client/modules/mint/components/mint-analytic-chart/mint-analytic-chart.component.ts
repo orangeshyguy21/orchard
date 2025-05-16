@@ -269,19 +269,25 @@ export class MintAnalyticChartComponent implements OnChanges {
 		const min_x_value = this.findMinimumXValue(this.chart_data);
 		const milli_genesis_time = this.mint_genesis_time*1000;
 		const display = (milli_genesis_time >= min_x_value) ? true : false;
+		const config = this.chartService.getFormAnnotationConfig(false);
 		return {
 			annotations: {
 				annotation : {
 					type: 'line',
-					borderColor: this.chartService.getAnnotationBorderColor(),
-					borderWidth: 1,
+					borderColor: config.border_color,
+					borderWidth: config.border_width,
 					display: display,
 					label: {
 						display:  true,
-						content: 'Genesis',
+						content: 'Mint Genesis',
 						position: 'start',
-						backgroundColor: 'rgb(29, 27, 26)',
-						borderColor: this.chartService.getAnnotationBorderColor(),
+						backgroundColor: config.label_bg_color,
+						color: config.text_color,
+						font: {
+							size: 12,
+							weight: '300'
+						},
+						borderColor: config.label_border_color,
 						borderWidth: 1,
 					},
 					scaleID: 'x',

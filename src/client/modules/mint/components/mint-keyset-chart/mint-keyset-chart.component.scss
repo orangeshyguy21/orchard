@@ -1,7 +1,8 @@
 @use '@styles/molecule/molecule';
+@use '@styles/nucleus/nucleus';
 
 .mint-keyset-chart-container{
-    @extend %p-b-1;
+    @extend %p-v-1;
     @extend %relative;
 
     canvas{

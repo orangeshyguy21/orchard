@@ -20,7 +20,7 @@ export class MintKeysetTableComponent implements OnChanges, AfterViewInit {
 	@Input() public keysets!: MintKeyset[];
 	@Input() public loading!: boolean;
 
-	public displayed_columns = ['keyset', 'unit', 'id', 'input_fee_ppk', 'valid_from'];
+	public displayed_columns = ['keyset', 'unit', 'id', 'input_fee_ppk', 'valid_from', 'balance'];
   	public data_source!: MatTableDataSource<MintKeyset>;
 
 	constructor() {}
@@ -36,9 +36,8 @@ export class MintKeysetTableComponent implements OnChanges, AfterViewInit {
 	}
 
 	private init() : void {
-		console.log(this.keysets);
-		this.data_source = new MatTableDataSource(this.keysets);
+		const sorted_keysets = this.keysets.sort((a, b) => b.valid_from - a.valid_from);
+		this.data_source = new MatTableDataSource(sorted_keysets);
 		this.data_source.sort = this.sort;
 	}
-
 }
