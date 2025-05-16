@@ -6,6 +6,7 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ScaleChartOptions, ChartType as ChartJsType } from 'chart.js';
 import { DateTime } from 'luxon';
 /* Application Dependencies */
+import { AmountPipe } from '@client/modules/local/pipes/amount/amount.pipe';
 import { NonNullableMintKeysetsSettings } from '@client/modules/chart/services/chart/chart.types';
 import { 
 	groupAnalyticsByUnit,
@@ -95,36 +96,33 @@ export class MintKeysetChartComponent {
 
 	private async init(): Promise<void> {
 		this.chart_type = 'line';
-
 		const valid_keysets_ids = this.keysets
 			.filter(keyset => this.chart_settings?.status.includes(keyset.active))
 			.filter(keyset => this.chart_settings?.units.includes(keyset.unit))
 			.map(keyset => keyset.id);
 		const valid_analytics = this.keysets_analytics.filter(analytic => valid_keysets_ids.includes(analytic.keyset_id));
 		const valid_analytics_pre = this.keysets_analytics_pre.filter(analytic => valid_keysets_ids.includes(analytic.keyset_id));
-		console.log(valid_analytics);
-		console.log(valid_analytics_pre);
-
-		this.chart_data = this.getChartData();
+		this.chart_data = this.getChartData(valid_analytics, valid_analytics_pre);
 		this.chart_options = this.getChartOptions();
 		if(this.chart_options?.plugins) this.chart_options.plugins.annotation = this.getAnnotations();
 	}
 
-	private getChartData(): ChartConfiguration['data'] {
+	private getChartData(valid_analytics: MintAnalyticKeyset[], valid_analytics_pre: MintAnalyticKeyset[]): ChartConfiguration['data'] {
 		if( !this.chart_settings ) return { datasets: [] };
-		if( (!this.keysets_analytics || this.keysets_analytics.length === 0) && (!this.keysets_analytics_pre || this.keysets_analytics_pre.length === 0) ) return { datasets: [] };
+		if( (!valid_analytics || valid_analytics.length === 0) && (!valid_analytics_pre || valid_analytics_pre.length === 0) ) return { datasets: [] };
 		const timestamp_first = DateTime.fromSeconds(this.chart_settings.date_start).startOf('day').toSeconds();
 		const timestamp_last = DateTime.fromSeconds(this.chart_settings.date_end).startOf('day').toSeconds();
-		const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.interval);
-		const data_keyset_groups = this.keysets_analytics.reduce((groups, analytic) => {
+		const data_keyset_groups = valid_analytics.reduce((groups, analytic) => {
 			const id = analytic.keyset_id;
 			groups[id] = groups[id] || [];
 			groups[id].push(analytic);
 			return groups;
 		}, {} as Record<string, MintAnalyticKeyset[]>);
-		const data_keyset_groups_prepended = this.prependData(data_keyset_groups, this.keysets_analytics_pre, timestamp_first);
+		const data_keyset_groups_prepended = this.prependData(data_keyset_groups, valid_analytics_pre, timestamp_first);
 		const datasets = Object.entries(data_keyset_groups_prepended).map(([keyset_id, data], index) => {
-			const keyset = this.keysets.find(k => k.id === keyset_id);
+			const keyset = this.keysets.find(k => k.id === keyset_id); 
+			const keyset_genesis_time = keyset ? DateTime.fromSeconds(keyset.valid_from).startOf('day').minus({ days: 1 }).toSeconds() : timestamp_first;
+			const timestamp_range = getAllPossibleTimestamps(keyset_genesis_time, timestamp_last, this.interval);
 			const data_keyed_by_timestamp = data.reduce((acc, item) => {
 				acc[item.created_time] = item.amount;
 				return acc;
@@ -184,6 +182,18 @@ export class MintKeysetChartComponent {
 		return analytics;
 	}
 
+	// private getAmountData(unqiue_timestamps:number[], data_keyed_by_timestamp: Record<number, number>, unit: string, cumulative: boolean): { x: number, y: number }[] { 
+	// 	let running_sum = 0;
+	// 	return unqiue_timestamps.map(timestamp => {
+	// 		const val = data_keyed_by_timestamp[timestamp] || 0;
+	// 		running_sum += AmountPipe.getConvertedAmount(unit, val);
+	// 		return {
+	// 			x: timestamp * 1000,
+	// 			y: cumulative ? running_sum : AmountPipe.getConvertedAmount(unit, val)
+	// 		};
+	// 	});
+	// }
+
 	private getChartOptions(): ChartConfiguration['options'] {
 		if ( !this.chart_data || this.chart_data.datasets.length === 0 || !this.chart_settings ) return {}
 		const units = this.chart_data.datasets.map(item => item.label);
@@ -211,7 +221,7 @@ export class MintKeysetChartComponent {
 			plugins: {
 				tooltip: {
 					enabled: true,
-					mode: 'index',
+					mode: 'nearest',
 					intersect: false,
 					callbacks: {
 						title: getTooltipTitle,
@@ -231,7 +241,7 @@ export class MintKeysetChartComponent {
 				},
 			},
 			interaction: {
-				mode: 'index',
+				mode: 'nearest',
 				axis: 'x',
 				intersect: false
 			}
@@ -245,7 +255,7 @@ export class MintKeysetChartComponent {
 		const config = this.chartService.getFormAnnotationConfig(false);
 		return {
 			annotations: {
-				annotation : {
+				genesis : {
 					type: 'line',
 					borderColor: config.border_color,
 					borderWidth: config.border_width,
