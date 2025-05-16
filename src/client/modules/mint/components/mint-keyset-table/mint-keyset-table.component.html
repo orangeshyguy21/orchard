@@ -1,6 +1,6 @@
 <div class="mint-keyset-table-container">
     <mat-card appearance="outlined">
-        @if(!loading){
+        @if(!loading && data_source){
             <div class="p-h-1" @fadeIn>
                 <table mat-table [dataSource]="data_source" matSort class="orc-feature-table">
                     <ng-container matColumnDef="keyset">

@@ -35,7 +35,7 @@ export class MintKeysetTableComponent implements OnChanges, AfterViewInit {
 	@Input() public loading!: boolean;
 
 	public displayed_columns = ['keyset', 'unit', 'id', 'input_fee_ppk', 'valid_from', 'balance'];
-  	public data_source: MatTableDataSource<MintKeysetRow> = new MatTableDataSource();
+  	public data_source!: MatTableDataSource<MintKeysetRow>;
 
 	constructor() {}
 
@@ -58,6 +58,8 @@ export class MintKeysetTableComponent implements OnChanges, AfterViewInit {
 				return new MintKeysetRow(keyset, keyset_analytics, keyset_analytics_pre);
 			});
 		this.data_source = new MatTableDataSource(keyset_rows);
-		this.data_source.sort = this.sort;
+		setTimeout(() => {
+			this.data_source.sort = this.sort;
+		});
 	}
 }
