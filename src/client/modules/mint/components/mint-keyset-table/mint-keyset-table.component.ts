@@ -49,7 +49,6 @@ export class MintKeysetTableComponent implements OnChanges {
 	}
 
 	private init() : any {
-		console.log('init table');
 		const keyset_rows = this.keysets
 			.filter(keyset => this.chart_settings?.date_end >= keyset.valid_from)
 			.filter(keyset => this.chart_settings?.status.includes(keyset.active))

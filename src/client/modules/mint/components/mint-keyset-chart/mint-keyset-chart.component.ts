@@ -76,8 +76,35 @@ export class MintKeysetChartComponent {
 		}
 	}
 
+	// private init() : any {
+	// 	const keyset_rows = this.keysets
+	// 		.filter(keyset => this.chart_settings?.date_end >= keyset.valid_from)
+	// 		.filter(keyset => this.chart_settings?.status.includes(keyset.active))
+	// 		.filter(keyset => this.chart_settings?.units.includes(keyset.unit))
+	// 		.sort((a, b) => b.valid_from - a.valid_from)
+	// 		.map(keyset => {
+	// 			const keyset_analytics = this.keysets_analytics.filter(analytic => analytic.keyset_id === keyset.id);
+	// 			const keyset_analytics_pre = this.keysets_analytics_pre.filter(analytic => analytic.keyset_id === keyset.id);
+	// 			return new MintKeysetRow(keyset, keyset_analytics, keyset_analytics_pre);
+	// 		});
+	// 	this.data_source = new MatTableDataSource(keyset_rows);
+	// 	setTimeout(() => {
+	// 		this.data_source.sort = this.sort;
+	// 	});
+	// }
+
 	private async init(): Promise<void> {
 		this.chart_type = 'line';
+
+		const valid_keysets_ids = this.keysets
+			.filter(keyset => this.chart_settings?.status.includes(keyset.active))
+			.filter(keyset => this.chart_settings?.units.includes(keyset.unit))
+			.map(keyset => keyset.id);
+		const valid_analytics = this.keysets_analytics.filter(analytic => valid_keysets_ids.includes(analytic.keyset_id));
+		const valid_analytics_pre = this.keysets_analytics_pre.filter(analytic => valid_keysets_ids.includes(analytic.keyset_id));
+		console.log(valid_analytics);
+		console.log(valid_analytics_pre);
+
 		this.chart_data = this.getChartData();
 		this.chart_options = this.getChartOptions();
 		if(this.chart_options?.plugins) this.chart_options.plugins.annotation = this.getAnnotations();
