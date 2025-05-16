@@ -68,6 +68,7 @@ import { MintNutComponent } from './components/mint-nut/mint-nut.component';
 import { MintKeysetChartComponent } from './components/mint-keyset-chart/mint-keyset-chart.component';
 import { MintKeysetControlComponent } from './components/mint-keyset-control/mint-keyset-control.component';
 import { MintKeysetTableComponent } from './components/mint-keyset-table/mint-keyset-table.component';
+import { MintSubsectionDatabaseComponent } from './components/mint-subsection-database/mint-subsection-database.component';
 
 @NgModule({
 	declarations: [
@@ -111,6 +112,7 @@ import { MintKeysetTableComponent } from './components/mint-keyset-table/mint-ke
         MintKeysetChartComponent,
         MintKeysetControlComponent,
         MintKeysetTableComponent,
+        MintSubsectionDatabaseComponent,
 	],
 	imports: [
 		CommonModule,
