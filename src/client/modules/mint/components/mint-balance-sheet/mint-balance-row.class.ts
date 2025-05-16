@@ -11,7 +11,7 @@ export class MintBalanceRow {
     liabilities: number;
     fee: number;
     active: boolean;
-    derivation_path: string;
+    derivation_path_index: number;
     first_seen: number;
     assets: number;
 
@@ -28,7 +28,7 @@ export class MintBalanceRow {
         this.fee = keyset.input_fee_ppk;
         this.active = keyset.active;
         this.assets = this.tempSetAssets();
-        this.derivation_path = keyset.derivation_path;
+        this.derivation_path_index = keyset.derivation_path_index;
         this.first_seen = keyset.valid_from;
     }
 

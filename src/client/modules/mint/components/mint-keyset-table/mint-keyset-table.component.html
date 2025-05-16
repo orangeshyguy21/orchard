@@ -9,7 +9,7 @@
                             <div class="p-v-1">
                                 <orc-mint-keyset
                                     [active]="keyset.active"
-                                    [derivation_path]="keyset.derivation_path"
+                                    [index]="keyset.derivation_path_index"
                                     [input_fee_ppk]="keyset.input_fee_ppk">
                                 </orc-mint-keyset>
                             </div>
@@ -46,7 +46,9 @@
     
                     <ng-container matColumnDef="balance">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header class="keyset-table-sticky-header"> Balance </th>
-                        <td mat-cell *matCellDef="let keyset"> 10 - todo </td>
+                        <td mat-cell *matCellDef="let keyset">
+                            <span class="font-size-m w-min-10" [innerHTML]="keyset.balance | amount : keyset.unit : 'mint'"></span>
+                        </td>
                     </ng-container>
                 
                     <tr mat-header-row *matHeaderRowDef="displayed_columns; sticky: true"></tr>

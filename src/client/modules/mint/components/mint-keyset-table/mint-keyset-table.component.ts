@@ -7,6 +7,8 @@ import { MatTableDataSource } from '@angular/material/table';
 /* Native Dependencies */
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 import { MintAnalyticKeyset } from '@client/modules/mint/classes/mint-analytic.class';
+/* Local Dependencies */
+import { MintKeysetRow } from './mint-keyset-row.class';
 
 @Component({
 	selector: 'orc-mint-keyset-table',
@@ -33,7 +35,7 @@ export class MintKeysetTableComponent implements OnChanges, AfterViewInit {
 	@Input() public loading!: boolean;
 
 	public displayed_columns = ['keyset', 'unit', 'id', 'input_fee_ppk', 'valid_from', 'balance'];
-  	public data_source: MatTableDataSource<MintKeyset> = new MatTableDataSource();
+  	public data_source: MatTableDataSource<MintKeysetRow> = new MatTableDataSource();
 
 	constructor() {}
 
@@ -44,12 +46,18 @@ export class MintKeysetTableComponent implements OnChanges, AfterViewInit {
 	}
 
 	public ngAfterViewInit(): void {
-		this.data_source.sort = this.sort;
+		// this.data_source.sort = this.sort;
 	}
 
 	private init() : void {
-		const sorted_keysets = this.keysets.sort((a, b) => b.valid_from - a.valid_from);
-		this.data_source = new MatTableDataSource(sorted_keysets);
+		const keyset_rows = this.keysets
+			.sort((a, b) => b.valid_from - a.valid_from)
+			.map(keyset => {
+				const keyset_analytics = this.keysets_analytics.filter(analytic => analytic.keyset_id === keyset.id);
+				const keyset_analytics_pre = this.keysets_analytics_pre.filter(analytic => analytic.keyset_id === keyset.id);
+				return new MintKeysetRow(keyset, keyset_analytics, keyset_analytics_pre);
+			});
+		this.data_source = new MatTableDataSource(keyset_rows);
 		this.data_source.sort = this.sort;
 	}
 }
