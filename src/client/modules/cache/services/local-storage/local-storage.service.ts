@@ -18,14 +18,6 @@ export class LocalStorageService {
 		MINT_KEYSETS_KEY: 'v0.mint.keysets.settings',
 	};
 
-
-    // public selected_units: MintUnit[] = [];
-	// public selected_date_start!: number;
-	// public selected_date_end!: number;
-	// public selected_interval: MintAnalyticsInterval = MintAnalyticsInterval.Day;
-	// public selected_type!: ChartType;
-
-
   	constructor() { }
 	
 	/**
@@ -80,7 +72,7 @@ export class LocalStorageService {
 	}
 	getMintKeysetsSettings(): MintKeysetsSettings {
 		const settings = this.getItem<MintKeysetsSettings>(this.STORAGE_KEYS.MINT_KEYSETS_KEY);
-		if (!settings) return { units: null };
+		if (!settings) return { units: null, status: null };
 		return settings;
 	}
 

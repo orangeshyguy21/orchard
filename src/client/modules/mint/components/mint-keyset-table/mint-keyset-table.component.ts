@@ -1,27 +1,39 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, ViewChild, AfterViewInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { animate, style, transition, trigger } from '@angular/animations';
 /* Vendor Dependencies */
-import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 /* Native Dependencies */
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
+import { MintAnalyticKeyset } from '@client/modules/mint/classes/mint-analytic.class';
 
 @Component({
 	selector: 'orc-mint-keyset-table',
 	standalone: false,
 	templateUrl: './mint-keyset-table.component.html',
 	styleUrl: './mint-keyset-table.component.scss',
-	changeDetection: ChangeDetectionStrategy.OnPush
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	animations: [
+        trigger('fadeIn', [
+            transition(':enter', [
+                style({ opacity: 0 }),
+                animate('300ms ease-in', style({ opacity: 1 }))
+            ])
+        ])
+    ]
 })
 export class MintKeysetTableComponent implements OnChanges, AfterViewInit {
 
 	@ViewChild(MatSort) sort!: MatSort;
 
 	@Input() public keysets!: MintKeyset[];
+	@Input() public keysets_analytics!: MintAnalyticKeyset[];
+	@Input() public keysets_analytics_pre!: MintAnalyticKeyset[];
 	@Input() public loading!: boolean;
 
 	public displayed_columns = ['keyset', 'unit', 'id', 'input_fee_ppk', 'valid_from', 'balance'];
-  	public data_source!: MatTableDataSource<MintKeyset>;
+  	public data_source: MatTableDataSource<MintKeyset> = new MatTableDataSource();
 
 	constructor() {}
 

@@ -10,13 +10,16 @@ import { DateTime } from 'luxon';
 import { NonNullableMintKeysetsSettings } from '@client/modules/chart/services/chart/chart.types';
 /* Native Dependencies */
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
-import { ChartType } from '@client/modules/mint/enums/chart-type.enum';
 /* Shared Dependencies */
-import { MintAnalyticsInterval, MintUnit } from '@shared/generated.types';
+import { MintUnit } from '@shared/generated.types';
 
 type UnitOption = {
 	label: string;
 	value: MintUnit;
+}
+type StatusOption = {
+	label: string;
+	value: boolean;
 }
 
 @Component({
@@ -47,6 +50,7 @@ export class MintKeysetControlComponent implements OnChanges {
 	@Input() date_start?: number;
 	@Input() date_end?: number;
 	@Input() units?: MintUnit[];
+	@Input() status?: boolean[];
 	@Input() keysets!: MintKeyset[];
 	@Input() loading!: boolean;
 	@Input() mint_genesis_time!: number;
@@ -60,9 +64,14 @@ export class MintKeysetControlComponent implements OnChanges {
 			date_end: new FormControl<DateTime | null>(null, [Validators.required]),
 		}),
 		units: new FormControl<MintUnit[] | null>(null, [Validators.required]),
+		status: new FormControl<boolean[] | null>(null, [Validators.required]),
 	});
 
 	public unit_options!: UnitOption[];
+	public status_options: StatusOption[] = [
+		{ label: 'Active', value: true },
+		{ label: 'Inactive', value: false },
+	];
 	public genesis_class: MatCalendarCellClassFunction<DateTime> = (cellDate, view) => {
 		if( view !== 'month' ) return '';
 		const unix_seconds = cellDate.toSeconds();
@@ -88,6 +97,9 @@ export class MintKeysetControlComponent implements OnChanges {
 		}
 		if(changes['units'] && this.units && this.panel.controls.units.value !== this.units) {
 			this.panel.controls.units.setValue(this.units);
+		}
+		if(changes['status'] && this.status && this.panel.controls.status.value !== this.status) {
+			this.panel.controls.status.setValue(this.status);
 		}
 	}
 
@@ -115,6 +127,13 @@ export class MintKeysetControlComponent implements OnChanges {
 		const is_valid = this.isValidChange();
 		if( !is_valid ) return;
 		this.units_change.emit(event.value);
+	}
+
+	public onStatusChange(event: MatSelectChange): void {
+		// if(this.panel.invalid) return;
+		// const is_valid = this.isValidChange();
+		// if( !is_valid ) return;
+		// this.status_change.emit(event.value);
 	}
 
 	private isValidChange(): boolean {

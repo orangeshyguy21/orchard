@@ -74,7 +74,8 @@ export class MintSubsectionKeysetsComponent {
 		return {
 			units: settings.units ?? this.getSelectedUnits(), // @todo there will be bugs here if a unit is not in the keysets (audit active keysets)
 			date_start: settings.date_start ?? this.mint_genesis_time,
-			date_end: settings.date_end ?? this.getSelectedDateEnd()
+			date_end: settings.date_end ?? this.getSelectedDateEnd(),
+			status: settings.status ?? [false, true],
 		};
 	}
 
@@ -88,7 +89,10 @@ export class MintSubsectionKeysetsComponent {
 	}
 
 	private getAnalyticsInterval(): MintAnalyticsInterval {
-		return MintAnalyticsInterval.Day;
+		const days_diff = DateTime.fromSeconds(this.chart_settings.date_end).diff(DateTime.fromSeconds(this.chart_settings.date_start), 'days').days;
+		if(days_diff <= 90) return MintAnalyticsInterval.Day;
+		if(days_diff <= 365) return MintAnalyticsInterval.Week;
+		return MintAnalyticsInterval.Month;
 	}
 
 	private async loadKeysetsAnalytics(timezone: string, interval: MintAnalyticsInterval): Promise<void> {

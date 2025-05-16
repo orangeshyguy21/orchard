@@ -9,6 +9,7 @@
 					[date_start]="chart_settings.date_start"
 					[date_end]="chart_settings.date_end"
 					[units]="chart_settings.units"
+					[status]="chart_settings.status"
 					[keysets]="mint_keysets"
 					[loading]="loading_static_data"
 					[mint_genesis_time]="mint_genesis_time">
@@ -36,6 +37,8 @@
 
 	<orc-mint-keyset-table
 		[keysets]="mint_keysets"
-		[loading]="loading_static_data">
+		[keysets_analytics]="keysets_analytics"
+		[keysets_analytics_pre]="keysets_analytics_pre"
+		[loading]="loading_dynamic_data">
 	</orc-mint-keyset-table>
 </div>

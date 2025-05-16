@@ -28,4 +28,5 @@ export type MintDashboardSettings = {
 
 export type MintKeysetsSettings = {
     units: MintUnit[] | null;
+    status: boolean[] | null;
 }
