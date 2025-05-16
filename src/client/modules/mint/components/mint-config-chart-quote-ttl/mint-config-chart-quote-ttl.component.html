@@ -5,20 +5,27 @@
         </div>
         <div class="mint-quote-ttl-chart-container">
             <canvas baseChart [data]="chart_data" [options]="chart_options" [type]="chart_type"></canvas>
+            @if( !loading && quotes.length === 0 ) {
+                <div class="no-data-overlay" @fadeInOut>
+                     <mat-icon class="icon-lg mat-symbol-outline orc-outline-color">bar_chart_off</mat-icon>
+                </div>
+            } 
         </div>
     </div>
-    <div class="flex flex-justify-center flex-items-center flex-gap-0-5">
-        <div class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color font-weight-extra-light">
-            <div>avg:</div>
-            <div>median:</div>
-            <div>min:</div>
-            <div>max:</div>
-        </div>
-        <div class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color">
-            <div>{{ metrics.avg | number:'1.0-0' }}</div>
-            <div>{{ metrics.median | number:'1.0-0' }}</div>
-            <div>{{ metrics.min | number:'1.0-0' }}</div>
-            <div>{{ metrics.max | number:'1.0-0' }}</div>
-        </div>
-    </div> 
+    @if( !loading && quotes.length > 0 ) {
+        <div class="flex flex-justify-center flex-items-center flex-gap-0-5">
+            <div class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color font-weight-extra-light">
+                <div>avg:</div>
+                <div>median:</div>
+                <div>min:</div>
+                <div>max:</div>
+            </div>
+            <div class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color">
+                <div>{{ metrics.avg | number:'1.0-0' }}</div>
+                <div>{{ metrics.median | number:'1.0-0' }}</div>
+                <div>{{ metrics.min | number:'1.0-0' }}</div>
+                <div>{{ metrics.max | number:'1.0-0' }}</div>
+            </div>
+        </div> 
+    }
 </div>

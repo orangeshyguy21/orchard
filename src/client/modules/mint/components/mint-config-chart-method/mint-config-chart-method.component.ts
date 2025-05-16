@@ -1,5 +1,6 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, Component, Input, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
+import { trigger, transition, style, animate } from '@angular/animations';
 /* Vendor Dependencies */
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartType as ChartJsType } from 'chart.js';
@@ -17,7 +18,18 @@ import { MintQuoteState, MeltQuoteState } from '@shared/generated.types';
 	standalone: false,
 	templateUrl: './mint-config-chart-method.component.html',
 	styleUrl: './mint-config-chart-method.component.scss',
-	changeDetection: ChangeDetectionStrategy.OnPush
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	animations: [
+		trigger('fadeInOut', [
+			transition(':enter', [
+				style({ opacity: 0 }),
+				animate('150ms ease-in', style({ opacity: 1 }))
+			]),
+			transition(':leave', [
+				animate('150ms ease-out', style({ opacity: 0 }))
+			])
+		])
+	]
 })
 export class MintConfigChartMethodComponent implements OnChanges {
 
