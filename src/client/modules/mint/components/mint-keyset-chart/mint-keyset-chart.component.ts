@@ -225,7 +225,6 @@ export class MintKeysetChartComponent {
 		const max_x_value = this.findMaximumXValue(this.chart_data) / 1000;
 		const config = this.chartService.getFormAnnotationConfig(false);
 		const annotations: Record<string, any> = {};
-
 		this.keysets
 			.filter(keyset => (keyset.valid_from >= min_x_value && keyset.valid_from <= max_x_value))
 			.filter(keyset => this.chart_settings?.status.includes(keyset.active))
