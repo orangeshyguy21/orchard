@@ -77,23 +77,6 @@ export class MintKeysetChartComponent {
 		}
 	}
 
-	// private init() : any {
-	// 	const keyset_rows = this.keysets
-	// 		.filter(keyset => this.chart_settings?.date_end >= keyset.valid_from)
-	// 		.filter(keyset => this.chart_settings?.status.includes(keyset.active))
-	// 		.filter(keyset => this.chart_settings?.units.includes(keyset.unit))
-	// 		.sort((a, b) => b.valid_from - a.valid_from)
-	// 		.map(keyset => {
-	// 			const keyset_analytics = this.keysets_analytics.filter(analytic => analytic.keyset_id === keyset.id);
-	// 			const keyset_analytics_pre = this.keysets_analytics_pre.filter(analytic => analytic.keyset_id === keyset.id);
-	// 			return new MintKeysetRow(keyset, keyset_analytics, keyset_analytics_pre);
-	// 		});
-	// 	this.data_source = new MatTableDataSource(keyset_rows);
-	// 	setTimeout(() => {
-	// 		this.data_source.sort = this.sort;
-	// 	});
-	// }
-
 	private async init(): Promise<void> {
 		this.chart_type = 'line';
 		const valid_keysets_ids = this.keysets
@@ -122,7 +105,8 @@ export class MintKeysetChartComponent {
 		const datasets = Object.entries(data_keyset_groups_prepended).map(([keyset_id, data], index) => {
 			const keyset = this.keysets.find(k => k.id === keyset_id); 
 			const keyset_genesis_time = keyset ? DateTime.fromSeconds(keyset.valid_from).startOf('day').minus({ days: 1 }).toSeconds() : timestamp_first;
-			const timestamp_range = getAllPossibleTimestamps(keyset_genesis_time, timestamp_last, this.interval);
+			const max_x = Math.max(keyset_genesis_time, timestamp_first);
+			const timestamp_range = getAllPossibleTimestamps(max_x, timestamp_last, this.interval);
 			const data_keyed_by_timestamp = data.reduce((acc, item) => {
 				acc[item.created_time] = item.amount;
 				return acc;
@@ -182,18 +166,6 @@ export class MintKeysetChartComponent {
 		return analytics;
 	}
 
-	// private getAmountData(unqiue_timestamps:number[], data_keyed_by_timestamp: Record<number, number>, unit: string, cumulative: boolean): { x: number, y: number }[] { 
-	// 	let running_sum = 0;
-	// 	return unqiue_timestamps.map(timestamp => {
-	// 		const val = data_keyed_by_timestamp[timestamp] || 0;
-	// 		running_sum += AmountPipe.getConvertedAmount(unit, val);
-	// 		return {
-	// 			x: timestamp * 1000,
-	// 			y: cumulative ? running_sum : AmountPipe.getConvertedAmount(unit, val)
-	// 		};
-	// 	});
-	// }
-
 	private getChartOptions(): ChartConfiguration['options'] {
 		if ( !this.chart_data || this.chart_data.datasets.length === 0 || !this.chart_settings ) return {}
 		const units = this.chart_data.datasets.map(item => item.label);
@@ -249,20 +221,26 @@ export class MintKeysetChartComponent {
 	}
 
 	private getAnnotations(): any {
-		const min_x_value = this.findMinimumXValue(this.chart_data);
-		const milli_genesis_time = this.mint_genesis_time*1000;
-		const display = (milli_genesis_time >= min_x_value) ? true : false;
+		const min_x_value = this.findMinimumXValue(this.chart_data) / 1000;
+		const max_x_value = this.findMaximumXValue(this.chart_data) / 1000;
 		const config = this.chartService.getFormAnnotationConfig(false);
-		return {
-			annotations: {
-				genesis : {
+		const annotations: Record<string, any> = {};
+
+		this.keysets
+			.filter(keyset => (keyset.valid_from >= min_x_value && keyset.valid_from <= max_x_value))
+			.filter(keyset => this.chart_settings?.status.includes(keyset.active))
+			.filter(keyset => this.chart_settings?.units.includes(keyset.unit))
+			.forEach(keyset => {
+				const milli_keyset_time = keyset.valid_from * 1000;
+				const display_keyset = (milli_keyset_time >= min_x_value) ? true : false;
+				annotations[`keyset_${keyset.id}`] = {
 					type: 'line',
 					borderColor: config.border_color,
 					borderWidth: config.border_width,
-					display: display,
+					display: display_keyset,
 					label: {
-						display:  true,
-						content: 'Mint Genesis',
+						display: true,
+						content: `Gen ${keyset.derivation_path_index} : ${keyset.unit}`,
 						position: 'start',
 						backgroundColor: config.label_bg_color,
 						color: config.text_color,
@@ -274,10 +252,11 @@ export class MintKeysetChartComponent {
 						borderWidth: 1,
 					},
 					scaleID: 'x',
-					value: milli_genesis_time
-				}
-			}
-		}
+					value: milli_keyset_time
+				};
+			});
+	
+		return { annotations };
 	}
 
 	private findMinimumXValue(chartData: ChartConfiguration['data']): number {
@@ -286,5 +265,13 @@ export class MintKeysetChartComponent {
 		  	dataset.data.map((point: any) => point.x)
 		);
 		return Math.min(...all_x_values);
+	}
+
+	private findMaximumXValue(chartData: ChartConfiguration['data']): number {
+		if (!chartData?.datasets || chartData.datasets.length === 0) return 0;
+		const all_x_values = chartData.datasets.flatMap(dataset => 
+		  	dataset.data.map((point: any) => point.x)
+		);
+		return Math.max(...all_x_values);
 	}
 }
