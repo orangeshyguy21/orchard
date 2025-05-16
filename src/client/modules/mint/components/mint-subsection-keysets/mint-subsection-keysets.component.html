@@ -1,7 +1,6 @@
 <div class="mint-subsection-keysets-container p-h-1">
 	<div class="mint-keyset-control p-t-1">
-		<div class="flex flex-justify-between flex-gap-1 flex-items-end">
-			<!-- <div class="title-l p-1">Keysets</div> -->
+		<div class="flex flex-justify-between flex-gap-1 flex-items-start">
 			@if( chart_settings ) {
 				<orc-mint-keyset-control
 					class="flex-grow"
@@ -12,14 +11,16 @@
 					[status]="chart_settings.status"
 					[keysets]="mint_keysets"
 					[loading]="loading_static_data"
-					[mint_genesis_time]="mint_genesis_time">
+					[mint_genesis_time]="mint_genesis_time"
+					(dateChange)="onDateChange($event)"
+					(unitsChange)="onUnitsChange($event)"
+					(statusChange)="onStatusChange($event)">
 				</orc-mint-keyset-control>
 			}
-			<div class="p-b-1">
-				<button mat-icon-button aria-label="Example icon button with a vertical three dot icon">
-					<mat-icon>more_vert</mat-icon>
-				</button>
-			</div>
+			<button mat-fab extended>
+				<mat-icon>autorenew</mat-icon>
+				Rotate Keyset
+			</button>
 		</div>
 		<div class="mint-keyset-control-rule"></div>
 	</div>
@@ -39,6 +40,7 @@
 		[keysets]="mint_keysets"
 		[keysets_analytics]="keysets_analytics"
 		[keysets_analytics_pre]="keysets_analytics_pre"
+		[chart_settings]="chart_settings"
 		[loading]="loading_dynamic_data">
 	</orc-mint-keyset-table>
 </div>

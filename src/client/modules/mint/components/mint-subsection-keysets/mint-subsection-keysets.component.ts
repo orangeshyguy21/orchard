@@ -122,4 +122,38 @@ export class MintSubsectionKeysetsComponent {
 		this.keysets_analytics = analytics_keysets;
 		this.keysets_analytics_pre = analytics_keysets_pre;
 	}
+
+	private async reloadDynamicData(): Promise<void> {
+		try {
+			this.mintService.clearKeysetsCache();
+			this.loading_dynamic_data = true;
+			this.interval = this.getAnalyticsInterval();
+			const timezone = this.settingService.getTimezone();
+			this.cdr.detectChanges();
+			await this.loadKeysetsAnalytics(timezone, this.interval);
+			this.loading_dynamic_data = false;
+			this.cdr.detectChanges();
+		} catch (error) {
+			console.error('Error updating dynamic data:', error);
+		}
+	}
+
+	public onDateChange(event: number[]): void {
+		this.chart_settings.date_start = event[0];
+		this.chart_settings.date_end = event[1];
+		this.chartService.setMintDashboardShortSettings(this.chart_settings);
+		this.reloadDynamicData();
+	}
+
+	public onUnitsChange(event: MintUnit[]): void {
+		this.chart_settings.units = event;
+		this.chartService.setMintKeysetsSettings(this.chart_settings);
+		this.reloadDynamicData();
+	}
+
+	public onStatusChange(event: boolean[]): void {
+		this.chart_settings.status = event;
+		this.chartService.setMintKeysetsSettings(this.chart_settings);
+		this.reloadDynamicData();
+	}
 }

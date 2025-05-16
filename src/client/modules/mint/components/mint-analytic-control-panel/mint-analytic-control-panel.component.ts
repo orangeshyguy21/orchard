@@ -61,10 +61,10 @@ export class MintAnalyticControlPanelComponent implements OnChanges {
 	@Input() loading!: boolean;
 	@Input() mint_genesis_time!: number;
 
-	@Output() date_change = new EventEmitter<number[]>();
-	@Output() units_change = new EventEmitter<MintUnit[]>();
-	@Output() interval_change = new EventEmitter<MintAnalyticsInterval>();
-	@Output() type_change = new EventEmitter<ChartType>();
+	@Output() dateChange = new EventEmitter<number[]>();
+	@Output() unitsChange = new EventEmitter<MintUnit[]>();
+	@Output() intervalChange = new EventEmitter<MintAnalyticsInterval>();
+	@Output() typeChange = new EventEmitter<ChartType>();
 
 	public readonly panel = new FormGroup({
 		daterange: new FormGroup({
@@ -139,28 +139,28 @@ export class MintAnalyticControlPanelComponent implements OnChanges {
 		if( this.panel.controls.daterange.controls.date_end.value === null ) return;
 		const date_start = Math.floor(this.panel.controls.daterange.controls.date_start.value.toSeconds());
 		const date_end = Math.floor(this.panel.controls.daterange.controls.date_end.value.endOf('day').toSeconds());
-		this.date_change.emit([date_start, date_end]);
+		this.dateChange.emit([date_start, date_end]);
 	}
 
 	public onUnitsChange(event: MatSelectChange): void {
 		if(this.panel.invalid) return;
 		const is_valid = this.isValidChange();
 		if( !is_valid ) return;
-		this.units_change.emit(event.value);
+		this.unitsChange.emit(event.value);
 	}
 
 	public onIntervalChange(event: MatSelectChange): void {
 		if(this.panel.invalid) return;
 		const is_valid = this.isValidChange();
 		if( !is_valid ) return;
-		this.interval_change.emit(event.value);
+		this.intervalChange.emit(event.value);
 	}
 
 	public onTypeChange(event: MatSelectChange): void {
 		if(this.panel.invalid) return;
 		const is_valid = this.isValidChange();
 		if( !is_valid ) return;
-		this.type_change.emit(event.value);
+		this.typeChange.emit(event.value);
 	}
 
 	private isValidChange(): boolean {

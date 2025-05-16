@@ -4,6 +4,8 @@ import { animate, style, transition, trigger } from '@angular/animations';
 /* Vendor Dependencies */
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+/* Application Dependencies */
+import { NonNullableMintKeysetsSettings } from '@client/modules/chart/services/chart/chart.types';
 /* Native Dependencies */
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 import { MintAnalyticKeyset } from '@client/modules/mint/classes/mint-analytic.class';
@@ -25,13 +27,14 @@ import { MintKeysetRow } from './mint-keyset-row.class';
         ])
     ]
 })
-export class MintKeysetTableComponent implements OnChanges, AfterViewInit {
+export class MintKeysetTableComponent implements OnChanges {
 
 	@ViewChild(MatSort) sort!: MatSort;
 
 	@Input() public keysets!: MintKeyset[];
 	@Input() public keysets_analytics!: MintAnalyticKeyset[];
 	@Input() public keysets_analytics_pre!: MintAnalyticKeyset[];
+	@Input() public chart_settings!: NonNullableMintKeysetsSettings;
 	@Input() public loading!: boolean;
 
 	public displayed_columns = ['keyset', 'unit', 'id', 'input_fee_ppk', 'valid_from', 'balance'];
@@ -45,12 +48,12 @@ export class MintKeysetTableComponent implements OnChanges, AfterViewInit {
 		}
 	}
 
-	public ngAfterViewInit(): void {
-		// this.data_source.sort = this.sort;
-	}
-
-	private init() : void {
+	private init() : any {
+		console.log('init table');
 		const keyset_rows = this.keysets
+			.filter(keyset => this.chart_settings?.date_end >= keyset.valid_from)
+			.filter(keyset => this.chart_settings?.status.includes(keyset.active))
+			.filter(keyset => this.chart_settings?.units.includes(keyset.unit))
 			.sort((a, b) => b.valid_from - a.valid_from)
 			.map(keyset => {
 				const keyset_analytics = this.keysets_analytics.filter(analytic => analytic.keyset_id === keyset.id);

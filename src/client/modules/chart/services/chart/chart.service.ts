@@ -130,4 +130,10 @@ export class ChartService {
     public setMintDashboardSettings(settings: AllMintDashboardSettings): void {
         this.localStorageService.setMintDashboardSettings(settings);
     }
+    public setMintKeysetsShortSettings(settings: { date_start: number, date_end: number }): void {
+        this.mint_keysets_short_settings = settings;
+    }
+    public setMintKeysetsSettings(settings: AllMintKeysetsSettings): void {
+        this.localStorageService.setMintKeysetsSettings(settings);
+    }
 }

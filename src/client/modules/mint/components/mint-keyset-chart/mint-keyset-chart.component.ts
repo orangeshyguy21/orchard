@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, SimpleChanges, ViewChild } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 /* Vendor Dependencies */
 import { BaseChartDirective } from 'ng2-charts';
@@ -36,7 +36,18 @@ import { MintAnalyticsInterval } from '@shared/generated.types';
 	standalone: false,
 	templateUrl: './mint-keyset-chart.component.html',
 	styleUrl: './mint-keyset-chart.component.scss',
-	changeDetection: ChangeDetectionStrategy.OnPush
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	animations: [
+		trigger('fadeInOut', [
+			transition(':enter', [
+				style({ opacity: 0 }),
+				animate('150ms ease-in', style({ opacity: 1 }))
+			]),
+			transition(':leave', [
+				animate('150ms ease-out', style({ opacity: 0 }))
+			])
+		])
+	]
 })
 export class MintKeysetChartComponent {
 

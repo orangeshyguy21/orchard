@@ -55,8 +55,9 @@ export class MintKeysetControlComponent implements OnChanges {
 	@Input() loading!: boolean;
 	@Input() mint_genesis_time!: number;
 
-	@Output() date_change = new EventEmitter<number[]>();
-	@Output() units_change = new EventEmitter<MintUnit[]>();
+	@Output() dateChange = new EventEmitter<number[]>();
+	@Output() unitsChange = new EventEmitter<MintUnit[]>();
+	@Output() statusChange = new EventEmitter<boolean[]>();
 
 	public readonly panel = new FormGroup({
 		daterange: new FormGroup({
@@ -119,21 +120,21 @@ export class MintKeysetControlComponent implements OnChanges {
 		if( this.panel.controls.daterange.controls.date_end.value === null ) return;
 		const date_start = Math.floor(this.panel.controls.daterange.controls.date_start.value.toSeconds());
 		const date_end = Math.floor(this.panel.controls.daterange.controls.date_end.value.endOf('day').toSeconds());
-		this.date_change.emit([date_start, date_end]);
+		this.dateChange.emit([date_start, date_end]);
 	}
 
 	public onUnitsChange(event: MatSelectChange): void {
 		if(this.panel.invalid) return;
 		const is_valid = this.isValidChange();
 		if( !is_valid ) return;
-		this.units_change.emit(event.value);
+		this.unitsChange.emit(event.value);
 	}
 
 	public onStatusChange(event: MatSelectChange): void {
-		// if(this.panel.invalid) return;
-		// const is_valid = this.isValidChange();
-		// if( !is_valid ) return;
-		// this.status_change.emit(event.value);
+		if(this.panel.invalid) return;
+		const is_valid = this.isValidChange();
+		if( !is_valid ) return;
+		this.statusChange.emit(event.value);
 	}
 
 	private isValidChange(): boolean {
@@ -141,10 +142,12 @@ export class MintKeysetControlComponent implements OnChanges {
 		if( this.panel.controls.daterange.controls.date_start.value === null ) return false;
 		if( this.panel.controls.daterange.controls.date_end.value === null ) return false;
 		if( this.panel.controls.units.value === null ) return false;
+		if( this.panel.controls.status.value === null ) return false;
 		// change checks
 		if( this.panel.controls.daterange.controls.date_start.value.toSeconds() !== this.chart_settings.date_start ) return true;
 		if( this.panel.controls.daterange.controls.date_end.value.toSeconds() !== this.chart_settings.date_end ) return true;
 		if( this.panel.controls.units.value !== this.chart_settings.units ) return true;
+		if( this.panel.controls.status.value !== this.chart_settings.status ) return true;
 		return false;
 	}
 }

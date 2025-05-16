@@ -89,6 +89,9 @@ export class LocalStorageService {
 	setMintDashboardSettings(settings: MintDashboardSettings): void {
 		this.setItem(this.STORAGE_KEYS.MINT_DASHBOARD_KEY, settings);
 	}
+	setMintKeysetsSettings(settings: MintKeysetsSettings): void {
+		this.setItem(this.STORAGE_KEYS.MINT_KEYSETS_KEY, settings);
+	}
   
 	/**
 	 * Remove an item from local storage
