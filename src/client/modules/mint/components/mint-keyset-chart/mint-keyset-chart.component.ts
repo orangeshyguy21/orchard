@@ -122,20 +122,22 @@ export class MintKeysetChartComponent {
 			groups[id].push(analytic);
 			return groups;
 		}, {} as Record<string, MintAnalyticKeyset[]>);
-		const data_unit_groups_prepended = this.prependData(data_keyset_groups, this.keysets_analytics_pre, timestamp_first);
-		const datasets = Object.entries(data_unit_groups_prepended).map(([unit, data], index) => {
+		const data_keyset_groups_prepended = this.prependData(data_keyset_groups, this.keysets_analytics_pre, timestamp_first);
+		const datasets = Object.entries(data_keyset_groups_prepended).map(([keyset_id, data], index) => {
+			const keyset = this.keysets.find(k => k.id === keyset_id);
 			const data_keyed_by_timestamp = data.reduce((acc, item) => {
 				acc[item.created_time] = item.amount;
 				return acc;
 			}, {} as Record<string, number>);
-			const color = this.chartService.getAssetColor(unit, index);
+			const color = this.chartService.getAssetColor(keyset_id, index);
 			const cumulative = this.chart_type === 'line';
-			const data_prepped = getAmountData(timestamp_range, data_keyed_by_timestamp, unit, cumulative)
-			const yAxisID = getYAxisId(unit);
+			const data_prepped = getAmountData(timestamp_range, data_keyed_by_timestamp, keyset_id, cumulative)
+			const yAxisID = getYAxisId(keyset_id);
+			const label = keyset ?  `Gen ${keyset.derivation_path_index} : ${keyset.unit}` : keyset_id;
 
 			return {
 				data: data_prepped,
-				label: unit.toUpperCase(),
+				label: label,
 				backgroundColor: color.bg,
 				borderColor: color.border,
 				borderWidth: 2,
@@ -218,7 +220,14 @@ export class MintKeysetChartComponent {
 				},
 				legend: {
 					display: true,
-					position: 'top'
+					position: 'left',
+					labels: {
+						padding: 15,
+						font: {
+							family: "'Roboto', 'Helvetica Neue', sans-serif",
+							size: 12,
+						},
+					}
 				},
 			},
 			interaction: {
