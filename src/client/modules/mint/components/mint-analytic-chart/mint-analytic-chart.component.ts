@@ -266,7 +266,7 @@ export class MintAnalyticChartComponent implements OnChanges {
 
 	private getAnnotations(): any {
 		const min_x_value = this.findMinimumXValue(this.chart_data);
-		const milli_genesis_time = this.mint_genesis_time*1000;
+		const milli_genesis_time = DateTime.fromSeconds(this.mint_genesis_time).startOf('day').toMillis();
 		const display = (milli_genesis_time >= min_x_value) ? true : false;
 		const config = this.chartService.getFormAnnotationConfig(false);
 		return {

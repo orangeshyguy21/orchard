@@ -20,6 +20,7 @@ import { SettingsTimeComponent } from './components/settings-time/settings-time.
 import { SettingsTimeTimezoneComponent } from './components/settings-time-timezone/settings-time-timezone.component';
 import { SettingsTimeLocaleComponent } from './components/settings-time-locale/settings-time-locale.component';
 import { SettingsThemeComponent } from './components/settings-theme/settings-theme.component';
+import { SettingsAiComponent } from './components/settings-ai/settings-ai.component';
 
 const routes: Routes = [
 	{
@@ -39,6 +40,7 @@ const routes: Routes = [
 	exports: [
 		RouterModule,
 	],
+	declarations: [],
 })
 export class SettingsAppRoutingModule { }
 
@@ -50,6 +52,7 @@ export class SettingsAppRoutingModule { }
 		SettingsTimeTimezoneComponent,
 		SettingsTimeLocaleComponent,
 		SettingsThemeComponent,
+		SettingsAiComponent,
 	],
 	imports: [
 		CommonModule,

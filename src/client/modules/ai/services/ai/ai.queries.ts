@@ -17,3 +17,23 @@ export const AI_CHAT_SUBSCRIPTION = `
         }
     }
 `;
+
+export const AI_MODELS_QUERY = `
+    query AiModels {
+        ai_models{
+            model
+            modified_at
+            name
+            size
+            digest
+            details{
+                family
+                families
+                format
+                parameter_size
+                parent_model
+                quantization_level
+            }
+        }
+    }
+`;

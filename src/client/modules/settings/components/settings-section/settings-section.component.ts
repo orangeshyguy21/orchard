@@ -26,15 +26,16 @@ export class SettingsSectionComponent implements OnInit {
 	constructor(
 		private localStorageService: LocalStorageService,
 		private settingService: SettingService,
-		private changeDetectorRef: ChangeDetectorRef,
+		private cdr: ChangeDetectorRef,
 	) {}
 
 	ngOnInit(): void {
 		this.locale = this.localStorageService.getLocale();
 		this.timezone = this.localStorageService.getTimezone();
 		this.theme = this.localStorageService.getTheme();
+		// todo get models
 		this.loading = false;
-		this.changeDetectorRef.detectChanges();
+		this.cdr.detectChanges();
 	}
 
 	public onLocaleChange(locale: string|null) {

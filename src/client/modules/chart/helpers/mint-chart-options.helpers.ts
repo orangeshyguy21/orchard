@@ -31,11 +31,12 @@ function getTimeTicks(timestamp: number): string {
 }
 
 export function getYAxis(units: (string | undefined)[]): string[] {
+    const lower_units = units.map(unit => unit?.toLowerCase());
     const y_axis: string[] = [];
-    if( units.includes('SAT') || units.includes('BTC') || units.includes('MSAT') ) {
+    if( lower_units.includes('sat') || lower_units.includes('btc') || lower_units.includes('msat') ) {
         y_axis.push('ybtc');
     }
-    if( units.includes('USD') || units.includes('EUR') ) {
+    if( lower_units.includes('usd') || lower_units.includes('eur') ) {
         y_axis.push('yfiat');
     }
     return y_axis;
@@ -110,7 +111,7 @@ export function getBtcYAxisConfig({
         position: 'left',
         title: {
             display: true,
-            text: 'SATS'
+            text: 'SAT'
         },
         beginAtZero: false,
         grid: {

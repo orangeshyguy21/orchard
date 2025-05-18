@@ -6,11 +6,10 @@
     @extend %relative;
 
     canvas{
-        max-height: min(calc(100vh - 530px), 800px);
+        max-height: 30vh;
         min-height: 300px;
     }
 }
-
 
 .no-data-overlay{
     @extend %absolute;

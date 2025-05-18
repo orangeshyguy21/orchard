@@ -1,17 +1,22 @@
 /* Core Dependencies */
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 /* Vendor Dependencies */
-import { Observable, catchError, Subscription, Subject } from 'rxjs';
+import { Observable, catchError, Subscription, Subject, map, throwError } from 'rxjs';
 /* Application Dependencies */
 import { ApiService } from '@client/modules/api/services/api/api.service';
 import { OrchardWsRes } from '@client/modules/api/types/api.types';
-/* Shared Dependencies */
-import { AiAgent, AiMessageRole, } from '@shared/generated.types';
+import { api, getApiQuery } from '@client/modules/api/helpers/api.helpers';
+import { OrchardErrors } from '@client/modules/error/classes/error.class';
+import { OrchardRes } from '@client/modules/api/types/api.types';
 /* Native Dependencies */
-import { AiChatResponse } from '@client/modules/ai/types/ai.types';
+import { AiChatResponse, AiModelResponse } from '@client/modules/ai/types/ai.types';
 import { AiChatChunk, AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
+import { AiModel } from '@client/modules/ai/classes/ai-model.class';
 /* Local Dependencies */
-import { AI_CHAT_SUBSCRIPTION } from './ai.queries';
+import { AI_CHAT_SUBSCRIPTION, AI_MODELS_QUERY } from './ai.queries';
+/* Shared Dependencies */
+import { AiAgent, AiMessageRole } from '@shared/generated.types';
 
 @Injectable({
 	providedIn: 'root'
@@ -29,9 +34,9 @@ export class AiService {
 	private toolcall_subject = new Subject<AiChatToolCall>();
 	private agent_subject = new Subject<{agent: AiAgent, content: string|null}>();
 
-
 	constructor(
-		private apiService: ApiService
+		private apiService: ApiService,
+		private http: HttpClient,
 	) {}
 
 	public closeAiSocket(): void {
@@ -92,5 +97,20 @@ export class AiService {
 				}
 			}
 		});
+	}
+
+	public getAiModels(): Observable<AiModel[]> {
+		const query = getApiQuery(AI_MODELS_QUERY);
+		return this.http.post<OrchardRes<AiModelResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.ai_models;
+			}),
+			map((aiModels) => aiModels.map((aiModel) => new AiModel(aiModel))),
+			catchError((error) => {
+				console.error('Error loading ai models:', error);
+				return throwError(() => error);
+			}),
+		);
 	}
 }

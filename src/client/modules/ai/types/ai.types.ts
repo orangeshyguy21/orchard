@@ -1,10 +1,14 @@
 /* Application Dependencies */
 import { ChartType } from "@client/modules/mint/enums/chart-type.enum";
 /* Shared Dependencies */
-import { OrchardAiChatChunk, AiFunctionName, MintUnit, MintAnalyticsInterval } from "@shared/generated.types";
+import { OrchardAiChatChunk, OrchardAiModel, AiFunctionName, MintUnit, MintAnalyticsInterval } from "@shared/generated.types";
 
 export type AiChatResponse = {
   	ai_chat: OrchardAiChatChunk;
+}
+
+export type AiModelResponse = {
+	ai_models: OrchardAiModel[];
 }
 
 export type AiFunction = 

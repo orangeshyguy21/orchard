@@ -86,7 +86,7 @@ export class MintKeysetChartComponent {
 		const valid_analytics = this.keysets_analytics.filter(analytic => valid_keysets_ids.includes(analytic.keyset_id));
 		const valid_analytics_pre = this.keysets_analytics_pre.filter(analytic => valid_keysets_ids.includes(analytic.keyset_id));
 		this.chart_data = this.getChartData(valid_analytics, valid_analytics_pre);
-		this.chart_options = this.getChartOptions();
+		this.chart_options = this.getChartOptions(valid_keysets_ids);
 		if(this.chart_options?.plugins) this.chart_options.plugins.annotation = this.getAnnotations();
 	}
 
@@ -111,11 +111,11 @@ export class MintKeysetChartComponent {
 				acc[item.created_time] = item.amount;
 				return acc;
 			}, {} as Record<string, number>);
-			const color = this.chartService.getAssetColor(keyset_id, index);
+			const color = this.chartService.getAssetColor(keyset?.unit || '', index);
 			const cumulative = this.chart_type === 'line';
 			const data_prepped = getAmountData(timestamp_range, data_keyed_by_timestamp, keyset_id, cumulative)
-			const yAxisID = getYAxisId(keyset_id);
-			const label = keyset ?  `Gen ${keyset.derivation_path_index} : ${keyset.unit}` : keyset_id;
+			const yAxisID = getYAxisId(keyset?.unit || '');
+			const label = keyset ?  `${keyset.unit.toUpperCase()} Gen ${keyset.derivation_path_index}` : keyset_id;
 
 			return {
 				data: data_prepped,
@@ -166,20 +166,26 @@ export class MintKeysetChartComponent {
 		return analytics;
 	}
 
-	private getChartOptions(): ChartConfiguration['options'] {
+	private getChartOptions(valid_keysets_ids: string[]): ChartConfiguration['options'] {
 		if ( !this.chart_data || this.chart_data.datasets.length === 0 || !this.chart_settings ) return {}
-		const units = this.chart_data.datasets.map(item => item.label);
+		const units = this.keysets.filter(keyset => valid_keysets_ids.includes(keyset.id)).map(keyset => keyset.unit);
 		const y_axis = getYAxis(units);
 		const scales: ScaleChartOptions<'line'>['scales'] = {};
 		scales['x'] = getXAxisConfig(this.interval, this.locale);
-		if( y_axis.includes('ybtc') ) scales['ybtc'] = getBtcYAxisConfig({
-			grid_color: this.chartService.getGridColor()
-		});
-		if( y_axis.includes('yfiat') ) scales['yfiat'] = getFiatYAxisConfig({
-			units,
-			show_grid: !y_axis.includes('ybtc'),
-			grid_color: this.chartService.getGridColor()
-		});
+		if( y_axis.includes('ybtc') ) scales['ybtc'] = {
+			...getBtcYAxisConfig({
+				grid_color: this.chartService.getGridColor()
+			}),
+			beginAtZero: true
+		};
+		if( y_axis.includes('yfiat') ) scales['yfiat'] = {
+			...getFiatYAxisConfig({
+				units,
+				show_grid: !y_axis.includes('ybtc'),
+				grid_color: this.chartService.getGridColor(),
+			}),
+			beginAtZero: true
+		};
 
 		return {
 			responsive: true,
@@ -202,11 +208,10 @@ export class MintKeysetChartComponent {
 				},
 				legend: {
 					display: true,
-					position: 'left',
+					position: 'top',
 					labels: {
 						padding: 15,
 						font: {
-							family: "'Roboto', 'Helvetica Neue', sans-serif",
 							size: 12,
 						},
 					}
@@ -229,9 +234,10 @@ export class MintKeysetChartComponent {
 			.filter(keyset => (keyset.valid_from >= min_x_value && keyset.valid_from <= max_x_value))
 			.filter(keyset => this.chart_settings?.status.includes(keyset.active))
 			.filter(keyset => this.chart_settings?.units.includes(keyset.unit))
-			.forEach(keyset => {
-				const milli_keyset_time = keyset.valid_from * 1000;
+			.forEach((keyset) => {
+				const milli_keyset_time = DateTime.fromSeconds(keyset.valid_from).startOf('day').toMillis();
 				const display_keyset = (milli_keyset_time >= min_x_value) ? true : false;
+				const label = this.getAnnotationLabel(keyset);
 				annotations[`keyset_${keyset.id}`] = {
 					type: 'line',
 					borderColor: config.border_color,
@@ -239,7 +245,7 @@ export class MintKeysetChartComponent {
 					display: display_keyset,
 					label: {
 						display: true,
-						content: `Gen ${keyset.derivation_path_index} : ${keyset.unit}`,
+						content: label,
 						position: 'start',
 						backgroundColor: config.label_bg_color,
 						color: config.text_color,
@@ -254,7 +260,6 @@ export class MintKeysetChartComponent {
 					value: milli_keyset_time
 				};
 			});
-	
 		return { annotations };
 	}
 
@@ -271,6 +276,12 @@ export class MintKeysetChartComponent {
 		const all_x_values = chartData.datasets.flatMap(dataset => 
 		  	dataset.data.map((point: any) => point.x)
 		);
-		return Math.max(...all_x_values);
+		const max_x_value = Math.max(...all_x_values);
+		return DateTime.fromMillis(max_x_value).endOf('day').toMillis();
+	}
+
+	private getAnnotationLabel(keyset: MintKeyset): string {
+		if( this.mint_genesis_time === keyset.valid_from ) return `Mint Genesis`;
+		return `${keyset.unit.toUpperCase()} Rotation ${keyset.derivation_path_index}`;
 	}
 }
