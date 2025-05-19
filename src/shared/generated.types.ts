@@ -33,7 +33,7 @@ export type AiChatInput = {
   agent?: InputMaybe<AiAgent>;
   id: Scalars['String']['input'];
   messages: Array<AiChatMessageInput>;
-  model: Scalars['String']['input'];
+  model?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type AiChatMessageInput = {

@@ -41,8 +41,6 @@ export class AppComponent implements OnInit {
 			.addSvgIcon('x', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/x.svg'))
 			.addSvgIcon('minting_disabled_outline', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/minting-disabled-outline.svg'))
 			.addSvgIcon('melting_disabled_outline', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/melting-disabled-outline.svg'));
-
-
 	}
 
 	private initSettings(): void {

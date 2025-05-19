@@ -136,6 +136,7 @@ export class MintKeysetChartComponent {
 				},
 				tension: 0.4,
 				yAxisID: yAxisID,
+				borderDash: keyset && !keyset.active ? [5, 5] : undefined,
 			};
 		});
 		
