@@ -13,7 +13,7 @@
             <div class="p-l-1 p-r-1 p-t-1 flex flex-column flex-gap-1">
                 <div class="flex flex-items-start flex-gap-2">
                     <div class="flex-1 flex flex-items-start flex-justify-between">
-                        <form>
+                        <form (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)">
                             <mat-form-field hideRequiredMarker="true" class="primary-form-field">
                                 <mat-label>Agent Model</mat-label>
                                 <input 

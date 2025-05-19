@@ -1,9 +1,10 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, computed, SimpleChanges, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, computed, SimpleChanges, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 /* Vendor Dependencies */
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
+import { MatAutocompleteTrigger, MatAutocomplete } from '@angular/material/autocomplete';
 /* Application Dependencies */
 import { AiModel } from '@client/modules/ai/classes/ai-model.class';
 import { Model } from '@client/modules/cache/services/local-storage/local-storage.types';
@@ -16,6 +17,9 @@ import { Model } from '@client/modules/cache/services/local-storage/local-storag
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SettingsAiComponent implements OnChanges {
+
+	@ViewChild(MatAutocompleteTrigger) autotrigger!: MatAutocompleteTrigger;
+	@ViewChild('auto') auto!: MatAutocomplete;
 
 	@Input() public loading!: boolean;
 	@Input() public error!: boolean;
@@ -47,6 +51,9 @@ export class SettingsAiComponent implements OnChanges {
 		this.model_control.setValue(this.model.model);
 		this.setFilteredOptions();
 		this.setAiModel(this.model.model);
+		setTimeout(() => {
+			this.auto.options.find(option => option.value === this.model?.model)?.select();	
+		});
 		this.cdr.detectChanges();
 		this.model_control.valueChanges.subscribe(value => {
 			this.onModelChange(value);
@@ -78,5 +85,14 @@ export class SettingsAiComponent implements OnChanges {
 		this.setFilteredOptions();
 		this.setAiModel(value);
 		this.cdr.detectChanges();
+	}
+
+	public onSubmit(event: Event) : void {
+		event.preventDefault();
+		this.autotrigger.closePanel();
+		this.onModelChange(this.model_control.value);
+		setTimeout(() => {
+			this.auto.options.find(option => option.value === this.model?.model)?.select();	
+		});
 	}
 }
