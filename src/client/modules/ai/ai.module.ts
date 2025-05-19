@@ -12,11 +12,13 @@ import { FormModule } from '@client/modules/form/form.module';
 /* Local Dependencies */
 import { AiInputComponent } from './components/ai-input/ai-input.component';
 import { AiNavComponent } from './components/ai-nav/ai-nav.component';
+import { BytesPipe } from './pipes/bytes/bytes.pipe';
 
 @NgModule({
 	declarations: [	
 		AiInputComponent,
 		AiNavComponent,
+		BytesPipe,
 	],
 	imports: [
 		CommonModule,
@@ -29,6 +31,7 @@ import { AiNavComponent } from './components/ai-nav/ai-nav.component';
 	],
 	exports: [
 		AiNavComponent,
+		BytesPipe,
 	]
 })
 export class AiModule { }

@@ -3,3 +3,12 @@
 .primary-form-field{
     @extend %w-min-18;
 }
+
+.model-detail-header{
+    @extend %p-b-0-5;
+    // @extend %m-b-0-5;
+    @extend %border-bottom;
+    @extend %border-bottom-solid;
+    @extend %orc-outline-variant-border;
+    
+}

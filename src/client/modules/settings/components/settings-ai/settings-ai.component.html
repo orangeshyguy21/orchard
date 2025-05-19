@@ -47,12 +47,12 @@
                         </div>
                     </div>
                 
-                    <div class="flex-1">
-                        <div class="ai-model-description">
-                            <div class="flex flex-justify-center p-b-1">
+                    <div class="flex-1 flex flex-justify-center">
+                        <div class="ai-model-description flex-grow flex flex-column flex-gap-1 w-max-24 p-b-1">
+                            <div class="flex flex-justify-center model-detail-header">
                                 <div class="font-size-xs orc-outline-color">Model Details</div>
                             </div>
-
+                            
                             @if( ai_model ) {
                                 <div class="flex flex-justify-center flex-items-center flex-gap-1">
                                     <div class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color font-weight-extra-light">
@@ -65,7 +65,7 @@
                                     <div class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color">
                                         <div>{{ ai_model.model }}</div>
                                         <div>{{ ai_model.details.parameter_size }}</div>
-                                        <div>{{ ai_model.size }}</div>
+                                        <div>{{ ai_model.size | bytes }}</div>
                                         <div>{{ ai_model.details.quantization_level }}</div>
                                         <div>{{ ai_model.modified_at | time:'medium' }}</div>
                                     </div>
