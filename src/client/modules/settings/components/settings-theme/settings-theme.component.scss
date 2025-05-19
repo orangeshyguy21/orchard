@@ -1,0 +1,11 @@
+@use '@styles/molecule/molecule';
+
+
+.theme-sample{
+    @extend %w-2;
+    @extend %h-2;
+    @extend %orc-corner-full;
+    @extend %border-solid;
+    @extend %border;
+    @extend %orc-outline-border;
+}

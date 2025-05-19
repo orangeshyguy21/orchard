@@ -1,10 +1,7 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, signal, computed, model } from '@angular/core';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { MatChipInputEvent } from '@angular/material/chips';
-import { FormControl } from '@angular/forms';
-import { Observable, map, startWith } from 'rxjs';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+/* Vendor Dependencies */
+import { lastValueFrom } from 'rxjs';
 /* Application Configuration */
 import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
@@ -26,7 +23,6 @@ import { SettingsCategory } from '@client/modules/settings/enums/category.enum';
 export class SettingsSectionComponent implements OnInit {
 
 	public version = environment.mode.version;
-	public loading: boolean = true;
 	public locale: Locale | null = null;
 	public timezone: Timezone | null = null;
 	public theme: Theme | null = null;
@@ -39,6 +35,10 @@ export class SettingsSectionComponent implements OnInit {
 		SettingsCategory.Ecash
 	];
 
+	public loading_static: boolean = true;
+	public loading_ai: boolean = true;
+	public error_ai: boolean = false;
+
 	constructor(
 		private localStorageService: LocalStorageService,
 		private settingService: SettingService,
@@ -50,15 +50,22 @@ export class SettingsSectionComponent implements OnInit {
 		this.locale = this.localStorageService.getLocale();
 		this.timezone = this.localStorageService.getTimezone();
 		this.theme = this.localStorageService.getTheme();
-		this.getModels();
-		this.loading = false;
+		this.loading_static = false;
 		this.cdr.detectChanges();
+		this.getModels();
 	}
 
 	private getModels() {
-		this.aiService.getAiModels().subscribe((models) => {
-			console.log('models', models);
-		});
+		this.aiService.getAiModels()
+			.subscribe((models:AiModel[]) => {
+				this.ai_models = models;
+				this.cdr.detectChanges();
+			}, (error) => {
+				this.error_ai = true;
+				this.loading_ai = false;
+				this.cdr.detectChanges();
+			}
+		);
 	}
 
 	public onUpdateFilters(filters: SettingsCategory[]) {
@@ -78,9 +85,10 @@ export class SettingsSectionComponent implements OnInit {
 	}
 
 	public onThemeChange(theme: ThemeType|null) {
-		console.log('theme change received', theme);
 		this.localStorageService.setTheme({ type: theme });
 		this.settingService.setTheme();
 		this.theme = this.localStorageService.getTheme();
 	}
 }
+
+

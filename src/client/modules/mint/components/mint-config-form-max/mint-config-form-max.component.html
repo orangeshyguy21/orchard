@@ -23,19 +23,7 @@
                         #element_max>
                     <span matSuffix class="form-suffix-text">{{ unit | unit }}</span>
                     @if (form_group.get(control_name)?.invalid && (form_group.get(control_name)?.dirty || form_group.get(control_name)?.touched)) {
-                        <mat-error class="font-size-xs">
-                            @if (form_group.get(control_name)?.hasError('required')) {
-                                Required
-                            } @else if (form_group.get(control_name)?.hasError('min')) {
-                                Must be at least {{form_group.get(control_name)?.getError('min')?.min}}
-                            } @else if (form_group.get(control_name)?.hasError('orchardInteger')) {
-                                Must be a whole number
-                            } @else if (form_group.get(control_name)?.hasError('orchardCents')) {
-                                Must have 2 decimals
-                            } @else {
-                                Invalid amount
-                            }
-                        </mat-error>
+                        <mat-error class="font-size-xs">{{ form_error() }}</mat-error>
                     }
                 </mat-form-field>
             </orc-dynamic-form-field>

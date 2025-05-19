@@ -42,7 +42,7 @@ todo: timezone (UTC - local)
 			<orc-settings-time
 				[locale]="locale"
 				[timezone]="timezone"
-				[loading]="loading"
+				[loading]="loading_static"
 				(localeChange)="onLocaleChange($event)"
 				(timezoneChange)="onTimezoneChange($event)">
 			</orc-settings-time>
@@ -63,7 +63,7 @@ todo: timezone (UTC - local)
 			</div>
 			<orc-settings-theme
 				[theme]="theme"
-				[loading]="loading"
+				[loading]="loading_static"
 				(themeChange)="onThemeChange($event)">
 			</orc-settings-theme>
 
@@ -81,9 +81,12 @@ todo: timezone (UTC - local)
 				</div>
 				<div class="category-rule"></div>
 			</div>
-			<orc-settings-ai></orc-settings-ai>
+			<orc-settings-ai
+				[loading]="loading_ai"
+				[error]="error_ai"
+				[models]="ai_models">
+			</orc-settings-ai>
 
 		</div>
 	</div>
-	
 </section>

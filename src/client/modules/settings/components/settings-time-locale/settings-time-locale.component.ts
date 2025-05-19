@@ -78,6 +78,7 @@ export class SettingsTimeLocaleComponent implements OnChanges {
 		{ code: 'id-ID', country: 'Indonesian (Indonesia)' }
 	];
 
+	// this is a great way to handle errors in a reactive way
 	public locale_control_error = computed(() => {
 		if (this.locale_control.hasError('required')) return 'required';
 		if (this.locale_control.hasError('invalid_locale')) return 'invalid locale';

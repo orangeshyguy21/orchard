@@ -16,6 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
 /* Application Dependencies */
 import { NavModule } from '@client/modules/nav/nav.module';
 import { LocalModule } from '@client/modules/local/local.module';
+import { FormModule } from '@client/modules/form/form.module';
 /* Native Module Dependencies */
 import { SettingsSectionComponent } from './components/settings-section/settings-section.component';
 import { SettingsTimeComponent } from './components/settings-time/settings-time.component';
@@ -73,6 +74,7 @@ export class SettingsAppRoutingModule { }
 		MatIconModule,
 		NavModule,
 		LocalModule,
+		FormModule,
 	],
 })
 export class SettingsAppModule { }

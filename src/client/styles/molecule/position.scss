@@ -16,6 +16,7 @@
     #{$c}flex-justify-evenly { justify-content: space-evenly; }
     #{$c}flex-justify-end { justify-content: flex-end; }
     #{$c}flex-grow { flex-grow: 1; }
+    #{$c}flex-grow-2 { flex-grow: 2; }
     #{$c}flex-gap-0-25 { gap: 0.25rem; }
     #{$c}flex-gap-0-5 { gap: 0.5rem; }
     #{$c}flex-gap-1 { gap: 1rem; }
@@ -59,8 +60,10 @@
     #{$c}w-min-10 { min-width: 10rem; }
     #{$c}w-min-12 { min-width: 12rem; }
     #{$c}w-min-18 { min-width: 18rem; }
+    #{$c}w-min-24 { min-width: 24rem; }
     #{$c}w-min-36 { min-width: 36rem; }
     #{$c}w-max-18 { max-width: 18rem; }
+    #{$c}w-max-24 { max-width: 24rem; }
     #{$c}w-max-36 { max-width: 36rem; }
     #{$c}w-max-54 { max-width: 54rem; }
 
