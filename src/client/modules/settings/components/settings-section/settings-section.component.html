@@ -20,29 +20,32 @@ todo: timezone (UTC - local)
     <div class="subsection-container">
 		<div class="flex flex-column">
 
-			<form>
-				<mat-form-field class="example-chip-list">
+			<form class="p-l-2 p-t-2 p-r-2">
+				<mat-form-field class="w-full">
 					<mat-label>Categories</mat-label>
-					<mat-chip-grid #chipGrid aria-label="Fruit selection">
-						@for (fruit of fruits(); track $index) {
-						<mat-chip-row (removed)="remove(fruit)">
-							{{fruit}}
-							<button matChipRemove [attr.aria-label]="'remove ' + fruit">
-								<mat-icon>cancel</mat-icon>
-							</button>
-						</mat-chip-row>
-						}
-					</mat-chip-grid>
-					<input
-						name="currentFruit"
-						placeholder="New Fruit..."
-						#fruitInput
-						[formControl]="fruit_control"
-						[matChipInputFor]="chipGrid"
-						[matAutocomplete]="auto"
-						[matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-						(matChipInputTokenEnd)="add($event)"
-					/>
+					<div class="flex flex-items-center">
+						<mat-chip-grid #chipGrid aria-label="Fruit selection">
+							@for (fruit of fruits(); track $index) {
+							<mat-chip-row (removed)="remove(fruit)">
+								{{fruit}}
+								<button matChipRemove [attr.aria-label]="'remove ' + fruit">
+									<mat-icon>cancel</mat-icon>
+								</button>
+							</mat-chip-row>
+							}
+						</mat-chip-grid>
+						<input
+							name="currentFruit"
+							placeholder="New Fruit..."
+							#fruitInput
+							[formControl]="fruit_control"
+							[matChipInputFor]="chipGrid"
+							[matAutocomplete]="auto"
+							[matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+							(matChipInputTokenEnd)="add($event)"
+						/>
+					</div>
+					
 					<mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event); fruitInput.value = ''">
 						@for (fruit of filteredFruits(); track fruit) {
 						<mat-option [value]="fruit">{{fruit}}</mat-option>
@@ -50,7 +53,6 @@ todo: timezone (UTC - local)
 					</mat-autocomplete>
 				</mat-form-field>
 			</form>
-			
 
 			<!-- Location Settings -->
 			<div class="sticky-setting z-index-1">
