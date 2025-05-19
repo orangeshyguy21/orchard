@@ -48,10 +48,31 @@
                     </div>
                 
                     <div class="flex-1">
-                        <div class="flex flex-items-center flex-justify-center">
-                            <div class="orc-outline-color">
-                                {{ ai_model | json }}
+                        <div class="ai-model-description">
+                            <div class="flex flex-justify-center p-b-1">
+                                <div class="font-size-xs orc-outline-color">Model Details</div>
                             </div>
+
+                            @if( ai_model ) {
+                                <div class="flex flex-justify-center flex-items-center flex-gap-1">
+                                    <div class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color font-weight-extra-light">
+                                        <div>model:</div>
+                                        <div>parameter size:</div>
+                                        <div>raw size:</div>
+                                        <div>quantization level:</div>
+                                        <div>last modified:</div>
+                                    </div>
+                                    <div class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color">
+                                        <div>{{ ai_model.model }}</div>
+                                        <div>{{ ai_model.details.parameter_size }}</div>
+                                        <div>{{ ai_model.size }}</div>
+                                        <div>{{ ai_model.details.quantization_level }}</div>
+                                        <div>{{ ai_model.modified_at | time:'medium' }}</div>
+                                    </div>
+                                </div> 
+                            }@else {
+                                nothing selected ( todo)
+                            }
                         </div>
                     </div>
                 </div>
@@ -59,3 +80,53 @@
         </mat-card-content>
     </mat-card>
 </div>
+
+
+<!-- <div class="flex flex-items-start">
+    <div class="flex-grow flex flex-items-start flex-justify-between">
+        <form class="flex flex-items-center flex-gap-1">
+            <div>
+                <mat-form-field hideRequiredMarker="true" class="primary-form-field">
+                    <mat-label>Locale</mat-label>
+                    <input 
+                        type="text"
+                        placeholder="Select locale"
+                        aria-label="Locale"
+                        matInput
+                        [formControl]="locale_control"
+                        [matAutocomplete]="auto">
+                    <mat-autocomplete #auto="matAutocomplete">
+                        @for (option of filtered_options | async; track option) {
+                            <mat-option [value]="option.code">{{option.code}} - {{option.country}}</mat-option>
+                        }
+                    </mat-autocomplete>
+                    @if( locale_control.invalid ) {
+                        <mat-error class="font-size-xs">{{ locale_control_error() }}</mat-error>
+                    }
+                </mat-form-field>
+            </div>
+            <div class="m-b-1-25">
+                <mat-checkbox 
+                    [formControl]="system_default_control"
+                    (change)="onSystemDefaultChange($event)">
+                    Sync with system
+                </mat-checkbox>
+            </div>
+        </form>
+
+        <div class="w-max-18">
+            <orc-help-text class="orc-surface-container-high-bg">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                Lorem ipsum dolor sit amet.
+            </orc-help-text>
+        </div>
+    </div>
+
+    <div class="flex-grow-2 w-max-24">
+        <div class="flex flex-items-center flex-justify-center">
+            <div class="orc-outline-color">
+                {{ unix_timestamp_seconds | time:'short' }}
+            </div>
+        </div>
+    </div>
+</div> -->

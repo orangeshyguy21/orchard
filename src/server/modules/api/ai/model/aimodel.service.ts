@@ -6,7 +6,7 @@ import { ErrorService } from '@server/modules/error/error.service';
 import { OrchardErrorCode } from '@server/modules/error/error.types';
 import { OrchardApiError } from '@server/modules/graphql/classes/orchard-error.class';
 /* Local Dependencies */
-// import { OrchardBitcoinBlockCount } from './btcblockcount.model';
+import { OrchardAiModel } from './aimodel.model';
 
 @Injectable()
 export class AiModelService {
@@ -18,11 +18,10 @@ export class AiModelService {
 		private errorService: ErrorService,
 	) {}
 	
-	// Method to get the current block count
 	async getModels(): Promise<any[]> {
 		try {
 			const models = await this.aiService.getModels();
-			return models;
+			return models.map(model => new OrchardAiModel(model));
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error,
 				errord: OrchardErrorCode.AiError,

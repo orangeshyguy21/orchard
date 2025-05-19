@@ -205,7 +205,7 @@ type OrchardAiModel {
   details: OrchardAiModelDetails!
   digest: String!
   model: String!
-  modified_at: String!
+  modified_at: UnixTimestamp!
   name: String!
   size: Float!
 }

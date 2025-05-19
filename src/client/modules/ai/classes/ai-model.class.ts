@@ -3,7 +3,7 @@ import { OrchardAiModel, OrchardAiModelDetails } from "@shared/generated.types";
 export class AiModel implements OrchardAiModel {
 
 	model: string;
-	modified_at: string;
+	modified_at: number;
 	name: string;
 	size: number;
 	digest: string;

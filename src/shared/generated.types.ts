@@ -304,7 +304,7 @@ export type OrchardAiModel = {
   details: OrchardAiModelDetails;
   digest: Scalars['String']['output'];
   model: Scalars['String']['output'];
-  modified_at: Scalars['String']['output'];
+  modified_at: Scalars['UnixTimestamp']['output'];
   name: Scalars['String']['output'];
   size: Scalars['Float']['output'];
 };
@@ -662,7 +662,6 @@ export type QueryMint_Analytics_KeysetsArgs = {
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   interval?: InputMaybe<MintAnalyticsInterval>;
   timezone?: InputMaybe<Scalars['Timezone']['input']>;
-  units?: InputMaybe<Array<MintUnit>>;
 };
 
 
