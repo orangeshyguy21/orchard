@@ -13,12 +13,6 @@
     @extend %flex-grow;
 }
 
-.config-category-rule{
-    @extend %border;
-    @extend %border-solid;
-    @extend %orc-outline-variant-border;
-}
-
 .disabled-overlay{
     @extend %absolute;
     @extend %top-0;
@@ -39,7 +33,7 @@
     @extend %p-l-2;
     @extend %p-r-2;
     @extend %p-t-2;
-    top: 0px;
+    @extend %top-0;
 }
 
 .sticky-method{

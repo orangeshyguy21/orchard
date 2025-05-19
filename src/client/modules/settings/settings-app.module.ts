@@ -11,6 +11,8 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
 /* Application Dependencies */
 import { NavModule } from '@client/modules/nav/nav.module';
 import { LocalModule } from '@client/modules/local/local.module';
@@ -65,6 +67,8 @@ export class SettingsAppRoutingModule { }
 		MatCheckboxModule,
 		MatSelectModule,
 		MatSlideToggleModule,
+		MatChipsModule,
+		MatIconModule,
 		NavModule,
 		LocalModule,
 	],

@@ -17,20 +17,142 @@ todo: timezone (UTC - local)
 		</div>
 	</orc-secondary-nav>
 
-    <div class="subsection-container p-1">
-      	<orc-settings-time
-			[locale]="locale"
-			[timezone]="timezone"
-			[loading]="loading"
-			(localeChange)="onLocaleChange($event)"
-			(timezoneChange)="onTimezoneChange($event)">
-		</orc-settings-time>
-		<orc-settings-theme
-			[theme]="theme"
-			[loading]="loading"
-			(themeChange)="onThemeChange($event)">
-		</orc-settings-theme>
-		<orc-settings-ai></orc-settings-ai>
-    </div>
+    <div class="subsection-container">
+		<div class="flex flex-column">
+
+			<form>
+				<mat-form-field class="example-chip-list">
+					<mat-label>Categories</mat-label>
+					<mat-chip-grid #chipGrid aria-label="Fruit selection">
+						@for (fruit of fruits(); track $index) {
+						<mat-chip-row (removed)="remove(fruit)">
+							{{fruit}}
+							<button matChipRemove [attr.aria-label]="'remove ' + fruit">
+								<mat-icon>cancel</mat-icon>
+							</button>
+						</mat-chip-row>
+						}
+					</mat-chip-grid>
+					<input
+						name="currentFruit"
+						placeholder="New Fruit..."
+						#fruitInput
+						[formControl]="fruit_control"
+						[matChipInputFor]="chipGrid"
+						[matAutocomplete]="auto"
+						[matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+						(matChipInputTokenEnd)="add($event)"
+					/>
+					<mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event); fruitInput.value = ''">
+						@for (fruit of filteredFruits(); track fruit) {
+						<mat-option [value]="fruit">{{fruit}}</mat-option>
+						}
+					</mat-autocomplete>
+				</mat-form-field>
+			</form>
+			
+
+			<!-- Location Settings -->
+			<div class="sticky-setting z-index-1">
+				<div class="flex flex-justify-between flex-items-end p-b-0-5">
+					<div>
+						<div class="title-l">Location</div>
+						<div class="font-size-xs orc-outline-color">Settings for local display and timezone</div>
+					</div>
+					<mat-chip-set aria-label="Location categories">
+						<mat-chip disabled>Orchard</mat-chip>
+						<mat-chip disabled>Local</mat-chip>
+					</mat-chip-set>
+				</div>
+				<div class="category-rule"></div>
+			</div>
+			<orc-settings-time
+				[locale]="locale"
+				[timezone]="timezone"
+				[loading]="loading"
+				(localeChange)="onLocaleChange($event)"
+				(timezoneChange)="onTimezoneChange($event)">
+			</orc-settings-time>
+
+			<!-- Theme Settings -->
+			<div class="sticky-setting z-index-1">
+				<div class="flex flex-justify-between flex-items-end p-b-0-5">
+					<div>
+						<div class="title-l">Theme</div>
+						<div class="font-size-xs orc-outline-color">Settings for the appearance of the application</div>
+					</div>
+					<mat-chip-set aria-label="Theme categories">
+						<mat-chip disabled>Orchard</mat-chip>
+						<mat-chip disabled>Local</mat-chip>
+					</mat-chip-set>
+				</div>
+				<div class="category-rule"></div>
+			</div>
+			<orc-settings-theme
+				[theme]="theme"
+				[loading]="loading"
+				(themeChange)="onThemeChange($event)">
+			</orc-settings-theme>
+
+			<!-- AI Settings -->
+			<div class="sticky-setting z-index-1">
+				<div class="flex flex-justify-between flex-items-end p-b-0-5">
+					<div>
+						<div class="title-l">AI</div>
+						<div class="font-size-xs orc-outline-color">Settings for the AI agents</div>
+					</div>
+					<mat-chip-set aria-label="AI categories">
+						<mat-chip disabled>Orchard</mat-chip>
+						<mat-chip disabled>Local</mat-chip>
+					</mat-chip-set>
+				</div>
+				<div class="category-rule"></div>
+			</div>
+			<orc-settings-ai></orc-settings-ai>
+
+		</div>
+	</div>
 	
 </section>
+
+
+<!-- <div>
+    <div class="flex flex-items-center">
+        <form class="flex-grow flex flex-items-center flex-gap-1">
+            <div>
+                <mat-form-field hideRequiredMarker="true" class="primary-form-field">
+                    <mat-label>Timezone</mat-label>
+                    <input 
+                        type="text"
+                        placeholder="Pick one"
+                        aria-label="Number"
+                        matInput
+                        [formControl]="timezone_control"
+                        [matAutocomplete]="auto">
+                    <mat-autocomplete #auto="matAutocomplete">
+                        @for (option of filtered_options | async; track option) {
+                            <mat-option [value]="option">{{option}}</mat-option>
+                        }
+                    </mat-autocomplete>
+                    @if( timezone_control.invalid ) {
+                        <mat-error class="font-size-xs">{{ timezone_control_error() }}</mat-error>
+                    }
+                </mat-form-field>
+            </div>
+            
+            <div class="m-b-1-25">
+                <mat-checkbox 
+                    [formControl]="system_default_control"
+                    (change)="onSystemDefaultChange($event)">
+                    Sync with system
+                </mat-checkbox>
+            </div>
+        </form>
+
+        <div class="w-max-36 m-b-1-25">
+            <div>
+                {{ unix_timestamp_seconds | time }}
+            </div>
+        </div>
+    </div>
+</div> -->
