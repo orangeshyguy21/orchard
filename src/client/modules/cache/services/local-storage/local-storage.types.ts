@@ -4,15 +4,19 @@ import { MintUnit, MintAnalyticsInterval } from '@shared/generated.types';
 import { ChartType } from '@client/modules/mint/enums/chart-type.enum';
 
 export type Timezone = {
-    tz: string|null;
+    tz: string | null;
 }
 
 export type Locale = {
-    code: string|null;
+    code: string | null;
 }
 
 export type Theme = {
     type: ThemeType | null;
+}
+
+export type Model = {
+    model: string | null;
 }
 
 export enum ThemeType {

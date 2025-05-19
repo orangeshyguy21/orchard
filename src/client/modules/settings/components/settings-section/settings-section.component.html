@@ -84,7 +84,9 @@ todo: timezone (UTC - local)
 			<orc-settings-ai
 				[loading]="loading_ai"
 				[error]="error_ai"
-				[models]="ai_models">
+				[model_options]="ai_models"
+				[model]="model"
+				(modelChange)="onModelChange($event)">
 			</orc-settings-ai>
 
 		</div>

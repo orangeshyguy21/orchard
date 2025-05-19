@@ -8,7 +8,7 @@ import { environment } from '@client/configs/configuration';
 import { LocalStorageService } from '@client/modules/cache/services/local-storage/local-storage.service';
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 import { AiService } from '@client/modules/ai/services/ai/ai.service';
-import { Locale, Timezone, Theme, ThemeType } from '@client/modules/cache/services/local-storage/local-storage.types';
+import { Locale, Timezone, Theme, ThemeType, Model } from '@client/modules/cache/services/local-storage/local-storage.types';
 import { AiModel } from '@client/modules/ai/classes/ai-model.class';
 /* Native Dependencies */
 import { SettingsCategory } from '@client/modules/settings/enums/category.enum';
@@ -26,6 +26,7 @@ export class SettingsSectionComponent implements OnInit {
 	public locale: Locale | null = null;
 	public timezone: Timezone | null = null;
 	public theme: Theme | null = null;
+	public model: Model | null = null;
 	public ai_models: AiModel[] = [];
 	public category_filters: SettingsCategory[] = [
 		SettingsCategory.Orchard,
@@ -50,6 +51,7 @@ export class SettingsSectionComponent implements OnInit {
 		this.locale = this.localStorageService.getLocale();
 		this.timezone = this.localStorageService.getTimezone();
 		this.theme = this.localStorageService.getTheme();
+		this.model = this.localStorageService.getModel();
 		this.loading_static = false;
 		this.cdr.detectChanges();
 		this.getModels();
@@ -59,6 +61,8 @@ export class SettingsSectionComponent implements OnInit {
 		this.aiService.getAiModels()
 			.subscribe((models:AiModel[]) => {
 				this.ai_models = models;
+				this.error_ai = false;
+				this.loading_ai = false;
 				this.cdr.detectChanges();
 			}, (error) => {
 				this.error_ai = true;
@@ -88,6 +92,11 @@ export class SettingsSectionComponent implements OnInit {
 		this.localStorageService.setTheme({ type: theme });
 		this.settingService.setTheme();
 		this.theme = this.localStorageService.getTheme();
+	}
+
+	public onModelChange(model: string|null) {
+		this.localStorageService.setModel({ model: model });
+		this.model = this.localStorageService.getModel();
 	}
 }
 
