@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, Subscription, Subject, map, throwError } from 'rxjs';
 /* Application Dependencies */
 import { ApiService } from '@client/modules/api/services/api/api.service';
+import { LocalStorageService } from '@client/modules/cache/services/local-storage/local-storage.service';
 import { OrchardWsRes } from '@client/modules/api/types/api.types';
 import { api, getApiQuery } from '@client/modules/api/helpers/api.helpers';
 import { OrchardErrors } from '@client/modules/error/classes/error.class';
@@ -36,6 +37,7 @@ export class AiService {
 
 	constructor(
 		private apiService: ApiService,
+		private localStorageService: LocalStorageService,
 		private http: HttpClient,
 	) {}
 
@@ -55,6 +57,7 @@ export class AiService {
 
 	public openAiSocket(agent: AiAgent, content: string|null, context?: string): void {
 		const subscription_id = crypto.randomUUID();
+		const ai_model = this.localStorageService.getModel();
 		this.subscription_id = subscription_id;
 		this.subscription = this.apiService.gql_socket.subscribe({
 			next: (response: OrchardWsRes<AiChatResponse>) => {
@@ -91,7 +94,7 @@ export class AiService {
 					ai_chat: {
 						id: subscription_id,
 						messages,
-						model: 'llama3.2:latest',
+						model: ai_model.model,
 						agent: agent
 					}
 				}
