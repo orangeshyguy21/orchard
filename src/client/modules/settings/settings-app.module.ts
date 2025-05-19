@@ -23,6 +23,7 @@ import { SettingsTimeTimezoneComponent } from './components/settings-time-timezo
 import { SettingsTimeLocaleComponent } from './components/settings-time-locale/settings-time-locale.component';
 import { SettingsThemeComponent } from './components/settings-theme/settings-theme.component';
 import { SettingsAiComponent } from './components/settings-ai/settings-ai.component';
+import { SettingsCategoriesComponent } from './components/settings-categories/settings-categories.component';
 
 const routes: Routes = [
 	{
@@ -50,6 +51,7 @@ export class SettingsAppRoutingModule { }
 @NgModule({
 	declarations: [
 		SettingsSectionComponent,
+		SettingsCategoriesComponent,
 		SettingsTimeComponent,
 		SettingsTimeTimezoneComponent,
 		SettingsTimeLocaleComponent,

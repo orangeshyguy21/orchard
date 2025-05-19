@@ -20,39 +20,10 @@ todo: timezone (UTC - local)
     <div class="subsection-container">
 		<div class="flex flex-column">
 
-			<form class="p-l-2 p-t-2 p-r-2">
-				<mat-form-field class="w-full">
-					<mat-label>Categories</mat-label>
-					<div class="flex flex-items-center">
-						<mat-chip-grid #chipGrid aria-label="Fruit selection">
-							@for (fruit of fruits(); track $index) {
-							<mat-chip-row (removed)="remove(fruit)">
-								{{fruit}}
-								<button matChipRemove [attr.aria-label]="'remove ' + fruit">
-									<mat-icon>cancel</mat-icon>
-								</button>
-							</mat-chip-row>
-							}
-						</mat-chip-grid>
-						<input
-							name="currentFruit"
-							placeholder="New Fruit..."
-							#fruitInput
-							[formControl]="fruit_control"
-							[matChipInputFor]="chipGrid"
-							[matAutocomplete]="auto"
-							[matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-							(matChipInputTokenEnd)="add($event)"
-						/>
-					</div>
-					
-					<mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event); fruitInput.value = ''">
-						@for (fruit of filteredFruits(); track fruit) {
-						<mat-option [value]="fruit">{{fruit}}</mat-option>
-						}
-					</mat-autocomplete>
-				</mat-form-field>
-			</form>
+			<orc-settings-categories 
+				[category_filters]="category_filters"
+				(updateFilters)="onUpdateFilters($event)">
+			</orc-settings-categories>
 
 			<!-- Location Settings -->
 			<div class="sticky-setting z-index-1">
@@ -116,45 +87,3 @@ todo: timezone (UTC - local)
 	</div>
 	
 </section>
-
-
-<!-- <div>
-    <div class="flex flex-items-center">
-        <form class="flex-grow flex flex-items-center flex-gap-1">
-            <div>
-                <mat-form-field hideRequiredMarker="true" class="primary-form-field">
-                    <mat-label>Timezone</mat-label>
-                    <input 
-                        type="text"
-                        placeholder="Pick one"
-                        aria-label="Number"
-                        matInput
-                        [formControl]="timezone_control"
-                        [matAutocomplete]="auto">
-                    <mat-autocomplete #auto="matAutocomplete">
-                        @for (option of filtered_options | async; track option) {
-                            <mat-option [value]="option">{{option}}</mat-option>
-                        }
-                    </mat-autocomplete>
-                    @if( timezone_control.invalid ) {
-                        <mat-error class="font-size-xs">{{ timezone_control_error() }}</mat-error>
-                    }
-                </mat-form-field>
-            </div>
-            
-            <div class="m-b-1-25">
-                <mat-checkbox 
-                    [formControl]="system_default_control"
-                    (change)="onSystemDefaultChange($event)">
-                    Sync with system
-                </mat-checkbox>
-            </div>
-        </form>
-
-        <div class="w-max-36 m-b-1-25">
-            <div>
-                {{ unix_timestamp_seconds | time }}
-            </div>
-        </div>
-    </div>
-</div> -->

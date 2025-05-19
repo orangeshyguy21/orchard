@@ -13,6 +13,8 @@ import { SettingService } from '@client/modules/settings/services/setting/settin
 import { AiService } from '@client/modules/ai/services/ai/ai.service';
 import { Locale, Timezone, Theme, ThemeType } from '@client/modules/cache/services/local-storage/local-storage.types';
 import { AiModel } from '@client/modules/ai/classes/ai-model.class';
+/* Native Dependencies */
+import { SettingsCategory } from '@client/modules/settings/enums/category.enum';
 
 @Component({
 	selector: 'orc-settings-section',
@@ -29,18 +31,13 @@ export class SettingsSectionComponent implements OnInit {
 	public timezone: Timezone | null = null;
 	public theme: Theme | null = null;
 	public ai_models: AiModel[] = [];
-
-
-	readonly separatorKeysCodes: number[] = [ENTER, COMMA];
-	public fruit_control = new FormControl('');
-	readonly fruits = signal(['Orchard', 'Bitcoin', 'Lightning', 'Mint', 'Ecash', 'Local']);
-	readonly allFruits: string[] = ['Orchard', 'Bitcoin', 'Lightning', 'Mint', 'Ecash'];
-	readonly filteredFruits = computed(() => {
-	  const currentFruit = this.fruit_control.value?.toLowerCase();
-	  return currentFruit
-		? this.allFruits.filter(fruit => fruit.toLowerCase().includes(currentFruit))
-		: this.allFruits.slice();
-	});
+	public category_filters: SettingsCategory[] = [
+		SettingsCategory.Orchard,
+		SettingsCategory.Bitcoin,
+		SettingsCategory.Lightning,
+		SettingsCategory.Mint,
+		SettingsCategory.Ecash
+	];
 
 	constructor(
 		private localStorageService: LocalStorageService,
@@ -64,6 +61,10 @@ export class SettingsSectionComponent implements OnInit {
 		});
 	}
 
+	public onUpdateFilters(filters: SettingsCategory[]) {
+		this.category_filters = filters;
+	}
+
 	public onLocaleChange(locale: string|null) {
 		this.localStorageService.setLocale({ code: locale });
 		this.settingService.setLocale();
@@ -82,36 +83,4 @@ export class SettingsSectionComponent implements OnInit {
 		this.settingService.setTheme();
 		this.theme = this.localStorageService.getTheme();
 	}
-
-
-	add(event: MatChipInputEvent): void {
-		const value = (event.value || '').trim();
-	
-		// Add our fruit
-		if (value) {
-		  this.fruits.update(fruits => [...fruits, value]);
-		}
-	
-		// Clear the input value
-		this.fruit_control.setValue('');
-	  }
-	
-	  remove(fruit: string): void {
-		this.fruits.update(fruits => {
-		  const index = fruits.indexOf(fruit);
-		  if (index < 0) {
-			return fruits;
-		  }
-	
-		  fruits.splice(index, 1);
-
-		  return [...fruits];
-		});
-	  }
-	
-	  selected(event: MatAutocompleteSelectedEvent): void {
-		this.fruits.update(fruits => [...fruits, event.option.viewValue]);
-		this.fruit_control.setValue('');
-		event.option.deselect();
-	  }
 }
