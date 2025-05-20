@@ -19,7 +19,7 @@ import { Model } from '@client/modules/cache/services/local-storage/local-storag
 export class SettingsAiComponent implements OnChanges {
 
 	@ViewChild(MatAutocompleteTrigger) autotrigger!: MatAutocompleteTrigger;
-	@ViewChild('auto') auto!: MatAutocomplete;
+	@ViewChild(MatAutocomplete) auto!: MatAutocomplete;
 
 	@Input() public enabled!: boolean;
 	@Input() public loading!: boolean;
@@ -39,9 +39,7 @@ export class SettingsAiComponent implements OnChanges {
 		return '';
 	});
 
-	constructor(
-		private cdr: ChangeDetectorRef
-	) { }
+	constructor() { }
 
 	ngOnChanges(changes: SimpleChanges): void {
 		if(changes['loading'] && this.loading === false) this.init();
@@ -55,7 +53,6 @@ export class SettingsAiComponent implements OnChanges {
 		setTimeout(() => {
 			this.auto.options.find(option => option.value === this.model?.model)?.select();	
 		});
-		this.cdr.detectChanges();
 		this.model_control.valueChanges.subscribe(value => {
 			this.onModelChange(value);
 		});
@@ -85,7 +82,6 @@ export class SettingsAiComponent implements OnChanges {
 		this.modelChange.emit(value);
 		this.setFilteredOptions();
 		this.setAiModel(value);
-		this.cdr.detectChanges();
 	}
 
 	public onSubmit(event: Event) : void {

@@ -1,8 +1,9 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, computed, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 /* Vendor Dependencies */
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatAutocompleteTrigger, MatAutocomplete } from '@angular/material/autocomplete';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 /* Application Dependencies */
@@ -16,6 +17,9 @@ import { Timezone } from '@client/modules/cache/services/local-storage/local-sto
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SettingsTimeTimezoneComponent implements OnChanges {
+
+	@ViewChild(MatAutocompleteTrigger) autotrigger!: MatAutocompleteTrigger;
+	@ViewChild(MatAutocomplete) auto!: MatAutocomplete;
 
 	@Input() timezone!: Timezone | null;
 	@Input() loading!: boolean;
@@ -46,15 +50,20 @@ export class SettingsTimeTimezoneComponent implements OnChanges {
 		if( this.timezone === null ) return;
 		this.initCheckbox(this.timezone?.tz);
 		this.initTimezone(this.timezone?.tz);
-		
+		this.setFilteredOptions();
+		setTimeout(() => {
+			this.auto.options.find(option => option.value === this.timezone?.tz)?.select();	
+		});
+		this.timezone_control.valueChanges.subscribe(value => {
+			this.onTimezoneChange(value);
+		});
+	}
+
+	private setFilteredOptions() {
 		this.filtered_options = this.timezone_control.valueChanges.pipe(
 			startWith(''),
 			map(value => this._filter(value || '')),
 		);
-
-		this.timezone_control.valueChanges.subscribe(value => {
-			this.onTimezoneChange(value);
-		});
 	}
 
 	private initCheckbox(tz: string|null) {
@@ -69,6 +78,7 @@ export class SettingsTimeTimezoneComponent implements OnChanges {
 
 	private _filter(value: string): string[] {
 		const filter_value = value.toLowerCase();
+		if( filter_value === this.timezone?.tz ) return this.timezone_options;
 		return this.timezone_options.filter(option => option.toLowerCase().includes(filter_value));
 	}
 
@@ -85,6 +95,16 @@ export class SettingsTimeTimezoneComponent implements OnChanges {
 		if( value === null ) return this.timezone_control.setErrors({ required: true });
 		if (!this.timezone_options.includes(value)) return this.timezone_control.setErrors({ invalid_timezone: true });
 		this.timezoneChange.emit(value);
-		if( value !== this.system_timezone ) return this.system_default_control.setValue(false);
+		if( value !== this.system_timezone ) this.system_default_control.setValue(false);
+		this.setFilteredOptions();
+	}
+
+	public onSubmit(event: Event) : void {
+		event.preventDefault();
+		this.autotrigger.closePanel();
+		this.onTimezoneChange(this.timezone_control.value);
+		setTimeout(() => {
+			this.auto.options.find(option => option.value === this.timezone?.tz)?.select();	
+		});
 	}
 }

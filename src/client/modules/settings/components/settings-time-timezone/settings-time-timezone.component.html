@@ -1,6 +1,6 @@
 <div class="flex flex-items-start">
     <div class="flex-grow flex flex-items-start flex-justify-between">
-        <form class="flex flex-items-center flex-gap-1">
+        <form class="flex flex-items-center flex-gap-1" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)">
             <div>
                 <mat-form-field hideRequiredMarker="true" class="primary-form-field">
                     <mat-label>Timezone</mat-label>
