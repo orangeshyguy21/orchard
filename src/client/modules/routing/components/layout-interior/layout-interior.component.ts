@@ -23,7 +23,6 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	public enabled_ai = environment.ai.api ? true : false;
 	public active_section! : string;
 	public active_agent! : AiAgent;
-	public model!: string | null;
 	
 	private subscriptions: Subscription = new Subscription();
 
@@ -31,11 +30,9 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		private router: Router,
 		private route: ActivatedRoute,
 		private cdr: ChangeDetectorRef,
-		private settingService: SettingService
 	) { }
 
 	ngOnInit(): void {
-		this.model = this.settingService.getModel();
 		const router_subscription = this.getRouterSubscription();
 		this.subscriptions.add(router_subscription);
 	}

@@ -1,0 +1,8 @@
+<button mat-icon-button type="button" (click)="command.emit()">
+    <mat-icon 
+        class="ai-input-action"
+        [class.ai-active]="actionable"
+        [class.mat-symbol-outline]="!actionable"
+        [@iconAnimation]="active"
+    >{{ active ? 'stop' : 'send' }}</mat-icon>
+</button>

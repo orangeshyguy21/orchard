@@ -1,0 +1,18 @@
+<button mat-button type="button" [matMenuTriggerFor]="model_menu">
+    <div class="orc-outline-color font-size-xs">{{ model }}</div>
+</button>
+<mat-menu #model_menu="matMenu" yPosition="above">
+    <button mat-menu-item>Model 1</button>
+    <button mat-menu-item>Model 2</button>
+    <button mat-menu-item>Model 3</button>
+    <button mat-menu-item>Model 4</button>
+</mat-menu>
+
+<!-- 
+// Customize the entire app. Change :root to your selector if you want to scope the styles. @todo implement this
+:root {
+  @include mat.menu-overrides((
+    item-label-text-color: orange,
+    item-icon-color: red,
+  ));
+} -->

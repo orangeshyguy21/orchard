@@ -5,10 +5,6 @@
 }
 
 .ai-input-form{
-    @extend %flex;
-    @extend %flex-row;
-    @extend %flex-gap-1;
-    @extend %flex-items-center;
     @extend %w-full;
 }
 
@@ -23,19 +19,8 @@
     @extend %flex-grow;
 }
 
-.ai-input-action{
-    @extend %trans-color-fast;
-    @extend %orc-outline-color;
-}
-
 .ai-input-empty{
     &.ai-input {
         @extend %orc-outline-color;
-    }
-}
-
-.ai-active{
-    &.ai-input-action{
-        @extend %orc-on-surface-color;
     }
 }
