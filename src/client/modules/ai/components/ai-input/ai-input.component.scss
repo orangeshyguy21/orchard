@@ -7,6 +7,7 @@
 .ai-input-form{
     @extend %flex;
     @extend %flex-row;
+    @extend %flex-gap-1;
     @extend %flex-items-center;
     @extend %w-full;
 }
