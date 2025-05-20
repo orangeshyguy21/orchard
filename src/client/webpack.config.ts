@@ -17,11 +17,11 @@ module.exports = {
 		}
 	},
 	plugins: [
-		new EnvironmentPlugin([
-			'PRODUCTION',
-			'BASE_PATH',
-			'AI_API',
-			'npm_package_version'
-		])
+		new EnvironmentPlugin({
+			PRODUCTION: true,
+			BASE_PATH: 'api',
+			AI_API: null,
+			npm_package_version: '0.0.1'
+		})
 	]
 }

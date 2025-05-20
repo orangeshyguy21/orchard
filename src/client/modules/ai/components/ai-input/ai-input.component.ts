@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, ChangeDetectorRef, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, ChangeDetectorRef, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { trigger, style, animate, transition } from '@angular/animations';
 /* Vendor Dependencies */
@@ -25,9 +25,10 @@ import { AiAgent } from '@shared/generated.types';
 		])
 	]
 })
-export class AiInputComponent implements OnInit, OnDestroy {
+export class AiInputComponent implements OnInit, OnDestroy, OnChanges {
 
 	@Input() active_agent!: AiAgent;
+	@Input() model!: string | null;
 
 	private chat_subscription: Subscription | null = null;
 
@@ -50,12 +51,17 @@ export class AiInputComponent implements OnInit, OnDestroy {
 	ngOnInit(): void {
 		this.chat_subscription = this.aiService.messages$
 			.subscribe((chunk: AiChatChunk) => {
-				if( chunk.done ){
-					setTimeout(() => {
-						this.cdr.detectChanges();
-					});
-				}
+				if( !chunk.done ) return;
+				setTimeout(() => {
+					this.cdr.detectChanges();
+				});
 			});
+	}
+
+	ngOnChanges(changes: SimpleChanges): void {
+		if( changes['model'] ) {
+			( this.model ) ? this.content.enable() : this.content.disable();
+		}
 	}
 
 	public onSubmit(event?: any): void {

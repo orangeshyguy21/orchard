@@ -1,12 +1,12 @@
 /* Core Dependencies */
 import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
 /* Vendor Dependencies */
-import { MatIconRegistry } from '@angular/material/icon';
-import { DomSanitizer } from '@angular/platform-browser';
 import annotationPlugin from 'chartjs-plugin-annotation'; 
 import Chart from 'chart.js/auto';
 /* Application Dependencies */
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
+import { GraphicService } from '@client/modules/graphic/services/graphic/graphic.service';
+import { AiService } from '@client/modules/ai/services/ai/ai.service';
 
 Chart.register(annotationPlugin);
 
@@ -19,31 +19,14 @@ Chart.register(annotationPlugin);
 })
 export class AppComponent implements OnInit {
 	constructor(
-		private matIconRegistry: MatIconRegistry,
-		private domSanitizer: DomSanitizer,
 		private settingService: SettingService,
+		private graphicService: GraphicService,
+		private aiService: AiService,
 	) { }
 
 	ngOnInit(): void {
-		this.initIcons();
-		this.initSettings();
-	}
-
-	private initIcons(): void {
-		this.matIconRegistry
-			.setDefaultFontSetClass('mat-symbol');
-		
-		this.matIconRegistry
-			.addSvgIcon('bitcoin', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/bitcoin.svg'))
-			.addSvgIcon('bitcoin_outline', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/bitcoin-outline.svg'))
-			.addSvgIcon('tor', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/tor.svg'))
-			.addSvgIcon('nostr', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/nostr.svg'))
-			.addSvgIcon('x', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/x.svg'))
-			.addSvgIcon('minting_disabled_outline', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/minting-disabled-outline.svg'))
-			.addSvgIcon('melting_disabled_outline', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/melting-disabled-outline.svg'));
-	}
-
-	private initSettings(): void {
+		this.graphicService.init();
 		this.settingService.init();
+		this.aiService.init();
 	}
 }

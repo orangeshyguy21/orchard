@@ -4,6 +4,10 @@ import { Event, Router, ActivatedRoute, ActivatedRouteSnapshot } from '@angular/
 /* Vendor Dependencies */
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
+/* Application Configuration */
+import { environment } from '@client/configs/configuration';
+/* Application Dependencies */
+import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 /* Shared Dependencies */
 import { AiAgent } from '@shared/generated.types';
 
@@ -16,18 +20,22 @@ import { AiAgent } from '@shared/generated.types';
 })
 export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
+	public enabled_ai = environment.ai.api ? true : false;
 	public active_section! : string;
 	public active_agent! : AiAgent;
+	public model!: string | null;
 	
 	private subscriptions: Subscription = new Subscription();
 
 	constructor(
 		private router: Router,
 		private route: ActivatedRoute,
-		private cdr: ChangeDetectorRef
+		private cdr: ChangeDetectorRef,
+		private settingService: SettingService
 	) { }
 
 	ngOnInit(): void {
+		this.model = this.settingService.getModel();
 		const router_subscription = this.getRouterSubscription();
 		this.subscriptions.add(router_subscription);
 	}

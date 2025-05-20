@@ -17,27 +17,28 @@ export class SettingService {
 		private localStorageService: LocalStorageService,
 	) { }
 
+	public init(): void {
+		this.setLocale();
+		this.setTimezone();
+		this.setTheme();
+	}
+
 	public getLocale(): string {
 		const system_locale = Intl.DateTimeFormat().resolvedOptions().locale;
 		return this.localStorageService.getLocale().code ?? system_locale;
 	}
-
 	public getTimezone(): string {
 		const system_timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 		return this.localStorageService.getTimezone().tz ?? system_timezone;
 	}
-
 	public getTheme(): ThemeType {
 		const prefers_light_theme = window.matchMedia('(prefers-color-scheme: light)').matches;
 		const theme = this.localStorageService.getTheme();
 		if( theme.type === null ) return prefers_light_theme ? ThemeType.LIGHT_MODE : ThemeType.DARK_MODE;
 		return theme.type
 	}
-
-	public init(): void {
-		this.setLocale();
-		this.setTimezone();
-		this.setTheme();
+	public getModel(): string | null {
+		return this.localStorageService.getModel().model;
 	}
 
 	public setLocale(): void {
@@ -45,17 +46,18 @@ export class SettingService {
 		this.dateAdapter.setLocale(locale);
 		Settings.defaultLocale = locale;
 	}
-
 	public setTimezone(): void {
 		const timezone = this.getTimezone();
 		Settings.defaultZone = timezone;
 	}
-
 	public setTheme(): void {
 		const theme = this.getTheme();
 		if( theme === null ) return document.body.classList.remove(ThemeType.LIGHT_MODE, ThemeType.DARK_MODE);
 		document.body.classList.remove(ThemeType.LIGHT_MODE, ThemeType.DARK_MODE);
 		document.body.classList.add(theme);
+	}
+	public setModel(model: string | null): void {
+		this.localStorageService.setModel({ model: model });
 	}
 }
 

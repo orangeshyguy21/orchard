@@ -21,6 +21,7 @@ export class SettingsAiComponent implements OnChanges {
 	@ViewChild(MatAutocompleteTrigger) autotrigger!: MatAutocompleteTrigger;
 	@ViewChild('auto') auto!: MatAutocomplete;
 
+	@Input() public enabled!: boolean;
 	@Input() public loading!: boolean;
 	@Input() public error!: boolean;
 	@Input() public model_options!: AiModel[];

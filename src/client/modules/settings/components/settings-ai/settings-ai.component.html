@@ -1,12 +1,3 @@
-<!-- <div class="p-2">
-    <mat-card appearance="outlined" class="relative overflow-hidden">
-        <mat-card-content class="orc-surface-container-low-bg">
-            {{ model_options | json }}
-        </mat-card-content>
-    </mat-card>
-</div> -->
-
-
 <div class="p-2">
     <mat-card appearance="outlined" class="relative overflow-hidden">
         <mat-card-content class="orc-surface-container-low-bg">
@@ -58,7 +49,7 @@
                                     <div class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color font-weight-extra-light">
                                         <div>model:</div>
                                         <div>parameter size:</div>
-                                        <div>raw size:</div>
+                                        <div>model size:</div>
                                         <div>quantization level:</div>
                                         <div>last modified:</div>
                                     </div>
@@ -79,6 +70,11 @@
                     </div>
                 </div>
             </div>
+            @if(!enabled) {
+                <div class="disabled-overlay">
+                    <div class="orc-outline-color font-weight-bold">AI DISABLED</div>
+                </div>
+            }
         </mat-card-content>
     </mat-card>
 </div>

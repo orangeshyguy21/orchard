@@ -3,9 +3,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 /* Vendor Dependencies */
 import { Observable, catchError, Subscription, Subject, map, throwError } from 'rxjs';
+/* Application Configuration */
+import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
 import { ApiService } from '@client/modules/api/services/api/api.service';
-import { LocalStorageService } from '@client/modules/cache/services/local-storage/local-storage.service';
+import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 import { OrchardWsRes } from '@client/modules/api/types/api.types';
 import { api, getApiQuery } from '@client/modules/api/helpers/api.helpers';
 import { OrchardErrors } from '@client/modules/error/classes/error.class';
@@ -37,9 +39,21 @@ export class AiService {
 
 	constructor(
 		private apiService: ApiService,
-		private localStorageService: LocalStorageService,
+		private settingService: SettingService,
 		private http: HttpClient,
 	) {}
+
+	public init(): void {
+		if( !environment.ai.api ) return;
+		const set_model = this.settingService.getModel();
+		this.getAiModels().subscribe((models) => {
+			// models = [];
+			if( models.find((model) => model.model === set_model) ) return;
+			const model = this.getSmallestFunctionModel(models);
+			console.log('smallest functional model', model);
+			this.settingService.setModel(model?.model || null);
+		});
+	}
 
 	public closeAiSocket(): void {
 		if( !this.subscription ) { return; }
@@ -57,7 +71,7 @@ export class AiService {
 
 	public openAiSocket(agent: AiAgent, content: string|null, context?: string): void {
 		const subscription_id = crypto.randomUUID();
-		const ai_model = this.localStorageService.getModel();
+		const ai_model = this.settingService.getModel();
 		this.subscription_id = subscription_id;
 		this.subscription = this.apiService.gql_socket.subscribe({
 			next: (response: OrchardWsRes<AiChatResponse>) => {
@@ -94,7 +108,7 @@ export class AiService {
 					ai_chat: {
 						id: subscription_id,
 						messages,
-						model: ai_model.model,
+						model: ai_model,
 						agent: agent
 					}
 				}
@@ -115,5 +129,12 @@ export class AiService {
 				return throwError(() => error);
 			}),
 		);
+	}
+
+	private getSmallestFunctionModel(models: AiModel[]): AiModel | null {
+		if( models.length === 0 ) return null;
+		const llama_models = models.filter((model) => model.model.includes('llama'));
+		if( llama_models.length > 0 ) return llama_models.sort((a, b) => a.size - b.size)[0];
+		return models.sort((a, b) => a.size - b.size)[0];
 	}
 }

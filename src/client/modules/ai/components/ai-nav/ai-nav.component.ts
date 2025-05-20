@@ -13,5 +13,6 @@ import { AiAgent } from '@shared/generated.types';
 export class AiNavComponent {
 
   	@Input() active_agent!: AiAgent;
+	@Input() model!: string | null;
 
 }

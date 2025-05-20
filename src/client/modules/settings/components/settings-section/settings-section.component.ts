@@ -1,7 +1,5 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-/* Vendor Dependencies */
-import { lastValueFrom } from 'rxjs';
 /* Application Configuration */
 import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
@@ -23,6 +21,7 @@ import { SettingsCategory } from '@client/modules/settings/enums/category.enum';
 export class SettingsSectionComponent implements OnInit {
 
 	public version = environment.mode.version;
+	public enabled_ai = environment.ai.api ? true : false;
 	public locale: Locale | null = null;
 	public timezone: Timezone | null = null;
 	public theme: Theme | null = null;
