@@ -8,6 +8,9 @@ import { filter } from 'rxjs/operators';
 import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
+import { AiService } from '@client/modules/ai/services/ai/ai.service';
+import { EventService } from '@client/modules/event/services/event/event.service';
+import { EventData } from '@client/modules/event/classes/event-data.class';
 /* Shared Dependencies */
 import { AiAgent } from '@shared/generated.types';
 
@@ -20,13 +23,18 @@ import { AiAgent } from '@shared/generated.types';
 })
 export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
-	public enabled_ai = environment.ai.api ? true : false;
+	public ai_enabled = environment.ai.enabled;
+	public active_chat!: boolean;
 	public active_section! : string;
 	public active_agent! : AiAgent;
+	public model!: string | null;
 	
 	private subscriptions: Subscription = new Subscription();
-
+	private event_subscription!: Subscription | undefined;
 	constructor(
+		private settingService: SettingService,
+		private aiService: AiService,
+		private eventService: EventService,
 		private router: Router,
 		private route: ActivatedRoute,
 		private cdr: ChangeDetectorRef,
@@ -35,6 +43,26 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	ngOnInit(): void {
 		const router_subscription = this.getRouterSubscription();
 		this.subscriptions.add(router_subscription);
+		this.model = this.settingService.getModel();
+		this.orchardOptionalInit();
+	}
+
+	private orchardOptionalInit(): void {
+		if( environment.ai.enabled ) {
+			this.subscriptions.add(this.getAgentSubscription());
+			this.subscriptions.add(this.getActiveAiSubscription());
+		}
+	}
+	private eventInit(): void {
+		if( this.event_subscription ) return;
+		// console.log('INITIALIZING EVENT SUBSCRIPTION'); @todo honestly. the angular app needs debug logging.
+		this.event_subscription = this.getEventSubscription();
+	}
+	private eventDestroy(): void {
+		if( !this.event_subscription ) return;
+		// console.log('DESTROYING EVENT SUBSCRIPTION');
+		this.event_subscription.unsubscribe();
+		this.event_subscription = undefined;
 	}
 
 	private getRouterSubscription(): Subscription {
@@ -46,8 +74,34 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 				const route_data = this.getRouteData(event);
 				this.setSection(route_data);
 				this.setAgent(route_data);
+				this.active_section === 'settings' ? this.eventInit() : this.eventDestroy();
 			});
 	}
+
+	private getAgentSubscription(): Subscription {
+		return this.aiService.agent_requests$
+			.subscribe(({ agent, content }) => {
+				this.aiService.openAiSocket(agent, content);
+			});
+	}
+	private getActiveAiSubscription(): Subscription {
+		return this.aiService.active$
+			.subscribe((active: boolean) => {
+				this.active_chat = active;
+				this.cdr.detectChanges();
+			});
+	}
+	
+
+	private getEventSubscription(): Subscription {
+		return this.eventService.getActiveEvent()
+			.subscribe((event_data: EventData | null) => {
+				console.log('EVENT LISTENER IN INTERIOR LAYOUT', event_data);
+				this.model = this.settingService.getModel();
+				this.cdr.detectChanges();
+			});
+	}
+
 
 	private getRouteData(event: Event): ActivatedRouteSnapshot['data'] | null {
 		const router_event = 'routerEvent' in event ? event.routerEvent : event;

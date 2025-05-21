@@ -19,7 +19,7 @@ import { trigger, transition, style, animate } from '@angular/animations';
 export class AiCommandComponent {
 
 	@Input() actionable!: boolean;
-	@Input() active!: boolean;
+	@Input() active_chat!: boolean;
 
 	@Output() command = new EventEmitter<void>();
 

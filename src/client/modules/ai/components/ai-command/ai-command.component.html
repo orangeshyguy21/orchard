@@ -3,6 +3,6 @@
         class="ai-input-action"
         [class.ai-active]="actionable"
         [class.mat-symbol-outline]="!actionable"
-        [@iconAnimation]="active"
-    >{{ active ? 'stop' : 'send' }}</mat-icon>
+        [@iconAnimation]="active_chat"
+    >{{ active_chat ? 'stop' : 'send' }}</mat-icon>
 </button>

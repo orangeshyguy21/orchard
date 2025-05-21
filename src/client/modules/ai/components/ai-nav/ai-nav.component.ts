@@ -3,8 +3,6 @@ import { ChangeDetectionStrategy, Component, Input, OnInit, ChangeDetectorRef, S
 import { FormControl } from '@angular/forms';
 /* Vendor Dependencies */
 import { Subscription } from 'rxjs';
-/* Application Dependencies */
-import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 /* Native Dependencies */
 import { AiService } from '@client/modules/ai/services/ai/ai.service';
 import { AiChatChunk } from '@client/modules/ai/classes/ai-chat-chunk.class';
@@ -20,13 +18,14 @@ import { AiAgent } from '@shared/generated.types';
 })
 export class AiNavComponent implements OnInit, OnChanges, OnDestroy {
 
-	public model!: string | null;
 	public content = new FormControl('');
 
 	@Input() active_agent!: AiAgent;
+	@Input() active_chat!: boolean;
+	@Input() model!: string | null;
 
 	public get actionable(): boolean {
-		if( this.aiService.active ) return true;
+		if( this.active_chat ) return true;
 		if( this.content.value ) return true;
 		return false;
 	}
@@ -35,19 +34,16 @@ export class AiNavComponent implements OnInit, OnChanges, OnDestroy {
 
 	constructor(
 		public aiService: AiService,
-		private settingService: SettingService,
 		private cdr: ChangeDetectorRef
 	) {}
 
 	ngOnInit(): void {
-		this.model = this.settingService.getModel();
 		// @todo get models
+		// @todo move this to the layout interior component
 		this.chat_subscription = this.aiService.messages$
 			.subscribe((chunk: AiChatChunk) => {
 				if( !chunk.done ) return;
-				setTimeout(() => {
-					this.cdr.detectChanges();
-				});
+				setTimeout(() => this.cdr.detectChanges());
 			});
 	}
 
@@ -57,8 +53,9 @@ export class AiNavComponent implements OnInit, OnChanges, OnDestroy {
 		}
 	}
 
+	// @todo ai service active should probably be an observable
 	public onCommand(): void {
-		this.aiService.active ? this.stopChat() : this.startChat();
+		this.active_chat ? this.stopChat() : this.startChat();
 	}
 
 	private startChat() {

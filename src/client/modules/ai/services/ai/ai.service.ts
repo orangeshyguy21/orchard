@@ -26,7 +26,7 @@ import { AiAgent, AiMessageRole } from '@shared/generated.types';
 })
 export class AiService {
 
-	public get active(): boolean { return !!this.subscription_id; }
+	public get active$(): Observable<boolean> { return this.active_subject.asObservable(); }
 	public get messages$(): Observable<AiChatChunk> { return this.message_subject.asObservable(); }
     public get tool_calls$(): Observable<AiChatToolCall> { return this.toolcall_subject.asObservable(); }
 	public get agent_requests$(): Observable<{agent: AiAgent, content: string|null}> {return this.agent_subject.asObservable(); }
@@ -36,6 +36,7 @@ export class AiService {
 	private message_subject = new Subject<AiChatChunk>();
 	private toolcall_subject = new Subject<AiChatToolCall>();
 	private agent_subject = new Subject<{agent: AiAgent, content: string|null}>();
+	private active_subject = new Subject<boolean>();
 
 	constructor(
 		private apiService: ApiService,
@@ -44,7 +45,7 @@ export class AiService {
 	) {}
 
 	public init(): void {
-		if( !environment.ai.api ) return;
+		if( !environment.ai.enabled ) return;
 		const set_model = this.settingService.getModel();
 		this.getAiModels().subscribe((models) => {
 			// models = [];
@@ -63,6 +64,7 @@ export class AiService {
 			type: 'stop'
 		});
 		this.subscription_id = null;
+		this.active_subject.next(false);
 	}
 
 	public requestAgent(agent: AiAgent, content: string|null): void {
@@ -73,6 +75,7 @@ export class AiService {
 		const subscription_id = crypto.randomUUID();
 		const ai_model = this.settingService.getModel();
 		this.subscription_id = subscription_id;
+		this.active_subject.next(true);
 		this.subscription = this.apiService.gql_socket.subscribe({
 			next: (response: OrchardWsRes<AiChatResponse>) => {
 				console.log('RESPONSE HEARD:', response);
@@ -86,6 +89,7 @@ export class AiService {
 			error: (error) => {
 				console.error('Socket error:', error);
 				this.subscription_id = null;
+				this.active_subject.next(false);
 			}
 		});
 

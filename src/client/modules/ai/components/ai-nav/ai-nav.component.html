@@ -1,6 +1,7 @@
 <div class="ai-nav-container">
     <orc-ai-input 
         [active_agent]="active_agent" 
+        [active_chat]="active_chat"
         [model]="model"
         [content]="content"
         (chat)="onChat()"
@@ -10,7 +11,7 @@
     ></orc-ai-model>
     <orc-ai-command 
         [actionable]="actionable" 
-        [active]="aiService.active"
+        [active_chat]="active_chat"
         (command)="onCommand()"
     ></orc-ai-command>
 </div>

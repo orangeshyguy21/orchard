@@ -13,7 +13,7 @@ import { AiAgent } from '@shared/generated.types';
 })
 export class AiInputComponent {
 
-	@Input() active!: boolean;
+	@Input() active_chat!: boolean;
 	@Input() active_agent!: AiAgent;
 	@Input() model!: string | null;
 	@Input() content!: FormControl;
@@ -21,7 +21,7 @@ export class AiInputComponent {
 	@Output() chat = new EventEmitter<void>();
 
 	public get placeholder(): string {
-		return this.active ? 'Generating...' : 'Message agent...';
+		return this.active_chat ? 'Generating...' : 'Message agent...';
 	}
 
 	constructor() {}

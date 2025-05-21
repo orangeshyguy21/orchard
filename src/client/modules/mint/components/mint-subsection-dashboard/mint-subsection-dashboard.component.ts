@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 /* Vendor Dependencies */
 import { forkJoin, lastValueFrom, Subscription } from 'rxjs';
@@ -31,7 +31,7 @@ import { AiFunctionName, MintAnalyticsInterval, MintUnit } from '@shared/generat
 	styleUrl: './mint-subsection-dashboard.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MintSubsectionDashboardComponent implements OnInit {
+export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 
 	// data
 	public mint_info: MintInfo | null = null;
@@ -73,12 +73,15 @@ export class MintSubsectionDashboardComponent implements OnInit {
 		this.mint_balances = this.route.snapshot.data['mint_balances'];
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
 		this.initMintConnections();
-		const agent_subscription = this.getAgentSubscription();
-		const tool_subscription = this.getToolSubscription();
-		this.subscriptions.add(agent_subscription);
-		this.subscriptions.add(tool_subscription);
+		this.orchardOptionalInit();
 		await this.initMintAnalytics();
+	}
 
+	orchardOptionalInit(): void {
+		if( environment.ai.enabled ) {
+			this.subscriptions.add(this.getAgentSubscription());
+			this.subscriptions.add(this.getToolSubscription());
+		}
 	}
 
 	private getAgentSubscription(): Subscription {
@@ -310,6 +313,10 @@ export class MintSubsectionDashboardComponent implements OnInit {
 		this.chart_settings.type = event;
 		this.chartService.setMintDashboardSettings(this.chart_settings);
 		this.reloadDynamicData();
+	}
+
+	ngOnDestroy(): void {
+		this.subscriptions.unsubscribe();
 	}
 }
 

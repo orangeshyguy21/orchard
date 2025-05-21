@@ -6,6 +6,8 @@ import { environment } from '@client/configs/configuration';
 import { LocalStorageService } from '@client/modules/cache/services/local-storage/local-storage.service';
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 import { AiService } from '@client/modules/ai/services/ai/ai.service';
+import { EventService } from '@client/modules/event/services/event/event.service';
+import { EventData } from '@client/modules/event/classes/event-data.class';
 import { Locale, Timezone, Theme, ThemeType, Model } from '@client/modules/cache/services/local-storage/local-storage.types';
 import { AiModel } from '@client/modules/ai/classes/ai-model.class';
 /* Native Dependencies */
@@ -21,7 +23,7 @@ import { SettingsCategory } from '@client/modules/settings/enums/category.enum';
 export class SettingsSectionComponent implements OnInit {
 
 	public version = environment.mode.version;
-	public enabled_ai = environment.ai.api ? true : false;
+	public enabled_ai = environment.ai.enabled;
 	public locale: Locale | null = null;
 	public timezone: Timezone | null = null;
 	public theme: Theme | null = null;
@@ -43,6 +45,7 @@ export class SettingsSectionComponent implements OnInit {
 		private localStorageService: LocalStorageService,
 		private settingService: SettingService,
 		private aiService: AiService,
+		private eventService: EventService,
 		private cdr: ChangeDetectorRef,
 	) {}
 
@@ -76,26 +79,34 @@ export class SettingsSectionComponent implements OnInit {
 	}
 
 	public onLocaleChange(locale: string|null) {
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		this.localStorageService.setLocale({ code: locale });
 		this.settingService.setLocale();
 		this.locale = this.localStorageService.getLocale();
+		this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
 	}
 
 	public onTimezoneChange(timezone: string|null) {
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		this.localStorageService.setTimezone({ tz: timezone });
 		this.settingService.setTimezone();
 		this.timezone = this.localStorageService.getTimezone();
+		this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
 	}
 
 	public onThemeChange(theme: ThemeType|null) {
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		this.localStorageService.setTheme({ type: theme });
 		this.settingService.setTheme();
 		this.theme = this.localStorageService.getTheme();
+		this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
 	}
 
 	public onModelChange(model: string|null) {
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		this.localStorageService.setModel({ model: model });
 		this.model = this.localStorageService.getModel();
+		this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
 	}
 }
 

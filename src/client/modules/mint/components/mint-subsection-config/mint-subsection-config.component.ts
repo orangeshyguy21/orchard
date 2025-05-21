@@ -6,6 +6,8 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { trigger, transition, style, animate } from '@angular/animations';
 /* Vendor Dependencies */
 import { Subscription, lastValueFrom, forkJoin } from 'rxjs';
+/* Application Configuration */
+import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
 import { EventService } from '@client/modules/event/services/event/event.service';
 import { OrchardValidators } from '@client/modules/form/validators';
@@ -100,18 +102,18 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 			const form_group = this.form_config.get(form_group_key) as FormGroup;
 			if( form_group.get('enabled')?.value === false ) form_group.disable();
 		});
-		const mint_info_subscription = this.getMintInfoSubscription();
-		const agent_subscription = this.getAgentSubscription();
-		const tool_subscription = this.getToolSubscription();
-		const event_subscription = this.getEventSubscription();
-		const form_subscription = this.getFormSubscription();
-		const dirty_count_subscription = this.getDirtyCountSubscription();
-		this.subscriptions.add(mint_info_subscription);
-		this.subscriptions.add(agent_subscription);
-		this.subscriptions.add(tool_subscription);	
-		this.subscriptions.add(event_subscription);
-		this.subscriptions.add(form_subscription);
-		this.subscriptions.add(dirty_count_subscription);
+		this.subscriptions.add(this.getMintInfoSubscription());
+		this.subscriptions.add(this.getEventSubscription());
+		this.subscriptions.add(this.getFormSubscription());
+		this.subscriptions.add(this.getDirtyCountSubscription());
+		this.orchardOptionalInit();
+	}
+
+	orchardOptionalInit(): void {
+		if( environment.ai.enabled ) {
+			this.subscriptions.add(this.getAgentSubscription());
+			this.subscriptions.add(this.getToolSubscription());
+		}
 	}
 
 	private getMintInfoSubscription(): Subscription {

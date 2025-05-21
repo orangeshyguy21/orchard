@@ -4,8 +4,13 @@
 		<div class="interior-router-outlet-container">
 			<router-outlet></router-outlet>
 		</div>
-		@if(enabled_ai) {
-			<orc-ai-nav [active_agent]="active_agent"></orc-ai-nav>
+		@if(ai_enabled) {
+			<orc-ai-nav 
+				[active_agent]="active_agent"
+				[active_chat]="active_chat"
+				[model]="model">
+			</orc-ai-nav>
 		}
 	</div>
+	<!-- <div> todo ai chat log </div> -->
 </div>
