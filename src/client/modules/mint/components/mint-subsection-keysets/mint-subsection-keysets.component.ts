@@ -33,7 +33,7 @@ export class MintSubsectionKeysetsComponent {
 	public loading_dynamic_data: boolean = true;
 	public keysets_analytics: MintAnalyticKeyset[] = [];
 	public keysets_analytics_pre: MintAnalyticKeyset[] = [];
-
+	public keysets_rotation: boolean = false;
 	constructor(
 		public route: ActivatedRoute,
 		private settingService: SettingService,
@@ -155,5 +155,10 @@ export class MintSubsectionKeysetsComponent {
 		this.chart_settings.status = event;
 		this.chartService.setMintKeysetsSettings(this.chart_settings);
 		this.reloadDynamicData();
+	}
+
+	public onRotation(): void {
+		this.keysets_rotation = !this.keysets_rotation;
+		this.cdr.detectChanges();
 	}
 }

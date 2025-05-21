@@ -159,7 +159,7 @@ export class MintConfigChartMethodComponent implements OnChanges {
 		const max_time = data.length ? Math.max(...data.map(d => d.x)) : Date.now();
 		const span_days = (max_time - min_time) / (1000 * 60 * 60 * 24);
 		const time_unit = span_days > 90 ? 'month' : span_days > 21 ? 'week' : 'day';
-		const use_log_scale = this.metrics.max / this.metrics.min >= 1000;
+		const use_log_scale = this.metrics.max / this.metrics.min >= 100;
 		const step_size = 1;
 	
 		const scales: any = {};

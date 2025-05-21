@@ -19,12 +19,6 @@
     @extend %z-index-1;
 }
 
-.mint-analytics-rule{
-    @extend %border;
-    @extend %border-solid;
-    @extend %orc-outline-variant-border;
-}
-
 .mint-analytic-header{
     @extend %sticky;
     @extend %title-m;

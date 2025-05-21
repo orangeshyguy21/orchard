@@ -149,6 +149,8 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges {
         const span_days = (max_time - min_time) / (1000 * 60 * 60 * 24);
         const time_unit = span_days > 90 ? 'month' : span_days > 21 ? 'week' : 'day';
         const step_size = 1;
+        const use_log_scale = this.metrics.max / this.metrics.min >= 100;
+
         const scales: any = {};
         scales['x'] = {
             type: 'time',
@@ -176,15 +178,21 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges {
         };
         scales['y'] = {
             position: 'left',
+            type: use_log_scale ? 'logarithmic' : 'linear',
             title: {
                 display: true,
                 text: 'seconds'
             },
-            beginAtZero: true,
+            beginAtZero: !use_log_scale,
             grid: {
                 display: true,
                 color: this.chartService.getGridColor()
             },
+            ticks: use_log_scale ? {
+				callback: function(value: number, index: number, values: number[]): string | null {
+					return value === 1 || Math.log10(value) % 1 === 0 ? value.toString() : null;
+				}
+			} : {}
         };
     
         return {

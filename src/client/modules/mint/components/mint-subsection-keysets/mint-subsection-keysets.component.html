@@ -17,13 +17,17 @@
 					(statusChange)="onStatusChange($event)">
 				</orc-mint-keyset-control>
 			}
-			<button mat-fab extended>
+			<button mat-fab extended (click)="onRotation()">
 				<mat-icon>autorenew</mat-icon>
 				Rotate Keyset
 			</button>
 		</div>
-		<div class="mint-keyset-control-rule"></div>
+		<div class="category-rule"></div>
 	</div>
+
+	@if( keysets_rotation ) {
+		we rotating dog
+	}
 
 	<orc-mint-keyset-chart
 		[locale]="locale"
