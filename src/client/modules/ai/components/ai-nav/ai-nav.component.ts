@@ -24,7 +24,7 @@ export class AiNavComponent {
 	@Input() content!: FormControl;
 
 	@Output() command = new EventEmitter<void>();
-
+	@Output() modelChange = new EventEmitter<string>();
 	constructor(
 		public aiService: AiService,
 		private cdr: ChangeDetectorRef

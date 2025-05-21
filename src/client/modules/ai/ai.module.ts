@@ -21,9 +21,9 @@ import { AiModelComponent } from './components/ai-model/ai-model.component';
 	declarations: [	
 		AiInputComponent,
 		AiNavComponent,
+		AiCommandComponent,
+		AiModelComponent,
 		BytesPipe,
-  AiCommandComponent,
-  AiModelComponent,
 	],
 	imports: [
 		CommonModule,

@@ -12,7 +12,8 @@
 				[model_options]="ai_models"
 				[actionable]="ai_actionable"
 				[content]="user_content"
-				(command)="onCommand()">
+				(command)="onCommand()"
+				(modelChange)="onModelChange($event)">
 			</orc-ai-nav>
 		}
 	</div>

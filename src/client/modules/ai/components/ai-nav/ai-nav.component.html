@@ -9,6 +9,7 @@
     <orc-ai-model 
         [model]="model"
         [model_options]="model_options"
+        (modelChange)="modelChange.emit($event)"
     ></orc-ai-model>
     <orc-ai-command 
         [actionable]="actionable" 

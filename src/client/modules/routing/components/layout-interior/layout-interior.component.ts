@@ -168,6 +168,14 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		this.cdr.detectChanges();
 	}
 
+	public onModelChange(model: string): void {
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		this.settingService.setModel(model);
+		this.model = model;
+		this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
+		this.cdr.detectChanges();
+	}
+
 	ngOnDestroy(): void {
 		this.subscriptions.unsubscribe();
 	}
