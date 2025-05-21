@@ -105,15 +105,22 @@ export class MintKeysetChartComponent {
 		const datasets = Object.entries(data_keyset_groups_prepended).map(([keyset_id, data], index) => {
 			const keyset = this.keysets.find(k => k.id === keyset_id); 
 			const keyset_genesis_time = keyset ? DateTime.fromSeconds(keyset.valid_from).startOf('day').minus({ days: 1 }).toSeconds() : timestamp_first;
-			const max_x = Math.max(keyset_genesis_time, timestamp_first);
-			const timestamp_range = getAllPossibleTimestamps(max_x, timestamp_last, this.interval);
+			const min_x = Math.max(keyset_genesis_time, timestamp_first);
+			const timestamp_range = getAllPossibleTimestamps(min_x, timestamp_last, this.interval);
 			const data_keyed_by_timestamp = data.reduce((acc, item) => {
 				acc[item.created_time] = item.amount;
 				return acc;
 			}, {} as Record<string, number>);
 			const color = this.chartService.getAssetColor(keyset?.unit || '', index);
 			const cumulative = this.chart_type === 'line';
-			const data_prepped = getAmountData(timestamp_range, data_keyed_by_timestamp, keyset_id, cumulative)
+			let data_prepped = getAmountData(timestamp_range, data_keyed_by_timestamp, keyset_id, cumulative);
+			if( keyset && !keyset.active ){
+				const successor_keyset = this.keysets.find(k => k.derivation_path_index === keyset?.derivation_path_index + 1);
+				const successor_keyset_genesis_time = successor_keyset ? DateTime.fromSeconds(successor_keyset.valid_from).startOf('day').minus({ days: 1 }).toSeconds() : timestamp_last;
+				const death_sentance = Math.min(successor_keyset_genesis_time, timestamp_last) * 1000;
+				const time_of_death_index = data_prepped.findIndex(d => (d.x >= death_sentance && d.y === 0));
+				if( time_of_death_index !== -1 ) data_prepped = data_prepped.slice(0, time_of_death_index + 1);
+			}
 			const yAxisID = getYAxisId(keyset?.unit || '');
 			const label = keyset ?  `${keyset.unit.toUpperCase()} Gen ${keyset.derivation_path_index}` : keyset_id;
 
