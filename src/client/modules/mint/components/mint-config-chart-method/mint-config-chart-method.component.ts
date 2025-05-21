@@ -159,6 +159,7 @@ export class MintConfigChartMethodComponent implements OnChanges {
 		const max_time = data.length ? Math.max(...data.map(d => d.x)) : Date.now();
 		const span_days = (max_time - min_time) / (1000 * 60 * 60 * 24);
 		const time_unit = span_days > 90 ? 'month' : span_days > 21 ? 'week' : 'day';
+		const use_log_scale = this.metrics.max / this.metrics.min >= 1000;
 		const step_size = 1;
 	
 		const scales: any = {};
@@ -173,6 +174,10 @@ export class MintConfigChartMethodComponent implements OnChanges {
 					day: 'MMM d',
 				}
 			},
+			grid: {
+				display: true,
+				color: this.chartService.getGridColor()
+			},
 			min: min_time,
 			max: max_time,
 			ticks: {
@@ -184,15 +189,21 @@ export class MintConfigChartMethodComponent implements OnChanges {
 		};
 		scales['y'] = {
 			position: 'left',
+			type: use_log_scale ? 'logarithmic' : 'linear',
 			title: {
 				display: true,
 				text: this.unit
 			},
-			beginAtZero: true,
+			beginAtZero: !use_log_scale,
 			grid: {
 				display: true,
 				color: this.chartService.getGridColor()
 			},
+			ticks: use_log_scale ? {
+				callback: function(value: number, index: number, values: number[]): string | null {
+					return value === 1 || Math.log10(value) % 1 === 0 ? value.toString() : null;
+				}
+			} : {}
 		};
 	
 		return {

@@ -161,6 +161,10 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges {
                     day: 'MMM d',
                 }
             },
+            grid: {
+				display: true,
+				color: this.chartService.getGridColor()
+			},
             min: min_time,
             max: max_time,
             ticks: {
