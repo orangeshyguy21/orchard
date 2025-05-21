@@ -2,10 +2,9 @@
     <div class="orc-outline-color font-size-xs">{{ model }}</div>
 </button>
 <mat-menu #model_menu="matMenu" yPosition="above">
-    <button mat-menu-item>Model 1</button>
-    <button mat-menu-item>Model 2</button>
-    <button mat-menu-item>Model 3</button>
-    <button mat-menu-item>Model 4</button>
+    @for (model of model_options; track model.model) {
+        <button mat-menu-item>{{ model.model }}</button>
+    }
 </mat-menu>
 
 <!-- 

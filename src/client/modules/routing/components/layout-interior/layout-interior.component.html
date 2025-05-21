@@ -8,7 +8,11 @@
 			<orc-ai-nav 
 				[active_agent]="active_agent"
 				[active_chat]="active_chat"
-				[model]="model">
+				[model]="model"
+				[model_options]="ai_models"
+				[actionable]="ai_actionable"
+				[content]="user_content"
+				(command)="onCommand()">
 			</orc-ai-nav>
 		}
 	</div>

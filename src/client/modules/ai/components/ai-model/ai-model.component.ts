@@ -1,4 +1,7 @@
+/* Core Dependencies */
 import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter } from '@angular/core';
+/* Application Dependencies */
+import { AiModel } from '@client/modules/ai/classes/ai-model.class';
 
 @Component({
   selector: 'orc-ai-model',
@@ -10,6 +13,7 @@ import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter } from 
 export class AiModelComponent {
 
 	@Input() model!: string | null;
+	@Input() model_options!: AiModel[];
 
 	@Output() modelChange = new EventEmitter<string>();
 

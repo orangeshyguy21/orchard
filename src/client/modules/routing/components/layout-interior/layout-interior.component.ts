@@ -1,6 +1,7 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Event, Router, ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
+import { FormControl } from '@angular/forms';
 /* Vendor Dependencies */
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -11,6 +12,8 @@ import { SettingService } from '@client/modules/settings/services/setting/settin
 import { AiService } from '@client/modules/ai/services/ai/ai.service';
 import { EventService } from '@client/modules/event/services/event/event.service';
 import { EventData } from '@client/modules/event/classes/event-data.class';
+import { AiChatChunk } from '@client/modules/ai/classes/ai-chat-chunk.class';
+import { AiModel } from '@client/modules/ai/classes/ai-model.class';
 /* Shared Dependencies */
 import { AiAgent } from '@shared/generated.types';
 
@@ -24,13 +27,22 @@ import { AiAgent } from '@shared/generated.types';
 export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	public ai_enabled = environment.ai.enabled;
+	public ai_models: AiModel[] = [];
 	public active_chat!: boolean;
 	public active_section! : string;
 	public active_agent! : AiAgent;
 	public model!: string | null;
+	public user_content = new FormControl('');
+
+	public get ai_actionable(): boolean {
+		if( this.active_chat ) return true;
+		if( this.user_content.value ) return true;
+		return false;
+	}
 	
 	private subscriptions: Subscription = new Subscription();
 	private event_subscription!: Subscription | undefined;
+
 	constructor(
 		private settingService: SettingService,
 		private aiService: AiService,
@@ -51,6 +63,8 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		if( environment.ai.enabled ) {
 			this.subscriptions.add(this.getAgentSubscription());
 			this.subscriptions.add(this.getActiveAiSubscription());
+			this.subscriptions.add(this.getAiMessagesSubscription());
+			this.getModels();
 		}
 	}
 	private eventInit(): void {
@@ -91,7 +105,12 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 				this.cdr.detectChanges();
 			});
 	}
-	
+	private getAiMessagesSubscription(): Subscription {
+		return this.aiService.messages$
+			.subscribe((chunk: AiChatChunk) => {
+				// @todo create messages
+			});
+	}
 
 	private getEventSubscription(): Subscription {
 		return this.eventService.getActiveEvent()
@@ -101,7 +120,6 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 				this.cdr.detectChanges();
 			});
 	}
-
 
 	private getRouteData(event: Event): ActivatedRouteSnapshot['data'] | null {
 		const router_event = 'routerEvent' in event ? event.routerEvent : event;
@@ -122,6 +140,31 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	private setAgent(route_data: ActivatedRouteSnapshot['data'] | null): void {
 		if( !route_data ) return;
 		this.active_agent = route_data['agent'] || '';
+		this.cdr.detectChanges();
+	}
+
+	private getModels(): void {
+		this.aiService.getAiModels()
+			.subscribe((models:AiModel[]) => {
+				this.ai_models = models;
+				this.cdr.detectChanges();
+			}
+		);
+	}
+
+	public onCommand(): void {
+		this.active_chat ? this.stopChat() : this.startChat();
+	}
+
+	private startChat() {
+		if( !this.user_content.value ) return;
+		const agent = this.active_agent || AiAgent.Default;
+		this.aiService.requestAgent(agent, this.user_content.value);
+		this.user_content.reset();
+	}
+
+	public stopChat(): void {
+		this.aiService.closeAiSocket();
 		this.cdr.detectChanges();
 	}
 

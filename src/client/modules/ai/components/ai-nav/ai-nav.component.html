@@ -4,15 +4,16 @@
         [active_chat]="active_chat"
         [model]="model"
         [content]="content"
-        (chat)="onChat()"
+        (chat)="command.emit()"
     ></orc-ai-input>
     <orc-ai-model 
         [model]="model"
+        [model_options]="model_options"
     ></orc-ai-model>
     <orc-ai-command 
         [actionable]="actionable" 
         [active_chat]="active_chat"
-        (command)="onCommand()"
+        (command)="command.emit()"
     ></orc-ai-command>
 </div>
 
