@@ -29,6 +29,9 @@ export class SettingsSectionComponent implements OnInit {
 	public theme: Theme | null = null;
 	public model: Model | null = null;
 	public ai_models: AiModel[] = [];
+	public loading_static: boolean = true;
+	public loading_ai: boolean = true;
+	public error_ai: boolean = false;
 	public category_filters: SettingsCategory[] = [
 		SettingsCategory.Orchard,
 		SettingsCategory.Bitcoin,
@@ -36,10 +39,6 @@ export class SettingsSectionComponent implements OnInit {
 		SettingsCategory.Mint,
 		SettingsCategory.Ecash
 	];
-
-	public loading_static: boolean = true;
-	public loading_ai: boolean = true;
-	public error_ai: boolean = false;
 
 	constructor(
 		private localStorageService: LocalStorageService,
