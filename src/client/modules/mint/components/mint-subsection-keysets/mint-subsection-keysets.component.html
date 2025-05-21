@@ -18,15 +18,18 @@
 				</orc-mint-keyset-control>
 			}
 			<button mat-fab extended (click)="onRotation()">
-				<mat-icon>autorenew</mat-icon>
-				Rotate Keyset
+				<mat-icon>switch_access_shortcut_add</mat-icon>
+				Keyset Rotation
 			</button>
 		</div>
 		<div class="category-rule"></div>
 	</div>
 
 	@if( keysets_rotation ) {
-		we rotating dog
+		<orc-mint-keyset-rotation 
+			[form_group]="form_keyset"
+			[unit_options]="unit_options"
+		></orc-mint-keyset-rotation>
 	}
 
 	<orc-mint-keyset-chart

@@ -1,6 +1,7 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 /* Vendor Dependencies */
 import { lastValueFrom, forkJoin } from 'rxjs';
 import { DateTime } from 'luxon';
@@ -34,6 +35,13 @@ export class MintSubsectionKeysetsComponent {
 	public keysets_analytics: MintAnalyticKeyset[] = [];
 	public keysets_analytics_pre: MintAnalyticKeyset[] = [];
 	public keysets_rotation: boolean = false;
+	public unit_options!: { value: string, label: string }[];
+	public form_keyset: FormGroup = new FormGroup({
+		unit: new FormControl(null, [Validators.required]),
+		input_fee_ppk: new FormControl(null, [Validators.min(0), Validators.max(100000)]),
+		max_order: new FormControl(32, [Validators.min(0), Validators.max(255)]),
+	});
+
 	constructor(
 		public route: ActivatedRoute,
 		private settingService: SettingService,
@@ -44,7 +52,31 @@ export class MintSubsectionKeysetsComponent {
 
 	ngOnInit(): void {		
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
+		this.unit_options = this.getUnitOptions();
+		const default_unit = this.getDefaultUnit();
+		const default_input_fee_ppk = this.getDefaultInputFeePpk(default_unit);
+		this.form_keyset.patchValue({
+			unit: default_unit,
+			input_fee_ppk: default_input_fee_ppk,
+		});
 		this.initKeysetsAnalytics();
+	}
+
+	private getUnitOptions(): { value: string, label: string }[] {
+		const possible_units = Array.from(new Set(this.mint_keysets.map(keyset => keyset.unit)));
+		return possible_units.map(unit => ({ value: unit, label: unit.toUpperCase() }));
+	}
+	private getDefaultUnit(): MintUnit {
+		const possible_units = Array.from(new Set(this.mint_keysets.map(keyset => keyset.unit)));
+		if( possible_units.includes(MintUnit.Sat) ) return MintUnit.Sat;
+		return this.mint_keysets.reduce((most_common_unit, keyset) => {
+			const count = this.mint_keysets.filter(k => k.unit === keyset.unit).length;
+			return count > most_common_unit.count ? { unit: keyset.unit, count: count } : most_common_unit;
+		}, { unit: this.mint_keysets[0].unit, count: 0 }).unit;
+	}
+	private getDefaultInputFeePpk(unit: MintUnit): number {
+		const active_keyset = this.mint_keysets.find(keyset => keyset.unit === unit && keyset.active);
+		return active_keyset?.input_fee_ppk ?? 1000;
 	}
 
 	private async initKeysetsAnalytics(): Promise<void> {
