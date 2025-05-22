@@ -36,6 +36,7 @@ export class MintSubsectionKeysetsComponent {
 	public keysets_analytics_pre: MintAnalyticKeyset[] = [];
 	public keysets_rotation: boolean = false;
 	public unit_options!: { value: string, label: string }[];
+	public keyset_out!: MintKeyset;
 	public form_keyset: FormGroup = new FormGroup({
 		unit: new FormControl(null, [Validators.required]),
 		input_fee_ppk: new FormControl(null, [Validators.min(0), Validators.max(100000)]),
@@ -55,6 +56,7 @@ export class MintSubsectionKeysetsComponent {
 		this.unit_options = this.getUnitOptions();
 		const default_unit = this.getDefaultUnit();
 		const default_input_fee_ppk = this.getDefaultInputFeePpk(default_unit);
+		this.keyset_out = this.getKeysetOut(default_unit);
 		this.form_keyset.patchValue({
 			unit: default_unit,
 			input_fee_ppk: default_input_fee_ppk,
@@ -77,6 +79,12 @@ export class MintSubsectionKeysetsComponent {
 	private getDefaultInputFeePpk(unit: MintUnit): number {
 		const active_keyset = this.mint_keysets.find(keyset => keyset.unit === unit && keyset.active);
 		return active_keyset?.input_fee_ppk ?? 1000;
+	}
+	private getKeysetOut(unit: MintUnit): MintKeyset {
+		return this.mint_keysets
+			.filter(keyset => keyset.unit === unit && keyset.active)
+			.sort((a, b) => a.valid_from - b.valid_from)
+			.pop() ?? this.mint_keysets[0];
 	}
 
 	private async initKeysetsAnalytics(): Promise<void> {

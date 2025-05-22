@@ -72,10 +72,43 @@
                 <div class="flex-1">
                     <div class="flex flex-column flex-gap-1 flex-items-center">
                         <div class="font-size-xs orc-outline-color">Keyset Rotating In</div>
-                        <div>new boi</div>
+                        <div class="flex flex-items-center flex-gap-1">
+                            <orc-graphic-asset 
+                                [unit]="form_group.get('unit')?.value" 
+                                [height]="'1.5rem'">
+                            </orc-graphic-asset>
+                            <orc-mint-keyset
+                                class="high-bg"
+                                [active]="true"
+                                [index]="keyset_out.derivation_path_index + 1"
+                                [input_fee_ppk]="form_group.get('input_fee_ppk')?.value">
+                            </orc-mint-keyset>
+                            <div>
+                                <span [innerHTML]="0 | amount : form_group.get('unit')?.value : 'mint'"></span>
+                            </div>
+                        </div>
+                        <!-- <div class="p-v-1">
+                            <mat-icon class="icon-lg mat-symbol-outline orc-outline-color">autorenew</mat-icon>
+                        </div> -->
                         <mat-icon class="icon-lg mat-symbol-outline orc-outline-color">autorenew</mat-icon>
-                        <div>old boi</div>
+          
                         <div class="font-size-xs orc-outline-color">Keyset Rotating Out</div>
+                        <div class="flex flex-items-center flex-gap-1">
+                            <orc-graphic-asset 
+                                [unit]="keyset_out.unit" 
+                                [height]="'1.5rem'">
+                            </orc-graphic-asset>
+                            <orc-mint-keyset
+                                class="high-bg"
+                                [active]="false"
+                                [index]="keyset_out.derivation_path_index"
+                                [input_fee_ppk]="keyset_out.input_fee_ppk">
+                            </orc-mint-keyset>
+                            <div>
+                                <span [innerHTML]="276126 | amount : form_group.get('unit')?.value : 'mint'"></span>
+                            </div>
+                        </div>
+                       
                     </div>
                 </div>
             </div>
