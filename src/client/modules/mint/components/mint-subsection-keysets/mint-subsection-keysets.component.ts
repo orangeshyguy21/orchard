@@ -1,13 +1,20 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { trigger, state, style, animate, transition } from '@angular/animations';
 /* Vendor Dependencies */
-import { lastValueFrom, forkJoin } from 'rxjs';
+import { lastValueFrom, forkJoin, Subscription } from 'rxjs';
 import { DateTime } from 'luxon';
+/* Application Configuration */
+import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
+import { EventService } from '@client/modules/event/services/event/event.service';
 import { ChartService } from '@client/modules/chart/services/chart/chart.service';
+import { AiService } from '@client/modules/ai/services/ai/ai.service';
+import { EventData } from '@client/modules/event/classes/event-data.class';
+import { AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
 import { NonNullableMintKeysetsSettings } from '@client/modules/chart/services/chart/chart.types';
 /* Native Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
@@ -22,9 +29,28 @@ import { MintUnit, MintAnalyticsInterval } from '@shared/generated.types';
 	standalone: false,
 	templateUrl: './mint-subsection-keysets.component.html',
 	styleUrl: './mint-subsection-keysets.component.scss',
-	changeDetection: ChangeDetectionStrategy.OnPush
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	animations: [
+		trigger('slideInOut', [
+			state('closed', style({
+				height: '0',
+				opacity: '0',
+				overflow: 'hidden'
+			})),
+			state('open', style({
+				height: '*',
+				opacity: '1'
+			})),
+			transition('closed => open', [
+				animate('200ms ease-out')
+			]),
+			transition('open => closed', [
+				animate('200ms ease-out')
+			])
+		])
+	]
 })
-export class MintSubsectionKeysetsComponent {
+export class MintSubsectionKeysetsComponent implements OnInit, OnDestroy {
 
 	public mint_keysets: MintKeyset[] = [];
 	public locale!: string;
@@ -42,28 +68,69 @@ export class MintSubsectionKeysetsComponent {
 	public form_keyset: FormGroup = new FormGroup({
 		unit: new FormControl(null, [Validators.required]),
 		input_fee_ppk: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(100000)]),
-		max_order: new FormControl(32, [Validators.required, Validators.min(0), Validators.max(255)]),
+		max_order: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(255)]),
 	});
+
+	private subscriptions: Subscription = new Subscription();
 
 	constructor(
 		public route: ActivatedRoute,
 		private settingService: SettingService,
+		private eventService: EventService,
 		private chartService: ChartService,
+		private aiService: AiService,
 		private mintService: MintService,
 		private cdr: ChangeDetectorRef,
 	) {}
 
+	// ngOnInit(): void {	
+	// 	this.mint_info = this.route.snapshot.data['mint_info'];
+	// 	this.quote_ttls = this.route.snapshot.data['mint_quote_ttl'];
+	// 	this.patchStaticFormElements();
+	// 	this.minting_units = this.getUniqueUnits('nut4');
+	// 	this.melting_units = this.getUniqueUnits('nut5');
+	// 	this.nut15_methods = this.getNut15Methods();
+	// 	this.nut17_commands = this.getNut17Commands();
+	// 	this.buildDynamicFormElements();
+	// 	this.initChartData();
+	// 	Object.keys(this.form_config.controls).forEach(form_group_key => {
+	// 		const form_group = this.form_config.get(form_group_key) as FormGroup;
+	// 		if( form_group.get('enabled')?.value === false ) form_group.disable();
+	// 	});
+	// 	this.subscriptions.add(this.getMintInfoSubscription());
+	// 	this.subscriptions.add(this.getEventSubscription());
+	// 	this.subscriptions.add(this.getFormSubscription());
+	// 	this.subscriptions.add(this.getDirtyCountSubscription());
+	// 	this.orchardOptionalInit();
+	// }
+
 	ngOnInit(): void {		
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
 		this.unit_options = this.getUnitOptions();
+		this.resetForm();
+		this.initKeysetsAnalytics();
+		this.subscriptions.add(this.getEventSubscription());
+		this.orchardOptionalInit();
+	}
+
+	orchardOptionalInit(): void {
+		if( environment.ai.enabled ) {
+			this.subscriptions.add(this.getAgentSubscription());
+			this.subscriptions.add(this.getToolSubscription());
+		}
+	}
+
+	private resetForm(): void {
+		this.form_keyset.markAsPristine();
 		const default_unit = this.getDefaultUnit();
 		const default_input_fee_ppk = this.getDefaultInputFeePpk(default_unit);
+		const default_max_order = 32;
 		this.keyset_out = this.getKeysetOut(default_unit);
 		this.form_keyset.patchValue({
 			unit: default_unit,
 			input_fee_ppk: default_input_fee_ppk,
+			max_order: default_max_order,
 		});
-		this.initKeysetsAnalytics();
 	}
 
 	private getUnitOptions(): { value: string, label: string }[] {
@@ -187,13 +254,41 @@ export class MintSubsectionKeysetsComponent {
 		});
 	}
 
-	private saveKeysetsRotation(): void {
-		this.keysets_rotation = false;
-		console.log(this.form_keyset.value);
+	private getEventSubscription(): Subscription {
+		return this.eventService.getActiveEvent()
+			.subscribe((event_data: EventData | null) => {
+				if( event_data?.type === 'SUCCESS' ) this.onSuccessEvent();
+				if( event_data?.confirmed ) this.onConfirmedEvent();
+				if( event_data === null && this.keysets_rotation ){
+					this.eventService.registerEvent(new EventData({
+						type: 'PENDING',
+						message: 'Keyset Rotation',
+					}));
+				}
+			});
+	}
+	private getAgentSubscription(): Subscription {
+		return this.aiService.agent_requests$
+			.subscribe(({ agent, content }) => {
+				const form_string = JSON.stringify(this.form_keyset.value);
+				this.aiService.openAiSocket(agent, content, form_string);
+			});
+	}
+
+	private getToolSubscription(): Subscription {
+		return this.aiService.tool_calls$
+			.subscribe((tool_call: AiChatToolCall) => {
+				console.log(tool_call);
+				// this.executeAgentFunction(tool_call);
+			});
 	}
 
 	private initKeysetsRotation(): void {
 		this.keysets_rotation = true;
+		this.eventService.registerEvent(new EventData({
+			type: 'PENDING',
+			message: 'Keyset Rotation',
+		}));
 		this.getMintKeysetBalance();
 	}
 
@@ -217,11 +312,49 @@ export class MintSubsectionKeysetsComponent {
 	}
 
 	public onRotation(): void {
-		( !this.keysets_rotation ) ? this.initKeysetsRotation() : this.saveKeysetsRotation();
+		( !this.keysets_rotation ) ? this.initKeysetsRotation() : this.onConfirmedEvent();
 	}
 
 	public onCloseRotation(): void {
 		this.keysets_rotation = false;
+		this.eventService.registerEvent(null);
 		this.cdr.detectChanges();
 	}	
+
+	private onConfirmedEvent(): void {
+		if (this.form_keyset.invalid) {
+			return this.eventService.registerEvent(new EventData({
+				type: 'WARNING',
+				message: 'Invalid keyset',
+			}));
+		}
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		const { unit, input_fee_ppk, max_order } = this.form_keyset.value;
+		this.mintService.rotateMintKeysets(unit, input_fee_ppk, max_order).subscribe({
+			next: (response) => {
+				console.log(response);
+				this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
+			},
+			error: (error) => {
+				this.eventService.registerEvent(new EventData({
+					type: 'ERROR',
+					message: error
+				}));
+			}
+		});
+	}
+
+	private onSuccessEvent(): void {
+		this.keysets_rotation = false;
+		this.cdr.detectChanges();
+		this.reloadDynamicData();
+		this.mintService.loadMintKeysets().subscribe((mint_keysets) => {
+			this.mint_keysets = mint_keysets;
+			this.resetForm();
+		});
+	}
+
+	ngOnDestroy(): void {
+		this.subscriptions.unsubscribe();
+	}
 }

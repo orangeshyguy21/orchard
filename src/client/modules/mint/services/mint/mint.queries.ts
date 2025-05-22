@@ -341,3 +341,12 @@ mutation MintNut05Update($mint_nut05_update: MintNut05UpdateInput!) {
 		disabled
 	}
 }`;
+
+export const MINT_KEYSETS_ROTATION_MUTATION = `
+mutation MintRotateKeyset($mint_rotate_keyset: MintRotateKeysetInput!) {
+	mint_rotate_keyset(mint_rotate_keyset: $mint_rotate_keyset) {
+		unit
+		input_fee_ppk
+		max_order
+	}
+}`;

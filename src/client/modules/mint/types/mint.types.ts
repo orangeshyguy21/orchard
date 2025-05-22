@@ -21,6 +21,7 @@ import {
     OrchardMintContactUpdate,
     OrchardMintNut04Update,
     OrchardMintNut05Update,
+    OrchardMintKeysetRotation,
 } from "@shared/generated.types";
 
 export type MintInfoResponse = {
@@ -162,4 +163,8 @@ export type MintNut04UpdateResponse = {
 
 export type MintNut05UpdateResponse = {
 	mint_nut05_update: OrchardMintNut05Update;
+}
+
+export type MintKeysetRotationResponse = {
+	mint_keysets_rotation: OrchardMintKeysetRotation;
 }

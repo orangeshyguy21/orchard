@@ -145,14 +145,6 @@ export type MintRotateKeysetInput = {
   unit: Scalars['String']['input'];
 };
 
-export type MintRotateKeysetOutput = {
-  __typename?: 'MintRotateKeysetOutput';
-  id: Scalars['String']['output'];
-  input_fee_ppk?: Maybe<Scalars['Int']['output']>;
-  max_order?: Maybe<Scalars['Int']['output']>;
-  unit: Scalars['String']['output'];
-};
-
 export enum MintUnit {
   Auth = 'auth',
   Btc = 'btc',
@@ -179,7 +171,7 @@ export type Mutation = {
   mint_nut04_update: OrchardMintNut04Update;
   mint_nut05_update: OrchardMintNut05Update;
   mint_quote_ttl_update: OrchardMintQuoteTtls;
-  mint_rotate_keyset: MintRotateKeysetOutput;
+  mint_rotate_keyset: OrchardMintKeysetRotation;
   mint_short_description_update: OrchardMintDescriptionUpdate;
   mint_url_add: OrchardMintUrlUpdate;
   mint_url_remove: OrchardMintUrlUpdate;
@@ -410,6 +402,14 @@ export type OrchardMintKeyset = {
   unit: Scalars['String']['output'];
   valid_from: Scalars['UnixTimestamp']['output'];
   valid_to?: Maybe<Scalars['UnixTimestamp']['output']>;
+};
+
+export type OrchardMintKeysetRotation = {
+  __typename?: 'OrchardMintKeysetRotation';
+  id: Scalars['String']['output'];
+  input_fee_ppk?: Maybe<Scalars['Int']['output']>;
+  max_order?: Maybe<Scalars['Int']['output']>;
+  unit: Scalars['String']['output'];
 };
 
 export type OrchardMintKeysetsAnalytics = {
@@ -689,6 +689,11 @@ export type QueryMint_Analytics_TransfersArgs = {
   interval?: InputMaybe<MintAnalyticsInterval>;
   timezone?: InputMaybe<Scalars['Timezone']['input']>;
   units?: InputMaybe<Array<MintUnit>>;
+};
+
+
+export type QueryMint_BalancesArgs = {
+  keyset_id?: InputMaybe<Scalars['String']['input']>;
 };
 
 

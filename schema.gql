@@ -129,13 +129,6 @@ input MintRotateKeysetInput {
   unit: String!
 }
 
-type MintRotateKeysetOutput {
-  id: String!
-  input_fee_ppk: Int
-  max_order: Int
-  unit: String!
-}
-
 enum MintUnit {
   auth
   btc
@@ -161,7 +154,7 @@ type Mutation {
   mint_nut04_update(mint_nut04_update: MintNut04UpdateInput!): OrchardMintNut04Update!
   mint_nut05_update(mint_nut05_update: MintNut05UpdateInput!): OrchardMintNut05Update!
   mint_quote_ttl_update(mint_quote_ttl_update: MintQuoteTtlUpdateInput!): OrchardMintQuoteTtls!
-  mint_rotate_keyset(mint_rotate_keyset: MintRotateKeysetInput!): MintRotateKeysetOutput!
+  mint_rotate_keyset(mint_rotate_keyset: MintRotateKeysetInput!): OrchardMintKeysetRotation!
   mint_short_description_update(mint_desc_update: MintDescriptionUpdateInput!): OrchardMintDescriptionUpdate!
   mint_url_add(mint_url_update: MintUrlUpdateInput!): OrchardMintUrlUpdate!
   mint_url_remove(mint_url_update: MintUrlUpdateInput!): OrchardMintUrlUpdate!
@@ -298,6 +291,13 @@ type OrchardMintKeyset {
   unit: String!
   valid_from: UnixTimestamp!
   valid_to: UnixTimestamp
+}
+
+type OrchardMintKeysetRotation {
+  id: String!
+  input_fee_ppk: Int
+  max_order: Int
+  unit: String!
 }
 
 type OrchardMintKeysetsAnalytics {

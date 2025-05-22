@@ -25,15 +25,15 @@
 		<div class="category-rule"></div>
 	</div>
 
-	@if( keysets_rotation ) {
+	<div [@slideInOut]="keysets_rotation ? 'open' : 'closed'" class="overflow-hidden">
 		<orc-mint-keyset-rotation 
 			[form_group]="form_keyset"
 			[unit_options]="unit_options"
 			[keyset_out]="keyset_out"
 			[keyset_out_balance]="keyset_out_balance"
 			(close)="onCloseRotation()">
-		></orc-mint-keyset-rotation>
-	}
+		</orc-mint-keyset-rotation>
+	</div>
 
 	<orc-mint-keyset-chart
 		[locale]="locale"

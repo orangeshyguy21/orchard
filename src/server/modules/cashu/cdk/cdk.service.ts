@@ -124,7 +124,6 @@ export class CdkService {
 		);`;
 		return new Promise((resolve, reject) => {
 			db.all(sql, (err, rows:CashuMintBalance[]) => {
-				console.log(rows);
 				if (err) reject(err);
 				resolve(rows);
 			});
@@ -489,7 +488,6 @@ export class CdkService {
 	}
 
 	public async getMintAnalyticsKeysets(db: sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintKeysetsAnalytics[]> {
-		console.log('args', args);
 		const interval = args?.interval || MintAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
 		const { where_conditions, params } = getAnalyticsConditions({
@@ -503,8 +501,6 @@ export class CdkService {
 			time_column: 'created_time',
 			group_by: 'keyset_id'
 		});
-
-		console.log('time_group_sql', time_group_sql);
 	
 		const sql = `
 			WITH issued AS (

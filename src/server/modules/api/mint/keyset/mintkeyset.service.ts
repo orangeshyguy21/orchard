@@ -9,7 +9,7 @@ import { OrchardApiError } from "@server/modules/graphql/classes/orchard-error.c
 import { MintService } from '@server/modules/api/mint/mint.service';
 import { ErrorService } from '@server/modules/error/error.service';
 /* Local Dependencies */
-import { OrchardMintKeyset, MintRotateKeysetOutput } from './mintkeyset.model';
+import { OrchardMintKeyset, OrchardMintKeysetRotation } from './mintkeyset.model';
 import { MintRotateKeysetInput } from './mintkeyset.input';
 
 @Injectable()
@@ -39,7 +39,7 @@ export class MintKeysetService {
 		});
 	}
 
-	async mintRotateKeyset(mint_rotate_keyset: MintRotateKeysetInput) : Promise<MintRotateKeysetOutput> {
+	async mintRotateKeyset(mint_rotate_keyset: MintRotateKeysetInput) : Promise<OrchardMintKeysetRotation> {
 		try {
 			return await this.cashuMintRpcService.rotateNextKeyset(mint_rotate_keyset);
 		} catch (error) {

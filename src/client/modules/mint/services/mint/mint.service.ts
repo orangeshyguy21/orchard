@@ -39,6 +39,7 @@ import {
 	MintQuoteTtlUpdateResponse,
 	MintNut04UpdateResponse,
 	MintNut05UpdateResponse,
+	MintKeysetRotationResponse,
 } from '@client/modules/mint/types/mint.types';
 import { CacheService } from '@client/modules/cache/services/cache/cache.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
@@ -81,6 +82,7 @@ import {
 	MINT_QUOTE_TTL_MUTATION,
 	MINT_NUT04_UPDATE_MUTATION,
 	MINT_NUT05_UPDATE_MUTATION,
+	MINT_KEYSETS_ROTATION_MUTATION,
 } from './mint.queries';
 
 
@@ -236,6 +238,7 @@ export class MintService {
 	}
 
 	public clearKeysetsCache() {
+		this.cache.clearCache(this.CACHE_KEYS.MINT_KEYSETS);
 		this.cache.clearCache(this.CACHE_KEYS.MINT_ANALYTICS_KEYSETS);
 		this.cache.clearCache(this.CACHE_KEYS.MINT_ANALYTICS_PRE_KEYSETS);
 	}
@@ -786,9 +789,21 @@ export class MintService {
 			})
 		);
 	}
-	
-	
 
+	public rotateMintKeysets(unit:string, input_fee_ppk:number, max_order:number) : Observable<MintKeysetRotationResponse> {
+		const query = getApiQuery(MINT_KEYSETS_ROTATION_MUTATION, { mint_rotate_keyset: { unit, input_fee_ppk, max_order } });
+		return this.http.post<OrchardRes<MintKeysetRotationResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error rotating mint keysets:', error);
+				return throwError(() => error);
+			})
+		); 
+	}
+	
 	public updateMint(mutation:string, variables:Record<string, any>) {
 		const query = getApiQuery(mutation, variables);
 		return this.http.post<OrchardRes<any>>(api, query).pipe(

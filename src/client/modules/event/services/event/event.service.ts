@@ -32,7 +32,7 @@ export class EventService {
 		event_data.created_at = Math.floor(Date.now() / 1000);
 		this.event_history.push(new EventData(event_data));
 		this.active_event_subject.next(event_data);
-		if( event_data.type !== 'PENDING' ) this.clearEvent(event_data);
+		if( event_data.duration ) this.clearEvent(event_data);
 	}
 
 	public getEventHistory(): EventData[] {
@@ -47,6 +47,6 @@ export class EventService {
 		setTimeout(() => {
 			if( this.active_event.type === 'PENDING' ) return;
 			this.active_event_subject.next(null);
-		}, event_data.duration);
+		}, event_data?.duration || 5000);
 	}
 }
