@@ -17,7 +17,7 @@
 					(statusChange)="onStatusChange($event)">
 				</orc-mint-keyset-control>
 			}
-			<button mat-fab extended (click)="onRotation()">
+			<button type="button" mat-fab extended (click)="onRotation()" (keydown.enter)="$event.preventDefault(); $event.stopPropagation();">
 				<mat-icon>{{ keysets_rotation ? 'save' : 'switch_access_shortcut_add' }}</mat-icon>
 				{{ keysets_rotation ? 'Save Rotation' : 'Keyset Rotation' }}
 			</button>

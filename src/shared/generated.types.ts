@@ -22,7 +22,9 @@ export enum AiAgent {
   Default = 'DEFAULT',
   MintConfig = 'MINT_CONFIG',
   MintDashboard = 'MINT_DASHBOARD',
-  MintInfo = 'MINT_INFO'
+  MintInfo = 'MINT_INFO',
+  MintKeysets = 'MINT_KEYSETS',
+  MintKeysetRotation = 'MINT_KEYSET_ROTATION'
 }
 
 export type AiChatAbortInput = {
@@ -53,6 +55,10 @@ export enum AiFunctionName {
   MintDescriptionUpdate = 'MINT_DESCRIPTION_UPDATE',
   MintEnabledUpdate = 'MINT_ENABLED_UPDATE',
   MintIconUrlUpdate = 'MINT_ICON_URL_UPDATE',
+  MintKeysetRotationInputFeePpkUpdate = 'MINT_KEYSET_ROTATION_INPUT_FEE_PPK_UPDATE',
+  MintKeysetRotationMaxOrderUpdate = 'MINT_KEYSET_ROTATION_MAX_ORDER_UPDATE',
+  MintKeysetRotationUnitUpdate = 'MINT_KEYSET_ROTATION_UNIT_UPDATE',
+  MintKeysetStatusUpdate = 'MINT_KEYSET_STATUS_UPDATE',
   MintMethodDescriptionUpdate = 'MINT_METHOD_DESCRIPTION_UPDATE',
   MintMethodMaxUpdate = 'MINT_METHOD_MAX_UPDATE',
   MintMethodMinUpdate = 'MINT_METHOD_MIN_UPDATE',

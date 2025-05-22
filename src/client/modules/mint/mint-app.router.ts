@@ -142,7 +142,8 @@ const routes: Routes = [
 				},
 				data: {
 					section: 'mint',
-					sub_section: 'keysets'
+					sub_section: 'keysets',
+					agent: AiAgent.MintKeysets
 				}
 			},
 			{

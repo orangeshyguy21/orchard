@@ -31,7 +31,11 @@ AiFunctionUpdateMintEnabled |
 AiFunctionUpdateMintQuoteTtl |
 AiFunctionUpdateMintMethodMin |
 AiFunctionUpdateMintMethodMax |
-AiFunctionUpdateMintMethodDescription;
+AiFunctionUpdateMintMethodDescription |
+AiFunctionUpdateMintKeysetStatus |
+AiFunctionUpdateMintKeysetRotationUnit |
+AiFunctionUpdateMintKeysetRotationInputFeePpk |
+AiFunctionUpdateMintKeysetRotationMaxOrder;
 
 export type AiFunctionUpdateMintAnalyticsDateRange = {
 	name: AiFunctionName.MintAnalyticsDateRangeUpdate;
@@ -187,5 +191,33 @@ export type AiFunctionUpdateMintMethodDescription = {
 		description: boolean;
 		method: string;
 		unit: MintUnit;
+	}
+}
+
+export type AiFunctionUpdateMintKeysetStatus = {
+	name: AiFunctionName.MintKeysetStatusUpdate;
+	arguments: {
+		statuses: string[];
+	}
+}
+
+export type AiFunctionUpdateMintKeysetRotationUnit = {
+	name: AiFunctionName.MintKeysetRotationUnitUpdate;
+	arguments: {
+		unit: MintUnit;
+	}
+}
+
+export type AiFunctionUpdateMintKeysetRotationInputFeePpk = {
+	name: AiFunctionName.MintKeysetRotationInputFeePpkUpdate;
+	arguments: {
+		input_fee_ppk: number;
+	}
+}
+
+export type AiFunctionUpdateMintKeysetRotationMaxOrder = {
+	name: AiFunctionName.MintKeysetRotationMaxOrderUpdate;
+	arguments: {
+		max_order: number;
 	}
 }

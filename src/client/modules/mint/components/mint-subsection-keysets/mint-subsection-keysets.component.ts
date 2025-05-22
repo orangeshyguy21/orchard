@@ -22,7 +22,7 @@ import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 import { MintBalance } from '@client/modules/mint/classes/mint-balance.class';
 import { MintAnalyticKeyset } from '@client/modules/mint/classes/mint-analytic.class';
 /* Shared Dependencies */
-import { MintUnit, MintAnalyticsInterval } from '@shared/generated.types';
+import { MintUnit, MintAnalyticsInterval, AiFunctionName, AiAgent } from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-subsection-keysets',
@@ -83,27 +83,6 @@ export class MintSubsectionKeysetsComponent implements OnInit, OnDestroy {
 		private mintService: MintService,
 		private cdr: ChangeDetectorRef,
 	) {}
-
-	// ngOnInit(): void {	
-	// 	this.mint_info = this.route.snapshot.data['mint_info'];
-	// 	this.quote_ttls = this.route.snapshot.data['mint_quote_ttl'];
-	// 	this.patchStaticFormElements();
-	// 	this.minting_units = this.getUniqueUnits('nut4');
-	// 	this.melting_units = this.getUniqueUnits('nut5');
-	// 	this.nut15_methods = this.getNut15Methods();
-	// 	this.nut17_commands = this.getNut17Commands();
-	// 	this.buildDynamicFormElements();
-	// 	this.initChartData();
-	// 	Object.keys(this.form_config.controls).forEach(form_group_key => {
-	// 		const form_group = this.form_config.get(form_group_key) as FormGroup;
-	// 		if( form_group.get('enabled')?.value === false ) form_group.disable();
-	// 	});
-	// 	this.subscriptions.add(this.getMintInfoSubscription());
-	// 	this.subscriptions.add(this.getEventSubscription());
-	// 	this.subscriptions.add(this.getFormSubscription());
-	// 	this.subscriptions.add(this.getDirtyCountSubscription());
-	// 	this.orchardOptionalInit();
-	// }
 
 	ngOnInit(): void {		
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
@@ -256,32 +235,77 @@ export class MintSubsectionKeysetsComponent implements OnInit, OnDestroy {
 	}
 
 	private getEventSubscription(): Subscription {
-		return this.eventService.getActiveEvent()
-			.subscribe((event_data: EventData | null) => {
-				if( event_data?.type === 'SUCCESS' ) this.onSuccessEvent();
-				if( event_data?.confirmed ) this.onConfirmedEvent();
-				if( event_data === null && this.keysets_rotation ){
-					this.eventService.registerEvent(new EventData({
-						type: 'PENDING',
-						message: 'Keyset Rotation',
-					}));
-				}
-			});
+		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
+			if( event_data?.type === 'SUCCESS' ) this.onSuccessEvent();
+			if( event_data?.confirmed ) this.onConfirmedEvent();
+			if( event_data === null && this.keysets_rotation ){
+				this.eventService.registerEvent(new EventData({
+					type: 'PENDING',
+					message: 'Keyset Rotation',
+				}));
+			}
+		});
 	}
 	private getAgentSubscription(): Subscription {
-		return this.aiService.agent_requests$
-			.subscribe(({ agent, content }) => {
-				const form_string = JSON.stringify(this.form_keyset.value);
-				this.aiService.openAiSocket(agent, content, form_string);
-			});
+		return this.aiService.agent_requests$.subscribe(({ agent, content }) => {
+			(this.keysets_rotation) ? this.hireRotationAgent(AiAgent.MintKeysetRotation, content) : this.hireAnalyticsAgent(agent, content);
+		});
+	}
+	private hireAnalyticsAgent(agent: AiAgent, content: string|null): void {
+		let context = `Current Date: ${DateTime.now().toFormat('yyyy-MM-dd')}\n`;
+		context += `Current Date Start: ${DateTime.fromSeconds(this.chart_settings.date_start).toFormat('yyyy-MM-dd')}\n`;
+		context += `Current Date End: ${DateTime.fromSeconds(this.chart_settings.date_end).toFormat('yyyy-MM-dd')}\n`;
+		context += `Current Units: ${this.chart_settings.units}\n`;
+		context += `Current Status: ${this.chart_settings.status}\n`;
+		context += `Available Units: ${this.unit_options.map(unit => unit.label).join(', ')}\n`;
+		this.aiService.openAiSocket(agent, content, context);
+	}
+	private hireRotationAgent(agent: AiAgent, content: string|null): void {
+		let context = `Current Unit: ${this.form_keyset.value.unit}\n`;
+		context += `Current Input Fee PPK: ${this.form_keyset.value.input_fee_ppk}\n`;
+		context += `Current Max Order: ${this.form_keyset.value.max_order}\n`;
+		context += `Available Units: ${this.unit_options.map(unit => unit.label).join(', ')}\n`;
+		this.aiService.openAiSocket(agent, content, context);
 	}
 
 	private getToolSubscription(): Subscription {
-		return this.aiService.tool_calls$
-			.subscribe((tool_call: AiChatToolCall) => {
-				console.log(tool_call);
-				// this.executeAgentFunction(tool_call);
+		return this.aiService.tool_calls$.subscribe((tool_call: AiChatToolCall) => {
+			this.executeAgentFunction(tool_call);
+		});
+	}
+	private executeAgentFunction(tool_call: AiChatToolCall): void {
+		if( tool_call.function.name === AiFunctionName.MintAnalyticsDateRangeUpdate ) {
+			const range = [
+				DateTime.fromFormat(tool_call.function.arguments.date_start, 'yyyy-MM-dd').toSeconds(),
+				DateTime.fromFormat(tool_call.function.arguments.date_end, 'yyyy-MM-dd').toSeconds()
+			];
+			this.onDateChange(range);
+		}
+		if( tool_call.function.name === AiFunctionName.MintAnalyticsUnitsUpdate ) {
+			// @todo parse this too....
+			this.onUnitsChange(tool_call.function.arguments.units);
+		}
+		if( tool_call.function.name === AiFunctionName.MintKeysetStatusUpdate ) {
+			// @todo try catch this parse
+			const parsed_statuses = JSON.parse(tool_call.function.arguments.statuses as any);
+			const statuses = parsed_statuses.map((status: boolean) => status);
+			this.onStatusChange(statuses);
+		}
+		if( tool_call.function.name === AiFunctionName.MintKeysetRotationUnitUpdate ) {
+			this.form_keyset.patchValue({
+				unit: tool_call.function.arguments.unit,
 			});
+		}
+		if( tool_call.function.name === AiFunctionName.MintKeysetRotationInputFeePpkUpdate ) {
+			this.form_keyset.patchValue({
+				input_fee_ppk: tool_call.function.arguments.input_fee_ppk,
+			});
+		}
+		if( tool_call.function.name === AiFunctionName.MintKeysetRotationMaxOrderUpdate ) {
+			this.form_keyset.patchValue({
+				max_order: tool_call.function.arguments.max_order,
+			});
+		}
 	}
 
 	private initKeysetsRotation(): void {

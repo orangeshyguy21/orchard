@@ -95,7 +95,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	private getAgentSubscription(): Subscription {
 		return this.aiService.agent_requests$
 			.subscribe(({ agent, content }) => {
-				this.aiService.openAiSocket(agent, content);
+				if( agent === AiAgent.Default ) this.aiService.openAiSocket(agent, content);
 			});
 	}
 	private getActiveAiSubscription(): Subscription {

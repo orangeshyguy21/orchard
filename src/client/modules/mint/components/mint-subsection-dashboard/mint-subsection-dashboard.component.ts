@@ -93,7 +93,6 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 				context += `Current Interval: ${this.chart_settings.interval}\n`;
 				context += `Current Units: ${this.chart_settings.units}\n`;
 				context += `Current Type: ${this.chart_settings.type}`;
-				console.log('CONTEXT:', context);
 				this.aiService.openAiSocket(agent, content, context);
 			});
 	}
