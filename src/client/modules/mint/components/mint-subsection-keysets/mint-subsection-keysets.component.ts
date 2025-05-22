@@ -41,8 +41,8 @@ export class MintSubsectionKeysetsComponent {
 	public keyset_out_balance!: MintBalance;
 	public form_keyset: FormGroup = new FormGroup({
 		unit: new FormControl(null, [Validators.required]),
-		input_fee_ppk: new FormControl(null, [Validators.min(0), Validators.max(100000)]),
-		max_order: new FormControl(32, [Validators.min(0), Validators.max(255)]),
+		input_fee_ppk: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(100000)]),
+		max_order: new FormControl(32, [Validators.required, Validators.min(0), Validators.max(255)]),
 	});
 
 	constructor(
@@ -187,6 +187,16 @@ export class MintSubsectionKeysetsComponent {
 		});
 	}
 
+	private saveKeysetsRotation(): void {
+		this.keysets_rotation = false;
+		console.log(this.form_keyset.value);
+	}
+
+	private initKeysetsRotation(): void {
+		this.keysets_rotation = true;
+		this.getMintKeysetBalance();
+	}
+
 	public onDateChange(event: number[]): void {
 		this.chart_settings.date_start = event[0];
 		this.chart_settings.date_end = event[1];
@@ -207,8 +217,11 @@ export class MintSubsectionKeysetsComponent {
 	}
 
 	public onRotation(): void {
-		this.keysets_rotation = !this.keysets_rotation;
-		this.getMintKeysetBalance();
+		( !this.keysets_rotation ) ? this.initKeysetsRotation() : this.saveKeysetsRotation();
 	}
-	
+
+	public onCloseRotation(): void {
+		this.keysets_rotation = false;
+		this.cdr.detectChanges();
+	}	
 }
