@@ -84,10 +84,13 @@
                     <div class="flex flex-column flex-gap-1 flex-items-center">
                         <div class="font-size-xs orc-outline-color">Keyset Rotating In</div>
                         <div class="flex flex-items-center flex-gap-1">
-                            <orc-graphic-asset 
-                                [unit]="form_group.get('unit')?.value" 
-                                [height]="'1.5rem'">
-                            </orc-graphic-asset>
+                            <div class="flex flex-column flex-items-center">
+                                <orc-graphic-asset 
+                                    [unit]="form_group.get('unit')?.value" 
+                                    [height]="'1.5rem'">
+                                </orc-graphic-asset>
+                                <span class="invisible h-0" [innerHTML]="0 | amount : form_group.get('unit')?.value : 'mint'"></span>
+                            </div>
                             <orc-mint-keyset
                                 class="high-bg"
                                 [active]="true"
@@ -104,10 +107,17 @@
           
                         <div class="font-size-xs orc-outline-color">Keyset Rotating Out</div>
                         <div class="flex flex-items-center flex-gap-1">
-                            <orc-graphic-asset 
-                                [unit]="keyset_out.unit" 
-                                [height]="'1.5rem'">
-                            </orc-graphic-asset>
+                            <div class="flex flex-column flex-items-center">
+                                <orc-graphic-asset 
+                                    [unit]="keyset_out.unit" 
+                                    [height]="'1.5rem'">
+                                </orc-graphic-asset>
+                                @if( keyset_out_balance ) {
+                                    <span class="invisible h-0" [innerHTML]="keyset_out_balance.balance | amount : form_group.get('unit')?.value : 'mint'"></span>
+                                }@else {
+                                    <div class="h-0 w-6"></div>
+                                }
+                            </div>
                             <orc-mint-keyset
                                 class="high-bg"
                                 [active]="false"
