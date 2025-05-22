@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, ViewChild, ElementRef, computed } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 /* Application Dependencies */
 import { OrchardNut4Method, OrchardNut5Method } from '@shared/generated.types';
@@ -22,6 +22,16 @@ export class MintConfigFormMaxComponent {
 
 	@ViewChild('element_max') element_max!: ElementRef<HTMLInputElement>;
 
+	// @todo test this, and implement in other components
+	public form_error = computed(() => {
+		if (this.form_group.get(this.control_name)?.hasError('required')) return 'Required';
+		if (this.form_group.get(this.control_name)?.hasError('min')) return `Must be at least ${this.form_group.get(this.control_name)?.getError("min")?.min}`;
+		if (this.form_group.get(this.control_name)?.hasError('orchardInteger')) return 'Must be a whole number';
+		if (this.form_group.get(this.control_name)?.hasError('orchardCents')) return 'Must have 2 decimals';
+		if (this.form_group.get(this.control_name)?.errors) return 'Invalid amount';
+		return '';
+	});
+	
 	public get form_hot(): boolean {
 		if( document.activeElement === this.element_max?.nativeElement ){
 			this.hot.emit(true);

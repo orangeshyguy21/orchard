@@ -21,6 +21,10 @@ import {
     UpdateMintMethodMinTool,
     UpdateMintMethodMaxTool,
     UpdateMintMethodDescriptionTool,
+    UpdateMintKeysetStatusTool,
+    UpdateMintKeysetRotationUnitTool,
+    UpdateMintKeysetRotationInputFeePpkTool,
+    UpdateMintKeysetRotationMaxOrderTool,
 } from "./ai.tools";
 
 export const AI_AGENTS = {
@@ -83,6 +87,34 @@ export const AI_AGENTS = {
             UpdateMintMethodMinTool,
             UpdateMintMethodMaxTool,
             UpdateMintMethodDescriptionTool,
+        ],
+    },
+    [AiAgent.MINT_KEYSETS]: {
+        name: 'Mint Keysets',
+        description: 'Mint keysets agent',
+        system_message: {
+            role: 'system',
+            content: `You are an agent designed to help explore data related to mint keysets.
+            You will be provided with the current state of the form along with the users request for changes`,
+        },
+        tools: [
+            UpdateMintAnalyticsDateRangeTool,
+            UpdateMintAnalyticsUnitsTool,
+            UpdateMintKeysetStatusTool,
+        ],
+    },
+    [AiAgent.MINT_KEYSET_ROTATION]: {
+        name: 'Mint Keyset Rotation',
+        description: 'Mint keyset rotation agent',
+        system_message: {
+            role: 'system',
+            content: `You are an agent designed to help rotate keysets in a cashu mint.
+            You will be provided with the current state of the form along with the users request for changes`,
+        },
+        tools: [
+            UpdateMintKeysetRotationUnitTool,
+            UpdateMintKeysetRotationInputFeePpkTool,
+            UpdateMintKeysetRotationMaxOrderTool,
         ],
     },
 };

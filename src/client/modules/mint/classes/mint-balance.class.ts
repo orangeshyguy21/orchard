@@ -6,7 +6,7 @@ export class MintBalance implements OrchardMintBalance {
 	keyset: string;
 
 	constructor(omb: OrchardMintBalance) {
-		this.balance = omb.balance;
-		this.keyset = omb.keyset;
+		this.balance = omb?.balance || 0;
+		this.keyset = omb?.keyset || '';
 	}
 }

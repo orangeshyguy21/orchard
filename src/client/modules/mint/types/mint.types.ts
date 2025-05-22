@@ -7,6 +7,7 @@ import {
     OrchardMintAnalytics,
     OrchardMintMintQuote,
     OrchardMintMeltQuote,
+    OrchardMintKeysetsAnalytics,
     MintUnit,
     MintAnalyticsInterval,
     MintQuoteState,
@@ -20,6 +21,7 @@ import {
     OrchardMintContactUpdate,
     OrchardMintNut04Update,
     OrchardMintNut05Update,
+    OrchardMintKeysetRotation,
 } from "@shared/generated.types";
 
 export type MintInfoResponse = {
@@ -69,6 +71,10 @@ export type MintMintQuotesResponse = {
 
 export type MintMeltQuotesResponse = {
 	mint_melt_quotes: OrchardMintMeltQuote[];
+}
+
+export type MintAnalyticsKeysetsResponse = {
+	mint_analytics_keysets: OrchardMintKeysetsAnalytics[];
 }
 
 export type MintPromisesArgs ={
@@ -157,4 +163,8 @@ export type MintNut04UpdateResponse = {
 
 export type MintNut05UpdateResponse = {
 	mint_nut05_update: OrchardMintNut05Update;
+}
+
+export type MintKeysetRotationResponse = {
+	mint_keysets_rotation: OrchardMintKeysetRotation;
 }

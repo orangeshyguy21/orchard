@@ -11,15 +11,21 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
 /* Application Dependencies */
 import { NavModule } from '@client/modules/nav/nav.module';
 import { LocalModule } from '@client/modules/local/local.module';
+import { FormModule } from '@client/modules/form/form.module';
+import { AiModule } from '@client/modules/ai/ai.module';
 /* Native Module Dependencies */
 import { SettingsSectionComponent } from './components/settings-section/settings-section.component';
 import { SettingsTimeComponent } from './components/settings-time/settings-time.component';
 import { SettingsTimeTimezoneComponent } from './components/settings-time-timezone/settings-time-timezone.component';
 import { SettingsTimeLocaleComponent } from './components/settings-time-locale/settings-time-locale.component';
 import { SettingsThemeComponent } from './components/settings-theme/settings-theme.component';
+import { SettingsAiComponent } from './components/settings-ai/settings-ai.component';
+import { SettingsCategoriesComponent } from './components/settings-categories/settings-categories.component';
 
 const routes: Routes = [
 	{
@@ -39,6 +45,7 @@ const routes: Routes = [
 	exports: [
 		RouterModule,
 	],
+	declarations: [],
 })
 export class SettingsAppRoutingModule { }
 
@@ -46,10 +53,12 @@ export class SettingsAppRoutingModule { }
 @NgModule({
 	declarations: [
 		SettingsSectionComponent,
+		SettingsCategoriesComponent,
 		SettingsTimeComponent,
 		SettingsTimeTimezoneComponent,
 		SettingsTimeLocaleComponent,
 		SettingsThemeComponent,
+		SettingsAiComponent,
 	],
 	imports: [
 		CommonModule,
@@ -62,8 +71,12 @@ export class SettingsAppRoutingModule { }
 		MatCheckboxModule,
 		MatSelectModule,
 		MatSlideToggleModule,
+		MatChipsModule,
+		MatIconModule,
 		NavModule,
 		LocalModule,
+		FormModule,
+		AiModule,
 	],
 })
 export class SettingsAppModule { }

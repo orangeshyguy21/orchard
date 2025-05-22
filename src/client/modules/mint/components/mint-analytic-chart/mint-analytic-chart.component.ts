@@ -6,7 +6,7 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ScaleChartOptions, ChartType as ChartJsType } from 'chart.js';
 import { DateTime } from 'luxon';
 /* Application Dependencies */
-import { NonNullableMintChartSettings } from '@client/modules/chart/services/chart/chart.types';
+import { NonNullableMintDashboardSettings } from '@client/modules/chart/services/chart/chart.types';
 import { 
 	groupAnalyticsByUnit,
 	prependData,
@@ -54,7 +54,7 @@ export class MintAnalyticChartComponent implements OnChanges {
 	@Input() public locale!: string;
 	@Input() public mint_analytics!: MintAnalytic[];
 	@Input() public mint_analytics_pre!: MintAnalytic[];
-	@Input() public chart_settings!: NonNullableMintChartSettings | undefined;
+	@Input() public chart_settings!: NonNullableMintDashboardSettings | undefined;
 	@Input() public mint_genesis_time!: number;
 	@Input() public selected_type!: ChartType | undefined;
 	@Input() public loading!: boolean;
@@ -266,21 +266,27 @@ export class MintAnalyticChartComponent implements OnChanges {
 
 	private getAnnotations(): any {
 		const min_x_value = this.findMinimumXValue(this.chart_data);
-		const milli_genesis_time = this.mint_genesis_time*1000;
+		const milli_genesis_time = DateTime.fromSeconds(this.mint_genesis_time).startOf('day').toMillis();
 		const display = (milli_genesis_time >= min_x_value) ? true : false;
+		const config = this.chartService.getFormAnnotationConfig(false);
 		return {
 			annotations: {
 				annotation : {
 					type: 'line',
-					borderColor: this.chartService.getAnnotationBorderColor(),
-					borderWidth: 1,
+					borderColor: config.border_color,
+					borderWidth: config.border_width,
 					display: display,
 					label: {
 						display:  true,
-						content: 'Genesis',
+						content: 'Mint Genesis',
 						position: 'start',
-						backgroundColor: 'rgb(29, 27, 26)',
-						borderColor: this.chartService.getAnnotationBorderColor(),
+						backgroundColor: config.label_bg_color,
+						color: config.text_color,
+						font: {
+							size: 12,
+							weight: '300'
+						},
+						borderColor: config.label_border_color,
 						borderWidth: 1,
 					},
 					scaleID: 'x',

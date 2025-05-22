@@ -30,4 +30,10 @@
         @extend %flex-items-center;
         @extend %flex-gap-1;
     }
+
+    #{$c}category-rule{
+        @extend %border;
+        @extend %border-solid;
+        @extend %orc-outline-variant-border;
+    }
 }

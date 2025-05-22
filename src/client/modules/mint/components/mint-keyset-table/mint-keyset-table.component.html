@@ -1,0 +1,62 @@
+<div class="mint-keyset-table-container">
+    <mat-card appearance="outlined">
+        @if(!loading && data_source){
+            <div class="p-h-1" @fadeIn>
+                <table mat-table [dataSource]="data_source" matSort class="orc-feature-table">
+                    <ng-container matColumnDef="keyset">
+                        <th mat-header-cell *matHeaderCellDef class="keyset-table-sticky-header"> Keyset </th>
+                        <td mat-cell *matCellDef="let keyset">
+                            <div class="flex flex-items-center flex-gap-1 p-v-1">
+                                <div class="w-min-12">
+                                    <orc-mint-keyset
+                                        [active]="keyset.active"
+                                        [index]="keyset.derivation_path_index"
+                                        [input_fee_ppk]="keyset.input_fee_ppk">
+                                    </orc-mint-keyset>
+                                </div>
+                                <span class="text-sm orc-outline-variant-color"> {{ keyset.id }} </span>
+                            </div>
+                        </td>
+                    </ng-container>
+    
+                    <ng-container matColumnDef="unit">
+                        <th mat-header-cell *matHeaderCellDef class="keyset-table-sticky-header"> Unit </th>
+                        <td mat-cell *matCellDef="let keyset">
+                            <div class="flex flex-items-center flex-gap-1">
+                                <orc-graphic-asset 
+                                    [unit]="keyset.unit" 
+                                    [height]="'1.5rem'">
+                                </orc-graphic-asset>
+                                <span class="text-sm"> {{ keyset.unit }} </span>
+                            </div>
+                        </td>
+                    </ng-container>
+                    
+                    <ng-container matColumnDef="input_fee_ppk">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header class="keyset-table-sticky-header"> Fee </th>
+                        <td mat-cell *matCellDef="let keyset"> {{ keyset.input_fee_ppk }} </td>
+                    </ng-container>
+                
+                    <ng-container matColumnDef="valid_from">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header class="keyset-table-sticky-header"> Created </th>
+                        <td mat-cell *matCellDef="let keyset"> {{ keyset.valid_from | time:'date-only' }} </td>
+                    </ng-container>
+    
+                    <ng-container matColumnDef="balance">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header class="keyset-table-sticky-header"> Balance </th>
+                        <td mat-cell *matCellDef="let keyset">
+                            <span class="font-size-m w-min-10" [innerHTML]="keyset.balance | amount : keyset.unit : 'mint'"></span>
+                        </td>
+                    </ng-container>
+                
+                    <tr mat-header-row *matHeaderRowDef="displayed_columns; sticky: true"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayed_columns;"></tr>
+                </table>
+            </div>
+        }@else {
+            <div class="flex flex-items-center flex-justify-center h-min-18">
+                <mat-icon class="icon-lg mat-symbol-outline orc-outline-variant-color">table</mat-icon>
+            </div>
+        }
+    </mat-card>
+</div>

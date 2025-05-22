@@ -7,8 +7,6 @@ import * as path from 'path';
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import sqlite3 from "sqlite3";
-/* Application Dependencies */
-import { OrchardErrorCode } from '@server/modules/error/error.types';
 /* Native Dependencies */
 import { 
 	CashuMintBalance,
@@ -17,6 +15,7 @@ import {
 	CashuMintMintQuote,
 	CashuMintProof,
 	CashuMintAnalytics,
+	CashuMintKeysetsAnalytics,
 } from '@server/modules/cashu/mintdb/cashumintdb.types';
 import { 
 	CashuMintMintQuotesArgs,
@@ -81,62 +80,33 @@ export class CdkService {
         }
     }
 
-	public async getMintBalances(db:sqlite3.Database) : Promise<CashuMintBalance[]> {
+	public async getMintBalances(db: sqlite3.Database, keyset_id?: string): Promise<CashuMintBalance[]> {
+		const where_clause = keyset_id ? 'WHERE keyset_id = ?' : '';
 		const sql = `
-		WITH issued_mint_sum AS (
+			WITH issued AS (
+				SELECT keyset_id, SUM(amount) AS issued_amount
+				FROM blind_signature
+				${where_clause}
+				GROUP BY keyset_id
+			),
+			redeemed AS (
+				SELECT keyset_id, SUM(amount) AS redeemed_amount
+				FROM proof
+				WHERE state = 'SPENT'
+				${keyset_id ? 'AND keyset_id = ?' : ''}
+				GROUP BY keyset_id
+			)
 			SELECT 
-				bs.keyset_id AS keyset,
-				SUM(DISTINCT mq.amount) AS amount
-			FROM mint_quote mq
-			JOIN blind_signature bs ON bs.quote_id = mq.id
-			WHERE mq.state = 'ISSUED'
-			GROUP BY bs.keyset_id
-		),
-
-		all_proofs_sum AS (
-			SELECT 
-				keyset_id AS keyset,
-				SUM(amount) AS amount
-			FROM proof
-			GROUP BY keyset_id
-		),
-
-		blind_sig_sum AS (
-			SELECT 
-				keyset_id AS keyset,
-				SUM(amount) AS amount
-			FROM blind_signature
-			WHERE quote_id IS NULL
-			GROUP BY keyset_id
-		),
-
-		paid_melt_sum AS (
-			SELECT 
-				bs.keyset_id AS keyset,
-				SUM(DISTINCT mq.amount) AS amount
-			FROM melt_quote mq
-			JOIN blind_signature bs ON bs.quote_id = mq.id
-			WHERE mq.state = 'PAID'
-			GROUP BY bs.keyset_id
-		)
-
-		SELECT 
-			COALESCE(ims.keyset, aps.keyset, bss.keyset, pms.keyset) AS keyset,
-			COALESCE(ims.amount, 0) - 
-			COALESCE(aps.amount, 0) + 
-			COALESCE(bss.amount, 0) - 
-			COALESCE(pms.amount, 0) AS balance
-		FROM 
-			issued_mint_sum ims
-			FULL OUTER JOIN all_proofs_sum aps ON ims.keyset = aps.keyset
-			FULL OUTER JOIN blind_sig_sum bss ON COALESCE(ims.keyset, aps.keyset) = bss.keyset
-			FULL OUTER JOIN paid_melt_sum pms ON COALESCE(ims.keyset, aps.keyset, bss.keyset) = pms.keyset
-		WHERE 
-			COALESCE(ims.keyset, aps.keyset, bss.keyset, pms.keyset) IS NOT NULL
-		ORDER BY keyset;`;
-
+				COALESCE(i.keyset_id, r.keyset_id) AS keyset,
+				COALESCE(i.issued_amount, 0) - COALESCE(r.redeemed_amount, 0) AS balance
+			FROM issued i
+			FULL OUTER JOIN redeemed r ON i.keyset_id = r.keyset_id
+			ORDER BY keyset;
+		`;
+	
+		const params = keyset_id ? [keyset_id, keyset_id] : [];
 		return new Promise((resolve, reject) => {
-			db.all(sql, (err, rows:CashuMintBalance[]) => {
+			db.all(sql, params, (err, rows: CashuMintBalance[]) => {
 				if (err) reject(err);
 				resolve(rows);
 			});
@@ -154,7 +124,6 @@ export class CdkService {
 		);`;
 		return new Promise((resolve, reject) => {
 			db.all(sql, (err, rows:CashuMintBalance[]) => {
-				console.log(rows);
 				if (err) reject(err);
 				resolve(rows);
 			});
@@ -278,7 +247,8 @@ export class CdkService {
 		const time_group_sql = getAnalyticsTimeGroupSql({
 			interval: interval,
 			timezone: timezone,
-			time_column: 'created_time'
+			time_column: 'created_time',
+			group_by: 'unit'
 		});
 		
 		const sqlite_sql = `
@@ -367,7 +337,8 @@ export class CdkService {
 		const time_group_sql = getAnalyticsTimeGroupSql({
 			interval: interval,
 			timezone: timezone,
-			time_column: 'created_time'
+			time_column: 'created_time',
+			group_by: 'unit'
 		});
 		const sql = `
 			SELECT 
@@ -419,7 +390,8 @@ export class CdkService {
 		const time_group_sql = getAnalyticsTimeGroupSql({
 			interval: interval,
 			timezone: timezone,
-			time_column: 'created_time'
+			time_column: 'created_time',
+			group_by: 'unit'
 		});
 		const sql = `
 			SELECT 
@@ -460,7 +432,7 @@ export class CdkService {
 		});
  	}
 
-	 public async getMintAnalyticsTransfers(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
+	public async getMintAnalyticsTransfers(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
 		const interval = args?.interval || MintAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
 		const { where_conditions, params } = getAnalyticsConditions({
@@ -472,7 +444,8 @@ export class CdkService {
 		const time_group_sql = getAnalyticsTimeGroupSql({
 			interval: interval,
 			timezone: timezone,
-			time_column: 'created_time'
+			time_column: 'created_time',
+			group_by: 'unit'
 		});
 		const sql = `
 			SELECT 
@@ -506,6 +479,78 @@ export class CdkService {
 						amount: row.amount,
 						created_time: timestamp,
 						operation_count: row.operation_count,
+					};
+				});
+				
+				resolve(result);
+			});
+		});
+	}
+
+	public async getMintAnalyticsKeysets(db: sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintKeysetsAnalytics[]> {
+		const interval = args?.interval || MintAnalyticsInterval.day;
+		const timezone = args?.timezone || 'UTC';
+		const { where_conditions, params } = getAnalyticsConditions({
+			args: args,
+			time_column: 'created_time'
+		});
+		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
+		const time_group_sql = getAnalyticsTimeGroupSql({
+			interval: interval,
+			timezone: timezone,
+			time_column: 'created_time',
+			group_by: 'keyset_id'
+		});
+	
+		const sql = `
+			WITH issued AS (
+				SELECT 
+					${time_group_sql} AS time_group,
+					keyset_id,
+					SUM(amount) AS issued_amount,
+					MIN(created_time) as min_created_time
+				FROM blind_signature
+				${where_clause}
+				GROUP BY time_group, keyset_id
+			),
+			redeemed AS (
+				SELECT 
+					${time_group_sql} AS time_group,
+					keyset_id,
+					SUM(amount) AS redeemed_amount,
+					MIN(created_time) as min_created_time
+				FROM proof
+				${where_clause}
+				AND state = 'SPENT'
+				GROUP BY time_group, keyset_id
+			)
+			SELECT 
+				COALESCE(i.time_group, r.time_group) AS time_group,
+				COALESCE(i.keyset_id, r.keyset_id) AS keyset_id,
+				COALESCE(i.issued_amount, 0) - COALESCE(r.redeemed_amount, 0) AS amount,
+				COALESCE(i.min_created_time, r.min_created_time) AS min_created_time
+			FROM issued i
+			FULL OUTER JOIN redeemed r 
+				ON i.time_group = r.time_group 
+				AND i.keyset_id = r.keyset_id
+			ORDER BY min_created_time;
+		`;
+	
+		return new Promise((resolve, reject) => {
+			db.all(sql, [...params, ...params], (err, rows: any[]) => {
+				if (err) return reject(err);
+						
+				const result = rows.map(row => {
+					const timestamp = getAnalyticsTimeGroupStamp({
+						min_created_time: row.min_created_time,
+						time_group: row.time_group,
+						interval: interval,
+						timezone: timezone
+					});
+					return {
+						keyset_id: row.keyset_id,
+						amount: row.amount,
+						created_time: timestamp,
 					};
 				});
 				

@@ -22,7 +22,9 @@ export enum AiAgent {
   Default = 'DEFAULT',
   MintConfig = 'MINT_CONFIG',
   MintDashboard = 'MINT_DASHBOARD',
-  MintInfo = 'MINT_INFO'
+  MintInfo = 'MINT_INFO',
+  MintKeysets = 'MINT_KEYSETS',
+  MintKeysetRotation = 'MINT_KEYSET_ROTATION'
 }
 
 export type AiChatAbortInput = {
@@ -53,6 +55,10 @@ export enum AiFunctionName {
   MintDescriptionUpdate = 'MINT_DESCRIPTION_UPDATE',
   MintEnabledUpdate = 'MINT_ENABLED_UPDATE',
   MintIconUrlUpdate = 'MINT_ICON_URL_UPDATE',
+  MintKeysetRotationInputFeePpkUpdate = 'MINT_KEYSET_ROTATION_INPUT_FEE_PPK_UPDATE',
+  MintKeysetRotationMaxOrderUpdate = 'MINT_KEYSET_ROTATION_MAX_ORDER_UPDATE',
+  MintKeysetRotationUnitUpdate = 'MINT_KEYSET_ROTATION_UNIT_UPDATE',
+  MintKeysetStatusUpdate = 'MINT_KEYSET_STATUS_UPDATE',
   MintMethodDescriptionUpdate = 'MINT_METHOD_DESCRIPTION_UPDATE',
   MintMethodMaxUpdate = 'MINT_METHOD_MAX_UPDATE',
   MintMethodMinUpdate = 'MINT_METHOD_MIN_UPDATE',
@@ -145,14 +151,6 @@ export type MintRotateKeysetInput = {
   unit: Scalars['String']['input'];
 };
 
-export type MintRotateKeysetOutput = {
-  __typename?: 'MintRotateKeysetOutput';
-  id: Scalars['String']['output'];
-  input_fee_ppk?: Maybe<Scalars['Int']['output']>;
-  max_order?: Maybe<Scalars['Int']['output']>;
-  unit: Scalars['String']['output'];
-};
-
 export enum MintUnit {
   Auth = 'auth',
   Btc = 'btc',
@@ -179,7 +177,7 @@ export type Mutation = {
   mint_nut04_update: OrchardMintNut04Update;
   mint_nut05_update: OrchardMintNut05Update;
   mint_quote_ttl_update: OrchardMintQuoteTtls;
-  mint_rotate_keyset: MintRotateKeysetOutput;
+  mint_rotate_keyset: OrchardMintKeysetRotation;
   mint_short_description_update: OrchardMintDescriptionUpdate;
   mint_url_add: OrchardMintUrlUpdate;
   mint_url_remove: OrchardMintUrlUpdate;
@@ -304,7 +302,7 @@ export type OrchardAiModel = {
   details: OrchardAiModelDetails;
   digest: Scalars['String']['output'];
   model: Scalars['String']['output'];
-  modified_at: Scalars['String']['output'];
+  modified_at: Scalars['UnixTimestamp']['output'];
   name: Scalars['String']['output'];
   size: Scalars['Float']['output'];
 };
@@ -410,6 +408,21 @@ export type OrchardMintKeyset = {
   unit: Scalars['String']['output'];
   valid_from: Scalars['UnixTimestamp']['output'];
   valid_to?: Maybe<Scalars['UnixTimestamp']['output']>;
+};
+
+export type OrchardMintKeysetRotation = {
+  __typename?: 'OrchardMintKeysetRotation';
+  id: Scalars['String']['output'];
+  input_fee_ppk?: Maybe<Scalars['Int']['output']>;
+  max_order?: Maybe<Scalars['Int']['output']>;
+  unit: Scalars['String']['output'];
+};
+
+export type OrchardMintKeysetsAnalytics = {
+  __typename?: 'OrchardMintKeysetsAnalytics';
+  amount: Scalars['Int']['output'];
+  created_time: Scalars['UnixTimestamp']['output'];
+  keyset_id: Scalars['String']['output'];
 };
 
 export type OrchardMintMeltQuote = {
@@ -618,6 +631,7 @@ export type Query = {
   ai_models: Array<OrchardAiModel>;
   bitcoin_blockcount: OrchardBitcoinBlockCount;
   mint_analytics_balances: Array<OrchardMintAnalytics>;
+  mint_analytics_keysets: Array<OrchardMintKeysetsAnalytics>;
   mint_analytics_melts: Array<OrchardMintAnalytics>;
   mint_analytics_mints: Array<OrchardMintAnalytics>;
   mint_analytics_transfers: Array<OrchardMintAnalytics>;
@@ -649,6 +663,14 @@ export type QueryMint_Analytics_BalancesArgs = {
 };
 
 
+export type QueryMint_Analytics_KeysetsArgs = {
+  date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  interval?: InputMaybe<MintAnalyticsInterval>;
+  timezone?: InputMaybe<Scalars['Timezone']['input']>;
+};
+
+
 export type QueryMint_Analytics_MeltsArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
@@ -673,6 +695,11 @@ export type QueryMint_Analytics_TransfersArgs = {
   interval?: InputMaybe<MintAnalyticsInterval>;
   timezone?: InputMaybe<Scalars['Timezone']['input']>;
   units?: InputMaybe<Array<MintUnit>>;
+};
+
+
+export type QueryMint_BalancesArgs = {
+  keyset_id?: InputMaybe<Scalars['String']['input']>;
 };
 
 

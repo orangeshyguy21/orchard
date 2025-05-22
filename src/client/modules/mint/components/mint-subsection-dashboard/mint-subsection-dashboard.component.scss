@@ -14,16 +14,9 @@
 .mint-analytic-control-panel{
     @extend %p-t-1;
     @extend %orc-surface-bg;
-    // @extend %orc-surface-container-low-bg;
     @extend %sticky;
     @extend %top-0;
     @extend %z-index-1;
-}
-
-.mint-analytics-rule{
-    @extend %border;
-    @extend %border-solid;
-    @extend %orc-outline-variant-border;
 }
 
 .mint-analytic-header{

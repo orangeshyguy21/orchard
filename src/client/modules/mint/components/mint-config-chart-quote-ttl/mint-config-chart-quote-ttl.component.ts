@@ -1,5 +1,6 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, Component, Input, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
+import { trigger, transition, style, animate } from '@angular/animations';
 /* Vendor Dependencies */
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartType as ChartJsType } from 'chart.js';
@@ -17,7 +18,18 @@ import { MintQuoteState, MeltQuoteState } from '@shared/generated.types';
     standalone: false,
     templateUrl: './mint-config-chart-quote-ttl.component.html',
     styleUrl: './mint-config-chart-quote-ttl.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    animations: [
+		trigger('fadeInOut', [
+			transition(':enter', [
+				style({ opacity: 0 }),
+				animate('150ms ease-in', style({ opacity: 1 }))
+			]),
+			transition(':leave', [
+				animate('150ms ease-out', style({ opacity: 0 }))
+			])
+		])
+	]
 })
 export class MintConfigChartQuoteTtlComponent implements OnChanges {
 
@@ -137,6 +149,8 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges {
         const span_days = (max_time - min_time) / (1000 * 60 * 60 * 24);
         const time_unit = span_days > 90 ? 'month' : span_days > 21 ? 'week' : 'day';
         const step_size = 1;
+        const use_log_scale = this.metrics.max / this.metrics.min >= 100;
+
         const scales: any = {};
         scales['x'] = {
             type: 'time',
@@ -149,6 +163,10 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges {
                     day: 'MMM d',
                 }
             },
+            grid: {
+				display: true,
+				color: this.chartService.getGridColor()
+			},
             min: min_time,
             max: max_time,
             ticks: {
@@ -160,15 +178,21 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges {
         };
         scales['y'] = {
             position: 'left',
+            type: use_log_scale ? 'logarithmic' : 'linear',
             title: {
                 display: true,
                 text: 'seconds'
             },
-            beginAtZero: true,
+            beginAtZero: !use_log_scale,
             grid: {
                 display: true,
                 color: this.chartService.getGridColor()
             },
+            ticks: use_log_scale ? {
+				callback: function(value: number, index: number, values: number[]): string | null {
+					return value === 1 || Math.log10(value) % 1 === 0 ? value.toString() : null;
+				}
+			} : {}
         };
     
         return {

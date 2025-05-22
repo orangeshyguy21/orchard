@@ -13,6 +13,7 @@ import { MintSubsectionDashboardComponent } from './components/mint-subsection-d
 import { MintSubsectionInfoComponent } from './components/mint-subsection-info/mint-subsection-info.component';
 import { MintSubsectionConfigComponent } from './components/mint-subsection-config/mint-subsection-config.component';
 import { MintSubsectionKeysetsComponent } from './components/mint-subsection-keysets/mint-subsection-keysets.component';
+import { MintSubsectionDatabaseComponent } from './components/mint-subsection-database/mint-subsection-database.component';
 import { MintService } from './services/mint/mint.service';
 /* Shared Dependencies */
 import { AiAgent } from '@shared/generated.types';
@@ -136,9 +137,22 @@ const routes: Routes = [
 				path: 'keysets',
 				component: MintSubsectionKeysetsComponent,
 				title: 'Orchard | Mint Keysets',
+				resolve: {
+					mint_keysets: mintKeysetsResolver,
+				},
 				data: {
 					section: 'mint',
-					sub_section: 'keysets'
+					sub_section: 'keysets',
+					agent: AiAgent.MintKeysets
+				}
+			},
+			{
+				path: 'database',
+				component: MintSubsectionDatabaseComponent,
+				title: 'Orchard | Mint Database',
+				data: {
+					section: 'mint',
+					sub_section: 'database'
 				}
 			},
 			{

@@ -5,7 +5,13 @@ import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
 import { LocalStorageService } from '@client/modules/cache/services/local-storage/local-storage.service';
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
-import { Locale, Timezone, Theme, ThemeType } from '@client/modules/cache/services/local-storage/local-storage.types';
+import { AiService } from '@client/modules/ai/services/ai/ai.service';
+import { EventService } from '@client/modules/event/services/event/event.service';
+import { EventData } from '@client/modules/event/classes/event-data.class';
+import { Locale, Timezone, Theme, ThemeType, Model } from '@client/modules/cache/services/local-storage/local-storage.types';
+import { AiModel } from '@client/modules/ai/classes/ai-model.class';
+/* Native Dependencies */
+import { SettingsCategory } from '@client/modules/settings/enums/category.enum';
 
 @Component({
 	selector: 'orc-settings-section',
@@ -17,42 +23,90 @@ import { Locale, Timezone, Theme, ThemeType } from '@client/modules/cache/servic
 export class SettingsSectionComponent implements OnInit {
 
 	public version = environment.mode.version;
-	public loading: boolean = true;
+	public enabled_ai = environment.ai.enabled;
 	public locale: Locale | null = null;
 	public timezone: Timezone | null = null;
 	public theme: Theme | null = null;
-
+	public model: Model | null = null;
+	public ai_models: AiModel[] = [];
+	public loading_static: boolean = true;
+	public loading_ai: boolean = true;
+	public error_ai: boolean = false;
+	public category_filters: SettingsCategory[] = [
+		SettingsCategory.Orchard,
+		SettingsCategory.Bitcoin,
+		SettingsCategory.Lightning,
+		SettingsCategory.Mint,
+		SettingsCategory.Ecash
+	];
 
 	constructor(
 		private localStorageService: LocalStorageService,
 		private settingService: SettingService,
-		private changeDetectorRef: ChangeDetectorRef,
+		private aiService: AiService,
+		private eventService: EventService,
+		private cdr: ChangeDetectorRef,
 	) {}
 
 	ngOnInit(): void {
 		this.locale = this.localStorageService.getLocale();
 		this.timezone = this.localStorageService.getTimezone();
 		this.theme = this.localStorageService.getTheme();
-		this.loading = false;
-		this.changeDetectorRef.detectChanges();
+		this.model = this.localStorageService.getModel();
+		this.loading_static = false;
+		this.cdr.detectChanges();
+		this.getModels();
+	}
+
+	private getModels() {
+		this.aiService.getAiModels()
+			.subscribe((models:AiModel[]) => {
+				this.ai_models = models;
+				this.error_ai = false;
+				this.loading_ai = false;
+				this.cdr.detectChanges();
+			}, (error) => {
+				this.error_ai = true;
+				this.loading_ai = false;
+				this.cdr.detectChanges();
+			}
+		);
+	}
+
+	public onUpdateFilters(filters: SettingsCategory[]) {
+		this.category_filters = filters;
 	}
 
 	public onLocaleChange(locale: string|null) {
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		this.localStorageService.setLocale({ code: locale });
 		this.settingService.setLocale();
 		this.locale = this.localStorageService.getLocale();
+		this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
 	}
 
 	public onTimezoneChange(timezone: string|null) {
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		this.localStorageService.setTimezone({ tz: timezone });
 		this.settingService.setTimezone();
 		this.timezone = this.localStorageService.getTimezone();
+		this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
 	}
 
 	public onThemeChange(theme: ThemeType|null) {
-		console.log('theme change received', theme);
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		this.localStorageService.setTheme({ type: theme });
 		this.settingService.setTheme();
 		this.theme = this.localStorageService.getTheme();
+		this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
+	}
+
+	public onModelChange(model: string|null) {
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		this.localStorageService.setModel({ model: model });
+		this.model = this.localStorageService.getModel();
+		this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
 	}
 }
+
+

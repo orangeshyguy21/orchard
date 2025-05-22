@@ -1,4 +1,21 @@
 <div class="ai-nav-container">
-    <orc-ai-input [active_agent]="active_agent"></orc-ai-input>
-    <!-- <div>btn</div> this will be a button to show the chat log  -->
+    <orc-ai-input 
+        [active_agent]="active_agent" 
+        [active_chat]="active_chat"
+        [model]="model"
+        [content]="content"
+        (chat)="command.emit()"
+    ></orc-ai-input>
+    <orc-ai-model 
+        [model]="model"
+        [model_options]="model_options"
+        (modelChange)="modelChange.emit($event)"
+    ></orc-ai-model>
+    <orc-ai-command 
+        [actionable]="actionable" 
+        [active_chat]="active_chat"
+        (command)="command.emit()"
+    ></orc-ai-command>
 </div>
+
+

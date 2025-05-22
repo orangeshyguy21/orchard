@@ -9,6 +9,10 @@
     #{$c}border-transparent { border-color: transparent; }
     #{$c}border-radius-4 { border-radius: 4rem; }
 
+    // Border Bottom
+    #{$c}border-bottom { border-bottom-width: 1px; }
+    #{$c}border-bottom-solid { border-bottom-style: solid; }
+
     // Outline
     #{$c}outline-none { outline: none; }
 }

@@ -435,3 +435,78 @@ export const UpdateMintMethodDescriptionTool = {
         },
     },
 };
+
+export const UpdateMintKeysetStatusTool = {
+    'type': 'function',
+    'function': {
+        'name': 'MINT_KEYSET_STATUS_UPDATE',
+        'description': 'This tool allows you to filter the keysets by status.',
+        'parameters': {
+            "type": "object",
+            "properties": {
+                "statuses": {
+                    "type": "array",
+                    "description": "The status types of the keysets to filter by",
+                    "items": {
+                        "type": "boolean",
+                        "enum": ["true", "false"]
+                    }
+                },
+            },
+            "required": ["statuses"]
+        },
+    },
+};
+
+export const UpdateMintKeysetRotationUnitTool = {
+    'type': 'function',
+    'function': {
+        'name': 'MINT_KEYSET_ROTATION_UNIT_UPDATE',
+        'description': 'This tool allows you to update the unit of the keyset rotation.',
+        'parameters': {
+            "type": "object",
+            "properties": {
+                "unit": {
+                    "type": "string",
+                    "enum": ["sat", "usd", "eur"],
+                    "description": "The unit of the method"
+                },
+            },
+            "required": ["unit"]
+        },
+    },
+};
+export const UpdateMintKeysetRotationInputFeePpkTool = {
+    'type': 'function',
+    'function': {
+        'name': 'MINT_KEYSET_ROTATION_INPUT_FEE_PPK_UPDATE',
+        'description': 'This tool allows you to update the input fee ppk of the keyset rotation.',
+        'parameters': {
+            "type": "object",
+            "properties": {
+                "input_fee_ppk": {
+                    "type": "number",
+                    "description": "The input fee ppk of the keyset rotation"
+                },
+            },
+            "required": ["input_fee_ppk"]
+        },
+    },
+};
+export const UpdateMintKeysetRotationMaxOrderTool = {
+    'type': 'function',
+    'function': {
+        'name': 'MINT_KEYSET_ROTATION_MAX_ORDER_UPDATE',
+        'description': 'This tool allows you to update the max order of the keyset rotation.',
+        'parameters': {
+            "type": "object",
+            "properties": {
+                "max_order": {
+                    "type": "number",
+                    "description": "The max order of the keyset rotation"
+                },
+            },
+            "required": ["max_order"]
+        },
+    },
+};

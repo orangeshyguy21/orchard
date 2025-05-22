@@ -1,0 +1,97 @@
+<div class="mint-keyset-rotation-container p-t-1">
+	<mat-card appearance="outlined" class="relative overflow-hidden">
+        <mat-card-content class="orc-surface-container-low-bg">
+            <div class="absolute top-0-5 right-0-5">
+                <button mat-icon-button (click)="close.emit()">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </div>
+            <div class="flex flex-gap-2">
+                <div class="flex-1">
+                    <form
+                        class="flex-grow flex-1 flex flex-column flex-gap-1"
+                        [formGroup]="form_group"
+                        (ngSubmit)="$event.preventDefault()"
+                        (keydown.enter)="$event.preventDefault()">      
+                        <div class="flex flex-gap-2">
+                            <mat-form-field 
+                                appearance="fill" 
+                                hideRequiredMarker="true"
+                                class="keyset-form-field orc-dynamic-form-field orc-hot-form-field p-r-2">
+                                <mat-label>Unit</mat-label>
+                                <mat-select formControlName="unit">
+                                    @for (unit of unit_options; track unit.value) {
+                                        <mat-option [value]="unit.value">{{unit.label}}</mat-option>
+                                    }
+                                </mat-select>
+                            </mat-form-field>
+                            <div class="flex-1">
+                                <orc-help-text class="orc-surface-container-high-bg">
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.  Lorem ipsum dolor sit amet,
+                                </orc-help-text>
+                            </div>
+                        </div>
+                        <div class="flex flex-gap-2">
+                            <mat-form-field 
+                                appearance="fill" 
+                                hideRequiredMarker="true"
+                                class="keyset-form-field orc-dynamic-form-field orc-hot-form-field p-r-2">
+                                <mat-label>Input Fee PPK</mat-label>
+                                <input 
+                                    type="number" 
+                                    step="1"
+                                    min="0"
+                                    matInput 
+                                    formControlName="input_fee_ppk" 
+                                    placeholder="Ex. 100">
+                                @if (form_group.get('input_fee_ppk')?.invalid && (form_group.get('input_fee_ppk')?.dirty || form_group.get('input_fee_ppk')?.touched)) {
+                                    <mat-error class="font-size-xs">{{ fee_error() }}</mat-error>
+                                }
+                            </mat-form-field>
+                            <div class="flex-1">
+                                <orc-help-text class="orc-surface-container-high-bg">
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing el
+                                </orc-help-text>
+                            </div>
+                        </div>
+                        <div class="flex flex-gap-2">
+                            <mat-form-field 
+                                appearance="fill" 
+                                hideRequiredMarker="true"
+                                class="keyset-form-field orc-dynamic-form-field orc-hot-form-field p-r-2">
+                                <mat-label>Max Order</mat-label>
+                                <input 
+                                    type="number" 
+                                    step="1"
+                                    min="0"
+                                    matInput 
+                                    formControlName="max_order" 
+                                    placeholder="Ex. 32">
+                                <mat-hint class="font-size-xs orc-outline-color">0 - 255</mat-hint>
+                                @if (form_group.get('max_order')?.invalid && (form_group.get('max_order')?.dirty || form_group.get('max_order')?.touched)) {
+                                    <mat-error class="font-size-xs">{{ max_order_error() }}</mat-error>
+                                }
+                            </mat-form-field>
+                            <div class="flex-1">
+                                <orc-help-text class="orc-surface-container-high-bg">
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor.
+                                </orc-help-text>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="flex-1">
+                    <orc-mint-keyset-rotation-preview
+                        [keyset_in_unit]="form_group.get('unit')?.value"
+                        [keyset_in_index]="keyset_out.derivation_path_index + 1"
+                        [keyset_in_fee]="form_group.get('input_fee_ppk')?.value"
+                        [keyset_out_unit]="form_group.get('unit')?.value"
+                        [keyset_out_index]="keyset_out.derivation_path_index"
+                        [keyset_out_fee]="form_group.get('input_fee_ppk')?.value"
+                        [keyset_out_balance]="keyset_out_balance?.balance">
+                    </orc-mint-keyset-rotation-preview>
+                </div>
+            </div>
+        </mat-card-content>
+    </mat-card>
+</div>

@@ -11,6 +11,6 @@ export type Config = {
 		critical_path: string;
 	},
 	ai : {
-		api: string | undefined;
+		enabled: boolean;
 	}
 };

@@ -18,6 +18,10 @@
         @extend %p-t-1-5;
         @extend %p-b-1-5;
     }
+    #{$c}p-v-2 {
+        @extend %p-t-2;
+        @extend %p-b-2;
+    }
     #{$c}p-h-0-5 {
         @extend %p-l-0-5;
         @extend %p-r-0-5;

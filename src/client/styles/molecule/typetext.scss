@@ -23,6 +23,9 @@
     // Text Alignment
     #{$c}text-center { text-align: center; }
 
+    // Text Overflow
+    #{$c}text-nowrap { white-space: nowrap; }
+
     // Material Symbols
     #{$c}mat-symbol-bold { font-variation-settings: 'FILL' 0, 'wght' 700, 'GRAD' 0, 'opsz' 20; }
 }

@@ -1,34 +1,44 @@
-<div class="p-1">
-    <div class="title-l p-b-1 p-l-1">Theme</div>
-    <mat-card appearance="outlined">
-        <mat-card-content>
-            <div class="p-l-1 p-r-1 p-t-1 flex flex-column flex-gap-1">
-
-                <div class="flex flex-items-center">
+<div class="p-2">
+    <mat-card appearance="outlined" class="relative overflow-hidden">
+        <mat-card-content class="orc-surface-container-low-bg">
+            <div class="flex flex-items-start p-l-1 p-r-1 p-t-1">
+                <div class="flex-grow flex flex-items-start flex-justify-between">
                     <form class="flex-grow flex flex-items-center flex-gap-1">
-                        <div class="w-min-18 m-b-1-25">
+                        <div class="w-min-18 m-b-1-25 flex flex-items-center flex-gap-1">
+                            <mat-icon [class.mat-symbol-outline]="theme_control.value">dark_mode</mat-icon>
                             <mat-slide-toggle
                                 [formControl]="theme_control"
                                 (change)="onThemeChange($event)"
-                                name="theme">dark or light
+                                name="theme">
                             </mat-slide-toggle>
+                            <mat-icon [class.mat-symbol-outline]="!theme_control.value">light_mode</mat-icon>
                         </div>
                         <div class="m-b-1-25">
                             <mat-checkbox 
                                 [formControl]="system_default_control"
                                 (change)="onSystemDefaultChange($event)">
-                                System default
+                                Sync with system
                             </mat-checkbox>
                         </div>
                     </form>
-            
-                    <div class="w-max-36 m-b-1-25">
-                        <div>
-                            todo
-                        </div>
+                    
+                    <div class="w-max-18">
+                        <orc-help-text class="orc-surface-container-high-bg">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                            Lorem ipsum dolor sit amet.
+                        </orc-help-text>
                     </div>
                 </div>
-
+            
+                <div class="flex-grow-2 w-max-24">
+                    <div class="flex flex-items-center flex-justify-center flex-gap-1">
+                        <div class="theme-sample orc-primary-bg"></div>
+                        <div class="theme-sample orc-primary-container-bg"></div>
+                        <div class="theme-sample orc-on-primary-bg"></div>
+                        <div class="theme-sample orc-on-primary-fixed-bg"></div>
+                        <div class="theme-sample orc-surface-bg"></div>
+                    </div>
+                </div>
             </div>
         </mat-card-content>
     </mat-card>

@@ -7,6 +7,8 @@ enum AiAgent {
   MINT_CONFIG
   MINT_DASHBOARD
   MINT_INFO
+  MINT_KEYSETS
+  MINT_KEYSET_ROTATION
 }
 
 input AiChatAbortInput {
@@ -37,6 +39,10 @@ enum AiFunctionName {
   MINT_DESCRIPTION_UPDATE
   MINT_ENABLED_UPDATE
   MINT_ICON_URL_UPDATE
+  MINT_KEYSET_ROTATION_INPUT_FEE_PPK_UPDATE
+  MINT_KEYSET_ROTATION_MAX_ORDER_UPDATE
+  MINT_KEYSET_ROTATION_UNIT_UPDATE
+  MINT_KEYSET_STATUS_UPDATE
   MINT_METHOD_DESCRIPTION_UPDATE
   MINT_METHOD_MAX_UPDATE
   MINT_METHOD_MIN_UPDATE
@@ -129,13 +135,6 @@ input MintRotateKeysetInput {
   unit: String!
 }
 
-type MintRotateKeysetOutput {
-  id: String!
-  input_fee_ppk: Int
-  max_order: Int
-  unit: String!
-}
-
 enum MintUnit {
   auth
   btc
@@ -161,7 +160,7 @@ type Mutation {
   mint_nut04_update(mint_nut04_update: MintNut04UpdateInput!): OrchardMintNut04Update!
   mint_nut05_update(mint_nut05_update: MintNut05UpdateInput!): OrchardMintNut05Update!
   mint_quote_ttl_update(mint_quote_ttl_update: MintQuoteTtlUpdateInput!): OrchardMintQuoteTtls!
-  mint_rotate_keyset(mint_rotate_keyset: MintRotateKeysetInput!): MintRotateKeysetOutput!
+  mint_rotate_keyset(mint_rotate_keyset: MintRotateKeysetInput!): OrchardMintKeysetRotation!
   mint_short_description_update(mint_desc_update: MintDescriptionUpdateInput!): OrchardMintDescriptionUpdate!
   mint_url_add(mint_url_update: MintUrlUpdateInput!): OrchardMintUrlUpdate!
   mint_url_remove(mint_url_update: MintUrlUpdateInput!): OrchardMintUrlUpdate!
@@ -205,7 +204,7 @@ type OrchardAiModel {
   details: OrchardAiModelDetails!
   digest: String!
   model: String!
-  modified_at: String!
+  modified_at: UnixTimestamp!
   name: String!
   size: Float!
 }
@@ -298,6 +297,19 @@ type OrchardMintKeyset {
   unit: String!
   valid_from: UnixTimestamp!
   valid_to: UnixTimestamp
+}
+
+type OrchardMintKeysetRotation {
+  id: String!
+  input_fee_ppk: Int
+  max_order: Int
+  unit: String!
+}
+
+type OrchardMintKeysetsAnalytics {
+  amount: Int!
+  created_time: UnixTimestamp!
+  keyset_id: String!
 }
 
 type OrchardMintMeltQuote {
@@ -480,10 +492,11 @@ type Query {
   ai_models: [OrchardAiModel!]!
   bitcoin_blockcount: OrchardBitcoinBlockCount!
   mint_analytics_balances(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
+  mint_analytics_keysets(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone): [OrchardMintKeysetsAnalytics!]!
   mint_analytics_melts(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
   mint_analytics_mints(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
   mint_analytics_transfers(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
-  mint_balances: [OrchardMintBalance!]!
+  mint_balances(keyset_id: String): [OrchardMintBalance!]!
   mint_balances_issued: [OrchardMintBalance!]!
   mint_balances_redeemed: [OrchardMintBalance!]!
   mint_databases: [OrchardMintDatabase!]!

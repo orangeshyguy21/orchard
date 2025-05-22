@@ -33,10 +33,12 @@ export class NutshellService {
 
 	constructor() {}
 
-	public async getMintBalances(db:sqlite3.Database) : Promise<CashuMintBalance[]> {
-		const sql = 'SELECT * FROM balance;';
+	public async getMintBalances(db:sqlite3.Database, keyset_id?: string) : Promise<CashuMintBalance[]> {
+		const where_clause = keyset_id ? `WHERE keyset_id = ?` : '';
+		const sql = `SELECT * FROM balance ${where_clause};`;
+		const params = keyset_id ? [keyset_id] : [];
 		return new Promise((resolve, reject) => {
-			db.all(sql, (err, rows:CashuMintBalance[]) => {
+			db.all(sql, params, (err, rows:CashuMintBalance[]) => {
 				if (err) reject(err);
 				resolve(rows);
 			});
@@ -167,7 +169,8 @@ export class NutshellService {
 		const time_group_sql = getAnalyticsTimeGroupSql({
 			interval: interval,
 			timezone: timezone,
-			time_column: 'created_time'
+			time_column: 'created_time',
+			group_by: 'unit'
 		});
 		
 		const sqlite_sql = `
@@ -256,7 +259,8 @@ export class NutshellService {
 		const time_group_sql = getAnalyticsTimeGroupSql({
 			interval: interval,
 			timezone: timezone,
-			time_column: 'created_time'
+			time_column: 'created_time',
+			group_by: 'unit'
 		});
 		const sql = `
 			SELECT 
@@ -308,7 +312,8 @@ export class NutshellService {
 		const time_group_sql = getAnalyticsTimeGroupSql({
 			interval: interval,
 			timezone: timezone,
-			time_column: 'created_time'
+			time_column: 'created_time',
+			group_by: 'unit'
 		});
 		const sql = `
 			SELECT 
@@ -361,7 +366,8 @@ export class NutshellService {
 		const time_group_sql = getAnalyticsTimeGroupSql({
 			interval: interval,
 			timezone: timezone,
-			time_column: 'created'
+			time_column: 'created',
+			group_by: 'unit'
 		});
 		const sql = `
 			SELECT 

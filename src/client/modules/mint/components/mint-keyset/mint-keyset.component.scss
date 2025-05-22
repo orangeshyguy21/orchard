@@ -1,11 +1,17 @@
 @use '@styles/molecule/molecule';
 @use '@styles/nucleus/nucleus';
 
-.mint-keyset-container{
+:host {
     @extend %flex;
+
+    &.high-bg {
+        .mint-keyset-container{
+            @extend %orc-surface-container-high-bg;
+        }
+    }
 }
 
-.mint-keyset-pill{
+.mint-keyset-container{
     @extend %orc-surface-container-low-bg;
     @extend %orc-corner-full;
     @extend %flex;

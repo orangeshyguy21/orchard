@@ -1,6 +1,6 @@
 /* Core Dependencies */
 import { Logger } from '@nestjs/common';
-import { Resolver, Query } from "@nestjs/graphql";
+import { Resolver, Query, Args } from "@nestjs/graphql";
 /* Internal Dependencies */
 import { MintBalanceService } from "./mintbalance.service";
 import { OrchardMintBalance } from "./mintbalance.model";
@@ -15,9 +15,11 @@ export class MintBalanceResolver {
 	) {}
 
 	@Query(() => [OrchardMintBalance])
-	async mint_balances() : Promise<OrchardMintBalance[]> {
-		this.logger.debug('GET { mint_balances }');
-		return await this.mintBalanceService.getMintBalances();
+	async mint_balances(
+		@Args('keyset_id', { type: () => String, nullable: true }) keyset_id?: string,
+	) : Promise<OrchardMintBalance[]> {
+		this.logger.debug(`GET { mint_balances ${keyset_id ? `for keyset ${keyset_id}` : ''} }`);
+		return await this.mintBalanceService.getMintBalances(keyset_id);
 	}
 
 	@Query(() => [OrchardMintBalance])

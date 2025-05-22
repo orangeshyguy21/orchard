@@ -15,7 +15,7 @@ const cashu = {
 }
 
 const ai = {
-	api: process.env["AI_API"],
+	enabled: process.env["AI_API"] ? true : false,
 };
 
 export const environment : Config = {

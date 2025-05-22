@@ -5,6 +5,8 @@ import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { toObservable } from '@angular/core/rxjs-interop';
 /* Vendor Dependencies */
 import { Subscription } from 'rxjs';
+/* Application Configuration */
+import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { MintInfoRpc } from '@client/modules/mint/classes/mint-info-rpc.class';
@@ -75,17 +77,18 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 				info: new FormControl(contact.info, [Validators.required]),
 			}));
 			contact_controls.forEach(control => this.form_array_contacts.push(control));
+		}	
+		this.subscriptions.add(this.getEventSubscription());
+		this.subscriptions.add(this.getFormSubscription());
+		this.subscriptions.add(this.getDirtyCountSubscription());
+		this.orchardOptionalInit();
+	}
+
+	orchardOptionalInit(): void {
+		if( environment.ai.enabled ) {
+			this.subscriptions.add(this.getAgentSubscription());
+			this.subscriptions.add(this.getToolSubscription());
 		}
-		const agent_subscription = this.getAgentSubscription();
-		const tool_subscription = this.getToolSubscription();
-		const event_subscription = this.getEventSubscription();
-		const form_subscription = this.getFormSubscription();
-		const dirty_count_subscription = this.getDirtyCountSubscription();
-		this.subscriptions.add(agent_subscription);
-		this.subscriptions.add(tool_subscription);	
-		this.subscriptions.add(event_subscription);
-		this.subscriptions.add(form_subscription);
-		this.subscriptions.add(dirty_count_subscription);
 	}
 
 	private getAgentSubscription(): Subscription {

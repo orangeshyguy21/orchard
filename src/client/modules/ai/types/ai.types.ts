@@ -1,10 +1,14 @@
 /* Application Dependencies */
 import { ChartType } from "@client/modules/mint/enums/chart-type.enum";
 /* Shared Dependencies */
-import { OrchardAiChatChunk, AiFunctionName, MintUnit, MintAnalyticsInterval } from "@shared/generated.types";
+import { OrchardAiChatChunk, OrchardAiModel, AiFunctionName, MintUnit, MintAnalyticsInterval } from "@shared/generated.types";
 
 export type AiChatResponse = {
   	ai_chat: OrchardAiChatChunk;
+}
+
+export type AiModelResponse = {
+	ai_models: OrchardAiModel[];
 }
 
 export type AiFunction = 
@@ -27,7 +31,11 @@ AiFunctionUpdateMintEnabled |
 AiFunctionUpdateMintQuoteTtl |
 AiFunctionUpdateMintMethodMin |
 AiFunctionUpdateMintMethodMax |
-AiFunctionUpdateMintMethodDescription;
+AiFunctionUpdateMintMethodDescription |
+AiFunctionUpdateMintKeysetStatus |
+AiFunctionUpdateMintKeysetRotationUnit |
+AiFunctionUpdateMintKeysetRotationInputFeePpk |
+AiFunctionUpdateMintKeysetRotationMaxOrder;
 
 export type AiFunctionUpdateMintAnalyticsDateRange = {
 	name: AiFunctionName.MintAnalyticsDateRangeUpdate;
@@ -183,5 +191,33 @@ export type AiFunctionUpdateMintMethodDescription = {
 		description: boolean;
 		method: string;
 		unit: MintUnit;
+	}
+}
+
+export type AiFunctionUpdateMintKeysetStatus = {
+	name: AiFunctionName.MintKeysetStatusUpdate;
+	arguments: {
+		statuses: string[];
+	}
+}
+
+export type AiFunctionUpdateMintKeysetRotationUnit = {
+	name: AiFunctionName.MintKeysetRotationUnitUpdate;
+	arguments: {
+		unit: MintUnit;
+	}
+}
+
+export type AiFunctionUpdateMintKeysetRotationInputFeePpk = {
+	name: AiFunctionName.MintKeysetRotationInputFeePpkUpdate;
+	arguments: {
+		input_fee_ppk: number;
+	}
+}
+
+export type AiFunctionUpdateMintKeysetRotationMaxOrder = {
+	name: AiFunctionName.MintKeysetRotationMaxOrderUpdate;
+	arguments: {
+		max_order: number;
 	}
 }

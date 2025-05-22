@@ -1,6 +1,6 @@
 @use '@styles/molecule/molecule';
 
-.mint-balance-chart-container{
+.mint-analytic-chart-container{
     @extend %p-b-1;
     @extend %relative;
 
@@ -9,7 +9,6 @@
         min-height: 300px;
     }
 }
-
 
 .no-data-overlay{
     @extend %absolute;

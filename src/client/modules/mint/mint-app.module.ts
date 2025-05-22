@@ -6,6 +6,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table'; 
+import { MatSortModule } from '@angular/material/sort';
 import { MatCardModule } from '@angular/material/card';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -64,6 +65,12 @@ import { MintConfigFormNut15MethodComponent } from './components/mint-config-for
 import { MintConfigFormNut17CommandsComponent } from './components/mint-config-form-nut17-commands/mint-config-form-nut17-commands.component';
 import { MintConfigFormNut19Component } from './components/mint-config-form-nut19/mint-config-form-nut19.component';
 import { MintNutComponent } from './components/mint-nut/mint-nut.component';
+import { MintKeysetChartComponent } from './components/mint-keyset-chart/mint-keyset-chart.component';
+import { MintKeysetControlComponent } from './components/mint-keyset-control/mint-keyset-control.component';
+import { MintKeysetTableComponent } from './components/mint-keyset-table/mint-keyset-table.component';
+import { MintSubsectionDatabaseComponent } from './components/mint-subsection-database/mint-subsection-database.component';
+import { MintKeysetRotationComponent } from './components/mint-keyset-rotation/mint-keyset-rotation.component';
+import { MintKeysetRotationPreviewComponent } from './components/mint-keyset-rotation-preview/mint-keyset-rotation-preview.component';
 
 @NgModule({
 	declarations: [
@@ -104,6 +111,12 @@ import { MintNutComponent } from './components/mint-nut/mint-nut.component';
         MintConfigFormNut17CommandsComponent,
         MintConfigFormNut19Component,
         MintNutComponent,
+        MintKeysetChartComponent,
+        MintKeysetControlComponent,
+        MintKeysetTableComponent,
+        MintSubsectionDatabaseComponent,
+        MintKeysetRotationComponent,
+        MintKeysetRotationPreviewComponent,
 	],
 	imports: [
 		CommonModule,
@@ -112,6 +125,7 @@ import { MintNutComponent } from './components/mint-nut/mint-nut.component';
 		MatIconModule,
 		MatButtonModule,
 		MatTableModule,
+		MatSortModule,
 		MatCardModule,
 		MatRippleModule,
 		MatDialogModule,

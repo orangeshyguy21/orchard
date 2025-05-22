@@ -66,20 +66,6 @@ export class MintSectionComponent implements OnInit, OnDestroy {
 			)
 			.subscribe(event => {
 				this.setSubSection(event);
-
-				// if (event instanceof NavigationStart) { @todo: account for resolvers loading
-				// 	// this.is_loading = true;
-				// 	console.log('LOADING START');
-				// }
-				// if (
-				// 	event instanceof NavigationEnd ||
-				// 	event instanceof NavigationCancel ||
-				// 	event instanceof NavigationError
-				// ) {
-				// 	// this.is_loading = false;
-				// 	console.log('LOADING END');
-				// }
-
 			});
 	}
 
@@ -108,7 +94,6 @@ export class MintSectionComponent implements OnInit, OnDestroy {
 				this.icon_data = image.data;
 				this.cdr.detectChanges();
 			}, (error) => {
-				console.log('ERROR HERE', error);
 				this.error = true;
 				this.loading = false;
 				this.cdr.detectChanges();

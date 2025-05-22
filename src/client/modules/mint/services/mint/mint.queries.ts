@@ -106,8 +106,9 @@ export const MINT_QUOTE_TTLS_QUERY = `{
 	}
 }`;
 
-export const MINT_BALANCES_QUERY = `{
-    mint_balances{
+export const MINT_BALANCES_QUERY = `
+query MintBalances($keyset_id: String) {
+    mint_balances(keyset_id: $keyset_id) {
         balance
     	keyset
     }
@@ -214,6 +215,14 @@ query MintMeltQuotes($unit: [MintUnit!], $state: [MeltQuoteState!], $date_start:
 	}
 }`;
 
+export const MINT_ANALYTICS_KEYSETS_QUERY = `
+query MintAnalyticsKeysets($date_start: UnixTimestamp, $date_end: UnixTimestamp, $interval: MintAnalyticsInterval, $timezone: Timezone) {
+	mint_analytics_keysets(date_start: $date_start, date_end: $date_end, interval: $interval, timezone: $timezone) {
+		amount
+		created_time
+		keyset_id
+	}
+}`;
 
 export const MINT_NAME_MUTATION = `
 mutation MintName($mint_name_update: MintNameUpdateInput!) {
@@ -330,5 +339,14 @@ mutation MintNut05Update($mint_nut05_update: MintNut05UpdateInput!) {
 		max_amount
 		min_amount
 		disabled
+	}
+}`;
+
+export const MINT_KEYSETS_ROTATION_MUTATION = `
+mutation MintRotateKeyset($mint_rotate_keyset: MintRotateKeysetInput!) {
+	mint_rotate_keyset(mint_rotate_keyset: $mint_rotate_keyset) {
+		unit
+		input_fee_ppk
+		max_order
 	}
 }`;

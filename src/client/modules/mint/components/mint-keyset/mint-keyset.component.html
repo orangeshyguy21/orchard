@@ -1,15 +1,13 @@
 <div class="mint-keyset-container">
-	<div class="mint-keyset-pill">
-        <div [class]="status_class()">
-            <mat-icon class="icon-sm">circle</mat-icon>
-        </div>
-        <div class="mint-keyset-generation">
-            <span>Gen {{ keyset_generation() }}</span>
-        </div>
-        <div class="mint-keyset-fee">
-            @if (input_fee_ppk > 0) {
-                <span>{{ input_fee_ppk | fee : 'mint' }} ppk</span>
-            }
-        </div>
+    <div [class]="status_class()">
+        <mat-icon class="icon-sm">circle</mat-icon>
+    </div>
+    <div class="mint-keyset-generation">
+        <span>Gen {{ index }}</span>
+    </div>
+    <div class="mint-keyset-fee">
+        @if (input_fee_ppk > 0) {
+            <span>{{ input_fee_ppk | fee : 'mint' }} ppk</span>
+        }
     </div>
 </div>

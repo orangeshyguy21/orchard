@@ -1,18 +1,18 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 /* Vendor Dependencies */
 import { MatSelectChange } from '@angular/material/select';
 import { MatCalendarCellClassFunction } from '@angular/material/datepicker';
 import { DateTime } from 'luxon';
 /* Application Dependencies */
-import { NonNullableMintChartSettings } from '@client/modules/chart/services/chart/chart.types';
+import { NonNullableMintDashboardSettings } from '@client/modules/chart/services/chart/chart.types';
 /* Native Dependencies */
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 import { ChartType } from '@client/modules/mint/enums/chart-type.enum';
 /* Shared Dependencies */
 import { MintAnalyticsInterval, MintUnit } from '@shared/generated.types';
-import { trigger, state, style, transition, animate } from '@angular/animations';
 
 type UnitOption = {
 	label: string;
@@ -51,20 +51,20 @@ type TypeOption = {
 })
 export class MintAnalyticControlPanelComponent implements OnChanges {
 	
-	@Input() chart_settings!: NonNullableMintChartSettings;
+	@Input() chart_settings!: NonNullableMintDashboardSettings;
 	@Input() date_start?: number;
 	@Input() date_end?: number;
 	@Input() units?: MintUnit[];
 	@Input() interval?: MintAnalyticsInterval;
 	@Input() type?: ChartType;
-	@Input() keysets!: MintKeyset[]; // gotta make the options from the keysets
+	@Input() keysets!: MintKeyset[];
 	@Input() loading!: boolean;
 	@Input() mint_genesis_time!: number;
 
-	@Output() date_change = new EventEmitter<number[]>();
-	@Output() units_change = new EventEmitter<MintUnit[]>();
-	@Output() interval_change = new EventEmitter<MintAnalyticsInterval>();
-	@Output() type_change = new EventEmitter<ChartType>();
+	@Output() dateChange = new EventEmitter<number[]>();
+	@Output() unitsChange = new EventEmitter<MintUnit[]>();
+	@Output() intervalChange = new EventEmitter<MintAnalyticsInterval>();
+	@Output() typeChange = new EventEmitter<ChartType>();
 
 	public readonly panel = new FormGroup({
 		daterange: new FormGroup({
@@ -139,28 +139,28 @@ export class MintAnalyticControlPanelComponent implements OnChanges {
 		if( this.panel.controls.daterange.controls.date_end.value === null ) return;
 		const date_start = Math.floor(this.panel.controls.daterange.controls.date_start.value.toSeconds());
 		const date_end = Math.floor(this.panel.controls.daterange.controls.date_end.value.endOf('day').toSeconds());
-		this.date_change.emit([date_start, date_end]);
+		this.dateChange.emit([date_start, date_end]);
 	}
 
 	public onUnitsChange(event: MatSelectChange): void {
 		if(this.panel.invalid) return;
 		const is_valid = this.isValidChange();
 		if( !is_valid ) return;
-		this.units_change.emit(event.value);
+		this.unitsChange.emit(event.value);
 	}
 
 	public onIntervalChange(event: MatSelectChange): void {
 		if(this.panel.invalid) return;
 		const is_valid = this.isValidChange();
 		if( !is_valid ) return;
-		this.interval_change.emit(event.value);
+		this.intervalChange.emit(event.value);
 	}
 
 	public onTypeChange(event: MatSelectChange): void {
 		if(this.panel.invalid) return;
 		const is_valid = this.isValidChange();
 		if( !is_valid ) return;
-		this.type_change.emit(event.value);
+		this.typeChange.emit(event.value);
 	}
 
 	private isValidChange(): boolean {

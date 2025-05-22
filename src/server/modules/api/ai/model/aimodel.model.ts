@@ -1,6 +1,10 @@
 /* Core Dependencies */
 import { Field, Float, ObjectType } from '@nestjs/graphql';
+/* Vendor Dependencies */
+import { DateTime } from 'luxon';
 /* Application Dependencies */
+import { UnixTimestamp } from '@server/modules/graphql/scalars/unixtimestamp.scalar';
+/* Native Dependencies */
 import { AiModel, AiModelDetails } from '@server/modules/ai/ai.types';
 
 @ObjectType()
@@ -43,8 +47,8 @@ export class OrchardAiModel {
     @Field()
     model: string;
 
-    @Field()
-    modified_at: string;
+    @Field(type => UnixTimestamp)
+	modified_at: number;
 
     @Field(() => Float)
     size: number;
@@ -58,7 +62,7 @@ export class OrchardAiModel {
     constructor(ai_model: AiModel) {
         this.name = ai_model.name;
         this.model = ai_model.model;
-        this.modified_at = ai_model.modified_at;
+        this.modified_at = DateTime.fromISO(ai_model.modified_at).toUnixInteger();
         this.size = ai_model.size;
         this.digest = ai_model.digest;
         this.details = ai_model.details;

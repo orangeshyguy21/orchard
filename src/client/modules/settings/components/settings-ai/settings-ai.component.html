@@ -1,0 +1,80 @@
+<div class="p-2">
+    <mat-card appearance="outlined" class="relative overflow-hidden">
+        <mat-card-content class="orc-surface-container-low-bg">
+            <div class="p-l-1 p-r-1 p-t-1 flex flex-column flex-gap-1">
+                <div class="flex flex-items-start flex-gap-2">
+                    <div class="flex-1 flex flex-items-start flex-justify-between">
+                        <form (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)">
+                            <mat-form-field hideRequiredMarker="true" class="primary-form-field">
+                                <mat-label>Agent Model</mat-label>
+                                <input 
+                                    type="text"
+                                    placeholder="Select model"
+                                    aria-label="Model"
+                                    matInput
+                                    [formControl]="model_control"
+                                    [matAutocomplete]="auto">
+                                <mat-autocomplete #auto="matAutocomplete">
+                                    @for (option of filtered_options | async; track option.model) {
+                                        <mat-option [value]="option.model">
+                                            <div class="flex flex-items-center flex-gap-1">
+                                                <div class="orc-outline-color w-min-3">{{ option.details.parameter_size }}</div>
+                                                <div>{{option.name}}</div>
+                                            </div>
+                                        </mat-option>
+                                    }
+                                </mat-autocomplete>
+                                @if( model_control.invalid ) {
+                                    <mat-error class="font-size-xs">{{ model_control_error() }}</mat-error>
+                                }
+                            </mat-form-field>
+                        </form>
+                
+                        <div class="w-max-18">
+                            <orc-help-text class="orc-surface-container-high-bg">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                Lorem ipsum dolor sit amet.
+                            </orc-help-text>
+                        </div>
+                    </div>
+                
+                    <div class="flex-1 flex flex-justify-center">
+                        <div class="ai-model-description flex-grow flex flex-column flex-gap-1 w-max-24 p-b-1">
+                            <div class="flex flex-justify-center model-detail-header">
+                                <div class="font-size-xs orc-outline-color">Model Details</div>
+                            </div>
+                            
+                            @if( ai_model ) {
+                                <div class="flex flex-justify-center flex-items-center flex-gap-1">
+                                    <div class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color font-weight-extra-light">
+                                        <div>model:</div>
+                                        <div>parameter size:</div>
+                                        <div>model size:</div>
+                                        <div>quantization level:</div>
+                                        <div>last modified:</div>
+                                    </div>
+                                    <div class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color">
+                                        <div>{{ ai_model.model }}</div>
+                                        <div>{{ ai_model.details.parameter_size }}</div>
+                                        <div>{{ ai_model.size | bytes }}</div>
+                                        <div>{{ ai_model.details.quantization_level }}</div>
+                                        <div>{{ ai_model.modified_at | time:'medium' }}</div>
+                                    </div>
+                                </div> 
+                            }@else {
+                                <div class="flex flex-justify-center orc-outline-variant-color p-v-2">
+                                    Select a default model
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if(!enabled) {
+                <div class="disabled-overlay">
+                    <div class="orc-outline-color font-weight-bold">AI DISABLED</div>
+                </div>
+            }
+        </mat-card-content>
+    </mat-card>
+</div>

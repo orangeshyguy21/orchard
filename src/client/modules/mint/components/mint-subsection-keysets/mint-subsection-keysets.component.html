@@ -1,3 +1,56 @@
-<div class="mint-subsection-keysets-container">
-	Keyset Management Coming Soon!
+<div class="mint-subsection-keysets-container p-h-1">
+	<div class="mint-keyset-control p-t-1">
+		<div class="flex flex-justify-between flex-gap-1 flex-items-start">
+			@if( chart_settings ) {
+				<orc-mint-keyset-control
+					class="flex-grow"
+					[chart_settings]="chart_settings"
+					[date_start]="chart_settings.date_start"
+					[date_end]="chart_settings.date_end"
+					[units]="chart_settings.units"
+					[status]="chart_settings.status"
+					[keysets]="mint_keysets"
+					[loading]="loading_static_data"
+					[mint_genesis_time]="mint_genesis_time"
+					(dateChange)="onDateChange($event)"
+					(unitsChange)="onUnitsChange($event)"
+					(statusChange)="onStatusChange($event)">
+				</orc-mint-keyset-control>
+			}
+			<button type="button" mat-fab extended (click)="onRotation()" (keydown.enter)="$event.preventDefault(); $event.stopPropagation();">
+				<mat-icon>{{ keysets_rotation ? 'save' : 'switch_access_shortcut_add' }}</mat-icon>
+				{{ keysets_rotation ? 'Save Rotation' : 'Keyset Rotation' }}
+			</button>
+		</div>
+		<div class="category-rule"></div>
+	</div>
+
+	<div [@slideInOut]="keysets_rotation ? 'open' : 'closed'" class="overflow-hidden">
+		<orc-mint-keyset-rotation 
+			[form_group]="form_keyset"
+			[unit_options]="unit_options"
+			[keyset_out]="keyset_out"
+			[keyset_out_balance]="keyset_out_balance"
+			(close)="onCloseRotation()">
+		</orc-mint-keyset-rotation>
+	</div>
+
+	<orc-mint-keyset-chart
+		[locale]="locale"
+		[interval]="interval"
+		[keysets]="mint_keysets"
+		[keysets_analytics]="keysets_analytics"
+		[keysets_analytics_pre]="keysets_analytics_pre"
+		[chart_settings]="chart_settings"
+		[mint_genesis_time]="mint_genesis_time"
+		[loading]="loading_dynamic_data">
+	</orc-mint-keyset-chart>
+
+	<orc-mint-keyset-table
+		[keysets]="mint_keysets"
+		[keysets_analytics]="keysets_analytics"
+		[keysets_analytics_pre]="keysets_analytics_pre"
+		[chart_settings]="chart_settings"
+		[loading]="loading_dynamic_data">
+	</orc-mint-keyset-table>
 </div>

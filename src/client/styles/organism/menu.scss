@@ -1,0 +1,6 @@
+@use '@styles/molecule/molecule';
+
+.bottom-nav-menu{
+    @extend %relative;
+    @extend %bottom-0-5;
+}

@@ -111,18 +111,20 @@ export function getAnalyticsConditions({
 export function getAnalyticsTimeGroupSql({
     interval,
     timezone,
-    time_column
+    time_column,
+    group_by
 }: {
     interval: CashuMintAnalyticsArgs['interval'];
     timezone: CashuMintAnalyticsArgs['timezone'];
     time_column: string;
+    group_by: string;
 }) : string {
     const now = DateTime.now().setZone(timezone);
 	const offset_seconds = now.offset * 60; // Convert minutes to seconds
     if( interval === 'day' ) return `strftime('%Y-%m-%d', datetime(${time_column} + ${offset_seconds}, 'unixepoch'))`;
     if( interval === 'week' ) return `strftime('%Y-%m-%d', datetime(${time_column} + ${offset_seconds} - (strftime('%w', datetime(${time_column} + ${offset_seconds}, 'unixepoch')) - 1) * 86400, 'unixepoch'))`;
     if( interval === 'month' ) return `strftime('%Y-%m-01', datetime(${time_column} + ${offset_seconds}, 'unixepoch'))`;
-    return `unit`;
+    return `${group_by}`;
 }
 
 export function getAnalyticsTimeGroupStamp({

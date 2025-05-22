@@ -1,8 +1,9 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, computed, Input, OnChanges, Output, SimpleChanges, EventEmitter } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, Input, OnChanges, Output, SimpleChanges, EventEmitter, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 /* Vendor Dependencies */
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatAutocompleteTrigger, MatAutocomplete } from '@angular/material/autocomplete';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 /* Application Dependencies */
@@ -18,6 +19,9 @@ import { LocaleOption } from './settings-time-locale.types';
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SettingsTimeLocaleComponent implements OnChanges {
+
+	@ViewChild(MatAutocompleteTrigger) autotrigger!: MatAutocompleteTrigger;
+	@ViewChild(MatAutocomplete) auto!: MatAutocomplete;
 
 	@Input() locale!: Locale | null;
 	@Input() loading!: boolean;
@@ -78,6 +82,7 @@ export class SettingsTimeLocaleComponent implements OnChanges {
 		{ code: 'id-ID', country: 'Indonesian (Indonesia)' }
 	];
 
+	// this is a great way to handle errors in a reactive way
 	public locale_control_error = computed(() => {
 		if (this.locale_control.hasError('required')) return 'required';
 		if (this.locale_control.hasError('invalid_locale')) return 'invalid locale';
@@ -96,19 +101,25 @@ export class SettingsTimeLocaleComponent implements OnChanges {
 		if( this.locale === null ) return;
 		this.initLocale(this.locale?.code);
 		this.initCheckbox(this.locale?.code);
-
-		this.filtered_options = this.locale_control.valueChanges.pipe(
-			startWith(''),
-			map(value => this._filter(value || '')),
-		);
-
+		this.setFilteredOptions();
+		setTimeout(() => {
+			this.auto.options.find(option => option.value === this.locale?.code)?.select();	
+		});
 		this.locale_control.valueChanges.subscribe(value => {
 			this.onLocaleChange(value);
 		});
 	}
 
+	private setFilteredOptions() {
+		this.filtered_options = this.locale_control.valueChanges.pipe(
+			startWith(''),
+			map(value => this._filter(value || '')),
+		);
+	}
+
 	private _filter(value: string): LocaleOption[] {
 		const filter_value = value.toLowerCase();
+		if( filter_value === this.locale?.code ) return this.locale_options;
 		return this.locale_options.filter(option => option.country.toLowerCase().includes(filter_value));
 	}
 	
@@ -135,6 +146,16 @@ export class SettingsTimeLocaleComponent implements OnChanges {
 		if( value === null ) return this.locale_control.setErrors({ required: true });
 		if (!this.locale_options.some(option => option.code === value)) return this.locale_control.setErrors({ invalid_locale: true });
 		this.localeChange.emit(value);
-		if( value !== this.system_locale ) return this.system_default_control.setValue(false);
+		if( value !== this.system_locale ) this.system_default_control.setValue(false);
+		this.setFilteredOptions();
+	}
+
+	public onSubmit(event: Event) : void {
+		event.preventDefault();
+		this.autotrigger.closePanel();
+		this.onLocaleChange(this.locale_control.value);
+		setTimeout(() => {
+			this.auto.options.find(option => option.value === this.locale?.code)?.select();	
+		});
 	}
 }
