@@ -87,10 +87,10 @@
                                 <span [innerHTML]="0 | amount : form_group.get('unit')?.value : 'mint'"></span>
                             </div>
                         </div>
-                        <!-- <div class="p-v-1">
+                        <div class="p-v-0-5">
                             <mat-icon class="icon-lg mat-symbol-outline orc-outline-color">autorenew</mat-icon>
-                        </div> -->
-                        <mat-icon class="icon-lg mat-symbol-outline orc-outline-color">autorenew</mat-icon>
+                        </div>
+                        <!-- <mat-icon class="icon-lg mat-symbol-outline orc-outline-color">autorenew</mat-icon> -->
           
                         <div class="font-size-xs orc-outline-color">Keyset Rotating Out</div>
                         <div class="flex flex-items-center flex-gap-1">
@@ -105,12 +105,11 @@
                                 [input_fee_ppk]="keyset_out.input_fee_ppk">
                             </orc-mint-keyset>
                             <div>
-                                <!-- @if( keyset_out_balance ) {
-                                    <span [innerHTML]="keyset_out_balance.balance | amount : form_group.get('unit')?.value : 'mint'"></span>
+                                @if( keyset_out_balance ) {
+                                    <span [@fadeIn] [innerHTML]="keyset_out_balance.balance | amount : form_group.get('unit')?.value : 'mint'"></span>
                                 }@else {
-                                    loader
-                                } -->
-                                    <div class="orc-surface-container-high-bg h-2 w-4 orc-corner-full"></div>
+                                    <div class="h-2 w-6 orc-corner-full shimmer-high"></div>
+                                }
                             </div>
                         </div>
                         
