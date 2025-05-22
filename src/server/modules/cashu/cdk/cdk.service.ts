@@ -80,17 +80,20 @@ export class CdkService {
         }
     }
 
-	public async getMintBalances(db: sqlite3.Database): Promise<CashuMintBalance[]> {
+	public async getMintBalances(db: sqlite3.Database, keyset_id?: string): Promise<CashuMintBalance[]> {
+		const where_clause = keyset_id ? 'WHERE keyset_id = ?' : '';
 		const sql = `
 			WITH issued AS (
 				SELECT keyset_id, SUM(amount) AS issued_amount
 				FROM blind_signature
+				${where_clause}
 				GROUP BY keyset_id
 			),
 			redeemed AS (
 				SELECT keyset_id, SUM(amount) AS redeemed_amount
 				FROM proof
 				WHERE state = 'SPENT'
+				${keyset_id ? 'AND keyset_id = ?' : ''}
 				GROUP BY keyset_id
 			)
 			SELECT 
@@ -101,8 +104,9 @@ export class CdkService {
 			ORDER BY keyset;
 		`;
 	
+		const params = keyset_id ? [keyset_id, keyset_id] : [];
 		return new Promise((resolve, reject) => {
-			db.all(sql, (err, rows: CashuMintBalance[]) => {
+			db.all(sql, params, (err, rows: CashuMintBalance[]) => {
 				if (err) reject(err);
 				resolve(rows);
 			});

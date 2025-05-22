@@ -298,6 +298,21 @@ export class MintService {
 		);
 	}
 
+	public getMintKeysetBalance(keyset_id:string): Observable<MintBalance> {
+		const query = getApiQuery(MINT_BALANCES_QUERY, { keyset_id });
+		return this.http.post<OrchardRes<MintBalancesResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.mint_balances;
+			}),
+			map((mint_balances) => new MintBalance(mint_balances[0])),
+			catchError((error) => {
+				console.error('Error loading mint keyset balance:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
 	public loadMintBalances(): Observable<MintBalance[]> {
 		if ( this.mint_balances_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.MINT_BALANCES) ) {
 			return of(this.mint_balances_subject.value);

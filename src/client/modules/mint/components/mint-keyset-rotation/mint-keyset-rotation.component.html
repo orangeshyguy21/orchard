@@ -105,10 +105,15 @@
                                 [input_fee_ppk]="keyset_out.input_fee_ppk">
                             </orc-mint-keyset>
                             <div>
-                                <span [innerHTML]="276126 | amount : form_group.get('unit')?.value : 'mint'"></span>
+                                <!-- @if( keyset_out_balance ) {
+                                    <span [innerHTML]="keyset_out_balance.balance | amount : form_group.get('unit')?.value : 'mint'"></span>
+                                }@else {
+                                    loader
+                                } -->
+                                    <div class="orc-surface-container-high-bg h-2 w-4 orc-corner-full"></div>
                             </div>
                         </div>
-                       
+                        
                     </div>
                 </div>
             </div>

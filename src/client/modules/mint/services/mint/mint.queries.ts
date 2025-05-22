@@ -106,8 +106,9 @@ export const MINT_QUOTE_TTLS_QUERY = `{
 	}
 }`;
 
-export const MINT_BALANCES_QUERY = `{
-    mint_balances{
+export const MINT_BALANCES_QUERY = `
+query MintBalances($keyset_id: String) {
+    mint_balances(keyset_id: $keyset_id) {
         balance
     	keyset
     }

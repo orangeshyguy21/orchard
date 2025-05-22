@@ -12,6 +12,7 @@ import { NonNullableMintKeysetsSettings } from '@client/modules/chart/services/c
 /* Native Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
+import { MintBalance } from '@client/modules/mint/classes/mint-balance.class';
 import { MintAnalyticKeyset } from '@client/modules/mint/classes/mint-analytic.class';
 /* Shared Dependencies */
 import { MintUnit, MintAnalyticsInterval } from '@shared/generated.types';
@@ -37,6 +38,7 @@ export class MintSubsectionKeysetsComponent {
 	public keysets_rotation: boolean = false;
 	public unit_options!: { value: string, label: string }[];
 	public keyset_out!: MintKeyset;
+	public keyset_out_balance!: MintBalance;
 	public form_keyset: FormGroup = new FormGroup({
 		unit: new FormControl(null, [Validators.required]),
 		input_fee_ppk: new FormControl(null, [Validators.min(0), Validators.max(100000)]),
@@ -178,6 +180,13 @@ export class MintSubsectionKeysetsComponent {
 		}
 	}
 
+	private async getMintKeysetBalance(): Promise<void> {
+		this.mintService.getMintKeysetBalance(this.keyset_out.id).subscribe((mint_balance) => {
+			this.keyset_out_balance = mint_balance;
+			this.cdr.detectChanges();
+		});
+	}
+
 	public onDateChange(event: number[]): void {
 		this.chart_settings.date_start = event[0];
 		this.chart_settings.date_end = event[1];
@@ -199,6 +208,7 @@ export class MintSubsectionKeysetsComponent {
 
 	public onRotation(): void {
 		this.keysets_rotation = !this.keysets_rotation;
-		this.cdr.detectChanges();
+		this.getMintKeysetBalance();
 	}
+	
 }

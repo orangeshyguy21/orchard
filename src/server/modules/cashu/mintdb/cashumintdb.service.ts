@@ -53,9 +53,9 @@ export class CashuMintDatabaseService implements OnModuleInit {
 		});
 	}
 
-	public async getMintBalances(db:sqlite3.Database) : Promise<CashuMintBalance[]> {
-		if( this.backend === 'nutshell' ) return this.nutshellService.getMintBalances(db);
-		if( this.backend === 'cdk' ) return this.cdkService.getMintBalances(db);
+	public async getMintBalances(db:sqlite3.Database, keyset_id?: string) : Promise<CashuMintBalance[]> {
+		if( this.backend === 'nutshell' ) return this.nutshellService.getMintBalances(db, keyset_id);
+		if( this.backend === 'cdk' ) return this.cdkService.getMintBalances(db, keyset_id);
 	}
 
 	public async getMintBalancesIssued(db:sqlite3.Database) : Promise<CashuMintBalance[]> {

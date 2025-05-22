@@ -490,7 +490,7 @@ type Query {
   mint_analytics_melts(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
   mint_analytics_mints(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
   mint_analytics_transfers(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
-  mint_balances: [OrchardMintBalance!]!
+  mint_balances(keyset_id: String): [OrchardMintBalance!]!
   mint_balances_issued: [OrchardMintBalance!]!
   mint_balances_redeemed: [OrchardMintBalance!]!
   mint_databases: [OrchardMintDatabase!]!
