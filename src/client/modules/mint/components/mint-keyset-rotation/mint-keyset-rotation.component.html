@@ -81,58 +81,15 @@
                     </form>
                 </div>
                 <div class="flex-1">
-                    <div class="flex flex-column flex-gap-1 flex-items-center">
-                        <div class="font-size-xs orc-outline-color">Keyset Rotating In</div>
-                        <div class="flex flex-items-center flex-gap-1">
-                            <div class="flex flex-column flex-items-center">
-                                <orc-graphic-asset 
-                                    [unit]="form_group.get('unit')?.value" 
-                                    [height]="'1.5rem'">
-                                </orc-graphic-asset>
-                                <span class="invisible h-0" [innerHTML]="0 | amount : form_group.get('unit')?.value : 'mint'"></span>
-                            </div>
-                            <orc-mint-keyset
-                                class="high-bg"
-                                [active]="true"
-                                [index]="keyset_out.derivation_path_index + 1"
-                                [input_fee_ppk]="form_group.get('input_fee_ppk')?.value">
-                            </orc-mint-keyset>
-                            <div>
-                                <span [innerHTML]="0 | amount : form_group.get('unit')?.value : 'mint'"></span>
-                            </div>
-                        </div>
-                        <div class="p-v-0-5">
-                            <mat-icon class="icon-lg mat-symbol-outline orc-outline-color">autorenew</mat-icon>
-                        </div>
-          
-                        <div class="font-size-xs orc-outline-color">Keyset Rotating Out</div>
-                        <div class="flex flex-items-center flex-gap-1">
-                            <div class="flex flex-column flex-items-center">
-                                <orc-graphic-asset 
-                                    [unit]="keyset_out.unit" 
-                                    [height]="'1.5rem'">
-                                </orc-graphic-asset>
-                                @if( keyset_out_balance ) {
-                                    <span class="invisible h-0" [innerHTML]="keyset_out_balance.balance | amount : form_group.get('unit')?.value : 'mint'"></span>
-                                }@else {
-                                    <div class="h-0 w-6"></div>
-                                }
-                            </div>
-                            <orc-mint-keyset
-                                class="high-bg"
-                                [active]="false"
-                                [index]="keyset_out.derivation_path_index"
-                                [input_fee_ppk]="keyset_out.input_fee_ppk">
-                            </orc-mint-keyset>
-                            <div>
-                                @if( keyset_out_balance ) {
-                                    <span [@fadeIn] [innerHTML]="keyset_out_balance.balance | amount : form_group.get('unit')?.value : 'mint'"></span>
-                                }@else {
-                                    <div class="h-2 w-6 orc-corner-full shimmer-high"></div>
-                                }
-                            </div>
-                        </div>
-                    </div>
+                    <orc-mint-keyset-rotation-preview
+                        [keyset_in_unit]="form_group.get('unit')?.value"
+                        [keyset_in_index]="keyset_out.derivation_path_index + 1"
+                        [keyset_in_fee]="form_group.get('input_fee_ppk')?.value"
+                        [keyset_out_unit]="form_group.get('unit')?.value"
+                        [keyset_out_index]="keyset_out.derivation_path_index"
+                        [keyset_out_fee]="form_group.get('input_fee_ppk')?.value"
+                        [keyset_out_balance]="keyset_out_balance?.balance">
+                    </orc-mint-keyset-rotation-preview>
                 </div>
             </div>
         </mat-card-content>

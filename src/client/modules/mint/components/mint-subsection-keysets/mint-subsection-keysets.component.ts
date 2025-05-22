@@ -34,17 +34,18 @@ import { MintUnit, MintAnalyticsInterval } from '@shared/generated.types';
 		trigger('slideInOut', [
 			state('closed', style({
 				height: '0',
-				opacity: '0',
-				overflow: 'hidden'
+				opacity: '0'
 			})),
 			state('open', style({
 				height: '*',
 				opacity: '1'
 			})),
 			transition('closed => open', [
+				style({ overflow: 'hidden' }),
 				animate('200ms ease-out')
 			]),
 			transition('open => closed', [
+				style({ overflow: 'hidden' }),
 				animate('200ms ease-out')
 			])
 		])
