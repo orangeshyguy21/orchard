@@ -434,7 +434,6 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 
 		this.mintService.updateMint(mutation, mutation_variables).subscribe({
 			next: (response) => {
-				console.log('response', response);
 				this.mintService.getMintInfo().subscribe((mint_info: MintInfoRpc) => {
 					this.init_info = mint_info;
 					this.cdr.detectChanges();
@@ -601,7 +600,16 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 	private onSuccess(reset: boolean = false): void {
 		this.mintService.clearInfoCache();
 		this.mintService.loadMintInfo().subscribe();
-		this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
+		// this.eventService.registerEvent(new EventData({
+		// 	type: 'SUCCESS',
+		// 	// message: 'Info updated',
+		// 	message: '[Nest] 40953  - 05/23/2025, 12:14:20 PM   DEBUG [BitcoinBlockCountResolver] GET { bitcoin_blockcount }',
+		// 	duration: 1000000,
+		// }));
+		this.eventService.registerEvent(new EventData({
+			type: 'SUCCESS',
+			message: '<span class="text-nowrap">Info updated!</span>',
+		}));
 		if( !reset ) return;
 		this.form_info.markAsPristine();
 		this.dirty_count.set(0);
