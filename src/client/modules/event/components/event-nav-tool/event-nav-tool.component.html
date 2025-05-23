@@ -8,7 +8,6 @@
             <mat-icon>cancel</mat-icon>
         </button>
     }
-    <!-- [class.invisible]="morph_state === 'notify'" -->
     <div 
         class="event-nav-tool-container"
         [class.action-nav-tool-highlight]="highlight"
@@ -25,7 +24,7 @@
         (click)="onClick()">
         <div class="event-nav-tool-switch">
             @if( morph_state === 'actionable' ) {
-                <div [@fadeInMessage] class="font-size-xs">{{ active_event?.message }}</div>
+                <div [@fadeInActionableMessage] class="font-size-xs">{{ active_event?.message }}</div>
             }
             @if( !saving ) {
                 <div [@enterAnimation] class="h-1-75 w-1-75">
@@ -34,29 +33,7 @@
             } @else {
                 <mat-spinner [diameter]="25" [@enterAnimation]></mat-spinner>
             }
-            <!-- @if( morph_state === 'notify' ) {
-                <div [@fadeInMessage]>{{ active_event?.message }}</div>
-            } -->
         </div>
-
-        <!-- @if( morph_state === 'notify' ) {
-            <div class="event-nav-tool-notifier">
-                <div 
-                    class="event-nav-tool-container"
-                    [ngClass]="{
-                        'nav-tool-success': tool_state === 'success',
-                        'nav-tool-warning': tool_state === 'warning',
-                        'nav-tool-error': tool_state === 'error',
-                    }">
-                    <div class="event-nav-tool-switch">
-                        <div class="h-1-75 w-1-75">
-                            <mat-icon [class.mat-symbol-outline]="!highlight" class="icon-md" [@iconAnimation]="icon">{{ icon }}</mat-icon>
-                        </div>
-                        <div>{{ active_event?.message }}</div>
-                    </div>
-                </div>
-            </div>
-        } -->
     </div>
     @if( morph_state === 'notify' ) {
         <div class="event-nav-tool-notifier">
@@ -72,7 +49,7 @@
                     <div class="h-1-75 w-1-75">
                         <mat-icon [class.mat-symbol-outline]="!highlight" class="icon-md" [@iconAnimation]="icon">{{ icon }}</mat-icon>
                     </div>
-                    <div class="notification-message" [innerHTML]="active_event?.message"></div>
+                    <div class="notification-message" [@growAndFadeText] [innerHTML]="active_event?.message"></div>
                 </div>
             </div>
         </div>

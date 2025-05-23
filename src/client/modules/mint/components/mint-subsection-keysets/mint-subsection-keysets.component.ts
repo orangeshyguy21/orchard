@@ -352,15 +352,17 @@ export class MintSubsectionKeysetsComponent implements OnInit, OnDestroy {
 		if (this.form_keyset.invalid) {
 			return this.eventService.registerEvent(new EventData({
 				type: 'WARNING',
-				message: 'Invalid keyset',
+				message: '<span class="text-nowrap">Invalid keyset</span>',
 			}));
 		}
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		const { unit, input_fee_ppk, max_order } = this.form_keyset.value;
 		this.mintService.rotateMintKeysets(unit, input_fee_ppk, max_order).subscribe({
 			next: (response) => {
-				console.log(response);
-				this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
+				this.eventService.registerEvent(new EventData({
+					type: 'SUCCESS',
+					message: '<span class="text-nowrap">Rotation complete!</span>',
+				}));
 			},
 			error: (error) => {
 				this.eventService.registerEvent(new EventData({

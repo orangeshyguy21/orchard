@@ -24,12 +24,28 @@ import { EventData } from '@client/modules/event/classes/event-data.class';
                 animate('200ms ease-out', style({ transform: 'scale(1)', opacity: 1 }))
             ]),
         ]),
-		trigger('fadeInMessage', [
+		trigger('fadeInActionableMessage', [
 			transition(':enter', [
 				style({ opacity: 0 }),
 				animate('150ms 100ms ease-in', style({ opacity: 1 })),
 			]),
 		]),
+		trigger('growAndFadeText', [
+			transition(':enter', [
+				style({ 
+					width: '0',
+					opacity: 0,
+					overflow: 'hidden',
+				}),
+				animate('150ms ease-out', style({ 
+					width: '*',
+					opacity: 0
+				})),
+				animate('150ms ease-in', style({
+					opacity: 1
+				}))
+			])
+		])
 	]
 })
 export class EventNavToolComponent implements OnChanges {

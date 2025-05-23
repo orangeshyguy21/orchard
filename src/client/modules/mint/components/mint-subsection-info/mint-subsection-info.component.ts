@@ -313,7 +313,7 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		if (this.form_info.invalid) {
 			return this.eventService.registerEvent(new EventData({
 				type: 'WARNING',
-				message: 'Invalid info data',
+				message: '<span class="text-nowrap">Invalid info</span>',
 			}));
 		}
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
@@ -600,12 +600,6 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 	private onSuccess(reset: boolean = false): void {
 		this.mintService.clearInfoCache();
 		this.mintService.loadMintInfo().subscribe();
-		// this.eventService.registerEvent(new EventData({
-		// 	type: 'SUCCESS',
-		// 	// message: 'Info updated',
-		// 	message: '[Nest] 40953  - 05/23/2025, 12:14:20 PM   DEBUG [BitcoinBlockCountResolver] GET { bitcoin_blockcount }',
-		// 	duration: 1000000,
-		// }));
 		this.eventService.registerEvent(new EventData({
 			type: 'SUCCESS',
 			message: '<span class="text-nowrap">Info updated!</span>',
