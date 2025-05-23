@@ -110,8 +110,10 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		return this.eventService.getActiveEvent()
 			.subscribe((event_data: EventData | null) => {
 				this.active_event = event_data;
-				if( event_data?.confirmed ) this.onConfirmedEvent();
 				if( event_data === null ) this.evaluateDirtyCount();
+				if( event_data && event_data.confirmed !== null ){
+					( event_data.confirmed ) ? this.onConfirmedEvent() : this.onUnconfirmedEvent();
+				}
 			});
 	}
 
@@ -122,8 +124,17 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 	}
 
 	private evaluateDirtyCount(): void {
-		const count = Object.keys(this.form_info.controls).filter(key => this.form_info.get(key)?.dirty).length;
-		this.dirty_count.set(count);
+		const contrtol_count = Object.keys(this.form_info.controls)
+			.filter(key => this.form_info.get(key) instanceof FormControl)
+			.filter(key => this.form_info.get(key)?.dirty).length;
+		const array_dirty_total = Object.keys(this.form_info.controls)
+			.filter(key => this.form_info.get(key) instanceof FormArray)
+			.reduce((total, key) => {
+			  const array_group = this.form_info.get(key) as FormArray;
+			  return total + array_group.controls.filter(control => control.dirty).length;
+			}, 0);
+
+		this.dirty_count.set(contrtol_count + array_dirty_total);
 		this.cdr.detectChanges();
 	}
 
@@ -204,14 +215,17 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 	private createPendingEvent(count: number): void {
 		if( count === 0 && this.active_event?.type !== 'PENDING' ) return;
 		if( count === 0 ) return this.eventService.registerEvent(null);
+		const message = (count === 1) ? '1 update' : `${count} updates`;
 		this.eventService.registerEvent(new EventData({
 			type: 'PENDING',
-			message: count.toString(),
+			message: message,
 		}));
 	}
 
 	public onAddUrlControl(url: string|null = null): void {
 		this.form_array_urls.push(new FormControl(url, [Validators.required]));
+		this.form_array_urls.at(-1).markAsDirty();
+		this.evaluateDirtyCount();
 	}
 
 	public onAddContactControl(method: string|null = null, info: string|null = null): void {
@@ -219,6 +233,8 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 			method: new FormControl(method, [Validators.required]),
 			info: new FormControl(info, [Validators.required]),
 		}));
+		this.form_array_contacts.at(-1).markAsDirty();
+		this.evaluateDirtyCount();
 	}
 
 	public onControlUpdate(control_name: keyof MintInfoRpc): void {
@@ -254,12 +270,44 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		const array_group = this.form_info.get(array_name) as FormArray;
 		const control_value = array_group.at(control_index).value;
 		const original_value = (this.init_info[array_name] && Array.isArray(this.init_info[array_name])) ? this.init_info[array_name][control_index] : null;
-		if( !original_value ) return array_group.removeAt(control_index);
+		if( !original_value ){
+			array_group.at(control_index).markAsPristine();
+			array_group.removeAt(control_index);
+			return;
+		}
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		if( array_name === 'urls' ) return this.removeMintUrl(control_index, control_value);
 		if( array_name === 'contact' ) return this.removeMintContact(control_index, control_value);
 	}
 	
+	private onUnconfirmedEvent(): void {
+		Object.keys(this.form_info.controls).forEach(key => {
+			const control = this.form_info.get(key);
+			if (control instanceof FormArray) {
+				if (key === 'urls' && this.form_array_urls.dirty) {
+					for (let i = this.form_array_urls.length - 1; i >= 0; i--) {
+						if (i >= this.init_info.urls.length) {
+							this.onArrayControlRemove({array_name: 'urls', control_index: i});
+						} else if (this.form_array_urls.at(i).dirty) {
+							this.onArrayControlCancel({array_name: 'urls', control_index: i});
+						}
+					}
+					this.form_array_urls.markAsPristine();
+				} else if (key === 'contact' && this.form_array_contacts.dirty) {
+					for (let i = this.form_array_contacts.length - 1; i >= 0; i--) {
+						if (i >= this.init_info.contact.length) {
+							this.onArrayControlRemove({array_name: 'contact', control_index: i});
+						} else if (this.form_array_contacts.at(i).dirty) {
+							this.onArrayControlCancel({array_name: 'contact', control_index: i});
+						}
+					}
+					this.form_array_contacts.markAsPristine();
+				}
+			} else if (control?.dirty) {
+			  	this.onControlCancel(key as keyof MintInfoRpc);
+			}
+		});
+	}
 
 	private onConfirmedEvent(): void {
 		if (this.form_info.invalid) {
