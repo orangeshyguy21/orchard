@@ -18,13 +18,13 @@ export class EventData {
     message?: string;
     created_at: number;
     duration: number | null;
-    confirmed: boolean;
+    confirmed: boolean | null;
 
     constructor(data: EventDataSeed){
         this.type = data.type;
         this.message = data.message;
         this.created_at = Math.floor(Date.now() / 1000);
         this.duration = data.duration || DURATION[this.type];
-        this.confirmed = false;
+        this.confirmed = null;
     }
 }

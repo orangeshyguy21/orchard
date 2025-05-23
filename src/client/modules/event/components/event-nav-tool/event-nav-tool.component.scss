@@ -4,7 +4,7 @@
     @extend %border;
     @extend %border-solid;
     @extend %orc-outline-border;
-    @extend %orc-corner-full;
+    @extend %orc-corner-extra-large;
     @extend %p-0-125;
 
     &.nav-tool-saving{
@@ -21,8 +21,12 @@
     }
 
     &.nav-tool-highlight{
+        @extend %orc-corner-large;
         .event-nav-tool-switch{
             @extend %orc-primary-container-bg;
+            @extend %orc-corner-medium;
+            width: 5rem;
+            height: 5rem;
         }
     }
 
@@ -48,14 +52,18 @@
 .event-nav-tool-switch{
     @extend %cursor-pointer;
     @extend %flex;
+    @extend %flex-column;
     @extend %flex-items-center;
     @extend %flex-justify-center;
+    @extend %flex-gap-1;
     @extend %w-2-5;
     @extend %h-2-5;
-    @extend %orc-corner-full;
+    @extend %orc-corner-extra-large;
     @extend %trans-bg-fast;
     @extend %border-solid;
     @extend %border-0-125;
     @extend %border-transparent;
     @extend %orc-on-surface-variant-color;
+
+    transition: all 0.15s ease-in-out;
 }

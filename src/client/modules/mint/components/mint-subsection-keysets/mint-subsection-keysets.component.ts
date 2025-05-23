@@ -312,7 +312,7 @@ export class MintSubsectionKeysetsComponent implements OnInit, OnDestroy {
 		this.keysets_rotation = true;
 		this.eventService.registerEvent(new EventData({
 			type: 'PENDING',
-			message: 'Keyset Rotation',
+			message: 'Save',
 		}));
 		this.getMintKeysetBalance();
 	}
@@ -337,7 +337,7 @@ export class MintSubsectionKeysetsComponent implements OnInit, OnDestroy {
 	}
 
 	public onRotation(): void {
-		( !this.keysets_rotation ) ? this.initKeysetsRotation() : this.onConfirmedEvent();
+		( !this.keysets_rotation ) ? this.initKeysetsRotation() : this.onCloseRotation();
 	}
 
 	public onCloseRotation(): void {

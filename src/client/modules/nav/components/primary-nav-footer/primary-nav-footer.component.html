@@ -3,7 +3,8 @@
         navroute="event"
         [active_event]="active_event"
         [active]="active_section === 'event'"
-        (save)="save.emit()">
+        (save)="save.emit()"
+        (cancel)="cancel.emit()">
     </orc-event-nav-tool>
     <orc-primary-nav-tool 
         icon="settings"
