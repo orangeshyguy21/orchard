@@ -236,13 +236,15 @@ export class MintSubsectionKeysetsComponent implements OnInit, OnDestroy {
 
 	private getEventSubscription(): Subscription {
 		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
-			if( event_data?.type === 'SUCCESS' ) this.onSuccessEvent();
-			if( event_data?.confirmed ) this.onConfirmedEvent();
 			if( event_data === null && this.keysets_rotation ){
 				this.eventService.registerEvent(new EventData({
 					type: 'PENDING',
 					message: 'Keyset Rotation',
 				}));
+			}
+			if( event_data ){
+				if( event_data.type === 'SUCCESS' ) this.onSuccessEvent();
+				if( event_data.confirmed !== null )( event_data.confirmed ) ? this.onConfirmedEvent() : this.onCloseRotation();
 			}
 		});
 	}
