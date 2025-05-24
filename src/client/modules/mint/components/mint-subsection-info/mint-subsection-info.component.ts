@@ -602,8 +602,15 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		this.mintService.loadMintInfo().subscribe();
 		this.eventService.registerEvent(new EventData({
 			type: 'SUCCESS',
-			message: '<span class="text-nowrap">Info updated!</span>',
+			// message: '<span>Info updated!</span>',
+			message: 'Info updated!',
+			duration: 1000000,
 		}));
+		// this.eventService.registerEvent(new EventData({
+		// 	type: 'SUCCESS',
+		// 	message: `The second approach is cleaner - it sets a minimum width that's wide enough for typical short messages like "save complete", and a maximum width that allows longer messages to wrap naturally when they exceed the limit.`,
+		// 	duration: 1000000,
+		// }));
 		if( !reset ) return;
 		this.form_info.markAsPristine();
 		this.dirty_count.set(0);

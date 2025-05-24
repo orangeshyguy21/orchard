@@ -80,9 +80,8 @@
             @extend %orc-corner-extra-large;
 
             .event-nav-tool-switch{
-                @extend %orc-corner-extra-large;
+                border-radius: 1.5rem;
                 @extend %flex-row;
-                // @extend %flex-gap-4;
                 @extend %flex-items-end;
                 @extend %p-l-0-5;
                 @extend %p-b-0-5;
@@ -90,14 +89,19 @@
                 @extend %p-r-1;
                 @extend %auto-width;
                 @extend %auto-height;
-                @extend %h-max-5;
             }
         }
     }
 }
 
-.notification-message{
+.event-message{
     @extend %p-t-0-25;
     @extend %p-b-0-25;
+
+    display: -webkit-box;
+    width: 20rem;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
   

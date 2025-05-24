@@ -34,6 +34,7 @@ import { EventData } from '@client/modules/event/classes/event-data.class';
 			transition(':enter', [
 				style({ 
 					width: '0',
+					whiteSpace: 'nowrap',
 					opacity: 0,
 					overflow: 'hidden',
 				}),
@@ -41,9 +42,13 @@ import { EventData } from '@client/modules/event/classes/event-data.class';
 					width: '*',
 					opacity: 0
 				})),
-				animate('150ms ease-in', style({
-					opacity: 1
-				}))
+				animate('150ms ease-out', style({ 
+					height: '*',
+					whiteSpace: 'normal',
+				})),
+				animate('100ms ease-out', style({ 
+					opacity: 1,
+				})),
 			])
 		])
 	]

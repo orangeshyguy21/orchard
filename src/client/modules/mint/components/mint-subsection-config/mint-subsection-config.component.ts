@@ -384,7 +384,7 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		const method = this.mint_info?.nuts[nut].methods[0].method;
 		if( !unit || !method ) return this.eventService.registerEvent(new EventData({
 			type: 'ERROR',
-			message: '<span class="text-nowrap">No unit or method found</span>',
+			message: '<span>No unit or method found</span>',
 		}));
 		if(nut === 'nut4') this.updateMintNut04(unit, method, 'disabled', control_value);
 		if(nut === 'nut5') this.updateMintNut05(unit, method, 'disabled', control_value);
@@ -515,7 +515,7 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		if (this.form_config.invalid) {
 			return this.eventService.registerEvent(new EventData({
 				type: 'WARNING',
-				message: '<span class="text-nowrap">Invalid config</span>',
+				message: '<span>Invalid config</span>',
 			}));
 		}
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
@@ -671,7 +671,7 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 	private onSuccess(reset: boolean = false): void {
 		this.eventService.registerEvent(new EventData({
 			type: 'SUCCESS',
-			message: '<span class="text-nowrap">Configuration updated!</span>',
+			message: '<span>Configuration updated!</span>',
 		}));
 		if( !reset ) return;
 		this.form_config.markAsPristine();
