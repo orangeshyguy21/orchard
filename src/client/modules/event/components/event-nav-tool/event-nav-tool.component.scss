@@ -97,9 +97,29 @@
 .event-message{
     @extend %p-t-0-25;
     @extend %p-b-0-25;
+    @extend %flex;
+    @extend %flex-justify-end;
 
+    // display: -webkit-box;
+    // width: 20rem;
+    // -webkit-line-clamp: 4;
+    // -webkit-box-orient: vertical;
+    // overflow: hidden;
+
+    // display: flex;
+    // justify-content: end;
+
+    &.short-message{
+        width: 12rem;
+    }
+
+    &.long-message{
+        width: 20rem;
+    }
+}
+
+.event-message-content{
     display: -webkit-box;
-    width: 20rem;
     -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
     overflow: hidden;

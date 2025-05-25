@@ -84,6 +84,13 @@ export class EventNavToolComponent implements OnChanges {
 		if( this.active_event?.type === 'ERROR' && this.active_event?.message ) return 'notify';
 		return 'default';
 	}
+	public get message_size(){
+		if( !this.active_event?.message ) return 'short-message';
+		const length = this.active_event.message.length;
+		console.log('new message length', length);
+		if( length <= 25 ) return 'short-message';
+		return 'long-message';
+	}
 
 	constructor(
 		private cdr: ChangeDetectorRef,

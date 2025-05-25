@@ -313,7 +313,7 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		if (this.form_info.invalid) {
 			return this.eventService.registerEvent(new EventData({
 				type: 'WARNING',
-				message: '<span class="text-nowrap">Invalid info</span>',
+				message: 'Invalid info',
 			}));
 		}
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
@@ -602,9 +602,7 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 		this.mintService.loadMintInfo().subscribe();
 		this.eventService.registerEvent(new EventData({
 			type: 'SUCCESS',
-			// message: '<span>Info updated!</span>',
-			message: 'Info updated!',
-			duration: 1000000,
+			message: 'Information updated!',
 		}));
 		// this.eventService.registerEvent(new EventData({
 		// 	type: 'SUCCESS',
