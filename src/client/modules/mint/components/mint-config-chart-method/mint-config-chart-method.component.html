@@ -19,12 +19,16 @@
                 <div>median:</div>
                 <div>min:</div>
                 <div>max:</div>
+                <div>over_max:</div>
+                <div>under_min:</div>
             </div>
             <div class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color">
                 <div>{{ metrics.avg | number:'1.0-0' }}</div>
                 <div>{{ metrics.median | number:'1.0-0' }}</div>
                 <div>{{ metrics.min | number:'1.0-0' }}</div>
                 <div>{{ metrics.max | number:'1.0-0' }}</div>
+                <div>{{ metrics.over_max | number:'1.0-0' }}</div>
+                <div>{{ metrics.under_min | number:'1.0-0' }}</div>
             </div>
         </div> 
     }
