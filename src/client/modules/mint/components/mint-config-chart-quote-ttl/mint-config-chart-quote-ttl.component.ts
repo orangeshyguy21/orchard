@@ -51,11 +51,13 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges {
         median: number;
         max: number;
         min: number;
+        coverage: number;
     } = {
         avg: 0,
         median: 0,
         max: 0,
-        min: 0
+        min: 0,
+        coverage: 0
     };
 
     constructor(
@@ -67,7 +69,9 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges {
 			this.init();
 		}
         if(changes['quote_ttl'] && !changes['quote_ttl'].firstChange) {
-            this.initOptions();         
+            this.initOptions();  
+            const deltas = this.getDeltas();
+            this.metrics = this.getMetrics(deltas);   
         }
         if(changes['form_hot'] && !changes['form_hot'].firstChange) {
             this.initOptions();
@@ -109,13 +113,16 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges {
         median: number;
         max: number;
         min: number;
+        coverage: number;
     } {
         const values = deltas.map(delta => delta['delta']);
+        const values_under_ttl = values.filter(value => value <= this.quote_ttl);
         return {
             avg: values.reduce((a, b) => a + b, 0) / values.length,
             median: values.sort((a, b) => a - b)[Math.floor(values.length / 2)],
             max: Math.max(...values),
-            min: Math.min(...values)
+            min: Math.min(...values),
+            coverage: (values_under_ttl.length / values.length) * 100
         };
     }
 

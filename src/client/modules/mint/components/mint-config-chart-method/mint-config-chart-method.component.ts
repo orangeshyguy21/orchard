@@ -54,11 +54,15 @@ export class MintConfigChartMethodComponent implements OnChanges {
         median: number;
         max: number;
         min: number;
+		over_max: number;
+		under_min: number;
     } = {
         avg: 0,
         median: 0,
         max: 0,
-        min: 0
+        min: 0,
+		over_max: 0,
+		under_min: 0
     };
 
     constructor(
@@ -71,9 +75,13 @@ export class MintConfigChartMethodComponent implements OnChanges {
 		}
         if(changes['min_amount'] && !changes['min_amount'].firstChange) {
             this.initOptions();
+			const amounts = this.getAmounts();
+            this.metrics = this.getMetrics(amounts);   
         }
 		if(changes['max_amount'] && !changes['max_amount'].firstChange) {
             this.initOptions();
+			const amounts = this.getAmounts();
+            this.metrics = this.getMetrics(amounts);   
         }
 		if(changes['min_hot'] && !changes['min_hot'].firstChange) {
             this.initOptions();
@@ -120,13 +128,17 @@ export class MintConfigChartMethodComponent implements OnChanges {
         median: number;
         max: number;
         min: number;
+		over_max: number;
+		under_min: number;
     } {
         const values = amounts.map(amount => amount['amount']);
         return {
             avg: values.reduce((a, b) => a + b, 0) / values.length,
             median: values.sort((a, b) => a - b)[Math.floor(values.length / 2)],
             max: Math.max(...values),
-            min: Math.min(...values)
+            min: Math.min(...values),
+			over_max: values.filter(value => value > this.max_amount).length,
+			under_min: values.filter(value => value < this.min_amount).length
         };
     }
 

@@ -23,7 +23,34 @@ import { EventData } from '@client/modules/event/classes/event-data.class';
                 style({ transform: 'scale(0.8)', opacity: 0.5 }),
                 animate('200ms ease-out', style({ transform: 'scale(1)', opacity: 1 }))
             ]),
-        ])
+        ]),
+		trigger('fadeInActionableMessage', [
+			transition(':enter', [
+				style({ opacity: 0 }),
+				animate('150ms 100ms ease-in', style({ opacity: 1 })),
+			]),
+		]),
+		trigger('growAndFadeText', [
+			transition(':enter', [
+				style({ 
+					width: '0',
+					whiteSpace: 'nowrap',
+					opacity: 0,
+					overflow: 'hidden',
+				}),
+				animate('150ms ease-out', style({ 
+					width: '*',
+					opacity: 0
+				})),
+				animate('150ms ease-out', style({ 
+					height: '*',
+					whiteSpace: 'normal',
+				})),
+				animate('100ms ease-out', style({ 
+					opacity: 1,
+				})),
+			])
+		])
 	]
 })
 export class EventNavToolComponent implements OnChanges {
@@ -33,7 +60,8 @@ export class EventNavToolComponent implements OnChanges {
 	@Input() active_event : EventData | null = null;
 
 	@Output() save : EventEmitter<void> = new EventEmitter();
-
+	@Output() cancel : EventEmitter<void> = new EventEmitter();
+	
 	public moused : boolean = false;
 	public icon : string = 'save_clock';
 
@@ -48,6 +76,20 @@ export class EventNavToolComponent implements OnChanges {
 		if( this.active_event?.type === 'WARNING' ) return 'warning';
 		if( this.active_event?.type === 'ERROR' ) return 'error';
 		return 'default';
+	}
+	public get morph_state(){
+		if( this.active_event?.type === 'PENDING' && this.active_event?.message ) return 'actionable';
+		if( this.active_event?.type === 'SUCCESS' && this.active_event?.message ) return 'notify';
+		if( this.active_event?.type === 'WARNING' && this.active_event?.message ) return 'notify';
+		if( this.active_event?.type === 'ERROR' && this.active_event?.message ) return 'notify';
+		return 'default';
+	}
+	public get message_size(){
+		if( !this.active_event?.message ) return 'short-message';
+		const length = this.active_event.message.length;
+		console.log('new message length', length);
+		if( length <= 25 ) return 'short-message';
+		return 'long-message';
 	}
 
 	constructor(

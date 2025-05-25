@@ -146,8 +146,10 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		return this.eventService.getActiveEvent()
 			.subscribe((event_data: EventData | null) => {
 				this.active_event = event_data;
-				if( event_data?.confirmed ) this.onConfirmedEvent();
 				if( event_data === null ) this.evaluateDirtyCount();
+				if( event_data && event_data.confirmed !== null ){
+					( event_data.confirmed ) ? this.onConfirmedEvent() : this.onUnconfirmedEvent();
+				}
 			});
 	}
 
@@ -298,9 +300,10 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		if( this.active_event?.type === 'SAVING' ) return;
 		if( count === 0 && this.active_event?.type !== 'PENDING' ) return;
 		if( count === 0 ) return this.eventService.registerEvent(null);
+		const message = (count === 1) ? '1 update' : `${count} updates`;
 		this.eventService.registerEvent(new EventData({
 			type: 'PENDING',
-			message: count.toString(),
+			message: message,
 		}));
 	}
 
@@ -379,7 +382,10 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		const unit = this.mint_info?.nuts[nut].methods[0].unit;
 		const method = this.mint_info?.nuts[nut].methods[0].method;
-		if( !unit || !method ) return this.eventService.registerEvent(new EventData({type: 'ERROR', message: 'No unit or method found'}));
+		if( !unit || !method ) return this.eventService.registerEvent(new EventData({
+			type: 'ERROR',
+			message: 'No unit or method found',
+		}));
 		if(nut === 'nut4') this.updateMintNut04(unit, method, 'disabled', control_value);
 		if(nut === 'nut5') this.updateMintNut05(unit, method, 'disabled', control_value);
 	}
@@ -458,11 +464,58 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 		form_group.get(unit)?.get(method)?.get(control_name)?.setValue(old_val);
 	}
 
+	private onUnconfirmedEvent(): void {
+		this.onTtlCancel({
+			form_group: this.form_minting,
+			control_name: 'mint_ttl',
+		});
+		this.onTtlCancel({
+			form_group: this.form_melting,
+			control_name: 'melt_ttl',
+		});
+		this.minting_units.forEach(unit => {
+			this.mint_info?.nuts.nut4.methods.forEach(method => {
+				this.onMethodCancel({
+					nut: 'nut4',
+					unit: unit,
+					method: method.method,
+					form_group: this.form_minting,
+					control_name: 'min_amount',
+				});
+				this.onMethodCancel({
+					nut: 'nut4',
+					unit: unit,
+					method: method.method,
+					form_group: this.form_minting,
+					control_name: 'max_amount',
+				});
+			});
+		});
+		this.melting_units.forEach(unit => {
+			this.mint_info?.nuts.nut5.methods.forEach(method => {
+				this.onMethodCancel({
+					nut: 'nut5',
+					unit: unit,
+					method: method.method,
+					form_group: this.form_melting,
+					control_name: 'min_amount',
+				});
+				this.onMethodCancel({
+					nut: 'nut5',
+					unit: unit,
+					method: method.method,
+					form_group: this.form_melting,
+					control_name: 'max_amount',
+				});
+			});
+		});
+	}
+
 	private onConfirmedEvent(): void {
 		if (this.form_config.invalid) {
 			return this.eventService.registerEvent(new EventData({
 				type: 'WARNING',
-				message: 'Invalid config data',
+				message: 'Invalid config',
 			}));
 		}
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
@@ -616,7 +669,10 @@ export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
 
 
 	private onSuccess(reset: boolean = false): void {
-		this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
+		this.eventService.registerEvent(new EventData({
+			type: 'SUCCESS',
+			message: 'Configuration updated!',
+		}));
 		if( !reset ) return;
 		this.form_config.markAsPristine();
 		this.dirty_count.set(0);

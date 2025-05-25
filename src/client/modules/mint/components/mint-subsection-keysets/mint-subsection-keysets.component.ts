@@ -236,13 +236,15 @@ export class MintSubsectionKeysetsComponent implements OnInit, OnDestroy {
 
 	private getEventSubscription(): Subscription {
 		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
-			if( event_data?.type === 'SUCCESS' ) this.onSuccessEvent();
-			if( event_data?.confirmed ) this.onConfirmedEvent();
 			if( event_data === null && this.keysets_rotation ){
 				this.eventService.registerEvent(new EventData({
 					type: 'PENDING',
 					message: 'Keyset Rotation',
 				}));
+			}
+			if( event_data ){
+				if( event_data.type === 'SUCCESS' ) this.onSuccessEvent();
+				if( event_data.confirmed !== null )( event_data.confirmed ) ? this.onConfirmedEvent() : this.onCloseRotation();
 			}
 		});
 	}
@@ -312,7 +314,7 @@ export class MintSubsectionKeysetsComponent implements OnInit, OnDestroy {
 		this.keysets_rotation = true;
 		this.eventService.registerEvent(new EventData({
 			type: 'PENDING',
-			message: 'Keyset Rotation',
+			message: 'Save',
 		}));
 		this.getMintKeysetBalance();
 	}
@@ -337,7 +339,7 @@ export class MintSubsectionKeysetsComponent implements OnInit, OnDestroy {
 	}
 
 	public onRotation(): void {
-		( !this.keysets_rotation ) ? this.initKeysetsRotation() : this.onConfirmedEvent();
+		( !this.keysets_rotation ) ? this.initKeysetsRotation() : this.onCloseRotation();
 	}
 
 	public onCloseRotation(): void {
@@ -357,8 +359,10 @@ export class MintSubsectionKeysetsComponent implements OnInit, OnDestroy {
 		const { unit, input_fee_ppk, max_order } = this.form_keyset.value;
 		this.mintService.rotateMintKeysets(unit, input_fee_ppk, max_order).subscribe({
 			next: (response) => {
-				console.log(response);
-				this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
+				this.eventService.registerEvent(new EventData({
+					type: 'SUCCESS',
+					message: 'Rotation complete!',
+				}));
 			},
 			error: (error) => {
 				this.eventService.registerEvent(new EventData({

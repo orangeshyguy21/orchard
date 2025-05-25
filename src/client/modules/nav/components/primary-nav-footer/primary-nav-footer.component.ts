@@ -16,5 +16,6 @@ export class PrimaryNavFooterComponent {
 	@Input() active_event!: EventData | null;
 
 	@Output() save : EventEmitter<void> = new EventEmitter();
+	@Output() cancel : EventEmitter<void> = new EventEmitter();
 
 }

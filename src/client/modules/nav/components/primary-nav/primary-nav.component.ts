@@ -70,6 +70,11 @@ export class PrimaryNavComponent {
 		this.active_event!.confirmed = true;
 		this.eventService.registerEvent(this.active_event);
 	}
+
+	public onCancel(): void {
+		this.active_event!.confirmed = false;
+		this.eventService.registerEvent(this.active_event);
+	}
 	
 	ngOnDestroy(): void {
 		this.subscriptions.unsubscribe();
