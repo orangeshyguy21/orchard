@@ -14,9 +14,8 @@
                 <mat-form-field appearance="fill" hideRequiredMarker="true" [ngClass]="form_hot ? 'orc-hot-form-field' : 'orc-cold-form-field'" class="mint-min-form-field orc-dynamic-form-field">
                     <mat-label>Min Amount</mat-label>
                     <input 
-                        type="number" 
-                        step="1"
-                        min="0"
+                        type="text" 
+                        inputFormat
                         matInput 
                         [formControlName]="control_name" 
                         placeholder="Ex. 1"
