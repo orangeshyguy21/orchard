@@ -87,7 +87,6 @@ export class EventNavToolComponent implements OnChanges {
 	public get message_size(){
 		if( !this.active_event?.message ) return 'short-message';
 		const length = this.active_event.message.length;
-		console.log('new message length', length);
 		if( length <= 25 ) return 'short-message';
 		return 'long-message';
 	}

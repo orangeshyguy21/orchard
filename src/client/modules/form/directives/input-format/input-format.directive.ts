@@ -39,7 +39,7 @@ export class InputFormatDirective {
 			this.elementRef.nativeElement.value = '';
 		}
 		if (this.ngControl) {
-			this.ngControl.control?.markAsTouched(); // Touch input to allow MatFormField to show errors properly
+			this.ngControl.control?.markAsTouched();
 		}
 	}
 
@@ -71,6 +71,20 @@ export class InputFormatDirective {
 	@HostListener('focus')
 	onFocus() {
 		this.unFormatValue();
+	}
+
+	@HostListener('keydown', ['$event'])
+	onKeyDown(event: KeyboardEvent) {
+		if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+			event.preventDefault();
+			const current_value = this._value ? Number(this._value) : 0;
+			const increment = event.key === 'ArrowUp' ? 1 : -1;
+			const new_value = current_value + increment;
+			this._value = new_value.toString();
+			this._onChange(new_value);
+			this.elementRef.nativeElement.value = this._value;
+			if (this.ngControl) this.ngControl.control?.markAsTouched();
+		}
 	}
 
 	writeValue(value: any) {
