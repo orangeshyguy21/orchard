@@ -14,10 +14,9 @@
                 <mat-form-field appearance="fill" hideRequiredMarker="true" [ngClass]="form_hot ? 'orc-hot-form-field' : 'orc-cold-form-field'" class="mint-max-form-field orc-dynamic-form-field">
                     <mat-label>Max Amount</mat-label>
                     <input 
-                        type="number" 
-                        step="1"
-                        min="0"
+                        type="text" 
                         matInput 
+                        inputFormat
                         [formControlName]="control_name" 
                         placeholder="Ex. 300 000"
                         #element_max>
