@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 /* Vendor Dependencies */
 import sqlite3 from "sqlite3";
 const sqlite3d = require('sqlite3').verbose();
+import { promises as fs } from 'fs';
 /* Application Dependencies */
 import { NutshellService } from '@server/modules/cashu/nutshell/nutshell.service';
 import { CdkService } from '@server/modules/cashu/cdk/cdk.service';
@@ -128,5 +129,58 @@ export class CashuMintDatabaseService implements OnModuleInit {
 	public async getMintAnalyticsKeysets(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintKeysetsAnalytics[]> {
 		if( this.backend === 'nutshell' )  throw OrchardErrorCode.MintSupportError;
 		if( this.backend === 'cdk' ) return this.cdkService.getMintAnalyticsKeysets(db, args);
+	}
+
+	/* Implementation Agnostic */
+
+	public async createBackup(db:sqlite3.Database) : Promise<void> {
+		return new Promise((resolve, reject) => {
+			db.run("VACUUM INTO 'backup.db'", (err) => {
+				if (err) {
+					console.error('Error during database backup:', err);
+					reject(err);
+				} else {
+					console.log('Database backup completed successfully');
+					resolve();
+				}
+			});
+		});
+		// if( this.backend === 'nutshell' ) return this.nutshellService.backupDatabase(db);
+		// if( this.backend === 'cdk' ) throw OrchardErrorCode.MintSupportError;
+	}
+
+
+	public async restoreBackup(uploaded_file_buffer: Buffer): Promise<void> {
+		const temp_path = `temp-restore-${Date.now()}.db`;
+		
+		try {
+			// Write uploaded buffer to temporary file
+			await fs.writeFile(temp_path, uploaded_file_buffer);
+			
+			// Verify it's a valid SQLite database
+			const temp_db = await this.getMintDatabase();
+			await new Promise((resolve, reject) => {
+				const test_db = new sqlite3d.Database(temp_path, (err) => {
+					if (err) reject(err);
+					else {
+						test_db.close();
+						resolve(null);
+					}
+				});
+			});
+			
+			// Replace current database
+			await fs.copyFile(temp_path, this.database);
+			
+			console.log('Database restored from uploaded file successfully');
+		} catch (err) {
+			console.error('Error restoring from uploaded file:', err);
+			throw err;
+		} finally {
+			// Clean up temp file
+			try {
+				await fs.unlink(temp_path);
+			} catch {}
+		}
 	}
 }

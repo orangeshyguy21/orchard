@@ -9,7 +9,11 @@
 	@include mat.table-overrides((
 		row-item-outline-color: var(--mat-sys-outline-variant),
 	));
+	@include mat.dialog-overrides((
+	  	container-color: var(--mat-sys-surface-container-highest),
+	));
 }
+
 
 /* Specific Table Overrides */
 .orc-feature-table {

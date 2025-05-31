@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { trigger, state, style, animate, transition } from '@angular/animations';
@@ -16,6 +16,7 @@ import { AiService } from '@client/modules/ai/services/ai/ai.service';
 import { EventData } from '@client/modules/event/classes/event-data.class';
 import { AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
 import { NonNullableMintKeysetsSettings } from '@client/modules/chart/services/chart/chart.types';
+import { ComponentCanDeactivate } from '@client/modules/routing/interfaces/routing.interfaces';
 /* Native Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
@@ -51,7 +52,12 @@ import { MintUnit, MintAnalyticsInterval, AiFunctionName, AiAgent } from '@share
 		])
 	]
 })
-export class MintSubsectionKeysetsComponent implements OnInit, OnDestroy {
+export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, OnInit, OnDestroy {
+
+	@HostListener('window:beforeunload')
+	canDeactivate(): boolean {
+		return this.active_event?.type !== 'PENDING';
+	}
 
 	public mint_keysets: MintKeyset[] = [];
 	public locale!: string;
@@ -72,6 +78,7 @@ export class MintSubsectionKeysetsComponent implements OnInit, OnDestroy {
 		max_order: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(255)]),
 	});
 
+	private active_event: EventData | null = null;
 	private subscriptions: Subscription = new Subscription();
 
 	constructor(
@@ -236,6 +243,7 @@ export class MintSubsectionKeysetsComponent implements OnInit, OnDestroy {
 
 	private getEventSubscription(): Subscription {
 		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
+			this.active_event = event_data;
 			if( event_data === null && this.keysets_rotation ){
 				this.eventService.registerEvent(new EventData({
 					type: 'PENDING',

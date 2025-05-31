@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, WritableSignal, signal, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, WritableSignal, signal, ChangeDetectorRef, HostListener } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { toObservable } from '@angular/core/rxjs-interop';
@@ -15,6 +15,7 @@ import { EventData } from '@client/modules/event/classes/event-data.class';
 import { AiService } from '@client/modules/ai/services/ai/ai.service';
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 import { AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
+import { ComponentCanDeactivate } from '@client/modules/routing/interfaces/routing.interfaces';
 /* Native Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
@@ -43,7 +44,12 @@ import { OrchardNut4Method, OrchardNut5Method, AiFunctionName } from '@shared/ge
 		])
 	]
 })
-export class MintSubsectionConfigComponent implements OnInit, OnDestroy {
+export class MintSubsectionConfigComponent implements ComponentCanDeactivate, OnInit, OnDestroy {
+
+	@HostListener('window:beforeunload')
+	canDeactivate(): boolean {
+		return this.active_event?.type !== 'PENDING';
+	}
 
 	public mint_info: MintInfo | null = null;
 	public quote_ttls!: MintQuoteTtls;
