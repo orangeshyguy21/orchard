@@ -1,3 +1,31 @@
 <div class="mint-subsection-database-container">
-	Database info coming soon!
+	<div class="mint-database-control p-t-1">
+		<div class="flex flex-justify-between flex-gap-1 flex-items-start">
+			<!-- @if( chart_settings ) {
+				<orc-mint-keyset-control
+					class="flex-grow"
+					[chart_settings]="chart_settings"
+					[date_start]="chart_settings.date_start"
+					[date_end]="chart_settings.date_end"
+					[units]="chart_settings.units"
+					[status]="chart_settings.status"
+					[keysets]="mint_keysets"
+					[loading]="loading_static_data"
+					[mint_genesis_time]="mint_genesis_time"
+					(dateChange)="onDateChange($event)"
+					(unitsChange)="onUnitsChange($event)"
+					(statusChange)="onStatusChange($event)">
+				</orc-mint-keyset-control>
+			} -->
+			<button type="button" mat-fab extended (click)="onCreate()" (keydown.enter)="$event.preventDefault(); $event.stopPropagation();">
+				<mat-icon>database</mat-icon>
+				Create Backup
+			</button>
+			<button type="button" mat-fab extended (click)="onCreate()" (keydown.enter)="$event.preventDefault(); $event.stopPropagation();">
+				<mat-icon>database_upload</mat-icon>
+				Restore Backup
+			</button>
+		</div>
+		<div class="category-rule"></div>
+	</div>
 </div>

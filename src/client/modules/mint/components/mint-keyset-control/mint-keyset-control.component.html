@@ -16,23 +16,27 @@
                 </mat-form-field>
             </div>
                 
-            <mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
-                <mat-label>Units</mat-label>
-                <mat-select formControlName="units" multiple (selectionChange)="onUnitsChange($event)">
-                    @for (unit of unit_options; track unit.value) {
-                        <mat-option [value]="unit.value">{{unit.label}}</mat-option>
-                    }
-                </mat-select>
-            </mat-form-field>
+            <div>
+                <mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
+                    <mat-label>Units</mat-label>
+                    <mat-select formControlName="units" multiple (selectionChange)="onUnitsChange($event)">
+                        @for (unit of unit_options; track unit.value) {
+                            <mat-option [value]="unit.value">{{unit.label}}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </div>
 
-            <mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
-                <mat-label>Keyset Status</mat-label>
-                <mat-select formControlName="status" multiple (selectionChange)="onStatusChange($event)">
-                    @for (status of status_options; track status.value) {
-                        <mat-option [value]="status.value">{{status.label}}</mat-option>
-                    }
-                </mat-select>
-            </mat-form-field>
+            <div>
+                <mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
+                    <mat-label>Keyset Status</mat-label>
+                    <mat-select formControlName="status" multiple (selectionChange)="onStatusChange($event)">
+                        @for (status of status_options; track status.value) {
+                            <mat-option [value]="status.value">{{status.label}}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </div>
         </div>
     </form>
 </div>
