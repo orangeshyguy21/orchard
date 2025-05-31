@@ -3,3 +3,8 @@ export enum ChartType {
 	Operations = 'operations',
 	Volume = 'volume'
 }
+
+export enum MintDataType {
+	Mints = 'mints',
+	Melts = 'melts',
+}
