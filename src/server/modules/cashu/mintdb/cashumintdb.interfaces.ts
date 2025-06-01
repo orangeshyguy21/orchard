@@ -17,6 +17,8 @@ export interface CashuMintMintQuotesArgs {
     date_end?: number;
     state?: MintQuoteState[];
     timezone?: TimezoneType;
+    page?: number;
+    page_size?: number;
 }
 
 export interface CashuMintMeltQuotesArgs {
@@ -25,6 +27,8 @@ export interface CashuMintMeltQuotesArgs {
     date_end?: number;
     state?: MeltQuoteState[];
     timezone?: TimezoneType;
+    page?: number;
+    page_size?: number;
 }
 
 

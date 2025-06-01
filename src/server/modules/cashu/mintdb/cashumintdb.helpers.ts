@@ -15,7 +15,6 @@ export function buildDynamicQuery(
     table_name: string, 
     args?: Record<string, any>,
     field_mappings?: Record<string, string>,
-    limit?: number
 ) : {
 	sql: string;
 	params: any[]
@@ -23,6 +22,9 @@ export function buildDynamicQuery(
     let sql = `SELECT * FROM ${table_name}`;
     const conditions: string[] = [];
     const params: any[] = [];
+    const page_size = args?.page_size || 500;
+    const page = args?.page || 1;
+    const offset = (page - 1) * page_size;
     
     if (args && field_mappings) {
         Object.entries(args).forEach(([arg_key, arg_value]) => {
@@ -31,8 +33,29 @@ export function buildDynamicQuery(
     }
     
     if (conditions.length > 0) sql += ` WHERE ${conditions.join(' AND ')}`;
-    sql += ` ORDER BY ${field_mappings?.date_start || 'created_time'} DESC`;
-    if (limit)  sql += ` LIMIT ${limit}`;
+    sql += ` ORDER BY ${field_mappings?.date_start || 'created_time'} DESC`;    
+    sql += ` LIMIT ${page_size}`;
+    if (offset > 0) sql += ` OFFSET ${offset}`;
+    return { sql: sql + ';', params };
+}
+
+export function buildCountQuery(
+    table_name: string, 
+    args?: Record<string, any>,
+    field_mappings?: Record<string, string>,
+) : {
+	sql: string;
+	params: any[]
+} {
+    let sql = `SELECT COUNT(*) AS count FROM ${table_name}`;
+    const conditions: string[] = [];
+    const params: any[] = [];
+    if (args && field_mappings) {
+        Object.entries(args).forEach(([arg_key, arg_value]) => {
+            processQueryArgument(arg_key, arg_value, field_mappings, conditions, params);
+        });
+    }
+    if (conditions.length > 0) sql += ` WHERE ${conditions.join(' AND ')}`;
     return { sql: sql + ';', params };
 }
 

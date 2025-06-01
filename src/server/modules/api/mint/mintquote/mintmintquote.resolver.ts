@@ -11,7 +11,7 @@ import { OrchardMintMintQuote } from "./mintmintquote.model";
 import { MintNut04UpdateInput, MintNut04QuoteUpdateInput } from "./mintmintquote.input";
 import { OrchardMintNut04Update, OrchardMintNut04QuoteUpdate } from "./mintmintquote.model";
 
-@Resolver(() => [OrchardMintMintQuote])
+@Resolver()
 export class MintMintQuoteResolver {
 
 	private readonly logger = new Logger(MintMintQuoteResolver.name);
@@ -31,7 +31,6 @@ export class MintMintQuoteResolver {
 		this.logger.debug('GET { mint_mint_quotes }');
 		return await this.mintMintQuoteService.getMintMintQuotes({ unit, state, date_start, date_end, timezone });
 	}
-
 
 	@Mutation(() => OrchardMintNut04Update)
 	async mint_nut04_update(@Args('mint_nut04_update') mint_nut04_update: MintNut04UpdateInput): Promise<OrchardMintNut04Update> {

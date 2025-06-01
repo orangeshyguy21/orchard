@@ -11,7 +11,7 @@ import { OrchardMintMeltQuote } from "./mintmeltquote.model";
 import { MintNut05UpdateInput } from "./mintmeltquote.input";
 import { OrchardMintNut05Update } from "./mintmeltquote.model";
 
-@Resolver(() => [OrchardMintMeltQuote])
+@Resolver()
 export class MintMeltQuoteResolver {
 
     private readonly logger = new Logger(MintMeltQuoteResolver.name);

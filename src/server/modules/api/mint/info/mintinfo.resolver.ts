@@ -23,7 +23,7 @@ import {
 } from "./mintinfo.input";
 
 
-@Resolver(() => [OrchardMintInfo])
+@Resolver()
 export class MintInfoResolver {
 
 	private readonly logger = new Logger(MintInfoResolver.name);

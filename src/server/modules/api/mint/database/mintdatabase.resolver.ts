@@ -5,7 +5,7 @@ import { Resolver, Query } from "@nestjs/graphql";
 import { MintDatabaseService } from "./mintdatabase.service";
 import { OrchardMintDatabase } from "./mintdatabase.model";
 
-@Resolver(() => [OrchardMintDatabase])
+@Resolver()
 export class MintDatabaseResolver {
 
 	private readonly logger = new Logger(MintDatabaseResolver.name);
