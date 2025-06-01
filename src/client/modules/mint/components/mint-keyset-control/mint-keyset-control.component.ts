@@ -73,14 +73,6 @@ export class MintKeysetControlComponent implements OnChanges {
 		{ label: 'Active', value: true },
 		{ label: 'Inactive', value: false },
 	];
-	public genesis_class: MatCalendarCellClassFunction<DateTime> = (cellDate, view) => {
-		if( view !== 'month' ) return '';
-		const unix_seconds = cellDate.toSeconds();
-		const unix_next_day = unix_seconds + 86400 - 1;
-		if( unix_seconds <= this.mint_genesis_time && unix_next_day >= this.mint_genesis_time ) return 'mint-genesis-date-class';
-		return '';
-	};
-
 	public get height_state(): string {
 		return this.panel?.invalid ? 'invalid' : 'valid';
 	}
@@ -90,7 +82,6 @@ export class MintKeysetControlComponent implements OnChanges {
 	ngOnChanges(changes: SimpleChanges): void {
 		if(changes['loading'] && !this.loading) this.initForm();
 		if(changes['date_start'] && this.date_start && this.panel.controls.daterange.get('date_start')?.value?.toSeconds() !== this.date_start) {
-			console.log('date_start changed', this.date_start);
 			this.panel.controls.daterange.get('date_start')?.setValue(DateTime.fromSeconds(this.date_start));
 		}
 		if(changes['date_end'] && this.date_end && this.panel.controls.daterange.get('date_end')?.value?.toSeconds() !== this.date_end) {
@@ -136,6 +127,14 @@ export class MintKeysetControlComponent implements OnChanges {
 		if( !is_valid ) return;
 		this.statusChange.emit(event.value);
 	}
+
+	public genesis_class: MatCalendarCellClassFunction<DateTime> = (cellDate, view) => {
+		if( view !== 'month' ) return '';
+		const unix_seconds = cellDate.toSeconds();
+		const unix_next_day = unix_seconds + 86400 - 1;
+		if( unix_seconds <= this.mint_genesis_time && unix_next_day >= this.mint_genesis_time ) return 'mint-genesis-date-class';
+		return '';
+	};
 
 	private isValidChange(): boolean {
 		// validations

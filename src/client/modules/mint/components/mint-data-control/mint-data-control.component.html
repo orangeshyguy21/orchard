@@ -1,1 +1,31 @@
-<p>mint-data-control works!</p>
+<div class="mint-data-control-container">
+    <form [formGroup]="panel" [@formStateReaction]="height_state" class="panel-form">
+        <div class="flex flex-col flex-gap-1">
+            <div>
+                <mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
+                    <mat-label>Data</mat-label>
+                    <mat-select formControlName="type" (selectionChange)="onTypeChange($event)">
+                        @for (type of type_options; track type) {
+                            <mat-option [value]="type">{{type}}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div formGroupName="daterange">
+                <mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic" class="mint-analytic-daterange">
+                    <mat-label>Date range</mat-label>
+                    <mat-date-range-input [rangePicker]="picker">
+                        <input matStartDate formControlName="date_start" placeholder="Start date" (blur)="onDateChange()">
+                        <input matEndDate formControlName="date_end" placeholder="End date" (blur)="onDateChange()"> 
+                    </mat-date-range-input>
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-date-range-picker #picker [dateClass]="genesis_class" (closed)="onDateChange()"></mat-date-range-picker>
+                    @if (panel.get('daterange')?.invalid) {
+                        <mat-error class="font-size-xs">Invalid date range</mat-error>
+                    }
+                </mat-form-field>
+            </div>
+        </div>
+    </form>
+</div>

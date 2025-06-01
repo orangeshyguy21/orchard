@@ -20,7 +20,7 @@ export class ChartService {
         date_start: null,
         date_end: null,
     }
-    public mint_database_short_settings: Record<string, string | null> = {
+    public mint_database_short_settings: Record<string, number | null> = {
         date_start: null,
         date_end: null,
     }
@@ -148,4 +148,11 @@ export class ChartService {
     public setMintKeysetsSettings(settings: AllMintKeysetsSettings): void {
         this.localStorageService.setMintKeysetsSettings(settings);
     }
+    public setMintDatabaseShortSettings(settings: { date_start: number, date_end: number }): void {
+        this.mint_database_short_settings = settings;
+    }
+    public setMintDatabaseSettings(settings: AllMintDatabaseSettings): void {
+        this.localStorageService.setMintDatabaseSettings(settings);
+    }
+    
 }

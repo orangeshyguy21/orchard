@@ -5,6 +5,6 @@ export enum ChartType {
 }
 
 export enum MintDataType {
-	Mints = 'mints',
-	Melts = 'melts',
+	Mints = 'Mints',
+	Melts = 'Melts',
 }

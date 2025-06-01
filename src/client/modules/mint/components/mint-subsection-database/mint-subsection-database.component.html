@@ -18,9 +18,18 @@
 				</orc-mint-keyset-control>
 			} -->
 
-			<div>
-				control
-			</div>
+			@if( chart_settings ) {
+				<orc-mint-data-control
+					class="flex-grow"
+					[chart_settings]="chart_settings"
+					[date_start]="chart_settings.date_start"
+					[date_end]="chart_settings.date_end"
+					[loading]="loading_static_data"
+					[mint_genesis_time]="mint_genesis_time"
+					(dateChange)="onDateChange($event)"
+					(typeChange)="onTypeChange($event)">
+				</orc-mint-data-control>
+			}
 			<div class="flex flex-gap-1">
 				<button 
 					type="button" 
@@ -37,7 +46,7 @@
 					mat-fab 
 					extended 
 					class="orc-icon-button"
-					(click)="onCreate()" 
+					(click)="onRestore()" 
 					(keydown.enter)="$event.preventDefault(); $event.stopPropagation();">
 					<mat-icon>database_upload</mat-icon>
 					Restore Backup

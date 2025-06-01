@@ -12,6 +12,18 @@ import { MintDataType } from '@client/modules/mint/enums/chart-type.enum';
 /* Native Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
+import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
+import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
+
+type MintData = MintMintData | MintMeltData;
+type MintMintData = {
+	type : MintDataType.Mints;
+	entities : MintMintQuote[];
+}
+type MintMeltData = {
+	type : MintDataType.Melts;
+	entities : MintMeltQuote[];
+}
 
 @Component({
 	selector: 'orc-mint-subsection-database',
@@ -27,10 +39,11 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 	public mint_genesis_time: number = 0;
 	public loading_static_data: boolean = true;
 	public loading_dynamic_data: boolean = true;
-	public data: any;
+	public data!: MintData;
 	public count: number = 0;
 
 	private mint_keysets: MintKeyset[] = [];
+	private timezone: string = '';
 
 	constructor(
 		private route: ActivatedRoute,
@@ -49,10 +62,10 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 		this.locale = this.settingService.getLocale();
 		this.mint_genesis_time = this.getMintGenesisTime();
 		this.chart_settings = this.getChartSettings();
-		const timezone = this.settingService.getTimezone();
+		this.timezone = this.settingService.getTimezone();
 		this.loading_static_data = false;
 		this.cdr.detectChanges();
-		await this.getSelectedData(timezone);
+		await this.getSelectedData();
 		this.loading_dynamic_data = false;
 		this.cdr.detectChanges();
 	}
@@ -80,22 +93,44 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 		return Math.floor(today.toSeconds());
 	}
 
-	private async getSelectedData(timezone: string): Promise<void> {
+	private async getSelectedData(): Promise<void> {
+		if( this.chart_settings.type === MintDataType.Mints ) return this.getMintsData();
+		// if( this.chart_settings.type === MintDataType.Melts ) return this.getMeltsData(timezone);
+	}
+
+	private async getMintsData(): Promise<void> {
 		const mint_mint_quotes_data = await lastValueFrom(
 			this.mintService.getMintMintQuotesData({
 				date_start: this.chart_settings.date_start,
 				date_end: this.chart_settings.date_end,
-				timezone: timezone
+				timezone: this.timezone
 			})
 		);
-		this.data = mint_mint_quotes_data.mint_mint_quotes;
+		this.data = {
+			type: MintDataType.Mints,
+			entities: mint_mint_quotes_data.mint_mint_quotes
+		};
 		this.count = mint_mint_quotes_data.count;
-		console.log(this.data);
-		console.log(this.count);
+	}
+
+	public onDateChange(event: number[]): void {
+		this.chart_settings.date_start = event[0];
+		this.chart_settings.date_end = event[1];
+		this.chartService.setMintDatabaseShortSettings(this.chart_settings);
+		this.getSelectedData();
+	}
+
+	public onTypeChange(event: MintDataType): void {
+		this.chart_settings.type = event;
+		this.chartService.setMintDatabaseSettings(this.chart_settings);
+		this.getSelectedData();
 	}
 
 	public onCreate(): void {
 		console.log('onCreate');
 	}
 
+	public onRestore(): void {
+		console.log('onRestore');
+	}
 }

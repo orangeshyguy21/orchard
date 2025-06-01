@@ -154,6 +154,9 @@ const routes: Routes = [
 				path: 'database',
 				component: MintSubsectionDatabaseComponent,
 				title: 'Orchard | Mint Database',
+				resolve: {
+					mint_keysets: mintKeysetsResolver,
+				},
 				data: {
 					section: 'mint',
 					sub_section: 'database'
