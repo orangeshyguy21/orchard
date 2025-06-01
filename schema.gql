@@ -503,6 +503,7 @@ type Query {
   mint_balances(keyset_id: String): [OrchardMintBalance!]!
   mint_balances_issued: [OrchardMintBalance!]!
   mint_balances_redeemed: [OrchardMintBalance!]!
+  mint_count_melt_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, state: [MeltQuoteState!], timezone: Timezone, unit: [MintUnit!]): OrchardMintCount!
   mint_count_mint_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, state: [MintQuoteState!], timezone: Timezone, unit: [MintUnit!]): OrchardMintCount!
   mint_databases: [OrchardMintDatabase!]!
   mint_info: OrchardMintInfo!

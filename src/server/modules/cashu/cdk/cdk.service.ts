@@ -208,6 +208,22 @@ export class CdkService {
 		});
 	}
 
+	public async getMintCountMeltQuotes(db:sqlite3.Database, args?: CashuMintMeltQuotesArgs) : Promise<number> {
+		const field_mappings = {
+			unit: 'unit',
+			date_start: 'created_time',
+			date_end: 'created_time',
+			status: 'state',
+		};
+		const { sql, params } = buildCountQuery('melt_quote', args, field_mappings);
+		return new Promise((resolve, reject) => {
+			db.get(sql, params, (err, row:CashuMintCount) => {
+				if (err) reject(err);
+				resolve(row.count);
+			});
+		});
+	}
+
 	public async getMintProofsPending(db:sqlite3.Database) : Promise<CashuMintProof[]> {
 		const sql = 'SELECT * FROM proof WHERE state = "PENDING";';
 		return new Promise((resolve, reject) => {

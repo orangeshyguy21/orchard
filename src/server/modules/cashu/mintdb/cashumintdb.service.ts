@@ -109,6 +109,11 @@ export class CashuMintDatabaseService implements OnModuleInit {
 		if( this.backend === 'cdk' ) return this.cdkService.getMintCountMintQuotes(db, args);
 	}
 
+	public async getMintCountMeltQuotes(db:sqlite3.Database, args?: CashuMintMeltQuotesArgs) : Promise<number> {
+		if( this.backend === 'nutshell' ) throw OrchardErrorCode.MintSupportError;
+		if( this.backend === 'cdk' ) return this.cdkService.getMintCountMeltQuotes(db, args);
+	}
+
   	/* Analytics */
 
   	public async getMintAnalyticsBalances(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
