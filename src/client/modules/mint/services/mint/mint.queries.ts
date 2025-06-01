@@ -188,15 +188,28 @@ query MintMintQuotes($unit: [MintUnit!], $state: [MintQuoteState!], $date_start:
 		id
 		amount
 		unit
-		request
 		state
-		request_lookup_id
-		pubkey
 		issued_time
 		created_time
-		paid_time
 	}
 }`;	
+
+// export const MINT_MELT_QUOTES_QUERY = `
+// query MintMeltQuotes($unit: [MintUnit!], $state: [MeltQuoteState!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $timezone: Timezone) {
+// 	mint_melt_quotes(unit: $unit, state: $state, date_start: $date_start, date_end: $date_end, timezone: $timezone) {
+// 		id
+// 		amount
+// 		unit
+// 		request
+// 		fee_reserve
+// 		state
+// 		payment_preimage
+// 		request_lookup_id
+// 		msat_to_pay
+// 		created_time
+// 		paid_time
+// 	}
+// }`;
 
 export const MINT_MELT_QUOTES_QUERY = `
 query MintMeltQuotes($unit: [MintUnit!], $state: [MeltQuoteState!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $timezone: Timezone) {
@@ -204,12 +217,7 @@ query MintMeltQuotes($unit: [MintUnit!], $state: [MeltQuoteState!], $date_start:
 		id
 		amount
 		unit
-		request
-		fee_reserve
 		state
-		payment_preimage
-		request_lookup_id
-		msat_to_pay
 		created_time
 		paid_time
 	}
@@ -350,3 +358,22 @@ mutation MintRotateKeyset($mint_rotate_keyset: MintRotateKeysetInput!) {
 		max_order
 	}
 }`;
+
+export const MINT_MINT_QUOTES_DATA_QUERY = `
+query MintMintQuotes($unit: [MintUnit!], $state: [MintQuoteState!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $timezone: Timezone, $page: Int, $page_size: Int) {
+	mint_mint_quotes(unit: $unit, state: $state, date_start: $date_start, date_end: $date_end, timezone: $timezone, page: $page, page_size: $page_size) {
+		id
+		amount
+		unit
+		request
+		state
+		request_lookup_id
+		pubkey
+		issued_time
+		created_time
+		paid_time
+	}
+	mint_count_mint_quotes(unit: $unit, state: $state, date_start: $date_start, date_end: $date_end, timezone: $timezone) {
+		count
+	}
+}`;	

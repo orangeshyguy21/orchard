@@ -354,6 +354,11 @@ export type OrchardMintContactUpdate = {
   method: Scalars['String']['output'];
 };
 
+export type OrchardMintCount = {
+  __typename?: 'OrchardMintCount';
+  count: Scalars['Int']['output'];
+};
+
 export type OrchardMintDatabase = {
   __typename?: 'OrchardMintDatabase';
   db: Scalars['String']['output'];
@@ -638,6 +643,8 @@ export type Query = {
   mint_balances: Array<OrchardMintBalance>;
   mint_balances_issued: Array<OrchardMintBalance>;
   mint_balances_redeemed: Array<OrchardMintBalance>;
+  mint_count_melt_quotes: OrchardMintCount;
+  mint_count_mint_quotes: OrchardMintCount;
   mint_databases: Array<OrchardMintDatabase>;
   mint_info: OrchardMintInfo;
   mint_info_rpc: OrchardMintInfoRpc;
@@ -703,6 +710,24 @@ export type QueryMint_BalancesArgs = {
 };
 
 
+export type QueryMint_Count_Melt_QuotesArgs = {
+  date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  state?: InputMaybe<Array<MeltQuoteState>>;
+  timezone?: InputMaybe<Scalars['Timezone']['input']>;
+  unit?: InputMaybe<Array<MintUnit>>;
+};
+
+
+export type QueryMint_Count_Mint_QuotesArgs = {
+  date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  state?: InputMaybe<Array<MintQuoteState>>;
+  timezone?: InputMaybe<Scalars['Timezone']['input']>;
+  unit?: InputMaybe<Array<MintUnit>>;
+};
+
+
 export type QueryMint_Melt_QuotesArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
@@ -715,6 +740,8 @@ export type QueryMint_Melt_QuotesArgs = {
 export type QueryMint_Mint_QuotesArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  page_size?: InputMaybe<Scalars['Int']['input']>;
   state?: InputMaybe<Array<MintQuoteState>>;
   timezone?: InputMaybe<Scalars['Timezone']['input']>;
   unit?: InputMaybe<Array<MintUnit>>;

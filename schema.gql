@@ -510,7 +510,7 @@ type Query {
   mint_info_rpc: OrchardMintInfoRpc!
   mint_keysets: [OrchardMintKeyset!]!
   mint_melt_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, state: [MeltQuoteState!], timezone: Timezone, unit: [MintUnit!]): [OrchardMintMeltQuote!]!
-  mint_mint_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, state: [MintQuoteState!], timezone: Timezone, unit: [MintUnit!]): [OrchardMintMintQuote!]!
+  mint_mint_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, page: Int, page_size: Int, state: [MintQuoteState!], timezone: Timezone, unit: [MintUnit!]): [OrchardMintMintQuote!]!
   mint_promises(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!]): [OrchardMintPromise!]!
   mint_proofs_pending: [OrchardMintProof!]!
   mint_proofs_used: [OrchardMintProof!]!

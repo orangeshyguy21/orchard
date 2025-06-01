@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef } from '@
 import { ActivatedRoute } from '@angular/router';
 /* Vendor Dependencies */
 import { DateTime } from 'luxon';
+import { lastValueFrom } from 'rxjs';
 /* Application Dependencies */
 import { NonNullableMintDatabaseSettings } from '@client/modules/chart/services/chart/chart.types';
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
@@ -26,6 +27,8 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 	public mint_genesis_time: number = 0;
 	public loading_static_data: boolean = true;
 	public loading_dynamic_data: boolean = true;
+	public data: any;
+	public count: number = 0;
 
 	private mint_keysets: MintKeyset[] = [];
 
@@ -49,9 +52,9 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 		const timezone = this.settingService.getTimezone();
 		this.loading_static_data = false;
 		this.cdr.detectChanges();
-		// await this.loadSelectedData(timezone);
-		// this.loading_dynamic_data = false;
-		// this.cdr.detectChanges();
+		await this.getSelectedData(timezone);
+		this.loading_dynamic_data = false;
+		this.cdr.detectChanges();
 	}
 
 	private getMintGenesisTime(): number {
@@ -77,27 +80,19 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 		return Math.floor(today.toSeconds());
 	}
 
-	// private async loadSelectedData(timezone: string): Promise<void> {
-	// 	const analytics_keysets_obs = this.mintService.loadMintAnalyticsKeysets({
-	// 		date_start: this.chart_settings.date_start,
-	// 		date_end: this.chart_settings.date_end,
-	// 		interval: interval,
-	// 		timezone: timezone
-	// 	});
-
-	// 	const [
-	// 		analytics_keysets,
-	// 		analytics_keysets_pre,
-	// 	] = await lastValueFrom(
-	// 		forkJoin([
-	// 			analytics_keysets_obs,
-	// 			analytics_keysets_pre_obs,
-	// 		])
-	// 	);
-		
-	// 	this.keysets_analytics = analytics_keysets;
-	// 	this.keysets_analytics_pre = analytics_keysets_pre;
-	// }
+	private async getSelectedData(timezone: string): Promise<void> {
+		const mint_mint_quotes_data = await lastValueFrom(
+			this.mintService.getMintMintQuotesData({
+				date_start: this.chart_settings.date_start,
+				date_end: this.chart_settings.date_end,
+				timezone: timezone
+			})
+		);
+		this.data = mint_mint_quotes_data.mint_mint_quotes;
+		this.count = mint_mint_quotes_data.count;
+		console.log(this.data);
+		console.log(this.count);
+	}
 
 	public onCreate(): void {
 		console.log('onCreate');

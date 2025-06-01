@@ -40,6 +40,7 @@ import {
 	MintNut04UpdateResponse,
 	MintNut05UpdateResponse,
 	MintKeysetRotationResponse,
+	MintMintQuotesDataResponse,
 } from '@client/modules/mint/types/mint.types';
 import { CacheService } from '@client/modules/cache/services/cache/cache.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
@@ -68,6 +69,7 @@ import {
 	MINT_MINT_QUOTES_QUERY,
 	MINT_MELT_QUOTES_QUERY,
 	MINT_ANALYTICS_KEYSETS_QUERY,
+	MINT_MINT_QUOTES_DATA_QUERY,
 	MINT_NAME_MUTATION,
 	MINT_DESCRIPTION_MUTATION,
 	MINT_DESCRIPTION_LONG_MUTATION,
@@ -584,6 +586,26 @@ export class MintService {
 			})
 		);
 	}	
+
+	public getMintMintQuotesData(args:MintMintQuotesArgs) {
+		const query = getApiQuery(MINT_MINT_QUOTES_DATA_QUERY, args);
+		return this.http.post<OrchardRes<MintMintQuotesDataResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			map((mint_mint_quotes_data) => {
+				return {
+					mint_mint_quotes: mint_mint_quotes_data.mint_mint_quotes.map((mint_mint_quote) => new MintMintQuote(mint_mint_quote)),
+					count: mint_mint_quotes_data.mint_count_mint_quotes.count
+				}
+			}),
+			catchError((error) => {
+				console.error('Error loading mint mint quotes data:', error);
+				return throwError(() => error);
+			})
+		);
+	}
 
 	public updateMintName(name:string) : Observable<MintNameUpdateResponse> {
 		const query = getApiQuery(MINT_NAME_MUTATION,  { mint_name_update: { name } });

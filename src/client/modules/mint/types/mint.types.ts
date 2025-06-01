@@ -13,6 +13,7 @@ import {
     MintQuoteState,
     MeltQuoteState,
     OrchardMintInfoRpc,
+    OrchardMintCount,
     OrchardMintNameUpdate, 
     OrchardMintIconUpdate,
     OrchardMintDescriptionUpdate,
@@ -167,4 +168,9 @@ export type MintNut05UpdateResponse = {
 
 export type MintKeysetRotationResponse = {
 	mint_keysets_rotation: OrchardMintKeysetRotation;
+}
+
+export type MintMintQuotesDataResponse = {
+	mint_mint_quotes: OrchardMintMintQuote[];
+	mint_count_mint_quotes: OrchardMintCount;
 }
