@@ -15,7 +15,7 @@ import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
 import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
 
-type MintData = MintMintData | MintMeltData;
+export type MintData = MintMintData | MintMeltData;
 type MintMintData = {
 	type : MintDataType.Mints;
 	entities : MintMintQuote[];
@@ -43,7 +43,6 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 	public count: number = 0;
 
 	private mint_keysets: MintKeyset[] = [];
-	private timezone: string = '';
 
 	constructor(
 		private route: ActivatedRoute,
@@ -62,10 +61,10 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 		this.locale = this.settingService.getLocale();
 		this.mint_genesis_time = this.getMintGenesisTime();
 		this.chart_settings = this.getChartSettings();
-		this.timezone = this.settingService.getTimezone();
+		const timezone = this.settingService.getTimezone();
 		this.loading_static_data = false;
 		this.cdr.detectChanges();
-		await this.getSelectedData();
+		await this.getDynamicData(timezone);
 		this.loading_dynamic_data = false;
 		this.cdr.detectChanges();
 	}
@@ -93,17 +92,17 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 		return Math.floor(today.toSeconds());
 	}
 
-	private async getSelectedData(): Promise<void> {
-		if( this.chart_settings.type === MintDataType.Mints ) return this.getMintsData();
+	private async getDynamicData(timezone: string): Promise<void> {
+		if( this.chart_settings.type === MintDataType.Mints ) return this.getMintsData(timezone);
 		// if( this.chart_settings.type === MintDataType.Melts ) return this.getMeltsData(timezone);
 	}
 
-	private async getMintsData(): Promise<void> {
+	private async getMintsData(timezone: string): Promise<void> {
 		const mint_mint_quotes_data = await lastValueFrom(
 			this.mintService.getMintMintQuotesData({
 				date_start: this.chart_settings.date_start,
 				date_end: this.chart_settings.date_end,
-				timezone: this.timezone
+				timezone: timezone
 			})
 		);
 		this.data = {
@@ -113,17 +112,30 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 		this.count = mint_mint_quotes_data.count;
 	}
 
+	private async reloadDynamicData(): Promise<void> {
+		try {
+			this.loading_dynamic_data = true;
+			const timezone = this.settingService.getTimezone();
+			this.cdr.detectChanges();
+			await this.getDynamicData(timezone);
+			this.loading_dynamic_data = false;
+			this.cdr.detectChanges();
+		} catch (error) {
+			console.error('Error updating dynamic data:', error);
+		}
+	}
+
 	public onDateChange(event: number[]): void {
 		this.chart_settings.date_start = event[0];
 		this.chart_settings.date_end = event[1];
 		this.chartService.setMintDatabaseShortSettings(this.chart_settings);
-		this.getSelectedData();
+		this.reloadDynamicData();
 	}
 
 	public onTypeChange(event: MintDataType): void {
 		this.chart_settings.type = event;
 		this.chartService.setMintDatabaseSettings(this.chart_settings);
-		this.getSelectedData();
+		this.reloadDynamicData();
 	}
 
 	public onCreate(): void {

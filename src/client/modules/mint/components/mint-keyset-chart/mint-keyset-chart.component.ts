@@ -6,14 +6,9 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ScaleChartOptions, ChartType as ChartJsType } from 'chart.js';
 import { DateTime } from 'luxon';
 /* Application Dependencies */
-import { AmountPipe } from '@client/modules/local/pipes/amount/amount.pipe';
 import { NonNullableMintKeysetsSettings } from '@client/modules/chart/services/chart/chart.types';
 import { 
-	groupAnalyticsByUnit,
-	prependData,
-	getDataKeyedByTimestamp,
 	getAmountData,
-	getRawData,
 	getAllPossibleTimestamps,
 	getYAxisId,
 } from '@client/modules/chart/helpers/mint-chart-data.helpers';
