@@ -124,23 +124,42 @@ export class MintDataChartComponent {
 		const data = this.chart_data.datasets[0]?.data as { x: number, y: number }[] || [];
 		const min_time = data.length ? Math.min(...data.map(d => d.x)) : Date.now();
 		const max_time = data.length ? Math.max(...data.map(d => d.x)) : Date.now();
+		const min_amount = data.length ? Math.min(...data.map(d => d.y)) : 0;
+		const max_amount = data.length ? Math.max(...data.map(d => d.y)) : 0;
 		const span_days = (max_time - min_time) / (1000 * 60 * 60 * 24);
 		const time_unit = span_days > 90 ? 'month' : span_days > 21 ? 'week' : 'day';
-		// const use_log_scale = this.metrics.max / this.metrics.min >= 100;
-		const use_log_scale = false; 
+		const use_log_scale = max_amount / min_amount >= 100;
 		const step_size = 1;
 
 		const units = this.chart_data.datasets.map(item => item.label);
 		const y_axis = getYAxis(units);
 		const scales: any = {};
-		if( y_axis.includes('ybtc') ) scales['ybtc'] = getBtcYAxisConfig({
-			grid_color: this.chartService.getGridColor()
-		});
-		if( y_axis.includes('yfiat') ) scales['yfiat'] = getFiatYAxisConfig({
-			units,
-			show_grid: !y_axis.includes('ybtc'),
-			grid_color: this.chartService.getGridColor()
-		});
+		if( y_axis.includes('ybtc') ) scales['ybtc'] = {
+			...getBtcYAxisConfig({
+				grid_color: this.chartService.getGridColor()
+			}),
+			type: use_log_scale ? 'logarithmic' : 'linear',
+			beginAtZero: !use_log_scale,
+			ticks: use_log_scale ? {
+				callback: function(value: number, index: number, values: number[]): string | null {
+					return value === 1 || Math.log10(value) % 1 === 0 ? value.toString() : null;
+				}
+			} : {}
+		};
+		if( y_axis.includes('yfiat') ) scales['yfiat'] = {
+			...getFiatYAxisConfig({
+				units,
+				show_grid: !y_axis.includes('ybtc'),
+				grid_color: this.chartService.getGridColor(),
+			}),
+			type: use_log_scale ? 'logarithmic' : 'linear',
+			beginAtZero: !use_log_scale,
+			ticks: use_log_scale ? {
+				callback: function(value: number, index: number, values: number[]): string | null {
+					return value === 1 || Math.log10(value) % 1 === 0 ? value.toString() : null;
+				}
+			} : {}
+		};
 
 		scales['x'] = {
 			type: 'time',
