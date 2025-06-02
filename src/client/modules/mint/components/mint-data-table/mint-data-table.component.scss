@@ -1,0 +1,10 @@
+@use '@styles/molecule/molecule';
+@use '@styles/nucleus/nucleus';
+
+.mint-data-table-container{
+    @extend %p-b-1;
+}
+
+.data-table-sticky-header{
+    top:86px !important;
+}

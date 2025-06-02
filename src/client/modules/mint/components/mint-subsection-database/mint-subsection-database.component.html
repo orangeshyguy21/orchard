@@ -68,7 +68,11 @@
 		[loading]="loading_dynamic_data">
 	</orc-mint-keyset-chart> -->
 
-	<orc-mint-data-table></orc-mint-data-table>
+	<orc-mint-data-table
+		[data]="data"
+		[chart_settings]="chart_settings"
+		[loading]="loading_dynamic_data">
+	</orc-mint-data-table>
 
 	<!-- <orc-mint-keyset-table
 		[keysets]="mint_keysets"

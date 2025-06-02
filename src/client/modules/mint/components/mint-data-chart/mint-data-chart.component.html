@@ -1,5 +1,4 @@
 <div class="mint-data-chart-container">
-    {{ data | json }}
     <canvas baseChart [data]="chart_data" [options]="chart_options" [type]="chart_type"></canvas>
     @if( !loading && data.entities.length === 0 ) {
         <div class="no-data-overlay" @fadeInOut>
