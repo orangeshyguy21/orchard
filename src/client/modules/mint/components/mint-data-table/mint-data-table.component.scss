@@ -12,34 +12,34 @@
 }
 
 tr.entity-row {
-    cursor: pointer;
+    @extend %cursor-pointer;
 }
 
 tr.entity-row:not(.expanded):hover {
-    background: whitesmoke;
+    @extend %orc-surface-container-low-bg;
 }
   
 tr.entity-row:not(.expanded):active {
-    background: #efefef;
+    @extend %orc-surface-container-high-bg;
 }
 
 tr.more-entity-row {
-    height: 0;
+    @extend %h-0;
 }
 
 .more-entity-wrapper{
-    overflow: hidden;
-    display: grid;
-    grid-template-rows: 0fr;
-    grid-template-columns: 100%;
+    @extend %overflow-hidden;
+    @extend %grid;
+    @extend %rows-0;
+    @extend %columns-full;
     transition: grid-template-rows 225ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .more-entity-wrapper-expanded {
-    grid-template-rows: 1fr;
+    @extend %rows-1;
 }
 
 .more-entity-content{
-    display: flex;
-    min-height: 0;
+    @extend %flex;
+    @extend %h-min-0;
 }
