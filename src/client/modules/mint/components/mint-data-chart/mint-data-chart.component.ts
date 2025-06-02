@@ -7,7 +7,7 @@ import { ChartConfiguration, ChartType as ChartJsType } from 'chart.js';
 import { DateTime } from 'luxon';
 /* Application Dependencies */
 import { MintDataType } from '@client/modules/mint/enums/chart-type.enum';
-import { NonNullableMintDatabaseSettings } from '@client/modules/chart/services/chart/chart.types';
+import { NonNullableMintDatabaseSettings } from '@client/modules/settings/types/setting.types';
 import { 
 	getYAxisId,
 } from '@client/modules/chart/helpers/mint-chart-data.helpers';
@@ -46,7 +46,7 @@ export class MintDataChartComponent {
 
 	@Input() public locale!: string;
 	@Input() public data!: MintData;
-	@Input() public chart_settings!: NonNullableMintDatabaseSettings | undefined;
+	@Input() public page_settings!: NonNullableMintDatabaseSettings | undefined;
 	@Input() public mint_genesis_time!: number;
 	@Input() public loading!: boolean;
 
@@ -83,7 +83,7 @@ export class MintDataChartComponent {
 	}
 
 	private getMintsData(): ChartConfiguration['data'] {
-		if( !this.chart_settings ) return { datasets: [] };
+		if( !this.page_settings ) return { datasets: [] };
 		if( (!this.data?.entities || this.data?.entities.length === 0) ) return { datasets: [] };
 		const data_unit_groups = this.mints_data.reduce((groups, entity) => {
 			const unit = entity.unit;

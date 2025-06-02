@@ -5,9 +5,8 @@ import { ActivatedRoute } from '@angular/router';
 import { DateTime } from 'luxon';
 import { lastValueFrom } from 'rxjs';
 /* Application Dependencies */
-import { NonNullableMintDatabaseSettings } from '@client/modules/chart/services/chart/chart.types';
+import { NonNullableMintDatabaseSettings } from '@client/modules/settings/types/setting.types';
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
-import { ChartService } from '@client/modules/chart/services/chart/chart.service';
 import { MintDataType } from '@client/modules/mint/enums/chart-type.enum';
 /* Native Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
@@ -34,7 +33,7 @@ type MintMeltData = {
 })
 export class MintSubsectionDatabaseComponent implements OnInit {
 
-	public chart_settings!: NonNullableMintDatabaseSettings;
+	public page_settings!: NonNullableMintDatabaseSettings;
 	public locale!: string;
 	public mint_genesis_time: number = 0;
 	public loading_static_data: boolean = true;
@@ -47,7 +46,6 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 	constructor(
 		private route: ActivatedRoute,
 		private settingService: SettingService,
-		private chartService: ChartService,
 		private mintService: MintService,
 		private cdr: ChangeDetectorRef,
 	) {}
@@ -60,7 +58,7 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 	private async initData(): Promise<void> {
 		this.locale = this.settingService.getLocale();
 		this.mint_genesis_time = this.getMintGenesisTime();
-		this.chart_settings = this.getChartSettings();
+		this.page_settings = this.getPageSettings();
 		const timezone = this.settingService.getTimezone();
 		this.loading_static_data = false;
 		this.cdr.detectChanges();
@@ -78,12 +76,13 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 		}, 0);
 	}
 
-	private getChartSettings(): NonNullableMintDatabaseSettings {
-		const settings = this.chartService.getMintDatabaseSettings();
+	private getPageSettings(): NonNullableMintDatabaseSettings {
+		const settings = this.settingService.getMintDatabaseSettings();
 		return {
+			type: settings.type ?? MintDataType.Mints,
 			date_start: settings.date_start ?? this.mint_genesis_time,
 			date_end: settings.date_end ?? this.getSelectedDateEnd(),
-			type: settings.type ?? MintDataType.Mints,
+			page: settings.page ?? 1,
 		};
 	}
 
@@ -93,15 +92,15 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 	}
 
 	private async getDynamicData(timezone: string): Promise<void> {
-		if( this.chart_settings.type === MintDataType.Mints ) return this.getMintsData(timezone);
+		if( this.page_settings.type === MintDataType.Mints ) return this.getMintsData(timezone);
 		// if( this.chart_settings.type === MintDataType.Melts ) return this.getMeltsData(timezone);
 	}
 
 	private async getMintsData(timezone: string): Promise<void> {
 		const mint_mint_quotes_data = await lastValueFrom(
 			this.mintService.getMintMintQuotesData({
-				date_start: this.chart_settings.date_start,
-				date_end: this.chart_settings.date_end,
+				date_start: this.page_settings.date_start,
+				date_end: this.page_settings.date_end,
 				timezone: timezone,
 				page: 1,
 				page_size: 4,
@@ -128,15 +127,15 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 	}
 
 	public onDateChange(event: number[]): void {
-		this.chart_settings.date_start = event[0];
-		this.chart_settings.date_end = event[1];
-		this.chartService.setMintDatabaseShortSettings(this.chart_settings);
+		this.page_settings.date_start = event[0];
+		this.page_settings.date_end = event[1];
+		this.settingService.setMintDatabaseShortSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
 
 	public onTypeChange(event: MintDataType): void {
-		this.chart_settings.type = event;
-		this.chartService.setMintDatabaseSettings(this.chart_settings);
+		this.page_settings.type = event;
+		this.settingService.setMintDatabaseSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
 

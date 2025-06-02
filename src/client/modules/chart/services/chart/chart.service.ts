@@ -5,7 +5,7 @@ import { ThemeService } from '@client/modules/settings/services/theme/theme.serv
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 import { LocalStorageService } from '@client/modules/cache/services/local-storage/local-storage.service';
 /* Local Dependencies */
-import { AllMintDashboardSettings, AllMintKeysetsSettings, AllMintDatabaseSettings } from './chart.types';
+import { AllMintDashboardSettings, AllMintKeysetsSettings } from './chart.types';
 
 @Injectable({
     providedIn: 'root'
@@ -17,10 +17,6 @@ export class ChartService {
         date_end: null,
     }
     public mint_keysets_short_settings: Record<string, number | null> = {
-        date_start: null,
-        date_end: null,
-    }
-    public mint_database_short_settings: Record<string, number | null> = {
         date_start: null,
         date_end: null,
     }
@@ -92,14 +88,6 @@ export class ChartService {
         } as AllMintKeysetsSettings;
     }
 
-    public getMintDatabaseSettings(): AllMintDatabaseSettings {
-        const long_term_settings = this.localStorageService.getMintDatabaseSettings();
-        return {
-            ...long_term_settings,
-            ...this.mint_database_short_settings
-        } as AllMintDatabaseSettings;
-    }
-
     public getFormAnnotationConfig(hot: boolean): any {
         const theme = this.settingService.getTheme();
         if( hot ) return {
@@ -148,11 +136,4 @@ export class ChartService {
     public setMintKeysetsSettings(settings: AllMintKeysetsSettings): void {
         this.localStorageService.setMintKeysetsSettings(settings);
     }
-    public setMintDatabaseShortSettings(settings: { date_start: number, date_end: number }): void {
-        this.mint_database_short_settings = settings;
-    }
-    public setMintDatabaseSettings(settings: AllMintDatabaseSettings): void {
-        this.localStorageService.setMintDatabaseSettings(settings);
-    }
-    
 }

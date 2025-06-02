@@ -5,15 +5,11 @@ import { animate, style, transition, trigger } from '@angular/animations';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 /* Application Dependencies */
-import { NonNullableMintDatabaseSettings } from '@client/modules/chart/services/chart/chart.types';
+import { NonNullableMintDatabaseSettings } from '@client/modules/settings/types/setting.types';
 /* Native Dependencies */
 import { MintData } from '@client/modules/mint/components/mint-subsection-database/mint-subsection-database.component';
 import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
 import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
-/* Local Dependencies */
-// import { MintKeysetRow } from './mint-keyset-row.class';
-
-
 
 @Component({
 	selector: 'orc-mint-data-table',
@@ -35,7 +31,7 @@ export class MintDataTableComponent implements OnChanges {
 	@ViewChild(MatSort) sort!: MatSort;
 
 	@Input() public data!: MintData;
-	@Input() public chart_settings!: NonNullableMintDatabaseSettings;
+	@Input() public page_settings!: NonNullableMintDatabaseSettings;
 	@Input() public loading!: boolean;
 
 	public displayed_columns = ['unit', 'amount', 'request', 'state', 'created_time'];
@@ -61,34 +57,3 @@ export class MintDataTableComponent implements OnChanges {
 		this.more_entity = this.more_entity === entity ? null : entity;
 	}
 }
-
-
-// /* Shared Dependencies */
-// import { OrchardMintMintQuote, MintQuoteState, MintUnit } from "@shared/generated.types";
-
-// export class MintMintQuote implements OrchardMintMintQuote {
-
-// 	public id: string;
-// 	public amount: number;
-// 	public unit: MintUnit;
-// 	public request: string;
-// 	public state: MintQuoteState;
-// 	public request_lookup_id: string;
-// 	public pubkey: string;
-// 	public issued_time: number | null;
-// 	public created_time: number | null;
-// 	public paid_time: number | null;
-
-// 	constructor(mint_mint_quote: OrchardMintMintQuote) {
-//         this.id = mint_mint_quote.id;
-// 		this.amount = mint_mint_quote.amount;
-// 		this.unit = mint_mint_quote.unit;
-// 		this.request = mint_mint_quote.request;
-// 		this.state = mint_mint_quote.state;
-// 		this.request_lookup_id = mint_mint_quote.request_lookup_id;
-// 		this.pubkey = mint_mint_quote.pubkey;
-// 		this.issued_time = mint_mint_quote.issued_time ?? null;
-// 		this.created_time = mint_mint_quote.created_time ?? null;
-// 		this.paid_time = mint_mint_quote.paid_time ?? null;
-// 	}
-// }

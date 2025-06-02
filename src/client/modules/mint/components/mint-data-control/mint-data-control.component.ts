@@ -7,7 +7,7 @@ import { DateTime } from 'luxon';
 import { MatCalendarCellClassFunction } from '@angular/material/datepicker';
 import { MatSelectChange } from '@angular/material/select';
 /* Application Dependencies */
-import { NonNullableMintDatabaseSettings } from '@client/modules/chart/services/chart/chart.types';
+import { NonNullableMintDatabaseSettings } from '@client/modules/settings/types/setting.types';
 import { MintDataType } from '@client/modules/mint/enums/chart-type.enum';
 /* Native Dependencies */
 
@@ -35,7 +35,7 @@ import { MintDataType } from '@client/modules/mint/enums/chart-type.enum';
 })
 export class MintDataControlComponent implements OnChanges {
 
-	@Input() chart_settings!: NonNullableMintDatabaseSettings;
+	@Input() page_settings!: NonNullableMintDatabaseSettings;
 	@Input() date_start?: number;
 	@Input() date_end?: number;
 	@Input() loading!: boolean;
@@ -72,9 +72,9 @@ export class MintDataControlComponent implements OnChanges {
 
 	private initForm(): void {
 		this.type_options = Object.values(MintDataType);
-		this.panel.controls.type.setValue(this.chart_settings.type);
-		this.panel.controls.daterange.controls.date_start.setValue(DateTime.fromSeconds(this.chart_settings.date_start));
-		this.panel.controls.daterange.controls.date_end.setValue(DateTime.fromSeconds(this.chart_settings.date_end));
+		this.panel.controls.type.setValue(this.page_settings.type);
+		this.panel.controls.daterange.controls.date_start.setValue(DateTime.fromSeconds(this.page_settings.date_start));
+		this.panel.controls.daterange.controls.date_end.setValue(DateTime.fromSeconds(this.page_settings.date_end));
 	}
 
 	public onDateChange(): void {
@@ -109,9 +109,9 @@ export class MintDataControlComponent implements OnChanges {
 		if( this.panel.controls.daterange.controls.date_start.value === null ) return false;
 		if( this.panel.controls.daterange.controls.date_end.value === null ) return false;
 		// change checks
-		if( this.panel.controls.type.value !== this.chart_settings.type ) return true;
-		if( this.panel.controls.daterange.controls.date_start.value.toSeconds() !== this.chart_settings.date_start ) return true;
-		if( this.panel.controls.daterange.controls.date_end.value.toSeconds() !== this.chart_settings.date_end ) return true;
+		if( this.panel.controls.type.value !== this.page_settings.type ) return true;
+		if( this.panel.controls.daterange.controls.date_start.value.toSeconds() !== this.page_settings.date_start ) return true;
+		if( this.panel.controls.daterange.controls.date_end.value.toSeconds() !== this.page_settings.date_end ) return true;
 		return false;
 	}
 
