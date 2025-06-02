@@ -57,3 +57,9 @@ tr.more-entity-row {
     display: flex;
     min-height: 0;
 }
+
+.data-table-sticky-footer{
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+}

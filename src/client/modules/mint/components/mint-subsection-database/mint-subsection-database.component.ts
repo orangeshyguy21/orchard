@@ -104,7 +104,7 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 				date_end: this.chart_settings.date_end,
 				timezone: timezone,
 				page: 1,
-				page_size: 3,
+				page_size: 500,
 			})
 		);
 		this.data = {

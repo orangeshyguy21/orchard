@@ -68,12 +68,15 @@
                     </tr>
                 </table>
 
-                <mat-paginator 
-                    [hidePageSize]="true"
-                    [length]="count"
-                    [pageSize]="data_source.data.length"
-                    showFirstLastButtons>
-                </mat-paginator>
+                <div class="data-table-sticky-footer">
+                    <div class="category-rule"></div>
+                    <mat-paginator 
+                        [hidePageSize]="true"
+                        [length]="count"
+                        [pageSize]="data_source.data.length"
+                        showFirstLastButtons>
+                    </mat-paginator>
+                </div>
             </div>
         }@else {
             <div class="flex flex-items-center flex-justify-center h-min-18">
