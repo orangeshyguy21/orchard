@@ -35,6 +35,7 @@ export class MintDataTableComponent implements OnChanges {
 	@ViewChild(MatSort) sort!: MatSort;
 
 	@Input() public data!: MintData;
+	@Input() public count!: number;
 	@Input() public chart_settings!: NonNullableMintDatabaseSettings;
 	@Input() public loading!: boolean;
 

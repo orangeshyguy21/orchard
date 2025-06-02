@@ -98,6 +98,8 @@ export type MintMintQuotesArgs = {
     date_end?: number;
     state?: MintQuoteState;
     timezone?: string;
+    page?: number;
+    page_size?: number;
 }
 
 export type MintMeltQuotesArgs = {
@@ -106,6 +108,8 @@ export type MintMeltQuotesArgs = {
     date_end?: number;
     state?: MeltQuoteState;
     timezone?: string;
+    page?: number;
+    page_size?: number;
 }
 
 export type MintNameUpdateResponse = {

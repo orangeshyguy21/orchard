@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table'; 
 import { MatSortModule } from '@angular/material/sort';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatCardModule } from '@angular/material/card';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -132,6 +133,7 @@ import { MintDataTableComponent } from './components/mint-data-table/mint-data-t
 		MatButtonModule,
 		MatTableModule,
 		MatSortModule,
+		MatPaginatorModule,
 		MatCardModule,
 		MatRippleModule,
 		MatDialogModule,

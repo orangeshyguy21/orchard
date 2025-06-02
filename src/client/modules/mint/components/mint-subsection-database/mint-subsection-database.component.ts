@@ -102,7 +102,9 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 			this.mintService.getMintMintQuotesData({
 				date_start: this.chart_settings.date_start,
 				date_end: this.chart_settings.date_end,
-				timezone: timezone
+				timezone: timezone,
+				page: 1,
+				page_size: 3,
 			})
 		);
 		this.data = {

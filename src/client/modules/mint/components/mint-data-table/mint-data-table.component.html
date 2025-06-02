@@ -67,6 +67,13 @@
                         class="more-entity-row">
                     </tr>
                 </table>
+
+                <mat-paginator 
+                    [hidePageSize]="true"
+                    [length]="count"
+                    [pageSize]="data_source.data.length"
+                    showFirstLastButtons>
+                </mat-paginator>
             </div>
         }@else {
             <div class="flex flex-items-center flex-justify-center h-min-18">
