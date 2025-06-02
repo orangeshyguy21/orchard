@@ -1,7 +1,7 @@
 <div class="mint-data-table-container">
     <mat-card appearance="outlined">
         @if(!loading && data_source){
-            <div class="p-h-1" @fadeIn>
+            <div class="p-h-1 flex flex-column flex-grow flex-justify-between" @fadeIn>
                 <table mat-table multiTemplateDataRows [dataSource]="data_source" matSort class="orc-feature-table">
     
                     <ng-container matColumnDef="unit">

@@ -9,6 +9,7 @@
 .mint-subsection-database-container{
     @extend %flex;
     @extend %flex-column;
+    @extend %flex-grow;
 }
 
 .mint-database-control{

@@ -1,8 +1,24 @@
 @use '@styles/molecule/molecule';
 @use '@styles/nucleus/nucleus';
 
+:host {
+    @extend %flex-grow;
+    @extend %flex;
+    @extend %flex-column;
+}
+
+
 .mint-data-table-container{
     @extend %p-b-1;
+    @extend %flex-grow;
+    @extend %flex;
+    @extend %flex-column;
+
+    mat-card{
+        @extend %flex-grow;
+        @extend %flex;
+        @extend %flex-column;
+    }
 }
 
 .data-table-sticky-header{
