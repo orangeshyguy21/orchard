@@ -21,6 +21,8 @@ import { ChartService } from '@client/modules/chart/services/chart/chart.service
 import { MintData } from '@client/modules/mint/components/mint-subsection-database/mint-subsection-database.component';
 import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
 import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
+/* Shared Dependencies */
+import { MintQuoteState } from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-data-chart',
@@ -95,7 +97,8 @@ export class MintDataChartComponent {
 			const color = this.chartService.getAssetColor(unit, index);
 			const data_prepped = data.map( entity => ({
 				x: (entity.created_time ?? 0) * 1000,
-				y: entity.amount
+				y: entity.amount,
+				state: entity.state
 			}));
 			const yAxisID = getYAxisId(unit);
 			return {
@@ -111,12 +114,26 @@ export class MintDataChartComponent {
 				pointHoverBorderColor: color.border,
 				pointRadius: 3,
 				pointHoverRadius: 4,
+				pointStyle: (context: any) => {
+					const state = data[context.dataIndex]?.state;
+					return this.getPointStyle(state);
+				},
 				tension: 0.4,
 				yAxisID: yAxisID,
 			};
 		});
 		
 		return { datasets };
+	}
+
+	private getPointStyle(state: MintQuoteState): string {
+		const map = {
+			[MintQuoteState.Unpaid]: 'triangle',
+			[MintQuoteState.Paid]: 'rect',
+			[MintQuoteState.Pending]: 'rectRot',
+			[MintQuoteState.Issued]: 'circle'
+		}
+		return map[state] || 'circle';
 	}
 
 	private getChartOptions(): ChartConfiguration['options'] {
