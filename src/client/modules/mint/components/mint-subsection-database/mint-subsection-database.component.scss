@@ -18,3 +18,22 @@
     @extend %top-0;
     @extend %z-index-1;
 }
+
+.mint-data-table{
+    @extend %p-b-1;
+    @extend %flex-grow;
+    @extend %flex;
+    @extend %flex-column;
+
+    mat-card{
+        @extend %flex-grow;
+        @extend %flex;
+        @extend %flex-column;
+    }
+}
+
+.data-table-sticky-footer{
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+}

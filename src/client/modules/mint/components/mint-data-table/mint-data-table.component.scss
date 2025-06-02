@@ -7,20 +7,6 @@
     @extend %flex-column;
 }
 
-
-.mint-data-table-container{
-    @extend %p-b-1;
-    @extend %flex-grow;
-    @extend %flex;
-    @extend %flex-column;
-
-    mat-card{
-        @extend %flex-grow;
-        @extend %flex;
-        @extend %flex-column;
-    }
-}
-
 .data-table-sticky-header{
     top:86px !important;
 }
@@ -56,10 +42,4 @@ tr.more-entity-row {
 .more-entity-content{
     display: flex;
     min-height: 0;
-}
-
-.data-table-sticky-footer{
-    position: sticky;
-    bottom: 0;
-    z-index: 1;
 }

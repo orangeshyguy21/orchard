@@ -57,10 +57,23 @@
 		[loading]="loading_dynamic_data">
 	</orc-mint-data-chart>
 
-	<orc-mint-data-table
-		[data]="data"
-		[count]="count"
-		[chart_settings]="chart_settings"
-		[loading]="loading_dynamic_data">
-	</orc-mint-data-table>
+	<div class="mint-data-table">
+		<mat-card appearance="outlined">
+			<orc-mint-data-table
+				[data]="data"
+				[chart_settings]="chart_settings"
+				[loading]="loading_dynamic_data">
+			</orc-mint-data-table>
+	
+			<div class="data-table-sticky-footer p-h-1">
+				<div class="category-rule"></div>
+				<mat-paginator 
+					[hidePageSize]="true"
+					[length]="count"
+					[pageSize]="data?.entities?.length"
+					showFirstLastButtons>
+				</mat-paginator>
+			</div>
+		</mat-card>
+	</div>
 </div>
