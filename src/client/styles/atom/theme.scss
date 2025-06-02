@@ -23,6 +23,13 @@
 	));
 }
 
+.orc-feature-paginator{
+	@include mat.paginator-overrides((
+		container-text-size: 0.875rem,
+		container-size: 2.5rem,
+	));
+}
+
 /* Specific Form Field Overrides */
 .orc-array-form-field {
 	@include mat.form-field-overrides((

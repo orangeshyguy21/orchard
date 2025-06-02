@@ -68,9 +68,12 @@
 			<div class="data-table-sticky-footer p-h-1">
 				<div class="category-rule"></div>
 				<mat-paginator 
+					class="orc-feature-paginator"
+					(page)="onPage($event)"
 					[hidePageSize]="true"
 					[length]="count"
 					[pageSize]="data?.entities?.length"
+					[pageIndex]="page_settings.page - 1"
 					showFirstLastButtons>
 				</mat-paginator>
 			</div>

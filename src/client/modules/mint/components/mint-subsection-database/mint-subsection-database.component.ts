@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 /* Vendor Dependencies */
 import { DateTime } from 'luxon';
 import { lastValueFrom } from 'rxjs';
+import { PageEvent } from '@angular/material/paginator';
 /* Application Dependencies */
 import { NonNullableMintDatabaseSettings } from '@client/modules/settings/types/setting.types';
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
@@ -23,6 +24,8 @@ type MintMeltData = {
 	type : MintDataType.Melts;
 	entities : MintMeltQuote[];
 }
+
+const PAGE_SIZE = 500;
 
 @Component({
 	selector: 'orc-mint-subsection-database',
@@ -59,6 +62,7 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 		this.locale = this.settingService.getLocale();
 		this.mint_genesis_time = this.getMintGenesisTime();
 		this.page_settings = this.getPageSettings();
+		console.log('page_settings', this.page_settings);
 		const timezone = this.settingService.getTimezone();
 		this.loading_static_data = false;
 		this.cdr.detectChanges();
@@ -102,8 +106,8 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 				date_start: this.page_settings.date_start,
 				date_end: this.page_settings.date_end,
 				timezone: timezone,
-				page: 1,
-				page_size: 4,
+				page: this.page_settings.page,
+				page_size: PAGE_SIZE,
 			})
 		);
 		this.data = {
@@ -136,6 +140,13 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 	public onTypeChange(event: MintDataType): void {
 		this.page_settings.type = event;
 		this.settingService.setMintDatabaseSettings(this.page_settings);
+		this.reloadDynamicData();
+	}
+
+	public onPage(event: PageEvent): void {
+		console.log('onPage', event);
+		this.page_settings.page = event.pageIndex + 1;	
+		this.settingService.setMintDatabaseShortSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
 

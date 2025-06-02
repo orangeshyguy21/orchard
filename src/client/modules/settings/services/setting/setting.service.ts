@@ -119,7 +119,7 @@ export class SettingService {
             ...this.mint_database_short_settings
         } as AllMintDatabaseSettings;
     }
-	public setMintDatabaseShortSettings(settings: { date_start: number, date_end: number }): void {
+	public setMintDatabaseShortSettings(settings: { date_start: number, date_end: number, page: number }): void {
         this.mint_database_short_settings = settings;
     }
     public setMintDatabaseSettings(settings: AllMintDatabaseSettings): void {
