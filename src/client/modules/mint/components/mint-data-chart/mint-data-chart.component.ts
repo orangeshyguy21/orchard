@@ -15,6 +15,8 @@ import {
 	getYAxis,
 	getBtcYAxisConfig,
 	getFiatYAxisConfig,
+	getTooltipTitleExact,
+	getTooltipLabel,
 } from '@client/modules/chart/helpers/mint-chart-options.helpers';
 import { ChartService } from '@client/modules/chart/services/chart/chart.service';
 /* Native Dependencies */
@@ -215,19 +217,19 @@ export class MintDataChartComponent {
 			plugins: {
 				tooltip: {
 					enabled: true,
-					mode: 'index',
+					mode: 'nearest',
 					intersect: false,
-					// callbacks: {
-					// 	title: getTooltipTitleExact,
-					// 	label: (context: any) => getTooltipLabel(context, this.locale),
-					// }
+					callbacks: {
+						title: getTooltipTitleExact,
+						label: (context: any) => getTooltipLabel(context, this.locale),
+					}
 				},
 				legend: {
 					display: false,
 				},
 			},
 			interaction: {
-				mode: 'index',
+				mode: 'nearest',
 				axis: 'x',
 				intersect: false
 			}
