@@ -8,3 +8,36 @@
 .data-table-sticky-header{
     top:86px !important;
 }
+
+tr.entity-row {
+    cursor: pointer;
+}
+
+tr.entity-row:not(.expanded):hover {
+    background: whitesmoke;
+}
+  
+tr.entity-row:not(.expanded):active {
+    background: #efefef;
+}
+
+tr.more-entity-row {
+    height: 0;
+}
+
+.more-entity-wrapper{
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: 0fr;
+    grid-template-columns: 100%;
+    transition: grid-template-rows 225ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.more-entity-wrapper-expanded {
+    grid-template-rows: 1fr;
+}
+
+.more-entity-content{
+    display: flex;
+    min-height: 0;
+}
