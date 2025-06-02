@@ -11,11 +11,10 @@ import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 import { EventService } from '@client/modules/event/services/event/event.service';
-import { ChartService } from '@client/modules/chart/services/chart/chart.service';
 import { AiService } from '@client/modules/ai/services/ai/ai.service';
 import { EventData } from '@client/modules/event/classes/event-data.class';
 import { AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
-import { NonNullableMintKeysetsSettings } from '@client/modules/chart/services/chart/chart.types';
+import { NonNullableMintKeysetsSettings } from '@client/modules/settings/types/setting.types';
 import { ComponentCanDeactivate } from '@client/modules/routing/interfaces/routing.interfaces';
 /* Native Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
@@ -63,7 +62,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	public locale!: string;
 	public interval!: MintAnalyticsInterval;
 	public mint_genesis_time: number = 0;
-	public chart_settings!: NonNullableMintKeysetsSettings;
+	public page_settings!: NonNullableMintKeysetsSettings;
 	public loading_static_data: boolean = true;
 	public loading_dynamic_data: boolean = true;
 	public keysets_analytics: MintAnalyticKeyset[] = [];
@@ -85,7 +84,6 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		public route: ActivatedRoute,
 		private settingService: SettingService,
 		private eventService: EventService,
-		private chartService: ChartService,
 		private aiService: AiService,
 		private mintService: MintService,
 		private cdr: ChangeDetectorRef,
@@ -146,7 +144,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	private async initKeysetsAnalytics(): Promise<void> {
 		this.locale = this.settingService.getLocale();
 		this.mint_genesis_time = this.getMintGenesisTime();
-		this.chart_settings = this.getChartSettings();
+		this.page_settings = this.getPageSettings();
 		this.interval = this.getAnalyticsInterval();
 		const timezone = this.settingService.getTimezone();
 		this.loading_static_data = false;
@@ -165,8 +163,8 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		}, 0);
 	}
 
-	private getChartSettings(): NonNullableMintKeysetsSettings {
-		const settings = this.chartService.getMintKeysetsSettings();
+	private getPageSettings(): NonNullableMintKeysetsSettings {
+		const settings = this.settingService.getMintKeysetsSettings();
 		return {
 			units: settings.units ?? this.getSelectedUnits(), // @todo there will be bugs here if a unit is not in the keysets (audit active keysets)
 			date_start: settings.date_start ?? this.mint_genesis_time,
@@ -185,7 +183,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	}
 
 	private getAnalyticsInterval(): MintAnalyticsInterval {
-		const days_diff = DateTime.fromSeconds(this.chart_settings.date_end).diff(DateTime.fromSeconds(this.chart_settings.date_start), 'days').days;
+		const days_diff = DateTime.fromSeconds(this.page_settings.date_end).diff(DateTime.fromSeconds(this.page_settings.date_start), 'days').days;
 		if(days_diff <= 90) return MintAnalyticsInterval.Day;
 		if(days_diff <= 365) return MintAnalyticsInterval.Week;
 		return MintAnalyticsInterval.Month;
@@ -193,14 +191,14 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 
 	private async loadKeysetsAnalytics(timezone: string, interval: MintAnalyticsInterval): Promise<void> {
 		const analytics_keysets_obs = this.mintService.loadMintAnalyticsKeysets({
-			date_start: this.chart_settings.date_start,
-			date_end: this.chart_settings.date_end,
+			date_start: this.page_settings.date_start,
+			date_end: this.page_settings.date_end,
 			interval: interval,
 			timezone: timezone
 		});
 		const analytics_keysets_pre_obs = this.mintService.loadMintAnalyticsKeysets({
 			date_start: 100000,
-			date_end: this.chart_settings.date_start-1,
+			date_end: this.page_settings.date_start-1,
 			interval: MintAnalyticsInterval.Custom,
 			timezone: timezone
 		});
@@ -263,10 +261,10 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	}
 	private hireAnalyticsAgent(agent: AiAgent, content: string|null): void {
 		let context = `Current Date: ${DateTime.now().toFormat('yyyy-MM-dd')}\n`;
-		context += `Current Date Start: ${DateTime.fromSeconds(this.chart_settings.date_start).toFormat('yyyy-MM-dd')}\n`;
-		context += `Current Date End: ${DateTime.fromSeconds(this.chart_settings.date_end).toFormat('yyyy-MM-dd')}\n`;
-		context += `Current Units: ${this.chart_settings.units}\n`;
-		context += `Current Status: ${this.chart_settings.status}\n`;
+		context += `Current Date Start: ${DateTime.fromSeconds(this.page_settings.date_start).toFormat('yyyy-MM-dd')}\n`;
+		context += `Current Date End: ${DateTime.fromSeconds(this.page_settings.date_end).toFormat('yyyy-MM-dd')}\n`;
+		context += `Current Units: ${this.page_settings.units}\n`;
+		context += `Current Status: ${this.page_settings.status}\n`;
 		context += `Available Units: ${this.unit_options.map(unit => unit.label).join(', ')}\n`;
 		this.aiService.openAiSocket(agent, content, context);
 	}
@@ -328,21 +326,21 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	}
 
 	public onDateChange(event: number[]): void {
-		this.chart_settings.date_start = event[0];
-		this.chart_settings.date_end = event[1];
-		this.chartService.setMintDashboardShortSettings(this.chart_settings);
+		this.page_settings.date_start = event[0];
+		this.page_settings.date_end = event[1];
+		this.settingService.setMintKeysetsShortSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
 
 	public onUnitsChange(event: MintUnit[]): void {
-		this.chart_settings.units = event;
-		this.chartService.setMintKeysetsSettings(this.chart_settings);
+		this.page_settings.units = event;
+		this.settingService.setMintKeysetsSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
 
 	public onStatusChange(event: boolean[]): void {
-		this.chart_settings.status = event;
-		this.chartService.setMintKeysetsSettings(this.chart_settings);
+		this.page_settings.status = event;
+		this.settingService.setMintKeysetsSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
 

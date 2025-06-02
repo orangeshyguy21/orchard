@@ -5,7 +5,7 @@ import { animate, style, transition, trigger } from '@angular/animations';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 /* Application Dependencies */
-import { NonNullableMintKeysetsSettings } from '@client/modules/chart/services/chart/chart.types';
+import { NonNullableMintKeysetsSettings } from '@client/modules/settings/types/setting.types';
 /* Native Dependencies */
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 import { MintAnalyticKeyset } from '@client/modules/mint/classes/mint-analytic.class';
@@ -34,7 +34,7 @@ export class MintKeysetTableComponent implements OnChanges {
 	@Input() public keysets!: MintKeyset[];
 	@Input() public keysets_analytics!: MintAnalyticKeyset[];
 	@Input() public keysets_analytics_pre!: MintAnalyticKeyset[];
-	@Input() public chart_settings!: NonNullableMintKeysetsSettings;
+	@Input() public page_settings!: NonNullableMintKeysetsSettings;
 	@Input() public loading!: boolean;
 
 	public displayed_columns = ['keyset', 'unit', 'input_fee_ppk', 'valid_from', 'balance'];
@@ -50,9 +50,9 @@ export class MintKeysetTableComponent implements OnChanges {
 
 	private init() : any {
 		const keyset_rows = this.keysets
-			.filter(keyset => this.chart_settings?.date_end >= keyset.valid_from)
-			.filter(keyset => this.chart_settings?.status.includes(keyset.active))
-			.filter(keyset => this.chart_settings?.units.includes(keyset.unit))
+			.filter(keyset => this.page_settings?.date_end >= keyset.valid_from)
+			.filter(keyset => this.page_settings?.status.includes(keyset.active))
+			.filter(keyset => this.page_settings?.units.includes(keyset.unit))
 			.sort((a, b) => b.valid_from - a.valid_from)
 			.map(keyset => {
 				const keyset_analytics = this.keysets_analytics.filter(analytic => analytic.keyset_id === keyset.id);

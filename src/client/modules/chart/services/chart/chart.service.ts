@@ -3,23 +3,11 @@ import { Injectable } from '@angular/core';
 /* Application Dependencies */
 import { ThemeService } from '@client/modules/settings/services/theme/theme.service';
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
-import { LocalStorageService } from '@client/modules/cache/services/local-storage/local-storage.service';
-/* Local Dependencies */
-import { AllMintDashboardSettings, AllMintKeysetsSettings } from './chart.types';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ChartService {
-
-    public mint_dashboard_short_settings: Record<string, number | null> = {
-        date_start: null,
-        date_end: null,
-    }
-    public mint_keysets_short_settings: Record<string, number | null> = {
-        date_start: null,
-        date_end: null,
-    }
 
     private asset_map: Record<string, string> = {
         'sat': '--orc-asset-btc',
@@ -37,7 +25,6 @@ export class ChartService {
     constructor(
         private themeService: ThemeService,
         private settingService: SettingService,
-        private localStorageService: LocalStorageService
     ) { }
 
     public getAssetColor(asset: string, data_index: number): { bg: string, border: string } {
@@ -72,22 +59,6 @@ export class ChartService {
         return colorhex;
     }
 
-    public getMintDashboardSettings(): AllMintDashboardSettings {
-        const long_term_settings = this.localStorageService.getMintDashboardSettings();
-        return {
-            ...long_term_settings,
-            ...this.mint_dashboard_short_settings
-        } as AllMintDashboardSettings;
-    }
-    
-    public getMintKeysetsSettings(): AllMintKeysetsSettings {
-        const long_term_settings = this.localStorageService.getMintKeysetsSettings();
-        return {
-            ...long_term_settings,
-            ...this.mint_keysets_short_settings
-        } as AllMintKeysetsSettings;
-    }
-
     public getFormAnnotationConfig(hot: boolean): any {
         const theme = this.settingService.getTheme();
         if( hot ) return {
@@ -106,9 +77,6 @@ export class ChartService {
         }
     }
 
-    /**
-     * Converts a hex color string to an rgba color string with specified opacity
-     */
     private hexToRgba(hex: string, opacity: number): string {
         hex = hex.replace('#', '');
         let r, g, b;
@@ -122,18 +90,5 @@ export class ChartService {
             b = parseInt(hex.substring(4, 6), 16);
         }
         return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-    }
-
-    public setMintDashboardShortSettings(settings: { date_start: number, date_end: number }): void {
-        this.mint_dashboard_short_settings = settings;
-    }
-    public setMintDashboardSettings(settings: AllMintDashboardSettings): void {
-        this.localStorageService.setMintDashboardSettings(settings);
-    }
-    public setMintKeysetsShortSettings(settings: { date_start: number, date_end: number }): void {
-        this.mint_keysets_short_settings = settings;
-    }
-    public setMintKeysetsSettings(settings: AllMintKeysetsSettings): void {
-        this.localStorageService.setMintKeysetsSettings(settings);
     }
 }

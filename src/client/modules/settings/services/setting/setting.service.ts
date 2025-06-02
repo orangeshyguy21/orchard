@@ -6,13 +6,21 @@ import { Settings } from 'luxon';
 /* Application Dependencies */
 import { LocalStorageService } from '@client/modules/cache/services/local-storage/local-storage.service';
 import { ThemeType } from '@client/modules/cache/services/local-storage/local-storage.types';
-import { AllMintDatabaseSettings } from '@client/modules/settings/types/setting.types';
+import { AllMintDashboardSettings, AllMintDatabaseSettings, AllMintKeysetsSettings } from '@client/modules/settings/types/setting.types';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class SettingService {
 
+	public mint_dashboard_short_settings: Record<string, number | null> = {
+        date_start: null,
+        date_end: null,
+    }
+    public mint_keysets_short_settings: Record<string, number | null> = {
+        date_start: null,
+        date_end: null,
+    }
 	public mint_database_short_settings: Record<string, number | null> = {
         date_start: null,
         date_end: null,
@@ -73,6 +81,36 @@ export class SettingService {
 		this.localStorageService.setModel({ model: model });
 	}
 
+	/* Page: Mint Dashboard */
+	public getMintDashboardSettings(): AllMintDashboardSettings {
+        const long_term_settings = this.localStorageService.getMintDashboardSettings();
+        return {
+            ...long_term_settings,
+            ...this.mint_dashboard_short_settings
+        } as AllMintDashboardSettings;
+    }
+	public setMintDashboardShortSettings(settings: { date_start: number, date_end: number }): void {
+        this.mint_dashboard_short_settings = settings;
+    }
+    public setMintDashboardSettings(settings: AllMintDashboardSettings): void {
+        this.localStorageService.setMintDashboardSettings(settings);
+    }
+    
+	/* Page: Mint Keysets */
+    public getMintKeysetsSettings(): AllMintKeysetsSettings {
+        const long_term_settings = this.localStorageService.getMintKeysetsSettings();
+        return {
+            ...long_term_settings,
+            ...this.mint_keysets_short_settings
+        } as AllMintKeysetsSettings;
+    }
+	public setMintKeysetsShortSettings(settings: { date_start: number, date_end: number }): void {
+        this.mint_keysets_short_settings = settings;
+    }
+    public setMintKeysetsSettings(settings: AllMintKeysetsSettings): void {
+        this.localStorageService.setMintKeysetsSettings(settings);
+    }
+
 	/* Page: Mint Database */
 	public getMintDatabaseSettings(): AllMintDatabaseSettings {
         const long_term_settings = this.localStorageService.getMintDatabaseSettings();
@@ -87,7 +125,4 @@ export class SettingService {
     public setMintDatabaseSettings(settings: AllMintDatabaseSettings): void {
         this.localStorageService.setMintDatabaseSettings(settings);
     }
-
-
-
 }
