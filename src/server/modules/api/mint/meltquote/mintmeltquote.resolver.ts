@@ -22,14 +22,14 @@ export class MintMeltQuoteResolver {
 
     @Query(() => [OrchardMintMeltQuote])
     async mint_melt_quotes(
-		@Args('unit', { type: () => [MintUnit], nullable: true }) unit?: MintUnit[],
-		@Args('state', { type: () => [MeltQuoteState], nullable: true }) state?: MeltQuoteState[],
+		@Args('units', { type: () => [MintUnit], nullable: true }) units?: MintUnit[],
+		@Args('states', { type: () => [MeltQuoteState], nullable: true }) states?: MeltQuoteState[],
 		@Args('date_start', { type: () => UnixTimestamp, nullable: true }) date_start?: number,
 		@Args('date_end', { type: () => UnixTimestamp, nullable: true }) date_end?: number,
 		@Args('timezone', { type: () => Timezone, nullable: true }) timezone?: TimezoneType,
 	) : Promise<OrchardMintMeltQuote[]> {
       	this.logger.debug('GET { mint_melt_quotes }');
-		return await this.mintMeltQuoteService.getMintMeltQuotes({ unit, state, date_start, date_end, timezone });
+		return await this.mintMeltQuoteService.getMintMeltQuotes({ units, states, date_start, date_end, timezone });
     }
 
 	@Mutation(() => OrchardMintNut05Update)

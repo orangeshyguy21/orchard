@@ -23,8 +23,6 @@ import { ChartService } from '@client/modules/chart/services/chart/chart.service
 import { MintData } from '@client/modules/mint/components/mint-subsection-database/mint-subsection-database.component';
 import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
 import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
-/* Shared Dependencies */
-import { MintQuoteState } from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-data-chart',
@@ -127,7 +125,7 @@ export class MintDataChartComponent {
 				pointHoverRadius: 4,
 				pointStyle: (context: any) => {
 					const state = data[context.dataIndex]?.state;
-					return this.getPointStyle(state);
+					return this.chartService.getStatePointStyle(this.data.type, state);
 				},
 				tension: 0.4,
 				yAxisID: yAxisID,
@@ -137,15 +135,16 @@ export class MintDataChartComponent {
 		return { datasets };
 	}
 
-	private getPointStyle(state: MintQuoteState): string {
-		const map = {
-			[MintQuoteState.Unpaid]: 'triangle',
-			[MintQuoteState.Paid]: 'rect',
-			[MintQuoteState.Pending]: 'rectRot',
-			[MintQuoteState.Issued]: 'circle'
-		}
-		return map[state] || 'circle';
-	}
+	// // todo leverage 
+	// private getPointStyle(state: MintQuoteState): string {
+	// 	const map = {
+	// 		[MintQuoteState.Unpaid]: 'triangle',
+	// 		[MintQuoteState.Paid]: 'rect',
+	// 		[MintQuoteState.Pending]: 'rectRot',
+	// 		[MintQuoteState.Issued]: 'circle'
+	// 	}
+	// 	return map[state] || 'circle';
+	// }
 
 	private getChartOptions(): ChartConfiguration['options'] {
 		if (!this.chart_data || this.chart_data.datasets.length === 0) return {};

@@ -84,7 +84,7 @@ export class LocalStorageService {
 	}
 	getMintDatabaseSettings(): MintDatabaseSettings {
 		const settings = this.getItem<MintDatabaseSettings>(this.STORAGE_KEYS.MINT_DATABASE_KEY);
-		if (!settings) return { type: null };
+		if (!settings) return { type: null, units: null, states: null };
 		return settings;
 	}
 

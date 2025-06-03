@@ -38,4 +38,6 @@ export type MintKeysetsSettings = {
 
 export type MintDatabaseSettings = {
     type: DataType | null;
+    units: MintUnit[] | null;
+    states: string[] | null;
 }

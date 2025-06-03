@@ -360,8 +360,8 @@ mutation MintRotateKeyset($mint_rotate_keyset: MintRotateKeysetInput!) {
 }`;
 
 export const MINT_MINT_QUOTES_DATA_QUERY = `
-query MintMintQuotes($unit: [MintUnit!], $state: [MintQuoteState!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $timezone: Timezone, $page: Int, $page_size: Int) {
-	mint_mint_quotes(unit: $unit, state: $state, date_start: $date_start, date_end: $date_end, timezone: $timezone, page: $page, page_size: $page_size) {
+query MintMintQuotes($units: [MintUnit!], $states: [MintQuoteState!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $timezone: Timezone, $page: Int, $page_size: Int) {
+	mint_mint_quotes(units: $units, states: $states, date_start: $date_start, date_end: $date_end, timezone: $timezone, page: $page, page_size: $page_size) {
 		id
 		amount
 		unit
@@ -373,7 +373,7 @@ query MintMintQuotes($unit: [MintUnit!], $state: [MintQuoteState!], $date_start:
 		created_time
 		paid_time
 	}
-	mint_count_mint_quotes(unit: $unit, state: $state, date_start: $date_start, date_end: $date_end, timezone: $timezone) {
+	mint_count_mint_quotes(units: $units, states: $states, date_start: $date_start, date_end: $date_end, timezone: $timezone) {
 		count
 	}
 }`;	

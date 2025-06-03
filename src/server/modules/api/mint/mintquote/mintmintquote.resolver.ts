@@ -22,8 +22,8 @@ export class MintMintQuoteResolver {
 
 	@Query(() => [OrchardMintMintQuote])
 	async mint_mint_quotes(
-		@Args('unit', { type: () => [MintUnit], nullable: true }) unit?: MintUnit[],
-		@Args('state', { type: () => [MintQuoteState], nullable: true }) state?: MintQuoteState[],
+		@Args('units', { type: () => [MintUnit], nullable: true }) units?: MintUnit[],
+		@Args('states', { type: () => [MintQuoteState], nullable: true }) states?: MintQuoteState[],
 		@Args('date_start', { type: () => UnixTimestamp, nullable: true }) date_start?: number,
 		@Args('date_end', { type: () => UnixTimestamp, nullable: true }) date_end?: number,
 		@Args('timezone', { type: () => Timezone, nullable: true }) timezone?: TimezoneType,
@@ -31,7 +31,7 @@ export class MintMintQuoteResolver {
 		@Args('page_size', { type: () => Int, nullable: true }) page_size?: number,
 	) : Promise<OrchardMintMintQuote[]> {
 		this.logger.debug('GET { mint_mint_quotes }');
-		return await this.mintMintQuoteService.getMintMintQuotes({ unit, state, date_start, date_end, timezone, page, page_size });
+		return await this.mintMintQuoteService.getMintMintQuotes({ units, states, date_start, date_end, timezone, page, page_size });
 	}
 
 	@Mutation(() => OrchardMintNut04Update)

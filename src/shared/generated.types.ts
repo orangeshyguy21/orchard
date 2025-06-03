@@ -742,9 +742,9 @@ export type QueryMint_Mint_QuotesArgs = {
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   page?: InputMaybe<Scalars['Int']['input']>;
   page_size?: InputMaybe<Scalars['Int']['input']>;
-  state?: InputMaybe<Array<MintQuoteState>>;
+  states?: InputMaybe<Array<MintQuoteState>>;
   timezone?: InputMaybe<Scalars['Timezone']['input']>;
-  unit?: InputMaybe<Array<MintUnit>>;
+  units?: InputMaybe<Array<MintUnit>>;
 };
 
 

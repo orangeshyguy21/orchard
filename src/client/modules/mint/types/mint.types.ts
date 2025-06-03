@@ -96,7 +96,7 @@ export type MintMintQuotesArgs = {
     units?: MintUnit[];
     date_start?: number;
     date_end?: number;
-    state?: MintQuoteState;
+    states?: MintQuoteState[];
     timezone?: string;
     page?: number;
     page_size?: number;
@@ -106,7 +106,7 @@ export type MintMeltQuotesArgs = {
     units?: MintUnit[];
     date_start?: number;
     date_end?: number;
-    state?: MeltQuoteState;
+    states?: MeltQuoteState[];
     timezone?: string;
     page?: number;
     page_size?: number;

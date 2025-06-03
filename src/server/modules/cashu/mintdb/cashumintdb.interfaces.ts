@@ -12,20 +12,20 @@ export interface CashuMintPromisesArgs {
 }
 
 export interface CashuMintMintQuotesArgs {
-    unit?: MintUnit[];
+    units?: MintUnit[];
     date_start?: number;
     date_end?: number;
-    state?: MintQuoteState[];
+    states?: MintQuoteState[];
     timezone?: TimezoneType;
     page?: number;
     page_size?: number;
 }
 
 export interface CashuMintMeltQuotesArgs {
-    unit?: MintUnit[];
+    units?: MintUnit[];
     date_start?: number;
     date_end?: number;
-    state?: MeltQuoteState[];
+    states?: MeltQuoteState[];
     timezone?: TimezoneType;
     page?: number;
     page_size?: number;

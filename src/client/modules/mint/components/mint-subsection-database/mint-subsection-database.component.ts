@@ -11,10 +11,13 @@ import { NonNullableMintDatabaseSettings } from '@client/modules/settings/types/
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 import { DataType } from '@client/modules/orchard/enums/data.enum';
 /* Native Dependencies */
+import { MintDataType } from '@client/modules/mint/enums/data-type.enum';
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
 import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
+/* Shared Dependencies */
+import { MintUnit, MintQuoteState } from '@shared/generated.types';
 
 export type MintData = MintMintData | MintMeltData;
 type MintMintData = {
@@ -46,7 +49,7 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 	public data!: MintData;
 	public count: number = 0;
 
-	private mint_keysets: MintKeyset[] = [];
+	public mint_keysets: MintKeyset[] = [];
 
 	constructor(
 		private route: ActivatedRoute,
@@ -64,6 +67,7 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 		this.locale = this.settingService.getLocale();
 		this.mint_genesis_time = this.getMintGenesisTime();
 		this.page_settings = this.getPageSettings();
+		console.log(this.page_settings);
 		const timezone = this.settingService.getTimezone();
 		this.loading_static_data = false;
 		this.cdr.detectChanges();
@@ -83,17 +87,30 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 
 	private getPageSettings(): NonNullableMintDatabaseSettings {
 		const settings = this.settingService.getMintDatabaseSettings();
+		const type = settings.type ?? DataType.MintMints;
 		return {
-			type: settings.type ?? DataType.MintMints,
+			type: type,
 			date_start: settings.date_start ?? this.mint_genesis_time,
 			date_end: settings.date_end ?? this.getSelectedDateEnd(),
 			page: settings.page ?? 1,
+			units: settings.units ?? this.getSelectedUnits(),
+			states: settings.states ?? this.getSelectedStates(type)
 		};
 	}
 
 	private getSelectedDateEnd(): number {
 		const today = DateTime.now().endOf('day');
 		return Math.floor(today.toSeconds());
+	}
+
+	private getSelectedUnits(): MintUnit[] {
+		return Array.from(new Set(this.mint_keysets.map(keyset => keyset.unit)));
+	}
+
+	private getSelectedStates(type: DataType): string[] {
+		if( type === DataType.MintMints ) return Object.values(MintQuoteState);
+		if( type === DataType.MintMelts ) return Object.values(MintQuoteState);
+		return [];
 	}
 
 	private async getDynamicData(timezone: string): Promise<void> {
@@ -106,6 +123,8 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 			this.mintService.getMintMintQuotesData({
 				date_start: this.page_settings.date_start,
 				date_end: this.page_settings.date_end,
+				units: this.page_settings.units,
+				states: (this.page_settings.states as MintQuoteState[]),
 				timezone: timezone,
 				page: this.page_settings.page,
 				page_size: PAGE_SIZE,
@@ -140,6 +159,18 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 
 	public onTypeChange(event: DataType): void {
 		this.page_settings.type = event;
+		this.settingService.setMintDatabaseSettings(this.page_settings);
+		this.reloadDynamicData();
+	}
+
+	public onUnitsChange(event: MintUnit[]): void {
+		this.page_settings.units = event;
+		this.settingService.setMintDatabaseSettings(this.page_settings);
+		this.reloadDynamicData();
+	}
+
+	public onStatesChange(event: string[]): void {
+		this.page_settings.states = event;
 		this.settingService.setMintDatabaseSettings(this.page_settings);
 		this.reloadDynamicData();
 	}

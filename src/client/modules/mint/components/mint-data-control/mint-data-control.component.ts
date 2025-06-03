@@ -10,7 +10,18 @@ import { MatSelectChange } from '@angular/material/select';
 import { NonNullableMintDatabaseSettings } from '@client/modules/settings/types/setting.types';
 import { DataType } from '@client/modules/orchard/enums/data.enum';
 import { MintDataType } from '@client/modules/mint/enums/data-type.enum';
-/* Native Dependencies */
+import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
+/* Shared Dependencies */
+import { MintUnit, MintQuoteState } from '@shared/generated.types';
+
+type UnitOption = {
+	label: string;
+	value: MintUnit;
+}
+type TypeOption = {
+	label: string;
+	value: MintDataType;
+}
 
 @Component({
 	selector: 'orc-mint-data-control',
@@ -42,9 +53,12 @@ export class MintDataControlComponent implements OnChanges {
 	@Input() date_end?: number;
 	@Input() loading!: boolean;
 	@Input() mint_genesis_time!: number;
+	@Input() keysets!: MintKeyset[];
 
 	@Output() dateChange = new EventEmitter<number[]>();
 	@Output() typeChange = new EventEmitter<DataType>();
+	@Output() unitsChange = new EventEmitter<MintUnit[]>();
+	@Output() statesChange = new EventEmitter<string[]>();
 	@Output() filterChange = new EventEmitter<Event>();
 
 	public readonly panel = new FormGroup({
@@ -53,10 +67,14 @@ export class MintDataControlComponent implements OnChanges {
 			date_start: new FormControl<DateTime | null>(null, [Validators.required]),
 			date_end: new FormControl<DateTime | null>(null, [Validators.required]),
 		}),
+		units: new FormControl<MintUnit[] | null>(null, [Validators.required]),
+		states: new FormControl<string[] | null>(null, [Validators.required]),
 		filter: new FormControl<string>(this.filter),
 	});
 
-	public type_options!: MintDataType[];
+	public type_options!: TypeOption[];
+	public unit_options!: UnitOption[]; 
+	public state_options!: string[];
 
 	public get height_state(): string {
 		return this.panel?.invalid ? 'invalid' : 'valid';
@@ -75,10 +93,15 @@ export class MintDataControlComponent implements OnChanges {
 	}
 
 	private initForm(): void {
-		this.type_options = Object.values(MintDataType);
+		const unique_units = Array.from(new Set(this.keysets.map(keyset => keyset.unit)));
+		this.unit_options = unique_units.map(unit => ({ label: unit.toUpperCase(), value: unit }));
+		this.type_options = Object.values(MintDataType).map(type => ({ label: type.substring(4), value: type }));
+		this.state_options = Object.values(MintQuoteState);
 		this.panel.controls.type.setValue(this.page_settings.type);
 		this.panel.controls.daterange.controls.date_start.setValue(DateTime.fromSeconds(this.page_settings.date_start));
 		this.panel.controls.daterange.controls.date_end.setValue(DateTime.fromSeconds(this.page_settings.date_end));
+		this.panel.controls.units.setValue(this.page_settings.units);
+		this.panel.controls.states.setValue(this.page_settings.states);
 	}
 
 	public onDateChange(): void {
@@ -99,6 +122,20 @@ export class MintDataControlComponent implements OnChanges {
 		this.typeChange.emit(event.value);
 	}
 
+	public onUnitsChange(event: MatSelectChange): void {
+		if(this.panel.invalid) return;
+		const is_valid = this.isValidChange();
+		if( !is_valid ) return;
+		this.unitsChange.emit(event.value);
+	}
+
+	public onStatesChange(event: MatSelectChange): void {
+		if(this.panel.invalid) return;
+		const is_valid = this.isValidChange();
+		if( !is_valid ) return;
+		this.statesChange.emit(event.value);
+	}
+
 	public genesis_class: MatCalendarCellClassFunction<DateTime> = (cellDate, view) => {
 		if( view !== 'month' ) return '';
 		const unix_seconds = cellDate.toSeconds();
@@ -112,10 +149,14 @@ export class MintDataControlComponent implements OnChanges {
 		if( this.panel.controls.type.value === null ) return false;
 		if( this.panel.controls.daterange.controls.date_start.value === null ) return false;
 		if( this.panel.controls.daterange.controls.date_end.value === null ) return false;
+		if( this.panel.controls.units.value === null ) return false;
+		if( this.panel.controls.states.value === null ) return false;
 		// change checks
 		if( this.panel.controls.type.value !== this.page_settings.type ) return true;
 		if( this.panel.controls.daterange.controls.date_start.value.toSeconds() !== this.page_settings.date_start ) return true;
 		if( this.panel.controls.daterange.controls.date_end.value.toSeconds() !== this.page_settings.date_end ) return true;
+		if( this.panel.controls.units.value !== this.page_settings.units ) return true;
+		if( this.panel.controls.states.value !== this.page_settings.states ) return true;
 		return false;
 	}
 
