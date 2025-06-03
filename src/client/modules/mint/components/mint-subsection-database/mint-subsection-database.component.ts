@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { DateTime } from 'luxon';
 import { lastValueFrom } from 'rxjs';
 import { PageEvent } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
 /* Application Dependencies */
 import { NonNullableMintDatabaseSettings } from '@client/modules/settings/types/setting.types';
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
@@ -18,11 +19,11 @@ import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.clas
 export type MintData = MintMintData | MintMeltData;
 type MintMintData = {
 	type : MintDataType.Mints;
-	entities : MintMintQuote[];
+	source : MatTableDataSource<MintMintQuote>;
 }
 type MintMeltData = {
 	type : MintDataType.Melts;
-	entities : MintMeltQuote[];
+	source : MatTableDataSource<MintMeltQuote>;
 }
 
 const PAGE_SIZE = 500;
@@ -112,7 +113,7 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 		);
 		this.data = {
 			type: MintDataType.Mints,
-			entities: mint_mint_quotes_data.mint_mint_quotes
+			source: new MatTableDataSource(mint_mint_quotes_data.mint_mint_quotes)
 		};
 		this.count = mint_mint_quotes_data.count;
 	}
@@ -151,6 +152,8 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 
 	public onFilterChange(event: Event): void {
 		this.filter = (event.target as HTMLInputElement).value;
+		this.data.source.filter = this.filter.trim().toLowerCase();
+		this.cdr.detectChanges();
 		console.log('filter', this.filter);
 		// this.reloadDynamicData();
 	}
@@ -163,3 +166,35 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 		console.log('onRestore');
 	}
 }
+
+
+
+
+// @ViewChild(MatSort) sort!: MatSort;
+
+// @Input() public data!: MintData;
+// @Input() public page_settings!: NonNullableMintDatabaseSettings;
+// @Input() public loading!: boolean;
+
+// public displayed_columns = ['unit', 'amount', 'request', 'state', 'created_time'];
+//   public data_source!: MatTableDataSource<MintMintQuote>;
+// public more_entity!: MintMintQuote | null;
+
+// constructor() {}
+
+// public ngOnChanges(changes: SimpleChanges): void {
+// 	if(changes['loading'] && this.loading === false) {
+// 		this.init();
+// 	}
+// }
+
+// private init() : any {
+// 	this.data_source = new MatTableDataSource(this.data.entities as MintMintQuote[]);
+// 	setTimeout(() => {
+// 		this.data_source.sort = this.sort;
+// 	});
+// }
+
+// public toggleMore(entity: MintMintQuote) {
+// 	this.more_entity = this.more_entity === entity ? null : entity;
+// }

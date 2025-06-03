@@ -61,6 +61,7 @@
 	<orc-mint-data-chart
 		[locale]="locale"
 		[data]="data"
+		[filter]="filter"
 		[page_settings]="page_settings"
 		[mint_genesis_time]="mint_genesis_time"
 		[loading]="loading_dynamic_data">
@@ -81,7 +82,7 @@
 					(page)="onPage($event)"
 					[hidePageSize]="true"
 					[length]="count"
-					[pageSize]="data?.entities?.length"
+					[pageSize]="data?.source?.data?.length"
 					[pageIndex]="page_settings.page - 1"
 					showFirstLastButtons>
 				</mat-paginator>

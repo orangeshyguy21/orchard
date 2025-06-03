@@ -3,7 +3,6 @@ import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, Vi
 import { animate, style, transition, trigger } from '@angular/animations';
 /* Vendor Dependencies */
 import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
 /* Application Dependencies */
 import { NonNullableMintDatabaseSettings } from '@client/modules/settings/types/setting.types';
 /* Native Dependencies */
@@ -35,7 +34,6 @@ export class MintDataTableComponent implements OnChanges {
 	@Input() public loading!: boolean;
 
 	public displayed_columns = ['unit', 'amount', 'request', 'state', 'created_time'];
-  	public data_source!: MatTableDataSource<MintMintQuote>;
 	public more_entity!: MintMintQuote | null;
 
 	constructor() {}
@@ -47,9 +45,8 @@ export class MintDataTableComponent implements OnChanges {
 	}
 
 	private init() : any {
-		this.data_source = new MatTableDataSource(this.data.entities as MintMintQuote[]);
 		setTimeout(() => {
-			this.data_source.sort = this.sort;
+			this.data.source.sort = this.sort;
 		});
 	}
 

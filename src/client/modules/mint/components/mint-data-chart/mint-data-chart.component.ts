@@ -50,6 +50,7 @@ export class MintDataChartComponent {
 
 	@Input() public locale!: string;
 	@Input() public data!: MintData;
+	@Input() public filter!: string;
 	@Input() public page_settings!: NonNullableMintDatabaseSettings | undefined;
 	@Input() public mint_genesis_time!: number;
 	@Input() public loading!: boolean;
@@ -59,7 +60,7 @@ export class MintDataChartComponent {
 	public chart_options!: ChartConfiguration['options'];
 
 	public get mints_data(): MintMintQuote[] {
-		if( this.data.type === MintDataType.Mints ) return this.data.entities;
+		if( this.data.type === MintDataType.Mints ) return this.data.source.filteredData;
 		return [];
 	}
 
@@ -70,6 +71,9 @@ export class MintDataChartComponent {
 	public ngOnChanges(changes: SimpleChanges): void {
 		if(changes['loading'] && this.loading === false) {
 			this.init();
+		}
+		if(changes['filter'] && !changes['filter'].firstChange) {
+			this.chart_data = this.getChartData();
 		}
 	}
 
@@ -93,7 +97,7 @@ export class MintDataChartComponent {
 
 	private getMintsData(): ChartConfiguration['data'] {
 		if( !this.page_settings ) return { datasets: [] };
-		if( (!this.data?.entities || this.data?.entities.length === 0) ) return { datasets: [] };
+		if( (!this.data?.source || this.data?.source.data.length === 0) ) return { datasets: [] };
 		const data_unit_groups = this.mints_data.reduce((groups, entity) => {
 			const unit = entity.unit;
 			groups[unit] = groups[unit] || [];
