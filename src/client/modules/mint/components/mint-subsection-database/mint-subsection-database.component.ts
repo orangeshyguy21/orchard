@@ -17,7 +17,7 @@ import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
 import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
 /* Shared Dependencies */
-import { MintUnit, MintQuoteState } from '@shared/generated.types';
+import { MintUnit, MintQuoteState, MeltQuoteState } from '@shared/generated.types';
 
 export type MintData = MintMintData | MintMeltData;
 type MintMintData = {
@@ -109,13 +109,13 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 
 	private getSelectedStates(type: DataType): string[] {
 		if( type === DataType.MintMints ) return Object.values(MintQuoteState);
-		if( type === DataType.MintMelts ) return Object.values(MintQuoteState);
+		if( type === DataType.MintMelts ) return Object.values(MeltQuoteState);
 		return [];
 	}
 
 	private async getDynamicData(timezone: string): Promise<void> {
 		if( this.page_settings.type === DataType.MintMints ) return this.getMintsData(timezone);
-		// if( this.chart_settings.type === MintDataType.Melts ) return this.getMeltsData(timezone);
+		if( this.page_settings.type === DataType.MintMelts ) return this.getMeltsData(timezone);
 	}
 
 	private async getMintsData(timezone: string): Promise<void> {
@@ -135,6 +135,26 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 			source: new MatTableDataSource(mint_mint_quotes_data.mint_mint_quotes)
 		};
 		this.count = mint_mint_quotes_data.count;
+	}
+
+	private async getMeltsData(timezone: string): Promise<void> {
+		const mint_melt_quotes_data = await lastValueFrom(
+			this.mintService.getMintMeltQuotesData({
+				date_start: this.page_settings.date_start,
+				date_end: this.page_settings.date_end,
+				units: this.page_settings.units,
+				states: (this.page_settings.states as MeltQuoteState[]),
+				timezone: timezone,
+				page: this.page_settings.page,
+				page_size: PAGE_SIZE,
+			})
+		);
+		console.log(mint_melt_quotes_data);
+		this.data = {
+			type: DataType.MintMelts,
+			source: new MatTableDataSource(mint_melt_quotes_data.mint_melt_quotes)
+		};
+		this.count = mint_melt_quotes_data.count;
 	}
 
 	private async reloadDynamicData(): Promise<void> {
@@ -159,6 +179,7 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 
 	public onTypeChange(event: DataType): void {
 		this.page_settings.type = event;
+		this.page_settings.states = this.getSelectedStates(event);
 		this.settingService.setMintDatabaseSettings(this.page_settings);
 		this.reloadDynamicData();
 	}

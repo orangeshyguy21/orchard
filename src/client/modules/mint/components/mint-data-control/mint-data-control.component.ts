@@ -12,7 +12,7 @@ import { DataType } from '@client/modules/orchard/enums/data.enum';
 import { MintDataType } from '@client/modules/mint/enums/data-type.enum';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 /* Shared Dependencies */
-import { MintUnit, MintQuoteState } from '@shared/generated.types';
+import { MintUnit, MintQuoteState, MeltQuoteState } from '@shared/generated.types';
 
 type UnitOption = {
 	label: string;
@@ -51,6 +51,7 @@ export class MintDataControlComponent implements OnChanges {
 	@Input() filter!: string;
 	@Input() date_start?: number;
 	@Input() date_end?: number;
+	@Input() states!: string[];
 	@Input() loading!: boolean;
 	@Input() mint_genesis_time!: number;
 	@Input() keysets!: MintKeyset[];
@@ -90,13 +91,17 @@ export class MintDataControlComponent implements OnChanges {
 		if(changes['date_end'] && this.date_end && this.panel.controls.daterange.get('date_end')?.value?.toSeconds() !== this.date_end) {
 			this.panel.controls.daterange.get('date_end')?.setValue(DateTime.fromSeconds(this.date_end));
 		}
+		if(changes['states'] && this.states && this.panel.controls.states.value !== this.states) {
+			this.state_options = (this.page_settings.type === DataType.MintMints) ? Object.values(MintQuoteState) : Object.values(MeltQuoteState);
+			this.panel.controls.states.setValue(this.states);
+		}
 	}
 
 	private initForm(): void {
 		const unique_units = Array.from(new Set(this.keysets.map(keyset => keyset.unit)));
 		this.unit_options = unique_units.map(unit => ({ label: unit.toUpperCase(), value: unit }));
 		this.type_options = Object.values(MintDataType).map(type => ({ label: type.substring(4), value: type }));
-		this.state_options = Object.values(MintQuoteState);
+		this.state_options = (this.page_settings.type === DataType.MintMints) ? Object.values(MintQuoteState) : Object.values(MeltQuoteState);
 		this.panel.controls.type.setValue(this.page_settings.type);
 		this.panel.controls.daterange.controls.date_start.setValue(DateTime.fromSeconds(this.page_settings.date_start));
 		this.panel.controls.daterange.controls.date_end.setValue(DateTime.fromSeconds(this.page_settings.date_end));

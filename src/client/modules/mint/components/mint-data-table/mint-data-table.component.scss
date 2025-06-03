@@ -7,6 +7,10 @@
     @extend %flex-column;
 }
 
+.mint-data-table-container{
+    @extend %relative;
+}
+
 .data-table-sticky-header{
     top:86px !important;
 }

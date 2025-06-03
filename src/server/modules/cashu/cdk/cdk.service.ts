@@ -177,10 +177,10 @@ export class CdkService {
 
 	public async getMintCountMintQuotes(db:sqlite3.Database, args?: CashuMintMintQuotesArgs) : Promise<number> {
 		const field_mappings = {
-			unit: 'unit',
+			units: 'unit',
 			date_start: 'created_time',
 			date_end: 'created_time',
-			status: 'state',
+			states: 'state',
 		};
 		const { sql, params } = buildCountQuery('mint_quote', args, field_mappings);
 		return new Promise((resolve, reject) => {
@@ -194,10 +194,10 @@ export class CdkService {
 
 	public async getMintMeltQuotes(db:sqlite3.Database, args?: CashuMintMeltQuotesArgs) : Promise<CashuMintMeltQuote[]> {
 		const field_mappings = {
-			unit: 'unit',
+			units: 'unit',
 			date_start: 'created_time',
 			date_end: 'created_time',
-			status: 'state',
+			states: 'state',
 		};
 		const { sql, params } = buildDynamicQuery('melt_quote', args, field_mappings);
 		return new Promise((resolve, reject) => {
@@ -210,10 +210,10 @@ export class CdkService {
 
 	public async getMintCountMeltQuotes(db:sqlite3.Database, args?: CashuMintMeltQuotesArgs) : Promise<number> {
 		const field_mappings = {
-			unit: 'unit',
+			units: 'unit',
 			date_start: 'created_time',
 			date_end: 'created_time',
-			status: 'state',
+			states: 'state',
 		};
 		const { sql, params } = buildCountQuery('melt_quote', args, field_mappings);
 		return new Promise((resolve, reject) => {

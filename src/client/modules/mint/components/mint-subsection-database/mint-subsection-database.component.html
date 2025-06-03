@@ -1,6 +1,6 @@
 <div class="mint-subsection-database-container p-h-1">
 	<div class="mint-database-control p-t-1">
-		<div class="flex flex-justify-between flex-gap-1 flex-items-start">
+		<div class="flex flex-justify-between flex-gap-2 flex-items-start">
 			@if( page_settings ) {
 				<orc-mint-data-control
 					class="flex-grow"
@@ -8,6 +8,7 @@
 					[filter]="filter"
 					[date_start]="page_settings.date_start"
 					[date_end]="page_settings.date_end"
+					[states]="page_settings.states"
 					[loading]="loading_static_data"
 					[mint_genesis_time]="mint_genesis_time"
 					[keysets]="mint_keysets"
@@ -19,7 +20,7 @@
 				</orc-mint-data-control>
 			}
 			<div>
-				<div class="flex flex-items-center flex-gap-1">
+				<div class="flex flex-items-center flex-gap-0-5">
 					<button 
 						type="button" 
 						mat-fab 
@@ -39,17 +40,6 @@
 		</div>
 		<div class="category-rule"></div>
 	</div>
-
-	<!-- <button 
-		type="button" 
-		mat-fab 
-		extended 
-		class="orc-icon-button"
-		(click)="onRestore()" 
-		(keydown.enter)="$event.preventDefault(); $event.stopPropagation();">
-		<mat-icon>database_upload</mat-icon>
-		Restore Backup
-	</button> -->
 
 	<!-- <div [@slideInOut]="keysets_rotation ? 'open' : 'closed'" class="overflow-hidden">
 		<orc-mint-keyset-rotation 
@@ -77,6 +67,12 @@
 				[page_settings]="page_settings"
 				[loading]="loading_dynamic_data">
 			</orc-mint-data-table>
+
+			@if( !loading_dynamic_data && data.source.data.length === 0 ) {
+				<div class="no-data-overlay" @fadeIn>
+					<mat-icon class="icon-lg mat-symbol-outline orc-outline-color">bar_chart_off</mat-icon>
+				</div>
+			}
 	
 			<div class="data-table-sticky-footer p-h-1">
 				<div class="category-rule"></div>

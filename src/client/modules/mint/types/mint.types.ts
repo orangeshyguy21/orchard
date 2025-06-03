@@ -178,3 +178,8 @@ export type MintMintQuotesDataResponse = {
 	mint_mint_quotes: OrchardMintMintQuote[];
 	mint_count_mint_quotes: OrchardMintCount;
 }
+
+export type MintMeltQuotesDataResponse = {
+	mint_melt_quotes: OrchardMintMeltQuote[];
+	mint_count_melt_quotes: OrchardMintCount;
+}
