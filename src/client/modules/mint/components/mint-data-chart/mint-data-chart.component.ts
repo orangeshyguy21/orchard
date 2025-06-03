@@ -62,6 +62,11 @@ export class MintDataChartComponent {
 		return [];
 	}
 
+	public get melts_data(): MintMeltQuote[] {
+		if( this.data.type === DataType.MintMelts ) return this.data.source.filteredData;
+		return [];
+	}
+
 	constructor(
 		private chartService: ChartService,
 	) { }
@@ -84,8 +89,9 @@ export class MintDataChartComponent {
 
 	private getChartData(): ChartConfiguration['data'] {
 		if( this.data.type === DataType.MintMints ) return this.getMintsData();
+		if( this.data.type === DataType.MintMelts ) return this.getMeltsData();
 		return { datasets: [] };
-		// if( this.data.type === DataType.MintMelts ) return this.getMeltsData();
+		
 	}
 
 	private getMintsData(): ChartConfiguration['data'] {
@@ -130,16 +136,47 @@ export class MintDataChartComponent {
 		return { datasets };
 	}
 
-	// // todo leverage 
-	// private getPointStyle(state: MintQuoteState): string {
-	// 	const map = {
-	// 		[MintQuoteState.Unpaid]: 'triangle',
-	// 		[MintQuoteState.Paid]: 'rect',
-	// 		[MintQuoteState.Pending]: 'rectRot',
-	// 		[MintQuoteState.Issued]: 'circle'
-	// 	}
-	// 	return map[state] || 'circle';
-	// }
+	private getMeltsData(): ChartConfiguration['data'] {
+		if( !this.page_settings ) return { datasets: [] };
+		if( (!this.data?.source || this.data?.source.data.length === 0) ) return { datasets: [] };
+		const data_unit_groups = this.melts_data.reduce((groups, entity) => {
+			const unit = entity.unit;
+			groups[unit] = groups[unit] || [];
+			groups[unit].push(entity);
+			return groups;
+		}, {} as Record<string, MintMeltQuote[]>);
+		const datasets = Object.entries(data_unit_groups).map(([unit, data], index) => {
+			const color = this.chartService.getAssetColor(unit, index);
+			const data_prepped = data.map( entity => ({
+				x: (entity.created_time ?? 0) * 1000,
+				y: entity.amount,
+				state: entity.state
+			}));
+			const yAxisID = getYAxisId(unit);
+			return {
+				data: data_prepped,
+				label: unit.toUpperCase(),
+				backgroundColor: color.bg,
+				borderColor: color.border,
+				borderWidth: 2,
+				borderRadius: 3,
+				pointBackgroundColor: color.border,
+				pointBorderColor: color.border,
+				pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
+				pointHoverBorderColor: color.border,
+				pointRadius: 3,
+				pointHoverRadius: 4,
+				pointStyle: (context: any) => {
+					const state = data[context.dataIndex]?.state;
+					return this.chartService.getStatePointStyle(this.data.type, state);
+				},
+				tension: 0.4,
+				yAxisID: yAxisID,
+			};
+		});
+		
+		return { datasets };
+	}
 
 	private getChartOptions(): ChartConfiguration['options'] {
 		if (!this.chart_data || this.chart_data.datasets.length === 0) return {};

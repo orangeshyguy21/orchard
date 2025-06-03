@@ -48,8 +48,11 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 	public loading_dynamic_data: boolean = true;
 	public data!: MintData;
 	public count: number = 0;
-
 	public mint_keysets: MintKeyset[] = [];
+
+	public get page_size(): number {
+		return this.data?.source?.data?.length ?? 0;
+	}
 
 	constructor(
 		private route: ActivatedRoute,
@@ -67,7 +70,6 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 		this.locale = this.settingService.getLocale();
 		this.mint_genesis_time = this.getMintGenesisTime();
 		this.page_settings = this.getPageSettings();
-		console.log(this.page_settings);
 		const timezone = this.settingService.getTimezone();
 		this.loading_static_data = false;
 		this.cdr.detectChanges();
