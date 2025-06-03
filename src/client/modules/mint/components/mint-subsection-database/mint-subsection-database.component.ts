@@ -37,6 +37,7 @@ const PAGE_SIZE = 500;
 export class MintSubsectionDatabaseComponent implements OnInit {
 
 	public page_settings!: NonNullableMintDatabaseSettings;
+	public filter: string = '';
 	public locale!: string;
 	public mint_genesis_time: number = 0;
 	public loading_static_data: boolean = true;
@@ -62,7 +63,6 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 		this.locale = this.settingService.getLocale();
 		this.mint_genesis_time = this.getMintGenesisTime();
 		this.page_settings = this.getPageSettings();
-		console.log('page_settings', this.page_settings);
 		const timezone = this.settingService.getTimezone();
 		this.loading_static_data = false;
 		this.cdr.detectChanges();
@@ -144,10 +144,15 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 	}
 
 	public onPage(event: PageEvent): void {
-		console.log('onPage', event);
 		this.page_settings.page = event.pageIndex + 1;	
 		this.settingService.setMintDatabaseShortSettings(this.page_settings);
 		this.reloadDynamicData();
+	}
+
+	public onFilterChange(event: Event): void {
+		this.filter = (event.target as HTMLInputElement).value;
+		console.log('filter', this.filter);
+		// this.reloadDynamicData();
 	}
 
 	public onCreate(): void {

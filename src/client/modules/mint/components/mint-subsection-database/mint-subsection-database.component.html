@@ -5,39 +5,48 @@
 				<orc-mint-data-control
 					class="flex-grow"
 					[page_settings]="page_settings"
+					[filter]="filter"
 					[date_start]="page_settings.date_start"
 					[date_end]="page_settings.date_end"
 					[loading]="loading_static_data"
 					[mint_genesis_time]="mint_genesis_time"
 					(dateChange)="onDateChange($event)"
-					(typeChange)="onTypeChange($event)">
+					(typeChange)="onTypeChange($event)"
+					(filterChange)="onFilterChange($event)">
 				</orc-mint-data-control>
 			}
-			<div class="flex flex-gap-1">
-				<button 
-					type="button" 
-					mat-fab 
-					extended 
-					class="orc-icon-button"
-					(click)="onCreate()" 
-					(keydown.enter)="$event.preventDefault(); $event.stopPropagation();">
-					<mat-icon>database</mat-icon>
-					Create Backup
-				</button>
-				<button 
-					type="button" 
-					mat-fab 
-					extended 
-					class="orc-icon-button"
-					(click)="onRestore()" 
-					(keydown.enter)="$event.preventDefault(); $event.stopPropagation();">
-					<mat-icon>database_upload</mat-icon>
-					Restore Backup
-				</button>
+			<div>
+				<div class="flex flex-items-center flex-gap-1">
+					<button 
+						type="button" 
+						mat-fab 
+						extended 
+						class="orc-icon-button"
+						(click)="onCreate()" 
+						(keydown.enter)="$event.preventDefault(); $event.stopPropagation();">
+						<mat-icon>database</mat-icon>
+						Create Backup
+					</button>
+					<button mat-icon-button>
+						<mat-icon>more_vert</mat-icon>
+					</button>
+				</div>
 			</div>
+			
 		</div>
 		<div class="category-rule"></div>
 	</div>
+
+	<!-- <button 
+		type="button" 
+		mat-fab 
+		extended 
+		class="orc-icon-button"
+		(click)="onRestore()" 
+		(keydown.enter)="$event.preventDefault(); $event.stopPropagation();">
+		<mat-icon>database_upload</mat-icon>
+		Restore Backup
+	</button> -->
 
 	<!-- <div [@slideInOut]="keysets_rotation ? 'open' : 'closed'" class="overflow-hidden">
 		<orc-mint-keyset-rotation 

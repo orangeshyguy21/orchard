@@ -36,6 +36,7 @@ import { MintDataType } from '@client/modules/mint/enums/chart-type.enum';
 export class MintDataControlComponent implements OnChanges {
 
 	@Input() page_settings!: NonNullableMintDatabaseSettings;
+	@Input() filter!: string;
 	@Input() date_start?: number;
 	@Input() date_end?: number;
 	@Input() loading!: boolean;
@@ -43,6 +44,7 @@ export class MintDataControlComponent implements OnChanges {
 
 	@Output() dateChange = new EventEmitter<number[]>();
 	@Output() typeChange = new EventEmitter<MintDataType>();
+	@Output() filterChange = new EventEmitter<Event>();
 
 	public readonly panel = new FormGroup({
 		type: new FormControl<MintDataType | null>(null, [Validators.required]),
@@ -50,6 +52,7 @@ export class MintDataControlComponent implements OnChanges {
 			date_start: new FormControl<DateTime | null>(null, [Validators.required]),
 			date_end: new FormControl<DateTime | null>(null, [Validators.required]),
 		}),
+		filter: new FormControl<string>(this.filter),
 	});
 
 	public type_options!: MintDataType[];

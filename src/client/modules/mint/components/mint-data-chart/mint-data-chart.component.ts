@@ -77,6 +77,11 @@ export class MintDataChartComponent {
 		this.chart_type = 'scatter';
 		this.chart_data = this.getChartData();
 		this.chart_options = this.getChartOptions();
+
+		(this.chart_options as any).plugins.htmlLegend = {
+			containerID: 'legend-container',
+		};
+
 		if(this.chart_options?.plugins) this.chart_options.plugins.annotation = this.getAnnotations();
 	}
 
