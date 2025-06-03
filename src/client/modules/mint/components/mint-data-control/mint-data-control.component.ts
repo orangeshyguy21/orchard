@@ -8,7 +8,8 @@ import { MatCalendarCellClassFunction } from '@angular/material/datepicker';
 import { MatSelectChange } from '@angular/material/select';
 /* Application Dependencies */
 import { NonNullableMintDatabaseSettings } from '@client/modules/settings/types/setting.types';
-import { MintDataType } from '@client/modules/mint/enums/chart-type.enum';
+import { DataType } from '@client/modules/orchard/enums/data.enum';
+import { MintDataType } from '@client/modules/mint/enums/data-type.enum';
 /* Native Dependencies */
 
 @Component({
@@ -43,11 +44,11 @@ export class MintDataControlComponent implements OnChanges {
 	@Input() mint_genesis_time!: number;
 
 	@Output() dateChange = new EventEmitter<number[]>();
-	@Output() typeChange = new EventEmitter<MintDataType>();
+	@Output() typeChange = new EventEmitter<DataType>();
 	@Output() filterChange = new EventEmitter<Event>();
 
 	public readonly panel = new FormGroup({
-		type: new FormControl<MintDataType | null>(null, [Validators.required]),
+		type: new FormControl<DataType | null>(null, [Validators.required]),
 		daterange: new FormGroup({
 			date_start: new FormControl<DateTime | null>(null, [Validators.required]),
 			date_end: new FormControl<DateTime | null>(null, [Validators.required]),

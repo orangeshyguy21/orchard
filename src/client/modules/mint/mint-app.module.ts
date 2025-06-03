@@ -75,6 +75,7 @@ import { MintKeysetRotationPreviewComponent } from './components/mint-keyset-rot
 import { MintDataControlComponent } from './components/mint-data-control/mint-data-control.component';
 import { MintDataChartComponent } from './components/mint-data-chart/mint-data-chart.component';
 import { MintDataTableComponent } from './components/mint-data-table/mint-data-table.component';
+import { MintDataChartLegendComponent } from './components/mint-data-chart-legend/mint-data-chart-legend.component';
 
 @NgModule({
 	declarations: [
@@ -124,6 +125,7 @@ import { MintDataTableComponent } from './components/mint-data-table/mint-data-t
         MintDataControlComponent,
         MintDataChartComponent,
         MintDataTableComponent,
+        MintDataChartLegendComponent,
 	],
 	imports: [
 		CommonModule,

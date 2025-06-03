@@ -9,7 +9,7 @@ import { MatTableDataSource } from '@angular/material/table';
 /* Application Dependencies */
 import { NonNullableMintDatabaseSettings } from '@client/modules/settings/types/setting.types';
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
-import { MintDataType } from '@client/modules/mint/enums/chart-type.enum';
+import { DataType } from '@client/modules/orchard/enums/data.enum';
 /* Native Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
@@ -18,11 +18,11 @@ import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.clas
 
 export type MintData = MintMintData | MintMeltData;
 type MintMintData = {
-	type : MintDataType.Mints;
+	type : DataType.MintMints;
 	source : MatTableDataSource<MintMintQuote>;
 }
 type MintMeltData = {
-	type : MintDataType.Melts;
+	type : DataType.MintMelts;
 	source : MatTableDataSource<MintMeltQuote>;
 }
 
@@ -84,7 +84,7 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 	private getPageSettings(): NonNullableMintDatabaseSettings {
 		const settings = this.settingService.getMintDatabaseSettings();
 		return {
-			type: settings.type ?? MintDataType.Mints,
+			type: settings.type ?? DataType.MintMints,
 			date_start: settings.date_start ?? this.mint_genesis_time,
 			date_end: settings.date_end ?? this.getSelectedDateEnd(),
 			page: settings.page ?? 1,
@@ -97,7 +97,7 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 	}
 
 	private async getDynamicData(timezone: string): Promise<void> {
-		if( this.page_settings.type === MintDataType.Mints ) return this.getMintsData(timezone);
+		if( this.page_settings.type === DataType.MintMints ) return this.getMintsData(timezone);
 		// if( this.chart_settings.type === MintDataType.Melts ) return this.getMeltsData(timezone);
 	}
 
@@ -112,7 +112,7 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 			})
 		);
 		this.data = {
-			type: MintDataType.Mints,
+			type: DataType.MintMints,
 			source: new MatTableDataSource(mint_mint_quotes_data.mint_mint_quotes)
 		};
 		this.count = mint_mint_quotes_data.count;
@@ -138,7 +138,7 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 		this.reloadDynamicData();
 	}
 
-	public onTypeChange(event: MintDataType): void {
+	public onTypeChange(event: DataType): void {
 		this.page_settings.type = event;
 		this.settingService.setMintDatabaseSettings(this.page_settings);
 		this.reloadDynamicData();
@@ -154,8 +154,6 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 		this.filter = (event.target as HTMLInputElement).value;
 		this.data.source.filter = this.filter.trim().toLowerCase();
 		this.cdr.detectChanges();
-		console.log('filter', this.filter);
-		// this.reloadDynamicData();
 	}
 
 	public onCreate(): void {
@@ -166,35 +164,3 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 		console.log('onRestore');
 	}
 }
-
-
-
-
-// @ViewChild(MatSort) sort!: MatSort;
-
-// @Input() public data!: MintData;
-// @Input() public page_settings!: NonNullableMintDatabaseSettings;
-// @Input() public loading!: boolean;
-
-// public displayed_columns = ['unit', 'amount', 'request', 'state', 'created_time'];
-//   public data_source!: MatTableDataSource<MintMintQuote>;
-// public more_entity!: MintMintQuote | null;
-
-// constructor() {}
-
-// public ngOnChanges(changes: SimpleChanges): void {
-// 	if(changes['loading'] && this.loading === false) {
-// 		this.init();
-// 	}
-// }
-
-// private init() : any {
-// 	this.data_source = new MatTableDataSource(this.data.entities as MintMintQuote[]);
-// 	setTimeout(() => {
-// 		this.data_source.sort = this.sort;
-// 	});
-// }
-
-// public toggleMore(entity: MintMintQuote) {
-// 	this.more_entity = this.more_entity === entity ? null : entity;
-// }

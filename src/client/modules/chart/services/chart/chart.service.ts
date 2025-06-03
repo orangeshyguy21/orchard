@@ -1,8 +1,11 @@
 /* Core Dependencies */
 import { Injectable } from '@angular/core';
 /* Application Dependencies */
+import { DataType } from '@client/modules/orchard/enums/data.enum';
 import { ThemeService } from '@client/modules/settings/services/theme/theme.service';
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
+/* Shared Dependencies */
+import { MintQuoteState, MeltQuoteState } from '@shared/generated.types';
 
 @Injectable({
     providedIn: 'root'
@@ -21,6 +24,17 @@ export class ChartService {
         { bg: 'rgba(243, 101, 29, 0.15)', border: 'rgb(243, 101, 29)' },
         { bg: 'rgba(156, 34, 34, 0.15)', border: 'rgb(156, 34, 34)' }
     ];
+    private state_mint_map = {
+        'UNPAID': 'triangle',
+        'PAID': 'rect',
+        'PENDING': 'rectRot',
+        'ISSUED': 'circle'
+    };
+    private state_melt_map = {
+        'UNPAID': 'triangle',
+        'PENDING': 'rectRot',
+        'PAID': 'circle'
+    };
 
     constructor(
         private themeService: ThemeService,
@@ -75,6 +89,12 @@ export class ChartService {
             label_bg_color: this.themeService.getThemeColor('--mat-sys-surface-container-low', theme),
             label_border_color: this.themeService.getThemeColor('--mat-sys-outline-variant', theme)
         }
+    }
+
+    public getStatePointStyle(datatype: DataType, state: string): string {
+        if( datatype === DataType.MintMints ) return this.state_mint_map[(state as MintQuoteState)] || 'circle';
+        if( datatype === DataType.MintMelts ) return this.state_melt_map[(state as MeltQuoteState)] || 'circle';
+        return 'circle';
     }
 
     private hexToRgba(hex: string, opacity: number): string {

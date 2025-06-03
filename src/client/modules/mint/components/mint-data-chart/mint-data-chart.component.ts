@@ -6,7 +6,7 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartType as ChartJsType } from 'chart.js';
 import { DateTime } from 'luxon';
 /* Application Dependencies */
-import { MintDataType } from '@client/modules/mint/enums/chart-type.enum';
+import { DataType } from '@client/modules/orchard/enums/data.enum';
 import { NonNullableMintDatabaseSettings } from '@client/modules/settings/types/setting.types';
 import { 
 	getYAxisId,
@@ -46,7 +46,7 @@ import { MintQuoteState } from '@shared/generated.types';
 })
 export class MintDataChartComponent {
 
-	@ViewChild(BaseChartDirective) chart?: BaseChartDirective;
+	@ViewChild(BaseChartDirective) public chart?: BaseChartDirective;
 
 	@Input() public locale!: string;
 	@Input() public data!: MintData;
@@ -60,7 +60,7 @@ export class MintDataChartComponent {
 	public chart_options!: ChartConfiguration['options'];
 
 	public get mints_data(): MintMintQuote[] {
-		if( this.data.type === MintDataType.Mints ) return this.data.source.filteredData;
+		if( this.data.type === DataType.MintMints ) return this.data.source.filteredData;
 		return [];
 	}
 
@@ -90,9 +90,9 @@ export class MintDataChartComponent {
 	}
 
 	private getChartData(): ChartConfiguration['data'] {
-		if( this.data.type === MintDataType.Mints ) return this.getMintsData();
+		if( this.data.type === DataType.MintMints ) return this.getMintsData();
 		return { datasets: [] };
-		// if( this.data.type === MintDataType.Melts ) return this.getMeltsData();
+		// if( this.data.type === DataType.MintMelts ) return this.getMeltsData();
 	}
 
 	private getMintsData(): ChartConfiguration['data'] {

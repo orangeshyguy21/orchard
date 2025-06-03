@@ -1,0 +1,54 @@
+@use '@styles/molecule/molecule';
+
+.mint-data-chart-legend-container{
+    @extend %flex;
+    @extend %flex-justify-center;
+    @extend %flex-gap-1;
+}
+
+.legend-item{
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-gap-0-5;
+}
+
+.legend-item-label{
+    @extend %font-size-xs;
+    @extend %orc-outline-color;
+}
+
+.legend-item-visual{
+
+    &.default{
+        @extend %w-1;
+        @extend %h-1;
+        @extend %orc-corner-full;
+    }
+
+    &.circle{
+        @extend %w-1;
+        @extend %h-1;
+        @extend %orc-corner-full;
+        @extend %orc-surface-container-highest-bg;
+    }
+
+    &.rect{
+        @extend %w-1;
+        @extend %h-1;
+        @extend %orc-surface-container-highest-bg;
+    }
+
+    &.rectRot{
+        @extend %w-1;
+        @extend %h-1;
+        transform: rotate(45deg);
+    }
+
+    &.triangle{
+        @extend %w-0;
+        @extend %h-0;
+        border-left: 0.5rem solid transparent;
+        border-right: 0.5rem solid transparent;
+        border-bottom: 1rem solid var(--mat-sys-surface-container-highest);
+    }
+}
