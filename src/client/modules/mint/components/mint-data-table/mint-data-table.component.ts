@@ -52,6 +52,7 @@ export class MintDataTableComponent implements OnChanges {
 
 	public toggleMore(entity: MintMintQuote) {
 		this.more_entity = this.more_entity === entity ? null : entity;
+		console.log('TOGGLE MORE', this.more_entity);
 	}
 }
 

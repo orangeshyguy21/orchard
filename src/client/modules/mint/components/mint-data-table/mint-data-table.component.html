@@ -27,7 +27,7 @@
                 <ng-container matColumnDef="request">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header class="data-table-sticky-header"> Invoice </th>
                     <td mat-cell *matCellDef="let entity">
-                        <div class="w-max-18">{{ entity.request }} </div>
+                        <div>{{ entity.request | truncate:60:25:25 }} </div>
                     </td>
                 </ng-container>
 
@@ -47,10 +47,25 @@
                             [class.more-entity-wrapper-expanded]="more_entity?.id === entity.id">
                             <div class="more-entity-content">
                                 @if(data.type === 'MintMints') {
-                                    <div> {{ entity.pubkey }}</div>
+                                    <div>
+                                        <div>id: {{ entity.id }}</div>
+                                        <div>invoice: {{ entity.request }}</div>
+                                        <div>pubkey: {{ entity.pubkey }}</div>
+                                        <div>request lookup id: {{ entity.request_lookup_id }}</div>
+                                        <div>issued time: {{ entity.issued_time | time:'medium' }}</div>
+                                        <div>paid time: {{ entity.paid_time | time:'medium' }}</div>
+                                    </div>
                                 }
                                 @if(data.type === 'MintMelts') {
-                                    <div> {{ entity.request_lookup_id }}</div>
+                                    <div>
+                                        <div>id: {{ entity.id }}</div>
+                                        <div>invoice: {{ entity.request }}</div>
+                                        <div>fee reserve: {{ entity.fee_reserve | amount:'msat' }}</div>
+                                        <div>msat to pay: {{ entity.msat_to_pay | amount:'msat' }}</div>
+                                        <div>payment preimage: {{ entity.payment_preimage }}</div>
+                                        <div>request lookup id: {{ entity.request_lookup_id }}</div>
+                                        <div>paid time: {{ entity.paid_time | time:'medium' }}</div>
+                                    </div>
                                 }
                             </div>
                         </div>
