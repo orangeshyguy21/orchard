@@ -29,7 +29,7 @@
 
             <div>
                 <mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
-                    <mat-label>Keyset Status</mat-label>
+                    <mat-label>Keyset State</mat-label>
                     <mat-select formControlName="status" multiple (selectionChange)="onStatusChange($event)">
                         @for (status of status_options; track status.value) {
                             <mat-option [value]="status.value">{{status.label}}</mat-option>
