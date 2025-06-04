@@ -46,7 +46,6 @@ export class MintDataMintComponent implements AfterViewInit {
 	) {}
 
 	ngAfterViewInit(): void {
-		console.log('ngAfterViewInit', this.id);
 		this.initQR();
 	}
 
@@ -87,14 +86,8 @@ export class MintDataMintComponent implements AfterViewInit {
 		  this.qr_code.append(this.qr_canvas.nativeElement);
 	}
 
-	// public onQRClick(): void {
-	// 	console.log('onQRClick');
-	// }
-
-	// maybe two methods for this?
 	public onCopy(value:string): void {
 		navigator.clipboard.writeText(value);
-
 		if (this.copy_timeout) clearTimeout(this.copy_timeout);
 		this.copy_animation_state = 'visible';
 		this.cdr.detectChanges();

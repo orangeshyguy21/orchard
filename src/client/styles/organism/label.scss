@@ -21,6 +21,31 @@
     @extend %orc-error-color;
 }
 
+.label-state{
+    @extend %orc-corner-small;
+    @extend %font-size-s;
+    @extend %p-v-0-25;
+    @extend %p-h-0-75;
+    @extend %font-weight-semi-bold;
+
+    &.label-success{
+        @extend %orc-inverse-tertiary-bg;
+    }
+
+    &.label-intermediate{
+        @extend %orc-inverse-secondary-bg;
+    }
+
+    &.label-warning{
+        @extend %orc-warning-bg;
+        @extend %orc-on-warning-color;
+    }
+
+    &.label-default{
+        @extend %orc-surface-container-highest-bg;
+    }
+}
+
 .label-nut{
     &.label-outline{
         mat-icon{
