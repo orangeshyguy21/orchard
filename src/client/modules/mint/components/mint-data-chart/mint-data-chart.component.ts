@@ -181,12 +181,12 @@ export class MintDataChartComponent {
 	private getChartOptions(): ChartConfiguration['options'] {
 		if (!this.chart_data || this.chart_data.datasets.length === 0) return {};
 		const data = this.chart_data.datasets[0]?.data as { x: number, y: number }[] || [];
-		const min_time = data.length ? Math.min(...data.map(d => d.x)) : Date.now();
-		const max_time = data.length ? Math.max(...data.map(d => d.x)) : Date.now();
+		const min_time = this.page_settings?.date_start ? this.page_settings.date_start * 1000 : Date.now();
+		const max_time = this.page_settings?.date_end ? this.page_settings.date_end * 1000 : Date.now();
 		const min_amount = data.length ? Math.min(...data.map(d => d.y)) : 0;
 		const max_amount = data.length ? Math.max(...data.map(d => d.y)) : 0;
 		const span_days = (max_time - min_time) / (1000 * 60 * 60 * 24);
-		const time_unit = span_days > 90 ? 'month' : span_days > 21 ? 'week' : 'day';
+		const time_unit = span_days > 90 ? 'month' : span_days > 21 ? 'week' : span_days >= 1 ? 'day' : 'hour';
 		const use_log_scale = max_amount / min_amount >= 100;
 		const step_size = 1;
 
@@ -229,6 +229,7 @@ export class MintDataChartComponent {
 					month: 'MMM yyyy',
 					week: 'MMM d',
 					day: 'MMM d',
+					hour: 'HH:mm',
 				}
 			},
 			grid: {
