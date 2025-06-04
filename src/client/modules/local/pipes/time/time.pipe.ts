@@ -14,7 +14,7 @@ export class TimePipe implements PipeTransform {
 		private settingService: SettingService
 	) {}
 	
-	transform(unix_timestamp: number, format: string = 'medium'): string {
+	transform(unix_timestamp: number|null|undefined, format: string = 'medium'): string {
 		if (!unix_timestamp) return '';
 		const date = new Date(unix_timestamp * 1000);
 		const timezone = this.settingService.getTimezone();

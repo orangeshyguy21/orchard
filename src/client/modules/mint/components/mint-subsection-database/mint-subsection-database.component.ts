@@ -151,7 +151,6 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 				page_size: PAGE_SIZE,
 			})
 		);
-		console.log(mint_melt_quotes_data);
 		this.data = {
 			type: DataType.MintMelts,
 			source: new MatTableDataSource(mint_melt_quotes_data.mint_melt_quotes)

@@ -47,14 +47,7 @@
                             [class.more-entity-wrapper-expanded]="more_entity?.id === entity.id">
                             <div class="more-entity-content">
                                 @if(data.type === 'MintMints') {
-                                    <div>
-                                        <div>id: {{ entity.id }}</div>
-                                        <div>invoice: {{ entity.request }}</div>
-                                        <div>pubkey: {{ entity.pubkey }}</div>
-                                        <div>request lookup id: {{ entity.request_lookup_id }}</div>
-                                        <div>issued time: {{ entity.issued_time | time:'medium' }}</div>
-                                        <div>paid time: {{ entity.paid_time | time:'medium' }}</div>
-                                    </div>
+                                    <orc-mint-data-mint [quote]="entity"></orc-mint-data-mint>
                                 }
                                 @if(data.type === 'MintMelts') {
                                     <div>

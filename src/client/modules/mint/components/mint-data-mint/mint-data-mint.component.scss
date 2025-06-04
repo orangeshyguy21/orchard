@@ -1,0 +1,11 @@
+// w-max-36 text-wrap overflow-hidden
+
+
+.mega-string {
+    max-width: 36rem;
+    word-break: break-all;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    line-height: 1.4;
+}
