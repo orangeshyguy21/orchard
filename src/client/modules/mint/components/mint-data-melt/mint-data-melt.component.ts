@@ -6,13 +6,13 @@ import QRCodeStyling from 'qr-code-styling';
 /* Application Dependencies */
 import { ThemeService } from '@client/modules/settings/services/theme/theme.service';
 /* Native Dependencies */
-import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
+import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
 
 @Component({
-	selector: 'orc-mint-data-mint',
+	selector: 'orc-mint-data-melt',
 	standalone: false,
-	templateUrl: './mint-data-mint.component.html',
-	styleUrl: './mint-data-mint.component.scss',
+	templateUrl: './mint-data-melt.component.html',
+	styleUrl: './mint-data-melt.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	animations: [
 		trigger('copyAnimation', [
@@ -29,11 +29,11 @@ import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.clas
 		])
 	]
 })
-export class MintDataMintComponent implements AfterViewInit {
+export class MintDataMeltComponent implements AfterViewInit {
 
 	@ViewChild('qr_canvas', { static: false }) qr_canvas!: ElementRef;
 
-	@Input() quote!: MintMintQuote;
+	@Input() quote!: MintMeltQuote;
 
 	public qr_code!: QRCodeStyling;
 	public copy_animation_state: 'visible' | 'hidden' = 'hidden';

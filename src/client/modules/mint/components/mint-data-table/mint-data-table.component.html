@@ -42,26 +42,9 @@
                                 'label-warning': (entity.state === 'PENDING'),
                                 'label-default': (entity.state === 'UNPAID')
                             }">{{ entity.state }}</div>
-
-                            <!-- <div class="label-state label-warning">{{ entity.state }}</div> -->
                         </div>
                     </td>
                 </ng-container>
-
-                <!-- export enum MintQuoteState {
-                    Issued = 'ISSUED',
-                    Paid = 'PAID',
-                    Pending = 'PENDING',
-                    Unpaid = 'UNPAID'
-                  }
-                   -->
-
-                   <!-- export enum MeltQuoteState {
-                    Paid = 'PAID',
-                    Pending = 'PENDING',
-                    Unpaid = 'UNPAID'
-                  }
-                 -->
 
                 <ng-container matColumnDef="created_time">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header class="data-table-sticky-header"> Created </th>
@@ -76,21 +59,10 @@
                                 @if(more_entity?.id === entity.id){
                                     <div [@fadeIn]>
                                         @if(data.type === 'MintMints') {
-                                            <orc-mint-data-mint 
-                                                [quote]="entity"
-                                                [id]="entity.id">
-                                            </orc-mint-data-mint>
+                                            <orc-mint-data-mint [quote]="entity"></orc-mint-data-mint>
                                         }
                                         @if(data.type === 'MintMelts') {
-                                            <div>
-                                                <div>id: {{ entity.id }}</div>
-                                                <div>invoice: {{ entity.request }}</div>
-                                                <div>fee reserve: {{ entity.fee_reserve | amount:'msat' }}</div>
-                                                <div>msat to pay: {{ entity.msat_to_pay | amount:'msat' }}</div>
-                                                <div>payment preimage: {{ entity.payment_preimage }}</div>
-                                                <div>request lookup id: {{ entity.request_lookup_id }}</div>
-                                                <div>paid time: {{ (entity.paid_time) | time:'medium' }}</div>
-                                            </div>
+                                            <orc-mint-data-melt [quote]="entity"></orc-mint-data-melt>
                                         }
                                     </div>
                                 }

@@ -14,12 +14,28 @@
         </div>
         <div class="flex flex-column flex-gap-1">
             <div class="flex flex-gap-1">
-                <div class="w-8 orc-outline-color font-weight-extra-light">Mint Quote ID:</div> 
+                <div class="w-8 orc-outline-color font-weight-extra-light">Melt Quote ID:</div> 
                 <div class="orc-text-button" (click)="onCopy(quote.id)">{{ quote.id }}</div>
             </div>
             <div class="flex flex-gap-1">
-                <div class="w-8 orc-outline-color font-weight-extra-light">Pubkey:</div> 
-                <div class="orc-text-button" (click)="onCopy(quote.pubkey)">{{ quote.pubkey }}</div>
+                <div class="w-8 orc-outline-color font-weight-extra-light">Fee Reserve:</div> 
+                <div [innerHTML]="quote.fee_reserve | amount : quote.unit : 'mint'"></div>
+            </div>
+            <div class="flex flex-gap-1">
+                <div class="w-8 orc-outline-color font-weight-extra-light">Msat to Pay:</div> 
+                @if(quote.msat_to_pay) {
+                    <div>{{ quote.msat_to_pay | amount:'msat' }}</div>
+                }@else {
+                    <div class="orc-outline-variant-color">Null</div>
+                }
+            </div>
+            <div class="flex flex-gap-1">
+                <div class="w-8 orc-outline-color font-weight-extra-light">Payment Preimage:</div> 
+                @if(quote.payment_preimage) {
+                    <div class="orc-text-button" (click)="onCopy(quote.payment_preimage)">{{ quote.payment_preimage }}</div>
+                }@else {
+                    <div class="orc-outline-variant-color">Null</div>
+                }
             </div>
             <div class="flex flex-gap-1">
                 <div class="w-8 orc-outline-color font-weight-extra-light">Request Lookup ID:</div> 
@@ -51,17 +67,17 @@
                     <div class="orc-outline-variant-color">Not Paid</div>
                 }
             </div>
-            <div class="flex flex-gap-1">
-                <div class="w-6 orc-outline-color font-weight-extra-light">Issued Time:</div> 
-                @if(quote.issued_time) {
-                    <div class="flex flex-gap-0-5">
-                        <div class="text-nowrap">{{ quote.issued_time | time:'medium' }}</div>
-                        <div class="orc-outline-color">{{ quote.created_time | timeDelta:quote.issued_time }} after created</div>
-                    </div>
-                }@else {
-                    <div class="orc-outline-variant-color">Not Issued</div>
-                }
-            </div>
         </div>
     </div>
 </div>
+
+
+<!-- <div>
+    <div>id: {{ entity.id }}</div>
+    <div>invoice: {{ entity.request }}</div>
+    <div>fee reserve: {{ entity.fee_reserve | amount:'msat' }}</div>
+    <div>msat to pay: {{ entity.msat_to_pay | amount:'msat' }}</div>
+    <div>payment preimage: {{ entity.payment_preimage }}</div>
+    <div>request lookup id: {{ entity.request_lookup_id }}</div>
+    <div>paid time: {{ (entity.paid_time) | time:'medium' }}</div>
+</div> -->

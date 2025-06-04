@@ -77,6 +77,7 @@ import { MintDataChartComponent } from './components/mint-data-chart/mint-data-c
 import { MintDataTableComponent } from './components/mint-data-table/mint-data-table.component';
 import { MintDataChartLegendComponent } from './components/mint-data-chart-legend/mint-data-chart-legend.component';
 import { MintDataMintComponent } from './components/mint-data-mint/mint-data-mint.component';
+import { MintDataMeltComponent } from './components/mint-data-melt/mint-data-melt.component';
 
 @NgModule({
 	declarations: [
@@ -128,6 +129,7 @@ import { MintDataMintComponent } from './components/mint-data-mint/mint-data-min
         MintDataTableComponent,
         MintDataChartLegendComponent,
         MintDataMintComponent,
+        MintDataMeltComponent,
 	],
 	imports: [
 		CommonModule,

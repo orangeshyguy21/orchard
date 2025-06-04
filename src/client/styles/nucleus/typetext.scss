@@ -16,4 +16,12 @@
         @extend %orc-on-surface-variant-color;
         @extend %font-weight-light;
     }
+
+    #{$c}mega-string {
+        @extend %text-break-all;
+        @extend %text-wrap-break;
+        @extend %text-overflow-break;
+        @extend %text-normal;
+        @extend %line-height-1-4;
+    }
 }
