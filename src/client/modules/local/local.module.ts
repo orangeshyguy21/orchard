@@ -7,6 +7,7 @@ import { AmountPipe } from './pipes/amount/amount.pipe';
 import { FeePipe } from './pipes/fee/fee.pipe';
 import { UnitPipe } from './pipes/unit/unit.pipe';
 import { TruncatePipe } from './pipes/truncate/truncate.pipe';
+import { TimeDeltaPipe } from './pipes/time-delta/time-delta.pipe';
 
 @NgModule({
 	declarations: [
@@ -14,7 +15,8 @@ import { TruncatePipe } from './pipes/truncate/truncate.pipe';
 		AmountPipe,
 		FeePipe,
 		UnitPipe,
-		TruncatePipe
+		TruncatePipe,
+		TimeDeltaPipe,
 	],
 	imports: [
 		CommonModule,
@@ -24,7 +26,8 @@ import { TruncatePipe } from './pipes/truncate/truncate.pipe';
 		AmountPipe,
 		FeePipe,
 		UnitPipe,
-		TruncatePipe
+		TruncatePipe,
+		TimeDeltaPipe,
 	]
 })
 export class LocalModule { }
