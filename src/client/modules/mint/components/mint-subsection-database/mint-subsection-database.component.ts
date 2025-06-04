@@ -11,7 +11,6 @@ import { NonNullableMintDatabaseSettings } from '@client/modules/settings/types/
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 import { DataType } from '@client/modules/orchard/enums/data.enum';
 /* Native Dependencies */
-import { MintDataType } from '@client/modules/mint/enums/data-type.enum';
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
@@ -29,7 +28,7 @@ type MintMeltData = {
 	source : MatTableDataSource<MintMeltQuote>;
 }
 
-const PAGE_SIZE = 500;
+const PAGE_SIZE = 100;
 
 @Component({
 	selector: 'orc-mint-subsection-database',
