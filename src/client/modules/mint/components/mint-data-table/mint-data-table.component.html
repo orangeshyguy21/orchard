@@ -46,18 +46,25 @@
                         <div class="more-entity-wrapper"
                             [class.more-entity-wrapper-expanded]="more_entity?.id === entity.id">
                             <div class="more-entity-content">
-                                @if(data.type === 'MintMints') {
-                                    <orc-mint-data-mint [quote]="entity"></orc-mint-data-mint>
-                                }
-                                @if(data.type === 'MintMelts') {
-                                    <div>
-                                        <div>id: {{ entity.id }}</div>
-                                        <div>invoice: {{ entity.request }}</div>
-                                        <div>fee reserve: {{ entity.fee_reserve | amount:'msat' }}</div>
-                                        <div>msat to pay: {{ entity.msat_to_pay | amount:'msat' }}</div>
-                                        <div>payment preimage: {{ entity.payment_preimage }}</div>
-                                        <div>request lookup id: {{ entity.request_lookup_id }}</div>
-                                        <div>paid time: {{ entity.paid_time | time:'medium' }}</div>
+                                @if(more_entity?.id === entity.id){
+                                    <div [@fadeIn]>
+                                        @if(data.type === 'MintMints') {
+                                            <orc-mint-data-mint 
+                                                [quote]="entity"
+                                                [id]="entity.id">
+                                            </orc-mint-data-mint>
+                                        }
+                                        @if(data.type === 'MintMelts') {
+                                            <div>
+                                                <div>id: {{ entity.id }}</div>
+                                                <div>invoice: {{ entity.request }}</div>
+                                                <div>fee reserve: {{ entity.fee_reserve | amount:'msat' }}</div>
+                                                <div>msat to pay: {{ entity.msat_to_pay | amount:'msat' }}</div>
+                                                <div>payment preimage: {{ entity.payment_preimage }}</div>
+                                                <div>request lookup id: {{ entity.request_lookup_id }}</div>
+                                                <div>paid time: {{ (entity.paid_time) | time:'medium' }}</div>
+                                            </div>
+                                        }
                                     </div>
                                 }
                             </div>

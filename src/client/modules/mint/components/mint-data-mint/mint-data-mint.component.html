@@ -1,27 +1,45 @@
 <div class="mint-quote-container p-v-1">
-    <div class="flex flex-gap-1">
-        <div>qr</div>
-        <div class="flex flex-column flex-gap-0-5">
-            <div class="flex flex-gap-1">
-                <div>Mint Quote ID:</div> 
-                <div>{{ quote.id }}</div>
-            </div>
-            <div class="flex flex-gap-1">
-                <div>Invoice:</div> 
-                <div class="mega-string">{{ quote.request }}</div>
-            </div>
-            <div class="flex flex-gap-1">
-                <div>Pubkey:</div> 
-                <div>{{ quote.pubkey }}</div>
-            </div>
-            <div class="flex flex-gap-1">
-                <div>Request Lookup ID:</div> 
-                <div>{{ quote.request_lookup_id }}</div>
+    <div class="flex flex-gap-2">
+        <div class="mint-connection-qr">
+            <div 
+                #qr_canvas 
+                matRipple
+                [matRippleCentered]="false"
+                [matRippleDisabled]="false"
+                [matRippleUnbounded]="false"
+                (click)="onCopy(quote.request)">
             </div>
         </div>
-        <div class="flex flex-column flex-gap-0-5">
+        <div class="flex flex-column flex-gap-1">
             <div class="flex flex-gap-1">
-                <div>Paid Time:</div> 
+                <div class="w-8 orc-outline-color font-weight-extra-light">Mint Quote ID:</div> 
+                <div class="orc-text-button" (click)="onCopy(quote.id)">{{ quote.id }}</div>
+            </div>
+            <div class="flex flex-gap-1">
+                <div class="w-8 orc-outline-color font-weight-extra-light">Pubkey:</div> 
+                <div class="orc-text-button" (click)="onCopy(quote.pubkey)">{{ quote.pubkey }}</div>
+            </div>
+            <div class="flex flex-gap-1">
+                <div class="w-8 orc-outline-color font-weight-extra-light">Request Lookup ID:</div> 
+                <div class="orc-text-button" (click)="onCopy(quote.request_lookup_id)">{{ quote.request_lookup_id }}</div>
+            </div>
+            <div class="flex flex-gap-1">
+                <div class="w-8 orc-outline-color font-weight-extra-light">Invoice:</div> 
+                <div class="mega-string orc-text-button" (click)="onCopy(quote.request)">{{ quote.request }}</div>
+            </div>
+            <div class="flex flex-gap-1">
+                <div class="w-8"></div> 
+                <div class="relative">
+                    <div class="absolute top-0 flex flex-gap-0-25 flex-row flex-align-center orc-outline-color" [@copyAnimation]="copy_animation_state">
+                        <div class="font-size-s text-nowrap">Copied</div>
+                        <mat-icon class="icon-sm">content_copy</mat-icon>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-column flex-gap-1">
+            <div class="flex flex-gap-1">
+                <div class="w-6 orc-outline-color font-weight-extra-light">Paid Time:</div> 
                 @if(quote.paid_time) {
                     <div>{{ quote.paid_time | time:'medium' }}</div>
                 }@else {
@@ -29,7 +47,7 @@
                 }
             </div>
             <div class="flex flex-gap-1">
-                <div>Issued Time:</div> 
+                <div class="w-6 orc-outline-color font-weight-extra-light">Issued Time:</div> 
                 @if(quote.issued_time) {
                     <div>{{ quote.issued_time | time:'medium' }}</div>
                 }@else {

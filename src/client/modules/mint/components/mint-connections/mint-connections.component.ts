@@ -58,7 +58,7 @@ export class MintConnectionsComponent {
 
 	@ViewChild('qr_canvas', { static: false }) qr_canvas!: ElementRef;
 
-	public qr_data: FormControl = new FormControl('tester');
+	public qr_data: FormControl = new FormControl('');
 	public qr_code!: QRCodeStyling;
 	public connections: Connection[] = [];
 	public qr_animation_state: 'visible' | 'hidden' = 'visible';

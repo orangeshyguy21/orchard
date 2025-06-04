@@ -1,5 +1,4 @@
-// w-max-36 text-wrap overflow-hidden
-
+@use '@styles/molecule/molecule';
 
 .mega-string {
     max-width: 36rem;
@@ -8,4 +7,16 @@
     overflow-wrap: break-word;
     white-space: normal;
     line-height: 1.4;
+}
+
+.mint-connection-qr{
+    @extend %orc-corner-large;
+    @extend %overflow-hidden;
+    @extend %orc-on-secondary-container-bg;
+    @extend %cursor-pointer;
+    @extend %trans-bg-medium;
+
+    &:hover {
+        @extend %orc-secondary-bg;
+    }
 }
