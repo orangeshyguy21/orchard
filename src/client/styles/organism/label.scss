@@ -1,7 +1,7 @@
 @use '@styles/molecule/molecule';
 @use '@styles/nucleus/nucleus';
 
-.protocol-spec{
+.label-spec{
     @extend %orc-corner-small;
     @extend %font-size-s;
     @extend %p-v-0-25;
@@ -11,7 +11,7 @@
     @extend %orc-on-primary-container-color;
 }
 
-.protocol-command{
+.label-command{
     @extend %orc-corner-small;
     @extend %font-size-xs;
     @extend %p-v-0-25;
@@ -21,14 +21,14 @@
     @extend %orc-error-color;
 }
 
-.nut-icon-graphic{
-    &.nut-icon-outline{
+.label-nut{
+    &.label-outline{
         mat-icon{
             font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 200, 'opsz' 48;
         }
     }
 
-    &.nut-icon-fill{
+    &.label-fill{
         mat-icon{
             font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 200, 'opsz' 48;
         }
