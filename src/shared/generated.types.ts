@@ -169,6 +169,7 @@ export type Mutation = {
   ai_chat_abort: OrchardAiChatStream;
   mint_contact_add: OrchardMintContactUpdate;
   mint_contact_remove: OrchardMintContactUpdate;
+  mint_database_backup: OrchardMintDatabaseBackup;
   mint_icon_update: OrchardMintIconUpdate;
   mint_long_description_update: OrchardMintDescriptionUpdate;
   mint_motd_update: OrchardMintMotdUpdate;
@@ -363,6 +364,12 @@ export type OrchardMintDatabase = {
   __typename?: 'OrchardMintDatabase';
   db: Scalars['String']['output'];
   version: Scalars['Int']['output'];
+};
+
+export type OrchardMintDatabaseBackup = {
+  __typename?: 'OrchardMintDatabaseBackup';
+  encoded_data: Scalars['String']['output'];
+  filename: Scalars['String']['output'];
 };
 
 export type OrchardMintDescriptionUpdate = {
@@ -713,27 +720,29 @@ export type QueryMint_BalancesArgs = {
 export type QueryMint_Count_Melt_QuotesArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
-  state?: InputMaybe<Array<MeltQuoteState>>;
+  states?: InputMaybe<Array<MeltQuoteState>>;
   timezone?: InputMaybe<Scalars['Timezone']['input']>;
-  unit?: InputMaybe<Array<MintUnit>>;
+  units?: InputMaybe<Array<MintUnit>>;
 };
 
 
 export type QueryMint_Count_Mint_QuotesArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
-  state?: InputMaybe<Array<MintQuoteState>>;
+  states?: InputMaybe<Array<MintQuoteState>>;
   timezone?: InputMaybe<Scalars['Timezone']['input']>;
-  unit?: InputMaybe<Array<MintUnit>>;
+  units?: InputMaybe<Array<MintUnit>>;
 };
 
 
 export type QueryMint_Melt_QuotesArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
-  state?: InputMaybe<Array<MeltQuoteState>>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  page_size?: InputMaybe<Scalars['Int']['input']>;
+  states?: InputMaybe<Array<MeltQuoteState>>;
   timezone?: InputMaybe<Scalars['Timezone']['input']>;
-  unit?: InputMaybe<Array<MintUnit>>;
+  units?: InputMaybe<Array<MintUnit>>;
 };
 
 

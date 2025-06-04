@@ -11,6 +11,7 @@ export enum OrchardErrorCode {
 	MintSupportError = 40004,
 	MintRpcConnectionError = 40005,
 	MintRpcActionError = 40006,
+	MintDatabaseBackupError = 40007,
 	// Ecash Level Errors (50001 - 59999)
 	AiError = 50001,
 	AiStreamError = 50002,

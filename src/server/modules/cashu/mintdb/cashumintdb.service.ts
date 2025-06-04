@@ -1,10 +1,11 @@
 /* Core Dependencies */
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import * as path from 'path';
+import { promises as fs } from 'fs';
 /* Vendor Dependencies */
 import sqlite3 from "sqlite3";
 const sqlite3d = require('sqlite3').verbose();
-import { promises as fs } from 'fs';
 /* Application Dependencies */
 import { NutshellService } from '@server/modules/cashu/nutshell/nutshell.service';
 import { CdkService } from '@server/modules/cashu/cdk/cdk.service';
@@ -31,6 +32,7 @@ import {
 @Injectable()
 export class CashuMintDatabaseService implements OnModuleInit {
 
+	private readonly logger = new Logger(CashuMintDatabaseService.name);
 	private backend: 'cdk' | 'nutshell';
 	private database: string;
 
@@ -143,54 +145,27 @@ export class CashuMintDatabaseService implements OnModuleInit {
 
 	/* Implementation Agnostic */
 
-	public async createBackup(db:sqlite3.Database) : Promise<void> {
-		return new Promise((resolve, reject) => {
-			db.run("VACUUM INTO 'backup.db'", (err) => {
-				if (err) {
-					console.error('Error during database backup:', err);
-					reject(err);
+	public async createBackup(db: sqlite3.Database): Promise<Buffer> {
+		return new Promise(async (resolve, reject) => {
+			const backup_path = path.resolve('temp-backup.db');
+			db.run(`VACUUM INTO '${backup_path}'`, async (error) => {
+				if (error) {
+					this.logger.error(`Error during database backup: ${error.message}`);
+					reject(error);
 				} else {
-					console.log('Database backup completed successfully');
-					resolve();
+					try {
+						const file_buffer = await fs.readFile(backup_path);
+						await fs.unlink(backup_path);
+						resolve(file_buffer);
+					} catch (read_error) {
+						this.logger.error(`Error reading backup file: ${read_error.message}`);
+						try {
+							await fs.unlink(backup_path);
+						} catch {}
+						reject(read_error);
+					}
 				}
 			});
 		});
-		// if( this.backend === 'nutshell' ) return this.nutshellService.backupDatabase(db);
-		// if( this.backend === 'cdk' ) throw OrchardErrorCode.MintSupportError;
-	}
-
-
-	public async restoreBackup(uploaded_file_buffer: Buffer): Promise<void> {
-		const temp_path = `temp-restore-${Date.now()}.db`;
-		
-		try {
-			// Write uploaded buffer to temporary file
-			await fs.writeFile(temp_path, uploaded_file_buffer);
-			
-			// Verify it's a valid SQLite database
-			const temp_db = await this.getMintDatabase();
-			await new Promise((resolve, reject) => {
-				const test_db = new sqlite3d.Database(temp_path, (err) => {
-					if (err) reject(err);
-					else {
-						test_db.close();
-						resolve(null);
-					}
-				});
-			});
-			
-			// Replace current database
-			await fs.copyFile(temp_path, this.database);
-			
-			console.log('Database restored from uploaded file successfully');
-		} catch (err) {
-			console.error('Error restoring from uploaded file:', err);
-			throw err;
-		} finally {
-			// Clean up temp file
-			try {
-				await fs.unlink(temp_path);
-			} catch {}
-		}
 	}
 }

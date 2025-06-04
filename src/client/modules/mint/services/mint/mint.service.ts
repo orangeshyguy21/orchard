@@ -42,6 +42,7 @@ import {
 	MintKeysetRotationResponse,
 	MintMintQuotesDataResponse,
 	MintMeltQuotesDataResponse,
+	MintDatabaseBackupResponse,
 } from '@client/modules/mint/types/mint.types';
 import { CacheService } from '@client/modules/cache/services/cache/cache.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
@@ -87,6 +88,7 @@ import {
 	MINT_NUT04_UPDATE_MUTATION,
 	MINT_NUT05_UPDATE_MUTATION,
 	MINT_KEYSETS_ROTATION_MUTATION,
+	MINT_DATABASE_BACKUP_MUTATION,
 } from './mint.queries';
 
 
@@ -846,6 +848,20 @@ export class MintService {
 				return throwError(() => error);
 			})
 		); 
+	}
+
+	public createMintDatabaseBackup() : Observable<MintDatabaseBackupResponse> {
+		const query = getApiQuery(MINT_DATABASE_BACKUP_MUTATION, {});
+		return this.http.post<OrchardRes<MintDatabaseBackupResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error creating mint database backup:', error);
+				return throwError(() => error);
+			})
+		);
 	}
 	
 	public updateMint(mutation:string, variables:Record<string, any>) {

@@ -10,6 +10,8 @@ import { MatTableDataSource } from '@angular/material/table';
 /* Application Dependencies */
 import { NonNullableMintDatabaseSettings } from '@client/modules/settings/types/setting.types';
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
+import { EventService } from '@client/modules/event/services/event/event.service';
+import { EventData } from '@client/modules/event/classes/event-data.class';
 import { DataType } from '@client/modules/orchard/enums/data.enum';
 /* Native Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
@@ -69,7 +71,6 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 	public data!: MintData;
 	public count: number = 0;
 	public mint_keysets: MintKeyset[] = [];
-	public backup_create: boolean = false;
 
 	public get page_size(): number {
 		return this.data?.source?.data?.length ?? 0;
@@ -78,6 +79,7 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 	constructor(
 		private route: ActivatedRoute,
 		private settingService: SettingService,
+		private eventService: EventService,
 		private mintService: MintService,
 		private cdr: ChangeDetectorRef,
 	) {}
@@ -231,29 +233,29 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 	}
 
 	public onCreate(): void {
-		this.backup_create = true;
-		this.cdr.detectChanges();
-		this.selectDirectory();
-	}
-
-	public async selectDirectory(): Promise<void> {
-		try {
-			const supports_directory_picker = 'showDirectoryPicker' in window;
-			if (!supports_directory_picker) {
-				alert('Directory picker not supported in this browser');
-				return;
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		this.mintService.createMintDatabaseBackup().subscribe({
+			next: (response) => {
+				const { filename, encoded_data } = response.mint_database_backup;
+				const decoded_data = atob(encoded_data);
+				const uint8_array = Uint8Array.from(decoded_data, c => c.charCodeAt(0));
+				const file = new File([uint8_array], filename, { type: 'application/octet-stream' });
+				const url = URL.createObjectURL(file);
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = filename;
+				a.click();
+				this.eventService.registerEvent(new EventData({
+					type: 'SUCCESS',
+					message: 'Backup created!',
+				}));
+			},
+			error: (error) => {
+				this.eventService.registerEvent(new EventData({
+					type: 'ERROR',
+					message: error
+				}));
 			}
-
-			// @ts-ignore - TypeScript doesn't have types for this yet
-			const directory_handle = await window.showDirectoryPicker({
-				mode: 'readwrite'
-			});
-			
-			console.log(directory_handle);
-			
-		} catch (error) {
-			// User cancelled the picker
-			console.log('Directory selection cancelled');
-		}
+		});
 	}
 }

@@ -2,6 +2,8 @@
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { Logger, ConsoleLogger, LogLevel, INestApplication } from '@nestjs/common';
+/* Vendor Dependencies */
+import { graphqlUploadExpress } from 'graphql-upload-ts';
 /* Application */
 import { AppModule } from './app.module';
 
@@ -26,6 +28,8 @@ async function bootstrap() {
 	const path = configService.get<string>('server.path');
 	const host = configService.get<string>('server.host');
 	app.setGlobalPrefix(path);
+	/* Middleware */
+	app.use(graphqlUploadExpress({ maxFileSize: 2 * 1000 * 1000 }));
 	await app.listen(port);
 	const logger = new Logger('OrchardApplication');
 	validation(app, configService, logger);

@@ -23,6 +23,7 @@ import {
     OrchardMintNut04Update,
     OrchardMintNut05Update,
     OrchardMintKeysetRotation,
+    OrchardMintDatabaseBackup,
 } from "@shared/generated.types";
 
 export type MintInfoResponse = {
@@ -182,4 +183,8 @@ export type MintMintQuotesDataResponse = {
 export type MintMeltQuotesDataResponse = {
 	mint_melt_quotes: OrchardMintMeltQuote[];
 	mint_count_melt_quotes: OrchardMintCount;
+}
+
+export type MintDatabaseBackupResponse = {
+	mint_database_backup: OrchardMintDatabaseBackup;
 }
