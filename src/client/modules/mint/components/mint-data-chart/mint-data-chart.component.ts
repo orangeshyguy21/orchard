@@ -105,6 +105,7 @@ export class MintDataChartComponent {
 		}, {} as Record<string, MintMintQuote[]>);
 		const datasets = Object.entries(data_unit_groups).map(([unit, data], index) => {
 			const color = this.chartService.getAssetColor(unit, index);
+			const custom_opacity = this.chartService.hexToRgba(color.border, 0.75);
 			const data_prepped = data.map( entity => ({
 				x: (entity.created_time ?? 0) * 1000,
 				y: entity.amount,
@@ -114,14 +115,12 @@ export class MintDataChartComponent {
 			return {
 				data: data_prepped,
 				label: unit.toUpperCase(),
-				backgroundColor: color.bg,
-				borderColor: color.border,
-				borderWidth: 2,
-				borderRadius: 3,
-				pointBackgroundColor: color.border,
-				pointBorderColor: color.border,
+				backgroundColor: custom_opacity,
+				borderColor: custom_opacity,
+				pointBackgroundColor: custom_opacity,
+				pointBorderColor: custom_opacity,
 				pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
-				pointHoverBorderColor: color.border,
+				pointHoverBorderColor: custom_opacity,
 				pointRadius: 3,
 				pointHoverRadius: 4,
 				pointStyle: (context: any) => {
@@ -147,6 +146,7 @@ export class MintDataChartComponent {
 		}, {} as Record<string, MintMeltQuote[]>);
 		const datasets = Object.entries(data_unit_groups).map(([unit, data], index) => {
 			const color = this.chartService.getAssetColor(unit, index);
+			const custom_opacity = this.chartService.hexToRgba(color.border, 0.75);
 			const data_prepped = data.map( entity => ({
 				x: (entity.created_time ?? 0) * 1000,
 				y: entity.amount,
@@ -156,14 +156,12 @@ export class MintDataChartComponent {
 			return {
 				data: data_prepped,
 				label: unit.toUpperCase(),
-				backgroundColor: color.bg,
-				borderColor: color.border,
-				borderWidth: 2,
-				borderRadius: 3,
-				pointBackgroundColor: color.border,
-				pointBorderColor: color.border,
+				backgroundColor: custom_opacity,
+				borderColor: custom_opacity,
+				pointBackgroundColor: custom_opacity,
+				pointBorderColor: custom_opacity,
 				pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
-				pointHoverBorderColor: color.border,
+				pointHoverBorderColor: custom_opacity,
 				pointRadius: 3,
 				pointHoverRadius: 4,
 				pointStyle: (context: any) => {

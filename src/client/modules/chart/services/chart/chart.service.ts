@@ -97,7 +97,7 @@ export class ChartService {
         return 'circle';
     }
 
-    private hexToRgba(hex: string, opacity: number): string {
+    public hexToRgba(hex: string, opacity: number): string {
         hex = hex.replace('#', '');
         let r, g, b;
         if (hex.length === 3) {

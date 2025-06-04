@@ -1,5 +1,6 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { trigger, state, style, animate, transition } from '@angular/animations';
 import { ActivatedRoute } from '@angular/router';
 /* Vendor Dependencies */
 import { DateTime } from 'luxon';
@@ -35,7 +36,27 @@ const PAGE_SIZE = 100;
 	standalone: false,
 	templateUrl: './mint-subsection-database.component.html',
 	styleUrl: './mint-subsection-database.component.scss',
-	changeDetection: ChangeDetectionStrategy.OnPush
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	animations: [
+		trigger('slideInOut', [
+			state('closed', style({
+				height: '0',
+				opacity: '0'
+			})),
+			state('open', style({
+				height: '*',
+				opacity: '1'
+			})),
+			transition('closed => open', [
+				style({ overflow: 'hidden' }),
+				animate('200ms ease-out')
+			]),
+			transition('open => closed', [
+				style({ overflow: 'hidden' }),
+				animate('200ms ease-out')
+			])
+		])
+	]
 })
 export class MintSubsectionDatabaseComponent implements OnInit {
 
@@ -48,6 +69,7 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 	public data!: MintData;
 	public count: number = 0;
 	public mint_keysets: MintKeyset[] = [];
+	public backup_create: boolean = false;
 
 	public get page_size(): number {
 		return this.data?.source?.data?.length ?? 0;
@@ -209,10 +231,29 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 	}
 
 	public onCreate(): void {
-		console.log('onCreate');
+		this.backup_create = true;
+		this.cdr.detectChanges();
+		this.selectDirectory();
 	}
 
-	public onRestore(): void {
-		console.log('onRestore');
+	public async selectDirectory(): Promise<void> {
+		try {
+			const supports_directory_picker = 'showDirectoryPicker' in window;
+			if (!supports_directory_picker) {
+				alert('Directory picker not supported in this browser');
+				return;
+			}
+
+			// @ts-ignore - TypeScript doesn't have types for this yet
+			const directory_handle = await window.showDirectoryPicker({
+				mode: 'readwrite'
+			});
+			
+			console.log(directory_handle);
+			
+		} catch (error) {
+			// User cancelled the picker
+			console.log('Directory selection cancelled');
+		}
 	}
 }

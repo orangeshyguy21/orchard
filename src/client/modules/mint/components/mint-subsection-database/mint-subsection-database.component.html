@@ -41,15 +41,9 @@
 		<div class="category-rule"></div>
 	</div>
 
-	<!-- <div [@slideInOut]="keysets_rotation ? 'open' : 'closed'" class="overflow-hidden">
-		<orc-mint-keyset-rotation 
-			[form_group]="form_keyset"
-			[unit_options]="unit_options"
-			[keyset_out]="keyset_out"
-			[keyset_out_balance]="keyset_out_balance"
-			(close)="onCloseRotation()">
-		</orc-mint-keyset-rotation>
-	</div> -->
+	<div [@slideInOut]="backup_create ? 'open' : 'closed'" class="overflow-hidden">
+		<orc-mint-data-backup-create></orc-mint-data-backup-create>
+	</div>
 
 	<orc-mint-data-chart
 		[locale]="locale"
