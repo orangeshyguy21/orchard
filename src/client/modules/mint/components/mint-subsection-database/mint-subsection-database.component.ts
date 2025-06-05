@@ -1,18 +1,21 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { ActivatedRoute } from '@angular/router';
 /* Vendor Dependencies */
 import { DateTime } from 'luxon';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, Subscription } from 'rxjs';
 import { PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
+/* Application Configuration */
+import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
 import { NonNullableMintDatabaseSettings } from '@client/modules/settings/types/setting.types';
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 import { EventService } from '@client/modules/event/services/event/event.service';
 import { EventData } from '@client/modules/event/classes/event-data.class';
 import { DataType } from '@client/modules/orchard/enums/data.enum';
+import { ComponentCanDeactivate } from '@client/modules/routing/interfaces/routing.interfaces';
 /* Native Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
@@ -60,7 +63,12 @@ const PAGE_SIZE = 100;
 		])
 	]
 })
-export class MintSubsectionDatabaseComponent implements OnInit {
+export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, OnInit {
+
+	@HostListener('window:beforeunload')
+	canDeactivate(): boolean {
+		return this.active_event?.type !== 'PENDING';
+	}
 
 	public page_settings!: NonNullableMintDatabaseSettings;
 	public filter: string = '';
@@ -72,6 +80,9 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 	public count: number = 0;
 	public mint_keysets: MintKeyset[] = [];
 	public backup_create: boolean = false;
+
+	private active_event: EventData | null = null;
+	private subscriptions: Subscription = new Subscription();
 
 	public get page_size(): number {
 		return this.data?.source?.data?.length ?? 0;
@@ -85,9 +96,60 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 		private cdr: ChangeDetectorRef,
 	) {}
 
+	// ngOnInit(): void {		
+	// 	this.mint_keysets = this.route.snapshot.data['mint_keysets'];
+	// 	this.unit_options = this.getUnitOptions();
+	// 	this.resetForm();
+	// 	this.initKeysetsAnalytics();
+	// 	this.subscriptions.add(this.getEventSubscription());
+	// 	this.orchardOptionalInit();
+	// }
+
 	ngOnInit(): void {
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
+		this.resetForm();
 		this.initData();
+		this.subscriptions.add(this.getEventSubscription());
+		this.orchardOptionalInit();
+	}
+
+
+	orchardOptionalInit(): void {
+		if( environment.ai.enabled ) {
+			// this.subscriptions.add(this.getAgentSubscription());
+			// this.subscriptions.add(this.getToolSubscription());
+		}
+	}
+
+	private resetForm(): void {
+		// todo
+		// this.form_keyset.markAsPristine();
+		// const default_unit = this.getDefaultUnit();
+		// const default_input_fee_ppk = this.getDefaultInputFeePpk(default_unit);
+		// const default_max_order = 32;
+		// this.keyset_out = this.getKeysetOut(default_unit);
+		// this.form_keyset.patchValue({
+		// 	unit: default_unit,
+		// 	input_fee_ppk: default_input_fee_ppk,
+		// 	max_order: default_max_order,
+		// });
+	}
+
+
+	private getEventSubscription(): Subscription {
+		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
+			this.active_event = event_data;
+			if( event_data === null && this.backup_create ){
+				this.eventService.registerEvent(new EventData({
+					type: 'PENDING',
+					message: 'Create Backup',
+				}));
+			}
+			if( event_data ){
+				if( event_data.type === 'SUCCESS' ) this.onSuccessEvent();
+				if( event_data.confirmed !== null )( event_data.confirmed ) ? this.onCreateConfirmed() : this.onCreateClose();
+			}
+		});
 	}
 
 	private async initData(): Promise<void> {
@@ -234,7 +296,7 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 	}
 
 	public onCreate(): void {
-		( !this.backup_create ) ? this.initCreateBackup() : this.onCloseCreate();
+		( !this.backup_create ) ? this.initCreateBackup() : this.onCreateClose();
 	}
 
 	private initCreateBackup(): void {
@@ -245,38 +307,43 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 		}));
 	}
 
-	public onCloseCreate(): void {
+	public onCreateClose(): void {
 		this.backup_create = false;
 		this.eventService.registerEvent(null);
 		this.cdr.detectChanges();
 	}	
 
+	private onCreateConfirmed(): void {
+		this.mintService.createMintDatabaseBackup().subscribe({
+			next: (response) => {
+				const { filebase64 } = response.mint_database_backup;
+				const decoded_data = atob(filebase64);
+				const filename = `MintDatabaseBackup-${DateTime.now().toFormat('yyyyMMdd-HHmmss')}.db`;
+				const uint8_array = Uint8Array.from(decoded_data, c => c.charCodeAt(0));
+				const file = new File([uint8_array], filename, { type: 'application/octet-stream' });
+				const url = URL.createObjectURL(file);
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = filename;
+				a.click();
+				this.eventService.registerEvent(new EventData({
+					type: 'SUCCESS',
+					message: 'Backup created!',
+				}));
+			},
+			error: (error) => {
+				this.eventService.registerEvent(new EventData({
+					type: 'ERROR',
+					message: error
+				}));
+			}
+		});
+	}
 
-	// public onCreate(): void {
-	// 	this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-	// 	this.mintService.createMintDatabaseBackup().subscribe({
-	// 		next: (response) => {
-	// 			const { filebase64 } = response.mint_database_backup;
-	// 			const decoded_data = atob(filebase64);
-	// 			const filename = `MintDatabaseBackup-${DateTime.now().toFormat('yyyyMMdd-HHmmss')}.db`;
-	// 			const uint8_array = Uint8Array.from(decoded_data, c => c.charCodeAt(0));
-	// 			const file = new File([uint8_array], filename, { type: 'application/octet-stream' });
-	// 			const url = URL.createObjectURL(file);
-	// 			const a = document.createElement('a');
-	// 			a.href = url;
-	// 			a.download = filename;
-	// 			a.click();
-	// 			this.eventService.registerEvent(new EventData({
-	// 				type: 'SUCCESS',
-	// 				message: 'Backup created!',
-	// 			}));
-	// 		},
-	// 		error: (error) => {
-	// 			this.eventService.registerEvent(new EventData({
-	// 				type: 'ERROR',
-	// 				message: error
-	// 			}));
-	// 		}
-	// 	});
-	// }
+
+	private onSuccessEvent(): void {
+		// todo try to download the file here instead for timing reasons?
+		this.backup_create = false;
+		this.cdr.detectChanges();
+	}
 }

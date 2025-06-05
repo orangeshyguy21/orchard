@@ -42,7 +42,9 @@
 	</div>
 
 	<div [@slideInOut]="backup_create ? 'open' : 'closed'" class="overflow-hidden">
-		<orc-mint-data-backup-create></orc-mint-data-backup-create>
+		<orc-mint-data-backup-create
+			(close)="onCreateClose()">
+		</orc-mint-data-backup-create>
 	</div>
 
 	<orc-mint-data-chart
