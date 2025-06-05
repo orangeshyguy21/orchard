@@ -260,8 +260,7 @@ type OrchardMintDatabase {
 }
 
 type OrchardMintDatabaseBackup {
-  encoded_data: String!
-  filename: String!
+  filebase64: String!
 }
 
 type OrchardMintDescriptionUpdate {

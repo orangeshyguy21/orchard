@@ -71,6 +71,7 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 	public data!: MintData;
 	public count: number = 0;
 	public mint_keysets: MintKeyset[] = [];
+	public backup_create: boolean = false;
 
 	public get page_size(): number {
 		return this.data?.source?.data?.length ?? 0;
@@ -233,29 +234,49 @@ export class MintSubsectionDatabaseComponent implements OnInit {
 	}
 
 	public onCreate(): void {
-		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		this.mintService.createMintDatabaseBackup().subscribe({
-			next: (response) => {
-				const { filename, encoded_data } = response.mint_database_backup;
-				const decoded_data = atob(encoded_data);
-				const uint8_array = Uint8Array.from(decoded_data, c => c.charCodeAt(0));
-				const file = new File([uint8_array], filename, { type: 'application/octet-stream' });
-				const url = URL.createObjectURL(file);
-				const a = document.createElement('a');
-				a.href = url;
-				a.download = filename;
-				a.click();
-				this.eventService.registerEvent(new EventData({
-					type: 'SUCCESS',
-					message: 'Backup created!',
-				}));
-			},
-			error: (error) => {
-				this.eventService.registerEvent(new EventData({
-					type: 'ERROR',
-					message: error
-				}));
-			}
-		});
+		( !this.backup_create ) ? this.initCreateBackup() : this.onCloseCreate();
 	}
+
+	private initCreateBackup(): void {
+		this.backup_create = true;
+		this.eventService.registerEvent(new EventData({
+			type: 'PENDING',
+			message: 'Save',
+		}));
+	}
+
+	public onCloseCreate(): void {
+		this.backup_create = false;
+		this.eventService.registerEvent(null);
+		this.cdr.detectChanges();
+	}	
+
+
+	// public onCreate(): void {
+	// 	this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+	// 	this.mintService.createMintDatabaseBackup().subscribe({
+	// 		next: (response) => {
+	// 			const { filebase64 } = response.mint_database_backup;
+	// 			const decoded_data = atob(filebase64);
+	// 			const filename = `MintDatabaseBackup-${DateTime.now().toFormat('yyyyMMdd-HHmmss')}.db`;
+	// 			const uint8_array = Uint8Array.from(decoded_data, c => c.charCodeAt(0));
+	// 			const file = new File([uint8_array], filename, { type: 'application/octet-stream' });
+	// 			const url = URL.createObjectURL(file);
+	// 			const a = document.createElement('a');
+	// 			a.href = url;
+	// 			a.download = filename;
+	// 			a.click();
+	// 			this.eventService.registerEvent(new EventData({
+	// 				type: 'SUCCESS',
+	// 				message: 'Backup created!',
+	// 			}));
+	// 		},
+	// 		error: (error) => {
+	// 			this.eventService.registerEvent(new EventData({
+	// 				type: 'ERROR',
+	// 				message: error
+	// 			}));
+	// 		}
+	// 	});
+	// }
 }

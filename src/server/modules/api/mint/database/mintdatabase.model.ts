@@ -20,15 +20,11 @@ export class OrchardMintDatabase {
 
 @ObjectType()
 export class OrchardMintDatabaseBackup {
-    
-    @Field()
-    filename: string;
 
 	@Field()
-	encoded_data: string;
+	filebase64: string;
 
-	constructor(filename: string, encoded_data: string) {
-		this.filename = filename;
-		this.encoded_data = encoded_data;
+	constructor(filebase64: string) {
+		this.filebase64 = filebase64;
 	}
 }

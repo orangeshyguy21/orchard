@@ -368,8 +368,7 @@ export type OrchardMintDatabase = {
 
 export type OrchardMintDatabaseBackup = {
   __typename?: 'OrchardMintDatabaseBackup';
-  encoded_data: Scalars['String']['output'];
-  filename: Scalars['String']['output'];
+  filebase64: Scalars['String']['output'];
 };
 
 export type OrchardMintDescriptionUpdate = {

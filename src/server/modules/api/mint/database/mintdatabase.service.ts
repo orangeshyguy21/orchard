@@ -42,10 +42,8 @@ export class MintDatabaseService {
 		return this.mintService.withDb(async (db) => {
 			try {
 				const database_buffer : Buffer = await this.cashuMintDatabaseService.createBackup(db);
-				const timestamp = DateTime.now().toFormat('yyyy-MM-dd-HH-mm-ss');
-				const filename = `mint-database-backup-${timestamp}.db`;
-				const encoded_data = database_buffer.toString('base64');
-				return new OrchardMintDatabaseBackup(filename, encoded_data);
+				const filebase64 = database_buffer.toString('base64');
+				return new OrchardMintDatabaseBackup(filebase64);
 			} catch (error) {
 				const error_code = this.errorService.resolveError({ logger: this.logger, error,
 					errord: OrchardErrorCode.MintDatabaseBackupError,

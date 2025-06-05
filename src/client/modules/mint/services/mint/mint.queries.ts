@@ -401,7 +401,6 @@ query MintMeltQuotes($units: [MintUnit!], $states: [MeltQuoteState!], $date_star
 export const MINT_DATABASE_BACKUP_MUTATION = `
 mutation MintDatabaseBackup {
 	mint_database_backup {
-		filename
-		encoded_data
+		filebase64
 	}
 }`;
