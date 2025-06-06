@@ -1,10 +1,11 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef, HostListener, OnDestroy } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 /* Vendor Dependencies */
 import { DateTime } from 'luxon';
-import { lastValueFrom, Subscription } from 'rxjs';
+import { lastValueFrom, map, Subscription } from 'rxjs';
 import { PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 /* Application Configuration */
@@ -46,24 +47,24 @@ const PAGE_SIZE = 100;
 		trigger('slideInOut', [
 			state('closed', style({
 				height: '0',
-				opacity: '0'
+				opacity: '0',
+				overflow: 'hidden'
 			})),
 			state('open', style({
 				height: '*',
-				opacity: '1'
+				opacity: '1',
+				overflow: 'hidden'
 			})),
 			transition('closed => open', [
-				style({ overflow: 'hidden' }),
 				animate('200ms ease-out')
 			]),
 			transition('open => closed', [
-				style({ overflow: 'hidden' }),
 				animate('200ms ease-out')
 			])
 		])
 	]
 })
-export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, OnInit {
+export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, OnInit, OnDestroy {
 
 	@HostListener('window:beforeunload')
 	canDeactivate(): boolean {
@@ -80,9 +81,16 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	public count: number = 0;
 	public mint_keysets: MintKeyset[] = [];
 	public backup_create: boolean = false;
+	public form_backup: FormGroup = new FormGroup({
+		filename: new FormControl(null, [Validators.required, Validators.maxLength(1000)]),
+	});
+	public database_version!: string;
+	public database_timestamp!: number;
+	public database_implementation!: string;
 
 	private active_event: EventData | null = null;
 	private subscriptions: Subscription = new Subscription();
+	private backup_encoded: string = '';
 
 	public get page_size(): number {
 		return this.data?.source?.data?.length ?? 0;
@@ -96,18 +104,9 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		private cdr: ChangeDetectorRef,
 	) {}
 
-	// ngOnInit(): void {		
-	// 	this.mint_keysets = this.route.snapshot.data['mint_keysets'];
-	// 	this.unit_options = this.getUnitOptions();
-	// 	this.resetForm();
-	// 	this.initKeysetsAnalytics();
-	// 	this.subscriptions.add(this.getEventSubscription());
-	// 	this.orchardOptionalInit();
-	// }
-
 	ngOnInit(): void {
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
-		this.resetForm();
+		this.form_backup.reset();
 		this.initData();
 		this.subscriptions.add(this.getEventSubscription());
 		this.orchardOptionalInit();
@@ -121,29 +120,17 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		}
 	}
 
-	private resetForm(): void {
-		// todo
-		// this.form_keyset.markAsPristine();
-		// const default_unit = this.getDefaultUnit();
-		// const default_input_fee_ppk = this.getDefaultInputFeePpk(default_unit);
-		// const default_max_order = 32;
-		// this.keyset_out = this.getKeysetOut(default_unit);
-		// this.form_keyset.patchValue({
-		// 	unit: default_unit,
-		// 	input_fee_ppk: default_input_fee_ppk,
-		// 	max_order: default_max_order,
-		// });
-	}
-
-
 	private getEventSubscription(): Subscription {
 		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
 			this.active_event = event_data;
-			if( event_data === null && this.backup_create ){
-				this.eventService.registerEvent(new EventData({
-					type: 'PENDING',
-					message: 'Create Backup',
-				}));
+			if( event_data === null ){
+				setTimeout(() => {
+					if( !this.backup_create ) return;
+					this.eventService.registerEvent(new EventData({
+						type: 'PENDING',
+						message: 'Save',
+					}));
+				},1000);
 			}
 			if( event_data ){
 				if( event_data.type === 'SUCCESS' ) this.onSuccessEvent();
@@ -305,6 +292,19 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 			type: 'PENDING',
 			message: 'Save',
 		}));
+		this.getDefaultFilename();
+	}
+
+	private async getDefaultFilename(): Promise<void> {
+		this.mintService.loadMintInfo().subscribe((mint_info) => {
+			this.database_version = mint_info.version.replace(/\//g, '-');
+			this.database_timestamp = DateTime.now().toSeconds();
+			this.database_implementation = 'sqlite';
+			const filename = `MintDatabaseBackup-${this.database_version}-${DateTime.fromSeconds(this.database_timestamp).toFormat('yyyyMMdd-HHmmss')}.db`;
+			this.form_backup.patchValue({
+				filename: filename
+			});
+		});
 	}
 
 	public onCreateClose(): void {
@@ -314,18 +314,16 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	}	
 
 	private onCreateConfirmed(): void {
+		if (this.form_backup.invalid) {
+			return this.eventService.registerEvent(new EventData({
+				type: 'WARNING',
+				message: 'Invalid filename',
+			}));
+		}
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		this.mintService.createMintDatabaseBackup().subscribe({
 			next: (response) => {
-				const { filebase64 } = response.mint_database_backup;
-				const decoded_data = atob(filebase64);
-				const filename = `MintDatabaseBackup-${DateTime.now().toFormat('yyyyMMdd-HHmmss')}.db`;
-				const uint8_array = Uint8Array.from(decoded_data, c => c.charCodeAt(0));
-				const file = new File([uint8_array], filename, { type: 'application/octet-stream' });
-				const url = URL.createObjectURL(file);
-				const a = document.createElement('a');
-				a.href = url;
-				a.download = filename;
-				a.click();
+				this.backup_encoded = response.mint_database_backup.filebase64;
 				this.eventService.registerEvent(new EventData({
 					type: 'SUCCESS',
 					message: 'Backup created!',
@@ -342,8 +340,21 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 
 
 	private onSuccessEvent(): void {
-		// todo try to download the file here instead for timing reasons?
+		const decoded_data = atob(this.backup_encoded);
+		const uint8_array = Uint8Array.from(decoded_data, c => c.charCodeAt(0));
+		const file = new File([uint8_array], this.form_backup.get('filename')?.value, { type: 'application/octet-stream' });
+		const url = URL.createObjectURL(file);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = this.form_backup.get('filename')?.value;
+		a.click();
 		this.backup_create = false;
+		this.backup_encoded = '';
 		this.cdr.detectChanges();
+	}
+
+	ngOnDestroy(): void {
+		this.backup_create = false;
+		this.subscriptions.unsubscribe();
 	}
 }

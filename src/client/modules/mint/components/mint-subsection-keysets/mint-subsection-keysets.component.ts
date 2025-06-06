@@ -34,18 +34,18 @@ import { MintUnit, MintAnalyticsInterval, AiFunctionName, AiAgent } from '@share
 		trigger('slideInOut', [
 			state('closed', style({
 				height: '0',
-				opacity: '0'
+				opacity: '0',
+				overflow: 'hidden'
 			})),
 			state('open', style({
 				height: '*',
-				opacity: '1'
+				opacity: '1',
+				overflow: 'hidden'
 			})),
 			transition('closed => open', [
-				style({ overflow: 'hidden' }),
 				animate('200ms ease-out')
 			]),
 			transition('open => closed', [
-				style({ overflow: 'hidden' }),
 				animate('200ms ease-out')
 			])
 		])
@@ -242,11 +242,14 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	private getEventSubscription(): Subscription {
 		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
 			this.active_event = event_data;
-			if( event_data === null && this.keysets_rotation ){
-				this.eventService.registerEvent(new EventData({
-					type: 'PENDING',
-					message: 'Keyset Rotation',
-				}));
+			if( event_data === null) {
+				setTimeout(() => {
+					if( !this.keysets_rotation ) return;
+					this.eventService.registerEvent(new EventData({
+						type: 'PENDING',
+						message: 'Save',
+					}));
+				},1000);
 			}
 			if( event_data ){
 				if( event_data.type === 'SUCCESS' ) this.onSuccessEvent();
@@ -390,6 +393,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	}
 
 	ngOnDestroy(): void {
+		this.keysets_rotation = false;
 		this.subscriptions.unsubscribe();
 	}
 }

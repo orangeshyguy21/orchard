@@ -1,5 +1,8 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, computed } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+/* Vendor Dependencies */
+import { DateTime } from 'luxon';
 
 @Component({
 	selector: 'orc-mint-data-backup-create',
@@ -10,6 +13,17 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angul
 })
 export class MintDataBackupCreateComponent {
 
+	@Input() form_group!: FormGroup;
+	@Input() database_version!: string;
+	@Input() database_timestamp!: number;
+	@Input() database_implementation!: string;
+
   	@Output() close = new EventEmitter<void>();
 
+	public filename_error = computed(() => {
+		if (this.form_group.get('filename')?.hasError('required')) return 'Required';
+		if (this.form_group.get('filename')?.hasError('maxlength')) return `Must be less than ${this.form_group.get('filename')?.getError("maxlength")?.requiredLength} characters`;
+		if (this.form_group.get('filename')?.errors) return 'Invalid';
+		return '';
+	});
 }

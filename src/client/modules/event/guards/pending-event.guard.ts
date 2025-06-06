@@ -14,8 +14,6 @@ export const pendingEventGuard: CanDeactivateFn<ComponentCanDeactivate> = (compo
 	if( !component ) return true;
 	if( !component.canDeactivate ) return true;
 	if( component.canDeactivate() ) return true;
-
-	console.log('pendingEventGuard', component.canDeactivate());
 	
 	const dialog = inject(MatDialog);
 	const eventService = inject(EventService);

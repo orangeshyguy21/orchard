@@ -43,6 +43,10 @@
 
 	<div [@slideInOut]="backup_create ? 'open' : 'closed'" class="overflow-hidden">
 		<orc-mint-data-backup-create
+			[form_group]="form_backup"
+			[database_version]="database_version"
+			[database_timestamp]="database_timestamp"
+			[database_implementation]="database_implementation"
 			(close)="onCreateClose()">
 		</orc-mint-data-backup-create>
 	</div>

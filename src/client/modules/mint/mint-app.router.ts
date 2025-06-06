@@ -157,6 +157,7 @@ const routes: Routes = [
 				resolve: {
 					mint_keysets: mintKeysetsResolver,
 				},
+				canDeactivate: [pendingEventGuard],
 				data: {
 					section: 'mint',
 					sub_section: 'database'
