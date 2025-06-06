@@ -285,6 +285,13 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	public onCreate(): void {
 		( !this.backup_create ) ? this.initCreateBackup() : this.onCreateClose();
 	}
+	public onRestore(): void {
+		// this.backup_create = true;
+		// this.eventService.registerEvent(new EventData({
+		// 	type: 'PENDING',
+		// 	message: 'Restore',
+		// }));
+	}
 
 	private initCreateBackup(): void {
 		this.backup_create = true;

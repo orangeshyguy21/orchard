@@ -13,6 +13,7 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSliderModule } from '@angular/material/slider';
@@ -147,6 +148,7 @@ import { MintDataBackupCreateComponent } from './components/mint-data-backup-cre
 		MatDialogModule,
 		MatDatepickerModule,
 		MatFormFieldModule,
+		MatMenuModule,
 		MatInputModule,
 		MatSelectModule,
 		MatSliderModule,
