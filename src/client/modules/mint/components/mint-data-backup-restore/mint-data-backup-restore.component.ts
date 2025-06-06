@@ -15,7 +15,6 @@ export class MintDataBackupRestoreComponent {
 
 	@Output() close = new EventEmitter<void>();
 
-	public file: File | null = null;
 	public file_loading = signal<number|null>(null);
 
 	public file_error = computed(() => {
@@ -27,7 +26,6 @@ export class MintDataBackupRestoreComponent {
 	public get file_quorum(): boolean {
 		if( this.file_loading() !== null && this.file_loading() !== 100 ) return false;
 		if( this.form_group.get('file')?.value === null ) return false;
-		if( !this.file ) return false;
 		return true;
 	};
 
@@ -36,17 +34,17 @@ export class MintDataBackupRestoreComponent {
 	public onFileSelected(event: Event): void {
 		const input = event.target as HTMLInputElement;
 		if( !input.files || input.files.length === 0 ) return;
-		this.file = input.files[0];
 		this.form_group.patchValue({
-			file: this.file
+			file: input.files[0]
 		});
 		this.form_group.get('file')?.markAsTouched();
+		this.form_group.get('file')?.markAsDirty();
 		this.readFileContent();
 		
 	}
 
 	private readFileContent(): void {
-		if (!this.file) return;
+		if (!this.form_group.get('file')?.value) return;
 		this.file_loading.set(0);
 		const reader = new FileReader();
 		reader.onprogress = (event) => {
@@ -67,6 +65,6 @@ export class MintDataBackupRestoreComponent {
 		reader.onerror = () => {
 			this.file_loading.set(null);
 		};
-		reader.readAsDataURL(this.file);
+		reader.readAsDataURL(this.form_group.get('file')?.value);
 	}
 }

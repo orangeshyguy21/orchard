@@ -10,6 +10,7 @@ import { PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 /* Application Configuration */
 import { environment } from '@client/configs/configuration';
+import { OrchardErrors } from '@client/modules/error/classes/error.class';
 /* Application Dependencies */
 import { NonNullableMintDatabaseSettings } from '@client/modules/settings/types/setting.types';
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
@@ -120,6 +121,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		this.form_backup.reset();
 		this.initData();
 		this.subscriptions.add(this.getEventSubscription());
+		this.subscriptions.add(this.getFormSubscription());
 		this.orchardOptionalInit();
 	}
 
@@ -146,13 +148,24 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 			if( event_data ){
 				if( this.form_mode === FormMode.CREATE ){
 					if( event_data.type === 'SUCCESS' ) this.onCreateSuccess();
+					if( event_data.type === 'ERROR' ) this.onError();
 					if( event_data.confirmed !== null )( event_data.confirmed ) ? this.onCreateConfirmed() : this.onClose();
 				}
 				if( this.form_mode === FormMode.RESTORE ){
 					if( event_data.type === 'SUCCESS' ) this.onRestoreSuccess();
+					if( event_data.type === 'ERROR' ) this.onError();
 					if( event_data.confirmed !== null )( event_data.confirmed ) ? this.onRestoreConfirmed() : this.onClose();
 				}
 			}
+		});
+	}
+
+	private getFormSubscription(): Subscription {
+		return this.form_restore.valueChanges.subscribe(() => {
+			if( this.form_restore.dirty ) this.eventService.registerEvent(new EventData({
+				type: 'PENDING',
+				message: 'Restore',
+			}));
 		});
 	}
 
@@ -329,10 +342,10 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 
 	private initRestoreBackup(): void {
 		this.form_mode = FormMode.RESTORE;
-		this.eventService.registerEvent(new EventData({
-			type: 'PENDING',
-			message: 'Restore',
-		}));
+		// this.eventService.registerEvent(new EventData({
+		// 	type: 'PENDING',
+		// 	message: 'Restore',
+		// }));
 	}
 
 	public onClose(): void {
@@ -359,10 +372,10 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 					message: 'Backup created!',
 				}));
 			},
-			error: (error) => {
+			error: (errors: OrchardErrors) => {
 				this.eventService.registerEvent(new EventData({
 					type: 'ERROR',
-					message: error
+					message: errors.errors[0].message
 				}));
 			}
 		});
@@ -382,10 +395,10 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 					message: 'Backup restored!',
 				}));
 			},
-			error: (error) => {
+			error: (errors: OrchardErrors) => {
 				this.eventService.registerEvent(new EventData({
 					type: 'ERROR',
-					message: error
+					message: errors.errors[0].message
 				}));
 			}
 		});
@@ -408,6 +421,13 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 
 	private onRestoreSuccess(): void {
 		this.form_mode = null;
+		this.form_restore.reset();
+		this.cdr.detectChanges();
+	}
+
+	private onError(): void {
+		this.form_mode = null;
+		this.form_backup.reset();
 		this.form_restore.reset();
 		this.cdr.detectChanges();
 	}

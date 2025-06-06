@@ -2,6 +2,8 @@
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { Logger, ConsoleLogger, LogLevel, INestApplication } from '@nestjs/common';
+/* Vendor Dependencies */
+import * as express from 'express';
 /* Application */
 import { AppModule } from './app.module';
 
@@ -17,6 +19,8 @@ const log_levels: Record<string, LogLevel[]> = {
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
 	const configService = app.get(ConfigService);
+	app.use(express.json({ limit: '10mb' }));
+	app.use(express.urlencoded({ limit: '10mb', extended: true }));
 	const loglevel = configService.get<string>('server.log') || 'info';
 	app.useLogger(new ConsoleLogger('OrchardApplication', {
 		logLevels: log_levels[loglevel],
