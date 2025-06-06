@@ -55,18 +55,29 @@ export class MintDatabaseService {
 	}
 
 	async restoreMintDatabaseBackup(filebase64: string) : Promise<OrchardMintDatabaseRestore> {
-		return this.mintService.withDb(async (db) => {
-			try {
-				await this.cashuMintDatabaseService.restoreBackup(db, filebase64);
-				return new OrchardMintDatabaseRestore(true);
-			} catch (error) {
-				const error_code = this.errorService.resolveError({ logger: this.logger, error,
-					errord: OrchardErrorCode.MintDatabaseRestoreError,
-					msg: 'Error restoring mint database backup',
-				});
-				throw new OrchardApiError(error_code);
-			}
-		});
+		// return this.mintService.withDb(async (db) => {
+		// 	try {
+		// 		await this.cashuMintDatabaseService.restoreBackup(db, filebase64);
+		// 		return new OrchardMintDatabaseRestore(true);
+		// 	} catch (error) {
+		// 		const error_code = this.errorService.resolveError({ logger: this.logger, error,
+		// 			errord: OrchardErrorCode.MintDatabaseRestoreError,
+		// 			msg: 'Error restoring mint database backup',
+		// 		});
+		// 		throw new OrchardApiError(error_code);
+		// 	}
+		// });
+
+		try {
+			await this.cashuMintDatabaseService.restoreBackup(filebase64);
+			return new OrchardMintDatabaseRestore(true);
+		} catch (error) {
+			const error_code = this.errorService.resolveError({ logger: this.logger, error,
+				errord: OrchardErrorCode.MintDatabaseRestoreError,
+				msg: 'Error restoring mint database backup',
+			});
+			throw new OrchardApiError(error_code);
+		}
 	}
 
 }
