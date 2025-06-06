@@ -6,7 +6,7 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ScaleChartOptions, ChartType as ChartJsType } from 'chart.js';
 import { DateTime } from 'luxon';
 /* Application Dependencies */
-import { NonNullableMintDashboardSettings } from '@client/modules/chart/services/chart/chart.types';
+import { NonNullableMintDashboardSettings } from '@client/modules/settings/types/setting.types';
 import { 
 	groupAnalyticsByUnit,
 	prependData,
@@ -54,7 +54,7 @@ export class MintAnalyticChartComponent implements OnChanges {
 	@Input() public locale!: string;
 	@Input() public mint_analytics!: MintAnalytic[];
 	@Input() public mint_analytics_pre!: MintAnalytic[];
-	@Input() public chart_settings!: NonNullableMintDashboardSettings | undefined;
+	@Input() public page_settings!: NonNullableMintDashboardSettings | undefined;
 	@Input() public mint_genesis_time!: number;
 	@Input() public selected_type!: ChartType | undefined;
 	@Input() public loading!: boolean;
@@ -98,11 +98,11 @@ export class MintAnalyticChartComponent implements OnChanges {
 	}
 
 	private getAmountChartData(): ChartConfiguration['data'] {
-		if( !this.chart_settings ) return { datasets: [] };
+		if( !this.page_settings ) return { datasets: [] };
 		if( (!this.mint_analytics || this.mint_analytics.length === 0) && (!this.mint_analytics_pre || this.mint_analytics_pre.length === 0) ) return { datasets: [] };
-		const timestamp_first = DateTime.fromSeconds(this.chart_settings.date_start).startOf('day').toSeconds();
-		const timestamp_last = DateTime.fromSeconds(this.chart_settings.date_end).startOf('day').toSeconds();
-		const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.chart_settings.interval);
+		const timestamp_first = DateTime.fromSeconds(this.page_settings.date_start).startOf('day').toSeconds();
+		const timestamp_last = DateTime.fromSeconds(this.page_settings.date_end).startOf('day').toSeconds();
+		const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.page_settings.interval);
 		const data_unit_groups = groupAnalyticsByUnit(this.mint_analytics);
 		const data_unit_groups_prepended = prependData(data_unit_groups, this.mint_analytics_pre, timestamp_first);
 		const datasets = Object.entries(data_unit_groups_prepended).map(([unit, data], index) => {
@@ -138,11 +138,11 @@ export class MintAnalyticChartComponent implements OnChanges {
 	}
 
 	private getAmountChartOptions(): ChartConfiguration['options'] {
-		if ( !this.chart_data || this.chart_data.datasets.length === 0 || !this.chart_settings ) return {}
+		if ( !this.chart_data || this.chart_data.datasets.length === 0 || !this.page_settings ) return {}
 		const units = this.chart_data.datasets.map(item => item.label);
 		const y_axis = getYAxis(units);
 		const scales: ScaleChartOptions<'line'>['scales'] = {};
-		scales['x'] = getXAxisConfig(this.chart_settings.interval, this.locale);
+		scales['x'] = getXAxisConfig(this.page_settings.interval, this.locale);
 		if( y_axis.includes('ybtc') ) scales['ybtc'] = getBtcYAxisConfig({
 			grid_color: this.chartService.getGridColor()
 		});
@@ -185,10 +185,10 @@ export class MintAnalyticChartComponent implements OnChanges {
 	}
 
 	private getOperationsChartData(): ChartConfiguration['data'] {
-		if ( !this.mint_analytics || this.mint_analytics.length === 0 || !this.chart_settings ) return { datasets: [] };
-		const timestamp_first = DateTime.fromSeconds(this.chart_settings.date_start).startOf('day').toSeconds();
-		const timestamp_last = DateTime.fromSeconds(this.chart_settings.date_end).startOf('day').toSeconds();
-		const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.chart_settings.interval);
+		if ( !this.mint_analytics || this.mint_analytics.length === 0 || !this.page_settings ) return { datasets: [] };
+		const timestamp_first = DateTime.fromSeconds(this.page_settings.date_start).startOf('day').toSeconds();
+		const timestamp_last = DateTime.fromSeconds(this.page_settings.date_end).startOf('day').toSeconds();
+		const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.page_settings.interval);
 		const data_unit_groups = groupAnalyticsByUnit(this.mint_analytics);
 		const data_unit_groups_prepended = prependData(data_unit_groups, this.mint_analytics_pre, timestamp_first);
 		const datasets = Object.entries(data_unit_groups_prepended).map(([unit, data], index) => {
@@ -219,13 +219,13 @@ export class MintAnalyticChartComponent implements OnChanges {
 	}
 
 	private getOperationsChartOptions(): ChartConfiguration['options'] {
-		if ( !this.chart_data || this.chart_data.datasets.length === 0 || !this.chart_settings ) return {}
+		if ( !this.chart_data || this.chart_data.datasets.length === 0 || !this.page_settings ) return {}
 
 		return {
 			responsive: true,
 			scales: {
 				x: { 
-					...getXAxisConfig(this.chart_settings.interval, this.locale),
+					...getXAxisConfig(this.page_settings.interval, this.locale),
 					stacked: true 
 				},
 				y: {

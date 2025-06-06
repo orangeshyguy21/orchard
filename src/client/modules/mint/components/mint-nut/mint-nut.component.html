@@ -1,6 +1,6 @@
 <div class="nut-spec" [class.disabled]="!supported" matRipple (click)="onNutClick()">
     <div>NUT {{ nut_index }}</div>
-    <div class="flex nut-icon-graphic" [ngClass]="supported ? 'nut-icon-fill' : 'nut-icon-outline'">
+    <div class="flex label-nut" [ngClass]="supported ? 'label-fill' : 'label-outline'">
          <ng-content></ng-content>
     </div>
 </div>

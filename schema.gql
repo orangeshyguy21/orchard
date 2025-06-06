@@ -152,6 +152,8 @@ type Mutation {
   ai_chat_abort(ai_chat_abort: AiChatAbortInput!): OrchardAiChatStream!
   mint_contact_add(mint_contact_update: MintContactUpdateInput!): OrchardMintContactUpdate!
   mint_contact_remove(mint_contact_update: MintContactUpdateInput!): OrchardMintContactUpdate!
+  mint_database_backup: OrchardMintDatabaseBackup!
+  mint_database_restore(filebase64: String!): OrchardMintDatabaseRestore!
   mint_icon_update(mint_icon_update: MintIconUpdateInput!): OrchardMintIconUpdate!
   mint_long_description_update(mint_desc_update: MintDescriptionUpdateInput!): OrchardMintDescriptionUpdate!
   mint_motd_update(mint_motd_update: MintMotdUpdateInput!): OrchardMintMotdUpdate!
@@ -249,9 +251,21 @@ type OrchardMintContactUpdate {
   method: String!
 }
 
+type OrchardMintCount {
+  count: Int!
+}
+
 type OrchardMintDatabase {
   db: String!
   version: Int!
+}
+
+type OrchardMintDatabaseBackup {
+  filebase64: String!
+}
+
+type OrchardMintDatabaseRestore {
+  success: Boolean!
 }
 
 type OrchardMintDescriptionUpdate {
@@ -499,12 +513,14 @@ type Query {
   mint_balances(keyset_id: String): [OrchardMintBalance!]!
   mint_balances_issued: [OrchardMintBalance!]!
   mint_balances_redeemed: [OrchardMintBalance!]!
+  mint_count_melt_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, states: [MeltQuoteState!], timezone: Timezone, units: [MintUnit!]): OrchardMintCount!
+  mint_count_mint_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, states: [MintQuoteState!], timezone: Timezone, units: [MintUnit!]): OrchardMintCount!
   mint_databases: [OrchardMintDatabase!]!
   mint_info: OrchardMintInfo!
   mint_info_rpc: OrchardMintInfoRpc!
   mint_keysets: [OrchardMintKeyset!]!
-  mint_melt_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, state: [MeltQuoteState!], timezone: Timezone, unit: [MintUnit!]): [OrchardMintMeltQuote!]!
-  mint_mint_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, state: [MintQuoteState!], timezone: Timezone, unit: [MintUnit!]): [OrchardMintMintQuote!]!
+  mint_melt_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, page: Int, page_size: Int, states: [MeltQuoteState!], timezone: Timezone, units: [MintUnit!]): [OrchardMintMeltQuote!]!
+  mint_mint_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, page: Int, page_size: Int, states: [MintQuoteState!], timezone: Timezone, units: [MintUnit!]): [OrchardMintMintQuote!]!
   mint_promises(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!]): [OrchardMintPromise!]!
   mint_proofs_pending: [OrchardMintProof!]!
   mint_proofs_used: [OrchardMintProof!]!

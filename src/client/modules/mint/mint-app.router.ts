@@ -6,6 +6,7 @@ import { catchError, of } from 'rxjs';
 /* Application Dependencies */
 import { errorResolveGuard } from '../error/guards/error-resolve.guard';
 import { ErrorService } from '../error/services/error.service';
+import { pendingEventGuard } from '../event/guards/pending-event.guard';
 /* Native Dependencies */
 import { MintSectionComponent } from './components/mint-section/mint-section.component';
 import { MintSubsectionErrorComponent } from './components/mint-subsection-error/mint-subsection-error.component';
@@ -113,6 +114,7 @@ const routes: Routes = [
 				resolve: {
 					mint_info_rpc: mintInfoRpcResolver,
 				},
+				canDeactivate: [pendingEventGuard],
 				data: {
 					section: 'mint',
 					sub_section: 'info',
@@ -127,6 +129,7 @@ const routes: Routes = [
 					mint_info: mintInfoResolver,
 					mint_quote_ttl: mintQuoteTtlsResolver,
 				},
+				canDeactivate: [pendingEventGuard],
 				data: {
 					section: 'mint',
 					sub_section: 'config',
@@ -140,6 +143,7 @@ const routes: Routes = [
 				resolve: {
 					mint_keysets: mintKeysetsResolver,
 				},
+				canDeactivate: [pendingEventGuard],
 				data: {
 					section: 'mint',
 					sub_section: 'keysets',
@@ -150,6 +154,10 @@ const routes: Routes = [
 				path: 'database',
 				component: MintSubsectionDatabaseComponent,
 				title: 'Orchard | Mint Database',
+				resolve: {
+					mint_keysets: mintKeysetsResolver,
+				},
+				canDeactivate: [pendingEventGuard],
 				data: {
 					section: 'mint',
 					sub_section: 'database'

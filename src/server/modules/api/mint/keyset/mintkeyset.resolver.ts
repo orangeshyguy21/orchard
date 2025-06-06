@@ -7,7 +7,7 @@ import { OrchardMintKeyset } from "./mintkeyset.model";
 import { OrchardMintKeysetRotation } from "./mintkeyset.model";
 import { MintRotateKeysetInput } from "./mintkeyset.input";
 
-@Resolver(() => [OrchardMintKeyset])
+@Resolver()
 export class MintKeysetResolver {
 
 	private readonly logger = new Logger(MintKeysetResolver.name);

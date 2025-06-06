@@ -1,25 +1,16 @@
 /* Core Dependencies */
 import { Injectable } from '@angular/core';
 /* Application Dependencies */
+import { DataType } from '@client/modules/orchard/enums/data.enum';
 import { ThemeService } from '@client/modules/settings/services/theme/theme.service';
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
-import { LocalStorageService } from '@client/modules/cache/services/local-storage/local-storage.service';
-/* Local Dependencies */
-import { AllMintDashboardSettings, AllMintKeysetsSettings } from './chart.types';
+/* Shared Dependencies */
+import { MintQuoteState, MeltQuoteState } from '@shared/generated.types';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ChartService {
-
-    public mint_dashboard_short_settings: Record<string, number | null> = {
-        date_start: null,
-        date_end: null,
-    }
-    public mint_keysets_short_settings: Record<string, number | null> = {
-        date_start: null,
-        date_end: null,
-    }
 
     private asset_map: Record<string, string> = {
         'sat': '--orc-asset-btc',
@@ -33,11 +24,21 @@ export class ChartService {
         { bg: 'rgba(243, 101, 29, 0.15)', border: 'rgb(243, 101, 29)' },
         { bg: 'rgba(156, 34, 34, 0.15)', border: 'rgb(156, 34, 34)' }
     ];
+    private state_mint_map = {
+        'UNPAID': 'triangle',
+        'PAID': 'rect',
+        'PENDING': 'rectRot',
+        'ISSUED': 'circle'
+    };
+    private state_melt_map = {
+        'UNPAID': 'triangle',
+        'PENDING': 'rectRot',
+        'PAID': 'circle'
+    };
 
     constructor(
         private themeService: ThemeService,
         private settingService: SettingService,
-        private localStorageService: LocalStorageService
     ) { }
 
     public getAssetColor(asset: string, data_index: number): { bg: string, border: string } {
@@ -72,22 +73,6 @@ export class ChartService {
         return colorhex;
     }
 
-    public getMintDashboardSettings(): AllMintDashboardSettings {
-        const long_term_settings = this.localStorageService.getMintDashboardSettings();
-        return {
-            ...long_term_settings,
-            ...this.mint_dashboard_short_settings
-        } as AllMintDashboardSettings;
-    }
-    
-    public getMintKeysetsSettings(): AllMintKeysetsSettings {
-        const long_term_settings = this.localStorageService.getMintKeysetsSettings();
-        return {
-            ...long_term_settings,
-            ...this.mint_keysets_short_settings
-        } as AllMintKeysetsSettings;
-    }
-
     public getFormAnnotationConfig(hot: boolean): any {
         const theme = this.settingService.getTheme();
         if( hot ) return {
@@ -106,10 +91,13 @@ export class ChartService {
         }
     }
 
-    /**
-     * Converts a hex color string to an rgba color string with specified opacity
-     */
-    private hexToRgba(hex: string, opacity: number): string {
+    public getStatePointStyle(datatype: DataType, state: string): string {
+        if( datatype === DataType.MintMints ) return this.state_mint_map[(state as MintQuoteState)] || 'circle';
+        if( datatype === DataType.MintMelts ) return this.state_melt_map[(state as MeltQuoteState)] || 'circle';
+        return 'circle';
+    }
+
+    public hexToRgba(hex: string, opacity: number): string {
         hex = hex.replace('#', '');
         let r, g, b;
         if (hex.length === 3) {
@@ -122,18 +110,5 @@ export class ChartService {
             b = parseInt(hex.substring(4, 6), 16);
         }
         return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-    }
-
-    public setMintDashboardShortSettings(settings: { date_start: number, date_end: number }): void {
-        this.mint_dashboard_short_settings = settings;
-    }
-    public setMintDashboardSettings(settings: AllMintDashboardSettings): void {
-        this.localStorageService.setMintDashboardSettings(settings);
-    }
-    public setMintKeysetsShortSettings(settings: { date_start: number, date_end: number }): void {
-        this.mint_keysets_short_settings = settings;
-    }
-    public setMintKeysetsSettings(settings: AllMintKeysetsSettings): void {
-        this.localStorageService.setMintKeysetsSettings(settings);
     }
 }

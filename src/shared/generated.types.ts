@@ -169,6 +169,8 @@ export type Mutation = {
   ai_chat_abort: OrchardAiChatStream;
   mint_contact_add: OrchardMintContactUpdate;
   mint_contact_remove: OrchardMintContactUpdate;
+  mint_database_backup: OrchardMintDatabaseBackup;
+  mint_database_restore: OrchardMintDatabaseRestore;
   mint_icon_update: OrchardMintIconUpdate;
   mint_long_description_update: OrchardMintDescriptionUpdate;
   mint_motd_update: OrchardMintMotdUpdate;
@@ -196,6 +198,11 @@ export type MutationMint_Contact_AddArgs = {
 
 export type MutationMint_Contact_RemoveArgs = {
   mint_contact_update: MintContactUpdateInput;
+};
+
+
+export type MutationMint_Database_RestoreArgs = {
+  filebase64: Scalars['String']['input'];
 };
 
 
@@ -354,10 +361,25 @@ export type OrchardMintContactUpdate = {
   method: Scalars['String']['output'];
 };
 
+export type OrchardMintCount = {
+  __typename?: 'OrchardMintCount';
+  count: Scalars['Int']['output'];
+};
+
 export type OrchardMintDatabase = {
   __typename?: 'OrchardMintDatabase';
   db: Scalars['String']['output'];
   version: Scalars['Int']['output'];
+};
+
+export type OrchardMintDatabaseBackup = {
+  __typename?: 'OrchardMintDatabaseBackup';
+  filebase64: Scalars['String']['output'];
+};
+
+export type OrchardMintDatabaseRestore = {
+  __typename?: 'OrchardMintDatabaseRestore';
+  success: Scalars['Boolean']['output'];
 };
 
 export type OrchardMintDescriptionUpdate = {
@@ -638,6 +660,8 @@ export type Query = {
   mint_balances: Array<OrchardMintBalance>;
   mint_balances_issued: Array<OrchardMintBalance>;
   mint_balances_redeemed: Array<OrchardMintBalance>;
+  mint_count_melt_quotes: OrchardMintCount;
+  mint_count_mint_quotes: OrchardMintCount;
   mint_databases: Array<OrchardMintDatabase>;
   mint_info: OrchardMintInfo;
   mint_info_rpc: OrchardMintInfoRpc;
@@ -703,21 +727,43 @@ export type QueryMint_BalancesArgs = {
 };
 
 
+export type QueryMint_Count_Melt_QuotesArgs = {
+  date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  states?: InputMaybe<Array<MeltQuoteState>>;
+  timezone?: InputMaybe<Scalars['Timezone']['input']>;
+  units?: InputMaybe<Array<MintUnit>>;
+};
+
+
+export type QueryMint_Count_Mint_QuotesArgs = {
+  date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  states?: InputMaybe<Array<MintQuoteState>>;
+  timezone?: InputMaybe<Scalars['Timezone']['input']>;
+  units?: InputMaybe<Array<MintUnit>>;
+};
+
+
 export type QueryMint_Melt_QuotesArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
-  state?: InputMaybe<Array<MeltQuoteState>>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  page_size?: InputMaybe<Scalars['Int']['input']>;
+  states?: InputMaybe<Array<MeltQuoteState>>;
   timezone?: InputMaybe<Scalars['Timezone']['input']>;
-  unit?: InputMaybe<Array<MintUnit>>;
+  units?: InputMaybe<Array<MintUnit>>;
 };
 
 
 export type QueryMint_Mint_QuotesArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
-  state?: InputMaybe<Array<MintQuoteState>>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  page_size?: InputMaybe<Scalars['Int']['input']>;
+  states?: InputMaybe<Array<MintQuoteState>>;
   timezone?: InputMaybe<Scalars['Timezone']['input']>;
-  unit?: InputMaybe<Array<MintUnit>>;
+  units?: InputMaybe<Array<MintUnit>>;
 };
 
 

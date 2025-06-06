@@ -1,6 +1,6 @@
 /* Core Dependencies */
 import { Logger } from '@nestjs/common';
-import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
+import { Resolver, Query, Mutation, Args, Int } from "@nestjs/graphql";
 /* Application Dependencies */
 import { UnixTimestamp } from "@server/modules/graphql/scalars/unixtimestamp.scalar";
 import { Timezone, TimezoneType } from "@server/modules/graphql/scalars/timezone.scalar";
@@ -11,7 +11,7 @@ import { OrchardMintMeltQuote } from "./mintmeltquote.model";
 import { MintNut05UpdateInput } from "./mintmeltquote.input";
 import { OrchardMintNut05Update } from "./mintmeltquote.model";
 
-@Resolver(() => [OrchardMintMeltQuote])
+@Resolver()
 export class MintMeltQuoteResolver {
 
     private readonly logger = new Logger(MintMeltQuoteResolver.name);
@@ -22,14 +22,16 @@ export class MintMeltQuoteResolver {
 
     @Query(() => [OrchardMintMeltQuote])
     async mint_melt_quotes(
-		@Args('unit', { type: () => [MintUnit], nullable: true }) unit?: MintUnit[],
-		@Args('state', { type: () => [MeltQuoteState], nullable: true }) state?: MeltQuoteState[],
+		@Args('units', { type: () => [MintUnit], nullable: true }) units?: MintUnit[],
+		@Args('states', { type: () => [MeltQuoteState], nullable: true }) states?: MeltQuoteState[],
 		@Args('date_start', { type: () => UnixTimestamp, nullable: true }) date_start?: number,
 		@Args('date_end', { type: () => UnixTimestamp, nullable: true }) date_end?: number,
 		@Args('timezone', { type: () => Timezone, nullable: true }) timezone?: TimezoneType,
+		@Args('page', { type: () => Int, nullable: true }) page?: number,
+		@Args('page_size', { type: () => Int, nullable: true }) page_size?: number,
 	) : Promise<OrchardMintMeltQuote[]> {
       	this.logger.debug('GET { mint_melt_quotes }');
-		return await this.mintMeltQuoteService.getMintMeltQuotes({ unit, state, date_start, date_end, timezone });
+		return await this.mintMeltQuoteService.getMintMeltQuotes({ units, states, date_start, date_end, timezone, page, page_size });
     }
 
 	@Mutation(() => OrchardMintNut05Update)

@@ -16,6 +16,7 @@ import {
 	CashuMintProof,
 	CashuMintAnalytics,
 	CashuMintKeysetsAnalytics,
+	CashuMintCount,
 } from '@server/modules/cashu/mintdb/cashumintdb.types';
 import { 
 	CashuMintMintQuotesArgs,
@@ -24,6 +25,7 @@ import {
 } from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
 import {
 	buildDynamicQuery,
+	buildCountQuery,
 	getAnalyticsTimeGroupStamp,
 	getAnalyticsConditions,
 	getAnalyticsTimeGroupSql,
@@ -157,40 +159,14 @@ export class CdkService {
 		});
 	}
 
-	// public async getMintDatabaseVersions(db:sqlite3.Database) : Promise<CashuMintDatabaseVersion[]> {
-	// 	const sql = 'SELECT * FROM dbversions;';
-	// 	return new Promise((resolve, reject) => {
-	// 		db.all(sql, (err, rows:CashuMintDatabaseVersion[]) => {
-	// 			if (err) reject(err);
-	// 			resolve(rows);
-	// 		});
-	// 	});
-	// }
-
-	public async getMintMeltQuotes(db:sqlite3.Database, args?: CashuMintMeltQuotesArgs) : Promise<CashuMintMeltQuote[]> {
+	public async getMintMintQuotes(db:sqlite3.Database, args?: CashuMintMintQuotesArgs) : Promise<CashuMintMintQuote[]> {
 		const field_mappings = {
-			unit: 'unit',
+			units: 'unit',
 			date_start: 'created_time',
 			date_end: 'created_time',
-			status: 'state',
+			states: 'state',
 		};
-		const { sql, params } = buildDynamicQuery('melt_quote', args, field_mappings, 500);
-		return new Promise((resolve, reject) => {
-			db.all(sql, params, (err, rows:CashuMintMeltQuote[]) => {
-				if (err) reject(err);
-				resolve(rows);
-			});
-		});
-	}
-
-  	public async getMintMintQuotes(db:sqlite3.Database, args?: CashuMintMintQuotesArgs) : Promise<CashuMintMintQuote[]> {
-		const field_mappings = {
-			unit: 'unit',
-			date_start: 'created_time',
-			date_end: 'created_time',
-			status: 'state',
-		};
-		const { sql, params } = buildDynamicQuery('mint_quote', args, field_mappings, 500);
+		const { sql, params } = buildDynamicQuery('mint_quote', args, field_mappings);
 		return new Promise((resolve, reject) => {
 			db.all(sql, params, (err, rows:CashuMintMintQuote[]) => {
 				if (err) reject(err);
@@ -199,20 +175,53 @@ export class CdkService {
 		});
     }
 
-	// public async getMintPromises(db:sqlite3.Database, args?: CashuMintPromisesArgs) : Promise<CashuMintPromise[]> {
-	// 	const field_mappings = {
-	// 		id_keysets: 'keyset_id',
-	// 		date_start: 'created',
-	// 		date_end: 'created'
-	// 	};
-	// 	const { sql, params } = buildDynamicQuery('blind_signature', args, field_mappings);
-	// 	return new Promise((resolve, reject) => {
-	// 		db.all(sql, params, (err, rows:CashuMintPromise[]) => {
-	// 			if (err) reject(err);
-	// 			resolve(rows);
-	// 		});
-	// 	});
-	// }
+	public async getMintCountMintQuotes(db:sqlite3.Database, args?: CashuMintMintQuotesArgs) : Promise<number> {
+		const field_mappings = {
+			units: 'unit',
+			date_start: 'created_time',
+			date_end: 'created_time',
+			states: 'state',
+		};
+		const { sql, params } = buildCountQuery('mint_quote', args, field_mappings);
+		return new Promise((resolve, reject) => {
+			db.get(sql, params, (err, row:CashuMintCount) => {
+				if (err) reject(err);
+				resolve(row.count);
+			});
+		});
+	}
+
+	public async getMintMeltQuotes(db:sqlite3.Database, args?: CashuMintMeltQuotesArgs) : Promise<CashuMintMeltQuote[]> {
+		const field_mappings = {
+			units: 'unit',
+			date_start: 'created_time',
+			date_end: 'created_time',
+			states: 'state',
+		};
+		const { sql, params } = buildDynamicQuery('melt_quote', args, field_mappings);
+		return new Promise((resolve, reject) => {
+			db.all(sql, params, (err, rows:CashuMintMeltQuote[]) => {
+				if (err) reject(err);
+				resolve(rows);
+			});
+		});
+	}
+
+	public async getMintCountMeltQuotes(db:sqlite3.Database, args?: CashuMintMeltQuotesArgs) : Promise<number> {
+		const field_mappings = {
+			units: 'unit',
+			date_start: 'created_time',
+			date_end: 'created_time',
+			states: 'state',
+		};
+		const { sql, params } = buildCountQuery('melt_quote', args, field_mappings);
+		return new Promise((resolve, reject) => {
+			db.get(sql, params, (err, row:CashuMintCount) => {
+				if (err) reject(err);
+				resolve(row.count);
+			});
+		});
+	}
 
 	public async getMintProofsPending(db:sqlite3.Database) : Promise<CashuMintProof[]> {
 		const sql = 'SELECT * FROM proof WHERE state = "PENDING";';

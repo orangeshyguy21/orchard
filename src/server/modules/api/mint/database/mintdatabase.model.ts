@@ -6,14 +6,36 @@ import { CashuMintDatabaseVersion } from '@server/modules/cashu/mintdb/cashumint
 @ObjectType()
 export class OrchardMintDatabase {
 
-  @Field()
-  db: string;
+	@Field()
+	db: string;
 
-  @Field(type => Int)
-  version: number;
+	@Field(type => Int)
+	version: number;
 
-  constructor(cashu_database:CashuMintDatabaseVersion) {
-    this.db = cashu_database.db;
-    this.version = cashu_database.version;
-  }
+	constructor(cashu_database:CashuMintDatabaseVersion) {
+		this.db = cashu_database.db;
+		this.version = cashu_database.version;
+	}
+}
+
+@ObjectType()
+export class OrchardMintDatabaseBackup {
+
+	@Field()
+	filebase64: string;
+
+	constructor(filebase64: string) {
+		this.filebase64 = filebase64;
+	}
+}
+
+@ObjectType()
+export class OrchardMintDatabaseRestore {
+
+	@Field()
+	success: boolean;
+
+	constructor(success: boolean) {
+		this.success = success;
+	}
 }

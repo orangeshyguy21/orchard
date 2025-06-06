@@ -16,6 +16,7 @@ import {
 import { 
 	CashuMintAnalyticsArgs,
 	CashuMintMintQuotesArgs,
+	CashuMintMeltQuotesArgs,
 	CashuMintPromisesArgs,
 } from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
 import {
@@ -89,7 +90,8 @@ export class NutshellService {
 		});
 	}
 
-	public async getMintMeltQuotes(db:sqlite3.Database) : Promise<CashuMintMeltQuote[]> {
+	public async getMintMeltQuotes(db:sqlite3.Database, args?: CashuMintMeltQuotesArgs) : Promise<CashuMintMeltQuote[]> {
+		// TODO: Implement args
 		const sql = 'SELECT * FROM melt_quotes;';
 		return new Promise((resolve, reject) => {
 			db.all(sql, (err, rows:CashuMintMeltQuote[]) => {
@@ -106,7 +108,7 @@ export class NutshellService {
 			date_end: 'created_time',
 			status: 'state'
 		};
-		const { sql, params } = buildDynamicQuery('mint_quotes', args, field_mappings, 500);
+		const { sql, params } = buildDynamicQuery('mint_quotes', args, field_mappings);
 		return new Promise((resolve, reject) => {
 			db.all(sql, params, (err, rows:NutshellMintMintQuote[]) => {
 				if (err) reject(err);

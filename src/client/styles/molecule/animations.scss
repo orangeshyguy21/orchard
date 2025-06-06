@@ -1,6 +1,7 @@
 @mixin prefixStyles($c) {
     #{$c}trans-bg-fast { transition: background-color 0.15s ease; }
     #{$c}trans-color-fast { transition: color 0.15s ease; }
+    #{$c}trans-color-medium { transition: color 0.3s ease; }
     #{$c}trans-font-weight-fast { transition: font-weight 0.15s ease; }
     #{$c}trans-bg-medium { transition: background-color 0.3s ease; }
     #{$c}trans-opacity-fast { transition: opacity 0.15s ease; }

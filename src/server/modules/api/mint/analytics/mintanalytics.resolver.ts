@@ -10,7 +10,7 @@ import { MintUnit } from '@server/modules/cashu/cashu.enums';
 import { OrchardMintAnalytics, OrchardMintKeysetsAnalytics } from "./mintanalytics.model";
 import { MintAnalyticsService } from "./mintanalytics.service";
 
-@Resolver(() => [OrchardMintAnalytics])
+@Resolver()
 export class MintAnalyticsResolver {
 
 	private readonly logger = new Logger(MintAnalyticsResolver.name);

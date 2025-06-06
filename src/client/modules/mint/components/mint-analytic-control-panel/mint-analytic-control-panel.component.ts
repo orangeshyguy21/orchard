@@ -7,7 +7,7 @@ import { MatSelectChange } from '@angular/material/select';
 import { MatCalendarCellClassFunction } from '@angular/material/datepicker';
 import { DateTime } from 'luxon';
 /* Application Dependencies */
-import { NonNullableMintDashboardSettings } from '@client/modules/chart/services/chart/chart.types';
+import { NonNullableMintDashboardSettings } from '@client/modules/settings/types/setting.types';
 /* Native Dependencies */
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 import { ChartType } from '@client/modules/mint/enums/chart-type.enum';
@@ -51,7 +51,7 @@ type TypeOption = {
 })
 export class MintAnalyticControlPanelComponent implements OnChanges {
 	
-	@Input() chart_settings!: NonNullableMintDashboardSettings;
+	@Input() page_settings!: NonNullableMintDashboardSettings;
 	@Input() date_start?: number;
 	@Input() date_end?: number;
 	@Input() units?: MintUnit[];
@@ -124,11 +124,11 @@ export class MintAnalyticControlPanelComponent implements OnChanges {
 	private initForm(): void {
 		const unique_units = Array.from(new Set(this.keysets.map(keyset => keyset.unit)));
 		this.unit_options = unique_units.map(unit => ({ label: unit.toUpperCase(), value: unit }));
-		this.panel.controls.daterange.controls.date_start.setValue(DateTime.fromSeconds(this.chart_settings.date_start));
-		this.panel.controls.daterange.controls.date_end.setValue(DateTime.fromSeconds(this.chart_settings.date_end));
-		this.panel.controls.units.setValue(this.chart_settings.units);
-		this.panel.controls.interval.setValue(this.chart_settings.interval);
-		this.panel.controls.type.setValue(this.chart_settings.type);
+		this.panel.controls.daterange.controls.date_start.setValue(DateTime.fromSeconds(this.page_settings.date_start));
+		this.panel.controls.daterange.controls.date_end.setValue(DateTime.fromSeconds(this.page_settings.date_end));
+		this.panel.controls.units.setValue(this.page_settings.units);
+		this.panel.controls.interval.setValue(this.page_settings.interval);
+		this.panel.controls.type.setValue(this.page_settings.type);
 	}
 
 	public onDateChange(): void {
@@ -171,11 +171,11 @@ export class MintAnalyticControlPanelComponent implements OnChanges {
 		if( this.panel.controls.interval.value === null ) return false;
 		if( this.panel.controls.type.value === null ) return false;
 		// change checks
-		if( this.panel.controls.daterange.controls.date_start.value.toSeconds() !== this.chart_settings.date_start ) return true;
-		if( this.panel.controls.daterange.controls.date_end.value.toSeconds() !== this.chart_settings.date_end ) return true;
-		if( this.panel.controls.units.value !== this.chart_settings.units ) return true;
-		if( this.panel.controls.interval.value !== this.chart_settings.interval ) return true;
-		if( this.panel.controls.type.value !== this.chart_settings.type ) return true;
+		if( this.panel.controls.daterange.controls.date_start.value.toSeconds() !== this.page_settings.date_start ) return true;
+		if( this.panel.controls.daterange.controls.date_end.value.toSeconds() !== this.page_settings.date_end ) return true;
+		if( this.panel.controls.units.value !== this.page_settings.units ) return true;
+		if( this.panel.controls.interval.value !== this.page_settings.interval ) return true;
+		if( this.panel.controls.type.value !== this.page_settings.type ) return true;
 		return false;
 	}
 }

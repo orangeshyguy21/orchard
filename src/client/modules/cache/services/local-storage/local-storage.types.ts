@@ -2,6 +2,7 @@
 import { MintUnit, MintAnalyticsInterval } from '@shared/generated.types';
 /* Application Dependencies */
 import { ChartType } from '@client/modules/mint/enums/chart-type.enum';
+import { DataType } from '@client/modules/orchard/enums/data.enum';
 
 export type Timezone = {
     tz: string | null;
@@ -33,4 +34,10 @@ export type MintDashboardSettings = {
 export type MintKeysetsSettings = {
     units: MintUnit[] | null;
     status: boolean[] | null;
+}
+
+export type MintDatabaseSettings = {
+    type: DataType | null;
+    units: MintUnit[] | null;
+    states: string[] | null;
 }

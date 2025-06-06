@@ -40,6 +40,10 @@ import {
 	MintNut04UpdateResponse,
 	MintNut05UpdateResponse,
 	MintKeysetRotationResponse,
+	MintMintQuotesDataResponse,
+	MintMeltQuotesDataResponse,
+	MintDatabaseBackupResponse,
+	MintDatabaseRestoreResponse,
 } from '@client/modules/mint/types/mint.types';
 import { CacheService } from '@client/modules/cache/services/cache/cache.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
@@ -68,6 +72,8 @@ import {
 	MINT_MINT_QUOTES_QUERY,
 	MINT_MELT_QUOTES_QUERY,
 	MINT_ANALYTICS_KEYSETS_QUERY,
+	MINT_MINT_QUOTES_DATA_QUERY,
+	MINT_MELT_QUOTES_DATA_QUERY,
 	MINT_NAME_MUTATION,
 	MINT_DESCRIPTION_MUTATION,
 	MINT_DESCRIPTION_LONG_MUTATION,
@@ -83,6 +89,8 @@ import {
 	MINT_NUT04_UPDATE_MUTATION,
 	MINT_NUT05_UPDATE_MUTATION,
 	MINT_KEYSETS_ROTATION_MUTATION,
+	MINT_DATABASE_BACKUP_MUTATION,
+	MINT_DATABASE_RESTORE_MUTATION,
 } from './mint.queries';
 
 
@@ -585,6 +593,46 @@ export class MintService {
 		);
 	}	
 
+	public getMintMintQuotesData(args:MintMintQuotesArgs) {
+		const query = getApiQuery(MINT_MINT_QUOTES_DATA_QUERY, args);
+		return this.http.post<OrchardRes<MintMintQuotesDataResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			map((mint_mint_quotes_data) => {
+				return {
+					mint_mint_quotes: mint_mint_quotes_data.mint_mint_quotes.map((mint_mint_quote) => new MintMintQuote(mint_mint_quote)),
+					count: mint_mint_quotes_data.mint_count_mint_quotes.count
+				}
+			}),
+			catchError((error) => {
+				console.error('Error loading mint mint quotes data:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public getMintMeltQuotesData(args:MintMeltQuotesArgs) {
+		const query = getApiQuery(MINT_MELT_QUOTES_DATA_QUERY, args);
+		return this.http.post<OrchardRes<MintMeltQuotesDataResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			map((mint_melt_quotes_data) => {
+				return {
+					mint_melt_quotes: mint_melt_quotes_data.mint_melt_quotes.map((mint_melt_quote) => new MintMeltQuote(mint_melt_quote)),
+					count: mint_melt_quotes_data.mint_count_melt_quotes.count
+				}
+			}),
+			catchError((error) => {
+				console.error('Error loading mint melt quotes data:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
 	public updateMintName(name:string) : Observable<MintNameUpdateResponse> {
 		const query = getApiQuery(MINT_NAME_MUTATION,  { mint_name_update: { name } });
 		return this.http.post<OrchardRes<MintNameUpdateResponse>>(api, query).pipe(
@@ -802,6 +850,35 @@ export class MintService {
 				return throwError(() => error);
 			})
 		); 
+	}
+
+	public createMintDatabaseBackup() : Observable<MintDatabaseBackupResponse> {
+		const query = getApiQuery(MINT_DATABASE_BACKUP_MUTATION, {});
+		return this.http.post<OrchardRes<MintDatabaseBackupResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error creating mint database backup:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public restoreMintDatabaseBackup(filebase64:string) : Observable<MintDatabaseRestoreResponse> {
+		const query = getApiQuery(MINT_DATABASE_RESTORE_MUTATION, { filebase64 });
+		console.log('query', query);
+		return this.http.post<OrchardRes<MintDatabaseRestoreResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error restoring mint database backup:', error);
+				return throwError(() => error);
+			})
+		);
 	}
 	
 	public updateMint(mutation:string, variables:Record<string, any>) {

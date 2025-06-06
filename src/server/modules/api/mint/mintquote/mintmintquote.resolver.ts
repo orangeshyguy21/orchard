@@ -1,6 +1,6 @@
 /* Core Dependencies */
 import { Logger } from '@nestjs/common';
-import { Resolver, Query, Args, Mutation } from "@nestjs/graphql";
+import { Resolver, Query, Args, Mutation, Int } from "@nestjs/graphql";
 /* Application Dependencies */
 import { UnixTimestamp } from "@server/modules/graphql/scalars/unixtimestamp.scalar";
 import { Timezone, TimezoneType } from "@server/modules/graphql/scalars/timezone.scalar";
@@ -11,7 +11,7 @@ import { OrchardMintMintQuote } from "./mintmintquote.model";
 import { MintNut04UpdateInput, MintNut04QuoteUpdateInput } from "./mintmintquote.input";
 import { OrchardMintNut04Update, OrchardMintNut04QuoteUpdate } from "./mintmintquote.model";
 
-@Resolver(() => [OrchardMintMintQuote])
+@Resolver()
 export class MintMintQuoteResolver {
 
 	private readonly logger = new Logger(MintMintQuoteResolver.name);
@@ -22,16 +22,17 @@ export class MintMintQuoteResolver {
 
 	@Query(() => [OrchardMintMintQuote])
 	async mint_mint_quotes(
-		@Args('unit', { type: () => [MintUnit], nullable: true }) unit?: MintUnit[],
-		@Args('state', { type: () => [MintQuoteState], nullable: true }) state?: MintQuoteState[],
+		@Args('units', { type: () => [MintUnit], nullable: true }) units?: MintUnit[],
+		@Args('states', { type: () => [MintQuoteState], nullable: true }) states?: MintQuoteState[],
 		@Args('date_start', { type: () => UnixTimestamp, nullable: true }) date_start?: number,
 		@Args('date_end', { type: () => UnixTimestamp, nullable: true }) date_end?: number,
 		@Args('timezone', { type: () => Timezone, nullable: true }) timezone?: TimezoneType,
+		@Args('page', { type: () => Int, nullable: true }) page?: number,
+		@Args('page_size', { type: () => Int, nullable: true }) page_size?: number,
 	) : Promise<OrchardMintMintQuote[]> {
 		this.logger.debug('GET { mint_mint_quotes }');
-		return await this.mintMintQuoteService.getMintMintQuotes({ unit, state, date_start, date_end, timezone });
+		return await this.mintMintQuoteService.getMintMintQuotes({ units, states, date_start, date_end, timezone, page, page_size });
 	}
-
 
 	@Mutation(() => OrchardMintNut04Update)
 	async mint_nut04_update(@Args('mint_nut04_update') mint_nut04_update: MintNut04UpdateInput): Promise<OrchardMintNut04Update> {

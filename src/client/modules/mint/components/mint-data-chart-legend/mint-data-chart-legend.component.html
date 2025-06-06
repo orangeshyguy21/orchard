@@ -1,0 +1,19 @@
+<div class="mint-data-chart-legend-container">
+    <!-- <div class="flex flex-items-center flex-gap-1">
+        <div>test</div>
+        <div>test</div>
+    </div> -->
+
+    @for(dataset of datasets_legend; track dataset.label) {
+        <div class="legend-item">
+            <div class="legend-item-visual default" [style.background-color]="dataset.color"></div>
+            <div class="legend-item-label">{{ dataset.label }}</div>
+        </div>
+    }
+    @for(state of states_legend; track state.label) {
+        <div class="legend-item">
+            <div class="legend-item-visual" [ngClass]="state.shape"></div>
+            <div class="legend-item-label">{{ state.label }}</div>
+        </div>
+    }
+</div>

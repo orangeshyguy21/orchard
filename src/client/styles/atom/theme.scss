@@ -9,13 +9,24 @@
 	@include mat.table-overrides((
 		row-item-outline-color: var(--mat-sys-outline-variant),
 	));
+	@include mat.dialog-overrides((
+	  	container-color: var(--mat-sys-surface-container-highest),
+	));
 }
+
 
 /* Specific Table Overrides */
 .orc-feature-table {
 	@include mat.table-overrides((
 		header-container-height: 2.5rem,
 		row-item-container-height: 3.0rem,
+	));
+}
+
+.orc-feature-paginator{
+	@include mat.paginator-overrides((
+		container-text-size: 0.875rem,
+		container-size: 2.5rem,
 	));
 }
 

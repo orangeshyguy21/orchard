@@ -1,0 +1,25 @@
+@use '@styles/molecule/molecule';
+@use '@styles/nucleus/nucleus';
+
+.mint-data-chart-container{
+    @extend %p-v-1;
+    @extend %relative;
+
+    canvas{
+        max-height: 25vh;
+        min-height: 200px;
+    }
+}
+
+.no-data-overlay{
+    @extend %absolute;
+    @extend %top-0;
+    @extend %left-0;
+    @extend %right-0;
+    @extend %bottom-0;
+    @extend %flex;
+    @extend %flex-column;
+    @extend %flex-gap-1;
+    @extend %flex-items-center;
+    @extend %flex-justify-center;
+}

@@ -1,6 +1,7 @@
 @use './animations' as animations;
 @use './border' as border;
 @use './form' as form;
+@use './grid' as grid;
 @use './icon' as icon;
 @use './position' as position;
 @use './properties' as properties;
@@ -12,6 +13,7 @@
     @include animations.prefixStyles($c);
     @include border.prefixStyles($c);
     @include form.prefixStyles($c);
+    @include grid.prefixStyles($c);
     @include icon.prefixStyles($c);
     @include position.prefixStyles($c);
     @include properties.prefixStyles($c);

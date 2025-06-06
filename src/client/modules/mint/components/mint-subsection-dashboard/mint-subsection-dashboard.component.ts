@@ -11,7 +11,7 @@ import { SettingService } from '@client/modules/settings/services/setting/settin
 import { AiService } from '@client/modules/ai/services/ai/ai.service';
 import { ChartService } from '@client/modules/chart/services/chart/chart.service';
 import { PublicService } from '@client/modules/public/services/image/public.service';
-import { NonNullableMintDashboardSettings } from '@client/modules/chart/services/chart/chart.types';
+import { NonNullableMintDashboardSettings } from '@client/modules/settings/types/setting.types';
 import { PublicUrl } from '@client/modules/public/classes/public-url.class';
 import { AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
 /* Native Dependencies */
@@ -54,7 +54,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public loading_dynamic_data: boolean = true;
 	public should_move_control: boolean = false;  // Controls where the panel renders
 	// chart settings
-	public chart_settings!: NonNullableMintDashboardSettings;
+	public page_settings!: NonNullableMintDashboardSettings;
 
 	private subscriptions: Subscription = new Subscription();
 
@@ -88,11 +88,11 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		return this.aiService.agent_requests$
 			.subscribe(({ agent, content }) => {
 				let context = `Current Date: ${DateTime.now().toFormat('yyyy-MM-dd')}\n`;
-				context += `Current Date Start: ${DateTime.fromSeconds(this.chart_settings.date_start).toFormat('yyyy-MM-dd')}\n`;
-				context += `Current Date End: ${DateTime.fromSeconds(this.chart_settings.date_end).toFormat('yyyy-MM-dd')}\n`;
-				context += `Current Interval: ${this.chart_settings.interval}\n`;
-				context += `Current Units: ${this.chart_settings.units}\n`;
-				context += `Current Type: ${this.chart_settings.type}`;
+				context += `Current Date Start: ${DateTime.fromSeconds(this.page_settings.date_start).toFormat('yyyy-MM-dd')}\n`;
+				context += `Current Date End: ${DateTime.fromSeconds(this.page_settings.date_end).toFormat('yyyy-MM-dd')}\n`;
+				context += `Current Interval: ${this.page_settings.interval}\n`;
+				context += `Current Units: ${this.page_settings.units}\n`;
+				context += `Current Type: ${this.page_settings.type}`;
 				this.aiService.openAiSocket(agent, content, context);
 			});
 	}
@@ -121,7 +121,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		try {
 			this.locale = await this.settingService.getLocale();
 			this.mint_genesis_time = this.getMintGenesisTime();
-			this.chart_settings = this.getChartSettings();
+			this.page_settings = this.getPageSettings();
 			this.loading_static_data = false;
 			this.changeDetectorRef.detectChanges();
 			await this.loadMintAnalytics();
@@ -135,58 +135,58 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	private async loadMintAnalytics(): Promise<void> {
 		const timezone = this.settingService.getTimezone();
 		const analytics_balances_obs = this.mintService.loadMintAnalyticsBalances({
-			units: this.chart_settings.units,
-			date_start: this.chart_settings.date_start,
-			date_end: this.chart_settings.date_end,
-			interval: this.chart_settings.interval,
+			units: this.page_settings.units,
+			date_start: this.page_settings.date_start,
+			date_end: this.page_settings.date_end,
+			interval: this.page_settings.interval,
 			timezone: timezone
 		});
 		const analytics_balances_pre_obs = this.mintService.loadMintAnalyticsBalances({
-			units: this.chart_settings.units,
+			units: this.page_settings.units,
 			date_start: 100000,
-			date_end: this.chart_settings.date_start-1,
+			date_end: this.page_settings.date_start-1,
 			interval: MintAnalyticsInterval.Custom,
 			timezone: timezone
 		});
 		const analytics_mints_obs = this.mintService.loadMintAnalyticsMints({
-			units: this.chart_settings.units,
-			date_start: this.chart_settings.date_start,
-			date_end: this.chart_settings.date_end,
-			interval: this.chart_settings.interval,
+			units: this.page_settings.units,
+			date_start: this.page_settings.date_start,
+			date_end: this.page_settings.date_end,
+			interval: this.page_settings.interval,
 			timezone: timezone
 		});
 		const analytics_mints_pre_obs = this.mintService.loadMintAnalyticsMints({
-			units: this.chart_settings.units,
+			units: this.page_settings.units,
 			date_start: 100000, // @todo make this bitcoin genesis time for the fans
-			date_end: this.chart_settings.date_start-1,
+			date_end: this.page_settings.date_start-1,
 			interval: MintAnalyticsInterval.Custom,
 			timezone: timezone
 		});
 		const analytics_melts_obs = this.mintService.loadMintAnalyticsMelts({
-			units: this.chart_settings.units,
-			date_start: this.chart_settings.date_start,
-			date_end: this.chart_settings.date_end,
-			interval: this.chart_settings.interval,
+			units: this.page_settings.units,
+			date_start: this.page_settings.date_start,
+			date_end: this.page_settings.date_end,
+			interval: this.page_settings.interval,
 			timezone: timezone
 		});
 		const analytics_melts_pre_obs = this.mintService.loadMintAnalyticsMelts({
-			units: this.chart_settings.units,
+			units: this.page_settings.units,
 			date_start: 100000,
-			date_end: this.chart_settings.date_start-1,
+			date_end: this.page_settings.date_start-1,
 			interval: MintAnalyticsInterval.Custom,
 			timezone: timezone
 		});
 		const analytics_transfers_obs = this.mintService.loadMintAnalyticsTransfers({
-			units: this.chart_settings.units,
-			date_start: this.chart_settings.date_start,
-			date_end: this.chart_settings.date_end,
-			interval: this.chart_settings.interval,
+			units: this.page_settings.units,
+			date_start: this.page_settings.date_start,
+			date_end: this.page_settings.date_end,
+			interval: this.page_settings.interval,
 			timezone: timezone
 		});
 		const analytics_transfers_pre_obs = this.mintService.loadMintAnalyticsTransfers({
-			units: this.chart_settings.units,
+			units: this.page_settings.units,
 			date_start: 100000,
-			date_end: this.chart_settings.date_start-1,
+			date_end: this.page_settings.date_start-1,
 			interval: MintAnalyticsInterval.Custom,
 			timezone: timezone
 		});
@@ -222,8 +222,8 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.mint_analytics_transfers_pre = analytics_transfers_pre;
 	}
 
-	private getChartSettings(): NonNullableMintDashboardSettings {
-		const settings = this.chartService.getMintDashboardSettings();
+	private getPageSettings(): NonNullableMintDashboardSettings {
+		const settings = this.settingService.getMintDashboardSettings();
 		return {
 			type: settings.type ?? ChartType.Summary,
 			interval: settings.interval ?? MintAnalyticsInterval.Day,
@@ -290,27 +290,27 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	}
 
 	public onDateChange(event: number[]): void {
-		this.chart_settings.date_start = event[0];
-		this.chart_settings.date_end = event[1];
-		this.chartService.setMintDashboardShortSettings(this.chart_settings);
+		this.page_settings.date_start = event[0];
+		this.page_settings.date_end = event[1];
+		this.settingService.setMintDashboardShortSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
 
 	public onUnitsChange(event: MintUnit[]): void {
-		this.chart_settings.units = event;
-		this.chartService.setMintDashboardSettings(this.chart_settings);
+		this.page_settings.units = event;
+		this.settingService.setMintDashboardShortSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
 
 	public onIntervalChange(event: MintAnalyticsInterval): void {
-		this.chart_settings.interval = event;
-		this.chartService.setMintDashboardSettings(this.chart_settings);
+		this.page_settings.interval = event;
+		this.settingService.setMintDashboardShortSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
 
 	public onTypeChange(event: ChartType): void {
-		this.chart_settings.type = event;
-		this.chartService.setMintDashboardSettings(this.chart_settings);
+		this.page_settings.type = event;
+		this.settingService.setMintDashboardShortSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
 

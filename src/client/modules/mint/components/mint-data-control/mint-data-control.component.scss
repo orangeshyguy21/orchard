@@ -1,0 +1,9 @@
+@use '@styles/molecule/molecule';
+
+.mint-data-control-container{
+    @extend %p-b-1;
+}
+
+.search-field{
+    @extend %w-full;
+}

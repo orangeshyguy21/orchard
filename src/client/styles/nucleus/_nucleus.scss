@@ -1,13 +1,13 @@
 @use './flex' as flex;
 @use './position' as position;
 @use './section' as section;
-@use './title' as title;
+@use './typetext' as typetext;
 
 @mixin prefixModule($c) {
     @include flex.prefixStyles($c);
     @include position.prefixStyles($c);
     @include section.prefixStyles($c);
-    @include title.prefixStyles($c);
+    @include typetext.prefixStyles($c);
 }
 
 @include prefixModule('%');

@@ -13,7 +13,6 @@ import { FormModule } from '@client/modules/form/form.module';
 /* Local Dependencies */
 import { AiInputComponent } from './components/ai-input/ai-input.component';
 import { AiNavComponent } from './components/ai-nav/ai-nav.component';
-import { BytesPipe } from './pipes/bytes/bytes.pipe';
 import { AiCommandComponent } from './components/ai-command/ai-command.component';
 import { AiModelComponent } from './components/ai-model/ai-model.component';
 
@@ -23,7 +22,6 @@ import { AiModelComponent } from './components/ai-model/ai-model.component';
 		AiNavComponent,
 		AiCommandComponent,
 		AiModelComponent,
-		BytesPipe,
 	],
 	imports: [
 		CommonModule,
@@ -37,7 +35,6 @@ import { AiModelComponent } from './components/ai-model/ai-model.component';
 	],
 	exports: [
 		AiNavComponent,
-		BytesPipe,
 	]
 })
 export class AiModule { }

@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, ChangeDetectorRef, WritableSignal, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, ChangeDetectorRef, WritableSignal, signal, HostListener } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { toObservable } from '@angular/core/rxjs-interop';
@@ -14,6 +14,7 @@ import { AiService } from '@client/modules/ai/services/ai/ai.service';
 import { AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
 import { EventService } from '@client/modules/event/services/event/event.service';
 import { EventData } from '@client/modules/event/classes/event-data.class';
+import { ComponentCanDeactivate } from '@client/modules/routing/interfaces/routing.interfaces';
 /* Shared Dependencies */
 import { AiFunctionName, OrchardContact } from '@shared/generated.types';
 
@@ -24,7 +25,12 @@ import { AiFunctionName, OrchardContact } from '@shared/generated.types';
 	styleUrl: './mint-subsection-info.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
+export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnInit, OnDestroy {
+
+	@HostListener('window:beforeunload')
+	canDeactivate(): boolean {
+		return this.active_event?.type !== 'PENDING';
+	}
 
 	public init_info!: MintInfoRpc;
 	public form_info: FormGroup = new FormGroup({
@@ -604,11 +610,6 @@ export class MintSubsectionInfoComponent implements OnInit, OnDestroy {
 			type: 'SUCCESS',
 			message: 'Information updated!',
 		}));
-		// this.eventService.registerEvent(new EventData({
-		// 	type: 'SUCCESS',
-		// 	message: `The second approach is cleaner - it sets a minimum width that's wide enough for typical short messages like "save complete", and a maximum width that allows longer messages to wrap naturally when they exceed the limit.`,
-		// 	duration: 1000000,
-		// }));
 		if( !reset ) return;
 		this.form_info.markAsPristine();
 		this.dirty_count.set(0);

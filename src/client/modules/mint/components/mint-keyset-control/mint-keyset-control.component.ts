@@ -7,7 +7,7 @@ import { MatSelectChange } from '@angular/material/select';
 import { MatCalendarCellClassFunction } from '@angular/material/datepicker';
 import { DateTime } from 'luxon';
 /* Application Dependencies */
-import { NonNullableMintKeysetsSettings } from '@client/modules/chart/services/chart/chart.types';
+import { NonNullableMintKeysetsSettings } from '@client/modules/settings/types/setting.types';
 /* Native Dependencies */
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 /* Shared Dependencies */
@@ -46,7 +46,7 @@ type StatusOption = {
 })
 export class MintKeysetControlComponent implements OnChanges {
 
-	@Input() chart_settings!: NonNullableMintKeysetsSettings;
+	@Input() page_settings!: NonNullableMintKeysetsSettings;
 	@Input() date_start?: number;
 	@Input() date_end?: number;
 	@Input() units?: MintUnit[];
@@ -73,14 +73,6 @@ export class MintKeysetControlComponent implements OnChanges {
 		{ label: 'Active', value: true },
 		{ label: 'Inactive', value: false },
 	];
-	public genesis_class: MatCalendarCellClassFunction<DateTime> = (cellDate, view) => {
-		if( view !== 'month' ) return '';
-		const unix_seconds = cellDate.toSeconds();
-		const unix_next_day = unix_seconds + 86400 - 1;
-		if( unix_seconds <= this.mint_genesis_time && unix_next_day >= this.mint_genesis_time ) return 'mint-genesis-date-class';
-		return '';
-	};
-
 	public get height_state(): string {
 		return this.panel?.invalid ? 'invalid' : 'valid';
 	}
@@ -90,7 +82,6 @@ export class MintKeysetControlComponent implements OnChanges {
 	ngOnChanges(changes: SimpleChanges): void {
 		if(changes['loading'] && !this.loading) this.initForm();
 		if(changes['date_start'] && this.date_start && this.panel.controls.daterange.get('date_start')?.value?.toSeconds() !== this.date_start) {
-			console.log('date_start changed', this.date_start);
 			this.panel.controls.daterange.get('date_start')?.setValue(DateTime.fromSeconds(this.date_start));
 		}
 		if(changes['date_end'] && this.date_end && this.panel.controls.daterange.get('date_end')?.value?.toSeconds() !== this.date_end) {
@@ -107,9 +98,9 @@ export class MintKeysetControlComponent implements OnChanges {
 	private initForm(): void {
 		const unique_units = Array.from(new Set(this.keysets.map(keyset => keyset.unit)));
 		this.unit_options = unique_units.map(unit => ({ label: unit.toUpperCase(), value: unit }));
-		this.panel.controls.daterange.controls.date_start.setValue(DateTime.fromSeconds(this.chart_settings.date_start));
-		this.panel.controls.daterange.controls.date_end.setValue(DateTime.fromSeconds(this.chart_settings.date_end));
-		this.panel.controls.units.setValue(this.chart_settings.units);
+		this.panel.controls.daterange.controls.date_start.setValue(DateTime.fromSeconds(this.page_settings.date_start));
+		this.panel.controls.daterange.controls.date_end.setValue(DateTime.fromSeconds(this.page_settings.date_end));
+		this.panel.controls.units.setValue(this.page_settings.units);
 	}
 
 	public onDateChange(): void {
@@ -137,6 +128,14 @@ export class MintKeysetControlComponent implements OnChanges {
 		this.statusChange.emit(event.value);
 	}
 
+	public genesis_class: MatCalendarCellClassFunction<DateTime> = (cellDate, view) => {
+		if( view !== 'month' ) return '';
+		const unix_seconds = cellDate.toSeconds();
+		const unix_next_day = unix_seconds + 86400 - 1;
+		if( unix_seconds <= this.mint_genesis_time && unix_next_day >= this.mint_genesis_time ) return 'mint-genesis-date-class';
+		return '';
+	};
+
 	private isValidChange(): boolean {
 		// validations
 		if( this.panel.controls.daterange.controls.date_start.value === null ) return false;
@@ -144,10 +143,10 @@ export class MintKeysetControlComponent implements OnChanges {
 		if( this.panel.controls.units.value === null ) return false;
 		if( this.panel.controls.status.value === null ) return false;
 		// change checks
-		if( this.panel.controls.daterange.controls.date_start.value.toSeconds() !== this.chart_settings.date_start ) return true;
-		if( this.panel.controls.daterange.controls.date_end.value.toSeconds() !== this.chart_settings.date_end ) return true;
-		if( this.panel.controls.units.value !== this.chart_settings.units ) return true;
-		if( this.panel.controls.status.value !== this.chart_settings.status ) return true;
+		if( this.panel.controls.daterange.controls.date_start.value.toSeconds() !== this.page_settings.date_start ) return true;
+		if( this.panel.controls.daterange.controls.date_end.value.toSeconds() !== this.page_settings.date_end ) return true;
+		if( this.panel.controls.units.value !== this.page_settings.units ) return true;
+		if( this.panel.controls.status.value !== this.page_settings.status ) return true;
 		return false;
 	}
 }

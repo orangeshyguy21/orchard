@@ -7,13 +7,18 @@
     #{$c}orc-primary-bg { background-color: var(--mat-sys-primary); }
     #{$c}orc-primary-container-bg { background-color: var(--mat-sys-primary-container); }
     #{$c}orc-surface-container-high-bg { background-color: var(--mat-sys-surface-container-high); }
+    #{$c}orc-surface-container-highest-bg { background-color: var(--mat-sys-surface-container-highest); }
     #{$c}orc-surface-container-bg { background-color: var(--mat-sys-surface-container); }
     #{$c}orc-surface-variant-bg { background-color: var(--mat-sys-surface-variant); }
     #{$c}orc-surface-container-low-bg { background-color: var(--mat-sys-surface-container-low); }
     #{$c}orc-surface-container-lowest-bg { background-color: var(--mat-sys-surface-container-lowest); }
+    #{$c}orc-surface-bright-bg { background-color: var(--mat-sys-surface-bright); }
     #{$c}orc-on-secondary-container-bg { background-color: var(--mat-sys-on-secondary-container); }
     #{$c}orc-on-primary-bg { background-color: var(--mat-sys-on-primary); }
     #{$c}orc-tertiary-container-bg { background-color: var(--mat-sys-tertiary-container); }
+    #{$c}orc-tertiary-bg { background-color: var(--mat-sys-tertiary); }
+    #{$c}orc-inverse-tertiary-bg { background-color: var(--mat-sys-inverse-tertiary); }
+    #{$c}orc-inverse-secondary-bg { background-color: var(--mat-sys-inverse-secondary); }
     #{$c}orc-secondary-bg { background-color: var(--mat-sys-secondary); }
     #{$c}orc-on-primary-fixed-bg { background-color: var(--mat-sys-on-primary-fixed); }
     #{$c}orc-on-error-bg { background-color: var(--mat-sys-on-error); }
@@ -43,6 +48,7 @@
     #{$c}orc-status-active-color { color: var(--orc-status-active); }
     #{$c}orc-status-warning-color { color: var(--orc-status-warning); }
     #{$c}orc-status-inactive-color { color: var(--orc-status-inactive); }
+    #{$c}orc-on-warning-color { color: var(--orc-on-warning-bg); }
     #{$c}orc-on-error-color { color: var(--mat-sys-on-error); }
     #{$c}orc-error-color { color: var(--mat-sys-error); }
     #{$c}orc-on-error-container-color { color: var(--mat-sys-on-error-container); }

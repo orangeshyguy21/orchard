@@ -16,6 +16,7 @@ import { MintMintQuoteModule } from "./mint/mintquote/mintmintquote.module";
 import { MintPromiseModule } from "./mint/promise/mintpromise.module";
 import { MintProofModule } from "./mint/proof/mintproof.module";
 import { MintAnalyticsModule } from "./mint/analytics/mintanalytics.module";
+import { MintCountModule } from "./mint/count/mintcount.module";
 // AI Endpoints
 import { AiModelModule } from "./ai/model/aimodel.module";
 import { AiChatModule } from "./ai/chat/aichat.module";
@@ -37,6 +38,7 @@ import { PublicUrlModule } from "./public/url/url.module";
 		MintPromiseModule,
 		MintProofModule,
 		MintAnalyticsModule,
+		MintCountModule,
 		AiModelModule,
 		AiChatModule,
 		PublicImageModule,

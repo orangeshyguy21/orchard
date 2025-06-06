@@ -183,33 +183,41 @@ query MintAnalyticsTransfers($units: [MintUnit!], $date_start: UnixTimestamp, $d
 }`;
 
 export const MINT_MINT_QUOTES_QUERY = `
-query MintMintQuotes($unit: [MintUnit!], $state: [MintQuoteState!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $timezone: Timezone) {
-	mint_mint_quotes(unit: $unit, state: $state, date_start: $date_start, date_end: $date_end, timezone: $timezone) {
+query MintMintQuotes($units: [MintUnit!], $states: [MintQuoteState!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $timezone: Timezone) {
+	mint_mint_quotes(units: $units, states: $states, date_start: $date_start, date_end: $date_end, timezone: $timezone) {
 		id
 		amount
 		unit
-		request
 		state
-		request_lookup_id
-		pubkey
 		issued_time
 		created_time
-		paid_time
 	}
 }`;	
 
+// export const MINT_MELT_QUOTES_QUERY = `
+// query MintMeltQuotes($unit: [MintUnit!], $state: [MeltQuoteState!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $timezone: Timezone) {
+// 	mint_melt_quotes(unit: $unit, state: $state, date_start: $date_start, date_end: $date_end, timezone: $timezone) {
+// 		id
+// 		amount
+// 		unit
+// 		request
+// 		fee_reserve
+// 		state
+// 		payment_preimage
+// 		request_lookup_id
+// 		msat_to_pay
+// 		created_time
+// 		paid_time
+// 	}
+// }`;
+
 export const MINT_MELT_QUOTES_QUERY = `
-query MintMeltQuotes($unit: [MintUnit!], $state: [MeltQuoteState!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $timezone: Timezone) {
-	mint_melt_quotes(unit: $unit, state: $state, date_start: $date_start, date_end: $date_end, timezone: $timezone) {
+query MintMeltQuotes($units: [MintUnit!], $states: [MeltQuoteState!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $timezone: Timezone) {
+	mint_melt_quotes(units: $units, states: $states, date_start: $date_start, date_end: $date_end, timezone: $timezone) {
 		id
 		amount
 		unit
-		request
-		fee_reserve
 		state
-		payment_preimage
-		request_lookup_id
-		msat_to_pay
 		created_time
 		paid_time
 	}
@@ -348,5 +356,58 @@ mutation MintRotateKeyset($mint_rotate_keyset: MintRotateKeysetInput!) {
 		unit
 		input_fee_ppk
 		max_order
+	}
+}`;
+
+export const MINT_MINT_QUOTES_DATA_QUERY = `
+query MintMintQuotes($units: [MintUnit!], $states: [MintQuoteState!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $timezone: Timezone, $page: Int, $page_size: Int) {
+	mint_mint_quotes(units: $units, states: $states, date_start: $date_start, date_end: $date_end, timezone: $timezone, page: $page, page_size: $page_size) {
+		id
+		amount
+		unit
+		request
+		state
+		request_lookup_id
+		pubkey
+		issued_time
+		created_time
+		paid_time
+	}
+	mint_count_mint_quotes(units: $units, states: $states, date_start: $date_start, date_end: $date_end, timezone: $timezone) {
+		count
+	}
+}`;	
+
+export const MINT_MELT_QUOTES_DATA_QUERY = `
+query MintMeltQuotes($units: [MintUnit!], $states: [MeltQuoteState!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $timezone: Timezone, $page: Int, $page_size: Int) {
+	mint_melt_quotes(units: $units, states: $states, date_start: $date_start, date_end: $date_end, timezone: $timezone, page: $page, page_size: $page_size) {
+		id
+		amount
+		unit
+		request
+		fee_reserve
+		state
+		payment_preimage
+		request_lookup_id
+		msat_to_pay
+		created_time
+		paid_time
+	}
+	mint_count_melt_quotes(units: $units, states: $states, date_start: $date_start, date_end: $date_end, timezone: $timezone) {
+		count
+	}
+}`;
+
+export const MINT_DATABASE_BACKUP_MUTATION = `
+mutation MintDatabaseBackup {
+	mint_database_backup {
+		filebase64
+	}
+}`;
+
+export const MINT_DATABASE_RESTORE_MUTATION = `
+mutation MintDatabaseRestore($filebase64: String!) {
+	mint_database_restore(filebase64: $filebase64) {
+		success
 	}
 }`;

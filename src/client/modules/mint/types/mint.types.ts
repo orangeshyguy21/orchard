@@ -13,6 +13,7 @@ import {
     MintQuoteState,
     MeltQuoteState,
     OrchardMintInfoRpc,
+    OrchardMintCount,
     OrchardMintNameUpdate, 
     OrchardMintIconUpdate,
     OrchardMintDescriptionUpdate,
@@ -22,6 +23,8 @@ import {
     OrchardMintNut04Update,
     OrchardMintNut05Update,
     OrchardMintKeysetRotation,
+    OrchardMintDatabaseBackup,
+    OrchardMintDatabaseRestore,
 } from "@shared/generated.types";
 
 export type MintInfoResponse = {
@@ -95,16 +98,20 @@ export type MintMintQuotesArgs = {
     units?: MintUnit[];
     date_start?: number;
     date_end?: number;
-    state?: MintQuoteState;
+    states?: MintQuoteState[];
     timezone?: string;
+    page?: number;
+    page_size?: number;
 }
 
 export type MintMeltQuotesArgs = {
     units?: MintUnit[];
     date_start?: number;
     date_end?: number;
-    state?: MeltQuoteState;
+    states?: MeltQuoteState[];
     timezone?: string;
+    page?: number;
+    page_size?: number;
 }
 
 export type MintNameUpdateResponse = {
@@ -167,4 +174,22 @@ export type MintNut05UpdateResponse = {
 
 export type MintKeysetRotationResponse = {
 	mint_keysets_rotation: OrchardMintKeysetRotation;
+}
+
+export type MintMintQuotesDataResponse = {
+	mint_mint_quotes: OrchardMintMintQuote[];
+	mint_count_mint_quotes: OrchardMintCount;
+}
+
+export type MintMeltQuotesDataResponse = {
+	mint_melt_quotes: OrchardMintMeltQuote[];
+	mint_count_melt_quotes: OrchardMintCount;
+}
+
+export type MintDatabaseBackupResponse = {
+	mint_database_backup: OrchardMintDatabaseBackup;
+}
+
+export type MintDatabaseRestoreResponse = {
+	mint_database_restore: OrchardMintDatabaseRestore;
 }
