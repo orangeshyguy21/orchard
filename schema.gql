@@ -153,6 +153,7 @@ type Mutation {
   mint_contact_add(mint_contact_update: MintContactUpdateInput!): OrchardMintContactUpdate!
   mint_contact_remove(mint_contact_update: MintContactUpdateInput!): OrchardMintContactUpdate!
   mint_database_backup: OrchardMintDatabaseBackup!
+  mint_database_restore(filebase64: String!): OrchardMintDatabaseRestore!
   mint_icon_update(mint_icon_update: MintIconUpdateInput!): OrchardMintIconUpdate!
   mint_long_description_update(mint_desc_update: MintDescriptionUpdateInput!): OrchardMintDescriptionUpdate!
   mint_motd_update(mint_motd_update: MintMotdUpdateInput!): OrchardMintMotdUpdate!
@@ -261,6 +262,10 @@ type OrchardMintDatabase {
 
 type OrchardMintDatabaseBackup {
   filebase64: String!
+}
+
+type OrchardMintDatabaseRestore {
+  success: Boolean!
 }
 
 type OrchardMintDescriptionUpdate {

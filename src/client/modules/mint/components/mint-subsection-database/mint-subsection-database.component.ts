@@ -375,11 +375,20 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 			}));
 		}
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		// send the file to the server
-		// this.mintService.restoreMintDatabaseBackup(encoded_file).subscribe({
-		// 	next: (response) => {
-		// });
-		// restore bro
+		this.mintService.restoreMintDatabaseBackup(this.form_restore.get('filebase64')?.value).subscribe({
+			next: (response) => {
+				this.eventService.registerEvent(new EventData({
+					type: 'SUCCESS',
+					message: 'Backup restored!',
+				}));
+			},
+			error: (error) => {
+				this.eventService.registerEvent(new EventData({
+					type: 'ERROR',
+					message: error
+				}));
+			}
+		});
 	}
 
 

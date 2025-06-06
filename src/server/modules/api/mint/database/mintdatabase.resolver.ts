@@ -1,9 +1,9 @@
 /* Core Dependencies */
 import { Logger } from '@nestjs/common';
-import { Resolver, Query, Mutation } from "@nestjs/graphql";
+import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
 /* Local Dependencies */
 import { MintDatabaseService } from "./mintdatabase.service";
-import { OrchardMintDatabase, OrchardMintDatabaseBackup } from "./mintdatabase.model";
+import { OrchardMintDatabase, OrchardMintDatabaseBackup, OrchardMintDatabaseRestore } from "./mintdatabase.model";
 
 @Resolver()
 export class MintDatabaseResolver {
@@ -24,5 +24,13 @@ export class MintDatabaseResolver {
 	async mint_database_backup() : Promise<OrchardMintDatabaseBackup> {
 		this.logger.debug('POST { mint_database_backup }');
 		return await this.mintDatabaseService.createMintDatabaseBackup();
+	}
+
+	@Mutation(() => OrchardMintDatabaseRestore)
+	async mint_database_restore(
+		@Args('filebase64') filebase64: string,
+	) : Promise<OrchardMintDatabaseRestore> {
+		this.logger.debug('POST { mint_database_restore }');
+		return await this.mintDatabaseService.restoreMintDatabaseBackup(filebase64);
 	}
 }

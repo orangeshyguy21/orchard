@@ -170,6 +170,7 @@ export type Mutation = {
   mint_contact_add: OrchardMintContactUpdate;
   mint_contact_remove: OrchardMintContactUpdate;
   mint_database_backup: OrchardMintDatabaseBackup;
+  mint_database_restore: OrchardMintDatabaseRestore;
   mint_icon_update: OrchardMintIconUpdate;
   mint_long_description_update: OrchardMintDescriptionUpdate;
   mint_motd_update: OrchardMintMotdUpdate;
@@ -197,6 +198,11 @@ export type MutationMint_Contact_AddArgs = {
 
 export type MutationMint_Contact_RemoveArgs = {
   mint_contact_update: MintContactUpdateInput;
+};
+
+
+export type MutationMint_Database_RestoreArgs = {
+  filebase64: Scalars['String']['input'];
 };
 
 
@@ -369,6 +375,11 @@ export type OrchardMintDatabase = {
 export type OrchardMintDatabaseBackup = {
   __typename?: 'OrchardMintDatabaseBackup';
   filebase64: Scalars['String']['output'];
+};
+
+export type OrchardMintDatabaseRestore = {
+  __typename?: 'OrchardMintDatabaseRestore';
+  success: Scalars['Boolean']['output'];
 };
 
 export type OrchardMintDescriptionUpdate = {

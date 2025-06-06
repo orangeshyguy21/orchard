@@ -57,15 +57,16 @@ export class MintDataBackupRestoreComponent {
 		};
 		reader.onload = (event) => {
 			this.file_loading.set(100);
-			const file_content = event.target?.result as string;
+			const file_content = reader.result as string;
+			const base64_content = file_content.split(',')[1];
 			this.form_group.patchValue({
-				filebase64: file_content
+				filebase64: base64_content
 			});
 			this.form_group.get('filebase64')?.markAsTouched();
 		};
 		reader.onerror = () => {
 			this.file_loading.set(null);
 		};
-		reader.readAsText(this.file);
+		reader.readAsDataURL(this.file);
 	}
 }

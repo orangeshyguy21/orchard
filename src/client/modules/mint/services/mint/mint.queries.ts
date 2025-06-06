@@ -404,3 +404,10 @@ mutation MintDatabaseBackup {
 		filebase64
 	}
 }`;
+
+export const MINT_DATABASE_RESTORE_MUTATION = `
+mutation MintDatabaseRestore($filebase64: String!) {
+	mint_database_restore(filebase64: $filebase64) {
+		success
+	}
+}`;

@@ -28,3 +28,14 @@ export class OrchardMintDatabaseBackup {
 		this.filebase64 = filebase64;
 	}
 }
+
+@ObjectType()
+export class OrchardMintDatabaseRestore {
+
+	@Field()
+	success: boolean;
+
+	constructor(success: boolean) {
+		this.success = success;
+	}
+}

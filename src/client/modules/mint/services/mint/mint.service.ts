@@ -43,6 +43,7 @@ import {
 	MintMintQuotesDataResponse,
 	MintMeltQuotesDataResponse,
 	MintDatabaseBackupResponse,
+	MintDatabaseRestoreResponse,
 } from '@client/modules/mint/types/mint.types';
 import { CacheService } from '@client/modules/cache/services/cache/cache.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
@@ -89,6 +90,7 @@ import {
 	MINT_NUT05_UPDATE_MUTATION,
 	MINT_KEYSETS_ROTATION_MUTATION,
 	MINT_DATABASE_BACKUP_MUTATION,
+	MINT_DATABASE_RESTORE_MUTATION,
 } from './mint.queries';
 
 
@@ -859,6 +861,21 @@ export class MintService {
 			}),
 			catchError((error) => {
 				console.error('Error creating mint database backup:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public restoreMintDatabaseBackup(filebase64:string) : Observable<MintDatabaseRestoreResponse> {
+		const query = getApiQuery(MINT_DATABASE_RESTORE_MUTATION, { filebase64 });
+		console.log('query', query);
+		return this.http.post<OrchardRes<MintDatabaseRestoreResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error restoring mint database backup:', error);
 				return throwError(() => error);
 			})
 		);

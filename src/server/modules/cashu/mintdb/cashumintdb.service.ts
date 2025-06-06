@@ -168,4 +168,86 @@ export class CashuMintDatabaseService implements OnModuleInit {
 			});
 		});
 	}
+
+	public async restoreBackup(db: sqlite3.Database, filebase64: string): Promise<void> {
+		return new Promise(async (resolve, reject) => {
+			const database_buffer: Buffer = Buffer.from(filebase64, 'base64');
+			const restore_path = path.resolve('temp-restore.db');
+			
+			try {
+				// Write the backup buffer to a temporary file
+				await fs.writeFile(restore_path, database_buffer);
+
+					// Validate that the file is actually a SQLite database
+					const is_valid_sqlite = await this.validateSqliteFile(restore_path);
+					console.log('is_valid_sqlite', is_valid_sqlite);
+					if (!is_valid_sqlite) {
+						this.logger.error('Invalid file: Not a valid SQLite database');
+						await fs.unlink(restore_path); // Clean up
+						reject(new Error('Invalid file: Not a valid SQLite database'));
+						return;
+					}
+				
+				// Close the current database connection
+				db.close((close_error) => {
+					if (close_error) {
+						this.logger.error(`Error closing database: ${close_error.message}`);
+						reject(close_error);
+						return;
+					}
+					
+					// Replace the original database file with the backup
+					// fs.copyFile(restore_path, this.database)
+					// 	.then(async () => {
+					// 		// Clean up the temporary restore file
+					// 		try {
+					// 			await fs.unlink(restore_path);
+					// 		} catch (cleanup_error) {
+					// 			this.logger.warn(`Warning: Could not clean up temporary file: ${cleanup_error.message}`);
+					// 		}
+					// 		this.logger.log('Database backup restored successfully');
+					// 		resolve();
+					// 	})
+					// 	.catch(async (copy_error) => {
+					// 		this.logger.error(`Error restoring database: ${copy_error.message}`);
+					// 		// Clean up the temporary file on error
+					// 		try {
+					// 			await fs.unlink(restore_path);
+					// 		} catch {}
+					// 		reject(copy_error);
+					// 	});
+				});
+			} catch (write_error) {
+				this.logger.error(`Error writing backup file: ${write_error.message}`);
+				reject(write_error);
+			}
+		});
+	}
+
+	private async validateSqliteFile(file_path: string): Promise<boolean> {
+		try {
+			// Check SQLite header
+			const file_handle = await fs.open(file_path, 'r');
+			const buffer = Buffer.alloc(16);
+			await file_handle.read(buffer, 0, 16, 0);
+			await file_handle.close();
+			
+			const sqlite_header = Buffer.from('SQLite format 3\0');
+			if (!buffer.equals(sqlite_header)) {
+				return false;
+			}
+			
+			// Test database connection
+			const test_db = new sqlite3d.Database(file_path, sqlite3.OPEN_READONLY);
+			return new Promise((resolve) => {
+				test_db.get("SELECT name FROM sqlite_master WHERE type='table' LIMIT 1", (err, row) => {
+					test_db.close();
+					resolve(!err); // Valid if no error
+				});
+			});
+		} catch (error) {
+			this.logger.error(`Error validating SQLite file: ${error.message}`);
+			return false;
+		}
+	}
 }

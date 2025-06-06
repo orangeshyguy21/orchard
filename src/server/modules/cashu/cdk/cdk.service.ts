@@ -186,7 +186,6 @@ export class CdkService {
 		return new Promise((resolve, reject) => {
 			db.get(sql, params, (err, row:CashuMintCount) => {
 				if (err) reject(err);
-				console.log(row);
 				resolve(row.count);
 			});
 		});
