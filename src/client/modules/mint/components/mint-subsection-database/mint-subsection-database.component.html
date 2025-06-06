@@ -56,14 +56,20 @@
 		<div class="category-rule"></div>
 	</div>
 
-	<div [@slideInOut]="backup_create ? 'open' : 'closed'" class="overflow-hidden">
+	<div [@slideInOut]="form_mode === 'CREATE' ? 'open' : 'closed'" class="overflow-hidden">
 		<orc-mint-data-backup-create
 			[form_group]="form_backup"
 			[database_version]="database_version"
 			[database_timestamp]="database_timestamp"
 			[database_implementation]="database_implementation"
-			(close)="onCreateClose()">
+			(close)="onClose()">
 		</orc-mint-data-backup-create>
+	</div>
+	<div [@slideInOut]="form_mode === 'RESTORE' ? 'open' : 'closed'" class="overflow-hidden">
+		<orc-mint-data-backup-restore
+			[form_group]="form_restore"
+			(close)="onClose()"
+		></orc-mint-data-backup-restore>
 	</div>
 
 	<orc-mint-data-chart

@@ -1,8 +1,6 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, computed } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-/* Vendor Dependencies */
-import { DateTime } from 'luxon';
 
 @Component({
 	selector: 'orc-mint-data-backup-create',

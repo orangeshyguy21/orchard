@@ -35,6 +35,11 @@ type MintMeltData = {
 	source : MatTableDataSource<MintMeltQuote>;
 }
 
+enum FormMode {
+	CREATE = 'CREATE',
+	RESTORE = 'RESTORE',
+}
+
 const PAGE_SIZE = 100;
 
 @Component({
@@ -68,7 +73,8 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 
 	@HostListener('window:beforeunload')
 	canDeactivate(): boolean {
-		return this.active_event?.type !== 'PENDING';
+		// return this.active_event?.type !== 'PENDING';
+		return true;
 	}
 
 	public page_settings!: NonNullableMintDatabaseSettings;
@@ -80,9 +86,14 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	public data!: MintData;
 	public count: number = 0;
 	public mint_keysets: MintKeyset[] = [];
-	public backup_create: boolean = false;
+	// public backup_create: boolean = false;
+	public form_mode!: FormMode | null;
 	public form_backup: FormGroup = new FormGroup({
 		filename: new FormControl(null, [Validators.required, Validators.maxLength(1000)]),
+	});
+	public form_restore: FormGroup = new FormGroup({
+		file: new FormControl(null, [Validators.required]),
+		filebase64: new FormControl(null, [Validators.required]),
 	});
 	public database_version!: string;
 	public database_timestamp!: number;
@@ -125,7 +136,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 			this.active_event = event_data;
 			if( event_data === null ){
 				setTimeout(() => {
-					if( !this.backup_create ) return;
+					if( this.form_mode !== FormMode.CREATE && this.form_mode !== FormMode.RESTORE ) return;
 					this.eventService.registerEvent(new EventData({
 						type: 'PENDING',
 						message: 'Save',
@@ -133,8 +144,14 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 				},1000);
 			}
 			if( event_data ){
-				if( event_data.type === 'SUCCESS' ) this.onSuccessEvent();
-				if( event_data.confirmed !== null )( event_data.confirmed ) ? this.onCreateConfirmed() : this.onCreateClose();
+				if( this.form_mode === FormMode.CREATE ){
+					if( event_data.type === 'SUCCESS' ) this.onCreateSuccess();
+					if( event_data.confirmed !== null )( event_data.confirmed ) ? this.onCreateConfirmed() : this.onClose();
+				}
+				if( this.form_mode === FormMode.RESTORE ){
+					if( event_data.type === 'SUCCESS' ) this.onRestoreSuccess();
+					if( event_data.confirmed !== null )( event_data.confirmed ) ? this.onRestoreConfirmed() : this.onClose();
+				}
 			}
 		});
 	}
@@ -283,18 +300,14 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	}
 
 	public onCreate(): void {
-		( !this.backup_create ) ? this.initCreateBackup() : this.onCreateClose();
+		( this.form_mode !== FormMode.CREATE ) ? this.initCreateBackup() : this.onClose();
 	}
 	public onRestore(): void {
-		// this.backup_create = true;
-		// this.eventService.registerEvent(new EventData({
-		// 	type: 'PENDING',
-		// 	message: 'Restore',
-		// }));
+		( this.form_mode !== FormMode.RESTORE ) ? this.initRestoreBackup() : this.onClose();
 	}
 
 	private initCreateBackup(): void {
-		this.backup_create = true;
+		this.form_mode = FormMode.CREATE;
 		this.eventService.registerEvent(new EventData({
 			type: 'PENDING',
 			message: 'Save',
@@ -314,8 +327,18 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		});
 	}
 
-	public onCreateClose(): void {
-		this.backup_create = false;
+	private initRestoreBackup(): void {
+		this.form_mode = FormMode.RESTORE;
+		this.eventService.registerEvent(new EventData({
+			type: 'PENDING',
+			message: 'Restore',
+		}));
+	}
+
+	public onClose(): void {
+		this.form_backup.reset();
+		this.form_restore.reset();
+		this.form_mode = null;
 		this.eventService.registerEvent(null);
 		this.cdr.detectChanges();
 	}	
@@ -344,9 +367,23 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 			}
 		});
 	}
+	private onRestoreConfirmed(): void {
+		if (this.form_restore.invalid) {
+			return this.eventService.registerEvent(new EventData({
+				type: 'WARNING',
+				message: 'Invalid backup file',
+			}));
+		}
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		// send the file to the server
+		// this.mintService.restoreMintDatabaseBackup(encoded_file).subscribe({
+		// 	next: (response) => {
+		// });
+		// restore bro
+	}
 
 
-	private onSuccessEvent(): void {
+	private onCreateSuccess(): void {
 		const decoded_data = atob(this.backup_encoded);
 		const uint8_array = Uint8Array.from(decoded_data, c => c.charCodeAt(0));
 		const file = new File([uint8_array], this.form_backup.get('filename')?.value, { type: 'application/octet-stream' });
@@ -355,13 +392,19 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		a.href = url;
 		a.download = this.form_backup.get('filename')?.value;
 		a.click();
-		this.backup_create = false;
+		this.form_mode = null;
 		this.backup_encoded = '';
 		this.cdr.detectChanges();
 	}
 
+	private onRestoreSuccess(): void {
+		this.form_mode = null;
+		this.form_restore.reset();
+		this.cdr.detectChanges();
+	}
+
 	ngOnDestroy(): void {
-		this.backup_create = false;
+		this.form_mode = null;
 		this.subscriptions.unsubscribe();
 	}
 }

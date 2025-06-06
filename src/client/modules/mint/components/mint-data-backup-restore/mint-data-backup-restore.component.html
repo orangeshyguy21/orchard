@@ -1,0 +1,79 @@
+<div class="mint-keyset-rotation-container p-t-1">
+	<mat-card appearance="outlined" class="relative overflow-hidden">
+        <mat-card-content class="orc-surface-container-low-bg">
+            <div class="absolute top-0-5 right-0-5">
+                <button mat-icon-button (click)="close.emit()">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </div>
+            <div class="flex flex-gap-2">
+                <div class="flex-1">
+                    <form class="flex-grow">
+                        <div class="flex flex-gap-2">
+                            <div class="flex-1 flex flex-items-center flex-gap-2">
+                                <!-- <div class="flex flex-items-center flex-gap-2">
+
+                                </div> -->
+                                <div>
+                                    <button mat-stroked-button (click)="fileInput.click()" type="button">
+                                        Select Backup
+                                    </button>
+                                    @if (form_group.get('file')?.invalid && (form_group.get('file')?.dirty || form_group.get('file')?.touched)) {
+                                        <mat-error class="font-size-xs">{{ file_error() }}</mat-error>
+                                    }
+                                    <input 
+                                        #fileInput
+                                        type="file" 
+                                        hidden 
+                                        (change)="onFileSelected($event)"
+                                        accept=".db,.sqlite,.sql">
+                                </div>
+                                <div>
+                                    @if( file_loading() !== null ) {
+                                        <mat-progress-spinner
+                                            diameter="20"
+                                            [mode]="'determinate'"
+                                            [value]="file_loading()">
+                                        </mat-progress-spinner>
+                                    }
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <orc-help-text class="orc-surface-container-high-bg">
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing el
+                                </orc-help-text>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="flex-1">
+                    <div class="flex flex-items-center flex-gap-2">
+                        <div>
+                            <mat-icon class="icon-lg" [class.mat-symbol-outline]="!file_quorum">database</mat-icon>
+                        </div>
+                        <div class="flex flex-justify-center flex-items-center flex-gap-1">
+                            <div class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color font-weight-extra-light">
+                                <div>File:</div>
+                                <div>Last Modified:</div>
+                                <div>Size:</div>
+                            </div>
+                            <div class="flex flex-column flex-gap-0-5 font-size-xs">
+                                @if( file && file_quorum ) {
+                                    <div>{{ file.name }}</div>
+                                    <div>{{ (file.lastModified/1000) | time:"medium" }}</div>
+                                    <div>{{ file.size | bytes }}</div>
+                                }@else{
+                                    <div class="flex flex-column flex-gap-0-5 orc-outline-color">
+                                        <div>No file selected</div> 
+                                        <div>-</div> 
+                                        <div>-</div> 
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </mat-card-content>
+    </mat-card>
+</div>
