@@ -139,7 +139,7 @@ export class CashuMintDatabaseService implements OnModuleInit {
 	}
 
 	public async getMintAnalyticsKeysets(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintKeysetsAnalytics[]> {
-		if( this.backend === 'nutshell' )  throw OrchardErrorCode.MintSupportError;
+		if( this.backend === 'nutshell' ) return this.nutshellService.getMintAnalyticsKeysets(db, args);
 		if( this.backend === 'cdk' ) return this.cdkService.getMintAnalyticsKeysets(db, args);
 	}
 

@@ -12,6 +12,7 @@ import {
 	CashuMintPromise,
 	CashuMintProof,
 	CashuMintAnalytics,
+	CashuMintKeysetsAnalytics,
 } from '@server/modules/cashu/mintdb/cashumintdb.types';
 import { 
 	CashuMintAnalyticsArgs,
@@ -35,7 +36,7 @@ export class NutshellService {
 	constructor() {}
 
 	public async getMintBalances(db:sqlite3.Database, keyset_id?: string) : Promise<CashuMintBalance[]> {
-		const where_clause = keyset_id ? `WHERE keyset_id = ?` : '';
+		const where_clause = keyset_id ? `WHERE keyset = ?` : '';
 		const sql = `SELECT * FROM balance ${where_clause};`;
 		const params = keyset_id ? [keyset_id] : [];
 		return new Promise((resolve, reject) => {
@@ -403,6 +404,77 @@ export class NutshellService {
 						amount: row.amount,
 						created_time: timestamp,
 						operation_count: row.operation_count,
+					};
+				});
+				
+				resolve(result);
+			});
+		});
+	}
+
+	public async getMintAnalyticsKeysets(db: sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintKeysetsAnalytics[]> {
+		const interval = args?.interval || MintAnalyticsInterval.day;
+		const timezone = args?.timezone || 'UTC';
+		const { where_conditions, params } = getAnalyticsConditions({
+			args: args,
+			time_column: 'created'
+		});
+		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
+		const time_group_sql = getAnalyticsTimeGroupSql({
+			interval: interval,
+			timezone: timezone,
+			time_column: 'created',
+			group_by: 'id'
+		});
+	
+		const sql = `
+			WITH issued AS (
+				SELECT 
+					${time_group_sql} AS time_group,
+					id,
+					SUM(amount) AS issued_amount,
+					MIN(created) as min_created_time
+				FROM promises
+				${where_clause}
+				GROUP BY time_group, id
+			),
+			redeemed AS (
+				SELECT 
+					${time_group_sql} AS time_group,
+					id,
+					SUM(amount) AS redeemed_amount,
+					MIN(created) as min_created_time
+				FROM proofs_used
+				${where_clause}
+				GROUP BY time_group, id
+			)
+			SELECT 
+				COALESCE(i.time_group, r.time_group) AS time_group,
+				COALESCE(i.id, r.id) AS keyset_id,
+				COALESCE(i.issued_amount, 0) - COALESCE(r.redeemed_amount, 0) AS amount,
+				COALESCE(i.min_created_time, r.min_created_time) AS min_created_time
+			FROM issued i
+			FULL OUTER JOIN redeemed r 
+				ON i.time_group = r.time_group 
+				AND i.id = r.id
+			ORDER BY min_created_time;
+		`;
+	
+		return new Promise((resolve, reject) => {
+			db.all(sql, [...params, ...params], (err, rows: any[]) => {
+				if (err) return reject(err);
+						
+				const result = rows.map(row => {
+					const timestamp = getAnalyticsTimeGroupStamp({
+						min_created_time: row.min_created_time,
+						time_group: row.time_group,
+						interval: interval,
+						timezone: timezone
+					});
+					return {
+						keyset_id: row.keyset_id,
+						amount: row.amount,
+						created_time: timestamp,
 					};
 				});
 				
