@@ -29,7 +29,7 @@ import {
 } from '@server/modules/cashu/mintdb/cashumintdb.helpers';
 import { MintAnalyticsInterval } from '@server/modules/cashu/mintdb/cashumintdb.enums';
 /* Local Dependencies */
-import { NutshellMintMintQuote } from './nutshell.types';
+import { NutshellMintMintQuote, NutshellMintMeltQuote } from './nutshell.types';
 
 @Injectable()
 export class NutshellService {
@@ -96,7 +96,7 @@ export class NutshellService {
 				const cashu_quote = (row: NutshellMintMintQuote): CashuMintMintQuote => ({
 					id: row.quote,
 					request_lookup_id: row.checking_id,
-					issued_time: null,
+					issued_time: (row.state === 'ISSUED') ? row.paid_time : null,
 					...row
 				});
 				resolve(rows.map(cashu_quote));
@@ -129,9 +129,17 @@ export class NutshellService {
 		};
 		const { sql, params } = buildDynamicQuery('melt_quotes', args, field_mappings);
 		return new Promise((resolve, reject) => {
-			db.all(sql, params, (err, rows:CashuMintMeltQuote[]) => {
+			db.all(sql, params, (err, rows:NutshellMintMeltQuote[]) => {
 				if (err) reject(err);
-				resolve(rows);
+				const cashu_quote = (row: NutshellMintMeltQuote): CashuMintMeltQuote => ({
+					id: row.quote,
+					request_lookup_id: row.checking_id,
+					paid_time: row.paid_time,
+					payment_preimage: null,
+					msat_to_pay: null,
+					...row
+				});
+				resolve(rows.map(cashu_quote));
 			});
 		});
 	}
