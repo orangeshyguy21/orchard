@@ -14,7 +14,6 @@ import { OrchardErrorCode } from '@server/modules/error/error.types';
 import { 
 	CashuMintBalance,
 	CashuMintKeyset,
-	CashuMintDatabaseVersion,
 	CashuMintMeltQuote,
 	CashuMintMintQuote,
 	CashuMintPromise,
@@ -76,11 +75,6 @@ export class CashuMintDatabaseService implements OnModuleInit {
 		if( this.backend === 'cdk' ) return this.cdkService.getMintKeysets(db);
 	}
 
-	public async getMintDatabaseVersions(db:sqlite3.Database) : Promise<CashuMintDatabaseVersion[]> {
-		if( this.backend === 'nutshell' ) return this.nutshellService.getMintDatabaseVersions(db);
-		if( this.backend === 'cdk' ) throw OrchardErrorCode.MintSupportError;
-	}
-
 	public async getMintMintQuotes(db:sqlite3.Database, args?: CashuMintMintQuotesArgs) : Promise<CashuMintMintQuote[]> {
 		if( this.backend === 'nutshell' ) return this.nutshellService.getMintMintQuotes(db, args);
 		if( this.backend === 'cdk' ) return this.cdkService.getMintMintQuotes(db, args);
@@ -107,12 +101,12 @@ export class CashuMintDatabaseService implements OnModuleInit {
 	}
 
 	public async getMintCountMintQuotes(db:sqlite3.Database, args?: CashuMintMintQuotesArgs) : Promise<number> {
-		if( this.backend === 'nutshell' ) throw OrchardErrorCode.MintSupportError;
+		if( this.backend === 'nutshell' ) return this.nutshellService.getMintCountMintQuotes(db, args);
 		if( this.backend === 'cdk' ) return this.cdkService.getMintCountMintQuotes(db, args);
 	}
 
 	public async getMintCountMeltQuotes(db:sqlite3.Database, args?: CashuMintMeltQuotesArgs) : Promise<number> {
-		if( this.backend === 'nutshell' ) throw OrchardErrorCode.MintSupportError;
+		if( this.backend === 'nutshell' ) return this.nutshellService.getMintCountMeltQuotes(db, args);
 		if( this.backend === 'cdk' ) return this.cdkService.getMintCountMeltQuotes(db, args);
 	}
 
@@ -139,7 +133,7 @@ export class CashuMintDatabaseService implements OnModuleInit {
 	}
 
 	public async getMintAnalyticsKeysets(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintKeysetsAnalytics[]> {
-		if( this.backend === 'nutshell' )  throw OrchardErrorCode.MintSupportError;
+		if( this.backend === 'nutshell' ) return this.nutshellService.getMintAnalyticsKeysets(db, args);
 		if( this.backend === 'cdk' ) return this.cdkService.getMintAnalyticsKeysets(db, args);
 	}
 

@@ -17,11 +17,6 @@ export type CashuMintKeyset = {
 	input_fee_ppk: number;
 }
 
-export type CashuMintDatabaseVersion = {
-	db: string;
-	version: number;
-}
-
 export type CashuMintMeltQuote = {
 	id: string;
 	unit: MintUnit;

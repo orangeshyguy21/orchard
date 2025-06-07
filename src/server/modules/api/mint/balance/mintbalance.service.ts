@@ -21,7 +21,7 @@ export class MintBalanceService {
 		private errorService: ErrorService,
 	) {}
 
-	async getMintBalances(keyset_id?: string): Promise<OrchardMintBalance[]> {
+	async getMintBalances(tag: string, keyset_id?: string): Promise<OrchardMintBalance[]> {
 		return this.mintService.withDb(async (db) => {
 			try {
 				const cashu_mint_balances: CashuMintBalance[] = await this.cashuMintDatabaseService.getMintBalances(db, keyset_id);
@@ -29,7 +29,7 @@ export class MintBalanceService {
 			} catch (error) {
 				const error_code = this.errorService.resolveError({ logger: this.logger, error,
 					errord: OrchardErrorCode.MintDatabaseSelectError,
-					msg: 'Error getting mint balances',
+					msg: tag,
 				});
 				throw new OrchardApiError(error_code);
 			}

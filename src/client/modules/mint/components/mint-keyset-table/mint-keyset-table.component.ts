@@ -37,7 +37,7 @@ export class MintKeysetTableComponent implements OnChanges {
 	@Input() public page_settings!: NonNullableMintKeysetsSettings;
 	@Input() public loading!: boolean;
 
-	public displayed_columns = ['keyset', 'unit', 'input_fee_ppk', 'valid_from', 'balance'];
+	public displayed_columns = ['keyset', 'input_fee_ppk', 'valid_from', 'balance'];
   	public data_source!: MatTableDataSource<MintKeysetRow>;
 
 	constructor() {}

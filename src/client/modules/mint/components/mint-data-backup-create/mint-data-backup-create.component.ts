@@ -11,6 +11,7 @@ import { FormGroup } from '@angular/forms';
 })
 export class MintDataBackupCreateComponent {
 
+	@Input() active!: boolean;
 	@Input() form_group!: FormGroup;
 	@Input() database_version!: string;
 	@Input() database_timestamp!: number;
