@@ -6,6 +6,7 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartType as ChartJsType } from 'chart.js';
 import { DateTime } from 'luxon';
 /* Application Dependencies */
+import { AmountPipe } from '@client/modules/local/pipes/amount/amount.pipe';
 import { DataType } from '@client/modules/orchard/enums/data.enum';
 import { NonNullableMintDatabaseSettings } from '@client/modules/settings/types/setting.types';
 import { 
@@ -108,7 +109,7 @@ export class MintDataChartComponent {
 			const custom_opacity = this.chartService.hexToRgba(color.border, 0.75);
 			const data_prepped = data.map( entity => ({
 				x: (entity.created_time ?? 0) * 1000,
-				y: entity.amount,
+				y: AmountPipe.getConvertedAmount(unit, entity.amount),
 				state: entity.state
 			}));
 			const yAxisID = getYAxisId(unit);
@@ -149,7 +150,7 @@ export class MintDataChartComponent {
 			const custom_opacity = this.chartService.hexToRgba(color.border, 0.75);
 			const data_prepped = data.map( entity => ({
 				x: (entity.created_time ?? 0) * 1000,
-				y: entity.amount,
+				y: AmountPipe.getConvertedAmount(unit, entity.amount),
 				state: entity.state
 			}));
 			const yAxisID = getYAxisId(unit);
