@@ -6,7 +6,6 @@ import sqlite3 from "sqlite3";
 import { 
 	CashuMintBalance,
 	CashuMintKeyset,
-	CashuMintDatabaseVersion,
 	CashuMintMeltQuote,
 	CashuMintMintQuote,
 	CashuMintPromise,
@@ -78,16 +77,6 @@ export class NutshellService {
 					const match = row.derivation_path?.match(/\/(\d+)'?$/);
 					row.derivation_path_index = match ? parseInt(match[1], 10) : null;
 				});
-				resolve(rows);
-			});
-		});
-	}
-
-	public async getMintDatabaseVersions(db:sqlite3.Database) : Promise<CashuMintDatabaseVersion[]> {
-		const sql = 'SELECT * FROM dbversions;';
-		return new Promise((resolve, reject) => {
-			db.all(sql, (err, rows:CashuMintDatabaseVersion[]) => {
-				if (err) reject(err);
 				resolve(rows);
 			});
 		});

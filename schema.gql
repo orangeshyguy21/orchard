@@ -255,11 +255,6 @@ type OrchardMintCount {
   count: Int!
 }
 
-type OrchardMintDatabase {
-  db: String!
-  version: Int!
-}
-
 type OrchardMintDatabaseBackup {
   filebase64: String!
 }
@@ -515,7 +510,6 @@ type Query {
   mint_balances_redeemed: [OrchardMintBalance!]!
   mint_count_melt_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, states: [MeltQuoteState!], timezone: Timezone, units: [MintUnit!]): OrchardMintCount!
   mint_count_mint_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, states: [MintQuoteState!], timezone: Timezone, units: [MintUnit!]): OrchardMintCount!
-  mint_databases: [OrchardMintDatabase!]!
   mint_info: OrchardMintInfo!
   mint_info_rpc: OrchardMintInfoRpc!
   mint_keysets: [OrchardMintKeyset!]!

@@ -14,7 +14,6 @@ import { OrchardErrorCode } from '@server/modules/error/error.types';
 import { 
 	CashuMintBalance,
 	CashuMintKeyset,
-	CashuMintDatabaseVersion,
 	CashuMintMeltQuote,
 	CashuMintMintQuote,
 	CashuMintPromise,
@@ -74,11 +73,6 @@ export class CashuMintDatabaseService implements OnModuleInit {
 	public async getMintKeysets(db:sqlite3.Database) : Promise<CashuMintKeyset[]> {
 		if( this.backend === 'nutshell' ) return this.nutshellService.getMintKeysets(db);
 		if( this.backend === 'cdk' ) return this.cdkService.getMintKeysets(db);
-	}
-
-	public async getMintDatabaseVersions(db:sqlite3.Database) : Promise<CashuMintDatabaseVersion[]> {
-		if( this.backend === 'nutshell' ) return this.nutshellService.getMintDatabaseVersions(db);
-		if( this.backend === 'cdk' ) throw OrchardErrorCode.MintSupportError;
 	}
 
 	public async getMintMintQuotes(db:sqlite3.Database, args?: CashuMintMintQuotesArgs) : Promise<CashuMintMintQuote[]> {
