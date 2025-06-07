@@ -366,12 +366,6 @@ export type OrchardMintCount = {
   count: Scalars['Int']['output'];
 };
 
-export type OrchardMintDatabase = {
-  __typename?: 'OrchardMintDatabase';
-  db: Scalars['String']['output'];
-  version: Scalars['Int']['output'];
-};
-
 export type OrchardMintDatabaseBackup = {
   __typename?: 'OrchardMintDatabaseBackup';
   filebase64: Scalars['String']['output'];
@@ -662,7 +656,6 @@ export type Query = {
   mint_balances_redeemed: Array<OrchardMintBalance>;
   mint_count_melt_quotes: OrchardMintCount;
   mint_count_mint_quotes: OrchardMintCount;
-  mint_databases: Array<OrchardMintDatabase>;
   mint_info: OrchardMintInfo;
   mint_info_rpc: OrchardMintInfoRpc;
   mint_keysets: Array<OrchardMintKeyset>;

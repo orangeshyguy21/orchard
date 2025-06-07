@@ -11,6 +11,7 @@ import { FormGroup } from '@angular/forms';
 })
 export class MintDataBackupRestoreComponent {
 
+	@Input() active!: boolean;
 	@Input() form_group!: FormGroup;
 
 	@Output() close = new EventEmitter<void>();

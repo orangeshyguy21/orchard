@@ -49,6 +49,7 @@
 
 	<div [@slideInOut]="form_mode === 'CREATE' ? 'open' : 'closed'" class="overflow-hidden">
 		<orc-mint-data-backup-create
+			[active]="form_mode === 'CREATE'"
 			[form_group]="form_backup"
 			[database_version]="database_version"
 			[database_timestamp]="database_timestamp"
@@ -58,6 +59,7 @@
 	</div>
 	<div [@slideInOut]="form_mode === 'RESTORE' ? 'open' : 'closed'" class="overflow-hidden">
 		<orc-mint-data-backup-restore
+			[active]="form_mode === 'RESTORE'"
 			[form_group]="form_restore"
 			(close)="onClose()"
 		></orc-mint-data-backup-restore>
