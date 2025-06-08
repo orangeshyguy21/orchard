@@ -117,4 +117,17 @@ export const AI_AGENTS = {
             UpdateMintKeysetRotationMaxOrderTool,
         ],
     },
+    [AiAgent.MINT_DATABASE]: {
+        name: 'Mint Database',
+        description: 'Mint database agent',
+        system_message: {
+            role: 'system',
+            content: `You are an agent designed to help explore the database of a cashu mint.
+            You will be provided with the current state of the form along with the users request for changes`,
+        },
+        tools: [
+            UpdateMintAnalyticsDateRangeTool,
+            UpdateMintAnalyticsUnitsTool,
+        ],
+    },
 };

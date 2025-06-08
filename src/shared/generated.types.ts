@@ -22,6 +22,7 @@ export enum AiAgent {
   Default = 'DEFAULT',
   MintConfig = 'MINT_CONFIG',
   MintDashboard = 'MINT_DASHBOARD',
+  MintDatabase = 'MINT_DATABASE',
   MintInfo = 'MINT_INFO',
   MintKeysets = 'MINT_KEYSETS',
   MintKeysetRotation = 'MINT_KEYSET_ROTATION'
