@@ -524,6 +524,7 @@ type Query {
   mint_balances_redeemed: [OrchardMintBalance!]!
   mint_count_melt_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, states: [MeltQuoteState!], units: [MintUnit!]): OrchardMintCount!
   mint_count_mint_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, states: [MintQuoteState!], units: [MintUnit!]): OrchardMintCount!
+  mint_count_proof_groups(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!], states: [MintProofState!]): OrchardMintCount!
   mint_info: OrchardMintInfo!
   mint_info_rpc: OrchardMintInfoRpc!
   mint_keysets: [OrchardMintKeyset!]!

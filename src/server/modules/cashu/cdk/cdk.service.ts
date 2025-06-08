@@ -210,75 +210,44 @@ export class CdkService {
 	}
 
 	public async getMintProofGroups(db: sqlite3.Database, args?: CashuMintProofsArgs): Promise<CashuMintProofGroup[]> {
-		// Default values
-		const page_size = args?.page_size || 500;
-		const page = args?.page || 1;
-		const offset = (page - 1) * page_size;
+		const field_mappings = {
+			states: 'p.state',
+			id_keysets: 'p.keyset_id',
+			date_start: 'p.created_time',
+			date_end: 'p.created_time',
+		};
 		
-		// Build WHERE conditions
-		const where_conditions: string[] = [];
-		const params: any[] = [];
-		
-		if (args?.states && args.states.length > 0) {
-			const state_placeholders = args.states.map(() => '?').join(',');
-			where_conditions.push(`p.state IN (${state_placeholders})`);
-			params.push(...args.states);
-		}
-		
-		if (args?.id_keysets && args.id_keysets.length > 0) {
-			const keyset_placeholders = args.id_keysets.map(() => '?').join(',');
-			where_conditions.push(`p.keyset_id IN (${keyset_placeholders})`);
-			params.push(...args.id_keysets);
-		}
-		
-		if (args?.date_start) {
-			where_conditions.push(`p.created_time >= ?`);
-			params.push(args.date_start);
-		}
-		
-		if (args?.date_end) {
-			where_conditions.push(`p.created_time <= ?`);
-			params.push(args.date_end);
-		}
-		
-		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
-		
-		const sql = `
+		const select_statement = `
 			SELECT 
 				p.created_time,
 				p.keyset_id,
 				k.unit,
 				p.state,
-				json_group_array(p.amount) as promises
+				json_group_array(p.amount) as proofs
 			FROM proof p
-			LEFT JOIN keyset k ON k.id = p.keyset_id
-			${where_clause}
-			GROUP BY 
-				p.created_time,
-				p.keyset_id,
-				k.unit,
-				p.state
-			ORDER BY p.created_time DESC
-			LIMIT ${page_size}
-			${offset > 0 ? `OFFSET ${offset}` : ''}
-		`;
+			LEFT JOIN keyset k ON k.id = p.keyset_id`;
+		
+		const group_by = 'p.created_time, p.keyset_id, k.unit, p.state';
+		
+		const { sql, params } = buildDynamicQuery(
+			'proof', 
+			args, 
+			field_mappings, 
+			select_statement, 
+			group_by
+		);
 		
 		return new Promise((resolve, reject) => {
 			db.all(sql, params, (err, rows: any[]) => {
-				if (err) {
-					reject(err);
-					return;
-				}
-				
+				if (err) { reject(err); }
 				const proof_groups: CashuMintProofGroup[] = rows.map(row => ({
-					amount: JSON.parse(row.promises).reduce((sum: number, amount: number) => sum + amount, 0),
+					amount: JSON.parse(row.proofs).reduce((sum: number, amount: number) => sum + amount, 0),
 					created_time: row.created_time,
 					keyset_id: row.keyset_id,
 					unit: row.unit,
 					state: row.state,
-					proofs: JSON.parse(row.promises)
+					proofs: JSON.parse(row.proofs)
 				}));
-				
 				resolve(proof_groups);
 			});
 		});
@@ -302,19 +271,33 @@ export class CdkService {
 
 	public async getMintCountProofGroups(db:sqlite3.Database, args?: CashuMintProofsArgs) : Promise<number> {
 		const field_mappings = {
-			units: 'unit',
-			date_start: 'created_time',
-			date_end: 'created_time',
-			states: 'state',
+			states: 'p.state',
+			id_keysets: 'p.keyset_id',
+			date_start: 'p.created_time',
+			date_end: 'p.created_time',
 		};
-		const { sql, params } = buildCountQuery('proof', args, field_mappings);
+		
+		const select_statement = `
+			SELECT COUNT(*) AS count FROM (
+				SELECT 
+					p.created_time,
+					p.keyset_id,
+					k.unit,
+					p.state
+				FROM proof p
+				LEFT JOIN keyset k ON k.id = p.keyset_id`;
+		
+		const group_by = 'p.created_time, p.keyset_id, k.unit, p.state';
+		const { sql, params } = buildCountQuery('proof', args, field_mappings, select_statement, group_by);
+		const final_sql = sql.replace(';', ') subquery;');
 		return new Promise((resolve, reject) => {
-			db.get(sql, params, (err, row:CashuMintCount) => {
+			db.get(final_sql, params, (err, row:CashuMintCount) => {
 				if (err) reject(err);
 				resolve(row.count);
 			});
 		});
 	}
+
 
 	/* Analytics */
 

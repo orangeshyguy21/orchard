@@ -8,18 +8,21 @@ import { CashuMintAnalyticsArgs } from './cashumintdb.interfaces';
  * @param table_name The database table to query
  * @param args Optional filtering arguments
  * @param field_mappings Maps argument fields to database columns
- * @param select_fields Optional fields to select (defaults to *)
+ * @param select_statement Optional custom SELECT statement (defaults to SELECT * FROM table_name)
+ * @param group_by Optional GROUP BY clause
  * @returns Object containing SQL query string and parameters array
  */
 export function buildDynamicQuery(
     table_name: string, 
     args?: Record<string, any>,
     field_mappings?: Record<string, string>,
+    select_statement?: string,
+    group_by?: string,
 ) : {
 	sql: string;
 	params: any[]
 } {
-    let sql = `SELECT * FROM ${table_name}`;
+    let sql = select_statement || `SELECT * FROM ${table_name}`;
     const conditions: string[] = [];
     const params: any[] = [];
     const page_size = args?.page_size || 500;
@@ -33,6 +36,7 @@ export function buildDynamicQuery(
     }
     
     if (conditions.length > 0) sql += ` WHERE ${conditions.join(' AND ')}`;
+    if (group_by) sql += ` GROUP BY ${group_by}`;
     sql += ` ORDER BY ${field_mappings?.date_start || 'created_time'} DESC`;    
     sql += ` LIMIT ${page_size}`;
     if (offset > 0) sql += ` OFFSET ${offset}`;
@@ -43,11 +47,13 @@ export function buildCountQuery(
     table_name: string, 
     args?: Record<string, any>,
     field_mappings?: Record<string, string>,
+    select_statement?: string,
+    group_by?: string,
 ) : {
 	sql: string;
 	params: any[]
 } {
-    let sql = `SELECT COUNT(*) AS count FROM ${table_name}`;
+    let sql = select_statement || `SELECT COUNT(*) AS count FROM ${table_name}`;
     const conditions: string[] = [];
     const params: any[] = [];
     if (args && field_mappings) {
@@ -56,6 +62,7 @@ export function buildCountQuery(
         });
     }
     if (conditions.length > 0) sql += ` WHERE ${conditions.join(' AND ')}`;
+    if (group_by) sql += ` GROUP BY ${group_by}`;
     return { sql: sql + ';', params };
 }
 
