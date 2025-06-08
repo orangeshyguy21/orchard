@@ -67,13 +67,13 @@ export type CashuMintProof = {
 	melt_quote: string;
 }
 
-export type CashuMintTransaction = {
+export type CashuMintProofGroup = {
 	amount: number;
 	created_time: number;
 	keyset_id: string;
 	unit: MintUnit;
 	state: MintProofState;
-	promises: number[];
+	proofs: number[];
 }
 
 export type CashuMintAnalytics = {

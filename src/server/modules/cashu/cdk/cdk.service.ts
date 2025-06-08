@@ -14,10 +14,10 @@ import {
 	CashuMintMeltQuote,
 	CashuMintMintQuote,
 	CashuMintProof,
+	CashuMintProofGroup,
 	CashuMintAnalytics,
 	CashuMintKeysetsAnalytics,
 	CashuMintCount,
-	CashuMintTransaction,
 } from '@server/modules/cashu/mintdb/cashumintdb.types';
 import { 
 	CashuMintMintQuotesArgs,
@@ -225,7 +225,7 @@ export class CdkService {
 		});
 	}
 
-	public async getMintTransactions(db: sqlite3.Database, args?: CashuMintProofsArgs): Promise<CashuMintTransaction[]> {
+	public async getMintProofGroups(db: sqlite3.Database, args?: CashuMintProofsArgs): Promise<CashuMintProofGroup[]> {
 		// Default values
 		const page_size = args?.page_size || 500;
 		const page = args?.page || 1;
@@ -286,16 +286,16 @@ export class CdkService {
 					return;
 				}
 				
-				const transactions: CashuMintTransaction[] = rows.map(row => ({
+				const proof_groups: CashuMintProofGroup[] = rows.map(row => ({
 					amount: JSON.parse(row.promises).reduce((sum: number, amount: number) => sum + amount, 0),
 					created_time: row.created_time,
 					keyset_id: row.keyset_id,
 					unit: row.unit,
 					state: row.state,
-					promises: JSON.parse(row.promises)
+					proofs: JSON.parse(row.promises)
 				}));
 				
-				resolve(transactions);
+				resolve(proof_groups);
 			});
 		});
 	}

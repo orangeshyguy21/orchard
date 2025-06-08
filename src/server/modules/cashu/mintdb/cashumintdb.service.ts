@@ -20,7 +20,7 @@ import {
 	CashuMintProof,
 	CashuMintAnalytics,
 	CashuMintKeysetsAnalytics,
-	CashuMintTransaction,
+	CashuMintProofGroup,
 } from './cashumintdb.types';
 import { 
 	CashuMintAnalyticsArgs,
@@ -96,9 +96,9 @@ export class CashuMintDatabaseService implements OnModuleInit {
 		if( this.backend === 'cdk' ) throw OrchardErrorCode.MintSupportError;
 	}
 
-	public async getMintTransactions(db:sqlite3.Database, args?: CashuMintProofsArgs) : Promise<CashuMintTransaction[]> {
+	public async getMintProofGroups(db:sqlite3.Database, args?: CashuMintProofsArgs) : Promise<CashuMintProofGroup[]> {
 		if( this.backend === 'nutshell' ) throw OrchardErrorCode.MintSupportError;
-		if( this.backend === 'cdk' ) return this.cdkService.getMintTransactions(db, args);
+		if( this.backend === 'cdk' ) return this.cdkService.getMintProofGroups(db, args);
 	}
 
 	public async getMintCountMintQuotes(db:sqlite3.Database, args?: CashuMintMintQuotesArgs) : Promise<number> {
