@@ -2,6 +2,7 @@ import { MintProofState, MintUnit, OrchardMintProofGroup } from "@shared/generat
 
 export class MintProofGroup implements OrchardMintProofGroup {
 
+    id: number;
 	amount: number;
 	created_time: number;
 	keyset_id: string;
@@ -10,6 +11,7 @@ export class MintProofGroup implements OrchardMintProofGroup {
 	unit: MintUnit;
 
 	constructor(omp: OrchardMintProofGroup) {
+        this.id = omp.created_time;
 		this.amount = omp.amount;
 		this.created_time = omp.created_time;
 		this.keyset_id = omp.keyset_id;
