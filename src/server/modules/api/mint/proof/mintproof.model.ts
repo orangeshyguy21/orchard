@@ -57,10 +57,10 @@ export class OrchardMintProofGroup {
 	@Field(type => String)
 	keyset_id: string;
 
-    @Field()
+  @Field(type => MintUnit)
 	unit: MintUnit;
 
-	@Field()
+	@Field(type => MintProofState)
 	state: MintProofState;
 
 	@Field(type => [Int])

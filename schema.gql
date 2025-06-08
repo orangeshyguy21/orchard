@@ -411,8 +411,8 @@ type OrchardMintProofGroup {
   created_time: UnixTimestamp!
   keyset_id: String!
   proofs: [Int!]!
-  state: String!
-  unit: String!
+  state: MintProofState!
+  unit: MintUnit!
 }
 
 type OrchardMintQuoteTtls {

@@ -535,20 +535,20 @@ export type OrchardMintProof = {
   y?: Maybe<Scalars['String']['output']>;
 };
 
+export type OrchardMintProofGroup = {
+  __typename?: 'OrchardMintProofGroup';
+  amount: Scalars['Int']['output'];
+  created_time: Scalars['UnixTimestamp']['output'];
+  keyset_id: Scalars['String']['output'];
+  proofs: Array<Scalars['Int']['output']>;
+  state: MintProofState;
+  unit: MintUnit;
+};
+
 export type OrchardMintQuoteTtls = {
   __typename?: 'OrchardMintQuoteTtls';
   melt_ttl?: Maybe<Scalars['Int']['output']>;
   mint_ttl?: Maybe<Scalars['Int']['output']>;
-};
-
-export type OrchardMintTransaction = {
-  __typename?: 'OrchardMintTransaction';
-  amount: Scalars['Int']['output'];
-  created_time: Scalars['UnixTimestamp']['output'];
-  keyset_id: Scalars['String']['output'];
-  promises: Array<Scalars['Int']['output']>;
-  state: Scalars['String']['output'];
-  unit: Scalars['String']['output'];
 };
 
 export type OrchardMintUrlUpdate = {
@@ -671,15 +671,16 @@ export type Query = {
   mint_balances_redeemed: Array<OrchardMintBalance>;
   mint_count_melt_quotes: OrchardMintCount;
   mint_count_mint_quotes: OrchardMintCount;
+  mint_count_proof_groups: OrchardMintCount;
   mint_info: OrchardMintInfo;
   mint_info_rpc: OrchardMintInfoRpc;
   mint_keysets: Array<OrchardMintKeyset>;
   mint_melt_quotes: Array<OrchardMintMeltQuote>;
   mint_mint_quotes: Array<OrchardMintMintQuote>;
   mint_promises: Array<OrchardMintPromise>;
+  mint_proof_groups: Array<OrchardMintProofGroup>;
   mint_proofs: Array<OrchardMintProof>;
   mint_quote_ttl: OrchardMintQuoteTtls;
-  mint_transactions: Array<OrchardMintTransaction>;
   public_image: OrchardPublicImage;
   public_urls: Array<OrchardPublicUrl>;
   status: OrchardStatus;
@@ -751,6 +752,14 @@ export type QueryMint_Count_Mint_QuotesArgs = {
 };
 
 
+export type QueryMint_Count_Proof_GroupsArgs = {
+  date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  id_keysets?: InputMaybe<Array<Scalars['String']['input']>>;
+  states?: InputMaybe<Array<MintProofState>>;
+};
+
+
 export type QueryMint_Melt_QuotesArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
@@ -778,7 +787,7 @@ export type QueryMint_PromisesArgs = {
 };
 
 
-export type QueryMint_TransactionsArgs = {
+export type QueryMint_Proof_GroupsArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   id_keysets?: InputMaybe<Array<Scalars['String']['input']>>;

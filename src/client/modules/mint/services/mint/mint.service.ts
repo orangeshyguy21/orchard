@@ -19,6 +19,7 @@ import {
 	MintAnalyticsArgs,
 	MintMintQuotesArgs,
 	MintMeltQuotesArgs,
+	MintProofGroupsArgs,
 	MintAnalyticsBalancesResponse,
 	MintAnalyticsMintsResponse,
 	MintAnalyticsMeltsResponse,
@@ -42,6 +43,7 @@ import {
 	MintKeysetRotationResponse,
 	MintMintQuotesDataResponse,
 	MintMeltQuotesDataResponse,
+	MintProofGroupsDataResponse,
 	MintDatabaseBackupResponse,
 	MintDatabaseRestoreResponse,
 } from '@client/modules/mint/types/mint.types';
@@ -54,6 +56,7 @@ import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 import { MintPromise } from '@client/modules/mint/classes/mint-promise.class';
 import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
 import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
+import { MintProofGroup } from '@client/modules/mint/classes/mint-proof-group.class';
 import { MintAnalytic, MintAnalyticKeyset } from '@client/modules/mint/classes/mint-analytic.class';
 /* Shared Dependencies */
 import { MintAnalyticsInterval, OrchardContact } from '@shared/generated.types';
@@ -74,6 +77,7 @@ import {
 	MINT_ANALYTICS_KEYSETS_QUERY,
 	MINT_MINT_QUOTES_DATA_QUERY,
 	MINT_MELT_QUOTES_DATA_QUERY,
+	MINT_PROOF_GROUPS_DATA_QUERY,
 	MINT_NAME_MUTATION,
 	MINT_DESCRIPTION_MUTATION,
 	MINT_DESCRIPTION_LONG_MUTATION,
@@ -518,7 +522,7 @@ export class MintService {
 		);
 	}
 
-	public loadMintMintQuotes(args:MintMintQuotesArgs) {
+	public loadMintMintQuotes(args?:MintMintQuotesArgs) {
 		if (this.mint_mint_quotes_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.MINT_MINT_QUOTES)) {
 			return of(this.mint_mint_quotes_subject.value);
 		}
@@ -540,7 +544,7 @@ export class MintService {
 		);
 	}
 
-	public loadMintMeltQuotes(args:MintMeltQuotesArgs) {
+	public loadMintMeltQuotes(args?:MintMeltQuotesArgs) {
 		if (this.mint_melt_quotes_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.MINT_MELT_QUOTES)) {
 			return of(this.mint_melt_quotes_subject.value);
 		}
@@ -633,25 +637,25 @@ export class MintService {
 		);
 	}
 
-	// public getMintProofGroupsData(args:MintProofGroupsArgs) {
-	// 	const query = getApiQuery(MINT_PROOF_GROUPS_DATA_QUERY, args);
-	// 	return this.http.post<OrchardRes<MintProofGroupsDataResponse>>(api, query).pipe(
-	// 		map((response) => {
-	// 			if (response.errors) throw new OrchardErrors(response.errors);
-	// 			return response.data;
-	// 		}),
-	// 		map((mint_proof_groups_data) => {
-	// 			return {
-	// 				mint_proof_groups: mint_proof_groups_data.mint_proof_groups.map((mint_proof_group) => new MintProofGroup(mint_proof_group)),
-	// 				count: mint_proof_groups_data.mint_count_proof_groups.count
-	// 			}
-	// 		}),
-	// 		catchError((error) => {
-	// 			console.error('Error loading mint proof groups data:', error);
-	// 			return throwError(() => error);
-	// 		})
-	// 	);
-	// }
+	public getMintProofGroupsData(args:MintProofGroupsArgs) {
+		const query = getApiQuery(MINT_PROOF_GROUPS_DATA_QUERY, args);
+		return this.http.post<OrchardRes<MintProofGroupsDataResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			map((mint_proof_groups_data) => {
+				return {
+					mint_proof_groups: mint_proof_groups_data.mint_proof_groups.map((mint_proof_group) => new MintProofGroup(mint_proof_group)),
+					count: mint_proof_groups_data.mint_count_proof_groups.count
+				}
+			}),
+			catchError((error) => {
+				console.error('Error loading mint proof groups data:', error);
+				return throwError(() => error);
+			})
+		);
+	}
 
 	public updateMintName(name:string) : Observable<MintNameUpdateResponse> {
 		const query = getApiQuery(MINT_NAME_MUTATION,  { mint_name_update: { name } });

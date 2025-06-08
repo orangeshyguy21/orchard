@@ -350,15 +350,14 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 
 	private async initChartData(): Promise<void> {
 		this.locale = this.settingService.getLocale();
-		const timezone = this.settingService.getTimezone();
-		await this.loadChartData(timezone);
+		await this.loadChartData();
 		this.data_loading = false;
 		this.cdr.detectChanges();
 	}
 
-	private async loadChartData(timezone: string): Promise<void> {
-		const mint_quotes_obs = this.mintService.loadMintMintQuotes({ timezone: timezone });
-		const melt_quotes_obs = this.mintService.loadMintMeltQuotes({ timezone: timezone });
+	private async loadChartData(): Promise<void> {
+		const mint_quotes_obs = this.mintService.loadMintMintQuotes();
+		const melt_quotes_obs = this.mintService.loadMintMeltQuotes();
 
 		const [
 			mint_quotes,

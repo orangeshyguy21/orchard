@@ -7,11 +7,13 @@ import {
     OrchardMintAnalytics,
     OrchardMintMintQuote,
     OrchardMintMeltQuote,
+    OrchardMintProofGroup,
     OrchardMintKeysetsAnalytics,
     MintUnit,
     MintAnalyticsInterval,
     MintQuoteState,
     MeltQuoteState,
+    MintProofState,
     OrchardMintInfoRpc,
     OrchardMintCount,
     OrchardMintNameUpdate, 
@@ -99,7 +101,6 @@ export type MintMintQuotesArgs = {
     date_start?: number;
     date_end?: number;
     states?: MintQuoteState[];
-    timezone?: string;
     page?: number;
     page_size?: number;
 }
@@ -109,7 +110,14 @@ export type MintMeltQuotesArgs = {
     date_start?: number;
     date_end?: number;
     states?: MeltQuoteState[];
-    timezone?: string;
+    page?: number;
+    page_size?: number;
+}
+
+export type MintProofGroupsArgs = {
+    id_keysets?: string[];
+    date_end?: number;
+    states?: MintProofState[];
     page?: number;
     page_size?: number;
 }
@@ -184,6 +192,11 @@ export type MintMintQuotesDataResponse = {
 export type MintMeltQuotesDataResponse = {
 	mint_melt_quotes: OrchardMintMeltQuote[];
 	mint_count_melt_quotes: OrchardMintCount;
+}
+
+export type MintProofGroupsDataResponse = {
+	mint_proof_groups: OrchardMintProofGroup[];
+	mint_count_proof_groups: OrchardMintCount;
 }
 
 export type MintDatabaseBackupResponse = {
