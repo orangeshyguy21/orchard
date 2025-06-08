@@ -15,16 +15,18 @@ import { OrchardErrors } from '@client/modules/error/classes/error.class';
 import { NonNullableMintDatabaseSettings } from '@client/modules/settings/types/setting.types';
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 import { EventService } from '@client/modules/event/services/event/event.service';
+import { AiService } from '@client/modules/ai/services/ai/ai.service';
 import { EventData } from '@client/modules/event/classes/event-data.class';
 import { DataType } from '@client/modules/orchard/enums/data.enum';
 import { ComponentCanDeactivate } from '@client/modules/routing/interfaces/routing.interfaces';
+import { AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
 /* Native Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
 import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
 /* Shared Dependencies */
-import { MintUnit, MintQuoteState, MeltQuoteState } from '@shared/generated.types';
+import { MintUnit, MintQuoteState, MeltQuoteState, AiAgent, AiFunctionName } from '@shared/generated.types';
 
 export type MintData = MintMintData | MintMeltData;
 type MintMintData = {
@@ -74,8 +76,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 
 	@HostListener('window:beforeunload')
 	canDeactivate(): boolean {
-		// return this.active_event?.type !== 'PENDING';
-		return true;
+		return this.active_event?.type !== 'PENDING';
 	}
 
 	public page_settings!: NonNullableMintDatabaseSettings;
@@ -87,7 +88,6 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	public data!: MintData;
 	public count: number = 0;
 	public mint_keysets: MintKeyset[] = [];
-	// public backup_create: boolean = false;
 	public form_mode!: FormMode | null;
 	public form_backup: FormGroup = new FormGroup({
 		filename: new FormControl(null, [Validators.required, Validators.maxLength(1000)]),
@@ -96,6 +96,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		file: new FormControl(null, [Validators.required]),
 		filebase64: new FormControl(null, [Validators.required]),
 	});
+	public unit_options!: { value: string, label: string }[];
 	public database_version!: string;
 	public database_timestamp!: number;
 	public database_implementation!: string;
@@ -113,11 +114,13 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		private settingService: SettingService,
 		private eventService: EventService,
 		private mintService: MintService,
+		private aiService: AiService,
 		private cdr: ChangeDetectorRef,
 	) {}
 
 	ngOnInit(): void {
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
+		this.unit_options = this.getUnitOptions();
 		this.form_backup.reset();
 		this.initData();
 		this.subscriptions.add(this.getEventSubscription());
@@ -128,8 +131,8 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 
 	orchardOptionalInit(): void {
 		if( environment.ai.enabled ) {
-			// this.subscriptions.add(this.getAgentSubscription());
-			// this.subscriptions.add(this.getToolSubscription());
+			this.subscriptions.add(this.getAgentSubscription());
+			this.subscriptions.add(this.getToolSubscription());
 		}
 	}
 
@@ -167,6 +170,41 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 				message: 'Restore',
 			}));
 		});
+	}
+
+	private getAgentSubscription(): Subscription {
+		return this.aiService.agent_requests$.subscribe(({ agent, content }) => {
+			// (this.keysets_rotation) ? this.hireRotationAgent(AiAgent.MintKeysetRotation, content) : this.hireAnalyticsAgent(agent, content);
+			this.hireAnalyticsAgent(AiAgent.MintDatabase, content);
+		});
+	}
+	private hireAnalyticsAgent(agent: AiAgent, content: string|null): void {
+		let context = `Current Date: ${DateTime.now().toFormat('yyyy-MM-dd')}\n`;
+		context += `Current Date Start: ${DateTime.fromSeconds(this.page_settings.date_start).toFormat('yyyy-MM-dd')}\n`;
+		context += `Current Date End: ${DateTime.fromSeconds(this.page_settings.date_end).toFormat('yyyy-MM-dd')}\n`;
+		context += `Current Data Type: ${this.page_settings.type}\n`;
+		context += `Current Units: ${this.page_settings.units}\n`;
+		context += `Current States: ${this.page_settings.states}\n`;
+		context += `Available Units: ${this.unit_options.map(unit => unit.value).join(', ')}\n`;
+		this.aiService.openAiSocket(agent, content, context);
+	}
+	// private hireRotationAgent(agent: AiAgent, content: string|null): void {
+	// 	let context = `Current Unit: ${this.form_keyset.value.unit}\n`;
+	// 	context += `Current Input Fee PPK: ${this.form_keyset.value.input_fee_ppk}\n`;
+	// 	context += `Current Max Order: ${this.form_keyset.value.max_order}\n`;
+	// 	context += `Available Units: ${this.unit_options.map(unit => unit.label).join(', ')}\n`;
+	// 	this.aiService.openAiSocket(agent, content, context);
+	// }
+
+	private getToolSubscription(): Subscription {
+		return this.aiService.tool_calls$.subscribe((tool_call: AiChatToolCall) => {
+			this.executeAgentFunction(tool_call);
+		});
+	}
+
+	private getUnitOptions(): { value: string, label: string }[] {
+		const possible_units = Array.from(new Set(this.mint_keysets.map(keyset => keyset.unit)));
+		return possible_units.map(unit => ({ value: unit, label: unit.toUpperCase() }));
 	}
 
 	private async initData(): Promise<void> {
@@ -430,6 +468,26 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		this.form_backup.reset();
 		this.form_restore.reset();
 		this.cdr.detectChanges();
+	}
+
+	private executeAgentFunction(tool_call: AiChatToolCall): void {
+		if( tool_call.function.name === AiFunctionName.MintAnalyticsDateRangeUpdate ) {
+			const range = [
+				DateTime.fromFormat(tool_call.function.arguments.date_start, 'yyyy-MM-dd').toSeconds(),
+				DateTime.fromFormat(tool_call.function.arguments.date_end, 'yyyy-MM-dd').toSeconds()
+			];
+			this.onDateChange(range);
+		}
+		if( tool_call.function.name === AiFunctionName.MintAnalyticsUnitsUpdate ) {
+			// @todo parse this too....
+			this.onUnitsChange(tool_call.function.arguments.units);
+		}
+		// if( tool_call.function.name === AiFunctionName.MintKeysetStatusUpdate ) {
+		// 	// @todo try catch this parse
+		// 	const parsed_statuses = JSON.parse(tool_call.function.arguments.statuses as any);
+		// 	const statuses = parsed_statuses.map((status: boolean) => status);
+		// 	this.onStatusChange(statuses);
+		// }
 	}
 
 	ngOnDestroy(): void {

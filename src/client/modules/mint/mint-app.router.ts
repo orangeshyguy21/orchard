@@ -160,7 +160,8 @@ const routes: Routes = [
 				canDeactivate: [pendingEventGuard],
 				data: {
 					section: 'mint',
-					sub_section: 'database'
+					sub_section: 'database',
+					agent: AiAgent.MintDatabase
 				}
 			},
 			{

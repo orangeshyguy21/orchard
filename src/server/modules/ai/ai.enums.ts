@@ -5,6 +5,7 @@ export enum AiAgent {
     MINT_CONFIG = 'MINT_CONFIG',
     MINT_KEYSETS = 'MINT_KEYSETS',
     MINT_KEYSET_ROTATION = 'MINT_KEYSET_ROTATION',
+    MINT_DATABASE = 'MINT_DATABASE',
 }
 
 export enum AiMessageRole {

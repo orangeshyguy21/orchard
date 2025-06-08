@@ -268,14 +268,14 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		context += `Current Date End: ${DateTime.fromSeconds(this.page_settings.date_end).toFormat('yyyy-MM-dd')}\n`;
 		context += `Current Units: ${this.page_settings.units}\n`;
 		context += `Current Status: ${this.page_settings.status}\n`;
-		context += `Available Units: ${this.unit_options.map(unit => unit.label).join(', ')}\n`;
+		context += `Available Units: ${this.unit_options.map(unit => unit.value).join(', ')}\n`;
 		this.aiService.openAiSocket(agent, content, context);
 	}
 	private hireRotationAgent(agent: AiAgent, content: string|null): void {
 		let context = `Current Unit: ${this.form_keyset.value.unit}\n`;
 		context += `Current Input Fee PPK: ${this.form_keyset.value.input_fee_ppk}\n`;
 		context += `Current Max Order: ${this.form_keyset.value.max_order}\n`;
-		context += `Available Units: ${this.unit_options.map(unit => unit.label).join(', ')}\n`;
+		context += `Available Units: ${this.unit_options.map(unit => unit.value).join(', ')}\n`;
 		this.aiService.openAiSocket(agent, content, context);
 	}
 

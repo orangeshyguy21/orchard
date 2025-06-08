@@ -14,10 +14,6 @@ import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 /* Shared Dependencies */
 import { MintUnit, MintQuoteState, MeltQuoteState } from '@shared/generated.types';
 
-type UnitOption = {
-	label: string;
-	value: MintUnit;
-}
 type TypeOption = {
 	label: string;
 	value: MintDataType;
@@ -49,6 +45,7 @@ export class MintDataControlComponent implements OnChanges {
 
 	@Input() page_settings!: NonNullableMintDatabaseSettings;
 	@Input() filter!: string;
+	@Input() unit_options!: { value: string, label: string }[];
 	@Input() date_start?: number;
 	@Input() date_end?: number;
 	@Input() states!: string[];
@@ -74,7 +71,6 @@ export class MintDataControlComponent implements OnChanges {
 	});
 
 	public type_options!: TypeOption[];
-	public unit_options!: UnitOption[]; 
 	public state_options!: string[];
 
 	public get height_state(): string {
@@ -98,8 +94,6 @@ export class MintDataControlComponent implements OnChanges {
 	}
 
 	private initForm(): void {
-		const unique_units = Array.from(new Set(this.keysets.map(keyset => keyset.unit)));
-		this.unit_options = unique_units.map(unit => ({ label: unit.toUpperCase(), value: unit }));
 		this.type_options = Object.values(MintDataType).map(type => ({ label: type.substring(4), value: type }));
 		this.state_options = (this.page_settings.type === DataType.MintMints) ? Object.values(MintQuoteState) : Object.values(MeltQuoteState);
 		this.panel.controls.type.setValue(this.page_settings.type);
