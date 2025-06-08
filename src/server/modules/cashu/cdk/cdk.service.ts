@@ -209,22 +209,6 @@ export class CdkService {
 		});
 	}
 
-	public async getMintCountMeltQuotes(db:sqlite3.Database, args?: CashuMintMeltQuotesArgs) : Promise<number> {
-		const field_mappings = {
-			units: 'unit',
-			date_start: 'created_time',
-			date_end: 'created_time',
-			states: 'state',
-		};
-		const { sql, params } = buildCountQuery('melt_quote', args, field_mappings);
-		return new Promise((resolve, reject) => {
-			db.get(sql, params, (err, row:CashuMintCount) => {
-				if (err) reject(err);
-				resolve(row.count);
-			});
-		});
-	}
-
 	public async getMintProofGroups(db: sqlite3.Database, args?: CashuMintProofsArgs): Promise<CashuMintProofGroup[]> {
 		// Default values
 		const page_size = args?.page_size || 500;
@@ -296,6 +280,38 @@ export class CdkService {
 				}));
 				
 				resolve(proof_groups);
+			});
+		});
+	}
+
+	public async getMintCountMeltQuotes(db:sqlite3.Database, args?: CashuMintMeltQuotesArgs) : Promise<number> {
+		const field_mappings = {
+			units: 'unit',
+			date_start: 'created_time',
+			date_end: 'created_time',
+			states: 'state',
+		};
+		const { sql, params } = buildCountQuery('melt_quote', args, field_mappings);
+		return new Promise((resolve, reject) => {
+			db.get(sql, params, (err, row:CashuMintCount) => {
+				if (err) reject(err);
+				resolve(row.count);
+			});
+		});
+	}
+
+	public async getMintCountProofGroups(db:sqlite3.Database, args?: CashuMintProofsArgs) : Promise<number> {
+		const field_mappings = {
+			units: 'unit',
+			date_start: 'created_time',
+			date_end: 'created_time',
+			states: 'state',
+		};
+		const { sql, params } = buildCountQuery('proof', args, field_mappings);
+		return new Promise((resolve, reject) => {
+			db.get(sql, params, (err, row:CashuMintCount) => {
+				if (err) reject(err);
+				resolve(row.count);
 			});
 		});
 	}

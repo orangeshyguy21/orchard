@@ -633,6 +633,26 @@ export class MintService {
 		);
 	}
 
+	// public getMintProofGroupsData(args:MintProofGroupsArgs) {
+	// 	const query = getApiQuery(MINT_PROOF_GROUPS_DATA_QUERY, args);
+	// 	return this.http.post<OrchardRes<MintProofGroupsDataResponse>>(api, query).pipe(
+	// 		map((response) => {
+	// 			if (response.errors) throw new OrchardErrors(response.errors);
+	// 			return response.data;
+	// 		}),
+	// 		map((mint_proof_groups_data) => {
+	// 			return {
+	// 				mint_proof_groups: mint_proof_groups_data.mint_proof_groups.map((mint_proof_group) => new MintProofGroup(mint_proof_group)),
+	// 				count: mint_proof_groups_data.mint_count_proof_groups.count
+	// 			}
+	// 		}),
+	// 		catchError((error) => {
+	// 			console.error('Error loading mint proof groups data:', error);
+	// 			return throwError(() => error);
+	// 		})
+	// 	);
+	// }
+
 	public updateMintName(name:string) : Observable<MintNameUpdateResponse> {
 		const query = getApiQuery(MINT_NAME_MUTATION,  { mint_name_update: { name } });
 		return this.http.post<OrchardRes<MintNameUpdateResponse>>(api, query).pipe(
