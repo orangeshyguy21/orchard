@@ -211,10 +211,9 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		this.locale = this.settingService.getLocale();
 		this.mint_genesis_time = this.getMintGenesisTime();
 		this.page_settings = this.getPageSettings();
-		const timezone = this.settingService.getTimezone();
 		this.loading_static_data = false;
 		this.cdr.detectChanges();
-		await this.getDynamicData(timezone);
+		await this.getDynamicData();
 		this.loading_dynamic_data = false;
 		this.cdr.detectChanges();
 	}
@@ -256,19 +255,18 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		return [];
 	}
 
-	private async getDynamicData(timezone: string): Promise<void> {
-		if( this.page_settings.type === DataType.MintMints ) return this.getMintsData(timezone);
-		if( this.page_settings.type === DataType.MintMelts ) return this.getMeltsData(timezone);
+	private async getDynamicData(): Promise<void> {
+		if( this.page_settings.type === DataType.MintMints ) return this.getMintsData();
+		if( this.page_settings.type === DataType.MintMelts ) return this.getMeltsData();
 	}
 
-	private async getMintsData(timezone: string): Promise<void> {
+	private async getMintsData(): Promise<void> {
 		const mint_mint_quotes_data = await lastValueFrom(
 			this.mintService.getMintMintQuotesData({
 				date_start: this.page_settings.date_start,
 				date_end: this.page_settings.date_end,
 				units: this.page_settings.units,
 				states: (this.page_settings.states as MintQuoteState[]),
-				timezone: timezone,
 				page: this.page_settings.page,
 				page_size: PAGE_SIZE,
 			})
@@ -280,14 +278,13 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		this.count = mint_mint_quotes_data.count;
 	}
 
-	private async getMeltsData(timezone: string): Promise<void> {
+	private async getMeltsData(): Promise<void> {
 		const mint_melt_quotes_data = await lastValueFrom(
 			this.mintService.getMintMeltQuotesData({
 				date_start: this.page_settings.date_start,
 				date_end: this.page_settings.date_end,
 				units: this.page_settings.units,
 				states: (this.page_settings.states as MeltQuoteState[]),
-				timezone: timezone,
 				page: this.page_settings.page,
 				page_size: PAGE_SIZE,
 			})
@@ -302,9 +299,8 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	private async reloadDynamicData(): Promise<void> {
 		try {
 			this.loading_dynamic_data = true;
-			const timezone = this.settingService.getTimezone();
 			this.cdr.detectChanges();
-			await this.getDynamicData(timezone);
+			await this.getDynamicData();
 			this.loading_dynamic_data = false;
 			this.cdr.detectChanges();
 		} catch (error) {

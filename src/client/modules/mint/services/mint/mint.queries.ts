@@ -360,8 +360,8 @@ mutation MintRotateKeyset($mint_rotate_keyset: MintRotateKeysetInput!) {
 }`;
 
 export const MINT_MINT_QUOTES_DATA_QUERY = `
-query MintMintQuotes($units: [MintUnit!], $states: [MintQuoteState!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $timezone: Timezone, $page: Int, $page_size: Int) {
-	mint_mint_quotes(units: $units, states: $states, date_start: $date_start, date_end: $date_end, timezone: $timezone, page: $page, page_size: $page_size) {
+query MintMintQuotes($units: [MintUnit!], $states: [MintQuoteState!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $page: Int, $page_size: Int) {
+	mint_mint_quotes(units: $units, states: $states, date_start: $date_start, date_end: $date_end, page: $page, page_size: $page_size) {
 		id
 		amount
 		unit
@@ -373,14 +373,14 @@ query MintMintQuotes($units: [MintUnit!], $states: [MintQuoteState!], $date_star
 		created_time
 		paid_time
 	}
-	mint_count_mint_quotes(units: $units, states: $states, date_start: $date_start, date_end: $date_end, timezone: $timezone) {
+	mint_count_mint_quotes(units: $units, states: $states, date_start: $date_start, date_end: $date_end) {
 		count
 	}
 }`;	
 
 export const MINT_MELT_QUOTES_DATA_QUERY = `
-query MintMeltQuotes($units: [MintUnit!], $states: [MeltQuoteState!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $timezone: Timezone, $page: Int, $page_size: Int) {
-	mint_melt_quotes(units: $units, states: $states, date_start: $date_start, date_end: $date_end, timezone: $timezone, page: $page, page_size: $page_size) {
+query MintMeltQuotes($units: [MintUnit!], $states: [MeltQuoteState!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $page: Int, $page_size: Int) {
+	mint_melt_quotes(units: $units, states: $states, date_start: $date_start, date_end: $date_end, page: $page, page_size: $page_size) {
 		id
 		amount
 		unit
@@ -393,7 +393,7 @@ query MintMeltQuotes($units: [MintUnit!], $states: [MeltQuoteState!], $date_star
 		created_time
 		paid_time
 	}
-	mint_count_melt_quotes(units: $units, states: $states, date_start: $date_start, date_end: $date_end, timezone: $timezone) {
+	mint_count_melt_quotes(units: $units, states: $states, date_start: $date_start, date_end: $date_end {
 		count
 	}
 }`;

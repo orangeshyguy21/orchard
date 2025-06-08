@@ -15,14 +15,8 @@ export class MintProofResolver {
 	) {}
 
 	@Query(() => [OrchardMintProof])
-	async mint_proofs_pending() : Promise<OrchardMintProof[]> {
-		this.logger.debug('GET { mint_proofs_pending }');
-		return await this.mintProofService.getMintProofsPending();
+	async mint_proofs() : Promise<OrchardMintProof[]> {
+		this.logger.debug('GET { mint_proofs }');
+		return await this.mintProofService.getMintProofs();
   	}
-
-	@Query(() => [OrchardMintProof])
-	async mint_proofs_used() : Promise<OrchardMintProof[]> {
-		this.logger.debug('GET { mint_proofs_used }');
-		return await this.mintProofService.getMintProofsUsed();
-	}
 }

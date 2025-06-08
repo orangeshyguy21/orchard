@@ -17,11 +17,13 @@ import {
 	CashuMintAnalytics,
 	CashuMintKeysetsAnalytics,
 	CashuMintCount,
+	CashuMintTransaction,
 } from '@server/modules/cashu/mintdb/cashumintdb.types';
 import { 
 	CashuMintMintQuotesArgs,
 	CashuMintAnalyticsArgs,
 	CashuMintMeltQuotesArgs,
+	CashuMintProofsArgs,
 } from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
 import {
 	buildDynamicQuery,
@@ -223,25 +225,80 @@ export class CdkService {
 		});
 	}
 
-	public async getMintProofsPending(db:sqlite3.Database) : Promise<CashuMintProof[]> {
-		const sql = 'SELECT * FROM proof WHERE state = "PENDING";';
+	public async getMintTransactions(db: sqlite3.Database, args?: CashuMintProofsArgs): Promise<CashuMintTransaction[]> {
+		// Default values
+		const page_size = args?.page_size || 500;
+		const page = args?.page || 1;
+		const offset = (page - 1) * page_size;
+		
+		// Build WHERE conditions
+		const where_conditions: string[] = [];
+		const params: any[] = [];
+		
+		if (args?.states && args.states.length > 0) {
+			const state_placeholders = args.states.map(() => '?').join(',');
+			where_conditions.push(`p.state IN (${state_placeholders})`);
+			params.push(...args.states);
+		}
+		
+		if (args?.id_keysets && args.id_keysets.length > 0) {
+			const keyset_placeholders = args.id_keysets.map(() => '?').join(',');
+			where_conditions.push(`p.keyset_id IN (${keyset_placeholders})`);
+			params.push(...args.id_keysets);
+		}
+		
+		if (args?.date_start) {
+			where_conditions.push(`p.created_time >= ?`);
+			params.push(args.date_start);
+		}
+		
+		if (args?.date_end) {
+			where_conditions.push(`p.created_time <= ?`);
+			params.push(args.date_end);
+		}
+		
+		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
+		
+		const sql = `
+			SELECT 
+				p.created_time,
+				p.keyset_id,
+				k.unit,
+				p.state,
+				json_group_array(p.amount) as promises
+			FROM proof p
+			LEFT JOIN keyset k ON k.id = p.keyset_id
+			${where_clause}
+			GROUP BY 
+				p.created_time,
+				p.keyset_id,
+				k.unit,
+				p.state
+			ORDER BY p.created_time DESC
+			LIMIT ${page_size}
+			${offset > 0 ? `OFFSET ${offset}` : ''}
+		`;
+		
 		return new Promise((resolve, reject) => {
-			db.all(sql, (err, rows:CashuMintProof[]) => {
-				if (err) reject(err);
-				resolve(rows);
+			db.all(sql, params, (err, rows: any[]) => {
+				if (err) {
+					reject(err);
+					return;
+				}
+				
+				const transactions: CashuMintTransaction[] = rows.map(row => ({
+					amount: JSON.parse(row.promises).reduce((sum: number, amount: number) => sum + amount, 0),
+					created_time: row.created_time,
+					keyset_id: row.keyset_id,
+					unit: row.unit,
+					state: row.state,
+					promises: JSON.parse(row.promises)
+				}));
+				
+				resolve(transactions);
 			});
 		});
 	}
-
-	public async getMintProofsUsed(db:sqlite3.Database) : Promise<CashuMintProof[]> {
-		const sql = 'SELECT * FROM proof WHERE state = "SPENT";';
-		return new Promise((resolve, reject) => {
-			db.all(sql, (err, rows:CashuMintProof[]) => {
-				if (err) reject(err);
-				resolve(rows);
-			});
-		});
-	}  	
 
 	/* Analytics */
 

@@ -2,18 +2,20 @@
 import { Injectable, Logger } from '@nestjs/common';
 /* Application Dependencies */
 import { CashuMintDatabaseService } from '@server/modules/cashu/mintdb/cashumintdb.service';
-import { CashuMintProof } from '@server/modules/cashu/mintdb/cashumintdb.types';
+import { CashuMintTransaction } from '@server/modules/cashu/mintdb/cashumintdb.types';
+import { CashuMintProofsArgs } from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
 import { OrchardErrorCode } from "@server/modules/error/error.types";
 import { OrchardApiError } from "@server/modules/graphql/classes/orchard-error.class";
 import { MintService } from '@server/modules/api/mint/mint.service';
 import { ErrorService } from '@server/modules/error/error.service';
 /* Local Dependencies */
-import { OrchardMintProof } from './mintproof.model';
+import { OrchardMintTransaction } from './minttransaction.model';
+
 
 @Injectable()
-export class MintProofService {
+export class MintTransactionService {
 
-	private readonly logger = new Logger(MintProofService.name);
+	private readonly logger = new Logger(MintTransactionService.name);
 
 	constructor(
 		private cashuMintDatabaseService: CashuMintDatabaseService,
@@ -21,15 +23,15 @@ export class MintProofService {
 		private errorService: ErrorService,
 	) {}
 
-	async getMintProofs() : Promise<OrchardMintProof[]> {
+	async getMintTransactions(args?: CashuMintProofsArgs) : Promise<OrchardMintTransaction[]> {
 		return this.mintService.withDb(async (db) => {
 			try {
-				const cashu_mint_proofs : CashuMintProof[] = await this.cashuMintDatabaseService.getMintProofs(db);
-				return cashu_mint_proofs.map( cmp => new OrchardMintProof(cmp));
+				const cashu_mint_transactions : CashuMintTransaction[] = await this.cashuMintDatabaseService.getMintTransactions(db, args);
+				return cashu_mint_transactions.map( cmp => new OrchardMintTransaction(cmp));
 			} catch (error) {
 				const error_code = this.errorService.resolveError({ logger: this.logger, error,
 					errord: OrchardErrorCode.MintDatabaseSelectError,
-					msg: 'Error getting mint proofs from database',
+					msg: 'Error getting mint transactions from database',
 				});
 				throw new OrchardApiError(error_code);
 			}

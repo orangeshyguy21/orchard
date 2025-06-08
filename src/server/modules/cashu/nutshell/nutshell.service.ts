@@ -18,7 +18,6 @@ import {
 	CashuMintAnalyticsArgs,
 	CashuMintMintQuotesArgs,
 	CashuMintMeltQuotesArgs,
-	CashuMintPromisesArgs,
 } from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
 import {
 	buildDynamicQuery,
@@ -160,7 +159,7 @@ export class NutshellService {
 		});
 	}
 
-	public async getMintPromises(db:sqlite3.Database, args?: CashuMintPromisesArgs) : Promise<CashuMintPromise[]> {
+	public async getMintPromises(db:sqlite3.Database, args?: any) : Promise<CashuMintPromise[]> {
 		const field_mappings = {
 			id_keysets: 'id',
 			date_start: 'created',

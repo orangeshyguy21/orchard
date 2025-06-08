@@ -19,3 +19,7 @@ export enum MintUnit {
     btc = "btc",
     auth = "auth"
 }
+
+export enum MintProofState {
+    SPENT = 'SPENT',
+}
