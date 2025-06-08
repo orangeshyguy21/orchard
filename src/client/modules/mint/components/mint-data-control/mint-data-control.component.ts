@@ -12,7 +12,7 @@ import { DataType } from '@client/modules/orchard/enums/data.enum';
 import { MintDataType } from '@client/modules/mint/enums/data-type.enum';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 /* Shared Dependencies */
-import { MintUnit, MintQuoteState, MeltQuoteState } from '@shared/generated.types';
+import { MintUnit } from '@shared/generated.types';
 
 type TypeOption = {
 	label: string;
@@ -46,6 +46,7 @@ export class MintDataControlComponent implements OnChanges {
 	@Input() page_settings!: NonNullableMintDatabaseSettings;
 	@Input() filter!: string;
 	@Input() unit_options!: { value: string, label: string }[];
+	@Input() state_options!: string[];
 	@Input() date_start?: number;
 	@Input() date_end?: number;
 	@Input() states!: string[];
@@ -71,7 +72,6 @@ export class MintDataControlComponent implements OnChanges {
 	});
 
 	public type_options!: TypeOption[];
-	public state_options!: string[];
 
 	public get height_state(): string {
 		return this.panel?.invalid ? 'invalid' : 'valid';
@@ -88,14 +88,12 @@ export class MintDataControlComponent implements OnChanges {
 			this.panel.controls.daterange.get('date_end')?.setValue(DateTime.fromSeconds(this.date_end));
 		}
 		if(changes['states'] && this.states && this.panel.controls.states.value !== this.states) {
-			this.state_options = (this.page_settings.type === DataType.MintMints) ? Object.values(MintQuoteState) : Object.values(MeltQuoteState);
 			this.panel.controls.states.setValue(this.states);
 		}
 	}
 
 	private initForm(): void {
 		this.type_options = Object.values(MintDataType).map(type => ({ label: type.substring(4), value: type }));
-		this.state_options = (this.page_settings.type === DataType.MintMints) ? Object.values(MintQuoteState) : Object.values(MeltQuoteState);
 		this.panel.controls.type.setValue(this.page_settings.type);
 		this.panel.controls.daterange.controls.date_start.setValue(DateTime.fromSeconds(this.page_settings.date_start));
 		this.panel.controls.daterange.controls.date_end.setValue(DateTime.fromSeconds(this.page_settings.date_end));

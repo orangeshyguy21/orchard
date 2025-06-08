@@ -116,6 +116,7 @@ export type MintMeltQuotesArgs = {
 
 export type MintProofGroupsArgs = {
     id_keysets?: string[];
+    date_start?: number;
     date_end?: number;
     states?: MintProofState[];
     page?: number;

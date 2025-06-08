@@ -42,11 +42,12 @@ export class MintCountResolver {
 	@Query(() => OrchardMintCount)
 	async mint_count_proof_groups(
 		@Args('id_keysets', { type: () => [String], nullable: true }) id_keysets?: string[],
+		@Args('units', { type: () => [MintUnit], nullable: true }) units?: MintUnit[],
+		@Args('states', { type: () => [MintProofState], nullable: true }) states?: MintProofState[],
 		@Args('date_start', { type: () => UnixTimestamp, nullable: true }) date_start?: number,
 		@Args('date_end', { type: () => UnixTimestamp, nullable: true }) date_end?: number,
-		@Args('states', { type: () => [MintProofState], nullable: true }) states?: MintProofState[],
 	) : Promise<OrchardMintCount> {
 		this.logger.debug('GET { mint_count_proof_groups }');
-		return await this.mintCountService.getMintCountProofGroups({ id_keysets, date_start, date_end, states });
+		return await this.mintCountService.getMintCountProofGroups({ id_keysets, units, states, date_start, date_end });
 	}
 }

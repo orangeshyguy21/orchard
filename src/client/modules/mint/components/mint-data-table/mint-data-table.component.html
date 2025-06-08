@@ -64,6 +64,9 @@
                                         @if(data.type === 'MintMelts') {
                                             <orc-mint-data-melt [quote]="entity"></orc-mint-data-melt>
                                         }
+                                        @if(data.type === 'MintProofGroups') {
+                                            {{ entity.proofs }}
+                                        }
                                     </div>
                                 }
                             </div>

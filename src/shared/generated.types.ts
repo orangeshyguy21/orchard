@@ -757,6 +757,7 @@ export type QueryMint_Count_Proof_GroupsArgs = {
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   id_keysets?: InputMaybe<Array<Scalars['String']['input']>>;
   states?: InputMaybe<Array<MintProofState>>;
+  units?: InputMaybe<Array<MintUnit>>;
 };
 
 

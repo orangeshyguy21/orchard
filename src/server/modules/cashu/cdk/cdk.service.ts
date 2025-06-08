@@ -227,7 +227,7 @@ export class CdkService {
 			FROM proof p
 			LEFT JOIN keyset k ON k.id = p.keyset_id`;
 		
-		const group_by = 'p.created_time, p.keyset_id, k.unit, p.state';
+		const group_by = 'p.created_time, k.unit, p.state';
 		
 		const { sql, params } = buildDynamicQuery(
 			'proof', 
@@ -270,6 +270,7 @@ export class CdkService {
 	}
 
 	public async getMintCountProofGroups(db:sqlite3.Database, args?: CashuMintProofsArgs) : Promise<number> {
+		console.log(args);
 		const field_mappings = {
 			states: 'p.state',
 			id_keysets: 'p.keyset_id',
@@ -287,9 +288,11 @@ export class CdkService {
 				FROM proof p
 				LEFT JOIN keyset k ON k.id = p.keyset_id`;
 		
-		const group_by = 'p.created_time, p.keyset_id, k.unit, p.state';
+		const group_by = 'p.created_time, k.unit, p.state';
 		const { sql, params } = buildCountQuery('proof', args, field_mappings, select_statement, group_by);
 		const final_sql = sql.replace(';', ') subquery;');
+		console.log(final_sql);
+		
 		return new Promise((resolve, reject) => {
 			db.get(final_sql, params, (err, row:CashuMintCount) => {
 				if (err) reject(err);

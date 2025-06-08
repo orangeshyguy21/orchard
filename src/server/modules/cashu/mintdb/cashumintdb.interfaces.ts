@@ -6,27 +6,28 @@ import { MintUnit, MintQuoteState, MeltQuoteState, MintProofState } from '@serve
 import { MintAnalyticsInterval } from './cashumintdb.enums';
 
 export interface CashuMintProofsArgs {
-    id_keysets?: string[];
     date_start?: number;
     date_end?: number;
+    units?: MintUnit[];
     states?: MintProofState[];
+    id_keysets?: string[];
     page?: number;
     page_size?: number;
 }
 
 export interface CashuMintMintQuotesArgs {
-    units?: MintUnit[];
     date_start?: number;
     date_end?: number;
+    units?: MintUnit[];
     states?: MintQuoteState[];
     page?: number;
     page_size?: number;
 }
 
 export interface CashuMintMeltQuotesArgs {
-    units?: MintUnit[];
     date_start?: number;
     date_end?: number;
+    units?: MintUnit[];
     states?: MeltQuoteState[];
     page?: number;
     page_size?: number;
@@ -34,9 +35,9 @@ export interface CashuMintMeltQuotesArgs {
 
 
 export interface CashuMintAnalyticsArgs {
-    units?: MintUnit[];
     date_start?: number;
     date_end?: number;
+    units?: MintUnit[];
     interval?: MintAnalyticsInterval;
     timezone?: TimezoneType;
 }

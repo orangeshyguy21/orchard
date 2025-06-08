@@ -376,22 +376,22 @@ query MintMeltQuotes($units: [MintUnit!], $states: [MeltQuoteState!], $date_star
 		created_time
 		paid_time
 	}
-	mint_count_melt_quotes(units: $units, states: $states, date_start: $date_start, date_end: $date_end {
+	mint_count_melt_quotes(units: $units, states: $states, date_start: $date_start, date_end: $date_end) {
 		count
 	}
 }`;
 
 export const MINT_PROOF_GROUPS_DATA_QUERY = `
-query MintProofGroups($id_keysets: [String!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $states: [MintProofState!], $page: Int, $page_size: Int) {
-	mint_proof_groups(id_keysets: $id_keysets, date_start: $date_end, date_end: $date_end, states: $states, page: $page, page_size: $page_size) {
+query MintProofGroups($units: [MintUnit!], $id_keysets: [String!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $states: [MintProofState!], $page: Int, $page_size: Int) {
+	mint_proof_groups(units: $units, id_keysets: $id_keysets, date_start: $date_start, date_end: $date_end, states: $states, page: $page, page_size: $page_size) {
 		amount
 		created_time
 		keyset_id
 		state
-		unit,
+		unit
 		proofs
 	}
-	mint_count_proof_groups(id_keysets: $id_keysets, date_start: $date_end, date_end: $date_end, states: $states) {
+	mint_count_proof_groups(units: $units, id_keysets: $id_keysets, date_start: $date_start, date_end: $date_end, states: $states) {
 		count
 	}
 }`;
