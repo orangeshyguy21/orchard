@@ -1,5 +1,5 @@
 <div class="mint-ecash-container p-v-1">
-    <div class="flex flex-column flex-gap-1">
+    <div class="flex flex-column flex-gap-2">
         @for(group_amount of group_amounts; track group_amount.keyset?.id) {
             <div class="flex flex-gap-2 flex-items-center">
                 @if(group_amount.keyset) {
@@ -11,31 +11,12 @@
                 }
                 <div class="flex flex-wrap flex-gap-1"> 
                     @for(note of group_amount.notes; track note.amount) {
-
-
-                        <!-- <div class="note-pill">
-                            <div class="flex flex-gap-0-5 flex-items-center">
-                                <div>{{ note.quantity }}</div>
-                                <mat-icon class="mat-symbol-outline">payments</mat-icon> 
-                            </div>
-                            <div class="note-pill-amount">
-                                <div class="text-nowrap" [innerHTML]="note.amount | amount : group.unit : 'mint'"></div>
-                            </div>
-                        </div> -->
-
-                        <!-- <div class="flex flex-column flex-justify-center">
-                            <div class="flex flex-gap-0-5 flex-items-center">
-                                <div>{{ note.quantity }}</div>
-                                <mat-icon class="mat-symbol-outline">payments</mat-icon> 
-                            </div>
-                            <div class="note-box">
-                                <div class="text-nowrap" [innerHTML]="note.amount | amount : group.unit : 'mint'"></div>
-                            </div>
-                        </div> -->
-
                         <div class="note-box">
                             <mat-icon class="mat-symbol-outline">payments</mat-icon> 
                             <div class="text-nowrap" [innerHTML]="note.amount | amount : group.unit : 'mint'"></div>
+                            @for( _ of [].constructor(note.quantity); track _; let i = $index ){
+                                <div class="stacked-note" [class]="'stack-height-' + (i <= 3 ? i : 'high')"></div>
+                            }
                         </div>
                     }
                 </div>

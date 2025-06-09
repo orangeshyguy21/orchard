@@ -17,23 +17,9 @@ export class MintDataEcashComponent implements OnInit {
 	@Input() public group!: MintProofGroup | MintPromiseGroup;
 	@Input() public keysets!: MintKeyset[];
 
-	public group_keysets: MintKeyset[] = [];
 	public group_amounts: { keyset: MintKeyset|undefined; notes: { amount: number; quantity: number }[] }[] = [];
-	// public group_amounts = [
-	// 	{
-	// 		keyset: 'keyset_1',
-	// 		notes: [
-	// 			{
-	// 				amount: 128,
-	// 				quantity: 1
-	// 			}
-	// 		]
-	// 	},
-	// 	{}
-	// ]
 
 	ngOnInit(): void {
-		// this.group_keysets = this.keysets.filter(keyset => this.group.keyset_ids.includes(keyset.id));
 		this.group_amounts = this.group.keyset_ids.map((keyset_id, index) => {
 			return {
 				keyset: this.keysets.find(keyset => keyset.id === keyset_id),
