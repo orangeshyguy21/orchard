@@ -9,7 +9,6 @@ import {
 	CashuMintMeltQuote,
 	CashuMintMintQuote,
 	CashuMintPromise,
-	CashuMintProof,
 	CashuMintAnalytics,
 	CashuMintKeysetsAnalytics,
 	CashuMintCount,
@@ -168,26 +167,6 @@ export class NutshellService {
 		const { sql, params } = buildDynamicQuery('promises', args, field_mappings);
 		return new Promise((resolve, reject) => {
 			db.all(sql, params, (err, rows:CashuMintPromise[]) => {
-				if (err) reject(err);
-				resolve(rows);
-			});
-		});
-	}
-
-	public async getMintProofsPending(db:sqlite3.Database) : Promise<CashuMintProof[]> {
-		const sql = 'SELECT * FROM proofs_pending;';
-		return new Promise((resolve, reject) => {
-			db.all(sql, (err, rows:CashuMintProof[]) => {
-				if (err) reject(err);
-				resolve(rows);
-			});
-		});
-	}
-
-	public async getMintProofsUsed(db:sqlite3.Database) : Promise<CashuMintProof[]> {
-		const sql = 'SELECT * FROM proofs_used;';
-		return new Promise((resolve, reject) => {
-			db.all(sql, (err, rows:CashuMintProof[]) => {
 				if (err) reject(err);
 				resolve(rows);
 			});

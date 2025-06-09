@@ -9,14 +9,14 @@ import { MintPromiseService } from "./mintpromise.service";
 import { MintPromiseResolver } from "./mintpromise.resolver";
  
 @Module({
-  imports: [
-    CashuMintDatabaseModule,
-    ErrorModule,
-  ],
-  providers: [
-    MintPromiseResolver,
-    MintPromiseService,
-    MintService,
-  ]
+	imports: [
+		CashuMintDatabaseModule,
+		ErrorModule,
+	],
+	providers: [
+		MintPromiseResolver,
+		MintPromiseService,
+		MintService,
+	]
 })
 export class MintPromiseModule {}

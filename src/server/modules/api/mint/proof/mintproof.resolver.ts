@@ -6,7 +6,7 @@ import { UnixTimestamp } from "@server/modules/graphql/scalars/unixtimestamp.sca
 import { MintProofState, MintUnit } from "@server/modules/cashu/cashu.enums";
 /* Local Dependencies */
 import { MintProofService } from "./mintproof.service";
-import { OrchardMintProof, OrchardMintProofGroup } from "./mintproof.model";
+import { OrchardMintProofGroup } from "./mintproof.model";
 
 @Resolver()
 export class MintProofResolver {
@@ -16,12 +16,6 @@ export class MintProofResolver {
 	constructor(
 		private mintProofService: MintProofService,
 	) {}
-
-	@Query(() => [OrchardMintProof])
-	async mint_proofs() : Promise<OrchardMintProof[]> {
-		this.logger.debug('GET { mint_proofs }');
-		return await this.mintProofService.getMintProofs();
-  	}
 
 	@Query(() => [OrchardMintProofGroup])
 	async mint_proof_groups(

@@ -538,9 +538,9 @@ export type OrchardMintProof = {
 export type OrchardMintProofGroup = {
   __typename?: 'OrchardMintProofGroup';
   amount: Scalars['Int']['output'];
+  amounts: Array<Array<Scalars['Int']['output']>>;
   created_time: Scalars['UnixTimestamp']['output'];
   keyset_ids: Array<Scalars['String']['output']>;
-  proofs: Array<Array<Scalars['Int']['output']>>;
   state: MintProofState;
   unit: MintUnit;
 };

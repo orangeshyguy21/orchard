@@ -383,34 +383,19 @@ type OrchardMintNut05Update {
   unit: String!
 }
 
-type OrchardMintPromise {
+type OrchardMintPromiseGroup {
   amount: Int!
-  b_: ID!
-  c_: String!
-  created: UnixTimestamp
-  dleq_e: String
-  dleq_s: String
-  id: String
-  mint_quote: String
-  swap_id: String
-}
-
-type OrchardMintProof {
-  amount: Int!
-  c: String!
-  created: UnixTimestamp
-  id: String
-  melt_quote: String
-  secret: String!
-  witness: String
-  y: String
+  amounts: [[Int!]!]!
+  created_time: UnixTimestamp!
+  keyset_ids: [String!]!
+  unit: MintUnit!
 }
 
 type OrchardMintProofGroup {
   amount: Int!
+  amounts: [[Int!]!]!
   created_time: UnixTimestamp!
   keyset_ids: [String!]!
-  proofs: [[Int!]!]!
   state: MintProofState!
   unit: MintUnit!
 }
@@ -530,9 +515,8 @@ type Query {
   mint_keysets: [OrchardMintKeyset!]!
   mint_melt_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, page: Int, page_size: Int, states: [MeltQuoteState!], units: [MintUnit!]): [OrchardMintMeltQuote!]!
   mint_mint_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, page: Int, page_size: Int, states: [MintQuoteState!], units: [MintUnit!]): [OrchardMintMintQuote!]!
-  mint_promises(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!]): [OrchardMintPromise!]!
+  mint_promise_groups(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!], page: Int, page_size: Int, units: [MintUnit!]): [OrchardMintPromiseGroup!]!
   mint_proof_groups(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!], page: Int, page_size: Int, states: [MintProofState!], units: [MintUnit!]): [OrchardMintProofGroup!]!
-  mint_proofs: [OrchardMintProof!]!
   mint_quote_ttl: OrchardMintQuoteTtls!
   public_image(url: String!): OrchardPublicImage!
   public_urls(urls: [String!]!): [OrchardPublicUrl!]!

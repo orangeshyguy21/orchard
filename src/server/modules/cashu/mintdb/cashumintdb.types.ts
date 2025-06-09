@@ -56,24 +56,21 @@ export type CashuMintPromise = {
 	swap_id: string;
 }
 
-export type CashuMintProof = {
-	amount: number;
-	id: string;
-	c: string;
-	secret: string;
-	y: string;
-	witness: string;
-	created: number;
-	melt_quote: string;
-}
-
 export type CashuMintProofGroup = {
 	amount: number;
 	created_time: number;
 	keyset_ids: string[];
 	unit: MintUnit;
 	state: MintProofState;
-	proofs: number[][];
+	amounts: number[][];
+}
+
+export type CashuMintPromiseGroup = {
+	amount: number;
+	created_time: number;
+	keyset_ids: string[];
+	unit: MintUnit;
+	amounts: number[][];
 }
 
 export type CashuMintAnalytics = {

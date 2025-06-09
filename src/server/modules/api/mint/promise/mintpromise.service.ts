@@ -2,13 +2,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 /* Application Dependencies */
 import { CashuMintDatabaseService } from '@server/modules/cashu/mintdb/cashumintdb.service';
-import { CashuMintPromise } from '@server/modules/cashu/mintdb/cashumintdb.types';
+import { CashuMintPromiseGroup } from '@server/modules/cashu/mintdb/cashumintdb.types';
 import { OrchardErrorCode } from "@server/modules/error/error.types";
 import { OrchardApiError } from "@server/modules/graphql/classes/orchard-error.class";
 import { MintService } from '@server/modules/api/mint/mint.service';
 import { ErrorService } from '@server/modules/error/error.service';
 /* Local Dependencies */
-import { OrchardMintPromise } from './mintpromise.model';
+import { OrchardMintPromiseGroup } from './mintpromise.model';
 
 
 @Injectable()
@@ -22,15 +22,15 @@ export class MintPromiseService {
 		private errorService: ErrorService,
 	) {}
 
-	async getMintPromises(args?: any) : Promise<OrchardMintPromise[]> {
+	async getMintPromiseGroups(args?: any) : Promise<OrchardMintPromiseGroup[]> {
 		return this.mintService.withDb(async (db) => {
 			try {
-				const cashu_mint_promises : CashuMintPromise[] = await this.cashuMintDatabaseService.getMintPromises(db, args);
-				return cashu_mint_promises.map( cmp => new OrchardMintPromise(cmp));
+				const cashu_mint_promise_groups : CashuMintPromiseGroup[] = await this.cashuMintDatabaseService.getMintPromiseGroups(db, args);
+				return cashu_mint_promise_groups.map( cmp => new OrchardMintPromiseGroup(cmp));
 			} catch (error) {
 				const error_code = this.errorService.resolveError({ logger: this.logger, error,
 					errord: OrchardErrorCode.MintDatabaseSelectError,
-					msg: 'Error getting mint promises from database',
+					msg: 'Error getting mint promise groups from database',
 				});
 				throw new OrchardApiError(error_code);
 			}

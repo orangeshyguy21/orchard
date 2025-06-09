@@ -389,7 +389,7 @@ query MintProofGroups($units: [MintUnit!], $id_keysets: [String!], $date_start: 
 		keyset_ids
 		state
 		unit
-		proofs
+		amounts
 	}
 	mint_count_proof_groups(units: $units, id_keysets: $id_keysets, date_start: $date_start, date_end: $date_end, states: $states) {
 		count

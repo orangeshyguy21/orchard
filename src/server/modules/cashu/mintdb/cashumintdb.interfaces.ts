@@ -5,16 +5,6 @@ import { MintUnit, MintQuoteState, MeltQuoteState, MintProofState } from '@serve
 /* Local Dependencies */
 import { MintAnalyticsInterval } from './cashumintdb.enums';
 
-export interface CashuMintProofsArgs {
-    date_start?: number;
-    date_end?: number;
-    units?: MintUnit[];
-    states?: MintProofState[];
-    id_keysets?: string[];
-    page?: number;
-    page_size?: number;
-}
-
 export interface CashuMintMintQuotesArgs {
     date_start?: number;
     date_end?: number;
@@ -33,6 +23,24 @@ export interface CashuMintMeltQuotesArgs {
     page_size?: number;
 }
 
+export interface CashuMintPromiseArgs {
+    date_start?: number;
+    date_end?: number;
+    units?: MintUnit[];
+    id_keysets?: string[];
+    page?: number;
+    page_size?: number;
+}
+
+export interface CashuMintProofsArgs {
+    date_start?: number;
+    date_end?: number;
+    units?: MintUnit[];
+    states?: MintProofState[];
+    id_keysets?: string[];
+    page?: number;
+    page_size?: number;
+}
 
 export interface CashuMintAnalyticsArgs {
     date_start?: number;
