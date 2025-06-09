@@ -550,3 +550,19 @@ export const UpdateMintDatabaseStatesTool = {
         },
     },
 };
+export const UpdateMintBackupFilenameTool = {
+    'type': 'function',
+    'function': {
+        'name': 'MINT_BACKUP_FILENAME_UPDATE',
+        'description': 'This tool allows you to update the filename of the backup.',
+        'parameters': {
+            "type": "object",
+            "properties": {
+                "filename": {
+                    "type": "string",
+                    "description": "The filename of the backup"
+                },
+            },
+        },
+    },
+};

@@ -179,8 +179,12 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 
 	private getAgentSubscription(): Subscription {
 		return this.aiService.agent_requests$.subscribe(({ agent, content }) => {
-			// (this.keysets_rotation) ? this.hireRotationAgent(AiAgent.MintKeysetRotation, content) : this.hireAnalyticsAgent(agent, content);
-			this.hireAnalyticsAgent(AiAgent.MintDatabase, content);
+			switch( this.form_mode ) {
+				case FormMode.CREATE:
+					return this.hireBackupAgent(AiAgent.MintBackup, content);
+				default:
+					return this.hireAnalyticsAgent(agent, content);
+			}
 		});
 	}
 
@@ -548,13 +552,14 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		context += `Available Units: ${this.unit_options.map(unit => unit.value).join(', ')}\n`;
 		this.aiService.openAiSocket(agent, content, context);
 	}
-	// private hireRotationAgent(agent: AiAgent, content: string|null): void {
-	// 	let context = `Current Unit: ${this.form_keyset.value.unit}\n`;
-	// 	context += `Current Input Fee PPK: ${this.form_keyset.value.input_fee_ppk}\n`;
-	// 	context += `Current Max Order: ${this.form_keyset.value.max_order}\n`;
-	// 	context += `Available Units: ${this.unit_options.map(unit => unit.label).join(', ')}\n`;
-	// 	this.aiService.openAiSocket(agent, content, context);
-	// }
+
+	private hireBackupAgent(agent: AiAgent, content: string|null): void {
+		let context = `Current Mint Version: ${this.database_version}\n`;
+		context += `Current Mint Timestamp: ${DateTime.fromSeconds(this.database_timestamp).toFormat('yyyy-MM-dd HH:mm:ss')}\n`;
+		context += `Current Mint Implementation: ${this.database_implementation}\n`;
+		context += `Current Backup Filename: ${this.form_backup.get('filename')?.value}\n`;
+		this.aiService.openAiSocket(agent, content, context);
+	}
 
 	private executeAgentFunction(tool_call: AiChatToolCall): void {
 		console.log(tool_call);
@@ -584,6 +589,13 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 				this.onStatesChange(tool_call.function.arguments.states);
 			} else {
 				console.warn('Invalid States received:', tool_call.function.arguments.states);
+			}
+		}
+		if( tool_call.function.name === AiFunctionName.MintBackupFilenameUpdate ) {
+			if( tool_call.function.arguments.filename ) {
+				this.form_backup.patchValue({ filename: tool_call.function.arguments.filename });
+			} else {
+				console.warn('Invalid Filename received:', tool_call.function.arguments.filename);
 			}
 		}
 	}

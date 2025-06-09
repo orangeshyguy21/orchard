@@ -27,6 +27,7 @@ import {
     UpdateMintKeysetRotationMaxOrderTool,
     UpdateMintDatabaseDataTypeTool,
     UpdateMintDatabaseStatesTool,
+    UpdateMintBackupFilenameTool,
 } from "./ai.tools";
 
 export const AI_AGENTS = {
@@ -132,6 +133,18 @@ export const AI_AGENTS = {
             UpdateMintAnalyticsUnitsTool,
             UpdateMintDatabaseDataTypeTool,
             UpdateMintDatabaseStatesTool,
+        ],
+    },
+    [AiAgent.MINT_BACKUP]: {
+        name: 'Mint Backup',
+        description: 'Mint backup agent',
+        system_message: {
+            role: 'system',
+            content: `You are an agent designed to help create database backups of a cashu mint.
+            You will be provided with the current state of the form along with the users request for changes`,
+        },
+        tools: [
+            UpdateMintBackupFilenameTool,
         ],
     },
 };
