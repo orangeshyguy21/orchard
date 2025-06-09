@@ -1,4 +1,5 @@
 @use '@styles/molecule/molecule';
+@use '@styles/nucleus/nucleus';
 
 
 .note-box{
@@ -7,9 +8,27 @@
     @extend %flex-column;
     @extend %flex-items-center;
     @extend %flex-gap-0-5;
+    @extend %w-min-3;
 
     @extend %border;
     @extend %border-solid;
     @extend %orc-corner-small;
     @extend %orc-outline-border;
+}
+
+.note-pill{
+    @extend %h-2-5;
+    @extend %p-h-0-5;
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-gap-0-5;
+    @extend %orc-corner-full;
+    @extend %orc-surface-container-highest-bg;
+}
+
+.note-pill-amount{
+    @extend %orc-surface-container-low-bg;
+    @extend %p-v-0-5;
+    @extend %p-h-1;
+    @extend %orc-corner-full;
 }
