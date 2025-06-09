@@ -74,6 +74,6 @@ export class AiChatToolCall implements ParsedOrchardAiChatToolCall {
         this.function = {
             name: tool_call.function.name,
             arguments: JSON.parse(tool_call.function.arguments)
-        };
+        } as AiFunction;
     }
 }

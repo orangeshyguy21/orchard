@@ -24,6 +24,7 @@ export type AllMintDatabaseSettings = MintDatabaseSettings & {
 	date_start: number | null;
 	date_end: number | null;
 	page: number | null;
+	page_size: number | null;
 }
 export type NonNullableMintDatabaseSettings = {
 	[K in keyof AllMintDatabaseSettings]: NonNullable<AllMintDatabaseSettings[K]>;

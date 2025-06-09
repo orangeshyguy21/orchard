@@ -48,10 +48,8 @@ export class AiService {
 		if( !environment.ai.enabled ) return;
 		const set_model = this.settingService.getModel();
 		this.getAiModels().subscribe((models) => {
-			// models = [];
 			if( models.find((model) => model.model === set_model) ) return;
 			const model = this.getSmallestFunctionModel(models);
-			console.log('smallest functional model', model);
 			this.settingService.setModel(model?.model || null);
 		});
 	}
@@ -78,7 +76,6 @@ export class AiService {
 		this.active_subject.next(true);
 		this.subscription = this.apiService.gql_socket.subscribe({
 			next: (response: OrchardWsRes<AiChatResponse>) => {
-				console.log('RESPONSE HEARD:', response);
 				if (response.type === 'data' && response?.payload?.data?.ai_chat) {
 					const chunk = new AiChatChunk(response.payload.data.ai_chat);
 					this.message_subject.next( chunk );
