@@ -12,8 +12,11 @@
 	@include mat.dialog-overrides((
 	  	container-color: var(--mat-sys-surface-container-highest),
 	));
+	@include mat.badge-overrides((
+	 	text-size: 0.75rem,
+		text-weight: 800,
+	));
 }
-
 
 /* Specific Table Overrides */
 .orc-feature-table {
@@ -126,18 +129,10 @@
 	}
 }
 
-// :root {
-// 	.mat-mdc-icon-button {
-// 		&.orc-icon-button {
-// 			.mdc-icon-button__ripple {
-// 				&:before {
-// 					transition: background-color 0.1s ease-in-out;
-// 				}
-// 			}
-
-// 			// &:hover .mdc-icon-button__ripple {
-// 			// 	background-color: var(--mat-sys-primary-container);
-// 			// }
-// 		}
-// 	}
-// }
+:root {
+	mat-icon{
+		.mat-badge-content{
+			font-family: 'Bai Jamjuree', sans-serif;
+		}
+	}
+}

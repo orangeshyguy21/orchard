@@ -1,0 +1,15 @@
+@use '@styles/molecule/molecule';
+
+
+.note-box{
+    @extend %p-0-5;
+    @extend %flex;
+    @extend %flex-column;
+    @extend %flex-items-center;
+    @extend %flex-gap-0-5;
+
+    @extend %border;
+    @extend %border-solid;
+    @extend %orc-corner-small;
+    @extend %orc-outline-border;
+}
