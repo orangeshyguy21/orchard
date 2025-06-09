@@ -1,6 +1,21 @@
 <div class="mint-ecash-container p-v-1">
-    <div class="flex flex-gap-2">
-        <div>{{ group.keyset_ids | json }}</div>
-        <div>{{ group.amounts | json }}</div>
+    <div class="flex flex-column flex-gap-1">
+        @for(keyset of group_keysets; track keyset.id; let i = $index) {
+            <div class="flex flex-gap-2 flex-items-center">
+                <orc-mint-keyset
+                    [active]="keyset.active"
+                    [index]="keyset.derivation_path_index"
+                    [input_fee_ppk]="keyset.input_fee_ppk">
+                </orc-mint-keyset>
+                <!-- <div>
+                    @for(amount of group.amounts[i]; track amount) {
+                        <div>
+                            <span [innerHTML]="amount | amount : group.unit : 'mint'"></span>
+                        </div>
+                    }
+                </div> -->
+                <div>{{ group.amounts[i] | json }}</div>
+            </div>
+        }
     </div>
 </div>

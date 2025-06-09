@@ -31,9 +31,11 @@
 
 .mint-keyset-generation{
     @extend %orc-on-primary-container-color;
+    @extend %text-nowrap;
 }
 
 .mint-keyset-fee{
     @extend %font-weight-light;
     @extend %orc-outline-color;
+    @extend %text-nowrap;
 }

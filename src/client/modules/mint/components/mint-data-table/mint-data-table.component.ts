@@ -7,6 +7,7 @@ import { MatSort } from '@angular/material/sort';
 import { NonNullableMintDatabaseSettings } from '@client/modules/settings/types/setting.types';
 /* Native Dependencies */
 import { MintData } from '@client/modules/mint/components/mint-subsection-database/mint-subsection-database.component';
+import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
 import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
 
@@ -31,6 +32,7 @@ export class MintDataTableComponent implements OnChanges {
 
 	@Input() public data!: MintData;
 	@Input() public page_settings!: NonNullableMintDatabaseSettings;
+	@Input() public keysets!: MintKeyset[];
 	@Input() public loading!: boolean;
 
 	public more_entity!: MintMintQuote | MintMeltQuote | null;
