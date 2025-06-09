@@ -2,7 +2,7 @@
 
 .mint-data-chart-legend-container{
     @extend %flex;
-    @extend %flex-justify-center;
+    @extend %flex-justify-evenly;
     @extend %flex-gap-1;
 }
 
@@ -10,7 +10,6 @@
     @extend %flex;
     @extend %flex-items-center;
     @extend %flex-gap-0-5;
-    // @extend %cursor-pointer;
 }
 
 .legend-item-label{
