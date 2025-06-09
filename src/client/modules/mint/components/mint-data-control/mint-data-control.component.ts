@@ -17,6 +17,7 @@ import { MintUnit } from '@shared/generated.types';
 type TypeOption = {
 	label: string;
 	value: MintDataType;
+	helper?: string;
 }
 
 @Component({
@@ -106,7 +107,7 @@ export class MintDataControlComponent implements OnChanges {
 	}
 
 	private initForm(): void {
-		this.type_options = Object.values(MintDataType).map(type => ({ label: type.substring(4), value: type }));
+		this.type_options = this.getTypeOptions();
 		this.panel.controls.type.setValue(this.page_settings.type);
 		this.panel.controls.daterange.controls.date_start.setValue(DateTime.fromSeconds(this.page_settings.date_start));
 		this.panel.controls.daterange.controls.date_end.setValue(DateTime.fromSeconds(this.page_settings.date_end));
@@ -146,13 +147,40 @@ export class MintDataControlComponent implements OnChanges {
 		this.statesChange.emit(event.value);
 	}
 
-	public genesis_class: MatCalendarCellClassFunction<DateTime> = (cellDate, view) => {
+	public genesisClass: MatCalendarCellClassFunction<DateTime> = (cellDate, view) => {
 		if( view !== 'month' ) return '';
 		const unix_seconds = cellDate.toSeconds();
 		const unix_next_day = unix_seconds + 86400 - 1;
 		if( unix_seconds <= this.mint_genesis_time && unix_next_day >= this.mint_genesis_time ) return 'mint-genesis-date-class';
 		return '';
 	};
+
+	public getSelectedTypeLabel(value: any): string {
+		const selected_type = this.type_options.find(type => type.value === value);
+		return selected_type ? selected_type.label : '';
+	}
+
+	private getTypeOptions(): TypeOption[] {
+		return Object.values(MintDataType).map(type => ({ 
+			label: this.getTypeLabel(type),
+			helper: this.getTypeHelper(type),
+			value: type,
+		}));
+	}
+	private getTypeLabel(type: MintDataType): string {
+		if( type === MintDataType.MintMints ) return 'Mints';
+		if( type === MintDataType.MintMelts ) return 'Melts';
+		if( type === MintDataType.MintProofGroups ) return 'Ecash Used';
+		if( type === MintDataType.MintPromiseGroups ) return 'Ecash Held';
+		return 'Unknown';
+	}
+	private getTypeHelper(type: MintDataType): string {
+		if( type === MintDataType.MintMints ) return 'Mint deposits';
+		if( type === MintDataType.MintMelts ) return 'Mint withdrawals';
+		if( type === MintDataType.MintProofGroups ) return 'Ecash burned by the mint';
+		if( type === MintDataType.MintPromiseGroups ) return 'Ecash promises outstanding';
+		return 'n/a';
+	}
 
 	private isValidChange(): boolean {
 		// validations
