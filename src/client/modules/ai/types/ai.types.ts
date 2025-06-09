@@ -1,5 +1,6 @@
 /* Application Dependencies */
 import { ChartType } from "@client/modules/mint/enums/chart-type.enum";
+import { MintDataType } from "@client/modules/mint/enums/data-type.enum";
 /* Shared Dependencies */
 import { OrchardAiChatChunk, OrchardAiModel, AiFunctionName, MintUnit, MintAnalyticsInterval } from "@shared/generated.types";
 
@@ -35,7 +36,8 @@ AiFunctionUpdateMintMethodDescription |
 AiFunctionUpdateMintKeysetStatus |
 AiFunctionUpdateMintKeysetRotationUnit |
 AiFunctionUpdateMintKeysetRotationInputFeePpk |
-AiFunctionUpdateMintKeysetRotationMaxOrder;
+AiFunctionUpdateMintKeysetRotationMaxOrder |
+AiFunctionUpdateMintDatabaseDataType;
 
 export type AiFunctionUpdateMintAnalyticsDateRange = {
 	name: AiFunctionName.MintAnalyticsDateRangeUpdate;
@@ -221,3 +223,17 @@ export type AiFunctionUpdateMintKeysetRotationMaxOrder = {
 		max_order: number;
 	}
 }
+
+export type AiFunctionUpdateMintDatabaseDataType = {
+	name: AiFunctionName.MintDatabaseDataTypeUpdate;
+	arguments: {
+		type: MintDataType;
+	}
+}
+
+// export type AiFunctionUpdateMintDatabaseStates = {
+// 	name: AiFunctionName.MintDatabaseStatesUpdate;
+// 	arguments: {
+// 		states: string[];
+// 	}
+// }

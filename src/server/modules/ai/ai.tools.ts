@@ -510,3 +510,43 @@ export const UpdateMintKeysetRotationMaxOrderTool = {
         },
     },
 };
+
+export const UpdateMintDatabaseDataTypeTool = {
+    'type': 'function',
+    'function': {
+        'name': 'MINT_DATABASE_DATA_TYPE_UPDATE',
+        'description': 'This tool allows you to change what type of data is being displayed.',
+        'parameters': {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": ["MintMints", "MintMelts", "MintProofGroups", "MintPromiseGroups"],
+                    "description": "The type of data to display. MintProofGroups is displayed as Ecash Used. MintPromiseGroups is displayed as Ecash Held."
+                },
+            },
+            "required": ["type"]
+        },
+    },
+};
+export const UpdateMintDatabaseStatesTool = {
+    'type': 'function',
+    'function': {
+        'name': 'MINT_DATABASE_STATES_UPDATE',
+        'description': 'This tool allows you to change what states are being displayed for the selected data type.',
+        'parameters': {
+            "type": "object",
+            "properties": {
+                "states": {
+                    "type": "array",
+                    "description": "The states to display for the selected data type. The valid states for MintMints are: ISSUED, PAID, PENDING, UNPAID. The valid states for MintMelts are: PAID, PENDING, UNPAID. The valid states for MintProofGroups are: SPENT. MintPromiseGroups has no states.",
+                    "items": {
+                        "type": "string",
+                        "enum": ["ISSUED", "PAID", "PENDING", "UNPAID", "SPENT"]
+                    }
+                },
+            },
+            "required": ["states"]
+        },
+    },
+};

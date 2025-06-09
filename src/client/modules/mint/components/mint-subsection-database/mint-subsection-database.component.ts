@@ -5,7 +5,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 /* Vendor Dependencies */
 import { DateTime } from 'luxon';
-import { lastValueFrom, map, Subscription } from 'rxjs';
+import { lastValueFrom, Subscription } from 'rxjs';
 import { PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 /* Application Configuration */
@@ -52,8 +52,6 @@ enum FormMode {
 	CREATE = 'CREATE',
 	RESTORE = 'RESTORE',
 }
-
-const PAGE_SIZE = 100;
 
 @Component({
 	selector: 'orc-mint-subsection-database',
@@ -138,6 +136,10 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		private cdr: ChangeDetectorRef,
 	) {}
 
+	/* *******************************************************
+	   Initalization                      
+	******************************************************** */
+	
 	ngOnInit(): void {
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
 		this.unit_options = this.getUnitOptions();
@@ -148,7 +150,6 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		this.orchardOptionalInit();
 	}
 
-
 	orchardOptionalInit(): void {
 		if( environment.ai.enabled ) {
 			this.subscriptions.add(this.getAgentSubscription());
@@ -156,30 +157,13 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		}
 	}
 
+	/* *******************************************************
+		Subscriptions                      
+	******************************************************** */
+
 	private getEventSubscription(): Subscription {
 		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
-			this.active_event = event_data;
-			if( event_data === null ){
-				setTimeout(() => {
-					if( this.form_mode !== FormMode.CREATE && this.form_mode !== FormMode.RESTORE ) return;
-					this.eventService.registerEvent(new EventData({
-						type: 'PENDING',
-						message: 'Save',
-					}));
-				},1000);
-			}
-			if( event_data ){
-				if( this.form_mode === FormMode.CREATE ){
-					if( event_data.type === 'SUCCESS' ) this.onCreateSuccess();
-					if( event_data.type === 'ERROR' ) this.onError();
-					if( event_data.confirmed !== null )( event_data.confirmed ) ? this.onCreateConfirmed() : this.onClose();
-				}
-				if( this.form_mode === FormMode.RESTORE ){
-					if( event_data.type === 'SUCCESS' ) this.onRestoreSuccess();
-					if( event_data.type === 'ERROR' ) this.onError();
-					if( event_data.confirmed !== null )( event_data.confirmed ) ? this.onRestoreConfirmed() : this.onClose();
-				}
-			}
+			this.eventReaction(event_data);
 		});
 	}
 
@@ -198,23 +182,6 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 			this.hireAnalyticsAgent(AiAgent.MintDatabase, content);
 		});
 	}
-	private hireAnalyticsAgent(agent: AiAgent, content: string|null): void {
-		let context = `Current Date: ${DateTime.now().toFormat('yyyy-MM-dd')}\n`;
-		context += `Current Date Start: ${DateTime.fromSeconds(this.page_settings.date_start).toFormat('yyyy-MM-dd')}\n`;
-		context += `Current Date End: ${DateTime.fromSeconds(this.page_settings.date_end).toFormat('yyyy-MM-dd')}\n`;
-		context += `Current Data Type: ${this.page_settings.type}\n`;
-		context += `Current Units: ${this.page_settings.units}\n`;
-		context += `Current States: ${this.page_settings.states}\n`;
-		context += `Available Units: ${this.unit_options.map(unit => unit.value).join(', ')}\n`;
-		this.aiService.openAiSocket(agent, content, context);
-	}
-	// private hireRotationAgent(agent: AiAgent, content: string|null): void {
-	// 	let context = `Current Unit: ${this.form_keyset.value.unit}\n`;
-	// 	context += `Current Input Fee PPK: ${this.form_keyset.value.input_fee_ppk}\n`;
-	// 	context += `Current Max Order: ${this.form_keyset.value.max_order}\n`;
-	// 	context += `Available Units: ${this.unit_options.map(unit => unit.label).join(', ')}\n`;
-	// 	this.aiService.openAiSocket(agent, content, context);
-	// }
 
 	private getToolSubscription(): Subscription {
 		return this.aiService.tool_calls$.subscribe((tool_call: AiChatToolCall) => {
@@ -222,31 +189,9 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		});
 	}
 
-	private getUnitOptions(): { value: string, label: string }[] {
-		const possible_units = Array.from(new Set(this.mint_keysets.map(keyset => keyset.unit)));
-		return possible_units.map(unit => ({ value: unit, label: unit.toUpperCase() }));
-	}
-
-	private async initData(): Promise<void> {
-		this.locale = this.settingService.getLocale();
-		this.mint_genesis_time = this.getMintGenesisTime();
-		this.page_settings = this.getPageSettings();
-		this.state_options = this.getDefaultStates(this.page_settings.type);
-		this.loading_static_data = false;
-		this.cdr.detectChanges();
-		await this.getDynamicData();
-		this.loading_dynamic_data = false;
-		this.cdr.detectChanges();
-	}
-
-	private getMintGenesisTime(): number {
-		if (!this.mint_keysets || this.mint_keysets.length === 0) return 0;
-		return this.mint_keysets.reduce((oldest_time, keyset) => {
-			return keyset.valid_from < oldest_time || oldest_time === 0 
-				? keyset.valid_from 
-				: oldest_time;
-		}, 0);
-	}
+	/* *******************************************************
+		Controls                      
+	******************************************************** */
 
 	private getPageSettings(): NonNullableMintDatabaseSettings {
 		const settings = this.settingService.getMintDatabaseSettings();
@@ -256,9 +201,15 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 			date_start: settings.date_start ?? this.mint_genesis_time,
 			date_end: settings.date_end ?? this.getDefaultDateEnd(),
 			page: settings.page ?? 1,
+			page_size: settings.page_size ?? 100,
 			units: settings.units ?? this.getDefaultUnits(),
 			states: settings.states ?? this.getDefaultStates(type)
 		};
+	}
+
+	private getUnitOptions(): { value: string, label: string }[] {
+		const possible_units = Array.from(new Set(this.mint_keysets.map(keyset => keyset.unit)));
+		return possible_units.map(unit => ({ value: unit, label: unit.toUpperCase() }));
 	}
 
 	private getDefaultDateEnd(): number {
@@ -278,6 +229,31 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		return [];
 	}
 
+	private getMintGenesisTime(): number {
+		if (!this.mint_keysets || this.mint_keysets.length === 0) return 0;
+		return this.mint_keysets.reduce((oldest_time, keyset) => {
+			return keyset.valid_from < oldest_time || oldest_time === 0 
+				? keyset.valid_from 
+				: oldest_time;
+		}, 0);
+	}
+
+	/* *******************************************************
+		Data Down                     
+	******************************************************** */
+
+	private async initData(): Promise<void> {
+		this.locale = this.settingService.getLocale();
+		this.mint_genesis_time = this.getMintGenesisTime();
+		this.page_settings = this.getPageSettings();
+		this.state_options = this.getDefaultStates(this.page_settings.type);
+		this.loading_static_data = false;
+		this.cdr.detectChanges();
+		await this.getDynamicData();
+		this.loading_dynamic_data = false;
+		this.cdr.detectChanges();
+	}
+
 	private async getDynamicData(): Promise<void> {
 		if( this.page_settings.type === DataType.MintMints ) return this.getMintsData();
 		if( this.page_settings.type === DataType.MintMelts ) return this.getMeltsData();
@@ -293,7 +269,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 				units: this.page_settings.units,
 				states: (this.page_settings.states as MintQuoteState[]),
 				page: this.page_settings.page,
-				page_size: PAGE_SIZE,
+				page_size: this.page_settings.page_size,
 			})
 		);
 		this.data = {
@@ -311,7 +287,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 				units: this.page_settings.units,
 				states: (this.page_settings.states as MeltQuoteState[]),
 				page: this.page_settings.page,
-				page_size: PAGE_SIZE,
+				page_size: this.page_settings.page_size,
 			})
 		);
 		this.data = {
@@ -329,7 +305,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 				units: this.page_settings.units,
 				states: (this.page_settings.states as MintProofState[]),
 				page: this.page_settings.page,
-				page_size: PAGE_SIZE,
+				page_size: this.page_settings.page_size,
 			})
 		);
 		this.data = {
@@ -346,7 +322,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 				date_end: this.page_settings.date_end,
 				units: this.page_settings.units,	
 				page: this.page_settings.page,
-				page_size: PAGE_SIZE,
+				page_size: this.page_settings.page_size,
 			})
 		);
 		this.data = {
@@ -367,6 +343,10 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 			console.error('Error updating dynamic data:', error);
 		}
 	}
+
+	/* *******************************************************
+		Actions Up                      
+	******************************************************** */
 
 	public onDateChange(event: number[]): void {
 		this.page_settings.date_start = event[0];
@@ -415,6 +395,18 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		( this.form_mode !== FormMode.RESTORE ) ? this.initRestoreBackup() : this.onClose();
 	}
 
+	public onClose(): void {
+		this.form_backup.reset();
+		this.form_restore.reset();
+		this.form_mode = null;
+		this.eventService.registerEvent(null);
+		this.cdr.detectChanges();
+	}	
+
+	/* *******************************************************
+		Database Forms                
+	******************************************************** */
+
 	private initCreateBackup(): void {
 		this.form_mode = FormMode.CREATE;
 		this.eventService.registerEvent(new EventData({
@@ -422,6 +414,10 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 			message: 'Save',
 		}));
 		this.getDefaultFilename();
+	}
+
+	private initRestoreBackup(): void {
+		this.form_mode = FormMode.RESTORE;
 	}
 
 	private async getDefaultFilename(): Promise<void> {
@@ -436,19 +432,32 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		});
 	}
 
-	private initRestoreBackup(): void {
-		this.form_mode = FormMode.RESTORE;
+	private eventReaction(event_data: EventData | null): void {
+		this.active_event = event_data;
+		if( event_data === null ){
+			setTimeout(() => {
+				if( this.form_mode !== FormMode.CREATE && this.form_mode !== FormMode.RESTORE ) return;
+				this.eventService.registerEvent(new EventData({
+					type: 'PENDING',
+					message: 'Save',
+				}));
+			},1000);
+		}
+		if( event_data ){
+			if( this.form_mode === FormMode.CREATE ){
+				if( event_data.type === 'SUCCESS' ) this.eventCreateSuccess();
+				if( event_data.type === 'ERROR' ) this.eventError();
+				if( event_data.confirmed !== null )( event_data.confirmed ) ? this.eventCreateConfirmed() : this.onClose();
+			}
+			if( this.form_mode === FormMode.RESTORE ){
+				if( event_data.type === 'SUCCESS' ) this.eventRestoreSuccess();
+				if( event_data.type === 'ERROR' ) this.eventError();
+				if( event_data.confirmed !== null )( event_data.confirmed ) ? this.eventRestoreConfirmed() : this.onClose();
+			}
+		}
 	}
 
-	public onClose(): void {
-		this.form_backup.reset();
-		this.form_restore.reset();
-		this.form_mode = null;
-		this.eventService.registerEvent(null);
-		this.cdr.detectChanges();
-	}	
-
-	private onCreateConfirmed(): void {
+	private eventCreateConfirmed(): void {
 		if (this.form_backup.invalid) {
 			return this.eventService.registerEvent(new EventData({
 				type: 'WARNING',
@@ -472,7 +481,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 			}
 		});
 	}
-	private onRestoreConfirmed(): void {
+	private eventRestoreConfirmed(): void {
 		if (this.form_restore.invalid) {
 			return this.eventService.registerEvent(new EventData({
 				type: 'WARNING',
@@ -496,8 +505,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		});
 	}
 
-
-	private onCreateSuccess(): void {
+	private eventCreateSuccess(): void {
 		const decoded_data = atob(this.backup_encoded);
 		const uint8_array = Uint8Array.from(decoded_data, c => c.charCodeAt(0));
 		const file = new File([uint8_array], this.form_backup.get('filename')?.value, { type: 'application/octet-stream' });
@@ -511,18 +519,40 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		this.cdr.detectChanges();
 	}
 
-	private onRestoreSuccess(): void {
+	private eventRestoreSuccess(): void {
 		this.form_mode = null;
 		this.form_restore.reset();
 		this.cdr.detectChanges();
 	}
 
-	private onError(): void {
+	private eventError(): void {
 		this.form_mode = null;
 		this.form_backup.reset();
 		this.form_restore.reset();
 		this.cdr.detectChanges();
 	}
+
+	/* *******************************************************
+	   Agent                      
+	******************************************************** */
+
+	private hireAnalyticsAgent(agent: AiAgent, content: string|null): void {
+		let context = `Current Date: ${DateTime.now().toFormat('yyyy-MM-dd')}\n`;
+		context += `Current Date Start: ${DateTime.fromSeconds(this.page_settings.date_start).toFormat('yyyy-MM-dd')}\n`;
+		context += `Current Date End: ${DateTime.fromSeconds(this.page_settings.date_end).toFormat('yyyy-MM-dd')}\n`;
+		context += `Current Data Type: ${this.page_settings.type}\n`;
+		context += `Current Units: ${this.page_settings.units}\n`;
+		context += `Current States: ${this.page_settings.states}\n`;
+		context += `Available Units: ${this.unit_options.map(unit => unit.value).join(', ')}\n`;
+		this.aiService.openAiSocket(agent, content, context);
+	}
+	// private hireRotationAgent(agent: AiAgent, content: string|null): void {
+	// 	let context = `Current Unit: ${this.form_keyset.value.unit}\n`;
+	// 	context += `Current Input Fee PPK: ${this.form_keyset.value.input_fee_ppk}\n`;
+	// 	context += `Current Max Order: ${this.form_keyset.value.max_order}\n`;
+	// 	context += `Available Units: ${this.unit_options.map(unit => unit.label).join(', ')}\n`;
+	// 	this.aiService.openAiSocket(agent, content, context);
+	// }
 
 	private executeAgentFunction(tool_call: AiChatToolCall): void {
 		if( tool_call.function.name === AiFunctionName.MintAnalyticsDateRangeUpdate ) {
@@ -543,6 +573,10 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		// 	this.onStatusChange(statuses);
 		// }
 	}
+
+	/* *******************************************************
+	   Destruction                      
+	******************************************************** */
 
 	ngOnDestroy(): void {
 		this.form_mode = null;

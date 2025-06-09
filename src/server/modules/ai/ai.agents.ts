@@ -25,6 +25,8 @@ import {
     UpdateMintKeysetRotationUnitTool,
     UpdateMintKeysetRotationInputFeePpkTool,
     UpdateMintKeysetRotationMaxOrderTool,
+    UpdateMintDatabaseDataTypeTool,
+    UpdateMintDatabaseStatesTool,
 } from "./ai.tools";
 
 export const AI_AGENTS = {
@@ -128,6 +130,8 @@ export const AI_AGENTS = {
         tools: [
             UpdateMintAnalyticsDateRangeTool,
             UpdateMintAnalyticsUnitsTool,
+            UpdateMintDatabaseDataTypeTool,
+            UpdateMintDatabaseStatesTool,
         ],
     },
 };
