@@ -386,7 +386,7 @@ query MintProofGroups($units: [MintUnit!], $id_keysets: [String!], $date_start: 
 	mint_proof_groups(units: $units, id_keysets: $id_keysets, date_start: $date_start, date_end: $date_end, states: $states, page: $page, page_size: $page_size) {
 		amount
 		created_time
-		keyset_id
+		keyset_ids
 		state
 		unit
 		proofs

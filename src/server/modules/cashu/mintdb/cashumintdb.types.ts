@@ -70,10 +70,10 @@ export type CashuMintProof = {
 export type CashuMintProofGroup = {
 	amount: number;
 	created_time: number;
-	keyset_id: string;
+	keyset_ids: string[];
 	unit: MintUnit;
 	state: MintProofState;
-	proofs: number[];
+	proofs: number[][];
 }
 
 export type CashuMintAnalytics = {

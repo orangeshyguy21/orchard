@@ -240,18 +240,39 @@ export class CdkService {
 		return new Promise((resolve, reject) => {
 			db.all(sql, params, (err, rows: any[]) => {
 				if (err) { reject(err); }
-				const proof_groups: CashuMintProofGroup[] = rows.map(row => ({
-					amount: JSON.parse(row.proofs).reduce((sum: number, amount: number) => sum + amount, 0),
-					created_time: row.created_time,
-					keyset_id: row.keyset_id,
-					unit: row.unit,
-					state: row.state,
-					proofs: JSON.parse(row.proofs)
+				const groups = {};
+				rows.forEach(row => {
+					const key = `${row.created_time}_${row.unit}_${row.state}`;
+					if (!groups[key]) {
+						groups[key] = {
+							created_time: row.created_time,
+							unit: row.unit,
+							state: row.state,
+							keysets: [],
+							proofs: []
+						};
+					}
+					groups[key].keysets.push(row.keyset_id);
+					groups[key].proofs.push(JSON.parse(row.proofs));
+				});
+				
+				const proof_groups: CashuMintProofGroup[] = Object.values(groups).map((group: any) => ({
+					amount: group.proofs.flat().reduce((sum, amount) => sum + amount, 0),
+					created_time: group.created_time,
+					keyset_ids: group.keysets,
+					unit: group.unit,
+					state: group.state,
+					proofs: group.proofs
 				}));
+
+				console.log(proof_groups);
+				
 				resolve(proof_groups);
 			});
 		});
 	}
+
+// ... existing code ...
 
 	public async getMintCountMeltQuotes(db:sqlite3.Database, args?: CashuMintMeltQuotesArgs) : Promise<number> {
 		const field_mappings = {
@@ -291,7 +312,6 @@ export class CdkService {
 		const group_by = 'p.created_time, k.unit, p.state';
 		const { sql, params } = buildCountQuery('proof', args, field_mappings, select_statement, group_by);
 		const final_sql = sql.replace(';', ') subquery;');
-		console.log(final_sql);
 		
 		return new Promise((resolve, reject) => {
 			db.get(final_sql, params, (err, row:CashuMintCount) => {

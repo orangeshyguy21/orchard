@@ -539,8 +539,8 @@ export type OrchardMintProofGroup = {
   __typename?: 'OrchardMintProofGroup';
   amount: Scalars['Int']['output'];
   created_time: Scalars['UnixTimestamp']['output'];
-  keyset_id: Scalars['String']['output'];
-  proofs: Array<Scalars['Int']['output']>;
+  keyset_ids: Array<Scalars['String']['output']>;
+  proofs: Array<Array<Scalars['Int']['output']>>;
   state: MintProofState;
   unit: MintUnit;
 };
@@ -795,6 +795,7 @@ export type QueryMint_Proof_GroupsArgs = {
   page?: InputMaybe<Scalars['Int']['input']>;
   page_size?: InputMaybe<Scalars['Int']['input']>;
   states?: InputMaybe<Array<MintProofState>>;
+  units?: InputMaybe<Array<MintUnit>>;
 };
 
 

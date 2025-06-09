@@ -409,8 +409,8 @@ type OrchardMintProof {
 type OrchardMintProofGroup {
   amount: Int!
   created_time: UnixTimestamp!
-  keyset_id: String!
-  proofs: [Int!]!
+  keyset_ids: [String!]!
+  proofs: [[Int!]!]!
   state: MintProofState!
   unit: MintUnit!
 }

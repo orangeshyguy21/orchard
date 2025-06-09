@@ -5,8 +5,8 @@ export class MintProofGroup implements OrchardMintProofGroup {
     id: number;
 	amount: number;
 	created_time: number;
-	keyset_id: string;
-	proofs: number[];
+	keyset_ids: string[];
+	proofs: number[][];
 	state: MintProofState;
 	unit: MintUnit;
 
@@ -14,7 +14,7 @@ export class MintProofGroup implements OrchardMintProofGroup {
         this.id = omp.created_time;
 		this.amount = omp.amount;
 		this.created_time = omp.created_time;
-		this.keyset_id = omp.keyset_id;
+		this.keyset_ids = omp.keyset_ids;
 		this.proofs = omp.proofs;
 		this.state = omp.state;
 		this.unit = omp.unit;
