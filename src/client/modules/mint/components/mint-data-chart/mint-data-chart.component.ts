@@ -24,6 +24,7 @@ import { ChartService } from '@client/modules/chart/services/chart/chart.service
 import { MintData } from '@client/modules/mint/components/mint-subsection-database/mint-subsection-database.component';
 import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
 import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
+import { MintProofGroup } from '@client/modules/mint/classes/mint-proof-group.class';
 
 @Component({
 	selector: 'orc-mint-data-chart',
@@ -62,9 +63,12 @@ export class MintDataChartComponent {
 		if( this.data.type === DataType.MintMints ) return this.data.source.filteredData;
 		return [];
 	}
-
 	public get melts_data(): MintMeltQuote[] {
 		if( this.data.type === DataType.MintMelts ) return this.data.source.filteredData;
+		return [];
+	}
+	public get proofs_data(): MintProofGroup[] {
+		if( this.data.type === DataType.MintProofGroups ) return this.data.source.filteredData;
 		return [];
 	}
 
@@ -91,6 +95,7 @@ export class MintDataChartComponent {
 	private getChartData(): ChartConfiguration['data'] {
 		if( this.data.type === DataType.MintMints ) return this.getMintsData();
 		if( this.data.type === DataType.MintMelts ) return this.getMeltsData();
+		if( this.data.type === DataType.MintProofGroups ) return this.getProofsData();
 		return { datasets: [] };
 		
 	}
@@ -145,6 +150,47 @@ export class MintDataChartComponent {
 			groups[unit].push(entity);
 			return groups;
 		}, {} as Record<string, MintMeltQuote[]>);
+		const datasets = Object.entries(data_unit_groups).map(([unit, data], index) => {
+			const color = this.chartService.getAssetColor(unit, index);
+			const custom_opacity = this.chartService.hexToRgba(color.border, 0.75);
+			const data_prepped = data.map( entity => ({
+				x: (entity.created_time ?? 0) * 1000,
+				y: AmountPipe.getConvertedAmount(unit, entity.amount),
+				state: entity.state
+			}));
+			const yAxisID = getYAxisId(unit);
+			return {
+				data: data_prepped,
+				label: unit.toUpperCase(),
+				backgroundColor: custom_opacity,
+				borderColor: custom_opacity,
+				pointBackgroundColor: custom_opacity,
+				pointBorderColor: custom_opacity,
+				pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
+				pointHoverBorderColor: custom_opacity,
+				pointRadius: 3,
+				pointHoverRadius: 4,
+				pointStyle: (context: any) => {
+					const state = data[context.dataIndex]?.state;
+					return this.chartService.getStatePointStyle(this.data.type, state);
+				},
+				tension: 0.4,
+				yAxisID: yAxisID,
+			};
+		});
+		
+		return { datasets };
+	}
+
+	private getProofsData(): ChartConfiguration['data'] {
+		if( !this.page_settings ) return { datasets: [] };
+		if( (!this.data?.source || this.data?.source.data.length === 0) ) return { datasets: [] };
+		const data_unit_groups = this.proofs_data.reduce((groups, entity) => {
+			const unit = entity.unit;
+			groups[unit] = groups[unit] || [];
+			groups[unit].push(entity);
+			return groups;
+		}, {} as Record<string, MintProofGroup[]>);
 		const datasets = Object.entries(data_unit_groups).map(([unit, data], index) => {
 			const color = this.chartService.getAssetColor(unit, index);
 			const custom_opacity = this.chartService.hexToRgba(color.border, 0.75);
