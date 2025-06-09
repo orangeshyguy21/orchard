@@ -30,8 +30,9 @@ export class AiChatResolver implements OnModuleInit {
     ai_chat(
         @Args('ai_chat') ai_chat: AiChatInput
     ) {
-        this.logger.debug(`SUBSCRIPTION { ai_chat } for stream ${ai_chat.id}`);
-        this.aiChatService.streamChat(ai_chat);
+        const tag = `SUBSCRIPTION { ai_chat } for stream ${ai_chat.id}`;
+        this.logger.debug(tag);
+        this.aiChatService.streamChat(tag, ai_chat);
         return pubSub.asyncIterableIterator('ai_chat');
     }
 
@@ -39,7 +40,8 @@ export class AiChatResolver implements OnModuleInit {
     async ai_chat_abort(
         @Args('ai_chat_abort') ai_chat_abort: AiChatAbortInput
     ): Promise<OrchardAiChatStream> {
-        this.logger.debug(`MUTATION { ai_chat_abort } for stream ${ai_chat_abort.id}`);
+        const tag = `MUTATION { ai_chat_abort } for stream ${ai_chat_abort.id}`;
+        this.logger.debug(tag);
         return this.aiChatService.abortStream(ai_chat_abort.id);
     }
 }

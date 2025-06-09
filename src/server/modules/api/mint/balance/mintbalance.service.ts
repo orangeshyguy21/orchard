@@ -27,39 +27,36 @@ export class MintBalanceService {
 				const cashu_mint_balances: CashuMintBalance[] = await this.cashuMintDatabaseService.getMintBalances(db, keyset_id);
 				return cashu_mint_balances.map(cmb => new OrchardMintBalance(cmb));
 			} catch (error) {
-				const error_code = this.errorService.resolveError({ logger: this.logger, error,
+				const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
 					errord: OrchardErrorCode.MintDatabaseSelectError,
-					msg: tag,
 				});
 				throw new OrchardApiError(error_code);
 			}
 		});
 	}
 
-	async getIssuedMintBalances(): Promise<OrchardMintBalance[]> {
+	async getIssuedMintBalances(tag: string): Promise<OrchardMintBalance[]> {
 		return this.mintService.withDb(async (db) => {
 			try {
 				const cashu_mint_balances_issued: CashuMintBalance[] = await this.cashuMintDatabaseService.getMintBalancesIssued(db);
 				return cashu_mint_balances_issued.map(cmb => new OrchardMintBalance(cmb));
 			} catch (error) {
-				const error_code = this.errorService.resolveError({ logger: this.logger, error,
+				const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
 					errord: OrchardErrorCode.MintDatabaseSelectError,
-					msg: 'Error getting issued mint balances',
 				});
 				throw new OrchardApiError(error_code);
 			}
 		});
 	}
 
-	async getRedeemedMintBalances(): Promise<OrchardMintBalance[]> {
+	async getRedeemedMintBalances(tag: string): Promise<OrchardMintBalance[]> {
 		return this.mintService.withDb(async (db) => {
 			try {
 				const cashu_mint_balances_redeemed: CashuMintBalance[] = await this.cashuMintDatabaseService.getMintBalancesRedeemed(db);
 				return cashu_mint_balances_redeemed.map(cmb => new OrchardMintBalance(cmb));
 			} catch (error) {
-				const error_code = this.errorService.resolveError({ logger: this.logger, error,
+				const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
 					errord: OrchardErrorCode.MintDatabaseSelectError,
-					msg: 'Error getting redeemed mint balances',
 				});
 				throw new OrchardApiError(error_code);
 			}

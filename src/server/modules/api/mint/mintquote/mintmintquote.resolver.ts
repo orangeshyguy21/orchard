@@ -28,19 +28,22 @@ export class MintMintQuoteResolver {
 		@Args('page', { type: () => Int, nullable: true }) page?: number,
 		@Args('page_size', { type: () => Int, nullable: true }) page_size?: number,
 	) : Promise<OrchardMintMintQuote[]> {
-		this.logger.debug('GET { mint_mint_quotes }');
-		return await this.mintMintQuoteService.getMintMintQuotes({ units, states, date_start, date_end, page, page_size });
+		const tag = 'GET { mint_mint_quotes }';
+		this.logger.debug(tag);
+		return await this.mintMintQuoteService.getMintMintQuotes(tag, { units, states, date_start, date_end, page, page_size });
 	}
 
 	@Mutation(() => OrchardMintNut04Update)
 	async mint_nut04_update(@Args('mint_nut04_update') mint_nut04_update: MintNut04UpdateInput): Promise<OrchardMintNut04Update> {
-		this.logger.debug(`MUTATION { mint_nut04_update }`);
-		return await this.mintMintQuoteService.updateMintNut04(mint_nut04_update);
+		const tag = 'MUTATION { mint_nut04_update }';
+		this.logger.debug(tag);
+		return await this.mintMintQuoteService.updateMintNut04(tag, mint_nut04_update);
 	}
 
 	@Mutation(() => OrchardMintNut04QuoteUpdate)
 	async mint_nut04_quote_update(@Args('mint_nut04_quote_update') mint_nut04_quote_update: MintNut04QuoteUpdateInput): Promise<OrchardMintNut04QuoteUpdate> {
-		this.logger.debug(`MUTATION { mint_nut04_quote_update }`);
-		return await this.mintMintQuoteService.updateMintNut04Quote(mint_nut04_quote_update);
+		const tag = 'MUTATION { mint_nut04_quote_update }';
+		this.logger.debug(tag);
+		return await this.mintMintQuoteService.updateMintNut04Quote(tag, mint_nut04_quote_update);
 	}
 }

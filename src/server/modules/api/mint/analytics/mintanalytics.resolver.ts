@@ -27,8 +27,9 @@ export class MintAnalyticsResolver {
 		@Args('interval', { type: () => MintAnalyticsInterval, nullable: true }) interval?: MintAnalyticsInterval,
 		@Args('timezone', { type: () => Timezone, nullable: true }) timezone?: TimezoneType,
 	) : Promise<OrchardMintAnalytics[]> {
-		this.logger.debug('GET { mint_analytics_balances }');
-		return await this.mintAnalyticsService.getMintAnalyticsBalances({ units, date_start, date_end, interval, timezone });
+		const tag = 'GET { mint_analytics_balances }';
+		this.logger.debug(tag);
+		return await this.mintAnalyticsService.getMintAnalyticsBalances(tag, { units, date_start, date_end, interval, timezone });
 	}
 
 	@Query(() => [OrchardMintAnalytics])
@@ -39,8 +40,9 @@ export class MintAnalyticsResolver {
 		@Args('interval', { type: () => MintAnalyticsInterval, nullable: true }) interval?: MintAnalyticsInterval,
 		@Args('timezone', { type: () => Timezone, nullable: true }) timezone?: TimezoneType,
 	) : Promise<OrchardMintAnalytics[]> {
-		this.logger.debug('GET { mint_analytics_mints }');
-		return await this.mintAnalyticsService.getMintAnalyticsMints({ units, date_start, date_end, interval, timezone });
+		const tag = 'GET { mint_analytics_mints }';
+		this.logger.debug(tag);
+		return await this.mintAnalyticsService.getMintAnalyticsMints(tag, { units, date_start, date_end, interval, timezone });
 	}	
 
 	@Query(() => [OrchardMintAnalytics])
@@ -51,8 +53,9 @@ export class MintAnalyticsResolver {
 		@Args('interval', { type: () => MintAnalyticsInterval, nullable: true }) interval?: MintAnalyticsInterval,
 		@Args('timezone', { type: () => Timezone, nullable: true }) timezone?: TimezoneType,
 	) : Promise<OrchardMintAnalytics[]> {
-		this.logger.debug('GET { mint_analytics_melts }');
-		return await this.mintAnalyticsService.getMintAnalyticsMelts({ units, date_start, date_end, interval, timezone });
+		const tag = 'GET { mint_analytics_melts }';
+		this.logger.debug(tag);
+		return await this.mintAnalyticsService.getMintAnalyticsMelts(tag, { units, date_start, date_end, interval, timezone });
 	}
 
 	@Query(() => [OrchardMintAnalytics])
@@ -63,8 +66,9 @@ export class MintAnalyticsResolver {
 		@Args('interval', { type: () => MintAnalyticsInterval, nullable: true }) interval?: MintAnalyticsInterval,
 		@Args('timezone', { type: () => Timezone, nullable: true }) timezone?: TimezoneType,
 	) : Promise<OrchardMintAnalytics[]> {
-		this.logger.debug('GET { mint_analytics_transfers }');
-		return await this.mintAnalyticsService.getMintAnalyticsTransfers({ units, date_start, date_end, interval, timezone });
+		const tag = 'GET { mint_analytics_transfers }';
+		this.logger.debug(tag);
+		return await this.mintAnalyticsService.getMintAnalyticsTransfers(tag, { units, date_start, date_end, interval, timezone });
 	}
 
 	@Query(() => [OrchardMintKeysetsAnalytics])
@@ -74,7 +78,8 @@ export class MintAnalyticsResolver {
 		@Args('interval', { type: () => MintAnalyticsInterval, nullable: true }) interval?: MintAnalyticsInterval,
 		@Args('timezone', { type: () => Timezone, nullable: true }) timezone?: TimezoneType,
 	) : Promise<OrchardMintKeysetsAnalytics[]> {
-		this.logger.debug('GET { mint_analytics_keysets }');
-		return await this.mintAnalyticsService.getMintAnalyticsKeysets({ date_start, date_end, interval, timezone });
+		const tag = 'GET { mint_analytics_keysets }';
+		this.logger.debug(tag);
+		return await this.mintAnalyticsService.getMintAnalyticsKeysets(tag, { date_start, date_end, interval, timezone });
 	}
 }

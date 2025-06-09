@@ -16,7 +16,8 @@ export class AiModelResolver {
 
 	@Query(() => [OrchardAiModel])
 	async ai_models() : Promise<OrchardAiModel[]> {
-		this.logger.debug('GET { ai_models }');
-		return await this.aiModelService.getModels();
+		const tag = 'GET { ai_models }';
+		this.logger.debug(tag);
+		return await this.aiModelService.getModels(tag);
 	}
 }

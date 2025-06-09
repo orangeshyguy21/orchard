@@ -27,7 +27,8 @@ export class MintProofResolver {
         @Args('page', { type: () => Int, nullable: true }) page?: number,
         @Args('page_size', { type: () => Int, nullable: true }) page_size?: number,
 	) : Promise<OrchardMintProofGroup[]> {
-		this.logger.debug('GET { mint_proof_groups }');
-		return await this.mintProofService.getMintProofGroups({ id_keysets, date_start, date_end, units, states, page, page_size });
+		const tag = 'GET { mint_proof_groups }';
+		this.logger.debug(tag);
+		return await this.mintProofService.getMintProofGroups(tag, { id_keysets, date_start, date_end, units, states, page, page_size });
   	}
 }

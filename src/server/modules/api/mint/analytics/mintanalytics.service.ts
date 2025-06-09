@@ -22,75 +22,70 @@ export class MintAnalyticsService {
 		private errorService: ErrorService,
 	) {}
 
-	async getMintAnalyticsBalances(args:CashuMintAnalyticsArgs) : Promise<OrchardMintAnalytics[]> {
+	async getMintAnalyticsBalances(tag: string, args:CashuMintAnalyticsArgs) : Promise<OrchardMintAnalytics[]> {
 		return this.mintService.withDb(async (db) => {
 			try {
 				const cashu_mint_analytics : CashuMintAnalytics[] = await this.cashuMintDatabaseService.getMintAnalyticsBalances(db, args);
 				return cashu_mint_analytics.map( cma => new OrchardMintAnalytics(cma) );
 			} catch (error) {
-				const error_code = this.errorService.resolveError({ logger: this.logger, error,
+				const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
 					errord: OrchardErrorCode.MintDatabaseSelectError,
-					msg: 'Error getting mint analytics',
 				});
 				throw new OrchardApiError(error_code);
 			}
 		});
 	}
 
-	async getMintAnalyticsMints(args:CashuMintAnalyticsArgs) : Promise<OrchardMintAnalytics[]> {
+	async getMintAnalyticsMints(tag: string, args:CashuMintAnalyticsArgs) : Promise<OrchardMintAnalytics[]> {
 		return this.mintService.withDb(async (db) => {
 			try {
 				const cashu_mint_analytics : CashuMintAnalytics[] = await this.cashuMintDatabaseService.getMintAnalyticsMints(db, args);
 				return cashu_mint_analytics.map( cma => new OrchardMintAnalytics(cma) );
 			} catch (error) {
-				const error_code = this.errorService.resolveError({ logger: this.logger, error,
+				const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
 					errord: OrchardErrorCode.MintDatabaseSelectError,
-					msg: 'Error getting mint analytics',
 				});
 				throw new OrchardApiError(error_code);
 			}
 		});
 	}
 
-	async getMintAnalyticsMelts(args:CashuMintAnalyticsArgs) : Promise<OrchardMintAnalytics[]> {
+	async getMintAnalyticsMelts(tag: string, args:CashuMintAnalyticsArgs) : Promise<OrchardMintAnalytics[]> {
 		return this.mintService.withDb(async (db) => {
 			try {
 				const cashu_mint_analytics : CashuMintAnalytics[] = await this.cashuMintDatabaseService.getMintAnalyticsMelts(db, args);
 				return cashu_mint_analytics.map( cma => new OrchardMintAnalytics(cma) );
 			} catch (error) {
-				const error_code = this.errorService.resolveError({ logger: this.logger, error,
+				const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
 					errord: OrchardErrorCode.MintDatabaseSelectError,
-					msg: 'Error getting mint analytics',
 				});
 				throw new OrchardApiError(error_code);
 			}
 		});
 	}
 
-	async getMintAnalyticsTransfers(args:CashuMintAnalyticsArgs) : Promise<OrchardMintAnalytics[]> {
+	async getMintAnalyticsTransfers(tag: string, args:CashuMintAnalyticsArgs) : Promise<OrchardMintAnalytics[]> {
 		return this.mintService.withDb(async (db) => {
 			try {
 				const cashu_mint_analytics : CashuMintAnalytics[] = await this.cashuMintDatabaseService.getMintAnalyticsTransfers(db, args);
 				return cashu_mint_analytics.map( cma => new OrchardMintAnalytics(cma) );
 			} catch (error) {
-				const error_code = this.errorService.resolveError({ logger: this.logger, error,
+				const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
 					errord: OrchardErrorCode.MintDatabaseSelectError,
-					msg: 'Error getting mint analytics',
 				});
 				throw new OrchardApiError(error_code);
 			}
 		});
 	}
 
-	async getMintAnalyticsKeysets(args:CashuMintAnalyticsArgs) : Promise<OrchardMintKeysetsAnalytics[]> {
+	async getMintAnalyticsKeysets(tag: string, args:CashuMintAnalyticsArgs) : Promise<OrchardMintKeysetsAnalytics[]> {
 		return this.mintService.withDb(async (db) => {
 			try {
 				const cashu_mint_analytics : CashuMintKeysetsAnalytics[] = await this.cashuMintDatabaseService.getMintAnalyticsKeysets(db, args);
 				return cashu_mint_analytics.map( cma => new OrchardMintKeysetsAnalytics(cma) );
 			} catch (error) {
-				const error_code = this.errorService.resolveError({ logger: this.logger, error,
+				const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
 					errord: OrchardErrorCode.MintDatabaseSelectError,
-					msg: 'Error getting mint keyset analytics',
 				});
 				throw new OrchardApiError(error_code);
 			}

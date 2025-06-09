@@ -24,8 +24,9 @@ export class MintCountResolver {
 		@Args('date_start', { type: () => UnixTimestamp, nullable: true }) date_start?: number,
 		@Args('date_end', { type: () => UnixTimestamp, nullable: true }) date_end?: number,
 	) : Promise<OrchardMintCount> {
-		this.logger.debug('GET { mint_count_mint_quotes }');
-		return await this.mintCountService.getMintCountMintQuotes({ units, states, date_start, date_end });
+		const tag = 'GET { mint_count_mint_quotes }';
+		this.logger.debug(tag);
+		return await this.mintCountService.getMintCountMintQuotes(tag, { units, states, date_start, date_end });
 	}
 
 	@Query(() => OrchardMintCount)
@@ -35,8 +36,9 @@ export class MintCountResolver {
 		@Args('date_start', { type: () => UnixTimestamp, nullable: true }) date_start?: number,
 		@Args('date_end', { type: () => UnixTimestamp, nullable: true }) date_end?: number,
 	) : Promise<OrchardMintCount> {
-		this.logger.debug('GET { mint_count_melt_quotes }');
-		return await this.mintCountService.getMintCountMeltQuotes({ units, states, date_start, date_end });
+		const tag = 'GET { mint_count_melt_quotes }';
+		this.logger.debug(tag);
+		return await this.mintCountService.getMintCountMeltQuotes(tag, { units, states, date_start, date_end });
 	}
 
 	@Query(() => OrchardMintCount)
@@ -46,10 +48,10 @@ export class MintCountResolver {
 		@Args('date_end', { type: () => UnixTimestamp, nullable: true }) date_end?: number,
 		@Args('units', { type: () => [MintUnit], nullable: true }) units?: MintUnit[],
 		@Args('states', { type: () => [MintProofState], nullable: true }) states?: MintProofState[],
-		
 	) : Promise<OrchardMintCount> {
-		this.logger.debug('GET { mint_count_proof_groups }');
-		return await this.mintCountService.getMintCountProofGroups({ id_keysets, units, states, date_start, date_end });
+		const tag = 'GET { mint_count_proof_groups }';
+		this.logger.debug(tag);
+		return await this.mintCountService.getMintCountProofGroups(tag, { id_keysets, units, states, date_start, date_end });
 	}
 
 	@Query(() => OrchardMintCount)
@@ -59,7 +61,8 @@ export class MintCountResolver {
 		@Args('date_start', { type: () => UnixTimestamp, nullable: true }) date_start?: number,
 		@Args('date_end', { type: () => UnixTimestamp, nullable: true }) date_end?: number,
 	) : Promise<OrchardMintCount> {
-		this.logger.debug('GET { mint_count_promise_groups }');
-		return await this.mintCountService.getMintCountPromiseGroups({ id_keysets, units, date_start, date_end });
+		const tag = 'GET { mint_count_promise_groups }';
+		this.logger.debug(tag);
+		return await this.mintCountService.getMintCountPromiseGroups(tag, { id_keysets, units, date_start, date_end });
 	}
 }

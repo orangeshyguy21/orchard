@@ -22,15 +22,14 @@ export class MintPromiseService {
 		private errorService: ErrorService,
 	) {}
 
-	async getMintPromiseGroups(args?: any) : Promise<OrchardMintPromiseGroup[]> {
+	async getMintPromiseGroups(tag: string, args?: any) : Promise<OrchardMintPromiseGroup[]> {
 		return this.mintService.withDb(async (db) => {
 			try {
 				const cashu_mint_promise_groups : CashuMintPromiseGroup[] = await this.cashuMintDatabaseService.getMintPromiseGroups(db, args);
 				return cashu_mint_promise_groups.map( cmp => new OrchardMintPromiseGroup(cmp));
 			} catch (error) {
-				const error_code = this.errorService.resolveError({ logger: this.logger, error,
+				const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
 					errord: OrchardErrorCode.MintDatabaseSelectError,
-					msg: 'Error getting mint promise groups from database',
 				});
 				throw new OrchardApiError(error_code);
 			}

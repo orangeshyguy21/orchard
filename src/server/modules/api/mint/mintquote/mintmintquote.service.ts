@@ -26,41 +26,38 @@ export class MintMintQuoteService {
 		private errorService: ErrorService,
 	) {}
 
-	async getMintMintQuotes(args?: CashuMintMintQuotesArgs) : Promise<OrchardMintMintQuote[]> {
+	async getMintMintQuotes(tag: string, args?: CashuMintMintQuotesArgs) : Promise<OrchardMintMintQuote[]> {
 		return this.mintService.withDb(async (db) => {
 			try {
 				const cashu_mint_quotes : CashuMintMintQuote[] = await this.cashuMintDatabaseService.getMintMintQuotes(db, args);
 				return cashu_mint_quotes.map( cmq => new OrchardMintMintQuote(cmq));
 			} catch (error) {
-				const error_code = this.errorService.resolveError({ logger: this.logger, error,
+				const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
 					errord: OrchardErrorCode.MintDatabaseSelectError,
-					msg: 'Error getting mint quotes from database',
 				});
 				throw new OrchardApiError(error_code);
 			}
 		});
 	}
 
-	async updateMintNut04(mint_nut04_update: MintNut04UpdateInput) : Promise<OrchardMintNut04Update> {
+	async updateMintNut04(tag: string, mint_nut04_update: MintNut04UpdateInput) : Promise<OrchardMintNut04Update> {
 		try {
 			await this.cashuMintRpcService.updateNut04(mint_nut04_update);
 			return mint_nut04_update;
 		} catch (error) {
-			const error_code = this.errorService.resolveError({ logger: this.logger, error,
+			const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
 				errord: OrchardErrorCode.MintRpcActionError,
-				msg: 'Error updating mint nut04',
 			});
 			throw new OrchardApiError(error_code);
 		}
 	}
 
-	async updateMintNut04Quote(mint_nut04_quote_update: MintNut04QuoteUpdateInput) : Promise<OrchardMintNut04QuoteUpdate> {
+	async updateMintNut04Quote(tag: string, mint_nut04_quote_update: MintNut04QuoteUpdateInput) : Promise<OrchardMintNut04QuoteUpdate> {
 		try {
 			return await this.cashuMintRpcService.updateNut04Quote(mint_nut04_quote_update);
 		} catch (error) {
-			const error_code = this.errorService.resolveError({ logger: this.logger, error,
+			const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
 				errord: OrchardErrorCode.MintRpcActionError,
-				msg: 'Error updating mint nut04 quote',
 			});
 			throw new OrchardApiError(error_code);
 		}

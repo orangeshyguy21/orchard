@@ -27,7 +27,8 @@ export class MintPromiseResolver {
         @Args('page', { type: () => Int, nullable: true }) page?: number,
         @Args('page_size', { type: () => Int, nullable: true }) page_size?: number,
 	) : Promise<OrchardMintPromiseGroup[]> {
-		this.logger.debug('GET { mint_promise_groups }');
-		return await this.mintPromiseService.getMintPromiseGroups({ id_keysets, date_start, date_end });
+		const tag = 'GET { mint_promise_groups }';
+		this.logger.debug(tag);
+		return await this.mintPromiseService.getMintPromiseGroups(tag, { id_keysets, date_start, date_end });
 	}
 }

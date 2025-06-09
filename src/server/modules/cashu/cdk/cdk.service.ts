@@ -112,7 +112,7 @@ export class CdkService {
 		const params = keyset_id ? [keyset_id, keyset_id] : [];
 		return new Promise((resolve, reject) => {
 			db.all(sql, params, (err, rows: CashuMintBalance[]) => {
-				if (err) reject(err);
+				if (err) return reject(err);
 				resolve(rows);
 			});
 		});
@@ -129,7 +129,7 @@ export class CdkService {
 		);`;
 		return new Promise((resolve, reject) => {
 			db.all(sql, (err, rows:CashuMintBalance[]) => {
-				if (err) reject(err);
+				if (err) return reject(err);
 				resolve(rows);
 			});
 		});
@@ -146,7 +146,7 @@ export class CdkService {
 		);`;
 		return new Promise((resolve, reject) => {
 			db.all(sql, (err, rows:CashuMintBalance[]) => {
-				if (err) reject(err);
+				if (err) return reject(err);
 				resolve(rows);
 			});
 		});
@@ -156,7 +156,7 @@ export class CdkService {
 		const sql = 'SELECT * FROM keyset;';
 		return new Promise((resolve, reject) => {
 			db.all(sql, (err, rows:CashuMintKeyset[]) => {
-				if (err) reject(err);
+				if (err) return reject(err);
 				resolve(rows);
 			});
 		});
@@ -172,7 +172,7 @@ export class CdkService {
 		const { sql, params } = buildDynamicQuery('mint_quote', args, field_mappings);
 		return new Promise((resolve, reject) => {
 			db.all(sql, params, (err, rows:CashuMintMintQuote[]) => {
-				if (err) reject(err);
+				if (err) return reject(err);
 				resolve(rows);
 			});
 		});
@@ -188,7 +188,7 @@ export class CdkService {
 		const { sql, params } = buildCountQuery('mint_quote', args, field_mappings);
 		return new Promise((resolve, reject) => {
 			db.get(sql, params, (err, row:CashuMintCount) => {
-				if (err) reject(err);
+				if (err) return reject(err);
 				resolve(row.count);
 			});
 		});
@@ -204,7 +204,7 @@ export class CdkService {
 		const { sql, params } = buildDynamicQuery('melt_quote', args, field_mappings);
 		return new Promise((resolve, reject) => {
 			db.all(sql, params, (err, rows:CashuMintMeltQuote[]) => {
-				if (err) reject(err);
+				if (err) return reject(err);
 				resolve(rows);
 			});
 		});
@@ -241,7 +241,7 @@ export class CdkService {
 		
 		return new Promise((resolve, reject) => {
 			db.all(sql, params, (err, rows: any[]) => {
-				if (err) { reject(err); }
+				if (err) return reject(err);
 				const groups = {};
 				rows.forEach(row => {
 					const key = `${row.created_time}_${row.unit}_${row.state}`;
@@ -300,7 +300,7 @@ export class CdkService {
 		
 		return new Promise((resolve, reject) => {
 			db.all(sql, params, (err, rows: any[]) => {
-				if (err) { reject(err); }
+				if (err) return reject(err);
 				const groups = {};
 				rows.forEach(row => {
 					const key = `${row.created_time}_${row.unit}`;
@@ -338,7 +338,7 @@ export class CdkService {
 		const { sql, params } = buildCountQuery('melt_quote', args, field_mappings);
 		return new Promise((resolve, reject) => {
 			db.get(sql, params, (err, row:CashuMintCount) => {
-				if (err) reject(err);
+				if (err) return reject(err);
 				resolve(row.count);
 			});
 		});
@@ -369,7 +369,7 @@ export class CdkService {
 		
 		return new Promise((resolve, reject) => {
 			db.get(final_sql, params, (err, row:CashuMintCount) => {
-				if (err) reject(err);
+				if (err) return reject(err);
 				resolve(row.count);
 			});
 		});
@@ -395,13 +395,10 @@ export class CdkService {
 		const group_by = 'bs.created_time, k.unit';
 		const { sql, params } = buildCountQuery('blind_signature', args, field_mappings, select_statement, group_by);
 		const final_sql = sql.replace(';', ') subquery;');
-
-		console.log(final_sql);
 		
 		return new Promise((resolve, reject) => {
 			db.get(final_sql, params, (err, row:CashuMintCount) => {
-				console.log(err);
-				if (err) reject(err);
+				if (err) return reject(err);
 				resolve(row.count);
 			});
 		});

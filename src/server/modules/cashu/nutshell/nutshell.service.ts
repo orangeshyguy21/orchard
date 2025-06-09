@@ -40,7 +40,7 @@ export class NutshellService {
 		const params = keyset_id ? [keyset_id] : [];
 		return new Promise((resolve, reject) => {
 			db.all(sql, params, (err, rows:CashuMintBalance[]) => {
-				if (err) reject(err);
+				if (err) return reject(err);
 				resolve(rows);
 			});
 		});
@@ -50,7 +50,7 @@ export class NutshellService {
 		const sql = 'SELECT * FROM balance_issued;';
 		return new Promise((resolve, reject) => {
 			db.all(sql, (err, rows:CashuMintBalance[]) => {
-				if (err) reject(err);
+				if (err) return reject(err);
 				resolve(rows);
 			});
 		});
@@ -60,7 +60,7 @@ export class NutshellService {
 		const sql = 'SELECT * FROM balance_redeemed;';
 		return new Promise((resolve, reject) => {
 			db.all(sql, (err, rows:CashuMintBalance[]) => {
-				if (err) reject(err);
+				if (err) return reject(err);
 				resolve(rows);
 			});
 		});
@@ -70,7 +70,7 @@ export class NutshellService {
 		const sql = 'SELECT * FROM keysets;';
 		return new Promise((resolve, reject) => {
 			db.all(sql, (err, rows:CashuMintKeyset[]) => {
-				if (err) reject(err);
+				if (err) return reject(err);
 				rows.forEach(row => {
 					const match = row.derivation_path?.match(/\/(\d+)'?$/);
 					row.derivation_path_index = match ? parseInt(match[1], 10) : null;
@@ -90,7 +90,7 @@ export class NutshellService {
 		const { sql, params } = buildDynamicQuery('mint_quotes', args, field_mappings);
 		return new Promise((resolve, reject) => {
 			db.all(sql, params, (err, rows:NutshellMintMintQuote[]) => {
-				if (err) reject(err);
+				if (err) return reject(err);
 				const cashu_quote = (row: NutshellMintMintQuote): CashuMintMintQuote => ({
 					id: row.quote,
 					request_lookup_id: row.checking_id,
@@ -112,7 +112,7 @@ export class NutshellService {
 		const { sql, params } = buildCountQuery('mint_quotes', args, field_mappings);
 		return new Promise((resolve, reject) => {
 			db.get(sql, params, (err, row:CashuMintCount) => {
-				if (err) reject(err);
+				if (err) return reject(err);
 				resolve(row.count);
 			});
 		});
@@ -128,7 +128,7 @@ export class NutshellService {
 		const { sql, params } = buildDynamicQuery('melt_quotes', args, field_mappings);
 		return new Promise((resolve, reject) => {
 			db.all(sql, params, (err, rows:NutshellMintMeltQuote[]) => {
-				if (err) reject(err);
+				if (err) return reject(err);
 				const cashu_quote = (row: NutshellMintMeltQuote): CashuMintMeltQuote => ({
 					id: row.quote,
 					request_lookup_id: row.checking_id,
@@ -152,7 +152,7 @@ export class NutshellService {
 		const { sql, params } = buildCountQuery('melt_quotes', args, field_mappings);
 		return new Promise((resolve, reject) => {
 			db.get(sql, params, (err, row:CashuMintCount) => {
-				if (err) reject(err);
+				if (err) return reject(err);
 				resolve(row.count);
 			});
 		});
@@ -167,7 +167,7 @@ export class NutshellService {
 		const { sql, params } = buildDynamicQuery('promises', args, field_mappings);
 		return new Promise((resolve, reject) => {
 			db.all(sql, params, (err, rows:CashuMintPromise[]) => {
-				if (err) reject(err);
+				if (err) return reject(err);
 				resolve(rows);
 			});
 		});

@@ -16,15 +16,17 @@ export class MintDatabaseResolver {
 
 	@Mutation(() => OrchardMintDatabaseBackup)
 	async mint_database_backup() : Promise<OrchardMintDatabaseBackup> {
-		this.logger.debug('POST { mint_database_backup }');
-		return await this.mintDatabaseService.createMintDatabaseBackup();
+		const tag = 'POST { mint_database_backup }';
+		this.logger.debug(tag);
+		return await this.mintDatabaseService.createMintDatabaseBackup(tag);
 	}
 
 	@Mutation(() => OrchardMintDatabaseRestore)
 	async mint_database_restore(
 		@Args('filebase64') filebase64: string,
 	) : Promise<OrchardMintDatabaseRestore> {
-		this.logger.debug('POST { mint_database_restore }');
-		return await this.mintDatabaseService.restoreMintDatabaseBackup(filebase64);
+		const tag = 'POST { mint_database_restore }';
+		this.logger.debug(tag);
+		return await this.mintDatabaseService.restoreMintDatabaseBackup(tag, filebase64);
 	}
 }

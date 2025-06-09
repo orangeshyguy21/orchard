@@ -18,14 +18,13 @@ export class AiModelService {
 		private errorService: ErrorService,
 	) {}
 	
-	async getModels(): Promise<any[]> {
+	async getModels(tag: string): Promise<any[]> {
 		try {
 			const models = await this.aiService.getModels();
 			return models.map(model => new OrchardAiModel(model));
 		} catch (error) {
-			const error_code = this.errorService.resolveError({ logger: this.logger, error,
+			const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
 				errord: OrchardErrorCode.AiError,
-				msg: 'Error getting ai models',
 			});
 			throw new OrchardApiError(error_code);
 		}

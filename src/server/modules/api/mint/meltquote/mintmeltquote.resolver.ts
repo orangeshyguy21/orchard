@@ -28,13 +28,15 @@ export class MintMeltQuoteResolver {
 		@Args('page', { type: () => Int, nullable: true }) page?: number,
 		@Args('page_size', { type: () => Int, nullable: true }) page_size?: number,
 	) : Promise<OrchardMintMeltQuote[]> {
-      	this.logger.debug('GET { mint_melt_quotes }');
-		return await this.mintMeltQuoteService.getMintMeltQuotes({ units, states, date_start, date_end, page, page_size });
+		const tag = 'GET { mint_melt_quotes }';
+      	this.logger.debug(tag);
+		return await this.mintMeltQuoteService.getMintMeltQuotes(tag, { units, states, date_start, date_end, page, page_size });
     }
 
 	@Mutation(() => OrchardMintNut05Update)
 	async mint_nut05_update(@Args('mint_nut05_update') mint_nut05_update: MintNut05UpdateInput): Promise<OrchardMintNut05Update> {
-		this.logger.debug(`MUTATION { mint_nut05_update }`);
-		return await this.mintMeltQuoteService.updateMintNut05(mint_nut05_update);
+		const tag = 'MUTATION { mint_nut05_update }';
+		this.logger.debug(tag);
+		return await this.mintMeltQuoteService.updateMintNut05(tag, mint_nut05_update);
 	}
 }

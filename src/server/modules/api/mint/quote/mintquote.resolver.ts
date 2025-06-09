@@ -17,13 +17,15 @@ export class MintQuoteResolver {
 
 	@Query(() => OrchardMintQuoteTtls)
 	async mint_quote_ttl(): Promise<OrchardMintQuoteTtls> {
-		this.logger.debug(`QUERY { mint_quote_ttl }`);
-		return await this.mintQuoteService.getMintQuoteTtl();
+		const tag = 'GET { mint_quote_ttl }';
+		this.logger.debug(tag);
+		return await this.mintQuoteService.getMintQuoteTtl(tag);
 	}
 
 	@Mutation(() => OrchardMintQuoteTtls)
 	async mint_quote_ttl_update(@Args('mint_quote_ttl_update') mint_quote_ttl_update: MintQuoteTtlUpdateInput): Promise<OrchardMintQuoteTtls> {
-		this.logger.debug(`MUTATION { mint_quote_ttl_update }`);
-		return await this.mintQuoteService.updateMintQuoteTtl(mint_quote_ttl_update);
+		const tag = 'MUTATION { mint_quote_ttl_update }';
+		this.logger.debug(tag);
+		return await this.mintQuoteService.updateMintQuoteTtl(tag, mint_quote_ttl_update);
 	}
 }

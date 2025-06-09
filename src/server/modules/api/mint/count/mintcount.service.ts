@@ -21,60 +21,56 @@ export class MintCountService {
 		private errorService: ErrorService,
 	) {}
 
-	async getMintCountMintQuotes(args?: CashuMintMintQuotesArgs) : Promise<OrchardMintCount> {
+	async getMintCountMintQuotes(tag: string, args?: CashuMintMintQuotesArgs) : Promise<OrchardMintCount> {
 		return this.mintService.withDb(async (db) => {
 			try {
 				const count : number = await this.cashuMintDatabaseService.getMintCountMintQuotes(db, args);
 				return new OrchardMintCount(count);
 			} catch (error) {
-				const error_code = this.errorService.resolveError({ logger: this.logger, error,
+				const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
 					errord: OrchardErrorCode.MintDatabaseSelectError,
-					msg: 'Error counting mint quotes from database',
 				});
 				throw new OrchardApiError(error_code);
 			}
 		});
 	}
 
-	async getMintCountMeltQuotes(args?: CashuMintMeltQuotesArgs) : Promise<OrchardMintCount> {
+	async getMintCountMeltQuotes(tag: string, args?: CashuMintMeltQuotesArgs) : Promise<OrchardMintCount> {
 		return this.mintService.withDb(async (db) => {
 			try {
 				const count : number = await this.cashuMintDatabaseService.getMintCountMeltQuotes(db, args);
 				return new OrchardMintCount(count);
 			} catch (error) {
-				const error_code = this.errorService.resolveError({ logger: this.logger, error,
+				const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
 					errord: OrchardErrorCode.MintDatabaseSelectError,
-					msg: 'Error counting melt quotes from database',
 				});
 				throw new OrchardApiError(error_code);
 			}
 		});
 	}
 
-	async getMintCountProofGroups(args?: CashuMintProofsArgs) : Promise<OrchardMintCount> {
+	async getMintCountProofGroups(tag: string, args?: CashuMintProofsArgs) : Promise<OrchardMintCount> {
 		return this.mintService.withDb(async (db) => {
 			try {
 				const count : number = await this.cashuMintDatabaseService.getMintCountProofGroups(db, args);
 				return new OrchardMintCount(count);
 			} catch (error) {
-				const error_code = this.errorService.resolveError({ logger: this.logger, error,
+				const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
 					errord: OrchardErrorCode.MintDatabaseSelectError,
-					msg: 'Error counting proof groups from database',
 				});
 				throw new OrchardApiError(error_code);
 			}
 		});
 	}
 
-	async getMintCountPromiseGroups(args?: CashuMintPromiseArgs) : Promise<OrchardMintCount> {
+	async getMintCountPromiseGroups(tag: string, args?: CashuMintPromiseArgs) : Promise<OrchardMintCount> {
 		return this.mintService.withDb(async (db) => {
 			try {
 				const count : number = await this.cashuMintDatabaseService.getMintCountPromiseGroups(db, args);
 				return new OrchardMintCount(count);
 			} catch (error) {
-				const error_code = this.errorService.resolveError({ logger: this.logger, error,
+				const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
 					errord: OrchardErrorCode.MintDatabaseSelectError,
-					msg: 'Error counting promise groups from database',
 				});
 				throw new OrchardApiError(error_code);
 			}

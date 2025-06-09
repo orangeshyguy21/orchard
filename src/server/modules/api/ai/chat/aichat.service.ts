@@ -23,7 +23,7 @@ export class AiChatService {
 		private errorService: ErrorService,
 	) {}
 
-    public async streamChat(ai_chat: AiChatInput) {
+    public async streamChat(tag: string, ai_chat: AiChatInput) {
         try {
             const controller = new AbortController();
             this.active_streams.set(ai_chat.id, controller);
@@ -65,9 +65,8 @@ export class AiChatService {
                 return false;
             }
             this.logger.debug(`Error streaming chat`, error);
-            const error_code = this.errorService.resolveError({ logger: this.logger, error,
+            const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
                 errord: OrchardErrorCode.AiError,
-                msg: 'Error streaming chat response',
             });
             throw new OrchardApiError(error_code);
         }

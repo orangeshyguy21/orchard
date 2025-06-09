@@ -16,7 +16,8 @@ export class PublicImageResolver {
 
 	@Query(() => OrchardPublicImage)
 	async public_image(@Args('url') url: string) : Promise<OrchardPublicImage> {
-		this.logger.debug('GET { image }');
-		return await this.publicImageService.getImageData(url);
+		const tag = 'GET { image }';
+		this.logger.debug(tag);
+		return await this.publicImageService.getImageData(tag, url);
 	}
 }
