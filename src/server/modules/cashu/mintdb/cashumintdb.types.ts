@@ -44,18 +44,6 @@ export type CashuMintMintQuote = {
 	paid_time: number;
 }
 
-export type CashuMintPromise = {
-	amount: number;
-	id: string;
-	b_: string;
-	c_: string;
-	dleq_e: string;
-	dleq_s: string;
-	created: number;
-	mint_quote: string;
-	swap_id: string;
-}
-
 export type CashuMintProofGroup = {
 	amount: number;
 	created_time: number;

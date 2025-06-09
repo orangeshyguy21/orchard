@@ -16,7 +16,6 @@ import {
 	CashuMintKeyset,
 	CashuMintMeltQuote,
 	CashuMintMintQuote,
-	CashuMintPromise,
 	CashuMintAnalytics,
 	CashuMintKeysetsAnalytics,
 	CashuMintProofGroup,
@@ -87,18 +86,13 @@ export class CashuMintDatabaseService implements OnModuleInit {
 		if( this.backend === 'cdk' ) return this.cdkService.getMintMeltQuotes(db, args);
 	}
 
-	public async getMintPromises(db:sqlite3.Database, args?: any) : Promise<CashuMintPromise[]> {
-		if( this.backend === 'nutshell' ) return this.nutshellService.getMintPromises(db, args);
-		if( this.backend === 'cdk' ) throw OrchardErrorCode.MintSupportError;
-	}
-
 	public async getMintProofGroups(db:sqlite3.Database, args?: CashuMintProofsArgs) : Promise<CashuMintProofGroup[]> {
-		if( this.backend === 'nutshell' ) throw OrchardErrorCode.MintSupportError;
+		if( this.backend === 'nutshell' ) return this.nutshellService.getMintProofGroups(db, args);
 		if( this.backend === 'cdk' ) return this.cdkService.getMintProofGroups(db, args);
 	}
 
 	public async getMintPromiseGroups(db:sqlite3.Database, args?: CashuMintPromiseArgs) : Promise<CashuMintPromiseGroup[]> {
-		if( this.backend === 'nutshell' ) throw OrchardErrorCode.MintSupportError;
+		if( this.backend === 'nutshell' ) return this.nutshellService.getMintPromiseGroups(db, args);
 		if( this.backend === 'cdk' ) return this.cdkService.getMintPromiseGroups(db, args);
 	}
 
@@ -113,12 +107,12 @@ export class CashuMintDatabaseService implements OnModuleInit {
 	}
 
 	public async getMintCountProofGroups(db:sqlite3.Database, args?: CashuMintProofsArgs) : Promise<number> {
-		if( this.backend === 'nutshell' ) throw OrchardErrorCode.MintSupportError;
+		if( this.backend === 'nutshell' ) return this.nutshellService.getMintCountProofGroups(db, args);
 		if( this.backend === 'cdk' ) return this.cdkService.getMintCountProofGroups(db, args);
 	}
 
 	public async getMintCountPromiseGroups(db:sqlite3.Database, args?: CashuMintPromiseArgs) : Promise<number> {
-		if( this.backend === 'nutshell' ) throw OrchardErrorCode.MintSupportError;
+		if( this.backend === 'nutshell' ) return this.nutshellService.getMintCountPromiseGroups(db, args);
 		if( this.backend === 'cdk' ) return this.cdkService.getMintCountPromiseGroups(db, args);
 	}
 

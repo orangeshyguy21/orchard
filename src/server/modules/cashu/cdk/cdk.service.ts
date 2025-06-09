@@ -316,14 +316,14 @@ export class CdkService {
 					groups[key].amounts.push(JSON.parse(row.amounts));
 				});
 				
-				const proof_groups: CashuMintPromiseGroup[] = Object.values(groups).map((group: any) => ({
+				const promise_groups: CashuMintPromiseGroup[] = Object.values(groups).map((group: any) => ({
 					amount: group.amounts.flat().reduce((sum, amount) => sum + amount, 0),
 					created_time: group.created_time,
 					keyset_ids: group.keysets,
 					unit: group.unit,
 					amounts: group.amounts
 				}));				
-				resolve(proof_groups);
+				resolve(promise_groups);
 			});
 		});
 	}
