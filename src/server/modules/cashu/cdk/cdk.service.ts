@@ -347,6 +347,7 @@ export class CdkService {
 	public async getMintCountProofGroups(db:sqlite3.Database, args?: CashuMintProofsArgs) : Promise<number> {
 		const field_mappings = {
 			states: 'p.state',
+			units: 'k.unit',
 			id_keysets: 'p.keyset_id',
 			date_start: 'p.created_time',
 			date_end: 'p.created_time',
@@ -368,6 +369,38 @@ export class CdkService {
 		
 		return new Promise((resolve, reject) => {
 			db.get(final_sql, params, (err, row:CashuMintCount) => {
+				if (err) reject(err);
+				resolve(row.count);
+			});
+		});
+	}
+
+	public async getMintCountPromiseGroups(db:sqlite3.Database, args?: CashuMintPromiseArgs) : Promise<number> {
+		const field_mappings = {
+			units: 'k.unit',
+			id_keysets: 'bs.keyset_id',
+			date_start: 'bs.created_time',
+			date_end: 'bs.created_time',
+		};
+
+		const select_statement = `
+			SELECT COUNT(*) AS count FROM (
+				SELECT 
+					bs.created_time,
+					bs.keyset_id,
+					k.unit
+				FROM blind_signature bs
+				LEFT JOIN keyset k ON k.id = bs.keyset_id`;
+		
+		const group_by = 'bs.created_time, k.unit';
+		const { sql, params } = buildCountQuery('blind_signature', args, field_mappings, select_statement, group_by);
+		const final_sql = sql.replace(';', ') subquery;');
+
+		console.log(final_sql);
+		
+		return new Promise((resolve, reject) => {
+			db.get(final_sql, params, (err, row:CashuMintCount) => {
+				console.log(err);
 				if (err) reject(err);
 				resolve(row.count);
 			});
