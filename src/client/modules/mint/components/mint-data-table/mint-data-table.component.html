@@ -31,13 +31,22 @@
                     </td>
                 </ng-container>
 
+                <ng-container matColumnDef="ecash">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="data-table-sticky-header"> Ecash </th>
+                    <td mat-cell *matCellDef="let entity">
+                        <div>{{ entity.notes_used | number:'1.0-0' }}</div>
+                    </td>
+                </ng-container>
+
+
+
                 <ng-container matColumnDef="state">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header class="data-table-sticky-header"> State </th>
                     <td mat-cell *matCellDef="let entity"> 
                         <div class="flex">
                             <div [ngClass]="{
                                 'label-state': true,
-                                'label-success': (data.type === 'MintMints' && entity.state === 'ISSUED') || (data.type === 'MintMelts' && entity.state === 'PAID'),
+                                'label-success': (data.type === 'MintMints' && entity.state === 'ISSUED') || (data.type === 'MintMelts' && entity.state === 'PAID') || (data.type === 'MintProofGroups' && entity.state === 'SPENT'),
                                 'label-intermediate': (data.type === 'MintMints' && entity.state === 'PAID'),
                                 'label-warning': (entity.state === 'PENDING'),
                                 'label-default': (entity.state === 'UNPAID')
@@ -58,14 +67,16 @@
                             <div class="more-entity-content">
                                 @if(more_entity?.id === entity.id){
                                     <div [@fadeIn]>
-                                        @if(data.type === 'MintMints') {
-                                            <orc-mint-data-mint [quote]="entity"></orc-mint-data-mint>
-                                        }
-                                        @if(data.type === 'MintMelts') {
-                                            <orc-mint-data-melt [quote]="entity"></orc-mint-data-melt>
-                                        }
-                                        @if(data.type === 'MintProofGroups') {
-                                            {{ entity.proofs }}
+                                        @switch (data.type) {
+                                            @case ('MintMints') {
+                                                <orc-mint-data-mint [quote]="entity"></orc-mint-data-mint>
+                                            }
+                                            @case ('MintMelts') {
+                                                <orc-mint-data-melt [quote]="entity"></orc-mint-data-melt>
+                                            }
+                                            @default {
+                                                <orc-mint-data-ecash [group]="entity"></orc-mint-data-ecash>
+                                            }
                                         }
                                     </div>
                                 }

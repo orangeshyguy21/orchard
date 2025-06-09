@@ -33,8 +33,14 @@ export class MintDataTableComponent implements OnChanges {
 	@Input() public page_settings!: NonNullableMintDatabaseSettings;
 	@Input() public loading!: boolean;
 
-	public displayed_columns = ['unit', 'amount', 'request', 'state', 'created_time'];
 	public more_entity!: MintMintQuote | MintMeltQuote | null;
+
+	public get displayed_columns(): string[] {
+		if( this.data.type === 'MintMints' || this.data.type === 'MintMelts' ) return ['unit', 'amount', 'request', 'state', 'created_time'];
+		if( this.data.type === 'MintProofGroups' ) return ['unit', 'amount', 'ecash', 'state', 'created_time'];
+		if( this.data.type === 'MintPromiseGroups' ) return ['unit', 'amount', 'ecash', 'created_time'];
+		return ['unit', 'amount', 'request', 'state', 'created_time'];
+	}
 
 	constructor() {}
 
