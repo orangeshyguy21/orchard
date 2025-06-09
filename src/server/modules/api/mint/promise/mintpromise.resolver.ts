@@ -1,14 +1,15 @@
 /* Core Dependencies */
 import { Logger } from '@nestjs/common';
-import { Resolver, Query, Args } from "@nestjs/graphql";
+import { Resolver, Query, Args, Int } from "@nestjs/graphql";
 /* Application Dependencies */
 import { UnixTimestamp } from "@server/modules/graphql/scalars/unixtimestamp.scalar";
+import { MintUnit } from '@server/modules/cashu/cashu.enums';
 /* Local Dependencies */
 import { MintPromiseService } from "./mintpromise.service";
-import { OrchardMintPromise } from "./mintpromise.model";
+import { OrchardMintPromiseGroup } from "./mintpromise.model";
 
 
-@Resolver(() => [OrchardMintPromise])
+@Resolver(() => [OrchardMintPromiseGroup])
 export class MintPromiseResolver {
 
 	private readonly logger = new Logger(MintPromiseResolver.name);
@@ -17,13 +18,17 @@ export class MintPromiseResolver {
 		private mintPromiseService: MintPromiseService,
 	) {}
 
-	@Query(() => [OrchardMintPromise])
-	async mint_promises(
+	@Query(() => [OrchardMintPromiseGroup])
+	async mint_promise_groups(
 		@Args('id_keysets', { type: () => [String], nullable: true }) id_keysets?: string[],
 		@Args('date_start', { type: () => UnixTimestamp, nullable: true }) date_start?: number,
 		@Args('date_end', { type: () => UnixTimestamp, nullable: true }) date_end?: number,
-	) : Promise<OrchardMintPromise[]> {
-		this.logger.debug('GET { mint_promises }');
-		return await this.mintPromiseService.getMintPromises({ id_keysets, date_start, date_end });
+		@Args('units', { type: () => [MintUnit], nullable: true }) units?: MintUnit[],
+        @Args('page', { type: () => Int, nullable: true }) page?: number,
+        @Args('page_size', { type: () => Int, nullable: true }) page_size?: number,
+	) : Promise<OrchardMintPromiseGroup[]> {
+		const tag = 'GET { mint_promise_groups }';
+		this.logger.debug(tag);
+		return await this.mintPromiseService.getMintPromiseGroups(tag, { id_keysets, date_start, date_end });
 	}
 }

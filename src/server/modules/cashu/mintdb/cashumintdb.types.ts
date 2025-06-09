@@ -1,5 +1,5 @@
 /* Native Dependencies */
-import { MintUnit, MintQuoteState, MeltQuoteState } from "@server/modules/cashu/cashu.enums";
+import { MintUnit, MintQuoteState, MeltQuoteState, MintProofState } from "@server/modules/cashu/cashu.enums";
 
 export type CashuMintBalance = {
 	keyset: string;
@@ -44,27 +44,21 @@ export type CashuMintMintQuote = {
 	paid_time: number;
 }
 
-export type CashuMintPromise = {
+export type CashuMintProofGroup = {
 	amount: number;
-	id: string;
-	b_: string;
-	c_: string;
-	dleq_e: string;
-	dleq_s: string;
-	created: number;
-	mint_quote: string;
-	swap_id: string;
+	created_time: number;
+	keyset_ids: string[];
+	unit: MintUnit;
+	state: MintProofState;
+	amounts: number[][];
 }
 
-export type CashuMintProof = {
+export type CashuMintPromiseGroup = {
 	amount: number;
-	id: string;
-	c: string;
-	secret: string;
-	y: string;
-	witness: string;
-	created: number;
-	melt_quote: string;
+	created_time: number;
+	keyset_ids: string[];
+	unit: MintUnit;
+	amounts: number[][];
 }
 
 export type CashuMintAnalytics = {
@@ -83,3 +77,4 @@ export type CashuMintKeysetsAnalytics = {
 export type CashuMintCount = {
 	count: number;
 }
+

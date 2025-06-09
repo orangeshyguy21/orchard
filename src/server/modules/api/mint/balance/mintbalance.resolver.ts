@@ -25,13 +25,15 @@ export class MintBalanceResolver {
 
 	@Query(() => [OrchardMintBalance])
 	async mint_balances_issued() : Promise<OrchardMintBalance[]> {
-		this.logger.debug('GET { mint_balances_issued }');
-		return await this.mintBalanceService.getIssuedMintBalances();
+		const tag = 'GET { mint_balances_issued }';
+		this.logger.debug(tag);
+		return await this.mintBalanceService.getIssuedMintBalances(tag);
 	}
 
 	@Query(() => [OrchardMintBalance])
 	async mint_balances_redeemed() : Promise<OrchardMintBalance[]> {
-		this.logger.debug('GET { mint_balances_redeemed }');
-		return await this.mintBalanceService.getRedeemedMintBalances();
+		const tag = 'GET { mint_balances_redeemed }';
+		this.logger.debug(tag);
+		return await this.mintBalanceService.getRedeemedMintBalances(tag);
 	}
 }

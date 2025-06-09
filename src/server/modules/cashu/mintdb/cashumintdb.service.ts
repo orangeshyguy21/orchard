@@ -16,15 +16,16 @@ import {
 	CashuMintKeyset,
 	CashuMintMeltQuote,
 	CashuMintMintQuote,
-	CashuMintPromise,
-	CashuMintProof,
 	CashuMintAnalytics,
 	CashuMintKeysetsAnalytics,
+	CashuMintProofGroup,
+	CashuMintPromiseGroup,
 } from './cashumintdb.types';
 import { 
 	CashuMintAnalyticsArgs,
 	CashuMintMintQuotesArgs,
-	CashuMintPromisesArgs,
+	CashuMintProofsArgs,
+	CashuMintPromiseArgs,
 	CashuMintMeltQuotesArgs,
 } from './cashumintdb.interfaces';
 
@@ -85,19 +86,14 @@ export class CashuMintDatabaseService implements OnModuleInit {
 		if( this.backend === 'cdk' ) return this.cdkService.getMintMeltQuotes(db, args);
 	}
 
-	public async getMintPromises(db:sqlite3.Database, args?: CashuMintPromisesArgs) : Promise<CashuMintPromise[]> {
-		if( this.backend === 'nutshell' ) return this.nutshellService.getMintPromises(db, args);
-		if( this.backend === 'cdk' ) throw OrchardErrorCode.MintSupportError;
+	public async getMintProofGroups(db:sqlite3.Database, args?: CashuMintProofsArgs) : Promise<CashuMintProofGroup[]> {
+		if( this.backend === 'nutshell' ) return this.nutshellService.getMintProofGroups(db, args);
+		if( this.backend === 'cdk' ) return this.cdkService.getMintProofGroups(db, args);
 	}
 
-	public async getMintProofsPending(db:sqlite3.Database) : Promise<CashuMintProof[]> {
-		if( this.backend === 'nutshell' ) return this.nutshellService.getMintProofsPending(db);
-		if( this.backend === 'cdk' ) throw OrchardErrorCode.MintSupportError;
-	}
-
-	public async getMintProofsUsed(db:sqlite3.Database) : Promise<CashuMintProof[]> {
-		if( this.backend === 'nutshell' ) return this.nutshellService.getMintProofsUsed(db);
-		if( this.backend === 'cdk' ) throw OrchardErrorCode.MintSupportError;
+	public async getMintPromiseGroups(db:sqlite3.Database, args?: CashuMintPromiseArgs) : Promise<CashuMintPromiseGroup[]> {
+		if( this.backend === 'nutshell' ) return this.nutshellService.getMintPromiseGroups(db, args);
+		if( this.backend === 'cdk' ) return this.cdkService.getMintPromiseGroups(db, args);
 	}
 
 	public async getMintCountMintQuotes(db:sqlite3.Database, args?: CashuMintMintQuotesArgs) : Promise<number> {
@@ -108,6 +104,16 @@ export class CashuMintDatabaseService implements OnModuleInit {
 	public async getMintCountMeltQuotes(db:sqlite3.Database, args?: CashuMintMeltQuotesArgs) : Promise<number> {
 		if( this.backend === 'nutshell' ) return this.nutshellService.getMintCountMeltQuotes(db, args);
 		if( this.backend === 'cdk' ) return this.cdkService.getMintCountMeltQuotes(db, args);
+	}
+
+	public async getMintCountProofGroups(db:sqlite3.Database, args?: CashuMintProofsArgs) : Promise<number> {
+		if( this.backend === 'nutshell' ) return this.nutshellService.getMintCountProofGroups(db, args);
+		if( this.backend === 'cdk' ) return this.cdkService.getMintCountProofGroups(db, args);
+	}
+
+	public async getMintCountPromiseGroups(db:sqlite3.Database, args?: CashuMintPromiseArgs) : Promise<number> {
+		if( this.backend === 'nutshell' ) return this.nutshellService.getMintCountPromiseGroups(db, args);
+		if( this.backend === 'cdk' ) return this.cdkService.getMintCountPromiseGroups(db, args);
 	}
 
   	/* Analytics */

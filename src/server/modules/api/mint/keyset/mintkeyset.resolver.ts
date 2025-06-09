@@ -18,13 +18,15 @@ export class MintKeysetResolver {
 
 	@Query(() => [OrchardMintKeyset])
 	async mint_keysets() : Promise<OrchardMintKeyset[]> {
-		this.logger.debug('GET { mint_keysets }');
-		return await this.mintKeysetService.getMintKeysets();
+		const tag = 'GET { mint_keysets }';
+		this.logger.debug(tag);
+		return await this.mintKeysetService.getMintKeysets(tag);
 	}
 
 	@Mutation(() => OrchardMintKeysetRotation)
 	async mint_rotate_keyset(@Args('mint_rotate_keyset') mint_rotate_keyset: MintRotateKeysetInput): Promise<OrchardMintKeysetRotation> {
-		this.logger.debug(`MUTATION { mint_rotate_keyset }`);
-		return await this.mintKeysetService.mintRotateKeyset(mint_rotate_keyset);
+		const tag = 'MUTATION { mint_rotate_keyset }';
+		this.logger.debug(tag);
+		return await this.mintKeysetService.mintRotateKeyset(tag, mint_rotate_keyset);
 	}
 }

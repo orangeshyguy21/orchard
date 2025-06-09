@@ -1,6 +1,7 @@
 export enum OrchardErrorCode {
 	// Orchard Level Errors
 	StatusError = 10001,
+	PublicAssetError = 10002,
 	// Bitcoin Level Errors
 	BitcoinRPCError = 20001,
 	// Lightning Level Errors (30001 - 39999)

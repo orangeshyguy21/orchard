@@ -9,7 +9,7 @@
                         <input matEndDate formControlName="date_end" placeholder="End date" (blur)="onDateChange()"> 
                     </mat-date-range-input>
                     <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-date-range-picker #picker [dateClass]="genesis_class" (closed)="onDateChange()"></mat-date-range-picker>
+                    <mat-date-range-picker #picker [dateClass]="genesisClass" (closed)="onDateChange()"></mat-date-range-picker>
                     @if (panel.get('daterange')?.invalid) {
                         <mat-error class="font-size-xs">Invalid date range</mat-error>
                     }
@@ -19,8 +19,14 @@
                 <mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
                     <mat-label>Data</mat-label>
                     <mat-select formControlName="type" (selectionChange)="onTypeChange($event)">
+                        <mat-select-trigger>
+                            {{panel.get('type')?.value ? getSelectedTypeLabel(panel.get('type')?.value) : ''}}
+                        </mat-select-trigger>
                         @for (type of type_options; track type) {
-                            <mat-option [value]="type.value">{{type.label}}</mat-option>
+                            <mat-option [value]="type.value">
+                                <div class="option-main">{{ type.label }}</div>
+                                <div class="option-helper">{{ type.helper }}</div>
+                            </mat-option>
                         }
                     </mat-select>
                 </mat-form-field>
@@ -49,7 +55,6 @@
             <div class="flex-grow">
                 <mat-form-field [hideRequiredMarker]="true" class="search-field">
                     <mat-label><mat-icon>search</mat-icon> Search</mat-label>
-                    <!-- <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input> -->
                     <input matInput formControlName="filter" (input)="filterChange.emit($event)">
                 </mat-form-field>
             </div>

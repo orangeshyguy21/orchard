@@ -1,19 +1,26 @@
 <div class="mint-data-chart-legend-container">
-    <!-- <div class="flex flex-items-center flex-gap-1">
-        <div>test</div>
-        <div>test</div>
-    </div> -->
-
-    @for(dataset of datasets_legend; track dataset.label) {
-        <div class="legend-item">
-            <div class="legend-item-visual default" [style.background-color]="dataset.color"></div>
-            <div class="legend-item-label">{{ dataset.label }}</div>
+    <div class="flex flex-items-center flex-justify-center flex-gap-2">
+        <div class="font-weight-light font-size-xs">Units</div>
+        <div class="flex flex-items-center flex-justify-center flex-gap-1">
+            @for(dataset of datasets_legend; track dataset.label) {
+                <div class="legend-item">
+                    <div class="legend-item-visual default" [style.background-color]="dataset.color"></div>
+                    <div class="legend-item-label">{{ dataset.label }}</div>
+                </div>
+            }
         </div>
-    }
-    @for(state of states_legend; track state.label) {
-        <div class="legend-item">
-            <div class="legend-item-visual" [ngClass]="state.shape"></div>
-            <div class="legend-item-label">{{ state.label }}</div>
+    </div>
+    @if( state_enabled ) {
+        <div class="flex flex-items-center flex-justify-center flex-gap-2">
+            <div class="font-weight-light font-size-xs">States</div>
+            <div class="flex flex-items-center flex-justify-center flex-gap-1">
+                @for(state of states_legend; track state.label) {
+                    <div class="legend-item">
+                        <div class="legend-item-visual" [ngClass]="state.shape"></div>
+                        <div class="legend-item-label">{{ state.label }}</div>
+                    </div>
+                }
+            </div>
         </div>
     }
 </div>

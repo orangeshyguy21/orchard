@@ -24,28 +24,26 @@ export class MintKeysetService {
 		private errorService: ErrorService,
 	) {}
 
-	async getMintKeysets() : Promise<OrchardMintKeyset[]> {
+	async getMintKeysets(tag: string) : Promise<OrchardMintKeyset[]> {
 		return this.mintService.withDb(async (db) => {
 			try {
 				const cashu_keysets : CashuMintKeyset[] = await this.cashuMintDatabaseService.getMintKeysets(db);
 				return cashu_keysets.map( ck => new OrchardMintKeyset(ck));
 			} catch (error) {
-				const error_code = this.errorService.resolveError({ logger: this.logger, error,
+				const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
 					errord: OrchardErrorCode.MintDatabaseSelectError,
-					msg: 'Error getting mint keysets from database',
 				});
 				throw new OrchardApiError(error_code);
 			}
 		});
 	}
 
-	async mintRotateKeyset(mint_rotate_keyset: MintRotateKeysetInput) : Promise<OrchardMintKeysetRotation> {
+	async mintRotateKeyset(tag: string, mint_rotate_keyset: MintRotateKeysetInput) : Promise<OrchardMintKeysetRotation> {
 		try {
 			return await this.cashuMintRpcService.rotateNextKeyset(mint_rotate_keyset);
 		} catch (error) {
-			const error_code = this.errorService.resolveError({ logger: this.logger, error,
+			const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
 				errord: OrchardErrorCode.MintRpcActionError,
-				msg: 'Error rotating next keyset',
 			});
 			throw new OrchardApiError(error_code);
 		}

@@ -12,11 +12,12 @@ import { DataType } from '@client/modules/orchard/enums/data.enum';
 import { MintDataType } from '@client/modules/mint/enums/data-type.enum';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 /* Shared Dependencies */
-import { MintUnit, MintQuoteState, MeltQuoteState } from '@shared/generated.types';
+import { MintUnit } from '@shared/generated.types';
 
 type TypeOption = {
 	label: string;
 	value: MintDataType;
+	helper?: string;
 }
 
 @Component({
@@ -46,6 +47,8 @@ export class MintDataControlComponent implements OnChanges {
 	@Input() page_settings!: NonNullableMintDatabaseSettings;
 	@Input() filter!: string;
 	@Input() unit_options!: { value: string, label: string }[];
+	@Input() state_options!: string[];
+	@Input() state_enabled!: boolean;
 	@Input() date_start?: number;
 	@Input() date_end?: number;
 	@Input() states!: string[];
@@ -71,7 +74,6 @@ export class MintDataControlComponent implements OnChanges {
 	});
 
 	public type_options!: TypeOption[];
-	public state_options!: string[];
 
 	public get height_state(): string {
 		return this.panel?.invalid ? 'invalid' : 'valid';
@@ -80,22 +82,32 @@ export class MintDataControlComponent implements OnChanges {
 	constructor() {}
 
 	ngOnChanges(changes: SimpleChanges): void {
-		if(changes['loading'] && !this.loading) this.initForm();
+		if(changes['loading'] && !this.loading){
+			this.initForm();
+		}
+		if(changes['state_enabled']) {
+			( this.state_enabled ) ? this.panel.controls.states.enable() : this.panel.controls.states.disable();
+		}
+
 		if(changes['date_start'] && this.date_start && this.panel.controls.daterange.get('date_start')?.value?.toSeconds() !== this.date_start) {
 			this.panel.controls.daterange.get('date_start')?.setValue(DateTime.fromSeconds(this.date_start));
 		}
 		if(changes['date_end'] && this.date_end && this.panel.controls.daterange.get('date_end')?.value?.toSeconds() !== this.date_end) {
 			this.panel.controls.daterange.get('date_end')?.setValue(DateTime.fromSeconds(this.date_end));
 		}
+		if(changes['type'] && this.page_settings.type && this.panel.controls.type.value !== this.page_settings.type) {
+			this.panel.controls.type.setValue(this.page_settings.type);
+		}
+		if(changes['units'] && this.page_settings.units && this.panel.controls.units.value !== this.page_settings.units) {
+			this.panel.controls.units.setValue(this.page_settings.units);
+		}
 		if(changes['states'] && this.states && this.panel.controls.states.value !== this.states) {
-			this.state_options = (this.page_settings.type === DataType.MintMints) ? Object.values(MintQuoteState) : Object.values(MeltQuoteState);
 			this.panel.controls.states.setValue(this.states);
 		}
 	}
 
 	private initForm(): void {
-		this.type_options = Object.values(MintDataType).map(type => ({ label: type.substring(4), value: type }));
-		this.state_options = (this.page_settings.type === DataType.MintMints) ? Object.values(MintQuoteState) : Object.values(MeltQuoteState);
+		this.type_options = this.getTypeOptions();
 		this.panel.controls.type.setValue(this.page_settings.type);
 		this.panel.controls.daterange.controls.date_start.setValue(DateTime.fromSeconds(this.page_settings.date_start));
 		this.panel.controls.daterange.controls.date_end.setValue(DateTime.fromSeconds(this.page_settings.date_end));
@@ -135,13 +147,40 @@ export class MintDataControlComponent implements OnChanges {
 		this.statesChange.emit(event.value);
 	}
 
-	public genesis_class: MatCalendarCellClassFunction<DateTime> = (cellDate, view) => {
+	public genesisClass: MatCalendarCellClassFunction<DateTime> = (cellDate, view) => {
 		if( view !== 'month' ) return '';
 		const unix_seconds = cellDate.toSeconds();
 		const unix_next_day = unix_seconds + 86400 - 1;
 		if( unix_seconds <= this.mint_genesis_time && unix_next_day >= this.mint_genesis_time ) return 'mint-genesis-date-class';
 		return '';
 	};
+
+	public getSelectedTypeLabel(value: any): string {
+		const selected_type = this.type_options.find(type => type.value === value);
+		return selected_type ? selected_type.label : '';
+	}
+
+	private getTypeOptions(): TypeOption[] {
+		return Object.values(MintDataType).map(type => ({ 
+			label: this.getTypeLabel(type),
+			helper: this.getTypeHelper(type),
+			value: type,
+		}));
+	}
+	private getTypeLabel(type: MintDataType): string {
+		if( type === MintDataType.MintMints ) return 'Mints';
+		if( type === MintDataType.MintMelts ) return 'Melts';
+		if( type === MintDataType.MintProofGroups ) return 'Ecash Used';
+		if( type === MintDataType.MintPromiseGroups ) return 'Ecash Held';
+		return 'Unknown';
+	}
+	private getTypeHelper(type: MintDataType): string {
+		if( type === MintDataType.MintMints ) return 'Mint deposits';
+		if( type === MintDataType.MintMelts ) return 'Mint withdrawals';
+		if( type === MintDataType.MintProofGroups ) return 'Ecash burned by the mint';
+		if( type === MintDataType.MintPromiseGroups ) return 'Ecash promises outstanding';
+		return 'n/a';
+	}
 
 	private isValidChange(): boolean {
 		// validations

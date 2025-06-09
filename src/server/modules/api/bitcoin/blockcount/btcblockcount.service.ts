@@ -28,14 +28,13 @@ export class BitcoinBlockCountService implements OnModuleDestroy {
 	}
 	
 	// Method to get the current block count
-	async getBlockCount(): Promise<OrchardBitcoinBlockCount> {
+	async getBlockCount(tag: string = 'GET { bitcoin_blockcount }'): Promise<OrchardBitcoinBlockCount> {
 		try {
 			const block_count = await this.bitcoinService.getBlockCount();
 			return new OrchardBitcoinBlockCount(block_count);
 		} catch (error) {
-			const error_code = this.errorService.resolveError({ logger: this.logger, error,
+			const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
 				errord: OrchardErrorCode.BitcoinRPCError,
-				msg: 'Error getting block count',
 			});
 			throw new OrchardApiError(error_code);
 		}

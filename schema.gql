@@ -118,6 +118,10 @@ input MintNut05UpdateInput {
   unit: String!
 }
 
+enum MintProofState {
+  SPENT
+}
+
 enum MintQuoteState {
   ISSUED
   PAID
@@ -379,27 +383,21 @@ type OrchardMintNut05Update {
   unit: String!
 }
 
-type OrchardMintPromise {
+type OrchardMintPromiseGroup {
   amount: Int!
-  b_: ID!
-  c_: String!
-  created: UnixTimestamp
-  dleq_e: String
-  dleq_s: String
-  id: String
-  mint_quote: String
-  swap_id: String
+  amounts: [[Int!]!]!
+  created_time: UnixTimestamp!
+  keyset_ids: [String!]!
+  unit: MintUnit!
 }
 
-type OrchardMintProof {
+type OrchardMintProofGroup {
   amount: Int!
-  c: String!
-  created: UnixTimestamp
-  id: String
-  melt_quote: String
-  secret: String!
-  witness: String
-  y: String
+  amounts: [[Int!]!]!
+  created_time: UnixTimestamp!
+  keyset_ids: [String!]!
+  state: MintProofState!
+  unit: MintUnit!
 }
 
 type OrchardMintQuoteTtls {
@@ -509,16 +507,17 @@ type Query {
   mint_balances(keyset_id: String): [OrchardMintBalance!]!
   mint_balances_issued: [OrchardMintBalance!]!
   mint_balances_redeemed: [OrchardMintBalance!]!
-  mint_count_melt_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, states: [MeltQuoteState!], timezone: Timezone, units: [MintUnit!]): OrchardMintCount!
-  mint_count_mint_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, states: [MintQuoteState!], timezone: Timezone, units: [MintUnit!]): OrchardMintCount!
+  mint_count_melt_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, states: [MeltQuoteState!], units: [MintUnit!]): OrchardMintCount!
+  mint_count_mint_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, states: [MintQuoteState!], units: [MintUnit!]): OrchardMintCount!
+  mint_count_promise_groups(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!], units: [MintUnit!]): OrchardMintCount!
+  mint_count_proof_groups(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!], states: [MintProofState!], units: [MintUnit!]): OrchardMintCount!
   mint_info: OrchardMintInfo!
   mint_info_rpc: OrchardMintInfoRpc!
   mint_keysets: [OrchardMintKeyset!]!
-  mint_melt_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, page: Int, page_size: Int, states: [MeltQuoteState!], timezone: Timezone, units: [MintUnit!]): [OrchardMintMeltQuote!]!
-  mint_mint_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, page: Int, page_size: Int, states: [MintQuoteState!], timezone: Timezone, units: [MintUnit!]): [OrchardMintMintQuote!]!
-  mint_promises(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!]): [OrchardMintPromise!]!
-  mint_proofs_pending: [OrchardMintProof!]!
-  mint_proofs_used: [OrchardMintProof!]!
+  mint_melt_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, page: Int, page_size: Int, states: [MeltQuoteState!], units: [MintUnit!]): [OrchardMintMeltQuote!]!
+  mint_mint_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, page: Int, page_size: Int, states: [MintQuoteState!], units: [MintUnit!]): [OrchardMintMintQuote!]!
+  mint_promise_groups(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!], page: Int, page_size: Int, units: [MintUnit!]): [OrchardMintPromiseGroup!]!
+  mint_proof_groups(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!], page: Int, page_size: Int, states: [MintProofState!], units: [MintUnit!]): [OrchardMintProofGroup!]!
   mint_quote_ttl: OrchardMintQuoteTtls!
   public_image(url: String!): OrchardPublicImage!
   public_urls(urls: [String!]!): [OrchardPublicUrl!]!

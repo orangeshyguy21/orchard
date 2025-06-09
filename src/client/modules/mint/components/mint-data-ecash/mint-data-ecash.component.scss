@@ -1,0 +1,50 @@
+@use '@styles/molecule/molecule';
+@use '@styles/nucleus/nucleus';
+
+
+.note-box{
+    @extend %relative;
+    @extend %p-0-5;
+    @extend %flex;
+    @extend %flex-column;
+    @extend %flex-items-center;
+    @extend %flex-gap-0-5;
+    @extend %w-min-3;
+    @extend %border;
+    @extend %border-solid;
+    @extend %orc-corner-small;
+    @extend %orc-outline-border;
+
+    .stacked-note{
+        @extend %absolute;
+        @extend %w-full;
+        @extend %h-full;
+        @extend %orc-corner-small;
+        @extend %border-bottom;
+        @extend %border-bottom-solid;
+        @extend %orc-outline-border-bottom;
+        @extend %border-right;
+        @extend %border-right-solid;
+        @extend %orc-outline-border-right;
+    }
+
+    .stack-height-1{
+        top: 3px;
+        left: 3px;
+    }
+    .stack-height-2{
+        top: 6px;
+        left: 6px;
+    }
+    .stack-height-3{
+        top: 9px;
+        left: 9px;
+    }
+
+    .stack-height-0{
+        @extend %hidden;
+    }
+    .stack-height-high{
+        @extend %hidden;
+    }
+}

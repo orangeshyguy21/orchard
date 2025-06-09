@@ -33,8 +33,9 @@ export class BitcoinBlockCountResolver {
 
 	@Query(() => OrchardBitcoinBlockCount)
 	async bitcoin_blockcount() : Promise<OrchardBitcoinBlockCount> {
-		this.logger.debug('GET { bitcoin_blockcount }');
-		return await this.bitcoinBlockCountService.getBlockCount();
+		const tag = 'GET { bitcoin_blockcount }';
+		this.logger.debug(tag);
+		return await this.bitcoinBlockCountService.getBlockCount(tag);
 	}
 
 	@Subscription(() => OrchardBitcoinBlockCount, {

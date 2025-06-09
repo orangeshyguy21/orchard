@@ -13,7 +13,8 @@ import {
 	CashuMintKeyset,
 	CashuMintMeltQuote,
 	CashuMintMintQuote,
-	CashuMintProof,
+	CashuMintProofGroup,
+	CashuMintPromiseGroup,
 	CashuMintAnalytics,
 	CashuMintKeysetsAnalytics,
 	CashuMintCount,
@@ -22,6 +23,8 @@ import {
 	CashuMintMintQuotesArgs,
 	CashuMintAnalyticsArgs,
 	CashuMintMeltQuotesArgs,
+	CashuMintProofsArgs,
+	CashuMintPromiseArgs,
 } from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
 import {
 	buildDynamicQuery,
@@ -109,7 +112,7 @@ export class CdkService {
 		const params = keyset_id ? [keyset_id, keyset_id] : [];
 		return new Promise((resolve, reject) => {
 			db.all(sql, params, (err, rows: CashuMintBalance[]) => {
-				if (err) reject(err);
+				if (err) return reject(err);
 				resolve(rows);
 			});
 		});
@@ -126,7 +129,7 @@ export class CdkService {
 		);`;
 		return new Promise((resolve, reject) => {
 			db.all(sql, (err, rows:CashuMintBalance[]) => {
-				if (err) reject(err);
+				if (err) return reject(err);
 				resolve(rows);
 			});
 		});
@@ -143,7 +146,7 @@ export class CdkService {
 		);`;
 		return new Promise((resolve, reject) => {
 			db.all(sql, (err, rows:CashuMintBalance[]) => {
-				if (err) reject(err);
+				if (err) return reject(err);
 				resolve(rows);
 			});
 		});
@@ -153,7 +156,7 @@ export class CdkService {
 		const sql = 'SELECT * FROM keyset;';
 		return new Promise((resolve, reject) => {
 			db.all(sql, (err, rows:CashuMintKeyset[]) => {
-				if (err) reject(err);
+				if (err) return reject(err);
 				resolve(rows);
 			});
 		});
@@ -169,7 +172,7 @@ export class CdkService {
 		const { sql, params } = buildDynamicQuery('mint_quote', args, field_mappings);
 		return new Promise((resolve, reject) => {
 			db.all(sql, params, (err, rows:CashuMintMintQuote[]) => {
-				if (err) reject(err);
+				if (err) return reject(err);
 				resolve(rows);
 			});
 		});
@@ -185,7 +188,7 @@ export class CdkService {
 		const { sql, params } = buildCountQuery('mint_quote', args, field_mappings);
 		return new Promise((resolve, reject) => {
 			db.get(sql, params, (err, row:CashuMintCount) => {
-				if (err) reject(err);
+				if (err) return reject(err);
 				resolve(row.count);
 			});
 		});
@@ -201,8 +204,126 @@ export class CdkService {
 		const { sql, params } = buildDynamicQuery('melt_quote', args, field_mappings);
 		return new Promise((resolve, reject) => {
 			db.all(sql, params, (err, rows:CashuMintMeltQuote[]) => {
-				if (err) reject(err);
+				if (err) return reject(err);
 				resolve(rows);
+			});
+		});
+	}
+
+	public async getMintProofGroups(db: sqlite3.Database, args?: CashuMintProofsArgs): Promise<CashuMintProofGroup[]> {
+		const field_mappings = {
+			states: 'p.state',
+			units: 'k.unit',
+			id_keysets: 'p.keyset_id',
+			date_start: 'p.created_time',
+			date_end: 'p.created_time',
+		};
+		
+		const select_statement = `
+			SELECT 
+				p.created_time,
+				p.keyset_id,
+				k.unit,
+				p.state,
+				json_group_array(p.amount) as amounts
+			FROM proof p
+			LEFT JOIN keyset k ON k.id = p.keyset_id`;
+		
+		const group_by = 'p.created_time, k.unit, p.state, p.keyset_id';
+		
+		const { sql, params } = buildDynamicQuery(
+			'proof', 
+			args, 
+			field_mappings, 
+			select_statement, 
+			group_by
+		);
+		
+		return new Promise((resolve, reject) => {
+			db.all(sql, params, (err, rows: any[]) => {
+				if (err) return reject(err);
+				const groups = {};
+				rows.forEach(row => {
+					const key = `${row.created_time}_${row.unit}_${row.state}`;
+					if (!groups[key]) {
+						groups[key] = {
+							created_time: row.created_time,
+							unit: row.unit,
+							state: row.state,
+							keysets: [],
+							amounts: []
+						};
+					}
+					groups[key].keysets.push(row.keyset_id);
+					groups[key].amounts.push(JSON.parse(row.amounts));
+				});
+				
+				const proof_groups: CashuMintProofGroup[] = Object.values(groups).map((group: any) => ({
+					amount: group.amounts.flat().reduce((sum, amount) => sum + amount, 0),
+					created_time: group.created_time,
+					keyset_ids: group.keysets,
+					unit: group.unit,
+					state: group.state,
+					amounts: group.amounts
+				}));				
+				resolve(proof_groups);
+			});
+		});
+	}
+
+	public async getMintPromiseGroups(db: sqlite3.Database, args?: CashuMintPromiseArgs): Promise<CashuMintPromiseGroup[]> {
+		const field_mappings = {
+			units: 'k.unit',
+			id_keysets: 'bs.keyset_id',
+			date_start: 'bs.created_time',
+			date_end: 'bs.created_time',
+		};
+
+		const select_statement = `
+			SELECT 
+				bs.created_time,
+				bs.keyset_id,
+				k.unit,
+				json_group_array(bs.amount) as amounts
+			FROM blind_signature bs
+			LEFT JOIN keyset k ON k.id = bs.keyset_id`;
+		
+		const group_by = 'bs.created_time, k.unit, bs.keyset_id';
+		
+		const { sql, params } = buildDynamicQuery(
+			'blind_signature', 
+			args, 
+			field_mappings, 
+			select_statement, 
+			group_by
+		);
+		
+		return new Promise((resolve, reject) => {
+			db.all(sql, params, (err, rows: any[]) => {
+				if (err) return reject(err);
+				const groups = {};
+				rows.forEach(row => {
+					const key = `${row.created_time}_${row.unit}`;
+					if (!groups[key]) {
+						groups[key] = {
+							created_time: row.created_time,
+							unit: row.unit,
+							keysets: [],
+							amounts: []
+						};
+					}
+					groups[key].keysets.push(row.keyset_id);
+					groups[key].amounts.push(JSON.parse(row.amounts));
+				});
+				
+				const promise_groups: CashuMintPromiseGroup[] = Object.values(groups).map((group: any) => ({
+					amount: group.amounts.flat().reduce((sum, amount) => sum + amount, 0),
+					created_time: group.created_time,
+					keyset_ids: group.keysets,
+					unit: group.unit,
+					amounts: group.amounts
+				}));				
+				resolve(promise_groups);
 			});
 		});
 	}
@@ -217,31 +338,72 @@ export class CdkService {
 		const { sql, params } = buildCountQuery('melt_quote', args, field_mappings);
 		return new Promise((resolve, reject) => {
 			db.get(sql, params, (err, row:CashuMintCount) => {
-				if (err) reject(err);
+				if (err) return reject(err);
 				resolve(row.count);
 			});
 		});
 	}
 
-	public async getMintProofsPending(db:sqlite3.Database) : Promise<CashuMintProof[]> {
-		const sql = 'SELECT * FROM proof WHERE state = "PENDING";';
+	public async getMintCountProofGroups(db:sqlite3.Database, args?: CashuMintProofsArgs) : Promise<number> {
+		const field_mappings = {
+			states: 'p.state',
+			units: 'k.unit',
+			id_keysets: 'p.keyset_id',
+			date_start: 'p.created_time',
+			date_end: 'p.created_time',
+		};
+		
+		const select_statement = `
+			SELECT COUNT(*) AS count FROM (
+				SELECT 
+					p.created_time,
+					p.keyset_id,
+					k.unit,
+					p.state
+				FROM proof p
+				LEFT JOIN keyset k ON k.id = p.keyset_id`;
+		
+		const group_by = 'p.created_time, k.unit, p.state';
+		const { sql, params } = buildCountQuery('proof', args, field_mappings, select_statement, group_by);
+		const final_sql = sql.replace(';', ') subquery;');
+		
 		return new Promise((resolve, reject) => {
-			db.all(sql, (err, rows:CashuMintProof[]) => {
-				if (err) reject(err);
-				resolve(rows);
+			db.get(final_sql, params, (err, row:CashuMintCount) => {
+				if (err) return reject(err);
+				resolve(row.count);
 			});
 		});
 	}
 
-	public async getMintProofsUsed(db:sqlite3.Database) : Promise<CashuMintProof[]> {
-		const sql = 'SELECT * FROM proof WHERE state = "SPENT";';
+	public async getMintCountPromiseGroups(db:sqlite3.Database, args?: CashuMintPromiseArgs) : Promise<number> {
+		const field_mappings = {
+			units: 'k.unit',
+			id_keysets: 'bs.keyset_id',
+			date_start: 'bs.created_time',
+			date_end: 'bs.created_time',
+		};
+
+		const select_statement = `
+			SELECT COUNT(*) AS count FROM (
+				SELECT 
+					bs.created_time,
+					bs.keyset_id,
+					k.unit
+				FROM blind_signature bs
+				LEFT JOIN keyset k ON k.id = bs.keyset_id`;
+		
+		const group_by = 'bs.created_time, k.unit';
+		const { sql, params } = buildCountQuery('blind_signature', args, field_mappings, select_statement, group_by);
+		const final_sql = sql.replace(';', ') subquery;');
+		
 		return new Promise((resolve, reject) => {
-			db.all(sql, (err, rows:CashuMintProof[]) => {
-				if (err) reject(err);
-				resolve(rows);
+			db.get(final_sql, params, (err, row:CashuMintCount) => {
+				if (err) return reject(err);
+				resolve(row.count);
 			});
 		});
-	}  	
+	}
+
 
 	/* Analytics */
 

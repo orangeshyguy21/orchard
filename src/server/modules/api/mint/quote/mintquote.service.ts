@@ -19,26 +19,24 @@ export class MintQuoteService {
 		private errorService: ErrorService,
 	) {}
 
-	async getMintQuoteTtl() : Promise<OrchardMintQuoteTtls> {
+	async getMintQuoteTtl(tag: string) : Promise<OrchardMintQuoteTtls> {
 		try {
 			return await this.cashuMintRpcService.getQuoteTtl();
 		} catch (error) {
-			const error_code = this.errorService.resolveError({ logger: this.logger, error,
+			const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
 				errord: OrchardErrorCode.MintRpcActionError,
-				msg: 'Error getting mint quote ttl from mint rpc',
 			});
 			throw new OrchardApiError(error_code);
 		}
 	}
 
-	async updateMintQuoteTtl(mint_quote_ttl_update: MintQuoteTtlUpdateInput) : Promise<OrchardMintQuoteTtls> {
+	async updateMintQuoteTtl(tag: string, mint_quote_ttl_update: MintQuoteTtlUpdateInput) : Promise<OrchardMintQuoteTtls> {
 		try {
 			await this.cashuMintRpcService.updateQuoteTtl(mint_quote_ttl_update);
 			return mint_quote_ttl_update;
 		} catch (error) {
-			const error_code = this.errorService.resolveError({ logger: this.logger, error,
+			const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
 				errord: OrchardErrorCode.MintRpcActionError,
-				msg: 'Error updating mint quote ttl',
 			});
 			throw new OrchardApiError(error_code);
 		}

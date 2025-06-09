@@ -7,6 +7,8 @@
 					[page_settings]="page_settings"
 					[filter]="filter"
 					[unit_options]="unit_options"
+					[state_options]="state_options"
+					[state_enabled]="state_enabled"
 					[date_start]="page_settings.date_start"
 					[date_end]="page_settings.date_end"
 					[states]="page_settings.states"
@@ -72,7 +74,8 @@
 		[filter]="filter"
 		[page_settings]="page_settings"
 		[mint_genesis_time]="mint_genesis_time"
-		[loading]="loading_dynamic_data">
+		[loading]="loading_dynamic_data"
+		[state_enabled]="state_enabled">
 	</orc-mint-data-chart>
 
 	<div class="mint-data-table">
@@ -80,6 +83,7 @@
 			<orc-mint-data-table
 				[data]="data"
 				[page_settings]="page_settings"
+				[keysets]="mint_keysets"
 				[loading]="loading_dynamic_data">
 			</orc-mint-data-table>
 
