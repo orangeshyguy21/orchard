@@ -37,7 +37,8 @@ AiFunctionUpdateMintKeysetStatus |
 AiFunctionUpdateMintKeysetRotationUnit |
 AiFunctionUpdateMintKeysetRotationInputFeePpk |
 AiFunctionUpdateMintKeysetRotationMaxOrder |
-AiFunctionUpdateMintDatabaseDataType;
+AiFunctionUpdateMintDatabaseDataType | 
+AiFunctionUpdateMintDatabaseStates;
 
 export type AiFunctionUpdateMintAnalyticsDateRange = {
 	name: AiFunctionName.MintAnalyticsDateRangeUpdate;
@@ -231,9 +232,9 @@ export type AiFunctionUpdateMintDatabaseDataType = {
 	}
 }
 
-// export type AiFunctionUpdateMintDatabaseStates = {
-// 	name: AiFunctionName.MintDatabaseStatesUpdate;
-// 	arguments: {
-// 		states: string[];
-// 	}
-// }
+export type AiFunctionUpdateMintDatabaseStates = {
+	name: AiFunctionName.MintDatabaseStatesUpdate;
+	arguments: {
+		states: string[];
+	}
+}

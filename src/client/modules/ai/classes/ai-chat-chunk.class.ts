@@ -71,9 +71,12 @@ export class AiChatToolCall implements ParsedOrchardAiChatToolCall {
     public function: AiFunction;
 
     constructor(tool_call: OrchardAiChatToolCall) {
+        console.log('RAW ARGUMENTS:', tool_call.function.arguments);
+        console.log('PARSED ARGUMENTS:', JSON.parse(tool_call.function.arguments));
+
         this.function = {
             name: tool_call.function.name,
             arguments: JSON.parse(tool_call.function.arguments)
-        };
+        } as AiFunction;
     }
 }

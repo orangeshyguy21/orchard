@@ -27,6 +27,7 @@ import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.clas
 import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
 import { MintProofGroup } from '@client/modules/mint/classes/mint-proof-group.class';
 import { MintPromiseGroup } from '@client/modules/mint/classes/mint-promise-group.class';
+import { MintDataType } from '@client/modules/mint/enums/data-type.enum';
 /* Shared Dependencies */
 import { MintUnit, MintQuoteState, MeltQuoteState, MintProofState, AiAgent, AiFunctionName } from '@shared/generated.types';
 
@@ -195,7 +196,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 
 	private getPageSettings(): NonNullableMintDatabaseSettings {
 		const settings = this.settingService.getMintDatabaseSettings();
-		const type = settings.type ?? DataType.MintMints;
+		const type = settings.type ?? MintDataType.MintMints;
 		return {
 			type: type,
 			date_start: settings.date_start ?? this.mint_genesis_time,
@@ -221,11 +222,11 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		return Array.from(new Set(this.mint_keysets.map(keyset => keyset.unit)));
 	}
 
-	private getDefaultStates(type: DataType): string[] {
-		if( type === DataType.MintMints ) return Object.values(MintQuoteState);
-		if( type === DataType.MintMelts ) return Object.values(MeltQuoteState);
-		if( type === DataType.MintProofGroups ) return Object.values(MintProofState);
-		if( type === DataType.MintPromiseGroups ) return [];
+	private getDefaultStates(type: MintDataType): string[] {
+		if( type === MintDataType.MintMints ) return Object.values(MintQuoteState);
+		if( type === MintDataType.MintMelts ) return Object.values(MeltQuoteState);
+		if( type === MintDataType.MintProofGroups ) return Object.values(MintProofState);
+		if( type === MintDataType.MintPromiseGroups ) return [];
 		return [];
 	}
 
@@ -255,10 +256,10 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	}
 
 	private async getDynamicData(): Promise<void> {
-		if( this.page_settings.type === DataType.MintMints ) return this.getMintsData();
-		if( this.page_settings.type === DataType.MintMelts ) return this.getMeltsData();
-		if( this.page_settings.type === DataType.MintProofGroups ) return this.getProofsData();
-		if( this.page_settings.type === DataType.MintPromiseGroups ) return this.getPromisesData();
+		if( this.page_settings.type === MintDataType.MintMints ) return this.getMintsData();
+		if( this.page_settings.type === MintDataType.MintMelts ) return this.getMeltsData();
+		if( this.page_settings.type === MintDataType.MintProofGroups ) return this.getProofsData();
+		if( this.page_settings.type === MintDataType.MintPromiseGroups ) return this.getPromisesData();
 	}
 
 	private async getMintsData(): Promise<void> {
@@ -355,7 +356,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		this.reloadDynamicData();
 	}
 
-	public onTypeChange(event: DataType): void {
+	public onTypeChange(event: MintDataType): void {
 		const default_states = this.getDefaultStates(event);
 		this.page_settings.type = event;
 		this.page_settings.states = default_states;
@@ -543,6 +544,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		context += `Current Data Type: ${this.page_settings.type}\n`;
 		context += `Current Units: ${this.page_settings.units}\n`;
 		context += `Current States: ${this.page_settings.states}\n`;
+		context += `Available Data Types: ${Object.values(MintDataType).join(', ')}\n`;
 		context += `Available Units: ${this.unit_options.map(unit => unit.value).join(', ')}\n`;
 		this.aiService.openAiSocket(agent, content, context);
 	}
@@ -555,6 +557,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	// }
 
 	private executeAgentFunction(tool_call: AiChatToolCall): void {
+		console.log(tool_call);
 		if( tool_call.function.name === AiFunctionName.MintAnalyticsDateRangeUpdate ) {
 			const range = [
 				DateTime.fromFormat(tool_call.function.arguments.date_start, 'yyyy-MM-dd').toSeconds(),
@@ -562,16 +565,27 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 			];
 			this.onDateChange(range);
 		}
-		if( tool_call.function.name === AiFunctionName.MintAnalyticsUnitsUpdate ) {
-			// @todo parse this too....
-			this.onUnitsChange(tool_call.function.arguments.units);
+		if( tool_call.function.name === AiFunctionName.MintDatabaseDataTypeUpdate ) {
+			if( tool_call.function.arguments.type && Object.values(MintDataType).includes(tool_call.function.arguments.type) ) {
+				this.onTypeChange(tool_call.function.arguments.type);
+			} else {
+				console.warn('Invalid MintDataType received:', tool_call.function.arguments.type);
+			}
 		}
-		// if( tool_call.function.name === AiFunctionName.MintKeysetStatusUpdate ) {
-		// 	// @todo try catch this parse
-		// 	const parsed_statuses = JSON.parse(tool_call.function.arguments.statuses as any);
-		// 	const statuses = parsed_statuses.map((status: boolean) => status);
-		// 	this.onStatusChange(statuses);
-		// }
+		if( tool_call.function.name === AiFunctionName.MintAnalyticsUnitsUpdate ) {
+			if( tool_call.function.arguments.units && tool_call.function.arguments.units.every((unit: string) => this.unit_options.some(option => option.value === unit)) ) {
+				this.onUnitsChange(tool_call.function.arguments.units);
+			} else {
+				console.warn('Invalid Units received:', tool_call.function.arguments.units);
+			}
+		}
+		if( tool_call.function.name === AiFunctionName.MintDatabaseStatesUpdate ) {
+			if( tool_call.function.arguments.states && tool_call.function.arguments.states.every((state: string) => this.state_options.includes(state)) ) {
+				this.onStatesChange(tool_call.function.arguments.states);
+			} else {
+				console.warn('Invalid States received:', tool_call.function.arguments.states);
+			}
+		}
 	}
 
 	/* *******************************************************

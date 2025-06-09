@@ -588,7 +588,6 @@ export class MintService {
 
 	public getMintMeltQuotesData(args:MintMeltQuotesArgs) {
 		const query = getApiQuery(MINT_MELT_QUOTES_DATA_QUERY, args);
-		console.log(query);
 		return this.http.post<OrchardRes<MintMeltQuotesDataResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
@@ -601,7 +600,6 @@ export class MintService {
 				}
 			}),
 			catchError((error) => {
-				console.log(error);
 				console.error('Error loading mint melt quotes data:', error);
 				return throwError(() => error);
 			})

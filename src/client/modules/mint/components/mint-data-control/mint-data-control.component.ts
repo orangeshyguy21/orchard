@@ -8,7 +8,7 @@ import { MatCalendarCellClassFunction } from '@angular/material/datepicker';
 import { MatSelectChange } from '@angular/material/select';
 /* Application Dependencies */
 import { NonNullableMintDatabaseSettings } from '@client/modules/settings/types/setting.types';
-import { DataType } from '@client/modules/orchard/enums/data.enum';
+// import { DataType } from '@client/modules/orchard/enums/data.enum';
 import { MintDataType } from '@client/modules/mint/enums/data-type.enum';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 /* Shared Dependencies */
@@ -51,19 +51,21 @@ export class MintDataControlComponent implements OnChanges {
 	@Input() state_enabled!: boolean;
 	@Input() date_start?: number;
 	@Input() date_end?: number;
+	@Input() type!: MintDataType;
 	@Input() states!: string[];
+	@Input() units!: MintUnit[];
 	@Input() loading!: boolean;
 	@Input() mint_genesis_time!: number;
 	@Input() keysets!: MintKeyset[];
 
 	@Output() dateChange = new EventEmitter<number[]>();
-	@Output() typeChange = new EventEmitter<DataType>();
+	@Output() typeChange = new EventEmitter<MintDataType>();
 	@Output() unitsChange = new EventEmitter<MintUnit[]>();
 	@Output() statesChange = new EventEmitter<string[]>();
 	@Output() filterChange = new EventEmitter<Event>();
 
 	public readonly panel = new FormGroup({
-		type: new FormControl<DataType | null>(null, [Validators.required]),
+		type: new FormControl<MintDataType | null>(null, [Validators.required]),
 		daterange: new FormGroup({
 			date_start: new FormControl<DateTime | null>(null, [Validators.required]),
 			date_end: new FormControl<DateTime | null>(null, [Validators.required]),

@@ -53,6 +53,7 @@ export enum AiFunctionName {
   MintContactRemove = 'MINT_CONTACT_REMOVE',
   MintContactUpdate = 'MINT_CONTACT_UPDATE',
   MintDatabaseDataTypeUpdate = 'MINT_DATABASE_DATA_TYPE_UPDATE',
+  MintDatabaseStatesUpdate = 'MINT_DATABASE_STATES_UPDATE',
   MintDescriptionLongUpdate = 'MINT_DESCRIPTION_LONG_UPDATE',
   MintDescriptionUpdate = 'MINT_DESCRIPTION_UPDATE',
   MintEnabledUpdate = 'MINT_ENABLED_UPDATE',
