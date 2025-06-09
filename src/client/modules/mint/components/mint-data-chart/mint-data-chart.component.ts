@@ -55,6 +55,7 @@ export class MintDataChartComponent {
 	@Input() public page_settings!: NonNullableMintDatabaseSettings | undefined;
 	@Input() public mint_genesis_time!: number;
 	@Input() public loading!: boolean;
+	@Input() public state_enabled!: boolean;
 
 	public chart_type!: ChartJsType;
 	public chart_data!: ChartConfiguration['data'];

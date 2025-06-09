@@ -47,6 +47,7 @@ export class MintDataControlComponent implements OnChanges {
 	@Input() filter!: string;
 	@Input() unit_options!: { value: string, label: string }[];
 	@Input() state_options!: string[];
+	@Input() state_enabled!: boolean;
 	@Input() date_start?: number;
 	@Input() date_end?: number;
 	@Input() states!: string[];
@@ -80,7 +81,13 @@ export class MintDataControlComponent implements OnChanges {
 	constructor() {}
 
 	ngOnChanges(changes: SimpleChanges): void {
-		if(changes['loading'] && !this.loading) this.initForm();
+		if(changes['loading'] && !this.loading){
+			this.initForm();
+		}
+		if(changes['state_enabled']) {
+			( this.state_enabled ) ? this.panel.controls.states.enable() : this.panel.controls.states.disable();
+		}
+
 		if(changes['date_start'] && this.date_start && this.panel.controls.daterange.get('date_start')?.value?.toSeconds() !== this.date_start) {
 			this.panel.controls.daterange.get('date_start')?.setValue(DateTime.fromSeconds(this.date_start));
 		}
@@ -105,7 +112,6 @@ export class MintDataControlComponent implements OnChanges {
 		this.panel.controls.daterange.controls.date_end.setValue(DateTime.fromSeconds(this.page_settings.date_end));
 		this.panel.controls.units.setValue(this.page_settings.units);
 		this.panel.controls.states.setValue(this.page_settings.states);
-		( this.page_settings.type === DataType.MintPromiseGroups ) ? this.panel.controls.states.disable() : this.panel.controls.states.enable();
 	}
 
 	public onDateChange(): void {
@@ -123,7 +129,6 @@ export class MintDataControlComponent implements OnChanges {
 		if(this.panel.invalid) return;
 		const is_valid = this.isValidChange();
 		if( !is_valid ) return;
-		( event.value === DataType.MintPromiseGroups ) ? this.panel.controls.states.disable() : this.panel.controls.states.enable();
 		this.typeChange.emit(event.value);
 	}
 

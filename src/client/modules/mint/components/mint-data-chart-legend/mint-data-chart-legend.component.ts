@@ -28,6 +28,7 @@ export class MintDataChartLegendComponent implements OnChanges {
 	@Input() public data!: MintData;
 	@Input() public chart!: Chart | undefined;
 	@Input() public chart_data!: ChartConfiguration['data'];
+	@Input() public state_enabled!: boolean;
 
 	public datasets_legend!: LegendDataset[];
 	public states_legend!: LegendState[];

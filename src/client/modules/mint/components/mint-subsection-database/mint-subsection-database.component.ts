@@ -125,6 +125,9 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	public get page_size(): number {
 		return this.data?.source?.data?.length ?? 0;
 	}
+	public get state_enabled(): boolean {
+		return this.data?.type === DataType.MintMints || this.data?.type === DataType.MintMelts || this.data?.type === DataType.MintProofGroups;
+	}
 
 	constructor(
 		private route: ActivatedRoute,

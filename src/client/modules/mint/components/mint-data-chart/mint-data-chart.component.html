@@ -3,7 +3,8 @@
     <orc-mint-data-chart-legend 
         [data]="data"
         [chart]="chart?.chart"
-        [chart_data]="chart_data">
+        [chart_data]="chart_data"
+        [state_enabled]="state_enabled">
     </orc-mint-data-chart-legend>
 
     <canvas baseChart [data]="chart_data" [options]="chart_options" [type]="chart_type"></canvas>
