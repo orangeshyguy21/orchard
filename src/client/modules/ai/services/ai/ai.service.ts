@@ -76,7 +76,6 @@ export class AiService {
 		this.active_subject.next(true);
 		this.subscription = this.apiService.gql_socket.subscribe({
 			next: (response: OrchardWsRes<AiChatResponse>) => {
-				console.log('RESPONSE HEARD:', response);
 				if (response.type === 'data' && response?.payload?.data?.ai_chat) {
 					const chunk = new AiChatChunk(response.payload.data.ai_chat);
 					this.message_subject.next( chunk );
