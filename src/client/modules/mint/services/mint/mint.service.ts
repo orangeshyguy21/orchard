@@ -12,14 +12,13 @@ import {
 	MintQuoteTtlsResponse,
 	MintBalancesResponse,
 	MintKeysetsResponse,
-	MintPromisesResponse,
 	MintMintQuotesResponse,
 	MintMeltQuotesResponse,
-	MintPromisesArgs,
 	MintAnalyticsArgs,
 	MintMintQuotesArgs,
 	MintMeltQuotesArgs,
 	MintProofGroupsArgs,
+	MintPromiseGroupsArgs,
 	MintAnalyticsBalancesResponse,
 	MintAnalyticsMintsResponse,
 	MintAnalyticsMeltsResponse,
@@ -44,6 +43,7 @@ import {
 	MintMintQuotesDataResponse,
 	MintMeltQuotesDataResponse,
 	MintProofGroupsDataResponse,
+	MintPromiseGroupsDataResponse,
 	MintDatabaseBackupResponse,
 	MintDatabaseRestoreResponse,
 } from '@client/modules/mint/types/mint.types';
@@ -53,10 +53,10 @@ import { MintQuoteTtls } from '@client/modules/mint/classes/mint-quote-ttls.clas
 import { MintInfoRpc } from '@client/modules/mint/classes/mint-info-rpc.class';
 import { MintBalance } from '@client/modules/mint/classes/mint-balance.class';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
-import { MintPromise } from '@client/modules/mint/classes/mint-promise.class';
 import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
 import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
 import { MintProofGroup } from '@client/modules/mint/classes/mint-proof-group.class';
+import { MintPromiseGroup } from '@client/modules/mint/classes/mint-promise-group.class';
 import { MintAnalytic, MintAnalyticKeyset } from '@client/modules/mint/classes/mint-analytic.class';
 /* Shared Dependencies */
 import { MintAnalyticsInterval, OrchardContact } from '@shared/generated.types';
@@ -66,8 +66,7 @@ import {
 	MINT_INFO_RPC_QUERY,
 	MINT_QUOTE_TTLS_QUERY,
 	MINT_BALANCES_QUERY, 
-	MINT_KEYSETS_QUERY, 
-	MINT_PROMISES_QUERY, 
+	MINT_KEYSETS_QUERY,  
 	MINT_ANALYTICS_BALANCES_QUERY, 
 	MINT_ANALYTICS_MINTS_QUERY,
 	MINT_ANALYTICS_MELTS_QUERY,
@@ -78,6 +77,7 @@ import {
 	MINT_MINT_QUOTES_DATA_QUERY,
 	MINT_MELT_QUOTES_DATA_QUERY,
 	MINT_PROOF_GROUPS_DATA_QUERY,
+	MINT_PROMISE_GROUPS_DATA_QUERY,
 	MINT_NAME_MUTATION,
 	MINT_DESCRIPTION_MUTATION,
 	MINT_DESCRIPTION_LONG_MUTATION,
@@ -109,7 +109,6 @@ export class MintService {
 		MINT_INFO: 'mint-info',
 		MINT_BALANCES: 'mint-balances',
 		MINT_KEYSETS: 'mint-keysets',
-		MINT_PROMISES: 'mint-promises',
 		MINT_ANALYTICS_BALANCES: 'mint-analytics-balances',
 		MINT_ANALYTICS_PRE_BALANCES: 'mint-analytics-pre-balances',
 		MINT_ANALYTICS_MINTS: 'mint-analytics-mints',
@@ -128,7 +127,6 @@ export class MintService {
 		[this.CACHE_KEYS.MINT_INFO]: 30 * 60 * 1000, // 30 minutes
 		[this.CACHE_KEYS.MINT_BALANCES]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.MINT_KEYSETS]: 30 * 60 * 1000, // 30 minutes
-		[this.CACHE_KEYS.MINT_PROMISES]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.MINT_ANALYTICS_BALANCES]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.MINT_ANALYTICS_PRE_BALANCES]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.MINT_ANALYTICS_MINTS]: 5 * 60 * 1000, // 5 minutes
@@ -147,7 +145,6 @@ export class MintService {
 	private readonly mint_info_subject: BehaviorSubject<MintInfo | null>;
 	private readonly mint_balances_subject: BehaviorSubject<MintBalance[] | null>;
 	private readonly mint_keysets_subject: BehaviorSubject<MintKeyset[] | null>;
-	private readonly mint_promises_subject: BehaviorSubject<MintPromise[] | null>;
 	private readonly mint_analytics_balances_subject: BehaviorSubject<MintAnalytic[] | null>;
 	private readonly mint_analytics_pre_balances_subject: BehaviorSubject<MintAnalytic[] | null>;
 	private readonly mint_analytics_mints_subject: BehaviorSubject<MintAnalytic[] | null>;
@@ -179,10 +176,6 @@ export class MintService {
 		this.mint_keysets_subject = this.cache.createCache<MintKeyset[]>(
 			this.CACHE_KEYS.MINT_KEYSETS,
 			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_KEYSETS]
-		);
-		this.mint_promises_subject = this.cache.createCache<MintPromise[]>(
-			this.CACHE_KEYS.MINT_PROMISES,
-			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_PROMISES]
 		);
 		this.mint_analytics_balances_subject = this.cache.createCache<MintAnalytic[]>(
 			this.CACHE_KEYS.MINT_ANALYTICS_BALANCES,
@@ -369,30 +362,6 @@ export class MintService {
 			}),
 			catchError((error) => {
 				console.error('Error loading mint keysets:', error);
-				return throwError(() => error);
-			})
-		);
-	}
-
-
-	public loadMintPromises(args:MintPromisesArgs): Observable<MintPromise[]> {
-		if (this.mint_promises_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.MINT_PROMISES)) {
-			return of(this.mint_promises_subject.value);
-		}
-
-		const query = getApiQuery(MINT_PROMISES_QUERY, args);
-
-		return this.http.post<OrchardRes<MintPromisesResponse>>(api, query).pipe(
-			map((response) => {
-				if (response.errors) throw new OrchardErrors(response.errors);
-				return response.data.mint_promises;
-			}),
-			map((mint_promises) => mint_promises.map((mint_promise) => new MintPromise(mint_promise))),
-			tap((mint_promises) => {
-				this.cache.updateCache(this.CACHE_KEYS.MINT_PROMISES, mint_promises);
-			}),
-			catchError((error) => {
-				console.error('Error loading mint promises:', error);
 				return throwError(() => error);
 			})
 		);
@@ -654,6 +623,26 @@ export class MintService {
 			}),
 			catchError((error) => {
 				console.error('Error loading mint proof groups data:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public getMintPromiseGroupsData(args:MintPromiseGroupsArgs) {
+		const query = getApiQuery(MINT_PROMISE_GROUPS_DATA_QUERY, args);
+		return this.http.post<OrchardRes<MintPromiseGroupsDataResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			map((mint_promise_groups_data) => {
+				return {
+					mint_promise_groups: mint_promise_groups_data.mint_promise_groups.map((mint_promise_group) => new MintPromiseGroup(mint_promise_group)),
+					count: mint_promise_groups_data.mint_count_promise_groups.count
+				}
+			}),
+			catchError((error) => {	
+				console.error('Error loading mint promise groups data:', error);
 				return throwError(() => error);
 			})
 		);

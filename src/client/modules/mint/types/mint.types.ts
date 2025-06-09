@@ -3,11 +3,11 @@ import {
     OrchardMintInfo,
     OrchardMintQuoteTtls,
     OrchardMintKeyset,
-    OrchardMintPromise,
     OrchardMintAnalytics,
     OrchardMintMintQuote,
     OrchardMintMeltQuote,
     OrchardMintProofGroup,
+    OrchardMintPromiseGroup,
     OrchardMintKeysetsAnalytics,
     MintUnit,
     MintAnalyticsInterval,
@@ -50,10 +50,6 @@ export type MintKeysetsResponse = {
   	mint_keysets: OrchardMintKeyset[];
 }
 
-export type MintPromisesResponse = {
-  	mint_promises: OrchardMintPromise[];
-}
-
 export type MintAnalyticsBalancesResponse = {
 	mint_analytics_balances: OrchardMintAnalytics[];
 }
@@ -80,12 +76,6 @@ export type MintMeltQuotesResponse = {
 
 export type MintAnalyticsKeysetsResponse = {
 	mint_analytics_keysets: OrchardMintKeysetsAnalytics[];
-}
-
-export type MintPromisesArgs ={
-    id_keysets?: string[];
-    date_start?: number;
-    date_end?: number;
 }
 
 export type MintAnalyticsArgs = {
@@ -118,7 +108,17 @@ export type MintProofGroupsArgs = {
     id_keysets?: string[];
     date_start?: number;
     date_end?: number;
+    units?: MintUnit[];
     states?: MintProofState[];
+    page?: number;
+    page_size?: number;
+}
+
+export type MintPromiseGroupsArgs = {
+    units?: MintUnit[];
+    id_keysets?: string[];
+    date_start?: number;
+    date_end?: number;
     page?: number;
     page_size?: number;
 }
@@ -198,6 +198,11 @@ export type MintMeltQuotesDataResponse = {
 export type MintProofGroupsDataResponse = {
 	mint_proof_groups: OrchardMintProofGroup[];
 	mint_count_proof_groups: OrchardMintCount;
+}
+
+export type MintPromiseGroupsDataResponse = {
+	mint_promise_groups: OrchardMintPromiseGroup[];
+	mint_count_promise_groups: OrchardMintCount;
 }
 
 export type MintDatabaseBackupResponse = {

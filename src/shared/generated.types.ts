@@ -510,29 +510,13 @@ export type OrchardMintNut05Update = {
   unit: Scalars['String']['output'];
 };
 
-export type OrchardMintPromise = {
-  __typename?: 'OrchardMintPromise';
+export type OrchardMintPromiseGroup = {
+  __typename?: 'OrchardMintPromiseGroup';
   amount: Scalars['Int']['output'];
-  b_: Scalars['ID']['output'];
-  c_: Scalars['String']['output'];
-  created?: Maybe<Scalars['UnixTimestamp']['output']>;
-  dleq_e?: Maybe<Scalars['String']['output']>;
-  dleq_s?: Maybe<Scalars['String']['output']>;
-  id?: Maybe<Scalars['String']['output']>;
-  mint_quote?: Maybe<Scalars['String']['output']>;
-  swap_id?: Maybe<Scalars['String']['output']>;
-};
-
-export type OrchardMintProof = {
-  __typename?: 'OrchardMintProof';
-  amount: Scalars['Int']['output'];
-  c: Scalars['String']['output'];
-  created?: Maybe<Scalars['UnixTimestamp']['output']>;
-  id?: Maybe<Scalars['String']['output']>;
-  melt_quote?: Maybe<Scalars['String']['output']>;
-  secret: Scalars['String']['output'];
-  witness?: Maybe<Scalars['String']['output']>;
-  y?: Maybe<Scalars['String']['output']>;
+  amounts: Array<Array<Scalars['Int']['output']>>;
+  created_time: Scalars['UnixTimestamp']['output'];
+  keyset_ids: Array<Scalars['String']['output']>;
+  unit: MintUnit;
 };
 
 export type OrchardMintProofGroup = {
@@ -671,15 +655,15 @@ export type Query = {
   mint_balances_redeemed: Array<OrchardMintBalance>;
   mint_count_melt_quotes: OrchardMintCount;
   mint_count_mint_quotes: OrchardMintCount;
+  mint_count_promise_groups: OrchardMintCount;
   mint_count_proof_groups: OrchardMintCount;
   mint_info: OrchardMintInfo;
   mint_info_rpc: OrchardMintInfoRpc;
   mint_keysets: Array<OrchardMintKeyset>;
   mint_melt_quotes: Array<OrchardMintMeltQuote>;
   mint_mint_quotes: Array<OrchardMintMintQuote>;
-  mint_promises: Array<OrchardMintPromise>;
+  mint_promise_groups: Array<OrchardMintPromiseGroup>;
   mint_proof_groups: Array<OrchardMintProofGroup>;
-  mint_proofs: Array<OrchardMintProof>;
   mint_quote_ttl: OrchardMintQuoteTtls;
   public_image: OrchardPublicImage;
   public_urls: Array<OrchardPublicUrl>;
@@ -752,6 +736,14 @@ export type QueryMint_Count_Mint_QuotesArgs = {
 };
 
 
+export type QueryMint_Count_Promise_GroupsArgs = {
+  date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  id_keysets?: InputMaybe<Array<Scalars['String']['input']>>;
+  units?: InputMaybe<Array<MintUnit>>;
+};
+
+
 export type QueryMint_Count_Proof_GroupsArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
@@ -781,10 +773,13 @@ export type QueryMint_Mint_QuotesArgs = {
 };
 
 
-export type QueryMint_PromisesArgs = {
+export type QueryMint_Promise_GroupsArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   id_keysets?: InputMaybe<Array<Scalars['String']['input']>>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  page_size?: InputMaybe<Scalars['Int']['input']>;
+  units?: InputMaybe<Array<MintUnit>>;
 };
 
 

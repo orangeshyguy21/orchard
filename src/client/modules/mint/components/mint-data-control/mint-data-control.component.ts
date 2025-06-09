@@ -87,6 +87,12 @@ export class MintDataControlComponent implements OnChanges {
 		if(changes['date_end'] && this.date_end && this.panel.controls.daterange.get('date_end')?.value?.toSeconds() !== this.date_end) {
 			this.panel.controls.daterange.get('date_end')?.setValue(DateTime.fromSeconds(this.date_end));
 		}
+		if(changes['type'] && this.page_settings.type && this.panel.controls.type.value !== this.page_settings.type) {
+			this.panel.controls.type.setValue(this.page_settings.type);
+		}
+		if(changes['units'] && this.page_settings.units && this.panel.controls.units.value !== this.page_settings.units) {
+			this.panel.controls.units.setValue(this.page_settings.units);
+		}
 		if(changes['states'] && this.states && this.panel.controls.states.value !== this.states) {
 			this.panel.controls.states.setValue(this.states);
 		}
@@ -99,6 +105,7 @@ export class MintDataControlComponent implements OnChanges {
 		this.panel.controls.daterange.controls.date_end.setValue(DateTime.fromSeconds(this.page_settings.date_end));
 		this.panel.controls.units.setValue(this.page_settings.units);
 		this.panel.controls.states.setValue(this.page_settings.states);
+		( this.page_settings.type === DataType.MintPromiseGroups ) ? this.panel.controls.states.disable() : this.panel.controls.states.enable();
 	}
 
 	public onDateChange(): void {
@@ -116,6 +123,7 @@ export class MintDataControlComponent implements OnChanges {
 		if(this.panel.invalid) return;
 		const is_valid = this.isValidChange();
 		if( !is_valid ) return;
+		( event.value === DataType.MintPromiseGroups ) ? this.panel.controls.states.disable() : this.panel.controls.states.enable();
 		this.typeChange.emit(event.value);
 	}
 

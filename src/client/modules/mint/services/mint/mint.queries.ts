@@ -127,21 +127,6 @@ export const MINT_KEYSETS_QUERY = `{
     }
 }`;
 
-export const MINT_PROMISES_QUERY = `
-query MintPromises($id_keysets: [String!]) {
-	mint_promises(id_keysets: $id_keysets) {
-		amount
-		id
-		b_
-		c_
-		dleq_e
-		dleq_s
-		created
-		mint_quote
-		swap_id
-	}
-}`;
-
 export const MINT_ANALYTICS_BALANCES_QUERY = `
 query MintAnalyticsBalances($units: [MintUnit!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $interval: MintAnalyticsInterval, $timezone: Timezone) {
 	mint_analytics_balances(units: $units, date_start: $date_start, date_end: $date_end, interval: $interval, timezone: $timezone) {
@@ -392,6 +377,20 @@ query MintProofGroups($units: [MintUnit!], $id_keysets: [String!], $date_start: 
 		amounts
 	}
 	mint_count_proof_groups(units: $units, id_keysets: $id_keysets, date_start: $date_start, date_end: $date_end, states: $states) {
+		count
+	}
+}`;
+
+export const MINT_PROMISE_GROUPS_DATA_QUERY = `
+query MintPromiseGroups($units: [MintUnit!], $id_keysets: [String!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $page: Int, $page_size: Int) {
+	mint_promise_groups(units: $units, id_keysets: $id_keysets, date_start: $date_start, date_end: $date_end, page: $page, page_size: $page_size) {
+		amount
+		created_time
+		keyset_ids
+		unit
+		amounts
+	}
+	mint_count_promise_groups(units: $units, id_keysets: $id_keysets, date_start: $date_start, date_end: $date_end) {
 		count
 	}
 }`;

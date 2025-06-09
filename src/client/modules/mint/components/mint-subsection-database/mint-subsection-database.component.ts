@@ -26,10 +26,11 @@ import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
 import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
 import { MintProofGroup } from '@client/modules/mint/classes/mint-proof-group.class';
+import { MintPromiseGroup } from '@client/modules/mint/classes/mint-promise-group.class';
 /* Shared Dependencies */
 import { MintUnit, MintQuoteState, MeltQuoteState, MintProofState, AiAgent, AiFunctionName } from '@shared/generated.types';
 
-export type MintData = MintMintData | MintMeltData | MintProofData;
+export type MintData = MintMintData | MintMeltData | MintProofData | MintPromiseData;
 type MintMintData = {
 	type : DataType.MintMints;
 	source : MatTableDataSource<MintMintQuote>;
@@ -41,6 +42,10 @@ type MintMeltData = {
 type MintProofData = {
 	type : DataType.MintProofGroups;
 	source : MatTableDataSource<MintProofGroup>;
+}
+type MintPromiseData = {
+	type : DataType.MintPromiseGroups;
+	source : MatTableDataSource<MintPromiseGroup>;
 }
 
 enum FormMode {
@@ -266,6 +271,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		if( type === DataType.MintMints ) return Object.values(MintQuoteState);
 		if( type === DataType.MintMelts ) return Object.values(MeltQuoteState);
 		if( type === DataType.MintProofGroups ) return Object.values(MintProofState);
+		if( type === DataType.MintPromiseGroups ) return [];
 		return [];
 	}
 
@@ -273,6 +279,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		if( this.page_settings.type === DataType.MintMints ) return this.getMintsData();
 		if( this.page_settings.type === DataType.MintMelts ) return this.getMeltsData();
 		if( this.page_settings.type === DataType.MintProofGroups ) return this.getProofsData();
+		if( this.page_settings.type === DataType.MintPromiseGroups ) return this.getPromisesData();
 	}
 
 	private async getMintsData(): Promise<void> {
@@ -316,6 +323,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 			this.mintService.getMintProofGroupsData({
 				date_start: this.page_settings.date_start,
 				date_end: this.page_settings.date_end,
+				units: this.page_settings.units,
 				states: (this.page_settings.states as MintProofState[]),
 				page: this.page_settings.page,
 				page_size: PAGE_SIZE,
@@ -325,8 +333,24 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 			type: DataType.MintProofGroups,
 			source: new MatTableDataSource(mint_proof_groups_data.mint_proof_groups)
 		};
-		console.log(this.data);
 		this.count = mint_proof_groups_data.count;
+	}
+
+	private async getPromisesData(): Promise<void> {
+		const mint_promise_groups_data = await lastValueFrom(
+			this.mintService.getMintPromiseGroupsData({
+				date_start: this.page_settings.date_start,
+				date_end: this.page_settings.date_end,
+				units: this.page_settings.units,	
+				page: this.page_settings.page,
+				page_size: PAGE_SIZE,
+			})
+		);
+		this.data = {
+			type: DataType.MintPromiseGroups,
+			source: new MatTableDataSource(mint_promise_groups_data.mint_promise_groups)
+		};
+		this.count = mint_promise_groups_data.count;
 	}
 
 	private async reloadDynamicData(): Promise<void> {
@@ -411,10 +435,6 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 
 	private initRestoreBackup(): void {
 		this.form_mode = FormMode.RESTORE;
-		// this.eventService.registerEvent(new EventData({
-		// 	type: 'PENDING',
-		// 	message: 'Restore',
-		// }));
 	}
 
 	public onClose(): void {

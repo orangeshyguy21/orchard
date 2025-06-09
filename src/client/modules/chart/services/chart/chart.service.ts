@@ -91,7 +91,7 @@ export class ChartService {
         }
     }
 
-    public getStatePointStyle(datatype: DataType, state: string): string {
+    public getStatePointStyle(datatype: DataType, state: string|undefined): string {
         if( datatype === DataType.MintMints ) return this.state_mint_map[(state as MintQuoteState)] || 'circle';
         if( datatype === DataType.MintMelts ) return this.state_melt_map[(state as MeltQuoteState)] || 'circle';
         return 'circle';

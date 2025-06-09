@@ -25,6 +25,7 @@ import { MintData } from '@client/modules/mint/components/mint-subsection-databa
 import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
 import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
 import { MintProofGroup } from '@client/modules/mint/classes/mint-proof-group.class';
+import { MintPromiseGroup } from '@client/modules/mint/classes/mint-promise-group.class';
 
 @Component({
 	selector: 'orc-mint-data-chart',
@@ -71,6 +72,10 @@ export class MintDataChartComponent {
 		if( this.data.type === DataType.MintProofGroups ) return this.data.source.filteredData;
 		return [];
 	}
+	public get promises_data(): MintPromiseGroup[] {
+		if( this.data.type === DataType.MintPromiseGroups ) return this.data.source.filteredData;
+		return [];
+	}
 
 	constructor(
 		private chartService: ChartService,
@@ -96,6 +101,7 @@ export class MintDataChartComponent {
 		if( this.data.type === DataType.MintMints ) return this.getMintsData();
 		if( this.data.type === DataType.MintMelts ) return this.getMeltsData();
 		if( this.data.type === DataType.MintProofGroups ) return this.getProofsData();
+		if( this.data.type === DataType.MintPromiseGroups ) return this.getPromisesData();
 		return { datasets: [] };
 	}
 
@@ -135,15 +141,27 @@ export class MintDataChartComponent {
 		return this.getDatasets(data_unit_groups);
 	}
 
+	private getPromisesData(): ChartConfiguration['data'] {
+		if( !this.page_settings ) return { datasets: [] };
+		if( (!this.data?.source || this.data?.source.data.length === 0) ) return { datasets: [] };
+		const data_unit_groups = this.promises_data.reduce((groups, entity) => {
+			const unit = entity.unit;
+			groups[unit] = groups[unit] || [];
+			groups[unit].push(entity);
+			return groups;
+		}, {} as Record<string, MintPromiseGroup[]>);
+		return this.getDatasets(data_unit_groups);
+	}
 
-	private getDatasets(data_unit_groups: Record<string, MintMintQuote[] | MintMeltQuote[] | MintProofGroup[]>): ChartConfiguration['data'] {
+
+	private getDatasets(data_unit_groups: Record<string, MintMintQuote[] | MintMeltQuote[] | MintProofGroup[] | MintPromiseGroup[]>): ChartConfiguration['data'] {
 		const datasets = Object.entries(data_unit_groups).map(([unit, data], index) => {
 			const color = this.chartService.getAssetColor(unit, index);
 			const custom_opacity = this.chartService.hexToRgba(color.border, 0.75);
 			const data_prepped = data.map( entity => ({
 				x: (entity.created_time ?? 0) * 1000,
 				y: AmountPipe.getConvertedAmount(unit, entity.amount),
-				state: entity.state
+				state: 'state' in entity ? entity.state : undefined
 			}));
 			const yAxisID = getYAxisId(unit);
 			return {
@@ -158,7 +176,8 @@ export class MintDataChartComponent {
 				pointRadius: 3,
 				pointHoverRadius: 4,
 				pointStyle: (context: any) => {
-					const state = data[context.dataIndex]?.state;
+					const entity = data[context.dataIndex];
+					const state = 'state' in entity ? entity.state : undefined;
 					return this.chartService.getStatePointStyle(this.data.type, state);
 				},
 				tension: 0.4,
