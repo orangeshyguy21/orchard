@@ -37,7 +37,7 @@ export class TaprootAssetsService implements OnModuleInit {
             if (!(method in this.grpc_client)) reject(OrchardErrorCode.TaprootAssetsSupportError);
             this.grpc_client[method](request, (error: Error | null, response: any) => {
                 console.log('error', error);
-                console.log('response', response);
+                console.log('response', JSON.stringify(response, null, 2));
                 if (error && error?.message?.includes('14 UNAVAILABLE')) reject(OrchardErrorCode.TaprootAssetsRpcConnectionError);
                 if (error) reject(error);
                 resolve(response);

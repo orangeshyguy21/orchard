@@ -246,9 +246,22 @@ type OrchardContact {
   method: String!
 }
 
+type OrchardCustomChannel {
+  asset_id: String!
+  chan_id: String!
+  local_balance: Float!
+  name: String!
+  remote_balance: Float!
+}
+
+type OrchardCustomChannelData {
+  open_channels: [OrchardCustomChannel!]!
+  pending_channels: [OrchardCustomChannel!]!
+}
+
 type OrchardLightningBalance {
   balance: Float!
-  custom_channel_data: Base64!
+  custom_channel_data: OrchardCustomChannelData!
   local_balance: OrchardLightningBalanceAmount!
   pending_open_balance: Float!
   pending_open_local_balance: OrchardLightningBalanceAmount!

@@ -32,3 +32,8 @@ export type LightningChannelBalance = {
     pending_open_remote_balance: { sat: string, msat: string };
     custom_channel_data: Buffer;
 }
+
+export type LightningCustomChannels = {
+    open_channels: { [key: string]: { asset_id: string, name: string, local_balance: number, remote_balance: number } };
+    pending_channels: { [key: string]: { asset_id: string, name: string, local_balance: number, remote_balance: number } };
+}
