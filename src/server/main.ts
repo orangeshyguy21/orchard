@@ -6,6 +6,9 @@ import { Logger, ConsoleLogger, LogLevel, INestApplication } from '@nestjs/commo
 import * as express from 'express';
 /* Application */
 import { AppModule } from './app.module';
+import { LightningType } from './modules/lightning/lightning.enums';
+import { MintType } from './modules/cashu/cashu.enums';
+
 
 const log_levels: Record<string, LogLevel[]> = {
 	'verbose': ['log', 'fatal', 'error', 'warn', 'debug', 'verbose'],
@@ -37,11 +40,14 @@ async function bootstrap() {
 }
 
 function validation(app: INestApplication, configService: ConfigService, logger: Logger) : void {
-	// validate MINT_BACKEND
-	const mint_backend = configService.get<string>('cashu.backend');
-	if( !mint_backend ) shutdown(app, logger, 'MINT_BACKEND not configured');
-	const valid_backends = ['nutshell', 'cdk'];
-	if( !valid_backends.includes(mint_backend) ) shutdown(app, logger, `Invalid MINT_BACKEND: ${mint_backend}`);
+	// validate LIGHTNING_TYPE
+	const lightning_type = configService.get<LightningType>('lightning.type');
+	if( !lightning_type ) shutdown(app, logger, 'LIGHTNING_TYPE not configured');
+	if( !Object.values(LightningType).includes(lightning_type) ) shutdown(app, logger, `Invalid LIGHTNING_TYPE: ${lightning_type}`);
+	// validate MINT_TYPE
+	const mint_type = configService.get<MintType>('cashu.type');
+	if( !mint_type ) shutdown(app, logger, 'MINT_TYPE not configured');
+	if( !Object.values(MintType).includes(mint_type) ) shutdown(app, logger, `Invalid MINT_TYPE: ${mint_type}`);
 	// validate MINT_DATABASE
 	const mint_database = configService.get<string>('cashu.database');
 	if( !mint_database ) shutdown(app, logger, 'MINT_DATABASE not configured');

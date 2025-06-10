@@ -9,6 +9,13 @@ export type Config = {
 		proxy: string | undefined;
 		log: string;
 	},
+	lightning: {
+		type: string;
+		host: string;
+		port: string;
+		macaroon: string;
+		cert: string;
+	},
 	bitcoin : {
 		host : string;
 		port : string;
@@ -16,7 +23,7 @@ export type Config = {
 		pass : string;
 	},
 	cashu : {
-		backend : string;
+		type : string;
 		api: string;
 		database : string;
 		rpc_host : string;

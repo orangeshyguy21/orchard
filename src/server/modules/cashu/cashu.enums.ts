@@ -1,3 +1,8 @@
+export enum MintType {
+    NUTSHELL = 'nutshell',
+    CDK = 'cdk'
+}
+
 export enum MintQuoteState {
     UNPAID = 'UNPAID',
     PAID = 'PAID',

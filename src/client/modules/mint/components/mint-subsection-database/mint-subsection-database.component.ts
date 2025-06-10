@@ -562,7 +562,6 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	}
 
 	private executeAgentFunction(tool_call: AiChatToolCall): void {
-		console.log(tool_call);
 		if( tool_call.function.name === AiFunctionName.MintAnalyticsDateRangeUpdate ) {
 			const range = [
 				DateTime.fromFormat(tool_call.function.arguments.date_start, 'yyyy-MM-dd').toSeconds(),
