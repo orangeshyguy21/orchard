@@ -4,7 +4,7 @@ export enum OrchardErrorCode {
 	PublicAssetError = 10002,
 	// Bitcoin Level Errors
 	BitcoinRPCError = 20001,
-	// Lightning Level Errors (30001 - 39999)
+	// Lightning Level Errors
 	LightningRpcConnectionError = 30001,
 	LightningRpcActionError = 30002,
 	// what will 300003 be?
@@ -19,10 +19,17 @@ export enum OrchardErrorCode {
 	MintDatabaseBackupError = 40007,
 	MintDatabaseRestoreError = 40008,
 	MintDatabaseRestoreInvalidError = 40009,
-	// Ecash Level Errors (50001 - 59999)
+	// Ecash Level Errors
+
+	// AI Level Errors
 	AiError = 50001,
 	AiStreamError = 50002,
 	AiStreamParseError = 50003,
+	// Taproot Assets Level Errors
+	TaprootAssetsRpcConnectionError = 60001,
+	TaprootAssetsRpcActionError = 60002,
+	// 60003
+	TaprootAssetsSupportError = 60004,
 };
 
 export const OrchardErrorMessages: Record<string, string> = {
@@ -43,4 +50,7 @@ export const OrchardErrorMessages: Record<string, string> = {
 	[OrchardErrorCode.AiError]: "AiError",
 	[OrchardErrorCode.AiStreamError]: "AiStreamError",
 	[OrchardErrorCode.AiStreamParseError]: "AiStreamParseError",
+	[OrchardErrorCode.TaprootAssetsRpcConnectionError]: "TaprootAssetsRpcConnectionError",
+	[OrchardErrorCode.TaprootAssetsRpcActionError]: "TaprootAssetsRpcActionError",
+	[OrchardErrorCode.TaprootAssetsSupportError]: "TaprootAssetsSupportError",
 };

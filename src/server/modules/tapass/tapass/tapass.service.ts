@@ -31,14 +31,14 @@ export class TaprootAssetsService implements OnModuleInit {
     }
 
     private makeGrpcRequest(method: string, request: any): Promise<any> {
-        if (!this.grpc_client) throw OrchardErrorCode.LightningRpcConnectionError;
+        if (!this.grpc_client) throw OrchardErrorCode.TaprootAssetsRpcConnectionError;
         
         return new Promise((resolve, reject) => {
-            if (!(method in this.grpc_client)) reject(OrchardErrorCode.LightningSupportError);
+            if (!(method in this.grpc_client)) reject(OrchardErrorCode.TaprootAssetsSupportError);
             this.grpc_client[method](request, (error: Error | null, response: any) => {
                 console.log('error', error);
                 console.log('response', response);
-                if (error && error?.message?.includes('14 UNAVAILABLE')) reject(OrchardErrorCode.LightningRpcConnectionError);
+                if (error && error?.message?.includes('14 UNAVAILABLE')) reject(OrchardErrorCode.TaprootAssetsRpcConnectionError);
                 if (error) reject(error);
                 resolve(response);
             });
