@@ -5,6 +5,10 @@ export enum OrchardErrorCode {
 	// Bitcoin Level Errors
 	BitcoinRPCError = 20001,
 	// Lightning Level Errors (30001 - 39999)
+	LightningRpcConnectionError = 30001,
+	LightningRpcActionError = 30002,
+	// what will 300003 be?
+	LightningSupportError = 30004,
 	// Mint Level Errors
 	MintPublicApiError = 40001,
 	MintDatabaseConnectionError = 40002,
@@ -24,6 +28,9 @@ export enum OrchardErrorCode {
 export const OrchardErrorMessages: Record<string, string> = {
 	[OrchardErrorCode.StatusError]: "StatusError",
 	[OrchardErrorCode.BitcoinRPCError]: "BitcoinRPCError",
+	[OrchardErrorCode.LightningRpcConnectionError]: "LightningRpcConnectionError",
+	[OrchardErrorCode.LightningRpcActionError]: "LightningRpcActionError",
+	[OrchardErrorCode.LightningSupportError]: "LightningSupportError",
 	[OrchardErrorCode.MintPublicApiError]: "MintPublicApiError",
 	[OrchardErrorCode.MintDatabaseConnectionError]: "MintDatabaseConnectionError",
 	[OrchardErrorCode.MintDatabaseSelectError]: "MintDatabaseSelectError",

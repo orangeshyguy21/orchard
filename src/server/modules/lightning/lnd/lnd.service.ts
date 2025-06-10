@@ -38,31 +38,18 @@ export class LndService {
                 defaults: true,
                 oneofs: true
             });
-            
-            // The package name for LND is 'lnrpc', not 'cdk_mint_rpc'
             const lightning_proto: any = grpc.loadPackageDefinition(package_definition).lnrpc;
-            
-            // Read the macaroon file (hex encoded)
             const macaroon_content = fs.readFileSync(rpc_macaroon);
             const macaroon_hex = macaroon_content.toString('hex');
-            
-            // Read the TLS cert file
             const cert_content = fs.readFileSync(rpc_tls_cert);
-            
-            // Create macaroon credentials
             const metadata = new grpc.Metadata();
             metadata.add('macaroon', macaroon_hex);
             const macaroon_creds = grpc.credentials.createFromMetadataGenerator((args, callback) => {
                 callback(null, metadata);
             });
-            
-            // Create SSL credentials using the TLS cert
             const ssl_creds = grpc.credentials.createSsl(cert_content);
-            
-            // Combine SSL and macaroon credentials
             const combined_creds = grpc.credentials.combineChannelCredentials(ssl_creds, macaroon_creds);
-            
-            this.logger.log('LND gRPC client initialized with macaroon authentication');
+            this.logger.log('Lightning gRPC client initialized with TLS certificate authentication');
             return new lightning_proto.Lightning(rpc_url, combined_creds);
             
         } catch (error) {

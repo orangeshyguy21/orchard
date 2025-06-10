@@ -4,7 +4,7 @@ import { Module } from '@nestjs/common';
 import { FetchModule } from '@server/modules/fetch/fetch.module';
 import { LndModule } from '@server/modules/lightning/lnd/lnd.module';
 /* Local Dependencies */
-import { LnRpcService } from './lnrpc.service';
+import { LightningRpcService } from './lnrpc.service';
 
 @Module({
 	imports: [
@@ -12,10 +12,10 @@ import { LnRpcService } from './lnrpc.service';
 		LndModule,
 	],
 	providers: [
-		LnRpcService,
+		LightningRpcService,
 	],
 	exports: [
-		LnRpcService
+		LightningRpcService
 	],
 })
-export class LnRpcModule {}
+export class LightningRpcModule {}

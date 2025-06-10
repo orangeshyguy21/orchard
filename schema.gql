@@ -243,6 +243,28 @@ type OrchardContact {
   method: String!
 }
 
+type OrchardLightningInfo {
+  alias: String!
+  best_header_timestamp: UnixTimestamp!
+  block_hash: String!
+  block_height: Int!
+  chains: [String!]!
+  color: String!
+  commit_hash: String!
+  identity_pubkey: String!
+  num_active_channels: Int!
+  num_inactive_channels: Int!
+  num_peers: Int!
+  num_pending_channels: Int!
+  require_htlc_interceptor: Boolean!
+  store_final_htlc_resolutions: Boolean!
+  synced_to_chain: Boolean!
+  synced_to_graph: Boolean!
+  testnet: Boolean!
+  uris: [String!]!
+  version: String!
+}
+
 type OrchardMintAnalytics {
   amount: Int!
   created_time: UnixTimestamp!
@@ -503,6 +525,7 @@ type OrchardStatus {
 type Query {
   ai_models: [OrchardAiModel!]!
   bitcoin_blockcount: OrchardBitcoinBlockCount!
+  lightning_info: OrchardLightningInfo!
   mint_analytics_balances(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
   mint_analytics_keysets(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone): [OrchardMintKeysetsAnalytics!]!
   mint_analytics_melts(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!

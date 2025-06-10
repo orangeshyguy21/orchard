@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { LightningRpcService } from './lnrpc.service';
+import { LightningInfoService } from './lninfo.service';
 
-describe('LightningRpcService', () => {
-  let service: LightningRpcService;
+describe('LightningInfoService', () => {
+  let service: LightningInfoService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [LightningRpcService],
+      providers: [LightningInfoService],
     }).compile();
 
-    service = module.get<LightningRpcService>(LightningRpcService);
+    service = module.get<LightningInfoService>(LightningInfoService);
   });
 
   it('should be defined', () => {
