@@ -22,7 +22,13 @@ export type Config = {
 		port: string;
 		macaroon: string;
 		cert: string;
-		taproot_asset_macaroon: string;
+	},
+	taproot_assets: {
+		type: string;
+		host: string;
+		port: string;
+		macaroon: string;
+		cert: string;
 	},
 	cashu : {
 		type : string;

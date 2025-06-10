@@ -8,6 +8,7 @@ import * as express from 'express';
 import { AppModule } from './app.module';
 import { BitcoinType } from './modules/bitcoin/bitcoin.enums';
 import { LightningType } from './modules/lightning/lightning.enums';
+import { TaprootAssetType } from './modules/tapass/tapass.enums';
 import { MintType } from './modules/cashu/cashu.enums';
 
 
@@ -49,6 +50,10 @@ function validation(app: INestApplication, configService: ConfigService, logger:
 	const lightning_type = configService.get<LightningType>('lightning.type');
 	if( !lightning_type ) shutdown(app, logger, 'LIGHTNING_TYPE not configured');
 	if( !Object.values(LightningType).includes(lightning_type) ) shutdown(app, logger, `Invalid LIGHTNING_TYPE: ${lightning_type}`);
+	// validate TAPROOT_ASSET_TYPE
+	const taproot_asset_type = configService.get<TaprootAssetType>('taproot_assets.type');
+	if( !taproot_asset_type ) shutdown(app, logger, 'TAPROOT_ASSET_TYPE not configured');
+	if( !Object.values(TaprootAssetType).includes(taproot_asset_type) ) shutdown(app, logger, `Invalid TAPROOT_ASSET_TYPE: ${taproot_asset_type}`);
 	// validate MINT_TYPE
 	const mint_type = configService.get<MintType>('cashu.type');
 	if( !mint_type ) shutdown(app, logger, 'MINT_TYPE not configured');

@@ -8,22 +8,22 @@ import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 
 @Injectable()
-export class LndService {
+export class TapdService {
 
-    private readonly logger = new Logger(LndService.name);
+    private readonly logger = new Logger(TapdService.name);
 
     constructor(
         private configService: ConfigService,
     ) {}
 
     private createGrpcCredentials() {
-        const rpc_host = this.configService.get('lightning.host');
-        const rpc_port = this.configService.get('lightning.port');
-        const rpc_macaroon = this.configService.get('lightning.macaroon');
-        const rpc_tls_cert = this.configService.get('lightning.cert');
+        const rpc_host = this.configService.get('taproot_assets.host');
+        const rpc_port = this.configService.get('taproot_assets.port');
+        const rpc_macaroon = this.configService.get('taproot_assets.macaroon');
+        const rpc_tls_cert = this.configService.get('taproot_assets.cert');
         
         if (!rpc_host || !rpc_port || !rpc_macaroon || !rpc_tls_cert) {
-            this.logger.warn('Missing LND RPC credentials, secure connection cannot be established');
+            this.logger.warn('Missing TAPD RPC credentials, secure connection cannot be established');
             return null;
         }
 
@@ -65,14 +65,8 @@ export class LndService {
         }
     }
 
-    public initializeLightningClient(): grpc.Client {
-        const lightning_proto_path = path.resolve(__dirname, '../../../../proto/lnd-lightning.proto');
-        return this.initializeGrpcClient([lightning_proto_path], 'lnrpc', 'Lightning');
-    }
-
-    public initializeWalletKitClient(): grpc.Client {
-        const lightning_proto_path = path.resolve(__dirname, '../../../../proto/lnd-lightning.proto');
-        const walletkit_proto_path = path.resolve(__dirname, '../../../../proto/lnd-walletkit.proto');
-        return this.initializeGrpcClient([lightning_proto_path, walletkit_proto_path], 'walletrpc', 'WalletKit');
+    public initializeTaprootAssetsClient(): grpc.Client {
+        const taproot_assets_proto_path = path.resolve(__dirname, '../../../../proto/tapd-taprootassets.proto');
+        return this.initializeGrpcClient([taproot_assets_proto_path], 'taprpc', 'TaprootAssets');
     }
 }

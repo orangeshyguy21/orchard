@@ -29,7 +29,14 @@ export const config = (): Config => {
 		port : process.env.LIGHTNING_RPC_PORT,
 		macaroon : process.env.LIGHTNING_MACAROON,
 		cert : process.env.LIGHTNING_CERT,
-		taproot_asset_macaroon : process.env.TAPROOT_ASSET_MACAROON,
+	};
+
+	const taproot_assets = {
+		type : process.env.TAPROOT_ASSET_TYPE,
+		host : process.env.TAPROOT_ASSET_RPC_HOST,
+		port : process.env.TAPROOT_ASSET_RPC_PORT,
+		macaroon : process.env.TAPROOT_ASSET_MACAROON,
+		cert : process.env.TAPROOT_ASSET_CERT,
 	};
 
 	const cashu = {
@@ -52,6 +59,7 @@ export const config = (): Config => {
 		server,
 		bitcoin,
 		lightning,
+		taproot_assets,
 		cashu,
 		ai,
 	};

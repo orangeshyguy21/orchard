@@ -2,20 +2,20 @@
 import { Module } from '@nestjs/common';
 /* Application Dependencies */
 import { FetchModule } from '@server/modules/fetch/fetch.module';
-import { LndModule } from '@server/modules/lightning/lnd/lnd.module';
+import { TapdModule } from '@server/modules/tapass/tapd/tapd.module';
 /* Local Dependencies */
-import { LightningService } from './lightning.service';
+import { TaprootAssetsService } from './tapass.service';
 
 @Module({
 	imports: [
 		FetchModule,
-		LndModule,
+		TapdModule,
 	],
 	providers: [
-		LightningService,
+		TaprootAssetsService,
 	],
 	exports: [
-		LightningService
+		TaprootAssetsService
 	],
 })
-export class LightningModule {}
+export class TaprootAssetsModule {}
