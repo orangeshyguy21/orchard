@@ -14,6 +14,7 @@ import { PublicService } from '@client/modules/public/services/image/public.serv
 import { NonNullableMintDashboardSettings } from '@client/modules/settings/types/setting.types';
 import { PublicUrl } from '@client/modules/public/classes/public-url.class';
 import { AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
+import { LightningBalance } from '@client/modules/lightning/classes/lightning-balance.class';
 /* Native Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { MintBalance } from '@client/modules/mint/classes/mint-balance.class';
@@ -37,6 +38,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public mint_info: MintInfo | null = null;
 	public mint_balances: MintBalance[] = [];
 	public mint_keysets: MintKeyset[] = [];
+	public lightning_balance: LightningBalance | null = null;
 	public mint_analytics_balances: MintAnalytic[] = [];
 	public mint_analytics_balances_pre: MintAnalytic[] = [];
 	public mint_analytics_mints: MintAnalytic[] = [];
@@ -72,6 +74,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.mint_info = this.route.snapshot.data['mint_info'];
 		this.mint_balances = this.route.snapshot.data['mint_balances'];
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
+		this.lightning_balance = this.route.snapshot.data['lightning_balance'];
 		this.initMintConnections();
 		this.orchardOptionalInit();
 		await this.initMintAnalytics();

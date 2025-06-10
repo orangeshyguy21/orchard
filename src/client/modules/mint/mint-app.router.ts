@@ -4,9 +4,10 @@ import { RouterModule, Router, Routes, ResolveFn, ActivatedRouteSnapshot, Router
 /* Vendor Dependencies */
 import { catchError, of } from 'rxjs';
 /* Application Dependencies */
-import { errorResolveGuard } from '../error/guards/error-resolve.guard';
-import { ErrorService } from '../error/services/error.service';
-import { pendingEventGuard } from '../event/guards/pending-event.guard';
+import { errorResolveGuard } from '@client/modules/error/guards/error-resolve.guard';
+import { ErrorService } from '@client/modules/error/services/error.service';
+import { pendingEventGuard } from '@client/modules/event/guards/pending-event.guard';
+import { LightningService } from '@client/modules/lightning/services/lightning/lightning.service';
 /* Native Dependencies */
 import { MintSectionComponent } from './components/mint-section/mint-section.component';
 import { MintSubsectionErrorComponent } from './components/mint-subsection-error/mint-subsection-error.component';
@@ -84,6 +85,19 @@ const mintQuoteTtlsResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, st
 	);
 };
 
+const lightningBalanceResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+	const lightningService = inject(LightningService);
+	const router = inject(Router);
+	const errorService = inject(ErrorService);
+	return lightningService.loadLightningBalance().pipe(
+		catchError(error => {
+			errorService.resolve_errors.push(error);
+			router.navigate(['mint', 'error'], { state: { error, target: state.url } });
+            return of([]);
+		})
+	);
+};
+
 const routes: Routes = [
 	{
 		path: '',
@@ -100,6 +114,7 @@ const routes: Routes = [
 					mint_info: mintInfoResolver,
 					mint_balances: mintBalancesResolver,
 					mint_keysets: mintKeysetsResolver,
+					lightning_balance: lightningBalanceResolver,
 				},
 				data: {
 					section: 'mint',

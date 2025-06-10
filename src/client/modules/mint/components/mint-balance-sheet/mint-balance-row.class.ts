@@ -22,20 +22,13 @@ export class MintBalanceRow {
         return `${formatted_ratio} : 1`;
     }
 
-    constructor(balance: MintBalance | undefined, keyset: MintKeyset) {
+    constructor(balance: MintBalance | undefined, assets: number, keyset: MintKeyset) {
         this.unit = keyset.unit;
         this.liabilities = balance?.balance ?? 0;
         this.fee = keyset.input_fee_ppk;
         this.active = keyset.active;
-        this.assets = this.tempSetAssets();
+        this.assets = assets;
         this.derivation_path_index = keyset.derivation_path_index;
         this.first_seen = keyset.valid_from;
-    }
-
-    private tempSetAssets(): number {
-        if(this.unit === 'sat') return 2100000;
-        if(this.unit === 'usd') return 2500;
-        if(this.unit === 'eur') return 1925;
-        return 550000;
     }
 }
