@@ -5,6 +5,11 @@ import { Module } from "@nestjs/common";
 import { StatusModule } from "./status/status.module";
 // Bitcoin Endpoints
 import { BitcoinBlockCountModule } from "./bitcoin/blockcount/btcblockcount.module";
+// Lightning Endpoints
+import { LightningInfoModule } from "./lightning/info/lninfo.module";
+import { LightningBalanceModule } from "./lightning/balance/lnbalance.module";
+// Taproot Assets Endpoints
+import { TaprootAssetsInfoModule } from "./tapass/info/tapinfo.module";
 // Cashu Mint Endpoints
 import { MintInfoModule } from "./mint/info/mintinfo.module";
 import { MintBalanceModule } from "./mint/balance/mintbalance.module";
@@ -28,6 +33,9 @@ import { PublicUrlModule } from "./public/url/url.module";
 	imports: [
 		StatusModule,
 		BitcoinBlockCountModule,
+		LightningInfoModule,
+		LightningBalanceModule,
+		TaprootAssetsInfoModule,
 		MintInfoModule,
 		MintBalanceModule,
 		MintKeysetModule,

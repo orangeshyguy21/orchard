@@ -1,5 +1,7 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, Component, Input, OnChanges } from '@angular/core';
+/* Application Dependencies */
+import { LightningBalance } from '@client/modules/lightning/classes/lightning-balance.class';
 /* Native Module Dependencies */
 import { MintBalance } from '@client/modules/mint/classes/mint-balance.class';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
@@ -17,6 +19,7 @@ export class MintBalanceSheetComponent implements OnChanges {
 
 	@Input() balances!: MintBalance[];
 	@Input() keysets!: MintKeyset[];
+	@Input() lightning_balance!: LightningBalance | null;
 	@Input() loading!: boolean;
 
 	public rows: MintBalanceRow[] = [];
@@ -32,13 +35,21 @@ export class MintBalanceSheetComponent implements OnChanges {
 		this.rows = this.getRows();
 	}
 
+	private getAssetBalances(): number {
+		if( this.lightning_balance ) {
+			return this.lightning_balance.local_balance.sat;
+		}
+		return 0;
+	}
+
 	private getRows(): MintBalanceRow[] {
 		const rows_by_unit: Record<string, MintBalanceRow> = {};
 
 		this.keysets
 			.map( keyset => {
-				const balance = this.balances.find( balance => balance.keyset === keyset.id);
-				return new MintBalanceRow(balance, keyset);
+				const liability_balance = this.balances.find( balance => balance.keyset === keyset.id);
+				const asset_balance = this.getAssetBalances();
+				return new MintBalanceRow(liability_balance, asset_balance, keyset);
 			})
 			.filter(row => row !== null)
 			.sort((a, b) => b.first_seen - a.first_seen)

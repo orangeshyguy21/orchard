@@ -153,9 +153,9 @@ export class CdkService {
 	}
 
 	public async getMintKeysets(db:sqlite3.Database) : Promise<CashuMintKeyset[]> {
-		const sql = 'SELECT * FROM keyset;';
+		const sql = 'SELECT * FROM keyset WHERE unit != ?;';
 		return new Promise((resolve, reject) => {
-			db.all(sql, (err, rows:CashuMintKeyset[]) => {
+			db.all(sql, ['auth'], (err, rows:CashuMintKeyset[]) => {
 				if (err) return reject(err);
 				resolve(rows);
 			});

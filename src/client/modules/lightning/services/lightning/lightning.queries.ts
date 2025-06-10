@@ -1,0 +1,57 @@
+export const LIGHTNING_INFO_QUERY = `{
+    lightning_info{
+        alias
+        best_header_timestamp
+        block_hash
+        block_height
+        color
+        commit_hash
+        identity_pubkey
+        num_active_channels
+        num_inactive_channels
+        num_peers
+        num_pending_channels
+        require_htlc_interceptor
+        store_final_htlc_resolutions
+        synced_to_chain
+        chains{
+            chain
+            network
+        }
+        features{
+            bit
+            is_known
+            is_required
+            name
+        }
+    }
+}`
+
+export const LIGHTNING_BALANCE_QUERY = `{
+    lightning_balance{
+        local_balance{
+            sat
+            msat
+        }
+        remote_balance{
+            sat
+            msat
+        }
+        custom_channel_data{
+            open_channels{
+                chan_id
+                asset_id
+                name
+                local_balance
+                remote_balance
+            }
+            pending_channels{
+                chan_id
+                asset_id
+                name
+                local_balance
+                remote_balance
+            }
+        }
+    }
+}`

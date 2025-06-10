@@ -10,13 +10,28 @@ export type Config = {
 		log: string;
 	},
 	bitcoin : {
+		type : string;
 		host : string;
 		port : string;
 		user : string;
 		pass : string;
 	},
+	lightning: {
+		type: string;
+		host: string;
+		port: string;
+		macaroon: string;
+		cert: string;
+	},
+	taproot_assets: {
+		type: string;
+		host: string;
+		port: string;
+		macaroon: string;
+		cert: string;
+	},
 	cashu : {
-		backend : string;
+		type : string;
 		api: string;
 		database : string;
 		rpc_host : string;

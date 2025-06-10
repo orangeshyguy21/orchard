@@ -16,14 +16,31 @@ export const config = (): Config => {
 	};
 
 	const bitcoin = {
-		host : process.env.BITCOIN_RPC_HOST || 'http://localhost',
-		port : process.env.BITCOIN_RPC_PORT || '8332',
+		type : process.env.BITCOIN_TYPE,
+		host : process.env.BITCOIN_RPC_HOST,
+		port : process.env.BITCOIN_RPC_PORT,
 		user : process.env.BITCOIN_RPC_USER,
 		pass : process.env.BITCOIN_RPC_PASSWORD,
 	};
 
+	const lightning = {
+		type : process.env.LIGHTNING_TYPE,
+		host : process.env.LIGHTNING_RPC_HOST,
+		port : process.env.LIGHTNING_RPC_PORT,
+		macaroon : process.env.LIGHTNING_MACAROON,
+		cert : process.env.LIGHTNING_CERT,
+	};
+
+	const taproot_assets = {
+		type : process.env.TAPROOT_ASSETS_TYPE,
+		host : process.env.TAPROOT_ASSETS_RPC_HOST,
+		port : process.env.TAPROOT_ASSETS_RPC_PORT,
+		macaroon : process.env.TAPROOT_ASSETS_MACAROON,
+		cert : process.env.TAPROOT_ASSETS_CERT,
+	};
+
 	const cashu = {
-		backend : process.env.MINT_BACKEND,
+		type : process.env.MINT_TYPE,
 		api : process.env.MINT_API,
 		database : process.env.MINT_DATABASE,
 		rpc_host : process.env.MINT_RPC_HOST,
@@ -41,6 +58,8 @@ export const config = (): Config => {
 		mode,
 		server,
 		bitcoin,
+		lightning,
+		taproot_assets,
 		cashu,
 		ai,
 	};

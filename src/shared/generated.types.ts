@@ -12,6 +12,8 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  /** Base64 encoded string scalar type */
+  Base64: { input: any; output: any; }
   /** Timezone custom scalar type based on IANA timezone database */
   Timezone: { input: any; output: any; }
   /** A Unix timestamp in seconds */
@@ -211,7 +213,7 @@ export type MutationMint_Contact_RemoveArgs = {
 
 
 export type MutationMint_Database_RestoreArgs = {
-  filebase64: Scalars['String']['input'];
+  filebase64: Scalars['Base64']['input'];
 };
 
 
@@ -350,6 +352,78 @@ export type OrchardContact = {
   method: Scalars['String']['output'];
 };
 
+export type OrchardCustomChannel = {
+  __typename?: 'OrchardCustomChannel';
+  asset_id: Scalars['String']['output'];
+  chan_id: Scalars['String']['output'];
+  local_balance: Scalars['Float']['output'];
+  name: Scalars['String']['output'];
+  remote_balance: Scalars['Float']['output'];
+};
+
+export type OrchardCustomChannelData = {
+  __typename?: 'OrchardCustomChannelData';
+  open_channels: Array<OrchardCustomChannel>;
+  pending_channels: Array<OrchardCustomChannel>;
+};
+
+export type OrchardLightningBalance = {
+  __typename?: 'OrchardLightningBalance';
+  balance: Scalars['Float']['output'];
+  custom_channel_data: OrchardCustomChannelData;
+  local_balance: OrchardLightningBalanceAmount;
+  pending_open_balance: Scalars['Float']['output'];
+  pending_open_local_balance: OrchardLightningBalanceAmount;
+  pending_open_remote_balance: OrchardLightningBalanceAmount;
+  remote_balance: OrchardLightningBalanceAmount;
+  unsettled_local_balance: OrchardLightningBalanceAmount;
+  unsettled_remote_balance: OrchardLightningBalanceAmount;
+};
+
+export type OrchardLightningBalanceAmount = {
+  __typename?: 'OrchardLightningBalanceAmount';
+  msat: Scalars['Float']['output'];
+  sat: Scalars['Float']['output'];
+};
+
+export type OrchardLightningChain = {
+  __typename?: 'OrchardLightningChain';
+  chain: Scalars['String']['output'];
+  network: Scalars['String']['output'];
+};
+
+export type OrchardLightningFeature = {
+  __typename?: 'OrchardLightningFeature';
+  bit: Scalars['Int']['output'];
+  is_known: Scalars['Boolean']['output'];
+  is_required: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type OrchardLightningInfo = {
+  __typename?: 'OrchardLightningInfo';
+  alias: Scalars['String']['output'];
+  best_header_timestamp: Scalars['UnixTimestamp']['output'];
+  block_hash: Scalars['String']['output'];
+  block_height: Scalars['Int']['output'];
+  chains: Array<OrchardLightningChain>;
+  color: Scalars['String']['output'];
+  commit_hash: Scalars['String']['output'];
+  features: Array<OrchardLightningFeature>;
+  identity_pubkey: Scalars['String']['output'];
+  num_active_channels: Scalars['Int']['output'];
+  num_inactive_channels: Scalars['Int']['output'];
+  num_peers: Scalars['Int']['output'];
+  num_pending_channels: Scalars['Int']['output'];
+  require_htlc_interceptor: Scalars['Boolean']['output'];
+  store_final_htlc_resolutions: Scalars['Boolean']['output'];
+  synced_to_chain: Scalars['Boolean']['output'];
+  synced_to_graph: Scalars['Boolean']['output'];
+  testnet: Scalars['Boolean']['output'];
+  uris: Array<Scalars['String']['output']>;
+  version: Scalars['String']['output'];
+};
+
 export type OrchardMintAnalytics = {
   __typename?: 'OrchardMintAnalytics';
   amount: Scalars['Int']['output'];
@@ -377,7 +451,7 @@ export type OrchardMintCount = {
 
 export type OrchardMintDatabaseBackup = {
   __typename?: 'OrchardMintDatabaseBackup';
-  filebase64: Scalars['String']['output'];
+  filebase64: Scalars['Base64']['output'];
 };
 
 export type OrchardMintDatabaseRestore = {
@@ -645,10 +719,24 @@ export type OrchardStatus = {
   title: Scalars['String']['output'];
 };
 
+export type OrchardTaprootAssetsInfo = {
+  __typename?: 'OrchardTaprootAssetsInfo';
+  block_hash: Scalars['String']['output'];
+  block_height: Scalars['Int']['output'];
+  lnd_identity_pubkey: Scalars['String']['output'];
+  lnd_version: Scalars['String']['output'];
+  network: Scalars['String']['output'];
+  node_alias: Scalars['String']['output'];
+  sync_to_chain: Scalars['Boolean']['output'];
+  version: Scalars['String']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
   ai_models: Array<OrchardAiModel>;
   bitcoin_blockcount: OrchardBitcoinBlockCount;
+  lightning_balance: OrchardLightningBalance;
+  lightning_info: OrchardLightningInfo;
   mint_analytics_balances: Array<OrchardMintAnalytics>;
   mint_analytics_keysets: Array<OrchardMintKeysetsAnalytics>;
   mint_analytics_melts: Array<OrchardMintAnalytics>;
@@ -672,6 +760,7 @@ export type Query = {
   public_image: OrchardPublicImage;
   public_urls: Array<OrchardPublicUrl>;
   status: OrchardStatus;
+  taproot_assets_info: OrchardTaprootAssetsInfo;
 };
 
 

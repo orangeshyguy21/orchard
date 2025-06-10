@@ -6,6 +6,11 @@ import { Logger, ConsoleLogger, LogLevel, INestApplication } from '@nestjs/commo
 import * as express from 'express';
 /* Application */
 import { AppModule } from './app.module';
+import { BitcoinType } from './modules/bitcoin/bitcoin.enums';
+import { LightningType } from './modules/lightning/lightning.enums';
+import { TaprootAssetType } from './modules/tapass/tapass.enums';
+import { MintType } from './modules/cashu/cashu.enums';
+
 
 const log_levels: Record<string, LogLevel[]> = {
 	'verbose': ['log', 'fatal', 'error', 'warn', 'debug', 'verbose'],
@@ -37,11 +42,22 @@ async function bootstrap() {
 }
 
 function validation(app: INestApplication, configService: ConfigService, logger: Logger) : void {
-	// validate MINT_BACKEND
-	const mint_backend = configService.get<string>('cashu.backend');
-	if( !mint_backend ) shutdown(app, logger, 'MINT_BACKEND not configured');
-	const valid_backends = ['nutshell', 'cdk'];
-	if( !valid_backends.includes(mint_backend) ) shutdown(app, logger, `Invalid MINT_BACKEND: ${mint_backend}`);
+	// validate BITCOIN_TYPE
+	const bitcoin_type = configService.get<BitcoinType>('bitcoin.type');
+	if( !bitcoin_type ) shutdown(app, logger, 'BITCOIN_TYPE not configured');
+	if( !Object.values(BitcoinType).includes(bitcoin_type) ) shutdown(app, logger, `Invalid BITCOIN_TYPE: ${bitcoin_type}`);
+	// validate LIGHTNING_TYPE
+	const lightning_type = configService.get<LightningType>('lightning.type');
+	if( !lightning_type ) shutdown(app, logger, 'LIGHTNING_TYPE not configured');
+	if( !Object.values(LightningType).includes(lightning_type) ) shutdown(app, logger, `Invalid LIGHTNING_TYPE: ${lightning_type}`);
+	// validate TAPROOT_ASSET_TYPE
+	const taproot_asset_type = configService.get<TaprootAssetType>('taproot_assets.type');
+	if( !taproot_asset_type ) shutdown(app, logger, 'TAPROOT_ASSET_TYPE not configured');
+	if( !Object.values(TaprootAssetType).includes(taproot_asset_type) ) shutdown(app, logger, `Invalid TAPROOT_ASSET_TYPE: ${taproot_asset_type}`);
+	// validate MINT_TYPE
+	const mint_type = configService.get<MintType>('cashu.type');
+	if( !mint_type ) shutdown(app, logger, 'MINT_TYPE not configured');
+	if( !Object.values(MintType).includes(mint_type) ) shutdown(app, logger, `Invalid MINT_TYPE: ${mint_type}`);
 	// validate MINT_DATABASE
 	const mint_database = configService.get<string>('cashu.database');
 	if( !mint_database ) shutdown(app, logger, 'MINT_DATABASE not configured');

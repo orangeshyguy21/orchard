@@ -2,18 +2,20 @@
 import { Module } from '@nestjs/common';
 /* Application Dependencies */
 import { FetchModule } from '@server/modules/fetch/fetch.module';
+import { LndModule } from '@server/modules/lightning/lnd/lnd.module';
 /* Local Dependencies */
-import { BitcoinService } from './bitcoin.service';
+import { LightningService } from './lightning.service';
 
 @Module({
 	imports: [
-        FetchModule,
-    ],
+		FetchModule,
+		LndModule,
+	],
 	providers: [
-        BitcoinService,
-    ],
+		LightningService,
+	],
 	exports: [
-        BitcoinService,
-    ],
+		LightningService
+	],
 })
-export class BitcoinModule {}
+export class LightningModule {}

@@ -70,9 +70,9 @@ export class NutshellService {
 	}
 
 	public async getMintKeysets(db:sqlite3.Database) : Promise<CashuMintKeyset[]> {
-		const sql = 'SELECT * FROM keysets;';
+		const sql = 'SELECT * FROM keysets WHERE unit != ?;';
 		return new Promise((resolve, reject) => {
-			db.all(sql, (err, rows:CashuMintKeyset[]) => {
+			db.all(sql, ['auth'], (err, rows:CashuMintKeyset[]) => {
 				if (err) return reject(err);
 				rows.forEach(row => {
 					const match = row.derivation_path?.match(/\/(\d+)'?$/);
