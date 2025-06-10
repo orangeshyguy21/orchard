@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 /* Application Dependencies */
 import { CdkService } from '@server/modules/cashu/cdk/cdk.service';
 import { OrchardErrorCode } from '@server/modules/error/error.types';
+import { MintType } from '@server/modules/cashu/cashu.enums';
 /* Local Dependencies */
 import { CashuMintInfoRpc } from './cashumintrpc.types';
 
@@ -12,7 +13,7 @@ export class CashuMintRpcService implements OnModuleInit {
 
     private readonly logger = new Logger(CashuMintRpcService.name);
     private grpc_client: any = null;
-    private backend: 'cdk' | 'nutshell';
+    private type: MintType;
 
     constructor(
         private configService: ConfigService,
@@ -20,13 +21,13 @@ export class CashuMintRpcService implements OnModuleInit {
     ) {}
 
     public async onModuleInit() {
-		this.backend = this.configService.get('cashu.backend');
+		this.type = this.configService.get('cashu.type');
         this.initializeGrpcClient();
 	}
     
     private initializeGrpcClient() {
-        if( this.backend === 'nutshell' ) this.logger.warn('Nutshell backend does not support gRPC');
-        if( this.backend === 'cdk' ) this.grpc_client = this.cdkService.initializeGrpcClient();
+        if( this.type === 'nutshell' ) this.logger.warn('Nutshell backend does not support gRPC');
+        if( this.type === 'cdk' ) this.grpc_client = this.cdkService.initializeGrpcClient();
     }
 
     private makeGrpcRequest(method: string, request: any): Promise<any> {
@@ -35,6 +36,7 @@ export class CashuMintRpcService implements OnModuleInit {
         return new Promise((resolve, reject) => {
             if (!(method in this.grpc_client)) reject(OrchardErrorCode.MintSupportError);
             this.grpc_client[method](request, (error: Error | null, response: any) => {
+                console.log(error);
                 if (error && error?.message?.includes('14 UNAVAILABLE')) reject(OrchardErrorCode.MintRpcConnectionError);
                 if (error) reject(error);
                 resolve(response);

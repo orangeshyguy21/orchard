@@ -2,14 +2,14 @@
 import { Module } from "@nestjs/common";
 /* Application Dependencies */
 import { ErrorModule } from "@server/modules/error/error.module";
-import { LightningRpcModule } from "@server/modules/lightning/rpc/lnrpc.module";
+import { LightningModule } from "@server/modules/lightning/lightning/lightning.module";
 /* Local Dependencies */
 import { LightningBalanceService } from './lnbalance.service';
 import { LightningBalanceResolver } from './lnbalance.resolver';
 
 @Module({
 	imports: [
-		LightningRpcModule,
+		LightningModule,
 		ErrorModule,
 	],
 	providers: [

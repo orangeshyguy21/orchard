@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import { Field, ObjectType, Float } from '@nestjs/graphql';
 /* Application Dependencies */
-import { LightningChannelBalance } from '@server/modules/lightning/rpc/lnrpc.types';
+import { LightningChannelBalance } from '@server/modules/lightning/lightning/lightning.types';
 import { Base64 } from '@server/modules/graphql/scalars/base64.scalar';
 
 @ObjectType()

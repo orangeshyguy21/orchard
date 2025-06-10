@@ -2,7 +2,7 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 /* Application Dependencies */
 import { UnixTimestamp } from '@server/modules/graphql/scalars/unixtimestamp.scalar';
-import { LightningInfo } from '@server/modules/lightning/rpc/lnrpc.types';
+import { LightningInfo } from '@server/modules/lightning/lightning/lightning.types';
 
 @ObjectType()
 export class OrchardLightningInfo {

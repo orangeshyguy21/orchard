@@ -6,12 +6,12 @@ import { OrchardErrorCode } from '@server/modules/error/error.types';
 import { LightningType } from '@server/modules/lightning/lightning.enums';
 import { LndService } from '@server/modules/lightning/lnd/lnd.service';
 /* Local Dependencies */
-import { LightningInfo, LightningChannelBalance } from './lnrpc.types';
+import { LightningInfo, LightningChannelBalance } from './lightning.types';
 
 @Injectable()
-export class LightningRpcService implements OnModuleInit {
+export class LightningService implements OnModuleInit {
 
-    private readonly logger = new Logger(LightningRpcService.name);
+    private readonly logger = new Logger(LightningService.name);
     
     private grpc_client: any = null;
     private type: LightningType;
@@ -23,12 +23,12 @@ export class LightningRpcService implements OnModuleInit {
 
     public async onModuleInit() {
 		this.type = this.configService.get('lightning.type');
-        this.initializeGrpcClient();
+        this.initializeGrpcClients();
 	}
 
         
-    private initializeGrpcClient() {
-        if( this.type === 'lnd' ) this.grpc_client = this.lndService.initializeGrpcClient();
+    private initializeGrpcClients() {
+        if( this.type === 'lnd' ) this.grpc_client = this.lndService.initializeLightningClient();
     }
 
     private makeGrpcRequest(method: string, request: any): Promise<any> {
@@ -54,4 +54,7 @@ export class LightningRpcService implements OnModuleInit {
         return this.makeGrpcRequest('ChannelBalance', {});
     }
 
+    async getLightningChannels() : Promise<any> {
+        return this.makeGrpcRequest('ListChannels', {});
+    }
 }
