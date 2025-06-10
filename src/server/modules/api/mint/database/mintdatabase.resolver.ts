@@ -1,6 +1,8 @@
 /* Core Dependencies */
 import { Logger } from '@nestjs/common';
-import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
+import { Resolver, Mutation, Args } from "@nestjs/graphql";
+/* Application Dependencies */
+import { Base64 } from '@server/modules/graphql/scalars/base64.scalar';
 /* Local Dependencies */
 import { MintDatabaseService } from "./mintdatabase.service";
 import { OrchardMintDatabaseBackup, OrchardMintDatabaseRestore } from "./mintdatabase.model";
@@ -23,7 +25,7 @@ export class MintDatabaseResolver {
 
 	@Mutation(() => OrchardMintDatabaseRestore)
 	async mint_database_restore(
-		@Args('filebase64') filebase64: string,
+		@Args('filebase64', { type: () => Base64 }) filebase64: string,
 	) : Promise<OrchardMintDatabaseRestore> {
 		const tag = 'POST { mint_database_restore }';
 		this.logger.debug(tag);

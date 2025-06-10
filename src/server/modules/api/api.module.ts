@@ -7,6 +7,7 @@ import { StatusModule } from "./status/status.module";
 import { BitcoinBlockCountModule } from "./bitcoin/blockcount/btcblockcount.module";
 // Lightning Endpoints
 import { LightningInfoModule } from "./lightning/info/lninfo.module";
+import { LightningBalanceModule } from "./lightning/balance/lnbalance.module";
 // Cashu Mint Endpoints
 import { MintInfoModule } from "./mint/info/mintinfo.module";
 import { MintBalanceModule } from "./mint/balance/mintbalance.module";
@@ -31,6 +32,7 @@ import { PublicUrlModule } from "./public/url/url.module";
 		StatusModule,
 		BitcoinBlockCountModule,
 		LightningInfoModule,
+		LightningBalanceModule,
 		MintInfoModule,
 		MintBalanceModule,
 		MintKeysetModule,

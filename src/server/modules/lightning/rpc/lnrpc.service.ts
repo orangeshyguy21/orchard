@@ -6,7 +6,7 @@ import { OrchardErrorCode } from '@server/modules/error/error.types';
 import { LightningType } from '@server/modules/lightning/lightning.enums';
 import { LndService } from '@server/modules/lightning/lnd/lnd.service';
 /* Local Dependencies */
-import { LightningInfo } from './lnrpc.types';
+import { LightningInfo, LightningChannelBalance } from './lnrpc.types';
 
 @Injectable()
 export class LightningRpcService implements OnModuleInit {
@@ -48,6 +48,10 @@ export class LightningRpcService implements OnModuleInit {
     
     async getLightningInfo() : Promise<LightningInfo> {
         return this.makeGrpcRequest('GetInfo', {});
+    }
+
+    async getLightningChannelBalance() : Promise<LightningChannelBalance> {
+        return this.makeGrpcRequest('ChannelBalance', {});
     }
 
 }

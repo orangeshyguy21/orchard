@@ -66,6 +66,9 @@ enum AiMessageRole {
   USER
 }
 
+"""Base64 encoded string scalar type"""
+scalar Base64
+
 enum MeltQuoteState {
   PAID
   PENDING
@@ -162,7 +165,7 @@ type Mutation {
   mint_contact_add(mint_contact_update: MintContactUpdateInput!): OrchardMintContactUpdate!
   mint_contact_remove(mint_contact_update: MintContactUpdateInput!): OrchardMintContactUpdate!
   mint_database_backup: OrchardMintDatabaseBackup!
-  mint_database_restore(filebase64: String!): OrchardMintDatabaseRestore!
+  mint_database_restore(filebase64: Base64!): OrchardMintDatabaseRestore!
   mint_icon_update(mint_icon_update: MintIconUpdateInput!): OrchardMintIconUpdate!
   mint_long_description_update(mint_desc_update: MintDescriptionUpdateInput!): OrchardMintDescriptionUpdate!
   mint_motd_update(mint_motd_update: MintMotdUpdateInput!): OrchardMintMotdUpdate!
@@ -243,6 +246,23 @@ type OrchardContact {
   method: String!
 }
 
+type OrchardLightningBalance {
+  balance: Float!
+  custom_channel_data: Base64!
+  local_balance: OrchardLightningBalanceAmount!
+  pending_open_balance: Float!
+  pending_open_local_balance: OrchardLightningBalanceAmount!
+  pending_open_remote_balance: OrchardLightningBalanceAmount!
+  remote_balance: OrchardLightningBalanceAmount!
+  unsettled_local_balance: OrchardLightningBalanceAmount!
+  unsettled_remote_balance: OrchardLightningBalanceAmount!
+}
+
+type OrchardLightningBalanceAmount {
+  msat: Float!
+  sat: Float!
+}
+
 type OrchardLightningChain {
   chain: String!
   network: String!
@@ -300,7 +320,7 @@ type OrchardMintCount {
 }
 
 type OrchardMintDatabaseBackup {
-  filebase64: String!
+  filebase64: Base64!
 }
 
 type OrchardMintDatabaseRestore {
@@ -538,6 +558,7 @@ type OrchardStatus {
 type Query {
   ai_models: [OrchardAiModel!]!
   bitcoin_blockcount: OrchardBitcoinBlockCount!
+  lightning_balance: OrchardLightningBalance!
   lightning_info: OrchardLightningInfo!
   mint_analytics_balances(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
   mint_analytics_keysets(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone): [OrchardMintKeysetsAnalytics!]!

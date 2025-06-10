@@ -10,6 +10,7 @@ import { WebserverModule } from './modules/webserver/webserver.module';
 /* Custom Graphql Type Definitions */
 import { UnixTimestamp } from './modules/graphql/scalars/unixtimestamp.scalar';
 import { Timezone } from './modules/graphql/scalars/timezone.scalar';
+import { Base64 } from './modules/graphql/scalars/base64.scalar';
 import { MintAnalyticsInterval } from './modules/cashu/mintdb/cashumintdb.enums';
 import { MintUnit, MintQuoteState, MeltQuoteState, MintProofState } from './modules/cashu/cashu.enums';
 import { AiAgent, AiMessageRole, AiFunctionName } from './modules/ai/ai.enums';
@@ -36,6 +37,7 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 		resolvers: { 
 			UnixTimestamp: UnixTimestamp,
 			Timezone: Timezone,
+			Base64: Base64,
 		},
 	}
 }

@@ -20,3 +20,15 @@ export type LightningInfo = {
     store_final_htlc_resolutions: boolean;
     features: { [key: string]: { name: string, is_required: boolean, is_known: boolean } };
 }
+
+export type LightningChannelBalance = {
+    balance: string;
+    pending_open_balance: string;
+    local_balance: { sat: string, msat: string };
+    remote_balance: { sat: string, msat: string };
+    unsettled_local_balance: { sat: string, msat: string };
+    unsettled_remote_balance: { sat: string, msat: string };
+    pending_open_local_balance: { sat: string, msat: string };
+    pending_open_remote_balance: { sat: string, msat: string };
+    custom_channel_data: Buffer;
+}
