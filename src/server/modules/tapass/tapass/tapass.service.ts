@@ -6,7 +6,7 @@ import { OrchardErrorCode } from '@server/modules/error/error.types';
 import { TaprootAssetType } from '@server/modules/tapass/tapass.enums';
 import { TapdService } from '@server/modules/tapass/tapd/tapd.service';
 /* Local Dependencies */
-// import { LightningInfo, LightningChannelBalance } from './lightning.types';
+import { TaprootAssetsInfo } from './tapass.types';
 
 @Injectable()
 export class TaprootAssetsService implements OnModuleInit {
@@ -22,7 +22,7 @@ export class TaprootAssetsService implements OnModuleInit {
     ) {}
 
     public async onModuleInit() {
-		this.type = this.configService.get('taproot_asset.type');
+		this.type = this.configService.get('taproot_assets.type');
         this.initializeGrpcClients();
 	}
         
@@ -45,7 +45,15 @@ export class TaprootAssetsService implements OnModuleInit {
         });
     }
 
-    async getTaprootAssetsBalance() : Promise<any> {
-        return this.makeGrpcRequest('ListBalances', {});
+    // async getTaprootAssetsInfo() : Promise<TaprootAssetsInfo> {   
+    //     return this.makeGrpcRequest('GetInfo', {});
+    // }
+
+    async getTaprootAssetsInfo() : Promise<TaprootAssetsInfo> {   
+        return this.makeGrpcRequest('ListAssets', {});
     }
+
+    // async getTaprootAssetsBalance() : Promise<any> {
+    //     return this.makeGrpcRequest('ListBalances', {});
+    // }
 }

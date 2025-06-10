@@ -555,6 +555,17 @@ type OrchardStatus {
   title: String!
 }
 
+type OrchardTaprootAssetsInfo {
+  block_hash: String!
+  block_height: Int!
+  lnd_identity_pubkey: String!
+  lnd_version: String!
+  network: String!
+  node_alias: String!
+  sync_to_chain: Boolean!
+  version: String!
+}
+
 type Query {
   ai_models: [OrchardAiModel!]!
   bitcoin_blockcount: OrchardBitcoinBlockCount!
@@ -583,6 +594,7 @@ type Query {
   public_image(url: String!): OrchardPublicImage!
   public_urls(urls: [String!]!): [OrchardPublicUrl!]!
   status: OrchardStatus!
+  taproot_assets_info: OrchardTaprootAssetsInfo!
 }
 
 type Subscription {

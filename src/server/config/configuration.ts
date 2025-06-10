@@ -32,11 +32,11 @@ export const config = (): Config => {
 	};
 
 	const taproot_assets = {
-		type : process.env.TAPROOT_ASSET_TYPE,
-		host : process.env.TAPROOT_ASSET_RPC_HOST,
-		port : process.env.TAPROOT_ASSET_RPC_PORT,
-		macaroon : process.env.TAPROOT_ASSET_MACAROON,
-		cert : process.env.TAPROOT_ASSET_CERT,
+		type : process.env.TAPROOT_ASSETS_TYPE,
+		host : process.env.TAPROOT_ASSETS_RPC_HOST,
+		port : process.env.TAPROOT_ASSETS_RPC_PORT,
+		macaroon : process.env.TAPROOT_ASSETS_MACAROON,
+		cert : process.env.TAPROOT_ASSETS_CERT,
 	};
 
 	const cashu = {

@@ -8,6 +8,8 @@ import { BitcoinBlockCountModule } from "./bitcoin/blockcount/btcblockcount.modu
 // Lightning Endpoints
 import { LightningInfoModule } from "./lightning/info/lninfo.module";
 import { LightningBalanceModule } from "./lightning/balance/lnbalance.module";
+// Taproot Assets Endpoints
+import { TaprootAssetsInfoModule } from "./tapass/info/tapinfo.module";
 // Cashu Mint Endpoints
 import { MintInfoModule } from "./mint/info/mintinfo.module";
 import { MintBalanceModule } from "./mint/balance/mintbalance.module";
@@ -33,6 +35,7 @@ import { PublicUrlModule } from "./public/url/url.module";
 		BitcoinBlockCountModule,
 		LightningInfoModule,
 		LightningBalanceModule,
+		TaprootAssetsInfoModule,
 		MintInfoModule,
 		MintBalanceModule,
 		MintKeysetModule,
