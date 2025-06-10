@@ -3,17 +3,17 @@ import { Module } from '@nestjs/common';
 /* Application Dependencies */
 import { FetchModule } from '@server/modules/fetch/fetch.module';
 /* Local Dependencies */
-import { BitcoinService } from './bitcoin.service';
+import { CoreService } from './core.service';
 
 @Module({
 	imports: [
         FetchModule,
     ],
 	providers: [
-        BitcoinService,
+        CoreService,
     ],
 	exports: [
-        BitcoinService,
+        CoreService,
     ],
 })
-export class BitcoinModule {}
+export class CoreModule {}

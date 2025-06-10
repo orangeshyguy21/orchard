@@ -2,7 +2,7 @@
 import { Module } from "@nestjs/common";
 /* Application Dependencies */
 import { ErrorModule } from "@server/modules/error/error.module";
-import { BitcoinModule } from "@server/modules/bitcoin/bitcoin.module";
+import { BitcoinRpcModule } from "@server/modules/bitcoin/rpc/btcrpc.module";
 /* Internal Dependencies */
 import { BitcoinBlockCountResolver } from "./btcblockcount.resolver";
 import { BitcoinBlockCountService } from "./btcblockcount.service";
@@ -10,7 +10,7 @@ import { BitcoinBlockCountService } from "./btcblockcount.service";
 @Module({
 	imports: [
 		ErrorModule,
-		BitcoinModule,
+		BitcoinRpcModule,
 	],
 	providers: [
 		BitcoinBlockCountResolver,

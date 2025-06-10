@@ -243,14 +243,27 @@ type OrchardContact {
   method: String!
 }
 
+type OrchardLightningChain {
+  chain: String!
+  network: String!
+}
+
+type OrchardLightningFeature {
+  bit: Int!
+  is_known: Boolean!
+  is_required: Boolean!
+  name: String!
+}
+
 type OrchardLightningInfo {
   alias: String!
   best_header_timestamp: UnixTimestamp!
   block_hash: String!
   block_height: Int!
-  chains: [String!]!
+  chains: [OrchardLightningChain!]!
   color: String!
   commit_hash: String!
+  features: [OrchardLightningFeature!]!
   identity_pubkey: String!
   num_active_channels: Int!
   num_inactive_channels: Int!

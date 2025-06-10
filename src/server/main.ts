@@ -6,6 +6,7 @@ import { Logger, ConsoleLogger, LogLevel, INestApplication } from '@nestjs/commo
 import * as express from 'express';
 /* Application */
 import { AppModule } from './app.module';
+import { BitcoinType } from './modules/bitcoin/bitcoin.enums';
 import { LightningType } from './modules/lightning/lightning.enums';
 import { MintType } from './modules/cashu/cashu.enums';
 
@@ -40,6 +41,10 @@ async function bootstrap() {
 }
 
 function validation(app: INestApplication, configService: ConfigService, logger: Logger) : void {
+	// validate BITCOIN_TYPE
+	const bitcoin_type = configService.get<BitcoinType>('bitcoin.type');
+	if( !bitcoin_type ) shutdown(app, logger, 'BITCOIN_TYPE not configured');
+	if( !Object.values(BitcoinType).includes(bitcoin_type) ) shutdown(app, logger, `Invalid BITCOIN_TYPE: ${bitcoin_type}`);
 	// validate LIGHTNING_TYPE
 	const lightning_type = configService.get<LightningType>('lightning.type');
 	if( !lightning_type ) shutdown(app, logger, 'LIGHTNING_TYPE not configured');

@@ -14,8 +14,9 @@ export type LightningInfo = {
     synced_to_chain: boolean;
     synced_to_graph: boolean;
     testnet: boolean;
-    chains: string[];
+    chains: { chain: string, network: string }[];
     uris: string[];
     require_htlc_interceptor: boolean;
     store_final_htlc_resolutions: boolean;
+    features: { [key: string]: { name: string, is_required: boolean, is_known: boolean } };
 }

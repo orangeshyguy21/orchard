@@ -16,6 +16,7 @@ export const config = (): Config => {
 	};
 
 	const bitcoin = {
+		type : process.env.BITCOIN_TYPE,
 		host : process.env.BITCOIN_RPC_HOST,
 		port : process.env.BITCOIN_RPC_PORT,
 		user : process.env.BITCOIN_RPC_USER,

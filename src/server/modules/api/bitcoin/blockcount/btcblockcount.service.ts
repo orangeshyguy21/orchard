@@ -3,7 +3,7 @@ import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 /* Vendor Dependencies */
 import { EventEmitter } from 'events';
 /* Application Dependencies */
-import { BitcoinService } from '@server/modules/bitcoin/bitcoin.service';
+import { BitcoinRpcService } from '@server/modules/bitcoin/rpc/btcrpc.service';
 import { ErrorService } from '@server/modules/error/error.service';
 import { OrchardErrorCode } from '@server/modules/error/error.types';
 import { OrchardApiError } from '@server/modules/graphql/classes/orchard-error.class';
@@ -19,7 +19,7 @@ export class BitcoinBlockCountService implements OnModuleDestroy {
 	private block_count: number;
 	
 	constructor(
-		private bitcoinService: BitcoinService,
+		private bitcoinRpcService: BitcoinRpcService,
 		private errorService: ErrorService,
 	) {}
 	
@@ -30,7 +30,7 @@ export class BitcoinBlockCountService implements OnModuleDestroy {
 	// Method to get the current block count
 	async getBlockCount(tag: string = 'GET { bitcoin_blockcount }'): Promise<OrchardBitcoinBlockCount> {
 		try {
-			const block_count = await this.bitcoinService.getBlockCount();
+			const block_count = await this.bitcoinRpcService.getBitcoinInfo();
 			return new OrchardBitcoinBlockCount(block_count);
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,

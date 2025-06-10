@@ -52,14 +52,14 @@ export class OrchardLightningInfo {
 	@Field(type => Boolean)
 	testnet: boolean;
 
-	@Field(type => [String])
-	chains: string[];
+	@Field(type => [OrchardLightningChain])
+	chains: OrchardLightningChain[];
 
 	@Field(type => [String])
 	uris: string[];
 
-	// @Field(type => Map)
-	// features: Map<number, Feature>;
+	@Field(type => [OrchardLightningFeature])
+	features: OrchardLightningFeature[];
 
 	@Field(type => Boolean)
 	require_htlc_interceptor: boolean;
@@ -83,9 +83,48 @@ export class OrchardLightningInfo {
 		this.synced_to_chain = ln_info.synced_to_chain;
 		this.synced_to_graph = ln_info.synced_to_graph;
 		this.testnet = ln_info.testnet;
-		this.chains = ln_info.chains;
+		this.chains = ln_info.chains.map(chain => new OrchardLightningChain(chain));
 		this.uris = ln_info.uris;
+		this.features = Object.entries(ln_info.features).map(([bit, feature]) => new OrchardLightningFeature(feature, bit));
 		this.require_htlc_interceptor = ln_info.require_htlc_interceptor;
 		this.store_final_htlc_resolutions = ln_info.store_final_htlc_resolutions;
+	}
+}
+
+@ObjectType()
+export class OrchardLightningChain {
+
+	@Field(type => String)
+	chain: string;
+
+	@Field(type => String)
+	network: string;
+
+	constructor(chain: LightningInfo['chains'][number]) {
+		this.chain = chain.chain;
+		this.network = chain.network;
+	}
+}
+
+@ObjectType()
+export class OrchardLightningFeature {
+
+	@Field(type => Int)
+	bit: number;
+
+	@Field(type => String)
+	name: string;
+
+	@Field(type => Boolean)
+	is_required: boolean;
+
+	@Field(type => Boolean)
+	is_known: boolean;
+
+	constructor(feature: LightningInfo['features'][number], bit: string) {
+		this.bit = parseInt(bit);
+		this.name = feature.name;
+		this.is_required = feature.is_required;
+		this.is_known = feature.is_known;
 	}
 }
