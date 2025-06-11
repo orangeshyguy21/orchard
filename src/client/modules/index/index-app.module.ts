@@ -2,6 +2,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
+/* Vendor Dependencies */
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 /* Local Dependencies */
 import { IndexSectionComponent } from './components/index-section/index-section.component';
 
@@ -33,6 +37,9 @@ export class IndexAppRoutingModule { }
 	],
 	imports: [
 		CommonModule,
+		MatGridListModule,
+		MatCardModule,
+		MatIconModule,
 		IndexAppRoutingModule,
 	],
 })
