@@ -3,11 +3,10 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 /* Application Dependencies */
-import { OrchardErrorCode } from '@server/modules/error/error.types';
 import { BitcoinType } from '@server/modules/bitcoin/bitcoin.enums';
 import { CoreService } from '@server/modules/bitcoin/core/core.service';
 /* Local Dependencies */
-// import { BitcoinInfo } from './btcrpc.types';
+import { BitcoinInfo } from './btcrpc.types';
 
 @Injectable()
 export class BitcoinRpcService implements OnModuleInit {
@@ -30,7 +29,11 @@ export class BitcoinRpcService implements OnModuleInit {
         if( this.type === BitcoinType.CORE ) this.coreService.initializeRpc();
     }
 
-    async getBitcoinInfo() : Promise<number> {
+    public async getBitcoinBlockCount() : Promise<number> {
         if( this.type === BitcoinType.CORE ) return this.coreService.makeRpcRequest('getblockcount', []);
+    }
+
+    public async getBitcoinInfo() : Promise<BitcoinInfo> {
+        if( this.type === BitcoinType.CORE ) return this.coreService.makeRpcRequest('getblockchaininfo', []);
     }
 }

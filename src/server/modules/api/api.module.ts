@@ -4,6 +4,7 @@ import { Module } from "@nestjs/common";
 // Orchard Endpoints
 import { StatusModule } from "./status/status.module";
 // Bitcoin Endpoints
+import { BitcoinInfoModule } from "./bitcoin/info/btcinfo.module";
 import { BitcoinBlockCountModule } from "./bitcoin/blockcount/btcblockcount.module";
 // Lightning Endpoints
 import { LightningInfoModule } from "./lightning/info/lninfo.module";
@@ -32,6 +33,7 @@ import { PublicUrlModule } from "./public/url/url.module";
 @Module({
 	imports: [
 		StatusModule,
+		BitcoinInfoModule,
 		BitcoinBlockCountModule,
 		LightningInfoModule,
 		LightningBalanceModule,

@@ -340,6 +340,24 @@ export type OrchardBitcoinBlockCount = {
   height: Scalars['Int']['output'];
 };
 
+export type OrchardBitcoinInfo = {
+  __typename?: 'OrchardBitcoinInfo';
+  automatic_pruning?: Maybe<Scalars['Boolean']['output']>;
+  bestblockhash: Scalars['String']['output'];
+  blocks: Scalars['Int']['output'];
+  chain: Scalars['String']['output'];
+  chainwork: Scalars['String']['output'];
+  difficulty: Scalars['Float']['output'];
+  headers: Scalars['Int']['output'];
+  initialblockdownload: Scalars['Boolean']['output'];
+  prune_target_size?: Maybe<Scalars['Int']['output']>;
+  pruned: Scalars['Boolean']['output'];
+  pruneheight?: Maybe<Scalars['Int']['output']>;
+  size_on_disk: Scalars['Int']['output'];
+  verificationprogress: Scalars['Float']['output'];
+  warnings: Array<Scalars['String']['output']>;
+};
+
 export type OrchardCachedEndpoint = {
   __typename?: 'OrchardCachedEndpoint';
   method: Scalars['String']['output'];
@@ -735,6 +753,7 @@ export type Query = {
   __typename?: 'Query';
   ai_models: Array<OrchardAiModel>;
   bitcoin_blockcount: OrchardBitcoinBlockCount;
+  bitcoin_info: OrchardBitcoinInfo;
   lightning_balance: OrchardLightningBalance;
   lightning_info: OrchardLightningInfo;
   mint_analytics_balances: Array<OrchardMintAnalytics>;

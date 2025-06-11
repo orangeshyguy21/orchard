@@ -236,6 +236,23 @@ type OrchardBitcoinBlockCount {
   height: Int!
 }
 
+type OrchardBitcoinInfo {
+  automatic_pruning: Boolean
+  bestblockhash: String!
+  blocks: Int!
+  chain: String!
+  chainwork: String!
+  difficulty: Float!
+  headers: Int!
+  initialblockdownload: Boolean!
+  prune_target_size: Int
+  pruned: Boolean!
+  pruneheight: Int
+  size_on_disk: Int!
+  verificationprogress: Float!
+  warnings: [String!]!
+}
+
 type OrchardCachedEndpoint {
   method: String!
   path: String!
@@ -582,6 +599,7 @@ type OrchardTaprootAssetsInfo {
 type Query {
   ai_models: [OrchardAiModel!]!
   bitcoin_blockcount: OrchardBitcoinBlockCount!
+  bitcoin_info: OrchardBitcoinInfo!
   lightning_balance: OrchardLightningBalance!
   lightning_info: OrchardLightningInfo!
   mint_analytics_balances(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
