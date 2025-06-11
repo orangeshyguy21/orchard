@@ -48,6 +48,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	public online_lightning! : boolean;
 	public online_mint! : boolean;
 	public block_count!: number;
+	public chain!: string;
 
 	public get ai_actionable(): boolean {
 		if( this.active_chat ) return true;
@@ -121,6 +122,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	private getBitcoinInfoSubscription(): Subscription {
 		return this.bitcoinService.bitcoin_info$.subscribe({
 			next: (info: BitcoinInfo | null) => {
+				this.chain = info?.chain || '';
 				this.online_bitcoin = (info !== null) ? true : false;
 				this.cdr.detectChanges();
 			},

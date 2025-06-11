@@ -2,13 +2,14 @@
 	<orc-primary-nav 
 		[active_section]="active_section"
 		[active_event]="active_event"
-		[block_count]="block_count"
 		[enabled_bitcoin]="enabled_bitcoin"
 		[enabled_lightning]="enabled_lightning"
 		[enabled_mint]="enabled_mint"
 		[online_bitcoin]="online_bitcoin"
 		[online_lightning]="online_lightning"
 		[online_mint]="online_mint"
+		[chain]="chain"
+		[block_count]="block_count"
 		(cancel)="onCancelPendingEvent()"
 		(save)="onSavePendingEvent()">
 	</orc-primary-nav>

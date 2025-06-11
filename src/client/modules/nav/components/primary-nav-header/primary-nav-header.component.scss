@@ -2,34 +2,41 @@
 @use '@styles/nucleus/nucleus';
 
 .primary-nav-header{
-    @extend %flex;
-    @extend %flex-column;
-    @extend %flex-items-center;
-    @extend %p-v-1-5;
+    @extend %p-t-0-5;
+    @extend %p-b-1;
 }
 
 .primary-nav-index{
+    @extend %p-v-1;
+    @extend %p-h-0-5;
     @extend %cursor-pointer;
     @extend %orc-corner-full;
+    @extend %orc-corner-large;
     @extend %flex;
+    @extend %flex-column;
     @extend %flex-items-center;
-    @extend %flex-justify-center;
     @extend %trans-bg-fast;
-    @extend %h-4;
-    @extend %w-4;
+    height: 6.5rem;
+    min-width: 4.5rem;
 
     &:hover{
         @extend %orc-surface-container-high-bg;
+
+        .primary-nav-chain{
+            @extend %font-weight-semi-bold;
+            @extend %orc-on-primary-container-color;
+        }
     }
 }
 
-.primary-nav-epoch{
-    @extend %font-weight-light;
+.primary-nav-chain{
     @extend %font-size-xs;
     @extend %p-b-0-5;
+    @extend %trans-font-weight-fast;
+    @extend %trans-color-fast;
 }
 
 .primary-nav-blockheight{
     @extend %font-weight-bold;
-    // min-height: 1.25rem; todo the loading is all jumpy as elements pop in
+    @extend %text-nowrap;
 }
