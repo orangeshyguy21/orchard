@@ -15,11 +15,10 @@
     @extend %flex-items-center;
     @extend %flex-justify-center;
     @extend %trans-bg-fast;
-    height: 4rem;
-    width: 4rem;
+    @extend %h-4;
+    @extend %w-4;
 
     &:hover{
-        // background-color: pink;
         @extend %orc-surface-container-high-bg;
     }
 }

@@ -1,5 +1,9 @@
 @use '@styles/molecule/molecule';
 
+:host {
+    @extend %flex;
+}
+
 .graphic-asset-unit{
     @extend %flex;
     @extend %flex-items-center;

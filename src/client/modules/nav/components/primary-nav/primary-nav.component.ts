@@ -18,6 +18,9 @@ export class PrimaryNavComponent {
 	@Input() enabled_bitcoin!: boolean;
 	@Input() enabled_lightning!: boolean;
 	@Input() enabled_mint!: boolean;
+	@Input() online_bitcoin!: boolean;
+	@Input() online_lightning!: boolean;
+	@Input() online_mint!: boolean;
 
 	@Output() save = new EventEmitter<void>();
 	@Output() cancel = new EventEmitter<void>();

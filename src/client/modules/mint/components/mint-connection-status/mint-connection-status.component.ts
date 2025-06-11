@@ -14,7 +14,7 @@ export class MintConnectionStatusComponent {
 
 	@Input() public public_url!: PublicUrl;
 
-	public get status_class_test(): string {
+	public get status_class(): string {
 		if( !this.public_url ) return 'orc-surface-container-high-color';
 		if( this.public_url.status !== 200 ) return 'orc-status-inactive-color';
 		if( !this.public_url.has_data ) return 'orc-status-warning-color';

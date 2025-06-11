@@ -44,6 +44,9 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	public enabled_bitcoin = environment.bitcoin.enabled;
 	public enabled_lightning = environment.lightning.enabled;
 	public enabled_mint = environment.mint.enabled;
+	public online_bitcoin! : boolean;
+	public online_lightning! : boolean;
+	public online_mint! : boolean;
 	public block_count!: number;
 
 	public get ai_actionable(): boolean {
@@ -53,7 +56,6 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	}
 	
 	private subscriptions: Subscription = new Subscription();
-	private event_subscription!: Subscription | undefined;
 
 	constructor(
 		private settingService: SettingService,
@@ -66,59 +68,6 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		private route: ActivatedRoute,
 		private cdr: ChangeDetectorRef,
 	) {}
-
-
-
-
-
-	// ngOnInit(): void {
-	// 	const event_subscription = this.getEventSubscription();
-	// 	const bitcoin_subscription = this.getBitcoinSubscription();
-	// 	this.subscriptions.add(event_subscription);
-	// 	this.subscriptions.add(bitcoin_subscription);
-	// }
-
-	// private getEventSubscription(): Subscription {
-	// 	return this.eventService.getActiveEvent()
-	// 		.subscribe((event_data: EventData | null) => {
-	// 			this.manageEvent(event_data);
-	// 		});
-	// }
-
-	// private getBitcoinSubscription(): Subscription {
-	// 	return timer(0, 60000).pipe(
-	// 		switchMap(() => this.bitcoinService.getBlockCount().pipe(
-	// 			catchError(error => {
-	// 				console.error('Failed to fetch block count, polling stopped:', error);
-	// 				return EMPTY;
-	// 			})
-	// 		))
-	// 	).subscribe({
-	// 		next: async (block_count: BitcoinBlockCount) => {
-	// 			this.block_count = block_count.height;
-	// 			this.changeDetectorRef.detectChanges();
-	// 		}
-	// 	});
-	// }
-
-	// private manageEvent(event: EventData | null): void {
-	// 	this.active_event = event;
-	// 	this.changeDetectorRef.detectChanges();
-	// }	
-
-	// public onSave(): void {
-	// 	this.active_event!.confirmed = true;
-	// 	this.eventService.registerEvent(this.active_event);
-	// }
-
-	// public onCancel(): void {
-	// 	this.active_event!.confirmed = false;
-	// 	this.eventService.registerEvent(this.active_event);
-	// }
-
-
-
-
 
 	/* *******************************************************
 	   Initalization                      
@@ -166,17 +115,20 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 				const route_data = this.getRouteData(event);
 				this.setSection(route_data);
 				this.setAgent(route_data);
-				// this.active_section === 'settings' ? this.eventInit() : this.eventDestroy();
 			});
 	}
 
 	private getBitcoinInfoSubscription(): Subscription {
-		return this.bitcoinService.bitcoin_info$.subscribe(
-            (info:BitcoinInfo | null) => {
-				console.log('bitcoin info', info);
-				// enaluavte the state of the bitcoin node 
-            }
-        );
+		return this.bitcoinService.bitcoin_info$.subscribe({
+			next: (info: BitcoinInfo | null) => {
+				this.online_bitcoin = (info !== null) ? true : false;
+				this.cdr.detectChanges();
+			},
+			error: (error) => {
+				this.online_bitcoin = false;
+				this.cdr.detectChanges();
+			}
+		});
 	}
 
 	private getBitcoinBlockCountSubscription(): Subscription {
@@ -197,21 +149,29 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 
 	private getLightningInfoSubscription(): Subscription {
-		return this.lightningService.lightning_info$.subscribe(
-            (info:LightningInfo | null) => {
-				console.log('lightning info', info);
-				// evaluate the state of the lightning node
-            }
-        );
+		return this.lightningService.lightning_info$.subscribe({
+			next: (info: LightningInfo | null) => {
+				this.online_lightning = (info !== null) ? true : false;
+				this.cdr.detectChanges();
+			},
+			error: (error) => {
+				this.online_lightning = false;
+				this.cdr.detectChanges();
+			}
+		});
 	}
 
 	private getMintInfoSubscription(): Subscription {	
-		return this.mintService.mint_info$.subscribe(
-            (info:MintInfo | null) => {
-				console.log('mint info', info);
-				// evaluate the state of the cashu mint
-            }
-        );
+		return this.mintService.mint_info$.subscribe({
+			next: (info: MintInfo | null) => {
+				this.online_mint = (info !== null) ? true : false;
+				this.cdr.detectChanges();
+			},
+			error: (error) => {
+				this.online_mint = false;
+				this.cdr.detectChanges();
+			}
+		});
 	}
 
 	private getAgentSubscription(): Subscription {

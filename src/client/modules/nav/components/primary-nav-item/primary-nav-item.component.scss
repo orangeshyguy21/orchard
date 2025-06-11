@@ -1,6 +1,11 @@
 @use '@styles/molecule/molecule';
 @use '@styles/nucleus/nucleus';
 
+:host {
+    @extend %relative;
+}
+
+
 .primary-nav-item-container{
     @extend %font-size-xs;
     @extend %p-h-1;
@@ -35,4 +40,18 @@
         @extend %font-weight-semi-bold;
         @extend %orc-on-primary-container-color;
     }
+}
+
+.primary-nav-item-indicator{
+    position: absolute;
+    left: 0;
+    top: 1rem;
+}
+
+.indicator-circle{
+    // @extend %orc-surface-container-highest-bg;
+    // @extend
+    height: 0.5rem;
+    width: 0.5rem;
+    border-radius: 50%;
 }

@@ -4,19 +4,25 @@
         icon="bitcoin"
         name="Bitcoin"
         [active]="active_section === 'bitcoin'"
+        [enabled]="enabled_bitcoin"
+        [online]="online_bitcoin"
         mode="svg">
     </orc-primary-nav-item>
     <orc-primary-nav-item 
         navroute="lightning"
         icon="bolt"
         name="Lightning"
-        [active]="active_section === 'lightning'">
+        [active]="active_section === 'lightning'"
+        [enabled]="enabled_lightning"
+        [online]="online_lightning">
     </orc-primary-nav-item>
     <orc-primary-nav-item 
         navroute="mint"
         icon="account_balance"
         name="Mint"
-        [active]="active_section === 'mint'">
+        [active]="active_section === 'mint'"
+        [enabled]="enabled_mint"
+        [online]="online_mint">
     </orc-primary-nav-item> 
     <orc-primary-nav-item 
         navroute="ecash"

@@ -7,6 +7,13 @@
     background-size: 1300px 100%;
 }
 
+.shimmer-highest {
+    animation: shimmering 3.1s linear infinite;
+    @extend %orc-surface-container-highest-bg;
+    background: linear-gradient(90deg, var(--mat-sys-surface-container-highest) 9%, var(--mat-sys-surface-container-high) 18%, var(--mat-sys-surface-container-highest) 31%);
+    background-size: 1300px 100%;
+}
+
 @keyframes shimmering {
     0% {
         background-position: -1300px 0;

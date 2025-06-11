@@ -28,6 +28,9 @@
     #{$c}orc-primary-fixed-dim-bg { background-color: var(--mat-sys-primary-fixed-dim); }
     #{$c}orc-inverse-primary-bg { background-color: var(--mat-sys-inverse-primary); }
     #{$c}orc-outline-variant-bg { background-color: var(--mat-sys-outline-variant); }
+    #{$c}orc-status-active-bg { background-color: var(--orc-status-active); }
+    #{$c}orc-status-warning-bg { background-color: var(--orc-status-warning); }
+    #{$c}orc-status-inactive-bg { background-color: var(--orc-status-inactive); }
     // Background Colors (with transparency)
     #{$c}orc-shadow-bg { background-color: color-mix(in srgb, var(--mat-sys-shadow), transparent 50%); }
     #{$c}orc-fog-bg { background-color: color-mix(in srgb, var(--mat-sys-surface-container), transparent 50%); }
@@ -41,6 +44,7 @@
     #{$c}orc-outline-variant-color { color: var(--mat-sys-outline-variant); }
     #{$c}orc-surface-color { color: var(--mat-sys-surface); }
     #{$c}orc-surface-container-high-color { color: var(--mat-sys-surface-container-high); }
+    #{$c}orc-surface-container-highest-color { color: var(--mat-sys-surface-container-highest); }
     #{$c}orc-on-surface-variant-color { color: var(--mat-sys-on-surface-variant); }
     #{$c}orc-primary-fixed-dim-color { color: var(--mat-sys-primary-fixed-dim); }
     #{$c}orc-tertiary-container-color { color: var(--mat-sys-tertiary-container); }
