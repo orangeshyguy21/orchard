@@ -8,6 +8,22 @@
     @extend %p-v-1-5;
 }
 
+.primary-nav-index{
+    @extend %cursor-pointer;
+    @extend %orc-corner-full;
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-justify-center;
+    @extend %trans-bg-fast;
+    height: 4rem;
+    width: 4rem;
+
+    &:hover{
+        // background-color: pink;
+        @extend %orc-surface-container-high-bg;
+    }
+}
+
 .primary-nav-epoch{
     @extend %font-weight-light;
     @extend %font-size-xs;
