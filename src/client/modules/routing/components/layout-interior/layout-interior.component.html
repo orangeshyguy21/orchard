@@ -1,9 +1,13 @@
 <div class="interior-container">
 	<orc-primary-nav 
 		[active_section]="active_section"
+		[active_event]="active_event"
+		[block_count]="block_count"
 		[enabled_bitcoin]="enabled_bitcoin"
 		[enabled_lightning]="enabled_lightning"
-		[enabled_mint]="enabled_mint">
+		[enabled_mint]="enabled_mint"
+		(cancel)="onCancelPendingEvent()"
+		(save)="onSavePendingEvent()">
 	</orc-primary-nav>
 	<div class="interior-section-container">
 		<div class="interior-router-outlet-container">

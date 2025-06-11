@@ -9,7 +9,7 @@
     <orc-primary-nav-footer 
         [active_section]="active_section"
         [active_event]="active_event"
-        (save)="onSave()"
-        (cancel)="onCancel()">
+        (save)="save.emit()"
+        (cancel)="cancel.emit()">
     </orc-primary-nav-footer>
 </div>

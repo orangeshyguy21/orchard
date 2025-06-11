@@ -3,8 +3,8 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { Event, Router, ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { FormControl } from '@angular/forms';
 /* Vendor Dependencies */
-import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { Subscription, timer, EMPTY } from 'rxjs';
+import { switchMap, catchError, filter } from 'rxjs/operators';
 /* Application Configuration */
 import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
@@ -16,6 +16,7 @@ import { AiService } from '@client/modules/ai/services/ai/ai.service';
 import { EventService } from '@client/modules/event/services/event/event.service';
 import { EventData } from '@client/modules/event/classes/event-data.class';
 import { BitcoinInfo } from '@client/modules/bitcoin/classes/bitcoin-info.class';
+import { BitcoinBlockCount } from '@client/modules/bitcoin/classes/bitcoin-blockcount.class';
 import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.class';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 import { AiChatChunk } from '@client/modules/ai/classes/ai-chat-chunk.class';
@@ -37,11 +38,13 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	public active_chat!: boolean;
 	public active_section! : string;
 	public active_agent! : AiAgent;
+	public active_event!: EventData | null;
 	public model!: string | null;
 	public user_content = new FormControl('');
 	public enabled_bitcoin = environment.bitcoin.enabled;
 	public enabled_lightning = environment.lightning.enabled;
 	public enabled_mint = environment.mint.enabled;
+	public block_count!: number;
 
 	public get ai_actionable(): boolean {
 		if( this.active_chat ) return true;
@@ -62,17 +65,68 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		private router: Router,
 		private route: ActivatedRoute,
 		private cdr: ChangeDetectorRef,
-	) {
+	) {}
 
-	}
+
+
+
+
+	// ngOnInit(): void {
+	// 	const event_subscription = this.getEventSubscription();
+	// 	const bitcoin_subscription = this.getBitcoinSubscription();
+	// 	this.subscriptions.add(event_subscription);
+	// 	this.subscriptions.add(bitcoin_subscription);
+	// }
+
+	// private getEventSubscription(): Subscription {
+	// 	return this.eventService.getActiveEvent()
+	// 		.subscribe((event_data: EventData | null) => {
+	// 			this.manageEvent(event_data);
+	// 		});
+	// }
+
+	// private getBitcoinSubscription(): Subscription {
+	// 	return timer(0, 60000).pipe(
+	// 		switchMap(() => this.bitcoinService.getBlockCount().pipe(
+	// 			catchError(error => {
+	// 				console.error('Failed to fetch block count, polling stopped:', error);
+	// 				return EMPTY;
+	// 			})
+	// 		))
+	// 	).subscribe({
+	// 		next: async (block_count: BitcoinBlockCount) => {
+	// 			this.block_count = block_count.height;
+	// 			this.changeDetectorRef.detectChanges();
+	// 		}
+	// 	});
+	// }
+
+	// private manageEvent(event: EventData | null): void {
+	// 	this.active_event = event;
+	// 	this.changeDetectorRef.detectChanges();
+	// }	
+
+	// public onSave(): void {
+	// 	this.active_event!.confirmed = true;
+	// 	this.eventService.registerEvent(this.active_event);
+	// }
+
+	// public onCancel(): void {
+	// 	this.active_event!.confirmed = false;
+	// 	this.eventService.registerEvent(this.active_event);
+	// }
+
+
+
+
 
 	/* *******************************************************
 	   Initalization                      
 	******************************************************** */
 
 	ngOnInit(): void {
-		const router_subscription = this.getRouterSubscription();
-		this.subscriptions.add(router_subscription);
+		this.subscriptions.add(this.getRouterSubscription());
+		this.subscriptions.add(this.getEventSubscription());
 		this.model = this.settingService.getModel();
 		this.orchardOptionalInit();
 	}
@@ -81,6 +135,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		if( this.enabled_bitcoin ) {
 			this.bitcoinService.loadBitcoinInfo().subscribe();
 			this.subscriptions.add(this.getBitcoinInfoSubscription());
+			this.subscriptions.add(this.getBitcoinBlockCountSubscription());
 		}
 		if( this.enabled_lightning ) {
 			this.lightningService.loadLightningInfo().subscribe();
@@ -111,7 +166,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 				const route_data = this.getRouteData(event);
 				this.setSection(route_data);
 				this.setAgent(route_data);
-				this.active_section === 'settings' ? this.eventInit() : this.eventDestroy();
+				// this.active_section === 'settings' ? this.eventInit() : this.eventDestroy();
 			});
 	}
 
@@ -123,6 +178,23 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
             }
         );
 	}
+
+	private getBitcoinBlockCountSubscription(): Subscription {
+		return timer(0, 60000).pipe(
+			switchMap(() => this.bitcoinService.getBlockCount().pipe(
+				catchError(error => {
+					console.error('Failed to fetch block count, polling stopped:', error);
+					return EMPTY;
+				})
+			))
+		).subscribe({
+			next: async (block_count: BitcoinBlockCount) => {
+				this.block_count = block_count.height;
+				this.cdr.detectChanges();
+			}
+		});
+	}
+
 
 	private getLightningInfoSubscription(): Subscription {
 		return this.lightningService.lightning_info$.subscribe(
@@ -168,8 +240,8 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	private getEventSubscription(): Subscription {
 		return this.eventService.getActiveEvent()
 			.subscribe((event_data: EventData | null) => {
-				console.log('EVENT LISTENER IN INTERIOR LAYOUT', event_data);
-				this.model = this.settingService.getModel();
+				this.active_event = event_data;
+				if( this.active_section === 'settings' ) this.model = this.settingService.getModel();
 				this.cdr.detectChanges();
 			});
 	}
@@ -177,15 +249,15 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	/* *******************************************************
 	   Events                      
 	******************************************************** */
-		
-	private eventInit(): void {
-		if( this.event_subscription ) return;
-		this.event_subscription = this.getEventSubscription();
+
+	public onSavePendingEvent(): void {
+		this.active_event!.confirmed = true;
+		this.eventService.registerEvent(this.active_event);
 	}
-	private eventDestroy(): void {
-		if( !this.event_subscription ) return;
-		this.event_subscription.unsubscribe();
-		this.event_subscription = undefined;
+
+	public onCancelPendingEvent(): void {
+		this.active_event!.confirmed = false;
+		this.eventService.registerEvent(this.active_event);
 	}
 
 	/* *******************************************************
