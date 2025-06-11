@@ -39,6 +39,9 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	public active_agent! : AiAgent;
 	public model!: string | null;
 	public user_content = new FormControl('');
+	public enabled_bitcoin = environment.bitcoin.enabled;
+	public enabled_lightning = environment.lightning.enabled;
+	public enabled_mint = environment.mint.enabled;
 
 	public get ai_actionable(): boolean {
 		if( this.active_chat ) return true;
@@ -59,7 +62,9 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		private router: Router,
 		private route: ActivatedRoute,
 		private cdr: ChangeDetectorRef,
-	) { }
+	) {
+
+	}
 
 	/* *******************************************************
 	   Initalization                      
@@ -73,23 +78,23 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	}
 
 	private orchardOptionalInit(): void {
+		if( this.enabled_bitcoin ) {
+			this.bitcoinService.loadBitcoinInfo().subscribe();
+			this.subscriptions.add(this.getBitcoinInfoSubscription());
+		}
+		if( this.enabled_lightning ) {
+			this.lightningService.loadLightningInfo().subscribe();
+			this.subscriptions.add(this.getLightningInfoSubscription());
+		}
+		if( this.enabled_mint ) {
+			this.mintService.loadMintInfo().subscribe();
+			this.subscriptions.add(this.getMintInfoSubscription());
+		}
 		if( environment.ai.enabled ) {
 			this.subscriptions.add(this.getAgentSubscription());
 			this.subscriptions.add(this.getActiveAiSubscription());
 			this.subscriptions.add(this.getAiMessagesSubscription());
 			this.getModels();
-		}
-		if( environment.bitcoin.enabled ) {
-			this.bitcoinService.loadBitcoinInfo().subscribe();
-			this.subscriptions.add(this.getBitcoinInfoSubscription());
-		}
-		if( environment.lightning.enabled ) {
-			this.lightningService.loadLightningInfo().subscribe();
-			this.subscriptions.add(this.getLightningInfoSubscription());
-		}
-		if( environment.mint.enabled ) {
-			this.mintService.loadMintInfo().subscribe();
-			this.subscriptions.add(this.getMintInfoSubscription());
 		}
 	}
 
@@ -155,6 +160,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	private getAiMessagesSubscription(): Subscription {
 		return this.aiService.messages$
 			.subscribe((chunk: AiChatChunk) => {
+				console.log('ai chunk', chunk);
 				// @todo create messages
 			});
 	}

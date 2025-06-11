@@ -1,5 +1,10 @@
 <div class="interior-container">
-	<orc-primary-nav [active_section]="active_section"></orc-primary-nav>
+	<orc-primary-nav 
+		[active_section]="active_section"
+		[enabled_bitcoin]="enabled_bitcoin"
+		[enabled_lightning]="enabled_lightning"
+		[enabled_mint]="enabled_mint">
+	</orc-primary-nav>
 	<div class="interior-section-container">
 		<div class="interior-router-outlet-container">
 			<router-outlet></router-outlet>

@@ -19,6 +19,9 @@ import { BitcoinBlockCount } from '@client/modules/bitcoin/classes/bitcoin-block
 export class PrimaryNavComponent {
 
 	@Input() active_section!: string;
+	@Input() enabled_bitcoin!: boolean;
+	@Input() enabled_lightning!: boolean;
+	@Input() enabled_mint!: boolean;
 
 	public active_event!: EventData | null;
 	public block_count!: number;
