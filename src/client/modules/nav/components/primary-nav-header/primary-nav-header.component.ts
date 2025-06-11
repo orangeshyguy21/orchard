@@ -24,8 +24,7 @@ export class PrimaryNavHeaderComponent implements OnChanges {
 	@Input() block_count!: number;
 
 	public polling_blocks: boolean = false;
-
-	public get epoch(): number { return this.getEpoch(); }
+	public epoch: number | null = null;
 
 	constructor(
 		private router: Router,
@@ -35,6 +34,7 @@ export class PrimaryNavHeaderComponent implements OnChanges {
 	ngOnChanges(changes: SimpleChanges): void {
 		if( !changes['block_count'] ) return;
 		if( changes['block_count'].firstChange ) return;
+		this.epoch = this.getEpoch();
 		setTimeout(() => {
 			this.polling_blocks = true;
 			this.changeDetectorRef.detectChanges();
@@ -45,7 +45,12 @@ export class PrimaryNavHeaderComponent implements OnChanges {
 		this.router.navigate(['/']);
 	}
 
-	public getEpoch(): number {
+	public getEpoch(): number | null {
+		if( !this.block_count ) return null;
+		if( this.block_count < 210000  ) return 1;
+		if( this.block_count < 420000  ) return 2;
+		if( this.block_count < 630000  ) return 3;
+		if( this.block_count < 840000  ) return 4;
 		if( this.block_count < 1050000 ) return 5;
 		if( this.block_count < 1260000 ) return 6;
 		if( this.block_count < 1470000 ) return 7;

@@ -16,4 +16,5 @@
 
 .primary-nav-blockheight{
     @extend %font-weight-bold;
+    // min-height: 1.25rem; todo the loading is all jumpy as elements pop in
 }

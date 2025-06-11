@@ -9,9 +9,15 @@ import { filter } from 'rxjs/operators';
 import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
+import { BitcoinService } from '@client/modules/bitcoin/services/bitcoin.service';
+import { LightningService } from '@client/modules/lightning/services/lightning/lightning.service';
+import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { AiService } from '@client/modules/ai/services/ai/ai.service';
 import { EventService } from '@client/modules/event/services/event/event.service';
 import { EventData } from '@client/modules/event/classes/event-data.class';
+import { BitcoinInfo } from '@client/modules/bitcoin/classes/bitcoin-info.class';
+import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.class';
+import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 import { AiChatChunk } from '@client/modules/ai/classes/ai-chat-chunk.class';
 import { AiModel } from '@client/modules/ai/classes/ai-model.class';
 /* Shared Dependencies */
@@ -45,12 +51,19 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	constructor(
 		private settingService: SettingService,
+		private bitcoinService: BitcoinService,
+		private lightningService: LightningService,
+		private mintService: MintService,
 		private aiService: AiService,
 		private eventService: EventService,
 		private router: Router,
 		private route: ActivatedRoute,
 		private cdr: ChangeDetectorRef,
 	) { }
+
+	/* *******************************************************
+	   Initalization                      
+	******************************************************** */
 
 	ngOnInit(): void {
 		const router_subscription = this.getRouterSubscription();
@@ -66,18 +79,23 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 			this.subscriptions.add(this.getAiMessagesSubscription());
 			this.getModels();
 		}
+		if( environment.bitcoin.enabled ) {
+			this.bitcoinService.loadBitcoinInfo().subscribe();
+			this.subscriptions.add(this.getBitcoinInfoSubscription());
+		}
+		if( environment.lightning.enabled ) {
+			this.lightningService.loadLightningInfo().subscribe();
+			this.subscriptions.add(this.getLightningInfoSubscription());
+		}
+		if( environment.mint.enabled ) {
+			this.mintService.loadMintInfo().subscribe();
+			this.subscriptions.add(this.getMintInfoSubscription());
+		}
 	}
-	private eventInit(): void {
-		if( this.event_subscription ) return;
-		// console.log('INITIALIZING EVENT SUBSCRIPTION'); @todo honestly. the angular app needs debug logging.
-		this.event_subscription = this.getEventSubscription();
-	}
-	private eventDestroy(): void {
-		if( !this.event_subscription ) return;
-		// console.log('DESTROYING EVENT SUBSCRIPTION');
-		this.event_subscription.unsubscribe();
-		this.event_subscription = undefined;
-	}
+
+	/* *******************************************************
+		Subscriptions                      
+	******************************************************** */
 
 	private getRouterSubscription(): Subscription {
 		return this.router.events
@@ -92,12 +110,40 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 			});
 	}
 
+	private getBitcoinInfoSubscription(): Subscription {
+		return this.bitcoinService.bitcoin_info$.subscribe(
+            (info:BitcoinInfo | null) => {
+				console.log('bitcoin info', info);
+				// enaluavte the state of the bitcoin node 
+            }
+        );
+	}
+
+	private getLightningInfoSubscription(): Subscription {
+		return this.lightningService.lightning_info$.subscribe(
+            (info:LightningInfo | null) => {
+				console.log('lightning info', info);
+				// evaluate the state of the lightning node
+            }
+        );
+	}
+
+	private getMintInfoSubscription(): Subscription {	
+		return this.mintService.mint_info$.subscribe(
+            (info:MintInfo | null) => {
+				console.log('mint info', info);
+				// evaluate the state of the cashu mint
+            }
+        );
+	}
+
 	private getAgentSubscription(): Subscription {
 		return this.aiService.agent_requests$
 			.subscribe(({ agent, content }) => {
 				if( agent === AiAgent.Default ) this.aiService.openAiSocket(agent, content);
 			});
 	}
+
 	private getActiveAiSubscription(): Subscription {
 		return this.aiService.active$
 			.subscribe((active: boolean) => {
@@ -105,6 +151,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 				this.cdr.detectChanges();
 			});
 	}
+
 	private getAiMessagesSubscription(): Subscription {
 		return this.aiService.messages$
 			.subscribe((chunk: AiChatChunk) => {
@@ -121,6 +168,24 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 			});
 	}
 
+	/* *******************************************************
+	   Events                      
+	******************************************************** */
+		
+	private eventInit(): void {
+		if( this.event_subscription ) return;
+		this.event_subscription = this.getEventSubscription();
+	}
+	private eventDestroy(): void {
+		if( !this.event_subscription ) return;
+		this.event_subscription.unsubscribe();
+		this.event_subscription = undefined;
+	}
+
+	/* *******************************************************
+	   Routing                      
+	******************************************************** */
+
 	private getRouteData(event: Event): ActivatedRouteSnapshot['data'] | null {
 		const router_event = 'routerEvent' in event ? event.routerEvent : event;
 		if( router_event.type !== 1 ) return null;
@@ -136,6 +201,10 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		this.active_section = route_data['section'] || '';
 		this.cdr.detectChanges();
 	}
+
+	/* *******************************************************
+	   Agent                      
+	******************************************************** */
 
 	private setAgent(route_data: ActivatedRouteSnapshot['data'] | null): void {
 		if( !route_data ) return;
