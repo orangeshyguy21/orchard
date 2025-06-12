@@ -1,4 +1,4 @@
-<button mat-icon-button type="button" (click)="command.emit()">
+<button mat-icon-button type="button" [disabled]="!actionable" (click)="command.emit()">
     <mat-icon 
         class="ai-input-action"
         [class.ai-active]="actionable"
