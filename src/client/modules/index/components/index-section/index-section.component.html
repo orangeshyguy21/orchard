@@ -14,6 +14,7 @@
                 <mat-card appearance="outlined" class="relative overflow-hidden">
                     <mat-card-content class="orc-surface-container-low-bg">
                         <mat-icon class="icon-lg" [svgIcon]="'bitcoin'"></mat-icon>
+                        <div>{{ bitcoin_info | json }}</div>
                     </mat-card-content>
                 </mat-card>
             </mat-grid-tile>
@@ -21,6 +22,7 @@
                 <mat-card appearance="outlined" class="relative overflow-hidden">
                     <mat-card-content class="orc-surface-container-low-bg">
                         <mat-icon class="icon-lg">bolt</mat-icon>
+                        <div>{{ lightning_info | json }}</div>
                     </mat-card-content>
                 </mat-card>
             </mat-grid-tile>
@@ -28,6 +30,7 @@
                 <mat-card appearance="outlined" class="relative overflow-hidden">
                     <mat-card-content class="orc-surface-container-low-bg">
                         <mat-icon class="icon-lg">account_balance</mat-icon>
+                        <div>{{ mint_info | json }}</div>
                     </mat-card-content>
                 </mat-card>
             </mat-grid-tile>

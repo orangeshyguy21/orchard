@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 /* Vendor Dependencies */
 import { Subscription} from 'rxjs';
 /* Application Configuration */
@@ -21,12 +21,17 @@ import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 })
 export class IndexSectionComponent implements OnInit, OnDestroy {
 
+	public bitcoin_info!: BitcoinInfo | null;
+	public lightning_info!: LightningInfo | null;
+	public mint_info!: MintInfo | null;
+
 	private subscriptions: Subscription = new Subscription();
 
 	constructor(
 		private bitcoinService: BitcoinService,
 		private lightningService: LightningService,
 		private mintService: MintService,
+		private cdr: ChangeDetectorRef,
 	) {}
 
 	/* *******************************************************
@@ -59,9 +64,8 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	private getBitcoinInfoSubscription(): Subscription {
 		return this.bitcoinService.bitcoin_info$.subscribe({
 			next: (info: BitcoinInfo | null) => {
-				// this.chain = info?.chain || '';
-				// this.online_bitcoin = (info !== null) ? true : false;
-				// this.cdr.detectChanges();
+				this.bitcoin_info = info;
+				this.cdr.detectChanges();
 			},
 			error: (error) => {
 				// this.online_bitcoin = false;
@@ -73,8 +77,8 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	private getLightningInfoSubscription(): Subscription {
 		return this.lightningService.lightning_info$.subscribe({
 			next: (info: LightningInfo | null) => {
-				// this.online_lightning = (info !== null) ? true : false;
-				// this.cdr.detectChanges();
+				this.lightning_info = info;
+				this.cdr.detectChanges();
 			},
 			error: (error) => {
 				// this.online_lightning = false;
@@ -86,8 +90,8 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	private getMintInfoSubscription(): Subscription {	
 		return this.mintService.mint_info$.subscribe({
 			next: (info: MintInfo | null) => {
-				// this.online_mint = (info !== null) ? true : false;
-				// this.cdr.detectChanges();
+				this.mint_info = info;
+				this.cdr.detectChanges();
 			},
 			error: (error) => {
 				// this.online_mint = false;

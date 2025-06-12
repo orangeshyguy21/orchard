@@ -20,6 +20,7 @@ import { MatSliderModule } from '@angular/material/slider';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { BaseChartDirective } from 'ng2-charts';
 /* Application Dependencies */
 import { NavModule } from '@client/modules/nav/nav.module';
@@ -159,6 +160,7 @@ import { MintDataEcashComponent } from './components/mint-data-ecash/mint-data-e
 		MatCheckboxModule,
 		MatSlideToggleModule,
 		MatProgressSpinnerModule,
+		MatTooltipModule,
 		BaseChartDirective,
 		NavModule,
 		LocalModule,
