@@ -13,8 +13,10 @@
 
 ### Implementation support
 
-- Bitcoin Lightning support (LND)
-- Cashu mint support (nutshell)
+- Bitcoin (core)
+- Lightning (lnd)
+- Cashu Mint (nutshell, cdk)
+- Taproot Assets (tapd)
 
 # Development Setup
 
@@ -31,6 +33,11 @@ mv .env.example .env
 nano .env
 ```
 
+### Package Management 
+```bash
+npm install
+```
+
 ### Client
 ```bash
 npm run start:client
@@ -45,6 +52,7 @@ npm run start:server
 # Production Setup
 
 ```bash
+npm install
 npm run build
 npm run start
 ```
