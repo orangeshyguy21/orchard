@@ -17,6 +17,7 @@
 - Lightning (lnd)
 - Cashu Mint (nutshell, cdk)
 - Taproot Assets (tapd)
+- AI (ollama)
 
 # Development Setup
 
