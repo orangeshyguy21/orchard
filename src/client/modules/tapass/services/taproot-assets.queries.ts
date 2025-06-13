@@ -1,5 +1,5 @@
 export const TAP_INFO_QUERY = `{
-    tap_info{
+    taproot_assets_info{
         block_hash
         block_height
         lnd_identity_pubkey

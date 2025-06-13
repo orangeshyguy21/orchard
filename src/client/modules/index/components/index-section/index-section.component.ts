@@ -1,15 +1,19 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef } from '@angular/core';
 /* Vendor Dependencies */
-import { Subscription} from 'rxjs';
+import { tap, catchError, finalize, EMPTY, forkJoin } from 'rxjs';
 /* Application Configuration */
 import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
 import { BitcoinService } from '@client/modules/bitcoin/services/bitcoin.service';
 import { LightningService } from '@client/modules/lightning/services/lightning/lightning.service';
+import { TaprootAssetsService } from '@client/modules/tapass/services/taproot-assets.service';
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { BitcoinInfo } from '@client/modules/bitcoin/classes/bitcoin-info.class';
 import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.class';
+import { LightningBalance } from '@client/modules/lightning/classes/lightning-balance.class';
+import { TaprootAssetInfo } from '@client/modules/tapass/classes/taproot-asset-info.class';
+import { TaprootAssets } from '@client/modules/tapass/classes/taproot-assets.class';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 
 @Component({
@@ -19,17 +23,34 @@ import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 	styleUrl: './index-section.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class IndexSectionComponent implements OnInit, OnDestroy {
+export class IndexSectionComponent implements OnInit {
+
+	public enabled_bitcoin = environment.bitcoin.enabled;
+	public enabled_lightning = environment.lightning.enabled;
+	public enabled_taproot_assets = environment.taproot_assets.enabled;
+	public enabled_mint = environment.mint.enabled;
+
+	public loading_bitcoin:boolean = false;
+	public loading_lightning:boolean = false;
+	public loading_taproot_assets:boolean = false;
+	public loading_mint:boolean = false;
+
+	public error_bitcoin!: string;
+	public error_lightning!: string;
+	public error_taproot_assets!: string;
+	public error_mint!: string;
 
 	public bitcoin_info!: BitcoinInfo | null;
 	public lightning_info!: LightningInfo | null;
+	public lightning_balance!: LightningBalance | null;
+	public taproot_assets_info!: TaprootAssetInfo | null;
+	public taproot_assets!: TaprootAssets | null;
 	public mint_info!: MintInfo | null;
-
-	private subscriptions: Subscription = new Subscription();
 
 	constructor(
 		private bitcoinService: BitcoinService,
 		private lightningService: LightningService,
+		private taprootAssetsService: TaprootAssetsService,
 		private mintService: MintService,
 		private cdr: ChangeDetectorRef,
 	) {}
@@ -43,64 +64,105 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	}
 
 	private orchardOptionalInit(): void {
-		if( environment.bitcoin.enabled ) {
-			this.bitcoinService.loadBitcoinInfo().subscribe();
-			this.subscriptions.add(this.getBitcoinInfoSubscription());
-		}
-		if( environment.lightning.enabled ) {
-			this.lightningService.loadLightningInfo().subscribe();
-			this.subscriptions.add(this.getLightningInfoSubscription());
-		}
-		if( environment.mint.enabled ) {
-			this.mintService.loadMintInfo().subscribe();
-			this.subscriptions.add(this.getMintInfoSubscription());
-		}
+		if( this.enabled_bitcoin ) this.getBitcoin();
+		if( this.enabled_lightning ) this.getLightning();
+		if( this.enabled_taproot_assets ) this.getTaprootAssets();
+		if( this.enabled_mint ) this.getMint();
 	}
 
 	/* *******************************************************
-		Subscriptions                      
+		Data                      
 	******************************************************** */
 
-	private getBitcoinInfoSubscription(): Subscription {
-		return this.bitcoinService.bitcoin_info$.subscribe({
-			next: (info: BitcoinInfo | null) => {
+	private getBitcoin(): void {
+		this.loading_bitcoin = true;
+		this.cdr.detectChanges();
+		this.bitcoinService.loadBitcoinInfo().pipe(
+			tap((info: BitcoinInfo) => {
 				this.bitcoin_info = info;
+				this.error_bitcoin = '';
+			}),
+			catchError((error) => {
+				this.error_bitcoin = error.message;
+				this.bitcoin_info = null;
+				return EMPTY;
+			}),
+			finalize(() => {
+				this.loading_bitcoin = false;
 				this.cdr.detectChanges();
-			},
-			error: (error) => {
-				// this.online_bitcoin = false;
-				// this.cdr.detectChanges();
-			}
-		});
+			})
+		).subscribe();
 	}
 
-	private getLightningInfoSubscription(): Subscription {
-		return this.lightningService.lightning_info$.subscribe({
-			next: (info: LightningInfo | null) => {
+	private getLightning(): void {
+		this.loading_taproot_assets = true;
+		this.cdr.detectChanges();
+
+		forkJoin({
+			info: this.lightningService.loadLightningInfo(),
+			balance: this.lightningService.loadLightningBalance()
+		}).pipe(
+			tap(({ info, balance }) => {
 				this.lightning_info = info;
+				this.lightning_balance = balance;
+				this.error_lightning = ''; 
+			}),
+			catchError((error) => {
+				this.error_lightning = error instanceof Error ? error.message : 'An unknown error occurred';
+				this.lightning_info = null;
+				return EMPTY;
+			}),
+			finalize(() => {
+				this.loading_lightning = false;
 				this.cdr.detectChanges();
-			},
-			error: (error) => {
-				// this.online_lightning = false;
-				// this.cdr.detectChanges();
-			}
-		});
+			})
+		).subscribe();
 	}
 
-	private getMintInfoSubscription(): Subscription {	
-		return this.mintService.mint_info$.subscribe({
-			next: (info: MintInfo | null) => {
+	private getTaprootAssets(): void {
+		this.loading_taproot_assets = true;
+		this.cdr.detectChanges();
+
+		forkJoin({
+			info: this.taprootAssetsService.loadTaprootAssetsInfo(),
+			assets: this.taprootAssetsService.loadTaprootAssets()
+		}).pipe(
+			tap(({ info, assets }) => {
+				this.taproot_assets_info = info;
+				this.taproot_assets = assets;
+				this.error_taproot_assets = ''; 
+			}),
+			catchError((error) => {
+				this.error_taproot_assets = error instanceof Error ? error.message : 'An unknown error occurred';
+				this.taproot_assets_info = null;
+				this.taproot_assets = null;
+				return EMPTY;
+			}),
+			finalize(() => {
+				this.loading_taproot_assets = false;
+				this.cdr.detectChanges();
+			})
+		).subscribe();
+	}
+
+	private getMint(): void {
+		this.loading_mint = true;
+		this.cdr.detectChanges();
+
+		this.mintService.loadMintInfo().pipe(
+			tap((info: MintInfo) => {
 				this.mint_info = info;
+				this.error_mint = '';
+			}),
+			catchError((error) => {
+				this.error_mint = error instanceof Error ? error.message : 'An unknown error occurred';
+				this.mint_info = null;
+				return EMPTY;
+			}),
+			finalize(() => {
+				this.loading_mint = false;
 				this.cdr.detectChanges();
-			},
-			error: (error) => {
-				// this.online_mint = false;
-				// this.cdr.detectChanges();
-			}
-		});
-	}
-
-	ngOnDestroy(): void {
-		this.subscriptions.unsubscribe();
+			})
+		).subscribe();
 	}
 }
