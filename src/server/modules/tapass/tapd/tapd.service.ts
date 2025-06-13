@@ -66,7 +66,7 @@ export class TapdService {
     }
 
     public initializeTaprootAssetsClient(): grpc.Client {
-        const taproot_assets_proto_path = path.resolve(__dirname, '../../../../proto/tapd-taprootassets.proto');
+        const taproot_assets_proto_path = path.resolve(__dirname, '../../../../proto/tapd/taprootassets.proto');
         return this.initializeGrpcClient([taproot_assets_proto_path], 'taprpc', 'TaprootAssets');
     }
 }

@@ -9,6 +9,7 @@ import { BitcoinBlockCountModule } from "./bitcoin/blockcount/btcblockcount.modu
 // Lightning Endpoints
 import { LightningInfoModule } from "./lightning/info/lninfo.module";
 import { LightningBalanceModule } from "./lightning/balance/lnbalance.module";
+import { LightningWalletModule } from "./lightning/wallet/lnwallet.module";
 // Taproot Assets Endpoints
 import { TaprootAssetsInfoModule } from "./tapass/info/tapinfo.module";
 // Cashu Mint Endpoints
@@ -37,6 +38,7 @@ import { PublicUrlModule } from "./public/url/url.module";
 		BitcoinBlockCountModule,
 		LightningInfoModule,
 		LightningBalanceModule,
+		LightningWalletModule,
 		TaprootAssetsInfoModule,
 		MintInfoModule,
 		MintBalanceModule,

@@ -5,7 +5,6 @@ import { Resolver, Query } from "@nestjs/graphql";
 import { LightningInfoService } from "./lninfo.service";
 import { OrchardLightningInfo } from "./lninfo.model";
 
-
 @Resolver()
 export class LightningInfoResolver {
 

@@ -1,46 +1,26 @@
 <section class="section-container">
-    <!-- <div class="index-section-container">
-        <mat-grid-list cols="2" rowHeight="2:1">
-            <mat-grid-tile>hello</mat-grid-tile>
-            <mat-grid-tile>world</mat-grid-tile>
-            <mat-grid-tile>3</mat-grid-tile>
-            <mat-grid-tile>4</mat-grid-tile>
-        </mat-grid-list>          
-    </div> -->
-
-    <div class="subsection-container">
-        <mat-grid-list cols="2" rowHeight="2:1">
-            <mat-grid-tile>
-                <mat-card appearance="outlined" class="relative overflow-hidden">
-                    <mat-card-content class="orc-surface-container-low-bg">
-                        <mat-icon class="icon-lg" [svgIcon]="'bitcoin'"></mat-icon>
-                        <div>{{ bitcoin_info | json }}</div>
-                    </mat-card-content>
-                </mat-card>
-            </mat-grid-tile>
-            <mat-grid-tile>
-                <mat-card appearance="outlined" class="relative overflow-hidden">
-                    <mat-card-content class="orc-surface-container-low-bg">
-                        <mat-icon class="icon-lg">bolt</mat-icon>
-                        <div>{{ lightning_info | json }}</div>
-                    </mat-card-content>
-                </mat-card>
-            </mat-grid-tile>
-            <mat-grid-tile>
-                <mat-card appearance="outlined" class="relative overflow-hidden">
-                    <mat-card-content class="orc-surface-container-low-bg">
-                        <mat-icon class="icon-lg">account_balance</mat-icon>
-                        <div>{{ mint_info | json }}</div>
-                    </mat-card-content>
-                </mat-card>
-            </mat-grid-tile>
-            <mat-grid-tile>
-                <mat-card appearance="outlined" class="relative overflow-hidden">
-                    <mat-card-content class="orc-surface-container-low-bg">
-                        <mat-icon class="icon-lg">payments</mat-icon>
-                    </mat-card-content>
-                </mat-card>
-            </mat-grid-tile>
-        </mat-grid-list> 
+    <div class="subsection-container p-2">
+        <div class="p-2 flex flex-column flex-gap-2">
+            <div class="flex flex-gap-2">
+                <div class="flex-1 flex flex-column flex-items-center">
+                    <mat-icon class="icon-lg" [svgIcon]="'bitcoin'"></mat-icon>
+                    <div>{{ bitcoin_info | json }}</div>
+                </div>
+                <div class="flex-1 flex flex-column flex-items-center">
+                    <mat-icon class="icon-lg">bolt</mat-icon>
+                    <div>{{ lightning_info | json }}</div>
+                </div>
+            </div>
+            <div class="flex flex-gap-1">
+                <div class="flex-1 flex flex-column flex-items-center">
+                    <mat-icon class="icon-lg">account_balance</mat-icon>
+                    <div>{{ mint_info | json }}</div>
+                </div>
+                <div class="flex-1 flex flex-column flex-items-center">
+                    <mat-icon class="icon-lg">payments</mat-icon>
+                    <div>hello world</div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>

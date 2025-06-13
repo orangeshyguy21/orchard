@@ -69,6 +69,14 @@ enum AiMessageRole {
 """Base64 encoded string scalar type"""
 scalar Base64
 
+enum LightningAddressType {
+  HYBRID_NESTED_WITNESS_PUBKEY_HASH
+  NESTED_WITNESS_PUBKEY_HASH
+  TAPROOT_PUBKEY
+  UNKOWN
+  WITNESS_PUBKEY_HASH
+}
+
 enum MeltQuoteState {
   PAID
   PENDING
@@ -274,6 +282,21 @@ type OrchardCustomChannel {
 type OrchardCustomChannelData {
   open_channels: [OrchardCustomChannel!]!
   pending_channels: [OrchardCustomChannel!]!
+}
+
+type OrchardLightningAccount {
+  address_type: LightningAddressType!
+  addresses: [OrchardLightningAddress!]!
+  derivation_path: String!
+  name: String!
+}
+
+type OrchardLightningAddress {
+  address: String!
+  balance: Float!
+  derivation_path: String!
+  is_internal: String!
+  public_key: Base64!
 }
 
 type OrchardLightningBalance {
@@ -602,6 +625,7 @@ type Query {
   bitcoin_info: OrchardBitcoinInfo!
   lightning_balance: OrchardLightningBalance!
   lightning_info: OrchardLightningInfo!
+  lightning_wallet: [OrchardLightningAccount!]!
   mint_analytics_balances(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
   mint_analytics_keysets(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone): [OrchardMintKeysetsAnalytics!]!
   mint_analytics_melts(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
