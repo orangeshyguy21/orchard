@@ -11,10 +11,11 @@ import { WebserverModule } from './modules/webserver/webserver.module';
 import { UnixTimestamp } from './modules/graphql/scalars/unixtimestamp.scalar';
 import { Timezone } from './modules/graphql/scalars/timezone.scalar';
 import { Base64 } from './modules/graphql/scalars/base64.scalar';
+import { LightningAddressType } from './modules/lightning/lightning.enums';
+import { TaprootAssetType, TaprootAssetVersion } from './modules/tapass/tapass.enums';
 import { MintAnalyticsInterval } from './modules/cashu/mintdb/cashumintdb.enums';
 import { MintUnit, MintQuoteState, MeltQuoteState, MintProofState } from './modules/cashu/cashu.enums';
 import { AiAgent, AiMessageRole, AiFunctionName } from './modules/ai/ai.enums';
-import { LightningAddressType } from './modules/lightning/lightning.enums';
 /* Application Configuration */
 import { config } from './config/configuration';
 
@@ -24,6 +25,8 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 	registerEnumType( MeltQuoteState, { name: 'MeltQuoteState' });
 	registerEnumType( MintProofState, { name: 'MintProofState' });
 	registerEnumType( MintAnalyticsInterval, { name: 'MintAnalyticsInterval' });
+	registerEnumType( TaprootAssetType, { name: 'TaprootAssetType' });
+	registerEnumType( TaprootAssetVersion, { name: 'TaprootAssetVersion' });
 	registerEnumType( LightningAddressType, { name: 'LightningAddressType' });
 	registerEnumType( AiAgent, { name: 'AiAgent' });
 	registerEnumType( AiMessageRole, { name: 'AiMessageRole' });

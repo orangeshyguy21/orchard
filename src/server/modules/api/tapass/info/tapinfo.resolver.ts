@@ -5,7 +5,6 @@ import { Resolver, Query } from "@nestjs/graphql";
 import { TaprootAssetsInfoService } from "./tapinfo.service";
 import { OrchardTaprootAssetsInfo } from "./tapinfo.model";
 
-
 @Resolver()
 export class TaprootAssetsInfoResolver {
 

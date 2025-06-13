@@ -608,6 +608,34 @@ type OrchardStatus {
   title: String!
 }
 
+type OrchardTaprootAsset {
+  amount: String!
+  asset_genesis: OrchardTaprootAssetGenesis!
+  asset_group: String
+  decimal_display: OrchardTaprootAssetDecimalDisplay!
+  is_burn: Boolean!
+  is_spent: Boolean!
+  version: TaprootAssetVersion!
+}
+
+type OrchardTaprootAssetDecimalDisplay {
+  decimal_display: Int!
+}
+
+type OrchardTaprootAssetGenesis {
+  asset_id: Base64!
+  asset_type: TaprootAssetType!
+  genesis_point: String!
+  name: String!
+  output_index: Int!
+}
+
+type OrchardTaprootAssets {
+  assets: [OrchardTaprootAsset!]!
+  unconfirmed_mints: String!
+  unconfirmed_transfers: String!
+}
+
 type OrchardTaprootAssetsInfo {
   block_hash: String!
   block_height: Int!
@@ -617,6 +645,12 @@ type OrchardTaprootAssetsInfo {
   node_alias: String!
   sync_to_chain: Boolean!
   version: String!
+}
+
+type OrchardTaprootAssetsUtxo {
+  amt_sat: Float!
+  assets: [OrchardTaprootAsset!]!
+  id: String!
 }
 
 type Query {
@@ -649,12 +683,25 @@ type Query {
   public_image(url: String!): OrchardPublicImage!
   public_urls(urls: [String!]!): [OrchardPublicUrl!]!
   status: OrchardStatus!
+  taproot_assets: OrchardTaprootAssets!
   taproot_assets_info: OrchardTaprootAssetsInfo!
+  taproot_assets_utxo: [OrchardTaprootAssetsUtxo!]!
 }
 
 type Subscription {
   ai_chat(ai_chat: AiChatInput!): OrchardAiChatChunk!
   blockCount: OrchardBitcoinBlockCount!
+}
+
+enum TaprootAssetType {
+  COLLECTIBLE
+  NORMAL
+  TAPD
+}
+
+enum TaprootAssetVersion {
+  ASSET_VERSION_V0
+  ASSET_VERSION_V1
 }
 
 """Timezone custom scalar type based on IANA timezone database"""
