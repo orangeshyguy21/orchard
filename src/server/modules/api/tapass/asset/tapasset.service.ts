@@ -8,12 +8,12 @@ import { TaprootAssetsService } from '@server/modules/tapass/tapass/tapass.servi
 import { TaprootAssetsUtxos, TaprootAssets } from '@server/modules/tapass/tapass/tapass.types';
 /* Local Dependencies */    
 // import { OrchardTaprootAssetsInfo } from './tapinfo.model';
-import { OrchardTaprootAssets, OrchardTaprootAssetsUtxo } from './tapwallet.model';
+import { OrchardTaprootAssets, OrchardTaprootAssetsUtxo } from './tapasset.model';
 
 @Injectable()
-export class TaprootAssetsWalletService {
+export class TaprootAssetsAssetService {
 
-    private readonly logger = new Logger(TaprootAssetsWalletService.name);
+    private readonly logger = new Logger(TaprootAssetsAssetService.name);
 
 	constructor(
 		private taprootAssetsService: TaprootAssetsService,

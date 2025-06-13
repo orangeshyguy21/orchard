@@ -2,29 +2,29 @@
 import { Logger } from '@nestjs/common';
 import { Resolver, Query } from "@nestjs/graphql";
 /* Local Dependencies */
-import { TaprootAssetsWalletService } from "./tapwallet.service";
-import { OrchardTaprootAssets, OrchardTaprootAssetsUtxo } from "./tapwallet.model";
+import { TaprootAssetsAssetService } from "./tapasset.service";
+import { OrchardTaprootAssets, OrchardTaprootAssetsUtxo } from "./tapasset.model";
 
 @Resolver()
-export class TaprootAssetsWalletResolver {
+export class TaprootAssetsAssetResolver {
 
-	private readonly logger = new Logger(TaprootAssetsWalletResolver.name);
+	private readonly logger = new Logger(TaprootAssetsAssetResolver.name);
 
 	constructor(
-		private taprootAssetsWalletService: TaprootAssetsWalletService,
+		private taprootAssetsAssetService: TaprootAssetsAssetService,
 	) {}
 
     @Query(() => OrchardTaprootAssets)
 	async taproot_assets() : Promise<OrchardTaprootAssets> {
 		const tag = 'GET { taproot_assets }';
 		this.logger.debug(tag);
-		return await this.taprootAssetsWalletService.getTaprootAssets(tag);
+		return await this.taprootAssetsAssetService.getTaprootAssets(tag);
 	}
 
 	@Query(() => [OrchardTaprootAssetsUtxo])
 	async taproot_assets_utxo() : Promise<OrchardTaprootAssetsUtxo[]> {
 		const tag = 'GET { taproot_assets_utxo }';
 		this.logger.debug(tag);
-		return await this.taprootAssetsWalletService.getTaprootAssetsUtxo(tag);
+		return await this.taprootAssetsAssetService.getTaprootAssetsUtxo(tag);
 	}
 }

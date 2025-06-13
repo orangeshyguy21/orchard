@@ -4,8 +4,8 @@ import { Module } from "@nestjs/common";
 import { ErrorModule } from "@server/modules/error/error.module";
 import { TaprootAssetsModule } from "@server/modules/tapass/tapass/tapass.module";
 /* Local Dependencies */
-import { TaprootAssetsWalletService } from "./tapwallet.service";
-import { TaprootAssetsWalletResolver } from "./tapwallet.resolver";
+import { TaprootAssetsAssetService } from "./tapasset.service";
+import { TaprootAssetsAssetResolver } from "./tapasset.resolver";
 
 @Module({
 	imports: [
@@ -13,8 +13,8 @@ import { TaprootAssetsWalletResolver } from "./tapwallet.resolver";
 		ErrorModule,
 	],
 	providers: [
-		TaprootAssetsWalletService,
-		TaprootAssetsWalletResolver,
+		TaprootAssetsAssetService,
+		TaprootAssetsAssetResolver,
 	]
 })
-export class TaprootAssetsWalletModule {}
+export class TaprootAssetsAssetModule {}

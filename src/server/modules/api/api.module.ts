@@ -12,7 +12,7 @@ import { LightningBalanceModule } from "./lightning/balance/lnbalance.module";
 import { LightningWalletModule } from "./lightning/wallet/lnwallet.module";
 // Taproot Assets Endpoints
 import { TaprootAssetsInfoModule } from "./tapass/info/tapinfo.module";
-import { TaprootAssetsWalletModule } from "./tapass/wallet/tapwallet.module";
+import { TaprootAssetsAssetModule } from "./tapass/asset/tapasset.module";
 // Cashu Mint Endpoints
 import { MintInfoModule } from "./mint/info/mintinfo.module";
 import { MintBalanceModule } from "./mint/balance/mintbalance.module";
@@ -41,7 +41,7 @@ import { PublicUrlModule } from "./public/url/url.module";
 		LightningBalanceModule,
 		LightningWalletModule,
 		TaprootAssetsInfoModule,
-		TaprootAssetsWalletModule,
+		TaprootAssetsAssetModule,
 		MintInfoModule,
 		MintBalanceModule,
 		MintKeysetModule,

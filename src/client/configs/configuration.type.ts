@@ -13,6 +13,9 @@ export type Config = {
 	lightning : {
 		enabled: boolean;
 	},
+	taproot_assets : {
+		enabled: boolean;
+	},
 	mint : {
 		enabled: boolean;
 		critical_path: string;
