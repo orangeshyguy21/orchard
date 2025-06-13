@@ -29,6 +29,7 @@ export class IndexSectionComponent implements OnInit {
 	public enabled_lightning = environment.lightning.enabled;
 	public enabled_taproot_assets = environment.taproot_assets.enabled;
 	public enabled_mint = environment.mint.enabled;
+	public enabled_ecash = false;
 
 	public loading_bitcoin:boolean = false;
 	public loading_lightning:boolean = false;
