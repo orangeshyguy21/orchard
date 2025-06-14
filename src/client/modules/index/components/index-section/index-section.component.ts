@@ -9,7 +9,8 @@ import { BitcoinService } from '@client/modules/bitcoin/services/bitcoin.service
 import { LightningService } from '@client/modules/lightning/services/lightning/lightning.service';
 import { TaprootAssetsService } from '@client/modules/tapass/services/taproot-assets.service';
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
-import { BitcoinInfo } from '@client/modules/bitcoin/classes/bitcoin-info.class';
+import { BitcoinBlockchainInfo } from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
+import { BitcoinNetworkInfo } from '@client/modules/bitcoin/classes/bitcoin-network-info.class';
 import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.class';
 import { LightningBalance } from '@client/modules/lightning/classes/lightning-balance.class';
 import { TaprootAssetInfo } from '@client/modules/tapass/classes/taproot-asset-info.class';
@@ -41,7 +42,8 @@ export class IndexSectionComponent implements OnInit {
 	public error_taproot_assets!: string;
 	public error_mint!: string;
 
-	public bitcoin_info!: BitcoinInfo | null;
+	public bitcoin_blockchain_info!: BitcoinBlockchainInfo | null;
+	public bitcoin_network_info!: BitcoinNetworkInfo | null;
 	public lightning_info!: LightningInfo | null;
 	public lightning_balance!: LightningBalance | null;
 	public taproot_assets_info!: TaprootAssetInfo | null;
@@ -78,14 +80,19 @@ export class IndexSectionComponent implements OnInit {
 	private getBitcoin(): void {
 		this.loading_bitcoin = true;
 		this.cdr.detectChanges();
-		this.bitcoinService.loadBitcoinInfo().pipe(
-			tap((info: BitcoinInfo) => {
-				this.bitcoin_info = info;
+		forkJoin({
+			blockchain: this.bitcoinService.loadBitcoinBlockchainInfo(),
+			network: this.bitcoinService.loadBitcoinNetworkInfo()
+		}).pipe(
+			tap(({ blockchain, network }) => {
+				this.bitcoin_blockchain_info = blockchain;
+				this.bitcoin_network_info = network;
 				this.error_bitcoin = '';
 			}),
 			catchError((error) => {
 				this.error_bitcoin = error.message;
-				this.bitcoin_info = null;
+				this.bitcoin_blockchain_info = null;
+				this.bitcoin_network_info = null;
 				return EMPTY;
 			}),
 			finalize(() => {

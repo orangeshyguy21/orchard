@@ -5,18 +5,18 @@ import { OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 /* Vendor Dependencies */
 import { PubSub } from 'graphql-subscriptions';
 /* Local Dependencies */
-import { OrchardBitcoinBlockCount } from './btcblockcount.model';
-import { BitcoinBlockCountService } from './btcblockcount.service';
+import { OrchardBitcoinBlockCount, OrchardBitcoinBlockchainInfo } from './btcblockchain.model';
+import { BitcoinBlockchainService } from './btcblockchain.service';
 
 const pubSub = new PubSub();
 
 @Resolver(() => OrchardBitcoinBlockCount)
-export class BitcoinBlockCountResolver {
+export class BitcoinBlockchainResolver {
 
-	private readonly logger = new Logger(BitcoinBlockCountResolver.name);
+	private readonly logger = new Logger(BitcoinBlockchainResolver.name);
 	
 	constructor(
-		private bitcoinBlockCountService: BitcoinBlockCountService,
+		private bitcoinBlockchainService: BitcoinBlockchainService,
 	) {}
 	
 	// onModuleInit() {
@@ -35,7 +35,7 @@ export class BitcoinBlockCountResolver {
 	async bitcoin_blockcount() : Promise<OrchardBitcoinBlockCount> {
 		const tag = 'GET { bitcoin_blockcount }';
 		this.logger.debug(tag);
-		return await this.bitcoinBlockCountService.getBlockCount(tag);
+		return await this.bitcoinBlockchainService.getBlockCount(tag);
 	}
 
 	@Subscription(() => OrchardBitcoinBlockCount, {
@@ -45,5 +45,12 @@ export class BitcoinBlockCountResolver {
 	subscribeToBlockCount() {
 		this.logger.debug('SUBSCRIPTION { bitcoin.blockcount }');
 		return pubSub.asyncIterableIterator('bitcoin.blockcount');
+	}
+
+	@Query(() => OrchardBitcoinBlockchainInfo)
+	async bitcoin_blockchain_info() : Promise<OrchardBitcoinBlockchainInfo> {
+		const tag = 'GET { bitcoin_blockchain_info }';
+		this.logger.debug(tag);
+		return await this.bitcoinBlockchainService.getBlockchainInfo(tag);
 	}
 }

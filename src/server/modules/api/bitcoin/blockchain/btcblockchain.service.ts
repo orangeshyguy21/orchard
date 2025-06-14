@@ -8,12 +8,12 @@ import { ErrorService } from '@server/modules/error/error.service';
 import { OrchardErrorCode } from '@server/modules/error/error.types';
 import { OrchardApiError } from '@server/modules/graphql/classes/orchard-error.class';
 /* Local Dependencies */
-import { OrchardBitcoinBlockCount } from './btcblockcount.model';
+import { OrchardBitcoinBlockCount, OrchardBitcoinBlockchainInfo } from './btcblockchain.model';
 
 @Injectable()
-export class BitcoinBlockCountService implements OnModuleDestroy {
+export class BitcoinBlockchainService implements OnModuleDestroy {
 
-	private readonly logger = new Logger(BitcoinBlockCountService.name);
+	private readonly logger = new Logger(BitcoinBlockchainService.name);
 	private interval_id: NodeJS.Timeout;
 	private event_emitter = new EventEmitter();
 	private block_count: number;
@@ -25,6 +25,19 @@ export class BitcoinBlockCountService implements OnModuleDestroy {
 	
 	onModuleDestroy() {
 		this.stopBlockCountPolling();
+	}
+
+	public async getBlockchainInfo(tag: string = 'GET { bitcoin_blockchain_info }'): Promise<OrchardBitcoinBlockchainInfo> {
+		try {
+			const info = await this.bitcoinRpcService.getBitcoinBlockchainInfo();
+			console.log(info);
+			return new OrchardBitcoinBlockchainInfo(info);
+		} catch (error) {
+			const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
+				errord: OrchardErrorCode.BitcoinRPCError,
+			});
+			throw new OrchardApiError(error_code);
+		}
 	}
 	
 	public async getBlockCount(tag: string = 'GET { bitcoin_blockcount }'): Promise<OrchardBitcoinBlockCount> {

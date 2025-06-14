@@ -1,5 +1,5 @@
-export const BITCOIN_INFO_QUERY = `{
-    bitcoin_info{
+export const BITCOIN_BLOCKCHAIN_INFO_QUERY = `{
+    bitcoin_blockchain_info{
         chain
         blocks
         headers
@@ -20,5 +20,26 @@ export const BITCOIN_INFO_QUERY = `{
 export const BITCOIN_BLOCK_COUNT_QUERY = `{
     bitcoin_blockcount{
         height
+    }
+}`;
+
+export const BITCOIN_NETWORK_INFO_QUERY = `{
+    bitcoin_network_info{
+        connections
+        connections_in
+        connections_out
+        incrementalfee
+        localaddresses
+        localrelay
+        localservices
+        localservicesnames
+        networkactive
+        networks
+        protocolversion
+        relayfee
+        subversion
+        timeoffset
+        version
+        warnings
     }
 }`;

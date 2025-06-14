@@ -1,6 +1,6 @@
-import { OrchardBitcoinInfo } from "@shared/generated.types";
+import { OrchardBitcoinBlockchainInfo } from "@shared/generated.types";
 
-export class BitcoinInfo implements OrchardBitcoinInfo {
+export class BitcoinBlockchainInfo implements OrchardBitcoinBlockchainInfo {
 
 	public chain: string;
 	public blocks: number;
@@ -17,7 +17,7 @@ export class BitcoinInfo implements OrchardBitcoinInfo {
 	public prune_target_size: number | null;
 	public warnings: string[];
 
-	constructor(obc: OrchardBitcoinInfo) {
+	constructor(obc: OrchardBitcoinBlockchainInfo) {
 		this.chain = obc.chain;
 		this.blocks = obc.blocks;
 		this.headers = obc.headers;

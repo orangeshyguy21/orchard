@@ -348,8 +348,8 @@ export type OrchardBitcoinBlockCount = {
   height: Scalars['Int']['output'];
 };
 
-export type OrchardBitcoinInfo = {
-  __typename?: 'OrchardBitcoinInfo';
+export type OrchardBitcoinBlockchainInfo = {
+  __typename?: 'OrchardBitcoinBlockchainInfo';
   automatic_pruning?: Maybe<Scalars['Boolean']['output']>;
   bestblockhash: Scalars['String']['output'];
   blocks: Scalars['Int']['output'];
@@ -363,6 +363,42 @@ export type OrchardBitcoinInfo = {
   pruneheight?: Maybe<Scalars['Int']['output']>;
   size_on_disk: Scalars['Int']['output'];
   verificationprogress: Scalars['Float']['output'];
+  warnings: Array<Scalars['String']['output']>;
+};
+
+export type OrchardBitcoinNetwork = {
+  __typename?: 'OrchardBitcoinNetwork';
+  limited: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
+  proxy: Scalars['String']['output'];
+  proxy_randomize_credentials: Scalars['Boolean']['output'];
+  reachable: Scalars['Boolean']['output'];
+};
+
+export type OrchardBitcoinNetworkAddress = {
+  __typename?: 'OrchardBitcoinNetworkAddress';
+  address: Scalars['String']['output'];
+  port: Scalars['Int']['output'];
+  score: Scalars['Int']['output'];
+};
+
+export type OrchardBitcoinNetworkInfo = {
+  __typename?: 'OrchardBitcoinNetworkInfo';
+  connections: Scalars['Int']['output'];
+  connections_in: Scalars['Int']['output'];
+  connections_out: Scalars['Int']['output'];
+  incrementalfee: Scalars['Float']['output'];
+  localaddresses: Array<OrchardBitcoinNetworkAddress>;
+  localrelay: Scalars['Boolean']['output'];
+  localservices: Scalars['String']['output'];
+  localservicesnames: Array<Scalars['String']['output']>;
+  networkactive: Scalars['Boolean']['output'];
+  networks: Array<OrchardBitcoinNetwork>;
+  protocolversion: Scalars['Int']['output'];
+  relayfee: Scalars['Float']['output'];
+  subversion: Scalars['String']['output'];
+  timeoffset: Scalars['Int']['output'];
+  version: Scalars['Int']['output'];
   warnings: Array<Scalars['String']['output']>;
 };
 
@@ -816,8 +852,9 @@ export type OrchardTaprootAssetsUtxo = {
 export type Query = {
   __typename?: 'Query';
   ai_models: Array<OrchardAiModel>;
+  bitcoin_blockchain_info: OrchardBitcoinBlockchainInfo;
   bitcoin_blockcount: OrchardBitcoinBlockCount;
-  bitcoin_info: OrchardBitcoinInfo;
+  bitcoin_network_info: OrchardBitcoinNetworkInfo;
   lightning_balance: OrchardLightningBalance;
   lightning_info: OrchardLightningInfo;
   lightning_wallet: Array<OrchardLightningAccount>;

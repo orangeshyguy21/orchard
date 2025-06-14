@@ -1,10 +1,20 @@
 /* Core Dependencies */
 import { Field, Int, Float, ObjectType } from '@nestjs/graphql';
 /* Application Dependencies */
-import { BitcoinInfo } from '@server/modules/bitcoin/rpc/btcrpc.types';
+import { BitcoinBlockchainInfo } from '@server/modules/bitcoin/rpc/btcrpc.types';
 
 @ObjectType()
-export class OrchardBitcoinInfo {
+export class OrchardBitcoinBlockCount {
+
+	@Field(type => Int)
+	height: number;
+
+	constructor(height: number) {
+		this.height = height;
+	}
+}
+@ObjectType()
+export class OrchardBitcoinBlockchainInfo {
 
     @Field(type => String)
     chain: string;
@@ -48,7 +58,7 @@ export class OrchardBitcoinInfo {
     @Field(type => [String])
     warnings: string[];
 
-	constructor(obi: BitcoinInfo) {
+	constructor(obi: BitcoinBlockchainInfo) {
         this.chain = obi.chain;
 		this.blocks = obi.blocks;
         this.headers = obi.headers;

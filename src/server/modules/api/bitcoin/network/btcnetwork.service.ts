@@ -6,23 +6,22 @@ import { ErrorService } from '@server/modules/error/error.service';
 import { OrchardErrorCode } from '@server/modules/error/error.types';
 import { OrchardApiError } from '@server/modules/graphql/classes/orchard-error.class';
 /* Local Dependencies */
-import { OrchardBitcoinInfo } from './btcinfo.model';
+import { OrchardBitcoinNetworkInfo } from './btcnetwork.model';
 
 @Injectable()
-export class BitcoinInfoService {
+export class BitcoinNetworkService {
 
-    private readonly logger = new Logger(BitcoinInfoService.name);
+    private readonly logger = new Logger(OrchardBitcoinNetworkInfo.name);
 	
 	constructor(
 		private bitcoinRpcService: BitcoinRpcService,
 		private errorService: ErrorService,
 	) {}
 	
-	public async getBitcoinInfo(tag: string = 'GET { bitcoin_info }'): Promise<OrchardBitcoinInfo> {
+	public async getBitcoinNetworkInfo(tag: string = 'GET { bitcoin_network_info }'): Promise<OrchardBitcoinNetworkInfo> {
 		try {
-			const info = await this.bitcoinRpcService.getBitcoinInfo();
-			console.log(info);
-			return new OrchardBitcoinInfo(info);
+			const info = await this.bitcoinRpcService.getBitcoinNetworkInfo();
+			return new OrchardBitcoinNetworkInfo(info);
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
 				errord: OrchardErrorCode.BitcoinRPCError,

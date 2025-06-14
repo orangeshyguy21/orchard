@@ -244,7 +244,7 @@ type OrchardBitcoinBlockCount {
   height: Int!
 }
 
-type OrchardBitcoinInfo {
+type OrchardBitcoinBlockchainInfo {
   automatic_pruning: Boolean
   bestblockhash: String!
   blocks: Int!
@@ -258,6 +258,39 @@ type OrchardBitcoinInfo {
   pruneheight: Int
   size_on_disk: Int!
   verificationprogress: Float!
+  warnings: [String!]!
+}
+
+type OrchardBitcoinNetwork {
+  limited: Boolean!
+  name: String!
+  proxy: String!
+  proxy_randomize_credentials: Boolean!
+  reachable: Boolean!
+}
+
+type OrchardBitcoinNetworkAddress {
+  address: String!
+  port: Int!
+  score: Int!
+}
+
+type OrchardBitcoinNetworkInfo {
+  connections: Int!
+  connections_in: Int!
+  connections_out: Int!
+  incrementalfee: Float!
+  localaddresses: [OrchardBitcoinNetworkAddress!]!
+  localrelay: Boolean!
+  localservices: String!
+  localservicesnames: [String!]!
+  networkactive: Boolean!
+  networks: [OrchardBitcoinNetwork!]!
+  protocolversion: Int!
+  relayfee: Float!
+  subversion: String!
+  timeoffset: Int!
+  version: Int!
   warnings: [String!]!
 }
 
@@ -655,8 +688,9 @@ type OrchardTaprootAssetsUtxo {
 
 type Query {
   ai_models: [OrchardAiModel!]!
+  bitcoin_blockchain_info: OrchardBitcoinBlockchainInfo!
   bitcoin_blockcount: OrchardBitcoinBlockCount!
-  bitcoin_info: OrchardBitcoinInfo!
+  bitcoin_network_info: OrchardBitcoinNetworkInfo!
   lightning_balance: OrchardLightningBalance!
   lightning_info: OrchardLightningInfo!
   lightning_wallet: [OrchardLightningAccount!]!

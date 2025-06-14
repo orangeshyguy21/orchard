@@ -12,15 +12,18 @@ import { CacheService } from '@client/modules/cache/services/cache/cache.service
 import { OrchardBitcoinBlockCount } from '@shared/generated.types';
 /* Native Dependencies */
 import { BitcoinBlockCount } from '@client/modules/bitcoin/classes/bitcoin-blockcount.class';
-import { BitcoinInfo } from '@client/modules/bitcoin/classes/bitcoin-info.class';
+import { BitcoinBlockchainInfo } from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
+import { BitcoinNetworkInfo } from '@client/modules/bitcoin/classes/bitcoin-network-info.class';
 import {
-	BitcoinInfoResponse,
+	BitcoinBlockchainInfoResponse,
 	BitcoinBlockCountResponse,
+	BitcoinNetworkInfoResponse,
 } from '@client/modules/bitcoin/types/bitcoin.types';
 /* Local Dependencies */
 import { 
-	BITCOIN_INFO_QUERY,
+	BITCOIN_BLOCKCHAIN_INFO_QUERY,
 	BITCOIN_BLOCK_COUNT_QUERY,
+	BITCOIN_NETWORK_INFO_QUERY,
 } from './bitcoin.queries';
 
 @Injectable({
@@ -28,55 +31,85 @@ import {
 })
 export class BitcoinService {
 
-	public get bitcoin_info$(): Observable<BitcoinInfo | null> { return this.bitcoin_info_subject.asObservable(); }
+	public get bitcoin_blockchain_info$(): Observable<BitcoinBlockchainInfo | null> { return this.bitcoin_blockchain_info_subject.asObservable(); }
 
 	public readonly CACHE_KEYS = {
-		BITCOIN_INFO: 'bitcoin-info',
+		BITCOIN_BLOCKCHAIN_INFO: 'bitcoin-blockchain-info',
+		BITCOIN_NETWORK_INFO: 'bitcoin-network-info',
 	};
 
 	private readonly CACHE_DURATIONS = {
-		[this.CACHE_KEYS.BITCOIN_INFO]: 30 * 60 * 1000, // 30 minutes
+		[this.CACHE_KEYS.BITCOIN_BLOCKCHAIN_INFO]: 30 * 60 * 1000, // 30 minutes
+		[this.CACHE_KEYS.BITCOIN_NETWORK_INFO]: 30 * 60 * 1000, // 30 minutes
 	};
 
 	/* Subjects for caching */
-	private readonly bitcoin_info_subject: BehaviorSubject<BitcoinInfo | null>;
+	private readonly bitcoin_blockchain_info_subject: BehaviorSubject<BitcoinBlockchainInfo | null>;
+	private readonly bitcoin_network_info_subject: BehaviorSubject<BitcoinNetworkInfo | null>;
 
 	/* Observables for caching (rapid request caching) */
-	private bitcoin_info_observable!: Observable<BitcoinInfo> | null;
+	private bitcoin_blockchain_info_observable!: Observable<BitcoinBlockchainInfo> | null;
 
 	constructor(
 		public http: HttpClient,
 		public cache: CacheService,
 	) {
-		this.bitcoin_info_subject = this.cache.createCache<BitcoinInfo>(
-			this.CACHE_KEYS.BITCOIN_INFO,
-			this.CACHE_DURATIONS[this.CACHE_KEYS.BITCOIN_INFO]
+		this.bitcoin_blockchain_info_subject = this.cache.createCache<BitcoinBlockchainInfo>(
+			this.CACHE_KEYS.BITCOIN_BLOCKCHAIN_INFO,
+			this.CACHE_DURATIONS[this.CACHE_KEYS.BITCOIN_BLOCKCHAIN_INFO]
+		);
+		this.bitcoin_network_info_subject = this.cache.createCache<BitcoinNetworkInfo>(
+			this.CACHE_KEYS.BITCOIN_NETWORK_INFO,
+			this.CACHE_DURATIONS[this.CACHE_KEYS.BITCOIN_NETWORK_INFO]
 		);
 	}
 
-	public loadBitcoinInfo(): Observable<BitcoinInfo> {
-		if ( this.bitcoin_info_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.BITCOIN_INFO) ) return of(this.bitcoin_info_subject.value);
-		if ( this.bitcoin_info_observable ) return this.bitcoin_info_observable;
-		const query = getApiQuery(BITCOIN_INFO_QUERY);
-		this.bitcoin_info_observable = this.http.post<OrchardRes<BitcoinInfoResponse>>(api, query).pipe(
+	public loadBitcoinBlockchainInfo(): Observable<BitcoinBlockchainInfo> {
+		if ( this.bitcoin_blockchain_info_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.BITCOIN_BLOCKCHAIN_INFO) ) return of(this.bitcoin_blockchain_info_subject.value);
+		if ( this.bitcoin_blockchain_info_observable ) return this.bitcoin_blockchain_info_observable;
+		const query = getApiQuery(BITCOIN_BLOCKCHAIN_INFO_QUERY);
+		this.bitcoin_blockchain_info_observable = this.http.post<OrchardRes<BitcoinBlockchainInfoResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
-				return response.data.bitcoin_info;
+				return response.data.bitcoin_blockchain_info;
 			}),
-			map((btc_info) => new BitcoinInfo(btc_info)),
+			map((btc_info) => new BitcoinBlockchainInfo(btc_info)),
 			tap((btc_info) => {
-				this.cache.updateCache(this.CACHE_KEYS.BITCOIN_INFO, btc_info);
-				this.bitcoin_info_subject.next(btc_info);
-				this.bitcoin_info_observable = null;
+				this.cache.updateCache(this.CACHE_KEYS.BITCOIN_BLOCKCHAIN_INFO, btc_info);
+				this.bitcoin_blockchain_info_subject.next(btc_info);
+				this.bitcoin_blockchain_info_observable = null;
 			}),
 			shareReplay(1),
 			catchError((error) => {
-				console.error('Error loading bitcoin info:', error);
-				this.bitcoin_info_observable = null;
+				console.error('Error loading bitcoin blockchain info:', error);
+				this.bitcoin_blockchain_info_observable = null;
 				return throwError(() => error);
 			}),
 		);
-		return this.bitcoin_info_observable;
+		return this.bitcoin_blockchain_info_observable;
+	}
+
+	public loadBitcoinNetworkInfo(): Observable<BitcoinNetworkInfo> {
+		if ( this.bitcoin_network_info_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.BITCOIN_NETWORK_INFO) ) {
+			return of(this.bitcoin_network_info_subject.value);
+		}
+
+		const query = getApiQuery(BITCOIN_NETWORK_INFO_QUERY);
+
+		return this.http.post<OrchardRes<BitcoinNetworkInfoResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.bitcoin_network_info;
+			}),
+			map((bitcoin_network_info) => new BitcoinNetworkInfo(bitcoin_network_info)),
+			tap((mint_keysets) => {
+				this.cache.updateCache(this.CACHE_KEYS.BITCOIN_NETWORK_INFO, mint_keysets);
+			}),
+			catchError((error) => {
+				console.error('Error loading bitcoin network info:', error);
+				return throwError(() => error);
+			})
+		);
 	}
 
 	public getBlockCount() : Observable<OrchardBitcoinBlockCount> {

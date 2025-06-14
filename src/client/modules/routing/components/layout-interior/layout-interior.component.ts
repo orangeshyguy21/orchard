@@ -15,7 +15,7 @@ import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { AiService } from '@client/modules/ai/services/ai/ai.service';
 import { EventService } from '@client/modules/event/services/event/event.service';
 import { EventData } from '@client/modules/event/classes/event-data.class';
-import { BitcoinInfo } from '@client/modules/bitcoin/classes/bitcoin-info.class';
+import { BitcoinBlockchainInfo } from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
 import { BitcoinBlockCount } from '@client/modules/bitcoin/classes/bitcoin-blockcount.class';
 import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.class';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
@@ -83,8 +83,8 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	private orchardOptionalInit(): void {
 		if( this.enabled_bitcoin ) {
-			this.bitcoinService.loadBitcoinInfo().subscribe();
-			this.subscriptions.add(this.getBitcoinInfoSubscription());
+			this.bitcoinService.loadBitcoinBlockchainInfo().subscribe();
+			this.subscriptions.add(this.getBitcoinBlockchainInfoSubscription());
 			this.subscriptions.add(this.getBitcoinBlockCountSubscription());
 		}
 		if( this.enabled_lightning ) {
@@ -119,9 +119,9 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 			});
 	}
 
-	private getBitcoinInfoSubscription(): Subscription {
-		return this.bitcoinService.bitcoin_info$.subscribe({
-			next: (info: BitcoinInfo | null) => {
+	private getBitcoinBlockchainInfoSubscription(): Subscription {
+		return this.bitcoinService.bitcoin_blockchain_info$.subscribe({
+			next: (info: BitcoinBlockchainInfo | null) => {
 				this.chain = info?.chain || '';
 				this.online_bitcoin = (info !== null) ? true : false;
 				this.cdr.detectChanges();
