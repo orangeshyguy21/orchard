@@ -49,6 +49,7 @@
     // Width
     #{$c}w-0 { width: 0; }
     #{$c}w-full { width: 100%; }
+    #{$c}w-0-5 { width: 0.5rem; }
     #{$c}w-1 { width: 1rem; }
     #{$c}w-1-5 { width: 1.5rem; }
     #{$c}w-1-75 { width: 1.75rem; }
@@ -116,6 +117,7 @@
     // Absolute Positioning
     #{$c}bottom-0 { bottom: 0; }
     #{$c}bottom-0-5 { bottom: 0.5rem; }
+    #{$c}bottom-1 { bottom: 1rem; }
     #{$c}left-0 { left: 0; }
     #{$c}left-half { left: 50%; }
     #{$c}top-0 { top: 0; }

@@ -29,7 +29,7 @@ export class AmountPipe implements PipeTransform {
 			case 'eur':
 				return this.transformFiat(amount, unit, locale, section);
 			default:
-				return `${amount.toLocaleString()} ${unit}`;
+				return this.transformToHtml(amount.toLocaleString(), unit);
 		}
 	}
 

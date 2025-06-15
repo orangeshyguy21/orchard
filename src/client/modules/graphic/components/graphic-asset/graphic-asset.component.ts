@@ -18,9 +18,12 @@ export class GraphicAssetComponent {
 	});
 
 	public unit_icon = computed(() => {
+		if( this.lower_unit() === 'sat' ) return 'currency_bitcoin';
+		if( this.lower_unit() === 'msat' ) return 'currency_bitcoin';
+		if( this.lower_unit() === 'btc' ) return 'currency_bitcoin';
 		if( this.lower_unit() === 'usd' ) return 'attach_money';
 		if( this.lower_unit() === 'eur' ) return 'euro';
-		return 'currency_bitcoin';
+		return 'question_mark';
 	});
 
 	public unit_icon_size = computed(() => {
@@ -29,9 +32,12 @@ export class GraphicAssetComponent {
 	});
 
 	public unit_class = computed(() => {
+		if( this.lower_unit() === 'sat' ) return 'graphic-asset-btc';
+		if( this.lower_unit() === 'msat' ) return 'graphic-asset-btc';
+		if( this.lower_unit() === 'btc' ) return 'graphic-asset-btc';
 		if( this.lower_unit() === 'usd' ) return 'graphic-asset-usd';
 		if( this.lower_unit() === 'eur' ) return 'graphic-asset-eur';
-		return 'graphic-asset-btc';
+		return 'graphic-asset-unknown';
 	});
 
 	public custody_icon = computed(() => {

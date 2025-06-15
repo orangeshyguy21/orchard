@@ -1,5 +1,90 @@
-<mat-card appearance="outlined">
+<mat-card appearance="outlined" class="bitcoin-enabled-card">
     <mat-card-content>
-        <mat-icon class="icon-lg" [svgIcon]="'bitcoin'"></mat-icon>
+
+        <div class="absolute left-1 top-1">
+            <div class="flex flex-column flex-gap-0-25">
+                <div class="flex flex-items-center flex-gap-0-5 h-1">
+                    @if( loading ) {
+                        <div class="h-1 w-1 orc-corner-full shimmer-high"></div>
+                        <div class="h-1 w-4 orc-corner-full shimmer-high"></div>
+                    } @else {
+                        <mat-icon class="icon-sm trans-color-medium orc-status-active-color">circle</mat-icon>
+                        <div class="orc-outline-color">online</div>
+                    }
+                </div>
+                <div class="flex flex-items-center flex-gap-0-5">
+                    @if( loading ) {
+                        <div class="h-1 w-1 orc-corner-full shimmer-high"></div>
+                        <div class="h-1 w-4 orc-corner-full shimmer-high"></div>
+                    } @else {
+                        <mat-icon class="icon-sm trans-color-medium orc-status-active-color">circle</mat-icon>
+                        <div class="orc-outline-color">synced</div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-column flex-gap-2">
+            <div class="flex flex-justify-center">
+                <div class="flex flex-items-center flex-gap-1">
+                    <mat-icon class="icon-lg" [svgIcon]="'bitcoin_outline'"></mat-icon>
+                    <div class="font-size-xxl font-weight-bold">Bitcoin</div>
+                </div>
+            </div>
+    
+            <div class="flex flex-gap-2">
+                <div class="flex-1 flex flex-column flex-gap-1">
+                    <div class="title-l">Info</div>
+                    <div class="flex flex-gap-2">
+                        <div class="flex flex-column flex-gap-1">
+                            <div class="font-weight-light orc-outline-color">Chain</div>
+                            <div class="font-weight-light orc-outline-color">Block height</div>
+                            <div class="font-weight-light orc-outline-color">Chain weight</div>
+                        </div>
+                        <div class="flex flex-column flex-gap-1">
+                            @if( loading ) {
+                                <div class="h-1 m-b-0-5 w-5 orc-corner-full shimmer-high"></div>
+                                <div class="h-1 m-b-0-5 w-5 orc-corner-full shimmer-high"></div>
+                                <div class="h-1 w-8 orc-corner-full shimmer-high"></div>
+                            } @else {
+                                <div [@fadeIn] class="font-weight-bold">{{ blockchain_info.chain }}</div>
+                                <div [@fadeIn] class="font-weight-bold">{{ blockchain_info.blocks | block }}</div>
+                                <div [@fadeIn] class="font-weight-bold">{{ blockchain_info.size_on_disk | bytes }}</div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-1 flex flex-column flex-gap-1">
+                    <div class="title-l">Hot wallet</div>
+                    <div>
+                        @if( loading ) {
+                            <div class="h-2 orc-corner-full shimmer-high"></div>
+                        } @else {
+                            <div [@fadeIn] class="flex flex-column flex-gap-1">
+                                @for( balance of balances_hot; track balance.unit ) {
+                                    <div class="flex flex-items-center flex-gap-2">
+                                        <orc-graphic-asset 
+                                            [unit]="balance.unit" 
+                                            [height]="'2rem'"
+                                            [custody]="'hot'">
+                                        </orc-graphic-asset>
+                                        <span class="text-nowrap font-size-l" [innerHTML]="balance.amount | amount : balance.unit : 'bitcoin'"></span>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute right-1 bottom-1">
+            @if( loading ) {
+                <div class="h-1 w-8 orc-corner-full shimmer-high"></div>
+            } @else {
+                <div class="orc-outline-color" [@fadeIn]>{{ network_info.subversion }}</div>
+            }
+        </div>
+
     </mat-card-content>
 </mat-card>

@@ -13,9 +13,12 @@ import { BitcoinBlockchainInfo } from '@client/modules/bitcoin/classes/bitcoin-b
 import { BitcoinNetworkInfo } from '@client/modules/bitcoin/classes/bitcoin-network-info.class';
 import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.class';
 import { LightningBalance } from '@client/modules/lightning/classes/lightning-balance.class';
+import { LightningAccount } from '@client/modules/lightning/classes/lightning-account.class';
 import { TaprootAssetInfo } from '@client/modules/tapass/classes/taproot-asset-info.class';
 import { TaprootAssets } from '@client/modules/tapass/classes/taproot-assets.class';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
+import { MintBalance } from '@client/modules/mint/classes/mint-balance.class';
+import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 
 @Component({
 	selector: 'orc-index-section',
@@ -29,6 +32,7 @@ export class IndexSectionComponent implements OnInit {
 	public enabled_bitcoin = environment.bitcoin.enabled;
 	public enabled_lightning = environment.lightning.enabled;
 	public enabled_taproot_assets = environment.taproot_assets.enabled;
+	public version = environment.mode.version;
 	public enabled_mint = environment.mint.enabled;
 	public enabled_ecash = false;
 
@@ -46,9 +50,12 @@ export class IndexSectionComponent implements OnInit {
 	public bitcoin_network_info!: BitcoinNetworkInfo | null;
 	public lightning_info!: LightningInfo | null;
 	public lightning_balance!: LightningBalance | null;
+	public lightning_accounts!: LightningAccount[] | null;
 	public taproot_assets_info!: TaprootAssetInfo | null;
 	public taproot_assets!: TaprootAssets | null;
 	public mint_info!: MintInfo | null;
+	public mint_balances!: MintBalance[] | null;
+	public mint_keysets!: MintKeyset[] | null;
 
 	constructor(
 		private bitcoinService: BitcoinService,
@@ -87,6 +94,8 @@ export class IndexSectionComponent implements OnInit {
 			tap(({ blockchain, network }) => {
 				this.bitcoin_blockchain_info = blockchain;
 				this.bitcoin_network_info = network;
+				console.log('BLOCKCHAIN INFO', this.bitcoin_blockchain_info);
+				console.log('NETWORK INFO', this.bitcoin_network_info);
 				this.error_bitcoin = '';
 			}),
 			catchError((error) => {
@@ -96,8 +105,12 @@ export class IndexSectionComponent implements OnInit {
 				return EMPTY;
 			}),
 			finalize(() => {
-				this.loading_bitcoin = false;
-				this.cdr.detectChanges();
+				setTimeout(() => {
+					this.loading_bitcoin = false;
+					this.cdr.detectChanges();
+				}, 1000);
+				// this.loading_bitcoin = false;
+				// this.cdr.detectChanges();
 			})
 		).subscribe();
 	}
@@ -108,16 +121,23 @@ export class IndexSectionComponent implements OnInit {
 
 		forkJoin({
 			info: this.lightningService.loadLightningInfo(),
-			balance: this.lightningService.loadLightningBalance()
+			balance: this.lightningService.loadLightningBalance(),
+			accounts: this.lightningService.loadLightningAccounts()
 		}).pipe(
-			tap(({ info, balance }) => {
+			tap(({ info, balance, accounts }) => {
 				this.lightning_info = info;
 				this.lightning_balance = balance;
+				this.lightning_accounts = accounts;
+				// console.log('LIGHTNING INFO', this.lightning_info);
+				// console.log('LIGHTNING BALANCE', this.lightning_balance);
+				// console.log('LIGHTNING ACCOUNTS', this.lightning_accounts);
 				this.error_lightning = ''; 
 			}),
 			catchError((error) => {
 				this.error_lightning = error instanceof Error ? error.message : 'An unknown error occurred';
 				this.lightning_info = null;
+				this.lightning_balance = null;
+				this.lightning_accounts = null;
 				return EMPTY;
 			}),
 			finalize(() => {
@@ -138,6 +158,8 @@ export class IndexSectionComponent implements OnInit {
 			tap(({ info, assets }) => {
 				this.taproot_assets_info = info;
 				this.taproot_assets = assets;
+				console.log('TAPROOT ASSETS INFO', this.taproot_assets_info);
+				console.log('TAPROOT ASSETS', this.taproot_assets);
 				this.error_taproot_assets = ''; 
 			}),
 			catchError((error) => {
@@ -157,14 +179,25 @@ export class IndexSectionComponent implements OnInit {
 		this.loading_mint = true;
 		this.cdr.detectChanges();
 
-		this.mintService.loadMintInfo().pipe(
-			tap((info: MintInfo) => {
+		forkJoin({
+			info: this.mintService.loadMintInfo(),
+			balances: this.mintService.loadMintBalances(),
+			keysets: this.mintService.loadMintKeysets()
+		}).pipe(
+			tap(({ info, balances, keysets }) => {
 				this.mint_info = info;
+				this.mint_balances = balances;
+				this.mint_keysets = keysets;
+				// console.log('MINT INFO', this.mint_info);
+				// console.log('MINT BALANCES', this.mint_balances);
+				// console.log('MINT KEYSETS', this.mint_keysets);
 				this.error_mint = '';
 			}),
 			catchError((error) => {
 				this.error_mint = error instanceof Error ? error.message : 'An unknown error occurred';
 				this.mint_info = null;
+				this.mint_balances = null;
+				this.mint_keysets = null;
 				return EMPTY;
 			}),
 			finalize(() => {

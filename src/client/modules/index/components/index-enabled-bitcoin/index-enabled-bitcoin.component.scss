@@ -3,3 +3,7 @@
 :host {
     @extend %w-full;
 }
+
+.bitcoin-enabled-card{
+    min-height: 20rem;
+}

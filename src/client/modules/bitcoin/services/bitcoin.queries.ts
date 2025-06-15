@@ -29,12 +29,22 @@ export const BITCOIN_NETWORK_INFO_QUERY = `{
         connections_in
         connections_out
         incrementalfee
-        localaddresses
+        localaddresses{
+            address
+            port
+            score
+        }
         localrelay
         localservices
         localservicesnames
         networkactive
-        networks
+        networks{
+            name
+            limited
+            reachable
+            proxy
+            proxy_randomize_credentials
+        }
         protocolversion
         relayfee
         subversion
