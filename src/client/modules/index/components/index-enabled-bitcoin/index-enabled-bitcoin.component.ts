@@ -11,6 +11,7 @@ type HotCoins = {
 	unit: string;
 	amount: number;
 	decimal_display: number;
+	utxos: number;
 }
 
 @Component({
@@ -54,7 +55,8 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 		const lightning_wallet = {
 			unit: 'sat',
 			amount: this.getLightningWalletBalance(),
-			decimal_display: 0
+			decimal_display: 0,
+			utxos: this.getLightningWalletUtxos()
 		}
 		const taproot_assets_wallet = this.getTaprootAssetsWalletBalance();
 		return ( taproot_assets_wallet ) ? [lightning_wallet, ...taproot_assets_wallet] : [lightning_wallet];
@@ -67,6 +69,16 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 			.reduce((sum, address) => sum + address.balance, 0);
 	}
 
+	private getLightningWalletUtxos(): number {
+		if (!this.enabled_lightning) return 0;
+		const unique_addresses = new Set(
+			this.lightning_accounts
+				.flatMap(account => account.addresses)
+				.map(address => address.address)
+		);
+		return unique_addresses.size;
+	}
+
 	private getTaprootAssetsWalletBalance(): HotCoins[] | null {
 		if (!this.enabled_taproot_assets) return null;
 		const grouped_assets = this.taproot_assets.assets.reduce((acc, asset) => {
@@ -76,10 +88,12 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 				acc[asset_id] = {
 					unit: asset.asset_genesis.name,
 					amount: 0,
-					decimal_display: asset.decimal_display?.decimal_display
+					decimal_display: asset.decimal_display?.decimal_display,
+					utxos: 0
 				};
 			}
 			acc[asset_id].amount += amount;
+			acc[asset_id].utxos++;
 			return acc;
 		}, {} as Record<string, HotCoins>);
 		return Object.values(grouped_assets);

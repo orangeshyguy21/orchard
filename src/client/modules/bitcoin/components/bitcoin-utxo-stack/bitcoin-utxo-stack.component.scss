@@ -1,0 +1,70 @@
+@use '@styles/molecule/molecule';
+
+.bitcoin-utxo-stack-container {
+    position: relative;   /* creates a stacking context */
+    z-index: 0;           /* ensures stacking context */
+    isolation: isolate;   /* strictly isolates z-index children */
+}
+
+.coin-top{
+    @extend %w-2;
+    @extend %h-2;
+    @extend %orc-corner-full;
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-justify-center;
+    @extend %font-size-xs;
+    @extend %font-weight-bold;
+    @extend %orc-surface-color;
+    line-height: 1;
+    z-index: 1;
+}
+
+.utxo-asset-btc{
+    @extend %orc-asset-btc-bg;
+}
+.utxo-asset-usd{
+    @extend %orc-asset-usd-bg;
+}
+.utxo-asset-eur{
+    @extend %orc-asset-eur-bg;
+}
+.utxo-asset-unknown{
+    @extend %orc-surface-tint-bg;
+}
+
+.utxo-overflow-btc{
+    @extend %orc-asset-btc-color;
+}
+.utxo-overflow-usd{
+    @extend %orc-asset-usd-color;
+}
+.utxo-overflow-eur{
+    @extend %orc-asset-eur-color;
+}
+.utxo-overflow-unknown{
+    @extend %orc-surface-tint-color;
+}
+
+
+.coin-wrapper{
+    width: 0.5rem;
+}
+
+.coin-stacked{
+    @extend %relative;
+    @extend %h-2;
+    @extend %w-3;
+    @extend %orc-corner-full;
+
+    &:before{
+        content: '';
+        @extend %absolute;
+        @extend %top-0;
+        left: 0.25rem;
+        @extend %h-full;
+        @extend %w-full;
+        @extend %orc-corner-full;
+        @extend %orc-surface-bg;
+    }
+}

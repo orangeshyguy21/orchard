@@ -58,7 +58,12 @@
                     <div class="title-l">Hot wallet</div>
                     <div>
                         @if( loading ) {
-                            <div class="h-2 orc-corner-full shimmer-high"></div>
+                            <div class="flex flex-column flex-gap-1">
+                                <div class="h-2 orc-corner-full shimmer-high"></div>
+                                @if( enabled_taproot_assets){
+                                    <div class="h-2 orc-corner-full shimmer-high"></div>
+                                }
+                            </div>
                         } @else {
                             <div [@fadeIn] class="flex flex-column flex-gap-1">
                                 @for( balance of balances_hot; track balance.unit ) {
@@ -68,7 +73,11 @@
                                             [height]="'2rem'"
                                             [custody]="'hot'">
                                         </orc-graphic-asset>
-                                        <span class="text-nowrap font-size-l" [innerHTML]="balance.amount | amount : balance.unit : 'bitcoin'"></span>
+                                        <span class="text-nowrap font-size-l flex-grow" [innerHTML]="balance.amount | amount : balance.unit : 'bitcoin'"></span>
+                                        <orc-bitcoin-utxo-stack 
+                                            [unit]="balance.unit"
+                                            [coins]="balance.utxos">
+                                        </orc-bitcoin-utxo-stack>
                                     </div>
                                 }
                             </div>

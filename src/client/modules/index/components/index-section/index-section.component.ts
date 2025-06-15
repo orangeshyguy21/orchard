@@ -128,9 +128,9 @@ export class IndexSectionComponent implements OnInit {
 				this.lightning_info = info;
 				this.lightning_balance = balance;
 				this.lightning_accounts = accounts;
-				// console.log('LIGHTNING INFO', this.lightning_info);
-				// console.log('LIGHTNING BALANCE', this.lightning_balance);
-				// console.log('LIGHTNING ACCOUNTS', this.lightning_accounts);
+				console.log('LIGHTNING INFO', this.lightning_info);
+				console.log('LIGHTNING BALANCE', this.lightning_balance);
+				console.log('LIGHTNING ACCOUNTS', this.lightning_accounts);
 				this.error_lightning = ''; 
 			}),
 			catchError((error) => {
