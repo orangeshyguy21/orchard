@@ -18,7 +18,7 @@ import { GraphicAssetComponent } from './components/graphic-asset/graphic-asset.
 	],
 	exports: [
 		GraphicOrchardLogoComponent,
-		GraphicAssetComponent
+		GraphicAssetComponent,
 	]
 })
 export class GraphicModule { }

@@ -1,9 +1,9 @@
 @use '@styles/molecule/molecule';
 
 .bitcoin-utxo-stack-container {
-    position: relative;   /* creates a stacking context */
-    z-index: 0;           /* ensures stacking context */
-    isolation: isolate;   /* strictly isolates z-index children */
+    @extend %relative;   /* creates a stacking context */
+    @extend %z-index-0;  /* ensures stacking context */
+    @extend %isolated;   /* strictly isolates z-index children */
 }
 
 .coin-top{
@@ -17,17 +17,14 @@
     @extend %font-weight-bold;
     @extend %orc-surface-color;
     line-height: 0.8;
-    z-index: 1;
+    @extend %z-index-1;
 }
 
 .utxo-asset-btc{
     @extend %orc-asset-btc-bg;
 }
-.utxo-asset-usd{
-    @extend %orc-asset-usd-bg;
-}
-.utxo-asset-eur{
-    @extend %orc-asset-eur-bg;
+.utxo-asset-tether{
+    @extend %orc-asset-tether-bg;
 }
 .utxo-asset-unknown{
     @extend %orc-surface-tint-bg;
@@ -36,11 +33,8 @@
 .utxo-overflow-btc{
     @extend %orc-asset-btc-color;
 }
-.utxo-overflow-usd{
-    @extend %orc-asset-usd-color;
-}
-.utxo-overflow-eur{
-    @extend %orc-asset-eur-color;
+.utxo-overflow-tether{
+    @extend %orc-asset-tether-color;
 }
 .utxo-overflow-unknown{
     @extend %orc-surface-tint-color;
@@ -48,7 +42,7 @@
 
 
 .coin-wrapper{
-    width: 0.5rem;
+    @extend %w-0-5;
 }
 
 .coin-stacked{

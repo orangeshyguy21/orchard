@@ -12,6 +12,7 @@ type HotCoins = {
 	amount: number;
 	decimal_display: number;
 	utxos: number;
+	asset_id?: string;
 }
 
 @Component({
@@ -89,7 +90,8 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 					unit: asset.asset_genesis.name,
 					amount: 0,
 					decimal_display: asset.decimal_display?.decimal_display,
-					utxos: 0
+					utxos: 0,
+					asset_id: asset.asset_genesis.asset_id
 				};
 			}
 			acc[asset_id].amount += amount;

@@ -7,3 +7,10 @@
 .lightning-enabled-card{
     min-height: 20rem;
 }
+
+.channel-divider{
+    width: 0.25rem;
+    height: 100%;
+    @extend %orc-corner-full;
+    @extend %orc-surface-container-highest-bg
+}

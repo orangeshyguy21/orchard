@@ -3,6 +3,13 @@ import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } f
 import { animate, style, transition, trigger } from '@angular/animations';
 /* Application Dependencies */
 import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.class';
+import { LightningBalance } from '@client/modules/lightning/classes/lightning-balance.class';
+
+type Channel = {
+	total: number;
+	recievable: number;
+	spendable: number;
+}
 
 @Component({
 	selector: 'orc-index-enabled-lightning',
@@ -24,6 +31,7 @@ export class IndexEnabledLightningComponent implements OnChanges {
 	@Input() loading!: boolean;
 	@Input() enabled_taproot_assets!: boolean;
 	@Input() lightning_info!: LightningInfo;
+	@Input() lightning_balance!: LightningBalance;
 
 	ngOnChanges(changes: SimpleChanges): void {
 		if( changes['loading'] && !this.loading ) {
@@ -31,5 +39,4 @@ export class IndexEnabledLightningComponent implements OnChanges {
 			// console.log('balances_hot', this.balances_hot);
 		}
 	}
-
 }

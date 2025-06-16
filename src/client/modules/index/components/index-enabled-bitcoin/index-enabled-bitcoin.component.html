@@ -72,12 +72,14 @@
                                         <orc-graphic-asset 
                                             [unit]="balance.unit" 
                                             [height]="'2rem'"
-                                            [custody]="'hot'">
+                                            [custody]="'hot'"
+                                            [asset_id]="balance.asset_id">
                                         </orc-graphic-asset>
                                         <span class="text-nowrap font-size-l flex-grow" [innerHTML]="balance.amount | amount : balance.unit : 'bitcoin'"></span>
                                         <orc-bitcoin-utxo-stack 
                                             [unit]="balance.unit"
-                                            [coins]="balance.utxos">
+                                            [coins]="balance.utxos"
+                                            [asset_id]="balance.asset_id">
                                         </orc-bitcoin-utxo-stack>
                                     </div>
                                 }
