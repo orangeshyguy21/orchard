@@ -26,10 +26,6 @@ export class PrimaryNavItemComponent {
 	public get indicator_class(): string {
 		if( this.online === false ) return 'trans-bg-medium orc-status-inactive-bg';
 		if( this.online === true ) return 'trans-bg-medium orc-status-active-bg';
-		// if( !this.public_url ) return 'orc-surface-container-high-color';
-		// if( this.public_url.status !== 200 ) return 'orc-status-inactive-color';
-		// if( !this.public_url.has_data ) return 'orc-status-warning-color';
-		// if( this.public_url.has_data ) return 'orc-status-active-color';
 		return 'shimmer-highest';
 	}
 
