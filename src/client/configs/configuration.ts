@@ -10,8 +10,21 @@ const api = {
 	path: process.env["BASE_PATH"] || 'api',
 };
 
-const cashu = {
-	critical_path: "/v1/info"
+const bitcoin = {
+	enabled: process.env["BITCOIN_TYPE"] ? true : false,
+}
+
+const lightning = {
+	enabled: process.env["LIGHTNING_TYPE"] ? true : false,
+}
+
+const taproot_assets = {
+	enabled: process.env["TAPROOT_ASSETS_TYPE"] ? true : false,
+}
+
+const mint = {
+	enabled: process.env["MINT_TYPE"] ? true : false,
+	critical_path: "/v1/info",
 }
 
 const ai = {
@@ -21,6 +34,9 @@ const ai = {
 export const environment : Config = {
 	mode,
 	api,
-	cashu,
+	bitcoin,
+	lightning,
+	taproot_assets,
+	mint,
 	ai,
 }

@@ -111,7 +111,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		if( !this.mint_info?.urls ) return;
 		if( this.mint_info.urls.length === 0 ) return;
 		const test_urls = this.mint_info.urls.map((url) => {
-			return `${url.replace(/\/$/, '')}${environment.cashu.critical_path}`;
+			return `${url.replace(/\/$/, '')}${environment.mint.critical_path}`;
 		});
 		this.publicService.getPublicUrlsData(test_urls)
 			.subscribe((urls) => {

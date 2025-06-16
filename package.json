@@ -1,6 +1,6 @@
 {
   "name": "orchard",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "a super application for cashu mints and taproot asset lightning nodes",
   "author": "shyguy",
   "private": true,

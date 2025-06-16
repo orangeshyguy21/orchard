@@ -14,6 +14,10 @@ export const LIGHTNING_INFO_QUERY = `{
         require_htlc_interceptor
         store_final_htlc_resolutions
         synced_to_chain
+        version
+        synced_to_graph
+        testnet
+        uris
         chains{
             chain
             network
@@ -25,11 +29,33 @@ export const LIGHTNING_INFO_QUERY = `{
             name
         }
     }
-}`
+}`;
 
 export const LIGHTNING_BALANCE_QUERY = `{
     lightning_balance{
+        balance
+        custom_channel_data{
+            open_channels{
+                asset_id
+                chan_id
+                local_balance
+                name
+                remote_balance
+            }
+            pending_channels{
+                asset_id
+                chan_id
+                local_balance
+                name
+                remote_balance
+            }
+        }
         local_balance{
+            sat
+            msat
+        }
+        pending_open_balance
+        pending_open_remote_balance{
             sat
             msat
         }
@@ -37,21 +63,26 @@ export const LIGHTNING_BALANCE_QUERY = `{
             sat
             msat
         }
-        custom_channel_data{
-            open_channels{
-                chan_id
-                asset_id
-                name
-                local_balance
-                remote_balance
-            }
-            pending_channels{
-                chan_id
-                asset_id
-                name
-                local_balance
-                remote_balance
-            }
+        unsettled_local_balance{
+            sat
+            msat
+        }
+        unsettled_remote_balance{
+            sat
+            msat
         }
     }
-}`
+}`;
+
+export const LIGHTNING_WALLET_QUERY = `{
+    lightning_wallet{
+        name
+        address_type
+        derivation_path
+        addresses{
+            address
+            balance
+            public_key
+        }
+	}
+}`;

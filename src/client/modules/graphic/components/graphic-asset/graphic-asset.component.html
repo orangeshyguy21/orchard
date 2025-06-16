@@ -1,14 +1,18 @@
-<div>
+<div class="graphic-asset-container">
     <div class="relative">
-        <div class="graphic-asset-unit" [class]="unit_class()" [style.height]="height" [style.width]="height">
-            <mat-icon 
-                class="graphic-asset-unit-icon"
-                [style.font-size]="unit_icon_size()"
-                [style.height]="unit_icon_size()"
-                [style.width]="unit_icon_size()">
-                {{ unit_icon() }}
-            </mat-icon>
-        </div>
+        @if(supported_taproot_asset()){
+            <img src="taproot-assets/tether.svg" [style.height]="height" [style.width]="height">
+        }@else {
+            <div class="graphic-asset-unit" [class]="unit_class()" [style.height]="height" [style.width]="height">
+                <mat-icon 
+                    class="graphic-asset-unit-icon"
+                    [style.font-size]="unit_icon_size()"
+                    [style.height]="unit_icon_size()"
+                    [style.width]="unit_icon_size()">
+                    {{ unit_icon() }}
+                </mat-icon>
+            </div>
+        }
         @if( custody ) {
             <div class="graphic-asset-custody">
                 <mat-icon 

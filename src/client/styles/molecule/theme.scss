@@ -3,6 +3,7 @@
     #{$c}orc-asset-btc-bg { background-color: var(--orc-asset-btc); }
     #{$c}orc-asset-usd-bg { background-color: var(--orc-asset-usd); }
     #{$c}orc-asset-eur-bg { background-color: var(--orc-asset-eur); }
+    #{$c}orc-asset-tether-bg { background-color: var(--orc-asset-tether); }
     #{$c}orc-surface-bg { background-color: var(--mat-sys-surface); }
     #{$c}orc-primary-bg { background-color: var(--mat-sys-primary); }
     #{$c}orc-primary-container-bg { background-color: var(--mat-sys-primary-container); }
@@ -13,6 +14,7 @@
     #{$c}orc-surface-container-low-bg { background-color: var(--mat-sys-surface-container-low); }
     #{$c}orc-surface-container-lowest-bg { background-color: var(--mat-sys-surface-container-lowest); }
     #{$c}orc-surface-bright-bg { background-color: var(--mat-sys-surface-bright); }
+    #{$c}orc-surface-tint-bg { background-color: var(--mat-sys-surface-tint); }
     #{$c}orc-on-secondary-container-bg { background-color: var(--mat-sys-on-secondary-container); }
     #{$c}orc-on-primary-bg { background-color: var(--mat-sys-on-primary); }
     #{$c}orc-tertiary-container-bg { background-color: var(--mat-sys-tertiary-container); }
@@ -28,11 +30,19 @@
     #{$c}orc-primary-fixed-dim-bg { background-color: var(--mat-sys-primary-fixed-dim); }
     #{$c}orc-inverse-primary-bg { background-color: var(--mat-sys-inverse-primary); }
     #{$c}orc-outline-variant-bg { background-color: var(--mat-sys-outline-variant); }
+    #{$c}orc-outline-bg { background-color: var(--mat-sys-outline); }
+    #{$c}orc-status-active-bg { background-color: var(--orc-status-active); }
+    #{$c}orc-status-warning-bg { background-color: var(--orc-status-warning); }
+    #{$c}orc-status-inactive-bg { background-color: var(--orc-status-inactive); }
     // Background Colors (with transparency)
     #{$c}orc-shadow-bg { background-color: color-mix(in srgb, var(--mat-sys-shadow), transparent 50%); }
     #{$c}orc-fog-bg { background-color: color-mix(in srgb, var(--mat-sys-surface-container), transparent 50%); }
 
     // Text Colors
+    #{$c}orc-asset-btc-color { color: var(--orc-asset-btc); }
+    #{$c}orc-asset-usd-color { color: var(--orc-asset-usd); }
+    #{$c}orc-asset-eur-color { color: var(--orc-asset-eur); }
+    #{$c}orc-asset-tether-color { color: var(--orc-asset-tether); }
     #{$c}orc-on-surface-color { color: var(--mat-sys-on-surface); }
     #{$c}orc-on-primary-color { color: var(--mat-sys-on-primary); }
     #{$c}orc-primary-container-color { color: var(--mat-sys-primary-container); }
@@ -41,6 +51,8 @@
     #{$c}orc-outline-variant-color { color: var(--mat-sys-outline-variant); }
     #{$c}orc-surface-color { color: var(--mat-sys-surface); }
     #{$c}orc-surface-container-high-color { color: var(--mat-sys-surface-container-high); }
+    #{$c}orc-surface-container-highest-color { color: var(--mat-sys-surface-container-highest); }
+    #{$c}orc-surface-tint-color { color: var(--mat-sys-surface-tint); }
     #{$c}orc-on-surface-variant-color { color: var(--mat-sys-on-surface-variant); }
     #{$c}orc-primary-fixed-dim-color { color: var(--mat-sys-primary-fixed-dim); }
     #{$c}orc-tertiary-container-color { color: var(--mat-sys-tertiary-container); }

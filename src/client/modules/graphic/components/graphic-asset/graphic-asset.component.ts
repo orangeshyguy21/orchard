@@ -1,26 +1,35 @@
+/* Core Dependencies */
 import { ChangeDetectionStrategy, Component, Input, computed } from '@angular/core';
 
 @Component({
-  selector: 'orc-graphic-asset',
-  standalone: false,
-  templateUrl: './graphic-asset.component.html',
-  styleUrl: './graphic-asset.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+	selector: 'orc-graphic-asset',
+	standalone: false,
+	templateUrl: './graphic-asset.component.html',
+	styleUrl: './graphic-asset.component.scss',
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GraphicAssetComponent {
 
 	@Input() unit! : string;
 	@Input() height : string = '2rem';
 	@Input() custody!: 'ecash' | 'lightning' | 'hot' | 'cold';
+	@Input() asset_id! : string | undefined;
+
+	private taproot_assets_map = new Map<string, string>([
+		['f81dce34c31687b969e1c5acc69ad6bb04528bd1d593efdc2d505245051f1648', 'tether.svg'],
+	]);
 
 	public lower_unit = computed(() => {
 		return this.unit.toLowerCase();
 	});
 
 	public unit_icon = computed(() => {
+		if( this.lower_unit() === 'sat' ) return 'currency_bitcoin';
+		if( this.lower_unit() === 'msat' ) return 'currency_bitcoin';
+		if( this.lower_unit() === 'btc' ) return 'currency_bitcoin';
 		if( this.lower_unit() === 'usd' ) return 'attach_money';
 		if( this.lower_unit() === 'eur' ) return 'euro';
-		return 'currency_bitcoin';
+		return 'question_mark';
 	});
 
 	public unit_icon_size = computed(() => {
@@ -29,9 +38,12 @@ export class GraphicAssetComponent {
 	});
 
 	public unit_class = computed(() => {
+		if( this.lower_unit() === 'sat' ) return 'graphic-asset-btc';
+		if( this.lower_unit() === 'msat' ) return 'graphic-asset-btc';
+		if( this.lower_unit() === 'btc' ) return 'graphic-asset-btc';
 		if( this.lower_unit() === 'usd' ) return 'graphic-asset-usd';
 		if( this.lower_unit() === 'eur' ) return 'graphic-asset-eur';
-		return 'graphic-asset-btc';
+		return 'graphic-asset-unknown';
 	});
 
 	public custody_icon = computed(() => {
@@ -48,4 +60,11 @@ export class GraphicAssetComponent {
 		return (isNaN(height_value) ? 2 : height_value) * 0.7 + 'rem';
 	});
 
+	public supported_taproot_asset = computed(() => {
+		return this.taproot_assets_map.has(this.asset_id!);
+	});
+	
+	public taproot_asset_image = computed(() => {
+		return `taproot-assets/${this.taproot_assets_map.get(this.asset_id!)}`;
+	});
 }

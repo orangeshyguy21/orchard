@@ -66,13 +66,18 @@ export class LndService {
     }
 
     public initializeLightningClient(): grpc.Client {
-        const lightning_proto_path = path.resolve(__dirname, '../../../../proto/lnd-lightning.proto');
+        const lightning_proto_path = path.resolve(__dirname, '../../../../proto/lnd/lightning.proto');
         return this.initializeGrpcClient([lightning_proto_path], 'lnrpc', 'Lightning');
     }
 
     public initializeWalletKitClient(): grpc.Client {
-        const lightning_proto_path = path.resolve(__dirname, '../../../../proto/lnd-lightning.proto');
-        const walletkit_proto_path = path.resolve(__dirname, '../../../../proto/lnd-walletkit.proto');
+        const lightning_proto_path = path.resolve(__dirname, '../../../../proto/lnd/lightning.proto');
+        const walletkit_proto_path = path.resolve(__dirname, '../../../../proto/lnd/walletkit.proto');
         return this.initializeGrpcClient([lightning_proto_path, walletkit_proto_path], 'walletrpc', 'WalletKit');
+
+        // const lightning_proto_path = path.resolve(__dirname, '../../../../proto/lnd-lightning.proto');
+        // console.log(lightning_proto_path);
+        // const walletkit_proto_path = path.resolve(__dirname, '../../../../proto/lnd-walletkit.proto');
+        // return this.initializeGrpcClient([walletkit_proto_path], 'walletrpc', 'WalletKit');
     }
 }

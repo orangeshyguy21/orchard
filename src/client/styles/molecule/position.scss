@@ -15,6 +15,7 @@
     #{$c}flex-justify-between { justify-content: space-between; }
     #{$c}flex-justify-evenly { justify-content: space-evenly; }
     #{$c}flex-justify-end { justify-content: flex-end; }
+    #{$c}flex-justify-start { justify-content: flex-start; }
     #{$c}flex-grow { flex-grow: 1; }
     #{$c}flex-grow-2 { flex-grow: 2; }
     #{$c}flex-gap-0-25 { gap: 0.25rem; }
@@ -47,8 +48,10 @@
     #{$c}h-max-5 { max-height: 5rem; }
 
     // Width
-    #{$c}w-0 { width: 0; }
     #{$c}w-full { width: 100%; }
+    #{$c}w-0 { width: 0; }
+    #{$c}w-0-25 { width: 0.25rem; }
+    #{$c}w-0-5 { width: 0.5rem; }
     #{$c}w-1 { width: 1rem; }
     #{$c}w-1-5 { width: 1.5rem; }
     #{$c}w-1-75 { width: 1.75rem; }
@@ -107,6 +110,7 @@
     #{$c}p-r-2 { padding-right: 2rem; }
 
     // Z-Index
+    #{$c}z-index-0 { z-index: 0; }
     #{$c}z-index-1 { z-index: 1; }
     #{$c}z-index-2 { z-index: 2; }
     #{$c}z-index-3 { z-index: 3; }
@@ -116,8 +120,10 @@
     // Absolute Positioning
     #{$c}bottom-0 { bottom: 0; }
     #{$c}bottom-0-5 { bottom: 0.5rem; }
+    #{$c}bottom-1 { bottom: 1rem; }
     #{$c}left-0 { left: 0; }
     #{$c}left-half { left: 50%; }
+    #{$c}left-2 { left: 2rem; }
     #{$c}top-0 { top: 0; }
     #{$c}top-0-5 { top: 0.5rem; }
     #{$c}top-1 { top: 1rem; }
@@ -126,6 +132,7 @@
     #{$c}right-0 { right: 0; }
     #{$c}right-0-5 { right: 0.5rem; }
     #{$c}right-1 { right: 1rem; }
+    #{$c}right-2 { right: 2rem; }
     #{$c}left-0 { left: 0; }
 
     // Transforms

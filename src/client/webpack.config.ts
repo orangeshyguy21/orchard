@@ -20,6 +20,10 @@ module.exports = {
 		new EnvironmentPlugin({
 			PRODUCTION: true,
 			BASE_PATH: 'api',
+			BITCOIN_TYPE: null,
+			LIGHTNING_TYPE: null,
+			TAPROOT_ASSETS_TYPE: null,
+			MINT_TYPE: null,
 			AI_API: null,
 			npm_package_version: '0.0.1'
 		})

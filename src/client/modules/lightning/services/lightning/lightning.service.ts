@@ -11,14 +11,17 @@ import { CacheService } from '@client/modules/cache/services/cache/cache.service
 /* Native Dependencies */
 import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.class';
 import { LightningBalance } from '@client/modules/lightning/classes/lightning-balance.class';
+import { LightningAccount } from '@client/modules/lightning/classes/lightning-account.class';
 import { 
 	LightningInfoResponse,
-	LightningBalanceResponse
+	LightningBalanceResponse,
+	LightningWalletResponse,
 } from '@client/modules/lightning/types/lightning.types';
 /* Local Dependencies */
 import { 
 	LIGHTNING_INFO_QUERY,
 	LIGHTNING_BALANCE_QUERY,
+	LIGHTNING_WALLET_QUERY,
 } from './lightning.queries';
 
 
@@ -32,16 +35,19 @@ export class LightningService {
 	public readonly CACHE_KEYS = {
 		LIGHTNING_INFO: 'lightning-info',
 		LIGHTNING_BALANCE: 'lightning-balance',
+		LIGHTNING_ACCOUNTS: 'lightning-accounts',
 	};
 
 	private readonly CACHE_DURATIONS = {
 		[this.CACHE_KEYS.LIGHTNING_INFO]: 30 * 60 * 1000, // 30 minutes
 		[this.CACHE_KEYS.LIGHTNING_BALANCE]: 5 * 60 * 1000, // 5 minutes
+		[this.CACHE_KEYS.LIGHTNING_ACCOUNTS]: 5 * 60 * 1000, // 5 minutes
 	};
 
 	/* Subjects for caching */
 	private readonly lightning_info_subject: BehaviorSubject<LightningInfo | null>;
 	private readonly lightning_balance_subject: BehaviorSubject<LightningBalance | null>;
+	private readonly lightning_accounts_subject: BehaviorSubject<LightningAccount[] | null>;
 
 	/* Observables for caching (rapid request caching) */
 	private lightning_info_observable!: Observable<LightningInfo> | null;
@@ -57,6 +63,10 @@ export class LightningService {
 		this.lightning_balance_subject = this.cache.createCache<LightningBalance>(
 			this.CACHE_KEYS.LIGHTNING_BALANCE,
 			this.CACHE_DURATIONS[this.CACHE_KEYS.LIGHTNING_BALANCE]
+		);
+		this.lightning_accounts_subject = this.cache.createCache<LightningAccount[]>(
+			this.CACHE_KEYS.LIGHTNING_ACCOUNTS,
+			this.CACHE_DURATIONS[this.CACHE_KEYS.LIGHTNING_ACCOUNTS]
 		);
 	}
 
@@ -106,6 +116,30 @@ export class LightningService {
 			}),
 			catchError((error) => {
 				console.error('Error loading lightning balance:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public loadLightningAccounts(): Observable<LightningAccount[]> {
+		if ( this.lightning_accounts_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.LIGHTNING_ACCOUNTS) ) {
+			return of(this.lightning_accounts_subject.value);
+		}
+
+		const query = getApiQuery(LIGHTNING_WALLET_QUERY);
+
+		return this.http.post<OrchardRes<LightningWalletResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.lightning_wallet;
+			}),
+			map((ln_wallet) => ln_wallet.map((ln_account) => new LightningAccount(ln_account))),
+			tap((ln_wallet) => {
+				this.cache.updateCache(this.CACHE_KEYS.LIGHTNING_ACCOUNTS, ln_wallet);
+				this.lightning_accounts_subject.next(ln_wallet);
+			}),
+			catchError((error) => {
+				console.error('Error loading lightning wallet:', error);
 				return throwError(() => error);
 			})
 		);

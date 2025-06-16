@@ -4,6 +4,11 @@
     (mouseenter)="onMouseEnter()"
     (mouseleave)="onMouseLeave()"
     (click)="onClick()">
+    @if( enabled ) {
+        <div class="primary-nav-item-indicator">
+             <div [ngClass]="indicator_class" class="indicator-circle"></div>
+        </div>
+    }
     <div class="primary-nav-item-icon">
         @if (mode === 'default') {
             <mat-icon [class.mat-symbol-outline]="!highlight" class="icon-md">{{ icon }}</mat-icon>

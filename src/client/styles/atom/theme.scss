@@ -16,6 +16,11 @@
 	 	text-size: 0.75rem,
 		text-weight: 800,
 	));
+	@include mat.tooltip-overrides((
+		container-color: var(--mat-sys-surface-container-highest),
+		supporting-text-color: var(--mat-sys-on-surface),
+		supporting-text-size: 0.75rem,
+	));
 }
 
 /* Specific Table Overrides */

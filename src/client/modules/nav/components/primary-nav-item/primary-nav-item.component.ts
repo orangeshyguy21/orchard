@@ -15,12 +15,19 @@ export class PrimaryNavItemComponent {
 	@Input() mode: 'default' | 'svg' = 'default';
 	@Input() navroute!: string;
 	@Input() active : boolean = false;
+	@Input() enabled! : boolean;
+	@Input() online! : boolean;
 
 	public moused = false;
 
 	public get highlight(){ return this.active || this.moused; }
 	public get icon_outline(){ return `${this.icon}_outline`; }
 	public get active_svg_icon(){ return this.highlight ? this.icon : this.icon_outline; }
+	public get indicator_class(): string {
+		if( this.online === false ) return 'trans-bg-medium orc-status-inactive-bg';
+		if( this.online === true ) return 'trans-bg-medium orc-status-active-bg';
+		return 'shimmer-highest';
+	}
 
 	constructor(
 		private changeDetectorRef: ChangeDetectorRef,

@@ -25,7 +25,6 @@ export class LightningService implements OnModuleInit {
 		this.type = this.configService.get('lightning.type');
         this.initializeGrpcClients();
 	}
-
         
     private initializeGrpcClients() {
         if( this.type === 'lnd' ) this.grpc_client = this.lndService.initializeLightningClient();
@@ -52,7 +51,7 @@ export class LightningService implements OnModuleInit {
         return this.makeGrpcRequest('ChannelBalance', {});
     }
 
-    async getLightningChannels() : Promise<any> {
-        return this.makeGrpcRequest('ListChannels', {});
-    }
+    // async getLightningChannels() : Promise<any> {
+    //     return this.makeGrpcRequest('ListChannels', {});
+    // }
 }

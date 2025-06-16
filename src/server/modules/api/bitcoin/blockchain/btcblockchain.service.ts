@@ -8,12 +8,12 @@ import { ErrorService } from '@server/modules/error/error.service';
 import { OrchardErrorCode } from '@server/modules/error/error.types';
 import { OrchardApiError } from '@server/modules/graphql/classes/orchard-error.class';
 /* Local Dependencies */
-import { OrchardBitcoinBlockCount } from './btcblockcount.model';
+import { OrchardBitcoinBlockCount, OrchardBitcoinBlockchainInfo } from './btcblockchain.model';
 
 @Injectable()
-export class BitcoinBlockCountService implements OnModuleDestroy {
+export class BitcoinBlockchainService implements OnModuleDestroy {
 
-	private readonly logger = new Logger(BitcoinBlockCountService.name);
+	private readonly logger = new Logger(BitcoinBlockchainService.name);
 	private interval_id: NodeJS.Timeout;
 	private event_emitter = new EventEmitter();
 	private block_count: number;
@@ -26,11 +26,23 @@ export class BitcoinBlockCountService implements OnModuleDestroy {
 	onModuleDestroy() {
 		this.stopBlockCountPolling();
 	}
-	
-	// Method to get the current block count
-	async getBlockCount(tag: string = 'GET { bitcoin_blockcount }'): Promise<OrchardBitcoinBlockCount> {
+
+	public async getBlockchainInfo(tag: string = 'GET { bitcoin_blockchain_info }'): Promise<OrchardBitcoinBlockchainInfo> {
 		try {
-			const block_count = await this.bitcoinRpcService.getBitcoinInfo();
+			const info = await this.bitcoinRpcService.getBitcoinBlockchainInfo();
+			console.log(info);
+			return new OrchardBitcoinBlockchainInfo(info);
+		} catch (error) {
+			const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
+				errord: OrchardErrorCode.BitcoinRPCError,
+			});
+			throw new OrchardApiError(error_code);
+		}
+	}
+	
+	public async getBlockCount(tag: string = 'GET { bitcoin_blockcount }'): Promise<OrchardBitcoinBlockCount> {
+		try {
+			const block_count = await this.bitcoinRpcService.getBitcoinBlockCount();
 			return new OrchardBitcoinBlockCount(block_count);
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
@@ -40,7 +52,6 @@ export class BitcoinBlockCountService implements OnModuleDestroy {
 		}
 	}
 	
-	// Start polling for block count updates
 	startBlockCountPolling(interval_ms: number = 30000): void {
 		if (this.interval_id) this.stopBlockCountPolling();
 		
@@ -59,7 +70,6 @@ export class BitcoinBlockCountService implements OnModuleDestroy {
 		this.logger.debug('Block count polling started');
 	}
 	
-	// Stop polling for block count updates
 	stopBlockCountPolling(): void {
 		if ( !this.interval_id ) return;
 		clearInterval(this.interval_id);
@@ -67,7 +77,6 @@ export class BitcoinBlockCountService implements OnModuleDestroy {
 		this.logger.debug('Block count polling stopped');
 	}
 	
-	// Register a callback for block count updates
 	onBlockCountUpdate(callback: (block_count: number) => void): void {
 		this.event_emitter.on('bitcoin.blockcount.update', callback);
 	}

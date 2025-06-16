@@ -20,12 +20,11 @@ import { animate, style, transition, trigger } from '@angular/animations';
 })
 export class PrimaryNavHeaderComponent implements OnChanges {
   
-	@Input() active_section: string = '';
+	@Input() active!: boolean;
 	@Input() block_count!: number;
+	@Input() chain!: string;
 
 	public polling_blocks: boolean = false;
-
-	public get epoch(): number { return this.getEpoch(); }
 
 	constructor(
 		private router: Router,
@@ -43,16 +42,5 @@ export class PrimaryNavHeaderComponent implements OnChanges {
 
 	public onClick() {
 		this.router.navigate(['/']);
-	}
-
-	public getEpoch(): number {
-		if( this.block_count < 1050000 ) return 5;
-		if( this.block_count < 1260000 ) return 6;
-		if( this.block_count < 1470000 ) return 7;
-		if( this.block_count < 1680000 ) return 8;
-		if( this.block_count < 1890000 ) return 9;
-		if( this.block_count < 2100000 ) return 10;
-		if( this.block_count < 2310000 ) return 11;
-		return 12;
 	}
 }

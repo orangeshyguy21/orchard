@@ -1,18 +1,24 @@
 /* Core Dependencies */
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+/* Vendor Dependencies */
+import { MatIconModule } from '@angular/material/icon';
 /* Local Dependencies */
 import { BlockPipe } from './pipes/block/block.pipe';
+import { BitcoinUtxoStackComponent } from './components/bitcoin-utxo-stack/bitcoin-utxo-stack.component';
 
 @NgModule({
 	declarations: [
-		BlockPipe
+		BlockPipe,
+		BitcoinUtxoStackComponent
 	],
 	imports: [
-		CommonModule
+		CommonModule,
+		MatIconModule
 	],
 	exports: [
-		BlockPipe
+		BlockPipe,
+		BitcoinUtxoStackComponent
 	]
 })
 export class BitcoinModule { }

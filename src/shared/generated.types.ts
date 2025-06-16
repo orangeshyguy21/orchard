@@ -84,6 +84,14 @@ export enum AiMessageRole {
   User = 'USER'
 }
 
+export enum LightningAddressType {
+  HybridNestedWitnessPubkeyHash = 'HYBRID_NESTED_WITNESS_PUBKEY_HASH',
+  NestedWitnessPubkeyHash = 'NESTED_WITNESS_PUBKEY_HASH',
+  TaprootPubkey = 'TAPROOT_PUBKEY',
+  Unkown = 'UNKOWN',
+  WitnessPubkeyHash = 'WITNESS_PUBKEY_HASH'
+}
+
 export enum MeltQuoteState {
   Paid = 'PAID',
   Pending = 'PENDING',
@@ -340,6 +348,60 @@ export type OrchardBitcoinBlockCount = {
   height: Scalars['Int']['output'];
 };
 
+export type OrchardBitcoinBlockchainInfo = {
+  __typename?: 'OrchardBitcoinBlockchainInfo';
+  automatic_pruning?: Maybe<Scalars['Boolean']['output']>;
+  bestblockhash: Scalars['String']['output'];
+  blocks: Scalars['Int']['output'];
+  chain: Scalars['String']['output'];
+  chainwork: Scalars['String']['output'];
+  difficulty: Scalars['Float']['output'];
+  headers: Scalars['Int']['output'];
+  initialblockdownload: Scalars['Boolean']['output'];
+  prune_target_size?: Maybe<Scalars['Int']['output']>;
+  pruned: Scalars['Boolean']['output'];
+  pruneheight?: Maybe<Scalars['Int']['output']>;
+  size_on_disk: Scalars['Int']['output'];
+  verificationprogress: Scalars['Float']['output'];
+  warnings: Array<Scalars['String']['output']>;
+};
+
+export type OrchardBitcoinNetwork = {
+  __typename?: 'OrchardBitcoinNetwork';
+  limited: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
+  proxy: Scalars['String']['output'];
+  proxy_randomize_credentials: Scalars['Boolean']['output'];
+  reachable: Scalars['Boolean']['output'];
+};
+
+export type OrchardBitcoinNetworkAddress = {
+  __typename?: 'OrchardBitcoinNetworkAddress';
+  address: Scalars['String']['output'];
+  port: Scalars['Int']['output'];
+  score: Scalars['Int']['output'];
+};
+
+export type OrchardBitcoinNetworkInfo = {
+  __typename?: 'OrchardBitcoinNetworkInfo';
+  connections: Scalars['Int']['output'];
+  connections_in: Scalars['Int']['output'];
+  connections_out: Scalars['Int']['output'];
+  incrementalfee: Scalars['Float']['output'];
+  localaddresses: Array<OrchardBitcoinNetworkAddress>;
+  localrelay: Scalars['Boolean']['output'];
+  localservices: Scalars['String']['output'];
+  localservicesnames: Array<Scalars['String']['output']>;
+  networkactive: Scalars['Boolean']['output'];
+  networks: Array<OrchardBitcoinNetwork>;
+  protocolversion: Scalars['Int']['output'];
+  relayfee: Scalars['Float']['output'];
+  subversion: Scalars['String']['output'];
+  timeoffset: Scalars['Int']['output'];
+  version: Scalars['Int']['output'];
+  warnings: Array<Scalars['String']['output']>;
+};
+
 export type OrchardCachedEndpoint = {
   __typename?: 'OrchardCachedEndpoint';
   method: Scalars['String']['output'];
@@ -365,6 +427,23 @@ export type OrchardCustomChannelData = {
   __typename?: 'OrchardCustomChannelData';
   open_channels: Array<OrchardCustomChannel>;
   pending_channels: Array<OrchardCustomChannel>;
+};
+
+export type OrchardLightningAccount = {
+  __typename?: 'OrchardLightningAccount';
+  address_type: LightningAddressType;
+  addresses: Array<OrchardLightningAddress>;
+  derivation_path: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type OrchardLightningAddress = {
+  __typename?: 'OrchardLightningAddress';
+  address: Scalars['String']['output'];
+  balance: Scalars['Float']['output'];
+  derivation_path: Scalars['String']['output'];
+  is_internal: Scalars['String']['output'];
+  public_key: Scalars['Base64']['output'];
 };
 
 export type OrchardLightningBalance = {
@@ -719,6 +798,38 @@ export type OrchardStatus = {
   title: Scalars['String']['output'];
 };
 
+export type OrchardTaprootAsset = {
+  __typename?: 'OrchardTaprootAsset';
+  amount: Scalars['String']['output'];
+  asset_genesis: OrchardTaprootAssetGenesis;
+  asset_group?: Maybe<Scalars['String']['output']>;
+  decimal_display: OrchardTaprootAssetDecimalDisplay;
+  is_burn: Scalars['Boolean']['output'];
+  is_spent: Scalars['Boolean']['output'];
+  version: TaprootAssetVersion;
+};
+
+export type OrchardTaprootAssetDecimalDisplay = {
+  __typename?: 'OrchardTaprootAssetDecimalDisplay';
+  decimal_display: Scalars['Int']['output'];
+};
+
+export type OrchardTaprootAssetGenesis = {
+  __typename?: 'OrchardTaprootAssetGenesis';
+  asset_id: Scalars['Base64']['output'];
+  asset_type: TaprootAssetType;
+  genesis_point: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  output_index: Scalars['Int']['output'];
+};
+
+export type OrchardTaprootAssets = {
+  __typename?: 'OrchardTaprootAssets';
+  assets: Array<OrchardTaprootAsset>;
+  unconfirmed_mints: Scalars['String']['output'];
+  unconfirmed_transfers: Scalars['String']['output'];
+};
+
 export type OrchardTaprootAssetsInfo = {
   __typename?: 'OrchardTaprootAssetsInfo';
   block_hash: Scalars['String']['output'];
@@ -731,12 +842,22 @@ export type OrchardTaprootAssetsInfo = {
   version: Scalars['String']['output'];
 };
 
+export type OrchardTaprootAssetsUtxo = {
+  __typename?: 'OrchardTaprootAssetsUtxo';
+  amt_sat: Scalars['Float']['output'];
+  assets: Array<OrchardTaprootAsset>;
+  id: Scalars['String']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
   ai_models: Array<OrchardAiModel>;
+  bitcoin_blockchain_info: OrchardBitcoinBlockchainInfo;
   bitcoin_blockcount: OrchardBitcoinBlockCount;
+  bitcoin_network_info: OrchardBitcoinNetworkInfo;
   lightning_balance: OrchardLightningBalance;
   lightning_info: OrchardLightningInfo;
+  lightning_wallet: Array<OrchardLightningAccount>;
   mint_analytics_balances: Array<OrchardMintAnalytics>;
   mint_analytics_keysets: Array<OrchardMintKeysetsAnalytics>;
   mint_analytics_melts: Array<OrchardMintAnalytics>;
@@ -760,7 +881,9 @@ export type Query = {
   public_image: OrchardPublicImage;
   public_urls: Array<OrchardPublicUrl>;
   status: OrchardStatus;
+  taproot_assets: OrchardTaprootAssets;
   taproot_assets_info: OrchardTaprootAssetsInfo;
+  taproot_assets_utxo: Array<OrchardTaprootAssetsUtxo>;
 };
 
 
@@ -906,3 +1029,14 @@ export type Subscription = {
 export type SubscriptionAi_ChatArgs = {
   ai_chat: AiChatInput;
 };
+
+export enum TaprootAssetType {
+  Collectible = 'COLLECTIBLE',
+  Normal = 'NORMAL',
+  Tapd = 'TAPD'
+}
+
+export enum TaprootAssetVersion {
+  AssetVersionV0 = 'ASSET_VERSION_V0',
+  AssetVersionV1 = 'ASSET_VERSION_V1'
+}

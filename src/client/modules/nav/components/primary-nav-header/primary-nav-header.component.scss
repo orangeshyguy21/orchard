@@ -2,18 +2,53 @@
 @use '@styles/nucleus/nucleus';
 
 .primary-nav-header{
+    @extend %p-t-0-5;
+    @extend %p-b-1;
+}
+
+.primary-nav-index{
+    @extend %p-v-1;
+    @extend %p-h-0-5;
+    @extend %cursor-pointer;
+    @extend %orc-corner-full;
+    @extend %orc-corner-large;
     @extend %flex;
     @extend %flex-column;
     @extend %flex-items-center;
-    @extend %p-v-1-5;
+    @extend %trans-bg-fast;
+    height: 6.5rem;
+    min-width: 4.5rem;
+
+    &:hover{
+        // @extend %orc-surface-container-high-bg;
+
+        .primary-nav-chain{
+            @extend %font-weight-semi-bold;
+            @extend %orc-on-primary-container-color;
+        }
+
+        .orchard-logo{
+            @extend %orc-surface-container-high-bg;
+        }
+    }
 }
 
-.primary-nav-epoch{
-    @extend %font-weight-light;
+.primary-nav-chain{
     @extend %font-size-xs;
     @extend %p-b-0-5;
+    @extend %trans-font-weight-fast;
+    @extend %trans-color-fast;
 }
 
 .primary-nav-blockheight{
     @extend %font-weight-bold;
+    @extend %text-nowrap;
+}
+
+.orchard-logo{
+    @extend %orc-corner-full;
+
+    &.logo-highlight{
+        @extend %orc-surface-container-high-bg;
+    }
 }

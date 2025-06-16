@@ -6,6 +6,7 @@
 @use './position' as position;
 @use './properties' as properties;
 @use './pseudo' as pseudo;
+@use './table' as table;
 @use './theme' as theme;
 @use './typetext' as typetext;
 
@@ -18,6 +19,7 @@
     @include position.prefixStyles($c);
     @include properties.prefixStyles($c);
     @include pseudo.prefixStyles($c);
+    @include table.prefixStyles($c);
     @include theme.prefixStyles($c);
     @include typetext.prefixStyles($c);
 }

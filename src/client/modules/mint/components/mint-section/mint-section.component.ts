@@ -42,12 +42,8 @@ export class MintSectionComponent implements OnInit, OnDestroy {
 				this.cdr.detectChanges();
 			}
 		});
-
-		const mint_info_subscription = this.getMintInfoSubscription();
-		const router_subscription = this.getRouterSubscription();
-
-		this.subscriptions.add(mint_info_subscription);
-		this.subscriptions.add(router_subscription);
+		this.subscriptions.add(this.getMintInfoSubscription());
+		this.subscriptions.add(this.getRouterSubscription());
 	}
 
 	private getMintInfoSubscription(): Subscription {

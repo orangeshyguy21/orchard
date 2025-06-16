@@ -69,6 +69,14 @@ enum AiMessageRole {
 """Base64 encoded string scalar type"""
 scalar Base64
 
+enum LightningAddressType {
+  HYBRID_NESTED_WITNESS_PUBKEY_HASH
+  NESTED_WITNESS_PUBKEY_HASH
+  TAPROOT_PUBKEY
+  UNKOWN
+  WITNESS_PUBKEY_HASH
+}
+
 enum MeltQuoteState {
   PAID
   PENDING
@@ -236,6 +244,56 @@ type OrchardBitcoinBlockCount {
   height: Int!
 }
 
+type OrchardBitcoinBlockchainInfo {
+  automatic_pruning: Boolean
+  bestblockhash: String!
+  blocks: Int!
+  chain: String!
+  chainwork: String!
+  difficulty: Float!
+  headers: Int!
+  initialblockdownload: Boolean!
+  prune_target_size: Int
+  pruned: Boolean!
+  pruneheight: Int
+  size_on_disk: Int!
+  verificationprogress: Float!
+  warnings: [String!]!
+}
+
+type OrchardBitcoinNetwork {
+  limited: Boolean!
+  name: String!
+  proxy: String!
+  proxy_randomize_credentials: Boolean!
+  reachable: Boolean!
+}
+
+type OrchardBitcoinNetworkAddress {
+  address: String!
+  port: Int!
+  score: Int!
+}
+
+type OrchardBitcoinNetworkInfo {
+  connections: Int!
+  connections_in: Int!
+  connections_out: Int!
+  incrementalfee: Float!
+  localaddresses: [OrchardBitcoinNetworkAddress!]!
+  localrelay: Boolean!
+  localservices: String!
+  localservicesnames: [String!]!
+  networkactive: Boolean!
+  networks: [OrchardBitcoinNetwork!]!
+  protocolversion: Int!
+  relayfee: Float!
+  subversion: String!
+  timeoffset: Int!
+  version: Int!
+  warnings: [String!]!
+}
+
 type OrchardCachedEndpoint {
   method: String!
   path: String!
@@ -257,6 +315,21 @@ type OrchardCustomChannel {
 type OrchardCustomChannelData {
   open_channels: [OrchardCustomChannel!]!
   pending_channels: [OrchardCustomChannel!]!
+}
+
+type OrchardLightningAccount {
+  address_type: LightningAddressType!
+  addresses: [OrchardLightningAddress!]!
+  derivation_path: String!
+  name: String!
+}
+
+type OrchardLightningAddress {
+  address: String!
+  balance: Float!
+  derivation_path: String!
+  is_internal: String!
+  public_key: Base64!
 }
 
 type OrchardLightningBalance {
@@ -568,6 +641,34 @@ type OrchardStatus {
   title: String!
 }
 
+type OrchardTaprootAsset {
+  amount: String!
+  asset_genesis: OrchardTaprootAssetGenesis!
+  asset_group: String
+  decimal_display: OrchardTaprootAssetDecimalDisplay!
+  is_burn: Boolean!
+  is_spent: Boolean!
+  version: TaprootAssetVersion!
+}
+
+type OrchardTaprootAssetDecimalDisplay {
+  decimal_display: Int!
+}
+
+type OrchardTaprootAssetGenesis {
+  asset_id: Base64!
+  asset_type: TaprootAssetType!
+  genesis_point: String!
+  name: String!
+  output_index: Int!
+}
+
+type OrchardTaprootAssets {
+  assets: [OrchardTaprootAsset!]!
+  unconfirmed_mints: String!
+  unconfirmed_transfers: String!
+}
+
 type OrchardTaprootAssetsInfo {
   block_hash: String!
   block_height: Int!
@@ -579,11 +680,20 @@ type OrchardTaprootAssetsInfo {
   version: String!
 }
 
+type OrchardTaprootAssetsUtxo {
+  amt_sat: Float!
+  assets: [OrchardTaprootAsset!]!
+  id: String!
+}
+
 type Query {
   ai_models: [OrchardAiModel!]!
+  bitcoin_blockchain_info: OrchardBitcoinBlockchainInfo!
   bitcoin_blockcount: OrchardBitcoinBlockCount!
+  bitcoin_network_info: OrchardBitcoinNetworkInfo!
   lightning_balance: OrchardLightningBalance!
   lightning_info: OrchardLightningInfo!
+  lightning_wallet: [OrchardLightningAccount!]!
   mint_analytics_balances(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
   mint_analytics_keysets(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone): [OrchardMintKeysetsAnalytics!]!
   mint_analytics_melts(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
@@ -607,12 +717,25 @@ type Query {
   public_image(url: String!): OrchardPublicImage!
   public_urls(urls: [String!]!): [OrchardPublicUrl!]!
   status: OrchardStatus!
+  taproot_assets: OrchardTaprootAssets!
   taproot_assets_info: OrchardTaprootAssetsInfo!
+  taproot_assets_utxo: [OrchardTaprootAssetsUtxo!]!
 }
 
 type Subscription {
   ai_chat(ai_chat: AiChatInput!): OrchardAiChatChunk!
   blockCount: OrchardBitcoinBlockCount!
+}
+
+enum TaprootAssetType {
+  COLLECTIBLE
+  NORMAL
+  TAPD
+}
+
+enum TaprootAssetVersion {
+  ASSET_VERSION_V0
+  ASSET_VERSION_V1
 }
 
 """Timezone custom scalar type based on IANA timezone database"""

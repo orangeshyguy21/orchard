@@ -4,12 +4,15 @@ import { Module } from "@nestjs/common";
 // Orchard Endpoints
 import { StatusModule } from "./status/status.module";
 // Bitcoin Endpoints
-import { BitcoinBlockCountModule } from "./bitcoin/blockcount/btcblockcount.module";
+import { BitcoinNetworkModule } from "./bitcoin/network/btcnetwork.module";
+import { BitcoinBlockchainModule } from "./bitcoin/blockchain/btcblockchain.module";
 // Lightning Endpoints
 import { LightningInfoModule } from "./lightning/info/lninfo.module";
 import { LightningBalanceModule } from "./lightning/balance/lnbalance.module";
+import { LightningWalletModule } from "./lightning/wallet/lnwallet.module";
 // Taproot Assets Endpoints
 import { TaprootAssetsInfoModule } from "./tapass/info/tapinfo.module";
+import { TaprootAssetsAssetModule } from "./tapass/asset/tapasset.module";
 // Cashu Mint Endpoints
 import { MintInfoModule } from "./mint/info/mintinfo.module";
 import { MintBalanceModule } from "./mint/balance/mintbalance.module";
@@ -32,10 +35,13 @@ import { PublicUrlModule } from "./public/url/url.module";
 @Module({
 	imports: [
 		StatusModule,
-		BitcoinBlockCountModule,
+		BitcoinNetworkModule,
+		BitcoinBlockchainModule,
 		LightningInfoModule,
 		LightningBalanceModule,
+		LightningWalletModule,
 		TaprootAssetsInfoModule,
+		TaprootAssetsAssetModule,
 		MintInfoModule,
 		MintBalanceModule,
 		MintKeysetModule,

@@ -1,0 +1,4 @@
+@mixin prefixStyles($c) {
+    #{$c}border-collapse { border-collapse: collapse; }
+    #{$c}vertical-align-middle { vertical-align: middle; }
+}

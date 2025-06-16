@@ -6,7 +6,7 @@ import { OrchardErrorCode } from '@server/modules/error/error.types';
 import { TaprootAssetType } from '@server/modules/tapass/tapass.enums';
 import { TapdService } from '@server/modules/tapass/tapd/tapd.service';
 /* Local Dependencies */
-import { TaprootAssetsInfo } from './tapass.types';
+import { TaprootAssetsInfo, TaprootAssetsUtxos, TaprootAssets } from './tapass.types';
 
 @Injectable()
 export class TaprootAssetsService implements OnModuleInit {
@@ -36,8 +36,6 @@ export class TaprootAssetsService implements OnModuleInit {
         return new Promise((resolve, reject) => {
             if (!(method in this.grpc_client)) reject(OrchardErrorCode.TaprootAssetsSupportError);
             this.grpc_client[method](request, (error: Error | null, response: any) => {
-                console.log('error', error);
-                console.log('response', JSON.stringify(response, null, 2));
                 if (error && error?.message?.includes('14 UNAVAILABLE')) reject(OrchardErrorCode.TaprootAssetsRpcConnectionError);
                 if (error) reject(error);
                 resolve(response);
@@ -45,15 +43,15 @@ export class TaprootAssetsService implements OnModuleInit {
         });
     }
 
-    // async getTaprootAssetsInfo() : Promise<TaprootAssetsInfo> {   
-    //     return this.makeGrpcRequest('GetInfo', {});
-    // }
-
     async getTaprootAssetsInfo() : Promise<TaprootAssetsInfo> {   
+        return this.makeGrpcRequest('GetInfo', {});
+    }
+
+    async getListTaprootAssets() : Promise<TaprootAssets> {   
         return this.makeGrpcRequest('ListAssets', {});
     }
 
-    // async getTaprootAssetsBalance() : Promise<any> {
-    //     return this.makeGrpcRequest('ListBalances', {});
-    // }
+    async getListTaprootAssetsUtxos() : Promise<TaprootAssetsUtxos> {   
+        return this.makeGrpcRequest('ListUtxos', {});
+    }
 }

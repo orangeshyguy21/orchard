@@ -1,3 +1,8 @@
 <div class="mint-connection-status-container flex">
-    <mat-icon [ngClass]="status_class_test" class="icon-sm trans-color-medium">circle</mat-icon>
+    <mat-icon 
+        [matTooltip]="status_tooltip" 
+        matTooltipPosition="left"
+        [ngClass]="status_class"
+        class="icon-sm trans-color-medium"
+    >circle</mat-icon>
 </div>
