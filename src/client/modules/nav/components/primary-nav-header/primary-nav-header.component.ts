@@ -20,7 +20,7 @@ import { animate, style, transition, trigger } from '@angular/animations';
 })
 export class PrimaryNavHeaderComponent implements OnChanges {
   
-	@Input() active_section: string = '';
+	@Input() active!: boolean;
 	@Input() block_count!: number;
 	@Input() chain!: string;
 

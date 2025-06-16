@@ -20,11 +20,15 @@
     min-width: 4.5rem;
 
     &:hover{
-        @extend %orc-surface-container-high-bg;
+        // @extend %orc-surface-container-high-bg;
 
         .primary-nav-chain{
             @extend %font-weight-semi-bold;
             @extend %orc-on-primary-container-color;
+        }
+
+        .orchard-logo{
+            @extend %orc-surface-container-high-bg;
         }
     }
 }
@@ -39,4 +43,12 @@
 .primary-nav-blockheight{
     @extend %font-weight-bold;
     @extend %text-nowrap;
+}
+
+.orchard-logo{
+    @extend %orc-corner-full;
+
+    &.logo-highlight{
+        @extend %orc-surface-container-high-bg;
+    }
 }

@@ -1,6 +1,8 @@
 <div class="primary-nav-header" [@.disabled]="!polling_blocks">
-    <div (click)="onClick()" class="primary-nav-index" matRipple>
-        <orc-graphic-orchard-logo height="3.5rem"></orc-graphic-orchard-logo>
+    <div (click)="onClick()" class="primary-nav-index">
+        <div class="orchard-logo flex flex-items-center flex-justify-center" [class.logo-highlight]="active" matRipple>
+            <orc-graphic-orchard-logo height="3.5rem"></orc-graphic-orchard-logo>
+        </div>
         <div class="primary-nav-chain">{{ chain }}</div>
         <div class="primary-nav-blockheight" [@blockCountChange]="block_count">{{ block_count | block }}</div>
     </div>
