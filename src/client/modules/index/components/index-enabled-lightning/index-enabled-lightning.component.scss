@@ -8,15 +8,6 @@
     min-height: 20rem;
 }
 
-.channel-divider{
-    width: 0.25rem;
-    height: 100%;
-    @extend %orc-corner-full;
-    @extend %orc-surface-container-highest-bg
-}
-
-
-
 .channel-table {
     width: 100%;
     border-collapse: collapse;
@@ -27,6 +18,7 @@
     }
     
     .channel-divider {
+        @extend %relative;
         width: 100%;
         min-width: 100px; // Minimum width for the channel visualization
         background-color: var(--orc-surface-container-highest-bg);
@@ -44,4 +36,23 @@
     .send-cell {
         text-align: left;
     }
+}
+
+.testflex{
+    height: 1rem;
+}
+
+.test{
+    @extend %absolute;
+    top: -1rem;
+    // @extend %left-0;
+    bottom: -1rem;
+    // @extend %right-0;
+    width: 0.25rem;
+    // height: 1rem;
+    top: 0;
+    bottom: -1rem;
+    background-color: var(--mat-sys-outline);
+    // background-color: red;
+    @extend %orc-corner-full;
 }

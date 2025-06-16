@@ -57,104 +57,69 @@
 
 
                 <!-- New table-based version -->
-                <div class="flex-grow flex flex-column flex-gap-1">
-                    <table class="channel-table">
-                        <thead>
-                            <tr>
-                                <th class="text-right font-size-xs text-nowrap orc-outline-color">Receive Capacity</th>
-                                <th class="channel-divider"></th>
-                                <th class="text-left font-size-xs text-nowrap orc-outline-color">Send Capacity</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @for(summary of channel_summaries; track summary.unit) {
+                @if( loading ) {
+                    <div class="flex-grow flex flex-column flex-gap-1">
+                        <div class="flex flex-justify-evenly">
+                            <div class="h-1 w-5 orc-corner-full shimmer-high"></div>
+                            <div class="h-1 w-5 orc-corner-full shimmer-high"></div>
+                        </div>
+                        <div class="h-3 w-full orc-corner-full shimmer-high"></div>
+                        @if( enabled_taproot_assets){
+                            <div class="h-3 w-full orc-corner-full shimmer-high"></div>
+                        }
+                    </div>
+                }@else {
+                    <div class="flex-grow flex flex-column flex-gap-1">
+                        <table class="channel-table">
+                            <thead>
                                 <tr>
-                                    <!-- Receive Capacity Column -->
-                                    <td class="receive-cell">
-                                        <div class="flex flex-items-center flex-gap-1">
-                                            <orc-graphic-asset 
-                                                [unit]="summary.unit" 
-                                                [height]="'2rem'"
-                                                [custody]="'lightning'"
-                                                [asset_id]="summary.asset_id">
-                                            </orc-graphic-asset>
-                                            <span class="text-nowrap font-size-l" [innerHTML]="summary.recievable | amount : summary.unit : 'lightning'"></span>
+                                    <th class="text-right font-size-xs text-nowrap orc-outline-color">Receive Capacity</th>
+                                    <th class="channel-divider">
+                                        <div class="flex flex-justify-center relative testflex">
+                                            <!-- <div class="text-nowrap">Receive Capacity</div> -->
+                                            <div class="test"></div>
+                                            <!-- <div class="text-nowrap">Send Capacity</div> -->
                                         </div>
-                                    </td>
-                                    
-                                    <!-- Divider Column -->
-                                    <td class="channel-divider">
-                                        <orc-lightning-channel
-                                            [height]="'2.5rem'"
-                                            [size]="summary.size"
-                                            [recievable]="summary.recievable"
-                                            [sendable]="summary.sendable"
-                                            [unit]="summary.unit"
-                                            [asset_id]="summary.asset_id">
-                                        </orc-lightning-channel>
-                                    </td>
-                                    
-                                    <!-- Send Capacity Column -->
-                                    <td class="send-cell">
-                                        <div class="flex flex-items-center flex-gap-1">
-                                            <span class="text-nowrap font-size-l" [innerHTML]="summary.sendable | amount : summary.unit : 'lightning'"></span>
-                                        </div>
-                                    </td>
+                                        
+                                    </th>
+                                    <th class="text-left font-size-xs text-nowrap orc-outline-color">Send Capacity</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-
-
-
-                <!-- <div class="flex flex-column flex-gap-1">
-                     <div class="flex">
-                        <div class="flex flex-column flex-gap-1">
-                            <div class="flex flex-justify-end flex-items-center">
-                                <div class="orc-outline-color p-r-1">receive capacity</div>
-                            </div>
-                            @for( summary of channel_summaries; track summary.unit ){
-                                <div class="flex flex-items-center flex-gap-1">
-                                    <orc-graphic-asset 
-                                        [unit]="summary.unit" 
-                                        [height]="'2rem'"
-                                        [custody]="'lightning'"
-                                        [asset_id]="summary.asset_id">
-                                    </orc-graphic-asset>
-                                    <span class="text-nowrap font-size-l flex-grow" [innerHTML]="summary.recievable | amount : summary.unit : 'lightning'"></span>
-                                    <orc-lightning-channel
-                                        [height]="'2.5rem'"
-                                        [size]="summary.size"
-                                        [fill]="summary.recievable"
-                                        [unit]="summary.unit"
-                                        [asset_id]="summary.asset_id">
-                                    </orc-lightning-channel>
-                                </div>
-                            }
-                        </div>
-                        <div class="channel-divider"></div>
-                        <div class="flex flex-column flex-gap-1">
-                            <div class="flex flex-justify-start flex-items-center">
-                                <div class="orc-outline-color p-l-1">send capacity</div>
-                            </div>
-                            @for( summary of channel_summaries; track summary.unit ){
-                                <div class="flex flex-items-center flex-gap-1">
-                                    <orc-lightning-channel
-                                        [height]="'2.5rem'"
-                                        [size]="summary.size"
-                                        [fill]="summary.sendable"
-                                        [unit]="summary.unit"
-                                        [asset_id]="summary.asset_id">
-                                    </orc-lightning-channel>
-                                    <span class="text-nowrap font-size-l flex-grow" [innerHTML]="summary.sendable | amount : summary.unit : 'lightning'"></span>
-                                </div>
-                            }
-                        </div>
-                     </div>
-                </div> -->
-
-
+                            </thead>
+                            <tbody>
+                                @for(summary of channel_summaries; track summary.unit) {
+                                    <tr>
+                                        <td class="receive-cell">
+                                            <div class="flex flex-items-center flex-gap-1">
+                                                <orc-graphic-asset 
+                                                    [unit]="summary.unit" 
+                                                    [height]="'2rem'"
+                                                    [custody]="'lightning'"
+                                                    [asset_id]="summary.asset_id">
+                                                </orc-graphic-asset>
+                                                <span class="text-nowrap font-size-l" [innerHTML]="summary.recievable | amount : summary.unit : 'lightning'"></span>
+                                            </div>
+                                        </td>
+                                        <td class="channel-divider">
+                                            <orc-lightning-channel
+                                                [height]="'2.5rem'"
+                                                [size]="summary.size"
+                                                [recievable]="summary.recievable"
+                                                [sendable]="summary.sendable"
+                                                [unit]="summary.unit"
+                                                [asset_id]="summary.asset_id">
+                                            </orc-lightning-channel>
+                                        </td>
+                                        <td class="send-cell">
+                                            <div class="flex flex-items-center flex-gap-1">
+                                                <span class="text-nowrap font-size-l" [innerHTML]="summary.sendable | amount : summary.unit : 'lightning'"></span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
             </div>
         </div>
 
@@ -162,7 +127,7 @@
             @if( loading ) {
                 <div class="h-1 w-8 orc-corner-full shimmer-high"></div>
             } @else {
-                <div [@fadeIn] class="orc-outline-color">{{ lightning_info.version }}</div>
+                <div [@fadeIn] class="orc-outline-color font-size-xs">{{ lightning_info.version }}</div>
             }
         </div>
 
