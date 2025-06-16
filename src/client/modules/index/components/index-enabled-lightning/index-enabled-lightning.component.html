@@ -69,7 +69,13 @@
                                         [asset_id]="summary.asset_id">
                                     </orc-graphic-asset>
                                     <span class="text-nowrap font-size-l flex-grow" [innerHTML]="summary.recievable | amount : summary.unit : 'lightning'"></span>
-                                    <div>bar</div>
+                                    <orc-lightning-channel
+                                        [height]="'2.5rem'"
+                                        [size]="summary.size"
+                                        [fill]="summary.recievable"
+                                        [unit]="summary.unit"
+                                        [asset_id]="summary.asset_id">
+                                    </orc-lightning-channel>
                                 </div>
                             }
                         </div>
@@ -80,7 +86,13 @@
                             </div>
                             @for( summary of channel_summaries; track summary.unit ){
                                 <div class="flex flex-items-center flex-gap-1">
-                                    <div>bar</div>
+                                    <orc-lightning-channel
+                                        [height]="'2.5rem'"
+                                        [size]="summary.size"
+                                        [fill]="summary.sendable"
+                                        [unit]="summary.unit"
+                                        [asset_id]="summary.asset_id">
+                                    </orc-lightning-channel>
                                     <span class="text-nowrap font-size-l flex-grow" [innerHTML]="summary.sendable | amount : summary.unit : 'lightning'"></span>
                                 </div>
                             }

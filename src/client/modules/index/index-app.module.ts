@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { LocalModule } from '@client/modules/local/local.module';
 import { GraphicModule } from '@client/modules/graphic/graphic.module';
 import { BitcoinModule } from '@client/modules/bitcoin/bitcoin.module';
+import { LightningModule } from '@client/modules/lightning/lightning.module';
 /* Local Dependencies */
 import { IndexSectionComponent } from './components/index-section/index-section.component';
 import { IndexEnabledBitcoinComponent } from './components/index-enabled-bitcoin/index-enabled-bitcoin.component';
@@ -50,6 +51,7 @@ export class IndexAppRoutingModule { }
 		LocalModule,
 		GraphicModule,
 		BitcoinModule,
+		LightningModule,
 		IndexAppRoutingModule,
 	],
 })

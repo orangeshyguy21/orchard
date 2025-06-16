@@ -1,0 +1,11 @@
+@use '@styles/molecule/molecule';
+
+// :host {
+//     @extend %flex;
+// }
+
+.lightning-channel-capacity{
+    // width: 100%;
+    width: 3rem;
+    background-color: #0f9493;
+}

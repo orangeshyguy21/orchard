@@ -6,36 +6,34 @@ import { RouterModule, Routes } from '@angular/router';
 import { LightningSectionComponent } from './components/lightning-section/lightning-section.component';
 
 const routes: Routes = [
-  {
-    path: '',
-    component: LightningSectionComponent,
-    title: 'Orchard | Lightning',
-    data: {
-      section: 'lightning',
-      sub_section: 'dashboard'
-    }
-  }
+	{
+		path: '',
+		component: LightningSectionComponent,
+		title: 'Orchard | Lightning',
+		data: {
+			section: 'lightning',
+			sub_section: 'dashboard'
+		}
+	}
 ];
 
 @NgModule({
-  imports: [
-    RouterModule.forChild(routes),
-  ],
-  exports: [
-    RouterModule,
-  ],
+	imports: [
+		RouterModule.forChild(routes),
+	],
+	exports: [
+		RouterModule,
+	],
 })
 export class LightningAppRoutingModule { }
 
-
 @NgModule({
-  declarations: [
-    LightningSectionComponent
-  ],
-  imports: [
-    CommonModule,
-    LightningAppRoutingModule,
-  ],
-
+	declarations: [
+		LightningSectionComponent
+	],
+	imports: [
+		CommonModule,
+		LightningAppRoutingModule,
+	],
 })
 export class LightningAppModule { }
