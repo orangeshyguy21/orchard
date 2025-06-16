@@ -1,0 +1,72 @@
+<mat-card appearance="outlined" class="lightning-enabled-card">
+    <mat-card-content>
+
+        <div class="absolute left-1 top-1">
+            <div class="flex flex-column flex-gap-0-25">
+                <div class="flex flex-items-center flex-gap-0-5 h-1">
+                    @if( loading ) {
+                        <div class="h-1 w-1 orc-corner-full shimmer-high"></div>
+                        <div class="h-1 w-4 orc-corner-full shimmer-high"></div>
+                    } @else {
+                        <mat-icon [@fadeIn] class="icon-sm trans-color-medium orc-status-active-color">circle</mat-icon>
+                        <div [@fadeIn] class="orc-outline-color">online</div>
+                    }
+                </div>
+                <div class="flex flex-items-center flex-gap-0-5">
+                    @if( loading ) {
+                        <div class="h-1 w-1 orc-corner-full shimmer-high"></div>
+                        <div class="h-1 w-4 orc-corner-full shimmer-high"></div>
+                    } @else {
+                        <mat-icon [@fadeIn] class="icon-sm trans-color-medium orc-status-active-color">circle</mat-icon>
+                        <div [@fadeIn] class="orc-outline-color">taproot assets</div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-column flex-gap-2">
+            <div class="flex flex-justify-center">
+                <div class="flex flex-items-center flex-gap-1">
+                    <mat-icon class="icon-lg mat-symbol-outline">bolt</mat-icon>
+                    <div class="font-size-xxl font-weight-bold">Lightning</div>
+                </div>
+            </div>
+
+            <div class="flex flex-gap-2">
+                <div class="flex-1 flex flex-column flex-gap-1">
+                    <div class="title-l">Info</div>
+                    <div class="flex flex-gap-2">
+                        <div class="flex flex-column flex-gap-1">
+                            <div class="font-weight-light orc-outline-color">Node</div>
+                            <div class="font-weight-light orc-outline-color">Channels</div>
+                        </div>
+                        <div class="flex flex-column flex-gap-1">
+                            @if( loading ) {
+                                <div class="h-1 m-b-0-5 w-5 orc-corner-full shimmer-high"></div>
+                                <div class="h-1 w-5 orc-corner-full shimmer-high"></div>
+                            } @else {
+                                <div [@fadeIn] class="flex flex-items-center flex-gap-0-5">
+                                    <div class="h-1 w-1 orc-corner-full" [style.background-color]="lightning_info.color"></div>
+                                    <div class="font-weight-bold">{{ lightning_info.alias }}</div>
+                                </div>
+                                <div [@fadeIn] class="font-weight-bold">{{ lightning_info.num_active_channels }}</div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-1 flex flex-column flex-gap-1">
+                    <div class="title-l">Capacity</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute right-1 bottom-1">
+            @if( loading ) {
+                <div class="h-1 w-8 orc-corner-full shimmer-high"></div>
+            } @else {
+                <div [@fadeIn] class="orc-outline-color">{{ lightning_info.version }}</div>
+            }
+        </div>
+
+    </mat-card-content>
+</mat-card>

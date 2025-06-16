@@ -37,10 +37,10 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	public enabled_mint = environment.mint.enabled;
 	public enabled_ecash = false;
 
-	public loading_bitcoin:boolean = false;
-	public loading_lightning:boolean = false;
-	public loading_taproot_assets:boolean = false;
-	public loading_mint:boolean = false;
+	public loading_bitcoin:boolean = true;
+	public loading_lightning:boolean = true;
+	public loading_taproot_assets:boolean = true;
+	public loading_mint:boolean = true;
 
 	public error_bitcoin!: string;
 	public error_lightning!: string;
@@ -73,27 +73,6 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	   Initalization                      
 	******************************************************** */
 
-	// ngOnInit(): void {
-	// 	this.mintService.loadMintInfo().subscribe({
-	// 		error: (error) => {
-	// 			this.error = true;
-	// 			this.loading = false;
-	// 			this.cdr.detectChanges();
-	// 		}
-	// 	});
-	// 	this.subscriptions.add(this.getMintInfoSubscription());
-	// 	this.subscriptions.add(this.getRouterSubscription());
-	// }
-
-	// private getMintInfoSubscription(): Subscription {
-	// 	return this.mintService.mint_info$.subscribe(
-    //         (info:MintInfo | null) => {
-	// 			if( info ) this.mint_info = info;
-	// 			this.loadImageData(info?.icon_url);
-    //         }
-    //     );
-	// }
-
 	ngOnInit(): void {
 		this.orchardOptionalInit();
 	}
@@ -113,8 +92,6 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	******************************************************** */
 
 	private getBitcoin(): void {
-		this.loading_bitcoin = true;
-		this.cdr.detectChanges();
 		forkJoin({
 			blockchain: this.bitcoinService.loadBitcoinBlockchainInfo(),
 			network: this.bitcoinService.loadBitcoinNetworkInfo()
@@ -136,7 +113,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 				setTimeout(() => {
 					this.loading_bitcoin = false;
 					this.cdr.detectChanges();
-				}, 1000);
+				}, 500);
 				// this.loading_bitcoin = false;
 				// this.cdr.detectChanges();
 			})
@@ -154,9 +131,6 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	}
 
 	private getLightning(): void {
-		this.loading_taproot_assets = true;
-		this.cdr.detectChanges();
-
 		forkJoin({
 			info: this.lightningService.loadLightningInfo(),
 			balance: this.lightningService.loadLightningBalance(),
@@ -179,16 +153,17 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 				return EMPTY;
 			}),
 			finalize(() => {
-				this.loading_lightning = false;
-				this.cdr.detectChanges();
+				setTimeout(() => {
+					this.loading_lightning = false;
+					this.cdr.detectChanges();
+				}, 750);
+				// this.loading_lightning = false;
+				// this.cdr.detectChanges();
 			})
 		).subscribe();
 	}
 
 	private getTaprootAssets(): void {
-		this.loading_taproot_assets = true;
-		this.cdr.detectChanges();
-
 		forkJoin({
 			info: this.taprootAssetsService.loadTaprootAssetsInfo(),
 			assets: this.taprootAssetsService.loadTaprootAssets()
@@ -214,9 +189,6 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	}
 
 	private getMint(): void {
-		this.loading_mint = true;
-		this.cdr.detectChanges();
-
 		forkJoin({
 			info: this.mintService.loadMintInfo(),
 			balances: this.mintService.loadMintBalances(),

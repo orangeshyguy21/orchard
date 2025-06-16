@@ -1,0 +1,9 @@
+@use '@styles/molecule/molecule';
+
+:host {
+    @extend %w-full;
+}
+
+.lightning-enabled-card{
+    min-height: 20rem;
+}

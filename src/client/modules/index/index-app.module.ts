@@ -12,6 +12,7 @@ import { BitcoinModule } from '@client/modules/bitcoin/bitcoin.module';
 /* Local Dependencies */
 import { IndexSectionComponent } from './components/index-section/index-section.component';
 import { IndexEnabledBitcoinComponent } from './components/index-enabled-bitcoin/index-enabled-bitcoin.component';
+import { IndexEnabledLightningComponent } from './components/index-enabled-lightning/index-enabled-lightning.component';
 
 const routes: Routes = [
 	{
@@ -40,6 +41,7 @@ export class IndexAppRoutingModule { }
 	declarations: [
 		IndexSectionComponent,
 		IndexEnabledBitcoinComponent,
+		IndexEnabledLightningComponent,
 	],
 	imports: [
 		CommonModule,
