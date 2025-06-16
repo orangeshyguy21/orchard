@@ -47,14 +47,68 @@
                             } @else {
                                 <div [@fadeIn] class="flex flex-items-center flex-gap-0-5">
                                     <div class="h-1 w-1 orc-corner-full" [style.background-color]="lightning_info.color"></div>
-                                    <div class="font-weight-bold">{{ lightning_info.alias }}</div>
+                                    <div class="font-weight-bold text-nowrap">{{ lightning_info.alias }}</div>
                                 </div>
                                 <div [@fadeIn] class="font-weight-bold">{{ lightning_info.num_active_channels }}</div>
                             }
                         </div>
                     </div>
                 </div>
-                <div class="flex flex-column flex-gap-1">
+
+
+                <!-- New table-based version -->
+                <div class="flex-grow flex flex-column flex-gap-1">
+                    <table class="channel-table">
+                        <thead>
+                            <tr>
+                                <th class="text-right font-size-xs text-nowrap orc-outline-color">Receive Capacity</th>
+                                <th class="channel-divider"></th>
+                                <th class="text-left font-size-xs text-nowrap orc-outline-color">Send Capacity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for(summary of channel_summaries; track summary.unit) {
+                                <tr>
+                                    <!-- Receive Capacity Column -->
+                                    <td class="receive-cell">
+                                        <div class="flex flex-items-center flex-gap-1">
+                                            <orc-graphic-asset 
+                                                [unit]="summary.unit" 
+                                                [height]="'2rem'"
+                                                [custody]="'lightning'"
+                                                [asset_id]="summary.asset_id">
+                                            </orc-graphic-asset>
+                                            <span class="text-nowrap font-size-l" [innerHTML]="summary.recievable | amount : summary.unit : 'lightning'"></span>
+                                        </div>
+                                    </td>
+                                    
+                                    <!-- Divider Column -->
+                                    <td class="channel-divider">
+                                        <orc-lightning-channel
+                                            [height]="'2.5rem'"
+                                            [size]="summary.size"
+                                            [recievable]="summary.recievable"
+                                            [sendable]="summary.sendable"
+                                            [unit]="summary.unit"
+                                            [asset_id]="summary.asset_id">
+                                        </orc-lightning-channel>
+                                    </td>
+                                    
+                                    <!-- Send Capacity Column -->
+                                    <td class="send-cell">
+                                        <div class="flex flex-items-center flex-gap-1">
+                                            <span class="text-nowrap font-size-l" [innerHTML]="summary.sendable | amount : summary.unit : 'lightning'"></span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+
+
+                <!-- <div class="flex flex-column flex-gap-1">
                      <div class="flex">
                         <div class="flex flex-column flex-gap-1">
                             <div class="flex flex-justify-end flex-items-center">
@@ -98,7 +152,9 @@
                             }
                         </div>
                      </div>
-                </div>
+                </div> -->
+
+
             </div>
         </div>
 

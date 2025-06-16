@@ -12,21 +12,28 @@ export class LightningChannelComponent {
 
 	@Input() height: string = '2rem';
 	@Input() size!: number;
-	@Input() fill!: number;
+	@Input() recievable!: number;
+	@Input() sendable!: number;
 	@Input() unit!: string;
 	@Input() asset_id?: string;
 
-	
-	// public unit_icon = computed(() => {
-	// 	if( this.lower_unit() === 'sat' ) return 'currency_bitcoin';
-	// 	if( this.lower_unit() === 'msat' ) return 'currency_bitcoin';
-	// 	if( this.lower_unit() === 'btc' ) return 'currency_bitcoin';
-	// 	if( this.lower_unit() === 'usd' ) return 'attach_money';
-	// 	if( this.lower_unit() === 'eur' ) return 'euro';
-	// 	return 'question_mark';
-	// });
+	public lower_unit = computed(() => {
+		return this.unit.toLowerCase();
+	});
 
-	public fill_percentage = computed(() => {
-		return (this.fill / this.size) * 100;
+	public channel_class = computed(() => {
+		if( this.lower_unit() === 'sat' ) return 'channel-btc';
+		if( this.lower_unit() === 'msat' ) return 'channel-btc';
+		if( this.lower_unit() === 'btc' ) return 'channel-btc';
+		if( this.asset_id === 'f81dce34c31687b969e1c5acc69ad6bb04528bd1d593efdc2d505245051f1648' ) return 'channel-tether';
+		return 'channel-unknown';
+	});
+
+	public percentage_recievable = computed(() => {
+		return (this.recievable / this.size) * 100;
+	});
+
+	public percentage_sendable = computed(() => {
+		return (this.sendable / this.size) * 100;
 	});
 }

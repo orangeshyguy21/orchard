@@ -14,3 +14,34 @@
     @extend %orc-corner-full;
     @extend %orc-surface-container-highest-bg
 }
+
+
+
+.channel-table {
+    width: 100%;
+    border-collapse: collapse;
+    
+    th, td {
+        padding: 0.5rem;
+        vertical-align: middle;
+    }
+    
+    .channel-divider {
+        width: 100%;
+        min-width: 100px; // Minimum width for the channel visualization
+        background-color: var(--orc-surface-container-highest-bg);
+        border-radius: 9999px;
+    }
+    
+    .receive-cell, .send-cell {
+        white-space: nowrap; // Prevent wrapping of content
+    }
+    
+    .receive-cell {
+        text-align: right;
+    }
+    
+    .send-cell {
+        text-align: left;
+    }
+}
