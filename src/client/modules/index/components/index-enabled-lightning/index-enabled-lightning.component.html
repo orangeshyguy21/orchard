@@ -73,22 +73,22 @@
                         <table class="channel-table">
                             <thead>
                                 <tr>
-                                    <th class="text-right font-size-xs text-nowrap orc-outline-color">Receive Capacity</th>
-                                    <th class="channel-divider">
-                                        <div class="flex flex-justify-center relative testflex">
-                                            <!-- <div class="text-nowrap">Receive Capacity</div> -->
-                                            <div class="test"></div>
-                                            <!-- <div class="text-nowrap">Send Capacity</div> -->
+                                    <th></th>
+                                    <th>
+                                        <div class="flex flex-justify-center relative h-1">
+                                            <div class="lightning-channels-divider">
+                                                <div class="title-capacity-receive font-size-xs text-nowrap orc-outline-color">Receive Capacity</div>
+                                                <div class="title-capacity-send font-size-xs text-nowrap orc-outline-color">Send Capacity</div>
+                                            </div>
                                         </div>
-                                        
                                     </th>
-                                    <th class="text-left font-size-xs text-nowrap orc-outline-color">Send Capacity</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @for(summary of channel_summaries; track summary.unit) {
                                     <tr>
-                                        <td class="receive-cell">
+                                        <td>
                                             <div class="flex flex-items-center flex-gap-1">
                                                 <orc-graphic-asset 
                                                     [unit]="summary.unit" 
@@ -99,7 +99,7 @@
                                                 <span class="text-nowrap font-size-l" [innerHTML]="summary.recievable | amount : summary.unit : 'lightning'"></span>
                                             </div>
                                         </td>
-                                        <td class="channel-divider">
+                                        <td class="w-full">
                                             <orc-lightning-channel
                                                 [height]="'2.5rem'"
                                                 [size]="summary.size"
@@ -109,7 +109,7 @@
                                                 [asset_id]="summary.asset_id">
                                             </orc-lightning-channel>
                                         </td>
-                                        <td class="send-cell">
+                                        <td>
                                             <div class="flex flex-items-center flex-gap-1">
                                                 <span class="text-nowrap font-size-l" [innerHTML]="summary.sendable | amount : summary.unit : 'lightning'"></span>
                                             </div>

@@ -9,50 +9,32 @@
 }
 
 .channel-table {
-    width: 100%;
-    border-collapse: collapse;
+    @extend %w-full;
+    @extend %border-collapse;
     
     th, td {
-        padding: 0.5rem;
-        vertical-align: middle;
-    }
-    
-    .channel-divider {
-        @extend %relative;
-        width: 100%;
-        min-width: 100px; // Minimum width for the channel visualization
-        background-color: var(--orc-surface-container-highest-bg);
-        border-radius: 9999px;
-    }
-    
-    .receive-cell, .send-cell {
-        white-space: nowrap; // Prevent wrapping of content
-    }
-    
-    .receive-cell {
-        text-align: right;
-    }
-    
-    .send-cell {
-        text-align: left;
+        @extend %p-0-5;
+        @extend %vertical-align-middle;
     }
 }
 
-.testflex{
-    height: 1rem;
-}
-
-.test{
+.lightning-channels-divider{
     @extend %absolute;
-    top: -1rem;
-    // @extend %left-0;
+    top: -0.5em;
     bottom: -1rem;
-    // @extend %right-0;
-    width: 0.25rem;
-    // height: 1rem;
-    top: 0;
-    bottom: -1rem;
-    background-color: var(--mat-sys-outline);
-    // background-color: red;
+    @extend %w-0-25;
+    @extend %orc-outline-bg;
     @extend %orc-corner-full;
+}
+
+.title-capacity-receive {
+    @extend %absolute;
+    @extend %right-2;
+    @extend %top-0-5;
+}
+
+.title-capacity-send {
+    @extend %absolute;
+    @extend %left-2;
+    @extend %top-0-5;
 }
