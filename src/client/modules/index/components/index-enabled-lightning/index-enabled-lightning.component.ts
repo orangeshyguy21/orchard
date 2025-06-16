@@ -4,11 +4,15 @@ import { animate, style, transition, trigger } from '@angular/animations';
 /* Application Dependencies */
 import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.class';
 import { LightningBalance } from '@client/modules/lightning/classes/lightning-balance.class';
+import { TaprootAssets } from '@client/modules/tapass/classes/taproot-assets.class';
 
-type Channel = {
-	total: number;
+type ChannelSummary = {
+	size: number;
 	recievable: number;
-	spendable: number;
+	sendable: number;
+	decimal_display: number,
+	unit: string;
+	asset_id?: string;
 }
 
 @Component({
@@ -32,11 +36,58 @@ export class IndexEnabledLightningComponent implements OnChanges {
 	@Input() enabled_taproot_assets!: boolean;
 	@Input() lightning_info!: LightningInfo;
 	@Input() lightning_balance!: LightningBalance;
+	@Input() taproot_assets!: TaprootAssets;
+
+	public channel_summaries : ChannelSummary[] = [];
 
 	ngOnChanges(changes: SimpleChanges): void {
 		if( changes['loading'] && !this.loading ) {
-			// this.balances_hot = this.getHotBalances();
-			// console.log('balances_hot', this.balances_hot);
+			this.init();
 		}
+	}
+
+	private init() : void {
+		const sat_summary = this.getSatSummary();
+		const taproot_assets_summaries = this.getTaprootAssetsSummaries();
+		this.channel_summaries = ( taproot_assets_summaries ) ? [sat_summary, ...taproot_assets_summaries] : [sat_summary];
+		console.log('channel_summaries', this.channel_summaries);
+	}
+
+	private getSatSummary() : ChannelSummary {
+		return {
+			size: this.lightning_balance.local_balance.sat + this.lightning_balance.remote_balance.sat,
+			recievable: this.lightning_balance.remote_balance.sat,
+			sendable: this.lightning_balance.local_balance.sat,
+			unit: 'sat',
+			decimal_display: 0,
+		}
+	}
+
+	private getTaprootAssetsSummaries() : ChannelSummary[] | null {
+		if( !this.enabled_taproot_assets ) return null;
+		
+		const grouped_summaries = this.lightning_balance.custom_channel_data.open_channels.reduce((acc, channel) => {
+			const asset_id = channel.asset_id;
+			const asset = this.taproot_assets.assets.find(asset => asset.asset_genesis.asset_id === asset_id);
+			
+			if (!acc[asset_id]) {
+				acc[asset_id] = {
+					size: 0,
+					recievable: 0,
+					sendable: 0,
+					unit: channel.name,
+					decimal_display: ( asset ) ? asset.decimal_display?.decimal_display : 0,
+					asset_id: asset_id
+				};
+			}
+			
+			acc[asset_id].size += channel.local_balance + channel.remote_balance;
+			acc[asset_id].recievable += channel.remote_balance;
+			acc[asset_id].sendable += channel.local_balance;
+			
+			return acc;
+		}, {} as Record<string, ChannelSummary>);
+		
+		return Object.values(grouped_summaries);
 	}
 }

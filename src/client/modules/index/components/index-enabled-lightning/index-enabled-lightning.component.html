@@ -60,16 +60,30 @@
                             <div class="flex flex-justify-end flex-items-center">
                                 <div class="orc-outline-color p-r-1">receive capacity</div>
                             </div>
-                            <div>logo - receive number - bar</div>
-                            <div>logo - receive number - bar</div>
+                            @for( summary of channel_summaries; track summary.unit ){
+                                <div class="flex flex-items-center flex-gap-1">
+                                    <orc-graphic-asset 
+                                        [unit]="summary.unit" 
+                                        [height]="'2rem'"
+                                        [custody]="'lightning'"
+                                        [asset_id]="summary.asset_id">
+                                    </orc-graphic-asset>
+                                    <span class="text-nowrap font-size-l flex-grow" [innerHTML]="summary.recievable | amount : summary.unit : 'lightning'"></span>
+                                    <div>bar</div>
+                                </div>
+                            }
                         </div>
                         <div class="channel-divider"></div>
                         <div class="flex flex-column flex-gap-1">
                             <div class="flex flex-justify-start flex-items-center">
                                 <div class="orc-outline-color p-l-1">send capacity</div>
                             </div>
-                            <div>bar - send number</div>
-                            <div>bar - send number</div>
+                            @for( summary of channel_summaries; track summary.unit ){
+                                <div class="flex flex-items-center flex-gap-1">
+                                    <div>bar</div>
+                                    <span class="text-nowrap font-size-l flex-grow" [innerHTML]="summary.sendable | amount : summary.unit : 'lightning'"></span>
+                                </div>
+                            }
                         </div>
                      </div>
                 </div>
