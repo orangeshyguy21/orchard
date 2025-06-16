@@ -56,7 +56,7 @@
 
 .lightning-channel-center{
     @extend %relative;
-    width: 0.25rem;
+    @extend %w-0-25;
 
     .center-border{
         @extend %absolute;

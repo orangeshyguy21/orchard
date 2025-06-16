@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 /* Vendor Dependencies */
-import { tap, catchError, finalize, EMPTY, forkJoin, Subscription } from 'rxjs';
+import { tap, catchError, finalize, EMPTY, forkJoin, Subscription, firstValueFrom } from 'rxjs';
 /* Application Configuration */
 import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
@@ -9,6 +9,7 @@ import { BitcoinService } from '@client/modules/bitcoin/services/bitcoin.service
 import { LightningService } from '@client/modules/lightning/services/lightning/lightning.service';
 import { TaprootAssetsService } from '@client/modules/tapass/services/taproot-assets.service';
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
+import { PublicService } from '@client/modules/public/services/image/public.service';
 import { BitcoinBlockchainInfo } from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
 import { BitcoinNetworkInfo } from '@client/modules/bitcoin/classes/bitcoin-network-info.class';
 import { BitcoinBlockCount } from '@client/modules/bitcoin/classes/bitcoin-blockcount.class';
@@ -58,6 +59,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	public mint_info!: MintInfo | null;
 	public mint_balances!: MintBalance[] | null;
 	public mint_keysets!: MintKeyset[] | null;
+	public mint_icon_data!: string | null;
 
 	private subscriptions: Subscription = new Subscription();
 
@@ -66,6 +68,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 		private lightningService: LightningService,
 		private taprootAssetsService: TaprootAssetsService,
 		private mintService: MintService,
+		private publicService: PublicService,
 		private cdr: ChangeDetectorRef,
 	) {}
 
@@ -198,9 +201,9 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 				this.mint_info = info;
 				this.mint_balances = balances;
 				this.mint_keysets = keysets;
-				// console.log('MINT INFO', this.mint_info);
-				// console.log('MINT BALANCES', this.mint_balances);
-				// console.log('MINT KEYSETS', this.mint_keysets);
+				console.log('MINT INFO', this.mint_info);
+				console.log('MINT BALANCES', this.mint_balances);
+				console.log('MINT KEYSETS', this.mint_keysets);
 				this.error_mint = '';
 			}),
 			catchError((error) => {
@@ -211,11 +214,36 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 				return EMPTY;
 			}),
 			finalize(() => {
-				this.loading_mint = false;
-				this.cdr.detectChanges();
+				setTimeout(async () => {
+					if( this.mint_info?.icon_url ){
+						const image = await firstValueFrom(this.publicService.getPublicImageData(this.mint_info?.icon_url));
+						this.mint_icon_data = image?.data ?? null;
+					}
+					this.loading_mint = false;
+					this.cdr.detectChanges();
+				}, 1000);
 			})
 		).subscribe();
 	}
+
+	// private loadImageData(image_url: string|null|undefined): void {
+	// 	if( !image_url ){
+	// 		this.mint_icon_data = null;
+	// 		this.loading_mint = false;
+	// 		this.cdr.detectChanges();
+	// 		return;
+	// 	}
+	// 	this.publicService.getPublicImageData(image_url).subscribe(
+	// 		(image:PublicImage) => {
+	// 			this.loading = false;
+	// 			this.mint_icon_data = image.data;
+	// 			this.cdr.detectChanges();
+	// 		}, (error) => {
+	// 			this.loading = false;
+	// 			this.cdr.detectChanges();
+	// 		}
+	// 	);
+	// }
 
 	ngOnDestroy(): void {
 		this.subscriptions.unsubscribe();

@@ -47,8 +47,12 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 
 	ngOnChanges(changes: SimpleChanges): void {
 		if( changes['loading'] && !this.loading ) {
-			this.balances_hot = this.getHotBalances();
+			this.init();
 		}
+	}
+
+	private init() : void {
+		this.balances_hot = this.getHotBalances();
 	}
 
 	private getHotBalances(): HotCoins[] | null {

@@ -28,8 +28,6 @@ import { LocalModule } from '@client/modules/local/local.module';
 import { GraphicModule } from '@client/modules/graphic/graphic.module';
 import { ErrorModule } from '@client/modules/error/error.module';
 import { FormModule } from '@client/modules/form/form.module';
-/* Local Dependencies */
-import { MintAppRoutingModule } from './mint-app.router';
 /* Native Dependencies */
 import { MintSectionComponent } from './components/mint-section/mint-section.component';
 import { MintSubsectionErrorComponent } from './components/mint-subsection-error/mint-subsection-error.component';
@@ -42,7 +40,6 @@ import { MintQrcodeDialogComponent } from './components/mint-qrcode-dialog/mint-
 import { MintAnalyticControlPanelComponent } from './components/mint-analytic-control-panel/mint-analytic-control-panel.component';
 import { MintAnalyticChartComponent } from './components/mint-analytic-chart/mint-analytic-chart.component';
 import { MintKeysetComponent } from './components/mint-keyset/mint-keyset.component';
-import { MintIconComponent } from './components/mint-icon/mint-icon.component';
 import { MintNameComponent } from './components/mint-name/mint-name.component';
 import { MintInfoFormIconComponent } from './components/mint-info-form-icon/mint-info-form-icon.component';
 import { MintInfoFormNameComponent } from './components/mint-info-form-name/mint-info-form-name.component';
@@ -83,6 +80,9 @@ import { MintDataMeltComponent } from './components/mint-data-melt/mint-data-mel
 import { MintDataBackupCreateComponent } from './components/mint-data-backup-create/mint-data-backup-create.component';
 import { MintDataBackupRestoreComponent } from './components/mint-data-backup-restore/mint-data-backup-restore.component';
 import { MintDataEcashComponent } from './components/mint-data-ecash/mint-data-ecash.component';
+/* Local Dependencies */
+import { MintAppRoutingModule } from './mint-app.router';
+import { MintModule } from './mint.module';
 
 @NgModule({
 	declarations: [
@@ -97,7 +97,6 @@ import { MintDataEcashComponent } from './components/mint-data-ecash/mint-data-e
 		MintAnalyticControlPanelComponent,
 		MintAnalyticChartComponent,
 		MintKeysetComponent,
-		MintIconComponent,
   		MintNameComponent,
     	MintInfoFormIconComponent,
 		MintInfoFormNameComponent,
@@ -167,6 +166,7 @@ import { MintDataEcashComponent } from './components/mint-data-ecash/mint-data-e
 		GraphicModule,
 		ErrorModule,
 		FormModule,
+		MintModule,
 	],
 })
 export class MintAppModule { }

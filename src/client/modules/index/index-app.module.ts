@@ -10,10 +10,12 @@ import { LocalModule } from '@client/modules/local/local.module';
 import { GraphicModule } from '@client/modules/graphic/graphic.module';
 import { BitcoinModule } from '@client/modules/bitcoin/bitcoin.module';
 import { LightningModule } from '@client/modules/lightning/lightning.module';
+import { MintModule } from '@client/modules/mint/mint.module';
 /* Local Dependencies */
 import { IndexSectionComponent } from './components/index-section/index-section.component';
 import { IndexEnabledBitcoinComponent } from './components/index-enabled-bitcoin/index-enabled-bitcoin.component';
 import { IndexEnabledLightningComponent } from './components/index-enabled-lightning/index-enabled-lightning.component';
+import { IndexEnabledMintComponent } from './components/index-enabled-mint/index-enabled-mint.component';
 
 const routes: Routes = [
 	{
@@ -43,6 +45,7 @@ export class IndexAppRoutingModule { }
 		IndexSectionComponent,
 		IndexEnabledBitcoinComponent,
 		IndexEnabledLightningComponent,
+		IndexEnabledMintComponent,
 	],
 	imports: [
 		CommonModule,
@@ -52,6 +55,7 @@ export class IndexAppRoutingModule { }
 		GraphicModule,
 		BitcoinModule,
 		LightningModule,
+		MintModule,
 		IndexAppRoutingModule,
 	],
 })

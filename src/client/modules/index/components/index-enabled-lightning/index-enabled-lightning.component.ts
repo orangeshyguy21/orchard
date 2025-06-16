@@ -50,7 +50,6 @@ export class IndexEnabledLightningComponent implements OnChanges {
 		const sat_summary = this.getSatSummary();
 		const taproot_assets_summaries = this.getTaprootAssetsSummaries();
 		this.channel_summaries = ( taproot_assets_summaries ) ? [sat_summary, ...taproot_assets_summaries] : [sat_summary];
-		console.log('channel_summaries', this.channel_summaries);
 	}
 
 	private getSatSummary() : ChannelSummary {
@@ -69,7 +68,6 @@ export class IndexEnabledLightningComponent implements OnChanges {
 		const grouped_summaries = this.lightning_balance.custom_channel_data.open_channels.reduce((acc, channel) => {
 			const asset_id = channel.asset_id;
 			const asset = this.taproot_assets.assets.find(asset => asset.asset_genesis.asset_id === asset_id);
-			
 			if (!acc[asset_id]) {
 				acc[asset_id] = {
 					size: 0,
@@ -80,11 +78,10 @@ export class IndexEnabledLightningComponent implements OnChanges {
 					asset_id: asset_id
 				};
 			}
-			
-			acc[asset_id].size += channel.local_balance + channel.remote_balance;
-			acc[asset_id].recievable += channel.remote_balance;
-			acc[asset_id].sendable += channel.local_balance;
-			
+			const size = (channel.local_balance + channel.remote_balance) / Math.pow(10, acc[asset_id].decimal_display);
+			acc[asset_id].size += size;
+			acc[asset_id].recievable += channel.remote_balance / Math.pow(10, acc[asset_id].decimal_display);
+			acc[asset_id].sendable += channel.local_balance / Math.pow(10, acc[asset_id].decimal_display);
 			return acc;
 		}, {} as Record<string, ChannelSummary>);
 		
