@@ -113,12 +113,8 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 				return EMPTY;
 			}),
 			finalize(() => {
-				setTimeout(() => {
-					this.loading_bitcoin = false;
-					this.cdr.detectChanges();
-				}, 500);
-				// this.loading_bitcoin = false;
-				// this.cdr.detectChanges();
+				this.loading_bitcoin = false;
+				this.cdr.detectChanges();
 			})
 		).subscribe();
 	}
@@ -156,12 +152,8 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 				return EMPTY;
 			}),
 			finalize(() => {
-				setTimeout(() => {
-					this.loading_lightning = false;
-					this.cdr.detectChanges();
-				}, 750);
-				// this.loading_lightning = false;
-				// this.cdr.detectChanges();
+				this.loading_lightning = false;
+				this.cdr.detectChanges();
 			})
 		).subscribe();
 	}
@@ -213,37 +205,16 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 				this.mint_keysets = null;
 				return EMPTY;
 			}),
-			finalize(() => {
-				setTimeout(async () => {
-					if( this.mint_info?.icon_url ){
-						const image = await firstValueFrom(this.publicService.getPublicImageData(this.mint_info?.icon_url));
-						this.mint_icon_data = image?.data ?? null;
-					}
-					this.loading_mint = false;
-					this.cdr.detectChanges();
-				}, 1000);
+			finalize(async () => {
+				if( this.mint_info?.icon_url ){
+					const image = await firstValueFrom(this.publicService.getPublicImageData(this.mint_info?.icon_url));
+					this.mint_icon_data = image?.data ?? null;
+				}
+				this.loading_mint = false;
+				this.cdr.detectChanges();
 			})
 		).subscribe();
 	}
-
-	// private loadImageData(image_url: string|null|undefined): void {
-	// 	if( !image_url ){
-	// 		this.mint_icon_data = null;
-	// 		this.loading_mint = false;
-	// 		this.cdr.detectChanges();
-	// 		return;
-	// 	}
-	// 	this.publicService.getPublicImageData(image_url).subscribe(
-	// 		(image:PublicImage) => {
-	// 			this.loading = false;
-	// 			this.mint_icon_data = image.data;
-	// 			this.cdr.detectChanges();
-	// 		}, (error) => {
-	// 			this.loading = false;
-	// 			this.cdr.detectChanges();
-	// 		}
-	// 	);
-	// }
 
 	ngOnDestroy(): void {
 		this.subscriptions.unsubscribe();
