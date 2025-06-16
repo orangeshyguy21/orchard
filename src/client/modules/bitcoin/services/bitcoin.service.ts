@@ -31,19 +31,23 @@ import {
 })
 export class BitcoinService {
 
+	public get bitcoin_blockcount$(): Observable<BitcoinBlockCount | null> { return this.bitcoin_block_subject.asObservable(); }
 	public get bitcoin_blockchain_info$(): Observable<BitcoinBlockchainInfo | null> { return this.bitcoin_blockchain_info_subject.asObservable(); }
 
 	public readonly CACHE_KEYS = {
+		BITCOIN_BLOCKCOUNT: 'bitcoin-blockcount',
 		BITCOIN_BLOCKCHAIN_INFO: 'bitcoin-blockchain-info',
 		BITCOIN_NETWORK_INFO: 'bitcoin-network-info',
 	};
 
 	private readonly CACHE_DURATIONS = {
+		[this.CACHE_KEYS.BITCOIN_BLOCKCOUNT]: 1 * 60 * 1000, // 1 minute
 		[this.CACHE_KEYS.BITCOIN_BLOCKCHAIN_INFO]: 30 * 60 * 1000, // 30 minutes
 		[this.CACHE_KEYS.BITCOIN_NETWORK_INFO]: 30 * 60 * 1000, // 30 minutes
 	};
 
 	/* Subjects for caching */
+	private readonly bitcoin_block_subject!: BehaviorSubject<BitcoinBlockCount | null>;
 	private readonly bitcoin_blockchain_info_subject: BehaviorSubject<BitcoinBlockchainInfo | null>;
 	private readonly bitcoin_network_info_subject: BehaviorSubject<BitcoinNetworkInfo | null>;
 
@@ -54,6 +58,7 @@ export class BitcoinService {
 		public http: HttpClient,
 		public cache: CacheService,
 	) {
+		this.bitcoin_block_subject = new BehaviorSubject<BitcoinBlockCount | null>(null);
 		this.bitcoin_blockchain_info_subject = this.cache.createCache<BitcoinBlockchainInfo>(
 			this.CACHE_KEYS.BITCOIN_BLOCKCHAIN_INFO,
 			this.CACHE_DURATIONS[this.CACHE_KEYS.BITCOIN_BLOCKCHAIN_INFO]
@@ -120,6 +125,9 @@ export class BitcoinService {
 				return response.data.bitcoin_blockcount;
 			}),
 			map((bitcoin_blockcount) => new BitcoinBlockCount(bitcoin_blockcount)),
+			tap((bitcoin_blockcount) => {
+                this.bitcoin_block_subject.next(bitcoin_blockcount);
+            }),
 			catchError((error) => {
 				console.error('Error loading bitcoin block count:', error);
 				return throwError(() => error);

@@ -34,6 +34,7 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 	@Input() loading!: boolean;
 	@Input() enabled_lightning!: boolean;
 	@Input() enabled_taproot_assets!: boolean;
+	@Input() blockcount!: number;
 	@Input() blockchain_info!: BitcoinBlockchainInfo;
 	@Input() network_info!: BitcoinNetworkInfo;
 	@Input() lightning_accounts!: LightningAccount[];

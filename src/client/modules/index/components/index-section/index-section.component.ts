@@ -1,7 +1,7 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 /* Vendor Dependencies */
-import { tap, catchError, finalize, EMPTY, forkJoin } from 'rxjs';
+import { tap, catchError, finalize, EMPTY, forkJoin, Subscription } from 'rxjs';
 /* Application Configuration */
 import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
@@ -11,6 +11,7 @@ import { TaprootAssetsService } from '@client/modules/tapass/services/taproot-as
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { BitcoinBlockchainInfo } from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
 import { BitcoinNetworkInfo } from '@client/modules/bitcoin/classes/bitcoin-network-info.class';
+import { BitcoinBlockCount } from '@client/modules/bitcoin/classes/bitcoin-blockcount.class';
 import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.class';
 import { LightningBalance } from '@client/modules/lightning/classes/lightning-balance.class';
 import { LightningAccount } from '@client/modules/lightning/classes/lightning-account.class';
@@ -27,7 +28,7 @@ import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 	styleUrl: './index-section.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class IndexSectionComponent implements OnInit {
+export class IndexSectionComponent implements OnInit, OnDestroy {
 
 	public enabled_bitcoin = environment.bitcoin.enabled;
 	public enabled_lightning = environment.lightning.enabled;
@@ -48,6 +49,7 @@ export class IndexSectionComponent implements OnInit {
 
 	public bitcoin_blockchain_info!: BitcoinBlockchainInfo | null;
 	public bitcoin_network_info!: BitcoinNetworkInfo | null;
+	public bitcoin_blockcount!: BitcoinBlockCount | null;
 	public lightning_info!: LightningInfo | null;
 	public lightning_balance!: LightningBalance | null;
 	public lightning_accounts!: LightningAccount[] | null;
@@ -56,6 +58,8 @@ export class IndexSectionComponent implements OnInit {
 	public mint_info!: MintInfo | null;
 	public mint_balances!: MintBalance[] | null;
 	public mint_keysets!: MintKeyset[] | null;
+
+	private subscriptions: Subscription = new Subscription();
 
 	constructor(
 		private bitcoinService: BitcoinService,
@@ -69,12 +73,36 @@ export class IndexSectionComponent implements OnInit {
 	   Initalization                      
 	******************************************************** */
 
+	// ngOnInit(): void {
+	// 	this.mintService.loadMintInfo().subscribe({
+	// 		error: (error) => {
+	// 			this.error = true;
+	// 			this.loading = false;
+	// 			this.cdr.detectChanges();
+	// 		}
+	// 	});
+	// 	this.subscriptions.add(this.getMintInfoSubscription());
+	// 	this.subscriptions.add(this.getRouterSubscription());
+	// }
+
+	// private getMintInfoSubscription(): Subscription {
+	// 	return this.mintService.mint_info$.subscribe(
+    //         (info:MintInfo | null) => {
+	// 			if( info ) this.mint_info = info;
+	// 			this.loadImageData(info?.icon_url);
+    //         }
+    //     );
+	// }
+
 	ngOnInit(): void {
 		this.orchardOptionalInit();
 	}
 
 	private orchardOptionalInit(): void {
-		if( this.enabled_bitcoin ) this.getBitcoin();
+		if( this.enabled_bitcoin ) {
+			this.getBitcoin();
+			this.getBitcoinBlockSubscription();
+		}
 		if( this.enabled_lightning ) this.getLightning();
 		if( this.enabled_taproot_assets ) this.getTaprootAssets();
 		if( this.enabled_mint ) this.getMint();
@@ -113,6 +141,16 @@ export class IndexSectionComponent implements OnInit {
 				// this.cdr.detectChanges();
 			})
 		).subscribe();
+	}
+
+	private getBitcoinBlockSubscription(): Subscription {
+		return this.bitcoinService.bitcoin_blockcount$.subscribe(
+            (blockcount:BitcoinBlockCount | null) => {
+				if( !blockcount ) return;
+				this.bitcoin_blockcount = blockcount;
+				this.cdr.detectChanges();
+            }
+        );
 	}
 
 	private getLightning(): void {
@@ -205,5 +243,9 @@ export class IndexSectionComponent implements OnInit {
 				this.cdr.detectChanges();
 			})
 		).subscribe();
+	}
+
+	ngOnDestroy(): void {
+		this.subscriptions.unsubscribe();
 	}
 }

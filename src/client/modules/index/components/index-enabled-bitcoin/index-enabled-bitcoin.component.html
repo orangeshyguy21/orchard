@@ -48,7 +48,7 @@
                                 <div class="h-1 w-8 orc-corner-full shimmer-high"></div>
                             } @else {
                                 <div [@fadeIn] class="font-weight-bold">{{ blockchain_info.chain }}</div>
-                                <div [@fadeIn] class="font-weight-bold">{{ blockchain_info.blocks | block }}</div>
+                                <div [@fadeIn] class="font-weight-bold">{{ blockcount | block }}</div>
                                 <div [@fadeIn] class="font-weight-bold">{{ blockchain_info.size_on_disk | bytes }}</div>
                             }
                         </div>
