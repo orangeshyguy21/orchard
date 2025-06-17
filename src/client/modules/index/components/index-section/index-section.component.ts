@@ -6,7 +6,7 @@ import { tap, catchError, finalize, EMPTY, forkJoin, Subscription, firstValueFro
 /* Application Configuration */
 import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
-import { BitcoinService } from '@client/modules/bitcoin/services/bitcoin.service';
+import { BitcoinService } from '@client/modules/bitcoin/services/bitcoin/bitcoin.service';
 import { LightningService } from '@client/modules/lightning/services/lightning/lightning.service';
 import { TaprootAssetsService } from '@client/modules/tapass/services/taproot-assets.service';
 import { MintService } from '@client/modules/mint/services/mint/mint.service';

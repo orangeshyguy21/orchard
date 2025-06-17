@@ -44,8 +44,7 @@ async function bootstrap() {
 function validation(app: INestApplication, configService: ConfigService, logger: Logger) : void {
 	// validate BITCOIN_TYPE
 	const bitcoin_type = configService.get<BitcoinType>('bitcoin.type');
-	if( !bitcoin_type ) shutdown(app, logger, 'BITCOIN_TYPE not configured');
-	if( !Object.values(BitcoinType).includes(bitcoin_type) ) shutdown(app, logger, `Invalid BITCOIN_TYPE: ${bitcoin_type}`);
+	if( bitcoin_type && !Object.values(BitcoinType).includes(bitcoin_type) ) shutdown(app, logger, `Invalid BITCOIN_TYPE: ${bitcoin_type}`);
 	// validate LIGHTNING_TYPE
 	const lightning_type = configService.get<LightningType>('lightning.type');
 	if( lightning_type && !Object.values(LightningType).includes(lightning_type) ) shutdown(app, logger, `Invalid LIGHTNING_TYPE: ${lightning_type}`);

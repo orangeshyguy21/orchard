@@ -30,18 +30,6 @@ export class LightningSectionComponent implements OnInit, OnDestroy {
 		private cdr: ChangeDetectorRef,
 	) {}
 
-	// ngOnInit(): void {
-	// 	this.mintService.loadMintInfo().subscribe({
-	// 		error: (error) => {
-	// 			this.error = true;
-	// 			this.loading = false;
-	// 			this.cdr.detectChanges();
-	// 		}
-	// 	});
-	// 	this.subscriptions.add(this.getMintInfoSubscription());
-	// 	this.subscriptions.add(this.getRouterSubscription());
-	// }
-
 	ngOnInit(): void {
 		this.lightningService.loadLightningInfo().subscribe({
 			error: (error) => {

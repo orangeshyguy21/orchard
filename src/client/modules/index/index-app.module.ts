@@ -23,6 +23,7 @@ import { IndexEnabledEcashComponent } from './components/index-enabled-ecash/ind
 import { IndexDisabledMintComponent } from './components/index-disabled-mint/index-disabled-mint.component';
 import { IndexDisabledEcashComponent } from './components/index-disabled-ecash/index-disabled-ecash.component';
 import { IndexDisabledLightningComponent } from './components/index-disabled-lightning/index-disabled-lightning.component';
+import { IndexDisabledBitcoinComponent } from './components/index-disabled-bitcoin/index-disabled-bitcoin.component';
 
 const routes: Routes = [
 	{
@@ -54,6 +55,7 @@ export class IndexAppRoutingModule { }
 		IndexEnabledLightningComponent,
 		IndexEnabledMintComponent,
 		IndexEnabledEcashComponent,
+		IndexDisabledBitcoinComponent,
 		IndexDisabledLightningComponent,
 		IndexDisabledMintComponent,
 		IndexDisabledEcashComponent,
