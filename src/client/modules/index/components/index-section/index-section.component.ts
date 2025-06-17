@@ -90,8 +90,10 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	}
 	private initBitcoin(): void {
 		this.loading_bitcoin = ( this.enabled_bitcoin ) ? true : false;
-		this.getBitcoin();
-		this.getBitcoinBlockSubscription();
+		if( this.enabled_bitcoin ) {
+			this.getBitcoin();
+			this.getBitcoinBlockSubscription();
+		} 
 		this.cdr.detectChanges();
 	}
 	private initLightning(): void {
