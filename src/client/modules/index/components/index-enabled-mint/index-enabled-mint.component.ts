@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
 /* Application Dependencies */
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
@@ -34,6 +34,8 @@ export class IndexEnabledMintComponent implements OnChanges {
 	@Input() balances!: MintBalance[];
 	@Input() icon_data!: string | null;
 
+	@Output() navigate: EventEmitter<void> = new EventEmitter<void>();
+
 	public liabilities!: Liabilities[] | null;
 
 	constructor() {}
@@ -46,7 +48,6 @@ export class IndexEnabledMintComponent implements OnChanges {
 
 	private init() : void {
 		this.liabilities = this.getLiabilities();
-		console.log('LIABILITIES', this.liabilities);
 	}
 
 	private getLiabilities(): Liabilities[] | null {

@@ -19,6 +19,7 @@
                         [network_info]="bitcoin_network_info!"
                         [lightning_accounts]="lightning_accounts!"
                         [taproot_assets]="taproot_assets!"
+                        (navigate)="onNavigate('bitcoin')"
                     ></orc-index-enabled-bitcoin>
                 </div>
                 <div class="flex-1 flex flex-column flex-items-center">
@@ -28,6 +29,7 @@
                         [lightning_balance]="lightning_balance!"
                         [taproot_assets]="taproot_assets!"
                         [enabled_taproot_assets]="enabled_taproot_assets"
+                        (navigate)="onNavigate('lightning')"
                     ></orc-index-enabled-lightning>
                 </div>
             </div>
@@ -39,6 +41,7 @@
                         [balances]="mint_balances!"
                         [keysets]="mint_keysets!"
                         [icon_data]="mint_icon_data!"
+                        (navigate)="onNavigate('mint')"
                     ></orc-index-enabled-mint>
                 </div>
                 <div class="flex-1 flex flex-column flex-items-center">

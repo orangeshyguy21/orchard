@@ -1,4 +1,4 @@
-<mat-card appearance="outlined" class="bitcoin-enabled-card">
+<mat-card appearance="outlined" class="bitcoin-enabled-card" (click)="navigate.emit()">
     <mat-card-content>
 
         <div class="absolute left-1 top-1">
@@ -26,9 +26,9 @@
 
         <div class="flex flex-column flex-gap-2">
             <div class="flex flex-justify-center">
-                <div class="flex flex-items-center flex-gap-1">
+                <div class="bitcoin-card-title">
                     <mat-icon class="icon-lg" [svgIcon]="'bitcoin_outline'"></mat-icon>
-                    <div class="font-size-xxl font-weight-bold">Bitcoin</div>
+                    <div class=" font-size-xxl font-weight-bold">Bitcoin</div>
                 </div>
             </div>
     

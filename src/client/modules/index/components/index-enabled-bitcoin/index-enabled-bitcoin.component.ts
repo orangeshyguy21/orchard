@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
 /* Application Dependencies */
 import { BitcoinBlockchainInfo } from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
@@ -40,6 +40,8 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 	@Input() network_info!: BitcoinNetworkInfo;
 	@Input() lightning_accounts!: LightningAccount[];
 	@Input() taproot_assets!: TaprootAssets;
+
+	@Output() navigate: EventEmitter<void> = new EventEmitter<void>();
 
 	public balances_hot!: HotCoins[] | null;
 

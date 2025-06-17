@@ -5,6 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 /* Vendor Dependencies */
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { MatRippleModule } from '@angular/material/core';
 /* Application Dependencies */
 import { LocalModule } from '@client/modules/local/local.module';
 import { GraphicModule } from '@client/modules/graphic/graphic.module';
@@ -53,6 +54,7 @@ export class IndexAppRoutingModule { }
 		CommonModule,
 		MatCardModule,
 		MatIconModule,
+		MatRippleModule,
 		LocalModule,
 		GraphicModule,
 		BitcoinModule,

@@ -1,4 +1,4 @@
-<mat-card appearance="outlined" class="mint-enabled-card">
+<mat-card appearance="outlined" class="mint-enabled-card" (click)="navigate.emit()">
     <mat-card-content>
 
         <div class="absolute left-1 top-1">
@@ -17,7 +17,7 @@
 
         <div class="flex flex-column flex-gap-2">
             <div class="flex flex-justify-center">
-                <div class="flex flex-items-center flex-gap-1">
+                <div class="mint-card-title">
                     <mat-icon class="icon-lg mat-symbol-outline">account_balance</mat-icon>
                     <div class="font-size-xxl font-weight-bold">Mint</div>
                 </div>
