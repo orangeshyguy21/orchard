@@ -1,6 +1,9 @@
 /* Core Dependencies */
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+/* Vendor Dependencies */
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 /* Application Dependencies */
 import { NavModule } from '@client/modules/nav/nav.module';
 /* Native Dependencies */
@@ -19,6 +22,8 @@ import { BitcoinAppRoutingModule } from './bitcoin-app.router';
 	],
 	imports: [
 		CommonModule,
+		MatIconModule,
+		MatButtonModule,
 		NavModule,
 		BitcoinAppRoutingModule,
 	],
