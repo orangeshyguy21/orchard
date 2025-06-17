@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 /* Vendor Dependencies */
-import { Observable, catchError, Subscription, Subject, map, throwError } from 'rxjs';
+import { Observable, catchError, Subscription, Subject, map, tap, throwError, shareReplay } from 'rxjs';
 /* Application Configuration */
 import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
@@ -37,6 +37,7 @@ export class AiService {
 	private toolcall_subject = new Subject<AiChatToolCall>();
 	private agent_subject = new Subject<{agent: AiAgent, content: string|null}>();
 	private active_subject = new Subject<boolean>();
+	private ai_models_observable!: Observable<AiModel[]> | null;
 
 	constructor(
 		private apiService: ApiService,
@@ -118,18 +119,25 @@ export class AiService {
 	}
 
 	public getAiModels(): Observable<AiModel[]> {
+		if ( this.ai_models_observable ) return this.ai_models_observable;
 		const query = getApiQuery(AI_MODELS_QUERY);
-		return this.http.post<OrchardRes<AiModelResponse>>(api, query).pipe(
+		this.ai_models_observable = this.http.post<OrchardRes<AiModelResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.ai_models;
 			}),
-			map((aiModels) => aiModels.map((aiModel) => new AiModel(aiModel))),
+			map((ai_models) => ai_models.map((ai_model) => new AiModel(ai_model))),
+			tap((ai_models) => {
+				this.ai_models_observable = null;
+			}),
+			shareReplay(1),
 			catchError((error) => {
 				console.error('Error loading ai models:', error);
+				this.ai_models_observable = null;
 				return throwError(() => error);
 			}),
 		);
+		return this.ai_models_observable;
 	}
 
 	private getSmallestFunctionModel(models: AiModel[]): AiModel | null {
