@@ -55,11 +55,10 @@ function validation(app: INestApplication, configService: ConfigService, logger:
 	if( taproot_asset_type && !Object.values(TaprootAssetType).includes(taproot_asset_type) ) shutdown(app, logger, `Invalid TAPROOT_ASSET_TYPE: ${taproot_asset_type}`);
 	// validate MINT_TYPE
 	const mint_type = configService.get<MintType>('cashu.type');
-	if( !mint_type ) shutdown(app, logger, 'MINT_TYPE not configured');
-	if( !Object.values(MintType).includes(mint_type) ) shutdown(app, logger, `Invalid MINT_TYPE: ${mint_type}`);
+	if( mint_type && !Object.values(MintType).includes(mint_type) ) shutdown(app, logger, `Invalid MINT_TYPE: ${mint_type}`);
 	// validate MINT_DATABASE
 	const mint_database = configService.get<string>('cashu.database');
-	if( !mint_database ) shutdown(app, logger, 'MINT_DATABASE not configured');
+	if( mint_type && !mint_database ) shutdown(app, logger, 'MINT_DATABASE not configured');
 }
 
 function shutdown(app: INestApplication, logger: Logger, error: string) : void {

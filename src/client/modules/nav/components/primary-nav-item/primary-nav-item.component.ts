@@ -24,6 +24,7 @@ export class PrimaryNavItemComponent {
 	public get icon_outline(){ return `${this.icon}_outline`; }
 	public get active_svg_icon(){ return this.highlight ? this.icon : this.icon_outline; }
 	public get indicator_class(): string {
+		if( !this.enabled ) return '';
 		if( this.online === false ) return 'trans-bg-medium orc-status-inactive-bg';
 		if( this.online === true ) return 'trans-bg-medium orc-status-active-bg';
 		return 'shimmer-highest';
