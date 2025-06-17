@@ -25,6 +25,9 @@
     #{$c}text-right { text-align: right; }
     #{$c}text-left { text-align: left; }
 
+    // Text Decoration
+    #{$c}text-decoration-none { text-decoration: none; }
+
     // Text Overflow
     #{$c}text-nowrap { white-space: nowrap; }
     #{$c}text-wrap { white-space: wrap; }

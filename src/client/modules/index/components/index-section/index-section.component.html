@@ -45,6 +45,9 @@
                             (navigate)="onNavigate('mint')"
                         ></orc-index-enabled-mint>
                     }
+                    @else {
+                        <orc-index-disabled-mint></orc-index-disabled-mint>
+                    }
                 </div>
                 <div class="flex-1 flex flex-column flex-items-center">
                     <orc-index-enabled-ecash></orc-index-enabled-ecash>

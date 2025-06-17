@@ -4,6 +4,7 @@
     @extend %orc-on-primary-container-color;
     @extend %cursor-pointer;
     @extend %trans-color-fast;
+    @extend %text-decoration-none;
 
     &:hover {
         @extend %orc-primary-fixed-dim-color;
