@@ -43,7 +43,6 @@ export class BitcoinSubsectionDisabledComponent {
 
 	public onCopy(): void {
 		navigator.clipboard.writeText(this.content);
-
 		if (this.copy_timeout) clearTimeout(this.copy_timeout);
 		this.copy_animation_state = 'visible';
 		this.cdr.detectChanges();
@@ -52,6 +51,4 @@ export class BitcoinSubsectionDisabledComponent {
 			this.cdr.detectChanges();
 		}, 1000);	
 	}
-
-
 }

@@ -13,3 +13,7 @@
     @extend %flex-items-center;
     @extend %flex-justify-center;
 }
+
+.config-container{
+    min-height: 20rem;
+}

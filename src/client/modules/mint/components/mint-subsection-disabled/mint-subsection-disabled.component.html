@@ -1,3 +1,91 @@
 <div class="mint-disabled-container p-1">
-    <div>todo mint config</div>
+    <div class="config-container">
+        <mat-form-field>
+            <mat-label>Mint Type</mat-label>
+            <mat-select [(value)]="type" (selectionChange)="onTypeChange($event)">
+                <mat-option value="nutshell">nutshell</mat-option>
+                <mat-option value="cdk">cdk</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <div class="orc-code-block w-min-24 p-2">
+            <div class="orc-code-block-header">
+                <div class="absolute top-0-5 right-0-5">
+                    <div class="flex flex-items-center flex-gap-0-5">
+                        <div class="orc-outline-color" [@copyAnimation]="copy_animation_state">
+                            <div class="font-size-s">Copied</div>
+                        </div>
+                        <button mat-icon-button type="button" class="orc-icon-button" (click)="onCopy()">
+                            <mat-icon class="orc-outline-color">content_copy</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+    
+            @if(type === 'nutshell') {
+                <div class="orc-code-block-content">
+                    <div><span class="orc-cb-comment"># Sample mint .env</span></div>
+                    <div>
+                        <span class="orc-cb-key">MINT_TYPE</span>
+                        <span class="orc-cb-equals">=</span>
+                        <span class="orc-cb-string">'nutshell'</span>
+                    </div>
+                    <div>
+                        <span class="orc-cb-key">MINT_API</span>
+                        <span class="orc-cb-equals">=</span>
+                        <span class="orc-cb-string">'http://localhost:3888'</span>
+                    </div>
+                    <div>
+                        <span class="orc-cb-key">MINT_DATABASE</span>
+                        <span class="orc-cb-equals">=</span>
+                        <span class="orc-cb-string">'/Path/to/database'</span>
+                    </div>
+                </div>
+            }
+            @if(type === 'cdk') {
+                <div class="orc-code-block-content">
+                    <div><span class="orc-cb-comment"># Sample mint .env</span></div>
+                    <div>
+                        <span class="orc-cb-key">MINT_TYPE</span>
+                        <span class="orc-cb-equals">=</span>
+                        <span class="orc-cb-string">'cdk'</span>
+                    </div>
+                    <div>
+                        <span class="orc-cb-key">MINT_API</span>
+                        <span class="orc-cb-equals">=</span>
+                        <span class="orc-cb-string">'http://localhost:5551'</span>
+                    </div>
+                    <div>
+                        <span class="orc-cb-key">MINT_DATABASE</span>
+                        <span class="orc-cb-equals">=</span>
+                        <span class="orc-cb-string">'/Path/to/database'</span>
+                    </div>
+                    <div>
+                        <span class="orc-cb-key">MINT_RPC_HOST</span>
+                        <span class="orc-cb-equals">=</span>
+                        <span class="orc-cb-string">'localhost'</span>
+                    </div>
+                    <div>
+                        <span class="orc-cb-key">MINT_RPC_PORT</span>
+                        <span class="orc-cb-equals">=</span>
+                        <span class="orc-cb-string">'5552'</span>
+                    </div>
+                    <div>
+                        <span class="orc-cb-key">MINT_RPC_KEY</span>
+                        <span class="orc-cb-equals">=</span>
+                        <span class="orc-cb-string">'/Path/to/client.key'</span>
+                    </div>
+                    <div> 
+                        <span class="orc-cb-key">MINT_RPC_CERT</span>
+                        <span class="orc-cb-equals">=</span>
+                        <span class="orc-cb-string">'/Path/to/client.pem'</span>
+                    </div>
+                    <div>
+                        <span class="orc-cb-key">MINT_RPC_CA</span>
+                        <span class="orc-cb-equals">=</span>
+                        <span class="orc-cb-string">'/Path/to/ca.pem'</span>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
 </div>

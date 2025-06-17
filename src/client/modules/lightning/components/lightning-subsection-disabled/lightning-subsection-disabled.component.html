@@ -1,3 +1,91 @@
 <div class="lightning-disabled-container p-1">
-    <div>todo lightning config</div>
+    <div class="flex flex-column flex-items-center flex-gap-2">
+        <div class="orc-code-block w-min-24 p-2">
+            <div class="orc-code-block-header">
+                <div class="absolute top-0-5 right-0-5">
+                    <div class="flex flex-items-center flex-gap-0-5">
+                        <div class="orc-outline-color" [@copyAnimation]="copy_animation_state_lightning">
+                            <div class="font-size-s">Copied</div>
+                        </div>
+                        <button mat-icon-button type="button" class="orc-icon-button" (click)="onCopyLightning()">
+                            <mat-icon class="orc-outline-color">content_copy</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="orc-code-block-content">
+                <div><span class="orc-cb-comment"># Sample lightning .env</span></div>
+                <div>
+                    <span class="orc-cb-key">LIGHTNING_TYPE</span>
+                    <span class="orc-cb-equals">=</span>
+                    <span class="orc-cb-string">'lnd'</span>
+                </div>
+                <div>
+                    <span class="orc-cb-key">LIGHTNING_RPC_HOST</span>
+                    <span class="orc-cb-equals">=</span>
+                    <span class="orc-cb-string">'localhost'</span>
+                </div>
+                <div>
+                    <span class="orc-cb-key">LIGHTNING_RPC_PORT</span>
+                    <span class="orc-cb-equals">=</span>
+                    <span class="orc-cb-string">'8447'</span>
+                </div>
+                <div>
+                    <span class="orc-cb-key">LIGHTNING_MACAROON</span>
+                    <span class="orc-cb-equals">=</span>
+                    <span class="orc-cb-string">'path/to/macaroon'</span>
+                </div>
+                <div>
+                    <span class="orc-cb-key">LIGHTNING_CERT</span>
+                    <span class="orc-cb-equals">=</span>
+                    <span class="orc-cb-string">'path/to/cert'</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="orc-code-block w-min-24 p-2">
+            <div class="orc-code-block-header">
+                <div class="absolute top-0-5 right-0-5">
+                    <div class="flex flex-items-center flex-gap-0-5">
+                        <div class="orc-outline-color" [@copyAnimation]="copy_animation_state_taproot_assets">
+                            <div class="font-size-s">Copied</div>
+                        </div>
+                        <button mat-icon-button type="button" class="orc-icon-button" (click)="onCopyTaprootAssets()">
+                            <mat-icon class="orc-outline-color">content_copy</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="orc-code-block-content">
+                <div><span class="orc-cb-comment"># Sample taproot assets .env</span></div>
+                <div>
+                    <span class="orc-cb-key">TAPROOT_ASSETS_TYPE</span>
+                    <span class="orc-cb-equals">=</span>
+                    <span class="orc-cb-string">'tapd'</span>
+                </div>
+                <div>
+                    <span class="orc-cb-key">TAPROOT_ASSETS_RPC_HOST</span>
+                    <span class="orc-cb-equals">=</span>
+                    <span class="orc-cb-string">'localhost'</span>
+                </div>
+                <div>
+                    <span class="orc-cb-key">TAPROOT_ASSETS_RPC_PORT</span>
+                    <span class="orc-cb-equals">=</span>
+                    <span class="orc-cb-string">'8447'</span>
+                </div>
+                <div>
+                    <span class="orc-cb-key">TAPROOT_ASSETS_MACAROON</span>
+                    <span class="orc-cb-equals">=</span>
+                    <span class="orc-cb-string">'path/to/macaroon'</span>
+                </div>
+                <div>
+                    <span class="orc-cb-key">TAPROOT_ASSETS_CERT</span>
+                    <span class="orc-cb-equals">=</span>
+                    <span class="orc-cb-string">'path/to/cert'</span>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
