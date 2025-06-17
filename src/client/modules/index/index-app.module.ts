@@ -6,13 +6,14 @@ import { RouterModule, Routes } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
+import { MatButtonModule } from '@angular/material/button';
 /* Application Dependencies */
 import { LocalModule } from '@client/modules/local/local.module';
 import { GraphicModule } from '@client/modules/graphic/graphic.module';
 import { BitcoinModule } from '@client/modules/bitcoin/bitcoin.module';
 import { LightningModule } from '@client/modules/lightning/lightning.module';
 import { MintModule } from '@client/modules/mint/mint.module';
-import { FormModule } from '@client/modules/form/form.module';
+// import { FormModule } from '@client/modules/form/form.module';
 /* Local Dependencies */
 import { IndexSectionComponent } from './components/index-section/index-section.component';
 import { IndexEnabledBitcoinComponent } from './components/index-enabled-bitcoin/index-enabled-bitcoin.component';
@@ -20,6 +21,8 @@ import { IndexEnabledLightningComponent } from './components/index-enabled-light
 import { IndexEnabledMintComponent } from './components/index-enabled-mint/index-enabled-mint.component';
 import { IndexEnabledEcashComponent } from './components/index-enabled-ecash/index-enabled-ecash.component';
 import { IndexDisabledMintComponent } from './components/index-disabled-mint/index-disabled-mint.component';
+import { IndexDisabledEcashComponent } from './components/index-disabled-ecash/index-disabled-ecash.component';
+import { IndexDisabledLightningComponent } from './components/index-disabled-lightning/index-disabled-lightning.component';
 
 const routes: Routes = [
 	{
@@ -51,19 +54,22 @@ export class IndexAppRoutingModule { }
 		IndexEnabledLightningComponent,
 		IndexEnabledMintComponent,
 		IndexEnabledEcashComponent,
+		IndexDisabledLightningComponent,
 		IndexDisabledMintComponent,
+		IndexDisabledEcashComponent,
 	],
 	imports: [
 		CommonModule,
 		MatCardModule,
 		MatIconModule,
 		MatRippleModule,
+		MatButtonModule,
 		LocalModule,
 		GraphicModule,
 		BitcoinModule,
 		LightningModule,
 		MintModule,
-		FormModule,
+		// FormModule,
 		IndexAppRoutingModule,
 	],
 })

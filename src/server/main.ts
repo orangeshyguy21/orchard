@@ -48,8 +48,7 @@ function validation(app: INestApplication, configService: ConfigService, logger:
 	if( !Object.values(BitcoinType).includes(bitcoin_type) ) shutdown(app, logger, `Invalid BITCOIN_TYPE: ${bitcoin_type}`);
 	// validate LIGHTNING_TYPE
 	const lightning_type = configService.get<LightningType>('lightning.type');
-	if( !lightning_type ) shutdown(app, logger, 'LIGHTNING_TYPE not configured');
-	if( !Object.values(LightningType).includes(lightning_type) ) shutdown(app, logger, `Invalid LIGHTNING_TYPE: ${lightning_type}`);
+	if( lightning_type && !Object.values(LightningType).includes(lightning_type) ) shutdown(app, logger, `Invalid LIGHTNING_TYPE: ${lightning_type}`);
 	// validate TAPROOT_ASSET_TYPE
 	const taproot_asset_type = configService.get<TaprootAssetType>('taproot_assets.type');
 	if( taproot_asset_type && !Object.values(TaprootAssetType).includes(taproot_asset_type) ) shutdown(app, logger, `Invalid TAPROOT_ASSET_TYPE: ${taproot_asset_type}`);

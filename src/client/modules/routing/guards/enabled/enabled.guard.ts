@@ -7,18 +7,19 @@ import { environment } from '@client/configs/configuration';
 export const enabledGuard: CanActivateFn = (route, state) => {
 	const section = route.data['section'];
 	const router = inject(Router);
-	console.log(section);
 	switch (section) {
 		case 'bitcoin':
-			return true;
+			if( environment.bitcoin.enabled ) return true;
+			router.navigate(['/bitcoin/disabled']);
+			return false;
 		case 'lightning':
-			return environment.lightning.enabled;
+			if( environment.lightning.enabled ) return true;
+			router.navigate(['/lightning/disabled']);
+			return false;
 		case 'mint':
-			if (!environment.mint.enabled) {
-				router.navigate(['/mint/disabled']);
-				return false;
-			}
-			return true;
+			if( environment.mint.enabled ) return true;
+			router.navigate(['/mint/disabled']);
+			return false;
 		default:
 			return true;
 	}
