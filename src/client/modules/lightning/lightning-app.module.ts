@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 /* Application Dependencies */
 import { NavModule } from '@client/modules/nav/nav.module';
+import { SettingsModule } from '@client/modules/settings/settings.module';
 /* Native Dependencies */
 import { LightningSectionComponent } from './components/lightning-section/lightning-section.component';
 import { LightningSubsectionDisabledComponent } from './components/lightning-subsection-disabled/lightning-subsection-disabled.component';
@@ -24,6 +25,7 @@ import { LightningAppRoutingModule } from './lightning-app.router';
 		MatIconModule,
 		MatButtonModule,
 		NavModule,
+		SettingsModule,
 		LightningAppRoutingModule,
 	],
 })

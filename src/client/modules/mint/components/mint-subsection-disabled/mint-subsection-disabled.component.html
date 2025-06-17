@@ -2,38 +2,11 @@
     <div class="config-container">
         <mat-form-field>
             <mat-label>Mint Type</mat-label>
-            <mat-select [(value)]="type" (selectionChange)="onTypeChange($event)">
+            <mat-select [(value)]="type">
                 <mat-option value="cdk">cdk</mat-option>
                 <mat-option value="nutshell">nutshell</mat-option>
             </mat-select>
         </mat-form-field>
-        <div class="orc-code-block w-min-24 p-2">
-            <div class="orc-code-block-header">
-                <div class="absolute top-0-5 right-0-5">
-                    <div class="flex flex-items-center flex-gap-0-5">
-                        <div class="orc-outline-color" [@copyAnimation]="copy_animation_state">
-                            <div class="font-size-s">Copied</div>
-                        </div>
-                        <button mat-icon-button type="button" class="orc-icon-button" (click)="onCopy()">
-                            <mat-icon class="orc-outline-color">content_copy</mat-icon>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="orc-code-block-content">
-                @for (line of env_config.lines; track line.type) {
-                    <div>
-                        @if (line.type === 'comment') {
-                            <span class="orc-cb-comment">{{ line.value }}</span>
-                        } @else {
-                            <span class="orc-cb-key">{{ line.key }}</span>
-                            <span class="orc-cb-equals">=</span>
-                            <span class="orc-cb-string">'{{ line.value }}'</span>
-                        }
-                    </div>
-                }
-            </div>
-        </div>
+        <orc-settings-env [env_config]="env_config"></orc-settings-env>
     </div>
 </div>

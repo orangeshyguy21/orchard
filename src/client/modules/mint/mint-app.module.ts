@@ -28,6 +28,7 @@ import { LocalModule } from '@client/modules/local/local.module';
 import { GraphicModule } from '@client/modules/graphic/graphic.module';
 import { ErrorModule } from '@client/modules/error/error.module';
 import { FormModule } from '@client/modules/form/form.module';
+import { SettingsModule } from '@client/modules/settings/settings.module';
 /* Native Dependencies */
 import { MintSectionComponent } from './components/mint-section/mint-section.component';
 import { MintSubsectionErrorComponent } from './components/mint-subsection-error/mint-subsection-error.component';
@@ -168,6 +169,7 @@ import { MintModule } from './mint.module';
 		GraphicModule,
 		ErrorModule,
 		FormModule,
+		SettingsModule,
 		MintModule,
 	],
 })
