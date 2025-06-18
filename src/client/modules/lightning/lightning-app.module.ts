@@ -1,38 +1,31 @@
 /* Core Dependencies */
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Routes } from '@angular/router';
-/* Local Dependencies */
+/* Vendor Dependencies */
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+/* Application Dependencies */
+import { NavModule } from '@client/modules/nav/nav.module';
+import { SettingsModule } from '@client/modules/settings/settings.module';
+/* Native Dependencies */
 import { LightningSectionComponent } from './components/lightning-section/lightning-section.component';
-
-const routes: Routes = [
-	{
-		path: '',
-		component: LightningSectionComponent,
-		title: 'Orchard | Lightning',
-		data: {
-			section: 'lightning',
-			sub_section: 'dashboard'
-		}
-	}
-];
-
-@NgModule({
-	imports: [
-		RouterModule.forChild(routes),
-	],
-	exports: [
-		RouterModule,
-	],
-})
-export class LightningAppRoutingModule { }
+import { LightningSubsectionDisabledComponent } from './components/lightning-subsection-disabled/lightning-subsection-disabled.component';
+import { LightningSubsectionDashboardComponent } from './components/lightning-subsection-dashboard/lightning-subsection-dashboard.component';
+/* Local Dependencies */
+import { LightningAppRoutingModule } from './lightning-app.router';
 
 @NgModule({
 	declarations: [
-		LightningSectionComponent
+		LightningSectionComponent,
+		LightningSubsectionDisabledComponent,
+		LightningSubsectionDashboardComponent
 	],
 	imports: [
 		CommonModule,
+		MatIconModule,
+		MatButtonModule,
+		NavModule,
+		SettingsModule,
 		LightningAppRoutingModule,
 	],
 })

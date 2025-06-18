@@ -28,12 +28,16 @@ import { LocalModule } from '@client/modules/local/local.module';
 import { GraphicModule } from '@client/modules/graphic/graphic.module';
 import { ErrorModule } from '@client/modules/error/error.module';
 import { FormModule } from '@client/modules/form/form.module';
+import { SettingsModule } from '@client/modules/settings/settings.module';
 /* Native Dependencies */
 import { MintSectionComponent } from './components/mint-section/mint-section.component';
 import { MintSubsectionErrorComponent } from './components/mint-subsection-error/mint-subsection-error.component';
 import { MintSubsectionDashboardComponent } from './components/mint-subsection-dashboard/mint-subsection-dashboard.component';
 import { MintSubsectionInfoComponent } from './components/mint-subsection-info/mint-subsection-info.component';
 import { MintSubsectionConfigComponent } from './components/mint-subsection-config/mint-subsection-config.component';
+import { MintSubsectionKeysetsComponent } from './components/mint-subsection-keysets/mint-subsection-keysets.component';
+import { MintSubsectionDatabaseComponent } from './components/mint-subsection-database/mint-subsection-database.component';
+import { MintSubsectionDisabledComponent } from './components/mint-subsection-disabled/mint-subsection-disabled.component';
 import { MintBalanceSheetComponent } from './components/mint-balance-sheet/mint-balance-sheet.component';
 import { MintConnectionsComponent } from './components/mint-connections/mint-connections.component';
 import { MintQrcodeDialogComponent } from './components/mint-qrcode-dialog/mint-qrcode-dialog.component';
@@ -50,7 +54,6 @@ import { MintInfoFormUrlsComponent } from './components/mint-info-form-urls/mint
 import { MintInfoFormUrlComponent } from './components/mint-info-form-url/mint-info-form-url.component';
 import { MintInfoFormContactsComponent } from './components/mint-info-form-contacts/mint-info-form-contacts.component';
 import { MintInfoFormContactComponent } from './components/mint-info-form-contact/mint-info-form-contact.component';
-import { MintSubsectionKeysetsComponent } from './components/mint-subsection-keysets/mint-subsection-keysets.component';
 import { MintConnectionStatusComponent } from './components/mint-connection-status/mint-connection-status.component';
 import { MintConfigFormEnabledComponent } from './components/mint-config-form-enabled/mint-config-form-enabled.component';
 import { MintConfigFormQuoteTtlComponent } from './components/mint-config-form-quote-ttl/mint-config-form-quote-ttl.component';
@@ -68,7 +71,6 @@ import { MintNutComponent } from './components/mint-nut/mint-nut.component';
 import { MintKeysetChartComponent } from './components/mint-keyset-chart/mint-keyset-chart.component';
 import { MintKeysetControlComponent } from './components/mint-keyset-control/mint-keyset-control.component';
 import { MintKeysetTableComponent } from './components/mint-keyset-table/mint-keyset-table.component';
-import { MintSubsectionDatabaseComponent } from './components/mint-subsection-database/mint-subsection-database.component';
 import { MintKeysetRotationComponent } from './components/mint-keyset-rotation/mint-keyset-rotation.component';
 import { MintKeysetRotationPreviewComponent } from './components/mint-keyset-rotation-preview/mint-keyset-rotation-preview.component';
 import { MintDataControlComponent } from './components/mint-data-control/mint-data-control.component';
@@ -91,6 +93,9 @@ import { MintModule } from './mint.module';
 		MintSubsectionDashboardComponent,
 		MintSubsectionInfoComponent,
 		MintSubsectionConfigComponent,
+		MintSubsectionKeysetsComponent,
+		MintSubsectionDatabaseComponent,
+		MintSubsectionDisabledComponent,
 		MintBalanceSheetComponent,
 		MintConnectionsComponent,
 		MintQrcodeDialogComponent,
@@ -107,7 +112,6 @@ import { MintModule } from './mint.module';
      	MintInfoFormUrlComponent,
      	MintInfoFormContactsComponent,
 		MintInfoFormContactComponent,
-  		MintSubsectionKeysetsComponent,
     	MintConnectionStatusComponent,
      	MintConfigFormEnabledComponent,
       	MintConfigFormQuoteTtlComponent,
@@ -125,7 +129,6 @@ import { MintModule } from './mint.module';
         MintKeysetChartComponent,
         MintKeysetControlComponent,
         MintKeysetTableComponent,
-        MintSubsectionDatabaseComponent,
         MintKeysetRotationComponent,
         MintKeysetRotationPreviewComponent,
         MintDataControlComponent,
@@ -166,6 +169,7 @@ import { MintModule } from './mint.module';
 		GraphicModule,
 		ErrorModule,
 		FormModule,
+		SettingsModule,
 		MintModule,
 	],
 })

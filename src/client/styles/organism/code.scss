@@ -1,0 +1,25 @@
+@use '@styles/molecule/molecule';
+
+.orc-code-block{
+    @extend %relative;
+    @extend %orc-corner-medium;
+    @extend %orc-surface-container-high-bg;
+}
+
+.orc-code-block-content{
+    @extend %font-size-s;
+    font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+}
+
+
+.orc-cb-key{
+    color: rgb(186, 203, 102);
+}
+
+.orc-cb-comment{
+    @extend %orc-outline-color;
+}
+
+.orc-cb-string{
+    color: rgb(220, 176, 114);
+}

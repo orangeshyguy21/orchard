@@ -6,6 +6,20 @@
 
 .lightning-enabled-card{
     min-height: 20rem;
+    @extend %cursor-pointer;
+
+    &:hover{
+        .lightning-card-title {
+            @extend %orc-primary-fixed-dim-color;
+        }
+    }
+}
+
+.lightning-card-title {
+    @extend %trans-color-fast;
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-gap-1;
 }
 
 .channel-table {

@@ -1,4 +1,4 @@
-<mat-card appearance="outlined" class="bitcoin-enabled-card">
+<mat-card appearance="outlined" class="bitcoin-enabled-card" (click)="navigate.emit()">
     <mat-card-content>
 
         <div class="absolute left-1 top-1">
@@ -26,9 +26,9 @@
 
         <div class="flex flex-column flex-gap-2">
             <div class="flex flex-justify-center">
-                <div class="flex flex-items-center flex-gap-1">
+                <div class="bitcoin-card-title">
                     <mat-icon class="icon-lg" [svgIcon]="'bitcoin_outline'"></mat-icon>
-                    <div class="font-size-xxl font-weight-bold">Bitcoin</div>
+                    <div class=" font-size-xxl font-weight-bold">Bitcoin</div>
                 </div>
             </div>
     
@@ -67,7 +67,32 @@
                             </div>
                         } @else {
                             <div [@fadeIn] class="flex flex-column flex-gap-1">
-                                @for( balance of balances_hot; track balance.unit ) {
+
+                                @if( balance_hot_bitcoin ) {
+                                    <div class="flex flex-items-center flex-gap-2">
+                                        <orc-graphic-asset 
+                                            [unit]="balance_hot_bitcoin.unit" 
+                                            [height]="'2rem'"
+                                            [custody]="'hot'">
+                                        </orc-graphic-asset>
+                                        <span class="text-nowrap font-size-l flex-grow" [innerHTML]="balance_hot_bitcoin.amount | amount : balance_hot_bitcoin.unit : 'bitcoin'"></span>
+                                        <orc-bitcoin-utxo-stack 
+                                            [unit]="balance_hot_bitcoin.unit"
+                                            [coins]="balance_hot_bitcoin.utxos">
+                                        </orc-bitcoin-utxo-stack>
+                                    </div>
+                                }
+
+                                @if( errors_lightning ){
+                                    <div class="flex flex-items-center flex-gap-1">
+                                        <div class="flex flex-items-center flex-justify-center orc-on-error-bg orc-corner-full h-2 w-2">
+                                            <mat-icon class="mat-symbol-outline">error</mat-icon>
+                                        </div>
+                                        <div class="font-size-s orc-on-error-container-color">{{ errors_lightning[0].message }}</div>
+                                    </div>
+                                }
+                                
+                                @for( balance of balances_hot_taproot_assets; track balance.unit ) {
                                     <div class="flex flex-items-center flex-gap-2">
                                         <orc-graphic-asset 
                                             [unit]="balance.unit" 
@@ -81,6 +106,15 @@
                                             [coins]="balance.utxos"
                                             [asset_id]="balance.asset_id">
                                         </orc-bitcoin-utxo-stack>
+                                    </div>
+                                }
+
+                                @if( errors_taproot_assets ){
+                                    <div class="flex flex-items-center flex-gap-1">
+                                        <div class="flex flex-items-center flex-justify-center orc-on-error-bg orc-corner-full h-2 w-2">
+                                            <mat-icon class="mat-symbol-outline">error</mat-icon>
+                                        </div>
+                                        <div class="font-size-s orc-on-error-container-color">{{ errors_taproot_assets[0].message }}</div>
                                     </div>
                                 }
                             </div>

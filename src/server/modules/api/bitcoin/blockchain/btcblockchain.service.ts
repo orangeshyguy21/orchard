@@ -30,7 +30,6 @@ export class BitcoinBlockchainService implements OnModuleDestroy {
 	public async getBlockchainInfo(tag: string = 'GET { bitcoin_blockchain_info }'): Promise<OrchardBitcoinBlockchainInfo> {
 		try {
 			const info = await this.bitcoinRpcService.getBitcoinBlockchainInfo();
-			console.log(info);
 			return new OrchardBitcoinBlockchainInfo(info);
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,

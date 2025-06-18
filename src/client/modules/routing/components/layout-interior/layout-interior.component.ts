@@ -9,7 +9,7 @@ import { switchMap, catchError, filter } from 'rxjs/operators';
 import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
-import { BitcoinService } from '@client/modules/bitcoin/services/bitcoin.service';
+import { BitcoinService } from '@client/modules/bitcoin/services/bitcoin/bitcoin.service';
 import { LightningService } from '@client/modules/lightning/services/lightning/lightning.service';
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { AiService } from '@client/modules/ai/services/ai/ai.service';

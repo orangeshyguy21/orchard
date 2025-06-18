@@ -1,5 +1,21 @@
 <section class="section-container">
-    <div class="btc-coming-soon-container">
-		<div>Bitcoin Coming Soon!</div>
-	</div>
+	<orc-secondary-nav>
+		<div secondary-nav-header class="secondary-nav-header">	
+			{{ bitcoin_blockchain_info?.chain }}
+		</div>
+		<div secondary-nav-items>
+			<orc-secondary-nav-item 
+				name="Dashboard"
+				navroute="mint"
+				[active]="active_sub_section === 'dashboard'">
+			</orc-secondary-nav-item>
+		</div>
+		<div secondary-nav-toolbar>
+			<div class="section-implementation">{{ bitcoin_network_info?.subversion }}</div>
+		</div>
+	</orc-secondary-nav>
+
+    <div class="subsection-container">
+      	<router-outlet></router-outlet>
+    </div>
 </section>

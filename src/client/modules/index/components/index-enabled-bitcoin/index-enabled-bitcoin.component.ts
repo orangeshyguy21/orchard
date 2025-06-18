@@ -1,11 +1,12 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
 /* Application Dependencies */
 import { BitcoinBlockchainInfo } from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
 import { BitcoinNetworkInfo } from '@client/modules/bitcoin/classes/bitcoin-network-info.class';
 import { LightningAccount } from '@client/modules/lightning/classes/lightning-account.class';
 import { TaprootAssets } from '@client/modules/tapass/classes/taproot-assets.class';
+import { OrchardError } from '@client/modules/error/types/error.types';
 
 type HotCoins = {
 	unit: string;
@@ -40,8 +41,13 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 	@Input() network_info!: BitcoinNetworkInfo;
 	@Input() lightning_accounts!: LightningAccount[];
 	@Input() taproot_assets!: TaprootAssets;
+	@Input() errors_lightning!: OrchardError[];
+	@Input() errors_taproot_assets!: OrchardError[];
 
-	public balances_hot!: HotCoins[] | null;
+	@Output() navigate: EventEmitter<void> = new EventEmitter<void>();
+
+	public balance_hot_bitcoin!: HotCoins | null;
+	public balances_hot_taproot_assets!: HotCoins[];
 
 	constructor() {}
 
@@ -52,23 +58,29 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 	}
 
 	private init() : void {
-		this.balances_hot = this.getHotBalances();
+		this.balance_hot_bitcoin = this.getHotBalanceBitcoin();
+		this.balances_hot_taproot_assets = this.getHotBalancesTaprootAssets();
 	}
 
-	private getHotBalances(): HotCoins[] | null {
-		if( !this.enabled_lightning && !this.enabled_taproot_assets ) return null;
-		const lightning_wallet = {
+	private getHotBalanceBitcoin(): HotCoins | null {
+		if( !this.enabled_lightning ) return null;
+		if( this.errors_lightning?.length > 0 ) return null;
+		return {
 			unit: 'sat',
 			amount: this.getLightningWalletBalance(),
 			decimal_display: 0,
 			utxos: this.getLightningWalletUtxos()
 		}
-		const taproot_assets_wallet = this.getTaprootAssetsWalletBalance();
-		return ( taproot_assets_wallet ) ? [lightning_wallet, ...taproot_assets_wallet] : [lightning_wallet];
+	}
+
+	private getHotBalancesTaprootAssets(): HotCoins[] {
+		if( !this.enabled_taproot_assets ) return [];
+		return this.getTaprootAssetsWalletBalance();
 	}
 
 	private getLightningWalletBalance(): number {
 		if( !this.enabled_lightning ) return 0;
+		if( this.errors_lightning?.length > 0 ) return 0;
 		return this.lightning_accounts
 			.flatMap(account => account.addresses)
 			.reduce((sum, address) => sum + address.balance, 0);
@@ -76,6 +88,7 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 
 	private getLightningWalletUtxos(): number {
 		if (!this.enabled_lightning) return 0;
+		if( this.errors_lightning?.length > 0 ) return 0;
 		const unique_addresses = new Set(
 			this.lightning_accounts
 				.flatMap(account => account.addresses)
@@ -84,8 +97,9 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 		return unique_addresses.size;
 	}
 
-	private getTaprootAssetsWalletBalance(): HotCoins[] | null {
-		if (!this.enabled_taproot_assets) return null;
+	private getTaprootAssetsWalletBalance(): HotCoins[] {
+		if (!this.enabled_taproot_assets) return [];
+		if( this.errors_taproot_assets?.length > 0 ) return [];
 		const grouped_assets = this.taproot_assets.assets.reduce((acc, asset) => {
 			const asset_id = asset.asset_genesis.asset_id;
 			const amount = parseInt(asset.amount) / Math.pow(10, asset.decimal_display?.decimal_display || 0);

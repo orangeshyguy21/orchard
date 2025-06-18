@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
 /* Application Dependencies */
 import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.class';
@@ -37,6 +37,8 @@ export class IndexEnabledLightningComponent implements OnChanges {
 	@Input() lightning_info!: LightningInfo;
 	@Input() lightning_balance!: LightningBalance;
 	@Input() taproot_assets!: TaprootAssets;
+
+	@Output() navigate: EventEmitter<void> = new EventEmitter<void>();
 
 	public channel_summaries : ChannelSummary[] = [];
 

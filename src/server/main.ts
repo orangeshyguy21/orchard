@@ -44,23 +44,19 @@ async function bootstrap() {
 function validation(app: INestApplication, configService: ConfigService, logger: Logger) : void {
 	// validate BITCOIN_TYPE
 	const bitcoin_type = configService.get<BitcoinType>('bitcoin.type');
-	if( !bitcoin_type ) shutdown(app, logger, 'BITCOIN_TYPE not configured');
-	if( !Object.values(BitcoinType).includes(bitcoin_type) ) shutdown(app, logger, `Invalid BITCOIN_TYPE: ${bitcoin_type}`);
+	if( bitcoin_type && !Object.values(BitcoinType).includes(bitcoin_type) ) shutdown(app, logger, `Invalid BITCOIN_TYPE: ${bitcoin_type}`);
 	// validate LIGHTNING_TYPE
 	const lightning_type = configService.get<LightningType>('lightning.type');
-	if( !lightning_type ) shutdown(app, logger, 'LIGHTNING_TYPE not configured');
-	if( !Object.values(LightningType).includes(lightning_type) ) shutdown(app, logger, `Invalid LIGHTNING_TYPE: ${lightning_type}`);
+	if( lightning_type && !Object.values(LightningType).includes(lightning_type) ) shutdown(app, logger, `Invalid LIGHTNING_TYPE: ${lightning_type}`);
 	// validate TAPROOT_ASSET_TYPE
 	const taproot_asset_type = configService.get<TaprootAssetType>('taproot_assets.type');
-	if( !taproot_asset_type ) shutdown(app, logger, 'TAPROOT_ASSET_TYPE not configured');
-	if( !Object.values(TaprootAssetType).includes(taproot_asset_type) ) shutdown(app, logger, `Invalid TAPROOT_ASSET_TYPE: ${taproot_asset_type}`);
+	if( taproot_asset_type && !Object.values(TaprootAssetType).includes(taproot_asset_type) ) shutdown(app, logger, `Invalid TAPROOT_ASSET_TYPE: ${taproot_asset_type}`);
 	// validate MINT_TYPE
 	const mint_type = configService.get<MintType>('cashu.type');
-	if( !mint_type ) shutdown(app, logger, 'MINT_TYPE not configured');
-	if( !Object.values(MintType).includes(mint_type) ) shutdown(app, logger, `Invalid MINT_TYPE: ${mint_type}`);
+	if( mint_type && !Object.values(MintType).includes(mint_type) ) shutdown(app, logger, `Invalid MINT_TYPE: ${mint_type}`);
 	// validate MINT_DATABASE
 	const mint_database = configService.get<string>('cashu.database');
-	if( !mint_database ) shutdown(app, logger, 'MINT_DATABASE not configured');
+	if( mint_type && !mint_database ) shutdown(app, logger, 'MINT_DATABASE not configured');
 }
 
 function shutdown(app: INestApplication, logger: Logger, error: string) : void {

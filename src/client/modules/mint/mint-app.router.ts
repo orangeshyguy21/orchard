@@ -5,6 +5,7 @@ import { RouterModule, Router, Routes, ResolveFn, ActivatedRouteSnapshot, Router
 import { catchError, of } from 'rxjs';
 /* Application Dependencies */
 import { errorResolveGuard } from '@client/modules/error/guards/error-resolve.guard';
+import { enabledGuard } from '@client/modules/routing/guards/enabled/enabled.guard';
 import { ErrorService } from '@client/modules/error/services/error.service';
 import { pendingEventGuard } from '@client/modules/event/guards/pending-event.guard';
 import { LightningService } from '@client/modules/lightning/services/lightning/lightning.service';
@@ -16,6 +17,7 @@ import { MintSubsectionInfoComponent } from './components/mint-subsection-info/m
 import { MintSubsectionConfigComponent } from './components/mint-subsection-config/mint-subsection-config.component';
 import { MintSubsectionKeysetsComponent } from './components/mint-subsection-keysets/mint-subsection-keysets.component';
 import { MintSubsectionDatabaseComponent } from './components/mint-subsection-database/mint-subsection-database.component';
+import { MintSubsectionDisabledComponent } from './components/mint-subsection-disabled/mint-subsection-disabled.component';
 import { MintService } from './services/mint/mint.service';
 /* Shared Dependencies */
 import { AiAgent } from '@shared/generated.types';
@@ -116,6 +118,7 @@ const routes: Routes = [
 					mint_keysets: mintKeysetsResolver,
 					lightning_balance: lightningBalanceResolver,
 				},
+				canActivate: [enabledGuard],
 				data: {
 					section: 'mint',
 					sub_section: 'dashboard',
@@ -190,6 +193,15 @@ const routes: Routes = [
 				canActivate: [errorResolveGuard]
 			},
 		]
+	},
+	{
+		path: 'disabled',
+		component: MintSubsectionDisabledComponent,
+		title: 'Orchard | Mint Disabled',
+		data: {
+			section: 'mint',
+			sub_section: 'disabled',
+		},
 	},
 ];
 

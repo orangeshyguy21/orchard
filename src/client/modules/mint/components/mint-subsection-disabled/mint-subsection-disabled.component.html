@@ -1,0 +1,12 @@
+<div class="mint-disabled-container p-1">
+    <div class="config-container">
+        <mat-form-field>
+            <mat-label>Mint Type</mat-label>
+            <mat-select [(value)]="type">
+                <mat-option value="cdk">cdk</mat-option>
+                <mat-option value="nutshell">nutshell</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <orc-settings-env [env_config]="env_config"></orc-settings-env>
+    </div>
+</div>

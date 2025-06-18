@@ -1,6 +1,6 @@
 /* Core Dependencies */
 import { Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { Router, Event, ActivatedRoute, NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
+import { Router, Event, ActivatedRoute } from '@angular/router';
 /* Vendor Dependencies */
 import { filter, Subscription } from 'rxjs';
 /* Application Dependencies */

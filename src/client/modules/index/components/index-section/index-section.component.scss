@@ -1,4 +1,5 @@
 @use '@styles/molecule/molecule';
+@use '@styles/nucleus/nucleus';
 
 :host {
     @extend %flex;
@@ -10,6 +11,27 @@
     @extend %flex;
     @extend %flex-column;
     @extend %flex-grow;
+    @extend %flex-items-center;
+    @extend %flex-justify-center;
+}
+
+.index-section{
+    @extend %flex-1;
+    @extend %flex;
+    @extend %flex-column;
+    @extend %flex-items-center;
+    @extend %p-1;
+    @extend %relative;
+}
+
+.index-section-error{
+    @extend %orc-surface-bg;
+    @extend %absolute;
+    @extend %top-0;
+    @extend %left-0;
+    @extend %w-full;
+    @extend %h-full;
+    @extend %flex;
     @extend %flex-items-center;
     @extend %flex-justify-center;
 }

@@ -1,11 +1,14 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { trigger, transition, style, animate } from '@angular/animations';
+
+import { Router } from '@angular/router';
 /* Vendor Dependencies */
 import { tap, catchError, finalize, EMPTY, forkJoin, Subscription, firstValueFrom } from 'rxjs';
 /* Application Configuration */
 import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
-import { BitcoinService } from '@client/modules/bitcoin/services/bitcoin.service';
+import { BitcoinService } from '@client/modules/bitcoin/services/bitcoin/bitcoin.service';
 import { LightningService } from '@client/modules/lightning/services/lightning/lightning.service';
 import { TaprootAssetsService } from '@client/modules/tapass/services/taproot-assets.service';
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
@@ -21,13 +24,22 @@ import { TaprootAssets } from '@client/modules/tapass/classes/taproot-assets.cla
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 import { MintBalance } from '@client/modules/mint/classes/mint-balance.class';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
+import { OrchardError } from '@client/modules/error/types/error.types';
 
 @Component({
 	selector: 'orc-index-section',
 	standalone: false,
 	templateUrl: './index-section.component.html',
 	styleUrl: './index-section.component.scss',
-	changeDetection: ChangeDetectionStrategy.OnPush
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	animations: [
+		trigger('fadeIn', [
+            transition(':enter', [
+                style({ opacity: 0 }),
+                animate('300ms ease-in', style({ opacity: 1 }))
+            ])
+        ])
+	]
 })
 export class IndexSectionComponent implements OnInit, OnDestroy {
 
@@ -43,10 +55,10 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	public loading_taproot_assets:boolean = true;
 	public loading_mint:boolean = true;
 
-	public error_bitcoin!: string;
-	public error_lightning!: string;
-	public error_taproot_assets!: string;
-	public error_mint!: string;
+	public errors_bitcoin!: OrchardError[];
+	public errors_lightning!: OrchardError[];
+	public errors_taproot_assets!: OrchardError[];
+	public errors_mint!: OrchardError[];
 
 	public bitcoin_blockchain_info!: BitcoinBlockchainInfo | null;
 	public bitcoin_network_info!: BitcoinNetworkInfo | null;
@@ -61,6 +73,16 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	public mint_keysets!: MintKeyset[] | null;
 	public mint_icon_data!: string | null;
 
+	public get preparing_bitcoin(): boolean {
+		return this.loading_bitcoin || this.loading_lightning || this.loading_taproot_assets || this.errors_bitcoin ? true : false;
+	}
+	public get preparing_lightning(): boolean {
+		return this.loading_lightning || this.loading_taproot_assets || this.errors_lightning ? true : false || this.errors_taproot_assets ? true : false;
+	}
+	public get preparing_mint(): boolean {
+		return this.loading_mint || this.errors_mint ? true : false;
+	}
+
 	private subscriptions: Subscription = new Subscription();
 
 	constructor(
@@ -69,6 +91,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 		private taprootAssetsService: TaprootAssetsService,
 		private mintService: MintService,
 		private publicService: PublicService,
+		private router: Router,
 		private cdr: ChangeDetectorRef,
 	) {}
 
@@ -81,13 +104,33 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	}
 
 	private orchardOptionalInit(): void {
+		this.initBitcoin();
+		this.initLightning();
+		this.initTaprootAssets();
+		this.initMint();
+	}
+	private initBitcoin(): void {
+		this.loading_bitcoin = ( this.enabled_bitcoin ) ? true : false;
 		if( this.enabled_bitcoin ) {
 			this.getBitcoin();
 			this.getBitcoinBlockSubscription();
-		}
+		} 
+		this.cdr.detectChanges();
+	}
+	private initLightning(): void {
+		this.loading_lightning = ( this.enabled_lightning ) ? true : false;
 		if( this.enabled_lightning ) this.getLightning();
+		this.cdr.detectChanges();
+	}
+	private initTaprootAssets(): void {
+		this.loading_taproot_assets = ( this.enabled_taproot_assets ) ? true : false;
 		if( this.enabled_taproot_assets ) this.getTaprootAssets();
+		this.cdr.detectChanges();
+	}
+	private initMint(): void {
+		this.loading_mint = ( this.enabled_mint ) ? true : false;
 		if( this.enabled_mint ) this.getMint();
+		this.cdr.detectChanges();
 	}
 
 	/* *******************************************************
@@ -102,14 +145,9 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 			tap(({ blockchain, network }) => {
 				this.bitcoin_blockchain_info = blockchain;
 				this.bitcoin_network_info = network;
-				console.log('BLOCKCHAIN INFO', this.bitcoin_blockchain_info);
-				console.log('NETWORK INFO', this.bitcoin_network_info);
-				this.error_bitcoin = '';
 			}),
 			catchError((error) => {
-				this.error_bitcoin = error.message;
-				this.bitcoin_blockchain_info = null;
-				this.bitcoin_network_info = null;
+				this.errors_bitcoin = error.errors;
 				return EMPTY;
 			}),
 			finalize(() => {
@@ -139,16 +177,9 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 				this.lightning_info = info;
 				this.lightning_balance = balance;
 				this.lightning_accounts = accounts;
-				console.log('LIGHTNING INFO', this.lightning_info);
-				console.log('LIGHTNING BALANCE', this.lightning_balance);
-				console.log('LIGHTNING ACCOUNTS', this.lightning_accounts);
-				this.error_lightning = ''; 
 			}),
 			catchError((error) => {
-				this.error_lightning = error instanceof Error ? error.message : 'An unknown error occurred';
-				this.lightning_info = null;
-				this.lightning_balance = null;
-				this.lightning_accounts = null;
+				this.errors_lightning = error.errors;
 				return EMPTY;
 			}),
 			finalize(() => {
@@ -166,14 +197,9 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 			tap(({ info, assets }) => {
 				this.taproot_assets_info = info;
 				this.taproot_assets = assets;
-				console.log('TAPROOT ASSETS INFO', this.taproot_assets_info);
-				console.log('TAPROOT ASSETS', this.taproot_assets);
-				this.error_taproot_assets = ''; 
 			}),
 			catchError((error) => {
-				this.error_taproot_assets = error instanceof Error ? error.message : 'An unknown error occurred';
-				this.taproot_assets_info = null;
-				this.taproot_assets = null;
+				this.errors_taproot_assets = error.errors;
 				return EMPTY;
 			}),
 			finalize(() => {
@@ -193,16 +219,9 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 				this.mint_info = info;
 				this.mint_balances = balances;
 				this.mint_keysets = keysets;
-				console.log('MINT INFO', this.mint_info);
-				console.log('MINT BALANCES', this.mint_balances);
-				console.log('MINT KEYSETS', this.mint_keysets);
-				this.error_mint = '';
 			}),
 			catchError((error) => {
-				this.error_mint = error instanceof Error ? error.message : 'An unknown error occurred';
-				this.mint_info = null;
-				this.mint_balances = null;
-				this.mint_keysets = null;
+				this.errors_mint = error.errors;
 				return EMPTY;
 			}),
 			finalize(async () => {
@@ -215,6 +234,18 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 			})
 		).subscribe();
 	}
+
+	/* *******************************************************
+		Actions Up                      
+	******************************************************** */
+
+	public onNavigate(route: string): void {
+		this.router.navigate([`/${route}`]);
+	}
+
+	/* *******************************************************
+		Destroy                    
+	******************************************************** */
 
 	ngOnDestroy(): void {
 		this.subscriptions.unsubscribe();
