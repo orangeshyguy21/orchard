@@ -25,8 +25,7 @@ export class CoreService {
         const user = this.configService.get('bitcoin.user');
         const pass = this.configService.get('bitcoin.pass');
         const host = this.configService.get('bitcoin.host');
-        // const port = this.configService.get('bitcoin.port');
-        const port = 8992;
+        const port = this.configService.get('bitcoin.port');
         const clean_host = host.replace(/^https?:\/\//, '');
         this.rpc_url = `http://${clean_host}:${port}/`;
         const auth_string = Buffer.from(`${user}:${pass}`).toString('base64');

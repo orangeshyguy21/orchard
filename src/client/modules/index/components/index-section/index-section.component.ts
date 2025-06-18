@@ -55,10 +55,10 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	public loading_taproot_assets:boolean = true;
 	public loading_mint:boolean = true;
 
-	public error_bitcoin!: OrchardError;
-	public error_lightning!: string;
-	public error_taproot_assets!: string;
-	public error_mint!: string;
+	public errors_bitcoin!: OrchardError[];
+	public errors_lightning!: OrchardError[];
+	public errors_taproot_assets!: OrchardError[];
+	public errors_mint!: OrchardError[];
 
 	public bitcoin_blockchain_info!: BitcoinBlockchainInfo | null;
 	public bitcoin_network_info!: BitcoinNetworkInfo | null;
@@ -73,13 +73,14 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	public mint_keysets!: MintKeyset[] | null;
 	public mint_icon_data!: string | null;
 
-	public get ready_bitcoin(): boolean {
-		return this.loading_bitcoin || this.loading_lightning || this.loading_taproot_assets || this.error_bitcoin ? true : false;
+	public get preparing_bitcoin(): boolean {
+		return this.loading_bitcoin || this.errors_bitcoin ? true : false;
 	}
-	public get state_bitcoin(): string {
-		if( this.error_bitcoin ) return 'error';
-		if( this.enabled_bitcoin ) return 'enabled';
-		return 'disabled';
+	public get preparing_lightning(): boolean {
+		return this.loading_lightning || this.loading_taproot_assets || this.errors_lightning ? true : false || this.errors_taproot_assets ? true : false;
+	}
+	public get preparing_mint(): boolean {
+		return this.loading_mint || this.errors_mint ? true : false;
 	}
 
 	private subscriptions: Subscription = new Subscription();
@@ -146,7 +147,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 				this.bitcoin_network_info = network;
 			}),
 			catchError((error) => {
-				this.error_bitcoin = error.errors[0];
+				this.errors_bitcoin = error.errors;
 				return EMPTY;
 			}),
 			finalize(() => {
@@ -178,7 +179,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 				this.lightning_accounts = accounts;
 			}),
 			catchError((error) => {
-				this.error_lightning = error instanceof Error ? error.message : 'An unknown error occurred';
+				this.errors_lightning = error.errors;
 				return EMPTY;
 			}),
 			finalize(() => {
@@ -198,7 +199,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 				this.taproot_assets = assets;
 			}),
 			catchError((error) => {
-				this.error_taproot_assets = error instanceof Error ? error.message : 'An unknown error occurred';
+				this.errors_taproot_assets = error.errors;
 				return EMPTY;
 			}),
 			finalize(() => {
@@ -220,7 +221,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 				this.mint_keysets = keysets;
 			}),
 			catchError((error) => {
-				this.error_mint = error instanceof Error ? error.message : 'An unknown error occurred';
+				this.errors_mint = error.errors;
 				return EMPTY;
 			}),
 			finalize(async () => {

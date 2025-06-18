@@ -12,7 +12,7 @@
                 <div class="index-section">
                     @if( enabled_bitcoin ) {
                         <orc-index-enabled-bitcoin
-                            [loading]="ready_bitcoin"
+                            [loading]="preparing_bitcoin"
                             [enabled_lightning]="enabled_lightning"
                             [enabled_taproot_assets]="enabled_taproot_assets"
                             [blockcount]="(bitcoin_blockcount) ? bitcoin_blockcount.height : 0"
@@ -26,16 +26,18 @@
                     @else {
                         <orc-index-disabled-bitcoin (navigate)="onNavigate('bitcoin')"></orc-index-disabled-bitcoin>
                     }
-                    @if( error_bitcoin ) {
-                        <div [@fadeIn] class="orc-surface-bg absolute top-0 left-0 w-full h-full flex flex-items-center flex-justify-center">
-                            <orc-error-resolve [error]="error_bitcoin"></orc-error-resolve>
+                    @if( errors_bitcoin ) {
+                        <div [@fadeIn] class="index-section-error">
+                            @for(error of errors_bitcoin; track error.code) {
+                                <orc-error-resolve [error]="error"></orc-error-resolve>
+                            }
                         </div>
                     }
                 </div>
                 <div class="index-section">
                     @if( enabled_lightning ) {
                         <orc-index-enabled-lightning
-                            [loading]="loading_lightning || loading_taproot_assets"
+                            [loading]="preparing_lightning"
                             [lightning_info]="lightning_info!"
                             [lightning_balance]="lightning_balance!"
                             [taproot_assets]="taproot_assets!"
@@ -45,6 +47,13 @@
                     }
                     @else {
                         <orc-index-disabled-lightning (navigate)="onNavigate('lightning')"></orc-index-disabled-lightning>
+                    }
+                    @if( errors_lightning ) {
+                        <div [@fadeIn] class="index-section-error">
+                            @for(error of errors_lightning; track error.code) {
+                                <orc-error-resolve [error]="error"></orc-error-resolve>
+                            }
+                        </div>
                     }
                 </div>
             </div>
@@ -62,6 +71,13 @@
                     }
                     @else {
                         <orc-index-disabled-mint (navigate)="onNavigate('mint')"></orc-index-disabled-mint>
+                    }
+                    @if( errors_mint ) {
+                        <div [@fadeIn] class="index-section-error">
+                            @for(error of errors_mint; track error.code) {
+                                <orc-error-resolve [error]="error"></orc-error-resolve>
+                            }
+                        </div>
                     }
                 </div>
                 <div class="index-section">
