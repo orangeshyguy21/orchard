@@ -10,10 +10,10 @@ import { MatButtonModule } from '@angular/material/button';
 /* Application Dependencies */
 import { LocalModule } from '@client/modules/local/local.module';
 import { GraphicModule } from '@client/modules/graphic/graphic.module';
+import { ErrorModule } from '@client/modules/error/error.module';
 import { BitcoinModule } from '@client/modules/bitcoin/bitcoin.module';
 import { LightningModule } from '@client/modules/lightning/lightning.module';
 import { MintModule } from '@client/modules/mint/mint.module';
-// import { FormModule } from '@client/modules/form/form.module';
 /* Local Dependencies */
 import { IndexSectionComponent } from './components/index-section/index-section.component';
 import { IndexEnabledBitcoinComponent } from './components/index-enabled-bitcoin/index-enabled-bitcoin.component';
@@ -68,10 +68,10 @@ export class IndexAppRoutingModule { }
 		MatButtonModule,
 		LocalModule,
 		GraphicModule,
+		ErrorModule,
 		BitcoinModule,
 		LightningModule,
 		MintModule,
-		// FormModule,
 		IndexAppRoutingModule,
 	],
 })

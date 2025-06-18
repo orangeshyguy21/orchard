@@ -1,5 +1,7 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { trigger, transition, style, animate } from '@angular/animations';
+
 import { Router } from '@angular/router';
 /* Vendor Dependencies */
 import { tap, catchError, finalize, EMPTY, forkJoin, Subscription, firstValueFrom } from 'rxjs';
@@ -22,13 +24,22 @@ import { TaprootAssets } from '@client/modules/tapass/classes/taproot-assets.cla
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 import { MintBalance } from '@client/modules/mint/classes/mint-balance.class';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
+import { OrchardError } from '@client/modules/error/types/error.types';
 
 @Component({
 	selector: 'orc-index-section',
 	standalone: false,
 	templateUrl: './index-section.component.html',
 	styleUrl: './index-section.component.scss',
-	changeDetection: ChangeDetectionStrategy.OnPush
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	animations: [
+		trigger('fadeIn', [
+            transition(':enter', [
+                style({ opacity: 0 }),
+                animate('300ms ease-in', style({ opacity: 1 }))
+            ])
+        ])
+	]
 })
 export class IndexSectionComponent implements OnInit, OnDestroy {
 
@@ -44,7 +55,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	public loading_taproot_assets:boolean = true;
 	public loading_mint:boolean = true;
 
-	public error_bitcoin!: string;
+	public error_bitcoin!: OrchardError;
 	public error_lightning!: string;
 	public error_taproot_assets!: string;
 	public error_mint!: string;
@@ -61,6 +72,15 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	public mint_balances!: MintBalance[] | null;
 	public mint_keysets!: MintKeyset[] | null;
 	public mint_icon_data!: string | null;
+
+	public get ready_bitcoin(): boolean {
+		return this.loading_bitcoin || this.loading_lightning || this.loading_taproot_assets || this.error_bitcoin ? true : false;
+	}
+	public get state_bitcoin(): string {
+		if( this.error_bitcoin ) return 'error';
+		if( this.enabled_bitcoin ) return 'enabled';
+		return 'disabled';
+	}
 
 	private subscriptions: Subscription = new Subscription();
 
@@ -126,7 +146,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 				this.bitcoin_network_info = network;
 			}),
 			catchError((error) => {
-				this.error_bitcoin = error.message;
+				this.error_bitcoin = error.errors[0];
 				return EMPTY;
 			}),
 			finalize(() => {

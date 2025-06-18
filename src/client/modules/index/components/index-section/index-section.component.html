@@ -1,18 +1,18 @@
 <section class="section-container">
-    <div class="subsection-container p-2">
-        <div class="flex flex-justify-center p-b-1">
+    <div class="subsection-container p-1">
+        <div class="flex flex-justify-center">
             <div class="flex flex-column flex-items-center">
                 <orc-graphic-orchard-logo height="5rem"></orc-graphic-orchard-logo>
                 <div class="font-size-xxl font-weight-bold p-b-0-5">Orchard</div>
                 <div class="orc-outline-color font-size-s">orchard/{{ version }}</div>
             </div>
         </div>
-        <div class="flex flex-column flex-gap-2">
-            <div class="flex flex-gap-2">
-                <div class="flex-1 flex flex-column flex-items-center">
+        <div class="flex flex-column">
+            <div class="flex">
+                <div class="index-section">
                     @if( enabled_bitcoin ) {
                         <orc-index-enabled-bitcoin
-                            [loading]="(loading_bitcoin || loading_lightning || loading_taproot_assets)"
+                            [loading]="ready_bitcoin"
                             [enabled_lightning]="enabled_lightning"
                             [enabled_taproot_assets]="enabled_taproot_assets"
                             [blockcount]="(bitcoin_blockcount) ? bitcoin_blockcount.height : 0"
@@ -26,8 +26,13 @@
                     @else {
                         <orc-index-disabled-bitcoin (navigate)="onNavigate('bitcoin')"></orc-index-disabled-bitcoin>
                     }
+                    @if( error_bitcoin ) {
+                        <div [@fadeIn] class="orc-surface-bg absolute top-0 left-0 w-full h-full flex flex-items-center flex-justify-center">
+                            <orc-error-resolve [error]="error_bitcoin"></orc-error-resolve>
+                        </div>
+                    }
                 </div>
-                <div class="flex-1 flex flex-column flex-items-center">
+                <div class="index-section">
                     @if( enabled_lightning ) {
                         <orc-index-enabled-lightning
                             [loading]="loading_lightning || loading_taproot_assets"
@@ -43,8 +48,8 @@
                     }
                 </div>
             </div>
-            <div class="flex flex-gap-2">
-                <div class="flex-1 flex flex-column flex-items-center">
+            <div class="flex">
+                <div class="index-section">
                     @if( enabled_mint ) {
                         <orc-index-enabled-mint
                             [loading]="loading_mint"
@@ -59,7 +64,7 @@
                         <orc-index-disabled-mint (navigate)="onNavigate('mint')"></orc-index-disabled-mint>
                     }
                 </div>
-                <div class="flex-1 flex flex-column flex-items-center">
+                <div class="index-section">
                     @if( enabled_ecash ) {
                         <orc-index-enabled-ecash></orc-index-enabled-ecash>
                     }

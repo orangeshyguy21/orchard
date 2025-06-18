@@ -6,6 +6,10 @@
             </div>
             <div class="error-resolve-info">
                 @switch (error.code) {
+                    @case (20001) {
+                        <h3>BITCOIN RPC ERROR</h3>
+                        <p>Orchard was unable to connect to the bitcoin RPC</p>
+                    }
                     @case (40001) {
                         <h3>MINT PUBLIC API ERROR</h3>
                         <p>Orchard was unable to connect to the public mint API</p>

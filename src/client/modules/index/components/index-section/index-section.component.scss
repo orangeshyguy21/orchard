@@ -1,4 +1,5 @@
 @use '@styles/molecule/molecule';
+@use '@styles/nucleus/nucleus';
 
 :host {
     @extend %flex;
@@ -12,4 +13,13 @@
     @extend %flex-grow;
     @extend %flex-items-center;
     @extend %flex-justify-center;
+}
+
+.index-section{
+    @extend %flex-1;
+    @extend %flex;
+    @extend %flex-column;
+    @extend %flex-items-center;
+    @extend %p-1;
+    @extend %relative;
 }
