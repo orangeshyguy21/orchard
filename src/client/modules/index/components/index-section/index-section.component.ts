@@ -74,7 +74,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	public mint_icon_data!: string | null;
 
 	public get preparing_bitcoin(): boolean {
-		return this.loading_bitcoin || this.errors_bitcoin ? true : false;
+		return this.loading_bitcoin || this.loading_lightning || this.loading_taproot_assets || this.errors_bitcoin ? true : false;
 	}
 	public get preparing_lightning(): boolean {
 		return this.loading_lightning || this.loading_taproot_assets || this.errors_lightning ? true : false || this.errors_taproot_assets ? true : false;
