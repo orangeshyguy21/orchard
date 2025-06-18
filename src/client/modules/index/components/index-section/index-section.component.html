@@ -57,6 +57,13 @@
                             }
                         </div>
                     }
+                    @if( errors_taproot_assets ) {
+                        <div [@fadeIn] class="index-section-error">
+                            @for(error of errors_taproot_assets; track error.code) {
+                                <orc-error-resolve [error]="error"></orc-error-resolve>
+                            }
+                        </div>
+                    }
                 </div>
             </div>
             <div class="flex">

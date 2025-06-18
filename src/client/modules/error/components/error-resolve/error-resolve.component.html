@@ -28,7 +28,11 @@
                     }
                     @case (40005) {
                         <h3>MINT RPC ERROR</h3>
-                        <p>Orchard was unable to make an RPC connection to the mint</p>
+                        <p>Orchard was unable to connect to the mint RPC</p>
+                    }
+                    @case (60001) {
+                        <h3>TAPROOT ASSETS RPC ERROR</h3>
+                        <p>Orchard was unable to connect to the taproot assets RPC</p>
                     }
                     @default {
                         <h3>UNKNOWN ERROR</h3>
