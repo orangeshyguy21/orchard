@@ -6,7 +6,7 @@
     @extend %relative;
 
     canvas{
-        max-height: 30vh;
+        max-height: max(30vh, 180px);
         min-height: 300px;
     }
 }

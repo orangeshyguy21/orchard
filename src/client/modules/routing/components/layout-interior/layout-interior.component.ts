@@ -1,10 +1,11 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Event, Router, ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { FormControl } from '@angular/forms';
 /* Vendor Dependencies */
 import { Subscription, timer, EMPTY } from 'rxjs';
 import { switchMap, catchError, filter } from 'rxjs/operators';
+import { MatSidenav } from '@angular/material/sidenav';
 /* Application Configuration */
 import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
@@ -35,10 +36,11 @@ import { AiAgent, AiMessageRole } from '@shared/generated.types';
 })
 export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
+	@ViewChild(MatSidenav) sidenav!: MatSidenav;
+
 	public ai_enabled = environment.ai.enabled;
 	public ai_models: AiModel[] = [];
 	public ai_conversations: AiChatConversation[] = [];
-	public ai_log: boolean = true;
 	public active_chat!: boolean;
 	public active_section! : string;
 	public active_agent! : AiAgent;
@@ -278,7 +280,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	}
 
 	public onToggleLog(): void {
-		this.ai_log = !this.ai_log;
+		( this.sidenav.opened ) ? this.sidenav.close() : this.sidenav.open();
 		this.cdr.detectChanges();
 	}
 

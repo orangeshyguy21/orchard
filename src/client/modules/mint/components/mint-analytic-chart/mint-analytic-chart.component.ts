@@ -153,7 +153,10 @@ export class MintAnalyticChartComponent implements OnChanges {
 		});
 
 		return {
-			responsive: true,
+			maintainAspectRatio: false,
+			onResize: (chart: any) => {
+				console.log('chart resized', chart);
+			},
 			elements: {
 				line: {
 					tension: 0.5,
