@@ -8,13 +8,8 @@
 .ai-chat-log-container{
     @extend %orc-surface-container-low-bg;
     @extend %flex;
+    @extend %flex-grow;
     @extend %flex-column;
-}
-
-.ai-chat-log-header{
-    @extend %flex;
-    @extend %flex-gap-1;
-    @extend %p-0-5;
 }
 
 .ai-chat-log-main{
@@ -23,6 +18,7 @@
 
 .ai-chat-log-footer{
     @extend %flex;
-    @extend %flex-gap-1;
+    @extend %flex-items-center;
+    @extend %flex-justify-center;
     @extend %p-0-5;
 }

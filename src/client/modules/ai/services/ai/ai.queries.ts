@@ -37,3 +37,27 @@ export const AI_MODELS_QUERY = `
         }
     }
 `;
+
+export const AI_AGENT_QUERY = `
+    query AiAgent($agent: AiAgent!) {
+        ai_agent(agent: $agent) {
+            name
+            description
+            system_message{
+                content
+                role
+            }
+            tools{
+                type
+                function{
+                    name
+                    description
+                    parameters{
+                        type
+                        properties
+                    }
+                }
+            }
+        }
+    }
+`;

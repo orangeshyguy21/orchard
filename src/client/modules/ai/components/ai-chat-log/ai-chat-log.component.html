@@ -1,14 +1,13 @@
 <div class="ai-chat-log-container">
-    <div class="ai-chat-log-header">
-        <button mat-icon-button class="orc-icon-button" type="button">
-            <mat-icon>close</mat-icon>
-        </button>
-    </div>
     <div class="ai-chat-log-main">
-        <div>{{ update_count }}</div>
-        <div>{{ conversation | json}}</div>
+        <orc-ai-agent [agent]="agent_definition"></orc-ai-agent>
+         @for (message of conversation?.messages; track message.id) {
+            <orc-ai-chat-message [message]="message"></orc-ai-chat-message>
+         }
     </div>
     <div class="ai-chat-log-footer">
-        <button mat-stroked-button>Clear Conversation</button>
+        <button mat-stroked-button>
+            <div class="orc-outline-color font-size-xs">clear conversation</div>
+        </button>
     </div>
 </div>

@@ -25,6 +25,7 @@ export enum OrchardErrorCode {
 	AiError = 50001,
 	AiStreamError = 50002,
 	AiStreamParseError = 50003,
+	AiAgentNotFoundError = 50004,
 	// Taproot Assets Level Errors
 	TaprootAssetsRpcConnectionError = 60001,
 	TaprootAssetsRpcActionError = 60002,
@@ -50,6 +51,7 @@ export const OrchardErrorMessages: Record<string, string> = {
 	[OrchardErrorCode.AiError]: "AiError",
 	[OrchardErrorCode.AiStreamError]: "AiStreamError",
 	[OrchardErrorCode.AiStreamParseError]: "AiStreamParseError",
+	[OrchardErrorCode.AiAgentNotFoundError]: "AiAgentNotFoundError",
 	[OrchardErrorCode.TaprootAssetsRpcConnectionError]: "TaprootAssetsRpcConnectionError",
 	[OrchardErrorCode.TaprootAssetsRpcActionError]: "TaprootAssetsRpcActionError",
 	[OrchardErrorCode.TaprootAssetsSupportError]: "TaprootAssetsSupportError",

@@ -284,6 +284,39 @@ export type MutationMint_Url_RemoveArgs = {
   mint_url_update: MintUrlUpdateInput;
 };
 
+export type OrchardAiAgent = {
+  __typename?: 'OrchardAiAgent';
+  description: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  system_message: OrchardAiAgentSystemMessage;
+  tools: Array<OrchardAiAgentTool>;
+};
+
+export type OrchardAiAgentSystemMessage = {
+  __typename?: 'OrchardAiAgentSystemMessage';
+  content: Scalars['String']['output'];
+  role: Scalars['String']['output'];
+};
+
+export type OrchardAiAgentTool = {
+  __typename?: 'OrchardAiAgentTool';
+  function: OrchardAiAgentToolFunction;
+  type: Scalars['String']['output'];
+};
+
+export type OrchardAiAgentToolFunction = {
+  __typename?: 'OrchardAiAgentToolFunction';
+  description: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  parameters: OrchardAiAgentToolParameters;
+};
+
+export type OrchardAiAgentToolParameters = {
+  __typename?: 'OrchardAiAgentToolParameters';
+  properties: Scalars['String']['output'];
+  type: Scalars['String']['output'];
+};
+
 export type OrchardAiChatChunk = {
   __typename?: 'OrchardAiChatChunk';
   created_at: Scalars['Int']['output'];
@@ -851,6 +884,7 @@ export type OrchardTaprootAssetsUtxo = {
 
 export type Query = {
   __typename?: 'Query';
+  ai_agent: OrchardAiAgent;
   ai_models: Array<OrchardAiModel>;
   bitcoin_blockchain_info: OrchardBitcoinBlockchainInfo;
   bitcoin_blockcount: OrchardBitcoinBlockCount;
@@ -884,6 +918,11 @@ export type Query = {
   taproot_assets: OrchardTaprootAssets;
   taproot_assets_info: OrchardTaprootAssetsInfo;
   taproot_assets_utxo: Array<OrchardTaprootAssetsUtxo>;
+};
+
+
+export type QueryAi_AgentArgs = {
+  agent: Scalars['String']['input'];
 };
 
 

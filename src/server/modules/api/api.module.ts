@@ -27,6 +27,7 @@ import { MintAnalyticsModule } from "./mint/analytics/mintanalytics.module";
 import { MintCountModule } from "./mint/count/mintcount.module";
 // AI Endpoints
 import { AiModelModule } from "./ai/model/aimodel.module";
+import { AiAgentModule } from "./ai/agent/aiagent.module";
 import { AiChatModule } from "./ai/chat/aichat.module";
 // Image Endpoints
 import { PublicImageModule } from "./public/image/image.module";
@@ -54,6 +55,7 @@ import { PublicUrlModule } from "./public/url/url.module";
 		MintAnalyticsModule,
 		MintCountModule,
 		AiModelModule,
+		AiAgentModule,
 		AiChatModule,
 		PublicImageModule,
 		PublicUrlModule,

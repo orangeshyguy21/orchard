@@ -34,7 +34,11 @@
 			}
 		</div>
 	</div>
-	<mat-sidenav mode="side" position="end" opened="true">
-		<orc-ai-chat-log [conversation]="ai_conversation" [update_count]="ai_update_count"></orc-ai-chat-log>
+	<mat-sidenav mode="side" position="end">
+		<orc-ai-chat-log 
+			[conversation]="ai_conversation" 
+			[update_count]="ai_update_count"
+			[agent_definition]="ai_agent_definition">
+		</orc-ai-chat-log>
 	</mat-sidenav>
 </mat-sidenav-container>

@@ -25,6 +25,7 @@ import { AiChatChunk } from '@client/modules/ai/classes/ai-chat-chunk.class';
 import { AiModel } from '@client/modules/ai/classes/ai-model.class';
 import { AiChatConversation } from '@client/modules/ai/classes/ai-chat-conversation.class';
 import { AiChatCompiledMessage } from '@client/modules/ai/classes/ai-chat-compiled-message.class';
+import { AiAgentDefinition } from '@client/modules/ai/classes/ai-agent-definition.class';
 /* Shared Dependencies */
 import { AiAgent, AiMessageRole } from '@shared/generated.types';
 
@@ -43,6 +44,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	public ai_models: AiModel[] = [];
 	public ai_conversation: AiChatConversation | null = null;
 	public ai_update_count: number = 0;
+	public ai_agent_definition: AiAgentDefinition | null = null;
 	public active_chat!: boolean;
 	public active_section! : string;
 	public active_agent! : AiAgent;
@@ -284,7 +286,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	}
 
 	public onToggleLog(): void {
-		( this.sidenav.opened ) ? this.sidenav.close() : this.sidenav.open();
+		( this.sidenav.opened ) ? this.closeChatLog() : this.openChatLog();
 		this.chartService.triggerResizeStart();
 		setTimeout(() => {
 			this.chartService.triggerResizeEnd();
@@ -321,6 +323,22 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		this.ai_update_count++;
 		this.cdr.detectChanges();
 	}
+
+	private openChatLog(): void {
+		this.sidenav.open();
+		this.aiService.getAiAgent(this.active_agent)
+			.subscribe((agent: AiAgentDefinition) => {
+				this.ai_agent_definition = agent;
+				this.cdr.detectChanges();
+			});
+	}
+	private closeChatLog(): void {
+		this.sidenav.close();
+	}
+
+	/* *******************************************************
+	   Destroy                      
+	******************************************************** */
 
 	ngOnDestroy(): void {
 		this.subscriptions.unsubscribe();

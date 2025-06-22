@@ -17,6 +17,8 @@ import { AiCommandComponent } from './components/ai-command/ai-command.component
 import { AiModelComponent } from './components/ai-model/ai-model.component';
 import { AiConversationHudComponent } from './components/ai-conversation-hud/ai-conversation-hud.component';
 import { AiChatLogComponent } from './components/ai-chat-log/ai-chat-log.component';
+import { AiChatMessageComponent } from './components/ai-chat-message/ai-chat-message.component';
+import { AiAgentComponent } from './components/ai-agent/ai-agent.component';
 
 @NgModule({
 	declarations: [	
@@ -26,6 +28,8 @@ import { AiChatLogComponent } from './components/ai-chat-log/ai-chat-log.compone
 		AiModelComponent,
  		AiConversationHudComponent,
    		AiChatLogComponent,
+		AiChatMessageComponent,
+		AiAgentComponent,
 	],
 	imports: [
 		CommonModule,
