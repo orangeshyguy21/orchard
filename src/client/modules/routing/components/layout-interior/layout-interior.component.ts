@@ -21,8 +21,10 @@ import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 import { AiChatChunk } from '@client/modules/ai/classes/ai-chat-chunk.class';
 import { AiModel } from '@client/modules/ai/classes/ai-model.class';
+import { AiChatConversation } from '@client/modules/ai/classes/ai-chat-conversation.class';
+import { AiChatCompiledMessage } from '@client/modules/ai/classes/ai-chat-compiled-message.class';
 /* Shared Dependencies */
-import { AiAgent } from '@shared/generated.types';
+import { AiAgent, AiMessageRole } from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-layout-interior',
@@ -35,6 +37,8 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	public ai_enabled = environment.ai.enabled;
 	public ai_models: AiModel[] = [];
+	public ai_conversations: AiChatConversation[] = [];
+	public ai_log: boolean = true;
 	public active_chat!: boolean;
 	public active_section! : string;
 	public active_agent! : AiAgent;
@@ -99,6 +103,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 			this.subscriptions.add(this.getAgentSubscription());
 			this.subscriptions.add(this.getActiveAiSubscription());
 			this.subscriptions.add(this.getAiMessagesSubscription());
+			this.subscriptions.add(this.getAiConversationSubscription());
 			this.getModels();
 		}
 	}
@@ -194,8 +199,15 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	private getAiMessagesSubscription(): Subscription {
 		return this.aiService.messages$
 			.subscribe((chunk: AiChatChunk) => {
-				console.log('ai chunk', chunk);
-				// @todo create messages
+				this.assembleMessages(chunk);
+			});
+	}
+
+	private getAiConversationSubscription(): Subscription {
+		return this.aiService.conversation$
+			.subscribe((conversation: AiChatConversation) => {
+				this.ai_conversations.push(conversation);
+				this.cdr.detectChanges();
 			});
 	}
 
@@ -265,6 +277,11 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		this.active_chat ? this.stopChat() : this.startChat();
 	}
 
+	public onToggleLog(): void {
+		this.ai_log = !this.ai_log;
+		this.cdr.detectChanges();
+	}
+
 	private startChat() {
 		if( !this.user_content.value ) return;
 		const agent = this.active_agent || AiAgent.Default;
@@ -283,6 +300,17 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		this.model = model;
 		this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
 		this.cdr.detectChanges();
+	}
+
+	private assembleMessages(chunk: AiChatChunk): void {
+		const conversation = this.ai_conversations.find(conversation => conversation.id === chunk.id_conversation);
+		if( !conversation ) return;
+		if( conversation.messages.length > 0 && conversation.messages[conversation.messages.length - 1].role !== AiMessageRole.Assistant ) {
+			conversation.messages.push(new AiChatCompiledMessage(conversation.id, chunk.message));
+		}else{
+			const last_message = conversation.messages[conversation.messages.length - 1];
+			last_message.integrateChunk(chunk);
+		}
 	}
 
 	ngOnDestroy(): void {

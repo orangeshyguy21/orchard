@@ -31,6 +31,7 @@ export class AiChatChunk implements ParsedOrchardAiChatChunk {
     public eval_count: number | null;
     public eval_duration: number | null;
     public id: string;
+    public id_conversation: string;
     public load_duration: number | null;
     public message: AiChatMessage;
     public model: string;
@@ -38,13 +39,14 @@ export class AiChatChunk implements ParsedOrchardAiChatChunk {
     public prompt_eval_duration: number | null;
     public total_duration: number | null;
 
-	constructor(chunk: OrchardAiChatChunk) {
+	constructor(chunk: OrchardAiChatChunk, id_conversation: string) {
 		this.created_at = chunk.created_at;
 		this.done = chunk.done;
 		this.done_reason = chunk.done_reason ?? null;
 		this.eval_count = chunk.eval_count ?? null;
 		this.eval_duration = chunk.eval_duration ?? null;
 		this.id = chunk.id;
+		this.id_conversation = id_conversation;
 		this.load_duration = chunk.load_duration ?? null;
 		this.message = new AiChatMessage(chunk.message);
 		this.model = chunk.model;

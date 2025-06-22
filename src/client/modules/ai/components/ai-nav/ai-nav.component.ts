@@ -4,6 +4,7 @@ import { FormControl } from '@angular/forms';
 /* Native Dependencies */
 import { AiService } from '@client/modules/ai/services/ai/ai.service';
 import { AiModel } from '@client/modules/ai/classes/ai-model.class';
+import { AiChatConversation } from '@client/modules/ai/classes/ai-chat-conversation.class';
 /* Shared Dependencies */
 import { AiAgent } from '@shared/generated.types';
 
@@ -22,9 +23,12 @@ export class AiNavComponent {
 	@Input() model_options!: AiModel[];
 	@Input() actionable!: boolean;
 	@Input() content!: FormControl;
+	@Input() conversations!: AiChatConversation[];
 
 	@Output() command = new EventEmitter<void>();
 	@Output() modelChange = new EventEmitter<string>();
+	@Output() toggleLog = new EventEmitter<void>();
+
 	constructor(
 		public aiService: AiService,
 		private cdr: ChangeDetectorRef

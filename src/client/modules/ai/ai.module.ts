@@ -15,6 +15,8 @@ import { AiInputComponent } from './components/ai-input/ai-input.component';
 import { AiNavComponent } from './components/ai-nav/ai-nav.component';
 import { AiCommandComponent } from './components/ai-command/ai-command.component';
 import { AiModelComponent } from './components/ai-model/ai-model.component';
+import { AiConversationHudComponent } from './components/ai-conversation-hud/ai-conversation-hud.component';
+import { AiChatLogComponent } from './components/ai-chat-log/ai-chat-log.component';
 
 @NgModule({
 	declarations: [	
@@ -22,6 +24,8 @@ import { AiModelComponent } from './components/ai-model/ai-model.component';
 		AiNavComponent,
 		AiCommandComponent,
 		AiModelComponent,
+ 		AiConversationHudComponent,
+   		AiChatLogComponent,
 	],
 	imports: [
 		CommonModule,
@@ -35,6 +39,7 @@ import { AiModelComponent } from './components/ai-model/ai-model.component';
 	],
 	exports: [
 		AiNavComponent,
+		AiChatLogComponent,
 	]
 })
 export class AiModule { }

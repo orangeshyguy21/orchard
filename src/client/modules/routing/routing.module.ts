@@ -1,6 +1,8 @@
 /* Core Dependencies */
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+/* Vendor Dependencies */
+import { MatSidenavModule } from '@angular/material/sidenav';
 /* Application Dependencies */
 import { NavModule } from '@client/modules/nav/nav.module';
 import { AiModule } from '@client/modules/ai/ai.module';
@@ -55,6 +57,7 @@ const routes: Routes = [
 @NgModule({
 	imports: [
 		RouterModule.forRoot(routes),
+		MatSidenavModule,
 		NavModule,
 		AiModule,
 	],

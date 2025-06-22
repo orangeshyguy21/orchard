@@ -1,4 +1,4 @@
-<div class="interior-container">
+<!-- <div class="interior-container">
 	<orc-primary-nav 
 		[active_section]="active_section"
 		[active_event]="active_event"
@@ -25,10 +25,54 @@
 				[model_options]="ai_models"
 				[actionable]="ai_actionable"
 				[content]="user_content"
+				[conversations]="ai_conversations"
 				(command)="onCommand()"
-				(modelChange)="onModelChange($event)">
+				(modelChange)="onModelChange($event)"
+				(toggleLog)="onToggleLog()">
 			</orc-ai-nav>
 		}
 	</div>
-	<!-- <div> todo ai chat log </div> -->
-</div>
+</div> -->
+
+<mat-sidenav-container>
+    <mat-sidenav mode="side" position="end" [opened]="ai_log">
+		<orc-ai-chat-log></orc-ai-chat-log>
+	</mat-sidenav>
+    <mat-sidenav-content>
+		<div class="interior-container">
+			<orc-primary-nav 
+				[active_section]="active_section"
+				[active_event]="active_event"
+				[enabled_bitcoin]="enabled_bitcoin"
+				[enabled_lightning]="enabled_lightning"
+				[enabled_mint]="enabled_mint"
+				[online_bitcoin]="online_bitcoin"
+				[online_lightning]="online_lightning"
+				[online_mint]="online_mint"
+				[chain]="chain"
+				[block_count]="block_count"
+				(cancel)="onCancelPendingEvent()"
+				(save)="onSavePendingEvent()">
+			</orc-primary-nav>
+			<div class="interior-section-container">
+				<div class="interior-router-outlet-container">
+					<router-outlet></router-outlet>
+				</div>
+				@if(ai_enabled) {
+					<orc-ai-nav 
+						[active_agent]="active_agent"
+						[active_chat]="active_chat"
+						[model]="model"
+						[model_options]="ai_models"
+						[actionable]="ai_actionable"
+						[content]="user_content"
+						[conversations]="ai_conversations"
+						(command)="onCommand()"
+						(modelChange)="onModelChange($event)"
+						(toggleLog)="onToggleLog()">
+					</orc-ai-nav>
+				}
+			</div>
+		</div>
+	</mat-sidenav-content>
+</mat-sidenav-container>

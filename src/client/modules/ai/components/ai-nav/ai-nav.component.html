@@ -11,6 +11,11 @@
         [model_options]="model_options"
         (modelChange)="modelChange.emit($event)"
     ></orc-ai-model>
+    <orc-ai-conversation-hud
+        [conversations]="conversations"
+        [clength]="conversations.length"
+        (toggle)="toggleLog.emit()"
+    ></orc-ai-conversation-hud>
     <orc-ai-command 
         [actionable]="actionable" 
         [active_chat]="active_chat"
