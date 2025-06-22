@@ -41,7 +41,8 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	public ai_enabled = environment.ai.enabled;
 	public ai_models: AiModel[] = [];
-	public ai_conversations: AiChatConversation[] = [];
+	public ai_conversation: AiChatConversation | null = null;
+	public ai_update_count: number = 0;
 	public active_chat!: boolean;
 	public active_section! : string;
 	public active_agent! : AiAgent;
@@ -210,7 +211,8 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	private getAiConversationSubscription(): Subscription {
 		return this.aiService.conversation$
 			.subscribe((conversation: AiChatConversation) => {
-				this.ai_conversations.push(conversation);
+				this.ai_conversation = conversation;
+				this.ai_update_count = 0;
 				this.cdr.detectChanges();
 			});
 	}
@@ -310,14 +312,14 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	}
 
 	private assembleMessages(chunk: AiChatChunk): void {
-		const conversation = this.ai_conversations.find(conversation => conversation.id === chunk.id_conversation);
-		if( !conversation ) return;
-		if( conversation.messages.length > 0 && conversation.messages[conversation.messages.length - 1].role !== AiMessageRole.Assistant ) {
-			conversation.messages.push(new AiChatCompiledMessage(conversation.id, chunk.message));
+		if( this.ai_conversation!.messages.length > 0 && this.ai_conversation!.messages[this.ai_conversation!.messages.length - 1].role !== AiMessageRole.Assistant ) {
+			this.ai_conversation!.messages.push(new AiChatCompiledMessage(this.ai_conversation!.id, chunk.message));
 		}else{
-			const last_message = conversation.messages[conversation.messages.length - 1];
+			const last_message = this.ai_conversation!.messages[this.ai_conversation!.messages.length - 1];
 			last_message.integrateChunk(chunk);
 		}
+		this.ai_update_count++;
+		this.cdr.detectChanges();
 	}
 
 	ngOnDestroy(): void {

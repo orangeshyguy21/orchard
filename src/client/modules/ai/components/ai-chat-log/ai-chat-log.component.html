@@ -1,1 +1,14 @@
-<p>ai-chat-log works!</p>
+<div class="ai-chat-log-container">
+    <div class="ai-chat-log-header">
+        <button mat-icon-button class="orc-icon-button" type="button">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+    <div class="ai-chat-log-main">
+        <div>{{ update_count }}</div>
+        <div>{{ conversation | json}}</div>
+    </div>
+    <div class="ai-chat-log-footer">
+        <button mat-stroked-button>Clear Conversation</button>
+    </div>
+</div>

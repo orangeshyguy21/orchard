@@ -12,8 +12,7 @@
         (modelChange)="modelChange.emit($event)"
     ></orc-ai-model>
     <orc-ai-conversation-hud
-        [conversations]="conversations"
-        [clength]="conversations.length"
+        [conversation]="conversation"
         (toggle)="toggleLog.emit()"
     ></orc-ai-conversation-hud>
     <orc-ai-command 

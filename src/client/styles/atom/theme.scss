@@ -21,6 +21,9 @@
 		supporting-text-color: var(--mat-sys-on-surface),
 		supporting-text-size: 0.75rem,
 	));
+	@include mat.sidenav-overrides((
+		container-background-color: var(--mat-sys-surface-container-low),
+	));
 }
 
 /* Specific Table Overrides */
@@ -139,5 +142,12 @@
 		.mat-badge-content{
 			font-family: 'Bai Jamjuree', sans-serif;
 		}
+	}
+}
+
+:root {
+	.mat-drawer.mat-drawer-end{
+		border-top-left-radius: 0rem;
+		border-bottom-left-radius: 0rem;
 	}
 }
