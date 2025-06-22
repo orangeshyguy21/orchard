@@ -1,10 +1,11 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy, SimpleChanges, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 /* Vendor Dependencies */
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ScaleChartOptions, ChartType as ChartJsType } from 'chart.js';
 import { DateTime } from 'luxon';
+import { Subscription } from 'rxjs';
 /* Application Dependencies */
 import { NonNullableMintDashboardSettings } from '@client/modules/settings/types/setting.types';
 import { 
@@ -47,7 +48,7 @@ import { ChartType } from '@client/modules/mint/enums/chart-type.enum';
 		])
 	]
 })
-export class MintAnalyticChartComponent implements OnChanges {
+export class MintAnalyticChartComponent implements OnChanges, OnDestroy {
 
 	@ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
@@ -62,10 +63,17 @@ export class MintAnalyticChartComponent implements OnChanges {
 	public chart_type!: ChartJsType;
 	public chart_data!: ChartConfiguration['data'];
 	public chart_options!: ChartConfiguration['options'];
+	public displayed: boolean = true;
+
+	private subscriptions: Subscription = new Subscription();
 
 	constructor(
 		private chartService: ChartService,
-	) { }
+		private cdr: ChangeDetectorRef,
+	) {
+		this.subscriptions.add(this.getRemoveSubscription());
+		this.subscriptions.add(this.getAddSubscription());
+	}
 
 	public ngOnChanges(changes: SimpleChanges): void {
 		if(changes['loading'] && this.loading === false) {
@@ -74,6 +82,21 @@ export class MintAnalyticChartComponent implements OnChanges {
 		if(changes['selected_type'] && !changes['selected_type'].firstChange ) {
 			this.init();
 		}
+	}
+
+	private getRemoveSubscription(): Subscription {
+		return this.chartService.onResizeStart()
+			.subscribe(() => {
+				this.displayed = false;
+				this.cdr.detectChanges();
+			});
+	}
+	private getAddSubscription(): Subscription {
+		return this.chartService.onResizeEnd()
+			.subscribe(() => {
+				this.displayed = true;
+				this.cdr.detectChanges();
+			});
 	}
 
 	private async init(): Promise<void> {
@@ -305,5 +328,9 @@ export class MintAnalyticChartComponent implements OnChanges {
 		  	dataset.data.map((point: any) => point.x)
 		);
 		return Math.min(...all_x_values);
+	}
+
+	ngOnDestroy(): void {
+		this.subscriptions.unsubscribe();
 	}
 }

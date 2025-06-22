@@ -4,6 +4,8 @@
 .mint-data-chart-container{
     @extend %p-v-1;
     @extend %relative;
+    max-height: max(25vh, 180px);
+    min-height: 200px;
 
     canvas{
         max-height: max(25vh, 180px);

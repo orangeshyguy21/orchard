@@ -4,6 +4,9 @@
     @extend %p-b-1;
     @extend %relative;
 
+    max-height: max(calc(100vh - 530px), 300px);
+    min-height: 300px;
+
     canvas{
         max-height: max(calc(100vh - 530px), 300px);
         min-height: 300px;

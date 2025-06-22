@@ -1,9 +1,10 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, ViewChild, OnChanges, OnDestroy, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 /* Vendor Dependencies */
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartType as ChartJsType } from 'chart.js';
+import { Subscription } from 'rxjs';
 /* Application Dependencies */
 import { ChartService } from '@client/modules/chart/services/chart/chart.service';
 import { getTooltipLabel, getTooltipTitleExact } from '@client/modules/chart/helpers/mint-chart-options.helpers';
@@ -31,7 +32,7 @@ import { MintQuoteState, MeltQuoteState } from '@shared/generated.types';
 		])
 	]
 })
-export class MintConfigChartQuoteTtlComponent implements OnChanges {
+export class MintConfigChartQuoteTtlComponent implements OnChanges, OnDestroy {
 
     @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
@@ -46,6 +47,7 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges {
     public chart_type!: ChartJsType;
 	public chart_data!: ChartConfiguration['data'];
 	public chart_options!: ChartConfiguration['options'];
+    public displayed: boolean = true;
     public metrics: {
         avg: number;
         median: number;
@@ -60,9 +62,15 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges {
         coverage: 0
     };
 
+    private subscriptions: Subscription = new Subscription();
+
     constructor(
         private chartService: ChartService,
-    ) { }
+        private cdr: ChangeDetectorRef,
+    ) {
+        this.subscriptions.add(this.getRemoveSubscription());
+		this.subscriptions.add(this.getAddSubscription());
+    }
 
     public ngOnChanges(changes: SimpleChanges): void {
 		if(changes['loading'] && this.loading === false) {
@@ -76,6 +84,21 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges {
         if(changes['form_hot'] && !changes['form_hot'].firstChange) {
             this.initOptions();
         }
+	}
+
+    private getRemoveSubscription(): Subscription {
+		return this.chartService.onResizeStart()
+			.subscribe(() => {
+				this.displayed = false;
+				this.cdr.detectChanges();
+			});
+	}
+	private getAddSubscription(): Subscription {
+		return this.chartService.onResizeEnd()
+			.subscribe(() => {
+				this.displayed = true;
+				this.cdr.detectChanges();
+			});
 	}
 
 	private async init(): Promise<void> {
@@ -261,4 +284,8 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges {
 			}
 		}
     }
+
+    ngOnDestroy(): void {
+		this.subscriptions.unsubscribe();
+	}
 }

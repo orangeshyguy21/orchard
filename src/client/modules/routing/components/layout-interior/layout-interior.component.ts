@@ -15,6 +15,7 @@ import { LightningService } from '@client/modules/lightning/services/lightning/l
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { AiService } from '@client/modules/ai/services/ai/ai.service';
 import { EventService } from '@client/modules/event/services/event/event.service';
+import { ChartService } from '@client/modules/chart/services/chart/chart.service';
 import { EventData } from '@client/modules/event/classes/event-data.class';
 import { BitcoinBlockchainInfo } from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
 import { BitcoinBlockCount } from '@client/modules/bitcoin/classes/bitcoin-blockcount.class';
@@ -71,6 +72,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		private mintService: MintService,
 		private aiService: AiService,
 		private eventService: EventService,
+		private chartService: ChartService,
 		private router: Router,
 		private route: ActivatedRoute,
 		private cdr: ChangeDetectorRef,
@@ -281,7 +283,10 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	public onToggleLog(): void {
 		( this.sidenav.opened ) ? this.sidenav.close() : this.sidenav.open();
-		this.cdr.detectChanges();
+		this.chartService.triggerResizeStart();
+		setTimeout(() => {
+			this.chartService.triggerResizeEnd();
+		}, 400);
 	}
 
 	private startChat() {

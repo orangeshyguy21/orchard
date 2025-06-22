@@ -7,7 +7,9 @@
         [state_enabled]="state_enabled">
     </orc-mint-data-chart-legend>
 
-    <canvas baseChart [data]="chart_data" [options]="chart_options" [type]="chart_type"></canvas>
+    @if( displayed ) {
+        <canvas baseChart [data]="chart_data" [options]="chart_options" [type]="chart_type"></canvas>
+    }
     @if( !loading && data.source.data.length === 0 ) {
         <div class="no-data-overlay" @fadeInOut>
             <mat-icon class="icon-lg mat-symbol-outline orc-outline-color">bar_chart_off</mat-icon>
