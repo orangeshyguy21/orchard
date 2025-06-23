@@ -190,7 +190,9 @@ type Mutation {
 
 type OrchardAiAgent {
   description: String!
+  icon: String!
   name: String!
+  section: String
   system_message: OrchardAiAgentSystemMessage!
   tools: [OrchardAiAgentTool!]!
 }

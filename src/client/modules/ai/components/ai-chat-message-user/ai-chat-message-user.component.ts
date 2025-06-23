@@ -4,13 +4,13 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { AiChatCompiledMessage } from '@client/modules/ai/classes/ai-chat-compiled-message.class';
 
 @Component({
-	selector: 'orc-ai-chat-message',
+	selector: 'orc-ai-chat-message-user',
 	standalone: false,
-	templateUrl: './ai-chat-message.component.html',
-	styleUrl: './ai-chat-message.component.scss',
+	templateUrl: './ai-chat-message-user.component.html',
+	styleUrl: './ai-chat-message-user.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AiChatMessageComponent {
+export class AiChatMessageUserComponent {
 
 	@Input() public message!: AiChatCompiledMessage;
 

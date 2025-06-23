@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AiChatMessageComponent } from './ai-chat-message.component';
+import { AiChatAvatarComponent } from './ai-chat-avatar.component';
 
-describe('AiChatMessageComponent', () => {
-  let component: AiChatMessageComponent;
-  let fixture: ComponentFixture<AiChatMessageComponent>;
+describe('AiChatAvatarComponent', () => {
+  let component: AiChatAvatarComponent;
+  let fixture: ComponentFixture<AiChatAvatarComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AiChatMessageComponent]
+      declarations: [AiChatAvatarComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(AiChatMessageComponent);
+    fixture = TestBed.createComponent(AiChatAvatarComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

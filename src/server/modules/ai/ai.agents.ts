@@ -32,8 +32,10 @@ import {
 
 export const AI_AGENTS = {
     [AiAgent.DEFAULT]: {
-        name: 'Default',
-        description: 'Default agent',
+        name: 'Orchard Agent',
+        icon: 'help',
+        section: null,
+        description: 'The general purpose agent',
         system_message: {
             role: 'system',
             content: 'You are a helpful assistant that can answer questions and help with tasks.',
@@ -41,8 +43,10 @@ export const AI_AGENTS = {
         tools: [],
     },
     [AiAgent.MINT_DASHBOARD]: {
-        name: 'Mint Dashboard',
-        description: 'Mint dashboard agent',
+        name: 'Mint Dashboard Agent',
+        icon: 'account_balance',
+        section: 'mint',
+        description: 'Control the filters of the mint analytics',
         system_message: {
             role: 'system',
             content: 'You are an agent designed to help adjust parameters used to explore mint analytics.',

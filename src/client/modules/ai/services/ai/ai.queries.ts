@@ -43,6 +43,8 @@ export const AI_AGENT_QUERY = `
         ai_agent(agent: $agent) {
             name
             description
+            icon
+            section
             system_message{
                 content
                 role

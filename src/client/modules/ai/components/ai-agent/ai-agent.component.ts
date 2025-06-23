@@ -1,7 +1,9 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-/* Shared Dependencies */
+/* Native Dependencies */
 import { AiAgentDefinition } from '@client/modules/ai/classes/ai-agent-definition.class';
+/* Shared Dependencies */
+import { AiMessageRole } from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-ai-agent',
@@ -13,5 +15,7 @@ import { AiAgentDefinition } from '@client/modules/ai/classes/ai-agent-definitio
 export class AiAgentComponent {
 
 	@Input() public agent!: AiAgentDefinition | null;
+
+	public role = AiMessageRole.Assistant;
 
 }

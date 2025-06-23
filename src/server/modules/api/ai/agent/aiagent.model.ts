@@ -74,6 +74,12 @@ export class OrchardAiAgent {
     @Field()
     description: string;
 
+    @Field()
+    icon: string;
+
+    @Field({ nullable: true })
+    section: string;
+
     @Field(() => OrchardAiAgentSystemMessage)
     system_message: OrchardAiAgentSystemMessage; 
 
@@ -83,6 +89,8 @@ export class OrchardAiAgent {
     constructor(ai_agent: any) {
         this.name = ai_agent.name;
         this.description = ai_agent.description;
+        this.icon = ai_agent.icon;
+        this.section = ai_agent.section;
         this.system_message = new OrchardAiAgentSystemMessage(ai_agent.system_message);
         this.tools = ai_agent.tools.map((tool: any) => new OrchardAiAgentTool(tool));
     }

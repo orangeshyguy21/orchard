@@ -1,12 +1,39 @@
 <div class="ai-chat-log-container">
-    <div class="ai-chat-log-main">
+    <div class="ai-chat-log-header">
         <orc-ai-agent [agent]="agent_definition"></orc-ai-agent>
-         @for (message of conversation?.messages; track message.id) {
-            <orc-ai-chat-message [message]="message"></orc-ai-chat-message>
-         }
+    </div>
+    <div class="category-rule"></div>
+    <div class="ai-chat-log-main">
+        @for (message of conversation?.messages; track message.id) {
+            @switch (message.role) {
+                @case ('SYSTEM') {
+                    <orc-ai-chat-message-system 
+                        [message]="message">
+                    </orc-ai-chat-message-system>
+                }
+                @case ('USER') {
+                    <orc-ai-chat-message-user 
+                        [message]="message">
+                    </orc-ai-chat-message-user>
+                }
+                @case ('ASSISTANT') {
+                    <orc-ai-chat-message-assistant 
+                        [message]="message"
+                        [revision]="revision"
+                        [agent]="agent_definition">
+                    </orc-ai-chat-message-assistant>
+                }
+                @case ('FUNCTION') {
+                    <div>function</div>
+                }
+                @default {
+                    <div>default</div>
+                }
+            }
+        }
     </div>
     <div class="ai-chat-log-footer">
-        <button mat-stroked-button>
+        <button mat-button>
             <div class="orc-outline-color font-size-xs">clear conversation</div>
         </button>
     </div>

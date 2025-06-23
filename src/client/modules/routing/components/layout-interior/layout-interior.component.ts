@@ -43,7 +43,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	public ai_enabled = environment.ai.enabled;
 	public ai_models: AiModel[] = [];
 	public ai_conversation: AiChatConversation | null = null;
-	public ai_update_count: number = 0;
+	public ai_revision: number = 0;
 	public ai_agent_definition: AiAgentDefinition | null = null;
 	public active_chat!: boolean;
 	public active_section! : string;
@@ -214,7 +214,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		return this.aiService.conversation$
 			.subscribe((conversation: AiChatConversation) => {
 				this.ai_conversation = conversation;
-				this.ai_update_count = 0;
+				this.ai_revision = 0;
 				this.cdr.detectChanges();
 			});
 	}
@@ -320,7 +320,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 			const last_message = this.ai_conversation!.messages[this.ai_conversation!.messages.length - 1];
 			last_message.integrateChunk(chunk);
 		}
-		this.ai_update_count++;
+		this.ai_revision++;
 		this.cdr.detectChanges();
 	}
 

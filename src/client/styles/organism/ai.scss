@@ -1,0 +1,13 @@
+@use '@styles/molecule/molecule';
+
+.orc-ai-chat-message{
+    @extend %flex;
+    @extend %flex-items-start;
+    @extend %flex-gap-1;
+}
+
+.orc-ai-chat-message-content{
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %h-min-2;
+}

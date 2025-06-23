@@ -287,7 +287,9 @@ export type MutationMint_Url_RemoveArgs = {
 export type OrchardAiAgent = {
   __typename?: 'OrchardAiAgent';
   description: Scalars['String']['output'];
+  icon: Scalars['String']['output'];
   name: Scalars['String']['output'];
+  section?: Maybe<Scalars['String']['output']>;
   system_message: OrchardAiAgentSystemMessage;
   tools: Array<OrchardAiAgentTool>;
 };
@@ -922,7 +924,7 @@ export type Query = {
 
 
 export type QueryAi_AgentArgs = {
-  agent: Scalars['String']['input'];
+  agent: AiAgent;
 };
 
 

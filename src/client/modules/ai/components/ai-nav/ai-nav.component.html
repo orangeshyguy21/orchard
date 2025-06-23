@@ -11,15 +11,15 @@
         [model_options]="model_options"
         (modelChange)="modelChange.emit($event)"
     ></orc-ai-model>
-    <orc-ai-conversation-hud
-        [conversation]="conversation"
-        (toggle)="toggleLog.emit()"
-    ></orc-ai-conversation-hud>
     <orc-ai-command 
         [actionable]="actionable" 
         [active_chat]="active_chat"
         (command)="command.emit()"
     ></orc-ai-command>
+    <orc-ai-conversation-hud
+        [conversation]="conversation"
+        (toggle)="toggleLog.emit()"
+    ></orc-ai-conversation-hud>
 </div>
 
 
