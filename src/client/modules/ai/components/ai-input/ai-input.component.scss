@@ -24,3 +24,9 @@
         @extend %orc-outline-color;
     }
 }
+
+.ai-active-container {
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %font-size-s;
+}

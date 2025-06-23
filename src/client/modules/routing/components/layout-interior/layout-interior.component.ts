@@ -22,6 +22,7 @@ import { BitcoinBlockCount } from '@client/modules/bitcoin/classes/bitcoin-block
 import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.class';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 import { AiChatChunk } from '@client/modules/ai/classes/ai-chat-chunk.class';
+import { AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
 import { AiModel } from '@client/modules/ai/classes/ai-model.class';
 import { AiChatConversation } from '@client/modules/ai/classes/ai-chat-conversation.class';
 import { AiChatCompiledMessage } from '@client/modules/ai/classes/ai-chat-compiled-message.class';

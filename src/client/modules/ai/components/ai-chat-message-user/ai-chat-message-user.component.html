@@ -5,7 +5,7 @@
             [icon]="'person'">
         </orc-ai-chat-avatar>
         <div class="orc-ai-chat-message-content">
-            {{ message.content }}
+            <div class="orc-ai-marked" [innerHTML]="marked_content"></div>
         </div>
     </div>
 </div>

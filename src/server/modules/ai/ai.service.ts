@@ -49,6 +49,7 @@ export class AiService {
                     model: model,
                     messages: [system_message, ...messages],
                     tools: tools,
+                    stream: true,
                 }),
                 signal: combined_signal,
             },

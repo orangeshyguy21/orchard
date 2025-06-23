@@ -1,4 +1,4 @@
-<div class="ai-input-container">
+<!-- <div class="ai-input-container">
     <form 
         class="ai-input-form"
         (keydown.enter)="onSubmit($event)"
@@ -14,4 +14,31 @@
             [autogrow]="true"
         ></textarea>
     </form>
+    <div>
+        <div class="shimmer-text">Generating...</div>
+    </div>
+</div> -->
+
+<div class="ai-input-container">
+    @if( !active_chat ) {
+        <form 
+            class="ai-input-form"
+            (keydown.enter)="onSubmit($event)"
+            (ngSubmit)="onSubmit()">
+            <textarea 
+                rows="1" 
+                matInput 
+                [placeholder]="placeholder" 
+                class="ai-input"
+                [class.ai-input-empty]="!content.value"
+                [formControl]="content"
+                [style.fontSize]="'smaller'"
+                [autogrow]="true"
+            ></textarea>
+        </form>
+    }@else {
+        <div class="ai-active-container orc-text-button">
+            <div class="shimmer-text">Generating...</div>
+        </div>
+    }
 </div>
