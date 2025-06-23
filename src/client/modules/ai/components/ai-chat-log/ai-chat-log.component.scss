@@ -26,6 +26,7 @@
     @extend %flex-column;
     @extend %flex-gap-1;
     @extend %p-v-0-5;
+    @extend %overflow-y-auto;
 }
 
 .ai-chat-log-footer{
