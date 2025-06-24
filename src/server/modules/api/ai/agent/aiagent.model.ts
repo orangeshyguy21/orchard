@@ -25,9 +25,13 @@ export class OrchardAiAgentToolParameters {
     @Field()
     properties: string;
 
+    @Field(() => [String])
+    required: string[];
+
     constructor(ai_agent_tool_parameters: any) {
         this.type = ai_agent_tool_parameters.type;
         this.properties = JSON.stringify(ai_agent_tool_parameters.properties);
+        this.required = ai_agent_tool_parameters.required;
     }
 }
 

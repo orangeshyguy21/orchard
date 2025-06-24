@@ -57,6 +57,7 @@ export const AI_AGENT_QUERY = `
                     parameters{
                         type
                         properties
+                        required
                     }
                 }
             }

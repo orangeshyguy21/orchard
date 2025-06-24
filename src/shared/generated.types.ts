@@ -316,6 +316,7 @@ export type OrchardAiAgentToolFunction = {
 export type OrchardAiAgentToolParameters = {
   __typename?: 'OrchardAiAgentToolParameters';
   properties: Scalars['String']['output'];
+  required: Array<Scalars['String']['output']>;
   type: Scalars['String']['output'];
 };
 

@@ -215,6 +215,7 @@ type OrchardAiAgentToolFunction {
 
 type OrchardAiAgentToolParameters {
   properties: String!
+  required: [String!]!
   type: String!
 }
 
