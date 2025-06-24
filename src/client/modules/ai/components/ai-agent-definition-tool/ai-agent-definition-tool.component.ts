@@ -1,6 +1,8 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 /* Native Dependencies */
+import { formatToolName } from '@client/modules/ai/helpers/tool-name-format';
+/* Shared Dependencies */
 import { OrchardAiAgentTool } from '@shared/generated.types';
 
 @Component({
@@ -21,14 +23,6 @@ export class AiAgentDefinitionToolComponent implements OnInit {
 	) {}
 
 	ngOnInit(): void {
-		this.tool_name = this.formatToolName(this.tool.function.name);
-	}
-
-	private formatToolName(tool_name: string): string {
-		return tool_name
-			.split('_')
-			.map(word => word.toLowerCase())
-			.join(' ')
-			.replace(/^\w/, c => c.toUpperCase());
+		this.tool_name = formatToolName(this.tool.function.name);
 	}
 }

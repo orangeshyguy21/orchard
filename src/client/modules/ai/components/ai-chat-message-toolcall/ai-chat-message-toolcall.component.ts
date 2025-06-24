@@ -5,6 +5,7 @@ import { trigger, transition, style, animate, state } from '@angular/animations'
 import { MatTableDataSource } from '@angular/material/table';
 /* Native Dependencies */
 import { AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
+import { formatToolName } from '@client/modules/ai/helpers/tool-name-format';
 /* Local Dependencies */
 import { ArgumentRow } from './argument-row.class';
 
@@ -57,17 +58,9 @@ export class AiChatMessageToolcallComponent implements OnInit {
 	) {}
 
 	ngOnInit(): void {
-		this.tool_title = this.formatToolName(this.tool_call.function.name);
+		this.tool_title = formatToolName(this.tool_call.function.name);
 		const arguments_rows = Object.entries(this.tool_call.function.arguments).map(([field, value]) => new ArgumentRow(field, value));
 		this.data_source = new MatTableDataSource(arguments_rows);
-	}
-
-	private formatToolName(tool_name: string): string {
-		return tool_name
-			.split('_')
-			.map(word => word.toLowerCase())
-			.join(' ')
-			.replace(/^\w/, c => c.toUpperCase());
 	}
 
 	public toggleToolDetails(): void {
