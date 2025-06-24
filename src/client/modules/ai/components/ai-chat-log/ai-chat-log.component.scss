@@ -18,11 +18,14 @@
     @extend %flex;
     @extend %flex-column;
     @extend %flex-gap-1;
+    @extend %overflow-y-auto;
+    @extend %p-b-1;
+    max-height: calc(100vh - 177px);
 }
 
 .ai-chat-log-footer{
     @extend %flex;
     @extend %flex-items-center;
     @extend %flex-justify-center;
-    @extend %p-0-5;
+    @extend %h-3;
 }
