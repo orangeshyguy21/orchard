@@ -1,5 +1,11 @@
 @use '@styles/molecule/molecule';
 
+.ai-chat-message-system-container{
+    @extend %flex;
+    @extend %flex-column;
+    @extend %flex-gap-1;
+}
+
 .ai-thinking {
     @extend %flex;
     @extend %flex-items-center;

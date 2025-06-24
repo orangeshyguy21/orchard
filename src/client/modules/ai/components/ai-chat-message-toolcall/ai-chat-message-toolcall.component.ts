@@ -1,8 +1,12 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, Component, Input, OnInit, ChangeDetectorRef } from '@angular/core';
 import { trigger, transition, style, animate, state } from '@angular/animations';
+/* Vendor Dependencies */
+import { MatTableDataSource } from '@angular/material/table';
 /* Native Dependencies */
 import { AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
+/* Local Dependencies */
+import { ArgumentRow } from './argument-row.class';
 
 @Component({
 	selector: 'orc-ai-chat-message-toolcall',
@@ -45,6 +49,8 @@ export class AiChatMessageToolcallComponent implements OnInit {
 
 	public tool_title!: string;
 	public tool_expanded: boolean = false;
+	public displayed_columns = ['field', 'value'];
+	public data_source!: MatTableDataSource<ArgumentRow>;
 
 	constructor(
 		private cdr: ChangeDetectorRef
@@ -52,11 +58,11 @@ export class AiChatMessageToolcallComponent implements OnInit {
 
 	ngOnInit(): void {
 		this.tool_title = this.formatToolName(this.tool_call.function.name);
+		const arguments_rows = Object.entries(this.tool_call.function.arguments).map(([field, value]) => new ArgumentRow(field, value));
+		this.data_source = new MatTableDataSource(arguments_rows);
 	}
 
 	private formatToolName(tool_name: string): string {
-		// Convert snake_case to title case
-		// Split by underscore, capitalize first letter of each word, join with spaces
 		return tool_name
 			.split('_')
 			.map(word => word.toLowerCase())

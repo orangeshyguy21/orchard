@@ -34,11 +34,17 @@
 
 .avatar-role-system{
     @extend %orc-neutral-bg;
-    // @extend %orc-on-neutral-color;
     @extend %orc-surface-container-high-color;
 }
 
 .avatar-role-function{
-    @extend %orc-primary-bg;
-    @extend %orc-on-primary-color;
+    background: linear-gradient(
+        to bottom,
+        #fff9a0 0%,
+        #ffe14c 25%,
+        #ff9a3c 50%,
+        #e94e1b 75%,
+        #8c1a1a 100%
+    );
+    @extend %orc-surface-container-high-color;
 }

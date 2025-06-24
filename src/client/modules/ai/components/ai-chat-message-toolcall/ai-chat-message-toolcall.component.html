@@ -5,7 +5,34 @@
         <mat-icon [@rotateIcon]="tool_expanded ? 'expanded' : 'collapsed'">keyboard_arrow_down</mat-icon>
     </div>
 
-    <div [@expandCollapse]="tool_expanded ? 'expanded' : 'collapsed'">
-        {{ tool_call.function.arguments | json }}
+    <div [@expandCollapse]="tool_expanded ? 'expanded' : 'collapsed'" class="p-t-0-5">
+        <mat-card appearance="outlined">
+            <div class="p-h-1">
+                <table mat-table [dataSource]="data_source" class="orc-feature-table">
+                    <ng-container matColumnDef="field">
+                        <th mat-header-cell *matHeaderCellDef> Form field </th>
+                        <td mat-cell *matCellDef="let argument">
+                            <div class="text-sm"> {{ argument.field }} </div>
+                        </td>
+                    </ng-container>
+        
+                    <ng-container matColumnDef="value">
+                        <th mat-header-cell *matHeaderCellDef> New value </th>
+                        <td mat-cell *matCellDef="let argument">
+                            <div class="text-sm"> {{ argument.value }} </div>
+                        </td>
+                    </ng-container>
+                
+                    <tr mat-header-row *matHeaderRowDef="displayed_columns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayed_columns;"></tr>
+                </table>
+            </div>
+        </mat-card>
     </div>
 </div>
+
+<!-- <div [@expandCollapse]="think_expanded ? 'expanded' : 'collapsed'">
+    <div class="orc-ai-chat-message-content p-t-0-5">
+        <div class="orc-ai-marked" [innerHTML]="marked_thinking_content"></div>
+    </div>
+</div> -->

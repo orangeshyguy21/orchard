@@ -9,6 +9,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatTableModule } from '@angular/material/table';
+import { MatCardModule } from '@angular/material/card';
 /* Application Dependencies */
 import { FormModule } from '@client/modules/form/form.module';
 /* Local Dependencies */
@@ -24,7 +26,7 @@ import { AiChatMessageSystemComponent } from './components/ai-chat-message-syste
 import { AiChatMessageUserComponent } from './components/ai-chat-message-user/ai-chat-message-user.component';
 import { AiChatMessageAssistantComponent } from './components/ai-chat-message-assistant/ai-chat-message-assistant.component';
 import { AiChatMessageToolcallComponent } from './components/ai-chat-message-toolcall/ai-chat-message-toolcall.component';
-import { ThoughtPipe } from './pipes/thought/thought.pipe';
+import { AiThoughtPipe } from './pipes/ai-thought/ai-thought.pipe';
 
 @NgModule({
 	declarations: [	
@@ -40,7 +42,7 @@ import { ThoughtPipe } from './pipes/thought/thought.pipe';
 		AiChatMessageUserComponent,
 		AiChatMessageAssistantComponent,
   		AiChatMessageToolcallComponent,
-		ThoughtPipe,
+		AiThoughtPipe,
 	],
 	imports: [
 		CommonModule,
@@ -51,6 +53,8 @@ import { ThoughtPipe } from './pipes/thought/thought.pipe';
 		MatButtonModule,
 		MatMenuModule,
 		MatExpansionModule,
+		MatTableModule,
+		MatCardModule,
 		FormModule,
 	],
 	exports: [

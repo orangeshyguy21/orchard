@@ -2,11 +2,11 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-	name: 'thought',
+	name: 'ai_thought',
 	standalone: false,
 	pure: true
 })
-export class ThoughtPipe implements PipeTransform {
+export class AiThoughtPipe implements PipeTransform {
 
 	transform(value: number): string {
 		if (!value || value < 0) {

@@ -6,6 +6,8 @@ import { marked } from 'marked';
 /* Native Dependencies */
 import { AiChatCompiledMessage } from '@client/modules/ai/classes/ai-chat-compiled-message.class';
 import { AiAgentDefinition } from '@client/modules/ai/classes/ai-agent-definition.class';
+/* Shared Dependencies */
+import { AiMessageRole } from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-ai-chat-message-assistant',
@@ -54,6 +56,7 @@ export class AiChatMessageAssistantComponent implements OnChanges {
 	@Input() public revision!: number;
 	@Input() public agent!: AiAgentDefinition | null;
 
+	public tool_roll = AiMessageRole.Function;
 	public marked_content!: string;
 	public marked_thinking_content!: string;
 	public think_duration!: number;

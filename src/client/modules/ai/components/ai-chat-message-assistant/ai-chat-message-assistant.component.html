@@ -10,7 +10,7 @@
                 @if( marked_thinking_content ) {
                     @if( message.done ) {
                         <div [@fadeIn] class="ai-thinking orc-text-button" (click)="toggleThinking()">
-                            <div>{{ think_duration | thought }}</div>
+                            <div>{{ think_duration | ai_thought }}</div>
                             <mat-icon [@rotateIcon]="think_expanded ? 'expanded' : 'collapsed'">keyboard_arrow_down</mat-icon>
                         </div>
                     }@else {
@@ -27,18 +27,26 @@
                 }
             </div>
             @if( marked_content ) {
-                {{ marked_content | json }}
                 <div class="orc-ai-chat-message-content">
                     <div class="orc-ai-marked" [innerHTML]="marked_content"></div>
                 </div>
             }
-            @if( message.tool_calls?.length ) {
-                <div class="orc-ai-chat-message-tool-calls">
-                    @for (tool_call of message.tool_calls; track tool_call.function.name) {
-                      <orc-ai-chat-message-toolcall [tool_call]="tool_call"></orc-ai-chat-message-toolcall>
-                    }
-              </div>
-            }
         </div>
     </div>
+    @if( message.tool_calls?.length ) {
+        <div [@fadeIn] class="orc-ai-chat-message">
+            <orc-ai-chat-avatar 
+                [role]="tool_roll"
+                [icon]="'construction'"
+                [section]="agent ? agent.section : null">
+            </orc-ai-chat-avatar>
+            <div class="flex flex-column flex-gap-1">
+                <div class="orc-ai-chat-message-tool-calls">
+                    @for (tool_call of message.tool_calls; track tool_call.function.name) {
+                        <orc-ai-chat-message-toolcall [tool_call]="tool_call"></orc-ai-chat-message-toolcall>
+                    }
+                </div>
+            </div>
+        </div>
+    }
 </div>
