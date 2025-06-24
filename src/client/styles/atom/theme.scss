@@ -88,6 +88,7 @@
 .orc-fullscreen-accordion{
 	@include mat.expansion-overrides((
 		header-collapsed-state-height: 3rem,
+		header-disabled-state-text-color: var(--mat-sys-on-surface),
 	));
 }
 

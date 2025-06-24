@@ -1,0 +1,56 @@
+<div class="ai-agent-definition-container">
+    <div class="flex flex-column flex-gap-2">
+        <div class="agent-property">
+            <div class="agent-property-label">
+                Description
+            </div>
+            <div class="agent-property-value">
+                {{ agent?.description }}
+            </div>
+        </div>
+        <div class="agent-property">
+            <div class="agent-property-label">
+                Seed prompt
+            </div>
+            <div class="agent-property-value">
+                {{ agent?.system_message?.content }}
+            </div>
+        </div>
+        <div class="agent-property">
+            <div class="agent-property-label">
+                Tools
+            </div>
+            <div class="agent-property-value">
+                list tools here
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- var(--mat-sys-on-surface-variant) for label color -->
+
+<!-- description
+
+    seed seed_prompt
+
+    tools -->
+
+<!-- 'type': 'function',
+'function': {
+    'name': 'MINT_DATABASE_STATES_UPDATE',
+    'description': 'This tool allows you to change what states are being displayed for the selected data type.',
+    'parameters': {
+        "type": "object",
+        "properties": {
+            "states": {
+                "type": "array",
+                "description": "The states to display for the selected data type. The valid states for MintMints are: ISSUED, PAID, PENDING, UNPAID. The valid states for MintMelts are: PAID, PENDING, UNPAID. The valid states for MintProofGroups are: SPENT. MintPromiseGroups has no states.",
+                "items": {
+                    "type": "string",
+                    "enum": ["ISSUED", "PAID", "PENDING", "UNPAID", "SPENT"]
+                }
+            },
+        },
+        "required": ["states"]
+    },
+}, -->
