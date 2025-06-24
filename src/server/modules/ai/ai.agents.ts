@@ -44,7 +44,7 @@ export const AI_AGENTS = {
     },
     [AiAgent.MINT_DASHBOARD]: {
         name: 'Mint Dashboard Agent',
-        icon: 'deployed_code',
+        icon: 'spa',
         section: 'mint',
         description: 'Control the filters of the mint analytics',
         system_message: {

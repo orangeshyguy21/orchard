@@ -1,3 +1,11 @@
 <div class="ai-chat-message-toolcall-container">
-    {{ tool_call | json }}
+
+   <div class="tool-summary orc-text-button" (click)="toggleToolDetails()">
+        <div>{{ tool_title }}</div>
+        <mat-icon [@rotateIcon]="tool_expanded ? 'expanded' : 'collapsed'">keyboard_arrow_down</mat-icon>
+    </div>
+
+    <div [@expandCollapse]="tool_expanded ? 'expanded' : 'collapsed'">
+        {{ tool_call.function.arguments | json }}
+    </div>
 </div>

@@ -61,6 +61,12 @@
 	));
 }
 
+.orc-low-accordion{
+	@include mat.expansion-overrides((
+		container-background-color: var(--mat-sys-surface-container-low),
+	));
+}
+
 
 /****************************************
 * Angular Material Unsupported Overrides

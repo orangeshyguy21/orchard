@@ -11,13 +11,6 @@
     @extend %flex;
     @extend %flex-grow;
     @extend %flex-column;
-    @extend %p-t-1;
-    @extend %p-l-1;
-    @extend %p-r-1;
-}
-
-.ai-chat-log-header{
-    @extend %p-b-0-5;
 }
 
 .ai-chat-log-main{
@@ -25,8 +18,6 @@
     @extend %flex;
     @extend %flex-column;
     @extend %flex-gap-1;
-    @extend %p-v-0-5;
-    @extend %overflow-y-auto;
 }
 
 .ai-chat-log-footer{

@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, signal } from '@angular/core';
 /* Native Dependencies */
 import { AiChatConversation } from '@client/modules/ai/classes/ai-chat-conversation.class';
 import { AiAgentDefinition } from '@client/modules/ai/classes/ai-agent-definition.class';
@@ -16,5 +16,11 @@ export class AiChatLogComponent {
 	@Input() public conversation!: AiChatConversation | null;
 	@Input() public revision!: number;
 	@Input() public agent_definition!: AiAgentDefinition | null;
+
+	public view = signal(1);
+
+	public setView(index: number) {
+		this.view.set(index);
+	}
 
 }

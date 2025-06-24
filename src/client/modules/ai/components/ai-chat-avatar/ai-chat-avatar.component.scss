@@ -10,9 +10,21 @@
     @extend %orc-corner-full;
 }
 
+// .avatar-role-assistant{
+//     @extend %orc-primary-container-bg;
+//     @extend %orc-on-primary-container-color;
+// }
+
 .avatar-role-assistant{
-    @extend %orc-primary-container-bg;
-    @extend %orc-on-primary-container-color;
+    background: linear-gradient(
+        to bottom,
+        #fff9a0 0%,
+        #ffe14c 25%,
+        #ff9a3c 50%,
+        #e94e1b 75%,
+        #8c1a1a 100%
+    );
+    @extend %orc-surface-container-high-color;
 }
 
 .avatar-role-user{
@@ -21,8 +33,9 @@
 }
 
 .avatar-role-system{
-    @extend %orc-primary-bg;
-    @extend %orc-on-primary-color;
+    @extend %orc-neutral-bg;
+    // @extend %orc-on-neutral-color;
+    @extend %orc-surface-container-high-color;
 }
 
 .avatar-role-function{

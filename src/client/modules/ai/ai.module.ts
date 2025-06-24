@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatExpansionModule } from '@angular/material/expansion';
 /* Application Dependencies */
 import { FormModule } from '@client/modules/form/form.module';
 /* Local Dependencies */
@@ -49,6 +50,7 @@ import { ThoughtPipe } from './pipes/thought/thought.pipe';
 		MatIconModule,
 		MatButtonModule,
 		MatMenuModule,
+		MatExpansionModule,
 		FormModule,
 	],
 	exports: [
