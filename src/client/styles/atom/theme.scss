@@ -34,6 +34,22 @@
 	));
 }
 
+.orc-dense-table {
+	@include mat.table-overrides((
+		header-container-height: 2.5rem,
+		row-item-container-height: 2.5rem,
+		header-headline-size: 0.75rem,
+		row-item-label-text-size: 0.75rem,
+	));
+}
+
+
+.orc-table-low {
+	@include mat.table-overrides((
+		background-color: var(--mat-sys-surface-container-low),
+	));
+}
+
 .orc-feature-paginator{
 	@include mat.paginator-overrides((
 		container-text-size: 0.875rem,
