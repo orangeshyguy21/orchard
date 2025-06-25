@@ -129,6 +129,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 				const route_data = this.getRouteData(event);
 				this.setSection(route_data);
 				this.setAgent(route_data);
+				this.onClearConversation();
 			});
 	}
 
@@ -215,7 +216,6 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	private getAiConversationSubscription(): Subscription {
 		return this.aiService.conversation$
 			.subscribe((conversation: AiChatConversation | null) => {
-				console.log('new conversation', conversation);
 				this.ai_conversation = conversation;
 				this.ai_revision = 0;
 				this.cdr.detectChanges();
