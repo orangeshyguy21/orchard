@@ -194,5 +194,16 @@
 			padding-left: 1rem;
 			padding-right: 1rem;
 		}
+		.mat-expansion-panel{
+			box-shadow: none;
+		}
+		.mat-expansion-panel:first-of-type{
+			border-top-left-radius: 0rem;
+			border-top-right-radius: 0rem;
+		}
+		.mat-expansion-panel:last-of-type{
+			border-bottom-left-radius: 0rem;
+			border-bottom-right-radius: 0rem;
+		}
 	}
 }
