@@ -3,6 +3,8 @@ import { Module } from "@nestjs/common";
 /* Local Dependencies */
 // Orchard Endpoints
 import { StatusModule } from "./status/status.module";
+// Auth Endpoints
+import { AuthLoginModule } from "./auth/login/authlogin.module";
 // Bitcoin Endpoints
 import { BitcoinNetworkModule } from "./bitcoin/network/btcnetwork.module";
 import { BitcoinBlockchainModule } from "./bitcoin/blockchain/btcblockchain.module";
@@ -36,6 +38,7 @@ import { PublicUrlModule } from "./public/url/url.module";
 @Module({
 	imports: [
 		StatusModule,
+		AuthLoginModule,
 		BitcoinNetworkModule,
 		BitcoinBlockchainModule,
 		LightningInfoModule,

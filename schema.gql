@@ -66,6 +66,10 @@ enum AiMessageRole {
   USER
 }
 
+input AuthLoginInput {
+  password: String!
+}
+
 """Base64 encoded string scalar type"""
 scalar Base64
 
@@ -170,6 +174,7 @@ input MintUrlUpdateInput {
 
 type Mutation {
   ai_chat_abort(ai_chat_abort: AiChatAbortInput!): OrchardAiChatStream!
+  login(auth_login: AuthLoginInput!): OrchardAuthLogin!
   mint_contact_add(mint_contact_update: MintContactUpdateInput!): OrchardMintContactUpdate!
   mint_contact_remove(mint_contact_update: MintContactUpdateInput!): OrchardMintContactUpdate!
   mint_database_backup: OrchardMintDatabaseBackup!
@@ -269,6 +274,10 @@ type OrchardAiModelDetails {
   parameter_size: String!
   parent_model: String!
   quantization_level: String!
+}
+
+type OrchardAuthLogin {
+  access_token: String!
 }
 
 type OrchardBitcoinBlockCount {
