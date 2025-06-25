@@ -4,6 +4,7 @@
 :host{
     @extend %flex;
     @extend %h-full;
+    @extend %w-full;
 }
 
 .ai-chat-log-container{
@@ -11,6 +12,7 @@
     @extend %flex;
     @extend %flex-grow;
     @extend %flex-column;
+    @extend %w-full;
 }
 
 .ai-chat-log-main{
