@@ -1,7 +1,9 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, OnChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnChanges, Output, EventEmitter } from '@angular/core';
+import { trigger, transition, style, animate } from '@angular/animations';
 /* Application Dependencies */
 import { LightningBalance } from '@client/modules/lightning/classes/lightning-balance.class';
+import { OrchardError } from '@client/modules/error/types/error.types';
 /* Native Module Dependencies */
 import { MintBalance } from '@client/modules/mint/classes/mint-balance.class';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
@@ -13,13 +15,26 @@ import { MintBalanceRow } from './mint-balance-row.class';
 	standalone: false,
 	templateUrl: './mint-balance-sheet.component.html',
 	styleUrl: './mint-balance-sheet.component.scss',
-	changeDetection: ChangeDetectionStrategy.OnPush
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	animations: [
+		trigger('fadeIn', [
+			transition(':enter', [
+				style({ opacity: 0 }),
+				animate('150ms ease-in', style({ opacity: 1 }))
+			])
+		])
+	]
 })
 export class MintBalanceSheetComponent implements OnChanges {
+
+	@Output() navigate = new EventEmitter<void>();
 
 	@Input() balances!: MintBalance[];
 	@Input() keysets!: MintKeyset[];
 	@Input() lightning_balance!: LightningBalance | null;
+	@Input() lightning_enabled!: boolean;
+	@Input() lightning_errors!: OrchardError[];
+	@Input() lightning_loading!: boolean;
 	@Input() loading!: boolean;
 
 	public rows: MintBalanceRow[] = [];

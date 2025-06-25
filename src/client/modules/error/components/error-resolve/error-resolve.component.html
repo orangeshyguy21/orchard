@@ -1,45 +1,30 @@
 <div class="error-resolve-container">
-    <mat-card appearance="outlined" class="overflow-hidden"> 
-        <div class="error-resolve-content">
-            <div class="error-resolve-icon">
+    @if( mode === 'default' ) {
+        <mat-card appearance="outlined" class="overflow-hidden"> 
+            <div class="error-resolve-content">
+                <div class="error-resolve-icon">
+                    <mat-icon class="mat-symbol-outline">error</mat-icon>
+                </div>
+                <div class="error-resolve-info">
+                    <h3>{{ error_title }}</h3>
+                    <p>{{ error_description }}</p>
+                </div>
+                <div class="error-resolve-code">
+                    <div>{{ error.code }}</div>
+                </div>
+            </div>
+        </mat-card>
+    }@else {
+        <div class="error-resolve-content-small">
+            <div class="error-resolve-icon-small">
                 <mat-icon class="mat-symbol-outline">error</mat-icon>
             </div>
-            <div class="error-resolve-info">
-                @switch (error.code) {
-                    @case (20001) {
-                        <h3>BITCOIN RPC ERROR</h3>
-                        <p>Orchard was unable to connect to the bitcoin RPC</p>
-                    }
-                    @case (30001) {
-                        <h3>LIGHTNING RPC ERROR</h3>
-                        <p>Orchard was unable to connect to the lightning RPC</p>
-                    }
-                    @case (40001) {
-                        <h3>MINT PUBLIC API ERROR</h3>
-                        <p>Orchard was unable to connect to the public mint API</p>
-                    }
-                    @case (40002) {
-                        <h3>MINT DATABASE ERROR</h3>
-                        <p>Orchard was unable to connect to the mint database</p>
-                    }
-                    @case (40003) {
-                        <h3>MINT DATABASE SELECT ERROR</h3>
-                        <p>Orchard was unable to retrieve data from the mint database</p>
-                    }
-                    @case (40005) {
-                        <h3>MINT RPC ERROR</h3>
-                        <p>Orchard was unable to connect to the mint RPC</p>
-                    }
-                    @case (60001) {
-                        <h3>TAPROOT ASSETS RPC ERROR</h3>
-                        <p>Orchard was unable to connect to the taproot assets RPC</p>
-                    }
-                    @default {
-                        <h3>UNKNOWN ERROR</h3>
-                        <p>{{ error.code }} : {{ error.message }}</p>
-                    }
-                }
+            <div class="error-resolve-info-small">
+                <div>{{ error_title }}</div>
+            </div>
+            <div class="error-resolve-code">
+                <div>{{ error.code }}</div>
             </div>
         </div>
-    </mat-card>
+    }
 </div>

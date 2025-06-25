@@ -1,20 +1,21 @@
 /* Core Dependencies */
 import { Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 /* Vendor Dependencies */
-import { forkJoin, lastValueFrom, Subscription } from 'rxjs';
+import { forkJoin, lastValueFrom, Subscription, EMPTY, catchError, finalize, tap } from 'rxjs';
 import { DateTime } from 'luxon';
 /* Application Configuration */
 import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 import { AiService } from '@client/modules/ai/services/ai/ai.service';
-import { ChartService } from '@client/modules/chart/services/chart/chart.service';
 import { PublicService } from '@client/modules/public/services/image/public.service';
+import { LightningService } from '@client/modules/lightning/services/lightning/lightning.service';
 import { NonNullableMintDashboardSettings } from '@client/modules/settings/types/setting.types';
 import { PublicUrl } from '@client/modules/public/classes/public-url.class';
 import { AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
 import { LightningBalance } from '@client/modules/lightning/classes/lightning-balance.class';
+import { OrchardError } from '@client/modules/error/types/error.types';
 /* Native Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { MintBalance } from '@client/modules/mint/classes/mint-balance.class';
@@ -38,7 +39,6 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public mint_info: MintInfo | null = null;
 	public mint_balances: MintBalance[] = [];
 	public mint_keysets: MintKeyset[] = [];
-	public lightning_balance: LightningBalance | null = null;
 	public mint_analytics_balances: MintAnalytic[] = [];
 	public mint_analytics_balances_pre: MintAnalytic[] = [];
 	public mint_analytics_mints: MintAnalytic[] = [];
@@ -47,14 +47,17 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public mint_analytics_melts_pre: MintAnalytic[] = [];
 	public mint_analytics_transfers: MintAnalytic[] = [];
 	public mint_analytics_transfers_pre: MintAnalytic[] = [];
-	public mint_connections: PublicUrl[] = []
+	public mint_connections: PublicUrl[] = [];
+	public lightning_enabled: boolean = environment.lightning.enabled;
+	public lightning_balance: LightningBalance | null = null;
 	public locale!: string;
 	// derived data
 	public mint_genesis_time: number = 0;
 	// state
 	public loading_static_data: boolean = true;
 	public loading_dynamic_data: boolean = true;
-	public should_move_control: boolean = false;  // Controls where the panel renders
+	public loading_lightning: boolean = true;
+	public errors_lightning: OrchardError[] = [];
 	// chart settings
 	public page_settings!: NonNullableMintDashboardSettings;
 
@@ -63,18 +66,18 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	constructor(
 		private mintService: MintService,
 		private settingService: SettingService,
-		private chartService: ChartService,
 		private publicService: PublicService,
+		private lightningService: LightningService,
 		private aiService: AiService,
+		private router: Router,
 		private route: ActivatedRoute,
-		private changeDetectorRef: ChangeDetectorRef
+		private cdr: ChangeDetectorRef
 	) {}
 
 	async ngOnInit(): Promise<void> {
 		this.mint_info = this.route.snapshot.data['mint_info'];
 		this.mint_balances = this.route.snapshot.data['mint_balances'];
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
-		this.lightning_balance = this.route.snapshot.data['lightning_balance'];
 		this.initMintConnections();
 		this.orchardOptionalInit();
 		await this.initMintAnalytics();
@@ -84,6 +87,9 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		if( environment.ai.enabled ) {
 			this.subscriptions.add(this.getAgentSubscription());
 			this.subscriptions.add(this.getToolSubscription());
+		}
+		if( this.lightning_enabled ) {
+			this.subscriptions.add(this.getLightningBalanceSubscription());
 		}
 	}
 
@@ -107,6 +113,24 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			});
 	}
 
+	private getLightningBalanceSubscription(): Subscription {
+		return this.lightningService.loadLightningBalance()
+			.pipe(
+				tap((balance) => {
+					this.lightning_balance = balance;
+					this.cdr.detectChanges();
+				}),
+				catchError((error) => {
+					this.errors_lightning = error.errors;
+					return EMPTY;
+				}),
+				finalize(() => {
+					this.loading_lightning = false;
+					this.cdr.detectChanges();
+				})
+			).subscribe();
+	}
+
 	private async initMintConnections(): Promise<void> {
 		if( !this.mint_info?.urls ) return;
 		if( this.mint_info.urls.length === 0 ) return;
@@ -116,7 +140,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.publicService.getPublicUrlsData(test_urls)
 			.subscribe((urls) => {
 				this.mint_connections = urls;
-				this.changeDetectorRef.detectChanges();
+				this.cdr.detectChanges();
 			});
 	}
 	
@@ -126,10 +150,10 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			this.mint_genesis_time = this.getMintGenesisTime();
 			this.page_settings = this.getPageSettings();
 			this.loading_static_data = false;
-			this.changeDetectorRef.detectChanges();
+			this.cdr.detectChanges();
 			await this.loadMintAnalytics();
 			this.loading_dynamic_data = false;
-			this.changeDetectorRef.detectChanges();
+			this.cdr.detectChanges();
 		} catch (error) {
 			console.log('ERROR IN INIT MINT ANALYTICS:', error);
 		}
@@ -264,10 +288,10 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		try {
 			this.mintService.clearDasbhoardCache();
 			this.loading_dynamic_data = true;
-			this.changeDetectorRef.detectChanges();
+			this.cdr.detectChanges();
 			await this.loadMintAnalytics();
 			this.loading_dynamic_data = false;
-			this.changeDetectorRef.detectChanges();
+			this.cdr.detectChanges();
 		} catch (error) {
 			console.error('Error updating dynamic data:', error);
 		}
@@ -315,6 +339,10 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.page_settings.type = event;
 		this.settingService.setMintDashboardShortSettings(this.page_settings);
 		this.reloadDynamicData();
+	}
+
+	public onNavigate(route: string): void {
+		this.router.navigate([`/${route}`]);
 	}
 
 	ngOnDestroy(): void {

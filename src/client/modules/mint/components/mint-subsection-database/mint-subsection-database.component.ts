@@ -542,22 +542,22 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	******************************************************** */
 
 	private hireAnalyticsAgent(agent: AiAgent, content: string|null): void {
-		let context = `Current Date: ${DateTime.now().toFormat('yyyy-MM-dd')}\n`;
-		context += `Current Date Start: ${DateTime.fromSeconds(this.page_settings.date_start).toFormat('yyyy-MM-dd')}\n`;
-		context += `Current Date End: ${DateTime.fromSeconds(this.page_settings.date_end).toFormat('yyyy-MM-dd')}\n`;
-		context += `Current Data Type: ${this.page_settings.type}\n`;
-		context += `Current Units: ${this.page_settings.units}\n`;
-		context += `Current States: ${this.page_settings.states}\n`;
-		context += `Available Data Types: ${Object.values(MintDataType).join(', ')}\n`;
-		context += `Available Units: ${this.unit_options.map(unit => unit.value).join(', ')}\n`;
+		let context = `* **Current Date:** ${DateTime.now().toFormat('yyyy-MM-dd')}\n`;
+		context += `* **Date Start:** ${DateTime.fromSeconds(this.page_settings.date_start).toFormat('yyyy-MM-dd')}\n`;
+		context += `* **Date End:** ${DateTime.fromSeconds(this.page_settings.date_end).toFormat('yyyy-MM-dd')}\n`;
+		context += `* **Data Type:** ${this.page_settings.type}\n`;
+		context += `* **Units:** ${this.page_settings.units.join(', ')}\n`;
+		context += `* **States:** ${this.page_settings.states.join(', ')}\n`;
+		context += `* **Available Data Types:** ${Object.values(MintDataType).join(', ')}\n`;
+		context += `* **Available Units:** ${this.unit_options.map(unit => unit.value).join(', ')}`;
 		this.aiService.openAiSocket(agent, content, context);
 	}
 
 	private hireBackupAgent(agent: AiAgent, content: string|null): void {
-		let context = `Current Mint Version: ${this.database_version}\n`;
-		context += `Current Mint Timestamp: ${DateTime.fromSeconds(this.database_timestamp).toFormat('yyyy-MM-dd HH:mm:ss')}\n`;
-		context += `Current Mint Implementation: ${this.database_implementation}\n`;
-		context += `Current Backup Filename: ${this.form_backup.get('filename')?.value}\n`;
+		let context = `* **Mint Version:** ${this.database_version}\n`;
+		context += `* **Mint Timestamp:** ${DateTime.fromSeconds(this.database_timestamp).toFormat('yyyy-MM-dd HH:mm:ss')}\n`;
+		context += `* **Mint Implementation:** ${this.database_implementation}\n`;
+		context += `* **Backup Filename:** ${this.form_backup.get('filename')?.value}`;
 		this.aiService.openAiSocket(agent, content, context);
 	}
 

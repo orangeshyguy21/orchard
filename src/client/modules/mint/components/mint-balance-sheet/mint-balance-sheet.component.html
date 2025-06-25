@@ -21,15 +21,29 @@
 				<ng-container matColumnDef="Assets">
 					<th mat-header-cell *matHeaderCellDef> Assets </th>
 					<td mat-cell *matCellDef="let row">
-						<div class="flex flex-items-center flex-gap-1">
-							<orc-graphic-asset 
-								[unit]="row.unit" 
-								[height]="'1.75rem'"
-								[custody]="'lightning'">
-							</orc-graphic-asset>
-							<span class="font-size-m w-min-10" [innerHTML]="row.assets | amount : row.unit : 'lightning'"></span>
-							<span class="font-size-m font-weight-bold orc-outline-color">{{ row.reserve_ratio }}</span>
-						</div>
+						@if( lightning_enabled ) {
+							@if( !lightning_loading ) {
+								@if( lightning_errors.length > 0 ) {
+									<div [@fadeIn]>
+										@for(error of lightning_errors; track error.code) {
+											<orc-error-resolve [error]="error" mode="small"></orc-error-resolve>
+										}
+									</div>
+								}@else{
+									<div [@fadeIn] class="flex flex-items-center flex-gap-1">
+										<orc-graphic-asset 
+											[unit]="row.unit" 
+											[height]="'1.75rem'"
+											[custody]="'lightning'">
+										</orc-graphic-asset>
+										<span class="font-size-m w-min-10" [innerHTML]="row.assets | amount : row.unit : 'lightning'"></span>
+										<span class="font-size-m font-weight-bold orc-outline-color">{{ row.reserve_ratio }}</span>
+									</div>
+								}
+							}
+						}@else {
+							<button mat-stroked-button (click)="navigate.emit()">Lightning Configuration</button>
+						}
 					</td>
 				</ng-container>
 
