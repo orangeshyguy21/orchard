@@ -84,12 +84,7 @@
                                 }
 
                                 @if( errors_lightning ){
-                                    <div class="flex flex-items-center flex-gap-1">
-                                        <div class="flex flex-items-center flex-justify-center orc-on-error-bg orc-corner-full h-2 w-2">
-                                            <mat-icon class="mat-symbol-outline">error</mat-icon>
-                                        </div>
-                                        <div class="font-size-s orc-on-error-container-color">{{ errors_lightning[0].message }}</div>
-                                    </div>
+                                    <orc-error-resolve [error]="errors_lightning[0]" mode="small"></orc-error-resolve>
                                 }
                                 
                                 @for( balance of balances_hot_taproot_assets; track balance.unit ) {
@@ -110,12 +105,7 @@
                                 }
 
                                 @if( errors_taproot_assets ){
-                                    <div class="flex flex-items-center flex-gap-1">
-                                        <div class="flex flex-items-center flex-justify-center orc-on-error-bg orc-corner-full h-2 w-2">
-                                            <mat-icon class="mat-symbol-outline">error</mat-icon>
-                                        </div>
-                                        <div class="font-size-s orc-on-error-container-color">{{ errors_taproot_assets[0].message }}</div>
-                                    </div>
+                                    <orc-error-resolve [error]="errors_taproot_assets[0]" mode="small"></orc-error-resolve>
                                 }
                             </div>
                         }
