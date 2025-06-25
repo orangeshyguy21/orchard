@@ -98,7 +98,7 @@ export class AiService {
 			}
 		});
 
-		const conversation = this.conversation_cache ? this.continueConversation(subscription_id, content, context, agent) : this.createConversation(subscription_id, content, context, agent);
+		const conversation = !this.conversation_cache? this.createConversation(subscription_id, agent, content, context) : this.continueConversation(subscription_id, agent, content, context);
 		this.conversation_subject.next(conversation);
 		const messages = conversation.getMessages();
 
@@ -164,24 +164,30 @@ export class AiService {
 		return models.sort((a, b) => a.size - b.size)[0];
 	}
 
-	private createConversation(id: string, content: string|null, context: string|undefined, agent: AiAgent): AiChatConversation {
-		const messages = [{
+	private createConversation(id: string, agent: AiAgent, content: string|null, context: string|undefined): AiChatConversation {
+		const messages = [];
+		if( context ) messages.push({
+			role: AiMessageRole.System,
+			content: this.getFullContext(context, AiMessageRole.System)
+		});
+		messages.push({
 			role: AiMessageRole.User,
 			content: content || ""
-		}];
-		if( context ) messages.unshift({
-			role: AiMessageRole.System,
-			content: context
 		});
 		const messages_obj = messages.map((message) => new AiChatCompiledMessage(id, message));
 		return new AiChatConversation(id, messages_obj, agent);
 	}
 
-	private continueConversation(id: string, content: string|null, context: string|undefined, agent: AiAgent): AiChatConversation {
+	private continueConversation(id: string, agent: AiAgent, content: string|null, context: string|undefined): AiChatConversation {
 		if( !this.conversation_cache ) throw new Error('Conversation cache not found');
 		if( context ) {
-			const system_message = this.conversation_cache.messages.find((message) => message.role === AiMessageRole.System);
-			if( system_message ) { system_message.content = context; }
+			const last_message = this.conversation_cache.messages[this.conversation_cache.messages.length - 1];
+			if( last_message.role === AiMessageRole.Assistant && last_message.tool_calls?.length ) {
+				this.conversation_cache.messages.push( new AiChatCompiledMessage(id, {
+					role: AiMessageRole.Function,
+					content: this.getFullContext(context, AiMessageRole.Function)
+				}));
+			}
 		}
 		this.conversation_cache.messages.push( new AiChatCompiledMessage(id, {
 			role: AiMessageRole.User,
@@ -190,13 +196,17 @@ export class AiService {
 		return new AiChatConversation(id, this.conversation_cache.messages, agent);
 	}
 
+	private getFullContext(context: string, role: AiMessageRole): string {
+		if( role === AiMessageRole.System ) return `## Initial Form State\n\n${context}`;
+		return `## Updated Form State\n\n${context}`;
+	}
+
 	public clearConversation(): void {
 		this.conversation_cache = null;
 		this.conversation_subject.next(null);
 	}
 
 	public updateConversation(conversation: AiChatConversation): void {
-		console.log('updateConversation', conversation);
 		this.conversation_cache = conversation;
 	}
 }
