@@ -11,6 +11,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
+import { MatBadgeModule } from '@angular/material/badge';
 /* Application Dependencies */
 import { FormModule } from '@client/modules/form/form.module';
 /* Local Dependencies */
@@ -59,6 +60,7 @@ import { AiAgentDefinitionToolComponent } from './components/ai-agent-definition
 		MatExpansionModule,
 		MatTableModule,
 		MatCardModule,
+		MatBadgeModule,
 		FormModule,
 	],
 	exports: [

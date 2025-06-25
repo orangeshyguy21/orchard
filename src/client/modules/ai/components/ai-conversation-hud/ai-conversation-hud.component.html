@@ -1,3 +1,10 @@
-<button mat-icon-button class="orc-icon-button" type="button" [disabled]="!conversation" (click)="toggle.emit()">
+<button 
+    mat-icon-button
+    class="orc-icon-button"
+    type="button"
+    [matBadge]="conversation?.message_count_assistant"
+    [matBadgeHidden]="!conversation || conversation?.message_count_assistant === 0"
+    [disabled]="!conversation"
+    (click)="toggle.emit()">
     <mat-icon>forum</mat-icon>
 </button>

@@ -24,6 +24,7 @@ export class AiNavComponent {
 	@Input() actionable!: boolean;
 	@Input() content!: FormControl;
 	@Input() conversation!: AiChatConversation | null;
+	@Input() message_length!: number | undefined;
 
 	@Output() command = new EventEmitter<void>();
 	@Output() modelChange = new EventEmitter<string>();

@@ -15,5 +15,6 @@ export class AiConversationHudComponent {
 	@Output() toggle = new EventEmitter<void>();
 
 	@Input() conversation!: AiChatConversation | null;
+	@Input() message_length!: number | undefined;
 
 }

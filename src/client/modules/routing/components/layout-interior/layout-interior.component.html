@@ -27,6 +27,7 @@
 					[actionable]="ai_actionable"
 					[content]="user_content"
 					[conversation]="ai_conversation"
+					[message_length]="ai_conversation?.messages?.length"
 					(command)="onCommand()"
 					(modelChange)="onModelChange($event)"
 					(toggleLog)="onToggleLog()">
