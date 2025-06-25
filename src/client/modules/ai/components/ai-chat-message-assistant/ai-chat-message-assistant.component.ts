@@ -55,12 +55,17 @@ export class AiChatMessageAssistantComponent implements OnChanges {
 	@Input() public message!: AiChatCompiledMessage;
 	@Input() public revision!: number;
 	@Input() public agent!: AiAgentDefinition | null;
+	@Input() public active_chat!: boolean;
 
 	public tool_roll = AiMessageRole.Function;
 	public marked_content!: string;
 	public marked_thinking_content!: string;
 	public think_duration!: number;
 	public think_expanded: boolean = false;
+
+	public get thinking(): boolean {
+		return this.message.done || !this.active_chat;
+	}
 	
 	private think_start!: number;
 	private think_end!: number;

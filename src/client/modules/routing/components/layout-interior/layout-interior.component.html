@@ -37,6 +37,7 @@
 	<mat-sidenav mode="side" position="end">
 		<orc-ai-chat-log 
 			[conversation]="ai_conversation" 
+			[active_chat]="active_chat"
 			[revision]="ai_revision"
 			[agent_definition]="ai_agent_definition"
 			(clear)="onClearConversation()">

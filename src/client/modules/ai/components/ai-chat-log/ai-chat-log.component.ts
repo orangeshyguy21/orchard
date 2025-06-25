@@ -14,6 +14,7 @@ import { AiAgentDefinition } from '@client/modules/ai/classes/ai-agent-definitio
 export class AiChatLogComponent {
 
 	@Input() public conversation!: AiChatConversation | null;
+	@Input() public active_chat!: boolean;
 	@Input() public revision!: number;
 	@Input() public agent_definition!: AiAgentDefinition | null;
 

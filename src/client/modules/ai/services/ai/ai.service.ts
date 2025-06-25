@@ -196,6 +196,7 @@ export class AiService {
 	}
 
 	public updateConversation(conversation: AiChatConversation): void {
+		console.log('updateConversation', conversation);
 		this.conversation_cache = conversation;
 	}
 }
