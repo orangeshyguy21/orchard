@@ -1,0 +1,17 @@
+@use '@styles/molecule/molecule';
+
+.agent-property{
+    @extend %flex;
+    @extend %flex-column;
+    @extend %flex-gap-0-5;
+}
+
+.agent-property-label{
+    @extend %font-size-xs;
+    @extend %font-weight-light;
+    @extend %orc-on-surface-variant-color;
+}
+
+.agent-property-value{
+    @extend %font-size-s;
+}

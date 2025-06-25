@@ -1,10 +1,11 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Event, Router, ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { FormControl } from '@angular/forms';
 /* Vendor Dependencies */
 import { Subscription, timer, EMPTY } from 'rxjs';
 import { switchMap, catchError, filter } from 'rxjs/operators';
+import { MatSidenav } from '@angular/material/sidenav';
 /* Application Configuration */
 import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
@@ -14,15 +15,20 @@ import { LightningService } from '@client/modules/lightning/services/lightning/l
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { AiService } from '@client/modules/ai/services/ai/ai.service';
 import { EventService } from '@client/modules/event/services/event/event.service';
+import { ChartService } from '@client/modules/chart/services/chart/chart.service';
 import { EventData } from '@client/modules/event/classes/event-data.class';
 import { BitcoinBlockchainInfo } from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
 import { BitcoinBlockCount } from '@client/modules/bitcoin/classes/bitcoin-blockcount.class';
 import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.class';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 import { AiChatChunk } from '@client/modules/ai/classes/ai-chat-chunk.class';
+import { AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
 import { AiModel } from '@client/modules/ai/classes/ai-model.class';
+import { AiChatConversation } from '@client/modules/ai/classes/ai-chat-conversation.class';
+import { AiChatCompiledMessage } from '@client/modules/ai/classes/ai-chat-compiled-message.class';
+import { AiAgentDefinition } from '@client/modules/ai/classes/ai-agent-definition.class';
 /* Shared Dependencies */
-import { AiAgent } from '@shared/generated.types';
+import { AiAgent, AiMessageRole } from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-layout-interior',
@@ -33,8 +39,13 @@ import { AiAgent } from '@shared/generated.types';
 })
 export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
+	@ViewChild(MatSidenav) sidenav!: MatSidenav;
+
 	public ai_enabled = environment.ai.enabled;
 	public ai_models: AiModel[] = [];
+	public ai_conversation: AiChatConversation | null = null;
+	public ai_revision: number = 0;
+	public ai_agent_definition: AiAgentDefinition | null = null;
 	public active_chat!: boolean;
 	public active_section! : string;
 	public active_agent! : AiAgent;
@@ -65,6 +76,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		private mintService: MintService,
 		private aiService: AiService,
 		private eventService: EventService,
+		private chartService: ChartService,
 		private router: Router,
 		private route: ActivatedRoute,
 		private cdr: ChangeDetectorRef,
@@ -99,6 +111,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 			this.subscriptions.add(this.getAgentSubscription());
 			this.subscriptions.add(this.getActiveAiSubscription());
 			this.subscriptions.add(this.getAiMessagesSubscription());
+			this.subscriptions.add(this.getAiConversationSubscription());
 			this.getModels();
 		}
 	}
@@ -116,6 +129,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 				const route_data = this.getRouteData(event);
 				this.setSection(route_data);
 				this.setAgent(route_data);
+				this.onClearConversation();
 			});
 	}
 
@@ -194,8 +208,17 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	private getAiMessagesSubscription(): Subscription {
 		return this.aiService.messages$
 			.subscribe((chunk: AiChatChunk) => {
-				console.log('ai chunk', chunk);
-				// @todo create messages
+				this.assembleMessages(chunk);
+				if( chunk.done && this.ai_conversation ) this.aiService.updateConversation(this.ai_conversation);
+			});
+	}
+
+	private getAiConversationSubscription(): Subscription {
+		return this.aiService.conversation$
+			.subscribe((conversation: AiChatConversation | null) => {
+				this.ai_conversation = conversation;
+				this.ai_revision = 0;
+				this.cdr.detectChanges();
 			});
 	}
 
@@ -248,7 +271,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	private setAgent(route_data: ActivatedRouteSnapshot['data'] | null): void {
 		if( !route_data ) return;
-		this.active_agent = route_data['agent'] || '';
+		this.active_agent = route_data['agent'] || AiAgent.Default;
 		this.cdr.detectChanges();
 	}
 
@@ -265,6 +288,14 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		this.active_chat ? this.stopChat() : this.startChat();
 	}
 
+	public onToggleLog(): void {
+		( this.sidenav.opened ) ? this.closeChatLog() : this.openChatLog();
+		this.chartService.triggerResizeStart();
+		setTimeout(() => {
+			this.chartService.triggerResizeEnd();
+		}, 400);
+	}
+
 	private startChat() {
 		if( !this.user_content.value ) return;
 		const agent = this.active_agent || AiAgent.Default;
@@ -274,6 +305,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	public stopChat(): void {
 		this.aiService.closeAiSocket();
+		if( this.ai_conversation ) this.aiService.updateConversation(this.ai_conversation);
 		this.cdr.detectChanges();
 	}
 
@@ -284,6 +316,39 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
 		this.cdr.detectChanges();
 	}
+
+	public onClearConversation(): void {
+		this.closeChatLog();
+		this.aiService.clearConversation();
+		this.cdr.detectChanges();
+	}
+
+	private assembleMessages(chunk: AiChatChunk): void {
+		if( this.ai_conversation!.messages.length > 0 && this.ai_conversation!.messages[this.ai_conversation!.messages.length - 1].role !== AiMessageRole.Assistant ) {
+			this.ai_conversation!.messages.push(new AiChatCompiledMessage(this.ai_conversation!.id, chunk.message));
+		}else{
+			const last_message = this.ai_conversation!.messages[this.ai_conversation!.messages.length - 1];
+			last_message.integrateChunk(chunk);
+		}
+		this.ai_revision++;
+		this.cdr.detectChanges();
+	}
+
+	private openChatLog(): void {
+		this.sidenav.open();
+		this.aiService.getAiAgent(this.active_agent)
+			.subscribe((agent: AiAgentDefinition) => {
+				this.ai_agent_definition = agent;
+				this.cdr.detectChanges();
+			});
+	}
+	private closeChatLog(): void {
+		this.sidenav.close();
+	}
+
+	/* *******************************************************
+	   Destroy                      
+	******************************************************** */
 
 	ngOnDestroy(): void {
 		this.subscriptions.unsubscribe();

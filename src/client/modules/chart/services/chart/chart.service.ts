@@ -1,5 +1,7 @@
 /* Core Dependencies */
 import { Injectable } from '@angular/core';
+/* Vendor Dependencies */
+import { Observable, Subject } from 'rxjs';
 /* Application Dependencies */
 import { DataType } from '@client/modules/orchard/enums/data.enum';
 import { ThemeService } from '@client/modules/settings/services/theme/theme.service';
@@ -35,6 +37,8 @@ export class ChartService {
         'PENDING': 'rectRot',
         'PAID': 'circle'
     };
+    private resize_start_subject = new Subject<void>();
+    private resize_end_subject = new Subject<void>();
 
     constructor(
         private themeService: ThemeService,
@@ -110,5 +114,19 @@ export class ChartService {
             b = parseInt(hex.substring(4, 6), 16);
         }
         return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+    }
+
+
+    public triggerResizeStart(): void {
+        this.resize_start_subject.next();
+    }
+    public triggerResizeEnd(): void {
+        this.resize_end_subject.next();
+    }
+    public onResizeStart(): Observable<void> {
+        return this.resize_start_subject.asObservable();
+    }
+    public onResizeEnd(): Observable<void> {
+        return this.resize_end_subject.asObservable();
     }
 }

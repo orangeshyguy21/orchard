@@ -9,6 +9,7 @@
     #{$c}flex { display: flex; }
     #{$c}flex-row { flex-direction: row; }
     #{$c}flex-column { flex-direction: column; }
+    #{$c}flex-items-start { align-items: flex-start; }
     #{$c}flex-items-center { align-items: center; }
     #{$c}flex-items-end { align-items: flex-end; }
     #{$c}flex-justify-center { justify-content: center; }
@@ -43,6 +44,8 @@
     #{$c}h-5 { height: 5rem; }
     #{$c}h-8 { height: 8rem; }
     #{$c}h-min-0 { min-height: 0; }
+    #{$c}h-min-2 { min-height: 2rem; }
+    #{$c}h-min-3 { min-height: 3rem; }
     #{$c}h-min-6 { min-height: 6rem; }
     #{$c}h-min-18 { min-height: 18rem; }
     #{$c}h-max-5 { max-height: 5rem; }
@@ -76,6 +79,7 @@
     #{$c}w-max-54 { max-width: 54rem; }
 
     // Margins
+    #{$c}m-0 { margin: 0; }
     #{$c}m-v-0-5 { margin: 0.5rem 0; }
     #{$c}m-h-1 { margin: 0 1rem; }
     #{$c}m-t-0-5 { margin-top: 0.5rem; }

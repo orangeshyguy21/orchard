@@ -2,6 +2,8 @@
 
 .mint-quote-ttl-chart-container{
     @extend %relative;
+    max-height: 225px;
+    min-height: 225px;
     
     canvas{
         max-height: 225px;

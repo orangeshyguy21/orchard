@@ -14,11 +14,28 @@
     background-size: 1300px 100%;
 }
 
+.shimmer-text {
+    background: linear-gradient(135deg, var(--mat-sys-primary), var(--mat-sys-primary-container), var(--mat-sys-primary));
+    background-clip: text;
+    color: transparent;
+    background-size: 200% 100%;
+    animation: shimmer-text 3s linear infinite;
+}
+
 @keyframes shimmering {
     0% {
         background-position: -1300px 0;
     }
     100% {
         background-position: 1300px 0;
+    }
+}
+
+@keyframes shimmer-text {
+    0% {
+        background-position: 100% 0;
+    }
+    100% {
+        background-position: -100% 0;
     }
 }

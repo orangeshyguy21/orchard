@@ -5,7 +5,9 @@
     <div class="flex flex-gap-1 relative">
         <div class="flex-grow">
             <div class="mint-method-chart-container">
-                <canvas baseChart [data]="chart_data" [options]="chart_options" [type]="chart_type"></canvas>
+                @if( displayed ) {
+                    <canvas baseChart [data]="chart_data" [options]="chart_options" [type]="chart_type"></canvas>
+                }
             </div>
         </div>
         <div class="flex flex-justify-center flex-items-center flex-gap-0-5">

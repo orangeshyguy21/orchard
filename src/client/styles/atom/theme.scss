@@ -21,13 +21,34 @@
 		supporting-text-color: var(--mat-sys-on-surface),
 		supporting-text-size: 0.75rem,
 	));
+	@include mat.sidenav-overrides((
+		container-background-color: var(--mat-sys-surface-container-low),
+	));
 }
+
+// header-collapsed-state-height
 
 /* Specific Table Overrides */
 .orc-feature-table {
 	@include mat.table-overrides((
 		header-container-height: 2.5rem,
 		row-item-container-height: 3.0rem,
+	));
+}
+
+.orc-dense-table {
+	@include mat.table-overrides((
+		header-container-height: 2.5rem,
+		row-item-container-height: 2.5rem,
+		header-headline-size: 0.75rem,
+		row-item-label-text-size: 0.75rem,
+	));
+}
+
+
+.orc-table-low {
+	@include mat.table-overrides((
+		background-color: var(--mat-sys-surface-container-low),
 	));
 }
 
@@ -55,6 +76,19 @@
 	@include mat.form-field-overrides((
 		// filled-label-text-weight: 600,
 		filled-container-color: transparent,
+	));
+}
+
+.orc-low-accordion{
+	@include mat.expansion-overrides((
+		container-background-color: var(--mat-sys-surface-container-low),
+	));
+}
+
+.orc-fullscreen-accordion{
+	@include mat.expansion-overrides((
+		header-collapsed-state-height: 3rem,
+		header-disabled-state-text-color: var(--mat-sys-on-surface),
 	));
 }
 
@@ -138,6 +172,38 @@
 	mat-icon{
 		.mat-badge-content{
 			font-family: 'Bai Jamjuree', sans-serif;
+		}
+	}
+}
+
+:root {
+	.mat-drawer.mat-drawer-end{
+		border-top-left-radius: 0rem;
+		border-bottom-left-radius: 0rem;
+	}
+}
+
+:root {
+	.orc-fullscreen-accordion{
+		.mat-expansion-panel-header{
+			padding-left: 1rem;
+			padding-right: 1rem;
+		}
+		.mat-expansion-panel-body{
+			padding-bottom: 0rem;
+			padding-left: 1rem;
+			padding-right: 1rem;
+		}
+		.mat-expansion-panel{
+			box-shadow: none;
+		}
+		.mat-expansion-panel:first-of-type{
+			border-top-left-radius: 0rem;
+			border-top-right-radius: 0rem;
+		}
+		.mat-expansion-panel:last-of-type{
+			border-bottom-left-radius: 0rem;
+			border-bottom-right-radius: 0rem;
 		}
 	}
 }

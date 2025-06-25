@@ -1,17 +1,23 @@
 <div class="ai-input-container">
-    <form 
-        class="ai-input-form"
-        (keydown.enter)="onSubmit($event)"
-        (ngSubmit)="onSubmit()">
-        <textarea 
-            rows="1" 
-            matInput 
-            [placeholder]="placeholder" 
-            class="ai-input"
-            [class.ai-input-empty]="!content.value"
-            [formControl]="content"
-            [style.fontSize]="'smaller'"
-            [autogrow]="true"
-        ></textarea>
-    </form>
+    @if( !active_chat ) {
+        <form 
+            class="ai-input-form"
+            (keydown.enter)="onSubmit($event)"
+            (ngSubmit)="onSubmit()">
+            <textarea 
+                rows="1" 
+                matInput 
+                [placeholder]="placeholder" 
+                class="ai-input"
+                [class.ai-input-empty]="!content.value"
+                [formControl]="content"
+                [style.fontSize]="'smaller'"
+                [autogrow]="true"
+            ></textarea>
+        </form>
+    }@else {
+        <div class="ai-active-container orc-text-button">
+            <div class="shimmer-text">Executing...</div>
+        </div>
+    }
 </div>

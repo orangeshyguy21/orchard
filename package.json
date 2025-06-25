@@ -51,6 +51,7 @@
     "graphql": "^16.11.0",
     "graphql-subscriptions": "^3.0.0",
     "luxon": "^3.6.1",
+    "marked": "^15.0.12",
     "ng2-charts": "^8.0.0",
     "qr-code-styling": "^1.9.2",
     "reflect-metadata": "^0.2.2",

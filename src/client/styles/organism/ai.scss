@@ -1,0 +1,42 @@
+@use '@styles/molecule/molecule';
+
+.orc-ai-chat-message{
+    @extend %flex;
+    @extend %flex-items-start;
+    @extend %flex-gap-1;
+}
+
+.orc-ai-chat-message-content{
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %h-min-2;
+}
+
+.orc-ai-chat-message-tool-calls{
+    @extend %flex;
+    @extend %flex-column;
+    @extend %flex-gap-1;
+}
+
+.orc-ai-marked{
+    @extend %flex;
+    @extend %flex-column;
+    @extend %flex-gap-0-5;
+
+    h2, ul, p{
+        @extend %m-0;
+    }
+
+    h2 {
+        @extend %font-size-m;
+    }
+
+    p, ul {
+        @extend %font-size-xs;
+    }
+
+    ul{
+        @extend %p-l-1;
+    }
+
+}

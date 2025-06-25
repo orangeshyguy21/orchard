@@ -13,11 +13,14 @@ import { api, getApiQuery } from '@client/modules/api/helpers/api.helpers';
 import { OrchardErrors } from '@client/modules/error/classes/error.class';
 import { OrchardRes } from '@client/modules/api/types/api.types';
 /* Native Dependencies */
-import { AiChatResponse, AiModelResponse } from '@client/modules/ai/types/ai.types';
-import { AiChatChunk, AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
+import { AiChatResponse, AiModelResponse, AiAgentResponse } from '@client/modules/ai/types/ai.types';
+import { AiChatChunk, AiChatToolCall, AiChatMessage } from '@client/modules/ai/classes/ai-chat-chunk.class';
 import { AiModel } from '@client/modules/ai/classes/ai-model.class';
+import { AiChatCompiledMessage } from '@client/modules/ai/classes/ai-chat-compiled-message.class';
+import { AiChatConversation } from '@client/modules/ai/classes/ai-chat-conversation.class';
+import { AiAgentDefinition } from '@client/modules/ai/classes/ai-agent-definition.class';
 /* Local Dependencies */
-import { AI_CHAT_SUBSCRIPTION, AI_MODELS_QUERY } from './ai.queries';
+import { AI_CHAT_SUBSCRIPTION, AI_MODELS_QUERY, AI_AGENT_QUERY } from './ai.queries';
 /* Shared Dependencies */
 import { AiAgent, AiMessageRole } from '@shared/generated.types';
 
@@ -27,17 +30,21 @@ import { AiAgent, AiMessageRole } from '@shared/generated.types';
 export class AiService {
 
 	public get active$(): Observable<boolean> { return this.active_subject.asObservable(); }
+	public get conversation$(): Observable<AiChatConversation | null> { return this.conversation_subject.asObservable(); }
 	public get messages$(): Observable<AiChatChunk> { return this.message_subject.asObservable(); }
     public get tool_calls$(): Observable<AiChatToolCall> { return this.toolcall_subject.asObservable(); }
 	public get agent_requests$(): Observable<{agent: AiAgent, content: string|null}> {return this.agent_subject.asObservable(); }
 
 	private subscription?: Subscription;
 	private subscription_id?: string | null;
+	private conversation_subject = new Subject<AiChatConversation | null>();
 	private message_subject = new Subject<AiChatChunk>();
 	private toolcall_subject = new Subject<AiChatToolCall>();
 	private agent_subject = new Subject<{agent: AiAgent, content: string|null}>();
 	private active_subject = new Subject<boolean>();
 	private ai_models_observable!: Observable<AiModel[]> | null;
+
+	private conversation_cache: AiChatConversation | null = null;
 
 	constructor(
 		private apiService: ApiService,
@@ -78,7 +85,7 @@ export class AiService {
 		this.subscription = this.apiService.gql_socket.subscribe({
 			next: (response: OrchardWsRes<AiChatResponse>) => {
 				if (response.type === 'data' && response?.payload?.data?.ai_chat) {
-					const chunk = new AiChatChunk(response.payload.data.ai_chat);
+					const chunk = new AiChatChunk(response.payload.data.ai_chat, subscription_id);
 					this.message_subject.next( chunk );
 					chunk.message.tool_calls?.forEach(tool_call => this.toolcall_subject.next(tool_call));
 					if( chunk.done ) this.closeAiSocket();
@@ -91,14 +98,9 @@ export class AiService {
 			}
 		});
 
-		const messages = [{
-			role: AiMessageRole.User,
-			content: content
-		}];
-		if( context ) messages.unshift({
-			role: AiMessageRole.System,
-			content: context
-		});
+		const conversation = !this.conversation_cache? this.createConversation(subscription_id, agent, content, context) : this.continueConversation(subscription_id, agent, content, context);
+		this.conversation_subject.next(conversation);
+		const messages = conversation.getMessages();
 
 		this.apiService.gql_socket.next({ type: 'connection_init', payload: {} });
 		this.apiService.gql_socket.next({
@@ -140,10 +142,71 @@ export class AiService {
 		return this.ai_models_observable;
 	}
 
+	public getAiAgent(agent: AiAgent): Observable<AiAgentDefinition> {
+		const query = getApiQuery(AI_AGENT_QUERY, { agent });
+		return this.http.post<OrchardRes<AiAgentResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.ai_agent;
+			}),
+			map((oaa) => new AiAgentDefinition(oaa)),
+			catchError((error) => {
+				console.error('Error loading ai agent:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
 	private getSmallestFunctionModel(models: AiModel[]): AiModel | null {
 		if( models.length === 0 ) return null;
 		const llama_models = models.filter((model) => model.model.includes('llama'));
 		if( llama_models.length > 0 ) return llama_models.sort((a, b) => a.size - b.size)[0];
 		return models.sort((a, b) => a.size - b.size)[0];
+	}
+
+	private createConversation(id: string, agent: AiAgent, content: string|null, context: string|undefined): AiChatConversation {
+		const messages = [];
+		if( context ) messages.push({
+			role: AiMessageRole.System,
+			content: this.getFullContext(context, AiMessageRole.System)
+		});
+		messages.push({
+			role: AiMessageRole.User,
+			content: content || ""
+		});
+		const messages_obj = messages.map((message) => new AiChatCompiledMessage(id, message));
+		return new AiChatConversation(id, messages_obj, agent);
+	}
+
+	private continueConversation(id: string, agent: AiAgent, content: string|null, context: string|undefined): AiChatConversation {
+		if( !this.conversation_cache ) throw new Error('Conversation cache not found');
+		if( context ) {
+			const last_message = this.conversation_cache.messages[this.conversation_cache.messages.length - 1];
+			if( last_message.role === AiMessageRole.Assistant && last_message.tool_calls?.length ) {
+				this.conversation_cache.messages.push( new AiChatCompiledMessage(id, {
+					role: AiMessageRole.Function,
+					content: this.getFullContext(context, AiMessageRole.Function)
+				}));
+			}
+		}
+		this.conversation_cache.messages.push( new AiChatCompiledMessage(id, {
+			role: AiMessageRole.User,
+			content: content || ""
+		}));
+		return new AiChatConversation(id, this.conversation_cache.messages, agent);
+	}
+
+	private getFullContext(context: string, role: AiMessageRole): string {
+		if( role === AiMessageRole.System ) return `## Initial Form State\n\n${context}`;
+		return `## Updated Form State\n\n${context}`;
+	}
+
+	public clearConversation(): void {
+		this.conversation_cache = null;
+		this.conversation_subject.next(null);
+	}
+
+	public updateConversation(conversation: AiChatConversation): void {
+		this.conversation_cache = conversation;
 	}
 }

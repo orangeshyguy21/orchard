@@ -4,10 +4,24 @@
 .ai-nav-container{
     @extend %flex;
     @extend %flex-row;
-    @extend %flex-items-center;   
+    @extend %flex-items-start;   
     @extend %flex-gap-1;
     @extend %orc-surface-container-low-bg;
     @extend %p-h-1;
-    @extend %h-3;
     @extend %p-l-1;
+}
+
+.ai-user-input{
+    @extend %flex-grow;
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %h-min-3;
+}
+
+.ai-action-bar{
+    @extend %flex;
+    @extend %flex-row;
+    @extend %flex-items-center;   
+    @extend %flex-gap-1;
+    @extend %h-3;
 }

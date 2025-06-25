@@ -136,8 +136,23 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	private getAgentSubscription(): Subscription {
 		return this.aiService.agent_requests$
 			.subscribe(({ agent, content }) => {
-				const form_string = JSON.stringify(this.form_config.value);
-				this.aiService.openAiSocket(agent, content, form_string);
+				const form_value = this.form_config.value;
+				let context = `# Mint Configuration\n\n`;
+				context += `## Minting\n`;
+				context += `* **Enabled:** ${form_value.minting?.enabled ? 'Yes' : 'No'}\n`;
+				context += `* **Mint TTL:** ${form_value.minting?.mint_ttl || 'Not set'} seconds\n`;
+				if (form_value.minting?.sat?.bolt11) {
+					const bolt11 = form_value.minting.sat.bolt11;
+					context += `* **SAT/BOLT11:** ${bolt11.min_amount} - ${bolt11.max_amount}\n`;
+				}
+				context += `## Melting\n`;
+				context += `* **Enabled:** ${form_value.melting?.enabled ? 'Yes' : 'No'}\n`;
+				context += `* **Melt TTL:** ${form_value.melting?.melt_ttl || 'Not set'} seconds\n`;
+				if (form_value.melting?.sat?.bolt11) {
+					const bolt11 = form_value.melting.sat.bolt11;
+					context += `* **SAT/BOLT11:** ${bolt11.min_amount} - ${bolt11.max_amount}\n`;
+				}
+				this.aiService.openAiSocket(agent, content, context);
 			});
 	}
 

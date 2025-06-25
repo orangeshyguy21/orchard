@@ -188,6 +188,37 @@ type Mutation {
   mint_url_remove(mint_url_update: MintUrlUpdateInput!): OrchardMintUrlUpdate!
 }
 
+type OrchardAiAgent {
+  description: String!
+  icon: String!
+  name: String!
+  section: String
+  system_message: OrchardAiAgentSystemMessage!
+  tools: [OrchardAiAgentTool!]!
+}
+
+type OrchardAiAgentSystemMessage {
+  content: String!
+  role: String!
+}
+
+type OrchardAiAgentTool {
+  function: OrchardAiAgentToolFunction!
+  type: String!
+}
+
+type OrchardAiAgentToolFunction {
+  description: String!
+  name: String!
+  parameters: OrchardAiAgentToolParameters!
+}
+
+type OrchardAiAgentToolParameters {
+  properties: String!
+  required: [String!]!
+  type: String!
+}
+
 type OrchardAiChatChunk {
   created_at: Int!
   done: Boolean!
@@ -687,6 +718,7 @@ type OrchardTaprootAssetsUtxo {
 }
 
 type Query {
+  ai_agent(agent: AiAgent!): OrchardAiAgent!
   ai_models: [OrchardAiModel!]!
   bitcoin_blockchain_info: OrchardBitcoinBlockchainInfo!
   bitcoin_blockcount: OrchardBitcoinBlockCount!

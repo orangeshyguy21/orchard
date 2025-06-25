@@ -4,9 +4,11 @@
 .mint-keyset-chart-container{
     @extend %p-v-1;
     @extend %relative;
+    max-height: max(30vh, 180px);
+    min-height: 300px;
 
     canvas{
-        max-height: 30vh;
+        max-height: max(30vh, 180px);
         min-height: 300px;
     }
 }

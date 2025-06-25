@@ -32,8 +32,10 @@ import {
 
 export const AI_AGENTS = {
     [AiAgent.DEFAULT]: {
-        name: 'Default',
-        description: 'Default agent',
+        name: 'Orchard Agent',
+        icon: 'spa',
+        section: null,
+        description: 'The general purpose agent',
         system_message: {
             role: 'system',
             content: 'You are a helpful assistant that can answer questions and help with tasks.',
@@ -41,8 +43,10 @@ export const AI_AGENTS = {
         tools: [],
     },
     [AiAgent.MINT_DASHBOARD]: {
-        name: 'Mint Dashboard',
-        description: 'Mint dashboard agent',
+        name: 'Mint Dashboard Agent',
+        icon: 'spa',
+        section: 'mint',
+        description: 'Control the filters of the mint analytics',
         system_message: {
             role: 'system',
             content: 'You are an agent designed to help adjust parameters used to explore mint analytics.',
@@ -55,7 +59,9 @@ export const AI_AGENTS = {
         ],
     },
     [AiAgent.MINT_INFO]: {
-        name: 'Mint Info',
+        name: 'Mint Info Agent',
+        icon: 'spa',
+        section: 'mint',
         description: 'Mint info agent',
         system_message: {
             role: 'system',
@@ -78,6 +84,8 @@ export const AI_AGENTS = {
     },
     [AiAgent.MINT_CONFIG]: {
         name: 'Mint Config',
+        icon: 'spa',
+        section: 'mint',
         description: 'Mint config agent',
         system_message: {
             role: 'system',
@@ -94,6 +102,8 @@ export const AI_AGENTS = {
     },
     [AiAgent.MINT_KEYSETS]: {
         name: 'Mint Keysets',
+        icon: 'spa',
+        section: 'mint',
         description: 'Mint keysets agent',
         system_message: {
             role: 'system',
@@ -108,6 +118,8 @@ export const AI_AGENTS = {
     },
     [AiAgent.MINT_KEYSET_ROTATION]: {
         name: 'Mint Keyset Rotation',
+        icon: 'spa',
+        section: 'mint',
         description: 'Mint keyset rotation agent',
         system_message: {
             role: 'system',
@@ -122,6 +134,8 @@ export const AI_AGENTS = {
     },
     [AiAgent.MINT_DATABASE]: {
         name: 'Mint Database',
+        icon: 'spa',
+        section: 'mint',
         description: 'Mint database agent',
         system_message: {
             role: 'system',
@@ -137,6 +151,8 @@ export const AI_AGENTS = {
     },
     [AiAgent.MINT_BACKUP]: {
         name: 'Mint Backup',
+        icon: 'spa',
+        section: 'mint',
         description: 'Mint backup agent',
         system_message: {
             role: 'system',
