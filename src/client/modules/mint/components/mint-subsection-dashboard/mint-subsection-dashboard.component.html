@@ -4,7 +4,11 @@
 			[balances]="mint_balances"
 			[keysets]="mint_keysets"
 			[lightning_balance]="lightning_balance ? lightning_balance : null"
-			[loading]="loading_static_data">
+			[lightning_enabled]="lightning_enabled"
+			[lightning_errors]="errors_lightning"
+			[lightning_loading]="loading_lightning"
+			[loading]="loading_static_data"
+			(navigate)="onNavigate('lightning')">
 		</orc-mint-balance-sheet>
 		<orc-mint-connections 
 			[urls]="mint_info ? mint_info.urls : null"
