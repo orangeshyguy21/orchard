@@ -26,4 +26,11 @@ export class AiChatCompiledMessage {
         if( chunk.message.tool_calls ) this.tool_calls?.push(...chunk.message.tool_calls);
         if( chunk.done ) this.done = true;
     }
+
+    public getMessage(): AiChatMessage {
+        return {
+            role: this.role,
+            content: this.content,
+        };
+    }
 }

@@ -1,3 +1,5 @@
+/* Native Dependencies */
+import { AiChatMessage } from '@client/modules/ai/classes/ai-chat-chunk.class';
 /* Local Dependencies */
 import { AiChatCompiledMessage } from "./ai-chat-compiled-message.class";
 /* Shared Dependencies */
@@ -12,5 +14,9 @@ export class AiChatConversation {
         this.id = id;
         this.messages = messages;
         this.agent = agent;
+    }
+
+    public getMessages(): AiChatMessage[] {
+        return this.messages.map((message) => message.getMessage());
     }
 }

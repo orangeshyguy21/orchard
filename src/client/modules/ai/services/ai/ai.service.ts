@@ -30,19 +30,21 @@ import { AiAgent, AiMessageRole } from '@shared/generated.types';
 export class AiService {
 
 	public get active$(): Observable<boolean> { return this.active_subject.asObservable(); }
-	public get conversation$(): Observable<AiChatConversation> { return this.conversation_subject.asObservable(); }
+	public get conversation$(): Observable<AiChatConversation | null> { return this.conversation_subject.asObservable(); }
 	public get messages$(): Observable<AiChatChunk> { return this.message_subject.asObservable(); }
     public get tool_calls$(): Observable<AiChatToolCall> { return this.toolcall_subject.asObservable(); }
 	public get agent_requests$(): Observable<{agent: AiAgent, content: string|null}> {return this.agent_subject.asObservable(); }
 
 	private subscription?: Subscription;
 	private subscription_id?: string | null;
-	private conversation_subject = new Subject<AiChatConversation>();
+	private conversation_subject = new Subject<AiChatConversation | null>();
 	private message_subject = new Subject<AiChatChunk>();
 	private toolcall_subject = new Subject<AiChatToolCall>();
 	private agent_subject = new Subject<{agent: AiAgent, content: string|null}>();
 	private active_subject = new Subject<boolean>();
 	private ai_models_observable!: Observable<AiModel[]> | null;
+
+	private conversation_cache: AiChatConversation | null = null;
 
 	constructor(
 		private apiService: ApiService,
@@ -96,17 +98,9 @@ export class AiService {
 			}
 		});
 
-		const messages = [{
-			role: AiMessageRole.User,
-			content: content || ""
-		}];
-		if( context ) messages.unshift({
-			role: AiMessageRole.System,
-			content: context
-		});
-
-		const conversation = this.createConversation(subscription_id, messages, agent);
+		const conversation = this.conversation_cache ? this.continueConversation(subscription_id, content, context, agent) : this.createConversation(subscription_id, content, context, agent);
 		this.conversation_subject.next(conversation);
+		const messages = conversation.getMessages();
 
 		this.apiService.gql_socket.next({ type: 'connection_init', payload: {} });
 		this.apiService.gql_socket.next({
@@ -170,8 +164,38 @@ export class AiService {
 		return models.sort((a, b) => a.size - b.size)[0];
 	}
 
-	private createConversation(id: string, messages: AiChatMessage[], agent: AiAgent): AiChatConversation {
+	private createConversation(id: string, content: string|null, context: string|undefined, agent: AiAgent): AiChatConversation {
+		const messages = [{
+			role: AiMessageRole.User,
+			content: content || ""
+		}];
+		if( context ) messages.unshift({
+			role: AiMessageRole.System,
+			content: context
+		});
 		const messages_obj = messages.map((message) => new AiChatCompiledMessage(id, message));
 		return new AiChatConversation(id, messages_obj, agent);
+	}
+
+	private continueConversation(id: string, content: string|null, context: string|undefined, agent: AiAgent): AiChatConversation {
+		if( !this.conversation_cache ) throw new Error('Conversation cache not found');
+		if( context ) {
+			const system_message = this.conversation_cache.messages.find((message) => message.role === AiMessageRole.System);
+			if( system_message ) { system_message.content = context; }
+		}
+		this.conversation_cache.messages.push( new AiChatCompiledMessage(id, {
+			role: AiMessageRole.User,
+			content: content || ""
+		}));
+		return new AiChatConversation(id, this.conversation_cache.messages, agent);
+	}
+
+	public clearConversation(): void {
+		this.conversation_cache = null;
+		this.conversation_subject.next(null);
+	}
+
+	public updateConversation(conversation: AiChatConversation): void {
+		this.conversation_cache = conversation;
 	}
 }

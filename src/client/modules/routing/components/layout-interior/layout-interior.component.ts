@@ -208,12 +208,14 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		return this.aiService.messages$
 			.subscribe((chunk: AiChatChunk) => {
 				this.assembleMessages(chunk);
+				if( chunk.done && this.ai_conversation ) this.aiService.updateConversation(this.ai_conversation);
 			});
 	}
 
 	private getAiConversationSubscription(): Subscription {
 		return this.aiService.conversation$
-			.subscribe((conversation: AiChatConversation) => {
+			.subscribe((conversation: AiChatConversation | null) => {
+				console.log('new conversation', conversation);
 				this.ai_conversation = conversation;
 				this.ai_revision = 0;
 				this.cdr.detectChanges();
@@ -311,6 +313,12 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		this.settingService.setModel(model);
 		this.model = model;
 		this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
+		this.cdr.detectChanges();
+	}
+
+	public onClearConversation(): void {
+		this.closeChatLog();
+		this.aiService.clearConversation();
 		this.cdr.detectChanges();
 	}
 

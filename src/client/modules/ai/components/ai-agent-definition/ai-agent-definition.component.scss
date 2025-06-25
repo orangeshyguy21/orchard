@@ -1,5 +1,4 @@
 @use '@styles/molecule/molecule';
-// @use '@styles/nucleus/nucleus';
 
 .agent-property{
     @extend %flex;
@@ -14,7 +13,5 @@
 }
 
 .agent-property-value{
-    // @extend %font-size-xs;
     @extend %font-size-s;
-    // @extend %orc-on-surface-color;
 }
