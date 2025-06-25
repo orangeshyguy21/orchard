@@ -2,6 +2,7 @@
 
 :host {
     @extend %flex-grow;
+    @extend %overflow-y-auto;
 }
 
 .primary-nav-items {
