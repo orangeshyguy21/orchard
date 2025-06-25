@@ -63,8 +63,8 @@ export class AiChatMessageAssistantComponent implements OnChanges {
 	public think_duration!: number;
 	public think_expanded: boolean = false;
 
-	public get thinking(): boolean {
-		return this.message.done || !this.active_chat;
+	public get thinking_complete(): boolean {
+		return this.message.done || !this.active_chat || this.think_end > 0;
 	}
 	
 	private think_start!: number;

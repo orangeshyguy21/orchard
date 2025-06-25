@@ -263,19 +263,19 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		});
 	}
 	private hireAnalyticsAgent(agent: AiAgent, content: string|null): void {
-		let context = `Current Date: ${DateTime.now().toFormat('yyyy-MM-dd')}\n`;
-		context += `Current Date Start: ${DateTime.fromSeconds(this.page_settings.date_start).toFormat('yyyy-MM-dd')}\n`;
-		context += `Current Date End: ${DateTime.fromSeconds(this.page_settings.date_end).toFormat('yyyy-MM-dd')}\n`;
-		context += `Current Units: ${this.page_settings.units}\n`;
-		context += `Current Status: ${this.page_settings.status}\n`;
-		context += `Available Units: ${this.unit_options.map(unit => unit.value).join(', ')}\n`;
+		let context = `* **Current Date:** ${DateTime.now().toFormat('yyyy-MM-dd')}\n`;
+		context += `* **Date Start:** ${DateTime.fromSeconds(this.page_settings.date_start).toFormat('yyyy-MM-dd')}\n`;
+		context += `* **Date End:** ${DateTime.fromSeconds(this.page_settings.date_end).toFormat('yyyy-MM-dd')}\n`;
+		context += `* **Units:** ${this.page_settings.units}\n`;
+		context += `* **Status:** ${this.page_settings.status}\n`;
+		context += `* **Available Units:** ${this.unit_options.map(unit => unit.value).join(', ')}\n`;
 		this.aiService.openAiSocket(agent, content, context);
 	}
 	private hireRotationAgent(agent: AiAgent, content: string|null): void {
-		let context = `Current Unit: ${this.form_keyset.value.unit}\n`;
-		context += `Current Input Fee PPK: ${this.form_keyset.value.input_fee_ppk}\n`;
-		context += `Current Max Order: ${this.form_keyset.value.max_order}\n`;
-		context += `Available Units: ${this.unit_options.map(unit => unit.value).join(', ')}\n`;
+		let context = `* **Current Unit:** ${this.form_keyset.value.unit}\n`;
+		context += `* **Input Fee PPK:** ${this.form_keyset.value.input_fee_ppk}\n`;
+		context += `* **Max Order:** ${this.form_keyset.value.max_order}\n`;
+		context += `* **Available Units:** ${this.unit_options.map(unit => unit.value).join(', ')}\n`;
 		this.aiService.openAiSocket(agent, content, context);
 	}
 
@@ -293,13 +293,12 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 			this.onDateChange(range);
 		}
 		if( tool_call.function.name === AiFunctionName.MintAnalyticsUnitsUpdate ) {
-			// @todo parse this too....
 			this.onUnitsChange(tool_call.function.arguments.units);
 		}
 		if( tool_call.function.name === AiFunctionName.MintKeysetStatusUpdate ) {
-			// @todo try catch this parse
-			const parsed_statuses = JSON.parse(tool_call.function.arguments.statuses as any);
-			const statuses = parsed_statuses.map((status: boolean) => status);
+			const statuses = typeof tool_call.function.arguments.statuses === 'string' 
+				? JSON.parse(tool_call.function.arguments.statuses).map((status: any) => status === 'true' || status === true)
+				: tool_call.function.arguments.statuses.map((status: any) => status === 'true' || status === true);
 			this.onStatusChange(statuses);
 		}
 		if( tool_call.function.name === AiFunctionName.MintKeysetRotationUnitUpdate ) {

@@ -271,7 +271,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	private setAgent(route_data: ActivatedRouteSnapshot['data'] | null): void {
 		if( !route_data ) return;
-		this.active_agent = route_data['agent'] || '';
+		this.active_agent = route_data['agent'] || AiAgent.Default;
 		this.cdr.detectChanges();
 	}
 

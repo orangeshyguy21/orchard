@@ -100,8 +100,29 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 	private getAgentSubscription(): Subscription {
 		return this.aiService.agent_requests$
 			.subscribe(({ agent, content }) => {
-				const form_string = JSON.stringify(this.form_info.value);
-				this.aiService.openAiSocket(agent, content, form_string);
+				const form_value = this.form_info.value;
+				let context = `* **Name:** ${form_value.name || 'Not set'}\n`;
+				context += `* **Description:** ${form_value.description || 'Not set'}\n`;
+				context += `* **Long Description:** ${form_value.description_long || 'Not set'}\n`;
+				context += `* **Icon URL:** ${form_value.icon_url || 'Not set'}\n`;
+				context += `* **Message of the Day:** ${form_value.motd || 'Not set'}\n`;
+				context += `* **URLs:**\n`;
+				if (form_value.urls && form_value.urls.length > 0) {
+					form_value.urls.forEach((url: string) => {
+						context += `  * ${url}\n`;
+					});
+				} else {
+					context += `  * No URLs configured\n`;
+				}
+				context += `* **Contacts:**\n`;
+				if (form_value.contact && form_value.contact.length > 0) {
+					form_value.contact.forEach((contact: any) => {
+						context += `  * ${contact.method}: ${contact.info}\n`;
+					});
+				} else {
+					context += `  * No contacts configured\n`;
+				}
+				this.aiService.openAiSocket(agent, content, context);
 			});
 	}
 

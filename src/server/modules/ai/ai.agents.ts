@@ -33,7 +33,7 @@ import {
 export const AI_AGENTS = {
     [AiAgent.DEFAULT]: {
         name: 'Orchard Agent',
-        icon: 'help',
+        icon: 'spa',
         section: null,
         description: 'The general purpose agent',
         system_message: {

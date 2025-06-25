@@ -8,7 +8,7 @@
         <div class="flex flex-column flex-gap-1">
             <div>
                 @if( marked_thinking_content ) {
-                    @if( thinking) {
+                    @if( thinking_complete ) {
                         <div [@fadeIn] class="ai-thinking orc-text-button" (click)="toggleThinking()">
                             <div>{{ think_duration | ai_thought }}</div>
                             <mat-icon [@rotateIcon]="think_expanded ? 'expanded' : 'collapsed'">keyboard_arrow_down</mat-icon>

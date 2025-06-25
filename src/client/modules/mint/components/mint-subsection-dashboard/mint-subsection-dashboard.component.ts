@@ -90,15 +90,6 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	private getAgentSubscription(): Subscription {
 		return this.aiService.agent_requests$
 			.subscribe(({ agent, content }) => {
-				// let context = `## Current Form State\n\n`;
-				// context += `* **Current Date:** ${DateTime.now().toFormat('yyyy-MM-dd')}\n`;
-				// context += `* **Date Start:** ${DateTime.fromSeconds(this.page_settings.date_start).toFormat('yyyy-MM-dd')}\n`;
-				// context += `* **Date End:** ${DateTime.fromSeconds(this.page_settings.date_end).toFormat('yyyy-MM-dd')}\n`;
-				// context += `* **Interval:** ${this.page_settings.interval}\n`;
-				// context += `* **Units:** ${this.page_settings.units.join(', ')}\n`;
-				// context += `* **Type:** ${this.page_settings.type}`;
-				// this.aiService.openAiSocket(agent, content, context);
-
 				let context = `* **Current Date:** ${DateTime.now().toFormat('yyyy-MM-dd')}\n`;
 				context += `* **Date Start:** ${DateTime.fromSeconds(this.page_settings.date_start).toFormat('yyyy-MM-dd')}\n`;
 				context += `* **Date End:** ${DateTime.fromSeconds(this.page_settings.date_end).toFormat('yyyy-MM-dd')}\n`;
