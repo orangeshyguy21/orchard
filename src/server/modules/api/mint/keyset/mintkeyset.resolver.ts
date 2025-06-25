@@ -1,6 +1,8 @@
 /* Core Dependencies */
-import { Logger } from '@nestjs/common';
+import { Logger, UseGuards } from '@nestjs/common';
 import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
+/* Application Dependencies */
+import { GqlAuthGuard } from '@server/modules/graphql/guards/auth.guard';
 /* Local Dependencies */
 import { MintKeysetService } from "./mintkeyset.service";
 import { OrchardMintKeyset } from "./mintkeyset.model";
@@ -17,6 +19,7 @@ export class MintKeysetResolver {
   	) {}
 
 	@Query(() => [OrchardMintKeyset])
+	@UseGuards(GqlAuthGuard)
 	async mint_keysets() : Promise<OrchardMintKeyset[]> {
 		const tag = 'GET { mint_keysets }';
 		this.logger.debug(tag);
@@ -24,6 +27,7 @@ export class MintKeysetResolver {
 	}
 
 	@Mutation(() => OrchardMintKeysetRotation)
+	@UseGuards(GqlAuthGuard)
 	async mint_rotate_keyset(@Args('mint_rotate_keyset') mint_rotate_keyset: MintRotateKeysetInput): Promise<OrchardMintKeysetRotation> {
 		const tag = 'MUTATION { mint_rotate_keyset }';
 		this.logger.debug(tag);
