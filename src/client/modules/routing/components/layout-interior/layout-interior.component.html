@@ -28,6 +28,7 @@
 					[content]="user_content"
 					[conversation]="ai_conversation"
 					[message_length]="ai_conversation?.messages?.length"
+					[log_open]="sidenav?.opened"
 					(command)="onCommand()"
 					(modelChange)="onModelChange($event)"
 					(toggleLog)="onToggleLog()">
