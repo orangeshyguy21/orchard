@@ -1,6 +1,8 @@
 /* Core Dependencies */
-import { Logger } from '@nestjs/common';
+import { Logger, UseGuards } from '@nestjs/common';
 import { Resolver, Query } from "@nestjs/graphql";
+/* Application Dependencies */
+import { GqlAuthGuard } from '@server/modules/graphql/guards/auth.guard';
 /* Local Dependencies */
 import { StatusService } from "./status.service";
 import { OrchardStatus } from "./status.model";
@@ -15,6 +17,7 @@ export class StatusResolver {
 	) {}
 
 	@Query(() => OrchardStatus)
+	@UseGuards(GqlAuthGuard)
 	async status() : Promise<OrchardStatus> {
 		this.logger.debug('GET { status }');
 		return await this.statusService.getStatus();

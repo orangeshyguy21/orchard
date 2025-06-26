@@ -1,6 +1,8 @@
 /* Core Dependencies */
-import { Logger } from '@nestjs/common';
+import { Logger, UseGuards } from '@nestjs/common';
 import { Resolver, Query, Args } from "@nestjs/graphql";
+/* Application Dependencies */
+import { GqlAuthGuard } from '@server/modules/graphql/guards/auth.guard';
 /* Local Dependencies */
 import { PublicImageService } from "./image.service";
 import { OrchardPublicImage } from "./image.model";
@@ -15,6 +17,7 @@ export class PublicImageResolver {
 	) {}
 
 	@Query(() => OrchardPublicImage)
+	@UseGuards(GqlAuthGuard)
 	async public_image(@Args('url') url: string) : Promise<OrchardPublicImage> {
 		const tag = 'GET { image }';
 		this.logger.debug(tag);
