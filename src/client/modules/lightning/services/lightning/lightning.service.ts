@@ -8,6 +8,7 @@ import { api, getApiQuery } from '@client/modules/api/helpers/api.helpers';
 import { OrchardErrors } from '@client/modules/error/classes/error.class';
 import { OrchardRes } from '@client/modules/api/types/api.types';
 import { CacheService } from '@client/modules/cache/services/cache/cache.service';
+import { AuthService } from '@client/modules/auth/services/auth/auth.service';
 /* Native Dependencies */
 import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.class';
 import { LightningBalance } from '@client/modules/lightning/classes/lightning-balance.class';
@@ -53,8 +54,9 @@ export class LightningService {
 	private lightning_info_observable!: Observable<LightningInfo> | null;
 
 	constructor(
-		public http: HttpClient,
-		public cache: CacheService,
+		private http: HttpClient,
+		private cache: CacheService,
+		private authService: AuthService,
 	) {
 		this.lightning_info_subject = this.cache.createCache<LightningInfo>(
 			this.CACHE_KEYS.LIGHTNING_INFO,
@@ -75,8 +77,9 @@ export class LightningService {
 		if ( this.lightning_info_observable ) return this.lightning_info_observable;
 
 		const query = getApiQuery(LIGHTNING_INFO_QUERY);
+		const headers = this.authService.getAuthHeaders();
 	
-		this.lightning_info_observable = this.http.post<OrchardRes<LightningInfoResponse>>(api, query).pipe(
+		this.lightning_info_observable = this.http.post<OrchardRes<LightningInfoResponse>>(api, query, { headers }).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.lightning_info;
@@ -104,8 +107,9 @@ export class LightningService {
 		}
 		
 		const query = getApiQuery(LIGHTNING_BALANCE_QUERY);
+		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<LightningBalanceResponse>>(api, query).pipe(
+		return this.http.post<OrchardRes<LightningBalanceResponse>>(api, query, { headers }).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.lightning_balance;
@@ -127,8 +131,9 @@ export class LightningService {
 		}
 
 		const query = getApiQuery(LIGHTNING_WALLET_QUERY);
+		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<LightningWalletResponse>>(api, query).pipe(
+		return this.http.post<OrchardRes<LightningWalletResponse>>(api, query, { headers }).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.lightning_wallet;

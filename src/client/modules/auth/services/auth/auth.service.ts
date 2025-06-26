@@ -58,7 +58,8 @@ export class AuthService {
 		// Basic token validation - you might want to add more sophisticated validation todo
 		try {
 			const payload = JSON.parse(atob(token.split('.')[1]));
-			const expiration_time = payload.exp * 1000; // Convert to milliseconds
+			console.log('payload', payload);
+			const expiration_time = payload.exp * 1000;
 			return Date.now() < expiration_time;
 		} catch {
 			return false;

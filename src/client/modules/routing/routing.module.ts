@@ -6,9 +6,10 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 /* Application Dependencies */
 import { NavModule } from '@client/modules/nav/nav.module';
 import { AiModule } from '@client/modules/ai/ai.module';
-/* Local Dependencies */
+/* Native Dependencies */
 import { LayoutExteriorComponent } from './components/layout-exterior/layout-exterior.component';
 import { LayoutInteriorComponent } from './components/layout-interior/layout-interior.component';
+import { authenticationGuard } from './guards/authentication/authentication.guard';
 
 const interior_routes = [
 	{
@@ -45,6 +46,7 @@ const routes: Routes = [
 	{
 		path: '',
 		component: LayoutInteriorComponent,
+		canActivate: [authenticationGuard],
 		children: interior_routes,
 	},
 	{
