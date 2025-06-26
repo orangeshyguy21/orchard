@@ -55,6 +55,7 @@ export class AuthSectionComponent {
 	}
 
 	private openInterior(): void {
-		this.router.navigate(['/']);
+		const interior_destination = history.state?.interior_destination;
+		this.router.navigate([interior_destination || '/']);
 	}
 }
