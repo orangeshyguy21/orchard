@@ -8,7 +8,6 @@ import { api, getApiQuery } from '@client/modules/api/helpers/api.helpers';
 import { OrchardErrors } from '@client/modules/error/classes/error.class';
 import { OrchardRes } from '@client/modules/api/types/api.types';
 import { CacheService } from '@client/modules/cache/services/cache/cache.service';
-import { AuthService } from '@client/modules/auth/services/auth/auth.service';
 /* Shared Dependencies */
 import { OrchardBitcoinBlockCount } from '@shared/generated.types';
 /* Native Dependencies */
@@ -58,7 +57,6 @@ export class BitcoinService {
 	constructor(
 		private http: HttpClient,
 		private cache: CacheService,
-		private authService: AuthService,
 	) {
 		this.bitcoin_block_subject = new BehaviorSubject<BitcoinBlockCount | null>(null);
 		this.bitcoin_blockchain_info_subject = this.cache.createCache<BitcoinBlockchainInfo>(
@@ -76,9 +74,8 @@ export class BitcoinService {
 		if ( this.bitcoin_blockchain_info_observable ) return this.bitcoin_blockchain_info_observable;
 		
 		const query = getApiQuery(BITCOIN_BLOCKCHAIN_INFO_QUERY);
-		const headers = this.authService.getAuthHeaders();
 
-		this.bitcoin_blockchain_info_observable = this.http.post<OrchardRes<BitcoinBlockchainInfoResponse>>(api, query, { headers }).pipe(
+		this.bitcoin_blockchain_info_observable = this.http.post<OrchardRes<BitcoinBlockchainInfoResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.bitcoin_blockchain_info;
@@ -105,9 +102,8 @@ export class BitcoinService {
 		}
 
 		const query = getApiQuery(BITCOIN_NETWORK_INFO_QUERY);
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<BitcoinNetworkInfoResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<BitcoinNetworkInfoResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.bitcoin_network_info;
@@ -125,9 +121,8 @@ export class BitcoinService {
 
 	public getBlockCount() : Observable<OrchardBitcoinBlockCount> {
 		const query = getApiQuery(BITCOIN_BLOCK_COUNT_QUERY);
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<BitcoinBlockCountResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<BitcoinBlockCountResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.bitcoin_blockcount;

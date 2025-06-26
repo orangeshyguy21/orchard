@@ -8,7 +8,6 @@ import { throwError, Observable } from 'rxjs';
 import { api, getApiQuery } from '@client/modules/api/helpers/api.helpers';
 import { OrchardErrors } from '@client/modules/error/classes/error.class';
 import { OrchardRes } from '@client/modules/api/types/api.types';
-import { AuthService } from '@client/modules/auth/services/auth/auth.service';
 /* Native Dependencies */
 import { PublicImage } from '@client/modules/public/classes/public-image.class';
 import { PublicUrl } from '@client/modules/public/classes/public-url.class';
@@ -23,14 +22,12 @@ export class PublicService {
 
     constructor(
         private http: HttpClient,
-		private authService: AuthService,
     ) {}
 
     getPublicImageData(url: string): Observable<PublicImage> {
         const query = getApiQuery(PUBLIC_IMAGE_GET_QUERY, { url });
-		const headers = this.authService.getAuthHeaders();
 
-        return this.http.post<OrchardRes<PublicImageResponse>>(api, query, { headers }).pipe(
+        return this.http.post<OrchardRes<PublicImageResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.public_image;
@@ -45,9 +42,8 @@ export class PublicService {
 
 	getPublicUrlsData(urls: string[]): Observable<PublicUrl[]> {
 		const query = getApiQuery(PUBLIC_URLS_GET_QUERY, { urls });
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<PublicUrlResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<PublicUrlResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.public_urls;

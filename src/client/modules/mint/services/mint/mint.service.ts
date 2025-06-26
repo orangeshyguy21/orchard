@@ -48,7 +48,6 @@ import {
 	MintDatabaseRestoreResponse,
 } from '@client/modules/mint/types/mint.types';
 import { CacheService } from '@client/modules/cache/services/cache/cache.service';
-import { AuthService } from '@client/modules/auth/services/auth/auth.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 import { MintQuoteTtls } from '@client/modules/mint/classes/mint-quote-ttls.class';
 import { MintInfoRpc } from '@client/modules/mint/classes/mint-info-rpc.class';
@@ -165,7 +164,6 @@ export class MintService {
 	constructor(
 		private http: HttpClient,
 		private cache: CacheService,
-		private authService: AuthService,
 	) {
 		this.mint_info_subject = this.cache.createCache<MintInfo>(
 			this.CACHE_KEYS.MINT_INFO,
@@ -255,9 +253,8 @@ export class MintService {
 		if ( this.mint_info_observable ) return this.mint_info_observable;
 
 		const query = getApiQuery(MINT_INFO_QUERY);
-		const headers = this.authService.getAuthHeaders();
 	
-		this.mint_info_observable = this.http.post<OrchardRes<MintInfoResponse>>(api, query, { headers }).pipe(
+		this.mint_info_observable = this.http.post<OrchardRes<MintInfoResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.mint_info;
@@ -281,9 +278,8 @@ export class MintService {
 
 	public getMintInfo(): Observable<MintInfoRpc> {
 		const query = getApiQuery(MINT_INFO_RPC_QUERY);
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintInfoRpcResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintInfoRpcResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.mint_info_rpc;
@@ -298,9 +294,8 @@ export class MintService {
 
 	public getMintQuoteTtls(): Observable<MintQuoteTtls> {
 		const query = getApiQuery(MINT_QUOTE_TTLS_QUERY);
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintQuoteTtlsResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintQuoteTtlsResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.mint_quote_ttl;
@@ -315,9 +310,8 @@ export class MintService {
 
 	public getMintKeysetBalance(keyset_id:string): Observable<MintBalance> {
 		const query = getApiQuery(MINT_BALANCES_QUERY, { keyset_id });
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintBalancesResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintBalancesResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.mint_balances;
@@ -336,9 +330,8 @@ export class MintService {
 		}
 		
 		const query = getApiQuery(MINT_BALANCES_QUERY);
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintBalancesResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintBalancesResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.mint_balances;
@@ -360,9 +353,8 @@ export class MintService {
 		}
 
 		const query = getApiQuery(MINT_KEYSETS_QUERY);
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintKeysetsResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintKeysetsResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.mint_keysets;
@@ -392,9 +384,8 @@ export class MintService {
 		}
 
 		const query = getApiQuery(MINT_ANALYTICS_BALANCES_QUERY, args);
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintAnalyticsBalancesResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintAnalyticsBalancesResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.mint_analytics_balances;
@@ -424,9 +415,8 @@ export class MintService {
 		}
 
 		const query = getApiQuery(MINT_ANALYTICS_MINTS_QUERY, args);
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintAnalyticsMintsResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintAnalyticsMintsResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.mint_analytics_mints;
@@ -456,9 +446,8 @@ export class MintService {
 		}
 
 		const query = getApiQuery(MINT_ANALYTICS_MELTS_QUERY, args);
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintAnalyticsMeltsResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintAnalyticsMeltsResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.mint_analytics_melts;
@@ -488,9 +477,8 @@ export class MintService {
 		}
 
 		const query = getApiQuery(MINT_ANALYTICS_TRANSFERS_QUERY, args);
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintAnalyticsTransfersResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintAnalyticsTransfersResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.mint_analytics_transfers;
@@ -512,9 +500,8 @@ export class MintService {
 		}
 
 		const query = getApiQuery(MINT_MINT_QUOTES_QUERY, args);
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintMintQuotesResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintMintQuotesResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.mint_mint_quotes;
@@ -536,9 +523,8 @@ export class MintService {
 		}
 
 		const query = getApiQuery(MINT_MELT_QUOTES_QUERY, args);
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintMeltQuotesResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintMeltQuotesResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.mint_melt_quotes;
@@ -568,9 +554,8 @@ export class MintService {
 		}
 
 		const query = getApiQuery(MINT_ANALYTICS_KEYSETS_QUERY, args);
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintAnalyticsKeysetsResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintAnalyticsKeysetsResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.mint_analytics_keysets;
@@ -588,9 +573,8 @@ export class MintService {
 
 	public getMintMintQuotesData(args:MintMintQuotesArgs) {
 		const query = getApiQuery(MINT_MINT_QUOTES_DATA_QUERY, args);
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintMintQuotesDataResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintMintQuotesDataResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data;
@@ -610,6 +594,7 @@ export class MintService {
 
 	public getMintMeltQuotesData(args:MintMeltQuotesArgs) {
 		const query = getApiQuery(MINT_MELT_QUOTES_DATA_QUERY, args);
+
 		return this.http.post<OrchardRes<MintMeltQuotesDataResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
@@ -630,9 +615,8 @@ export class MintService {
 
 	public getMintProofGroupsData(args:MintProofGroupsArgs) {
 		const query = getApiQuery(MINT_PROOF_GROUPS_DATA_QUERY, args);
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintProofGroupsDataResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintProofGroupsDataResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data;
@@ -652,9 +636,8 @@ export class MintService {
 
 	public getMintPromiseGroupsData(args:MintPromiseGroupsArgs) {
 		const query = getApiQuery(MINT_PROMISE_GROUPS_DATA_QUERY, args);
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintPromiseGroupsDataResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintPromiseGroupsDataResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data;
@@ -674,9 +657,8 @@ export class MintService {
 
 	public updateMintName(name:string) : Observable<MintNameUpdateResponse> {
 		const query = getApiQuery(MINT_NAME_MUTATION,  { mint_name_update: { name } });
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintNameUpdateResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintNameUpdateResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data;
@@ -690,9 +672,8 @@ export class MintService {
 
 	public updateMintDescription(description:string) : Observable<MintDescriptionUpdateResponse> {
 		const query = getApiQuery(MINT_DESCRIPTION_MUTATION,  { mint_desc_update: { description } });
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintDescriptionUpdateResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintDescriptionUpdateResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data;
@@ -706,9 +687,8 @@ export class MintService {
 
 	public updateMintDescriptionLong(description:string) : Observable<MintDescriptionLongUpdateResponse> {
 		const query = getApiQuery(MINT_DESCRIPTION_LONG_MUTATION,  { mint_desc_update: { description } });
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintDescriptionLongUpdateResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintDescriptionLongUpdateResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data;
@@ -722,9 +702,8 @@ export class MintService {
 
 	public updateMintIcon(icon_url:string) : Observable<MintIconUrlUpdateResponse> {
 		const query = getApiQuery(MINT_ICON_MUTATION,  { mint_icon_update: { icon_url } });
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintIconUrlUpdateResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintIconUrlUpdateResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data;
@@ -738,9 +717,8 @@ export class MintService {
 
 	public updateMintMotd(motd:string) : Observable<MintMotdUpdateResponse> {
 		const query = getApiQuery(MINT_MOTD_MUTATION,  { mint_motd_update: { motd } });
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintMotdUpdateResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintMotdUpdateResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data;
@@ -754,9 +732,8 @@ export class MintService {
 
 	public updateMintUrl(url_add:string, url_remove:string) : Observable<MintUrlUpdateResponse> {
 		const query = getApiQuery(MINT_URL_UPDATE_MUTATIONS,  { url_add: { url: url_add }, url_remove: { url: url_remove } });
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintUrlUpdateResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintUrlUpdateResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data;
@@ -770,9 +747,8 @@ export class MintService {
 
 	public addMintUrl(url:string) : Observable<MintUrlAddResponse> {
 		const query = getApiQuery(MINT_URL_ADD_MUTATION,  { mint_url_update: { url } });
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintUrlAddResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintUrlAddResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data;
@@ -786,9 +762,8 @@ export class MintService {
 
 	public removeMintUrl(url:string) : Observable<MintUrlRemoveResponse> {
 		const query = getApiQuery(MINT_URL_REMOVE_MUTATION,  { mint_url_update: { url } });
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintUrlRemoveResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintUrlRemoveResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data;
@@ -811,9 +786,8 @@ export class MintService {
 				'info': contact_remove.info
 			}
 		});
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintContactUpdateResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintContactUpdateResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data;
@@ -827,9 +801,8 @@ export class MintService {
 
 	public removeMintContact(contact:OrchardContact) : Observable<MintContactRemoveResponse> {
 		const query = getApiQuery(MINT_CONTACT_REMOVE_MUTATION,  { contact_remove: { method: contact.method, info: contact.info } });
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintContactRemoveResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintContactRemoveResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data;
@@ -843,9 +816,8 @@ export class MintService {
 
 	public addMintContact(contact:OrchardContact) : Observable<MintContactAddResponse> {
 		const query = getApiQuery(MINT_CONTACT_ADD_MUTATION,  { contact_add: { method: contact.method, info: contact.info } });
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintContactAddResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintContactAddResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data;
@@ -859,9 +831,8 @@ export class MintService {
 
 	public updateMintQuoteTtl(key:keyof MintQuoteTtls, value:number|null) : Observable<MintQuoteTtlUpdateResponse> {
 		const query = getApiQuery(MINT_QUOTE_TTL_MUTATION,  { mint_quote_ttl_update: { [key]: value } });
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintQuoteTtlUpdateResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintQuoteTtlUpdateResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data;
@@ -875,9 +846,8 @@ export class MintService {
 
 	public updateMintNut04(unit:string, method:string, key:string, value:any) : Observable<MintNut04UpdateResponse> {
 		const query = getApiQuery(MINT_NUT04_UPDATE_MUTATION, { mint_nut04_update: { unit, method, [key]: value } });
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintNut04UpdateResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintNut04UpdateResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data;
@@ -891,9 +861,8 @@ export class MintService {
 
 	public updateMintNut05(unit:string, method:string, key:string, value:any) : Observable<MintNut05UpdateResponse> {
 		const query = getApiQuery(MINT_NUT05_UPDATE_MUTATION, { mint_nut05_update: { unit, method, [key]: value } });
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintNut05UpdateResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintNut05UpdateResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data;
@@ -907,9 +876,8 @@ export class MintService {
 
 	public rotateMintKeysets(unit:string, input_fee_ppk:number, max_order:number) : Observable<MintKeysetRotationResponse> {
 		const query = getApiQuery(MINT_KEYSETS_ROTATION_MUTATION, { mint_rotate_keyset: { unit, input_fee_ppk, max_order } });
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintKeysetRotationResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintKeysetRotationResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data;
@@ -923,9 +891,8 @@ export class MintService {
 
 	public createMintDatabaseBackup() : Observable<MintDatabaseBackupResponse> {
 		const query = getApiQuery(MINT_DATABASE_BACKUP_MUTATION, {});
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintDatabaseBackupResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintDatabaseBackupResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data;
@@ -939,9 +906,8 @@ export class MintService {
 
 	public restoreMintDatabaseBackup(filebase64:string) : Observable<MintDatabaseRestoreResponse> {
 		const query = getApiQuery(MINT_DATABASE_RESTORE_MUTATION, { filebase64 });
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintDatabaseRestoreResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<MintDatabaseRestoreResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data;
@@ -955,9 +921,8 @@ export class MintService {
 	
 	public updateMint(mutation:string, variables:Record<string, any>) {
 		const query = getApiQuery(mutation, variables);
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<any>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<any>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data;

@@ -2,7 +2,7 @@
 import { NgModule } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { BrowserModule } from '@angular/platform-browser'; 
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 /* Vendor Dependencies */
 import { provideLuxonDateAdapter } from '@angular/material-luxon-adapter';
@@ -23,6 +23,7 @@ import {
 import 'chartjs-adapter-luxon';
 /* Application Dependencies */
 import { RoutingModule } from './modules/routing/routing.module';
+import { authInterceptor } from './modules/auth/interceptors/auth.interceptor';
 /* Native Dependencies */
 import { AppComponent } from './app.component';
 
@@ -36,7 +37,9 @@ import { AppComponent } from './app.component';
         RoutingModule
     ],
     providers: [
-		provideHttpClient(),
+		provideHttpClient(
+			withInterceptors([authInterceptor])
+		),
 		provideAnimations(),
 		provideLuxonDateAdapter(),
 		provideCharts({ 

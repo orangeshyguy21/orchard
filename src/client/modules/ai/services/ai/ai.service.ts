@@ -6,7 +6,6 @@ import { Observable, catchError, Subscription, Subject, map, tap, throwError, sh
 /* Application Dependencies */
 import { ApiService } from '@client/modules/api/services/api/api.service';
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
-import { AuthService } from '@client/modules/auth/services/auth/auth.service';
 import { OrchardWsRes } from '@client/modules/api/types/api.types';
 import { api, getApiQuery } from '@client/modules/api/helpers/api.helpers';
 import { OrchardErrors } from '@client/modules/error/classes/error.class';
@@ -48,19 +47,8 @@ export class AiService {
 	constructor(
 		private apiService: ApiService,
 		private settingService: SettingService,
-		private authService: AuthService,
 		private http: HttpClient,
 	) {}
-
-	// public init(): void {
-	// 	if( !environment.ai.enabled ) return;
-	// 	const set_model = this.settingService.getModel();
-	// 	this.getAiModels().subscribe((models) => {
-	// 		if( models.find((model) => model.model === set_model) ) return;
-	// 		const model = this.getSmallestFunctionModel(models);
-	// 		this.settingService.setModel(model?.model || null);
-	// 	});
-	// }
 
 	public getFunctionModel(): Observable<AiModel | null> {
 		const set_model = this.settingService.getModel();
@@ -136,9 +124,8 @@ export class AiService {
 	public getAiModels(): Observable<AiModel[]> {
 		if ( this.ai_models_observable ) return this.ai_models_observable;
 		const query = getApiQuery(AI_MODELS_QUERY);
-		const headers = this.authService.getAuthHeaders();
 
-		this.ai_models_observable = this.http.post<OrchardRes<AiModelResponse>>(api, query, { headers }).pipe(
+		this.ai_models_observable = this.http.post<OrchardRes<AiModelResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.ai_models;
@@ -159,9 +146,8 @@ export class AiService {
 
 	public getAiAgent(agent: AiAgent): Observable<AiAgentDefinition> {
 		const query = getApiQuery(AI_AGENT_QUERY, { agent });
-		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<AiAgentResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<AiAgentResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.ai_agent;
