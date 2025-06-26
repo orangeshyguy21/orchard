@@ -7,8 +7,11 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 /* Application Dependencies */
 import { FormModule } from '@client/modules/form/form.module';
+import { GraphicModule } from '@client/modules/graphic/graphic.module';
 /* Local Dependencies */
 import { AuthSectionComponent } from './components/auth-section/auth-section.component';
 import { AuthPasswordComponent } from './components/auth-password/auth-password.component';
@@ -39,7 +42,10 @@ export class AuthAppRoutingModule { }
 		MatCardModule,
 		MatFormFieldModule,
 		MatInputModule,
+		MatIconModule,
+		MatButtonModule,
 		FormModule,
+		GraphicModule,
 	],
 })
 export class AuthAppModule { }
