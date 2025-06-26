@@ -3,8 +3,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 /* Vendor Dependencies */
 import { Observable, catchError, Subscription, Subject, map, tap, throwError, shareReplay } from 'rxjs';
-/* Application Configuration */
-import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
 import { ApiService } from '@client/modules/api/services/api/api.service';
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
@@ -54,14 +52,27 @@ export class AiService {
 		private http: HttpClient,
 	) {}
 
-	public init(): void {
-		if( !environment.ai.enabled ) return;
+	// public init(): void {
+	// 	if( !environment.ai.enabled ) return;
+	// 	const set_model = this.settingService.getModel();
+	// 	this.getAiModels().subscribe((models) => {
+	// 		if( models.find((model) => model.model === set_model) ) return;
+	// 		const model = this.getSmallestFunctionModel(models);
+	// 		this.settingService.setModel(model?.model || null);
+	// 	});
+	// }
+
+	public getFunctionModel(): Observable<AiModel | null> {
 		const set_model = this.settingService.getModel();
-		this.getAiModels().subscribe((models) => {
-			if( models.find((model) => model.model === set_model) ) return;
-			const model = this.getSmallestFunctionModel(models);
-			this.settingService.setModel(model?.model || null);
-		});
+		return this.getAiModels().pipe(
+			map((models) => {
+				if( models.find((model) => model.model === set_model) ) {
+					return models.find((model) => model.model === set_model) || null;
+				}
+				const model = this.getSmallestFunctionModel(models);
+				return model;
+			})
+		);
 	}
 
 	public closeAiSocket(): void {
