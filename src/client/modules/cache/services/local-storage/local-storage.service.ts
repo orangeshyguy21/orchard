@@ -93,7 +93,7 @@ export class LocalStorageService {
 		return settings;
 	}
 
-	setAuthToken(token: string): void {
+	setAuthToken(token: string | null): void {
 		this.setItem(this.STORAGE_KEYS.AUTH_TOKEN_KEY, token);
 	}
 	setTimezone(timezone: Timezone): void {

@@ -42,6 +42,10 @@ export class AuthService {
 		);
 	}
 
+	public logout(): void {
+		this.localStorageService.setAuthToken(null);
+	}
+
 	public isAuthenticated(): boolean {
 		return this.hasValidToken();
 	}

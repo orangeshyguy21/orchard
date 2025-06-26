@@ -14,8 +14,6 @@
     @extend %p-h-1;
 }
 
-.secondary-nav-header{}
-
 ::ng-deep [secondary-nav-header] {
     @extend %w-min-18;
 }

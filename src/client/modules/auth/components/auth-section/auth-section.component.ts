@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 /* Native Dependencies */
@@ -12,7 +12,7 @@ import { AuthService } from '@client/modules/auth/services/auth/auth.service';
 	styleUrl: './auth-section.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AuthSectionComponent {
+export class AuthSectionComponent implements OnInit {
 
 	public form_auth: FormGroup = new FormGroup({
 		password: new FormControl(null, [Validators.required]),
@@ -22,6 +22,10 @@ export class AuthSectionComponent {
 		private readonly authService: AuthService,
 		private readonly router: Router,
 	) {}
+
+	public ngOnInit(): void {
+		this.authService.logout();
+	}
 
 	public onControlUpdate(control_name: string): void {
 		if( this.form_auth.get(control_name)?.invalid ) return;
