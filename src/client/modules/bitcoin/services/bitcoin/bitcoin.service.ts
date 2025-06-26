@@ -55,8 +55,8 @@ export class BitcoinService {
 	private bitcoin_blockchain_info_observable!: Observable<BitcoinBlockchainInfo> | null;
 
 	constructor(
-		public http: HttpClient,
-		public cache: CacheService,
+		private http: HttpClient,
+		private cache: CacheService,
 	) {
 		this.bitcoin_block_subject = new BehaviorSubject<BitcoinBlockCount | null>(null);
 		this.bitcoin_blockchain_info_subject = this.cache.createCache<BitcoinBlockchainInfo>(
@@ -72,7 +72,9 @@ export class BitcoinService {
 	public loadBitcoinBlockchainInfo(): Observable<BitcoinBlockchainInfo> {
 		if ( this.bitcoin_blockchain_info_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.BITCOIN_BLOCKCHAIN_INFO) ) return of(this.bitcoin_blockchain_info_subject.value);
 		if ( this.bitcoin_blockchain_info_observable ) return this.bitcoin_blockchain_info_observable;
+		
 		const query = getApiQuery(BITCOIN_BLOCKCHAIN_INFO_QUERY);
+
 		this.bitcoin_blockchain_info_observable = this.http.post<OrchardRes<BitcoinBlockchainInfoResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
@@ -119,6 +121,7 @@ export class BitcoinService {
 
 	public getBlockCount() : Observable<OrchardBitcoinBlockCount> {
 		const query = getApiQuery(BITCOIN_BLOCK_COUNT_QUERY);
+
 		return this.http.post<OrchardRes<BitcoinBlockCountResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);

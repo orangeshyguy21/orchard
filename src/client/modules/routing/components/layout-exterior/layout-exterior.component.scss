@@ -1,0 +1,20 @@
+@use '@styles/molecule/molecule';
+
+.exterior-container{
+    @extend %flex;
+    @extend %flex-row;
+    @extend %h-full;
+}
+
+.exterior-section-container{
+    @extend %flex-grow;
+    @extend %flex;
+    @extend %flex-column;
+    @extend %h-dvh;
+}
+
+.exterior-router-outlet-container{
+    @extend %flex-grow;
+    @extend %flex;
+    @extend %flex-column;
+}

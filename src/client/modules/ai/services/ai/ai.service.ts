@@ -3,8 +3,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 /* Vendor Dependencies */
 import { Observable, catchError, Subscription, Subject, map, tap, throwError, shareReplay } from 'rxjs';
-/* Application Configuration */
-import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
 import { ApiService } from '@client/modules/api/services/api/api.service';
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
@@ -52,14 +50,17 @@ export class AiService {
 		private http: HttpClient,
 	) {}
 
-	public init(): void {
-		if( !environment.ai.enabled ) return;
+	public getFunctionModel(): Observable<AiModel | null> {
 		const set_model = this.settingService.getModel();
-		this.getAiModels().subscribe((models) => {
-			if( models.find((model) => model.model === set_model) ) return;
-			const model = this.getSmallestFunctionModel(models);
-			this.settingService.setModel(model?.model || null);
-		});
+		return this.getAiModels().pipe(
+			map((models) => {
+				if( models.find((model) => model.model === set_model) ) {
+					return models.find((model) => model.model === set_model) || null;
+				}
+				const model = this.getSmallestFunctionModel(models);
+				return model;
+			})
+		);
 	}
 
 	public closeAiSocket(): void {
@@ -123,6 +124,7 @@ export class AiService {
 	public getAiModels(): Observable<AiModel[]> {
 		if ( this.ai_models_observable ) return this.ai_models_observable;
 		const query = getApiQuery(AI_MODELS_QUERY);
+
 		this.ai_models_observable = this.http.post<OrchardRes<AiModelResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
@@ -144,6 +146,7 @@ export class AiService {
 
 	public getAiAgent(agent: AiAgent): Observable<AiAgentDefinition> {
 		const query = getApiQuery(AI_AGENT_QUERY, { agent });
+
 		return this.http.post<OrchardRes<AiAgentResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);

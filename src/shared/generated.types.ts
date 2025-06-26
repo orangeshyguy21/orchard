@@ -84,6 +84,10 @@ export enum AiMessageRole {
   User = 'USER'
 }
 
+export type AuthenticationInput = {
+  password: Scalars['String']['input'];
+};
+
 export enum LightningAddressType {
   HybridNestedWitnessPubkeyHash = 'HYBRID_NESTED_WITNESS_PUBKEY_HASH',
   NestedWitnessPubkeyHash = 'NESTED_WITNESS_PUBKEY_HASH',
@@ -186,6 +190,7 @@ export type MintUrlUpdateInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   ai_chat_abort: OrchardAiChatStream;
+  authentication: OrchardAuthentication;
   mint_contact_add: OrchardMintContactUpdate;
   mint_contact_remove: OrchardMintContactUpdate;
   mint_database_backup: OrchardMintDatabaseBackup;
@@ -207,6 +212,11 @@ export type Mutation = {
 
 export type MutationAi_Chat_AbortArgs = {
   ai_chat_abort: AiChatAbortInput;
+};
+
+
+export type MutationAuthenticationArgs = {
+  authentication: AuthenticationInput;
 };
 
 
@@ -377,6 +387,11 @@ export type OrchardAiModelDetails = {
   parameter_size: Scalars['String']['output'];
   parent_model: Scalars['String']['output'];
   quantization_level: Scalars['String']['output'];
+};
+
+export type OrchardAuthentication = {
+  __typename?: 'OrchardAuthentication';
+  access_token: Scalars['String']['output'];
 };
 
 export type OrchardBitcoinBlockCount = {

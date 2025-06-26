@@ -1,6 +1,8 @@
 /* Core Dependencies */
-import { Logger } from '@nestjs/common';
+import { Logger, UseGuards } from '@nestjs/common';
 import { Resolver, Query, Args } from "@nestjs/graphql";
+/* Application Dependencies */
+import { GqlAuthGuard } from '@server/modules/graphql/guards/auth.guard';
 /* Native Dependencies */
 import { AiAgent } from '@server/modules/ai/ai.enums';
 /* Internal Dependencies */
@@ -17,6 +19,7 @@ export class AiAgentResolver {
 	) {}
 
 	@Query(() => OrchardAiAgent)
+	@UseGuards(GqlAuthGuard)
 	async ai_agent(
         @Args('agent', { type: () => AiAgent }) agent: AiAgent) : Promise<OrchardAiAgent> {
 		const tag = 'GET { ai_agent }';

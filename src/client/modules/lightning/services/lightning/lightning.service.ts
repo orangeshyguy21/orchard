@@ -53,8 +53,8 @@ export class LightningService {
 	private lightning_info_observable!: Observable<LightningInfo> | null;
 
 	constructor(
-		public http: HttpClient,
-		public cache: CacheService,
+		private http: HttpClient,
+		private cache: CacheService,
 	) {
 		this.lightning_info_subject = this.cache.createCache<LightningInfo>(
 			this.CACHE_KEYS.LIGHTNING_INFO,

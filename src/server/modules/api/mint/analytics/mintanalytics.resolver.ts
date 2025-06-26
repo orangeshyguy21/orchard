@@ -1,7 +1,8 @@
 /* Core Dependencies */
-import { Logger } from '@nestjs/common';
+import { Logger, UseGuards } from '@nestjs/common';
 import { Resolver, Query, Args } from "@nestjs/graphql";
 /* Application Dependencies */
+import { GqlAuthGuard } from '@server/modules/graphql/guards/auth.guard';
 import { UnixTimestamp } from "@server/modules/graphql/scalars/unixtimestamp.scalar";
 import { Timezone, TimezoneType } from "@server/modules/graphql/scalars/timezone.scalar";
 import { MintAnalyticsInterval } from '@server/modules/cashu/mintdb/cashumintdb.enums';
@@ -20,6 +21,7 @@ export class MintAnalyticsResolver {
 	) {}
 
 	@Query(() => [OrchardMintAnalytics])
+	@UseGuards(GqlAuthGuard)
 	async mint_analytics_balances(
 		@Args('units', { type: () => [MintUnit], nullable: true }) units?: MintUnit[],
 		@Args('date_start', { type: () => UnixTimestamp, nullable: true }) date_start?: number,
@@ -33,6 +35,7 @@ export class MintAnalyticsResolver {
 	}
 
 	@Query(() => [OrchardMintAnalytics])
+	@UseGuards(GqlAuthGuard)
 	async mint_analytics_mints(
 		@Args('units', { type: () => [MintUnit], nullable: true }) units?: MintUnit[],
 		@Args('date_start', { type: () => UnixTimestamp, nullable: true }) date_start?: number,
@@ -46,6 +49,7 @@ export class MintAnalyticsResolver {
 	}	
 
 	@Query(() => [OrchardMintAnalytics])
+	@UseGuards(GqlAuthGuard)
 	async mint_analytics_melts(
 		@Args('units', { type: () => [MintUnit], nullable: true }) units?: MintUnit[],
 		@Args('date_start', { type: () => UnixTimestamp, nullable: true }) date_start?: number,
@@ -59,6 +63,7 @@ export class MintAnalyticsResolver {
 	}
 
 	@Query(() => [OrchardMintAnalytics])
+	@UseGuards(GqlAuthGuard)
 	async mint_analytics_transfers(
 		@Args('units', { type: () => [MintUnit], nullable: true }) units?: MintUnit[],
 		@Args('date_start', { type: () => UnixTimestamp, nullable: true }) date_start?: number,
@@ -72,6 +77,7 @@ export class MintAnalyticsResolver {
 	}
 
 	@Query(() => [OrchardMintKeysetsAnalytics])
+	@UseGuards(GqlAuthGuard)
 	async mint_analytics_keysets(
 		@Args('date_start', { type: () => UnixTimestamp, nullable: true }) date_start?: number,
 		@Args('date_end', { type: () => UnixTimestamp, nullable: true }) date_end?: number,

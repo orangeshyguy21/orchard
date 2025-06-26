@@ -13,6 +13,7 @@ export const config = (): Config => {
 		path  : process.env.BASE_PATH || 'api',
 		proxy : process.env.TOR_PROXY_SERVER || undefined,
 		log   : process.env.LOG_LEVEL || 'info',
+		pass  : process.env.ADMIN_PASSWORD,
 	};
 
 	const bitcoin = {

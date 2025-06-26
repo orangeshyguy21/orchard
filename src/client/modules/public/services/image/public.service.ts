@@ -21,11 +21,12 @@ import { PUBLIC_IMAGE_GET_QUERY, PUBLIC_URLS_GET_QUERY } from './public.queries'
 export class PublicService {
 
     constructor(
-        public http: HttpClient,
+        private http: HttpClient,
     ) {}
 
     getPublicImageData(url: string): Observable<PublicImage> {
         const query = getApiQuery(PUBLIC_IMAGE_GET_QUERY, { url });
+
         return this.http.post<OrchardRes<PublicImageResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
@@ -41,6 +42,7 @@ export class PublicService {
 
 	getPublicUrlsData(urls: string[]): Observable<PublicUrl[]> {
 		const query = getApiQuery(PUBLIC_URLS_GET_QUERY, { urls });
+
 		return this.http.post<OrchardRes<PublicUrlResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);

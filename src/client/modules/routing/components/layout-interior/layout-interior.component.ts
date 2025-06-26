@@ -89,7 +89,6 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	ngOnInit(): void {
 		this.subscriptions.add(this.getRouterSubscription());
 		this.subscriptions.add(this.getEventSubscription());
-		this.model = this.settingService.getModel();
 		this.orchardOptionalInit();
 	}
 
@@ -112,6 +111,14 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 			this.subscriptions.add(this.getActiveAiSubscription());
 			this.subscriptions.add(this.getAiMessagesSubscription());
 			this.subscriptions.add(this.getAiConversationSubscription());
+			this.model = this.settingService.getModel();
+			if( !this.model ) {
+				this.aiService.getFunctionModel().subscribe((model) => {
+					this.model = model?.model || null;
+					this.settingService.setModel(this.model);
+					this.cdr.detectChanges();
+				});
+			}
 			this.getModels();
 		}
 	}

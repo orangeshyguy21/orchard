@@ -1,9 +1,11 @@
 /* Core Dependencies */
-import { Logger } from '@nestjs/common';
+import { Logger, UseGuards } from '@nestjs/common';
 import { Resolver, Subscription, Query } from '@nestjs/graphql';
 import { OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 /* Vendor Dependencies */
 import { PubSub } from 'graphql-subscriptions';
+/* Application Dependencies */
+import { GqlAuthGuard } from '@server/modules/graphql/guards/auth.guard';
 /* Local Dependencies */
 import { OrchardBitcoinBlockCount, OrchardBitcoinBlockchainInfo } from './btcblockchain.model';
 import { BitcoinBlockchainService } from './btcblockchain.service';
@@ -32,6 +34,7 @@ export class BitcoinBlockchainResolver {
 	// }
 
 	@Query(() => OrchardBitcoinBlockCount)
+	@UseGuards(GqlAuthGuard)
 	async bitcoin_blockcount() : Promise<OrchardBitcoinBlockCount> {
 		const tag = 'GET { bitcoin_blockcount }';
 		this.logger.debug(tag);
@@ -42,12 +45,14 @@ export class BitcoinBlockchainResolver {
 		name: 'blockCount',
 		resolve: (value) => value.blockCount,
 	})
+	@UseGuards(GqlAuthGuard)
 	subscribeToBlockCount() {
 		this.logger.debug('SUBSCRIPTION { bitcoin.blockcount }');
 		return pubSub.asyncIterableIterator('bitcoin.blockcount');
 	}
 
 	@Query(() => OrchardBitcoinBlockchainInfo)
+	@UseGuards(GqlAuthGuard)
 	async bitcoin_blockchain_info() : Promise<OrchardBitcoinBlockchainInfo> {
 		const tag = 'GET { bitcoin_blockchain_info }';
 		this.logger.debug(tag);

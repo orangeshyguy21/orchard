@@ -6,9 +6,10 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 /* Application Dependencies */
 import { NavModule } from '@client/modules/nav/nav.module';
 import { AiModule } from '@client/modules/ai/ai.module';
-/* Local Dependencies */
+/* Native Dependencies */
 import { LayoutExteriorComponent } from './components/layout-exterior/layout-exterior.component';
 import { LayoutInteriorComponent } from './components/layout-interior/layout-interior.component';
+import { authenticationGuard } from './guards/authentication/authentication.guard';
 
 const interior_routes = [
 	{
@@ -39,18 +40,19 @@ const interior_routes = [
 		path: 'event',
 		loadChildren: () => import('@client/modules/event/event-app.module').then(m => m.EventAppModule),
 	}
-]
+];
 
 const routes: Routes = [
 	{
 		path: '',
 		component: LayoutInteriorComponent,
+		canActivate: [authenticationGuard],
 		children: interior_routes,
 	},
 	{
-		path: 'login',
+		path: 'authentication',
 		component: LayoutExteriorComponent,
-		loadChildren: () => import('@client/modules/login/login-app.module').then(m => m.LoginAppModule)
+		loadChildren: () => import('@client/modules/auth/auth-app.module').then(m => m.AuthAppModule)
 	},
 ];
 

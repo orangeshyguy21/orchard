@@ -31,6 +31,13 @@
         @extend %flex-gap-1;
     }
 
+    #{$c}secondary-nav-toolbar {
+        @extend %flex;
+        @extend %flex-row;
+        @extend %flex-items-center;
+        @extend %flex-gap-1;
+    }
+
     #{$c}category-rule{
         @extend %border;
         @extend %border-solid;

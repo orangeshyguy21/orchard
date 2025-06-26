@@ -46,8 +46,8 @@ export class TaprootAssetsService {
 	private tap_info_observable!: Observable<TaprootAssetInfo> | null;
 
 	constructor(
-		public http: HttpClient,
-		public cache: CacheService,
+		private http: HttpClient,
+		private cache: CacheService,
 	) {
 		this.tap_info_subject = this.cache.createCache<TaprootAssetInfo>(
 			this.CACHE_KEYS.TAP_INFO,

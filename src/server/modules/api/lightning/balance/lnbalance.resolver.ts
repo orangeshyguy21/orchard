@@ -1,6 +1,8 @@
 /* Core Dependencies */
-import { Logger } from '@nestjs/common';
+import { Logger, UseGuards } from '@nestjs/common';
 import { Resolver, Query } from "@nestjs/graphql";
+/* Application Dependencies */
+import { GqlAuthGuard } from '@server/modules/graphql/guards/auth.guard';
 /* Local Dependencies */
 import { LightningBalanceService } from "./lnbalance.service";
 import { OrchardLightningBalance } from "./lnbalance.model";
@@ -16,6 +18,7 @@ export class LightningBalanceResolver {
 	) {}
 
 	@Query(() => OrchardLightningBalance)
+	@UseGuards(GqlAuthGuard)
 	async lightning_balance() : Promise<OrchardLightningBalance> {
 		const tag = 'GET { lightning_balance }';
 		this.logger.debug(tag);

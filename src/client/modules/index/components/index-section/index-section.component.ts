@@ -1,7 +1,6 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
-
 import { Router } from '@angular/router';
 /* Vendor Dependencies */
 import { tap, catchError, finalize, EMPTY, forkJoin, Subscription, firstValueFrom } from 'rxjs';
