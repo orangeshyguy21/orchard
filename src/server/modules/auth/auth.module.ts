@@ -8,6 +8,7 @@ import { UserModule } from '@server/modules/user/user.module';
 /* Local Dependencies */
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './auth.strategy';
+import { RefreshTokenStrategy } from './refresh.strategy';
 
 @Module({
     imports: [
@@ -16,7 +17,7 @@ import { JwtStrategy } from './auth.strategy';
         JwtModule.registerAsync({
             useFactory: async (configService: ConfigService) => ({
                 secret: configService.get('server.pass'),
-                signOptions: { expiresIn: '1h' },
+                signOptions: { expiresIn: '15m' },
             }),
             inject: [ConfigService],
         }),
@@ -24,6 +25,7 @@ import { JwtStrategy } from './auth.strategy';
     providers: [
         AuthService,
         JwtStrategy,
+        RefreshTokenStrategy,
     ],
     exports: [
         AuthService

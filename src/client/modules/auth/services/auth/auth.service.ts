@@ -10,7 +10,7 @@ import { LocalStorageService } from '@client/modules/cache/services/local-storag
 /* Native Dependencies */
 import { AuthenticationResponse } from '@client/modules/auth/types/auth.types';
 /* Local Dependencies */
-import { AUTHENTICATION_MUTATION } from './auth.queries';
+import { AUTHENTICATION_MUTATION, REFRESH_TOKEN_MUTATION } from './auth.queries';
 /* Shared Dependencies */
 import { OrchardAuthentication } from '@shared/generated.types';
 
@@ -34,6 +34,7 @@ export class AuthService {
 			}),
 			tap((authentication) => {
 				this.localStorageService.setAuthToken(authentication.access_token);
+				this.localStorageService.setRefreshToken(authentication.refresh_token);
 			}),
 			catchError((error) => {
 				console.error('Error authenticating:', error);
@@ -42,8 +43,35 @@ export class AuthService {
 		);
 	}
 
+	public refreshToken(): Observable<OrchardAuthentication> {
+		const refresh_token = this.localStorageService.getRefreshToken();
+		if (!refresh_token) {
+			return throwError(() => new Error('No refresh token available'));
+		}
+
+		const query = getApiQuery(REFRESH_TOKEN_MUTATION, {});
+		const headers = { 'Authorization': `Bearer ${refresh_token}` };
+
+		return this.http.post<OrchardRes<AuthenticationResponse>>(api, query, { headers }).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.authentication;
+			}),
+			tap((authentication) => {
+				this.localStorageService.setAuthToken(authentication.access_token);
+				this.localStorageService.setRefreshToken(authentication.refresh_token);
+			}),
+			catchError((error) => {
+				console.error('Error refreshing token:', error);
+				this.logout();
+				return throwError(() => error);
+			}),
+		);
+	}
+
 	public logout(): void {
 		this.localStorageService.setAuthToken(null);
+		this.localStorageService.setRefreshToken(null);
 	}
 
 	public isAuthenticated(): boolean {
@@ -59,7 +87,6 @@ export class AuthService {
 		const token = this.localStorageService.getAuthToken();
 		if (!token) return false;
 		
-		// Basic token validation - you might want to add more sophisticated validation todo
 		try {
 			const payload = JSON.parse(atob(token.split('.')[1]));
 			console.log('payload', payload);

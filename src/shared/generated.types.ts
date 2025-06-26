@@ -207,6 +207,7 @@ export type Mutation = {
   mint_short_description_update: OrchardMintDescriptionUpdate;
   mint_url_add: OrchardMintUrlUpdate;
   mint_url_remove: OrchardMintUrlUpdate;
+  refreshToken: OrchardAuthentication;
 };
 
 
@@ -392,6 +393,7 @@ export type OrchardAiModelDetails = {
 export type OrchardAuthentication = {
   __typename?: 'OrchardAuthentication';
   access_token: Scalars['String']['output'];
+  refresh_token: Scalars['String']['output'];
 };
 
 export type OrchardBitcoinBlockCount = {

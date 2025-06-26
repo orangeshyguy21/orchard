@@ -11,6 +11,7 @@ export class LocalStorageService {
 	private readonly STORAGE_KEYS = {
 		/* Auth Settings */
 		AUTH_TOKEN_KEY: 'v0.auth.token',
+		REFRESH_TOKEN_KEY: 'v0.auth.refresh_token',
 		/* User Settings */
 		TIMEZONE_KEY: 'v0.setting.timezone',
 		LOCALE_KEY: 'v0.setting.locale',
@@ -57,6 +58,9 @@ export class LocalStorageService {
 	getAuthToken(): string | null {
 		return this.getItem<string>(this.STORAGE_KEYS.AUTH_TOKEN_KEY);
 	}
+	getRefreshToken(): string | null {
+		return this.getItem<string>(this.STORAGE_KEYS.REFRESH_TOKEN_KEY);
+	}
 	getTimezone(): Timezone {
 		const timezone = this.getItem<Timezone>(this.STORAGE_KEYS.TIMEZONE_KEY);
 		if (!timezone) return { tz: null };
@@ -95,6 +99,9 @@ export class LocalStorageService {
 
 	setAuthToken(token: string | null): void {
 		this.setItem(this.STORAGE_KEYS.AUTH_TOKEN_KEY, token);
+	}
+	setRefreshToken(token: string | null): void {
+		this.setItem(this.STORAGE_KEYS.REFRESH_TOKEN_KEY, token);
 	}
 	setTimezone(timezone: Timezone): void {
 		this.setItem(this.STORAGE_KEYS.TIMEZONE_KEY, timezone);
