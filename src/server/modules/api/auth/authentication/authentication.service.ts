@@ -31,9 +31,9 @@ export class AuthenticationService {
         }
     }
 
-    async refreshToken(tag: string): Promise<OrchardAuthentication> {
+    async refreshToken(tag: string, refresh_token: string): Promise<OrchardAuthentication> {
         try {
-            const token = await this.authService.refreshToken('');
+            const token = await this.authService.refreshToken(refresh_token);
             if(!token) throw OrchardErrorCode.AuthenticationError;
             return new OrchardAuthentication(token);
         } catch (error) {

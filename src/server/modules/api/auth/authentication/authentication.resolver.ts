@@ -2,6 +2,8 @@
 import { Logger } from '@nestjs/common';
 import { Resolver, Args, Mutation } from "@nestjs/graphql";
 import { UseGuards } from '@nestjs/common';
+import { GqlExecutionContext } from '@nestjs/graphql';
+import { ExecutionContext } from '@nestjs/common';
 /* Application Dependencies */
 import { GqlRefreshGuard } from '@server/modules/graphql/guards/refresh.guard';
 /* Local Dependencies */
@@ -27,9 +29,12 @@ export class AuthenticationResolver {
 
     @Mutation(() => OrchardAuthentication)
     @UseGuards(GqlRefreshGuard)
-    async refreshToken() {
+    async refreshToken(context: ExecutionContext) {
         const tag = 'MUTATION { refreshToken }';
         this.logger.debug(tag);
-        return await this.authenticationService.refreshToken(tag);
+        const ctx = GqlExecutionContext.create(context);
+        const req = ctx.getContext().req;
+        const user = req.user;
+        return await this.authenticationService.refreshToken(tag, user.refresh_token);
     }
 }
