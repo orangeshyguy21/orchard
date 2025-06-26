@@ -4,7 +4,7 @@ import { ObjectType, Field } from '@nestjs/graphql';
 import { OrchardAuthToken } from '@server/modules/auth/auth.types';
 
 @ObjectType()
-export class OrchardAuthLogin {
+export class OrchardAuthentication {
 
     @Field()
     access_token: string;

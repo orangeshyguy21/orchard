@@ -9,6 +9,8 @@ import { Timezone, Locale, Theme, Model, MintDashboardSettings, MintKeysetsSetti
 export class LocalStorageService {
 
 	private readonly STORAGE_KEYS = {
+		/* Auth Settings */
+		AUTH_TOKEN_KEY: 'v0.auth.token',
 		/* User Settings */
 		TIMEZONE_KEY: 'v0.setting.timezone',
 		LOCALE_KEY: 'v0.setting.locale',
@@ -52,6 +54,9 @@ export class LocalStorageService {
 		}
 	}
 
+	getAuthToken(): string | null {
+		return this.getItem<string>(this.STORAGE_KEYS.AUTH_TOKEN_KEY);
+	}
 	getTimezone(): Timezone {
 		const timezone = this.getItem<Timezone>(this.STORAGE_KEYS.TIMEZONE_KEY);
 		if (!timezone) return { tz: null };
@@ -88,6 +93,9 @@ export class LocalStorageService {
 		return settings;
 	}
 
+	setAuthToken(token: string): void {
+		this.setItem(this.STORAGE_KEYS.AUTH_TOKEN_KEY, token);
+	}
 	setTimezone(timezone: Timezone): void {
 		this.setItem(this.STORAGE_KEYS.TIMEZONE_KEY, timezone);
 	}

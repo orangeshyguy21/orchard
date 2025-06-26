@@ -39,7 +39,7 @@ const interior_routes = [
 		path: 'event',
 		loadChildren: () => import('@client/modules/event/event-app.module').then(m => m.EventAppModule),
 	}
-]
+];
 
 const routes: Routes = [
 	{
@@ -48,9 +48,9 @@ const routes: Routes = [
 		children: interior_routes,
 	},
 	{
-		path: 'login',
+		path: 'authentication',
 		component: LayoutExteriorComponent,
-		loadChildren: () => import('@client/modules/login/login-app.module').then(m => m.LoginAppModule)
+		loadChildren: () => import('@client/modules/auth/auth-app.module').then(m => m.AuthAppModule)
 	},
 ];
 

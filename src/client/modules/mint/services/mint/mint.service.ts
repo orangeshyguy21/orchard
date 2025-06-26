@@ -48,6 +48,7 @@ import {
 	MintDatabaseRestoreResponse,
 } from '@client/modules/mint/types/mint.types';
 import { CacheService } from '@client/modules/cache/services/cache/cache.service';
+import { AuthService } from '@client/modules/auth/services/auth/auth.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 import { MintQuoteTtls } from '@client/modules/mint/classes/mint-quote-ttls.class';
 import { MintInfoRpc } from '@client/modules/mint/classes/mint-info-rpc.class';
@@ -162,8 +163,9 @@ export class MintService {
 	private mint_info_observable!: Observable<MintInfo> | null;
 
 	constructor(
-		public http: HttpClient,
-		public cache: CacheService,
+		private http: HttpClient,
+		private cache: CacheService,
+		private authService: AuthService,
 	) {
 		this.mint_info_subject = this.cache.createCache<MintInfo>(
 			this.CACHE_KEYS.MINT_INFO,
@@ -350,8 +352,9 @@ export class MintService {
 		}
 
 		const query = getApiQuery(MINT_KEYSETS_QUERY);
+		const headers = this.authService.getAuthHeaders();
 
-		return this.http.post<OrchardRes<MintKeysetsResponse>>(api, query).pipe(
+		return this.http.post<OrchardRes<MintKeysetsResponse>>(api, query, { headers }).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.mint_keysets;

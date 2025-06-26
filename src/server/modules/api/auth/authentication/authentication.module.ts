@@ -4,8 +4,8 @@ import { Module } from "@nestjs/common";
 import { ErrorModule } from "@server/modules/error/error.module";
 import { AuthModule } from "@server/modules/auth/auth.module";
 /* Internal Dependencies */
-import { AuthLoginResolver } from "./authlogin.resolver";
-import { AuthLoginService } from "./authlogin.service";
+import { AuthenticationResolver } from "./authentication.resolver";
+import { AuthenticationService } from "./authentication.service";
 
 @Module({
 	imports: [
@@ -13,8 +13,8 @@ import { AuthLoginService } from "./authlogin.service";
 		AuthModule,
 	],
 	providers: [
-		AuthLoginResolver,
-		AuthLoginService,
+		AuthenticationResolver,
+		AuthenticationService,
 	],
 })
-export class AuthLoginModule {}
+export class AuthenticationModule {}

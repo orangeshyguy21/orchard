@@ -1,0 +1,15 @@
+@use '@styles/molecule/molecule';
+
+:host {
+    @extend %flex;
+    @extend %flex-column;
+    @extend %flex-grow;
+}
+
+.auth-subsection-container{
+    @extend %flex;
+    @extend %flex-column;
+    @extend %flex-grow;
+    @extend %flex-items-center;
+    @extend %flex-justify-center;
+}

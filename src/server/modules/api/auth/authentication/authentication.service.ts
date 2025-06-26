@@ -6,23 +6,23 @@ import { ErrorService } from '@server/modules/error/error.service';
 import { OrchardErrorCode } from '@server/modules/error/error.types';
 import { OrchardApiError } from '@server/modules/graphql/classes/orchard-error.class';
 /* Local Dependencies */
-import { OrchardAuthLogin } from './authlogin.model';
-import { AuthLoginInput } from './authlogin.input';
+import { OrchardAuthentication } from './authentication.model';
+import { AuthenticationInput } from './authentication.input';
 
 @Injectable()
-export class AuthLoginService {
-    private readonly logger = new Logger(AuthLoginService.name);
+export class AuthenticationService {
+    private readonly logger = new Logger(AuthenticationService.name);
 
     constructor(
         private authService: AuthService,
         private errorService: ErrorService,
     ) {}
     
-    async getToken(tag: string, auth_login: AuthLoginInput): Promise<OrchardAuthLogin> {
+    async getToken(tag: string, authentication: AuthenticationInput): Promise<OrchardAuthentication> {
 		try {
-			const token = await this.authService.getToken(auth_login.password);
+			const token = await this.authService.getToken(authentication.password);
             if(!token) throw OrchardErrorCode.AuthenticationError;
-			return new OrchardAuthLogin(token);
+			return new OrchardAuthentication(token);
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
 				errord: OrchardErrorCode.AuthenticationError,
