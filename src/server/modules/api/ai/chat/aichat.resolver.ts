@@ -29,7 +29,6 @@ export class AiChatResolver implements OnModuleInit {
 	}
 
     @Subscription(() => OrchardAiChatChunk)
-	@UseGuards(GqlAuthGuard)
     ai_chat(
         @Args('ai_chat') ai_chat: AiChatInput
     ) {

@@ -16,13 +16,14 @@ export class AiConversationHudComponent implements OnChanges {
 
 	@Input() conversation!: AiChatConversation | null;
 	@Input() message_length!: number | undefined;
+	@Input() tool_length!: number;
 	@Input() log_open!: boolean | undefined;
 
 	public engaged: boolean = false;
 	
 	public get badge_hidden(): boolean {
 		if( !this.conversation ) return true;
-		if( this.conversation.message_count_assistant === 0 ) return true;
+		if( this.tool_length === 0 ) return true;
 		if( this.engaged ) return true;
 		if( this.log_open ) return true;
 		return false;
