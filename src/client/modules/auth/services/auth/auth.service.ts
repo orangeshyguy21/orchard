@@ -51,9 +51,7 @@ export class AuthService {
 
 	public refreshToken(): Observable<OrchardAuthentication> {
 		const refresh_token = this.localStorageService.getRefreshToken();
-		if (!refresh_token) {
-			return throwError(() => new Error('No refresh token available'));
-		}
+		if (!refresh_token) return throwError(() => new Error('No refresh token available'));
 
 		const query = getApiQuery(REFRESH_AUTHENTICATION_MUTATION, {});
 		const headers = { 'Authorization': `Bearer ${refresh_token}` };

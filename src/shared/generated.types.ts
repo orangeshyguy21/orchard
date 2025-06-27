@@ -207,7 +207,7 @@ export type Mutation = {
   mint_short_description_update: OrchardMintDescriptionUpdate;
   mint_url_add: OrchardMintUrlUpdate;
   mint_url_remove: OrchardMintUrlUpdate;
-  refreshToken: OrchardAuthentication;
+  refresh_authentication: OrchardAuthentication;
 };
 
 

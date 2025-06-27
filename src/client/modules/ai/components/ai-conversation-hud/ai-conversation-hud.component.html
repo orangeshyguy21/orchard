@@ -2,7 +2,7 @@
     mat-icon-button
     class="orc-icon-button"
     type="button"
-    [matBadge]="conversation?.message_count_assistant"
+    [matBadge]="tool_length"
     [matBadgeHidden]="badge_hidden"
     [disabled]="!conversation"
     (click)="toggleLog()">

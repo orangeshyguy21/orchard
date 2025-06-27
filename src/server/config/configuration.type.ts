@@ -9,6 +9,8 @@ export type Config = {
 		proxy: string | undefined;
 		log: string;
 		pass: string;
+		ttl: string;
+		limit: string;
 	},
 	bitcoin : {
 		type : string;

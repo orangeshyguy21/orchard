@@ -4,8 +4,6 @@ import { promises as dns } from 'dns';
 import { URL } from 'url';
 /* Application Dependencies */
 import { FetchService } from '@server/modules/fetch/fetch.service';
-import { OrchardApiError } from '@server/modules/graphql/classes/orchard-error.class';
-import { OrchardErrorCode } from '@server/modules/error/error.types';
 /* Local Dependencies */
 import { OrchardPublicUrl } from './url.model';
 

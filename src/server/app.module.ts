@@ -4,6 +4,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule, registerEnumType } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 /* Application Modules */
+import { SecurityModule } from './modules/security/security.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { ApiModule } from './modules/api/api.module';
 import { FetchModule } from './modules/fetch/fetch.module';
 import { WebserverModule } from './modules/webserver/webserver.module';
@@ -59,6 +61,8 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 			inject: [ConfigService],
 			useFactory: (configService: ConfigService) => initializeGraphQL(configService),
 		}),
+		SecurityModule,
+		AuthModule,
 		ApiModule,
 		FetchModule,
 		// SseModule,

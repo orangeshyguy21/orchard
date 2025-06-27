@@ -46,6 +46,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	public ai_conversation: AiChatConversation | null = null;
 	public ai_revision: number = 0;
 	public ai_agent_definition: AiAgentDefinition | null = null;
+	public ai_tool_calls: number = 0;
 	public active_chat!: boolean;
 	public active_section! : string;
 	public active_agent! : AiAgent;
@@ -216,6 +217,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		return this.aiService.messages$
 			.subscribe((chunk: AiChatChunk) => {
 				this.assembleMessages(chunk);
+				this.countToolCalls(chunk);
 				if( chunk.done && this.ai_conversation ) this.aiService.updateConversation(this.ai_conversation);
 			});
 	}
@@ -327,6 +329,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	public onClearConversation(): void {
 		this.closeChatLog();
 		this.aiService.clearConversation();
+		this.ai_tool_calls = 0;
 		this.cdr.detectChanges();
 	}
 
@@ -338,6 +341,11 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 			last_message.integrateChunk(chunk);
 		}
 		this.ai_revision++;
+		this.cdr.detectChanges();
+	}
+
+	private countToolCalls(chunk: AiChatChunk): void {
+		this.ai_tool_calls += chunk.message.tool_calls?.length || 0;
 		this.cdr.detectChanges();
 	}
 
