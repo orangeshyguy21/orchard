@@ -13,8 +13,8 @@ export class GqlRefreshGuard extends AuthGuard('jwt-refresh') {
         return ctx.getContext().req;
     }
 
-    handleRequest(err: any, user: any, info: any, context: ExecutionContext) {
-        if (err || !user) throw new OrchardApiError(OrchardErrorCode.AuthenticationError);
+    handleRequest(err: any, user: any, info: any, context: ExecutionContext) {        
+        if (err || !user)throw new OrchardApiError(OrchardErrorCode.AuthenticationExpiredError);
         return user;
     }
 }

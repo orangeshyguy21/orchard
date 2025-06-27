@@ -8,9 +8,15 @@ import { OrchardErrors } from '@client/modules/error/classes/error.class';
 import { OrchardRes } from '@client/modules/api/types/api.types';
 import { LocalStorageService } from '@client/modules/cache/services/local-storage/local-storage.service';
 /* Native Dependencies */
-import { AuthenticationResponse } from '@client/modules/auth/types/auth.types';
+import { 
+	AuthenticationResponse,
+	RefreshAuthenticationResponse
+} from '@client/modules/auth/types/auth.types';
 /* Local Dependencies */
-import { AUTHENTICATION_MUTATION, REFRESH_TOKEN_MUTATION } from './auth.queries';
+import {
+	AUTHENTICATION_MUTATION,
+	REFRESH_AUTHENTICATION_MUTATION
+} from './auth.queries';
 /* Shared Dependencies */
 import { OrchardAuthentication } from '@shared/generated.types';
 
@@ -49,17 +55,17 @@ export class AuthService {
 			return throwError(() => new Error('No refresh token available'));
 		}
 
-		const query = getApiQuery(REFRESH_TOKEN_MUTATION, {});
+		const query = getApiQuery(REFRESH_AUTHENTICATION_MUTATION, {});
 		const headers = { 'Authorization': `Bearer ${refresh_token}` };
 
-		return this.http.post<OrchardRes<AuthenticationResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<RefreshAuthenticationResponse>>(api, query, { headers }).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
-				return response.data.authentication;
+				return response.data.refresh_authentication;
 			}),
-			tap((authentication) => {
-				this.localStorageService.setAuthToken(authentication.access_token);
-				this.localStorageService.setRefreshToken(authentication.refresh_token);
+			tap((refresh_authentication) => {
+				this.localStorageService.setAuthToken(refresh_authentication.access_token);
+				this.localStorageService.setRefreshToken(refresh_authentication.refresh_token);
 			}),
 			catchError((error) => {
 				console.error('Error refreshing token:', error);
@@ -89,7 +95,6 @@ export class AuthService {
 		
 		try {
 			const payload = JSON.parse(atob(token.split('.')[1]));
-			console.log('payload', payload);
 			const expiration_time = payload.exp * 1000;
 			return Date.now() < expiration_time;
 		} catch {

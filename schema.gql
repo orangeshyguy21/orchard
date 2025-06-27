@@ -191,7 +191,7 @@ type Mutation {
   mint_short_description_update(mint_desc_update: MintDescriptionUpdateInput!): OrchardMintDescriptionUpdate!
   mint_url_add(mint_url_update: MintUrlUpdateInput!): OrchardMintUrlUpdate!
   mint_url_remove(mint_url_update: MintUrlUpdateInput!): OrchardMintUrlUpdate!
-  refreshToken: OrchardAuthentication!
+  refresh_authentication: OrchardAuthentication!
 }
 
 type OrchardAiAgent {

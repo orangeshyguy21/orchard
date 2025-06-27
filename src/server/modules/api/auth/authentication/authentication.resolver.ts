@@ -1,11 +1,11 @@
 /* Core Dependencies */
 import { Logger } from '@nestjs/common';
-import { Resolver, Args, Mutation } from "@nestjs/graphql";
+import { Resolver, Args, Mutation, Context } from "@nestjs/graphql";
 import { UseGuards } from '@nestjs/common';
-import { GqlExecutionContext } from '@nestjs/graphql';
-import { ExecutionContext } from '@nestjs/common';
 /* Application Dependencies */
 import { GqlRefreshGuard } from '@server/modules/graphql/guards/refresh.guard';
+import { OrchardErrorCode } from '@server/modules/error/error.types';
+import { OrchardApiError } from '@server/modules/graphql/classes/orchard-error.class';
 /* Local Dependencies */
 import { AuthenticationService } from './authentication.service';
 import { OrchardAuthentication } from './authentication.model';
@@ -29,12 +29,13 @@ export class AuthenticationResolver {
 
     @Mutation(() => OrchardAuthentication)
     @UseGuards(GqlRefreshGuard)
-    async refreshToken(context: ExecutionContext) {
-        const tag = 'MUTATION { refreshToken }';
+    async refresh_authentication(@Context() context: any) {
+        const tag = 'MUTATION { refresh_authentication }';
         this.logger.debug(tag);
-        const ctx = GqlExecutionContext.create(context);
-        const req = ctx.getContext().req;
-        const user = req.user;
+        const req = context.req;
+        const user = req?.user;
+        if (!user) throw new OrchardApiError(OrchardErrorCode.AuthenticationExpiredError);
+        if (!user.refresh_token) throw new OrchardApiError(OrchardErrorCode.AuthenticationExpiredError);
         return await this.authenticationService.refreshToken(tag, user.refresh_token);
     }
 }

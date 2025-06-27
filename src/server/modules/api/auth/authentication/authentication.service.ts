@@ -34,11 +34,11 @@ export class AuthenticationService {
     async refreshToken(tag: string, refresh_token: string): Promise<OrchardAuthentication> {
         try {
             const token = await this.authService.refreshToken(refresh_token);
-            if(!token) throw OrchardErrorCode.AuthenticationError;
+            if(!token) throw OrchardErrorCode.AuthenticationExpiredError;
             return new OrchardAuthentication(token);
         } catch (error) {
             const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
-                errord: OrchardErrorCode.AuthenticationError,
+                errord: OrchardErrorCode.AuthenticationExpiredError,
             });
             throw new OrchardApiError(error_code);
         }

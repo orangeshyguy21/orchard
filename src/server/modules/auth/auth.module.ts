@@ -7,8 +7,8 @@ import { ConfigService } from '@nestjs/config';
 import { UserModule } from '@server/modules/user/user.module';
 /* Local Dependencies */
 import { AuthService } from './auth.service';
-import { JwtStrategy } from './auth.strategy';
-import { RefreshTokenStrategy } from './refresh.strategy';
+import { AuthStrategy } from './strategy/auth.strategy';
+import { RefreshTokenStrategy } from './strategy/refresh.strategy';
 
 @Module({
     imports: [
@@ -17,14 +17,13 @@ import { RefreshTokenStrategy } from './refresh.strategy';
         JwtModule.registerAsync({
             useFactory: async (configService: ConfigService) => ({
                 secret: configService.get('server.pass'),
-                signOptions: { expiresIn: '15m' },
             }),
             inject: [ConfigService],
         }),
     ],
     providers: [
         AuthService,
-        JwtStrategy,
+        AuthStrategy,
         RefreshTokenStrategy,
     ],
     exports: [

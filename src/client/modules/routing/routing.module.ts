@@ -15,30 +15,37 @@ const interior_routes = [
 	{
 		path: '',
 		loadChildren: () => import('@client/modules/index/index-app.module').then(m => m.IndexAppModule),
+		canActivateChild: [authenticationGuard],
 	},
 	{
 		path: 'bitcoin',
 		loadChildren: () => import('@client/modules/bitcoin/bitcoin-app.module').then(m => m.BitcoinAppModule),
+		canActivateChild: [authenticationGuard],
 	},
 	{
 		path: 'lightning',
 		loadChildren: () => import('@client/modules/lightning/lightning-app.module').then(m => m.LightningAppModule),
+		canActivateChild: [authenticationGuard],
 	},
 	{
 		path: 'mint',
 		loadChildren: () => import('@client/modules/mint/mint-app.module').then(m => m.MintAppModule),
+		canActivateChild: [authenticationGuard],
 	},
 	{
 		path: 'ecash',
 		loadChildren: () => import('@client/modules/ecash/ecash-app.module').then(m => m.EcashAppModule),
+		canActivateChild: [authenticationGuard],
 	},
 	{
 		path: 'settings',
 		loadChildren: () => import('@client/modules/settings/settings-app.module').then(m => m.SettingsAppModule),
+		canActivateChild: [authenticationGuard],
 	},
 	{
 		path: 'event',
 		loadChildren: () => import('@client/modules/event/event-app.module').then(m => m.EventAppModule),
+		canActivateChild: [authenticationGuard],
 	}
 ];
 
@@ -47,6 +54,7 @@ const routes: Routes = [
 		path: '',
 		component: LayoutInteriorComponent,
 		canActivate: [authenticationGuard],
+		canActivateChild: [authenticationGuard],
 		children: interior_routes,
 	},
 	{
