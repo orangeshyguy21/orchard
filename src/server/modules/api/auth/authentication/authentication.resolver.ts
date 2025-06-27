@@ -2,6 +2,7 @@
 import { Logger } from '@nestjs/common';
 import { Resolver, Args, Mutation, Context } from "@nestjs/graphql";
 import { UseGuards } from '@nestjs/common';
+import { Throttle, seconds } from '@nestjs/throttler';
 /* Application Dependencies */
 import { GqlRefreshGuard } from '@server/modules/graphql/guards/refresh.guard';
 import { OrchardErrorCode } from '@server/modules/error/error.types';
@@ -21,6 +22,7 @@ export class AuthenticationResolver {
     ) {}
 
     @Mutation(() => OrchardAuthentication)
+    @Throttle({ default: { limit: 4, ttl: seconds(10) } })
     async authentication(@Args('authentication') authentication: AuthenticationInput) {
         const tag = 'MUTATION { authentication }';
         this.logger.debug(tag);

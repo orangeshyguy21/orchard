@@ -14,6 +14,8 @@ export const config = (): Config => {
 		proxy : process.env.TOR_PROXY_SERVER || undefined,
 		log   : process.env.LOG_LEVEL || 'info',
 		pass  : process.env.ADMIN_PASSWORD,
+		ttl   : process.env.THROTTLE_TTL || '60000',
+		limit : process.env.THROTTLE_LIMIT || '10',
 	};
 
 	const bitcoin = {
