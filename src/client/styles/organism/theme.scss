@@ -1,0 +1,51 @@
+@use '@styles/molecule/molecule';
+
+body{
+    &.dark-mode{
+        .graphic-orchard-logo-container{
+            .surface-fill{
+                @extend %orc-brand-surface-fill;
+            }
+            .lightest-fill{
+                @extend %orc-brand-lightest-fill;
+            }
+            .light-fill{
+                @extend %orc-brand-light-fill;
+            }
+            .medium-fill{
+                @extend %orc-brand-medium-fill;
+            }
+            .dark-fill{
+                @extend %orc-brand-dark-fill;
+            }
+            .darkest-fill{
+                @extend %orc-brand-darkest-fill;
+            }
+        }
+    }
+    &.light-mode{
+        .graphic-orchard-logo-container{
+            @extend %orc-brand-surface-gradient;
+            @extend %orc-corner-full;
+
+            .surface-fill{
+                @extend %orc-brand-surface-fill;
+            }
+            .lightest-fill{
+                fill: white;
+            }
+            .light-fill{
+                fill: white;
+            }
+            .medium-fill{
+                fill: white;
+            }
+            .dark-fill{
+                fill: white;
+            }
+            .darkest-fill{
+                fill: white;
+            }
+        }
+    }
+}

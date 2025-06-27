@@ -110,4 +110,16 @@
     #{$c}orc-level3 { box-shadow: var(--mat-sys-level3); }
     #{$c}orc-level4 { box-shadow: var(--mat-sys-level4); }
     #{$c}orc-level5 { box-shadow: var(--mat-sys-level5); }
+
+    // Gradients
+    #{$c}orc-brand-surface-gradient { 
+        background: linear-gradient(
+            to bottom,
+            var(--orc-sys-brand-lightest) 0%,
+            var(--orc-sys-brand-light) 25%,
+            var(--orc-sys-brand-medium) 50%,
+            var(--orc-sys-brand-dark) 75%,
+            var(--orc-sys-brand-darkest) 100%
+        );
+    }
 }

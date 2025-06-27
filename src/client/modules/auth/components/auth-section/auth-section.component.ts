@@ -2,6 +2,9 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+/* Application Dependencies */
+import { SettingService } from '@client/modules/settings/services/setting/setting.service';
+import { ThemeType } from '@client/modules/cache/services/local-storage/local-storage.types';
 /* Native Dependencies */
 import { AuthService } from '@client/modules/auth/services/auth/auth.service';
 
@@ -10,9 +13,11 @@ import { AuthService } from '@client/modules/auth/services/auth/auth.service';
 	standalone: false,
 	templateUrl: './auth-section.component.html',
 	styleUrl: './auth-section.component.scss',
-	changeDetection: ChangeDetectionStrategy.OnPush
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AuthSectionComponent implements OnInit {
+
+	public show_surface:boolean = false;
 
 	public form_auth: FormGroup = new FormGroup({
 		password: new FormControl(null, [Validators.required]),
@@ -20,11 +25,15 @@ export class AuthSectionComponent implements OnInit {
 
 	constructor(
 		private readonly authService: AuthService,
+		private readonly settingService: SettingService,
 		private readonly router: Router,
 	) {}
 
 	public ngOnInit(): void {
 		this.authService.logout();
+		const theme = this.settingService.getTheme();
+		this.show_surface = theme === ThemeType.LIGHT_MODE;
+		// console.log(theme);
 	}
 
 	public onControlUpdate(control_name: string): void {
