@@ -19,15 +19,28 @@ export class AuthenticationService {
     ) {}
     
     async getToken(tag: string, authentication: AuthenticationInput): Promise<OrchardAuthentication> {
-		try {
-			const token = await this.authService.getToken(authentication.password);
+        try {
+            const token = await this.authService.getToken(authentication.password);
             if(!token) throw OrchardErrorCode.AuthenticationError;
-			return new OrchardAuthentication(token);
-		} catch (error) {
-			const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
-				errord: OrchardErrorCode.AuthenticationError,
-			});
-			throw new OrchardApiError(error_code);
-		}
-	} 
+            return new OrchardAuthentication(token);
+        } catch (error) {
+            const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
+                errord: OrchardErrorCode.AuthenticationError,
+            });
+            throw new OrchardApiError(error_code);
+        }
+    }
+
+    async refreshToken(tag: string, refresh_token: string): Promise<OrchardAuthentication> {
+        try {
+            const token = await this.authService.refreshToken(refresh_token);
+            if(!token) throw OrchardErrorCode.AuthenticationError;
+            return new OrchardAuthentication(token);
+        } catch (error) {
+            const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
+                errord: OrchardErrorCode.AuthenticationError,
+            });
+            throw new OrchardApiError(error_code);
+        }
+    }
 }

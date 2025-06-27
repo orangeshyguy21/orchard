@@ -1,17 +1,29 @@
 <section class="section-container">
     <div class="subsection-container">
         <div class="auth-subsection-container p-2">
-            <orc-graphic-orchard-logo height="10rem"></orc-graphic-orchard-logo>
-            <mat-card appearance="outlined" class="relative overflow-hidden">
-                <mat-card-content class="orc-surface-container-low-bg">
-                    <orc-auth-password 
-                        [form_group]="form_auth"
-                        [control_name]="'password'"
-                        (update)="onControlUpdate($event)"
-                        (cancel)="onControlCancel($event)">
-                    </orc-auth-password>
-                </mat-card-content>
-            </mat-card>
+
+            <div class="authentication-form">
+                <div class="orchard-logo-container">
+                    <div class="graphic-container">
+                        <orc-graphic-orchard-logo 
+                            height="10rem"
+                            [animate]="true">
+                        </orc-graphic-orchard-logo>
+                    </div>
+                </div>
+    
+                <mat-card appearance="outlined" class="relative overflow-hidden">
+                    <mat-card-content class="orc-surface-container-low-bg">
+                        <orc-auth-password 
+                            [form_group]="form_auth"
+                            [control_name]="'password'"
+                            (update)="onControlUpdate($event)"
+                            (cancel)="onControlCancel($event)">
+                        </orc-auth-password>
+                    </mat-card-content>
+                </mat-card>
+            </div>
+            
         </div>
     </div>
 </section>
