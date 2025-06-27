@@ -33,7 +33,6 @@ export class AuthSectionComponent implements OnInit {
 		this.authService.logout();
 		const theme = this.settingService.getTheme();
 		this.show_surface = theme === ThemeType.LIGHT_MODE;
-		// console.log(theme);
 	}
 
 	public onControlUpdate(control_name: string): void {
