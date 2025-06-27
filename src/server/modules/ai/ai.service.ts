@@ -35,7 +35,6 @@ export class AiService {
     }
 
     async streamChat(model: string, agent: AiAgent | null, messages: AiMessage[], signal?: AbortSignal) {
-        console.log('streamChat', messages);
         if( !agent ) agent = AiAgent.DEFAULT;
         const tools = AI_AGENTS[agent].tools;
         const system_message = AI_AGENTS[agent].system_message;

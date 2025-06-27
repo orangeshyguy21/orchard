@@ -6,9 +6,9 @@ mutation Authentication($authentication: AuthenticationInput!) {
 	}
 }`;
 
-export const REFRESH_TOKEN_MUTATION = `
-mutation RefreshToken {
-	refreshToken {
+export const REFRESH_AUTHENTICATION_MUTATION = `
+mutation RefreshAuthentication {
+	refresh_authentication {
 		access_token
 		refresh_token
 	}

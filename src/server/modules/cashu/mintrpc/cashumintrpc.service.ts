@@ -36,7 +36,6 @@ export class CashuMintRpcService implements OnModuleInit {
         return new Promise((resolve, reject) => {
             if (!(method in this.grpc_client)) reject(OrchardErrorCode.MintSupportError);
             this.grpc_client[method](request, (error: Error | null, response: any) => {
-                console.log(error);
                 if (error && error?.message?.includes('14 UNAVAILABLE')) reject(OrchardErrorCode.MintRpcConnectionError);
                 if (error) reject(error);
                 resolve(response);

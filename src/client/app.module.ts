@@ -24,6 +24,7 @@ import 'chartjs-adapter-luxon';
 /* Application Dependencies */
 import { RoutingModule } from './modules/routing/routing.module';
 import { authInterceptor } from './modules/auth/interceptors/auth.interceptor';
+import { errorInterceptor } from './modules/error/interceptors/error.interceptor';
 /* Native Dependencies */
 import { AppComponent } from './app.component';
 
@@ -38,7 +39,10 @@ import { AppComponent } from './app.component';
     ],
     providers: [
 		provideHttpClient(
-			withInterceptors([authInterceptor])
+			withInterceptors([
+				authInterceptor,
+				errorInterceptor
+			])
 		),
 		provideAnimations(),
 		provideLuxonDateAdapter(),
