@@ -67,4 +67,15 @@ export class AuthService {
             throw new UnauthorizedException('Invalid refresh token');
         }
     }
+
+    async validateAccessToken(access_token: string): Promise<JwtPayload> {
+        if (!access_token) throw new UnauthorizedException('No access token provided');
+        try {
+            const payload = await this.jwtService.verifyAsync<JwtPayload>(access_token);
+            if (payload.type !== 'access') throw new UnauthorizedException('Invalid token type - access token required');
+            return payload;
+        } catch (error) {
+            throw new UnauthorizedException('Invalid access token');
+        }
+    }
 }

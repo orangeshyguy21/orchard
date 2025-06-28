@@ -6,6 +6,7 @@ import { Observable, catchError, Subscription, Subject, map, tap, throwError, sh
 /* Application Dependencies */
 import { ApiService } from '@client/modules/api/services/api/api.service';
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
+import { LocalStorageService } from '@client/modules/cache/services/local-storage/local-storage.service';
 import { OrchardWsRes } from '@client/modules/api/types/api.types';
 import { api, getApiQuery } from '@client/modules/api/helpers/api.helpers';
 import { OrchardErrors } from '@client/modules/error/classes/error.class';
@@ -47,6 +48,7 @@ export class AiService {
 	constructor(
 		private apiService: ApiService,
 		private settingService: SettingService,
+		private localStorageService: LocalStorageService,
 		private http: HttpClient,
 	) {}
 
@@ -64,7 +66,6 @@ export class AiService {
 	}
 
 	public closeAiSocket(): void {
-		console.log('closeAiSocket', this.subscription);
 		if( !this.subscription ) { return; }
 		this.subscription?.unsubscribe();
 		this.apiService.gql_socket.next({
@@ -103,6 +104,7 @@ export class AiService {
 		const conversation = !this.conversation_cache? this.createConversation(subscription_id, agent, content, context) : this.continueConversation(subscription_id, agent, content, context);
 		this.conversation_subject.next(conversation);
 		const messages = conversation.getMessages();
+		const auth_token = this.localStorageService.getAuthToken();
 
 		this.apiService.gql_socket.next({ type: 'connection_init', payload: {} });
 		this.apiService.gql_socket.next({
@@ -115,7 +117,8 @@ export class AiService {
 						id: subscription_id,
 						messages,
 						model: ai_model,
-						agent: agent
+						agent: agent,
+						auth: auth_token
 					}
 				}
 			}

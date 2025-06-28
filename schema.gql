@@ -19,6 +19,7 @@ input AiChatAbortInput {
 
 input AiChatInput {
   agent: AiAgent
+  auth: String!
   id: String!
   messages: [AiChatMessageInput!]!
   model: String!
