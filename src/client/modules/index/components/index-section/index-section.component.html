@@ -6,30 +6,18 @@
 		</div>
 		<div secondary-nav-items></div>
 		<div secondary-nav-toolbar>
-			<div class="section-implementation">Orchard {{ version }}</div>
+			<div class="section-implementation">{{ version }}</div>
 		</div>
 	</orc-secondary-nav>
-
-
-    <!-- <div class="mint-subsection-config-container">
-        <div class="flex flex-column">
-    
-           
-            <div class="sticky-nut z-index-1">
-                <div class="title-l">Minting</div>
-                <div class="font-size-xs orc-outline-color p-b-0-5">Configure depositing to the mint</div>
-                <div class="category-rule"></div>
-            </div> -->
 
     <div class="subsection-container p-1">
         <div class="flex flex-column">
 
-            <div class="sticky-nut z-index-1">
-                <div class="flex flex-items-center flex-gap-0-5 p-b-0-5">
-                    <mat-icon [svgIcon]="'bitcoin_outline'"></mat-icon>
-                    <div class="title-l">Bitcoin</div>
-                </div>
-                <!-- <div class="font-size-xs orc-outline-color p-b-0-5">Configure depositing to the mint</div> -->
+            <div class="sticky-section z-index-1">
+                <orc-index-header-bitcoin
+                    [loading]="preparing_bitcoin"
+                    [network_info]="bitcoin_network_info!"
+                ></orc-index-header-bitcoin>
                 <div class="category-rule"></div>
             </div>
 

@@ -2,7 +2,7 @@ import { Config } from "./configuration.type";
 
 const mode = {
 	production: process.env["PRODUCTION"] === 'true',
-	version: process.env["npm_package_version"] || '0.0.1',
+	version: `orchard/${process.env["npm_package_version"] || '0.0.1'}`,
 };
 
 const api = {

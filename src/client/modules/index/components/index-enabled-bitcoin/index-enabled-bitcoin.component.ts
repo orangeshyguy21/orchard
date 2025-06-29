@@ -1,6 +1,8 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
+/* Vendor Dependencies */
+import { MatTableDataSource } from '@angular/material/table';
 /* Application Dependencies */
 import { BitcoinBlockchainInfo } from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
 import { BitcoinNetworkInfo } from '@client/modules/bitcoin/classes/bitcoin-network-info.class';
@@ -46,8 +48,10 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 
 	@Output() navigate: EventEmitter<void> = new EventEmitter<void>();
 
-	public balance_hot_bitcoin!: HotCoins | null;
-	public balances_hot_taproot_assets!: HotCoins[];
+	// public balance_hot_bitcoin!: HotCoins | null;
+	// public balances_hot_taproot_assets!: HotCoins[];
+	public displayed_columns = ['amount', 'utxos'];
+	public data_source!: MatTableDataSource<HotCoins>;
 
 	constructor() {}
 
@@ -58,8 +62,16 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 	}
 
 	private init() : void {
-		this.balance_hot_bitcoin = this.getHotBalanceBitcoin();
-		this.balances_hot_taproot_assets = this.getHotBalancesTaprootAssets();
+
+		// this.balance_hot_bitcoin = this.getHotBalanceBitcoin();
+		// this.balances_hot_taproot_assets = this.getHotBalancesTaprootAssets();
+		// this.data_source = new MatTableDataSource([]);
+		const data: HotCoins[] = [];
+		const hot_coins = this.getHotBalanceBitcoin();
+		const hot_coins_taproot_assets = this.getHotBalancesTaprootAssets();
+		if( hot_coins ) data.push(hot_coins);
+		if( hot_coins_taproot_assets.length > 0 ) data.push(...hot_coins_taproot_assets);
+		this.data_source = new MatTableDataSource(data);
 	}
 
 	private getHotBalanceBitcoin(): HotCoins | null {

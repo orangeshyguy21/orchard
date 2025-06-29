@@ -1,0 +1,34 @@
+<div class="index-header-bitcoin-container">
+    <div class="flex flex-items-center flex-gap-0-5 p-b-0-5 w-min-10">
+        <mat-icon [svgIcon]="'bitcoin_outline'"></mat-icon>
+        <div class="title-l">Bitcoin</div>
+    </div>
+    <div class="flex flex-gap-1">
+        <div class="flex flex-items-center flex-gap-0-5 h-1">
+            @if( loading ) {
+                <div class="h-1 w-1 orc-corner-full shimmer-high"></div>
+                <div class="h-1 w-4 orc-corner-full shimmer-high"></div>
+            } @else {
+                <mat-icon class="icon-sm trans-color-medium orc-status-active-color">circle</mat-icon>
+                <div class="orc-outline-color">online</div>
+            }
+        </div>
+        <div class="flex flex-items-center flex-gap-0-5">
+            @if( loading ) {
+                <div class="h-1 w-1 orc-corner-full shimmer-high"></div>
+                <div class="h-1 w-4 orc-corner-full shimmer-high"></div>
+            } @else {
+                <mat-icon class="icon-sm trans-color-medium orc-status-active-color">circle</mat-icon>
+                <div class="orc-outline-color">synced</div>
+            }
+        </div>
+    </div>
+    <div class="flex-grow"></div>
+    <div>
+        @if( loading ) {
+            <div class="h-1 w-8 orc-corner-full shimmer-high"></div>
+        } @else {
+            <div class="orc-outline-color font-size-xs">{{ network_info.subversion }}</div>
+        }
+    </div>
+</div>

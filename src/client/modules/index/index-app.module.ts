@@ -7,6 +7,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTableModule } from '@angular/material/table';
 /* Application Dependencies */
 import { LocalModule } from '@client/modules/local/local.module';
 import { GraphicModule } from '@client/modules/graphic/graphic.module';
@@ -25,6 +26,7 @@ import { IndexDisabledMintComponent } from './components/index-disabled-mint/ind
 import { IndexDisabledEcashComponent } from './components/index-disabled-ecash/index-disabled-ecash.component';
 import { IndexDisabledLightningComponent } from './components/index-disabled-lightning/index-disabled-lightning.component';
 import { IndexDisabledBitcoinComponent } from './components/index-disabled-bitcoin/index-disabled-bitcoin.component';
+import { IndexHeaderBitcoinComponent } from './components/index-header-bitcoin/index-header-bitcoin.component';
 
 const routes: Routes = [
 	{
@@ -52,6 +54,7 @@ export class IndexAppRoutingModule { }
 @NgModule({
 	declarations: [
 		IndexSectionComponent,
+		IndexHeaderBitcoinComponent,
 		IndexEnabledBitcoinComponent,
 		IndexEnabledLightningComponent,
 		IndexEnabledMintComponent,
@@ -67,6 +70,7 @@ export class IndexAppRoutingModule { }
 		MatIconModule,
 		MatRippleModule,
 		MatButtonModule,
+		MatTableModule,
 		LocalModule,
 		GraphicModule,
 		ErrorModule,

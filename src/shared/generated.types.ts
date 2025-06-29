@@ -37,6 +37,7 @@ export type AiChatAbortInput = {
 
 export type AiChatInput = {
   agent?: InputMaybe<AiAgent>;
+  auth: Scalars['String']['input'];
   id: Scalars['String']['input'];
   messages: Array<AiChatMessageInput>;
   model: Scalars['String']['input'];
