@@ -48,8 +48,6 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 
 	@Output() navigate: EventEmitter<void> = new EventEmitter<void>();
 
-	// public balance_hot_bitcoin!: HotCoins | null;
-	// public balances_hot_taproot_assets!: HotCoins[];
 	public displayed_columns = ['amount', 'utxos'];
 	public data_source!: MatTableDataSource<HotCoins>;
 
@@ -62,10 +60,6 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 	}
 
 	private init() : void {
-
-		// this.balance_hot_bitcoin = this.getHotBalanceBitcoin();
-		// this.balances_hot_taproot_assets = this.getHotBalancesTaprootAssets();
-		// this.data_source = new MatTableDataSource([]);
 		const data: HotCoins[] = [];
 		const hot_coins = this.getHotBalanceBitcoin();
 		const hot_coins_taproot_assets = this.getHotBalancesTaprootAssets();

@@ -23,7 +23,13 @@
                             </tr>
                             <tr class="h-2">
                                 <td class="font-weight-light orc-outline-color text-nowrap">Block height</td>
-                                <td class="font-weight-bold">{{ blockcount | block }}</td>
+                                <td class="font-weight-bold">
+                                    @if( blockchain_info?.initialblockdownload ) {
+                                        <span class="orc-outline-color">syncing</span>
+                                    } @else {
+                                        {{ blockcount | block }}
+                                    }
+                                </td>
                             </tr>
                             <tr class="h-2">
                                 <td class="font-weight-light orc-outline-color text-nowrap">Chain weight</td>
@@ -61,7 +67,8 @@
                                 <td mat-cell *matCellDef="let row">
                                     <orc-bitcoin-utxo-stack 
                                         [unit]="row.unit"
-                                        [coins]="row.utxos">
+                                        [coins]="row.utxos"
+                                        [asset_id]="row.asset_id">
                                     </orc-bitcoin-utxo-stack> 
                                 </td>
                             </ng-container>

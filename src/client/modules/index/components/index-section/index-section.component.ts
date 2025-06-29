@@ -142,6 +142,8 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 			network: this.bitcoinService.loadBitcoinNetworkInfo()
 		}).pipe(
 			tap(({ blockchain, network }) => {
+				console.log(blockchain);
+				console.log(network);
 				this.bitcoin_blockchain_info = blockchain;
 				this.bitcoin_network_info = network;
 			}),

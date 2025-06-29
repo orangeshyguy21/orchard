@@ -16,7 +16,9 @@
             <div class="sticky-section z-index-1">
                 <orc-index-header-bitcoin
                     [loading]="preparing_bitcoin"
-                    [network_info]="bitcoin_network_info!"
+                    [network_info]="bitcoin_network_info"
+                    [blockchain_info]="bitcoin_blockchain_info"
+                    [error]="errors_bitcoin?.length ? true : false"
                 ></orc-index-header-bitcoin>
                 <div class="category-rule"></div>
             </div>
@@ -47,7 +49,19 @@
                 </div>
             }
 
-            <!-- <div class="flex">
+            <div class="sticky-section z-index-1">
+                <orc-index-header-lightning
+                    [loading]="preparing_lightning"
+                    [lightning_info]="lightning_info!"
+                ></orc-index-header-lightning>
+                <div class="category-rule"></div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+ <!-- <div class="flex">
                 <div class="index-section">
                     @if( enabled_bitcoin ) {
                         <orc-index-enabled-bitcoin
@@ -137,6 +151,3 @@
                     }
                 </div>
             </div> -->
-        </div>
-    </div>
-</section>
