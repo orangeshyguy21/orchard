@@ -88,6 +88,15 @@
                 }
             </div>
 
+            <div class="sticky-section z-index-1">
+                <orc-index-header-mint
+                    [loading]="preparing_mint"
+                    [info]="mint_info!"
+                    [error]="errors_mint.length ? true : false"
+                ></orc-index-header-mint>
+                <div class="category-rule"></div>
+            </div>
+
         </div>
     </div>
 </section>

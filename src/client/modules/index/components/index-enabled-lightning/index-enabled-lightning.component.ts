@@ -40,7 +40,7 @@ export class IndexEnabledLightningComponent implements OnChanges {
 	@Input() lightning_balance!: LightningBalance | null;
 	@Input() taproot_assets!: TaprootAssets | null;
 
-	public displayed_columns = ['receive', 'channel', 'send'];
+	public displayed_columns = ['unit', 'receive', 'channel', 'send'];
 	public data_source!: MatTableDataSource<ChannelSummary>;
 
 	ngOnChanges(changes: SimpleChanges): void {

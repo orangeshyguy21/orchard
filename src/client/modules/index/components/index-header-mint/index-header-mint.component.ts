@@ -2,13 +2,13 @@
 import { ChangeDetectionStrategy, Component, Input, computed } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
 /* Application Dependencies */
-import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.class';
+import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 
 @Component({
-	selector: 'orc-index-header-lightning',
+	selector: 'orc-index-header-mint',
 	standalone: false,
-	templateUrl: './index-header-lightning.component.html',
-	styleUrl: './index-header-lightning.component.scss',
+	templateUrl: './index-header-mint.component.html',
+	styleUrl: './index-header-mint.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	animations: [
         trigger('fadeIn', [
@@ -19,15 +19,14 @@ import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.
         ])
     ]
 })
-export class IndexHeaderLightningComponent {
+export class IndexHeaderMintComponent {
 
 	@Input() loading!: boolean;
-	@Input() lightning_info!: LightningInfo;
+	@Input() info!: MintInfo;
 	@Input() error!: boolean;
 
 	public state = computed(() => {
 		if( this.error ) return 'offline';
-		if( !this.lightning_info.synced_to_chain || !this.lightning_info.synced_to_graph ) return 'syncing';
 		return 'online';
 	});
 }
