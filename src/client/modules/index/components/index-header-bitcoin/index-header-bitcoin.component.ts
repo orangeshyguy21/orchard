@@ -32,11 +32,4 @@ export class IndexHeaderBitcoinComponent {
 		if( this.blockchain_info?.initialblockdownload ) return 'syncing';
 		return 'online';
 	});
-
-	public syncing_msg = computed(() => {
-		if( !this.blockchain_info ) return '';
-		if( !this.blockchain_info.initialblockdownload ) return 'synced';
-		const progress_percentage = (this.blockchain_info.verificationprogress * 100).toFixed(2);
-		return `syncing ${progress_percentage}%`;
-	});
 }

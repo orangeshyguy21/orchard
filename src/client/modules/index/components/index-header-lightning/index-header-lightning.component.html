@@ -5,13 +5,21 @@
     </div>
     @if( !loading ) {
         <div [@fadeIn] class="flex flex-gap-1">
-            <div class="flex flex-items-center flex-gap-0-5 h-1">
-                <mat-icon class="icon-sm trans-color-medium orc-status-active-color">circle</mat-icon>
-                <div class="orc-outline-color">online</div>
-            </div>
             <div class="flex flex-items-center flex-gap-0-5">
-                <mat-icon class="icon-sm trans-color-medium orc-status-active-color">circle</mat-icon>
-                <div class="orc-outline-color">taproot assets</div>
+                @switch( state() ) {
+                    @case( 'offline' ) {
+                        <mat-icon class="icon-sm orc-status-error-color">circle</mat-icon>
+                        <div class="orc-outline-color">offline</div>
+                    }
+                    @case( 'syncing' ) {
+                        <mat-icon class="icon-sm orc-status-warning-color">circle</mat-icon>
+                        <div class="orc-outline-color">syncing</div>
+                    }
+                    @default {
+                        <mat-icon class="icon-sm orc-status-active-color">circle</mat-icon>
+                        <div class="orc-outline-color">online</div>
+                    }
+                }
             </div>
         </div>
     }

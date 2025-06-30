@@ -11,7 +11,7 @@
 	</orc-secondary-nav>
 
     <div class="subsection-container p-1">
-        <div class="flex flex-column relative">
+        <div class="flex flex-column">
 
             <div class="sticky-section z-index-1">
                 <orc-index-header-bitcoin
@@ -23,38 +23,45 @@
                 <div class="category-rule"></div>
             </div>
 
-            @if( enabled_bitcoin ) {
-                <orc-index-enabled-bitcoin
-                    [loading]="preparing_bitcoin"
-                    [enabled_lightning]="enabled_lightning"
-                    [enabled_taproot_assets]="enabled_taproot_assets"
-                    [blockcount]="(bitcoin_blockcount) ? bitcoin_blockcount.height : 0"
-                    [blockchain_info]="bitcoin_blockchain_info!"
-                    [network_info]="bitcoin_network_info!"
-                    [lightning_accounts]="lightning_accounts!"
-                    [taproot_assets]="taproot_assets!"
-                    [errors_lightning]="errors_lightning"
-                    [errors_taproot_assets]="errors_taproot_assets"
-                    (navigate)="onNavigate('bitcoin')"
-                ></orc-index-enabled-bitcoin>
-            }
-            @else {
-                <orc-index-disabled-bitcoin (navigate)="onNavigate('bitcoin')"></orc-index-disabled-bitcoin>
-            }
-            @if( errors_bitcoin ) {
-                <div [@fadeIn] class="index-section-error">
-                    @for(error of errors_bitcoin; track error.code) {
-                        <orc-error-resolve [error]="error"></orc-error-resolve>
-                    }
-                </div>
-            }
-
+            <div class="relative">
+                @if( enabled_bitcoin ) {
+                    <orc-index-enabled-bitcoin
+                        [loading]="preparing_bitcoin"
+                        [enabled_lightning]="enabled_lightning"
+                        [enabled_taproot_assets]="enabled_taproot_assets"
+                        [blockcount]="(bitcoin_blockcount) ? bitcoin_blockcount.height : 0"
+                        [blockchain_info]="bitcoin_blockchain_info!"
+                        [network_info]="bitcoin_network_info!"
+                        [lightning_accounts]="lightning_accounts!"
+                        [taproot_assets]="taproot_assets!"
+                        [errors_lightning]="errors_lightning"
+                        [errors_taproot_assets]="errors_taproot_assets"
+                        (navigate)="onNavigate('bitcoin')"
+                    ></orc-index-enabled-bitcoin>
+                }
+                @else {
+                    <orc-index-disabled-bitcoin (navigate)="onNavigate('bitcoin')"></orc-index-disabled-bitcoin>
+                }
+                @if( errors_bitcoin ) {
+                    <div [@fadeIn] class="index-section-error">
+                        @for(error of errors_bitcoin; track error.code) {
+                            <orc-error-resolve [error]="error"></orc-error-resolve>
+                        }
+                    </div>
+                }
+            </div>
+            
             <div class="sticky-section z-index-1">
                 <orc-index-header-lightning
                     [loading]="preparing_lightning"
                     [lightning_info]="lightning_info!"
+                    [error]="errors_lightning?.length ? true : false"
                 ></orc-index-header-lightning>
                 <div class="category-rule"></div>
+            </div>
+
+            <div class="relative">
+                ln stuff
             </div>
 
         </div>
