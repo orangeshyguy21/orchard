@@ -1,9 +1,0 @@
-@use '@styles/molecule/molecule';
-
-:host {
-    @extend %w-full;
-}
-
-.ecash-enabled-card{
-    min-height: 20rem;
-}
