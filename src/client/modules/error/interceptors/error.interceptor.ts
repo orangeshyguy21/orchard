@@ -21,6 +21,7 @@ export const errorInterceptor: HttpInterceptorFn = (
             const has_refresh_error = response.body.errors.some((err: any) => err.extensions?.code === 10003);
             if (has_refresh_error) throw { type: 'refresh_error', response };
             if (has_auth_error)  throw { type: 'auth_error', response };
+            return response;
         }),
         catchError((error) => {
             if (error.type === 'refresh_error') {

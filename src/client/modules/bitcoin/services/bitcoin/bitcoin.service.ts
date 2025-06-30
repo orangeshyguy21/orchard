@@ -74,7 +74,7 @@ export class BitcoinService {
 		if ( this.bitcoin_blockchain_info_observable ) return this.bitcoin_blockchain_info_observable;
 		
 		const query = getApiQuery(BITCOIN_BLOCKCHAIN_INFO_QUERY);
-
+		
 		this.bitcoin_blockchain_info_observable = this.http.post<OrchardRes<BitcoinBlockchainInfoResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
@@ -88,7 +88,6 @@ export class BitcoinService {
 			}),
 			shareReplay(1),
 			catchError((error) => {
-				console.error('Error loading bitcoin blockchain info:', error);
 				this.bitcoin_blockchain_info_observable = null;
 				return throwError(() => error);
 			}),

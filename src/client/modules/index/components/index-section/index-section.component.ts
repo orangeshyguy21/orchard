@@ -111,6 +111,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	private initBitcoin(): void {
 		this.loading_bitcoin = ( this.enabled_bitcoin ) ? true : false;
 		if( this.enabled_bitcoin ) {
+			console.log('initBitcoin');
 			this.getBitcoin();
 			this.getBitcoinBlockSubscription();
 		} 
@@ -148,10 +149,14 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 				this.bitcoin_network_info = network;
 			}),
 			catchError((error) => {
+				console.log('error', error);
 				this.errors_bitcoin = error.errors;
+				this.cdr.detectChanges();
 				return EMPTY;
 			}),
 			finalize(() => {
+				console.log('finalize', this.bitcoin_blockchain_info);
+				console.log('finalize', this.bitcoin_network_info);
 				this.loading_bitcoin = false;
 				this.cdr.detectChanges();
 			})
@@ -181,6 +186,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 			}),
 			catchError((error) => {
 				this.errors_lightning = error.errors;
+				this.cdr.detectChanges();
 				return EMPTY;
 			}),
 			finalize(() => {
@@ -201,6 +207,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 			}),
 			catchError((error) => {
 				this.errors_taproot_assets = error.errors;
+				this.cdr.detectChanges();
 				return EMPTY;
 			}),
 			finalize(() => {
@@ -223,6 +230,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 			}),
 			catchError((error) => {
 				this.errors_mint = error.errors;
+				this.cdr.detectChanges();
 				return EMPTY;
 			}),
 			finalize(async () => {

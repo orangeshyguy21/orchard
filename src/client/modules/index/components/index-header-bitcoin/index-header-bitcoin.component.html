@@ -5,34 +5,22 @@
     </div>
     @if( !loading ) {
         <div [@fadeIn] class="flex flex-gap-1">
-            <div class="flex flex-items-center flex-gap-0-5 h-1">
-                <mat-icon 
-                    class="icon-sm trans-color-medium"
-                    [ngClass]="{
-                        'orc-status-active-color': !error,
-                        'orc-status-error-color': error
-                    }">circle
-                </mat-icon>
-                <div class="orc-outline-color">{{ !error ? 'online' : 'offline' }}</div>
+            <div class="flex flex-items-center flex-gap-0-5">
+                @switch( state() ) {
+                    @case( 'offline' ) {
+                        <mat-icon class="icon-sm orc-status-error-color">circle</mat-icon>
+                        <div class="orc-outline-color">offline</div>
+                    }
+                    @case( 'syncing' ) {
+                        <mat-icon class="icon-sm orc-status-warning-color">circle</mat-icon>
+                        <div class="orc-outline-color">syncing {{ blockchain_info?.verificationprogress | percent:'1.0-2' }}</div>
+                    }
+                    @default {
+                        <mat-icon class="icon-sm orc-status-active-color">circle</mat-icon>
+                        <div class="orc-outline-color">online</div>
+                    }
+                }
             </div>
-            @if( !error ) {
-                <div class="flex flex-items-center flex-gap-0-5">
-                    <mat-icon 
-                        class="icon-sm trans-color-medium"
-                        [ngClass]="{
-                            'orc-status-active-color': !blockchain_info?.initialblockdownload,
-                            'orc-status-warning-color': blockchain_info?.initialblockdownload
-                        }">circle
-                    </mat-icon>
-                    <div class="orc-outline-color">
-                        @if( blockchain_info?.initialblockdownload ) {
-                            <span class="orc-outline-color">syncing {{ blockchain_info?.verificationprogress | percent:'1.0-2' }}</span>
-                        } @else {
-                            <span class="orc-outline-color">synced</span>
-                        }
-                    </div>
-                </div>
-            }
         </div>
     }
     <div class="flex-grow"></div>

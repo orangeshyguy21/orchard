@@ -27,6 +27,12 @@ export class IndexHeaderBitcoinComponent {
 	@Input() blockchain_info!: BitcoinBlockchainInfo | null;
 	@Input() error!: boolean;
 
+	public state = computed(() => {
+		if( this.error ) return 'offline';
+		if( this.blockchain_info?.initialblockdownload ) return 'syncing';
+		return 'online';
+	});
+
 	public syncing_msg = computed(() => {
 		if( !this.blockchain_info ) return '';
 		if( !this.blockchain_info.initialblockdownload ) return 'synced';

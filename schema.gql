@@ -299,7 +299,7 @@ type OrchardBitcoinBlockchainInfo {
   prune_target_size: Int
   pruned: Boolean!
   pruneheight: Int
-  size_on_disk: Int!
+  size_on_disk: Float!
   verificationprogress: Float!
   warnings: [String!]!
 }

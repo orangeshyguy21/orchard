@@ -144,6 +144,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	private getBitcoinBlockchainInfoSubscription(): Subscription {
 		return this.bitcoinService.bitcoin_blockchain_info$.subscribe({
 			next: (info: BitcoinBlockchainInfo | null) => {
+				console.log('info', info);
 				this.chain = info?.chain || '';
 				this.online_bitcoin = (info !== null) ? true : false;
 				this.cdr.detectChanges();
