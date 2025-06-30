@@ -105,6 +105,11 @@
                         [balances]="mint_balances!"
                         [keysets]="mint_keysets!"
                         [icon_data]="mint_icon_data!"
+                        [lightning_balance]="lightning_balance!"
+                        [lightning_enabled]="enabled_lightning"
+                        [lightning_errors]="errors_lightning"
+                        [lightning_loading]="preparing_lightning"
+                        (navigate)="onNavigate($event)"
                     ></orc-index-enabled-mint>
                 }
                 @else {
@@ -116,6 +121,20 @@
                             <orc-error-resolve [error]="error"></orc-error-resolve>
                         }
                     </div>
+                }
+            </div>
+
+            <div class="sticky-section z-index-1">
+                <orc-index-header-ecash></orc-index-header-ecash>
+                <div class="category-rule"></div>
+            </div>
+
+            <div class="relative">
+                @if( enabled_ecash ) {
+                    <orc-index-enabled-ecash></orc-index-enabled-ecash>
+                }
+                @else {
+                    <orc-index-disabled-ecash></orc-index-disabled-ecash>
                 }
             </div>
 

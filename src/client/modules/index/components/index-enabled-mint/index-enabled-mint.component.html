@@ -1,6 +1,6 @@
 <div class="p-2">
-    <div class="flex flex-gap-2">
-        <div class="flex-1 flex flex-column flex-gap-1">
+    <div class="flex flex-gap-4">
+        <div class="flex flex-column flex-gap-1">
             <div class="title-l">Info</div>
             <div class="orc-info-table">
                 <table>
@@ -37,29 +37,17 @@
             </div>
         </div>
 
-        <div class="flex-1 flex flex-column flex-gap-1">
-            <!-- <div class="title-l">Liabilities</div>
-            
-            <div>
-                @if( loading ) {
-                    <div class="flex flex-column flex-gap-1">
-                        <div class="h-2 orc-corner-full shimmer-high"></div>
-                    </div>
-                } @else {
-                    <div [@fadeIn] class="flex flex-column flex-gap-1">
-                        @for( balance of liabilities; track balance.unit ) {
-                            <div class="flex flex-items-center flex-gap-2">
-                                <orc-graphic-asset 
-                                    [unit]="balance.unit" 
-                                    [height]="'2rem'"
-                                    [custody]="'ecash'">
-                                </orc-graphic-asset>
-                                <span class="text-nowrap font-size-l flex-grow" [innerHTML]="balance.amount | amount : balance.unit : 'mint'"></span>
-                            </div>
-                        }
-                    </div>
-                }
-            </div> -->
+        <div class="flex-grow">
+            <orc-mint-balance-sheet 
+                [balances]="balances"
+                [keysets]="keysets"
+                [lightning_balance]="lightning_balance"
+                [lightning_enabled]="lightning_enabled"
+                [lightning_errors]="lightning_errors"
+                [lightning_loading]="lightning_loading"
+                [loading]="loading"
+                (navigate)="navigate.emit('lightning')">
+            </orc-mint-balance-sheet>
         </div>
     </div>
 </div>
