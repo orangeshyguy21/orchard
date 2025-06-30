@@ -15,8 +15,9 @@ export class PrimaryNavItemComponent {
 	@Input() mode: 'default' | 'svg' = 'default';
 	@Input() navroute!: string;
 	@Input() active : boolean = false;
-	@Input() enabled! : boolean;
+	@Input() enabled! : boolean;	
 	@Input() online! : boolean;
+	@Input() syncing! : boolean;
 
 	public moused = false;
 
@@ -26,6 +27,7 @@ export class PrimaryNavItemComponent {
 	public get indicator_class(): string {
 		if( !this.enabled ) return '';
 		if( this.online === false ) return 'trans-bg-medium orc-status-inactive-bg';
+		if( this.syncing ) return 'trans-bg-medium orc-status-warning-bg';
 		if( this.online === true ) return 'trans-bg-medium orc-status-active-bg';
 		return 'shimmer-highest';
 	}

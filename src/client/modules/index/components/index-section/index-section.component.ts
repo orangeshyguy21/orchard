@@ -111,7 +111,6 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	private initBitcoin(): void {
 		this.loading_bitcoin = ( this.enabled_bitcoin ) ? true : false;
 		if( this.enabled_bitcoin ) {
-			console.log('initBitcoin');
 			this.getBitcoin();
 			this.getBitcoinBlockSubscription();
 		} 
@@ -143,20 +142,15 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 			network: this.bitcoinService.loadBitcoinNetworkInfo()
 		}).pipe(
 			tap(({ blockchain, network }) => {
-				console.log(blockchain);
-				console.log(network);
 				this.bitcoin_blockchain_info = blockchain;
 				this.bitcoin_network_info = network;
 			}),
 			catchError((error) => {
-				console.log('error', error);
 				this.errors_bitcoin = error.errors;
 				this.cdr.detectChanges();
 				return EMPTY;
 			}),
 			finalize(() => {
-				console.log('finalize', this.bitcoin_blockchain_info);
-				console.log('finalize', this.bitcoin_network_info);
 				this.loading_bitcoin = false;
 				this.cdr.detectChanges();
 			})

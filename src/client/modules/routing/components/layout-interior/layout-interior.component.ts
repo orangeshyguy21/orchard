@@ -22,7 +22,6 @@ import { BitcoinBlockCount } from '@client/modules/bitcoin/classes/bitcoin-block
 import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.class';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 import { AiChatChunk } from '@client/modules/ai/classes/ai-chat-chunk.class';
-import { AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
 import { AiModel } from '@client/modules/ai/classes/ai-model.class';
 import { AiChatConversation } from '@client/modules/ai/classes/ai-chat-conversation.class';
 import { AiChatCompiledMessage } from '@client/modules/ai/classes/ai-chat-compiled-message.class';
@@ -59,6 +58,8 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	public online_bitcoin! : boolean;
 	public online_lightning! : boolean;
 	public online_mint! : boolean;
+	public syncing_bitcoin! : boolean;
+	public syncing_lightning! : boolean;
 	public block_count!: number;
 	public chain!: string;
 
@@ -144,9 +145,10 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	private getBitcoinBlockchainInfoSubscription(): Subscription {
 		return this.bitcoinService.bitcoin_blockchain_info$.subscribe({
 			next: (info: BitcoinBlockchainInfo | null) => {
-				console.log('info', info);
+				if( info === undefined ) return;
 				this.chain = info?.chain || '';
 				this.online_bitcoin = (info !== null) ? true : false;
+				this.syncing_bitcoin = (info?.initialblockdownload) ? true : false;
 				this.cdr.detectChanges();
 			},
 			error: (error) => {
@@ -176,7 +178,9 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	private getLightningInfoSubscription(): Subscription {
 		return this.lightningService.lightning_info$.subscribe({
 			next: (info: LightningInfo | null) => {
+				if( info === undefined ) return;
 				this.online_lightning = (info !== null) ? true : false;
+				this.syncing_lightning = (info?.synced_to_chain && info?.synced_to_graph) ? false : true;
 				this.cdr.detectChanges();
 			},
 			error: (error) => {
@@ -189,6 +193,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	private getMintInfoSubscription(): Subscription {	
 		return this.mintService.mint_info$.subscribe({
 			next: (info: MintInfo | null) => {
+				if( info === undefined ) return;
 				this.online_mint = (info !== null) ? true : false;
 				this.cdr.detectChanges();
 			},
