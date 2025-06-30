@@ -10,12 +10,21 @@ import { LightningAccount } from '@client/modules/lightning/classes/lightning-ac
 import { TaprootAssets } from '@client/modules/tapass/classes/taproot-assets.class';
 import { OrchardError } from '@client/modules/error/types/error.types';
 
+type TableRow = HotCoins | ProtocolError;
+
 type HotCoins = {
+	type: 'hot_coins',
 	unit: string;
 	amount: number;
 	decimal_display: number;
 	utxos: number;
 	asset_id?: string;
+}
+
+type ProtocolError = {
+	type: 'error',
+	error_lightning?: boolean;
+	error_taproot_assets?: boolean;
 }
 
 @Component({
@@ -47,7 +56,7 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 	@Input() errors_taproot_assets!: OrchardError[];
 
 	public displayed_columns = ['amount', 'utxos'];
-	public data_source!: MatTableDataSource<HotCoins>;
+	public data_source!: MatTableDataSource<TableRow>;
 
 	constructor() {}
 
@@ -58,18 +67,23 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 	}
 
 	private init() : void {
-		const data: HotCoins[] = [];
+		const data: TableRow[] = [];
 		const hot_coins = this.getHotBalanceBitcoin();
 		const hot_coins_taproot_assets = this.getHotBalancesTaprootAssets();
 		if( hot_coins ) data.push(hot_coins);
 		if( hot_coins_taproot_assets.length > 0 ) data.push(...hot_coins_taproot_assets);
+		console.log(data);
 		this.data_source = new MatTableDataSource(data);
 	}
 
-	private getHotBalanceBitcoin(): HotCoins | null {
+	private getHotBalanceBitcoin(): TableRow | null {
 		if( !this.enabled_lightning ) return null;
-		if( this.errors_lightning.length > 0 ) return null;
+		if( this.errors_lightning.length > 0 ) return { 
+			type: 'error',
+			error_lightning: true
+		};
 		return {
+			type: 'hot_coins',
 			unit: 'sat',
 			amount: this.getLightningWalletBalance(),
 			decimal_display: 0,
@@ -77,8 +91,12 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 		}
 	}
 
-	private getHotBalancesTaprootAssets(): HotCoins[] {
+	private getHotBalancesTaprootAssets(): TableRow[] {
 		if( !this.enabled_taproot_assets ) return [];
+		if( this.errors_taproot_assets.length > 0 ) return [{ 
+			type: 'error',
+			error_taproot_assets: true 
+		}];
 		return this.getTaprootAssetsWalletBalance();
 	}
 
@@ -103,12 +121,12 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 
 	private getTaprootAssetsWalletBalance(): HotCoins[] {
 		if (!this.enabled_taproot_assets) return [];
-		if( this.errors_taproot_assets.length > 0 ) return [];
 		const grouped_assets = this.taproot_assets.assets.reduce((acc, asset) => {
 			const asset_id = asset.asset_genesis.asset_id;
 			const amount = parseInt(asset.amount) / Math.pow(10, asset.decimal_display?.decimal_display || 0);
 			if (!acc[asset_id]) {
 				acc[asset_id] = {
+					type: 'hot_coins',
 					unit: asset.asset_genesis.name,
 					amount: 0,
 					decimal_display: asset.decimal_display?.decimal_display,
