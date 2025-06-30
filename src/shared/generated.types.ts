@@ -415,7 +415,7 @@ export type OrchardBitcoinBlockchainInfo = {
   prune_target_size?: Maybe<Scalars['Int']['output']>;
   pruned: Scalars['Boolean']['output'];
   pruneheight?: Maybe<Scalars['Int']['output']>;
-  size_on_disk: Scalars['Int']['output'];
+  size_on_disk: Scalars['Float']['output'];
   verificationprogress: Scalars['Float']['output'];
   warnings: Array<Scalars['String']['output']>;
 };

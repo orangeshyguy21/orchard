@@ -18,22 +18,22 @@
                     <table>
                         <tbody>
                             <tr class="h-2">
-                                <td class="font-weight-light orc-outline-color">Chain</td>
-                                <td class="font-weight-bold">{{ blockchain_info?.chain }}</td>
+                                <td class="font-weight-extra-light orc-outline-color">Chain</td>
+                                <td>{{ blockchain_info?.chain }}</td>
                             </tr>
                             <tr class="h-2">
-                                <td class="font-weight-light orc-outline-color text-nowrap">Block height</td>
-                                <td class="font-weight-bold">
+                                <td class="font-weight-extra-light orc-outline-color text-nowrap">Block height</td>
+                                <td>
                                     @if( blockchain_info?.initialblockdownload ) {
-                                        <span class="orc-outline-color">syncing</span>
+                                        {{ blockchain_info?.blocks | block }}
                                     } @else {
                                         {{ blockcount | block }}
                                     }
                                 </td>
                             </tr>
                             <tr class="h-2">
-                                <td class="font-weight-light orc-outline-color text-nowrap">Chain weight</td>
-                                <td class="font-weight-bold">{{ blockchain_info?.size_on_disk | bytes }}</td>
+                                <td class="font-weight-extra-light orc-outline-color text-nowrap">Chain weight</td>
+                                <td>{{ blockchain_info?.size_on_disk | bytes }}</td>
                             </tr>
                         </tbody>
                     </table>
