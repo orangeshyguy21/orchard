@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { BitcoinType } from '@server/modules/bitcoin/bitcoin.enums';
 import { CoreService } from '@server/modules/bitcoin/core/core.service';
 /* Local Dependencies */
-import { BitcoinBlockchainInfo, BitcoinNetworkInfo } from './btcrpc.types';
+import { BitcoinBlockchainInfo, BitcoinNetworkInfo, BitcoinBlock } from './btcrpc.types';
 
 @Injectable()
 export class BitcoinRpcService implements OnModuleInit {
@@ -41,11 +41,23 @@ export class BitcoinRpcService implements OnModuleInit {
         if( this.type === BitcoinType.CORE ) return this.coreService.makeRpcRequest('getblockchaininfo', []);
     }
 
+    public async getBitcoinBlock(hash: string) : Promise<BitcoinBlock> {
+        if( this.type === BitcoinType.CORE ) return this.coreService.makeRpcRequest('getblock', [hash, 1]);
+    }
+
     /* *******************************************************
 	   Network                      
 	******************************************************** */
 
     public async getBitcoinNetworkInfo() : Promise<BitcoinNetworkInfo> {
         if( this.type === BitcoinType.CORE ) return this.coreService.makeRpcRequest('getnetworkinfo', []);
+    }
+
+    /* *******************************************************
+	   Mempool                      
+	******************************************************** */
+
+    public async getBitcoinMempool() : Promise<any> {
+        if( this.type === BitcoinType.CORE ) return this.coreService.makeRpcRequest('getrawmempool', [true]);
     }
 }

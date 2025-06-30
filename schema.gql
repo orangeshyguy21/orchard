@@ -283,6 +283,28 @@ type OrchardAuthentication {
   refresh_token: String!
 }
 
+type OrchardBitcoinBlock {
+  bits: String!
+  chainwork: String!
+  confirmations: Int!
+  difficulty: Float!
+  hash: String!
+  height: Int!
+  mediantime: UnixTimestamp!
+  merkleroot: String!
+  nTx: Int!
+  nextblockhash: String!
+  nonce: Float!
+  previousblockhash: String!
+  size: Int!
+  strippedsize: Int!
+  time: UnixTimestamp!
+  tx: [String!]!
+  version: Float!
+  versionHex: String!
+  weight: Float!
+}
+
 type OrchardBitcoinBlockCount {
   height: Int!
 }
@@ -302,6 +324,10 @@ type OrchardBitcoinBlockchainInfo {
   size_on_disk: Float!
   verificationprogress: Float!
   warnings: [String!]!
+}
+
+type OrchardBitcoinMempool {
+  test: Int!
 }
 
 type OrchardBitcoinNetwork {
@@ -732,8 +758,10 @@ type OrchardTaprootAssetsUtxo {
 type Query {
   ai_agent(agent: AiAgent!): OrchardAiAgent!
   ai_models: [OrchardAiModel!]!
+  bitcoin_block(hash: String!): OrchardBitcoinBlock!
   bitcoin_blockchain_info: OrchardBitcoinBlockchainInfo!
   bitcoin_blockcount: OrchardBitcoinBlockCount!
+  bitcoin_mempool: OrchardBitcoinMempool!
   bitcoin_network_info: OrchardBitcoinNetworkInfo!
   lightning_balance: OrchardLightningBalance!
   lightning_info: OrchardLightningInfo!

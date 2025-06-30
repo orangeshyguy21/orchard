@@ -8,7 +8,11 @@ import { ErrorService } from '@server/modules/error/error.service';
 import { OrchardErrorCode } from '@server/modules/error/error.types';
 import { OrchardApiError } from '@server/modules/graphql/classes/orchard-error.class';
 /* Local Dependencies */
-import { OrchardBitcoinBlockCount, OrchardBitcoinBlockchainInfo } from './btcblockchain.model';
+import { 
+	OrchardBitcoinBlockCount, 
+	OrchardBitcoinBlockchainInfo,
+	OrchardBitcoinBlock,
+} from './btcblockchain.model';
 
 @Injectable()
 export class BitcoinBlockchainService implements OnModuleDestroy {
@@ -50,6 +54,29 @@ export class BitcoinBlockchainService implements OnModuleDestroy {
 			throw new OrchardApiError(error_code);
 		}
 	}
+
+	public async getBlock(tag: string = 'GET { bitcoin_block }', hash: string): Promise<OrchardBitcoinBlock> {
+		try {
+			const block = await this.bitcoinRpcService.getBitcoinBlock(hash);
+			return new OrchardBitcoinBlock(block);
+		} catch (error) {
+			const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
+				errord: OrchardErrorCode.BitcoinRPCError,
+			});
+			throw new OrchardApiError(error_code);
+		}
+	}
+
+	// async mintRotateKeyset(tag: string, mint_rotate_keyset: MintRotateKeysetInput) : Promise<OrchardMintKeysetRotation> {
+	// 	try {
+	// 		return await this.cashuMintRpcService.rotateNextKeyset(mint_rotate_keyset);
+	// 	} catch (error) {
+	// 		const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
+	// 			errord: OrchardErrorCode.MintRpcActionError,
+	// 		});
+	// 		throw new OrchardApiError(error_code);
+	// 	}
+	// }
 	
 	startBlockCountPolling(interval_ms: number = 30000): void {
 		if (this.interval_id) this.stopBlockCountPolling();
