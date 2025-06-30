@@ -40,7 +40,7 @@ export class OrchardBitcoinBlockchainInfo {
     @Field(type => String)
     chainwork: string;
     
-    @Field(type => Int)
+    @Field(type => Float)
     size_on_disk: number;
     
     @Field(type => Boolean)

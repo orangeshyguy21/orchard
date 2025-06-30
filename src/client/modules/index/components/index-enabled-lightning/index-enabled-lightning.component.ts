@@ -1,6 +1,8 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
+/* Vendor Dependencies */
+import { MatTableDataSource } from '@angular/material/table';
 /* Application Dependencies */
 import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.class';
 import { LightningBalance } from '@client/modules/lightning/classes/lightning-balance.class';
@@ -34,13 +36,12 @@ export class IndexEnabledLightningComponent implements OnChanges {
 
 	@Input() loading!: boolean;
 	@Input() enabled_taproot_assets!: boolean;
-	@Input() lightning_info!: LightningInfo;
-	@Input() lightning_balance!: LightningBalance;
-	@Input() taproot_assets!: TaprootAssets;
+	@Input() lightning_info!: LightningInfo | null;
+	@Input() lightning_balance!: LightningBalance | null;
+	@Input() taproot_assets!: TaprootAssets | null;
 
-	@Output() navigate: EventEmitter<void> = new EventEmitter<void>();
-
-	public channel_summaries : ChannelSummary[] = [];
+	public displayed_columns = ['unit', 'receive', 'channel', 'send'];
+	public data_source!: MatTableDataSource<ChannelSummary>;
 
 	ngOnChanges(changes: SimpleChanges): void {
 		if( changes['loading'] && !this.loading ) {
@@ -51,14 +52,17 @@ export class IndexEnabledLightningComponent implements OnChanges {
 	private init() : void {
 		const sat_summary = this.getSatSummary();
 		const taproot_assets_summaries = this.getTaprootAssetsSummaries();
-		this.channel_summaries = ( taproot_assets_summaries ) ? [sat_summary, ...taproot_assets_summaries] : [sat_summary];
+		const data = ( taproot_assets_summaries ) ? [sat_summary, ...taproot_assets_summaries] : [sat_summary];
+		this.data_source = new MatTableDataSource(data);
 	}
 
 	private getSatSummary() : ChannelSummary {
+		const local_balance = this.lightning_balance?.local_balance.sat || 0;
+		const remote_balance = this.lightning_balance?.remote_balance.sat || 0;
 		return {
-			size: this.lightning_balance.local_balance.sat + this.lightning_balance.remote_balance.sat,
-			recievable: this.lightning_balance.remote_balance.sat,
-			sendable: this.lightning_balance.local_balance.sat,
+			size: local_balance + remote_balance,
+			recievable: remote_balance,
+			sendable: local_balance,
 			unit: 'sat',
 			decimal_display: 0,
 		}
@@ -66,10 +70,12 @@ export class IndexEnabledLightningComponent implements OnChanges {
 
 	private getTaprootAssetsSummaries() : ChannelSummary[] | null {
 		if( !this.enabled_taproot_assets ) return null;
+		if( !this.lightning_balance ) return null;
+		if( !this.taproot_assets ) return null;
 		
 		const grouped_summaries = this.lightning_balance.custom_channel_data.open_channels.reduce((acc, channel) => {
 			const asset_id = channel.asset_id;
-			const asset = this.taproot_assets.assets.find(asset => asset.asset_genesis.asset_id === asset_id);
+			const asset = this.taproot_assets?.assets.find(asset => asset.asset_genesis.asset_id === asset_id);
 			if (!acc[asset_id]) {
 				acc[asset_id] = {
 					size: 0,

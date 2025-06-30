@@ -1,23 +1,5 @@
 @use '@styles/molecule/molecule';
 
-:host {
-    @extend %w-full;
-}
-
-.bitcoin-enabled-card{
-    min-height: 20rem;
-    @extend %cursor-pointer;
-
-    &:hover{
-        .bitcoin-card-title {
-            @extend %orc-primary-fixed-dim-color;
-        }
-    }
-}
-
-.bitcoin-card-title {
-    @extend %trans-color-fast;
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-gap-1;
+.bitcoin-enabled-container{
+    min-height: 16rem;
 }

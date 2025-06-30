@@ -5,6 +5,8 @@ import { animate, style, transition, trigger } from '@angular/animations';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 import { MintBalance } from '@client/modules/mint/classes/mint-balance.class';
+import { LightningBalance } from '@client/modules/lightning/classes/lightning-balance.class';
+import { OrchardError } from '@client/modules/error/types/error.types';
 
 type Liabilities = {
 	unit: string;
@@ -28,13 +30,18 @@ type Liabilities = {
 })
 export class IndexEnabledMintComponent implements OnChanges {
 
+
   	@Input() loading!: boolean;
 	@Input() info!: MintInfo;
 	@Input() keysets!: MintKeyset[];
 	@Input() balances!: MintBalance[];
 	@Input() icon_data!: string | null;
+	@Input() lightning_balance!: LightningBalance | null;
+	@Input() lightning_enabled!: boolean;
+	@Input() lightning_errors!: OrchardError[];
+	@Input() lightning_loading!: boolean;
 
-	@Output() navigate: EventEmitter<void> = new EventEmitter<void>();
+	@Output() navigate: EventEmitter<string> = new EventEmitter<string>();
 
 	public liabilities!: Liabilities[] | null;
 

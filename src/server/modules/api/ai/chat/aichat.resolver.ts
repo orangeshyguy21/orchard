@@ -6,6 +6,7 @@ import { OnModuleInit } from '@nestjs/common';
 import { PubSub } from 'graphql-subscriptions';
 /* Application Dependencies */
 import { GqlAuthGuard } from '@server/modules/graphql/guards/auth.guard';
+import { AuthService } from '@server/modules/auth/auth.service';
 /* Local Dependencies */
 import { AiChatService } from './aichat.service';
 import { OrchardAiChatChunk, OrchardAiChatStream } from './aichat.model';
@@ -20,6 +21,7 @@ export class AiChatResolver implements OnModuleInit {
 	
 	constructor(
 		private aiChatService: AiChatService,
+        private authService: AuthService,
 	) {}
 	
 	onModuleInit() {
@@ -29,11 +31,16 @@ export class AiChatResolver implements OnModuleInit {
 	}
 
     @Subscription(() => OrchardAiChatChunk)
-    ai_chat(
+    async ai_chat(
         @Args('ai_chat') ai_chat: AiChatInput
     ) {
         const tag = `SUBSCRIPTION { ai_chat } for stream ${ai_chat.id}`;
         this.logger.debug(tag);
+        try {
+            await this.authService.validateAccessToken(ai_chat.auth);
+        } catch (error) {
+            throw error;
+        }
         this.aiChatService.streamChat(tag, ai_chat);
         return pubSub.asyncIterableIterator('ai_chat');
     }

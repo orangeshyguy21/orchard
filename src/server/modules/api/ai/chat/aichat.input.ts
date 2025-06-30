@@ -21,6 +21,9 @@ export class AiChatInput {
     @Field()
 	model: string;
 
+	@Field()
+	auth: string;
+
     @Field(() => AiAgent, { nullable: true })
 	agent: AiAgent | null;
 

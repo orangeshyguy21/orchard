@@ -15,7 +15,7 @@ export class CacheService {
   public createCache<T>(key: string, duration: number): BehaviorSubject<T | null> {
     if(this.cache.has(key)) return this.cache.get(key)!.subject;
     this.cache.set(key, {
-      subject: new BehaviorSubject<T | null>(null),
+      subject: new BehaviorSubject<T | null | undefined>(undefined),
       last_fetch_time: 0,
       duration,
     });

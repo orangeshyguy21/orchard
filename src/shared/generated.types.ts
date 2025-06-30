@@ -37,6 +37,7 @@ export type AiChatAbortInput = {
 
 export type AiChatInput = {
   agent?: InputMaybe<AiAgent>;
+  auth: Scalars['String']['input'];
   id: Scalars['String']['input'];
   messages: Array<AiChatMessageInput>;
   model: Scalars['String']['input'];
@@ -414,7 +415,7 @@ export type OrchardBitcoinBlockchainInfo = {
   prune_target_size?: Maybe<Scalars['Int']['output']>;
   pruned: Scalars['Boolean']['output'];
   pruneheight?: Maybe<Scalars['Int']['output']>;
-  size_on_disk: Scalars['Int']['output'];
+  size_on_disk: Scalars['Float']['output'];
   verificationprogress: Scalars['Float']['output'];
   warnings: Array<Scalars['String']['output']>;
 };

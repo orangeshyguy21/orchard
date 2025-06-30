@@ -16,5 +16,7 @@ export class PrimaryNavItemsComponent {
 	@Input() online_bitcoin!: boolean;
 	@Input() online_lightning!: boolean;
 	@Input() online_mint!: boolean;
+	@Input() syncing_bitcoin!: boolean;
+	@Input() syncing_lightning!: boolean;
 
 }

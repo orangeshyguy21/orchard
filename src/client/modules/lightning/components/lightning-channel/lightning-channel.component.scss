@@ -60,9 +60,9 @@
 
     .center-border{
         @extend %absolute;
-        top: -1rem;
+        top: -2rem;
         @extend %left-0;
-        bottom: -1rem;
+        bottom: -2rem;
         @extend %right-0;
         background-color: var(--mat-sys-outline);
         @extend %orc-corner-full;

@@ -1,136 +1,94 @@
-<mat-card appearance="outlined" class="lightning-enabled-card" (click)="navigate.emit()">
-    <mat-card-content>
-
-        <div class="absolute left-1 top-1">
-            <div class="flex flex-column flex-gap-0-25">
-                <div class="flex flex-items-center flex-gap-0-5 h-1">
-                    @if( loading ) {
-                        <div class="h-1 w-1 orc-corner-full shimmer-high"></div>
-                        <div class="h-1 w-4 orc-corner-full shimmer-high"></div>
-                    } @else {
-                        <mat-icon [@fadeIn] class="icon-sm trans-color-medium orc-status-active-color">circle</mat-icon>
-                        <div [@fadeIn] class="orc-outline-color">online</div>
-                    }
-                </div>
-                @if( enabled_taproot_assets ) {
-                    <div class="flex flex-items-center flex-gap-0-5">
-                        @if( loading ) {
-                            <div class="h-1 w-1 orc-corner-full shimmer-high"></div>
-                            <div class="h-1 w-4 orc-corner-full shimmer-high"></div>
-                        } @else {
-                            <mat-icon [@fadeIn] class="icon-sm trans-color-medium orc-status-active-color">circle</mat-icon>
-                            <div [@fadeIn] class="orc-outline-color">taproot assets</div>
-                        }
-                    </div>
-                }
+<div class="lightning-enabled-container">
+    <div class="flex flex-gap-4 p-2">
+        <div class="flex flex-column flex-gap-1">
+            <div class="title-l">Info</div>
+            <div class="orc-info-table">
+                <table>
+                    <tbody>
+                        <tr>
+                            <td class="font-weight-extra-light orc-outline-color">Node</td>
+                            <td>
+                                <div class="flex flex-items-center flex-gap-1">
+                                    <div class="h-2 w-2 orc-corner-full" [style.background-color]="lightning_info?.color"></div>
+                                    <div class="text-nowrap">{{ lightning_info?.alias }}</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="font-weight-extra-light orc-outline-color">Channels</td>
+                            <td>{{ lightning_info?.num_active_channels }}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
-        <div class="flex flex-column flex-gap-2">
-            <div class="flex flex-justify-center">
-                <div class="lightning-card-title">
-                    <mat-icon class="icon-lg mat-symbol-outline">bolt</mat-icon>
-                    <div class="font-size-xxl font-weight-bold">Lightning</div>
-                </div>
-            </div>
 
-            <div class="flex flex-gap-2">
-                <div class="flex flex-column flex-gap-1">
-                    <div class="title-l">Info</div>
-                    <div class="flex flex-gap-2">
-                        <div class="flex flex-column flex-gap-1">
-                            <div class="font-weight-light orc-outline-color">Node</div>
-                            <div class="font-weight-light orc-outline-color">Channels</div>
-                        </div>
-                        <div class="flex flex-column flex-gap-1">
-                            @if( loading ) {
-                                <div class="h-1 m-b-0-5 w-5 orc-corner-full shimmer-high"></div>
-                                <div class="h-1 w-5 orc-corner-full shimmer-high"></div>
-                            } @else {
-                                <div [@fadeIn] class="flex flex-items-center flex-gap-0-5">
-                                    <div class="h-1 w-1 orc-corner-full" [style.background-color]="lightning_info.color"></div>
-                                    <div class="font-weight-bold text-nowrap">{{ lightning_info.alias }}</div>
-                                </div>
-                                <div [@fadeIn] class="font-weight-bold">{{ lightning_info.num_active_channels }}</div>
-                            }
-                        </div>
-                    </div>
-                </div>
+        <div class="flex-grow flex flex-column flex-gap-1">
+            <div class="flex flex-column flex-gap-1">
+                <div class="title-l">Channel Summary</div>
+                <mat-card appearance="outlined" class="overflow-hidden">
+                    <div class="p-h-1">
+                        <table mat-table [dataSource]="data_source" class="orc-feature-table">
 
-
-                @if( loading ) {
-                    <div class="flex-grow flex flex-column flex-gap-1">
-                        <div class="flex flex-justify-evenly">
-                            <div class="h-1 w-5 orc-corner-full shimmer-high"></div>
-                            <div class="h-1 w-5 orc-corner-full shimmer-high"></div>
-                        </div>
-                        <div class="h-3 w-full orc-corner-full shimmer-high"></div>
-                        @if( enabled_taproot_assets){
-                            <div class="h-3 w-full orc-corner-full shimmer-high"></div>
-                        }
-                    </div>
-                }@else {
-                    <div class="flex-grow flex flex-column flex-gap-1">
-                        <table class="channel-table">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>
-                                        <div class="flex flex-justify-center relative h-1">
-                                            <div class="lightning-channels-divider">
-                                                <div class="title-capacity-receive font-size-xs text-nowrap orc-outline-color">Receive Capacity</div>
-                                                <div class="title-capacity-send font-size-xs text-nowrap orc-outline-color">Send Capacity</div>
-                                            </div>
+                            <ng-container matColumnDef="unit">
+                                <th mat-header-cell *matHeaderCellDef></th>
+                                <td mat-cell *matCellDef="let row"> 
+                                    <orc-graphic-asset 
+                                        [unit]="row.unit" 
+                                        [height]="'2rem'"
+                                        [custody]="'lightning'"
+                                        [asset_id]="row.asset_id">
+                                    </orc-graphic-asset>
+                                </td>
+                            </ng-container>
+                        
+            
+                            <ng-container matColumnDef="receive">
+                                <th mat-header-cell *matHeaderCellDef></th>
+                                <td mat-cell *matCellDef="let row"> 
+                                    <span class="text-nowrap font-size-l" [innerHTML]="row.recievable | amount : row.unit : 'lightning'"></span>
+                                </td>
+                            </ng-container>
+                        
+                            <ng-container matColumnDef="channel">
+                                <th mat-header-cell *matHeaderCellDef>
+                                    <div class="flex flex-justify-center relative h-1">
+                                        <div class="lightning-channels-divider">
+                                            <div class="title-capacity-receive font-size-xs text-nowrap orc-outline-color">Receive Capacity</div>
+                                            <div class="title-capacity-send font-size-xs text-nowrap orc-outline-color">Send Capacity</div>
                                         </div>
-                                    </th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for(summary of channel_summaries; track summary.unit) {
-                                    <tr>
-                                        <td>
-                                            <div class="flex flex-items-center flex-gap-1">
-                                                <orc-graphic-asset 
-                                                    [unit]="summary.unit" 
-                                                    [height]="'2rem'"
-                                                    [custody]="'lightning'"
-                                                    [asset_id]="summary.asset_id">
-                                                </orc-graphic-asset>
-                                                <span class="text-nowrap font-size-l" [innerHTML]="summary.recievable | amount : summary.unit : 'lightning'"></span>
-                                            </div>
-                                        </td>
-                                        <td class="w-full">
-                                            <orc-lightning-channel
-                                                [height]="'2.5rem'"
-                                                [size]="summary.size"
-                                                [recievable]="summary.recievable"
-                                                [sendable]="summary.sendable"
-                                                [unit]="summary.unit"
-                                                [asset_id]="summary.asset_id">
-                                            </orc-lightning-channel>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-items-center flex-gap-1">
-                                                <span class="text-nowrap font-size-l" [innerHTML]="summary.sendable | amount : summary.unit : 'lightning'"></span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
+                                    </div>
+                                </th>
+                                <td mat-cell *matCellDef="let row" class="w-full">
+                                    <div class="p-v-1">
+                                        <orc-lightning-channel
+                                            [height]="'3rem'"
+                                            [size]="row.size"
+                                            [recievable]="row.recievable"
+                                            [sendable]="row.sendable"
+                                            [unit]="row.unit"
+                                            [asset_id]="row.asset_id">
+                                        </orc-lightning-channel>
+                                    </div>
+                                    
+                                </td>
+                            </ng-container>
+            
+                            <ng-container matColumnDef="send">
+                                <th mat-header-cell *matHeaderCellDef></th>
+                                <td mat-cell *matCellDef="let row">
+                                    <span class="text-nowrap font-size-l" [innerHTML]="row.sendable | amount : row.unit : 'lightning'"></span>
+                                </td>
+                            </ng-container>
+            
+                            <tr mat-header-row *matHeaderRowDef="displayed_columns"></tr>
+                            <tr mat-row *matRowDef="let row; columns: displayed_columns;"></tr>
+                        
                         </table>
                     </div>
-                }
+                </mat-card>
             </div>
         </div>
-
-        <div class="absolute right-1 bottom-1">
-            @if( loading ) {
-                <div class="h-1 w-8 orc-corner-full shimmer-high"></div>
-            } @else {
-                <div [@fadeIn] class="orc-outline-color font-size-xs">{{ lightning_info.version }}</div>
-            }
-        </div>
-
-    </mat-card-content>
-</mat-card>
+    </div>
+</div>

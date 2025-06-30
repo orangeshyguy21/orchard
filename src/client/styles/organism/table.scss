@@ -1,0 +1,15 @@
+.orc-info-table{
+    th, td {
+        min-height: 2rem;
+        text-align: left;
+        vertical-align: middle;
+        border-right: 2rem solid transparent; 
+    }
+
+    th:last-child, td:last-child {
+        border-right: none;
+    }
+    tr{
+        height: 2rem;
+    }
+}

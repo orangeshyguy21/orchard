@@ -54,10 +54,10 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	public loading_taproot_assets:boolean = true;
 	public loading_mint:boolean = true;
 
-	public errors_bitcoin!: OrchardError[];
-	public errors_lightning!: OrchardError[];
-	public errors_taproot_assets!: OrchardError[];
-	public errors_mint!: OrchardError[];
+	public errors_bitcoin: OrchardError[] = [];
+	public errors_lightning: OrchardError[] = [];
+	public errors_taproot_assets: OrchardError[] = [];
+	public errors_mint: OrchardError[] = [];
 
 	public bitcoin_blockchain_info!: BitcoinBlockchainInfo | null;
 	public bitcoin_network_info!: BitcoinNetworkInfo | null;
@@ -73,13 +73,13 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	public mint_icon_data!: string | null;
 
 	public get preparing_bitcoin(): boolean {
-		return this.loading_bitcoin || this.loading_lightning || this.loading_taproot_assets || this.errors_bitcoin ? true : false;
+		return this.loading_bitcoin || this.loading_lightning || this.loading_taproot_assets || this.errors_bitcoin.length > 0;
 	}
 	public get preparing_lightning(): boolean {
-		return this.loading_lightning || this.loading_taproot_assets || this.errors_lightning ? true : false || this.errors_taproot_assets ? true : false;
+		return this.loading_lightning || this.loading_taproot_assets || this.errors_lightning.length > 0 || this.errors_taproot_assets.length > 0;
 	}
 	public get preparing_mint(): boolean {
-		return this.loading_mint || this.errors_mint ? true : false;
+		return this.loading_mint || this.errors_mint.length > 0;
 	}
 
 	private subscriptions: Subscription = new Subscription();
@@ -147,6 +147,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 			}),
 			catchError((error) => {
 				this.errors_bitcoin = error.errors;
+				this.cdr.detectChanges();
 				return EMPTY;
 			}),
 			finalize(() => {
@@ -179,6 +180,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 			}),
 			catchError((error) => {
 				this.errors_lightning = error.errors;
+				this.cdr.detectChanges();
 				return EMPTY;
 			}),
 			finalize(() => {
@@ -199,6 +201,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 			}),
 			catchError((error) => {
 				this.errors_taproot_assets = error.errors;
+				this.cdr.detectChanges();
 				return EMPTY;
 			}),
 			finalize(() => {
@@ -221,6 +224,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 			}),
 			catchError((error) => {
 				this.errors_mint = error.errors;
+				this.cdr.detectChanges();
 				return EMPTY;
 			}),
 			finalize(async () => {

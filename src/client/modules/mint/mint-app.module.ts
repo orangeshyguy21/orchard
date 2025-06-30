@@ -38,12 +38,12 @@ import { MintSubsectionConfigComponent } from './components/mint-subsection-conf
 import { MintSubsectionKeysetsComponent } from './components/mint-subsection-keysets/mint-subsection-keysets.component';
 import { MintSubsectionDatabaseComponent } from './components/mint-subsection-database/mint-subsection-database.component';
 import { MintSubsectionDisabledComponent } from './components/mint-subsection-disabled/mint-subsection-disabled.component';
-import { MintBalanceSheetComponent } from './components/mint-balance-sheet/mint-balance-sheet.component';
+// import { MintBalanceSheetComponent } from './components/mint-balance-sheet/mint-balance-sheet.component';
 import { MintConnectionsComponent } from './components/mint-connections/mint-connections.component';
 import { MintQrcodeDialogComponent } from './components/mint-qrcode-dialog/mint-qrcode-dialog.component';
 import { MintAnalyticControlPanelComponent } from './components/mint-analytic-control-panel/mint-analytic-control-panel.component';
 import { MintAnalyticChartComponent } from './components/mint-analytic-chart/mint-analytic-chart.component';
-import { MintKeysetComponent } from './components/mint-keyset/mint-keyset.component';
+// import { MintKeysetComponent } from './components/mint-keyset/mint-keyset.component';
 import { MintNameComponent } from './components/mint-name/mint-name.component';
 import { MintInfoFormIconComponent } from './components/mint-info-form-icon/mint-info-form-icon.component';
 import { MintInfoFormNameComponent } from './components/mint-info-form-name/mint-info-form-name.component';
@@ -96,12 +96,12 @@ import { MintModule } from './mint.module';
 		MintSubsectionKeysetsComponent,
 		MintSubsectionDatabaseComponent,
 		MintSubsectionDisabledComponent,
-		MintBalanceSheetComponent,
+		// MintBalanceSheetComponent,
 		MintConnectionsComponent,
 		MintQrcodeDialogComponent,
 		MintAnalyticControlPanelComponent,
 		MintAnalyticChartComponent,
-		MintKeysetComponent,
+		// MintKeysetComponent,
   		MintNameComponent,
     	MintInfoFormIconComponent,
 		MintInfoFormNameComponent,

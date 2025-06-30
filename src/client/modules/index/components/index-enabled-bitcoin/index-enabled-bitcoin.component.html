@@ -1,126 +1,86 @@
-<mat-card appearance="outlined" class="bitcoin-enabled-card" (click)="navigate.emit()">
-    <mat-card-content>
 
-        <div class="absolute left-1 top-1">
-            <div class="flex flex-column flex-gap-0-25">
-                <div class="flex flex-items-center flex-gap-0-5 h-1">
-                    @if( loading ) {
-                        <div class="h-1 w-1 orc-corner-full shimmer-high"></div>
-                        <div class="h-1 w-4 orc-corner-full shimmer-high"></div>
-                    } @else {
-                        <mat-icon [@fadeIn] class="icon-sm trans-color-medium orc-status-active-color">circle</mat-icon>
-                        <div [@fadeIn] class="orc-outline-color">online</div>
-                    }
-                </div>
-                <div class="flex flex-items-center flex-gap-0-5">
-                    @if( loading ) {
-                        <div class="h-1 w-1 orc-corner-full shimmer-high"></div>
-                        <div class="h-1 w-4 orc-corner-full shimmer-high"></div>
-                    } @else {
-                        <mat-icon [@fadeIn] class="icon-sm trans-color-medium orc-status-active-color">circle</mat-icon>
-                        <div [@fadeIn] class="orc-outline-color">synced</div>
-                    }
+<div class="bitcoin-enabled-container">
+    <div class="flex flex-gap-1 p-2">
+        <div class="flex-1">
+            <div class="flex flex-column flex-gap-1">
+                <div class="title-l">Info</div>
+                <div class="orc-info-table">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td class="font-weight-extra-light orc-outline-color">Chain</td>
+                                <td>{{ blockchain_info?.chain }}</td>
+                            </tr>
+                            <tr>
+                                <td class="font-weight-extra-light orc-outline-color text-nowrap">Block height</td>
+                                <td>
+                                    {{ blockcount | block }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="font-weight-extra-light orc-outline-color text-nowrap">Chain weight</td>
+                                <td>{{ blockchain_info?.size_on_disk | bytes }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-
-        <div class="flex flex-column flex-gap-2">
-            <div class="flex flex-justify-center">
-                <div class="bitcoin-card-title">
-                    <mat-icon class="icon-lg" [svgIcon]="'bitcoin_outline'"></mat-icon>
-                    <div class=" font-size-xxl font-weight-bold">Bitcoin</div>
-                </div>
-            </div>
-    
-            <div class="flex flex-gap-2">
-                <div class="flex-1 flex flex-column flex-gap-1">
-                    <div class="title-l">Info</div>
-                    <div class="flex flex-gap-2">
-                        <div class="flex flex-column flex-gap-1">
-                            <div class="font-weight-light orc-outline-color">Chain</div>
-                            <div class="font-weight-light orc-outline-color text-nowrap">Block height</div>
-                            <div class="font-weight-light orc-outline-color text-nowrap">Chain weight</div>
-                        </div>
-                        <div class="flex flex-column flex-gap-1">
-                            @if( loading ) {
-                                <div class="h-1 m-b-0-5 w-5 orc-corner-full shimmer-high"></div>
-                                <div class="h-1 m-b-0-5 w-5 orc-corner-full shimmer-high"></div>
-                                <div class="h-1 w-8 orc-corner-full shimmer-high"></div>
-                            } @else {
-                                <div [@fadeIn] class="font-weight-bold">{{ blockchain_info.chain }}</div>
-                                <div [@fadeIn] class="font-weight-bold">{{ blockcount | block }}</div>
-                                <div [@fadeIn] class="font-weight-bold">{{ blockchain_info.size_on_disk | bytes }}</div>
-                            }
-                        </div>
-                    </div>
-                </div>
-                <div class="flex-1 flex flex-column flex-gap-1">
-                    <div class="title-l">Hot wallet</div>
-                    
-                    <div>
-                        @if( loading ) {
-                            <div class="flex flex-column flex-gap-1">
-                                <div class="h-2 orc-corner-full shimmer-high"></div>
-                                @if( enabled_taproot_assets){
-                                    <div class="h-2 orc-corner-full shimmer-high"></div>
-                                }
-                            </div>
-                        } @else {
-                            <div [@fadeIn] class="flex flex-column flex-gap-1">
-
-                                @if( balance_hot_bitcoin ) {
-                                    <div class="flex flex-items-center flex-gap-2">
-                                        <orc-graphic-asset 
-                                            [unit]="balance_hot_bitcoin.unit" 
-                                            [height]="'2rem'"
-                                            [custody]="'hot'">
-                                        </orc-graphic-asset>
-                                        <span class="text-nowrap font-size-l flex-grow" [innerHTML]="balance_hot_bitcoin.amount | amount : balance_hot_bitcoin.unit : 'bitcoin'"></span>
+        <div class="flex-1">
+            <div class="flex flex-column flex-gap-1">
+                <div class="title-l">Hot wallet</div>
+                <mat-card appearance="outlined" class="overflow-hidden">
+                    <div class="p-h-1">
+                        <table mat-table [dataSource]="data_source" class="orc-feature-table">
+            
+                            <ng-container matColumnDef="amount">
+                                <th mat-header-cell *matHeaderCellDef> Total </th>
+                                <td mat-cell *matCellDef="let row"> 
+                                    @if( row.type === 'error' ){
+                                        @if( row.error_lightning ){
+                                            <orc-error-resolve [error]="errors_lightning[0]" mode="small"></orc-error-resolve>
+                                        }
+                                        @if( row.error_taproot_assets ){
+                                            <orc-error-resolve [error]="errors_taproot_assets[0]" mode="small"></orc-error-resolve>
+                                        }
+                                    }
+                                    @if( row.type === 'hot_coins' ){
+                                        <div class="flex flex-items-center flex-gap-2">
+                                            <orc-graphic-asset 
+                                                [unit]="row.unit" 
+                                                [height]="'2rem'"
+                                                [custody]="'hot'"
+                                                [asset_id]="row.asset_id">
+                                            </orc-graphic-asset>
+                                            <span class="text-nowrap font-size-l flex-grow" [innerHTML]="row.amount | amount : row.unit : 'bitcoin'"></span>
+                                        </div>
+                                    }                                    
+                                </td>
+                            </ng-container>
+                        
+                            <ng-container matColumnDef="utxos">
+                                <th mat-header-cell *matHeaderCellDef></th>
+                                <td mat-cell *matCellDef="let row">
+                                    @if( !row.error_lightning && !row.error_taproot_assets ){
                                         <orc-bitcoin-utxo-stack 
-                                            [unit]="balance_hot_bitcoin.unit"
-                                            [coins]="balance_hot_bitcoin.utxos">
-                                        </orc-bitcoin-utxo-stack>
-                                    </div>
-                                }
-
-                                @if( errors_lightning ){
-                                    <orc-error-resolve [error]="errors_lightning[0]" mode="small"></orc-error-resolve>
-                                }
-                                
-                                @for( balance of balances_hot_taproot_assets; track balance.unit ) {
-                                    <div class="flex flex-items-center flex-gap-2">
-                                        <orc-graphic-asset 
-                                            [unit]="balance.unit" 
-                                            [height]="'2rem'"
-                                            [custody]="'hot'"
-                                            [asset_id]="balance.asset_id">
-                                        </orc-graphic-asset>
-                                        <span class="text-nowrap font-size-l flex-grow" [innerHTML]="balance.amount | amount : balance.unit : 'bitcoin'"></span>
-                                        <orc-bitcoin-utxo-stack 
-                                            [unit]="balance.unit"
-                                            [coins]="balance.utxos"
-                                            [asset_id]="balance.asset_id">
-                                        </orc-bitcoin-utxo-stack>
-                                    </div>
-                                }
-
-                                @if( errors_taproot_assets ){
-                                    <orc-error-resolve [error]="errors_taproot_assets[0]" mode="small"></orc-error-resolve>
-                                }
-                            </div>
-                        }
+                                            [unit]="row.unit"
+                                            [coins]="row.utxos"
+                                            [asset_id]="row.asset_id">
+                                        </orc-bitcoin-utxo-stack> 
+                                    }
+                                </td>
+                            </ng-container>
+            
+                            <tr mat-header-row *matHeaderRowDef="displayed_columns"></tr>
+                            <tr mat-row *matRowDef="let row; columns: displayed_columns;"></tr>
+                        
+                        </table>
                     </div>
-                </div>
+                </mat-card>
             </div>
         </div>
-
-        <div class="absolute right-1 bottom-1">
-            @if( loading ) {
-                <div class="h-1 w-8 orc-corner-full shimmer-high"></div>
-            } @else {
-                <div class="orc-outline-color font-size-xs" [@fadeIn]>{{ network_info.subversion }}</div>
-            }
+        <div class="flex-1">
+            <div class="title-l">Mempool</div>
         </div>
-
-    </mat-card-content>
-</mat-card>
+    </div>
+</div>

@@ -6,6 +6,7 @@
         [active]="active_section === 'bitcoin'"
         [enabled]="enabled_bitcoin"
         [online]="online_bitcoin"
+        [syncing]="syncing_bitcoin"
         mode="svg">
     </orc-primary-nav-item>
     <orc-primary-nav-item 
@@ -14,7 +15,8 @@
         name="Lightning"
         [active]="active_section === 'lightning'"
         [enabled]="enabled_lightning"
-        [online]="online_lightning">
+        [online]="online_lightning"
+        [syncing]="syncing_lightning">
     </orc-primary-nav-item>
     <orc-primary-nav-item 
         navroute="mint"
