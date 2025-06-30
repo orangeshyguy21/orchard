@@ -17,11 +17,11 @@
                 <div class="orc-info-table">
                     <table>
                         <tbody>
-                            <tr class="h-2">
+                            <tr>
                                 <td class="font-weight-extra-light orc-outline-color">Chain</td>
                                 <td>{{ blockchain_info?.chain }}</td>
                             </tr>
-                            <tr class="h-2">
+                            <tr>
                                 <td class="font-weight-extra-light orc-outline-color text-nowrap">Block height</td>
                                 <td>
                                     @if( blockchain_info?.initialblockdownload ) {
@@ -31,7 +31,7 @@
                                     }
                                 </td>
                             </tr>
-                            <tr class="h-2">
+                            <tr>
                                 <td class="font-weight-extra-light orc-outline-color text-nowrap">Chain weight</td>
                                 <td>{{ blockchain_info?.size_on_disk | bytes }}</td>
                             </tr>

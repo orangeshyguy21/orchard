@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
 /* Vendor Dependencies */
 import { MatTableDataSource } from '@angular/material/table';
@@ -45,8 +45,6 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 	@Input() taproot_assets!: TaprootAssets;
 	@Input() errors_lightning!: OrchardError[];
 	@Input() errors_taproot_assets!: OrchardError[];
-
-	@Output() navigate: EventEmitter<void> = new EventEmitter<void>();
 
 	public displayed_columns = ['amount', 'utxos'];
 	public data_source!: MatTableDataSource<HotCoins>;

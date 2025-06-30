@@ -36,7 +36,6 @@
                         [taproot_assets]="taproot_assets!"
                         [errors_lightning]="errors_lightning"
                         [errors_taproot_assets]="errors_taproot_assets"
-                        (navigate)="onNavigate('bitcoin')"
                     ></orc-index-enabled-bitcoin>
                 }
                 @else {
@@ -61,7 +60,32 @@
             </div>
 
             <div class="relative">
-                ln stuff
+                @if( enabled_lightning ) {
+                    <orc-index-enabled-lightning
+                        [loading]="preparing_lightning"
+                        [lightning_info]="lightning_info!"
+                        [lightning_balance]="lightning_balance!"
+                        [taproot_assets]="taproot_assets!"
+                        [enabled_taproot_assets]="enabled_taproot_assets"
+                    ></orc-index-enabled-lightning>
+                }
+                @else {
+                    <orc-index-disabled-lightning (navigate)="onNavigate('lightning')"></orc-index-disabled-lightning>
+                }
+                @if( errors_lightning.length > 0 ) {
+                    <div [@fadeIn] class="index-section-error">
+                        @for(error of errors_lightning; track error.code) {
+                            <orc-error-resolve [error]="error"></orc-error-resolve>
+                        }
+                    </div>
+                }
+                @if( errors_taproot_assets.length > 0 ) {
+                    <div [@fadeIn] class="index-section-error">
+                        @for(error of errors_taproot_assets; track error.code) {
+                            <orc-error-resolve [error]="error"></orc-error-resolve>
+                        }
+                    </div>
+                }
             </div>
 
         </div>
