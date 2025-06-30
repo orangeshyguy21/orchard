@@ -14,11 +14,7 @@
                             <tr>
                                 <td class="font-weight-extra-light orc-outline-color text-nowrap">Block height</td>
                                 <td>
-                                    @if( blockchain_info?.initialblockdownload ) {
-                                        {{ blockchain_info?.blocks | block }}
-                                    } @else {
-                                        {{ blockcount | block }}
-                                    }
+                                    {{ blockcount | block }}
                                 </td>
                             </tr>
                             <tr>

@@ -137,7 +137,6 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 			acc[asset_id].utxos++;
 			return acc;
 		}, {} as Record<string, HotCoins>);
-		console.log(grouped_assets);
 		return Object.values(grouped_assets);
 	}
 }
