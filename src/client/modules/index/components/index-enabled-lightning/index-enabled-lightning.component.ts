@@ -1,6 +1,8 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
+/* Vendor Dependencies */
+import { MatTableDataSource } from '@angular/material/table';
 /* Application Dependencies */
 import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.class';
 import { LightningBalance } from '@client/modules/lightning/classes/lightning-balance.class';
@@ -38,7 +40,8 @@ export class IndexEnabledLightningComponent implements OnChanges {
 	@Input() lightning_balance!: LightningBalance | null;
 	@Input() taproot_assets!: TaprootAssets | null;
 
-	public channel_summaries : ChannelSummary[] = [];
+	public displayed_columns = ['receive', 'channel', 'send'];
+	public data_source!: MatTableDataSource<ChannelSummary>;
 
 	ngOnChanges(changes: SimpleChanges): void {
 		if( changes['loading'] && !this.loading ) {
@@ -49,7 +52,8 @@ export class IndexEnabledLightningComponent implements OnChanges {
 	private init() : void {
 		const sat_summary = this.getSatSummary();
 		const taproot_assets_summaries = this.getTaprootAssetsSummaries();
-		this.channel_summaries = ( taproot_assets_summaries ) ? [sat_summary, ...taproot_assets_summaries] : [sat_summary];
+		const data = ( taproot_assets_summaries ) ? [sat_summary, ...taproot_assets_summaries] : [sat_summary];
+		this.data_source = new MatTableDataSource(data);
 	}
 
 	private getSatSummary() : ChannelSummary {
