@@ -72,7 +72,6 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 		const hot_coins_taproot_assets = this.getHotBalancesTaprootAssets();
 		if( hot_coins ) data.push(hot_coins);
 		if( hot_coins_taproot_assets.length > 0 ) data.push(...hot_coins_taproot_assets);
-		console.log(data);
 		this.data_source = new MatTableDataSource(data);
 	}
 
@@ -138,6 +137,7 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 			acc[asset_id].utxos++;
 			return acc;
 		}, {} as Record<string, HotCoins>);
+		console.log(grouped_assets);
 		return Object.values(grouped_assets);
 	}
 }
