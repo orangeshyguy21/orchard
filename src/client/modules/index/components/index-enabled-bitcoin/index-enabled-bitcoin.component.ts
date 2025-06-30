@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
 /* Vendor Dependencies */
 import { MatTableDataSource } from '@angular/material/table';
@@ -40,7 +40,13 @@ type ProtocolError = {
                 style({ opacity: 0 }),
                 animate('300ms ease-in', style({ opacity: 1 }))
             ])
-        ])
+        ]),
+		trigger('blockDataChange', [
+			transition('* => *', [
+				animate('200ms ease-out', style({ opacity: 0.1 })),
+				animate('400ms ease-in', style({ opacity: 1 }))
+			]),
+		])
     ]
 })
 export class IndexEnabledBitcoinComponent implements OnChanges {
@@ -59,16 +65,20 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 
 	public displayed_columns = ['amount', 'utxos'];
 	public data_source!: MatTableDataSource<TableRow>;
+	public polling_block: boolean = false;
 
 	public get sync_progress(): number {
 		return (this.blockchain_info) ? this.blockchain_info?.verificationprogress * 100 : 0;
 	}
 
-	constructor() {}
+	constructor(
+		private cdr: ChangeDetectorRef
+	) {}
 
 	ngOnChanges(changes: SimpleChanges): void {
 		if( changes['loading'] && !this.loading ) {
 			this.init();
+			this.pollingBlock();
 		}
 	}
 
@@ -79,6 +89,14 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 		if( hot_coins ) data.push(hot_coins);
 		if( hot_coins_taproot_assets.length > 0 ) data.push(...hot_coins_taproot_assets);
 		this.data_source = new MatTableDataSource(data);
+	}
+
+	private pollingBlock(): void {
+		if( !this.blockchain_info?.initialblockdownload ) return;
+		setTimeout(() => {
+			this.polling_block = true;
+			this.cdr.detectChanges();
+		}, 1000);
 	}
 
 	private getHotBalanceBitcoin(): TableRow | null {
