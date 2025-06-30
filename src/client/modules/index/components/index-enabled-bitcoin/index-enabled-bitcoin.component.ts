@@ -39,8 +39,8 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 	@Input() enabled_lightning!: boolean;
 	@Input() enabled_taproot_assets!: boolean;
 	@Input() blockcount!: number;
-	@Input() blockchain_info!: BitcoinBlockchainInfo;
-	@Input() network_info!: BitcoinNetworkInfo;
+	@Input() blockchain_info!: BitcoinBlockchainInfo | null;
+	@Input() network_info!: BitcoinNetworkInfo | null;
 	@Input() lightning_accounts!: LightningAccount[];
 	@Input() taproot_assets!: TaprootAssets;
 	@Input() errors_lightning!: OrchardError[];
@@ -70,7 +70,7 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 
 	private getHotBalanceBitcoin(): HotCoins | null {
 		if( !this.enabled_lightning ) return null;
-		if( this.errors_lightning?.length > 0 ) return null;
+		if( this.errors_lightning.length > 0 ) return null;
 		return {
 			unit: 'sat',
 			amount: this.getLightningWalletBalance(),
@@ -86,7 +86,7 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 
 	private getLightningWalletBalance(): number {
 		if( !this.enabled_lightning ) return 0;
-		if( this.errors_lightning?.length > 0 ) return 0;
+		if( this.errors_lightning.length > 0 ) return 0;
 		return this.lightning_accounts
 			.flatMap(account => account.addresses)
 			.reduce((sum, address) => sum + address.balance, 0);
@@ -94,7 +94,7 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 
 	private getLightningWalletUtxos(): number {
 		if (!this.enabled_lightning) return 0;
-		if( this.errors_lightning?.length > 0 ) return 0;
+		if( this.errors_lightning.length > 0 ) return 0;
 		const unique_addresses = new Set(
 			this.lightning_accounts
 				.flatMap(account => account.addresses)
@@ -105,7 +105,7 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 
 	private getTaprootAssetsWalletBalance(): HotCoins[] {
 		if (!this.enabled_taproot_assets) return [];
-		if( this.errors_taproot_assets?.length > 0 ) return [];
+		if( this.errors_taproot_assets.length > 0 ) return [];
 		const grouped_assets = this.taproot_assets.assets.reduce((acc, asset) => {
 			const asset_id = asset.asset_genesis.asset_id;
 			const amount = parseInt(asset.amount) / Math.pow(10, asset.decimal_display?.decimal_display || 0);

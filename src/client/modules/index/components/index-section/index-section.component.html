@@ -18,7 +18,7 @@
                     [loading]="preparing_bitcoin"
                     [network_info]="bitcoin_network_info"
                     [blockchain_info]="bitcoin_blockchain_info"
-                    [error]="errors_bitcoin?.length ? true : false"
+                    [error]="errors_bitcoin.length ? true : false"
                 ></orc-index-header-bitcoin>
                 <div class="category-rule"></div>
             </div>
@@ -42,7 +42,7 @@
                 @else {
                     <orc-index-disabled-bitcoin (navigate)="onNavigate('bitcoin')"></orc-index-disabled-bitcoin>
                 }
-                @if( errors_bitcoin ) {
+                @if( errors_bitcoin.length > 0 ) {
                     <div [@fadeIn] class="index-section-error">
                         @for(error of errors_bitcoin; track error.code) {
                             <orc-error-resolve [error]="error"></orc-error-resolve>
@@ -55,7 +55,7 @@
                 <orc-index-header-lightning
                     [loading]="preparing_lightning"
                     [lightning_info]="lightning_info!"
-                    [error]="errors_lightning?.length ? true : false"
+                    [error]="errors_lightning.length ? true : false"
                 ></orc-index-header-lightning>
                 <div class="category-rule"></div>
             </div>

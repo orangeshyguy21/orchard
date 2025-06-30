@@ -2,10 +2,10 @@
 <div class="p-2">
 
     <div class="flex flex-column flex-gap-2">
-        @if( errors_lightning ){
+        @if( errors_lightning.length > 0 ){
             <orc-error-resolve [error]="errors_lightning[0]" mode="small"></orc-error-resolve>
         }
-        @if( errors_taproot_assets ){
+        @if( errors_taproot_assets.length > 0 ){
             <orc-error-resolve [error]="errors_taproot_assets[0]" mode="small"></orc-error-resolve>
         }
     </div>

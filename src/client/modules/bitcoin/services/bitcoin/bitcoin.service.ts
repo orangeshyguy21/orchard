@@ -89,6 +89,7 @@ export class BitcoinService {
 			shareReplay(1),
 			catchError((error) => {
 				this.bitcoin_blockchain_info_observable = null;
+				this.bitcoin_blockchain_info_subject.next(null);
 				return throwError(() => error);
 			}),
 		);
