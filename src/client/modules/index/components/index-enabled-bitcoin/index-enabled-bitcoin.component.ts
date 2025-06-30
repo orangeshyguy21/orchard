@@ -58,6 +58,10 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 	public displayed_columns = ['amount', 'utxos'];
 	public data_source!: MatTableDataSource<TableRow>;
 
+	public get sync_progress(): number {
+		return (this.blockchain_info) ? this.blockchain_info?.verificationprogress * 100 : 0;
+	}
+
 	constructor() {}
 
 	ngOnChanges(changes: SimpleChanges): void {

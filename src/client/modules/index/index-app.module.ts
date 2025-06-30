@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 /* Application Dependencies */
 import { LocalModule } from '@client/modules/local/local.module';
 import { GraphicModule } from '@client/modules/graphic/graphic.module';
@@ -77,6 +78,7 @@ export class IndexAppRoutingModule { }
 		MatRippleModule,
 		MatButtonModule,
 		MatTableModule,
+		MatProgressSpinnerModule,
 		LocalModule,
 		GraphicModule,
 		ErrorModule,

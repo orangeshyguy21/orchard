@@ -1,6 +1,6 @@
 
 <div class="bitcoin-enabled-container">
-    <div class="flex flex-gap-1 p-2">
+    <div class="flex flex-gap-4 p-2">
         <div class="flex-1">
             <div class="flex flex-column flex-gap-1">
                 <div class="title-l">Info</div>
@@ -80,7 +80,56 @@
             </div>
         </div>
         <div class="flex-1">
-            <div class="title-l">Mempool</div>
+            @if( blockchain_info?.initialblockdownload ){
+                <div class="title-l">Block Download</div>
+                <div class="p-1">
+                    <div class="flex flex-gap-1">
+                        <div class="relative">
+                            <mat-progress-spinner
+                                mode="determinate"
+                                [value]="sync_progress"
+                                [diameter]="200"
+                                [strokeWidth]="20">
+                            </mat-progress-spinner>
+                            <div class="progress-background">
+                                <div class="spinner">
+                                    <mat-progress-spinner
+                                        mode="determinate"
+                                        [value]="100"
+                                        [diameter]="200"
+                                        [strokeWidth]="20">
+                                    </mat-progress-spinner>
+                                </div>
+                                <div class="progress-number">
+                                    <div>{{ blockchain_info?.verificationprogress | percent:'1.0-2' }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="orc-info-table">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td class="font-weight-extra-light orc-outline-color">Chain</td>
+                                        <td>{{ blockchain_info?.chain }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-weight-extra-light orc-outline-color text-nowrap">Block height</td>
+                                        <td>
+                                            {{ blockcount | block }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-weight-extra-light orc-outline-color text-nowrap">Chain weight</td>
+                                        <td>{{ blockchain_info?.size_on_disk | bytes }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }@else {
+                <div class="title-l">Mempool</div>
+            }
         </div>
     </div>
 </div>

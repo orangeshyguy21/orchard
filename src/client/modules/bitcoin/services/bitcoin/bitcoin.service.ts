@@ -119,6 +119,25 @@ export class BitcoinService {
 		);
 	}
 
+	public getBitcoinBlockchainInfo() : Observable<BitcoinBlockchainInfo> {
+		const query = getApiQuery(BITCOIN_BLOCKCHAIN_INFO_QUERY);
+
+		return this.http.post<OrchardRes<BitcoinBlockchainInfoResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.bitcoin_blockchain_info;
+			}),
+			map((bitcoin_blockchain_info) => new BitcoinBlockchainInfo(bitcoin_blockchain_info)),
+			tap((bitcoin_blockchain_info) => {
+                this.bitcoin_blockchain_info_subject.next(bitcoin_blockchain_info);
+            }),
+			catchError((error) => {
+				console.error('Error loading bitcoin blockchain info:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
 	public getBlockCount() : Observable<OrchardBitcoinBlockCount> {
 		const query = getApiQuery(BITCOIN_BLOCK_COUNT_QUERY);
 

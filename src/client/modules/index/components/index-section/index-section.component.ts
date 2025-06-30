@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef, OnDestro
 import { trigger, transition, style, animate } from '@angular/animations';
 import { Router } from '@angular/router';
 /* Vendor Dependencies */
-import { tap, catchError, finalize, EMPTY, forkJoin, Subscription, firstValueFrom } from 'rxjs';
+import { tap, catchError, finalize, EMPTY, forkJoin, Subscription, firstValueFrom, timer, switchMap } from 'rxjs';
 /* Application Configuration */
 import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
@@ -112,7 +112,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 		this.loading_bitcoin = ( this.enabled_bitcoin ) ? true : false;
 		if( this.enabled_bitcoin ) {
 			this.getBitcoin();
-			this.getBitcoinBlockSubscription();
+			this.subscriptions.add(this.getBitcoinBlockSubscription());
 		} 
 		this.cdr.detectChanges();
 	}
@@ -152,6 +152,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 			}),
 			finalize(() => {
 				this.loading_bitcoin = false;
+				if( this.bitcoin_blockchain_info?.initialblockdownload ) this.subscriptions.add(this.getBitcoinBlockchainSubscription());
 				this.cdr.detectChanges();
 			})
 		).subscribe();
@@ -165,6 +166,24 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 				this.cdr.detectChanges();
             }
         );
+	}
+
+	private getBitcoinBlockchainSubscription(): Subscription {
+		return timer(0, 10000).pipe(
+			switchMap(() => this.bitcoinService.getBitcoinBlockchainInfo().pipe(
+				catchError(error => {
+					console.error('Failed to fetch block count, polling stopped:', error);
+					return EMPTY;
+				})
+			))
+		).subscribe({
+			next: async (blockchain_info: BitcoinBlockchainInfo) => {
+				this.bitcoin_blockchain_info = blockchain_info;
+				console.log('new blockchain info', blockchain_info);
+				// go get the block
+				this.cdr.detectChanges();
+			}
+		});
 	}
 
 	private getLightning(): void {
