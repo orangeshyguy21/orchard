@@ -122,7 +122,7 @@ export class OrchardBitcoinBlock {
 	@Field(type => String)
 	previousblockhash: string;
 
-	@Field(type => String)
+	@Field(type => String, { nullable: true })
 	nextblockhash: string;
 
 	@Field(type => Int)

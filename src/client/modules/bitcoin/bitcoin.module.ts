@@ -5,11 +5,13 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 /* Local Dependencies */
 import { BlockPipe } from './pipes/block/block.pipe';
+import { Log2WorkPipe } from './pipes/log2work/log2work.pipe';
 import { BitcoinUtxoStackComponent } from './components/bitcoin-utxo-stack/bitcoin-utxo-stack.component';
 
 @NgModule({
 	declarations: [
 		BlockPipe,
+		Log2WorkPipe,
 		BitcoinUtxoStackComponent
 	],
 	imports: [
@@ -18,6 +20,7 @@ import { BitcoinUtxoStackComponent } from './components/bitcoin-utxo-stack/bitco
 	],
 	exports: [
 		BlockPipe,
+		Log2WorkPipe,
 		BitcoinUtxoStackComponent
 	]
 })

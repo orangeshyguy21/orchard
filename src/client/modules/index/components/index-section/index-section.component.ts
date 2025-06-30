@@ -15,6 +15,7 @@ import { PublicService } from '@client/modules/public/services/image/public.serv
 import { BitcoinBlockchainInfo } from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
 import { BitcoinNetworkInfo } from '@client/modules/bitcoin/classes/bitcoin-network-info.class';
 import { BitcoinBlockCount } from '@client/modules/bitcoin/classes/bitcoin-blockcount.class';
+import { BitcoinBlock } from '@client/modules/bitcoin/classes/bitcoin-block.class';
 import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.class';
 import { LightningBalance } from '@client/modules/lightning/classes/lightning-balance.class';
 import { LightningAccount } from '@client/modules/lightning/classes/lightning-account.class';
@@ -62,6 +63,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	public bitcoin_blockchain_info!: BitcoinBlockchainInfo | null;
 	public bitcoin_network_info!: BitcoinNetworkInfo | null;
 	public bitcoin_blockcount!: BitcoinBlockCount | null;
+	public bitcoin_block!: BitcoinBlock | null;
 	public lightning_info!: LightningInfo | null;
 	public lightning_balance!: LightningBalance | null;
 	public lightning_accounts!: LightningAccount[] | null;
@@ -179,10 +181,17 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 		).subscribe({
 			next: async (blockchain_info: BitcoinBlockchainInfo) => {
 				this.bitcoin_blockchain_info = blockchain_info;
-				console.log('new blockchain info', blockchain_info);
-				// go get the block
+				this.getBitcoinBlock();
 				this.cdr.detectChanges();
 			}
+		});
+	}
+
+	private getBitcoinBlock(): void {
+		this.bitcoinService.getBlock(this.bitcoin_blockchain_info?.bestblockhash ?? '').subscribe((block) => {
+			this.bitcoin_block = block;
+			console.log('new block', this.bitcoin_block);
+			this.cdr.detectChanges();
 		});
 	}
 

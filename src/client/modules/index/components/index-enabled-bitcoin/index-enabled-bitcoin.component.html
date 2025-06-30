@@ -109,18 +109,30 @@
                             <table>
                                 <tbody>
                                     <tr>
-                                        <td class="font-weight-extra-light orc-outline-color">Chain</td>
-                                        <td>{{ blockchain_info?.chain }}</td>
+                                        <td class="font-weight-extra-light orc-outline-color">Date</td>
+                                        <td class="text-nowrap w-min-18">{{ block?.time | time:'medium' }}</td>
                                     </tr>
                                     <tr>
-                                        <td class="font-weight-extra-light orc-outline-color text-nowrap">Block height</td>
+                                        <td class="font-weight-extra-light orc-outline-color text-nowrap">Block</td>
                                         <td>
-                                            {{ blockcount | block }}
+                                            {{ block?.height | block }}
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="font-weight-extra-light orc-outline-color text-nowrap">Chain weight</td>
-                                        <td>{{ blockchain_info?.size_on_disk | bytes }}</td>
+                                        <td class="font-weight-extra-light orc-outline-color text-nowrap">Version</td>
+                                        <td>
+                                            0x{{ block?.versionHex }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-weight-extra-light orc-outline-color text-nowrap">New Best</td>
+                                        <td class="text-nowrap">
+                                            {{ block?.hash | truncate:60:25:10 }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-weight-extra-light orc-outline-color text-nowrap">Log2 Work</td>
+                                        <td>{{ block?.chainwork | log2work }}</td>
                                     </tr>
                                 </tbody>
                             </table>

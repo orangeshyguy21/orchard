@@ -397,6 +397,29 @@ export type OrchardAuthentication = {
   refresh_token: Scalars['String']['output'];
 };
 
+export type OrchardBitcoinBlock = {
+  __typename?: 'OrchardBitcoinBlock';
+  bits: Scalars['String']['output'];
+  chainwork: Scalars['String']['output'];
+  confirmations: Scalars['Int']['output'];
+  difficulty: Scalars['Float']['output'];
+  hash: Scalars['String']['output'];
+  height: Scalars['Int']['output'];
+  mediantime: Scalars['UnixTimestamp']['output'];
+  merkleroot: Scalars['String']['output'];
+  nTx: Scalars['Int']['output'];
+  nextblockhash?: Maybe<Scalars['String']['output']>;
+  nonce: Scalars['Float']['output'];
+  previousblockhash: Scalars['String']['output'];
+  size: Scalars['Int']['output'];
+  strippedsize: Scalars['Int']['output'];
+  time: Scalars['UnixTimestamp']['output'];
+  tx: Array<Scalars['String']['output']>;
+  version: Scalars['Float']['output'];
+  versionHex: Scalars['String']['output'];
+  weight: Scalars['Float']['output'];
+};
+
 export type OrchardBitcoinBlockCount = {
   __typename?: 'OrchardBitcoinBlockCount';
   height: Scalars['Int']['output'];
@@ -418,6 +441,11 @@ export type OrchardBitcoinBlockchainInfo = {
   size_on_disk: Scalars['Float']['output'];
   verificationprogress: Scalars['Float']['output'];
   warnings: Array<Scalars['String']['output']>;
+};
+
+export type OrchardBitcoinMempool = {
+  __typename?: 'OrchardBitcoinMempool';
+  test: Scalars['Int']['output'];
 };
 
 export type OrchardBitcoinNetwork = {
@@ -907,8 +935,10 @@ export type Query = {
   __typename?: 'Query';
   ai_agent: OrchardAiAgent;
   ai_models: Array<OrchardAiModel>;
+  bitcoin_block: OrchardBitcoinBlock;
   bitcoin_blockchain_info: OrchardBitcoinBlockchainInfo;
   bitcoin_blockcount: OrchardBitcoinBlockCount;
+  bitcoin_mempool: OrchardBitcoinMempool;
   bitcoin_network_info: OrchardBitcoinNetworkInfo;
   lightning_balance: OrchardLightningBalance;
   lightning_info: OrchardLightningInfo;
@@ -944,6 +974,11 @@ export type Query = {
 
 export type QueryAi_AgentArgs = {
   agent: AiAgent;
+};
+
+
+export type QueryBitcoin_BlockArgs = {
+  hash: Scalars['String']['input'];
 };
 
 

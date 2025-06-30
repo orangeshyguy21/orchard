@@ -293,7 +293,7 @@ type OrchardBitcoinBlock {
   mediantime: UnixTimestamp!
   merkleroot: String!
   nTx: Int!
-  nextblockhash: String!
+  nextblockhash: String
   nonce: Float!
   previousblockhash: String!
   size: Int!

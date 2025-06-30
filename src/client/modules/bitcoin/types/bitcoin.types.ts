@@ -1,4 +1,9 @@
-import { OrchardBitcoinBlockchainInfo, OrchardBitcoinBlockCount, OrchardBitcoinNetworkInfo } from "@shared/generated.types";
+import { 
+	OrchardBitcoinBlockchainInfo, 
+	OrchardBitcoinBlockCount, 
+	OrchardBitcoinNetworkInfo, 
+	OrchardBitcoinBlock,
+} from "@shared/generated.types";
 
 export type BitcoinBlockchainInfoResponse = {
 	bitcoin_blockchain_info: OrchardBitcoinBlockchainInfo;
@@ -10,4 +15,8 @@ export type BitcoinBlockCountResponse = {
 
 export type BitcoinNetworkInfoResponse = {
 	bitcoin_network_info: OrchardBitcoinNetworkInfo;
+}
+
+export type BitcoinBlockResponse = {
+	bitcoin_block: OrchardBitcoinBlock;
 }
