@@ -190,7 +190,6 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	private getBitcoinBlock(): void {
 		this.bitcoinService.getBlock(this.bitcoin_blockchain_info?.bestblockhash ?? '').subscribe((block) => {
 			this.bitcoin_block = block;
-			console.log('new block', this.bitcoin_block);
 			this.cdr.detectChanges();
 		});
 	}
