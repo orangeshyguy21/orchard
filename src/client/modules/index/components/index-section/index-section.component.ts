@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef, OnDestro
 import { trigger, transition, style, animate } from '@angular/animations';
 import { Router } from '@angular/router';
 /* Vendor Dependencies */
-import { tap, catchError, finalize, EMPTY, forkJoin, Subscription, firstValueFrom, timer, switchMap } from 'rxjs';
+import { tap, catchError, finalize, EMPTY, forkJoin, Subscription, firstValueFrom, timer, switchMap, takeWhile } from 'rxjs';
 /* Application Configuration */
 import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
@@ -85,6 +85,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	}
 
 	private subscriptions: Subscription = new Subscription();
+	private bitcoin_polling_active: boolean = false;
 
 	constructor(
 		private bitcoinService: BitcoinService,
@@ -171,10 +172,13 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	}
 
 	private getBitcoinBlockchainSubscription(): Subscription {
+		this.bitcoin_polling_active = true;
 		return timer(0, 5000).pipe(
+			takeWhile(() => this.bitcoin_polling_active), // Stop when flag is false
 			switchMap(() => this.bitcoinService.getBitcoinBlockchainInfo().pipe(
 				catchError(error => {
-					console.error('Failed to fetch block count, polling stopped:', error);
+					console.error('Failed to fetch blockchain info, polling stopped:', error);
+					this.bitcoin_polling_active = false; // Stop the timer
 					return EMPTY;
 				})
 			))

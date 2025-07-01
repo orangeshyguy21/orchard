@@ -4,7 +4,7 @@ import { Event, Router, ActivatedRoute, ActivatedRouteSnapshot } from '@angular/
 import { FormControl } from '@angular/forms';
 /* Vendor Dependencies */
 import { Subscription, timer, EMPTY } from 'rxjs';
-import { switchMap, catchError, filter } from 'rxjs/operators';
+import { switchMap, catchError, filter, takeWhile } from 'rxjs/operators';
 import { MatSidenav } from '@angular/material/sidenav';
 /* Application Configuration */
 import { environment } from '@client/configs/configuration';
@@ -70,6 +70,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	}
 	
 	private subscriptions: Subscription = new Subscription();
+	private bitcoin_polling_active: boolean = false;
 
 	constructor(
 		private settingService: SettingService,
@@ -96,6 +97,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	private orchardOptionalInit(): void {
 		if( this.enabled_bitcoin ) {
+			this.bitcoin_polling_active = true;
 			this.bitcoinService.loadBitcoinBlockchainInfo().subscribe();
 			this.subscriptions.add(this.getBitcoinBlockchainInfoSubscription());
 			this.subscriptions.add(this.getBitcoinBlockCountSubscription());
@@ -160,9 +162,11 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	private getBitcoinBlockCountSubscription(): Subscription {
 		return timer(0, 60000).pipe(
+			takeWhile(() => this.bitcoin_polling_active), 
 			switchMap(() => this.bitcoinService.getBlockCount().pipe(
 				catchError(error => {
 					console.error('Failed to fetch block count, polling stopped:', error);
+					this.bitcoin_polling_active = false;
 					return EMPTY;
 				})
 			))
@@ -173,7 +177,6 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 			}
 		});
 	}
-
 
 	private getLightningInfoSubscription(): Subscription {
 		return this.lightningService.lightning_info$.subscribe({
