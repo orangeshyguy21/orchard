@@ -1,5 +1,11 @@
 /* Core Dependencies */
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import * as fs from 'fs';
+import * as path from 'path';
+/* Vendor Dependencies */
+import * as grpc from '@grpc/grpc-js';
+import * as protoLoader from '@grpc/proto-loader';
 /* Vendor Dependencies */
 import sqlite3 from "sqlite3";
 /* Native Dependencies */
@@ -35,7 +41,52 @@ import { NutshellMintMintQuote, NutshellMintMeltQuote } from './nutshell.types';
 @Injectable()
 export class NutshellService {
 
-	constructor() {}
+	private readonly logger = new Logger(NutshellService.name);
+
+	constructor(
+		private configService: ConfigService,
+	) {}
+
+	public initializeGrpcClient() : grpc.Client {
+        const rpc_key = this.configService.get('cashu.rpc_key');
+        const rpc_cert = this.configService.get('cashu.rpc_cert');
+        const rpc_ca = this.configService.get('cashu.rpc_ca');
+        const rpc_host = this.configService.get('cashu.rpc_host');
+        const rpc_port = this.configService.get('cashu.rpc_port');
+        const rpc_url = `${rpc_host}:${rpc_port}`;
+
+        if (!rpc_key || !rpc_cert || !rpc_ca || !rpc_host || !rpc_port) {
+            this.logger.warn('Missing RPC credentials, secure connection cannot be established');
+            return;
+        }
+        
+        try {
+            const proto_path = path.resolve(__dirname, '../../../../proto/nutshell/management.proto');
+            const package_definition = protoLoader.loadSync(proto_path, {
+                keepCase: true,
+                longs: String,
+                enums: String,
+                defaults: true,
+                oneofs: true
+            });
+            const mint_proto: any = grpc.loadPackageDefinition(package_definition).management;
+            const key_content = fs.readFileSync(rpc_key);
+            const cert_content = fs.readFileSync(rpc_cert);
+            const ca_content = rpc_ca ? fs.readFileSync(rpc_ca) : undefined;
+            const ssl_credentials = grpc.credentials.createSsl(
+                ca_content,
+                key_content,
+                cert_content
+            );
+			this.logger.log('Mint gRPC client initialized with TLS certificate authentication');
+            return new mint_proto.Mint(
+                rpc_url,
+                ssl_credentials
+            );
+        } catch (error) {
+			this.logger.error(`Failed to initialize gRPC client: ${error.message}`);
+        }
+    }
 
 	public async getMintBalances(db:sqlite3.Database, keyset_id?: string) : Promise<CashuMintBalance[]> {
 		const where_clause = keyset_id ? `WHERE keyset = ?` : '';

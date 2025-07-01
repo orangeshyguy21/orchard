@@ -171,7 +171,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	}
 
 	private getBitcoinBlockchainSubscription(): Subscription {
-		return timer(0, 10000).pipe(
+		return timer(0, 5000).pipe(
 			switchMap(() => this.bitcoinService.getBitcoinBlockchainInfo().pipe(
 				catchError(error => {
 					console.error('Failed to fetch block count, polling stopped:', error);
@@ -180,6 +180,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 			))
 		).subscribe({
 			next: async (blockchain_info: BitcoinBlockchainInfo) => {
+				console.log('new blockchain info', blockchain_info);
 				this.bitcoin_blockchain_info = blockchain_info;
 				this.getBitcoinBlock();
 				this.cdr.detectChanges();

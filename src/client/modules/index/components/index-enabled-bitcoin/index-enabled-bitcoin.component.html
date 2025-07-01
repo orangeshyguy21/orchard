@@ -28,7 +28,7 @@
         </div>
         <div class="flex-1">
             <div class="flex flex-column flex-gap-1">
-                <div class="title-l">Hot wallet</div>
+                <div class="title-l">Hot Wallet</div>
                 <mat-card appearance="outlined" class="overflow-hidden">
                     <div class="p-h-1">
                         <table mat-table [dataSource]="data_source" class="orc-feature-table">
@@ -52,7 +52,7 @@
                                                 [custody]="'hot'"
                                                 [asset_id]="row.asset_id">
                                             </orc-graphic-asset>
-                                            <span class="text-nowrap font-size-l flex-grow" [innerHTML]="row.amount | amount : row.unit : 'bitcoin'"></span>
+                                            <span class="text-nowrap font-size-m flex-grow" [innerHTML]="row.amount | amount : row.unit : 'bitcoin'"></span>
                                         </div>
                                     }                                    
                                 </td>
@@ -101,7 +101,7 @@
                                     </mat-progress-spinner>
                                 </div>
                                 <div class="progress-number">
-                                    <div class="text-nowrap font-size-l font-weight-bold" [@blockDataChange]="blockchain_info?.verificationprogress">{{ blockchain_info?.verificationprogress | percent:'1.0-2' }}</div>
+                                    <div class="text-nowrap font-size-l font-weight-bold" [@blockDataChange]="block?.height">{{ blockchain_info?.verificationprogress | percent:'1.0-2' }}</div>
                                 </div>
                             </div>
                         </div>
@@ -119,13 +119,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="font-weight-extra-light orc-outline-color text-nowrap">Version</td>
-                                        <td [@blockDataChange]="block?.versionHex">
-                                            0x{{ block?.versionHex }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="font-weight-extra-light orc-outline-color text-nowrap">New tip</td>
+                                        <td class="font-weight-extra-light orc-outline-color text-nowrap">New height</td>
                                         <td class="text-nowrap w-min-24" [@blockDataChange]="block?.hash">
                                             {{ block?.hash | truncate:60:27:10 }}
                                         </td>
@@ -134,6 +128,12 @@
                                         <td class="font-weight-extra-light orc-outline-color text-nowrap">Log2 work</td>
                                         <td [@blockDataChange]="block?.chainwork">
                                             {{ block?.chainwork | log2work }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-weight-extra-light orc-outline-color text-nowrap">Target height</td>
+                                        <td [@blockDataChange]="blockchain_info?.headers">
+                                            {{ blockchain_info?.headers | block }}
                                         </td>
                                     </tr>
                                 </tbody>

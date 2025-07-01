@@ -3,6 +3,7 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 /* Application Dependencies */
 import { CdkService } from '@server/modules/cashu/cdk/cdk.service';
+import { NutshellService } from '@server/modules/cashu/nutshell/nutshell.service';
 import { OrchardErrorCode } from '@server/modules/error/error.types';
 import { MintType } from '@server/modules/cashu/cashu.enums';
 /* Local Dependencies */
@@ -18,6 +19,7 @@ export class CashuMintRpcService implements OnModuleInit {
     constructor(
         private configService: ConfigService,
         private cdkService: CdkService,
+        private nutshellService: NutshellService,
     ) {}
 
     public async onModuleInit() {
@@ -26,7 +28,7 @@ export class CashuMintRpcService implements OnModuleInit {
 	}
     
     private initializeGrpcClient() {
-        if( this.type === 'nutshell' ) this.logger.warn('Nutshell backend does not support gRPC');
+        if( this.type === 'nutshell' ) this.grpc_client = this.nutshellService.initializeGrpcClient();
         if( this.type === 'cdk' ) this.grpc_client = this.cdkService.initializeGrpcClient();
     }
 

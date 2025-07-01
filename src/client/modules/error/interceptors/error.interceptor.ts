@@ -25,6 +25,7 @@ export const errorInterceptor: HttpInterceptorFn = (
         }),
         catchError((error) => {
             if (error.type === 'refresh_error') {
+                console.log('refresh error, logging out');
                 authService.logout();
                 router.navigate(['/authentication']);
             }
@@ -38,10 +39,11 @@ export const errorInterceptor: HttpInterceptorFn = (
                         });
                         return next(newRequest);
                     }),
-                    catchError((refreshError) => {
+                    catchError((refresh_error) => {
                         authService.logout();
+                        console.log('refresh error, logging out', refresh_error );
                         router.navigate(['/authentication']);
-                        return throwError(() => refreshError);
+                        return throwError(() => refresh_error);
                     })
                 );
             }
