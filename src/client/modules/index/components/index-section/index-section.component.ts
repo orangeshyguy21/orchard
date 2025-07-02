@@ -184,7 +184,6 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 			))
 		).subscribe({
 			next: async (blockchain_info: BitcoinBlockchainInfo) => {
-				console.log('new blockchain info', blockchain_info);
 				this.bitcoin_blockchain_info = blockchain_info;
 				this.getBitcoinBlock();
 				this.cdr.detectChanges();
