@@ -21,7 +21,7 @@ export class LightningWalletService {
 
 	async getListAccounts(tag: string) : Promise<OrchardLightningAccount[]> {
 		try {
-			const addresses : LightningAddresses = await this.lightningWalletKitService.getListAddresses();
+			const addresses : LightningAddresses = await this.lightningWalletKitService.getLightningAddresses();
             return addresses.account_with_addresses.map(account => new OrchardLightningAccount(account));
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
