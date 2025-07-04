@@ -67,7 +67,7 @@ export class MintBalanceSheetComponent implements OnChanges {
 				return new MintBalanceRow(liability_balance, asset_balance, keyset);
 			})
 			.filter(row => row !== null)
-			.sort((a, b) => b.first_seen - a.first_seen)
+			.sort((a, b) => b.derivation_path_index - a.derivation_path_index)
 			.forEach( row => {
 				const unit = row.unit.toLowerCase();
 				if (!rows_by_unit[unit]) {
