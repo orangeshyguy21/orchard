@@ -15,6 +15,7 @@ export class MintConfigFormMaxComponent {
 	@Input() form_group!: FormGroup;
     @Input() control_name!: keyof OrchardNut4Method | keyof OrchardNut5Method;
 	@Input() unit!: string;
+	@Input() nut!: 'nut4' | 'nut5';
 
     @Output() update = new EventEmitter<keyof OrchardNut4Method | keyof OrchardNut5Method>();
     @Output() cancel = new EventEmitter<keyof OrchardNut4Method | keyof OrchardNut5Method>();
@@ -29,6 +30,12 @@ export class MintConfigFormMaxComponent {
 		if (this.form_group.get(this.control_name)?.hasError('orchardInteger')) return 'Must be a whole number';
 		if (this.form_group.get(this.control_name)?.hasError('orchardCents')) return 'Must have 2 decimals';
 		if (this.form_group.get(this.control_name)?.errors) return 'Invalid amount';
+		return '';
+	});
+
+	public help_text = computed(() => {
+		if( this.nut === 'nut4' ) return 'Configure the maximum amount of ecash that can be minted per deposit invoice.';
+		if( this.nut === 'nut5' ) return 'Configure the maximum amount of ecash that can be melted per withdrawal invoice.';
 		return '';
 	});
 	

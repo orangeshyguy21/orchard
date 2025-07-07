@@ -10,8 +10,8 @@ export class MintInfoRpc implements OrchardMintInfoRpc {
 	icon_url: string | null;
 	motd: string | null;
 	urls: string[];
-    total_issued: string;
-    total_redeemed: string;
+    total_issued: string | null;
+    total_redeemed: string | null;
 
 	constructor(omi: OrchardMintInfoRpc) {
 		this.name = omi.name ?? null;

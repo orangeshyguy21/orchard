@@ -652,8 +652,8 @@ export type OrchardMintInfoRpc = {
   icon_url?: Maybe<Scalars['String']['output']>;
   motd?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
-  total_issued: Scalars['String']['output'];
-  total_redeemed: Scalars['String']['output'];
+  total_issued?: Maybe<Scalars['String']['output']>;
+  total_redeemed?: Maybe<Scalars['String']['output']>;
   urls: Array<Scalars['String']['output']>;
   version: Scalars['String']['output'];
 };
