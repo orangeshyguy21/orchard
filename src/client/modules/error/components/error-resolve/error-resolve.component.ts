@@ -58,6 +58,10 @@ export class ErrorResolveComponent {
 			title: 'MINT DATABASE SELECT ERROR',
 			description: 'Orchard was unable to retrieve data from the mint database'
 		},
+		40004: {
+			title: 'MINT SUPPORT ERROR',
+			description: 'This mint type does not support this feature'
+		},
 		40005: {
 			title: 'MINT RPC ERROR',
 			description: 'Orchard was unable to connect to the mint RPC'

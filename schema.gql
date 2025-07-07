@@ -510,8 +510,8 @@ type OrchardMintInfoRpc {
   icon_url: String
   motd: String
   name: String
-  total_issued: String!
-  total_redeemed: String!
+  total_issued: String
+  total_redeemed: String
   urls: [String!]!
   version: String!
 }
