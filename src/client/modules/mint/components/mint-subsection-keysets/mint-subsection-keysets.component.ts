@@ -16,6 +16,7 @@ import { EventData } from '@client/modules/event/classes/event-data.class';
 import { AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
 import { NonNullableMintKeysetsSettings } from '@client/modules/settings/types/setting.types';
 import { ComponentCanDeactivate } from '@client/modules/routing/interfaces/routing.interfaces';
+import { OrchardErrors } from '@client/modules/error/classes/error.class';
 /* Native Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
@@ -372,10 +373,10 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 					message: 'Rotation complete!',
 				}));
 			},
-			error: (error) => {
+			error: (error:OrchardErrors) => {
 				this.eventService.registerEvent(new EventData({
 					type: 'ERROR',
-					message: error
+					message: error.errors[0].message,
 				}));
 			}
 		});
