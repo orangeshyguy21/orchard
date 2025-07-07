@@ -33,7 +33,14 @@
                 </form>
                 <div class="flex-1">
                     <orc-help-text class="orc-surface-container-high-bg">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                        @if( this.nut === 'nut4' ) {
+                            Allow users to add a description to bolt11 minting invoices.
+                        } @else {
+                            <div class="flex flex-column flex-gap-0-5">
+                                <span>Indicates whether the bolt11 payment method backend supports paying amountless invoices.</span>
+                                <span>Not configurable. On/Off determined by lightning backend.</span>
+                            </div>
+                        }
                     </orc-help-text>
                 </div>
             </div>
