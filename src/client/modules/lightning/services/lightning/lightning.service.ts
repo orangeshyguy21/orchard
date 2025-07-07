@@ -89,8 +89,10 @@ export class LightningService {
 			}),
 			shareReplay(1),
 			catchError((error) => {
+
 				console.error('Error loading lightning info:', error);
 				this.lightning_info_observable = null;
+				this.lightning_info_subject.next(null);
 				return throwError(() => error);
 			}),
 		);
