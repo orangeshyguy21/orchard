@@ -702,7 +702,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	private onError(error: OrchardErrors): void {
 		this.eventService.registerEvent(new EventData({
 			type: 'ERROR',
-			message: error.errors[0].message
+			message: error.errors[0].message,
 		}));
 	}
 
