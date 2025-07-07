@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 /* Application Dependencies */
 import { SettingService } from '@client/modules/settings/services/setting/setting.service';
 import { ThemeType } from '@client/modules/cache/services/local-storage/local-storage.types';
+import { OrchardErrors } from '@client/modules/error/classes/error.class';
 /* Native Dependencies */
 import { AuthService } from '@client/modules/auth/services/auth/auth.service';
 
@@ -57,13 +58,16 @@ export class AuthSectionComponent implements OnInit {
 					this.openInterior();
 				},
 				error: (error) => {
-					this.errorControl(error.message);
+					this.errorControl(error);
 				}
 			});
 	}
 
-	private errorControl(error: string): void {
-		this.form_auth.get('password')?.setErrors({ 'incorrect': true });
+	private errorControl(error: string | OrchardErrors): void {
+		let error_validation: Record<string, boolean> = { 'incorrect': true };
+		const has_throttler_error = (error as OrchardErrors)?.errors?.some((err) => err?.code === 10005);
+		if( has_throttler_error ) error_validation = { 'throttler': true };
+		this.form_auth.get('password')?.setErrors(error_validation);
 	}
 
 	private openInterior(): void {
