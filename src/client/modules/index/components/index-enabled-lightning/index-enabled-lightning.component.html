@@ -15,8 +15,12 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="font-weight-extra-light orc-outline-color">Channels</td>
+                            <td class="font-weight-extra-light orc-outline-color">Channels open</td>
                             <td>{{ lightning_info?.num_active_channels }}</td>
+                        </tr>
+                        <tr>
+                            <td class="font-weight-extra-light orc-outline-color">Channels closed</td>
+                            <td>{{ lightning_info?.num_inactive_channels }}</td>
                         </tr>
                     </tbody>
                 </table>
