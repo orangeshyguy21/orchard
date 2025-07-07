@@ -1,11 +1,7 @@
 /* Core Dependencies */
 import { Injectable } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import {
-    ThrottlerException,
-    ThrottlerGuard,
-    ThrottlerRequest,
-} from '@nestjs/throttler';
+import { ThrottlerException, ThrottlerGuard, ThrottlerRequest } from '@nestjs/throttler';
 
 @Injectable()
 export class GqlThrottlerGuard extends ThrottlerGuard {
@@ -22,9 +18,9 @@ export class GqlThrottlerGuard extends ThrottlerGuard {
 
     private getClientIp(request: any): string {
         return request.ip || 
-               request.connection?.remoteAddress || 
-               request.socket?.remoteAddress || 
-               request.connection?.socket?.remoteAddress || 
-               'unknown';
+            request.connection?.remoteAddress || 
+            request.socket?.remoteAddress || 
+            request.connection?.socket?.remoteAddress || 
+            'unknown';
       }
 }

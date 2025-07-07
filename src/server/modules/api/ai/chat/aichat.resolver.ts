@@ -1,11 +1,10 @@
 /* Core Dependencies */
-import { Logger, UseGuards } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { Resolver, Subscription, Args, Mutation } from '@nestjs/graphql';
 import { OnModuleInit } from '@nestjs/common';
 /* Vendor Dependencies */
 import { PubSub } from 'graphql-subscriptions';
 /* Application Dependencies */
-import { GqlAuthGuard } from '@server/modules/graphql/guards/auth.guard';
 import { AuthService } from '@server/modules/auth/auth.service';
 /* Local Dependencies */
 import { AiChatService } from './aichat.service';
@@ -46,7 +45,6 @@ export class AiChatResolver implements OnModuleInit {
     }
 
     @Mutation(() => OrchardAiChatStream)
-	@UseGuards(GqlAuthGuard)
     async ai_chat_abort(
         @Args('ai_chat_abort') ai_chat_abort: AiChatAbortInput
     ): Promise<OrchardAiChatStream> {

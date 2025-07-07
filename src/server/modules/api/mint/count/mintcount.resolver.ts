@@ -1,8 +1,7 @@
 /* Core Dependencies */
-import { Logger, UseGuards } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { Resolver, Query, Args } from "@nestjs/graphql";
 /* Application Dependencies */
-import { GqlAuthGuard } from '@server/modules/graphql/guards/auth.guard';
 import { UnixTimestamp } from "@server/modules/graphql/scalars/unixtimestamp.scalar";
 import { MintUnit, MintQuoteState, MeltQuoteState, MintProofState } from "@server/modules/cashu/cashu.enums";
 /* Local Dependencies */
@@ -19,7 +18,6 @@ export class MintCountResolver {
 	) {}
 
 	@Query(() => OrchardMintCount)
-	@UseGuards(GqlAuthGuard)
 	async mint_count_mint_quotes(
 		@Args('units', { type: () => [MintUnit], nullable: true }) units?: MintUnit[],
 		@Args('states', { type: () => [MintQuoteState], nullable: true }) states?: MintQuoteState[],
@@ -32,7 +30,6 @@ export class MintCountResolver {
 	}
 
 	@Query(() => OrchardMintCount)
-	@UseGuards(GqlAuthGuard)
 	async mint_count_melt_quotes(
 		@Args('units', { type: () => [MintUnit], nullable: true }) units?: MintUnit[],
 		@Args('states', { type: () => [MeltQuoteState], nullable: true }) states?: MeltQuoteState[],
@@ -45,7 +42,6 @@ export class MintCountResolver {
 	}
 
 	@Query(() => OrchardMintCount)
-	@UseGuards(GqlAuthGuard)
 	async mint_count_proof_groups(
 		@Args('id_keysets', { type: () => [String], nullable: true }) id_keysets?: string[],
 		@Args('date_start', { type: () => UnixTimestamp, nullable: true }) date_start?: number,
@@ -59,7 +55,6 @@ export class MintCountResolver {
 	}
 
 	@Query(() => OrchardMintCount)
-	@UseGuards(GqlAuthGuard)
 	async mint_count_promise_groups(
 		@Args('id_keysets', { type: () => [String], nullable: true }) id_keysets?: string[],
 		@Args('units', { type: () => [MintUnit], nullable: true }) units?: MintUnit[],

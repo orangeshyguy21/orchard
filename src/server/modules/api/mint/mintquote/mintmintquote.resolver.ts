@@ -1,8 +1,7 @@
 /* Core Dependencies */
-import { Logger, UseGuards } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { Resolver, Query, Args, Mutation, Int } from "@nestjs/graphql";
 /* Application Dependencies */
-import { GqlAuthGuard } from '@server/modules/graphql/guards/auth.guard';
 import { UnixTimestamp } from "@server/modules/graphql/scalars/unixtimestamp.scalar";
 import { MintUnit, MintQuoteState } from "@server/modules/cashu/cashu.enums";
 /* Local Dependencies */
@@ -21,7 +20,6 @@ export class MintMintQuoteResolver {
 	) {}
 
 	@Query(() => [OrchardMintMintQuote])
-	@UseGuards(GqlAuthGuard)
 	async mint_mint_quotes(
 		@Args('units', { type: () => [MintUnit], nullable: true }) units?: MintUnit[],
 		@Args('states', { type: () => [MintQuoteState], nullable: true }) states?: MintQuoteState[],
@@ -36,7 +34,6 @@ export class MintMintQuoteResolver {
 	}
 
 	@Mutation(() => OrchardMintNut04Update)
-	@UseGuards(GqlAuthGuard)
 	async mint_nut04_update(@Args('mint_nut04_update') mint_nut04_update: MintNut04UpdateInput): Promise<OrchardMintNut04Update> {
 		const tag = 'MUTATION { mint_nut04_update }';
 		this.logger.debug(tag);
@@ -44,7 +41,6 @@ export class MintMintQuoteResolver {
 	}
 
 	@Mutation(() => OrchardMintNut04QuoteUpdate)
-	@UseGuards(GqlAuthGuard)
 	async mint_nut04_quote_update(@Args('mint_nut04_quote_update') mint_nut04_quote_update: MintNut04QuoteUpdateInput): Promise<OrchardMintNut04QuoteUpdate> {
 		const tag = 'MUTATION { mint_nut04_quote_update }';
 		this.logger.debug(tag);

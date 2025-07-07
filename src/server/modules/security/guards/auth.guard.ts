@@ -2,15 +2,20 @@
 import { Injectable, ExecutionContext } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { GqlExecutionContext } from '@nestjs/graphql';
-/* Application Dependencies */
+import { Reflector } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 /* Application Dependencies */
 import { OrchardErrorCode } from '@server/modules/error/error.types';
 import { OrchardApiError } from '@server/modules/graphql/classes/orchard-error.class';
+/* Native Dependencies */
+import { PUBLIC_KEY } from '@server/modules/security/decorators/auth.decorator';
 
 @Injectable()
 export class GqlAuthGuard extends AuthGuard('jwt') {
-    constructor(private configService: ConfigService) {
+    constructor(
+        private configService: ConfigService,
+        private reflector: Reflector,
+    ) {
         super();
     }
     getRequest(context: ExecutionContext) {
@@ -19,6 +24,11 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
     }
 
     canActivate(context: ExecutionContext) {
+        const is_public = this.reflector.getAllAndOverride<boolean>(PUBLIC_KEY, [
+            context.getHandler(),
+            context.getClass(),
+        ]);
+        if (is_public) return true;
         const production = this.configService.get<boolean>('mode.production');
         if (!production) return true;
         return super.canActivate(context);

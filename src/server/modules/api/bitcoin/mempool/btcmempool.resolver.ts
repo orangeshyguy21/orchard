@@ -1,12 +1,9 @@
 /* Core Dependencies */
-import { Logger, UseGuards } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { Resolver, Query } from '@nestjs/graphql';
-/* Application Dependencies */
-import { GqlAuthGuard } from '@server/modules/graphql/guards/auth.guard';
 /* Local Dependencies */
 import { OrchardBitcoinMempool } from './btcmempool.model';
 import { BitcoinMempoolService } from './btcmempool.service';
-
 
 @Resolver()
 export class BitcoinMempoolResolver {
@@ -18,7 +15,6 @@ export class BitcoinMempoolResolver {
 	) {}
 
 	@Query(() => OrchardBitcoinMempool)
-	@UseGuards(GqlAuthGuard)
 	async bitcoin_mempool() : Promise<OrchardBitcoinMempool> {
 		const tag = 'GET { bitcoin_mempool }';
 		this.logger.debug(tag);
