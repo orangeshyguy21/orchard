@@ -20,6 +20,7 @@ export class GqlThrottlerGuard extends ThrottlerGuard {
     }
 
     private getClientIp(request: any): string {
+        if(!request) return 'unknown';
         return request.ip || 
             request.connection?.remoteAddress || 
             request.socket?.remoteAddress || 
