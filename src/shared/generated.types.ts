@@ -768,6 +768,11 @@ export type OrchardMintProofGroup = {
   unit: MintUnit;
 };
 
+export type OrchardMintProofGroupStats = {
+  __typename?: 'OrchardMintProofGroupStats';
+  median: Scalars['Int']['output'];
+};
+
 export type OrchardMintQuoteTtls = {
   __typename?: 'OrchardMintQuoteTtls';
   melt_ttl?: Maybe<Scalars['Int']['output']>;
@@ -961,6 +966,7 @@ export type Query = {
   mint_melt_quotes: Array<OrchardMintMeltQuote>;
   mint_mint_quotes: Array<OrchardMintMintQuote>;
   mint_promise_groups: Array<OrchardMintPromiseGroup>;
+  mint_proof_group_stats: OrchardMintProofGroupStats;
   mint_proof_groups: Array<OrchardMintProofGroup>;
   mint_quote_ttl: OrchardMintQuoteTtls;
   public_image: OrchardPublicImage;
@@ -1091,6 +1097,11 @@ export type QueryMint_Promise_GroupsArgs = {
   page?: InputMaybe<Scalars['Int']['input']>;
   page_size?: InputMaybe<Scalars['Int']['input']>;
   units?: InputMaybe<Array<MintUnit>>;
+};
+
+
+export type QueryMint_Proof_Group_StatsArgs = {
+  unit: MintUnit;
 };
 
 

@@ -33,7 +33,7 @@ export class InputFormatDirective {
 	private _onChange(value: any): void {}
 
 	private formatValue(value: string | null) {
-		if (value !== null) {
+		if (value !== null && value !== '') {
 			this.elementRef.nativeElement.value = this.numberWithSpaces(value);
 		} else {
 			this.elementRef.nativeElement.value = '';
@@ -50,17 +50,13 @@ export class InputFormatDirective {
 	private unFormatValue() {
 		const value = this.elementRef.nativeElement.value;
 		this._value = value.replace(/[^\d.-]/g, '');
-		if (value) {
-			this.elementRef.nativeElement.value = this._value;
-		} else {
-			this.elementRef.nativeElement.value = '';
-		}
+		this.elementRef.nativeElement.value = this._value;
 	}
 
 	@HostListener('input', ['$event.target.value'])
 	onInput(value: string) {
 		this._value = value.replace(/[^\d.-]/g, '');
-		this._onChange(Number(this._value));
+		(this._value === '') ? this._onChange(null) : this._onChange(Number(this._value));
 	}
 
 	@HostListener('blur')

@@ -408,3 +408,10 @@ mutation MintDatabaseRestore($filebase64: String!) {
 		success
 	}
 }`;
+
+export const MINT_PROOF_GROUP_STATS_QUERY = `
+query MintProofGroupStats($unit: MintUnit!) {
+	mint_proof_group_stats(unit: $unit) {
+		median
+	}
+}`;

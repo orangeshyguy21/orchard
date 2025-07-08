@@ -72,6 +72,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	public unit_options!: { value: string, label: string }[];
 	public keyset_out!: MintKeyset;
 	public keyset_out_balance!: MintBalance;
+	public median_notes!: number;
 	public form_keyset: FormGroup = new FormGroup({
 		unit: new FormControl(null, [Validators.required]),
 		input_fee_ppk: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(100000)]),
@@ -240,6 +241,13 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		});
 	}
 
+	private async getMintProofGroupStats(): Promise<void> {
+		this.mintService.getMintProofGroupStats(this.keyset_out.unit).subscribe((stats) => {
+			this.median_notes = stats.mint_proof_group_stats.median;
+			this.cdr.detectChanges();
+		});
+	}
+
 	private getEventSubscription(): Subscription {
 		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
 			this.active_event = event_data;
@@ -326,6 +334,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 			message: 'Save',
 		}));
 		this.getMintKeysetBalance();
+		this.getMintProofGroupStats();
 	}
 
 	public onDateChange(event: number[]): void {

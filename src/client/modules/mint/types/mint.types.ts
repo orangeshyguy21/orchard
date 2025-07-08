@@ -27,6 +27,7 @@ import {
     OrchardMintKeysetRotation,
     OrchardMintDatabaseBackup,
     OrchardMintDatabaseRestore,
+    OrchardMintProofGroupStats,
 } from "@shared/generated.types";
 
 export type MintInfoResponse = {
@@ -211,4 +212,8 @@ export type MintDatabaseBackupResponse = {
 
 export type MintDatabaseRestoreResponse = {
 	mint_database_restore: OrchardMintDatabaseRestore;
+}
+
+export type MintProofGroupStatsResponse = {
+	mint_proof_group_stats: OrchardMintProofGroupStats;
 }

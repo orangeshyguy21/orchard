@@ -46,6 +46,7 @@ import {
 	MintPromiseGroupsDataResponse,
 	MintDatabaseBackupResponse,
 	MintDatabaseRestoreResponse,
+	MintProofGroupStatsResponse
 } from '@client/modules/mint/types/mint.types';
 import { CacheService } from '@client/modules/cache/services/cache/cache.service';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
@@ -59,7 +60,7 @@ import { MintProofGroup } from '@client/modules/mint/classes/mint-proof-group.cl
 import { MintPromiseGroup } from '@client/modules/mint/classes/mint-promise-group.class';
 import { MintAnalytic, MintAnalyticKeyset } from '@client/modules/mint/classes/mint-analytic.class';
 /* Shared Dependencies */
-import { MintAnalyticsInterval, OrchardContact } from '@shared/generated.types';
+import { MintAnalyticsInterval, OrchardContact, MintUnit } from '@shared/generated.types';
 /* Local Dependencies */
 import { 
 	MINT_INFO_QUERY, 
@@ -95,6 +96,7 @@ import {
 	MINT_KEYSETS_ROTATION_MUTATION,
 	MINT_DATABASE_BACKUP_MUTATION,
 	MINT_DATABASE_RESTORE_MUTATION,
+	MINT_PROOF_GROUP_STATS_QUERY
 } from './mint.queries';
 
 
@@ -650,6 +652,21 @@ export class MintService {
 			}),
 			catchError((error) => {	
 				console.error('Error loading mint promise groups data:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public getMintProofGroupStats(unit:MintUnit) {	
+		const query = getApiQuery(MINT_PROOF_GROUP_STATS_QUERY, { unit });
+
+		return this.http.post<OrchardRes<MintProofGroupStatsResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error loading mint proof group stats:', error);
 				return throwError(() => error);
 			})
 		);
