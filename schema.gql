@@ -283,6 +283,28 @@ type OrchardAuthentication {
   refresh_token: String!
 }
 
+type OrchardBitcoinBlock {
+  bits: String!
+  chainwork: String!
+  confirmations: Int!
+  difficulty: Float!
+  hash: String!
+  height: Int!
+  mediantime: UnixTimestamp!
+  merkleroot: String!
+  nTx: Int!
+  nextblockhash: String
+  nonce: Float!
+  previousblockhash: String!
+  size: Int!
+  strippedsize: Int!
+  time: UnixTimestamp!
+  tx: [String!]!
+  version: Float!
+  versionHex: String!
+  weight: Float!
+}
+
 type OrchardBitcoinBlockCount {
   height: Int!
 }
@@ -302,6 +324,10 @@ type OrchardBitcoinBlockchainInfo {
   size_on_disk: Float!
   verificationprogress: Float!
   warnings: [String!]!
+}
+
+type OrchardBitcoinMempool {
+  test: Int!
 }
 
 type OrchardBitcoinNetwork {
@@ -484,8 +510,8 @@ type OrchardMintInfoRpc {
   icon_url: String
   motd: String
   name: String
-  total_issued: String!
-  total_redeemed: String!
+  total_issued: String
+  total_redeemed: String
   urls: [String!]!
   version: String!
 }
@@ -586,6 +612,10 @@ type OrchardMintProofGroup {
   keyset_ids: [String!]!
   state: MintProofState!
   unit: MintUnit!
+}
+
+type OrchardMintProofGroupStats {
+  median: Int!
 }
 
 type OrchardMintQuoteTtls {
@@ -732,8 +762,10 @@ type OrchardTaprootAssetsUtxo {
 type Query {
   ai_agent(agent: AiAgent!): OrchardAiAgent!
   ai_models: [OrchardAiModel!]!
+  bitcoin_block(hash: String!): OrchardBitcoinBlock!
   bitcoin_blockchain_info: OrchardBitcoinBlockchainInfo!
   bitcoin_blockcount: OrchardBitcoinBlockCount!
+  bitcoin_mempool: OrchardBitcoinMempool!
   bitcoin_network_info: OrchardBitcoinNetworkInfo!
   lightning_balance: OrchardLightningBalance!
   lightning_info: OrchardLightningInfo!
@@ -756,6 +788,7 @@ type Query {
   mint_melt_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, page: Int, page_size: Int, states: [MeltQuoteState!], units: [MintUnit!]): [OrchardMintMeltQuote!]!
   mint_mint_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, page: Int, page_size: Int, states: [MintQuoteState!], units: [MintUnit!]): [OrchardMintMintQuote!]!
   mint_promise_groups(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!], page: Int, page_size: Int, units: [MintUnit!]): [OrchardMintPromiseGroup!]!
+  mint_proof_group_stats(unit: MintUnit!): OrchardMintProofGroupStats!
   mint_proof_groups(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!], page: Int, page_size: Int, states: [MintProofState!], units: [MintUnit!]): [OrchardMintProofGroup!]!
   mint_quote_ttl: OrchardMintQuoteTtls!
   public_image(url: String!): OrchardPublicImage!

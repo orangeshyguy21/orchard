@@ -10,6 +10,9 @@ import { OrchardAuthToken, JwtPayload, RefreshTokenPayload } from './auth.types'
 @Injectable()
 export class AuthService {
 
+    private token_ttl: string = '15m';
+    private refresh_ttl: string = '7d';
+
     constructor(
         private configService: ConfigService,
         private jwtService: JwtService,
@@ -31,8 +34,8 @@ export class AuthService {
             type: 'refresh'
         };
         const [access_token, refresh_token] = await Promise.all([
-            this.jwtService.signAsync(access_payload, { expiresIn: '15m' }),
-            this.jwtService.signAsync(refresh_payload, { expiresIn: '7d' })
+            this.jwtService.signAsync(access_payload, { expiresIn: this.token_ttl }),
+            this.jwtService.signAsync(refresh_payload, { expiresIn: this.refresh_ttl })
         ]);
         return {
             access_token,
@@ -56,8 +59,8 @@ export class AuthService {
                 type: 'refresh'
             };
             const [new_access_token, new_refresh_token] = await Promise.all([
-                this.jwtService.signAsync(access_payload, { expiresIn: '15m' }),
-                this.jwtService.signAsync(new_refresh_payload, { expiresIn: '7d' })
+                this.jwtService.signAsync(access_payload, { expiresIn: this.token_ttl }),
+                this.jwtService.signAsync(new_refresh_payload, { expiresIn: this.refresh_ttl })
             ]);
             return {
                 access_token: new_access_token,

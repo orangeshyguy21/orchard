@@ -38,10 +38,10 @@ export const errorInterceptor: HttpInterceptorFn = (
                         });
                         return next(newRequest);
                     }),
-                    catchError((refreshError) => {
+                    catchError((refresh_error) => {
                         authService.logout();
                         router.navigate(['/authentication']);
-                        return throwError(() => refreshError);
+                        return throwError(() => refresh_error);
                     })
                 );
             }

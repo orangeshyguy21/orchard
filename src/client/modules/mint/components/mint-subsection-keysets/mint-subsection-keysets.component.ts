@@ -16,6 +16,7 @@ import { EventData } from '@client/modules/event/classes/event-data.class';
 import { AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
 import { NonNullableMintKeysetsSettings } from '@client/modules/settings/types/setting.types';
 import { ComponentCanDeactivate } from '@client/modules/routing/interfaces/routing.interfaces';
+import { OrchardErrors } from '@client/modules/error/classes/error.class';
 /* Native Dependencies */
 import { MintService } from '@client/modules/mint/services/mint/mint.service';
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
@@ -71,6 +72,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	public unit_options!: { value: string, label: string }[];
 	public keyset_out!: MintKeyset;
 	public keyset_out_balance!: MintBalance;
+	public median_notes!: number;
 	public form_keyset: FormGroup = new FormGroup({
 		unit: new FormControl(null, [Validators.required]),
 		input_fee_ppk: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(100000)]),
@@ -239,6 +241,13 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		});
 	}
 
+	private async getMintProofGroupStats(): Promise<void> {
+		this.mintService.getMintProofGroupStats(this.keyset_out.unit).subscribe((stats) => {
+			this.median_notes = stats.mint_proof_group_stats.median;
+			this.cdr.detectChanges();
+		});
+	}
+
 	private getEventSubscription(): Subscription {
 		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
 			this.active_event = event_data;
@@ -325,6 +334,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 			message: 'Save',
 		}));
 		this.getMintKeysetBalance();
+		this.getMintProofGroupStats();
 	}
 
 	public onDateChange(event: number[]): void {
@@ -372,10 +382,10 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 					message: 'Rotation complete!',
 				}));
 			},
-			error: (error) => {
+			error: (error:OrchardErrors) => {
 				this.eventService.registerEvent(new EventData({
 					type: 'ERROR',
-					message: error
+					message: error.errors[0].message,
 				}));
 			}
 		});

@@ -1,13 +1,12 @@
 /* Core Dependencies */
-import { Logger, UseGuards } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { Resolver, Query, Args, Int } from "@nestjs/graphql";
 /* Application Dependencies */
-import { GqlAuthGuard } from '@server/modules/graphql/guards/auth.guard';
 import { UnixTimestamp } from "@server/modules/graphql/scalars/unixtimestamp.scalar";
 import { MintProofState, MintUnit } from "@server/modules/cashu/cashu.enums";
 /* Local Dependencies */
 import { MintProofService } from "./mintproof.service";
-import { OrchardMintProofGroup } from "./mintproof.model";
+import { OrchardMintProofGroup, OrchardMintProofGroupStats } from "./mintproof.model";
 
 @Resolver()
 export class MintProofResolver {
@@ -19,7 +18,6 @@ export class MintProofResolver {
 	) {}
 
 	@Query(() => [OrchardMintProofGroup])
-	@UseGuards(GqlAuthGuard)
 	async mint_proof_groups(
 		@Args('id_keysets', { type: () => [String], nullable: true }) id_keysets?: string[],
 		@Args('date_start', { type: () => UnixTimestamp, nullable: true }) date_start?: number,
@@ -33,4 +31,13 @@ export class MintProofResolver {
 		this.logger.debug(tag);
 		return await this.mintProofService.getMintProofGroups(tag, { id_keysets, date_start, date_end, units, states, page, page_size });
   	}
+
+	@Query(() => OrchardMintProofGroupStats)
+	async mint_proof_group_stats(
+		@Args('unit', { type: () => MintUnit }) unit: MintUnit,
+	) : Promise<OrchardMintProofGroupStats> {
+		const tag = 'GET { mint_proof_group_stats }';
+		this.logger.debug(tag);
+		return await this.mintProofService.getMintProofGroupStats(tag, unit);
+	}
 }

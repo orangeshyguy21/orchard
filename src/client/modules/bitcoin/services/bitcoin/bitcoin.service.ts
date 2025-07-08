@@ -14,16 +14,19 @@ import { OrchardBitcoinBlockCount } from '@shared/generated.types';
 import { BitcoinBlockCount } from '@client/modules/bitcoin/classes/bitcoin-blockcount.class';
 import { BitcoinBlockchainInfo } from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
 import { BitcoinNetworkInfo } from '@client/modules/bitcoin/classes/bitcoin-network-info.class';
+import { BitcoinBlock } from '@client/modules/bitcoin/classes/bitcoin-block.class';
 import {
 	BitcoinBlockchainInfoResponse,
 	BitcoinBlockCountResponse,
 	BitcoinNetworkInfoResponse,
+	BitcoinBlockResponse,
 } from '@client/modules/bitcoin/types/bitcoin.types';
 /* Local Dependencies */
 import { 
 	BITCOIN_BLOCKCHAIN_INFO_QUERY,
 	BITCOIN_BLOCK_COUNT_QUERY,
 	BITCOIN_NETWORK_INFO_QUERY,
+	BITCOIN_BLOCK_QUERY,
 } from './bitcoin.queries';
 
 @Injectable({
@@ -119,6 +122,25 @@ export class BitcoinService {
 		);
 	}
 
+	public getBitcoinBlockchainInfo() : Observable<BitcoinBlockchainInfo> {
+		const query = getApiQuery(BITCOIN_BLOCKCHAIN_INFO_QUERY);
+
+		return this.http.post<OrchardRes<BitcoinBlockchainInfoResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.bitcoin_blockchain_info;
+			}),
+			map((bitcoin_blockchain_info) => new BitcoinBlockchainInfo(bitcoin_blockchain_info)),
+			tap((bitcoin_blockchain_info) => {
+                this.bitcoin_blockchain_info_subject.next(bitcoin_blockchain_info);
+            }),
+			catchError((error) => {
+				console.error('Error loading bitcoin blockchain info:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
 	public getBlockCount() : Observable<OrchardBitcoinBlockCount> {
 		const query = getApiQuery(BITCOIN_BLOCK_COUNT_QUERY);
 
@@ -133,6 +155,22 @@ export class BitcoinService {
             }),
 			catchError((error) => {
 				console.error('Error loading bitcoin block count:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public getBlock(hash: string) : Observable<BitcoinBlock> {
+		const query = getApiQuery(BITCOIN_BLOCK_QUERY, { hash });
+
+		return this.http.post<OrchardRes<BitcoinBlockResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.bitcoin_block;
+			}),
+			map((bitcoin_block) => new BitcoinBlock(bitcoin_block)),
+			catchError((error) => {
+				console.error('Error loading bitcoin block:', error);
 				return throwError(() => error);
 			})
 		);

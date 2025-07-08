@@ -4,6 +4,7 @@ export enum OrchardErrorCode {
 	AuthenticationError = 10002,
 	AuthenticationExpiredError = 10003,
 	PublicAssetError = 10004,
+	ThrottlerError = 10005,
 	// Bitcoin Level Errors
 	BitcoinRPCError = 20001,
 	// Lightning Level Errors
@@ -40,6 +41,7 @@ export const OrchardErrorMessages: Record<string, string> = {
 	[OrchardErrorCode.AuthenticationError]: "AuthenticationError",
 	[OrchardErrorCode.AuthenticationExpiredError]: "AuthenticationExpiredError",
 	[OrchardErrorCode.PublicAssetError]: "PublicAssetError",
+	[OrchardErrorCode.ThrottlerError]: "ThrottlerError",
 	[OrchardErrorCode.BitcoinRPCError]: "BitcoinRPCError",
 	[OrchardErrorCode.LightningRpcConnectionError]: "LightningRpcConnectionError",
 	[OrchardErrorCode.LightningRpcActionError]: "LightningRpcActionError",

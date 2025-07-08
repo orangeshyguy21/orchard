@@ -21,12 +21,13 @@ export class AuthPasswordComponent {
 
     public password_visible = signal(false);
 
-	public form_error = computed(() => {
+	public get form_error(): string {
+        if (this.form_group.get(this.control_name)?.hasError('throttler')) return 'Too many attempts';
         if (this.form_group.get(this.control_name)?.hasError('incorrect')) return 'Incorrect password';
 		if (this.form_group.get(this.control_name)?.hasError('required')) return 'Required';
 		if (this.form_group.get(this.control_name)?.errors) return 'Invalid password';
 		return '';
-	});
+	}
 
     constructor(){}
 

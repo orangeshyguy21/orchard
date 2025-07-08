@@ -15,8 +15,12 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="font-weight-extra-light orc-outline-color">Channels</td>
+                            <td class="font-weight-extra-light orc-outline-color">Channels open</td>
                             <td>{{ lightning_info?.num_active_channels }}</td>
+                        </tr>
+                        <tr>
+                            <td class="font-weight-extra-light orc-outline-color">Channels closed</td>
+                            <td>{{ lightning_info?.num_inactive_channels }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -47,7 +51,7 @@
                             <ng-container matColumnDef="receive">
                                 <th mat-header-cell *matHeaderCellDef></th>
                                 <td mat-cell *matCellDef="let row"> 
-                                    <span class="text-nowrap font-size-l" [innerHTML]="row.recievable | amount : row.unit : 'lightning'"></span>
+                                    <span class="text-nowrap font-size-m" [innerHTML]="row.recievable | amount : row.unit : 'lightning'"></span>
                                 </td>
                             </ng-container>
                         
@@ -78,7 +82,7 @@
                             <ng-container matColumnDef="send">
                                 <th mat-header-cell *matHeaderCellDef></th>
                                 <td mat-cell *matCellDef="let row">
-                                    <span class="text-nowrap font-size-l" [innerHTML]="row.sendable | amount : row.unit : 'lightning'"></span>
+                                    <span class="text-nowrap font-size-m" [innerHTML]="row.sendable | amount : row.unit : 'lightning'"></span>
                                 </td>
                             </ng-container>
             

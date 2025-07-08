@@ -1,6 +1,6 @@
 
 <div class="bitcoin-enabled-container">
-    <div class="flex flex-gap-1 p-2">
+    <div class="flex flex-gap-4 p-2">
         <div class="flex-1">
             <div class="flex flex-column flex-gap-1">
                 <div class="title-l">Info</div>
@@ -28,7 +28,7 @@
         </div>
         <div class="flex-1">
             <div class="flex flex-column flex-gap-1">
-                <div class="title-l">Hot wallet</div>
+                <div class="title-l">Hot Wallet</div>
                 <mat-card appearance="outlined" class="overflow-hidden">
                     <div class="p-h-1">
                         <table mat-table [dataSource]="data_source" class="orc-feature-table">
@@ -52,7 +52,7 @@
                                                 [custody]="'hot'"
                                                 [asset_id]="row.asset_id">
                                             </orc-graphic-asset>
-                                            <span class="text-nowrap font-size-l flex-grow" [innerHTML]="row.amount | amount : row.unit : 'bitcoin'"></span>
+                                            <span class="text-nowrap font-size-m flex-grow" [innerHTML]="row.amount | amount : row.unit : 'bitcoin'"></span>
                                         </div>
                                     }                                    
                                 </td>
@@ -80,7 +80,70 @@
             </div>
         </div>
         <div class="flex-1">
-            <div class="title-l">Mempool</div>
+            @if( blockchain_info?.initialblockdownload ){
+                <div class="title-l">Block Download</div>
+                <div class="p-t-1" [@.disabled]="!polling_block">
+                    <div class="flex flex-gap-1">
+                        <div class="relative">
+                            <mat-progress-spinner
+                                mode="determinate"
+                                [value]="sync_progress"
+                                [diameter]="200"
+                                [strokeWidth]="20">
+                            </mat-progress-spinner>
+                            <div class="progress-background">
+                                <div class="spinner">
+                                    <mat-progress-spinner
+                                        mode="determinate"
+                                        [value]="100"
+                                        [diameter]="200"
+                                        [strokeWidth]="20">
+                                    </mat-progress-spinner>
+                                </div>
+                                <div class="progress-number">
+                                    <div class="text-nowrap font-size-l font-weight-bold" [@blockDataChange]="block?.height">{{ blockchain_info?.verificationprogress | percent:'1.0-2' }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="orc-info-table">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td class="font-weight-extra-light orc-outline-color">Date</td>
+                                        <td class="text-nowrap" [@blockDataChange]="block?.time">{{ block?.time | time:'medium' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-weight-extra-light orc-outline-color text-nowrap">Block height</td>
+                                        <td [@blockDataChange]="block?.height">
+                                            {{ block?.height | block }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-weight-extra-light orc-outline-color text-nowrap">Best block</td>
+                                        <td class="text-nowrap w-min-24" [@blockDataChange]="block?.hash">
+                                            {{ block?.hash | truncate:60:27:10 }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-weight-extra-light orc-outline-color text-nowrap">Log2 work</td>
+                                        <td [@blockDataChange]="block?.chainwork">
+                                            {{ block?.chainwork | log2work }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-weight-extra-light orc-outline-color text-nowrap">Target height</td>
+                                        <td [@blockDataChange]="blockchain_info?.headers">
+                                            {{ blockchain_info?.headers | block }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }@else {
+                <div class="title-l">Mempool</div>
+            }
         </div>
     </div>
 </div>

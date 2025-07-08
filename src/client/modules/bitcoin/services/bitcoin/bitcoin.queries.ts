@@ -53,3 +53,28 @@ export const BITCOIN_NETWORK_INFO_QUERY = `{
         warnings
     }
 }`;
+
+export const BITCOIN_BLOCK_QUERY = `
+query BitcoinBlock($hash: String!) {
+    bitcoin_block(hash: $hash){
+        bits
+        chainwork
+        confirmations
+        difficulty
+        hash
+        height
+        mediantime
+        merkleroot
+        nTx
+        nextblockhash
+        nonce
+        previousblockhash
+        size
+        strippedsize
+        time
+        version
+        versionHex
+        weight
+        tx
+    }
+}`;

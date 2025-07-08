@@ -397,6 +397,29 @@ export type OrchardAuthentication = {
   refresh_token: Scalars['String']['output'];
 };
 
+export type OrchardBitcoinBlock = {
+  __typename?: 'OrchardBitcoinBlock';
+  bits: Scalars['String']['output'];
+  chainwork: Scalars['String']['output'];
+  confirmations: Scalars['Int']['output'];
+  difficulty: Scalars['Float']['output'];
+  hash: Scalars['String']['output'];
+  height: Scalars['Int']['output'];
+  mediantime: Scalars['UnixTimestamp']['output'];
+  merkleroot: Scalars['String']['output'];
+  nTx: Scalars['Int']['output'];
+  nextblockhash?: Maybe<Scalars['String']['output']>;
+  nonce: Scalars['Float']['output'];
+  previousblockhash: Scalars['String']['output'];
+  size: Scalars['Int']['output'];
+  strippedsize: Scalars['Int']['output'];
+  time: Scalars['UnixTimestamp']['output'];
+  tx: Array<Scalars['String']['output']>;
+  version: Scalars['Float']['output'];
+  versionHex: Scalars['String']['output'];
+  weight: Scalars['Float']['output'];
+};
+
 export type OrchardBitcoinBlockCount = {
   __typename?: 'OrchardBitcoinBlockCount';
   height: Scalars['Int']['output'];
@@ -418,6 +441,11 @@ export type OrchardBitcoinBlockchainInfo = {
   size_on_disk: Scalars['Float']['output'];
   verificationprogress: Scalars['Float']['output'];
   warnings: Array<Scalars['String']['output']>;
+};
+
+export type OrchardBitcoinMempool = {
+  __typename?: 'OrchardBitcoinMempool';
+  test: Scalars['Int']['output'];
 };
 
 export type OrchardBitcoinNetwork = {
@@ -624,8 +652,8 @@ export type OrchardMintInfoRpc = {
   icon_url?: Maybe<Scalars['String']['output']>;
   motd?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
-  total_issued: Scalars['String']['output'];
-  total_redeemed: Scalars['String']['output'];
+  total_issued?: Maybe<Scalars['String']['output']>;
+  total_redeemed?: Maybe<Scalars['String']['output']>;
   urls: Array<Scalars['String']['output']>;
   version: Scalars['String']['output'];
 };
@@ -738,6 +766,11 @@ export type OrchardMintProofGroup = {
   keyset_ids: Array<Scalars['String']['output']>;
   state: MintProofState;
   unit: MintUnit;
+};
+
+export type OrchardMintProofGroupStats = {
+  __typename?: 'OrchardMintProofGroupStats';
+  median: Scalars['Int']['output'];
 };
 
 export type OrchardMintQuoteTtls = {
@@ -907,8 +940,10 @@ export type Query = {
   __typename?: 'Query';
   ai_agent: OrchardAiAgent;
   ai_models: Array<OrchardAiModel>;
+  bitcoin_block: OrchardBitcoinBlock;
   bitcoin_blockchain_info: OrchardBitcoinBlockchainInfo;
   bitcoin_blockcount: OrchardBitcoinBlockCount;
+  bitcoin_mempool: OrchardBitcoinMempool;
   bitcoin_network_info: OrchardBitcoinNetworkInfo;
   lightning_balance: OrchardLightningBalance;
   lightning_info: OrchardLightningInfo;
@@ -931,6 +966,7 @@ export type Query = {
   mint_melt_quotes: Array<OrchardMintMeltQuote>;
   mint_mint_quotes: Array<OrchardMintMintQuote>;
   mint_promise_groups: Array<OrchardMintPromiseGroup>;
+  mint_proof_group_stats: OrchardMintProofGroupStats;
   mint_proof_groups: Array<OrchardMintProofGroup>;
   mint_quote_ttl: OrchardMintQuoteTtls;
   public_image: OrchardPublicImage;
@@ -944,6 +980,11 @@ export type Query = {
 
 export type QueryAi_AgentArgs = {
   agent: AiAgent;
+};
+
+
+export type QueryBitcoin_BlockArgs = {
+  hash: Scalars['String']['input'];
 };
 
 
@@ -1056,6 +1097,11 @@ export type QueryMint_Promise_GroupsArgs = {
   page?: InputMaybe<Scalars['Int']['input']>;
   page_size?: InputMaybe<Scalars['Int']['input']>;
   units?: InputMaybe<Array<MintUnit>>;
+};
+
+
+export type QueryMint_Proof_Group_StatsArgs = {
+  unit: MintUnit;
 };
 
 

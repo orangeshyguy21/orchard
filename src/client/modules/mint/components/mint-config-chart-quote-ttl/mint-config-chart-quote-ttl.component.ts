@@ -8,6 +8,7 @@ import { Subscription } from 'rxjs';
 /* Application Dependencies */
 import { ChartService } from '@client/modules/chart/services/chart/chart.service';
 import { getTooltipLabel, getTooltipTitleExact } from '@client/modules/chart/helpers/mint-chart-options.helpers';
+import { avg, median, max, min } from '@client/modules/math/helpers';
 /* Native Dependencies */
 import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
 import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
@@ -141,10 +142,10 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges, OnDestroy {
         const values = deltas.map(delta => delta['delta']);
         const values_under_ttl = values.filter(value => value <= this.quote_ttl);
         return {
-            avg: values.reduce((a, b) => a + b, 0) / values.length,
-            median: values.sort((a, b) => a - b)[Math.floor(values.length / 2)],
-            max: Math.max(...values),
-            min: Math.min(...values),
+            avg: avg(values),
+            median: median(values),
+            max: max(values),
+            min: min(values),
             coverage: (values_under_ttl.length / values.length) * 100
         };
     }

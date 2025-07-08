@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef, OnDestro
 import { trigger, transition, style, animate } from '@angular/animations';
 import { Router } from '@angular/router';
 /* Vendor Dependencies */
-import { tap, catchError, finalize, EMPTY, forkJoin, Subscription, firstValueFrom } from 'rxjs';
+import { tap, catchError, finalize, EMPTY, forkJoin, Subscription, firstValueFrom, timer, switchMap, takeWhile } from 'rxjs';
 /* Application Configuration */
 import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
@@ -15,6 +15,7 @@ import { PublicService } from '@client/modules/public/services/image/public.serv
 import { BitcoinBlockchainInfo } from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
 import { BitcoinNetworkInfo } from '@client/modules/bitcoin/classes/bitcoin-network-info.class';
 import { BitcoinBlockCount } from '@client/modules/bitcoin/classes/bitcoin-blockcount.class';
+import { BitcoinBlock } from '@client/modules/bitcoin/classes/bitcoin-block.class';
 import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.class';
 import { LightningBalance } from '@client/modules/lightning/classes/lightning-balance.class';
 import { LightningAccount } from '@client/modules/lightning/classes/lightning-account.class';
@@ -62,6 +63,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	public bitcoin_blockchain_info!: BitcoinBlockchainInfo | null;
 	public bitcoin_network_info!: BitcoinNetworkInfo | null;
 	public bitcoin_blockcount!: BitcoinBlockCount | null;
+	public bitcoin_block!: BitcoinBlock | null;
 	public lightning_info!: LightningInfo | null;
 	public lightning_balance!: LightningBalance | null;
 	public lightning_accounts!: LightningAccount[] | null;
@@ -83,6 +85,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	}
 
 	private subscriptions: Subscription = new Subscription();
+	private bitcoin_polling_active: boolean = false;
 
 	constructor(
 		private bitcoinService: BitcoinService,
@@ -112,7 +115,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 		this.loading_bitcoin = ( this.enabled_bitcoin ) ? true : false;
 		if( this.enabled_bitcoin ) {
 			this.getBitcoin();
-			this.getBitcoinBlockSubscription();
+			this.subscriptions.add(this.getBitcoinBlockSubscription());
 		} 
 		this.cdr.detectChanges();
 	}
@@ -152,6 +155,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 			}),
 			finalize(() => {
 				this.loading_bitcoin = false;
+				if( this.bitcoin_blockchain_info?.initialblockdownload ) this.subscriptions.add(this.getBitcoinBlockchainSubscription());
 				this.cdr.detectChanges();
 			})
 		).subscribe();
@@ -165,6 +169,33 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 				this.cdr.detectChanges();
             }
         );
+	}
+
+	private getBitcoinBlockchainSubscription(): Subscription {
+		this.bitcoin_polling_active = true;
+		return timer(0, 5000).pipe(
+			takeWhile(() => this.bitcoin_polling_active), // Stop when flag is false
+			switchMap(() => this.bitcoinService.getBitcoinBlockchainInfo().pipe(
+				catchError(error => {
+					console.error('Failed to fetch blockchain info, polling stopped:', error);
+					this.bitcoin_polling_active = false; // Stop the timer
+					return EMPTY;
+				})
+			))
+		).subscribe({
+			next: async (blockchain_info: BitcoinBlockchainInfo) => {
+				this.bitcoin_blockchain_info = blockchain_info;
+				this.getBitcoinBlock();
+				this.cdr.detectChanges();
+			}
+		});
+	}
+
+	private getBitcoinBlock(): void {
+		this.bitcoinService.getBlock(this.bitcoin_blockchain_info?.bestblockhash ?? '').subscribe((block) => {
+			this.bitcoin_block = block;
+			this.cdr.detectChanges();
+		});
 	}
 
 	private getLightning(): void {

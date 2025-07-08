@@ -2,9 +2,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'block',
-  standalone: false,
-  pure: false
+	name: 'block',
+	standalone: false,
+	pure: false
 })
 export class BlockPipe implements PipeTransform {
 	transform(value: number | string | undefined | null): string {

@@ -42,6 +42,10 @@ export class ErrorResolveComponent {
 			title: 'LIGHTNING RPC ERROR',
 			description: 'Orchard was unable to connect to the lightning RPC'
 		},
+		30002: {
+			title: 'LIGHTNING RPC ACTION ERROR',
+			description: 'A lightning RPC action failed to execute'
+		},
 		40001: {
 			title: 'MINT PUBLIC API ERROR',
 			description: 'Orchard was unable to connect to the public mint API'
@@ -54,6 +58,10 @@ export class ErrorResolveComponent {
 			title: 'MINT DATABASE SELECT ERROR',
 			description: 'Orchard was unable to retrieve data from the mint database'
 		},
+		40004: {
+			title: 'MINT SUPPORT ERROR',
+			description: 'This mint type does not support this feature'
+		},
 		40005: {
 			title: 'MINT RPC ERROR',
 			description: 'Orchard was unable to connect to the mint RPC'
@@ -61,6 +69,10 @@ export class ErrorResolveComponent {
 		60001: {
 			title: 'TAPROOT ASSETS RPC ERROR',
 			description: 'Orchard was unable to connect to the taproot assets RPC'
+		},
+		60002: {
+			title: 'TAPROOT ASSETS RPC ACTION ERROR',
+			description: 'A taproot assets RPC action failed to execute'
 		}
 	};
 }

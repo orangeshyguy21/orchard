@@ -3,6 +3,7 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 /* Application Dependencies */
 import { CdkService } from '@server/modules/cashu/cdk/cdk.service';
+import { NutshellService } from '@server/modules/cashu/nutshell/nutshell.service';
 import { OrchardErrorCode } from '@server/modules/error/error.types';
 import { MintType } from '@server/modules/cashu/cashu.enums';
 /* Local Dependencies */
@@ -18,6 +19,7 @@ export class CashuMintRpcService implements OnModuleInit {
     constructor(
         private configService: ConfigService,
         private cdkService: CdkService,
+        private nutshellService: NutshellService,
     ) {}
 
     public async onModuleInit() {
@@ -26,8 +28,8 @@ export class CashuMintRpcService implements OnModuleInit {
 	}
     
     private initializeGrpcClient() {
-        if( this.type === 'nutshell' ) this.logger.warn('Nutshell backend does not support gRPC');
         if( this.type === 'cdk' ) this.grpc_client = this.cdkService.initializeGrpcClient();
+        if( this.type === 'nutshell' ) this.grpc_client = this.nutshellService.initializeGrpcClient();
     }
 
     private makeGrpcRequest(method: string, request: any): Promise<any> {
@@ -44,7 +46,12 @@ export class CashuMintRpcService implements OnModuleInit {
     }
     
     async getMintInfo() : Promise<CashuMintInfoRpc> {
-        return this.makeGrpcRequest('GetInfo', {});
+        const info = await this.makeGrpcRequest('GetInfo', {});
+        if( this.type === 'cdk' ){
+            info.description_long = info.long_description;
+            return info;
+        }
+        if( this.type === 'nutshell' ) return info;
     }
 
     async getQuoteTtl() : Promise<{ mint_ttl: number, melt_ttl: number }> {
@@ -104,9 +111,11 @@ export class CashuMintRpcService implements OnModuleInit {
     }) : Promise<{}> {
         const request: any = { unit, method };
         if (disabled !== undefined) request.disabled = disabled;
-        if (min_amount !== undefined) request.min = min_amount;
-        if (max_amount !== undefined) request.max = max_amount;
-        if (description !== undefined) request.description = description;
+        if (min_amount !== undefined) request.min_amount = min_amount;
+        if (max_amount !== undefined) request.max_amount = max_amount;
+        if (description !== undefined) {
+            request.options = { description };
+        }
         return this.makeGrpcRequest('UpdateNut04', request);
     }
 
@@ -127,9 +136,11 @@ export class CashuMintRpcService implements OnModuleInit {
     }) : Promise<{}> {
         const request: any = { unit, method };
         if (disabled !== undefined) request.disabled = disabled;
-        if (min_amount !== undefined) request.min = min_amount;
-        if (max_amount !== undefined) request.max = max_amount;
-        if (amountless !== undefined) request.amountless = amountless;
+        if (min_amount !== undefined) request.min_amount = min_amount;
+        if (max_amount !== undefined) request.max_amount = max_amount;
+        if (amountless !== undefined) {
+            request.options = { amountless };
+        }
         return this.makeGrpcRequest('UpdateNut05', request);
     }
 

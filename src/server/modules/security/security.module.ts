@@ -1,7 +1,12 @@
 /* Core Dependencies */
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
+/* Local Dependencies */
+import { GqlAuthGuard } from './guards/auth.guard';
+// import { GqlRefreshGuard } from './guards/refresh.guard';
+import { GqlThrottlerGuard } from './guards/throttler.guard';
 
 @Module({
     imports: [
@@ -15,7 +20,10 @@ import { ThrottlerModule } from '@nestjs/throttler';
             ],
         }),
     ],
-
-    providers: [],
+    providers: [
+        { provide: APP_GUARD, useClass: GqlAuthGuard },
+        // { provide: APP_GUARD, useClass: GqlRefreshGuard },
+        { provide: APP_GUARD, useClass: GqlThrottlerGuard },
+    ],
 })
 export class SecurityModule {}

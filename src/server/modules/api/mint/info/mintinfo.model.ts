@@ -340,10 +340,10 @@ export class OrchardMintInfoRpc {
 	@Field({ nullable: true })
 	motd: string;
 
-	@Field()
+	@Field({ nullable: true })
 	total_issued: string;
 
-	@Field()
+	@Field({ nullable: true })
 	total_redeemed: string;
 
 	@Field({ nullable: true })
@@ -362,7 +362,7 @@ export class OrchardMintInfoRpc {
 		this.name = cashu_info.name;
 		this.version = cashu_info.version;
 		this.description = cashu_info.description;
-		this.description_long = cashu_info.long_description;
+		this.description_long = cashu_info.description_long;
 		this.motd = cashu_info.motd;
 		this.total_issued = cashu_info.total_issued;
 		this.total_redeemed = cashu_info.total_redeemed;

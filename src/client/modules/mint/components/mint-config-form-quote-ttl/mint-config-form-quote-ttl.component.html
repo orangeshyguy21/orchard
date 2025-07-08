@@ -30,26 +30,14 @@
                                         #element_quote_ttl>
                                     <span matSuffix class="form-suffix-text">seconds</span>
                                     @if (form_group.get(control_name)?.invalid && (form_group.get(control_name)?.dirty || form_group.get(control_name)?.touched)) {
-                                        <mat-error class="font-size-xs">
-                                            @if (form_group.get(control_name)?.hasError('required')) {
-                                                Required
-                                            } @else if (form_group.get(control_name)?.hasError('min')) {
-                                                Must be at least {{form_group.get(control_name)?.getError('min')?.min}} second
-                                            } @else if (form_group.get(control_name)?.hasError('max')) {
-                                                Cannot exceed {{form_group.get(control_name)?.getError('max')?.max}} seconds
-                                            } @else if (form_group.get(control_name)?.hasError('orchardMicros')) {
-                                                Invalid format
-                                            } @else {
-                                                Invalid TTL
-                                            }
-                                        </mat-error>
+                                        <mat-error class="font-size-xs">{{ form_error }}</mat-error>
                                     }
                                 </mat-form-field>
                             </orc-dynamic-form-field>
                         </form>
                         <div class="flex-1">
                             <orc-help-text class="orc-surface-container-high-bg">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                {{ help_text() }}
                             </orc-help-text>
                         </div>
                     </div> 

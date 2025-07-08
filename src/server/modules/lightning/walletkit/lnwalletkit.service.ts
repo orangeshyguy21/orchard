@@ -44,7 +44,7 @@ export class LightningWalletKitService implements OnModuleInit {
         });
     }
 
-    async getListAddresses() : Promise<LightningAddresses> {
+    async getLightningAddresses() : Promise<LightningAddresses> {
         return this.makeGrpcRequest('ListAddresses', {});
     }
 }

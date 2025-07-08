@@ -53,7 +53,7 @@ export class MintKeysetTableComponent implements OnChanges {
 			.filter(keyset => this.page_settings?.date_end >= keyset.valid_from)
 			.filter(keyset => this.page_settings?.status.includes(keyset.active))
 			.filter(keyset => this.page_settings?.units.includes(keyset.unit))
-			.sort((a, b) => b.valid_from - a.valid_from)
+			.sort((a, b) => b.derivation_path_index - a.derivation_path_index)
 			.map(keyset => {
 				const keyset_analytics = this.keysets_analytics.filter(analytic => analytic.keyset_id === keyset.id);
 				const keyset_analytics_pre = this.keysets_analytics_pre.filter(analytic => analytic.keyset_id === keyset.id);

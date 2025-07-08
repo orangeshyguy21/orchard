@@ -4,6 +4,7 @@
 .help-text-container{
     @extend %orc-corner-small;
     @extend %inherit-bg;
+    @extend %h-min-3;
 }
 
 .help-text-content{

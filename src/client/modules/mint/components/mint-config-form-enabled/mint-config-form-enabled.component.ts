@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, ViewChild, OnChanges, SimpleChanges, computed } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 /* Vendor Dependencies */
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
@@ -23,6 +23,12 @@ export class MintConfigFormEnabledComponent implements OnChanges {
 
 	@Output() update = new EventEmitter<{form_group: FormGroup, nut: 'nut4' | 'nut5'}>();
 
+	public help_text = computed(() => {
+		if( this.nut === 'nut4' ) return 'Control the minting of new ecash. Disable to prevent deposits into the mint and new ecash from being minted.';
+		if( this.nut === 'nut5' ) return 'Control the melting of ecash. Disable to prevent withdrawals from the mint and ecash from being melted.';
+		return '';
+	});
+
 	@ViewChild('toggle') toggle!: MatSlideToggle;
 
 	constructor(
@@ -35,7 +41,6 @@ export class MintConfigFormEnabledComponent implements OnChanges {
 		if( this.enabled === this.toggle.checked ) return;
 		this.toggle.checked = this.enabled;
 		(this.enabled) ? this.form_group.get('enabled')?.setValue(true) : this.launchDialog();
-		// this.onChange({checked: this.enabled} as MatSlideToggleChange);
 	}
 
 	public onChange(event: MatSlideToggleChange): void {

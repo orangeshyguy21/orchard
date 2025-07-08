@@ -15,6 +15,7 @@ import { AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
 import { EventService } from '@client/modules/event/services/event/event.service';
 import { EventData } from '@client/modules/event/classes/event-data.class';
 import { ComponentCanDeactivate } from '@client/modules/routing/interfaces/routing.interfaces';
+import { OrchardErrors } from '@client/modules/error/classes/error.class';
 /* Shared Dependencies */
 import { AiFunctionName, OrchardContact } from '@shared/generated.types';
 
@@ -467,8 +468,8 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 				});
 				this.onSuccess(true);
 			},
-			error: (error) => {
-				this.onError(error.message);
+			error: (error:OrchardErrors) => {
+				this.onError(error);
 			}
 		});
 	}
@@ -480,8 +481,8 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 				this.onSuccess();
 				this.form_info.get('name')?.markAsPristine();
 			},
-			error: (error) => {
-				this.onError(error.message);
+			error: (error:OrchardErrors) => {
+				this.onError(error);
 			}
 		});
 	}
@@ -493,8 +494,8 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 				this.onSuccess();
 				this.form_info.get('description')?.markAsPristine();
 			},
-			error: (error) => {
-				this.onError(error.message);
+			error: (error:OrchardErrors) => {
+				this.onError(error);
 			}
 		});
 	}
@@ -506,8 +507,8 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 				this.onSuccess();
 				this.form_info.get('icon_url')?.markAsPristine();
 			},
-			error: (error) => {
-				this.onError(error.message);
+			error: (error:OrchardErrors) => {
+				this.onError(error);
 			}
 		});
 	}
@@ -519,8 +520,8 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 				this.onSuccess();
 				this.form_info.get('description_long')?.markAsPristine();
 			},
-			error: (error) => {
-				this.onError(error.message);
+			error: (error:OrchardErrors) => {
+				this.onError(error);
 			}
 		});
 	}
@@ -532,8 +533,8 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 				this.onSuccess();
 				this.form_info.get('motd')?.markAsPristine();
 			},
-			error: (error) => {
-				this.onError(error.message);
+			error: (error:OrchardErrors) => {
+				this.onError(error);
 			}
 		});
 	}
@@ -545,8 +546,8 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 				this.onSuccess();
 				this.form_array_urls.at(-1).markAsPristine();
 			},
-			error: (error) => {
-				this.onError(error.message);
+			error: (error:OrchardErrors) => {
+				this.onError(error);
 			}
 		});
 	}
@@ -558,8 +559,8 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 				this.onSuccess();
 				this.form_array_urls.at(control_index).markAsPristine();
 			},
-			error: (error) => {
-				this.onError(error.message);
+			error: (error:OrchardErrors) => {
+				this.onError(error);
 			}
 		});
 	}
@@ -571,8 +572,8 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 				this.form_array_urls.removeAt(control_index);
 				this.onSuccess();
 			},
-			error: (error) => {
-				this.onError(error.message);
+			error: (error:OrchardErrors) => {
+				this.onError(error);
 			}
 		});
 	}
@@ -588,8 +589,8 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 				this.onSuccess();
 				this.form_array_contacts.at(-1).markAsPristine();
 			},
-			error: (error) => {
-				this.onError(error.message);
+			error: (error:OrchardErrors) => {
+				this.onError(error);
 			}
 		});
 	}
@@ -605,8 +606,8 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 				this.onSuccess();
 				this.form_array_contacts.at(control_index).markAsPristine();
 			},
-			error: (error) => {
-				this.onError(error.message);
+			error: (error:OrchardErrors) => {
+				this.onError(error);
 			}
 		});
 	}
@@ -618,8 +619,8 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 				this.form_array_contacts.removeAt(control_index);
 				this.onSuccess();
 			},
-			error: (error) => {
-				this.onError(error.message);
+			error: (error:OrchardErrors) => {
+				this.onError(error);
 			}
 		});
 	}
@@ -636,10 +637,10 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 		this.dirty_count.set(0);
 	}
 
-	private onError(error: string): void {
+	private onError(error: OrchardErrors): void {
 		this.eventService.registerEvent(new EventData({
 			type: 'ERROR',
-			message: error
+			message: error.errors[0].message,
 		}));
 	}
 

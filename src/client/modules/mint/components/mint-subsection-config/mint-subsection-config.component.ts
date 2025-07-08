@@ -10,6 +10,7 @@ import { Subscription, lastValueFrom, forkJoin } from 'rxjs';
 import { environment } from '@client/configs/configuration';
 /* Application Dependencies */
 import { EventService } from '@client/modules/event/services/event/event.service';
+import { OrchardErrors } from '@client/modules/error/classes/error.class';
 import { OrchardValidators } from '@client/modules/form/validators';
 import { EventData } from '@client/modules/event/classes/event-data.class';
 import { AiService } from '@client/modules/ai/services/ai/ai.service';
@@ -636,8 +637,8 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 				});
 				this.onSuccess(true);
 			},
-			error: (error) => {
-				this.onError(error.message);
+			error: (error:OrchardErrors) => {
+				this.onError(error);
 			}
 		});
 	}
@@ -649,8 +650,8 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 				this.onSuccess();
 				this.form_config.get(control_name)?.markAsPristine();
 			},
-			error: (error) => {
-				this.onError(error.message);
+			error: (error:OrchardErrors) => {
+				this.onError(error);
 			}
 		});
 	}
@@ -665,8 +666,8 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 				this.onSuccess();
 				this.form_config.get(control_name)?.markAsPristine();
 			},
-			error: (error) => {
-				this.onError(error.message);
+			error: (error:OrchardErrors) => {
+				this.onError(error);
 			}
 		});
 	}
@@ -681,8 +682,8 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 				this.onSuccess();
 				this.form_config.get(control_name)?.markAsPristine();
 			},
-			error: (error) => {
-				this.onError(error.message);
+			error: (error:OrchardErrors) => {
+				this.onError(error);
 			}
 		});
 	}
@@ -698,10 +699,10 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		this.dirty_count.set(0);
 	}
 
-	private onError(error: string): void {
+	private onError(error: OrchardErrors): void {
 		this.eventService.registerEvent(new EventData({
 			type: 'ERROR',
-			message: error
+			message: error.errors[0].message,
 		}));
 	}
 
