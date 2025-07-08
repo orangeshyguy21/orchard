@@ -39,6 +39,15 @@ export class MintConfigFormQuoteTtlComponent {
 
 	@ViewChild('element_quote_ttl') element_quote_ttl!: ElementRef<HTMLInputElement>;
 
+	public get form_error(): string {
+		if (this.form_group.get(this.control_name)?.hasError('required')) return 'Required';
+		if (this.form_group.get(this.control_name)?.hasError('min')) return `Must be at least ${this.form_group.get(this.control_name)?.getError("min")?.min}`;
+		if (this.form_group.get(this.control_name)?.hasError('max')) return `Cannot exceed ${this.form_group.get(this.control_name)?.getError("max")?.max}`;
+		if (this.form_group.get(this.control_name)?.hasError('orchardMicros')) return 'Invalid format';
+		if (this.form_group.get(this.control_name)?.errors) return 'Invalid TTL';
+		return '';
+	};
+
 	public help_text = computed(() => {
 		if( this.nut === 'nut4' ) return 'Configure the time to live for checking deposit invoices. Invoices paid after this time will be checked less often.';
 		if( this.nut === 'nut5' ) return 'Configure the time to live for checking withdraw invoices. Invoices paid after this time will be checked less often.';

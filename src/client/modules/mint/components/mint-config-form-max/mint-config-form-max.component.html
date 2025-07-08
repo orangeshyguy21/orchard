@@ -22,7 +22,7 @@
                         #element_max>
                     <span matSuffix class="form-suffix-text">{{ unit | unit }}</span>
                     @if (form_group.get(control_name)?.invalid && (form_group.get(control_name)?.dirty || form_group.get(control_name)?.touched)) {
-                        <mat-error class="font-size-xs">{{ form_error() }}</mat-error>
+                        <mat-error class="font-size-xs">{{ form_error }}</mat-error>
                     }
                 </mat-form-field>
             </orc-dynamic-form-field>
