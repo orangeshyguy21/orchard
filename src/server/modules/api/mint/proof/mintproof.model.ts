@@ -35,3 +35,11 @@ export class OrchardMintProofGroup {
 		this.amounts = cashu_mint_pg.amounts;
 	}
 }
+
+@ObjectType()
+export class OrchardMintProofGroupStats {
+
+	@Field(type => Int)
+	median: number;
+	
+}

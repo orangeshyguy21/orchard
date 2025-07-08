@@ -614,6 +614,10 @@ type OrchardMintProofGroup {
   unit: MintUnit!
 }
 
+type OrchardMintProofGroupStats {
+  median: Int!
+}
+
 type OrchardMintQuoteTtls {
   melt_ttl: Int
   mint_ttl: Int
@@ -784,6 +788,7 @@ type Query {
   mint_melt_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, page: Int, page_size: Int, states: [MeltQuoteState!], units: [MintUnit!]): [OrchardMintMeltQuote!]!
   mint_mint_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, page: Int, page_size: Int, states: [MintQuoteState!], units: [MintUnit!]): [OrchardMintMintQuote!]!
   mint_promise_groups(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!], page: Int, page_size: Int, units: [MintUnit!]): [OrchardMintPromiseGroup!]!
+  mint_proof_group_stats(unit: MintUnit!): OrchardMintProofGroupStats!
   mint_proof_groups(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!], page: Int, page_size: Int, states: [MintProofState!], units: [MintUnit!]): [OrchardMintProofGroup!]!
   mint_quote_ttl: OrchardMintQuoteTtls!
   public_image(url: String!): OrchardPublicImage!
