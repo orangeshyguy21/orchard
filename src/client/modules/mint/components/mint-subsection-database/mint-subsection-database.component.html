@@ -44,8 +44,13 @@
 						<mat-icon>more_vert</mat-icon>
 					</button>
 
-					<mat-menu #advanced_menu="matMenu" yPosition="below" class="sticky-menu">
-						<button mat-menu-item (click)="onRestore()">Restore Backup</button>
+					<mat-menu #advanced_menu="matMenu" yPosition="below" class="orc-sticky-menu orc-more-menu">
+						<button mat-menu-item (click)="onRestore()">
+							<div class="flex flex-items-center flex-gap-0-5">
+								<mat-icon>restore</mat-icon>
+								<span>Restore Backup</span>
+							</div>
+						</button>
 					</mat-menu>
 				</div>
 			</div>

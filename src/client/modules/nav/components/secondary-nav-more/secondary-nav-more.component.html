@@ -8,6 +8,11 @@
 	</button>
 </div>
 
-<mat-menu #more_menu="matMenu" yPosition="below" class="top-nav-menu">
-    <button mat-menu-item (click)="logout()">Logout</button>
+<mat-menu #more_menu="matMenu" yPosition="below" class="orc-top-nav-menu orc-more-menu">
+    <button mat-menu-item (click)="logout()">
+		<div class="flex flex-items-center flex-gap-0-5">
+			<mat-icon>logout</mat-icon>
+			<span>Logout</span>
+		</div>
+	</button>
 </mat-menu>
