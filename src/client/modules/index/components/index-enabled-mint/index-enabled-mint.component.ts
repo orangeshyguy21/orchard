@@ -32,6 +32,7 @@ export class IndexEnabledMintComponent implements OnChanges {
 
 
   	@Input() loading!: boolean;
+	@Input() loading_icon!: boolean;
 	@Input() info!: MintInfo | null;
 	@Input() keysets!: MintKeyset[];
 	@Input() balances!: MintBalance[];

@@ -18,8 +18,13 @@ export class MintBalanceRow {
 
     public get reserve_ratio(): string {
         const ratio = this.assets / AmountPipe.getConvertedAmount(this.unit, this.liabilities);
-        const formatted_ratio = Number.isInteger(ratio) ? ratio.toString() : (ratio.toFixed(1).endsWith('.0') ? Math.floor(ratio).toString() : ratio.toFixed(1));
         if (ratio === Infinity) return '∞ : 1';
+        let formatted_ratio: string;
+        if (ratio > 3) {
+            formatted_ratio = Math.round(ratio).toString();
+        } else {
+            formatted_ratio = Number.isInteger(ratio) ? ratio.toString() : (ratio.toFixed(1).endsWith('.0') ? Math.floor(ratio).toString() : ratio.toFixed(1));
+        }
         return `${formatted_ratio} : 1`;
     }
 

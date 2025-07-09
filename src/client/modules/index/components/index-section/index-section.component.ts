@@ -54,6 +54,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	public loading_lightning:boolean = true;
 	public loading_taproot_assets:boolean = true;
 	public loading_mint:boolean = true;
+	public loading_mint_icon:boolean = true;
 
 	public errors_bitcoin: OrchardError[] = [];
 	public errors_lightning: OrchardError[] = [];
@@ -131,6 +132,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	}
 	private initMint(): void {
 		this.loading_mint = ( this.enabled_mint ) ? true : false;
+		this.loading_mint_icon = ( this.enabled_mint ) ? true : false;
 		if( this.enabled_mint ) this.getMint();
 		this.cdr.detectChanges();
 	}
@@ -259,11 +261,12 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 				return EMPTY;
 			}),
 			finalize(async () => {
+				this.loading_mint = false;
 				if( this.mint_info?.icon_url ){
 					const image = await firstValueFrom(this.publicService.getPublicImageData(this.mint_info?.icon_url));
 					this.mint_icon_data = image?.data ?? null;
 				}
-				this.loading_mint = false;
+				this.loading_mint_icon = false;
 				this.cdr.detectChanges();
 			})
 		).subscribe();

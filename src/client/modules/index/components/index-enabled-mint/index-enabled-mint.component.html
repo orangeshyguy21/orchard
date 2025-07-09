@@ -9,7 +9,10 @@
                             <td class="font-weight-extra-light orc-outline-color">Mint</td>
                             <td>
                                 <div class="flex flex-items-center flex-gap-1">
-                                    <orc-mint-icon [icon_data]="icon_data"></orc-mint-icon>
+                                    <orc-mint-icon
+                                        [loading]="loading_icon"
+                                        [icon_data]="icon_data">
+                                    </orc-mint-icon>
                                     <div class="text-nowrap">{{ info?.name }}</div>
                                 </div>
                             </td>
@@ -18,7 +21,6 @@
                             <td class="font-weight-extra-light orc-outline-color">Minting</td>
                             <td>
                                 <div class="flex flex-items-center flex-gap-0-5">
-                                    <!-- <mat-icon class="icon-sm orc-status-active-color">circle</mat-icon> -->
                                     <div>{{ info?.nuts?.nut4?.disabled ? 'Disabled' : 'Enabled' }}</div>
                                 </div>
                             </td>
@@ -27,7 +29,6 @@
                             <td class="font-weight-extra-light orc-outline-color">Melting</td>
                             <td>
                                 <div class="flex flex-items-center flex-gap-0-5">
-                                    <!-- <mat-icon class="icon-sm orc-status-active-color">circle</mat-icon> -->
                                     <div>{{ info?.nuts?.nut5?.disabled ? 'Disabled' : 'Enabled' }}</div>
                                 </div>
                             </td>
