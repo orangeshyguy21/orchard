@@ -4,7 +4,7 @@
 		<div class="p-h-1">
             <table mat-table [dataSource]="rows" class="orc-feature-table">
 
-				<ng-container matColumnDef="Liabilities">
+				<ng-container matColumnDef="liabilities">
 					<th mat-header-cell *matHeaderCellDef> Liabilities </th>
 					<td mat-cell *matCellDef="let row"> 
 						<div class="flex flex-items-center flex-gap-1">
@@ -18,7 +18,7 @@
 					</td>
 				</ng-container>
 			
-				<ng-container matColumnDef="Assets">
+				<ng-container matColumnDef="assets">
 					<th mat-header-cell *matHeaderCellDef> Assets </th>
 					<td mat-cell *matCellDef="let row">
 						@if( lightning_enabled ) {
@@ -47,7 +47,7 @@
 					</td>
 				</ng-container>
 
-				<ng-container matColumnDef="Keyset">
+				<ng-container matColumnDef="keyset">
 					<th mat-header-cell *matHeaderCellDef> Keyset </th>
 					<td mat-cell *matCellDef="let row">
 						<orc-mint-keyset
@@ -55,6 +55,13 @@
 							[index]="row.derivation_path_index"
 							[input_fee_ppk]="row.fee">
 						</orc-mint-keyset>
+					</td>
+				</ng-container>
+
+				<ng-container matColumnDef="fees">
+					<th mat-header-cell *matHeaderCellDef> Fees </th>
+					<td mat-cell *matCellDef="let row">
+						<span class="font-size-m" [innerHTML]="row.fees | amount : row.unit : 'mint'"></span>
 					</td>
 				</ng-container>
 

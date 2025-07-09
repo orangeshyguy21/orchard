@@ -31,6 +31,9 @@ export class OrchardMintKeyset {
 	@Field(type => Int)
 	input_fee_ppk: number;
 
+	@Field(type => Int, { nullable: true })
+	fees_paid: number;
+
 	constructor(cashu_keyset:CashuMintKeyset) {
 		this.id = cashu_keyset.id;
 		this.derivation_path = cashu_keyset.derivation_path;
@@ -40,6 +43,7 @@ export class OrchardMintKeyset {
 		this.active = !!cashu_keyset.active;
 		this.unit = cashu_keyset.unit;
 		this.input_fee_ppk = cashu_keyset.input_fee_ppk;
+		this.fees_paid = cashu_keyset.fees_paid;
 	}
 }
 

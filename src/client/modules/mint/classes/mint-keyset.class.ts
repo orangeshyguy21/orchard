@@ -11,6 +11,7 @@ export class MintKeyset implements OrchardMintKeyset {
 	unit: MintUnit;
 	valid_from: number;
 	valid_to: number;
+	fees_paid: number | null;
 
 	constructor(omk: OrchardMintKeyset) {
 		this.active = omk.active;
@@ -21,5 +22,6 @@ export class MintKeyset implements OrchardMintKeyset {
 		this.unit = omk.unit as MintUnit;
 		this.valid_from = omk.valid_from;
 		this.valid_to = omk.valid_to;
+		this.fees_paid = omk.fees_paid ?? null;
 	}
 }	

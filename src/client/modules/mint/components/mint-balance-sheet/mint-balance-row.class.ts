@@ -9,11 +9,12 @@ export class MintBalanceRow {
 
     unit: string;
     liabilities: number;
-    fee: number;
+    input_fee_ppk: number;
     active: boolean;
     derivation_path_index: number;
     first_seen: number;
     assets: number;
+    fees: number | null;
 
     public get reserve_ratio(): string {
         const ratio = this.assets / AmountPipe.getConvertedAmount(this.unit, this.liabilities);
@@ -25,7 +26,8 @@ export class MintBalanceRow {
     constructor(balance: MintBalance | undefined, assets: number, keyset: MintKeyset) {
         this.unit = keyset.unit;
         this.liabilities = balance?.balance ?? 0;
-        this.fee = keyset.input_fee_ppk;
+        this.fees = keyset.fees_paid ?? null;
+        this.input_fee_ppk = keyset.input_fee_ppk;
         this.active = keyset.active;
         this.assets = assets;
         this.derivation_path_index = keyset.derivation_path_index;

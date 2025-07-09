@@ -120,13 +120,10 @@ export class CdkService {
 
 	public async getMintBalancesIssued(db:sqlite3.Database) : Promise<CashuMintBalance[]> {
 		const sql = `
-		SELECT keyset, COALESCE(s, 0) AS balance FROM (
-			SELECT k.id AS keyset, SUM(mq.amount) AS s
-			FROM keyset k
-			JOIN mint_quote mq ON k.unit = mq.unit
-			WHERE k.active = 1 AND mq.state = 'ISSUED'
-			GROUP BY k.id
-		);`;
+			SELECT keyset_id AS keyset, SUM(amount) AS balance
+			FROM blind_signature
+			GROUP BY keyset_id
+			ORDER BY keyset_id;`;
 		return new Promise((resolve, reject) => {
 			db.all(sql, (err, rows:CashuMintBalance[]) => {
 				if (err) return reject(err);
@@ -137,13 +134,11 @@ export class CdkService {
 
 	public async getMintBalancesRedeemed(db:sqlite3.Database) : Promise<CashuMintBalance[]> {
 		const sql = `
-		SELECT keyset, COALESCE(s, 0) AS balance FROM (
-			SELECT k.id AS keyset, SUM(mq.amount) AS s
-			FROM keyset k
-			JOIN melt_quote mq ON k.unit = mq.unit
-			WHERE k.active = 1 AND mq.state = 'PAID'
-			GROUP BY k.id
-		);`;
+			SELECT keyset_id AS keyset, SUM(amount) AS balance
+			FROM proof
+			WHERE state = 'SPENT'
+			GROUP BY keyset_id
+			ORDER BY keyset_id;`;
 		return new Promise((resolve, reject) => {
 			db.all(sql, (err, rows:CashuMintBalance[]) => {
 				if (err) return reject(err);

@@ -15,6 +15,7 @@ export type CashuMintKeyset = {
 	active: number;
 	unit: MintUnit;
 	input_fee_ppk: number;
+	fees_paid: number | null;
 }
 
 export type CashuMintMeltQuote = {
