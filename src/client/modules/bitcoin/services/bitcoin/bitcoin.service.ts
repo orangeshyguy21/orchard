@@ -15,11 +15,13 @@ import { BitcoinBlockCount } from '@client/modules/bitcoin/classes/bitcoin-block
 import { BitcoinBlockchainInfo } from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
 import { BitcoinNetworkInfo } from '@client/modules/bitcoin/classes/bitcoin-network-info.class';
 import { BitcoinBlock } from '@client/modules/bitcoin/classes/bitcoin-block.class';
+import { BitcoinTransaction } from '@client/modules/bitcoin/classes/bitcoin-transaction.class';
 import {
 	BitcoinBlockchainInfoResponse,
 	BitcoinBlockCountResponse,
 	BitcoinNetworkInfoResponse,
 	BitcoinBlockResponse,
+	BitcoinMempoolTransactionsResponse,
 } from '@client/modules/bitcoin/types/bitcoin.types';
 /* Local Dependencies */
 import { 
@@ -27,6 +29,7 @@ import {
 	BITCOIN_BLOCK_COUNT_QUERY,
 	BITCOIN_NETWORK_INFO_QUERY,
 	BITCOIN_BLOCK_QUERY,
+	BITCOIN_MEMPOOL_TRANSACTIONS_QUERY,
 } from './bitcoin.queries';
 
 @Injectable({
@@ -171,6 +174,22 @@ export class BitcoinService {
 			map((bitcoin_block) => new BitcoinBlock(bitcoin_block)),
 			catchError((error) => {
 				console.error('Error loading bitcoin block:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public getBitcoinMempoolTransactions() : Observable<BitcoinTransaction[]> {
+		const query = getApiQuery(BITCOIN_MEMPOOL_TRANSACTIONS_QUERY);
+
+		return this.http.post<OrchardRes<BitcoinMempoolTransactionsResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.bitcoin_mempool_transactions;
+			}),
+			map((txs) => txs.map((tx) => new BitcoinTransaction(tx))),
+			catchError((error) => {
+				console.error('Error loading bitcoin mempool transactions:', error);
 				return throwError(() => error);
 			})
 		);

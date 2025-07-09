@@ -7,6 +7,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { BitcoinBlockchainInfo } from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
 import { BitcoinNetworkInfo } from '@client/modules/bitcoin/classes/bitcoin-network-info.class';
 import { BitcoinBlock } from '@client/modules/bitcoin/classes/bitcoin-block.class';
+import { BitcoinTransaction } from '@client/modules/bitcoin/classes/bitcoin-transaction.class';
 import { LightningAccount } from '@client/modules/lightning/classes/lightning-account.class';
 import { TaprootAssets } from '@client/modules/tapass/classes/taproot-assets.class';
 import { OrchardError } from '@client/modules/error/types/error.types';
@@ -58,6 +59,7 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 	@Input() blockchain_info!: BitcoinBlockchainInfo | null;
 	@Input() block!: BitcoinBlock | null;
 	@Input() network_info!: BitcoinNetworkInfo | null;
+	@Input() mempool!: BitcoinTransaction[];
 	@Input() lightning_accounts!: LightningAccount[];
 	@Input() taproot_assets!: TaprootAssets;
 	@Input() errors_lightning!: OrchardError[];

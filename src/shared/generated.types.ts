@@ -443,9 +443,31 @@ export type OrchardBitcoinBlockchainInfo = {
   warnings: Array<Scalars['String']['output']>;
 };
 
-export type OrchardBitcoinMempool = {
-  __typename?: 'OrchardBitcoinMempool';
-  test: Scalars['Int']['output'];
+export type OrchardBitcoinMempoolFees = {
+  __typename?: 'OrchardBitcoinMempoolFees';
+  ancestor: Scalars['Float']['output'];
+  base: Scalars['Float']['output'];
+  descendant: Scalars['Float']['output'];
+  modified: Scalars['Float']['output'];
+};
+
+export type OrchardBitcoinMempoolTransaction = {
+  __typename?: 'OrchardBitcoinMempoolTransaction';
+  ancestorcount: Scalars['Int']['output'];
+  ancestorsize: Scalars['Int']['output'];
+  bip125_replaceable: Scalars['Boolean']['output'];
+  depends: Array<Scalars['String']['output']>;
+  descendantcount: Scalars['Int']['output'];
+  descendantsize: Scalars['Int']['output'];
+  fees: OrchardBitcoinMempoolFees;
+  height: Scalars['Int']['output'];
+  spentby: Array<Scalars['String']['output']>;
+  time: Scalars['UnixTimestamp']['output'];
+  txid: Scalars['ID']['output'];
+  unbroadcast: Scalars['Boolean']['output'];
+  vsize: Scalars['Int']['output'];
+  weight: Scalars['Int']['output'];
+  wtxid: Scalars['String']['output'];
 };
 
 export type OrchardBitcoinNetwork = {
@@ -944,7 +966,7 @@ export type Query = {
   bitcoin_block: OrchardBitcoinBlock;
   bitcoin_blockchain_info: OrchardBitcoinBlockchainInfo;
   bitcoin_blockcount: OrchardBitcoinBlockCount;
-  bitcoin_mempool: OrchardBitcoinMempool;
+  bitcoin_mempool_transactions: Array<OrchardBitcoinMempoolTransaction>;
   bitcoin_network_info: OrchardBitcoinNetworkInfo;
   lightning_balance: OrchardLightningBalance;
   lightning_info: OrchardLightningInfo;

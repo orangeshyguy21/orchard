@@ -78,3 +78,28 @@ query BitcoinBlock($hash: String!) {
         tx
     }
 }`;
+
+export const BITCOIN_MEMPOOL_TRANSACTIONS_QUERY = `{
+    bitcoin_mempool_transactions{
+        txid
+        vsize
+        weight
+        time
+        height
+        descendantcount
+        descendantsize
+        ancestorcount
+        ancestorsize
+        wtxid
+        fees{
+            base
+            modified
+            ancestor
+            descendant
+        }
+        depends
+        spentby
+        bip125_replaceable
+        unbroadcast
+    }
+}`;

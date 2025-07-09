@@ -16,6 +16,7 @@ import { BitcoinBlockchainInfo } from '@client/modules/bitcoin/classes/bitcoin-b
 import { BitcoinNetworkInfo } from '@client/modules/bitcoin/classes/bitcoin-network-info.class';
 import { BitcoinBlockCount } from '@client/modules/bitcoin/classes/bitcoin-blockcount.class';
 import { BitcoinBlock } from '@client/modules/bitcoin/classes/bitcoin-block.class';
+import { BitcoinTransaction } from '@client/modules/bitcoin/classes/bitcoin-transaction.class';
 import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.class';
 import { LightningBalance } from '@client/modules/lightning/classes/lightning-balance.class';
 import { LightningAccount } from '@client/modules/lightning/classes/lightning-account.class';
@@ -65,6 +66,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	public bitcoin_network_info!: BitcoinNetworkInfo | null;
 	public bitcoin_blockcount!: BitcoinBlockCount | null;
 	public bitcoin_block!: BitcoinBlock | null;
+	public bitcoin_mempool!: BitcoinTransaction[] | null;
 	public lightning_info!: LightningInfo | null;
 	public lightning_balance!: LightningBalance | null;
 	public lightning_accounts!: LightningAccount[] | null;
@@ -144,11 +146,13 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	private getBitcoin(): void {
 		forkJoin({
 			blockchain: this.bitcoinService.loadBitcoinBlockchainInfo(),
-			network: this.bitcoinService.loadBitcoinNetworkInfo()
+			network: this.bitcoinService.loadBitcoinNetworkInfo(),
+			mempool: this.bitcoinService.getBitcoinMempoolTransactions()
 		}).pipe(
-			tap(({ blockchain, network }) => {
+			tap(({ blockchain, network, mempool }) => {
 				this.bitcoin_blockchain_info = blockchain;
 				this.bitcoin_network_info = network;
+				this.bitcoin_mempool = mempool;
 			}),
 			catchError((error) => {
 				this.errors_bitcoin = error.errors;
