@@ -26,7 +26,7 @@ export class OrchardMintMintQuote {
 	@Field()
 	request_lookup_id: string;
 	
-	@Field()
+	@Field({ nullable: true })
 	pubkey: string;
 
 	@Field(type => UnixTimestamp, { nullable: true })

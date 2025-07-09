@@ -708,7 +708,7 @@ export type OrchardMintMintQuote = {
   id: Scalars['ID']['output'];
   issued_time?: Maybe<Scalars['UnixTimestamp']['output']>;
   paid_time?: Maybe<Scalars['UnixTimestamp']['output']>;
-  pubkey: Scalars['String']['output'];
+  pubkey?: Maybe<Scalars['String']['output']>;
   request: Scalars['String']['output'];
   request_lookup_id: Scalars['String']['output'];
   state: MintQuoteState;

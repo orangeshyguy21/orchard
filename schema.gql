@@ -561,7 +561,7 @@ type OrchardMintMintQuote {
   id: ID!
   issued_time: UnixTimestamp
   paid_time: UnixTimestamp
-  pubkey: String!
+  pubkey: String
   request: String!
   request_lookup_id: String!
   state: MintQuoteState!

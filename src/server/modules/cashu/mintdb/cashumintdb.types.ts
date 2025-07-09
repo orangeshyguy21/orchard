@@ -39,7 +39,7 @@ export type CashuMintMintQuote = {
 	request: string;
 	state: MintQuoteState;
 	request_lookup_id: string;
-	pubkey: string;
+	pubkey: string | null;
 	issued_time: number;
 	created_time: number;
 	paid_time: number;
