@@ -8,7 +8,7 @@ import { CashuMintMeltQuote } from '@server/modules/cashu/mintdb/cashumintdb.typ
 @ObjectType()
 export class OrchardMintMeltQuote {
 
-	@Field(type => ID, { nullable: true })
+	@Field(type => ID)
 	id:string;
 
 	@Field(type => MintUnit)

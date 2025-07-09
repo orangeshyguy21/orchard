@@ -10,7 +10,7 @@ export class MintKeysetRow {
     input_fee_ppk: number;
     unit: string;
     valid_from: number;
-    valid_to: number;
+    valid_to: number | null;
     fees_paid: number | null;
     balance: number;
 

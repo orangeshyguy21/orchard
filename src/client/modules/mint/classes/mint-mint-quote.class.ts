@@ -3,7 +3,7 @@ import { OrchardMintMintQuote, MintQuoteState, MintUnit } from "@shared/generate
 
 export class MintMintQuote implements OrchardMintMintQuote {
 
-	public id: string | null;
+	public id: string;
 	public amount: number;
 	public unit: MintUnit;
 	public request: string;
@@ -15,7 +15,7 @@ export class MintMintQuote implements OrchardMintMintQuote {
 	public paid_time: number | null;
 
 	constructor(mint_mint_quote: OrchardMintMintQuote) {
-        this.id = mint_mint_quote.id ?? null;
+        this.id = mint_mint_quote.id;
 		this.amount = mint_mint_quote.amount;
 		this.unit = mint_mint_quote.unit;
 		this.request = mint_mint_quote.request;

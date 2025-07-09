@@ -522,7 +522,7 @@ type OrchardMintKeyset {
   derivation_path_index: Int!
   fees_paid: Int
   id: ID!
-  input_fee_ppk: Int!
+  input_fee_ppk: Int
   unit: String!
   valid_from: UnixTimestamp!
   valid_to: UnixTimestamp
@@ -545,7 +545,7 @@ type OrchardMintMeltQuote {
   amount: Int!
   created_time: UnixTimestamp!
   fee_reserve: Int!
-  id: ID
+  id: ID!
   msat_to_pay: Int
   paid_time: UnixTimestamp
   payment_preimage: String
@@ -558,7 +558,7 @@ type OrchardMintMeltQuote {
 type OrchardMintMintQuote {
   amount: Int!
   created_time: UnixTimestamp!
-  id: ID
+  id: ID!
   issued_time: UnixTimestamp
   paid_time: UnixTimestamp
   pubkey: String

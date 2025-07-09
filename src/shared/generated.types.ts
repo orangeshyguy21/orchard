@@ -665,7 +665,7 @@ export type OrchardMintKeyset = {
   derivation_path_index: Scalars['Int']['output'];
   fees_paid?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
-  input_fee_ppk: Scalars['Int']['output'];
+  input_fee_ppk?: Maybe<Scalars['Int']['output']>;
   unit: Scalars['String']['output'];
   valid_from: Scalars['UnixTimestamp']['output'];
   valid_to?: Maybe<Scalars['UnixTimestamp']['output']>;
@@ -691,7 +691,7 @@ export type OrchardMintMeltQuote = {
   amount: Scalars['Int']['output'];
   created_time: Scalars['UnixTimestamp']['output'];
   fee_reserve: Scalars['Int']['output'];
-  id?: Maybe<Scalars['ID']['output']>;
+  id: Scalars['ID']['output'];
   msat_to_pay?: Maybe<Scalars['Int']['output']>;
   paid_time?: Maybe<Scalars['UnixTimestamp']['output']>;
   payment_preimage?: Maybe<Scalars['String']['output']>;
@@ -705,7 +705,7 @@ export type OrchardMintMintQuote = {
   __typename?: 'OrchardMintMintQuote';
   amount: Scalars['Int']['output'];
   created_time: Scalars['UnixTimestamp']['output'];
-  id?: Maybe<Scalars['ID']['output']>;
+  id: Scalars['ID']['output'];
   issued_time?: Maybe<Scalars['UnixTimestamp']['output']>;
   paid_time?: Maybe<Scalars['UnixTimestamp']['output']>;
   pubkey?: Maybe<Scalars['String']['output']>;

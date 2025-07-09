@@ -11,15 +11,15 @@ export type CashuMintKeyset = {
 	derivation_path: string;
 	derivation_path_index: number;
 	valid_from: number;
-	valid_to: number;
+	valid_to: number | null;
 	active: number;
 	unit: MintUnit;
-	input_fee_ppk: number;
+	input_fee_ppk: number | null;
 	fees_paid: number | null;
 }
 
 export type CashuMintMeltQuote = {
-	id: string | null;
+	id: string;
 	unit: MintUnit;
 	amount: number;
 	request: string;
@@ -33,7 +33,7 @@ export type CashuMintMeltQuote = {
 }
 
 export type CashuMintMintQuote = {
-	id: string | null;
+	id: string;
 	amount: number;
 	unit: MintUnit;
 	request: string;
