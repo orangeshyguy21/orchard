@@ -543,27 +543,27 @@ type OrchardMintKeysetsAnalytics {
 
 type OrchardMintMeltQuote {
   amount: Int!
-  created_time: UnixTimestamp
+  created_time: UnixTimestamp!
   fee_reserve: Int!
-  id: ID!
+  id: ID
   msat_to_pay: Int
   paid_time: UnixTimestamp
   payment_preimage: String
   request: String!
-  request_lookup_id: String!
+  request_lookup_id: String
   state: MeltQuoteState!
   unit: MintUnit!
 }
 
 type OrchardMintMintQuote {
   amount: Int!
-  created_time: UnixTimestamp
-  id: ID!
+  created_time: UnixTimestamp!
+  id: ID
   issued_time: UnixTimestamp
   paid_time: UnixTimestamp
   pubkey: String
   request: String!
-  request_lookup_id: String!
+  request_lookup_id: String
   state: MintQuoteState!
   unit: MintUnit!
 }

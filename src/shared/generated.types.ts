@@ -689,14 +689,14 @@ export type OrchardMintKeysetsAnalytics = {
 export type OrchardMintMeltQuote = {
   __typename?: 'OrchardMintMeltQuote';
   amount: Scalars['Int']['output'];
-  created_time?: Maybe<Scalars['UnixTimestamp']['output']>;
+  created_time: Scalars['UnixTimestamp']['output'];
   fee_reserve: Scalars['Int']['output'];
-  id: Scalars['ID']['output'];
+  id?: Maybe<Scalars['ID']['output']>;
   msat_to_pay?: Maybe<Scalars['Int']['output']>;
   paid_time?: Maybe<Scalars['UnixTimestamp']['output']>;
   payment_preimage?: Maybe<Scalars['String']['output']>;
   request: Scalars['String']['output'];
-  request_lookup_id: Scalars['String']['output'];
+  request_lookup_id?: Maybe<Scalars['String']['output']>;
   state: MeltQuoteState;
   unit: MintUnit;
 };
@@ -704,13 +704,13 @@ export type OrchardMintMeltQuote = {
 export type OrchardMintMintQuote = {
   __typename?: 'OrchardMintMintQuote';
   amount: Scalars['Int']['output'];
-  created_time?: Maybe<Scalars['UnixTimestamp']['output']>;
-  id: Scalars['ID']['output'];
+  created_time: Scalars['UnixTimestamp']['output'];
+  id?: Maybe<Scalars['ID']['output']>;
   issued_time?: Maybe<Scalars['UnixTimestamp']['output']>;
   paid_time?: Maybe<Scalars['UnixTimestamp']['output']>;
   pubkey?: Maybe<Scalars['String']['output']>;
   request: Scalars['String']['output'];
-  request_lookup_id: Scalars['String']['output'];
+  request_lookup_id?: Maybe<Scalars['String']['output']>;
   state: MintQuoteState;
   unit: MintUnit;
 };

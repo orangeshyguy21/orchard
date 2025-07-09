@@ -8,7 +8,7 @@ import { CashuMintMintQuote } from '@server/modules/cashu/mintdb/cashumintdb.typ
 @ObjectType()
 export class OrchardMintMintQuote {
 
-	@Field(type => ID)
+	@Field(type => ID, { nullable: true })
 	id:string;
 
 	@Field(type => Int)
@@ -23,17 +23,17 @@ export class OrchardMintMintQuote {
 	@Field(type => MintQuoteState)
 	state: MintQuoteState;
 
-	@Field()
+	@Field({ nullable: true })
 	request_lookup_id: string;
 	
 	@Field({ nullable: true })
 	pubkey: string;
 
-	@Field(type => UnixTimestamp, { nullable: true })
-	issued_time: number;
+	@Field(type => UnixTimestamp)
+	created_time: number;
 
 	@Field(type => UnixTimestamp, { nullable: true })
-	created_time: number;
+	issued_time: number;
 
 	@Field(type => UnixTimestamp, { nullable: true })
 	paid_time: number;

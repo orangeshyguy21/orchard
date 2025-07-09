@@ -19,31 +19,31 @@ export type CashuMintKeyset = {
 }
 
 export type CashuMintMeltQuote = {
-	id: string;
+	id: string | null;
 	unit: MintUnit;
 	amount: number;
 	request: string;
 	fee_reserve: number;
 	state: MeltQuoteState;
 	payment_preimage: string | null;
-	request_lookup_id: string;
+	request_lookup_id: string | null;
 	msat_to_pay: number | null;
 	created_time: number;
-	paid_time: number;
+	paid_time: number | null;
 }
 
 export type CashuMintMintQuote = {
-	id: string;
+	id: string | null;
 	amount: number;
 	unit: MintUnit;
 	request: string;
 	state: MintQuoteState;
-	request_lookup_id: string;
+	request_lookup_id: string | null;
 	pubkey: string | null;
-	issued_time: number;
 	created_time: number;
-	paid_time: number;
-}
+	issued_time: number | null;
+	paid_time: number | null;
+}	
 
 export type CashuMintProofGroup = {
 	amount: number;

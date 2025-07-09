@@ -85,7 +85,8 @@ export class MintDataMeltComponent implements AfterViewInit {
 		  this.qr_code.append(this.qr_canvas.nativeElement);
 	}
 
-	public onCopy(value:string): void {
+	public onCopy(value:string|null): void {
+		if( !value ) return;
 		navigator.clipboard.writeText(value);
 		if (this.copy_timeout) clearTimeout(this.copy_timeout);
 		this.copy_animation_state = 'visible';
