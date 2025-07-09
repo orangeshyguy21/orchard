@@ -2,7 +2,7 @@
 import { Logger } from '@nestjs/common';
 import { Resolver, Query } from '@nestjs/graphql';
 /* Local Dependencies */
-import { OrchardBitcoinMempool } from './btcmempool.model';
+import { OrchardBitcoinMempoolTransaction } from './btcmempool.model';
 import { BitcoinMempoolService } from './btcmempool.service';
 
 @Resolver()
@@ -14,10 +14,10 @@ export class BitcoinMempoolResolver {
 		private bitcoinMempoolService: BitcoinMempoolService,
 	) {}
 
-	@Query(() => OrchardBitcoinMempool)
-	async bitcoin_mempool() : Promise<OrchardBitcoinMempool> {
-		const tag = 'GET { bitcoin_mempool }';
+	@Query(() => [OrchardBitcoinMempoolTransaction])
+	async bitcoin_mempool_transactions() : Promise<OrchardBitcoinMempoolTransaction[]> {
+		const tag = 'GET { bitcoin_mempool_transactions }';
 		this.logger.debug(tag);
-		return await this.bitcoinMempoolService.getBitcoinMempool(tag);
+		return await this.bitcoinMempoolService.getBitcoinMempoolTransactions(tag);
 	}
 }

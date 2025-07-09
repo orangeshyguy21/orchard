@@ -326,8 +326,29 @@ type OrchardBitcoinBlockchainInfo {
   warnings: [String!]!
 }
 
-type OrchardBitcoinMempool {
-  test: Int!
+type OrchardBitcoinMempoolFees {
+  ancestor: Float!
+  base: Float!
+  descendant: Float!
+  modified: Float!
+}
+
+type OrchardBitcoinMempoolTransaction {
+  ancestorcount: Int!
+  ancestorsize: Int!
+  bip125_replaceable: Boolean!
+  depends: [String!]!
+  descendantcount: Int!
+  descendantsize: Int!
+  fees: OrchardBitcoinMempoolFees!
+  height: Int!
+  spentby: [String!]!
+  time: UnixTimestamp!
+  txid: ID!
+  unbroadcast: Boolean!
+  vsize: Int!
+  weight: Int!
+  wtxid: String!
 }
 
 type OrchardBitcoinNetwork {
@@ -766,7 +787,7 @@ type Query {
   bitcoin_block(hash: String!): OrchardBitcoinBlock!
   bitcoin_blockchain_info: OrchardBitcoinBlockchainInfo!
   bitcoin_blockcount: OrchardBitcoinBlockCount!
-  bitcoin_mempool: OrchardBitcoinMempool!
+  bitcoin_mempool_transactions: [OrchardBitcoinMempoolTransaction!]!
   bitcoin_network_info: OrchardBitcoinNetworkInfo!
   lightning_balance: OrchardLightningBalance!
   lightning_info: OrchardLightningInfo!
