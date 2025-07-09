@@ -39,6 +39,9 @@ export class SettingsSectionComponent implements OnInit {
 		SettingsCategory.Mint,
 		SettingsCategory.Ecash
 	];
+	public cat_orchard = SettingsCategory.Orchard;
+	public cat_local= SettingsCategory.Local;
+	
 
 	constructor(
 		private localStorageService: LocalStorageService,
