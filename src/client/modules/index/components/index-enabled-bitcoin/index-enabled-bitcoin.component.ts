@@ -92,7 +92,7 @@ export class IndexEnabledBitcoinComponent implements OnChanges {
 	}
 
 	private pollingBlock(): void {
-		if( !this.blockchain_info?.initialblockdownload ) return;
+		if( this.blockchain_info?.is_synced ) return;
 		setTimeout(() => {
 			this.polling_block = true;
 			this.cdr.detectChanges();

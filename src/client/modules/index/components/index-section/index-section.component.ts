@@ -155,7 +155,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 			}),
 			finalize(() => {
 				this.loading_bitcoin = false;
-				if( this.bitcoin_blockchain_info?.initialblockdownload ) this.subscriptions.add(this.getBitcoinBlockchainSubscription());
+				if( !this.bitcoin_blockchain_info?.is_synced ) this.subscriptions.add(this.getBitcoinBlockchainSubscription());
 				this.cdr.detectChanges();
 			})
 		).subscribe();
@@ -174,11 +174,11 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	private getBitcoinBlockchainSubscription(): Subscription {
 		this.bitcoin_polling_active = true;
 		return timer(0, 5000).pipe(
-			takeWhile(() => this.bitcoin_polling_active), // Stop when flag is false
+			takeWhile(() => this.bitcoin_polling_active),
 			switchMap(() => this.bitcoinService.getBitcoinBlockchainInfo().pipe(
 				catchError(error => {
 					console.error('Failed to fetch blockchain info, polling stopped:', error);
-					this.bitcoin_polling_active = false; // Stop the timer
+					this.bitcoin_polling_active = false;
 					return EMPTY;
 				})
 			))
