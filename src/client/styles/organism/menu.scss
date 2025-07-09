@@ -7,6 +7,10 @@
 
 .top-nav-menu{
     @extend %relative;
+    @extend %top-0-5;
+}
+
+.sticky-menu{
+    @extend %relative;
     @extend %top-1-5;
-    // top: 1.5rem;
 }
