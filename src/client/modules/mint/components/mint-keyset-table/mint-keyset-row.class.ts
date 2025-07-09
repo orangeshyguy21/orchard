@@ -11,6 +11,7 @@ export class MintKeysetRow {
     unit: string;
     valid_from: number;
     valid_to: number;
+    fees_paid: number | null;
     balance: number;
 
     constructor(keyset: MintKeyset, keyset_analytics: MintAnalyticKeyset[], keyset_analytics_pre: MintAnalyticKeyset[]) {
@@ -21,6 +22,7 @@ export class MintKeysetRow {
         this.unit = keyset.unit;
         this.valid_from = keyset.valid_from;
         this.valid_to = keyset.valid_to;
+        this.fees_paid = keyset.fees_paid;
         this.balance = this.getBalance(keyset_analytics, keyset_analytics_pre);
     }
 

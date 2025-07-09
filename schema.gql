@@ -520,6 +520,7 @@ type OrchardMintKeyset {
   active: Boolean!
   derivation_path: String!
   derivation_path_index: Int!
+  fees_paid: Int
   id: ID!
   input_fee_ppk: Int!
   unit: String!

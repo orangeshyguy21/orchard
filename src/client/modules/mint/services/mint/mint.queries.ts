@@ -124,6 +124,7 @@ export const MINT_KEYSETS_QUERY = `{
 		unit
 		valid_from
 		valid_to
+		fees_paid
     }
 }`;
 

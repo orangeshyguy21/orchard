@@ -37,7 +37,7 @@ export class MintKeysetTableComponent implements OnChanges {
 	@Input() public page_settings!: NonNullableMintKeysetsSettings;
 	@Input() public loading!: boolean;
 
-	public displayed_columns = ['keyset', 'input_fee_ppk', 'valid_from', 'balance'];
+	public displayed_columns = ['keyset', 'input_fee_ppk', 'valid_from', 'balance', 'fees'];
   	public data_source!: MatTableDataSource<MintKeysetRow>;
 
 	constructor() {}
@@ -45,6 +45,7 @@ export class MintKeysetTableComponent implements OnChanges {
 	public ngOnChanges(changes: SimpleChanges): void {
 		if(changes['loading'] && this.loading === false) {
 			this.init();
+			if(this.data_source.data[0]?.fees_paid === null) this.displayed_columns = ['keyset', 'input_fee_ppk', 'valid_from', 'balance'];
 		}
 	}
 

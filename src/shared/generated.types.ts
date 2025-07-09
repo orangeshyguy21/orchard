@@ -663,6 +663,7 @@ export type OrchardMintKeyset = {
   active: Scalars['Boolean']['output'];
   derivation_path: Scalars['String']['output'];
   derivation_path_index: Scalars['Int']['output'];
+  fees_paid?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
   input_fee_ppk: Scalars['Int']['output'];
   unit: Scalars['String']['output'];

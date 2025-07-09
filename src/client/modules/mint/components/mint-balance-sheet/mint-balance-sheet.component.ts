@@ -38,7 +38,7 @@ export class MintBalanceSheetComponent implements OnChanges {
 	@Input() loading!: boolean;
 
 	public rows: MintBalanceRow[] = [];
-	public displayed_columns: string[] = ['Liabilities', 'Assets', 'Keyset'];
+	public displayed_columns: string[] = ['liabilities', 'assets', 'keyset', 'fees'];
 
 	constructor() {}
 
@@ -48,6 +48,7 @@ export class MintBalanceSheetComponent implements OnChanges {
 
 	private init(): void {
 		this.rows = this.getRows();
+		if(this.rows[0]?.fees === null) this.displayed_columns = ['liabilities', 'assets', 'keyset'];
 	}
 
 	private getAssetBalances(): number {
@@ -75,6 +76,7 @@ export class MintBalanceSheetComponent implements OnChanges {
 					return;
 				}
 				rows_by_unit[unit].liabilities += row.liabilities;
+				if( row.fees !== null ) rows_by_unit[unit].fees = (rows_by_unit[unit].fees ?? 0) + row.fees;
 			});
 		
 		return Object.values(rows_by_unit).sort((a, b) => {
