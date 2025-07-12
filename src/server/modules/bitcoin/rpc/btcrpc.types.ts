@@ -109,3 +109,44 @@ export type BitcoinTransaction = {
     'bip125-replaceable': boolean;
     unbroadcast: boolean;
 }
+
+export type BitcoinFeeEstimate = {
+    feerate?: number;
+    errors?: string[];
+    blocks: number;
+}
+
+export type BitcoinBlockTemplate = {
+    version: number;
+    rules: string[];
+    vbavailable: {
+        [rulename: string]: number;
+    };
+    vbrequired: number;
+    previousblockhash: string;
+    transactions: {
+        data: string;
+        txid: string;
+        hash: string;
+        depends: number[];
+        fee: number;
+        sigops: number;
+        weight: number;
+    }[];
+    coinbaseaux: {
+        [key: string]: string;
+    };
+    coinbasevalue: number;
+    longpollid: string;
+    target: string;
+    mintime: number;
+    mutable: string[];
+    noncerange: string;
+    sigoplimit: number;
+    sizelimit: number;
+    weightlimit: number;
+    curtime: number;
+    bits: string;
+    height: number;
+    default_witness_commitment?: string;
+}

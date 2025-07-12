@@ -8,7 +8,9 @@ import { AuthenticationModule } from "./auth/authentication/authentication.modul
 // Bitcoin Endpoints
 import { BitcoinNetworkModule } from "./bitcoin/network/btcnetwork.module";
 import { BitcoinBlockchainModule } from "./bitcoin/blockchain/btcblockchain.module";
+import { BitcoinBlockModule } from "./bitcoin/block/btcblock.module";
 import { BitcoinMempoolModule } from "./bitcoin/mempool/btcmempool.module";
+import { BitcoinTransactionModule } from "./bitcoin/transaction/btctransaction.module";
 // Lightning Endpoints
 import { LightningInfoModule } from "./lightning/info/lninfo.module";
 import { LightningBalanceModule } from "./lightning/balance/lnbalance.module";
@@ -42,7 +44,9 @@ import { PublicUrlModule } from "./public/url/url.module";
 		AuthenticationModule,
 		BitcoinNetworkModule,
 		BitcoinBlockchainModule,
+		BitcoinBlockModule,
 		BitcoinMempoolModule,
+		BitcoinTransactionModule,
 		LightningInfoModule,
 		LightningBalanceModule,
 		LightningWalletModule,

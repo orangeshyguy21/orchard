@@ -11,6 +11,8 @@ import {
     BitcoinNetworkInfo,
     BitcoinBlock,
     BitcoinTransaction,
+    BitcoinFeeEstimate,
+    BitcoinBlockTemplate,
 } from './btcrpc.types';
 
 @Injectable()
@@ -64,5 +66,24 @@ export class BitcoinRpcService implements OnModuleInit {
 
     public async getBitcoinMempool() : Promise<Record<string, BitcoinTransaction>> {
         if( this.type === BitcoinType.CORE ) return this.coreService.makeRpcRequest('getrawmempool', [true]);
+    }
+
+    /* *******************************************************
+	   Mining                      
+	******************************************************** */
+
+    public async getBitcoinBlockTemplate() : Promise<BitcoinBlockTemplate> {
+        if( this.type === BitcoinType.CORE ) return this.coreService.makeRpcRequest('getblocktemplate', [{
+            "rules": ["segwit"],
+            "mode": "template"
+        }]);
+    }
+
+    /* *******************************************************
+	   Utilities                      
+	******************************************************** */
+
+    public async getBitcoinFeeEstimate(target: number) : Promise<BitcoinFeeEstimate> {
+        if( this.type === BitcoinType.CORE ) return this.coreService.makeRpcRequest('estimatesmartfee', [target]);
     }
 }

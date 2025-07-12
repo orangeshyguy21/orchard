@@ -1,6 +1,6 @@
 /* Core Dependencies */
 import { Logger } from '@nestjs/common';
-import { Resolver, Subscription, Query, Args } from '@nestjs/graphql';
+import { Resolver, Subscription, Query } from '@nestjs/graphql';
 import { OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 /* Vendor Dependencies */
 import { PubSub } from 'graphql-subscriptions';
@@ -9,7 +9,6 @@ import { BitcoinBlockchainService } from './btcblockchain.service';
 import { 
 	OrchardBitcoinBlockCount, 
 	OrchardBitcoinBlockchainInfo,
-	OrchardBitcoinBlock,
 } from './btcblockchain.model';
 
 const pubSub = new PubSub();
@@ -56,12 +55,5 @@ export class BitcoinBlockchainResolver {
 		const tag = 'GET { bitcoin_blockchain_info }';
 		this.logger.debug(tag);
 		return await this.bitcoinBlockchainService.getBlockchainInfo(tag);
-	}
-
-	@Query(() => OrchardBitcoinBlock)
-	async bitcoin_block(@Args('hash', { type: () => String }) hash: string) : Promise<OrchardBitcoinBlock> {
-		const tag = 'GET { bitcoin_block }';
-		this.logger.debug(tag);
-		return await this.bitcoinBlockchainService.getBlock(tag, hash);
 	}
 }

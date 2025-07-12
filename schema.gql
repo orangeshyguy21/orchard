@@ -309,6 +309,37 @@ type OrchardBitcoinBlockCount {
   height: Int!
 }
 
+type OrchardBitcoinBlockTemplate {
+  bits: String!
+  coinbasevalue: Int!
+  curtime: Int!
+  default_witness_commitment: String
+  height: Int!
+  longpollid: String!
+  mintime: Int!
+  mutable: [String!]!
+  noncerange: String!
+  previousblockhash: String!
+  rules: [String!]!
+  sigoplimit: Int!
+  sizelimit: Int!
+  target: String!
+  transactions: [OrchardBitcoinBlockTemplateTransaction!]!
+  vbrequired: Int!
+  version: Int!
+  weightlimit: Int!
+}
+
+type OrchardBitcoinBlockTemplateTransaction {
+  data: String!
+  depends: [Int!]!
+  fee: Int!
+  hash: String!
+  sigops: Int!
+  txid: String!
+  weight: Int!
+}
+
 type OrchardBitcoinBlockchainInfo {
   automatic_pruning: Boolean
   bestblockhash: String!
@@ -382,6 +413,13 @@ type OrchardBitcoinNetworkInfo {
   timeoffset: Int!
   version: Int!
   warnings: [String!]!
+}
+
+type OrchardBitcoinTxFeeEstimate {
+  blocks: Int!
+  errors: [String!]
+  feerate: Float
+  target: Int!
 }
 
 type OrchardCachedEndpoint {
@@ -785,10 +823,12 @@ type Query {
   ai_agent(agent: AiAgent!): OrchardAiAgent!
   ai_models: [OrchardAiModel!]!
   bitcoin_block(hash: String!): OrchardBitcoinBlock!
+  bitcoin_block_template: OrchardBitcoinBlockTemplate!
   bitcoin_blockchain_info: OrchardBitcoinBlockchainInfo!
   bitcoin_blockcount: OrchardBitcoinBlockCount!
   bitcoin_mempool_transactions: [OrchardBitcoinMempoolTransaction!]!
   bitcoin_network_info: OrchardBitcoinNetworkInfo!
+  bitcoin_transaction_fee_estimates: [OrchardBitcoinTxFeeEstimate!]!
   lightning_balance: OrchardLightningBalance!
   lightning_info: OrchardLightningInfo!
   lightning_wallet: [OrchardLightningAccount!]!

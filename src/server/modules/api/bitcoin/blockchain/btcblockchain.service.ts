@@ -1,7 +1,5 @@
 /* Core Dependencies */
-import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
-/* Vendor Dependencies */
-import { EventEmitter } from 'events';
+import { Injectable, Logger } from '@nestjs/common';
 /* Application Dependencies */
 import { BitcoinRpcService } from '@server/modules/bitcoin/rpc/btcrpc.service';
 import { ErrorService } from '@server/modules/error/error.service';
@@ -11,27 +9,19 @@ import { OrchardApiError } from '@server/modules/graphql/classes/orchard-error.c
 import { 
 	OrchardBitcoinBlockCount, 
 	OrchardBitcoinBlockchainInfo,
-	OrchardBitcoinBlock,
 } from './btcblockchain.model';
 
 @Injectable()
-export class BitcoinBlockchainService implements OnModuleDestroy {
+export class BitcoinBlockchainService {
 
 	private readonly logger = new Logger(BitcoinBlockchainService.name);
-	private interval_id: NodeJS.Timeout;
-	private event_emitter = new EventEmitter();
-	private block_count: number;
 	
 	constructor(
 		private bitcoinRpcService: BitcoinRpcService,
 		private errorService: ErrorService,
 	) {}
-	
-	onModuleDestroy() {
-		this.stopBlockCountPolling();
-	}
 
-	public async getBlockchainInfo(tag: string = 'GET { bitcoin_blockchain_info }'): Promise<OrchardBitcoinBlockchainInfo> {
+	public async getBlockchainInfo(tag: string): Promise<OrchardBitcoinBlockchainInfo> {
 		try {
 			const info = await this.bitcoinRpcService.getBitcoinBlockchainInfo();
 			return new OrchardBitcoinBlockchainInfo(info);
@@ -43,7 +33,7 @@ export class BitcoinBlockchainService implements OnModuleDestroy {
 		}
 	}
 	
-	public async getBlockCount(tag: string = 'GET { bitcoin_blockcount }'): Promise<OrchardBitcoinBlockCount> {
+	public async getBlockCount(tag: string): Promise<OrchardBitcoinBlockCount> {
 		try {
 			const block_count = await this.bitcoinRpcService.getBitcoinBlockCount();
 			return new OrchardBitcoinBlockCount(block_count);
@@ -53,57 +43,5 @@ export class BitcoinBlockchainService implements OnModuleDestroy {
 			});
 			throw new OrchardApiError(error_code);
 		}
-	}
-
-	public async getBlock(tag: string = 'GET { bitcoin_block }', hash: string): Promise<OrchardBitcoinBlock> {
-		try {
-			const block = await this.bitcoinRpcService.getBitcoinBlock(hash);
-			return new OrchardBitcoinBlock(block);
-		} catch (error) {
-			const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
-				errord: OrchardErrorCode.BitcoinRPCError,
-			});
-			throw new OrchardApiError(error_code);
-		}
-	}
-
-	// async mintRotateKeyset(tag: string, mint_rotate_keyset: MintRotateKeysetInput) : Promise<OrchardMintKeysetRotation> {
-	// 	try {
-	// 		return await this.cashuMintRpcService.rotateNextKeyset(mint_rotate_keyset);
-	// 	} catch (error) {
-	// 		const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
-	// 			errord: OrchardErrorCode.MintRpcActionError,
-	// 		});
-	// 		throw new OrchardApiError(error_code);
-	// 	}
-	// }
-	
-	startBlockCountPolling(interval_ms: number = 30000): void {
-		if (this.interval_id) this.stopBlockCountPolling();
-		
-		this.interval_id = setInterval(async () => {
-			try {
-				const obbc = await this.getBlockCount();
-				if( obbc.height === this.block_count ) return;
-				this.block_count = obbc.height;
-				this.event_emitter.emit('bitcoin.blockcount.update', obbc.height);
-			} catch (error) {
-				this.stopBlockCountPolling();
-				throw error;
-			}
-		}, interval_ms);
-		
-		this.logger.debug('Block count polling started');
-	}
-	
-	stopBlockCountPolling(): void {
-		if ( !this.interval_id ) return;
-		clearInterval(this.interval_id);
-		this.interval_id = null;
-		this.logger.debug('Block count polling stopped');
-	}
-	
-	onBlockCountUpdate(callback: (block_count: number) => void): void {
-		this.event_emitter.on('bitcoin.blockcount.update', callback);
 	}
 }
