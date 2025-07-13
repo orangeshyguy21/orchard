@@ -22,6 +22,7 @@ import { IndexSectionComponent } from './components/index-section/index-section.
 import { IndexBitcoinHeaderComponent } from './components/index-bitcoin-header/index-bitcoin-header.component';
 import { IndexBitcoinEnabledComponent } from './components/index-bitcoin-enabled/index-bitcoin-enabled.component';
 import { IndexBitcoinDisabledComponent } from './components/index-bitcoin-disabled/index-bitcoin-disabled.component';
+import { IndexBitcoinInfoComponent } from './components/index-bitcoin-info/index-bitcoin-info.component';
 import { IndexLightningHeaderComponent } from './components/index-lightning-header/index-lightning-header.component';
 import { IndexLightningEnabledComponent } from './components/index-lightning-enabled/index-lightning-enabled.component';
 import { IndexLightningDisabledComponent } from './components/index-lightning-disabled/index-lightning-disabled.component';
@@ -31,6 +32,9 @@ import { IndexMintDisabledComponent } from './components/index-mint-disabled/ind
 import { IndexEcashHeaderComponent } from './components/index-ecash-header/index-ecash-header.component';
 import { IndexEcashEnabledComponent } from './components/index-ecash-enabled/index-ecash-enabled.component';
 import { IndexEcashDisabledComponent } from './components/index-ecash-disabled/index-ecash-disabled.component';
+import { IndexBitcoinHotwalletComponent } from './components/index-bitcoin-hotwallet/index-bitcoin-hotwallet.component';
+import { IndexBitcoinSyncingComponent } from './components/index-bitcoin-syncing/index-bitcoin-syncing.component';
+import { IndexBitcoinBlockchainComponent } from './components/index-bitcoin-blockchain/index-bitcoin-blockchain.component';
 
 const routes: Routes = [
 	{
@@ -61,6 +65,10 @@ export class IndexAppRoutingModule { }
 		IndexBitcoinHeaderComponent,
 		IndexBitcoinEnabledComponent,
 		IndexBitcoinDisabledComponent,
+		IndexBitcoinInfoComponent,
+		IndexBitcoinHotwalletComponent,
+		IndexBitcoinSyncingComponent,
+		IndexBitcoinBlockchainComponent,
 		IndexLightningHeaderComponent,
 		IndexLightningEnabledComponent,
 		IndexLightningDisabledComponent,
