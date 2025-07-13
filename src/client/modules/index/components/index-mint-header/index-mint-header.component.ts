@@ -5,10 +5,10 @@ import { animate, style, transition, trigger } from '@angular/animations';
 import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
 
 @Component({
-	selector: 'orc-index-header-mint',
+	selector: 'orc-index-mint-header',
 	standalone: false,
-	templateUrl: './index-header-mint.component.html',
-	styleUrl: './index-header-mint.component.scss',
+	templateUrl: './index-mint-header.component.html',
+	styleUrl: './index-mint-header.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	animations: [
         trigger('fadeIn', [
@@ -19,7 +19,7 @@ import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
         ])
     ]
 })
-export class IndexHeaderMintComponent {
+export class IndexMintHeaderComponent {
 
 	@Input() loading!: boolean;
 	@Input() info!: MintInfo;

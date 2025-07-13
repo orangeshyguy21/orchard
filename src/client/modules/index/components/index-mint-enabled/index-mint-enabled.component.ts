@@ -14,10 +14,10 @@ type Liabilities = {
 }
 
 @Component({
-	selector: 'orc-index-enabled-mint',
+	selector: 'orc-index-mint-enabled',
 	standalone: false,
-	templateUrl: './index-enabled-mint.component.html',
-	styleUrl: './index-enabled-mint.component.scss',
+	templateUrl: './index-mint-enabled.component.html',
+	styleUrl: './index-mint-enabled.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	animations: [
         trigger('fadeIn', [
@@ -28,8 +28,7 @@ type Liabilities = {
         ])
     ]
 })
-export class IndexEnabledMintComponent implements OnChanges {
-
+export class IndexMintEnabledComponent implements OnChanges {
 
   	@Input() loading!: boolean;
 	@Input() loading_icon!: boolean;

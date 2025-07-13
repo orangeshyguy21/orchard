@@ -94,17 +94,17 @@
             </div>
 
             <div class="sticky-section z-index-1">
-                <orc-index-header-mint
+                <orc-index-mint-header
                     [loading]="preparing_mint"
                     [info]="mint_info!"
                     [error]="errors_mint.length ? true : false"
-                ></orc-index-header-mint>
+                ></orc-index-mint-header>
                 <div class="category-rule"></div>
             </div>
 
             <div class="relative">
                 @if( enabled_mint ) {
-                    <orc-index-enabled-mint
+                    <orc-index-mint-enabled
                         [loading]="loading_mint"
                         [loading_icon]="loading_mint_icon"
                         [info]="mint_info!"
@@ -116,10 +116,10 @@
                         [lightning_errors]="errors_lightning"
                         [lightning_loading]="preparing_lightning"
                         (navigate)="onNavigate($event)"
-                    ></orc-index-enabled-mint>
+                    ></orc-index-mint-enabled>
                 }
                 @else {
-                    <orc-index-disabled-mint (navigate)="onNavigate('mint')"></orc-index-disabled-mint>
+                    <orc-index-mint-disabled (navigate)="onNavigate('mint')"></orc-index-mint-disabled>
                 }
                 @if( errors_mint.length > 0 ) {
                     <div [@fadeIn] class="index-section-error">

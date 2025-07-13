@@ -2,13 +2,13 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
-	selector: 'orc-index-disabled-mint',
+	selector: 'orc-index-mint-disabled',
 	standalone: false,
-	templateUrl: './index-disabled-mint.component.html',
-	styleUrl: './index-disabled-mint.component.scss',
+	templateUrl: './index-mint-disabled.component.html',
+	styleUrl: './index-mint-disabled.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class IndexDisabledMintComponent {
+export class IndexMintDisabledComponent {
 
   	@Output() navigate: EventEmitter<void> = new EventEmitter<void>();
 

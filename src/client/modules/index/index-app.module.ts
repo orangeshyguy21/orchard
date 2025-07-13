@@ -25,11 +25,11 @@ import { IndexBitcoinDisabledComponent } from './components/index-bitcoin-disabl
 import { IndexLightningHeaderComponent } from './components/index-lightning-header/index-lightning-header.component';
 import { IndexLightningEnabledComponent } from './components/index-lightning-enabled/index-lightning-enabled.component';
 import { IndexLightningDisabledComponent } from './components/index-lightning-disabled/index-lightning-disabled.component';
-import { IndexEnabledMintComponent } from './components/index-enabled-mint/index-enabled-mint.component';
+import { IndexMintEnabledComponent } from './components/index-mint-enabled/index-mint-enabled.component';
+import { IndexMintHeaderComponent } from './components/index-mint-header/index-mint-header.component';
 import { IndexEnabledEcashComponent } from './components/index-enabled-ecash/index-enabled-ecash.component';
-import { IndexDisabledMintComponent } from './components/index-disabled-mint/index-disabled-mint.component';
+import { IndexMintDisabledComponent } from './components/index-mint-disabled/index-mint-disabled.component';
 import { IndexDisabledEcashComponent } from './components/index-disabled-ecash/index-disabled-ecash.component';
-import { IndexHeaderMintComponent } from './components/index-header-mint/index-header-mint.component';
 import { IndexHeaderEcashComponent } from './components/index-header-ecash/index-header-ecash.component';
 
 const routes: Routes = [
@@ -64,11 +64,11 @@ export class IndexAppRoutingModule { }
 		IndexLightningHeaderComponent,
 		IndexLightningEnabledComponent,
 		IndexLightningDisabledComponent,
-		IndexHeaderMintComponent,
+		IndexMintHeaderComponent,
+		IndexMintEnabledComponent,
+		IndexMintDisabledComponent,
 		IndexHeaderEcashComponent,
-		IndexEnabledMintComponent,
 		IndexEnabledEcashComponent,
-		IndexDisabledMintComponent,
 		IndexDisabledEcashComponent,
 	],
 	imports: [
