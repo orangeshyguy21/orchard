@@ -25,12 +25,12 @@ import { IndexBitcoinDisabledComponent } from './components/index-bitcoin-disabl
 import { IndexLightningHeaderComponent } from './components/index-lightning-header/index-lightning-header.component';
 import { IndexLightningEnabledComponent } from './components/index-lightning-enabled/index-lightning-enabled.component';
 import { IndexLightningDisabledComponent } from './components/index-lightning-disabled/index-lightning-disabled.component';
-import { IndexMintEnabledComponent } from './components/index-mint-enabled/index-mint-enabled.component';
 import { IndexMintHeaderComponent } from './components/index-mint-header/index-mint-header.component';
-import { IndexEnabledEcashComponent } from './components/index-enabled-ecash/index-enabled-ecash.component';
+import { IndexMintEnabledComponent } from './components/index-mint-enabled/index-mint-enabled.component';
 import { IndexMintDisabledComponent } from './components/index-mint-disabled/index-mint-disabled.component';
-import { IndexDisabledEcashComponent } from './components/index-disabled-ecash/index-disabled-ecash.component';
-import { IndexHeaderEcashComponent } from './components/index-header-ecash/index-header-ecash.component';
+import { IndexEcashHeaderComponent } from './components/index-ecash-header/index-ecash-header.component';
+import { IndexEcashEnabledComponent } from './components/index-ecash-enabled/index-ecash-enabled.component';
+import { IndexEcashDisabledComponent } from './components/index-ecash-disabled/index-ecash-disabled.component';
 
 const routes: Routes = [
 	{
@@ -67,9 +67,9 @@ export class IndexAppRoutingModule { }
 		IndexMintHeaderComponent,
 		IndexMintEnabledComponent,
 		IndexMintDisabledComponent,
-		IndexHeaderEcashComponent,
-		IndexEnabledEcashComponent,
-		IndexDisabledEcashComponent,
+		IndexEcashHeaderComponent,
+		IndexEcashEnabledComponent,
+		IndexEcashDisabledComponent,
 	],
 	imports: [
 		CommonModule,
