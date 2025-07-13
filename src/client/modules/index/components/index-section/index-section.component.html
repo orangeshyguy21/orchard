@@ -15,18 +15,18 @@
         <div class="flex flex-column">
 
             <div class="sticky-section z-index-1">
-                <orc-index-header-bitcoin
+                <orc-index-bitcoin-header
                     [loading]="preparing_bitcoin"
                     [network_info]="bitcoin_network_info"
                     [blockchain_info]="bitcoin_blockchain_info"
                     [error]="errors_bitcoin.length ? true : false"
-                ></orc-index-header-bitcoin>
+                ></orc-index-bitcoin-header>
                 <div class="category-rule"></div>
             </div>
 
             <div class="relative">
                 @if( enabled_bitcoin ) {
-                    <orc-index-enabled-bitcoin
+                    <orc-index-bitcoin-enabled
                         [loading]="preparing_bitcoin"
                         [enabled_lightning]="enabled_lightning"
                         [enabled_taproot_assets]="enabled_taproot_assets"
@@ -41,10 +41,10 @@
                         [taproot_assets]="taproot_assets!"
                         [errors_lightning]="errors_lightning"
                         [errors_taproot_assets]="errors_taproot_assets"
-                    ></orc-index-enabled-bitcoin>
+                    ></orc-index-bitcoin-enabled>
                 }
                 @else {
-                    <orc-index-disabled-bitcoin (navigate)="onNavigate('bitcoin')"></orc-index-disabled-bitcoin>
+                    <orc-index-bitcoin-disabled (navigate)="onNavigate('bitcoin')"></orc-index-bitcoin-disabled>
                 }
                 @if( errors_bitcoin.length > 0 ) {
                     <div [@fadeIn] class="index-section-error">

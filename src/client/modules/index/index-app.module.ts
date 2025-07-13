@@ -19,15 +19,15 @@ import { NavModule } from '@client/modules/nav/nav.module';
 import { MintModule } from '@client/modules/mint/mint.module';
 /* Local Dependencies */
 import { IndexSectionComponent } from './components/index-section/index-section.component';
-import { IndexEnabledBitcoinComponent } from './components/index-enabled-bitcoin/index-enabled-bitcoin.component';
+import { IndexBitcoinHeaderComponent } from './components/index-bitcoin-header/index-bitcoin-header.component';
+import { IndexBitcoinEnabledComponent } from './components/index-bitcoin-enabled/index-bitcoin-enabled.component';
+import { IndexBitcoinDisabledComponent } from './components/index-bitcoin-disabled/index-bitcoin-disabled.component';
 import { IndexEnabledLightningComponent } from './components/index-enabled-lightning/index-enabled-lightning.component';
 import { IndexEnabledMintComponent } from './components/index-enabled-mint/index-enabled-mint.component';
 import { IndexEnabledEcashComponent } from './components/index-enabled-ecash/index-enabled-ecash.component';
 import { IndexDisabledMintComponent } from './components/index-disabled-mint/index-disabled-mint.component';
 import { IndexDisabledEcashComponent } from './components/index-disabled-ecash/index-disabled-ecash.component';
 import { IndexDisabledLightningComponent } from './components/index-disabled-lightning/index-disabled-lightning.component';
-import { IndexDisabledBitcoinComponent } from './components/index-disabled-bitcoin/index-disabled-bitcoin.component';
-import { IndexHeaderBitcoinComponent } from './components/index-header-bitcoin/index-header-bitcoin.component';
 import { IndexHeaderLightningComponent } from './components/index-header-lightning/index-header-lightning.component';
 import { IndexHeaderMintComponent } from './components/index-header-mint/index-header-mint.component';
 import { IndexHeaderEcashComponent } from './components/index-header-ecash/index-header-ecash.component';
@@ -58,15 +58,15 @@ export class IndexAppRoutingModule { }
 @NgModule({
 	declarations: [
 		IndexSectionComponent,
-		IndexHeaderBitcoinComponent,
+		IndexBitcoinHeaderComponent,
+		IndexBitcoinEnabledComponent,
+		IndexBitcoinDisabledComponent,
 		IndexHeaderLightningComponent,
 		IndexHeaderMintComponent,
 		IndexHeaderEcashComponent,
-		IndexEnabledBitcoinComponent,
 		IndexEnabledLightningComponent,
 		IndexEnabledMintComponent,
 		IndexEnabledEcashComponent,
-		IndexDisabledBitcoinComponent,
 		IndexDisabledLightningComponent,
 		IndexDisabledMintComponent,
 		IndexDisabledEcashComponent,

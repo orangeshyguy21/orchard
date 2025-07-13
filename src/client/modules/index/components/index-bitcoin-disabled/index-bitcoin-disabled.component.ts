@@ -2,13 +2,13 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
-	selector: 'orc-index-disabled-bitcoin',
+	selector: 'orc-index-bitcoin-disabled',
 	standalone: false,
-	templateUrl: './index-disabled-bitcoin.component.html',
-	styleUrl: './index-disabled-bitcoin.component.scss',
+	templateUrl: './index-bitcoin-disabled.component.html',
+	styleUrl: './index-bitcoin-disabled.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class IndexDisabledBitcoinComponent {
+export class IndexBitcoinDisabledComponent {
 
 	@Output() navigate: EventEmitter<void> = new EventEmitter<void>();
 

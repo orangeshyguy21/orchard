@@ -32,10 +32,10 @@ type ProtocolError = {
 }
 
 @Component({
-	selector: 'orc-index-enabled-bitcoin',
+	selector: 'orc-index-bitcoin-enabled',
 	standalone: false,
-	templateUrl: './index-enabled-bitcoin.component.html',
-	styleUrl: './index-enabled-bitcoin.component.scss',
+	templateUrl: './index-bitcoin-enabled.component.html',
+	styleUrl: './index-bitcoin-enabled.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	animations: [
         trigger('fadeIn', [
@@ -52,7 +52,7 @@ type ProtocolError = {
 		])
     ]
 })
-export class IndexEnabledBitcoinComponent implements OnChanges {
+export class IndexBitcoinEnabledComponent implements OnChanges {
 
 	@Input() loading!: boolean;
 	@Input() enabled_lightning!: boolean;

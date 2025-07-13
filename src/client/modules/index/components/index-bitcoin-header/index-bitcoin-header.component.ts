@@ -6,10 +6,10 @@ import { BitcoinNetworkInfo } from '@client/modules/bitcoin/classes/bitcoin-netw
 import { BitcoinBlockchainInfo } from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
 
 @Component({
-	selector: 'orc-index-header-bitcoin',
+	selector: 'orc-index-bitcoin-header',
 	standalone: false,
-	templateUrl: './index-header-bitcoin.component.html',
-	styleUrl: './index-header-bitcoin.component.scss',
+	templateUrl: './index-bitcoin-header.component.html',
+	styleUrl: './index-bitcoin-header.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	animations: [
         trigger('fadeIn', [
@@ -20,7 +20,7 @@ import { BitcoinBlockchainInfo } from '@client/modules/bitcoin/classes/bitcoin-b
         ])
     ]
 })
-export class IndexHeaderBitcoinComponent {
+export class IndexBitcoinHeaderComponent {
 
   	@Input() loading!: boolean;
   	@Input() network_info!: BitcoinNetworkInfo | null;
