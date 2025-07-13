@@ -1,98 +1,16 @@
 <div class="lightning-enabled-container">
     @if( !loading ){
         <div [@fadeIn] class="flex flex-gap-4 p-2">
-            <div class="flex flex-column flex-gap-1">
-                <div class="title-l">Info</div>
-                <div class="orc-info-table">
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td class="font-weight-extra-light orc-outline-color">Node</td>
-                                <td>
-                                    <div class="flex flex-items-center flex-gap-1">
-                                        <div class="h-2 w-2 orc-corner-full" [style.background-color]="lightning_info?.color"></div>
-                                        <div class="text-nowrap">{{ lightning_info?.alias }}</div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="font-weight-extra-light orc-outline-color">Channels open</td>
-                                <td>{{ lightning_info?.num_active_channels }}</td>
-                            </tr>
-                            <tr>
-                                <td class="font-weight-extra-light orc-outline-color">Channels closed</td>
-                                <td>{{ lightning_info?.num_inactive_channels }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <orc-index-lightning-info
+                [lightning_info]="lightning_info"
+            ></orc-index-lightning-info>
 
-
-            <div class="flex-grow flex flex-column flex-gap-1">
-                <div class="flex flex-column flex-gap-1">
-                    <div class="title-l">Channel Summary</div>
-                    <mat-card appearance="outlined" class="overflow-hidden">
-                        <div class="p-h-1">
-                            <table mat-table [dataSource]="data_source" class="orc-feature-table">
-
-                                <ng-container matColumnDef="unit">
-                                    <th mat-header-cell *matHeaderCellDef></th>
-                                    <td mat-cell *matCellDef="let row"> 
-                                        <orc-graphic-asset 
-                                            [unit]="row.unit" 
-                                            [height]="'2rem'"
-                                            [custody]="'lightning'"
-                                            [asset_id]="row.asset_id">
-                                        </orc-graphic-asset>
-                                    </td>
-                                </ng-container>
-                            
-                
-                                <ng-container matColumnDef="receive">
-                                    <th mat-header-cell *matHeaderCellDef></th>
-                                    <td mat-cell *matCellDef="let row"> 
-                                        <span class="text-nowrap font-size-m" [innerHTML]="row.recievable | amount : row.unit : 'lightning'"></span>
-                                    </td>
-                                </ng-container>
-                            
-                                <ng-container matColumnDef="channel">
-                                    <th mat-header-cell *matHeaderCellDef>
-                                        <div class="flex flex-justify-center relative h-1">
-                                            <div class="lightning-channels-divider">
-                                                <div class="title-capacity-receive font-size-xs text-nowrap orc-outline-color">Receive Capacity</div>
-                                                <div class="title-capacity-send font-size-xs text-nowrap orc-outline-color">Send Capacity</div>
-                                            </div>
-                                        </div>
-                                    </th>
-                                    <td mat-cell *matCellDef="let row" class="w-full">
-                                        <div class="p-v-1">
-                                            <orc-lightning-channel
-                                                [height]="'3rem'"
-                                                [size]="row.size"
-                                                [recievable]="row.recievable"
-                                                [sendable]="row.sendable"
-                                                [unit]="row.unit"
-                                                [asset_id]="row.asset_id">
-                                            </orc-lightning-channel>
-                                        </div>
-                                    </td>
-                                </ng-container>
-                
-                                <ng-container matColumnDef="send">
-                                    <th mat-header-cell *matHeaderCellDef></th>
-                                    <td mat-cell *matCellDef="let row">
-                                        <span class="text-nowrap font-size-m" [innerHTML]="row.sendable | amount : row.unit : 'lightning'"></span>
-                                    </td>
-                                </ng-container>
-                
-                                <tr mat-header-row *matHeaderRowDef="displayed_columns"></tr>
-                                <tr mat-row *matRowDef="let row; columns: displayed_columns;"></tr>
-                            
-                            </table>
-                        </div>
-                    </mat-card>
-                </div>
+            <div class="flex-grow">
+                <orc-lightning-channel-table
+                    [enabled_taproot_assets]="enabled_taproot_assets"
+                    [lightning_balance]="lightning_balance"
+                    [taproot_assets]="taproot_assets"
+                ></orc-lightning-channel-table>
             </div>
         </div>
     }
