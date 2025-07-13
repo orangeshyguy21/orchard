@@ -56,26 +56,26 @@
             </div>
             
             <div class="sticky-section z-index-1">
-                <orc-index-header-lightning
+                <orc-index-lightning-header
                     [loading]="preparing_lightning"
                     [lightning_info]="lightning_info!"
                     [error]="errors_lightning.length ? true : false"
-                ></orc-index-header-lightning>
+                ></orc-index-lightning-header>
                 <div class="category-rule"></div>
             </div>
 
             <div class="relative">
                 @if( enabled_lightning ) {
-                    <orc-index-enabled-lightning
+                    <orc-index-lightning-enabled
                         [loading]="preparing_lightning"
                         [lightning_info]="lightning_info!"
                         [lightning_balance]="lightning_balance!"
                         [taproot_assets]="taproot_assets!"
                         [enabled_taproot_assets]="enabled_taproot_assets"
-                    ></orc-index-enabled-lightning>
+                    ></orc-index-lightning-enabled>
                 }
                 @else {
-                    <orc-index-disabled-lightning (navigate)="onNavigate('lightning')"></orc-index-disabled-lightning>
+                    <orc-index-lightning-disabled (navigate)="onNavigate('lightning')"></orc-index-lightning-disabled>
                 }
                 @if( errors_lightning.length > 0 ) {
                     <div [@fadeIn] class="index-section-error">

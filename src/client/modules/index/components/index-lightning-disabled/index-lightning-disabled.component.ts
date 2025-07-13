@@ -2,13 +2,13 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
-	selector: 'orc-index-disabled-lightning',
+	selector: 'orc-index-lightning-disabled',
 	standalone: false,
-	templateUrl: './index-disabled-lightning.component.html',
-	styleUrl: './index-disabled-lightning.component.scss',
+	templateUrl: './index-lightning-disabled.component.html',
+	styleUrl: './index-lightning-disabled.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class IndexDisabledLightningComponent {
+export class IndexLightningDisabledComponent {
 
 	@Output() navigate: EventEmitter<void> = new EventEmitter<void>();
 

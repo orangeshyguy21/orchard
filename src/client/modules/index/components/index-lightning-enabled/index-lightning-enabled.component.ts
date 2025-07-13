@@ -18,10 +18,10 @@ type ChannelSummary = {
 }
 
 @Component({
-	selector: 'orc-index-enabled-lightning',
+	selector: 'orc-index-lightning-enabled',
 	standalone: false,
-	templateUrl: './index-enabled-lightning.component.html',
-	styleUrl: './index-enabled-lightning.component.scss',
+	templateUrl: './index-lightning-enabled.component.html',
+	styleUrl: './index-lightning-enabled.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	animations: [
         trigger('fadeIn', [
@@ -32,7 +32,7 @@ type ChannelSummary = {
         ])
     ]
 })
-export class IndexEnabledLightningComponent implements OnChanges {
+export class IndexLightningEnabledComponent implements OnChanges {
 
 	@Input() loading!: boolean;
 	@Input() enabled_taproot_assets!: boolean;

@@ -5,10 +5,10 @@ import { animate, style, transition, trigger } from '@angular/animations';
 import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.class';
 
 @Component({
-	selector: 'orc-index-header-lightning',
+	selector: 'orc-index-lightning-header',
 	standalone: false,
-	templateUrl: './index-header-lightning.component.html',
-	styleUrl: './index-header-lightning.component.scss',
+	templateUrl: './index-lightning-header.component.html',
+	styleUrl: './index-lightning-header.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	animations: [
         trigger('fadeIn', [
@@ -19,7 +19,7 @@ import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.
         ])
     ]
 })
-export class IndexHeaderLightningComponent {
+export class IndexLightningHeaderComponent {
 
 	@Input() loading!: boolean;
 	@Input() lightning_info!: LightningInfo;

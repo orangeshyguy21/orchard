@@ -22,13 +22,13 @@ import { IndexSectionComponent } from './components/index-section/index-section.
 import { IndexBitcoinHeaderComponent } from './components/index-bitcoin-header/index-bitcoin-header.component';
 import { IndexBitcoinEnabledComponent } from './components/index-bitcoin-enabled/index-bitcoin-enabled.component';
 import { IndexBitcoinDisabledComponent } from './components/index-bitcoin-disabled/index-bitcoin-disabled.component';
-import { IndexEnabledLightningComponent } from './components/index-enabled-lightning/index-enabled-lightning.component';
+import { IndexLightningHeaderComponent } from './components/index-lightning-header/index-lightning-header.component';
+import { IndexLightningEnabledComponent } from './components/index-lightning-enabled/index-lightning-enabled.component';
+import { IndexLightningDisabledComponent } from './components/index-lightning-disabled/index-lightning-disabled.component';
 import { IndexEnabledMintComponent } from './components/index-enabled-mint/index-enabled-mint.component';
 import { IndexEnabledEcashComponent } from './components/index-enabled-ecash/index-enabled-ecash.component';
 import { IndexDisabledMintComponent } from './components/index-disabled-mint/index-disabled-mint.component';
 import { IndexDisabledEcashComponent } from './components/index-disabled-ecash/index-disabled-ecash.component';
-import { IndexDisabledLightningComponent } from './components/index-disabled-lightning/index-disabled-lightning.component';
-import { IndexHeaderLightningComponent } from './components/index-header-lightning/index-header-lightning.component';
 import { IndexHeaderMintComponent } from './components/index-header-mint/index-header-mint.component';
 import { IndexHeaderEcashComponent } from './components/index-header-ecash/index-header-ecash.component';
 
@@ -61,13 +61,13 @@ export class IndexAppRoutingModule { }
 		IndexBitcoinHeaderComponent,
 		IndexBitcoinEnabledComponent,
 		IndexBitcoinDisabledComponent,
-		IndexHeaderLightningComponent,
+		IndexLightningHeaderComponent,
+		IndexLightningEnabledComponent,
+		IndexLightningDisabledComponent,
 		IndexHeaderMintComponent,
 		IndexHeaderEcashComponent,
-		IndexEnabledLightningComponent,
 		IndexEnabledMintComponent,
 		IndexEnabledEcashComponent,
-		IndexDisabledLightningComponent,
 		IndexDisabledMintComponent,
 		IndexDisabledEcashComponent,
 	],
