@@ -425,6 +425,39 @@ export type OrchardBitcoinBlockCount = {
   height: Scalars['Int']['output'];
 };
 
+export type OrchardBitcoinBlockTemplate = {
+  __typename?: 'OrchardBitcoinBlockTemplate';
+  bits: Scalars['String']['output'];
+  coinbasevalue: Scalars['Int']['output'];
+  curtime: Scalars['Int']['output'];
+  default_witness_commitment?: Maybe<Scalars['String']['output']>;
+  height: Scalars['Int']['output'];
+  longpollid: Scalars['String']['output'];
+  mintime: Scalars['Int']['output'];
+  mutable: Array<Scalars['String']['output']>;
+  noncerange: Scalars['String']['output'];
+  previousblockhash: Scalars['String']['output'];
+  rules: Array<Scalars['String']['output']>;
+  sigoplimit: Scalars['Int']['output'];
+  sizelimit: Scalars['Int']['output'];
+  target: Scalars['String']['output'];
+  transactions: Array<OrchardBitcoinBlockTemplateTransaction>;
+  vbrequired: Scalars['Int']['output'];
+  version: Scalars['Int']['output'];
+  weightlimit: Scalars['Int']['output'];
+};
+
+export type OrchardBitcoinBlockTemplateTransaction = {
+  __typename?: 'OrchardBitcoinBlockTemplateTransaction';
+  data: Scalars['String']['output'];
+  depends: Array<Scalars['Int']['output']>;
+  fee: Scalars['Int']['output'];
+  hash: Scalars['String']['output'];
+  sigops: Scalars['Int']['output'];
+  txid: Scalars['String']['output'];
+  weight: Scalars['Int']['output'];
+};
+
 export type OrchardBitcoinBlockchainInfo = {
   __typename?: 'OrchardBitcoinBlockchainInfo';
   automatic_pruning?: Maybe<Scalars['Boolean']['output']>;
@@ -504,6 +537,14 @@ export type OrchardBitcoinNetworkInfo = {
   timeoffset: Scalars['Int']['output'];
   version: Scalars['Int']['output'];
   warnings: Array<Scalars['String']['output']>;
+};
+
+export type OrchardBitcoinTxFeeEstimate = {
+  __typename?: 'OrchardBitcoinTxFeeEstimate';
+  blocks: Scalars['Int']['output'];
+  errors?: Maybe<Array<Scalars['String']['output']>>;
+  feerate?: Maybe<Scalars['Float']['output']>;
+  target: Scalars['Int']['output'];
 };
 
 export type OrchardCachedEndpoint = {
@@ -964,10 +1005,12 @@ export type Query = {
   ai_agent: OrchardAiAgent;
   ai_models: Array<OrchardAiModel>;
   bitcoin_block: OrchardBitcoinBlock;
+  bitcoin_block_template: OrchardBitcoinBlockTemplate;
   bitcoin_blockchain_info: OrchardBitcoinBlockchainInfo;
   bitcoin_blockcount: OrchardBitcoinBlockCount;
   bitcoin_mempool_transactions: Array<OrchardBitcoinMempoolTransaction>;
   bitcoin_network_info: OrchardBitcoinNetworkInfo;
+  bitcoin_transaction_fee_estimates: Array<OrchardBitcoinTxFeeEstimate>;
   lightning_balance: OrchardLightningBalance;
   lightning_info: OrchardLightningInfo;
   lightning_wallet: Array<OrchardLightningAccount>;

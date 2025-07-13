@@ -103,3 +103,43 @@ export const BITCOIN_MEMPOOL_TRANSACTIONS_QUERY = `{
         unbroadcast
     }
 }`;
+
+export const BITCOIN_TRANSACTION_FEE_ESTIMATES_QUERY = `{
+    bitcoin_transaction_fee_estimates{
+        target
+        blocks
+        errors
+        feerate
+    }
+}`;
+
+export const BITCOIN_BLOCK_TEMPLATE_QUERY = `{
+    bitcoin_block_template{
+        bits
+        coinbasevalue
+        curtime
+        default_witness_commitment
+        height
+        longpollid
+        mintime
+        mutable
+        noncerange
+        previousblockhash
+        rules
+        sigoplimit
+        sizelimit
+        target
+        transactions{
+            data
+            txid
+            hash
+            depends
+            fee
+            sigops
+            weight
+        }
+        vbrequired
+        version
+        weightlimit
+    }
+}`;

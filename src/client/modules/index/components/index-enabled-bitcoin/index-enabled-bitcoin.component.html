@@ -1,150 +1,152 @@
 
 <div class="bitcoin-enabled-container">
-    <div class="flex flex-gap-4 p-2">
-        <div class="flex-1">
-            <div class="flex flex-column flex-gap-1">
-                <div class="title-l">Info</div>
-                <div class="orc-info-table">
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td class="font-weight-extra-light orc-outline-color">Chain</td>
-                                <td>{{ blockchain_info?.chain }}</td>
-                            </tr>
-                            <tr>
-                                <td class="font-weight-extra-light orc-outline-color text-nowrap">Block height</td>
-                                <td>
-                                    {{ blockcount | block }}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="font-weight-extra-light orc-outline-color text-nowrap">Chain weight</td>
-                                <td>{{ blockchain_info?.size_on_disk | bytes }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div class="flex-1">
-            <div class="flex flex-column flex-gap-1">
-                <div class="title-l">Hot Wallet</div>
-                <mat-card appearance="outlined" class="overflow-hidden">
-                    <div class="p-h-1">
-                        <table mat-table [dataSource]="data_source" class="orc-feature-table">
-            
-                            <ng-container matColumnDef="amount">
-                                <th mat-header-cell *matHeaderCellDef> Total </th>
-                                <td mat-cell *matCellDef="let row"> 
-                                    @if( row.type === 'error' ){
-                                        @if( row.error_lightning ){
-                                            <orc-error-resolve [error]="errors_lightning[0]" mode="small"></orc-error-resolve>
-                                        }
-                                        @if( row.error_taproot_assets ){
-                                            <orc-error-resolve [error]="errors_taproot_assets[0]" mode="small"></orc-error-resolve>
-                                        }
-                                    }
-                                    @if( row.type === 'hot_coins' ){
-                                        <div class="flex flex-items-center flex-gap-2">
-                                            <orc-graphic-asset 
-                                                [unit]="row.unit" 
-                                                [height]="'2rem'"
-                                                [custody]="'hot'"
-                                                [asset_id]="row.asset_id">
-                                            </orc-graphic-asset>
-                                            <span class="text-nowrap font-size-m flex-grow" [innerHTML]="row.amount | amount : row.unit : 'bitcoin'"></span>
-                                        </div>
-                                    }                                    
-                                </td>
-                            </ng-container>
-                        
-                            <ng-container matColumnDef="utxos">
-                                <th mat-header-cell *matHeaderCellDef></th>
-                                <td mat-cell *matCellDef="let row">
-                                    @if( !row.error_lightning && !row.error_taproot_assets ){
-                                        <orc-bitcoin-utxo-stack 
-                                            [unit]="row.unit"
-                                            [coins]="row.utxos"
-                                            [asset_id]="row.asset_id">
-                                        </orc-bitcoin-utxo-stack> 
-                                    }
-                                </td>
-                            </ng-container>
-            
-                            <tr mat-header-row *matHeaderRowDef="displayed_columns"></tr>
-                            <tr mat-row *matRowDef="let row; columns: displayed_columns;"></tr>
-                        
+    @if( !loading ){
+        <div [@fadeIn] class="flex flex-gap-4 p-2">
+            <div class="flex-1">
+                <div class="flex flex-column flex-gap-1">
+                    <div class="title-l">Info</div>
+                    <div class="orc-info-table">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td class="font-weight-extra-light orc-outline-color">Chain</td>
+                                    <td>{{ blockchain_info?.chain }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-weight-extra-light orc-outline-color text-nowrap">Block height</td>
+                                    <td>
+                                        {{ blockcount | block }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="font-weight-extra-light orc-outline-color text-nowrap">Chain weight</td>
+                                    <td>{{ blockchain_info?.size_on_disk | bytes }}</td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
-                </mat-card>
+                </div>
             </div>
-        </div>
-        <div class="flex-1">
-            @if( !blockchain_info?.is_synced ){
-                <div class="title-l">Syncing</div>
-                <div class="p-t-1" [@.disabled]="!polling_block">
-                    <div class="flex flex-gap-1">
-                        <div class="relative">
-                            <mat-progress-spinner
-                                mode="determinate"
-                                [value]="sync_progress"
-                                [diameter]="200"
-                                [strokeWidth]="20">
-                            </mat-progress-spinner>
-                            <div class="progress-background">
-                                <div class="spinner">
-                                    <mat-progress-spinner
-                                        mode="determinate"
-                                        [value]="100"
-                                        [diameter]="200"
-                                        [strokeWidth]="20">
-                                    </mat-progress-spinner>
-                                </div>
-                                <div class="progress-number">
-                                    <div class="text-nowrap font-size-l font-weight-bold" [@blockDataChange]="block?.height">{{ blockchain_info?.verificationprogress | percent:'1.0-2' }}</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="orc-info-table">
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <td class="font-weight-extra-light orc-outline-color">Date</td>
-                                        <td class="text-nowrap" [@blockDataChange]="block?.time">{{ block?.time | time:'medium' }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="font-weight-extra-light orc-outline-color text-nowrap">Block height</td>
-                                        <td [@blockDataChange]="block?.height">
-                                            {{ block?.height | block }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="font-weight-extra-light orc-outline-color text-nowrap">Best block</td>
-                                        <td class="text-nowrap w-min-24" [@blockDataChange]="block?.hash">
-                                            {{ block?.hash | truncate:60:27:10 }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="font-weight-extra-light orc-outline-color text-nowrap">Log2 work</td>
-                                        <td [@blockDataChange]="block?.chainwork">
-                                            {{ block?.chainwork | log2work }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="font-weight-extra-light orc-outline-color text-nowrap">Target height</td>
-                                        <td [@blockDataChange]="blockchain_info?.headers">
-                                            {{ blockchain_info?.headers | block }}
-                                        </td>
-                                    </tr>
-                                </tbody>
+            <div class="flex-1">
+                <div class="flex flex-column flex-gap-1">
+                    <div class="title-l">Hot Wallet</div>
+                    <mat-card appearance="outlined" class="overflow-hidden">
+                        <div class="p-h-1">
+                            <table mat-table [dataSource]="data_source" class="orc-feature-table">
+                
+                                <ng-container matColumnDef="amount">
+                                    <th mat-header-cell *matHeaderCellDef> Total </th>
+                                    <td mat-cell *matCellDef="let row"> 
+                                        @if( row.type === 'error' ){
+                                            @if( row.error_lightning ){
+                                                <orc-error-resolve [error]="errors_lightning[0]" mode="small"></orc-error-resolve>
+                                            }
+                                            @if( row.error_taproot_assets ){
+                                                <orc-error-resolve [error]="errors_taproot_assets[0]" mode="small"></orc-error-resolve>
+                                            }
+                                        }
+                                        @if( row.type === 'hot_coins' ){
+                                            <div class="flex flex-items-center flex-gap-2">
+                                                <orc-graphic-asset 
+                                                    [unit]="row.unit" 
+                                                    [height]="'2rem'"
+                                                    [custody]="'hot'"
+                                                    [asset_id]="row.asset_id">
+                                                </orc-graphic-asset>
+                                                <span class="text-nowrap font-size-m flex-grow" [innerHTML]="row.amount | amount : row.unit : 'bitcoin'"></span>
+                                            </div>
+                                        }                                    
+                                    </td>
+                                </ng-container>
+                            
+                                <ng-container matColumnDef="utxos">
+                                    <th mat-header-cell *matHeaderCellDef></th>
+                                    <td mat-cell *matCellDef="let row">
+                                        @if( !row.error_lightning && !row.error_taproot_assets ){
+                                            <orc-bitcoin-utxo-stack 
+                                                [unit]="row.unit"
+                                                [coins]="row.utxos"
+                                                [asset_id]="row.asset_id">
+                                            </orc-bitcoin-utxo-stack> 
+                                        }
+                                    </td>
+                                </ng-container>
+                
+                                <tr mat-header-row *matHeaderRowDef="displayed_columns"></tr>
+                                <tr mat-row *matRowDef="let row; columns: displayed_columns;"></tr>
+                            
                             </table>
                         </div>
-                    </div>
+                    </mat-card>
                 </div>
-            }@else {
-                <div class="title-l">Mempool</div>
-                // mempool chart
-            }
+            </div>
+            <div class="flex-1">
+                @if( !blockchain_info?.is_synced ){
+                    <div class="title-l">Syncing</div>
+                    <div class="p-t-1" [@.disabled]="!polling_block">
+                        <div class="flex flex-gap-1">
+                            <div class="relative">
+                                <mat-progress-spinner
+                                    mode="determinate"
+                                    [value]="sync_progress"
+                                    [diameter]="200"
+                                    [strokeWidth]="20">
+                                </mat-progress-spinner>
+                                <div class="progress-background">
+                                    <div class="spinner">
+                                        <mat-progress-spinner
+                                            mode="determinate"
+                                            [value]="100"
+                                            [diameter]="200"
+                                            [strokeWidth]="20">
+                                        </mat-progress-spinner>
+                                    </div>
+                                    <div class="progress-number">
+                                        <div class="text-nowrap font-size-l font-weight-bold" [@blockDataChange]="block?.height">{{ blockchain_info?.verificationprogress | percent:'1.0-2' }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="orc-info-table">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td class="font-weight-extra-light orc-outline-color">Date</td>
+                                            <td class="text-nowrap" [@blockDataChange]="block?.time">{{ block?.time | time:'medium' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-extra-light orc-outline-color text-nowrap">Block height</td>
+                                            <td [@blockDataChange]="block?.height">
+                                                {{ block?.height | block }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-extra-light orc-outline-color text-nowrap">Best block</td>
+                                            <td class="text-nowrap w-min-24" [@blockDataChange]="block?.hash">
+                                                {{ block?.hash | truncate:60:27:10 }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-extra-light orc-outline-color text-nowrap">Log2 work</td>
+                                            <td [@blockDataChange]="block?.chainwork">
+                                                {{ block?.chainwork | log2work }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-extra-light orc-outline-color text-nowrap">Target height</td>
+                                            <td [@blockDataChange]="blockchain_info?.headers">
+                                                {{ blockchain_info?.headers | block }}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                }@else {
+                    <div class="title-l">Mempool</div>
+                    {{ transaction_fee_estimates | json }}
+                }
+            </div>
         </div>
-    </div>
+    }
 </div>

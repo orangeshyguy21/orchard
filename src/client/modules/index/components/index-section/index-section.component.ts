@@ -17,6 +17,8 @@ import { BitcoinNetworkInfo } from '@client/modules/bitcoin/classes/bitcoin-netw
 import { BitcoinBlockCount } from '@client/modules/bitcoin/classes/bitcoin-blockcount.class';
 import { BitcoinBlock } from '@client/modules/bitcoin/classes/bitcoin-block.class';
 import { BitcoinTransaction } from '@client/modules/bitcoin/classes/bitcoin-transaction.class';
+import { BitcoinBlockTemplate } from '@client/modules/bitcoin/classes/bitcoin-block-template.class';
+import { BitcoinTransactionFeeEstimate } from '@client/modules/bitcoin/classes/bitcoin-transaction-fee-estimate.class';
 import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.class';
 import { LightningBalance } from '@client/modules/lightning/classes/lightning-balance.class';
 import { LightningAccount } from '@client/modules/lightning/classes/lightning-account.class';
@@ -67,6 +69,8 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	public bitcoin_blockcount!: BitcoinBlockCount | null;
 	public bitcoin_block!: BitcoinBlock | null;
 	public bitcoin_mempool!: BitcoinTransaction[] | null;
+	public bitcoin_block_template!: BitcoinBlockTemplate | null;
+	public bitcoin_transaction_fee_estimates!: BitcoinTransactionFeeEstimate[] | null;
 	public lightning_info!: LightningInfo | null;
 	public lightning_balance!: LightningBalance | null;
 	public lightning_accounts!: LightningAccount[] | null;
@@ -147,12 +151,10 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 		forkJoin({
 			blockchain: this.bitcoinService.loadBitcoinBlockchainInfo(),
 			network: this.bitcoinService.loadBitcoinNetworkInfo(),
-			mempool: this.bitcoinService.getBitcoinMempoolTransactions()
 		}).pipe(
-			tap(({ blockchain, network, mempool }) => {
+			tap(({ blockchain, network }) => {
 				this.bitcoin_blockchain_info = blockchain;
 				this.bitcoin_network_info = network;
-				this.bitcoin_mempool = mempool;
 			}),
 			catchError((error) => {
 				this.errors_bitcoin = error.errors;
@@ -160,8 +162,32 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 				return EMPTY;
 			}),
 			finalize(() => {
+				( !this.bitcoin_blockchain_info?.is_synced ) 
+					? this.subscriptions.add(this.getBitcoinBlockchainSubscription()) 
+					: this.getBitcoinMempool();
+				this.cdr.detectChanges();
+			})
+		).subscribe();
+	}
+
+	private getBitcoinMempool() : void {
+		forkJoin({
+			block: this.bitcoinService.getBlock(this.bitcoin_blockchain_info?.bestblockhash ?? ''),
+			block_template: this.bitcoinService.getBitcoinBlockTemplate(),
+			transaction_fee_estimates: this.bitcoinService.getBitcoinTransactionFeeEstimates(),
+		}).pipe(
+			tap(({ block, block_template, transaction_fee_estimates }) => {
+				this.bitcoin_block = block;
+				this.bitcoin_block_template = block_template;
+				this.bitcoin_transaction_fee_estimates = transaction_fee_estimates;
+			}),	
+			catchError((error) => {
+				this.errors_bitcoin = error.errors;
+				this.cdr.detectChanges();
+				return EMPTY;
+			}),
+			finalize(() => {
 				this.loading_bitcoin = false;
-				if( !this.bitcoin_blockchain_info?.is_synced ) this.subscriptions.add(this.getBitcoinBlockchainSubscription());
 				this.cdr.detectChanges();
 			})
 		).subscribe();
@@ -172,6 +198,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
             (blockcount:BitcoinBlockCount | null) => {
 				if( !blockcount ) return;
 				this.bitcoin_blockcount = blockcount;
+				this.loading_bitcoin = false;
 				this.cdr.detectChanges();
             }
         );
