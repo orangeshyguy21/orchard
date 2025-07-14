@@ -1,5 +1,29 @@
 @use '@styles/molecule/molecule';
 
 .target-form-field{
-    @extend %w-min-18;
+    min-width: 16rem;
+}
+
+.blockchain-divider{
+    width: 5px;
+    height: 100%;
+    @extend %orc-surface-container-highest-bg;
+}
+
+.block{
+    @extend %relative;
+    @extend %orc-surface-container-highest-bg;
+    height: 10rem;
+    width: 10rem;
+    border-radius: 0.5rem;
+}
+
+.block-half{
+    // @extend %orc-surface-container-highest-bg;
+    // #{$c}orc-surface-bg { background-color: var(--mat-sys-surface); }
+    background: linear-gradient(to right, var(--mat-sys-surface-container-highest), var(--mat-sys-surface));
+    height: 10rem;
+    width: 8rem;
+    border-top-left-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
 }
