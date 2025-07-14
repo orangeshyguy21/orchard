@@ -1,4 +1,37 @@
-<div class="bitcoin-blockchain-container">
+<div class="flex flex-column flex-gap-1">
     <div class="title-l">Blockchain</div>
-    stuff //
+    <div class="flex flex-gap-1">
+        <mat-card appearance="outlined" class="relative overflow-hidden">
+            <mat-card-content class="orc-surface-container-low-bg">
+                <div class="flex flex-column">
+                    <form [formGroup]="form_group">
+                        <mat-form-field hideRequiredMarker="true" class="target-form-field">
+                            <mat-label>Target</mat-label>
+                            <mat-select formControlName="target" (selectionChange)="onTargetChange($event)">
+                                <mat-select-trigger>
+                                    <div class="flex flex-gap-2" [innerHTML]="getSelectedTargetLabel(form_group.get('target')?.value)"></div>
+                                </mat-select-trigger>
+                                @for (option of target_options; track option) {
+                                    <mat-option [value]="option.target">
+                                        <div class="option-main">{{ option.blocks_label }}</div>
+                                        <div class="option-helper">{{ option.time }}</div>
+                                    </mat-option>
+                                }
+                            </mat-select>
+                        </mat-form-field>
+                    </form>
+
+                    <div class="flex flex-justify-center">
+                        <div class="flex flex-items-end flex-gap-0-5 font-size-xxl orc-amount-container">
+                            <div>{{ txfee_estimate?.feerate | feerate }}</div>
+                            <div class="orc-unit">sat/vB</div>
+                        </div>
+                    </div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+        <div>
+
+        </div>
+    </div>
 </div>

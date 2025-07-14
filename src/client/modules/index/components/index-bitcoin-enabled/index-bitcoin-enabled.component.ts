@@ -1,6 +1,7 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { FormGroup } from '@angular/forms';
 /* Application Dependencies */
 import { BitcoinBlockchainInfo } from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
 import { BitcoinNetworkInfo } from '@client/modules/bitcoin/classes/bitcoin-network-info.class';
@@ -36,12 +37,16 @@ export class IndexBitcoinEnabledComponent {
 	@Input() blockchain_info!: BitcoinBlockchainInfo | null;
 	@Input() block!: BitcoinBlock | null;
 	@Input() block_template!: BitcoinBlockTemplate | null;
-	@Input() transaction_fee_estimates!: BitcoinTransactionFeeEstimate[] | null;
 	@Input() network_info!: BitcoinNetworkInfo | null;
 	@Input() mempool!: BitcoinTransaction[];
+	@Input() txfee_estimate!: BitcoinTransactionFeeEstimate | null;
 	@Input() lightning_accounts!: LightningAccount[];
 	@Input() taproot_assets!: TaprootAssets;
 	@Input() errors_lightning!: OrchardError[];
 	@Input() errors_taproot_assets!: OrchardError[];
+	@Input() form_group!: FormGroup;
+	@Input() control_name!: string;
+
+	@Output() target_change = new EventEmitter<number>();
 
 }

@@ -1054,6 +1054,11 @@ export type QueryBitcoin_BlockArgs = {
 };
 
 
+export type QueryBitcoin_Transaction_Fee_EstimatesArgs = {
+  targets: Array<Scalars['Int']['input']>;
+};
+
+
 export type QueryMint_Analytics_BalancesArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;

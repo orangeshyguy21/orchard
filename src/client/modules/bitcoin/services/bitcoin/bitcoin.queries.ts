@@ -104,8 +104,9 @@ export const BITCOIN_MEMPOOL_TRANSACTIONS_QUERY = `{
     }
 }`;
 
-export const BITCOIN_TRANSACTION_FEE_ESTIMATES_QUERY = `{
-    bitcoin_transaction_fee_estimates{
+export const BITCOIN_TRANSACTION_FEE_ESTIMATES_QUERY = `
+query BitcoinTransactionFeeEstimates($targets: [Int!]!) {
+    bitcoin_transaction_fee_estimates(targets: $targets){
         target
         blocks
         errors

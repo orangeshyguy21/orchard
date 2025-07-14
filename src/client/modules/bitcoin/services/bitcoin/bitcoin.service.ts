@@ -201,8 +201,8 @@ export class BitcoinService {
 		);
 	}
 
-	public getBitcoinTransactionFeeEstimates() : Observable<BitcoinTransactionFeeEstimate[]> {
-		const query = getApiQuery(BITCOIN_TRANSACTION_FEE_ESTIMATES_QUERY);
+	public getBitcoinTransactionFeeEstimates(targets: number[]) : Observable<BitcoinTransactionFeeEstimate[]> {
+		const query = getApiQuery(BITCOIN_TRANSACTION_FEE_ESTIMATES_QUERY, { targets });
 
 		return this.http.post<OrchardRes<BitcoinTransactionFeeEstimatesResponse>>(api, query).pipe(
 			map((response) => {

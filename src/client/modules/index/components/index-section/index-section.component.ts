@@ -2,6 +2,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { Router } from '@angular/router';
+import { FormGroup, FormControl } from '@angular/forms';
 /* Vendor Dependencies */
 import { tap, catchError, finalize, EMPTY, forkJoin, Subscription, firstValueFrom, timer, switchMap, takeWhile } from 'rxjs';
 /* Application Configuration */
@@ -70,7 +71,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	public bitcoin_block!: BitcoinBlock | null;
 	public bitcoin_mempool!: BitcoinTransaction[] | null;
 	public bitcoin_block_template!: BitcoinBlockTemplate | null;
-	public bitcoin_transaction_fee_estimates!: BitcoinTransactionFeeEstimate[] | null;
+	public bitcoin_txfee_estimate!: BitcoinTransactionFeeEstimate | null;
 	public lightning_info!: LightningInfo | null;
 	public lightning_balance!: LightningBalance | null;
 	public lightning_accounts!: LightningAccount[] | null;
@@ -80,6 +81,10 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	public mint_balances!: MintBalance[] | null;
 	public mint_keysets!: MintKeyset[] | null;
 	public mint_icon_data!: string | null;
+
+	public bitcoin_txfee_form: FormGroup = new FormGroup({
+		target: new FormControl(1),
+	});
 
 	public get preparing_bitcoin(): boolean {
 		return this.loading_bitcoin || this.loading_lightning || this.loading_taproot_assets || this.errors_bitcoin.length > 0;
@@ -174,12 +179,14 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 		forkJoin({
 			block: this.bitcoinService.getBlock(this.bitcoin_blockchain_info?.bestblockhash ?? ''),
 			block_template: this.bitcoinService.getBitcoinBlockTemplate(),
-			transaction_fee_estimates: this.bitcoinService.getBitcoinTransactionFeeEstimates(),
+			mempool: this.bitcoinService.getBitcoinMempoolTransactions(),
+			txfee: this.bitcoinService.getBitcoinTransactionFeeEstimates([this.bitcoin_txfee_form.value.target]),
 		}).pipe(
-			tap(({ block, block_template, transaction_fee_estimates }) => {
+			tap(({ block, block_template, mempool, txfee }) => {
 				this.bitcoin_block = block;
 				this.bitcoin_block_template = block_template;
-				this.bitcoin_transaction_fee_estimates = transaction_fee_estimates;
+				this.bitcoin_mempool = mempool;
+				this.bitcoin_txfee_estimate = txfee[0] ?? null;
 			}),	
 			catchError((error) => {
 				this.errors_bitcoin = error.errors;
@@ -198,7 +205,6 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
             (blockcount:BitcoinBlockCount | null) => {
 				if( !blockcount ) return;
 				this.bitcoin_blockcount = blockcount;
-				this.loading_bitcoin = false;
 				this.cdr.detectChanges();
             }
         );
@@ -206,6 +212,8 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 
 	private getBitcoinBlockchainSubscription(): Subscription {
 		this.bitcoin_polling_active = true;
+		this.loading_bitcoin = false;
+		this.cdr.detectChanges();
 		return timer(0, 5000).pipe(
 			takeWhile(() => this.bitcoin_polling_active),
 			switchMap(() => this.bitcoinService.getBitcoinBlockchainInfo().pipe(
@@ -227,6 +235,13 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	private getBitcoinBlock(): void {
 		this.bitcoinService.getBlock(this.bitcoin_blockchain_info?.bestblockhash ?? '').subscribe((block) => {
 			this.bitcoin_block = block;
+			this.cdr.detectChanges();
+		});
+	}
+
+	private getBitcoinFeeEstimate(): void {
+		this.bitcoinService.getBitcoinTransactionFeeEstimates([this.bitcoin_txfee_form.value.target]).subscribe((txfee) => {
+			this.bitcoin_txfee_estimate = txfee[0] ?? null;
 			this.cdr.detectChanges();
 		});
 	}
@@ -309,6 +324,10 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 
 	public onNavigate(route: string): void {
 		this.router.navigate([`/${route}`]);
+	}
+
+	public onTargetChange(target: number): void {
+		this.getBitcoinFeeEstimate();
 	}
 
 	/* *******************************************************

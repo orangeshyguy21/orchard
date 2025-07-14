@@ -18,8 +18,7 @@ export class BtcTransactionService {
 		private errorService: ErrorService,
 	) {}
 
-	public async getTransactionFeeEstimates(tag: string): Promise<OrchardBitcoinTxFeeEstimate[]> {
-        const targets = [1, 3, 6, 250];
+	public async getTransactionFeeEstimates(tag: string, targets: number[]): Promise<OrchardBitcoinTxFeeEstimate[]> {
         try {
             const fee_estimates_promises = targets.map(target => this.bitcoinRpcService.getBitcoinFeeEstimate(target)
                 .then(fee_estimate => new OrchardBitcoinTxFeeEstimate(target, fee_estimate))

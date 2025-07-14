@@ -1,6 +1,7 @@
 /* Core Dependencies */
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 /* Vendor Dependencies */
 import { MatCardModule } from '@angular/material/card';
@@ -9,6 +10,8 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 /* Application Dependencies */
 import { LocalModule } from '@client/modules/local/local.module';
 import { GraphicModule } from '@client/modules/graphic/graphic.module';
@@ -85,12 +88,15 @@ export class IndexAppRoutingModule { }
 	],
 	imports: [
 		CommonModule,
+		ReactiveFormsModule,
 		MatCardModule,
 		MatIconModule,
 		MatRippleModule,
 		MatButtonModule,
 		MatTableModule,
 		MatProgressSpinnerModule,
+		MatFormFieldModule,
+		MatSelectModule,
 		LocalModule,
 		GraphicModule,
 		ErrorModule,

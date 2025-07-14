@@ -30,7 +30,8 @@ export class BitcoinUtxoStackComponent {
 	});
 
 	public coin_array = computed(() => {
-		return Array.from({ length: (this.coins - 1) }).slice( 0, this.limiter-1 );
+		const count = Math.min(this.coins - 1, this.limiter - 1);
+		return Array.from({ length: count }, (_, i) => i);
 	});
 
 }

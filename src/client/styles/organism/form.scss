@@ -24,3 +24,8 @@ button.mint-genesis-date-class {
     @extend %flex-justify-center;
     @extend %orc-fog-bg;
 }
+
+.option-helper{
+    @extend %font-size-xs;
+    @extend %orc-outline-color;
+}
