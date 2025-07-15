@@ -15,34 +15,9 @@
     @extend %orc-surface-container-highest-bg;
 }
 
-.block-container{
-    @extend %relative;
-    @extend %flex;
-    @extend %flex-column;
-}
-
-.block-header{
-    @extend %relative;
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-justify-center;
-}
-
-.block-height{
-    @extend %absolute;
-    @extend %bottom-1;
-}
-
-.block{
-    @extend %orc-surface-container-highest-bg;
-    height: 10rem;
-    width: 10rem;
-    border-radius: 0.5rem;
-}
-
 .block-half{
     height: 10rem;
-    width: 8rem;
+    width: 6rem;
 }
 
 .block-chained{

@@ -39,10 +39,10 @@ export class IndexBitcoinBlockchainComponent implements OnInit {
 	public target_options: TargetOption[] = [];
 	public mempool_depth!: number;
 
-	public get block_half(): number {
-		if(!this.block) return 0;
-		return this.block.height - 1;
-	}
+	// public get block_half(): number {
+	// 	if(!this.block) return 0;
+	// 	return this.block.height - 1;
+	// }
 
 	ngOnInit(): void {
 		this.mempool_depth = this.calculateMempoolBlocks();

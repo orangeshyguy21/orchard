@@ -72,8 +72,8 @@ export class BitcoinBlockTemplate implements OrchardBitcoinBlockTemplate {
 
     private calculateFeerate(tx: OrchardBitcoinBlockTemplateTransaction): number | null {
         if (!tx.fee || !tx.weight) return null;
-        const vsize = (tx.weight / 4 ) * 1000;
-        return (tx.fee / 1000000) / vsize;
+        const vsize = (tx.weight / 4 );
+        return (tx.fee / 100000) / vsize;
     }
 
     private calculateWeight(): number {
