@@ -30,16 +30,43 @@
 
 .block{
     @extend %orc-surface-container-highest-bg;
-    // --mat-sys-surface-variant if block_template
     height: 10rem;
     width: 10rem;
     border-radius: 0.5rem;
+    @extend %relative;
+    @extend %overflow-hidden;
 
+    // .block-fullness{
+    //     @extend %orc-surface-container-lowest-bg;
+    // }
+}
+
+.block-template{
+    @extend %orc-surface-variant-bg;
+
+    // .block-fullness{
+    //     @extend %orc-surface-variant-bg;
+    // }
+}
+
+.block-content{
+    position: absolute;
+    z-index: 2;
+    bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
     @extend %flex;
     @extend %flex-items-center;
     @extend %flex-justify-center;
 }
 
-.block-template{
-    @extend %orc-surface-variant-bg;
+.block-fullness{
+    position: absolute;
+    z-index: 1;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    opacity: 0.05;
+    background: white;
 }

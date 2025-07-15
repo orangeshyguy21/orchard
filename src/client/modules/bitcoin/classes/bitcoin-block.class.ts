@@ -21,7 +21,7 @@ export class BitcoinBlock implements OrchardBitcoinBlock {
     public versionHex: string;
     public weight: number;
     public tx: OrchardBitcoinRawTransaction[];
-
+    // derived
     public feerate_lowest: number;
     public feerate_highest: number;
     public fullness: number;
@@ -46,7 +46,7 @@ export class BitcoinBlock implements OrchardBitcoinBlock {
         this.versionHex = obn.versionHex;
         this.weight = obn.weight;
         this.tx = obn.tx;
-        
+        // derived
         const { fee_lowest, fee_highest } = this.calculateFeeRange();
         this.feerate_lowest = fee_lowest;
         this.feerate_highest = fee_highest;
