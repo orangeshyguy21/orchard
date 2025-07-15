@@ -1,0 +1,40 @@
+@use '@styles/molecule/molecule';
+
+:host{
+    @extend %flex;
+}
+
+.bitcoin-block-container{
+    @extend %relative;
+    @extend %flex;
+    @extend %flex-column;
+}
+
+// .block-container{
+//     @extend %relative;
+//     @extend %flex;
+//     @extend %flex-column;
+// }
+
+.block-header{
+    @extend %relative;
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-justify-center;
+}
+
+.block-height{
+    @extend %absolute;
+    @extend %bottom-1;
+}
+
+.block{
+    @extend %orc-surface-container-highest-bg;
+    height: 10rem;
+    width: 10rem;
+    border-radius: 0.5rem;
+
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-justify-center;
+}

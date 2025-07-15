@@ -2,7 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { DateTime } from 'luxon';
 
 @Pipe({
-	name: 'timeDelta',
+	name: 'time_delta',
 	standalone: false,
 	pure: false
 })

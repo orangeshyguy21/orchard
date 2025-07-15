@@ -8,6 +8,7 @@ import { FeePipe } from './pipes/fee/fee.pipe';
 import { UnitPipe } from './pipes/unit/unit.pipe';
 import { TruncatePipe } from './pipes/truncate/truncate.pipe';
 import { TimeDeltaPipe } from './pipes/time-delta/time-delta.pipe';
+import { TimeAgoPipe } from './pipes/time-ago/time-ago.pipe';
 import { BytesPipe } from './pipes/bytes/bytes.pipe';
 
 @NgModule({
@@ -18,6 +19,7 @@ import { BytesPipe } from './pipes/bytes/bytes.pipe';
 		UnitPipe,
 		TruncatePipe,
 		TimeDeltaPipe,
+		TimeAgoPipe,
 		BytesPipe,
 	],
 	imports: [
@@ -30,6 +32,7 @@ import { BytesPipe } from './pipes/bytes/bytes.pipe';
 		UnitPipe,
 		TruncatePipe,
 		TimeDeltaPipe,
+		TimeAgoPipe,
 		BytesPipe,
 	]
 })

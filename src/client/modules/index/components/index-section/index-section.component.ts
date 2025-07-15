@@ -176,6 +176,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	}
 
 	private getBitcoinMempool() : void {
+		console.log(this.bitcoin_blockchain_info?.bestblockhash);
 		forkJoin({
 			block: this.bitcoinService.getBlock(this.bitcoin_blockchain_info?.bestblockhash ?? ''),
 			block_template: this.bitcoinService.getBitcoinBlockTemplate(),
@@ -183,6 +184,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 			txfee: this.bitcoinService.getBitcoinTransactionFeeEstimates([this.bitcoin_txfee_form.value.target]),
 		}).pipe(
 			tap(({ block, block_template, mempool, txfee }) => {
+				console.log('block_template', block_template);
 				this.bitcoin_block = block;
 				this.bitcoin_block_template = block_template;
 				this.bitcoin_mempool = mempool;

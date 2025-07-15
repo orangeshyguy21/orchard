@@ -9,13 +9,15 @@
                 </tr>
                 <tr>
                     <td class="font-weight-extra-light orc-outline-color text-nowrap">Block height</td>
-                    <td>
+                    <td class="text-nowrap">
                         {{ blockcount | block }}
                     </td>
                 </tr>
                 <tr>
                     <td class="font-weight-extra-light orc-outline-color text-nowrap">Chain weight</td>
-                    <td>{{ blockchain_info?.size_on_disk | bytes }}</td>
+                    <td class="text-nowrap">
+                        {{ blockchain_info?.size_on_disk | bytes }}
+                    </td>
                 </tr>
             </tbody>
         </table>

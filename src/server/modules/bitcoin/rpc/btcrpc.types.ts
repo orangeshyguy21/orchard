@@ -85,9 +85,46 @@ export type BitcoinBlock = {
     strippedsize: number;
     size: number;
     weight: number;
-    tx: string[];
+    tx: BitcoinRawTransaction[];
 }
 
+export interface BitcoinRawTransaction {
+    in_active_chain?: boolean;
+    txid: string;
+    hash: string;
+    size: number;
+    vsize: number;
+    weight: number;
+    version: number;
+    locktime: number;
+    fee: number;
+    vin: Array<{
+        txid: string;
+        vout: number;
+        scriptSig: {
+            asm: string;
+            hex: string;
+        };
+        sequence: number;
+        txinwitness?: string[];
+    }>;
+    vout: Array<{
+        value: number;
+        n: number;
+        scriptPubKey: {
+            asm: string;
+            hex: string;
+            reqSigs?: number;
+            type: string;
+            addresses?: string[];
+        };
+    }>;
+    blockhash?: string;
+    confirmations?: number;
+    blocktime?: number;
+    time?: number;
+}
+  
 export type BitcoinTransaction = {
     vsize: number;
     weight: number;

@@ -75,7 +75,11 @@ query BitcoinBlock($hash: String!) {
         version
         versionHex
         weight
-        tx
+        tx{
+            txid
+            fee
+            vsize
+        }
     }
 }`;
 
@@ -131,7 +135,6 @@ export const BITCOIN_BLOCK_TEMPLATE_QUERY = `{
         sizelimit
         target
         transactions{
-            data
             txid
             hash
             depends

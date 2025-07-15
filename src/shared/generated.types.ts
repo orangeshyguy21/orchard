@@ -414,7 +414,7 @@ export type OrchardBitcoinBlock = {
   size: Scalars['Int']['output'];
   strippedsize: Scalars['Int']['output'];
   time: Scalars['UnixTimestamp']['output'];
-  tx: Array<Scalars['String']['output']>;
+  tx: Array<OrchardBitcoinRawTransaction>;
   version: Scalars['Float']['output'];
   versionHex: Scalars['String']['output'];
   weight: Scalars['Float']['output'];
@@ -537,6 +537,13 @@ export type OrchardBitcoinNetworkInfo = {
   timeoffset: Scalars['Int']['output'];
   version: Scalars['Int']['output'];
   warnings: Array<Scalars['String']['output']>;
+};
+
+export type OrchardBitcoinRawTransaction = {
+  __typename?: 'OrchardBitcoinRawTransaction';
+  fee?: Maybe<Scalars['Float']['output']>;
+  txid: Scalars['String']['output'];
+  vsize?: Maybe<Scalars['Int']['output']>;
 };
 
 export type OrchardBitcoinTxFeeEstimate = {

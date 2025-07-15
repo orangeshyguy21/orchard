@@ -5,13 +5,35 @@
 }
 
 .blockchain-divider{
-    width: 5px;
-    height: 100%;
+    position: absolute;
+    top: -1rem;
+    left: 0;
+    right: 0;
+    bottom: -1rem;
+    width: 0.25rem;
+    @extend %orc-corner-full;
     @extend %orc-surface-container-highest-bg;
 }
 
-.block{
+.block-container{
     @extend %relative;
+    @extend %flex;
+    @extend %flex-column;
+}
+
+.block-header{
+    @extend %relative;
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-justify-center;
+}
+
+.block-height{
+    @extend %absolute;
+    @extend %bottom-1;
+}
+
+.block{
     @extend %orc-surface-container-highest-bg;
     height: 10rem;
     width: 10rem;
@@ -19,11 +41,18 @@
 }
 
 .block-half{
-    // @extend %orc-surface-container-highest-bg;
-    // #{$c}orc-surface-bg { background-color: var(--mat-sys-surface); }
-    background: linear-gradient(to right, var(--mat-sys-surface-container-highest), var(--mat-sys-surface));
     height: 10rem;
     width: 8rem;
+}
+
+.block-chained{
+    background: linear-gradient(to right, var(--mat-sys-surface-container-highest), var(--mat-sys-surface));
     border-top-left-radius: 0.5rem;
     border-bottom-left-radius: 0.5rem;
+}
+
+.block-template{
+    background: linear-gradient(to left, var(--mat-sys-surface-container-highest), var(--mat-sys-surface));
+    border-top-right-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
 }

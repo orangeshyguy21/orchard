@@ -299,7 +299,7 @@ type OrchardBitcoinBlock {
   size: Int!
   strippedsize: Int!
   time: UnixTimestamp!
-  tx: [String!]!
+  tx: [OrchardBitcoinRawTransaction!]!
   version: Float!
   versionHex: String!
   weight: Float!
@@ -413,6 +413,12 @@ type OrchardBitcoinNetworkInfo {
   timeoffset: Int!
   version: Int!
   warnings: [String!]!
+}
+
+type OrchardBitcoinRawTransaction {
+  fee: Float
+  txid: String!
+  vsize: Int
 }
 
 type OrchardBitcoinTxFeeEstimate {

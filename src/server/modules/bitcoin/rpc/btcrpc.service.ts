@@ -49,7 +49,7 @@ export class BitcoinRpcService implements OnModuleInit {
     }
 
     public async getBitcoinBlock(hash: string) : Promise<BitcoinBlock> {
-        if( this.type === BitcoinType.CORE ) return this.coreService.makeRpcRequest('getblock', [hash, 1]);
+        if( this.type === BitcoinType.CORE ) return this.coreService.makeRpcRequest('getblock', [hash, 2]);
     }
 
     /* *******************************************************

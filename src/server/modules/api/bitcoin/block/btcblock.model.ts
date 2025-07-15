@@ -5,6 +5,25 @@ import { UnixTimestamp } from '@server/modules/graphql/scalars/unixtimestamp.sca
 import { BitcoinBlock, BitcoinBlockTemplate } from '@server/modules/bitcoin/rpc/btcrpc.types';
 
 @ObjectType()
+export class OrchardBitcoinRawTransaction {
+
+    @Field(type => String)
+    txid: string;
+
+    @Field(type => Float, { nullable: true })
+    fee: number;
+
+    @Field(type => Int, { nullable: true })
+    vsize: number;
+
+    constructor(obrt: BitcoinBlock['tx'][number]) {
+        this.txid = obrt.txid;
+        this.fee = obrt.fee;
+        this.vsize = obrt.vsize;
+    }
+}
+
+@ObjectType()
 export class OrchardBitcoinBlock {
 
 	@Field(type => String)
@@ -61,10 +80,11 @@ export class OrchardBitcoinBlock {
 	@Field(type => Float)
 	weight: number;
 
-	@Field(type => [String])
-	tx: string[];
+	@Field(type => [OrchardBitcoinRawTransaction])
+	tx: OrchardBitcoinRawTransaction[];
 
 	constructor(obb: BitcoinBlock) {
+        console.dir(obb, { depth: null, colors: true });
 		this.hash = obb.hash;
 		this.confirmations = obb.confirmations;
 		this.height = obb.height;
@@ -83,7 +103,7 @@ export class OrchardBitcoinBlock {
 		this.strippedsize = obb.strippedsize;
 		this.size = obb.size;
 		this.weight = obb.weight;
-		this.tx = obb.tx;
+		this.tx = obb.tx.map(tx => new OrchardBitcoinRawTransaction(tx));
 	}
 }
 

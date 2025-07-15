@@ -37,15 +37,16 @@ export class IndexBitcoinBlockchainComponent implements OnInit {
 	@Output() target_change = new EventEmitter<number>();
 
 	public target_options: TargetOption[] = [];
+	public mempool_depth!: number;
 
-	ngOnInit(): void {
-		this.target_options = this.getTargetOptions();
+	public get block_half(): number {
+		if(!this.block) return 0;
+		return this.block.height - 1;
 	}
 
-	private getTargetOptions(): TargetOption[] {
-		const mempool_blocks = this.calculateMempoolBlocks();
-		// return possible_options.filter(option => option.blocks <= mempool_blocks);
-		return possible_options;
+	ngOnInit(): void {
+		this.mempool_depth = this.calculateMempoolBlocks();
+		this.target_options = possible_options;
 	}
 
 	private calculateMempoolBlocks(): number {
