@@ -26,8 +26,10 @@
     border-bottom-left-radius: 0.5rem;
 }
 
+// orc-surface-variant-bg
+
 .block-template{
-    background: linear-gradient(to left, var(--mat-sys-surface-container-highest), var(--mat-sys-surface));
+    background: linear-gradient(to left, var(--mat-sys-surface-variant), var(--mat-sys-surface));
     border-top-right-radius: 0.5rem;
     border-bottom-right-radius: 0.5rem;
 }

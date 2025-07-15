@@ -30,6 +30,7 @@
 
 .block{
     @extend %orc-surface-container-highest-bg;
+    // --mat-sys-surface-variant if block_template
     height: 10rem;
     width: 10rem;
     border-radius: 0.5rem;
@@ -37,4 +38,8 @@
     @extend %flex;
     @extend %flex-items-center;
     @extend %flex-justify-center;
+}
+
+.block-template{
+    @extend %orc-surface-variant-bg;
 }
