@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 /* Vendor Dependencies */
 import { MatSelectChange } from '@angular/material/select';
@@ -38,11 +38,11 @@ export class IndexBitcoinBlockchainComponent implements OnInit {
 
 	public target_options: TargetOption[] = [];
 	public mempool_depth!: number;
+	public target_block: number = 0;
 
-	// public get block_half(): number {
-	// 	if(!this.block) return 0;
-	// 	return this.block.height - 1;
-	// }
+	constructor(
+		private readonly cdr: ChangeDetectorRef
+	) {}
 
 	ngOnInit(): void {
 		this.mempool_depth = this.calculateMempoolBlocks();
@@ -59,11 +59,20 @@ export class IndexBitcoinBlockchainComponent implements OnInit {
 
 	public onTargetChange(event: MatSelectChange): void {
 		this.target_change.emit(event.value);
+		this.target_block = this.getTargetBlock();
+		this.cdr.detectChanges();
 	}
 
 	public getSelectedTargetLabel(target: number): string {
 		const option = this.target_options.find(option => option.target === target);
 		if(!option) return '';
 		return `<div>${option.blocks_label}</div> <div class="font-weight-semi-bold">${option.time}</div>`;
+	}
+
+	private getTargetBlock(): number {
+		if(!this.txfee_estimate || !this.block_template) return 0;
+		if( !this.txfee_estimate.feerate || !this.block_template.feerate_lowest ) return 0;
+		if(this.txfee_estimate.feerate > this.block_template.feerate_lowest) return 0; 
+		return 1;
 	}
 }

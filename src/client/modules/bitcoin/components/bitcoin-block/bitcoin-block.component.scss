@@ -26,7 +26,7 @@
     @extend %orc-surface-container-highest-bg;
     height: 10rem;
     width: 10rem;
-    border-radius: 0.5rem;
+    @extend %orc-corner-small;
     @extend %relative;
     @extend %overflow-hidden;
 }
@@ -36,23 +36,23 @@
 }
 
 .block-content{
-    position: absolute;
-    z-index: 2;
-    bottom: 0;
-    top: 0;
-    left: 0;
-    right: 0;
+    @extend %absolute;
+    @extend %z-index-2;
+    @extend %bottom-0;
+    @extend %top-0;
+    @extend %left-0;
+    @extend %right-0;
     @extend %flex;
     @extend %flex-items-center;
     @extend %flex-justify-center;
 }
 
 .block-fullness{
-    position: absolute;
-    z-index: 1;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    @extend %absolute;
+    @extend %z-index-1;
+    @extend %bottom-0;
+    @extend %left-0;
+    @extend %right-0;
     opacity: 0.05;
     background: white;
 }

@@ -5,12 +5,12 @@
 }
 
 .blockchain-divider{
-    position: absolute;
-    top: -1rem;
-    left: 0;
-    right: 0;
+    @extend %absolute;
+    @extend %left-0;
+    @extend %right-0;
     bottom: -1rem;
-    width: 0.25rem;
+    top: -1rem;
+    @extend %w-0-25;
     @extend %orc-corner-full;
     @extend %orc-surface-container-highest-bg;
 }
@@ -33,21 +33,28 @@
 }
 
 .block-indicator{
-    position: absolute;
-    bottom: 0rem;
-    right: 5rem;
+    @extend %absolute;
+    @extend %bottom-0;
+
+    &.next-block{
+        right: 5rem;
+    }
+
+    &.pool-block{
+        right: 10rem;
+    }
 }
 
-.test{
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    left: 0;
+.block-indicator-icon{
+    @extend %absolute;
+    @extend %bottom-0;
+    @extend %right-0;
+    @extend %left-0;
     @extend %flex;
     @extend %flex-items-center;
     @extend %flex-justify-center;
 
     mat-icon{
-        overflow: visible;
+        @extend %overflow-visible;
     }
 }
