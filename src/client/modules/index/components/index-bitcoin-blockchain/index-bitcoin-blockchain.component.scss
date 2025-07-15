@@ -26,10 +26,28 @@
     border-bottom-left-radius: 0.5rem;
 }
 
-// orc-surface-variant-bg
-
 .block-template{
     background: linear-gradient(to left, var(--mat-sys-surface-variant), var(--mat-sys-surface));
     border-top-right-radius: 0.5rem;
     border-bottom-right-radius: 0.5rem;
+}
+
+.block-indicator{
+    position: absolute;
+    bottom: 0rem;
+    right: 5rem;
+}
+
+.test{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-justify-center;
+
+    mat-icon{
+        overflow: visible;
+    }
 }
