@@ -10,12 +10,6 @@
     @extend %flex-column;
 }
 
-// .block-container{
-//     @extend %relative;
-//     @extend %flex;
-//     @extend %flex-column;
-// }
-
 .block-header{
     @extend %relative;
     @extend %flex;
@@ -35,18 +29,10 @@
     border-radius: 0.5rem;
     @extend %relative;
     @extend %overflow-hidden;
-
-    // .block-fullness{
-    //     @extend %orc-surface-container-lowest-bg;
-    // }
 }
 
 .block-template{
     @extend %orc-surface-variant-bg;
-
-    // .block-fullness{
-    //     @extend %orc-surface-variant-bg;
-    // }
 }
 
 .block-content{
