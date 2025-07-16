@@ -84,7 +84,6 @@ export class OrchardBitcoinBlock {
 	tx: OrchardBitcoinRawTransaction[];
 
 	constructor(obb: BitcoinBlock) {
-        console.dir(obb, { depth: null, colors: true });
 		this.hash = obb.hash;
 		this.confirmations = obb.confirmations;
 		this.height = obb.height;

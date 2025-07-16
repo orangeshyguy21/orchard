@@ -204,11 +204,18 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 		return this.bitcoinService.bitcoin_blockcount$.subscribe(
             (blockcount:BitcoinBlockCount | null) => {
 				if( !blockcount ) return;
-				if( this.bitcoin_blockcount && blockcount > this.bitcoin_blockcount ) this.getBitcoinMempool();
+				if( this.bitcoin_blockcount && blockcount.height > this.bitcoin_blockcount?.height ) this.refreshBitcoinMempool();
 				this.bitcoin_blockcount = blockcount;
 				this.cdr.detectChanges();
             }
         );
+	}
+
+	private refreshBitcoinMempool(): void {
+		this.bitcoinService.getBitcoinBlockchainInfo().subscribe((blockchain_info: BitcoinBlockchainInfo) => {
+			this.bitcoin_blockchain_info = blockchain_info;
+			this.getBitcoinMempool();
+		});
 	}
 
 	private getBitcoinBlockchainSubscription(): Subscription {

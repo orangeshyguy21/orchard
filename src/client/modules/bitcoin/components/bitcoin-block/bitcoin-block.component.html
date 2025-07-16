@@ -20,7 +20,7 @@
                 
                 <div class="flex flex-justify-center">
                     @if( !is_template ) {
-                        <div>{{ block_time | time_ago }}</div>
+                        <div>{{ $any(this.block).time | time_ago }}</div>
                     }@else {
                         <div>~ 10 minutes</div>
                     }
@@ -28,6 +28,5 @@
             </div>
         </div>
         <div class="block-fullness" [style.height]="block?.fullness | percent"></div>
-        <!-- <div class="block-fullness" [style.height]="'50%'"></div> -->
     </div>
 </div>

@@ -1,5 +1,6 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { trigger, transition, animate, style } from '@angular/animations';
 import { FormGroup } from '@angular/forms';
 /* Vendor Dependencies */
 import { MatSelectChange } from '@angular/material/select';
@@ -23,7 +24,15 @@ export type TargetOption = {
 	standalone: false,
 	templateUrl: './index-bitcoin-blockchain.component.html',
 	styleUrl: './index-bitcoin-blockchain.component.scss',
-	changeDetection: ChangeDetectionStrategy.OnPush
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	animations: [
+		trigger('blockDataChange', [
+			transition('* => *', [
+				animate('200ms ease-out', style({ opacity: 0.1 })),
+				animate('400ms ease-in', style({ opacity: 1 }))
+			]),
+		])
+    ]
 })
 export class IndexBitcoinBlockchainComponent implements OnInit {
 
