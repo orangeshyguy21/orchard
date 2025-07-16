@@ -8,6 +8,7 @@
     @extend %relative;
     @extend %flex;
     @extend %flex-column;
+    @extend %isolated;
 }
 
 .block-header{
