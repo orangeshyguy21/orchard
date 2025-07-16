@@ -15,6 +15,7 @@ const DURATION = {
 export class EventData {
 
     type: 'PENDING' | 'SAVING' | 'SUCCESS' | 'WARNING' | 'ERROR';
+    id: string;
     message?: string;
     created_at: number;
     duration: number | null;
@@ -22,6 +23,7 @@ export class EventData {
 
     constructor(data: EventDataSeed){
         this.type = data.type;
+        this.id = crypto.randomUUID();
         this.message = data.message;
         this.created_at = Math.floor(Date.now() / 1000);
         this.duration = data.duration || DURATION[this.type];
