@@ -1,6 +1,6 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
-import { trigger, transition, animate, style } from '@angular/animations';
+import { ChangeDetectionStrategy, Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
+import { trigger, transition, animate, style, state } from '@angular/animations';
 import { FormGroup } from '@angular/forms';
 /* Vendor Dependencies */
 import { MatSelectChange } from '@angular/material/select';
@@ -31,10 +31,20 @@ export type TargetOption = {
 				animate('200ms ease-out', style({ opacity: 0.1 })),
 				animate('400ms ease-in', style({ opacity: 1 }))
 			]),
+		]),
+		trigger('blockIndicatorMove', [
+			state('0', style({ right: '5rem' })),
+			state('1', style({ right: '14rem' })),
+			transition('0 => 1', [
+				animate('300ms ease-in-out')
+			]),
+			transition('1 => 0', [
+				animate('300ms ease-in-out')
+			])
 		])
     ]
 })
-export class IndexBitcoinBlockchainComponent implements OnInit {
+export class IndexBitcoinBlockchainComponent implements OnInit, OnChanges {
 
 	@Input() block!: BitcoinBlock | null;
 	@Input() block_template!: BitcoinBlockTemplate | null;
@@ -58,6 +68,13 @@ export class IndexBitcoinBlockchainComponent implements OnInit {
 		this.target_options = possible_options;
 	}
 
+	ngOnChanges(changes: SimpleChanges): void {
+		if(changes['txfee_estimate']) {
+			this.target_block = this.getTargetBlock();
+			this.cdr.detectChanges();
+		}
+	}
+
 	private calculateMempoolBlocks(): number {
 		if (!this.mempool || this.mempool.length === 0) return 0;
 		const total_weight = this.mempool.reduce((sum, tx) => sum + tx.weight, 0);
@@ -68,8 +85,6 @@ export class IndexBitcoinBlockchainComponent implements OnInit {
 
 	public onTargetChange(event: MatSelectChange): void {
 		this.target_change.emit(event.value);
-		this.target_block = this.getTargetBlock();
-		this.cdr.detectChanges();
 	}
 
 	public getSelectedTargetLabel(target: number): string {
