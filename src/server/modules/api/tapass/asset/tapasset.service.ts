@@ -23,6 +23,7 @@ export class TaprootAssetsAssetService {
     async getTaprootAssets(tag: string) : Promise<OrchardTaprootAssets> {
 		try {
 			const ta_assets : TaprootAssets = await this.taprootAssetsService.getListTaprootAssets();
+			console.dir(ta_assets, { depth: null, colors: true });
 			return new OrchardTaprootAssets(ta_assets);
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,

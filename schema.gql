@@ -808,6 +808,10 @@ type OrchardTaprootAssets {
   unconfirmed_transfers: String!
 }
 
+type OrchardTaprootAssetsId {
+  asset_id: TaprootAssetId!
+}
+
 type OrchardTaprootAssetsInfo {
   block_hash: String!
   block_height: Int!
@@ -863,6 +867,7 @@ type Query {
   public_urls(urls: [String!]!): [OrchardPublicUrl!]!
   status: OrchardStatus!
   taproot_assets: OrchardTaprootAssets!
+  taproot_assets_ids: [OrchardTaprootAssetsId!]!
   taproot_assets_info: OrchardTaprootAssetsInfo!
   taproot_assets_utxo: [OrchardTaprootAssetsUtxo!]!
 }
@@ -870,6 +875,10 @@ type Query {
 type Subscription {
   ai_chat(ai_chat: AiChatInput!): OrchardAiChatChunk!
   blockCount: OrchardBitcoinBlockCount!
+}
+
+enum TaprootAssetId {
+  USDT
 }
 
 enum TaprootAssetType {

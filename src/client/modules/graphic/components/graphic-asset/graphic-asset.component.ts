@@ -1,5 +1,7 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, Component, Input, computed } from '@angular/core';
+/* Shared Dependencies */
+import { TaprootAssetId } from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-graphic-asset',
@@ -16,7 +18,7 @@ export class GraphicAssetComponent {
 	@Input() asset_id! : string | undefined;
 
 	private taproot_assets_map = new Map<string, string>([
-		['f81dce34c31687b969e1c5acc69ad6bb04528bd1d593efdc2d505245051f1648', 'tether.svg'],
+		[TaprootAssetId.Usdt, 'tether.svg'],
 	]);
 
 	public lower_unit = computed(() => {
