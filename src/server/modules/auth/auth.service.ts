@@ -13,6 +13,8 @@ export class AuthService {
     private token_ttl: string = '15m';
     private refresh_ttl: string = '7d';
 
+    private blacklist: string[] = [];
+
     constructor(
         private configService: ConfigService,
         private jwtService: JwtService,
@@ -45,6 +47,7 @@ export class AuthService {
 
     async refreshToken(refresh_token: string): Promise<OrchardAuthToken> {
         try {
+            if (this.blacklist.includes(refresh_token)) throw new UnauthorizedException('Invalid refresh token');
             const payload = await this.jwtService.verifyAsync<RefreshTokenPayload>(refresh_token);
             if (payload.type !== 'refresh') throw new UnauthorizedException('Invalid token type');
             const user = await this.userService.getUser();
@@ -66,6 +69,17 @@ export class AuthService {
                 access_token: new_access_token,
                 refresh_token: new_refresh_token,
             };
+        } catch (error) {
+            throw new UnauthorizedException('Invalid refresh token');
+        }
+    }
+
+    async revokeToken(refresh_token: string): Promise<boolean> {
+        try {
+            const payload = await this.jwtService.verifyAsync<RefreshTokenPayload>(refresh_token);
+            if (payload.type !== 'refresh') throw new UnauthorizedException('Invalid token type');
+            this.blacklist.push(refresh_token);
+            return true;
         } catch (error) {
             throw new UnauthorizedException('Invalid refresh token');
         }

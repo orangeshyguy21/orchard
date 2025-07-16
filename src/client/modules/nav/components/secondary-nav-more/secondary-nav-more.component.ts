@@ -1,6 +1,8 @@
 /* Core Dependencies */
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Router } from '@angular/router';
+/* Application Dependencies */
+import { AuthService } from '@client/modules/auth/services/auth/auth.service';
 
 @Component({
 	selector: 'orc-secondary-nav-more',
@@ -12,10 +14,12 @@ import { Router } from '@angular/router';
 export class SecondaryNavMoreComponent {
 
 	constructor(
-		private router: Router
+		private router: Router,
+		private authService: AuthService
 	) {}
 
 	logout() {
+		this.authService.revokeToken().subscribe();
 		this.router.navigate(['/authentication']);
 	}
 }

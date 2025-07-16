@@ -31,7 +31,6 @@ export class AuthSectionComponent implements OnInit {
 	) {}
 
 	public ngOnInit(): void {
-		this.authService.logout();
 		const theme = this.settingService.getTheme();
 		this.show_surface = theme === ThemeType.LIGHT_MODE;
 	}

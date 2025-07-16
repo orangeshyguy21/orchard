@@ -42,4 +42,23 @@ export class AuthenticationResolver {
         if (!user.refresh_token) throw new OrchardApiError(OrchardErrorCode.AuthenticationExpiredError);
         return await this.authenticationService.refreshToken(tag, user.refresh_token);
     }
+
+    // @Mutation(() => Boolean)
+    // async revoke_authentication() {
+    //     const tag = 'MUTATION { revoke_authentication }';
+    //     this.logger.debug(tag);
+    //     return await this.authenticationService.revokeToken(tag);
+    // }
+
+    @Mutation(() => Boolean)
+    @UseGuards(GqlRefreshGuard)
+    async revoke_authentication(@Context() context: any) {
+        const tag = 'MUTATION { revoke_authentication }';
+        this.logger.debug(tag);
+        const req = context.req;
+        const user = req?.user;
+        if (!user) throw new OrchardApiError(OrchardErrorCode.AuthenticationExpiredError);
+        if (!user.refresh_token) throw new OrchardApiError(OrchardErrorCode.AuthenticationExpiredError);
+        return await this.authenticationService.revokeToken(tag, user.refresh_token);
+    }
 }

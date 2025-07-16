@@ -43,4 +43,15 @@ export class AuthenticationService {
             throw new OrchardApiError(error_code);
         }
     }
+
+    async revokeToken(tag: string, token: string): Promise<boolean> {
+        try {
+            return this.authService.revokeToken(token);
+        } catch (error) {
+            const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
+                errord: OrchardErrorCode.AuthenticationExpiredError,
+            });
+            throw new OrchardApiError(error_code);
+        }
+    }
 }

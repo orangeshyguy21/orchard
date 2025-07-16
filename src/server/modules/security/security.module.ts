@@ -5,7 +5,6 @@ import { ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 /* Local Dependencies */
 import { GqlAuthGuard } from './guards/auth.guard';
-// import { GqlRefreshGuard } from './guards/refresh.guard';
 import { GqlThrottlerGuard } from './guards/throttler.guard';
 
 @Module({
@@ -22,7 +21,6 @@ import { GqlThrottlerGuard } from './guards/throttler.guard';
     ],
     providers: [
         { provide: APP_GUARD, useClass: GqlAuthGuard },
-        // { provide: APP_GUARD, useClass: GqlRefreshGuard },
         { provide: APP_GUARD, useClass: GqlThrottlerGuard },
     ],
 })

@@ -193,6 +193,7 @@ type Mutation {
   mint_url_add(mint_url_update: MintUrlUpdateInput!): OrchardMintUrlUpdate!
   mint_url_remove(mint_url_update: MintUrlUpdateInput!): OrchardMintUrlUpdate!
   refresh_authentication: OrchardAuthentication!
+  revoke_authentication: Boolean!
 }
 
 type OrchardAiAgent {
