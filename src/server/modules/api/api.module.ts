@@ -8,7 +8,9 @@ import { AuthenticationModule } from "./auth/authentication/authentication.modul
 // Bitcoin Endpoints
 import { BitcoinNetworkModule } from "./bitcoin/network/btcnetwork.module";
 import { BitcoinBlockchainModule } from "./bitcoin/blockchain/btcblockchain.module";
+import { BitcoinBlockModule } from "./bitcoin/block/btcblock.module";
 import { BitcoinMempoolModule } from "./bitcoin/mempool/btcmempool.module";
+import { BitcoinTransactionModule } from "./bitcoin/transaction/btctransaction.module";
 // Lightning Endpoints
 import { LightningInfoModule } from "./lightning/info/lninfo.module";
 import { LightningBalanceModule } from "./lightning/balance/lnbalance.module";
@@ -16,6 +18,7 @@ import { LightningWalletModule } from "./lightning/wallet/lnwallet.module";
 // Taproot Assets Endpoints
 import { TaprootAssetsInfoModule } from "./tapass/info/tapinfo.module";
 import { TaprootAssetsAssetModule } from "./tapass/asset/tapasset.module";
+import { TaprootAssetsIdModule } from "./tapass/id/tapid.module";
 // Cashu Mint Endpoints
 import { MintInfoModule } from "./mint/info/mintinfo.module";
 import { MintBalanceModule } from "./mint/balance/mintbalance.module";
@@ -42,12 +45,15 @@ import { PublicUrlModule } from "./public/url/url.module";
 		AuthenticationModule,
 		BitcoinNetworkModule,
 		BitcoinBlockchainModule,
+		BitcoinBlockModule,
 		BitcoinMempoolModule,
+		BitcoinTransactionModule,
 		LightningInfoModule,
 		LightningBalanceModule,
 		LightningWalletModule,
 		TaprootAssetsInfoModule,
 		TaprootAssetsAssetModule,
+		TaprootAssetsIdModule,
 		MintInfoModule,
 		MintBalanceModule,
 		MintKeysetModule,

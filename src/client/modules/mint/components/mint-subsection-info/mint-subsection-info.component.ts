@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, ChangeDetectorRe
 import { ActivatedRoute } from '@angular/router';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { toObservable } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 /* Vendor Dependencies */
 import { Subscription } from 'rxjs';
 /* Application Configuration */
@@ -43,6 +44,7 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 		urls: new FormArray([]),
 		contact: new FormArray([]),
 	});
+	public focus_control: string | null = null;
 
 	public get form_array_urls(): FormArray {
 		return this.form_info.get('urls') as FormArray;
@@ -62,8 +64,12 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 		public route: ActivatedRoute,
 		public aiService: AiService,
 		public eventService: EventService,
-		public cdr: ChangeDetectorRef
-	) {}
+		public cdr: ChangeDetectorRef,
+		public router: Router
+	) {
+		const nav = this.router.getCurrentNavigation();
+		this.focus_control = nav?.extras.state?.['focus_control'];
+	}
 
 	async ngOnInit(): Promise<void> {
 		this.init_info = this.route.snapshot.data['mint_info_rpc'];		

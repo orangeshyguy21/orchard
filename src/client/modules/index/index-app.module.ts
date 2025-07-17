@@ -1,6 +1,7 @@
 /* Core Dependencies */
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 /* Vendor Dependencies */
 import { MatCardModule } from '@angular/material/card';
@@ -9,6 +10,8 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 /* Application Dependencies */
 import { LocalModule } from '@client/modules/local/local.module';
 import { GraphicModule } from '@client/modules/graphic/graphic.module';
@@ -19,18 +22,24 @@ import { NavModule } from '@client/modules/nav/nav.module';
 import { MintModule } from '@client/modules/mint/mint.module';
 /* Local Dependencies */
 import { IndexSectionComponent } from './components/index-section/index-section.component';
-import { IndexEnabledBitcoinComponent } from './components/index-enabled-bitcoin/index-enabled-bitcoin.component';
-import { IndexEnabledLightningComponent } from './components/index-enabled-lightning/index-enabled-lightning.component';
-import { IndexEnabledMintComponent } from './components/index-enabled-mint/index-enabled-mint.component';
-import { IndexEnabledEcashComponent } from './components/index-enabled-ecash/index-enabled-ecash.component';
-import { IndexDisabledMintComponent } from './components/index-disabled-mint/index-disabled-mint.component';
-import { IndexDisabledEcashComponent } from './components/index-disabled-ecash/index-disabled-ecash.component';
-import { IndexDisabledLightningComponent } from './components/index-disabled-lightning/index-disabled-lightning.component';
-import { IndexDisabledBitcoinComponent } from './components/index-disabled-bitcoin/index-disabled-bitcoin.component';
-import { IndexHeaderBitcoinComponent } from './components/index-header-bitcoin/index-header-bitcoin.component';
-import { IndexHeaderLightningComponent } from './components/index-header-lightning/index-header-lightning.component';
-import { IndexHeaderMintComponent } from './components/index-header-mint/index-header-mint.component';
-import { IndexHeaderEcashComponent } from './components/index-header-ecash/index-header-ecash.component';
+import { IndexBitcoinHeaderComponent } from './components/index-bitcoin-header/index-bitcoin-header.component';
+import { IndexBitcoinEnabledComponent } from './components/index-bitcoin-enabled/index-bitcoin-enabled.component';
+import { IndexBitcoinDisabledComponent } from './components/index-bitcoin-disabled/index-bitcoin-disabled.component';
+import { IndexBitcoinInfoComponent } from './components/index-bitcoin-info/index-bitcoin-info.component';
+import { IndexLightningHeaderComponent } from './components/index-lightning-header/index-lightning-header.component';
+import { IndexLightningEnabledComponent } from './components/index-lightning-enabled/index-lightning-enabled.component';
+import { IndexLightningDisabledComponent } from './components/index-lightning-disabled/index-lightning-disabled.component';
+import { IndexMintHeaderComponent } from './components/index-mint-header/index-mint-header.component';
+import { IndexMintEnabledComponent } from './components/index-mint-enabled/index-mint-enabled.component';
+import { IndexMintDisabledComponent } from './components/index-mint-disabled/index-mint-disabled.component';
+import { IndexEcashHeaderComponent } from './components/index-ecash-header/index-ecash-header.component';
+import { IndexEcashEnabledComponent } from './components/index-ecash-enabled/index-ecash-enabled.component';
+import { IndexEcashDisabledComponent } from './components/index-ecash-disabled/index-ecash-disabled.component';
+import { IndexBitcoinHotwalletComponent } from './components/index-bitcoin-hotwallet/index-bitcoin-hotwallet.component';
+import { IndexBitcoinSyncingComponent } from './components/index-bitcoin-syncing/index-bitcoin-syncing.component';
+import { IndexBitcoinBlockchainComponent } from './components/index-bitcoin-blockchain/index-bitcoin-blockchain.component';
+import { IndexLightningInfoComponent } from './components/index-lightning-info/index-lightning-info.component';
+import { IndexMintInfoComponent } from './components/index-mint-info/index-mint-info.component';
 
 const routes: Routes = [
 	{
@@ -58,27 +67,36 @@ export class IndexAppRoutingModule { }
 @NgModule({
 	declarations: [
 		IndexSectionComponent,
-		IndexHeaderBitcoinComponent,
-		IndexHeaderLightningComponent,
-		IndexHeaderMintComponent,
-		IndexHeaderEcashComponent,
-		IndexEnabledBitcoinComponent,
-		IndexEnabledLightningComponent,
-		IndexEnabledMintComponent,
-		IndexEnabledEcashComponent,
-		IndexDisabledBitcoinComponent,
-		IndexDisabledLightningComponent,
-		IndexDisabledMintComponent,
-		IndexDisabledEcashComponent,
+		IndexBitcoinHeaderComponent,
+		IndexBitcoinEnabledComponent,
+		IndexBitcoinDisabledComponent,
+		IndexBitcoinInfoComponent,
+		IndexBitcoinHotwalletComponent,
+		IndexBitcoinSyncingComponent,
+		IndexBitcoinBlockchainComponent,
+		IndexLightningHeaderComponent,
+		IndexLightningEnabledComponent,
+		IndexLightningDisabledComponent,
+		IndexLightningInfoComponent,
+		IndexMintHeaderComponent,
+		IndexMintEnabledComponent,
+		IndexMintDisabledComponent,
+		IndexMintInfoComponent,
+		IndexEcashHeaderComponent,
+		IndexEcashEnabledComponent,
+		IndexEcashDisabledComponent,
 	],
 	imports: [
 		CommonModule,
+		ReactiveFormsModule,
 		MatCardModule,
 		MatIconModule,
 		MatRippleModule,
 		MatButtonModule,
 		MatTableModule,
 		MatProgressSpinnerModule,
+		MatFormFieldModule,
+		MatSelectModule,
 		LocalModule,
 		GraphicModule,
 		ErrorModule,

@@ -36,7 +36,9 @@ export class MintNameComponent {
 	) { }
 
    	public onClick(){
-		this.router.navigate(['mint', 'info']);
+		this.router.navigate(['mint', 'info'], {
+            state: { focus_control: 'name' }
+        });
 	}
 
 }

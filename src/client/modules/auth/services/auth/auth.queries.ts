@@ -13,3 +13,8 @@ mutation RefreshAuthentication {
 		refresh_token
 	}
 }`;
+
+export const REVOKE_AUTHENTICATION_MUTATION = `
+mutation RevokeAuthentication {
+	revoke_authentication
+}`;

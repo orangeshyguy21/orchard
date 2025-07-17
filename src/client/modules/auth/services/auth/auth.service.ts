@@ -10,12 +10,14 @@ import { LocalStorageService } from '@client/modules/cache/services/local-storag
 /* Native Dependencies */
 import { 
 	AuthenticationResponse,
-	RefreshAuthenticationResponse
+	RefreshAuthenticationResponse,
+	RevokeAuthenticationResponse
 } from '@client/modules/auth/types/auth.types';
 /* Local Dependencies */
 import {
 	AUTHENTICATION_MUTATION,
-	REFRESH_AUTHENTICATION_MUTATION
+	REFRESH_AUTHENTICATION_MUTATION,
+	REVOKE_AUTHENTICATION_MUTATION
 } from './auth.queries';
 /* Shared Dependencies */
 import { OrchardAuthentication } from '@shared/generated.types';
@@ -67,13 +69,32 @@ export class AuthService {
 			}),
 			catchError((error) => {
 				console.error('Error refreshing token:', error);
-				this.logout();
+				this.clearAuthCache();
 				return throwError(() => error);
 			}),
 		);
 	}
 
-	public logout(): void {
+	public revokeToken(): Observable<boolean> {
+		const refresh_token = this.localStorageService.getRefreshToken();
+		if (!refresh_token) return throwError(() => new Error('No refresh token available'));
+
+		const query = getApiQuery(REVOKE_AUTHENTICATION_MUTATION, {});
+		const headers = { 'Authorization': `Bearer ${refresh_token}` };
+
+		return this.http.post<OrchardRes<RevokeAuthenticationResponse>>(api, query, { headers }).pipe(
+			map((response) => {
+				return response.data.revoke_authentication;
+			}),
+			catchError((error) => {
+				console.error('Error revoking token:', error);
+				this.clearAuthCache();
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	public clearAuthCache(): void {
 		this.localStorageService.setAuthToken(null);
 		this.localStorageService.setRefreshToken(null);
 	}

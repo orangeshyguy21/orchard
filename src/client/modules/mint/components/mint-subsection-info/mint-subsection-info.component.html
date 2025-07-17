@@ -8,11 +8,13 @@
                             [icon_url]="init_info.icon_url"
                             [form_group]="form_info"
                             [control_name]="'icon_url'"
+                            [focused]="focus_control === 'icon_url'"
                             (update)="onControlUpdate($event)"
                             (cancel)="onControlCancel($event)">
                             <orc-mint-info-form-name 
                                 [form_group]="form_info"
                                 [control_name]="'name'"
+                                [focused]="focus_control === 'name'"
                                 (update)="onControlUpdate($event)"
                                 (cancel)="onControlCancel($event)">
                             </orc-mint-info-form-name>

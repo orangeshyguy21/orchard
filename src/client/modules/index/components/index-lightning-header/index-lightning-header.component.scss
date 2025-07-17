@@ -1,0 +1,8 @@
+@use '@styles/molecule/molecule';
+@use '@styles/nucleus/nucleus';
+
+.index-lightning-header-container{
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-gap-0-5;
+}

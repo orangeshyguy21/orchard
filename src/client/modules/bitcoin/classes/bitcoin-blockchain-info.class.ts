@@ -17,6 +17,10 @@ export class BitcoinBlockchainInfo implements OrchardBitcoinBlockchainInfo {
 	public prune_target_size: number | null;
 	public warnings: string[];
 
+	public get is_synced(): boolean {
+		return !this.initialblockdownload && this.headers === this.blocks;
+	}
+
 	constructor(obc: OrchardBitcoinBlockchainInfo) {
 		this.chain = obc.chain;
 		this.blocks = obc.blocks;

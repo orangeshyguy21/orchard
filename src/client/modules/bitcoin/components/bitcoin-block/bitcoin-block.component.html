@@ -1,0 +1,32 @@
+<div class="bitcoin-block-container">
+    @if( !is_template ) {
+        <div class="block-header">
+            <div class="block-height">{{ block?.height | block }}</div>
+        </div>
+    }
+    <div class="block" [ngClass]="{'block-template': is_template}">
+        <div class="block-content">
+            <div class="flex flex-column flex-gap-0-5 flex-align-center">
+                <div class="flex flex-gap-0-5 font-size-xs flex-justify-center">
+                    <div>{{ block?.feerate_lowest | feerate }}</div>
+                    <div>-</div>
+                    <div>{{ block?.feerate_highest | feerate }}</div>
+                    <div>sat/vB</div>
+                </div>
+                
+                <div class="flex flex-justify-center">
+                    <div>{{ block?.tx?.length }} transactions</div>
+                </div>
+                
+                <div class="flex flex-justify-center">
+                    @if( !is_template ) {
+                        <div>{{ $any(this.block).time | time_ago }}</div>
+                    }@else {
+                        <div>~ 10 minutes</div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="block-fullness" [style.height]="block?.fullness | percent"></div>
+    </div>
+</div>

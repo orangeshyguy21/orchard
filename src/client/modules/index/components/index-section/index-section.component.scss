@@ -16,23 +16,6 @@
     @extend %top-0;
 }
 
-.index-section-container{
-    @extend %flex;
-    @extend %flex-column;
-    @extend %flex-grow;
-    @extend %flex-items-center;
-    @extend %flex-justify-center;
-}
-
-.index-section{
-    @extend %flex-1;
-    @extend %flex;
-    @extend %flex-column;
-    @extend %flex-items-center;
-    @extend %p-1;
-    @extend %relative;
-}
-
 .index-section-error{
     @extend %orc-surface-bg;
     @extend %absolute;

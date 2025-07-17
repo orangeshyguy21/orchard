@@ -23,17 +23,17 @@ export class OrchardMintMintQuote {
 	@Field(type => MintQuoteState)
 	state: MintQuoteState;
 
-	@Field()
+	@Field({ nullable: true })
 	request_lookup_id: string;
 	
-	@Field()
+	@Field({ nullable: true })
 	pubkey: string;
+
+	@Field(type => UnixTimestamp)
+	created_time: number;
 
 	@Field(type => UnixTimestamp, { nullable: true })
 	issued_time: number;
-
-	@Field(type => UnixTimestamp, { nullable: true })
-	created_time: number;
 
 	@Field(type => UnixTimestamp, { nullable: true })
 	paid_time: number;

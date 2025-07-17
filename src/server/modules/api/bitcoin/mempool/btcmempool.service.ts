@@ -6,7 +6,7 @@ import { ErrorService } from '@server/modules/error/error.service';
 import { OrchardErrorCode } from '@server/modules/error/error.types';
 import { OrchardApiError } from '@server/modules/graphql/classes/orchard-error.class';
 /* Local Dependencies */
-import { OrchardBitcoinMempool } from './btcmempool.model';
+import { OrchardBitcoinMempoolTransaction } from './btcmempool.model';
 
 @Injectable()
 export class BitcoinMempoolService {
@@ -18,11 +18,10 @@ export class BitcoinMempoolService {
 		private errorService: ErrorService,
 	) {}
 	
-	public async getBitcoinMempool(tag: string = 'GET { bitcoin_mempool }'): Promise<OrchardBitcoinMempool> {
+	public async getBitcoinMempoolTransactions(tag: string = 'GET { bitcoin_mempool }'): Promise<OrchardBitcoinMempoolTransaction[]> {
 		try {
 			const mempool = await this.bitcoinRpcService.getBitcoinMempool();
-            console.log(mempool);
-			return new OrchardBitcoinMempool(mempool);
+			return Object.entries(mempool).map(([txid, tx]) => new OrchardBitcoinMempoolTransaction(tx, txid));
 		} catch (error) {
 			const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
 				errord: OrchardErrorCode.BitcoinRPCError,

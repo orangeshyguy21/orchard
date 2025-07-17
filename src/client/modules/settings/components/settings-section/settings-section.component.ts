@@ -39,6 +39,9 @@ export class SettingsSectionComponent implements OnInit {
 		SettingsCategory.Mint,
 		SettingsCategory.Ecash
 	];
+	public cat_orchard = SettingsCategory.Orchard;
+	public cat_local= SettingsCategory.Local;
+	
 
 	constructor(
 		private localStorageService: LocalStorageService,
@@ -82,7 +85,10 @@ export class SettingsSectionComponent implements OnInit {
 		this.localStorageService.setLocale({ code: locale });
 		this.settingService.setLocale();
 		this.locale = this.localStorageService.getLocale();
-		this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
+		this.eventService.registerEvent(new EventData({
+			type: 'SUCCESS',
+			message: 'Locale updated!',
+		}));
 	}
 
 	public onTimezoneChange(timezone: string|null) {
@@ -90,7 +96,10 @@ export class SettingsSectionComponent implements OnInit {
 		this.localStorageService.setTimezone({ tz: timezone });
 		this.settingService.setTimezone();
 		this.timezone = this.localStorageService.getTimezone();
-		this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
+		this.eventService.registerEvent(new EventData({
+			type: 'SUCCESS',
+			message: 'Timezone updated!',
+		}));
 	}
 
 	public onThemeChange(theme: ThemeType|null) {
@@ -98,14 +107,20 @@ export class SettingsSectionComponent implements OnInit {
 		this.localStorageService.setTheme({ type: theme });
 		this.settingService.setTheme();
 		this.theme = this.localStorageService.getTheme();
-		this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
+		this.eventService.registerEvent(new EventData({
+			type: 'SUCCESS',
+			message: 'Theme updated!',
+		}));
 	}
 
 	public onModelChange(model: string|null) {
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		this.localStorageService.setModel({ model: model });
 		this.model = this.localStorageService.getModel();
-		this.eventService.registerEvent(new EventData({type: 'SUCCESS'}));
+		this.eventService.registerEvent(new EventData({
+			type: 'SUCCESS',
+			message: 'Model updated!',
+		}));
 	}
 }
 

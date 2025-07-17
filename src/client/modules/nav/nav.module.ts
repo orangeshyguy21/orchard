@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 /* Vendor Dependencies */
 import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
 /* Application Dependencies */
 import { GraphicModule } from '@client/modules/graphic/graphic.module';
 import { BitcoinModule } from '@client/modules/bitcoin/bitcoin.module';
@@ -17,6 +19,7 @@ import { SecondaryNavComponent } from './components/secondary-nav/secondary-nav.
 import { SecondaryNavItemComponent } from './components/secondary-nav-item/secondary-nav-item.component';
 import { PrimaryNavFooterComponent } from './components/primary-nav-footer/primary-nav-footer.component';
 import { PrimaryNavToolComponent } from './components/primary-nav-tool/primary-nav-tool.component';
+import { SecondaryNavMoreComponent } from './components/secondary-nav-more/secondary-nav-more.component';
 
 @NgModule({
 	declarations: [
@@ -27,12 +30,15 @@ import { PrimaryNavToolComponent } from './components/primary-nav-tool/primary-n
 		SecondaryNavComponent,
 		SecondaryNavItemComponent,
 		PrimaryNavFooterComponent,
-		PrimaryNavToolComponent
+		PrimaryNavToolComponent,
+  		SecondaryNavMoreComponent
 	],
 	imports: [
 		CommonModule,
 		MatIconModule,
 		MatRippleModule,
+		MatButtonModule,
+		MatMenuModule,
 		GraphicModule,
 		BitcoinModule,
 		EventModule
@@ -40,7 +46,8 @@ import { PrimaryNavToolComponent } from './components/primary-nav-tool/primary-n
 	exports: [
 		PrimaryNavComponent,
 		SecondaryNavComponent,
-		SecondaryNavItemComponent
+		SecondaryNavItemComponent,
+		SecondaryNavMoreComponent
 	]
 })
 export class NavModule { }

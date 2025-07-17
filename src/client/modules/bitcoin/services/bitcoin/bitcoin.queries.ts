@@ -75,6 +75,75 @@ query BitcoinBlock($hash: String!) {
         version
         versionHex
         weight
-        tx
+        tx{
+            txid
+            fee
+            vsize
+        }
+    }
+}`;
+
+export const BITCOIN_MEMPOOL_TRANSACTIONS_QUERY = `{
+    bitcoin_mempool_transactions{
+        txid
+        vsize
+        weight
+        time
+        height
+        descendantcount
+        descendantsize
+        ancestorcount
+        ancestorsize
+        wtxid
+        fees{
+            base
+            modified
+            ancestor
+            descendant
+        }
+        depends
+        spentby
+        bip125_replaceable
+        unbroadcast
+    }
+}`;
+
+export const BITCOIN_TRANSACTION_FEE_ESTIMATES_QUERY = `
+query BitcoinTransactionFeeEstimates($targets: [Int!]!) {
+    bitcoin_transaction_fee_estimates(targets: $targets){
+        target
+        blocks
+        errors
+        feerate
+    }
+}`;
+
+export const BITCOIN_BLOCK_TEMPLATE_QUERY = `{
+    bitcoin_block_template{
+        bits
+        coinbasevalue
+        curtime
+        default_witness_commitment
+        height
+        longpollid
+        mintime
+        mutable
+        noncerange
+        previousblockhash
+        rules
+        sigoplimit
+        sizelimit
+        target
+        transactions{
+            txid
+            hash
+            depends
+            fee
+            sigops
+            weight
+        }
+        vbrequired
+        version
+        weightlimit
     }
 }`;

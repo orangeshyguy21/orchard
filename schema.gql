@@ -193,6 +193,7 @@ type Mutation {
   mint_url_add(mint_url_update: MintUrlUpdateInput!): OrchardMintUrlUpdate!
   mint_url_remove(mint_url_update: MintUrlUpdateInput!): OrchardMintUrlUpdate!
   refresh_authentication: OrchardAuthentication!
+  revoke_authentication: Boolean!
 }
 
 type OrchardAiAgent {
@@ -299,7 +300,7 @@ type OrchardBitcoinBlock {
   size: Int!
   strippedsize: Int!
   time: UnixTimestamp!
-  tx: [String!]!
+  tx: [OrchardBitcoinRawTransaction!]!
   version: Float!
   versionHex: String!
   weight: Float!
@@ -307,6 +308,37 @@ type OrchardBitcoinBlock {
 
 type OrchardBitcoinBlockCount {
   height: Int!
+}
+
+type OrchardBitcoinBlockTemplate {
+  bits: String!
+  coinbasevalue: Int!
+  curtime: Int!
+  default_witness_commitment: String
+  height: Int!
+  longpollid: String!
+  mintime: Int!
+  mutable: [String!]!
+  noncerange: String!
+  previousblockhash: String!
+  rules: [String!]!
+  sigoplimit: Int!
+  sizelimit: Int!
+  target: String!
+  transactions: [OrchardBitcoinBlockTemplateTransaction!]!
+  vbrequired: Int!
+  version: Int!
+  weightlimit: Int!
+}
+
+type OrchardBitcoinBlockTemplateTransaction {
+  data: String!
+  depends: [Int!]!
+  fee: Int!
+  hash: String!
+  sigops: Int!
+  txid: String!
+  weight: Int!
 }
 
 type OrchardBitcoinBlockchainInfo {
@@ -326,8 +358,29 @@ type OrchardBitcoinBlockchainInfo {
   warnings: [String!]!
 }
 
-type OrchardBitcoinMempool {
-  test: Int!
+type OrchardBitcoinMempoolFees {
+  ancestor: Float!
+  base: Float!
+  descendant: Float!
+  modified: Float!
+}
+
+type OrchardBitcoinMempoolTransaction {
+  ancestorcount: Int!
+  ancestorsize: Int!
+  bip125_replaceable: Boolean!
+  depends: [String!]!
+  descendantcount: Int!
+  descendantsize: Int!
+  fees: OrchardBitcoinMempoolFees!
+  height: Int!
+  spentby: [String!]!
+  time: UnixTimestamp!
+  txid: ID!
+  unbroadcast: Boolean!
+  vsize: Int!
+  weight: Int!
+  wtxid: String!
 }
 
 type OrchardBitcoinNetwork {
@@ -361,6 +414,19 @@ type OrchardBitcoinNetworkInfo {
   timeoffset: Int!
   version: Int!
   warnings: [String!]!
+}
+
+type OrchardBitcoinRawTransaction {
+  fee: Float
+  txid: String!
+  vsize: Int
+}
+
+type OrchardBitcoinTxFeeEstimate {
+  blocks: Int!
+  errors: [String!]
+  feerate: Float
+  target: Int!
 }
 
 type OrchardCachedEndpoint {
@@ -522,7 +588,7 @@ type OrchardMintKeyset {
   derivation_path_index: Int!
   fees_paid: Int
   id: ID!
-  input_fee_ppk: Int!
+  input_fee_ppk: Int
   unit: String!
   valid_from: UnixTimestamp!
   valid_to: UnixTimestamp
@@ -543,27 +609,27 @@ type OrchardMintKeysetsAnalytics {
 
 type OrchardMintMeltQuote {
   amount: Int!
-  created_time: UnixTimestamp
+  created_time: UnixTimestamp!
   fee_reserve: Int!
   id: ID!
   msat_to_pay: Int
   paid_time: UnixTimestamp
   payment_preimage: String
   request: String!
-  request_lookup_id: String!
+  request_lookup_id: String
   state: MeltQuoteState!
   unit: MintUnit!
 }
 
 type OrchardMintMintQuote {
   amount: Int!
-  created_time: UnixTimestamp
+  created_time: UnixTimestamp!
   id: ID!
   issued_time: UnixTimestamp
   paid_time: UnixTimestamp
-  pubkey: String!
+  pubkey: String
   request: String!
-  request_lookup_id: String!
+  request_lookup_id: String
   state: MintQuoteState!
   unit: MintUnit!
 }
@@ -743,6 +809,10 @@ type OrchardTaprootAssets {
   unconfirmed_transfers: String!
 }
 
+type OrchardTaprootAssetsId {
+  asset_id: TaprootAssetId!
+}
+
 type OrchardTaprootAssetsInfo {
   block_hash: String!
   block_height: Int!
@@ -764,10 +834,12 @@ type Query {
   ai_agent(agent: AiAgent!): OrchardAiAgent!
   ai_models: [OrchardAiModel!]!
   bitcoin_block(hash: String!): OrchardBitcoinBlock!
+  bitcoin_block_template: OrchardBitcoinBlockTemplate!
   bitcoin_blockchain_info: OrchardBitcoinBlockchainInfo!
   bitcoin_blockcount: OrchardBitcoinBlockCount!
-  bitcoin_mempool: OrchardBitcoinMempool!
+  bitcoin_mempool_transactions: [OrchardBitcoinMempoolTransaction!]!
   bitcoin_network_info: OrchardBitcoinNetworkInfo!
+  bitcoin_transaction_fee_estimates(targets: [Int!]!): [OrchardBitcoinTxFeeEstimate!]!
   lightning_balance: OrchardLightningBalance!
   lightning_info: OrchardLightningInfo!
   lightning_wallet: [OrchardLightningAccount!]!
@@ -796,6 +868,7 @@ type Query {
   public_urls(urls: [String!]!): [OrchardPublicUrl!]!
   status: OrchardStatus!
   taproot_assets: OrchardTaprootAssets!
+  taproot_assets_ids: [OrchardTaprootAssetsId!]!
   taproot_assets_info: OrchardTaprootAssetsInfo!
   taproot_assets_utxo: [OrchardTaprootAssetsUtxo!]!
 }
@@ -803,6 +876,10 @@ type Query {
 type Subscription {
   ai_chat(ai_chat: AiChatInput!): OrchardAiChatChunk!
   blockCount: OrchardBitcoinBlockCount!
+}
+
+enum TaprootAssetId {
+  USDT
 }
 
 enum TaprootAssetType {

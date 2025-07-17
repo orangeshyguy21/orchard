@@ -1,8 +1,0 @@
-@use '@styles/molecule/molecule';
-@use '@styles/nucleus/nucleus';
-
-.index-header-bitcoin-container{
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-gap-0-5;
-}

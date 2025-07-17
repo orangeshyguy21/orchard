@@ -1,12 +1,23 @@
 @use '@styles/molecule/molecule';
 
-.bottom-nav-menu{
+// should be orc
+.orc-bottom-nav-menu{
     @extend %relative;
     @extend %bottom-0-5;
 }
 
-.top-nav-menu{
+.orc-top-nav-menu{
+    @extend %relative;
+    @extend %top-0-5;
+}
+
+.orc-sticky-menu{
     @extend %relative;
     @extend %top-1-5;
-    // top: 1.5rem;
+}
+
+.orc-more-menu{
+    button{
+        min-width: 12rem;
+    }
 }

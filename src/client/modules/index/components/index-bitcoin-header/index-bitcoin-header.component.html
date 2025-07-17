@@ -1,0 +1,32 @@
+<div class="index-bitcoin-header-container">
+    <div class="flex flex-items-center flex-gap-0-5 p-b-0-5 w-min-10">
+        <mat-icon [svgIcon]="'bitcoin_outline'"></mat-icon>
+        <div class="title-l">Bitcoin</div>
+    </div>
+    @if( !loading ) {
+        <div [@fadeIn] class="flex flex-gap-1">
+            <div class="flex flex-items-center flex-gap-0-5">
+                @switch( state() ) {
+                    @case( 'offline' ) {
+                        <mat-icon class="icon-sm orc-status-error-color">circle</mat-icon>
+                        <div class="orc-outline-color">offline</div>
+                    }
+                    @case( 'syncing' ) {
+                        <mat-icon class="icon-sm orc-status-warning-color">circle</mat-icon>
+                        <div class="orc-outline-color">syncing</div>
+                    }
+                    @default {
+                        <mat-icon class="icon-sm orc-status-active-color">circle</mat-icon>
+                        <div class="orc-outline-color">online</div>
+                    }
+                }
+            </div>
+        </div>
+    }
+    <div class="flex-grow"></div>
+    <div>
+        @if( !loading ) {
+            <div [@fadeIn] class="orc-outline-color font-size-xs">{{ network_info?.subversion }}</div>
+        }
+    </div>
+</div>

@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, ViewChild, ElementRef, Output, EventEmitter, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 /* Application Dependencies */
 import { MintInfoRpc } from '@client/modules/mint/classes/mint-info-rpc.class';
@@ -11,10 +11,11 @@ import { MintInfoRpc } from '@client/modules/mint/classes/mint-info-rpc.class';
     styleUrl: './mint-info-form-name.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MintInfoFormNameComponent {
+export class MintInfoFormNameComponent implements OnInit {
 
     @Input() form_group!: FormGroup;
     @Input() control_name!: keyof MintInfoRpc;
+    @Input() focused: boolean = false;
 
     @Output() update = new EventEmitter<keyof MintInfoRpc>();
     @Output() cancel = new EventEmitter<keyof MintInfoRpc>();
@@ -22,6 +23,12 @@ export class MintInfoFormNameComponent {
     @ViewChild('element_name') element_name!: ElementRef<HTMLInputElement>;
 
     constructor(){}
+
+    ngOnInit(): void {
+        setTimeout(() => {
+            if(this.focused) this.element_name.nativeElement.focus();
+        });
+	}
 
     public get form_hot(): boolean {
         if( document.activeElement === this.element_name?.nativeElement ) return true;

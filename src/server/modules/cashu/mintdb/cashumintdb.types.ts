@@ -11,10 +11,10 @@ export type CashuMintKeyset = {
 	derivation_path: string;
 	derivation_path_index: number;
 	valid_from: number;
-	valid_to: number;
+	valid_to: number | null;
 	active: number;
 	unit: MintUnit;
-	input_fee_ppk: number;
+	input_fee_ppk: number | null;
 	fees_paid: number | null;
 }
 
@@ -26,10 +26,10 @@ export type CashuMintMeltQuote = {
 	fee_reserve: number;
 	state: MeltQuoteState;
 	payment_preimage: string | null;
-	request_lookup_id: string;
+	request_lookup_id: string | null;
 	msat_to_pay: number | null;
 	created_time: number;
-	paid_time: number;
+	paid_time: number | null;
 }
 
 export type CashuMintMintQuote = {
@@ -38,12 +38,12 @@ export type CashuMintMintQuote = {
 	unit: MintUnit;
 	request: string;
 	state: MintQuoteState;
-	request_lookup_id: string;
-	pubkey: string;
-	issued_time: number;
+	request_lookup_id: string | null;
+	pubkey: string | null;
 	created_time: number;
-	paid_time: number;
-}
+	issued_time: number | null;
+	paid_time: number | null;
+}	
 
 export type CashuMintProofGroup = {
 	amount: number;

@@ -1,8 +1,0 @@
-@use '@styles/molecule/molecule';
-@use '@styles/nucleus/nucleus';
-
-.index-header-mint-container{
-    @extend %flex;
-    @extend %flex-items-end;
-    @extend %flex-gap-0-5;
-}

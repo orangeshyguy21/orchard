@@ -36,6 +36,8 @@ export class MintIconComponent {
 	) { }
 
    	public onClick(){
-		this.router.navigate(['mint', 'info']);
+		this.router.navigate(['mint', 'info'], {
+            state: { focus_control: 'icon_url' }
+        });
 	}
 }

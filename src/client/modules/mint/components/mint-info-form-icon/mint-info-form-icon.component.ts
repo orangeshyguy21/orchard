@@ -32,6 +32,7 @@ export class MintInfoFormIconComponent implements OnInit, OnDestroy {
 	@Input() form_group!: FormGroup;
     @Input() control_name!: keyof MintInfoRpc;
 	@Input() icon_url: string | null = null;
+	@Input() focused: boolean = false;
 
     @Output() update = new EventEmitter<keyof MintInfoRpc>();
     @Output() cancel = new EventEmitter<keyof MintInfoRpc>();
@@ -64,6 +65,7 @@ export class MintInfoFormIconComponent implements OnInit, OnDestroy {
 	ngOnInit(): void {
         setTimeout(() => {
             this.form_ready = true;
+            if(this.focused) this.element_icon_url.nativeElement.focus();
             this.cdr.detectChanges();
         });
         this.form_group.get(this.control_name)?.valueChanges

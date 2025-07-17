@@ -12,8 +12,9 @@ todo: timezone (UTC - local)
 			<div class="font-size-s">Orchard Settings</div>
 		</div>
 		<div secondary-nav-items></div>
-		<div secondary-nav-toolbar>
+		<div secondary-nav-toolbar class="secondary-nav-toolbar">
 			<div class="section-implementation">{{ version }}</div>
+			<orc-secondary-nav-more></orc-secondary-nav-more>
 		</div>
 	</orc-secondary-nav>
 
@@ -26,70 +27,76 @@ todo: timezone (UTC - local)
 			</orc-settings-categories>
 
 			<!-- Location Settings -->
-			<div class="sticky-setting z-index-1">
-				<div class="flex flex-justify-between flex-items-end p-b-0-5">
-					<div>
-						<div class="title-l">Location</div>
-						<div class="font-size-xs orc-outline-color">Settings for local display and timezone</div>
+			@if(category_filters.includes(cat_orchard) || category_filters.includes(cat_local)) {
+				<div class="sticky-setting z-index-1">
+					<div class="flex flex-justify-between flex-items-end p-b-0-5">
+						<div>
+							<div class="title-l">Location</div>
+							<div class="font-size-xs orc-outline-color">Settings for local display and timezone</div>
+						</div>
+						<mat-chip-set aria-label="Location categories">
+							<mat-chip disabled>Orchard</mat-chip>
+							<mat-chip disabled>Local</mat-chip>
+						</mat-chip-set>
 					</div>
-					<mat-chip-set aria-label="Location categories">
-						<mat-chip disabled>Orchard</mat-chip>
-						<mat-chip disabled>Local</mat-chip>
-					</mat-chip-set>
+					<div class="category-rule"></div>
 				</div>
-				<div class="category-rule"></div>
-			</div>
-			<orc-settings-time
-				[locale]="locale"
-				[timezone]="timezone"
-				[loading]="loading_static"
-				(localeChange)="onLocaleChange($event)"
-				(timezoneChange)="onTimezoneChange($event)">
-			</orc-settings-time>
+				<orc-settings-time
+					[locale]="locale"
+					[timezone]="timezone"
+					[loading]="loading_static"
+					(localeChange)="onLocaleChange($event)"
+					(timezoneChange)="onTimezoneChange($event)">
+				</orc-settings-time>
+			}
+			
 
 			<!-- Theme Settings -->
+			@if(category_filters.includes(cat_orchard) || category_filters.includes(cat_local)) {
 			<div class="sticky-setting z-index-1">
-				<div class="flex flex-justify-between flex-items-end p-b-0-5">
-					<div>
-						<div class="title-l">Theme</div>
-						<div class="font-size-xs orc-outline-color">Settings for the appearance of the application</div>
+					<div class="flex flex-justify-between flex-items-end p-b-0-5">
+						<div>
+							<div class="title-l">Theme</div>
+							<div class="font-size-xs orc-outline-color">Settings for the appearance of the application</div>
+						</div>
+						<mat-chip-set aria-label="Theme categories">
+							<mat-chip disabled>Orchard</mat-chip>
+							<mat-chip disabled>Local</mat-chip>
+						</mat-chip-set>
 					</div>
-					<mat-chip-set aria-label="Theme categories">
-						<mat-chip disabled>Orchard</mat-chip>
-						<mat-chip disabled>Local</mat-chip>
-					</mat-chip-set>
+					<div class="category-rule"></div>
 				</div>
-				<div class="category-rule"></div>
-			</div>
-			<orc-settings-theme
-				[theme]="theme"
-				[loading]="loading_static"
-				(themeChange)="onThemeChange($event)">
-			</orc-settings-theme>
+				<orc-settings-theme
+					[theme]="theme"
+					[loading]="loading_static"
+					(themeChange)="onThemeChange($event)">
+				</orc-settings-theme>
+			}
 
 			<!-- AI Settings -->
-			<div class="sticky-setting z-index-1">
-				<div class="flex flex-justify-between flex-items-end p-b-0-5">
-					<div>
-						<div class="title-l">AI</div>
-						<div class="font-size-xs orc-outline-color">Settings for the AI agents</div>
+			@if(category_filters.includes(cat_orchard) || category_filters.includes(cat_local)) {
+				<div class="sticky-setting z-index-1">
+					<div class="flex flex-justify-between flex-items-end p-b-0-5">
+						<div>
+							<div class="title-l">AI</div>
+							<div class="font-size-xs orc-outline-color">Settings for the AI agents</div>
+						</div>
+						<mat-chip-set aria-label="AI categories">
+							<mat-chip disabled>Orchard</mat-chip>
+							<mat-chip disabled>Local</mat-chip>
+						</mat-chip-set>
 					</div>
-					<mat-chip-set aria-label="AI categories">
-						<mat-chip disabled>Orchard</mat-chip>
-						<mat-chip disabled>Local</mat-chip>
-					</mat-chip-set>
+					<div class="category-rule"></div>
 				</div>
-				<div class="category-rule"></div>
-			</div>
-			<orc-settings-ai
-				[enabled]="enabled_ai"
-				[loading]="loading_ai"
-				[error]="error_ai"
-				[model_options]="ai_models"
-				[model]="model"
-				(modelChange)="onModelChange($event)">
-			</orc-settings-ai>
-
+				<orc-settings-ai
+					[enabled]="enabled_ai"
+					[loading]="loading_ai"
+					[error]="error_ai"
+					[model_options]="ai_models"
+					[model]="model"
+					(modelChange)="onModelChange($event)">
+				</orc-settings-ai>
+			}
 		</div>
 	</div>
 </section>

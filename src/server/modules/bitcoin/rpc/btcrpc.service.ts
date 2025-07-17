@@ -6,7 +6,14 @@ import { ConfigService } from '@nestjs/config';
 import { BitcoinType } from '@server/modules/bitcoin/bitcoin.enums';
 import { CoreService } from '@server/modules/bitcoin/core/core.service';
 /* Local Dependencies */
-import { BitcoinBlockchainInfo, BitcoinNetworkInfo, BitcoinBlock } from './btcrpc.types';
+import { 
+    BitcoinBlockchainInfo,
+    BitcoinNetworkInfo,
+    BitcoinBlock,
+    BitcoinTransaction,
+    BitcoinFeeEstimate,
+    BitcoinBlockTemplate,
+} from './btcrpc.types';
 
 @Injectable()
 export class BitcoinRpcService implements OnModuleInit {
@@ -42,7 +49,7 @@ export class BitcoinRpcService implements OnModuleInit {
     }
 
     public async getBitcoinBlock(hash: string) : Promise<BitcoinBlock> {
-        if( this.type === BitcoinType.CORE ) return this.coreService.makeRpcRequest('getblock', [hash, 1]);
+        if( this.type === BitcoinType.CORE ) return this.coreService.makeRpcRequest('getblock', [hash, 2]);
     }
 
     /* *******************************************************
@@ -57,7 +64,26 @@ export class BitcoinRpcService implements OnModuleInit {
 	   Mempool                      
 	******************************************************** */
 
-    public async getBitcoinMempool() : Promise<any> {
+    public async getBitcoinMempool() : Promise<Record<string, BitcoinTransaction>> {
         if( this.type === BitcoinType.CORE ) return this.coreService.makeRpcRequest('getrawmempool', [true]);
+    }
+
+    /* *******************************************************
+	   Mining                      
+	******************************************************** */
+
+    public async getBitcoinBlockTemplate() : Promise<BitcoinBlockTemplate> {
+        if( this.type === BitcoinType.CORE ) return this.coreService.makeRpcRequest('getblocktemplate', [{
+            "rules": ["segwit"],
+            "mode": "template"
+        }]);
+    }
+
+    /* *******************************************************
+	   Utilities                      
+	******************************************************** */
+
+    public async getBitcoinFeeEstimate(target: number) : Promise<BitcoinFeeEstimate> {
+        if( this.type === BitcoinType.CORE ) return this.coreService.makeRpcRequest('estimatesmartfee', [target]);
     }
 }

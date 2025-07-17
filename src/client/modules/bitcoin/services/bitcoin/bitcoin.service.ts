@@ -15,11 +15,17 @@ import { BitcoinBlockCount } from '@client/modules/bitcoin/classes/bitcoin-block
 import { BitcoinBlockchainInfo } from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
 import { BitcoinNetworkInfo } from '@client/modules/bitcoin/classes/bitcoin-network-info.class';
 import { BitcoinBlock } from '@client/modules/bitcoin/classes/bitcoin-block.class';
+import { BitcoinTransaction } from '@client/modules/bitcoin/classes/bitcoin-transaction.class';
+import { BitcoinTransactionFeeEstimate } from '@client/modules/bitcoin/classes/bitcoin-transaction-fee-estimate.class';
+import { BitcoinBlockTemplate } from '@client/modules/bitcoin/classes/bitcoin-block-template.class';
 import {
 	BitcoinBlockchainInfoResponse,
 	BitcoinBlockCountResponse,
 	BitcoinNetworkInfoResponse,
 	BitcoinBlockResponse,
+	BitcoinMempoolTransactionsResponse,
+	BitcoinTransactionFeeEstimatesResponse,
+	BitcoinBlockTemplateResponse,
 } from '@client/modules/bitcoin/types/bitcoin.types';
 /* Local Dependencies */
 import { 
@@ -27,6 +33,9 @@ import {
 	BITCOIN_BLOCK_COUNT_QUERY,
 	BITCOIN_NETWORK_INFO_QUERY,
 	BITCOIN_BLOCK_QUERY,
+	BITCOIN_MEMPOOL_TRANSACTIONS_QUERY,
+	BITCOIN_TRANSACTION_FEE_ESTIMATES_QUERY,
+	BITCOIN_BLOCK_TEMPLATE_QUERY,
 } from './bitcoin.queries';
 
 @Injectable({
@@ -171,6 +180,54 @@ export class BitcoinService {
 			map((bitcoin_block) => new BitcoinBlock(bitcoin_block)),
 			catchError((error) => {
 				console.error('Error loading bitcoin block:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public getBitcoinMempoolTransactions() : Observable<BitcoinTransaction[]> {
+		const query = getApiQuery(BITCOIN_MEMPOOL_TRANSACTIONS_QUERY);
+
+		return this.http.post<OrchardRes<BitcoinMempoolTransactionsResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.bitcoin_mempool_transactions;
+			}),
+			map((txs) => txs.map((tx) => new BitcoinTransaction(tx))),
+			catchError((error) => {
+				console.error('Error loading bitcoin mempool transactions:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public getBitcoinTransactionFeeEstimates(targets: number[]) : Observable<BitcoinTransactionFeeEstimate[]> {
+		const query = getApiQuery(BITCOIN_TRANSACTION_FEE_ESTIMATES_QUERY, { targets });
+
+		return this.http.post<OrchardRes<BitcoinTransactionFeeEstimatesResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.bitcoin_transaction_fee_estimates;
+			}),
+			map((fee_estimates) => fee_estimates.map((fee_estimate) => new BitcoinTransactionFeeEstimate(fee_estimate))),
+			catchError((error) => {
+				console.error('Error loading bitcoin transaction fee estimates:', error);
+				return throwError(() => error);
+			})
+		);
+	}
+
+	public getBitcoinBlockTemplate() : Observable<BitcoinBlockTemplate> {
+		const query = getApiQuery(BITCOIN_BLOCK_TEMPLATE_QUERY);
+
+		return this.http.post<OrchardRes<BitcoinBlockTemplateResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.bitcoin_block_template;
+			}),
+			map((block_template) => new BitcoinBlockTemplate(block_template)),
+			catchError((error) => {
+				console.error('Error loading bitcoin block template:', error);
 				return throwError(() => error);
 			})
 		);

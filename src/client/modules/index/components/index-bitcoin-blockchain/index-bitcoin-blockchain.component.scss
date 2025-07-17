@@ -1,0 +1,60 @@
+@use '@styles/molecule/molecule';
+
+.target-form-field{
+    min-width: 16rem;
+}
+
+.blockchain-divider{
+    @extend %absolute;
+    @extend %left-0;
+    @extend %right-0;
+    bottom: -1rem;
+    top: -1rem;
+    @extend %w-0-25;
+    @extend %orc-corner-full;
+    @extend %orc-surface-container-highest-bg;
+}
+
+.block-half{
+    height: 10rem;
+    width: 5rem;
+}
+
+.block-chained{
+    background: linear-gradient(to right, var(--mat-sys-surface-container-highest), var(--mat-sys-surface));
+    border-top-left-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+}
+
+.block-template{
+    background: linear-gradient(to left, var(--mat-sys-surface-variant), var(--mat-sys-surface));
+    border-top-right-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+}
+
+.block-indicator{
+    @extend %absolute;
+    @extend %bottom-0;
+
+    &.next-block{
+        right: 5rem;
+    }
+
+    &.pool-block{
+        right: 14rem;
+    }
+}
+
+.block-indicator-icon{
+    @extend %absolute;
+    @extend %bottom-0;
+    @extend %right-0;
+    @extend %left-0;
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-justify-center;
+
+    mat-icon{
+        @extend %overflow-visible;
+    }
+}

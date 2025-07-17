@@ -1,0 +1,26 @@
+<div class="flex flex-column flex-gap-1">
+    <div class="title-l">Info</div>
+    <div class="orc-info-table">
+        <table>
+            <tbody>
+                <tr>
+                    <td class="font-weight-extra-light orc-outline-color">Node</td>
+                    <td>
+                        <div class="flex flex-items-center flex-gap-1">
+                            <div class="h-2 w-2 orc-corner-full" [style.background-color]="lightning_info?.color"></div>
+                            <div class="text-nowrap">{{ lightning_info?.alias }}</div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="font-weight-extra-light orc-outline-color">Channels open</td>
+                    <td>{{ lightning_info?.num_active_channels }}</td>
+                </tr>
+                <tr>
+                    <td class="font-weight-extra-light orc-outline-color">Channels closed</td>
+                    <td>{{ lightning_info?.num_inactive_channels }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

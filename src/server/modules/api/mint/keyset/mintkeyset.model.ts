@@ -28,7 +28,7 @@ export class OrchardMintKeyset {
 	@Field()
 	unit: MintUnit;
 
-	@Field(type => Int)
+	@Field(type => Int, { nullable: true })
 	input_fee_ppk: number;
 
 	@Field(type => Int, { nullable: true })

@@ -2,6 +2,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { Router } from '@angular/router';
+import { FormGroup, FormControl } from '@angular/forms';
 /* Vendor Dependencies */
 import { tap, catchError, finalize, EMPTY, forkJoin, Subscription, firstValueFrom, timer, switchMap, takeWhile } from 'rxjs';
 /* Application Configuration */
@@ -16,6 +17,9 @@ import { BitcoinBlockchainInfo } from '@client/modules/bitcoin/classes/bitcoin-b
 import { BitcoinNetworkInfo } from '@client/modules/bitcoin/classes/bitcoin-network-info.class';
 import { BitcoinBlockCount } from '@client/modules/bitcoin/classes/bitcoin-blockcount.class';
 import { BitcoinBlock } from '@client/modules/bitcoin/classes/bitcoin-block.class';
+import { BitcoinTransaction } from '@client/modules/bitcoin/classes/bitcoin-transaction.class';
+import { BitcoinBlockTemplate } from '@client/modules/bitcoin/classes/bitcoin-block-template.class';
+import { BitcoinTransactionFeeEstimate } from '@client/modules/bitcoin/classes/bitcoin-transaction-fee-estimate.class';
 import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.class';
 import { LightningBalance } from '@client/modules/lightning/classes/lightning-balance.class';
 import { LightningAccount } from '@client/modules/lightning/classes/lightning-account.class';
@@ -54,6 +58,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	public loading_lightning:boolean = true;
 	public loading_taproot_assets:boolean = true;
 	public loading_mint:boolean = true;
+	public loading_mint_icon:boolean = true;
 
 	public errors_bitcoin: OrchardError[] = [];
 	public errors_lightning: OrchardError[] = [];
@@ -64,6 +69,9 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	public bitcoin_network_info!: BitcoinNetworkInfo | null;
 	public bitcoin_blockcount!: BitcoinBlockCount | null;
 	public bitcoin_block!: BitcoinBlock | null;
+	public bitcoin_mempool!: BitcoinTransaction[] | null;
+	public bitcoin_block_template!: BitcoinBlockTemplate | null;
+	public bitcoin_txfee_estimate!: BitcoinTransactionFeeEstimate | null;
 	public lightning_info!: LightningInfo | null;
 	public lightning_balance!: LightningBalance | null;
 	public lightning_accounts!: LightningAccount[] | null;
@@ -73,6 +81,10 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	public mint_balances!: MintBalance[] | null;
 	public mint_keysets!: MintKeyset[] | null;
 	public mint_icon_data!: string | null;
+
+	public bitcoin_txfee_form: FormGroup = new FormGroup({
+		target: new FormControl(1),
+	});
 
 	public get preparing_bitcoin(): boolean {
 		return this.loading_bitcoin || this.loading_lightning || this.loading_taproot_assets || this.errors_bitcoin.length > 0;
@@ -131,6 +143,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	}
 	private initMint(): void {
 		this.loading_mint = ( this.enabled_mint ) ? true : false;
+		this.loading_mint_icon = ( this.enabled_mint ) ? true : false;
 		if( this.enabled_mint ) this.getMint();
 		this.cdr.detectChanges();
 	}
@@ -142,7 +155,7 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	private getBitcoin(): void {
 		forkJoin({
 			blockchain: this.bitcoinService.loadBitcoinBlockchainInfo(),
-			network: this.bitcoinService.loadBitcoinNetworkInfo()
+			network: this.bitcoinService.loadBitcoinNetworkInfo(),
 		}).pipe(
 			tap(({ blockchain, network }) => {
 				this.bitcoin_blockchain_info = blockchain;
@@ -154,8 +167,34 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 				return EMPTY;
 			}),
 			finalize(() => {
+				( !this.bitcoin_blockchain_info?.is_synced ) 
+					? this.subscriptions.add(this.getBitcoinBlockchainSubscription()) 
+					: this.getBitcoinMempool();
+				this.cdr.detectChanges();
+			})
+		).subscribe();
+	}
+
+	private getBitcoinMempool() : void {
+		forkJoin({
+			block: this.bitcoinService.getBlock(this.bitcoin_blockchain_info?.bestblockhash ?? ''),
+			block_template: this.bitcoinService.getBitcoinBlockTemplate(),
+			mempool: this.bitcoinService.getBitcoinMempoolTransactions(),
+			txfee: this.bitcoinService.getBitcoinTransactionFeeEstimates([this.bitcoin_txfee_form.value.target]),
+		}).pipe(
+			tap(({ block, block_template, mempool, txfee }) => {
+				this.bitcoin_block = block;
+				this.bitcoin_block_template = block_template;
+				this.bitcoin_mempool = mempool;
+				this.bitcoin_txfee_estimate = txfee[0] ?? null;
+			}),	
+			catchError((error) => {
+				this.errors_bitcoin = error.errors;
+				this.cdr.detectChanges();
+				return EMPTY;
+			}),
+			finalize(() => {
 				this.loading_bitcoin = false;
-				if( this.bitcoin_blockchain_info?.initialblockdownload ) this.subscriptions.add(this.getBitcoinBlockchainSubscription());
 				this.cdr.detectChanges();
 			})
 		).subscribe();
@@ -165,20 +204,30 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 		return this.bitcoinService.bitcoin_blockcount$.subscribe(
             (blockcount:BitcoinBlockCount | null) => {
 				if( !blockcount ) return;
+				if( this.bitcoin_blockcount && blockcount.height > this.bitcoin_blockcount?.height ) this.refreshBitcoinMempool();
 				this.bitcoin_blockcount = blockcount;
 				this.cdr.detectChanges();
             }
         );
 	}
 
+	private refreshBitcoinMempool(): void {
+		this.bitcoinService.getBitcoinBlockchainInfo().subscribe((blockchain_info: BitcoinBlockchainInfo) => {
+			this.bitcoin_blockchain_info = blockchain_info;
+			this.getBitcoinMempool();
+		});
+	}
+
 	private getBitcoinBlockchainSubscription(): Subscription {
 		this.bitcoin_polling_active = true;
+		this.loading_bitcoin = false;
+		this.cdr.detectChanges();
 		return timer(0, 5000).pipe(
-			takeWhile(() => this.bitcoin_polling_active), // Stop when flag is false
+			takeWhile(() => this.bitcoin_polling_active),
 			switchMap(() => this.bitcoinService.getBitcoinBlockchainInfo().pipe(
 				catchError(error => {
 					console.error('Failed to fetch blockchain info, polling stopped:', error);
-					this.bitcoin_polling_active = false; // Stop the timer
+					this.bitcoin_polling_active = false;
 					return EMPTY;
 				})
 			))
@@ -194,6 +243,13 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 	private getBitcoinBlock(): void {
 		this.bitcoinService.getBlock(this.bitcoin_blockchain_info?.bestblockhash ?? '').subscribe((block) => {
 			this.bitcoin_block = block;
+			this.cdr.detectChanges();
+		});
+	}
+
+	private getBitcoinFeeEstimate(): void {
+		this.bitcoinService.getBitcoinTransactionFeeEstimates([this.bitcoin_txfee_form.value.target]).subscribe((txfee) => {
+			this.bitcoin_txfee_estimate = txfee[0] ?? null;
 			this.cdr.detectChanges();
 		});
 	}
@@ -259,11 +315,12 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 				return EMPTY;
 			}),
 			finalize(async () => {
+				this.loading_mint = false;
 				if( this.mint_info?.icon_url ){
 					const image = await firstValueFrom(this.publicService.getPublicImageData(this.mint_info?.icon_url));
 					this.mint_icon_data = image?.data ?? null;
 				}
-				this.loading_mint = false;
+				this.loading_mint_icon = false;
 				this.cdr.detectChanges();
 			})
 		).subscribe();
@@ -275,6 +332,10 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 
 	public onNavigate(route: string): void {
 		this.router.navigate([`/${route}`]);
+	}
+
+	public onTargetChange(target: number): void {
+		this.getBitcoinFeeEstimate();
 	}
 
 	/* *******************************************************
