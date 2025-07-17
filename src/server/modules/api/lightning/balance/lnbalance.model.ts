@@ -18,19 +18,6 @@ export class OrchardLightningBalanceAmount {
     }
 }
 
-// {
-//     "open_channels": {
-//       "f81dce34c31687b969e1c5acc69ad6bb04528bd1d593efdc2d505245051f1648": {
-//         "asset_id": "f81dce34c31687b969e1c5acc69ad6bb04528bd1d593efdc2d505245051f1648",
-//         "name": "USDT",
-//         "local_balance": 500000,
-//         "remote_balance": 500000
-//       }
-//     },
-//     "pending_channels": {}
-//   }
-
-
 @ObjectType()
 export class OrchardCustomChannel {
 

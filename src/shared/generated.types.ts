@@ -209,6 +209,7 @@ export type Mutation = {
   mint_url_add: OrchardMintUrlUpdate;
   mint_url_remove: OrchardMintUrlUpdate;
   refresh_authentication: OrchardAuthentication;
+  revoke_authentication: Scalars['Boolean']['output'];
 };
 
 
