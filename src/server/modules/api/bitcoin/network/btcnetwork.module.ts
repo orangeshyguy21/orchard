@@ -1,20 +1,14 @@
 /* Core Dependencies */
-import { Module } from "@nestjs/common";
+import {Module} from '@nestjs/common';
 /* Application Dependencies */
-import { ErrorModule } from "@server/modules/error/error.module";
-import { BitcoinRpcModule } from "@server/modules/bitcoin/rpc/btcrpc.module";
+import {ErrorModule} from '@server/modules/error/error.module';
+import {BitcoinRpcModule} from '@server/modules/bitcoin/rpc/btcrpc.module';
 /* Internal Dependencies */
-import { BitcoinNetworkResolver } from "./btcnetwork.resolver";
-import { BitcoinNetworkService } from "./btcnetwork.service";
+import {BitcoinNetworkResolver} from './btcnetwork.resolver';
+import {BitcoinNetworkService} from './btcnetwork.service';
 
 @Module({
-	imports: [
-		ErrorModule,
-		BitcoinRpcModule,
-	],
-	providers: [
-		BitcoinNetworkResolver,
-		BitcoinNetworkService,
-	],
+	imports: [ErrorModule, BitcoinRpcModule],
+	providers: [BitcoinNetworkResolver, BitcoinNetworkService],
 })
 export class BitcoinNetworkModule {}

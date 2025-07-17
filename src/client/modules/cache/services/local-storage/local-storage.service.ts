@@ -1,13 +1,12 @@
 /* Core Dependencies */
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 /* Local Dependencies */
-import { Timezone, Locale, Theme, Model, MintDashboardSettings, MintKeysetsSettings, MintDatabaseSettings } from './local-storage.types';
+import {Timezone, Locale, Theme, Model, MintDashboardSettings, MintKeysetsSettings, MintDatabaseSettings} from './local-storage.types';
 
 @Injectable({
-  	providedIn: 'root'
+	providedIn: 'root',
 })
 export class LocalStorageService {
-
 	private readonly STORAGE_KEYS = {
 		/* Auth Settings */
 		AUTH_TOKEN_KEY: 'v0.auth.token',
@@ -23,8 +22,8 @@ export class LocalStorageService {
 		MINT_DATABASE_KEY: 'v0.mint.database.settings',
 	};
 
-  	constructor() { }
-	
+	constructor() {}
+
 	/**
 	 * Get an item from local storage
 	 * @param key The key to retrieve
@@ -33,7 +32,7 @@ export class LocalStorageService {
 	getItem<T>(key: string): T | null {
 		const item = localStorage.getItem(key);
 		if (!item) return null;
-		
+
 		try {
 			return JSON.parse(item);
 		} catch (error) {
@@ -41,7 +40,7 @@ export class LocalStorageService {
 			return null;
 		}
 	}
-  
+
 	/**
 	 * Store an item in local storage
 	 * @param key The key to store the value under
@@ -63,37 +62,37 @@ export class LocalStorageService {
 	}
 	getTimezone(): Timezone {
 		const timezone = this.getItem<Timezone>(this.STORAGE_KEYS.TIMEZONE_KEY);
-		if (!timezone) return { tz: null };
+		if (!timezone) return {tz: null};
 		return timezone;
 	}
 	getLocale(): Locale {
 		const locale = this.getItem<Locale>(this.STORAGE_KEYS.LOCALE_KEY);
-		if (!locale) return { code: null };
+		if (!locale) return {code: null};
 		return locale;
 	}
 	getTheme(): Theme {
 		const theme = this.getItem<Theme>(this.STORAGE_KEYS.THEME_KEY);
-		if (!theme) return { type: null };
+		if (!theme) return {type: null};
 		return theme;
 	}
 	getModel(): Model {
 		const model = this.getItem<Model>(this.STORAGE_KEYS.MODEL_KEY);
-		if (!model) return { model: null };
+		if (!model) return {model: null};
 		return model;
 	}
 	getMintDashboardSettings(): MintDashboardSettings {
 		const settings = this.getItem<MintDashboardSettings>(this.STORAGE_KEYS.MINT_DASHBOARD_KEY);
-		if (!settings) return { units: null, interval: null, type: null };
+		if (!settings) return {units: null, interval: null, type: null};
 		return settings;
 	}
 	getMintKeysetsSettings(): MintKeysetsSettings {
 		const settings = this.getItem<MintKeysetsSettings>(this.STORAGE_KEYS.MINT_KEYSETS_KEY);
-		if (!settings) return { units: null, status: null };
+		if (!settings) return {units: null, status: null};
 		return settings;
 	}
 	getMintDatabaseSettings(): MintDatabaseSettings {
 		const settings = this.getItem<MintDatabaseSettings>(this.STORAGE_KEYS.MINT_DATABASE_KEY);
-		if (!settings) return { type: null, units: null, states: null };
+		if (!settings) return {type: null, units: null, states: null};
 		return settings;
 	}
 
@@ -124,7 +123,7 @@ export class LocalStorageService {
 	setMintDatabaseSettings(settings: MintDatabaseSettings): void {
 		this.setItem(this.STORAGE_KEYS.MINT_DATABASE_KEY, settings);
 	}
-  
+
 	/**
 	 * Remove an item from local storage
 	 * @param key The key to remove
@@ -132,14 +131,14 @@ export class LocalStorageService {
 	removeItem(key: string): void {
 		localStorage.removeItem(key);
 	}
-  
+
 	/**
 	 * Clear all items from local storage
 	 */
 	clear(): void {
 		localStorage.clear();
 	}
-  
+
 	/**
 	 * Check if a key exists in local storage
 	 * @param key The key to check

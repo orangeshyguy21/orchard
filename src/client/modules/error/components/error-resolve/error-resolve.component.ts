@@ -1,7 +1,7 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 /* Native Dependencies */
-import { OrchardError } from '@client/modules/error/types/error.types';
+import {OrchardError} from '@client/modules/error/types/error.types';
 
 interface ErrorInfo {
 	title: string;
@@ -13,10 +13,9 @@ interface ErrorInfo {
 	standalone: false,
 	templateUrl: './error-resolve.component.html',
 	styleUrl: './error-resolve.component.scss',
-	changeDetection: ChangeDetectionStrategy.OnPush
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ErrorResolveComponent {
-
 	@Input() error!: OrchardError;
 	@Input() mode: 'default' | 'small' = 'default';
 
@@ -36,43 +35,43 @@ export class ErrorResolveComponent {
 	private readonly error_messages: Record<number, ErrorInfo> = {
 		20001: {
 			title: 'BITCOIN RPC ERROR',
-			description: 'Orchard was unable to connect to the bitcoin RPC'
+			description: 'Orchard was unable to connect to the bitcoin RPC',
 		},
 		30001: {
 			title: 'LIGHTNING RPC ERROR',
-			description: 'Orchard was unable to connect to the lightning RPC'
+			description: 'Orchard was unable to connect to the lightning RPC',
 		},
 		30002: {
 			title: 'LIGHTNING RPC ACTION ERROR',
-			description: 'A lightning RPC action failed to execute'
+			description: 'A lightning RPC action failed to execute',
 		},
 		40001: {
 			title: 'MINT PUBLIC API ERROR',
-			description: 'Orchard was unable to connect to the public mint API'
+			description: 'Orchard was unable to connect to the public mint API',
 		},
 		40002: {
 			title: 'MINT DATABASE ERROR',
-			description: 'Orchard was unable to connect to the mint database'
+			description: 'Orchard was unable to connect to the mint database',
 		},
 		40003: {
 			title: 'MINT DATABASE SELECT ERROR',
-			description: 'Orchard was unable to retrieve data from the mint database'
+			description: 'Orchard was unable to retrieve data from the mint database',
 		},
 		40004: {
 			title: 'MINT SUPPORT ERROR',
-			description: 'This mint type does not support this feature'
+			description: 'This mint type does not support this feature',
 		},
 		40005: {
 			title: 'MINT RPC ERROR',
-			description: 'Orchard was unable to connect to the mint RPC'
+			description: 'Orchard was unable to connect to the mint RPC',
 		},
 		60001: {
 			title: 'TAPROOT ASSETS RPC ERROR',
-			description: 'Orchard was unable to connect to the taproot assets RPC'
+			description: 'Orchard was unable to connect to the taproot assets RPC',
 		},
 		60002: {
 			title: 'TAPROOT ASSETS RPC ACTION ERROR',
-			description: 'A taproot assets RPC action failed to execute'
-		}
+			description: 'A taproot assets RPC action failed to execute',
+		},
 	};
 }

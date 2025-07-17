@@ -1,18 +1,17 @@
 /* Core Dependencies */
-import { Injectable, Logger } from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 /* Application Dependencies */
-import { BitcoinRpcService } from '@server/modules/bitcoin/rpc/btcrpc.service';
-import { ErrorService } from '@server/modules/error/error.service';
-import { OrchardErrorCode } from '@server/modules/error/error.types';
-import { OrchardApiError } from '@server/modules/graphql/classes/orchard-error.class';
+import {BitcoinRpcService} from '@server/modules/bitcoin/rpc/btcrpc.service';
+import {ErrorService} from '@server/modules/error/error.service';
+import {OrchardErrorCode} from '@server/modules/error/error.types';
+import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 /* Local Dependencies */
-import { OrchardBitcoinBlock, OrchardBitcoinBlockTemplate } from './btcblock.model';
+import {OrchardBitcoinBlock, OrchardBitcoinBlockTemplate} from './btcblock.model';
 
 @Injectable()
 export class BitcoinBlockService {
-
 	private readonly logger = new Logger(BitcoinBlockService.name);
-	
+
 	constructor(
 		private bitcoinRpcService: BitcoinRpcService,
 		private errorService: ErrorService,
@@ -23,28 +22,34 @@ export class BitcoinBlockService {
 			const block = await this.bitcoinRpcService.getBitcoinBlock(hash);
 			return new OrchardBitcoinBlock(block);
 		} catch (error) {
-			const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
+			const error_code = this.errorService.resolveError({
+				logger: this.logger,
+				error,
+				msg: tag,
 				errord: OrchardErrorCode.BitcoinRPCError,
 			});
 			throw new OrchardApiError(error_code);
 		}
 	}
 
-    public async getBlockTemplate(tag: string): Promise<OrchardBitcoinBlockTemplate> {
-        try {
-            const block_template = await this.bitcoinRpcService.getBitcoinBlockTemplate();
-            return new OrchardBitcoinBlockTemplate(block_template);
-        } catch (error) {
-            const error_code = this.errorService.resolveError({ logger: this.logger, error, msg: tag,
-                errord: OrchardErrorCode.BitcoinRPCError,
-            });
-            throw new OrchardApiError(error_code);
-        }
-    }
+	public async getBlockTemplate(tag: string): Promise<OrchardBitcoinBlockTemplate> {
+		try {
+			const block_template = await this.bitcoinRpcService.getBitcoinBlockTemplate();
+			return new OrchardBitcoinBlockTemplate(block_template);
+		} catch (error) {
+			const error_code = this.errorService.resolveError({
+				logger: this.logger,
+				error,
+				msg: tag,
+				errord: OrchardErrorCode.BitcoinRPCError,
+			});
+			throw new OrchardApiError(error_code);
+		}
+	}
 
-    // startBlockCountPolling(interval_ms: number = 30000): void {
+	// startBlockCountPolling(interval_ms: number = 30000): void {
 	// 	if (this.interval_id) this.stopBlockCountPolling();
-		
+
 	// 	this.interval_id = setInterval(async () => {
 	// 		try {
 	// 			const obbc = await this.getBlockCount();
@@ -56,22 +61,22 @@ export class BitcoinBlockService {
 	// 			throw error;
 	// 		}
 	// 	}, interval_ms);
-		
+
 	// 	this.logger.debug('Block count polling started');
 	// }
-	
+
 	// stopBlockCountPolling(): void {
 	// 	if ( !this.interval_id ) return;
 	// 	clearInterval(this.interval_id);
 	// 	this.interval_id = null;
 	// 	this.logger.debug('Block count polling stopped');
 	// }
-	
+
 	// onBlockCountUpdate(callback: (block_count: number) => void): void {
 	// 	this.event_emitter.on('bitcoin.blockcount.update', callback);
 	// }
 
-    // onModuleDestroy() {
+	// onModuleDestroy() {
 	// 	this.stopBlockCountPolling();
 	// }
 }

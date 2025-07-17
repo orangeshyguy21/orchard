@@ -1,22 +1,21 @@
 /* Core Dependencies */
-import { Field, ID, Int, Float, ObjectType } from '@nestjs/graphql';
+import {Field, ID, Int, Float, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
-import { UnixTimestamp } from '@server/modules/graphql/scalars/unixtimestamp.scalar';
-import { BitcoinTransaction } from '@server/modules/bitcoin/rpc/btcrpc.types';
+import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
+import {BitcoinTransaction} from '@server/modules/bitcoin/rpc/btcrpc.types';
 
 @ObjectType()
 export class OrchardBitcoinMempoolFees {
-
-	@Field(type => Float)
+	@Field((type) => Float)
 	base: number;
 
-	@Field(type => Float)
+	@Field((type) => Float)
 	modified: number;
 
-	@Field(type => Float)
+	@Field((type) => Float)
 	ancestor: number;
 
-	@Field(type => Float)
+	@Field((type) => Float)
 	descendant: number;
 
 	constructor(fees: BitcoinTransaction['fees']) {
@@ -27,53 +26,51 @@ export class OrchardBitcoinMempoolFees {
 	}
 }
 
-
 @ObjectType()
 export class OrchardBitcoinMempoolTransaction {
-
-	@Field(type => ID)
+	@Field((type) => ID)
 	txid: string;
 
-	@Field(type => Int)
+	@Field((type) => Int)
 	vsize: number;
 
-	@Field(type => Int)
+	@Field((type) => Int)
 	weight: number;
 
-	@Field(type => UnixTimestamp)
+	@Field((type) => UnixTimestamp)
 	time: number;
 
-	@Field(type => Int)
+	@Field((type) => Int)
 	height: number;
 
-	@Field(type => Int)
+	@Field((type) => Int)
 	descendantcount: number;
 
-	@Field(type => Int)
+	@Field((type) => Int)
 	descendantsize: number;
 
-	@Field(type => Int)
+	@Field((type) => Int)
 	ancestorcount: number;
 
-	@Field(type => Int)
+	@Field((type) => Int)
 	ancestorsize: number;
 
-	@Field(type => String)
+	@Field((type) => String)
 	wtxid: string;
 
-	@Field(type => OrchardBitcoinMempoolFees)
+	@Field((type) => OrchardBitcoinMempoolFees)
 	fees: OrchardBitcoinMempoolFees;
 
-	@Field(type => [String])
+	@Field((type) => [String])
 	depends: string[];
 
-	@Field(type => [String])
+	@Field((type) => [String])
 	spentby: string[];
 
-	@Field(type => Boolean)
+	@Field((type) => Boolean)
 	bip125_replaceable: boolean;
 
-	@Field(type => Boolean)
+	@Field((type) => Boolean)
 	unbroadcast: boolean;
 
 	constructor(tx: BitcoinTransaction, txid: string) {

@@ -1,18 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { TapdService } from './tapd.service';
+import {Test, TestingModule} from '@nestjs/testing';
+import {TapdService} from './tapd.service';
 
 describe('TapdService', () => {
-  let service: TapdService;
+	let service: TapdService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [TapdService],
-    }).compile();
+	beforeEach(async () => {
+		const module: TestingModule = await Test.createTestingModule({
+			providers: [TapdService],
+		}).compile();
 
-    service = module.get<TapdService>(TapdService);
-  });
+		service = module.get<TapdService>(TapdService);
+	});
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
+	it('should be defined', () => {
+		expect(service).toBeDefined();
+	});
 });

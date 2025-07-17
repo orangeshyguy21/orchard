@@ -1,12 +1,10 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+	providedIn: 'root',
 })
 export class ErrorService {
-
 	public resolve_errors: any[] = [];
 
-  	constructor() { }
-
+	constructor() {}
 }

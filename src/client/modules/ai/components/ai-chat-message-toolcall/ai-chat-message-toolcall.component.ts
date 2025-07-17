@@ -1,13 +1,13 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, OnInit, ChangeDetectorRef } from '@angular/core';
-import { trigger, transition, style, animate, state } from '@angular/animations';
+import {ChangeDetectionStrategy, Component, Input, OnInit, ChangeDetectorRef} from '@angular/core';
+import {trigger, transition, style, animate, state} from '@angular/animations';
 /* Vendor Dependencies */
-import { MatTableDataSource } from '@angular/material/table';
+import {MatTableDataSource} from '@angular/material/table';
 /* Native Dependencies */
-import { AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
-import { formatToolName } from '@client/modules/ai/helpers/tool-name-format';
+import {AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
+import {formatToolName} from '@client/modules/ai/helpers/tool-name-format';
 /* Local Dependencies */
-import { ArgumentRow } from './argument-row.class';
+import {ArgumentRow} from './argument-row.class';
 
 @Component({
 	selector: 'orc-ai-chat-message-toolcall',
@@ -15,7 +15,7 @@ import { ArgumentRow } from './argument-row.class';
 	templateUrl: './ai-chat-message-toolcall.component.html',
 	styleUrl: './ai-chat-message-toolcall.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-    // prettier-ignore
+	// prettier-ignore
 	animations: [
 		trigger('expandCollapse', [
             state('collapsed', style({
@@ -46,7 +46,6 @@ import { ArgumentRow } from './argument-row.class';
     ],
 })
 export class AiChatMessageToolcallComponent implements OnInit {
-
 	@Input() tool_call!: AiChatToolCall;
 
 	public tool_title!: string;
@@ -54,9 +53,7 @@ export class AiChatMessageToolcallComponent implements OnInit {
 	public displayed_columns = ['field', 'value'];
 	public data_source!: MatTableDataSource<ArgumentRow>;
 
-	constructor(
-		private cdr: ChangeDetectorRef
-	) {}
+	constructor(private cdr: ChangeDetectorRef) {}
 
 	ngOnInit(): void {
 		this.tool_title = formatToolName(this.tool_call.function.name);

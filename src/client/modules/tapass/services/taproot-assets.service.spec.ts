@@ -1,16 +1,16 @@
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { TaprootAssetsService } from './taproot-assets.service';
+import {TaprootAssetsService} from './taproot-assets.service';
 
 describe('TaprootAssetsService', () => {
-  let service: TaprootAssetsService;
+	let service: TaprootAssetsService;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(TaprootAssetsService);
-  });
+	beforeEach(() => {
+		TestBed.configureTestingModule({});
+		service = TestBed.inject(TaprootAssetsService);
+	});
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+	it('should be created', () => {
+		expect(service).toBeTruthy();
+	});
 });

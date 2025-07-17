@@ -1,9 +1,8 @@
 /* Core Dependencies */
-import { Kind, ValueNode } from 'graphql';
-import { GraphQLScalarType } from 'graphql';
+import {Kind, ValueNode} from 'graphql';
+import {GraphQLScalarType} from 'graphql';
 
 export const UnixTimestamp = new GraphQLScalarType({
-
 	name: 'UnixTimestamp',
 	description: 'A Unix timestamp in seconds',
 
@@ -16,8 +15,8 @@ export const UnixTimestamp = new GraphQLScalarType({
 	},
 
 	parseLiteral(ast: ValueNode): number | null {
-		if( ast.kind !== Kind.INT ) return null;
+		if (ast.kind !== Kind.INT) return null;
 		const intValue = parseInt(ast.value, 10);
 		return /^[0-9]{10}$/.test(intValue.toString()) ? intValue : null;
-	}
+	},
 });

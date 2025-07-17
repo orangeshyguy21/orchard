@@ -1,13 +1,10 @@
 /* Core Dependencies */
-import { Module } from "@nestjs/common";
+import {Module} from '@nestjs/common';
 /* Local Dependencies */
-import { StatusResolver } from "./status.resolver";
-import { StatusService } from './status.service';
+import {StatusResolver} from './status.resolver';
+import {StatusService} from './status.service';
 
 @Module({
-	providers: [
-		StatusResolver,
-		StatusService
-	],
+	providers: [StatusResolver, StatusService],
 })
 export class StatusModule {}

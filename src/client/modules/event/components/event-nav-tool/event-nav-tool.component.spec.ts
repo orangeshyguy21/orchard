@@ -1,23 +1,22 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { EventNavToolComponent } from './event-nav-tool.component';
+import {EventNavToolComponent} from './event-nav-tool.component';
 
 describe('EventNavToolComponent', () => {
-  let component: EventNavToolComponent;
-  let fixture: ComponentFixture<EventNavToolComponent>;
+	let component: EventNavToolComponent;
+	let fixture: ComponentFixture<EventNavToolComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [EventNavToolComponent]
-    })
-    .compileComponents();
+	beforeEach(async () => {
+		await TestBed.configureTestingModule({
+			declarations: [EventNavToolComponent],
+		}).compileComponents();
 
-    fixture = TestBed.createComponent(EventNavToolComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+		fixture = TestBed.createComponent(EventNavToolComponent);
+		component = fixture.componentInstance;
+		fixture.detectChanges();
+	});
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+	it('should create', () => {
+		expect(component).toBeTruthy();
+	});
 });

@@ -1,43 +1,42 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Event, Router, ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
-import { FormControl } from '@angular/forms';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Event, Router, ActivatedRoute, ActivatedRouteSnapshot} from '@angular/router';
+import {FormControl} from '@angular/forms';
 /* Vendor Dependencies */
-import { Subscription, timer, EMPTY } from 'rxjs';
-import { switchMap, catchError, filter, takeWhile } from 'rxjs/operators';
-import { MatSidenav } from '@angular/material/sidenav';
+import {Subscription, timer, EMPTY} from 'rxjs';
+import {switchMap, catchError, filter, takeWhile} from 'rxjs/operators';
+import {MatSidenav} from '@angular/material/sidenav';
 /* Application Configuration */
-import { environment } from '@client/configs/configuration';
+import {environment} from '@client/configs/configuration';
 /* Application Dependencies */
-import { SettingService } from '@client/modules/settings/services/setting/setting.service';
-import { BitcoinService } from '@client/modules/bitcoin/services/bitcoin/bitcoin.service';
-import { LightningService } from '@client/modules/lightning/services/lightning/lightning.service';
-import { MintService } from '@client/modules/mint/services/mint/mint.service';
-import { AiService } from '@client/modules/ai/services/ai/ai.service';
-import { EventService } from '@client/modules/event/services/event/event.service';
-import { ChartService } from '@client/modules/chart/services/chart/chart.service';
-import { EventData } from '@client/modules/event/classes/event-data.class';
-import { BitcoinBlockchainInfo } from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
-import { BitcoinBlockCount } from '@client/modules/bitcoin/classes/bitcoin-blockcount.class';
-import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.class';
-import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
-import { AiChatChunk } from '@client/modules/ai/classes/ai-chat-chunk.class';
-import { AiModel } from '@client/modules/ai/classes/ai-model.class';
-import { AiChatConversation } from '@client/modules/ai/classes/ai-chat-conversation.class';
-import { AiChatCompiledMessage } from '@client/modules/ai/classes/ai-chat-compiled-message.class';
-import { AiAgentDefinition } from '@client/modules/ai/classes/ai-agent-definition.class';
+import {SettingService} from '@client/modules/settings/services/setting/setting.service';
+import {BitcoinService} from '@client/modules/bitcoin/services/bitcoin/bitcoin.service';
+import {LightningService} from '@client/modules/lightning/services/lightning/lightning.service';
+import {MintService} from '@client/modules/mint/services/mint/mint.service';
+import {AiService} from '@client/modules/ai/services/ai/ai.service';
+import {EventService} from '@client/modules/event/services/event/event.service';
+import {ChartService} from '@client/modules/chart/services/chart/chart.service';
+import {EventData} from '@client/modules/event/classes/event-data.class';
+import {BitcoinBlockchainInfo} from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
+import {BitcoinBlockCount} from '@client/modules/bitcoin/classes/bitcoin-blockcount.class';
+import {LightningInfo} from '@client/modules/lightning/classes/lightning-info.class';
+import {MintInfo} from '@client/modules/mint/classes/mint-info.class';
+import {AiChatChunk} from '@client/modules/ai/classes/ai-chat-chunk.class';
+import {AiModel} from '@client/modules/ai/classes/ai-model.class';
+import {AiChatConversation} from '@client/modules/ai/classes/ai-chat-conversation.class';
+import {AiChatCompiledMessage} from '@client/modules/ai/classes/ai-chat-compiled-message.class';
+import {AiAgentDefinition} from '@client/modules/ai/classes/ai-agent-definition.class';
 /* Shared Dependencies */
-import { AiAgent, AiMessageRole } from '@shared/generated.types';
+import {AiAgent, AiMessageRole} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-layout-interior',
 	standalone: false,
 	templateUrl: './layout-interior.component.html',
 	styleUrl: './layout-interior.component.scss',
-	changeDetection: ChangeDetectionStrategy.OnPush
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayoutInteriorComponent implements OnInit, OnDestroy {
-
 	@ViewChild(MatSidenav) sidenav!: MatSidenav;
 
 	public ai_enabled = environment.ai.enabled;
@@ -47,28 +46,28 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	public ai_agent_definition: AiAgentDefinition | null = null;
 	public ai_tool_calls: number = 0;
 	public active_chat!: boolean;
-	public active_section! : string;
-	public active_agent! : AiAgent;
+	public active_section!: string;
+	public active_agent!: AiAgent;
 	public active_event!: EventData | null;
 	public model!: string | null;
 	public user_content = new FormControl('');
 	public enabled_bitcoin = environment.bitcoin.enabled;
 	public enabled_lightning = environment.lightning.enabled;
 	public enabled_mint = environment.mint.enabled;
-	public online_bitcoin! : boolean;
-	public online_lightning! : boolean;
-	public online_mint! : boolean;
-	public syncing_bitcoin! : boolean;
-	public syncing_lightning! : boolean;
+	public online_bitcoin!: boolean;
+	public online_lightning!: boolean;
+	public online_mint!: boolean;
+	public syncing_bitcoin!: boolean;
+	public syncing_lightning!: boolean;
 	public block_count!: number;
 	public chain!: string;
 
 	public get ai_actionable(): boolean {
-		if( this.active_chat ) return true;
-		if( this.user_content.value ) return true;
+		if (this.active_chat) return true;
+		if (this.user_content.value) return true;
 		return false;
 	}
-	
+
 	private subscriptions: Subscription = new Subscription();
 	private bitcoin_polling_active: boolean = false;
 
@@ -96,27 +95,27 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	}
 
 	private orchardOptionalInit(): void {
-		if( this.enabled_bitcoin ) {
+		if (this.enabled_bitcoin) {
 			this.bitcoin_polling_active = true;
 			this.bitcoinService.loadBitcoinBlockchainInfo().subscribe();
 			this.subscriptions.add(this.getBitcoinBlockchainInfoSubscription());
 			this.subscriptions.add(this.getBitcoinBlockCountSubscription());
 		}
-		if( this.enabled_lightning ) {
+		if (this.enabled_lightning) {
 			this.lightningService.loadLightningInfo().subscribe();
 			this.subscriptions.add(this.getLightningInfoSubscription());
 		}
-		if( this.enabled_mint ) {
+		if (this.enabled_mint) {
 			this.mintService.loadMintInfo().subscribe();
 			this.subscriptions.add(this.getMintInfoSubscription());
 		}
-		if( environment.ai.enabled ) {
+		if (environment.ai.enabled) {
 			this.subscriptions.add(this.getAgentSubscription());
 			this.subscriptions.add(this.getActiveAiSubscription());
 			this.subscriptions.add(this.getAiMessagesSubscription());
 			this.subscriptions.add(this.getAiConversationSubscription());
 			this.model = this.settingService.getModel();
-			if( !this.model ) {
+			if (!this.model) {
 				this.aiService.getFunctionModel().subscribe((model) => {
 					this.model = model?.model || null;
 					this.settingService.setModel(this.model);
@@ -132,121 +131,116 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	******************************************************** */
 
 	private getRouterSubscription(): Subscription {
-		return this.router.events
-			.pipe(
-				filter((event: Event) => 'routerEvent' in event || 'type' in event)
-			)
-			.subscribe(event => {
-				const route_data = this.getRouteData(event);
-				this.setSection(route_data);
-				this.setAgent(route_data);
-				this.onClearConversation();
-			});
+		return this.router.events.pipe(filter((event: Event) => 'routerEvent' in event || 'type' in event)).subscribe((event) => {
+			const route_data = this.getRouteData(event);
+			this.setSection(route_data);
+			this.setAgent(route_data);
+			this.onClearConversation();
+		});
 	}
 
 	private getBitcoinBlockchainInfoSubscription(): Subscription {
 		return this.bitcoinService.bitcoin_blockchain_info$.subscribe({
 			next: (info: BitcoinBlockchainInfo | null) => {
-				if( info === undefined ) return;
+				if (info === undefined) return;
 				this.chain = info?.chain || '';
-				this.online_bitcoin = (info !== null) ? true : false;
-				this.syncing_bitcoin = (info?.initialblockdownload) ? true : false;
+				this.online_bitcoin = info !== null ? true : false;
+				this.syncing_bitcoin = info?.initialblockdownload ? true : false;
 				this.cdr.detectChanges();
 			},
 			error: (error) => {
 				this.online_bitcoin = false;
 				this.cdr.detectChanges();
-			}
+			},
 		});
 	}
 
 	private getBitcoinBlockCountSubscription(): Subscription {
-		return timer(0, 60000).pipe(
-			takeWhile(() => this.bitcoin_polling_active), 
-			switchMap(() => this.bitcoinService.getBlockCount().pipe(
-				catchError(error => {
-					console.error('Failed to fetch block count, polling stopped:', error);
-					this.bitcoin_polling_active = false;
-					return EMPTY;
-				})
-			))
-		).subscribe({
-			next: async (block_count: BitcoinBlockCount) => {
-				this.block_count = block_count.height;
-				this.cdr.detectChanges();
-			}
-		});
+		return timer(0, 60000)
+			.pipe(
+				takeWhile(() => this.bitcoin_polling_active),
+				switchMap(() =>
+					this.bitcoinService.getBlockCount().pipe(
+						catchError((error) => {
+							console.error('Failed to fetch block count, polling stopped:', error);
+							this.bitcoin_polling_active = false;
+							return EMPTY;
+						}),
+					),
+				),
+			)
+			.subscribe({
+				next: async (block_count: BitcoinBlockCount) => {
+					this.block_count = block_count.height;
+					this.cdr.detectChanges();
+				},
+			});
 	}
 
 	private getLightningInfoSubscription(): Subscription {
 		return this.lightningService.lightning_info$.subscribe({
 			next: (info: LightningInfo | null) => {
-				if( info === undefined ) return;
-				this.online_lightning = (info !== null) ? true : false;
-				this.syncing_lightning = (info?.synced_to_chain && info?.synced_to_graph) ? false : true;
+				if (info === undefined) return;
+				this.online_lightning = info !== null ? true : false;
+				this.syncing_lightning = info?.synced_to_chain && info?.synced_to_graph ? false : true;
 				this.cdr.detectChanges();
 			},
 			error: (error) => {
 				this.online_lightning = false;
 				this.cdr.detectChanges();
-			}
+			},
 		});
 	}
 
-	private getMintInfoSubscription(): Subscription {	
+	private getMintInfoSubscription(): Subscription {
 		return this.mintService.mint_info$.subscribe({
 			next: (info: MintInfo | null) => {
-				if( info === undefined ) return;
-				this.online_mint = (info !== null) ? true : false;
+				if (info === undefined) return;
+				this.online_mint = info !== null ? true : false;
 				this.cdr.detectChanges();
 			},
 			error: (error) => {
 				this.online_mint = false;
 				this.cdr.detectChanges();
-			}
+			},
 		});
 	}
 
 	private getAgentSubscription(): Subscription {
-		return this.aiService.agent_requests$
-			.subscribe(({ agent, content }) => {
-				if( agent === AiAgent.Default ) this.aiService.openAiSocket(agent, content);
-			});
+		return this.aiService.agent_requests$.subscribe(({agent, content}) => {
+			if (agent === AiAgent.Default) this.aiService.openAiSocket(agent, content);
+		});
 	}
 
 	private getActiveAiSubscription(): Subscription {
-		return this.aiService.active$
-			.subscribe((active: boolean) => {
-				this.active_chat = active;
-				this.cdr.detectChanges();
-			});
+		return this.aiService.active$.subscribe((active: boolean) => {
+			this.active_chat = active;
+			this.cdr.detectChanges();
+		});
 	}
 
 	private getAiMessagesSubscription(): Subscription {
-		return this.aiService.messages$
-			.subscribe((chunk: AiChatChunk) => {
-				this.assembleMessages(chunk);
-				this.countToolCalls(chunk);
-				if( chunk.done && this.ai_conversation ) this.aiService.updateConversation(this.ai_conversation);
-			});
+		return this.aiService.messages$.subscribe((chunk: AiChatChunk) => {
+			this.assembleMessages(chunk);
+			this.countToolCalls(chunk);
+			if (chunk.done && this.ai_conversation) this.aiService.updateConversation(this.ai_conversation);
+		});
 	}
 
 	private getAiConversationSubscription(): Subscription {
-		return this.aiService.conversation$
-			.subscribe((conversation: AiChatConversation | null) => {
-				this.ai_conversation = conversation;
-				this.ai_revision = 0;
-				this.cdr.detectChanges();
-			});
+		return this.aiService.conversation$.subscribe((conversation: AiChatConversation | null) => {
+			this.ai_conversation = conversation;
+			this.ai_revision = 0;
+			this.cdr.detectChanges();
+		});
 	}
 
 	private getEventSubscription(): Subscription {
-		return this.eventService.getActiveEvent()
-			.subscribe((event_data: EventData | null) => {
-				this.active_event = event_data;
-				if( this.active_section === 'settings' ) this.model = this.settingService.getModel();
-				this.cdr.detectChanges();
-			});
+		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
+			this.active_event = event_data;
+			if (this.active_section === 'settings') this.model = this.settingService.getModel();
+			this.cdr.detectChanges();
+		});
 	}
 
 	/* *******************************************************
@@ -269,7 +263,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	private getRouteData(event: Event): ActivatedRouteSnapshot['data'] | null {
 		const router_event = 'routerEvent' in event ? event.routerEvent : event;
-		if( router_event.type !== 1 ) return null;
+		if (router_event.type !== 1) return null;
 		let route = this.route.root;
 		while (route.firstChild) {
 			route = route.firstChild;
@@ -278,7 +272,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	}
 
 	private setSection(route_data: ActivatedRouteSnapshot['data'] | null): void {
-		if( !route_data ) return;
+		if (!route_data) return;
 		this.active_section = route_data['section'] || '';
 		this.cdr.detectChanges();
 	}
@@ -288,18 +282,16 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	******************************************************** */
 
 	private setAgent(route_data: ActivatedRouteSnapshot['data'] | null): void {
-		if( !route_data ) return;
+		if (!route_data) return;
 		this.active_agent = route_data['agent'] || AiAgent.Default;
 		this.cdr.detectChanges();
 	}
 
 	private getModels(): void {
-		this.aiService.getAiModels()
-			.subscribe((models:AiModel[]) => {
-				this.ai_models = models;
-				this.cdr.detectChanges();
-			}
-		);
+		this.aiService.getAiModels().subscribe((models: AiModel[]) => {
+			this.ai_models = models;
+			this.cdr.detectChanges();
+		});
 	}
 
 	public onCommand(): void {
@@ -307,7 +299,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	}
 
 	public onToggleLog(): void {
-		( this.sidenav.opened ) ? this.closeChatLog() : this.openChatLog();
+		this.sidenav.opened ? this.closeChatLog() : this.openChatLog();
 		this.chartService.triggerResizeStart();
 		setTimeout(() => {
 			this.chartService.triggerResizeEnd();
@@ -315,7 +307,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	}
 
 	private startChat() {
-		if( !this.user_content.value ) return;
+		if (!this.user_content.value) return;
 		const agent = this.active_agent || AiAgent.Default;
 		this.aiService.requestAgent(agent, this.user_content.value);
 		this.user_content.reset();
@@ -323,7 +315,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	public stopChat(): void {
 		this.aiService.closeAiSocket();
-		if( this.ai_conversation ) this.aiService.updateConversation(this.ai_conversation);
+		if (this.ai_conversation) this.aiService.updateConversation(this.ai_conversation);
 		this.cdr.detectChanges();
 	}
 
@@ -331,10 +323,12 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		this.settingService.setModel(model);
 		this.model = model;
-		this.eventService.registerEvent(new EventData({
-			type: 'SUCCESS',
-			message: 'Model updated!',
-		}));
+		this.eventService.registerEvent(
+			new EventData({
+				type: 'SUCCESS',
+				message: 'Model updated!',
+			}),
+		);
 		this.cdr.detectChanges();
 	}
 
@@ -346,9 +340,12 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	}
 
 	private assembleMessages(chunk: AiChatChunk): void {
-		if( this.ai_conversation!.messages.length > 0 && this.ai_conversation!.messages[this.ai_conversation!.messages.length - 1].role !== AiMessageRole.Assistant ) {
+		if (
+			this.ai_conversation!.messages.length > 0 &&
+			this.ai_conversation!.messages[this.ai_conversation!.messages.length - 1].role !== AiMessageRole.Assistant
+		) {
 			this.ai_conversation!.messages.push(new AiChatCompiledMessage(this.ai_conversation!.id, chunk.message));
-		}else{
+		} else {
 			const last_message = this.ai_conversation!.messages[this.ai_conversation!.messages.length - 1];
 			last_message.integrateChunk(chunk);
 		}
@@ -363,11 +360,10 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	private openChatLog(): void {
 		this.sidenav.open();
-		this.aiService.getAiAgent(this.active_agent)
-			.subscribe((agent: AiAgentDefinition) => {
-				this.ai_agent_definition = agent;
-				this.cdr.detectChanges();
-			});
+		this.aiService.getAiAgent(this.active_agent).subscribe((agent: AiAgentDefinition) => {
+			this.ai_agent_definition = agent;
+			this.cdr.detectChanges();
+		});
 	}
 	private closeChatLog(): void {
 		this.sidenav.close();

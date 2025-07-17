@@ -1,20 +1,20 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, SimpleChanges, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
-import { FormControl } from '@angular/forms';
-import { animate, state, style, transition, trigger } from '@angular/animations';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, SimpleChanges, ViewChild} from '@angular/core';
+import {Router} from '@angular/router';
+import {FormControl} from '@angular/forms';
+import {animate, state, style, transition, trigger} from '@angular/animations';
 /* Vendor Dependencies */
-import { firstValueFrom } from 'rxjs';
+import {firstValueFrom} from 'rxjs';
 import QRCodeStyling from 'qr-code-styling';
-import { MatDialog } from '@angular/material/dialog';
+import {MatDialog} from '@angular/material/dialog';
 /* Application Dependencies */
-import { ThemeService } from '@client/modules/settings/services/theme/theme.service';
-import { PublicService } from '@client/modules/public/services/image/public.service';
-import { PublicUrl } from '@client/modules/public/classes/public-url.class';
+import {ThemeService} from '@client/modules/settings/services/theme/theme.service';
+import {PublicService} from '@client/modules/public/services/image/public.service';
+import {PublicUrl} from '@client/modules/public/classes/public-url.class';
 /* Native Dependencies */
-import { MintQrcodeDialogComponent } from '../mint-qrcode-dialog/mint-qrcode-dialog.component';
+import {MintQrcodeDialogComponent} from '../mint-qrcode-dialog/mint-qrcode-dialog.component';
 /* Local Dependencies */
-import { Connection } from './mint-connections.classes';
+import {Connection} from './mint-connections.classes';
 
 @Component({
 	selector: 'orc-mint-connections',
@@ -49,7 +49,6 @@ import { Connection } from './mint-connections.classes';
 	],
 })
 export class MintConnectionsComponent {
-
 	@Input() urls!: string[] | null;
 	@Input() icon_url!: string | null;
 	@Input() time: number | undefined;
@@ -57,7 +56,7 @@ export class MintConnectionsComponent {
 	@Input() loading!: boolean;
 	@Input() mint_connections!: PublicUrl[];
 
-	@ViewChild('qr_canvas', { static: false }) qr_canvas!: ElementRef;
+	@ViewChild('qr_canvas', {static: false}) qr_canvas!: ElementRef;
 
 	public qr_data: FormControl = new FormControl('');
 	public qr_code!: QRCodeStyling;
@@ -76,23 +75,23 @@ export class MintConnectionsComponent {
 		private themeService: ThemeService,
 		private publicService: PublicService,
 		private dialog: MatDialog,
-		private router: Router
+		private router: Router,
 	) {
 		this.qr_primary_color = this.themeService.getThemeColor('--mat-sys-surface') || '#000000';
 		this.qr_corner_dot_color = this.themeService.getThemeColor('--mat-sys-surface-container-highest') || '#000000';
 	}
 
 	ngOnChanges(changes: SimpleChanges): void {
-		if( this.loading !== false ) return;
-		if( this.qr_code ) return;
+		if (this.loading !== false) return;
+		if (this.qr_code) return;
 		this.init();
 		this.initQR();
 		this.loadImage();
 	}
 
 	private init(): void {
-		this.connections = this.urls?.map(url => new Connection(url, this.getDisplayedUrl(url))) ?? [];
-		if( this.connections.length > 0 ) this.qr_data.setValue(this.connections[0].url);
+		this.connections = this.urls?.map((url) => new Connection(url, this.getDisplayedUrl(url))) ?? [];
+		if (this.connections.length > 0) this.qr_data.setValue(this.connections[0].url);
 		this.changeDetectorRef.detectChanges();
 	}
 
@@ -112,7 +111,7 @@ export class MintConnectionsComponent {
 	}
 
 	private initQR(): void {
-		if( this.connections.length === 0 ) return;
+		if (this.connections.length === 0) return;
 
 		this.qr_code = new QRCodeStyling({
 			width: 195,
@@ -125,7 +124,7 @@ export class MintConnectionsComponent {
 			qrOptions: {
 				typeNumber: 0,
 				mode: 'Byte',
-				errorCorrectionLevel: 'Q'
+				errorCorrectionLevel: 'Q',
 			},
 			imageOptions: {
 				hideBackgroundDots: true,
@@ -135,7 +134,7 @@ export class MintConnectionsComponent {
 			},
 			dotsOptions: {
 				color: this.qr_primary_color,
-				type: 'extra-rounded'
+				type: 'extra-rounded',
 			},
 			backgroundOptions: {
 				color: undefined,
@@ -146,17 +145,18 @@ export class MintConnectionsComponent {
 			},
 			cornersDotOptions: {
 				color: this.qr_corner_dot_color,
-			 	type: 'square',
-			}
-		  });
-	  
-		  this.qr_code.append(this.qr_canvas.nativeElement);
+				type: 'square',
+			},
+		});
+
+		this.qr_code.append(this.qr_canvas.nativeElement);
 	}
 
 	private async loadImage(): Promise<void> {
-		if( !this.icon_url ) return this.qr_code.update({
-			image: this.placeholder_icon_url
-		});
+		if (!this.icon_url)
+			return this.qr_code.update({
+				image: this.placeholder_icon_url,
+			});
 		const image = await firstValueFrom(this.publicService.getPublicImageData(this.icon_url));
 		this.icon_data = image?.data ?? undefined;
 		this.qr_code.update({
@@ -167,10 +167,10 @@ export class MintConnectionsComponent {
 	private updateQRCode(): void {
 		this.qr_animation_state = 'hidden';
 		this.changeDetectorRef.detectChanges();
-		
+
 		setTimeout(() => {
 			this.qr_code.update({
-				data: this.qr_data.value
+				data: this.qr_data.value,
 			});
 			this.qr_animation_state = 'visible';
 			this.changeDetectorRef.detectChanges();
@@ -189,18 +189,18 @@ export class MintConnectionsComponent {
 		this.copy_timeout = setTimeout(() => {
 			this.copy_animation_state = 'hidden';
 			this.changeDetectorRef.detectChanges();
-		}, 1000);		
+		}, 1000);
 	}
 
 	public onQRClick(): void {
 		this.dialog.open(MintQrcodeDialogComponent, {
 			data: {
-				connection: this.connections.find(connection => connection.url === this.qr_data.value),
+				connection: this.connections.find((connection) => connection.url === this.qr_data.value),
 				primary_color: this.qr_primary_color,
 				corner_dot_color: this.qr_corner_dot_color,
 				icon_data: this.icon_data ?? this.placeholder_icon_url,
-				mint_name: this.mint_name
-			}
+				mint_name: this.mint_name,
+			},
 		});
 	}
 

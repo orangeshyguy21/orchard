@@ -1,23 +1,22 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { MintBalanceSheetComponent } from './mint-balance-sheet.component';
+import {MintBalanceSheetComponent} from './mint-balance-sheet.component';
 
 describe('MintBalanceSheetComponent', () => {
-  let component: MintBalanceSheetComponent;
-  let fixture: ComponentFixture<MintBalanceSheetComponent>;
+	let component: MintBalanceSheetComponent;
+	let fixture: ComponentFixture<MintBalanceSheetComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [MintBalanceSheetComponent]
-    })
-    .compileComponents();
+	beforeEach(async () => {
+		await TestBed.configureTestingModule({
+			declarations: [MintBalanceSheetComponent],
+		}).compileComponents();
 
-    fixture = TestBed.createComponent(MintBalanceSheetComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+		fixture = TestBed.createComponent(MintBalanceSheetComponent);
+		component = fixture.componentInstance;
+		fixture.detectChanges();
+	});
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+	it('should create', () => {
+		expect(component).toBeTruthy();
+	});
 });

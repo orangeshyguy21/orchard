@@ -1,9 +1,9 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, ChangeDetectorRef, Input, OnInit } from '@angular/core';
-import { animate, style, transition, trigger } from '@angular/animations';
+import {ChangeDetectionStrategy, Component, ChangeDetectorRef, Input, OnInit} from '@angular/core';
+import {animate, style, transition, trigger} from '@angular/animations';
 /* Application Dependencies */
-import { BitcoinBlockchainInfo } from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
-import { BitcoinBlock } from '@client/modules/bitcoin/classes/bitcoin-block.class';
+import {BitcoinBlockchainInfo} from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
+import {BitcoinBlock} from '@client/modules/bitcoin/classes/bitcoin-block.class';
 
 @Component({
 	selector: 'orc-index-bitcoin-syncing',
@@ -22,26 +22,23 @@ import { BitcoinBlock } from '@client/modules/bitcoin/classes/bitcoin-block.clas
     ],
 })
 export class IndexBitcoinSyncingComponent implements OnInit {
-
 	@Input() blockchain_info!: BitcoinBlockchainInfo | null;
 	@Input() block!: BitcoinBlock | null;
 
 	public polling_block: boolean = false;
 
 	public get sync_progress(): number {
-		return (this.blockchain_info) ? this.blockchain_info?.verificationprogress * 100 : 0;
+		return this.blockchain_info ? this.blockchain_info?.verificationprogress * 100 : 0;
 	}
 
-	constructor(
-		private cdr: ChangeDetectorRef
-	) {}
+	constructor(private cdr: ChangeDetectorRef) {}
 
 	ngOnInit(): void {
 		this.pollingBlock();
 	}
 
 	private pollingBlock(): void {
-		if( this.blockchain_info?.is_synced ) return;
+		if (this.blockchain_info?.is_synced) return;
 		setTimeout(() => {
 			this.polling_block = true;
 			this.cdr.detectChanges();

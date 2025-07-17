@@ -1,5 +1,5 @@
 /* Local Dependencies */
-import { TargetOption } from './index-bitcoin-blockchain.component';
+import {TargetOption} from './index-bitcoin-blockchain.component';
 
 export const possible_options: TargetOption[] = [
 	{
@@ -55,5 +55,5 @@ export const possible_options: TargetOption[] = [
 		blocks: 1008,
 		blocks_label: 'In 1008 blocks',
 		time: '~1 week',
-	},	
+	},
 ];

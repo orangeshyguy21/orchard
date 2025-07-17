@@ -1,43 +1,43 @@
 /* Core Dependencies */
-import { Module } from "@nestjs/common";
+import {Module} from '@nestjs/common';
 /* Local Dependencies */
 // Orchard Endpoints
-import { StatusModule } from "./status/status.module";
+import {StatusModule} from './status/status.module';
 // Auth Endpoints
-import { AuthenticationModule } from "./auth/authentication/authentication.module";
+import {AuthenticationModule} from './auth/authentication/authentication.module';
 // Bitcoin Endpoints
-import { BitcoinNetworkModule } from "./bitcoin/network/btcnetwork.module";
-import { BitcoinBlockchainModule } from "./bitcoin/blockchain/btcblockchain.module";
-import { BitcoinBlockModule } from "./bitcoin/block/btcblock.module";
-import { BitcoinMempoolModule } from "./bitcoin/mempool/btcmempool.module";
-import { BitcoinTransactionModule } from "./bitcoin/transaction/btctransaction.module";
+import {BitcoinNetworkModule} from './bitcoin/network/btcnetwork.module';
+import {BitcoinBlockchainModule} from './bitcoin/blockchain/btcblockchain.module';
+import {BitcoinBlockModule} from './bitcoin/block/btcblock.module';
+import {BitcoinMempoolModule} from './bitcoin/mempool/btcmempool.module';
+import {BitcoinTransactionModule} from './bitcoin/transaction/btctransaction.module';
 // Lightning Endpoints
-import { LightningInfoModule } from "./lightning/info/lninfo.module";
-import { LightningBalanceModule } from "./lightning/balance/lnbalance.module";
-import { LightningWalletModule } from "./lightning/wallet/lnwallet.module";
+import {LightningInfoModule} from './lightning/info/lninfo.module';
+import {LightningBalanceModule} from './lightning/balance/lnbalance.module';
+import {LightningWalletModule} from './lightning/wallet/lnwallet.module';
 // Taproot Assets Endpoints
-import { TaprootAssetsInfoModule } from "./tapass/info/tapinfo.module";
-import { TaprootAssetsAssetModule } from "./tapass/asset/tapasset.module";
-import { TaprootAssetsIdModule } from "./tapass/id/tapid.module";
+import {TaprootAssetsInfoModule} from './tapass/info/tapinfo.module';
+import {TaprootAssetsAssetModule} from './tapass/asset/tapasset.module';
+import {TaprootAssetsIdModule} from './tapass/id/tapid.module';
 // Cashu Mint Endpoints
-import { MintInfoModule } from "./mint/info/mintinfo.module";
-import { MintBalanceModule } from "./mint/balance/mintbalance.module";
-import { MintKeysetModule } from './mint/keyset/mintkeyset.module';
-import { MintDatabaseModule } from "./mint/database/mintdatabase.module";
-import { MintQuoteModule } from "./mint/quote/mintquote.module";
-import { MintMeltQuoteModule } from "./mint/meltquote/mintmeltquote.module";
-import { MintMintQuoteModule } from "./mint/mintquote/mintmintquote.module";
-import { MintPromiseModule } from "./mint/promise/mintpromise.module";
-import { MintProofModule } from "./mint/proof/mintproof.module";
-import { MintAnalyticsModule } from "./mint/analytics/mintanalytics.module";
-import { MintCountModule } from "./mint/count/mintcount.module";
+import {MintInfoModule} from './mint/info/mintinfo.module';
+import {MintBalanceModule} from './mint/balance/mintbalance.module';
+import {MintKeysetModule} from './mint/keyset/mintkeyset.module';
+import {MintDatabaseModule} from './mint/database/mintdatabase.module';
+import {MintQuoteModule} from './mint/quote/mintquote.module';
+import {MintMeltQuoteModule} from './mint/meltquote/mintmeltquote.module';
+import {MintMintQuoteModule} from './mint/mintquote/mintmintquote.module';
+import {MintPromiseModule} from './mint/promise/mintpromise.module';
+import {MintProofModule} from './mint/proof/mintproof.module';
+import {MintAnalyticsModule} from './mint/analytics/mintanalytics.module';
+import {MintCountModule} from './mint/count/mintcount.module';
 // AI Endpoints
-import { AiModelModule } from "./ai/model/aimodel.module";
-import { AiAgentModule } from "./ai/agent/aiagent.module";
-import { AiChatModule } from "./ai/chat/aichat.module";
+import {AiModelModule} from './ai/model/aimodel.module';
+import {AiAgentModule} from './ai/agent/aiagent.module';
+import {AiChatModule} from './ai/chat/aichat.module';
 // Image Endpoints
-import { PublicImageModule } from "./public/image/image.module";
-import { PublicUrlModule } from "./public/url/url.module";
+import {PublicImageModule} from './public/image/image.module';
+import {PublicUrlModule} from './public/url/url.module';
 
 @Module({
 	imports: [

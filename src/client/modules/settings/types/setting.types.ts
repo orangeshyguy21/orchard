@@ -1,11 +1,15 @@
 /* Application Dependencies */
-import { MintDashboardSettings, MintKeysetsSettings, MintDatabaseSettings } from '@client/modules/cache/services/local-storage/local-storage.types';
+import {
+	MintDashboardSettings,
+	MintKeysetsSettings,
+	MintDatabaseSettings,
+} from '@client/modules/cache/services/local-storage/local-storage.types';
 
 /* Page: Mint Dashboard */
 export type AllMintDashboardSettings = MintDashboardSettings & {
 	date_start: number | null;
 	date_end: number | null;
-}
+};
 export type NonNullableMintDashboardSettings = {
 	[K in keyof AllMintDashboardSettings]: NonNullable<AllMintDashboardSettings[K]>;
 };
@@ -14,7 +18,7 @@ export type NonNullableMintDashboardSettings = {
 export type AllMintKeysetsSettings = MintKeysetsSettings & {
 	date_start: number | null;
 	date_end: number | null;
-}
+};
 export type NonNullableMintKeysetsSettings = {
 	[K in keyof AllMintKeysetsSettings]: NonNullable<AllMintKeysetsSettings[K]>;
 };
@@ -25,7 +29,7 @@ export type AllMintDatabaseSettings = MintDatabaseSettings & {
 	date_end: number | null;
 	page: number | null;
 	page_size: number | null;
-}
+};
 export type NonNullableMintDatabaseSettings = {
 	[K in keyof AllMintDatabaseSettings]: NonNullable<AllMintDatabaseSettings[K]>;
 };

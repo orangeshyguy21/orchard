@@ -1,7 +1,7 @@
 /* Core Dependencies */
-import { Module } from '@nestjs/common';
+import {Module} from '@nestjs/common';
 /* Local Dependencies */
-import { NutshellService } from './nutshell.service';
+import {NutshellService} from './nutshell.service';
 
 @Module({
 	providers: [NutshellService],

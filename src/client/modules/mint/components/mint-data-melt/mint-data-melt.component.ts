@@ -1,12 +1,12 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, ElementRef, Input, AfterViewInit, ViewChild, ChangeDetectorRef } from '@angular/core';
-import { animate, state, style, transition, trigger } from '@angular/animations';
+import {ChangeDetectionStrategy, Component, ElementRef, Input, AfterViewInit, ViewChild, ChangeDetectorRef} from '@angular/core';
+import {animate, state, style, transition, trigger} from '@angular/animations';
 /* Vendor Dependencies */
 import QRCodeStyling from 'qr-code-styling';
 /* Application Dependencies */
-import { ThemeService } from '@client/modules/settings/services/theme/theme.service';
+import {ThemeService} from '@client/modules/settings/services/theme/theme.service';
 /* Native Dependencies */
-import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
+import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
 
 @Component({
 	selector: 'orc-mint-data-melt',
@@ -31,8 +31,7 @@ import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.clas
 	],
 })
 export class MintDataMeltComponent implements AfterViewInit {
-
-	@ViewChild('qr_canvas', { static: false }) qr_canvas!: ElementRef;
+	@ViewChild('qr_canvas', {static: false}) qr_canvas!: ElementRef;
 
 	@Input() quote!: MintMeltQuote;
 
@@ -42,7 +41,7 @@ export class MintDataMeltComponent implements AfterViewInit {
 
 	constructor(
 		private themeService: ThemeService,
-		private cdr: ChangeDetectorRef
+		private cdr: ChangeDetectorRef,
 	) {}
 
 	ngAfterViewInit(): void {
@@ -64,11 +63,11 @@ export class MintDataMeltComponent implements AfterViewInit {
 			qrOptions: {
 				typeNumber: 0,
 				mode: 'Byte',
-				errorCorrectionLevel: 'Q'
+				errorCorrectionLevel: 'Q',
 			},
 			dotsOptions: {
 				color: qr_primary_color,
-				type: 'extra-rounded'
+				type: 'extra-rounded',
 			},
 			backgroundOptions: {
 				color: undefined,
@@ -79,15 +78,15 @@ export class MintDataMeltComponent implements AfterViewInit {
 			},
 			cornersDotOptions: {
 				color: qr_corner_dot_color,
-			 	type: 'square',
-			}
-		  });
-	  
-		  this.qr_code.append(this.qr_canvas.nativeElement);
+				type: 'square',
+			},
+		});
+
+		this.qr_code.append(this.qr_canvas.nativeElement);
 	}
 
-	public onCopy(value:string|null): void {
-		if( !value ) return;
+	public onCopy(value: string | null): void {
+		if (!value) return;
 		navigator.clipboard.writeText(value);
 		if (this.copy_timeout) clearTimeout(this.copy_timeout);
 		this.copy_animation_state = 'visible';
@@ -95,6 +94,6 @@ export class MintDataMeltComponent implements AfterViewInit {
 		this.copy_timeout = setTimeout(() => {
 			this.copy_animation_state = 'hidden';
 			this.cdr.detectChanges();
-		}, 1000);		
+		}, 1000);
 	}
 }

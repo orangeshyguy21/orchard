@@ -1,7 +1,7 @@
 /* Core Dependencies */
-import { Module } from '@nestjs/common';
+import {Module} from '@nestjs/common';
 /* Local Dependencies */
-import { LndService } from './lnd.service';
+import {LndService} from './lnd.service';
 
 @Module({
 	providers: [LndService],

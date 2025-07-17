@@ -1,25 +1,23 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component , Inject, ViewChild, ElementRef, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import {ChangeDetectionStrategy, Component, Inject, ViewChild, ElementRef, OnInit} from '@angular/core';
+import {FormGroup, FormControl, Validators} from '@angular/forms';
 /* Vendor Dependencies */
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import QRCodeStyling, { DotType, CornerSquareType } from 'qr-code-styling';
-import { MatSlideToggleChange } from '@angular/material/slide-toggle';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import QRCodeStyling, {DotType, CornerSquareType} from 'qr-code-styling';
+import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 /* Application Dependencies */
-import { ThemeService } from '@client/modules/settings/services/theme/theme.service';
-import { ThemeType } from '@client/modules/cache/services/local-storage/local-storage.types';
-
+import {ThemeService} from '@client/modules/settings/services/theme/theme.service';
+import {ThemeType} from '@client/modules/cache/services/local-storage/local-storage.types';
 
 @Component({
 	selector: 'orc-mint-qrcode-dialog',
 	standalone: false,
 	templateUrl: './mint-qrcode-dialog.component.html',
 	styleUrl: './mint-qrcode-dialog.component.scss',
-	changeDetection: ChangeDetectionStrategy.OnPush
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintQrcodeDialogComponent implements OnInit {
-
-	@ViewChild('qr_canvas', { static: true }) qr_canvas!: ElementRef;
+	@ViewChild('qr_canvas', {static: true}) qr_canvas!: ElementRef;
 
 	public qr_code!: QRCodeStyling;
 
@@ -43,7 +41,7 @@ export class MintQrcodeDialogComponent implements OnInit {
 
 	constructor(
 		@Inject(MAT_DIALOG_DATA) public data: any,
-		private themeService: ThemeService
+		private themeService: ThemeService,
 	) {}
 
 	ngOnInit(): void {
@@ -66,7 +64,7 @@ export class MintQrcodeDialogComponent implements OnInit {
 			qrOptions: {
 				typeNumber: 0,
 				mode: 'Byte',
-				errorCorrectionLevel: 'Q'
+				errorCorrectionLevel: 'Q',
 			},
 			imageOptions: {
 				hideBackgroundDots: true,
@@ -76,7 +74,7 @@ export class MintQrcodeDialogComponent implements OnInit {
 			},
 			dotsOptions: {
 				color: themeless_primary_color,
-				type: 'extra-rounded'
+				type: 'extra-rounded',
 			},
 			backgroundOptions: {
 				color: themeless_bg,
@@ -87,10 +85,10 @@ export class MintQrcodeDialogComponent implements OnInit {
 			},
 			cornersDotOptions: {
 				color: themeless_corner_dot_color,
-			 	type: 'square',
-			}
-		  });
-	  
+				type: 'square',
+			},
+		});
+
 		this.qr_code.append(this.qr_canvas.nativeElement);
 	}
 
@@ -99,22 +97,22 @@ export class MintQrcodeDialogComponent implements OnInit {
 		const style_value = this.qr_options.value.style;
 		this.qr_code.update({
 			dotsOptions: {
-				type: this.dot_options[style_value]
+				type: this.dot_options[style_value],
 			},
 			cornersSquareOptions: {
-				type: this.corner_squre_options[style_value]
-			}
+				type: this.corner_squre_options[style_value],
+			},
 		});
 	}
 
 	public onImageChange(event: MatSlideToggleChange): void {
-		if( this.qr_options.value.image === null || this.qr_options.value.image === undefined ) return;
+		if (this.qr_options.value.image === null || this.qr_options.value.image === undefined) return;
 		this.qr_code.update({
-			image: event.checked ? this.data.icon_data : null
+			image: event.checked ? this.data.icon_data : null,
 		});
 	}
 
 	public download(): void {
-		this.qr_code.download({ name: `${this.data.mint_name} QR`, extension: "png" });
+		this.qr_code.download({name: `${this.data.mint_name} QR`, extension: 'png'});
 	}
 }

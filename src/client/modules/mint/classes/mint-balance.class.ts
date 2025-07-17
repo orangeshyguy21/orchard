@@ -1,7 +1,6 @@
-import { OrchardMintBalance } from "@shared/generated.types";
+import {OrchardMintBalance} from '@shared/generated.types';
 
 export class MintBalance implements OrchardMintBalance {
-
 	balance: number;
 	keyset: string;
 

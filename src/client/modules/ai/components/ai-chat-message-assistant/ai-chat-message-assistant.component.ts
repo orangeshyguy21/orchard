@@ -1,13 +1,13 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
-import { trigger, transition, style, animate, state } from '@angular/animations';
+import {ChangeDetectionStrategy, Component, Input, ChangeDetectorRef, OnChanges, SimpleChanges} from '@angular/core';
+import {trigger, transition, style, animate, state} from '@angular/animations';
 /* Vendor Dependencies */
-import { marked } from 'marked';
+import {marked} from 'marked';
 /* Native Dependencies */
-import { AiChatCompiledMessage } from '@client/modules/ai/classes/ai-chat-compiled-message.class';
-import { AiAgentDefinition } from '@client/modules/ai/classes/ai-agent-definition.class';
+import {AiChatCompiledMessage} from '@client/modules/ai/classes/ai-chat-compiled-message.class';
+import {AiAgentDefinition} from '@client/modules/ai/classes/ai-agent-definition.class';
 /* Shared Dependencies */
-import { AiMessageRole } from '@shared/generated.types';
+import {AiMessageRole} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-ai-chat-message-assistant',
@@ -52,7 +52,6 @@ import { AiMessageRole } from '@shared/generated.types';
     ],
 })
 export class AiChatMessageAssistantComponent implements OnChanges {
-
 	@Input() public message!: AiChatCompiledMessage;
 	@Input() public revision!: number;
 	@Input() public agent!: AiAgentDefinition | null;
@@ -67,16 +66,14 @@ export class AiChatMessageAssistantComponent implements OnChanges {
 	public get thinking_complete(): boolean {
 		return this.message.done || !this.active_chat || this.think_end > 0;
 	}
-	
+
 	private think_start!: number;
 	private think_end!: number;
-	
-	constructor(
-		private readonly cdr: ChangeDetectorRef
-	) {}
+
+	constructor(private readonly cdr: ChangeDetectorRef) {}
 
 	ngOnChanges(changes: SimpleChanges): void {
-		if( changes['revision'] ) {
+		if (changes['revision']) {
 			this.parseRawContent();
 		}
 	}
@@ -85,20 +82,20 @@ export class AiChatMessageAssistantComponent implements OnChanges {
 		if (!this.message?.content) return;
 		const content = this.message.content;
 		const think_start = content.indexOf('<think>');
-		if( think_start === -1 ) {
+		if (think_start === -1) {
 			this.marked_content = await this.updateMarkedContent(content);
 			return;
 		}
-		if( !this.think_start ) this.think_start = Date.now();
+		if (!this.think_start) this.think_start = Date.now();
 		const think_end = content.indexOf('</think>', think_start);
-		if (think_end === -1) { 
+		if (think_end === -1) {
 			this.marked_thinking_content = await this.updateMarkedContent(content.substring(think_start + 7));
 			return;
 		}
-		if( !this.think_end ) this.think_end = Date.now();
+		if (!this.think_end) this.think_end = Date.now();
 		this.marked_thinking_content = await this.updateMarkedContent(content.substring(think_start + 7, think_end));
 		this.marked_content = await this.updateMarkedContent(content.substring(think_end + 8));
-		if( this.message.done ) this.finalizeMessage();
+		if (this.message.done) this.finalizeMessage();
 	}
 
 	private finalizeMessage(): void {

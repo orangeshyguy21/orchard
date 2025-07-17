@@ -1,9 +1,9 @@
-import { OrchardStatus } from "@shared/generated.types";
+import {OrchardStatus} from '@shared/generated.types';
 
 export type OrchardRes<T> = {
 	data: T;
-	errors?: { message: string; extensions: { code: number } }[];
-}
+	errors?: {message: string; extensions: {code: number}}[];
+};
 
 export type OrchardWsRes<T> = {
 	type: string;
@@ -14,5 +14,5 @@ export type OrchardWsRes<T> = {
 };
 
 export type StatusResponse = {
-  	status: OrchardStatus;
-}
+	status: OrchardStatus;
+};

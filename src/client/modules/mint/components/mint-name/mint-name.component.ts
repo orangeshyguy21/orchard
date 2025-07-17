@@ -1,7 +1,7 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Router } from '@angular/router';
-import { animate, style, transition, trigger } from '@angular/animations';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {Router} from '@angular/router';
+import {animate, style, transition, trigger} from '@angular/animations';
 
 @Component({
 	selector: 'orc-mint-name',
@@ -9,7 +9,7 @@ import { animate, style, transition, trigger } from '@angular/animations';
 	templateUrl: './mint-name.component.html',
 	styleUrl: './mint-name.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-    // prettier-ignore
+	// prettier-ignore
 	animations: [
         trigger('fadeIn', [
             transition(':enter', [
@@ -20,26 +20,22 @@ import { animate, style, transition, trigger } from '@angular/animations';
     ],
 })
 export class MintNameComponent {
-
 	@Input() name!: string | null;
-    @Input() loading!: boolean;
-    @Input() error!: boolean;
+	@Input() loading!: boolean;
+	@Input() error!: boolean;
 
-    public get state(): 'loading' | 'error' | 'name' | 'unset' {
-        if( this.loading ) return 'loading';
-        if( this.error ) return 'error';
-        if( this.name ) return 'name';
-        return 'unset';
-    }
-
-	constructor(
-		private router: Router
-	) { }
-
-   	public onClick(){
-		this.router.navigate(['mint', 'info'], {
-            state: { focus_control: 'name' }
-        });
+	public get state(): 'loading' | 'error' | 'name' | 'unset' {
+		if (this.loading) return 'loading';
+		if (this.error) return 'error';
+		if (this.name) return 'name';
+		return 'unset';
 	}
 
+	constructor(private router: Router) {}
+
+	public onClick() {
+		this.router.navigate(['mint', 'info'], {
+			state: {focus_control: 'name'},
+		});
+	}
 }

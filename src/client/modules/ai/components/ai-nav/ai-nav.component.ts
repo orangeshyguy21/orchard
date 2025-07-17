@@ -1,22 +1,21 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import {ChangeDetectionStrategy, Component, Input, ChangeDetectorRef, Output, EventEmitter} from '@angular/core';
+import {FormControl} from '@angular/forms';
 /* Native Dependencies */
-import { AiService } from '@client/modules/ai/services/ai/ai.service';
-import { AiModel } from '@client/modules/ai/classes/ai-model.class';
-import { AiChatConversation } from '@client/modules/ai/classes/ai-chat-conversation.class';
+import {AiService} from '@client/modules/ai/services/ai/ai.service';
+import {AiModel} from '@client/modules/ai/classes/ai-model.class';
+import {AiChatConversation} from '@client/modules/ai/classes/ai-chat-conversation.class';
 /* Shared Dependencies */
-import { AiAgent } from '@shared/generated.types';
+import {AiAgent} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-ai-nav',
 	standalone: false,
 	templateUrl: './ai-nav.component.html',
 	styleUrl: './ai-nav.component.scss',
-	changeDetection: ChangeDetectionStrategy.OnPush
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AiNavComponent {
-
 	@Input() active_agent!: AiAgent;
 	@Input() active_chat!: boolean;
 	@Input() model!: string | null;
@@ -34,7 +33,7 @@ export class AiNavComponent {
 
 	constructor(
 		public aiService: AiService,
-		private cdr: ChangeDetectorRef
+		private cdr: ChangeDetectorRef,
 	) {}
 
 	// @todo ai service active should probably be an observable
@@ -43,7 +42,7 @@ export class AiNavComponent {
 	}
 
 	private startChat() {
-		if( !this.content.value ) return;
+		if (!this.content.value) return;
 		const agent = this.active_agent || AiAgent.Default;
 		this.aiService.requestAgent(agent, this.content.value);
 		this.content.reset();
@@ -54,4 +53,3 @@ export class AiNavComponent {
 		this.cdr.detectChanges();
 	}
 }
-

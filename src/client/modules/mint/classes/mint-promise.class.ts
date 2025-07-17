@@ -1,7 +1,6 @@
-import { OrchardMintPromise } from "@shared/generated.types";
+import {OrchardMintPromise} from '@shared/generated.types';
 
 export class MintPromise implements OrchardMintPromise {
-
 	amount: number;
 	b_: string;
 	c_: string;

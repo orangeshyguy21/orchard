@@ -1,7 +1,6 @@
-import { OrchardContact, OrchardMintInfo, OrchardNuts } from "@shared/generated.types";
+import {OrchardContact, OrchardMintInfo, OrchardNuts} from '@shared/generated.types';
 
 export class MintInfo implements OrchardMintInfo {
-
 	name: string;
 	pubkey: string | null;
 	version: string;

@@ -1,7 +1,7 @@
 /* Core Dependencies */
-import { Module } from '@nestjs/common';
+import {Module} from '@nestjs/common';
 /* Local Dependencies */
-import { CdkService } from './cdk.service';
+import {CdkService} from './cdk.service';
 
 @Module({
 	providers: [CdkService],

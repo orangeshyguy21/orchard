@@ -1,32 +1,21 @@
 /* Core Dependencies */
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
 /* Vendor Dependencies */
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import {MatButtonModule} from '@angular/material/button';
 /* Application Dependencies */
-import { NavModule } from '@client/modules/nav/nav.module';
-import { SettingsModule } from '@client/modules/settings/settings.module';
+import {NavModule} from '@client/modules/nav/nav.module';
+import {SettingsModule} from '@client/modules/settings/settings.module';
 /* Native Dependencies */
-import { LightningSectionComponent } from './components/lightning-section/lightning-section.component';
-import { LightningSubsectionDisabledComponent } from './components/lightning-subsection-disabled/lightning-subsection-disabled.component';
-import { LightningSubsectionDashboardComponent } from './components/lightning-subsection-dashboard/lightning-subsection-dashboard.component';
+import {LightningSectionComponent} from './components/lightning-section/lightning-section.component';
+import {LightningSubsectionDisabledComponent} from './components/lightning-subsection-disabled/lightning-subsection-disabled.component';
+import {LightningSubsectionDashboardComponent} from './components/lightning-subsection-dashboard/lightning-subsection-dashboard.component';
 /* Local Dependencies */
-import { LightningAppRoutingModule } from './lightning-app.router';
+import {LightningAppRoutingModule} from './lightning-app.router';
 
 @NgModule({
-	declarations: [
-		LightningSectionComponent,
-		LightningSubsectionDisabledComponent,
-		LightningSubsectionDashboardComponent
-	],
-	imports: [
-		CommonModule,
-		MatIconModule,
-		MatButtonModule,
-		NavModule,
-		SettingsModule,
-		LightningAppRoutingModule,
-	],
+	declarations: [LightningSectionComponent, LightningSubsectionDisabledComponent, LightningSubsectionDashboardComponent],
+	imports: [CommonModule, MatIconModule, MatButtonModule, NavModule, SettingsModule, LightningAppRoutingModule],
 })
-export class LightningAppModule { }
+export class LightningAppModule {}

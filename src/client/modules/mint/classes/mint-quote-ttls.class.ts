@@ -1,8 +1,7 @@
 /* Shared Dependencies */
-import { OrchardMintQuoteTtls } from "@shared/generated.types";
+import {OrchardMintQuoteTtls} from '@shared/generated.types';
 
 export class MintQuoteTtls implements OrchardMintQuoteTtls {
-
 	melt_ttl: number | null;
 	mint_ttl: number | null;
 

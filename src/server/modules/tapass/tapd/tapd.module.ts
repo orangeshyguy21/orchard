@@ -1,7 +1,7 @@
 /* Core Dependencies */
-import { Module } from '@nestjs/common';
+import {Module} from '@nestjs/common';
 /* Local Dependencies */
-import { TapdService } from './tapd.service';
+import {TapdService} from './tapd.service';
 
 @Module({
 	providers: [TapdService],

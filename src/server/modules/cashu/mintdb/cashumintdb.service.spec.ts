@@ -1,20 +1,20 @@
 /* Core Dependencies */
-import { Test, TestingModule } from '@nestjs/testing';
+import {Test, TestingModule} from '@nestjs/testing';
 /* Local Dependencies */
-import { CashuMintDatabaseService } from './cashumintdb.service';
+import {CashuMintDatabaseService} from './cashumintdb.service';
 
 describe('CashuMintDatabaseService', () => {
-  let service: CashuMintDatabaseService;
+	let service: CashuMintDatabaseService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [CashuMintDatabaseService],
-    }).compile();
+	beforeEach(async () => {
+		const module: TestingModule = await Test.createTestingModule({
+			providers: [CashuMintDatabaseService],
+		}).compile();
 
-    service = module.get<CashuMintDatabaseService>(CashuMintDatabaseService);
-  });
+		service = module.get<CashuMintDatabaseService>(CashuMintDatabaseService);
+	});
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
+	it('should be defined', () => {
+		expect(service).toBeDefined();
+	});
 });

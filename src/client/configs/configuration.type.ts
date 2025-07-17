@@ -1,26 +1,26 @@
 export type Config = {
-	mode : {
+	mode: {
 		production: boolean;
 		version: string;
-	},
-	api : {
+	};
+	api: {
 		proxy: string;
 		path: string;
-	},
-	bitcoin : {
+	};
+	bitcoin: {
 		enabled: boolean;
-	},
-	lightning : {
+	};
+	lightning: {
 		enabled: boolean;
-	},
-	taproot_assets : {
+	};
+	taproot_assets: {
 		enabled: boolean;
-	},
-	mint : {
+	};
+	mint: {
 		enabled: boolean;
 		critical_path: string;
-	},
-	ai : {
+	};
+	ai: {
 		enabled: boolean;
-	}
+	};
 };

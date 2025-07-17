@@ -1,219 +1,219 @@
-import { 
-    OrchardMintBalance,
-    OrchardMintInfo,
-    OrchardMintQuoteTtls,
-    OrchardMintKeyset,
-    OrchardMintAnalytics,
-    OrchardMintMintQuote,
-    OrchardMintMeltQuote,
-    OrchardMintProofGroup,
-    OrchardMintPromiseGroup,
-    OrchardMintKeysetsAnalytics,
-    MintUnit,
-    MintAnalyticsInterval,
-    MintQuoteState,
-    MeltQuoteState,
-    MintProofState,
-    OrchardMintInfoRpc,
-    OrchardMintCount,
-    OrchardMintNameUpdate, 
-    OrchardMintIconUpdate,
-    OrchardMintDescriptionUpdate,
-    OrchardMintMotdUpdate,
-    OrchardMintUrlUpdate,
-    OrchardMintContactUpdate,
-    OrchardMintNut04Update,
-    OrchardMintNut05Update,
-    OrchardMintKeysetRotation,
-    OrchardMintDatabaseBackup,
-    OrchardMintDatabaseRestore,
-    OrchardMintProofGroupStats,
-} from "@shared/generated.types";
+import {
+	OrchardMintBalance,
+	OrchardMintInfo,
+	OrchardMintQuoteTtls,
+	OrchardMintKeyset,
+	OrchardMintAnalytics,
+	OrchardMintMintQuote,
+	OrchardMintMeltQuote,
+	OrchardMintProofGroup,
+	OrchardMintPromiseGroup,
+	OrchardMintKeysetsAnalytics,
+	MintUnit,
+	MintAnalyticsInterval,
+	MintQuoteState,
+	MeltQuoteState,
+	MintProofState,
+	OrchardMintInfoRpc,
+	OrchardMintCount,
+	OrchardMintNameUpdate,
+	OrchardMintIconUpdate,
+	OrchardMintDescriptionUpdate,
+	OrchardMintMotdUpdate,
+	OrchardMintUrlUpdate,
+	OrchardMintContactUpdate,
+	OrchardMintNut04Update,
+	OrchardMintNut05Update,
+	OrchardMintKeysetRotation,
+	OrchardMintDatabaseBackup,
+	OrchardMintDatabaseRestore,
+	OrchardMintProofGroupStats,
+} from '@shared/generated.types';
 
 export type MintInfoResponse = {
-  	mint_info: OrchardMintInfo;
-}
+	mint_info: OrchardMintInfo;
+};
 
 export type MintInfoRpcResponse = {
 	mint_info_rpc: OrchardMintInfoRpc;
-}
+};
 
 export type MintQuoteTtlsResponse = {
 	mint_quote_ttl: OrchardMintQuoteTtls;
-}
+};
 
 export type MintBalancesResponse = {
-  	mint_balances: OrchardMintBalance[];
-      errors?: string[];
-}
+	mint_balances: OrchardMintBalance[];
+	errors?: string[];
+};
 
 export type MintKeysetsResponse = {
-  	mint_keysets: OrchardMintKeyset[];
-}
+	mint_keysets: OrchardMintKeyset[];
+};
 
 export type MintAnalyticsBalancesResponse = {
 	mint_analytics_balances: OrchardMintAnalytics[];
-}
+};
 
 export type MintAnalyticsMintsResponse = {
 	mint_analytics_mints: OrchardMintAnalytics[];
-}
+};
 
 export type MintAnalyticsMeltsResponse = {
 	mint_analytics_melts: OrchardMintAnalytics[];
-}
+};
 
 export type MintAnalyticsTransfersResponse = {
 	mint_analytics_transfers: OrchardMintAnalytics[];
-}
+};
 
 export type MintMintQuotesResponse = {
 	mint_mint_quotes: OrchardMintMintQuote[];
-}
+};
 
 export type MintMeltQuotesResponse = {
 	mint_melt_quotes: OrchardMintMeltQuote[];
-}
+};
 
 export type MintAnalyticsKeysetsResponse = {
 	mint_analytics_keysets: OrchardMintKeysetsAnalytics[];
-}
+};
 
 export type MintAnalyticsArgs = {
-    units?: MintUnit[];
-    date_start?: number;
-    date_end?: number;
-    interval?: MintAnalyticsInterval;
-    timezone?: string;
-}
+	units?: MintUnit[];
+	date_start?: number;
+	date_end?: number;
+	interval?: MintAnalyticsInterval;
+	timezone?: string;
+};
 
 export type MintMintQuotesArgs = {
-    units?: MintUnit[];
-    date_start?: number;
-    date_end?: number;
-    states?: MintQuoteState[];
-    page?: number;
-    page_size?: number;
-}
+	units?: MintUnit[];
+	date_start?: number;
+	date_end?: number;
+	states?: MintQuoteState[];
+	page?: number;
+	page_size?: number;
+};
 
 export type MintMeltQuotesArgs = {
-    units?: MintUnit[];
-    date_start?: number;
-    date_end?: number;
-    states?: MeltQuoteState[];
-    page?: number;
-    page_size?: number;
-}
+	units?: MintUnit[];
+	date_start?: number;
+	date_end?: number;
+	states?: MeltQuoteState[];
+	page?: number;
+	page_size?: number;
+};
 
 export type MintProofGroupsArgs = {
-    id_keysets?: string[];
-    date_start?: number;
-    date_end?: number;
-    units?: MintUnit[];
-    states?: MintProofState[];
-    page?: number;
-    page_size?: number;
-}
+	id_keysets?: string[];
+	date_start?: number;
+	date_end?: number;
+	units?: MintUnit[];
+	states?: MintProofState[];
+	page?: number;
+	page_size?: number;
+};
 
 export type MintPromiseGroupsArgs = {
-    units?: MintUnit[];
-    id_keysets?: string[];
-    date_start?: number;
-    date_end?: number;
-    page?: number;
-    page_size?: number;
-}
+	units?: MintUnit[];
+	id_keysets?: string[];
+	date_start?: number;
+	date_end?: number;
+	page?: number;
+	page_size?: number;
+};
 
 export type MintNameUpdateResponse = {
 	mint_name_update: OrchardMintNameUpdate;
-}
+};
 
 export type MintDescriptionUpdateResponse = {
 	mint_short_description_update: OrchardMintDescriptionUpdate;
-}
+};
 
 export type MintDescriptionLongUpdateResponse = {
 	mint_long_description_update: OrchardMintDescriptionUpdate;
-}
+};
 
 export type MintIconUrlUpdateResponse = {
 	mint_icon_update: OrchardMintIconUpdate;
-}
+};
 
 export type MintMotdUpdateResponse = {
 	mint_motd_update: OrchardMintMotdUpdate;
-}
+};
 
 export type MintUrlUpdateResponse = {
 	mint_url_add: OrchardMintUrlUpdate;
 	mint_url_remove: OrchardMintUrlUpdate;
-}
+};
 
 export type MintUrlAddResponse = {
 	mint_url_add: OrchardMintUrlUpdate;
-}
+};
 
 export type MintUrlRemoveResponse = {
 	mint_url_remove: OrchardMintUrlUpdate;
-}
+};
 
 export type MintContactUpdateResponse = {
 	mint_contact_add: OrchardMintContactUpdate;
 	mint_contact_remove: OrchardMintContactUpdate;
-}
+};
 
 export type MintContactRemoveResponse = {
 	mint_contact_remove: OrchardMintContactUpdate;
-}
+};
 
 export type MintContactAddResponse = {
 	mint_contact_add: OrchardMintContactUpdate;
-}
+};
 
 export type MintQuoteTtlUpdateResponse = {
 	mint_quote_ttl_update: OrchardMintQuoteTtls;
-}
+};
 
 export type MintNut04UpdateResponse = {
 	mint_nut04_update: OrchardMintNut04Update;
-}
+};
 
 export type MintNut05UpdateResponse = {
 	mint_nut05_update: OrchardMintNut05Update;
-}
+};
 
 export type MintKeysetRotationResponse = {
 	mint_keysets_rotation: OrchardMintKeysetRotation;
-}
+};
 
 export type MintMintQuotesDataResponse = {
 	mint_mint_quotes: OrchardMintMintQuote[];
 	mint_count_mint_quotes: OrchardMintCount;
-}
+};
 
 export type MintMeltQuotesDataResponse = {
 	mint_melt_quotes: OrchardMintMeltQuote[];
 	mint_count_melt_quotes: OrchardMintCount;
-}
+};
 
 export type MintProofGroupsDataResponse = {
 	mint_proof_groups: OrchardMintProofGroup[];
 	mint_count_proof_groups: OrchardMintCount;
-}
+};
 
 export type MintPromiseGroupsDataResponse = {
 	mint_promise_groups: OrchardMintPromiseGroup[];
 	mint_count_promise_groups: OrchardMintCount;
-}
+};
 
 export type MintDatabaseBackupResponse = {
 	mint_database_backup: OrchardMintDatabaseBackup;
-}
+};
 
 export type MintDatabaseRestoreResponse = {
 	mint_database_restore: OrchardMintDatabaseRestore;
-}
+};
 
 export type MintProofGroupStatsResponse = {
 	mint_proof_group_stats: OrchardMintProofGroupStats;
-}
+};

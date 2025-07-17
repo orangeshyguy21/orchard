@@ -1,36 +1,28 @@
 /* Core Dependencies */
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 /* Vendor Dependencies */
-import { BehaviorSubject, catchError, map, Observable, of, shareReplay, tap, throwError } from 'rxjs';
+import {BehaviorSubject, catchError, map, Observable, of, shareReplay, tap, throwError} from 'rxjs';
 /* Application Dependencies */
-import { api, getApiQuery } from '@client/modules/api/helpers/api.helpers';
-import { OrchardErrors } from '@client/modules/error/classes/error.class';
-import { OrchardRes } from '@client/modules/api/types/api.types';
-import { CacheService } from '@client/modules/cache/services/cache/cache.service';
+import {api, getApiQuery} from '@client/modules/api/helpers/api.helpers';
+import {OrchardErrors} from '@client/modules/error/classes/error.class';
+import {OrchardRes} from '@client/modules/api/types/api.types';
+import {CacheService} from '@client/modules/cache/services/cache/cache.service';
 /* Native Dependencies */
-import { LightningInfo } from '@client/modules/lightning/classes/lightning-info.class';
-import { LightningBalance } from '@client/modules/lightning/classes/lightning-balance.class';
-import { LightningAccount } from '@client/modules/lightning/classes/lightning-account.class';
-import { 
-	LightningInfoResponse,
-	LightningBalanceResponse,
-	LightningWalletResponse,
-} from '@client/modules/lightning/types/lightning.types';
+import {LightningInfo} from '@client/modules/lightning/classes/lightning-info.class';
+import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
+import {LightningAccount} from '@client/modules/lightning/classes/lightning-account.class';
+import {LightningInfoResponse, LightningBalanceResponse, LightningWalletResponse} from '@client/modules/lightning/types/lightning.types';
 /* Local Dependencies */
-import { 
-	LIGHTNING_INFO_QUERY,
-	LIGHTNING_BALANCE_QUERY,
-	LIGHTNING_WALLET_QUERY,
-} from './lightning.queries';
-
+import {LIGHTNING_INFO_QUERY, LIGHTNING_BALANCE_QUERY, LIGHTNING_WALLET_QUERY} from './lightning.queries';
 
 @Injectable({
-  	providedIn: 'root'
+	providedIn: 'root',
 })
 export class LightningService {
-
-	public get lightning_info$(): Observable<LightningInfo | null> { return this.lightning_info_subject.asObservable(); }
+	public get lightning_info$(): Observable<LightningInfo | null> {
+		return this.lightning_info_subject.asObservable();
+	}
 
 	public readonly CACHE_KEYS = {
 		LIGHTNING_INFO: 'lightning-info',
@@ -58,24 +50,25 @@ export class LightningService {
 	) {
 		this.lightning_info_subject = this.cache.createCache<LightningInfo>(
 			this.CACHE_KEYS.LIGHTNING_INFO,
-			this.CACHE_DURATIONS[this.CACHE_KEYS.LIGHTNING_INFO]
+			this.CACHE_DURATIONS[this.CACHE_KEYS.LIGHTNING_INFO],
 		);
 		this.lightning_balance_subject = this.cache.createCache<LightningBalance>(
 			this.CACHE_KEYS.LIGHTNING_BALANCE,
-			this.CACHE_DURATIONS[this.CACHE_KEYS.LIGHTNING_BALANCE]
+			this.CACHE_DURATIONS[this.CACHE_KEYS.LIGHTNING_BALANCE],
 		);
 		this.lightning_accounts_subject = this.cache.createCache<LightningAccount[]>(
 			this.CACHE_KEYS.LIGHTNING_ACCOUNTS,
-			this.CACHE_DURATIONS[this.CACHE_KEYS.LIGHTNING_ACCOUNTS]
+			this.CACHE_DURATIONS[this.CACHE_KEYS.LIGHTNING_ACCOUNTS],
 		);
 	}
 
 	public loadLightningInfo(): Observable<LightningInfo> {
-		if ( this.lightning_info_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.LIGHTNING_INFO) ) return of(this.lightning_info_subject.value);
-		if ( this.lightning_info_observable ) return this.lightning_info_observable;
+		if (this.lightning_info_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.LIGHTNING_INFO))
+			return of(this.lightning_info_subject.value);
+		if (this.lightning_info_observable) return this.lightning_info_observable;
 
 		const query = getApiQuery(LIGHTNING_INFO_QUERY);
-	
+
 		this.lightning_info_observable = this.http.post<OrchardRes<LightningInfoResponse>>(api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
@@ -89,22 +82,21 @@ export class LightningService {
 			}),
 			shareReplay(1),
 			catchError((error) => {
-
 				console.error('Error loading lightning info:', error);
 				this.lightning_info_observable = null;
 				this.lightning_info_subject.next(null);
 				return throwError(() => error);
 			}),
 		);
-		
+
 		return this.lightning_info_observable;
 	}
 
 	public loadLightningBalance(): Observable<LightningBalance> {
-		if ( this.lightning_balance_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.LIGHTNING_BALANCE) ) {
+		if (this.lightning_balance_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.LIGHTNING_BALANCE)) {
 			return of(this.lightning_balance_subject.value);
 		}
-		
+
 		const query = getApiQuery(LIGHTNING_BALANCE_QUERY);
 
 		return this.http.post<OrchardRes<LightningBalanceResponse>>(api, query).pipe(
@@ -119,12 +111,12 @@ export class LightningService {
 			catchError((error) => {
 				console.error('Error loading lightning balance:', error);
 				return throwError(() => error);
-			})
+			}),
 		);
 	}
 
 	public loadLightningAccounts(): Observable<LightningAccount[]> {
-		if ( this.lightning_accounts_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.LIGHTNING_ACCOUNTS) ) {
+		if (this.lightning_accounts_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.LIGHTNING_ACCOUNTS)) {
 			return of(this.lightning_accounts_subject.value);
 		}
 
@@ -143,7 +135,7 @@ export class LightningService {
 			catchError((error) => {
 				console.error('Error loading lightning wallet:', error);
 				return throwError(() => error);
-			})
+			}),
 		);
 	}
 }

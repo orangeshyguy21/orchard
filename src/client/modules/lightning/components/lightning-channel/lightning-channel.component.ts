@@ -1,17 +1,16 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, computed } from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, computed} from '@angular/core';
 /* Shared Dependencies */
-import { TaprootAssetId } from '@shared/generated.types';
+import {TaprootAssetId} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-lightning-channel',
 	standalone: false,
 	templateUrl: './lightning-channel.component.html',
 	styleUrl: './lightning-channel.component.scss',
-	changeDetection: ChangeDetectionStrategy.OnPush
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LightningChannelComponent {
-
 	@Input() height: string = '2rem';
 	@Input() size!: number;
 	@Input() recievable!: number;
@@ -24,10 +23,10 @@ export class LightningChannelComponent {
 	});
 
 	public channel_class = computed(() => {
-		if( this.lower_unit() === 'sat' ) return 'channel-btc';
-		if( this.lower_unit() === 'msat' ) return 'channel-btc';
-		if( this.lower_unit() === 'btc' ) return 'channel-btc';
-		if( this.asset_id === TaprootAssetId.Usdt ) return 'channel-tether';
+		if (this.lower_unit() === 'sat') return 'channel-btc';
+		if (this.lower_unit() === 'msat') return 'channel-btc';
+		if (this.lower_unit() === 'btc') return 'channel-btc';
+		if (this.asset_id === TaprootAssetId.Usdt) return 'channel-tether';
 		return 'channel-unknown';
 	});
 

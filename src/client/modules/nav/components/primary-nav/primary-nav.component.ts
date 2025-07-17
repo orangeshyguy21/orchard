@@ -1,17 +1,16 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter } from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, Output, EventEmitter} from '@angular/core';
 /* Application Dependencies */
-import { EventData } from 'src/client/modules/event/classes/event-data.class';
+import {EventData} from 'src/client/modules/event/classes/event-data.class';
 
 @Component({
 	selector: 'orc-primary-nav',
 	standalone: false,
 	templateUrl: './primary-nav.component.html',
 	styleUrl: './primary-nav.component.scss',
-	changeDetection: ChangeDetectionStrategy.OnPush
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PrimaryNavComponent {
-
 	@Input() active_section!: string;
 	@Input() active_event!: EventData | null;
 	@Input() enabled_bitcoin!: boolean;

@@ -1,12 +1,12 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter } from '@angular/core';
-import { trigger, transition, style, animate } from '@angular/animations';
+import {ChangeDetectionStrategy, Component, Input, Output, EventEmitter} from '@angular/core';
+import {trigger, transition, style, animate} from '@angular/animations';
 @Component({
-    selector: 'orc-ai-command',
-    standalone: false,
-    templateUrl: './ai-command.component.html',
-    styleUrl: './ai-command.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
+	selector: 'orc-ai-command',
+	standalone: false,
+	templateUrl: './ai-command.component.html',
+	styleUrl: './ai-command.component.scss',
+	changeDetection: ChangeDetectionStrategy.OnPush,
 	// prettier-ignore
 	animations: [
 		trigger('iconAnimation', [
@@ -18,10 +18,8 @@ import { trigger, transition, style, animate } from '@angular/animations';
 	],
 })
 export class AiCommandComponent {
-
 	@Input() actionable!: boolean;
 	@Input() active_chat!: boolean;
 
 	@Output() command = new EventEmitter<void>();
-
 }

@@ -1,23 +1,22 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { MintSubsectionDatabaseComponent } from './mint-subsection-database.component';
+import {MintSubsectionDatabaseComponent} from './mint-subsection-database.component';
 
 describe('MintSubsectionDatabaseComponent', () => {
-  let component: MintSubsectionDatabaseComponent;
-  let fixture: ComponentFixture<MintSubsectionDatabaseComponent>;
+	let component: MintSubsectionDatabaseComponent;
+	let fixture: ComponentFixture<MintSubsectionDatabaseComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [MintSubsectionDatabaseComponent]
-    })
-    .compileComponents();
+	beforeEach(async () => {
+		await TestBed.configureTestingModule({
+			declarations: [MintSubsectionDatabaseComponent],
+		}).compileComponents();
 
-    fixture = TestBed.createComponent(MintSubsectionDatabaseComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+		fixture = TestBed.createComponent(MintSubsectionDatabaseComponent);
+		component = fixture.componentInstance;
+		fixture.detectChanges();
+	});
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+	it('should create', () => {
+		expect(component).toBeTruthy();
+	});
 });

@@ -4,5 +4,5 @@ export enum SettingsCategory {
 	Lightning = 'Lightning',
 	Mint = 'Mint',
 	Ecash = 'Ecash',
-	Local = 'Local'
+	Local = 'Local',
 }

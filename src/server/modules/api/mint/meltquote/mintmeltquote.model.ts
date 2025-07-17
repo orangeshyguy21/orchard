@@ -1,44 +1,43 @@
 /* Core Dependencies */
-import { Field, Int, ID, ObjectType } from '@nestjs/graphql';
+import {Field, Int, ID, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
-import { UnixTimestamp } from '@server/modules/graphql/scalars/unixtimestamp.scalar';
-import { MintUnit, MeltQuoteState } from '@server/modules/cashu/cashu.enums';
-import { CashuMintMeltQuote } from '@server/modules/cashu/mintdb/cashumintdb.types';
+import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
+import {MintUnit, MeltQuoteState} from '@server/modules/cashu/cashu.enums';
+import {CashuMintMeltQuote} from '@server/modules/cashu/mintdb/cashumintdb.types';
 
 @ObjectType()
 export class OrchardMintMeltQuote {
+	@Field((type) => ID)
+	id: string;
 
-	@Field(type => ID)
-	id:string;
-
-	@Field(type => MintUnit)
+	@Field((type) => MintUnit)
 	unit: string;
 
-	@Field(type => Int)
+	@Field((type) => Int)
 	amount: number;
 
 	@Field()
 	request: string;
 
-	@Field(type => Int)
+	@Field((type) => Int)
 	fee_reserve: number;
 
-	@Field(type => MeltQuoteState)
+	@Field((type) => MeltQuoteState)
 	state: MeltQuoteState;
 
-	@Field({ nullable: true })
+	@Field({nullable: true})
 	payment_preimage: string;
 
-	@Field({ nullable: true })
+	@Field({nullable: true})
 	request_lookup_id: string;
 
-	@Field(type => Int, { nullable: true })
+	@Field((type) => Int, {nullable: true})
 	msat_to_pay: number;
 
-	@Field(type => UnixTimestamp)
+	@Field((type) => UnixTimestamp)
 	created_time: number;
 
-	@Field(type => UnixTimestamp, { nullable: true })
+	@Field((type) => UnixTimestamp, {nullable: true})
 	paid_time: number;
 
 	constructor(cashu_mint_melt_quote: CashuMintMeltQuote) {
@@ -64,12 +63,12 @@ export class OrchardMintNut05Update {
 	@Field()
 	method: string;
 
-	@Field({ nullable: true })
+	@Field({nullable: true})
 	disabled: boolean;
 
-	@Field(() => Int, { nullable: true })
+	@Field(() => Int, {nullable: true})
 	min_amount: number;
 
-	@Field(() => Int, { nullable: true })
+	@Field(() => Int, {nullable: true})
 	max_amount: number;
 }

@@ -1,23 +1,22 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { AiChatMessageAssistantComponent } from './ai-chat-message-assistant.component';
+import {AiChatMessageAssistantComponent} from './ai-chat-message-assistant.component';
 
 describe('AiChatMessageAssistantComponent', () => {
-  let component: AiChatMessageAssistantComponent;
-  let fixture: ComponentFixture<AiChatMessageAssistantComponent>;
+	let component: AiChatMessageAssistantComponent;
+	let fixture: ComponentFixture<AiChatMessageAssistantComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [AiChatMessageAssistantComponent]
-    })
-    .compileComponents();
+	beforeEach(async () => {
+		await TestBed.configureTestingModule({
+			declarations: [AiChatMessageAssistantComponent],
+		}).compileComponents();
 
-    fixture = TestBed.createComponent(AiChatMessageAssistantComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+		fixture = TestBed.createComponent(AiChatMessageAssistantComponent);
+		component = fixture.componentInstance;
+		fixture.detectChanges();
+	});
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+	it('should create', () => {
+		expect(component).toBeTruthy();
+	});
 });

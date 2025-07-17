@@ -1,13 +1,13 @@
 /* Core Dependencies */
-import { Module } from '@nestjs/common';
+import {Module} from '@nestjs/common';
 /* Application Dependencies */
-import { FetchModule } from '@server/modules/fetch/fetch.module';
+import {FetchModule} from '@server/modules/fetch/fetch.module';
 /* Local Dependencies */
-import { CashuMintApiService } from './cashumintapi.service';
+import {CashuMintApiService} from './cashumintapi.service';
 
 @Module({
-  imports: [FetchModule],
-  providers: [CashuMintApiService],
-  exports: [CashuMintApiService],
+	imports: [FetchModule],
+	providers: [CashuMintApiService],
+	exports: [CashuMintApiService],
 })
 export class CashuMintApiModule {}

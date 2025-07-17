@@ -1,21 +1,20 @@
 /* Core Dependencies */
-import { Field, Int, Float, ObjectType } from '@nestjs/graphql';
+import {Field, Int, Float, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
-import { BitcoinFeeEstimate } from '@server/modules/bitcoin/rpc/btcrpc.types';
+import {BitcoinFeeEstimate} from '@server/modules/bitcoin/rpc/btcrpc.types';
 
 @ObjectType()
 export class OrchardBitcoinTxFeeEstimate {
+	@Field((type) => Int)
+	target: number;
 
-    @Field(type => Int)
-    target: number;
-
-	@Field(type => Float, { nullable: true })
+	@Field((type) => Float, {nullable: true})
 	feerate: number;
 
-	@Field(type => [String], { nullable: true })
+	@Field((type) => [String], {nullable: true})
 	errors: string[];
 
-	@Field(type => Int)
+	@Field((type) => Int)
 	blocks: number;
 
 	constructor(target: number, obte: BitcoinFeeEstimate) {

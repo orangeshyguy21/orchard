@@ -1,7 +1,6 @@
-import { OrchardAiAgent, OrchardAiAgentSystemMessage, OrchardAiAgentTool } from "@shared/generated.types";
+import {OrchardAiAgent, OrchardAiAgentSystemMessage, OrchardAiAgentTool} from '@shared/generated.types';
 
 export class AiAgentDefinition implements OrchardAiAgent {
-
 	name: string;
 	description: string;
 	icon: string;

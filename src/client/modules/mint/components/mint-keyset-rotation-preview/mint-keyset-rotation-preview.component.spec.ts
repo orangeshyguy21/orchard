@@ -1,23 +1,22 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { MintKeysetRotationPreviewComponent } from './mint-keyset-rotation-preview.component';
+import {MintKeysetRotationPreviewComponent} from './mint-keyset-rotation-preview.component';
 
 describe('MintKeysetRotationPreviewComponent', () => {
-  let component: MintKeysetRotationPreviewComponent;
-  let fixture: ComponentFixture<MintKeysetRotationPreviewComponent>;
+	let component: MintKeysetRotationPreviewComponent;
+	let fixture: ComponentFixture<MintKeysetRotationPreviewComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [MintKeysetRotationPreviewComponent]
-    })
-    .compileComponents();
+	beforeEach(async () => {
+		await TestBed.configureTestingModule({
+			declarations: [MintKeysetRotationPreviewComponent],
+		}).compileComponents();
 
-    fixture = TestBed.createComponent(MintKeysetRotationPreviewComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+		fixture = TestBed.createComponent(MintKeysetRotationPreviewComponent);
+		component = fixture.componentInstance;
+		fixture.detectChanges();
+	});
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+	it('should create', () => {
+		expect(component).toBeTruthy();
+	});
 });

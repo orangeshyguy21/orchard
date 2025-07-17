@@ -1,12 +1,12 @@
 export type Nut15Method = {
-	unit: string,
-	methods: string[]
-}
+	unit: string;
+	methods: string[];
+};
 
 export type Nut17Commands = {
-	unit: string,
+	unit: string;
 	methods: {
-		method: string,
-		commands: string[]
-	}[]
-}
+		method: string;
+		commands: string[];
+	}[];
+};

@@ -1,17 +1,16 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, computed } from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, computed} from '@angular/core';
 /* Shared Dependencies */
-import { TaprootAssetId } from '@shared/generated.types';
+import {TaprootAssetId} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-bitcoin-utxo-stack',
 	standalone: false,
 	templateUrl: './bitcoin-utxo-stack.component.html',
 	styleUrl: './bitcoin-utxo-stack.component.scss',
-	changeDetection: ChangeDetectionStrategy.OnPush
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BitcoinUtxoStackComponent {
-
 	@Input() unit!: string;
 	@Input() coins!: number;
 	@Input() asset_id!: string | undefined;
@@ -20,21 +19,20 @@ export class BitcoinUtxoStackComponent {
 
 	public asset_class = computed(() => {
 		const lower_unit = this.unit.toLowerCase();
-		if( this.asset_id === TaprootAssetId.Usdt ) return 'utxo-asset-tether';
-		if( lower_unit === 'sat' || lower_unit === 'msat' || lower_unit === 'btc' ) return 'utxo-asset-btc';
+		if (this.asset_id === TaprootAssetId.Usdt) return 'utxo-asset-tether';
+		if (lower_unit === 'sat' || lower_unit === 'msat' || lower_unit === 'btc') return 'utxo-asset-btc';
 		return 'utxo-asset-unknown';
 	});
 
 	public overflow_class = computed(() => {
 		const lower_unit = this.unit.toLowerCase();
-		if( this.asset_id === TaprootAssetId.Usdt ) return 'utxo-overflow-tether';
-		if( lower_unit === 'sat' || lower_unit === 'msat' || lower_unit === 'btc' ) return 'utxo-overflow-btc';
+		if (this.asset_id === TaprootAssetId.Usdt) return 'utxo-overflow-tether';
+		if (lower_unit === 'sat' || lower_unit === 'msat' || lower_unit === 'btc') return 'utxo-overflow-btc';
 		return 'utxo-overflow-unknown';
 	});
 
 	public coin_array = computed(() => {
 		const count = Math.min(this.coins - 1, this.limiter - 1);
-		return Array.from({ length: count }, (_, i) => i);
+		return Array.from({length: count}, (_, i) => i);
 	});
-
 }

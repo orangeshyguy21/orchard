@@ -1,31 +1,40 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, WritableSignal, signal, ChangeDetectorRef, HostListener } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { toObservable } from '@angular/core/rxjs-interop';
-import { trigger, transition, style, animate } from '@angular/animations';
+import {
+	ChangeDetectionStrategy,
+	Component,
+	OnInit,
+	OnDestroy,
+	WritableSignal,
+	signal,
+	ChangeDetectorRef,
+	HostListener,
+} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
+import {FormGroup, FormControl, Validators} from '@angular/forms';
+import {toObservable} from '@angular/core/rxjs-interop';
+import {trigger, transition, style, animate} from '@angular/animations';
 /* Vendor Dependencies */
-import { Subscription, lastValueFrom, forkJoin } from 'rxjs';
+import {Subscription, lastValueFrom, forkJoin} from 'rxjs';
 /* Application Configuration */
-import { environment } from '@client/configs/configuration';
+import {environment} from '@client/configs/configuration';
 /* Application Dependencies */
-import { EventService } from '@client/modules/event/services/event/event.service';
-import { OrchardErrors } from '@client/modules/error/classes/error.class';
-import { OrchardValidators } from '@client/modules/form/validators';
-import { EventData } from '@client/modules/event/classes/event-data.class';
-import { AiService } from '@client/modules/ai/services/ai/ai.service';
-import { SettingService } from '@client/modules/settings/services/setting/setting.service';
-import { AiChatToolCall } from '@client/modules/ai/classes/ai-chat-chunk.class';
-import { ComponentCanDeactivate } from '@client/modules/routing/interfaces/routing.interfaces';
+import {EventService} from '@client/modules/event/services/event/event.service';
+import {OrchardErrors} from '@client/modules/error/classes/error.class';
+import {OrchardValidators} from '@client/modules/form/validators';
+import {EventData} from '@client/modules/event/classes/event-data.class';
+import {AiService} from '@client/modules/ai/services/ai/ai.service';
+import {SettingService} from '@client/modules/settings/services/setting/setting.service';
+import {AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
+import {ComponentCanDeactivate} from '@client/modules/routing/interfaces/routing.interfaces';
 /* Native Dependencies */
-import { MintService } from '@client/modules/mint/services/mint/mint.service';
-import { MintInfo } from '@client/modules/mint/classes/mint-info.class';
-import { MintQuoteTtls } from '@client/modules/mint/classes/mint-quote-ttls.class';
-import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.class';
-import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.class';
-import { Nut15Method, Nut17Commands } from '@client/modules/mint/types/nut.types';
+import {MintService} from '@client/modules/mint/services/mint/mint.service';
+import {MintInfo} from '@client/modules/mint/classes/mint-info.class';
+import {MintQuoteTtls} from '@client/modules/mint/classes/mint-quote-ttls.class';
+import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class';
+import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
+import {Nut15Method, Nut17Commands} from '@client/modules/mint/types/nut.types';
 /* Shared Dependencies */
-import { OrchardNut4Method, OrchardNut5Method, AiFunctionName } from '@shared/generated.types';
+import {OrchardNut4Method, OrchardNut5Method, AiFunctionName} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-subsection-config',
@@ -47,7 +56,6 @@ import { OrchardNut4Method, OrchardNut5Method, AiFunctionName } from '@shared/ge
 	],
 })
 export class MintSubsectionConfigComponent implements ComponentCanDeactivate, OnInit, OnDestroy {
-
 	@HostListener('window:beforeunload')
 	canDeactivate(): boolean {
 		return this.active_event?.type !== 'PENDING';
@@ -93,10 +101,10 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		public eventService: EventService,
 		public aiService: AiService,
 		public settingService: SettingService,
-		public cdr: ChangeDetectorRef
+		public cdr: ChangeDetectorRef,
 	) {}
 
-	ngOnInit(): void {	
+	ngOnInit(): void {
 		this.mint_info = this.route.snapshot.data['mint_info'];
 		this.quote_ttls = this.route.snapshot.data['mint_quote_ttl'];
 		this.patchStaticFormElements();
@@ -106,9 +114,9 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		this.nut17_commands = this.getNut17Commands();
 		this.buildDynamicFormElements();
 		this.initChartData();
-		Object.keys(this.form_config.controls).forEach(form_group_key => {
+		Object.keys(this.form_config.controls).forEach((form_group_key) => {
 			const form_group = this.form_config.get(form_group_key) as FormGroup;
-			if( form_group.get('enabled')?.value === false ) form_group.disable();
+			if (form_group.get('enabled')?.value === false) form_group.disable();
 		});
 		this.subscriptions.add(this.getMintInfoSubscription());
 		this.subscriptions.add(this.getEventSubscription());
@@ -118,62 +126,57 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	}
 
 	orchardOptionalInit(): void {
-		if( environment.ai.enabled ) {
+		if (environment.ai.enabled) {
 			this.subscriptions.add(this.getAgentSubscription());
 			this.subscriptions.add(this.getToolSubscription());
 		}
 	}
 
 	private getMintInfoSubscription(): Subscription {
-		return this.mintService.mint_info$.subscribe(
-            (info:MintInfo | null) => {
-				if( info ) this.mint_info = info;
-				( this.mint_info?.nuts.nut4.disabled ) ? this.form_minting.disable() : this.form_minting.enable();
-				( this.mint_info?.nuts.nut5.disabled ) ? this.form_melting.disable() : this.form_melting.enable();
-				this.cdr.detectChanges();
-            }
-        );
+		return this.mintService.mint_info$.subscribe((info: MintInfo | null) => {
+			if (info) this.mint_info = info;
+			this.mint_info?.nuts.nut4.disabled ? this.form_minting.disable() : this.form_minting.enable();
+			this.mint_info?.nuts.nut5.disabled ? this.form_melting.disable() : this.form_melting.enable();
+			this.cdr.detectChanges();
+		});
 	}
 
 	private getAgentSubscription(): Subscription {
-		return this.aiService.agent_requests$
-			.subscribe(({ agent, content }) => {
-				const form_value = this.form_config.value;
-				let context = `# Mint Configuration\n\n`;
-				context += `## Minting\n`;
-				context += `* **Enabled:** ${form_value.minting?.enabled ? 'Yes' : 'No'}\n`;
-				context += `* **Mint TTL:** ${form_value.minting?.mint_ttl || 'Not set'} seconds\n`;
-				if (form_value.minting?.sat?.bolt11) {
-					const bolt11 = form_value.minting.sat.bolt11;
-					context += `* **SAT/BOLT11:** ${bolt11.min_amount} - ${bolt11.max_amount}\n`;
-				}
-				context += `## Melting\n`;
-				context += `* **Enabled:** ${form_value.melting?.enabled ? 'Yes' : 'No'}\n`;
-				context += `* **Melt TTL:** ${form_value.melting?.melt_ttl || 'Not set'} seconds\n`;
-				if (form_value.melting?.sat?.bolt11) {
-					const bolt11 = form_value.melting.sat.bolt11;
-					context += `* **SAT/BOLT11:** ${bolt11.min_amount} - ${bolt11.max_amount}\n`;
-				}
-				this.aiService.openAiSocket(agent, content, context);
-			});
+		return this.aiService.agent_requests$.subscribe(({agent, content}) => {
+			const form_value = this.form_config.value;
+			let context = `# Mint Configuration\n\n`;
+			context += `## Minting\n`;
+			context += `* **Enabled:** ${form_value.minting?.enabled ? 'Yes' : 'No'}\n`;
+			context += `* **Mint TTL:** ${form_value.minting?.mint_ttl || 'Not set'} seconds\n`;
+			if (form_value.minting?.sat?.bolt11) {
+				const bolt11 = form_value.minting.sat.bolt11;
+				context += `* **SAT/BOLT11:** ${bolt11.min_amount} - ${bolt11.max_amount}\n`;
+			}
+			context += `## Melting\n`;
+			context += `* **Enabled:** ${form_value.melting?.enabled ? 'Yes' : 'No'}\n`;
+			context += `* **Melt TTL:** ${form_value.melting?.melt_ttl || 'Not set'} seconds\n`;
+			if (form_value.melting?.sat?.bolt11) {
+				const bolt11 = form_value.melting.sat.bolt11;
+				context += `* **SAT/BOLT11:** ${bolt11.min_amount} - ${bolt11.max_amount}\n`;
+			}
+			this.aiService.openAiSocket(agent, content, context);
+		});
 	}
 
 	private getToolSubscription(): Subscription {
-		return this.aiService.tool_calls$
-			.subscribe((tool_call: AiChatToolCall) => {
-				this.executeAgentFunction(tool_call);
-			});
+		return this.aiService.tool_calls$.subscribe((tool_call: AiChatToolCall) => {
+			this.executeAgentFunction(tool_call);
+		});
 	}
 
 	private getEventSubscription(): Subscription {
-		return this.eventService.getActiveEvent()
-			.subscribe((event_data: EventData | null) => {
-				this.active_event = event_data;
-				if( event_data === null ) this.evaluateDirtyCount();
-				if( event_data && event_data.confirmed !== null ){
-					( event_data.confirmed ) ? this.onConfirmedEvent() : this.onUnconfirmedEvent();
-				}
-			});
+		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
+			this.active_event = event_data;
+			if (event_data === null) this.evaluateDirtyCount();
+			if (event_data && event_data.confirmed !== null) {
+				event_data.confirmed ? this.onConfirmedEvent() : this.onUnconfirmedEvent();
+			}
+		});
 	}
 
 	private getFormSubscription(): Subscription {
@@ -184,7 +187,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 
 	private evaluateDirtyCount(): void {
 		let count = 0;
-		
+
 		const countDirtyControls = (group: FormGroup): number => {
 			return Object.keys(group.controls).reduce((acc, key) => {
 				const control = group.get(key);
@@ -192,7 +195,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 				return acc + (control?.dirty ? 1 : 0);
 			}, 0);
 		};
-		
+
 		count = countDirtyControls(this.form_config);
 		this.dirty_count.set(count);
 		this.cdr.detectChanges();
@@ -205,52 +208,52 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	}
 
 	private executeAgentFunction(tool_call: AiChatToolCall): void {
-		if( tool_call.function.name === AiFunctionName.MintEnabledUpdate ) {
+		if (tool_call.function.name === AiFunctionName.MintEnabledUpdate) {
 			const operation = tool_call.function.arguments.operation;
 			const enabled = tool_call.function.arguments.enabled;
-			const form_group = (operation === 'minting') ? this.form_minting : this.form_melting;
-			if( !form_group ) return;
+			const form_group = operation === 'minting' ? this.form_minting : this.form_melting;
+			if (!form_group) return;
 			form_group.get('enabled')?.markAsDirty();
-			form_group.get('enabled')?.setValue(enabled); 
+			form_group.get('enabled')?.setValue(enabled);
 		}
-		if( tool_call.function.name === AiFunctionName.MintQuoteTtlUpdate ) {
+		if (tool_call.function.name === AiFunctionName.MintQuoteTtlUpdate) {
 			const operation = tool_call.function.arguments.operation;
 			const ttl = tool_call.function.arguments.ttl;
-			const form_control = (operation === 'minting') ? this.form_minting.get('mint_ttl') : this.form_melting.get('melt_ttl');
-			if( !form_control ) return;
+			const form_control = operation === 'minting' ? this.form_minting.get('mint_ttl') : this.form_melting.get('melt_ttl');
+			if (!form_control) return;
 			form_control?.markAsDirty();
 			form_control?.setValue(ttl);
 		}
-		if( tool_call.function.name === AiFunctionName.MintMethodMinUpdate ) {
+		if (tool_call.function.name === AiFunctionName.MintMethodMinUpdate) {
 			const operation = tool_call.function.arguments.operation;
 			const method = tool_call.function.arguments.method;
 			const unit = tool_call.function.arguments.unit;
 			const min_amount = tool_call.function.arguments.min_amount;
-			const form_group = (operation === 'minting') ? this.form_minting : this.form_melting;
+			const form_group = operation === 'minting' ? this.form_minting : this.form_melting;
 			const form_control = form_group.get(unit)?.get(method)?.get('min_amount');
-			if( !form_control ) return;
+			if (!form_control) return;
 			form_control?.markAsDirty();
 			form_control?.setValue(min_amount);
 		}
-		if( tool_call.function.name === AiFunctionName.MintMethodMaxUpdate ) {
+		if (tool_call.function.name === AiFunctionName.MintMethodMaxUpdate) {
 			const operation = tool_call.function.arguments.operation;
 			const method = tool_call.function.arguments.method;
 			const unit = tool_call.function.arguments.unit;
 			const max_amount = tool_call.function.arguments.max_amount;
-			const form_group = (operation === 'minting') ? this.form_minting : this.form_melting;
+			const form_group = operation === 'minting' ? this.form_minting : this.form_melting;
 			const form_control = form_group.get(unit)?.get(method)?.get('max_amount');
-			if( !form_control ) return;
+			if (!form_control) return;
 			form_control?.markAsDirty();
 			form_control?.setValue(max_amount);
 		}
-		if( tool_call.function.name === AiFunctionName.MintMethodDescriptionUpdate ) {
+		if (tool_call.function.name === AiFunctionName.MintMethodDescriptionUpdate) {
 			const method = tool_call.function.arguments.method;
 			const unit = tool_call.function.arguments.unit;
 			const description = tool_call.function.arguments.description;
 			const form_control = this.form_minting.get(unit)?.get(method)?.get('description');
-			if( !form_control ) return;
+			if (!form_control) return;
 			form_control.markAsDirty();
-			if( typeof description === 'string' ) return form_control.setValue(JSON.parse((description as string).toLowerCase()));
+			if (typeof description === 'string') return form_control.setValue(JSON.parse((description as string).toLowerCase()));
 			form_control.setValue(description);
 		}
 	}
@@ -269,98 +272,108 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	}
 
 	private translateDisabled(status: boolean | undefined): boolean {
-		if(status === undefined) return false;
+		if (status === undefined) return false;
 		return !status;
 	}
 
 	private translateQuoteTtl(quote_ttl: number | null, to_seconds: boolean = true): number | null {
-		const factor = to_seconds ? (1/1000) : 1000;
-		return (quote_ttl !== null) ? (quote_ttl * factor) : null;
+		const factor = to_seconds ? 1 / 1000 : 1000;
+		return quote_ttl !== null ? quote_ttl * factor : null;
 	}
 
 	private getUniqueUnits(nut: 'nut4' | 'nut5'): string[] {
 		const unit_set = new Set<string>();
-		this.mint_info?.nuts[nut].methods.forEach( method => unit_set.add(method.unit));
+		this.mint_info?.nuts[nut].methods.forEach((method) => unit_set.add(method.unit));
 		return Array.from(unit_set);
 	}
 
 	private getNut15Methods(): Nut15Method[] {
-		const all_units : string[] = this.mint_info?.nuts.nut15.methods.map(m => m.unit) || [];
+		const all_units: string[] = this.mint_info?.nuts.nut15.methods.map((m) => m.unit) || [];
 		const units = Array.from(new Set(all_units));
-		return units.map(unit => ({
+		return units.map((unit) => ({
 			unit,
-			methods: this.mint_info?.nuts.nut15.methods.filter(m => m.unit === unit).map(m => m.method) || []
+			methods: this.mint_info?.nuts.nut15.methods.filter((m) => m.unit === unit).map((m) => m.method) || [],
 		}));
 	}
 
 	private getNut17Commands(): Nut17Commands[] {
-		const all_units : string[] = this.mint_info?.nuts.nut17.supported.map(m => m.unit) || [];
+		const all_units: string[] = this.mint_info?.nuts.nut17.supported.map((m) => m.unit) || [];
 		const units = Array.from(new Set(all_units));
 		const nut17_commands: Nut17Commands[] = [];
-		units.forEach(unit => {
-			const methods = this.mint_info?.nuts.nut17.supported.filter( supp => supp.unit === unit).map( supp => supp.method) || [];
-			const mcommands = methods.map(method => {
+		units.forEach((unit) => {
+			const methods = this.mint_info?.nuts.nut17.supported.filter((supp) => supp.unit === unit).map((supp) => supp.method) || [];
+			const mcommands = methods.map((method) => {
 				return {
 					method: method,
-					commands: []
-				}
+					commands: [],
+				};
 			});
-			nut17_commands.push({ unit, methods: mcommands })
+			nut17_commands.push({unit, methods: mcommands});
 		});
-		nut17_commands.forEach( group => {
-			group.methods.forEach( method => {
-				this.mint_info?.nuts.nut17.supported.filter( supp => supp.unit === group.unit && supp.method === method.method).forEach( supp => {
-					supp.commands.forEach( command => {
-						method.commands.push(command);
+		nut17_commands.forEach((group) => {
+			group.methods.forEach((method) => {
+				this.mint_info?.nuts.nut17.supported
+					.filter((supp) => supp.unit === group.unit && supp.method === method.method)
+					.forEach((supp) => {
+						supp.commands.forEach((command) => {
+							method.commands.push(command);
+						});
 					});
-				});
 			});
 		});
 		return nut17_commands;
 	}
 
 	private createPendingEvent(count: number): void {
-		if( this.active_event?.type === 'SAVING' ) return;
-		if( count === 0 && this.active_event?.type !== 'PENDING' ) return;
-		if( count === 0 ) return this.eventService.registerEvent(null);
-		const message = (count === 1) ? '1 update' : `${count} updates`;
-		this.eventService.registerEvent(new EventData({
-			type: 'PENDING',
-			message: message,
-		}));
+		if (this.active_event?.type === 'SAVING') return;
+		if (count === 0 && this.active_event?.type !== 'PENDING') return;
+		if (count === 0) return this.eventService.registerEvent(null);
+		const message = count === 1 ? '1 update' : `${count} updates`;
+		this.eventService.registerEvent(
+			new EventData({
+				type: 'PENDING',
+				message: message,
+			}),
+		);
 	}
 
 	private buildDynamicFormElements(): void {
-		this.minting_units.forEach(unit => {
+		this.minting_units.forEach((unit) => {
 			this.form_minting.addControl(unit, new FormGroup({}));
 			this.mint_info?.nuts.nut4.methods
-				.filter( method => method.unit === unit)
-				.forEach( method => {
+				.filter((method) => method.unit === unit)
+				.forEach((method) => {
 					const min_validators = [Validators.required, Validators.min(0)];
-					(method.unit === 'sat') ? min_validators.push(OrchardValidators.integer) : min_validators.push(OrchardValidators.cents);
+					method.unit === 'sat' ? min_validators.push(OrchardValidators.integer) : min_validators.push(OrchardValidators.cents);
 					const max_validators = [Validators.required, OrchardValidators.minGreaterThan('min_amount')];
-					(method.unit === 'sat') ? max_validators.push(OrchardValidators.integer) : max_validators.push(OrchardValidators.cents);
-					(this.form_minting.get(unit) as FormGroup).addControl(method.method, new FormGroup({
-						min_amount: new FormControl(method.min_amount, min_validators),
-						max_amount: new FormControl(method.max_amount, max_validators),
-						description: new FormControl(method.description),
-					}));
+					method.unit === 'sat' ? max_validators.push(OrchardValidators.integer) : max_validators.push(OrchardValidators.cents);
+					(this.form_minting.get(unit) as FormGroup).addControl(
+						method.method,
+						new FormGroup({
+							min_amount: new FormControl(method.min_amount, min_validators),
+							max_amount: new FormControl(method.max_amount, max_validators),
+							description: new FormControl(method.description),
+						}),
+					);
 				});
 		});
-		this.melting_units.forEach(unit => {
+		this.melting_units.forEach((unit) => {
 			this.form_melting.addControl(unit, new FormGroup({}));
 			this.mint_info?.nuts.nut5.methods
-				.filter( method => method.unit === unit)
-				.forEach( method => {
+				.filter((method) => method.unit === unit)
+				.forEach((method) => {
 					const min_validators = [Validators.required, Validators.min(0)];
-					(method.unit === 'sat') ? min_validators.push(OrchardValidators.integer) : min_validators.push(OrchardValidators.cents);
+					method.unit === 'sat' ? min_validators.push(OrchardValidators.integer) : min_validators.push(OrchardValidators.cents);
 					const max_validators = [Validators.required, OrchardValidators.minGreaterThan('min_amount')];
-					(method.unit === 'sat') ? max_validators.push(OrchardValidators.integer) : max_validators.push(OrchardValidators.cents);
-					(this.form_melting.get(unit) as FormGroup).addControl(method.method, new FormGroup({
-						min_amount: new FormControl(method.min_amount, min_validators),
-						max_amount: new FormControl(method.max_amount, max_validators),
-						amountless: new FormControl({ value: method.amountless, disabled: true }),
-					}));
+					method.unit === 'sat' ? max_validators.push(OrchardValidators.integer) : max_validators.push(OrchardValidators.cents);
+					(this.form_melting.get(unit) as FormGroup).addControl(
+						method.method,
+						new FormGroup({
+							min_amount: new FormControl(method.min_amount, min_validators),
+							max_amount: new FormControl(method.max_amount, max_validators),
+							amountless: new FormControl({value: method.amountless, disabled: true}),
+						}),
+					);
 				});
 		});
 	}
@@ -376,113 +389,87 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		const mint_quotes_obs = this.mintService.loadMintMintQuotes();
 		const melt_quotes_obs = this.mintService.loadMintMeltQuotes();
 
-		const [
-			mint_quotes,
-			melt_quotes,
-		] = await lastValueFrom(
-			forkJoin([
-				mint_quotes_obs,
-				melt_quotes_obs,
-			])
-		);
-		
+		const [mint_quotes, melt_quotes] = await lastValueFrom(forkJoin([mint_quotes_obs, melt_quotes_obs]));
+
 		this.mint_quotes = mint_quotes;
 		this.melt_quotes = melt_quotes;
 	}
 
-	public onEnabledUpdate({
-		form_group,
-		nut
-	}: {
-		form_group: FormGroup,
-		nut: 'nut4' | 'nut5'
-	}): void {
-		if(form_group.get('enabled')?.invalid) return;
+	public onEnabledUpdate({form_group, nut}: {form_group: FormGroup; nut: 'nut4' | 'nut5'}): void {
+		if (form_group.get('enabled')?.invalid) return;
 		form_group.get('enabled')?.markAsPristine();
 		const control_value = this.translateDisabled(form_group.get('enabled')?.value);
-		(control_value) ? form_group.disable() : form_group.enable();
+		control_value ? form_group.disable() : form_group.enable();
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		const unit = this.mint_info?.nuts[nut].methods[0].unit;
 		const method = this.mint_info?.nuts[nut].methods[0].method;
-		if( !unit || !method ) return this.eventService.registerEvent(new EventData({
-			type: 'ERROR',
-			message: 'No unit or method found',
-		}));
-		if(nut === 'nut4') this.updateMintNut04(unit, method, 'disabled', control_value);
-		if(nut === 'nut5') this.updateMintNut05(unit, method, 'disabled', control_value);
+		if (!unit || !method)
+			return this.eventService.registerEvent(
+				new EventData({
+					type: 'ERROR',
+					message: 'No unit or method found',
+				}),
+			);
+		if (nut === 'nut4') this.updateMintNut04(unit, method, 'disabled', control_value);
+		if (nut === 'nut5') this.updateMintNut05(unit, method, 'disabled', control_value);
 	}
 
-	public onTtlCancel(
-		{
-			form_group,
-			control_name
-		}: {
-			form_group: FormGroup,
-			control_name: keyof MintQuoteTtls
-		}): void {
-		if(!control_name) return;
+	public onTtlCancel({form_group, control_name}: {form_group: FormGroup; control_name: keyof MintQuoteTtls}): void {
+		if (!control_name) return;
 		form_group.get(control_name)?.markAsPristine();
 		form_group.get(control_name)?.setValue(this.translateQuoteTtl(this.quote_ttls[control_name]));
 	}
 
-	public onTtlUpdate(
-		{
-			form_group,
-			control_name
-		}: {
-			form_group: FormGroup,
-			control_name: keyof MintQuoteTtls
-		}): void {
-		if(!control_name) return;
-		if(form_group.get(control_name)?.invalid) return;
+	public onTtlUpdate({form_group, control_name}: {form_group: FormGroup; control_name: keyof MintQuoteTtls}): void {
+		if (!control_name) return;
+		if (form_group.get(control_name)?.invalid) return;
 		form_group.get(control_name)?.markAsPristine();
 		const control_value = this.translateQuoteTtl(form_group.get(control_name)?.value, false);
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		this.updateMintTtl(control_name, control_value);
 	}
 
-	public onMethodUpdate(
-		{
-			nut,
-			unit,
-			method,
-			form_group,
-			control_name
-		}: {
-			nut: 'nut4' | 'nut5',
-			unit: string,
-			method: string,
-			form_group: FormGroup,
-			control_name: keyof OrchardNut4Method | keyof OrchardNut5Method
-		}
-	): void {
-		if(!control_name) return;
-		if(form_group.get(unit)?.get(method)?.get(control_name)?.invalid) return;
+	public onMethodUpdate({
+		nut,
+		unit,
+		method,
+		form_group,
+		control_name,
+	}: {
+		nut: 'nut4' | 'nut5';
+		unit: string;
+		method: string;
+		form_group: FormGroup;
+		control_name: keyof OrchardNut4Method | keyof OrchardNut5Method;
+	}): void {
+		if (!control_name) return;
+		if (form_group.get(unit)?.get(method)?.get(control_name)?.invalid) return;
 		form_group.get(unit)?.get(method)?.get(control_name)?.markAsPristine();
 		const control_value = form_group.get(unit)?.get(method)?.get(control_name)?.value;
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		if(nut === 'nut4') this.updateMintNut04(unit, method, control_name as keyof OrchardNut4Method, control_value);
-		if(nut === 'nut5') this.updateMintNut05(unit, method, control_name as keyof OrchardNut5Method, control_value);
+		if (nut === 'nut4') this.updateMintNut04(unit, method, control_name as keyof OrchardNut4Method, control_value);
+		if (nut === 'nut5') this.updateMintNut05(unit, method, control_name as keyof OrchardNut5Method, control_value);
 	}
 
-	public onMethodCancel(
-		{
-			nut,
-			unit,
-			method,
-			form_group,
-			control_name
-		}: {
-			nut: 'nut4' | 'nut5',
-			unit: string,
-			method: string,
-			form_group: FormGroup,
-			control_name: keyof OrchardNut4Method | keyof OrchardNut5Method
-		}
-	): void {
+	public onMethodCancel({
+		nut,
+		unit,
+		method,
+		form_group,
+		control_name,
+	}: {
+		nut: 'nut4' | 'nut5';
+		unit: string;
+		method: string;
+		form_group: FormGroup;
+		control_name: keyof OrchardNut4Method | keyof OrchardNut5Method;
+	}): void {
 		form_group.get(unit)?.get(method)?.get(control_name)?.markAsPristine();
-		const nut_method = this.mint_info?.nuts[nut].methods.find( nut_method => nut_method.unit === unit && nut_method.method === method );
-		let old_val = (nut === 'nut4') ? (nut_method as OrchardNut4Method)?.[control_name as keyof OrchardNut4Method] : (nut_method as OrchardNut5Method)?.[control_name as keyof OrchardNut5Method];
+		const nut_method = this.mint_info?.nuts[nut].methods.find((nut_method) => nut_method.unit === unit && nut_method.method === method);
+		let old_val =
+			nut === 'nut4'
+				? (nut_method as OrchardNut4Method)?.[control_name as keyof OrchardNut4Method]
+				: (nut_method as OrchardNut5Method)?.[control_name as keyof OrchardNut5Method];
 		form_group.get(unit)?.get(method)?.get(control_name)?.setValue(old_val);
 	}
 
@@ -495,8 +482,8 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 			form_group: this.form_melting,
 			control_name: 'melt_ttl',
 		});
-		this.minting_units.forEach(unit => {
-			this.mint_info?.nuts.nut4.methods.forEach(method => {
+		this.minting_units.forEach((unit) => {
+			this.mint_info?.nuts.nut4.methods.forEach((method) => {
 				this.onMethodCancel({
 					nut: 'nut4',
 					unit: unit,
@@ -513,8 +500,8 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 				});
 			});
 		});
-		this.melting_units.forEach(unit => {
-			this.mint_info?.nuts.nut5.methods.forEach(method => {
+		this.melting_units.forEach((unit) => {
+			this.mint_info?.nuts.nut5.methods.forEach((method) => {
 				this.onMethodCancel({
 					nut: 'nut5',
 					unit: unit,
@@ -535,20 +522,24 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 
 	private onConfirmedEvent(): void {
 		if (this.form_config.invalid) {
-			return this.eventService.registerEvent(new EventData({
-				type: 'WARNING',
-				message: 'Invalid config',
-			}));
+			return this.eventService.registerEvent(
+				new EventData({
+					type: 'WARNING',
+					message: 'Invalid config',
+				}),
+			);
 		}
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		const mutation_parts: string[] = [];
 		const mutation_types: Record<string, string> = {};
 		const mutation_values: Record<string, any> = {};
-		const ttl_updates: Record<string, (number|null)> = {};
+		const ttl_updates: Record<string, number | null> = {};
 
-		if (this.form_minting.get('mint_ttl')?.dirty) ttl_updates['mint_ttl'] = this.translateQuoteTtl(this.form_minting.get('mint_ttl')?.value, false);
-		if (this.form_melting.get('melt_ttl')?.dirty) ttl_updates['melt_ttl'] = this.translateQuoteTtl(this.form_melting.get('melt_ttl')?.value, false);
-		
+		if (this.form_minting.get('mint_ttl')?.dirty)
+			ttl_updates['mint_ttl'] = this.translateQuoteTtl(this.form_minting.get('mint_ttl')?.value, false);
+		if (this.form_melting.get('melt_ttl')?.dirty)
+			ttl_updates['melt_ttl'] = this.translateQuoteTtl(this.form_melting.get('melt_ttl')?.value, false);
+
 		if (Object.keys(ttl_updates).length > 0) {
 			mutation_parts.push(`
 				mint_quote_ttl_update(mint_quote_ttl_update: $ttl_update) {
@@ -560,14 +551,15 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 			mutation_values['ttl_update'] = ttl_updates;
 		}
 
-		this.minting_units.forEach(unit => {
+		this.minting_units.forEach((unit) => {
 			const unit_group = this.form_minting.get(unit) as FormGroup;
 			if (!unit_group) return;
-			Object.keys(unit_group.controls).forEach(method => {
+			Object.keys(unit_group.controls).forEach((method) => {
 				const method_group = unit_group.get(method) as FormGroup;
 				if (!method_group) return;
-				const method_update: Record<string, any> = { unit, method };
-				if ( this.form_minting.get('enabled')?.dirty ) method_update['disabled'] = this.translateDisabled(this.form_minting.get('enabled')?.value);
+				const method_update: Record<string, any> = {unit, method};
+				if (this.form_minting.get('enabled')?.dirty)
+					method_update['disabled'] = this.translateDisabled(this.form_minting.get('enabled')?.value);
 				if (method_group.get('min_amount')?.dirty) method_update['min_amount'] = method_group.get('min_amount')?.value;
 				if (method_group.get('max_amount')?.dirty) method_update['max_amount'] = method_group.get('max_amount')?.value;
 				if (method_group.get('description')?.dirty) method_update['description'] = method_group.get('description')?.value;
@@ -589,14 +581,15 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 			});
 		});
 
-		this.melting_units.forEach(unit => {
+		this.melting_units.forEach((unit) => {
 			const unit_group = this.form_melting.get(unit) as FormGroup;
 			if (!unit_group) return;
-			Object.keys(unit_group.controls).forEach(method => {
+			Object.keys(unit_group.controls).forEach((method) => {
 				const method_group = unit_group.get(method) as FormGroup;
 				if (!method_group) return;
-				const method_update: Record<string, any> = { unit, method };
-				if ( this.form_melting.get('enabled')?.dirty ) method_update['disabled'] = this.translateDisabled(this.form_melting.get('enabled')?.value);
+				const method_update: Record<string, any> = {unit, method};
+				if (this.form_melting.get('enabled')?.dirty)
+					method_update['disabled'] = this.translateDisabled(this.form_melting.get('enabled')?.value);
 				if (method_group.get('min_amount')?.dirty) method_update['min_amount'] = method_group.get('min_amount')?.value;
 				if (method_group.get('max_amount')?.dirty) method_update['max_amount'] = method_group.get('max_amount')?.value;
 				if (Object.keys(method_update).length > 2) {
@@ -619,11 +612,9 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		if (mutation_parts.length === 0) return;
 
 		const mutation = `
-			mutation BulkMintUpdate(${
-				Object.entries(mutation_types)
-					.map(([key, type]) => `$${key}: ${type}`)
-					.join(',\n            ')
-			}) {
+			mutation BulkMintUpdate(${Object.entries(mutation_types)
+				.map(([key, type]) => `$${key}: ${type}`)
+				.join(',\n            ')}) {
 				${mutation_parts.join('\n')}
 			}
 		`;
@@ -638,9 +629,9 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 				});
 				this.onSuccess(true);
 			},
-			error: (error:OrchardErrors) => {
+			error: (error: OrchardErrors) => {
 				this.onError(error);
-			}
+			},
 		});
 	}
 
@@ -651,60 +642,67 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 				this.onSuccess();
 				this.form_config.get(control_name)?.markAsPristine();
 			},
-			error: (error:OrchardErrors) => {
+			error: (error: OrchardErrors) => {
 				this.onError(error);
-			}
+			},
 		});
 	}
 
-	private updateMintNut04(unit:string, method:string, control_name:keyof OrchardNut4Method | 'disabled', control_value: any): void {
+	private updateMintNut04(unit: string, method: string, control_name: keyof OrchardNut4Method | 'disabled', control_value: any): void {
 		this.mintService.updateMintNut04(unit, method, control_name, control_value).subscribe({
 			next: (response) => {
-				const nut_method = this.mint_info?.nuts.nut4.methods.find( nut_method => nut_method.unit === unit && nut_method.method === method );
-				if( nut_method ) (nut_method as any)[control_name] = control_value;
-				if( control_name === 'disabled' &&  this.mint_info ) this.mint_info.nuts.nut4.disabled = control_value;
+				const nut_method = this.mint_info?.nuts.nut4.methods.find(
+					(nut_method) => nut_method.unit === unit && nut_method.method === method,
+				);
+				if (nut_method) (nut_method as any)[control_name] = control_value;
+				if (control_name === 'disabled' && this.mint_info) this.mint_info.nuts.nut4.disabled = control_value;
 				this.cdr.detectChanges();
 				this.onSuccess();
 				this.form_config.get(control_name)?.markAsPristine();
 			},
-			error: (error:OrchardErrors) => {
+			error: (error: OrchardErrors) => {
 				this.onError(error);
-			}
+			},
 		});
 	}
 
-	private updateMintNut05(unit:string, method:string, control_name:keyof OrchardNut5Method | 'disabled', control_value: any): void {
+	private updateMintNut05(unit: string, method: string, control_name: keyof OrchardNut5Method | 'disabled', control_value: any): void {
 		this.mintService.updateMintNut05(unit, method, control_name, control_value).subscribe({
 			next: (response) => {
-				const nut_method = this.mint_info?.nuts.nut5.methods.find( nut_method => nut_method.unit === unit && nut_method.method === method );
-				if( nut_method ) (nut_method as any)[control_name] = control_value;
-				if( control_name === 'disabled' &&  this.mint_info ) this.mint_info.nuts.nut5.disabled = control_value;
+				const nut_method = this.mint_info?.nuts.nut5.methods.find(
+					(nut_method) => nut_method.unit === unit && nut_method.method === method,
+				);
+				if (nut_method) (nut_method as any)[control_name] = control_value;
+				if (control_name === 'disabled' && this.mint_info) this.mint_info.nuts.nut5.disabled = control_value;
 				this.cdr.detectChanges();
 				this.onSuccess();
 				this.form_config.get(control_name)?.markAsPristine();
 			},
-			error: (error:OrchardErrors) => {
+			error: (error: OrchardErrors) => {
 				this.onError(error);
-			}
+			},
 		});
 	}
 
-
 	private onSuccess(reset: boolean = false): void {
-		this.eventService.registerEvent(new EventData({
-			type: 'SUCCESS',
-			message: 'Configuration updated!',
-		}));
-		if( !reset ) return;
+		this.eventService.registerEvent(
+			new EventData({
+				type: 'SUCCESS',
+				message: 'Configuration updated!',
+			}),
+		);
+		if (!reset) return;
 		this.form_config.markAsPristine();
 		this.dirty_count.set(0);
 	}
 
 	private onError(error: OrchardErrors): void {
-		this.eventService.registerEvent(new EventData({
-			type: 'ERROR',
-			message: error.errors[0].message,
-		}));
+		this.eventService.registerEvent(
+			new EventData({
+				type: 'ERROR',
+				message: error.errors[0].message,
+			}),
+		);
 	}
 
 	ngOnDestroy(): void {}

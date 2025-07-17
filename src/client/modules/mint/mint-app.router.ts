@@ -1,49 +1,49 @@
 /* Core Dependencies */
-import { NgModule, inject } from '@angular/core';
-import { RouterModule, Router, Routes, ResolveFn, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import {NgModule, inject} from '@angular/core';
+import {RouterModule, Router, Routes, ResolveFn, ActivatedRouteSnapshot, RouterStateSnapshot} from '@angular/router';
 /* Vendor Dependencies */
-import { catchError, of } from 'rxjs';
+import {catchError, of} from 'rxjs';
 /* Application Dependencies */
-import { errorResolveGuard } from '@client/modules/error/guards/error-resolve.guard';
-import { enabledGuard } from '@client/modules/routing/guards/enabled/enabled.guard';
-import { ErrorService } from '@client/modules/error/services/error.service';
-import { pendingEventGuard } from '@client/modules/event/guards/pending-event.guard';
+import {errorResolveGuard} from '@client/modules/error/guards/error-resolve.guard';
+import {enabledGuard} from '@client/modules/routing/guards/enabled/enabled.guard';
+import {ErrorService} from '@client/modules/error/services/error.service';
+import {pendingEventGuard} from '@client/modules/event/guards/pending-event.guard';
 /* Native Dependencies */
-import { MintSectionComponent } from './components/mint-section/mint-section.component';
-import { MintSubsectionErrorComponent } from './components/mint-subsection-error/mint-subsection-error.component';
-import { MintSubsectionDashboardComponent } from './components/mint-subsection-dashboard/mint-subsection-dashboard.component';
-import { MintSubsectionInfoComponent } from './components/mint-subsection-info/mint-subsection-info.component';
-import { MintSubsectionConfigComponent } from './components/mint-subsection-config/mint-subsection-config.component';
-import { MintSubsectionKeysetsComponent } from './components/mint-subsection-keysets/mint-subsection-keysets.component';
-import { MintSubsectionDatabaseComponent } from './components/mint-subsection-database/mint-subsection-database.component';
-import { MintSubsectionDisabledComponent } from './components/mint-subsection-disabled/mint-subsection-disabled.component';
-import { MintService } from './services/mint/mint.service';
+import {MintSectionComponent} from './components/mint-section/mint-section.component';
+import {MintSubsectionErrorComponent} from './components/mint-subsection-error/mint-subsection-error.component';
+import {MintSubsectionDashboardComponent} from './components/mint-subsection-dashboard/mint-subsection-dashboard.component';
+import {MintSubsectionInfoComponent} from './components/mint-subsection-info/mint-subsection-info.component';
+import {MintSubsectionConfigComponent} from './components/mint-subsection-config/mint-subsection-config.component';
+import {MintSubsectionKeysetsComponent} from './components/mint-subsection-keysets/mint-subsection-keysets.component';
+import {MintSubsectionDatabaseComponent} from './components/mint-subsection-database/mint-subsection-database.component';
+import {MintSubsectionDisabledComponent} from './components/mint-subsection-disabled/mint-subsection-disabled.component';
+import {MintService} from './services/mint/mint.service';
 /* Shared Dependencies */
-import { AiAgent } from '@shared/generated.types';
+import {AiAgent} from '@shared/generated.types';
 
 const mintInfoResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
 	const mintService = inject(MintService);
 	const router = inject(Router);
 	const errorService = inject(ErrorService);
 	return mintService.loadMintInfo().pipe(
-		catchError(error => {
+		catchError((error) => {
 			errorService.resolve_errors.push(error);
-            router.navigate(['mint', 'error'], { state: { error, target: state.url } });
-            return of([]);
-		})
+			router.navigate(['mint', 'error'], {state: {error, target: state.url}});
+			return of([]);
+		}),
 	);
 };
-	
+
 const mintBalancesResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
 	const mintService = inject(MintService);
 	const router = inject(Router);
 	const errorService = inject(ErrorService);
 	return mintService.loadMintBalances().pipe(
-		catchError(error => {
+		catchError((error) => {
 			errorService.resolve_errors.push(error);
-            router.navigate(['mint', 'error'], { state: { error, target: state.url } });
-            return of([]);
-		})
+			router.navigate(['mint', 'error'], {state: {error, target: state.url}});
+			return of([]);
+		}),
 	);
 };
 
@@ -52,11 +52,11 @@ const mintKeysetsResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, stat
 	const router = inject(Router);
 	const errorService = inject(ErrorService);
 	return mintService.loadMintKeysets().pipe(
-		catchError(error => {
+		catchError((error) => {
 			errorService.resolve_errors.push(error);
-			router.navigate(['mint', 'error'], { state: { error, target: state.url } });
-            return of([]);
-		})
+			router.navigate(['mint', 'error'], {state: {error, target: state.url}});
+			return of([]);
+		}),
 	);
 };
 
@@ -65,11 +65,11 @@ const mintInfoRpcResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, stat
 	const router = inject(Router);
 	const errorService = inject(ErrorService);
 	return mintService.getMintInfo().pipe(
-		catchError(error => {
+		catchError((error) => {
 			errorService.resolve_errors.push(error);
-			router.navigate(['mint', 'error'], { state: { error, target: state.url } });
-            return of([]);
-		})
+			router.navigate(['mint', 'error'], {state: {error, target: state.url}});
+			return of([]);
+		}),
 	);
 };
 
@@ -78,11 +78,11 @@ const mintQuoteTtlsResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, st
 	const router = inject(Router);
 	const errorService = inject(ErrorService);
 	return mintService.getMintQuoteTtls().pipe(
-		catchError(error => {
+		catchError((error) => {
 			errorService.resolve_errors.push(error);
-			router.navigate(['mint', 'error'], { state: { error, target: state.url } });
-            return of([]);
-		})
+			router.navigate(['mint', 'error'], {state: {error, target: state.url}});
+			return of([]);
+		}),
 	);
 };
 
@@ -107,8 +107,8 @@ const routes: Routes = [
 				data: {
 					section: 'mint',
 					sub_section: 'dashboard',
-					agent: AiAgent.MintDashboard
-				}
+					agent: AiAgent.MintDashboard,
+				},
 			},
 			{
 				path: 'info',
@@ -121,8 +121,8 @@ const routes: Routes = [
 				data: {
 					section: 'mint',
 					sub_section: 'info',
-					agent: AiAgent.MintInfo
-				}
+					agent: AiAgent.MintInfo,
+				},
 			},
 			{
 				path: 'config',
@@ -136,8 +136,8 @@ const routes: Routes = [
 				data: {
 					section: 'mint',
 					sub_section: 'config',
-					agent: AiAgent.MintConfig
-				}
+					agent: AiAgent.MintConfig,
+				},
 			},
 			{
 				path: 'keysets',
@@ -150,8 +150,8 @@ const routes: Routes = [
 				data: {
 					section: 'mint',
 					sub_section: 'keysets',
-					agent: AiAgent.MintKeysets
-				}
+					agent: AiAgent.MintKeysets,
+				},
 			},
 			{
 				path: 'database',
@@ -164,8 +164,8 @@ const routes: Routes = [
 				data: {
 					section: 'mint',
 					sub_section: 'database',
-					agent: AiAgent.MintDatabase
-				}
+					agent: AiAgent.MintDatabase,
+				},
 			},
 			{
 				path: 'error',
@@ -175,9 +175,9 @@ const routes: Routes = [
 					section: 'mint',
 					sub_section: 'error',
 				},
-				canActivate: [errorResolveGuard]
+				canActivate: [errorResolveGuard],
 			},
-		]
+		],
 	},
 	{
 		path: 'disabled',
@@ -191,11 +191,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-	imports: [
-		RouterModule.forChild(routes),
-	],
-	exports: [
-		RouterModule,
-	],
+	imports: [RouterModule.forChild(routes)],
+	exports: [RouterModule],
 })
-export class MintAppRoutingModule { }
+export class MintAppRoutingModule {}

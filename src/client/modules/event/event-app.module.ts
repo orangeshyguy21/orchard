@@ -1,11 +1,11 @@
 /* Core Dependencies */
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule, Routes } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {RouterModule, Routes} from '@angular/router';
 /* Vendor Dependencies */
-import { MatIconModule } from '@angular/material/icon';
+import {MatIconModule} from '@angular/material/icon';
 /* Native Dependencies */
-import { EventSectionComponent } from './components/event-section/event-section.component';
+import {EventSectionComponent} from './components/event-section/event-section.component';
 
 const routes: Routes = [
 	{
@@ -14,30 +14,19 @@ const routes: Routes = [
 		title: 'Orchard | Event Log',
 		data: {
 			section: 'event',
-		}
-	}
+		},
+	},
 ];
 
 @NgModule({
-	imports: [
-		RouterModule.forChild(routes),
-	],
-	exports: [
-		RouterModule,
-	],
+	imports: [RouterModule.forChild(routes)],
+	exports: [RouterModule],
 })
-export class EventAppRoutingModule { }
-
+export class EventAppRoutingModule {}
 
 @NgModule({
-	declarations: [
-  		EventSectionComponent
-	],
-	imports: [
-		CommonModule,
-		MatIconModule,
-		EventAppRoutingModule
-	],
-	exports: []
+	declarations: [EventSectionComponent],
+	imports: [CommonModule, MatIconModule, EventAppRoutingModule],
+	exports: [],
 })
-export class EventAppModule { }
+export class EventAppModule {}

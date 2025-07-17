@@ -1,29 +1,28 @@
 /* Core Dependencies */
-import { Field, Int, ObjectType } from '@nestjs/graphql';
+import {Field, Int, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
-import { UnixTimestamp } from '@server/modules/graphql/scalars/unixtimestamp.scalar';
-import { CashuMintProofGroup } from '@server/modules/cashu/mintdb/cashumintdb.types';
-import { MintUnit, MintProofState } from '@server/modules/cashu/cashu.enums';
+import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
+import {CashuMintProofGroup} from '@server/modules/cashu/mintdb/cashumintdb.types';
+import {MintUnit, MintProofState} from '@server/modules/cashu/cashu.enums';
 
 @ObjectType()
 export class OrchardMintProofGroup {
-
-	@Field(type => Int)
+	@Field((type) => Int)
 	amount: number;
 
-	@Field(type => UnixTimestamp)
+	@Field((type) => UnixTimestamp)
 	created_time: number;
 
-	@Field(type => [String])
+	@Field((type) => [String])
 	keyset_ids: string[];
 
- 	@Field(type => MintUnit)
+	@Field((type) => MintUnit)
 	unit: MintUnit;
 
-	@Field(type => MintProofState)
+	@Field((type) => MintProofState)
 	state: MintProofState;
 
-	@Field(type => [[Int]])
+	@Field((type) => [[Int]])
 	amounts: number[][];
 
 	constructor(cashu_mint_pg: CashuMintProofGroup) {
@@ -38,8 +37,6 @@ export class OrchardMintProofGroup {
 
 @ObjectType()
 export class OrchardMintProofGroupStats {
-
-	@Field(type => Int)
+	@Field((type) => Int)
 	median: number;
-	
 }

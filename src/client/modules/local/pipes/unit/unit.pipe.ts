@@ -1,12 +1,11 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
-  	name: 'unit',
+	name: 'unit',
 	standalone: false,
-	pure: true
+	pure: true,
 })
 export class UnitPipe implements PipeTransform {
-
 	transform(unit: string, title: boolean = false): string {
 		if (unit === null || unit === undefined) return '';
 		const unit_lower = unit.toLowerCase();

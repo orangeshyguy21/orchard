@@ -1,13 +1,12 @@
 /* Core Dependencies */
-import { Pipe, PipeTransform } from '@angular/core';
+import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
 	name: 'ai_thought',
 	standalone: false,
-	pure: true
+	pure: true,
 })
 export class AiThoughtPipe implements PipeTransform {
-
 	transform(value: number): string {
 		if (!value || value < 0) {
 			return 'Thought for a second';

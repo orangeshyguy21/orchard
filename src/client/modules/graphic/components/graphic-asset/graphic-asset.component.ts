@@ -1,36 +1,33 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, computed } from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, computed} from '@angular/core';
 /* Shared Dependencies */
-import { TaprootAssetId } from '@shared/generated.types';
+import {TaprootAssetId} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-graphic-asset',
 	standalone: false,
 	templateUrl: './graphic-asset.component.html',
 	styleUrl: './graphic-asset.component.scss',
-	changeDetection: ChangeDetectionStrategy.OnPush
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GraphicAssetComponent {
-
-	@Input() unit! : string;
-	@Input() height : string = '2rem';
+	@Input() unit!: string;
+	@Input() height: string = '2rem';
 	@Input() custody!: 'ecash' | 'lightning' | 'hot' | 'cold';
-	@Input() asset_id! : string | undefined;
+	@Input() asset_id!: string | undefined;
 
-	private taproot_assets_map = new Map<string, string>([
-		[TaprootAssetId.Usdt, 'tether.svg'],
-	]);
+	private taproot_assets_map = new Map<string, string>([[TaprootAssetId.Usdt, 'tether.svg']]);
 
 	public lower_unit = computed(() => {
 		return this.unit.toLowerCase();
 	});
 
 	public unit_icon = computed(() => {
-		if( this.lower_unit() === 'sat' ) return 'currency_bitcoin';
-		if( this.lower_unit() === 'msat' ) return 'currency_bitcoin';
-		if( this.lower_unit() === 'btc' ) return 'currency_bitcoin';
-		if( this.lower_unit() === 'usd' ) return 'attach_money';
-		if( this.lower_unit() === 'eur' ) return 'euro';
+		if (this.lower_unit() === 'sat') return 'currency_bitcoin';
+		if (this.lower_unit() === 'msat') return 'currency_bitcoin';
+		if (this.lower_unit() === 'btc') return 'currency_bitcoin';
+		if (this.lower_unit() === 'usd') return 'attach_money';
+		if (this.lower_unit() === 'eur') return 'euro';
 		return 'question_mark';
 	});
 
@@ -40,20 +37,20 @@ export class GraphicAssetComponent {
 	});
 
 	public unit_class = computed(() => {
-		if( this.lower_unit() === 'sat' ) return 'graphic-asset-btc';
-		if( this.lower_unit() === 'msat' ) return 'graphic-asset-btc';
-		if( this.lower_unit() === 'btc' ) return 'graphic-asset-btc';
-		if( this.lower_unit() === 'usd' ) return 'graphic-asset-usd';
-		if( this.lower_unit() === 'eur' ) return 'graphic-asset-eur';
+		if (this.lower_unit() === 'sat') return 'graphic-asset-btc';
+		if (this.lower_unit() === 'msat') return 'graphic-asset-btc';
+		if (this.lower_unit() === 'btc') return 'graphic-asset-btc';
+		if (this.lower_unit() === 'usd') return 'graphic-asset-usd';
+		if (this.lower_unit() === 'eur') return 'graphic-asset-eur';
 		return 'graphic-asset-unknown';
 	});
 
 	public custody_icon = computed(() => {
-		if( !this.custody ) return 'payments';
-		if( this.custody === 'ecash' ) return 'payments';
-		if( this.custody === 'lightning' ) return 'bolt';
-		if( this.custody === 'hot' ) return 'mode_heat';
-		if( this.custody === 'cold' ) return 'ac_unit';
+		if (!this.custody) return 'payments';
+		if (this.custody === 'ecash') return 'payments';
+		if (this.custody === 'lightning') return 'bolt';
+		if (this.custody === 'hot') return 'mode_heat';
+		if (this.custody === 'cold') return 'ac_unit';
 		return 'payments';
 	});
 
@@ -65,7 +62,7 @@ export class GraphicAssetComponent {
 	public supported_taproot_asset = computed(() => {
 		return this.taproot_assets_map.has(this.asset_id!);
 	});
-	
+
 	public taproot_asset_image = computed(() => {
 		return `taproot-assets/${this.taproot_assets_map.get(this.asset_id!)}`;
 	});

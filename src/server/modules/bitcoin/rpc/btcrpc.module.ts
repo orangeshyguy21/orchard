@@ -1,21 +1,14 @@
 /* Core Dependencies */
-import { Module } from '@nestjs/common';
+import {Module} from '@nestjs/common';
 /* Application Dependencies */
-import { FetchModule } from '@server/modules/fetch/fetch.module';
-import { CoreModule } from '@server/modules/bitcoin/core/core.module';
+import {FetchModule} from '@server/modules/fetch/fetch.module';
+import {CoreModule} from '@server/modules/bitcoin/core/core.module';
 /* Local Dependencies */
-import { BitcoinRpcService } from './btcrpc.service';
+import {BitcoinRpcService} from './btcrpc.service';
 
 @Module({
-	imports: [
-		FetchModule,
-		CoreModule,
-	],
-	providers: [
-		BitcoinRpcService,
-	],
-	exports: [
-		BitcoinRpcService
-	],
+	imports: [FetchModule, CoreModule],
+	providers: [BitcoinRpcService],
+	exports: [BitcoinRpcService],
 })
 export class BitcoinRpcModule {}
