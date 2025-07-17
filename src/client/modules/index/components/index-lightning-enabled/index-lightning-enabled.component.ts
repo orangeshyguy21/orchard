@@ -23,14 +23,15 @@ type ChannelSummary = {
 	templateUrl: './index-lightning-enabled.component.html',
 	styleUrl: './index-lightning-enabled.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
+	// prettier-ignore
 	animations: [
         trigger('fadeIn', [
             transition(':enter', [
                 style({ opacity: 0 }),
-                animate('300ms ease-in', style({ opacity: 1 }))
-            ])
-        ])
-    ]
+                animate('300ms ease-in', style({ opacity: 1 })),
+            ]),
+        ]),
+    ],
 })
 export class IndexLightningEnabledComponent implements OnChanges {
 

@@ -10,14 +10,15 @@ import { MintUnit } from '@shared/generated.types';
 	templateUrl: './mint-keyset-rotation-preview.component.html',
 	styleUrl: './mint-keyset-rotation-preview.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
+	// prettier-ignore
 	animations: [
 		trigger('fadeIn', [
 			transition(':enter', [
 				style({ opacity: 0 }),
-				animate('150ms ease-in', style({ opacity: 1 }))
-			])
-		])
-	]
+				animate('150ms ease-in', style({ opacity: 1 })),
+			]),
+		]),
+	],
 })
 export class MintKeysetRotationPreviewComponent {
 

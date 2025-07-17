@@ -10,20 +10,21 @@ import { EnvConfig } from '@client/modules/settings/types/env.types';
 	templateUrl: './settings-env.component.html',
 	styleUrl: './settings-env.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
+	// prettier-ignore
 	animations: [
 		trigger('copyAnimation', [
 			state('visible', style({
 				opacity: 1,
-				transform: 'translateY(0)'
+				transform: 'translateY(0)',
 			})),
 			state('hidden', style({
 				opacity: 0,
-				transform: 'translateY(-0.5rem)'
+				transform: 'translateY(-0.5rem)',
 			})),
 			transition('hidden => visible', animate('100ms ease-out')),
-			transition('visible => hidden', animate('100ms ease-in', style({ opacity: 0 })))
-		])
-	]
+			transition('visible => hidden', animate('100ms ease-in', style({ opacity: 0 }))),
+		]),
+	],
 })
 export class SettingsEnvComponent {
 

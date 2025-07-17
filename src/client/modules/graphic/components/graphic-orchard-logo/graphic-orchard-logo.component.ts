@@ -10,14 +10,15 @@ import { ThemeType } from '@client/modules/cache/services/local-storage/local-st
 	templateUrl: './graphic-orchard-logo.component.html',
 	styleUrl: './graphic-orchard-logo.component.scss',
   	changeDetection: ChangeDetectionStrategy.OnPush,
-	  animations: [
+	// prettier-ignore
+	animations: [
         trigger('fadeIn', [
             transition(':enter', [
                 style({ opacity: 0 }),
-                animate('650ms ease-in', style({ opacity: 1 }))
-            ])
+                animate('650ms ease-in', style({ opacity: 1 })),
+            ]),
         ]),
-	]
+	],
 })
 export class GraphicOrchardLogoComponent implements OnInit {
 

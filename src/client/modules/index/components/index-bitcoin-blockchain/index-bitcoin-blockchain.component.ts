@@ -25,24 +25,25 @@ export type TargetOption = {
 	templateUrl: './index-bitcoin-blockchain.component.html',
 	styleUrl: './index-bitcoin-blockchain.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
+	// prettier-ignore
 	animations: [
 		trigger('blockDataChange', [
 			transition('* => *', [
 				animate('200ms ease-out', style({ opacity: 0.1 })),
-				animate('400ms ease-in', style({ opacity: 1 }))
+				animate('400ms ease-in', style({ opacity: 1 })),
 			]),
 		]),
 		trigger('blockIndicatorMove', [
 			state('0', style({ right: '5rem' })),
 			state('1', style({ right: '14rem' })),
 			transition('0 => 1', [
-				animate('300ms ease-in-out')
+				animate('300ms ease-in-out'),
 			]),
 			transition('1 => 0', [
-				animate('300ms ease-in-out')
-			])
-		])
-    ]
+				animate('300ms ease-in-out'),
+			]),
+		]),
+    ],
 })
 export class IndexBitcoinBlockchainComponent implements OnInit, OnChanges {
 

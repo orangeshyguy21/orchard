@@ -17,14 +17,15 @@ import { MintMeltQuote } from '@client/modules/mint/classes/mint-melt-quote.clas
 	templateUrl: './mint-data-table.component.html',
 	styleUrl: './mint-data-table.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
+	// prettier-ignore
 	animations: [
         trigger('fadeIn', [
             transition(':enter', [
                 style({ opacity: 0 }),
-                animate('300ms ease-in', style({ opacity: 1 }))
-            ])
-        ])
-    ]
+                animate('300ms ease-in', style({ opacity: 1 })),
+            ]),
+        ]),
+    ],
 })
 export class MintDataTableComponent implements OnChanges {
 

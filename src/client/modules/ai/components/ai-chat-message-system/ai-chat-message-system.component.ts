@@ -12,34 +12,35 @@ import { AiChatCompiledMessage } from '@client/modules/ai/classes/ai-chat-compil
 	templateUrl: './ai-chat-message-system.component.html',
 	styleUrl: './ai-chat-message-system.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
+    // prettier-ignore
 	animations: [
 		trigger('expandCollapse', [
             state('collapsed', style({
                 height: '0',
                 overflow: 'hidden',
-                opacity: 0
+                opacity: 0,
             })),
             state('expanded', style({
                 height: '*',
                 overflow: 'visible',
-                opacity: 1
+                opacity: 1,
             })),
             transition('collapsed <=> expanded', [
-                animate('300ms ease-in-out')
-            ])
+                animate('300ms ease-in-out'),
+            ]),
         ]),
         trigger('rotateIcon', [
             state('collapsed', style({
-                transform: 'rotate(0deg)'
+                transform: 'rotate(0deg)',
             })),
             state('expanded', style({
-                transform: 'rotate(180deg)'
+                transform: 'rotate(180deg)',
             })),
             transition('collapsed <=> expanded', [
-                animate('300ms ease-in-out')
-            ])
-        ])
-    ]
+                animate('300ms ease-in-out'),
+            ]),
+        ]),
+    ],
 })
 export class AiChatMessageSystemComponent implements OnInit {
 

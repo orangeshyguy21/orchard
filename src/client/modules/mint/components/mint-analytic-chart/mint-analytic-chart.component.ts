@@ -36,6 +36,7 @@ import { ChartType } from '@client/modules/mint/enums/chart-type.enum';
 	templateUrl: './mint-analytic-chart.component.html',
 	styleUrl: './mint-analytic-chart.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
+	// prettier-ignore
 	animations: [
 		trigger('fadeInOut', [
 			transition(':enter', [
@@ -43,10 +44,10 @@ import { ChartType } from '@client/modules/mint/enums/chart-type.enum';
 				animate('150ms ease-in', style({ opacity: 1 }))
 			]),
 			transition(':leave', [
-				animate('150ms ease-out', style({ opacity: 0 }))
-			])
-		])
-	]
+				animate('150ms ease-out', style({ opacity: 0 })),
+			]),
+		]),
+	],
 })
 export class MintAnalyticChartComponent implements OnChanges, OnDestroy {
 

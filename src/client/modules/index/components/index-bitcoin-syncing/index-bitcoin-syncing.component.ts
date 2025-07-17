@@ -11,14 +11,15 @@ import { BitcoinBlock } from '@client/modules/bitcoin/classes/bitcoin-block.clas
 	templateUrl: './index-bitcoin-syncing.component.html',
 	styleUrl: './index-bitcoin-syncing.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
+	// prettier-ignore
 	animations: [
 		trigger('blockDataChange', [
 			transition('* => *', [
 				animate('200ms ease-out', style({ opacity: 0.1 })),
-				animate('400ms ease-in', style({ opacity: 1 }))
+				animate('400ms ease-in', style({ opacity: 1 })),
 			]),
-		])
-    ]
+		]),
+    ],
 })
 export class IndexBitcoinSyncingComponent implements OnInit {
 

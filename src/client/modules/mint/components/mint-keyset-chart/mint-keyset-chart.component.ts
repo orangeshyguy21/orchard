@@ -34,17 +34,18 @@ import { MintAnalyticsInterval } from '@shared/generated.types';
 	templateUrl: './mint-keyset-chart.component.html',
 	styleUrl: './mint-keyset-chart.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
+	// prettier-ignore
 	animations: [
 		trigger('fadeInOut', [
 			transition(':enter', [
 				style({ opacity: 0 }),
-				animate('150ms ease-in', style({ opacity: 1 }))
+				animate('150ms ease-in', style({ opacity: 1 })),
 			]),
 			transition(':leave', [
-				animate('150ms ease-out', style({ opacity: 0 }))
-			])
-		])
-	]
+				animate('150ms ease-out', style({ opacity: 0 })),
+			]),
+		]),
+	],
 })
 export class MintKeysetChartComponent implements OnChanges, OnDestroy {
 

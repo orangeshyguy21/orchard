@@ -22,16 +22,17 @@ import { Connection } from './mint-connections.classes';
 	templateUrl: './mint-connections.component.html',
 	styleUrl: './mint-connections.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
+	// prettier-ignore
 	animations: [
 		trigger('fadeInOut', [
 			state('visible', style({
-				opacity: 1
+				opacity: 1,
 			})),
 			state('hidden', style({
-				opacity: 0
+				opacity: 0,
 			})),
 			transition('visible => hidden', animate('150ms ease-out')),
-			transition('hidden => visible', animate('150ms ease-in'))
+			transition('hidden => visible', animate('150ms ease-in')),
 		]),
 		trigger('copyAnimation', [
 			state('visible', style({
@@ -40,12 +41,12 @@ import { Connection } from './mint-connections.classes';
 			})),
 			state('hidden', style({
 				opacity: 0,
-				transform: 'translateY(-0.5rem)'
+				transform: 'translateY(-0.5rem)',
 			})),
 			transition('hidden => visible', animate('100ms ease-out')),
-			transition('visible => hidden', animate('100ms ease-in', style({ opacity: 0 })))
-		])
-	]
+			transition('visible => hidden', animate('100ms ease-in', style({ opacity: 0 }))),
+		]),
+	],
 })
 export class MintConnectionsComponent {
 

@@ -16,14 +16,15 @@ import { MintBalanceRow } from './mint-balance-row.class';
 	templateUrl: './mint-balance-sheet.component.html',
 	styleUrl: './mint-balance-sheet.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
+	// prettier-ignore
 	animations: [
 		trigger('fadeIn', [
 			transition(':enter', [
 				style({ opacity: 0 }),
-				animate('150ms ease-in', style({ opacity: 1 }))
-			])
-		])
-	]
+				animate('150ms ease-in', style({ opacity: 1 })),
+			]),
+		]),
+	],
 })
 export class MintBalanceSheetComponent implements OnChanges {
 

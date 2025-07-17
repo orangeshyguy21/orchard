@@ -12,20 +12,21 @@ import { MintInfoRpc } from '@client/modules/mint/classes/mint-info-rpc.class';
 	templateUrl: './mint-info-form-icon.component.html',
 	styleUrl: './mint-info-form-icon.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
+    // prettier-ignore
     animations: [
 		trigger('enterScaleAnimation', [
             transition(':enter', [
                 style({ transform: 'scale(0.8)', opacity: 0.5 }),
-                animate('150ms ease-out', style({ transform: 'scale(1)', opacity: 1 }))
+                animate('150ms ease-out', style({ transform: 'scale(1)', opacity: 1 })),
             ]),
         ]),
         trigger('enterAnimation', [
             transition(':enter', [
                 style({ opacity: 0 }),
-                animate('150ms ease-out', style({ opacity: 1 }))
+                animate('150ms ease-out', style({ opacity: 1 })),
             ]),
-        ])
-	]
+        ]),
+	],
 })
 export class MintInfoFormIconComponent implements OnInit, OnDestroy {
 

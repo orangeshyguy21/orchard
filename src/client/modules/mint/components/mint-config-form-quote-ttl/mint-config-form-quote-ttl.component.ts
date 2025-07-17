@@ -12,17 +12,18 @@ import { MintMintQuote } from '@client/modules/mint/classes/mint-mint-quote.clas
 	templateUrl: './mint-config-form-quote-ttl.component.html',
 	styleUrl: './mint-config-form-quote-ttl.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
+	// prettier-ignore
 	animations: [
 		trigger('fadeInOut', [
 			transition(':enter', [
 				style({ opacity: 0 }),
-				animate('150ms ease-in', style({ opacity: 1 }))
+				animate('150ms ease-in', style({ opacity: 1 })),
 			]),
 			transition(':leave', [
-				animate('150ms ease-out', style({ opacity: 0 }))
-			])
-		])
-	]
+				animate('150ms ease-out', style({ opacity: 0 })),
+			]),
+		]),
+	],
 })
 export class MintConfigFormQuoteTtlComponent {
 

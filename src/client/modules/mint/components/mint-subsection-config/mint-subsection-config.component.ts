@@ -33,17 +33,18 @@ import { OrchardNut4Method, OrchardNut5Method, AiFunctionName } from '@shared/ge
 	templateUrl: './mint-subsection-config.component.html',
 	styleUrl: './mint-subsection-config.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
+	// prettier-ignore
 	animations: [
 		trigger('fadeInOut', [
 			transition(':enter', [
 				style({ opacity: 0 }),
-				animate('150ms ease-in', style({ opacity: 1 }))
+				animate('150ms ease-in', style({ opacity: 1 })),
 			]),
 			transition(':leave', [
-				animate('150ms ease-out', style({ opacity: 0 }))
-			])
-		])
-	]
+				animate('150ms ease-out', style({ opacity: 0 })),
+			]),
+		]),
+	],
 })
 export class MintSubsectionConfigComponent implements ComponentCanDeactivate, OnInit, OnDestroy {
 

@@ -31,26 +31,27 @@ import { MintUnit, MintAnalyticsInterval, AiFunctionName, AiAgent } from '@share
 	templateUrl: './mint-subsection-keysets.component.html',
 	styleUrl: './mint-subsection-keysets.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
+	// prettier-ignore
 	animations: [
 		trigger('slideInOut', [
 			state('closed', style({
 				height: '0',
 				opacity: '0',
-				overflow: 'hidden'
+				overflow: 'hidden',
 			})),
 			state('open', style({
 				height: '*',
 				opacity: '1',
-				overflow: 'hidden'
+				overflow: 'hidden',
 			})),
 			transition('closed => open', [
-				animate('200ms ease-out')
+				animate('200ms ease-out'),
 			]),
 			transition('open => closed', [
-				animate('200ms ease-out')
-			])
-		])
-	]
+				animate('200ms ease-out'),
+			]),
+		]),
+	],
 })
 export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, OnInit, OnDestroy {
 

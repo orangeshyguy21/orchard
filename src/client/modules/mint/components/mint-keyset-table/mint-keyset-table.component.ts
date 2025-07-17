@@ -18,14 +18,15 @@ import { MintKeysetRow } from './mint-keyset-row.class';
 	templateUrl: './mint-keyset-table.component.html',
 	styleUrl: './mint-keyset-table.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
+	// prettier-ignore
 	animations: [
         trigger('fadeIn', [
             transition(':enter', [
                 style({ opacity: 0 }),
-                animate('300ms ease-in', style({ opacity: 1 }))
-            ])
-        ])
-    ]
+                animate('300ms ease-in', style({ opacity: 1 })),
+            ]),
+        ]),
+    ],
 })
 export class MintKeysetTableComponent implements OnChanges {
 

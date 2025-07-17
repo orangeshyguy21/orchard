@@ -9,14 +9,15 @@ import { animate, style, transition, trigger } from '@angular/animations';
 	templateUrl: './primary-nav-header.component.html',
 	styleUrl: './primary-nav-header.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
+	// prettier-ignore
 	animations: [
 		trigger('blockCountChange', [
 			transition('* => *', [
 				animate('200ms ease-out', style({ opacity: 0.1 })),
-				animate('400ms ease-in', style({ opacity: 1 }))
+				animate('400ms ease-in', style({ opacity: 1 })),
 			]),
-		])
-	]
+		]),
+	],
 })
 export class PrimaryNavHeaderComponent implements OnChanges {
   

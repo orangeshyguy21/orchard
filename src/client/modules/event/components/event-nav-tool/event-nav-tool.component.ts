@@ -11,17 +11,18 @@ import { EventData } from '@client/modules/event/classes/event-data.class';
 	templateUrl: './event-nav-tool.component.html',
 	styleUrl: './event-nav-tool.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
+	// prettier-ignore
 	animations: [
 		trigger('iconAnimation', [
 			transition('* => *', [
 				style({ transform: 'scale(0.8)', opacity: 0.5 }),
-				animate('200ms ease-out', style({ transform: 'scale(1)', opacity: 1 }))
-			])
+				animate('200ms ease-out', style({ transform: 'scale(1)', opacity: 1 })),
+			]),
 		]),
 		trigger('enterAnimation', [
             transition(':enter', [
                 style({ transform: 'scale(0.8)', opacity: 0.5 }),
-                animate('200ms ease-out', style({ transform: 'scale(1)', opacity: 1 }))
+                animate('200ms ease-out', style({ transform: 'scale(1)', opacity: 1 })),
             ]),
         ]),
 		trigger('fadeInActionableMessage', [

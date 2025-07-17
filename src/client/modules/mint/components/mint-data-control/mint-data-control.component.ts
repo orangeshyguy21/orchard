@@ -26,21 +26,22 @@ type TypeOption = {
 	templateUrl: './mint-data-control.component.html',
 	styleUrl: './mint-data-control.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
+	// prettier-ignore
 	animations: [
 		trigger('formStateReaction', [
 			state('valid', style({
 				height: '52px',
-				overflow: 'hidden'
+				overflow: 'hidden',
 			})),
 			state('invalid', style({
 				height: '71px',
-				overflow: 'hidden'
+				overflow: 'hidden',
 			})),
 			transition('valid <=> invalid', [
-				animate('300ms ease-in-out')
-			])
-		])
-	]
+				animate('300ms ease-in-out'),
+			]),
+		]),
+	],
 })
 export class MintDataControlComponent implements OnChanges {
 
