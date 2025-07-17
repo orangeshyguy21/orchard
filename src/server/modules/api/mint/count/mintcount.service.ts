@@ -31,10 +31,7 @@ export class MintCountService {
 				const count: number = await this.cashuMintDatabaseService.getMintCountMintQuotes(db, args);
 				return new OrchardMintCount(count);
 			} catch (error) {
-				const error_code = this.errorService.resolveError({
-					logger: this.logger,
-					error,
-					msg: tag,
+				const error_code = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});
 				throw new OrchardApiError(error_code);
@@ -48,10 +45,7 @@ export class MintCountService {
 				const count: number = await this.cashuMintDatabaseService.getMintCountMeltQuotes(db, args);
 				return new OrchardMintCount(count);
 			} catch (error) {
-				const error_code = this.errorService.resolveError({
-					logger: this.logger,
-					error,
-					msg: tag,
+				const error_code = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});
 				throw new OrchardApiError(error_code);
@@ -65,10 +59,7 @@ export class MintCountService {
 				const count: number = await this.cashuMintDatabaseService.getMintCountProofGroups(db, args);
 				return new OrchardMintCount(count);
 			} catch (error) {
-				const error_code = this.errorService.resolveError({
-					logger: this.logger,
-					error,
-					msg: tag,
+				const error_code = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});
 				throw new OrchardApiError(error_code);
@@ -82,10 +73,7 @@ export class MintCountService {
 				const count: number = await this.cashuMintDatabaseService.getMintCountPromiseGroups(db, args);
 				return new OrchardMintCount(count);
 			} catch (error) {
-				const error_code = this.errorService.resolveError({
-					logger: this.logger,
-					error,
-					msg: tag,
+				const error_code = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});
 				throw new OrchardApiError(error_code);

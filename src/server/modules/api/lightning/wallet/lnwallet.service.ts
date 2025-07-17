@@ -23,10 +23,7 @@ export class LightningWalletService {
 			const addresses: LightningAddresses = await this.lightningWalletKitService.getLightningAddresses();
 			return addresses.account_with_addresses.map((account) => new OrchardLightningAccount(account));
 		} catch (error) {
-			const error_code = this.errorService.resolveError({
-				logger: this.logger,
-				error,
-				msg: tag,
+			const error_code = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.LightningRpcActionError,
 			});
 			throw new OrchardApiError(error_code);

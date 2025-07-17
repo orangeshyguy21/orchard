@@ -22,7 +22,9 @@ export class AiAgentService {
 			if (!agent) throw OrchardErrorCode.AiAgentNotFoundError;
 			return new OrchardAiAgent(agent);
 		} catch (error) {
-			const error_code = this.errorService.resolveError({logger: this.logger, error, msg: tag, errord: OrchardErrorCode.AiError});
+			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+				errord: OrchardErrorCode.AiError,
+			});
 			throw new OrchardApiError(error_code);
 		}
 	}

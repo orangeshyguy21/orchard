@@ -29,10 +29,7 @@ export class MintPromiseService {
 				);
 				return cashu_mint_promise_groups.map((cmp) => new OrchardMintPromiseGroup(cmp));
 			} catch (error) {
-				const error_code = this.errorService.resolveError({
-					logger: this.logger,
-					error,
-					msg: tag,
+				const error_code = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});
 				throw new OrchardApiError(error_code);

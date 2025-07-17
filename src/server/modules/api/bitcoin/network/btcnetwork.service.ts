@@ -22,10 +22,7 @@ export class BitcoinNetworkService {
 			const info = await this.bitcoinRpcService.getBitcoinNetworkInfo();
 			return new OrchardBitcoinNetworkInfo(info);
 		} catch (error) {
-			const error_code = this.errorService.resolveError({
-				logger: this.logger,
-				error,
-				msg: tag,
+			const error_code = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.BitcoinRPCError,
 			});
 			throw new OrchardApiError(error_code);

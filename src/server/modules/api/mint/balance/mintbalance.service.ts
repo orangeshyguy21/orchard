@@ -26,10 +26,7 @@ export class MintBalanceService {
 				const cashu_mint_balances: CashuMintBalance[] = await this.cashuMintDatabaseService.getMintBalances(db, keyset_id);
 				return cashu_mint_balances.map((cmb) => new OrchardMintBalance(cmb));
 			} catch (error) {
-				const error_code = this.errorService.resolveError({
-					logger: this.logger,
-					error,
-					msg: tag,
+				const error_code = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});
 				throw new OrchardApiError(error_code);
@@ -43,10 +40,7 @@ export class MintBalanceService {
 				const cashu_mint_balances_issued: CashuMintBalance[] = await this.cashuMintDatabaseService.getMintBalancesIssued(db);
 				return cashu_mint_balances_issued.map((cmb) => new OrchardMintBalance(cmb));
 			} catch (error) {
-				const error_code = this.errorService.resolveError({
-					logger: this.logger,
-					error,
-					msg: tag,
+				const error_code = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});
 				throw new OrchardApiError(error_code);
@@ -60,10 +54,7 @@ export class MintBalanceService {
 				const cashu_mint_balances_redeemed: CashuMintBalance[] = await this.cashuMintDatabaseService.getMintBalancesRedeemed(db);
 				return cashu_mint_balances_redeemed.map((cmb) => new OrchardMintBalance(cmb));
 			} catch (error) {
-				const error_code = this.errorService.resolveError({
-					logger: this.logger,
-					error,
-					msg: tag,
+				const error_code = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});
 				throw new OrchardApiError(error_code);

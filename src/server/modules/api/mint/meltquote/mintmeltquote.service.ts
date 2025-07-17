@@ -30,10 +30,7 @@ export class MintMeltQuoteService {
 				const cashu_melt_quotes: CashuMintMeltQuote[] = await this.cashuMintDatabaseService.getMintMeltQuotes(db, args);
 				return cashu_melt_quotes.map((cmq) => new OrchardMintMeltQuote(cmq));
 			} catch (error) {
-				const error_code = this.errorService.resolveError({
-					logger: this.logger,
-					error,
-					msg: tag,
+				const error_code = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});
 				throw new OrchardApiError(error_code);
@@ -46,10 +43,7 @@ export class MintMeltQuoteService {
 			await this.cashuMintRpcService.updateNut05(mint_nut05_update);
 			return mint_nut05_update;
 		} catch (error) {
-			const error_code = this.errorService.resolveError({
-				logger: this.logger,
-				error,
-				msg: tag,
+			const error_code = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintRpcActionError,
 			});
 			throw new OrchardApiError(error_code);

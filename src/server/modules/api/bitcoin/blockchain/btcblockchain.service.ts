@@ -22,10 +22,7 @@ export class BitcoinBlockchainService {
 			const info = await this.bitcoinRpcService.getBitcoinBlockchainInfo();
 			return new OrchardBitcoinBlockchainInfo(info);
 		} catch (error) {
-			const error_code = this.errorService.resolveError({
-				logger: this.logger,
-				error,
-				msg: tag,
+			const error_code = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.BitcoinRPCError,
 			});
 			throw new OrchardApiError(error_code);
@@ -37,10 +34,7 @@ export class BitcoinBlockchainService {
 			const block_count = await this.bitcoinRpcService.getBitcoinBlockCount();
 			return new OrchardBitcoinBlockCount(block_count);
 		} catch (error) {
-			const error_code = this.errorService.resolveError({
-				logger: this.logger,
-				error,
-				msg: tag,
+			const error_code = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.BitcoinRPCError,
 			});
 			throw new OrchardApiError(error_code);

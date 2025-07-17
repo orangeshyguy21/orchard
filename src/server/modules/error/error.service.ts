@@ -7,7 +7,7 @@ import {OrchardErrorCode, OrchardErrorMessages} from './error.types';
 export class ErrorService {
 	constructor() {}
 
-	public resolveError({logger, error, errord, msg}: {logger: Logger; error: any; errord: OrchardErrorCode; msg: string}) {
+	public resolveError(logger: Logger, error: any, msg: string, {errord}: {errord: OrchardErrorCode}) {
 		logger.error(msg);
 		logger.debug(`${msg}: ${error}`);
 		let error_code = errord;

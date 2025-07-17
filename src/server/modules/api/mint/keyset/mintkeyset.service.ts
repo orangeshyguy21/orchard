@@ -29,10 +29,7 @@ export class MintKeysetService {
 				const cashu_keysets: CashuMintKeyset[] = await this.cashuMintDatabaseService.getMintKeysets(db);
 				return cashu_keysets.map((ck) => new OrchardMintKeyset(ck));
 			} catch (error) {
-				const error_code = this.errorService.resolveError({
-					logger: this.logger,
-					error,
-					msg: tag,
+				const error_code = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});
 				throw new OrchardApiError(error_code);
@@ -48,10 +45,7 @@ export class MintKeysetService {
 		try {
 			return await this.cashuMintRpcService.rotateNextKeyset(mint_rotate_keyset);
 		} catch (error) {
-			const error_code = this.errorService.resolveError({
-				logger: this.logger,
-				error,
-				msg: tag,
+			const error_code = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintRpcActionError,
 			});
 			throw new OrchardApiError(error_code);

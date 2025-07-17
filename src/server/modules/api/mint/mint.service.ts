@@ -22,11 +22,8 @@ export class MintService {
 		try {
 			db = await this.cashuMintDatabaseService.getMintDatabase();
 		} catch (error) {
-			const error_code = this.errorService.resolveError({
-				logger: this.logger,
-				error,
+			const error_code = this.errorService.resolveError(this.logger, error, 'Error connecting to mint database', {
 				errord: OrchardErrorCode.MintDatabaseConnectionError,
-				msg: 'Error connecting to mint database',
 			});
 			throw new OrchardApiError(error_code);
 		}

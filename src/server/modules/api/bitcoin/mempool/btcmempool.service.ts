@@ -22,10 +22,7 @@ export class BitcoinMempoolService {
 			const mempool = await this.bitcoinRpcService.getBitcoinMempool();
 			return Object.entries(mempool).map(([txid, tx]) => new OrchardBitcoinMempoolTransaction(tx, txid));
 		} catch (error) {
-			const error_code = this.errorService.resolveError({
-				logger: this.logger,
-				error,
-				msg: tag,
+			const error_code = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.BitcoinRPCError,
 			});
 			throw new OrchardApiError(error_code);

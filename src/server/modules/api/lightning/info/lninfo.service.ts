@@ -23,10 +23,7 @@ export class LightningInfoService {
 			const lightning_info: LightningInfo = await this.lightningService.getLightningInfo();
 			return new OrchardLightningInfo(lightning_info);
 		} catch (error) {
-			const error_code = this.errorService.resolveError({
-				logger: this.logger,
-				error,
-				msg: tag,
+			const error_code = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.LightningRpcActionError,
 			});
 			throw new OrchardApiError(error_code);

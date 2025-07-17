@@ -23,10 +23,7 @@ export class LightningBalanceService {
 			const lcb: LightningChannelBalance = await this.lightningService.getLightningChannelBalance();
 			return new OrchardLightningBalance(lcb);
 		} catch (error) {
-			const error_code = this.errorService.resolveError({
-				logger: this.logger,
-				error,
-				msg: tag,
+			const error_code = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.LightningRpcActionError,
 			});
 			throw new OrchardApiError(error_code);

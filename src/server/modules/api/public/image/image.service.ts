@@ -24,10 +24,7 @@ export class PublicImageService {
 			const buffer = Buffer.from(await response.arrayBuffer());
 			return new OrchardPublicImage(buffer, content_type || 'image/jpeg');
 		} catch (error) {
-			const error_code = this.errorService.resolveError({
-				logger: this.logger,
-				error,
-				msg: tag,
+			const error_code = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.PublicAssetError,
 			});
 			throw new OrchardApiError(error_code);

@@ -26,10 +26,7 @@ export class MintDatabaseService {
 				const filebase64 = database_buffer.toString('base64');
 				return new OrchardMintDatabaseBackup(filebase64);
 			} catch (error) {
-				const error_code = this.errorService.resolveError({
-					logger: this.logger,
-					error,
-					msg: tag,
+				const error_code = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseBackupError,
 				});
 				throw new OrchardApiError(error_code);
@@ -42,10 +39,7 @@ export class MintDatabaseService {
 			await this.cashuMintDatabaseService.restoreBackup(filebase64);
 			return new OrchardMintDatabaseRestore(true);
 		} catch (error) {
-			const error_code = this.errorService.resolveError({
-				logger: this.logger,
-				error,
-				msg: tag,
+			const error_code = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintDatabaseRestoreError,
 			});
 			throw new OrchardApiError(error_code);

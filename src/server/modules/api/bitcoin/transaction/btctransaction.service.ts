@@ -26,10 +26,7 @@ export class BtcTransactionService {
 			);
 			return await Promise.all(fee_estimates_promises);
 		} catch (error) {
-			const error_code = this.errorService.resolveError({
-				logger: this.logger,
-				error,
-				msg: tag,
+			const error_code = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.BitcoinRPCError,
 			});
 			throw new OrchardApiError(error_code);
