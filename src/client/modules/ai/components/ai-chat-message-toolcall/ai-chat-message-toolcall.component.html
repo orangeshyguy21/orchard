@@ -1,32 +1,31 @@
 <div class="ai-chat-message-toolcall-container">
+	<div class="tool-summary orc-text-button" (click)="toggleToolDetails()">
+		<div>{{ tool_title }}</div>
+		<mat-icon [@rotateIcon]="tool_expanded ? 'expanded' : 'collapsed'">keyboard_arrow_down</mat-icon>
+	</div>
 
-   <div class="tool-summary orc-text-button" (click)="toggleToolDetails()">
-        <div>{{ tool_title }}</div>
-        <mat-icon [@rotateIcon]="tool_expanded ? 'expanded' : 'collapsed'">keyboard_arrow_down</mat-icon>
-    </div>
+	<div [@expandCollapse]="tool_expanded ? 'expanded' : 'collapsed'" class="p-t-0-5">
+		<mat-card appearance="outlined" class="overflow-hidden">
+			<div class="p-h-1 orc-surface-container-low-bg">
+				<table mat-table [dataSource]="data_source" class="orc-dense-table orc-table-low">
+					<ng-container matColumnDef="field">
+						<th mat-header-cell *matHeaderCellDef>Form Field</th>
+						<td mat-cell *matCellDef="let argument">
+							<div>{{ argument.field }}</div>
+						</td>
+					</ng-container>
 
-    <div [@expandCollapse]="tool_expanded ? 'expanded' : 'collapsed'" class="p-t-0-5">
-        <mat-card appearance="outlined" class="overflow-hidden">
-            <div class="p-h-1 orc-surface-container-low-bg"> 
-                <table mat-table [dataSource]="data_source" class="orc-dense-table orc-table-low">
-                    <ng-container matColumnDef="field">
-                        <th mat-header-cell *matHeaderCellDef> Form Field </th>
-                        <td mat-cell *matCellDef="let argument">
-                            <div> {{ argument.field }} </div>
-                        </td>
-                    </ng-container>
-        
-                    <ng-container matColumnDef="value">
-                        <th mat-header-cell *matHeaderCellDef> New Value </th>
-                        <td mat-cell *matCellDef="let argument">
-                            <div> {{ argument.value }} </div>
-                        </td>
-                    </ng-container>
-                
-                    <tr mat-header-row *matHeaderRowDef="displayed_columns"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayed_columns;"></tr>
-                </table>
-            </div>
-        </mat-card>
-    </div>
+					<ng-container matColumnDef="value">
+						<th mat-header-cell *matHeaderCellDef>New Value</th>
+						<td mat-cell *matCellDef="let argument">
+							<div>{{ argument.value }}</div>
+						</td>
+					</ng-container>
+
+					<tr mat-header-row *matHeaderRowDef="displayed_columns"></tr>
+					<tr mat-row *matRowDef="let row; columns: displayed_columns"></tr>
+				</table>
+			</div>
+		</mat-card>
+	</div>
 </div>

@@ -1,16 +1,16 @@
 <div class="mint-name-container">
-    @switch (state) {
-        @case ('loading') {
-            <div class="mint-name-loading shimmer-high"></div>
-        }
-        @case ('error') {
-            <div class="mint-name-error" @fadeIn>Mint Info Error</div>
-        }
-        @case ('name') {
-            <div class="orc-text-button-subtle" (click)="onClick()" @fadeIn>{{ name }}</div>
-        }
-        @case ('unset') {
-            <i class="orc-outline-color" @fadeIn>Untitled Mint</i>
-        }
-    }
+	@switch (state) {
+		@case ('loading') {
+			<div class="mint-name-loading shimmer-high"></div>
+		}
+		@case ('error') {
+			<div class="mint-name-error" @fadeIn>Mint Info Error</div>
+		}
+		@case ('name') {
+			<div class="orc-text-button-subtle" (click)="onClick()" @fadeIn>{{ name }}</div>
+		}
+		@case ('unset') {
+			<i class="orc-outline-color" @fadeIn>Untitled Mint</i>
+		}
+	}
 </div>

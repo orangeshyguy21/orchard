@@ -1,36 +1,32 @@
 <div class="ai-agent-definition-tool-container">
-    <div class="flex flex-items-center flex-gap-0-5 orc-text-button" (click)="toggleToolDefinition()">
-        <div>
-            <mat-icon>construction</mat-icon>
-        </div>
-        <div class="flex-grow">{{ tool_name }}</div>
-        <div>
-            <mat-icon [@rotateIcon]="tool_expanded ? 'expanded' : 'collapsed'">keyboard_arrow_down</mat-icon>
-        </div>
-    </div>
+	<div class="flex flex-items-center flex-gap-0-5 orc-text-button" (click)="toggleToolDefinition()">
+		<div>
+			<mat-icon>construction</mat-icon>
+		</div>
+		<div class="flex-grow">{{ tool_name }}</div>
+		<div>
+			<mat-icon [@rotateIcon]="tool_expanded ? 'expanded' : 'collapsed'">keyboard_arrow_down</mat-icon>
+		</div>
+	</div>
 
-    <div [@expandCollapse]="tool_expanded ? 'expanded' : 'collapsed'">
-        <div class="flex flex-column flex-gap-1 p-t-0-5 p-l-2">
-            <div class="agent-property">
-                <div class="agent-property-label">
-                    Description
-                </div>
-                <div class="agent-property-value">
-                    {{ tool.function.description }}
-                </div>
-            </div>
-            <div class="agent-property">
-                <div class="agent-property-label">
-                    Required parameters
-                </div>
-                <div class="agent-property-value">
-                    <div class="flex flex-gap-0-5">
-                        @for (param of tool.function.parameters.required; track param) {
-                            <div class="label-command orc-surface-container-high-bg">{{ param }}</div>
-                        }
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+	<div [@expandCollapse]="tool_expanded ? 'expanded' : 'collapsed'">
+		<div class="flex flex-column flex-gap-1 p-t-0-5 p-l-2">
+			<div class="agent-property">
+				<div class="agent-property-label">Description</div>
+				<div class="agent-property-value">
+					{{ tool.function.description }}
+				</div>
+			</div>
+			<div class="agent-property">
+				<div class="agent-property-label">Required parameters</div>
+				<div class="agent-property-value">
+					<div class="flex flex-gap-0-5">
+						@for (param of tool.function.parameters.required; track param) {
+							<div class="label-command orc-surface-container-high-bg">{{ param }}</div>
+						}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>

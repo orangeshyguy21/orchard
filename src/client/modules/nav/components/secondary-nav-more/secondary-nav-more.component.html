@@ -1,15 +1,11 @@
 <div class="secondary-nav-more-container">
-	<button 
-		[matMenuTriggerFor]="more_menu"
-		mat-icon-button
-		class="orc-icon-button"
-		type="button">
+	<button [matMenuTriggerFor]="more_menu" mat-icon-button class="orc-icon-button" type="button">
 		<mat-icon>more_vert</mat-icon>
 	</button>
 </div>
 
 <mat-menu #more_menu="matMenu" yPosition="below" class="orc-top-nav-menu orc-more-menu">
-    <button mat-menu-item (click)="logout()">
+	<button mat-menu-item (click)="logout()">
 		<div class="flex flex-items-center flex-gap-0-5">
 			<mat-icon>logout</mat-icon>
 			<span>Logout</span>

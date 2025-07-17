@@ -1,6 +1,6 @@
 <div class="mint-dashboard-container">
 	<div class="mint-dashboard-header p-b-1">
-		<orc-mint-balance-sheet 
+		<orc-mint-balance-sheet
 			[balances]="mint_balances"
 			[keysets]="mint_keysets"
 			[lightning_balance]="lightning_balance ? lightning_balance : null"
@@ -8,22 +8,24 @@
 			[lightning_errors]="errors_lightning"
 			[lightning_loading]="loading_lightning"
 			[loading]="loading_static_data"
-			(navigate)="onNavigate('lightning')">
+			(navigate)="onNavigate('lightning')"
+		>
 		</orc-mint-balance-sheet>
-		<orc-mint-connections 
+		<orc-mint-connections
 			[urls]="mint_info ? mint_info.urls : null"
 			[icon_url]="mint_info ? mint_info.icon_url : null"
 			[time]="mint_info?.time"
 			[mint_name]="mint_info?.name"
 			[mint_connections]="mint_connections"
-			[loading]="loading_static_data">
+			[loading]="loading_static_data"
+		>
 		</orc-mint-connections>
-	</div>	
+	</div>
 
 	<div class="mint-analytic-control-panel">
 		<div class="flex flex-justify-between flex-gap-1 flex-items-end">
 			<div class="title-l p-1">Nutalytics</div>
-			@if( page_settings ) {
+			@if (page_settings) {
 				<orc-mint-analytic-control-panel
 					class="flex-grow"
 					[page_settings]="page_settings"
@@ -38,8 +40,9 @@
 					(dateChange)="onDateChange($event)"
 					(unitsChange)="onUnitsChange($event)"
 					(intervalChange)="onIntervalChange($event)"
-					(typeChange)="onTypeChange($event)">
-				</orc-mint-analytic-control-panel> 	
+					(typeChange)="onTypeChange($event)"
+				>
+				</orc-mint-analytic-control-panel>
 			}
 			<!-- <div class="p-b-1">
 				<button mat-icon-button aria-label="Example icon button with a vertical three dot icon">
@@ -60,7 +63,8 @@
 		[page_settings]="page_settings"
 		[mint_genesis_time]="mint_genesis_time"
 		[selected_type]="page_settings ? page_settings.type : undefined"
-		[loading]="loading_dynamic_data">
+		[loading]="loading_dynamic_data"
+	>
 	</orc-mint-analytic-chart>
 	<div class="mint-analytic-header z-index-2">
 		<div class="mint-analytic-title">Mints &nbsp;&nbsp;<small>deposits</small></div>
@@ -72,7 +76,8 @@
 		[page_settings]="page_settings"
 		[mint_genesis_time]="mint_genesis_time"
 		[selected_type]="page_settings ? page_settings.type : undefined"
-		[loading]="loading_dynamic_data">
+		[loading]="loading_dynamic_data"
+	>
 	</orc-mint-analytic-chart>
 	<div class="mint-analytic-header z-index-3">
 		<div class="mint-analytic-title">Melts &nbsp;&nbsp;<small>withdrawals</small></div>
@@ -84,7 +89,8 @@
 		[page_settings]="page_settings"
 		[mint_genesis_time]="mint_genesis_time"
 		[selected_type]="page_settings ? page_settings.type : undefined"
-		[loading]="loading_dynamic_data">
+		[loading]="loading_dynamic_data"
+	>
 	</orc-mint-analytic-chart>
 	<div class="mint-analytic-header z-index-4">
 		<div class="mint-analytic-title">Transfers</div>
@@ -96,6 +102,7 @@
 		[page_settings]="page_settings"
 		[mint_genesis_time]="mint_genesis_time"
 		[selected_type]="page_settings ? page_settings.type : undefined"
-		[loading]="loading_dynamic_data">
+		[loading]="loading_dynamic_data"
+	>
 	</orc-mint-analytic-chart>
 </div>

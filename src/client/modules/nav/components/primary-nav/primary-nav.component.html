@@ -1,24 +1,17 @@
 <div class="primary-nav-container">
-	<orc-primary-nav-header 
-        [active]="active_section === 'index'"
-        [block_count]="block_count"
-        [chain]="chain">
-    </orc-primary-nav-header>
-    <orc-primary-nav-items 
-        [active_section]="active_section"
-        [enabled_bitcoin]="enabled_bitcoin"
-        [enabled_lightning]="enabled_lightning"
-        [enabled_mint]="enabled_mint"
-        [online_bitcoin]="online_bitcoin"
-        [online_lightning]="online_lightning"
-        [online_mint]="online_mint"
-        [syncing_bitcoin]="syncing_bitcoin"
-        [syncing_lightning]="syncing_lightning">
-    </orc-primary-nav-items>
-    <orc-primary-nav-footer 
-        [active_section]="active_section"
-        [active_event]="active_event"
-        (save)="save.emit()"
-        (cancel)="cancel.emit()">
-    </orc-primary-nav-footer>
+	<orc-primary-nav-header [active]="active_section === 'index'" [block_count]="block_count" [chain]="chain"> </orc-primary-nav-header>
+	<orc-primary-nav-items
+		[active_section]="active_section"
+		[enabled_bitcoin]="enabled_bitcoin"
+		[enabled_lightning]="enabled_lightning"
+		[enabled_mint]="enabled_mint"
+		[online_bitcoin]="online_bitcoin"
+		[online_lightning]="online_lightning"
+		[online_mint]="online_mint"
+		[syncing_bitcoin]="syncing_bitcoin"
+		[syncing_lightning]="syncing_lightning"
+	>
+	</orc-primary-nav-items>
+	<orc-primary-nav-footer [active_section]="active_section" [active_event]="active_event" (save)="save.emit()" (cancel)="cancel.emit()">
+	</orc-primary-nav-footer>
 </div>

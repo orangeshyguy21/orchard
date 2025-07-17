@@ -1,339 +1,352 @@
 <div class="mint-subsection-config-container">
-    <div class="flex flex-column">
+	<div class="flex flex-column">
+		<!-- NUT 04 -->
+		<div class="sticky-nut z-index-1">
+			<div class="title-l">Minting</div>
+			<div class="font-size-xs orc-outline-color p-b-0-5">Configure depositing to the mint</div>
+			<div class="category-rule"></div>
+		</div>
+		<orc-mint-config-form-enabled
+			[nut]="'nut4'"
+			[enabled]="form_minting.get('enabled')?.value"
+			[form_group]="form_minting"
+			(update)="onEnabledUpdate($event)"
+		>
+		</orc-mint-config-form-enabled>
+		<orc-mint-config-form-quote-ttl
+			[nut]="'nut4'"
+			[form_group]="form_minting"
+			[control_name]="'mint_ttl'"
+			[disabled]="mint_info?.nuts?.nut4?.disabled"
+			[locale]="locale"
+			[loading]="data_loading"
+			[quotes]="mint_quotes"
+			(update)="onTtlUpdate($event)"
+			(cancel)="onTtlCancel($event)"
+		>
+		</orc-mint-config-form-quote-ttl>
+		@for (unit of minting_units; track unit) {
+			<div class="sticky-method z-index-1">
+				<div class="flex flex-items-center flex-gap-0-5 p-b-0-5">
+					<div class="font-size-xs orc-outline-color">{{ unit | titlecase }} Configuration</div>
+					<orc-graphic-asset [unit]="unit" [height]="'1rem'"> </orc-graphic-asset>
+				</div>
+			</div>
+			<div class="p-h-2 p-b-2">
+				<mat-card appearance="outlined" class="relative overflow-hidden">
+					<mat-card-content class="orc-surface-container-low-bg">
+						@for (method of mint_info?.nuts?.nut4?.methods; track method; let i = $index) {
+							@if (method.unit === unit && method.method === 'bolt11') {
+								<orc-mint-config-form-bolt11
+									class="flex-1"
+									[nut]="'nut4'"
+									[index]="i"
+									[unit]="unit"
+									[method]="method.method"
+									[form_group]="form_minting"
+									[locale]="locale"
+									[loading]="data_loading"
+									[quotes]="mint_quotes"
+									(update)="onMethodUpdate($event)"
+									(cancel)="onMethodCancel($event)"
+								></orc-mint-config-form-bolt11>
+							}
+						}
+						@if (mint_info?.nuts?.nut4?.disabled) {
+							<div class="disabled-overlay" @fadeInOut>
+								<div class="orc-outline-color font-weight-bold">MINTING DISABLED</div>
+							</div>
+						}
+					</mat-card-content>
+				</mat-card>
+			</div>
+		}
 
-        <!-- NUT 04 -->
-        <div class="sticky-nut z-index-1">
-            <div class="title-l">Minting</div>
-            <div class="font-size-xs orc-outline-color p-b-0-5">Configure depositing to the mint</div>
-            <div class="category-rule"></div>
-        </div>
-        <orc-mint-config-form-enabled
-            [nut]="'nut4'"
-            [enabled]="form_minting.get('enabled')?.value"
-            [form_group]="form_minting"
-            (update)="onEnabledUpdate($event)">
-        </orc-mint-config-form-enabled>
-        <orc-mint-config-form-quote-ttl
-            [nut]="'nut4'"
-            [form_group]="form_minting"
-            [control_name]="'mint_ttl'"
-            [disabled]="mint_info?.nuts?.nut4?.disabled"
-            [locale]="locale"
-            [loading]="data_loading"
-            [quotes]="mint_quotes"
-            (update)="onTtlUpdate($event)"
-            (cancel)="onTtlCancel($event)">
-        </orc-mint-config-form-quote-ttl>
-        @for (unit of minting_units; track unit) {
-            <div class="sticky-method z-index-1">
-                <div class="flex flex-items-center flex-gap-0-5 p-b-0-5">
-                    <div class="font-size-xs orc-outline-color">{{ unit | titlecase }} Configuration</div>
-                    <orc-graphic-asset 
-                        [unit]="unit" 
-                        [height]="'1rem'">
-                    </orc-graphic-asset>
-                </div>                
-            </div>
-            <div class="p-h-2 p-b-2">
-                <mat-card appearance="outlined" class="relative overflow-hidden">
-                    <mat-card-content class="orc-surface-container-low-bg">
-                        @for (method of mint_info?.nuts?.nut4?.methods; track method; let i = $index) {
-                            @if (method.unit === unit && method.method === 'bolt11') {
-                                <orc-mint-config-form-bolt11 
-                                    class="flex-1"
-                                    [nut]="'nut4'"
-                                    [index]="i"
-                                    [unit]="unit"
-                                    [method]="method.method"
-                                    [form_group]="form_minting"
-                                    [locale]="locale"
-                                    [loading]="data_loading"
-                                    [quotes]="mint_quotes"
-                                    (update)="onMethodUpdate($event)"
-                                    (cancel)="onMethodCancel($event)"
-                                ></orc-mint-config-form-bolt11>
-                            }
-                        }
-                        @if(mint_info?.nuts?.nut4?.disabled) {
-                            <div class="disabled-overlay" @fadeInOut>
-                                <div class="orc-outline-color font-weight-bold">MINTING DISABLED</div>
-                            </div>
-                        }
-                    </mat-card-content>
-                </mat-card>
-            </div>
-        }
+		<!-- NUT 05 -->
+		<div class="sticky-nut z-index-1">
+			<div class="title-l">Melting</div>
+			<div class="font-size-xs orc-outline-color p-b-0-5">Configure withdrawing from the mint</div>
+			<div class="category-rule"></div>
+		</div>
+		<orc-mint-config-form-enabled [nut]="'nut5'" [form_group]="form_melting" (update)="onEnabledUpdate($event)">
+		</orc-mint-config-form-enabled>
+		<orc-mint-config-form-quote-ttl
+			[nut]="'nut5'"
+			[form_group]="form_melting"
+			[control_name]="'melt_ttl'"
+			[disabled]="mint_info?.nuts?.nut5?.disabled"
+			[locale]="locale"
+			[loading]="data_loading"
+			[quotes]="melt_quotes"
+			(update)="onTtlUpdate($event)"
+			(cancel)="onTtlCancel($event)"
+		>
+		</orc-mint-config-form-quote-ttl>
+		@for (unit of melting_units; track unit) {
+			<div class="sticky-method z-index-1">
+				<div class="flex flex-items-center flex-gap-0-5 p-b-0-5">
+					<div class="font-size-xs orc-outline-color">{{ unit | titlecase }} Configuration</div>
+					<orc-graphic-asset [unit]="unit" [height]="'1rem'"> </orc-graphic-asset>
+				</div>
+			</div>
+			<div class="p-h-2 p-b-2">
+				<mat-card appearance="outlined" class="relative overflow-hidden">
+					<mat-card-content class="orc-surface-container-low-bg">
+						@for (method of mint_info?.nuts?.nut4?.methods; track method; let i = $index) {
+							@if (method.unit === unit && method.method === 'bolt11') {
+								<orc-mint-config-form-bolt11
+									class="flex-1"
+									[nut]="'nut5'"
+									[index]="i"
+									[unit]="unit"
+									[method]="method.method"
+									[form_group]="form_melting"
+									[form_status]="form_melting.get('enabled')?.value"
+									[locale]="locale"
+									[loading]="data_loading"
+									[quotes]="melt_quotes"
+									(update)="onMethodUpdate($event)"
+									(cancel)="onMethodCancel($event)"
+								></orc-mint-config-form-bolt11>
+							}
+						}
+						@if (mint_info?.nuts?.nut5?.disabled) {
+							<div class="disabled-overlay" @fadeInOut>
+								<div class="orc-outline-color font-weight-bold">MELTING DISABLED</div>
+							</div>
+						}
+					</mat-card-content>
+				</mat-card>
+			</div>
+		}
 
-        <!-- NUT 05 -->
-        <div class="sticky-nut z-index-1">
-            <div class="title-l">Melting</div>
-            <div class="font-size-xs orc-outline-color p-b-0-5">Configure withdrawing from the mint</div>
-            <div class="category-rule"></div>
-        </div>  
-        <orc-mint-config-form-enabled
-            [nut]="'nut5'"
-            [form_group]="form_melting"
-            (update)="onEnabledUpdate($event)">
-        </orc-mint-config-form-enabled>
-        <orc-mint-config-form-quote-ttl
-            [nut]="'nut5'"
-            [form_group]="form_melting"
-            [control_name]="'melt_ttl'"
-            [disabled]="mint_info?.nuts?.nut5?.disabled"
-            [locale]="locale"
-            [loading]="data_loading"
-            [quotes]="melt_quotes"
-            (update)="onTtlUpdate($event)"
-            (cancel)="onTtlCancel($event)">
-        </orc-mint-config-form-quote-ttl>
-        @for (unit of melting_units; track unit) {
-            <div class="sticky-method z-index-1">
-                <div class="flex flex-items-center flex-gap-0-5 p-b-0-5">
-                    <div class="font-size-xs orc-outline-color">{{ unit | titlecase }} Configuration</div>
-                    <orc-graphic-asset 
-                        [unit]="unit" 
-                        [height]="'1rem'">
-                    </orc-graphic-asset>
-                </div>                
-            </div>
-            <div class="p-h-2 p-b-2">
-                <mat-card appearance="outlined" class="relative overflow-hidden">
-                    <mat-card-content class="orc-surface-container-low-bg">
-                        @for (method of mint_info?.nuts?.nut4?.methods; track method; let i = $index) {
-                            @if (method.unit === unit && method.method === 'bolt11') {
-                                <orc-mint-config-form-bolt11 
-                                    class="flex-1"
-                                    [nut]="'nut5'"
-                                    [index]="i"
-                                    [unit]="unit"
-                                    [method]="method.method"
-                                    [form_group]="form_melting"
-                                    [form_status]="form_melting.get('enabled')?.value"
-                                    [locale]="locale"
-                                    [loading]="data_loading"
-                                    [quotes]="melt_quotes"
-                                    (update)="onMethodUpdate($event)"
-                                    (cancel)="onMethodCancel($event)"
-                                ></orc-mint-config-form-bolt11>
-                            }
-                        }
-                        @if(mint_info?.nuts?.nut5?.disabled) {
-                            <div class="disabled-overlay" @fadeInOut>
-                                <div class="orc-outline-color font-weight-bold">MELTING DISABLED</div>
-                            </div>
-                        }
-                    </mat-card-content>
-                </mat-card>
-            </div>
-        }
+		<!-- NUT 07 -->
+		<div class="sticky-nut z-index-1">
+			<div class="title-l">Token state check</div>
+			<div class="font-size-xs orc-outline-color p-b-0-5">Check token validity without revealing ownership</div>
+			<div class="category-rule"></div>
+		</div>
+		<orc-mint-config-form-supported [nut_index]="'07'" [nut_icon]="'pageview'" [supported]="mint_info?.nuts?.nut7?.supported">
+			<div class="flex flex-column flex-gap-0-5">
+				<span
+					>Allows clients to check the state of tokens (spent/unspent) without revealing which specific tokens they own, providing
+					privacy-preserving token validation.</span
+				>
+				<span>Not configurable. Status determined by mint version.</span>
+			</div>
+		</orc-mint-config-form-supported>
 
-        <!-- NUT 07 -->
-        <div class="sticky-nut z-index-1">
-            <div class="title-l">Token state check</div>
-            <div class="font-size-xs orc-outline-color p-b-0-5">Check token validity without revealing ownership</div>
-            <div class="category-rule"></div>
-        </div>
-        <orc-mint-config-form-supported
-            [nut_index]="'07'"
-            [nut_icon]="'pageview'"
-            [supported]="mint_info?.nuts?.nut7?.supported">
-            <div class="flex flex-column flex-gap-0-5">
-                <span>Allows clients to check the state of tokens (spent/unspent) without revealing which specific tokens they own, providing privacy-preserving token validation.</span>
-                <span>Not configurable. Status determined by mint version.</span>
-            </div>
-        </orc-mint-config-form-supported>
+		<!-- NUT 08 -->
+		<div class="sticky-nut z-index-1">
+			<div class="title-l">Lightning fee return</div>
+			<div class="font-size-xs orc-outline-color p-b-0-5">
+				Refunds any unused Lightning fee to the user after a melt (withdrawal) attempt
+			</div>
+			<div class="category-rule"></div>
+		</div>
+		<orc-mint-config-form-supported [nut_index]="'08'" [nut_icon]="'arrow_circle_left'" [supported]="mint_info?.nuts?.nut8?.supported">
+			<div class="flex flex-column flex-gap-0-5">
+				<span
+					>If a Lightning withdrawal (melt) is overpaid, the mint returns any unused portion of the fee to the user, ensuring fair
+					and transparent fee handling.</span
+				>
+				<span>Not configurable. Status determined by mint version.</span>
+			</div>
+		</orc-mint-config-form-supported>
 
-        <!-- NUT 08 -->
-        <div class="sticky-nut z-index-1">
-            <div class="title-l">Lightning fee return</div>
-            <div class="font-size-xs orc-outline-color p-b-0-5">Refunds any unused Lightning fee to the user after a melt (withdrawal) attempt</div>
-            <div class="category-rule"></div>
-        </div>  
-        <orc-mint-config-form-supported
-            [nut_index]="'08'"
-            [nut_icon]="'arrow_circle_left'"
-            [supported]="mint_info?.nuts?.nut8?.supported">
-            <div class="flex flex-column flex-gap-0-5">
-                <span>If a Lightning withdrawal (melt) is overpaid, the mint returns any unused portion of the fee to the user, ensuring fair and transparent fee handling.</span>
-                <span>Not configurable. Status determined by mint version.</span>
-            </div>
-        </orc-mint-config-form-supported>
+		<!-- NUT 09 -->
+		<div class="sticky-nut z-index-1">
+			<div class="title-l">Restore signatures</div>
+			<div class="font-size-xs orc-outline-color p-b-0-5">Allows users to restore lost or missing ecash signatures from the mint</div>
+			<div class="category-rule"></div>
+		</div>
+		<orc-mint-config-form-supported [nut_index]="'09'" [nut_icon]="'password'" [supported]="mint_info?.nuts?.nut9?.supported">
+			<div class="flex flex-column flex-gap-0-5">
+				<span
+					>If a user loses or fails to receive ecash signatures after a successful minting or melting operation, this feature
+					enables them to request the mint to re-issue the missing signatures, improving reliability and user experience.</span
+				>
+				<span>Not configurable. Status determined by mint version.</span>
+			</div>
+		</orc-mint-config-form-supported>
 
-        <!-- NUT 09 -->
-        <div class="sticky-nut z-index-1">
-            <div class="title-l">Restore signatures</div>
-            <div class="font-size-xs orc-outline-color p-b-0-5">Allows users to restore lost or missing ecash signatures from the mint</div>
-            <div class="category-rule"></div>
-        </div>  
-        <orc-mint-config-form-supported
-            [nut_index]="'09'"
-            [nut_icon]="'password'"
-            [supported]="mint_info?.nuts?.nut9?.supported">
-            <div class="flex flex-column flex-gap-0-5">
-                <span>If a user loses or fails to receive ecash signatures after a successful minting or melting operation, this feature enables them to request the mint to re-issue the missing signatures, improving reliability and user experience.</span>
-                <span>Not configurable. Status determined by mint version.</span>
-            </div>
-        </orc-mint-config-form-supported>
+		<!-- NUT 10 -->
+		<div class="sticky-nut z-index-1">
+			<div class="title-l">Spending conditions</div>
+			<div class="font-size-xs orc-outline-color p-b-0-5">Defines custom conditions that must be met before ecash can be spent</div>
+			<div class="category-rule"></div>
+		</div>
+		<orc-mint-config-form-supported [nut_index]="'10'" [nut_icon]="'flowsheet'" [supported]="mint_info?.nuts?.nut10?.supported">
+			<div class="flex flex-column flex-gap-0-5">
+				<span
+					>Allows the mint to enforce additional rules or requirements—such as time locks or external approvals—before ecash
+					tokens can be spent, enabling advanced use cases and enhanced security.</span
+				>
+				<span>Not configurable. Status determined by mint version.</span>
+			</div>
+		</orc-mint-config-form-supported>
 
-        <!-- NUT 10 -->
-        <div class="sticky-nut z-index-1">
-            <div class="title-l">Spending conditions</div>
-            <div class="font-size-xs orc-outline-color p-b-0-5">Defines custom conditions that must be met before ecash can be spent</div>
-            <div class="category-rule"></div>
-        </div>  
-        <orc-mint-config-form-supported
-            [nut_index]="'10'"
-            [nut_icon]="'flowsheet'"
-            [supported]="mint_info?.nuts?.nut10?.supported">
-            <div class="flex flex-column flex-gap-0-5">
-                <span>Allows the mint to enforce additional rules or requirements—such as time locks or external approvals—before ecash tokens can be spent, enabling advanced use cases and enhanced security.</span>
-                <span>Not configurable. Status determined by mint version.</span>
-            </div>
-        </orc-mint-config-form-supported>
+		<!-- NUT 11 -->
+		<div class="sticky-nut z-index-1">
+			<div class="title-l">Pay to Public Key (P2PK)</div>
+			<div class="font-size-xs orc-outline-color p-b-0-5">
+				Enables ecash to be sent directly to a public key instead of a blinded secret
+			</div>
+			<div class="category-rule"></div>
+		</div>
+		<orc-mint-config-form-supported [nut_index]="'11'" [nut_icon]="'key'" [supported]="mint_info?.nuts?.nut11?.supported">
+			<div class="flex flex-column flex-gap-0-5">
+				<span
+					>Allows users to receive ecash payments to a specified public key, making it possible to send and claim tokens without
+					prior interaction, and enabling new use cases like invoices and static addresses.</span
+				>
+				<span>Not configurable. Status determined by mint version.</span>
+			</div>
+		</orc-mint-config-form-supported>
 
-        <!-- NUT 11 -->
-        <div class="sticky-nut z-index-1">
-            <div class="title-l">Pay to Public Key (P2PK)</div>
-            <div class="font-size-xs orc-outline-color p-b-0-5">Enables ecash to be sent directly to a public key instead of a blinded secret</div>
-            <div class="category-rule"></div>
-        </div>  
-        <orc-mint-config-form-supported
-            [nut_index]="'11'"
-            [nut_icon]="'key'"
-            [supported]="mint_info?.nuts?.nut11?.supported">
-            <div class="flex flex-column flex-gap-0-5">
-                <span>Allows users to receive ecash payments to a specified public key, making it possible to send and claim tokens without prior interaction, and enabling new use cases like invoices and static addresses.</span>
-                <span>Not configurable. Status determined by mint version.</span>
-            </div>
-        </orc-mint-config-form-supported>
+		<!-- NUT 12 -->
+		<div class="sticky-nut z-index-1">
+			<div class="title-l">Offline ecash signature validation</div>
+			<div class="font-size-xs orc-outline-color p-b-0-5">
+				Allows ecash signatures to be validated without an online connection to the mint
+			</div>
+			<div class="category-rule"></div>
+		</div>
+		<orc-mint-config-form-supported [nut_index]="'12'" [nut_icon]="'wifi_off'" [supported]="mint_info?.nuts?.nut12?.supported">
+			<div class="flex flex-column flex-gap-0-5">
+				<span
+					>Enables users to verify the authenticity of ecash tokens offline, using public information published by the mint. This
+					improves usability and security in situations where the mint is temporarily unreachable.</span
+				>
+				<span>Not configurable. Status determined by mint version.</span>
+			</div>
+		</orc-mint-config-form-supported>
 
-        <!-- NUT 12 -->
-        <div class="sticky-nut z-index-1">
-            <div class="title-l">Offline ecash signature validation</div>
-            <div class="font-size-xs orc-outline-color p-b-0-5">Allows ecash signatures to be validated without an online connection to the mint</div>
-            <div class="category-rule"></div>
-        </div>  
-        <orc-mint-config-form-supported
-            [nut_index]="'12'"
-            [nut_icon]="'wifi_off'"
-            [supported]="mint_info?.nuts?.nut12?.supported">
-            <div class="flex flex-column flex-gap-0-5">
-                <span>Enables users to verify the authenticity of ecash tokens offline, using public information published by the mint. This improves usability and security in situations where the mint is temporarily unreachable.</span>
-                <span>Not configurable. Status determined by mint version.</span>
-            </div>
-        </orc-mint-config-form-supported>
+		<!-- NUT 14 -->
+		<div class="sticky-nut z-index-1">
+			<div class="title-l">Hashed Timelock Contracts (HTLCs)</div>
+			<div class="font-size-xs orc-outline-color p-b-0-5">Enables conditional payments using hashed timelock contracts (HTLCs)r</div>
+			<div class="category-rule"></div>
+		</div>
+		<orc-mint-config-form-supported [nut_index]="'14'" [nut_icon]="'lock_clock'" [supported]="mint_info?.nuts?.nut14?.supported">
+			<div class="flex flex-column flex-gap-0-5">
+				<span
+					>Allows ecash to be locked and spent only if a specific secret is revealed before a deadline, enabling advanced features
+					like atomic swaps and trust-minimized payments.</span
+				>
+				<span>Not configurable. Status determined by mint version.</span>
+			</div>
+		</orc-mint-config-form-supported>
 
-        <!-- NUT 14 -->
-        <div class="sticky-nut z-index-1">
-            <div class="title-l">Hashed Timelock Contracts (HTLCs)</div>
-            <div class="font-size-xs orc-outline-color p-b-0-5">Enables conditional payments using hashed timelock contracts (HTLCs)r</div>
-            <div class="category-rule"></div>
-        </div>  
-        <orc-mint-config-form-supported
-            [nut_index]="'14'"
-            [nut_icon]="'lock_clock'"
-            [supported]="mint_info?.nuts?.nut14?.supported">
-            <div class="flex flex-column flex-gap-0-5">
-                <span>Allows ecash to be locked and spent only if a specific secret is revealed before a deadline, enabling advanced features like atomic swaps and trust-minimized payments.</span>
-                <span>Not configurable. Status determined by mint version.</span>
-            </div>
-        </orc-mint-config-form-supported>
+		<!-- NUT 15 -->
+		<div class="sticky-nut z-index-1">
+			<div class="title-l">Partial multi-path payments</div>
+			<div class="font-size-xs orc-outline-color p-b-0-5">Enables splitting payments across multiple paths or methods.</div>
+			<div class="category-rule"></div>
+		</div>
+		<orc-mint-config-form-supported
+			[nut_index]="'15'"
+			[nut_icon]="'thunderstorm'"
+			[supported]="mint_info?.nuts?.nut15?.methods?.length === 0 ? false : true"
+		>
+			<div class="flex flex-column flex-gap-0-5">
+				<span
+					>Allows ecash payments to be divided and sent over several routes or using different methods, improving flexibility,
+					privacy, and reliability for large or complex transactions.</span
+				>
+				<span>Not currently configurable via the mint RPC. Must be set in the mint config file.</span>
+			</div>
+		</orc-mint-config-form-supported>
+		@if (nut15_methods.length > 0) {
+			<div class="sticky-method z-index-1">
+				<div class="flex flex-items-center flex-gap-0-5 p-b-0-5">
+					<div class="font-size-xs orc-outline-color">Supported methods</div>
+				</div>
+			</div>
 
-        <!-- NUT 15 -->
-        <div class="sticky-nut z-index-1">
-            <div class="title-l">Partial multi-path payments</div>
-            <div class="font-size-xs orc-outline-color p-b-0-5">Enables splitting payments across multiple paths or methods.</div>
-            <div class="category-rule"></div>
-        </div>  
-        <orc-mint-config-form-supported
-            [nut_index]="'15'"
-            [nut_icon]="'thunderstorm'"
-            [supported]="mint_info?.nuts?.nut15?.methods?.length === 0 ? false : true">
-            <div class="flex flex-column flex-gap-0-5">
-                <span>Allows ecash payments to be divided and sent over several routes or using different methods, improving flexibility, privacy, and reliability for large or complex transactions.</span>
-                <span>Not currently configurable via the mint RPC. Must be set in the mint config file.</span>
-            </div>
-        </orc-mint-config-form-supported>
-        @if( nut15_methods.length > 0 ) {
-            <div class="sticky-method z-index-1">
-                <div class="flex flex-items-center flex-gap-0-5 p-b-0-5">
-                    <div class="font-size-xs orc-outline-color">Supported methods</div>
-                </div>                
-            </div>
+			<div class="p-h-2 p-b-2">
+				<div class="flex flex-items-center flex-justify-evenly flex-gap-2">
+					@for (nut15_method of nut15_methods; track nut15_method.unit) {
+						<orc-mint-config-form-nut15-method [nut15_method]="nut15_method"></orc-mint-config-form-nut15-method>
+					}
+				</div>
+			</div>
+		}
 
-            <div class="p-h-2 p-b-2">
-                <div class="flex flex-items-center flex-justify-evenly flex-gap-2">
-                    @for (nut15_method of nut15_methods; track nut15_method.unit) {
-                        <orc-mint-config-form-nut15-method [nut15_method]="nut15_method"></orc-mint-config-form-nut15-method>
-                    }
-                </div>
-            </div>
-        }
+		<!-- NUT 17 -->
+		<div class="sticky-nut z-index-1">
+			<div class="title-l">WebSockets</div>
+			<div class="font-size-xs orc-outline-color p-b-0-5">Enables real-time updates and communication via WebSockets</div>
+			<div class="category-rule"></div>
+		</div>
+		<orc-mint-config-form-supported
+			[nut_index]="'17'"
+			[nut_icon]="'electrical_services'"
+			[supported]="mint_info?.nuts?.nut17?.supported ? true : false"
+		>
+			<div class="flex flex-column flex-gap-0-5">
+				<span
+					>Allows wallets to receive instant notifications and interact with the mint in real time using WebSocket connections,
+					improving responsiveness for actions like payments, state changes, and event monitoring.</span
+				>
+				<span>Not currently configurable via the mint RPC. Must be set in the mint config file.</span>
+			</div>
+		</orc-mint-config-form-supported>
+		@if (nut17_commands.length > 0) {
+			<div class="sticky-method z-index-1">
+				<div class="flex flex-items-center flex-gap-0-5 p-b-0-5">
+					<div class="font-size-xs orc-outline-color">Supported commands</div>
+				</div>
+			</div>
 
-        <!-- NUT 17 -->
-        <div class="sticky-nut z-index-1">
-            <div class="title-l">WebSockets</div>
-            <div class="font-size-xs orc-outline-color p-b-0-5">Enables real-time updates and communication via WebSockets</div>
-            <div class="category-rule"></div>
-        </div>  
-        <orc-mint-config-form-supported
-            [nut_index]="'17'"
-            [nut_icon]="'electrical_services'"
-            [supported]="mint_info?.nuts?.nut17?.supported ? true : false">
-            <div class="flex flex-column flex-gap-0-5">
-                <span>Allows wallets to receive instant notifications and interact with the mint in real time using WebSocket connections, improving responsiveness for actions like payments, state changes, and event monitoring.</span>
-                <span>Not currently configurable via the mint RPC. Must be set in the mint config file.</span>
-            </div>
-        </orc-mint-config-form-supported>
-        @if( nut17_commands.length > 0 ) {
-            <div class="sticky-method z-index-1">
-                <div class="flex flex-items-center flex-gap-0-5 p-b-0-5">
-                    <div class="font-size-xs orc-outline-color">Supported commands</div>
-                </div>                
-            </div>
+			<div class="p-h-2 p-b-2">
+				<div class="flex flex-items-center flex-justify-evenly flex-gap-2">
+					@for (unit_group of nut17_commands; track unit_group.unit) {
+						<orc-mint-config-form-nut17-commands [nut17_commands]="unit_group"></orc-mint-config-form-nut17-commands>
+					}
+				</div>
+			</div>
+		}
 
-            <div class="p-h-2 p-b-2">
-                <div class="flex flex-items-center flex-justify-evenly flex-gap-2">
-                    @for (unit_group of nut17_commands; track unit_group.unit) {
-                        <orc-mint-config-form-nut17-commands [nut17_commands]="unit_group"></orc-mint-config-form-nut17-commands>
-                    }
-                </div>
-            </div>
-        }
+		<!-- NUT 19 -->
+		<div class="sticky-nut z-index-1">
+			<div class="title-l">Cached Responses</div>
+			<div class="font-size-xs orc-outline-color p-b-0-5">
+				Enables caching of mint API responses for improved performance and reliability
+			</div>
+			<div class="category-rule"></div>
+		</div>
+		<orc-mint-config-form-supported
+			[nut_index]="'19'"
+			[nut_icon]="'download_for_offline'"
+			[supported]="mint_info?.nuts?.nut19 ? true : false"
+		>
+			<div class="flex flex-column flex-gap-0-5">
+				<span
+					>Allows the mint to serve certain API responses from cache, reducing load and improving availability for frequently
+					requested data. Cache duration and endpoints are set in the mint configuration file.</span
+				>
+				<span>Not currently configurable via the mint RPC. Must be set in the mint config file.</span>
+			</div>
+		</orc-mint-config-form-supported>
+		@if (mint_info?.nuts?.nut19) {
+			<orc-mint-config-form-nut19 [nut19]="mint_info?.nuts?.nut19"></orc-mint-config-form-nut19>
+		}
 
-        <!-- NUT 19 -->
-        <div class="sticky-nut z-index-1">
-            <div class="title-l">Cached Responses</div>
-            <div class="font-size-xs orc-outline-color p-b-0-5">Enables caching of mint API responses for improved performance and reliability</div>
-            <div class="category-rule"></div>
-        </div>  
-        <orc-mint-config-form-supported
-            [nut_index]="'19'"
-            [nut_icon]="'download_for_offline'"
-            [supported]="mint_info?.nuts?.nut19 ? true : false">
-            <div class="flex flex-column flex-gap-0-5">
-                <span>Allows the mint to serve certain API responses from cache, reducing load and improving availability for frequently requested data. Cache duration and endpoints are set in the mint configuration file.</span>
-                <span>Not currently configurable via the mint RPC. Must be set in the mint config file.</span>
-            </div>
-        </orc-mint-config-form-supported>
-        @if( mint_info?.nuts?.nut19 ) {
-            <orc-mint-config-form-nut19 [nut19]="mint_info?.nuts?.nut19"></orc-mint-config-form-nut19>
-        }
-
-        <!-- NUT 20 -->
-        <div class="sticky-nut z-index-1">
-            <div class="title-l">Signature on Mint Quote</div>
-            <div class="font-size-xs orc-outline-color p-b-0-5">Adds a cryptographic signature to mint quotes for enhanced security</div>
-            <div class="category-rule"></div>
-        </div>  
-        <orc-mint-config-form-supported
-            [nut_index]="'20'"
-            [nut_icon]="'stylus_note'"
-            [supported]="mint_info?.nuts?.nut20?.supported">
-            <div class="flex flex-column flex-gap-0-5">
-                <span>Ensures that every mint quote is signed by the mint, allowing clients to verify the authenticity and integrity of quotes before proceeding with transactions. This protects users from tampering and replay attacks.</span>
-                <span>Not configurable. Status determined by mint version.</span>
-            </div>
-        </orc-mint-config-form-supported>
-    </div>
+		<!-- NUT 20 -->
+		<div class="sticky-nut z-index-1">
+			<div class="title-l">Signature on Mint Quote</div>
+			<div class="font-size-xs orc-outline-color p-b-0-5">Adds a cryptographic signature to mint quotes for enhanced security</div>
+			<div class="category-rule"></div>
+		</div>
+		<orc-mint-config-form-supported [nut_index]="'20'" [nut_icon]="'stylus_note'" [supported]="mint_info?.nuts?.nut20?.supported">
+			<div class="flex flex-column flex-gap-0-5">
+				<span
+					>Ensures that every mint quote is signed by the mint, allowing clients to verify the authenticity and integrity of
+					quotes before proceeding with transactions. This protects users from tampering and replay attacks.</span
+				>
+				<span>Not configurable. Status determined by mint version.</span>
+			</div>
+		</orc-mint-config-form-supported>
+	</div>
 </div>

@@ -1,7 +1,7 @@
 <div class="mint-subsection-database-container p-h-1">
 	<div class="mint-database-control p-t-1">
 		<div class="flex flex-justify-between flex-gap-2 flex-items-start">
-			@if( page_settings ) {
+			@if (page_settings) {
 				<orc-mint-data-control
 					class="flex-grow"
 					[page_settings]="page_settings"
@@ -21,26 +21,24 @@
 					(typeChange)="onTypeChange($event)"
 					(unitsChange)="onUnitsChange($event)"
 					(statesChange)="onStatesChange($event)"
-					(filterChange)="onFilterChange($event)">
+					(filterChange)="onFilterChange($event)"
+				>
 				</orc-mint-data-control>
 			}
 			<div>
 				<div class="flex flex-items-center flex-gap-0-5 relative">
-					<button 
-						type="button" 
-						mat-fab 
-						extended 
+					<button
+						type="button"
+						mat-fab
+						extended
 						class="orc-icon-button"
-						(click)="onCreate()" 
-						(keydown.enter)="$event.preventDefault(); $event.stopPropagation();">
+						(click)="onCreate()"
+						(keydown.enter)="$event.preventDefault(); $event.stopPropagation()"
+					>
 						<mat-icon>database</mat-icon>
 						Create Backup
 					</button>
-					<button 
-						mat-icon-button 
-						type="button" 
-						class="orc-icon-button"
-						[matMenuTriggerFor]="advanced_menu">
+					<button mat-icon-button type="button" class="orc-icon-button" [matMenuTriggerFor]="advanced_menu">
 						<mat-icon>more_vert</mat-icon>
 					</button>
 
@@ -65,7 +63,8 @@
 			[database_version]="database_version"
 			[database_timestamp]="database_timestamp"
 			[database_implementation]="database_implementation"
-			(close)="onClose()">
+			(close)="onClose()"
+		>
 		</orc-mint-data-backup-create>
 	</div>
 	<div [@slideInOut]="form_mode === 'RESTORE' ? 'open' : 'closed'" class="overflow-hidden">
@@ -83,34 +82,32 @@
 		[page_settings]="page_settings"
 		[mint_genesis_time]="mint_genesis_time"
 		[loading]="loading_dynamic_data"
-		[state_enabled]="state_enabled">
+		[state_enabled]="state_enabled"
+	>
 	</orc-mint-data-chart>
 
 	<div class="mint-data-table">
 		<mat-card appearance="outlined">
-			<orc-mint-data-table
-				[data]="data"
-				[page_settings]="page_settings"
-				[keysets]="mint_keysets"
-				[loading]="loading_dynamic_data">
+			<orc-mint-data-table [data]="data" [page_settings]="page_settings" [keysets]="mint_keysets" [loading]="loading_dynamic_data">
 			</orc-mint-data-table>
 
-			@if( !loading_dynamic_data && data.source.data.length === 0 ) {
+			@if (!loading_dynamic_data && data.source.data.length === 0) {
 				<div class="no-data-overlay" @fadeIn>
 					<mat-icon class="icon-lg mat-symbol-outline orc-outline-color">bar_chart_off</mat-icon>
 				</div>
 			}
-	
+
 			<div class="data-table-sticky-footer p-h-1">
 				<div class="category-rule"></div>
-				<mat-paginator 
+				<mat-paginator
 					class="orc-feature-paginator"
 					(page)="onPage($event)"
 					[hidePageSize]="true"
 					[length]="count"
 					[pageSize]="page_size"
 					[pageIndex]="page_settings.page - 1"
-					showFirstLastButtons>
+					showFirstLastButtons
+				>
 				</mat-paginator>
 			</div>
 		</mat-card>
