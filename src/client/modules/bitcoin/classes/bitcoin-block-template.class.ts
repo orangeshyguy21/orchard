@@ -16,7 +16,6 @@ export class BitcoinBlockTemplate implements OrchardBitcoinBlockTemplate {
 	public sizelimit: number;
 	public target: string;
 	public transactions: OrchardBitcoinBlockTemplateTransaction[];
-	public tx: OrchardBitcoinBlockTemplateTransaction[];
 	public vbrequired: number;
 	public version: number;
 	public weightlimit: number;
@@ -46,7 +45,6 @@ export class BitcoinBlockTemplate implements OrchardBitcoinBlockTemplate {
 		this.version = block_template.version;
 		this.weightlimit = block_template.weightlimit;
 		// derived
-		this.tx = block_template.transactions;
 		const {fee_lowest, fee_highest} = this.calculateFeeRange();
 		this.feerate_lowest = fee_lowest;
 		this.feerate_highest = fee_highest;

@@ -13,6 +13,7 @@ import {BitcoinBlockTemplate} from '../../classes/bitcoin-block-template.class';
 })
 export class BitcoinBlockComponent {
 	@Input() block?: BitcoinBlock | BitcoinBlockTemplate;
+	@Input() transactions?: BitcoinBlock['tx'] | BitcoinBlockTemplate['transactions'];
 	@Input() height?: number;
 	@Input() is_template: boolean = false;
 }
