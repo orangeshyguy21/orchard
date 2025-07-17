@@ -1,70 +1,69 @@
 /* Core Dependencies */
-import { Field, Int, ObjectType } from '@nestjs/graphql';
+import {Field, Int, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
-import { UnixTimestamp } from '@server/modules/graphql/scalars/unixtimestamp.scalar';
-import { LightningInfo } from '@server/modules/lightning/lightning/lightning.types';
+import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
+import {LightningInfo} from '@server/modules/lightning/lightning/lightning.types';
 
 @ObjectType()
 export class OrchardLightningInfo {
-
-	@Field(type => String)
+	@Field((type) => String)
 	version: string;
 
-	@Field(type => String)
+	@Field((type) => String)
 	commit_hash: string;
 
-	@Field(type => String)
+	@Field((type) => String)
 	identity_pubkey: string;
 
-	@Field(type => String)
+	@Field((type) => String)
 	alias: string;
 
-	@Field(type => String)
+	@Field((type) => String)
 	color: string;
 
-	@Field(type => Int)
+	@Field((type) => Int)
 	num_pending_channels: number;
 
-	@Field(type => Int)
+	@Field((type) => Int)
 	num_active_channels: number;
 
-	@Field(type => Int)
+	@Field((type) => Int)
 	num_inactive_channels: number;
 
-	@Field(type => Int)
+	@Field((type) => Int)
 	num_peers: number;
 
-	@Field(type => Int)
+	@Field((type) => Int)
 	block_height: number;
 
-	@Field(type => String)
+	@Field((type) => String)
 	block_hash: string;
 
-	@Field(type => UnixTimestamp)
+	@Field((type) => UnixTimestamp)
 	best_header_timestamp: number;
 
-	@Field(type => Boolean)
+	@Field((type) => Boolean)
 	synced_to_chain: boolean;
 
-	@Field(type => Boolean)
+	@Field((type) => Boolean)
 	synced_to_graph: boolean;
 
-	@Field(type => Boolean)
+	@Field((type) => Boolean)
 	testnet: boolean;
 
-	@Field(type => [OrchardLightningChain])
+	@Field((type) => [OrchardLightningChain])
 	chains: OrchardLightningChain[];
 
-	@Field(type => [String])
+	@Field((type) => [String])
 	uris: string[];
 
-	@Field(type => [OrchardLightningFeature])
+	@Field((type) => [OrchardLightningFeature])
 	features: OrchardLightningFeature[];
 
-	@Field(type => Boolean)
+	@Field((type) => Boolean)
 	require_htlc_interceptor: boolean;
 
-	@Field(type => Boolean)
+	@Field((type) => Boolean)
 	store_final_htlc_resolutions: boolean;
 
 	constructor(ln_info: LightningInfo) {
@@ -83,7 +82,7 @@ export class OrchardLightningInfo {
 		this.synced_to_chain = ln_info.synced_to_chain;
 		this.synced_to_graph = ln_info.synced_to_graph;
 		this.testnet = ln_info.testnet;
-		this.chains = ln_info.chains.map(chain => new OrchardLightningChain(chain));
+		this.chains = ln_info.chains.map((chain) => new OrchardLightningChain(chain));
 		this.uris = ln_info.uris;
 		this.features = Object.entries(ln_info.features).map(([bit, feature]) => new OrchardLightningFeature(feature, bit));
 		this.require_htlc_interceptor = ln_info.require_htlc_interceptor;
@@ -93,11 +92,10 @@ export class OrchardLightningInfo {
 
 @ObjectType()
 export class OrchardLightningChain {
-
-	@Field(type => String)
+	@Field((type) => String)
 	chain: string;
 
-	@Field(type => String)
+	@Field((type) => String)
 	network: string;
 
 	constructor(chain: LightningInfo['chains'][number]) {
@@ -108,17 +106,16 @@ export class OrchardLightningChain {
 
 @ObjectType()
 export class OrchardLightningFeature {
-
-	@Field(type => Int)
+	@Field((type) => Int)
 	bit: number;
 
-	@Field(type => String)
+	@Field((type) => String)
 	name: string;
 
-	@Field(type => Boolean)
+	@Field((type) => Boolean)
 	is_required: boolean;
 
-	@Field(type => Boolean)
+	@Field((type) => Boolean)
 	is_known: boolean;
 
 	constructor(feature: LightningInfo['features'][number], bit: string) {

@@ -1,36 +1,40 @@
 <div class="mint-config-form-min-container">
-    <div class="flex flex-gap-2">
-        <form
-            class="flex-1 flex-grow"
-            [formGroup]="form_group"
-            (ngSubmit)="onSubmit($event)"
-            (keydown.enter)="onSubmit($event)"
-            (keydown.escape)="onCancel($event)">        
-            <orc-dynamic-form-field
-                [hot]="form_hot"
-                [invalid]="form_group.get(control_name)?.invalid || false"
-                (submit)="onSubmit($event)"
-                (cancel)="onCancel($event)">
-                <mat-form-field appearance="fill" hideRequiredMarker="true" [ngClass]="form_hot ? 'orc-hot-form-field' : 'orc-cold-form-field'" class="mint-max-form-field orc-dynamic-form-field">
-                    <mat-label>Max Amount</mat-label>
-                    <input 
-                        type="text" 
-                        matInput 
-                        inputFormat
-                        [formControlName]="control_name" 
-                        placeholder="Ex. 300 000"
-                        #element_max>
-                    <span matSuffix class="form-suffix-text">{{ unit | unit }}</span>
-                    @if (form_group.get(control_name)?.invalid && (form_group.get(control_name)?.dirty || form_group.get(control_name)?.touched)) {
-                        <mat-error class="font-size-xs">{{ form_error }}</mat-error>
-                    }
-                </mat-form-field>
-            </orc-dynamic-form-field>
-        </form>
-        <div class="flex-1">
-            <orc-help-text class="orc-surface-container-high-bg">
-                {{ help_text() }}
-            </orc-help-text>
-        </div>
-    </div>
+	<div class="flex flex-gap-2">
+		<form
+			class="flex-1 flex-grow"
+			[formGroup]="form_group"
+			(ngSubmit)="onSubmit($event)"
+			(keydown.enter)="onSubmit($event)"
+			(keydown.escape)="onCancel($event)"
+		>
+			<orc-dynamic-form-field
+				[hot]="form_hot"
+				[invalid]="form_group.get(control_name)?.invalid || false"
+				(submit)="onSubmit($event)"
+				(cancel)="onCancel($event)"
+			>
+				<mat-form-field
+					appearance="fill"
+					hideRequiredMarker="true"
+					[ngClass]="form_hot ? 'orc-hot-form-field' : 'orc-cold-form-field'"
+					class="mint-max-form-field orc-dynamic-form-field"
+				>
+					<mat-label>Max Amount</mat-label>
+					<input type="text" matInput inputFormat [formControlName]="control_name" placeholder="Ex. 300 000" #element_max />
+					<span matSuffix class="form-suffix-text">{{ unit | unit }}</span>
+					@if (
+						form_group.get(control_name)?.invalid &&
+						(form_group.get(control_name)?.dirty || form_group.get(control_name)?.touched)
+					) {
+						<mat-error class="font-size-xs">{{ form_error }}</mat-error>
+					}
+				</mat-form-field>
+			</orc-dynamic-form-field>
+		</form>
+		<div class="flex-1">
+			<orc-help-text class="orc-surface-container-high-bg">
+				{{ help_text() }}
+			</orc-help-text>
+		</div>
+	</div>
 </div>

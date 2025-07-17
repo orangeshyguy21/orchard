@@ -1,51 +1,47 @@
 /* Core Dependencies */
-import { Logger } from '@nestjs/common';
-import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
+import {Logger} from '@nestjs/common';
+import {Resolver, Query, Mutation, Args} from '@nestjs/graphql';
 /* Local Dependencies */
-import { MintInfoService } from "./mintinfo.service";
-import { 
-	OrchardMintInfo, 
-	OrchardMintInfoRpc, 
-	OrchardMintNameUpdate, 
-	OrchardMintIconUpdate, 
-	OrchardMintDescriptionUpdate, 
+import {MintInfoService} from './mintinfo.service';
+import {
+	OrchardMintInfo,
+	OrchardMintInfoRpc,
+	OrchardMintNameUpdate,
+	OrchardMintIconUpdate,
+	OrchardMintDescriptionUpdate,
 	OrchardMintMotdUpdate,
 	OrchardMintUrlUpdate,
 	OrchardMintContactUpdate,
-} from "./mintinfo.model";
-import { 
+} from './mintinfo.model';
+import {
 	MintNameUpdateInput,
 	MintIconUpdateInput,
 	MintDescriptionUpdateInput,
 	MintMotdUpdateInput,
 	MintUrlUpdateInput,
 	MintContactUpdateInput,
-} from "./mintinfo.input";
-
+} from './mintinfo.input';
 
 @Resolver()
 export class MintInfoResolver {
-
 	private readonly logger = new Logger(MintInfoResolver.name);
 
-	constructor(
-		private mintInfoService: MintInfoService,
-	) {}
+	constructor(private mintInfoService: MintInfoService) {}
 
 	@Query(() => OrchardMintInfo)
-	async mint_info() : Promise<OrchardMintInfo> {
+	async mint_info(): Promise<OrchardMintInfo> {
 		const tag = 'GET { mint_info }';
 		this.logger.debug(tag);
 		return await this.mintInfoService.getMintInfo(tag);
 	}
 
 	@Query(() => OrchardMintInfoRpc)
-	async mint_info_rpc() : Promise<OrchardMintInfoRpc> {
+	async mint_info_rpc(): Promise<OrchardMintInfoRpc> {
 		const tag = 'GET { mint_info_rpc }';
 		this.logger.debug(tag);
 		return await this.mintInfoService.getMintInfoRpc(tag);
 	}
-	
+
 	@Mutation(() => OrchardMintNameUpdate)
 	async mint_name_update(@Args('mint_name_update') mint_name_update: MintNameUpdateInput): Promise<OrchardMintNameUpdate> {
 		const tag = 'MUTATION { mint_name_update }';
@@ -61,14 +57,18 @@ export class MintInfoResolver {
 	}
 
 	@Mutation(() => OrchardMintDescriptionUpdate)
-	async mint_short_description_update(@Args('mint_desc_update') mint_desc_update: MintDescriptionUpdateInput): Promise<OrchardMintDescriptionUpdate> {
+	async mint_short_description_update(
+		@Args('mint_desc_update') mint_desc_update: MintDescriptionUpdateInput,
+	): Promise<OrchardMintDescriptionUpdate> {
 		const tag = 'MUTATION { mint_short_description_update }';
 		this.logger.debug(tag);
 		return await this.mintInfoService.updateMintShortDescription(tag, mint_desc_update);
 	}
 
 	@Mutation(() => OrchardMintDescriptionUpdate)
-	async mint_long_description_update(@Args('mint_desc_update') mint_desc_update: MintDescriptionUpdateInput): Promise<OrchardMintDescriptionUpdate> {
+	async mint_long_description_update(
+		@Args('mint_desc_update') mint_desc_update: MintDescriptionUpdateInput,
+	): Promise<OrchardMintDescriptionUpdate> {
 		const tag = 'MUTATION { mint_long_description_update }';
 		this.logger.debug(tag);
 		return await this.mintInfoService.updateMintLongDescription(tag, mint_desc_update);

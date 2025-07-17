@@ -1,23 +1,22 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { IndexBitcoinDisabledComponent } from './index-bitcoin-disabled.component';
+import {IndexBitcoinDisabledComponent} from './index-bitcoin-disabled.component';
 
 describe('IndexBitcoinDisabledComponent', () => {
-  let component: IndexBitcoinDisabledComponent;
-  let fixture: ComponentFixture<IndexBitcoinDisabledComponent>;
+	let component: IndexBitcoinDisabledComponent;
+	let fixture: ComponentFixture<IndexBitcoinDisabledComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [IndexBitcoinDisabledComponent]
-    })
-    .compileComponents();
+	beforeEach(async () => {
+		await TestBed.configureTestingModule({
+			declarations: [IndexBitcoinDisabledComponent],
+		}).compileComponents();
 
-    fixture = TestBed.createComponent(IndexBitcoinDisabledComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+		fixture = TestBed.createComponent(IndexBitcoinDisabledComponent);
+		component = fixture.componentInstance;
+		fixture.detectChanges();
+	});
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+	it('should create', () => {
+		expect(component).toBeTruthy();
+	});
 });

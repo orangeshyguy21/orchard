@@ -1,10 +1,11 @@
-<div 
-    class="primary-nav-tool-container"
-    [class.primary-nav-tool-highlight]="highlight"
-    (mouseenter)="onMouseEnter()"
-    (mouseleave)="onMouseLeave()"
-    (click)="onClick()">
-    <div class="primary-nav-tool-switch">
-        <mat-icon [class.mat-symbol-outline]="!highlight" class="icon-md">{{ icon }}</mat-icon>
-    </div>
+<div
+	class="primary-nav-tool-container"
+	[class.primary-nav-tool-highlight]="highlight"
+	(mouseenter)="onMouseEnter()"
+	(mouseleave)="onMouseLeave()"
+	(click)="onClick()"
+>
+	<div class="primary-nav-tool-switch">
+		<mat-icon [class.mat-symbol-outline]="!highlight" class="icon-md">{{ icon }}</mat-icon>
+	</div>
 </div>

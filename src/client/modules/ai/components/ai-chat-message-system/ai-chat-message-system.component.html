@@ -1,19 +1,16 @@
 <div class="ai-chat-message-system-container">
-    <div class="orc-ai-chat-message">
-        <orc-ai-chat-avatar 
-            [role]="message.role"
-            [icon]="'settings'">
-        </orc-ai-chat-avatar>
-        <div>
-            <div class="message-summary orc-text-button" (click)="toggleMessage()">
-                <div>System message</div>
-                <mat-icon [@rotateIcon]="message_expanded ? 'expanded' : 'collapsed'">keyboard_arrow_down</mat-icon>
-            </div>
-            <div [@expandCollapse]="message_expanded ? 'expanded' : 'collapsed'">
-                <div class="orc-ai-chat-message-content p-t-0-5">
-                    <div class="orc-ai-marked" [innerHTML]="marked_content"></div>
-                </div>
-            </div>
-        </div>
-    </div>
+	<div class="orc-ai-chat-message">
+		<orc-ai-chat-avatar [role]="message.role" [icon]="'settings'"> </orc-ai-chat-avatar>
+		<div>
+			<div class="message-summary orc-text-button" (click)="toggleMessage()">
+				<div>System message</div>
+				<mat-icon [@rotateIcon]="message_expanded ? 'expanded' : 'collapsed'">keyboard_arrow_down</mat-icon>
+			</div>
+			<div [@expandCollapse]="message_expanded ? 'expanded' : 'collapsed'">
+				<div class="orc-ai-chat-message-content p-t-0-5">
+					<div class="orc-ai-marked" [innerHTML]="marked_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>

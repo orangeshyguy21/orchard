@@ -1,10 +1,10 @@
 <div class="mint-keyset-chart-container">
-    @if( displayed ) {
-        <canvas baseChart [data]="chart_data" [options]="chart_options" [type]="chart_type"></canvas>
-    }
-    @if( !loading && keysets_analytics.length === 0 &&  keysets_analytics_pre.length === 0 ) {
-        <div class="no-data-overlay" @fadeInOut>
-            <mat-icon class="icon-lg mat-symbol-outline orc-outline-color">bar_chart_off</mat-icon>
-        </div>
-    }
+	@if (displayed) {
+		<canvas baseChart [data]="chart_data" [options]="chart_options" [type]="chart_type"></canvas>
+	}
+	@if (!loading && keysets_analytics.length === 0 && keysets_analytics_pre.length === 0) {
+		<div class="no-data-overlay" @fadeInOut>
+			<mat-icon class="icon-lg mat-symbol-outline orc-outline-color">bar_chart_off</mat-icon>
+		</div>
+	}
 </div>

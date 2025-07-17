@@ -1,23 +1,22 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { MintNutComponent } from './mint-nut.component';
+import {MintNutComponent} from './mint-nut.component';
 
 describe('MintNutComponent', () => {
-  let component: MintNutComponent;
-  let fixture: ComponentFixture<MintNutComponent>;
+	let component: MintNutComponent;
+	let fixture: ComponentFixture<MintNutComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [MintNutComponent]
-    })
-    .compileComponents();
+	beforeEach(async () => {
+		await TestBed.configureTestingModule({
+			declarations: [MintNutComponent],
+		}).compileComponents();
 
-    fixture = TestBed.createComponent(MintNutComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+		fixture = TestBed.createComponent(MintNutComponent);
+		component = fixture.componentInstance;
+		fixture.detectChanges();
+	});
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+	it('should create', () => {
+		expect(component).toBeTruthy();
+	});
 });

@@ -1,9 +1,9 @@
 /* Core Dependencies */
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule, Routes } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {RouterModule, Routes} from '@angular/router';
 /* Local Dependencies */
-import { EcashSectionComponent } from './components/ecash-section/ecash-section.component';
+import {EcashSectionComponent} from './components/ecash-section/ecash-section.component';
 
 const routes: Routes = [
 	{
@@ -12,29 +12,19 @@ const routes: Routes = [
 		title: 'Orchard | Ecash',
 		data: {
 			section: 'ecash',
-			sub_section: 'dashboard'
-		}
-	}
+			sub_section: 'dashboard',
+		},
+	},
 ];
 
 @NgModule({
-	imports: [
-		RouterModule.forChild(routes),
-	],
-	exports: [
-		RouterModule,
-	],
+	imports: [RouterModule.forChild(routes)],
+	exports: [RouterModule],
 })
-export class EcashAppRoutingModule { }
-
+export class EcashAppRoutingModule {}
 
 @NgModule({
-	declarations: [
-		EcashSectionComponent
-	],
-	imports: [
-		CommonModule,
-		EcashAppRoutingModule,
-	],
+	declarations: [EcashSectionComponent],
+	imports: [CommonModule, EcashAppRoutingModule],
 })
-export class EcashAppModule { }
+export class EcashAppModule {}

@@ -1,12 +1,12 @@
 /* Core Dependencies */
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {RouterModule, Routes} from '@angular/router';
 /* Application Dependencies */
-import { enabledGuard } from '@client/modules/routing/guards/enabled/enabled.guard';
+import {enabledGuard} from '@client/modules/routing/guards/enabled/enabled.guard';
 /* Native Dependencies */
-import { BitcoinSectionComponent } from './components/bitcoin-section/bitcoin-section.component';
-import { BitcoinSubsectionDashboardComponent } from './components/bitcoin-subsection-dashboard/bitcoin-subsection-dashboard.component';
-import { BitcoinSubsectionDisabledComponent } from './components/bitcoin-subsection-disabled/bitcoin-subsection-disabled.component';
+import {BitcoinSectionComponent} from './components/bitcoin-section/bitcoin-section.component';
+import {BitcoinSubsectionDashboardComponent} from './components/bitcoin-subsection-dashboard/bitcoin-subsection-dashboard.component';
+import {BitcoinSubsectionDisabledComponent} from './components/bitcoin-subsection-disabled/bitcoin-subsection-disabled.component';
 
 const routes: Routes = [
 	{
@@ -19,12 +19,12 @@ const routes: Routes = [
 			{
 				path: '',
 				component: BitcoinSubsectionDashboardComponent,
-                title: 'Orchard | Bitcoin',
-                canActivate: [enabledGuard],
-                data: {
-                    section: 'bitcoin',
-                    sub_section: 'dashboard',
-                },
+				title: 'Orchard | Bitcoin',
+				canActivate: [enabledGuard],
+				data: {
+					section: 'bitcoin',
+					sub_section: 'dashboard',
+				},
 			},
 		],
 	},
@@ -40,11 +40,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-	imports: [
-		RouterModule.forChild(routes),
-	],
-	exports: [
-		RouterModule,
-	],
+	imports: [RouterModule.forChild(routes)],
+	exports: [RouterModule],
 })
-export class BitcoinAppRoutingModule { }
+export class BitcoinAppRoutingModule {}

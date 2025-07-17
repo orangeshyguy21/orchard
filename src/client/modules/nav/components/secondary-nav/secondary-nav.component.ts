@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 
 @Component({
 	selector: 'orc-secondary-nav',
@@ -8,6 +8,4 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 	styleUrl: './secondary-nav.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SecondaryNavComponent {
-
-}
+export class SecondaryNavComponent {}

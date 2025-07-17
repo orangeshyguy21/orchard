@@ -1,41 +1,40 @@
 /* Core Dependencies */
-import { Field, Int, ID, ObjectType } from '@nestjs/graphql';
+import {Field, Int, ID, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
-import { UnixTimestamp } from '@server/modules/graphql/scalars/unixtimestamp.scalar';
-import { MintUnit, MintQuoteState } from '@server/modules/cashu/cashu.enums';
-import { CashuMintMintQuote } from '@server/modules/cashu/mintdb/cashumintdb.types';
+import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
+import {MintUnit, MintQuoteState} from '@server/modules/cashu/cashu.enums';
+import {CashuMintMintQuote} from '@server/modules/cashu/mintdb/cashumintdb.types';
 
 @ObjectType()
 export class OrchardMintMintQuote {
+	@Field((type) => ID)
+	id: string;
 
-	@Field(type => ID)
-	id:string;
-
-	@Field(type => Int)
+	@Field((type) => Int)
 	amount: number;
 
-	@Field(type => MintUnit)
+	@Field((type) => MintUnit)
 	unit: string;
 
 	@Field()
 	request: string;
 
-	@Field(type => MintQuoteState)
+	@Field((type) => MintQuoteState)
 	state: MintQuoteState;
 
-	@Field({ nullable: true })
+	@Field({nullable: true})
 	request_lookup_id: string;
-	
-	@Field({ nullable: true })
+
+	@Field({nullable: true})
 	pubkey: string;
 
-	@Field(type => UnixTimestamp)
+	@Field((type) => UnixTimestamp)
 	created_time: number;
 
-	@Field(type => UnixTimestamp, { nullable: true })
+	@Field((type) => UnixTimestamp, {nullable: true})
 	issued_time: number;
 
-	@Field(type => UnixTimestamp, { nullable: true })
+	@Field((type) => UnixTimestamp, {nullable: true})
 	paid_time: number;
 
 	constructor(cashu_mint_mint_quote: CashuMintMintQuote) {
@@ -52,25 +51,24 @@ export class OrchardMintMintQuote {
 	}
 }
 
-
 @ObjectType()
-export class  OrchardMintNut04Update {
+export class OrchardMintNut04Update {
 	@Field()
 	unit: string;
 
 	@Field()
 	method: string;
 
-	@Field({ nullable: true })
+	@Field({nullable: true})
 	disabled: boolean;
 
-	@Field(() => Int, { nullable: true })
+	@Field(() => Int, {nullable: true})
 	min_amount: number;
 
-	@Field(() => Int, { nullable: true })
+	@Field(() => Int, {nullable: true})
 	max_amount: number;
 
-	@Field({ nullable: true })
+	@Field({nullable: true})
 	description: boolean;
 }
 

@@ -1,20 +1,20 @@
 /* Core Dependencies */
-import { Test, TestingModule } from '@nestjs/testing';
+import {Test, TestingModule} from '@nestjs/testing';
 /* Local Dependencies */
-import { StatusService } from './status.service';
+import {StatusService} from './status.service';
 
 describe('StatusService', () => {
-  let service: StatusService;
+	let service: StatusService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [StatusService],
-    }).compile();
+	beforeEach(async () => {
+		const module: TestingModule = await Test.createTestingModule({
+			providers: [StatusService],
+		}).compile();
 
-    service = module.get<StatusService>(StatusService);
-  });
+		service = module.get<StatusService>(StatusService);
+	});
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
+	it('should be defined', () => {
+		expect(service).toBeDefined();
+	});
 });

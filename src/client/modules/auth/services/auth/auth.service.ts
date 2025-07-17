@@ -1,39 +1,30 @@
 /* Core Dependencies */
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, tap, map, catchError, throwError } from 'rxjs';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Observable, tap, map, catchError, throwError} from 'rxjs';
 /* Application Dependencies */
-import { api, getApiQuery } from '@client/modules/api/helpers/api.helpers';
-import { OrchardErrors } from '@client/modules/error/classes/error.class';
-import { OrchardRes } from '@client/modules/api/types/api.types';
-import { LocalStorageService } from '@client/modules/cache/services/local-storage/local-storage.service';
+import {api, getApiQuery} from '@client/modules/api/helpers/api.helpers';
+import {OrchardErrors} from '@client/modules/error/classes/error.class';
+import {OrchardRes} from '@client/modules/api/types/api.types';
+import {LocalStorageService} from '@client/modules/cache/services/local-storage/local-storage.service';
 /* Native Dependencies */
-import { 
-	AuthenticationResponse,
-	RefreshAuthenticationResponse,
-	RevokeAuthenticationResponse
-} from '@client/modules/auth/types/auth.types';
+import {AuthenticationResponse, RefreshAuthenticationResponse, RevokeAuthenticationResponse} from '@client/modules/auth/types/auth.types';
 /* Local Dependencies */
-import {
-	AUTHENTICATION_MUTATION,
-	REFRESH_AUTHENTICATION_MUTATION,
-	REVOKE_AUTHENTICATION_MUTATION
-} from './auth.queries';
+import {AUTHENTICATION_MUTATION, REFRESH_AUTHENTICATION_MUTATION, REVOKE_AUTHENTICATION_MUTATION} from './auth.queries';
 /* Shared Dependencies */
-import { OrchardAuthentication } from '@shared/generated.types';
+import {OrchardAuthentication} from '@shared/generated.types';
 
 @Injectable({
-  	providedIn: 'root'
+	providedIn: 'root',
 })
 export class AuthService {
-
 	constructor(
 		private http: HttpClient,
-		private localStorageService: LocalStorageService
+		private localStorageService: LocalStorageService,
 	) {}
 
 	public authenticate(password: string): Observable<OrchardAuthentication> {
-		const query = getApiQuery(AUTHENTICATION_MUTATION, { authentication: { password } });
+		const query = getApiQuery(AUTHENTICATION_MUTATION, {authentication: {password}});
 
 		return this.http.post<OrchardRes<AuthenticationResponse>>(api, query).pipe(
 			map((response) => {
@@ -56,9 +47,9 @@ export class AuthService {
 		if (!refresh_token) return throwError(() => new Error('No refresh token available'));
 
 		const query = getApiQuery(REFRESH_AUTHENTICATION_MUTATION, {});
-		const headers = { 'Authorization': `Bearer ${refresh_token}` };
+		const headers = {Authorization: `Bearer ${refresh_token}`};
 
-		return this.http.post<OrchardRes<RefreshAuthenticationResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<RefreshAuthenticationResponse>>(api, query, {headers}).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.refresh_authentication;
@@ -80,9 +71,9 @@ export class AuthService {
 		if (!refresh_token) return throwError(() => new Error('No refresh token available'));
 
 		const query = getApiQuery(REVOKE_AUTHENTICATION_MUTATION, {});
-		const headers = { 'Authorization': `Bearer ${refresh_token}` };
+		const headers = {Authorization: `Bearer ${refresh_token}`};
 
-		return this.http.post<OrchardRes<RevokeAuthenticationResponse>>(api, query, { headers }).pipe(
+		return this.http.post<OrchardRes<RevokeAuthenticationResponse>>(api, query, {headers}).pipe(
 			map((response) => {
 				return response.data.revoke_authentication;
 			}),
@@ -105,13 +96,13 @@ export class AuthService {
 
 	public getAuthHeaders(): Record<string, string> {
 		const token = this.localStorageService.getAuthToken();
-		return token ? { 'Authorization': 'Bearer ' + token } : {};
+		return token ? {Authorization: 'Bearer ' + token} : {};
 	}
 
 	private hasValidToken(): boolean {
 		const token = this.localStorageService.getAuthToken();
 		if (!token) return false;
-		
+
 		try {
 			const payload = JSON.parse(atob(token.split('.')[1]));
 			const expiration_time = payload.exp * 1000;

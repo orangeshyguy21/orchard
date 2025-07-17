@@ -1,40 +1,38 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, OnInit, ChangeDetectorRef } from '@angular/core';
-import { trigger, transition, style, animate } from '@angular/animations';
+import {ChangeDetectionStrategy, Component, Input, OnInit, ChangeDetectorRef} from '@angular/core';
+import {trigger, transition, style, animate} from '@angular/animations';
 /* Application Dependencies */
-import { ThemeType } from '@client/modules/cache/services/local-storage/local-storage.types';
+import {ThemeType} from '@client/modules/cache/services/local-storage/local-storage.types';
 
 @Component({
 	selector: 'orc-graphic-orchard-logo',
 	standalone: false,
 	templateUrl: './graphic-orchard-logo.component.html',
 	styleUrl: './graphic-orchard-logo.component.scss',
-  	changeDetection: ChangeDetectionStrategy.OnPush,
-	  animations: [
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	// prettier-ignore
+	animations: [
         trigger('fadeIn', [
             transition(':enter', [
                 style({ opacity: 0 }),
-                animate('650ms ease-in', style({ opacity: 1 }))
-            ])
+                animate('650ms ease-in', style({ opacity: 1 })),
+            ]),
         ]),
-	]
+	],
 })
 export class GraphicOrchardLogoComponent implements OnInit {
+	@Input() height: string = '40px';
+	@Input() surface: boolean = false;
+	@Input() animate: boolean = false;
+	@Input() theme: ThemeType = ThemeType.DARK_MODE;
 
-    @Input() height:string = '40px';
-	@Input() surface:boolean = false;
-	@Input() animate:boolean = false;
-	@Input() theme:ThemeType = ThemeType.DARK_MODE;
+	public darkest: boolean = false;
+	public dark: boolean = false;
+	public medium: boolean = false;
+	public light: boolean = false;
+	public lightest: boolean = false;
 
-	public darkest:boolean = false;
-	public dark:boolean = false;
-	public medium:boolean = false;
-	public light:boolean = false;
-	public lightest:boolean = false;
-
-	constructor(
-		private readonly cdr: ChangeDetectorRef,
-	) {}
+	constructor(private readonly cdr: ChangeDetectorRef) {}
 
 	public ngOnInit(): void {
 		this.darkest = !this.animate;
@@ -42,7 +40,7 @@ export class GraphicOrchardLogoComponent implements OnInit {
 		this.medium = !this.animate;
 		this.light = !this.animate;
 		this.lightest = !this.animate;
-		if( this.animate ) this.startAnimation();
+		if (this.animate) this.startAnimation();
 	}
 
 	private startAnimation(): void {
@@ -55,7 +53,7 @@ export class GraphicOrchardLogoComponent implements OnInit {
 			setTimeout(() => {
 				this.medium = true;
 				this.cdr.detectChanges();
-				setTimeout(() => {	
+				setTimeout(() => {
 					this.light = true;
 					this.cdr.detectChanges();
 					setTimeout(() => {

@@ -1,27 +1,26 @@
-import { OrchardLightningInfo, OrchardLightningChain, OrchardLightningFeature } from "@shared/generated.types";
+import {OrchardLightningInfo, OrchardLightningChain, OrchardLightningFeature} from '@shared/generated.types';
 
 export class LightningInfo implements OrchardLightningInfo {
-
-    public alias: string;
-    public best_header_timestamp: number;
-    public block_hash: string;
-    public block_height: number;
-    public chains: OrchardLightningChain[];
-    public color: string;
-    public commit_hash: string;
-    public features: OrchardLightningFeature[];
-    public identity_pubkey: string;
-    public num_active_channels: number;
-    public num_inactive_channels: number;
-    public num_peers: number;
-    public num_pending_channels: number;
-    public require_htlc_interceptor: boolean;
-    public store_final_htlc_resolutions: boolean;
-    public synced_to_chain: boolean;
-    public synced_to_graph: boolean;
-    public testnet: boolean;
-    public uris: string[];
-    public version: string;
+	public alias: string;
+	public best_header_timestamp: number;
+	public block_hash: string;
+	public block_height: number;
+	public chains: OrchardLightningChain[];
+	public color: string;
+	public commit_hash: string;
+	public features: OrchardLightningFeature[];
+	public identity_pubkey: string;
+	public num_active_channels: number;
+	public num_inactive_channels: number;
+	public num_peers: number;
+	public num_pending_channels: number;
+	public require_htlc_interceptor: boolean;
+	public store_final_htlc_resolutions: boolean;
+	public synced_to_chain: boolean;
+	public synced_to_graph: boolean;
+	public testnet: boolean;
+	public uris: string[];
+	public version: string;
 
 	constructor(oli: OrchardLightningInfo) {
 		this.alias = oli.alias;

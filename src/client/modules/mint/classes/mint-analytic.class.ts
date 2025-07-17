@@ -1,7 +1,6 @@
-import { OrchardMintAnalytics, MintUnit, OrchardMintKeysetsAnalytics } from "@shared/generated.types";
+import {OrchardMintAnalytics, MintUnit, OrchardMintKeysetsAnalytics} from '@shared/generated.types';
 
 export class MintAnalytic implements OrchardMintAnalytics {
-
 	unit: MintUnit;
 	amount: number;
 	created_time: number;
@@ -16,7 +15,6 @@ export class MintAnalytic implements OrchardMintAnalytics {
 }
 
 export class MintAnalyticKeyset implements OrchardMintKeysetsAnalytics {
-
 	keyset_id: string;
 	amount: number;
 	created_time: number;

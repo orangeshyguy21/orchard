@@ -1,23 +1,22 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { MintSubsectionDisabledComponent } from './mint-subsection-disabled.component';
+import {MintSubsectionDisabledComponent} from './mint-subsection-disabled.component';
 
 describe('MintSubsectionDisabledComponent', () => {
-  let component: MintSubsectionDisabledComponent;
-  let fixture: ComponentFixture<MintSubsectionDisabledComponent>;
+	let component: MintSubsectionDisabledComponent;
+	let fixture: ComponentFixture<MintSubsectionDisabledComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [MintSubsectionDisabledComponent]
-    })
-    .compileComponents();
+	beforeEach(async () => {
+		await TestBed.configureTestingModule({
+			declarations: [MintSubsectionDisabledComponent],
+		}).compileComponents();
 
-    fixture = TestBed.createComponent(MintSubsectionDisabledComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+		fixture = TestBed.createComponent(MintSubsectionDisabledComponent);
+		component = fixture.componentInstance;
+		fixture.detectChanges();
+	});
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+	it('should create', () => {
+		expect(component).toBeTruthy();
+	});
 });

@@ -1,8 +1,8 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import {ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChanges, SimpleChanges} from '@angular/core';
+import {FormControl} from '@angular/forms';
 /* Shared Dependencies */
-import { AiAgent } from '@shared/generated.types';
+import {AiAgent} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-ai-input',
@@ -12,7 +12,6 @@ import { AiAgent } from '@shared/generated.types';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AiInputComponent implements OnChanges {
-
 	@Input() active_chat!: boolean;
 	@Input() active_agent!: AiAgent;
 	@Input() model!: string | null;
@@ -27,13 +26,13 @@ export class AiInputComponent implements OnChanges {
 	constructor() {}
 
 	ngOnChanges(changes: SimpleChanges): void {
-		if( changes['model'] ) {
-			( this.model ) ? this.content.enable() : this.content.disable();
+		if (changes['model']) {
+			this.model ? this.content.enable() : this.content.disable();
 		}
 	}
 
 	public onSubmit(event?: any): void {
-		if( event ) event.preventDefault();
+		if (event) event.preventDefault();
 		this.chat.emit();
 	}
 }

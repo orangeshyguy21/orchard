@@ -1,7 +1,6 @@
-import { OrchardBitcoinBlockchainInfo } from "@shared/generated.types";
+import {OrchardBitcoinBlockchainInfo} from '@shared/generated.types';
 
 export class BitcoinBlockchainInfo implements OrchardBitcoinBlockchainInfo {
-
 	public chain: string;
 	public blocks: number;
 	public headers: number;
@@ -29,12 +28,12 @@ export class BitcoinBlockchainInfo implements OrchardBitcoinBlockchainInfo {
 		this.difficulty = obc.difficulty;
 		this.verificationprogress = obc.verificationprogress;
 		this.initialblockdownload = obc.initialblockdownload;
-        this.chainwork = obc.chainwork;
-        this.size_on_disk = obc.size_on_disk;
-        this.pruned = obc.pruned;
-        this.pruneheight = obc.pruneheight ?? null;
-        this.automatic_pruning = obc.automatic_pruning ?? null;
-        this.prune_target_size = obc.prune_target_size ?? null;
-        this.warnings = obc.warnings;
+		this.chainwork = obc.chainwork;
+		this.size_on_disk = obc.size_on_disk;
+		this.pruned = obc.pruned;
+		this.pruneheight = obc.pruneheight ?? null;
+		this.automatic_pruning = obc.automatic_pruning ?? null;
+		this.prune_target_size = obc.prune_target_size ?? null;
+		this.warnings = obc.warnings;
 	}
 }

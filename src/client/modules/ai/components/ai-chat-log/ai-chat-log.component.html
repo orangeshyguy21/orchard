@@ -1,55 +1,49 @@
 <div class="ai-chat-log-container">
-    <mat-accordion displayMode="flat" class="orc-low-accordion orc-fullscreen-accordion flex-grow">
-        <mat-expansion-panel [expanded]="view() === 0" (opened)="setView(0)" (closed)="setView(1)">
-            <mat-expansion-panel-header>
-                 <orc-ai-agent [agent]="agent_definition"></orc-ai-agent>
-            </mat-expansion-panel-header>
-            <div>
-                <div class="ai-chat-log-main">
-                    <orc-ai-agent-definition [agent]="agent_definition"></orc-ai-agent-definition>
-                </div>
-            </div>
-        </mat-expansion-panel>
-        <div class="p-h-1">
-            <div class="category-rule"></div>
-        </div>
-        <mat-expansion-panel [expanded]="view() === 1" disabled>
-            <mat-expansion-panel-header>
-                Chat Log
-            </mat-expansion-panel-header>
-            <div class="ai-chat-log-main">
-                @for (message of conversation?.messages; track message.id) {
-                    @switch (message.role) {
-                        @case ('SYSTEM') {
-                            <orc-ai-chat-message-system 
-                                [message]="message">
-                            </orc-ai-chat-message-system>
-                        }
-                        @case ('USER') {
-                            <orc-ai-chat-message-user 
-                                [message]="message">
-                            </orc-ai-chat-message-user>
-                        }
-                        @case ('ASSISTANT') {
-                            <orc-ai-chat-message-assistant 
-                                [message]="message"
-                                [revision]="revision"
-                                [active_chat]="active_chat"
-                                [agent]="agent_definition">
-                            </orc-ai-chat-message-assistant>
-                        }
-                    }
-                }
-            </div>
-        </mat-expansion-panel>
-    </mat-accordion>
-    <div class="p-h-1">
-        <div class="category-rule"></div>
-    </div>
-    <div class="ai-chat-log-footer">
-        <button mat-button (click)="clear.emit()">
-            <div class="orc-outline-color font-size-xs">clear conversation</div>
-        </button>
-    </div>
+	<mat-accordion displayMode="flat" class="orc-low-accordion orc-fullscreen-accordion flex-grow">
+		<mat-expansion-panel [expanded]="view() === 0" (opened)="setView(0)" (closed)="setView(1)">
+			<mat-expansion-panel-header>
+				<orc-ai-agent [agent]="agent_definition"></orc-ai-agent>
+			</mat-expansion-panel-header>
+			<div>
+				<div class="ai-chat-log-main">
+					<orc-ai-agent-definition [agent]="agent_definition"></orc-ai-agent-definition>
+				</div>
+			</div>
+		</mat-expansion-panel>
+		<div class="p-h-1">
+			<div class="category-rule"></div>
+		</div>
+		<mat-expansion-panel [expanded]="view() === 1" disabled>
+			<mat-expansion-panel-header> Chat Log </mat-expansion-panel-header>
+			<div class="ai-chat-log-main">
+				@for (message of conversation?.messages; track message.id) {
+					@switch (message.role) {
+						@case ('SYSTEM') {
+							<orc-ai-chat-message-system [message]="message"> </orc-ai-chat-message-system>
+						}
+						@case ('USER') {
+							<orc-ai-chat-message-user [message]="message"> </orc-ai-chat-message-user>
+						}
+						@case ('ASSISTANT') {
+							<orc-ai-chat-message-assistant
+								[message]="message"
+								[revision]="revision"
+								[active_chat]="active_chat"
+								[agent]="agent_definition"
+							>
+							</orc-ai-chat-message-assistant>
+						}
+					}
+				}
+			</div>
+		</mat-expansion-panel>
+	</mat-accordion>
+	<div class="p-h-1">
+		<div class="category-rule"></div>
+	</div>
+	<div class="ai-chat-log-footer">
+		<button mat-button (click)="clear.emit()">
+			<div class="orc-outline-color font-size-xs">clear conversation</div>
+		</button>
+	</div>
 </div>
-  

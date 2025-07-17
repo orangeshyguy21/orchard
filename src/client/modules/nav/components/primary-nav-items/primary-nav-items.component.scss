@@ -1,13 +1,13 @@
 @use '@styles/molecule/molecule';
 
 :host {
-    @extend %flex-grow;
-    @extend %overflow-y-auto;
+	@extend %flex-grow;
+	@extend %overflow-y-auto;
 }
 
 .primary-nav-items {
-    @extend %flex;
-    @extend %flex-column;
-    @extend %flex-items-center;
-    @extend %flex-gap-1-5;
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-items-center;
+	@extend %flex-gap-1-5;
 }

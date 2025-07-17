@@ -1,20 +1,20 @@
 <div class="mint-icon-container">
-    @switch (state) {
-        @case ('loading') {
-            <div class="mint-icon mint-icon-loading shimmer-high"></div>
-        }
-        @case ('error') {
-            <div class="mint-icon mint-icon-error" @fadeIn>
-                <mat-icon class="mat-symbol-outline">error</mat-icon>
-            </div>
-        }
-        @case ('icon') {
-            <img [src]="icon_data" alt="Mint Icon" class="h-2 cursor-pointer mint-icon-url" (click)="onClick()" @fadeIn>
-        }
-        @case ('unset') {
-            <div class="mint-icon mint-icon-placeholder" matRipple (click)="onClick()" @fadeIn>
-                <mat-icon>add</mat-icon>
-            </div>
-        }
-    }
+	@switch (state) {
+		@case ('loading') {
+			<div class="mint-icon mint-icon-loading shimmer-high"></div>
+		}
+		@case ('error') {
+			<div class="mint-icon mint-icon-error" @fadeIn>
+				<mat-icon class="mat-symbol-outline">error</mat-icon>
+			</div>
+		}
+		@case ('icon') {
+			<img [src]="icon_data" alt="Mint Icon" class="h-2 cursor-pointer mint-icon-url" (click)="onClick()" @fadeIn />
+		}
+		@case ('unset') {
+			<div class="mint-icon mint-icon-placeholder" matRipple (click)="onClick()" @fadeIn>
+				<mat-icon>add</mat-icon>
+			</div>
+		}
+	}
 </div>

@@ -1,20 +1,20 @@
 /* Core Dependencies */
-import { Test, TestingModule } from '@nestjs/testing';
+import {Test, TestingModule} from '@nestjs/testing';
 /* Local Dependencies */
-import { MintBalanceService } from './mintbalance.service';
+import {MintBalanceService} from './mintbalance.service';
 
 describe('MintBalanceService', () => {
-  let service: MintBalanceService;
+	let service: MintBalanceService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [MintBalanceService],
-    }).compile();
+	beforeEach(async () => {
+		const module: TestingModule = await Test.createTestingModule({
+			providers: [MintBalanceService],
+		}).compile();
 
-    service = module.get<MintBalanceService>(MintBalanceService);
-  });
+		service = module.get<MintBalanceService>(MintBalanceService);
+	});
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
+	it('should be defined', () => {
+		expect(service).toBeDefined();
+	});
 });

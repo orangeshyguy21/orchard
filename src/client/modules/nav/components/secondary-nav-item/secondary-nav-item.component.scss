@@ -1,52 +1,52 @@
 @use '@styles/molecule/molecule';
 
-.secondary-nav-item-container{
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-justify-center;
-    @extend %h-full;
-    @extend %cursor-pointer;
-    @extend %m-h-1;
-    @extend %w-min-5;
-    @extend %relative;
-    @extend %overflow-hidden;
+.secondary-nav-item-container {
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	@extend %h-full;
+	@extend %cursor-pointer;
+	@extend %m-h-1;
+	@extend %w-min-5;
+	@extend %relative;
+	@extend %overflow-hidden;
 
-    &::after {
-        @extend %pseudo-element;
-        @extend %absolute;
-        @extend %bottom-0;
-        @extend %left-half;
-        @extend %w-0;
-        @extend %h-0;
+	&::after {
+		@extend %pseudo-element;
+		@extend %absolute;
+		@extend %bottom-0;
+		@extend %left-half;
+		@extend %w-0;
+		@extend %h-0;
 
-        @extend %orc-corner-full;
-        @extend %orc-primary-container-bg;
-        
-        @extend %opacity-0;
-        @extend %transform-translate-50-50;
-        transition: width 0.15s ease-out, height 0.15s ease-out, opacity 0.15s ease-in-out, border-radius 0.15s ease-out;
-    }
+		@extend %orc-corner-full;
+		@extend %orc-primary-container-bg;
 
+		@extend %opacity-0;
+		@extend %transform-translate-50-50;
+		transition:
+			width 0.15s ease-out,
+			height 0.15s ease-out,
+			opacity 0.15s ease-in-out,
+			border-radius 0.15s ease-out;
+	}
 
-    &.secondary-nav-item-highlight{
+	&.secondary-nav-item-highlight {
+		.secondary-nav-item-name {
+			@extend %orc-on-primary-container-color;
+		}
 
-        .secondary-nav-item-name{
-            @extend %orc-on-primary-container-color;
-        } 
-
-        &::after {
-            @extend %opacity-1;
-            @extend %w-full;
-            @extend %h-1;
-            @extend %orc-corner-small-top;
-        }
-    }
+		&::after {
+			@extend %opacity-1;
+			@extend %w-full;
+			@extend %h-1;
+			@extend %orc-corner-small-top;
+		}
+	}
 }
 
-
-
-.secondary-nav-item-name{
-    @extend %font-size-xs;
-    @extend %trans-font-weight-fast;
-    @extend %trans-color-fast;
+.secondary-nav-item-name {
+	@extend %font-size-xs;
+	@extend %trans-font-weight-fast;
+	@extend %trans-color-fast;
 }

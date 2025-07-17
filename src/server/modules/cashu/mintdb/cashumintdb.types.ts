@@ -1,10 +1,10 @@
 /* Native Dependencies */
-import { MintUnit, MintQuoteState, MeltQuoteState, MintProofState } from "@server/modules/cashu/cashu.enums";
+import {MintUnit, MintQuoteState, MeltQuoteState, MintProofState} from '@server/modules/cashu/cashu.enums';
 
 export type CashuMintBalance = {
 	keyset: string;
 	balance: number;
-}   
+};
 
 export type CashuMintKeyset = {
 	id: string;
@@ -16,7 +16,7 @@ export type CashuMintKeyset = {
 	unit: MintUnit;
 	input_fee_ppk: number | null;
 	fees_paid: number | null;
-}
+};
 
 export type CashuMintMeltQuote = {
 	id: string;
@@ -30,7 +30,7 @@ export type CashuMintMeltQuote = {
 	msat_to_pay: number | null;
 	created_time: number;
 	paid_time: number | null;
-}
+};
 
 export type CashuMintMintQuote = {
 	id: string;
@@ -43,7 +43,7 @@ export type CashuMintMintQuote = {
 	created_time: number;
 	issued_time: number | null;
 	paid_time: number | null;
-}	
+};
 
 export type CashuMintProofGroup = {
 	amount: number;
@@ -52,7 +52,7 @@ export type CashuMintProofGroup = {
 	unit: MintUnit;
 	state: MintProofState;
 	amounts: number[][];
-}
+};
 
 export type CashuMintPromiseGroup = {
 	amount: number;
@@ -60,22 +60,21 @@ export type CashuMintPromiseGroup = {
 	keyset_ids: string[];
 	unit: MintUnit;
 	amounts: number[][];
-}
+};
 
 export type CashuMintAnalytics = {
 	unit: string;
 	amount: number;
 	created_time: number;
 	operation_count: number;
-}
+};
 
 export type CashuMintKeysetsAnalytics = {
 	keyset_id: string;
 	amount: number;
 	created_time: number;
-}
+};
 
 export type CashuMintCount = {
 	count: number;
-}
-
+};

@@ -1,13 +1,13 @@
-import { OrchardLightningInfo, OrchardLightningBalance, OrchardLightningAccount } from "@shared/generated.types";
+import {OrchardLightningInfo, OrchardLightningBalance, OrchardLightningAccount} from '@shared/generated.types';
 
 export type LightningInfoResponse = {
-    lightning_info: OrchardLightningInfo;
-}
+	lightning_info: OrchardLightningInfo;
+};
 
 export type LightningBalanceResponse = {
-    lightning_balance: OrchardLightningBalance;
-}
+	lightning_balance: OrchardLightningBalance;
+};
 
 export type LightningWalletResponse = {
-    lightning_wallet: OrchardLightningAccount[];
-}
+	lightning_wallet: OrchardLightningAccount[];
+};

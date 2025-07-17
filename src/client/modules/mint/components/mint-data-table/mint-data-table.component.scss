@@ -2,48 +2,48 @@
 @use '@styles/nucleus/nucleus';
 
 :host {
-    @extend %flex-grow;
-    @extend %flex;
-    @extend %flex-column;
+	@extend %flex-grow;
+	@extend %flex;
+	@extend %flex-column;
 }
 
-.mint-data-table-container{
-    @extend %relative;
+.mint-data-table-container {
+	@extend %relative;
 }
 
-.data-table-sticky-header{
-    top:86px !important;
+.data-table-sticky-header {
+	top: 86px !important;
 }
 
 tr.entity-row {
-    @extend %cursor-pointer;
+	@extend %cursor-pointer;
 }
 
 tr.entity-row:not(.expanded):hover {
-    @extend %orc-surface-container-low-bg;
+	@extend %orc-surface-container-low-bg;
 }
-  
+
 tr.entity-row:not(.expanded):active {
-    @extend %orc-surface-container-high-bg;
+	@extend %orc-surface-container-high-bg;
 }
 
 tr.more-entity-row {
-    @extend %h-0;
+	@extend %h-0;
 }
 
-.more-entity-wrapper{
-    @extend %overflow-hidden;
-    @extend %grid;
-    @extend %rows-0;
-    @extend %columns-full;
-    transition: grid-template-rows 225ms cubic-bezier(0.4, 0, 0.2, 1);
+.more-entity-wrapper {
+	@extend %overflow-hidden;
+	@extend %grid;
+	@extend %rows-0;
+	@extend %columns-full;
+	transition: grid-template-rows 225ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .more-entity-wrapper-expanded {
-    @extend %rows-1;
+	@extend %rows-1;
 }
 
-.more-entity-content{
-    @extend %flex;
-    @extend %h-min-0;
+.more-entity-content {
+	@extend %flex;
+	@extend %h-min-0;
 }

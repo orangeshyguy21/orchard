@@ -1,23 +1,22 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { MintDataControlComponent } from './mint-data-control.component';
+import {MintDataControlComponent} from './mint-data-control.component';
 
 describe('MintDataControlComponent', () => {
-  let component: MintDataControlComponent;
-  let fixture: ComponentFixture<MintDataControlComponent>;
+	let component: MintDataControlComponent;
+	let fixture: ComponentFixture<MintDataControlComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [MintDataControlComponent]
-    })
-    .compileComponents();
+	beforeEach(async () => {
+		await TestBed.configureTestingModule({
+			declarations: [MintDataControlComponent],
+		}).compileComponents();
 
-    fixture = TestBed.createComponent(MintDataControlComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+		fixture = TestBed.createComponent(MintDataControlComponent);
+		component = fixture.componentInstance;
+		fixture.detectChanges();
+	});
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+	it('should create', () => {
+		expect(component).toBeTruthy();
+	});
 });

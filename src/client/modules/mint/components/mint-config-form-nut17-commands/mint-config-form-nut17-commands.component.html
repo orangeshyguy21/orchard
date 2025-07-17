@@ -1,35 +1,31 @@
 <div class="flex flex-column flex-items-center flex-gap-1">
-    <div class="flex flex-items-center flex-gap-1">
-        <orc-graphic-asset 
-            [unit]="nut17_commands.unit" 
-            [height]="'2rem'">
-        </orc-graphic-asset>
-        <div>{{ nut17_commands.unit | unit:true }}</div>
-    </div>
+	<div class="flex flex-items-center flex-gap-1">
+		<orc-graphic-asset [unit]="nut17_commands.unit" [height]="'2rem'"> </orc-graphic-asset>
+		<div>{{ nut17_commands.unit | unit: true }}</div>
+	</div>
 
-    <mat-card appearance="outlined" class="w-min-18">
-        <mat-card-content>
-            <div class="flex flex-items-center flex-justify-center flex-gap-2 p-0-5">
-                @for (method of nut17_commands.methods; track method.method) {
-                    <div class="flex flex-column flex-items-center">
-                        <div class="p-b-1 flex">
-                            <div class="label-spec">{{ method.method }}</div>
-                        </div>
-                        @if( method.commands.length > 0 ) {
-                            <div class="flex flex-column flex-items-start flex-gap-0-5">
-                                @for (command of method.commands; track command) {
-                                    <div class="flex">
-                                        <div class="label-command">{{ command }}</div>
-                                    </div>
-                                }
-                            </div>
-                        }
-                        @else {
-                            <div class="orc-outline-color font-size-xs">No Supported Commands</div>
-                        }
-                    </div>
-                }
-            </div>
-        </mat-card-content>
-    </mat-card>
+	<mat-card appearance="outlined" class="w-min-18">
+		<mat-card-content>
+			<div class="flex flex-items-center flex-justify-center flex-gap-2 p-0-5">
+				@for (method of nut17_commands.methods; track method.method) {
+					<div class="flex flex-column flex-items-center">
+						<div class="p-b-1 flex">
+							<div class="label-spec">{{ method.method }}</div>
+						</div>
+						@if (method.commands.length > 0) {
+							<div class="flex flex-column flex-items-start flex-gap-0-5">
+								@for (command of method.commands; track command) {
+									<div class="flex">
+										<div class="label-command">{{ command }}</div>
+									</div>
+								}
+							</div>
+						} @else {
+							<div class="orc-outline-color font-size-xs">No Supported Commands</div>
+						}
+					</div>
+				}
+			</div>
+		</mat-card-content>
+	</mat-card>
 </div>

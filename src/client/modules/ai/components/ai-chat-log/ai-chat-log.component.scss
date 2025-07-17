@@ -1,33 +1,33 @@
 @use '@styles/molecule/molecule';
 @use '@styles/nucleus/nucleus';
 
-:host{
-    @extend %flex;
-    @extend %h-full;
-    @extend %w-full;
+:host {
+	@extend %flex;
+	@extend %h-full;
+	@extend %w-full;
 }
 
-.ai-chat-log-container{
-    @extend %orc-surface-container-low-bg;
-    @extend %flex;
-    @extend %flex-grow;
-    @extend %flex-column;
-    @extend %w-full;
+.ai-chat-log-container {
+	@extend %orc-surface-container-low-bg;
+	@extend %flex;
+	@extend %flex-grow;
+	@extend %flex-column;
+	@extend %w-full;
 }
 
-.ai-chat-log-main{
-    @extend %flex-grow;
-    @extend %flex;
-    @extend %flex-column;
-    @extend %flex-gap-1;
-    @extend %overflow-y-auto;
-    @extend %p-b-1;
-    max-height: calc(100vh - 177px);
+.ai-chat-log-main {
+	@extend %flex-grow;
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-gap-1;
+	@extend %overflow-y-auto;
+	@extend %p-b-1;
+	max-height: calc(100vh - 177px);
 }
 
-.ai-chat-log-footer{
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-justify-center;
-    @extend %h-3;
+.ai-chat-log-footer {
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	@extend %h-3;
 }

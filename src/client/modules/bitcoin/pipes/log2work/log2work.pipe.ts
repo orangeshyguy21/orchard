@@ -1,10 +1,10 @@
 /* Core Dependencies */
-import { Pipe, PipeTransform } from '@angular/core';
+import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
 	name: 'log2work',
 	standalone: false,
-	pure: false
+	pure: false,
 })
 export class Log2WorkPipe implements PipeTransform {
 	transform(chainwork: string | null | undefined): number {

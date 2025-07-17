@@ -1,40 +1,40 @@
 @use '@styles/molecule/molecule';
 @use '@styles/nucleus/nucleus';
 
-.add-form-array-item-container{
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-gap-1;
+.add-form-array-item-container {
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-gap-1;
 }
 
-.orc-form-array-add-item{
-    @extend %flex;
-    @extend %h-3;
-    @extend %w-min-18;
+.orc-form-array-add-item {
+	@extend %flex;
+	@extend %h-3;
+	@extend %w-min-18;
 }
 
-.orc-form-array-add-item-action{
-    @extend %border;
-    @extend %flex-grow;
-    @extend %flex;
-    @extend %border-dashed;
-    @extend %orc-outline-border;
-    @extend %cursor-pointer;
-    @extend %orc-corner-extra-small;
-    @extend %trans-bg-fast;
-    @extend %orc-on-surface-variant-color;
-    @extend %font-weight-extra-light;
+.orc-form-array-add-item-action {
+	@extend %border;
+	@extend %flex-grow;
+	@extend %flex;
+	@extend %border-dashed;
+	@extend %orc-outline-border;
+	@extend %cursor-pointer;
+	@extend %orc-corner-extra-small;
+	@extend %trans-bg-fast;
+	@extend %orc-on-surface-variant-color;
+	@extend %font-weight-extra-light;
 
-    &:hover{
-        @extend %orc-surface-container-bg;
-    }
+	&:hover {
+		@extend %orc-surface-container-bg;
+	}
 }
 
-.orc-form-array-add-item-inner{
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-gap-0-5;
-    @extend %p-h-1;
-    @extend %font-size-xs;
-    @extend %font-weight-light;
+.orc-form-array-add-item-inner {
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-gap-0-5;
+	@extend %p-h-1;
+	@extend %font-size-xs;
+	@extend %font-weight-light;
 }

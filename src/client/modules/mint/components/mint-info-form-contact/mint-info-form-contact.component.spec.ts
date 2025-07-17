@@ -1,23 +1,22 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { MintInfoFormContactComponent } from './mint-info-form-contact.component';
+import {MintInfoFormContactComponent} from './mint-info-form-contact.component';
 
 describe('MintInfoFormContactComponent', () => {
-  let component: MintInfoFormContactComponent;
-  let fixture: ComponentFixture<MintInfoFormContactComponent>;
+	let component: MintInfoFormContactComponent;
+	let fixture: ComponentFixture<MintInfoFormContactComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [MintInfoFormContactComponent]
-    })
-    .compileComponents();
+	beforeEach(async () => {
+		await TestBed.configureTestingModule({
+			declarations: [MintInfoFormContactComponent],
+		}).compileComponents();
 
-    fixture = TestBed.createComponent(MintInfoFormContactComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+		fixture = TestBed.createComponent(MintInfoFormContactComponent);
+		component = fixture.componentInstance;
+		fixture.detectChanges();
+	});
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+	it('should create', () => {
+		expect(component).toBeTruthy();
+	});
 });

@@ -1,51 +1,45 @@
 <div class="flex flex-column flex-gap-1">
-    <div class="title-l p-l-1">Hot Wallet</div>
-    <mat-card appearance="outlined" class="overflow-hidden">
-        <div class="p-h-1">
-            <table mat-table [dataSource]="data_source" class="orc-feature-table">
+	<div class="title-l p-l-1">Hot Wallet</div>
+	<mat-card appearance="outlined" class="overflow-hidden">
+		<div class="p-h-1">
+			<table mat-table [dataSource]="data_source" class="orc-feature-table">
+				<ng-container matColumnDef="amount">
+					<th mat-header-cell *matHeaderCellDef>Total</th>
+					<td mat-cell *matCellDef="let row">
+						@if (row.type === 'error') {
+							@if (row.error_lightning) {
+								<orc-error-resolve [error]="errors_lightning[0]" mode="small"></orc-error-resolve>
+							}
+							@if (row.error_taproot_assets) {
+								<orc-error-resolve [error]="errors_taproot_assets[0]" mode="small"></orc-error-resolve>
+							}
+						}
+						@if (row.type === 'hot_coins') {
+							<div class="flex flex-items-center flex-gap-2">
+								<orc-graphic-asset [unit]="row.unit" [height]="'2rem'" [custody]="'hot'" [asset_id]="row.asset_id">
+								</orc-graphic-asset>
+								<span
+									class="text-nowrap font-size-m flex-grow"
+									[innerHTML]="row.amount | amount: row.unit : 'bitcoin'"
+								></span>
+							</div>
+						}
+					</td>
+				</ng-container>
 
-                <ng-container matColumnDef="amount">
-                    <th mat-header-cell *matHeaderCellDef> Total </th>
-                    <td mat-cell *matCellDef="let row"> 
-                        @if( row.type === 'error' ){
-                            @if( row.error_lightning ){
-                                <orc-error-resolve [error]="errors_lightning[0]" mode="small"></orc-error-resolve>
-                            }
-                            @if( row.error_taproot_assets ){
-                                <orc-error-resolve [error]="errors_taproot_assets[0]" mode="small"></orc-error-resolve>
-                            }
-                        }
-                        @if( row.type === 'hot_coins' ){
-                            <div class="flex flex-items-center flex-gap-2">
-                                <orc-graphic-asset 
-                                    [unit]="row.unit" 
-                                    [height]="'2rem'"
-                                    [custody]="'hot'"
-                                    [asset_id]="row.asset_id">
-                                </orc-graphic-asset>
-                                <span class="text-nowrap font-size-m flex-grow" [innerHTML]="row.amount | amount : row.unit : 'bitcoin'"></span>
-                            </div>
-                        }                                    
-                    </td>
-                </ng-container>
-            
-                <ng-container matColumnDef="utxos">
-                    <th mat-header-cell *matHeaderCellDef></th>
-                    <td mat-cell *matCellDef="let row">
-                        @if( !row.error_lightning && !row.error_taproot_assets ){
-                            <orc-bitcoin-utxo-stack 
-                                [unit]="row.unit"
-                                [coins]="row.utxos"
-                                [asset_id]="row.asset_id">
-                            </orc-bitcoin-utxo-stack> 
-                        }
-                    </td>
-                </ng-container>
+				<ng-container matColumnDef="utxos">
+					<th mat-header-cell *matHeaderCellDef></th>
+					<td mat-cell *matCellDef="let row">
+						@if (!row.error_lightning && !row.error_taproot_assets) {
+							<orc-bitcoin-utxo-stack [unit]="row.unit" [coins]="row.utxos" [asset_id]="row.asset_id">
+							</orc-bitcoin-utxo-stack>
+						}
+					</td>
+				</ng-container>
 
-                <tr mat-header-row *matHeaderRowDef="displayed_columns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayed_columns;"></tr>
-            
-            </table>
-        </div>
-    </mat-card>
+				<tr mat-header-row *matHeaderRowDef="displayed_columns"></tr>
+				<tr mat-row *matRowDef="let row; columns: displayed_columns"></tr>
+			</table>
+		</div>
+	</mat-card>
 </div>

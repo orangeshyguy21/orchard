@@ -1,23 +1,22 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { SettingsAiComponent } from './settings-ai.component';
+import {SettingsAiComponent} from './settings-ai.component';
 
 describe('SettingsAiComponent', () => {
-  let component: SettingsAiComponent;
-  let fixture: ComponentFixture<SettingsAiComponent>;
+	let component: SettingsAiComponent;
+	let fixture: ComponentFixture<SettingsAiComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [SettingsAiComponent]
-    })
-    .compileComponents();
+	beforeEach(async () => {
+		await TestBed.configureTestingModule({
+			declarations: [SettingsAiComponent],
+		}).compileComponents();
 
-    fixture = TestBed.createComponent(SettingsAiComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+		fixture = TestBed.createComponent(SettingsAiComponent);
+		component = fixture.componentInstance;
+		fixture.detectChanges();
+	});
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+	it('should create', () => {
+		expect(component).toBeTruthy();
+	});
 });

@@ -1,24 +1,23 @@
 /* Core Dependencies */
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 /* Vendor Dependencies */
-import { Subject, Observable } from 'rxjs';
+import {Subject, Observable} from 'rxjs';
 /* Native Dependencies */
-import { EventData } from 'src/client/modules/event/classes/event-data.class';
+import {EventData} from 'src/client/modules/event/classes/event-data.class';
 
 @Injectable({
-  	providedIn: 'root'
+	providedIn: 'root',
 })
 export class EventService {
-
 	private event_history: EventData[] = [];
 	private active_event_subject = new Subject<EventData | null>();
 	private active_event!: EventData;
 	private saving_time!: number;
 
 	public registerEvent(event_data: EventData | null): void {
-		if( !event_data ) return this.active_event_subject.next(null);
-		if( event_data.type === 'SAVING') this.saving_time = Date.now();
-		if( this.active_event?.type === 'SAVING' && event_data.type === 'SUCCESS' ) {
+		if (!event_data) return this.active_event_subject.next(null);
+		if (event_data.type === 'SAVING') this.saving_time = Date.now();
+		if (this.active_event?.type === 'SAVING' && event_data.type === 'SUCCESS') {
 			const time_remaining = 1000 + this.saving_time - Date.now();
 			const delay = time_remaining > 0 ? time_remaining : 0;
 			setTimeout(() => this.emitEvent(event_data), delay);
@@ -32,7 +31,7 @@ export class EventService {
 		event_data.created_at = Math.floor(Date.now() / 1000);
 		this.event_history.push(new EventData(event_data));
 		this.active_event_subject.next(event_data);
-		if( event_data.duration ) this.clearEvent(event_data);
+		if (event_data.duration) this.clearEvent(event_data);
 	}
 
 	public getEventHistory(): EventData[] {
@@ -45,8 +44,8 @@ export class EventService {
 
 	private clearEvent(event_data: EventData): void {
 		setTimeout(() => {
-			if( this.active_event.type === 'PENDING' ) return;
-			if( this.active_event.id !== event_data.id ) return;
+			if (this.active_event.type === 'PENDING') return;
+			if (this.active_event.id !== event_data.id) return;
 			this.active_event_subject.next(null);
 		}, event_data?.duration || 5000);
 	}

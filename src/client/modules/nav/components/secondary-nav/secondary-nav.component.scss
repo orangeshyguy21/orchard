@@ -2,29 +2,29 @@
 @use '@styles/nucleus/nucleus';
 
 :host {
-    flex-shrink: 0;
+	flex-shrink: 0;
 }
 
-.secondary-nav-container{
-    @extend %flex;
-    @extend %flex-row;
-    @extend %flex-items-center;   
-    @extend %orc-surface-container-low-bg;
-    @extend %h-3;
-    @extend %p-h-1;
+.secondary-nav-container {
+	@extend %flex;
+	@extend %flex-row;
+	@extend %flex-items-center;
+	@extend %orc-surface-container-low-bg;
+	@extend %h-3;
+	@extend %p-h-1;
 }
 
 ::ng-deep [secondary-nav-header] {
-    @extend %w-min-18;
+	@extend %w-min-18;
 }
 
-.secondary-nav-items{
-    @extend %flex-grow;
-    @extend %h-full;
+.secondary-nav-items {
+	@extend %flex-grow;
+	@extend %h-full;
 }
 
 ::ng-deep [secondary-nav-items] {
-    @extend %flex;
-    @extend %flex-row;
-    @extend %h-full;
+	@extend %flex;
+	@extend %flex-row;
+	@extend %h-full;
 }

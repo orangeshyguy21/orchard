@@ -1,27 +1,26 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 /* Application Configuration */
-import { environment } from '@client/configs/configuration';
+import {environment} from '@client/configs/configuration';
 /* Application Dependencies */
-import { LocalStorageService } from '@client/modules/cache/services/local-storage/local-storage.service';
-import { SettingService } from '@client/modules/settings/services/setting/setting.service';
-import { AiService } from '@client/modules/ai/services/ai/ai.service';
-import { EventService } from '@client/modules/event/services/event/event.service';
-import { EventData } from '@client/modules/event/classes/event-data.class';
-import { Locale, Timezone, Theme, ThemeType, Model } from '@client/modules/cache/services/local-storage/local-storage.types';
-import { AiModel } from '@client/modules/ai/classes/ai-model.class';
+import {LocalStorageService} from '@client/modules/cache/services/local-storage/local-storage.service';
+import {SettingService} from '@client/modules/settings/services/setting/setting.service';
+import {AiService} from '@client/modules/ai/services/ai/ai.service';
+import {EventService} from '@client/modules/event/services/event/event.service';
+import {EventData} from '@client/modules/event/classes/event-data.class';
+import {Locale, Timezone, Theme, ThemeType, Model} from '@client/modules/cache/services/local-storage/local-storage.types';
+import {AiModel} from '@client/modules/ai/classes/ai-model.class';
 /* Native Dependencies */
-import { SettingsCategory } from '@client/modules/settings/enums/category.enum';
+import {SettingsCategory} from '@client/modules/settings/enums/category.enum';
 
 @Component({
 	selector: 'orc-settings-section',
 	standalone: false,
 	templateUrl: './settings-section.component.html',
 	styleUrl: './settings-section.component.scss',
-	changeDetection: ChangeDetectionStrategy.OnPush
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsSectionComponent implements OnInit {
-
 	public version = environment.mode.version;
 	public enabled_ai = environment.ai.enabled;
 	public locale: Locale | null = null;
@@ -37,11 +36,10 @@ export class SettingsSectionComponent implements OnInit {
 		SettingsCategory.Bitcoin,
 		SettingsCategory.Lightning,
 		SettingsCategory.Mint,
-		SettingsCategory.Ecash
+		SettingsCategory.Ecash,
 	];
 	public cat_orchard = SettingsCategory.Orchard;
-	public cat_local= SettingsCategory.Local;
-	
+	public cat_local = SettingsCategory.Local;
 
 	constructor(
 		private localStorageService: LocalStorageService,
@@ -62,17 +60,18 @@ export class SettingsSectionComponent implements OnInit {
 	}
 
 	private getModels() {
-		this.aiService.getAiModels()
-			.subscribe((models:AiModel[]) => {
+		this.aiService.getAiModels().subscribe(
+			(models: AiModel[]) => {
 				this.ai_models = models;
 				this.error_ai = false;
 				this.loading_ai = false;
 				this.cdr.detectChanges();
-			}, (error) => {
+			},
+			(error) => {
 				this.error_ai = true;
 				this.loading_ai = false;
 				this.cdr.detectChanges();
-			}
+			},
 		);
 	}
 
@@ -80,48 +79,54 @@ export class SettingsSectionComponent implements OnInit {
 		this.category_filters = filters;
 	}
 
-	public onLocaleChange(locale: string|null) {
+	public onLocaleChange(locale: string | null) {
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		this.localStorageService.setLocale({ code: locale });
+		this.localStorageService.setLocale({code: locale});
 		this.settingService.setLocale();
 		this.locale = this.localStorageService.getLocale();
-		this.eventService.registerEvent(new EventData({
-			type: 'SUCCESS',
-			message: 'Locale updated!',
-		}));
+		this.eventService.registerEvent(
+			new EventData({
+				type: 'SUCCESS',
+				message: 'Locale updated!',
+			}),
+		);
 	}
 
-	public onTimezoneChange(timezone: string|null) {
+	public onTimezoneChange(timezone: string | null) {
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		this.localStorageService.setTimezone({ tz: timezone });
+		this.localStorageService.setTimezone({tz: timezone});
 		this.settingService.setTimezone();
 		this.timezone = this.localStorageService.getTimezone();
-		this.eventService.registerEvent(new EventData({
-			type: 'SUCCESS',
-			message: 'Timezone updated!',
-		}));
+		this.eventService.registerEvent(
+			new EventData({
+				type: 'SUCCESS',
+				message: 'Timezone updated!',
+			}),
+		);
 	}
 
-	public onThemeChange(theme: ThemeType|null) {
+	public onThemeChange(theme: ThemeType | null) {
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		this.localStorageService.setTheme({ type: theme });
+		this.localStorageService.setTheme({type: theme});
 		this.settingService.setTheme();
 		this.theme = this.localStorageService.getTheme();
-		this.eventService.registerEvent(new EventData({
-			type: 'SUCCESS',
-			message: 'Theme updated!',
-		}));
+		this.eventService.registerEvent(
+			new EventData({
+				type: 'SUCCESS',
+				message: 'Theme updated!',
+			}),
+		);
 	}
 
-	public onModelChange(model: string|null) {
+	public onModelChange(model: string | null) {
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		this.localStorageService.setModel({ model: model });
+		this.localStorageService.setModel({model: model});
 		this.model = this.localStorageService.getModel();
-		this.eventService.registerEvent(new EventData({
-			type: 'SUCCESS',
-			message: 'Model updated!',
-		}));
+		this.eventService.registerEvent(
+			new EventData({
+				type: 'SUCCESS',
+				message: 'Model updated!',
+			}),
+		);
 	}
 }
-
-

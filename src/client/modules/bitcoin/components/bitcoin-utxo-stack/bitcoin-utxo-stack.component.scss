@@ -1,64 +1,63 @@
 @use '@styles/molecule/molecule';
 
 .bitcoin-utxo-stack-container {
-    @extend %relative;   /* creates a stacking context */
-    @extend %z-index-0;  /* ensures stacking context */
-    @extend %isolated;   /* strictly isolates z-index children */
+	@extend %relative; /* creates a stacking context */
+	@extend %z-index-0; /* ensures stacking context */
+	@extend %isolated; /* strictly isolates z-index children */
 }
 
-.coin-top{
-    @extend %w-2;
-    @extend %h-2;
-    @extend %orc-corner-full;
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-justify-center;
-    @extend %font-size-xs;
-    @extend %font-weight-bold;
-    @extend %orc-surface-color;
-    line-height: 0.8;
-    @extend %z-index-1;
+.coin-top {
+	@extend %w-2;
+	@extend %h-2;
+	@extend %orc-corner-full;
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	@extend %font-size-xs;
+	@extend %font-weight-bold;
+	@extend %orc-surface-color;
+	line-height: 0.8;
+	@extend %z-index-1;
 }
 
-.utxo-asset-btc{
-    @extend %orc-asset-btc-bg;
+.utxo-asset-btc {
+	@extend %orc-asset-btc-bg;
 }
-.utxo-asset-tether{
-    @extend %orc-asset-tether-bg;
+.utxo-asset-tether {
+	@extend %orc-asset-tether-bg;
 }
-.utxo-asset-unknown{
-    @extend %orc-surface-tint-bg;
-}
-
-.utxo-overflow-btc{
-    @extend %orc-asset-btc-color;
-}
-.utxo-overflow-tether{
-    @extend %orc-asset-tether-color;
-}
-.utxo-overflow-unknown{
-    @extend %orc-surface-tint-color;
+.utxo-asset-unknown {
+	@extend %orc-surface-tint-bg;
 }
 
-
-.coin-wrapper{
-    @extend %w-0-5;
+.utxo-overflow-btc {
+	@extend %orc-asset-btc-color;
+}
+.utxo-overflow-tether {
+	@extend %orc-asset-tether-color;
+}
+.utxo-overflow-unknown {
+	@extend %orc-surface-tint-color;
 }
 
-.coin-stacked{
-    @extend %relative;
-    @extend %h-2;
-    @extend %w-3;
-    @extend %orc-corner-full;
+.coin-wrapper {
+	@extend %w-0-5;
+}
 
-    &:before{
-        content: '';
-        @extend %absolute;
-        @extend %top-0;
-        left: 0.25rem;
-        @extend %h-full;
-        @extend %w-full;
-        @extend %orc-corner-full;
-        @extend %orc-surface-bg;
-    }
+.coin-stacked {
+	@extend %relative;
+	@extend %h-2;
+	@extend %w-3;
+	@extend %orc-corner-full;
+
+	&:before {
+		content: '';
+		@extend %absolute;
+		@extend %top-0;
+		left: 0.25rem;
+		@extend %h-full;
+		@extend %w-full;
+		@extend %orc-corner-full;
+		@extend %orc-surface-bg;
+	}
 }

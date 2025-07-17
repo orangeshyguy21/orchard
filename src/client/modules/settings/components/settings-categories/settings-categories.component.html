@@ -1,33 +1,33 @@
 <form class="p-l-2 p-t-2 p-r-2">
-    <mat-form-field class="w-full">
-        <mat-label>Categories</mat-label>
-        <div class="flex flex-items-center">
-            <mat-chip-grid #chipGrid aria-label="Settings categories selection">
-                @for (category of category_filters; track $index) {
-                <mat-chip-row (removed)="remove(category)">
-                    {{category}}
-                    <button matChipRemove [attr.aria-label]="'remove ' + category">
-                        <mat-icon>cancel</mat-icon>
-                    </button>
-                </mat-chip-row>
-                }
-            </mat-chip-grid>
-            <input
-                name="currentCategories"
-                placeholder="Add Category..."
-                #category_input
-                [formControl]="new_category_control"
-                [matChipInputFor]="chipGrid"
-                [matAutocomplete]="auto"
-                [matChipInputSeparatorKeyCodes]="separator_codes"
-                (matChipInputTokenEnd)="add($event)"
-            />
-        </div>
-        
-        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event); category_input.value = ''">
-            @for (option of filtered_options | async; track option) {
-                <mat-option [value]="option">{{option}}</mat-option>
-            }
-        </mat-autocomplete>
-    </mat-form-field>
+	<mat-form-field class="w-full">
+		<mat-label>Categories</mat-label>
+		<div class="flex flex-items-center">
+			<mat-chip-grid #chipGrid aria-label="Settings categories selection">
+				@for (category of category_filters; track $index) {
+					<mat-chip-row (removed)="remove(category)">
+						{{ category }}
+						<button matChipRemove [attr.aria-label]="'remove ' + category">
+							<mat-icon>cancel</mat-icon>
+						</button>
+					</mat-chip-row>
+				}
+			</mat-chip-grid>
+			<input
+				name="currentCategories"
+				placeholder="Add Category..."
+				#category_input
+				[formControl]="new_category_control"
+				[matChipInputFor]="chipGrid"
+				[matAutocomplete]="auto"
+				[matChipInputSeparatorKeyCodes]="separator_codes"
+				(matChipInputTokenEnd)="add($event)"
+			/>
+		</div>
+
+		<mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event); category_input.value = ''">
+			@for (option of filtered_options | async; track option) {
+				<mat-option [value]="option">{{ option }}</mat-option>
+			}
+		</mat-autocomplete>
+	</mat-form-field>
 </form>

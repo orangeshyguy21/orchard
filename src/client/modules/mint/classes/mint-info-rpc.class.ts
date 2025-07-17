@@ -1,7 +1,6 @@
-import { OrchardContact, OrchardMintInfoRpc } from "@shared/generated.types";
+import {OrchardContact, OrchardMintInfoRpc} from '@shared/generated.types';
 
 export class MintInfoRpc implements OrchardMintInfoRpc {
-
 	name: string | null;
 	version: string;
 	description: string | null;
@@ -10,8 +9,8 @@ export class MintInfoRpc implements OrchardMintInfoRpc {
 	icon_url: string | null;
 	motd: string | null;
 	urls: string[];
-    total_issued: string | null;
-    total_redeemed: string | null;
+	total_issued: string | null;
+	total_redeemed: string | null;
 
 	constructor(omi: OrchardMintInfoRpc) {
 		this.name = omi.name ?? null;
@@ -22,7 +21,7 @@ export class MintInfoRpc implements OrchardMintInfoRpc {
 		this.icon_url = omi.icon_url ?? null;
 		this.motd = omi.motd ?? null;
 		this.urls = omi.urls;
-        this.total_issued = omi.total_issued ?? null;
-        this.total_redeemed = omi.total_redeemed ?? null;
+		this.total_issued = omi.total_issued ?? null;
+		this.total_redeemed = omi.total_redeemed ?? null;
 	}
 }

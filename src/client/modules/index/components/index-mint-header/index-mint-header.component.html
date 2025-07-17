@@ -1,51 +1,36 @@
 <div class="index-mint-header-container">
-    <div class="flex flex-items-center flex-gap-0-5 p-b-0-5 w-min-10">
-        <mat-icon class="mat-symbol-outline">account_balance</mat-icon>
-        <div class="title-l">Mint</div>
-    </div>
-    <div class="p-b-0-5 w-min-10">
-        @if( !loading ) {
-            <div [@fadeIn] class="flex flex-gap-1">
-                <div class="flex flex-items-center flex-gap-0-5">
-                    @switch( state() ) {
-                        @case( 'offline' ) {
-                            <mat-icon class="icon-sm orc-status-error-color">circle</mat-icon>
-                            <div class="orc-outline-color">offline</div>
-                        }
-                        @default {
-                            <mat-icon class="icon-sm orc-status-active-color">circle</mat-icon>
-                            <div class="orc-outline-color">online</div>
-                        }
-                    }
-                </div>
-            </div>
-        }
-    </div>
-    <div class="flex-grow flex h-3">
-        <orc-secondary-nav-item 
-            name="Dashboard"
-            navroute="mint">
-        </orc-secondary-nav-item>
-        <orc-secondary-nav-item 
-            name="Info"
-            navroute="mint/info">
-        </orc-secondary-nav-item>
-        <orc-secondary-nav-item
-            name="Config"
-            navroute="mint/config">
-        </orc-secondary-nav-item>
-        <orc-secondary-nav-item
-            name="Keysets"
-            navroute="mint/keysets">
-        </orc-secondary-nav-item>
-        <orc-secondary-nav-item
-            name="Database"
-            navroute="mint/database">
-        </orc-secondary-nav-item>
-    </div>
-    <div>
-        @if( !loading ) {
-            <div [@fadeIn] class="orc-outline-color font-size-xs p-b-0-5">{{ info.version }}</div>
-        }
-    </div>
+	<div class="flex flex-items-center flex-gap-0-5 p-b-0-5 w-min-10">
+		<mat-icon class="mat-symbol-outline">account_balance</mat-icon>
+		<div class="title-l">Mint</div>
+	</div>
+	<div class="p-b-0-5 w-min-10">
+		@if (!loading) {
+			<div [@fadeIn] class="flex flex-gap-1">
+				<div class="flex flex-items-center flex-gap-0-5">
+					@switch (state()) {
+						@case ('offline') {
+							<mat-icon class="icon-sm orc-status-error-color">circle</mat-icon>
+							<div class="orc-outline-color">offline</div>
+						}
+						@default {
+							<mat-icon class="icon-sm orc-status-active-color">circle</mat-icon>
+							<div class="orc-outline-color">online</div>
+						}
+					}
+				</div>
+			</div>
+		}
+	</div>
+	<div class="flex-grow flex h-3">
+		<orc-secondary-nav-item name="Dashboard" navroute="mint"> </orc-secondary-nav-item>
+		<orc-secondary-nav-item name="Info" navroute="mint/info"> </orc-secondary-nav-item>
+		<orc-secondary-nav-item name="Config" navroute="mint/config"> </orc-secondary-nav-item>
+		<orc-secondary-nav-item name="Keysets" navroute="mint/keysets"> </orc-secondary-nav-item>
+		<orc-secondary-nav-item name="Database" navroute="mint/database"> </orc-secondary-nav-item>
+	</div>
+	<div>
+		@if (!loading) {
+			<div [@fadeIn] class="orc-outline-color font-size-xs p-b-0-5">{{ info.version }}</div>
+		}
+	</div>
 </div>

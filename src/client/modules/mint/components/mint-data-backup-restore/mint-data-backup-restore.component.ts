@@ -1,22 +1,21 @@
 /* Core Dependencies */
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, computed, signal } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output, computed, signal} from '@angular/core';
+import {FormGroup} from '@angular/forms';
 
 @Component({
 	selector: 'orc-mint-data-backup-restore',
 	standalone: false,
 	templateUrl: './mint-data-backup-restore.component.html',
 	styleUrl: './mint-data-backup-restore.component.scss',
-	changeDetection: ChangeDetectionStrategy.OnPush
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintDataBackupRestoreComponent {
-
 	@Input() active!: boolean;
 	@Input() form_group!: FormGroup;
 
 	@Output() close = new EventEmitter<void>();
 
-	public file_loading = signal<number|null>(null);
+	public file_loading = signal<number | null>(null);
 
 	public file_error = computed(() => {
 		if (this.form_group.get('file')?.hasError('required')) return 'Required';
@@ -25,23 +24,22 @@ export class MintDataBackupRestoreComponent {
 	});
 
 	public get file_quorum(): boolean {
-		if( this.file_loading() !== null && this.file_loading() !== 100 ) return false;
-		if( this.form_group.get('file')?.value === null ) return false;
+		if (this.file_loading() !== null && this.file_loading() !== 100) return false;
+		if (this.form_group.get('file')?.value === null) return false;
 		return true;
-	};
+	}
 
-	constructor(){}
+	constructor() {}
 
 	public onFileSelected(event: Event): void {
 		const input = event.target as HTMLInputElement;
-		if( !input.files || input.files.length === 0 ) return;
+		if (!input.files || input.files.length === 0) return;
 		this.form_group.patchValue({
-			file: input.files[0]
+			file: input.files[0],
 		});
 		this.form_group.get('file')?.markAsTouched();
 		this.form_group.get('file')?.markAsDirty();
 		this.readFileContent();
-		
 	}
 
 	private readFileContent(): void {
@@ -59,7 +57,7 @@ export class MintDataBackupRestoreComponent {
 			const file_content = reader.result as string;
 			const base64_content = file_content.split(',')[1];
 			this.form_group.patchValue({
-				filebase64: base64_content
+				filebase64: base64_content,
 			});
 			this.form_group.get('filebase64')?.markAsTouched();
 		};

@@ -1,23 +1,22 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { MintSubsectionErrorComponent } from './mint-subsection-error.component';
+import {MintSubsectionErrorComponent} from './mint-subsection-error.component';
 
 describe('MintSubsectionErrorComponent', () => {
-  let component: MintSubsectionErrorComponent;
-  let fixture: ComponentFixture<MintSubsectionErrorComponent>;
+	let component: MintSubsectionErrorComponent;
+	let fixture: ComponentFixture<MintSubsectionErrorComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [MintSubsectionErrorComponent]
-    })
-    .compileComponents();
+	beforeEach(async () => {
+		await TestBed.configureTestingModule({
+			declarations: [MintSubsectionErrorComponent],
+		}).compileComponents();
 
-    fixture = TestBed.createComponent(MintSubsectionErrorComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+		fixture = TestBed.createComponent(MintSubsectionErrorComponent);
+		component = fixture.componentInstance;
+		fixture.detectChanges();
+	});
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+	it('should create', () => {
+		expect(component).toBeTruthy();
+	});
 });

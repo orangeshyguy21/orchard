@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import { InputType, Field, Int } from "@nestjs/graphql";
+import {InputType, Field, Int} from '@nestjs/graphql';
 
 @InputType()
 export class MintNut05UpdateInput {
@@ -9,12 +9,12 @@ export class MintNut05UpdateInput {
 	@Field()
 	method: string;
 
-	@Field({ nullable: true })
-	disabled: boolean;  
+	@Field({nullable: true})
+	disabled: boolean;
 
-	@Field(() => Int, { nullable: true })
+	@Field(() => Int, {nullable: true})
 	min_amount: number;
 
-	@Field(() => Int, { nullable: true })
+	@Field(() => Int, {nullable: true})
 	max_amount: number;
 }

@@ -178,7 +178,7 @@ query MintMintQuotes($units: [MintUnit!], $states: [MintQuoteState!], $date_star
 		issued_time
 		created_time
 	}
-}`;	
+}`;
 
 export const MINT_MELT_QUOTES_QUERY = `
 query MintMeltQuotes($units: [MintUnit!], $states: [MeltQuoteState!], $date_start: UnixTimestamp, $date_end: UnixTimestamp) {
@@ -345,7 +345,7 @@ query MintMintQuotes($units: [MintUnit!], $states: [MintQuoteState!], $date_star
 	mint_count_mint_quotes(units: $units, states: $states, date_start: $date_start, date_end: $date_end) {
 		count
 	}
-}`;	
+}`;
 
 export const MINT_MELT_QUOTES_DATA_QUERY = `
 query MintMeltQuotes($units: [MintUnit!], $states: [MeltQuoteState!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $page: Int, $page_size: Int) {

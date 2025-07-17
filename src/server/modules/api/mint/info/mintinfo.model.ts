@@ -1,8 +1,8 @@
 /* Core Dependencies */
-import { Field, ObjectType, Int } from '@nestjs/graphql';
+import {Field, ObjectType, Int} from '@nestjs/graphql';
 /* Application Dependencies */
-import { UnixTimestamp } from '@server/modules/graphql/scalars/unixtimestamp.scalar';
-import { 
+import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
+import {
 	CashuCachedEndpoint,
 	CashuContact,
 	CashuMintInfo,
@@ -11,23 +11,23 @@ import {
 	CashuNut15Method,
 	CashuNutSupported,
 } from '@server/modules/cashu/mintapi/cashumintapi.types';
-import { CashuMintInfoRpc } from '@server/modules/cashu/mintrpc/cashumintrpc.types';
-import { MintUnit } from '@server/modules/cashu/cashu.enums';
+import {CashuMintInfoRpc} from '@server/modules/cashu/mintrpc/cashumintrpc.types';
+import {MintUnit} from '@server/modules/cashu/cashu.enums';
 
 @ObjectType()
 export class OrchardNutSupported {
-
 	@Field()
 	supported: boolean;
 
-	constructor(nut: 
-		CashuMintInfo['nuts']['7' ] | 
-		CashuMintInfo['nuts']['8' ] | 
-		CashuMintInfo['nuts']['9' ] |
-		CashuMintInfo['nuts']['10' ] |
-		CashuMintInfo['nuts']['11' ] |
-		CashuMintInfo['nuts']['12' ] |
-		CashuMintInfo['nuts']['14' ]
+	constructor(
+		nut:
+			| CashuMintInfo['nuts']['7']
+			| CashuMintInfo['nuts']['8']
+			| CashuMintInfo['nuts']['9']
+			| CashuMintInfo['nuts']['10']
+			| CashuMintInfo['nuts']['11']
+			| CashuMintInfo['nuts']['12']
+			| CashuMintInfo['nuts']['14'],
 	) {
 		this.supported = nut.supported;
 	}
@@ -35,7 +35,6 @@ export class OrchardNutSupported {
 
 @ObjectType()
 export class OrchardNut4 {
-
 	@Field(() => [OrchardNut4Method!])
 	methods: OrchardNut4Method[];
 
@@ -50,7 +49,6 @@ export class OrchardNut4 {
 
 @ObjectType()
 export class OrchardNut5 {
-
 	@Field(() => [OrchardNut5Method!])
 	methods: OrchardNut5Method[];
 
@@ -65,7 +63,6 @@ export class OrchardNut5 {
 
 @ObjectType()
 export class OrchardNut15 {
-
 	@Field(() => [OrchardNut15Method!])
 	methods: OrchardNut15Method[];
 
@@ -76,7 +73,6 @@ export class OrchardNut15 {
 
 @ObjectType()
 export class OrchardNut17 {
-
 	@Field(() => [OrchardNut17Supported!])
 	supported: OrchardNut17Supported[];
 
@@ -87,7 +83,6 @@ export class OrchardNut17 {
 
 @ObjectType()
 export class OrchardNut19 {
-
 	@Field(() => [OrchardCachedEndpoint!])
 	cached_endpoints: OrchardCachedEndpoint[];
 
@@ -102,7 +97,6 @@ export class OrchardNut19 {
 
 @ObjectType()
 export class OrchardNuts {
-
 	@Field()
 	nut4: OrchardNut4;
 
@@ -161,38 +155,37 @@ export class OrchardNuts {
 
 @ObjectType()
 export class OrchardMintInfo {
-
 	@Field()
 	name: string;
 
-	@Field({ nullable: true })
+	@Field({nullable: true})
 	pubkey: string;
 
 	@Field()
 	version: string;
-	
-	@Field({ nullable: true })
+
+	@Field({nullable: true})
 	description: string;
 
-	@Field({ nullable: true })
+	@Field({nullable: true})
 	description_long: string;
 
-	@Field(() => [OrchardContact!], { nullable: true })
+	@Field(() => [OrchardContact!], {nullable: true})
 	contact: OrchardContact[];
 
-	@Field({ nullable: true })
+	@Field({nullable: true})
 	icon_url: string;
 
-	@Field(() => [String!], { nullable: true })
+	@Field(() => [String!], {nullable: true})
 	urls: string[];
 
-	@Field(type => UnixTimestamp)
+	@Field((type) => UnixTimestamp)
 	time: number;
 
 	@Field(() => OrchardNuts!)
 	nuts: OrchardNuts;
 
-	constructor(cashu_info:CashuMintInfo) {
+	constructor(cashu_info: CashuMintInfo) {
 		this.name = cashu_info.name;
 		this.pubkey = cashu_info.pubkey;
 		this.version = cashu_info.version;
@@ -208,7 +201,6 @@ export class OrchardMintInfo {
 
 @ObjectType()
 export class OrchardContact {
-
 	@Field()
 	method: string;
 
@@ -223,21 +215,20 @@ export class OrchardContact {
 
 @ObjectType()
 export class OrchardNut4Method {
-
 	@Field()
 	method: string;
 
 	@Field()
 	unit: string;
 
-	@Field({ nullable: true })
+	@Field({nullable: true})
 	description?: boolean;
 
-	@Field({ nullable: true })
+	@Field({nullable: true})
 	min_amount?: number;
 
-	@Field({ nullable: true })
-	max_amount?: number;  
+	@Field({nullable: true})
+	max_amount?: number;
 
 	constructor(method: CashuNut4Method) {
 		this.method = method.method;
@@ -250,21 +241,20 @@ export class OrchardNut4Method {
 
 @ObjectType()
 export class OrchardNut5Method {
-
 	@Field()
 	method: string;
 
 	@Field()
 	unit: string;
 
-	@Field({ nullable: true })
+	@Field({nullable: true})
 	amountless?: boolean;
 
-	@Field({ nullable: true })
+	@Field({nullable: true})
 	min_amount?: number;
 
-	@Field({ nullable: true })
-	max_amount?: number;  
+	@Field({nullable: true})
+	max_amount?: number;
 
 	constructor(method: CashuNut5Method) {
 		this.method = method.method;
@@ -277,23 +267,20 @@ export class OrchardNut5Method {
 
 @ObjectType()
 export class OrchardNut15Method {
-
 	@Field()
 	method: string;
 
 	@Field(() => MintUnit)
 	unit: MintUnit;
 
-	constructor(method: CashuNut15Method){
+	constructor(method: CashuNut15Method) {
 		this.method = method.method;
 		this.unit = method.unit;
 	}
 }
 
-
 @ObjectType()
 export class OrchardNut17Supported {
-
 	@Field()
 	method: string;
 
@@ -303,7 +290,7 @@ export class OrchardNut17Supported {
 	@Field(() => [String!])
 	commands: string[];
 
-	constructor(supported: CashuNutSupported){
+	constructor(supported: CashuNutSupported) {
 		this.method = supported.method;
 		this.unit = supported.unit;
 		this.commands = supported.commands;
@@ -312,7 +299,6 @@ export class OrchardNut17Supported {
 
 @ObjectType()
 export class OrchardCachedEndpoint {
-
 	@Field()
 	method: string;
 
@@ -327,38 +313,37 @@ export class OrchardCachedEndpoint {
 
 @ObjectType()
 export class OrchardMintInfoRpc {
-
-	@Field({ nullable: true })
+	@Field({nullable: true})
 	name: string;
 
 	@Field()
 	version: string;
-	
-	@Field({ nullable: true })
+
+	@Field({nullable: true})
 	description: string;
 
-	@Field({ nullable: true })
+	@Field({nullable: true})
 	motd: string;
 
-	@Field({ nullable: true })
+	@Field({nullable: true})
 	total_issued: string;
 
-	@Field({ nullable: true })
+	@Field({nullable: true})
 	total_redeemed: string;
 
-	@Field({ nullable: true })
+	@Field({nullable: true})
 	description_long: string;
 
 	@Field(() => [OrchardContact!])
 	contact: OrchardContact[];
 
-	@Field({ nullable: true })
+	@Field({nullable: true})
 	icon_url: string;
 
 	@Field(() => [String!])
 	urls: string[];
 
-	constructor(cashu_info:CashuMintInfoRpc) {
+	constructor(cashu_info: CashuMintInfoRpc) {
 		this.name = cashu_info.name;
 		this.version = cashu_info.version;
 		this.description = cashu_info.description;
@@ -374,7 +359,7 @@ export class OrchardMintInfoRpc {
 
 @ObjectType()
 export class OrchardMintNameUpdate {
-	@Field({ nullable: true })
+	@Field({nullable: true})
 	name: string;
 }
 
@@ -392,7 +377,7 @@ export class OrchardMintDescriptionUpdate {
 
 @ObjectType()
 export class OrchardMintMotdUpdate {
-	@Field({ nullable: true })
+	@Field({nullable: true})
 	motd: string;
 }
 

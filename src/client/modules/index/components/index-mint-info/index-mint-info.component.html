@@ -1,37 +1,34 @@
 <div class="flex flex-column flex-gap-1">
-    <div class="title-l">Info</div>
-    <div class="orc-info-table">
-        <table>
-            <tbody>
-                <tr>
-                    <td class="font-weight-extra-light orc-outline-color">Mint</td>
-                    <td>
-                        <div class="flex flex-items-center flex-gap-1">
-                            <orc-mint-icon
-                                [loading]="loading"
-                                [icon_data]="icon_data">
-                            </orc-mint-icon>
-                            <div class="text-nowrap">{{ info?.name }}</div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="font-weight-extra-light orc-outline-color">Minting</td>
-                    <td>
-                        <div class="flex flex-items-center flex-gap-0-5">
-                            <div>{{ info?.nuts?.nut4?.disabled ? 'Disabled' : 'Enabled' }}</div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="font-weight-extra-light orc-outline-color">Melting</td>
-                    <td>
-                        <div class="flex flex-items-center flex-gap-0-5">
-                            <div>{{ info?.nuts?.nut5?.disabled ? 'Disabled' : 'Enabled' }}</div>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+	<div class="title-l">Info</div>
+	<div class="orc-info-table">
+		<table>
+			<tbody>
+				<tr>
+					<td class="font-weight-extra-light orc-outline-color">Mint</td>
+					<td>
+						<div class="flex flex-items-center flex-gap-1">
+							<orc-mint-icon [loading]="loading" [icon_data]="icon_data"> </orc-mint-icon>
+							<div class="text-nowrap">{{ info?.name }}</div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td class="font-weight-extra-light orc-outline-color">Minting</td>
+					<td>
+						<div class="flex flex-items-center flex-gap-0-5">
+							<div>{{ info?.nuts?.nut4?.disabled ? 'Disabled' : 'Enabled' }}</div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td class="font-weight-extra-light orc-outline-color">Melting</td>
+					<td>
+						<div class="flex flex-items-center flex-gap-0-5">
+							<div>{{ info?.nuts?.nut5?.disabled ? 'Disabled' : 'Enabled' }}</div>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 </div>

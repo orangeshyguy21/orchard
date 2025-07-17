@@ -1,27 +1,21 @@
 /* Core Dependencies */
-import { Logger } from '@nestjs/common';
-import { Resolver, Subscription, Query } from '@nestjs/graphql';
-import { OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import {Logger} from '@nestjs/common';
+import {Resolver, Subscription, Query} from '@nestjs/graphql';
+import {OnModuleInit, OnModuleDestroy} from '@nestjs/common';
 /* Vendor Dependencies */
-import { PubSub } from 'graphql-subscriptions';
+import {PubSub} from 'graphql-subscriptions';
 /* Local Dependencies */
-import { BitcoinBlockchainService } from './btcblockchain.service';
-import { 
-	OrchardBitcoinBlockCount, 
-	OrchardBitcoinBlockchainInfo,
-} from './btcblockchain.model';
+import {BitcoinBlockchainService} from './btcblockchain.service';
+import {OrchardBitcoinBlockCount, OrchardBitcoinBlockchainInfo} from './btcblockchain.model';
 
 const pubSub = new PubSub();
 
 @Resolver(() => OrchardBitcoinBlockCount)
 export class BitcoinBlockchainResolver {
-
 	private readonly logger = new Logger(BitcoinBlockchainResolver.name);
-	
-	constructor(
-		private bitcoinBlockchainService: BitcoinBlockchainService,
-	) {}
-	
+
+	constructor(private bitcoinBlockchainService: BitcoinBlockchainService) {}
+
 	// onModuleInit() {
 	// 	this.bitcoinBlockCountService.startBlockCountPolling();
 	// 	this.bitcoinBlockCountService.onBlockCountUpdate((block_count) => {
@@ -29,13 +23,13 @@ export class BitcoinBlockchainResolver {
 	// 		pubSub.publish('bitcoin.blockcount', { blockCount: { block_count } });
 	// 	});
 	// }
-	
+
 	// onModuleDestroy() {
 	// 	this.bitcoinBlockCountService.stopBlockCountPolling();
 	// }
 
 	@Query(() => OrchardBitcoinBlockCount)
-	async bitcoin_blockcount() : Promise<OrchardBitcoinBlockCount> {
+	async bitcoin_blockcount(): Promise<OrchardBitcoinBlockCount> {
 		const tag = 'GET { bitcoin_blockcount }';
 		this.logger.debug(tag);
 		return await this.bitcoinBlockchainService.getBlockCount(tag);
@@ -51,7 +45,7 @@ export class BitcoinBlockchainResolver {
 	}
 
 	@Query(() => OrchardBitcoinBlockchainInfo)
-	async bitcoin_blockchain_info() : Promise<OrchardBitcoinBlockchainInfo> {
+	async bitcoin_blockchain_info(): Promise<OrchardBitcoinBlockchainInfo> {
 		const tag = 'GET { bitcoin_blockchain_info }';
 		this.logger.debug(tag);
 		return await this.bitcoinBlockchainService.getBlockchainInfo(tag);

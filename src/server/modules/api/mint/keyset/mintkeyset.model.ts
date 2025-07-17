@@ -1,25 +1,25 @@
 /* Core Dependencies */
-import { Field, Int, ID, ObjectType } from '@nestjs/graphql';
+import {Field, Int, ID, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
-import { UnixTimestamp } from '@server/modules/graphql/scalars/unixtimestamp.scalar';
-import { CashuMintKeyset } from '@server/modules/cashu/mintdb/cashumintdb.types';
-import { MintUnit } from '@server/modules/cashu/cashu.enums';
+import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
+import {CashuMintKeyset} from '@server/modules/cashu/mintdb/cashumintdb.types';
+import {MintUnit} from '@server/modules/cashu/cashu.enums';
 
 @ObjectType()
 export class OrchardMintKeyset {
-	@Field(type => ID)
+	@Field((type) => ID)
 	id: string;
 
 	@Field()
 	derivation_path: string;
 
-	@Field(type => Int)
+	@Field((type) => Int)
 	derivation_path_index: number;
 
-	@Field(type => UnixTimestamp)
+	@Field((type) => UnixTimestamp)
 	valid_from: number;
 
-	@Field(type => UnixTimestamp, { nullable: true })
+	@Field((type) => UnixTimestamp, {nullable: true})
 	valid_to: number;
 
 	@Field()
@@ -28,13 +28,13 @@ export class OrchardMintKeyset {
 	@Field()
 	unit: MintUnit;
 
-	@Field(type => Int, { nullable: true })
+	@Field((type) => Int, {nullable: true})
 	input_fee_ppk: number;
 
-	@Field(type => Int, { nullable: true })
+	@Field((type) => Int, {nullable: true})
 	fees_paid: number;
 
-	constructor(cashu_keyset:CashuMintKeyset) {
+	constructor(cashu_keyset: CashuMintKeyset) {
 		this.id = cashu_keyset.id;
 		this.derivation_path = cashu_keyset.derivation_path;
 		this.derivation_path_index = cashu_keyset.derivation_path_index;
@@ -51,13 +51,13 @@ export class OrchardMintKeyset {
 export class OrchardMintKeysetRotation {
 	@Field()
 	id: string;
-	
+
 	@Field()
 	unit: string;
 
-	@Field(() => Int, { nullable: true })
+	@Field(() => Int, {nullable: true})
 	max_order: number;
 
-	@Field(() => Int, { nullable: true })
+	@Field(() => Int, {nullable: true})
 	input_fee_ppk: number;
 }

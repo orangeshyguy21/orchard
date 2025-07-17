@@ -1,7 +1,7 @@
 /* Core Dependencies */
-import { Module } from '@nestjs/common';
+import {Module} from '@nestjs/common';
 /* Local Dependencies */
-import { ErrorService } from './error.service';
+import {ErrorService} from './error.service';
 
 @Module({
 	providers: [ErrorService],

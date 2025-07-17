@@ -1,57 +1,34 @@
 @use '@styles/molecule/molecule';
 @use '@styles/nucleus/nucleus';
 
-// :host {
-//     @extend %flex;
-//     @extend %flex-column;
-//     @extend %flex-grow;
-// }
-
-.mint-dashboard-container{
-    @extend %flex;
-    @extend %flex-column;
-    @extend %p-1;
+.mint-dashboard-container {
+	@extend %flex;
+	@extend %flex-column;
+	@extend %p-1;
 }
 
-.mint-dashboard-header{
-    @extend %flex;
-    @extend %flex-gap-2;
+.mint-dashboard-header {
+	@extend %flex;
+	@extend %flex-gap-2;
 }
 
-.mint-analytic-control-panel{
-    @extend %p-t-1;
-    @extend %orc-surface-bg;
-    @extend %sticky;
-    @extend %top-0;
-    @extend %z-index-1;
+.mint-analytic-control-panel {
+	@extend %p-t-1;
+	@extend %orc-surface-bg;
+	@extend %sticky;
+	@extend %top-0;
+	@extend %z-index-1;
 }
 
-.mint-analytic-header{
-    @extend %sticky;
-    @extend %title-m;
-    @extend %flex;
-    top: 86px;
+.mint-analytic-header {
+	@extend %sticky;
+	@extend %title-m;
+	@extend %flex;
+	top: 86px;
 }
 
-.mint-analytic-title{
-    @extend %orc-surface-bg;
-    @extend %p-1;
-    @extend %orc-corner-full;
+.mint-analytic-title {
+	@extend %orc-surface-bg;
+	@extend %p-1;
+	@extend %orc-corner-full;
 }
-
-
-// @use '@styles/molecule/molecule';
-
-// :host {
-//     @extend %flex;
-//     @extend %flex-column;
-//     @extend %flex-grow;
-// }
-
-// .mint-subsection-info-container{
-//     @extend %p-2;
-//     @extend %flex;
-//     @extend %flex-column;
-//     @extend %flex-grow;
-//     @extend %flex-gap-1;
-// }

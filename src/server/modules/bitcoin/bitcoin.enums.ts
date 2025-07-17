@@ -1,3 +1,3 @@
 export enum BitcoinType {
-    CORE = 'core',
+	CORE = 'core',
 }

@@ -1,16 +1,16 @@
 @use '@styles/molecule/molecule';
 
 :host {
-    @extend %w-full;
+	@extend %w-full;
 }
 
-.lightning-disabled-card{
-    min-height: 20rem;
-    @extend %border-dashed;
+.lightning-disabled-card {
+	min-height: 20rem;
+	@extend %border-dashed;
 
-    mat-card-content{
-        @extend %flex-grow;
-        @extend %flex;
-        @extend %flex-column;
-    }
+	mat-card-content {
+		@extend %flex-grow;
+		@extend %flex;
+		@extend %flex-column;
+	}
 }

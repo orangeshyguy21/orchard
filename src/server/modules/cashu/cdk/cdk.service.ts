@@ -1,14 +1,14 @@
 /* Core Dependencies */
-import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import {Injectable, Logger} from '@nestjs/common';
+import {ConfigService} from '@nestjs/config';
 import * as fs from 'fs';
 import * as path from 'path';
 /* Vendor Dependencies */
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
-import sqlite3 from "sqlite3";
+import sqlite3 from 'sqlite3';
 /* Native Dependencies */
-import { 
+import {
 	CashuMintBalance,
 	CashuMintKeyset,
 	CashuMintMeltQuote,
@@ -19,7 +19,7 @@ import {
 	CashuMintKeysetsAnalytics,
 	CashuMintCount,
 } from '@server/modules/cashu/mintdb/cashumintdb.types';
-import { 
+import {
 	CashuMintMintQuotesArgs,
 	CashuMintAnalyticsArgs,
 	CashuMintMeltQuotesArgs,
@@ -33,57 +33,47 @@ import {
 	getAnalyticsConditions,
 	getAnalyticsTimeGroupSql,
 } from '@server/modules/cashu/mintdb/cashumintdb.helpers';
-import { MintAnalyticsInterval } from '@server/modules/cashu/mintdb/cashumintdb.enums';
+import {MintAnalyticsInterval} from '@server/modules/cashu/mintdb/cashumintdb.enums';
 
 @Injectable()
 export class CdkService {
-
 	private readonly logger = new Logger(CdkService.name);
 
-	constructor(
-		private configService: ConfigService,
-	) {}
+	constructor(private configService: ConfigService) {}
 
-	public initializeGrpcClient() : grpc.Client {
-        const rpc_key = this.configService.get('cashu.rpc_key');
-        const rpc_cert = this.configService.get('cashu.rpc_cert');
-        const rpc_ca = this.configService.get('cashu.rpc_ca');
-        const rpc_host = this.configService.get('cashu.rpc_host');
-        const rpc_port = this.configService.get('cashu.rpc_port');
-        const rpc_url = `${rpc_host}:${rpc_port}`;
+	public initializeGrpcClient(): grpc.Client {
+		const rpc_key = this.configService.get('cashu.rpc_key');
+		const rpc_cert = this.configService.get('cashu.rpc_cert');
+		const rpc_ca = this.configService.get('cashu.rpc_ca');
+		const rpc_host = this.configService.get('cashu.rpc_host');
+		const rpc_port = this.configService.get('cashu.rpc_port');
+		const rpc_url = `${rpc_host}:${rpc_port}`;
 
-        if (!rpc_key || !rpc_cert || !rpc_ca || !rpc_host || !rpc_port) {
-            this.logger.warn('Missing RPC credentials, secure connection cannot be established');
-            return;
-        }
-        
-        try {
-            const proto_path = path.resolve(__dirname, '../../../../proto/cdk/cdk-mint-rpc.proto');
-            const package_definition = protoLoader.loadSync(proto_path, {
-                keepCase: true,
-                longs: String,
-                enums: String,
-                defaults: true,
-                oneofs: true
-            });
-            const mint_proto: any = grpc.loadPackageDefinition(package_definition).cdk_mint_rpc;
-            const key_content = fs.readFileSync(rpc_key);
-            const cert_content = fs.readFileSync(rpc_cert);
-            const ca_content = rpc_ca ? fs.readFileSync(rpc_ca) : undefined;
-            const ssl_credentials = grpc.credentials.createSsl(
-                ca_content,
-                key_content,
-                cert_content
-            );
+		if (!rpc_key || !rpc_cert || !rpc_ca || !rpc_host || !rpc_port) {
+			this.logger.warn('Missing RPC credentials, secure connection cannot be established');
+			return;
+		}
+
+		try {
+			const proto_path = path.resolve(__dirname, '../../../../proto/cdk/cdk-mint-rpc.proto');
+			const package_definition = protoLoader.loadSync(proto_path, {
+				keepCase: true,
+				longs: String,
+				enums: String,
+				defaults: true,
+				oneofs: true,
+			});
+			const mint_proto: any = grpc.loadPackageDefinition(package_definition).cdk_mint_rpc;
+			const key_content = fs.readFileSync(rpc_key);
+			const cert_content = fs.readFileSync(rpc_cert);
+			const ca_content = rpc_ca ? fs.readFileSync(rpc_ca) : undefined;
+			const ssl_credentials = grpc.credentials.createSsl(ca_content, key_content, cert_content);
 			this.logger.log('Mint gRPC client initialized with TLS certificate authentication');
-            return new mint_proto.CdkMint(
-                rpc_url,
-                ssl_credentials
-            );
-        } catch (error) {
+			return new mint_proto.CdkMint(rpc_url, ssl_credentials);
+		} catch (error) {
 			this.logger.error(`Failed to initialize gRPC client: ${error.message}`);
-        }
-    }
+		}
+	}
 
 	public async getMintBalances(db: sqlite3.Database, keyset_id?: string): Promise<CashuMintBalance[]> {
 		const where_clause = keyset_id ? 'WHERE keyset_id = ?' : '';
@@ -108,7 +98,7 @@ export class CdkService {
 			FULL OUTER JOIN redeemed r ON i.keyset_id = r.keyset_id
 			ORDER BY keyset;
 		`;
-	
+
 		const params = keyset_id ? [keyset_id, keyset_id] : [];
 		return new Promise((resolve, reject) => {
 			db.all(sql, params, (err, rows: CashuMintBalance[]) => {
@@ -118,21 +108,21 @@ export class CdkService {
 		});
 	}
 
-	public async getMintBalancesIssued(db:sqlite3.Database) : Promise<CashuMintBalance[]> {
+	public async getMintBalancesIssued(db: sqlite3.Database): Promise<CashuMintBalance[]> {
 		const sql = `
 			SELECT keyset_id AS keyset, SUM(amount) AS balance
 			FROM blind_signature
 			GROUP BY keyset_id
 			ORDER BY keyset_id;`;
 		return new Promise((resolve, reject) => {
-			db.all(sql, (err, rows:CashuMintBalance[]) => {
+			db.all(sql, (err, rows: CashuMintBalance[]) => {
 				if (err) return reject(err);
 				resolve(rows);
 			});
 		});
 	}
 
-	public async getMintBalancesRedeemed(db:sqlite3.Database) : Promise<CashuMintBalance[]> {
+	public async getMintBalancesRedeemed(db: sqlite3.Database): Promise<CashuMintBalance[]> {
 		const sql = `
 			SELECT keyset_id AS keyset, SUM(amount) AS balance
 			FROM proof
@@ -140,65 +130,65 @@ export class CdkService {
 			GROUP BY keyset_id
 			ORDER BY keyset_id;`;
 		return new Promise((resolve, reject) => {
-			db.all(sql, (err, rows:CashuMintBalance[]) => {
+			db.all(sql, (err, rows: CashuMintBalance[]) => {
 				if (err) return reject(err);
 				resolve(rows);
 			});
 		});
 	}
 
-	public async getMintKeysets(db:sqlite3.Database) : Promise<CashuMintKeyset[]> {
+	public async getMintKeysets(db: sqlite3.Database): Promise<CashuMintKeyset[]> {
 		const sql = 'SELECT * FROM keyset WHERE unit != ?;';
 		return new Promise((resolve, reject) => {
-			db.all(sql, ['auth'], (err, rows:CashuMintKeyset[]) => {
+			db.all(sql, ['auth'], (err, rows: CashuMintKeyset[]) => {
 				if (err) return reject(err);
 				resolve(rows);
 			});
 		});
 	}
 
-	public async getMintMintQuotes(db:sqlite3.Database, args?: CashuMintMintQuotesArgs) : Promise<CashuMintMintQuote[]> {
+	public async getMintMintQuotes(db: sqlite3.Database, args?: CashuMintMintQuotesArgs): Promise<CashuMintMintQuote[]> {
 		const field_mappings = {
 			units: 'unit',
 			date_start: 'created_time',
 			date_end: 'created_time',
 			states: 'state',
 		};
-		const { sql, params } = buildDynamicQuery('mint_quote', args, field_mappings);
+		const {sql, params} = buildDynamicQuery('mint_quote', args, field_mappings);
 		return new Promise((resolve, reject) => {
-			db.all(sql, params, (err, rows:CashuMintMintQuote[]) => {
+			db.all(sql, params, (err, rows: CashuMintMintQuote[]) => {
 				if (err) return reject(err);
 				resolve(rows);
 			});
 		});
-    }
+	}
 
-	public async getMintCountMintQuotes(db:sqlite3.Database, args?: CashuMintMintQuotesArgs) : Promise<number> {
+	public async getMintCountMintQuotes(db: sqlite3.Database, args?: CashuMintMintQuotesArgs): Promise<number> {
 		const field_mappings = {
 			units: 'unit',
 			date_start: 'created_time',
 			date_end: 'created_time',
 			states: 'state',
 		};
-		const { sql, params } = buildCountQuery('mint_quote', args, field_mappings);
+		const {sql, params} = buildCountQuery('mint_quote', args, field_mappings);
 		return new Promise((resolve, reject) => {
-			db.get(sql, params, (err, row:CashuMintCount) => {
+			db.get(sql, params, (err, row: CashuMintCount) => {
 				if (err) return reject(err);
 				resolve(row.count);
 			});
 		});
 	}
 
-	public async getMintMeltQuotes(db:sqlite3.Database, args?: CashuMintMeltQuotesArgs) : Promise<CashuMintMeltQuote[]> {
+	public async getMintMeltQuotes(db: sqlite3.Database, args?: CashuMintMeltQuotesArgs): Promise<CashuMintMeltQuote[]> {
 		const field_mappings = {
 			units: 'unit',
 			date_start: 'created_time',
 			date_end: 'created_time',
 			states: 'state',
 		};
-		const { sql, params } = buildDynamicQuery('melt_quote', args, field_mappings);
+		const {sql, params} = buildDynamicQuery('melt_quote', args, field_mappings);
 		return new Promise((resolve, reject) => {
-			db.all(sql, params, (err, rows:CashuMintMeltQuote[]) => {
+			db.all(sql, params, (err, rows: CashuMintMeltQuote[]) => {
 				if (err) return reject(err);
 				resolve(rows);
 			});
@@ -213,7 +203,7 @@ export class CdkService {
 			date_start: 'p.created_time',
 			date_end: 'p.created_time',
 		};
-		
+
 		const select_statement = `
 			SELECT 
 				p.created_time,
@@ -223,22 +213,16 @@ export class CdkService {
 				json_group_array(p.amount) as amounts
 			FROM proof p
 			LEFT JOIN keyset k ON k.id = p.keyset_id`;
-		
+
 		const group_by = 'p.created_time, k.unit, p.state, p.keyset_id';
-		
-		const { sql, params } = buildDynamicQuery(
-			'proof', 
-			args, 
-			field_mappings, 
-			select_statement, 
-			group_by
-		);
-		
+
+		const {sql, params} = buildDynamicQuery('proof', args, field_mappings, select_statement, group_by);
+
 		return new Promise((resolve, reject) => {
 			db.all(sql, params, (err, rows: any[]) => {
 				if (err) return reject(err);
 				const groups = {};
-				rows.forEach(row => {
+				rows.forEach((row) => {
 					const key = `${row.created_time}_${row.unit}_${row.state}`;
 					if (!groups[key]) {
 						groups[key] = {
@@ -246,21 +230,21 @@ export class CdkService {
 							unit: row.unit,
 							state: row.state,
 							keysets: [],
-							amounts: []
+							amounts: [],
 						};
 					}
 					groups[key].keysets.push(row.keyset_id);
 					groups[key].amounts.push(JSON.parse(row.amounts));
 				});
-				
+
 				const proof_groups: CashuMintProofGroup[] = Object.values(groups).map((group: any) => ({
 					amount: group.amounts.flat().reduce((sum, amount) => sum + amount, 0),
 					created_time: group.created_time,
 					keyset_ids: group.keysets,
 					unit: group.unit,
 					state: group.state,
-					amounts: group.amounts
-				}));				
+					amounts: group.amounts,
+				}));
 				resolve(proof_groups);
 			});
 		});
@@ -282,64 +266,58 @@ export class CdkService {
 				json_group_array(bs.amount) as amounts
 			FROM blind_signature bs
 			LEFT JOIN keyset k ON k.id = bs.keyset_id`;
-		
+
 		const group_by = 'bs.created_time, k.unit, bs.keyset_id';
-		
-		const { sql, params } = buildDynamicQuery(
-			'blind_signature', 
-			args, 
-			field_mappings, 
-			select_statement, 
-			group_by
-		);
-		
+
+		const {sql, params} = buildDynamicQuery('blind_signature', args, field_mappings, select_statement, group_by);
+
 		return new Promise((resolve, reject) => {
 			db.all(sql, params, (err, rows: any[]) => {
 				if (err) return reject(err);
 				const groups = {};
-				rows.forEach(row => {
+				rows.forEach((row) => {
 					const key = `${row.created_time}_${row.unit}`;
 					if (!groups[key]) {
 						groups[key] = {
 							created_time: row.created_time,
 							unit: row.unit,
 							keysets: [],
-							amounts: []
+							amounts: [],
 						};
 					}
 					groups[key].keysets.push(row.keyset_id);
 					groups[key].amounts.push(JSON.parse(row.amounts));
 				});
-				
+
 				const promise_groups: CashuMintPromiseGroup[] = Object.values(groups).map((group: any) => ({
 					amount: group.amounts.flat().reduce((sum, amount) => sum + amount, 0),
 					created_time: group.created_time,
 					keyset_ids: group.keysets,
 					unit: group.unit,
-					amounts: group.amounts
-				}));				
+					amounts: group.amounts,
+				}));
 				resolve(promise_groups);
 			});
 		});
 	}
 
-	public async getMintCountMeltQuotes(db:sqlite3.Database, args?: CashuMintMeltQuotesArgs) : Promise<number> {
+	public async getMintCountMeltQuotes(db: sqlite3.Database, args?: CashuMintMeltQuotesArgs): Promise<number> {
 		const field_mappings = {
 			units: 'unit',
 			date_start: 'created_time',
 			date_end: 'created_time',
 			states: 'state',
 		};
-		const { sql, params } = buildCountQuery('melt_quote', args, field_mappings);
+		const {sql, params} = buildCountQuery('melt_quote', args, field_mappings);
 		return new Promise((resolve, reject) => {
-			db.get(sql, params, (err, row:CashuMintCount) => {
+			db.get(sql, params, (err, row: CashuMintCount) => {
 				if (err) return reject(err);
 				resolve(row.count);
 			});
 		});
 	}
 
-	public async getMintCountProofGroups(db:sqlite3.Database, args?: CashuMintProofsArgs) : Promise<number> {
+	public async getMintCountProofGroups(db: sqlite3.Database, args?: CashuMintProofsArgs): Promise<number> {
 		const field_mappings = {
 			states: 'p.state',
 			units: 'k.unit',
@@ -347,7 +325,7 @@ export class CdkService {
 			date_start: 'p.created_time',
 			date_end: 'p.created_time',
 		};
-		
+
 		const select_statement = `
 			SELECT COUNT(*) AS count FROM (
 				SELECT 
@@ -357,20 +335,20 @@ export class CdkService {
 					p.state
 				FROM proof p
 				LEFT JOIN keyset k ON k.id = p.keyset_id`;
-		
+
 		const group_by = 'p.created_time, k.unit, p.state';
-		const { sql, params } = buildCountQuery('proof', args, field_mappings, select_statement, group_by);
+		const {sql, params} = buildCountQuery('proof', args, field_mappings, select_statement, group_by);
 		const final_sql = sql.replace(';', ') subquery;');
-		
+
 		return new Promise((resolve, reject) => {
-			db.get(final_sql, params, (err, row:CashuMintCount) => {
+			db.get(final_sql, params, (err, row: CashuMintCount) => {
 				if (err) return reject(err);
 				resolve(row.count);
 			});
 		});
 	}
 
-	public async getMintCountPromiseGroups(db:sqlite3.Database, args?: CashuMintPromiseArgs) : Promise<number> {
+	public async getMintCountPromiseGroups(db: sqlite3.Database, args?: CashuMintPromiseArgs): Promise<number> {
 		const field_mappings = {
 			units: 'k.unit',
 			id_keysets: 'bs.keyset_id',
@@ -386,37 +364,36 @@ export class CdkService {
 					k.unit
 				FROM blind_signature bs
 				LEFT JOIN keyset k ON k.id = bs.keyset_id`;
-		
+
 		const group_by = 'bs.created_time, k.unit';
-		const { sql, params } = buildCountQuery('blind_signature', args, field_mappings, select_statement, group_by);
+		const {sql, params} = buildCountQuery('blind_signature', args, field_mappings, select_statement, group_by);
 		const final_sql = sql.replace(';', ') subquery;');
-		
+
 		return new Promise((resolve, reject) => {
-			db.get(final_sql, params, (err, row:CashuMintCount) => {
+			db.get(final_sql, params, (err, row: CashuMintCount) => {
 				if (err) return reject(err);
 				resolve(row.count);
 			});
 		});
 	}
 
-
 	/* Analytics */
 
-	public async getMintAnalyticsBalances(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
+	public async getMintAnalyticsBalances(db: sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
 		const interval = args?.interval || MintAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
-		const { where_conditions, params } = getAnalyticsConditions({
+		const {where_conditions, params} = getAnalyticsConditions({
 			args: args,
-			time_column: 'created_time'
+			time_column: 'created_time',
 		});
 		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
 		const time_group_sql = getAnalyticsTimeGroupSql({
 			interval: interval,
 			timezone: timezone,
 			time_column: 'created_time',
-			group_by: 'unit'
+			group_by: 'unit',
 		});
-		
+
 		const sqlite_sql = `
 			WITH mint_data AS (
 				SELECT 
@@ -467,17 +444,17 @@ export class CdkService {
 				m.time_group IS NULL
 			ORDER BY 
 				min_created_time;`;
-		
+
 		return new Promise((resolve, reject) => {
-			db.all(sqlite_sql, [...params, ...params], (err, rows:any[]) => {
+			db.all(sqlite_sql, [...params, ...params], (err, rows: any[]) => {
 				if (err) return reject(err);
-						
-				const result = rows.map(row => {
+
+				const result = rows.map((row) => {
 					const timestamp = getAnalyticsTimeGroupStamp({
 						min_created_time: row.min_created_time,
 						time_group: row.time_group,
 						interval: interval,
-						timezone: timezone
+						timezone: timezone,
 					});
 					return {
 						unit: row.unit,
@@ -486,25 +463,25 @@ export class CdkService {
 						operation_count: row.operation_count,
 					};
 				});
-				
+
 				resolve(result);
 			});
 		});
 	}
 
-	public async getMintAnalyticsMints(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
+	public async getMintAnalyticsMints(db: sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
 		const interval = args?.interval || MintAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
-		const { where_conditions, params } = getAnalyticsConditions({
+		const {where_conditions, params} = getAnalyticsConditions({
 			args: args,
-			time_column: 'created_time'
+			time_column: 'created_time',
 		});
 		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
 		const time_group_sql = getAnalyticsTimeGroupSql({
 			interval: interval,
 			timezone: timezone,
 			time_column: 'created_time',
-			group_by: 'unit'
+			group_by: 'unit',
 		});
 		const sql = `
 			SELECT 
@@ -520,17 +497,17 @@ export class CdkService {
 				time_group, unit
 			ORDER BY 
 				min_created_time;`;
-    
+
 		return new Promise((resolve, reject) => {
-			db.all(sql, params, (err, rows:any[]) => {
+			db.all(sql, params, (err, rows: any[]) => {
 				if (err) return reject(err);
-						
-				const result = rows.map(row => {
+
+				const result = rows.map((row) => {
 					const timestamp = getAnalyticsTimeGroupStamp({
 						min_created_time: row.min_created_time,
 						time_group: row.time_group,
 						interval: interval,
-						timezone: timezone
+						timezone: timezone,
 					});
 					return {
 						unit: row.unit,
@@ -539,25 +516,25 @@ export class CdkService {
 						operation_count: row.operation_count,
 					};
 				});
-				
+
 				resolve(result);
 			});
 		});
- 	}
+	}
 
-	 public async getMintAnalyticsMelts(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
+	public async getMintAnalyticsMelts(db: sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
 		const interval = args?.interval || MintAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
-		const { where_conditions, params } = getAnalyticsConditions({
+		const {where_conditions, params} = getAnalyticsConditions({
 			args: args,
-			time_column: 'created_time'
+			time_column: 'created_time',
 		});
 		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
 		const time_group_sql = getAnalyticsTimeGroupSql({
 			interval: interval,
 			timezone: timezone,
 			time_column: 'created_time',
-			group_by: 'unit'
+			group_by: 'unit',
 		});
 		const sql = `
 			SELECT 
@@ -573,17 +550,17 @@ export class CdkService {
 				time_group, unit
 			ORDER BY 
 				min_created_time;`;
-    
+
 		return new Promise((resolve, reject) => {
-			db.all(sql, params, (err, rows:any[]) => {
+			db.all(sql, params, (err, rows: any[]) => {
 				if (err) return reject(err);
-						
-				const result = rows.map(row => {
+
+				const result = rows.map((row) => {
 					const timestamp = getAnalyticsTimeGroupStamp({
 						min_created_time: row.min_created_time,
 						time_group: row.time_group,
 						interval: interval,
-						timezone: timezone
+						timezone: timezone,
 					});
 					return {
 						unit: row.unit,
@@ -592,18 +569,18 @@ export class CdkService {
 						operation_count: row.operation_count,
 					};
 				});
-				
+
 				resolve(result);
 			});
 		});
- 	}
+	}
 
-	public async getMintAnalyticsTransfers(db:sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
+	public async getMintAnalyticsTransfers(db: sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
 		const interval = args?.interval || MintAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
-		const { where_conditions, params } = getAnalyticsConditions({
+		const {where_conditions, params} = getAnalyticsConditions({
 			args: args,
-			time_column: 'created_time'
+			time_column: 'created_time',
 		});
 		where_conditions.push('quote_id IS NULL');
 		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
@@ -611,7 +588,7 @@ export class CdkService {
 			interval: interval,
 			timezone: timezone,
 			time_column: 'created_time',
-			group_by: 'unit'
+			group_by: 'unit',
 		});
 		const sql = `
 			SELECT 
@@ -628,17 +605,17 @@ export class CdkService {
 				time_group, unit
 			ORDER BY
 				min_created_time;`;
-    
+
 		return new Promise((resolve, reject) => {
-			db.all(sql, params, (err, rows:any[]) => {
+			db.all(sql, params, (err, rows: any[]) => {
 				if (err) return reject(err);
-						
-				const result = rows.map(row => {
+
+				const result = rows.map((row) => {
 					const timestamp = getAnalyticsTimeGroupStamp({
 						min_created_time: row.min_created_time,
 						time_group: row.time_group,
 						interval: interval,
-						timezone: timezone
+						timezone: timezone,
 					});
 					return {
 						unit: row.unit,
@@ -647,7 +624,7 @@ export class CdkService {
 						operation_count: row.operation_count,
 					};
 				});
-				
+
 				resolve(result);
 			});
 		});
@@ -656,18 +633,18 @@ export class CdkService {
 	public async getMintAnalyticsKeysets(db: sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintKeysetsAnalytics[]> {
 		const interval = args?.interval || MintAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
-		const { where_conditions, params } = getAnalyticsConditions({
+		const {where_conditions, params} = getAnalyticsConditions({
 			args: args,
-			time_column: 'created_time'
+			time_column: 'created_time',
 		});
 		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
 		const time_group_sql = getAnalyticsTimeGroupSql({
 			interval: interval,
 			timezone: timezone,
 			time_column: 'created_time',
-			group_by: 'keyset_id'
+			group_by: 'keyset_id',
 		});
-	
+
 		const sql = `
 			WITH issued AS (
 				SELECT 
@@ -701,17 +678,17 @@ export class CdkService {
 				AND i.keyset_id = r.keyset_id
 			ORDER BY min_created_time;
 		`;
-	
+
 		return new Promise((resolve, reject) => {
 			db.all(sql, [...params, ...params], (err, rows: any[]) => {
 				if (err) return reject(err);
-						
-				const result = rows.map(row => {
+
+				const result = rows.map((row) => {
 					const timestamp = getAnalyticsTimeGroupStamp({
 						min_created_time: row.min_created_time,
 						time_group: row.time_group,
 						interval: interval,
-						timezone: timezone
+						timezone: timezone,
 					});
 					return {
 						keyset_id: row.keyset_id,
@@ -719,7 +696,7 @@ export class CdkService {
 						created_time: timestamp,
 					};
 				});
-				
+
 				resolve(result);
 			});
 		});

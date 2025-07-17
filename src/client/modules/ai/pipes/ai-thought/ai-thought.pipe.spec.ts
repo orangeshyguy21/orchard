@@ -1,8 +1,8 @@
-import { AiThoughtPipe } from './ai-thought.pipe';
+import {AiThoughtPipe} from './ai-thought.pipe';
 
 describe('AiThoughtPipe', () => {
-  it('create an instance', () => {
-    const pipe = new AiThoughtPipe();
-    expect(pipe).toBeTruthy();
-  });
+	it('create an instance', () => {
+		const pipe = new AiThoughtPipe();
+		expect(pipe).toBeTruthy();
+	});
 });

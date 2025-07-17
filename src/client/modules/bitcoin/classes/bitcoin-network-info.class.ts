@@ -1,7 +1,6 @@
-import { OrchardBitcoinNetworkInfo, OrchardBitcoinNetworkAddress, OrchardBitcoinNetwork } from "@shared/generated.types";
+import {OrchardBitcoinNetworkInfo, OrchardBitcoinNetworkAddress, OrchardBitcoinNetwork} from '@shared/generated.types';
 
 export class BitcoinNetworkInfo implements OrchardBitcoinNetworkInfo {
-
 	public connections: number;
 	public connections_in: number;
 	public connections_out: number;

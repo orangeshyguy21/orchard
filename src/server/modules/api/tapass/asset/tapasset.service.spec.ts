@@ -1,18 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { TaprootAssetsAssetService } from './tapasset.service';
+import {Test, TestingModule} from '@nestjs/testing';
+import {TaprootAssetsAssetService} from './tapasset.service';
 
 describe('TaprootAssetsAssetService', () => {
-  let service: TaprootAssetsAssetService;
+	let service: TaprootAssetsAssetService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [TaprootAssetsAssetService],
-    }).compile();
+	beforeEach(async () => {
+		const module: TestingModule = await Test.createTestingModule({
+			providers: [TaprootAssetsAssetService],
+		}).compile();
 
-    service = module.get<TaprootAssetsAssetService>(TaprootAssetsAssetService);
-  });
+		service = module.get<TaprootAssetsAssetService>(TaprootAssetsAssetService);
+	});
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
+	it('should be defined', () => {
+		expect(service).toBeDefined();
+	});
 });

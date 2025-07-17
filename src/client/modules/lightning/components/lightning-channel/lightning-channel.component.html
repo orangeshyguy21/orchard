@@ -1,19 +1,19 @@
 <div class="lightning-channel-container">
-    <div class="flex flex-items-center">
-        <div class="flex-1 lightning-channel lightning-channel-recievable" [style.height]="height">
-            <div class="lightning-channel-potential">
-                <div class="potential-border"></div>
-            </div>
-            <div class="lightning-channel-filled" [style.width]="percentage_recievable() + '%'" [class]="channel_class()"></div>
-        </div>
-        <div class="lightning-channel-center" [style.height]="height">
-            <div class="center-border"></div>
-        </div>
-        <div class="flex-1 lightning-channel lightning-channel-sendable" [style.height]="height">
-            <div class="lightning-channel-filled" [style.width]="percentage_sendable() + '%'" [class]="channel_class()"></div>
-            <div class="lightning-channel-potential">
-                <div class="potential-border"></div>
-            </div>
-        </div>
-    </div>
+	<div class="flex flex-items-center">
+		<div class="flex-1 lightning-channel lightning-channel-recievable" [style.height]="height">
+			<div class="lightning-channel-potential">
+				<div class="potential-border"></div>
+			</div>
+			<div class="lightning-channel-filled" [style.width]="percentage_recievable() + '%'" [class]="channel_class()"></div>
+		</div>
+		<div class="lightning-channel-center" [style.height]="height">
+			<div class="center-border"></div>
+		</div>
+		<div class="flex-1 lightning-channel lightning-channel-sendable" [style.height]="height">
+			<div class="lightning-channel-filled" [style.width]="percentage_sendable() + '%'" [class]="channel_class()"></div>
+			<div class="lightning-channel-potential">
+				<div class="potential-border"></div>
+			</div>
+		</div>
+	</div>
 </div>

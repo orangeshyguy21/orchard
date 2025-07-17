@@ -1,32 +1,33 @@
 @use '@styles/molecule/molecule';
 
 .channel-table {
-    @extend %w-full;
-    @extend %border-collapse;
-    
-    th, td {
-        @extend %p-0-5;
-        @extend %vertical-align-middle;
-    }
+	@extend %w-full;
+	@extend %border-collapse;
+
+	th,
+	td {
+		@extend %p-0-5;
+		@extend %vertical-align-middle;
+	}
 }
 
-.lightning-channels-divider{
-    @extend %absolute;
-    top: -0.5em;
-    bottom: -1rem;
-    @extend %w-0-25;
-    @extend %orc-outline-bg;
-    @extend %orc-corner-full;
+.lightning-channels-divider {
+	@extend %absolute;
+	top: -0.5em;
+	bottom: -1rem;
+	@extend %w-0-25;
+	@extend %orc-outline-bg;
+	@extend %orc-corner-full;
 }
 
 .title-capacity-receive {
-    @extend %absolute;
-    @extend %right-2;
-    @extend %top-0-5;
+	@extend %absolute;
+	@extend %right-2;
+	@extend %top-0-5;
 }
 
 .title-capacity-send {
-    @extend %absolute;
-    @extend %left-2;
-    @extend %top-0-5;
+	@extend %absolute;
+	@extend %left-2;
+	@extend %top-0-5;
 }

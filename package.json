@@ -7,7 +7,8 @@
   "license": "MIT",
   "scripts": {
     "build": "nest build && ng build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format": "prettier --write \"src/client/**/*.{ts,html}\" \"src/client/modules/**/*.scss\" \"src/server/**/*.ts\"",
+    "format:watch": "nodemon --watch src/client --watch src/server --ext ts,html,scss,json --exec \"npm run format\"",
     "ng": "ng",
     "start": "node dist/main",
     "start:client": "npx graphql-codegen && ng serve --proxy-config proxy.conf.js",
@@ -98,6 +99,7 @@
     "karma-coverage": "~2.2.1",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "nodemon": "^3.1.10",
     "prettier": "^3.6.2",
     "source-map-support": "^0.5.21",
     "supertest": "^7.1.3",

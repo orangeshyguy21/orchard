@@ -1,16 +1,13 @@
 import {Directive, ElementRef, HostListener, Input} from '@angular/core';
 import {MAT_INPUT_VALUE_ACCESSOR} from '@angular/material/input';
-import { NgControl} from '@angular/forms';
+import {NgControl} from '@angular/forms';
 
 @Directive({
 	selector: 'input[inputFormat]',
 	standalone: false,
-	providers: [
-		{provide: MAT_INPUT_VALUE_ACCESSOR, useExisting: InputFormatDirective},
-	]
+	providers: [{provide: MAT_INPUT_VALUE_ACCESSOR, useExisting: InputFormatDirective}],
 })
 export class InputFormatDirective {
-
 	private _value!: string | null;
 
 	get value(): string | null {
@@ -25,7 +22,7 @@ export class InputFormatDirective {
 
 	constructor(
 		private elementRef: ElementRef<HTMLInputElement>,
-		public ngControl: NgControl
+		public ngControl: NgControl,
 	) {
 		ngControl.valueAccessor = this;
 	}
@@ -56,7 +53,7 @@ export class InputFormatDirective {
 	@HostListener('input', ['$event.target.value'])
 	onInput(value: string) {
 		this._value = value.replace(/[^\d.-]/g, '');
-		(this._value === '') ? this._onChange(null) : this._onChange(Number(this._value));
+		this._value === '' ? this._onChange(null) : this._onChange(Number(this._value));
 	}
 
 	@HostListener('blur')
@@ -86,11 +83,11 @@ export class InputFormatDirective {
 	writeValue(value: any) {
 		this._value = value;
 		this.formatValue(this._value);
-  	}
+	}
 
-    registerOnChange(fn: (value: any) => void) {
-      	this._onChange = fn;
-    }
+	registerOnChange(fn: (value: any) => void) {
+		this._onChange = fn;
+	}
 
-    registerOnTouched() {}
+	registerOnTouched() {}
 }

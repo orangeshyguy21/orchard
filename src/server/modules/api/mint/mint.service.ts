@@ -1,15 +1,14 @@
 /* Core Dependencies */
-import { Injectable, Logger } from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 /* Vendor Dependencies */
-import sqlite3 from "sqlite3";
+import sqlite3 from 'sqlite3';
 /* Application Dependencies */
-import { CashuMintDatabaseService } from '@server/modules/cashu/mintdb/cashumintdb.service';
-import { OrchardErrorCode } from "@server/modules/error/error.types";
-import { OrchardApiError } from "@server/modules/graphql/classes/orchard-error.class";
-import { ErrorService } from '@server/modules/error/error.service';
+import {CashuMintDatabaseService} from '@server/modules/cashu/mintdb/cashumintdb.service';
+import {OrchardErrorCode} from '@server/modules/error/error.types';
+import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
+import {ErrorService} from '@server/modules/error/error.service';
 @Injectable()
 export class MintService {
-
 	private readonly logger = new Logger(MintService.name);
 
 	constructor(
@@ -23,9 +22,8 @@ export class MintService {
 		try {
 			db = await this.cashuMintDatabaseService.getMintDatabase();
 		} catch (error) {
-			const error_code = this.errorService.resolveError({ logger: this.logger, error,
+			const error_code = this.errorService.resolveError(this.logger, error, 'Error connecting to mint database', {
 				errord: OrchardErrorCode.MintDatabaseConnectionError,
-				msg: 'Error connecting to mint database',
 			});
 			throw new OrchardApiError(error_code);
 		}

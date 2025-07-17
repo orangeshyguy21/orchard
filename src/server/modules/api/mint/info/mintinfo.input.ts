@@ -1,9 +1,9 @@
 /* Core Dependencies */
-import { InputType, Field } from "@nestjs/graphql";
+import {InputType, Field} from '@nestjs/graphql';
 
 @InputType()
 export class MintNameUpdateInput {
-	@Field({ nullable: true })
+	@Field({nullable: true})
 	name: string;
 }
 
@@ -21,7 +21,7 @@ export class MintDescriptionUpdateInput {
 
 @InputType()
 export class MintMotdUpdateInput {
-	@Field({ nullable: true })
+	@Field({nullable: true})
 	motd: string;
 }
 

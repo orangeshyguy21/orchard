@@ -1,9 +1,9 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
-  	name: 'feerate',
+	name: 'feerate',
 	standalone: false,
-	pure: true
+	pure: true,
 })
 export class FeeratePipe implements PipeTransform {
 	transform(value: number | null | undefined): number | null {
