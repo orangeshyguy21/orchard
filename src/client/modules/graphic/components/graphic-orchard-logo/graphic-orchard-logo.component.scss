@@ -1,9 +1,9 @@
 @use '@styles/molecule/molecule';
 
 :host {
-    @extend %flex;
+	@extend %flex;
 }
 
-.graphic-orchard-logo-container{
-    @extend %flex;
+.graphic-orchard-logo-container {
+	@extend %flex;
 }

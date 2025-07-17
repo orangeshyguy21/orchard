@@ -2,40 +2,40 @@
 @use '@styles/nucleus/nucleus';
 
 :host {
-    @extend %flex;
+	@extend %flex;
 
-    &.high-bg {
-        .mint-keyset-container{
-            @extend %orc-surface-container-high-bg;
-        }
-    }
+	&.high-bg {
+		.mint-keyset-container {
+			@extend %orc-surface-container-high-bg;
+		}
+	}
 }
 
-.mint-keyset-container{
-    @extend %orc-surface-container-low-bg;
-    @extend %orc-corner-full;
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-gap-1;
-    @extend %p-h-1;
-    @extend %p-v-0-5;
+.mint-keyset-container {
+	@extend %orc-surface-container-low-bg;
+	@extend %orc-corner-full;
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-gap-1;
+	@extend %p-h-1;
+	@extend %p-v-0-5;
 }
 
-.keyset-active{
-    @extend %orc-status-active-color;
+.keyset-active {
+	@extend %orc-status-active-color;
 }
 
-.keyset-inactive{
-    @extend %orc-status-inactive-color;
+.keyset-inactive {
+	@extend %orc-status-inactive-color;
 }
 
-.mint-keyset-generation{
-    @extend %orc-on-primary-container-color;
-    @extend %text-nowrap;
+.mint-keyset-generation {
+	@extend %orc-on-primary-container-color;
+	@extend %text-nowrap;
 }
 
-.mint-keyset-fee{
-    @extend %font-weight-light;
-    @extend %orc-outline-color;
-    @extend %text-nowrap;
+.mint-keyset-fee {
+	@extend %font-weight-light;
+	@extend %orc-outline-color;
+	@extend %text-nowrap;
 }

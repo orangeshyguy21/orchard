@@ -1,14 +1,14 @@
 @use '@styles/molecule/molecule';
 
-.mint-analytic-control-panel-container{
-    @extend %p-b-1;
+.mint-analytic-control-panel-container {
+	@extend %p-b-1;
 }
 
-.mint-analytic-daterange{
-    @extend %w-min-18;
+.mint-analytic-daterange {
+	@extend %w-min-18;
 }
 
-.panel-form{
-    @extend %flex;
-    @extend %flex-justify-between;
+.panel-form {
+	@extend %flex;
+	@extend %flex-justify-between;
 }

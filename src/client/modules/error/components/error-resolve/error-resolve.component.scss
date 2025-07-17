@@ -1,66 +1,66 @@
 @use '@styles/molecule/molecule';
 @use '@styles/nucleus/nucleus';
 
-.error-resolve-container{
-    @extend %flex;
+.error-resolve-container {
+	@extend %flex;
 }
 
 .error-resolve-content {
-    @extend %flex;
-    @extend %flex-row;
-    @extend %w-min-36;
+	@extend %flex;
+	@extend %flex-row;
+	@extend %w-min-36;
 }
 
-.error-resolve-icon{
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-justify-center;
-    @extend %orc-on-error-container-color;
-    @extend %orc-on-error-bg;
-    @extend %p-0-5;
+.error-resolve-icon {
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	@extend %orc-on-error-container-color;
+	@extend %orc-on-error-bg;
+	@extend %p-0-5;
 }
 
-.error-resolve-info{
-    @extend %flex-grow;
-    @extend %p-1;
-    @extend %orc-on-error-container-color;
+.error-resolve-info {
+	@extend %flex-grow;
+	@extend %p-1;
+	@extend %orc-on-error-container-color;
 }
 
-.error-resolve-content-small{
-    @extend %flex;
-    @extend %flex-row;
-    @extend %overflow-hidden;
-    @extend %orc-corner-full;
-    @extend %border;
-    @extend %border-solid;
-    @extend %orc-outline-variant-border;
+.error-resolve-content-small {
+	@extend %flex;
+	@extend %flex-row;
+	@extend %overflow-hidden;
+	@extend %orc-corner-full;
+	@extend %border;
+	@extend %border-solid;
+	@extend %orc-outline-variant-border;
 }
 
-.error-resolve-icon-small{
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-justify-center;
-    @extend %orc-on-error-container-color;
-    @extend %orc-on-error-bg;
-    @extend %p-0-5;
-    @extend %orc-corner-full;
+.error-resolve-icon-small {
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	@extend %orc-on-error-container-color;
+	@extend %orc-on-error-bg;
+	@extend %p-0-5;
+	@extend %orc-corner-full;
 }
 
-.error-resolve-info-small{
-    @extend %p-h-1;
-    @extend %orc-on-error-container-color;
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-justify-center;
-    @extend %font-weight-bold;
-    @extend %font-size-xs;
+.error-resolve-info-small {
+	@extend %p-h-1;
+	@extend %orc-on-error-container-color;
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	@extend %font-weight-bold;
+	@extend %font-size-xs;
 }
 
-.error-resolve-code{
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-justify-center;
-    @extend %p-r-1;
-    @extend %orc-outline-variant-color;
-    @extend %font-size-xs;
+.error-resolve-code {
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	@extend %p-r-1;
+	@extend %orc-outline-variant-color;
+	@extend %font-size-xs;
 }

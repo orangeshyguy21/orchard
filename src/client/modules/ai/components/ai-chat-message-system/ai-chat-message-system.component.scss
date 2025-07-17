@@ -1,8 +1,8 @@
 @use '@styles/molecule/molecule';
 
 .message-summary {
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-gap-0-5;
-    @extend %font-size-xs;
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-gap-0-5;
+	@extend %font-size-xs;
 }

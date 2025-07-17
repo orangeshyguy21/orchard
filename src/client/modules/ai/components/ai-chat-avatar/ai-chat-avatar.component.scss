@@ -1,45 +1,31 @@
 @use '@styles/molecule/molecule';
 
-.ai-chat-avatar-icon{
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-justify-center;
-    @extend %flex-gap-1;
-    @extend %w-2;
-    @extend %h-2;
-    @extend %orc-corner-full;
+.ai-chat-avatar-icon {
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	@extend %flex-gap-1;
+	@extend %w-2;
+	@extend %h-2;
+	@extend %orc-corner-full;
 }
 
-.avatar-role-assistant{
-    background: linear-gradient(
-        to bottom,
-        #fff9a0 0%,
-        #ffe14c 25%,
-        #ff9a3c 50%,
-        #e94e1b 75%,
-        #8c1a1a 100%
-    );
-    @extend %orc-surface-container-high-color;
+.avatar-role-assistant {
+	background: linear-gradient(to bottom, #fff9a0 0%, #ffe14c 25%, #ff9a3c 50%, #e94e1b 75%, #8c1a1a 100%);
+	@extend %orc-surface-container-high-color;
 }
 
-.avatar-role-user{
-    @extend %orc-primary-bg;
-    @extend %orc-on-primary-color;
+.avatar-role-user {
+	@extend %orc-primary-bg;
+	@extend %orc-on-primary-color;
 }
 
-.avatar-role-system{
-    @extend %orc-neutral-bg;
-    @extend %orc-surface-container-high-color;
+.avatar-role-system {
+	@extend %orc-neutral-bg;
+	@extend %orc-surface-container-high-color;
 }
 
-.avatar-role-function{
-    background: linear-gradient(
-        to bottom,
-        #fff9a0 0%,
-        #ffe14c 25%,
-        #ff9a3c 50%,
-        #e94e1b 75%,
-        #8c1a1a 100%
-    );
-    @extend %orc-surface-container-high-color;
+.avatar-role-function {
+	background: linear-gradient(to bottom, #fff9a0 0%, #ffe14c 25%, #ff9a3c 50%, #e94e1b 75%, #8c1a1a 100%);
+	@extend %orc-surface-container-high-color;
 }

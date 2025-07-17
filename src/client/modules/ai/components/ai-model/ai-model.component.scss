@@ -1,11 +1,11 @@
 @use '@styles/molecule/molecule';
 
-.active-model-option{
-    @extend %orc-surface-variant-bg;
+.active-model-option {
+	@extend %orc-surface-variant-bg;
 
-    &.mat-mdc-menu-item{
-        &:hover{
-            @extend %orc-surface-variant-bg;
-        }
-    }
+	&.mat-mdc-menu-item {
+		&:hover {
+			@extend %orc-surface-variant-bg;
+		}
+	}
 }

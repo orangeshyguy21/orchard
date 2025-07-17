@@ -2,28 +2,28 @@
 @use '@styles/nucleus/nucleus';
 
 :host {
-    @extend %flex;
-    @extend %flex-column;
-    @extend %flex-grow;
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-grow;
 }
 
-.sticky-section{
-    @extend %orc-surface-bg;
-    @extend %sticky;
-    @extend %p-l-2;
-    @extend %p-r-2;
-    @extend %p-t-2;
-    @extend %top-0;
+.sticky-section {
+	@extend %orc-surface-bg;
+	@extend %sticky;
+	@extend %p-l-2;
+	@extend %p-r-2;
+	@extend %p-t-2;
+	@extend %top-0;
 }
 
-.index-section-error{
-    @extend %orc-surface-bg;
-    @extend %absolute;
-    @extend %top-0;
-    @extend %left-0;
-    @extend %w-full;
-    @extend %h-full;
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-justify-center;
+.index-section-error {
+	@extend %orc-surface-bg;
+	@extend %absolute;
+	@extend %top-0;
+	@extend %left-0;
+	@extend %w-full;
+	@extend %h-full;
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
 }

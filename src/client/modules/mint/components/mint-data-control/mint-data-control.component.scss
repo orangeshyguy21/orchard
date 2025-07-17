@@ -1,11 +1,11 @@
 @use '@styles/molecule/molecule';
 
-.mint-data-control-container{
-    @extend %p-b-1;
+.mint-data-control-container {
+	@extend %p-b-1;
 }
 
-.search-field{
-    @extend %w-full;
+.search-field {
+	@extend %w-full;
 }
 
 // .option-helper{

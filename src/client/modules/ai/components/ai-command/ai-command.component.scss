@@ -1,12 +1,12 @@
 @use '@styles/molecule/molecule';
 
-.ai-input-action{
-    @extend %trans-color-fast;
-    @extend %orc-outline-color;
+.ai-input-action {
+	@extend %trans-color-fast;
+	@extend %orc-outline-color;
 }
 
-.ai-active{
-    &.ai-input-action{
-        @extend %orc-on-surface-color;
-    }
+.ai-active {
+	&.ai-input-action {
+		@extend %orc-on-surface-color;
+	}
 }

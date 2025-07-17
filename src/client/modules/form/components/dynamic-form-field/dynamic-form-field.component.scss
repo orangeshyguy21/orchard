@@ -1,21 +1,21 @@
 @use '@styles/molecule/molecule';
 
-.dynamic-form-field-container{
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-gap-0-5;
+.dynamic-form-field-container {
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-gap-0-5;
 }
 
-.dynamic-actions{
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %invisible;
+.dynamic-actions {
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %invisible;
 
-    &.form-hot{
-        @extend %visible;
-    }
+	&.form-hot {
+		@extend %visible;
+	}
 
-    &.form-invalid{
-        @extend %m-b-1-25;
-    }
+	&.form-invalid {
+		@extend %m-b-1-25;
+	}
 }

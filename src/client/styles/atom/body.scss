@@ -2,30 +2,30 @@
 @use './pallete' as orchard-pallete;
 
 html {
-  color-scheme: light dark;
-  @include mat.theme((
-    color: (
-      primary: orchard-pallete.$primary-palette,
-      tertiary: orchard-pallete.$tertiary-palette,
-    ),
-    density: -1,
-  ), $overrides: (
-    // surface: light-dark(#fff8f5, #110000), not going here yet
-  ));
+	color-scheme: light dark;
+	@include mat.theme((
+		color: (
+			primary: orchard-pallete.$primary-palette,
+			tertiary: orchard-pallete.$tertiary-palette,
+		),
+		density: -1,
+	), $overrides: (
+		// surface: light-dark(#fff8f5, #110000), not going here yet
+	));
 }
 
 body {
-  background: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-  font-family: 'Bai Jamjuree', sans-serif;
-  height: 100dvh;
-  margin: 0;
+	background: var(--mat-sys-surface);
+	color: var(--mat-sys-on-surface);
+	font-family: 'Bai Jamjuree', sans-serif;
+	height: 100dvh;
+	margin: 0;
 
-  &.dark-mode {
-    color-scheme: dark;
-  }
+	&.dark-mode {
+		color-scheme: dark;
+	}
 
-  &.light-mode {
-    color-scheme: light;
-  }
+	&.light-mode {
+		color-scheme: light;
+	}
 }

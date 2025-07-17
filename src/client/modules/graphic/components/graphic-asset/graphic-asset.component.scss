@@ -1,46 +1,46 @@
 @use '@styles/molecule/molecule';
 
 :host {
-    @extend %flex;
+	@extend %flex;
 }
 
-.graphic-asset-unit{
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-justify-center;
-    @extend %orc-corner-full;
+.graphic-asset-unit {
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	@extend %orc-corner-full;
 }
 
-.graphic-asset-unit-icon{
-    @extend %orc-surface-color;
-    @extend %mat-symbol-bold;
+.graphic-asset-unit-icon {
+	@extend %orc-surface-color;
+	@extend %mat-symbol-bold;
 }
 
-.graphic-asset-btc{
-    @extend %orc-asset-btc-bg;
-    @extend %transform-rotate-15;
+.graphic-asset-btc {
+	@extend %orc-asset-btc-bg;
+	@extend %transform-rotate-15;
 }
 
-.graphic-asset-usd{
-    @extend %orc-asset-usd-bg;
+.graphic-asset-usd {
+	@extend %orc-asset-usd-bg;
 }
 
-.graphic-asset-eur{
-    @extend %orc-asset-eur-bg;
+.graphic-asset-eur {
+	@extend %orc-asset-eur-bg;
 }
 
-.graphic-asset-unknown{
-    @extend %orc-surface-tint-bg;
+.graphic-asset-unknown {
+	@extend %orc-surface-tint-bg;
 }
 
-.graphic-asset-custody{
-    @extend %absolute;
-    @extend %top-half;
-    @extend %left-half;
-    @extend %orc-corner-full;
-    @extend %orc-surface-bg;
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-justify-center;
-    @extend %p-0-125;
+.graphic-asset-custody {
+	@extend %absolute;
+	@extend %top-half;
+	@extend %left-half;
+	@extend %orc-corner-full;
+	@extend %orc-surface-bg;
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	@extend %p-0-125;
 }

@@ -1,15 +1,15 @@
 @use '@styles/molecule/molecule';
 
 :host {
-    @extend %flex;
-    @extend %flex-column;
-    @extend %flex-grow;
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-grow;
 }
 
-.event-coming-soon-container{
-    @extend %flex;
-    @extend %flex-column;
-    @extend %flex-grow;
-    @extend %flex-items-center;
-    @extend %flex-justify-center;
+.event-coming-soon-container {
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-grow;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
 }
