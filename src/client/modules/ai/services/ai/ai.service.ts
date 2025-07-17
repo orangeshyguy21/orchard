@@ -66,7 +66,7 @@ export class AiService {
 	}
 
 	public closeAiSocket(): void {
-		if( !this.subscription ) { return; }
+		if( !this.subscription ) return;
 		this.subscription?.unsubscribe();
 		this.apiService.gql_socket.next({
 			id: this.subscription_id,
