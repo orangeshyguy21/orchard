@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "build": "nest build && ng build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\"",
     "ng": "ng",
     "start": "node dist/main",
     "start:client": "npx graphql-codegen && ng serve --proxy-config proxy.conf.js",
