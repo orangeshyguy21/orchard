@@ -128,10 +128,10 @@
 		</div>
 		<orc-mint-config-form-supported [nut_index]="'07'" [nut_icon]="'pageview'" [supported]="mint_info?.nuts?.nut7?.supported">
 			<div class="flex flex-column flex-gap-0-5">
-				<span
-					>Allows clients to check the state of tokens (spent/unspent) without revealing which specific tokens they own, providing
-					privacy-preserving token validation.</span
-				>
+				<span>
+					Allows clients to check the state of tokens (spent/unspent) without revealing which specific tokens they own, providing
+					privacy-preserving token validation.
+				</span>
 				<span>Not configurable. Status determined by mint version.</span>
 			</div>
 		</orc-mint-config-form-supported>
@@ -146,10 +146,10 @@
 		</div>
 		<orc-mint-config-form-supported [nut_index]="'08'" [nut_icon]="'arrow_circle_left'" [supported]="mint_info?.nuts?.nut8?.supported">
 			<div class="flex flex-column flex-gap-0-5">
-				<span
-					>If a Lightning withdrawal (melt) is overpaid, the mint returns any unused portion of the fee to the user, ensuring fair
-					and transparent fee handling.</span
-				>
+				<span>
+					If a Lightning withdrawal (melt) is overpaid, the mint returns any unused portion of the fee to the user, ensuring fair
+					and transparent fee handling.
+				</span>
 				<span>Not configurable. Status determined by mint version.</span>
 			</div>
 		</orc-mint-config-form-supported>
@@ -162,10 +162,10 @@
 		</div>
 		<orc-mint-config-form-supported [nut_index]="'09'" [nut_icon]="'password'" [supported]="mint_info?.nuts?.nut9?.supported">
 			<div class="flex flex-column flex-gap-0-5">
-				<span
-					>If a user loses or fails to receive ecash signatures after a successful minting or melting operation, this feature
-					enables them to request the mint to re-issue the missing signatures, improving reliability and user experience.</span
-				>
+				<span>
+					If a user loses or fails to receive ecash signatures after a successful minting or melting operation, this feature
+					enables them to request the mint to re-issue the missing signatures, improving reliability and user experience.
+				</span>
 				<span>Not configurable. Status determined by mint version.</span>
 			</div>
 		</orc-mint-config-form-supported>
@@ -178,10 +178,10 @@
 		</div>
 		<orc-mint-config-form-supported [nut_index]="'10'" [nut_icon]="'flowsheet'" [supported]="mint_info?.nuts?.nut10?.supported">
 			<div class="flex flex-column flex-gap-0-5">
-				<span
-					>Allows the mint to enforce additional rules or requirements—such as time locks or external approvals—before ecash
-					tokens can be spent, enabling advanced use cases and enhanced security.</span
-				>
+				<span>
+					Allows the mint to enforce additional rules or requirements—such as time locks or external approvals—before ecash tokens
+					can be spent, enabling advanced use cases and enhanced security.
+				</span>
 				<span>Not configurable. Status determined by mint version.</span>
 			</div>
 		</orc-mint-config-form-supported>
@@ -196,10 +196,10 @@
 		</div>
 		<orc-mint-config-form-supported [nut_index]="'11'" [nut_icon]="'key'" [supported]="mint_info?.nuts?.nut11?.supported">
 			<div class="flex flex-column flex-gap-0-5">
-				<span
-					>Allows users to receive ecash payments to a specified public key, making it possible to send and claim tokens without
-					prior interaction, and enabling new use cases like invoices and static addresses.</span
-				>
+				<span>
+					Allows users to receive ecash payments to a specified public key, making it possible to send and claim tokens without
+					prior interaction, and enabling new use cases like invoices and static addresses.
+				</span>
 				<span>Not configurable. Status determined by mint version.</span>
 			</div>
 		</orc-mint-config-form-supported>
@@ -214,10 +214,10 @@
 		</div>
 		<orc-mint-config-form-supported [nut_index]="'12'" [nut_icon]="'wifi_off'" [supported]="mint_info?.nuts?.nut12?.supported">
 			<div class="flex flex-column flex-gap-0-5">
-				<span
-					>Enables users to verify the authenticity of ecash tokens offline, using public information published by the mint. This
-					improves usability and security in situations where the mint is temporarily unreachable.</span
-				>
+				<span>
+					Enables users to verify the authenticity of ecash tokens offline, using public information published by the mint. This
+					improves usability and security in situations where the mint is temporarily unreachable.
+				</span>
 				<span>Not configurable. Status determined by mint version.</span>
 			</div>
 		</orc-mint-config-form-supported>
@@ -230,10 +230,10 @@
 		</div>
 		<orc-mint-config-form-supported [nut_index]="'14'" [nut_icon]="'lock_clock'" [supported]="mint_info?.nuts?.nut14?.supported">
 			<div class="flex flex-column flex-gap-0-5">
-				<span
-					>Allows ecash to be locked and spent only if a specific secret is revealed before a deadline, enabling advanced features
-					like atomic swaps and trust-minimized payments.</span
-				>
+				<span>
+					Allows ecash to be locked and spent only if a specific secret is revealed before a deadline, enabling advanced features
+					like atomic swaps and trust-minimized payments.
+				</span>
 				<span>Not configurable. Status determined by mint version.</span>
 			</div>
 		</orc-mint-config-form-supported>
@@ -250,10 +250,10 @@
 			[supported]="mint_info?.nuts?.nut15?.methods?.length === 0 ? false : true"
 		>
 			<div class="flex flex-column flex-gap-0-5">
-				<span
-					>Allows ecash payments to be divided and sent over several routes or using different methods, improving flexibility,
-					privacy, and reliability for large or complex transactions.</span
-				>
+				<span>
+					Allows ecash payments to be divided and sent over several routes or using different methods, improving flexibility,
+					privacy, and reliability for large or complex transactions.
+				</span>
 				<span>Not currently configurable via the mint RPC. Must be set in the mint config file.</span>
 			</div>
 		</orc-mint-config-form-supported>
@@ -285,10 +285,10 @@
 			[supported]="mint_info?.nuts?.nut17?.supported ? true : false"
 		>
 			<div class="flex flex-column flex-gap-0-5">
-				<span
-					>Allows wallets to receive instant notifications and interact with the mint in real time using WebSocket connections,
-					improving responsiveness for actions like payments, state changes, and event monitoring.</span
-				>
+				<span>
+					Allows wallets to receive instant notifications and interact with the mint in real time using WebSocket connections,
+					improving responsiveness for actions like payments, state changes, and event monitoring.
+				</span>
 				<span>Not currently configurable via the mint RPC. Must be set in the mint config file.</span>
 			</div>
 		</orc-mint-config-form-supported>
@@ -322,10 +322,10 @@
 			[supported]="mint_info?.nuts?.nut19 ? true : false"
 		>
 			<div class="flex flex-column flex-gap-0-5">
-				<span
-					>Allows the mint to serve certain API responses from cache, reducing load and improving availability for frequently
-					requested data. Cache duration and endpoints are set in the mint configuration file.</span
-				>
+				<span>
+					Allows the mint to serve certain API responses from cache, reducing load and improving availability for frequently
+					requested data. Cache duration and endpoints are set in the mint configuration file.
+				</span>
 				<span>Not currently configurable via the mint RPC. Must be set in the mint config file.</span>
 			</div>
 		</orc-mint-config-form-supported>
@@ -341,10 +341,10 @@
 		</div>
 		<orc-mint-config-form-supported [nut_index]="'20'" [nut_icon]="'stylus_note'" [supported]="mint_info?.nuts?.nut20?.supported">
 			<div class="flex flex-column flex-gap-0-5">
-				<span
-					>Ensures that every mint quote is signed by the mint, allowing clients to verify the authenticity and integrity of
-					quotes before proceeding with transactions. This protects users from tampering and replay attacks.</span
-				>
+				<span>
+					Ensures that every mint quote is signed by the mint, allowing clients to verify the authenticity and integrity of quotes
+					before proceeding with transactions. This protects users from tampering and replay attacks.
+				</span>
 				<span>Not configurable. Status determined by mint version.</span>
 			</div>
 		</orc-mint-config-form-supported>
