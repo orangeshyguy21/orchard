@@ -1,5 +1,7 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, Input, computed} from '@angular/core';
+/* Application Configuration */
+import {environment} from '@client/configs/configuration';
 /* Shared Dependencies */
 import {TaprootAssetId} from '@shared/generated.types';
 
@@ -16,7 +18,7 @@ export class GraphicAssetComponent {
 	@Input() custody!: 'ecash' | 'lightning' | 'hot' | 'cold';
 	@Input() asset_id!: string | undefined;
 
-	private taproot_assets_map = new Map<string, string>([[TaprootAssetId.Usdt, 'tether.svg']]);
+	private taproot_assets_map = new Map<string, string>([[environment.constants.taproot_asset_ids.usdt, 'tether.svg']]);
 
 	public lower_unit = computed(() => {
 		return this.unit.toLowerCase();

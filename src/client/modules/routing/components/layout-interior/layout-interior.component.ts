@@ -109,6 +109,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 			this.mintService.loadMintInfo().subscribe();
 			this.subscriptions.add(this.getMintInfoSubscription());
 		}
+		// if taproot go get the ids
 		if (environment.ai.enabled) {
 			this.subscriptions.add(this.getAgentSubscription());
 			this.subscriptions.add(this.getActiveAiSubscription());

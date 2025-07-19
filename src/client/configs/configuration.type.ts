@@ -23,4 +23,9 @@ export type Config = {
 	ai: {
 		enabled: boolean;
 	};
+	constants: {
+		taproot_asset_ids: {
+			usdt: string;
+		};
+	};
 };

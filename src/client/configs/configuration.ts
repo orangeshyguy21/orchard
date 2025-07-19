@@ -31,6 +31,12 @@ const ai = {
 	enabled: process.env['AI_API'] ? true : false,
 };
 
+const constants = {
+	taproot_asset_ids: {
+		usdt: '594ad28f56e02a3cbeef62166c92317fea911730392ea715ff756a398a8ffc4e',
+	},
+};
+
 export const environment: Config = {
 	mode,
 	api,
@@ -39,4 +45,5 @@ export const environment: Config = {
 	taproot_assets,
 	mint,
 	ai,
+	constants,
 };
