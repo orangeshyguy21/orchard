@@ -668,7 +668,7 @@ export type OrchardMintInfo = {
   name: Scalars['String']['output'];
   nuts: OrchardNuts;
   pubkey?: Maybe<Scalars['String']['output']>;
-  time: Scalars['UnixTimestamp']['output'];
+  time?: Maybe<Scalars['UnixTimestamp']['output']>;
   urls?: Maybe<Array<Scalars['String']['output']>>;
   version: Scalars['String']['output'];
 };
@@ -888,11 +888,11 @@ export type OrchardNuts = {
   nut10: OrchardNutSupported;
   nut11: OrchardNutSupported;
   nut12: OrchardNutSupported;
-  nut14: OrchardNutSupported;
-  nut15: OrchardNut15;
-  nut17: OrchardNut17;
-  nut19: OrchardNut19;
-  nut20: OrchardNutSupported;
+  nut14?: Maybe<OrchardNutSupported>;
+  nut15?: Maybe<OrchardNut15>;
+  nut17?: Maybe<OrchardNut17>;
+  nut19?: Maybe<OrchardNut19>;
+  nut20?: Maybe<OrchardNutSupported>;
 };
 
 export type OrchardPublicImage = {

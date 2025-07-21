@@ -11,5 +11,5 @@ import {OrchardNut19} from '@shared/generated.types';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintConfigFormNut19Component {
-	@Input() nut19!: OrchardNut19 | undefined;
+	@Input() nut19!: OrchardNut19 | undefined | null;
 }

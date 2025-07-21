@@ -129,7 +129,7 @@ export class NutshellService {
 			unit: 'unit',
 			date_start: 'created_time',
 			date_end: 'created_time',
-			status: 'state',
+			states: 'state',
 		};
 		const {sql, params} = buildDynamicQuery('mint_quotes', args, field_mappings);
 		return new Promise((resolve, reject) => {

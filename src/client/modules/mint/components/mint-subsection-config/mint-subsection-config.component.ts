@@ -293,17 +293,17 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		const units = Array.from(new Set(all_units));
 		return units.map((unit) => ({
 			unit,
-			methods: this.mint_info?.nuts.nut15.methods.filter((m) => m.unit === unit).map((m) => m.method) || [],
+			methods: this.mint_info?.nuts.nut15?.methods?.filter((m) => m.unit === unit).map((m) => m.method) || [],
 		}));
 	}
 
 	private getNut17Commands(): Nut17Commands[] {
 		if (!this.mint_info?.nuts.nut17) return [];
-		const all_units: string[] = this.mint_info?.nuts.nut17.supported.map((m) => m.unit) || [];
+		const all_units: string[] = this.mint_info?.nuts.nut17?.supported?.map((m) => m.unit) || [];
 		const units = Array.from(new Set(all_units));
 		const nut17_commands: Nut17Commands[] = [];
 		units.forEach((unit) => {
-			const methods = this.mint_info?.nuts.nut17.supported.filter((supp) => supp.unit === unit).map((supp) => supp.method) || [];
+			const methods = this.mint_info?.nuts.nut17?.supported?.filter((supp) => supp.unit === unit).map((supp) => supp.method) || [];
 			const mcommands = methods.map((method) => {
 				return {
 					method: method,
@@ -314,7 +314,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		});
 		nut17_commands.forEach((group) => {
 			group.methods.forEach((method) => {
-				this.mint_info?.nuts.nut17.supported
+				this.mint_info?.nuts.nut17?.supported
 					.filter((supp) => supp.unit === group.unit && supp.method === method.method)
 					.forEach((supp) => {
 						supp.commands.forEach((command) => {
