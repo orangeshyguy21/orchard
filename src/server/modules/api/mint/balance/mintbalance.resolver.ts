@@ -13,7 +13,7 @@ export class MintBalanceResolver {
 
 	@Query(() => [OrchardMintBalance])
 	async mint_balances(@Args('keyset_id', {type: () => String, nullable: true}) keyset_id?: string): Promise<OrchardMintBalance[]> {
-		const tag = `GET { mint_balances ${keyset_id ? `for keyset ${keyset_id}` : ''} }`;
+		const tag = `GET { mint_balances ${keyset_id ? `for keyset ${keyset_id} ` : ''}}`;
 		this.logger.debug(tag);
 		return await this.mintBalanceService.getMintBalances(tag, keyset_id);
 	}

@@ -99,7 +99,6 @@ export class AuthService {
 	public getAuthHeaders(): Record<string, string> {
 		const token = this.localStorageService.getAuthToken();
 		return token ? {Authorization: 'Bearer ' + token} : {};
-		// return token ? {Authorization: 'Bearer ' + token + 'foobar'} : {};
 	}
 
 	private hasValidToken(): boolean {

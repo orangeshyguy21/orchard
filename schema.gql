@@ -524,7 +524,7 @@ type OrchardMintInfo {
   name: String!
   nuts: OrchardNuts!
   pubkey: String
-  time: UnixTimestamp!
+  time: UnixTimestamp
   urls: [String!]
   version: String!
 }
@@ -717,11 +717,11 @@ type OrchardNuts {
   nut10: OrchardNutSupported!
   nut11: OrchardNutSupported!
   nut12: OrchardNutSupported!
-  nut14: OrchardNutSupported!
-  nut15: OrchardNut15!
-  nut17: OrchardNut17!
-  nut19: OrchardNut19!
-  nut20: OrchardNutSupported!
+  nut14: OrchardNutSupported
+  nut15: OrchardNut15
+  nut17: OrchardNut17
+  nut19: OrchardNut19
+  nut20: OrchardNutSupported
 }
 
 type OrchardPublicImage {

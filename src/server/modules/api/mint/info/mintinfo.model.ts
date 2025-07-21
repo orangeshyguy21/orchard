@@ -121,19 +121,19 @@ export class OrchardNuts {
 	@Field()
 	nut12: OrchardNutSupported;
 
-	@Field()
+	@Field({nullable: true})
 	nut14: OrchardNutSupported;
 
-	@Field()
+	@Field({nullable: true})
 	nut15: OrchardNut15;
 
-	@Field()
+	@Field({nullable: true})
 	nut17: OrchardNut17;
 
-	@Field()
+	@Field({nullable: true})
 	nut19: OrchardNut19;
 
-	@Field()
+	@Field({nullable: true})
 	nut20: OrchardNutSupported;
 
 	constructor(nuts: CashuMintInfo['nuts']) {
@@ -145,11 +145,11 @@ export class OrchardNuts {
 		this.nut10 = new OrchardNutSupported(nuts['10']);
 		this.nut11 = new OrchardNutSupported(nuts['11']);
 		this.nut12 = new OrchardNutSupported(nuts['12']);
-		this.nut14 = new OrchardNutSupported(nuts['14']);
-		this.nut15 = new OrchardNut15(nuts['15']);
-		this.nut17 = new OrchardNut17(nuts['17']);
-		this.nut19 = new OrchardNut19(nuts['19']);
-		this.nut20 = new OrchardNutSupported(nuts['20']);
+		this.nut14 = nuts['14'] ? new OrchardNutSupported(nuts['14']) : null;
+		this.nut15 = nuts['15'] ? new OrchardNut15(nuts['15']) : null;
+		this.nut17 = nuts['17'] ? new OrchardNut17(nuts['17']) : null;
+		this.nut19 = nuts['19'] ? new OrchardNut19(nuts['19']) : null;
+		this.nut20 = nuts['20'] ? new OrchardNutSupported(nuts['20']) : null;
 	}
 }
 
@@ -179,7 +179,7 @@ export class OrchardMintInfo {
 	@Field(() => [String!], {nullable: true})
 	urls: string[];
 
-	@Field((type) => UnixTimestamp)
+	@Field((type) => UnixTimestamp, {nullable: true})
 	time: number;
 
 	@Field(() => OrchardNuts!)
