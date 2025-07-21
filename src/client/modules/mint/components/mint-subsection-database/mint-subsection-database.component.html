@@ -64,8 +64,7 @@
 			[database_timestamp]="database_timestamp"
 			[database_implementation]="database_implementation"
 			(close)="onClose()"
-		>
-		</orc-mint-data-backup-create>
+		></orc-mint-data-backup-create>
 	</div>
 	<div [@slideInOut]="form_mode === 'RESTORE' ? 'open' : 'closed'" class="overflow-hidden">
 		<orc-mint-data-backup-restore
@@ -83,8 +82,7 @@
 		[mint_genesis_time]="mint_genesis_time"
 		[loading]="loading_dynamic_data"
 		[state_enabled]="state_enabled"
-	>
-	</orc-mint-data-chart>
+	></orc-mint-data-chart>
 
 	<div class="mint-data-table">
 		<mat-card appearance="outlined">
@@ -107,8 +105,7 @@
 					[pageSize]="page_size"
 					[pageIndex]="page_settings.page - 1"
 					showFirstLastButtons
-				>
-				</mat-paginator>
+				></mat-paginator>
 			</div>
 		</mat-card>
 	</div>
