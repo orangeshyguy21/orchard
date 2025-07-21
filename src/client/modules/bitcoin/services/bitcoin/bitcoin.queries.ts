@@ -57,29 +57,14 @@ export const BITCOIN_NETWORK_INFO_QUERY = `{
 export const BITCOIN_BLOCK_QUERY = `
 query BitcoinBlock($hash: String!) {
     bitcoin_block(hash: $hash){
-        bits
         chainwork
-        confirmations
-        difficulty
         hash
         height
-        mediantime
-        merkleroot
         nTx
-        nextblockhash
-        nonce
-        previousblockhash
-        size
-        strippedsize
         time
-        version
-        versionHex
         weight
-        tx{
-            txid
-            fee
-            vsize
-        }
+        feerate_low
+        feerate_high
     }
 }`;
 
@@ -120,30 +105,10 @@ query BitcoinTransactionFeeEstimates($targets: [Int!]!) {
 
 export const BITCOIN_BLOCK_TEMPLATE_QUERY = `{
     bitcoin_block_template{
-        bits
-        coinbasevalue
-        curtime
-        default_witness_commitment
         height
-        longpollid
-        mintime
-        mutable
-        noncerange
-        previousblockhash
-        rules
-        sigoplimit
-        sizelimit
-        target
-        transactions{
-            txid
-            hash
-            depends
-            fee
-            sigops
-            weight
-        }
-        vbrequired
-        version
-        weightlimit
+        weight
+        nTx
+        feerate_low
+        feerate_high
     }
 }`;

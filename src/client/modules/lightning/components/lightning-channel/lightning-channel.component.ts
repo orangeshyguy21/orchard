@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, Input, computed} from '@angular/core';
-/* Shared Dependencies */
-import {TaprootAssetId} from '@shared/generated.types';
+/* Application Configuration */
+import {environment} from '@client/configs/configuration';
 
 @Component({
 	selector: 'orc-lightning-channel',
@@ -26,7 +26,7 @@ export class LightningChannelComponent {
 		if (this.lower_unit() === 'sat') return 'channel-btc';
 		if (this.lower_unit() === 'msat') return 'channel-btc';
 		if (this.lower_unit() === 'btc') return 'channel-btc';
-		if (this.asset_id === TaprootAssetId.Usdt) return 'channel-tether';
+		if (this.asset_id === environment.constants.taproot_asset_ids.usdt) return 'channel-tether';
 		return 'channel-unknown';
 	});
 

@@ -400,24 +400,13 @@ export type OrchardAuthentication = {
 
 export type OrchardBitcoinBlock = {
   __typename?: 'OrchardBitcoinBlock';
-  bits: Scalars['String']['output'];
   chainwork: Scalars['String']['output'];
-  confirmations: Scalars['Int']['output'];
-  difficulty: Scalars['Float']['output'];
+  feerate_high: Scalars['Float']['output'];
+  feerate_low: Scalars['Float']['output'];
   hash: Scalars['String']['output'];
   height: Scalars['Int']['output'];
-  mediantime: Scalars['UnixTimestamp']['output'];
-  merkleroot: Scalars['String']['output'];
   nTx: Scalars['Int']['output'];
-  nextblockhash?: Maybe<Scalars['String']['output']>;
-  nonce: Scalars['Float']['output'];
-  previousblockhash: Scalars['String']['output'];
-  size: Scalars['Int']['output'];
-  strippedsize: Scalars['Int']['output'];
   time: Scalars['UnixTimestamp']['output'];
-  tx: Array<OrchardBitcoinRawTransaction>;
-  version: Scalars['Float']['output'];
-  versionHex: Scalars['String']['output'];
   weight: Scalars['Float']['output'];
 };
 
@@ -428,34 +417,10 @@ export type OrchardBitcoinBlockCount = {
 
 export type OrchardBitcoinBlockTemplate = {
   __typename?: 'OrchardBitcoinBlockTemplate';
-  bits: Scalars['String']['output'];
-  coinbasevalue: Scalars['Int']['output'];
-  curtime: Scalars['Int']['output'];
-  default_witness_commitment?: Maybe<Scalars['String']['output']>;
+  feerate_high: Scalars['Float']['output'];
+  feerate_low: Scalars['Float']['output'];
   height: Scalars['Int']['output'];
-  longpollid: Scalars['String']['output'];
-  mintime: Scalars['Int']['output'];
-  mutable: Array<Scalars['String']['output']>;
-  noncerange: Scalars['String']['output'];
-  previousblockhash: Scalars['String']['output'];
-  rules: Array<Scalars['String']['output']>;
-  sigoplimit: Scalars['Int']['output'];
-  sizelimit: Scalars['Int']['output'];
-  target: Scalars['String']['output'];
-  transactions: Array<OrchardBitcoinBlockTemplateTransaction>;
-  vbrequired: Scalars['Int']['output'];
-  version: Scalars['Int']['output'];
-  weightlimit: Scalars['Int']['output'];
-};
-
-export type OrchardBitcoinBlockTemplateTransaction = {
-  __typename?: 'OrchardBitcoinBlockTemplateTransaction';
-  data: Scalars['String']['output'];
-  depends: Array<Scalars['Int']['output']>;
-  fee: Scalars['Int']['output'];
-  hash: Scalars['String']['output'];
-  sigops: Scalars['Int']['output'];
-  txid: Scalars['String']['output'];
+  nTx: Scalars['Int']['output'];
   weight: Scalars['Int']['output'];
 };
 
@@ -538,13 +503,6 @@ export type OrchardBitcoinNetworkInfo = {
   timeoffset: Scalars['Int']['output'];
   version: Scalars['Int']['output'];
   warnings: Array<Scalars['String']['output']>;
-};
-
-export type OrchardBitcoinRawTransaction = {
-  __typename?: 'OrchardBitcoinRawTransaction';
-  fee?: Maybe<Scalars['Float']['output']>;
-  txid: Scalars['String']['output'];
-  vsize?: Maybe<Scalars['Int']['output']>;
 };
 
 export type OrchardBitcoinTxFeeEstimate = {
@@ -989,11 +947,6 @@ export type OrchardTaprootAssets = {
   unconfirmed_transfers: Scalars['String']['output'];
 };
 
-export type OrchardTaprootAssetsId = {
-  __typename?: 'OrchardTaprootAssetsId';
-  asset_id: TaprootAssetId;
-};
-
 export type OrchardTaprootAssetsInfo = {
   __typename?: 'OrchardTaprootAssetsInfo';
   block_hash: Scalars['String']['output'];
@@ -1052,7 +1005,6 @@ export type Query = {
   public_urls: Array<OrchardPublicUrl>;
   status: OrchardStatus;
   taproot_assets: OrchardTaprootAssets;
-  taproot_assets_ids: Array<OrchardTaprootAssetsId>;
   taproot_assets_info: OrchardTaprootAssetsInfo;
   taproot_assets_utxo: Array<OrchardTaprootAssetsUtxo>;
 };
@@ -1220,10 +1172,6 @@ export type Subscription = {
 export type SubscriptionAi_ChatArgs = {
   ai_chat: AiChatInput;
 };
-
-export enum TaprootAssetId {
-  Usdt = 'USDT'
-}
 
 export enum TaprootAssetType {
   Collectible = 'COLLECTIBLE',

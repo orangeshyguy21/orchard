@@ -15,4 +15,8 @@ export class BitcoinBlockComponent {
 	@Input() block?: BitcoinBlock | BitcoinBlockTemplate;
 	@Input() height?: number;
 	@Input() is_template: boolean = false;
+
+	public get fullness(): number {
+		return (this.block?.weight ?? 0) / 4000000;
+	}
 }
