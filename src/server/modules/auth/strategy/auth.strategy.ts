@@ -14,10 +14,16 @@ export class AuthStrategy extends PassportStrategy(Strategy) {
 			jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
 			ignoreExpiration: false,
 			secretOrKey: configService.get('server.pass'),
+			passReqToCallback: true,
 		});
 	}
 
-	async validate(payload: JwtPayload) {
-		return {id: payload.sub, name: payload.username};
+	async validate(req: any, payload: JwtPayload) {
+		const auth_token = req.get('Authorization').replace('Bearer', '').trim();
+		return {
+			id: payload.sub,
+			name: payload.username,
+			auth_token,
+		};
 	}
 }

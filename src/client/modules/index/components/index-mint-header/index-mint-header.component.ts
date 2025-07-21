@@ -21,6 +21,7 @@ import {MintInfo} from '@client/modules/mint/classes/mint-info.class';
     ],
 })
 export class IndexMintHeaderComponent {
+	@Input() enabled!: boolean;
 	@Input() loading!: boolean;
 	@Input() info!: MintInfo;
 	@Input() error!: boolean;

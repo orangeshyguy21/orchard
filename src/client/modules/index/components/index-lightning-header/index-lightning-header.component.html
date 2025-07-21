@@ -3,7 +3,7 @@
 		<mat-icon class="mat-symbol-outline">bolt</mat-icon>
 		<div class="title-l">Lightning</div>
 	</div>
-	@if (!loading) {
+	@if (enabled && !loading) {
 		<div [@fadeIn] class="flex flex-gap-1">
 			<div class="flex flex-items-center flex-gap-0-5">
 				@switch (state()) {
@@ -25,7 +25,7 @@
 	}
 	<div class="flex-grow"></div>
 	<div>
-		@if (!loading) {
+		@if (enabled && !loading) {
 			<div [@fadeIn] class="orc-outline-color font-size-xs">{{ lightning_info.version }}</div>
 		}
 	</div>

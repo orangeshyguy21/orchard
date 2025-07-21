@@ -4,13 +4,9 @@
 	@extend %w-full;
 }
 
-.mint-disabled-card {
-	min-height: 20rem;
-	@extend %border-dashed;
-
-	mat-card-content {
-		@extend %flex-grow;
-		@extend %flex;
-		@extend %flex-column;
-	}
+.mint-disabled-container {
+	min-height: 16rem;
+	@extend %flex-grow;
+	@extend %flex;
+	@extend %flex-column;
 }

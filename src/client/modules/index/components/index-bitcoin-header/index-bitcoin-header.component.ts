@@ -22,6 +22,7 @@ import {BitcoinBlockchainInfo} from '@client/modules/bitcoin/classes/bitcoin-blo
     ],
 })
 export class IndexBitcoinHeaderComponent {
+	@Input() enabled!: boolean;
 	@Input() loading!: boolean;
 	@Input() network_info!: BitcoinNetworkInfo | null;
 	@Input() blockchain_info!: BitcoinBlockchainInfo | null;
