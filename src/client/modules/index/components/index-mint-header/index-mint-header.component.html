@@ -4,7 +4,7 @@
 		<div class="title-l">Mint</div>
 	</div>
 	<div class="p-b-0-5 w-min-10">
-		@if (!loading) {
+		@if (enabled && !loading) {
 			<div [@fadeIn] class="flex flex-gap-1">
 				<div class="flex flex-items-center flex-gap-0-5">
 					@switch (state()) {
@@ -29,7 +29,7 @@
 		<orc-secondary-nav-item name="Database" navroute="mint/database"> </orc-secondary-nav-item>
 	</div>
 	<div>
-		@if (!loading) {
+		@if (enabled && !loading) {
 			<div [@fadeIn] class="orc-outline-color font-size-xs p-b-0-5">{{ info.version }}</div>
 		}
 	</div>

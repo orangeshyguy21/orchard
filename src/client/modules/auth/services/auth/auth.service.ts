@@ -75,6 +75,8 @@ export class AuthService {
 
 		return this.http.post<OrchardRes<RevokeAuthenticationResponse>>(api, query, {headers}).pipe(
 			map((response) => {
+				this.clearAuthCache();
+				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.revoke_authentication;
 			}),
 			catchError((error) => {
@@ -97,6 +99,7 @@ export class AuthService {
 	public getAuthHeaders(): Record<string, string> {
 		const token = this.localStorageService.getAuthToken();
 		return token ? {Authorization: 'Bearer ' + token} : {};
+		// return token ? {Authorization: 'Bearer ' + token + 'foobar'} : {};
 	}
 
 	private hasValidToken(): boolean {

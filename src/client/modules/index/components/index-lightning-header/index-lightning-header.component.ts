@@ -21,13 +21,14 @@ import {LightningInfo} from '@client/modules/lightning/classes/lightning-info.cl
     ],
 })
 export class IndexLightningHeaderComponent {
+	@Input() enabled!: boolean;
 	@Input() loading!: boolean;
 	@Input() lightning_info!: LightningInfo;
 	@Input() error!: boolean;
 
 	public state = computed(() => {
 		if (this.error) return 'offline';
-		if (!this.lightning_info.synced_to_chain || !this.lightning_info.synced_to_graph) return 'syncing';
+		if (!this.lightning_info?.synced_to_chain || !this.lightning_info?.synced_to_graph) return 'syncing';
 		return 'online';
 	});
 }
