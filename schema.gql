@@ -285,26 +285,13 @@ type OrchardAuthentication {
 }
 
 type OrchardBitcoinBlock {
-  bits: String!
   chainwork: String!
-  confirmations: Int!
-  difficulty: Float!
   feerate_high: Float!
   feerate_low: Float!
   hash: String!
   height: Int!
-  mediantime: UnixTimestamp!
-  merkleroot: String!
   nTx: Int!
-  nextblockhash: String
-  nonce: Float!
-  previousblockhash: String!
-  size: Int!
-  strippedsize: Int!
   time: UnixTimestamp!
-  tx: [OrchardBitcoinRawTransaction!]!
-  version: Float!
-  versionHex: String!
   weight: Float!
 }
 
@@ -313,37 +300,10 @@ type OrchardBitcoinBlockCount {
 }
 
 type OrchardBitcoinBlockTemplate {
-  bits: String!
-  coinbasevalue: Int!
-  curtime: Int!
-  default_witness_commitment: String
   feerate_high: Float!
   feerate_low: Float!
   height: Int!
-  longpollid: String!
-  mintime: Int!
-  mutable: [String!]!
   nTx: Int!
-  noncerange: String!
-  previousblockhash: String!
-  rules: [String!]!
-  sigoplimit: Int!
-  sizelimit: Int!
-  target: String!
-  transactions: [OrchardBitcoinBlockTemplateTransaction!]!
-  vbrequired: Int!
-  version: Int!
-  weight: Int!
-  weightlimit: Int!
-}
-
-type OrchardBitcoinBlockTemplateTransaction {
-  data: String!
-  depends: [Int!]!
-  fee: Int!
-  hash: String!
-  sigops: Int!
-  txid: String!
   weight: Int!
 }
 
@@ -420,12 +380,6 @@ type OrchardBitcoinNetworkInfo {
   timeoffset: Int!
   version: Int!
   warnings: [String!]!
-}
-
-type OrchardBitcoinRawTransaction {
-  fee: Float
-  txid: String!
-  vsize: Int
 }
 
 type OrchardBitcoinTxFeeEstimate {
