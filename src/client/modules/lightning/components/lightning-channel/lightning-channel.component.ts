@@ -2,8 +2,6 @@
 import {ChangeDetectionStrategy, Component, Input, computed} from '@angular/core';
 /* Application Configuration */
 import {environment} from '@client/configs/configuration';
-/* Shared Dependencies */
-import {TaprootAssetId} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-lightning-channel',

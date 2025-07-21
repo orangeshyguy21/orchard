@@ -989,11 +989,6 @@ export type OrchardTaprootAssets = {
   unconfirmed_transfers: Scalars['String']['output'];
 };
 
-export type OrchardTaprootAssetsId = {
-  __typename?: 'OrchardTaprootAssetsId';
-  asset_id: TaprootAssetId;
-};
-
 export type OrchardTaprootAssetsInfo = {
   __typename?: 'OrchardTaprootAssetsInfo';
   block_hash: Scalars['String']['output'];
@@ -1052,7 +1047,6 @@ export type Query = {
   public_urls: Array<OrchardPublicUrl>;
   status: OrchardStatus;
   taproot_assets: OrchardTaprootAssets;
-  taproot_assets_ids: Array<OrchardTaprootAssetsId>;
   taproot_assets_info: OrchardTaprootAssetsInfo;
   taproot_assets_utxo: Array<OrchardTaprootAssetsUtxo>;
 };
@@ -1220,10 +1214,6 @@ export type Subscription = {
 export type SubscriptionAi_ChatArgs = {
   ai_chat: AiChatInput;
 };
-
-export enum TaprootAssetId {
-  Usdt = 'USDT'
-}
 
 export enum TaprootAssetType {
   Collectible = 'COLLECTIBLE',
