@@ -5,6 +5,7 @@ import {CommonModule} from '@angular/common';
 import {MatIconModule} from '@angular/material/icon';
 import {MatCardModule} from '@angular/material/card';
 import {MatTableModule} from '@angular/material/table';
+import {MatButtonModule} from '@angular/material/button';
 /* Application Dependencies */
 import {GraphicModule} from '@client/modules/graphic/graphic.module';
 import {LocalModule} from '@client/modules/local/local.module';
@@ -16,7 +17,7 @@ import {MintBalanceSheetComponent} from './components/mint-balance-sheet/mint-ba
 
 @NgModule({
 	declarations: [MintIconComponent, MintKeysetComponent, MintBalanceSheetComponent],
-	imports: [CommonModule, MatIconModule, MatCardModule, MatTableModule, GraphicModule, LocalModule, ErrorModule],
+	imports: [CommonModule, MatIconModule, MatCardModule, MatTableModule, MatButtonModule, GraphicModule, LocalModule, ErrorModule],
 	exports: [MintIconComponent, MintKeysetComponent, MintBalanceSheetComponent],
 })
 export class MintModule {}

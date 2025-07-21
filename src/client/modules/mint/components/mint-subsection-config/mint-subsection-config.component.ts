@@ -288,6 +288,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	}
 
 	private getNut15Methods(): Nut15Method[] {
+		if (!this.mint_info?.nuts.nut15) return [];
 		const all_units: string[] = this.mint_info?.nuts.nut15.methods.map((m) => m.unit) || [];
 		const units = Array.from(new Set(all_units));
 		return units.map((unit) => ({
@@ -297,6 +298,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	}
 
 	private getNut17Commands(): Nut17Commands[] {
+		if (!this.mint_info?.nuts.nut17) return [];
 		const all_units: string[] = this.mint_info?.nuts.nut17.supported.map((m) => m.unit) || [];
 		const units = Array.from(new Set(all_units));
 		const nut17_commands: Nut17Commands[] = [];
