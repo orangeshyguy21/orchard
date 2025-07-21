@@ -17,8 +17,13 @@ export class MintSubsectionDisabledComponent {
 			lines: [
 				{type: 'comment', value: '# Sample Mint .env'},
 				{type: 'variable', key: 'MINT_TYPE', value: 'nutshell'},
-				{type: 'variable', key: 'MINT_API', value: 'http://localhost:3888'},
+				{type: 'variable', key: 'MINT_API', value: 'http://localhost:3338'},
 				{type: 'variable', key: 'MINT_DATABASE', value: '/path/to/database'},
+				{type: 'variable', key: 'MINT_RPC_HOST', value: 'localhost'},
+				{type: 'variable', key: 'MINT_RPC_PORT', value: '3339'},
+				{type: 'variable', key: 'MINT_RPC_KEY', value: '/path/to/client_private.pem'},
+				{type: 'variable', key: 'MINT_RPC_CERT', value: '/path/to/client_cert.pem'},
+				{type: 'variable', key: 'MINT_RPC_CA', value: '/path/to/ca_cert.pem'},
 			],
 		},
 		cdk: {
