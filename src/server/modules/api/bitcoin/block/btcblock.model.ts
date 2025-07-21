@@ -81,6 +81,13 @@ export class OrchardBitcoinBlock {
 	@Field((type) => [OrchardBitcoinRawTransaction])
 	tx: OrchardBitcoinRawTransaction[];
 
+	// customs
+	@Field((type) => Float)
+	feerate_low: number;
+
+	@Field((type) => Float)
+	feerate_high: number;
+
 	constructor(obb: BitcoinBlock) {
 		this.hash = obb.hash;
 		this.confirmations = obb.confirmations;
@@ -105,6 +112,8 @@ export class OrchardBitcoinBlock {
 		let start = performance.now();
 		const {fee_lowest, fee_highest} = this.calculateFeeRange(obb.tx);
 		let end = performance.now();
+		this.feerate_low = fee_lowest;
+		this.feerate_high = fee_highest;
 		console.log('time', end - start);
 		console.log('height', this.height);
 		console.log('fee_lowest', fee_lowest * 100000);
@@ -115,45 +124,36 @@ export class OrchardBitcoinBlock {
 		let fee_lowest = Infinity;
 		let fee_highest = -Infinity;
 		let lowest_txid = '';
-
 		// Build lookup maps once for the entire block
 		const tx_by_txid = new Map<string, BitcoinBlock['tx'][number]>();
 		const children_by_parent = new Map<string, BitcoinBlock['tx'][number][]>();
 		const all_txids = new Set<string>();
-
 		// O(n) preprocessing
-		for (const tx of txs) {
+		txs.forEach((tx) => {
 			tx_by_txid.set(tx.txid, tx);
 			children_by_parent.set(tx.txid, []);
 			all_txids.add(tx.txid);
-		}
-
+		});
 		// Build parent-child relationships
-		for (const tx of txs) {
-			for (const input of tx.vin) {
-				if (children_by_parent.has(input.txid)) {
-					children_by_parent.get(input.txid)!.push(tx);
-				}
-			}
-		}
-
+		txs.forEach((tx) => {
+			tx.vin.forEach((input) => {
+				if (!children_by_parent.has(input.txid)) return;
+				children_by_parent.get(input.txid)!.push(tx);
+			});
+		});
 		// Find root transactions
 		const root_txs = this.findRootTransactionsOptimized(txs, all_txids);
-
 		// Calculate effective feerates using pre-built maps
-		for (const tx of root_txs) {
+		root_txs.forEach((tx) => {
 			const effective_feerate = this.calculateEffectiveFeerateOptimized(tx, children_by_parent);
-			if (effective_feerate === null) continue;
-			// if (effective_feerate < fee_lowest) fee_lowest = effective_feerate;
+			if (effective_feerate === null) return;
 			if (effective_feerate < fee_lowest) {
 				fee_lowest = effective_feerate;
 				lowest_txid = tx.txid;
 			}
 			if (effective_feerate > fee_highest) fee_highest = effective_feerate;
-		}
-
+		});
 		console.log('lowest_txid', lowest_txid);
-
 		return {
 			fee_lowest: isFinite(fee_lowest) ? fee_lowest : 0,
 			fee_highest: isFinite(fee_highest) ? fee_highest : 0,
@@ -162,20 +162,15 @@ export class OrchardBitcoinBlock {
 
 	private findRootTransactionsOptimized(all_txs: BitcoinBlock['tx'], all_txids: Set<string>): BitcoinBlock['tx'] {
 		const root_txs: BitcoinBlock['tx'] = [];
-
-		for (const tx of all_txs) {
+		all_txs.forEach((tx) => {
 			let is_root = true;
 			for (const input of tx.vin) {
-				if (all_txids.has(input.txid)) {
-					is_root = false;
-					break;
-				}
+				if (!all_txids.has(input.txid)) continue;
+				is_root = false;
+				break;
 			}
-			if (is_root) {
-				root_txs.push(tx);
-			}
-		}
-
+			if (is_root) root_txs.push(tx);
+		});
 		return root_txs;
 	}
 
@@ -184,16 +179,10 @@ export class OrchardBitcoinBlock {
 		children_by_parent: Map<string, BitcoinBlock['tx'][number][]>,
 	): number | null {
 		if (!tx.fee || !tx.vsize) return null;
-
 		const descendant_txs = this.findAllDescendantsOptimized(tx.txid, children_by_parent);
-
-		if (descendant_txs.length === 0) {
-			return (tx.fee * 1000) / tx.vsize;
-		}
-
+		if (descendant_txs.length === 0) return (tx.fee * 1000) / tx.vsize;
 		const total_effective_fee = tx.fee + descendant_txs.reduce((sum, descendant) => sum + descendant.fee, 0);
 		const total_effective_vsize = tx.vsize + descendant_txs.reduce((sum, descendant) => sum + descendant.vsize, 0);
-
 		return (total_effective_fee * 1000) / total_effective_vsize;
 	}
 
@@ -204,22 +193,17 @@ export class OrchardBitcoinBlock {
 		const descendants: BitcoinBlock['tx'][number][] = [];
 		const visited = new Set<string>();
 		const to_process = [parent_txid];
-
 		while (to_process.length > 0) {
 			const current_txid = to_process.shift()!;
-
 			if (visited.has(current_txid)) continue;
 			visited.add(current_txid);
-
 			const children = children_by_parent.get(current_txid) || [];
-			for (const child of children) {
-				if (!visited.has(child.txid)) {
-					descendants.push(child);
-					to_process.push(child.txid);
-				}
-			}
+			children.forEach((child) => {
+				if (visited.has(child.txid)) return;
+				descendants.push(child);
+				to_process.push(child.txid);
+			});
 		}
-
 		return descendants;
 	}
 }
@@ -314,14 +298,26 @@ export class OrchardBitcoinBlockTemplate {
 	@Field((type) => String)
 	bits: string;
 
+	// customs
+	@Field((type) => Int)
+	nTx: number;
+
+	@Field((type) => Int)
+	weight: number;
+
+	@Field((type) => Float)
+	feerate_low: number;
+
+	@Field((type) => Float)
+	feerate_high: number;
+
 	constructor(obbt: BitcoinBlockTemplate) {
+		// some fields are omitted
 		this.version = obbt.version;
 		this.rules = obbt.rules;
-		// this.vbavailable = obbt.vbavailable; // omit
 		this.vbrequired = obbt.vbrequired;
 		this.previousblockhash = obbt.previousblockhash;
 		this.transactions = obbt.transactions;
-		// this.coinbaseaux = obbt.coinbaseaux; // omit
 		this.coinbasevalue = obbt.coinbasevalue;
 		this.longpollid = obbt.longpollid;
 		this.target = obbt.target;
@@ -335,5 +331,94 @@ export class OrchardBitcoinBlockTemplate {
 		this.height = obbt.height;
 		this.default_witness_commitment = obbt.default_witness_commitment;
 		this.bits = obbt.bits;
+
+		// customs
+		this.nTx = obbt.transactions.length;
+		this.weight = this.calculateWeight(obbt.transactions);
+		const {feerate_low, feerate_high} = this.calculateFeerateRange(obbt.transactions);
+		this.feerate_low = feerate_low;
+		this.feerate_high = feerate_high;
+		console.log('feerate_low', feerate_low * 100000);
+		console.log('feerate_high', feerate_high * 100000);
+	}
+
+	private calculateWeight(txs: BitcoinBlockTemplate['transactions']): number {
+		return txs.reduce((sum, tx) => sum + tx.weight, 0);
+	}
+
+	private calculateFeerateRange(txs: BitcoinBlockTemplate['transactions']): {feerate_low: number; feerate_high: number} {
+		let feerate_low = Infinity;
+		let feerate_high = -Infinity;
+		let lowest_txid = '';
+		// Build lookup maps once for the entire block
+		const tx_by_txid = new Map<string, (typeof txs)[number]>();
+		const children_by_parent = new Map<string, (typeof txs)[number][]>();
+		const all_txids = new Set<string>();
+		// O(n) preprocessing
+		txs.forEach((tx) => {
+			tx_by_txid.set(tx.txid, tx);
+			children_by_parent.set(tx.txid, []);
+			all_txids.add(tx.txid);
+		});
+		// Build parent-child relationships
+		txs.forEach((tx) => {
+			tx.depends.forEach((dep_idx: number) => {
+				if (dep_idx === 0) return;
+				const parent_tx = txs[dep_idx - 1];
+				if (!parent_tx) return;
+				children_by_parent.get(parent_tx.txid)!.push(tx);
+			});
+		});
+		// Find root transactions (those with no depends or only 0)
+		const root_txs = txs.filter((tx) => !tx.depends || tx.depends.length === 0 || tx.depends.every((d) => d === 0));
+		// Calculate effective feerates
+		root_txs.forEach((tx) => {
+			const effective_feerate = this.calculateEffectiveFeerateOptimized(tx, children_by_parent);
+			if (effective_feerate === null) return;
+			if (effective_feerate < feerate_low) {
+				feerate_low = effective_feerate;
+				lowest_txid = tx.txid;
+			}
+			if (effective_feerate > feerate_high) feerate_high = effective_feerate;
+		});
+		console.log('TEMPLATE');
+		console.log('lowest_txid', lowest_txid);
+		return {
+			feerate_low: isFinite(feerate_low) ? feerate_low : 0,
+			feerate_high: isFinite(feerate_high) ? feerate_high : 0,
+		};
+	}
+
+	private calculateEffectiveFeerateOptimized(
+		tx: BitcoinBlockTemplate['transactions'][number],
+		children_by_parent: Map<string, BitcoinBlockTemplate['transactions'][number][]>,
+	): number | null {
+		if (!tx.fee || !tx.weight) return null;
+		const descendant_txs = this.findAllDescendantsOptimized(tx.txid, children_by_parent);
+		if (descendant_txs.length === 0) return tx.fee / 100000 / (tx.weight / 4);
+		const total_effective_fee = tx.fee + descendant_txs.reduce((sum, descendant) => sum + descendant.fee, 0);
+		const total_effective_weight = tx.weight + descendant_txs.reduce((sum, descendant) => sum + descendant.weight, 0);
+		return total_effective_fee / 100000 / (total_effective_weight / 4);
+	}
+
+	private findAllDescendantsOptimized(
+		parent_txid: string,
+		children_by_parent: Map<string, BitcoinBlockTemplate['transactions'][number][]>,
+	): BitcoinBlockTemplate['transactions'][number][] {
+		const descendants: BitcoinBlockTemplate['transactions'][number][] = [];
+		const visited = new Set<string>();
+		const to_process = [parent_txid];
+		while (to_process.length > 0) {
+			const current_txid = to_process.shift()!;
+			if (visited.has(current_txid)) continue;
+			visited.add(current_txid);
+			const children = children_by_parent.get(current_txid) || [];
+			children.forEach((child) => {
+				if (visited.has(child.txid)) return;
+				descendants.push(child);
+				to_process.push(child.txid);
+			});
+		}
+		return descendants;
 	}
 }

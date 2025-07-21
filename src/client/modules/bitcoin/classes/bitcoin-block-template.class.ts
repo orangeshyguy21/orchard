@@ -19,11 +19,10 @@ export class BitcoinBlockTemplate implements OrchardBitcoinBlockTemplate {
 	public vbrequired: number;
 	public version: number;
 	public weightlimit: number;
-	// derived
-	public feerate_lowest: number;
-	public feerate_highest: number;
+	public feerate_low: number;
+	public feerate_high: number;
 	public weight: number;
-	public fullness: number;
+	public nTx: number;
 
 	constructor(block_template: OrchardBitcoinBlockTemplate) {
 		this.bits = block_template.bits;
@@ -44,42 +43,36 @@ export class BitcoinBlockTemplate implements OrchardBitcoinBlockTemplate {
 		this.vbrequired = block_template.vbrequired;
 		this.version = block_template.version;
 		this.weightlimit = block_template.weightlimit;
-		// derived
-		const {fee_lowest, fee_highest} = this.calculateFeeRange();
-		this.feerate_lowest = fee_lowest;
-		this.feerate_highest = fee_highest;
-		this.weight = this.calculateWeight();
-		this.fullness = this.calculateFullness();
+		this.feerate_low = block_template.feerate_low;
+		this.feerate_high = block_template.feerate_high;
+		this.weight = block_template.weight;
+		this.nTx = block_template.nTx;
 	}
 
-	private calculateFeeRange(): {fee_lowest: number; fee_highest: number} {
-		let fee_lowest = Infinity;
-		let fee_highest = -Infinity;
+	// private calculateFeeRange(): {fee_lowest: number; fee_highest: number} {
+	// 	let fee_lowest = Infinity;
+	// 	let fee_highest = -Infinity;
 
-		for (const tx of this.transactions) {
-			const feerate = this.calculateFeerate(tx);
-			if (feerate === null) continue;
-			if (feerate < fee_lowest) fee_lowest = feerate;
-			if (feerate > fee_highest) fee_highest = feerate;
-		}
+	// 	for (const tx of this.transactions) {
+	// 		const feerate = this.calculateFeerate(tx);
+	// 		if (feerate === null) continue;
+	// 		if (feerate < fee_lowest) fee_lowest = feerate;
+	// 		if (feerate > fee_highest) fee_highest = feerate;
+	// 	}
 
-		return {
-			fee_lowest: isFinite(fee_lowest) ? fee_lowest : 0,
-			fee_highest: isFinite(fee_highest) ? fee_highest : 0,
-		};
-	}
+	// 	return {
+	// 		fee_lowest: isFinite(fee_lowest) ? fee_lowest : 0,
+	// 		fee_highest: isFinite(fee_highest) ? fee_highest : 0,
+	// 	};
+	// }
 
-	private calculateFeerate(tx: OrchardBitcoinBlockTemplateTransaction): number | null {
-		if (!tx.fee || !tx.weight) return null;
-		const vsize = tx.weight / 4;
-		return tx.fee / 100000 / vsize;
-	}
+	// private calculateFeerate(tx: OrchardBitcoinBlockTemplateTransaction): number | null {
+	// 	if (!tx.fee || !tx.weight) return null;
+	// 	const vsize = tx.weight / 4;
+	// 	return tx.fee / 100000 / vsize;
+	// }
 
-	private calculateWeight(): number {
-		return this.transactions.reduce((sum, tx) => sum + tx.weight, 0);
-	}
-
-	private calculateFullness(): number {
-		return this.weight / 4000000;
-	}
+	// private calculateWeight(): number {
+	// 	return this.transactions.reduce((sum, tx) => sum + tx.weight, 0);
+	// }
 }

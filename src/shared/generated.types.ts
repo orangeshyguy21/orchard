@@ -404,6 +404,8 @@ export type OrchardBitcoinBlock = {
   chainwork: Scalars['String']['output'];
   confirmations: Scalars['Int']['output'];
   difficulty: Scalars['Float']['output'];
+  feerate_high: Scalars['Float']['output'];
+  feerate_low: Scalars['Float']['output'];
   hash: Scalars['String']['output'];
   height: Scalars['Int']['output'];
   mediantime: Scalars['UnixTimestamp']['output'];
@@ -432,10 +434,13 @@ export type OrchardBitcoinBlockTemplate = {
   coinbasevalue: Scalars['Int']['output'];
   curtime: Scalars['Int']['output'];
   default_witness_commitment?: Maybe<Scalars['String']['output']>;
+  feerate_high: Scalars['Float']['output'];
+  feerate_low: Scalars['Float']['output'];
   height: Scalars['Int']['output'];
   longpollid: Scalars['String']['output'];
   mintime: Scalars['Int']['output'];
   mutable: Array<Scalars['String']['output']>;
+  nTx: Scalars['Int']['output'];
   noncerange: Scalars['String']['output'];
   previousblockhash: Scalars['String']['output'];
   rules: Array<Scalars['String']['output']>;
@@ -445,6 +450,7 @@ export type OrchardBitcoinBlockTemplate = {
   transactions: Array<OrchardBitcoinBlockTemplateTransaction>;
   vbrequired: Scalars['Int']['output'];
   version: Scalars['Int']['output'];
+  weight: Scalars['Int']['output'];
   weightlimit: Scalars['Int']['output'];
 };
 

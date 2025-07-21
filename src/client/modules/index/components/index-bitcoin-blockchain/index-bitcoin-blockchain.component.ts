@@ -103,8 +103,8 @@ export class IndexBitcoinBlockchainComponent implements OnInit, OnChanges {
 
 	private getTargetBlock(): number {
 		if (!this.txfee_estimate || !this.block_template) return 0;
-		if (!this.txfee_estimate.feerate || !this.block_template.feerate_lowest) return 0;
-		if (this.txfee_estimate.feerate > this.block_template.feerate_lowest) return 0;
+		if (!this.txfee_estimate.feerate || !this.block_template.feerate_low) return 0;
+		if (this.txfee_estimate.feerate > this.block_template.feerate_low) return 0;
 		return 1;
 	}
 }

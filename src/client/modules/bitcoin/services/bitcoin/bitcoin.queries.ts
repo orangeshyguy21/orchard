@@ -80,6 +80,8 @@ query BitcoinBlock($hash: String!) {
             fee
             vsize
         }
+        feerate_low
+        feerate_high
     }
 }`;
 
@@ -145,5 +147,8 @@ export const BITCOIN_BLOCK_TEMPLATE_QUERY = `{
         vbrequired
         version
         weightlimit
+        nTx
+        feerate_low
+        feerate_high
     }
 }`;
