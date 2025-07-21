@@ -57,3 +57,11 @@
 	opacity: 0.05;
 	background: white;
 }
+
+.block-feerange {
+	@extend %flex;
+	@extend %flex-gap-0-5;
+	@extend %font-size-xs;
+	@extend %flex-justify-center;
+	@extend %orc-on-surface-variant-color;
+}
