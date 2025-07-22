@@ -9,8 +9,7 @@
 			[lightning_loading]="loading_lightning"
 			[loading]="loading_static_data"
 			(navigate)="onNavigate('lightning')"
-		>
-		</orc-mint-balance-sheet>
+		></orc-mint-balance-sheet>
 		<orc-mint-connections
 			[urls]="mint_info ? mint_info.urls : null"
 			[icon_url]="mint_info ? mint_info.icon_url : null"
@@ -18,8 +17,7 @@
 			[mint_name]="mint_info?.name"
 			[mint_connections]="mint_connections"
 			[loading]="loading_static_data"
-		>
-		</orc-mint-connections>
+		></orc-mint-connections>
 	</div>
 
 	<div class="mint-analytic-control-panel">
@@ -41,8 +39,7 @@
 					(unitsChange)="onUnitsChange($event)"
 					(intervalChange)="onIntervalChange($event)"
 					(typeChange)="onTypeChange($event)"
-				>
-				</orc-mint-analytic-control-panel>
+				></orc-mint-analytic-control-panel>
 			}
 			<!-- <div class="p-b-1">
 				<button mat-icon-button aria-label="Example icon button with a vertical three dot icon">
@@ -64,8 +61,7 @@
 		[mint_genesis_time]="mint_genesis_time"
 		[selected_type]="page_settings ? page_settings.type : undefined"
 		[loading]="loading_dynamic_data"
-	>
-	</orc-mint-analytic-chart>
+	></orc-mint-analytic-chart>
 	<div class="mint-analytic-header z-index-2">
 		<div class="mint-analytic-title">Mints &nbsp;&nbsp;<small>deposits</small></div>
 	</div>
@@ -77,8 +73,7 @@
 		[mint_genesis_time]="mint_genesis_time"
 		[selected_type]="page_settings ? page_settings.type : undefined"
 		[loading]="loading_dynamic_data"
-	>
-	</orc-mint-analytic-chart>
+	></orc-mint-analytic-chart>
 	<div class="mint-analytic-header z-index-3">
 		<div class="mint-analytic-title">Melts &nbsp;&nbsp;<small>withdrawals</small></div>
 	</div>
@@ -90,8 +85,7 @@
 		[mint_genesis_time]="mint_genesis_time"
 		[selected_type]="page_settings ? page_settings.type : undefined"
 		[loading]="loading_dynamic_data"
-	>
-	</orc-mint-analytic-chart>
+	></orc-mint-analytic-chart>
 	<div class="mint-analytic-header z-index-4">
 		<div class="mint-analytic-title">Transfers</div>
 	</div>
@@ -103,6 +97,5 @@
 		[mint_genesis_time]="mint_genesis_time"
 		[selected_type]="page_settings ? page_settings.type : undefined"
 		[loading]="loading_dynamic_data"
-	>
-	</orc-mint-analytic-chart>
+	></orc-mint-analytic-chart>
 </div>
