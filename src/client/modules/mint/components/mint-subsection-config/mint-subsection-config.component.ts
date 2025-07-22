@@ -256,6 +256,8 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 			if (typeof description === 'string') return form_control.setValue(JSON.parse((description as string).toLowerCase()));
 			form_control.setValue(description);
 		}
+		this.evaluateDirtyCount();
+		this.cdr.detectChanges();
 	}
 
 	private patchStaticFormElements(): void {

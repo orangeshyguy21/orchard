@@ -251,6 +251,7 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 			this.form_info.get('contact')?.markAsDirty();
 			this.form_array_contacts.removeAt(index);
 		}
+		this.evaluateDirtyCount();
 		this.cdr.detectChanges();
 	}
 
