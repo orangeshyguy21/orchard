@@ -113,6 +113,6 @@ export class OrchardBitcoinNetworkInfo {
 		this.relayfee = bni.relayfee;
 		this.incrementalfee = bni.incrementalfee;
 		this.localaddresses = bni.localaddresses;
-		this.warnings = bni.warnings;
+		this.warnings = Array.isArray(bni.warnings) ? bni.warnings : [bni.warnings];
 	}
 }

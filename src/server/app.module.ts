@@ -50,7 +50,9 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 			if (!configService.get('mode.production')) return error;
 			return {
 				message: error.message,
-				extensions: error.extensions,
+				extensions: {
+					code: error.extensions?.code,
+				},
 			};
 		},
 	};
