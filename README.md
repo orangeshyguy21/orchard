@@ -13,11 +13,17 @@
 
 ### Implementation support
 
-- Bitcoin (core)
-- Lightning (lnd)
-- Cashu Mint (nutshell, cdk)
-- Taproot Assets (tapd)
-- AI (ollama)
+- Bitcoin
+  - core
+- Lightning
+  - lnd
+- Cashu Mint
+  - cdk (sqlite)
+  - nutshell (sqlite)
+- Taproot Assets
+  - tapd
+- AI
+  - ollama
 
 # Development Setup
 
@@ -53,6 +59,15 @@ npm run start:server
 # Production Setup
 
 ```bash
+npm install
+npm run build
+npm run start
+```
+
+## Updating
+
+```bash
+git pull
 npm install
 npm run build
 npm run start
