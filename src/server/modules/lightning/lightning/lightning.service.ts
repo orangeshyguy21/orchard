@@ -35,6 +35,7 @@ export class LightningService implements OnModuleInit {
 		return new Promise((resolve, reject) => {
 			if (!(method in this.grpc_client)) reject(OrchardErrorCode.LightningSupportError);
 			this.grpc_client[method](request, (error: Error | null, response: any) => {
+				if (error) this.logger.debug('error', error);
 				if (error && error?.message?.includes('14 UNAVAILABLE')) reject(OrchardErrorCode.LightningRpcConnectionError);
 				if (error) reject(error);
 				resolve(response);
@@ -49,8 +50,4 @@ export class LightningService implements OnModuleInit {
 	async getLightningChannelBalance(): Promise<LightningChannelBalance> {
 		return this.makeGrpcRequest('ChannelBalance', {});
 	}
-
-	// async getLightningChannels() : Promise<any> {
-	//     return this.makeGrpcRequest('ListChannels', {});
-	// }
 }
