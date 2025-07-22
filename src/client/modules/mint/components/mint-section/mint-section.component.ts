@@ -47,7 +47,8 @@ export class MintSectionComponent implements OnInit, OnDestroy {
 
 	private getMintInfoSubscription(): Subscription {
 		return this.mintService.mint_info$.subscribe((info: MintInfo | null) => {
-			if (info) this.mint_info = info;
+			if (!info) return;
+			this.mint_info = info;
 			this.loadImageData(info?.icon_url);
 		});
 	}

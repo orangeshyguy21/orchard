@@ -14,7 +14,7 @@ export const config = (): Config => {
 		log: process.env.LOG_LEVEL || 'info',
 		pass: process.env.ADMIN_PASSWORD,
 		ttl: process.env.THROTTLE_TTL || '60000',
-		limit: process.env.THROTTLE_LIMIT || '10',
+		limit: process.env.THROTTLE_LIMIT || '20',
 	};
 
 	const bitcoin = {
