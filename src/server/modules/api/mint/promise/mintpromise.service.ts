@@ -3,6 +3,7 @@ import {Injectable, Logger} from '@nestjs/common';
 /* Application Dependencies */
 import {CashuMintDatabaseService} from '@server/modules/cashu/mintdb/cashumintdb.service';
 import {CashuMintPromiseGroup} from '@server/modules/cashu/mintdb/cashumintdb.types';
+import {CashuMintPromiseArgs} from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 import {MintService} from '@server/modules/api/mint/mint.service';
@@ -20,7 +21,7 @@ export class MintPromiseService {
 		private errorService: ErrorService,
 	) {}
 
-	async getMintPromiseGroups(tag: string, args?: any): Promise<OrchardMintPromiseGroup[]> {
+	async getMintPromiseGroups(tag: string, args?: CashuMintPromiseArgs): Promise<OrchardMintPromiseGroup[]> {
 		return this.mintService.withDb(async (db) => {
 			try {
 				const cashu_mint_promise_groups: CashuMintPromiseGroup[] = await this.cashuMintDatabaseService.getMintPromiseGroups(
