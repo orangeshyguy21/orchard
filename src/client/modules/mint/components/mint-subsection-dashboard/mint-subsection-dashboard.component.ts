@@ -182,7 +182,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		});
 		const analytics_mints_pre_obs = this.mintService.loadMintAnalyticsMints({
 			units: this.page_settings.units,
-			date_start: 100000, // @todo make this bitcoin genesis time for the fans
+			date_start: 100000,
 			date_end: this.page_settings.date_start - 1,
 			interval: MintAnalyticsInterval.Custom,
 			timezone: timezone,
@@ -321,19 +321,19 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 
 	public onUnitsChange(event: MintUnit[]): void {
 		this.page_settings.units = event;
-		this.settingService.setMintDashboardShortSettings(this.page_settings);
+		this.settingService.setMintDashboardSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
 
 	public onIntervalChange(event: MintAnalyticsInterval): void {
 		this.page_settings.interval = event;
-		this.settingService.setMintDashboardShortSettings(this.page_settings);
+		this.settingService.setMintDashboardSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
 
 	public onTypeChange(event: ChartType): void {
 		this.page_settings.type = event;
-		this.settingService.setMintDashboardShortSettings(this.page_settings);
+		this.settingService.setMintDashboardSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
 
