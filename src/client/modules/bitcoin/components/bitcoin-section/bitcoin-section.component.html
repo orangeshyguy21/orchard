@@ -1,7 +1,10 @@
 <section class="section-container">
 	<orc-secondary-nav>
 		<div secondary-nav-header class="secondary-nav-header">
-			{{ bitcoin_blockchain_info?.chain }}
+			<div class="flex flex-items-center flex-gap-1">
+				<mat-icon class="mat-symbol-outline">deployed_code</mat-icon>
+				<div class="text-nowrap">{{ bitcoin_blockchain_info?.chain }}</div>
+			</div>
 		</div>
 		<div secondary-nav-items>
 			<orc-secondary-nav-item name="Dashboard" navroute="mint" [active]="active_sub_section === 'dashboard'">

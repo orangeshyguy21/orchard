@@ -25,6 +25,6 @@ export class MintPromiseResolver {
 	): Promise<OrchardMintPromiseGroup[]> {
 		const tag = 'GET { mint_promise_groups }';
 		this.logger.debug(tag);
-		return await this.mintPromiseService.getMintPromiseGroups(tag, {id_keysets, date_start, date_end});
+		return await this.mintPromiseService.getMintPromiseGroups(tag, {id_keysets, date_start, date_end, units, page, page_size});
 	}
 }

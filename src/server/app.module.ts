@@ -46,6 +46,15 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 			Timezone: Timezone,
 			Base64: Base64,
 		},
+		formatError: (error) => {
+			if (!configService.get('mode.production')) return error;
+			return {
+				message: error.message,
+				extensions: {
+					code: error.extensions?.code,
+				},
+			};
+		},
 	};
 }
 

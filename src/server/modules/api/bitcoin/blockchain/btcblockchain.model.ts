@@ -70,6 +70,6 @@ export class OrchardBitcoinBlockchainInfo {
 		this.pruneheight = obi.pruneheight;
 		this.automatic_pruning = obi.automatic_pruning;
 		this.prune_target_size = obi.prune_target_size;
-		this.warnings = obi.warnings;
+		this.warnings = Array.isArray(obi.warnings) ? obi.warnings : [obi.warnings];
 	}
 }

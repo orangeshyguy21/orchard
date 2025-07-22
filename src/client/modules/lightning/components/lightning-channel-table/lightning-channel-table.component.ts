@@ -37,20 +37,23 @@ export class LightningChannelTableComponent implements OnInit {
 	private init(): void {
 		const sat_summary = this.getSatSummary();
 		const taproot_assets_summaries = this.getTaprootAssetsSummaries();
-		const data = taproot_assets_summaries ? [sat_summary, ...taproot_assets_summaries] : [sat_summary];
+		const data = taproot_assets_summaries ? [...sat_summary, ...taproot_assets_summaries] : [...sat_summary];
 		this.data_source = new MatTableDataSource(data);
 	}
 
-	private getSatSummary(): ChannelSummary {
+	private getSatSummary(): ChannelSummary[] {
 		const local_balance = this.lightning_balance?.local_balance.sat || 0;
 		const remote_balance = this.lightning_balance?.remote_balance.sat || 0;
-		return {
-			size: local_balance + remote_balance,
-			recievable: remote_balance,
-			sendable: local_balance,
-			unit: 'sat',
-			decimal_display: 0,
-		};
+		if (local_balance === 0 && remote_balance === 0) return [];
+		return [
+			{
+				size: local_balance + remote_balance,
+				recievable: remote_balance,
+				sendable: local_balance,
+				unit: 'sat',
+				decimal_display: 0,
+			},
+		];
 	}
 
 	private getTaprootAssetsSummaries(): ChannelSummary[] | null {

@@ -31,3 +31,10 @@
 	@extend %left-2;
 	@extend %top-0-5;
 }
+
+.empty-ln-node {
+	@extend %h-8;
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+}

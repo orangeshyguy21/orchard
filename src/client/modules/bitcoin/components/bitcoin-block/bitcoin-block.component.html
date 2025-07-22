@@ -8,9 +8,9 @@
 		<div class="block-content">
 			<div class="flex flex-column flex-gap-0-5 flex-align-center">
 				<div class="block-feerange">
-					<div>{{ block?.feerate_low | feerate | number: '1.2-2' }}</div>
+					<div>{{ block?.feerate_low | feerate }}</div>
 					<div>-</div>
-					<div>{{ block?.feerate_high | feerate | number: '1.2-2' }}</div>
+					<div>{{ block?.feerate_high | feerate }}</div>
 					<div>sat/vB</div>
 				</div>
 

@@ -51,9 +51,23 @@ export class OrchardCustomChannelData {
 	@Field((type) => [OrchardCustomChannel])
 	pending_channels: OrchardCustomChannel[];
 
-	constructor(ccd: LightningCustomChannels) {
-		this.open_channels = Object.entries(ccd.open_channels).map(([chan_id, cc]) => new OrchardCustomChannel(cc, chan_id));
-		this.pending_channels = Object.entries(ccd.pending_channels).map(([chan_id, cc]) => new OrchardCustomChannel(cc, chan_id));
+	constructor(buffer: Buffer) {
+		const ccd = this.getCustomChannelData(buffer);
+		this.open_channels = ccd ? Object.entries(ccd.open_channels).map(([chan_id, cc]) => new OrchardCustomChannel(cc, chan_id)) : [];
+		this.pending_channels = ccd
+			? Object.entries(ccd.pending_channels).map(([chan_id, cc]) => new OrchardCustomChannel(cc, chan_id))
+			: [];
+	}
+
+	private getCustomChannelData(buffer: Buffer): LightningCustomChannels | null {
+		try {
+			const custom_channel_data_str = buffer?.toString('utf8');
+			if (!custom_channel_data_str) return null;
+			if (custom_channel_data_str.trim().length === 0) return null;
+			return JSON.parse(custom_channel_data_str);
+		} catch (error) {
+			return null;
+		}
 	}
 }
 
@@ -95,6 +109,6 @@ export class OrchardLightningBalance {
 		this.unsettled_remote_balance = new OrchardLightningBalanceAmount(lnb.unsettled_remote_balance);
 		this.pending_open_local_balance = new OrchardLightningBalanceAmount(lnb.pending_open_local_balance);
 		this.pending_open_remote_balance = new OrchardLightningBalanceAmount(lnb.pending_open_remote_balance);
-		this.custom_channel_data = new OrchardCustomChannelData(JSON.parse(lnb.custom_channel_data.toString('utf8')));
+		this.custom_channel_data = new OrchardCustomChannelData(lnb.custom_channel_data);
 	}
 }
