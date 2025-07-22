@@ -84,6 +84,7 @@
     #{$c}orc-corner-extra-small { border-radius: var(--mat-sys-corner-extra-small); }
     #{$c}orc-corner-extra-small-top { border-radius: var(--mat-sys-corner-extra-small-top); }
     #{$c}orc-corner-full { border-radius: var(--mat-sys-corner-full); }
+    #{$c}orc-corner-full-end { border-radius: 0 var(--mat-sys-corner-full) var(--mat-sys-corner-full) 0; }
     #{$c}orc-corner-large { border-radius: var(--mat-sys-corner-large); }
     #{$c}orc-corner-large-end { border-radius: var(--mat-sys-corner-large-end); }
     #{$c}orc-corner-large-start { border-radius: var(--mat-sys-corner-large-start); }

@@ -13,12 +13,16 @@
 					</td>
 				</tr>
 				<tr>
-					<td class="font-weight-extra-light orc-outline-color">Channels open</td>
+					<td class="font-weight-extra-light orc-outline-color">Channels active</td>
 					<td>{{ lightning_info?.num_active_channels }}</td>
 				</tr>
 				<tr>
-					<td class="font-weight-extra-light orc-outline-color">Channels closed</td>
+					<td class="font-weight-extra-light orc-outline-color">Channels inactive</td>
 					<td>{{ lightning_info?.num_inactive_channels }}</td>
+				</tr>
+				<tr>
+					<td class="font-weight-extra-light orc-outline-color">Channels pending</td>
+					<td>{{ lightning_info?.num_pending_channels }}</td>
 				</tr>
 			</tbody>
 		</table>
