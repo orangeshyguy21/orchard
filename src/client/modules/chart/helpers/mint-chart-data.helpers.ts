@@ -74,10 +74,8 @@ export function getAllPossibleTimestamps(first_timestamp: number, last_timestamp
 }
 
 function getValidTimestamp(timestamp: number, interval: MintAnalyticsInterval): number {
-	if (interval === MintAnalyticsInterval.Day) return DateTime.fromSeconds(timestamp).startOf('day').toSeconds();
-	if (interval === MintAnalyticsInterval.Week) return DateTime.fromSeconds(timestamp).startOf('week').toSeconds();
-	if (interval === MintAnalyticsInterval.Month) return DateTime.fromSeconds(timestamp).startOf('month').toSeconds();
-	return DateTime.fromSeconds(timestamp).startOf('day').toSeconds(); // Default to day
+	const time_interval = getTimeInterval(interval);
+	return DateTime.fromSeconds(timestamp).startOf(time_interval).toSeconds();
 }
 
 function getNextTimestamp(timestamp: number, interval: MintAnalyticsInterval): number {
