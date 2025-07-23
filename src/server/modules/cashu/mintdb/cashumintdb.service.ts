@@ -183,7 +183,7 @@ export class CashuMintDatabaseService implements OnModuleInit {
 					reject(OrchardErrorCode.MintDatabaseRestoreInvalidError);
 					return;
 				}
-
+				await fs.unlink(this.database);
 				fs.copyFile(restore_path, this.database)
 					.then(async () => {
 						try {
