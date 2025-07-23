@@ -37,10 +37,6 @@ export class MintKeysetService {
 		});
 	}
 
-	// async getMintKeysetFees(tag: string) : Promise<number> {
-	// 	//
-	// }
-
 	async mintRotateKeyset(tag: string, mint_rotate_keyset: MintRotateKeysetInput): Promise<OrchardMintKeysetRotation> {
 		try {
 			return await this.cashuMintRpcService.rotateNextKeyset(mint_rotate_keyset);

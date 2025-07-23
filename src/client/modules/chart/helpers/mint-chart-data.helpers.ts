@@ -1,9 +1,8 @@
 /* Application Dependencies */
 import {MintAnalytic} from '@client/modules/mint/classes/mint-analytic.class';
-import {MintAnalyticKeyset} from '@client/modules/mint/classes/mint-analytic.class';
 import {AmountPipe} from '@client/modules/local/pipes/amount/amount.pipe';
 /* Vendor Dependencies */
-import {DateTime} from 'luxon';
+import {DateTime, DateTimeUnit} from 'luxon';
 /* Shared Dependencies */
 import {MintAnalyticsInterval} from '@shared/generated.types';
 
@@ -123,4 +122,11 @@ export function getYAxisId(unit: string): string {
 	if (unit === 'usd') return 'yfiat';
 	if (unit === 'eur') return 'yfiat';
 	return 'ybtc';
+}
+
+export function getTimeInterval(interval: MintAnalyticsInterval): DateTimeUnit {
+	if (!interval) return 'day';
+	if (interval === MintAnalyticsInterval.Week) return 'week';
+	if (interval === MintAnalyticsInterval.Month) return 'month';
+	return 'day';
 }

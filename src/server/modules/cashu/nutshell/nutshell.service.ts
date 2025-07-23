@@ -365,75 +365,61 @@ export class NutshellService {
 	}
 
 	/* Analytics */
-
 	public async getMintAnalyticsBalances(db: sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
 		const interval = args?.interval || MintAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
 		const {where_conditions, params} = getAnalyticsConditions({
 			args: args,
-			time_column: 'created_time',
+			time_column: 'created',
 		});
 		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
 		const time_group_sql = getAnalyticsTimeGroupSql({
 			interval: interval,
 			timezone: timezone,
-			time_column: 'created_time',
+			time_column: 'created',
 			group_by: 'unit',
 		});
 
-		const sqlite_sql = `
-			WITH mint_data AS (
+		const sql = `
+			WITH issued AS (
 				SELECT 
 					${time_group_sql} AS time_group,
-					unit,
-					SUM(CASE WHEN state = 'ISSUED' THEN amount ELSE 0 END) AS mint_amount,
-					COUNT(DISTINCT CASE WHEN state = 'ISSUED' THEN quote ELSE NULL END) AS mint_count,
-					MIN(created_time) as min_created_time
-				FROM 
-					mint_quotes
-					${where_clause}
-				GROUP BY 
-					time_group, unit
+					k.unit,
+					SUM(p.amount) AS issued_amount,
+					COUNT(DISTINCT p.b_) AS issued_count,
+					MIN(p.created) as min_created_time
+				FROM promises p
+				LEFT JOIN keysets k ON k.id = p.id
+				${where_clause}
+				GROUP BY time_group, k.unit
 			),
-			melt_data AS (
+			redeemed AS (
 				SELECT 
 					${time_group_sql} AS time_group,
-					unit,
-					SUM(CASE WHEN state = 'PAID' THEN amount ELSE 0 END) AS melt_amount,
-					COUNT(DISTINCT CASE WHEN state = 'PAID' THEN quote ELSE NULL END) AS melt_count,
-					MIN(created_time) as min_created_time
-				FROM 
-					melt_quotes
-					${where_clause}
-				GROUP BY 
-					time_group, unit
+					k.unit,
+					SUM(pu.amount) AS redeemed_amount,
+					COUNT(DISTINCT pu.secret) AS redeemed_count,
+					MIN(pu.created) as min_created_time
+				FROM proofs_used pu
+				LEFT JOIN keysets k ON k.id = pu.id
+				${where_clause}
+				GROUP BY time_group, k.unit
 			)
 			SELECT 
-				COALESCE(m.time_group, l.time_group) AS time_group,
-				COALESCE(m.unit, l.unit) AS unit,
-				COALESCE(m.mint_amount, 0) - COALESCE(l.melt_amount, 0) AS amount,
-				COALESCE(m.mint_count, 0) + COALESCE(l.melt_count, 0) AS operation_count,
-				COALESCE(m.min_created_time, l.min_created_time) AS min_created_time
-			FROM 
-				mint_data m
-				LEFT JOIN melt_data l ON m.time_group = l.time_group AND m.unit = l.unit
-			UNION ALL
-			SELECT 
-				l.time_group,
-				l.unit,
-				-l.melt_amount AS amount,
-				l.melt_count AS operation_count,
-				l.min_created_time
-			FROM 
-				melt_data l
-				LEFT JOIN mint_data m ON l.time_group = m.time_group AND l.unit = m.unit
-			WHERE 
-				m.time_group IS NULL
-			ORDER BY 
-				min_created_time;`;
+				COALESCE(i.time_group, r.time_group) AS time_group,
+				COALESCE(i.unit, r.unit) AS unit,
+				COALESCE(i.issued_amount, 0) - COALESCE(r.redeemed_amount, 0) AS amount,
+				COALESCE(i.issued_count, 0) + COALESCE(r.redeemed_count, 0) AS operation_count,
+				COALESCE(i.min_created_time, r.min_created_time) AS min_created_time
+			FROM issued i
+			FULL OUTER JOIN redeemed r 
+				ON i.time_group = r.time_group 
+				AND i.unit = r.unit
+			ORDER BY min_created_time;
+		`;
 
 		return new Promise((resolve, reject) => {
-			db.all(sqlite_sql, [...params, ...params], (err, rows: any[]) => {
+			db.all(sql, [...params, ...params], (err, rows: any[]) => {
 				if (err) return reject(err);
 
 				const result = rows.map((row) => {
