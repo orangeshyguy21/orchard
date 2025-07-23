@@ -315,7 +315,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public onDateChange(event: number[]): void {
 		this.page_settings.date_start = event[0];
 		this.page_settings.date_end = event[1];
-		this.settingService.setMintDashboardShortSettings(this.page_settings);
+		this.settingService.setMintDashboardSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
 

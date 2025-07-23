@@ -359,7 +359,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	public onDateChange(event: number[]): void {
 		this.page_settings.date_start = event[0];
 		this.page_settings.date_end = event[1];
-		this.settingService.setMintDatabaseShortSettings(this.page_settings);
+		this.settingService.setMintDatabaseSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
 
@@ -386,7 +386,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 
 	public onPage(event: PageEvent): void {
 		this.page_settings.page = event.pageIndex + 1;
-		this.settingService.setMintDatabaseShortSettings(this.page_settings);
+		this.settingService.setMintDatabaseSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
 
