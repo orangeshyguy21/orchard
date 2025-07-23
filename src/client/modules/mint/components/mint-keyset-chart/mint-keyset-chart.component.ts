@@ -8,7 +8,7 @@ import {DateTime} from 'luxon';
 import {Subscription} from 'rxjs';
 /* Application Dependencies */
 import {NonNullableMintKeysetsSettings} from '@client/modules/settings/types/setting.types';
-import {getAmountData, getAllPossibleTimestamps, getYAxisId} from '@client/modules/chart/helpers/mint-chart-data.helpers';
+import {getAmountData, getAllPossibleTimestamps, getYAxisId, getTimeInterval} from '@client/modules/chart/helpers/mint-chart-data.helpers';
 import {
 	getXAxisConfig,
 	getYAxis,
@@ -106,8 +106,9 @@ export class MintKeysetChartComponent implements OnChanges, OnDestroy {
 		if (!this.page_settings) return {datasets: []};
 		if ((!valid_analytics || valid_analytics.length === 0) && (!valid_analytics_pre || valid_analytics_pre.length === 0))
 			return {datasets: []};
-		const timestamp_first = DateTime.fromSeconds(this.page_settings.date_start).startOf('day').toSeconds();
-		const timestamp_last = DateTime.fromSeconds(this.page_settings.date_end).startOf('day').toSeconds();
+		const time_interval = getTimeInterval(this.interval);
+		const timestamp_first = DateTime.fromSeconds(this.page_settings.date_start).startOf(time_interval).toSeconds();
+		const timestamp_last = DateTime.fromSeconds(this.page_settings.date_end).startOf(time_interval).toSeconds();
 		const data_keyset_groups = valid_analytics.reduce(
 			(groups, analytic) => {
 				const id = analytic.keyset_id;
