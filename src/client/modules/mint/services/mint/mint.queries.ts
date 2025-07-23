@@ -404,7 +404,7 @@ mutation MintDatabaseBackup {
 }`;
 
 export const MINT_DATABASE_RESTORE_MUTATION = `
-mutation MintDatabaseRestore($filebase64: String!) {
+mutation MintDatabaseRestore($filebase64: Base64!) {
 	mint_database_restore(filebase64: $filebase64) {
 		success
 	}

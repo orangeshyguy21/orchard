@@ -4,7 +4,7 @@ import {trigger, transition, style, animate} from '@angular/animations';
 /* Vendor Dependencies */
 import {BaseChartDirective} from 'ng2-charts';
 import {ChartConfiguration, ScaleChartOptions, ChartType as ChartJsType} from 'chart.js';
-import {DateTime} from 'luxon';
+import {DateTime, DateTimeUnit} from 'luxon';
 import {Subscription} from 'rxjs';
 /* Application Dependencies */
 import {NonNullableMintDashboardSettings} from '@client/modules/settings/types/setting.types';
@@ -16,6 +16,7 @@ import {
 	getRawData,
 	getAllPossibleTimestamps,
 	getYAxisId,
+	getTimeInterval,
 } from '@client/modules/chart/helpers/mint-chart-data.helpers';
 import {
 	getXAxisConfig,
@@ -29,6 +30,8 @@ import {ChartService} from '@client/modules/chart/services/chart/chart.service';
 /* Native Dependencies */
 import {MintAnalytic} from '@client/modules/mint/classes/mint-analytic.class';
 import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
+/* Shared Dependencies */
+import {MintAnalyticsInterval} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-analytic-chart',
@@ -123,10 +126,12 @@ export class MintAnalyticChartComponent implements OnChanges, OnDestroy {
 		if (
 			(!this.mint_analytics || this.mint_analytics.length === 0) &&
 			(!this.mint_analytics_pre || this.mint_analytics_pre.length === 0)
-		)
+		) {
 			return {datasets: []};
-		const timestamp_first = DateTime.fromSeconds(this.page_settings.date_start).startOf('day').toSeconds();
-		const timestamp_last = DateTime.fromSeconds(this.page_settings.date_end).startOf('day').toSeconds();
+		}
+		const time_interval = getTimeInterval(this.page_settings.interval);
+		const timestamp_first = DateTime.fromSeconds(this.page_settings.date_start).startOf(time_interval).toSeconds();
+		const timestamp_last = DateTime.fromSeconds(this.page_settings.date_end).startOf(time_interval).toSeconds();
 		const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.page_settings.interval);
 		const data_unit_groups = groupAnalyticsByUnit(this.mint_analytics);
 		const data_unit_groups_prepended = prependData(data_unit_groups, this.mint_analytics_pre, timestamp_first);

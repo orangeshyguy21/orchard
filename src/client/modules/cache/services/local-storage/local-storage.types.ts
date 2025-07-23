@@ -26,17 +26,20 @@ export enum ThemeType {
 }
 
 export type MintDashboardSettings = {
+	date_start: number | null;
 	units: MintUnit[] | null;
 	interval: MintAnalyticsInterval | null;
 	type: ChartType | null;
 };
 
 export type MintKeysetsSettings = {
+	date_start: number | null;
 	units: MintUnit[] | null;
 	status: boolean[] | null;
 };
 
 export type MintDatabaseSettings = {
+	date_start: number | null;
 	type: MintDataType | null;
 	units: MintUnit[] | null;
 	states: string[] | null;

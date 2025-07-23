@@ -177,14 +177,14 @@ export class MintDataControlComponent implements OnChanges {
 		if (type === MintDataType.MintMints) return 'Mints';
 		if (type === MintDataType.MintMelts) return 'Melts';
 		if (type === MintDataType.MintProofGroups) return 'Ecash Used';
-		if (type === MintDataType.MintPromiseGroups) return 'Ecash Held';
+		if (type === MintDataType.MintPromiseGroups) return 'Ecash Issued';
 		return 'Unknown';
 	}
 	private getTypeHelper(type: MintDataType): string {
 		if (type === MintDataType.MintMints) return 'Mint deposits';
 		if (type === MintDataType.MintMelts) return 'Mint withdrawals';
 		if (type === MintDataType.MintProofGroups) return 'Ecash burned by the mint';
-		if (type === MintDataType.MintPromiseGroups) return 'Ecash promises outstanding';
+		if (type === MintDataType.MintPromiseGroups) return 'Ecash issued by the mint';
 		return 'n/a';
 	}
 

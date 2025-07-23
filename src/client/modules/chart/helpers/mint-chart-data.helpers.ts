@@ -1,9 +1,8 @@
 /* Application Dependencies */
 import {MintAnalytic} from '@client/modules/mint/classes/mint-analytic.class';
-import {MintAnalyticKeyset} from '@client/modules/mint/classes/mint-analytic.class';
 import {AmountPipe} from '@client/modules/local/pipes/amount/amount.pipe';
 /* Vendor Dependencies */
-import {DateTime} from 'luxon';
+import {DateTime, DateTimeUnit} from 'luxon';
 /* Shared Dependencies */
 import {MintAnalyticsInterval} from '@shared/generated.types';
 
@@ -75,10 +74,8 @@ export function getAllPossibleTimestamps(first_timestamp: number, last_timestamp
 }
 
 function getValidTimestamp(timestamp: number, interval: MintAnalyticsInterval): number {
-	if (interval === MintAnalyticsInterval.Day) return DateTime.fromSeconds(timestamp).startOf('day').toSeconds();
-	if (interval === MintAnalyticsInterval.Week) return DateTime.fromSeconds(timestamp).startOf('week').toSeconds();
-	if (interval === MintAnalyticsInterval.Month) return DateTime.fromSeconds(timestamp).startOf('month').toSeconds();
-	return DateTime.fromSeconds(timestamp).startOf('day').toSeconds(); // Default to day
+	const time_interval = getTimeInterval(interval);
+	return DateTime.fromSeconds(timestamp).startOf(time_interval).toSeconds();
 }
 
 function getNextTimestamp(timestamp: number, interval: MintAnalyticsInterval): number {
@@ -123,4 +120,11 @@ export function getYAxisId(unit: string): string {
 	if (unit === 'usd') return 'yfiat';
 	if (unit === 'eur') return 'yfiat';
 	return 'ybtc';
+}
+
+export function getTimeInterval(interval: MintAnalyticsInterval): DateTimeUnit {
+	if (!interval) return 'day';
+	if (interval === MintAnalyticsInterval.Week) return 'week';
+	if (interval === MintAnalyticsInterval.Month) return 'month';
+	return 'day';
 }

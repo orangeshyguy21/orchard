@@ -13,15 +13,12 @@ import {AllMintDashboardSettings, AllMintDatabaseSettings, AllMintKeysetsSetting
 })
 export class SettingService {
 	public mint_dashboard_short_settings: Record<string, number | null> = {
-		date_start: null,
 		date_end: null,
 	};
 	public mint_keysets_short_settings: Record<string, number | null> = {
-		date_start: null,
 		date_end: null,
 	};
 	public mint_database_short_settings: Record<string, number | null> = {
-		date_start: null,
 		date_end: null,
 		page: null,
 	};
@@ -88,11 +85,12 @@ export class SettingService {
 			...this.mint_dashboard_short_settings,
 		} as AllMintDashboardSettings;
 	}
-	public setMintDashboardShortSettings(settings: {date_start: number; date_end: number}): void {
-		this.mint_dashboard_short_settings = settings;
-	}
 	public setMintDashboardSettings(settings: AllMintDashboardSettings): void {
-		this.localStorageService.setMintDashboardSettings(settings);
+		const {date_end, ...long_settings} = settings;
+		this.localStorageService.setMintDashboardSettings(long_settings);
+		this.mint_dashboard_short_settings = {
+			date_end: date_end,
+		};
 	}
 
 	/* Page: Mint Keysets */
@@ -103,11 +101,12 @@ export class SettingService {
 			...this.mint_keysets_short_settings,
 		} as AllMintKeysetsSettings;
 	}
-	public setMintKeysetsShortSettings(settings: {date_start: number; date_end: number}): void {
-		this.mint_keysets_short_settings = settings;
-	}
 	public setMintKeysetsSettings(settings: AllMintKeysetsSettings): void {
-		this.localStorageService.setMintKeysetsSettings(settings);
+		const {date_end, ...long_settings} = settings;
+		this.localStorageService.setMintKeysetsSettings(long_settings);
+		this.mint_keysets_short_settings = {
+			date_end: date_end,
+		};
 	}
 
 	/* Page: Mint Database */
@@ -118,10 +117,12 @@ export class SettingService {
 			...this.mint_database_short_settings,
 		} as AllMintDatabaseSettings;
 	}
-	public setMintDatabaseShortSettings(settings: {date_start: number; date_end: number; page: number}): void {
-		this.mint_database_short_settings = settings;
-	}
 	public setMintDatabaseSettings(settings: AllMintDatabaseSettings): void {
-		this.localStorageService.setMintDatabaseSettings(settings);
+		const {date_end, page, ...long_settings} = settings;
+		this.localStorageService.setMintDatabaseSettings(long_settings);
+		this.mint_database_short_settings = {
+			date_end: date_end,
+			page: page,
+		};
 	}
 }

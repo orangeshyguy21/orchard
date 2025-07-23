@@ -345,7 +345,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	public onDateChange(event: number[]): void {
 		this.page_settings.date_start = event[0];
 		this.page_settings.date_end = event[1];
-		this.settingService.setMintKeysetsShortSettings(this.page_settings);
+		this.settingService.setMintKeysetsSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
 
