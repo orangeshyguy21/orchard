@@ -9,6 +9,8 @@ import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 /* Local Dependencies */
 import {MintBalanceRow} from './mint-balance-row.class';
+/* Shared Dependencies */
+import {MintUnit} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-balance-sheet',
@@ -51,10 +53,9 @@ export class MintBalanceSheetComponent implements OnChanges {
 		if (this.rows[0]?.fees === null) this.displayed_columns = ['liabilities', 'assets', 'keyset'];
 	}
 
-	private getAssetBalances(): number {
-		if (this.lightning_balance) {
-			return this.lightning_balance.local_balance.sat;
-		}
+	private getAssetBalances(unit: MintUnit): number | null {
+		if (unit === MintUnit.Eur || unit === MintUnit.Usd) return null;
+		if (this.lightning_balance) return this.lightning_balance.local_balance.sat;
 		return 0;
 	}
 
@@ -64,7 +65,7 @@ export class MintBalanceSheetComponent implements OnChanges {
 		this.keysets
 			.map((keyset) => {
 				const liability_balance = this.balances.find((balance) => balance.keyset === keyset.id);
-				const asset_balance = this.getAssetBalances();
+				const asset_balance = this.getAssetBalances(keyset.unit);
 				return new MintBalanceRow(liability_balance, asset_balance, keyset);
 			})
 			.filter((row) => row !== null)
