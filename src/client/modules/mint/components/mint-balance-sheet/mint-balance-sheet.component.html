@@ -28,8 +28,17 @@
 									<div [@fadeIn] class="flex flex-items-center flex-gap-1">
 										<orc-graphic-asset [unit]="row.unit" [height]="'1.75rem'" [custody]="'lightning'">
 										</orc-graphic-asset>
-										<span class="font-size-m w-min-10" [innerHTML]="row.assets | amount: row.unit : 'lightning'"></span>
-										<span class="font-size-m font-weight-bold orc-outline-color">{{ row.reserve_ratio }}</span>
+										@if (row.assets !== null) {
+											<span
+												class="font-size-m w-min-10"
+												[innerHTML]="row.assets | amount: row.unit : 'lightning'"
+											></span>
+											<span class="font-size-m font-weight-bold orc-outline-color">{{ row.reserve_ratio }}</span>
+										} @else {
+											<span class="font-size-m w-min-10 orc-outline-color">
+												<mat-icon>check_indeterminate_small</mat-icon>
+											</span>
+										}
 									</div>
 								}
 							}
