@@ -153,7 +153,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			this.loading_dynamic_data = false;
 			this.cdr.detectChanges();
 		} catch (error) {
-			console.log('ERROR IN INIT MINT ANALYTICS:', error);
+			console.error('ERROR IN INIT MINT ANALYTICS:', error);
 		}
 	}
 
