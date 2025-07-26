@@ -35,12 +35,14 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 	registerEnumType(AiFunctionName, {name: 'AiFunctionName'});
 
 	const path = configService.get('server.path');
+	const is_production = configService.get('mode.production');
 
 	return {
-		autoSchemaFile: configService.get('mode.production') ? true : 'schema.gql',
+		autoSchemaFile: is_production ? true : 'schema.gql',
 		sortSchema: true,
 		path: path,
 		installSubscriptionHandlers: true,
+		playground: !is_production,
 		resolvers: {
 			UnixTimestamp: UnixTimestamp,
 			Timezone: Timezone,

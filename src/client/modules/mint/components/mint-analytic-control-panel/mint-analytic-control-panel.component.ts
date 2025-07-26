@@ -108,7 +108,6 @@ export class MintAnalyticControlPanelComponent implements OnChanges {
 			this.date_start &&
 			this.panel.controls.daterange.get('date_start')?.value?.toSeconds() !== this.date_start
 		) {
-			console.log('date_start changed', this.date_start);
 			this.panel.controls.daterange.get('date_start')?.setValue(DateTime.fromSeconds(this.date_start));
 		}
 		if (changes['date_end'] && this.date_end && this.panel.controls.daterange.get('date_end')?.value?.toSeconds() !== this.date_end) {
