@@ -2,6 +2,7 @@
 import {DateTime} from 'luxon';
 /* Local Dependencies */
 import {CashuMintAnalyticsArgs} from './cashumintdb.interfaces';
+import {CashuMintDatabase} from './cashumintdb.types';
 
 /**
  * Builds a dynamic SQL query with parameters based on provided arguments
@@ -165,4 +166,14 @@ export function getAnalyticsTimeGroupStamp({
 	if (interval === 'custom') return min_created_time;
 	const datetime = DateTime.fromFormat(time_group, 'yyyy-MM-dd', {zone: timezone}).startOf('day');
 	return Math.floor(datetime.toSeconds());
+}
+
+export async function queryRows<T>(client: CashuMintDatabase, sql: string, params?: any[]): Promise<T[]> {
+	if (client.type === 'sqlite') return client.database.prepare(sql).all(params) as T[];
+	return client.database.query(sql, params).then((res) => res.rows as T[]);
+}
+
+export async function queryRow<T>(client: CashuMintDatabase, sql: string, params?: any[]): Promise<T> {
+	if (client.type === 'sqlite') return client.database.prepare(sql).get(params) as T;
+	return client.database.get(sql, params);
 }

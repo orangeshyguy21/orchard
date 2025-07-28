@@ -6,10 +6,9 @@ import * as path from 'path';
 /* Vendor Dependencies */
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
-/* Vendor Dependencies */
-import sqlite3 from 'sqlite3';
 /* Native Dependencies */
 import {
+	CashuMintDatabase,
 	CashuMintBalance,
 	CashuMintKeyset,
 	CashuMintMeltQuote,
@@ -33,10 +32,18 @@ import {
 	getAnalyticsConditions,
 	getAnalyticsTimeGroupSql,
 	buildCountQuery,
+	queryRows,
+	queryRow,
 } from '@server/modules/cashu/mintdb/cashumintdb.helpers';
 import {MintAnalyticsInterval} from '@server/modules/cashu/mintdb/cashumintdb.enums';
 /* Local Dependencies */
-import {NutshellMintMintQuote, NutshellMintMeltQuote} from './nutshell.types';
+import {
+	NutshellMintMintQuote,
+	NutshellMintMeltQuote,
+	NutshellMintEcash,
+	NutshellMintAnalytics,
+	NutshellMintKeysetsAnalytics,
+} from './nutshell.types';
 
 @Injectable()
 export class NutshellService {
@@ -78,53 +85,51 @@ export class NutshellService {
 		}
 	}
 
-	public async getMintBalances(db: sqlite3.Database, keyset_id?: string): Promise<CashuMintBalance[]> {
+	public async getMintBalances(client: CashuMintDatabase, keyset_id?: string): Promise<CashuMintBalance[]> {
 		const where_clause = keyset_id ? `WHERE keyset = ?` : '';
 		const sql = `SELECT * FROM balance ${where_clause};`;
 		const params = keyset_id ? [keyset_id] : [];
-		return new Promise((resolve, reject) => {
-			db.all(sql, params, (err, rows: CashuMintBalance[]) => {
-				if (err) return reject(err);
-				resolve(rows);
-			});
-		});
+		try {
+			return queryRows<CashuMintBalance>(client, sql, params);
+		} catch (err) {
+			throw err;
+		}
 	}
 
-	public async getMintBalancesIssued(db: sqlite3.Database): Promise<CashuMintBalance[]> {
+	public async getMintBalancesIssued(client: CashuMintDatabase): Promise<CashuMintBalance[]> {
 		const sql = 'SELECT * FROM balance_issued;';
-		return new Promise((resolve, reject) => {
-			db.all(sql, (err, rows: CashuMintBalance[]) => {
-				if (err) return reject(err);
-				resolve(rows);
-			});
-		});
+		try {
+			return queryRows<CashuMintBalance>(client, sql);
+		} catch (err) {
+			throw err;
+		}
 	}
 
-	public async getMintBalancesRedeemed(db: sqlite3.Database): Promise<CashuMintBalance[]> {
+	public async getMintBalancesRedeemed(client: CashuMintDatabase): Promise<CashuMintBalance[]> {
 		const sql = 'SELECT * FROM balance_redeemed;';
-		return new Promise((resolve, reject) => {
-			db.all(sql, (err, rows: CashuMintBalance[]) => {
-				if (err) return reject(err);
-				resolve(rows);
-			});
-		});
+		try {
+			return queryRows<CashuMintBalance>(client, sql);
+		} catch (err) {
+			throw err;
+		}
 	}
 
-	public async getMintKeysets(db: sqlite3.Database): Promise<CashuMintKeyset[]> {
+	public async getMintKeysets(client: CashuMintDatabase): Promise<CashuMintKeyset[]> {
 		const sql = 'SELECT * FROM keysets WHERE unit != ?;';
-		return new Promise((resolve, reject) => {
-			db.all(sql, ['auth'], (err, rows: CashuMintKeyset[]) => {
-				if (err) return reject(err);
-				rows.forEach((row) => {
-					const match = row.derivation_path?.match(/\/(\d+)'?$/);
-					row.derivation_path_index = match ? parseInt(match[1], 10) : null;
-				});
-				resolve(rows);
-			});
-		});
+		try {
+			const rows = await queryRows<CashuMintKeyset>(client, sql, ['auth']);
+			return rows.map((row) => ({
+				...row,
+				derivation_path_index: row.derivation_path?.match(/\/(\d+)'?$/)?.[1]
+					? parseInt(row.derivation_path.match(/\/(\d+)'?$/)[1], 10)
+					: null,
+			}));
+		} catch (err) {
+			throw err;
+		}
 	}
 
-	public async getMintMintQuotes(db: sqlite3.Database, args?: CashuMintMintQuotesArgs): Promise<CashuMintMintQuote[]> {
+	public async getMintMintQuotes(client: CashuMintDatabase, args?: CashuMintMintQuotesArgs): Promise<CashuMintMintQuote[]> {
 		const field_mappings = {
 			unit: 'unit',
 			date_start: 'created_time',
@@ -132,21 +137,20 @@ export class NutshellService {
 			states: 'state',
 		};
 		const {sql, params} = buildDynamicQuery('mint_quotes', args, field_mappings);
-		return new Promise((resolve, reject) => {
-			db.all(sql, params, (err, rows: NutshellMintMintQuote[]) => {
-				if (err) return reject(err);
-				const cashu_quote = (row: NutshellMintMintQuote): CashuMintMintQuote => ({
-					id: row.quote,
-					request_lookup_id: row.checking_id,
-					issued_time: row.state === 'ISSUED' ? row.paid_time : null,
-					...row,
-				});
-				resolve(rows.map(cashu_quote));
-			});
-		});
+		try {
+			const rows = await queryRows<NutshellMintMintQuote>(client, sql, params);
+			return rows.map((row) => ({
+				id: row.quote,
+				request_lookup_id: row.checking_id,
+				issued_time: row.state === 'ISSUED' ? row.paid_time : null,
+				...row,
+			}));
+		} catch (err) {
+			throw err;
+		}
 	}
 
-	public async getMintMeltQuotes(db: sqlite3.Database, args?: CashuMintMeltQuotesArgs): Promise<CashuMintMeltQuote[]> {
+	public async getMintMeltQuotes(client: CashuMintDatabase, args?: CashuMintMeltQuotesArgs): Promise<CashuMintMeltQuote[]> {
 		const field_mappings = {
 			units: 'unit',
 			date_start: 'created_time',
@@ -154,23 +158,22 @@ export class NutshellService {
 			states: 'state',
 		};
 		const {sql, params} = buildDynamicQuery('melt_quotes', args, field_mappings);
-		return new Promise((resolve, reject) => {
-			db.all(sql, params, (err, rows: NutshellMintMeltQuote[]) => {
-				if (err) return reject(err);
-				const cashu_quote = (row: NutshellMintMeltQuote): CashuMintMeltQuote => ({
-					id: row.quote,
-					request_lookup_id: row.checking_id,
-					paid_time: row.paid_time,
-					payment_preimage: null,
-					msat_to_pay: null,
-					...row,
-				});
-				resolve(rows.map(cashu_quote));
-			});
-		});
+		try {
+			const rows = await queryRows<NutshellMintMeltQuote>(client, sql, params);
+			return rows.map((row) => ({
+				id: row.quote,
+				request_lookup_id: row.checking_id,
+				paid_time: row.paid_time,
+				payment_preimage: null,
+				msat_to_pay: null,
+				...row,
+			}));
+		} catch (err) {
+			throw err;
+		}
 	}
 
-	public async getMintProofGroups(db: sqlite3.Database, args?: CashuMintProofsArgs): Promise<CashuMintProofGroup[]> {
+	public async getMintProofGroups(client: CashuMintDatabase, args?: CashuMintProofsArgs): Promise<CashuMintProofGroup[]> {
 		const field_mappings = {
 			units: 'k.unit',
 			id_keysets: 'p.id',
@@ -191,39 +194,38 @@ export class NutshellService {
 
 		const {sql, params} = buildDynamicQuery('proofs_used', args, field_mappings, select_statement, group_by);
 
-		return new Promise((resolve, reject) => {
-			db.all(sql, params, (err, rows: any[]) => {
-				if (err) return reject(err);
-				const groups = {};
-				rows.forEach((row) => {
-					const key = `${row.created}_${row.unit}`;
-					if (!groups[key]) {
-						groups[key] = {
-							created_time: row.created,
-							unit: row.unit,
-							state: 'SPENT',
-							keysets: [],
-							amounts: [],
-						};
-					}
-					groups[key].keysets.push(row.id);
-					groups[key].amounts.push(JSON.parse(row.amounts));
-				});
-
-				const proof_groups: CashuMintProofGroup[] = Object.values(groups).map((group: any) => ({
-					amount: group.amounts.flat().reduce((sum, amount) => sum + amount, 0),
-					created_time: group.created_time,
-					keyset_ids: group.keysets,
-					unit: group.unit,
-					state: group.state,
-					amounts: group.amounts,
-				}));
-				resolve(proof_groups);
+		try {
+			const rows = await queryRows<NutshellMintEcash>(client, sql, params);
+			const groups = {};
+			rows.forEach((row) => {
+				const key = `${row.created}_${row.unit}`;
+				if (!groups[key]) {
+					groups[key] = {
+						created_time: row.created,
+						unit: row.unit,
+						state: 'SPENT',
+						keysets: [],
+						amounts: [],
+					};
+				}
+				groups[key].keysets.push(row.id);
+				groups[key].amounts.push(JSON.parse(row.amounts));
 			});
-		});
+
+			return Object.values(groups).map((group: any) => ({
+				amount: group.amounts.flat().reduce((sum, amount) => sum + amount, 0),
+				created_time: group.created_time,
+				keyset_ids: group.keysets,
+				unit: group.unit,
+				state: group.state,
+				amounts: group.amounts,
+			}));
+		} catch (err) {
+			throw err;
+		}
 	}
 
-	public async getMintPromiseGroups(db: sqlite3.Database, args?: CashuMintPromiseArgs): Promise<CashuMintPromiseGroup[]> {
+	public async getMintPromiseGroups(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<CashuMintPromiseGroup[]> {
 		const field_mappings = {
 			units: 'k.unit',
 			id_keysets: 'p.id',
@@ -244,37 +246,36 @@ export class NutshellService {
 
 		const {sql, params} = buildDynamicQuery('promises', args, field_mappings, select_statement, group_by);
 
-		return new Promise((resolve, reject) => {
-			db.all(sql, params, (err, rows: any[]) => {
-				if (err) return reject(err);
-				const groups = {};
-				rows.forEach((row) => {
-					const key = `${row.created}_${row.unit}`;
-					if (!groups[key]) {
-						groups[key] = {
-							created_time: row.created,
-							unit: row.unit,
-							keysets: [],
-							amounts: [],
-						};
-					}
-					groups[key].keysets.push(row.id);
-					groups[key].amounts.push(JSON.parse(row.amounts));
-				});
-
-				const promise_groups: CashuMintPromiseGroup[] = Object.values(groups).map((group: any) => ({
-					amount: group.amounts.flat().reduce((sum, amount) => sum + amount, 0),
-					created_time: group.created_time,
-					keyset_ids: group.keysets,
-					unit: group.unit,
-					amounts: group.amounts,
-				}));
-				resolve(promise_groups);
+		try {
+			const rows = await queryRows<NutshellMintEcash>(client, sql, params);
+			const groups = {};
+			rows.forEach((row) => {
+				const key = `${row.created}_${row.unit}`;
+				if (!groups[key]) {
+					groups[key] = {
+						created_time: row.created,
+						unit: row.unit,
+						keysets: [],
+						amounts: [],
+					};
+				}
+				groups[key].keysets.push(row.id);
+				groups[key].amounts.push(JSON.parse(row.amounts));
 			});
-		});
+
+			return Object.values(groups).map((group: any) => ({
+				amount: group.amounts.flat().reduce((sum, amount) => sum + amount, 0),
+				created_time: group.created_time,
+				keyset_ids: group.keysets,
+				unit: group.unit,
+				amounts: group.amounts,
+			}));
+		} catch (err) {
+			throw err;
+		}
 	}
 
-	public async getMintCountMeltQuotes(db: sqlite3.Database, args?: CashuMintMeltQuotesArgs): Promise<number> {
+	public async getMintCountMeltQuotes(client: CashuMintDatabase, args?: CashuMintMeltQuotesArgs): Promise<number> {
 		const field_mappings = {
 			units: 'unit',
 			date_start: 'created_time',
@@ -282,15 +283,15 @@ export class NutshellService {
 			states: 'state',
 		};
 		const {sql, params} = buildCountQuery('melt_quotes', args, field_mappings);
-		return new Promise((resolve, reject) => {
-			db.get(sql, params, (err, row: CashuMintCount) => {
-				if (err) return reject(err);
-				resolve(row.count);
-			});
-		});
+		try {
+			const row = await queryRow<CashuMintCount>(client, sql, params);
+			return row.count;
+		} catch (err) {
+			throw err;
+		}
 	}
 
-	public async getMintCountMintQuotes(db: sqlite3.Database, args?: CashuMintMintQuotesArgs): Promise<number> {
+	public async getMintCountMintQuotes(client: CashuMintDatabase, args?: CashuMintMintQuotesArgs): Promise<number> {
 		const field_mappings = {
 			units: 'unit',
 			date_start: 'created_time',
@@ -298,15 +299,15 @@ export class NutshellService {
 			states: 'state',
 		};
 		const {sql, params} = buildCountQuery('mint_quotes', args, field_mappings);
-		return new Promise((resolve, reject) => {
-			db.get(sql, params, (err, row: CashuMintCount) => {
-				if (err) return reject(err);
-				resolve(row.count);
-			});
-		});
+		try {
+			const row = await queryRow<CashuMintCount>(client, sql, params);
+			return row.count;
+		} catch (err) {
+			throw err;
+		}
 	}
 
-	public async getMintCountProofGroups(db: sqlite3.Database, args?: CashuMintProofsArgs): Promise<number> {
+	public async getMintCountProofGroups(client: CashuMintDatabase, args?: CashuMintProofsArgs): Promise<number> {
 		const field_mappings = {
 			units: 'k.unit',
 			id_keysets: 'p.id',
@@ -327,15 +328,15 @@ export class NutshellService {
 		const {sql, params} = buildCountQuery('proofs_used', args, field_mappings, select_statement, group_by);
 		const final_sql = sql.replace(';', ') subquery;');
 
-		return new Promise((resolve, reject) => {
-			db.get(final_sql, params, (err, row: CashuMintCount) => {
-				if (err) return reject(err);
-				resolve(row.count);
-			});
-		});
+		try {
+			const row = await queryRow<CashuMintCount>(client, final_sql, params);
+			return row.count;
+		} catch (err) {
+			throw err;
+		}
 	}
 
-	public async getMintCountPromiseGroups(db: sqlite3.Database, args?: CashuMintPromiseArgs): Promise<number> {
+	public async getMintCountPromiseGroups(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<number> {
 		const field_mappings = {
 			units: 'k.unit',
 			id_keysets: 'p.id',
@@ -356,16 +357,16 @@ export class NutshellService {
 		const {sql, params} = buildCountQuery('promises', args, field_mappings, select_statement, group_by);
 		const final_sql = sql.replace(';', ') subquery;');
 
-		return new Promise((resolve, reject) => {
-			db.get(final_sql, params, (err, row: CashuMintCount) => {
-				if (err) return reject(err);
-				resolve(row.count);
-			});
-		});
+		try {
+			const row = await queryRow<CashuMintCount>(client, final_sql, params);
+			return row.count;
+		} catch (err) {
+			throw err;
+		}
 	}
 
 	/* Analytics */
-	public async getMintAnalyticsBalances(db: sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
+	public async getMintAnalyticsBalances(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
 		const interval = args?.interval || MintAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
 		const {where_conditions, params} = getAnalyticsConditions({
@@ -418,31 +419,28 @@ export class NutshellService {
 			ORDER BY min_created_time;
 		`;
 
-		return new Promise((resolve, reject) => {
-			db.all(sql, [...params, ...params], (err, rows: any[]) => {
-				if (err) return reject(err);
-
-				const result = rows.map((row) => {
-					const timestamp = getAnalyticsTimeGroupStamp({
-						min_created_time: row.min_created_time,
-						time_group: row.time_group,
-						interval: interval,
-						timezone: timezone,
-					});
-					return {
-						unit: row.unit,
-						amount: row.amount,
-						created_time: timestamp,
-						operation_count: row.operation_count,
-					};
+		try {
+			const rows = await queryRows<NutshellMintAnalytics>(client, sql, [...params, ...params]);
+			return rows.map((row) => {
+				const timestamp = getAnalyticsTimeGroupStamp({
+					min_created_time: row.min_created_time,
+					time_group: row.time_group,
+					interval: interval,
+					timezone: timezone,
 				});
-
-				resolve(result);
+				return {
+					unit: row.unit,
+					amount: row.amount,
+					created_time: timestamp,
+					operation_count: row.operation_count,
+				};
 			});
-		});
+		} catch (err) {
+			throw err;
+		}
 	}
 
-	public async getMintAnalyticsMints(db: sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
+	public async getMintAnalyticsMints(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
 		const interval = args?.interval || MintAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
 		const {where_conditions, params} = getAnalyticsConditions({
@@ -471,31 +469,28 @@ export class NutshellService {
 			ORDER BY 
 				min_created_time;`;
 
-		return new Promise((resolve, reject) => {
-			db.all(sql, params, (err, rows: any[]) => {
-				if (err) return reject(err);
-
-				const result = rows.map((row) => {
-					const timestamp = getAnalyticsTimeGroupStamp({
-						min_created_time: row.min_created_time,
-						time_group: row.time_group,
-						interval: interval,
-						timezone: timezone,
-					});
-					return {
-						unit: row.unit,
-						amount: row.amount,
-						created_time: timestamp,
-						operation_count: row.operation_count,
-					};
+		try {
+			const rows = await queryRows<NutshellMintAnalytics>(client, sql, params);
+			return rows.map((row) => {
+				const timestamp = getAnalyticsTimeGroupStamp({
+					min_created_time: row.min_created_time,
+					time_group: row.time_group,
+					interval: interval,
+					timezone: timezone,
 				});
-
-				resolve(result);
+				return {
+					unit: row.unit,
+					amount: row.amount,
+					created_time: timestamp,
+					operation_count: row.operation_count,
+				};
 			});
-		});
+		} catch (err) {
+			throw err;
+		}
 	}
 
-	public async getMintAnalyticsMelts(db: sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
+	public async getMintAnalyticsMelts(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
 		const interval = args?.interval || MintAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
 		const {where_conditions, params} = getAnalyticsConditions({
@@ -524,31 +519,28 @@ export class NutshellService {
 			ORDER BY 
 				min_created_time;`;
 
-		return new Promise((resolve, reject) => {
-			db.all(sql, params, (err, rows: any[]) => {
-				if (err) return reject(err);
-
-				const result = rows.map((row) => {
-					const timestamp = getAnalyticsTimeGroupStamp({
-						min_created_time: row.min_created_time,
-						time_group: row.time_group,
-						interval: interval,
-						timezone: timezone,
-					});
-					return {
-						unit: row.unit,
-						amount: row.amount,
-						created_time: timestamp,
-						operation_count: row.operation_count,
-					};
+		try {
+			const rows = await queryRows<NutshellMintAnalytics>(client, sql, params);
+			return rows.map((row) => {
+				const timestamp = getAnalyticsTimeGroupStamp({
+					min_created_time: row.min_created_time,
+					time_group: row.time_group,
+					interval: interval,
+					timezone: timezone,
 				});
-
-				resolve(result);
+				return {
+					unit: row.unit,
+					amount: row.amount,
+					created_time: timestamp,
+					operation_count: row.operation_count,
+				};
 			});
-		});
+		} catch (err) {
+			throw err;
+		}
 	}
 
-	public async getMintAnalyticsTransfers(db: sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
+	public async getMintAnalyticsTransfers(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
 		const interval = args?.interval || MintAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
 		const {where_conditions, params} = getAnalyticsConditions({
@@ -579,31 +571,28 @@ export class NutshellService {
 			ORDER BY
 				min_created_time;`;
 
-		return new Promise((resolve, reject) => {
-			db.all(sql, params, (err, rows: any[]) => {
-				if (err) return reject(err);
-
-				const result = rows.map((row) => {
-					const timestamp = getAnalyticsTimeGroupStamp({
-						min_created_time: row.min_created_time,
-						time_group: row.time_group,
-						interval: interval,
-						timezone: timezone,
-					});
-					return {
-						unit: row.unit,
-						amount: row.amount,
-						created_time: timestamp,
-						operation_count: row.operation_count,
-					};
+		try {
+			const rows = await queryRows<NutshellMintAnalytics>(client, sql, params);
+			return rows.map((row) => {
+				const timestamp = getAnalyticsTimeGroupStamp({
+					min_created_time: row.min_created_time,
+					time_group: row.time_group,
+					interval: interval,
+					timezone: timezone,
 				});
-
-				resolve(result);
+				return {
+					unit: row.unit,
+					amount: row.amount,
+					created_time: timestamp,
+					operation_count: row.operation_count,
+				};
 			});
-		});
+		} catch (err) {
+			throw err;
+		}
 	}
 
-	public async getMintAnalyticsKeysets(db: sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintKeysetsAnalytics[]> {
+	public async getMintAnalyticsKeysets(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintKeysetsAnalytics[]> {
 		const interval = args?.interval || MintAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
 		const {where_conditions, params} = getAnalyticsConditions({
@@ -651,26 +640,23 @@ export class NutshellService {
 			ORDER BY min_created_time;
 		`;
 
-		return new Promise((resolve, reject) => {
-			db.all(sql, [...params, ...params], (err, rows: any[]) => {
-				if (err) return reject(err);
-
-				const result = rows.map((row) => {
-					const timestamp = getAnalyticsTimeGroupStamp({
-						min_created_time: row.min_created_time,
-						time_group: row.time_group,
-						interval: interval,
-						timezone: timezone,
-					});
-					return {
-						keyset_id: row.keyset_id,
-						amount: row.amount,
-						created_time: timestamp,
-					};
+		try {
+			const rows = await queryRows<NutshellMintKeysetsAnalytics>(client, sql, [...params, ...params]);
+			return rows.map((row) => {
+				const timestamp = getAnalyticsTimeGroupStamp({
+					min_created_time: row.min_created_time,
+					time_group: row.time_group,
+					interval: interval,
+					timezone: timezone,
 				});
-
-				resolve(result);
+				return {
+					keyset_id: row.keyset_id,
+					amount: row.amount,
+					created_time: timestamp,
+				};
 			});
-		});
+		} catch (err) {
+			throw err;
+		}
 	}
 }

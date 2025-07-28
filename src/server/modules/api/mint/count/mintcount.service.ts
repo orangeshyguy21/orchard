@@ -26,9 +26,9 @@ export class MintCountService {
 	) {}
 
 	async getMintCountMintQuotes(tag: string, args?: CashuMintMintQuotesArgs): Promise<OrchardMintCount> {
-		return this.mintService.withDb(async (db) => {
+		return this.mintService.withDbClient(async (client) => {
 			try {
-				const count: number = await this.cashuMintDatabaseService.getMintCountMintQuotes(db, args);
+				const count: number = await this.cashuMintDatabaseService.getMintCountMintQuotes(client, args);
 				return new OrchardMintCount(count);
 			} catch (error) {
 				const error_code = this.errorService.resolveError(this.logger, error, tag, {
@@ -40,9 +40,9 @@ export class MintCountService {
 	}
 
 	async getMintCountMeltQuotes(tag: string, args?: CashuMintMeltQuotesArgs): Promise<OrchardMintCount> {
-		return this.mintService.withDb(async (db) => {
+		return this.mintService.withDbClient(async (client) => {
 			try {
-				const count: number = await this.cashuMintDatabaseService.getMintCountMeltQuotes(db, args);
+				const count: number = await this.cashuMintDatabaseService.getMintCountMeltQuotes(client, args);
 				return new OrchardMintCount(count);
 			} catch (error) {
 				const error_code = this.errorService.resolveError(this.logger, error, tag, {
@@ -54,9 +54,9 @@ export class MintCountService {
 	}
 
 	async getMintCountProofGroups(tag: string, args?: CashuMintProofsArgs): Promise<OrchardMintCount> {
-		return this.mintService.withDb(async (db) => {
+		return this.mintService.withDbClient(async (client) => {
 			try {
-				const count: number = await this.cashuMintDatabaseService.getMintCountProofGroups(db, args);
+				const count: number = await this.cashuMintDatabaseService.getMintCountProofGroups(client, args);
 				return new OrchardMintCount(count);
 			} catch (error) {
 				const error_code = this.errorService.resolveError(this.logger, error, tag, {
@@ -68,9 +68,9 @@ export class MintCountService {
 	}
 
 	async getMintCountPromiseGroups(tag: string, args?: CashuMintPromiseArgs): Promise<OrchardMintCount> {
-		return this.mintService.withDb(async (db) => {
+		return this.mintService.withDbClient(async (client) => {
 			try {
-				const count: number = await this.cashuMintDatabaseService.getMintCountPromiseGroups(db, args);
+				const count: number = await this.cashuMintDatabaseService.getMintCountPromiseGroups(client, args);
 				return new OrchardMintCount(count);
 			} catch (error) {
 				const error_code = this.errorService.resolveError(this.logger, error, tag, {

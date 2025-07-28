@@ -20,9 +20,9 @@ export class MintDatabaseService {
 	) {}
 
 	async createMintDatabaseBackup(tag: string): Promise<OrchardMintDatabaseBackup> {
-		return this.mintService.withDb(async (db) => {
+		return this.mintService.withDbClient(async (client) => {
 			try {
-				const database_buffer: Buffer = await this.cashuMintDatabaseService.createBackup(db);
+				const database_buffer: Buffer = await this.cashuMintDatabaseService.createBackup(client);
 				const filebase64 = database_buffer.toString('base64');
 				return new OrchardMintDatabaseBackup(filebase64);
 			} catch (error) {

@@ -4,8 +4,8 @@ import {ConfigService} from '@nestjs/config';
 import * as path from 'path';
 import {promises as fs} from 'fs';
 /* Vendor Dependencies */
-import sqlite3 from 'sqlite3';
-const sqlite3d = require('sqlite3').verbose();
+import {Client} from 'pg';
+import DatabaseConstructor from 'better-sqlite3';
 /* Application Dependencies */
 import {MintType} from '@server/modules/cashu/cashu.enums';
 import {NutshellService} from '@server/modules/cashu/nutshell/nutshell.service';
@@ -13,6 +13,7 @@ import {CdkService} from '@server/modules/cashu/cdk/cdk.service';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 /* Local Dependencies */
 import {
+	CashuMintDatabase,
 	CashuMintBalance,
 	CashuMintKeyset,
 	CashuMintMeltQuote,
@@ -47,126 +48,152 @@ export class CashuMintDatabaseService implements OnModuleInit {
 		this.database = this.configService.get('cashu.database');
 	}
 
-	public async getMintDatabase(): Promise<sqlite3.Database> {
-		return new Promise((resolve, reject) => {
-			const db = new sqlite3d.Database(this.database, (err) => {
-				if (err) reject(err);
-				resolve(db);
-			});
-		});
+	public async getMintDatabase(): Promise<CashuMintDatabase> {
+		try {
+			if (this.configService.get('cashu.database_type') === 'sqlite') {
+				const db = new DatabaseConstructor(this.database);
+				return {type: 'sqlite', database: db};
+			} else {
+				const client = new Client({
+					connectionString: this.database,
+				});
+				return {type: 'postgres', database: client};
+			}
+		} catch (error) {
+			throw OrchardErrorCode.MintDatabaseConnectionError;
+		}
 	}
 
-	public async getMintBalances(db: sqlite3.Database, keyset_id?: string): Promise<CashuMintBalance[]> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintBalances(db, keyset_id);
-		if (this.type === 'cdk') return this.cdkService.getMintBalances(db, keyset_id);
+	public async getMintBalances(client: CashuMintDatabase, keyset_id?: string): Promise<CashuMintBalance[]> {
+		if (this.type === 'nutshell') return this.nutshellService.getMintBalances(client, keyset_id);
+		if (this.type === 'cdk') return this.cdkService.getMintBalances(client, keyset_id);
 	}
 
-	public async getMintBalancesIssued(db: sqlite3.Database): Promise<CashuMintBalance[]> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintBalancesIssued(db);
-		if (this.type === 'cdk') return this.cdkService.getMintBalancesIssued(db);
+	public async getMintBalancesIssued(client: CashuMintDatabase): Promise<CashuMintBalance[]> {
+		if (this.type === 'nutshell') return this.nutshellService.getMintBalancesIssued(client);
+		if (this.type === 'cdk') return this.cdkService.getMintBalancesIssued(client);
 	}
 
-	public async getMintBalancesRedeemed(db: sqlite3.Database): Promise<CashuMintBalance[]> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintBalancesRedeemed(db);
-		if (this.type === 'cdk') return this.cdkService.getMintBalancesRedeemed(db);
+	public async getMintBalancesRedeemed(client: CashuMintDatabase): Promise<CashuMintBalance[]> {
+		if (this.type === 'nutshell') return this.nutshellService.getMintBalancesRedeemed(client);
+		if (this.type === 'cdk') return this.cdkService.getMintBalancesRedeemed(client);
 	}
 
-	public async getMintKeysets(db: sqlite3.Database): Promise<CashuMintKeyset[]> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintKeysets(db);
-		if (this.type === 'cdk') return this.cdkService.getMintKeysets(db);
+	public async getMintKeysets(client: CashuMintDatabase): Promise<CashuMintKeyset[]> {
+		if (this.type === 'nutshell') return this.nutshellService.getMintKeysets(client);
+		if (this.type === 'cdk') return this.cdkService.getMintKeysets(client);
 	}
 
-	public async getMintMintQuotes(db: sqlite3.Database, args?: CashuMintMintQuotesArgs): Promise<CashuMintMintQuote[]> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintMintQuotes(db, args);
-		if (this.type === 'cdk') return this.cdkService.getMintMintQuotes(db, args);
+	public async getMintMintQuotes(client: CashuMintDatabase, args?: CashuMintMintQuotesArgs): Promise<CashuMintMintQuote[]> {
+		if (this.type === 'nutshell') return this.nutshellService.getMintMintQuotes(client, args);
+		if (this.type === 'cdk') return this.cdkService.getMintMintQuotes(client, args);
 	}
 
-	public async getMintMeltQuotes(db: sqlite3.Database, args?: CashuMintMeltQuotesArgs): Promise<CashuMintMeltQuote[]> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintMeltQuotes(db, args);
-		if (this.type === 'cdk') return this.cdkService.getMintMeltQuotes(db, args);
+	public async getMintMeltQuotes(client: CashuMintDatabase, args?: CashuMintMeltQuotesArgs): Promise<CashuMintMeltQuote[]> {
+		if (this.type === 'nutshell') return this.nutshellService.getMintMeltQuotes(client, args);
+		if (this.type === 'cdk') return this.cdkService.getMintMeltQuotes(client, args);
 	}
 
-	public async getMintProofGroups(db: sqlite3.Database, args?: CashuMintProofsArgs): Promise<CashuMintProofGroup[]> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintProofGroups(db, args);
-		if (this.type === 'cdk') return this.cdkService.getMintProofGroups(db, args);
+	public async getMintProofGroups(client: CashuMintDatabase, args?: CashuMintProofsArgs): Promise<CashuMintProofGroup[]> {
+		if (this.type === 'nutshell') return this.nutshellService.getMintProofGroups(client, args);
+		if (this.type === 'cdk') return this.cdkService.getMintProofGroups(client, args);
 	}
 
-	public async getMintPromiseGroups(db: sqlite3.Database, args?: CashuMintPromiseArgs): Promise<CashuMintPromiseGroup[]> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintPromiseGroups(db, args);
-		if (this.type === 'cdk') return this.cdkService.getMintPromiseGroups(db, args);
+	public async getMintPromiseGroups(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<CashuMintPromiseGroup[]> {
+		if (this.type === 'nutshell') return this.nutshellService.getMintPromiseGroups(client, args);
+		if (this.type === 'cdk') return this.cdkService.getMintPromiseGroups(client, args);
 	}
 
-	public async getMintCountMintQuotes(db: sqlite3.Database, args?: CashuMintMintQuotesArgs): Promise<number> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintCountMintQuotes(db, args);
-		if (this.type === 'cdk') return this.cdkService.getMintCountMintQuotes(db, args);
+	public async getMintCountMintQuotes(client: CashuMintDatabase, args?: CashuMintMintQuotesArgs): Promise<number> {
+		if (this.type === 'nutshell') return this.nutshellService.getMintCountMintQuotes(client, args);
+		if (this.type === 'cdk') return this.cdkService.getMintCountMintQuotes(client, args);
 	}
 
-	public async getMintCountMeltQuotes(db: sqlite3.Database, args?: CashuMintMeltQuotesArgs): Promise<number> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintCountMeltQuotes(db, args);
-		if (this.type === 'cdk') return this.cdkService.getMintCountMeltQuotes(db, args);
+	public async getMintCountMeltQuotes(client: CashuMintDatabase, args?: CashuMintMeltQuotesArgs): Promise<number> {
+		if (this.type === 'nutshell') return this.nutshellService.getMintCountMeltQuotes(client, args);
+		if (this.type === 'cdk') return this.cdkService.getMintCountMeltQuotes(client, args);
 	}
 
-	public async getMintCountProofGroups(db: sqlite3.Database, args?: CashuMintProofsArgs): Promise<number> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintCountProofGroups(db, args);
-		if (this.type === 'cdk') return this.cdkService.getMintCountProofGroups(db, args);
+	public async getMintCountProofGroups(client: CashuMintDatabase, args?: CashuMintProofsArgs): Promise<number> {
+		if (this.type === 'nutshell') return this.nutshellService.getMintCountProofGroups(client, args);
+		if (this.type === 'cdk') return this.cdkService.getMintCountProofGroups(client, args);
 	}
 
-	public async getMintCountPromiseGroups(db: sqlite3.Database, args?: CashuMintPromiseArgs): Promise<number> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintCountPromiseGroups(db, args);
-		if (this.type === 'cdk') return this.cdkService.getMintCountPromiseGroups(db, args);
+	public async getMintCountPromiseGroups(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<number> {
+		if (this.type === 'nutshell') return this.nutshellService.getMintCountPromiseGroups(client, args);
+		if (this.type === 'cdk') return this.cdkService.getMintCountPromiseGroups(client, args);
 	}
 
 	/* Analytics */
 
-	public async getMintAnalyticsBalances(db: sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintAnalyticsBalances(db, args);
-		if (this.type === 'cdk') return this.cdkService.getMintAnalyticsBalances(db, args);
+	public async getMintAnalyticsBalances(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
+		if (this.type === 'nutshell') return this.nutshellService.getMintAnalyticsBalances(client, args);
+		if (this.type === 'cdk') return this.cdkService.getMintAnalyticsBalances(client, args);
 	}
 
-	public async getMintAnalyticsMints(db: sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintAnalyticsMints(db, args);
-		if (this.type === 'cdk') return this.cdkService.getMintAnalyticsMints(db, args);
+	public async getMintAnalyticsMints(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
+		if (this.type === 'nutshell') return this.nutshellService.getMintAnalyticsMints(client, args);
+		if (this.type === 'cdk') return this.cdkService.getMintAnalyticsMints(client, args);
 	}
 
-	public async getMintAnalyticsMelts(db: sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintAnalyticsMelts(db, args);
-		if (this.type === 'cdk') return this.cdkService.getMintAnalyticsMelts(db, args);
+	public async getMintAnalyticsMelts(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
+		if (this.type === 'nutshell') return this.nutshellService.getMintAnalyticsMelts(client, args);
+		if (this.type === 'cdk') return this.cdkService.getMintAnalyticsMelts(client, args);
 	}
 
-	public async getMintAnalyticsTransfers(db: sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintAnalyticsTransfers(db, args);
-		if (this.type === 'cdk') return this.cdkService.getMintAnalyticsTransfers(db, args);
+	public async getMintAnalyticsTransfers(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
+		if (this.type === 'nutshell') return this.nutshellService.getMintAnalyticsTransfers(client, args);
+		if (this.type === 'cdk') return this.cdkService.getMintAnalyticsTransfers(client, args);
 	}
 
-	public async getMintAnalyticsKeysets(db: sqlite3.Database, args?: CashuMintAnalyticsArgs): Promise<CashuMintKeysetsAnalytics[]> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintAnalyticsKeysets(db, args);
-		if (this.type === 'cdk') return this.cdkService.getMintAnalyticsKeysets(db, args);
+	public async getMintAnalyticsKeysets(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintKeysetsAnalytics[]> {
+		if (this.type === 'nutshell') return this.nutshellService.getMintAnalyticsKeysets(client, args);
+		if (this.type === 'cdk') return this.cdkService.getMintAnalyticsKeysets(client, args);
 	}
 
 	/* Implementation Agnostic */
 
-	public async createBackup(db: sqlite3.Database): Promise<Buffer> {
-		return new Promise(async (resolve, reject) => {
+	public async createBackup(client: CashuMintDatabase): Promise<Buffer> {
+		if (client.type === 'sqlite') {
 			const backup_path = path.resolve('temp-backup.db');
-			db.run(`VACUUM INTO '${backup_path}'`, async (error) => {
-				if (error) {
-					this.logger.error(`Error during database backup: ${error.message}`);
-					reject(error);
-				} else {
-					try {
-						const file_buffer = await fs.readFile(backup_path);
-						await fs.unlink(backup_path);
-						resolve(file_buffer);
-					} catch (read_error) {
-						this.logger.error(`Error reading backup file: ${read_error.message}`);
-						try {
-							await fs.unlink(backup_path);
-						} catch {}
-						reject(read_error);
-					}
+
+			try {
+				await client.database.backup(backup_path);
+				const file_buffer = await fs.readFile(backup_path);
+				await fs.unlink(backup_path);
+				return file_buffer;
+			} catch (error) {
+				this.logger.error(`Error during database backup: ${error.message}`);
+				try {
+					await fs.unlink(backup_path);
+				} catch (cleanup_error) {
+					// Ignore cleanup errors
 				}
-			});
-		});
+				throw error;
+			}
+		}
+
+		// return new Promise(async (resolve, reject) => {
+		// 	const backup_path = path.resolve('temp-backup.db');
+		// 	db.run(`VACUUM INTO '${backup_path}'`, async (error) => {
+		// 		if (error) {
+		// 			this.logger.error(`Error during database backup: ${error.message}`);
+		// 			reject(error);
+		// 		} else {
+		// 			try {
+		// 				const file_buffer = await fs.readFile(backup_path);
+		// 				await fs.unlink(backup_path);
+		// 				resolve(file_buffer);
+		// 			} catch (read_error) {
+		// 				this.logger.error(`Error reading backup file: ${read_error.message}`);
+		// 				try {
+		// 					await fs.unlink(backup_path);
+		// 				} catch {}
+		// 				reject(read_error);
+		// 			}
+		// 		}
+		// 	});
+		// });
 	}
 
 	public async restoreBackup(filebase64: string): Promise<void> {
@@ -216,13 +243,10 @@ export class CashuMintDatabaseService implements OnModuleInit {
 			await file_handle.close();
 			const sqlite_header = Buffer.from('SQLite format 3\0');
 			if (!buffer.equals(sqlite_header)) return false;
-			const test_db = new sqlite3d.Database(file_path);
-			return new Promise((resolve) => {
-				test_db.get("SELECT name FROM sqlite_master WHERE type='table' LIMIT 1", (err, row) => {
-					test_db.close();
-					resolve(!err);
-				});
-			});
+			const test_db = new DatabaseConstructor(file_path);
+			const row = await test_db.prepare("SELECT name FROM sqlite_master WHERE type='table' LIMIT 1").get();
+			test_db.close();
+			return row !== undefined;
 		} catch (error) {
 			this.logger.error(`Error validating SQLite file: ${error.message}`);
 			return false;
