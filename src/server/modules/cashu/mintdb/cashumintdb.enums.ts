@@ -4,3 +4,8 @@ export enum MintAnalyticsInterval {
 	month = 'month',
 	custom = 'custom',
 }
+
+export enum MintDatabaseType {
+	sqlite = 'sqlite',
+	postgres = 'postgres',
+}

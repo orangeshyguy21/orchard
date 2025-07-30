@@ -3,14 +3,16 @@ import {Database} from 'better-sqlite3';
 import {Client} from 'pg';
 /* Native Dependencies */
 import {MintUnit, MintQuoteState, MeltQuoteState, MintProofState} from '@server/modules/cashu/cashu.enums';
+/* Local Dependencies */
+import {MintDatabaseType} from '@server/modules/cashu/mintdb/cashumintdb.enums';
 
 export type CashuMintDatabase = CashuMintSqliteDatabase | CashuMintPostgresDatabase;
 type CashuMintSqliteDatabase = {
-	type: 'sqlite';
+	type: MintDatabaseType.sqlite;
 	database: Database;
 };
 type CashuMintPostgresDatabase = {
-	type: 'postgres';
+	type: MintDatabaseType.postgres;
 	database: InstanceType<typeof Client>;
 };
 

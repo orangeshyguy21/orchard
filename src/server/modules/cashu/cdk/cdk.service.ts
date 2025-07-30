@@ -154,7 +154,7 @@ export class CdkService {
 			date_end: 'created_time',
 			states: 'state',
 		};
-		const {sql, params} = buildDynamicQuery('mint_quote', args, field_mappings);
+		const {sql, params} = buildDynamicQuery(client.type, 'mint_quote', args, field_mappings);
 		try {
 			return queryRows<CashuMintMintQuote>(client, sql, params);
 		} catch (err) {
@@ -169,7 +169,7 @@ export class CdkService {
 			date_end: 'created_time',
 			states: 'state',
 		};
-		const {sql, params} = buildCountQuery('mint_quote', args, field_mappings);
+		const {sql, params} = buildCountQuery(client.type, 'mint_quote', args, field_mappings);
 		try {
 			const row = await queryRow<CashuMintCount>(client, sql, params);
 			return row.count;
@@ -185,7 +185,7 @@ export class CdkService {
 			date_end: 'created_time',
 			states: 'state',
 		};
-		const {sql, params} = buildDynamicQuery('melt_quote', args, field_mappings);
+		const {sql, params} = buildDynamicQuery(client.type, 'melt_quote', args, field_mappings);
 		try {
 			return queryRows<CashuMintMeltQuote>(client, sql, params);
 		} catch (err) {
@@ -214,7 +214,7 @@ export class CdkService {
 
 		const group_by = 'p.created_time, k.unit, p.state, p.keyset_id';
 
-		const {sql, params} = buildDynamicQuery('proof', args, field_mappings, select_statement, group_by);
+		const {sql, params} = buildDynamicQuery(client.type, 'proof', args, field_mappings, select_statement, group_by);
 
 		try {
 			const rows = await queryRows<CdklMintProof>(client, sql, params);
@@ -267,7 +267,7 @@ export class CdkService {
 
 		const group_by = 'bs.created_time, k.unit, bs.keyset_id';
 
-		const {sql, params} = buildDynamicQuery('blind_signature', args, field_mappings, select_statement, group_by);
+		const {sql, params} = buildDynamicQuery(client.type, 'blind_signature', args, field_mappings, select_statement, group_by);
 
 		try {
 			const rows = await queryRows<CdklMintPromise>(client, sql, params);
@@ -306,7 +306,7 @@ export class CdkService {
 			date_end: 'created_time',
 			states: 'state',
 		};
-		const {sql, params} = buildCountQuery('melt_quote', args, field_mappings);
+		const {sql, params} = buildCountQuery(client.type, 'melt_quote', args, field_mappings);
 		try {
 			const row = await queryRow<CashuMintCount>(client, sql, params);
 			return row.count;
@@ -335,7 +335,7 @@ export class CdkService {
 				LEFT JOIN keyset k ON k.id = p.keyset_id`;
 
 		const group_by = 'p.created_time, k.unit, p.state';
-		const {sql, params} = buildCountQuery('proof', args, field_mappings, select_statement, group_by);
+		const {sql, params} = buildCountQuery(client.type, 'proof', args, field_mappings, select_statement, group_by);
 		const final_sql = sql.replace(';', ') subquery;');
 
 		try {
@@ -364,7 +364,7 @@ export class CdkService {
 				LEFT JOIN keyset k ON k.id = bs.keyset_id`;
 
 		const group_by = 'bs.created_time, k.unit';
-		const {sql, params} = buildCountQuery('blind_signature', args, field_mappings, select_statement, group_by);
+		const {sql, params} = buildCountQuery(client.type, 'blind_signature', args, field_mappings, select_statement, group_by);
 		const final_sql = sql.replace(';', ') subquery;');
 
 		try {
@@ -383,6 +383,7 @@ export class CdkService {
 		const {where_conditions, params} = getAnalyticsConditions({
 			args: args,
 			time_column: 'created_time',
+			db_type: client.type,
 		});
 		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
 		const time_group_sql = getAnalyticsTimeGroupSql({
@@ -390,6 +391,7 @@ export class CdkService {
 			timezone: timezone,
 			time_column: 'created_time',
 			group_by: 'unit',
+			db_type: client.type,
 		});
 
 		const sqlite_sql = `
@@ -470,6 +472,7 @@ export class CdkService {
 		const {where_conditions, params} = getAnalyticsConditions({
 			args: args,
 			time_column: 'created_time',
+			db_type: client.type,
 		});
 		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
 		const time_group_sql = getAnalyticsTimeGroupSql({
@@ -477,6 +480,7 @@ export class CdkService {
 			timezone: timezone,
 			time_column: 'created_time',
 			group_by: 'unit',
+			db_type: client.type,
 		});
 		const sql = `
 			SELECT 
@@ -520,6 +524,7 @@ export class CdkService {
 		const {where_conditions, params} = getAnalyticsConditions({
 			args: args,
 			time_column: 'created_time',
+			db_type: client.type,
 		});
 		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
 		const time_group_sql = getAnalyticsTimeGroupSql({
@@ -527,6 +532,7 @@ export class CdkService {
 			timezone: timezone,
 			time_column: 'created_time',
 			group_by: 'unit',
+			db_type: client.type,
 		});
 		const sql = `
 			SELECT 
@@ -570,6 +576,7 @@ export class CdkService {
 		const {where_conditions, params} = getAnalyticsConditions({
 			args: args,
 			time_column: 'created_time',
+			db_type: client.type,
 		});
 		where_conditions.push('quote_id IS NULL');
 		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
@@ -578,6 +585,7 @@ export class CdkService {
 			timezone: timezone,
 			time_column: 'created_time',
 			group_by: 'unit',
+			db_type: client.type,
 		});
 		const sql = `
 			SELECT 
@@ -622,6 +630,7 @@ export class CdkService {
 		const {where_conditions, params} = getAnalyticsConditions({
 			args: args,
 			time_column: 'created_time',
+			db_type: client.type,
 		});
 		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
 		const time_group_sql = getAnalyticsTimeGroupSql({
@@ -629,6 +638,7 @@ export class CdkService {
 			timezone: timezone,
 			time_column: 'created_time',
 			group_by: 'keyset_id',
+			db_type: client.type,
 		});
 
 		const sql = `

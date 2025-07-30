@@ -30,6 +30,7 @@ import {
 	CashuMintPromiseArgs,
 	CashuMintMeltQuotesArgs,
 } from './cashumintdb.interfaces';
+import {MintDatabaseType} from './cashumintdb.enums';
 
 @Injectable()
 export class CashuMintDatabaseService implements OnModuleInit {
@@ -52,12 +53,12 @@ export class CashuMintDatabaseService implements OnModuleInit {
 		try {
 			if (this.configService.get('cashu.database_type') === 'sqlite') {
 				const db = new DatabaseConstructor(this.database);
-				return {type: 'sqlite', database: db};
+				return {type: MintDatabaseType.sqlite, database: db};
 			} else {
 				const client = new Client({
 					connectionString: this.database,
 				});
-				return {type: 'postgres', database: client};
+				return {type: MintDatabaseType.postgres, database: client};
 			}
 		} catch (error) {
 			throw OrchardErrorCode.MintDatabaseConnectionError;
@@ -154,7 +155,7 @@ export class CashuMintDatabaseService implements OnModuleInit {
 	/* Implementation Agnostic */
 
 	public async createBackup(client: CashuMintDatabase): Promise<Buffer> {
-		if (client.type === 'sqlite') {
+		if (client.type === MintDatabaseType.sqlite) {
 			const backup_path = path.resolve('temp-backup.db');
 
 			try {
@@ -172,28 +173,6 @@ export class CashuMintDatabaseService implements OnModuleInit {
 				throw error;
 			}
 		}
-
-		// return new Promise(async (resolve, reject) => {
-		// 	const backup_path = path.resolve('temp-backup.db');
-		// 	db.run(`VACUUM INTO '${backup_path}'`, async (error) => {
-		// 		if (error) {
-		// 			this.logger.error(`Error during database backup: ${error.message}`);
-		// 			reject(error);
-		// 		} else {
-		// 			try {
-		// 				const file_buffer = await fs.readFile(backup_path);
-		// 				await fs.unlink(backup_path);
-		// 				resolve(file_buffer);
-		// 			} catch (read_error) {
-		// 				this.logger.error(`Error reading backup file: ${read_error.message}`);
-		// 				try {
-		// 					await fs.unlink(backup_path);
-		// 				} catch {}
-		// 				reject(read_error);
-		// 			}
-		// 		}
-		// 	});
-		// });
 	}
 
 	public async restoreBackup(filebase64: string): Promise<void> {
