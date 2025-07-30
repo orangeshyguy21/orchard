@@ -800,7 +800,7 @@ export type OrchardMintProofGroup = {
 
 export type OrchardMintProofGroupStats = {
   __typename?: 'OrchardMintProofGroupStats';
-  median: Scalars['Int']['output'];
+  median: Scalars['Float']['output'];
 };
 
 export type OrchardMintQuoteTtls = {
