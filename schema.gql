@@ -642,7 +642,7 @@ type OrchardMintProofGroup {
 }
 
 type OrchardMintProofGroupStats {
-  median: Int!
+  median: Float!
 }
 
 type OrchardMintQuoteTtls {
