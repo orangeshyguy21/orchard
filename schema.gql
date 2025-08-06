@@ -250,6 +250,7 @@ type OrchardAiChatFunction {
 type OrchardAiChatMessage {
   content: String!
   role: AiMessageRole!
+  thinking: String
   tool_calls: [OrchardAiChatToolCall!]
 }
 

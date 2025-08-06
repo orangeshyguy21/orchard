@@ -359,6 +359,7 @@ export type OrchardAiChatMessage = {
   __typename?: 'OrchardAiChatMessage';
   content: Scalars['String']['output'];
   role: AiMessageRole;
+  thinking?: Maybe<Scalars['String']['output']>;
   tool_calls?: Maybe<Array<OrchardAiChatToolCall>>;
 };
 

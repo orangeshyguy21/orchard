@@ -73,12 +73,26 @@ export class AiChatMessageAssistantComponent implements OnChanges {
 	constructor(private readonly cdr: ChangeDetectorRef) {}
 
 	ngOnChanges(changes: SimpleChanges): void {
-		if (changes['revision']) {
-			this.parseRawContent();
-		}
+		if (changes['revision']) this.parseRawContent();
 	}
 
 	private async parseRawContent(): Promise<void> {
+		if (this.message.thinking) return this.parseNewThinkingContent();
+		return this.parseLegacyThinkingContent();
+	}
+
+	private async parseNewThinkingContent(): Promise<void> {
+		if (!this.message?.thinking) return;
+		if (!this.think_start) this.think_start = Date.now();
+		this.marked_thinking_content = await this.updateMarkedContent(this.message.thinking);
+		this.marked_content = await this.updateMarkedContent(this.message.content);
+		if (this.message.done) {
+			this.think_end = Date.now();
+			this.finalizeMessage();
+		}
+	}
+
+	private async parseLegacyThinkingContent(): Promise<void> {
 		if (!this.message?.content) return;
 		const content = this.message.content;
 		const think_start = content.indexOf('<think>');

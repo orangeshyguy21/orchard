@@ -36,12 +36,16 @@ export class OrchardAiChatMessage {
 	@Field()
 	content: string;
 
+	@Field({nullable: true})
+	thinking: string;
+
 	@Field(() => [OrchardAiChatToolCall], {nullable: true})
 	tool_calls: OrchardAiChatToolCall[];
 
 	constructor(message: AiMessage) {
 		this.role = message.role;
 		this.content = message.content;
+		this.thinking = message.thinking;
 		this.tool_calls = message.tool_calls?.map((tool_call: any) => new OrchardAiChatToolCall(tool_call));
 	}
 }
