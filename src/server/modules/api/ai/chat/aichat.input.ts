@@ -10,6 +10,9 @@ export class AiChatMessageInput {
 
 	@Field()
 	content: string;
+
+	@Field({nullable: true})
+	thinking: string;
 }
 
 @InputType()

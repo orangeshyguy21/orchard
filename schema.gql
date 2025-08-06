@@ -28,6 +28,7 @@ input AiChatInput {
 input AiChatMessageInput {
   content: String!
   role: AiMessageRole!
+  thinking: String
 }
 
 enum AiFunctionName {
