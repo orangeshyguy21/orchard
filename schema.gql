@@ -63,6 +63,7 @@ enum AiFunctionName {
 
 enum AiMessageRole {
   ASSISTANT
+  ERROR
   FUNCTION
   SYSTEM
   USER

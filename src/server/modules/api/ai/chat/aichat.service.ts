@@ -2,11 +2,13 @@
 import {Injectable, Logger} from '@nestjs/common';
 /* Vendor Dependencies */
 import {EventEmitter} from 'events';
+import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {AiService} from '@server/modules/ai/ai.service';
 import {ErrorService} from '@server/modules/error/error.service';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
+import {AiMessageRole} from '@server/modules/ai/ai.enums';
 /* Local Dependencies */
 import {OrchardAiChatChunk, OrchardAiChatStream} from './aichat.model';
 import {AiChatInput} from './aichat.input';
@@ -48,6 +50,7 @@ export class AiChatService {
 					})
 					.filter((chunk_json) => chunk_json !== null)
 					.forEach((chunk_json) => {
+						if (chunk_json.error) chunk_json = this.getChunkErrorJSON(chunk_json.error);
 						this.event_emitter.emit('ai.chat.update', new OrchardAiChatChunk(chunk_json, ai_chat.id));
 					});
 			}
@@ -82,5 +85,17 @@ export class AiChatService {
 		controller.abort();
 		this.active_streams.delete(id);
 		return {id};
+	}
+
+	private getChunkErrorJSON(error: string): any {
+		return {
+			model: 'error',
+			created_at: DateTime.now().toMillis(),
+			message: {
+				role: AiMessageRole.ERROR,
+				content: error,
+			},
+			done: true,
+		};
 	}
 }

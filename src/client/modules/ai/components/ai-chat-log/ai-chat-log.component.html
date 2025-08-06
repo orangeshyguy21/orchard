@@ -33,6 +33,9 @@
 							>
 							</orc-ai-chat-message-assistant>
 						}
+						@case ('ERROR') {
+							<orc-ai-chat-message-error [message]="message"> </orc-ai-chat-message-error>
+						}
 					}
 				}
 			</div>
