@@ -28,6 +28,7 @@ input AiChatInput {
 input AiChatMessageInput {
   content: String!
   role: AiMessageRole!
+  thinking: String
 }
 
 enum AiFunctionName {
@@ -62,6 +63,7 @@ enum AiFunctionName {
 
 enum AiMessageRole {
   ASSISTANT
+  ERROR
   FUNCTION
   SYSTEM
   USER
@@ -250,6 +252,7 @@ type OrchardAiChatFunction {
 type OrchardAiChatMessage {
   content: String!
   role: AiMessageRole!
+  thinking: String
   tool_calls: [OrchardAiChatToolCall!]
 }
 

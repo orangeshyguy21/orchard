@@ -4,6 +4,7 @@ export const AI_CHAT_SUBSCRIPTION = `
             message {
                 role
                 content
+                thinking
                 tool_calls {
                     function {
                         name

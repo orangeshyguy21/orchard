@@ -20,6 +20,7 @@ export class AiChatAvatarComponent {
 		[AiMessageRole.User]: 'avatar-role-user',
 		[AiMessageRole.System]: 'avatar-role-system',
 		[AiMessageRole.Function]: 'avatar-role-function',
+		[AiMessageRole.Error]: 'avatar-role-error',
 	};
 
 	public role_class = computed(() => {

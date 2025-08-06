@@ -7,6 +7,7 @@ interface ParsedOrchardAiChatChunk extends Omit<OrchardAiChatChunk, 'message'> {
 	message: {
 		content: string;
 		role: AiMessageRole;
+		thinking?: string | null;
 		tool_calls?: {
 			function: AiFunction;
 		}[];
@@ -58,11 +59,13 @@ export class AiChatChunk implements ParsedOrchardAiChatChunk {
 export class AiChatMessage implements ParsedOrchardAiChatMessage {
 	public content: string;
 	public role: AiMessageRole;
+	public thinking?: string | null;
 	public tool_calls?: AiChatToolCall[];
 
 	constructor(message: OrchardAiChatMessage) {
 		this.content = message.content;
 		this.role = message.role;
+		this.thinking = message.thinking ?? null;
 		this.tool_calls = message.tool_calls?.map((tool_call: OrchardAiChatToolCall) => new AiChatToolCall(tool_call));
 	}
 }

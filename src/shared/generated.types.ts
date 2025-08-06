@@ -46,6 +46,7 @@ export type AiChatInput = {
 export type AiChatMessageInput = {
   content: Scalars['String']['input'];
   role: AiMessageRole;
+  thinking?: InputMaybe<Scalars['String']['input']>;
 };
 
 export enum AiFunctionName {
@@ -80,6 +81,7 @@ export enum AiFunctionName {
 
 export enum AiMessageRole {
   Assistant = 'ASSISTANT',
+  Error = 'ERROR',
   Function = 'FUNCTION',
   System = 'SYSTEM',
   User = 'USER'
@@ -359,6 +361,7 @@ export type OrchardAiChatMessage = {
   __typename?: 'OrchardAiChatMessage';
   content: Scalars['String']['output'];
   role: AiMessageRole;
+  thinking?: Maybe<Scalars['String']['output']>;
   tool_calls?: Maybe<Array<OrchardAiChatToolCall>>;
 };
 
