@@ -14,6 +14,7 @@ export enum AiMessageRole {
 	ASSISTANT = 'assistant',
 	FUNCTION = 'function',
 	SYSTEM = 'system',
+	ERROR = 'error',
 }
 
 export enum AiFunctionName {

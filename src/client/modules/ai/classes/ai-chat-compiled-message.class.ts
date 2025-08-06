@@ -7,6 +7,7 @@ export class AiChatCompiledMessage {
 	public id: string;
 	public id_conversation: string;
 	public content: string;
+	public thinking?: string | null;
 	public role: AiMessageRole;
 	public tool_calls?: AiChatToolCall[];
 	public done: boolean;
@@ -15,6 +16,7 @@ export class AiChatCompiledMessage {
 		this.id = crypto.randomUUID();
 		this.id_conversation = id_conversation;
 		this.content = message.content;
+		this.thinking = message.thinking;
 		this.role = message.role;
 		this.tool_calls = message.tool_calls || [];
 		this.done = false;
@@ -22,6 +24,7 @@ export class AiChatCompiledMessage {
 
 	public integrateChunk(chunk: AiChatChunk): void {
 		this.content += chunk.message.content;
+		if (chunk.message.thinking) this.thinking += chunk.message.thinking;
 		if (chunk.message.tool_calls) this.tool_calls?.push(...chunk.message.tool_calls);
 		if (chunk.done) this.done = true;
 	}
@@ -30,6 +33,7 @@ export class AiChatCompiledMessage {
 		return {
 			role: this.role,
 			content: this.content,
+			thinking: this.thinking,
 		};
 	}
 }

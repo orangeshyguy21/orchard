@@ -23,6 +23,7 @@ export type AiModelDetails = {
 export type AiMessage = {
 	role: AiMessageRole;
 	content: string;
+	thinking?: string;
 	tool_calls?: AiToolCall[];
 };
 

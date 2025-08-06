@@ -30,6 +30,7 @@ import {AiChatMessageToolcallComponent} from './components/ai-chat-message-toolc
 import {AiThoughtPipe} from './pipes/ai-thought/ai-thought.pipe';
 import {AiAgentDefinitionComponent} from './components/ai-agent-definition/ai-agent-definition.component';
 import {AiAgentDefinitionToolComponent} from './components/ai-agent-definition-tool/ai-agent-definition-tool.component';
+import {AiChatMessageErrorComponent} from './components/ai-chat-message-error/ai-chat-message-error.component';
 
 @NgModule({
 	declarations: [
@@ -48,6 +49,7 @@ import {AiAgentDefinitionToolComponent} from './components/ai-agent-definition-t
 		AiThoughtPipe,
 		AiAgentDefinitionComponent,
 		AiAgentDefinitionToolComponent,
+		AiChatMessageErrorComponent,
 	],
 	imports: [
 		CommonModule,

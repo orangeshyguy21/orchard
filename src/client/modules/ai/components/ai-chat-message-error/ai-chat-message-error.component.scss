@@ -1,0 +1,5 @@
+@use '@styles/molecule/molecule';
+
+.error-message {
+	@extend %orc-error-color;
+}

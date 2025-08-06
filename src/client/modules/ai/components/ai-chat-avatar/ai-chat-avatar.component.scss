@@ -29,3 +29,8 @@
 	background: linear-gradient(to bottom, #fff9a0 0%, #ffe14c 25%, #ff9a3c 50%, #e94e1b 75%, #8c1a1a 100%);
 	@extend %orc-surface-container-high-color;
 }
+
+.avatar-role-error {
+	@extend %orc-error-bg;
+	@extend %orc-on-error-color;
+}
