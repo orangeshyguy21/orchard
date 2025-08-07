@@ -162,10 +162,8 @@ export function getAnalyticsTimeGroupSql({
 	group_by: string;
 	db_type: MintDatabaseType;
 }): string {
-	const now = DateTime.now().setZone(timezone);
-	const offset_seconds = now.offset * 60; // Convert minutes to seconds
 	if (db_type === MintDatabaseType.sqlite) {
-		return getAnalyticsTimeGroupSqlSqlite({interval, time_column, group_by, offset_seconds});
+		return getAnalyticsTimeGroupSqlSqlite({interval, time_column, group_by, timezone});
 	} else {
 		return getAnalyticsTimeGroupSqlPostgres({interval, time_column, group_by, timezone});
 	}
@@ -175,13 +173,15 @@ function getAnalyticsTimeGroupSqlSqlite({
 	interval,
 	time_column,
 	group_by,
-	offset_seconds,
+	timezone,
 }: {
 	interval: CashuMintAnalyticsArgs['interval'];
 	time_column: string;
 	group_by: string;
-	offset_seconds: number;
+	timezone: string;
 }): string {
+	const now = DateTime.now().setZone(timezone);
+	const offset_seconds = now.offset * 60; // Convert minutes to seconds
 	if (interval === 'day') {
 		return `strftime('%Y-%m-%d', datetime(${time_column} + ${offset_seconds}, 'unixepoch'))`;
 	}

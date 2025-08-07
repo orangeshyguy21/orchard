@@ -1,16 +1,5 @@
 /* Native Dependencies */
 import {MintUnit, MintQuoteState, MeltQuoteState} from '@server/modules/cashu/cashu.enums';
-import {CashuMintKeyset} from '@server/modules/cashu/mintdb/cashumintdb.types';
-import {MintDatabaseType} from '@server/modules/cashu/mintdb/cashumintdb.enums';
-
-// export type NutshellMintKeysetSqlite = CashuMintKeyset & {
-// 	type: MintDatabaseType.sqlite;
-// };
-// export type NutshellMintKeysetPostgres = CashuMintKeyset & {
-// 	type: MintDatabaseType.postgres;
-// 	valid_from: string;
-// 	valid_to: string | null;
-// };
 
 export type NutshellMintMintQuote = {
 	quote: string;
