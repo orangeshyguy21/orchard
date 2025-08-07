@@ -36,6 +36,7 @@ export type Config = {
 	cashu: {
 		type: string;
 		api: string;
+		database_type: string;
 		database: string;
 		rpc_host: string;
 		rpc_port: string;
