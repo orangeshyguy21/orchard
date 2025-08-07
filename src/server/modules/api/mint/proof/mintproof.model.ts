@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {Field, Int, ObjectType} from '@nestjs/graphql';
+import {Field, Int, Float, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 import {CashuMintProofGroup} from '@server/modules/cashu/mintdb/cashumintdb.types';
@@ -37,6 +37,6 @@ export class OrchardMintProofGroup {
 
 @ObjectType()
 export class OrchardMintProofGroupStats {
-	@Field((type) => Int)
+	@Field((type) => Float)
 	median: number;
 }

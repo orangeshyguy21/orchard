@@ -24,9 +24,9 @@ export class MintKeysetService {
 	) {}
 
 	async getMintKeysets(tag: string): Promise<OrchardMintKeyset[]> {
-		return this.mintService.withDb(async (db) => {
+		return this.mintService.withDbClient(async (client) => {
 			try {
-				const cashu_keysets: CashuMintKeyset[] = await this.cashuMintDatabaseService.getMintKeysets(db);
+				const cashu_keysets: CashuMintKeyset[] = await this.cashuMintDatabaseService.getMintKeysets(client);
 				return cashu_keysets.map((ck) => new OrchardMintKeyset(ck));
 			} catch (error) {
 				const error_code = this.errorService.resolveError(this.logger, error, tag, {

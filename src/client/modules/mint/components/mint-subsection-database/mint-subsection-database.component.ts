@@ -434,8 +434,9 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		this.mintService.loadMintInfo().subscribe((mint_info) => {
 			this.database_version = mint_info.version.replace(/\//g, '-');
 			this.database_timestamp = DateTime.now().toSeconds();
-			this.database_implementation = 'sqlite';
-			const filename = `MintDatabaseBackup-${this.database_version}-${DateTime.fromSeconds(this.database_timestamp).toFormat('yyyyMMdd-HHmmss')}.db`;
+			this.database_implementation = environment.mint.database_type;
+			const extension = this.database_implementation === 'sqlite' ? 'db' : 'sql';
+			const filename = `MintDatabaseBackup-${this.database_version}-${DateTime.fromSeconds(this.database_timestamp).toFormat('yyyyMMdd-HHmmss')}.${extension}`;
 			this.form_backup.patchValue({
 				filename: filename,
 			});

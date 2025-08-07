@@ -25,6 +25,7 @@ const taproot_assets = {
 const mint = {
 	enabled: process.env['MINT_TYPE'] ? true : false,
 	critical_path: '/v1/info',
+	database_type: process.env['MINT_DATABASE']?.includes('postgres://') ? 'postgres' : 'sqlite',
 };
 
 const ai = {
