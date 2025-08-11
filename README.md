@@ -19,7 +19,7 @@
   - lnd
 - Cashu Mint
   - cdk (sqlite)
-  - nutshell (sqlite)
+  - nutshell (sqlite, postgreSQL)
 - Taproot Assets
   - tapd
 - AI
