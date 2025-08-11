@@ -16,7 +16,7 @@
 		<mat-expansion-panel [expanded]="view() === 1" disabled>
 			<mat-expansion-panel-header> Chat Log </mat-expansion-panel-header>
 			<div class="ai-chat-log-main">
-				@for (message of conversation?.messages; track message.id) {
+				@for (message of conversation?.messages; track message.id; let i = $index) {
 					@switch (message.role) {
 						@case ('SYSTEM') {
 							<orc-ai-chat-message-system [message]="message"> </orc-ai-chat-message-system>
@@ -30,8 +30,9 @@
 								[revision]="revision"
 								[active_chat]="active_chat"
 								[agent]="agent_definition"
-							>
-							</orc-ai-chat-message-assistant>
+								[index]="i"
+								[conversation_length]="conversation?.messages?.length"
+							></orc-ai-chat-message-assistant>
 						}
 						@case ('ERROR') {
 							<orc-ai-chat-message-error [message]="message"> </orc-ai-chat-message-error>

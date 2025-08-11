@@ -56,6 +56,8 @@ export class AiChatMessageAssistantComponent implements OnChanges {
 	@Input() public revision!: number;
 	@Input() public agent!: AiAgentDefinition | null;
 	@Input() public active_chat!: boolean;
+	@Input() public index!: number;
+	@Input() public conversation_length!: number | undefined;
 
 	public tool_roll = AiMessageRole.Function;
 	public marked_content!: string;
@@ -64,7 +66,12 @@ export class AiChatMessageAssistantComponent implements OnChanges {
 	public think_expanded: boolean = false;
 
 	public get thinking_complete(): boolean {
-		return this.message.done || !this.active_chat || this.think_end > 0;
+		return this.message.done || !this.active_chat || this.think_end > 0 || !this.last_message;
+	}
+
+	public get last_message(): boolean {
+		if (!this.conversation_length) return false;
+		return this.index === this.conversation_length - 1;
 	}
 
 	private think_start!: number;

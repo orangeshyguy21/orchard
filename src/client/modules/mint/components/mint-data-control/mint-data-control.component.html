@@ -5,8 +5,20 @@
 				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic" class="mint-analytic-daterange">
 					<mat-label>Date range</mat-label>
 					<mat-date-range-input [rangePicker]="picker">
-						<input matStartDate formControlName="date_start" placeholder="Start date" (blur)="onDateChange()" />
-						<input matEndDate formControlName="date_end" placeholder="End date" (blur)="onDateChange()" />
+						<input
+							matStartDate
+							formControlName="date_start"
+							placeholder="Start date"
+							(blur)="onDateChange()"
+							(keyup.enter)="onDateChange()"
+						/>
+						<input
+							matEndDate
+							formControlName="date_end"
+							placeholder="End date"
+							(blur)="onDateChange()"
+							(keyup.enter)="onDateChange()"
+						/>
 					</mat-date-range-input>
 					<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
 					<mat-date-range-picker #picker [dateClass]="genesisClass" (closed)="onDateChange()"></mat-date-range-picker>
