@@ -6,6 +6,9 @@ import {promises as fs} from 'fs';
 /* Vendor Dependencies */
 import {Client} from 'pg';
 import DatabaseConstructor from 'better-sqlite3';
+import {exec} from 'child_process';
+import util from 'util';
+const execAsync = util.promisify(exec);
 /* Application Dependencies */
 import {MintType} from '@server/modules/cashu/cashu.enums';
 import {NutshellService} from '@server/modules/cashu/nutshell/nutshell.service';
@@ -156,16 +159,16 @@ export class CashuMintDatabaseService implements OnModuleInit {
 
 	public async createBackup(client: CashuMintDatabase): Promise<Buffer> {
 		if (client.type === MintDatabaseType.sqlite) return this.createBackupSqlite(client);
-		if (client.type === MintDatabaseType.postgres) throw OrchardErrorCode.MintSupportError;
+		if (client.type === MintDatabaseType.postgres) return this.createBackupPostgres();
 	}
 
 	public async restoreBackup(filebase64: string): Promise<void> {
 		if (this.configService.get('cashu.database_type') === 'sqlite') return this.restoreBackupSqlite(filebase64);
-		if (this.configService.get('cashu.database_type') === 'postgres') throw OrchardErrorCode.MintSupportError;
+		if (this.configService.get('cashu.database_type') === 'postgres') return this.restoreBackupPostgres(filebase64);
 	}
 
 	private async createBackupSqlite(client: CashuMintDatabase): Promise<Buffer> {
-		const backup_path = path.resolve('temp-backup.db');
+		const backup_path = path.resolve('data/tmp/tmp-sqlite-backup.db');
 		try {
 			await client.database.backup(backup_path);
 			const file_buffer = await fs.readFile(backup_path);
@@ -185,7 +188,7 @@ export class CashuMintDatabaseService implements OnModuleInit {
 	private async restoreBackupSqlite(filebase64: string): Promise<void> {
 		return new Promise(async (resolve, reject) => {
 			const database_buffer: Buffer = Buffer.from(filebase64, 'base64');
-			const restore_path = path.resolve('temp-restore.db');
+			const restore_path = path.resolve('data/tmp/tmp-sqlite-restore.db');
 
 			try {
 				await fs.writeFile(restore_path, database_buffer);
@@ -219,6 +222,74 @@ export class CashuMintDatabaseService implements OnModuleInit {
 				reject(write_error);
 			}
 		});
+	}
+
+	private async createBackupPostgres(): Promise<Buffer> {
+		const backup_path = path.resolve('data/tmp/tmp-postgres-backup.custom');
+		try {
+			const connection_string = this.configService.get('cashu.database');
+			const pg_dump_path = this.configService.get('cashu.pg_dump_path');
+			const {host, port, username, password, db_name} = this.parsePostgresConnection(connection_string);
+			const pg_dump_cmd = `${pg_dump_path} --host="${host}" --port="${port}" --username="${username}" --dbname="${db_name}" --format=custom --file="${backup_path}"`;
+			const env = {...process.env, PGPASSWORD: password};
+			await execAsync(pg_dump_cmd, {env});
+			const file_buffer = await fs.readFile(backup_path);
+			await fs.unlink(backup_path);
+			return file_buffer;
+		} catch (error) {
+			this.logger.error(`Error during database backup: ${error.message}`);
+			try {
+				await fs.unlink(backup_path);
+			} catch (cleanup_error) {
+				// Ignore cleanup errors
+			}
+			throw error;
+		}
+	}
+
+	private async restoreBackupPostgres(filebase64: string): Promise<void> {
+		return new Promise(async (resolve, reject) => {
+			const database_buffer: Buffer = Buffer.from(filebase64, 'base64');
+			const restore_path = path.resolve('data/tmp/tmp-postgres-restore.sql');
+
+			try {
+				await fs.writeFile(restore_path, database_buffer);
+				const connection_string = this.configService.get('cashu.database');
+				const pg_restore_path = this.configService.get('cashu.pg_restore_path') || 'pg_restore';
+				const connection = this.parsePostgresConnection(connection_string);
+				const env = {...process.env, PGPASSWORD: connection.password};
+				const restore_cmd = `${pg_restore_path} --host="${connection.host}" --port="${connection.port}" --username="${connection.username}" --dbname="postgres" --clean --create --if-exists "${restore_path}"`;
+				await execAsync(restore_cmd, {env});
+				await fs.unlink(restore_path);
+				this.logger.log('PostgreSQL database backup restored successfully');
+				resolve();
+			} catch (error) {
+				this.logger.error(`Error restoring PostgreSQL database: ${error.message}`);
+				try {
+					await fs.unlink(restore_path);
+				} catch (cleanup_error) {
+					// Ignore cleanup errors
+				}
+				reject(error);
+			}
+		});
+	}
+
+	private parsePostgresConnection(connection_string: string): {
+		host: string;
+		port: string;
+		username: string;
+		password: string;
+		db_name: string;
+	} {
+		const url = new URL(connection_string);
+		return {
+			host: url.hostname,
+			port: url.port || '5432',
+			username: url.username,
+			password: url.password,
+			db_name: url.pathname.slice(1) || 'postgres',
+		};
 	}
 
 	private async validateSqliteFile(file_path: string): Promise<boolean> {
