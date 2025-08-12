@@ -623,6 +623,60 @@ export class NutshellService {
 		}
 	}
 
+	public async getMintAnalyticsFees(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
+		const interval = args?.interval || MintAnalyticsInterval.day;
+		const timezone = args?.timezone || 'UTC';
+		const {where_conditions, params} = getAnalyticsConditions({
+			args: args,
+			time_column: 'time',
+			db_type: client.type,
+		});
+		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
+		const time_group_sql = getAnalyticsTimeGroupSql({
+			interval: interval,
+			timezone: timezone,
+			time_column: 'time',
+			group_by: 'unit',
+			db_type: client.type,
+		});
+
+		const sql = `
+			SELECT 
+				${time_group_sql} AS time_group,
+				unit,
+				SUM(keyset_fees_paid) AS amount,
+				COUNT(DISTINCT time) AS operation_count,
+				MIN(time) as min_created_time
+			FROM 
+				balance_log
+				${where_clause}
+			GROUP BY 
+				time_group, unit
+			ORDER BY 
+				min_created_time;`;
+		const sql_converted = convertSqlToType(sql, client.type);
+
+		try {
+			const rows = await queryRows<NutshellMintAnalytics>(client, sql_converted, params);
+			return rows.map((row) => {
+				const timestamp = getAnalyticsTimeGroupStamp({
+					min_created_time: row.min_created_time,
+					time_group: row.time_group,
+					interval: interval,
+					timezone: timezone,
+				});
+				return {
+					unit: row.unit,
+					amount: row.amount,
+					created_time: timestamp,
+					operation_count: row.operation_count,
+				};
+			});
+		} catch (err) {
+			throw err;
+		}
+	}
+
 	public async getMintAnalyticsKeysets(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintKeysetsAnalytics[]> {
 		const interval = args?.interval || MintAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
