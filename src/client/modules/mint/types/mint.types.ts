@@ -67,6 +67,10 @@ export type MintAnalyticsTransfersResponse = {
 	mint_analytics_transfers: OrchardMintAnalytics[];
 };
 
+export type MintAnalyticsFeesResponse = {
+	mint_analytics_fees: OrchardMintAnalytics[];
+};
+
 export type MintMintQuotesResponse = {
 	mint_mint_quotes: OrchardMintMintQuote[];
 };

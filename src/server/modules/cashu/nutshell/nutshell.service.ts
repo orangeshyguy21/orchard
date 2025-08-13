@@ -639,12 +639,14 @@ export class NutshellService {
 			group_by: 'unit',
 			db_type: client.type,
 		});
+		const fee_calculation_sql =
+			args?.interval === MintAnalyticsInterval.custom ? `(MAX(keyset_fees_paid) - MIN(keyset_fees_paid))` : `MAX(keyset_fees_paid)`;
 
 		const sql = `
 			SELECT 
 				${time_group_sql} AS time_group,
 				unit,
-				SUM(keyset_fees_paid) AS amount,
+				${fee_calculation_sql} AS amount,
 				COUNT(DISTINCT time) AS operation_count,
 				MIN(time) as min_created_time
 			FROM 

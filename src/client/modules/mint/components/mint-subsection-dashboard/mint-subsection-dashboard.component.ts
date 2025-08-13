@@ -46,6 +46,8 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public mint_analytics_melts_pre: MintAnalytic[] = [];
 	public mint_analytics_transfers: MintAnalytic[] = [];
 	public mint_analytics_transfers_pre: MintAnalytic[] = [];
+	public mint_analytics_fees: MintAnalytic[] = [];
+	public mint_analytics_fees_pre: MintAnalytic[] = [];
 	public mint_connections: PublicUrl[] = [];
 	public lightning_enabled: boolean = environment.lightning.enabled;
 	public lightning_balance: LightningBalance | null = null;
@@ -215,6 +217,20 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			interval: MintAnalyticsInterval.Custom,
 			timezone: timezone,
 		});
+		const analytics_fees_obs = this.mintService.loadMintAnalyticsFees({
+			units: this.page_settings.units,
+			date_start: this.page_settings.date_start,
+			date_end: this.page_settings.date_end,
+			interval: this.page_settings.interval,
+			timezone: timezone,
+		});
+		const analytics_fees_pre_obs = this.mintService.loadMintAnalyticsFees({
+			units: this.page_settings.units,
+			date_start: 100000,
+			date_end: this.page_settings.date_start - 1,
+			interval: MintAnalyticsInterval.Custom,
+			timezone: timezone,
+		});
 		const [
 			analytics_balances,
 			analytics_balances_pre,
@@ -224,6 +240,8 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			analytics_melts_pre,
 			analytics_transfers,
 			analytics_transfers_pre,
+			analytics_fees,
+			analytics_fees_pre,
 		] = await lastValueFrom(
 			forkJoin([
 				analytics_balances_obs,
@@ -234,6 +252,8 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 				analytics_melts_pre_obs,
 				analytics_transfers_obs,
 				analytics_transfers_pre_obs,
+				analytics_fees_obs,
+				analytics_fees_pre_obs,
 			]),
 		);
 
@@ -245,6 +265,8 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.mint_analytics_melts_pre = analytics_melts_pre;
 		this.mint_analytics_transfers = analytics_transfers;
 		this.mint_analytics_transfers_pre = analytics_transfers_pre;
+		this.mint_analytics_fees = analytics_fees;
+		this.mint_analytics_fees_pre = analytics_fees_pre;
 	}
 
 	private getPageSettings(): NonNullableMintDashboardSettings {

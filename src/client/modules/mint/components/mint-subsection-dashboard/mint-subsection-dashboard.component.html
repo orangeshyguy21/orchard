@@ -62,7 +62,7 @@
 		[selected_type]="page_settings ? page_settings.type : undefined"
 		[loading]="loading_dynamic_data"
 	></orc-mint-analytic-chart>
-	<div class="mint-analytic-header z-index-2">
+	<div class="mint-analytic-header z-index-1">
 		<div class="mint-analytic-title">Mints &nbsp;&nbsp;<small>deposits</small></div>
 	</div>
 	<orc-mint-analytic-chart
@@ -74,7 +74,7 @@
 		[selected_type]="page_settings ? page_settings.type : undefined"
 		[loading]="loading_dynamic_data"
 	></orc-mint-analytic-chart>
-	<div class="mint-analytic-header z-index-3">
+	<div class="mint-analytic-header z-index-1">
 		<div class="mint-analytic-title">Melts &nbsp;&nbsp;<small>withdrawals</small></div>
 	</div>
 	<orc-mint-analytic-chart
@@ -86,13 +86,25 @@
 		[selected_type]="page_settings ? page_settings.type : undefined"
 		[loading]="loading_dynamic_data"
 	></orc-mint-analytic-chart>
-	<div class="mint-analytic-header z-index-4">
+	<div class="mint-analytic-header z-index-1">
 		<div class="mint-analytic-title">Transfers</div>
 	</div>
 	<orc-mint-analytic-chart
 		[locale]="locale"
 		[mint_analytics]="mint_analytics_transfers"
 		[mint_analytics_pre]="mint_analytics_transfers_pre"
+		[page_settings]="page_settings"
+		[mint_genesis_time]="mint_genesis_time"
+		[selected_type]="page_settings ? page_settings.type : undefined"
+		[loading]="loading_dynamic_data"
+	></orc-mint-analytic-chart>
+	<div class="mint-analytic-header z-index-1">
+		<div class="mint-analytic-title">Fee Revenue</div>
+	</div>
+	<orc-mint-analytic-chart
+		[locale]="locale"
+		[mint_analytics]="mint_analytics_fees"
+		[mint_analytics_pre]="mint_analytics_fees_pre"
 		[page_settings]="page_settings"
 		[mint_genesis_time]="mint_genesis_time"
 		[selected_type]="page_settings ? page_settings.type : undefined"

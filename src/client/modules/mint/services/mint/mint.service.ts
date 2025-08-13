@@ -23,6 +23,7 @@ import {
 	MintAnalyticsMintsResponse,
 	MintAnalyticsMeltsResponse,
 	MintAnalyticsTransfersResponse,
+	MintAnalyticsFeesResponse,
 	MintAnalyticsKeysetsResponse,
 	MintInfoRpcResponse,
 	MintNameUpdateResponse,
@@ -72,6 +73,7 @@ import {
 	MINT_ANALYTICS_MINTS_QUERY,
 	MINT_ANALYTICS_MELTS_QUERY,
 	MINT_ANALYTICS_TRANSFERS_QUERY,
+	MINT_ANALYTICS_FEES_QUERY,
 	MINT_MINT_QUOTES_QUERY,
 	MINT_MELT_QUOTES_QUERY,
 	MINT_ANALYTICS_KEYSETS_QUERY,
@@ -119,6 +121,8 @@ export class MintService {
 		MINT_ANALYTICS_PRE_MELTS: 'mint-analytics-pre-melts',
 		MINT_ANALYTICS_TRANSFERS: 'mint-analytics-transfers',
 		MINT_ANALYTICS_PRE_TRANSFERS: 'mint-analytics-pre-transfers',
+		MINT_ANALYTICS_FEES: 'mint-analytics-fees',
+		MINT_ANALYTICS_PRE_FEES: 'mint-analytics-pre-fees',
 		MINT_MINT_QUOTES: 'mint-mint-quotes',
 		MINT_MELT_QUOTES: 'mint-melt-quotes',
 		MINT_ANALYTICS_KEYSETS: 'mint-analytics-keysets',
@@ -137,6 +141,8 @@ export class MintService {
 		[this.CACHE_KEYS.MINT_ANALYTICS_PRE_MELTS]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.MINT_ANALYTICS_TRANSFERS]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.MINT_ANALYTICS_PRE_TRANSFERS]: 5 * 60 * 1000, // 5 minutes
+		[this.CACHE_KEYS.MINT_ANALYTICS_FEES]: 5 * 60 * 1000, // 5 minutes
+		[this.CACHE_KEYS.MINT_ANALYTICS_PRE_FEES]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.MINT_MINT_QUOTES]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.MINT_MELT_QUOTES]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.MINT_ANALYTICS_KEYSETS]: 5 * 60 * 1000, // 5 minutes
@@ -155,6 +161,8 @@ export class MintService {
 	private readonly mint_analytics_pre_melts_subject: BehaviorSubject<MintAnalytic[] | null>;
 	private readonly mint_analytics_transfers_subject: BehaviorSubject<MintAnalytic[] | null>;
 	private readonly mint_analytics_pre_transfers_subject: BehaviorSubject<MintAnalytic[] | null>;
+	private readonly mint_analytics_fees_subject: BehaviorSubject<MintAnalytic[] | null>;
+	private readonly mint_analytics_pre_fees_subject: BehaviorSubject<MintAnalytic[] | null>;
 	private readonly mint_mint_quotes_subject: BehaviorSubject<MintMintQuote[] | null>;
 	private readonly mint_melt_quotes_subject: BehaviorSubject<MintMeltQuote[] | null>;
 	private readonly mint_analytics_keysets_subject: BehaviorSubject<MintAnalyticKeyset[] | null>;
@@ -210,6 +218,14 @@ export class MintService {
 		this.mint_analytics_pre_transfers_subject = this.cache.createCache<MintAnalytic[]>(
 			this.CACHE_KEYS.MINT_ANALYTICS_PRE_TRANSFERS,
 			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_ANALYTICS_PRE_TRANSFERS],
+		);
+		this.mint_analytics_fees_subject = this.cache.createCache<MintAnalytic[]>(
+			this.CACHE_KEYS.MINT_ANALYTICS_FEES,
+			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_ANALYTICS_FEES],
+		);
+		this.mint_analytics_pre_fees_subject = this.cache.createCache<MintAnalytic[]>(
+			this.CACHE_KEYS.MINT_ANALYTICS_PRE_FEES,
+			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_ANALYTICS_PRE_FEES],
 		);
 		this.mint_mint_quotes_subject = this.cache.createCache<MintMintQuote[]>(
 			this.CACHE_KEYS.MINT_MINT_QUOTES,
@@ -531,6 +547,45 @@ export class MintService {
 			}),
 			catchError((error) => {
 				console.error('Error loading mint analytics transfers:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	public loadMintAnalyticsFees(args: MintAnalyticsArgs) {
+		if (args.interval === MintAnalyticsInterval.Custom) {
+			return this.loadGenericMintAnalyticsFees(
+				args,
+				this.mint_analytics_pre_transfers_subject.value,
+				this.CACHE_KEYS.MINT_ANALYTICS_PRE_TRANSFERS,
+			);
+		} else {
+			return this.loadGenericMintAnalyticsFees(args, this.mint_analytics_fees_subject.value, this.CACHE_KEYS.MINT_ANALYTICS_FEES);
+		}
+	}
+
+	private loadGenericMintAnalyticsFees(
+		args: MintAnalyticsArgs,
+		subject_value: MintAnalytic[] | null,
+		cache_key: string,
+	): Observable<MintAnalytic[]> {
+		if (subject_value && this.cache.isCacheValid(cache_key)) {
+			return of(subject_value);
+		}
+
+		const query = getApiQuery(MINT_ANALYTICS_FEES_QUERY, args);
+
+		return this.http.post<OrchardRes<MintAnalyticsFeesResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.mint_analytics_fees;
+			}),
+			map((mint_analytics_fees) => mint_analytics_fees.map((mint_analytic) => new MintAnalytic(mint_analytic))),
+			tap((mint_analytics_fees) => {
+				this.cache.updateCache(cache_key, mint_analytics_fees);
+			}),
+			catchError((error) => {
+				console.error('Error loading mint analytics fees:', error);
 				return throwError(() => error);
 			}),
 		);
