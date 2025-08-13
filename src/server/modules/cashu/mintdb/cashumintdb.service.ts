@@ -162,7 +162,7 @@ export class CashuMintDatabaseService implements OnModuleInit {
 
 	public async restoreBackup(filebase64: string): Promise<void> {
 		if (this.configService.get('cashu.database_type') === 'sqlite') return this.restoreBackupSqlite(filebase64);
-		if (this.configService.get('cashu.database_type') === 'postgres') throw OrchardErrorCode.MintSupportError;
+		if (this.configService.get('cashu.database_type') === 'postgres') return this.restoreBackupPostgres(filebase64);
 	}
 
 	private async createBackupSqlite(client: CashuMintDatabase): Promise<Buffer> {
@@ -222,35 +222,21 @@ export class CashuMintDatabaseService implements OnModuleInit {
 		});
 	}
 
-	// private async createBackupPostgres(): Promise<Buffer> {
-	// 	const backup_path = path.resolve('data/tmp/tmp-postgres-backup.custom');
-	// 	try {
-	// 		const connection_string = this.configService.get('cashu.database');
-	// 		const {host, port, username, password, db_name} = this.parsePostgresConnection(connection_string);
-	// 		const pg_dump_cmd = `pg_dump --host="${host}" --port="${port}" --username="${username}" --dbname="${db_name}" --format=custom --file="${backup_path}"`;
-	// 		const env = {...process.env, PGPASSWORD: password};
-	// 		await execAsync(pg_dump_cmd, {env});
-	// 		const file_buffer = await fs.readFile(backup_path);
-	// 		await fs.unlink(backup_path);
-	// 		return file_buffer;
-	// 	} catch (error) {
-	// 		this.logger.error(`Error during database backup: ${error.message}`);
-	// 		try {
-	// 			await fs.unlink(backup_path);
-	// 		} catch (cleanup_error) {
-	// 			// Ignore cleanup errors
-	// 		}
-	// 		throw error;
-	// 	}
-	// }
-
 	private async createBackupPostgres(): Promise<Buffer> {
-		const backup_path = path.resolve('data/tmp/tmp-postgres-backup.custom');
+		const backup_path = path.resolve('data/tmp/tmp-postgres-backup.sql');
 		try {
 			const connection_string = this.configService.get('cashu.database');
 			const {host, port, username, password, db_name} = this.parsePostgresConnection(connection_string);
 			const env = {...process.env, PGPASSWORD: password};
-			const args = [`--host=${host}`, `--port=${port}`, `--username=${username}`, `--dbname=${db_name}`, `--file=${backup_path}`];
+			const args = [
+				`--host=${host}`,
+				`--port=${port}`,
+				`--username=${username}`,
+				`--dbname=${db_name}`,
+				`--clean`,
+				`--if-exists`,
+				`--file=${backup_path}`,
+			];
 
 			await new Promise<void>((resolve, reject) => {
 				const pg_dump_process = spawn(`pg_dump`, args, {
@@ -262,6 +248,7 @@ export class CashuMintDatabaseService implements OnModuleInit {
 					else reject(OrchardErrorCode.MintDatabaseBackupError);
 				});
 				pg_dump_process.on('error', (error) => {
+					this.logger.error(`Error during database backup: ${error.message}`);
 					reject(OrchardErrorCode.MintDatabaseBackupError);
 				});
 			});
@@ -276,37 +263,46 @@ export class CashuMintDatabaseService implements OnModuleInit {
 			} catch (cleanup_error) {
 				// Ignore cleanup errors
 			}
-			throw error;
+			throw OrchardErrorCode.MintDatabaseBackupError;
 		}
 	}
 
-	// private async restoreBackupPostgres(filebase64: string): Promise<void> {
-	// 	return new Promise(async (resolve, reject) => {
-	// 		const database_buffer: Buffer = Buffer.from(filebase64, 'base64');
-	// 		const restore_path = path.resolve('data/tmp/tmp-postgres-restore.sql');
+	private async restoreBackupPostgres(filebase64: string): Promise<void> {
+		const restore_path = path.resolve('data/tmp/tmp-postgres-restore.sql');
+		try {
+			const database_buffer: Buffer = Buffer.from(filebase64, 'base64');
+			await fs.writeFile(restore_path, database_buffer);
+			const connection_string = this.configService.get('cashu.database');
+			const {host, port, username, password, db_name} = this.parsePostgresConnection(connection_string);
+			const env = {...process.env, PGPASSWORD: password};
+			const args = [`--host=${host}`, `--port=${port}`, `--username=${username}`, `--dbname=${db_name}`, `--file=${restore_path}`];
+			await new Promise<void>((resolve, reject) => {
+				const psql_process = spawn(`psql`, args, {
+					env,
+					stdio: ['ignore', 'pipe', 'inherit'],
+				});
+				psql_process.on('close', (code) => {
+					if (code === 0) resolve();
+					else reject(OrchardErrorCode.MintDatabaseRestoreError);
+				});
+				psql_process.on('error', (error) => {
+					this.logger.error(`Error restoring PostgreSQL database: ${error.message}`);
+					reject(OrchardErrorCode.MintDatabaseRestoreError);
+				});
+			});
 
-	// 		try {
-	// 			await fs.writeFile(restore_path, database_buffer);
-	// 			const connection_string = this.configService.get('cashu.database');
-	// 			const pg_restore_path = this.configService.get('cashu.pg_restore_path') || 'pg_restore';
-	// 			const connection = this.parsePostgresConnection(connection_string);
-	// 			const env = {...process.env, PGPASSWORD: connection.password};
-	// 			const restore_cmd = `${pg_restore_path} --host="${connection.host}" --port="${connection.port}" --username="${connection.username}" --dbname="postgres" --clean --create --if-exists "${restore_path}"`;
-	// 			await execAsync(restore_cmd, {env});
-	// 			await fs.unlink(restore_path);
-	// 			this.logger.log('PostgreSQL database backup restored successfully');
-	// 			resolve();
-	// 		} catch (error) {
-	// 			this.logger.error(`Error restoring PostgreSQL database: ${error.message}`);
-	// 			try {
-	// 				await fs.unlink(restore_path);
-	// 			} catch (cleanup_error) {
-	// 				// Ignore cleanup errors
-	// 			}
-	// 			reject(error);
-	// 		}
-	// 	});
-	// }
+			await fs.unlink(restore_path);
+			this.logger.log('PostgreSQL database backup restored successfully');
+		} catch (error) {
+			this.logger.error(`Error restoring PostgreSQL database: ${error.message}`);
+			try {
+				await fs.unlink(restore_path);
+			} catch (cleanup_error) {
+				// Ignore cleanup errors
+			}
+			throw OrchardErrorCode.MintDatabaseRestoreError;
+		}
+	}
 
 	private parsePostgresConnection(connection_string: string): {
 		host: string;
