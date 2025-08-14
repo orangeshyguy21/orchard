@@ -315,7 +315,7 @@ export class CashuMintDatabaseService implements OnModuleInit {
 			port: url.port || '5432',
 			username: url.username,
 			password: url.password,
-			db_name: url.pathname.slice(1) || 'postgres',
+			db_name: url.pathname.slice(1),
 		};
 	}
 
