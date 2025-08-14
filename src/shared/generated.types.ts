@@ -984,6 +984,7 @@ export type Query = {
   lightning_info: OrchardLightningInfo;
   lightning_wallet: Array<OrchardLightningAccount>;
   mint_analytics_balances: Array<OrchardMintAnalytics>;
+  mint_analytics_fees: Array<OrchardMintAnalytics>;
   mint_analytics_keysets: Array<OrchardMintKeysetsAnalytics>;
   mint_analytics_melts: Array<OrchardMintAnalytics>;
   mint_analytics_mints: Array<OrchardMintAnalytics>;
@@ -1029,6 +1030,15 @@ export type QueryBitcoin_Transaction_Fee_EstimatesArgs = {
 
 
 export type QueryMint_Analytics_BalancesArgs = {
+  date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  interval?: InputMaybe<MintAnalyticsInterval>;
+  timezone?: InputMaybe<Scalars['Timezone']['input']>;
+  units?: InputMaybe<Array<MintUnit>>;
+};
+
+
+export type QueryMint_Analytics_FeesArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   interval?: InputMaybe<MintAnalyticsInterval>;
