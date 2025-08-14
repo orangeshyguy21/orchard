@@ -19,6 +19,7 @@ import {
 	CashuMintProofGroup,
 	CashuMintPromiseGroup,
 	CashuMintCount,
+	CashuMintFee,
 } from '@server/modules/cashu/mintdb/cashumintdb.types';
 import {
 	CashuMintAnalyticsArgs,
@@ -384,6 +385,17 @@ export class NutshellService {
 		}
 	}
 
+	public async getMintFees(client: CashuMintDatabase, limit: number = 1): Promise<CashuMintFee[]> {
+		const sql = `SELECT * FROM balance_log ORDER BY time ASC LIMIT ?;`;
+		const sql_converted = convertSqlToType(sql, client.type);
+		try {
+			return queryRows<CashuMintFee>(client, sql_converted, [limit]);
+		} catch (err) {
+			console.log('Error fetching mint fees:', err);
+			throw err;
+		}
+	}
+
 	/* Analytics */
 
 	public async getMintAnalyticsBalances(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
@@ -640,7 +652,7 @@ export class NutshellService {
 			db_type: client.type,
 		});
 		const fee_calculation_sql =
-			args?.interval === MintAnalyticsInterval.custom ? `(MAX(keyset_fees_paid) - MIN(keyset_fees_paid))` : `MAX(keyset_fees_paid)`;
+			args?.interval === MintAnalyticsInterval.custom ? `MAX(keyset_fees_paid)` : `(MAX(keyset_fees_paid) - MIN(keyset_fees_paid))`;
 
 		const sql = `
 			SELECT 

@@ -30,6 +30,7 @@ import {MintPromiseModule} from './mint/promise/mintpromise.module';
 import {MintProofModule} from './mint/proof/mintproof.module';
 import {MintAnalyticsModule} from './mint/analytics/mintanalytics.module';
 import {MintCountModule} from './mint/count/mintcount.module';
+import {MintFeeModule} from './mint/fee/mintfee.module';
 // AI Endpoints
 import {AiModelModule} from './ai/model/aimodel.module';
 import {AiAgentModule} from './ai/agent/aiagent.module';
@@ -63,6 +64,7 @@ import {PublicUrlModule} from './public/url/url.module';
 		MintProofModule,
 		MintAnalyticsModule,
 		MintCountModule,
+		MintFeeModule,
 		AiModelModule,
 		AiAgentModule,
 		AiChatModule,

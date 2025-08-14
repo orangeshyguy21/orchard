@@ -23,6 +23,7 @@ import {
 	CashuMintKeysetsAnalytics,
 	CashuMintProofGroup,
 	CashuMintPromiseGroup,
+	CashuMintFee,
 } from './cashumintdb.types';
 import {
 	CashuMintAnalyticsArgs,
@@ -124,6 +125,11 @@ export class CashuMintDatabaseService implements OnModuleInit {
 	public async getMintCountPromiseGroups(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<number> {
 		if (this.type === 'nutshell') return this.nutshellService.getMintCountPromiseGroups(client, args);
 		if (this.type === 'cdk') return this.cdkService.getMintCountPromiseGroups(client, args);
+	}
+
+	public async getMintFees(client: CashuMintDatabase, limit?: number): Promise<CashuMintFee[]> {
+		if (this.type === 'nutshell') return this.nutshellService.getMintFees(client, limit);
+		if (this.type === 'cdk') throw OrchardErrorCode.MintSupportError;
 	}
 
 	/* Analytics */

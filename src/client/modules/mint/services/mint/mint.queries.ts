@@ -426,3 +426,14 @@ query MintProofGroupStats($unit: MintUnit!) {
 		median
 	}
 }`;
+
+export const MINT_FEES_QUERY = `
+query MintFees($limit: Int) {
+	mint_fees(limit: $limit) {
+		unit
+		keyset_balance
+		keyset_fees_paid
+		backend_balance
+		time
+	}
+}`;

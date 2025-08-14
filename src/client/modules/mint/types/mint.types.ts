@@ -28,6 +28,7 @@ import {
 	OrchardMintDatabaseBackup,
 	OrchardMintDatabaseRestore,
 	OrchardMintProofGroupStats,
+	OrchardMintFee,
 } from '@shared/generated.types';
 
 export type MintInfoResponse = {
@@ -220,4 +221,8 @@ export type MintDatabaseRestoreResponse = {
 
 export type MintProofGroupStatsResponse = {
 	mint_proof_group_stats: OrchardMintProofGroupStats;
+};
+
+export type MintFeesResponse = {
+	mint_fees: OrchardMintFee[];
 };

@@ -21,6 +21,7 @@ import {MintService} from '@client/modules/mint/services/mint/mint.service';
 import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintInfo} from '@client/modules/mint/classes/mint-info.class';
+import {MintFee} from '@client/modules/mint/classes/mint-fee.class';
 import {MintAnalytic} from '@client/modules/mint/classes/mint-analytic.class';
 import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
 /* Shared Dependencies */
@@ -38,6 +39,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public mint_info: MintInfo | null = null;
 	public mint_balances: MintBalance[] = [];
 	public mint_keysets: MintKeyset[] = [];
+	public mint_fees: MintFee[] = [];
 	public mint_analytics_balances: MintAnalytic[] = [];
 	public mint_analytics_balances_pre: MintAnalytic[] = [];
 	public mint_analytics_mints: MintAnalytic[] = [];
@@ -151,12 +153,17 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			this.page_settings = this.getPageSettings();
 			this.loading_static_data = false;
 			this.cdr.detectChanges();
+			await this.loadMintFees();
 			await this.loadMintAnalytics();
 			this.loading_dynamic_data = false;
 			this.cdr.detectChanges();
 		} catch (error) {
 			console.error('ERROR IN INIT MINT ANALYTICS:', error);
 		}
+	}
+
+	private async loadMintFees(): Promise<void> {
+		this.mint_fees = await lastValueFrom(this.mintService.loadMintFees(1));
 	}
 
 	private async loadMintAnalytics(): Promise<void> {
@@ -265,8 +272,16 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.mint_analytics_melts_pre = analytics_melts_pre;
 		this.mint_analytics_transfers = analytics_transfers;
 		this.mint_analytics_transfers_pre = analytics_transfers_pre;
-		this.mint_analytics_fees = analytics_fees;
+		this.mint_analytics_fees = this.applyMintFees(analytics_fees, analytics_fees_pre);
 		this.mint_analytics_fees_pre = analytics_fees_pre;
+	}
+
+	private applyMintFees(analytics_fees: MintAnalytic[], analytics_fees_pre: MintAnalytic[]): MintAnalytic[] {
+		if (analytics_fees_pre.length > 0) return analytics_fees;
+		if (analytics_fees.length === 0) return analytics_fees;
+		if (this.mint_fees.length === 0) return analytics_fees;
+		analytics_fees[0].amount += this.mint_fees[0].keyset_fees_paid;
+		return analytics_fees;
 	}
 
 	private getPageSettings(): NonNullableMintDashboardSettings {

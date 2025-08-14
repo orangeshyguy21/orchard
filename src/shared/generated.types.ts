@@ -657,6 +657,15 @@ export type OrchardMintDescriptionUpdate = {
   description: Scalars['String']['output'];
 };
 
+export type OrchardMintFee = {
+  __typename?: 'OrchardMintFee';
+  backend_balance: Scalars['Int']['output'];
+  keyset_balance: Scalars['Int']['output'];
+  keyset_fees_paid: Scalars['Int']['output'];
+  time: Scalars['UnixTimestamp']['output'];
+  unit: MintUnit;
+};
+
 export type OrchardMintIconUpdate = {
   __typename?: 'OrchardMintIconUpdate';
   icon_url: Scalars['String']['output'];
@@ -996,6 +1005,7 @@ export type Query = {
   mint_count_mint_quotes: OrchardMintCount;
   mint_count_promise_groups: OrchardMintCount;
   mint_count_proof_groups: OrchardMintCount;
+  mint_fees: Array<OrchardMintFee>;
   mint_info: OrchardMintInfo;
   mint_info_rpc: OrchardMintInfoRpc;
   mint_keysets: Array<OrchardMintKeyset>;
@@ -1117,6 +1127,11 @@ export type QueryMint_Count_Proof_GroupsArgs = {
   id_keysets?: InputMaybe<Array<Scalars['String']['input']>>;
   states?: InputMaybe<Array<MintProofState>>;
   units?: InputMaybe<Array<MintUnit>>;
+};
+
+
+export type QueryMint_FeesArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
 };
 
 

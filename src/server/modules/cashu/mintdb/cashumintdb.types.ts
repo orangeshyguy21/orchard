@@ -93,3 +93,11 @@ export type CashuMintKeysetsAnalytics = {
 export type CashuMintCount = {
 	count: number;
 };
+
+export type CashuMintFee = {
+	unit: MintUnit;
+	keyset_balance: number;
+	keyset_fees_paid: number;
+	backend_balance: number;
+	time: number;
+};
