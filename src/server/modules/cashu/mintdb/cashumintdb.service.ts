@@ -248,8 +248,7 @@ export class CashuMintDatabaseService implements OnModuleInit {
 					else reject(OrchardErrorCode.MintDatabaseBackupError);
 				});
 				pg_dump_process.on('error', (error) => {
-					this.logger.error(`Error during database backup: ${error.message}`);
-					reject(OrchardErrorCode.MintDatabaseBackupError);
+					reject(error);
 				});
 			});
 
@@ -257,7 +256,7 @@ export class CashuMintDatabaseService implements OnModuleInit {
 			await fs.unlink(backup_path);
 			return file_buffer;
 		} catch (error) {
-			this.logger.error(`Error during database backup: ${error.message}`);
+			this.logger.error(`Error during database backup: ${error}`);
 			try {
 				await fs.unlink(backup_path);
 			} catch (cleanup_error) {
@@ -286,15 +285,14 @@ export class CashuMintDatabaseService implements OnModuleInit {
 					else reject(OrchardErrorCode.MintDatabaseRestoreError);
 				});
 				psql_process.on('error', (error) => {
-					this.logger.error(`Error restoring PostgreSQL database: ${error.message}`);
-					reject(OrchardErrorCode.MintDatabaseRestoreError);
+					reject(error);
 				});
 			});
 
 			await fs.unlink(restore_path);
 			this.logger.log('PostgreSQL database backup restored successfully');
 		} catch (error) {
-			this.logger.error(`Error restoring PostgreSQL database: ${error.message}`);
+			this.logger.error(`Error restoring PostgreSQL database: ${error}`);
 			try {
 				await fs.unlink(restore_path);
 			} catch (cleanup_error) {
