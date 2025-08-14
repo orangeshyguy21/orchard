@@ -51,8 +51,6 @@ export const config = (): Config => {
 		rpc_key: process.env.MINT_RPC_KEY,
 		rpc_cert: process.env.MINT_RPC_CERT,
 		rpc_ca: process.env.MINT_RPC_CA,
-		pg_dump_path: process.env.PG_DUMP_PATH || 'pg_dump',
-		pg_restore_path: process.env.PG_RESTORE_PATH || 'pg_restore',
 	};
 
 	const ai = {

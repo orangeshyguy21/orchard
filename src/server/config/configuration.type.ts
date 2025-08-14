@@ -43,8 +43,6 @@ export type Config = {
 		rpc_key: string;
 		rpc_cert: string;
 		rpc_ca: string;
-		pg_dump_path: string;
-		pg_restore_path: string;
 	};
 	ai: {
 		api: string;
