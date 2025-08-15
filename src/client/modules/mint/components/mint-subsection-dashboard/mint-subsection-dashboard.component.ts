@@ -73,6 +73,10 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	// charts
 	public page_settings!: NonNullableMintDashboardSettings;
 
+	public get chart_navigation(): string[] {
+		return this.page_settings?.chart_navigation || [];
+	}
+
 	private subscriptions: Subscription = new Subscription();
 
 	constructor(
@@ -376,26 +380,14 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	}
 
 	private scrollToChart(chart_title: string) {
-		let target_element: ElementRef | undefined;
-
-		switch (chart_title) {
-			case 'Balance Sheet':
-				target_element = this.balance_chart;
-				break;
-			case 'Mints':
-				target_element = this.mints_chart;
-				break;
-			case 'Melts':
-				target_element = this.melts_chart;
-				break;
-			case 'Transfers':
-				target_element = this.transfers_chart;
-				break;
-			case 'Fee Revenue':
-				target_element = this.fee_revenue_chart;
-				break;
-		}
-
+		const chart_map: Record<string, ElementRef> = {
+			'Balance Sheet': this.balance_chart,
+			Mints: this.mints_chart,
+			Melts: this.melts_chart,
+			Transfers: this.transfers_chart,
+			'Fee Revenue': this.fee_revenue_chart,
+		};
+		const target_element = chart_map[chart_title];
 		if (!target_element?.nativeElement) return;
 		target_element.nativeElement.scrollIntoView({
 			behavior: 'smooth',
@@ -451,7 +443,6 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			.map((chart_name) => chart_name_to_area[chart_name])
 			.filter(Boolean)
 			.join('" "');
-
 		this.chart_container.nativeElement.style.gridTemplateAreas = `"${chart_areas}"`;
 	}
 

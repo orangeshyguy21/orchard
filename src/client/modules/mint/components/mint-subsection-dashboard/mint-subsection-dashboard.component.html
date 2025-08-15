@@ -159,7 +159,7 @@
 		<div class="w-8 p-t-1 p-r-0-5">
 			<orc-tertiary-nav
 				class="mint-chart-tertiary-nav"
-				[items]="page_settings?.chart_navigation ?? []"
+				[items]="chart_navigation"
 				(itemsChange)="onChartNavigationChange($event)"
 				(itemSelect)="onChartNavigationSelect($event)"
 			></orc-tertiary-nav>
