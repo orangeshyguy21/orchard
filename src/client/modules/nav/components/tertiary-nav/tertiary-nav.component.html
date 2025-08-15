@@ -1,0 +1,7 @@
+<div class="tertiary-nav-container">
+	<mat-chip-set class="mat-mdc-chip-set-stacked" cdkDropList cdkDropListOrientation="vertical" (cdkDropListDropped)="onDrop($event)">
+		@for (item of items; track item) {
+			<mat-chip class="font-size-s" (click)="onClick(item)" cdkDrag>{{ item }}</mat-chip>
+		}
+	</mat-chip-set>
+</div>

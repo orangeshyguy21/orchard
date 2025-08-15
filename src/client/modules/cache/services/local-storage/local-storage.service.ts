@@ -82,7 +82,7 @@ export class LocalStorageService {
 	}
 	getMintDashboardSettings(): MintDashboardSettings {
 		const settings = this.getItem<MintDashboardSettings>(this.STORAGE_KEYS.MINT_DASHBOARD_KEY);
-		if (!settings) return {date_start: null, units: null, interval: null, type: null};
+		if (!settings) return {date_start: null, units: null, interval: null, type: null, chart_navigation: null};
 		return settings;
 	}
 	getMintKeysetsSettings(): MintKeysetsSettings {

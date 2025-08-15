@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef, OnDestroy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 /* Vendor Dependencies */
 import {forkJoin, lastValueFrom, Subscription, EMPTY, catchError, finalize, tap} from 'rxjs';
@@ -35,8 +35,13 @@ import {AiFunctionName, MintAnalyticsInterval, MintUnit} from '@shared/generated
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
+	@ViewChild('balance_chart', {static: false}) balance_chart!: ElementRef;
+	@ViewChild('mints_chart', {static: false}) mints_chart!: ElementRef;
+	@ViewChild('melts_chart', {static: false}) melts_chart!: ElementRef;
+	@ViewChild('transfers_chart', {static: false}) transfers_chart!: ElementRef;
+	@ViewChild('fee_revenue_chart', {static: false}) fee_revenue_chart!: ElementRef;
+
 	// data
-	public mint_type!: string;
 	public mint_info: MintInfo | null = null;
 	public mint_balances: MintBalance[] = [];
 	public mint_keysets: MintKeyset[] = [];
@@ -58,13 +63,15 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	// derived data
 	public mint_genesis_time: number = 0;
 	// state
+	public mint_type!: string;
 	public loading_static_data: boolean = true;
 	public loading_dynamic_data: boolean = true;
 	public loading_lightning: boolean = true;
 	public errors_lightning: OrchardError[] = [];
 	public mint_fee_revenue: boolean = false;
-	// chart settings
+	// charts
 	public page_settings!: NonNullableMintDashboardSettings;
+	// public chart_navigation: string[] = ['Balance Sheet', 'Mints', 'Melts', 'Transfers', 'Fee Revenue'];
 
 	private subscriptions: Subscription = new Subscription();
 
@@ -305,6 +312,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			units: settings.units ?? this.getSelectedUnits(), // @todo there will be bugs here if a unit is not in the keysets (audit active keysets)
 			date_start: settings.date_start ?? this.getSelectedDateStart(),
 			date_end: settings.date_end ?? this.getSelectedDateEnd(),
+			chart_navigation: settings.chart_navigation ?? this.getChartNavigation(),
 		};
 	}
 
@@ -321,6 +329,10 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	private getSelectedDateEnd(): number {
 		const today = DateTime.now().endOf('day');
 		return Math.floor(today.toSeconds());
+	}
+
+	private getChartNavigation(): string[] {
+		return ['Balance Sheet', 'Mints', 'Melts', 'Transfers', 'Fee Revenue'];
 	}
 
 	private getMintGenesisTime(): number {
@@ -362,6 +374,40 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		}
 	}
 
+	private scrollToChart(chart_title: string) {
+		let target_element: ElementRef | undefined;
+
+		switch (chart_title) {
+			case 'Balance Sheet':
+				target_element = this.balance_chart;
+				break;
+			case 'Mints':
+				target_element = this.mints_chart;
+				break;
+			case 'Melts':
+				target_element = this.melts_chart;
+				break;
+			case 'Transfers':
+				target_element = this.transfers_chart;
+				break;
+			case 'Fee Revenue':
+				target_element = this.fee_revenue_chart;
+				break;
+		}
+
+		if (!target_element?.nativeElement) return;
+		target_element.nativeElement.scrollIntoView({
+			behavior: 'smooth',
+			block: 'start',
+			inline: 'nearest',
+		});
+	}
+
+	public getChartOrder(chartType: string): number {
+		const chartIndex = this.page_settings.chart_navigation.findIndex((item) => item === chartType);
+		return chartIndex >= 0 ? chartIndex : 999; // Default to end if not found
+	}
+
 	public onDateChange(event: number[]): void {
 		this.page_settings.date_start = event[0];
 		this.page_settings.date_end = event[1];
@@ -389,6 +435,16 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 
 	public onNavigate(route: string): void {
 		this.router.navigate([`/${route}`]);
+	}
+
+	public onChartNavigationChange(event: string[]): void {
+		this.page_settings.chart_navigation = event;
+		this.settingService.setMintDashboardSettings(this.page_settings);
+	}
+
+	public onChartNavigationSelect(event: string): void {
+		console.log(event);
+		this.scrollToChart(event);
 	}
 
 	ngOnDestroy(): void {
