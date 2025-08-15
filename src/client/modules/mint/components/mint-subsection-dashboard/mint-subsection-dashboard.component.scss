@@ -41,16 +41,28 @@ $analytics-offset: 86px;
 	top: calc(#{$analytics-offset} + 1rem);
 }
 
-.chart-container {
-	@extend %flex;
-	@extend %flex-column;
-}
-
 .chart-target {
 	@extend %relative;
 	top: -$analytics-offset;
 }
 
-// .testy {
-// 	height: 100%;
-// }
+.chart-container {
+	display: grid;
+	grid-template-areas: 'chart1' 'chart2' 'chart3' 'chart4' 'chart5';
+}
+
+.chart-balance-sheet {
+	grid-area: chart1;
+}
+.chart-mints {
+	grid-area: chart2;
+}
+.chart-melts {
+	grid-area: chart3;
+}
+.chart-transfers {
+	grid-area: chart4;
+}
+.chart-fee-revenue {
+	grid-area: chart5;
+}

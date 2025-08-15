@@ -40,6 +40,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	@ViewChild('melts_chart', {static: false}) melts_chart!: ElementRef;
 	@ViewChild('transfers_chart', {static: false}) transfers_chart!: ElementRef;
 	@ViewChild('fee_revenue_chart', {static: false}) fee_revenue_chart!: ElementRef;
+	@ViewChild('chart_container', {static: false}) chart_container!: ElementRef;
 
 	// data
 	public mint_info: MintInfo | null = null;
@@ -71,7 +72,6 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public mint_fee_revenue: boolean = false;
 	// charts
 	public page_settings!: NonNullableMintDashboardSettings;
-	// public chart_navigation: string[] = ['Balance Sheet', 'Mints', 'Melts', 'Transfers', 'Fee Revenue'];
 
 	private subscriptions: Subscription = new Subscription();
 
@@ -176,6 +176,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			this.locale = await this.settingService.getLocale();
 			this.mint_genesis_time = this.getMintGenesisTime();
 			this.page_settings = this.getPageSettings();
+			this.updateChartLayout();
 			this.loading_static_data = false;
 			this.cdr.detectChanges();
 			await this.loadMintAnalytics();
@@ -403,11 +404,6 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	public getChartOrder(chartType: string): number {
-		const chartIndex = this.page_settings.chart_navigation.findIndex((item) => item === chartType);
-		return chartIndex >= 0 ? chartIndex : 999; // Default to end if not found
-	}
-
 	public onDateChange(event: number[]): void {
 		this.page_settings.date_start = event[0];
 		this.page_settings.date_end = event[1];
@@ -440,6 +436,23 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public onChartNavigationChange(event: string[]): void {
 		this.page_settings.chart_navigation = event;
 		this.settingService.setMintDashboardSettings(this.page_settings);
+		this.updateChartLayout();
+	}
+
+	private updateChartLayout(): void {
+		const chart_name_to_area: Record<string, string> = {
+			'Balance Sheet': 'chart1',
+			Mints: 'chart2',
+			Melts: 'chart3',
+			Transfers: 'chart4',
+			'Fee Revenue': 'chart5',
+		};
+		const chart_areas = this.page_settings.chart_navigation
+			.map((chart_name) => chart_name_to_area[chart_name])
+			.filter(Boolean)
+			.join('" "');
+
+		this.chart_container.nativeElement.style.gridTemplateAreas = `"${chart_areas}"`;
 	}
 
 	public onChartNavigationSelect(event: string): void {
