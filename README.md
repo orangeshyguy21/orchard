@@ -5,7 +5,7 @@
   <img src="src/client/assets/img/orchard-logo.svg" alt="orchard-logo" width="150px"/>
   <br>
   <br>
-  <em>A Bitcoin super application</em>
+  <em>Your sovereign bank in cyberspace</em>
   <br>
 </p>
 
