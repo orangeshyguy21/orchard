@@ -36,6 +36,7 @@ import {AiFunctionName, MintAnalyticsInterval, MintUnit} from '@shared/generated
 })
 export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	// data
+	public mint_type!: string;
 	public mint_info: MintInfo | null = null;
 	public mint_balances: MintBalance[] = [];
 	public mint_keysets: MintKeyset[] = [];
@@ -61,6 +62,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public loading_dynamic_data: boolean = true;
 	public loading_lightning: boolean = true;
 	public errors_lightning: OrchardError[] = [];
+	public mint_fee_revenue: boolean = false;
 	// chart settings
 	public page_settings!: NonNullableMintDashboardSettings;
 
@@ -78,12 +80,15 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	) {}
 
 	async ngOnInit(): Promise<void> {
+		this.mint_type = environment.mint.type;
 		this.mint_info = this.route.snapshot.data['mint_info'];
 		this.mint_balances = this.route.snapshot.data['mint_balances'];
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
 		this.initMintConnections();
 		this.orchardOptionalInit();
+		this.getMintFees();
 		await this.initMintAnalytics();
+		this.mint_fee_revenue = this.getMintFeeRevenueState();
 	}
 
 	orchardOptionalInit(): void {
@@ -94,6 +99,19 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		if (this.lightning_enabled) {
 			this.subscriptions.add(this.getLightningBalanceSubscription());
 		}
+	}
+
+	private async getMintFees(): Promise<void> {
+		try {
+			this.mint_fees = await lastValueFrom(this.mintService.loadMintFees(1));
+		} catch (error) {
+			this.mint_fees = [];
+		}
+	}
+
+	private getMintFeeRevenueState(): boolean {
+		const fee_sum = this.mint_keysets.reduce((sum, keyset) => sum + (keyset?.fees_paid || 0), 0);
+		return fee_sum > 0;
 	}
 
 	private getAgentSubscription(): Subscription {
@@ -153,17 +171,12 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			this.page_settings = this.getPageSettings();
 			this.loading_static_data = false;
 			this.cdr.detectChanges();
-			await this.loadMintFees();
 			await this.loadMintAnalytics();
 			this.loading_dynamic_data = false;
 			this.cdr.detectChanges();
 		} catch (error) {
 			console.error('ERROR IN INIT MINT ANALYTICS:', error);
 		}
-	}
-
-	private async loadMintFees(): Promise<void> {
-		this.mint_fees = await lastValueFrom(this.mintService.loadMintFees(1));
 	}
 
 	private async loadMintAnalytics(): Promise<void> {
