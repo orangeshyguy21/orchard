@@ -437,9 +437,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 
 	private updateChartLayout(): void {
 		const chart_areas = this.page_settings.chart_navigation.map((area) => `"${area}"`).join(' ');
-		console.log(chart_areas);
 		this.chart_container.nativeElement.style.gridTemplateAreas = `${chart_areas}`;
-		console.log(this.chart_container.nativeElement.style.gridTemplateAreas);
 	}
 
 	public onChartNavigationSelect(event: string): void {
