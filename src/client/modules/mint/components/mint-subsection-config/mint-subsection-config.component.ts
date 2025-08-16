@@ -3,11 +3,13 @@ import {
 	ChangeDetectionStrategy,
 	Component,
 	OnInit,
-	OnDestroy,
 	WritableSignal,
 	signal,
 	ChangeDetectorRef,
 	HostListener,
+	ViewChild,
+	ElementRef,
+	AfterViewInit,
 } from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
@@ -26,6 +28,7 @@ import {AiService} from '@client/modules/ai/services/ai/ai.service';
 import {SettingService} from '@client/modules/settings/services/setting/setting.service';
 import {AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {ComponentCanDeactivate} from '@client/modules/routing/interfaces/routing.interfaces';
+import {NonNullableMintConfigSettings} from '@client/modules/settings/types/setting.types';
 /* Native Dependencies */
 import {MintService} from '@client/modules/mint/services/mint/mint.service';
 import {MintInfo} from '@client/modules/mint/classes/mint-info.class';
@@ -35,6 +38,22 @@ import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class'
 import {Nut15Method, Nut17Commands} from '@client/modules/mint/types/nut.types';
 /* Shared Dependencies */
 import {OrchardNut4Method, OrchardNut5Method, AiFunctionName} from '@shared/generated.types';
+
+enum TertiaryNav {
+	Nut4 = 'nav4',
+	Nut5 = 'nav5',
+	Nut7 = 'nav7',
+	Nut8 = 'nav8',
+	Nut9 = 'nav9',
+	Nut10 = 'nav10',
+	Nut11 = 'nav11',
+	Nut12 = 'nav12',
+	Nut14 = 'nav14',
+	Nut15 = 'nav15',
+	Nut17 = 'nav17',
+	Nut19 = 'nav19',
+	Nut20 = 'nav20',
+}
 
 @Component({
 	selector: 'orc-mint-subsection-config',
@@ -55,12 +74,28 @@ import {OrchardNut4Method, OrchardNut5Method, AiFunctionName} from '@shared/gene
 		]),
 	],
 })
-export class MintSubsectionConfigComponent implements ComponentCanDeactivate, OnInit, OnDestroy {
+export class MintSubsectionConfigComponent implements ComponentCanDeactivate, OnInit, AfterViewInit {
+	@ViewChild('nav4', {static: false}) nav4!: ElementRef;
+	@ViewChild('nav5', {static: false}) nav5!: ElementRef;
+	@ViewChild('nav7', {static: false}) nav7!: ElementRef;
+	@ViewChild('nav8', {static: false}) nav8!: ElementRef;
+	@ViewChild('nav9', {static: false}) nav9!: ElementRef;
+	@ViewChild('nav10', {static: false}) nav10!: ElementRef;
+	@ViewChild('nav11', {static: false}) nav11!: ElementRef;
+	@ViewChild('nav12', {static: false}) nav12!: ElementRef;
+	@ViewChild('nav14', {static: false}) nav14!: ElementRef;
+	@ViewChild('nav15', {static: false}) nav15!: ElementRef;
+	@ViewChild('nav17', {static: false}) nav17!: ElementRef;
+	@ViewChild('nav19', {static: false}) nav19!: ElementRef;
+	@ViewChild('nav20', {static: false}) nav20!: ElementRef;
+	@ViewChild('nut_container', {static: false}) nut_container!: ElementRef;
+
 	@HostListener('window:beforeunload')
 	canDeactivate(): boolean {
 		return this.active_event?.type !== 'PENDING';
 	}
 
+	public page_settings!: NonNullableMintConfigSettings;
 	public mint_info: MintInfo | null = null;
 	public quote_ttls!: MintQuoteTtls;
 	public minting_units: string[] = [];
@@ -81,6 +116,21 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 			melt_ttl: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(3600), OrchardValidators.micros]),
 		}),
 	});
+	public tertiary_nav_titles: Record<TertiaryNav, string> = {
+		[TertiaryNav.Nut4]: 'Nut 4',
+		[TertiaryNav.Nut5]: 'Nut 5',
+		[TertiaryNav.Nut7]: 'Nut 7',
+		[TertiaryNav.Nut8]: 'Nut 8',
+		[TertiaryNav.Nut9]: 'Nut 9',
+		[TertiaryNav.Nut10]: 'Nut 10',
+		[TertiaryNav.Nut11]: 'Nut 11',
+		[TertiaryNav.Nut12]: 'Nut 12',
+		[TertiaryNav.Nut14]: 'Nut 14',
+		[TertiaryNav.Nut15]: 'Nut 15',
+		[TertiaryNav.Nut17]: 'Nut 17',
+		[TertiaryNav.Nut19]: 'Nut 19',
+		[TertiaryNav.Nut20]: 'Nut 20',
+	};
 
 	public get form_minting(): FormGroup {
 		return this.form_config.get('minting') as FormGroup;
@@ -105,6 +155,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	) {}
 
 	ngOnInit(): void {
+		this.page_settings = this.getPageSettings();
 		this.mint_info = this.route.snapshot.data['mint_info'];
 		this.quote_ttls = this.route.snapshot.data['mint_quote_ttl'];
 		this.patchStaticFormElements();
@@ -125,11 +176,22 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		this.orchardOptionalInit();
 	}
 
+	ngAfterViewInit(): void {
+		this.updateTertiaryNav();
+	}
+
 	orchardOptionalInit(): void {
 		if (environment.ai.enabled) {
 			this.subscriptions.add(this.getAgentSubscription());
 			this.subscriptions.add(this.getToolSubscription());
 		}
+	}
+
+	private getPageSettings(): NonNullableMintConfigSettings {
+		const settings = this.settingService.getMintConfigSettings();
+		return {
+			tertiary_nav: settings.tertiary_nav ?? Object.values(TertiaryNav),
+		};
 	}
 
 	private getMintInfoSubscription(): Subscription {
@@ -709,5 +771,29 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		);
 	}
 
-	ngOnDestroy(): void {}
+	public onTertiaryNavChange(event: string[]): void {
+		this.page_settings.tertiary_nav = event;
+		this.settingService.setMintConfigSettings(this.page_settings);
+		this.updateTertiaryNav();
+	}
+
+	public onTertiaryNavSelect(event: string): void {
+		this.scrollToChart(event as TertiaryNav);
+	}
+
+	private scrollToChart(nav_item: TertiaryNav) {
+		const target_element = this[`${nav_item}`];
+		if (!target_element?.nativeElement) return;
+		target_element.nativeElement.scrollIntoView({
+			behavior: 'smooth',
+			block: 'start',
+			inline: 'nearest',
+		});
+	}
+
+	private updateTertiaryNav(): void {
+		const tertiary_nav = this.page_settings.tertiary_nav.map((area) => `"${area}"`).join(' ');
+		this.nut_container.nativeElement.style.gridTemplateAreas = `${tertiary_nav}`;
+		console.log(this.nut_container.nativeElement.style.gridTemplateAreas);
+	}
 }

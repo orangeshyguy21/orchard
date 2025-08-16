@@ -30,7 +30,11 @@ export type MintDashboardSettings = {
 	units: MintUnit[] | null;
 	interval: MintAnalyticsInterval | null;
 	type: ChartType | null;
-	chart_navigation: string[] | null;
+	tertiary_nav: string[] | null;
+};
+
+export type MintConfigSettings = {
+	tertiary_nav: string[] | null;
 };
 
 export type MintKeysetsSettings = {

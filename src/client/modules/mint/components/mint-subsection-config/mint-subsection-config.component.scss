@@ -29,3 +29,55 @@
 	@extend %p-r-2;
 	top: 57px;
 }
+
+.nut-tertiary-nav {
+	@extend %sticky;
+	@extend %z-index-1;
+	top: 107px;
+}
+
+.test {
+	@extend %sticky;
+	@extend %z-index-1;
+	top: 80px;
+}
+
+.nut4 {
+	grid-area: nav4;
+}
+.nut5 {
+	grid-area: nav5;
+}
+.nut7 {
+	grid-area: nav7;
+}
+.nut8 {
+	grid-area: nav8;
+}
+.nut9 {
+	grid-area: nav9;
+}
+.nut10 {
+	grid-area: nav10;
+}
+.nut11 {
+	grid-area: nav11;
+}
+.nut12 {
+	grid-area: nav12;
+}
+.nut14 {
+	grid-area: nav14;
+}
+.nut15 {
+	grid-area: nav15;
+}
+.nut17 {
+	grid-area: nav17;
+}
+.nut19 {
+	grid-area: nav19;
+}
+.nut20 {
+	grid-area: nav20;
+}

@@ -51,7 +51,7 @@
 	</div>
 
 	<div class="flex flex-gap-0-5">
-		<div class="flex-grow chart-container" #chart_container>
+		<div class="flex-grow grid" #chart_container>
 			<div class="relative chart-balance-sheet">
 				<div class="chart-target" #nav1></div>
 				<div class="mint-analytic-header z-index-1">
@@ -159,10 +159,10 @@
 		<div class="w-8 p-t-1 p-r-0-5">
 			<orc-tertiary-nav
 				class="mint-chart-tertiary-nav"
-				[items]="chart_navigation"
-				[titles]="subsection_nav_titles"
-				(itemsChange)="onChartNavigationChange($event)"
-				(itemSelect)="onChartNavigationSelect($event)"
+				[items]="tertiary_nav"
+				[titles]="tertiary_nav_titles"
+				(itemsChange)="onTertiaryNavChange($event)"
+				(itemSelect)="onTertiaryNavSelect($event)"
 			></orc-tertiary-nav>
 		</div>
 	</div>

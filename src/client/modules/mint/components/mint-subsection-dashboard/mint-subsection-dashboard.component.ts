@@ -27,7 +27,7 @@ import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
 /* Shared Dependencies */
 import {AiFunctionName, MintAnalyticsInterval, MintUnit} from '@shared/generated.types';
 
-enum SubSectionArea {
+enum TertiaryNav {
 	BalanceSheet = 'nav1',
 	Mints = 'nav2',
 	Melts = 'nav3',
@@ -80,16 +80,16 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public mint_fee_revenue: boolean = false;
 	// charts
 	public page_settings!: NonNullableMintDashboardSettings;
-	public subsection_nav_titles: Record<SubSectionArea, string> = {
-		[SubSectionArea.BalanceSheet]: 'Balance Sheet',
-		[SubSectionArea.Mints]: 'Mints',
-		[SubSectionArea.Melts]: 'Melts',
-		[SubSectionArea.Transfers]: 'Transfers',
-		[SubSectionArea.FeeRevenue]: 'Fee Revenue',
+	public tertiary_nav_titles: Record<TertiaryNav, string> = {
+		[TertiaryNav.BalanceSheet]: 'Balance Sheet',
+		[TertiaryNav.Mints]: 'Mints',
+		[TertiaryNav.Melts]: 'Melts',
+		[TertiaryNav.Transfers]: 'Transfers',
+		[TertiaryNav.FeeRevenue]: 'Fee Revenue',
 	};
 
-	public get chart_navigation(): string[] {
-		return this.page_settings?.chart_navigation || [];
+	public get tertiary_nav(): string[] {
+		return this.page_settings?.tertiary_nav || [];
 	}
 
 	private subscriptions: Subscription = new Subscription();
@@ -195,7 +195,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			this.locale = await this.settingService.getLocale();
 			this.mint_genesis_time = this.getMintGenesisTime();
 			this.page_settings = this.getPageSettings();
-			this.updateChartLayout();
+			this.updateTertiaryNav();
 			this.loading_static_data = false;
 			this.cdr.detectChanges();
 			await this.loadMintAnalytics();
@@ -332,7 +332,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			units: settings.units ?? this.getSelectedUnits(), // @todo there will be bugs here if a unit is not in the keysets (audit active keysets)
 			date_start: settings.date_start ?? this.getSelectedDateStart(),
 			date_end: settings.date_end ?? this.getSelectedDateEnd(),
-			chart_navigation: settings.chart_navigation ?? Object.values(SubSectionArea),
+			tertiary_nav: settings.tertiary_nav ?? Object.values(TertiaryNav),
 		};
 	}
 
@@ -390,8 +390,8 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	private scrollToChart(chart_area: SubSectionArea) {
-		const target_element = this[`${chart_area}`];
+	private scrollToChart(nav_item: TertiaryNav) {
+		const target_element = this[`${nav_item}`];
 		if (!target_element?.nativeElement) return;
 		target_element.nativeElement.scrollIntoView({
 			behavior: 'smooth',
@@ -429,19 +429,19 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.router.navigate([`/${route}`]);
 	}
 
-	public onChartNavigationChange(event: string[]): void {
-		this.page_settings.chart_navigation = event;
+	public onTertiaryNavChange(event: string[]): void {
+		this.page_settings.tertiary_nav = event;
 		this.settingService.setMintDashboardSettings(this.page_settings);
-		this.updateChartLayout();
+		this.updateTertiaryNav();
 	}
 
-	private updateChartLayout(): void {
-		const chart_areas = this.page_settings.chart_navigation.map((area) => `"${area}"`).join(' ');
-		this.chart_container.nativeElement.style.gridTemplateAreas = `${chart_areas}`;
+	public onTertiaryNavSelect(event: string): void {
+		this.scrollToChart(event as TertiaryNav);
 	}
 
-	public onChartNavigationSelect(event: string): void {
-		this.scrollToChart(event as SubSectionArea);
+	private updateTertiaryNav(): void {
+		const tertiary_nav = this.page_settings.tertiary_nav.map((area) => `"${area}"`).join(' ');
+		this.chart_container.nativeElement.style.gridTemplateAreas = `${tertiary_nav}`;
 	}
 
 	ngOnDestroy(): void {
