@@ -27,6 +27,14 @@ import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
 /* Shared Dependencies */
 import {AiFunctionName, MintAnalyticsInterval, MintUnit} from '@shared/generated.types';
 
+enum SubSectionArea {
+	BalanceSheet = 'nav1',
+	Mints = 'nav2',
+	Melts = 'nav3',
+	Transfers = 'nav4',
+	FeeRevenue = 'nav5',
+}
+
 @Component({
 	selector: 'orc-mint-subsection-dashboard',
 	standalone: false,
@@ -35,11 +43,11 @@ import {AiFunctionName, MintAnalyticsInterval, MintUnit} from '@shared/generated
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
-	@ViewChild('balance_chart', {static: false}) balance_chart!: ElementRef;
-	@ViewChild('mints_chart', {static: false}) mints_chart!: ElementRef;
-	@ViewChild('melts_chart', {static: false}) melts_chart!: ElementRef;
-	@ViewChild('transfers_chart', {static: false}) transfers_chart!: ElementRef;
-	@ViewChild('fee_revenue_chart', {static: false}) fee_revenue_chart!: ElementRef;
+	@ViewChild('nav1', {static: false}) nav1!: ElementRef;
+	@ViewChild('nav2', {static: false}) nav2!: ElementRef;
+	@ViewChild('nav3', {static: false}) nav3!: ElementRef;
+	@ViewChild('nav4', {static: false}) nav4!: ElementRef;
+	@ViewChild('nav5', {static: false}) nav5!: ElementRef;
 	@ViewChild('chart_container', {static: false}) chart_container!: ElementRef;
 
 	// data
@@ -72,6 +80,13 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public mint_fee_revenue: boolean = false;
 	// charts
 	public page_settings!: NonNullableMintDashboardSettings;
+	public subsection_nav_titles: Record<SubSectionArea, string> = {
+		[SubSectionArea.BalanceSheet]: 'Balance Sheet',
+		[SubSectionArea.Mints]: 'Mints',
+		[SubSectionArea.Melts]: 'Melts',
+		[SubSectionArea.Transfers]: 'Transfers',
+		[SubSectionArea.FeeRevenue]: 'Fee Revenue',
+	};
 
 	public get chart_navigation(): string[] {
 		return this.page_settings?.chart_navigation || [];
@@ -317,7 +332,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			units: settings.units ?? this.getSelectedUnits(), // @todo there will be bugs here if a unit is not in the keysets (audit active keysets)
 			date_start: settings.date_start ?? this.getSelectedDateStart(),
 			date_end: settings.date_end ?? this.getSelectedDateEnd(),
-			chart_navigation: settings.chart_navigation ?? this.getChartNavigation(),
+			chart_navigation: settings.chart_navigation ?? Object.values(SubSectionArea),
 		};
 	}
 
@@ -334,10 +349,6 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	private getSelectedDateEnd(): number {
 		const today = DateTime.now().endOf('day');
 		return Math.floor(today.toSeconds());
-	}
-
-	private getChartNavigation(): string[] {
-		return ['Balance Sheet', 'Mints', 'Melts', 'Transfers', 'Fee Revenue'];
 	}
 
 	private getMintGenesisTime(): number {
@@ -379,15 +390,8 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	private scrollToChart(chart_title: string) {
-		const chart_map: Record<string, ElementRef> = {
-			'Balance Sheet': this.balance_chart,
-			Mints: this.mints_chart,
-			Melts: this.melts_chart,
-			Transfers: this.transfers_chart,
-			'Fee Revenue': this.fee_revenue_chart,
-		};
-		const target_element = chart_map[chart_title];
+	private scrollToChart(chart_area: SubSectionArea) {
+		const target_element = this[`${chart_area}`];
 		if (!target_element?.nativeElement) return;
 		target_element.nativeElement.scrollIntoView({
 			behavior: 'smooth',
@@ -432,23 +436,14 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	}
 
 	private updateChartLayout(): void {
-		const chart_name_to_area: Record<string, string> = {
-			'Balance Sheet': 'chart1',
-			Mints: 'chart2',
-			Melts: 'chart3',
-			Transfers: 'chart4',
-			'Fee Revenue': 'chart5',
-		};
-		const chart_areas = this.page_settings.chart_navigation
-			.map((chart_name) => chart_name_to_area[chart_name])
-			.filter(Boolean)
-			.join('" "');
-		this.chart_container.nativeElement.style.gridTemplateAreas = `"${chart_areas}"`;
+		const chart_areas = this.page_settings.chart_navigation.map((area) => `"${area}"`).join(' ');
+		console.log(chart_areas);
+		this.chart_container.nativeElement.style.gridTemplateAreas = `${chart_areas}`;
+		console.log(this.chart_container.nativeElement.style.gridTemplateAreas);
 	}
 
 	public onChartNavigationSelect(event: string): void {
-		console.log(event);
-		this.scrollToChart(event);
+		this.scrollToChart(event as SubSectionArea);
 	}
 
 	ngOnDestroy(): void {

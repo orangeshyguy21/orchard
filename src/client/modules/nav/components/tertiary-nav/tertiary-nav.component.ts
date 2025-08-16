@@ -12,6 +12,7 @@ import {CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/d
 })
 export class TertiaryNavComponent {
 	@Input() items: string[] = [];
+	@Input() titles: Record<string, string> = {};
 
 	@Output() itemsChange = new EventEmitter<string[]>();
 	@Output() itemSelect = new EventEmitter<string>();

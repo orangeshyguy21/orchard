@@ -47,22 +47,23 @@ $analytics-offset: 86px;
 }
 
 .chart-container {
+	// @extend %grid;
 	display: grid;
-	grid-template-areas: 'chart1' 'chart2' 'chart3' 'chart4' 'chart5';
+	grid-template-areas: 'nav1' 'nav2' 'nav3' 'nav4' 'nav5';
 }
 
 .chart-balance-sheet {
-	grid-area: chart1;
+	grid-area: nav1;
 }
 .chart-mints {
-	grid-area: chart2;
+	grid-area: nav2;
 }
 .chart-melts {
-	grid-area: chart3;
+	grid-area: nav3;
 }
 .chart-transfers {
-	grid-area: chart4;
+	grid-area: nav4;
 }
 .chart-fee-revenue {
-	grid-area: chart5;
+	grid-area: nav5;
 }

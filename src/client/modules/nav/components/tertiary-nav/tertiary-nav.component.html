@@ -2,7 +2,7 @@
 	<mat-chip-set class="mat-mdc-chip-set-stacked" cdkDropList cdkDropListOrientation="vertical" (cdkDropListDropped)="onDrop($event)">
 		@for (item of items; track item) {
 			<mat-chip class="font-size-s" (click)="onClick(item)" cdkDrag>
-				<span class="orc-outline-color">{{ item }}</span>
+				<span class="orc-outline-color">{{ titles[item] }}</span>
 			</mat-chip>
 		}
 	</mat-chip-set>
