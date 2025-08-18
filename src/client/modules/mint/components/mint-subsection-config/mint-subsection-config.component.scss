@@ -33,13 +33,13 @@
 .nut-tertiary-nav {
 	@extend %sticky;
 	@extend %z-index-1;
-	top: 2rem;
+	top: 3rem;
 }
 
-.test {
-	@extend %sticky;
-	@extend %z-index-1;
-	top: 80px;
+.nav-tertiary-title {
+	@extend %font-size-m;
+	@extend %orc-on-surface-variant-color;
+	@extend %p-b-0-5;
 }
 
 .nut4 {

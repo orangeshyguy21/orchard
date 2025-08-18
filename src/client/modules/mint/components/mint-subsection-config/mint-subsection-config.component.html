@@ -396,14 +396,15 @@
 			</div>
 		</div>
 		<div class="p-r-0-5">
-			<!-- <div class="category-rule test"></div> -->
 			<orc-tertiary-nav
 				class="nut-tertiary-nav"
 				[keys]="page_settings.tertiary_nav"
 				[items]="tertiary_nav_items"
 				(orderChange)="onTertiaryNavChange($event)"
 				(keySelect)="onTertiaryNavSelect($event)"
-			></orc-tertiary-nav>
+			>
+				<div class="nav-tertiary-title">Features</div>
+			</orc-tertiary-nav>
 		</div>
 	</div>
 </div>

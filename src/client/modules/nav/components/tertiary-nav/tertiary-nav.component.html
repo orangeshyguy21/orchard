@@ -1,4 +1,5 @@
 <div class="tertiary-nav-container">
+	<ng-content></ng-content>
 	<div class="tertiary-nav-items" cdkDropList cdkDropListOrientation="vertical" (cdkDropListDropped)="onDrop($event)">
 		@for (key of keys; track key) {
 			<orc-tertiary-nav-item [item]="items[key]" (click)="onClick(key)" cdkDrag></orc-tertiary-nav-item>
