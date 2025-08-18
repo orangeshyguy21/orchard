@@ -2,10 +2,10 @@
 	<div class="tertiary-nav-item-focus-overlay"></div>
 	<div class="nav-item">
 		<div class="nav-item-titles">
-			<div class="nav-item-title">{{ item.title }}</div>
-			<div class="nav-item-subtitle">{{ item.subtitle }}</div>
+			<div class="nav-item-title">{{ title }}</div>
+			<div class="nav-item-subtitle">{{ subtitle }}</div>
 		</div>
-		@if (item.status) {
+		@if (status) {
 			<div class="nav-item-status" [ngClass]="status_class">
 				<mat-icon class="icon-sm">circle</mat-icon>
 			</div>

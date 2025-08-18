@@ -118,6 +118,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 			melt_ttl: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(3600), OrchardValidators.micros]),
 		}),
 	});
+	public tertiary_nav_revision: number = 0;
 	public tertiary_nav_items: Record<TertiaryNav, TertiaryNavItem> = {
 		[TertiaryNav.Nut4]: {
 			title: 'Minting',
@@ -960,5 +961,6 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		this.tertiary_nav_items[TertiaryNav.Nut5].status = this.form_melting.get('enabled')?.value
 			? TertiaryNavItemStatus.Enabled
 			: TertiaryNavItemStatus.Enabled;
+		this.tertiary_nav_revision++;
 	}
 }

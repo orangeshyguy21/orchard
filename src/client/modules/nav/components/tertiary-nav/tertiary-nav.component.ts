@@ -2,7 +2,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, Output, EventEmitter} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 /* Vendor Dependencies */
-import {CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
+import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 /* Native Dependencies */
 import {TertiaryNavItem} from '@client/modules/nav/types/tertiary-nav-item.type';
 
@@ -31,6 +31,7 @@ import {TertiaryNavItem} from '@client/modules/nav/types/tertiary-nav-item.type'
 export class TertiaryNavComponent {
 	@Input() keys: string[] = [];
 	@Input() items: Record<string, TertiaryNavItem> = {};
+	@Input() revision?: number = 0;
 
 	@Output() orderChange = new EventEmitter<string[]>();
 	@Output() keySelect = new EventEmitter<string>();
