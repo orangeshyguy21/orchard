@@ -34,6 +34,9 @@
 	@extend %sticky;
 	@extend %z-index-1;
 	top: 3rem;
+	height: calc(100vh - 9rem);
+	@extend %overflow-y-auto;
+	@extend %block;
 }
 
 .nav-tertiary-title {
