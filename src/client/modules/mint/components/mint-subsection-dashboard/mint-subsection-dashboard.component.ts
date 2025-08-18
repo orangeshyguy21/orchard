@@ -16,6 +16,7 @@ import {PublicUrl} from '@client/modules/public/classes/public-url.class';
 import {AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
 import {OrchardError} from '@client/modules/error/types/error.types';
+import {TertiaryNavItem} from '@client/modules/nav/types/tertiary-nav-item.type';
 /* Native Dependencies */
 import {MintService} from '@client/modules/mint/services/mint/mint.service';
 import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
@@ -80,12 +81,12 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public mint_fee_revenue: boolean = false;
 	// charts
 	public page_settings!: NonNullableMintDashboardSettings;
-	public tertiary_nav_titles: Record<TertiaryNav, string> = {
-		[TertiaryNav.BalanceSheet]: 'Balance Sheet',
-		[TertiaryNav.Mints]: 'Mints',
-		[TertiaryNav.Melts]: 'Melts',
-		[TertiaryNav.Transfers]: 'Transfers',
-		[TertiaryNav.FeeRevenue]: 'Fee Revenue',
+	public tertiary_nav_items: Record<TertiaryNav, TertiaryNavItem> = {
+		[TertiaryNav.BalanceSheet]: {title: 'Balance Sheet'},
+		[TertiaryNav.Mints]: {title: 'Mints'},
+		[TertiaryNav.Melts]: {title: 'Melts'},
+		[TertiaryNav.Transfers]: {title: 'Transfers'},
+		[TertiaryNav.FeeRevenue]: {title: 'Fee Revenue'},
 	};
 
 	public get tertiary_nav(): string[] {

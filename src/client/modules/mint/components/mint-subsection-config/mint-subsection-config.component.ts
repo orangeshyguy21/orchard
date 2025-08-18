@@ -29,6 +29,8 @@ import {SettingService} from '@client/modules/settings/services/setting/setting.
 import {AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {ComponentCanDeactivate} from '@client/modules/routing/interfaces/routing.interfaces';
 import {NonNullableMintConfigSettings} from '@client/modules/settings/types/setting.types';
+import {TertiaryNavItem} from '@client/modules/nav/types/tertiary-nav-item.type';
+import {TertiaryNavItemStatus} from '@client/modules/nav/enums/tertiary-nav-item-status.enum';
 /* Native Dependencies */
 import {MintService} from '@client/modules/mint/services/mint/mint.service';
 import {MintInfo} from '@client/modules/mint/classes/mint-info.class';
@@ -116,20 +118,72 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 			melt_ttl: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(3600), OrchardValidators.micros]),
 		}),
 	});
-	public tertiary_nav_titles: Record<TertiaryNav, string> = {
-		[TertiaryNav.Nut4]: 'Nut 4',
-		[TertiaryNav.Nut5]: 'Nut 5',
-		[TertiaryNav.Nut7]: 'Nut 7',
-		[TertiaryNav.Nut8]: 'Nut 8',
-		[TertiaryNav.Nut9]: 'Nut 9',
-		[TertiaryNav.Nut10]: 'Nut 10',
-		[TertiaryNav.Nut11]: 'Nut 11',
-		[TertiaryNav.Nut12]: 'Nut 12',
-		[TertiaryNav.Nut14]: 'Nut 14',
-		[TertiaryNav.Nut15]: 'Nut 15',
-		[TertiaryNav.Nut17]: 'Nut 17',
-		[TertiaryNav.Nut19]: 'Nut 19',
-		[TertiaryNav.Nut20]: 'Nut 20',
+	public tertiary_nav_items: Record<TertiaryNav, TertiaryNavItem> = {
+		[TertiaryNav.Nut4]: {
+			title: 'Minting',
+			subtitle: 'Nut 4',
+			status: TertiaryNavItemStatus.Enabled,
+		},
+		[TertiaryNav.Nut5]: {
+			title: 'Melting',
+			subtitle: 'Nut 5',
+			status: TertiaryNavItemStatus.Enabled,
+		},
+		[TertiaryNav.Nut7]: {
+			title: 'Token check',
+			subtitle: 'Nut 7',
+			status: TertiaryNavItemStatus.Enabled,
+		},
+		[TertiaryNav.Nut8]: {
+			title: 'Lightning fee',
+			subtitle: 'Nut 8',
+			status: TertiaryNavItemStatus.Enabled,
+		},
+		[TertiaryNav.Nut9]: {
+			title: 'Restore signatures',
+			subtitle: 'Nut 9',
+			status: TertiaryNavItemStatus.Enabled,
+		},
+		[TertiaryNav.Nut10]: {
+			title: 'Spending conditions',
+			subtitle: 'Nut 10',
+			status: TertiaryNavItemStatus.Enabled,
+		},
+		[TertiaryNav.Nut11]: {
+			title: 'P2Pk',
+			subtitle: 'Nut 11',
+			status: TertiaryNavItemStatus.Enabled,
+		},
+		[TertiaryNav.Nut12]: {
+			title: 'Offline validation',
+			subtitle: 'Nut 12',
+			status: TertiaryNavItemStatus.Enabled,
+		},
+		[TertiaryNav.Nut14]: {
+			title: 'HTLCs',
+			subtitle: 'Nut 14',
+			status: TertiaryNavItemStatus.Enabled,
+		},
+		[TertiaryNav.Nut15]: {
+			title: 'PMP payments',
+			subtitle: 'Nut 15',
+			status: TertiaryNavItemStatus.Enabled,
+		},
+		[TertiaryNav.Nut17]: {
+			title: 'Websockets',
+			subtitle: 'Nut 17',
+			status: TertiaryNavItemStatus.Enabled,
+		},
+		[TertiaryNav.Nut19]: {
+			title: 'Cached responses',
+			subtitle: 'Nut 19',
+			status: TertiaryNavItemStatus.Enabled,
+		},
+		[TertiaryNav.Nut20]: {
+			title: 'Quote signature',
+			subtitle: 'Nut 20',
+			status: TertiaryNavItemStatus.Enabled,
+		},
 	};
 
 	public get form_minting(): FormGroup {

@@ -1,9 +1,7 @@
 <div class="tertiary-nav-container">
-	<mat-chip-set class="mat-mdc-chip-set-stacked" cdkDropList cdkDropListOrientation="vertical" (cdkDropListDropped)="onDrop($event)">
-		@for (item of items; track item) {
-			<mat-chip class="font-size-s" (click)="onClick(item)" cdkDrag>
-				<span class="orc-outline-color">{{ titles[item] }}</span>
-			</mat-chip>
+	<div class="tertiary-nav-items" cdkDropList cdkDropListOrientation="vertical" (cdkDropListDropped)="onDrop($event)">
+		@for (key of keys; track key) {
+			<orc-tertiary-nav-item [item]="items[key]" (click)="onClick(key)" cdkDrag></orc-tertiary-nav-item>
 		}
-	</mat-chip-set>
+	</div>
 </div>

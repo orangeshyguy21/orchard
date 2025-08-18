@@ -6,7 +6,6 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatRippleModule} from '@angular/material/core';
 import {MatButtonModule} from '@angular/material/button';
 import {MatMenuModule} from '@angular/material/menu';
-import {MatChipsModule} from '@angular/material/chips';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 /* Application Dependencies */
 import {GraphicModule} from '@client/modules/graphic/graphic.module';
@@ -23,6 +22,7 @@ import {PrimaryNavFooterComponent} from './components/primary-nav-footer/primary
 import {PrimaryNavToolComponent} from './components/primary-nav-tool/primary-nav-tool.component';
 import {SecondaryNavMoreComponent} from './components/secondary-nav-more/secondary-nav-more.component';
 import {TertiaryNavComponent} from './components/tertiary-nav/tertiary-nav.component';
+import {TertiaryNavItemComponent} from './components/tertiary-nav-item/tertiary-nav-item.component';
 
 @NgModule({
 	declarations: [
@@ -36,6 +36,7 @@ import {TertiaryNavComponent} from './components/tertiary-nav/tertiary-nav.compo
 		PrimaryNavToolComponent,
 		SecondaryNavMoreComponent,
 		TertiaryNavComponent,
+		TertiaryNavItemComponent,
 	],
 	imports: [
 		CommonModule,
@@ -43,7 +44,6 @@ import {TertiaryNavComponent} from './components/tertiary-nav/tertiary-nav.compo
 		MatRippleModule,
 		MatButtonModule,
 		MatMenuModule,
-		MatChipsModule,
 		DragDropModule,
 		GraphicModule,
 		BitcoinModule,

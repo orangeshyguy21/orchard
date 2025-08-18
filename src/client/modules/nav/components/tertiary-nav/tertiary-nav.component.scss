@@ -1,0 +1,7 @@
+@use '@styles/molecule/molecule';
+
+.tertiary-nav-items {
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-gap-0-5;
+}

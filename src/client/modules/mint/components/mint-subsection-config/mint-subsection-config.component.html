@@ -395,14 +395,14 @@
 				</orc-mint-config-form-supported>
 			</div>
 		</div>
-		<div class="w-8 p-r-0-5">
+		<div class="p-r-0-5">
 			<!-- <div class="category-rule test"></div> -->
 			<orc-tertiary-nav
 				class="nut-tertiary-nav"
-				[items]="page_settings.tertiary_nav"
-				[titles]="tertiary_nav_titles"
-				(itemsChange)="onTertiaryNavChange($event)"
-				(itemSelect)="onTertiaryNavSelect($event)"
+				[keys]="page_settings.tertiary_nav"
+				[items]="tertiary_nav_items"
+				(orderChange)="onTertiaryNavChange($event)"
+				(keySelect)="onTertiaryNavSelect($event)"
 			></orc-tertiary-nav>
 		</div>
 	</div>

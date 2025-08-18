@@ -159,10 +159,10 @@
 		<div class="w-8 p-t-1 p-r-0-5">
 			<orc-tertiary-nav
 				class="mint-chart-tertiary-nav"
-				[items]="tertiary_nav"
-				[titles]="tertiary_nav_titles"
-				(itemsChange)="onTertiaryNavChange($event)"
-				(itemSelect)="onTertiaryNavSelect($event)"
+				[keys]="tertiary_nav"
+				[items]="tertiary_nav_items"
+				(orderChange)="onTertiaryNavChange($event)"
+				(keySelect)="onTertiaryNavSelect($event)"
 			></orc-tertiary-nav>
 		</div>
 	</div>
