@@ -5,3 +5,7 @@
 	@extend %flex-column;
 	@extend %flex-gap-0-5;
 }
+
+.drop-placeholder {
+	opacity: 0.5;
+}

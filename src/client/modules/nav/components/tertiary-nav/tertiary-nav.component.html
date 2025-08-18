@@ -2,7 +2,11 @@
 	<ng-content></ng-content>
 	<div class="tertiary-nav-items" cdkDropList cdkDropListOrientation="vertical" (cdkDropListDropped)="onDrop($event)">
 		@for (key of keys; track key) {
-			<orc-tertiary-nav-item [item]="items[key]" (click)="onClick(key)" cdkDrag></orc-tertiary-nav-item>
+			<orc-tertiary-nav-item [item]="items[key]" (click)="onClick(key)" cdkDrag>
+				<div class="drop-placeholder" *cdkDragPlaceholder>
+					<orc-tertiary-nav-item [item]="items[key]"></orc-tertiary-nav-item>
+				</div>
+			</orc-tertiary-nav-item>
 		}
 	</div>
 	<div class="relative">
