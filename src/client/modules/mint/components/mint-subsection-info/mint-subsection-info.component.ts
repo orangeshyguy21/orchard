@@ -79,6 +79,10 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 		this.focus_control = nav?.extras.state?.['focus_control'];
 	}
 
+	/* *******************************************************
+	   Initalization                      
+	******************************************************** */
+
 	async ngOnInit(): Promise<void> {
 		this.init_info = this.route.snapshot.data['mint_info_rpc'];
 		this.form_info.patchValue({
@@ -114,6 +118,10 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 			this.subscriptions.add(this.getToolSubscription());
 		}
 	}
+
+	/* *******************************************************
+		Subscriptions                      
+	******************************************************** */
 
 	private getAgentSubscription(): Subscription {
 		return this.aiService.agent_requests$.subscribe(({agent, content}) => {
@@ -165,6 +173,16 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 		});
 	}
 
+	private getDirtyCountSubscription(): Subscription {
+		return this.dirty_count$.subscribe((count) => {
+			this.createPendingEvent(count);
+		});
+	}
+
+	/* *******************************************************
+		Form                      
+	******************************************************** */
+
 	private evaluateDirtyCount(): void {
 		const contrtol_count = Object.keys(this.form_info.controls)
 			.filter((key) => this.form_info.get(key) instanceof FormControl)
@@ -180,81 +198,6 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 		this.cdr.detectChanges();
 	}
 
-	private getDirtyCountSubscription(): Subscription {
-		return this.dirty_count$.subscribe((count) => {
-			this.createPendingEvent(count);
-		});
-	}
-
-	private executeAgentFunction(tool_call: AiChatToolCall): void {
-		if (tool_call.function.name === AiFunctionName.MintNameUpdate) {
-			this.form_info.get('name')?.setValue(tool_call.function.arguments.name);
-			this.form_info.get('name')?.markAsDirty();
-		}
-		if (tool_call.function.name === AiFunctionName.MintDescriptionUpdate) {
-			this.form_info.get('description')?.setValue(tool_call.function.arguments.description);
-			this.form_info.get('description')?.markAsDirty();
-		}
-		if (tool_call.function.name === AiFunctionName.MintIconUrlUpdate) {
-			this.form_info.get('icon_url')?.setValue(tool_call.function.arguments.icon_url);
-			this.form_info.get('icon_url')?.markAsDirty();
-		}
-		if (tool_call.function.name === AiFunctionName.MintDescriptionLongUpdate) {
-			this.form_info.get('description_long')?.setValue(tool_call.function.arguments.description_long);
-			this.form_info.get('description_long')?.markAsDirty();
-		}
-		if (tool_call.function.name === AiFunctionName.MintMotdUpdate) {
-			this.form_info.get('motd')?.setValue(tool_call.function.arguments.motd);
-			this.form_info.get('motd')?.markAsDirty();
-		}
-		if (tool_call.function.name === AiFunctionName.MintUrlAdd) {
-			this.form_info.get('urls')?.markAsDirty();
-			this.onAddUrlControl(tool_call.function.arguments.url);
-			this.form_array_urls.at(-1).markAsDirty();
-		}
-		if (tool_call.function.name === AiFunctionName.MintUrlUpdate) {
-			const index = this.init_info.urls.indexOf(tool_call.function.arguments.old_url);
-			if (index === -1) return;
-			this.form_info.get('urls')?.markAsDirty();
-			this.form_array_urls.at(index).setValue(tool_call.function.arguments.url);
-			this.form_array_urls.at(index).markAsDirty();
-		}
-		if (tool_call.function.name === AiFunctionName.MintUrlRemove) {
-			const index = this.init_info.urls.indexOf(tool_call.function.arguments.url);
-			if (index === -1) return;
-			this.form_info.get('urls')?.markAsDirty();
-			this.form_array_urls.removeAt(index);
-		}
-		if (tool_call.function.name === AiFunctionName.MintContactAdd) {
-			this.form_info.get('contact')?.markAsDirty();
-			this.onAddContactControl(tool_call.function.arguments.method, tool_call.function.arguments.info);
-			this.form_array_contacts.at(-1).markAsDirty();
-		}
-		if (tool_call.function.name === AiFunctionName.MintContactUpdate) {
-			const old_method = tool_call.function.arguments.old_method;
-			const old_info = tool_call.function.arguments.old_info;
-			const index = this.init_info.contact.findIndex((contact) => contact.method === old_method && contact.info === old_info);
-			if (index === -1) return;
-			this.form_info.get('contact')?.markAsDirty();
-			this.form_array_contacts.at(index).setValue({
-				method: tool_call.function.arguments.method,
-				info: tool_call.function.arguments.info,
-			});
-			this.form_array_contacts.at(index).get('method')?.markAsDirty();
-			this.form_array_contacts.at(index).get('info')?.markAsDirty();
-		}
-		if (tool_call.function.name === AiFunctionName.MintContactRemove) {
-			const method = tool_call.function.arguments.method;
-			const info = tool_call.function.arguments.info;
-			const index = this.init_info.contact.findIndex((contact) => contact.method === method && contact.info === info);
-			if (index === -1) return;
-			this.form_info.get('contact')?.markAsDirty();
-			this.form_array_contacts.removeAt(index);
-		}
-		this.evaluateDirtyCount();
-		this.cdr.detectChanges();
-	}
-
 	private createPendingEvent(count: number): void {
 		if (count === 0 && this.active_event?.type !== 'PENDING') return;
 		if (count === 0) return this.eventService.registerEvent(null);
@@ -265,68 +208,6 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 				message: message,
 			}),
 		);
-	}
-
-	public onAddUrlControl(url: string | null = null): void {
-		this.form_array_urls.push(new FormControl(url, [Validators.required]));
-		this.form_array_urls.at(-1).markAsDirty();
-		this.evaluateDirtyCount();
-	}
-
-	public onAddContactControl(method: string | null = null, info: string | null = null): void {
-		this.form_array_contacts.push(
-			new FormGroup({
-				method: new FormControl(method, [Validators.required]),
-				info: new FormControl(info, [Validators.required]),
-			}),
-		);
-		this.form_array_contacts.at(-1).markAsDirty();
-		this.evaluateDirtyCount();
-	}
-
-	public onControlUpdate(control_name: keyof MintInfoRpc): void {
-		if (this.form_info.get(control_name)?.invalid) return;
-		this.form_info.get(control_name)?.markAsPristine();
-		const control_value = this.form_info.get(control_name)?.value;
-		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		if (control_name === 'name') return this.updateMintName(control_value);
-		if (control_name === 'description') return this.updateMintDescription(control_value);
-		if (control_name === 'description_long') return this.updateMintDescriptionLong(control_value);
-		if (control_name === 'icon_url') return this.updateMintIcon(control_value);
-		if (control_name === 'motd') return this.updateMintMotd(control_value);
-	}
-
-	public onArrayControlUpdate({array_name, control_index}: {array_name: keyof MintInfoRpc; control_index: number}): void {
-		const array_group = this.form_info.get(array_name) as FormArray;
-		if (array_group.at(control_index).invalid) return;
-		array_group.at(control_index).markAsPristine();
-		const original_value =
-			this.init_info[array_name] && Array.isArray(this.init_info[array_name]) ? this.init_info[array_name][control_index] : null;
-		const control_value = array_group.at(control_index).value;
-		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		if (array_name === 'urls') {
-			if (original_value) return this.updateMintUrl(control_index, control_value, original_value);
-			return this.addMintUrl(control_value);
-		}
-		if (array_name === 'contact') {
-			if (original_value) return this.updateMintContact(control_index, control_value, original_value);
-			return this.addMintContact(control_value);
-		}
-	}
-
-	public onArrayControlRemove({array_name, control_index}: {array_name: keyof MintInfoRpc; control_index: number}): void {
-		const array_group = this.form_info.get(array_name) as FormArray;
-		const control_value = array_group.at(control_index).value;
-		const original_value =
-			this.init_info[array_name] && Array.isArray(this.init_info[array_name]) ? this.init_info[array_name][control_index] : null;
-		if (!original_value) {
-			array_group.at(control_index).markAsPristine();
-			array_group.removeAt(control_index);
-			return;
-		}
-		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		if (array_name === 'urls') return this.removeMintUrl(control_index, control_value);
-		if (array_name === 'contact') return this.removeMintContact(control_index, control_value);
 	}
 
 	private onUnconfirmedEvent(): void {
@@ -669,6 +550,72 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 		);
 	}
 
+	/* *******************************************************
+		Actions Up                     
+	******************************************************** */
+
+	public onAddUrlControl(url: string | null = null): void {
+		this.form_array_urls.push(new FormControl(url, [Validators.required]));
+		this.form_array_urls.at(-1).markAsDirty();
+		this.evaluateDirtyCount();
+	}
+
+	public onAddContactControl(method: string | null = null, info: string | null = null): void {
+		this.form_array_contacts.push(
+			new FormGroup({
+				method: new FormControl(method, [Validators.required]),
+				info: new FormControl(info, [Validators.required]),
+			}),
+		);
+		this.form_array_contacts.at(-1).markAsDirty();
+		this.evaluateDirtyCount();
+	}
+
+	public onControlUpdate(control_name: keyof MintInfoRpc): void {
+		if (this.form_info.get(control_name)?.invalid) return;
+		this.form_info.get(control_name)?.markAsPristine();
+		const control_value = this.form_info.get(control_name)?.value;
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		if (control_name === 'name') return this.updateMintName(control_value);
+		if (control_name === 'description') return this.updateMintDescription(control_value);
+		if (control_name === 'description_long') return this.updateMintDescriptionLong(control_value);
+		if (control_name === 'icon_url') return this.updateMintIcon(control_value);
+		if (control_name === 'motd') return this.updateMintMotd(control_value);
+	}
+
+	public onArrayControlUpdate({array_name, control_index}: {array_name: keyof MintInfoRpc; control_index: number}): void {
+		const array_group = this.form_info.get(array_name) as FormArray;
+		if (array_group.at(control_index).invalid) return;
+		array_group.at(control_index).markAsPristine();
+		const original_value =
+			this.init_info[array_name] && Array.isArray(this.init_info[array_name]) ? this.init_info[array_name][control_index] : null;
+		const control_value = array_group.at(control_index).value;
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		if (array_name === 'urls') {
+			if (original_value) return this.updateMintUrl(control_index, control_value, original_value);
+			return this.addMintUrl(control_value);
+		}
+		if (array_name === 'contact') {
+			if (original_value) return this.updateMintContact(control_index, control_value, original_value);
+			return this.addMintContact(control_value);
+		}
+	}
+
+	public onArrayControlRemove({array_name, control_index}: {array_name: keyof MintInfoRpc; control_index: number}): void {
+		const array_group = this.form_info.get(array_name) as FormArray;
+		const control_value = array_group.at(control_index).value;
+		const original_value =
+			this.init_info[array_name] && Array.isArray(this.init_info[array_name]) ? this.init_info[array_name][control_index] : null;
+		if (!original_value) {
+			array_group.at(control_index).markAsPristine();
+			array_group.removeAt(control_index);
+			return;
+		}
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		if (array_name === 'urls') return this.removeMintUrl(control_index, control_value);
+		if (array_name === 'contact') return this.removeMintContact(control_index, control_value);
+	}
+
 	public onControlCancel(control_name: keyof MintInfoRpc): void {
 		if (!control_name) return;
 		this.form_info.get(control_name)?.markAsPristine();
@@ -683,6 +630,83 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 		array_group.at(control_index).markAsPristine();
 		array_group.at(control_index).setValue(original_value);
 	}
+
+	/* *******************************************************
+		AI                    
+	******************************************************** */
+
+	private executeAgentFunction(tool_call: AiChatToolCall): void {
+		if (tool_call.function.name === AiFunctionName.MintNameUpdate) {
+			this.form_info.get('name')?.setValue(tool_call.function.arguments.name);
+			this.form_info.get('name')?.markAsDirty();
+		}
+		if (tool_call.function.name === AiFunctionName.MintDescriptionUpdate) {
+			this.form_info.get('description')?.setValue(tool_call.function.arguments.description);
+			this.form_info.get('description')?.markAsDirty();
+		}
+		if (tool_call.function.name === AiFunctionName.MintIconUrlUpdate) {
+			this.form_info.get('icon_url')?.setValue(tool_call.function.arguments.icon_url);
+			this.form_info.get('icon_url')?.markAsDirty();
+		}
+		if (tool_call.function.name === AiFunctionName.MintDescriptionLongUpdate) {
+			this.form_info.get('description_long')?.setValue(tool_call.function.arguments.description_long);
+			this.form_info.get('description_long')?.markAsDirty();
+		}
+		if (tool_call.function.name === AiFunctionName.MintMotdUpdate) {
+			this.form_info.get('motd')?.setValue(tool_call.function.arguments.motd);
+			this.form_info.get('motd')?.markAsDirty();
+		}
+		if (tool_call.function.name === AiFunctionName.MintUrlAdd) {
+			this.form_info.get('urls')?.markAsDirty();
+			this.onAddUrlControl(tool_call.function.arguments.url);
+			this.form_array_urls.at(-1).markAsDirty();
+		}
+		if (tool_call.function.name === AiFunctionName.MintUrlUpdate) {
+			const index = this.init_info.urls.indexOf(tool_call.function.arguments.old_url);
+			if (index === -1) return;
+			this.form_info.get('urls')?.markAsDirty();
+			this.form_array_urls.at(index).setValue(tool_call.function.arguments.url);
+			this.form_array_urls.at(index).markAsDirty();
+		}
+		if (tool_call.function.name === AiFunctionName.MintUrlRemove) {
+			const index = this.init_info.urls.indexOf(tool_call.function.arguments.url);
+			if (index === -1) return;
+			this.form_info.get('urls')?.markAsDirty();
+			this.form_array_urls.removeAt(index);
+		}
+		if (tool_call.function.name === AiFunctionName.MintContactAdd) {
+			this.form_info.get('contact')?.markAsDirty();
+			this.onAddContactControl(tool_call.function.arguments.method, tool_call.function.arguments.info);
+			this.form_array_contacts.at(-1).markAsDirty();
+		}
+		if (tool_call.function.name === AiFunctionName.MintContactUpdate) {
+			const old_method = tool_call.function.arguments.old_method;
+			const old_info = tool_call.function.arguments.old_info;
+			const index = this.init_info.contact.findIndex((contact) => contact.method === old_method && contact.info === old_info);
+			if (index === -1) return;
+			this.form_info.get('contact')?.markAsDirty();
+			this.form_array_contacts.at(index).setValue({
+				method: tool_call.function.arguments.method,
+				info: tool_call.function.arguments.info,
+			});
+			this.form_array_contacts.at(index).get('method')?.markAsDirty();
+			this.form_array_contacts.at(index).get('info')?.markAsDirty();
+		}
+		if (tool_call.function.name === AiFunctionName.MintContactRemove) {
+			const method = tool_call.function.arguments.method;
+			const info = tool_call.function.arguments.info;
+			const index = this.init_info.contact.findIndex((contact) => contact.method === method && contact.info === info);
+			if (index === -1) return;
+			this.form_info.get('contact')?.markAsDirty();
+			this.form_array_contacts.removeAt(index);
+		}
+		this.evaluateDirtyCount();
+		this.cdr.detectChanges();
+	}
+
+	/* *******************************************************
+		Clean Up                      
+	******************************************************** */
 
 	ngOnDestroy(): void {
 		this.subscriptions.unsubscribe();
