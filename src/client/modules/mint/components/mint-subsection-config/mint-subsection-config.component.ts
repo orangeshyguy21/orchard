@@ -118,114 +118,114 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 			melt_ttl: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(3600), OrchardValidators.micros]),
 		}),
 	});
-	// public tertiary_nav_items: Record<TertiaryNav, TertiaryNavItem> = {
-	// 	[TertiaryNav.Nut4]: {
-	// 		title: 'Minting',
-	// 		subtitle: 'Nut 4',
-	// 		status: TertiaryNavItemStatus.Enabled,
-	// 	},
-	// 	[TertiaryNav.Nut5]: {
-	// 		title: 'Melting',
-	// 		subtitle: 'Nut 5',
-	// 		status: TertiaryNavItemStatus.Enabled,
-	// 	},
-	// 	[TertiaryNav.Nut7]: {
-	// 		title: 'Token check',
-	// 		subtitle: 'Nut 7',
-	// 		status: TertiaryNavItemStatus.Enabled,
-	// 	},
-	// 	[TertiaryNav.Nut8]: {
-	// 		title: 'Lightning fee',
-	// 		subtitle: 'Nut 8',
-	// 		status: TertiaryNavItemStatus.Enabled,
-	// 	},
-	// 	[TertiaryNav.Nut9]: {
-	// 		title: 'Restore signatures',
-	// 		subtitle: 'Nut 9',
-	// 		status: TertiaryNavItemStatus.Enabled,
-	// 	},
-	// 	[TertiaryNav.Nut10]: {
-	// 		title: 'Spending conditions',
-	// 		subtitle: 'Nut 10',
-	// 		status: TertiaryNavItemStatus.Enabled,
-	// 	},
-	// 	[TertiaryNav.Nut11]: {
-	// 		title: 'P2Pk',
-	// 		subtitle: 'Nut 11',
-	// 		status: TertiaryNavItemStatus.Enabled,
-	// 	},
-	// 	[TertiaryNav.Nut12]: {
-	// 		title: 'Offline validation',
-	// 		subtitle: 'Nut 12',
-	// 		status: TertiaryNavItemStatus.Enabled,
-	// 	},
-	// 	[TertiaryNav.Nut14]: {
-	// 		title: 'HTLCs',
-	// 		subtitle: 'Nut 14',
-	// 		status: TertiaryNavItemStatus.Enabled,
-	// 	},
-	// 	[TertiaryNav.Nut15]: {
-	// 		title: 'PMP payments',
-	// 		subtitle: 'Nut 15',
-	// 		status: TertiaryNavItemStatus.Enabled,
-	// 	},
-	// 	[TertiaryNav.Nut17]: {
-	// 		title: 'Websockets',
-	// 		subtitle: 'Nut 17',
-	// 		status: TertiaryNavItemStatus.Enabled,
-	// 	},
-	// 	[TertiaryNav.Nut19]: {
-	// 		title: 'Cached responses',
-	// 		subtitle: 'Nut 19',
-	// 		status: TertiaryNavItemStatus.Enabled,
-	// 	},
-	// 	[TertiaryNav.Nut20]: {
-	// 		title: 'Quote signature',
-	// 		subtitle: 'Nut 20',
-	// 		status: TertiaryNavItemStatus.Enabled,
-	// 	},
-	// };
 	public tertiary_nav_items: Record<TertiaryNav, TertiaryNavItem> = {
 		[TertiaryNav.Nut4]: {
 			title: 'Minting',
+			subtitle: 'Nut 4',
+			status: TertiaryNavItemStatus.Enabled,
 		},
 		[TertiaryNav.Nut5]: {
 			title: 'Melting',
+			subtitle: 'Nut 5',
+			status: TertiaryNavItemStatus.Enabled,
 		},
 		[TertiaryNav.Nut7]: {
 			title: 'Token check',
+			subtitle: 'Nut 7',
+			status: TertiaryNavItemStatus.Enabled,
 		},
 		[TertiaryNav.Nut8]: {
 			title: 'Lightning fee',
+			subtitle: 'Nut 8',
+			status: TertiaryNavItemStatus.Enabled,
 		},
 		[TertiaryNav.Nut9]: {
 			title: 'Restore signatures',
+			subtitle: 'Nut 9',
+			status: TertiaryNavItemStatus.Enabled,
 		},
 		[TertiaryNav.Nut10]: {
 			title: 'Spending conditions',
+			subtitle: 'Nut 10',
+			status: TertiaryNavItemStatus.Enabled,
 		},
 		[TertiaryNav.Nut11]: {
 			title: 'P2Pk',
+			subtitle: 'Nut 11',
+			status: TertiaryNavItemStatus.Enabled,
 		},
 		[TertiaryNav.Nut12]: {
 			title: 'Offline validation',
+			subtitle: 'Nut 12',
+			status: TertiaryNavItemStatus.Enabled,
 		},
 		[TertiaryNav.Nut14]: {
 			title: 'HTLCs',
+			subtitle: 'Nut 14',
+			status: TertiaryNavItemStatus.Enabled,
 		},
 		[TertiaryNav.Nut15]: {
 			title: 'PMP payments',
+			subtitle: 'Nut 15',
+			status: TertiaryNavItemStatus.Enabled,
 		},
 		[TertiaryNav.Nut17]: {
 			title: 'Websockets',
+			subtitle: 'Nut 17',
+			status: TertiaryNavItemStatus.Enabled,
 		},
 		[TertiaryNav.Nut19]: {
 			title: 'Cached responses',
+			subtitle: 'Nut 19',
+			status: TertiaryNavItemStatus.Enabled,
 		},
 		[TertiaryNav.Nut20]: {
 			title: 'Quote signature',
+			subtitle: 'Nut 20',
+			status: TertiaryNavItemStatus.Enabled,
 		},
 	};
+	// public tertiary_nav_items: Record<TertiaryNav, TertiaryNavItem> = {
+	// 	[TertiaryNav.Nut4]: {
+	// 		title: 'Minting',
+	// 	},
+	// 	[TertiaryNav.Nut5]: {
+	// 		title: 'Melting',
+	// 	},
+	// 	[TertiaryNav.Nut7]: {
+	// 		title: 'Token check',
+	// 	},
+	// 	[TertiaryNav.Nut8]: {
+	// 		title: 'Lightning fee',
+	// 	},
+	// 	[TertiaryNav.Nut9]: {
+	// 		title: 'Restore signatures',
+	// 	},
+	// 	[TertiaryNav.Nut10]: {
+	// 		title: 'Spending conditions',
+	// 	},
+	// 	[TertiaryNav.Nut11]: {
+	// 		title: 'P2Pk',
+	// 	},
+	// 	[TertiaryNav.Nut12]: {
+	// 		title: 'Offline validation',
+	// 	},
+	// 	[TertiaryNav.Nut14]: {
+	// 		title: 'HTLCs',
+	// 	},
+	// 	[TertiaryNav.Nut15]: {
+	// 		title: 'PMP payments',
+	// 	},
+	// 	[TertiaryNav.Nut17]: {
+	// 		title: 'Websockets',
+	// 	},
+	// 	[TertiaryNav.Nut19]: {
+	// 		title: 'Cached responses',
+	// 	},
+	// 	[TertiaryNav.Nut20]: {
+	// 		title: 'Quote signature',
+	// 	},
+	// };
 
 	public get form_minting(): FormGroup {
 		return this.form_config.get('minting') as FormGroup;
