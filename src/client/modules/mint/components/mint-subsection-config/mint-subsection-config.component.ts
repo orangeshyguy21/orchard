@@ -249,11 +249,16 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		public cdr: ChangeDetectorRef,
 	) {}
 
+	/* *******************************************************
+	   Initalization                      
+	******************************************************** */
+
 	ngOnInit(): void {
 		this.page_settings = this.getPageSettings();
 		this.mint_info = this.route.snapshot.data['mint_info'];
 		this.quote_ttls = this.route.snapshot.data['mint_quote_ttl'];
 		this.patchStaticFormElements();
+		this.initTertiaryNavStatus();
 		this.minting_units = this.getUniqueUnits('nut4');
 		this.melting_units = this.getUniqueUnits('nut5');
 		this.nut15_methods = this.getNut15Methods();
@@ -288,6 +293,109 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 			tertiary_nav: settings.tertiary_nav ?? Object.values(TertiaryNav),
 		};
 	}
+
+	private patchStaticFormElements(): void {
+		this.form_config.patchValue({
+			minting: {
+				enabled: this.translateDisabled(this.mint_info?.nuts.nut4.disabled),
+				mint_ttl: this.translateQuoteTtl(this.quote_ttls.mint_ttl),
+			},
+			melting: {
+				enabled: this.translateDisabled(this.mint_info?.nuts.nut5.disabled),
+				melt_ttl: this.translateQuoteTtl(this.quote_ttls.melt_ttl),
+			},
+		});
+	}
+
+	private getUniqueUnits(nut: 'nut4' | 'nut5'): string[] {
+		const unit_set = new Set<string>();
+		this.mint_info?.nuts[nut].methods.forEach((method) => unit_set.add(method.unit));
+		return Array.from(unit_set);
+	}
+
+	private getNut15Methods(): Nut15Method[] {
+		if (!this.mint_info?.nuts.nut15) return [];
+		const all_units: string[] = this.mint_info?.nuts.nut15.methods.map((m) => m.unit) || [];
+		const units = Array.from(new Set(all_units));
+		return units.map((unit) => ({
+			unit,
+			methods: this.mint_info?.nuts.nut15?.methods?.filter((m) => m.unit === unit).map((m) => m.method) || [],
+		}));
+	}
+
+	private getNut17Commands(): Nut17Commands[] {
+		if (!this.mint_info?.nuts.nut17) return [];
+		const all_units: string[] = this.mint_info?.nuts.nut17?.supported?.map((m) => m.unit) || [];
+		const units = Array.from(new Set(all_units));
+		const nut17_commands: Nut17Commands[] = [];
+		units.forEach((unit) => {
+			const methods = this.mint_info?.nuts.nut17?.supported?.filter((supp) => supp.unit === unit).map((supp) => supp.method) || [];
+			const mcommands = methods.map((method) => {
+				return {
+					method: method,
+					commands: [],
+				};
+			});
+			nut17_commands.push({unit, methods: mcommands});
+		});
+		nut17_commands.forEach((group) => {
+			group.methods.forEach((method) => {
+				this.mint_info?.nuts.nut17?.supported
+					.filter((supp) => supp.unit === group.unit && supp.method === method.method)
+					.forEach((supp) => {
+						supp.commands.forEach((command) => {
+							method.commands.push(command);
+						});
+					});
+			});
+		});
+		return nut17_commands;
+	}
+
+	private buildDynamicFormElements(): void {
+		this.minting_units.forEach((unit) => {
+			this.form_minting.addControl(unit, new FormGroup({}));
+			this.mint_info?.nuts.nut4.methods
+				.filter((method) => method.unit === unit)
+				.forEach((method) => {
+					const min_validators = [Validators.required, Validators.min(0)];
+					method.unit === 'sat' ? min_validators.push(OrchardValidators.integer) : min_validators.push(OrchardValidators.cents);
+					const max_validators = [Validators.required, OrchardValidators.minGreaterThan('min_amount')];
+					method.unit === 'sat' ? max_validators.push(OrchardValidators.integer) : max_validators.push(OrchardValidators.cents);
+					(this.form_minting.get(unit) as FormGroup).addControl(
+						method.method,
+						new FormGroup({
+							min_amount: new FormControl(method.min_amount, min_validators),
+							max_amount: new FormControl(method.max_amount, max_validators),
+							description: new FormControl(method.description),
+						}),
+					);
+				});
+		});
+		this.melting_units.forEach((unit) => {
+			this.form_melting.addControl(unit, new FormGroup({}));
+			this.mint_info?.nuts.nut5.methods
+				.filter((method) => method.unit === unit)
+				.forEach((method) => {
+					const min_validators = [Validators.required, Validators.min(0)];
+					method.unit === 'sat' ? min_validators.push(OrchardValidators.integer) : min_validators.push(OrchardValidators.cents);
+					const max_validators = [Validators.required, OrchardValidators.minGreaterThan('min_amount')];
+					method.unit === 'sat' ? max_validators.push(OrchardValidators.integer) : max_validators.push(OrchardValidators.cents);
+					(this.form_melting.get(unit) as FormGroup).addControl(
+						method.method,
+						new FormGroup({
+							min_amount: new FormControl(method.min_amount, min_validators),
+							max_amount: new FormControl(method.max_amount, max_validators),
+							amountless: new FormControl({value: method.amountless, disabled: true}),
+						}),
+					);
+				});
+		});
+	}
+
+	/* *******************************************************
+		Subscriptions                      
+	******************************************************** */
 
 	private getMintInfoSubscription(): Subscription {
 		return this.mintService.mint_info$.subscribe((info: MintInfo | null) => {
@@ -342,202 +450,15 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		});
 	}
 
-	private evaluateDirtyCount(): void {
-		let count = 0;
-
-		const countDirtyControls = (group: FormGroup): number => {
-			return Object.keys(group.controls).reduce((acc, key) => {
-				const control = group.get(key);
-				if (control instanceof FormGroup) return acc + countDirtyControls(control);
-				return acc + (control?.dirty ? 1 : 0);
-			}, 0);
-		};
-
-		count = countDirtyControls(this.form_config);
-		this.dirty_count.set(count);
-		this.cdr.detectChanges();
-	}
-
 	private getDirtyCountSubscription(): Subscription {
 		return this.dirty_count$.subscribe((count) => {
 			this.createPendingEvent(count);
 		});
 	}
 
-	private executeAgentFunction(tool_call: AiChatToolCall): void {
-		if (tool_call.function.name === AiFunctionName.MintEnabledUpdate) {
-			const operation = tool_call.function.arguments.operation;
-			const enabled = tool_call.function.arguments.enabled;
-			const form_group = operation === 'minting' ? this.form_minting : this.form_melting;
-			if (!form_group) return;
-			form_group.get('enabled')?.markAsDirty();
-			form_group.get('enabled')?.setValue(enabled);
-		}
-		if (tool_call.function.name === AiFunctionName.MintQuoteTtlUpdate) {
-			const operation = tool_call.function.arguments.operation;
-			const ttl = tool_call.function.arguments.ttl;
-			const form_control = operation === 'minting' ? this.form_minting.get('mint_ttl') : this.form_melting.get('melt_ttl');
-			if (!form_control) return;
-			form_control?.markAsDirty();
-			form_control?.setValue(ttl);
-		}
-		if (tool_call.function.name === AiFunctionName.MintMethodMinUpdate) {
-			const operation = tool_call.function.arguments.operation;
-			const method = tool_call.function.arguments.method;
-			const unit = tool_call.function.arguments.unit;
-			const min_amount = tool_call.function.arguments.min_amount;
-			const form_group = operation === 'minting' ? this.form_minting : this.form_melting;
-			const form_control = form_group.get(unit)?.get(method)?.get('min_amount');
-			if (!form_control) return;
-			form_control?.markAsDirty();
-			form_control?.setValue(min_amount);
-		}
-		if (tool_call.function.name === AiFunctionName.MintMethodMaxUpdate) {
-			const operation = tool_call.function.arguments.operation;
-			const method = tool_call.function.arguments.method;
-			const unit = tool_call.function.arguments.unit;
-			const max_amount = tool_call.function.arguments.max_amount;
-			const form_group = operation === 'minting' ? this.form_minting : this.form_melting;
-			const form_control = form_group.get(unit)?.get(method)?.get('max_amount');
-			if (!form_control) return;
-			form_control?.markAsDirty();
-			form_control?.setValue(max_amount);
-		}
-		if (tool_call.function.name === AiFunctionName.MintMethodDescriptionUpdate) {
-			const method = tool_call.function.arguments.method;
-			const unit = tool_call.function.arguments.unit;
-			const description = tool_call.function.arguments.description;
-			const form_control = this.form_minting.get(unit)?.get(method)?.get('description');
-			if (!form_control) return;
-			form_control.markAsDirty();
-			if (typeof description === 'string') return form_control.setValue(JSON.parse((description as string).toLowerCase()));
-			form_control.setValue(description);
-		}
-		this.evaluateDirtyCount();
-		this.cdr.detectChanges();
-	}
-
-	private patchStaticFormElements(): void {
-		this.form_config.patchValue({
-			minting: {
-				enabled: this.translateDisabled(this.mint_info?.nuts.nut4.disabled),
-				mint_ttl: this.translateQuoteTtl(this.quote_ttls.mint_ttl),
-			},
-			melting: {
-				enabled: this.translateDisabled(this.mint_info?.nuts.nut5.disabled),
-				melt_ttl: this.translateQuoteTtl(this.quote_ttls.melt_ttl),
-			},
-		});
-	}
-
-	private translateDisabled(status: boolean | undefined): boolean {
-		if (status === undefined) return false;
-		return !status;
-	}
-
-	private translateQuoteTtl(quote_ttl: number | null, to_seconds: boolean = true): number | null {
-		const factor = to_seconds ? 1 / 1000 : 1000;
-		return quote_ttl !== null ? quote_ttl * factor : null;
-	}
-
-	private getUniqueUnits(nut: 'nut4' | 'nut5'): string[] {
-		const unit_set = new Set<string>();
-		this.mint_info?.nuts[nut].methods.forEach((method) => unit_set.add(method.unit));
-		return Array.from(unit_set);
-	}
-
-	private getNut15Methods(): Nut15Method[] {
-		if (!this.mint_info?.nuts.nut15) return [];
-		const all_units: string[] = this.mint_info?.nuts.nut15.methods.map((m) => m.unit) || [];
-		const units = Array.from(new Set(all_units));
-		return units.map((unit) => ({
-			unit,
-			methods: this.mint_info?.nuts.nut15?.methods?.filter((m) => m.unit === unit).map((m) => m.method) || [],
-		}));
-	}
-
-	private getNut17Commands(): Nut17Commands[] {
-		if (!this.mint_info?.nuts.nut17) return [];
-		const all_units: string[] = this.mint_info?.nuts.nut17?.supported?.map((m) => m.unit) || [];
-		const units = Array.from(new Set(all_units));
-		const nut17_commands: Nut17Commands[] = [];
-		units.forEach((unit) => {
-			const methods = this.mint_info?.nuts.nut17?.supported?.filter((supp) => supp.unit === unit).map((supp) => supp.method) || [];
-			const mcommands = methods.map((method) => {
-				return {
-					method: method,
-					commands: [],
-				};
-			});
-			nut17_commands.push({unit, methods: mcommands});
-		});
-		nut17_commands.forEach((group) => {
-			group.methods.forEach((method) => {
-				this.mint_info?.nuts.nut17?.supported
-					.filter((supp) => supp.unit === group.unit && supp.method === method.method)
-					.forEach((supp) => {
-						supp.commands.forEach((command) => {
-							method.commands.push(command);
-						});
-					});
-			});
-		});
-		return nut17_commands;
-	}
-
-	private createPendingEvent(count: number): void {
-		if (this.active_event?.type === 'SAVING') return;
-		if (count === 0 && this.active_event?.type !== 'PENDING') return;
-		if (count === 0) return this.eventService.registerEvent(null);
-		const message = count === 1 ? '1 update' : `${count} updates`;
-		this.eventService.registerEvent(
-			new EventData({
-				type: 'PENDING',
-				message: message,
-			}),
-		);
-	}
-
-	private buildDynamicFormElements(): void {
-		this.minting_units.forEach((unit) => {
-			this.form_minting.addControl(unit, new FormGroup({}));
-			this.mint_info?.nuts.nut4.methods
-				.filter((method) => method.unit === unit)
-				.forEach((method) => {
-					const min_validators = [Validators.required, Validators.min(0)];
-					method.unit === 'sat' ? min_validators.push(OrchardValidators.integer) : min_validators.push(OrchardValidators.cents);
-					const max_validators = [Validators.required, OrchardValidators.minGreaterThan('min_amount')];
-					method.unit === 'sat' ? max_validators.push(OrchardValidators.integer) : max_validators.push(OrchardValidators.cents);
-					(this.form_minting.get(unit) as FormGroup).addControl(
-						method.method,
-						new FormGroup({
-							min_amount: new FormControl(method.min_amount, min_validators),
-							max_amount: new FormControl(method.max_amount, max_validators),
-							description: new FormControl(method.description),
-						}),
-					);
-				});
-		});
-		this.melting_units.forEach((unit) => {
-			this.form_melting.addControl(unit, new FormGroup({}));
-			this.mint_info?.nuts.nut5.methods
-				.filter((method) => method.unit === unit)
-				.forEach((method) => {
-					const min_validators = [Validators.required, Validators.min(0)];
-					method.unit === 'sat' ? min_validators.push(OrchardValidators.integer) : min_validators.push(OrchardValidators.cents);
-					const max_validators = [Validators.required, OrchardValidators.minGreaterThan('min_amount')];
-					method.unit === 'sat' ? max_validators.push(OrchardValidators.integer) : max_validators.push(OrchardValidators.cents);
-					(this.form_melting.get(unit) as FormGroup).addControl(
-						method.method,
-						new FormGroup({
-							min_amount: new FormControl(method.min_amount, min_validators),
-							max_amount: new FormControl(method.max_amount, max_validators),
-							amountless: new FormControl({value: method.amountless, disabled: true}),
-						}),
-					);
-				});
-		});
-	}
+	/* *******************************************************
+		Data                      
+	******************************************************** */
 
 	private async initChartData(): Promise<void> {
 		this.locale = this.settingService.getLocale();
@@ -554,6 +475,49 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 
 		this.mint_quotes = mint_quotes;
 		this.melt_quotes = melt_quotes;
+	}
+
+	/* *******************************************************
+		Form                      
+	******************************************************** */
+
+	private evaluateDirtyCount(): void {
+		let count = 0;
+
+		const countDirtyControls = (group: FormGroup): number => {
+			return Object.keys(group.controls).reduce((acc, key) => {
+				const control = group.get(key);
+				if (control instanceof FormGroup) return acc + countDirtyControls(control);
+				return acc + (control?.dirty ? 1 : 0);
+			}, 0);
+		};
+
+		count = countDirtyControls(this.form_config);
+		this.dirty_count.set(count);
+		this.cdr.detectChanges();
+	}
+
+	private translateDisabled(status: boolean | undefined): boolean {
+		if (status === undefined) return false;
+		return !status;
+	}
+
+	private translateQuoteTtl(quote_ttl: number | null, to_seconds: boolean = true): number | null {
+		const factor = to_seconds ? 1 / 1000 : 1000;
+		return quote_ttl !== null ? quote_ttl * factor : null;
+	}
+
+	private createPendingEvent(count: number): void {
+		if (this.active_event?.type === 'SAVING') return;
+		if (count === 0 && this.active_event?.type !== 'PENDING') return;
+		if (count === 0) return this.eventService.registerEvent(null);
+		const message = count === 1 ? '1 update' : `${count} updates`;
+		this.eventService.registerEvent(
+			new EventData({
+				type: 'PENDING',
+				message: message,
+			}),
+		);
 	}
 
 	public onEnabledUpdate({form_group, nut}: {form_group: FormGroup; nut: 'nut4' | 'nut5'}): void {
@@ -573,6 +537,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 			);
 		if (nut === 'nut4') this.updateMintNut04(unit, method, 'disabled', control_value);
 		if (nut === 'nut5') this.updateMintNut05(unit, method, 'disabled', control_value);
+		this.updateTertiaryNavStatus();
 	}
 
 	public onTtlCancel({form_group, control_name}: {form_group: FormGroup; control_name: keyof MintQuoteTtls}): void {
@@ -866,6 +831,67 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		);
 	}
 
+	/* *******************************************************
+		AI                      
+	******************************************************** */
+
+	private executeAgentFunction(tool_call: AiChatToolCall): void {
+		if (tool_call.function.name === AiFunctionName.MintEnabledUpdate) {
+			const operation = tool_call.function.arguments.operation;
+			const enabled = tool_call.function.arguments.enabled;
+			const form_group = operation === 'minting' ? this.form_minting : this.form_melting;
+			if (!form_group) return;
+			form_group.get('enabled')?.markAsDirty();
+			form_group.get('enabled')?.setValue(enabled);
+		}
+		if (tool_call.function.name === AiFunctionName.MintQuoteTtlUpdate) {
+			const operation = tool_call.function.arguments.operation;
+			const ttl = tool_call.function.arguments.ttl;
+			const form_control = operation === 'minting' ? this.form_minting.get('mint_ttl') : this.form_melting.get('melt_ttl');
+			if (!form_control) return;
+			form_control?.markAsDirty();
+			form_control?.setValue(ttl);
+		}
+		if (tool_call.function.name === AiFunctionName.MintMethodMinUpdate) {
+			const operation = tool_call.function.arguments.operation;
+			const method = tool_call.function.arguments.method;
+			const unit = tool_call.function.arguments.unit;
+			const min_amount = tool_call.function.arguments.min_amount;
+			const form_group = operation === 'minting' ? this.form_minting : this.form_melting;
+			const form_control = form_group.get(unit)?.get(method)?.get('min_amount');
+			if (!form_control) return;
+			form_control?.markAsDirty();
+			form_control?.setValue(min_amount);
+		}
+		if (tool_call.function.name === AiFunctionName.MintMethodMaxUpdate) {
+			const operation = tool_call.function.arguments.operation;
+			const method = tool_call.function.arguments.method;
+			const unit = tool_call.function.arguments.unit;
+			const max_amount = tool_call.function.arguments.max_amount;
+			const form_group = operation === 'minting' ? this.form_minting : this.form_melting;
+			const form_control = form_group.get(unit)?.get(method)?.get('max_amount');
+			if (!form_control) return;
+			form_control?.markAsDirty();
+			form_control?.setValue(max_amount);
+		}
+		if (tool_call.function.name === AiFunctionName.MintMethodDescriptionUpdate) {
+			const method = tool_call.function.arguments.method;
+			const unit = tool_call.function.arguments.unit;
+			const description = tool_call.function.arguments.description;
+			const form_control = this.form_minting.get(unit)?.get(method)?.get('description');
+			if (!form_control) return;
+			form_control.markAsDirty();
+			if (typeof description === 'string') return form_control.setValue(JSON.parse((description as string).toLowerCase()));
+			form_control.setValue(description);
+		}
+		this.evaluateDirtyCount();
+		this.cdr.detectChanges();
+	}
+
+	/* *******************************************************
+		Tertiary Nav                      
+	******************************************************** */
+
 	public onTertiaryNavChange(event: string[]): void {
 		this.page_settings.tertiary_nav = event;
 		this.settingService.setMintConfigSettings(this.page_settings);
@@ -889,6 +915,50 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	private updateTertiaryNav(): void {
 		const tertiary_nav = this.page_settings.tertiary_nav.map((area) => `"${area}"`).join(' ');
 		this.nut_container.nativeElement.style.gridTemplateAreas = `${tertiary_nav}`;
-		console.log(this.nut_container.nativeElement.style.gridTemplateAreas);
+	}
+
+	private initTertiaryNavStatus(): void {
+		this.updateTertiaryNavStatus();
+		this.tertiary_nav_items[TertiaryNav.Nut7].status = this.mint_info?.nuts.nut7.supported
+			? TertiaryNavItemStatus.Enabled
+			: TertiaryNavItemStatus.Disabled;
+		this.tertiary_nav_items[TertiaryNav.Nut8].status = this.mint_info?.nuts.nut8.supported
+			? TertiaryNavItemStatus.Enabled
+			: TertiaryNavItemStatus.Enabled;
+		this.tertiary_nav_items[TertiaryNav.Nut9].status = this.mint_info?.nuts.nut9.supported
+			? TertiaryNavItemStatus.Enabled
+			: TertiaryNavItemStatus.Disabled;
+		this.tertiary_nav_items[TertiaryNav.Nut10].status = this.mint_info?.nuts.nut10.supported
+			? TertiaryNavItemStatus.Enabled
+			: TertiaryNavItemStatus.Enabled;
+		this.tertiary_nav_items[TertiaryNav.Nut11].status = this.mint_info?.nuts.nut11.supported
+			? TertiaryNavItemStatus.Enabled
+			: TertiaryNavItemStatus.Disabled;
+		this.tertiary_nav_items[TertiaryNav.Nut12].status = this.mint_info?.nuts.nut12.supported
+			? TertiaryNavItemStatus.Enabled
+			: TertiaryNavItemStatus.Enabled;
+		this.tertiary_nav_items[TertiaryNav.Nut14].status = this.mint_info?.nuts?.nut14?.supported
+			? TertiaryNavItemStatus.Enabled
+			: TertiaryNavItemStatus.Disabled;
+		this.tertiary_nav_items[TertiaryNav.Nut15].status =
+			this.mint_info?.nuts?.nut15?.methods?.length === 0 ? TertiaryNavItemStatus.Disabled : TertiaryNavItemStatus.Enabled;
+		this.tertiary_nav_items[TertiaryNav.Nut17].status = this.mint_info?.nuts?.nut17?.supported
+			? TertiaryNavItemStatus.Enabled
+			: TertiaryNavItemStatus.Disabled;
+		this.tertiary_nav_items[TertiaryNav.Nut19].status = this.mint_info?.nuts?.nut19
+			? TertiaryNavItemStatus.Enabled
+			: TertiaryNavItemStatus.Enabled;
+		this.tertiary_nav_items[TertiaryNav.Nut20].status = this.mint_info?.nuts?.nut20?.supported
+			? TertiaryNavItemStatus.Enabled
+			: TertiaryNavItemStatus.Disabled;
+	}
+
+	private updateTertiaryNavStatus(): void {
+		this.tertiary_nav_items[TertiaryNav.Nut4].status = this.form_minting.get('enabled')?.value
+			? TertiaryNavItemStatus.Enabled
+			: TertiaryNavItemStatus.Disabled;
+		this.tertiary_nav_items[TertiaryNav.Nut5].status = this.form_melting.get('enabled')?.value
+			? TertiaryNavItemStatus.Enabled
+			: TertiaryNavItemStatus.Enabled;
 	}
 }

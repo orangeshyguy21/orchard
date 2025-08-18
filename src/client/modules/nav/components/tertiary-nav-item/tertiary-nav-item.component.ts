@@ -1,6 +1,7 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 /* Native Dependencies */
+import {TertiaryNavItemStatus} from '@client/modules/nav/enums/tertiary-nav-item-status.enum';
 import {TertiaryNavItem} from '@client/modules/nav/types/tertiary-nav-item.type';
 
 @Component({
@@ -12,4 +13,15 @@ import {TertiaryNavItem} from '@client/modules/nav/types/tertiary-nav-item.type'
 })
 export class TertiaryNavItemComponent {
 	@Input() item!: TertiaryNavItem;
+
+	public get status_class(): string {
+		if (this.item.status === TertiaryNavItemStatus.Enabled) return 'orc-primary-color';
+		if (this.item.status === TertiaryNavItemStatus.Disabled) return 'orc-outline-variant-color';
+		return '';
+	}
 }
+
+// 		@extend %orc-outline-variant-bg;
+
+// @extend %orc-outline-variant-bg;
+// @extend %orc-outline-color;

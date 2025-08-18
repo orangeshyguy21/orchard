@@ -6,7 +6,7 @@
 			<div class="nav-item-subtitle">{{ item.subtitle }}</div>
 		</div>
 		@if (item.status) {
-			<div class="nav-item-status">
+			<div class="nav-item-status" [ngClass]="status_class">
 				<mat-icon class="icon-sm">circle</mat-icon>
 			</div>
 		}
