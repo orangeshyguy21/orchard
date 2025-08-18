@@ -179,12 +179,7 @@ export class MintConnectionsComponent {
 		}, 150);
 	}
 
-	// maybe two methods for this?
-	public onSelectConnection(connection: Connection): void {
-		this.qr_data.setValue(connection.url);
-		navigator.clipboard.writeText(connection.url);
-		this.updateQRCode();
-
+	private showCopyMessage(): void {
 		if (this.copy_timeout) clearTimeout(this.copy_timeout);
 		this.copy_animation_state = 'visible';
 		this.changeDetectorRef.detectChanges();
@@ -192,6 +187,13 @@ export class MintConnectionsComponent {
 			this.copy_animation_state = 'hidden';
 			this.changeDetectorRef.detectChanges();
 		}, 1000);
+	}
+
+	public onSelectConnection(connection: Connection): void {
+		this.qr_data.setValue(connection.url);
+		navigator.clipboard.writeText(connection.url);
+		this.updateQRCode();
+		this.showCopyMessage();
 	}
 
 	public onQRClick(): void {

@@ -5,8 +5,10 @@
 			<div class="nav-item-title">{{ item.title }}</div>
 			<div class="nav-item-subtitle">{{ item.subtitle }}</div>
 		</div>
-		<div class="nav-item-status">
-			<mat-icon class="icon-sm">circle</mat-icon>
-		</div>
+		@if (item.status) {
+			<div class="nav-item-status">
+				<mat-icon class="icon-sm">circle</mat-icon>
+			</div>
+		}
 	</div>
 </div>

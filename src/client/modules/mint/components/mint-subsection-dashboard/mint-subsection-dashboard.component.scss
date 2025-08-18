@@ -41,6 +41,13 @@ $analytics-offset: 86px;
 	top: calc(#{$analytics-offset} + 1rem);
 }
 
+.nav-tertiary-title {
+	@extend %font-size-m;
+	@extend %orc-on-surface-variant-color;
+	@extend %p-b-0-5;
+	@extend %p-l-0-25;
+}
+
 .chart-target {
 	@extend %relative;
 	top: -$analytics-offset;
