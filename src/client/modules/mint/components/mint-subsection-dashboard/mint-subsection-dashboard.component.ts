@@ -106,6 +106,10 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		private cdr: ChangeDetectorRef,
 	) {}
 
+	/* *******************************************************
+	   Initalization                      
+	******************************************************** */
+
 	async ngOnInit(): Promise<void> {
 		this.mint_type = environment.mint.type;
 		this.mint_info = this.route.snapshot.data['mint_info'];
@@ -128,18 +132,16 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	private async getMintFees(): Promise<void> {
-		try {
-			this.mint_fees = await lastValueFrom(this.mintService.loadMintFees(1));
-		} catch (error) {
-			this.mint_fees = [];
-		}
+	private getMintGenesisTime(): number {
+		if (!this.mint_keysets || this.mint_keysets.length === 0) return 0;
+		return this.mint_keysets.reduce((oldest_time, keyset) => {
+			return keyset.valid_from < oldest_time || oldest_time === 0 ? keyset.valid_from : oldest_time;
+		}, 0);
 	}
 
-	private getMintFeeRevenueState(): boolean {
-		const fee_sum = this.mint_keysets.reduce((sum, keyset) => sum + (keyset?.fees_paid || 0), 0);
-		return fee_sum > 0;
-	}
+	/* *******************************************************
+		Subscriptions                      
+	******************************************************** */
 
 	private getAgentSubscription(): Subscription {
 		return this.aiService.agent_requests$.subscribe(({agent, content}) => {
@@ -177,6 +179,23 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 				}),
 			)
 			.subscribe();
+	}
+
+	/* *******************************************************
+		Data                      
+	******************************************************** */
+
+	private async getMintFees(): Promise<void> {
+		try {
+			this.mint_fees = await lastValueFrom(this.mintService.loadMintFees(1));
+		} catch (error) {
+			this.mint_fees = [];
+		}
+	}
+
+	private getMintFeeRevenueState(): boolean {
+		const fee_sum = this.mint_keysets.reduce((sum, keyset) => sum + (keyset?.fees_paid || 0), 0);
+		return fee_sum > 0;
 	}
 
 	private async initMintConnections(): Promise<void> {
@@ -325,6 +344,23 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		return analytics_fees;
 	}
 
+	private async reloadDynamicData(): Promise<void> {
+		try {
+			this.mintService.clearDasbhoardCache();
+			this.loading_dynamic_data = true;
+			this.cdr.detectChanges();
+			await this.loadMintAnalytics();
+			this.loading_dynamic_data = false;
+			this.cdr.detectChanges();
+		} catch (error) {
+			console.error('Error updating dynamic data:', error);
+		}
+	}
+
+	/* *******************************************************
+		Page Settings                      
+	******************************************************** */
+
 	private getPageSettings(): NonNullableMintDashboardSettings {
 		const settings = this.settingService.getMintDashboardSettings();
 		return {
@@ -352,25 +388,9 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		return Math.floor(today.toSeconds());
 	}
 
-	private getMintGenesisTime(): number {
-		if (!this.mint_keysets || this.mint_keysets.length === 0) return 0;
-		return this.mint_keysets.reduce((oldest_time, keyset) => {
-			return keyset.valid_from < oldest_time || oldest_time === 0 ? keyset.valid_from : oldest_time;
-		}, 0);
-	}
-
-	private async reloadDynamicData(): Promise<void> {
-		try {
-			this.mintService.clearDasbhoardCache();
-			this.loading_dynamic_data = true;
-			this.cdr.detectChanges();
-			await this.loadMintAnalytics();
-			this.loading_dynamic_data = false;
-			this.cdr.detectChanges();
-		} catch (error) {
-			console.error('Error updating dynamic data:', error);
-		}
-	}
+	/* *******************************************************
+		AI                    
+	******************************************************** */
 
 	private executeAgentFunction(tool_call: AiChatToolCall): void {
 		if (tool_call.function.name === AiFunctionName.MintAnalyticsDateRangeUpdate) {
@@ -391,15 +411,9 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	private scrollToChart(nav_item: TertiaryNav) {
-		const target_element = this[`${nav_item}`];
-		if (!target_element?.nativeElement) return;
-		target_element.nativeElement.scrollIntoView({
-			behavior: 'smooth',
-			block: 'start',
-			inline: 'nearest',
-		});
-	}
+	/* *******************************************************
+		Actions Up                     
+	******************************************************** */
 
 	public onDateChange(event: number[]): void {
 		this.page_settings.date_start = event[0];
@@ -430,6 +444,10 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.router.navigate([`/${route}`]);
 	}
 
+	/* *******************************************************
+		Tertiary Nav                      
+	******************************************************** */
+
 	public onTertiaryNavChange(event: string[]): void {
 		this.page_settings.tertiary_nav = event;
 		this.settingService.setMintDashboardSettings(this.page_settings);
@@ -444,6 +462,20 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		const tertiary_nav = this.page_settings.tertiary_nav.map((area) => `"${area}"`).join(' ');
 		this.chart_container.nativeElement.style.gridTemplateAreas = `${tertiary_nav}`;
 	}
+
+	private scrollToChart(nav_item: TertiaryNav) {
+		const target_element = this[`${nav_item}`];
+		if (!target_element?.nativeElement) return;
+		target_element.nativeElement.scrollIntoView({
+			behavior: 'smooth',
+			block: 'start',
+			inline: 'nearest',
+		});
+	}
+
+	/* *******************************************************
+		Clean Up                      
+	******************************************************** */
 
 	ngOnDestroy(): void {
 		this.subscriptions.unsubscribe();
