@@ -1,5 +1,15 @@
 /* Core Dependencies */
-import {Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef} from '@angular/core';
+import {
+	Component,
+	ChangeDetectionStrategy,
+	OnInit,
+	ChangeDetectorRef,
+	OnDestroy,
+	ViewChild,
+	ElementRef,
+	ViewChildren,
+	QueryList,
+} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 /* Vendor Dependencies */
 import {forkJoin, lastValueFrom, Subscription, EMPTY, catchError, finalize, tap} from 'rxjs';
@@ -44,11 +54,7 @@ enum TertiaryNav {
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
-	@ViewChild('nav1', {static: false}) nav1!: ElementRef;
-	@ViewChild('nav2', {static: false}) nav2!: ElementRef;
-	@ViewChild('nav3', {static: false}) nav3!: ElementRef;
-	@ViewChild('nav4', {static: false}) nav4!: ElementRef;
-	@ViewChild('nav5', {static: false}) nav5!: ElementRef;
+	@ViewChildren('nav1,nav2,nav3,nav4,nav5') nav_elements!: QueryList<ElementRef>;
 	@ViewChild('chart_container', {static: false}) chart_container!: ElementRef;
 
 	// data
@@ -464,7 +470,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	}
 
 	private scrollToChart(nav_item: TertiaryNav) {
-		const target_element = this[`${nav_item}`];
+		const target_element = this.nav_elements.find((el) => el.nativeElement.classList.contains(nav_item));
 		if (!target_element?.nativeElement) return;
 		target_element.nativeElement.scrollIntoView({
 			behavior: 'smooth',

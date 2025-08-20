@@ -10,6 +10,8 @@ import {
 	ViewChild,
 	ElementRef,
 	AfterViewInit,
+	ViewChildren,
+	QueryList,
 } from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
@@ -77,19 +79,7 @@ enum TertiaryNav {
 	],
 })
 export class MintSubsectionConfigComponent implements ComponentCanDeactivate, OnInit, AfterViewInit {
-	@ViewChild('nav4', {static: false}) nav4!: ElementRef;
-	@ViewChild('nav5', {static: false}) nav5!: ElementRef;
-	@ViewChild('nav7', {static: false}) nav7!: ElementRef;
-	@ViewChild('nav8', {static: false}) nav8!: ElementRef;
-	@ViewChild('nav9', {static: false}) nav9!: ElementRef;
-	@ViewChild('nav10', {static: false}) nav10!: ElementRef;
-	@ViewChild('nav11', {static: false}) nav11!: ElementRef;
-	@ViewChild('nav12', {static: false}) nav12!: ElementRef;
-	@ViewChild('nav14', {static: false}) nav14!: ElementRef;
-	@ViewChild('nav15', {static: false}) nav15!: ElementRef;
-	@ViewChild('nav17', {static: false}) nav17!: ElementRef;
-	@ViewChild('nav19', {static: false}) nav19!: ElementRef;
-	@ViewChild('nav20', {static: false}) nav20!: ElementRef;
+	@ViewChildren('nav4,nav5,nav7,nav8,nav9,nav10,nav11,nav12,nav14,nav15,nav17,nav19,nav20') nav_elements!: QueryList<ElementRef>;
 	@ViewChild('nut_container', {static: false}) nut_container!: ElementRef;
 
 	@HostListener('window:beforeunload')
@@ -123,110 +113,69 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		[TertiaryNav.Nut4]: {
 			title: 'Minting',
 			subtitle: 'Nut 4',
-			status: TertiaryNavItemStatus.Enabled,
+			status: undefined,
 		},
 		[TertiaryNav.Nut5]: {
 			title: 'Melting',
 			subtitle: 'Nut 5',
-			status: TertiaryNavItemStatus.Enabled,
+			status: undefined,
 		},
 		[TertiaryNav.Nut7]: {
 			title: 'Token check',
 			subtitle: 'Nut 7',
-			status: TertiaryNavItemStatus.Enabled,
+			status: undefined,
 		},
 		[TertiaryNav.Nut8]: {
 			title: 'Lightning fee',
 			subtitle: 'Nut 8',
-			status: TertiaryNavItemStatus.Enabled,
+			status: undefined,
 		},
 		[TertiaryNav.Nut9]: {
 			title: 'Restore signatures',
 			subtitle: 'Nut 9',
-			status: TertiaryNavItemStatus.Enabled,
+			status: undefined,
 		},
 		[TertiaryNav.Nut10]: {
 			title: 'Spending conditions',
 			subtitle: 'Nut 10',
-			status: TertiaryNavItemStatus.Enabled,
+			status: undefined,
 		},
 		[TertiaryNav.Nut11]: {
 			title: 'P2Pk',
 			subtitle: 'Nut 11',
-			status: TertiaryNavItemStatus.Enabled,
+			status: undefined,
 		},
 		[TertiaryNav.Nut12]: {
 			title: 'Offline validation',
 			subtitle: 'Nut 12',
-			status: TertiaryNavItemStatus.Enabled,
+			status: undefined,
 		},
 		[TertiaryNav.Nut14]: {
 			title: 'HTLCs',
 			subtitle: 'Nut 14',
-			status: TertiaryNavItemStatus.Enabled,
+			status: undefined,
 		},
 		[TertiaryNav.Nut15]: {
 			title: 'PMP payments',
 			subtitle: 'Nut 15',
-			status: TertiaryNavItemStatus.Enabled,
+			status: undefined,
 		},
 		[TertiaryNav.Nut17]: {
 			title: 'Websockets',
 			subtitle: 'Nut 17',
-			status: TertiaryNavItemStatus.Enabled,
+			status: undefined,
 		},
 		[TertiaryNav.Nut19]: {
 			title: 'Cached responses',
 			subtitle: 'Nut 19',
-			status: TertiaryNavItemStatus.Enabled,
+			status: undefined,
 		},
 		[TertiaryNav.Nut20]: {
 			title: 'Quote signature',
 			subtitle: 'Nut 20',
-			status: TertiaryNavItemStatus.Enabled,
+			status: undefined,
 		},
 	};
-	// public tertiary_nav_items: Record<TertiaryNav, TertiaryNavItem> = {
-	// 	[TertiaryNav.Nut4]: {
-	// 		title: 'Minting',
-	// 	},
-	// 	[TertiaryNav.Nut5]: {
-	// 		title: 'Melting',
-	// 	},
-	// 	[TertiaryNav.Nut7]: {
-	// 		title: 'Token check',
-	// 	},
-	// 	[TertiaryNav.Nut8]: {
-	// 		title: 'Lightning fee',
-	// 	},
-	// 	[TertiaryNav.Nut9]: {
-	// 		title: 'Restore signatures',
-	// 	},
-	// 	[TertiaryNav.Nut10]: {
-	// 		title: 'Spending conditions',
-	// 	},
-	// 	[TertiaryNav.Nut11]: {
-	// 		title: 'P2Pk',
-	// 	},
-	// 	[TertiaryNav.Nut12]: {
-	// 		title: 'Offline validation',
-	// 	},
-	// 	[TertiaryNav.Nut14]: {
-	// 		title: 'HTLCs',
-	// 	},
-	// 	[TertiaryNav.Nut15]: {
-	// 		title: 'PMP payments',
-	// 	},
-	// 	[TertiaryNav.Nut17]: {
-	// 		title: 'Websockets',
-	// 	},
-	// 	[TertiaryNav.Nut19]: {
-	// 		title: 'Cached responses',
-	// 	},
-	// 	[TertiaryNav.Nut20]: {
-	// 		title: 'Quote signature',
-	// 	},
-	// };
 
 	public get form_minting(): FormGroup {
 		return this.form_config.get('minting') as FormGroup;
@@ -904,7 +853,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	}
 
 	private scrollToChart(nav_item: TertiaryNav) {
-		const target_element = this[`${nav_item}`];
+		const target_element = this.nav_elements.find((el) => el.nativeElement.classList.contains(nav_item));
 		if (!target_element?.nativeElement) return;
 		target_element.nativeElement.scrollIntoView({
 			behavior: 'smooth',
@@ -920,47 +869,26 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 
 	private initTertiaryNavStatus(): void {
 		this.updateTertiaryNavStatus();
-		this.tertiary_nav_items[TertiaryNav.Nut7].status = this.mint_info?.nuts.nut7.supported
-			? TertiaryNavItemStatus.Enabled
-			: TertiaryNavItemStatus.Disabled;
-		this.tertiary_nav_items[TertiaryNav.Nut8].status = this.mint_info?.nuts.nut8.supported
-			? TertiaryNavItemStatus.Enabled
-			: TertiaryNavItemStatus.Enabled;
-		this.tertiary_nav_items[TertiaryNav.Nut9].status = this.mint_info?.nuts.nut9.supported
-			? TertiaryNavItemStatus.Enabled
-			: TertiaryNavItemStatus.Disabled;
-		this.tertiary_nav_items[TertiaryNav.Nut10].status = this.mint_info?.nuts.nut10.supported
-			? TertiaryNavItemStatus.Enabled
-			: TertiaryNavItemStatus.Enabled;
-		this.tertiary_nav_items[TertiaryNav.Nut11].status = this.mint_info?.nuts.nut11.supported
-			? TertiaryNavItemStatus.Enabled
-			: TertiaryNavItemStatus.Disabled;
-		this.tertiary_nav_items[TertiaryNav.Nut12].status = this.mint_info?.nuts.nut12.supported
-			? TertiaryNavItemStatus.Enabled
-			: TertiaryNavItemStatus.Enabled;
-		this.tertiary_nav_items[TertiaryNav.Nut14].status = this.mint_info?.nuts?.nut14?.supported
-			? TertiaryNavItemStatus.Enabled
-			: TertiaryNavItemStatus.Disabled;
-		this.tertiary_nav_items[TertiaryNav.Nut15].status =
-			this.mint_info?.nuts?.nut15?.methods?.length === 0 ? TertiaryNavItemStatus.Disabled : TertiaryNavItemStatus.Enabled;
-		this.tertiary_nav_items[TertiaryNav.Nut17].status = this.mint_info?.nuts?.nut17?.supported
-			? TertiaryNavItemStatus.Enabled
-			: TertiaryNavItemStatus.Disabled;
-		this.tertiary_nav_items[TertiaryNav.Nut19].status = this.mint_info?.nuts?.nut19
-			? TertiaryNavItemStatus.Enabled
-			: TertiaryNavItemStatus.Enabled;
-		this.tertiary_nav_items[TertiaryNav.Nut20].status = this.mint_info?.nuts?.nut20?.supported
-			? TertiaryNavItemStatus.Enabled
-			: TertiaryNavItemStatus.Disabled;
+		this.setNavItemStatus(TertiaryNav.Nut7, this.mint_info?.nuts.nut7.supported ? true : false);
+		this.setNavItemStatus(TertiaryNav.Nut8, this.mint_info?.nuts.nut8.supported ? true : false);
+		this.setNavItemStatus(TertiaryNav.Nut9, this.mint_info?.nuts.nut9.supported ? true : false);
+		this.setNavItemStatus(TertiaryNav.Nut10, this.mint_info?.nuts.nut10.supported ? true : false);
+		this.setNavItemStatus(TertiaryNav.Nut11, this.mint_info?.nuts.nut11.supported ? true : false);
+		this.setNavItemStatus(TertiaryNav.Nut12, this.mint_info?.nuts.nut12.supported ? true : false);
+		this.setNavItemStatus(TertiaryNav.Nut14, this.mint_info?.nuts?.nut14?.supported ? true : false);
+		this.setNavItemStatus(TertiaryNav.Nut15, this.mint_info?.nuts?.nut15?.methods?.length === 0 ? false : true);
+		this.setNavItemStatus(TertiaryNav.Nut17, this.mint_info?.nuts?.nut17?.supported ? true : false);
+		this.setNavItemStatus(TertiaryNav.Nut19, this.mint_info?.nuts?.nut19 ? true : false);
+		this.setNavItemStatus(TertiaryNav.Nut20, this.mint_info?.nuts?.nut20?.supported ? true : false);
 	}
 
 	private updateTertiaryNavStatus(): void {
-		this.tertiary_nav_items[TertiaryNav.Nut4].status = this.form_minting.get('enabled')?.value
-			? TertiaryNavItemStatus.Enabled
-			: TertiaryNavItemStatus.Disabled;
-		this.tertiary_nav_items[TertiaryNav.Nut5].status = this.form_melting.get('enabled')?.value
-			? TertiaryNavItemStatus.Enabled
-			: TertiaryNavItemStatus.Enabled;
+		this.setNavItemStatus(TertiaryNav.Nut4, this.form_minting.get('enabled')?.value);
+		this.setNavItemStatus(TertiaryNav.Nut5, this.form_melting.get('enabled')?.value);
 		this.tertiary_nav_revision++;
+	}
+
+	private setNavItemStatus(nav_key: TertiaryNav, condition: boolean): void {
+		this.tertiary_nav_items[nav_key].status = condition ? TertiaryNavItemStatus.Enabled : TertiaryNavItemStatus.Disabled;
 	}
 }
