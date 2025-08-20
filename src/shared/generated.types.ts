@@ -657,6 +657,15 @@ export type OrchardMintDescriptionUpdate = {
   description: Scalars['String']['output'];
 };
 
+export type OrchardMintFee = {
+  __typename?: 'OrchardMintFee';
+  backend_balance: Scalars['Int']['output'];
+  keyset_balance: Scalars['Int']['output'];
+  keyset_fees_paid: Scalars['Int']['output'];
+  time: Scalars['UnixTimestamp']['output'];
+  unit: MintUnit;
+};
+
 export type OrchardMintIconUpdate = {
   __typename?: 'OrchardMintIconUpdate';
   icon_url: Scalars['String']['output'];
@@ -984,6 +993,7 @@ export type Query = {
   lightning_info: OrchardLightningInfo;
   lightning_wallet: Array<OrchardLightningAccount>;
   mint_analytics_balances: Array<OrchardMintAnalytics>;
+  mint_analytics_fees: Array<OrchardMintAnalytics>;
   mint_analytics_keysets: Array<OrchardMintKeysetsAnalytics>;
   mint_analytics_melts: Array<OrchardMintAnalytics>;
   mint_analytics_mints: Array<OrchardMintAnalytics>;
@@ -995,6 +1005,7 @@ export type Query = {
   mint_count_mint_quotes: OrchardMintCount;
   mint_count_promise_groups: OrchardMintCount;
   mint_count_proof_groups: OrchardMintCount;
+  mint_fees: Array<OrchardMintFee>;
   mint_info: OrchardMintInfo;
   mint_info_rpc: OrchardMintInfoRpc;
   mint_keysets: Array<OrchardMintKeyset>;
@@ -1029,6 +1040,15 @@ export type QueryBitcoin_Transaction_Fee_EstimatesArgs = {
 
 
 export type QueryMint_Analytics_BalancesArgs = {
+  date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  interval?: InputMaybe<MintAnalyticsInterval>;
+  timezone?: InputMaybe<Scalars['Timezone']['input']>;
+  units?: InputMaybe<Array<MintUnit>>;
+};
+
+
+export type QueryMint_Analytics_FeesArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   interval?: InputMaybe<MintAnalyticsInterval>;
@@ -1107,6 +1127,11 @@ export type QueryMint_Count_Proof_GroupsArgs = {
   id_keysets?: InputMaybe<Array<Scalars['String']['input']>>;
   states?: InputMaybe<Array<MintProofState>>;
   units?: InputMaybe<Array<MintUnit>>;
+};
+
+
+export type QueryMint_FeesArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
 };
 
 

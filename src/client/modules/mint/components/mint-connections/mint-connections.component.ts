@@ -153,10 +153,12 @@ export class MintConnectionsComponent {
 	}
 
 	private async loadImage(): Promise<void> {
-		if (!this.icon_url)
+		if (!this.qr_code) return;
+		if (!this.icon_url) {
 			return this.qr_code.update({
 				image: this.placeholder_icon_url,
 			});
+		}
 		const image = await firstValueFrom(this.publicService.getPublicImageData(this.icon_url));
 		this.icon_data = image?.data ?? undefined;
 		this.qr_code.update({
@@ -177,12 +179,7 @@ export class MintConnectionsComponent {
 		}, 150);
 	}
 
-	// maybe two methods for this?
-	public onSelectConnection(connection: Connection): void {
-		this.qr_data.setValue(connection.url);
-		navigator.clipboard.writeText(connection.url);
-		this.updateQRCode();
-
+	private showCopyMessage(): void {
 		if (this.copy_timeout) clearTimeout(this.copy_timeout);
 		this.copy_animation_state = 'visible';
 		this.changeDetectorRef.detectChanges();
@@ -190,6 +187,13 @@ export class MintConnectionsComponent {
 			this.copy_animation_state = 'hidden';
 			this.changeDetectorRef.detectChanges();
 		}, 1000);
+	}
+
+	public onSelectConnection(connection: Connection): void {
+		this.qr_data.setValue(connection.url);
+		navigator.clipboard.writeText(connection.url);
+		this.updateQRCode();
+		this.showCopyMessage();
 	}
 
 	public onQRClick(): void {

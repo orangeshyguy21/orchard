@@ -1,0 +1,17 @@
+<div class="tertiary-nav-item-container">
+	<div class="tertiary-nav-item-focus-overlay"></div>
+	<div class="nav-item">
+		<div class="nav-item-titles">
+			<div class="nav-item-title">{{ title }}</div>
+			<div class="nav-item-subtitle">{{ subtitle }}</div>
+		</div>
+		@if (status) {
+			<div class="nav-item-status" [ngClass]="status_class">
+				<mat-icon class="icon-sm">circle</mat-icon>
+			</div>
+		}
+	</div>
+</div>
+
+<!-- drag placeholder -->
+<ng-content></ng-content>

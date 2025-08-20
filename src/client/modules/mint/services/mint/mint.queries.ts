@@ -168,6 +168,16 @@ query MintAnalyticsTransfers($units: [MintUnit!], $date_start: UnixTimestamp, $d
 	}
 }`;
 
+export const MINT_ANALYTICS_FEES_QUERY = `
+query MintAnalyticsFees($units: [MintUnit!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $interval: MintAnalyticsInterval, $timezone: Timezone) {
+	mint_analytics_fees(units: $units, date_start: $date_start, date_end: $date_end, interval: $interval, timezone: $timezone) {
+		unit
+		amount
+		created_time
+		operation_count
+	}
+}`;
+
 export const MINT_MINT_QUOTES_QUERY = `
 query MintMintQuotes($units: [MintUnit!], $states: [MintQuoteState!], $date_start: UnixTimestamp, $date_end: UnixTimestamp) {
 	mint_mint_quotes(units: $units, states: $states, date_start: $date_start, date_end: $date_end) {
@@ -414,5 +424,16 @@ export const MINT_PROOF_GROUP_STATS_QUERY = `
 query MintProofGroupStats($unit: MintUnit!) {
 	mint_proof_group_stats(unit: $unit) {
 		median
+	}
+}`;
+
+export const MINT_FEES_QUERY = `
+query MintFees($limit: Int) {
+	mint_fees(limit: $limit) {
+		unit
+		keyset_balance
+		keyset_fees_paid
+		backend_balance
+		time
 	}
 }`;

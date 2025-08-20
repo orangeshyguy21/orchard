@@ -68,6 +68,19 @@ export class MintAnalyticsResolver {
 		return await this.mintAnalyticsService.getMintAnalyticsTransfers(tag, {units, date_start, date_end, interval, timezone});
 	}
 
+	@Query(() => [OrchardMintAnalytics])
+	async mint_analytics_fees(
+		@Args('units', {type: () => [MintUnit], nullable: true}) units?: MintUnit[],
+		@Args('date_start', {type: () => UnixTimestamp, nullable: true}) date_start?: number,
+		@Args('date_end', {type: () => UnixTimestamp, nullable: true}) date_end?: number,
+		@Args('interval', {type: () => MintAnalyticsInterval, nullable: true}) interval?: MintAnalyticsInterval,
+		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
+	): Promise<OrchardMintAnalytics[]> {
+		const tag = 'GET { mint_analytics_fees }';
+		this.logger.debug(tag);
+		return await this.mintAnalyticsService.getMintAnalyticsFees(tag, {units, date_start, date_end, interval, timezone});
+	}
+
 	@Query(() => [OrchardMintKeysetsAnalytics])
 	async mint_analytics_keysets(
 		@Args('date_start', {type: () => UnixTimestamp, nullable: true}) date_start?: number,

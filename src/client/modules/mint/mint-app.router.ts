@@ -28,7 +28,7 @@ const mintInfoResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, state: 
 	return mintService.loadMintInfo().pipe(
 		catchError((error) => {
 			errorService.resolve_errors.push(error);
-			router.navigate(['mint', 'error'], {state: {error, target: state.url}});
+			router.navigate(['mint', 'error'], {state: {error, target: state.url, sub_section: route.data['sub_section']}});
 			return of([]);
 		}),
 	);
@@ -41,7 +41,7 @@ const mintBalancesResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, sta
 	return mintService.loadMintBalances().pipe(
 		catchError((error) => {
 			errorService.resolve_errors.push(error);
-			router.navigate(['mint', 'error'], {state: {error, target: state.url}});
+			router.navigate(['mint', 'error'], {state: {error, target: state.url, sub_section: route.data['sub_section']}});
 			return of([]);
 		}),
 	);
@@ -54,7 +54,7 @@ const mintKeysetsResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, stat
 	return mintService.loadMintKeysets().pipe(
 		catchError((error) => {
 			errorService.resolve_errors.push(error);
-			router.navigate(['mint', 'error'], {state: {error, target: state.url}});
+			router.navigate(['mint', 'error'], {state: {error, target: state.url, sub_section: route.data['sub_section']}});
 			return of([]);
 		}),
 	);
@@ -67,7 +67,7 @@ const mintInfoRpcResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, stat
 	return mintService.getMintInfo().pipe(
 		catchError((error) => {
 			errorService.resolve_errors.push(error);
-			router.navigate(['mint', 'error'], {state: {error, target: state.url}});
+			router.navigate(['mint', 'error'], {state: {error, target: state.url, sub_section: route.data['sub_section']}});
 			return of([]);
 		}),
 	);
@@ -80,7 +80,7 @@ const mintQuoteTtlsResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, st
 	return mintService.getMintQuoteTtls().pipe(
 		catchError((error) => {
 			errorService.resolve_errors.push(error);
-			router.navigate(['mint', 'error'], {state: {error, target: state.url}});
+			router.navigate(['mint', 'error'], {state: {error, target: state.url, sub_section: route.data['sub_section']}});
 			return of([]);
 		}),
 	);
@@ -176,6 +176,13 @@ const routes: Routes = [
 					sub_section: 'error',
 				},
 				canActivate: [errorResolveGuard],
+				resolve: {
+					origin: () => {
+						const router = inject(Router);
+						const navigation = router.getCurrentNavigation();
+						return navigation?.extras?.state?.['sub_section'] || 'unknown';
+					},
+				},
 			},
 		],
 	},

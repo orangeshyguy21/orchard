@@ -1,6 +1,8 @@
 @use '@styles/molecule/molecule';
 @use '@styles/nucleus/nucleus';
 
+$analytics-offset: 86px;
+
 .mint-dashboard-container {
 	@extend %flex;
 	@extend %flex-column;
@@ -17,18 +19,52 @@
 	@extend %orc-surface-bg;
 	@extend %sticky;
 	@extend %top-0;
-	@extend %z-index-1;
+	@extend %z-index-2;
 }
 
 .mint-analytic-header {
 	@extend %sticky;
 	@extend %title-m;
 	@extend %flex;
-	top: 86px;
+	top: $analytics-offset;
 }
 
 .mint-analytic-title {
 	@extend %orc-surface-bg;
 	@extend %p-1;
 	@extend %orc-corner-full-end;
+}
+
+.mint-chart-tertiary-nav {
+	@extend %sticky;
+	@extend %z-index-1;
+	top: calc(#{$analytics-offset} + 1rem);
+}
+
+.nav-tertiary-title {
+	@extend %font-size-m;
+	@extend %orc-on-surface-variant-color;
+	@extend %p-b-0-5;
+	@extend %p-l-0-25;
+}
+
+.chart-target {
+	@extend %relative;
+	top: -$analytics-offset;
+}
+
+.chart-balance-sheet {
+	grid-area: nav1;
+}
+.chart-mints {
+	grid-area: nav2;
+}
+.chart-melts {
+	grid-area: nav3;
+}
+.chart-transfers {
+	grid-area: nav4;
+}
+.chart-fee-revenue {
+	grid-area: nav5;
 }

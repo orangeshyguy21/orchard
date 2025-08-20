@@ -18,6 +18,7 @@ export type Config = {
 	};
 	mint: {
 		enabled: boolean;
+		type: string;
 		critical_path: string;
 		database_type: string;
 	};

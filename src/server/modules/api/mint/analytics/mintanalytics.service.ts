@@ -83,6 +83,20 @@ export class MintAnalyticsService {
 		});
 	}
 
+	async getMintAnalyticsFees(tag: string, args: CashuMintAnalyticsArgs): Promise<OrchardMintAnalytics[]> {
+		return this.mintService.withDbClient(async (client) => {
+			try {
+				const cashu_mint_analytics: CashuMintAnalytics[] = await this.cashuMintDatabaseService.getMintAnalyticsFees(client, args);
+				return cashu_mint_analytics.map((cma) => new OrchardMintAnalytics(cma));
+			} catch (error) {
+				const error_code = this.errorService.resolveError(this.logger, error, tag, {
+					errord: OrchardErrorCode.MintDatabaseSelectError,
+				});
+				throw new OrchardApiError(error_code);
+			}
+		});
+	}
+
 	async getMintAnalyticsKeysets(tag: string, args: CashuMintAnalyticsArgs): Promise<OrchardMintKeysetsAnalytics[]> {
 		return this.mintService.withDbClient(async (client) => {
 			try {

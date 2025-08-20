@@ -91,6 +91,10 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		private cdr: ChangeDetectorRef,
 	) {}
 
+	/* *******************************************************
+	   Initalization                      
+	******************************************************** */
+
 	ngOnInit(): void {
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
 		this.unit_options = this.getUnitOptions();
@@ -107,46 +111,58 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		}
 	}
 
-	private resetForm(): void {
-		this.form_keyset.markAsPristine();
-		const default_unit = this.getDefaultUnit();
-		const default_input_fee_ppk = this.getDefaultInputFeePpk(default_unit);
-		const default_max_order = 32;
-		this.keyset_out = this.getKeysetOut(default_unit);
-		this.form_keyset.patchValue({
-			unit: default_unit,
-			input_fee_ppk: default_input_fee_ppk,
-			max_order: default_max_order,
-		});
-	}
-
 	private getUnitOptions(): {value: string; label: string}[] {
 		const possible_units = Array.from(new Set(this.mint_keysets.map((keyset) => keyset.unit)));
 		return possible_units.map((unit) => ({value: unit, label: unit.toUpperCase()}));
 	}
-	private getDefaultUnit(): MintUnit {
-		const possible_units = Array.from(new Set(this.mint_keysets.map((keyset) => keyset.unit)));
-		if (possible_units.includes(MintUnit.Sat)) return MintUnit.Sat;
-		return this.mint_keysets.reduce(
-			(most_common_unit, keyset) => {
-				const count = this.mint_keysets.filter((k) => k.unit === keyset.unit).length;
-				return count > most_common_unit.count ? {unit: keyset.unit, count: count} : most_common_unit;
-			},
-			{unit: this.mint_keysets[0].unit, count: 0},
-		).unit;
+
+	private getMintGenesisTime(): number {
+		if (!this.mint_keysets || this.mint_keysets.length === 0) return 0;
+		return this.mint_keysets.reduce((oldest_time, keyset) => {
+			return keyset.valid_from < oldest_time || oldest_time === 0 ? keyset.valid_from : oldest_time;
+		}, 0);
 	}
-	private getDefaultInputFeePpk(unit: MintUnit): number {
-		const active_keyset = this.mint_keysets.find((keyset) => keyset.unit === unit && keyset.active);
-		return active_keyset?.input_fee_ppk ?? 1000;
+
+	/* *******************************************************
+		Subscriptions                      
+	******************************************************** */
+
+	private getEventSubscription(): Subscription {
+		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
+			this.active_event = event_data;
+			if (event_data === null) {
+				setTimeout(() => {
+					if (!this.keysets_rotation) return;
+					this.eventService.registerEvent(
+						new EventData({
+							type: 'PENDING',
+							message: 'Save',
+						}),
+					);
+				}, 1000);
+			}
+			if (event_data) {
+				if (event_data.type === 'SUCCESS') this.onSuccessEvent();
+				if (event_data.confirmed !== null) event_data.confirmed ? this.onConfirmedEvent() : this.onCloseRotation();
+			}
+		});
 	}
-	private getKeysetOut(unit: MintUnit): MintKeyset {
-		return (
-			this.mint_keysets
-				.filter((keyset) => keyset.unit === unit && keyset.active)
-				.sort((a, b) => a.valid_from - b.valid_from)
-				.pop() ?? this.mint_keysets[0]
-		);
+
+	private getAgentSubscription(): Subscription {
+		return this.aiService.agent_requests$.subscribe(({agent, content}) => {
+			this.keysets_rotation ? this.hireRotationAgent(AiAgent.MintKeysetRotation, content) : this.hireAnalyticsAgent(agent, content);
+		});
 	}
+
+	private getToolSubscription(): Subscription {
+		return this.aiService.tool_calls$.subscribe((tool_call: AiChatToolCall) => {
+			this.executeAgentFunction(tool_call);
+		});
+	}
+
+	/* *******************************************************
+		Data                      
+	******************************************************** */
 
 	private async initKeysetsAnalytics(): Promise<void> {
 		this.locale = this.settingService.getLocale();
@@ -159,32 +175,6 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		await this.loadKeysetsAnalytics(timezone, this.interval);
 		this.loading_dynamic_data = false;
 		this.cdr.detectChanges();
-	}
-
-	private getMintGenesisTime(): number {
-		if (!this.mint_keysets || this.mint_keysets.length === 0) return 0;
-		return this.mint_keysets.reduce((oldest_time, keyset) => {
-			return keyset.valid_from < oldest_time || oldest_time === 0 ? keyset.valid_from : oldest_time;
-		}, 0);
-	}
-
-	private getPageSettings(): NonNullableMintKeysetsSettings {
-		const settings = this.settingService.getMintKeysetsSettings();
-		return {
-			units: settings.units ?? this.getSelectedUnits(), // @todo there will be bugs here if a unit is not in the keysets (audit active keysets)
-			date_start: settings.date_start ?? this.mint_genesis_time,
-			date_end: settings.date_end ?? this.getSelectedDateEnd(),
-			status: settings.status ?? [false, true],
-		};
-	}
-
-	private getSelectedUnits(): MintUnit[] {
-		return Array.from(new Set(this.mint_keysets.map((keyset) => keyset.unit)));
-	}
-
-	private getSelectedDateEnd(): number {
-		const today = DateTime.now().endOf('day');
-		return Math.floor(today.toSeconds());
 	}
 
 	private getAnalyticsInterval(): MintAnalyticsInterval {
@@ -248,127 +238,47 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		});
 	}
 
-	private getEventSubscription(): Subscription {
-		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
-			this.active_event = event_data;
-			if (event_data === null) {
-				setTimeout(() => {
-					if (!this.keysets_rotation) return;
-					this.eventService.registerEvent(
-						new EventData({
-							type: 'PENDING',
-							message: 'Save',
-						}),
-					);
-				}, 1000);
-			}
-			if (event_data) {
-				if (event_data.type === 'SUCCESS') this.onSuccessEvent();
-				if (event_data.confirmed !== null) event_data.confirmed ? this.onConfirmedEvent() : this.onCloseRotation();
-			}
+	/* *******************************************************
+		Form                      
+	******************************************************** */
+
+	private resetForm(): void {
+		this.form_keyset.markAsPristine();
+		const default_unit = this.getDefaultUnit();
+		const default_input_fee_ppk = this.getDefaultInputFeePpk(default_unit);
+		const default_max_order = 32;
+		this.keyset_out = this.getKeysetOut(default_unit);
+		this.form_keyset.patchValue({
+			unit: default_unit,
+			input_fee_ppk: default_input_fee_ppk,
+			max_order: default_max_order,
 		});
-	}
-	private getAgentSubscription(): Subscription {
-		return this.aiService.agent_requests$.subscribe(({agent, content}) => {
-			this.keysets_rotation ? this.hireRotationAgent(AiAgent.MintKeysetRotation, content) : this.hireAnalyticsAgent(agent, content);
-		});
-	}
-	private hireAnalyticsAgent(agent: AiAgent, content: string | null): void {
-		let context = `* **Current Date:** ${DateTime.now().toFormat('yyyy-MM-dd')}\n`;
-		context += `* **Date Start:** ${DateTime.fromSeconds(this.page_settings.date_start).toFormat('yyyy-MM-dd')}\n`;
-		context += `* **Date End:** ${DateTime.fromSeconds(this.page_settings.date_end).toFormat('yyyy-MM-dd')}\n`;
-		context += `* **Units:** ${this.page_settings.units}\n`;
-		context += `* **Status:** ${this.page_settings.status}\n`;
-		context += `* **Available Units:** ${this.unit_options.map((unit) => unit.value).join(', ')}\n`;
-		this.aiService.openAiSocket(agent, content, context);
-	}
-	private hireRotationAgent(agent: AiAgent, content: string | null): void {
-		let context = `* **Current Unit:** ${this.form_keyset.value.unit}\n`;
-		context += `* **Input Fee PPK:** ${this.form_keyset.value.input_fee_ppk}\n`;
-		context += `* **Max Order:** ${this.form_keyset.value.max_order}\n`;
-		context += `* **Available Units:** ${this.unit_options.map((unit) => unit.value).join(', ')}\n`;
-		this.aiService.openAiSocket(agent, content, context);
 	}
 
-	private getToolSubscription(): Subscription {
-		return this.aiService.tool_calls$.subscribe((tool_call: AiChatToolCall) => {
-			this.executeAgentFunction(tool_call);
-		});
-	}
-	private executeAgentFunction(tool_call: AiChatToolCall): void {
-		if (tool_call.function.name === AiFunctionName.MintAnalyticsDateRangeUpdate) {
-			const range = [
-				DateTime.fromFormat(tool_call.function.arguments.date_start, 'yyyy-MM-dd').toSeconds(),
-				DateTime.fromFormat(tool_call.function.arguments.date_end, 'yyyy-MM-dd').toSeconds(),
-			];
-			this.onDateChange(range);
-		}
-		if (tool_call.function.name === AiFunctionName.MintAnalyticsUnitsUpdate) {
-			this.onUnitsChange(tool_call.function.arguments.units);
-		}
-		if (tool_call.function.name === AiFunctionName.MintKeysetStatusUpdate) {
-			const statuses =
-				typeof tool_call.function.arguments.statuses === 'string'
-					? JSON.parse(tool_call.function.arguments.statuses).map((status: any) => status === 'true' || status === true)
-					: tool_call.function.arguments.statuses.map((status: any) => status === 'true' || status === true);
-			this.onStatusChange(statuses);
-		}
-		if (tool_call.function.name === AiFunctionName.MintKeysetRotationUnitUpdate) {
-			this.form_keyset.patchValue({
-				unit: tool_call.function.arguments.unit,
-			});
-		}
-		if (tool_call.function.name === AiFunctionName.MintKeysetRotationInputFeePpkUpdate) {
-			this.form_keyset.patchValue({
-				input_fee_ppk: tool_call.function.arguments.input_fee_ppk,
-			});
-		}
-		if (tool_call.function.name === AiFunctionName.MintKeysetRotationMaxOrderUpdate) {
-			this.form_keyset.patchValue({
-				max_order: tool_call.function.arguments.max_order,
-			});
-		}
+	private getDefaultUnit(): MintUnit {
+		const possible_units = Array.from(new Set(this.mint_keysets.map((keyset) => keyset.unit)));
+		if (possible_units.includes(MintUnit.Sat)) return MintUnit.Sat;
+		return this.mint_keysets.reduce(
+			(most_common_unit, keyset) => {
+				const count = this.mint_keysets.filter((k) => k.unit === keyset.unit).length;
+				return count > most_common_unit.count ? {unit: keyset.unit, count: count} : most_common_unit;
+			},
+			{unit: this.mint_keysets[0].unit, count: 0},
+		).unit;
 	}
 
-	private initKeysetsRotation(): void {
-		this.keysets_rotation = true;
-		this.eventService.registerEvent(
-			new EventData({
-				type: 'PENDING',
-				message: 'Save',
-			}),
+	private getDefaultInputFeePpk(unit: MintUnit): number {
+		const active_keyset = this.mint_keysets.find((keyset) => keyset.unit === unit && keyset.active);
+		return active_keyset?.input_fee_ppk ?? 1000;
+	}
+
+	private getKeysetOut(unit: MintUnit): MintKeyset {
+		return (
+			this.mint_keysets
+				.filter((keyset) => keyset.unit === unit && keyset.active)
+				.sort((a, b) => a.valid_from - b.valid_from)
+				.pop() ?? this.mint_keysets[0]
 		);
-		this.getMintKeysetBalance();
-		this.getMintProofGroupStats();
-	}
-
-	public onDateChange(event: number[]): void {
-		this.page_settings.date_start = event[0];
-		this.page_settings.date_end = event[1];
-		this.settingService.setMintKeysetsSettings(this.page_settings);
-		this.reloadDynamicData();
-	}
-
-	public onUnitsChange(event: MintUnit[]): void {
-		this.page_settings.units = event;
-		this.settingService.setMintKeysetsSettings(this.page_settings);
-		this.reloadDynamicData();
-	}
-
-	public onStatusChange(event: boolean[]): void {
-		this.page_settings.status = event;
-		this.settingService.setMintKeysetsSettings(this.page_settings);
-		this.reloadDynamicData();
-	}
-
-	public onRotation(): void {
-		!this.keysets_rotation ? this.initKeysetsRotation() : this.onCloseRotation();
-	}
-
-	public onCloseRotation(): void {
-		this.keysets_rotation = false;
-		this.eventService.registerEvent(null);
-		this.cdr.detectChanges();
 	}
 
 	private onConfirmedEvent(): void {
@@ -411,6 +321,134 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 			this.resetForm();
 		});
 	}
+
+	private initKeysetsRotation(): void {
+		this.keysets_rotation = true;
+		this.eventService.registerEvent(
+			new EventData({
+				type: 'PENDING',
+				message: 'Save',
+			}),
+		);
+		this.getMintKeysetBalance();
+		this.getMintProofGroupStats();
+	}
+
+	/* *******************************************************
+		Page Settings                      
+	******************************************************** */
+
+	private getPageSettings(): NonNullableMintKeysetsSettings {
+		const settings = this.settingService.getMintKeysetsSettings();
+		return {
+			units: settings.units ?? this.getSelectedUnits(), // @todo there will be bugs here if a unit is not in the keysets (audit active keysets)
+			date_start: settings.date_start ?? this.mint_genesis_time,
+			date_end: settings.date_end ?? this.getSelectedDateEnd(),
+			status: settings.status ?? [false, true],
+		};
+	}
+
+	private getSelectedUnits(): MintUnit[] {
+		return Array.from(new Set(this.mint_keysets.map((keyset) => keyset.unit)));
+	}
+
+	private getSelectedDateEnd(): number {
+		const today = DateTime.now().endOf('day');
+		return Math.floor(today.toSeconds());
+	}
+
+	/* *******************************************************
+		AI                     
+	******************************************************** */
+
+	private hireAnalyticsAgent(agent: AiAgent, content: string | null): void {
+		let context = `* **Current Date:** ${DateTime.now().toFormat('yyyy-MM-dd')}\n`;
+		context += `* **Date Start:** ${DateTime.fromSeconds(this.page_settings.date_start).toFormat('yyyy-MM-dd')}\n`;
+		context += `* **Date End:** ${DateTime.fromSeconds(this.page_settings.date_end).toFormat('yyyy-MM-dd')}\n`;
+		context += `* **Units:** ${this.page_settings.units}\n`;
+		context += `* **Status:** ${this.page_settings.status}\n`;
+		context += `* **Available Units:** ${this.unit_options.map((unit) => unit.value).join(', ')}\n`;
+		this.aiService.openAiSocket(agent, content, context);
+	}
+	private hireRotationAgent(agent: AiAgent, content: string | null): void {
+		let context = `* **Current Unit:** ${this.form_keyset.value.unit}\n`;
+		context += `* **Input Fee PPK:** ${this.form_keyset.value.input_fee_ppk}\n`;
+		context += `* **Max Order:** ${this.form_keyset.value.max_order}\n`;
+		context += `* **Available Units:** ${this.unit_options.map((unit) => unit.value).join(', ')}\n`;
+		this.aiService.openAiSocket(agent, content, context);
+	}
+
+	private executeAgentFunction(tool_call: AiChatToolCall): void {
+		if (tool_call.function.name === AiFunctionName.MintAnalyticsDateRangeUpdate) {
+			const range = [
+				DateTime.fromFormat(tool_call.function.arguments.date_start, 'yyyy-MM-dd').toSeconds(),
+				DateTime.fromFormat(tool_call.function.arguments.date_end, 'yyyy-MM-dd').toSeconds(),
+			];
+			this.onDateChange(range);
+		}
+		if (tool_call.function.name === AiFunctionName.MintAnalyticsUnitsUpdate) {
+			this.onUnitsChange(tool_call.function.arguments.units);
+		}
+		if (tool_call.function.name === AiFunctionName.MintKeysetStatusUpdate) {
+			const statuses =
+				typeof tool_call.function.arguments.statuses === 'string'
+					? JSON.parse(tool_call.function.arguments.statuses).map((status: any) => status === 'true' || status === true)
+					: tool_call.function.arguments.statuses.map((status: any) => status === 'true' || status === true);
+			this.onStatusChange(statuses);
+		}
+		if (tool_call.function.name === AiFunctionName.MintKeysetRotationUnitUpdate) {
+			this.form_keyset.patchValue({
+				unit: tool_call.function.arguments.unit,
+			});
+		}
+		if (tool_call.function.name === AiFunctionName.MintKeysetRotationInputFeePpkUpdate) {
+			this.form_keyset.patchValue({
+				input_fee_ppk: tool_call.function.arguments.input_fee_ppk,
+			});
+		}
+		if (tool_call.function.name === AiFunctionName.MintKeysetRotationMaxOrderUpdate) {
+			this.form_keyset.patchValue({
+				max_order: tool_call.function.arguments.max_order,
+			});
+		}
+	}
+
+	/* *******************************************************
+		Actions Up                     
+	******************************************************** */
+
+	public onDateChange(event: number[]): void {
+		this.page_settings.date_start = event[0];
+		this.page_settings.date_end = event[1];
+		this.settingService.setMintKeysetsSettings(this.page_settings);
+		this.reloadDynamicData();
+	}
+
+	public onUnitsChange(event: MintUnit[]): void {
+		this.page_settings.units = event;
+		this.settingService.setMintKeysetsSettings(this.page_settings);
+		this.reloadDynamicData();
+	}
+
+	public onStatusChange(event: boolean[]): void {
+		this.page_settings.status = event;
+		this.settingService.setMintKeysetsSettings(this.page_settings);
+		this.reloadDynamicData();
+	}
+
+	public onRotation(): void {
+		!this.keysets_rotation ? this.initKeysetsRotation() : this.onCloseRotation();
+	}
+
+	public onCloseRotation(): void {
+		this.keysets_rotation = false;
+		this.eventService.registerEvent(null);
+		this.cdr.detectChanges();
+	}
+
+	/* *******************************************************
+		Clean Up                      
+	******************************************************** */
 
 	ngOnDestroy(): void {
 		this.keysets_rotation = false;

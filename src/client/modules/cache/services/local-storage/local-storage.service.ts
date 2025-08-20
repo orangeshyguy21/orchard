@@ -1,7 +1,16 @@
 /* Core Dependencies */
 import {Injectable} from '@angular/core';
 /* Local Dependencies */
-import {Timezone, Locale, Theme, Model, MintDashboardSettings, MintKeysetsSettings, MintDatabaseSettings} from './local-storage.types';
+import {
+	Timezone,
+	Locale,
+	Theme,
+	Model,
+	MintDashboardSettings,
+	MintKeysetsSettings,
+	MintDatabaseSettings,
+	MintConfigSettings,
+} from './local-storage.types';
 
 @Injectable({
 	providedIn: 'root',
@@ -18,6 +27,7 @@ export class LocalStorageService {
 		MODEL_KEY: 'v0.setting.model',
 		/* Mint Settings */
 		MINT_DASHBOARD_KEY: 'v0.mint.dashboard.settings',
+		MINT_CONFIG_KEY: 'v0.mint.config.settings',
 		MINT_KEYSETS_KEY: 'v0.mint.keysets.settings',
 		MINT_DATABASE_KEY: 'v0.mint.database.settings',
 	};
@@ -82,7 +92,12 @@ export class LocalStorageService {
 	}
 	getMintDashboardSettings(): MintDashboardSettings {
 		const settings = this.getItem<MintDashboardSettings>(this.STORAGE_KEYS.MINT_DASHBOARD_KEY);
-		if (!settings) return {date_start: null, units: null, interval: null, type: null};
+		if (!settings) return {date_start: null, units: null, interval: null, type: null, tertiary_nav: null};
+		return settings;
+	}
+	getMintConfigSettings(): MintConfigSettings {
+		const settings = this.getItem<MintConfigSettings>(this.STORAGE_KEYS.MINT_CONFIG_KEY);
+		if (!settings) return {tertiary_nav: null};
 		return settings;
 	}
 	getMintKeysetsSettings(): MintKeysetsSettings {
@@ -116,6 +131,9 @@ export class LocalStorageService {
 	}
 	setMintDashboardSettings(settings: MintDashboardSettings): void {
 		this.setItem(this.STORAGE_KEYS.MINT_DASHBOARD_KEY, settings);
+	}
+	setMintConfigSettings(settings: MintConfigSettings): void {
+		this.setItem(this.STORAGE_KEYS.MINT_CONFIG_KEY, settings);
 	}
 	setMintKeysetsSettings(settings: MintKeysetsSettings): void {
 		this.setItem(this.STORAGE_KEYS.MINT_KEYSETS_KEY, settings);

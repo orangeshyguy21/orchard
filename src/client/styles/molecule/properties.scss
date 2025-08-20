@@ -10,7 +10,9 @@
     #{$c}visible { visibility: visible; }
     #{$c}hidden { display: none; }
     #{$c}grid { display: grid; }
+    #{$c}block { display: block; }
     #{$c}inherit-bg { background-color: inherit; }
+    #{$c}inherit-border-radius { border-radius: inherit; }
     #{$c}auto-width { width: auto; }
     #{$c}auto-height { height: auto; }
     #{$c}isolated { isolation: isolate; }

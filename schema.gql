@@ -515,6 +515,14 @@ type OrchardMintDescriptionUpdate {
   description: String!
 }
 
+type OrchardMintFee {
+  backend_balance: Int!
+  keyset_balance: Int!
+  keyset_fees_paid: Int!
+  time: UnixTimestamp!
+  unit: MintUnit!
+}
+
 type OrchardMintIconUpdate {
   icon_url: String!
 }
@@ -803,6 +811,7 @@ type Query {
   lightning_info: OrchardLightningInfo!
   lightning_wallet: [OrchardLightningAccount!]!
   mint_analytics_balances(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
+  mint_analytics_fees(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
   mint_analytics_keysets(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone): [OrchardMintKeysetsAnalytics!]!
   mint_analytics_melts(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
   mint_analytics_mints(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
@@ -814,6 +823,7 @@ type Query {
   mint_count_mint_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, states: [MintQuoteState!], units: [MintUnit!]): OrchardMintCount!
   mint_count_promise_groups(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!], units: [MintUnit!]): OrchardMintCount!
   mint_count_proof_groups(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!], states: [MintProofState!], units: [MintUnit!]): OrchardMintCount!
+  mint_fees(limit: Int): [OrchardMintFee!]!
   mint_info: OrchardMintInfo!
   mint_info_rpc: OrchardMintInfoRpc!
   mint_keysets: [OrchardMintKeyset!]!

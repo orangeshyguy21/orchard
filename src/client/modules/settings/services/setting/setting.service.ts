@@ -6,7 +6,12 @@ import {Settings} from 'luxon';
 /* Application Dependencies */
 import {LocalStorageService} from '@client/modules/cache/services/local-storage/local-storage.service';
 import {ThemeType} from '@client/modules/cache/services/local-storage/local-storage.types';
-import {AllMintDashboardSettings, AllMintDatabaseSettings, AllMintKeysetsSettings} from '@client/modules/settings/types/setting.types';
+import {
+	AllMintDashboardSettings,
+	AllMintDatabaseSettings,
+	AllMintKeysetsSettings,
+	AllMintConfigSettings,
+} from '@client/modules/settings/types/setting.types';
 
 @Injectable({
 	providedIn: 'root',
@@ -91,6 +96,14 @@ export class SettingService {
 		this.mint_dashboard_short_settings = {
 			date_end: date_end,
 		};
+	}
+
+	/* Page: Mint Config */
+	public getMintConfigSettings(): AllMintConfigSettings {
+		return this.localStorageService.getMintConfigSettings();
+	}
+	public setMintConfigSettings(settings: AllMintConfigSettings): void {
+		this.localStorageService.setMintConfigSettings(settings);
 	}
 
 	/* Page: Mint Keysets */
