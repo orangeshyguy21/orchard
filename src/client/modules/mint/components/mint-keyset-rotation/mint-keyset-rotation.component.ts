@@ -1,9 +1,13 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {FormGroup} from '@angular/forms';
+/* Vendor Dependencies */
+import {MatSelectChange} from '@angular/material/select';
 /* Native Dependencies */
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
+/* Shared Dependencies */
+import {MintUnit} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-keyset-rotation',
@@ -20,6 +24,7 @@ export class MintKeysetRotationComponent {
 	@Input() median_notes!: number;
 
 	@Output() close = new EventEmitter<void>();
+	@Output() updateUnit = new EventEmitter<MintUnit>();
 
 	public get fee_error(): string {
 		if (this.form_group.get('input_fee_ppk')?.hasError('required')) return 'Required';
@@ -46,5 +51,9 @@ export class MintKeysetRotationComponent {
 		const median_notes = this.median_notes;
 		if (fee_ppk > 0 && median_notes === 0) return 1;
 		return Math.floor((median_notes * fee_ppk + 999) / 1000);
+	}
+
+	public onUnitChange(event: MatSelectChange): void {
+		this.updateUnit.emit(event.value);
 	}
 }

@@ -446,6 +446,12 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		this.cdr.detectChanges();
 	}
 
+	public onUpdateUnit(unit: MintUnit): void {
+		this.keyset_out = this.getKeysetOut(unit);
+		this.getMintKeysetBalance();
+		this.cdr.detectChanges();
+	}
+
 	/* *******************************************************
 		Clean Up                      
 	******************************************************** */

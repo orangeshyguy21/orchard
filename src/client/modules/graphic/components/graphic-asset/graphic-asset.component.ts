@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input, computed} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, computed, input} from '@angular/core';
 /* Application Configuration */
 import {environment} from '@client/configs/configuration';
 
@@ -11,7 +11,7 @@ import {environment} from '@client/configs/configuration';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GraphicAssetComponent {
-	@Input() unit!: string;
+	public unit = input.required<string>();
 	@Input() height: string = '2rem';
 	@Input() custody!: 'ecash' | 'lightning' | 'hot' | 'cold';
 	@Input() asset_id!: string | undefined;
@@ -19,15 +19,16 @@ export class GraphicAssetComponent {
 	private taproot_assets_map = new Map<string, string>([[environment.constants.taproot_asset_ids.usdt, 'tether.svg']]);
 
 	public lower_unit = computed(() => {
-		return this.unit.toLowerCase();
+		return this.unit().toLowerCase();
 	});
 
 	public unit_icon = computed(() => {
-		if (this.lower_unit() === 'sat') return 'currency_bitcoin';
-		if (this.lower_unit() === 'msat') return 'currency_bitcoin';
-		if (this.lower_unit() === 'btc') return 'currency_bitcoin';
-		if (this.lower_unit() === 'usd') return 'attach_money';
-		if (this.lower_unit() === 'eur') return 'euro';
+		const unit = this.lower_unit();
+		if (unit === 'sat') return 'currency_bitcoin';
+		if (unit === 'msat') return 'currency_bitcoin';
+		if (unit === 'btc') return 'currency_bitcoin';
+		if (unit === 'usd') return 'attach_money';
+		if (unit === 'eur') return 'euro';
 		return 'question_mark';
 	});
 
@@ -37,11 +38,12 @@ export class GraphicAssetComponent {
 	});
 
 	public unit_class = computed(() => {
-		if (this.lower_unit() === 'sat') return 'graphic-asset-btc';
-		if (this.lower_unit() === 'msat') return 'graphic-asset-btc';
-		if (this.lower_unit() === 'btc') return 'graphic-asset-btc';
-		if (this.lower_unit() === 'usd') return 'graphic-asset-usd';
-		if (this.lower_unit() === 'eur') return 'graphic-asset-eur';
+		const unit = this.lower_unit();
+		if (unit === 'sat') return 'graphic-asset-btc';
+		if (unit === 'msat') return 'graphic-asset-btc';
+		if (unit === 'btc') return 'graphic-asset-btc';
+		if (unit === 'usd') return 'graphic-asset-usd';
+		if (unit === 'eur') return 'graphic-asset-eur';
 		return 'graphic-asset-unknown';
 	});
 
