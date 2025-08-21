@@ -176,12 +176,14 @@ export class MintAnalyticChartComponent implements OnChanges, OnDestroy {
 		if (y_axis.includes('ybtc'))
 			scales['ybtc'] = getBtcYAxisConfig({
 				grid_color: this.chartService.getGridColor(),
+				begin_at_zero: true,
 			});
 		if (y_axis.includes('yfiat'))
 			scales['yfiat'] = getFiatYAxisConfig({
 				units,
 				show_grid: !y_axis.includes('ybtc'),
 				grid_color: this.chartService.getGridColor(),
+				begin_at_zero: true,
 			});
 
 		return {
