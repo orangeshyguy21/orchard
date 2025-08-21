@@ -21,7 +21,7 @@
 								class="keyset-form-field orc-dynamic-form-field orc-hot-form-field p-r-2"
 							>
 								<mat-label>Unit</mat-label>
-								<mat-select formControlName="unit">
+								<mat-select formControlName="unit" (selectionChange)="onUnitChange($event)">
 									@for (unit of unit_options; track unit.value) {
 										<mat-option [value]="unit.value">{{ unit.label }}</mat-option>
 									}
@@ -95,12 +95,11 @@
 						[keyset_in_unit]="form_group.get('unit')?.value"
 						[keyset_in_index]="keyset_out.derivation_path_index + 1"
 						[keyset_in_fee]="form_group.get('input_fee_ppk')?.value"
-						[keyset_out_unit]="form_group.get('unit')?.value"
+						[keyset_out_unit]="keyset_out.unit"
 						[keyset_out_index]="keyset_out.derivation_path_index"
-						[keyset_out_fee]="form_group.get('input_fee_ppk')?.value"
+						[keyset_out_fee]="keyset_out.input_fee_ppk"
 						[keyset_out_balance]="keyset_out_balance?.balance"
-					>
-					</orc-mint-keyset-rotation-preview>
+					></orc-mint-keyset-rotation-preview>
 				</div>
 			</div>
 		</mat-card-content>
