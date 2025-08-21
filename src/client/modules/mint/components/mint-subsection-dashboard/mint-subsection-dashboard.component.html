@@ -129,29 +129,31 @@
 						[loading]="loading_dynamic_data"
 					></orc-mint-analytic-chart>
 
-					@if (mint_type === 'cdk') {
-						<div class="absolute top-0 right-0 bottom-0 left-0 flex flex-justify-center flex-items-center orc-surface-bg">
-							<div class="flex flex-column flex-items-center flex-gap-1">
-								<div><mat-icon class="icon-lg orc-outline-color">block</mat-icon></div>
-								<div class="font-size-s orc-outline-color">Fee analytics not available for CDK</div>
+					@if (!loading_dynamic_data) {
+						@if (mint_type === 'cdk') {
+							<div class="absolute top-0 right-0 bottom-0 left-0 flex flex-justify-center flex-items-center orc-surface-bg">
+								<div class="flex flex-column flex-items-center flex-gap-1">
+									<div><mat-icon class="icon-lg orc-outline-color">block</mat-icon></div>
+									<div class="font-size-s orc-outline-color">Fee analytics not available for CDK</div>
+								</div>
 							</div>
-						</div>
-					}
-					@if (mint_type === 'nutshell' && mint_fees.length === 0 && mint_fee_revenue) {
-						<div class="absolute top-0 right-0 bottom-0 left-0 flex flex-justify-center flex-items-center orc-surface-bg">
-							<div class="flex flex-column flex-items-center flex-gap-1">
-								<div><mat-icon class="icon-lg orc-outline-color">sound_detection_dog_barking</mat-icon></div>
-								<div class="font-size-s orc-outline-color">Nutshells watchdog required for analytics</div>
+						}
+						@if (mint_type === 'nutshell' && mint_fees.length === 0 && mint_fee_revenue) {
+							<div class="absolute top-0 right-0 bottom-0 left-0 flex flex-justify-center flex-items-center orc-surface-bg">
+								<div class="flex flex-column flex-items-center flex-gap-1">
+									<div><mat-icon class="icon-lg orc-outline-color">sound_detection_dog_barking</mat-icon></div>
+									<div class="font-size-s orc-outline-color">Nutshells watchdog required for analytics</div>
+								</div>
 							</div>
-						</div>
-					}
-					@if (mint_type === 'nutshell' && mint_fees.length === 0 && !mint_fee_revenue) {
-						<div class="absolute top-0 right-0 bottom-0 left-0 flex flex-justify-center flex-items-center orc-surface-bg">
-							<div class="flex flex-column flex-items-center flex-gap-1">
-								<div><mat-icon class="icon-lg orc-outline-color">money_off</mat-icon></div>
-								<div class="font-size-s orc-outline-color">No fee revenue</div>
+						}
+						@if (mint_type === 'nutshell' && mint_fees.length === 0 && !mint_fee_revenue) {
+							<div class="absolute top-0 right-0 bottom-0 left-0 flex flex-justify-center flex-items-center orc-surface-bg">
+								<div class="flex flex-column flex-items-center flex-gap-1">
+									<div><mat-icon class="icon-lg orc-outline-color">money_off</mat-icon></div>
+									<div class="font-size-s orc-outline-color">No fee revenue</div>
+								</div>
 							</div>
-						</div>
+						}
 					}
 				</div>
 			</div>
