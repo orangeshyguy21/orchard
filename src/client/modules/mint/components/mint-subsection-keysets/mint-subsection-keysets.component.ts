@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnDestroy, HostListener} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnDestroy, HostListener, ViewChild, ElementRef} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
 import {trigger, state, style, animate, transition} from '@angular/animations';
@@ -58,6 +58,8 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	canDeactivate(): boolean {
 		return this.active_event?.type !== 'PENDING';
 	}
+
+	@ViewChild('keyset_form', {static: false}) keyset_form!: ElementRef;
 
 	public mint_keysets: MintKeyset[] = [];
 	public locale!: string;
@@ -330,6 +332,11 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 				message: 'Save',
 			}),
 		);
+		this.keyset_form.nativeElement.scrollIntoView({
+			behavior: 'smooth',
+			block: 'start',
+			inline: 'nearest',
+		});
 		this.getMintKeysetBalance();
 		this.getMintProofGroupStats();
 	}

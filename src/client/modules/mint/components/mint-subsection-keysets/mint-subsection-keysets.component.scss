@@ -17,3 +17,8 @@
 	@extend %top-0;
 	@extend %z-index-1;
 }
+
+.mint-keyset-form-target {
+	@extend %relative;
+	top: -87px;
+}
