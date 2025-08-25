@@ -42,7 +42,7 @@ export class SettingsEnvComponent {
 			if (line.type === 'comment') {
 				content += `${line.value}\n`;
 			} else if (line.type === 'variable') {
-				content += `${line.key}='${line.value}'\n`;
+				content += `${line.key}=${line.value}\n`;
 			}
 		});
 		return content;

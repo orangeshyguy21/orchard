@@ -1,0 +1,14 @@
+.git
+.gitignore
+.cache
+*.md
+!README*.md
+/node_modules
+/dist
+/.github
+.vscode
+CHANGELOG.md
+
+# all env files
+.env
+.env.example

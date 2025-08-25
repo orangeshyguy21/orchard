@@ -36,10 +36,10 @@ async function bootstrap() {
 	const path = configService.get<string>('server.path');
 	const host = configService.get<string>('server.host');
 	app.setGlobalPrefix(path);
-	await app.listen(port);
+	await app.listen(port, host);
 	const logger = new Logger('OrchardApplication');
 	validation(app, configService, logger);
-	logger.log(`Application is running on: ${host}:${port}/${path}`);
+	logger.log(`Application is running on: ${host}:${port}`);
 }
 
 function validation(app: INestApplication, configService: ConfigService, logger: Logger): void {
