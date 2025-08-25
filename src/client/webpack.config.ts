@@ -18,7 +18,6 @@ module.exports = {
 	},
 	plugins: [
 		new EnvironmentPlugin({
-			PRODUCTION: true,
 			BASE_PATH: 'api',
 			BITCOIN_TYPE: null,
 			LIGHTNING_TYPE: null,
@@ -26,7 +25,7 @@ module.exports = {
 			MINT_TYPE: null,
 			MINT_DATABASE: null,
 			AI_API: null,
-			npm_package_version: '0.0.1',
+			npm_package_version: null,
 		}),
 	],
 };

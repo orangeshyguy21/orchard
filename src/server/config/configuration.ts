@@ -3,7 +3,7 @@ import {Config} from './configuration.type';
 
 export const config = (): Config => {
 	const mode = {
-		production: process.env.PRODUCTION === 'true',
+		production: process.env.NODE_ENV === 'production',
 	};
 
 	const server = {
