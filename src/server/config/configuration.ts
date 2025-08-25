@@ -44,7 +44,7 @@ export const config = (): Config => {
 	const cashu = {
 		type: process.env.MINT_TYPE,
 		api: process.env.MINT_API,
-		database_type: process.env.MINT_DATABASE.includes('postgres://') ? 'postgres' : 'sqlite',
+		database_type: process.env.MINT_DATABASE?.includes('postgres://') ? 'postgres' : 'sqlite',
 		database: process.env.MINT_DATABASE,
 		rpc_host: process.env.MINT_RPC_HOST,
 		rpc_port: process.env.MINT_RPC_PORT,
