@@ -59,7 +59,7 @@ export class CdkService {
 		}
 
 		try {
-			const proto_path = path.resolve(__dirname, '../../../../proto/cdk/cdk-mint-rpc.proto');
+			const proto_path = path.join(process.cwd(), 'proto/cdk/cdk-mint-rpc.proto');
 			const package_definition = protoLoader.loadSync(proto_path, {
 				keepCase: true,
 				longs: String,
