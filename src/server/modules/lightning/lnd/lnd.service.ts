@@ -41,9 +41,7 @@ export class LndService {
 
 	private initializeGrpcClient(proto_paths: string[], package_namespace: string, client_class: string): grpc.Client {
 		const credentials = this.createGrpcCredentials();
-		if (!credentials) {
-			return;
-		}
+		if (!credentials) return;
 
 		try {
 			const package_definition = protoLoader.loadSync(proto_paths, {

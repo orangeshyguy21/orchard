@@ -20,20 +20,14 @@ FROM deps as build
 
 WORKDIR /app
 
-# Set env variables
-ARG NODE_ENV="production"
-ENV NODE_ENV=${NODE_ENV}
-ARG SERVER_HOST="0.0.0.0"
-ENV SERVER_HOST=${SERVER_HOST}
-
 # Copy source code
 COPY . .
 
 # Build the Angular and NestJS application
 RUN npm run build
 
-# Remove non production necessary modules
-# RUN npm prune --production
+# Remove .env file after build is complete
+RUN rm -f .env
 
 # ---------------
 # Release App
@@ -42,16 +36,15 @@ FROM node:24-alpine as final
 
 WORKDIR /app
 
-# Set env variables
-ARG NODE_ENV="production"
-ENV NODE_ENV=${NODE_ENV}
-
 # Copy package files and production dependencies
 COPY --from=build /app/package*.json ./
 COPY --from=build /app/node_modules/ ./node_modules
 
 # Copy built files
 COPY --from=build /app/dist/ ./dist
+
+# Copy proto files
+COPY --from=build /app/proto/ ./proto
 
 # Copy Angular public assets
 COPY --from=build /app/public/ ./public

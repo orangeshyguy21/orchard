@@ -8,7 +8,4 @@
 /.github
 .vscode
 CHANGELOG.md
-
-# all env files
-.env
 .env.example
