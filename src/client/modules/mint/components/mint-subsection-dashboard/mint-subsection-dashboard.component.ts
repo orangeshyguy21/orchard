@@ -42,7 +42,7 @@ enum TertiaryNav {
 	BalanceSheet = 'nav1',
 	Mints = 'nav2',
 	Melts = 'nav3',
-	Transfers = 'nav4',
+	Swaps = 'nav4',
 	FeeRevenue = 'nav5',
 }
 
@@ -68,8 +68,8 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public mint_analytics_mints_pre: MintAnalytic[] = [];
 	public mint_analytics_melts: MintAnalytic[] = [];
 	public mint_analytics_melts_pre: MintAnalytic[] = [];
-	public mint_analytics_transfers: MintAnalytic[] = [];
-	public mint_analytics_transfers_pre: MintAnalytic[] = [];
+	public mint_analytics_swaps: MintAnalytic[] = [];
+	public mint_analytics_swaps_pre: MintAnalytic[] = [];
 	public mint_analytics_fees: MintAnalytic[] = [];
 	public mint_analytics_fees_pre: MintAnalytic[] = [];
 	public mint_connections: PublicUrl[] = [];
@@ -91,7 +91,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		[TertiaryNav.BalanceSheet]: {title: 'Balance Sheet'},
 		[TertiaryNav.Mints]: {title: 'Mints'},
 		[TertiaryNav.Melts]: {title: 'Melts'},
-		[TertiaryNav.Transfers]: {title: 'Transfers'},
+		[TertiaryNav.Swaps]: {title: 'Swaps'},
 		[TertiaryNav.FeeRevenue]: {title: 'Fee Revenue'},
 	};
 
@@ -276,14 +276,14 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			interval: MintAnalyticsInterval.Custom,
 			timezone: timezone,
 		});
-		const analytics_transfers_obs = this.mintService.loadMintAnalyticsTransfers({
+		const analytics_swaps_obs = this.mintService.loadMintAnalyticsSwaps({
 			units: this.page_settings.units,
 			date_start: this.page_settings.date_start,
 			date_end: this.page_settings.date_end,
 			interval: this.page_settings.interval,
 			timezone: timezone,
 		});
-		const analytics_transfers_pre_obs = this.mintService.loadMintAnalyticsTransfers({
+		const analytics_swaps_pre_obs = this.mintService.loadMintAnalyticsSwaps({
 			units: this.page_settings.units,
 			date_start: 100000,
 			date_end: this.page_settings.date_start - 1,
@@ -311,8 +311,8 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			analytics_mints_pre,
 			analytics_melts,
 			analytics_melts_pre,
-			analytics_transfers,
-			analytics_transfers_pre,
+			analytics_swaps,
+			analytics_swaps_pre,
 			analytics_fees,
 			analytics_fees_pre,
 		] = await lastValueFrom(
@@ -323,8 +323,8 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 				analytics_mints_pre_obs,
 				analytics_melts_obs,
 				analytics_melts_pre_obs,
-				analytics_transfers_obs,
-				analytics_transfers_pre_obs,
+				analytics_swaps_obs,
+				analytics_swaps_pre_obs,
 				analytics_fees_obs,
 				analytics_fees_pre_obs,
 			]),
@@ -336,8 +336,8 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.mint_analytics_mints_pre = analytics_mints_pre;
 		this.mint_analytics_melts = analytics_melts;
 		this.mint_analytics_melts_pre = analytics_melts_pre;
-		this.mint_analytics_transfers = analytics_transfers;
-		this.mint_analytics_transfers_pre = analytics_transfers_pre;
+		this.mint_analytics_swaps = analytics_swaps;
+		this.mint_analytics_swaps_pre = analytics_swaps_pre;
 		this.mint_analytics_fees = this.applyMintFees(analytics_fees, analytics_fees_pre);
 		this.mint_analytics_fees_pre = analytics_fees_pre;
 	}

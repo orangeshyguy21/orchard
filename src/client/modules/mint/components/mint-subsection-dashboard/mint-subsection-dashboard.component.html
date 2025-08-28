@@ -98,15 +98,15 @@
 					[loading]="loading_dynamic_data"
 				></orc-mint-analytic-chart>
 			</div>
-			<div class="relative chart-transfers">
+			<div class="relative chart-swaps">
 				<div class="chart-target nav4" #nav4></div>
 				<div class="mint-analytic-header z-index-1">
-					<div class="mint-analytic-title w-min-7">Transfers</div>
+					<div class="mint-analytic-title w-min-7">Swaps &nbsp;&nbsp;<small>internal</small></div>
 				</div>
 				<orc-mint-analytic-chart
 					[locale]="locale"
-					[mint_analytics]="mint_analytics_transfers"
-					[mint_analytics_pre]="mint_analytics_transfers_pre"
+					[mint_analytics]="mint_analytics_swaps"
+					[mint_analytics_pre]="mint_analytics_swaps_pre"
 					[page_settings]="page_settings"
 					[mint_genesis_time]="mint_genesis_time"
 					[selected_type]="page_settings ? page_settings.type : undefined"
