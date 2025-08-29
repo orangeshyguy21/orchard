@@ -1,17 +1,16 @@
 /* Local Dependencies */
 import {Config} from './configuration.type';
 
-// Helper function to replace localhost/127.0.0.1 with host.docker.internal in Docker
 const replaceLocalhostInDocker = (host: string | undefined): string | undefined => {
 	if (!host) return host;
 	if (!process.env.DOCKER_ENV) return host;
 	return host
-		.replace(/^127\.0\.0\.1$/, 'host.docker.internal')
-		.replace(/^localhost$/, 'host.docker.internal')
-		.replace(/^127\.0\.0\.1:/, 'host.docker.internal:')
-		.replace(/^localhost:/, 'host.docker.internal:')
-		.replace(/\/\/127\.0\.0\.1/, '//host.docker.internal')
-		.replace(/\/\/localhost/, '//host.docker.internal');
+		.replace(/\/\/localhost(?=[:/]|$)/gi, '//host.docker.internal')
+		.replace(/\/\/127\.0\.0\.1(?=[:/]|$)/g, '//host.docker.internal')
+		.replace(/\blocalhost\b/gi, 'host.docker.internal')
+		.replace(/\b127\.0\.0\.1\b/g, 'host.docker.internal')
+		.replace(/\[::1\]/g, 'host.docker.internal')
+		.replace(/::1(?=[:/]|$)/g, 'host.docker.internal');
 };
 
 export const config = (): Config => {
@@ -58,7 +57,7 @@ export const config = (): Config => {
 		type: process.env.MINT_TYPE,
 		api: replaceLocalhostInDocker(process.env.MINT_API),
 		database_type: process.env.MINT_DATABASE?.includes('postgres://') ? 'postgres' : 'sqlite',
-		database: process.env.MINT_DATABASE,
+		database: replaceLocalhostInDocker(process.env.MINT_DATABASE),
 		rpc_host: replaceLocalhostInDocker(process.env.MINT_RPC_HOST),
 		rpc_port: process.env.MINT_RPC_PORT,
 		rpc_key: process.env.MINT_RPC_KEY,
