@@ -2,7 +2,7 @@
 import {Field, Float, Int, ObjectType} from '@nestjs/graphql';
 
 @ObjectType()
-export class OrchardOracleBounds {
+export class OrchardBitcoinOracleBounds {
 	@Field(() => Float)
 	min: number;
 
@@ -11,7 +11,7 @@ export class OrchardOracleBounds {
 }
 
 @ObjectType()
-export class OrchardOracleBlockWindow {
+export class OrchardBitcoinOracleBlockWindow {
 	@Field(() => Int)
 	start: number;
 
@@ -20,7 +20,7 @@ export class OrchardOracleBlockWindow {
 }
 
 @ObjectType()
-export class OrchardOracleIntradayPoint {
+export class OrchardBitcoinOracleIntradayPoint {
 	@Field(() => Int)
 	block_height: number;
 
@@ -32,7 +32,7 @@ export class OrchardOracleIntradayPoint {
 }
 
 @ObjectType()
-export class OrchardOracleResult {
+export class OrchardBitcoinOracle {
 	@Field(() => Float)
 	central_price: number;
 
@@ -42,12 +42,12 @@ export class OrchardOracleResult {
 	@Field(() => Float)
 	deviation_pct: number;
 
-	@Field(() => OrchardOracleBounds)
-	bounds: OrchardOracleBounds;
+	@Field(() => OrchardBitcoinOracleBounds)
+	bounds: OrchardBitcoinOracleBounds;
 
-	@Field(() => OrchardOracleBlockWindow)
-	block_window: OrchardOracleBlockWindow;
+	@Field(() => OrchardBitcoinOracleBlockWindow)
+	block_window: OrchardBitcoinOracleBlockWindow;
 
-	@Field(() => [OrchardOracleIntradayPoint], {nullable: true})
-	intraday?: OrchardOracleIntradayPoint[];
+	@Field(() => [OrchardBitcoinOracleIntradayPoint], {nullable: true})
+	intraday?: OrchardBitcoinOracleIntradayPoint[];
 }

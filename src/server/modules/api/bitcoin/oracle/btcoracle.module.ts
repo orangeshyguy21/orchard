@@ -2,13 +2,13 @@
 import {Module} from '@nestjs/common';
 /* Application Dependencies */
 import {ErrorModule} from '@server/modules/error/error.module';
-import {BitcoinOracleModule as CoreBitcoinOracleModule} from '@server/modules/bitcoin/oracle/oracle.module';
+import {BitcoinUTXOracleModule} from '@server/modules/bitcoin/utxoracle/utxoracle.module';
 /* Internal Dependencies */
 import {BitcoinOracleResolver} from './btcoracle.resolver';
-import {BitcoinOracleApiService} from './btcoracle.service';
+import {BitcoinOracleService} from './btcoracle.service';
 
 @Module({
-	imports: [ErrorModule, CoreBitcoinOracleModule],
-	providers: [BitcoinOracleResolver, BitcoinOracleApiService],
+	imports: [ErrorModule, BitcoinUTXOracleModule],
+	providers: [BitcoinOracleResolver, BitcoinOracleService],
 })
 export class BitcoinOracleModule {}

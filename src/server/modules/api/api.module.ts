@@ -11,7 +11,7 @@ import {BitcoinBlockchainModule} from './bitcoin/blockchain/btcblockchain.module
 import {BitcoinBlockModule} from './bitcoin/block/btcblock.module';
 import {BitcoinMempoolModule} from './bitcoin/mempool/btcmempool.module';
 import {BitcoinTransactionModule} from './bitcoin/transaction/btctransaction.module';
-import {BitcoinOracleModule as ApiBitcoinOracleModule} from './bitcoin/oracle/btcoracle.module';
+import {BitcoinOracleModule} from './bitcoin/oracle/btcoracle.module';
 // Lightning Endpoints
 import {LightningInfoModule} from './lightning/info/lninfo.module';
 import {LightningBalanceModule} from './lightning/balance/lnbalance.module';
@@ -49,7 +49,7 @@ import {PublicUrlModule} from './public/url/url.module';
 		BitcoinBlockModule,
 		BitcoinMempoolModule,
 		BitcoinTransactionModule,
-		ApiBitcoinOracleModule,
+		BitcoinOracleModule,
 		LightningInfoModule,
 		LightningBalanceModule,
 		LightningWalletModule,

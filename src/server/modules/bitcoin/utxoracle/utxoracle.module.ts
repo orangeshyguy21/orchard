@@ -3,11 +3,11 @@ import {Module} from '@nestjs/common';
 /* Application Dependencies */
 import {BitcoinRpcModule} from '@server/modules/bitcoin/rpc/btcrpc.module';
 /* Local Dependencies */
-import {BitcoinOracleService} from './oracle.service';
+import {BitcoinUTXOracleService} from './utxoracle.service';
 
 @Module({
 	imports: [BitcoinRpcModule],
-	providers: [BitcoinOracleService],
-	exports: [BitcoinOracleService],
+	providers: [BitcoinUTXOracleService],
+	exports: [BitcoinUTXOracleService],
 })
-export class BitcoinOracleModule {}
+export class BitcoinUTXOracleModule {}

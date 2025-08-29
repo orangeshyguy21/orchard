@@ -4,16 +4,16 @@ import {ConfigService} from '@nestjs/config';
 /* Application Dependencies */
 import {BitcoinRpcService} from '@server/modules/bitcoin/rpc/btcrpc.service';
 /* Local Dependencies */
-import {OracleRunOptions, OracleResult} from './oracle.types';
+import {UTXOracleRunOptions, UTXOracleResult} from './utxoracle.types';
 
 @Injectable()
-export class BitcoinOracleService {
+export class BitcoinUTXOracleService {
 	constructor(
 		private config_service: ConfigService,
 		private btc_rpc: BitcoinRpcService,
 	) {}
 
-	public async runOracle(options: OracleRunOptions): Promise<OracleResult> {
+	public async runOracle(options: UTXOracleRunOptions): Promise<UTXOracleResult> {
 		const mode = options.mode;
 		if (mode === 'recent') return this.runRecentMode(options);
 		if (mode === 'date') return this.runDateMode(options);
@@ -26,39 +26,37 @@ export class BitcoinOracleService {
 		return Number.isFinite(parsed) && parsed > 0 ? parsed : 144;
 	}
 
-	private async runRecentMode(options: OracleRunOptions): Promise<OracleResult> {
+	private async runRecentMode(options: UTXOracleRunOptions): Promise<UTXOracleResult> {
 		const recent_blocks = options.recent_blocks || this.getDefaultRecentBlocks();
 		const tip = await this.btc_rpc.getBitcoinBlockCount();
 		const consensus_tip = tip - 6;
 		const start = Math.max(0, consensus_tip - recent_blocks);
 		const end = consensus_tip;
 
-		const {central_price, rough_price_estimate, deviation_pct, bounds} = await this.computeWindow(start, end);
+		const {central_price, rough_price_estimate, deviation_pct, bounds, intraday} = await this.computeWindow(start, end);
 
-		const result: OracleResult = {
+		const result: UTXOracleResult = {
 			central_price,
 			rough_price_estimate,
 			deviation_pct,
 			bounds,
 			block_window: {start, end},
+			intraday,
 		};
-
-		if (options.emit_html) {
-			result.html = this.renderHtmlPlaceholder();
-		}
 		return result;
 	}
 
-	private async runDateMode(options: OracleRunOptions): Promise<OracleResult> {
+	private async runDateMode(options: UTXOracleRunOptions): Promise<UTXOracleResult> {
 		if (!options.date) throw new Error('Date mode requires options.date in YYYY-MM-DD');
 		const {start, end} = await this.findBlockWindowForDate(options.date);
-		const {central_price, rough_price_estimate, deviation_pct, bounds} = await this.computeWindow(start, end);
+		const {central_price, rough_price_estimate, deviation_pct, bounds, intraday} = await this.computeWindow(start, end);
 		return {
 			central_price,
 			rough_price_estimate,
 			deviation_pct,
 			bounds,
 			block_window: {start, end},
+			intraday,
 		};
 	}
 
@@ -103,6 +101,7 @@ export class BitcoinOracleService {
 		rough_price_estimate: number;
 		deviation_pct: number;
 		bounds: {min: number; max: number};
+		intraday: Array<{block_height: number; timestamp: number; price: number}>;
 	}> {
 		// Pre-scan window txids to detect same-day inputs
 		const window_txids = await this.collectWindowTxids(start, end);
@@ -113,8 +112,13 @@ export class BitcoinOracleService {
 		// 3) Slide stencils and compute rough price
 		const rough_price_estimate = this.computeRoughPrice(histogram);
 		// 4) Create intraday points and compute central price + deviation
-		const {central_price, deviation_pct, bounds} = await this.computeCentralPrice(start, end, rough_price_estimate, window_txids);
-		return {central_price, rough_price_estimate, deviation_pct, bounds};
+		const {central_price, deviation_pct, bounds, intraday} = await this.computeCentralPrice(
+			start,
+			end,
+			rough_price_estimate,
+			window_txids,
+		);
+		return {central_price, rough_price_estimate, deviation_pct, bounds, intraday};
 	}
 
 	private async collectWindowTxids(start: number, end: number): Promise<Set<string>> {
@@ -291,7 +295,12 @@ export class BitcoinOracleService {
 		end: number,
 		rough: number,
 		window_txids: Set<string>,
-	): Promise<{central_price: number; deviation_pct: number; bounds: {min: number; max: number}}> {
+	): Promise<{
+		central_price: number;
+		deviation_pct: number;
+		bounds: {min: number; max: number};
+		intraday: Array<{block_height: number; timestamp: number; price: number}>;
+	}> {
 		const usds = [5, 10, 15, 20, 25, 30, 40, 50, 100, 150, 200, 300, 500, 1000];
 		const pct_range_wide = 0.25;
 		const pct_micro_remove = 0.0001;
@@ -360,7 +369,14 @@ export class BitcoinOracleService {
 		[, mad] = this.findCentralOutput(output_prices, dn, up);
 		const price_range = up - dn;
 		const dev_pct = price_range ? mad / price_range : 0;
-		return {central_price, deviation_pct: dev_pct, bounds: {min: dn, max: up}};
+
+		const intraday: Array<{block_height: number; timestamp: number; price: number}> = output_prices.map((price, i) => ({
+			block_height: prices_blocks[i],
+			timestamp: prices_times[i],
+			price,
+		}));
+
+		return {central_price, deviation_pct: dev_pct, bounds: {min: dn, max: up}, intraday};
 	}
 
 	private findCentralOutput(points: number[], min: number, max: number): [number, number] {
@@ -391,9 +407,5 @@ export class BitcoinOracleService {
 		const m = deviations.length;
 		const mad = m % 2 === 0 ? (deviations[m / 2 - 1] + deviations[m / 2]) / 2 : deviations[Math.floor(m / 2)];
 		return [best_output, mad];
-	}
-
-	private renderHtmlPlaceholder(): string {
-		return '<!-- HTML rendering is disabled by default -->';
 	}
 }

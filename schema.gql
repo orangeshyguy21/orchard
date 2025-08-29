@@ -385,6 +385,31 @@ type OrchardBitcoinNetworkInfo {
   warnings: [String!]!
 }
 
+type OrchardBitcoinOracle {
+  block_window: OrchardBitcoinOracleBlockWindow!
+  bounds: OrchardBitcoinOracleBounds!
+  central_price: Float!
+  deviation_pct: Float!
+  intraday: [OrchardBitcoinOracleIntradayPoint!]
+  rough_price_estimate: Float!
+}
+
+type OrchardBitcoinOracleBlockWindow {
+  end: Int!
+  start: Int!
+}
+
+type OrchardBitcoinOracleBounds {
+  max: Float!
+  min: Float!
+}
+
+type OrchardBitcoinOracleIntradayPoint {
+  block_height: Int!
+  price: Float!
+  timestamp: Int!
+}
+
 type OrchardBitcoinTxFeeEstimate {
   blocks: Int!
   errors: [String!]
@@ -735,31 +760,6 @@ type OrchardNuts {
   nut20: OrchardNutSupported
 }
 
-type OrchardOracleBlockWindow {
-  end: Int!
-  start: Int!
-}
-
-type OrchardOracleBounds {
-  max: Float!
-  min: Float!
-}
-
-type OrchardOracleIntradayPoint {
-  block_height: Int!
-  price: Float!
-  timestamp: Int!
-}
-
-type OrchardOracleResult {
-  block_window: OrchardOracleBlockWindow!
-  bounds: OrchardOracleBounds!
-  central_price: Float!
-  deviation_pct: Float!
-  intraday: [OrchardOracleIntradayPoint!]
-  rough_price_estimate: Float!
-}
-
 type OrchardPublicImage {
   data: String
   type: String!
@@ -831,8 +831,8 @@ type Query {
   bitcoin_blockcount: OrchardBitcoinBlockCount!
   bitcoin_mempool_transactions: [OrchardBitcoinMempoolTransaction!]!
   bitcoin_network_info: OrchardBitcoinNetworkInfo!
-  bitcoin_oracle_date(date: String!): OrchardOracleResult!
-  bitcoin_oracle_recent: OrchardOracleResult!
+  bitcoin_oracle_date(date: String!): OrchardBitcoinOracle!
+  bitcoin_oracle_recent: OrchardBitcoinOracle!
   bitcoin_transaction_fee_estimates(targets: [Int!]!): [OrchardBitcoinTxFeeEstimate!]!
   lightning_balance: OrchardLightningBalance!
   lightning_info: OrchardLightningInfo!
