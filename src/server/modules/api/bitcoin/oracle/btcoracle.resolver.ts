@@ -12,16 +12,21 @@ export class BitcoinOracleResolver {
 	constructor(private bitcoinOracleService: BitcoinOracleService) {}
 
 	@Query(() => OrchardBitcoinOracle)
-	async bitcoin_oracle_recent(): Promise<OrchardBitcoinOracle> {
+	async bitcoin_oracle_recent(
+		@Args('include_intraday', {type: () => Boolean, nullable: true}) include_intraday?: boolean,
+	): Promise<OrchardBitcoinOracle> {
 		const tag = 'GET { bitcoin_oracle_recent }';
 		this.logger.debug(tag);
-		return await this.bitcoinOracleService.getRecentOracle(tag);
+		return await this.bitcoinOracleService.getRecentOracle(include_intraday, tag);
 	}
 
 	@Query(() => OrchardBitcoinOracle)
-	async bitcoin_oracle_date(@Args('date', {type: () => String}) date: string): Promise<OrchardBitcoinOracle> {
+	async bitcoin_oracle_date(
+		@Args('date', {type: () => String}) date: string,
+		@Args('include_intraday', {type: () => Boolean, nullable: true}) include_intraday?: boolean,
+	): Promise<OrchardBitcoinOracle> {
 		const tag = 'GET { bitcoin_oracle_date }';
 		this.logger.debug(tag);
-		return await this.bitcoinOracleService.getDateOracle(date, tag);
+		return await this.bitcoinOracleService.getDateOracle(date, include_intraday, tag);
 	}
 }

@@ -28,12 +28,17 @@ export class BitcoinUTXOracleService {
 
 	private async runRecentMode(options: UTXOracleRunOptions): Promise<UTXOracleResult> {
 		const recent_blocks = options.recent_blocks || this.getDefaultRecentBlocks();
+		const include_intraday = options.include_intraday === true;
 		const tip = await this.btc_rpc.getBitcoinBlockCount();
 		const consensus_tip = tip - 6;
 		const start = Math.max(0, consensus_tip - recent_blocks);
 		const end = consensus_tip;
 
-		const {central_price, rough_price_estimate, deviation_pct, bounds, intraday} = await this.computeWindow(start, end);
+		const {central_price, rough_price_estimate, deviation_pct, bounds, intraday} = await this.computeWindow(
+			start,
+			end,
+			include_intraday,
+		);
 
 		const result: UTXOracleResult = {
 			central_price,
@@ -41,22 +46,27 @@ export class BitcoinUTXOracleService {
 			deviation_pct,
 			bounds,
 			block_window: {start, end},
-			intraday,
+			...(include_intraday ? {intraday} : {}),
 		};
 		return result;
 	}
 
 	private async runDateMode(options: UTXOracleRunOptions): Promise<UTXOracleResult> {
 		if (!options.date) throw new Error('Date mode requires options.date in YYYY-MM-DD');
+		const include_intraday = options.include_intraday === true;
 		const {start, end} = await this.findBlockWindowForDate(options.date);
-		const {central_price, rough_price_estimate, deviation_pct, bounds, intraday} = await this.computeWindow(start, end);
+		const {central_price, rough_price_estimate, deviation_pct, bounds, intraday} = await this.computeWindow(
+			start,
+			end,
+			include_intraday,
+		);
 		return {
 			central_price,
 			rough_price_estimate,
 			deviation_pct,
 			bounds,
 			block_window: {start, end},
-			intraday,
+			...(include_intraday ? {intraday} : {}),
 		};
 	}
 
@@ -96,6 +106,7 @@ export class BitcoinUTXOracleService {
 	private async computeWindow(
 		start: number,
 		end: number,
+		include_intraday: boolean,
 	): Promise<{
 		central_price: number;
 		rough_price_estimate: number;
@@ -117,6 +128,7 @@ export class BitcoinUTXOracleService {
 			end,
 			rough_price_estimate,
 			window_txids,
+			include_intraday,
 		);
 		return {central_price, rough_price_estimate, deviation_pct, bounds, intraday};
 	}
@@ -295,6 +307,7 @@ export class BitcoinUTXOracleService {
 		end: number,
 		rough: number,
 		window_txids: Set<string>,
+		include_intraday: boolean,
 	): Promise<{
 		central_price: number;
 		deviation_pct: number;
@@ -348,8 +361,10 @@ export class BitcoinUTXOracleService {
 							}
 							if (append) {
 								output_prices.push(usd / n);
-								prices_blocks.push(height);
-								prices_times.push(timestamp);
+								if (include_intraday) {
+									prices_blocks.push(height);
+									prices_times.push(timestamp);
+								}
 							}
 						}
 					}
@@ -370,11 +385,13 @@ export class BitcoinUTXOracleService {
 		const price_range = up - dn;
 		const dev_pct = price_range ? mad / price_range : 0;
 
-		const intraday: Array<{block_height: number; timestamp: number; price: number}> = output_prices.map((price, i) => ({
-			block_height: prices_blocks[i],
-			timestamp: prices_times[i],
-			price,
-		}));
+		const intraday: Array<{block_height: number; timestamp: number; price: number}> = include_intraday
+			? output_prices.map((price, i) => ({
+					block_height: prices_blocks[i],
+					timestamp: prices_times[i],
+					price,
+				}))
+			: [];
 
 		return {central_price, deviation_pct: dev_pct, bounds: {min: dn, max: up}, intraday};
 	}

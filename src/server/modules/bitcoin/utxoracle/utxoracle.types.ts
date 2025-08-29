@@ -2,6 +2,7 @@ export type UTXOracleRunOptions = {
 	mode: 'date' | 'recent';
 	date?: string; // YYYY-MM-DD in UTC
 	recent_blocks?: number; // defaults to 144
+	include_intraday?: boolean; // include intraday data in result
 };
 
 export type UTXOracleResult = {

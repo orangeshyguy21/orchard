@@ -17,9 +17,9 @@ export class BitcoinOracleService {
 		private bitcoinUTXOracleService: BitcoinUTXOracleService,
 	) {}
 
-	public async getRecentOracle(tag: string = 'GET { bitcoin_oracle_recent }'): Promise<OrchardBitcoinOracle> {
+	public async getRecentOracle(include_intraday?: boolean, tag: string = 'GET { bitcoin_oracle_recent }'): Promise<OrchardBitcoinOracle> {
 		try {
-			const res = await this.bitcoinUTXOracleService.runOracle({mode: 'recent'});
+			const res = await this.bitcoinUTXOracleService.runOracle({mode: 'recent', include_intraday});
 			return res as unknown as OrchardBitcoinOracle;
 		} catch (error) {
 			const error_code = this.errorService.resolveError(this.logger, error, tag, {
@@ -29,9 +29,13 @@ export class BitcoinOracleService {
 		}
 	}
 
-	public async getDateOracle(date: string, tag: string = 'GET { bitcoin_oracle_date }'): Promise<OrchardBitcoinOracle> {
+	public async getDateOracle(
+		date: string,
+		include_intraday?: boolean,
+		tag: string = 'GET { bitcoin_oracle_date }',
+	): Promise<OrchardBitcoinOracle> {
 		try {
-			const res = await this.bitcoinUTXOracleService.runOracle({mode: 'date', date});
+			const res = await this.bitcoinUTXOracleService.runOracle({mode: 'date', date, include_intraday});
 			return res as unknown as OrchardBitcoinOracle;
 		} catch (error) {
 			const error_code = this.errorService.resolveError(this.logger, error, tag, {
