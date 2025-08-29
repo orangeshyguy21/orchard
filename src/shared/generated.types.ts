@@ -997,7 +997,7 @@ export type Query = {
   mint_analytics_keysets: Array<OrchardMintKeysetsAnalytics>;
   mint_analytics_melts: Array<OrchardMintAnalytics>;
   mint_analytics_mints: Array<OrchardMintAnalytics>;
-  mint_analytics_transfers: Array<OrchardMintAnalytics>;
+  mint_analytics_swaps: Array<OrchardMintAnalytics>;
   mint_balances: Array<OrchardMintBalance>;
   mint_balances_issued: Array<OrchardMintBalance>;
   mint_balances_redeemed: Array<OrchardMintBalance>;
@@ -1083,7 +1083,7 @@ export type QueryMint_Analytics_MintsArgs = {
 };
 
 
-export type QueryMint_Analytics_TransfersArgs = {
+export type QueryMint_Analytics_SwapsArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   interval?: InputMaybe<MintAnalyticsInterval>;
