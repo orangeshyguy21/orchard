@@ -2,28 +2,29 @@ services:
   orchard:
     build: .
     ports:
-      - "3321:3321"
+      - "${SERVER_PORT}:${SERVER_PORT}"
     env_file:
-      - .env  # This passes ALL variables from .env file
+      - .env
     environment:
       - NODE_ENV=production
       - SERVER_HOST=0.0.0.0
       - DOCKER_ENV=true
       # Lightning Network (container paths)
-      - LIGHTNING_MACAROON=/app/certs/lightning/admin.macaroon
+      - LIGHTNING_MACAROON=/app/certs/lightning/orchard.macaroon
       - LIGHTNING_CERT=/app/certs/lightning/tls.cert
       # Taproot Assets (container paths)
-      - TAPROOT_ASSETS_MACAROON=/app/certs/taproot/admin.macaroon
+      - TAPROOT_ASSETS_MACAROON=/app/certs/taproot/orchard.macaroon
       - TAPROOT_ASSETS_CERT=/app/certs/taproot/tls.cert
       # Mint (container paths)
       - MINT_RPC_KEY=/app/certs/mint/rpc.key
       - MINT_RPC_CERT=/app/certs/mint/rpc.cert
       - MINT_RPC_CA=/app/certs/mint/rpc.ca
+    tmpfs:
+      - /app/data/tmp
     volumes:
-      # Only mount if the files exist (conditional mounting)
       - type: bind
         source: ${LIGHTNING_MACAROON}
-        target: /app/certs/lightning/admin.macaroon
+        target: /app/certs/lightning/orchard.macaroon
         read_only: true
         bind:
           create_host_path: false
@@ -35,7 +36,7 @@ services:
           create_host_path: false
       - type: bind
         source: ${TAPROOT_ASSETS_MACAROON}
-        target: /app/certs/taproot/admin.macaroon
+        target: /app/certs/taproot/orchard.macaroon
         read_only: true
         bind:
           create_host_path: false

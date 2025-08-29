@@ -55,6 +55,7 @@ COPY --from=build /app/public/ ./public
 # RUN chown -R nestjs:nodejs /app
 # USER nestjs
 
-EXPOSE 3321
+ARG SERVER_PORT=3321
+EXPOSE ${SERVER_PORT}
 
 CMD ["npm", "run", "start"]
