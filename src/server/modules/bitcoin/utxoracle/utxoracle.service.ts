@@ -120,7 +120,7 @@ export class BitcoinUTXOracleService {
 		const histogram = await this.buildHistogram(start, end, window_txids);
 		// 2) Smooth/normalize
 		this.smoothAndNormalize(histogram);
-		// 3) Slide stencils and compute rough price
+		// 3) Slide stencils and compute rough price (neighbor-weighted)
 		const rough_price_estimate = this.computeRoughPrice(histogram);
 		// 4) Create intraday points and compute central price + deviation
 		const {central_price, deviation_pct, bounds, intraday} = await this.computeCentralPrice(
@@ -143,35 +143,100 @@ export class BitcoinUTXOracleService {
 		return set;
 	}
 
+	private output_bins_cache: number[] | null = null;
+	private getOutputHistogramBins(): number[] {
+		if (this.output_bins_cache) return this.output_bins_cache;
+		const bins: number[] = [0.0];
+		for (let exponent = -6; exponent < 6; exponent++) {
+			for (let b = 0; b < 200; b++) {
+				bins.push(10 ** (exponent + b / 200));
+			}
+		}
+		this.output_bins_cache = bins;
+		return bins;
+	}
+
+	private upperBound(arr: number[], target: number): number {
+		let lo = 0,
+			hi = arr.length;
+		while (lo < hi) {
+			const mid = (lo + hi) >>> 1;
+			if (arr[mid] <= target) lo = mid + 1;
+			else hi = mid;
+		}
+		return lo;
+	}
+
+	private mapAmountToBin(amount: number): number {
+		const bins = this.getOutputHistogramBins();
+		let idx = this.upperBound(bins, amount) - 1;
+		if (idx < 0) idx = 0;
+		if (idx >= bins.length) idx = bins.length - 1;
+		return idx;
+	}
+
 	private async buildHistogram(start: number, end: number, window_txids: Set<string>): Promise<Float64Array> {
-		// Histogram binning aligned to oracle.py constants
-		const num_bins = 1 + 200 * (6 - -6); // zero + 200 per decade across [-6,5]
 		const counts = new Float64Array(1 + 200 * 12);
 		const min_btc = this.getMinBtc();
 		const max_btc = this.getMaxBtc();
+		const seen_txids = new Set<string>();
 
 		for (let height = start; height <= end; height++) {
 			const hash = await this.btc_rpc.getBitcoinBlockHash(height);
-			const block = await this.btc_rpc.getBitcoinBlock(hash); // verbosity=2 typed
+			const block = await this.btc_rpc.getBitcoinBlock(hash);
 			for (const tx of block.tx) {
-				const is_coinbase = !!tx.vin.find((v) => !v.txid && v.vout === undefined);
-				if (is_coinbase) continue;
-				if (tx.vin.length > 5) continue;
-				if (tx.vout.length !== 2) continue;
+				// coinbase detection
+				const is_coinbase = (tx.vin || []).some((v: any) => v.coinbase !== undefined || (!v.txid && v.vout === undefined));
+				if (is_coinbase) {
+					if (tx.txid) seen_txids.add(tx.txid);
+					continue;
+				}
+				if (tx.vin.length > 5) {
+					if (tx.txid) seen_txids.add(tx.txid);
+					continue;
+				}
+				if (tx.vout.length !== 2) {
+					if (tx.txid) seen_txids.add(tx.txid);
+					continue;
+				}
 				const has_op_return = tx.vout.some((v) => v.scriptPubKey?.type === 'nulldata');
-				if (has_op_return) continue;
-				// Same-day input exclusion: if any input references a txid in this window
-				const same_day_input = (tx.vin || []).some((v) => v.txid && window_txids.has(v.txid));
-				if (same_day_input) continue;
-				// Witness length threshold approximation
-				const witness_exceeds = (tx.vin || []).some((v) => (v.txinwitness || []).some((w) => Buffer.from(w, 'hex').length > 500));
-				if (witness_exceeds) continue;
+				if (has_op_return) {
+					if (tx.txid) seen_txids.add(tx.txid);
+					continue;
+				}
+				// same-day input exclusion: only consider inputs referencing already-seen txids
+				const same_day_input = (tx.vin || []).some((v: any) => v.txid && seen_txids.has(v.txid));
+				if (same_day_input) {
+					if (tx.txid) seen_txids.add(tx.txid);
+					continue;
+				}
+				// witness length threshold: sum per-input stack and cap at 500 total or item
+				let witness_exceeds = false;
+				for (const v of tx.vin || []) {
+					const w = (v.txinwitness || []) as string[];
+					if (!w || w.length === 0) continue;
+					let total = 0;
+					for (const item of w) {
+						const len = Buffer.from(item, 'hex').length;
+						total += len;
+						if (len > 500 || total > 500) {
+							witness_exceeds = true;
+							break;
+						}
+					}
+					if (witness_exceeds) break;
+				}
+				if (witness_exceeds) {
+					if (tx.txid) seen_txids.add(tx.txid);
+					continue;
+				}
 				for (const vout of tx.vout) {
 					const value_btc = vout.value;
 					if (value_btc <= min_btc || value_btc >= max_btc) continue;
-					const bin_index = this.mapAmountToBin(value_btc, num_bins);
-					if (bin_index >= 0 && bin_index < counts.length) counts[bin_index] += 1;
+					const bin_index = this.mapAmountToBin(value_btc);
+					if (bin_index >= 0 && bin_index < counts.length) counts[bin_index] += 1.0;
 				}
+				if (tx.txid) seen_txids.add(tx.txid);
 			}
 		}
 		return counts;
@@ -187,18 +252,6 @@ export class BitcoinUTXOracleService {
 		const v = this.config_service.get<string>('ORACLE_MAX_OUTPUT_BTC');
 		const n = v ? Number(v) : NaN;
 		return Number.isFinite(n) ? n : 1e5;
-	}
-
-	private mapAmountToBin(amount: number, num_bins: number): number {
-		const first_bin_value = -6;
-		const last_bin_value = 6;
-		const range = last_bin_value - first_bin_value;
-		const amount_log = Math.log10(amount);
-		const percent_in_range = (amount_log - first_bin_value) / range;
-		let est = Math.floor(percent_in_range * num_bins);
-		if (est < 0) est = 0;
-		if (est >= num_bins) est = num_bins - 1;
-		return est;
 	}
 
 	private smoothAndNormalize(counts: Float64Array): void {
@@ -283,9 +336,25 @@ export class BitcoinUTXOracleService {
 			}
 			total_score += score;
 		}
-		const usd100_in_btc_best_bin = center_p001 + best_slide;
-		const usd100_in_btc = this.binIndexToAmount(usd100_in_btc_best_bin);
-		return Math.floor(100 / usd100_in_btc);
+		// Neighbor-weighted refinement like python
+		const best_bin = center_p001 + best_slide;
+		const best_price = 100 / this.binIndexToAmount(best_bin);
+		const neighbor_up = counts.slice(left + best_slide + 1, right + best_slide + 1);
+		let neighbor_up_score = 0;
+		for (let i = 0; i < len && i < neighbor_up.length; i++) neighbor_up_score += neighbor_up[i] * spike[i];
+		const neighbor_down = counts.slice(left + best_slide - 1, right + best_slide - 1);
+		let neighbor_down_score = 0;
+		for (let i = 0; i < len && i < neighbor_down.length; i++) neighbor_down_score += neighbor_down[i] * spike[i];
+		const best_neighbor_dir = neighbor_down_score > neighbor_up_score ? -1 : +1;
+		const neighbor_bin = center_p001 + best_slide + best_neighbor_dir;
+		const neighbor_price = 100 / this.binIndexToAmount(neighbor_bin);
+		const avg_score = total_score / (max_slide - min_slide);
+		const a1 = best_score - avg_score;
+		const a2 = Math.abs((best_neighbor_dir === -1 ? neighbor_down_score : neighbor_up_score) - avg_score);
+		const w1 = a1 / (a1 + a2);
+		const w2 = a2 / (a1 + a2);
+		const rough = w1 * best_price + w2 * neighbor_price;
+		return Math.floor(rough);
 	}
 
 	private binIndexToAmount(bin_index: number): number {
@@ -318,31 +387,64 @@ export class BitcoinUTXOracleService {
 		const pct_range_wide = 0.25;
 		const pct_micro_remove = 0.0001;
 		const micro_list: number[] = [];
-		for (let i = 0.00005; i < 0.0001; i += 0.00001) micro_list.push(Number(i.toFixed(8)));
-		for (let i = 0.0001; i < 0.001; i += 0.00001) micro_list.push(Number(i.toFixed(8)));
-		for (let i = 0.001; i < 0.01; i += 0.0001) micro_list.push(Number(i.toFixed(8)));
-		for (let i = 0.01; i < 0.1; i += 0.001) micro_list.push(Number(i.toFixed(8)));
-		for (let i = 0.1; i < 1; i += 0.01) micro_list.push(Number(i.toFixed(8)));
+		for (let i = 0.00005; i < 0.0001; i += 0.00001) micro_list.push(i);
+		for (let i = 0.0001; i < 0.001; i += 0.00001) micro_list.push(i);
+		for (let i = 0.001; i < 0.01; i += 0.0001) micro_list.push(i);
+		for (let i = 0.01; i < 0.1; i += 0.001) micro_list.push(i);
+		for (let i = 0.1; i < 1; i += 0.01) micro_list.push(i);
 
 		const output_prices: number[] = [];
 		const prices_blocks: number[] = [];
 		const prices_times: number[] = [];
+		const seen_txids = new Set<string>();
 
 		for (let height = start; height <= end; height++) {
 			const hash = await this.btc_rpc.getBitcoinBlockHash(height);
 			const block = await this.btc_rpc.getBitcoinBlock(hash);
 			const timestamp = block.time;
 			for (const tx of block.tx) {
-				const is_coinbase = !!tx.vin.find((v) => !v.txid && v.vout === undefined);
-				if (is_coinbase) continue;
-				if (tx.vin.length > 5) continue;
-				if (tx.vout.length !== 2) continue;
+				const is_coinbase = (tx.vin || []).some((v: any) => v.coinbase !== undefined || (!v.txid && v.vout === undefined));
+				if (is_coinbase) {
+					if (tx.txid) seen_txids.add(tx.txid);
+					continue;
+				}
+				if (tx.vin.length > 5) {
+					if (tx.txid) seen_txids.add(tx.txid);
+					continue;
+				}
+				if (tx.vout.length !== 2) {
+					if (tx.txid) seen_txids.add(tx.txid);
+					continue;
+				}
 				const has_op_return = tx.vout.some((v) => v.scriptPubKey?.type === 'nulldata');
-				if (has_op_return) continue;
-				const same_day_input = (tx.vin || []).some((v) => v.txid && window_txids.has(v.txid));
-				if (same_day_input) continue;
-				const witness_exceeds = (tx.vin || []).some((v) => (v.txinwitness || []).some((w) => Buffer.from(w, 'hex').length > 500));
-				if (witness_exceeds) continue;
+				if (has_op_return) {
+					if (tx.txid) seen_txids.add(tx.txid);
+					continue;
+				}
+				const same_day_input = (tx.vin || []).some((v: any) => v.txid && seen_txids.has(v.txid));
+				if (same_day_input) {
+					if (tx.txid) seen_txids.add(tx.txid);
+					continue;
+				}
+				let witness_exceeds = false;
+				for (const v of tx.vin || []) {
+					const w = (v.txinwitness || []) as string[];
+					if (!w || w.length === 0) continue;
+					let total = 0;
+					for (const item of w) {
+						const len = Buffer.from(item, 'hex').length;
+						total += len;
+						if (len > 500 || total > 500) {
+							witness_exceeds = true;
+							break;
+						}
+					}
+					if (witness_exceeds) break;
+				}
+				if (witness_exceeds) {
+					if (tx.txid) seen_txids.add(tx.txid);
+					continue;
+				}
 				for (const vout of tx.vout) {
 					const n = vout.value;
 					for (const usd of usds) {
@@ -369,14 +471,17 @@ export class BitcoinUTXOracleService {
 						}
 					}
 				}
+				if (tx.txid) seen_txids.add(tx.txid);
 			}
 		}
 
 		const pct_range_tight = 0.05;
-		let center = rough;
+		const center = rough;
 		let up = center * (1 + pct_range_tight);
 		let dn = center * (1 - pct_range_tight);
 		let [central_price, mad] = this.findCentralOutput(output_prices, dn, up);
+
+		// Match python: no iterative re-centering loop (their loop is effectively a no-op)
 
 		const pct_range_med = 0.1;
 		up = central_price * (1 + pct_range_med);
@@ -386,14 +491,10 @@ export class BitcoinUTXOracleService {
 		const dev_pct = price_range ? mad / price_range : 0;
 
 		const intraday: Array<{block_height: number; timestamp: number; price: number}> = include_intraday
-			? output_prices.map((price, i) => ({
-					block_height: prices_blocks[i],
-					timestamp: prices_times[i],
-					price,
-				}))
+			? output_prices.map((price, i) => ({block_height: prices_blocks[i], timestamp: prices_times[i], price}))
 			: [];
 
-		return {central_price, deviation_pct: dev_pct, bounds: {min: dn, max: up}, intraday};
+		return {central_price: Math.floor(central_price), deviation_pct: dev_pct, bounds: {min: dn, max: up}, intraday};
 	}
 
 	private findCentralOutput(points: number[], min: number, max: number): [number, number] {
