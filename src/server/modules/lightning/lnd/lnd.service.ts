@@ -36,7 +36,16 @@ export class LndService {
 		const ssl_creds = grpc.credentials.createSsl(cert_content);
 		const combined_creds = grpc.credentials.combineChannelCredentials(ssl_creds, macaroon_creds);
 
-		return {rpc_url, combined_creds};
+		// When running in Docker, we connect to host.docker.internal but need to verify against localhost
+		let channel_options: Record<string, any> | undefined = undefined;
+		if (rpc_host?.includes('host.docker.internal')) {
+			channel_options = {
+				'grpc.ssl_target_name_override': 'localhost',
+				'grpc.default_authority': 'localhost',
+			};
+		}
+
+		return {rpc_url, combined_creds, channel_options};
 	}
 
 	private initializeGrpcClient(proto_paths: string[], package_namespace: string, client_class: string): grpc.Client {
@@ -53,7 +62,7 @@ export class LndService {
 			});
 			const grpc_package: any = grpc.loadPackageDefinition(package_definition)[package_namespace];
 			this.logger.log(`${client_class} gRPC client initialized with TLS certificate authentication`);
-			return new grpc_package[client_class](credentials.rpc_url, credentials.combined_creds);
+			return new grpc_package[client_class](credentials.rpc_url, credentials.combined_creds, credentials.channel_options);
 		} catch (error) {
 			this.logger.error(`Failed to initialize ${client_class} gRPC client: ${error.message}`);
 			throw error;
