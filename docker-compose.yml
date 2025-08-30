@@ -2,7 +2,7 @@ services:
   orchard:
     build: .
     ports:
-      - "${SERVER_PORT}:${SERVER_PORT}"
+      - "${SERVER_PORT:-3321}:${SERVER_PORT:-3321}"
     env_file:
       - .env
     environment:
