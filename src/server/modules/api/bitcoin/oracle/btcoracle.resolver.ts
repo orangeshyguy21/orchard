@@ -14,22 +14,12 @@ export class BitcoinOracleResolver {
 
 	@Query(() => OrchardBitcoinOracle)
 	@Throttle({default: {limit: 2, ttl: minutes(60)}})
-	async bitcoin_oracle_recent(
-		@Args('include_intraday', {type: () => Boolean, nullable: true}) include_intraday?: boolean,
-	): Promise<OrchardBitcoinOracle> {
-		const tag = 'GET { bitcoin_oracle_recent }';
-		this.logger.debug(tag);
-		return await this.bitcoinOracleService.getRecentOracle(include_intraday, tag);
-	}
-
-	@Query(() => OrchardBitcoinOracle)
-	@Throttle({default: {limit: 2, ttl: minutes(60)}})
-	async bitcoin_oracle_date(
+	async bitcoin_oracle(
 		@Args('date', {type: () => String}) date: string,
-		@Args('include_intraday', {type: () => Boolean, nullable: true}) include_intraday?: boolean,
+		@Args('intraday', {type: () => Boolean, nullable: true}) intraday?: boolean,
 	): Promise<OrchardBitcoinOracle> {
 		const tag = 'GET { bitcoin_oracle_date }';
 		this.logger.debug(tag);
-		return await this.bitcoinOracleService.getDateOracle(date, include_intraday, tag);
+		return await this.bitcoinOracleService.getOracle(tag, {date, intraday});
 	}
 }

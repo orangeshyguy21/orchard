@@ -14,10 +14,9 @@ export class BitcoinUTXOracleService {
 	) {}
 
 	public async runOracle(options: UTXOracleRunOptions): Promise<UTXOracleResult> {
-		const mode = options.mode;
-		if (mode === 'recent') return this.runRecentMode(options);
-		if (mode === 'date') return this.runDateMode(options);
-		throw new Error('Invalid oracle mode');
+		const date = options.date;
+		if (date) return this.runDateMode(options);
+		return this.runRecentMode(options);
 	}
 
 	private getDefaultRecentBlocks(): number {
@@ -28,7 +27,7 @@ export class BitcoinUTXOracleService {
 
 	private async runRecentMode(options: UTXOracleRunOptions): Promise<UTXOracleResult> {
 		const recent_blocks = options.recent_blocks || this.getDefaultRecentBlocks();
-		const include_intraday = options.include_intraday === true;
+		const include_intraday = options.intraday === true;
 		const tip = await this.btc_rpc.getBitcoinBlockCount();
 		const consensus_tip = tip - 6;
 		const start = Math.max(0, consensus_tip - recent_blocks);
@@ -53,7 +52,7 @@ export class BitcoinUTXOracleService {
 
 	private async runDateMode(options: UTXOracleRunOptions): Promise<UTXOracleResult> {
 		if (!options.date) throw new Error('Date mode requires options.date in YYYY-MM-DD');
-		const include_intraday = options.include_intraday === true;
+		const include_intraday = options.intraday === true;
 		const {start, end} = await this.findBlockWindowForDate(options.date);
 		const {central_price, rough_price_estimate, deviation_pct, bounds, intraday} = await this.computeWindow(
 			start,

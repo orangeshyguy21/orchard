@@ -5,6 +5,7 @@ import {ErrorService} from '@server/modules/error/error.service';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 import {BitcoinUTXOracleService} from '@server/modules/bitcoin/utxoracle/utxoracle.service';
+import {UTXOracleRunOptions} from '@server/modules/bitcoin/utxoracle/utxoracle.types';
 /* Local Dependencies */
 import {OrchardBitcoinOracle} from './btcoracle.model';
 
@@ -17,25 +18,10 @@ export class BitcoinOracleService {
 		private bitcoinUTXOracleService: BitcoinUTXOracleService,
 	) {}
 
-	public async getRecentOracle(include_intraday?: boolean, tag: string = 'GET { bitcoin_oracle_recent }'): Promise<OrchardBitcoinOracle> {
+	public async getOracle(tag: string, options: UTXOracleRunOptions): Promise<OrchardBitcoinOracle> {
 		try {
-			const res = await this.bitcoinUTXOracleService.runOracle({mode: 'recent', include_intraday});
-			return res as unknown as OrchardBitcoinOracle;
-		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
-				errord: OrchardErrorCode.BitcoinRPCError,
-			});
-			throw new OrchardApiError(error_code);
-		}
-	}
-
-	public async getDateOracle(
-		date: string,
-		include_intraday?: boolean,
-		tag: string = 'GET { bitcoin_oracle_date }',
-	): Promise<OrchardBitcoinOracle> {
-		try {
-			const res = await this.bitcoinUTXOracleService.runOracle({mode: 'date', date, include_intraday});
+			// will want to refacgtor to use timestamps when fully integrated.
+			const res = await this.bitcoinUTXOracleService.runOracle(options);
 			return res as unknown as OrchardBitcoinOracle;
 		} catch (error) {
 			const error_code = this.errorService.resolveError(this.logger, error, tag, {
