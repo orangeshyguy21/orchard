@@ -49,11 +49,6 @@ COPY --from=build /app/proto/ ./proto
 # Copy Angular public assets
 COPY --from=build /app/public/ ./public
 
-# # Create non-root user for security
-# RUN addgroup -g 1001 -S nodejs
-# RUN adduser -S nestjs -u 1001
-# RUN chown -R nestjs:nodejs /app
-# USER nestjs
 
 ARG SERVER_PORT=3321
 EXPOSE ${SERVER_PORT}
