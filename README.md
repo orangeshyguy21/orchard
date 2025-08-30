@@ -99,12 +99,14 @@ npm run start
 
 ### Sqlite Cashu Mint
 ```
-docker compose -f docker-compose.yml -f docker-compose.sqlite.yml up --build
+docker compose build orchard
+docker compose -f docker-compose.yml -f docker-compose.sqlite.yml up -d
 ```
 
 ### Postgres Cashu Mint
 ```
-docker compose up --build
+docker compose build orchard
+docker compose up -d
 ```
 
 <br>
