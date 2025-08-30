@@ -4,7 +4,7 @@ import {trigger, transition, style, animate} from '@angular/animations';
 /* Vendor Dependencies */
 import {BaseChartDirective} from 'ng2-charts';
 import {ChartConfiguration, ScaleChartOptions, ChartType as ChartJsType} from 'chart.js';
-import {DateTime, DateTimeUnit} from 'luxon';
+import {DateTime} from 'luxon';
 import {Subscription} from 'rxjs';
 /* Application Dependencies */
 import {NonNullableMintDashboardSettings} from '@client/modules/settings/types/setting.types';
@@ -30,8 +30,6 @@ import {ChartService} from '@client/modules/chart/services/chart/chart.service';
 /* Native Dependencies */
 import {MintAnalytic} from '@client/modules/mint/classes/mint-analytic.class';
 import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
-/* Shared Dependencies */
-import {MintAnalyticsInterval} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-analytic-chart',
@@ -66,7 +64,7 @@ export class MintAnalyticChartComponent implements OnChanges, OnDestroy {
 	public chart_type!: ChartJsType;
 	public chart_data!: ChartConfiguration['data'];
 	public chart_options!: ChartConfiguration['options'];
-	public displayed: boolean = true;
+	public displayed: boolean = false;
 
 	private subscriptions: Subscription = new Subscription();
 
@@ -100,7 +98,7 @@ export class MintAnalyticChartComponent implements OnChanges, OnDestroy {
 		});
 	}
 
-	private async init(): Promise<void> {
+	private init(): void {
 		switch (this.selected_type) {
 			case ChartType.Summary:
 				this.chart_type = 'line';
@@ -119,6 +117,13 @@ export class MintAnalyticChartComponent implements OnChanges, OnDestroy {
 				this.chart_options = this.getAmountChartOptions();
 				break;
 		}
+		setTimeout(() => {
+			this.chart?.chart?.resize();
+		});
+		setTimeout(() => {
+			this.displayed = true;
+			this.cdr.detectChanges();
+		}, 50);
 	}
 
 	private getAmountChartData(): ChartConfiguration['data'] {
@@ -187,6 +192,7 @@ export class MintAnalyticChartComponent implements OnChanges, OnDestroy {
 			});
 
 		return {
+			responsive: true,
 			maintainAspectRatio: false,
 			elements: {
 				line: {
@@ -257,6 +263,7 @@ export class MintAnalyticChartComponent implements OnChanges, OnDestroy {
 
 		return {
 			responsive: true,
+			maintainAspectRatio: false,
 			scales: {
 				x: {
 					...getXAxisConfig(this.page_settings.interval, this.locale),

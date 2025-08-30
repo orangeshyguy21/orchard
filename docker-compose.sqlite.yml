@@ -1,0 +1,10 @@
+services:
+  orchard:
+    environment:
+      - MINT_DATABASE=/app/data/mint-data/db.sqlite
+    volumes:
+      - type: bind
+        source: ${MINT_DATABASE}
+        target: /app/data/mint-data/db.sqlite
+        bind:
+          create_host_path: false

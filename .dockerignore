@@ -1,0 +1,11 @@
+.git
+.gitignore
+.cache
+*.md
+!README*.md
+/node_modules
+/dist
+/.github
+.vscode
+CHANGELOG.md
+.env.example

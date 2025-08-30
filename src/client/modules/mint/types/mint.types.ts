@@ -64,8 +64,8 @@ export type MintAnalyticsMeltsResponse = {
 	mint_analytics_melts: OrchardMintAnalytics[];
 };
 
-export type MintAnalyticsTransfersResponse = {
-	mint_analytics_transfers: OrchardMintAnalytics[];
+export type MintAnalyticsSwapsResponse = {
+	mint_analytics_swaps: OrchardMintAnalytics[];
 };
 
 export type MintAnalyticsFeesResponse = {

@@ -66,13 +66,10 @@ export class MintAnalyticsService {
 		});
 	}
 
-	async getMintAnalyticsTransfers(tag: string, args: CashuMintAnalyticsArgs): Promise<OrchardMintAnalytics[]> {
+	async getMintAnalyticsSwaps(tag: string, args: CashuMintAnalyticsArgs): Promise<OrchardMintAnalytics[]> {
 		return this.mintService.withDbClient(async (client) => {
 			try {
-				const cashu_mint_analytics: CashuMintAnalytics[] = await this.cashuMintDatabaseService.getMintAnalyticsTransfers(
-					client,
-					args,
-				);
+				const cashu_mint_analytics: CashuMintAnalytics[] = await this.cashuMintDatabaseService.getMintAnalyticsSwaps(client, args);
 				return cashu_mint_analytics.map((cma) => new OrchardMintAnalytics(cma));
 			} catch (error) {
 				const error_code = this.errorService.resolveError(this.logger, error, tag, {

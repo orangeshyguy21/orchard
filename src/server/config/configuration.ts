@@ -1,9 +1,21 @@
 /* Local Dependencies */
 import {Config} from './configuration.type';
 
+const replaceLocalhostInDocker = (host: string | undefined): string | undefined => {
+	if (!host) return host;
+	if (!process.env.DOCKER_ENV) return host;
+	return host
+		.replace(/\/\/localhost(?=[:/]|$)/gi, '//host.docker.internal')
+		.replace(/\/\/127\.0\.0\.1(?=[:/]|$)/g, '//host.docker.internal')
+		.replace(/\blocalhost\b/gi, 'host.docker.internal')
+		.replace(/\b127\.0\.0\.1\b/g, 'host.docker.internal')
+		.replace(/\[::1\]/g, 'host.docker.internal')
+		.replace(/::1(?=[:/]|$)/g, 'host.docker.internal');
+};
+
 export const config = (): Config => {
 	const mode = {
-		production: process.env.PRODUCTION === 'true',
+		production: process.env.NODE_ENV === 'production',
 	};
 
 	const server = {
@@ -19,7 +31,7 @@ export const config = (): Config => {
 
 	const bitcoin = {
 		type: process.env.BITCOIN_TYPE,
-		host: process.env.BITCOIN_RPC_HOST,
+		host: replaceLocalhostInDocker(process.env.BITCOIN_RPC_HOST),
 		port: process.env.BITCOIN_RPC_PORT,
 		user: process.env.BITCOIN_RPC_USER,
 		pass: process.env.BITCOIN_RPC_PASSWORD,
@@ -27,7 +39,7 @@ export const config = (): Config => {
 
 	const lightning = {
 		type: process.env.LIGHTNING_TYPE,
-		host: process.env.LIGHTNING_RPC_HOST,
+		host: replaceLocalhostInDocker(process.env.LIGHTNING_RPC_HOST),
 		port: process.env.LIGHTNING_RPC_PORT,
 		macaroon: process.env.LIGHTNING_MACAROON,
 		cert: process.env.LIGHTNING_CERT,
@@ -35,7 +47,7 @@ export const config = (): Config => {
 
 	const taproot_assets = {
 		type: process.env.TAPROOT_ASSETS_TYPE,
-		host: process.env.TAPROOT_ASSETS_RPC_HOST,
+		host: replaceLocalhostInDocker(process.env.TAPROOT_ASSETS_RPC_HOST),
 		port: process.env.TAPROOT_ASSETS_RPC_PORT,
 		macaroon: process.env.TAPROOT_ASSETS_MACAROON,
 		cert: process.env.TAPROOT_ASSETS_CERT,
@@ -43,10 +55,10 @@ export const config = (): Config => {
 
 	const cashu = {
 		type: process.env.MINT_TYPE,
-		api: process.env.MINT_API,
-		database_type: process.env.MINT_DATABASE.includes('postgres://') ? 'postgres' : 'sqlite',
-		database: process.env.MINT_DATABASE,
-		rpc_host: process.env.MINT_RPC_HOST,
+		api: replaceLocalhostInDocker(process.env.MINT_API),
+		database_type: process.env.MINT_DATABASE?.includes('postgres://') ? 'postgres' : 'sqlite',
+		database: replaceLocalhostInDocker(process.env.MINT_DATABASE),
+		rpc_host: replaceLocalhostInDocker(process.env.MINT_RPC_HOST),
 		rpc_port: process.env.MINT_RPC_PORT,
 		rpc_key: process.env.MINT_RPC_KEY,
 		rpc_cert: process.env.MINT_RPC_CERT,
@@ -54,7 +66,7 @@ export const config = (): Config => {
 	};
 
 	const ai = {
-		api: process.env.AI_API,
+		api: replaceLocalhostInDocker(process.env.AI_API),
 	};
 
 	const config = {

@@ -80,7 +80,7 @@ nano .env
 
 # Production Setup
 
-## Run the application
+## Run the application (standard)
 ```bash
 npm install
 npm run build
@@ -93,6 +93,20 @@ git pull
 npm install
 npm run build
 npm run start
+```
+
+## Run the application (docker)
+
+### Sqlite Cashu Mint
+```
+docker compose build orchard
+docker compose -f docker-compose.yml -f docker-compose.sqlite.yml up -d
+```
+
+### Postgres Cashu Mint
+```
+docker compose build orchard
+docker compose up -d
 ```
 
 <br>

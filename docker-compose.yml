@@ -1,0 +1,67 @@
+services:
+  orchard:
+    build: .
+    ports:
+      - "${SERVER_PORT:-3321}:${SERVER_PORT:-3321}"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - SERVER_HOST=0.0.0.0
+      - DOCKER_ENV=true
+      # Lightning Network (container paths)
+      - LIGHTNING_MACAROON=/app/certs/lightning/orchard.macaroon
+      - LIGHTNING_CERT=/app/certs/lightning/tls.cert
+      # Taproot Assets (container paths)
+      - TAPROOT_ASSETS_MACAROON=/app/certs/taproot/orchard.macaroon
+      - TAPROOT_ASSETS_CERT=/app/certs/taproot/tls.cert
+      # Mint (container paths)
+      - MINT_RPC_KEY=/app/certs/mint/rpc.key
+      - MINT_RPC_CERT=/app/certs/mint/rpc.cert
+      - MINT_RPC_CA=/app/certs/mint/rpc.ca
+    tmpfs:
+      - /app/data/tmp
+    volumes:
+      - type: bind
+        source: ${LIGHTNING_MACAROON}
+        target: /app/certs/lightning/orchard.macaroon
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${LIGHTNING_CERT}
+        target: /app/certs/lightning/tls.cert
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${TAPROOT_ASSETS_MACAROON}
+        target: /app/certs/taproot/orchard.macaroon
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${TAPROOT_ASSETS_CERT}
+        target: /app/certs/taproot/tls.cert
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${MINT_RPC_KEY}
+        target: /app/certs/mint/rpc.key
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${MINT_RPC_CERT}
+        target: /app/certs/mint/rpc.cert
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${MINT_RPC_CA}
+        target: /app/certs/mint/rpc.ca
+        read_only: true
+        bind:
+          create_host_path: false
+    restart: unless-stopped

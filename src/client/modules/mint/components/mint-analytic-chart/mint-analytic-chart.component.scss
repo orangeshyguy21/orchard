@@ -3,13 +3,12 @@
 .mint-analytic-chart-container {
 	@extend %p-b-1;
 	@extend %relative;
-
 	max-height: max(calc(100vh - 530px), 300px);
 	min-height: 300px;
 
 	canvas {
-		max-height: max(calc(100vh - 530px), 300px);
-		min-height: 300px;
+		height: 100% !important;
+		width: 100% !important;
 	}
 }
 
