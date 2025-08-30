@@ -36,6 +36,7 @@ export class TapdService {
 		const ssl_creds = grpc.credentials.createSsl(cert_content);
 		const combined_creds = grpc.credentials.combineChannelCredentials(ssl_creds, macaroon_creds);
 
+		// When running in Docker, we connect to host.docker.internal but need to verify against localhost
 		let channel_options: Record<string, any> | undefined = undefined;
 		if (rpc_host?.includes('host.docker.internal')) {
 			channel_options = {
