@@ -508,6 +508,35 @@ export type OrchardBitcoinNetworkInfo = {
   warnings: Array<Scalars['String']['output']>;
 };
 
+export type OrchardBitcoinOracle = {
+  __typename?: 'OrchardBitcoinOracle';
+  block_window: OrchardBitcoinOracleBlockWindow;
+  bounds: OrchardBitcoinOracleBounds;
+  central_price: Scalars['Float']['output'];
+  deviation_pct: Scalars['Float']['output'];
+  intraday?: Maybe<Array<OrchardBitcoinOracleIntradayPoint>>;
+  rough_price_estimate: Scalars['Float']['output'];
+};
+
+export type OrchardBitcoinOracleBlockWindow = {
+  __typename?: 'OrchardBitcoinOracleBlockWindow';
+  end: Scalars['Int']['output'];
+  start: Scalars['Int']['output'];
+};
+
+export type OrchardBitcoinOracleBounds = {
+  __typename?: 'OrchardBitcoinOracleBounds';
+  max: Scalars['Float']['output'];
+  min: Scalars['Float']['output'];
+};
+
+export type OrchardBitcoinOracleIntradayPoint = {
+  __typename?: 'OrchardBitcoinOracleIntradayPoint';
+  block_height: Scalars['Int']['output'];
+  price: Scalars['Float']['output'];
+  timestamp: Scalars['Int']['output'];
+};
+
 export type OrchardBitcoinTxFeeEstimate = {
   __typename?: 'OrchardBitcoinTxFeeEstimate';
   blocks: Scalars['Int']['output'];
@@ -988,6 +1017,7 @@ export type Query = {
   bitcoin_blockcount: OrchardBitcoinBlockCount;
   bitcoin_mempool_transactions: Array<OrchardBitcoinMempoolTransaction>;
   bitcoin_network_info: OrchardBitcoinNetworkInfo;
+  bitcoin_oracle: OrchardBitcoinOracle;
   bitcoin_transaction_fee_estimates: Array<OrchardBitcoinTxFeeEstimate>;
   lightning_balance: OrchardLightningBalance;
   lightning_info: OrchardLightningInfo;
@@ -1031,6 +1061,12 @@ export type QueryAi_AgentArgs = {
 
 export type QueryBitcoin_BlockArgs = {
   hash: Scalars['String']['input'];
+};
+
+
+export type QueryBitcoin_OracleArgs = {
+  date: Scalars['String']['input'];
+  intraday?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 

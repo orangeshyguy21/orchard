@@ -50,6 +50,18 @@ export class BitcoinRpcService implements OnModuleInit {
 		if (this.type === BitcoinType.CORE) return this.coreService.makeRpcRequest('getblock', [hash, 2]);
 	}
 
+	public async getBitcoinBlockHash(height: number): Promise<string> {
+		if (this.type === BitcoinType.CORE) return this.coreService.makeRpcRequest('getblockhash', [height]);
+	}
+
+	public async getBitcoinBlockHeader(hash: string): Promise<any> {
+		if (this.type === BitcoinType.CORE) return this.coreService.makeRpcRequest('getblockheader', [hash, true]);
+	}
+
+	public async getBitcoinBlockRaw(hash: string): Promise<string> {
+		if (this.type === BitcoinType.CORE) return this.coreService.makeRpcRequest('getblock', [hash, 0]);
+	}
+
 	/* *******************************************************
 	   Network                      
 	******************************************************** */
