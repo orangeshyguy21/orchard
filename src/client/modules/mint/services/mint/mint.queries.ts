@@ -183,6 +183,7 @@ query MintMintQuotes($units: [MintUnit!], $states: [MintQuoteState!], $date_star
 	mint_mint_quotes(units: $units, states: $states, date_start: $date_start, date_end: $date_end) {
 		id
 		amount
+		amount_issued
 		unit
 		state
 		issued_time

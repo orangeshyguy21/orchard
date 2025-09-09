@@ -154,7 +154,28 @@ export class CdkService {
 			date_end: 'created_time',
 			states: 'state',
 		};
-		const {sql, params} = buildDynamicQuery(client.type, 'mint_quote', args, field_mappings);
+
+		const state_case = `
+			CASE
+				WHEN amount_paid = 0 AND amount_issued = 0 THEN 'UNPAID'
+				WHEN amount_paid > amount_issued THEN 'PAID'
+				ELSE 'ISSUED'
+			END
+		`;
+
+		const issued_time_expr = `COALESCE((SELECT MIN(timestamp) FROM mint_quote_issued i WHERE i.quote_id = mint_quote.id), created_time)`;
+		const paid_time_expr = `COALESCE((SELECT MIN(timestamp) FROM mint_quote_payments p WHERE p.quote_id = mint_quote.id), created_time)`;
+
+		const select_statement = `
+			SELECT 
+				id, amount, unit, request, request_lookup_id, pubkey, created_time, amount_paid, amount_issued,
+				UPPER(payment_method) AS payment_method,
+				${issued_time_expr} AS issued_time,
+				${paid_time_expr} AS paid_time,
+				${state_case} AS state
+			FROM mint_quote`;
+
+		const {sql, params} = buildDynamicQuery(client.type, 'mint_quote', args, field_mappings, select_statement);
 		try {
 			return queryRows<CashuMintMintQuote>(client, sql, params);
 		} catch (err) {
@@ -169,7 +190,25 @@ export class CdkService {
 			date_end: 'created_time',
 			states: 'state',
 		};
-		const {sql, params} = buildCountQuery(client.type, 'mint_quote', args, field_mappings);
+
+		const state_case = `
+			CASE
+				WHEN amount_paid = 0 AND amount_issued = 0 THEN 'UNPAID'
+				WHEN amount_paid > amount_issued THEN 'PAID'
+				ELSE 'ISSUED'
+			END
+		`;
+
+		const select_statement = `
+			SELECT COUNT(*) AS count FROM (
+				SELECT 
+					created_time,
+					unit,
+					${state_case} AS state
+				FROM mint_quote
+			) subquery`;
+
+		const {sql, params} = buildCountQuery(client.type, 'mint_quote', args, field_mappings, select_statement);
 		try {
 			const row = await queryRow<CashuMintCount>(client, sql, params);
 			return row.count;
@@ -399,8 +438,8 @@ export class CdkService {
 				SELECT 
 					${time_group_sql} AS time_group,
 					unit,
-					SUM(CASE WHEN state = 'ISSUED' THEN amount ELSE 0 END) AS mint_amount,
-					COUNT(DISTINCT CASE WHEN state = 'ISSUED' THEN id ELSE NULL END) AS mint_count,
+					SUM(amount_issued) AS mint_amount,
+					COUNT(DISTINCT CASE WHEN amount_issued > 0 THEN id ELSE NULL END) AS mint_count,
 					MIN(created_time) as min_created_time
 				FROM 
 					mint_quote
@@ -486,8 +525,8 @@ export class CdkService {
 			SELECT 
 				${time_group_sql} AS time_group,
 				unit,
-				SUM(CASE WHEN state = 'ISSUED' THEN amount ELSE 0 END) AS amount,
-				COUNT(DISTINCT CASE WHEN state = 'ISSUED' THEN id ELSE NULL END) AS operation_count,
+				SUM(amount_issued) AS amount,
+				COUNT(DISTINCT CASE WHEN amount_issued > 0 THEN id ELSE NULL END) AS operation_count,
 				MIN(created_time) as min_created_time
 			FROM 
 				mint_quote

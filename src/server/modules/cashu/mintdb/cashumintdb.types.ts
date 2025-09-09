@@ -2,7 +2,7 @@
 import {Database} from 'better-sqlite3';
 import {Client} from 'pg';
 /* Native Dependencies */
-import {MintUnit, MintQuoteState, MeltQuoteState, MintProofState} from '@server/modules/cashu/cashu.enums';
+import {MintUnit, MintQuoteState, MeltQuoteState, MintProofState, MintPaymentMethod} from '@server/modules/cashu/cashu.enums';
 /* Local Dependencies */
 import {MintDatabaseType} from '@server/modules/cashu/mintdb/cashumintdb.enums';
 
@@ -33,6 +33,22 @@ export type CashuMintKeyset = {
 	fees_paid: number | null;
 };
 
+export type CashuMintMintQuote = {
+	id: string;
+	amount: number | null;
+	unit: MintUnit;
+	request: string;
+	state: MintQuoteState;
+	request_lookup_id: string | null;
+	pubkey: string | null;
+	created_time: number;
+	issued_time: number | null;
+	paid_time: number | null;
+	amount_paid: number;
+	amount_issued: number;
+	payment_method: MintPaymentMethod;
+};
+
 export type CashuMintMeltQuote = {
 	id: string;
 	unit: MintUnit;
@@ -45,19 +61,7 @@ export type CashuMintMeltQuote = {
 	msat_to_pay: number | null;
 	created_time: number;
 	paid_time: number | null;
-};
-
-export type CashuMintMintQuote = {
-	id: string;
-	amount: number;
-	unit: MintUnit;
-	request: string;
-	state: MintQuoteState;
-	request_lookup_id: string | null;
-	pubkey: string | null;
-	created_time: number;
-	issued_time: number | null;
-	paid_time: number | null;
+	payment_method: MintPaymentMethod;
 };
 
 export type CashuMintProofGroup = {

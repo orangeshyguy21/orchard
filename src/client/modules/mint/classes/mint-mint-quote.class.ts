@@ -1,9 +1,9 @@
 /* Shared Dependencies */
-import {OrchardMintMintQuote, MintQuoteState, MintUnit} from '@shared/generated.types';
+import {OrchardMintMintQuote, MintQuoteState, MintUnit, MintPaymentMethod} from '@shared/generated.types';
 
 export class MintMintQuote implements OrchardMintMintQuote {
 	public id: string;
-	public amount: number;
+	public amount: number | null;
 	public unit: MintUnit;
 	public request: string;
 	public state: MintQuoteState;
@@ -12,10 +12,13 @@ export class MintMintQuote implements OrchardMintMintQuote {
 	public issued_time: number | null;
 	public created_time: number | null;
 	public paid_time: number | null;
+	public amount_paid: number;
+	public amount_issued: number;
+	public payment_method: MintPaymentMethod;
 
 	constructor(mint_mint_quote: OrchardMintMintQuote) {
 		this.id = mint_mint_quote.id;
-		this.amount = mint_mint_quote.amount;
+		this.amount = mint_mint_quote.amount ?? null;
 		this.unit = mint_mint_quote.unit;
 		this.request = mint_mint_quote.request;
 		this.state = mint_mint_quote.state;
@@ -24,5 +27,8 @@ export class MintMintQuote implements OrchardMintMintQuote {
 		this.issued_time = mint_mint_quote.issued_time ?? null;
 		this.created_time = mint_mint_quote.created_time ?? null;
 		this.paid_time = mint_mint_quote.paid_time ?? null;
+		this.amount_paid = mint_mint_quote.amount_paid;
+		this.amount_issued = mint_mint_quote.amount_issued;
+		this.payment_method = mint_mint_quote.payment_method;
 	}
 }

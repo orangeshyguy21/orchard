@@ -140,6 +140,11 @@ input MintNut05UpdateInput {
   unit: String!
 }
 
+enum MintPaymentMethod {
+  BOLT11
+  BOLT12
+}
+
 enum MintProofState {
   SPENT
 }
@@ -610,6 +615,7 @@ type OrchardMintMeltQuote {
   id: ID!
   msat_to_pay: Int
   paid_time: UnixTimestamp
+  payment_method: MintPaymentMethod!
   payment_preimage: String
   request: String!
   request_lookup_id: String
@@ -618,11 +624,14 @@ type OrchardMintMeltQuote {
 }
 
 type OrchardMintMintQuote {
-  amount: Int!
+  amount: Int
+  amount_issued: Int!
+  amount_paid: Int!
   created_time: UnixTimestamp!
   id: ID!
   issued_time: UnixTimestamp
   paid_time: UnixTimestamp
+  payment_method: MintPaymentMethod!
   pubkey: String
   request: String!
   request_lookup_id: String

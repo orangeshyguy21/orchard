@@ -39,7 +39,8 @@ import {
 	queryRows,
 	queryRow,
 } from '@server/modules/cashu/mintdb/cashumintdb.helpers';
-import {MintAnalyticsInterval, MintDatabaseType} from '@server/modules/cashu/mintdb/cashumintdb.enums';
+import {MintAnalyticsInterval} from '@server/modules/cashu/mintdb/cashumintdb.enums';
+import {MintPaymentMethod} from '@server/modules/cashu/cashu.enums';
 /* Local Dependencies */
 import {
 	NutshellMintMintQuote,
@@ -158,6 +159,9 @@ export class NutshellService {
 				issued_time: row.state === 'ISSUED' ? convertDateToUnixTimestamp(row.paid_time) : null,
 				created_time: convertDateToUnixTimestamp(row.created_time),
 				paid_time: convertDateToUnixTimestamp(row.paid_time),
+				amount_paid: row.amount,
+				amount_issued: row.amount,
+				payment_method: MintPaymentMethod.BOLT11,
 			}));
 		} catch (err) {
 			throw err;
@@ -183,6 +187,7 @@ export class NutshellService {
 				created_time: convertDateToUnixTimestamp(row.created_time),
 				payment_preimage: null,
 				msat_to_pay: null,
+				payment_method: MintPaymentMethod.BOLT11,
 			}));
 		} catch (err) {
 			throw err;

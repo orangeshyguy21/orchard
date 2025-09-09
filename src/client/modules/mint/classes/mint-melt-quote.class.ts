@@ -1,5 +1,5 @@
 /* Shared Dependencies */
-import {OrchardMintMeltQuote, MeltQuoteState, MintUnit} from '@shared/generated.types';
+import {OrchardMintMeltQuote, MeltQuoteState, MintUnit, MintPaymentMethod} from '@shared/generated.types';
 
 export class MintMeltQuote implements OrchardMintMeltQuote {
 	public id: string;
@@ -13,6 +13,7 @@ export class MintMeltQuote implements OrchardMintMeltQuote {
 	public msat_to_pay: number | null;
 	public created_time: number;
 	public paid_time: number | null;
+	public payment_method: MintPaymentMethod;
 
 	constructor(mint_melt_quote: OrchardMintMeltQuote) {
 		this.id = mint_melt_quote.id;
@@ -26,5 +27,6 @@ export class MintMeltQuote implements OrchardMintMeltQuote {
 		this.msat_to_pay = mint_melt_quote.msat_to_pay ?? null;
 		this.created_time = mint_melt_quote.created_time;
 		this.paid_time = mint_melt_quote.paid_time ?? null;
+		this.payment_method = mint_melt_quote.payment_method;
 	}
 }

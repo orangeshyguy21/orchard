@@ -193,7 +193,7 @@ export class MintDataChartComponent implements OnChanges, OnDestroy {
 			const custom_opacity = this.chartService.hexToRgba(color.border, 0.75);
 			const data_prepped = data.map((entity) => ({
 				x: (entity.created_time ?? 0) * 1000,
-				y: AmountPipe.getConvertedAmount(unit, entity.amount),
+				y: AmountPipe.getConvertedAmount(unit, this.getEffectiveAmount(entity)),
 				state: 'state' in entity ? entity.state : undefined,
 			}));
 			const yAxisID = getYAxisId(unit);
@@ -219,6 +219,11 @@ export class MintDataChartComponent implements OnChanges, OnDestroy {
 		});
 
 		return {datasets};
+	}
+
+	private getEffectiveAmount(entity: MintMintQuote | MintMeltQuote | MintProofGroup | MintPromiseGroup): number {
+		if (entity instanceof MintMintQuote) return entity.amount_paid;
+		return entity.amount;
 	}
 
 	private getChartOptions(): ChartConfiguration['options'] {

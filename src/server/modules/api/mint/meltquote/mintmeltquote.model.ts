@@ -2,8 +2,23 @@
 import {Field, Int, ID, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
-import {MintUnit, MeltQuoteState} from '@server/modules/cashu/cashu.enums';
+import {MintUnit, MeltQuoteState, MintPaymentMethod} from '@server/modules/cashu/cashu.enums';
 import {CashuMintMeltQuote} from '@server/modules/cashu/mintdb/cashumintdb.types';
+
+// export type CashuMintMeltQuote = {
+// 	id: string;
+// 	unit: MintUnit;
+// 	amount: number;
+// 	request: string;
+// 	fee_reserve: number;
+// 	state: MeltQuoteState;
+// 	payment_preimage: string | null;
+// 	request_lookup_id: string | null;
+// 	msat_to_pay: number | null;
+// 	created_time: number;
+// 	paid_time: number | null;
+// 	payment_method: MintPaymentMethod;
+// };
 
 @ObjectType()
 export class OrchardMintMeltQuote {
@@ -40,6 +55,9 @@ export class OrchardMintMeltQuote {
 	@Field((type) => UnixTimestamp, {nullable: true})
 	paid_time: number;
 
+	@Field((type) => MintPaymentMethod)
+	payment_method: MintPaymentMethod;
+
 	constructor(cashu_mint_melt_quote: CashuMintMeltQuote) {
 		this.id = cashu_mint_melt_quote.id;
 		this.request = cashu_mint_melt_quote.request;
@@ -52,6 +70,7 @@ export class OrchardMintMeltQuote {
 		this.created_time = cashu_mint_melt_quote.created_time;
 		this.paid_time = cashu_mint_melt_quote.paid_time;
 		this.msat_to_pay = cashu_mint_melt_quote.msat_to_pay;
+		this.payment_method = cashu_mint_melt_quote.payment_method;
 	}
 }
 

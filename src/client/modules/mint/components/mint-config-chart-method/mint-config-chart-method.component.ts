@@ -136,8 +136,13 @@ export class MintConfigChartMethodComponent implements OnChanges, OnDestroy {
 
 		return valid_quotes.map((quote) => ({
 			created_time: quote.created_time ?? 0,
-			amount: quote.amount,
+			amount: this.getEffectiveAmount(quote),
 		}));
+	}
+
+	private getEffectiveAmount(entity: MintMintQuote | MintMeltQuote): number {
+		if (entity instanceof MintMintQuote) return entity.amount_issued;
+		return entity.amount;
 	}
 
 	private getMetrics(amounts: Record<string, number>[]): {

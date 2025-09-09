@@ -155,6 +155,11 @@ export type MintNut05UpdateInput = {
   unit: Scalars['String']['input'];
 };
 
+export enum MintPaymentMethod {
+  Bolt11 = 'BOLT11',
+  Bolt12 = 'BOLT12'
+}
+
 export enum MintProofState {
   Spent = 'SPENT'
 }
@@ -764,6 +769,7 @@ export type OrchardMintMeltQuote = {
   id: Scalars['ID']['output'];
   msat_to_pay?: Maybe<Scalars['Int']['output']>;
   paid_time?: Maybe<Scalars['UnixTimestamp']['output']>;
+  payment_method: MintPaymentMethod;
   payment_preimage?: Maybe<Scalars['String']['output']>;
   request: Scalars['String']['output'];
   request_lookup_id?: Maybe<Scalars['String']['output']>;
@@ -773,11 +779,14 @@ export type OrchardMintMeltQuote = {
 
 export type OrchardMintMintQuote = {
   __typename?: 'OrchardMintMintQuote';
-  amount: Scalars['Int']['output'];
+  amount?: Maybe<Scalars['Int']['output']>;
+  amount_issued: Scalars['Int']['output'];
+  amount_paid: Scalars['Int']['output'];
   created_time: Scalars['UnixTimestamp']['output'];
   id: Scalars['ID']['output'];
   issued_time?: Maybe<Scalars['UnixTimestamp']['output']>;
   paid_time?: Maybe<Scalars['UnixTimestamp']['output']>;
+  payment_method: MintPaymentMethod;
   pubkey?: Maybe<Scalars['String']['output']>;
   request: Scalars['String']['output'];
   request_lookup_id?: Maybe<Scalars['String']['output']>;
