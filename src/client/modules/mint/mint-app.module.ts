@@ -58,6 +58,7 @@ import {MintConnectionStatusComponent} from './components/mint-connection-status
 import {MintConfigFormEnabledComponent} from './components/mint-config-form-enabled/mint-config-form-enabled.component';
 import {MintConfigFormQuoteTtlComponent} from './components/mint-config-form-quote-ttl/mint-config-form-quote-ttl.component';
 import {MintConfigFormBolt11Component} from './components/mint-config-form-bolt11/mint-config-form-bolt11.component';
+import {MintConfigFormBolt12Component} from './components/mint-config-form-bolt12/mint-config-form-bolt12.component';
 import {MintConfigFormMinComponent} from './components/mint-config-form-min/mint-config-form-min.component';
 import {MintConfigFormMaxComponent} from './components/mint-config-form-max/mint-config-form-max.component';
 import {MintConfigFormEnabledConfirmComponent} from './components/mint-config-form-enabled-confirm/mint-config-form-enabled-confirm.component';
@@ -116,6 +117,7 @@ import {MintModule} from './mint.module';
 		MintConfigFormEnabledComponent,
 		MintConfigFormQuoteTtlComponent,
 		MintConfigFormBolt11Component,
+		MintConfigFormBolt12Component,
 		MintConfigFormMinComponent,
 		MintConfigFormMaxComponent,
 		MintConfigFormEnabledConfirmComponent,

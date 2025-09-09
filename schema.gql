@@ -141,8 +141,8 @@ input MintNut05UpdateInput {
 }
 
 enum MintPaymentMethod {
-  BOLT11
-  BOLT12
+  bolt11
+  bolt12
 }
 
 enum MintProofState {

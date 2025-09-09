@@ -41,7 +41,7 @@ import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class'
 import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
 import {Nut15Method, Nut17Commands} from '@client/modules/mint/types/nut.types';
 /* Shared Dependencies */
-import {OrchardNut4Method, OrchardNut5Method, AiFunctionName} from '@shared/generated.types';
+import {OrchardNut4Method, OrchardNut5Method, AiFunctionName, MintPaymentMethod} from '@shared/generated.types';
 
 enum TertiaryNav {
 	Nut4 = 'nav4',
@@ -95,7 +95,11 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	public locale!: string;
 	public data_loading: boolean = true;
 	public mint_quotes: MintMintQuote[] = [];
+	public mint_quotes_bolt11: MintMintQuote[] = [];
+	public mint_quotes_bolt12: MintMintQuote[] = [];
 	public melt_quotes: MintMeltQuote[] = [];
+	public melt_quotes_bolt11: MintMeltQuote[] = [];
+	public melt_quotes_bolt12: MintMeltQuote[] = [];
 	public nut15_methods: Nut15Method[] = [];
 	public nut17_commands: Nut17Commands[] = [];
 	public form_config: FormGroup = new FormGroup({
@@ -424,7 +428,11 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		const [mint_quotes, melt_quotes] = await lastValueFrom(forkJoin([mint_quotes_obs, melt_quotes_obs]));
 
 		this.mint_quotes = mint_quotes;
+		this.mint_quotes_bolt11 = mint_quotes.filter((quote) => quote.payment_method === MintPaymentMethod.Bolt11);
+		this.mint_quotes_bolt12 = mint_quotes.filter((quote) => quote.payment_method === MintPaymentMethod.Bolt12);
 		this.melt_quotes = melt_quotes;
+		this.melt_quotes_bolt11 = melt_quotes.filter((quote) => quote.payment_method === MintPaymentMethod.Bolt11);
+		this.melt_quotes_bolt12 = melt_quotes.filter((quote) => quote.payment_method === MintPaymentMethod.Bolt12);
 	}
 
 	/* *******************************************************

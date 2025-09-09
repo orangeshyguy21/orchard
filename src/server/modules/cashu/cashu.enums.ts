@@ -30,6 +30,6 @@ export enum MintProofState {
 }
 
 export enum MintPaymentMethod {
-	BOLT11 = 'BOLT11',
-	BOLT12 = 'BOLT12',
+	bolt11 = 'bolt11',
+	bolt12 = 'bolt12',
 }

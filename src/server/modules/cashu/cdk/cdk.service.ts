@@ -169,7 +169,7 @@ export class CdkService {
 		const select_statement = `
 			SELECT 
 				id, amount, unit, request, request_lookup_id, pubkey, created_time, amount_paid, amount_issued,
-				UPPER(payment_method) AS payment_method,
+				lower(payment_method) AS payment_method,
 				${issued_time_expr} AS issued_time,
 				${paid_time_expr} AS paid_time,
 				${state_case} AS state

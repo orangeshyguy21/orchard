@@ -156,8 +156,8 @@ export type MintNut05UpdateInput = {
 };
 
 export enum MintPaymentMethod {
-  Bolt11 = 'BOLT11',
-  Bolt12 = 'BOLT12'
+  Bolt11 = 'bolt11',
+  Bolt12 = 'bolt12'
 }
 
 export enum MintProofState {

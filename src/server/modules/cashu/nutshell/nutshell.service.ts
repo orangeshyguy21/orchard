@@ -161,7 +161,7 @@ export class NutshellService {
 				paid_time: convertDateToUnixTimestamp(row.paid_time),
 				amount_paid: row.amount,
 				amount_issued: row.amount,
-				payment_method: MintPaymentMethod.BOLT11,
+				payment_method: MintPaymentMethod.bolt11,
 			}));
 		} catch (err) {
 			throw err;
@@ -187,7 +187,7 @@ export class NutshellService {
 				created_time: convertDateToUnixTimestamp(row.created_time),
 				payment_preimage: null,
 				msat_to_pay: null,
-				payment_method: MintPaymentMethod.BOLT11,
+				payment_method: MintPaymentMethod.bolt11,
 			}));
 		} catch (err) {
 			throw err;
