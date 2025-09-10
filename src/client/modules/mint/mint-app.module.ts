@@ -79,6 +79,7 @@ import {MintDataChartComponent} from './components/mint-data-chart/mint-data-cha
 import {MintDataTableComponent} from './components/mint-data-table/mint-data-table.component';
 import {MintDataChartLegendComponent} from './components/mint-data-chart-legend/mint-data-chart-legend.component';
 import {MintDataMintComponent} from './components/mint-data-mint/mint-data-mint.component';
+import {MintDataMintBolt12Component} from './components/mint-data-mint-bolt12/mint-data-mint-bolt12.component';
 import {MintDataMeltComponent} from './components/mint-data-melt/mint-data-melt.component';
 import {MintDataBackupCreateComponent} from './components/mint-data-backup-create/mint-data-backup-create.component';
 import {MintDataBackupRestoreComponent} from './components/mint-data-backup-restore/mint-data-backup-restore.component';
@@ -138,6 +139,7 @@ import {MintModule} from './mint.module';
 		MintDataTableComponent,
 		MintDataChartLegendComponent,
 		MintDataMintComponent,
+		MintDataMintBolt12Component,
 		MintDataMeltComponent,
 		MintDataBackupCreateComponent,
 		MintDataBackupRestoreComponent,

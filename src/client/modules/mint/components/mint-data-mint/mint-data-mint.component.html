@@ -26,7 +26,9 @@
 				<div class="orc-text-button" (click)="onCopy(quote.request_lookup_id)">{{ quote.request_lookup_id }}</div>
 			</div>
 			<div class="flex flex-gap-1">
-				<div class="w-8 orc-outline-color font-weight-extra-light">Invoice:</div>
+				<div class="w-8 orc-outline-color font-weight-extra-light">
+					{{ quote.payment_method == 'bolt11' ? 'Bolt 11 Invoice' : 'Bolt 12 Offer' }}:
+				</div>
 				<div class="mega-string w-max-36 orc-text-button" (click)="onCopy(quote.request)">{{ quote.request }}</div>
 			</div>
 			<div class="flex flex-gap-1">
@@ -42,29 +44,34 @@
 				</div>
 			</div>
 		</div>
-		<div class="flex flex-column flex-gap-1">
-			<div class="flex flex-gap-1">
-				<div class="w-6 orc-outline-color font-weight-extra-light">Paid Time:</div>
-				@if (quote.paid_time) {
-					<div class="flex flex-gap-0-5">
-						<div class="text-nowrap">{{ quote.paid_time | time: 'medium' }}</div>
-						<div class="orc-outline-color">{{ quote.created_time | time_delta: quote.paid_time }} after created</div>
-					</div>
-				} @else {
-					<div class="orc-outline-variant-color">Not Paid</div>
-				}
+		<div class="flex flex-column flex-gap-2">
+			<div class="flex flex-column flex-gap-1">
+				<div class="flex flex-gap-1">
+					<div class="w-6 orc-outline-color font-weight-extra-light">Paid Time:</div>
+					@if (quote.paid_time) {
+						<div class="flex flex-gap-0-5">
+							<div class="text-nowrap">{{ quote.paid_time | time: 'medium' }}</div>
+							<div class="orc-outline-color">{{ quote.created_time | time_delta: quote.paid_time }} after created</div>
+						</div>
+					} @else {
+						<div class="orc-outline-variant-color">Not Paid</div>
+					}
+				</div>
+				<div class="flex flex-gap-1">
+					<div class="w-6 orc-outline-color font-weight-extra-light">Issued Time:</div>
+					@if (quote.issued_time) {
+						<div class="flex flex-gap-0-5">
+							<div class="text-nowrap">{{ quote.issued_time | time: 'medium' }}</div>
+							<div class="orc-outline-color">{{ quote.created_time | time_delta: quote.issued_time }} after created</div>
+						</div>
+					} @else {
+						<div class="orc-outline-variant-color">Not Issued</div>
+					}
+				</div>
 			</div>
-			<div class="flex flex-gap-1">
-				<div class="w-6 orc-outline-color font-weight-extra-light">Issued Time:</div>
-				@if (quote.issued_time) {
-					<div class="flex flex-gap-0-5">
-						<div class="text-nowrap">{{ quote.issued_time | time: 'medium' }}</div>
-						<div class="orc-outline-color">{{ quote.created_time | time_delta: quote.issued_time }} after created</div>
-					</div>
-				} @else {
-					<div class="orc-outline-variant-color">Not Issued</div>
-				}
-			</div>
+			@if (quote.payment_method == 'bolt12') {
+				<orc-mint-data-mint-bolt12 [quote]="quote"></orc-mint-data-mint-bolt12>
+			}
 		</div>
 	</div>
 </div>

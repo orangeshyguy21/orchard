@@ -96,6 +96,25 @@
 	));
 }
 
+/* Specific Progress Spinner Overrides */
+.orc-default-progress-spinner{
+	@include mat.progress-spinner-overrides((
+		active-indicator-color: var(--mat-sys-surface-container-highest),
+	));
+}
+
+.orc-intermediate-progress-spinner{
+	@include mat.progress-spinner-overrides((
+		active-indicator-color: var(--mat-sys-inverse-secondary),
+	));
+}
+
+.orc-success-progress-spinner{
+	@include mat.progress-spinner-overrides((
+		active-indicator-color: var(--mat-sys-inverse-tertiary),
+	));
+}
+
 /****************************************
 * Angular Material Unsupported Overrides
 ****************************************/

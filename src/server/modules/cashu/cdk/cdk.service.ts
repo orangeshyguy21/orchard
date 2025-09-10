@@ -163,8 +163,25 @@ export class CdkService {
 			END
 		`;
 
-		const issued_time_expr = `COALESCE((SELECT MIN(timestamp) FROM mint_quote_issued i WHERE i.quote_id = mint_quote.id), created_time)`;
-		const paid_time_expr = `COALESCE((SELECT MIN(timestamp) FROM mint_quote_payments p WHERE p.quote_id = mint_quote.id), created_time)`;
+		const issued_time_expr = `
+			CASE
+				WHEN EXISTS (SELECT 1 FROM mint_quote_issued i WHERE i.quote_id = mint_quote.id)
+					THEN (SELECT MIN(timestamp) FROM mint_quote_issued i WHERE i.quote_id = mint_quote.id)
+				WHEN amount_paid = 0 AND amount_issued = 0 THEN NULL
+				WHEN amount_paid > amount_issued THEN NULL
+				ELSE created_time
+			END
+		`;
+		const paid_time_expr = `
+			CASE
+				WHEN EXISTS (SELECT 1 FROM mint_quote_payments p WHERE p.quote_id = mint_quote.id)
+					THEN (SELECT MIN(timestamp) FROM mint_quote_payments p WHERE p.quote_id = mint_quote.id)
+				WHEN amount_paid = 0 THEN NULL
+				WHEN amount_paid > amount_issued THEN created_time
+				WHEN amount_paid = amount_issued THEN created_time
+				ELSE NULL
+			END
+		`;
 
 		const select_statement = `
 			SELECT 
@@ -226,7 +243,18 @@ export class CdkService {
 		};
 		const {sql, params} = buildDynamicQuery(client.type, 'melt_quote', args, field_mappings);
 		try {
-			return queryRows<CashuMintMeltQuote>(client, sql, params);
+			const rows = await queryRows<CashuMintMeltQuote>(client, sql, params);
+			return rows.map((row) => {
+				const s = row.request?.trim();
+				if (!s?.startsWith('{')) return row;
+				try {
+					const j: any = JSON.parse(s);
+					const offer = j?.offer ?? j?.Bolt12?.offer ?? j?.bolt12?.offer;
+					return offer ? {...row, request: offer} : row;
+				} catch {
+					return row;
+				}
+			});
 		} catch (err) {
 			throw err;
 		}

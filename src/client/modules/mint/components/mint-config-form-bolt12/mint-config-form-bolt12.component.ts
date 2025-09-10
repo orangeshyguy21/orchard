@@ -9,11 +9,11 @@ import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class'
 import {OrchardNut4Method, OrchardNut5Method} from '@shared/generated.types';
 
 @Component({
-    selector: 'orc-mint-config-form-bolt12',
-    standalone: false,
-    templateUrl: './mint-config-form-bolt12.component.html',
-    styleUrl: './mint-config-form-bolt12.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush
+	selector: 'orc-mint-config-form-bolt12',
+	standalone: false,
+	templateUrl: './mint-config-form-bolt12.component.html',
+	styleUrl: './mint-config-form-bolt12.component.scss',
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintConfigFormBolt12Component {
 	@Input() nut!: 'nut4' | 'nut5';
