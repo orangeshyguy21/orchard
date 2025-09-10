@@ -18,7 +18,6 @@ export class MintDataMintBolt12Component {
 	public percentage_issued = computed(() => {
 		const q = this.quote();
 		const pct = (q.amount_issued / q.amount_paid) * 100;
-		console.log(pct);
 		return Math.max(0, Math.min(100, pct));
 	});
 
