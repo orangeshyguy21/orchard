@@ -39,6 +39,7 @@ export class CashuMintRpcService implements OnModuleInit {
 			this.grpc_client[method](request, (error: Error | null, response: any) => {
 				if (error) this.logger.debug('error', error);
 				if (error && error?.message?.includes('14 UNAVAILABLE')) reject(OrchardErrorCode.MintRpcConnectionError);
+				if (error && error?.message?.includes('13 INTERNAL')) reject(OrchardErrorCode.MintRpcInternalError);
 				if (error && error?.message?.includes('12 UNIMPLEMENTED')) reject(OrchardErrorCode.MintSupportError);
 				if (error) reject(error);
 				resolve(response);
