@@ -118,10 +118,12 @@ export function getAnalyticsConditions({
 	args,
 	time_column,
 	db_type,
+	time_is_epoch_seconds,
 }: {
 	args: CashuMintAnalyticsArgs;
 	time_column: string;
 	db_type: MintDatabaseType;
+	time_is_epoch_seconds?: boolean;
 }): {
 	where_conditions: string[];
 	params: any[];
@@ -129,12 +131,24 @@ export function getAnalyticsConditions({
 	const where_conditions = [];
 	const params = [];
 	if (args?.date_start) {
-		where_conditions.push(`${time_column} >= ?`);
-		params.push(convertDateArgument(args.date_start, db_type));
+		if (db_type === MintDatabaseType.sqlite) {
+			where_conditions.push(`${time_column} >= ?`);
+			params.push(convertDateArgument(args.date_start, db_type));
+		} else {
+			const time_expr = time_is_epoch_seconds ? `to_timestamp(${time_column})` : `${time_column}`;
+			where_conditions.push(`${time_expr} >= to_timestamp(?)`);
+			params.push(args.date_start);
+		}
 	}
 	if (args?.date_end) {
-		where_conditions.push(`${time_column} <= ?`);
-		params.push(convertDateArgument(args.date_end, db_type));
+		if (db_type === MintDatabaseType.sqlite) {
+			where_conditions.push(`${time_column} <= ?`);
+			params.push(convertDateArgument(args.date_end, db_type));
+		} else {
+			const time_expr = time_is_epoch_seconds ? `to_timestamp(${time_column})` : `${time_column}`;
+			where_conditions.push(`${time_expr} <= to_timestamp(?)`);
+			params.push(args.date_end);
+		}
 	}
 	if (args?.units && args.units.length > 0) {
 		const unit_placeholders = args.units.map(() => '?').join(',');
@@ -155,17 +169,19 @@ export function getAnalyticsTimeGroupSql({
 	time_column,
 	group_by,
 	db_type,
+	time_is_epoch_seconds,
 }: {
 	interval: CashuMintAnalyticsArgs['interval'];
 	timezone: CashuMintAnalyticsArgs['timezone'];
 	time_column: string;
 	group_by: string;
 	db_type: MintDatabaseType;
+	time_is_epoch_seconds?: boolean;
 }): string {
 	if (db_type === MintDatabaseType.sqlite) {
 		return getAnalyticsTimeGroupSqlSqlite({interval, time_column, group_by, timezone});
 	} else {
-		return getAnalyticsTimeGroupSqlPostgres({interval, time_column, group_by, timezone});
+		return getAnalyticsTimeGroupSqlPostgres({interval, time_column, group_by, timezone, time_is_epoch_seconds});
 	}
 }
 
@@ -199,13 +215,16 @@ function getAnalyticsTimeGroupSqlPostgres({
 	time_column,
 	group_by,
 	timezone,
+	time_is_epoch_seconds,
 }: {
 	interval: CashuMintAnalyticsArgs['interval'];
 	time_column: string;
 	group_by: string;
 	timezone: string;
+	time_is_epoch_seconds?: boolean;
 }): string {
-	const timezone_expr = `${time_column}::timestamp AT TIME ZONE 'UTC' AT TIME ZONE '${timezone}'`;
+	const base_ts = time_is_epoch_seconds ? `to_timestamp(${time_column})` : `${time_column}`;
+	const timezone_expr = `${base_ts} AT TIME ZONE 'UTC' AT TIME ZONE '${timezone}'`;
 	if (interval === 'day') {
 		return `to_char(${timezone_expr}, 'YYYY-MM-DD')`;
 	}
@@ -236,12 +255,14 @@ export function getAnalyticsTimeGroupStamp({
 
 export async function queryRows<T>(client: CashuMintDatabase, sql: string, params?: any[]): Promise<T[]> {
 	if (client.type === MintDatabaseType.sqlite) return client.database.prepare(sql).all(params) as T[];
-	return client.database.query(sql, params).then((res) => res.rows as T[]);
+	const pg_sql = convertSqlToType(sql, MintDatabaseType.postgres);
+	return client.database.query(pg_sql, params).then((res) => res.rows as T[]);
 }
 
 export async function queryRow<T>(client: CashuMintDatabase, sql: string, params?: any[]): Promise<T> {
 	if (client.type === MintDatabaseType.sqlite) return client.database.prepare(sql).get(params) as T;
-	return client.database.query(sql, params).then((res) => res.rows[0] as T);
+	const pg_sql = convertSqlToType(sql, MintDatabaseType.postgres);
+	return client.database.query(pg_sql, params).then((res) => res.rows[0] as T);
 }
 
 /**
