@@ -13,7 +13,7 @@
 		<div class="relative">
 			<mat-progress-spinner class="orc-default-progress-spinner" mode="determinate" [value]="100" [diameter]="150" [strokeWidth]="20">
 			</mat-progress-spinner>
-			<div class="progress-background">
+			<div class="issuance-background">
 				<div>
 					<mat-progress-spinner
 						[class]="spinner_class()"
@@ -21,10 +21,9 @@
 						[value]="percentage_issued()"
 						[diameter]="150"
 						[strokeWidth]="20"
-					>
-					</mat-progress-spinner>
+					></mat-progress-spinner>
 				</div>
-				<div class="progress-number">
+				<div class="absolute">
 					<div class="flex flex-column flex-items-center flex-gap-0-25">
 						@if (quote().amount_paid === 0) {
 							<div class="orc-outline-variant-color">No</div>

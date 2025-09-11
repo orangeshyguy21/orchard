@@ -6,7 +6,6 @@ import * as path from 'path';
 /* Vendor Dependencies */
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
-import {DateTime} from 'luxon';
 /* Native Dependencies */
 import {
 	CashuMintDatabase,
