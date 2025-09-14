@@ -53,6 +53,7 @@ export class CashuMintRpcService implements OnModuleInit {
 			info.description_long = info.long_description;
 			return info;
 		}
+
 		if (this.type === 'nutshell') return info;
 	}
 

@@ -21,7 +21,10 @@
 								[innerHTML]="entity.amount | amount: entity.unit : 'mint'"
 							></span>
 						} @else {
-							<div class="font-size-xs w-min-10 orc-outline-color">amountless</div>
+							<span
+								class="font-size-m w-min-10 text-nowrap"
+								[innerHTML]="entity.amount_paid | amount: entity.unit : 'mint'"
+							></span>
 						}
 					</td>
 				</ng-container>
@@ -29,11 +32,12 @@
 				<ng-container matColumnDef="request">
 					<th mat-header-cell *matHeaderCellDef mat-sort-header class="data-table-sticky-header">Request</th>
 					<td mat-cell *matCellDef="let entity">
-						<div class="flex flex-column flex-gap-0-25">
-							<div>{{ entity.request | truncate: 60 : 25 : 25 }}</div>
-							<div class="font-size-xs w-min-10 orc-outline-color">
-								{{ entity.payment_method == 'bolt11' ? 'bolt 11 invoice' : 'bolt 12 offer' }}
+						<div class="flex flex-row flex-gap-0-25 flex-items-center">
+							<div class="method-label">
+								<div>BOLT {{ entity.payment_method == 'bolt11' ? '11' : '12' }}</div>
+								<mat-icon class="icon-sm">bolt</mat-icon>
 							</div>
+							<div>{{ entity.request | truncate: 60 : 25 : 25 }}</div>
 						</div>
 					</td>
 				</ng-container>
