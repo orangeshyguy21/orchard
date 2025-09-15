@@ -91,7 +91,7 @@
     "@typescript-eslint/parser": "^8.44.0",
     "dotenv": "^17.2.2",
     "dotenv-webpack": "^8.1.1",
-    "eslint": "^9.31.0",
+    "eslint": "^9.35.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "jasmine-core": "~5.10.0",
