@@ -5,6 +5,7 @@ import {ConfigService} from '@nestjs/config';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {LightningType} from '@server/modules/lightning/lightning.enums';
 import {LndService} from '@server/modules/lightning/lnd/lnd.service';
+import {ClnService} from '@server/modules/lightning/cln/cln.service';
 /* Local Dependencies */
 import {LightningInfo, LightningChannelBalance} from './lightning.types';
 
@@ -18,6 +19,7 @@ export class LightningService implements OnModuleInit {
 	constructor(
 		private configService: ConfigService,
 		private lndService: LndService,
+		private clnService: ClnService,
 	) {}
 
 	public async onModuleInit() {
@@ -27,6 +29,7 @@ export class LightningService implements OnModuleInit {
 
 	private initializeGrpcClients() {
 		if (this.type === 'lnd') this.grpc_client = this.lndService.initializeLightningClient();
+		if (this.type === 'cln') this.grpc_client = this.clnService.initializeLightningClient();
 	}
 
 	private makeGrpcRequest(method: string, request: any): Promise<any> {
