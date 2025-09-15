@@ -77,7 +77,7 @@ export class NutshellService {
 				defaults: true,
 				oneofs: true,
 			});
-			const mint_proto: any = grpc.loadPackageDefinition(package_definition).management;
+			const mint_proto: any = grpc.loadPackageDefinition(package_definition).cashu;
 			const key_content = fs.readFileSync(rpc_key);
 			const cert_content = fs.readFileSync(rpc_cert);
 			const ca_content = rpc_ca ? fs.readFileSync(rpc_ca) : undefined;

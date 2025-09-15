@@ -49,12 +49,8 @@ export class CashuMintRpcService implements OnModuleInit {
 
 	async getMintInfo(): Promise<CashuMintInfoRpc> {
 		const info = await this.makeGrpcRequest('GetInfo', {});
-		if (this.type === 'cdk') {
-			info.description_long = info.long_description;
-			return info;
-		}
-
-		if (this.type === 'nutshell') return info;
+		info.description_long = info.long_description;
+		return info;
 	}
 
 	async getQuoteTtl(): Promise<{mint_ttl: number; melt_ttl: number}> {
