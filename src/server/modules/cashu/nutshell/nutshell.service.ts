@@ -6,7 +6,6 @@ import * as path from 'path';
 /* Vendor Dependencies */
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
-import {DateTime} from 'luxon';
 /* Native Dependencies */
 import {
 	CashuMintDatabase,
@@ -34,12 +33,12 @@ import {
 	getAnalyticsConditions,
 	getAnalyticsTimeGroupSql,
 	buildCountQuery,
-	convertSqlToType,
 	convertDateToUnixTimestamp,
 	queryRows,
 	queryRow,
 } from '@server/modules/cashu/mintdb/cashumintdb.helpers';
-import {MintAnalyticsInterval, MintDatabaseType} from '@server/modules/cashu/mintdb/cashumintdb.enums';
+import {MintAnalyticsInterval} from '@server/modules/cashu/mintdb/cashumintdb.enums';
+import {MintPaymentMethod} from '@server/modules/cashu/cashu.enums';
 /* Local Dependencies */
 import {
 	NutshellMintMintQuote,
@@ -77,7 +76,7 @@ export class NutshellService {
 				defaults: true,
 				oneofs: true,
 			});
-			const mint_proto: any = grpc.loadPackageDefinition(package_definition).management;
+			const mint_proto: any = grpc.loadPackageDefinition(package_definition).cashu;
 			const key_content = fs.readFileSync(rpc_key);
 			const cert_content = fs.readFileSync(rpc_cert);
 			const ca_content = rpc_ca ? fs.readFileSync(rpc_ca) : undefined;
@@ -92,10 +91,9 @@ export class NutshellService {
 	public async getMintBalances(client: CashuMintDatabase, keyset_id?: string): Promise<CashuMintBalance[]> {
 		const where_clause = keyset_id ? `WHERE keyset = ?` : '';
 		const sql = `SELECT * FROM balance ${where_clause};`;
-		const sql_converted = convertSqlToType(sql, client.type);
 		const params = keyset_id ? [keyset_id] : [];
 		try {
-			return queryRows<CashuMintBalance>(client, sql_converted, params);
+			return queryRows<CashuMintBalance>(client, sql, params);
 		} catch (err) {
 			throw err;
 		}
@@ -103,9 +101,8 @@ export class NutshellService {
 
 	public async getMintBalancesIssued(client: CashuMintDatabase): Promise<CashuMintBalance[]> {
 		const sql = 'SELECT * FROM balance_issued;';
-		const sql_converted = convertSqlToType(sql, client.type);
 		try {
-			return queryRows<CashuMintBalance>(client, sql_converted);
+			return queryRows<CashuMintBalance>(client, sql);
 		} catch (err) {
 			throw err;
 		}
@@ -113,9 +110,8 @@ export class NutshellService {
 
 	public async getMintBalancesRedeemed(client: CashuMintDatabase): Promise<CashuMintBalance[]> {
 		const sql = 'SELECT * FROM balance_redeemed;';
-		const sql_converted = convertSqlToType(sql, client.type);
 		try {
-			return queryRows<CashuMintBalance>(client, sql_converted);
+			return queryRows<CashuMintBalance>(client, sql);
 		} catch (err) {
 			throw err;
 		}
@@ -123,9 +119,8 @@ export class NutshellService {
 
 	public async getMintKeysets(client: CashuMintDatabase): Promise<CashuMintKeyset[]> {
 		const sql = 'SELECT * FROM keysets WHERE unit != ?;';
-		const sql_converted = convertSqlToType(sql, client.type);
 		try {
-			const rows = await queryRows<CashuMintKeyset>(client, sql_converted, ['auth']);
+			const rows = await queryRows<CashuMintKeyset>(client, sql, ['auth']);
 			return rows.map((row) => ({
 				...row,
 				valid_from: convertDateToUnixTimestamp(row.valid_from),
@@ -148,9 +143,8 @@ export class NutshellService {
 			states: 'state',
 		};
 		const {sql, params} = buildDynamicQuery(client.type, 'mint_quotes', args, field_mappings);
-		const sql_converted = convertSqlToType(sql, client.type);
 		try {
-			const rows = await queryRows<NutshellMintMintQuote>(client, sql_converted, params);
+			const rows = await queryRows<NutshellMintMintQuote>(client, sql, params);
 			return rows.map((row) => ({
 				...row,
 				id: row.quote,
@@ -158,6 +152,9 @@ export class NutshellService {
 				issued_time: row.state === 'ISSUED' ? convertDateToUnixTimestamp(row.paid_time) : null,
 				created_time: convertDateToUnixTimestamp(row.created_time),
 				paid_time: convertDateToUnixTimestamp(row.paid_time),
+				amount_paid: row.amount,
+				amount_issued: row.amount,
+				payment_method: MintPaymentMethod.bolt11,
 			}));
 		} catch (err) {
 			throw err;
@@ -172,9 +169,8 @@ export class NutshellService {
 			states: 'state',
 		};
 		const {sql, params} = buildDynamicQuery(client.type, 'melt_quotes', args, field_mappings);
-		const sql_converted = convertSqlToType(sql, client.type);
 		try {
-			const rows = await queryRows<NutshellMintMeltQuote>(client, sql_converted, params);
+			const rows = await queryRows<NutshellMintMeltQuote>(client, sql, params);
 			return rows.map((row) => ({
 				...row,
 				id: row.quote,
@@ -183,6 +179,7 @@ export class NutshellService {
 				created_time: convertDateToUnixTimestamp(row.created_time),
 				payment_preimage: null,
 				msat_to_pay: null,
+				payment_method: MintPaymentMethod.bolt11,
 			}));
 		} catch (err) {
 			throw err;
@@ -208,9 +205,8 @@ export class NutshellService {
 
 		const group_by = 'p.created, k.unit, p.id';
 		const {sql, params} = buildDynamicQuery(client.type, 'proofs_used', args, field_mappings, select_statement, group_by);
-		const sql_converted = convertSqlToType(sql, client.type);
 		try {
-			const rows = await queryRows<NutshellMintEcash>(client, sql_converted, params);
+			const rows = await queryRows<NutshellMintEcash>(client, sql, params);
 			const groups = {};
 			rows.forEach((row) => {
 				const created_time = convertDateToUnixTimestamp(row.created);
@@ -261,10 +257,8 @@ export class NutshellService {
 
 		const group_by = 'p.created, k.unit, p.id';
 		const {sql, params} = buildDynamicQuery(client.type, 'promises', args, field_mappings, select_statement, group_by);
-		const sql_converted = convertSqlToType(sql, client.type);
-
 		try {
-			const rows = await queryRows<NutshellMintEcash>(client, sql_converted, params);
+			const rows = await queryRows<NutshellMintEcash>(client, sql, params);
 			const groups = {};
 			rows.forEach((row) => {
 				const created_time = convertDateToUnixTimestamp(row.created);
@@ -302,9 +296,8 @@ export class NutshellService {
 			states: 'state',
 		};
 		const {sql, params} = buildCountQuery(client.type, 'melt_quotes', args, field_mappings);
-		const sql_converted = convertSqlToType(sql, client.type);
 		try {
-			const row = await queryRow<CashuMintCount>(client, sql_converted, params);
+			const row = await queryRow<CashuMintCount>(client, sql, params);
 			return row.count;
 		} catch (err) {
 			throw err;
@@ -319,9 +312,8 @@ export class NutshellService {
 			states: 'state',
 		};
 		const {sql, params} = buildCountQuery(client.type, 'mint_quotes', args, field_mappings);
-		const sql_converted = convertSqlToType(sql, client.type);
 		try {
-			const row = await queryRow<CashuMintCount>(client, sql_converted, params);
+			const row = await queryRow<CashuMintCount>(client, sql, params);
 			return row.count;
 		} catch (err) {
 			throw err;
@@ -347,9 +339,8 @@ export class NutshellService {
 		const group_by = 'p.created, k.unit';
 		const {sql, params} = buildCountQuery(client.type, 'proofs_used', args, field_mappings, select_statement, group_by);
 		const final_sql = sql.replace(';', ') subquery;');
-		const sql_converted = convertSqlToType(final_sql, client.type);
 		try {
-			const row = await queryRow<CashuMintCount>(client, sql_converted, params);
+			const row = await queryRow<CashuMintCount>(client, final_sql, params);
 			return row.count;
 		} catch (err) {
 			throw err;
@@ -375,10 +366,8 @@ export class NutshellService {
 		const group_by = 'p.created, k.unit';
 		const {sql, params} = buildCountQuery(client.type, 'promises', args, field_mappings, select_statement, group_by);
 		const final_sql = sql.replace(';', ') subquery;');
-		const sql_converted = convertSqlToType(final_sql, client.type);
-
 		try {
-			const row = await queryRow<CashuMintCount>(client, sql_converted, params);
+			const row = await queryRow<CashuMintCount>(client, final_sql, params);
 			return row.count;
 		} catch (err) {
 			throw err;
@@ -387,9 +376,8 @@ export class NutshellService {
 
 	public async getMintFees(client: CashuMintDatabase, limit: number = 1): Promise<CashuMintFee[]> {
 		const sql = `SELECT * FROM balance_log ORDER BY time ASC LIMIT ?;`;
-		const sql_converted = convertSqlToType(sql, client.type);
 		try {
-			return queryRows<CashuMintFee>(client, sql_converted, [limit]);
+			return queryRows<CashuMintFee>(client, sql, [limit]);
 		} catch (err) {
 			console.log('Error fetching mint fees:', err);
 			throw err;
@@ -452,9 +440,8 @@ export class NutshellService {
 				AND i.unit = r.unit
 			ORDER BY min_created_time;
 		`;
-		const sql_converted = convertSqlToType(sql, client.type);
 		try {
-			const rows = await queryRows<NutshellMintAnalytics>(client, sql_converted, [...params, ...params]);
+			const rows = await queryRows<NutshellMintAnalytics>(client, sql, [...params, ...params]);
 			return rows.map((row) => {
 				const timestamp = getAnalyticsTimeGroupStamp({
 					min_created_time: row.min_created_time,
@@ -504,10 +491,9 @@ export class NutshellService {
 				time_group, unit
 			ORDER BY 
 				min_created_time;`;
-		const sql_converted = convertSqlToType(sql, client.type);
 
 		try {
-			const rows = await queryRows<NutshellMintAnalytics>(client, sql_converted, params);
+			const rows = await queryRows<NutshellMintAnalytics>(client, sql, params);
 			return rows.map((row) => {
 				const timestamp = getAnalyticsTimeGroupStamp({
 					min_created_time: row.min_created_time,
@@ -557,10 +543,9 @@ export class NutshellService {
 				time_group, unit
 			ORDER BY 
 				min_created_time;`;
-		const sql_converted = convertSqlToType(sql, client.type);
 
 		try {
-			const rows = await queryRows<NutshellMintAnalytics>(client, sql_converted, params);
+			const rows = await queryRows<NutshellMintAnalytics>(client, sql, params);
 			return rows.map((row) => {
 				const timestamp = getAnalyticsTimeGroupStamp({
 					min_created_time: row.min_created_time,
@@ -612,10 +597,9 @@ export class NutshellService {
 				time_group, unit
 			ORDER BY
 				min_created_time;`;
-		const sql_converted = convertSqlToType(sql, client.type);
 
 		try {
-			const rows = await queryRows<NutshellMintAnalytics>(client, sql_converted, params);
+			const rows = await queryRows<NutshellMintAnalytics>(client, sql, params);
 			return rows.map((row) => {
 				const timestamp = getAnalyticsTimeGroupStamp({
 					min_created_time: row.min_created_time,
@@ -668,10 +652,9 @@ export class NutshellService {
 				time_group, unit
 			ORDER BY 
 				min_created_time;`;
-		const sql_converted = convertSqlToType(sql, client.type);
 
 		try {
-			const rows = await queryRows<NutshellMintAnalytics>(client, sql_converted, params);
+			const rows = await queryRows<NutshellMintAnalytics>(client, sql, params);
 			return rows.map((row) => {
 				const timestamp = getAnalyticsTimeGroupStamp({
 					min_created_time: row.min_created_time,
@@ -740,10 +723,9 @@ export class NutshellService {
 				AND i.id = r.id
 			ORDER BY min_created_time;
 		`;
-		const sql_converted = convertSqlToType(sql, client.type);
 
 		try {
-			const rows = await queryRows<NutshellMintKeysetsAnalytics>(client, sql_converted, [...params, ...params]);
+			const rows = await queryRows<NutshellMintKeysetsAnalytics>(client, sql, [...params, ...params]);
 			return rows.map((row) => {
 				const timestamp = getAnalyticsTimeGroupStamp({
 					min_created_time: row.min_created_time,

@@ -140,6 +140,11 @@ input MintNut05UpdateInput {
   unit: String!
 }
 
+enum MintPaymentMethod {
+  bolt11
+  bolt12
+}
+
 enum MintProofState {
   SPENT
 }
@@ -610,6 +615,7 @@ type OrchardMintMeltQuote {
   id: ID!
   msat_to_pay: Int
   paid_time: UnixTimestamp
+  payment_method: MintPaymentMethod!
   payment_preimage: String
   request: String!
   request_lookup_id: String
@@ -618,11 +624,14 @@ type OrchardMintMeltQuote {
 }
 
 type OrchardMintMintQuote {
-  amount: Int!
+  amount: Int
+  amount_issued: Int!
+  amount_paid: Int!
   created_time: UnixTimestamp!
   id: ID!
   issued_time: UnixTimestamp
   paid_time: UnixTimestamp
+  payment_method: MintPaymentMethod!
   pubkey: String
   request: String!
   request_lookup_id: String
@@ -698,7 +707,7 @@ type OrchardNut4 {
 type OrchardNut4Method {
   description: Boolean
   max_amount: Float
-  method: String!
+  method: MintPaymentMethod!
   min_amount: Float
   unit: String!
 }
@@ -711,7 +720,7 @@ type OrchardNut5 {
 type OrchardNut5Method {
   amountless: Boolean
   max_amount: Float
-  method: String!
+  method: MintPaymentMethod!
   min_amount: Float
   unit: String!
 }
@@ -721,7 +730,7 @@ type OrchardNut15 {
 }
 
 type OrchardNut15Method {
-  method: String!
+  method: MintPaymentMethod!
   unit: MintUnit!
 }
 
@@ -731,7 +740,7 @@ type OrchardNut17 {
 
 type OrchardNut17Supported {
   commands: [String!]!
-  method: String!
+  method: MintPaymentMethod!
   unit: String!
 }
 

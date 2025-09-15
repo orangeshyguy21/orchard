@@ -155,6 +155,11 @@ export type MintNut05UpdateInput = {
   unit: Scalars['String']['input'];
 };
 
+export enum MintPaymentMethod {
+  Bolt11 = 'bolt11',
+  Bolt12 = 'bolt12'
+}
+
 export enum MintProofState {
   Spent = 'SPENT'
 }
@@ -764,6 +769,7 @@ export type OrchardMintMeltQuote = {
   id: Scalars['ID']['output'];
   msat_to_pay?: Maybe<Scalars['Int']['output']>;
   paid_time?: Maybe<Scalars['UnixTimestamp']['output']>;
+  payment_method: MintPaymentMethod;
   payment_preimage?: Maybe<Scalars['String']['output']>;
   request: Scalars['String']['output'];
   request_lookup_id?: Maybe<Scalars['String']['output']>;
@@ -773,11 +779,14 @@ export type OrchardMintMeltQuote = {
 
 export type OrchardMintMintQuote = {
   __typename?: 'OrchardMintMintQuote';
-  amount: Scalars['Int']['output'];
+  amount?: Maybe<Scalars['Int']['output']>;
+  amount_issued: Scalars['Int']['output'];
+  amount_paid: Scalars['Int']['output'];
   created_time: Scalars['UnixTimestamp']['output'];
   id: Scalars['ID']['output'];
   issued_time?: Maybe<Scalars['UnixTimestamp']['output']>;
   paid_time?: Maybe<Scalars['UnixTimestamp']['output']>;
+  payment_method: MintPaymentMethod;
   pubkey?: Maybe<Scalars['String']['output']>;
   request: Scalars['String']['output'];
   request_lookup_id?: Maybe<Scalars['String']['output']>;
@@ -865,7 +874,7 @@ export type OrchardNut4Method = {
   __typename?: 'OrchardNut4Method';
   description?: Maybe<Scalars['Boolean']['output']>;
   max_amount?: Maybe<Scalars['Float']['output']>;
-  method: Scalars['String']['output'];
+  method: MintPaymentMethod;
   min_amount?: Maybe<Scalars['Float']['output']>;
   unit: Scalars['String']['output'];
 };
@@ -880,7 +889,7 @@ export type OrchardNut5Method = {
   __typename?: 'OrchardNut5Method';
   amountless?: Maybe<Scalars['Boolean']['output']>;
   max_amount?: Maybe<Scalars['Float']['output']>;
-  method: Scalars['String']['output'];
+  method: MintPaymentMethod;
   min_amount?: Maybe<Scalars['Float']['output']>;
   unit: Scalars['String']['output'];
 };
@@ -892,7 +901,7 @@ export type OrchardNut15 = {
 
 export type OrchardNut15Method = {
   __typename?: 'OrchardNut15Method';
-  method: Scalars['String']['output'];
+  method: MintPaymentMethod;
   unit: MintUnit;
 };
 
@@ -904,7 +913,7 @@ export type OrchardNut17 = {
 export type OrchardNut17Supported = {
   __typename?: 'OrchardNut17Supported';
   commands: Array<Scalars['String']['output']>;
-  method: Scalars['String']['output'];
+  method: MintPaymentMethod;
   unit: Scalars['String']['output'];
 };
 

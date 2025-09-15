@@ -18,7 +18,7 @@ export class BitcoinOracleResolver {
 		@Args('date', {type: () => String}) date: string,
 		@Args('intraday', {type: () => Boolean, nullable: true}) intraday?: boolean,
 	): Promise<OrchardBitcoinOracle> {
-		const tag = 'GET { bitcoin_oracle_date }';
+		const tag = 'GET { bitcoin_oracle }';
 		this.logger.debug(tag);
 		return await this.bitcoinOracleService.getOracle(tag, {date, intraday});
 	}

@@ -58,6 +58,7 @@ import {MintConnectionStatusComponent} from './components/mint-connection-status
 import {MintConfigFormEnabledComponent} from './components/mint-config-form-enabled/mint-config-form-enabled.component';
 import {MintConfigFormQuoteTtlComponent} from './components/mint-config-form-quote-ttl/mint-config-form-quote-ttl.component';
 import {MintConfigFormBolt11Component} from './components/mint-config-form-bolt11/mint-config-form-bolt11.component';
+import {MintConfigFormBolt12Component} from './components/mint-config-form-bolt12/mint-config-form-bolt12.component';
 import {MintConfigFormMinComponent} from './components/mint-config-form-min/mint-config-form-min.component';
 import {MintConfigFormMaxComponent} from './components/mint-config-form-max/mint-config-form-max.component';
 import {MintConfigFormEnabledConfirmComponent} from './components/mint-config-form-enabled-confirm/mint-config-form-enabled-confirm.component';
@@ -78,10 +79,12 @@ import {MintDataChartComponent} from './components/mint-data-chart/mint-data-cha
 import {MintDataTableComponent} from './components/mint-data-table/mint-data-table.component';
 import {MintDataChartLegendComponent} from './components/mint-data-chart-legend/mint-data-chart-legend.component';
 import {MintDataMintComponent} from './components/mint-data-mint/mint-data-mint.component';
+import {MintDataMintBolt12Component} from './components/mint-data-mint-bolt12/mint-data-mint-bolt12.component';
 import {MintDataMeltComponent} from './components/mint-data-melt/mint-data-melt.component';
 import {MintDataBackupCreateComponent} from './components/mint-data-backup-create/mint-data-backup-create.component';
 import {MintDataBackupRestoreComponent} from './components/mint-data-backup-restore/mint-data-backup-restore.component';
 import {MintDataEcashComponent} from './components/mint-data-ecash/mint-data-ecash.component';
+import {MintPaymentMethodComponent} from './components/mint-payment-method/mint-payment-method.component';
 /* Local Dependencies */
 import {MintAppRoutingModule} from './mint-app.router';
 import {MintModule} from './mint.module';
@@ -116,6 +119,7 @@ import {MintModule} from './mint.module';
 		MintConfigFormEnabledComponent,
 		MintConfigFormQuoteTtlComponent,
 		MintConfigFormBolt11Component,
+		MintConfigFormBolt12Component,
 		MintConfigFormMinComponent,
 		MintConfigFormMaxComponent,
 		MintConfigFormEnabledConfirmComponent,
@@ -136,10 +140,12 @@ import {MintModule} from './mint.module';
 		MintDataTableComponent,
 		MintDataChartLegendComponent,
 		MintDataMintComponent,
+		MintDataMintBolt12Component,
 		MintDataMeltComponent,
 		MintDataBackupCreateComponent,
 		MintDataBackupRestoreComponent,
 		MintDataEcashComponent,
+		MintPaymentMethodComponent,
 	],
 	imports: [
 		CommonModule,

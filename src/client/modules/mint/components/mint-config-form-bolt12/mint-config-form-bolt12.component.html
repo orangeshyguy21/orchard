@@ -1,0 +1,41 @@
+<div class="flex flex-gap-2">
+	<div class="flex flex-column flex-gap-2 flex-1">
+		<div class="flex flex-justify-center">
+			<div class="font-size-xs orc-outline-color">Bolt 12 Settings</div>
+		</div>
+		<div class="flex flex-column flex-gap-1">
+			<orc-mint-config-form-max
+				[form_group]="form_bolt12"
+				[control_name]="'max_amount'"
+				[unit]="unit"
+				[nut]="nut"
+				(update)="onUpdate($event)"
+				(cancel)="onCancel($event)"
+				(hot)="onMaxHot($event)"
+			></orc-mint-config-form-max>
+			<orc-mint-config-form-min
+				[form_group]="form_bolt12"
+				[control_name]="'min_amount'"
+				[unit]="unit"
+				[nut]="nut"
+				(update)="onUpdate($event)"
+				(cancel)="onCancel($event)"
+				(hot)="onMinHot($event)"
+			></orc-mint-config-form-min>
+		</div>
+	</div>
+	<div class="flex-1">
+		<orc-mint-config-chart-method
+			[nut]="nut"
+			[loading]="loading"
+			[quotes]="quotes"
+			[locale]="locale"
+			[unit]="unit"
+			[method]="method"
+			[min_amount]="form_bolt12.get('min_amount')?.value"
+			[max_amount]="form_bolt12.get('max_amount')?.value"
+			[min_hot]="min_hot"
+			[max_hot]="max_hot"
+		></orc-mint-config-chart-method>
+	</div>
+</div>

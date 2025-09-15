@@ -23,6 +23,7 @@ export class GraphicService {
 			.addSvgIcon('nostr', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/nostr.svg'))
 			.addSvgIcon('x', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/x.svg'))
 			.addSvgIcon('minting_disabled_outline', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/minting-disabled-outline.svg'))
-			.addSvgIcon('melting_disabled_outline', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/melting-disabled-outline.svg'));
+			.addSvgIcon('melting_disabled_outline', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/melting-disabled-outline.svg'))
+			.addSvgIcon('double_bolt', this.domSanitizer.bypassSecurityTrustResourceUrl('icon/double-bolt.svg'));
 	}
 }

@@ -20,7 +20,7 @@ export class BitcoinOracleService {
 
 	public async getOracle(tag: string, options: UTXOracleRunOptions): Promise<OrchardBitcoinOracle> {
 		try {
-			// will want to refacgtor to use timestamps when fully integrated.
+			// will want to refactor to use timestamps when fully integrated.
 			const res = await this.bitcoinUTXOracleService.runOracle(options);
 			return res as unknown as OrchardBitcoinOracle;
 		} catch (error) {

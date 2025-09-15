@@ -28,3 +28,8 @@ export enum MintUnit {
 export enum MintProofState {
 	SPENT = 'SPENT',
 }
+
+export enum MintPaymentMethod {
+	bolt11 = 'bolt11',
+	bolt12 = 'bolt12',
+}

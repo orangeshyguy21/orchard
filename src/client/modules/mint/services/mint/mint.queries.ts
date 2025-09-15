@@ -183,10 +183,12 @@ query MintMintQuotes($units: [MintUnit!], $states: [MintQuoteState!], $date_star
 	mint_mint_quotes(units: $units, states: $states, date_start: $date_start, date_end: $date_end) {
 		id
 		amount
+		amount_issued
 		unit
 		state
 		issued_time
 		created_time
+		payment_method
 	}
 }`;
 
@@ -199,6 +201,7 @@ query MintMeltQuotes($units: [MintUnit!], $states: [MeltQuoteState!], $date_star
 		state
 		created_time
 		paid_time
+		payment_method
 	}
 }`;
 
@@ -351,6 +354,9 @@ query MintMintQuotes($units: [MintUnit!], $states: [MintQuoteState!], $date_star
 		issued_time
 		created_time
 		paid_time
+		amount_paid
+		amount_issued
+		payment_method
 	}
 	mint_count_mint_quotes(units: $units, states: $states, date_start: $date_start, date_end: $date_end) {
 		count
@@ -371,6 +377,7 @@ query MintMeltQuotes($units: [MintUnit!], $states: [MeltQuoteState!], $date_star
 		msat_to_pay
 		created_time
 		paid_time
+		payment_method
 	}
 	mint_count_melt_quotes(units: $units, states: $states, date_start: $date_start, date_end: $date_end) {
 		count

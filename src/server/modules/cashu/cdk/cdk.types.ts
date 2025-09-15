@@ -1,7 +1,7 @@
 /* Native Dependencies */
 import {MintUnit, MintProofState} from '@server/modules/cashu/cashu.enums';
 
-export type CdklMintProof = {
+export type CdkMintProof = {
 	created_time: number;
 	keyset_id: string;
 	unit: MintUnit;
@@ -9,14 +9,14 @@ export type CdklMintProof = {
 	amounts: string;
 };
 
-export type CdklMintPromise = {
+export type CdkMintPromise = {
 	created_time: number;
 	keyset_id: string;
 	unit: MintUnit;
 	amounts: string;
 };
 
-export type CdklMintAnalytics = {
+export type CdkMintAnalytics = {
 	time_group: string;
 	unit: MintUnit;
 	amount: number;
@@ -24,7 +24,7 @@ export type CdklMintAnalytics = {
 	min_created_time: number;
 };
 
-export type CdklMintKeysetsAnalytics = {
+export type CdkMintKeysetsAnalytics = {
 	time_group: string;
 	keyset_id: string;
 	amount: number;
