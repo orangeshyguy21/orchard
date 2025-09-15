@@ -84,6 +84,7 @@ import {MintDataMeltComponent} from './components/mint-data-melt/mint-data-melt.
 import {MintDataBackupCreateComponent} from './components/mint-data-backup-create/mint-data-backup-create.component';
 import {MintDataBackupRestoreComponent} from './components/mint-data-backup-restore/mint-data-backup-restore.component';
 import {MintDataEcashComponent} from './components/mint-data-ecash/mint-data-ecash.component';
+import {MintPaymentMethodComponent} from './components/mint-payment-method/mint-payment-method.component';
 /* Local Dependencies */
 import {MintAppRoutingModule} from './mint-app.router';
 import {MintModule} from './mint.module';
@@ -144,6 +145,7 @@ import {MintModule} from './mint.module';
 		MintDataBackupCreateComponent,
 		MintDataBackupRestoreComponent,
 		MintDataEcashComponent,
+		MintPaymentMethodComponent,
 	],
 	imports: [
 		CommonModule,

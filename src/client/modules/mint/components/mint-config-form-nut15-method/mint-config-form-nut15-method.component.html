@@ -8,7 +8,7 @@
 		<mat-card-content>
 			<div class="flex flex-items-center flex-justify-center flex-gap-2 p-0-5">
 				@for (method of nut15_method.methods; track method) {
-					<div class="label-spec">{{ method }}</div>
+					<orc-mint-payment-method class="orc-outline-color font-size-xs" [payment_method]="method"></orc-mint-payment-method>
 				}
 			</div>
 		</mat-card-content>

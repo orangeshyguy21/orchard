@@ -874,7 +874,7 @@ export type OrchardNut4Method = {
   __typename?: 'OrchardNut4Method';
   description?: Maybe<Scalars['Boolean']['output']>;
   max_amount?: Maybe<Scalars['Float']['output']>;
-  method: Scalars['String']['output'];
+  method: MintPaymentMethod;
   min_amount?: Maybe<Scalars['Float']['output']>;
   unit: Scalars['String']['output'];
 };
@@ -889,7 +889,7 @@ export type OrchardNut5Method = {
   __typename?: 'OrchardNut5Method';
   amountless?: Maybe<Scalars['Boolean']['output']>;
   max_amount?: Maybe<Scalars['Float']['output']>;
-  method: Scalars['String']['output'];
+  method: MintPaymentMethod;
   min_amount?: Maybe<Scalars['Float']['output']>;
   unit: Scalars['String']['output'];
 };
@@ -901,7 +901,7 @@ export type OrchardNut15 = {
 
 export type OrchardNut15Method = {
   __typename?: 'OrchardNut15Method';
-  method: Scalars['String']['output'];
+  method: MintPaymentMethod;
   unit: MintUnit;
 };
 
@@ -913,7 +913,7 @@ export type OrchardNut17 = {
 export type OrchardNut17Supported = {
   __typename?: 'OrchardNut17Supported';
   commands: Array<Scalars['String']['output']>;
-  method: Scalars['String']['output'];
+  method: MintPaymentMethod;
   unit: Scalars['String']['output'];
 };
 

@@ -1,0 +1,10 @@
+@use '@styles/molecule/molecule';
+
+.mint-payment-method-container {
+	@extend %font-weight-semi-bold;
+	@extend %flex;
+	@extend %flex-row;
+	@extend %flex-gap-0-25;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+}

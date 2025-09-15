@@ -1,0 +1,9 @@
+<div class="mint-payment-method-container">
+	@if (payment_method() == 'bolt11') {
+		<div>BOLT 11</div>
+		<mat-icon [class]="icon_size()">bolt</mat-icon>
+	} @else {
+		<div>BOLT 12</div>
+		<mat-icon [class]="icon_size()" [svgIcon]="'double_bolt'"></mat-icon>
+	}
+</div>

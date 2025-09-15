@@ -707,7 +707,7 @@ type OrchardNut4 {
 type OrchardNut4Method {
   description: Boolean
   max_amount: Float
-  method: String!
+  method: MintPaymentMethod!
   min_amount: Float
   unit: String!
 }
@@ -720,7 +720,7 @@ type OrchardNut5 {
 type OrchardNut5Method {
   amountless: Boolean
   max_amount: Float
-  method: String!
+  method: MintPaymentMethod!
   min_amount: Float
   unit: String!
 }
@@ -730,7 +730,7 @@ type OrchardNut15 {
 }
 
 type OrchardNut15Method {
-  method: String!
+  method: MintPaymentMethod!
   unit: MintUnit!
 }
 
@@ -740,7 +740,7 @@ type OrchardNut17 {
 
 type OrchardNut17Supported {
   commands: [String!]!
-  method: String!
+  method: MintPaymentMethod!
   unit: String!
 }
 

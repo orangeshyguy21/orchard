@@ -34,15 +34,10 @@
 					<th mat-header-cell *matHeaderCellDef mat-sort-header class="data-table-sticky-header">Request</th>
 					<td mat-cell *matCellDef="let entity">
 						<div class="flex flex-row flex-gap-0-5 flex-items-center">
-							<div class="method-label">
-								@if (entity.payment_method == 'bolt11') {
-									<div>BOLT 11</div>
-									<mat-icon class="icon-sm">bolt</mat-icon>
-								} @else {
-									<div>BOLT 12</div>
-									<mat-icon class="icon-sm" [svgIcon]="'double_bolt'"></mat-icon>
-								}
-							</div>
+							<orc-mint-payment-method
+								class="orc-outline-color font-size-xs"
+								[payment_method]="entity.payment_method"
+							></orc-mint-payment-method>
 							<div>{{ entity.request | truncate: 60 : 25 : 25 }}</div>
 						</div>
 					</td>

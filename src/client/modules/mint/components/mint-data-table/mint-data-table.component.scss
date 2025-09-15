@@ -47,15 +47,3 @@ tr.more-entity-row {
 	@extend %flex;
 	@extend %h-min-0;
 }
-
-.method-label {
-	@extend %orc-corner-small;
-	@extend %font-size-xs;
-	@extend %font-weight-semi-bold;
-	@extend %flex;
-	@extend %flex-row;
-	@extend %flex-gap-0-25;
-	@extend %flex-items-center;
-	@extend %flex-justify-center;
-	@extend %orc-outline-color;
-}
