@@ -34,7 +34,6 @@ import {
 	getAnalyticsTimeGroupSql,
 	queryRows,
 	queryRow,
-	convertSqlToType,
 } from '@server/modules/cashu/mintdb/cashumintdb.helpers';
 import {MintAnalyticsInterval, MintDatabaseType} from '@server/modules/cashu/mintdb/cashumintdb.enums';
 /* Local Dependencies */
@@ -103,11 +102,10 @@ export class CdkService {
 			FULL OUTER JOIN redeemed r ON i.keyset_id = r.keyset_id
 			ORDER BY keyset;
 		`;
-		const sql_converted = convertSqlToType(sql, client.type);
 
 		const params = keyset_id ? [keyset_id, keyset_id] : [];
 		try {
-			return queryRows<CashuMintBalance>(client, sql_converted, params);
+			return queryRows<CashuMintBalance>(client, sql, params);
 		} catch (err) {
 			throw err;
 		}
@@ -119,9 +117,8 @@ export class CdkService {
 			FROM blind_signature
 			GROUP BY keyset_id
 			ORDER BY keyset_id;`;
-		const sql_converted = convertSqlToType(sql, client.type);
 		try {
-			return queryRows<CashuMintBalance>(client, sql_converted);
+			return queryRows<CashuMintBalance>(client, sql);
 		} catch (err) {
 			throw err;
 		}
@@ -134,9 +131,8 @@ export class CdkService {
 			WHERE state = 'SPENT'
 			GROUP BY keyset_id
 			ORDER BY keyset_id;`;
-		const sql_converted = convertSqlToType(sql, client.type);
 		try {
-			return queryRows<CashuMintBalance>(client, sql_converted);
+			return queryRows<CashuMintBalance>(client, sql);
 		} catch (err) {
 			throw err;
 		}
@@ -144,9 +140,8 @@ export class CdkService {
 
 	public async getMintKeysets(client: CashuMintDatabase): Promise<CashuMintKeyset[]> {
 		const sql = 'SELECT * FROM keyset WHERE unit != ?;';
-		const sql_converted = convertSqlToType(sql, client.type);
 		try {
-			return queryRows<CashuMintKeyset>(client, sql_converted, ['auth']);
+			return queryRows<CashuMintKeyset>(client, sql, ['auth']);
 		} catch (err) {
 			throw err;
 		}
@@ -201,9 +196,8 @@ export class CdkService {
 			) mq`;
 
 		const {sql, params} = buildDynamicQuery(MintDatabaseType.sqlite, 'mint_quote', args, field_mappings, select_statement);
-		const sql_converted = convertSqlToType(sql, client.type);
 		try {
-			return queryRows<CashuMintMintQuote>(client, sql_converted, params);
+			return queryRows<CashuMintMintQuote>(client, sql, params);
 		} catch (err) {
 			throw err;
 		}
@@ -217,9 +211,8 @@ export class CdkService {
 			states: 'state',
 		};
 		const {sql, params} = buildDynamicQuery(MintDatabaseType.sqlite, 'melt_quote', args, field_mappings);
-		const sql_converted = convertSqlToType(sql, client.type);
 		try {
-			const rows = await queryRows<CashuMintMeltQuote>(client, sql_converted, params);
+			const rows = await queryRows<CashuMintMeltQuote>(client, sql, params);
 			return rows.map((row) => {
 				const s = row.request?.trim();
 				if (!s?.startsWith('{')) return row;
@@ -257,9 +250,8 @@ export class CdkService {
 
 		const group_by = 'p.created_time, k.unit, p.state, p.keyset_id';
 		const {sql, params} = buildDynamicQuery(MintDatabaseType.sqlite, 'proof', args, field_mappings, select_statement, group_by);
-		const sql_converted = convertSqlToType(sql, client.type);
 		try {
-			const rows = await queryRows<CdkMintProof>(client, sql_converted, params);
+			const rows = await queryRows<CdkMintProof>(client, sql, params);
 			const groups = {};
 			rows.forEach((row) => {
 				const key = `${row.created_time}_${row.unit}_${row.state}`;
@@ -318,9 +310,8 @@ export class CdkService {
 			select_statement,
 			group_by,
 		);
-		const sql_converted = convertSqlToType(sql, client.type);
 		try {
-			const rows = await queryRows<CdkMintPromise>(client, sql_converted, params);
+			const rows = await queryRows<CdkMintPromise>(client, sql, params);
 			const groups = {};
 			rows.forEach((row) => {
 				const key = `${row.created_time}_${row.unit}`;
@@ -376,9 +367,8 @@ export class CdkService {
 			) subquery`;
 
 		const {sql, params} = buildCountQuery(MintDatabaseType.sqlite, 'mint_quote', args, field_mappings, select_statement);
-		const sql_converted = convertSqlToType(sql, client.type);
 		try {
-			const row = await queryRow<CashuMintCount>(client, sql_converted, params);
+			const row = await queryRow<CashuMintCount>(client, sql, params);
 			return row.count;
 		} catch (err) {
 			throw err;
@@ -393,9 +383,8 @@ export class CdkService {
 			states: 'state',
 		};
 		const {sql, params} = buildCountQuery(MintDatabaseType.sqlite, 'melt_quote', args, field_mappings);
-		const sql_converted = convertSqlToType(sql, client.type);
 		try {
-			const row = await queryRow<CashuMintCount>(client, sql_converted, params);
+			const row = await queryRow<CashuMintCount>(client, sql, params);
 			return row.count;
 		} catch (err) {
 			throw err;
@@ -422,10 +411,8 @@ export class CdkService {
 		const group_by = 'p.created_time, k.unit, p.state';
 		const {sql, params} = buildCountQuery(MintDatabaseType.sqlite, 'proof', args, field_mappings, select_statement, group_by);
 		const final_sql = sql.replace(';', ') subquery;');
-		const sql_converted = convertSqlToType(final_sql, client.type);
-
 		try {
-			const row = await queryRow<CashuMintCount>(client, sql_converted, params);
+			const row = await queryRow<CashuMintCount>(client, final_sql, params);
 			return row.count;
 		} catch (err) {
 			throw err;
@@ -450,10 +437,8 @@ export class CdkService {
 		const group_by = 'bs.created_time, k.unit';
 		const {sql, params} = buildCountQuery(MintDatabaseType.sqlite, 'blind_signature', args, field_mappings, select_statement, group_by);
 		const final_sql = sql.replace(';', ') subquery;');
-		const sql_converted = convertSqlToType(final_sql, client.type);
-
 		try {
-			const row = await queryRow<CashuMintCount>(client, sql_converted, params);
+			const row = await queryRow<CashuMintCount>(client, final_sql, params);
 			return row.count;
 		} catch (err) {
 			throw err;
@@ -531,10 +516,9 @@ export class CdkService {
 				m.time_group IS NULL
 			ORDER BY 
 				min_created_time;`;
-		const sql_converted = convertSqlToType(sql, client.type);
 
 		try {
-			const rows = await queryRows<CdkMintAnalytics>(client, sql_converted, [...params, ...params]);
+			const rows = await queryRows<CdkMintAnalytics>(client, sql, [...params, ...params]);
 			return rows.map((row) => {
 				const timestamp = getAnalyticsTimeGroupStamp({
 					min_created_time: row.min_created_time,
@@ -586,10 +570,9 @@ export class CdkService {
 				time_group, unit
 			ORDER BY 
 				min_created_time;`;
-		const sql_converted = convertSqlToType(sql, client.type);
 
 		try {
-			const rows = await queryRows<CdkMintAnalytics>(client, sql_converted, params);
+			const rows = await queryRows<CdkMintAnalytics>(client, sql, params);
 			return rows.map((row) => {
 				const timestamp = getAnalyticsTimeGroupStamp({
 					min_created_time: row.min_created_time,
@@ -641,10 +624,9 @@ export class CdkService {
 				time_group, unit
 			ORDER BY 
 				min_created_time;`;
-		const sql_converted = convertSqlToType(sql, client.type);
 
 		try {
-			const rows = await queryRows<CdkMintAnalytics>(client, sql_converted, params);
+			const rows = await queryRows<CdkMintAnalytics>(client, sql, params);
 			return rows.map((row) => {
 				const timestamp = getAnalyticsTimeGroupStamp({
 					min_created_time: row.min_created_time,
@@ -698,10 +680,9 @@ export class CdkService {
 				time_group, unit
 			ORDER BY
 				min_created_time;`;
-		const sql_converted = convertSqlToType(sql, client.type);
 
 		try {
-			const rows = await queryRows<CdkMintAnalytics>(client, sql_converted, params);
+			const rows = await queryRows<CdkMintAnalytics>(client, sql, params);
 			return rows.map((row) => {
 				const timestamp = getAnalyticsTimeGroupStamp({
 					min_created_time: row.min_created_time,
@@ -773,10 +754,9 @@ export class CdkService {
 				AND i.keyset_id = r.keyset_id
 			ORDER BY min_created_time;
 		`;
-		const sql_converted = convertSqlToType(sql, client.type);
 
 		try {
-			const rows = await queryRows<CdkMintKeysetsAnalytics>(client, sql_converted, [...params, ...params]);
+			const rows = await queryRows<CdkMintKeysetsAnalytics>(client, sql, [...params, ...params]);
 			return rows.map((row) => {
 				const timestamp = getAnalyticsTimeGroupStamp({
 					min_created_time: row.min_created_time,
