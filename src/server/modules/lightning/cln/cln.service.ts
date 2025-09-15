@@ -40,7 +40,6 @@ export class ClnService {
 	}
 
 	private initializeGrpcClient(proto_paths: string[], package_namespace: string, client_class: string): grpc.Client {
-		console.log('HERE WE ARE PREPPING CLN CLIENT');
 		const credentials = this.createGrpcCredentials();
 		if (!credentials) return;
 

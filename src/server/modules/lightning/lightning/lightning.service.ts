@@ -48,16 +48,59 @@ export class LightningService implements OnModuleInit {
 
 	async getLightningInfo(): Promise<LightningInfo> {
 		if (this.type === 'lnd') return this.makeGrpcRequest('GetInfo', {});
-		if (this.type === 'cln') return this.makeGrpcRequest('Getinfo', {});
+		if (this.type === 'cln') return this.mapClnInfo();
 	}
-
-	// async getLightningChannelBalance(): Promise<LightningChannelBalance> {
-	// 	return this.makeGrpcRequest('ChannelBalance', {});
-	// }
 
 	async getLightningChannelBalance(): Promise<LightningChannelBalance> {
 		if (this.type === 'lnd') return this.makeGrpcRequest('ChannelBalance', {});
 		if (this.type === 'cln') return this.getClnChannelBalance();
+	}
+
+	private async mapClnInfo(): Promise<LightningInfo> {
+		const info = await this.makeGrpcRequest('Getinfo', {});
+		const toHex = (v: any): string => {
+			if (v == null) return '';
+			if (Buffer.isBuffer(v)) return v.toString('hex');
+			if (typeof v === 'string') return v.replace(/^#/, '');
+			return '';
+		};
+
+		const id_hex = toHex(info?.id);
+		const color_hex = toHex(info?.color).toLowerCase();
+		const network: string = info?.network ?? '';
+		const addresses: any[] = Array.isArray(info?.address) ? info.address : [];
+
+		const uris: string[] = addresses
+			.map((a: any) => {
+				const addr = a?.address;
+				const port = a?.port;
+				if (!id_hex || !addr || !port) return null;
+				return `${id_hex}@${addr}:${port}`;
+			})
+			.filter((x: string | null): x is string => !!x);
+
+		return {
+			version: info?.version ?? '',
+			commit_hash: '',
+			identity_pubkey: id_hex,
+			alias: info?.alias ?? '',
+			color: color_hex,
+			num_pending_channels: info?.num_pending_channels ?? 0,
+			num_active_channels: info?.num_active_channels ?? 0,
+			num_inactive_channels: info?.num_inactive_channels ?? 0,
+			num_peers: info?.num_peers ?? 0,
+			block_height: info?.blockheight ?? 0,
+			block_hash: '',
+			best_header_timestamp: 0,
+			synced_to_chain: true,
+			synced_to_graph: true,
+			testnet: !(network === 'bitcoin' || network === 'mainnet'),
+			chains: [{chain: 'bitcoin', network}],
+			uris,
+			require_htlc_interceptor: false,
+			store_final_htlc_resolutions: false,
+			features: {},
+		};
 	}
 
 	private asBigIntMsat(v: any): bigint {
