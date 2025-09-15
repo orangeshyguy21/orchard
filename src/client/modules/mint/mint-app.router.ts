@@ -179,7 +179,7 @@ const routes: Routes = [
 				resolve: {
 					origin: () => {
 						const router = inject(Router);
-						const navigation = router.getCurrentNavigation();
+						const navigation = router.currentNavigation();
 						return navigation?.extras?.state?.['sub_section'] || 'unknown';
 					},
 				},

@@ -75,7 +75,7 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 		public cdr: ChangeDetectorRef,
 		public router: Router,
 	) {
-		const nav = this.router.getCurrentNavigation();
+		const nav = this.router.currentNavigation();
 		this.focus_control = nav?.extras.state?.['focus_control'];
 	}
 
