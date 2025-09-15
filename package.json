@@ -94,7 +94,7 @@
     "eslint": "^9.31.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
-    "jasmine-core": "~5.9.0",
+    "jasmine-core": "~5.10.0",
     "jest": "^29.7.0",
     "karma": "~6.4.4",
     "karma-chrome-launcher": "~3.2.0",
