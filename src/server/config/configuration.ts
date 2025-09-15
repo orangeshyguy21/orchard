@@ -43,6 +43,8 @@ export const config = (): Config => {
 		port: process.env.LIGHTNING_RPC_PORT,
 		macaroon: process.env.LIGHTNING_MACAROON,
 		cert: process.env.LIGHTNING_CERT,
+		key: process.env.LIGHTNING_KEY,
+		ca: process.env.LIGHTNING_CA,
 	};
 
 	const taproot_assets = {
