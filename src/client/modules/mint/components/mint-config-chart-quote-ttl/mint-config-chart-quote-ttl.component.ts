@@ -101,7 +101,6 @@ export class MintConfigChartQuoteTtlComponent implements OnChanges, OnDestroy {
 	}
 
 	private async init(): Promise<void> {
-		console.log('init', this.nut, this.quotes);
 		this.chart_type = 'scatter';
 		const deltas = this.getDeltas();
 		this.metrics = this.getMetrics(deltas);

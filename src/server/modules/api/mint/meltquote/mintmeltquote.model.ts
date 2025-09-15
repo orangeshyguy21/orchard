@@ -5,21 +5,6 @@ import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scala
 import {MintUnit, MeltQuoteState, MintPaymentMethod} from '@server/modules/cashu/cashu.enums';
 import {CashuMintMeltQuote} from '@server/modules/cashu/mintdb/cashumintdb.types';
 
-// export type CashuMintMeltQuote = {
-// 	id: string;
-// 	unit: MintUnit;
-// 	amount: number;
-// 	request: string;
-// 	fee_reserve: number;
-// 	state: MeltQuoteState;
-// 	payment_preimage: string | null;
-// 	request_lookup_id: string | null;
-// 	msat_to_pay: number | null;
-// 	created_time: number;
-// 	paid_time: number | null;
-// 	payment_method: MintPaymentMethod;
-// };
-
 @ObjectType()
 export class OrchardMintMeltQuote {
 	@Field((type) => ID)
