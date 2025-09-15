@@ -18,7 +18,7 @@
 - Lightning
   - lnd
 - Cashu Mint
-  - cdk (sqlite)
+  - cdk (sqlite, postgreSQL)
     - Lacks support for fee revenue
   - nutshell (sqlite, postgreSQL)
     - Management RPC still in development. Waiting on official release
