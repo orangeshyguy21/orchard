@@ -56,6 +56,11 @@ export class LightningService implements OnModuleInit {
 		if (this.type === 'cln') return this.getClnChannelBalance();
 	}
 
+	async getDecodedRequest(request: string): Promise<any> {
+		if (this.type === 'lnd') return this.makeGrpcRequest('DecodePayReq', {pay_req: request});
+		if (this.type === 'cln') return this.makeGrpcRequest('Decode', {string: request});
+	}
+
 	private async mapClnInfo(): Promise<LightningInfo> {
 		const info = await this.makeGrpcRequest('Getinfo', {});
 		const toHex = (v: any): string => {
