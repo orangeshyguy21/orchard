@@ -84,6 +84,14 @@ enum LightningAddressType {
   WITNESS_PUBKEY_HASH
 }
 
+enum LightningRequestType {
+  BOLT11_INVOICE
+  BOLT12_INVOICE
+  BOLT12_INVOICE_REQUEST
+  BOLT12_OFFER
+  UNKNOWN
+}
+
 enum MeltQuoteState {
   PAID
   PENDING
@@ -512,6 +520,14 @@ type OrchardLightningInfo {
   version: String!
 }
 
+type OrchardLightningRequest {
+  description: String
+  expiry: Float
+  offer_quantity_max: Float
+  type: LightningRequestType!
+  valid: Boolean!
+}
+
 type OrchardMintAnalytics {
   amount: Int!
   created_time: UnixTimestamp!
@@ -844,6 +860,7 @@ type Query {
   bitcoin_transaction_fee_estimates(targets: [Int!]!): [OrchardBitcoinTxFeeEstimate!]!
   lightning_balance: OrchardLightningBalance!
   lightning_info: OrchardLightningInfo!
+  lightning_request(request: String!): OrchardLightningRequest!
   lightning_wallet: [OrchardLightningAccount!]!
   mint_analytics_balances(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
   mint_analytics_fees(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!

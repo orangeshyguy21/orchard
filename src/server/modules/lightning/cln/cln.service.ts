@@ -7,11 +7,11 @@ import * as path from 'path';
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 /* Application Dependencies */
-import {LightningInfo, LightningChannelBalance} from '@server/modules/lightning/lightning/lightning.types';
+import {LightningInfo, LightningChannelBalance, LightningRequest} from '@server/modules/lightning/lightning/lightning.types';
 import {LightningAddresses} from '@server/modules/lightning/walletkit/lnwalletkit.types';
 import {LightningAddressType} from '@server/modules/lightning/lightning.enums';
 /* Local Dependencies */
-import {asBigIntMsat, msatToStrings, sumMsat} from './cln.helpers';
+import {asBigIntMsat, msatToStrings, sumMsat, mapRequestType, mapRequestExpiry, mapRequestDescription} from './cln.helpers';
 
 @Injectable()
 export class ClnService {
@@ -125,8 +125,8 @@ export class ClnService {
 	}
 
 	public async mapClnChannelBalance(funds: any, peers: any): Promise<LightningChannelBalance> {
-		const openStates = new Set(['ChanneldNormal']);
-		const pendingStates = new Set([
+		const open_states = new Set(['ChanneldNormal']);
+		const pending_states = new Set([
 			'Openingd',
 			'ChanneldAwaitingLockin',
 			'DualopendOpenInit',
@@ -136,60 +136,60 @@ export class ClnService {
 			'DualopendOpenCommittReady',
 		]);
 
-		const fundChans = funds?.channels ?? [];
-		const peerChans = peers?.channels ?? [];
+		const fund_chans = funds?.channels ?? [];
+		const peer_chans = peers?.channels ?? [];
 
-		const openFundChans = fundChans.filter((c: any) => openStates.has(c.state));
-		const pendingFundChans = fundChans.filter((c: any) => pendingStates.has(c.state));
-		const openPeerChans = peerChans.filter((c: any) => openStates.has(c.state));
+		const open_fund_chans = fund_chans.filter((c: any) => open_states.has(c.state));
+		const pending_fund_chans = fund_chans.filter((c: any) => pending_states.has(c.state));
+		const open_peer_chans = peer_chans.filter((c: any) => open_states.has(c.state));
 
-		let localOpenMsat = sumMsat(openPeerChans, (c: any) => c.to_us_msat ?? 0);
-		if (localOpenMsat === BigInt(0)) {
-			localOpenMsat = sumMsat(openFundChans, (c: any) => c.our_amount_msat ?? 0);
+		let local_open_msat = sumMsat(open_peer_chans, (c: any) => c.to_us_msat ?? 0);
+		if (local_open_msat === BigInt(0)) {
+			local_open_msat = sumMsat(open_fund_chans, (c: any) => c.our_amount_msat ?? 0);
 		}
 
-		let remoteOpenMsat = BigInt(0);
-		for (const c of openPeerChans) {
+		let remote_open_msat = BigInt(0);
+		for (const c of open_peer_chans) {
 			const total = asBigIntMsat(c.total_msat);
-			const toUs = asBigIntMsat(c.to_us_msat);
-			if (total > BigInt(0)) remoteOpenMsat += total - toUs;
+			const to_us = asBigIntMsat(c.to_us_msat);
+			if (total > BigInt(0)) remote_open_msat += total - to_us;
 		}
-		if (remoteOpenMsat === BigInt(0)) {
-			for (const c of openFundChans) {
+		if (remote_open_msat === BigInt(0)) {
+			for (const c of open_fund_chans) {
 				const total = asBigIntMsat(c.amount_msat);
 				const ours = asBigIntMsat(c.our_amount_msat);
-				if (total > BigInt(0)) remoteOpenMsat += total - ours;
+				if (total > BigInt(0)) remote_open_msat += total - ours;
 			}
 		}
 
-		let unsettledLocalMsat = BigInt(0);
-		let unsettledRemoteMsat = BigInt(0);
-		for (const c of openPeerChans) {
+		let unsettled_local_msat = BigInt(0);
+		let unsettled_remote_msat = BigInt(0);
+		for (const c of open_peer_chans) {
 			for (const h of c.htlcs || []) {
 				const amt = asBigIntMsat(h.amount_msat);
 				const dir = h.direction; // 'IN' | 'OUT'
-				if (dir === 'OUT') unsettledLocalMsat += BigInt(amt);
-				else if (dir === 'IN') unsettledRemoteMsat += BigInt(amt);
+				if (dir === 'OUT') unsettled_local_msat += BigInt(amt);
+				else if (dir === 'IN') unsettled_remote_msat += BigInt(amt);
 			}
 		}
 
-		const pendingLocalMsat = sumMsat(pendingFundChans, (c: any) => c.our_amount_msat);
-		let pendingRemoteMsat = BigInt(0);
-		for (const c of pendingFundChans) {
+		const pending_local_msat = sumMsat(pending_fund_chans, (c: any) => c.our_amount_msat);
+		let pending_remote_msat = BigInt(0);
+		for (const c of pending_fund_chans) {
 			const total = asBigIntMsat(c.amount_msat);
 			const ours = asBigIntMsat(c.our_amount_msat);
-			if (total > BigInt(0)) pendingRemoteMsat += total - ours;
+			if (total > BigInt(0)) pending_remote_msat += total - ours;
 		}
 
 		return {
-			balance: (localOpenMsat / BigInt(1000)).toString(),
-			pending_open_balance: (pendingLocalMsat / BigInt(1000)).toString(),
-			local_balance: msatToStrings(localOpenMsat),
-			remote_balance: msatToStrings(remoteOpenMsat),
-			unsettled_local_balance: msatToStrings(unsettledLocalMsat),
-			unsettled_remote_balance: msatToStrings(unsettledRemoteMsat),
-			pending_open_local_balance: msatToStrings(pendingLocalMsat),
-			pending_open_remote_balance: msatToStrings(pendingRemoteMsat),
+			balance: (local_open_msat / BigInt(1000)).toString(),
+			pending_open_balance: (pending_local_msat / BigInt(1000)).toString(),
+			local_balance: msatToStrings(local_open_msat),
+			remote_balance: msatToStrings(remote_open_msat),
+			unsettled_local_balance: msatToStrings(unsettled_local_msat),
+			unsettled_remote_balance: msatToStrings(unsettled_remote_msat),
+			pending_open_local_balance: msatToStrings(pending_local_msat),
+			pending_open_remote_balance: msatToStrings(pending_remote_msat),
 			custom_channel_data: Buffer.alloc(0),
 		};
 	}
@@ -207,7 +207,6 @@ export class ClnService {
 
 		const bech32 = entries.map((e) => e?.bech32).filter((x: string) => !!x);
 		const p2tr = entries.map((e) => e?.p2tr).filter((x: string) => !!x);
-
 		const account_with_addresses: LightningAddresses['account_with_addresses'] = [];
 
 		if (bech32.length) {
@@ -229,5 +228,15 @@ export class ClnService {
 		}
 
 		return {account_with_addresses};
+	}
+
+	public mapClnRequest(request: any): LightningRequest {
+		return {
+			type: mapRequestType(request?.item_type),
+			valid: request?.valid ?? false,
+			expiry: mapRequestExpiry(request),
+			description: mapRequestDescription(request?.description),
+			offer_quantity_max: request?.offer_quantity_max ?? null,
+		};
 	}
 }

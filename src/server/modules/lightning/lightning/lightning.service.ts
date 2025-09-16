@@ -7,7 +7,7 @@ import {LightningType} from '@server/modules/lightning/lightning.enums';
 import {LndService} from '@server/modules/lightning/lnd/lnd.service';
 import {ClnService} from '@server/modules/lightning/cln/cln.service';
 /* Local Dependencies */
-import {LightningInfo, LightningChannelBalance} from './lightning.types';
+import {LightningInfo, LightningChannelBalance, LightningRequest} from './lightning.types';
 
 @Injectable()
 export class LightningService implements OnModuleInit {
@@ -61,8 +61,8 @@ export class LightningService implements OnModuleInit {
 		}
 	}
 
-	async getDecodedRequest(request: string): Promise<any> {
-		if (this.type === 'lnd') return this.makeGrpcRequest('DecodePayReq', {pay_req: request});
-		if (this.type === 'cln') return this.makeGrpcRequest('Decode', {string: request});
+	async getLightningRequest(request: string): Promise<LightningRequest> {
+		if (this.type === 'lnd') return this.lndService.mapLndRequest(await this.makeGrpcRequest('DecodePayReq', {pay_req: request}));
+		if (this.type === 'cln') return this.clnService.mapClnRequest(await this.makeGrpcRequest('Decode', {string: request}));
 	}
 }

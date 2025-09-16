@@ -6,6 +6,10 @@ import * as path from 'path';
 /* Vendor Dependencies */
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
+/* Application Dependencies */
+import {LightningRequest} from '@server/modules/lightning/lightning/lightning.types';
+/* Local Dependencies */
+import {mapRequestType, mapRequestDescription, mapRequestExpiry} from './lnd.helpers';
 
 @Injectable()
 export class LndService {
@@ -78,5 +82,15 @@ export class LndService {
 		const lightning_proto_path = path.join(process.cwd(), 'proto/lnd/lightning.proto');
 		const walletkit_proto_path = path.join(process.cwd(), 'proto/lnd/walletkit.proto');
 		return this.initializeGrpcClient([lightning_proto_path, walletkit_proto_path], 'walletrpc', 'WalletKit');
+	}
+
+	public mapLndRequest(request: any): LightningRequest {
+		return {
+			type: mapRequestType(),
+			valid: true,
+			expiry: mapRequestExpiry(request),
+			description: mapRequestDescription(request?.description),
+			offer_quantity_max: null,
+		};
 	}
 }
