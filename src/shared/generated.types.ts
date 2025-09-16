@@ -103,7 +103,8 @@ export enum LightningRequestType {
   Bolt11Invoice = 'BOLT11_INVOICE',
   Bolt12Invoice = 'BOLT12_INVOICE',
   Bolt12InvoiceRequest = 'BOLT12_INVOICE_REQUEST',
-  Bolt12Offer = 'BOLT12_OFFER'
+  Bolt12Offer = 'BOLT12_OFFER',
+  Unknown = 'UNKNOWN'
 }
 
 export enum MeltQuoteState {

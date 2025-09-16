@@ -5,6 +5,7 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
 import QRCodeStyling from 'qr-code-styling';
 /* Application Dependencies */
 import {ThemeService} from '@client/modules/settings/services/theme/theme.service';
+import {LightningRequest} from '@client/modules/lightning/classes/lightning-request.class';
 /* Native Dependencies */
 import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class';
 
@@ -28,12 +29,20 @@ import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class'
 			transition('hidden => visible', animate('100ms ease-out')),
 			transition('visible => hidden', animate('100ms ease-in', style({ opacity: 0 }))),
 		]),
+		trigger('fadeIn', [
+			transition(':enter', [
+				style({ opacity: 0 }),
+				animate('150ms ease-in', style({ opacity: 1 })),
+			]),
+		]),
 	],
 })
 export class MintDataMintComponent implements AfterViewInit {
 	@ViewChild('qr_canvas', {static: false}) qr_canvas!: ElementRef;
 
 	@Input() quote!: MintMintQuote;
+	@Input() loading!: boolean;
+	@Input() lightning_request!: LightningRequest | null;
 
 	public qr_code!: QRCodeStyling;
 	public copy_animation_state: 'visible' | 'hidden' = 'hidden';

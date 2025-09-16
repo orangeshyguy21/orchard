@@ -86,3 +86,14 @@ export const LIGHTNING_WALLET_QUERY = `{
         }
 	}
 }`;
+
+export const LIGHTNING_REQUEST_QUERY = `
+query LightningRequest($request: String!) {
+    lightning_request(request: $request) {
+        valid
+        type
+        expiry
+        description
+        offer_quantity_max
+    }
+}`;

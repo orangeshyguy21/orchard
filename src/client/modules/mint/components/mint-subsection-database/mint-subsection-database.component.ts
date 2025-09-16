@@ -15,11 +15,13 @@ import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {NonNullableMintDatabaseSettings} from '@client/modules/settings/types/setting.types';
 import {SettingService} from '@client/modules/settings/services/setting/setting.service';
 import {EventService} from '@client/modules/event/services/event/event.service';
+import {LightningService} from '@client/modules/lightning/services/lightning/lightning.service';
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
 import {EventData} from '@client/modules/event/classes/event-data.class';
 import {DataType} from '@client/modules/orchard/enums/data.enum';
 import {ComponentCanDeactivate} from '@client/modules/routing/interfaces/routing.interfaces';
 import {AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
+import {LightningRequest} from '@client/modules/lightning/classes/lightning-request.class';
 /* Native Dependencies */
 import {MintService} from '@client/modules/mint/services/mint/mint.service';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
@@ -100,6 +102,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	public mint_genesis_time: number = 0;
 	public loading_static_data: boolean = true;
 	public loading_dynamic_data: boolean = true;
+	public loading_more: boolean = false;
 	public data!: MintData;
 	public count: number = 0;
 	public mint_keysets: MintKeyset[] = [];
@@ -116,6 +119,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	public database_version!: string;
 	public database_timestamp!: number;
 	public database_implementation!: string;
+	public lightning_request!: LightningRequest | null;
 
 	private active_event: EventData | null = null;
 	private subscriptions: Subscription = new Subscription();
@@ -135,6 +139,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		private settingService: SettingService,
 		private eventService: EventService,
 		private mintService: MintService,
+		private lightningService: LightningService,
 		private aiService: AiService,
 		private cdr: ChangeDetectorRef,
 	) {}
@@ -352,6 +357,12 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		}
 	}
 
+	private async getLightningRequest(request: string): Promise<void> {
+		this.lightning_request = await lastValueFrom(this.lightningService.getLightningRequest(request));
+		this.loading_more = false;
+		this.cdr.detectChanges();
+	}
+
 	/* *******************************************************
 		Actions Up                      
 	******************************************************** */
@@ -409,6 +420,11 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		this.form_mode = null;
 		this.eventService.registerEvent(null);
 		this.cdr.detectChanges();
+	}
+	public onMoreRequest(request: string): void {
+		this.loading_more = true;
+		this.cdr.detectChanges();
+		this.getLightningRequest(request);
 	}
 
 	/* *******************************************************

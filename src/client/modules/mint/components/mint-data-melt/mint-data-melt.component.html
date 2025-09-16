@@ -29,7 +29,7 @@
 					<div class="orc-outline-variant-color">Null</div>
 				}
 			</div>
-			<div class="flex flex-gap-1">
+			<!-- <div class="flex flex-gap-1">
 				<div class="w-8 orc-outline-color font-weight-extra-light">Payment Preimage:</div>
 				@if (quote.payment_preimage) {
 					<div class="orc-text-button" (click)="onCopy(quote.payment_preimage)">{{ quote.payment_preimage }}</div>
@@ -40,11 +40,35 @@
 			<div class="flex flex-gap-1">
 				<div class="w-8 orc-outline-color font-weight-extra-light">Request Lookup ID:</div>
 				<div class="orc-text-button" (click)="onCopy(quote.request_lookup_id)">{{ quote.request_lookup_id }}</div>
-			</div>
+			</div> -->
 			<div class="flex flex-gap-1">
-				<div class="w-8 orc-outline-color font-weight-extra-light">Request:</div>
+				<div class="w-8 orc-outline-color font-weight-extra-light">
+					{{ quote.payment_method == 'bolt11' ? 'Bolt 11 Invoice' : 'Bolt 12 Offer' }}:
+				</div>
 				<div class="mega-string w-max-36 orc-text-button" (click)="onCopy(quote.request)">{{ quote.request }}</div>
 			</div>
+			@if (lightning_request && !loading) {
+				<div [@fadeIn] class="flex flex-column flex-gap-1">
+					<div class="flex flex-gap-1">
+						<div class="w-8 orc-outline-color font-weight-extra-light">
+							{{ quote.payment_method == 'bolt11' ? 'Bolt 11 Expiry' : 'Bolt 12 Expiry' }}:
+						</div>
+						<div>
+							@if (lightning_request?.expiry) {
+								{{ lightning_request?.expiry | time: 'medium' }}
+							} @else {
+								<div class="orc-outline-variant-color">No Expiry</div>
+							}
+						</div>
+					</div>
+					@if (lightning_request?.description) {
+						<div class="flex flex-gap-1">
+							<div class="w-8 orc-outline-color font-weight-extra-light">Description</div>
+							<div>{{ lightning_request?.description }}</div>
+						</div>
+					}
+				</div>
+			}
 			<div class="flex flex-gap-1">
 				<div class="w-8"></div>
 				<div class="relative">

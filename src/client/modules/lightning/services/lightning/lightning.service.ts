@@ -12,9 +12,15 @@ import {CacheService} from '@client/modules/cache/services/cache/cache.service';
 import {LightningInfo} from '@client/modules/lightning/classes/lightning-info.class';
 import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
 import {LightningAccount} from '@client/modules/lightning/classes/lightning-account.class';
-import {LightningInfoResponse, LightningBalanceResponse, LightningWalletResponse} from '@client/modules/lightning/types/lightning.types';
+import {LightningRequest} from '@client/modules/lightning/classes/lightning-request.class';
+import {
+	LightningInfoResponse,
+	LightningBalanceResponse,
+	LightningWalletResponse,
+	LightningRequestResponse,
+} from '@client/modules/lightning/types/lightning.types';
 /* Local Dependencies */
-import {LIGHTNING_INFO_QUERY, LIGHTNING_BALANCE_QUERY, LIGHTNING_WALLET_QUERY} from './lightning.queries';
+import {LIGHTNING_INFO_QUERY, LIGHTNING_BALANCE_QUERY, LIGHTNING_WALLET_QUERY, LIGHTNING_REQUEST_QUERY} from './lightning.queries';
 
 @Injectable({
 	providedIn: 'root',
@@ -134,6 +140,22 @@ export class LightningService {
 			}),
 			catchError((error) => {
 				console.error('Error loading lightning wallet:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	public getLightningRequest(request: string): Observable<LightningRequest> {
+		const query = getApiQuery(LIGHTNING_REQUEST_QUERY, {request});
+
+		return this.http.post<OrchardRes<LightningRequestResponse>>(api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.lightning_request;
+			}),
+			map((ln_request) => new LightningRequest(ln_request)),
+			catchError((error) => {
+				console.error('Error loading lightning request:', error);
 				return throwError(() => error);
 			}),
 		);
