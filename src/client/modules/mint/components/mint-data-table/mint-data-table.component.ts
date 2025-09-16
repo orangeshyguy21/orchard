@@ -1,6 +1,8 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {animate, style, transition, trigger} from '@angular/animations';
+/* Application Configuration */
+import {environment} from '@client/configs/configuration';
 /* Vendor Dependencies */
 import {MatSort} from '@angular/material/sort';
 /* Application Dependencies */
@@ -65,8 +67,7 @@ export class MintDataTableComponent implements OnChanges {
 
 	public toggleMore(entity: MintMintQuote | MintMeltQuote) {
 		this.more_entity = this.more_entity === entity ? null : entity;
-		if (this.more_entity) {
-			this.updateRequest.emit(this.more_entity.request);
-		}
+		if (!environment.lightning.enabled) return;
+		if (this.more_entity) this.updateRequest.emit(this.more_entity.request);
 	}
 }
