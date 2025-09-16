@@ -8,12 +8,15 @@ import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 /* Application Dependencies */
 import {LightningInfo, LightningChannelBalance} from '@server/modules/lightning/lightning/lightning.types';
+import {LightningAddresses} from '@server/modules/lightning/walletkit/lnwalletkit.types';
+import {LightningAddressType} from '@server/modules/lightning/lightning.enums';
 /* Local Dependencies */
 import {asBigIntMsat, msatToStrings, sumMsat} from './cln.helpers';
 
 @Injectable()
 export class ClnService {
 	private readonly logger = new Logger(ClnService.name);
+	private lightning_client: grpc.Client | null = null;
 
 	constructor(private configService: ConfigService) {}
 
@@ -65,9 +68,14 @@ export class ClnService {
 	}
 
 	public initializeLightningClient(): grpc.Client {
+		if (this.lightning_client) return this.lightning_client;
 		const node_proto_path = path.join(process.cwd(), 'proto/cln/node.proto');
 		const primitives_proto_path = path.join(process.cwd(), 'proto/cln/primitives.proto');
-		return this.initializeGrpcClient([node_proto_path, primitives_proto_path], 'cln', 'Node');
+		return (this.lightning_client = this.initializeGrpcClient([node_proto_path, primitives_proto_path], 'cln', 'Node'));
+	}
+
+	public initializeWalletKitClient(): grpc.Client {
+		return this.initializeLightningClient();
 	}
 
 	public async mapClnInfo(info: any): Promise<LightningInfo> {
@@ -184,5 +192,42 @@ export class ClnService {
 			pending_open_remote_balance: msatToStrings(pendingRemoteMsat),
 			custom_channel_data: Buffer.alloc(0),
 		};
+	}
+
+	public mapClnAddresses(addresses: any): LightningAddresses {
+		const entries: any[] = Array.isArray(addresses?.addresses) ? addresses.addresses : [];
+
+		const mkAddress = (addr: string) => ({
+			address: addr,
+			is_internal: 'false',
+			balance: 0,
+			derivation_path: '',
+			public_key: Buffer.alloc(0),
+		});
+
+		const bech32 = entries.map((e) => e?.bech32).filter((x: string) => !!x);
+		const p2tr = entries.map((e) => e?.p2tr).filter((x: string) => !!x);
+
+		const account_with_addresses: LightningAddresses['account_with_addresses'] = [];
+
+		if (bech32.length) {
+			account_with_addresses.push({
+				name: 'bech32',
+				address_type: LightningAddressType.WITNESS_PUBKEY_HASH,
+				derivation_path: '',
+				addresses: bech32.map(mkAddress),
+			});
+		}
+
+		if (p2tr.length) {
+			account_with_addresses.push({
+				name: 'p2tr',
+				address_type: LightningAddressType.TAPROOT_PUBKEY,
+				derivation_path: '',
+				addresses: p2tr.map(mkAddress),
+			});
+		}
+
+		return {account_with_addresses};
 	}
 }
