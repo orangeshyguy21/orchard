@@ -1,15 +1,5 @@
 /* Core Dependencies */
-import {
-	ChangeDetectionStrategy,
-	Component,
-	ElementRef,
-	Input,
-	input,
-	computed,
-	AfterViewInit,
-	ViewChild,
-	ChangeDetectorRef,
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ElementRef, input, computed, AfterViewInit, ViewChild, ChangeDetectorRef} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 /* Vendor Dependencies */
 import QRCodeStyling from 'qr-code-styling';
