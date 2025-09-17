@@ -4,6 +4,8 @@ import {CommonModule} from '@angular/common';
 /* Vendor Dependencies */
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatSelectModule} from '@angular/material/select';
 /* Application Dependencies */
 import {NavModule} from '@client/modules/nav/nav.module';
 import {SettingsModule} from '@client/modules/settings/settings.module';
@@ -16,6 +18,15 @@ import {LightningAppRoutingModule} from './lightning-app.router';
 
 @NgModule({
 	declarations: [LightningSectionComponent, LightningSubsectionDisabledComponent, LightningSubsectionDashboardComponent],
-	imports: [CommonModule, MatIconModule, MatButtonModule, NavModule, SettingsModule, LightningAppRoutingModule],
+	imports: [
+		CommonModule,
+		MatIconModule,
+		MatButtonModule,
+		MatFormFieldModule,
+		MatSelectModule,
+		NavModule,
+		SettingsModule,
+		LightningAppRoutingModule,
+	],
 })
 export class LightningAppModule {}

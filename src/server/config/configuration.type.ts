@@ -25,6 +25,8 @@ export type Config = {
 		port: string;
 		macaroon: string;
 		cert: string;
+		key: string;
+		ca: string;
 	};
 	taproot_assets: {
 		type: string;

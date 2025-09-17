@@ -102,6 +102,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	public melt_quotes_bolt12: MintMeltQuote[] = [];
 	public nut15_methods: Nut15Method[] = [];
 	public nut17_commands: Nut17Commands[] = [];
+	public method_index: string[] = [];
 	public form_config: FormGroup = new FormGroup({
 		minting: new FormGroup({
 			enabled: new FormControl(),
@@ -213,6 +214,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		this.quote_ttls = this.route.snapshot.data['mint_quote_ttl'];
 		this.patchStaticFormElements();
 		this.initTertiaryNavStatus();
+		this.method_index = this.getMethodIndex();
 		this.minting_units = this.getUniqueUnits('nut4');
 		this.melting_units = this.getUniqueUnits('nut5');
 		this.nut15_methods = this.getNut15Methods();
@@ -345,6 +347,17 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 					);
 				});
 		});
+	}
+
+	private getMethodIndex(): string[] {
+		const method_index: string[] = [];
+		this.mint_info?.nuts.nut4.methods.forEach((method) => {
+			method_index.push(`nut4:${method.unit}:${method.method}`);
+		});
+		this.mint_info?.nuts.nut5.methods.forEach((method) => {
+			method_index.push(`nut5:${method.unit}:${method.method}`);
+		});
+		return method_index;
 	}
 
 	/* *******************************************************

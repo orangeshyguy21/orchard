@@ -13,7 +13,7 @@ import {WebserverModule} from './modules/webserver/webserver.module';
 import {UnixTimestamp} from './modules/graphql/scalars/unixtimestamp.scalar';
 import {Timezone} from './modules/graphql/scalars/timezone.scalar';
 import {Base64} from './modules/graphql/scalars/base64.scalar';
-import {LightningAddressType} from './modules/lightning/lightning.enums';
+import {LightningAddressType, LightningRequestType} from './modules/lightning/lightning.enums';
 import {TaprootAssetType, TaprootAssetVersion} from './modules/tapass/tapass.enums';
 import {MintAnalyticsInterval} from './modules/cashu/mintdb/cashumintdb.enums';
 import {MintUnit, MintQuoteState, MeltQuoteState, MintProofState, MintPaymentMethod} from './modules/cashu/cashu.enums';
@@ -31,6 +31,7 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 	registerEnumType(TaprootAssetType, {name: 'TaprootAssetType'});
 	registerEnumType(TaprootAssetVersion, {name: 'TaprootAssetVersion'});
 	registerEnumType(LightningAddressType, {name: 'LightningAddressType'});
+	registerEnumType(LightningRequestType, {name: 'LightningRequestType'});
 	registerEnumType(AiAgent, {name: 'AiAgent'});
 	registerEnumType(AiMessageRole, {name: 'AiMessageRole'});
 	registerEnumType(AiFunctionName, {name: 'AiFunctionName'});

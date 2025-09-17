@@ -5,8 +5,9 @@ import {ConfigService} from '@nestjs/config';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {LightningType} from '@server/modules/lightning/lightning.enums';
 import {LndService} from '@server/modules/lightning/lnd/lnd.service';
+import {ClnService} from '@server/modules/lightning/cln/cln.service';
 /* Local Dependencies */
-import {LightningInfo, LightningChannelBalance} from './lightning.types';
+import {LightningInfo, LightningChannelBalance, LightningRequest} from './lightning.types';
 
 @Injectable()
 export class LightningService implements OnModuleInit {
@@ -18,6 +19,7 @@ export class LightningService implements OnModuleInit {
 	constructor(
 		private configService: ConfigService,
 		private lndService: LndService,
+		private clnService: ClnService,
 	) {}
 
 	public async onModuleInit() {
@@ -27,6 +29,7 @@ export class LightningService implements OnModuleInit {
 
 	private initializeGrpcClients() {
 		if (this.type === 'lnd') this.grpc_client = this.lndService.initializeLightningClient();
+		if (this.type === 'cln') this.grpc_client = this.clnService.initializeLightningClient();
 	}
 
 	private makeGrpcRequest(method: string, request: any): Promise<any> {
@@ -44,10 +47,22 @@ export class LightningService implements OnModuleInit {
 	}
 
 	async getLightningInfo(): Promise<LightningInfo> {
-		return this.makeGrpcRequest('GetInfo', {});
+		if (this.type === 'lnd') return this.makeGrpcRequest('GetInfo', {});
+		if (this.type === 'cln') return this.clnService.mapClnInfo(await this.makeGrpcRequest('Getinfo', {}));
 	}
 
 	async getLightningChannelBalance(): Promise<LightningChannelBalance> {
-		return this.makeGrpcRequest('ChannelBalance', {});
+		if (this.type === 'lnd') return this.makeGrpcRequest('ChannelBalance', {});
+		if (this.type === 'cln') {
+			return this.clnService.mapClnChannelBalance(
+				await this.makeGrpcRequest('ListFunds', {}),
+				await this.makeGrpcRequest('ListPeerChannels', {}),
+			);
+		}
+	}
+
+	async getLightningRequest(request: string): Promise<LightningRequest> {
+		if (this.type === 'lnd') return this.lndService.mapLndRequest(await this.makeGrpcRequest('DecodePayReq', {pay_req: request}));
+		if (this.type === 'cln') return this.clnService.mapClnRequest(await this.makeGrpcRequest('Decode', {string: request}));
 	}
 }

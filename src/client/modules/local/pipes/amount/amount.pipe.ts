@@ -11,7 +11,7 @@ import {SettingService} from '@client/modules/settings/services/setting/setting.
 export class AmountPipe implements PipeTransform {
 	constructor(private settingService: SettingService) {}
 
-	transform(amount: number, unit: string, section?: string): string {
+	transform(amount: number | null, unit: string, section?: string): string {
 		if (amount === null || amount === undefined) return '';
 		const locale = this.settingService.getLocale();
 		const unit_lower = unit.toLowerCase();

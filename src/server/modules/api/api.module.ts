@@ -16,6 +16,7 @@ import {BitcoinOracleModule} from './bitcoin/oracle/btcoracle.module';
 import {LightningInfoModule} from './lightning/info/lninfo.module';
 import {LightningBalanceModule} from './lightning/balance/lnbalance.module';
 import {LightningWalletModule} from './lightning/wallet/lnwallet.module';
+import {LightningRequestModule} from './lightning/request/lnrequest.module';
 // Taproot Assets Endpoints
 import {TaprootAssetsInfoModule} from './tapass/info/tapinfo.module';
 import {TaprootAssetsAssetModule} from './tapass/asset/tapasset.module';
@@ -53,6 +54,7 @@ import {PublicUrlModule} from './public/url/url.module';
 		LightningInfoModule,
 		LightningBalanceModule,
 		LightningWalletModule,
+		LightningRequestModule,
 		TaprootAssetsInfoModule,
 		TaprootAssetsAssetModule,
 		MintInfoModule,

@@ -1,5 +1,6 @@
 export enum LightningType {
 	LND = 'lnd',
+	CLN = 'cln',
 }
 
 export enum LightningAddressType {
@@ -8,4 +9,12 @@ export enum LightningAddressType {
 	NESTED_WITNESS_PUBKEY_HASH = 'NESTED_WITNESS_PUBKEY_HASH',
 	HYBRID_NESTED_WITNESS_PUBKEY_HASH = 'HYBRID_NESTED_WITNESS_PUBKEY_HASH',
 	TAPROOT_PUBKEY = 'TAPROOT_PUBKEY',
+}
+
+export enum LightningRequestType {
+	BOLT11_INVOICE = 'BOLT11_INVOICE',
+	BOLT12_OFFER = 'BOLT12_OFFER',
+	BOLT12_INVOICE = 'BOLT12_INVOICE',
+	BOLT12_INVOICE_REQUEST = 'BOLT12_INVOICE_REQUEST',
+	UNKNOWN = 'UNKNOWN',
 }

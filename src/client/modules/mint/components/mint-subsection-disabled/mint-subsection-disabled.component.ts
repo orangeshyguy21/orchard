@@ -12,7 +12,7 @@ import {EnvConfig} from '@client/modules/settings/types/env.types';
 })
 export class MintSubsectionDisabledComponent {
 	public type: 'nutshell' | 'cdk' = 'cdk';
-	public env_configs: Record<string, EnvConfig> = {
+	private env_configs: Record<string, EnvConfig> = {
 		nutshell: {
 			lines: [
 				{type: 'comment', value: '# Sample Mint .env'},

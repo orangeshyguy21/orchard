@@ -1,10 +1,13 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {animate, style, transition, trigger} from '@angular/animations';
+/* Application Configuration */
+import {environment} from '@client/configs/configuration';
 /* Vendor Dependencies */
 import {MatSort} from '@angular/material/sort';
 /* Application Dependencies */
 import {NonNullableMintDatabaseSettings} from '@client/modules/settings/types/setting.types';
+import {LightningRequest} from '@client/modules/lightning/classes/lightning-request.class';
 /* Native Dependencies */
 import {MintData} from '@client/modules/mint/components/mint-subsection-database/mint-subsection-database.component';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
@@ -34,6 +37,10 @@ export class MintDataTableComponent implements OnChanges {
 	@Input() public page_settings!: NonNullableMintDatabaseSettings;
 	@Input() public keysets!: MintKeyset[];
 	@Input() public loading!: boolean;
+	@Input() public loading_more!: boolean;
+	@Input() public lightning_request!: LightningRequest | null;
+
+	@Output() public updateRequest = new EventEmitter<string>();
 
 	public more_entity!: MintMintQuote | MintMeltQuote | null;
 
@@ -58,7 +65,9 @@ export class MintDataTableComponent implements OnChanges {
 		});
 	}
 
-	public toggleMore(entity: MintMintQuote) {
+	public toggleMore(entity: MintMintQuote | MintMeltQuote) {
 		this.more_entity = this.more_entity === entity ? null : entity;
+		if (!environment.lightning.enabled) return;
+		if (this.more_entity) this.updateRequest.emit(this.more_entity.request);
 	}
 }

@@ -22,8 +22,7 @@
 					(unitsChange)="onUnitsChange($event)"
 					(statesChange)="onStatesChange($event)"
 					(filterChange)="onFilterChange($event)"
-				>
-				</orc-mint-data-control>
+				></orc-mint-data-control>
 			}
 			<div>
 				<div class="flex flex-items-center flex-gap-0-5 relative">
@@ -86,8 +85,15 @@
 
 	<div class="mint-data-table">
 		<mat-card appearance="outlined">
-			<orc-mint-data-table [data]="data" [page_settings]="page_settings" [keysets]="mint_keysets" [loading]="loading_dynamic_data">
-			</orc-mint-data-table>
+			<orc-mint-data-table
+				[data]="data"
+				[page_settings]="page_settings"
+				[keysets]="mint_keysets"
+				[loading]="loading_dynamic_data"
+				[lightning_request]="lightning_request"
+				[loading_more]="loading_more"
+				(updateRequest)="onMoreRequest($event)"
+			></orc-mint-data-table>
 
 			@if (!loading_dynamic_data && data.source.data.length === 0) {
 				<div class="no-data-overlay" @fadeIn>

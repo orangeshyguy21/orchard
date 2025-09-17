@@ -99,6 +99,14 @@ export enum LightningAddressType {
   WitnessPubkeyHash = 'WITNESS_PUBKEY_HASH'
 }
 
+export enum LightningRequestType {
+  Bolt11Invoice = 'BOLT11_INVOICE',
+  Bolt12Invoice = 'BOLT12_INVOICE',
+  Bolt12InvoiceRequest = 'BOLT12_INVOICE_REQUEST',
+  Bolt12Offer = 'BOLT12_OFFER',
+  Unknown = 'UNKNOWN'
+}
+
 export enum MeltQuoteState {
   Paid = 'PAID',
   Pending = 'PENDING',
@@ -651,6 +659,15 @@ export type OrchardLightningInfo = {
   version: Scalars['String']['output'];
 };
 
+export type OrchardLightningRequest = {
+  __typename?: 'OrchardLightningRequest';
+  description?: Maybe<Scalars['String']['output']>;
+  expiry?: Maybe<Scalars['Float']['output']>;
+  offer_quantity_max?: Maybe<Scalars['Float']['output']>;
+  type: LightningRequestType;
+  valid: Scalars['Boolean']['output'];
+};
+
 export type OrchardMintAnalytics = {
   __typename?: 'OrchardMintAnalytics';
   amount: Scalars['Int']['output'];
@@ -1030,6 +1047,7 @@ export type Query = {
   bitcoin_transaction_fee_estimates: Array<OrchardBitcoinTxFeeEstimate>;
   lightning_balance: OrchardLightningBalance;
   lightning_info: OrchardLightningInfo;
+  lightning_request: OrchardLightningRequest;
   lightning_wallet: Array<OrchardLightningAccount>;
   mint_analytics_balances: Array<OrchardMintAnalytics>;
   mint_analytics_fees: Array<OrchardMintAnalytics>;
@@ -1081,6 +1099,11 @@ export type QueryBitcoin_OracleArgs = {
 
 export type QueryBitcoin_Transaction_Fee_EstimatesArgs = {
   targets: Array<Scalars['Int']['input']>;
+};
+
+
+export type QueryLightning_RequestArgs = {
+  request: Scalars['String']['input'];
 };
 
 

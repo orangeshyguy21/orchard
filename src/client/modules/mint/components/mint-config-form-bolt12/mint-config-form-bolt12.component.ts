@@ -17,7 +17,6 @@ import {OrchardNut4Method, OrchardNut5Method} from '@shared/generated.types';
 })
 export class MintConfigFormBolt12Component {
 	@Input() nut!: 'nut4' | 'nut5';
-	@Input() index!: number;
 	@Input() unit!: string;
 	@Input() method!: string;
 	@Input() form_group!: FormGroup;

@@ -1,3 +1,5 @@
+import {LightningRequestType} from '@server/modules/lightning/lightning.enums';
+
 export type LightningInfo = {
 	version: string;
 	commit_hash: string;
@@ -36,4 +38,12 @@ export type LightningChannelBalance = {
 export type LightningCustomChannels = {
 	open_channels: {[key: string]: {asset_id: string; name: string; local_balance: number; remote_balance: number}};
 	pending_channels: {[key: string]: {asset_id: string; name: string; local_balance: number; remote_balance: number}};
+};
+
+export type LightningRequest = {
+	type: LightningRequestType;
+	valid: boolean;
+	expiry: number | null;
+	description: string | null;
+	offer_quantity_max: number | null;
 };

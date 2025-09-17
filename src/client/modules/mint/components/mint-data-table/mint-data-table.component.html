@@ -84,10 +84,18 @@
 									<div [@fadeIn]>
 										@switch (data.type) {
 											@case ('MintMints') {
-												<orc-mint-data-mint [quote]="entity"></orc-mint-data-mint>
+												<orc-mint-data-mint
+													[quote]="entity"
+													[loading]="loading_more"
+													[lightning_request]="lightning_request"
+												></orc-mint-data-mint>
 											}
 											@case ('MintMelts') {
-												<orc-mint-data-melt [quote]="entity"></orc-mint-data-melt>
+												<orc-mint-data-melt
+													[quote]="entity"
+													[loading]="loading_more"
+													[lightning_request]="lightning_request"
+												></orc-mint-data-melt>
 											}
 											@default {
 												<orc-mint-data-ecash [group]="entity" [keysets]="keysets"></orc-mint-data-ecash>

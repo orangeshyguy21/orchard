@@ -5,6 +5,8 @@ import {ConfigService} from '@nestjs/config';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {LightningType} from '@server/modules/lightning/lightning.enums';
 import {LndService} from '@server/modules/lightning/lnd/lnd.service';
+import {ClnService} from '@server/modules/lightning/cln/cln.service';
+import {LightningAddressType} from '@server/modules/lightning/lightning.enums';
 /* Local Dependencies */
 import {LightningAddresses} from './lnwalletkit.types';
 
@@ -18,6 +20,7 @@ export class LightningWalletKitService implements OnModuleInit {
 	constructor(
 		private configService: ConfigService,
 		private lndService: LndService,
+		private clnService: ClnService,
 	) {}
 
 	public async onModuleInit() {
@@ -27,6 +30,7 @@ export class LightningWalletKitService implements OnModuleInit {
 
 	private initializeGrpcClients() {
 		if (this.type === 'lnd') this.grpc_client = this.lndService.initializeWalletKitClient();
+		if (this.type === 'cln') this.grpc_client = this.clnService.initializeWalletKitClient();
 	}
 
 	private makeGrpcRequest(method: string, request: any): Promise<any> {
@@ -43,6 +47,7 @@ export class LightningWalletKitService implements OnModuleInit {
 	}
 
 	async getLightningAddresses(): Promise<LightningAddresses> {
-		return this.makeGrpcRequest('ListAddresses', {});
+		if (this.type === 'lnd') return this.makeGrpcRequest('ListAddresses', {});
+		if (this.type === 'cln') return this.clnService.mapClnAddresses(await this.makeGrpcRequest('ListAddresses', {}));
 	}
 }
