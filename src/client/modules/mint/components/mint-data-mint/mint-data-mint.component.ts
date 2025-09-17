@@ -1,13 +1,32 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, ElementRef, Input, AfterViewInit, ViewChild, ChangeDetectorRef} from '@angular/core';
+import {
+	ChangeDetectionStrategy,
+	Component,
+	ElementRef,
+	Input,
+	input,
+	computed,
+	AfterViewInit,
+	ViewChild,
+	ChangeDetectorRef,
+} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 /* Vendor Dependencies */
 import QRCodeStyling from 'qr-code-styling';
+import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {ThemeService} from '@client/modules/settings/services/theme/theme.service';
 import {LightningRequest} from '@client/modules/lightning/classes/lightning-request.class';
 /* Native Dependencies */
 import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class';
+/* Shared Dependencies */
+import {MintQuoteState} from '@shared/generated.types';
+
+enum ExpiredState {
+	NONE = 'None',
+	PAID = 'PAID',
+	EXPIRED = 'EXPIRED',
+}
 
 @Component({
 	selector: 'orc-mint-data-mint',
@@ -40,12 +59,38 @@ import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class'
 export class MintDataMintComponent implements AfterViewInit {
 	@ViewChild('qr_canvas', {static: false}) qr_canvas!: ElementRef;
 
-	@Input() quote!: MintMintQuote;
-	@Input() loading!: boolean;
-	@Input() lightning_request!: LightningRequest | null;
+	public quote = input.required<MintMintQuote>();
+	public loading = input.required<boolean>();
+	public lightning_request = input<LightningRequest | null>(null);
 
 	public qr_code!: QRCodeStyling;
 	public copy_animation_state: 'visible' | 'hidden' = 'hidden';
+
+	private expired_state = computed((): ExpiredState => {
+		const lr = this.lightning_request();
+		const quote = this.quote();
+		if (!lr) return ExpiredState.NONE;
+		if (!lr.expiry) return ExpiredState.NONE;
+		if (quote.state === MintQuoteState.Paid || quote.state === MintQuoteState.Issued) return ExpiredState.PAID;
+		const now_seconds = DateTime.utc().toUnixInteger();
+		if (quote.state === MintQuoteState.Unpaid && now_seconds > lr.expiry) return ExpiredState.EXPIRED;
+		return ExpiredState.NONE;
+	});
+
+	public expired_message = computed(() => {
+		const expired_state = this.expired_state();
+		if (expired_state === ExpiredState.PAID) return 'Paid before expiry';
+		if (expired_state === ExpiredState.EXPIRED) return 'Expired before paid';
+		return '';
+	});
+
+	public expired_class = computed(() => {
+		const expired_state = this.expired_state();
+		if (expired_state === ExpiredState.PAID) return 'orc-outline-color';
+		if (expired_state === ExpiredState.EXPIRED) return 'orc-status-warning-color';
+		return '';
+	});
+
 	private copy_timeout: any;
 
 	constructor(
@@ -65,7 +110,7 @@ export class MintDataMintComponent implements AfterViewInit {
 			width: 195,
 			height: 195,
 			type: 'svg',
-			data: this.quote.request,
+			data: this.quote().request,
 			image: undefined,
 			shape: 'square',
 			margin: 0,
