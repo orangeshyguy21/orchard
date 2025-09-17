@@ -93,8 +93,7 @@
 				[lightning_request]="lightning_request"
 				[loading_more]="loading_more"
 				(updateRequest)="onMoreRequest($event)"
-			>
-			</orc-mint-data-table>
+			></orc-mint-data-table>
 
 			@if (!loading_dynamic_data && data.source.data.length === 0) {
 				<div class="no-data-overlay" @fadeIn>

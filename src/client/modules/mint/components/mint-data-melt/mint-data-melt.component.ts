@@ -49,10 +49,6 @@ enum ExpiredState {
 export class MintDataMeltComponent implements AfterViewInit {
 	@ViewChild('qr_canvas', {static: false}) qr_canvas!: ElementRef;
 
-	// @Input() quote!: MintMeltQuote;
-	// @Input() loading!: boolean;
-	// @Input() lightning_request!: LightningRequest | null;
-
 	public quote = input.required<MintMeltQuote>();
 	public loading = input.required<boolean>();
 	public lightning_request = input<LightningRequest | null>(null);
