@@ -12,13 +12,15 @@ services:
       # Lightning Network (container paths)
       - LIGHTNING_MACAROON=/app/certs/lightning/orchard.macaroon
       - LIGHTNING_CERT=/app/certs/lightning/tls.cert
+      - LIGHTNING_KEY=/app/certs/lightning/client.key
+      - LIGHTNING_CA=/app/certs/lightning/ca.pem
       # Taproot Assets (container paths)
       - TAPROOT_ASSETS_MACAROON=/app/certs/taproot/orchard.macaroon
       - TAPROOT_ASSETS_CERT=/app/certs/taproot/tls.cert
       # Mint (container paths)
-      - MINT_RPC_KEY=/app/certs/mint/rpc.key
-      - MINT_RPC_CERT=/app/certs/mint/rpc.cert
-      - MINT_RPC_CA=/app/certs/mint/rpc.ca
+      - MINT_RPC_KEY=/app/certs/mint/client.key
+      - MINT_RPC_CERT=/app/certs/mint/client.pem
+      - MINT_RPC_CA=/app/certs/mint/ca.pem
     tmpfs:
       - /app/data/tmp
     volumes:
@@ -31,6 +33,18 @@ services:
       - type: bind
         source: ${LIGHTNING_CERT}
         target: /app/certs/lightning/tls.cert
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${LIGHTNING_KEY}
+        target: /app/certs/lightning/client.key
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${LIGHTNING_CA}
+        target: /app/certs/lightning/ca.pem
         read_only: true
         bind:
           create_host_path: false
@@ -48,19 +62,19 @@ services:
           create_host_path: false
       - type: bind
         source: ${MINT_RPC_KEY}
-        target: /app/certs/mint/rpc.key
+        target: /app/certs/mint/client.key
         read_only: true
         bind:
           create_host_path: false
       - type: bind
         source: ${MINT_RPC_CERT}
-        target: /app/certs/mint/rpc.cert
+        target: /app/certs/mint/client.pem
         read_only: true
         bind:
           create_host_path: false
       - type: bind
         source: ${MINT_RPC_CA}
-        target: /app/certs/mint/rpc.ca
+        target: /app/certs/mint/ca.pem
         read_only: true
         bind:
           create_host_path: false
