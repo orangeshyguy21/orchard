@@ -98,13 +98,18 @@ npm run start
 ## Run the application (docker)
 
 ### Sqlite Cashu Mint
+```bash
+# Additional env vars
+MINT_DATANAME=mint.sqlite3
+MINT_DATADIR=/path/to/data/directory
 ```
+```bash
 docker compose build orchard
 docker compose -f docker-compose.yml -f docker-compose.sqlite.yml up -d
 ```
 
 ### Postgres Cashu Mint
-```
+```bash
 docker compose build orchard
 docker compose up -d
 ```
