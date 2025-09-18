@@ -5,10 +5,6 @@ FROM node:24-alpine as deps
 
 WORKDIR /app
 
-# Install dependencies necessary for pg_dump and psql
-RUN apk add --update --no-cache \
-  postgresql-client
-
 # Install app dependencies
 COPY package.json package-lock.json ./
 RUN npm ci
@@ -35,6 +31,9 @@ RUN rm -f .env
 FROM node:24-alpine as final
 
 WORKDIR /app
+
+# Install dependencies necessary for pg_dump and psql
+RUN apk add --update --no-cache postgresql-client
 
 # Copy package files and production dependencies
 COPY --from=build /app/package*.json ./
