@@ -573,9 +573,11 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		this.cdr.detectChanges();
 	}
 
-	private eventRestoreSuccess(): void {
+	private async eventRestoreSuccess(): Promise<void> {
 		this.form_mode = null;
 		this.form_restore.reset();
+		this.cdr.detectChanges();
+		await this.getDynamicData();
 		this.cdr.detectChanges();
 	}
 
