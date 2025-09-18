@@ -105,3 +105,8 @@ export type CashuMintFee = {
 	backend_balance: number;
 	time: number;
 };
+
+export type CashuMintKeysetProofCount = {
+	id: string;
+	count: number;
+};

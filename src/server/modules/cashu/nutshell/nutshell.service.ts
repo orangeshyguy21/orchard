@@ -19,6 +19,7 @@ import {
 	CashuMintPromiseGroup,
 	CashuMintCount,
 	CashuMintFee,
+	CashuMintKeysetProofCount,
 } from '@server/modules/cashu/mintdb/cashumintdb.types';
 import {
 	CashuMintAnalyticsArgs,
@@ -26,6 +27,7 @@ import {
 	CashuMintMeltQuotesArgs,
 	CashuMintProofsArgs,
 	CashuMintPromiseArgs,
+	CashuMintKeysetProofsArgs,
 } from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
 import {
 	buildDynamicQuery,
@@ -389,7 +391,26 @@ export class NutshellService {
 		try {
 			return queryRows<CashuMintFee>(client, sql, [limit]);
 		} catch (err) {
-			console.log('Error fetching mint fees:', err);
+			throw err;
+		}
+	}
+
+	public getMintKeysetProofCounts(client: CashuMintDatabase, args?: CashuMintKeysetProofsArgs): Promise<CashuMintKeysetProofCount[]> {
+		const {where_conditions, params} = getAnalyticsConditions({
+			args: args,
+			time_column: 'created',
+			db_type: client.type,
+		});
+		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
+		const sql = `SELECT 
+			id,
+			COUNT(*) AS count 
+			FROM proofs_used
+			${where_clause}
+			GROUP BY id;`;
+		try {
+			return queryRows<CashuMintKeysetProofCount>(client, sql, [...params]);
+		} catch (err) {
 			throw err;
 		}
 	}

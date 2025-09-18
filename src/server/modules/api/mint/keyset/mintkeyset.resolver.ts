@@ -1,9 +1,11 @@
 /* Core Dependencies */
 import {Logger} from '@nestjs/common';
 import {Resolver, Query, Mutation, Args} from '@nestjs/graphql';
+/* Application Dependencies */
+import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 /* Local Dependencies */
 import {MintKeysetService} from './mintkeyset.service';
-import {OrchardMintKeyset} from './mintkeyset.model';
+import {OrchardMintKeyset, OrchardMintKeysetProofCount} from './mintkeyset.model';
 import {OrchardMintKeysetRotation} from './mintkeyset.model';
 import {MintRotateKeysetInput} from './mintkeyset.input';
 
@@ -18,6 +20,17 @@ export class MintKeysetResolver {
 		const tag = 'GET { mint_keysets }';
 		this.logger.debug(tag);
 		return await this.mintKeysetService.getMintKeysets(tag);
+	}
+
+	@Query(() => [OrchardMintKeysetProofCount])
+	async mint_keyset_proof_counts(
+		@Args('date_start', {type: () => UnixTimestamp, nullable: true}) date_start?: number,
+		@Args('date_end', {type: () => UnixTimestamp, nullable: true}) date_end?: number,
+		@Args('id_keysets', {type: () => [String], nullable: true}) id_keysets?: string[],
+	): Promise<OrchardMintKeysetProofCount[]> {
+		const tag = 'GET { mint_keyset_proof_counts }';
+		this.logger.debug(tag);
+		return await this.mintKeysetService.getMintKeysetProofCounts(tag, {date_start, date_end, id_keysets});
 	}
 
 	@Mutation(() => OrchardMintKeysetRotation)
