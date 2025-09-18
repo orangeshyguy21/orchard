@@ -72,8 +72,18 @@ export class CdkService {
 			const cert_content = fs.readFileSync(rpc_cert);
 			const ca_content = rpc_ca ? fs.readFileSync(rpc_ca) : undefined;
 			const ssl_credentials = grpc.credentials.createSsl(ca_content, key_content, cert_content);
+
+			// When running in Docker, we connect to host.docker.internal but need to verify against localhost
+			let channel_options: Record<string, any> | undefined = undefined;
+			if (rpc_host?.includes('host.docker.internal')) {
+				channel_options = {
+					'grpc.ssl_target_name_override': 'localhost',
+					'grpc.default_authority': 'localhost',
+				};
+			}
+
 			this.logger.log('Mint gRPC client initialized with TLS certificate authentication');
-			return new mint_proto.CdkMint(rpc_url, ssl_credentials);
+			return new mint_proto.CdkMint(rpc_url, ssl_credentials, channel_options);
 		} catch (error) {
 			this.logger.error(`Failed to initialize gRPC client: ${error.message}`);
 		}
