@@ -763,6 +763,12 @@ export type OrchardMintKeyset = {
   valid_to?: Maybe<Scalars['UnixTimestamp']['output']>;
 };
 
+export type OrchardMintKeysetProofCount = {
+  __typename?: 'OrchardMintKeysetProofCount';
+  count: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
+};
+
 export type OrchardMintKeysetRotation = {
   __typename?: 'OrchardMintKeysetRotation';
   id: Scalars['String']['output'];
@@ -1065,6 +1071,7 @@ export type Query = {
   mint_fees: Array<OrchardMintFee>;
   mint_info: OrchardMintInfo;
   mint_info_rpc: OrchardMintInfoRpc;
+  mint_keyset_proof_counts: Array<OrchardMintKeysetProofCount>;
   mint_keysets: Array<OrchardMintKeyset>;
   mint_melt_quotes: Array<OrchardMintMeltQuote>;
   mint_mint_quotes: Array<OrchardMintMintQuote>;
@@ -1200,6 +1207,13 @@ export type QueryMint_Count_Proof_GroupsArgs = {
 
 export type QueryMint_FeesArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryMint_Keyset_Proof_CountsArgs = {
+  date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  id_keysets?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 

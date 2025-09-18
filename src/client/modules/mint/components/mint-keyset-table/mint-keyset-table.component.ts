@@ -9,6 +9,7 @@ import {NonNullableMintKeysetsSettings} from '@client/modules/settings/types/set
 /* Native Dependencies */
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintAnalyticKeyset} from '@client/modules/mint/classes/mint-analytic.class';
+import {MintKeysetProofCount} from '@client/modules/mint/classes/mint-keyset-proof-count.class';
 /* Local Dependencies */
 import {MintKeysetRow} from './mint-keyset-row.class';
 
@@ -34,10 +35,11 @@ export class MintKeysetTableComponent implements OnChanges {
 	@Input() public keysets!: MintKeyset[];
 	@Input() public keysets_analytics!: MintAnalyticKeyset[];
 	@Input() public keysets_analytics_pre!: MintAnalyticKeyset[];
+	@Input() public keysets_proof_counts!: MintKeysetProofCount[];
 	@Input() public page_settings!: NonNullableMintKeysetsSettings;
 	@Input() public loading!: boolean;
 
-	public displayed_columns = ['keyset', 'input_fee_ppk', 'valid_from', 'balance', 'fees'];
+	public displayed_columns = ['keyset', 'input_fee_ppk', 'valid_from', 'balance', 'fees', 'proofs'];
 	public data_source!: MatTableDataSource<MintKeysetRow>;
 
 	constructor() {}
@@ -45,7 +47,8 @@ export class MintKeysetTableComponent implements OnChanges {
 	public ngOnChanges(changes: SimpleChanges): void {
 		if (changes['loading'] && this.loading === false) {
 			this.init();
-			if (this.data_source.data[0]?.fees_paid === null) this.displayed_columns = ['keyset', 'input_fee_ppk', 'valid_from', 'balance'];
+			if (this.data_source.data[0]?.fees_paid === null)
+				this.displayed_columns = ['keyset', 'input_fee_ppk', 'valid_from', 'balance', 'proofs'];
 		}
 	}
 
@@ -58,7 +61,8 @@ export class MintKeysetTableComponent implements OnChanges {
 			.map((keyset) => {
 				const keyset_analytics = this.keysets_analytics.filter((analytic) => analytic.keyset_id === keyset.id);
 				const keyset_analytics_pre = this.keysets_analytics_pre.filter((analytic) => analytic.keyset_id === keyset.id);
-				return new MintKeysetRow(keyset, keyset_analytics, keyset_analytics_pre);
+				const keyset_proof_count = this.keysets_proof_counts.find((proof_count) => proof_count.id === keyset.id);
+				return new MintKeysetRow(keyset, keyset_analytics, keyset_analytics_pre, keyset_proof_count);
 			});
 		this.data_source = new MatTableDataSource(keyset_rows);
 		setTimeout(() => {

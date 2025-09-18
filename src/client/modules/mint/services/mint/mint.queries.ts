@@ -214,6 +214,14 @@ query MintAnalyticsKeysets($date_start: UnixTimestamp, $date_end: UnixTimestamp,
 	}
 }`;
 
+export const MINT_KEYSET_PROOF_COUNTS_QUERY = `
+query MintKeysetProofCounts($date_start: UnixTimestamp, $date_end: UnixTimestamp, $id_keysets: [String!]) {
+	mint_keyset_proof_counts(date_start: $date_start, date_end: $date_end, id_keysets: $id_keysets) {
+		id
+		count
+	}
+}`;
+
 export const MINT_NAME_MUTATION = `
 mutation MintName($mint_name_update: MintNameUpdateInput!) {
 	mint_name_update(mint_name_update: $mint_name_update) {
