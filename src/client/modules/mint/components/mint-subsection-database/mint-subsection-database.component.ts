@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef, HostListener, OnDestroy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef, HostListener, OnDestroy, ViewChild, ElementRef} from '@angular/core';
 import {trigger, state, style, animate, transition} from '@angular/animations';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
 import {ActivatedRoute} from '@angular/router';
@@ -95,6 +95,9 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	canDeactivate(): boolean {
 		return this.active_event?.type !== 'PENDING';
 	}
+
+	@ViewChild('backup_form', {static: false}) backup_form!: ElementRef;
+	@ViewChild('restore_form', {static: false}) restore_form!: ElementRef;
 
 	public page_settings!: NonNullableMintDatabaseSettings;
 	public filter: string = '';
@@ -439,11 +442,21 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 				message: 'Save',
 			}),
 		);
+		this.backup_form.nativeElement.scrollIntoView({
+			behavior: 'smooth',
+			block: 'start',
+			inline: 'nearest',
+		});
 		this.getDefaultFilename();
 	}
 
 	private initRestoreBackup(): void {
 		this.form_mode = FormMode.RESTORE;
+		this.restore_form.nativeElement.scrollIntoView({
+			behavior: 'smooth',
+			block: 'start',
+			inline: 'nearest',
+		});
 	}
 
 	private async getDefaultFilename(): Promise<void> {

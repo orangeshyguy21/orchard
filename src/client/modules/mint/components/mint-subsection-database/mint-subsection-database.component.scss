@@ -50,3 +50,8 @@
 	@extend %flex-items-center;
 	@extend %flex-justify-center;
 }
+
+.mint-database-form-target {
+	@extend %relative;
+	top: -87px;
+}
