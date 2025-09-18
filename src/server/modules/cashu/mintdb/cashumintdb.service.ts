@@ -53,18 +53,6 @@ export class CashuMintDatabaseService implements OnModuleInit {
 
 	public async getMintDatabase(): Promise<CashuMintDatabase> {
 		try {
-			// if (this.configService.get('cashu.database_type') === 'sqlite') {
-			// 	const db = new DatabaseConstructor(this.database);
-			// 	db.pragma('journal_mode = WAL');
-			// 	db.pragma('synchronous = NORMAL');
-			// 	db.pragma('busy_timeout = 5000');
-			// 	return {type: MintDatabaseType.sqlite, database: db};
-			// } else {
-			// 	const client = new Client({
-			// 		connectionString: this.database,
-			// 	});
-			// 	return {type: MintDatabaseType.postgres, database: client};
-			// }
 			if (this.configService.get('cashu.database_type') === 'sqlite') {
 				const db = new DatabaseConstructor(this.database, {readonly: true, fileMustExist: true});
 				try {
