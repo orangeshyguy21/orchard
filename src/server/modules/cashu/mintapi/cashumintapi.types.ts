@@ -11,6 +11,7 @@ export type CashuMintInfo = {
 	icon_url: string;
 	urls: string[];
 	time: number;
+	tos_url: string;
 	nuts: {
 		4: {
 			methods: Record<string, CashuNut4Method>;

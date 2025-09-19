@@ -176,6 +176,9 @@ export class OrchardMintInfo {
 	@Field({nullable: true})
 	icon_url: string;
 
+	@Field({nullable: true})
+	tos_url: string;
+
 	@Field(() => [String!], {nullable: true})
 	urls: string[];
 
@@ -193,6 +196,7 @@ export class OrchardMintInfo {
 		this.description_long = cashu_info.description_long;
 		this.contact = cashu_info.contact;
 		this.icon_url = cashu_info.icon_url;
+		this.tos_url = cashu_info.tos_url;
 		this.urls = cashu_info.urls;
 		this.time = cashu_info.time;
 		this.nuts = new OrchardNuts(cashu_info.nuts);
