@@ -6,6 +6,8 @@ import * as path from 'path';
 /* Vendor Dependencies */
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
+/* Application Dependencies */
+import {CredentialService} from '@server/modules/credential/credential.service';
 /* Native Dependencies */
 import {
 	CashuMintDatabase,
@@ -45,7 +47,10 @@ import {CdkMintProof, CdkMintPromise, CdkMintAnalytics, CdkMintKeysetsAnalytics}
 export class CdkService {
 	private readonly logger = new Logger(CdkService.name);
 
-	constructor(private configService: ConfigService) {}
+	constructor(
+		private configService: ConfigService,
+		private credentialService: CredentialService,
+	) {}
 
 	public initializeGrpcClient(): grpc.Client {
 		const rpc_key = this.configService.get('cashu.rpc_key');
@@ -70,12 +75,11 @@ export class CdkService {
 				oneofs: true,
 			});
 			const mint_proto: any = grpc.loadPackageDefinition(package_definition).cdk_mint_rpc;
-			const key_content = fs.readFileSync(rpc_key);
-			const cert_content = fs.readFileSync(rpc_cert);
-			const ca_content = rpc_ca ? fs.readFileSync(rpc_ca) : undefined;
+			const key_content = this.credentialService.loadPemOrPath(rpc_key);
+			const cert_content = this.credentialService.loadPemOrPath(rpc_cert);
+			const ca_content = rpc_ca ? this.credentialService.loadPemOrPath(rpc_ca) : undefined;
 			const ssl_credentials = grpc.credentials.createSsl(ca_content, key_content, cert_content);
 
-			// When running in Docker, we connect to host.docker.internal but need to verify against localhost
 			let channel_options: Record<string, any> | undefined = undefined;
 			if (rpc_host?.includes('host.docker.internal')) {
 				channel_options = {
