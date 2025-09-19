@@ -45,7 +45,6 @@ export class MintKeysetService {
 					client,
 					args,
 				);
-				console.log('cashu_keyset_proof_counts', cashu_keyset_proof_counts);
 				return cashu_keyset_proof_counts.map((ckpc) => new OrchardMintKeysetProofCount(ckpc));
 			} catch (error) {
 				const error_code = this.errorService.resolveError(this.logger, error, tag, {

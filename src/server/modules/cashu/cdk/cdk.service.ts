@@ -462,6 +462,7 @@ export class CdkService {
 			args: args,
 			time_column: 'created_time',
 			db_type: client.type,
+			time_is_epoch_seconds: true,
 		});
 		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
 		const sql = `SELECT 
