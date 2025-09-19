@@ -8,6 +8,7 @@ export class MintInfo implements OrchardMintInfo {
 	description_long: string | null;
 	contact: OrchardContact[] | null;
 	icon_url: string | null;
+	tos_url: string | null;
 	urls: string[] | null;
 	time: number;
 	nuts: OrchardNuts;
@@ -20,6 +21,7 @@ export class MintInfo implements OrchardMintInfo {
 		this.description_long = omi.description_long ?? null;
 		this.contact = omi.contact ?? null;
 		this.icon_url = omi.icon_url ?? null;
+		this.tos_url = omi.tos_url ?? null;
 		this.urls = omi.urls ?? null;
 		this.time = omi.time;
 		this.nuts = omi.nuts;

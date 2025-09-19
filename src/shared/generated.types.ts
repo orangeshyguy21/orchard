@@ -732,6 +732,7 @@ export type OrchardMintInfo = {
   nuts: OrchardNuts;
   pubkey?: Maybe<Scalars['String']['output']>;
   time?: Maybe<Scalars['UnixTimestamp']['output']>;
+  tos_url?: Maybe<Scalars['String']['output']>;
   urls?: Maybe<Array<Scalars['String']['output']>>;
   version: Scalars['String']['output'];
 };
