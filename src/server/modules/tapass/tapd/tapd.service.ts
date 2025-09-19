@@ -6,12 +6,17 @@ import * as path from 'path';
 /* Vendor Dependencies */
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
+/* Application Dependencies */
+import {CredentialService} from '@server/modules/credential/credential.service';
 
 @Injectable()
 export class TapdService {
 	private readonly logger = new Logger(TapdService.name);
 
-	constructor(private configService: ConfigService) {}
+	constructor(
+		private configService: ConfigService,
+		private credentialService: CredentialService,
+	) {}
 
 	private createGrpcCredentials() {
 		const rpc_host = this.configService.get('taproot_assets.host');
@@ -25,9 +30,8 @@ export class TapdService {
 		}
 
 		const rpc_url = `${rpc_host}:${rpc_port}`;
-		const macaroon_content = fs.readFileSync(rpc_macaroon);
-		const macaroon_hex = macaroon_content.toString('hex');
-		const cert_content = fs.readFileSync(rpc_tls_cert);
+		const macaroon_hex = this.credentialService.loadMacaroonHex(rpc_macaroon);
+		const cert_content = this.credentialService.loadPemOrPath(rpc_tls_cert);
 		const metadata = new grpc.Metadata();
 		metadata.add('macaroon', macaroon_hex);
 		const macaroon_creds = grpc.credentials.createFromMetadataGenerator((args, callback) => {
