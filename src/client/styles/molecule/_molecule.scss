@@ -3,6 +3,7 @@
 @use './form' as form;
 @use './grid' as grid;
 @use './icon' as icon;
+@use './list' as list;
 @use './position' as position;
 @use './properties' as properties;
 @use './pseudo' as pseudo;
@@ -16,6 +17,7 @@
     @include form.prefixStyles($c);
     @include grid.prefixStyles($c);
     @include icon.prefixStyles($c);
+    @include list.prefixStyles($c);
     @include position.prefixStyles($c);
     @include properties.prefixStyles($c);
     @include pseudo.prefixStyles($c);

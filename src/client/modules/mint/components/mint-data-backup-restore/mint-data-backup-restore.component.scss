@@ -1,0 +1,10 @@
+@use '@styles/molecule/molecule';
+
+.file-not-ready {
+	@extend %orc-outline-variant-color;
+	@extend %mat-symbol-outline;
+}
+
+.file-ready {
+	@extend %orc-primary-color;
+}
