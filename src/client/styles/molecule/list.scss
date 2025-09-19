@@ -1,0 +1,5 @@
+@mixin prefixStyles($c) {
+    #{$c}list-gap-0-25 { display: grid; row-gap: 0.25rem; }
+    #{$c}list-gap-0-5 { display: grid; row-gap: 0.5rem; }
+    #{$c}list-gap-1 { display: grid; row-gap: 1rem; }
+}

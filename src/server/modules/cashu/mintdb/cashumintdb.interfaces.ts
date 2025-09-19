@@ -49,3 +49,9 @@ export interface CashuMintAnalyticsArgs {
 	interval?: MintAnalyticsInterval;
 	timezone?: TimezoneType;
 }
+
+export interface CashuMintKeysetProofsArgs {
+	date_start?: number;
+	date_end?: number;
+	id_keysets?: string[];
+}

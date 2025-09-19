@@ -6,9 +6,9 @@
 					<mat-icon>close</mat-icon>
 				</button>
 			</div>
-			<div class="flex flex-gap-2 flex-items-center">
-				<div class="flex-1">
-					<form class="flex-grow flex flex-justify-end">
+			<div class="flex flex-gap-2 p-h-1">
+				<div class="flex-1 flex flex-row flex-items-center flex-gap-2">
+					<form class="flex">
 						<div>
 							<button mat-stroked-button (click)="fileInput.click()" type="button">Select Backup</button>
 							@if (form_group.get('file')?.invalid && (form_group.get('file')?.dirty || form_group.get('file')?.touched)) {
@@ -17,33 +17,34 @@
 							<input #fileInput type="file" hidden (change)="onFileSelected($event)" accept=".db,.sqlite,.sql,.backup" />
 						</div>
 					</form>
-				</div>
-				<div class="flex-1">
 					<div class="flex flex-items-center flex-gap-2">
 						<div>
-							<mat-icon class="icon-lg" [class.mat-symbol-outline]="!file_quorum">database</mat-icon>
+							<mat-icon class="icon-lg" [class]="file_quorum ? 'file-ready' : 'file-not-ready'">database</mat-icon>
 						</div>
-						<div class="flex flex-justify-center flex-items-center flex-gap-1">
+						<div class="flex flex-justify-center flex-items-center flex-gap-1" [class.invisible]="!file_quorum">
 							<div class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color font-weight-extra-light">
 								<div>File:</div>
 								<div>Last Modified:</div>
 								<div>Size:</div>
 							</div>
 							<div class="flex flex-column flex-gap-0-5 font-size-xs">
-								@if (form_group.get('file')?.value && file_quorum) {
-									<div>{{ form_group.get('file')?.value.name }}</div>
-									<div>{{ form_group.get('file')?.value.lastModified / 1000 | time: 'medium' }}</div>
-									<div>{{ form_group.get('file')?.value.size | bytes }}</div>
-								} @else {
-									<div class="flex flex-column flex-gap-0-5 orc-outline-color">
-										<div>No file selected</div>
-										<div>-</div>
-										<div>-</div>
-									</div>
-								}
+								<div>{{ form_group.get('file')?.value?.name }}</div>
+								<div>{{ form_group.get('file')?.value?.lastModified / 1000 | time: 'medium' }}</div>
+								<div>{{ form_group.get('file')?.value?.size | bytes }}</div>
 							</div>
 						</div>
 					</div>
+				</div>
+				<div class="flex-1 p-r-1">
+					<orc-help-text class="orc-surface-container-high-bg w-max-18">
+						<div class="title-m">Restoring from backup</div>
+						<ol class="list-gap-0-25 p-l-1">
+							<li><span class="orc-status-warning-color">Shut down the mint</span></li>
+							<li>Select a backup file (match current mint version)</li>
+							<li>Restore the backup</li>
+							<li>Start the mint</li>
+						</ol>
+					</orc-help-text>
 				</div>
 			</div>
 		</mat-card-content>

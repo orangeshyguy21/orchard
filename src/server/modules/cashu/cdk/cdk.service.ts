@@ -18,6 +18,7 @@ import {
 	CashuMintAnalytics,
 	CashuMintKeysetsAnalytics,
 	CashuMintCount,
+	CashuMintKeysetProofCount,
 } from '@server/modules/cashu/mintdb/cashumintdb.types';
 import {
 	CashuMintMintQuotesArgs,
@@ -25,6 +26,7 @@ import {
 	CashuMintMeltQuotesArgs,
 	CashuMintProofsArgs,
 	CashuMintPromiseArgs,
+	CashuMintKeysetProofsArgs,
 } from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
 import {
 	buildDynamicQuery,
@@ -450,6 +452,27 @@ export class CdkService {
 		try {
 			const row = await queryRow<CashuMintCount>(client, final_sql, params);
 			return row.count;
+		} catch (err) {
+			throw err;
+		}
+	}
+
+	public getMintKeysetProofCounts(client: CashuMintDatabase, args?: CashuMintKeysetProofsArgs): Promise<CashuMintKeysetProofCount[]> {
+		const {where_conditions, params} = getAnalyticsConditions({
+			args: args,
+			time_column: 'created_time',
+			db_type: client.type,
+			time_is_epoch_seconds: true,
+		});
+		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
+		const sql = `SELECT 
+			keyset_id AS id,
+			COUNT(*) AS count 
+			FROM proof
+			${where_clause}
+			GROUP BY keyset_id;`;
+		try {
+			return queryRows<CashuMintKeysetProofCount>(client, sql, [...params]);
 		} catch (err) {
 			throw err;
 		}

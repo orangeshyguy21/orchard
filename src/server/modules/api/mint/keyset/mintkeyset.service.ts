@@ -3,13 +3,14 @@ import {Injectable, Logger} from '@nestjs/common';
 /* Application Dependencies */
 import {CashuMintDatabaseService} from '@server/modules/cashu/mintdb/cashumintdb.service';
 import {CashuMintRpcService} from '@server/modules/cashu/mintrpc/cashumintrpc.service';
-import {CashuMintKeyset} from '@server/modules/cashu/mintdb/cashumintdb.types';
+import {CashuMintKeyset, CashuMintKeysetProofCount} from '@server/modules/cashu/mintdb/cashumintdb.types';
+import {CashuMintKeysetProofsArgs} from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 import {MintService} from '@server/modules/api/mint/mint.service';
 import {ErrorService} from '@server/modules/error/error.service';
 /* Local Dependencies */
-import {OrchardMintKeyset, OrchardMintKeysetRotation} from './mintkeyset.model';
+import {OrchardMintKeyset, OrchardMintKeysetRotation, OrchardMintKeysetProofCount} from './mintkeyset.model';
 import {MintRotateKeysetInput} from './mintkeyset.input';
 
 @Injectable()
@@ -28,6 +29,23 @@ export class MintKeysetService {
 			try {
 				const cashu_keysets: CashuMintKeyset[] = await this.cashuMintDatabaseService.getMintKeysets(client);
 				return cashu_keysets.map((ck) => new OrchardMintKeyset(ck));
+			} catch (error) {
+				const error_code = this.errorService.resolveError(this.logger, error, tag, {
+					errord: OrchardErrorCode.MintDatabaseSelectError,
+				});
+				throw new OrchardApiError(error_code);
+			}
+		});
+	}
+
+	async getMintKeysetProofCounts(tag: string, args?: CashuMintKeysetProofsArgs): Promise<OrchardMintKeysetProofCount[]> {
+		return this.mintService.withDbClient(async (client) => {
+			try {
+				const cashu_keyset_proof_counts: CashuMintKeysetProofCount[] = await this.cashuMintDatabaseService.getMintKeysetProofCounts(
+					client,
+					args,
+				);
+				return cashu_keyset_proof_counts.map((ckpc) => new OrchardMintKeysetProofCount(ckpc));
 			} catch (error) {
 				const error_code = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,

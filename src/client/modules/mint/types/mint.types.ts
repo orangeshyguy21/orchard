@@ -29,6 +29,7 @@ import {
 	OrchardMintDatabaseRestore,
 	OrchardMintProofGroupStats,
 	OrchardMintFee,
+	OrchardMintKeysetProofCount,
 } from '@shared/generated.types';
 
 export type MintInfoResponse = {
@@ -84,6 +85,10 @@ export type MintAnalyticsKeysetsResponse = {
 	mint_analytics_keysets: OrchardMintKeysetsAnalytics[];
 };
 
+export type MintKeysetProofCountsResponse = {
+	mint_keyset_proof_counts: OrchardMintKeysetProofCount[];
+};
+
 export type MintAnalyticsArgs = {
 	units?: MintUnit[];
 	date_start?: number;
@@ -127,6 +132,12 @@ export type MintPromiseGroupsArgs = {
 	date_end?: number;
 	page?: number;
 	page_size?: number;
+};
+
+export type MintKeysetProofCountsArgs = {
+	date_start?: number;
+	date_end?: number;
+	id_keysets?: string[];
 };
 
 export type MintNameUpdateResponse = {

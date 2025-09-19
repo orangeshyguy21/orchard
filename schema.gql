@@ -611,6 +611,11 @@ type OrchardMintKeyset {
   valid_to: UnixTimestamp
 }
 
+type OrchardMintKeysetProofCount {
+  count: Int!
+  id: ID!
+}
+
 type OrchardMintKeysetRotation {
   id: String!
   input_fee_ppk: Int
@@ -878,6 +883,7 @@ type Query {
   mint_fees(limit: Int): [OrchardMintFee!]!
   mint_info: OrchardMintInfo!
   mint_info_rpc: OrchardMintInfoRpc!
+  mint_keyset_proof_counts(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!]): [OrchardMintKeysetProofCount!]!
   mint_keysets: [OrchardMintKeyset!]!
   mint_melt_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, page: Int, page_size: Int, states: [MeltQuoteState!], units: [MintUnit!]): [OrchardMintMeltQuote!]!
   mint_mint_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, page: Int, page_size: Int, states: [MintQuoteState!], units: [MintUnit!]): [OrchardMintMintQuote!]!
