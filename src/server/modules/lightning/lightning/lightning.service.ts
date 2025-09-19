@@ -46,6 +46,37 @@ export class LightningService implements OnModuleInit {
 		});
 	}
 
+	// LND-only generic callers for analytics use-cases
+	public async listPayments(request: any): Promise<any> {
+		if (this.type !== 'lnd') throw OrchardErrorCode.LightningSupportError;
+		return this.makeGrpcRequest('ListPayments', request);
+	}
+
+	public async listInvoices(request: any): Promise<any> {
+		if (this.type !== 'lnd') throw OrchardErrorCode.LightningSupportError;
+		return this.makeGrpcRequest('ListInvoices', request);
+	}
+
+	public async forwardingHistory(request: any): Promise<any> {
+		if (this.type !== 'lnd') throw OrchardErrorCode.LightningSupportError;
+		return this.makeGrpcRequest('ForwardingHistory', request);
+	}
+
+	public async closedChannels(request: any): Promise<any> {
+		if (this.type !== 'lnd') throw OrchardErrorCode.LightningSupportError;
+		return this.makeGrpcRequest('ClosedChannels', request);
+	}
+
+	public async getTransactions(request: any): Promise<any> {
+		if (this.type !== 'lnd') throw OrchardErrorCode.LightningSupportError;
+		return this.makeGrpcRequest('GetTransactions', request);
+	}
+
+	public async listChannels(request: any): Promise<any> {
+		if (this.type !== 'lnd') throw OrchardErrorCode.LightningSupportError;
+		return this.makeGrpcRequest('ListChannels', request);
+	}
+
 	async getLightningInfo(): Promise<LightningInfo> {
 		if (this.type === 'lnd') return this.makeGrpcRequest('GetInfo', {});
 		if (this.type === 'cln') return this.clnService.mapClnInfo(await this.makeGrpcRequest('Getinfo', {}));
