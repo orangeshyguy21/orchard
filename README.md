@@ -13,19 +13,13 @@
 
 # Implementation support
 
-- Bitcoin
-  - core
-- Lightning
-  - lnd
-- Cashu Mint
-  - cdk (sqlite, postgreSQL)
-    - Lacks support for fee revenue
-  - nutshell (sqlite, postgreSQL)
-    - Management RPC still in development. Waiting on official release
-- Taproot Assets
-  - tapd
-- AI
-  - ollama
+| Protocol       | Implementation                     | Version                    |
+| -------------- | ---------------------------------- | -------------------------- |
+| Bitcoin        | core                               | (^Satoshi:28.0.0)          |
+| Lightning      | lnd, cln                           | (^v0.19.0-beta), (^v25.02) |
+| Cashu Mint     | cdk, nutshell                      | (^v0.13.0), (^0.17.1)      |
+| Taproot Assets | tapd                               | (^v0.6.1-alpha)            |
+| AI             | ollam                              | -                          |
 
 <br>
 <br>
@@ -44,36 +38,11 @@ mv .env.example .env
 nano .env
 ```
 
-## Environment Variable Options
-```bash
-# --------------------------------------------
-# Environment Configs (required)
-# --------------------------------------------
-
-# --------------------------------------------
-# Orchard Configs (required)
-# --------------------------------------------
-
-# --------------------------------------------
-# Bitcoin Configs (optional)
-# --------------------------------------------
-
-# --------------------------------------------
-# Lightning Configs (optional)
-# --------------------------------------------
-
-# --------------------------------------------
-# Taproot Configs (optional)
-# --------------------------------------------
-
-# --------------------------------------------
-# Cashu Mint Configs (optional)
-# --------------------------------------------
-
-# --------------------------------------------
-# AI Configs (optional)
-# --------------------------------------------
-```
+## Configuration Options
+|           | Orchard | Bitcoin | Lightning  | Taproot Assets | Cashu Mint | AI |
+| --------- | ------- | ------- | ---------- | -------------- | ---------- | -- |
+| Required  | ✅      |         |            |                |            |     |
+| Optional  |         | ✅      | ✅          | ✅             | ✅         | ✅  |
 
 <br>
 <br>
