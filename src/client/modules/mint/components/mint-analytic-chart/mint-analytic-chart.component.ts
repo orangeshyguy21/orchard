@@ -99,6 +99,7 @@ export class MintAnalyticChartComponent implements OnChanges, OnDestroy {
 	}
 
 	private init(): void {
+		if (this.mint_analytics.length === 0 && this.mint_analytics_pre.length === 0) return;
 		switch (this.selected_type) {
 			case ChartType.Summary:
 				this.chart_type = 'line';

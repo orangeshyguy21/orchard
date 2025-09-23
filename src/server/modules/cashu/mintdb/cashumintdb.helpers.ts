@@ -293,3 +293,38 @@ export function convertDateToUnixTimestamp(date_arg: number | Date): number | nu
 	if (date_arg instanceof Date) return DateTime.fromJSDate(date_arg).toSeconds();
 	return null;
 }
+
+export function extractRequestString(raw_request?: string | null): string | null {
+	if (!raw_request) return null;
+	const trimmed = raw_request.trim();
+	if (!trimmed.startsWith('{')) return trimmed;
+
+	try {
+		const json: any = JSON.parse(trimmed);
+		const offer_paths = ['offer', 'Bolt12.offer', 'bolt12.offer'];
+		const invoice_paths = ['bolt11', 'Bolt11', 'Bolt11.bolt11', 'invoice'];
+		const offer = findFirstString(json, offer_paths);
+		if (offer) return offer;
+		const bolt11 = findFirstString(json, invoice_paths);
+		return bolt11 || trimmed;
+	} catch {
+		return trimmed;
+	}
+}
+
+function findFirstString(obj: any, paths: string[]): string | undefined {
+	for (const path of paths) {
+		const val = getStringByPath(obj, path);
+		if (val) return val;
+	}
+	return undefined;
+}
+
+function getStringByPath(obj: any, dot_path: string): string | undefined {
+	let cur: any = obj;
+	for (const key of dot_path.split('.')) {
+		if (cur == null || typeof cur !== 'object') return undefined;
+		cur = cur[key];
+	}
+	return typeof cur === 'string' && cur ? cur : undefined;
+}

@@ -38,6 +38,7 @@ import {
 	getAnalyticsTimeGroupSql,
 	queryRows,
 	queryRow,
+	extractRequestString,
 } from '@server/modules/cashu/mintdb/cashumintdb.helpers';
 import {MintAnalyticsInterval, MintDatabaseType} from '@server/modules/cashu/mintdb/cashumintdb.enums';
 /* Local Dependencies */
@@ -230,15 +231,8 @@ export class CdkService {
 		try {
 			const rows = await queryRows<CashuMintMeltQuote>(client, sql, params);
 			return rows.map((row) => {
-				const s = row.request?.trim();
-				if (!s?.startsWith('{')) return row;
-				try {
-					const j: any = JSON.parse(s);
-					const offer = j?.offer ?? j?.Bolt12?.offer ?? j?.bolt12?.offer;
-					return offer ? {...row, request: offer} : row;
-				} catch {
-					return row;
-				}
+				const s = extractRequestString(row.request);
+				return s ? {...row, request: s} : row;
 			});
 		} catch (err) {
 			throw err;
