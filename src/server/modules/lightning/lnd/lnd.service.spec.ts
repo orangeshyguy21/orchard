@@ -1,18 +1,27 @@
+/* Core Dependencies */
 import {Test, TestingModule} from '@nestjs/testing';
+import {ConfigService} from '@nestjs/config';
+/* Application Dependencies */
+import {CredentialService} from '@server/modules/credential/credential.service';
+/* Local Dependencies */
 import {LndService} from './lnd.service';
 
 describe('LndService', () => {
-	let service: LndService;
+	let lnd_service: LndService;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [LndService],
+			providers: [
+				LndService,
+				{provide: ConfigService, useValue: {get: jest.fn()}},
+				{provide: CredentialService, useValue: {loadMacaroonHex: jest.fn(), loadPemOrPath: jest.fn()}},
+			],
 		}).compile();
 
-		service = module.get<LndService>(LndService);
+		lnd_service = module.get<LndService>(LndService);
 	});
 
 	it('should be defined', () => {
-		expect(service).toBeDefined();
+		expect(lnd_service).toBeDefined();
 	});
 });

@@ -1,18 +1,27 @@
+/* Core Dependencies */
 import {Test, TestingModule} from '@nestjs/testing';
+import {ConfigService} from '@nestjs/config';
+/* Application Dependencies */
+import {CredentialService} from '@server/modules/credential/credential.service';
+/* Local Dependencies */
 import {ClnService} from './cln.service';
 
 describe('ClnService', () => {
-	let service: ClnService;
+	let cln_service: ClnService;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [ClnService],
+			providers: [
+				ClnService,
+				{provide: ConfigService, useValue: {get: jest.fn()}},
+				{provide: CredentialService, useValue: {loadPemOrPath: jest.fn()}},
+			],
 		}).compile();
 
-		service = module.get<ClnService>(ClnService);
+		cln_service = module.get<ClnService>(ClnService);
 	});
 
 	it('should be defined', () => {
-		expect(service).toBeDefined();
+		expect(cln_service).toBeDefined();
 	});
 });

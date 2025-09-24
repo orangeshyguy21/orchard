@@ -16,7 +16,7 @@
     "start:server:nowatch": "NODE_ENV=development nest start",
     "start:server:debug": "NODE_ENV=development nest start --debug --watch",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest",
+    "test:server": "jest",
     "test:watch": "jest --watch",
     "test:client": "ng test",
     "test:cov": "jest --coverage",
@@ -112,19 +112,16 @@
     "typescript": "~5.9.2"
   },
   "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "src",
+    "moduleFileExtensions": ["js", "json", "ts"],
+    "rootDir": "src/server",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
+      "^.+\\.(t|j)s$": ["ts-jest", { "tsconfig": "tsconfig.server.spec.json" }]
     },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
+    "moduleNameMapper": {
+      "^@server/(.*)$": "<rootDir>/$1"
+    },
+    "collectCoverageFrom": ["**/*.(t|j)s"],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
   }

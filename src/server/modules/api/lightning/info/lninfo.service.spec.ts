@@ -1,18 +1,27 @@
+/* Core Dependencies */
 import {Test, TestingModule} from '@nestjs/testing';
+/* Application Dependencies */
+import {LightningService} from '@server/modules/lightning/lightning/lightning.service';
+import {ErrorService} from '@server/modules/error/error.service';
+/* Local Dependencies */
 import {LightningInfoService} from './lninfo.service';
 
 describe('LightningInfoService', () => {
-	let service: LightningInfoService;
+	let lightning_info_service: LightningInfoService;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [LightningInfoService],
+			providers: [
+				LightningInfoService,
+				{provide: LightningService, useValue: {getLightningInfo: jest.fn()}},
+				{provide: ErrorService, useValue: {resolveError: jest.fn()}},
+			],
 		}).compile();
 
-		service = module.get<LightningInfoService>(LightningInfoService);
+		lightning_info_service = module.get<LightningInfoService>(LightningInfoService);
 	});
 
 	it('should be defined', () => {
-		expect(service).toBeDefined();
+		expect(lightning_info_service).toBeDefined();
 	});
 });
