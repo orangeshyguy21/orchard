@@ -1,7 +1,6 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {Router} from '@angular/router';
-import {animate, style, transition, trigger} from '@angular/animations';
 
 @Component({
 	selector: 'orc-mint-name',
@@ -9,15 +8,6 @@ import {animate, style, transition, trigger} from '@angular/animations';
 	templateUrl: './mint-name.component.html',
 	styleUrl: './mint-name.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	// prettier-ignore
-	animations: [
-        trigger('fadeIn', [
-            transition(':enter', [
-                style({ opacity: 0 }),
-                animate('300ms ease-in', style({ opacity: 1 })),
-            ]),
-        ]),
-    ],
 })
 export class MintNameComponent {
 	@Input() name!: string | null;

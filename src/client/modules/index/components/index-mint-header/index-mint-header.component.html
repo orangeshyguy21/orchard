@@ -5,7 +5,7 @@
 	</div>
 	<div class="p-b-0-5 w-min-10">
 		@if (enabled && !loading) {
-			<div [@fadeIn] class="flex flex-gap-1">
+			<div animate.enter="orc-fadein" class="flex flex-gap-1">
 				<div class="flex flex-items-center flex-gap-0-5">
 					@switch (state()) {
 						@case ('offline') {
@@ -30,7 +30,7 @@
 	</div>
 	<div>
 		@if (enabled && !loading) {
-			<div [@fadeIn] class="orc-outline-color font-size-xs p-b-0-5">{{ info.version }}</div>
+			<div animate.enter="orc-fadein" class="orc-outline-color font-size-xs p-b-0-5">{{ info.version }}</div>
 		}
 	</div>
 </div>

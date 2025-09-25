@@ -1,6 +1,5 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, Input, Output, EventEmitter} from '@angular/core';
-import {animate, style, transition, trigger} from '@angular/animations';
 import {FormGroup} from '@angular/forms';
 /* Application Dependencies */
 import {BitcoinBlockchainInfo} from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
@@ -19,15 +18,6 @@ import {OrchardError} from '@client/modules/error/types/error.types';
 	templateUrl: './index-bitcoin-enabled.component.html',
 	styleUrl: './index-bitcoin-enabled.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	// prettier-ignore
-	animations: [
-        trigger('fadeIn', [
-            transition(':enter', [
-                style({ opacity: 0 }),
-                animate('300ms ease-in', style({ opacity: 1 })),
-            ]),
-        ]),
-    ],
 })
 export class IndexBitcoinEnabledComponent {
 	@Input() loading!: boolean;

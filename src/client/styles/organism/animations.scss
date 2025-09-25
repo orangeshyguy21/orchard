@@ -39,3 +39,16 @@
         background-position: -100% 0;
     }
 }
+
+.orc-fadein-fast {
+	animation: fadein 150ms ease-in both;
+}
+
+.orc-fadein {
+	animation: fadein 300ms ease-in both;
+}
+
+@keyframes fadein {
+	from { opacity: 0; }
+	to   { opacity: 1; }
+}

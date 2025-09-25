@@ -10,3 +10,31 @@
 		@extend %orc-on-surface-color;
 	}
 }
+
+.pop-anim {
+	animation-duration: 200ms;
+	animation-timing-function: ease-out;
+	animation-fill-mode: both;
+}
+
+@keyframes pop-in-a {
+	from {
+		transform: scale(0.8);
+		opacity: 0.5;
+	}
+	to {
+		transform: scale(1);
+		opacity: 1;
+	}
+}
+
+@keyframes pop-in-b {
+	from {
+		transform: scale(0.8);
+		opacity: 0.5;
+	}
+	to {
+		transform: scale(1);
+		opacity: 1;
+	}
+}

@@ -27,7 +27,7 @@
 		<orc-mint-keyset class="high-bg" [active]="false" [index]="keyset_out_index" [input_fee_ppk]="keyset_out_fee"> </orc-mint-keyset>
 		<div>
 			@if (keyset_out_balance !== undefined) {
-				<span [@fadeIn] [innerHTML]="keyset_out_balance | amount: keyset_out_unit : 'mint'"></span>
+				<span animate.enter="orc-fadein-fast" [innerHTML]="keyset_out_balance | amount: keyset_out_unit : 'mint'"></span>
 			} @else {
 				<div class="h-2 w-6 orc-corner-full shimmer-high"></div>
 			}
