@@ -40,7 +40,7 @@
 			</div>
 		</div>
 		@if (!loading && quotes.length === 0) {
-			<div class="no-data-overlay orc-surface-container-low-bg" @fadeInOut>
+			<div class="no-data-overlay orc-surface-container-low-bg" animate.enter="orc-fadein-fast" animate.leave="orc-fadeout-fast">
 				<mat-icon class="icon-lg mat-symbol-outline orc-outline-color">bar_chart_off</mat-icon>
 			</div>
 		}

@@ -1,6 +1,5 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, Input, ViewChild, OnChanges, OnDestroy, SimpleChanges, ChangeDetectorRef} from '@angular/core';
-import {trigger, transition, style, animate} from '@angular/animations';
 /* Vendor Dependencies */
 import {BaseChartDirective} from 'ng2-charts';
 import {ChartConfiguration, ChartType as ChartJsType} from 'chart.js';
@@ -21,18 +20,6 @@ import {MintQuoteState, MeltQuoteState} from '@shared/generated.types';
 	templateUrl: './mint-config-chart-quote-ttl.component.html',
 	styleUrl: './mint-config-chart-quote-ttl.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	// prettier-ignore
-	animations: [
-		trigger('fadeInOut', [
-			transition(':enter', [
-				style({ opacity: 0 }),
-				animate('150ms ease-in', style({ opacity: 1 })),
-			]),
-			transition(':leave', [
-				animate('150ms ease-out', style({ opacity: 0 })),
-			]),
-		]),
-	],
 })
 export class MintConfigChartQuoteTtlComponent implements OnChanges, OnDestroy {
 	@ViewChild(BaseChartDirective) chart?: BaseChartDirective;

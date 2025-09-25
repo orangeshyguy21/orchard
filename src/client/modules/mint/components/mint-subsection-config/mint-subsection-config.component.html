@@ -66,7 +66,7 @@
 									}
 								</div>
 								@if (mint_info?.nuts?.nut4?.disabled) {
-									<div class="disabled-overlay" @fadeInOut>
+									<div class="disabled-overlay" animate.enter="orc-fadein-fast" animate.leave="orc-fadeout-fast">
 										<div class="orc-outline-color font-weight-bold">MINTING DISABLED</div>
 									</div>
 								}
@@ -138,7 +138,7 @@
 									}
 								</div>
 								@if (mint_info?.nuts?.nut5?.disabled) {
-									<div class="disabled-overlay" @fadeInOut>
+									<div class="disabled-overlay" animate.enter="orc-fadein-fast" animate.leave="orc-fadeout-fast">
 										<div class="orc-outline-color font-weight-bold">MELTING DISABLED</div>
 									</div>
 								}

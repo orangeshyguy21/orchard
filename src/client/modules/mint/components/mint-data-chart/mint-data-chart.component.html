@@ -6,7 +6,7 @@
 		<canvas baseChart [data]="chart_data" [options]="chart_options" [type]="chart_type"></canvas>
 	}
 	@if (!loading && data.source.data.length === 0) {
-		<div class="no-data-overlay" @fadeInOut>
+		<div class="no-data-overlay" animate.enter="orc-fadein-fast" animate.leave="orc-fadeout-fast">
 			<mat-icon class="icon-lg mat-symbol-outline orc-outline-color">bar_chart_off</mat-icon>
 		</div>
 	}

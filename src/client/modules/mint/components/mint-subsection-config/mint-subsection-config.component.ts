@@ -16,7 +16,6 @@ import {
 import {ActivatedRoute} from '@angular/router';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
 import {toObservable} from '@angular/core/rxjs-interop';
-import {trigger, transition, style, animate} from '@angular/animations';
 /* Vendor Dependencies */
 import {Subscription, lastValueFrom, forkJoin} from 'rxjs';
 /* Application Configuration */
@@ -65,18 +64,6 @@ enum TertiaryNav {
 	templateUrl: './mint-subsection-config.component.html',
 	styleUrl: './mint-subsection-config.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	// prettier-ignore
-	animations: [
-		trigger('fadeInOut', [
-			transition(':enter', [
-				style({ opacity: 0 }),
-				animate('150ms ease-in', style({ opacity: 1 })),
-			]),
-			transition(':leave', [
-				animate('150ms ease-out', style({ opacity: 0 })),
-			]),
-		]),
-	],
 })
 export class MintSubsectionConfigComponent implements ComponentCanDeactivate, OnInit, AfterViewInit {
 	@ViewChildren('nav4,nav5,nav7,nav8,nav9,nav10,nav11,nav12,nav14,nav15,nav17,nav19,nav20') nav_elements!: QueryList<ElementRef>;
