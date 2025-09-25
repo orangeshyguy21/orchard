@@ -40,4 +40,49 @@ describe('CashuMintApiService', () => {
 		});
 		expect(out).toEqual({name: 'Mint'});
 	});
+
+	it('calls config with expected key and parses json once', async () => {
+		config_service.get.mockReturnValue('https://mint');
+		const json = jest.fn().mockResolvedValue({ok: true});
+		fetch_service.fetchWithProxy.mockResolvedValue({json} as any);
+		await cashu_mint_api_service.getMintInfo();
+		expect(config_service.get).toHaveBeenCalledTimes(1);
+		expect(config_service.get).toHaveBeenCalledWith('cashu.api');
+		expect(json).toHaveBeenCalledTimes(1);
+	});
+
+	it('propagates fetchWithProxy rejection', async () => {
+		config_service.get.mockReturnValue('https://mint');
+		fetch_service.fetchWithProxy.mockRejectedValueOnce(new Error('network'));
+		await expect(cashu_mint_api_service.getMintInfo()).rejects.toThrow('network');
+	});
+
+	it('propagates response.json rejection', async () => {
+		config_service.get.mockReturnValue('https://mint');
+		const json = jest.fn().mockRejectedValueOnce(new Error('bad json'));
+		fetch_service.fetchWithProxy.mockResolvedValue({json} as any);
+		await expect(cashu_mint_api_service.getMintInfo()).rejects.toThrow('bad json');
+	});
+
+	it('builds request url without trailing slash', async () => {
+		config_service.get.mockReturnValue('https://mint');
+		const json = jest.fn().mockResolvedValue({});
+		fetch_service.fetchWithProxy.mockResolvedValue({json} as any);
+		await cashu_mint_api_service.getMintInfo();
+		expect(fetch_service.fetchWithProxy).toHaveBeenCalledWith('https://mint/v1/info', {
+			method: 'GET',
+			headers: {'Content-Type': 'application/json'},
+		});
+	});
+
+	it('builds request url with trailing slash (current double-slash behavior)', async () => {
+		config_service.get.mockReturnValue('https://mint/');
+		const json = jest.fn().mockResolvedValue({});
+		fetch_service.fetchWithProxy.mockResolvedValue({json} as any);
+		await cashu_mint_api_service.getMintInfo();
+		expect(fetch_service.fetchWithProxy).toHaveBeenCalledWith('https://mint//v1/info', {
+			method: 'GET',
+			headers: {'Content-Type': 'application/json'},
+		});
+	});
 });
