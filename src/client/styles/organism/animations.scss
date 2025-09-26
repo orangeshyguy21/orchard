@@ -127,3 +127,16 @@
 .orc-animation-collapsible > .orc-animation-collapsible-inner {
 	@extend %overflow-hidden;
 }
+
+/* Form Reaction */
+/* (for dynamic height forms to show invalid errors) */
+
+.orc-animation-form-reaction {
+	height: 52px; /* valid state height */
+	@extend %overflow-hidden;
+	transition: height 300ms ease-in-out;
+
+    &.animation-invalid {
+        height: 71px; /* invalid state height */
+    }
+}
