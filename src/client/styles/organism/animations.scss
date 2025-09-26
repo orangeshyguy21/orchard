@@ -82,11 +82,27 @@
 	grid-template-rows: 0fr;
 	transition: grid-template-rows 300ms ease-in-out, opacity 300ms ease-in-out;
 	opacity: 0;
-}
-.orc-expand-collapse.expanded {
-	grid-template-rows: 1fr;
-	opacity: 1;
+
+    &.expanded {
+        grid-template-rows: 1fr;
+        opacity: 1;
+    }
 }
 .orc-expand-collapse > .orc-expand-collapse-inner {
 	overflow: hidden;
+}
+
+/* Copy */
+
+.orc-copied {
+	opacity: 0;
+	transform: translateY(-0.5rem);
+	transition: opacity 100ms ease-out, transform 100ms ease-out;
+	will-change: opacity, transform;
+}
+
+.orc-copied.visible {
+	opacity: 1;
+	transform: translateY(0);
+	transition: opacity 100ms ease-in, transform 100ms ease-in;
 }

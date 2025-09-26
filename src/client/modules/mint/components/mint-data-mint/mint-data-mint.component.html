@@ -50,8 +50,8 @@
 				<div class="w-8"></div>
 				<div class="relative">
 					<div
-						class="absolute top-0 flex flex-gap-0-25 flex-row flex-align-center orc-outline-color"
-						[@copyAnimation]="copy_animation_state"
+						class="orc-copied absolute top-0 flex flex-gap-0-25 flex-row flex-align-center orc-outline-color"
+						[class.visible]="copy_animation_state === 'visible'"
 					>
 						<div class="font-size-s text-nowrap">Copied</div>
 						<mat-icon class="icon-sm">content_copy</mat-icon>

@@ -2,7 +2,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, SimpleChanges, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 import {FormControl} from '@angular/forms';
-import {animate, state, style, transition, trigger} from '@angular/animations';
 /* Vendor Dependencies */
 import {firstValueFrom} from 'rxjs';
 import QRCodeStyling from 'qr-code-styling';
@@ -22,21 +21,6 @@ import {Connection} from './mint-connections.classes';
 	templateUrl: './mint-connections.component.html',
 	styleUrl: './mint-connections.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	// prettier-ignore
-	animations: [
-		trigger('copyAnimation', [
-			state('visible', style({
-				opacity: 1,
-				transform: 'translateY(0)'
-			})),
-			state('hidden', style({
-				opacity: 0,
-				transform: 'translateY(-0.5rem)',
-			})),
-			transition('hidden => visible', animate('100ms ease-out')),
-			transition('visible => hidden', animate('100ms ease-in', style({ opacity: 0 }))),
-		]),
-	],
 })
 export class MintConnectionsComponent {
 	@Input() urls!: string[] | null;
