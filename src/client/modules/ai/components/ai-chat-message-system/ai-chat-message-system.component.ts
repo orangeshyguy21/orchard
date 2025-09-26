@@ -29,17 +29,6 @@ import {AiChatCompiledMessage} from '@client/modules/ai/classes/ai-chat-compiled
                 animate('300ms ease-in-out'),
             ]),
         ]),
-        trigger('rotateIcon', [
-            state('collapsed', style({
-                transform: 'rotate(0deg)',
-            })),
-            state('expanded', style({
-                transform: 'rotate(180deg)',
-            })),
-            transition('collapsed <=> expanded', [
-                animate('300ms ease-in-out'),
-            ]),
-        ]),
     ],
 })
 export class AiChatMessageSystemComponent implements OnInit {

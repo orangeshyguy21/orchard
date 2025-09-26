@@ -1,7 +1,7 @@
 <div class="ai-chat-message-toolcall-container">
 	<div class="tool-summary orc-text-button" (click)="toggleToolDetails()">
 		<div>{{ tool_title }}</div>
-		<mat-icon [@rotateIcon]="tool_expanded ? 'expanded' : 'collapsed'">keyboard_arrow_down</mat-icon>
+		<mat-icon class="orc-rotate-toggle" [class.expanded]="tool_expanded">keyboard_arrow_down</mat-icon>
 	</div>
 
 	<div [@expandCollapse]="tool_expanded ? 'expanded' : 'collapsed'" class="p-t-0-5">

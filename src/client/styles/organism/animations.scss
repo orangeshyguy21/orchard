@@ -61,3 +61,12 @@
 	from { opacity: 1; }
 	to { opacity: 0; }
 }
+
+.orc-rotate-toggle {
+	transform: rotate(0deg);
+	transition: transform 300ms ease-in-out;
+
+    &.expanded {
+        transform: rotate(180deg);
+    }
+}

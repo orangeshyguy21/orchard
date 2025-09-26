@@ -5,7 +5,7 @@
 		</div>
 		<div class="flex-grow">{{ tool_name }}</div>
 		<div>
-			<mat-icon [@rotateIcon]="tool_expanded ? 'expanded' : 'collapsed'">keyboard_arrow_down</mat-icon>
+			<mat-icon class="orc-rotate-toggle" [class.expanded]="tool_expanded">keyboard_arrow_down</mat-icon>
 		</div>
 	</div>
 

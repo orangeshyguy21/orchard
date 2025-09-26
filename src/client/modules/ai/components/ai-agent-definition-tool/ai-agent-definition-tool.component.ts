@@ -29,17 +29,6 @@ import {OrchardAiAgentTool} from '@shared/generated.types';
                 animate('300ms ease-in-out'),
             ]),
         ]),
-        trigger('rotateIcon', [
-            state('collapsed', style({
-                transform: 'rotate(0deg)',
-            })),
-            state('expanded', style({
-                transform: 'rotate(180deg)',
-            })),
-            transition('collapsed <=> expanded', [
-                animate('300ms ease-in-out'),
-            ]),
-        ]),
     ],
 })
 export class AiAgentDefinitionToolComponent implements OnInit {

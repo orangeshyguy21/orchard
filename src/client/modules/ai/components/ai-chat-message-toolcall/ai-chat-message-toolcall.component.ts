@@ -32,17 +32,6 @@ import {ArgumentRow} from './argument-row.class';
                 animate('300ms ease-in-out'),
             ]),
         ]),
-        trigger('rotateIcon', [
-            state('collapsed', style({
-                transform: 'rotate(0deg)',
-            })),
-            state('expanded', style({
-                transform: 'rotate(180deg)',
-            })),
-            transition('collapsed <=> expanded', [
-                animate('300ms ease-in-out'),
-            ]),
-        ]),
     ],
 })
 export class AiChatMessageToolcallComponent implements OnInit {

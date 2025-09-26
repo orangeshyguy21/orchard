@@ -8,12 +8,12 @@
 					@if (thinking_complete) {
 						<div animate.enter="orc-fadein-fast" class="ai-thinking orc-text-button" (click)="toggleThinking()">
 							<div>{{ think_duration | ai_thought }}</div>
-							<mat-icon [@rotateIcon]="think_expanded ? 'expanded' : 'collapsed'">keyboard_arrow_down</mat-icon>
+							<mat-icon class="orc-rotate-toggle" [class.expanded]="think_expanded">keyboard_arrow_down</mat-icon>
 						</div>
 					} @else {
 						<div animate.enter="orc-fadein-fast" class="ai-thinking orc-text-button" (click)="toggleThinking()">
 							<div class="shimmer-text">Thinking</div>
-							<mat-icon [@rotateIcon]="think_expanded ? 'expanded' : 'collapsed'">keyboard_arrow_down</mat-icon>
+							<mat-icon class="orc-rotate-toggle" [class.expanded]="think_expanded">keyboard_arrow_down</mat-icon>
 						</div>
 					}
 					<div [@expandCollapse]="think_expanded ? 'expanded' : 'collapsed'">
