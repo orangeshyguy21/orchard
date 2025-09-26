@@ -4,14 +4,14 @@
 		<mat-card appearance="outlined" class="relative overflow-hidden">
 			<mat-card-content class="orc-surface-container-low-bg h-full">
 				<div class="flex flex-column">
-					<form [formGroup]="form_group">
+					<form [formGroup]="form_group()">
 						<mat-form-field hideRequiredMarker="true" class="target-form-field">
 							<mat-label>Fee rate</mat-label>
 							<mat-select formControlName="target" (selectionChange)="onTargetChange($event)">
 								<mat-select-trigger>
 									<div
 										class="flex flex-gap-2"
-										[innerHTML]="getSelectedTargetLabel(form_group.get('target')?.value)"
+										[innerHTML]="getSelectedTargetLabel(form_group().get('target')?.value)"
 									></div>
 								</mat-select-trigger>
 								@for (option of target_options; track option.target) {
@@ -25,11 +25,11 @@
 					</form>
 
 					<div class="flex flex-justify-center">
-						@if (txfee_estimate?.errors) {
-							<mat-error class="font-size-xs">{{ txfee_estimate?.errors }}</mat-error>
+						@if (txfee_estimate()?.errors) {
+							<mat-error class="font-size-xs">{{ txfee_estimate()?.errors }}</mat-error>
 						} @else {
 							<div class="flex flex-items-end flex-gap-0-5 font-size-xl orc-amount-container">
-								<div>{{ txfee_estimate?.feerate | feerate }}</div>
+								<div>{{ txfee_estimate()?.feerate | feerate }}</div>
 								<div class="orc-unit">sat/vB</div>
 							</div>
 						}
@@ -37,15 +37,11 @@
 				</div>
 			</mat-card-content>
 		</mat-card>
-		<div [@blockDataChange]="block?.height">
+		<div #flash>
 			<div class="flex flex-gap-1">
 				<div class="flex flex-column">
 					<div class="relative">
-						<div
-							class="block-indicator"
-							[ngClass]="{'next-block': target_block === 0, 'pool-block': target_block === 1}"
-							[@blockIndicatorMove]="target_block.toString()"
-						>
+						<div class="block-indicator" [class.next-block]="target_block() === 0" [class.pool-block]="target_block() === 1">
 							<div class="block-indicator-icon">
 								<mat-icon class="icon-lg orc-surface-variant-color">arrow_drop_down</mat-icon>
 							</div>
@@ -56,9 +52,9 @@
 							<div class="block-half block-template"></div>
 						}
 						<orc-bitcoin-block
-							[block]="block_template || undefined"
+							[block]="block_template() || undefined"
 							[is_template]="true"
-							[height]="block_template?.height"
+							[height]="block_template()?.height"
 						></orc-bitcoin-block>
 					</div>
 				</div>
@@ -69,7 +65,7 @@
 					</div>
 				</div>
 				<div class="flex flex-gap-1">
-					<orc-bitcoin-block [block]="block || undefined" [height]="block?.height"></orc-bitcoin-block>
+					<orc-bitcoin-block [block]="block() || undefined" [height]="block()?.height"></orc-bitcoin-block>
 					<div class="block-half block-chained"></div>
 				</div>
 			</div>

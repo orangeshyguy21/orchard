@@ -2,15 +2,16 @@
 import {
 	ChangeDetectionStrategy,
 	Component,
-	Input,
+	input,
 	OnInit,
 	Output,
 	EventEmitter,
-	ChangeDetectorRef,
-	OnChanges,
-	SimpleChanges,
+	ViewChild,
+	ElementRef,
+	AfterViewInit,
+	effect,
+	computed,
 } from '@angular/core';
-import {trigger, transition, animate, style, state} from '@angular/animations';
 import {FormGroup} from '@angular/forms';
 /* Vendor Dependencies */
 import {MatSelectChange} from '@angular/material/select';
@@ -35,57 +36,48 @@ export type TargetOption = {
 	templateUrl: './index-bitcoin-blockchain.component.html',
 	styleUrl: './index-bitcoin-blockchain.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	// prettier-ignore
-	animations: [
-		trigger('blockDataChange', [
-			transition('* => *', [
-				animate('200ms ease-out', style({ opacity: 0.1 })),
-				animate('400ms ease-in', style({ opacity: 1 })),
-			]),
-		]),
-		trigger('blockIndicatorMove', [
-			state('0', style({ right: '5rem' })),
-			state('1', style({ right: '14rem' })),
-			transition('0 => 1', [
-				animate('300ms ease-in-out'),
-			]),
-			transition('1 => 0', [
-				animate('300ms ease-in-out'),
-			]),
-		]),
-    ],
 })
-export class IndexBitcoinBlockchainComponent implements OnInit, OnChanges {
-	@Input() block!: BitcoinBlock | null;
-	@Input() block_template!: BitcoinBlockTemplate | null;
-	@Input() mempool!: BitcoinTransaction[] | null;
-	@Input() txfee_estimate!: BitcoinTransactionFeeEstimate | null;
-	@Input() form_group!: FormGroup;
-	@Input() control_name!: string;
+export class IndexBitcoinBlockchainComponent implements OnInit, AfterViewInit {
+	public block = input<BitcoinBlock | null>(null);
+	public block_height = input<number | null>(null);
+	public block_template = input<BitcoinBlockTemplate | null>(null);
+	public mempool = input<BitcoinTransaction[] | null>(null);
+	public txfee_estimate = input<BitcoinTransactionFeeEstimate | null>(null);
+	public form_group = input.required<FormGroup>();
+	public control_name = input.required<string>();
 
 	@Output() target_change = new EventEmitter<number>();
 
+	@ViewChild('flash', {read: ElementRef}) flash!: ElementRef<HTMLElement>;
+
 	public target_options: TargetOption[] = [];
 	public mempool_depth!: number;
-	public target_block: number = 0;
+	public target_block = computed(() => this.getTargetBlock());
 
-	constructor(private readonly cdr: ChangeDetectorRef) {}
+	private initialized: boolean = false;
+
+	constructor() {
+		effect(() => {
+			const block_height = this.block_height();
+			if (!block_height) return;
+			console.log('block_height', block_height);
+			this.animateFlash();
+		});
+	}
 
 	ngOnInit(): void {
 		this.mempool_depth = this.calculateMempoolBlocks();
 		this.target_options = possible_options;
 	}
 
-	ngOnChanges(changes: SimpleChanges): void {
-		if (changes['txfee_estimate']) {
-			this.target_block = this.getTargetBlock();
-			this.cdr.detectChanges();
-		}
+	ngAfterViewInit(): void {
+		this.initialized = true;
 	}
 
 	private calculateMempoolBlocks(): number {
-		if (!this.mempool || this.mempool.length === 0) return 0;
-		const total_weight = this.mempool.reduce((sum, tx) => sum + tx.weight, 0);
+		const mempool = this.mempool();
+		if (!mempool || mempool.length === 0) return 0;
+		const total_weight = mempool.reduce((sum, tx) => sum + tx.weight, 0);
 		const block_weight_limit = 4000000; // 4MWU
 		const num_blocks = Math.ceil(total_weight / block_weight_limit);
 		return num_blocks;
@@ -102,9 +94,23 @@ export class IndexBitcoinBlockchainComponent implements OnInit, OnChanges {
 	}
 
 	private getTargetBlock(): number {
-		if (!this.txfee_estimate || !this.block_template) return 0;
-		if (!this.txfee_estimate.feerate || !this.block_template.feerate_low) return 0;
-		if (this.txfee_estimate.feerate > this.block_template.feerate_low) return 0;
+		const txfee_estimate = this.txfee_estimate();
+		const block_template = this.block_template();
+		if (!txfee_estimate || !block_template) return 0;
+		if (!txfee_estimate.feerate || !block_template.feerate_low) return 0;
+		if (txfee_estimate.feerate > block_template.feerate_low) return 0;
 		return 1;
+	}
+
+	private animateFlash(): void {
+		if (!this.initialized) return;
+		const flash = this.flash.nativeElement;
+		for (const anim of flash.getAnimations()) anim.cancel();
+		flash
+			.animate([{opacity: 1}, {opacity: 0.1}], {duration: 200, easing: 'ease-out', fill: 'forwards'})
+			.finished.catch(() => {})
+			.finally(() => {
+				flash.animate([{opacity: 0.1}, {opacity: 1}], {duration: 400, easing: 'ease-in', fill: 'forwards'});
+			});
 	}
 }
