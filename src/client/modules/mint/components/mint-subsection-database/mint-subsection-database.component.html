@@ -55,24 +55,28 @@
 		<div class="category-rule"></div>
 	</div>
 
-	<div [@slideInOut]="form_mode === 'CREATE' ? 'open' : 'closed'" class="overflow-hidden">
-		<div class="mint-database-form-target" #backup_form></div>
-		<orc-mint-data-backup-create
-			[active]="form_mode === 'CREATE'"
-			[form_group]="form_backup"
-			[database_version]="database_version"
-			[database_timestamp]="database_timestamp"
-			[database_implementation]="database_implementation"
-			(close)="onClose()"
-		></orc-mint-data-backup-create>
+	<div class="orc-collapsible" [class.open]="form_mode === 'CREATE'">
+		<div class="orc-collapsible-inner">
+			<div class="mint-database-form-target" #backup_form></div>
+			<orc-mint-data-backup-create
+				[active]="form_mode === 'CREATE'"
+				[form_group]="form_backup"
+				[database_version]="database_version"
+				[database_timestamp]="database_timestamp"
+				[database_implementation]="database_implementation"
+				(close)="onClose()"
+			></orc-mint-data-backup-create>
+		</div>
 	</div>
-	<div [@slideInOut]="form_mode === 'RESTORE' ? 'open' : 'closed'" class="overflow-hidden">
-		<div class="mint-database-form-target" #restore_form></div>
-		<orc-mint-data-backup-restore
-			[active]="form_mode === 'RESTORE'"
-			[form_group]="form_restore"
-			(close)="onClose()"
-		></orc-mint-data-backup-restore>
+	<div class="orc-collapsible" [class.open]="form_mode === 'RESTORE'">
+		<div class="orc-collapsible-inner">
+			<div class="mint-database-form-target" #restore_form></div>
+			<orc-mint-data-backup-restore
+				[active]="form_mode === 'RESTORE'"
+				[form_group]="form_restore"
+				(close)="onClose()"
+			></orc-mint-data-backup-restore>
+		</div>
 	</div>
 
 	<orc-mint-data-chart

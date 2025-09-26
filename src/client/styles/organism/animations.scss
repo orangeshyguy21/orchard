@@ -106,3 +106,22 @@
 	transform: translateY(0);
 	transition: opacity 100ms ease-in, transform 100ms ease-in;
 }
+
+/* Collapsible */
+
+.orc-collapsible {
+	@extend %grid;
+	@extend %rows-0;
+	@extend %opacity-0;
+	transition: grid-template-rows 200ms ease-out, opacity 200ms ease-out;
+	@extend %overflow-hidden;
+    @extend %w-full;
+
+    &.open {
+        @extend %rows-1;
+        @extend %opacity-1;
+    }
+}
+.orc-collapsible > .orc-collapsible-inner {
+	@extend %overflow-hidden;
+}

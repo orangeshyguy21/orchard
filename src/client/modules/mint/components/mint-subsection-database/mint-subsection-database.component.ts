@@ -1,6 +1,5 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef, HostListener, OnDestroy, ViewChild, ElementRef} from '@angular/core';
-import {trigger, state, style, animate, transition} from '@angular/animations';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
 import {ActivatedRoute} from '@angular/router';
 /* Vendor Dependencies */
@@ -62,27 +61,6 @@ enum FormMode {
 	templateUrl: './mint-subsection-database.component.html',
 	styleUrl: './mint-subsection-database.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	// prettier-ignore
-	animations: [
-		trigger('slideInOut', [
-			state('closed', style({
-				height: '0',
-				opacity: '0',
-				overflow: 'hidden',
-			})),
-			state('open', style({
-				height: '*',
-				opacity: '1',
-				overflow: 'hidden',
-			})),
-			transition('closed => open', [
-				animate('200ms ease-out'),
-			]),
-			transition('open => closed', [
-				animate('200ms ease-out'),
-			]),
-		]),
-	],
 })
 export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, OnInit, OnDestroy {
 	@HostListener('window:beforeunload')

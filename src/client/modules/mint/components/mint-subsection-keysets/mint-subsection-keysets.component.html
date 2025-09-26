@@ -31,17 +31,19 @@
 		<div class="category-rule"></div>
 	</div>
 
-	<div [@slideInOut]="keysets_rotation ? 'open' : 'closed'" class="overflow-hidden">
-		<div class="mint-keyset-form-target" #keyset_form></div>
-		<orc-mint-keyset-rotation
-			[form_group]="form_keyset"
-			[unit_options]="unit_options"
-			[keyset_out]="keyset_out"
-			[keyset_out_balance]="keyset_out_balance"
-			[median_notes]="median_notes"
-			(updateUnit)="onUpdateUnit($event)"
-			(close)="onCloseRotation()"
-		></orc-mint-keyset-rotation>
+	<div class="orc-collapsible" [class.open]="keysets_rotation">
+		<div class="orc-collapsible-inner">
+			<div class="mint-keyset-form-target" #keyset_form></div>
+			<orc-mint-keyset-rotation
+				[form_group]="form_keyset"
+				[unit_options]="unit_options"
+				[keyset_out]="keyset_out"
+				[keyset_out_balance]="keyset_out_balance"
+				[median_notes]="median_notes"
+				(updateUnit)="onUpdateUnit($event)"
+				(close)="onCloseRotation()"
+			></orc-mint-keyset-rotation>
+		</div>
 	</div>
 
 	<orc-mint-keyset-chart
