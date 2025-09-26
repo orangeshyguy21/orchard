@@ -1,6 +1,5 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, Input, ChangeDetectorRef, OnChanges, SimpleChanges} from '@angular/core';
-import {trigger, transition, style, animate, state} from '@angular/animations';
 /* Vendor Dependencies */
 import {marked} from 'marked';
 /* Native Dependencies */
@@ -15,24 +14,6 @@ import {AiMessageRole} from '@shared/generated.types';
 	templateUrl: './ai-chat-message-assistant.component.html',
 	styleUrl: './ai-chat-message-assistant.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	// prettier-ignore
-	animations: [
-		trigger('expandCollapse', [
-            state('collapsed', style({
-                height: '0',
-                overflow: 'hidden',
-                opacity: 0,
-            })),
-            state('expanded', style({
-                height: '*',
-                overflow: 'visible',
-                opacity: 1,
-            })),
-            transition('collapsed <=> expanded', [
-                animate('300ms ease-in-out'),
-            ]),
-        ]),
-    ],
 })
 export class AiChatMessageAssistantComponent implements OnChanges {
 	@Input() public message!: AiChatCompiledMessage;

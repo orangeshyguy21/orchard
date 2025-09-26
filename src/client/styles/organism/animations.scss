@@ -1,5 +1,6 @@
 @use '@styles/molecule/molecule';
 
+/* Shimmer */
 .shimmer-high {
     animation: shimmering 3.1s linear 10;
     @extend %orc-surface-container-high-bg;
@@ -40,6 +41,8 @@
     }
 }
 
+/* Fade */
+
 .orc-fadein-fast {
 	animation: fadein 150ms ease-in both;
 }
@@ -62,6 +65,8 @@
 	to { opacity: 0; }
 }
 
+/* Rotate */
+
 .orc-rotate-toggle {
 	transform: rotate(0deg);
 	transition: transform 300ms ease-in-out;
@@ -69,4 +74,19 @@
     &.expanded {
         transform: rotate(180deg);
     }
+}
+
+/* Expandable */
+.orc-expand-collapse {
+	display: grid;
+	grid-template-rows: 0fr;
+	transition: grid-template-rows 300ms ease-in-out, opacity 300ms ease-in-out;
+	opacity: 0;
+}
+.orc-expand-collapse.expanded {
+	grid-template-rows: 1fr;
+	opacity: 1;
+}
+.orc-expand-collapse > .orc-expand-collapse-inner {
+	overflow: hidden;
 }

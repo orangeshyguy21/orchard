@@ -16,9 +16,11 @@
 							<mat-icon class="orc-rotate-toggle" [class.expanded]="think_expanded">keyboard_arrow_down</mat-icon>
 						</div>
 					}
-					<div [@expandCollapse]="think_expanded ? 'expanded' : 'collapsed'">
-						<div class="orc-ai-chat-message-content p-t-0-5">
-							<div class="orc-ai-marked" [innerHTML]="marked_thinking_content"></div>
+					<div class="orc-expand-collapse" [class.expanded]="think_expanded">
+						<div class="orc-expand-collapse-inner">
+							<div class="orc-ai-chat-message-content p-t-0-5">
+								<div class="orc-ai-marked" [innerHTML]="marked_thinking_content"></div>
+							</div>
 						</div>
 					</div>
 				}
