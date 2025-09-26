@@ -1,10 +1,10 @@
 <div class="mint-icon-container">
 	@switch (state) {
 		@case ('loading') {
-			<div class="mint-icon mint-icon-loading shimmer-high"></div>
+			<div class="mint-icon mint-icon-loading orc-animation-shimmer-high"></div>
 		}
 		@case ('error') {
-			<div class="mint-icon mint-icon-error" animate.enter="orc-fadein">
+			<div class="mint-icon mint-icon-error" animate.enter="orc-animation-fadein">
 				<mat-icon class="mat-symbol-outline">error</mat-icon>
 			</div>
 		}
@@ -14,11 +14,11 @@
 				alt="Mint Icon"
 				class="h-2 cursor-pointer mint-icon-url"
 				(click)="onClick()"
-				animate.enter="orc-fadein"
+				animate.enter="orc-animation-fadein"
 			/>
 		}
 		@case ('unset') {
-			<div class="mint-icon mint-icon-placeholder" matRipple (click)="onClick()" animate.enter="orc-fadein">
+			<div class="mint-icon mint-icon-placeholder" matRipple (click)="onClick()" animate.enter="orc-animation-fadein">
 				<mat-icon>add</mat-icon>
 			</div>
 		}

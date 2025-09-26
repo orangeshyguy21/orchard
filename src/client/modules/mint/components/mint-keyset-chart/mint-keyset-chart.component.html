@@ -3,7 +3,7 @@
 		<canvas baseChart [data]="chart_data" [options]="chart_options" [type]="chart_type"></canvas>
 	}
 	@if (!loading && keysets_analytics.length === 0 && keysets_analytics_pre.length === 0) {
-		<div class="no-data-overlay" animate.enter="orc-fadein-fast" animate.leave="orc-fadeout-fast">
+		<div class="no-data-overlay" animate.enter="orc-animation-fadein-fast" animate.leave="orc-animation-fadeout-fast">
 			<mat-icon class="icon-lg mat-symbol-outline orc-outline-color">bar_chart_off</mat-icon>
 		</div>
 	}

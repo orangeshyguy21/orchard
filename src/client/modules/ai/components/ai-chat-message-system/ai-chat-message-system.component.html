@@ -4,10 +4,10 @@
 		<div>
 			<div class="message-summary orc-text-button" (click)="toggleMessage()">
 				<div>System message</div>
-				<mat-icon class="orc-rotate-toggle" [class.expanded]="message_expanded">keyboard_arrow_down</mat-icon>
+				<mat-icon class="orc-animation-rotate-toggle" [class.animation-expanded]="message_expanded">keyboard_arrow_down</mat-icon>
 			</div>
-			<div class="orc-expand-collapse" [class.expanded]="message_expanded">
-				<div class="orc-expand-collapse-inner">
+			<div class="orc-animation-expand-collapse" [class.animation-expanded]="message_expanded">
+				<div class="orc-animation-expand-collapse-inner">
 					<div class="orc-ai-chat-message-content p-t-0-5">
 						<div class="orc-ai-marked" [innerHTML]="marked_content"></div>
 					</div>

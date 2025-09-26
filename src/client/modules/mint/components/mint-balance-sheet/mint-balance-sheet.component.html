@@ -19,13 +19,13 @@
 						@if (lightning_enabled) {
 							@if (!lightning_loading) {
 								@if (lightning_errors.length > 0) {
-									<div animate.enter="orc-fadein-fast">
+									<div animate.enter="orc-animation-fadein-fast">
 										@for (error of lightning_errors; track error.code) {
 											<orc-error-resolve [error]="error" mode="small"></orc-error-resolve>
 										}
 									</div>
 								} @else {
-									<div animate.enter="orc-fadein-fast" class="flex flex-items-center flex-gap-1">
+									<div animate.enter="orc-animation-fadein-fast" class="flex flex-items-center flex-gap-1">
 										<orc-graphic-asset [unit]="row.unit" [height]="'1.75rem'" [custody]="'lightning'">
 										</orc-graphic-asset>
 										@if (row.assets !== null) {

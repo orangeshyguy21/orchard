@@ -1,26 +1,27 @@
 @use '@styles/molecule/molecule';
 
 /* Shimmer */
-.shimmer-high {
+
+.orc-animation-shimmer-high {
     animation: shimmering 3.1s linear 10;
     @extend %orc-surface-container-high-bg;
     background: linear-gradient(90deg, var(--mat-sys-surface-container-high) 9%, var(--mat-sys-surface-container-highest) 18%, var(--mat-sys-surface-container-high) 31%);
     background-size: 1300px 100%;
 }
 
-.shimmer-highest {
+.orc-animation-shimmer-highest {
     animation: shimmering 3.1s linear 10;
     @extend %orc-surface-container-highest-bg;
     background: linear-gradient(90deg, var(--mat-sys-surface-container-highest) 9%, var(--mat-sys-surface-container-high) 18%, var(--mat-sys-surface-container-highest) 31%);
     background-size: 1300px 100%;
 }
 
-.shimmer-text {
+.orc-animation-shimmer-text {
     background: linear-gradient(135deg, var(--mat-sys-primary), var(--mat-sys-primary-container), var(--mat-sys-primary));
     background-clip: text;
     color: transparent;
     background-size: 200% 100%;
-    animation: shimmer-text 3s linear infinite;
+    animation: shimmering-text 3s linear infinite;
 }
 
 @keyframes shimmering {
@@ -32,7 +33,7 @@
     }
 }
 
-@keyframes shimmer-text {
+@keyframes shimmering-text {
     0% {
         background-position: 100% 0;
     }
@@ -43,15 +44,15 @@
 
 /* Fade */
 
-.orc-fadein-fast {
+.orc-animation-fadein-fast {
 	animation: fadein 150ms ease-in both;
 }
 
-.orc-fadein {
+.orc-animation-fadein {
 	animation: fadein 300ms ease-in both;
 }
 
-.orc-fadeout-fast {
+.orc-animation-fadeout-fast {
 	animation: fadeout 150ms ease-out both;
 }
 
@@ -67,49 +68,50 @@
 
 /* Rotate */
 
-.orc-rotate-toggle {
+.orc-animation-rotate-toggle {
 	transform: rotate(0deg);
 	transition: transform 300ms ease-in-out;
 
-    &.expanded {
+    &.animation-expanded {
         transform: rotate(180deg);
     }
 }
 
 /* Expandable */
-.orc-expand-collapse {
+
+.orc-animation-expand-collapse {
     @extend %grid;
 	@extend %rows-0;
     @extend %opacity-0;
     transition: grid-template-rows 300ms ease-in-out, opacity 300ms ease-in-out;
 
-    &.expanded {
+    &.animation-expanded {
         @extend %rows-1;
         @extend %opacity-1;
     }
 }
-.orc-expand-collapse > .orc-expand-collapse-inner {
+.orc-animation-expand-collapse > .orc-animation-expand-collapse-inner {
     @extend %overflow-hidden;
 }
 
 /* Copy */
 
-.orc-copied {
+.orc-animation-copied {
 	@extend %opacity-0;
 	transform: translateY(-0.5rem);
 	transition: opacity 100ms ease-out, transform 100ms ease-out;
 	will-change: opacity, transform;
-}
 
-.orc-copied.visible {
-	@extend %opacity-1;
-	transform: translateY(0);
-	transition: opacity 100ms ease-in, transform 100ms ease-in;
+    &.animation-visible {
+        @extend %opacity-1;
+        transform: translateY(0);
+        transition: opacity 100ms ease-in, transform 100ms ease-in;
+    }
 }
 
 /* Collapsible */
 
-.orc-collapsible {
+.orc-animation-collapsible {
 	@extend %grid;
 	@extend %rows-0;
 	@extend %opacity-0;
@@ -117,11 +119,11 @@
 	@extend %overflow-hidden;
     @extend %w-full;
 
-    &.open {
+    &.animation-open {
         @extend %rows-1;
         @extend %opacity-1;
     }
 }
-.orc-collapsible > .orc-collapsible-inner {
+.orc-animation-collapsible > .orc-animation-collapsible-inner {
 	@extend %overflow-hidden;
 }

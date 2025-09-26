@@ -1,11 +1,11 @@
 <div class="ai-chat-message-toolcall-container">
 	<div class="tool-summary orc-text-button" (click)="toggleToolDetails()">
 		<div>{{ tool_title }}</div>
-		<mat-icon class="orc-rotate-toggle" [class.expanded]="tool_expanded">keyboard_arrow_down</mat-icon>
+		<mat-icon class="orc-animation-rotate-toggle" [class.animation-expanded]="tool_expanded">keyboard_arrow_down</mat-icon>
 	</div>
 
-	<div class="orc-expand-collapse p-t-0-5" [class.expanded]="tool_expanded">
-		<div class="orc-expand-collapse-inner">
+	<div class="orc-animation-expand-collapse p-t-0-5" [class.animation-expanded]="tool_expanded">
+		<div class="orc-animation-expand-collapse-inner">
 			<mat-card appearance="outlined" class="overflow-hidden">
 				<div class="p-h-1 orc-surface-container-low-bg">
 					<table mat-table [dataSource]="data_source" class="orc-dense-table orc-table-low">
