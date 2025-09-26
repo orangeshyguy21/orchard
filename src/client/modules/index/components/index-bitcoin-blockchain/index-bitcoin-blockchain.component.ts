@@ -60,7 +60,6 @@ export class IndexBitcoinBlockchainComponent implements OnInit, AfterViewInit {
 		effect(() => {
 			const block_height = this.block_height();
 			if (!block_height) return;
-			console.log('block_height', block_height);
 			this.animateFlash();
 		});
 	}
