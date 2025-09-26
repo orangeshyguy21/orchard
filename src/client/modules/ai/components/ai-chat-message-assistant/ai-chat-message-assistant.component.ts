@@ -17,12 +17,6 @@ import {AiMessageRole} from '@shared/generated.types';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	// prettier-ignore
 	animations: [
-        trigger('fadeIn', [
-            transition(':enter', [
-                style({ opacity: 0 }),
-                animate('150ms ease-in', style({ opacity: 1 })),
-            ]),
-        ]),
 		trigger('expandCollapse', [
             state('collapsed', style({
                 height: '0',

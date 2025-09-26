@@ -38,12 +38,6 @@ enum ExpiredState {
 			transition('hidden => visible', animate('100ms ease-out')),
 			transition('visible => hidden', animate('100ms ease-in', style({ opacity: 0 }))),
 		]),
-		trigger('fadeIn', [
-			transition(':enter', [
-				style({ opacity: 0 }),
-				animate('150ms ease-in', style({ opacity: 1 })),
-			]),
-		]),
 	],
 })
 export class MintDataMintComponent implements AfterViewInit {

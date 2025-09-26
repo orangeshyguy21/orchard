@@ -98,7 +98,7 @@
 			></orc-mint-data-table>
 
 			@if (!loading_dynamic_data && data.source.data.length === 0) {
-				<div class="no-data-overlay" @fadeIn>
+				<div class="no-data-overlay" animate.enter="orc-fadein">
 					<mat-icon class="icon-lg mat-symbol-outline orc-outline-color">bar_chart_off</mat-icon>
 				</div>
 			}

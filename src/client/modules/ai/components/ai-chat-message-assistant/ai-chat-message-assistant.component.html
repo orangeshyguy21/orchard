@@ -6,12 +6,12 @@
 			<div>
 				@if (marked_thinking_content) {
 					@if (thinking_complete) {
-						<div [@fadeIn] class="ai-thinking orc-text-button" (click)="toggleThinking()">
+						<div animate.enter="orc-fadein-fast" class="ai-thinking orc-text-button" (click)="toggleThinking()">
 							<div>{{ think_duration | ai_thought }}</div>
 							<mat-icon [@rotateIcon]="think_expanded ? 'expanded' : 'collapsed'">keyboard_arrow_down</mat-icon>
 						</div>
 					} @else {
-						<div [@fadeIn] class="ai-thinking orc-text-button" (click)="toggleThinking()">
+						<div animate.enter="orc-fadein-fast" class="ai-thinking orc-text-button" (click)="toggleThinking()">
 							<div class="shimmer-text">Thinking</div>
 							<mat-icon [@rotateIcon]="think_expanded ? 'expanded' : 'collapsed'">keyboard_arrow_down</mat-icon>
 						</div>
@@ -31,7 +31,7 @@
 		</div>
 	</div>
 	@if (message.tool_calls?.length) {
-		<div [@fadeIn] class="orc-ai-chat-message">
+		<div animate.enter="orc-fadein-fast" class="orc-ai-chat-message">
 			<orc-ai-chat-avatar [role]="tool_roll" [icon]="'construction'" [section]="agent ? agent.section : null"> </orc-ai-chat-avatar>
 			<div class="flex flex-column flex-gap-1">
 				<div class="orc-ai-chat-message-tool-calls">

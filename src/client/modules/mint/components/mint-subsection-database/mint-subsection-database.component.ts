@@ -82,12 +82,6 @@ enum FormMode {
 				animate('200ms ease-out'),
 			]),
 		]),
-		trigger('fadeIn', [
-            transition(':enter', [
-                style({ opacity: 0 }),
-                animate('300ms ease-in', style({ opacity: 1 })),
-            ]),
-        ]),
 	],
 })
 export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, OnInit, OnDestroy {
