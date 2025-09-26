@@ -94,9 +94,9 @@
     @extend %overflow-hidden;
 }
 
-/* Copy */
+/* Feedback */
 
-.orc-animation-copied {
+.orc-animation-feedback {
 	@extend %opacity-0;
 	transform: translateY(-0.5rem);
 	transition: opacity 100ms ease-out, transform 100ms ease-out;
