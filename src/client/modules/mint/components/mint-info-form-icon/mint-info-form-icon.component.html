@@ -14,16 +14,16 @@
 			>
 				@switch (icon_state) {
 					@case ('loading') {
-						<mat-spinner [@enterScaleAnimation] [diameter]="35"></mat-spinner>
+						<mat-spinner animate.enter="enter-scale" [diameter]="35"></mat-spinner>
 					}
 					@case ('error') {
-						<mat-icon [@enterScaleAnimation] class="icon-lg mat-symbol-outline">error</mat-icon>
+						<mat-icon animate.enter="enter-scale" class="icon-lg mat-symbol-outline">error</mat-icon>
 					}
 					@case ('unset') {
-						<mat-icon [@enterScaleAnimation] class="icon-lg mat-symbol-outline">add_photo_alternate</mat-icon>
+						<mat-icon animate.enter="enter-scale" class="icon-lg mat-symbol-outline">add_photo_alternate</mat-icon>
 					}
 					@default {
-						<div [@enterAnimation] class="set-icon-interior">
+						<div animate.enter="orc-animation-fadein-fast" class="set-icon-interior">
 							<div class="set-icon-update">
 								<mat-icon class="icon-lg">edit</mat-icon>
 							</div>
