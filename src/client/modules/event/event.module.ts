@@ -9,10 +9,12 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 /* Local Dependencies */
 import {EventNavToolComponent} from './components/event-nav-tool/event-nav-tool.component';
 import {EventUnsavedDialogComponent} from './components/event-unsaved-dialog/event-unsaved-dialog.component';
+import {EventStackComponent} from './components/event-stack/event-stack.component';
+import {EventStackMessageComponent} from './components/event-stack-message/event-stack-message.component';
 
 @NgModule({
-	declarations: [EventNavToolComponent, EventUnsavedDialogComponent],
+	declarations: [EventNavToolComponent, EventUnsavedDialogComponent, EventStackComponent, EventStackMessageComponent],
 	imports: [CommonModule, MatIconModule, MatButtonModule, MatDialogModule, MatProgressSpinnerModule],
-	exports: [EventNavToolComponent],
+	exports: [EventNavToolComponent, EventStackComponent],
 })
 export class EventModule {}

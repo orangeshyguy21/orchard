@@ -1,0 +1,9 @@
+<div class="event-stack-container">
+	@for (event of stack(); track event.id) {
+		<orc-event-stack-message
+			animate.enter="animation-enter-left-fade"
+			animate.leave="orc-animation-fadeout-fast"
+			[event]="event"
+		></orc-event-stack-message>
+	}
+</div>

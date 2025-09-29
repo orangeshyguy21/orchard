@@ -7,8 +7,7 @@
 	<div
 		class="event-nav-tool-container"
 		[class.action-nav-tool-highlight]="highlight()"
-		[class.invisible]="morph_state() === 'notify'"
-		[class]="container_collapsed_class()"
+		[class]="container_class()"
 		(mouseenter)="onMouseEnter()"
 		(mouseleave)="onMouseLeave()"
 		(click)="onClick()"
@@ -27,18 +26,4 @@
 			}
 		</div>
 	</div>
-	@if (morph_state() === 'notify') {
-		<div class="event-nav-tool-notifier">
-			<div class="event-nav-tool-container" [class]="container_expanded_class()" [class.nav-tool-notify]="morph_state() === 'notify'">
-				<div class="event-nav-tool-switch">
-					<div class="h-1-75 w-1-75">
-						<mat-icon #icon_expanded [class.mat-symbol-outline]="!highlight()" class="icon-md">{{ icon() }}</mat-icon>
-					</div>
-					<div class="event-message" [class]="message_size()" (animate.enter)="playGrowFade($event)">
-						<div class="event-message-content" [innerHTML]="active_event()?.message"></div>
-					</div>
-				</div>
-			</div>
-		</div>
-	}
 </div>

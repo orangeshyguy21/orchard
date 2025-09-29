@@ -6,6 +6,7 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 /* Application Dependencies */
 import {NavModule} from '@client/modules/nav/nav.module';
 import {AiModule} from '@client/modules/ai/ai.module';
+import {EventModule} from '@client/modules/event/event.module';
 /* Native Dependencies */
 import {LayoutExteriorComponent} from './components/layout-exterior/layout-exterior.component';
 import {LayoutInteriorComponent} from './components/layout-interior/layout-interior.component';
@@ -65,7 +66,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-	imports: [RouterModule.forRoot(routes), MatSidenavModule, NavModule, AiModule],
+	imports: [RouterModule.forRoot(routes), MatSidenavModule, NavModule, AiModule, EventModule],
 	exports: [RouterModule],
 	declarations: [LayoutExteriorComponent, LayoutInteriorComponent],
 })

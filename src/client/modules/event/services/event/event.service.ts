@@ -2,6 +2,7 @@
 import {Injectable} from '@angular/core';
 /* Vendor Dependencies */
 import {Subject, Observable} from 'rxjs';
+import {DateTime} from 'luxon';
 /* Native Dependencies */
 import {EventData} from 'src/client/modules/event/classes/event-data.class';
 
@@ -28,7 +29,8 @@ export class EventService {
 
 	private emitEvent(event_data: EventData): void {
 		this.active_event = event_data;
-		event_data.created_at = Math.floor(Date.now() / 1000);
+		// event_data.created_at = Math.floor(Date.now() / 1000);
+		event_data.created_at = Math.floor(DateTime.now().toSeconds());
 		this.event_history.push(new EventData(event_data));
 		this.active_event_subject.next(event_data);
 		if (event_data.duration) this.clearEvent(event_data);
