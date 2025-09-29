@@ -1,54 +1,41 @@
 <div class="flex flex-column flex-items-center relative">
-	@if (morph_state === 'actionable') {
+	@if (morph_state() === 'actionable') {
 		<button type="button" mat-icon-button class="orc-icon-button" (click)="cancel.emit()">
 			<mat-icon>cancel</mat-icon>
 		</button>
 	}
 	<div
 		class="event-nav-tool-container"
-		[class.action-nav-tool-highlight]="highlight"
-		[class.invisible]="morph_state === 'notify'"
-		[ngClass]="{
-			'nav-tool-saving': tool_state === 'saving',
-			'nav-tool-success': tool_state === 'success',
-			'nav-tool-warning': tool_state === 'warning',
-			'nav-tool-error': tool_state === 'error',
-			'nav-tool-highlight': tool_state === 'highlight',
-		}"
+		[class.action-nav-tool-highlight]="highlight()"
+		[class.invisible]="morph_state() === 'notify'"
+		[class]="container_collapsed_class()"
 		(mouseenter)="onMouseEnter()"
 		(mouseleave)="onMouseLeave()"
 		(click)="onClick()"
 	>
 		<div class="event-nav-tool-switch">
-			@if (morph_state === 'actionable') {
-				<div [@fadeInActionableMessage] class="font-size-xs">{{ active_event?.message }}</div>
+			@if (morph_state() === 'actionable') {
+				<div animate.enter="fade-in-150-delay-100" class="font-size-xs">{{ active_event()?.message }}</div>
 			}
-			@if (!saving) {
-				<div [@enterAnimation] class="h-1-75 w-1-75">
-					<mat-icon [class.mat-symbol-outline]="!highlight" class="icon-md" [@iconAnimation]="icon">{{ icon }}</mat-icon>
+			@if (!saving()) {
+				<div animate.enter="enter-scale-200" class="h-1-75 w-1-75">
+					<mat-icon #icon_collapsed [class.mat-symbol-outline]="!highlight()" class="icon-md">{{ icon() }}</mat-icon>
 				</div>
 			} @else {
-				<mat-spinner [diameter]="25" [@enterAnimation]></mat-spinner>
+				<!-- is this working with spinners? it might not be -->
+				<mat-spinner [diameter]="25" animate.enter="enter-scale-200"></mat-spinner>
 			}
 		</div>
 	</div>
-	@if (morph_state === 'notify') {
+	@if (morph_state() === 'notify') {
 		<div class="event-nav-tool-notifier">
-			<div
-				class="event-nav-tool-container"
-				[ngClass]="{
-					'nav-tool-success': tool_state === 'success',
-					'nav-tool-warning': tool_state === 'warning',
-					'nav-tool-error': tool_state === 'error',
-					'nav-tool-notify': morph_state === 'notify',
-				}"
-			>
+			<div class="event-nav-tool-container" [class]="container_expanded_class()" [class.nav-tool-notify]="morph_state() === 'notify'">
 				<div class="event-nav-tool-switch">
 					<div class="h-1-75 w-1-75">
-						<mat-icon [class.mat-symbol-outline]="!highlight" class="icon-md" [@iconAnimation]="icon">{{ icon }}</mat-icon>
+						<mat-icon #icon_expanded [class.mat-symbol-outline]="!highlight()" class="icon-md">{{ icon() }}</mat-icon>
 					</div>
-					<div class="event-message" [ngClass]="message_size" [@growAndFadeText]>
-						<div class="event-message-content" [innerHTML]="active_event?.message"></div>
+					<div class="event-message" [class]="message_size()" (animate.enter)="playGrowFade($event)">
+						<div class="event-message-content" [innerHTML]="active_event()?.message"></div>
 					</div>
 				</div>
 			</div>

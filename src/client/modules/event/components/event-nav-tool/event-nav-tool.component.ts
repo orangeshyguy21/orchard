@@ -1,5 +1,20 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
+import {
+	ChangeDetectionStrategy,
+	ChangeDetectorRef,
+	Component,
+	EventEmitter,
+	input,
+	signal,
+	computed,
+	effect,
+	OnChanges,
+	Output,
+	SimpleChanges,
+	ViewChild,
+	ElementRef,
+	AnimationCallbackEvent,
+} from '@angular/core';
 import {Router} from '@angular/router';
 import {trigger, style, animate, transition} from '@angular/animations';
 /* Application Dependencies */
@@ -13,12 +28,6 @@ import {EventData} from '@client/modules/event/classes/event-data.class';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	// prettier-ignore
 	animations: [
-		trigger('iconAnimation', [
-			transition('* => *', [
-				style({ transform: 'scale(0.8)', opacity: 0.5 }),
-				animate('200ms ease-out', style({ transform: 'scale(1)', opacity: 1 })),
-			]),
-		]),
 		trigger('enterAnimation', [
             transition(':enter', [
                 style({ transform: 'scale(0.8)', opacity: 0.5 }),
@@ -54,94 +63,252 @@ import {EventData} from '@client/modules/event/classes/event-data.class';
 		])
 	],
 })
-export class EventNavToolComponent implements OnChanges {
-	@Input() navroute!: string;
-	@Input() active: boolean = false;
-	@Input() active_event: EventData | null = null;
+export class EventNavToolComponent {
+	// @Input() navroute!: string;
+	// @Input() active: boolean = false;
+	// @Input() active_event: EventData | null = null;
+	public navroute = input.required<string>();
+	public active = input<boolean>(false);
+	public active_event = input<EventData | null>(null);
 
 	@Output() save: EventEmitter<void> = new EventEmitter();
 	@Output() cancel: EventEmitter<void> = new EventEmitter();
 
-	public moused: boolean = false;
-	public icon: string = 'save_clock';
+	@ViewChild('icon_collapsed', {read: ElementRef}) icon_collapsed!: ElementRef<HTMLElement>;
+	@ViewChild('icon_expanded', {read: ElementRef}) icon_expanded!: ElementRef<HTMLElement>;
 
-	public get highlight() {
-		return this.active || this.moused;
-	}
-	public get pending_event() {
-		return this.active_event?.type === 'PENDING';
-	}
-	public get saving() {
-		return this.active_event?.type === 'SAVING';
-	}
+	// public moused: boolean = false;
+	// public icon: string = 'save_clock';
 
-	public get tool_state() {
-		if (this.active_event?.type === 'PENDING') return 'highlight';
-		if (this.active_event?.type === 'SAVING') return 'saving';
-		if (this.active_event?.type === 'SUCCESS') return 'success';
-		if (this.active_event?.type === 'WARNING') return 'warning';
-		if (this.active_event?.type === 'ERROR') return 'error';
+	public moused = signal<boolean>(false);
+	// public icon = signal<string>('save_clock');
+
+	// public get highlight() {
+	// 	return this.active || this.moused;
+	// }
+	// public get pending_event() {
+	// 	return this.active_event?.type === 'PENDING';
+	// }
+	// public get saving() {
+	// 	return this.active_event?.type === 'SAVING';
+	// }
+
+	public highlight = computed(() => this.active() || this.moused());
+	public pending_event = computed(() => this.active_event()?.type === 'PENDING');
+	public saving = computed(() => this.active_event()?.type === 'SAVING');
+
+	// public get tool_state() {
+	// 	if (this.active_event?.type === 'PENDING') return 'highlight';
+	// 	if (this.active_event?.type === 'SAVING') return 'saving';
+	// 	if (this.active_event?.type === 'SUCCESS') return 'success';
+	// 	if (this.active_event?.type === 'WARNING') return 'warning';
+	// 	if (this.active_event?.type === 'ERROR') return 'error';
+	// 	return 'default';
+	// }
+	// public get morph_state() {
+	// 	if (this.active_event?.type === 'PENDING' && this.active_event?.message) return 'actionable';
+	// 	if (this.active_event?.type === 'SUCCESS' && this.active_event?.message) return 'notify';
+	// 	if (this.active_event?.type === 'WARNING' && this.active_event?.message) return 'notify';
+	// 	if (this.active_event?.type === 'ERROR' && this.active_event?.message) return 'notify';
+	// 	return 'default';
+	// }
+	// public get message_size() {
+	// 	if (!this.active_event?.message) return 'short-message';
+	// 	const length = this.active_event.message.length;
+	// 	if (length <= 25) return 'short-message';
+	// 	return 'long-message';
+	// }
+
+	public icon = computed(() => {
+		const active_event = this.active_event();
+		if (!active_event) return 'save_clock';
+		if (active_event.type === 'PENDING') return 'save';
+		if (active_event.type === 'SUCCESS') return 'check';
+		if (active_event.type === 'WARNING') return 'warning';
+		if (active_event.type === 'ERROR') return 'error';
+		return 'save_clock';
+	});
+
+	public tool_state = computed(() => {
+		const active_event = this.active_event();
+		if (active_event?.type === 'PENDING') return 'highlight';
+		if (active_event?.type === 'SAVING') return 'saving';
+		if (active_event?.type === 'SUCCESS') return 'success';
+		if (active_event?.type === 'WARNING') return 'warning';
+		if (active_event?.type === 'ERROR') return 'error';
 		return 'default';
-	}
-	public get morph_state() {
-		if (this.active_event?.type === 'PENDING' && this.active_event?.message) return 'actionable';
-		if (this.active_event?.type === 'SUCCESS' && this.active_event?.message) return 'notify';
-		if (this.active_event?.type === 'WARNING' && this.active_event?.message) return 'notify';
-		if (this.active_event?.type === 'ERROR' && this.active_event?.message) return 'notify';
+	});
+	public container_collapsed_class = computed(() => {
+		const tool_state = this.tool_state();
+		if (tool_state === 'saving') return 'nav-tool-saving';
+		if (tool_state === 'success') return 'nav-tool-success';
+		if (tool_state === 'warning') return 'nav-tool-warning';
+		if (tool_state === 'error') return 'nav-tool-error';
+		if (tool_state === 'highlight') return 'nav-tool-highlight';
+		return '';
+	});
+	public container_expanded_class = computed(() => {
+		const tool_state = this.tool_state();
+		if (tool_state === 'success') return 'nav-tool-success';
+		if (tool_state === 'warning') return 'nav-tool-warning';
+		if (tool_state === 'error') return 'nav-tool-error';
+		return '';
+	});
+	public morph_state = computed(() => {
+		const active_event = this.active_event();
+		if (active_event?.type === 'PENDING' && active_event?.message) return 'actionable';
+		if (active_event?.type === 'SUCCESS' && active_event?.message) return 'notify';
+		if (active_event?.type === 'WARNING' && active_event?.message) return 'notify';
+		if (active_event?.type === 'ERROR' && active_event?.message) return 'notify';
 		return 'default';
-	}
-	public get message_size() {
-		if (!this.active_event?.message) return 'short-message';
-		const length = this.active_event.message.length;
+	});
+	public message_size = computed(() => {
+		const active_event = this.active_event();
+		if (!active_event?.message) return 'short-message';
+		const length = active_event.message.length;
 		if (length <= 25) return 'short-message';
 		return 'long-message';
-	}
+	});
 
 	constructor(
 		private cdr: ChangeDetectorRef,
 		private router: Router,
-	) {}
+	) {
+		// react to active_event changes and update icon
+		// effect(() => {
+		// 	const ev = this.active_event();
+		// 	if (!ev) {
+		// 		this.icon.set('save_clock');
+		// 		return;
+		// 	}
+		// 	if (ev.type === 'PENDING') this.icon.set('save');
+		// 	if (ev.type === 'SUCCESS') this.icon.set('check');
+		// 	if (ev.type === 'WARNING') this.icon.set('warning');
+		// 	if (ev.type === 'ERROR') this.icon.set('error');
+		// });
 
-	public ngOnChanges(changes: SimpleChanges): void {
-		if (changes['active_event'] && !changes['active_event'].firstChange) {
-			this.onEventUpdate();
-		}
+		// optional: play pop animation whenever icon changes
+		effect(() => {
+			this.icon(); // track changes
+			this.animate();
+		});
 	}
 
-	private onEventUpdate(): void {
-		if (!this.active_event) {
-			this.icon = 'save_clock';
-			this.cdr.detectChanges();
-			return;
-		}
-		if (this.active_event?.type === 'PENDING') {
-			this.icon = 'save';
-		}
-		if (this.active_event?.type === 'SUCCESS') {
-			this.icon = 'check';
-		}
-		if (this.active_event?.type === 'WARNING') {
-			this.icon = 'warning';
-		}
-		if (this.active_event?.type === 'ERROR') {
-			this.icon = 'error';
-		}
-		this.cdr.detectChanges();
-	}
+	// public ngOnChanges(changes: SimpleChanges): void {
+	// 	if (changes['active_event'] && !changes['active_event'].firstChange) {
+	// 		this.onEventUpdate();
+	// 	}
+	// }
+
+	// private onEventUpdate(): void {
+	// 	if (!this.active_event) {
+	// 		this.icon = 'save_clock';
+	// 		this.cdr.detectChanges();
+	// 		return;
+	// 	}
+	// 	if (this.active_event?.type === 'PENDING') {
+	// 		this.icon = 'save';
+	// 	}
+	// 	if (this.active_event?.type === 'SUCCESS') {
+	// 		this.icon = 'check';
+	// 	}
+	// 	if (this.active_event?.type === 'WARNING') {
+	// 		this.icon = 'warning';
+	// 	}
+	// 	if (this.active_event?.type === 'ERROR') {
+	// 		this.icon = 'error';
+	// 	}
+	// 	this.cdr.detectChanges();
+	// }
 
 	public onMouseEnter() {
-		this.moused = true;
-		this.cdr.detectChanges();
+		this.moused.set(true);
+		// this.cdr.detectChanges();
 	}
 
 	public onMouseLeave() {
-		this.moused = false;
-		this.cdr.detectChanges();
+		this.moused.set(false);
+		// this.cdr.detectChanges();
 	}
 
 	public onClick() {
-		if (this.pending_event) return this.save.emit();
-		this.router.navigate([this.navroute]);
+		if (this.pending_event()) return this.save.emit();
+		this.router.navigate([this.navroute()]);
+	}
+
+	private animate(): void {
+		const icon_collapsed = this.icon_collapsed?.nativeElement;
+		const icon_expanded = this.icon_expanded?.nativeElement;
+		if (icon_collapsed) this.animatePop(icon_collapsed);
+		if (icon_expanded) this.animatePop(icon_expanded);
+	}
+
+	private animatePop(el: HTMLElement): void {
+		if (!el) return;
+		for (const anim of el.getAnimations()) anim.cancel();
+		el.animate(
+			[
+				{transform: 'scale(0.8)', opacity: 0.5},
+				{transform: 'scale(1)', opacity: 1},
+			],
+			{duration: 200, easing: 'ease-out', fill: 'both'},
+		);
+	}
+
+	public async playGrowFade(event: AnimationCallbackEvent): Promise<void> {
+		const el = event.target as HTMLElement;
+		console.log('playGrowFade', el);
+		if (!el) return event.animationComplete();
+
+		// cancel any prior runs
+		for (const a of el.getAnimations()) a.cancel();
+
+		// // snapshot inline styles to restore
+		// const prev = {
+		// 	overflow: el.style.overflow,
+		// 	white_space: el.style.whiteSpace,
+		// 	width: el.style.width,
+		// 	height: el.style.height,
+		// 	opacity: el.style.opacity,
+		// };
+
+		// // prepare collapsed state
+		// el.style.overflow = 'hidden';
+		// el.style.whiteSpace = 'nowrap';
+		el.style.opacity = '0';
+		// el.style.width = '0px';
+		// el.style.height = '0px';
+
+		// step 1: grow width to natural width
+		const target_width = el.scrollWidth;
+		console.log('active_event()?.message', this.active_event()?.message);
+		console.log('target_width', target_width);
+		try {
+			await el.animate([{width: '0px'}, {width: `${target_width}px`}], {duration: 150, easing: 'ease-out', fill: 'forwards'})
+				.finished;
+		} catch {}
+
+		// step 2: allow wrapping and grow height to natural height
+		el.style.whiteSpace = 'normal';
+		const target_height = el.scrollHeight;
+		try {
+			await el.animate([{height: '0px'}, {height: `${target_height}px`}], {duration: 150, easing: 'ease-out', fill: 'forwards'})
+				.finished;
+		} catch {}
+
+		// step 3: fade in
+		try {
+			await el.animate([{opacity: 0}, {opacity: 1}], {duration: 100, easing: 'ease-out', fill: 'forwards'}).finished;
+		} catch {}
+
+		// // cleanup
+		// el.style.width = prev.width;
+		// el.style.height = prev.height;
+		// el.style.opacity = prev.opacity;
+		// el.style.overflow = prev.overflow;
+		// el.style.whiteSpace = prev.white_space;
+
+		event.animationComplete();
 	}
 }
 
@@ -182,4 +349,38 @@ export class EventNavToolComponent implements OnChanges {
 // 			{duration: 200, easing: 'ease-out', fill: 'both'},
 // 		);
 // 	}
+// }
+
+// constructor(
+// 	private cdr: ChangeDetectorRef,
+// 	private router: Router,
+// ) {
+// 	// react to active_event changes and update icon
+// 	effect(() => {
+// 		const ev = this.active_event();
+// 		if (!ev) {
+// 			this.icon.set('save_clock');
+// 			return;
+// 		}
+// 		if (ev.type === 'PENDING') this.icon.set('save');
+// 		if (ev.type === 'SUCCESS') this.icon.set('check');
+// 		if (ev.type === 'WARNING') this.icon.set('warning');
+// 		if (ev.type === 'ERROR') this.icon.set('error');
+// 	});
+
+// 	// optional: play pop animation whenever icon changes
+// 	effect(() => {
+// 		this.icon(); // track changes
+// 		this.playPop();
+// 	});
+// }
+
+// public onMouseEnter() {
+// 	this.moused.set(true);
+// 	// this.cdr.detectChanges();
+// }
+
+// public onMouseLeave() {
+// 	this.moused.set(false);
+// 	// this.cdr.detectChanges();
 // }
