@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, effect, signal, untracked} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, effect, signal} from '@angular/core';
 /* Native Dependencies */
 import {EventData} from '@client/modules/event/classes/event-data.class';
 
@@ -13,23 +13,35 @@ import {EventData} from '@client/modules/event/classes/event-data.class';
 export class EventStackComponent {
 	public active_event = input<EventData | null>(null);
 	public stack = signal<EventData[]>([]);
+	public moused = signal<boolean>(false);
+
+	private marked_for_removal: string[] = [];
 
 	constructor() {
 		effect(() => {
-			this.sideEffectActiveEvent();
+			const active_event = this.active_event();
+			this.sideEffectActiveEvent(active_event);
 		});
 	}
 
-	private sideEffectActiveEvent(): void {
-		const action_event = this.active_event();
-		if (!action_event || !action_event.duration || action_event.duration <= 0) return;
-		untracked(() => {
-			this.stack.update((prev) => [...prev, action_event]);
-			setTimeout(() => this.clearEvent(action_event.id), action_event.duration || 0);
-		});
+	private sideEffectActiveEvent(active_event: EventData | null): void {
+		if (!active_event || !active_event.duration || active_event.duration <= 0) return;
+		this.stack.update((prev) => [...prev, active_event]);
+		setTimeout(() => this.clearEvent(active_event.id), active_event.duration || 0);
 	}
 
-	private clearEvent(id: string): void {
+	private clearEvent(id: string): any {
+		if (this.moused()) return this.marked_for_removal.push(id);
 		this.stack.update((events) => events.filter((e) => e.id !== id));
+	}
+
+	public onMouseEnter() {
+		this.moused.set(true);
+	}
+
+	public onMouseLeave() {
+		this.moused.set(false);
+		this.marked_for_removal.forEach((id) => this.clearEvent(id));
+		this.marked_for_removal = [];
 	}
 }

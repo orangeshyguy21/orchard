@@ -38,7 +38,6 @@ export class EventNavToolComponent {
 	public highlight = computed(() => this.active() || this.moused());
 	public pending_event = computed(() => this.active_event()?.type === 'PENDING');
 	public saving = computed(() => this.active_event()?.type === 'SAVING');
-
 	public icon = computed(() => {
 		const active_event = this.active_event();
 		if (!active_event) return 'save_clock';
@@ -48,25 +47,6 @@ export class EventNavToolComponent {
 		if (active_event.type === 'ERROR') return 'error';
 		return 'save_clock';
 	});
-
-	// private tool_state = computed(() => {
-	// 	const active_event = this.active_event();
-	// 	if (active_event?.type === 'PENDING') return 'highlight';
-	// 	if (active_event?.type === 'SAVING') return 'saving';
-	// 	if (active_event?.type === 'SUCCESS') return 'success';
-	// 	if (active_event?.type === 'WARNING') return 'warning';
-	// 	if (active_event?.type === 'ERROR') return 'error';
-	// 	return 'default';
-	// });
-	// public container_class = computed(() => {
-	// 	const tool_state = this.tool_state();
-	// 	if (tool_state === 'saving') return 'nav-tool-saving';
-	// 	if (tool_state === 'success') return 'nav-tool-success';
-	// 	if (tool_state === 'warning') return 'nav-tool-warning';
-	// 	if (tool_state === 'error') return 'nav-tool-error';
-	// 	if (tool_state === 'highlight') return 'nav-tool-highlight';
-	// 	return '';
-	// });
 	public container_class = computed(() => {
 		const event_type = this.active_event()?.type;
 		if (event_type === 'SAVING') return 'nav-tool-saving';
@@ -84,7 +64,7 @@ export class EventNavToolComponent {
 
 	constructor(private router: Router) {
 		effect(() => {
-			this.icon(); // track changes
+			this.icon();
 			this.animate();
 		});
 	}

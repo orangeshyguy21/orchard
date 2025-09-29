@@ -7,6 +7,7 @@
 	@extend %orc-outline-border;
 	@extend %orc-corner-extra-large;
 	@extend %p-0-125;
+	@extend %w-max-36;
 
 	&.event-success {
 		.event-switch {
