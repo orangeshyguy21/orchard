@@ -86,7 +86,7 @@ import {MintDataBackupRestoreComponent} from './components/mint-data-backup-rest
 import {MintDataEcashComponent} from './components/mint-data-ecash/mint-data-ecash.component';
 import {MintPaymentMethodComponent} from './components/mint-payment-method/mint-payment-method.component';
 /* Local Dependencies */
-import {MintAppRoutingModule} from './mint-app.router';
+import {MintAppRoutingModule} from './mint.app.router';
 import {MintModule} from './mint.module';
 
 @NgModule({

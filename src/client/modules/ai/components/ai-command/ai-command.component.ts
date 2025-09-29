@@ -19,11 +19,11 @@ export class AiCommandComponent {
 	constructor() {
 		effect(() => {
 			this.active_chat();
-			this.playPop();
+			this.animatePop();
 		});
 	}
 
-	private playPop(): void {
+	private animatePop(): void {
 		const el = this.icon?.nativeElement;
 		if (!el) return;
 		for (const anim of el.getAnimations()) anim.cancel();

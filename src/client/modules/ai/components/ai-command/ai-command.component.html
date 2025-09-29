@@ -1,7 +1,7 @@
 <button mat-icon-button type="button" [disabled]="!actionable()" (click)="command.emit()">
 	<mat-icon
 		#icon
-		class="ai-input-action pop-anim"
+		class="ai-input-action"
 		[class.ai-active]="actionable()"
 		[class.orc-animation-shimmer-text]="active_chat()"
 		[class.mat-symbol-outline]="!actionable()"
