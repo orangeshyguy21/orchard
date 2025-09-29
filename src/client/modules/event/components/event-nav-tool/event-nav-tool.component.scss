@@ -69,11 +69,10 @@
 	transition: all 0.15s ease-in-out;
 }
 
-/* 1) enterAnimation: scale + fade (200ms ease-out) */
-.enter-scale-200 {
-	animation: enter-scale-200 200ms ease-out both;
+.animate-enter-scale {
+	animation: enter-scale 200ms ease-out both;
 }
-@keyframes enter-scale-200 {
+@keyframes enter-scale {
 	from {
 		transform: scale(0.8);
 		opacity: 0.5;
@@ -84,8 +83,7 @@
 	}
 }
 
-/* 2) fadeInActionableMessage: fade in (150ms ease-in) with 100ms delay */
-.fade-in-150-delay-100 {
+.animate-fadein-delayed {
 	animation: fade-in-150 150ms ease-in 100ms both;
 }
 @keyframes fade-in-150 {

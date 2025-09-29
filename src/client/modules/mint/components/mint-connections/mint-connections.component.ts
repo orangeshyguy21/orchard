@@ -140,7 +140,7 @@ export class MintConnectionsComponent {
 	}
 
 	private updateQRCode(): void {
-		this.playFade();
+		this.animateFade();
 		setTimeout(() => {
 			this.qr_code.update({
 				data: this.qr_data.value,
@@ -148,7 +148,7 @@ export class MintConnectionsComponent {
 		}, 150);
 	}
 
-	private async playFade(): Promise<void> {
+	private async animateFade(): Promise<void> {
 		const qr_el = this.qr_canvas?.nativeElement as HTMLElement;
 		if (!qr_el || !this.qr_code) return;
 		for (const anim of qr_el.getAnimations()) anim.cancel();

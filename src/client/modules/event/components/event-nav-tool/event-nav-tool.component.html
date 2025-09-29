@@ -14,15 +14,14 @@
 	>
 		<div class="event-nav-tool-switch">
 			@if (morph_state() === 'actionable') {
-				<div animate.enter="fade-in-150-delay-100" class="font-size-xs">{{ active_event()?.message }}</div>
+				<div animate.enter="animate-fadein-delayed" class="font-size-xs">{{ active_event()?.message }}</div>
 			}
 			@if (!saving()) {
-				<div animate.enter="enter-scale-200" class="h-1-75 w-1-75">
+				<div animate.enter="animate-enter-scale" class="h-1-75 w-1-75">
 					<mat-icon #icon_collapsed [class.mat-symbol-outline]="!highlight()" class="icon-md">{{ icon() }}</mat-icon>
 				</div>
 			} @else {
-				<!-- is this working with spinners? it might not be -->
-				<mat-spinner [diameter]="25" animate.enter="enter-scale-200"></mat-spinner>
+				<mat-spinner [diameter]="25" animate.enter="animate-enter-scale"></mat-spinner>
 			}
 		</div>
 	</div>
