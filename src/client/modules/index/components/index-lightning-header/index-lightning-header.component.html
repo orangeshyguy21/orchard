@@ -4,7 +4,7 @@
 		<div class="title-l">Lightning</div>
 	</div>
 	@if (enabled && !loading) {
-		<div [@fadeIn] class="flex flex-gap-1">
+		<div animate.enter="orc-animation-fadein" class="flex flex-gap-1">
 			<div class="flex flex-items-center flex-gap-0-5">
 				@switch (state()) {
 					@case ('offline') {
@@ -26,7 +26,7 @@
 	<div class="flex-grow"></div>
 	<div>
 		@if (enabled && !loading) {
-			<div [@fadeIn] class="orc-outline-color font-size-xs">{{ lightning_info.version }}</div>
+			<div animate.enter="orc-animation-fadein" class="orc-outline-color font-size-xs">{{ lightning_info.version }}</div>
 		}
 	</div>
 </div>

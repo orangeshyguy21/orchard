@@ -1,7 +1,17 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
+import {
+	ChangeDetectionStrategy,
+	Component,
+	EventEmitter,
+	input,
+	signal,
+	computed,
+	effect,
+	Output,
+	ViewChild,
+	ElementRef,
+} from '@angular/core';
 import {Router} from '@angular/router';
-import {trigger, style, animate, transition} from '@angular/animations';
 /* Application Dependencies */
 import {EventData} from '@client/modules/event/classes/event-data.class';
 
@@ -11,136 +21,83 @@ import {EventData} from '@client/modules/event/classes/event-data.class';
 	templateUrl: './event-nav-tool.component.html',
 	styleUrl: './event-nav-tool.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	// prettier-ignore
-	animations: [
-		trigger('iconAnimation', [
-			transition('* => *', [
-				style({ transform: 'scale(0.8)', opacity: 0.5 }),
-				animate('200ms ease-out', style({ transform: 'scale(1)', opacity: 1 })),
-			]),
-		]),
-		trigger('enterAnimation', [
-            transition(':enter', [
-                style({ transform: 'scale(0.8)', opacity: 0.5 }),
-                animate('200ms ease-out', style({ transform: 'scale(1)', opacity: 1 })),
-            ]),
-        ]),
-		trigger('fadeInActionableMessage', [
-			transition(':enter', [
-				style({ opacity: 0 }),
-				animate('150ms 100ms ease-in', style({ opacity: 1 })),
-			]),
-		]),
-		trigger('growAndFadeText', [
-			transition(':enter', [
-				style({ 
-					width: '0',
-					whiteSpace: 'nowrap',
-					opacity: 0,
-					overflow: 'hidden',
-				}),
-				animate('150ms ease-out', style({ 
-					width: '*',
-					opacity: 0
-				})),
-				animate('150ms ease-out', style({ 
-					height: '*',
-					whiteSpace: 'normal',
-				})),
-				animate('100ms ease-out', style({ 
-					opacity: 1,
-				})),
-			])
-		])
-	],
 })
-export class EventNavToolComponent implements OnChanges {
-	@Input() navroute!: string;
-	@Input() active: boolean = false;
-	@Input() active_event: EventData | null = null;
+export class EventNavToolComponent {
+	public navroute = input.required<string>();
+	public active = input<boolean>(false);
+	public active_event = input<EventData | null>(null);
 
 	@Output() save: EventEmitter<void> = new EventEmitter();
 	@Output() cancel: EventEmitter<void> = new EventEmitter();
 
-	public moused: boolean = false;
-	public icon: string = 'save_clock';
+	@ViewChild('icon_collapsed', {read: ElementRef}) icon_collapsed!: ElementRef<HTMLElement>;
+	@ViewChild('icon_expanded', {read: ElementRef}) icon_expanded!: ElementRef<HTMLElement>;
 
-	public get highlight() {
-		return this.active || this.moused;
-	}
-	public get pending_event() {
-		return this.active_event?.type === 'PENDING';
-	}
-	public get saving() {
-		return this.active_event?.type === 'SAVING';
-	}
+	public moused = signal<boolean>(false);
 
-	public get tool_state() {
-		if (this.active_event?.type === 'PENDING') return 'highlight';
-		if (this.active_event?.type === 'SAVING') return 'saving';
-		if (this.active_event?.type === 'SUCCESS') return 'success';
-		if (this.active_event?.type === 'WARNING') return 'warning';
-		if (this.active_event?.type === 'ERROR') return 'error';
+	public highlight = computed(() => this.active() || this.moused());
+	public pending_event = computed(() => this.active_event()?.type === 'PENDING');
+	public saving = computed(() => this.active_event()?.type === 'SAVING');
+	public icon = computed(() => {
+		const active_event = this.active_event();
+		if (!active_event) return 'save_clock';
+		if (active_event.type === 'PENDING') return 'save';
+		if (active_event.type === 'SUCCESS') return 'check';
+		if (active_event.type === 'WARNING') return 'warning';
+		if (active_event.type === 'ERROR') return 'error';
+		return 'save_clock';
+	});
+	public container_class = computed(() => {
+		const event_type = this.active_event()?.type;
+		if (event_type === 'SAVING') return 'nav-tool-saving';
+		if (event_type === 'SUCCESS') return 'nav-tool-success';
+		if (event_type === 'WARNING') return 'nav-tool-warning';
+		if (event_type === 'ERROR') return 'nav-tool-error';
+		if (event_type === 'PENDING') return 'nav-tool-highlight';
+		return '';
+	});
+	public morph_state = computed(() => {
+		const active_event = this.active_event();
+		if (active_event?.type === 'PENDING' && active_event?.message) return 'actionable';
 		return 'default';
-	}
-	public get morph_state() {
-		if (this.active_event?.type === 'PENDING' && this.active_event?.message) return 'actionable';
-		if (this.active_event?.type === 'SUCCESS' && this.active_event?.message) return 'notify';
-		if (this.active_event?.type === 'WARNING' && this.active_event?.message) return 'notify';
-		if (this.active_event?.type === 'ERROR' && this.active_event?.message) return 'notify';
-		return 'default';
-	}
-	public get message_size() {
-		if (!this.active_event?.message) return 'short-message';
-		const length = this.active_event.message.length;
-		if (length <= 25) return 'short-message';
-		return 'long-message';
-	}
+	});
 
-	constructor(
-		private cdr: ChangeDetectorRef,
-		private router: Router,
-	) {}
-
-	public ngOnChanges(changes: SimpleChanges): void {
-		if (changes['active_event'] && !changes['active_event'].firstChange) {
-			this.onEventUpdate();
-		}
-	}
-
-	private onEventUpdate(): void {
-		if (!this.active_event) {
-			this.icon = 'save_clock';
-			this.cdr.detectChanges();
-			return;
-		}
-		if (this.active_event?.type === 'PENDING') {
-			this.icon = 'save';
-		}
-		if (this.active_event?.type === 'SUCCESS') {
-			this.icon = 'check';
-		}
-		if (this.active_event?.type === 'WARNING') {
-			this.icon = 'warning';
-		}
-		if (this.active_event?.type === 'ERROR') {
-			this.icon = 'error';
-		}
-		this.cdr.detectChanges();
+	constructor(private router: Router) {
+		effect(() => {
+			this.icon();
+			this.animate();
+		});
 	}
 
 	public onMouseEnter() {
-		this.moused = true;
-		this.cdr.detectChanges();
+		this.moused.set(true);
 	}
 
 	public onMouseLeave() {
-		this.moused = false;
-		this.cdr.detectChanges();
+		this.moused.set(false);
 	}
 
 	public onClick() {
-		if (this.pending_event) return this.save.emit();
-		this.router.navigate([this.navroute]);
+		if (this.pending_event()) return this.save.emit();
+		this.router.navigate([this.navroute()]);
+	}
+
+	private animate(): void {
+		const icon_collapsed = this.icon_collapsed?.nativeElement;
+		const icon_expanded = this.icon_expanded?.nativeElement;
+		if (icon_collapsed) this.animatePop(icon_collapsed);
+		if (icon_expanded) this.animatePop(icon_expanded);
+	}
+
+	private animatePop(el: HTMLElement): void {
+		if (!el) return;
+		for (const anim of el.getAnimations()) anim.cancel();
+		el.animate(
+			[
+				{transform: 'scale(0.8)', opacity: 0.5},
+				{transform: 'scale(1)', opacity: 1},
+			],
+			{duration: 200, easing: 'ease-out', fill: 'both'},
+		);
 	}
 }

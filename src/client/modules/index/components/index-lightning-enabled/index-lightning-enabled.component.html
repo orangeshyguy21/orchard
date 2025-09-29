@@ -1,8 +1,7 @@
 <div class="lightning-enabled-container">
 	@if (!loading) {
-		<div [@fadeIn] class="flex flex-gap-4 p-2">
+		<div animate.enter="orc-animation-fadein" class="flex flex-gap-4 p-2">
 			<orc-index-lightning-info [lightning_info]="lightning_info"></orc-index-lightning-info>
-
 			<div class="flex-grow">
 				<orc-lightning-channel-table
 					[enabled_taproot_assets]="enabled_taproot_assets"

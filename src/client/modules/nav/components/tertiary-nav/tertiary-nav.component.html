@@ -21,8 +21,8 @@
 	</div>
 	<div class="relative">
 		<div
-			class="absolute top-0-5 flex flex-gap-0-25 flex-row flex-align-center orc-outline-color"
-			[@orderUpdateAnimation]="order_update_animation_state"
+			class="orc-animation-feedback absolute top-0-5 flex flex-gap-0-25 flex-row flex-align-center orc-outline-color"
+			[class.animation-visible]="update_feedback"
 		>
 			<div class="font-size-s">Order saved</div>
 			<mat-icon class="icon-sm">save</mat-icon>

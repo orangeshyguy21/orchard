@@ -1,7 +1,6 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, ChangeDetectorRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, ViewChild, ElementRef, effect} from '@angular/core';
 import {Router} from '@angular/router';
-import {animate, style, transition, trigger} from '@angular/animations';
 
 @Component({
 	selector: 'orc-primary-nav-header',
@@ -9,35 +8,39 @@ import {animate, style, transition, trigger} from '@angular/animations';
 	templateUrl: './primary-nav-header.component.html',
 	styleUrl: './primary-nav-header.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	// prettier-ignore
-	animations: [
-		trigger('blockCountChange', [
-			transition('* => *', [
-				animate('200ms ease-out', style({ opacity: 0.1 })),
-				animate('400ms ease-in', style({ opacity: 1 })),
-			]),
-		]),
-	],
 })
-export class PrimaryNavHeaderComponent implements OnChanges {
-	@Input() active!: boolean;
-	@Input() block_count!: number;
-	@Input() chain!: string;
+export class PrimaryNavHeaderComponent {
+	public active = input.required<boolean>();
+	public block_count = input.required<number>();
+	public chain = input.required<string>();
 
-	public polling_blocks: boolean = false;
+	@ViewChild('flash', {read: ElementRef}) flash!: ElementRef<HTMLElement>;
 
-	constructor(
-		private router: Router,
-		private changeDetectorRef: ChangeDetectorRef,
-	) {}
+	private polling_blocks: boolean = false;
 
-	ngOnChanges(changes: SimpleChanges): void {
-		if (!changes['block_count']) return;
-		if (changes['block_count'].firstChange) return;
-		setTimeout(() => {
-			this.polling_blocks = true;
-			this.changeDetectorRef.detectChanges();
-		}, 1000);
+	constructor(private router: Router) {
+		effect(() => {
+			const block_count = this.block_count();
+			if (!block_count) return;
+			if (!this.polling_blocks) {
+				setTimeout(() => {
+					this.polling_blocks = true;
+				}, 1000);
+			}
+			this.animateFlash();
+		});
+	}
+
+	private animateFlash(): void {
+		if (!this.polling_blocks) return;
+		const flash = this.flash.nativeElement;
+		for (const anim of flash.getAnimations()) anim.cancel();
+		flash
+			.animate([{opacity: 1}, {opacity: 0.1}], {duration: 200, easing: 'ease-out', fill: 'forwards'})
+			.finished.catch(() => {})
+			.finally(() => {
+				flash.animate([{opacity: 0.1}, {opacity: 1}], {duration: 400, easing: 'ease-in', fill: 'forwards'});
+			});
 	}
 
 	public onClick() {

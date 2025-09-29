@@ -48,7 +48,7 @@
 					<orc-index-bitcoin-disabled (navigate)="onNavigate('bitcoin')"></orc-index-bitcoin-disabled>
 				}
 				@if (errors_bitcoin.length > 0) {
-					<div [@fadeIn] class="index-section-error">
+					<div animate.enter="orc-animation-fadein" class="index-section-error">
 						@for (error of errors_bitcoin; track error.code) {
 							<orc-error-resolve [error]="error"></orc-error-resolve>
 						}
@@ -79,14 +79,14 @@
 					<orc-index-lightning-disabled (navigate)="onNavigate('lightning')"></orc-index-lightning-disabled>
 				}
 				@if (errors_lightning.length > 0) {
-					<div [@fadeIn] class="index-section-error">
+					<div animate.enter="orc-animation-fadein" class="index-section-error">
 						@for (error of errors_lightning; track error.code) {
 							<orc-error-resolve [error]="error"></orc-error-resolve>
 						}
 					</div>
 				}
 				@if (errors_taproot_assets.length > 0) {
-					<div [@fadeIn] class="index-section-error">
+					<div animate.enter="orc-animation-fadein" class="index-section-error">
 						@for (error of errors_taproot_assets; track error.code) {
 							<orc-error-resolve [error]="error"></orc-error-resolve>
 						}
@@ -123,7 +123,7 @@
 					<orc-index-mint-disabled (navigate)="onNavigate('mint')"></orc-index-mint-disabled>
 				}
 				@if (errors_mint.length > 0) {
-					<div [@fadeIn] class="index-section-error">
+					<div animate.enter="orc-animation-fadein" class="index-section-error">
 						@for (error of errors_mint; track error.code) {
 							<orc-error-resolve [error]="error"></orc-error-resolve>
 						}

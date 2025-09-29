@@ -34,7 +34,7 @@ export class PrimaryNavItemComponent {
 		if (this.online === false) return 'trans-bg-medium orc-status-inactive-bg';
 		if (this.syncing) return 'trans-bg-medium orc-status-warning-bg';
 		if (this.online === true) return 'trans-bg-medium orc-status-active-bg';
-		return 'shimmer-highest';
+		return 'orc-animation-shimmer-highest';
 	}
 
 	constructor(

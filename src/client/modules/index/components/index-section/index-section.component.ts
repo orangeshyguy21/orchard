@@ -1,6 +1,5 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef, OnDestroy} from '@angular/core';
-import {trigger, transition, style, animate} from '@angular/animations';
 import {Router} from '@angular/router';
 import {FormGroup, FormControl} from '@angular/forms';
 /* Vendor Dependencies */
@@ -36,15 +35,6 @@ import {OrchardError} from '@client/modules/error/types/error.types';
 	templateUrl: './index-section.component.html',
 	styleUrl: './index-section.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	// prettier-ignore
-	animations: [
-		trigger('fadeIn', [
-            transition(':enter', [
-                style({ opacity: 0 }),
-                animate('300ms ease-in', style({ opacity: 1 })),
-            ]),
-        ]),
-    ],
 })
 export class IndexSectionComponent implements OnInit, OnDestroy {
 	public enabled_bitcoin = environment.bitcoin.enabled;

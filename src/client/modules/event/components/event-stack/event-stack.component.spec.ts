@@ -1,17 +1,17 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {PendingEventComponent} from './pending-event.component';
+import {EventStackComponent} from './event-stack.component';
 
-describe('PendingEventComponent', () => {
-	let component: PendingEventComponent;
-	let fixture: ComponentFixture<PendingEventComponent>;
+describe('EventStackComponent', () => {
+	let component: EventStackComponent;
+	let fixture: ComponentFixture<EventStackComponent>;
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [PendingEventComponent],
+			declarations: [EventStackComponent],
 		}).compileComponents();
 
-		fixture = TestBed.createComponent(PendingEventComponent);
+		fixture = TestBed.createComponent(EventStackComponent);
 		component = fixture.componentInstance;
 		fixture.detectChanges();
 	});

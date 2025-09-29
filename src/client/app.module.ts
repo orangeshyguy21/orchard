@@ -3,7 +3,6 @@ import {NgModule} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import {BrowserModule} from '@angular/platform-browser';
 import {provideHttpClient, withInterceptors} from '@angular/common/http';
-import {provideAnimations} from '@angular/platform-browser/animations';
 /* Vendor Dependencies */
 import {provideLuxonDateAdapter} from '@angular/material-luxon-adapter';
 import {provideCharts} from 'ng2-charts';
@@ -33,7 +32,6 @@ import {AppComponent} from './app.component';
 	imports: [RouterOutlet, BrowserModule, RoutingModule],
 	providers: [
 		provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
-		provideAnimations(),
 		provideLuxonDateAdapter(),
 		provideCharts({
 			registerables: [

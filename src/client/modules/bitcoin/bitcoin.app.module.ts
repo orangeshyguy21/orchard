@@ -12,7 +12,7 @@ import {BitcoinSectionComponent} from './components/bitcoin-section/bitcoin-sect
 import {BitcoinSubsectionDashboardComponent} from './components/bitcoin-subsection-dashboard/bitcoin-subsection-dashboard.component';
 import {BitcoinSubsectionDisabledComponent} from './components/bitcoin-subsection-disabled/bitcoin-subsection-disabled.component';
 /* Local Dependencies */
-import {BitcoinAppRoutingModule} from './bitcoin-app.router';
+import {BitcoinAppRoutingModule} from './bitcoin.app.router';
 
 @NgModule({
 	declarations: [BitcoinSectionComponent, BitcoinSubsectionDashboardComponent, BitcoinSubsectionDisabledComponent],

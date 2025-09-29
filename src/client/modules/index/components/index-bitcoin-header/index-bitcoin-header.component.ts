@@ -1,6 +1,5 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, Input, computed} from '@angular/core';
-import {animate, style, transition, trigger} from '@angular/animations';
 /* Application Dependencies */
 import {BitcoinNetworkInfo} from '@client/modules/bitcoin/classes/bitcoin-network-info.class';
 import {BitcoinBlockchainInfo} from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
@@ -11,15 +10,6 @@ import {BitcoinBlockchainInfo} from '@client/modules/bitcoin/classes/bitcoin-blo
 	templateUrl: './index-bitcoin-header.component.html',
 	styleUrl: './index-bitcoin-header.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	// prettier-ignore
-	animations: [
-        trigger('fadeIn', [
-            transition(':enter', [
-                style({ opacity: 0 }),
-                animate('300ms ease-in', style({ opacity: 1 })),
-            ]),
-        ]),
-    ],
 })
 export class IndexBitcoinHeaderComponent {
 	@Input() enabled!: boolean;

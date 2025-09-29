@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, Output, EventEmitter} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {trigger, state, style, transition, animate} from '@angular/animations';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 /* Vendor Dependencies */
 import {MatSelectChange} from '@angular/material/select';
 import {MatCalendarCellClassFunction} from '@angular/material/datepicker';
@@ -28,22 +28,6 @@ type StatusOption = {
 	templateUrl: './mint-keyset-control.component.html',
 	styleUrl: './mint-keyset-control.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	// prettier-ignore
-	animations: [
-		trigger('formStateReaction', [
-			state('valid', style({
-				height: '52px',
-				overflow: 'hidden',
-			})),
-			state('invalid', style({
-				height: '71px',
-				overflow: 'hidden',
-			})),
-			transition('valid <=> invalid', [
-				animate('300ms ease-in-out'),
-			]),
-		]),
-	],
 })
 export class MintKeysetControlComponent implements OnChanges {
 	@Input() page_settings!: NonNullableMintKeysetsSettings;
@@ -77,7 +61,15 @@ export class MintKeysetControlComponent implements OnChanges {
 		return this.panel?.invalid ? 'invalid' : 'valid';
 	}
 
-	constructor() {}
+	constructor() {
+		this.panel
+			.get('daterange')
+			?.statusChanges.pipe(takeUntilDestroyed())
+			.subscribe(() => {
+				const group = this.panel.get('daterange');
+				group?.markAllAsTouched();
+			});
+	}
 
 	ngOnChanges(changes: SimpleChanges): void {
 		if (changes['loading'] && !this.loading) this.initForm();

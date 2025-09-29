@@ -2,7 +2,7 @@
 	<div class="orc-code-block-header">
 		<div class="absolute top-0-5 right-0-5">
 			<div class="flex flex-items-center flex-gap-0-5">
-				<div class="orc-outline-color" [@copyAnimation]="copy_animation_state">
+				<div class="orc-outline-color orc-animation-feedback" [class.animation-visible]="copy_animation_state === 'visible'">
 					<div class="font-size-s">Copied</div>
 				</div>
 				<button mat-icon-button type="button" class="orc-icon-button" (click)="onCopy()">

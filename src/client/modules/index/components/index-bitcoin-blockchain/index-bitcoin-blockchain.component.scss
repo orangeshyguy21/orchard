@@ -35,6 +35,7 @@
 .block-indicator {
 	@extend %absolute;
 	@extend %bottom-0;
+	transition: transform 300ms ease-in-out;
 
 	&.next-block {
 		right: 5rem;

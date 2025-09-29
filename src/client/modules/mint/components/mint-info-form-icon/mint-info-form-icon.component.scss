@@ -72,3 +72,18 @@
 	@extend %trans-opacity-fast;
 	@extend %orc-shadow-bg;
 }
+
+.enter-scale {
+	animation: enter-scale 150ms ease-out;
+}
+
+@keyframes enter-scale {
+	from {
+		transform: scale(0.8);
+		opacity: 0.5;
+	}
+	to {
+		transform: scale(1);
+		opacity: 1;
+	}
+}

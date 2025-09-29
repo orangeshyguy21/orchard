@@ -16,8 +16,8 @@
 				</div>
 				<div class="relative">
 					<div
-						class="absolute top-1 flex flex-gap-0-25 flex-row flex-align-center orc-outline-color"
-						[@copyAnimation]="copy_animation_state"
+						class="orc-animation-feedback absolute top-1 flex flex-gap-0-25 flex-row flex-align-center orc-outline-color"
+						[class.animation-visible]="copy_animation_state === 'visible'"
 					>
 						<div class="font-size-s">URL copied</div>
 						<mat-icon class="icon-sm">content_copy</mat-icon>
@@ -28,7 +28,6 @@
 				<div
 					#qr_canvas
 					matRipple
-					[@fadeInOut]="qr_animation_state"
 					[matRippleCentered]="false"
 					[matRippleDisabled]="false"
 					[matRippleUnbounded]="false"
