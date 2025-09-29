@@ -1,6 +1,5 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, ElementRef, input, computed, AfterViewInit, ViewChild, ChangeDetectorRef} from '@angular/core';
-import {animate, state, style, transition, trigger} from '@angular/animations';
 /* Vendor Dependencies */
 import QRCodeStyling from 'qr-code-styling';
 import {DateTime} from 'luxon';
@@ -24,27 +23,6 @@ enum ExpiredState {
 	templateUrl: './mint-data-mint.component.html',
 	styleUrl: './mint-data-mint.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	// prettier-ignore
-	animations: [
-		trigger('copyAnimation', [
-			state('visible', style({
-				opacity: 1,
-				transform: 'translateY(0)',
-			})),
-			state('hidden', style({
-				opacity: 0,
-				transform: 'translateY(-0.5rem)',
-			})),
-			transition('hidden => visible', animate('100ms ease-out')),
-			transition('visible => hidden', animate('100ms ease-in', style({ opacity: 0 }))),
-		]),
-		trigger('fadeIn', [
-			transition(':enter', [
-				style({ opacity: 0 }),
-				animate('150ms ease-in', style({ opacity: 1 })),
-			]),
-		]),
-	],
 })
 export class MintDataMintComponent implements AfterViewInit {
 	@ViewChild('qr_canvas', {static: false}) qr_canvas!: ElementRef;

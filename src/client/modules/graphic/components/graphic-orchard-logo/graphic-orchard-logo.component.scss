@@ -7,3 +7,16 @@
 .graphic-orchard-logo-container {
 	@extend %flex;
 }
+
+.fade-in {
+	animation: login-fade 650ms ease-in both;
+}
+
+@keyframes login-fade {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}

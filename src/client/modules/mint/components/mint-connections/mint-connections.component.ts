@@ -2,7 +2,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, SimpleChanges, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 import {FormControl} from '@angular/forms';
-import {animate, state, style, transition, trigger} from '@angular/animations';
 /* Vendor Dependencies */
 import {firstValueFrom} from 'rxjs';
 import QRCodeStyling from 'qr-code-styling';
@@ -22,31 +21,6 @@ import {Connection} from './mint-connections.classes';
 	templateUrl: './mint-connections.component.html',
 	styleUrl: './mint-connections.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	// prettier-ignore
-	animations: [
-		trigger('fadeInOut', [
-			state('visible', style({
-				opacity: 1,
-			})),
-			state('hidden', style({
-				opacity: 0,
-			})),
-			transition('visible => hidden', animate('150ms ease-out')),
-			transition('hidden => visible', animate('150ms ease-in')),
-		]),
-		trigger('copyAnimation', [
-			state('visible', style({
-				opacity: 1,
-				transform: 'translateY(0)'
-			})),
-			state('hidden', style({
-				opacity: 0,
-				transform: 'translateY(-0.5rem)',
-			})),
-			transition('hidden => visible', animate('100ms ease-out')),
-			transition('visible => hidden', animate('100ms ease-in', style({ opacity: 0 }))),
-		]),
-	],
 })
 export class MintConnectionsComponent {
 	@Input() urls!: string[] | null;
@@ -61,7 +35,6 @@ export class MintConnectionsComponent {
 	public qr_data: FormControl = new FormControl('');
 	public qr_code!: QRCodeStyling;
 	public connections: Connection[] = [];
-	public qr_animation_state: 'visible' | 'hidden' = 'visible';
 	public copy_animation_state: 'visible' | 'hidden' = 'hidden';
 
 	private copy_timeout: any;
@@ -167,16 +140,26 @@ export class MintConnectionsComponent {
 	}
 
 	private updateQRCode(): void {
-		this.qr_animation_state = 'hidden';
-		this.changeDetectorRef.detectChanges();
-
+		this.animateFade();
 		setTimeout(() => {
 			this.qr_code.update({
 				data: this.qr_data.value,
 			});
-			this.qr_animation_state = 'visible';
-			this.changeDetectorRef.detectChanges();
 		}, 150);
+	}
+
+	private async animateFade(): Promise<void> {
+		const qr_el = this.qr_canvas?.nativeElement as HTMLElement;
+		if (!qr_el || !this.qr_code) return;
+		for (const anim of qr_el.getAnimations()) anim.cancel();
+		const fade_out = qr_el.animate([{opacity: 1}, {opacity: 0}], {duration: 150, easing: 'ease-out', fill: 'forwards'});
+		try {
+			await fade_out.finished;
+		} catch {}
+		const fade_in = qr_el.animate([{opacity: 0}, {opacity: 1}], {duration: 150, easing: 'ease-in', fill: 'forwards'});
+		try {
+			await fade_in.finished;
+		} catch {}
 	}
 
 	private showCopyMessage(): void {

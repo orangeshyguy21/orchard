@@ -14,7 +14,7 @@ import {LightningSectionComponent} from './components/lightning-section/lightnin
 import {LightningSubsectionDisabledComponent} from './components/lightning-subsection-disabled/lightning-subsection-disabled.component';
 import {LightningSubsectionDashboardComponent} from './components/lightning-subsection-dashboard/lightning-subsection-dashboard.component';
 /* Local Dependencies */
-import {LightningAppRoutingModule} from './lightning-app.router';
+import {LightningAppRoutingModule} from './lightning.app.router';
 
 @NgModule({
 	declarations: [LightningSectionComponent, LightningSubsectionDisabledComponent, LightningSubsectionDashboardComponent],

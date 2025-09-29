@@ -2,7 +2,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnDestroy, HostListener, ViewChild, ElementRef} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
-import {trigger, state, style, animate, transition} from '@angular/animations';
 /* Vendor Dependencies */
 import {lastValueFrom, forkJoin, Subscription} from 'rxjs';
 import {DateTime} from 'luxon';
@@ -32,27 +31,6 @@ import {MintUnit, MintAnalyticsInterval, AiFunctionName, AiAgent} from '@shared/
 	templateUrl: './mint-subsection-keysets.component.html',
 	styleUrl: './mint-subsection-keysets.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	// prettier-ignore
-	animations: [
-		trigger('slideInOut', [
-			state('closed', style({
-				height: '0',
-				opacity: '0',
-				overflow: 'hidden',
-			})),
-			state('open', style({
-				height: '*',
-				opacity: '1',
-				overflow: 'hidden',
-			})),
-			transition('closed => open', [
-				animate('200ms ease-out'),
-			]),
-			transition('open => closed', [
-				animate('200ms ease-out'),
-			]),
-		]),
-	],
 })
 export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, OnInit, OnDestroy {
 	@HostListener('window:beforeunload')

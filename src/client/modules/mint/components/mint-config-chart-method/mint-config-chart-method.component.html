@@ -29,18 +29,21 @@
 					<div>{{ metrics.under_min | number: '1.0-0' }}</div>
 				} @else {
 					<div class="flex flex-column flex-gap-1">
-						<div class="h-0-5 w-3 orc-corner-full shimmer-high"></div>
-						<div class="h-0-5 w-3 orc-corner-full shimmer-high"></div>
-						<div class="h-0-5 w-3 orc-corner-full shimmer-high"></div>
-						<div class="h-0-5 w-3 orc-corner-full shimmer-high"></div>
-						<div class="h-0-5 w-3 orc-corner-full shimmer-high"></div>
-						<div class="h-0-5 w-3 orc-corner-full shimmer-high"></div>
+						<div class="h-0-5 w-3 orc-corner-full orc-animation-shimmer-high"></div>
+						<div class="h-0-5 w-3 orc-corner-full orc-animation-shimmer-high"></div>
+						<div class="h-0-5 w-3 orc-corner-full orc-animation-shimmer-high"></div>
+						<div class="h-0-5 w-3 orc-corner-full orc-animation-shimmer-high"></div>
+						<div class="h-0-5 w-3 orc-corner-full orc-animation-shimmer-high"></div>
 					</div>
 				}
 			</div>
 		</div>
 		@if (!loading && quotes.length === 0) {
-			<div class="no-data-overlay orc-surface-container-low-bg" @fadeInOut>
+			<div
+				class="no-data-overlay orc-surface-container-low-bg"
+				animate.enter="orc-animation-fadein-fast"
+				animate.leave="orc-animation-fadeout-fast"
+			>
 				<mat-icon class="icon-lg mat-symbol-outline orc-outline-color">bar_chart_off</mat-icon>
 			</div>
 		}

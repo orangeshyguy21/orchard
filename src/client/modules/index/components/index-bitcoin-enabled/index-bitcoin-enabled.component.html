@@ -1,6 +1,6 @@
 <div class="bitcoin-enabled-container">
 	@if (!loading) {
-		<div [@fadeIn] class="flex flex-gap-4 p-2">
+		<div animate.enter="orc-animation-fadein" class="flex flex-gap-4 p-2">
 			<div class="flex-1">
 				<orc-index-bitcoin-info [blockchain_info]="blockchain_info" [blockcount]="blockcount"></orc-index-bitcoin-info>
 			</div>
@@ -20,6 +20,7 @@
 				} @else {
 					<orc-index-bitcoin-blockchain
 						[block]="block"
+						[block_height]="blockcount"
 						[block_template]="block_template"
 						[mempool]="mempool"
 						[txfee_estimate]="txfee_estimate"

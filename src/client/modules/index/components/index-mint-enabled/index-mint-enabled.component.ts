@@ -1,6 +1,5 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChanges, SimpleChanges} from '@angular/core';
-import {animate, style, transition, trigger} from '@angular/animations';
 /* Application Dependencies */
 import {MintInfo} from '@client/modules/mint/classes/mint-info.class';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
@@ -19,15 +18,6 @@ type Liabilities = {
 	templateUrl: './index-mint-enabled.component.html',
 	styleUrl: './index-mint-enabled.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	// prettier-ignore
-	animations: [
-        trigger('fadeIn', [
-            transition(':enter', [
-                style({ opacity: 0 }),
-                animate('300ms ease-in', style({ opacity: 1 })),
-            ]),
-        ]),
-    ],
 })
 export class IndexMintEnabledComponent implements OnChanges {
 	@Input() loading!: boolean;

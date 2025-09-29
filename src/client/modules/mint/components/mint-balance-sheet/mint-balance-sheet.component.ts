@@ -1,6 +1,5 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, Input, OnChanges, Output, EventEmitter} from '@angular/core';
-import {trigger, transition, style, animate} from '@angular/animations';
 /* Application Dependencies */
 import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
 import {OrchardError} from '@client/modules/error/types/error.types';
@@ -18,15 +17,6 @@ import {MintUnit} from '@shared/generated.types';
 	templateUrl: './mint-balance-sheet.component.html',
 	styleUrl: './mint-balance-sheet.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	// prettier-ignore
-	animations: [
-		trigger('fadeIn', [
-			transition(':enter', [
-				style({ opacity: 0 }),
-				animate('150ms ease-in', style({ opacity: 1 })),
-			]),
-		]),
-	],
 })
 export class MintBalanceSheetComponent implements OnChanges {
 	@Output() navigate = new EventEmitter<void>();

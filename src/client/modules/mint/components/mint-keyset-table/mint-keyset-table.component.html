@@ -1,7 +1,7 @@
 <div class="mint-keyset-table-container">
 	<mat-card appearance="outlined">
 		@if (!loading && data_source) {
-			<div class="p-h-1" @fadeIn>
+			<div class="p-h-1" animate.enter="orc-animation-fadein">
 				<table mat-table [dataSource]="data_source" matSort class="orc-feature-table">
 					<ng-container matColumnDef="keyset">
 						<th mat-header-cell *matHeaderCellDef class="keyset-table-sticky-header">Keyset</th>

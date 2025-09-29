@@ -1,6 +1,5 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, ViewChild} from '@angular/core';
-import {animate, style, transition, trigger} from '@angular/animations';
 /* Vendor Dependencies */
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
@@ -19,15 +18,6 @@ import {MintKeysetRow} from './mint-keyset-row.class';
 	templateUrl: './mint-keyset-table.component.html',
 	styleUrl: './mint-keyset-table.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	// prettier-ignore
-	animations: [
-        trigger('fadeIn', [
-            transition(':enter', [
-                style({ opacity: 0 }),
-                animate('300ms ease-in', style({ opacity: 1 })),
-            ]),
-        ]),
-    ],
 })
 export class MintKeysetTableComponent implements OnChanges {
 	@ViewChild(MatSort) sort!: MatSort;

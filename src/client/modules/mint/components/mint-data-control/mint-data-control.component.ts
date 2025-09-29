@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, Output, EventEmitter} from '@angular/core';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
-import {trigger, state, style, transition, animate} from '@angular/animations';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 /* Vendor Dependencies */
 import {DateTime} from 'luxon';
 import {MatCalendarCellClassFunction} from '@angular/material/datepicker';
@@ -26,22 +26,6 @@ type TypeOption = {
 	templateUrl: './mint-data-control.component.html',
 	styleUrl: './mint-data-control.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	// prettier-ignore
-	animations: [
-		trigger('formStateReaction', [
-			state('valid', style({
-				height: '52px',
-				overflow: 'hidden',
-			})),
-			state('invalid', style({
-				height: '71px',
-				overflow: 'hidden',
-			})),
-			transition('valid <=> invalid', [
-				animate('300ms ease-in-out'),
-			]),
-		]),
-	],
 })
 export class MintDataControlComponent implements OnChanges {
 	@Input() page_settings!: NonNullableMintDatabaseSettings;
@@ -81,7 +65,15 @@ export class MintDataControlComponent implements OnChanges {
 		return this.panel?.invalid ? 'invalid' : 'valid';
 	}
 
-	constructor() {}
+	constructor() {
+		this.panel
+			.get('daterange')
+			?.statusChanges.pipe(takeUntilDestroyed())
+			.subscribe(() => {
+				const group = this.panel.get('daterange');
+				group?.markAllAsTouched();
+			});
+	}
 
 	ngOnChanges(changes: SimpleChanges): void {
 		if (changes['loading'] && !this.loading) {

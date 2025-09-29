@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, Output, EventEmitter} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {trigger, state, style, transition, animate} from '@angular/animations';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 /* Vendor Dependencies */
 import {MatSelectChange} from '@angular/material/select';
 import {MatCalendarCellClassFunction} from '@angular/material/datepicker';
@@ -33,22 +33,6 @@ type TypeOption = {
 	templateUrl: './mint-analytic-control-panel.component.html',
 	styleUrl: './mint-analytic-control-panel.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	// prettier-ignore
-	animations: [
-		trigger('formStateReaction', [
-			state('valid', style({
-				height: '52px',
-				overflow: 'hidden',
-			})),
-			state('invalid', style({
-				height: '71px',
-				overflow: 'hidden',
-			})),
-			transition('valid <=> invalid', [
-				animate('300ms ease-in-out'),
-			]),
-		]),
-	],
 })
 export class MintAnalyticControlPanelComponent implements OnChanges {
 	@Input() page_settings!: NonNullableMintDashboardSettings;
@@ -99,7 +83,15 @@ export class MintAnalyticControlPanelComponent implements OnChanges {
 		return this.panel?.invalid ? 'invalid' : 'valid';
 	}
 
-	constructor() {}
+	constructor() {
+		this.panel
+			.get('daterange')
+			?.statusChanges.pipe(takeUntilDestroyed())
+			.subscribe(() => {
+				const group = this.panel.get('daterange');
+				group?.markAllAsTouched();
+			});
+	}
 
 	ngOnChanges(changes: SimpleChanges): void {
 		if (changes['loading'] && !this.loading) this.initForm();
@@ -143,6 +135,10 @@ export class MintAnalyticControlPanelComponent implements OnChanges {
 		const date_start = Math.floor(this.panel.controls.daterange.controls.date_start.value.toSeconds());
 		const date_end = Math.floor(this.panel.controls.daterange.controls.date_end.value.endOf('day').toSeconds());
 		this.dateChange.emit([date_start, date_end]);
+	}
+
+	public onTest(): void {
+		console.log('onTest');
 	}
 
 	public onUnitsChange(event: MatSelectChange): void {

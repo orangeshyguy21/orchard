@@ -1,10 +1,10 @@
 <div class="mint-analytic-control-panel-container">
-	<form [formGroup]="panel" [@formStateReaction]="height_state" class="panel-form">
+	<form [formGroup]="panel" class="panel-form orc-animation-form-reaction" [class.animation-invalid]="height_state === 'invalid'">
 		<div class="flex flex-col flex-gap-1">
 			<div formGroupName="daterange">
 				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic" class="mint-analytic-daterange">
 					<mat-label>Date range</mat-label>
-					<mat-date-range-input [rangePicker]="picker">
+					<mat-date-range-input [rangePicker]="picker" (dateChange)="onTest()">
 						<input
 							matStartDate
 							formControlName="date_start"

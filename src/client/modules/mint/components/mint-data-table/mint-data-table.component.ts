@@ -1,6 +1,5 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from '@angular/core';
-import {animate, style, transition, trigger} from '@angular/animations';
 /* Application Configuration */
 import {environment} from '@client/configs/configuration';
 /* Vendor Dependencies */
@@ -20,15 +19,6 @@ import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class'
 	templateUrl: './mint-data-table.component.html',
 	styleUrl: './mint-data-table.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	// prettier-ignore
-	animations: [
-        trigger('fadeIn', [
-            transition(':enter', [
-                style({ opacity: 0 }),
-                animate('300ms ease-in', style({ opacity: 1 })),
-            ]),
-        ]),
-    ],
 })
 export class MintDataTableComponent implements OnChanges {
 	@ViewChild(MatSort) sort!: MatSort;
