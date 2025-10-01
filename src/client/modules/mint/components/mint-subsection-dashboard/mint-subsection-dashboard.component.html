@@ -1,6 +1,6 @@
 <div class="mint-dashboard-container">
 	<div class="mint-dashboard-header p-b-1">
-		<orc-mint-balance-sheet
+		<orc-mint-general-balance-sheet
 			[balances]="mint_balances"
 			[keysets]="mint_keysets"
 			[lightning_balance]="lightning_balance ? lightning_balance : null"
@@ -9,7 +9,7 @@
 			[lightning_loading]="loading_lightning"
 			[loading]="loading_static_data"
 			(navigate)="onNavigate('lightning')"
-		></orc-mint-balance-sheet>
+		></orc-mint-general-balance-sheet>
 		<orc-mint-connections
 			[urls]="mint_info ? mint_info.urls : null"
 			[icon_url]="mint_info ? mint_info.icon_url : null"

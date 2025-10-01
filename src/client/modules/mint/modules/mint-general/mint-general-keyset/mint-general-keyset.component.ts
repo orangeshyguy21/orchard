@@ -4,13 +4,13 @@ import {ChangeDetectionStrategy, Component, Input, computed} from '@angular/core
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 
 @Component({
-	selector: 'orc-mint-keyset',
+	selector: 'orc-mint-general-keyset',
 	standalone: false,
-	templateUrl: './mint-keyset.component.html',
-	styleUrl: './mint-keyset.component.scss',
+	templateUrl: './mint-general-keyset.component.html',
+	styleUrl: './mint-general-keyset.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintKeysetComponent {
+export class MintGeneralKeysetComponent {
 	@Input() public active!: MintKeyset['active'];
 	@Input() public index!: MintKeyset['derivation_path_index'];
 	@Input() public input_fee_ppk!: MintKeyset['input_fee_ppk'];

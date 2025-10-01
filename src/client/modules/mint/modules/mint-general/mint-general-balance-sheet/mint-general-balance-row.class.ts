@@ -5,7 +5,7 @@ import {AmountPipe} from '@client/modules/local/pipes/amount/amount.pipe';
 import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 
-export class MintBalanceRow {
+export class MintGeneralBalanceRow {
 	unit: string;
 	liabilities: number;
 	input_fee_ppk: number;

@@ -7,18 +7,18 @@ import {OrchardError} from '@client/modules/error/types/error.types';
 import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 /* Local Dependencies */
-import {MintBalanceRow} from './mint-balance-row.class';
+import {MintGeneralBalanceRow} from './mint-general-balance-row.class';
 /* Shared Dependencies */
 import {MintUnit} from '@shared/generated.types';
 
 @Component({
-	selector: 'orc-mint-balance-sheet',
+	selector: 'orc-mint-general-balance-sheet',
 	standalone: false,
-	templateUrl: './mint-balance-sheet.component.html',
-	styleUrl: './mint-balance-sheet.component.scss',
+	templateUrl: './mint-general-balance-sheet.component.html',
+	styleUrl: './mint-general-balance-sheet.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintBalanceSheetComponent implements OnChanges {
+export class MintGeneralBalanceSheetComponent implements OnChanges {
 	@Output() navigate = new EventEmitter<void>();
 
 	@Input() balances!: MintBalance[];
@@ -29,7 +29,7 @@ export class MintBalanceSheetComponent implements OnChanges {
 	@Input() lightning_loading!: boolean;
 	@Input() loading!: boolean;
 
-	public rows: MintBalanceRow[] = [];
+	public rows: MintGeneralBalanceRow[] = [];
 	public displayed_columns: string[] = ['liabilities', 'assets', 'keyset', 'fees'];
 
 	constructor() {}
@@ -49,14 +49,14 @@ export class MintBalanceSheetComponent implements OnChanges {
 		return 0;
 	}
 
-	private getRows(): MintBalanceRow[] {
-		const rows_by_unit: Record<string, MintBalanceRow> = {};
+	private getRows(): MintGeneralBalanceRow[] {
+		const rows_by_unit: Record<string, MintGeneralBalanceRow> = {};
 		if (!this.keysets) return [];
 		this.keysets
 			.map((keyset) => {
 				const liability_balance = this.balances.find((balance) => balance.keyset === keyset.id);
 				const asset_balance = this.getAssetBalances(keyset.unit);
-				return new MintBalanceRow(liability_balance, asset_balance, keyset);
+				return new MintGeneralBalanceRow(liability_balance, asset_balance, keyset);
 			})
 			.filter((row) => row !== null)
 			.sort((a, b) => b.derivation_path_index - a.derivation_path_index)

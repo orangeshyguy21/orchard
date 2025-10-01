@@ -4,7 +4,7 @@
 			<orc-index-mint-info [loading]="loading_icon" [icon_data]="icon_data" [info]="info"></orc-index-mint-info>
 
 			<div class="flex-grow">
-				<orc-mint-balance-sheet
+				<orc-mint-general-balance-sheet
 					[balances]="balances"
 					[keysets]="keysets"
 					[lightning_balance]="lightning_balance"
@@ -14,7 +14,7 @@
 					[loading]="loading"
 					(navigate)="navigate.emit('lightning')"
 				>
-				</orc-mint-balance-sheet>
+				</orc-mint-general-balance-sheet>
 			</div>
 		</div>
 	}

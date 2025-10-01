@@ -30,6 +30,8 @@ import {ErrorModule} from '@client/modules/error/error.module';
 import {FormModule} from '@client/modules/form/form.module';
 import {SettingsModule} from '@client/modules/settings/settings.module';
 /* Native Dependencies */
+import {MintGeneralModule} from './modules/mint-general/mint-general.module';
+
 import {MintSectionComponent} from './components/mint-section/mint-section.component';
 import {MintSubsectionErrorComponent} from './components/mint-subsection-error/mint-subsection-error.component';
 import {MintSubsectionDashboardComponent} from './components/mint-subsection-dashboard/mint-subsection-dashboard.component';
@@ -87,7 +89,6 @@ import {MintDataEcashComponent} from './components/mint-data-ecash/mint-data-eca
 import {MintPaymentMethodComponent} from './components/mint-payment-method/mint-payment-method.component';
 /* Local Dependencies */
 import {MintAppRoutingModule} from './mint.app.router';
-import {MintModule} from './mint.module';
 
 @NgModule({
 	declarations: [
@@ -176,7 +177,7 @@ import {MintModule} from './mint.module';
 		ErrorModule,
 		FormModule,
 		SettingsModule,
-		MintModule,
+		MintGeneralModule,
 	],
 })
 export class MintAppModule {}

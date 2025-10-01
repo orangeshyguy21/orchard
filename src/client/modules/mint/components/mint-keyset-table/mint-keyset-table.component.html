@@ -9,12 +9,12 @@
 							<div class="flex flex-items-center flex-gap-1 p-v-1">
 								<orc-graphic-asset [unit]="keyset.unit" [height]="'1.5rem'"> </orc-graphic-asset>
 								<div class="w-min-12">
-									<orc-mint-keyset
+									<orc-mint-general-keyset
 										[active]="keyset.active"
 										[index]="keyset.derivation_path_index"
 										[input_fee_ppk]="keyset.input_fee_ppk"
 									>
-									</orc-mint-keyset>
+									</orc-mint-general-keyset>
 								</div>
 								<span class="text-sm orc-outline-variant-color"> {{ keyset.id }} </span>
 							</div>

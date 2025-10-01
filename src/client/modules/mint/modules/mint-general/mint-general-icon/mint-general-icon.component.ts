@@ -3,13 +3,13 @@ import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {Router} from '@angular/router';
 
 @Component({
-	selector: 'orc-mint-icon',
+	selector: 'orc-mint-general-icon',
 	standalone: false,
-	templateUrl: './mint-icon.component.html',
-	styleUrl: './mint-icon.component.scss',
+	templateUrl: './mint-general-icon.component.html',
+	styleUrl: './mint-general-icon.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintIconComponent {
+export class MintGeneralIconComponent {
 	@Input() icon_data!: string | null;
 	@Input() loading!: boolean;
 	@Input() error!: boolean;
