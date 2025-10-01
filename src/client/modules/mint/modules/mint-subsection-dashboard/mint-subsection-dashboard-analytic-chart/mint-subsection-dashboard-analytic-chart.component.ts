@@ -31,13 +31,13 @@ import {MintAnalytic} from '@client/modules/mint/classes/mint-analytic.class';
 import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
 
 @Component({
-	selector: 'orc-mint-analytic-chart',
+	selector: 'orc-mint-subsection-dashboard-analytic-chart',
 	standalone: false,
-	templateUrl: './mint-analytic-chart.component.html',
-	styleUrl: './mint-analytic-chart.component.scss',
+	templateUrl: './mint-subsection-dashboard-analytic-chart.component.html',
+	styleUrl: './mint-subsection-dashboard-analytic-chart.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintAnalyticChartComponent implements OnChanges, OnDestroy {
+export class MintSubsectionDashboardAnalyticChartComponent implements OnChanges, OnDestroy {
 	@ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
 	@Input() public locale!: string;

@@ -31,6 +31,7 @@ import {FormModule} from '@client/modules/form/form.module';
 import {SettingsModule} from '@client/modules/settings/settings.module';
 /* Native Dependencies */
 import {MintGeneralModule} from './modules/mint-general/mint-general.module';
+import {MintSubsectionDashboardModule} from './modules/mint-subsection-dashboard/mint-subsection-dashboard.module';
 
 import {MintSectionComponent} from './components/mint-section/mint-section.component';
 import {MintSubsectionErrorComponent} from './components/mint-subsection-error/mint-subsection-error.component';
@@ -44,7 +45,7 @@ import {MintSubsectionDisabledComponent} from './components/mint-subsection-disa
 import {MintConnectionsComponent} from './components/mint-connections/mint-connections.component';
 import {MintQrcodeDialogComponent} from './components/mint-qrcode-dialog/mint-qrcode-dialog.component';
 import {MintAnalyticControlPanelComponent} from './components/mint-analytic-control-panel/mint-analytic-control-panel.component';
-import {MintAnalyticChartComponent} from './components/mint-analytic-chart/mint-analytic-chart.component';
+// import {MintAnalyticChartComponent} from './components/mint-analytic-chart/mint-analytic-chart.component';
 // import { MintKeysetComponent } from './components/mint-keyset/mint-keyset.component';
 import {MintNameComponent} from './components/mint-name/mint-name.component';
 import {MintInfoFormIconComponent} from './components/mint-info-form-icon/mint-info-form-icon.component';
@@ -104,7 +105,7 @@ import {MintAppRoutingModule} from './mint.app.router';
 		MintConnectionsComponent,
 		MintQrcodeDialogComponent,
 		MintAnalyticControlPanelComponent,
-		MintAnalyticChartComponent,
+		// MintAnalyticChartComponent,
 		// MintKeysetComponent,
 		MintNameComponent,
 		MintInfoFormIconComponent,
@@ -178,6 +179,7 @@ import {MintAppRoutingModule} from './mint.app.router';
 		FormModule,
 		SettingsModule,
 		MintGeneralModule,
+		MintSubsectionDashboardModule,
 	],
 })
 export class MintAppModule {}
