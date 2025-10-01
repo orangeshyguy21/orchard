@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 /* Vendor Dependencies */
-import {MatIconModule} from '@angular/material/icon';
+import {MintAppModule} from '@client/modules/mint/mint.app.module';
 /* Local Dependencies */
 import {MintPaymentMethodComponent} from './mint-payment-method.component';
 
@@ -12,7 +12,7 @@ describe('MintPaymentMethodComponent', () => {
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
 			declarations: [MintPaymentMethodComponent],
-			imports: [MatIconModule],
+			imports: [MintAppModule],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(MintPaymentMethodComponent);

@@ -1,5 +1,8 @@
+/* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-
+/* Native Dependencies */
+import {SettingsAppModule} from '@client/modules/settings/settings.app.module';
+/* Local Dependencies */
 import {SettingsCategoriesComponent} from './settings-categories.component';
 
 describe('SettingsCategoriesComponent', () => {
@@ -8,7 +11,7 @@ describe('SettingsCategoriesComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [SettingsCategoriesComponent],
+			imports: [SettingsAppModule],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(SettingsCategoriesComponent);
