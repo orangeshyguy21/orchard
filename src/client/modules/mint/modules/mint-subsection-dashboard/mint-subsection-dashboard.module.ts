@@ -13,8 +13,12 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatSliderModule} from '@angular/material/slider';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {BaseChartDirective} from 'ng2-charts';
+/* Application Dependencies */
+import {NavModule} from '@client/modules/nav/nav.module';
+import {OrcMintGeneralModule} from '@client/modules/mint/modules/mint-general/mint-general.module';
 /* Local Dependencies */
-import {MintSDAnalyticChartComponent} from './mint-sd-analytic-chart/mint-sd-analytic-chart.component';
+import {MintSubsectionDashboardComponent} from './mint-subsection-dashboard/mint-subsection-dashboard.component';
+import {MintSubsectionDashboardAnalyticChartComponent} from './mint-subsection-dashboard-analytic-chart/mint-subsection-dashboard-analytic-chart.component';
 import {MintSDAnalyticControlPanelComponent} from './mint-sd-analytic-control-panel/mint-sd-analytic-control-panel.component';
 import {MintSDConnectionsComponent} from './mint-sd-connections/mint-sd-connections.component';
 import {MintSDConnectionStatusComponent} from './mint-sd-connection-status/mint-sd-connection-status.component';
@@ -22,7 +26,8 @@ import {MintSDConnectionQrcodeDialogComponent} from './mint-sd-connection-qrcode
 
 @NgModule({
 	declarations: [
-		MintSDAnalyticChartComponent,
+		MintSubsectionDashboardComponent,
+		MintSubsectionDashboardAnalyticChartComponent,
 		MintSDAnalyticControlPanelComponent,
 		MintSDConnectionsComponent,
 		MintSDConnectionStatusComponent,
@@ -41,7 +46,9 @@ import {MintSDConnectionQrcodeDialogComponent} from './mint-sd-connection-qrcode
 		MatSliderModule,
 		MatSlideToggleModule,
 		BaseChartDirective,
+		NavModule,
+		OrcMintGeneralModule,
 	],
-	exports: [MintSDAnalyticChartComponent, MintSDAnalyticControlPanelComponent, MintSDConnectionsComponent],
+	exports: [],
 })
 export class OrcMintSubsectionDashboardModule {}

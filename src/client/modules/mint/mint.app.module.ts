@@ -35,7 +35,7 @@ import {OrcMintSubsectionDashboardModule} from './modules/mint-subsection-dashbo
 
 import {MintSectionComponent} from './components/mint-section/mint-section.component';
 import {MintSubsectionErrorComponent} from './components/mint-subsection-error/mint-subsection-error.component';
-import {MintSubsectionDashboardComponent} from './components/mint-subsection-dashboard/mint-subsection-dashboard.component';
+// import {MintSubsectionDashboardComponent} from './components/mint-subsection-dashboard/mint-subsection-dashboard.component';
 import {MintSubsectionInfoComponent} from './components/mint-subsection-info/mint-subsection-info.component';
 import {MintSubsectionConfigComponent} from './components/mint-subsection-config/mint-subsection-config.component';
 import {MintSubsectionKeysetsComponent} from './components/mint-subsection-keysets/mint-subsection-keysets.component';
@@ -87,7 +87,7 @@ import {MintAppRoutingModule} from './mint.app.router';
 	declarations: [
 		MintSectionComponent,
 		MintSubsectionErrorComponent,
-		MintSubsectionDashboardComponent,
+		// MintSubsectionDashboardComponent,
 		MintSubsectionInfoComponent,
 		MintSubsectionConfigComponent,
 		MintSubsectionKeysetsComponent,
