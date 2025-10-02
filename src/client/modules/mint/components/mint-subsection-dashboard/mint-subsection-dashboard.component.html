@@ -10,21 +10,21 @@
 			[loading]="loading_static_data"
 			(navigate)="onNavigate('lightning')"
 		></orc-mint-general-balance-sheet>
-		<orc-mint-connections
+		<orc-mint-sd-connections
 			[urls]="mint_info ? mint_info.urls : null"
 			[icon_url]="mint_info ? mint_info.icon_url : null"
 			[time]="mint_info?.time"
 			[mint_name]="mint_info?.name"
 			[mint_connections]="mint_connections"
 			[loading]="loading_static_data"
-		></orc-mint-connections>
+		></orc-mint-sd-connections>
 	</div>
 
 	<div class="mint-analytic-control-panel">
 		<div class="flex flex-justify-between flex-gap-1 flex-items-end">
 			<div class="title-l p-1">Nutalytics</div>
 			@if (page_settings) {
-				<orc-mint-analytic-control-panel
+				<orc-mint-sd-analytic-control-panel
 					class="flex-grow"
 					[page_settings]="page_settings"
 					[date_start]="page_settings.date_start"
@@ -39,7 +39,7 @@
 					(unitsChange)="onUnitsChange($event)"
 					(intervalChange)="onIntervalChange($event)"
 					(typeChange)="onTypeChange($event)"
-				></orc-mint-analytic-control-panel>
+				></orc-mint-sd-analytic-control-panel>
 			}
 			<!-- <div class="p-b-1">
 				<button mat-icon-button aria-label="Example icon button with a vertical three dot icon">
@@ -57,7 +57,7 @@
 				<div class="mint-analytic-header z-index-1">
 					<div class="mint-analytic-title">Balance Sheet</div>
 				</div>
-				<orc-mint-subsection-dashboard-analytic-chart
+				<orc-mint-sd-analytic-chart
 					[locale]="locale"
 					[mint_analytics]="mint_analytics_balances"
 					[mint_analytics_pre]="mint_analytics_balances_pre"
@@ -65,7 +65,7 @@
 					[mint_genesis_time]="mint_genesis_time"
 					[selected_type]="page_settings ? page_settings.type : undefined"
 					[loading]="loading_dynamic_data"
-				></orc-mint-subsection-dashboard-analytic-chart>
+				></orc-mint-sd-analytic-chart>
 			</div>
 
 			<div class="relative chart-mints">
@@ -73,7 +73,7 @@
 				<div class="mint-analytic-header z-index-1">
 					<div class="mint-analytic-title">Mints &nbsp;&nbsp;<small>deposits</small></div>
 				</div>
-				<orc-mint-subsection-dashboard-analytic-chart
+				<orc-mint-sd-analytic-chart
 					[locale]="locale"
 					[mint_analytics]="mint_analytics_mints"
 					[mint_analytics_pre]="mint_analytics_mints_pre"
@@ -81,14 +81,14 @@
 					[mint_genesis_time]="mint_genesis_time"
 					[selected_type]="page_settings ? page_settings.type : undefined"
 					[loading]="loading_dynamic_data"
-				></orc-mint-subsection-dashboard-analytic-chart>
+				></orc-mint-sd-analytic-chart>
 			</div>
 			<div class="relative chart-melts">
 				<div class="chart-target nav3" #nav3></div>
 				<div class="mint-analytic-header z-index-1">
 					<div class="mint-analytic-title">Melts &nbsp;&nbsp;<small>withdrawals</small></div>
 				</div>
-				<orc-mint-subsection-dashboard-analytic-chart
+				<orc-mint-sd-analytic-chart
 					[locale]="locale"
 					[mint_analytics]="mint_analytics_melts"
 					[mint_analytics_pre]="mint_analytics_melts_pre"
@@ -96,14 +96,14 @@
 					[mint_genesis_time]="mint_genesis_time"
 					[selected_type]="page_settings ? page_settings.type : undefined"
 					[loading]="loading_dynamic_data"
-				></orc-mint-subsection-dashboard-analytic-chart>
+				></orc-mint-sd-analytic-chart>
 			</div>
 			<div class="relative chart-swaps">
 				<div class="chart-target nav4" #nav4></div>
 				<div class="mint-analytic-header z-index-1">
 					<div class="mint-analytic-title w-min-7">Swaps &nbsp;&nbsp;<small>internal</small></div>
 				</div>
-				<orc-mint-subsection-dashboard-analytic-chart
+				<orc-mint-sd-analytic-chart
 					[locale]="locale"
 					[mint_analytics]="mint_analytics_swaps"
 					[mint_analytics_pre]="mint_analytics_swaps_pre"
@@ -111,7 +111,7 @@
 					[mint_genesis_time]="mint_genesis_time"
 					[selected_type]="page_settings ? page_settings.type : undefined"
 					[loading]="loading_dynamic_data"
-				></orc-mint-subsection-dashboard-analytic-chart>
+				></orc-mint-sd-analytic-chart>
 			</div>
 			<div class="relative chart-fee-revenue">
 				<div class="chart-target nav5" #nav5></div>
@@ -119,7 +119,7 @@
 					<div class="mint-analytic-title">Fee Revenue</div>
 				</div>
 				<div class="relative">
-					<orc-mint-subsection-dashboard-analytic-chart
+					<orc-mint-sd-analytic-chart
 						[locale]="locale"
 						[mint_analytics]="mint_analytics_fees"
 						[mint_analytics_pre]="mint_analytics_fees_pre"
@@ -127,7 +127,7 @@
 						[mint_genesis_time]="mint_genesis_time"
 						[selected_type]="page_settings ? page_settings.type : undefined"
 						[loading]="loading_dynamic_data"
-					></orc-mint-subsection-dashboard-analytic-chart>
+					></orc-mint-sd-analytic-chart>
 
 					@if (!loading_dynamic_data) {
 						@if (mint_type === 'cdk') {

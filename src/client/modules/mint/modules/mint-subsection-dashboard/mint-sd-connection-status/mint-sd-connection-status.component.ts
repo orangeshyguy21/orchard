@@ -4,13 +4,13 @@ import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {PublicUrl} from '@client/modules/public/classes/public-url.class';
 
 @Component({
-	selector: 'orc-mint-connection-status',
+	selector: 'orc-mint-sd-connection-status',
 	standalone: false,
-	templateUrl: './mint-connection-status.component.html',
-	styleUrl: './mint-connection-status.component.scss',
+	templateUrl: './mint-sd-connection-status.component.html',
+	styleUrl: './mint-sd-connection-status.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintConnectionStatusComponent {
+export class MintSDConnectionStatusComponent {
 	@Input() public public_url!: PublicUrl;
 
 	public get status_class(): string {

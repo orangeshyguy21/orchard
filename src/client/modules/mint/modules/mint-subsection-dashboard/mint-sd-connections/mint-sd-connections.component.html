@@ -7,7 +7,7 @@
 				<div class="mint-connection-urls">
 					@for (connection of connections; track connection.url; let i = $index) {
 						<div class="flex flex-items-center flex-gap-0-5">
-							<orc-mint-connection-status [public_url]="mint_connections[i]"></orc-mint-connection-status>
+							<orc-mint-sd-connection-status [public_url]="mint_connections[i]"></orc-mint-sd-connection-status>
 							<div class="orc-text-button" (click)="onSelectConnection(connection)">
 								{{ connection.displayed_url }}
 							</div>
