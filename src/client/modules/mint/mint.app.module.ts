@@ -23,7 +23,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {BaseChartDirective} from 'ng2-charts';
 /* Application Dependencies */
-import {NavModule} from '@client/modules/nav/nav.module';
+import {OrcNavModule} from '@client/modules/nav/nav.module';
 import {LocalModule} from '@client/modules/local/local.module';
 import {GraphicModule} from '@client/modules/graphic/graphic.module';
 import {ErrorModule} from '@client/modules/error/error.module';
@@ -87,7 +87,6 @@ import {MintAppRoutingModule} from './mint.app.router';
 	declarations: [
 		MintSectionComponent,
 		MintSubsectionErrorComponent,
-		// MintSubsectionDashboardComponent,
 		MintSubsectionInfoComponent,
 		MintSubsectionConfigComponent,
 		MintSubsectionKeysetsComponent,
@@ -156,7 +155,7 @@ import {MintAppRoutingModule} from './mint.app.router';
 		MatProgressSpinnerModule,
 		MatTooltipModule,
 		BaseChartDirective,
-		NavModule,
+		OrcNavModule,
 		LocalModule,
 		GraphicModule,
 		ErrorModule,

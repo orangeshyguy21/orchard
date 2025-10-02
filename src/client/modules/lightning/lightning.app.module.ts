@@ -7,7 +7,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 /* Application Dependencies */
-import {NavModule} from '@client/modules/nav/nav.module';
+import {OrcNavModule} from '@client/modules/nav/nav.module';
 import {SettingsModule} from '@client/modules/settings/settings.module';
 /* Native Dependencies */
 import {LightningSectionComponent} from './components/lightning-section/lightning-section.component';
@@ -24,7 +24,7 @@ import {LightningAppRoutingModule} from './lightning.app.router';
 		MatButtonModule,
 		MatFormFieldModule,
 		MatSelectModule,
-		NavModule,
+		OrcNavModule,
 		SettingsModule,
 		LightningAppRoutingModule,
 	],

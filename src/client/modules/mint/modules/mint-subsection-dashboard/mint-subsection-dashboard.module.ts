@@ -14,7 +14,7 @@ import {MatSliderModule} from '@angular/material/slider';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {BaseChartDirective} from 'ng2-charts';
 /* Application Dependencies */
-import {NavModule} from '@client/modules/nav/nav.module';
+import {OrcNavModule} from '@client/modules/nav/nav.module';
 import {OrcMintGeneralModule} from '@client/modules/mint/modules/mint-general/mint-general.module';
 /* Local Dependencies */
 import {MintSubsectionDashboardComponent} from './mint-subsection-dashboard/mint-subsection-dashboard.component';
@@ -46,7 +46,7 @@ import {MintSDConnectionQrcodeDialogComponent} from './mint-sd-connection-qrcode
 		MatSliderModule,
 		MatSlideToggleModule,
 		BaseChartDirective,
-		NavModule,
+		OrcNavModule,
 		OrcMintGeneralModule,
 	],
 	exports: [],

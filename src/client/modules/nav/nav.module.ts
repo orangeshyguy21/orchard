@@ -51,4 +51,4 @@ import {TertiaryNavItemComponent} from './components/tertiary-nav-item/tertiary-
 	],
 	exports: [PrimaryNavComponent, SecondaryNavComponent, SecondaryNavItemComponent, SecondaryNavMoreComponent, TertiaryNavComponent],
 })
-export class NavModule {}
+export class OrcNavModule {}

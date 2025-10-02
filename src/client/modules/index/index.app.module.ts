@@ -18,7 +18,7 @@ import {GraphicModule} from '@client/modules/graphic/graphic.module';
 import {ErrorModule} from '@client/modules/error/error.module';
 import {BitcoinModule} from '@client/modules/bitcoin/bitcoin.module';
 import {LightningModule} from '@client/modules/lightning/lightning.module';
-import {NavModule} from '@client/modules/nav/nav.module';
+import {OrcNavModule} from '@client/modules/nav/nav.module';
 import {OrcMintGeneralModule} from '@client/modules/mint/modules/mint-general/mint-general.module';
 /* Local Dependencies */
 import {IndexSectionComponent} from './components/index-section/index-section.component';
@@ -97,7 +97,7 @@ export class IndexAppRoutingModule {}
 		ErrorModule,
 		BitcoinModule,
 		LightningModule,
-		NavModule,
+		OrcNavModule,
 		OrcMintGeneralModule,
 		IndexAppRoutingModule,
 	],

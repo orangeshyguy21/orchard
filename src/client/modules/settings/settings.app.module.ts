@@ -14,7 +14,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatIconModule} from '@angular/material/icon';
 /* Application Dependencies */
-import {NavModule} from '@client/modules/nav/nav.module';
+import {OrcNavModule} from '@client/modules/nav/nav.module';
 import {LocalModule} from '@client/modules/local/local.module';
 import {FormModule} from '@client/modules/form/form.module';
 import {AiModule} from '@client/modules/ai/ai.module';
@@ -68,7 +68,7 @@ export class SettingsAppRoutingModule {}
 		MatSlideToggleModule,
 		MatChipsModule,
 		MatIconModule,
-		NavModule,
+		OrcNavModule,
 		LocalModule,
 		FormModule,
 		AiModule,
