@@ -10,13 +10,13 @@ import {ThemeService} from '@client/modules/settings/services/theme/theme.servic
 import {ThemeType} from '@client/modules/cache/services/local-storage/local-storage.types';
 
 @Component({
-	selector: 'orc-mint-sd-connection-qrcode-dialog',
+	selector: 'orc-mint-subsection-dashboard-connection-dialog',
 	standalone: false,
-	templateUrl: './mint-sd-connection-qrcode-dialog.component.html',
-	styleUrl: './mint-sd-connection-qrcode-dialog.component.scss',
+	templateUrl: './mint-subsection-dashboard-connection-dialog.component.html',
+	styleUrl: './mint-subsection-dashboard-connection-dialog.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintSDConnectionQrcodeDialogComponent implements OnInit {
+export class MintSubsectionDashboardConnectionDialogComponent implements OnInit {
 	@ViewChild('qr_canvas', {static: true}) qr_canvas!: ElementRef;
 
 	public qr_code!: QRCodeStyling;

@@ -11,18 +11,18 @@ import {ThemeService} from '@client/modules/settings/services/theme/theme.servic
 import {PublicService} from '@client/modules/public/services/image/public.service';
 import {PublicUrl} from '@client/modules/public/classes/public-url.class';
 /* Native Dependencies */
-import {MintSDConnectionQrcodeDialogComponent} from '../mint-sd-connection-qrcode-dialog/mint-sd-connection-qrcode-dialog.component';
+import {MintSubsectionDashboardConnectionDialogComponent} from '../mint-subsection-dashboard-connection-dialog/mint-subsection-dashboard-connection-dialog.component';
 /* Local Dependencies */
-import {Connection} from './mint-sd-connections.classes';
+import {Connection} from './mint-subsection-dashboard-connections.classes';
 
 @Component({
-	selector: 'orc-mint-sd-connections',
+	selector: 'orc-mint-subsection-dashboard-connections',
 	standalone: false,
-	templateUrl: './mint-sd-connections.component.html',
-	styleUrl: './mint-sd-connections.component.scss',
+	templateUrl: './mint-subsection-dashboard-connections.component.html',
+	styleUrl: './mint-subsection-dashboard-connections.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintSDConnectionsComponent {
+export class MintSubsectionDashboardConnectionsComponent {
 	@Input() urls!: string[] | null;
 	@Input() icon_url!: string | null;
 	@Input() time: number | undefined;
@@ -180,7 +180,7 @@ export class MintSDConnectionsComponent {
 	}
 
 	public onQRClick(): void {
-		this.dialog.open(MintSDConnectionQrcodeDialogComponent, {
+		this.dialog.open(MintSubsectionDashboardConnectionDialogComponent, {
 			data: {
 				connection: this.connections.find((connection) => connection.url === this.qr_data.value),
 				primary_color: this.qr_primary_color,

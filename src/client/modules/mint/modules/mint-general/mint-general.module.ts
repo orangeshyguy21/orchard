@@ -11,10 +11,10 @@ import {GraphicModule} from '@client/modules/graphic/graphic.module';
 import {LocalModule} from '@client/modules/local/local.module';
 import {ErrorModule} from '@client/modules/error/error.module';
 /* Local Dependencies */
-import {MintGeneralIconComponent} from './mint-general-icon/mint-general-icon.component';
-import {MintGeneralNameComponent} from './mint-general-name/mint-general-name.component';
-import {MintGeneralKeysetComponent} from './mint-general-keyset/mint-general-keyset.component';
-import {MintGeneralBalanceSheetComponent} from './mint-general-balance-sheet/mint-general-balance-sheet.component';
+import {MintGeneralIconComponent} from './components/mint-general-icon/mint-general-icon.component';
+import {MintGeneralNameComponent} from './components/mint-general-name/mint-general-name.component';
+import {MintGeneralKeysetComponent} from './components/mint-general-keyset/mint-general-keyset.component';
+import {MintGeneralBalanceSheetComponent} from './components/mint-general-balance-sheet/mint-general-balance-sheet.component';
 
 @NgModule({
 	declarations: [MintGeneralIconComponent, MintGeneralNameComponent, MintGeneralKeysetComponent, MintGeneralBalanceSheetComponent],

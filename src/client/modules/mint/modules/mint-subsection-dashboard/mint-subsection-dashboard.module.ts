@@ -2,6 +2,7 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ReactiveFormsModule} from '@angular/forms';
+import {RouterModule, Routes} from '@angular/router';
 /* Vendor Dependencies */
 import {MatIconModule} from '@angular/material/icon';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -17,23 +18,26 @@ import {BaseChartDirective} from 'ng2-charts';
 import {OrcNavModule} from '@client/modules/nav/nav.module';
 import {OrcMintGeneralModule} from '@client/modules/mint/modules/mint-general/mint-general.module';
 /* Local Dependencies */
-import {MintSubsectionDashboardComponent} from './mint-subsection-dashboard/mint-subsection-dashboard.component';
-import {MintSubsectionDashboardAnalyticChartComponent} from './mint-subsection-dashboard-analytic-chart/mint-subsection-dashboard-analytic-chart.component';
-import {MintSDAnalyticControlPanelComponent} from './mint-sd-analytic-control-panel/mint-sd-analytic-control-panel.component';
-import {MintSDConnectionsComponent} from './mint-sd-connections/mint-sd-connections.component';
-import {MintSDConnectionStatusComponent} from './mint-sd-connection-status/mint-sd-connection-status.component';
-import {MintSDConnectionQrcodeDialogComponent} from './mint-sd-connection-qrcode-dialog/mint-sd-connection-qrcode-dialog.component';
+import {MintSubsectionDashboardComponent} from './components/mint-subsection-dashboard/mint-subsection-dashboard.component';
+import {MintSubsectionDashboardAnalyticChartComponent} from './components/mint-subsection-dashboard-analytic-chart/mint-subsection-dashboard-analytic-chart.component';
+import {MintSubsectionDashboardAnalyticControlPanelComponent} from './components/mint-subsection-dashboard-analytic-control-panel/mint-subsection-dashboard-analytic-control-panel.component';
+import {MintSubsectionDashboardConnectionsComponent} from './components/mint-subsection-dashboard-connections/mint-subsection-dashboard-connections.component';
+import {MintSubsectionDashboardConnectionStatusComponent} from './components/mint-subsection-dashboard-connection-status/mint-subsection-dashboard-connection-status.component';
+import {MintSubsectionDashboardConnectionDialogComponent} from './components/mint-subsection-dashboard-connection-dialog/mint-subsection-dashboard-connection-dialog.component';
+
+const mint_subsection_dashboard_routes: Routes = [{path: '', component: MintSubsectionDashboardComponent}];
 
 @NgModule({
 	declarations: [
 		MintSubsectionDashboardComponent,
 		MintSubsectionDashboardAnalyticChartComponent,
-		MintSDAnalyticControlPanelComponent,
-		MintSDConnectionsComponent,
-		MintSDConnectionStatusComponent,
-		MintSDConnectionQrcodeDialogComponent,
+		MintSubsectionDashboardAnalyticControlPanelComponent,
+		MintSubsectionDashboardConnectionsComponent,
+		MintSubsectionDashboardConnectionStatusComponent,
+		MintSubsectionDashboardConnectionDialogComponent,
 	],
 	imports: [
+		RouterModule.forChild(mint_subsection_dashboard_routes),
 		CommonModule,
 		ReactiveFormsModule,
 		MatIconModule,

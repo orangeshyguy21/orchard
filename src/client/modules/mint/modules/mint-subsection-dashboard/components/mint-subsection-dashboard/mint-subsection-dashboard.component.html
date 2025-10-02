@@ -10,21 +10,21 @@
 			[loading]="loading_static_data"
 			(navigate)="onNavigate('lightning')"
 		></orc-mint-general-balance-sheet>
-		<orc-mint-sd-connections
+		<orc-mint-subsection-dashboard-connections
 			[urls]="mint_info ? mint_info.urls : null"
 			[icon_url]="mint_info ? mint_info.icon_url : null"
 			[time]="mint_info?.time"
 			[mint_name]="mint_info?.name"
 			[mint_connections]="mint_connections"
 			[loading]="loading_static_data"
-		></orc-mint-sd-connections>
+		></orc-mint-subsection-dashboard-connections>
 	</div>
 
 	<div class="mint-analytic-control-panel">
 		<div class="flex flex-justify-between flex-gap-1 flex-items-end">
 			<div class="title-l p-1">Nutalytics</div>
 			@if (page_settings) {
-				<orc-mint-sd-analytic-control-panel
+				<orc-mint-subsection-dashboard-analytic-control-panel
 					class="flex-grow"
 					[page_settings]="page_settings"
 					[date_start]="page_settings.date_start"
@@ -39,7 +39,7 @@
 					(unitsChange)="onUnitsChange($event)"
 					(intervalChange)="onIntervalChange($event)"
 					(typeChange)="onTypeChange($event)"
-				></orc-mint-sd-analytic-control-panel>
+				></orc-mint-subsection-dashboard-analytic-control-panel>
 			}
 			<!-- <div class="p-b-1">
 				<button mat-icon-button aria-label="Example icon button with a vertical three dot icon">

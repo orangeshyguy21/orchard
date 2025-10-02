@@ -31,7 +31,6 @@ import {FormModule} from '@client/modules/form/form.module';
 import {SettingsModule} from '@client/modules/settings/settings.module';
 /* Native Dependencies */
 import {OrcMintGeneralModule} from './modules/mint-general/mint-general.module';
-import {OrcMintSubsectionDashboardModule} from './modules/mint-subsection-dashboard/mint-subsection-dashboard.module';
 
 import {MintSectionComponent} from './components/mint-section/mint-section.component';
 import {MintSubsectionErrorComponent} from './components/mint-subsection-error/mint-subsection-error.component';
@@ -162,7 +161,6 @@ import {MintAppRoutingModule} from './mint.app.router';
 		FormModule,
 		SettingsModule,
 		OrcMintGeneralModule,
-		OrcMintSubsectionDashboardModule,
 	],
 })
 export class MintAppModule {}

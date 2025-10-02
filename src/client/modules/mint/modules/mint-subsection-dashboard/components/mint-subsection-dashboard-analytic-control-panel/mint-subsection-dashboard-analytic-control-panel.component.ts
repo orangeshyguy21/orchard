@@ -28,13 +28,13 @@ type TypeOption = {
 };
 
 @Component({
-	selector: 'orc-mint-sd-analytic-control-panel',
+	selector: 'orc-mint-subsection-dashboard-analytic-control-panel',
 	standalone: false,
-	templateUrl: './mint-sd-analytic-control-panel.component.html',
-	styleUrl: './mint-sd-analytic-control-panel.component.scss',
+	templateUrl: './mint-subsection-dashboard-analytic-control-panel.component.html',
+	styleUrl: './mint-subsection-dashboard-analytic-control-panel.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintSDAnalyticControlPanelComponent implements OnChanges {
+export class MintSubsectionDashboardAnalyticControlPanelComponent implements OnChanges {
 	@Input() page_settings!: NonNullableMintDashboardSettings;
 	@Input() date_start?: number;
 	@Input() date_end?: number;
