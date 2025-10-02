@@ -30,8 +30,8 @@ import {ErrorModule} from '@client/modules/error/error.module';
 import {FormModule} from '@client/modules/form/form.module';
 import {SettingsModule} from '@client/modules/settings/settings.module';
 /* Native Dependencies */
-import {MintGeneralModule} from './modules/mint-general/mint-general.module';
-import {MintSubsectionDashboardModule} from './modules/mint-subsection-dashboard/mint-subsection-dashboard.module';
+import {OrcMintGeneralModule} from './modules/mint-general/mint-general.module';
+import {OrcMintSubsectionDashboardModule} from './modules/mint-subsection-dashboard/mint-subsection-dashboard.module';
 
 import {MintSectionComponent} from './components/mint-section/mint-section.component';
 import {MintSubsectionErrorComponent} from './components/mint-subsection-error/mint-subsection-error.component';
@@ -41,9 +41,6 @@ import {MintSubsectionConfigComponent} from './components/mint-subsection-config
 import {MintSubsectionKeysetsComponent} from './components/mint-subsection-keysets/mint-subsection-keysets.component';
 import {MintSubsectionDatabaseComponent} from './components/mint-subsection-database/mint-subsection-database.component';
 import {MintSubsectionDisabledComponent} from './components/mint-subsection-disabled/mint-subsection-disabled.component';
-// import {MintConnectionsComponent} from './components/mint-connections/mint-connections.component';
-// import {MintQrcodeDialogComponent} from './components/mint-qrcode-dialog/mint-qrcode-dialog.component';
-import {MintNameComponent} from './components/mint-name/mint-name.component';
 import {MintInfoFormIconComponent} from './components/mint-info-form-icon/mint-info-form-icon.component';
 import {MintInfoFormNameComponent} from './components/mint-info-form-name/mint-info-form-name.component';
 import {MintInfoFormDescriptionComponent} from './components/mint-info-form-description/mint-info-form-description.component';
@@ -53,7 +50,6 @@ import {MintInfoFormUrlsComponent} from './components/mint-info-form-urls/mint-i
 import {MintInfoFormUrlComponent} from './components/mint-info-form-url/mint-info-form-url.component';
 import {MintInfoFormContactsComponent} from './components/mint-info-form-contacts/mint-info-form-contacts.component';
 import {MintInfoFormContactComponent} from './components/mint-info-form-contact/mint-info-form-contact.component';
-// import {MintConnectionStatusComponent} from './components/mint-connection-status/mint-connection-status.component';
 import {MintConfigFormEnabledComponent} from './components/mint-config-form-enabled/mint-config-form-enabled.component';
 import {MintConfigFormQuoteTtlComponent} from './components/mint-config-form-quote-ttl/mint-config-form-quote-ttl.component';
 import {MintConfigFormBolt11Component} from './components/mint-config-form-bolt11/mint-config-form-bolt11.component';
@@ -97,7 +93,6 @@ import {MintAppRoutingModule} from './mint.app.router';
 		MintSubsectionKeysetsComponent,
 		MintSubsectionDatabaseComponent,
 		MintSubsectionDisabledComponent,
-		MintNameComponent,
 		MintInfoFormIconComponent,
 		MintInfoFormNameComponent,
 		MintInfoFormDescriptionComponent,
@@ -167,8 +162,8 @@ import {MintAppRoutingModule} from './mint.app.router';
 		ErrorModule,
 		FormModule,
 		SettingsModule,
-		MintGeneralModule,
-		MintSubsectionDashboardModule,
+		OrcMintGeneralModule,
+		OrcMintSubsectionDashboardModule,
 	],
 })
 export class MintAppModule {}

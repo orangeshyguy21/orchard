@@ -8,7 +8,7 @@
 					<td>
 						<div class="flex flex-items-center flex-gap-1">
 							<orc-mint-general-icon [loading]="loading" [icon_data]="icon_data"> </orc-mint-general-icon>
-							<div class="text-nowrap">{{ info?.name }}</div>
+							<orc-mint-general-name [name]="info ? info.name : null" [loading]="loading"> </orc-mint-general-name>
 						</div>
 					</td>
 				</tr>

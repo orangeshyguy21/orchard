@@ -2,7 +2,7 @@
 	<orc-secondary-nav>
 		<div secondary-nav-header class="secondary-nav-header">
 			<orc-mint-general-icon [icon_data]="icon_data" [loading]="loading" [error]="error"> </orc-mint-general-icon>
-			<orc-mint-name [name]="mint_info ? mint_info.name : null" [loading]="loading" [error]="error"> </orc-mint-name>
+			<orc-mint-general-name [name]="mint_info ? mint_info.name : null" [loading]="loading" [error]="error"> </orc-mint-general-name>
 		</div>
 		<div secondary-nav-items>
 			<orc-secondary-nav-item name="Dashboard" navroute="mint" [active]="active_sub_section === 'dashboard'">

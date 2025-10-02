@@ -44,4 +44,4 @@ import {MintSDConnectionQrcodeDialogComponent} from './mint-sd-connection-qrcode
 	],
 	exports: [MintSDAnalyticChartComponent, MintSDAnalyticControlPanelComponent, MintSDConnectionsComponent],
 })
-export class MintSubsectionDashboardModule {}
+export class OrcMintSubsectionDashboardModule {}

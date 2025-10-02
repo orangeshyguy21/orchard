@@ -3,13 +3,13 @@ import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {Router} from '@angular/router';
 
 @Component({
-	selector: 'orc-mint-name',
+	selector: 'orc-mint-general-name',
 	standalone: false,
-	templateUrl: './mint-name.component.html',
-	styleUrl: './mint-name.component.scss',
+	templateUrl: './mint-general-name.component.html',
+	styleUrl: './mint-general-name.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintNameComponent {
+export class MintGeneralNameComponent {
 	@Input() name!: string | null;
 	@Input() loading!: boolean;
 	@Input() error!: boolean;
