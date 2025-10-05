@@ -2,7 +2,7 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ReactiveFormsModule} from '@angular/forms';
-import {RouterModule, Routes} from '@angular/router';
+import {RouterModule} from '@angular/router';
 /* Vendor Dependencies */
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
@@ -13,6 +13,8 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatSelectModule} from '@angular/material/select';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
+/* Application Dependencies */
+import {pendingEventGuard} from '@client/modules/event/guards/pending-event.guard';
 /* Local Dependencies */
 import {MintSubsectionInfoComponent} from './components/mint-subsection-info/mint-subsection-info.component';
 import {MintSubsectionInfoFormNameComponent} from './components/mint-subsection-info-form-name/mint-subsection-info-form-name.component';
@@ -24,8 +26,6 @@ import {MintSubsectionInfoFormContactComponent} from './components/mint-subsecti
 import {MintSubsectionInfoFormUrlsComponent} from './components/mint-subsection-info-form-urls/mint-subsection-info-form-urls.component';
 import {MintSubsectionInfoFormUrlComponent} from './components/mint-subsection-info-form-url/mint-subsection-info-form-url.component';
 import {MintSubsectionInfoFormMotdComponent} from './components/mint-subsection-info-form-motd/mint-subsection-info-form-motd.component';
-
-const mint_subsection_info_routes: Routes = [{path: '', component: MintSubsectionInfoComponent}];
 
 @NgModule({
 	declarations: [
@@ -41,7 +41,13 @@ const mint_subsection_info_routes: Routes = [{path: '', component: MintSubsectio
 		MintSubsectionInfoFormMotdComponent,
 	],
 	imports: [
-		RouterModule.forChild(mint_subsection_info_routes),
+		RouterModule.forChild([
+			{
+				path: '',
+				component: MintSubsectionInfoComponent,
+				canDeactivate: [pendingEventGuard],
+			},
+		]),
 		CommonModule,
 		ReactiveFormsModule,
 		MatFormFieldModule,

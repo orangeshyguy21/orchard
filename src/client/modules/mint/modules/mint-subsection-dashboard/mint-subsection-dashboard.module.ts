@@ -2,7 +2,7 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ReactiveFormsModule} from '@angular/forms';
-import {RouterModule, Routes} from '@angular/router';
+import {RouterModule} from '@angular/router';
 /* Vendor Dependencies */
 import {MatIconModule} from '@angular/material/icon';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -25,8 +25,6 @@ import {MintSubsectionDashboardConnectionsComponent} from './components/mint-sub
 import {MintSubsectionDashboardConnectionStatusComponent} from './components/mint-subsection-dashboard-connection-status/mint-subsection-dashboard-connection-status.component';
 import {MintSubsectionDashboardConnectionDialogComponent} from './components/mint-subsection-dashboard-connection-dialog/mint-subsection-dashboard-connection-dialog.component';
 
-const mint_subsection_dashboard_routes: Routes = [{path: '', component: MintSubsectionDashboardComponent}];
-
 @NgModule({
 	declarations: [
 		MintSubsectionDashboardComponent,
@@ -37,7 +35,12 @@ const mint_subsection_dashboard_routes: Routes = [{path: '', component: MintSubs
 		MintSubsectionDashboardConnectionDialogComponent,
 	],
 	imports: [
-		RouterModule.forChild(mint_subsection_dashboard_routes),
+		RouterModule.forChild([
+			{
+				path: '',
+				component: MintSubsectionDashboardComponent,
+			},
+		]),
 		CommonModule,
 		ReactiveFormsModule,
 		MatIconModule,
