@@ -16,7 +16,7 @@ import {MatIconModule} from '@angular/material/icon';
 /* Application Dependencies */
 import {OrcNavModule} from '@client/modules/nav/nav.module';
 import {LocalModule} from '@client/modules/local/local.module';
-import {FormModule} from '@client/modules/form/form.module';
+import {OrcFormModule} from '@client/modules/form/form.module';
 import {AiModule} from '@client/modules/ai/ai.module';
 /* Native Module Dependencies */
 import {SettingsSectionComponent} from './components/settings-section/settings-section.component';
@@ -70,7 +70,7 @@ export class SettingsAppRoutingModule {}
 		MatIconModule,
 		OrcNavModule,
 		LocalModule,
-		FormModule,
+		OrcFormModule,
 		AiModule,
 	],
 })

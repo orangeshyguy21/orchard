@@ -3,7 +3,7 @@
 
 	<div class="flex flex-column flex-gap-1">
 		@for (contact_control of form_array.controls; track $index) {
-			<orc-mint-info-form-contact
+			<orc-mint-subsection-info-form-contact
 				[form_group]="form_group"
 				[form_array]="form_array"
 				[array_name]="'contact'"
@@ -13,8 +13,7 @@
 				(update)="onControlUpdate($event)"
 				(cancel)="onControlCancel($event)"
 				(remove)="onControlRemove($event)"
-			>
-			</orc-mint-info-form-contact>
+			></orc-mint-subsection-info-form-contact>
 		}
 
 		<orc-add-form-array-item (addControl)="onAddControl()">

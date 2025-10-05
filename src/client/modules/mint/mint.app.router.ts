@@ -11,7 +11,6 @@ import {pendingEventGuard} from '@client/modules/event/guards/pending-event.guar
 /* Native Dependencies */
 import {MintSectionComponent} from './components/mint-section/mint-section.component';
 import {MintSubsectionErrorComponent} from './components/mint-subsection-error/mint-subsection-error.component';
-import {MintSubsectionInfoComponent} from './components/mint-subsection-info/mint-subsection-info.component';
 import {MintSubsectionConfigComponent} from './components/mint-subsection-config/mint-subsection-config.component';
 import {MintSubsectionKeysetsComponent} from './components/mint-subsection-keysets/mint-subsection-keysets.component';
 import {MintSubsectionDatabaseComponent} from './components/mint-subsection-database/mint-subsection-database.component';
@@ -114,7 +113,10 @@ const routes: Routes = [
 			},
 			{
 				path: 'info',
-				component: MintSubsectionInfoComponent,
+				loadChildren: () =>
+					import('@client/modules/mint/modules/mint-subsection-info/mint-subsection-info.module').then(
+						(m) => m.OrcMintSubsectionInfoModule,
+					),
 				title: 'Orchard | Mint Info',
 				resolve: {
 					mint_info_rpc: mintInfoRpcResolver,

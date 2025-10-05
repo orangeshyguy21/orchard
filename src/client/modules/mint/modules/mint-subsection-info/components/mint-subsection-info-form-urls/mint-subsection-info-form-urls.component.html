@@ -3,7 +3,7 @@
 
 	<div class="flex flex-column flex-gap-1">
 		@for (url_control of form_array.controls; track $index) {
-			<orc-mint-info-form-url
+			<orc-mint-subsection-info-form-url
 				[form_group]="form_group"
 				[form_array]="form_array"
 				[array_name]="'urls'"
@@ -12,8 +12,7 @@
 				(update)="onControlUpdate($event)"
 				(cancel)="onControlCancel($event)"
 				(remove)="onControlRemove($event)"
-			>
-			</orc-mint-info-form-url>
+			></orc-mint-subsection-info-form-url>
 		}
 
 		<div class="flex flex-row flex-gap-1">

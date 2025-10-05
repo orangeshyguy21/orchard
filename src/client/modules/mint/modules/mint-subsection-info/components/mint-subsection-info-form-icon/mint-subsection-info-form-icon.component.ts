@@ -17,13 +17,13 @@ import {Subject, debounceTime, takeUntil} from 'rxjs';
 import {MintInfoRpc} from '@client/modules/mint/classes/mint-info-rpc.class';
 
 @Component({
-	selector: 'orc-mint-info-form-icon',
+	selector: 'orc-mint-subsection-info-form-icon',
 	standalone: false,
-	templateUrl: './mint-info-form-icon.component.html',
-	styleUrl: './mint-info-form-icon.component.scss',
+	templateUrl: './mint-subsection-info-form-icon.component.html',
+	styleUrl: './mint-subsection-info-form-icon.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintInfoFormIconComponent implements OnInit, OnDestroy {
+export class MintSubsectionInfoFormIconComponent implements OnInit, OnDestroy {
 	@Input() form_group!: FormGroup;
 	@Input() control_name!: keyof MintInfoRpc;
 	@Input() icon_url: string | null = null;

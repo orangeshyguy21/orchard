@@ -5,17 +5,17 @@ import {FormGroup, FormArray} from '@angular/forms';
 import {MintInfoRpc} from '@client/modules/mint/classes/mint-info-rpc.class';
 
 @Component({
-	selector: 'orc-mint-info-form-contacts',
+	selector: 'orc-mint-subsection-info-form-urls',
 	standalone: false,
-	templateUrl: './mint-info-form-contacts.component.html',
-	styleUrl: './mint-info-form-contacts.component.scss',
+	templateUrl: './mint-subsection-info-form-urls.component.html',
+	styleUrl: './mint-subsection-info-form-urls.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintInfoFormContactsComponent {
+export class MintSubsectionInfoFormUrlsComponent {
 	@Input() form_group!: FormGroup;
 	@Input() form_array!: FormArray;
 	@Input() array_name!: keyof MintInfoRpc;
-	@Input() array_length!: number;
+	@Input() array_length!: number; // forces update on array length change
 
 	@Output() update = new EventEmitter<{array_name: keyof MintInfoRpc; control_index: number}>();
 	@Output() cancel = new EventEmitter<{array_name: keyof MintInfoRpc; control_index: number}>();
@@ -23,13 +23,11 @@ export class MintInfoFormContactsComponent {
 	@Output() addControl = new EventEmitter<void>();
 
 	public added_index!: number;
-	public added_method!: string;
 
 	constructor() {}
 
 	public onAddControl(): void {
 		this.added_index = this.form_array.length;
-		this.added_method = this.getAddedMethod();
 		this.addControl.emit();
 	}
 
@@ -52,13 +50,5 @@ export class MintInfoFormContactsComponent {
 			array_name: this.array_name,
 			control_index: index,
 		});
-	}
-
-	private getAddedMethod(): string {
-		const all_methods = ['email', 'twitter', 'nostr'];
-		const used_methods = this.form_array.controls.map((control) => control.get('method')?.value);
-		const remaining_methods = all_methods.filter((method) => !used_methods.includes(method));
-		if (remaining_methods.length > 0) return remaining_methods[0];
-		return 'email';
 	}
 }

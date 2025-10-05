@@ -22,13 +22,13 @@ type ContactOption = {
 };
 
 @Component({
-	selector: 'orc-mint-info-form-contact',
+	selector: 'orc-mint-subsection-info-form-contact',
 	standalone: false,
-	templateUrl: './mint-info-form-contact.component.html',
-	styleUrl: './mint-info-form-contact.component.scss',
+	templateUrl: './mint-subsection-info-form-contact.component.html',
+	styleUrl: './mint-subsection-info-form-contact.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintInfoFormContactComponent implements AfterViewInit {
+export class MintSubsectionInfoFormContactComponent implements AfterViewInit {
 	@Input() form_group!: FormGroup;
 	@Input() form_array!: FormArray;
 	@Input() array_name!: string;

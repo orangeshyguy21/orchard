@@ -17,13 +17,13 @@ import {FormGroup, FormArray} from '@angular/forms';
 import {Subscription} from 'rxjs';
 
 @Component({
-	selector: 'orc-mint-info-form-url',
+	selector: 'orc-mint-subsection-info-form-url',
 	standalone: false,
-	templateUrl: './mint-info-form-url.component.html',
-	styleUrl: './mint-info-form-url.component.scss',
+	templateUrl: './mint-subsection-info-form-url.component.html',
+	styleUrl: './mint-subsection-info-form-url.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintInfoFormUrlComponent implements OnInit, AfterViewInit, OnDestroy {
+export class MintSubsectionInfoFormUrlComponent implements OnInit, AfterViewInit, OnDestroy {
 	@Input() form_group!: FormGroup;
 	@Input() form_array!: FormArray;
 	@Input() array_name!: string;

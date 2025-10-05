@@ -4,7 +4,7 @@
 			<div class="h-full flex flex-column flex-gap-1">
 				<div class="flex flex-gap-1 flex-grow">
 					<div class="flex-1 flex flex-column flex-gap-1">
-						<orc-mint-info-form-icon
+						<orc-mint-subsection-info-form-icon
 							[icon_url]="init_info.icon_url"
 							[form_group]="form_info"
 							[control_name]="'icon_url'"
@@ -12,29 +12,29 @@
 							(update)="onControlUpdate($event)"
 							(cancel)="onControlCancel($event)"
 						>
-							<orc-mint-info-form-name
+							<orc-mint-subsection-info-form-name
 								[form_group]="form_info"
 								[control_name]="'name'"
 								[focused]="focus_control === 'name'"
 								(update)="onControlUpdate($event)"
 								(cancel)="onControlCancel($event)"
-							></orc-mint-info-form-name>
-							<orc-mint-info-form-description
+							></orc-mint-subsection-info-form-name>
+							<orc-mint-subsection-info-form-description
 								[form_group]="form_info"
 								[control_name]="'description'"
 								(update)="onControlUpdate($event)"
 								(cancel)="onControlCancel($event)"
-							></orc-mint-info-form-description>
-						</orc-mint-info-form-icon>
-						<orc-mint-info-form-description-long
+							></orc-mint-subsection-info-form-description>
+						</orc-mint-subsection-info-form-icon>
+						<orc-mint-subsection-info-form-description-long
 							[form_group]="form_info"
 							[control_name]="'description_long'"
 							(update)="onControlUpdate($event)"
 							(cancel)="onControlCancel($event)"
-						></orc-mint-info-form-description-long>
+						></orc-mint-subsection-info-form-description-long>
 					</div>
 					<div class="flex-1 flex flex-column flex-gap-2">
-						<orc-mint-info-form-urls
+						<orc-mint-subsection-info-form-urls
 							[form_group]="form_info"
 							[form_array]="form_array_urls"
 							[array_name]="'urls'"
@@ -43,8 +43,8 @@
 							(update)="onArrayControlUpdate($event)"
 							(cancel)="onArrayControlCancel($event)"
 							(remove)="onArrayControlRemove($event)"
-						></orc-mint-info-form-urls>
-						<orc-mint-info-form-contacts
+						></orc-mint-subsection-info-form-urls>
+						<orc-mint-subsection-info-form-contacts
 							[form_group]="form_info"
 							[form_array]="form_array_contacts"
 							[array_name]="'contact'"
@@ -53,17 +53,16 @@
 							(update)="onArrayControlUpdate($event)"
 							(cancel)="onArrayControlCancel($event)"
 							(remove)="onArrayControlRemove($event)"
-						></orc-mint-info-form-contacts>
+						></orc-mint-subsection-info-form-contacts>
 					</div>
 				</div>
-				<orc-mint-info-form-motd
+				<orc-mint-subsection-info-form-motd
 					[form_group]="form_info"
 					[control_name]="'motd'"
 					[motd]="init_info.motd"
 					(update)="onControlUpdate($event)"
 					(cancel)="onControlCancel($event)"
-				>
-				</orc-mint-info-form-motd>
+				></orc-mint-subsection-info-form-motd>
 			</div>
 		</mat-card-content>
 	</mat-card>

@@ -27,28 +27,17 @@ import {OrcNavModule} from '@client/modules/nav/nav.module';
 import {LocalModule} from '@client/modules/local/local.module';
 import {GraphicModule} from '@client/modules/graphic/graphic.module';
 import {ErrorModule} from '@client/modules/error/error.module';
-import {FormModule} from '@client/modules/form/form.module';
+import {OrcFormModule} from '@client/modules/form/form.module';
 import {SettingsModule} from '@client/modules/settings/settings.module';
 /* Native Dependencies */
 import {OrcMintGeneralModule} from './modules/mint-general/mint-general.module';
 
 import {MintSectionComponent} from './components/mint-section/mint-section.component';
 import {MintSubsectionErrorComponent} from './components/mint-subsection-error/mint-subsection-error.component';
-// import {MintSubsectionDashboardComponent} from './components/mint-subsection-dashboard/mint-subsection-dashboard.component';
-import {MintSubsectionInfoComponent} from './components/mint-subsection-info/mint-subsection-info.component';
 import {MintSubsectionConfigComponent} from './components/mint-subsection-config/mint-subsection-config.component';
 import {MintSubsectionKeysetsComponent} from './components/mint-subsection-keysets/mint-subsection-keysets.component';
 import {MintSubsectionDatabaseComponent} from './components/mint-subsection-database/mint-subsection-database.component';
 import {MintSubsectionDisabledComponent} from './components/mint-subsection-disabled/mint-subsection-disabled.component';
-import {MintInfoFormIconComponent} from './components/mint-info-form-icon/mint-info-form-icon.component';
-import {MintInfoFormNameComponent} from './components/mint-info-form-name/mint-info-form-name.component';
-import {MintInfoFormDescriptionComponent} from './components/mint-info-form-description/mint-info-form-description.component';
-import {MintInfoFormDescriptionLongComponent} from './components/mint-info-form-description-long/mint-info-form-description-long.component';
-import {MintInfoFormMotdComponent} from './components/mint-info-form-motd/mint-info-form-motd.component';
-import {MintInfoFormUrlsComponent} from './components/mint-info-form-urls/mint-info-form-urls.component';
-import {MintInfoFormUrlComponent} from './components/mint-info-form-url/mint-info-form-url.component';
-import {MintInfoFormContactsComponent} from './components/mint-info-form-contacts/mint-info-form-contacts.component';
-import {MintInfoFormContactComponent} from './components/mint-info-form-contact/mint-info-form-contact.component';
 import {MintConfigFormEnabledComponent} from './components/mint-config-form-enabled/mint-config-form-enabled.component';
 import {MintConfigFormQuoteTtlComponent} from './components/mint-config-form-quote-ttl/mint-config-form-quote-ttl.component';
 import {MintConfigFormBolt11Component} from './components/mint-config-form-bolt11/mint-config-form-bolt11.component';
@@ -86,20 +75,10 @@ import {MintAppRoutingModule} from './mint.app.router';
 	declarations: [
 		MintSectionComponent,
 		MintSubsectionErrorComponent,
-		MintSubsectionInfoComponent,
 		MintSubsectionConfigComponent,
 		MintSubsectionKeysetsComponent,
 		MintSubsectionDatabaseComponent,
 		MintSubsectionDisabledComponent,
-		MintInfoFormIconComponent,
-		MintInfoFormNameComponent,
-		MintInfoFormDescriptionComponent,
-		MintInfoFormDescriptionLongComponent,
-		MintInfoFormMotdComponent,
-		MintInfoFormUrlsComponent,
-		MintInfoFormUrlComponent,
-		MintInfoFormContactsComponent,
-		MintInfoFormContactComponent,
 		MintConfigFormEnabledComponent,
 		MintConfigFormQuoteTtlComponent,
 		MintConfigFormBolt11Component,
@@ -158,7 +137,7 @@ import {MintAppRoutingModule} from './mint.app.router';
 		LocalModule,
 		GraphicModule,
 		ErrorModule,
-		FormModule,
+		OrcFormModule,
 		SettingsModule,
 		OrcMintGeneralModule,
 	],

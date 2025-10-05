@@ -6,13 +6,13 @@ import {MintInfoRpc} from '@client/modules/mint/classes/mint-info-rpc.class';
 import {AutogrowDirective} from '@client/modules/form/directives/autogrow/autogrow.directive';
 
 @Component({
-	selector: 'orc-mint-info-form-motd',
+	selector: 'orc-mint-subsection-info-form-motd',
 	standalone: false,
-	templateUrl: './mint-info-form-motd.component.html',
-	styleUrl: './mint-info-form-motd.component.scss',
+	templateUrl: './mint-subsection-info-form-motd.component.html',
+	styleUrl: './mint-subsection-info-form-motd.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintInfoFormMotdComponent {
+export class MintSubsectionInfoFormMotdComponent {
 	@Input() form_group!: FormGroup;
 	@Input() control_name!: keyof MintInfoRpc;
 	@Input() motd!: string | null;

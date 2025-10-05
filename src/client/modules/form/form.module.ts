@@ -18,4 +18,4 @@ import {HelpTextComponent} from './components/help-text/help-text.component';
 	imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatButtonModule, MatIconModule],
 	exports: [AutogrowDirective, InputFormatDirective, DynamicFormFieldComponent, AddFormArrayItemComponent, HelpTextComponent],
 })
-export class FormModule {}
+export class OrcFormModule {}

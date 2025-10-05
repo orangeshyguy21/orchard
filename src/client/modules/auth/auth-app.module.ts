@@ -10,7 +10,7 @@ import {MatInputModule} from '@angular/material/input';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 /* Application Dependencies */
-import {FormModule} from '@client/modules/form/form.module';
+import {OrcFormModule} from '@client/modules/form/form.module';
 import {GraphicModule} from '@client/modules/graphic/graphic.module';
 /* Local Dependencies */
 import {AuthSectionComponent} from './components/auth-section/auth-section.component';
@@ -41,7 +41,7 @@ export class AuthAppRoutingModule {}
 		MatInputModule,
 		MatIconModule,
 		MatButtonModule,
-		FormModule,
+		OrcFormModule,
 		GraphicModule,
 	],
 })
