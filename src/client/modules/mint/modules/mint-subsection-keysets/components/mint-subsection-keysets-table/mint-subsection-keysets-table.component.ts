@@ -10,16 +10,16 @@ import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintAnalyticKeyset} from '@client/modules/mint/classes/mint-analytic.class';
 import {MintKeysetProofCount} from '@client/modules/mint/classes/mint-keyset-proof-count.class';
 /* Local Dependencies */
-import {MintKeysetRow} from './mint-keyset-row.class';
+import {MintSubsectionKeysetsTableRow} from './mint-subsection-keysets-table-row.class';
 
 @Component({
-	selector: 'orc-mint-keyset-table',
+	selector: 'orc-mint-subsection-keysets-table',
 	standalone: false,
-	templateUrl: './mint-keyset-table.component.html',
-	styleUrl: './mint-keyset-table.component.scss',
+	templateUrl: './mint-subsection-keysets-table.component.html',
+	styleUrl: './mint-subsection-keysets-table.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintKeysetTableComponent implements OnChanges {
+export class MintSubsectionKeysetsTableComponent implements OnChanges {
 	@ViewChild(MatSort) sort!: MatSort;
 
 	@Input() public keysets!: MintKeyset[];
@@ -30,7 +30,7 @@ export class MintKeysetTableComponent implements OnChanges {
 	@Input() public loading!: boolean;
 
 	public displayed_columns = ['keyset', 'input_fee_ppk', 'valid_from', 'balance', 'fees', 'proofs'];
-	public data_source!: MatTableDataSource<MintKeysetRow>;
+	public data_source!: MatTableDataSource<MintSubsectionKeysetsTableRow>;
 
 	constructor() {}
 
@@ -52,7 +52,7 @@ export class MintKeysetTableComponent implements OnChanges {
 				const keyset_analytics = this.keysets_analytics.filter((analytic) => analytic.keyset_id === keyset.id);
 				const keyset_analytics_pre = this.keysets_analytics_pre.filter((analytic) => analytic.keyset_id === keyset.id);
 				const keyset_proof_count = this.keysets_proof_counts.find((proof_count) => proof_count.id === keyset.id);
-				return new MintKeysetRow(keyset, keyset_analytics, keyset_analytics_pre, keyset_proof_count);
+				return new MintSubsectionKeysetsTableRow(keyset, keyset_analytics, keyset_analytics_pre, keyset_proof_count);
 			});
 		this.data_source = new MatTableDataSource(keyset_rows);
 		setTimeout(() => {

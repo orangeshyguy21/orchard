@@ -23,13 +23,13 @@ type StatusOption = {
 };
 
 @Component({
-	selector: 'orc-mint-keyset-control',
+	selector: 'orc-mint-subsection-keysets-control',
 	standalone: false,
-	templateUrl: './mint-keyset-control.component.html',
-	styleUrl: './mint-keyset-control.component.scss',
+	templateUrl: './mint-subsection-keysets-control.component.html',
+	styleUrl: './mint-subsection-keysets-control.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintKeysetControlComponent implements OnChanges {
+export class MintSubsectionKeysetsControlComponent implements OnChanges {
 	@Input() page_settings!: NonNullableMintKeysetsSettings;
 	@Input() date_start?: number;
 	@Input() date_end?: number;

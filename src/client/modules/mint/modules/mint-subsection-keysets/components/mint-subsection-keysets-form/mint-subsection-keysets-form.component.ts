@@ -10,13 +10,13 @@ import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
 import {MintUnit} from '@shared/generated.types';
 
 @Component({
-	selector: 'orc-mint-keyset-rotation',
+	selector: 'orc-mint-subsection-keysets-form',
 	standalone: false,
-	templateUrl: './mint-keyset-rotation.component.html',
-	styleUrl: './mint-keyset-rotation.component.scss',
+	templateUrl: './mint-subsection-keysets-form.component.html',
+	styleUrl: './mint-subsection-keysets-form.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintKeysetRotationComponent {
+export class MintSubsectionKeysetsFormComponent {
 	@Input() form_group!: FormGroup;
 	@Input() unit_options!: {value: string; label: string}[];
 	@Input() keyset_out!: MintKeyset;

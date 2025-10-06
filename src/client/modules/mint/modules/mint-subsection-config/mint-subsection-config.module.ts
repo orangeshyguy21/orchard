@@ -1,8 +1,8 @@
 /* Core Dependencies */
 import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {ReactiveFormsModule} from '@angular/forms';
-import {RouterModule} from '@angular/router';
+import {CommonModule as CoreCommonModule} from '@angular/common';
+import {ReactiveFormsModule as CoreReactiveFormsModule} from '@angular/forms';
+import {RouterModule as CoreRouterModule} from '@angular/router';
 /* Vendor Dependencies */
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
@@ -10,7 +10,9 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatIconModule} from '@angular/material/icon';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatCardModule} from '@angular/material/card';
-import {BaseChartDirective} from 'ng2-charts';
+import {MatRippleModule} from '@angular/material/core';
+import {MatButtonModule} from '@angular/material/button';
+import {BaseChartDirective as ChartJsBaseChartDirective} from 'ng2-charts';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
@@ -55,22 +57,24 @@ import {MintSubsectionConfigNut19Component} from './components/mint-subsection-c
 		MintSubsectionConfigNut19Component,
 	],
 	imports: [
-		RouterModule.forChild([
+		CoreRouterModule.forChild([
 			{
 				path: '',
 				component: MintSubsectionConfigComponent,
 				canDeactivate: [pendingEventGuard],
 			},
 		]),
-		CommonModule,
-		ReactiveFormsModule,
+		CoreCommonModule,
+		CoreReactiveFormsModule,
 		MatCardModule,
 		MatFormFieldModule,
 		MatInputModule,
 		MatSlideToggleModule,
 		MatDialogModule,
 		MatIconModule,
-		BaseChartDirective,
+		MatRippleModule,
+		MatButtonModule,
+		ChartJsBaseChartDirective,
 		OrcFormModule,
 		OrcGraphicModule,
 		OrcNavModule,

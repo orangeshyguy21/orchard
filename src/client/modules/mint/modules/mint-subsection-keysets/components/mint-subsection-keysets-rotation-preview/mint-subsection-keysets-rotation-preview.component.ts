@@ -4,13 +4,13 @@ import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {MintUnit} from '@shared/generated.types';
 
 @Component({
-	selector: 'orc-mint-keyset-rotation-preview',
+	selector: 'orc-mint-subsection-keysets-rotation-preview',
 	standalone: false,
-	templateUrl: './mint-keyset-rotation-preview.component.html',
-	styleUrl: './mint-keyset-rotation-preview.component.scss',
+	templateUrl: './mint-subsection-keysets-rotation-preview.component.html',
+	styleUrl: './mint-subsection-keysets-rotation-preview.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintKeysetRotationPreviewComponent {
+export class MintSubsectionKeysetsRotationPreviewComponent {
 	@Input() keyset_in_unit!: MintUnit;
 	@Input() keyset_in_index!: number;
 	@Input() keyset_in_fee!: number;

@@ -11,7 +11,6 @@ import {pendingEventGuard} from '@client/modules/event/guards/pending-event.guar
 /* Native Dependencies */
 import {MintSectionComponent} from './components/mint-section/mint-section.component';
 import {MintSubsectionErrorComponent} from './components/mint-subsection-error/mint-subsection-error.component';
-import {MintSubsectionKeysetsComponent} from './components/mint-subsection-keysets/mint-subsection-keysets.component';
 import {MintSubsectionDatabaseComponent} from './components/mint-subsection-database/mint-subsection-database.component';
 import {MintSubsectionDisabledComponent} from './components/mint-subsection-disabled/mint-subsection-disabled.component';
 import {MintService} from './services/mint/mint.service';
@@ -147,12 +146,15 @@ const routes: Routes = [
 			},
 			{
 				path: 'keysets',
-				component: MintSubsectionKeysetsComponent,
+				loadChildren: () =>
+					import('@client/modules/mint/modules/mint-subsection-keysets/mint-subsection-keysets.module').then(
+						(m) => m.OrcMintSubsectionKeysetsModule,
+					),
 				title: 'Orchard | Mint Keysets',
 				resolve: {
 					mint_keysets: mintKeysetsResolver,
 				},
-				canDeactivate: [pendingEventGuard],
+				canActivate: [enabledGuard],
 				data: {
 					section: 'mint',
 					sub_section: 'keysets',

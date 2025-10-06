@@ -3,7 +3,7 @@ import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintAnalyticKeyset} from '@client/modules/mint/classes/mint-analytic.class';
 import {MintKeysetProofCount} from '@client/modules/mint/classes/mint-keyset-proof-count.class';
 
-export class MintKeysetRow {
+export class MintSubsectionKeysetsTableRow {
 	active: boolean;
 	derivation_path_index: number;
 	id: string;

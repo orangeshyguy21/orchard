@@ -35,14 +35,8 @@ import {OrcMintSectionGeneralModule} from './modules/mint-section-general/mint-s
 
 import {MintSectionComponent} from './components/mint-section/mint-section.component';
 import {MintSubsectionErrorComponent} from './components/mint-subsection-error/mint-subsection-error.component';
-import {MintSubsectionKeysetsComponent} from './components/mint-subsection-keysets/mint-subsection-keysets.component';
 import {MintSubsectionDatabaseComponent} from './components/mint-subsection-database/mint-subsection-database.component';
 import {MintSubsectionDisabledComponent} from './components/mint-subsection-disabled/mint-subsection-disabled.component';
-import {MintKeysetChartComponent} from './components/mint-keyset-chart/mint-keyset-chart.component';
-import {MintKeysetControlComponent} from './components/mint-keyset-control/mint-keyset-control.component';
-import {MintKeysetTableComponent} from './components/mint-keyset-table/mint-keyset-table.component';
-import {MintKeysetRotationComponent} from './components/mint-keyset-rotation/mint-keyset-rotation.component';
-import {MintKeysetRotationPreviewComponent} from './components/mint-keyset-rotation-preview/mint-keyset-rotation-preview.component';
 import {MintDataControlComponent} from './components/mint-data-control/mint-data-control.component';
 import {MintDataChartComponent} from './components/mint-data-chart/mint-data-chart.component';
 import {MintDataTableComponent} from './components/mint-data-table/mint-data-table.component';
@@ -60,14 +54,8 @@ import {MintAppRoutingModule} from './mint.app.router';
 	declarations: [
 		MintSectionComponent,
 		MintSubsectionErrorComponent,
-		MintSubsectionKeysetsComponent,
 		MintSubsectionDatabaseComponent,
 		MintSubsectionDisabledComponent,
-		MintKeysetChartComponent,
-		MintKeysetControlComponent,
-		MintKeysetTableComponent,
-		MintKeysetRotationComponent,
-		MintKeysetRotationPreviewComponent,
 		MintDataControlComponent,
 		MintDataChartComponent,
 		MintDataTableComponent,

@@ -11,9 +11,9 @@ import {MatRippleModule} from '@angular/material/core';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatIconModule} from '@angular/material/icon';
 import {MatSelectModule} from '@angular/material/select';
+import {MatButtonModule} from '@angular/material/button';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
-/* Application Dependencies */
 import {pendingEventGuard} from '@client/modules/event/guards/pending-event.guard';
 /* Local Dependencies */
 import {MintSubsectionInfoComponent} from './components/mint-subsection-info/mint-subsection-info.component';
@@ -57,6 +57,7 @@ import {MintSubsectionInfoFormMotdComponent} from './components/mint-subsection-
 		MatProgressSpinnerModule,
 		MatIconModule,
 		MatSelectModule,
+		MatButtonModule,
 		OrcFormModule,
 	],
 	exports: [],

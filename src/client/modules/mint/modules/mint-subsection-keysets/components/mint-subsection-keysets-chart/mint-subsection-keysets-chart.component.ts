@@ -24,13 +24,13 @@ import {MintAnalyticKeyset} from '@client/modules/mint/classes/mint-analytic.cla
 import {MintAnalyticsInterval} from '@shared/generated.types';
 
 @Component({
-	selector: 'orc-mint-keyset-chart',
+	selector: 'orc-mint-subsection-keysets-chart',
 	standalone: false,
-	templateUrl: './mint-keyset-chart.component.html',
-	styleUrl: './mint-keyset-chart.component.scss',
+	templateUrl: './mint-subsection-keysets-chart.component.html',
+	styleUrl: './mint-subsection-keysets-chart.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintKeysetChartComponent implements OnChanges, OnDestroy {
+export class MintSubsectionKeysetsChartComponent implements OnChanges, OnDestroy {
 	@ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
 	@Input() public locale!: string;

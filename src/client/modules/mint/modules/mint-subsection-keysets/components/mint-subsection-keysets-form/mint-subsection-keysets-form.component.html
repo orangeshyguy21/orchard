@@ -91,7 +91,7 @@
 					</form>
 				</div>
 				<div class="flex-1">
-					<orc-mint-keyset-rotation-preview
+					<orc-mint-subsection-keysets-rotation-preview
 						[keyset_in_unit]="form_group.get('unit')?.value"
 						[keyset_in_index]="keyset_out.derivation_path_index + 1"
 						[keyset_in_fee]="form_group.get('input_fee_ppk')?.value"
@@ -99,7 +99,7 @@
 						[keyset_out_index]="keyset_out.derivation_path_index"
 						[keyset_out_fee]="keyset_out.input_fee_ppk"
 						[keyset_out_balance]="keyset_out_balance?.balance"
-					></orc-mint-keyset-rotation-preview>
+					></orc-mint-subsection-keysets-rotation-preview>
 				</div>
 			</div>
 		</mat-card-content>

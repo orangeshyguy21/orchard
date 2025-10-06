@@ -1,8 +1,8 @@
 /* Core Dependencies */
 import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {ReactiveFormsModule} from '@angular/forms';
-import {RouterModule} from '@angular/router';
+import {CommonModule as CoreCommonModule} from '@angular/common';
+import {ReactiveFormsModule as CoreReactiveFormsModule} from '@angular/forms';
+import {RouterModule as CoreRouterModule} from '@angular/router';
 /* Vendor Dependencies */
 import {MatIconModule} from '@angular/material/icon';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -13,7 +13,7 @@ import {MatDialogModule} from '@angular/material/dialog';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatSliderModule} from '@angular/material/slider';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
-import {BaseChartDirective} from 'ng2-charts';
+import {BaseChartDirective as ChartJsBaseChartDirective} from 'ng2-charts';
 /* Application Dependencies */
 import {OrcNavModule} from '@client/modules/nav/nav.module';
 import {OrcMintGeneralModule} from '@client/modules/mint/modules/mint-general/mint-general.module';
@@ -35,14 +35,14 @@ import {MintSubsectionDashboardConnectionDialogComponent} from './components/min
 		MintSubsectionDashboardConnectionDialogComponent,
 	],
 	imports: [
-		RouterModule.forChild([
+		CoreRouterModule.forChild([
 			{
 				path: '',
 				component: MintSubsectionDashboardComponent,
 			},
 		]),
-		CommonModule,
-		ReactiveFormsModule,
+		CoreCommonModule,
+		CoreReactiveFormsModule,
 		MatIconModule,
 		MatFormFieldModule,
 		MatSelectModule,
@@ -52,7 +52,7 @@ import {MintSubsectionDashboardConnectionDialogComponent} from './components/min
 		MatTooltipModule,
 		MatSliderModule,
 		MatSlideToggleModule,
-		BaseChartDirective,
+		ChartJsBaseChartDirective,
 		OrcNavModule,
 		OrcMintGeneralModule,
 	],
