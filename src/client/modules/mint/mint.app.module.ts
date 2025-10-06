@@ -24,34 +24,20 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {BaseChartDirective} from 'ng2-charts';
 /* Application Dependencies */
 import {OrcNavModule} from '@client/modules/nav/nav.module';
-import {LocalModule} from '@client/modules/local/local.module';
-import {GraphicModule} from '@client/modules/graphic/graphic.module';
+import {OrcLocalModule} from '@client/modules/local/local.module';
+import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {ErrorModule} from '@client/modules/error/error.module';
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {SettingsModule} from '@client/modules/settings/settings.module';
 /* Native Dependencies */
 import {OrcMintGeneralModule} from './modules/mint-general/mint-general.module';
+import {OrcMintSectionGeneralModule} from './modules/mint-section-general/mint-section-general.module';
 
 import {MintSectionComponent} from './components/mint-section/mint-section.component';
 import {MintSubsectionErrorComponent} from './components/mint-subsection-error/mint-subsection-error.component';
-import {MintSubsectionConfigComponent} from './components/mint-subsection-config/mint-subsection-config.component';
 import {MintSubsectionKeysetsComponent} from './components/mint-subsection-keysets/mint-subsection-keysets.component';
 import {MintSubsectionDatabaseComponent} from './components/mint-subsection-database/mint-subsection-database.component';
 import {MintSubsectionDisabledComponent} from './components/mint-subsection-disabled/mint-subsection-disabled.component';
-import {MintConfigFormEnabledComponent} from './components/mint-config-form-enabled/mint-config-form-enabled.component';
-import {MintConfigFormQuoteTtlComponent} from './components/mint-config-form-quote-ttl/mint-config-form-quote-ttl.component';
-import {MintConfigFormBolt11Component} from './components/mint-config-form-bolt11/mint-config-form-bolt11.component';
-import {MintConfigFormBolt12Component} from './components/mint-config-form-bolt12/mint-config-form-bolt12.component';
-import {MintConfigFormMinComponent} from './components/mint-config-form-min/mint-config-form-min.component';
-import {MintConfigFormMaxComponent} from './components/mint-config-form-max/mint-config-form-max.component';
-import {MintConfigFormEnabledConfirmComponent} from './components/mint-config-form-enabled-confirm/mint-config-form-enabled-confirm.component';
-import {MintConfigChartQuoteTtlComponent} from './components/mint-config-chart-quote-ttl/mint-config-chart-quote-ttl.component';
-import {MintConfigChartMethodComponent} from './components/mint-config-chart-method/mint-config-chart-method.component';
-import {MintConfigFormSupportedComponent} from './components/mint-config-form-supported/mint-config-form-supported.component';
-import {MintConfigFormNut15MethodComponent} from './components/mint-config-form-nut15-method/mint-config-form-nut15-method.component';
-import {MintConfigFormNut17CommandsComponent} from './components/mint-config-form-nut17-commands/mint-config-form-nut17-commands.component';
-import {MintConfigFormNut19Component} from './components/mint-config-form-nut19/mint-config-form-nut19.component';
-import {MintNutComponent} from './components/mint-nut/mint-nut.component';
 import {MintKeysetChartComponent} from './components/mint-keyset-chart/mint-keyset-chart.component';
 import {MintKeysetControlComponent} from './components/mint-keyset-control/mint-keyset-control.component';
 import {MintKeysetTableComponent} from './components/mint-keyset-table/mint-keyset-table.component';
@@ -67,7 +53,6 @@ import {MintDataMeltComponent} from './components/mint-data-melt/mint-data-melt.
 import {MintDataBackupCreateComponent} from './components/mint-data-backup-create/mint-data-backup-create.component';
 import {MintDataBackupRestoreComponent} from './components/mint-data-backup-restore/mint-data-backup-restore.component';
 import {MintDataEcashComponent} from './components/mint-data-ecash/mint-data-ecash.component';
-import {MintPaymentMethodComponent} from './components/mint-payment-method/mint-payment-method.component';
 /* Local Dependencies */
 import {MintAppRoutingModule} from './mint.app.router';
 
@@ -75,24 +60,9 @@ import {MintAppRoutingModule} from './mint.app.router';
 	declarations: [
 		MintSectionComponent,
 		MintSubsectionErrorComponent,
-		MintSubsectionConfigComponent,
 		MintSubsectionKeysetsComponent,
 		MintSubsectionDatabaseComponent,
 		MintSubsectionDisabledComponent,
-		MintConfigFormEnabledComponent,
-		MintConfigFormQuoteTtlComponent,
-		MintConfigFormBolt11Component,
-		MintConfigFormBolt12Component,
-		MintConfigFormMinComponent,
-		MintConfigFormMaxComponent,
-		MintConfigFormEnabledConfirmComponent,
-		MintConfigChartQuoteTtlComponent,
-		MintConfigChartMethodComponent,
-		MintConfigFormSupportedComponent,
-		MintConfigFormNut15MethodComponent,
-		MintConfigFormNut17CommandsComponent,
-		MintConfigFormNut19Component,
-		MintNutComponent,
 		MintKeysetChartComponent,
 		MintKeysetControlComponent,
 		MintKeysetTableComponent,
@@ -108,7 +78,6 @@ import {MintAppRoutingModule} from './mint.app.router';
 		MintDataBackupCreateComponent,
 		MintDataBackupRestoreComponent,
 		MintDataEcashComponent,
-		MintPaymentMethodComponent,
 	],
 	imports: [
 		CommonModule,
@@ -134,12 +103,13 @@ import {MintAppRoutingModule} from './mint.app.router';
 		MatTooltipModule,
 		BaseChartDirective,
 		OrcNavModule,
-		LocalModule,
-		GraphicModule,
+		OrcLocalModule,
+		OrcGraphicModule,
 		ErrorModule,
 		OrcFormModule,
 		SettingsModule,
 		OrcMintGeneralModule,
+		OrcMintSectionGeneralModule,
 	],
 })
 export class MintAppModule {}

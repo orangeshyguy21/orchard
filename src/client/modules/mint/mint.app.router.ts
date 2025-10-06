@@ -11,7 +11,6 @@ import {pendingEventGuard} from '@client/modules/event/guards/pending-event.guar
 /* Native Dependencies */
 import {MintSectionComponent} from './components/mint-section/mint-section.component';
 import {MintSubsectionErrorComponent} from './components/mint-subsection-error/mint-subsection-error.component';
-import {MintSubsectionConfigComponent} from './components/mint-subsection-config/mint-subsection-config.component';
 import {MintSubsectionKeysetsComponent} from './components/mint-subsection-keysets/mint-subsection-keysets.component';
 import {MintSubsectionDatabaseComponent} from './components/mint-subsection-database/mint-subsection-database.component';
 import {MintSubsectionDisabledComponent} from './components/mint-subsection-disabled/mint-subsection-disabled.component';
@@ -121,7 +120,7 @@ const routes: Routes = [
 				resolve: {
 					mint_info_rpc: mintInfoRpcResolver,
 				},
-				canDeactivate: [pendingEventGuard],
+				canActivate: [enabledGuard],
 				data: {
 					section: 'mint',
 					sub_section: 'info',
@@ -130,13 +129,16 @@ const routes: Routes = [
 			},
 			{
 				path: 'config',
-				component: MintSubsectionConfigComponent,
+				loadChildren: () =>
+					import('@client/modules/mint/modules/mint-subsection-config/mint-subsection-config.module').then(
+						(m) => m.OrcMintSubsectionConfigModule,
+					),
 				title: 'Orchard | Mint Config',
 				resolve: {
 					mint_info: mintInfoResolver,
 					mint_quote_ttl: mintQuoteTtlsResolver,
 				},
-				canDeactivate: [pendingEventGuard],
+				canActivate: [enabledGuard],
 				data: {
 					section: 'mint',
 					sub_section: 'config',

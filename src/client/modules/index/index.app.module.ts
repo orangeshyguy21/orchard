@@ -13,8 +13,8 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 /* Application Dependencies */
-import {LocalModule} from '@client/modules/local/local.module';
-import {GraphicModule} from '@client/modules/graphic/graphic.module';
+import {OrcLocalModule} from '@client/modules/local/local.module';
+import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {ErrorModule} from '@client/modules/error/error.module';
 import {BitcoinModule} from '@client/modules/bitcoin/bitcoin.module';
 import {LightningModule} from '@client/modules/lightning/lightning.module';
@@ -92,8 +92,8 @@ export class IndexAppRoutingModule {}
 		MatProgressSpinnerModule,
 		MatFormFieldModule,
 		MatSelectModule,
-		LocalModule,
-		GraphicModule,
+		OrcLocalModule,
+		OrcGraphicModule,
 		ErrorModule,
 		BitcoinModule,
 		LightningModule,

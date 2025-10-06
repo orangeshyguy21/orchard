@@ -5,7 +5,7 @@ import {CommonModule} from '@angular/common';
 import {MatIconModule} from '@angular/material/icon';
 import {MatTooltipModule} from '@angular/material/tooltip';
 /* Application Dependencies */
-import {LocalModule} from '@client/modules/local/local.module';
+import {OrcLocalModule} from '@client/modules/local/local.module';
 /* Local Dependencies */
 import {BlockPipe} from './pipes/block/block.pipe';
 import {Log2WorkPipe} from './pipes/log2work/log2work.pipe';
@@ -15,7 +15,7 @@ import {BitcoinBlockComponent} from './components/bitcoin-block/bitcoin-block.co
 
 @NgModule({
 	declarations: [BlockPipe, Log2WorkPipe, FeeratePipe, BitcoinUtxoStackComponent, BitcoinBlockComponent],
-	imports: [CommonModule, MatIconModule, MatTooltipModule, LocalModule],
+	imports: [CommonModule, MatIconModule, MatTooltipModule, OrcLocalModule],
 	exports: [BlockPipe, Log2WorkPipe, FeeratePipe, BitcoinUtxoStackComponent, BitcoinBlockComponent],
 })
 export class BitcoinModule {}

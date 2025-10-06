@@ -7,8 +7,8 @@ import {MatCardModule} from '@angular/material/card';
 import {MatTableModule} from '@angular/material/table';
 import {MatButtonModule} from '@angular/material/button';
 /* Application Dependencies */
-import {GraphicModule} from '@client/modules/graphic/graphic.module';
-import {LocalModule} from '@client/modules/local/local.module';
+import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
+import {OrcLocalModule} from '@client/modules/local/local.module';
 import {ErrorModule} from '@client/modules/error/error.module';
 /* Local Dependencies */
 import {MintGeneralIconComponent} from './components/mint-general-icon/mint-general-icon.component';
@@ -18,7 +18,7 @@ import {MintGeneralBalanceSheetComponent} from './components/mint-general-balanc
 
 @NgModule({
 	declarations: [MintGeneralIconComponent, MintGeneralNameComponent, MintGeneralKeysetComponent, MintGeneralBalanceSheetComponent],
-	imports: [CommonModule, MatIconModule, MatCardModule, MatTableModule, MatButtonModule, GraphicModule, LocalModule, ErrorModule],
+	imports: [CommonModule, MatIconModule, MatCardModule, MatTableModule, MatButtonModule, OrcGraphicModule, OrcLocalModule, ErrorModule],
 	exports: [MintGeneralIconComponent, MintGeneralNameComponent, MintGeneralKeysetComponent, MintGeneralBalanceSheetComponent],
 })
 export class OrcMintGeneralModule {}

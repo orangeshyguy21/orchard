@@ -8,7 +8,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatMenuModule} from '@angular/material/menu';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 /* Application Dependencies */
-import {GraphicModule} from '@client/modules/graphic/graphic.module';
+import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {BitcoinModule} from '@client/modules/bitcoin/bitcoin.module';
 import {EventModule} from '@client/modules/event/event.module';
 /* Local Dependencies */
@@ -45,7 +45,7 @@ import {TertiaryNavItemComponent} from './components/tertiary-nav-item/tertiary-
 		MatButtonModule,
 		MatMenuModule,
 		DragDropModule,
-		GraphicModule,
+		OrcGraphicModule,
 		BitcoinModule,
 		EventModule,
 	],

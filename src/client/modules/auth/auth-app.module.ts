@@ -11,7 +11,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
-import {GraphicModule} from '@client/modules/graphic/graphic.module';
+import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 /* Local Dependencies */
 import {AuthSectionComponent} from './components/auth-section/auth-section.component';
 import {AuthPasswordComponent} from './components/auth-password/auth-password.component';
@@ -42,7 +42,7 @@ export class AuthAppRoutingModule {}
 		MatIconModule,
 		MatButtonModule,
 		OrcFormModule,
-		GraphicModule,
+		OrcGraphicModule,
 	],
 })
 export class AuthAppModule {}

@@ -6,15 +6,15 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatTableModule} from '@angular/material/table';
 import {MatCardModule} from '@angular/material/card';
 /* Application Dependencies */
-import {GraphicModule} from '@client/modules/graphic/graphic.module';
-import {LocalModule} from '@client/modules/local/local.module';
+import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
+import {OrcLocalModule} from '@client/modules/local/local.module';
 /* Local Dependencies */
 import {LightningChannelComponent} from './components/lightning-channel/lightning-channel.component';
 import {LightningChannelTableComponent} from './components/lightning-channel-table/lightning-channel-table.component';
 
 @NgModule({
 	declarations: [LightningChannelComponent, LightningChannelTableComponent],
-	imports: [CommonModule, MatIconModule, MatTableModule, MatCardModule, GraphicModule, LocalModule],
+	imports: [CommonModule, MatIconModule, MatTableModule, MatCardModule, OrcGraphicModule, OrcLocalModule],
 	exports: [LightningChannelComponent, LightningChannelTableComponent],
 })
 export class LightningModule {}

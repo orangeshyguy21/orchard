@@ -15,7 +15,7 @@ import {MatChipsModule} from '@angular/material/chips';
 import {MatIconModule} from '@angular/material/icon';
 /* Application Dependencies */
 import {OrcNavModule} from '@client/modules/nav/nav.module';
-import {LocalModule} from '@client/modules/local/local.module';
+import {OrcLocalModule} from '@client/modules/local/local.module';
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {AiModule} from '@client/modules/ai/ai.module';
 /* Native Module Dependencies */
@@ -69,7 +69,7 @@ export class SettingsAppRoutingModule {}
 		MatChipsModule,
 		MatIconModule,
 		OrcNavModule,
-		LocalModule,
+		OrcLocalModule,
 		OrcFormModule,
 		AiModule,
 	],
