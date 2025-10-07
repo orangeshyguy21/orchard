@@ -20,7 +20,8 @@ const interior_routes = [
 	},
 	{
 		path: 'bitcoin',
-		loadChildren: () => import('@client/modules/bitcoin/bitcoin.app.module').then((m) => m.BitcoinAppModule),
+		loadChildren: () =>
+			import('@client/modules/bitcoin/modules/bitcoin-section/bitcoin-section.module').then((m) => m.BitcoinSectionModule),
 		canActivateChild: [authenticationGuard],
 	},
 	{

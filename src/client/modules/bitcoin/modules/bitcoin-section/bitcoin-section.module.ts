@@ -4,17 +4,14 @@ import {CommonModule as CoreCommonModule} from '@angular/common';
 import {RouterModule as CoreRouterModule} from '@angular/router';
 /* Vendor Dependencies */
 import {MatIconModule} from '@angular/material/icon';
-import {MatButtonModule} from '@angular/material/button';
 /* Application Dependencies */
 import {OrcNavModule} from '@client/modules/nav/nav.module';
-import {OrcSettingsModule} from '@client/modules/settings/settings.module';
 import {enabledGuard} from '@client/modules/routing/guards/enabled/enabled.guard';
 /* Native Dependencies */
 import {BitcoinSectionComponent} from './components/bitcoin-section/bitcoin-section.component';
-import {BitcoinSubsectionDisabledComponent} from './components/bitcoin-subsection-disabled/bitcoin-subsection-disabled.component';
 
 @NgModule({
-	declarations: [BitcoinSectionComponent, BitcoinSubsectionDisabledComponent],
+	declarations: [BitcoinSectionComponent],
 	imports: [
 		CoreRouterModule.forChild([
 			{
@@ -41,7 +38,10 @@ import {BitcoinSubsectionDisabledComponent} from './components/bitcoin-subsectio
 			},
 			{
 				path: 'disabled',
-				component: BitcoinSubsectionDisabledComponent,
+				loadChildren: () =>
+					import('@client/modules/bitcoin/modules/bitcoin-subsection-disabled/bitcoin-subsection-disabled.module').then(
+						(m) => m.OrcBitcoinSubsectionDisabledModule,
+					),
 				title: 'Orchard | Bitcoin Disabled',
 				data: {
 					section: 'bitcoin',
@@ -51,9 +51,7 @@ import {BitcoinSubsectionDisabledComponent} from './components/bitcoin-subsectio
 		]),
 		CoreCommonModule,
 		MatIconModule,
-		MatButtonModule,
 		OrcNavModule,
-		OrcSettingsModule,
 	],
 })
-export class BitcoinAppModule {}
+export class BitcoinSectionModule {}
