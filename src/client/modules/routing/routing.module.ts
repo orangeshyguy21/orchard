@@ -30,7 +30,7 @@ const interior_routes = [
 	},
 	{
 		path: 'mint',
-		loadChildren: () => import('@client/modules/mint/mint.app.module').then((m) => m.MintAppModule),
+		loadChildren: () => import('@client/modules/mint/modules/mint-section/mint-section.module').then((m) => m.OrcMintSectionModule),
 		canActivateChild: [authenticationGuard],
 	},
 	{
