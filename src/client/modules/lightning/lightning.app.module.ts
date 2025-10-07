@@ -8,7 +8,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 /* Application Dependencies */
 import {OrcNavModule} from '@client/modules/nav/nav.module';
-import {SettingsModule} from '@client/modules/settings/settings.module';
+import {OrcSettingsModule} from '@client/modules/settings/settings.module';
 /* Native Dependencies */
 import {LightningSectionComponent} from './components/lightning-section/lightning-section.component';
 import {LightningSubsectionDisabledComponent} from './components/lightning-subsection-disabled/lightning-subsection-disabled.component';
@@ -25,7 +25,7 @@ import {LightningAppRoutingModule} from './lightning.app.router';
 		MatFormFieldModule,
 		MatSelectModule,
 		OrcNavModule,
-		SettingsModule,
+		OrcSettingsModule,
 		LightningAppRoutingModule,
 	],
 })

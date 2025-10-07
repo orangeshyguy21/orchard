@@ -6,7 +6,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 /* Application Dependencies */
 import {OrcNavModule} from '@client/modules/nav/nav.module';
-import {SettingsModule} from '@client/modules/settings/settings.module';
+import {OrcSettingsModule} from '@client/modules/settings/settings.module';
 /* Native Dependencies */
 import {BitcoinSectionComponent} from './components/bitcoin-section/bitcoin-section.component';
 import {BitcoinSubsectionDashboardComponent} from './components/bitcoin-subsection-dashboard/bitcoin-subsection-dashboard.component';
@@ -16,6 +16,6 @@ import {BitcoinAppRoutingModule} from './bitcoin.app.router';
 
 @NgModule({
 	declarations: [BitcoinSectionComponent, BitcoinSubsectionDashboardComponent, BitcoinSubsectionDisabledComponent],
-	imports: [CommonModule, MatIconModule, MatButtonModule, OrcNavModule, SettingsModule, BitcoinAppRoutingModule],
+	imports: [CommonModule, MatIconModule, MatButtonModule, OrcNavModule, OrcSettingsModule, BitcoinAppRoutingModule],
 })
 export class BitcoinAppModule {}

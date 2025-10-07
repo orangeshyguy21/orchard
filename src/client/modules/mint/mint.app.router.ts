@@ -9,8 +9,6 @@ import {enabledGuard} from '@client/modules/routing/guards/enabled/enabled.guard
 import {ErrorService} from '@client/modules/error/services/error.service';
 /* Native Dependencies */
 import {MintSectionComponent} from './components/mint-section/mint-section.component';
-import {MintSubsectionErrorComponent} from './components/mint-subsection-error/mint-subsection-error.component';
-import {MintSubsectionDisabledComponent} from './components/mint-subsection-disabled/mint-subsection-disabled.component';
 import {MintService} from './services/mint/mint.service';
 /* Shared Dependencies */
 import {AiAgent} from '@shared/generated.types';
@@ -178,7 +176,10 @@ const routes: Routes = [
 			},
 			{
 				path: 'error',
-				component: MintSubsectionErrorComponent,
+				loadChildren: () =>
+					import('@client/modules/mint/modules/mint-subsection-error/mint-subsection-error.module').then(
+						(m) => m.OrcMintSubsectionErrorModule,
+					),
 				title: 'Orchard | Mint Error',
 				data: {
 					section: 'mint',
@@ -197,7 +198,10 @@ const routes: Routes = [
 	},
 	{
 		path: 'disabled',
-		component: MintSubsectionDisabledComponent,
+		loadChildren: () =>
+			import('@client/modules/mint/modules/mint-subsection-disabled/mint-subsection-disabled.module').then(
+				(m) => m.OrcMintSubsectionDisabledModule,
+			),
 		title: 'Orchard | Mint Disabled',
 		data: {
 			section: 'mint',

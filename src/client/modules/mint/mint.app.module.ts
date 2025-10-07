@@ -26,21 +26,19 @@ import {BaseChartDirective} from 'ng2-charts';
 import {OrcNavModule} from '@client/modules/nav/nav.module';
 import {OrcLocalModule} from '@client/modules/local/local.module';
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
-import {ErrorModule} from '@client/modules/error/error.module';
+import {OrcErrorModule} from '@client/modules/error/error.module';
 import {OrcFormModule} from '@client/modules/form/form.module';
-import {SettingsModule} from '@client/modules/settings/settings.module';
+import {OrcSettingsModule} from '@client/modules/settings/settings.module';
 /* Native Dependencies */
 import {OrcMintGeneralModule} from './modules/mint-general/mint-general.module';
 import {OrcMintSectionGeneralModule} from './modules/mint-section-general/mint-section-general.module';
 
 import {MintSectionComponent} from './components/mint-section/mint-section.component';
-import {MintSubsectionErrorComponent} from './components/mint-subsection-error/mint-subsection-error.component';
-import {MintSubsectionDisabledComponent} from './components/mint-subsection-disabled/mint-subsection-disabled.component';
 /* Local Dependencies */
 import {MintAppRoutingModule} from './mint.app.router';
 
 @NgModule({
-	declarations: [MintSectionComponent, MintSubsectionErrorComponent, MintSubsectionDisabledComponent],
+	declarations: [MintSectionComponent],
 	imports: [
 		CommonModule,
 		ReactiveFormsModule,
@@ -67,9 +65,9 @@ import {MintAppRoutingModule} from './mint.app.router';
 		OrcNavModule,
 		OrcLocalModule,
 		OrcGraphicModule,
-		ErrorModule,
+		OrcErrorModule,
 		OrcFormModule,
-		SettingsModule,
+		OrcSettingsModule,
 		OrcMintGeneralModule,
 		OrcMintSectionGeneralModule,
 	],

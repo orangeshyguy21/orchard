@@ -1,5 +1,6 @@
+/* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-
+/* Local Dependencies */
 import {MintSubsectionDisabledComponent} from './mint-subsection-disabled.component';
 
 describe('MintSubsectionDisabledComponent', () => {

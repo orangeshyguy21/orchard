@@ -12,4 +12,4 @@ import {SettingsEnvComponent} from './components/settings-env/settings-env.compo
 	imports: [CommonModule, MatIconModule, MatButtonModule],
 	exports: [SettingsEnvComponent],
 })
-export class SettingsModule {}
+export class OrcSettingsModule {}
