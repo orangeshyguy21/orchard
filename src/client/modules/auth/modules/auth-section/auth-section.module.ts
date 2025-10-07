@@ -1,8 +1,8 @@
 /* Core Dependencies */
 import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {RouterModule, Routes} from '@angular/router';
-import {ReactiveFormsModule} from '@angular/forms';
+import {CommonModule as CoreCommonModule} from '@angular/common';
+import {RouterModule as CoreRouterModule} from '@angular/router';
+import {ReactiveFormsModule as CoreReactiveFormsModule} from '@angular/forms';
 /* Vendor Dependencies */
 import {MatCardModule} from '@angular/material/card';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -16,26 +16,17 @@ import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {AuthSectionComponent} from './components/auth-section/auth-section.component';
 import {AuthPasswordComponent} from './components/auth-password/auth-password.component';
 
-const routes: Routes = [
-	{
-		path: '',
-		component: AuthSectionComponent,
-	},
-];
-
-@NgModule({
-	imports: [RouterModule.forChild(routes)],
-	exports: [RouterModule],
-	declarations: [],
-})
-export class AuthAppRoutingModule {}
-
 @NgModule({
 	declarations: [AuthSectionComponent, AuthPasswordComponent],
 	imports: [
-		AuthAppRoutingModule,
-		CommonModule,
-		ReactiveFormsModule,
+		CoreRouterModule.forChild([
+			{
+				path: '',
+				component: AuthSectionComponent,
+			},
+		]),
+		CoreCommonModule,
+		CoreReactiveFormsModule,
 		MatCardModule,
 		MatFormFieldModule,
 		MatInputModule,
@@ -45,4 +36,4 @@ export class AuthAppRoutingModule {}
 		OrcGraphicModule,
 	],
 })
-export class AuthAppModule {}
+export class AuthSectionModule {}

@@ -61,7 +61,7 @@ const routes: Routes = [
 	{
 		path: 'authentication',
 		component: LayoutExteriorComponent,
-		loadChildren: () => import('@client/modules/auth/auth-app.module').then((m) => m.AuthAppModule),
+		loadChildren: () => import('@client/modules/auth/modules/auth-section/auth-section.module').then((m) => m.AuthSectionModule),
 	},
 ];
 
