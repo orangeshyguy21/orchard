@@ -7,11 +7,9 @@ import {catchError, of} from 'rxjs';
 import {errorResolveGuard} from '@client/modules/error/guards/error-resolve.guard';
 import {enabledGuard} from '@client/modules/routing/guards/enabled/enabled.guard';
 import {ErrorService} from '@client/modules/error/services/error.service';
-import {pendingEventGuard} from '@client/modules/event/guards/pending-event.guard';
 /* Native Dependencies */
 import {MintSectionComponent} from './components/mint-section/mint-section.component';
 import {MintSubsectionErrorComponent} from './components/mint-subsection-error/mint-subsection-error.component';
-import {MintSubsectionDatabaseComponent} from './components/mint-subsection-database/mint-subsection-database.component';
 import {MintSubsectionDisabledComponent} from './components/mint-subsection-disabled/mint-subsection-disabled.component';
 import {MintService} from './services/mint/mint.service';
 /* Shared Dependencies */
@@ -163,12 +161,15 @@ const routes: Routes = [
 			},
 			{
 				path: 'database',
-				component: MintSubsectionDatabaseComponent,
+				loadChildren: () =>
+					import('@client/modules/mint/modules/mint-subsection-database/mint-subsection-database.module').then(
+						(m) => m.OrcMintSubsectionDatabaseModule,
+					),
 				title: 'Orchard | Mint Database',
 				resolve: {
 					mint_keysets: mintKeysetsResolver,
 				},
-				canDeactivate: [pendingEventGuard],
+				canActivate: [enabledGuard],
 				data: {
 					section: 'mint',
 					sub_section: 'database',
