@@ -46,7 +46,7 @@ const interior_routes = [
 	},
 	{
 		path: 'event',
-		loadChildren: () => import('@client/modules/event/event.app.module').then((m) => m.EventAppModule),
+		loadChildren: () => import('@client/modules/event/modules/event-section/event-section.module').then((m) => m.OrcEventSectionModule),
 		canActivateChild: [authenticationGuard],
 	},
 ];
