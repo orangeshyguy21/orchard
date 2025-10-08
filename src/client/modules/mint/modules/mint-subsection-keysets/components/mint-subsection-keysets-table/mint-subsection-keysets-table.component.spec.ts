@@ -1,5 +1,7 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+/* Native Dependencies */
+import {OrcMintSubsectionKeysetsModule} from '@client/modules/mint/modules/mint-subsection-keysets/mint-subsection-keysets.module';
 /* Local Dependencies */
 import {MintSubsectionKeysetsTableComponent} from './mint-subsection-keysets-table.component';
 
@@ -9,7 +11,7 @@ describe('MintSubsectionKeysetsTableComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [MintSubsectionKeysetsTableComponent],
+			imports: [OrcMintSubsectionKeysetsModule],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(MintSubsectionKeysetsTableComponent);
