@@ -3,13 +3,13 @@ import {ChangeDetectionStrategy, Component, Input, Output, EventEmitter, ViewChi
 import {FormGroup} from '@angular/forms';
 
 @Component({
-	selector: 'orc-auth-password',
+	selector: 'orc-auth-subsection-authenticate-password',
 	standalone: false,
-	templateUrl: './auth-password.component.html',
-	styleUrl: './auth-password.component.scss',
+	templateUrl: './auth-subsection-authenticate-password.component.html',
+	styleUrl: './auth-subsection-authenticate-password.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AuthPasswordComponent {
+export class AuthSubsectionAuthenticatePasswordComponent {
 	@ViewChild('element_password') element_password!: ElementRef<HTMLInputElement>;
 
 	@Input() form_group!: FormGroup;
