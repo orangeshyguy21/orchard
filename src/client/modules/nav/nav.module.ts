@@ -12,31 +12,31 @@ import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {OrcBitcoinGeneralModule} from '@client/modules/bitcoin/modules/bitcoin-general/bitcoin-general.module';
 import {OrcEventGeneralModule} from '@client/modules/event/modules/event-general/event-general.module';
 /* Local Dependencies */
-import {PrimaryNavComponent} from '@client/modules/nav/components/primary-nav/primary-nav.component';
-import {PrimaryNavHeaderComponent} from './components/primary-nav-header/primary-nav-header.component';
-import {PrimaryNavItemsComponent} from './components/primary-nav-items/primary-nav-items.component';
-import {PrimaryNavItemComponent} from './components/primary-nav-item/primary-nav-item.component';
-import {SecondaryNavComponent} from './components/secondary-nav/secondary-nav.component';
-import {SecondaryNavItemComponent} from './components/secondary-nav-item/secondary-nav-item.component';
-import {PrimaryNavFooterComponent} from './components/primary-nav-footer/primary-nav-footer.component';
-import {PrimaryNavToolComponent} from './components/primary-nav-tool/primary-nav-tool.component';
-import {SecondaryNavMoreComponent} from './components/secondary-nav-more/secondary-nav-more.component';
-import {TertiaryNavComponent} from './components/tertiary-nav/tertiary-nav.component';
-import {TertiaryNavItemComponent} from './components/tertiary-nav-item/tertiary-nav-item.component';
+import {NavPrimaryComponent} from '@client/modules/nav/components/nav-primary/nav-primary.component';
+import {NavPrimaryHeaderComponent} from './components/nav-primary-header/nav-primary-header.component';
+import {NavPrimaryFooterComponent} from './components/nav-primary-footer/nav-primary-footer.component';
+import {NavPrimaryItemsComponent} from './components/nav-primary-items/nav-primary-items.component';
+import {NavPrimaryItemComponent} from './components/nav-primary-item/nav-primary-item.component';
+import {NavPrimaryToolComponent} from './components/nav-primary-tool/nav-primary-tool.component';
+import {NavSecondaryComponent} from './components/nav-secondary/nav-secondary.component';
+import {NavSecondaryItemComponent} from './components/nav-secondary-item/nav-secondary-item.component';
+import {NavSecondaryMoreComponent} from './components/nav-secondary-more/nav-secondary-more.component';
+import {NavTertiaryComponent} from './components/nav-tertiary/nav-tertiary.component';
+import {NavTertiaryItemComponent} from './components/nav-tertiary-item/nav-tertiary-item.component';
 
 @NgModule({
 	declarations: [
-		PrimaryNavComponent,
-		PrimaryNavHeaderComponent,
-		PrimaryNavItemsComponent,
-		PrimaryNavItemComponent,
-		SecondaryNavComponent,
-		SecondaryNavItemComponent,
-		PrimaryNavFooterComponent,
-		PrimaryNavToolComponent,
-		SecondaryNavMoreComponent,
-		TertiaryNavComponent,
-		TertiaryNavItemComponent,
+		NavPrimaryComponent,
+		NavPrimaryHeaderComponent,
+		NavPrimaryFooterComponent,
+		NavPrimaryItemsComponent,
+		NavPrimaryItemComponent,
+		NavPrimaryToolComponent,
+		NavSecondaryComponent,
+		NavSecondaryItemComponent,
+		NavSecondaryMoreComponent,
+		NavTertiaryComponent,
+		NavTertiaryItemComponent,
 	],
 	imports: [
 		CommonModule,
@@ -49,6 +49,6 @@ import {TertiaryNavItemComponent} from './components/tertiary-nav-item/tertiary-
 		OrcBitcoinGeneralModule,
 		OrcEventGeneralModule,
 	],
-	exports: [PrimaryNavComponent, SecondaryNavComponent, SecondaryNavItemComponent, SecondaryNavMoreComponent, TertiaryNavComponent],
+	exports: [NavPrimaryComponent, NavSecondaryComponent, NavSecondaryItemComponent, NavSecondaryMoreComponent, NavTertiaryComponent],
 })
 export class OrcNavModule {}

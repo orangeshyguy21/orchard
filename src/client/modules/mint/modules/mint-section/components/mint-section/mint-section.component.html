@@ -1,25 +1,25 @@
 <section class="section-container">
-	<orc-secondary-nav>
+	<orc-nav-secondary>
 		<div secondary-nav-header class="secondary-nav-header">
 			<orc-mint-general-icon [icon_data]="icon_data" [loading]="loading" [error]="error"> </orc-mint-general-icon>
 			<orc-mint-general-name [name]="mint_info ? mint_info.name : null" [loading]="loading" [error]="error"> </orc-mint-general-name>
 		</div>
 		<div secondary-nav-items>
-			<orc-secondary-nav-item name="Dashboard" navroute="mint" [active]="active_sub_section === 'dashboard'">
-			</orc-secondary-nav-item>
-			<orc-secondary-nav-item name="Info" navroute="mint/info" [active]="active_sub_section === 'info'"> </orc-secondary-nav-item>
-			<orc-secondary-nav-item name="Config" navroute="mint/config" [active]="active_sub_section === 'config'">
-			</orc-secondary-nav-item>
-			<orc-secondary-nav-item name="Keysets" navroute="mint/keysets" [active]="active_sub_section === 'keysets'">
-			</orc-secondary-nav-item>
-			<orc-secondary-nav-item name="Database" navroute="mint/database" [active]="active_sub_section === 'database'">
-			</orc-secondary-nav-item>
+			<orc-nav-secondary-item name="Dashboard" navroute="mint" [active]="active_sub_section === 'dashboard'">
+			</orc-nav-secondary-item>
+			<orc-nav-secondary-item name="Info" navroute="mint/info" [active]="active_sub_section === 'info'"> </orc-nav-secondary-item>
+			<orc-nav-secondary-item name="Config" navroute="mint/config" [active]="active_sub_section === 'config'">
+			</orc-nav-secondary-item>
+			<orc-nav-secondary-item name="Keysets" navroute="mint/keysets" [active]="active_sub_section === 'keysets'">
+			</orc-nav-secondary-item>
+			<orc-nav-secondary-item name="Database" navroute="mint/database" [active]="active_sub_section === 'database'">
+			</orc-nav-secondary-item>
 		</div>
 		<div secondary-nav-toolbar class="secondary-nav-toolbar">
 			<div class="section-implementation">{{ mint_info?.version }}</div>
-			<orc-secondary-nav-more></orc-secondary-nav-more>
+			<orc-nav-secondary-more></orc-nav-secondary-more>
 		</div>
-	</orc-secondary-nav>
+	</orc-nav-secondary>
 
 	<div class="subsection-container">
 		<router-outlet></router-outlet>

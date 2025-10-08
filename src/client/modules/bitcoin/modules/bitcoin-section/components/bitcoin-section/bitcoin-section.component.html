@@ -1,5 +1,5 @@
 <section class="section-container">
-	<orc-secondary-nav>
+	<orc-nav-secondary>
 		<div secondary-nav-header class="secondary-nav-header">
 			<div class="flex flex-items-center flex-gap-1">
 				<mat-icon class="mat-symbol-outline">deployed_code</mat-icon>
@@ -7,14 +7,14 @@
 			</div>
 		</div>
 		<div secondary-nav-items>
-			<orc-secondary-nav-item name="Dashboard" navroute="mint" [active]="active_sub_section === 'dashboard'">
-			</orc-secondary-nav-item>
+			<orc-nav-secondary-item name="Dashboard" navroute="mint" [active]="active_sub_section === 'dashboard'">
+			</orc-nav-secondary-item>
 		</div>
 		<div secondary-nav-toolbar class="secondary-nav-toolbar">
 			<div class="section-implementation">{{ bitcoin_network_info?.subversion }}</div>
-			<orc-secondary-nav-more></orc-secondary-nav-more>
+			<orc-nav-secondary-more></orc-nav-secondary-more>
 		</div>
-	</orc-secondary-nav>
+	</orc-nav-secondary>
 
 	<div class="subsection-container">
 		<router-outlet></router-outlet>
