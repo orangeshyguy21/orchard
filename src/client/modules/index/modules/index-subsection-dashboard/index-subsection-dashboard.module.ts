@@ -22,46 +22,46 @@ import {OrcLightningGeneralModule} from '@client/modules/lightning/modules/light
 import {OrcMintGeneralModule} from '@client/modules/mint/modules/mint-general/mint-general.module';
 /* Local Dependencies */
 import {IndexSubsectionDashboardComponent} from './components/index-subsection-dashboard/index-subsection-dashboard.component';
-import {IndexBitcoinHeaderComponent} from './components/index-bitcoin-header/index-bitcoin-header.component';
-import {IndexBitcoinEnabledComponent} from './components/index-bitcoin-enabled/index-bitcoin-enabled.component';
-import {IndexBitcoinDisabledComponent} from './components/index-bitcoin-disabled/index-bitcoin-disabled.component';
-import {IndexBitcoinInfoComponent} from './components/index-bitcoin-info/index-bitcoin-info.component';
-import {IndexLightningHeaderComponent} from './components/index-lightning-header/index-lightning-header.component';
-import {IndexLightningEnabledComponent} from './components/index-lightning-enabled/index-lightning-enabled.component';
-import {IndexLightningDisabledComponent} from './components/index-lightning-disabled/index-lightning-disabled.component';
-import {IndexMintHeaderComponent} from './components/index-mint-header/index-mint-header.component';
-import {IndexMintEnabledComponent} from './components/index-mint-enabled/index-mint-enabled.component';
-import {IndexMintDisabledComponent} from './components/index-mint-disabled/index-mint-disabled.component';
-import {IndexEcashHeaderComponent} from './components/index-ecash-header/index-ecash-header.component';
-import {IndexEcashEnabledComponent} from './components/index-ecash-enabled/index-ecash-enabled.component';
-import {IndexEcashDisabledComponent} from './components/index-ecash-disabled/index-ecash-disabled.component';
-import {IndexBitcoinHotwalletComponent} from './components/index-bitcoin-hotwallet/index-bitcoin-hotwallet.component';
-import {IndexBitcoinSyncingComponent} from './components/index-bitcoin-syncing/index-bitcoin-syncing.component';
-import {IndexBitcoinBlockchainComponent} from './components/index-bitcoin-blockchain/index-bitcoin-blockchain.component';
-import {IndexLightningInfoComponent} from './components/index-lightning-info/index-lightning-info.component';
-import {IndexMintInfoComponent} from './components/index-mint-info/index-mint-info.component';
+import {IndexSubsectionDashboardBitcoinHeaderComponent} from './components/index-subsection-dashboard-bitcoin-header/index-subsection-dashboard-bitcoin-header.component';
+import {IndexSubsectionDashboardBitcoinDisabledComponent} from './components/index-subsection-dashboard-bitcoin-disabled/index-subsection-dashboard-bitcoin-disabled.component';
+import {IndexSubsectionDashboardBitcoinEnabledComponent} from './components/index-subsection-dashboard-bitcoin-enabled/index-subsection-dashboard-bitcoin-enabled.component';
+import {IndexSubsectionDashboardBitcoinEnabledHotwalletComponent} from './components/index-subsection-dashboard-bitcoin-enabled-hotwallet/index-subsection-dashboard-bitcoin-enabled-hotwallet.component';
+import {IndexSubsectionDashboardBitcoinEnabledInfoComponent} from './components/index-subsection-dashboard-bitcoin-enabled-info/index-subsection-dashboard-bitcoin-enabled-info.component';
+import {IndexSubsectionDashboardBitcoinEnabledBlockchainComponent} from './components/index-subsection-dashboard-bitcoin-enabled-blockchain/index-subsection-dashboard-bitcoin-enabled-blockchain.component';
+import {IndexSubsectionDashboardBitcoinEnabledSyncingComponent} from './components/index-subsection-dashboard-bitcoin-enabled-syncing/index-subsection-dashboard-bitcoin-enabled-syncing.component';
+import {IndexSubsectionDashboardLightningHeaderComponent} from './components/index-subsection-dashboard-lightning-header/index-subsection-dashboard-lightning-header.component';
+import {IndexSubsectionDashboardLightningDisabledComponent} from './components/index-subsection-dashboard-lightning-disabled/index-subsection-dashboard-lightning-disabled.component';
+import {IndexSubsectionDashboardLightningEnabledComponent} from './components/index-subsection-dashboard-lightning-enabled/index-subsection-dashboard-lightning-enabled.component';
+import {IndexSubsectionDashboardLightningEnabledInfoComponent} from './components/index-subsection-dashboard-lightning-enabled-info/index-subsection-dashboard-lightning-enabled-info.component';
+import {IndexSubsectionDashboardMintHeaderComponent} from './components/index-subsection-dashboard-mint-header/index-subsection-dashboard-mint-header.component';
+import {IndexSubsectionDashboardMintEnabledComponent} from './components/index-subsection-dashboard-mint-enabled/index-subsection-dashboard-mint-enabled.component';
+import {IndexSubsectionDashboardMintDisabledComponent} from './components/index-subsection-dashboard-mint-disabled/index-subsection-dashboard-mint-disabled.component';
+import {IndexSubsectionDashboardEcashHeaderComponent} from './components/index-subsection-dashboard-ecash-header/index-subsection-dashboard-ecash-header.component';
+import {IndexSubsectionDashboardEcashDisabledComponent} from './components/index-subsection-dashboard-ecash-disabled/index-subsection-dashboard-ecash-disabled.component';
+import {IndexSubsectionDashboardEcashEnabledComponent} from './components/index-subsection-dashboard-ecash-enabled/index-subsection-dashboard-ecash-enabled.component';
+import {IndexSubsectionDashboardMintEnabledInfoComponent} from './components/index-subsection-dashboard-mint-enabled-info/index-subsection-dashboard-mint-enabled-info.component';
 
 @NgModule({
 	declarations: [
 		IndexSubsectionDashboardComponent,
-		IndexBitcoinHeaderComponent,
-		IndexBitcoinEnabledComponent,
-		IndexBitcoinDisabledComponent,
-		IndexBitcoinInfoComponent,
-		IndexBitcoinHotwalletComponent,
-		IndexBitcoinSyncingComponent,
-		IndexBitcoinBlockchainComponent,
-		IndexLightningHeaderComponent,
-		IndexLightningEnabledComponent,
-		IndexLightningDisabledComponent,
-		IndexLightningInfoComponent,
-		IndexMintHeaderComponent,
-		IndexMintEnabledComponent,
-		IndexMintDisabledComponent,
-		IndexMintInfoComponent,
-		IndexEcashHeaderComponent,
-		IndexEcashEnabledComponent,
-		IndexEcashDisabledComponent,
+		IndexSubsectionDashboardBitcoinHeaderComponent,
+		IndexSubsectionDashboardBitcoinDisabledComponent,
+		IndexSubsectionDashboardBitcoinEnabledComponent,
+		IndexSubsectionDashboardBitcoinEnabledHotwalletComponent,
+		IndexSubsectionDashboardBitcoinEnabledBlockchainComponent,
+		IndexSubsectionDashboardBitcoinEnabledInfoComponent,
+		IndexSubsectionDashboardBitcoinEnabledSyncingComponent,
+		IndexSubsectionDashboardLightningHeaderComponent,
+		IndexSubsectionDashboardLightningDisabledComponent,
+		IndexSubsectionDashboardLightningEnabledComponent,
+		IndexSubsectionDashboardLightningEnabledInfoComponent,
+		IndexSubsectionDashboardMintHeaderComponent,
+		IndexSubsectionDashboardMintDisabledComponent,
+		IndexSubsectionDashboardMintEnabledComponent,
+		IndexSubsectionDashboardMintEnabledInfoComponent,
+		IndexSubsectionDashboardEcashHeaderComponent,
+		IndexSubsectionDashboardEcashEnabledComponent,
+		IndexSubsectionDashboardEcashDisabledComponent,
 	],
 	imports: [
 		[

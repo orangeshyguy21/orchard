@@ -1,18 +1,18 @@
 <div class="flex flex-column">
 	<div class="sticky-section z-index-1">
-		<orc-index-bitcoin-header
+		<orc-index-subsection-dashboard-bitcoin-header
 			[enabled]="enabled_bitcoin"
 			[loading]="preparing_bitcoin"
 			[network_info]="bitcoin_network_info"
 			[blockchain_info]="bitcoin_blockchain_info"
 			[error]="errors_bitcoin.length ? true : false"
-		></orc-index-bitcoin-header>
+		></orc-index-subsection-dashboard-bitcoin-header>
 		<div class="category-rule"></div>
 	</div>
 
 	<div class="relative">
 		@if (enabled_bitcoin) {
-			<orc-index-bitcoin-enabled
+			<orc-index-subsection-dashboard-bitcoin-enabled
 				[loading]="preparing_bitcoin"
 				[enabled_lightning]="enabled_lightning"
 				[enabled_taproot_assets]="enabled_taproot_assets"
@@ -30,9 +30,11 @@
 				[form_group]="bitcoin_txfee_form"
 				[control_name]="'target'"
 				(target_change)="onTargetChange($event)"
-			></orc-index-bitcoin-enabled>
+			></orc-index-subsection-dashboard-bitcoin-enabled>
 		} @else {
-			<orc-index-bitcoin-disabled (navigate)="onNavigate('bitcoin')"></orc-index-bitcoin-disabled>
+			<orc-index-subsection-dashboard-bitcoin-disabled
+				(navigate)="onNavigate('bitcoin')"
+			></orc-index-subsection-dashboard-bitcoin-disabled>
 		}
 		@if (errors_bitcoin.length > 0) {
 			<div animate.enter="orc-animation-fadein" class="index-section-error">
@@ -44,26 +46,28 @@
 	</div>
 
 	<div class="sticky-section z-index-1">
-		<orc-index-lightning-header
+		<orc-index-subsection-dashboard-lightning-header
 			[enabled]="enabled_lightning"
 			[loading]="preparing_lightning"
 			[lightning_info]="lightning_info!"
 			[error]="errors_lightning.length ? true : false"
-		></orc-index-lightning-header>
+		></orc-index-subsection-dashboard-lightning-header>
 		<div class="category-rule"></div>
 	</div>
 
 	<div class="relative">
 		@if (enabled_lightning) {
-			<orc-index-lightning-enabled
+			<orc-index-subsection-dashboard-lightning-enabled
 				[loading]="preparing_lightning"
 				[lightning_info]="lightning_info!"
 				[lightning_balance]="lightning_balance!"
 				[taproot_assets]="taproot_assets!"
 				[enabled_taproot_assets]="enabled_taproot_assets"
-			></orc-index-lightning-enabled>
+			></orc-index-subsection-dashboard-lightning-enabled>
 		} @else {
-			<orc-index-lightning-disabled (navigate)="onNavigate('lightning')"></orc-index-lightning-disabled>
+			<orc-index-subsection-dashboard-lightning-disabled
+				(navigate)="onNavigate('lightning')"
+			></orc-index-subsection-dashboard-lightning-disabled>
 		}
 		@if (errors_lightning.length > 0) {
 			<div animate.enter="orc-animation-fadein" class="index-section-error">
@@ -82,18 +86,18 @@
 	</div>
 
 	<div class="sticky-section z-index-1">
-		<orc-index-mint-header
+		<orc-index-subsection-dashboard-mint-header
 			[enabled]="enabled_mint"
 			[loading]="preparing_mint"
 			[info]="mint_info!"
 			[error]="errors_mint.length ? true : false"
-		></orc-index-mint-header>
+		></orc-index-subsection-dashboard-mint-header>
 		<div class="category-rule"></div>
 	</div>
 
 	<div class="relative">
 		@if (enabled_mint) {
-			<orc-index-mint-enabled
+			<orc-index-subsection-dashboard-mint-enabled
 				[loading]="loading_mint"
 				[loading_icon]="loading_mint_icon"
 				[info]="mint_info!"
@@ -105,9 +109,9 @@
 				[lightning_errors]="errors_lightning"
 				[lightning_loading]="preparing_lightning"
 				(navigate)="onNavigate($event)"
-			></orc-index-mint-enabled>
+			></orc-index-subsection-dashboard-mint-enabled>
 		} @else {
-			<orc-index-mint-disabled (navigate)="onNavigate('mint')"></orc-index-mint-disabled>
+			<orc-index-subsection-dashboard-mint-disabled (navigate)="onNavigate('mint')"></orc-index-subsection-dashboard-mint-disabled>
 		}
 		@if (errors_mint.length > 0) {
 			<div animate.enter="orc-animation-fadein" class="index-section-error">
@@ -119,15 +123,15 @@
 	</div>
 
 	<div class="sticky-section z-index-1">
-		<orc-index-ecash-header></orc-index-ecash-header>
+		<orc-index-subsection-dashboard-ecash-header></orc-index-subsection-dashboard-ecash-header>
 		<div class="category-rule"></div>
 	</div>
 
 	<div class="relative">
 		@if (enabled_ecash) {
-			<orc-index-ecash-enabled></orc-index-ecash-enabled>
+			<orc-index-subsection-dashboard-ecash-enabled></orc-index-subsection-dashboard-ecash-enabled>
 		} @else {
-			<orc-index-ecash-disabled></orc-index-ecash-disabled>
+			<orc-index-subsection-dashboard-ecash-disabled></orc-index-subsection-dashboard-ecash-disabled>
 		}
 	</div>
 </div>
