@@ -30,8 +30,8 @@ import {SettingService} from '@client/modules/settings/services/setting/setting.
 import {AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {ComponentCanDeactivate} from '@client/modules/routing/interfaces/routing.interfaces';
 import {NonNullableMintConfigSettings} from '@client/modules/settings/types/setting.types';
-import {TertiaryNavItem} from '@client/modules/nav/types/tertiary-nav-item.type';
-import {TertiaryNavItemStatus} from '@client/modules/nav/enums/tertiary-nav-item-status.enum';
+import {NavTertiaryItem} from '@client/modules/nav/types/nav-tertiary-item.type';
+import {NavTertiaryItemStatus} from '@client/modules/nav/enums/nav-tertiary-item-status.enum';
 /* Native Dependencies */
 import {MintService} from '@client/modules/mint/services/mint/mint.service';
 import {MintInfo} from '@client/modules/mint/classes/mint-info.class';
@@ -101,7 +101,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		}),
 	});
 	public tertiary_nav_revision: number = 0;
-	public tertiary_nav_items: Record<TertiaryNav, TertiaryNavItem> = {
+	public tertiary_nav_items: Record<TertiaryNav, NavTertiaryItem> = {
 		[TertiaryNav.Nut4]: {
 			title: 'Minting',
 			subtitle: 'Nut 4',
@@ -897,6 +897,6 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	}
 
 	private setNavItemStatus(nav_key: TertiaryNav, condition: boolean): void {
-		this.tertiary_nav_items[nav_key].status = condition ? TertiaryNavItemStatus.Enabled : TertiaryNavItemStatus.Disabled;
+		this.tertiary_nav_items[nav_key].status = condition ? NavTertiaryItemStatus.Enabled : NavTertiaryItemStatus.Disabled;
 	}
 }

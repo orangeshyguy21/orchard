@@ -5,7 +5,7 @@
 	flex-shrink: 0;
 }
 
-.secondary-nav-container {
+.nav-secondary-container {
 	@extend %flex;
 	@extend %flex-row;
 	@extend %flex-items-center;
@@ -14,16 +14,16 @@
 	@extend %p-h-1;
 }
 
-::ng-deep [secondary-nav-header] {
+::ng-deep [nav-secondary-header] {
 	@extend %w-min-18;
 }
 
-.secondary-nav-items {
+.nav-secondary-items {
 	@extend %flex-grow;
 	@extend %h-full;
 }
 
-::ng-deep [secondary-nav-items] {
+::ng-deep [nav-secondary-items] {
 	@extend %flex;
 	@extend %flex-row;
 	@extend %h-full;

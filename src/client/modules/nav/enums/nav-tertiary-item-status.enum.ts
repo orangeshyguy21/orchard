@@ -1,4 +1,4 @@
-export enum TertiaryNavItemStatus {
+export enum NavTertiaryItemStatus {
 	Enabled = 'enabled',
 	Disabled = 'disabled',
 }

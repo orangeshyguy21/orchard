@@ -26,7 +26,7 @@ import {PublicUrl} from '@client/modules/public/classes/public-url.class';
 import {AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
 import {OrchardError} from '@client/modules/error/types/error.types';
-import {TertiaryNavItem} from '@client/modules/nav/types/tertiary-nav-item.type';
+import {NavTertiaryItem} from '@client/modules/nav/types/nav-tertiary-item.type';
 /* Native Dependencies */
 import {MintService} from '@client/modules/mint/services/mint/mint.service';
 import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
@@ -38,7 +38,7 @@ import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
 /* Shared Dependencies */
 import {AiFunctionName, MintAnalyticsInterval, MintUnit} from '@shared/generated.types';
 
-enum TertiaryNav {
+enum NavTertiary {
 	BalanceSheet = 'nav1',
 	Mints = 'nav2',
 	Melts = 'nav3',
@@ -87,12 +87,12 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public mint_fee_revenue: boolean = false;
 	// charts
 	public page_settings!: NonNullableMintDashboardSettings;
-	public tertiary_nav_items: Record<TertiaryNav, TertiaryNavItem> = {
-		[TertiaryNav.BalanceSheet]: {title: 'Balance Sheet'},
-		[TertiaryNav.Mints]: {title: 'Mints'},
-		[TertiaryNav.Melts]: {title: 'Melts'},
-		[TertiaryNav.Swaps]: {title: 'Swaps'},
-		[TertiaryNav.FeeRevenue]: {title: 'Fee Revenue'},
+	public tertiary_nav_items: Record<NavTertiary, NavTertiaryItem> = {
+		[NavTertiary.BalanceSheet]: {title: 'Balance Sheet'},
+		[NavTertiary.Mints]: {title: 'Mints'},
+		[NavTertiary.Melts]: {title: 'Melts'},
+		[NavTertiary.Swaps]: {title: 'Swaps'},
+		[NavTertiary.FeeRevenue]: {title: 'Fee Revenue'},
 	};
 
 	public get tertiary_nav(): string[] {
@@ -375,7 +375,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			units: settings.units ?? this.getSelectedUnits(), // @todo there will be bugs here if a unit is not in the keysets (audit active keysets)
 			date_start: settings.date_start ?? this.getSelectedDateStart(),
 			date_end: settings.date_end ?? this.getSelectedDateEnd(),
-			tertiary_nav: settings.tertiary_nav ?? Object.values(TertiaryNav),
+			tertiary_nav: settings.tertiary_nav ?? Object.values(NavTertiary),
 		};
 	}
 
@@ -461,7 +461,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	}
 
 	public onTertiaryNavSelect(event: string): void {
-		this.scrollToChart(event as TertiaryNav);
+		this.scrollToChart(event as NavTertiary);
 	}
 
 	private updateTertiaryNav(): void {
@@ -469,7 +469,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.chart_container.nativeElement.style.gridTemplateAreas = `${tertiary_nav}`;
 	}
 
-	private scrollToChart(nav_item: TertiaryNav) {
+	private scrollToChart(nav_item: NavTertiary) {
 		const target_element = this.nav_elements.find((el) => el.nativeElement.classList.contains(nav_item));
 		if (!target_element?.nativeElement) return;
 		target_element.nativeElement.scrollIntoView({
