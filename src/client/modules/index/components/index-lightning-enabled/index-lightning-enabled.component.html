@@ -3,11 +3,11 @@
 		<div animate.enter="orc-animation-fadein" class="flex flex-gap-4 p-2">
 			<orc-index-lightning-info [lightning_info]="lightning_info"></orc-index-lightning-info>
 			<div class="flex-grow">
-				<orc-lightning-channel-table
+				<orc-lightning-general-channel-table
 					[enabled_taproot_assets]="enabled_taproot_assets"
 					[lightning_balance]="lightning_balance"
 					[taproot_assets]="taproot_assets"
-				></orc-lightning-channel-table>
+				></orc-lightning-general-channel-table>
 			</div>
 		</div>
 	}

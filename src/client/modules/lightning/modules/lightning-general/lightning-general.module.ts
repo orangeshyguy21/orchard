@@ -9,12 +9,12 @@ import {MatCardModule} from '@angular/material/card';
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {OrcLocalModule} from '@client/modules/local/local.module';
 /* Local Dependencies */
-import {LightningChannelComponent} from './components/lightning-channel/lightning-channel.component';
-import {LightningChannelTableComponent} from './components/lightning-channel-table/lightning-channel-table.component';
+import {LightningGeneralChannelComponent} from './components/lightning-general-channel/lightning-general-channel.component';
+import {LightningGeneralChannelTableComponent} from './components/lightning-general-channel-table/lightning-general-channel-table.component';
 
 @NgModule({
-	declarations: [LightningChannelComponent, LightningChannelTableComponent],
+	declarations: [LightningGeneralChannelComponent, LightningGeneralChannelTableComponent],
 	imports: [CommonModule, MatIconModule, MatTableModule, MatCardModule, OrcGraphicModule, OrcLocalModule],
-	exports: [LightningChannelComponent, LightningChannelTableComponent],
+	exports: [LightningGeneralChannelComponent, LightningGeneralChannelTableComponent],
 })
-export class LightningModule {}
+export class OrcLightningGeneralModule {}

@@ -16,13 +16,13 @@ type ChannelSummary = {
 };
 
 @Component({
-	selector: 'orc-lightning-channel-table',
+	selector: 'orc-lightning-general-channel-table',
 	standalone: false,
-	templateUrl: './lightning-channel-table.component.html',
-	styleUrl: './lightning-channel-table.component.scss',
+	templateUrl: './lightning-general-channel-table.component.html',
+	styleUrl: './lightning-general-channel-table.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LightningChannelTableComponent implements OnInit {
+export class LightningGeneralChannelTableComponent implements OnInit {
 	@Input() enabled_taproot_assets!: boolean;
 	@Input() lightning_balance!: LightningBalance | null;
 	@Input() taproot_assets!: TaprootAssets | null;

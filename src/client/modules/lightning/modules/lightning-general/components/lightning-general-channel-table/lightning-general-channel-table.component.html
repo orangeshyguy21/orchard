@@ -30,15 +30,14 @@
 						</th>
 						<td mat-cell *matCellDef="let row" class="w-full">
 							<div class="p-v-1">
-								<orc-lightning-channel
+								<orc-lightning-general-channel
 									[height]="'3rem'"
 									[size]="row.size"
 									[recievable]="row.recievable"
 									[sendable]="row.sendable"
 									[unit]="row.unit"
 									[asset_id]="row.asset_id"
-								>
-								</orc-lightning-channel>
+								></orc-lightning-general-channel>
 							</div>
 						</td>
 					</ng-container>
@@ -61,7 +60,3 @@
 		</div>
 	}
 </div>
-
-<!-- <div class="no-data-overlay" @fadeInOut>
-	<mat-icon class="icon-lg mat-symbol-outline orc-outline-color">bar_chart_off</mat-icon>
-</div> -->

@@ -4,13 +4,13 @@ import {ChangeDetectionStrategy, Component, Input, computed} from '@angular/core
 import {environment} from '@client/configs/configuration';
 
 @Component({
-	selector: 'orc-lightning-channel',
+	selector: 'orc-lightning-general-channel',
 	standalone: false,
-	templateUrl: './lightning-channel.component.html',
-	styleUrl: './lightning-channel.component.scss',
+	templateUrl: './lightning-general-channel.component.html',
+	styleUrl: './lightning-general-channel.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LightningChannelComponent {
+export class LightningGeneralChannelComponent {
 	@Input() height: string = '2rem';
 	@Input() size!: number;
 	@Input() recievable!: number;

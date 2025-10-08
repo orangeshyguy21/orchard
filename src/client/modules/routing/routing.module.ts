@@ -26,7 +26,8 @@ const interior_routes = [
 	},
 	{
 		path: 'lightning',
-		loadChildren: () => import('@client/modules/lightning/lightning.app.module').then((m) => m.LightningAppModule),
+		loadChildren: () =>
+			import('@client/modules/lightning/modules/lightning-section/lightning-section.module').then((m) => m.OrcLightningSectionModule),
 		canActivateChild: [authenticationGuard],
 	},
 	{
