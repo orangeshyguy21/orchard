@@ -1,16 +1,16 @@
 <div class="bitcoin-block-container">
 	@if (!is_template) {
 		<div class="block-header">
-			<div class="block-height">{{ block?.height | block }}</div>
+			<div class="block-height">{{ block?.height | bitcoinGeneralBlock }}</div>
 		</div>
 	}
 	<div class="block" [ngClass]="{'block-template': is_template}">
 		<div class="block-content">
 			<div class="flex flex-column flex-gap-0-5 flex-align-center">
 				<div class="block-feerange">
-					<div>{{ block?.feerate_low | feerate }}</div>
+					<div>{{ block?.feerate_low | bitcoinGeneralFeerate }}</div>
 					<div>-</div>
-					<div>{{ block?.feerate_high | feerate }}</div>
+					<div>{{ block?.feerate_high | bitcoinGeneralFeerate }}</div>
 					<div>sat/vB</div>
 				</div>
 

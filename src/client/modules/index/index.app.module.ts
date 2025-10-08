@@ -16,7 +16,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {OrcLocalModule} from '@client/modules/local/local.module';
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {OrcErrorModule} from '@client/modules/error/error.module';
-import {BitcoinModule} from '@client/modules/bitcoin/bitcoin.module';
+import {OrcBitcoinGeneralModule} from '@client/modules/bitcoin/modules/bitcoin-general/bitcoin-general.module';
 import {LightningModule} from '@client/modules/lightning/lightning.module';
 import {OrcNavModule} from '@client/modules/nav/nav.module';
 import {OrcMintGeneralModule} from '@client/modules/mint/modules/mint-general/mint-general.module';
@@ -95,7 +95,7 @@ export class IndexAppRoutingModule {}
 		OrcLocalModule,
 		OrcGraphicModule,
 		OrcErrorModule,
-		BitcoinModule,
+		OrcBitcoinGeneralModule,
 		LightningModule,
 		OrcNavModule,
 		OrcMintGeneralModule,

@@ -26,7 +26,7 @@
 						<tr>
 							<td class="font-weight-extra-light orc-outline-color text-nowrap">Block height</td>
 							<td #flash_height_two>
-								{{ block()?.height | block }}
+								{{ block()?.height | bitcoinGeneralBlock }}
 							</td>
 						</tr>
 						<tr>
@@ -38,13 +38,13 @@
 						<tr>
 							<td class="font-weight-extra-light orc-outline-color text-nowrap">Log2 work</td>
 							<td #flash_chainwork>
-								{{ block()?.chainwork | log2work }}
+								{{ block()?.chainwork | bitcoinGeneralLog2work }}
 							</td>
 						</tr>
 						<tr>
 							<td class="font-weight-extra-light orc-outline-color text-nowrap">Target height</td>
 							<td #flash_headers>
-								{{ blockchain_info()?.headers | block }}
+								{{ blockchain_info()?.headers | bitcoinGeneralBlock }}
 							</td>
 						</tr>
 					</tbody>

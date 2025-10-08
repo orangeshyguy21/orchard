@@ -9,7 +9,7 @@ import {MatMenuModule} from '@angular/material/menu';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 /* Application Dependencies */
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
-import {BitcoinModule} from '@client/modules/bitcoin/bitcoin.module';
+import {OrcBitcoinGeneralModule} from '@client/modules/bitcoin/modules/bitcoin-general/bitcoin-general.module';
 import {EventModule} from '@client/modules/event/event.module';
 /* Local Dependencies */
 import {PrimaryNavComponent} from '@client/modules/nav/components/primary-nav/primary-nav.component';
@@ -46,7 +46,7 @@ import {TertiaryNavItemComponent} from './components/tertiary-nav-item/tertiary-
 		MatMenuModule,
 		DragDropModule,
 		OrcGraphicModule,
-		BitcoinModule,
+		OrcBitcoinGeneralModule,
 		EventModule,
 	],
 	exports: [PrimaryNavComponent, SecondaryNavComponent, SecondaryNavItemComponent, SecondaryNavMoreComponent, TertiaryNavComponent],

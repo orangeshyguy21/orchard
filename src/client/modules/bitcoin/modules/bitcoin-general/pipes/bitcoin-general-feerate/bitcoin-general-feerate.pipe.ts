@@ -1,11 +1,11 @@
 import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
-	name: 'feerate',
+	name: 'bitcoinGeneralFeerate',
 	standalone: false,
 	pure: true,
 })
-export class FeeratePipe implements PipeTransform {
+export class BitcoinGeneralFeeratePipe implements PipeTransform {
 	transform(value: number | null | undefined): number | null {
 		if (value === null || value === undefined || isNaN(value)) return null;
 		const sat_vbyte = (value * 100_000_000) / 1_000;

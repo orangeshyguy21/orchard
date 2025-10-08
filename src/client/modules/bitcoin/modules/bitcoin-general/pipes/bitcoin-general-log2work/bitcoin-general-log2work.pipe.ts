@@ -2,11 +2,11 @@
 import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
-	name: 'log2work',
+	name: 'bitcoinGeneralLog2work',
 	standalone: false,
 	pure: false,
 })
-export class Log2WorkPipe implements PipeTransform {
+export class BitcoinGeneralLog2workPipe implements PipeTransform {
 	transform(chainwork: string | null | undefined): number {
 		if (!chainwork) return 0;
 		const chainworkDecimal = parseInt(chainwork, 16);

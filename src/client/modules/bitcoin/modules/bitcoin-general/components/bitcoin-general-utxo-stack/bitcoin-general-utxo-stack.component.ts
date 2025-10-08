@@ -4,13 +4,13 @@ import {ChangeDetectionStrategy, Component, Input, computed} from '@angular/core
 import {environment} from '@client/configs/configuration';
 
 @Component({
-	selector: 'orc-bitcoin-utxo-stack',
+	selector: 'orc-bitcoin-general-utxo-stack',
 	standalone: false,
-	templateUrl: './bitcoin-utxo-stack.component.html',
-	styleUrl: './bitcoin-utxo-stack.component.scss',
+	templateUrl: './bitcoin-general-utxo-stack.component.html',
+	styleUrl: './bitcoin-general-utxo-stack.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BitcoinUtxoStackComponent {
+export class BitcoinGeneralUtxoStackComponent {
 	@Input() unit!: string;
 	@Input() coins!: number;
 	@Input() asset_id!: string | undefined;

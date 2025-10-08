@@ -2,11 +2,11 @@
 import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
-	name: 'block',
+	name: 'bitcoinGeneralBlock',
 	standalone: false,
 	pure: false,
 })
-export class BlockPipe implements PipeTransform {
+export class BitcoinGeneralBlockPipe implements PipeTransform {
 	transform(value: number | string | undefined | null): string {
 		if (!value) return '';
 		const block_height = value.toString().replace(/\s/g, '');

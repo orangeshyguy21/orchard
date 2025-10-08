@@ -31,8 +31,8 @@
 					<th mat-header-cell *matHeaderCellDef></th>
 					<td mat-cell *matCellDef="let row">
 						@if (!row.error_lightning && !row.error_taproot_assets) {
-							<orc-bitcoin-utxo-stack [unit]="row.unit" [coins]="row.utxos" [asset_id]="row.asset_id">
-							</orc-bitcoin-utxo-stack>
+							<orc-bitcoin-general-utxo-stack [unit]="row.unit" [coins]="row.utxos" [asset_id]="row.asset_id">
+							</orc-bitcoin-general-utxo-stack>
 						}
 					</td>
 				</ng-container>
