@@ -1,0 +1,18 @@
+<div class="p-2">
+	<mat-card appearance="outlined" class="relative overflow-hidden">
+		<mat-card-content class="orc-surface-container-low-bg">
+			<div class="p-l-1 p-r-1 p-t-1 flex flex-column flex-gap-1">
+				<orc-settings-subsection-dashboard-time-timezone
+					[timezone]="timezone"
+					[loading]="loading"
+					(timezoneChange)="timezoneChange.emit($event)"
+				></orc-settings-subsection-dashboard-time-timezone>
+				<orc-settings-subsection-dashboard-time-locale
+					[locale]="locale"
+					[loading]="loading"
+					(localeChange)="localeChange.emit($event)"
+				></orc-settings-subsection-dashboard-time-locale>
+			</div>
+		</mat-card-content>
+	</mat-card>
+</div>

@@ -8,9 +8,9 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatMenuModule} from '@angular/material/menu';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 /* Application Dependencies */
-import {GraphicModule} from '@client/modules/graphic/graphic.module';
-import {BitcoinModule} from '@client/modules/bitcoin/bitcoin.module';
-import {EventModule} from '@client/modules/event/event.module';
+import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
+import {OrcBitcoinGeneralModule} from '@client/modules/bitcoin/modules/bitcoin-general/bitcoin-general.module';
+import {OrcEventGeneralModule} from '@client/modules/event/modules/event-general/event-general.module';
 /* Local Dependencies */
 import {PrimaryNavComponent} from '@client/modules/nav/components/primary-nav/primary-nav.component';
 import {PrimaryNavHeaderComponent} from './components/primary-nav-header/primary-nav-header.component';
@@ -45,10 +45,10 @@ import {TertiaryNavItemComponent} from './components/tertiary-nav-item/tertiary-
 		MatButtonModule,
 		MatMenuModule,
 		DragDropModule,
-		GraphicModule,
-		BitcoinModule,
-		EventModule,
+		OrcGraphicModule,
+		OrcBitcoinGeneralModule,
+		OrcEventGeneralModule,
 	],
 	exports: [PrimaryNavComponent, SecondaryNavComponent, SecondaryNavItemComponent, SecondaryNavMoreComponent, TertiaryNavComponent],
 })
-export class NavModule {}
+export class OrcNavModule {}
