@@ -5,7 +5,7 @@ import {RouterModule, Routes} from '@angular/router';
 import {MatSidenavModule} from '@angular/material/sidenav';
 /* Application Dependencies */
 import {OrcNavModule} from '@client/modules/nav/nav.module';
-import {AiModule} from '@client/modules/ai/ai.module';
+import {OrcAiModule} from '@client/modules/ai/ai.module';
 import {OrcEventGeneralModule} from '@client/modules/event/modules/event-general/event-general.module';
 /* Native Dependencies */
 import {LayoutExteriorComponent} from './components/layout-exterior/layout-exterior.component';
@@ -41,7 +41,8 @@ const interior_routes = [
 	},
 	{
 		path: 'settings',
-		loadChildren: () => import('@client/modules/settings/settings.app.module').then((m) => m.SettingsAppModule),
+		loadChildren: () =>
+			import('@client/modules/settings/modules/settings-section/settings-section.module').then((m) => m.OrcSettingsSectionModule),
 		canActivateChild: [authenticationGuard],
 	},
 	{
@@ -67,7 +68,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-	imports: [RouterModule.forRoot(routes), MatSidenavModule, OrcNavModule, AiModule, OrcEventGeneralModule],
+	imports: [RouterModule.forRoot(routes), MatSidenavModule, OrcNavModule, OrcAiModule, OrcEventGeneralModule],
 	exports: [RouterModule],
 	declarations: [LayoutExteriorComponent, LayoutInteriorComponent],
 })

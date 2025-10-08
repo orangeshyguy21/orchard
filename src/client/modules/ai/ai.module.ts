@@ -67,4 +67,4 @@ import {AiChatMessageErrorComponent} from './components/ai-chat-message-error/ai
 	],
 	exports: [AiNavComponent, AiChatLogComponent],
 })
-export class AiModule {}
+export class OrcAiModule {}

@@ -7,7 +7,7 @@ import {ReactiveFormsModule as CoreReactiveFormsModule} from '@angular/forms';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 /* Application Dependencies */
-import {OrcSettingsModule} from '@client/modules/settings/settings.module';
+import {OrcSettingsGeneralModule} from '@client/modules/settings/modules/settings-general/settings-general.module';
 /* Local Dependencies */
 import {MintSubsectionDisabledComponent} from './components/mint-subsection-disabled/mint-subsection-disabled.component';
 
@@ -24,7 +24,7 @@ import {MintSubsectionDisabledComponent} from './components/mint-subsection-disa
 		CoreReactiveFormsModule,
 		MatFormFieldModule,
 		MatSelectModule,
-		OrcSettingsModule,
+		OrcSettingsGeneralModule,
 	],
 	exports: [],
 })

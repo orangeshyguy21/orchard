@@ -4,7 +4,7 @@ import {RouterModule as CoreRouterModule} from '@angular/router';
 /* Vendor Dependencies */
 import {MatIconModule} from '@angular/material/icon';
 /* Application Dependencies */
-import {OrcSettingsModule} from '@client/modules/settings/settings.module';
+import {OrcSettingsGeneralModule} from '@client/modules/settings/modules/settings-general/settings-general.module';
 /* Local Dependencies */
 import {BitcoinSubsectionDisabledComponent} from './components/bitcoin-subsection-disabled/bitcoin-subsection-disabled.component';
 
@@ -18,7 +18,7 @@ import {BitcoinSubsectionDisabledComponent} from './components/bitcoin-subsectio
 			},
 		]),
 		MatIconModule,
-		OrcSettingsModule,
+		OrcSettingsGeneralModule,
 	],
 	exports: [],
 })
