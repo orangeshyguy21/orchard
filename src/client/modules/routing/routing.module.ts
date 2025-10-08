@@ -36,7 +36,7 @@ const interior_routes = [
 	},
 	{
 		path: 'ecash',
-		loadChildren: () => import('@client/modules/ecash/ecash.app.module').then((m) => m.EcashAppModule),
+		loadChildren: () => import('@client/modules/ecash/modules/ecash-section/ecash-section.module').then((m) => m.EcashSectionModule),
 		canActivateChild: [authenticationGuard],
 	},
 	{
