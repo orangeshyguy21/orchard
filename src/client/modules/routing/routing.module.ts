@@ -15,13 +15,13 @@ import {authenticationGuard} from './guards/authentication/authentication.guard'
 const interior_routes = [
 	{
 		path: '',
-		loadChildren: () => import('@client/modules/index/index.app.module').then((m) => m.IndexAppModule),
+		loadChildren: () => import('@client/modules/index/modules/index-section/index-section.module').then((m) => m.OrcIndexSectionModule),
 		canActivateChild: [authenticationGuard],
 	},
 	{
 		path: 'bitcoin',
 		loadChildren: () =>
-			import('@client/modules/bitcoin/modules/bitcoin-section/bitcoin-section.module').then((m) => m.BitcoinSectionModule),
+			import('@client/modules/bitcoin/modules/bitcoin-section/bitcoin-section.module').then((m) => m.OrcBitcoinSectionModule),
 		canActivateChild: [authenticationGuard],
 	},
 	{

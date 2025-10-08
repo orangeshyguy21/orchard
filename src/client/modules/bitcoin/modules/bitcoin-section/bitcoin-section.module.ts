@@ -54,4 +54,4 @@ import {BitcoinSectionComponent} from './components/bitcoin-section/bitcoin-sect
 		OrcNavModule,
 	],
 })
-export class BitcoinSectionModule {}
+export class OrcBitcoinSectionModule {}

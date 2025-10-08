@@ -30,13 +30,13 @@ import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {OrchardError} from '@client/modules/error/types/error.types';
 
 @Component({
-	selector: 'orc-index-section',
+	selector: 'orc-index-subsection-dashboard',
 	standalone: false,
-	templateUrl: './index-section.component.html',
-	styleUrl: './index-section.component.scss',
+	templateUrl: './index-subsection-dashboard.component.html',
+	styleUrl: './index-subsection-dashboard.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class IndexSectionComponent implements OnInit, OnDestroy {
+export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public enabled_bitcoin = environment.bitcoin.enabled;
 	public enabled_lightning = environment.lightning.enabled;
 	public enabled_taproot_assets = environment.taproot_assets.enabled;

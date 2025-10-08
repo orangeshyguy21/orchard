@@ -1,8 +1,8 @@
 /* Core Dependencies */
 import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {ReactiveFormsModule} from '@angular/forms';
-import {RouterModule, Routes} from '@angular/router';
+import {CommonModule as CoreCommonModule} from '@angular/common';
+import {RouterModule as CoreRouterModule} from '@angular/router';
+import {ReactiveFormsModule as CoreReactiveFormsModule} from '@angular/forms';
 /* Vendor Dependencies */
 import {MatCardModule} from '@angular/material/card';
 import {MatIconModule} from '@angular/material/icon';
@@ -21,7 +21,7 @@ import {OrcBitcoinGeneralModule} from '@client/modules/bitcoin/modules/bitcoin-g
 import {OrcLightningGeneralModule} from '@client/modules/lightning/modules/lightning-general/lightning-general.module';
 import {OrcMintGeneralModule} from '@client/modules/mint/modules/mint-general/mint-general.module';
 /* Local Dependencies */
-import {IndexSectionComponent} from './components/index-section/index-section.component';
+import {IndexSubsectionDashboardComponent} from './components/index-subsection-dashboard/index-subsection-dashboard.component';
 import {IndexBitcoinHeaderComponent} from './components/index-bitcoin-header/index-bitcoin-header.component';
 import {IndexBitcoinEnabledComponent} from './components/index-bitcoin-enabled/index-bitcoin-enabled.component';
 import {IndexBitcoinDisabledComponent} from './components/index-bitcoin-disabled/index-bitcoin-disabled.component';
@@ -41,27 +41,9 @@ import {IndexBitcoinBlockchainComponent} from './components/index-bitcoin-blockc
 import {IndexLightningInfoComponent} from './components/index-lightning-info/index-lightning-info.component';
 import {IndexMintInfoComponent} from './components/index-mint-info/index-mint-info.component';
 
-const routes: Routes = [
-	{
-		path: '',
-		component: IndexSectionComponent,
-		title: 'Orchard',
-		data: {
-			section: 'index',
-		},
-	},
-];
-
-@NgModule({
-	imports: [RouterModule.forChild(routes)],
-	exports: [RouterModule],
-	declarations: [],
-})
-export class IndexAppRoutingModule {}
-
 @NgModule({
 	declarations: [
-		IndexSectionComponent,
+		IndexSubsectionDashboardComponent,
 		IndexBitcoinHeaderComponent,
 		IndexBitcoinEnabledComponent,
 		IndexBitcoinDisabledComponent,
@@ -82,8 +64,16 @@ export class IndexAppRoutingModule {}
 		IndexEcashDisabledComponent,
 	],
 	imports: [
-		CommonModule,
-		ReactiveFormsModule,
+		[
+			CoreRouterModule.forChild([
+				{
+					path: '',
+					component: IndexSubsectionDashboardComponent,
+				},
+			]),
+		],
+		CoreCommonModule,
+		CoreReactiveFormsModule,
 		MatCardModule,
 		MatIconModule,
 		MatRippleModule,
@@ -99,7 +89,6 @@ export class IndexAppRoutingModule {}
 		OrcMintGeneralModule,
 		OrcBitcoinGeneralModule,
 		OrcLightningGeneralModule,
-		IndexAppRoutingModule,
 	],
 })
-export class IndexAppModule {}
+export class OrcIndexSubsectionDashboardModule {}
