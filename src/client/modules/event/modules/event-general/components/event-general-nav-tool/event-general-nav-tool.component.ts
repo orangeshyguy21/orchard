@@ -16,13 +16,13 @@ import {Router} from '@angular/router';
 import {EventData} from '@client/modules/event/classes/event-data.class';
 
 @Component({
-	selector: 'orc-event-nav-tool',
+	selector: 'orc-event-general-nav-tool',
 	standalone: false,
-	templateUrl: './event-nav-tool.component.html',
-	styleUrl: './event-nav-tool.component.scss',
+	templateUrl: './event-general-nav-tool.component.html',
+	styleUrl: './event-general-nav-tool.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EventNavToolComponent {
+export class EventGeneralNavToolComponent {
 	public navroute = input.required<string>();
 	public active = input<boolean>(false);
 	public active_event = input<EventData | null>(null);

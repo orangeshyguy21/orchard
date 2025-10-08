@@ -4,13 +4,13 @@ import {ChangeDetectionStrategy, Component, input, computed} from '@angular/core
 import {EventData} from '@client/modules/event/classes/event-data.class';
 
 @Component({
-	selector: 'orc-event-stack-message',
+	selector: 'orc-event-general-stack-message',
 	standalone: false,
-	templateUrl: './event-stack-message.component.html',
-	styleUrl: './event-stack-message.component.scss',
+	templateUrl: './event-general-stack-message.component.html',
+	styleUrl: './event-general-stack-message.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EventStackMessageComponent {
+export class EventGeneralStackMessageComponent {
 	public event = input<EventData | null>(null);
 
 	public event_type_class = computed(() => {

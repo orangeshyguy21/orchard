@@ -4,13 +4,13 @@ import {ChangeDetectionStrategy, Component, input, effect, signal} from '@angula
 import {EventData} from '@client/modules/event/classes/event-data.class';
 
 @Component({
-	selector: 'orc-event-stack',
+	selector: 'orc-event-general-stack',
 	standalone: false,
-	templateUrl: './event-stack.component.html',
-	styleUrl: './event-stack.component.scss',
+	templateUrl: './event-general-stack.component.html',
+	styleUrl: './event-general-stack.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EventStackComponent {
+export class EventGeneralStackComponent {
 	public active_event = input<EventData | null>(null);
 	public stack = signal<EventData[]>([]);
 	public moused = signal<boolean>(false);
