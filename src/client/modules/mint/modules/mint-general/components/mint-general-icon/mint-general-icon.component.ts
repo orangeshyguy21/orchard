@@ -1,0 +1,31 @@
+/* Core Dependencies */
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {Router} from '@angular/router';
+
+@Component({
+	selector: 'orc-mint-general-icon',
+	standalone: false,
+	templateUrl: './mint-general-icon.component.html',
+	styleUrl: './mint-general-icon.component.scss',
+	changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class MintGeneralIconComponent {
+	@Input() icon_data!: string | null;
+	@Input() loading!: boolean;
+	@Input() error!: boolean;
+
+	public get state(): 'loading' | 'error' | 'icon' | 'unset' {
+		if (this.loading) return 'loading';
+		if (this.error) return 'error';
+		if (this.icon_data) return 'icon';
+		return 'unset';
+	}
+
+	constructor(private router: Router) {}
+
+	public onClick() {
+		this.router.navigate(['mint', 'info'], {
+			state: {focus_control: 'icon_url'},
+		});
+	}
+}

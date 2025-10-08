@@ -13,7 +13,7 @@ import {MatTableModule} from '@angular/material/table';
 import {MatCardModule} from '@angular/material/card';
 import {MatBadgeModule} from '@angular/material/badge';
 /* Application Dependencies */
-import {FormModule} from '@client/modules/form/form.module';
+import {OrcFormModule} from '@client/modules/form/form.module';
 /* Local Dependencies */
 import {AiInputComponent} from './components/ai-input/ai-input.component';
 import {AiNavComponent} from './components/ai-nav/ai-nav.component';
@@ -63,8 +63,8 @@ import {AiChatMessageErrorComponent} from './components/ai-chat-message-error/ai
 		MatTableModule,
 		MatCardModule,
 		MatBadgeModule,
-		FormModule,
+		OrcFormModule,
 	],
 	exports: [AiNavComponent, AiChatLogComponent],
 })
-export class AiModule {}
+export class OrcAiModule {}

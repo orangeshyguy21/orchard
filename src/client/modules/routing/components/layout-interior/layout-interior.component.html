@@ -20,7 +20,7 @@
 		<div class="interior-section-container">
 			<div class="interior-router-outlet-container">
 				<router-outlet></router-outlet>
-				<orc-event-stack [active_event]="active_event"></orc-event-stack>
+				<orc-event-general-stack [active_event]="active_event"></orc-event-general-stack>
 			</div>
 			@if (ai_enabled) {
 				<orc-ai-nav

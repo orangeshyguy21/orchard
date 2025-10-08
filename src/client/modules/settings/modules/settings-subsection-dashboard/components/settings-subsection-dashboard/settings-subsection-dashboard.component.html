@@ -1,0 +1,81 @@
+<!-- <p>settings-section works!</p>
+todo: theme (light - dark)
+todo: language (en - de)
+todo: unit (btc - sat)
+todo: timezone (UTC - local)
+ -->
+
+<div class="settings-dashboard-container p-1">
+	<div class="flex flex-column">
+		<orc-settings-subsection-dashboard-categories [category_filters]="category_filters" (updateFilters)="onUpdateFilters($event)">
+		</orc-settings-subsection-dashboard-categories>
+
+		<!-- Location Settings -->
+		@if (category_filters.includes(cat_orchard) || category_filters.includes(cat_local)) {
+			<div class="sticky-setting z-index-1">
+				<div class="flex flex-justify-between flex-items-end p-b-0-5">
+					<div>
+						<div class="title-l">Location</div>
+						<div class="font-size-xs orc-outline-color">Settings for local display and timezone</div>
+					</div>
+					<mat-chip-set aria-label="Location categories">
+						<mat-chip disabled>Orchard</mat-chip>
+						<mat-chip disabled>Local</mat-chip>
+					</mat-chip-set>
+				</div>
+				<div class="category-rule"></div>
+			</div>
+			<orc-settings-subsection-dashboard-time
+				[locale]="locale"
+				[timezone]="timezone"
+				[loading]="loading_static"
+				(localeChange)="onLocaleChange($event)"
+				(timezoneChange)="onTimezoneChange($event)"
+			></orc-settings-subsection-dashboard-time>
+		}
+
+		<!-- Theme Settings -->
+		@if (category_filters.includes(cat_orchard) || category_filters.includes(cat_local)) {
+			<div class="sticky-setting z-index-1">
+				<div class="flex flex-justify-between flex-items-end p-b-0-5">
+					<div>
+						<div class="title-l">Theme</div>
+						<div class="font-size-xs orc-outline-color">Settings for the appearance of the application</div>
+					</div>
+					<mat-chip-set aria-label="Theme categories">
+						<mat-chip disabled>Orchard</mat-chip>
+						<mat-chip disabled>Local</mat-chip>
+					</mat-chip-set>
+				</div>
+				<div class="category-rule"></div>
+			</div>
+			<orc-settings-subsection-dashboard-theme [theme]="theme" [loading]="loading_static" (themeChange)="onThemeChange($event)">
+			</orc-settings-subsection-dashboard-theme>
+		}
+
+		<!-- AI Settings -->
+		@if (category_filters.includes(cat_orchard) || category_filters.includes(cat_local)) {
+			<div class="sticky-setting z-index-1">
+				<div class="flex flex-justify-between flex-items-end p-b-0-5">
+					<div>
+						<div class="title-l">AI</div>
+						<div class="font-size-xs orc-outline-color">Settings for the AI agents</div>
+					</div>
+					<mat-chip-set aria-label="AI categories">
+						<mat-chip disabled>Orchard</mat-chip>
+						<mat-chip disabled>Local</mat-chip>
+					</mat-chip-set>
+				</div>
+				<div class="category-rule"></div>
+			</div>
+			<orc-settings-subsection-dashboard-ai
+				[enabled]="enabled_ai"
+				[loading]="loading_ai"
+				[error]="error_ai"
+				[model_options]="ai_models"
+				[model]="model"
+				(modelChange)="onModelChange($event)"
+			></orc-settings-subsection-dashboard-ai>
+		}
+	</div>
+</div>

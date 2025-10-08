@@ -8,7 +8,7 @@ import {map} from 'rxjs';
 import {ComponentCanDeactivate} from '@client/modules/routing/interfaces/routing.interfaces';
 /* Native Dependencies */
 import {EventService} from '@client/modules/event/services/event/event.service';
-import {EventUnsavedDialogComponent} from '../components/event-unsaved-dialog/event-unsaved-dialog.component';
+import {EventGeneralUnsavedDialogComponent} from '@client/modules/event/modules/event-general/components/event-general-unsaved-dialog/event-general-unsaved-dialog.component';
 
 export const pendingEventGuard: CanDeactivateFn<ComponentCanDeactivate> = (component) => {
 	if (!component) return true;
@@ -18,7 +18,7 @@ export const pendingEventGuard: CanDeactivateFn<ComponentCanDeactivate> = (compo
 	const dialog = inject(MatDialog);
 	const eventService = inject(EventService);
 
-	const dialog_ref = dialog.open(EventUnsavedDialogComponent);
+	const dialog_ref = dialog.open(EventGeneralUnsavedDialogComponent);
 	return dialog_ref.afterClosed().pipe(
 		map((decision) => {
 			if (decision === true) {

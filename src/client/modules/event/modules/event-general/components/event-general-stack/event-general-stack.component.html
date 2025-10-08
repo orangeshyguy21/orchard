@@ -1,0 +1,9 @@
+<div class="event-stack-container" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+	@for (event of stack(); track event.id) {
+		<orc-event-general-stack-message
+			animate.enter="animation-enter-left-fade"
+			animate.leave="orc-animation-fadeout-fast"
+			[event]="event"
+		></orc-event-general-stack-message>
+	}
+</div>

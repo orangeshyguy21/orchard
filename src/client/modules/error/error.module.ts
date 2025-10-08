@@ -12,4 +12,4 @@ import {ErrorResolveComponent} from './components/error-resolve/error-resolve.co
 	imports: [CommonModule, MatIconModule, MatCardModule],
 	exports: [ErrorResolveComponent],
 })
-export class ErrorModule {}
+export class OrcErrorModule {}

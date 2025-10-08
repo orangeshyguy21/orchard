@@ -1,0 +1,41 @@
+<div class="bitcoin-enabled-container">
+	@if (!loading) {
+		<div animate.enter="orc-animation-fadein" class="flex flex-gap-4 p-2">
+			<div class="flex-1">
+				<orc-index-subsection-dashboard-bitcoin-enabled-info
+					[blockchain_info]="blockchain_info"
+					[blockcount]="blockcount"
+				></orc-index-subsection-dashboard-bitcoin-enabled-info>
+			</div>
+			<div class="flex-1">
+				<orc-index-subsection-dashboard-bitcoin-enabled-hotwallet
+					[enabled_lightning]="enabled_lightning"
+					[enabled_taproot_assets]="enabled_taproot_assets"
+					[errors_lightning]="errors_lightning"
+					[errors_taproot_assets]="errors_taproot_assets"
+					[lightning_accounts]="lightning_accounts"
+					[taproot_assets]="taproot_assets"
+				></orc-index-subsection-dashboard-bitcoin-enabled-hotwallet>
+			</div>
+			<div class="flex-1">
+				@if (!blockchain_info?.is_synced) {
+					<orc-index-subsection-dashboard-bitcoin-enabled-syncing
+						[blockchain_info]="blockchain_info"
+						[block]="block"
+					></orc-index-subsection-dashboard-bitcoin-enabled-syncing>
+				} @else {
+					<orc-index-subsection-dashboard-bitcoin-enabled-blockchain
+						[block]="block"
+						[block_height]="blockcount"
+						[block_template]="block_template"
+						[mempool]="mempool"
+						[txfee_estimate]="txfee_estimate"
+						[form_group]="form_group"
+						[control_name]="control_name"
+						(target_change)="target_change.emit($event)"
+					></orc-index-subsection-dashboard-bitcoin-enabled-blockchain>
+				}
+			</div>
+		</div>
+	}
+</div>
