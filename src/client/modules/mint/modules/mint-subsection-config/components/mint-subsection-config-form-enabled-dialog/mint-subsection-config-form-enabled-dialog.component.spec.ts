@@ -1,17 +1,18 @@
+/* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+/* Local Dependencies */
+import {MintSubsectionConfigFormEnabledDialogComponent} from './mint-subsection-config-form-enabled-dialog.component';
 
-import {MintConfigFormEnabledConfirmComponent} from './mint-config-form-enabled-confirm.component';
-
-describe('MintConfigFormEnabledConfirmComponent', () => {
-	let component: MintConfigFormEnabledConfirmComponent;
-	let fixture: ComponentFixture<MintConfigFormEnabledConfirmComponent>;
+describe('MintSubsectionConfigFormEnabledDialogComponent', () => {
+	let component: MintSubsectionConfigFormEnabledDialogComponent;
+	let fixture: ComponentFixture<MintSubsectionConfigFormEnabledDialogComponent>;
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [MintConfigFormEnabledConfirmComponent],
+			declarations: [MintSubsectionConfigFormEnabledDialogComponent],
 		}).compileComponents();
 
-		fixture = TestBed.createComponent(MintConfigFormEnabledConfirmComponent);
+		fixture = TestBed.createComponent(MintSubsectionConfigFormEnabledDialogComponent);
 		component = fixture.componentInstance;
 		fixture.detectChanges();
 	});
