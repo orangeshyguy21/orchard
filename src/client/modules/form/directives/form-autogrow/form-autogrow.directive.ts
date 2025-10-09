@@ -2,15 +2,15 @@
 import {Directive, ElementRef, Input, HostListener, DoCheck, OnInit} from '@angular/core';
 
 @Directive({
-	selector: '[autogrow]',
+	selector: '[formAutogrow]',
 	standalone: false,
 })
-export class AutogrowDirective implements OnInit, DoCheck {
+export class FormAutogrowDirective implements OnInit, DoCheck {
 	private _autogrow!: boolean; // whether or not to autogrow (this can be set using an input)
 	private MAX_HEIGHT = 250; // the max height of the textarea
 	private HEIGHT_BUFFER = 0; // this is a distance buffer to make the logic work in a wider range of scenarios
 
-	@Input() set autogrow(condition: boolean) {
+	@Input() set formAutogrow(condition: boolean) {
 		this._autogrow = condition != false;
 	}
 

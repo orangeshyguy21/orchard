@@ -119,7 +119,7 @@
 					<div class="mint-analytic-title">Fee Revenue</div>
 				</div>
 				<div class="relative">
-					<orc-mint-subsection-dashboard-analytic-chart
+					<orc-mint-subsection-dashboard-chart
 						[locale]="locale"
 						[mint_analytics]="mint_analytics_fees"
 						[mint_analytics_pre]="mint_analytics_fees_pre"
@@ -127,7 +127,7 @@
 						[mint_genesis_time]="mint_genesis_time"
 						[selected_type]="page_settings ? page_settings.type : undefined"
 						[loading]="loading_dynamic_data"
-					></orc-mint-subsection-dashboard-analytic-chart>
+					></orc-mint-subsection-dashboard-chart>
 
 					@if (!loading_dynamic_data) {
 						@if (mint_type === 'cdk') {
