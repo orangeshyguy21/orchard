@@ -4,7 +4,6 @@ import {provideLuxonDateAdapter} from '@angular/material-luxon-adapter';
 import {provideHttpClient} from '@angular/common/http';
 import {provideHttpClientTesting} from '@angular/common/http/testing';
 import {RouterOutlet, provideRouter} from '@angular/router';
-import {MatSidenavModule} from '@angular/material/sidenav';
 /* Vendor Dependencies */
 import {MatIconTestingModule} from '@angular/material/icon/testing';
 /* Native Dependencies */
@@ -18,7 +17,7 @@ describe('LayoutInteriorComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			imports: [MatSidenavModule, OrcRoutingModule, RouterOutlet, MatIconTestingModule],
+			imports: [OrcRoutingModule, RouterOutlet, MatIconTestingModule],
 			declarations: [LayoutInteriorComponent],
 			providers: [provideLuxonDateAdapter(), provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
 		}).compileComponents();
