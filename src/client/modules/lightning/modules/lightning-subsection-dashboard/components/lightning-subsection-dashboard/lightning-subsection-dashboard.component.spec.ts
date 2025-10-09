@@ -1,5 +1,8 @@
+/* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-
+/* Native Dependencies */
+import {OrcLightningSubsectionDashboardModule} from '@client/modules/lightning/modules/lightning-subsection-dashboard/lightning-subsection-dashboard.module';
+/* Local Dependencies */
 import {LightningSubsectionDashboardComponent} from './lightning-subsection-dashboard.component';
 
 describe('LightningSubsectionDashboardComponent', () => {
@@ -8,7 +11,7 @@ describe('LightningSubsectionDashboardComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [LightningSubsectionDashboardComponent],
+			imports: [OrcLightningSubsectionDashboardModule],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(LightningSubsectionDashboardComponent);
