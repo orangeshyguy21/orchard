@@ -1,5 +1,7 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+/* Native Dependencies */
+import {OrcMintSubsectionDisabledModule} from '@client/modules/mint/modules/mint-subsection-disabled/mint-subsection-disabled.module';
 /* Local Dependencies */
 import {MintSubsectionDisabledComponent} from './mint-subsection-disabled.component';
 
@@ -9,7 +11,7 @@ describe('MintSubsectionDisabledComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [MintSubsectionDisabledComponent],
+			imports: [OrcMintSubsectionDisabledModule],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(MintSubsectionDisabledComponent);

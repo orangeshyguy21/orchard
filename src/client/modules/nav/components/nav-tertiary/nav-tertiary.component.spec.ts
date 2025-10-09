@@ -1,5 +1,7 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+/* Native Dependencies */
+import {OrcNavModule} from '@client/modules/nav/nav.module';
 /* Local Dependencies */
 import {NavTertiaryComponent} from './nav-tertiary.component';
 
@@ -9,7 +11,7 @@ describe('NavTertiaryComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [NavTertiaryComponent],
+			imports: [OrcNavModule],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(NavTertiaryComponent);
