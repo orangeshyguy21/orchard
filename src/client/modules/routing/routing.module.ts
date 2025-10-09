@@ -37,7 +37,7 @@ const interior_routes = [
 	},
 	{
 		path: 'ecash',
-		loadChildren: () => import('@client/modules/ecash/modules/ecash-section/ecash-section.module').then((m) => m.EcashSectionModule),
+		loadChildren: () => import('@client/modules/ecash/modules/ecash-section/ecash-section.module').then((m) => m.OrcEcashSectionModule),
 		canActivateChild: [authenticationGuard],
 	},
 	{
@@ -73,4 +73,4 @@ const routes: Routes = [
 	exports: [RouterModule],
 	declarations: [LayoutExteriorComponent, LayoutInteriorComponent],
 })
-export class RoutingModule {}
+export class OrcRoutingModule {}

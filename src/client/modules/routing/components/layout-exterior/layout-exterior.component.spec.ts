@@ -1,5 +1,8 @@
+/* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-
+/* Native Dependencies */
+import {OrcRoutingModule} from '@client/modules/routing/routing.module';
+/* Local Dependencies */
 import {LayoutExteriorComponent} from './layout-exterior.component';
 
 describe('LayoutExteriorComponent', () => {
@@ -9,6 +12,7 @@ describe('LayoutExteriorComponent', () => {
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
 			declarations: [LayoutExteriorComponent],
+			imports: [OrcRoutingModule],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(LayoutExteriorComponent);
