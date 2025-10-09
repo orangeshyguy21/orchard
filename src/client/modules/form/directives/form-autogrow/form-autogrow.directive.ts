@@ -1,4 +1,4 @@
-// core
+/* Core Dependencies */
 import {Directive, ElementRef, Input, HostListener, DoCheck, OnInit} from '@angular/core';
 
 @Directive({

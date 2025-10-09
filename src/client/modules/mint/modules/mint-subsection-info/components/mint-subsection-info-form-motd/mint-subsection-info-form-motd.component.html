@@ -6,7 +6,7 @@
 		(keydown.enter)="onSubmit($event)"
 		(keydown.escape)="onCancel($event)"
 	>
-		<orc-dynamic-form-field
+		<orc-form-field-dynamic
 			[hot]="form_hot"
 			[invalid]="form_group.get(control_name)?.invalid || false"
 			[subscript_sizing]="'dynamic'"
@@ -45,6 +45,6 @@
 					</button>
 				}
 			</div>
-		</orc-dynamic-form-field>
+		</orc-form-field-dynamic>
 	</form>
 </div>

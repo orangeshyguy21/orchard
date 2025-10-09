@@ -1,12 +1,12 @@
 import {ChangeDetectionStrategy, Component, Output, EventEmitter} from '@angular/core';
 
 @Component({
-	selector: 'orc-add-form-array-item',
+	selector: 'orc-form-array-add-item',
 	standalone: false,
-	templateUrl: './add-form-array-item.component.html',
-	styleUrl: './add-form-array-item.component.scss',
+	templateUrl: './form-array-add-item.component.html',
+	styleUrl: './form-array-add-item.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AddFormArrayItemComponent {
+export class FormArrayAddItemComponent {
 	@Output() addControl = new EventEmitter<void>();
 }

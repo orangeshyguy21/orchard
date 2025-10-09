@@ -11,7 +11,7 @@
 							(keydown.enter)="onSubmit($event)"
 							(keydown.escape)="onCancel($event)"
 						>
-							<orc-dynamic-form-field
+							<orc-form-field-dynamic
 								[hot]="form_hot"
 								[invalid]="form_group.get(control_name)?.invalid || false"
 								(submit)="onSubmit($event)"
@@ -40,7 +40,7 @@
 										<mat-error class="font-size-xs">{{ form_error }}</mat-error>
 									}
 								</mat-form-field>
-							</orc-dynamic-form-field>
+							</orc-form-field-dynamic>
 						</form>
 						<div class="flex-1">
 							<orc-help-text class="orc-surface-container-high-bg">

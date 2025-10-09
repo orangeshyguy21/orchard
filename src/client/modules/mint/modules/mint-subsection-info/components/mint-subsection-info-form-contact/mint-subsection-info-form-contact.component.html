@@ -2,7 +2,7 @@
 	<form [formGroup]="form_group" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)" (keydown.escape)="onCancel($event)">
 		<ng-container [formArrayName]="array_name">
 			<div [formGroupName]="subgroup_index">
-				<orc-dynamic-form-field
+				<orc-form-field-dynamic
 					[hot]="method_form_hot || info_form_hot"
 					[invalid]="group_invalid"
 					[subscript_sizing]="'dynamic'"
@@ -57,7 +57,7 @@
 							}
 						</mat-form-field>
 					</div>
-				</orc-dynamic-form-field>
+				</orc-form-field-dynamic>
 			</div>
 		</ng-container>
 	</form>

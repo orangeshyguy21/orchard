@@ -1,6 +1,6 @@
 <div>
 	<form [formGroup]="form_group" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)" (keydown.escape)="onCancel($event)">
-		<orc-dynamic-form-field [hot]="form_hot" (submit)="onSubmit($event)" (cancel)="onCancel($event)">
+		<orc-form-field-dynamic [hot]="form_hot" (submit)="onSubmit($event)" (cancel)="onCancel($event)">
 			<mat-form-field
 				appearance="fill"
 				[ngClass]="form_hot ? 'orc-hot-form-field' : 'orc-cold-form-field'"
@@ -17,6 +17,6 @@
 					placeholder="Ex. Describe your mint more"
 				></textarea>
 			</mat-form-field>
-		</orc-dynamic-form-field>
+		</orc-form-field-dynamic>
 	</form>
 </div>

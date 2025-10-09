@@ -1,13 +1,13 @@
 import {ChangeDetectionStrategy, Component, Input, Output, EventEmitter} from '@angular/core';
 
 @Component({
-	selector: 'orc-dynamic-form-field',
+	selector: 'orc-form-field-dynamic',
 	standalone: false,
-	templateUrl: './dynamic-form-field.component.html',
-	styleUrl: './dynamic-form-field.component.scss',
+	templateUrl: './form-field-dynamic.component.html',
+	styleUrl: './form-field-dynamic.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DynamicFormFieldComponent {
+export class FormFieldDynamicComponent {
 	@Input() hot!: boolean;
 	@Input() invalid!: boolean;
 	@Input() subscript_sizing: 'default' | 'dynamic' = 'default';
