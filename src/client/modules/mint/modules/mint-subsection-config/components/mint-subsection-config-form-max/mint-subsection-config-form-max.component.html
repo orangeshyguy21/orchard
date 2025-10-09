@@ -20,7 +20,14 @@
 					class="mint-max-form-field orc-dynamic-form-field"
 				>
 					<mat-label>Max Amount</mat-label>
-					<input type="text" matInput inputFormat [formControlName]="control_name" placeholder="Ex. 300 000" #element_max />
+					<input
+						type="text"
+						matInput
+						formNumberSeparator
+						[formControlName]="control_name"
+						placeholder="Ex. 300 000"
+						#element_max
+					/>
 					<span matSuffix class="form-suffix-text">{{ unit | unit }}</span>
 					@if (
 						form_group.get(control_name)?.invalid &&

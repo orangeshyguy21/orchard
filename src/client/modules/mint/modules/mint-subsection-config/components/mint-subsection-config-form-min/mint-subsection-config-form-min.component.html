@@ -20,7 +20,7 @@
 					class="mint-min-form-field orc-dynamic-form-field"
 				>
 					<mat-label>Min Amount</mat-label>
-					<input type="text" inputFormat matInput [formControlName]="control_name" placeholder="Ex. 1" #element_min />
+					<input type="text" formNumberSeparator matInput [formControlName]="control_name" placeholder="Ex. 1" #element_min />
 					<span matSuffix class="form-suffix-text">{{ unit | unit }}</span>
 					@if (
 						form_group.get(control_name)?.invalid &&

@@ -8,7 +8,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 /* Native Dependencies */
 import {FormAutogrowDirective} from '@client/modules/form/directives/form-autogrow/form-autogrow.directive';
-import {InputFormatDirective} from './directives/input-format/input-format.directive';
+import {FormNumberSeparatorDirective} from './directives/form-number-separator/form-number-separator.directive';
 import {FormFieldDynamicComponent} from './components/form-field-dynamic/form-field-dynamic.component';
 import {FormArrayAddItemComponent} from './components/form-array-add-item/form-array-add-item.component';
 import {FormHelpTextComponent} from './components/form-help-text/form-help-text.component';
@@ -16,12 +16,18 @@ import {FormHelpTextComponent} from './components/form-help-text/form-help-text.
 @NgModule({
 	declarations: [
 		FormAutogrowDirective,
-		InputFormatDirective,
+		FormNumberSeparatorDirective,
 		FormFieldDynamicComponent,
 		FormArrayAddItemComponent,
 		FormHelpTextComponent,
 	],
 	imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatButtonModule, MatIconModule],
-	exports: [FormAutogrowDirective, InputFormatDirective, FormFieldDynamicComponent, FormArrayAddItemComponent, FormHelpTextComponent],
+	exports: [
+		FormAutogrowDirective,
+		FormNumberSeparatorDirective,
+		FormFieldDynamicComponent,
+		FormArrayAddItemComponent,
+		FormHelpTextComponent,
+	],
 })
 export class OrcFormModule {}

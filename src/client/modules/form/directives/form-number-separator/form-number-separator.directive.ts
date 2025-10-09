@@ -3,11 +3,11 @@ import {MAT_INPUT_VALUE_ACCESSOR} from '@angular/material/input';
 import {NgControl} from '@angular/forms';
 
 @Directive({
-	selector: 'input[inputFormat]',
+	selector: 'input[formNumberSeparator]',
 	standalone: false,
-	providers: [{provide: MAT_INPUT_VALUE_ACCESSOR, useExisting: InputFormatDirective}],
+	providers: [{provide: MAT_INPUT_VALUE_ACCESSOR, useExisting: FormNumberSeparatorDirective}],
 })
-export class InputFormatDirective {
+export class FormNumberSeparatorDirective {
 	private _value!: string | null;
 
 	get value(): string | null {

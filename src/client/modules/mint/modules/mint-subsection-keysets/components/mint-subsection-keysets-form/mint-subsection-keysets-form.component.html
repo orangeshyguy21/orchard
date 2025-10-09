@@ -41,7 +41,7 @@
 								class="keyset-form-field orc-dynamic-form-field orc-hot-form-field p-r-2"
 							>
 								<mat-label>Input Fee PPK</mat-label>
-								<input type="text" inputFormat matInput formControlName="input_fee_ppk" placeholder="Ex. 100" />
+								<input type="text" formNumberSeparator matInput formControlName="input_fee_ppk" placeholder="Ex. 100" />
 								@if (
 									form_group.get('input_fee_ppk')?.invalid &&
 									(form_group.get('input_fee_ppk')?.dirty || form_group.get('input_fee_ppk')?.touched)
