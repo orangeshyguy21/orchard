@@ -86,6 +86,7 @@
             "customWebpackConfig": {
               "path": "src/client/webpack.config.ts"
             },
+            "main": "src/client/test.ts",
             "polyfills": [
               "zone.js",
               "zone.js/testing"
