@@ -1,5 +1,11 @@
+/* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-
+import {RouterOutlet, provideRouter} from '@angular/router';
+import {provideHttpClient} from '@angular/common/http';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
+/* Native Dependencies */
+import {OrcMintSectionModule} from '@client/modules/mint/modules/mint-section/mint-section.module';
+/* Local Dependencies */
 import {MintSectionComponent} from './mint-section.component';
 
 describe('MintSectionComponent', () => {
@@ -8,7 +14,9 @@ describe('MintSectionComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
+			imports: [OrcMintSectionModule, RouterOutlet],
 			declarations: [MintSectionComponent],
+			providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(MintSectionComponent);
