@@ -16,12 +16,13 @@
     "start:server:nowatch": "NODE_ENV=development nest start",
     "start:server:debug": "NODE_ENV=development nest start --debug --watch",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "test": "jest && ng test --watch=false",
     "test:server": "jest",
-    "test:watch": "jest --watch",
+    "test:server:watch": "jest --watch",
+    "test:server:cov": "jest --coverage",
+    "test:server:e2e": "jest --config ./test/jest-e2e.json",
     "test:client": "ng test --watch=false",
-    "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
     "watch:client": "NODE_ENV=development ng build --watch --configuration development"
   },
   "dependencies": {
