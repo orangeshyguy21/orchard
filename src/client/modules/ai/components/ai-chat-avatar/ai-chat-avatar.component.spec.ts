@@ -1,5 +1,10 @@
+/* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-
+/* Native Dependencies */
+import {OrcAiModule} from '@client/modules/ai/ai.module';
+/* Shared Dependencies */
+import {AiMessageRole} from '@shared/generated.types';
+/* Local Dependencies */
 import {AiChatAvatarComponent} from './ai-chat-avatar.component';
 
 describe('AiChatAvatarComponent', () => {
@@ -8,11 +13,13 @@ describe('AiChatAvatarComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [AiChatAvatarComponent],
+			imports: [OrcAiModule],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(AiChatAvatarComponent);
 		component = fixture.componentInstance;
+		component.role = AiMessageRole.Assistant;
+		component.icon = 'person';
 		fixture.detectChanges();
 	});
 

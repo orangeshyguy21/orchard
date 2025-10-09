@@ -1,5 +1,7 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+/* Native Dependencies */
+import {OrcEventGeneralModule} from '@client/modules/event/modules/event-general/event-general.module';
 /* Local Dependencies */
 import {EventGeneralNavToolComponent} from './event-general-nav-tool.component';
 
@@ -9,7 +11,7 @@ describe('EventGeneralNavToolComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [EventGeneralNavToolComponent],
+			imports: [OrcEventGeneralModule],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(EventGeneralNavToolComponent);

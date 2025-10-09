@@ -1,6 +1,6 @@
 <div class="mint-info-form-name-container">
 	<form [formGroup]="form_group" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)" (keydown.escape)="onCancel($event)">
-		<orc-dynamic-form-field
+		<orc-form-field-dynamic
 			[hot]="form_hot"
 			[invalid]="form_group.get(control_name)?.invalid || false"
 			(submit)="onSubmit($event)"
@@ -25,6 +25,6 @@
 					</mat-error>
 				}
 			</mat-form-field>
-		</orc-dynamic-form-field>
+		</orc-form-field-dynamic>
 	</form>
 </div>

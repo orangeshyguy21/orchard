@@ -1,0 +1,34 @@
+@use '@styles/molecule/molecule';
+
+:host {
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-grow;
+}
+
+.auth-subsection-container {
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-grow;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	@extend %flex-gap-2;
+}
+
+.authentication-form {
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-items-center;
+}
+
+.orchard-logo-container {
+	@extend %relative;
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+}
+
+.graphic-container {
+	@extend %absolute;
+	@extend %bottom-1;
+}

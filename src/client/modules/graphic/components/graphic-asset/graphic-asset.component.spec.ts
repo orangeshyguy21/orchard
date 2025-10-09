@@ -1,5 +1,8 @@
+/* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-
+/* Native Dependencies */
+import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
+/* Local Dependencies */
 import {GraphicAssetComponent} from './graphic-asset.component';
 
 describe('GraphicAssetComponent', () => {
@@ -8,11 +11,12 @@ describe('GraphicAssetComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [GraphicAssetComponent],
+			imports: [OrcGraphicModule],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(GraphicAssetComponent);
 		component = fixture.componentInstance;
+		fixture.componentRef.setInput('unit', 'sat');
 		fixture.detectChanges();
 	});
 

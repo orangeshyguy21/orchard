@@ -1,5 +1,7 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+/* Native Dependencies */
+import {OrcIndexSubsectionDashboardModule} from '@client/modules/index/modules/index-subsection-dashboard/index-subsection-dashboard.module';
 /* Local Dependencies */
 import {IndexSubsectionDashboardMintEnabledInfoComponent} from './index-subsection-dashboard-mint-enabled-info.component';
 
@@ -9,11 +11,12 @@ describe('IndexSubsectionDashboardMintEnabledInfoComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [IndexSubsectionDashboardMintEnabledInfoComponent],
+			imports: [OrcIndexSubsectionDashboardModule],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(IndexSubsectionDashboardMintEnabledInfoComponent);
 		component = fixture.componentInstance;
+		component.loading = true;
 		fixture.detectChanges();
 	});
 

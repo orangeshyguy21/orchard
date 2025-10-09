@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import {NgModule} from '@angular/core';
-import {RouterOutlet} from '@angular/router';
-import {BrowserModule} from '@angular/platform-browser';
+import {RouterOutlet as CoreRouterOutlet} from '@angular/router';
+import {BrowserModule as CoreBrowserModule} from '@angular/platform-browser';
 import {provideHttpClient, withInterceptors} from '@angular/common/http';
 /* Vendor Dependencies */
 import {provideLuxonDateAdapter} from '@angular/material-luxon-adapter';
@@ -21,7 +21,7 @@ import {
 } from 'chart.js';
 import 'chartjs-adapter-luxon';
 /* Application Dependencies */
-import {RoutingModule} from './modules/routing/routing.module';
+import {OrcRoutingModule} from './modules/routing/routing.module';
 import {authInterceptor} from './modules/auth/interceptors/auth.interceptor';
 import {errorInterceptor} from './modules/error/interceptors/error.interceptor';
 /* Native Dependencies */
@@ -29,7 +29,7 @@ import {AppComponent} from './app.component';
 
 @NgModule({
 	declarations: [AppComponent],
-	imports: [RouterOutlet, BrowserModule, RoutingModule],
+	imports: [CoreRouterOutlet, CoreBrowserModule, OrcRoutingModule],
 	providers: [
 		provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
 		provideLuxonDateAdapter(),
@@ -51,4 +51,4 @@ import {AppComponent} from './app.component';
 	],
 	bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class OrcAppModule {}

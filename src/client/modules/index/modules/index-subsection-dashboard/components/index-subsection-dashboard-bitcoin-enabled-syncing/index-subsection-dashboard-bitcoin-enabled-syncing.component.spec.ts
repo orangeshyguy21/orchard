@@ -1,5 +1,9 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+/* Vendor Dependencies */
+import {provideLuxonDateAdapter} from '@angular/material-luxon-adapter';
+/* Native Dependencies */
+import {OrcIndexSubsectionDashboardModule} from '@client/modules/index/modules/index-subsection-dashboard/index-subsection-dashboard.module';
 /* Local Dependencies */
 import {IndexSubsectionDashboardBitcoinEnabledSyncingComponent} from './index-subsection-dashboard-bitcoin-enabled-syncing.component';
 
@@ -9,7 +13,8 @@ describe('IndexSubsectionDashboardBitcoinEnabledSyncingComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [IndexSubsectionDashboardBitcoinEnabledSyncingComponent],
+			imports: [OrcIndexSubsectionDashboardModule],
+			providers: [provideLuxonDateAdapter()],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(IndexSubsectionDashboardBitcoinEnabledSyncingComponent);

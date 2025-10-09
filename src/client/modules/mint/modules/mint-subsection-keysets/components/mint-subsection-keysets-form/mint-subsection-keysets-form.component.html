@@ -28,10 +28,10 @@
 								</mat-select>
 							</mat-form-field>
 							<div class="flex-1">
-								<orc-help-text class="orc-surface-container-high-bg">
+								<orc-form-help-text class="orc-surface-container-high-bg">
 									The unit of the keyset to rotate. Only existing units can be rotated. New units must be set in the mint
 									config.
-								</orc-help-text>
+								</orc-form-help-text>
 							</div>
 						</div>
 						<div class="flex flex-gap-2">
@@ -41,7 +41,7 @@
 								class="keyset-form-field orc-dynamic-form-field orc-hot-form-field p-r-2"
 							>
 								<mat-label>Input Fee PPK</mat-label>
-								<input type="text" inputFormat matInput formControlName="input_fee_ppk" placeholder="Ex. 100" />
+								<input type="text" formNumberSeparator matInput formControlName="input_fee_ppk" placeholder="Ex. 100" />
 								@if (
 									form_group.get('input_fee_ppk')?.invalid &&
 									(form_group.get('input_fee_ppk')?.dirty || form_group.get('input_fee_ppk')?.touched)
@@ -50,7 +50,7 @@
 								}
 							</mat-form-field>
 							<div class="flex-1">
-								<orc-help-text class="orc-surface-container-high-bg">
+								<orc-form-help-text class="orc-surface-container-high-bg">
 									<div class="flex flex-column flex-gap-0-5">
 										<span
 											>The transaction fee charged by a keyset is based on the number of ecash notes used in the
@@ -63,7 +63,7 @@
 											></span
 										></span>
 									</div>
-								</orc-help-text>
+								</orc-form-help-text>
 							</div>
 						</div>
 						<div class="flex flex-gap-2">
@@ -83,9 +83,9 @@
 								}
 							</mat-form-field>
 							<div class="flex-1">
-								<orc-help-text class="orc-surface-container-high-bg">
+								<orc-form-help-text class="orc-surface-container-high-bg">
 									The max order determines the range of ecash denominations that this keyset can create.
-								</orc-help-text>
+								</orc-form-help-text>
 							</div>
 						</div>
 					</form>

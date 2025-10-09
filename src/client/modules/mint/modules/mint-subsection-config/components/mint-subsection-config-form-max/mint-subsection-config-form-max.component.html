@@ -7,7 +7,7 @@
 			(keydown.enter)="onSubmit($event)"
 			(keydown.escape)="onCancel($event)"
 		>
-			<orc-dynamic-form-field
+			<orc-form-field-dynamic
 				[hot]="form_hot"
 				[invalid]="form_group.get(control_name)?.invalid || false"
 				(submit)="onSubmit($event)"
@@ -20,7 +20,14 @@
 					class="mint-max-form-field orc-dynamic-form-field"
 				>
 					<mat-label>Max Amount</mat-label>
-					<input type="text" matInput inputFormat [formControlName]="control_name" placeholder="Ex. 300 000" #element_max />
+					<input
+						type="text"
+						matInput
+						formNumberSeparator
+						[formControlName]="control_name"
+						placeholder="Ex. 300 000"
+						#element_max
+					/>
 					<span matSuffix class="form-suffix-text">{{ unit | unit }}</span>
 					@if (
 						form_group.get(control_name)?.invalid &&
@@ -29,12 +36,12 @@
 						<mat-error class="font-size-xs">{{ form_error }}</mat-error>
 					}
 				</mat-form-field>
-			</orc-dynamic-form-field>
+			</orc-form-field-dynamic>
 		</form>
 		<div class="flex-1">
-			<orc-help-text class="orc-surface-container-high-bg">
+			<orc-form-help-text class="orc-surface-container-high-bg">
 				{{ help_text() }}
-			</orc-help-text>
+			</orc-form-help-text>
 		</div>
 	</div>
 </div>

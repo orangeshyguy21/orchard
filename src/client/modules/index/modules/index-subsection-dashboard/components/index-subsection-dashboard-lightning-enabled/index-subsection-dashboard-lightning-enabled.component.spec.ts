@@ -1,5 +1,7 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+/* Native Dependencies */
+import {OrcIndexSubsectionDashboardModule} from '@client/modules/index/modules/index-subsection-dashboard/index-subsection-dashboard.module';
 /* Local Dependencies */
 import {IndexSubsectionDashboardLightningEnabledComponent} from './index-subsection-dashboard-lightning-enabled.component';
 
@@ -9,11 +11,12 @@ describe('IndexSubsectionDashboardLightningEnabledComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [IndexSubsectionDashboardLightningEnabledComponent],
+			imports: [OrcIndexSubsectionDashboardModule],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(IndexSubsectionDashboardLightningEnabledComponent);
 		component = fixture.componentInstance;
+		component.loading = true;
 		fixture.detectChanges();
 	});
 

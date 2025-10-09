@@ -34,4 +34,4 @@ import {EcashSectionComponent} from './components/ecash-section/ecash-section.co
 		CoreCommonModule,
 	],
 })
-export class EcashSectionModule {}
+export class OrcEcashSectionModule {}

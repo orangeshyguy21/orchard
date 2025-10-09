@@ -1,13 +1,18 @@
+/* Core Dependencies */
 import {TestBed} from '@angular/core/testing';
+/* Vendor Dependencies */
+import {provideLuxonDateAdapter} from '@angular/material-luxon-adapter';
+/* Local Dependencies */
+import {SettingService} from './setting.service';
 
-import {LocaleService} from './locale.service';
-
-describe('LocaleService', () => {
-	let service: LocaleService;
+describe('SettingService', () => {
+	let service: SettingService;
 
 	beforeEach(() => {
-		TestBed.configureTestingModule({});
-		service = TestBed.inject(LocaleService);
+		TestBed.configureTestingModule({
+			providers: [provideLuxonDateAdapter()],
+		});
+		service = TestBed.inject(SettingService);
 	});
 
 	it('should be created', () => {

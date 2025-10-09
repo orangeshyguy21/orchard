@@ -1,0 +1,31 @@
+<div class="tertiary-nav-container">
+	<ng-content></ng-content>
+	<div class="tertiary-nav-items" cdkDropList cdkDropListOrientation="vertical" (cdkDropListDropped)="onDrop($event)">
+		@for (key of keys; track key) {
+			<orc-nav-tertiary-item
+				[title]="items[key].title"
+				[subtitle]="items[key].subtitle"
+				[status]="items[key].status"
+				(click)="onClick(key)"
+				cdkDrag
+			>
+				<div class="drop-placeholder" *cdkDragPlaceholder>
+					<orc-nav-tertiary-item
+						[title]="items[key].title"
+						[subtitle]="items[key].subtitle"
+						[status]="items[key].status"
+					></orc-nav-tertiary-item>
+				</div>
+			</orc-nav-tertiary-item>
+		}
+	</div>
+	<div class="relative">
+		<div
+			class="orc-animation-feedback absolute top-0-5 flex flex-gap-0-25 flex-row flex-align-center orc-outline-color"
+			[class.animation-visible]="update_feedback"
+		>
+			<div class="font-size-s">Order saved</div>
+			<mat-icon class="icon-sm">save</mat-icon>
+		</div>
+	</div>
+</div>

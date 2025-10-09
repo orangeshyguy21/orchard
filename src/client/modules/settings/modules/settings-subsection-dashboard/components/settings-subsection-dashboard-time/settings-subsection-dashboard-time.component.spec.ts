@@ -1,5 +1,9 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+/* Vendor Dependencies */
+import {provideLuxonDateAdapter} from '@angular/material-luxon-adapter';
+/* Native Dependencies */
+import {OrcSettingsSubsectionDashboardModule} from '@client/modules/settings/modules/settings-subsection-dashboard/settings-subsection-dashboard.module';
 /* Local Dependencies */
 import {SettingsSubsectionDashboardTimeComponent} from './settings-subsection-dashboard-time.component';
 
@@ -9,11 +13,15 @@ describe('SettingsSubsectionDashboardTimeComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [SettingsSubsectionDashboardTimeComponent],
+			imports: [OrcSettingsSubsectionDashboardModule],
+			providers: [provideLuxonDateAdapter()],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(SettingsSubsectionDashboardTimeComponent);
 		component = fixture.componentInstance;
+		component.locale = null as any;
+		component.timezone = null as any;
+		component.loading = true;
 		fixture.detectChanges();
 	});
 

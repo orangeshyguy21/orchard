@@ -1,5 +1,7 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+/* Native Dependencies */
+import {OrcSettingsSubsectionDashboardModule} from '@client/modules/settings/modules/settings-subsection-dashboard/settings-subsection-dashboard.module';
 /* Local Dependencies */
 import {SettingsSubsectionDashboardThemeComponent} from './settings-subsection-dashboard-theme.component';
 
@@ -9,7 +11,7 @@ describe('SettingsSubsectionDashboardThemeComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [SettingsSubsectionDashboardThemeComponent],
+			imports: [OrcSettingsSubsectionDashboardModule],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(SettingsSubsectionDashboardThemeComponent);

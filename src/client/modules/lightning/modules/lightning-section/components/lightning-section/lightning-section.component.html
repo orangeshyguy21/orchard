@@ -1,20 +1,20 @@
 <section class="section-container">
-	<orc-secondary-nav>
-		<div secondary-nav-header class="secondary-nav-header">
+	<orc-nav-secondary>
+		<div nav-secondary-header class="nav-secondary-header">
 			<div class="flex flex-items-center flex-gap-1">
 				<div class="h-2 w-2 orc-corner-full" [style.background-color]="lightning_info?.color"></div>
 				<div class="text-nowrap">{{ lightning_info?.alias }}</div>
 			</div>
 		</div>
-		<div secondary-nav-items>
-			<orc-secondary-nav-item name="Dashboard" navroute="mint" [active]="active_sub_section === 'dashboard'">
-			</orc-secondary-nav-item>
+		<div nav-secondary-items>
+			<orc-nav-secondary-item name="Dashboard" navroute="mint" [active]="active_sub_section === 'dashboard'">
+			</orc-nav-secondary-item>
 		</div>
-		<div secondary-nav-toolbar class="secondary-nav-toolbar">
+		<div nav-secondary-toolbar class="nav-secondary-toolbar">
 			<div class="section-implementation">{{ lightning_info?.version }}</div>
-			<orc-secondary-nav-more></orc-secondary-nav-more>
+			<orc-nav-secondary-more></orc-nav-secondary-more>
 		</div>
-	</orc-secondary-nav>
+	</orc-nav-secondary>
 
 	<div class="subsection-container">
 		<router-outlet></router-outlet>

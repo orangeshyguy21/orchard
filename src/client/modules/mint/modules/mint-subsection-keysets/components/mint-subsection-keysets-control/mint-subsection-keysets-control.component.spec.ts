@@ -1,5 +1,9 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+/* Vendor Dependencies */
+import {provideLuxonDateAdapter} from '@angular/material-luxon-adapter';
+/* Native Dependencies */
+import {OrcMintSubsectionKeysetsModule} from '@client/modules/mint/modules/mint-subsection-keysets/mint-subsection-keysets.module';
 /* Local Dependencies */
 import {MintSubsectionKeysetsControlComponent} from './mint-subsection-keysets-control.component';
 
@@ -9,11 +13,15 @@ describe('MintSubsectionKeysetsControlComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [MintSubsectionKeysetsControlComponent],
+			imports: [OrcMintSubsectionKeysetsModule],
+			providers: [provideLuxonDateAdapter()],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(MintSubsectionKeysetsControlComponent);
 		component = fixture.componentInstance;
+		component.loading = true;
+		component.page_settings = {date_start: 0, date_end: 0, units: [], status: []} as any;
+		component.keysets = [] as any;
 		fixture.detectChanges();
 	});
 

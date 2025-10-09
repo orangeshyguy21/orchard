@@ -1,13 +1,18 @@
+/* Core Dependencies */
 import {TestBed} from '@angular/core/testing';
+import {provideHttpClient} from '@angular/common/http';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
+/* Local Dependencies */
+import {PublicService} from './public.service';
 
-import {ImageService} from './image.service';
-
-describe('ImageService', () => {
-	let service: ImageService;
+describe('PublicService', () => {
+	let service: PublicService;
 
 	beforeEach(() => {
-		TestBed.configureTestingModule({});
-		service = TestBed.inject(ImageService);
+		TestBed.configureTestingModule({
+			providers: [provideHttpClient(), provideHttpClientTesting()],
+		});
+		service = TestBed.inject(PublicService);
 	});
 
 	it('should be created', () => {

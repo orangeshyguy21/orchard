@@ -1,15 +1,15 @@
 /* Core Dependencies */
 import {enableProdMode} from '@angular/core';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {platformBrowser} from '@angular/platform-browser';
 /* Application Modules */
-import {AppModule} from './app.module';
+import {OrcAppModule} from './app.module';
 /* Application Configuration */
 import {environment} from './configs/configuration';
 
 if (environment.mode.production) enableProdMode();
 
 document.addEventListener('DOMContentLoaded', () => {
-	platformBrowserDynamic()
-		.bootstrapModule(AppModule)
+	platformBrowser()
+		.bootstrapModule(OrcAppModule)
 		.catch((err) => console.error(err));
 });

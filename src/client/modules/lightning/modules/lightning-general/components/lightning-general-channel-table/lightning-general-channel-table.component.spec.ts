@@ -1,5 +1,7 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+/* Native Dependencies */
+import {OrcLightningGeneralModule} from '@client/modules/lightning/modules/lightning-general/lightning-general.module';
 /* Local Dependencies */
 import {LightningGeneralChannelTableComponent} from './lightning-general-channel-table.component';
 
@@ -9,7 +11,7 @@ describe('LightningGeneralChannelTableComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [LightningGeneralChannelTableComponent],
+			imports: [OrcLightningGeneralModule],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(LightningGeneralChannelTableComponent);
