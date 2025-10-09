@@ -1,5 +1,5 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-
+import {OrcNavModule} from '@client/modules/nav/nav.module';
 import {IndexSectionComponent} from './index-section.component';
 
 describe('IndexSectionComponent', () => {
@@ -8,6 +8,7 @@ describe('IndexSectionComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
+			imports: [OrcNavModule],
 			declarations: [IndexSectionComponent],
 		}).compileComponents();
 
