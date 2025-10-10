@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, SimpleChanges, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 import {FormControl} from '@angular/forms';
 /* Vendor Dependencies */
@@ -54,7 +54,7 @@ export class MintSubsectionDashboardConnectionsComponent {
 		this.qr_corner_dot_color = this.themeService.getThemeColor('--mat-sys-surface-container-highest') || '#000000';
 	}
 
-	ngOnChanges(changes: SimpleChanges): void {
+	ngOnChanges(): void {
 		if (this.loading !== false) return;
 		if (this.qr_code) return;
 		this.init();

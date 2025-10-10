@@ -1,5 +1,5 @@
 /* Vendor Dependencies */
-import {TimeUnit, TimeScaleOptions} from 'chart.js';
+import {TimeUnit} from 'chart.js';
 import {DateTime} from 'luxon';
 /* Shared Dependencies */
 import {MintAnalyticsInterval} from '@shared/generated.types';

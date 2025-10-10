@@ -53,7 +53,7 @@ export class FormAutogrowDirective implements OnInit, DoCheck {
 	 * @returns
 	 */
 	@HostListener('paste', ['$event'])
-	onPaste(event: ClipboardEvent) {
+	onPaste() {
 		if (this._autogrow === false) return;
 		setTimeout(() => {
 			this.grow();

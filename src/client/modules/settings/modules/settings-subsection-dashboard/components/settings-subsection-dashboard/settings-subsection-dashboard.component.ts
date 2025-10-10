@@ -68,6 +68,7 @@ export class SettingsSubsectionDashboardComponent implements OnInit {
 				this.cdr.detectChanges();
 			},
 			(error) => {
+				console.error(error);
 				this.error_ai = true;
 				this.loading_ai = false;
 				this.cdr.detectChanges();

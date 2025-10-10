@@ -363,7 +363,7 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 		`;
 
 		this.mintService.updateMint(mutation, mutation_variables).subscribe({
-			next: (response) => {
+			next: () => {
 				this.mintService.getMintInfo().subscribe((mint_info: MintInfoRpc) => {
 					this.init_info = mint_info;
 					this.cdr.detectChanges();
@@ -469,7 +469,7 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 
 	private removeMintUrl(control_index: number, control_value: string): void {
 		this.mintService.removeMintUrl(control_value).subscribe({
-			next: (response) => {
+			next: () => {
 				this.init_info.urls.splice(control_index, 1);
 				this.form_array_urls.removeAt(control_index);
 				this.onSuccess();
@@ -516,7 +516,7 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 
 	private removeMintContact(control_index: number, control_value: OrchardContact): void {
 		this.mintService.removeMintContact(control_value).subscribe({
-			next: (response) => {
+			next: () => {
 				this.init_info.contact.splice(control_index, 1);
 				this.form_array_contacts.removeAt(control_index);
 				this.onSuccess();

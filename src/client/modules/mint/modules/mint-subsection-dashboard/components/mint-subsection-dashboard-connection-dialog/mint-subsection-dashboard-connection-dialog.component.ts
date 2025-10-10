@@ -92,7 +92,7 @@ export class MintSubsectionDashboardConnectionDialogComponent implements OnInit 
 		this.qr_code.append(this.qr_canvas.nativeElement);
 	}
 
-	public onStyleChange(event: Event): void {
+	public onStyleChange(): void {
 		if (this.qr_options.value.style === null || this.qr_options.value.style === undefined) return;
 		const style_value = this.qr_options.value.style;
 		this.qr_code.update({

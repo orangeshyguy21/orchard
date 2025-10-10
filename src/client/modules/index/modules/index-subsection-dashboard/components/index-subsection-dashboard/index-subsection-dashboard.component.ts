@@ -341,7 +341,7 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.router.navigate([`/${route}`]);
 	}
 
-	public onTargetChange(target: number): void {
+	public onTargetChange(): void {
 		this.getBitcoinFeeEstimate();
 	}
 

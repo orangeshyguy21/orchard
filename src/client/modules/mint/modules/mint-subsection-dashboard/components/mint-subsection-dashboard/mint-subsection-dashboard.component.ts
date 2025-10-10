@@ -194,7 +194,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	private async getMintFees(): Promise<void> {
 		try {
 			this.mint_fees = await lastValueFrom(this.mintService.loadMintFees(1));
-		} catch (error) {
+		} catch {
 			this.mint_fees = [];
 		}
 	}

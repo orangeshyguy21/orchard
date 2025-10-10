@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, ChangeDetectorRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, Output, EventEmitter, SimpleChanges, ChangeDetectorRef} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 /* Application Dependencies */

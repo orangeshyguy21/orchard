@@ -32,6 +32,7 @@ export class LightningSectionComponent implements OnInit, OnDestroy {
 	ngOnInit(): void {
 		this.lightningService.loadLightningInfo().subscribe({
 			error: (error) => {
+				console.error(error);
 				this.error = true;
 				this.loading = false;
 				this.cdr.detectChanges();

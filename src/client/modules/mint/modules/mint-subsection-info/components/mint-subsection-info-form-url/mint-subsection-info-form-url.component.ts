@@ -57,7 +57,7 @@ export class MintSubsectionInfoFormUrlComponent implements OnInit, AfterViewInit
 
 	ngOnInit(): void {
 		this.subscription.add(
-			this.form_array.valueChanges.subscribe((value) => {
+			this.form_array.valueChanges.subscribe(() => {
 				this.url_icon = this.getUrlIcon();
 				this.cdr.detectChanges();
 			}),

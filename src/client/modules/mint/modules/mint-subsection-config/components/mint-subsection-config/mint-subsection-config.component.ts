@@ -704,7 +704,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		`;
 
 		this.mintService.updateMint(mutation, mutation_values).subscribe({
-			next: (response) => {
+			next: () => {
 				this.mintService.clearInfoCache();
 				this.mintService.loadMintInfo().subscribe();
 				this.mintService.getMintQuoteTtls().subscribe((quote_ttls: MintQuoteTtls) => {
@@ -734,7 +734,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 
 	private updateMintNut04(unit: string, method: string, control_name: keyof OrchardNut4Method | 'disabled', control_value: any): void {
 		this.mintService.updateMintNut04(unit, method, control_name, control_value).subscribe({
-			next: (response) => {
+			next: () => {
 				const nut_method = this.mint_info?.nuts.nut4.methods.find(
 					(nut_method) => nut_method.unit === unit && nut_method.method === method,
 				);
@@ -752,7 +752,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 
 	private updateMintNut05(unit: string, method: string, control_name: keyof OrchardNut5Method | 'disabled', control_value: any): void {
 		this.mintService.updateMintNut05(unit, method, control_name, control_value).subscribe({
-			next: (response) => {
+			next: () => {
 				const nut_method = this.mint_info?.nuts.nut5.methods.find(
 					(nut_method) => nut_method.unit === unit && nut_method.method === method,
 				);

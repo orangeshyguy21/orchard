@@ -52,7 +52,7 @@ export class MintSubsectionDatabaseFormRestoreComponent {
 				this.file_loading.set(percentage);
 			}
 		};
-		reader.onload = (event) => {
+		reader.onload = () => {
 			this.file_loading.set(100);
 			const file_content = reader.result as string;
 			const base64_content = file_content.split(',')[1];

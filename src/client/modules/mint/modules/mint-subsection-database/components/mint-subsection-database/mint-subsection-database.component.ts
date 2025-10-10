@@ -491,7 +491,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		}
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		this.mintService.restoreMintDatabaseBackup(this.form_restore.get('filebase64')?.value).subscribe({
-			next: (response) => {
+			next: () => {
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'SUCCESS',

@@ -51,7 +51,7 @@ export class AuthSubsectionAuthenticateComponent implements OnInit {
 
 	private authenticate(password: string): void {
 		this.authService.authenticate(password).subscribe({
-			next: (response) => {
+			next: () => {
 				this.openInterior();
 			},
 			error: (error) => {

@@ -237,7 +237,7 @@ export class MintSubsectionDatabaseChartComponent implements OnChanges, OnDestro
 				beginAtZero: !use_log_scale,
 				ticks: use_log_scale
 					? {
-							callback: function (value: number, index: number, values: number[]): string | null {
+							callback: function (value: number): string | null {
 								return value === 1 || Math.log10(value) % 1 === 0 ? value.toString() : null;
 							},
 						}
@@ -254,7 +254,7 @@ export class MintSubsectionDatabaseChartComponent implements OnChanges, OnDestro
 				beginAtZero: !use_log_scale,
 				ticks: use_log_scale
 					? {
-							callback: function (value: number, index: number, values: number[]): string | null {
+							callback: function (value: number): string | null {
 								return value === 1 || Math.log10(value) % 1 === 0 ? value.toString() : null;
 							},
 						}
