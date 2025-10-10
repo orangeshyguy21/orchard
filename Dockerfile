@@ -1,7 +1,7 @@
 # ---------------
 # Install Dependencies
 # ---------------
-FROM node:24-alpine as deps
+FROM node:22-alpine as deps
 
 WORKDIR /app
 
@@ -28,7 +28,7 @@ RUN rm -f .env
 # ---------------
 # Release App
 # ---------------
-FROM node:24-alpine as final
+FROM node:22-alpine as final
 
 WORKDIR /app
 

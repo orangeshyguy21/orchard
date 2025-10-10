@@ -68,6 +68,7 @@ export class CashuMintDatabaseService implements OnModuleInit {
 				return {type: MintDatabaseType.postgres, database: client};
 			}
 		} catch (error) {
+			this.logger.debug(error);
 			throw OrchardErrorCode.MintDatabaseConnectionError;
 		}
 	}
