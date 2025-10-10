@@ -49,9 +49,9 @@ export class MintSubsectionDashboardConnectionDialogComponent implements OnInit 
 	}
 
 	private initQR(): void {
-		let themeless_primary_color = this.themeService.extractThemeColor(this.data.primary_color, ThemeType.DARK_MODE);
-		let themeless_corner_dot_color = this.themeService.extractThemeColor(this.data.corner_dot_color, ThemeType.DARK_MODE);
-		let themeless_bg = this.themeService.getThemeColor('--mat-sys-on-secondary-container', ThemeType.DARK_MODE);
+		const themeless_primary_color = this.themeService.extractThemeColor(this.data.primary_color, ThemeType.DARK_MODE);
+		const themeless_corner_dot_color = this.themeService.extractThemeColor(this.data.corner_dot_color, ThemeType.DARK_MODE);
+		const themeless_bg = this.themeService.getThemeColor('--mat-sys-on-secondary-container', ThemeType.DARK_MODE);
 
 		this.qr_code = new QRCodeStyling({
 			width: 395,

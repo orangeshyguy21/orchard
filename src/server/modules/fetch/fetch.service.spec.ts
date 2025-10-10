@@ -15,7 +15,7 @@ describe('FetchService', () => {
 		}).compile();
 
 		fetch_service = module.get<FetchService>(FetchService);
-		config_service = module.get(ConfigService) as any;
+		config_service = module.get(ConfigService);
 	});
 
 	it('should be defined', () => {

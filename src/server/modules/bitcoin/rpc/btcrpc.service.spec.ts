@@ -23,8 +23,8 @@ describe('BitcoinRpcService', () => {
 		}).compile();
 
 		bitcoin_rpc_service = module.get<BitcoinRpcService>(BitcoinRpcService);
-		config_service = module.get(ConfigService) as any;
-		core_service = module.get(CoreService) as any;
+		config_service = module.get(ConfigService);
+		core_service = module.get(CoreService);
 		// make service think we're CORE
 		config_service.get.mockReturnValue(BitcoinType.CORE);
 		await bitcoin_rpc_service.onModuleInit();

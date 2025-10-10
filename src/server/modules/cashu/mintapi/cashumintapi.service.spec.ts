@@ -21,8 +21,8 @@ describe('CashuMintApiService', () => {
 		}).compile();
 
 		cashu_mint_api_service = module.get<CashuMintApiService>(CashuMintApiService);
-		config_service = module.get(ConfigService) as any;
-		fetch_service = module.get(FetchService) as any;
+		config_service = module.get(ConfigService);
+		fetch_service = module.get(FetchService);
 	});
 
 	it('should be defined', () => {

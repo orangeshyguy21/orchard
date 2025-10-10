@@ -39,8 +39,8 @@ describe('CdkService', () => {
 		jest.clearAllMocks();
 
 		cdk_service = module.get<CdkService>(CdkService);
-		config_service = module.get(ConfigService) as any;
-		credential_service = module.get(CredentialService) as any;
+		config_service = module.get(ConfigService);
+		credential_service = module.get(CredentialService);
 	});
 
 	it('should be defined', () => {
@@ -107,7 +107,7 @@ describe('CdkService', () => {
 		jest.spyOn(grpc, 'loadPackageDefinition').mockReturnValue({cdk_mint_rpc: {CdkMint: CdkMintMock}} as any);
 		cdk_service.initializeGrpcClient();
 		expect(CdkMintMock).toHaveBeenCalled();
-		const args = (CdkMintMock as jest.Mock).mock.calls[0];
+		const args = (CdkMintMock).mock.calls[0];
 		expect(args[2]).toMatchObject({
 			'grpc.ssl_target_name_override': 'localhost',
 			'grpc.default_authority': 'localhost',
@@ -211,9 +211,9 @@ describe('CdkService', () => {
 		]);
 		const out = await cdk_service.getMintProofGroups({} as any);
 		expect(out).toHaveLength(2);
-		const g1 = out.find((g) => g.created_time === 10)!;
+		const g1 = out.find((g) => g.created_time === 10);
 		expect(g1.amount).toBe(3);
-		const g2 = out.find((g) => g.created_time === 11)!;
+		const g2 = out.find((g) => g.created_time === 11);
 		expect(g2.amount).toBe(3);
 
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([]);

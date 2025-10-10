@@ -25,8 +25,8 @@ describe('PublicImageService', () => {
 		}).compile();
 
 		public_image_service = module.get<PublicImageService>(PublicImageService);
-		fetch_service = module.get(FetchService) as any;
-		error_service = module.get(ErrorService) as any;
+		fetch_service = module.get(FetchService);
+		error_service = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {

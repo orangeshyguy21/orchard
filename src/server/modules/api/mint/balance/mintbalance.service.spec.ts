@@ -31,9 +31,9 @@ describe('MintBalanceService', () => {
 		}).compile();
 
 		mint_balance_service = module.get<MintBalanceService>(MintBalanceService);
-		mint_db_service = module.get(CashuMintDatabaseService) as any;
-		mint_service = module.get(MintService) as any;
-		error_service = module.get(ErrorService) as any;
+		mint_db_service = module.get(CashuMintDatabaseService);
+		mint_service = module.get(MintService);
+		error_service = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {

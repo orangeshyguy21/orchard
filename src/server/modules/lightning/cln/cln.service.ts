@@ -44,7 +44,7 @@ export class ClnService {
 
 		const ssl_creds = grpc.credentials.createSsl(ca_cert_content, client_key_content, client_cert_content);
 
-		let channel_options: Record<string, any> | undefined = {
+		const channel_options: Record<string, any> | undefined = {
 			'grpc.ssl_target_name_override': 'cln',
 		};
 

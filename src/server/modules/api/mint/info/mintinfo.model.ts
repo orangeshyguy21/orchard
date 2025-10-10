@@ -35,7 +35,7 @@ export class OrchardNutSupported {
 
 @ObjectType()
 export class OrchardNut4 {
-	@Field(() => [OrchardNut4Method!])
+	@Field(() => [OrchardNut4Method])
 	methods: OrchardNut4Method[];
 
 	@Field()
@@ -49,7 +49,7 @@ export class OrchardNut4 {
 
 @ObjectType()
 export class OrchardNut5 {
-	@Field(() => [OrchardNut5Method!])
+	@Field(() => [OrchardNut5Method])
 	methods: OrchardNut5Method[];
 
 	@Field()
@@ -63,7 +63,7 @@ export class OrchardNut5 {
 
 @ObjectType()
 export class OrchardNut15 {
-	@Field(() => [OrchardNut15Method!])
+	@Field(() => [OrchardNut15Method])
 	methods: OrchardNut15Method[];
 
 	constructor(nut15: CashuMintInfo['nuts']['15']) {
@@ -73,7 +73,7 @@ export class OrchardNut15 {
 
 @ObjectType()
 export class OrchardNut17 {
-	@Field(() => [OrchardNut17Supported!])
+	@Field(() => [OrchardNut17Supported])
 	supported: OrchardNut17Supported[];
 
 	constructor(nut17: CashuMintInfo['nuts']['17']) {
@@ -83,7 +83,7 @@ export class OrchardNut17 {
 
 @ObjectType()
 export class OrchardNut19 {
-	@Field(() => [OrchardCachedEndpoint!])
+	@Field(() => [OrchardCachedEndpoint])
 	cached_endpoints: OrchardCachedEndpoint[];
 
 	@Field()
@@ -170,7 +170,7 @@ export class OrchardMintInfo {
 	@Field({nullable: true})
 	description_long: string;
 
-	@Field(() => [OrchardContact!], {nullable: true})
+	@Field(() => [OrchardContact], {nullable: true})
 	contact: OrchardContact[];
 
 	@Field({nullable: true})
@@ -179,13 +179,13 @@ export class OrchardMintInfo {
 	@Field({nullable: true})
 	tos_url: string;
 
-	@Field(() => [String!], {nullable: true})
+	@Field(() => [String], {nullable: true})
 	urls: string[];
 
 	@Field((type) => UnixTimestamp, {nullable: true})
 	time: number;
 
-	@Field(() => OrchardNuts!)
+	@Field(() => OrchardNuts)
 	nuts: OrchardNuts;
 
 	constructor(cashu_info: CashuMintInfo) {
@@ -291,7 +291,7 @@ export class OrchardNut17Supported {
 	@Field()
 	unit: string;
 
-	@Field(() => [String!])
+	@Field(() => [String])
 	commands: string[];
 
 	constructor(supported: CashuNutSupported) {
@@ -338,13 +338,13 @@ export class OrchardMintInfoRpc {
 	@Field({nullable: true})
 	description_long: string;
 
-	@Field(() => [OrchardContact!])
+	@Field(() => [OrchardContact])
 	contact: OrchardContact[];
 
 	@Field({nullable: true})
 	icon_url: string;
 
-	@Field(() => [String!])
+	@Field(() => [String])
 	urls: string[];
 
 	constructor(cashu_info: CashuMintInfoRpc) {

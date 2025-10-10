@@ -23,8 +23,8 @@ describe('TaprootAssetsService', () => {
 		}).compile();
 
 		taproot_assets_service = module.get<TaprootAssetsService>(TaprootAssetsService);
-		config_service = module.get(ConfigService) as any;
-		tapd_service = module.get(TapdService) as any;
+		config_service = module.get(ConfigService);
+		tapd_service = module.get(TapdService);
 		config_service.get.mockReturnValue('tapd');
 		await taproot_assets_service.onModuleInit();
 	});

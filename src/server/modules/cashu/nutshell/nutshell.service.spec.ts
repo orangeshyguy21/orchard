@@ -37,8 +37,8 @@ describe('NutshellService', () => {
 		}).compile();
 
 		nutshell_service = module.get<NutshellService>(NutshellService);
-		config_service = module.get(ConfigService) as any;
-		credential_service = module.get(CredentialService) as any;
+		config_service = module.get(ConfigService);
+		credential_service = module.get(CredentialService);
 		jest.clearAllMocks();
 	});
 
@@ -189,7 +189,7 @@ describe('NutshellService', () => {
 				{valid_from: 'x', valid_to: 'y', derivation_path: "m/86'/0'/1'"},
 			])
 			.mockRejectedValueOnce(new Error('fail'));
-		let out = await nutshell_service.getMintKeysets({} as any);
+		const out = await nutshell_service.getMintKeysets({} as any);
 		expect(out[0].derivation_path_index).toBeNull();
 		expect(out[1].derivation_path_index).toBe(1);
 		// verify auth param applied

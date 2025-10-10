@@ -27,9 +27,9 @@ describe('CashuMintRpcService', () => {
 		}).compile();
 
 		cashu_mint_rpc_service = module.get<CashuMintRpcService>(CashuMintRpcService);
-		config_service = module.get(ConfigService) as any;
-		cdk_service = module.get(CdkService) as any;
-		nutshell_service = module.get(NutshellService) as any;
+		config_service = module.get(ConfigService);
+		cdk_service = module.get(CdkService);
+		nutshell_service = module.get(NutshellService);
 	});
 
 	it('should be defined', () => {

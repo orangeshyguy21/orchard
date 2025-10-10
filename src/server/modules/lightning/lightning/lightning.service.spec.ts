@@ -34,9 +34,9 @@ describe('LightningService', () => {
 		}).compile();
 
 		lightning_service = module.get<LightningService>(LightningService);
-		config_service = module.get(ConfigService) as any;
-		lnd_service = module.get(LndService) as any;
-		cln_service = module.get(ClnService) as any;
+		config_service = module.get(ConfigService);
+		lnd_service = module.get(LndService);
+		cln_service = module.get(ClnService);
 	});
 
 	it('should be defined', () => {

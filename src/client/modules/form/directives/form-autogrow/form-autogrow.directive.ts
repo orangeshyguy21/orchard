@@ -70,10 +70,10 @@ export class FormAutogrowDirective implements OnInit, DoCheck {
 	public grow(): void {
 		this.el.nativeElement.style.height = 'auto';
 
-		let scroll_height = this.el.nativeElement.scrollHeight;
+		const scroll_height = this.el.nativeElement.scrollHeight;
 
 		if (scroll_height === 0) return;
-		let estimated_height = scroll_height + this.HEIGHT_BUFFER;
+		const estimated_height = scroll_height + this.HEIGHT_BUFFER;
 
 		if (estimated_height > this.MAX_HEIGHT) {
 			this.el.nativeElement.style.height = `${this.MAX_HEIGHT}px`;

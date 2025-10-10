@@ -25,8 +25,8 @@ describe('LightningWalletService', () => {
 		}).compile();
 
 		lightning_wallet_service = module.get<LightningWalletService>(LightningWalletService);
-		walletkit_service = module.get(LightningWalletKitService) as any;
-		error_service = module.get(ErrorService) as any;
+		walletkit_service = module.get(LightningWalletKitService);
+		error_service = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {

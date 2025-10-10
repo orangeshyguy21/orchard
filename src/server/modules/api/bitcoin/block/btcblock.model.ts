@@ -59,7 +59,7 @@ export class OrchardBitcoinBlock {
 		txs.forEach((tx) => {
 			tx.vin.forEach((input) => {
 				if (!children_by_parent.has(input.txid)) return;
-				children_by_parent.get(input.txid)!.push(tx);
+				children_by_parent.get(input.txid).push(tx);
 			});
 		});
 		// Find root transactions
@@ -111,7 +111,7 @@ export class OrchardBitcoinBlock {
 		const visited = new Set<string>();
 		const to_process = [parent_txid];
 		while (to_process.length > 0) {
-			const current_txid = to_process.shift()!;
+			const current_txid = to_process.shift();
 			if (visited.has(current_txid)) continue;
 			visited.add(current_txid);
 			const children = children_by_parent.get(current_txid) || [];
@@ -174,7 +174,7 @@ export class OrchardBitcoinBlockTemplate {
 				if (dep_idx === 0) return;
 				const parent_tx = txs[dep_idx - 1];
 				if (!parent_tx) return;
-				children_by_parent.get(parent_tx.txid)!.push(tx);
+				children_by_parent.get(parent_tx.txid).push(tx);
 			});
 		});
 		// Find root transactions (those with no depends or only 0)
@@ -212,7 +212,7 @@ export class OrchardBitcoinBlockTemplate {
 		const visited = new Set<string>();
 		const to_process = [parent_txid];
 		while (to_process.length > 0) {
-			const current_txid = to_process.shift()!;
+			const current_txid = to_process.shift();
 			if (visited.has(current_txid)) continue;
 			visited.add(current_txid);
 			const children = children_by_parent.get(current_txid) || [];

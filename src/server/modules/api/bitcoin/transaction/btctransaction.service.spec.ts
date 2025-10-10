@@ -25,8 +25,8 @@ describe('BtcTransactionService', () => {
 		}).compile();
 
 		btc_transaction_service = module.get<BtcTransactionService>(BtcTransactionService);
-		bitcoin_rpc_service = module.get(BitcoinRpcService) as any;
-		error_service = module.get(ErrorService) as any;
+		bitcoin_rpc_service = module.get(BitcoinRpcService);
+		error_service = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {

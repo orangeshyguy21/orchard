@@ -23,9 +23,9 @@ describe('AuthService', () => {
 		}).compile();
 
 		auth_service = module.get<AuthService>(AuthService);
-		config_service = module.get(ConfigService) as any;
-		jwt_service = module.get(JwtService) as any;
-		user_service = module.get(UserService) as any;
+		config_service = module.get(ConfigService);
+		jwt_service = module.get(JwtService);
+		user_service = module.get(UserService);
 	});
 
 	it('should be defined', () => {

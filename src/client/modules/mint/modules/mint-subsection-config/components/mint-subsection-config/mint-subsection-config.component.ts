@@ -550,7 +550,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	}): void {
 		form_group.get(unit)?.get(method)?.get(control_name)?.markAsPristine();
 		const nut_method = this.mint_info?.nuts[nut].methods.find((nut_method) => nut_method.unit === unit && nut_method.method === method);
-		let old_val =
+		const old_val =
 			nut === 'nut4'
 				? (nut_method as OrchardNut4Method)?.[control_name as keyof OrchardNut4Method]
 				: (nut_method as OrchardNut5Method)?.[control_name as keyof OrchardNut5Method];

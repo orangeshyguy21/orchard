@@ -30,9 +30,9 @@ describe('MintMeltQuoteService', () => {
 		}).compile();
 
 		mint_melt_quote_service = module.get<MintMeltQuoteService>(MintMeltQuoteService);
-		mint_db_service = module.get(CashuMintDatabaseService) as any;
-		mint_rpc_service = module.get(CashuMintRpcService) as any;
-		error_service = module.get(ErrorService) as any;
+		mint_db_service = module.get(CashuMintDatabaseService);
+		mint_rpc_service = module.get(CashuMintRpcService);
+		error_service = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {

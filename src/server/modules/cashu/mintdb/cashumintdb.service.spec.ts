@@ -44,9 +44,9 @@ describe('CashuMintDatabaseService', () => {
 		}).compile();
 
 		cashu_mint_database_service = module.get<CashuMintDatabaseService>(CashuMintDatabaseService);
-		config_service = module.get(ConfigService) as any;
-		nutshell_service = module.get(NutshellService) as any;
-		cdk_service = module.get(CdkService) as any;
+		config_service = module.get(ConfigService);
+		nutshell_service = module.get(NutshellService);
+		cdk_service = module.get(CdkService);
 	});
 
 	it('should be defined', () => {

@@ -25,8 +25,8 @@ describe('MintQuoteService', () => {
 		}).compile();
 
 		mint_quote_service = module.get<MintQuoteService>(MintQuoteService);
-		mint_rpc_service = module.get(CashuMintRpcService) as any;
-		error_service = module.get(ErrorService) as any;
+		mint_rpc_service = module.get(CashuMintRpcService);
+		error_service = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {

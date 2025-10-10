@@ -25,8 +25,8 @@ describe('LightningInfoService', () => {
 		}).compile();
 
 		lightning_info_service = module.get<LightningInfoService>(LightningInfoService);
-		lightning_service = module.get(LightningService) as any;
-		error_service = module.get(ErrorService) as any;
+		lightning_service = module.get(LightningService);
+		error_service = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {

@@ -25,8 +25,8 @@ describe('AiModelService', () => {
 		}).compile();
 
 		ai_model_service = module.get<AiModelService>(AiModelService);
-		ai_service = module.get(AiService) as any;
-		error_service = module.get(ErrorService) as any;
+		ai_service = module.get(AiService);
+		error_service = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {
