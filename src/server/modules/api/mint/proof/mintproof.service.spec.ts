@@ -9,12 +9,12 @@ import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 /* Local Dependencies */
 import {MintProofService} from './mintproof.service';
-import {OrchardMintProofGroup, OrchardMintProofGroupStats} from './mintproof.model';
+import {OrchardMintProofGroup} from './mintproof.model';
 
 describe('MintProofService', () => {
 	let mint_proof_service: MintProofService;
 	let mint_db_service: jest.Mocked<CashuMintDatabaseService>;
-	let mint_service: jest.Mocked<MintService>;
+	let _mint_service: jest.Mocked<MintService>;
 	let error_service: jest.Mocked<ErrorService>;
 
 	beforeEach(async () => {
@@ -29,7 +29,7 @@ describe('MintProofService', () => {
 
 		mint_proof_service = module.get<MintProofService>(MintProofService);
 		mint_db_service = module.get(CashuMintDatabaseService);
-		mint_service = module.get(MintService);
+		_mint_service = module.get(MintService);
 		error_service = module.get(ErrorService);
 	});
 

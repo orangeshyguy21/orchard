@@ -10,7 +10,7 @@ import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 /* Local Dependencies */
 import {MintMeltQuoteService} from './mintmeltquote.service';
-import {OrchardMintMeltQuote, OrchardMintNut05Update} from './mintmeltquote.model';
+import {OrchardMintMeltQuote} from './mintmeltquote.model';
 
 describe('MintMeltQuoteService', () => {
 	let mint_melt_quote_service: MintMeltQuoteService;

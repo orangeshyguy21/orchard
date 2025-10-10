@@ -8,7 +8,6 @@ import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 /* Local Dependencies */
 import {MintQuoteService} from './mintquote.service';
-import {OrchardMintQuoteTtls} from './mintquote.model';
 
 describe('MintQuoteService', () => {
 	let mint_quote_service: MintQuoteService;

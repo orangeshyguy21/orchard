@@ -1,7 +1,6 @@
 /* Core Dependencies */
 import {Injectable, Logger} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
-import * as fs from 'fs';
 import * as path from 'path';
 /* Vendor Dependencies */
 import * as grpc from '@grpc/grpc-js';

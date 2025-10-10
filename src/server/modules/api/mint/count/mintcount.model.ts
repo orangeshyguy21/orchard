@@ -3,7 +3,7 @@ import {Field, Int, ObjectType} from '@nestjs/graphql';
 
 @ObjectType()
 export class OrchardMintCount {
-	@Field((type) => Int)
+	@Field(() => Int)
 	count: number;
 
 	constructor(count: number) {

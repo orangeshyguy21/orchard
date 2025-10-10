@@ -5,7 +5,7 @@ import {BitcoinBlockchainInfo} from '@server/modules/bitcoin/rpc/btcrpc.types';
 
 @ObjectType()
 export class OrchardBitcoinBlockCount {
-	@Field((type) => Int)
+	@Field(() => Int)
 	height: number;
 
 	constructor(height: number) {
@@ -14,46 +14,46 @@ export class OrchardBitcoinBlockCount {
 }
 @ObjectType()
 export class OrchardBitcoinBlockchainInfo {
-	@Field((type) => String)
+	@Field(() => String)
 	chain: string;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	blocks: number;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	headers: number;
 
-	@Field((type) => String)
+	@Field(() => String)
 	bestblockhash: string;
 
-	@Field((type) => Float)
+	@Field(() => Float)
 	difficulty: number;
 
-	@Field((type) => Float)
+	@Field(() => Float)
 	verificationprogress: number;
 
-	@Field((type) => Boolean)
+	@Field(() => Boolean)
 	initialblockdownload: boolean;
 
-	@Field((type) => String)
+	@Field(() => String)
 	chainwork: string;
 
-	@Field((type) => Float)
+	@Field(() => Float)
 	size_on_disk: number;
 
-	@Field((type) => Boolean)
+	@Field(() => Boolean)
 	pruned: boolean;
 
-	@Field((type) => Int, {nullable: true})
+	@Field(() => Int, {nullable: true})
 	pruneheight: number;
 
-	@Field((type) => Boolean, {nullable: true})
+	@Field(() => Boolean, {nullable: true})
 	automatic_pruning: boolean;
 
-	@Field((type) => Int, {nullable: true})
+	@Field(() => Int, {nullable: true})
 	prune_target_size: number;
 
-	@Field((type) => [String])
+	@Field(() => [String])
 	warnings: string[];
 
 	constructor(obi: BitcoinBlockchainInfo) {

@@ -7,19 +7,19 @@ import {CashuMintMintQuote} from '@server/modules/cashu/mintdb/cashumintdb.types
 
 @ObjectType()
 export class OrchardMintMintQuote {
-	@Field((type) => ID)
+	@Field(() => ID)
 	id: string;
 
-	@Field((type) => Int, {nullable: true})
+	@Field(() => Int, {nullable: true})
 	amount: number;
 
-	@Field((type) => MintUnit)
+	@Field(() => MintUnit)
 	unit: string;
 
 	@Field()
 	request: string;
 
-	@Field((type) => MintQuoteState)
+	@Field(() => MintQuoteState)
 	state: MintQuoteState;
 
 	@Field({nullable: true})
@@ -28,22 +28,22 @@ export class OrchardMintMintQuote {
 	@Field({nullable: true})
 	pubkey: string;
 
-	@Field((type) => UnixTimestamp)
+	@Field(() => UnixTimestamp)
 	created_time: number;
 
-	@Field((type) => UnixTimestamp, {nullable: true})
+	@Field(() => UnixTimestamp, {nullable: true})
 	issued_time: number;
 
-	@Field((type) => UnixTimestamp, {nullable: true})
+	@Field(() => UnixTimestamp, {nullable: true})
 	paid_time: number;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	amount_paid: number;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	amount_issued: number;
 
-	@Field((type) => MintPaymentMethod)
+	@Field(() => MintPaymentMethod)
 	payment_method: MintPaymentMethod;
 
 	constructor(cashu_mint_mint_quote: CashuMintMintQuote) {

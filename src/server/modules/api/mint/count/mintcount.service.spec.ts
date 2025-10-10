@@ -14,7 +14,7 @@ import {OrchardMintCount} from './mintcount.model';
 describe('MintCountService', () => {
 	let mint_count_service: MintCountService;
 	let mint_db_service: jest.Mocked<CashuMintDatabaseService>;
-	let mint_service: jest.Mocked<MintService>;
+	let _mint_service: jest.Mocked<MintService>;
 	let error_service: jest.Mocked<ErrorService>;
 
 	beforeEach(async () => {
@@ -37,7 +37,7 @@ describe('MintCountService', () => {
 
 		mint_count_service = module.get<MintCountService>(MintCountService);
 		mint_db_service = module.get(CashuMintDatabaseService);
-		mint_service = module.get(MintService);
+		_mint_service = module.get(MintService);
 		error_service = module.get(ErrorService);
 	});
 

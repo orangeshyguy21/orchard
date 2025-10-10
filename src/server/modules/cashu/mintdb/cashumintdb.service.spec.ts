@@ -79,7 +79,6 @@ describe('CashuMintDatabaseService', () => {
 	});
 
 	it('getMintDatabase returns sqlite client with pragma and readonly', async () => {
-		const BetterSqlite3 = require('better-sqlite3');
 		config_service.get.mockImplementation((k: string) => {
 			if (k === 'cashu.database_type') return 'sqlite';
 			if (k === 'cashu.database') return '/tmp/sqlite.db';
@@ -152,7 +151,7 @@ describe('CashuMintDatabaseService', () => {
 		];
 
 		// Nutshell
-		nutshell_map.forEach(([svc_method, n_method]) => {
+		nutshell_map.forEach(([_svc_method, n_method]) => {
 			(nutshell_service[n_method as any] as any) = jest.fn().mockResolvedValue('nutshell');
 		});
 		config_service.get.mockImplementation((k: string) => (k === 'cashu.type' ? 'nutshell' : 'x'));
@@ -250,7 +249,7 @@ describe('CashuMintDatabaseService', () => {
 				if (k === 'cashu.database') return 'postgres://user:pass@localhost:5432/db';
 				return undefined as any;
 			});
-			const read_file = jest.spyOn(fs_promises, 'readFile').mockResolvedValue(Buffer.from('pg'));
+			const _read_file = jest.spyOn(fs_promises, 'readFile').mockResolvedValue(Buffer.from('pg'));
 			const unlink = jest.spyOn(fs_promises, 'unlink').mockResolvedValue(undefined as any);
 			const spawn_mock = child_process.spawn as unknown as jest.Mock;
 			spawn_mock.mockImplementation((): any => {

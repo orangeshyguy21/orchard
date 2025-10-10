@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {Field, ObjectType, Int} from '@nestjs/graphql';
+import {Field, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 import {
@@ -182,7 +182,7 @@ export class OrchardMintInfo {
 	@Field(() => [String], {nullable: true})
 	urls: string[];
 
-	@Field((type) => UnixTimestamp, {nullable: true})
+	@Field(() => UnixTimestamp, {nullable: true})
 	time: number;
 
 	@Field(() => OrchardNuts)

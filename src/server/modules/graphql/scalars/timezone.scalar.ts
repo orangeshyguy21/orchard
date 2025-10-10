@@ -21,5 +21,5 @@ export const Timezone = new GraphQLScalarType({
 	},
 });
 
-const supported_timezones = (Intl as any).supportedValuesOf('timeZone') as string[];
-export type TimezoneType = (typeof supported_timezones)[number];
+const _supported_timezones = (Intl as any).supportedValuesOf('timeZone') as string[];
+export type TimezoneType = (typeof _supported_timezones)[number];

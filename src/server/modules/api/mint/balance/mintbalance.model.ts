@@ -8,7 +8,7 @@ export class OrchardMintBalance {
 	@Field()
 	keyset: string;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	balance: number;
 
 	constructor(cashu_mint_balance: CashuMintBalance) {

@@ -7,7 +7,7 @@ import {Base64} from '@server/modules/graphql/scalars/base64.scalar';
 
 @ObjectType()
 export class OrchardTaprootAssetDecimalDisplay {
-	@Field((type) => Int)
+	@Field(() => Int)
 	decimal_display: number;
 
 	constructor(decimal_display: TaprootAsset['decimal_display']) {
@@ -17,19 +17,19 @@ export class OrchardTaprootAssetDecimalDisplay {
 
 @ObjectType()
 export class OrchardTaprootAssetGenesis {
-	@Field((type) => String)
+	@Field(() => String)
 	genesis_point: string;
 
-	@Field((type) => String)
+	@Field(() => String)
 	name: string;
 
-	@Field((type) => Base64)
+	@Field(() => Base64)
 	asset_id: string;
 
-	@Field((type) => TaprootAssetType)
+	@Field(() => TaprootAssetType)
 	asset_type: TaprootAssetType;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	output_index: number;
 
 	constructor(asset_genesis: TaprootAsset['asset_genesis']) {
@@ -43,25 +43,25 @@ export class OrchardTaprootAssetGenesis {
 
 @ObjectType()
 export class OrchardTaprootAsset {
-	@Field((type) => TaprootAssetVersion)
+	@Field(() => TaprootAssetVersion)
 	version: TaprootAssetVersion;
 
-	@Field((type) => String)
+	@Field(() => String)
 	amount: string;
 
-	@Field((type) => String, {nullable: true})
+	@Field(() => String, {nullable: true})
 	asset_group: string;
 
-	@Field((type) => Boolean)
+	@Field(() => Boolean)
 	is_spent: boolean;
 
-	@Field((type) => Boolean)
+	@Field(() => Boolean)
 	is_burn: boolean;
 
-	@Field((type) => OrchardTaprootAssetGenesis)
+	@Field(() => OrchardTaprootAssetGenesis)
 	asset_genesis: OrchardTaprootAssetGenesis;
 
-	@Field((type) => OrchardTaprootAssetDecimalDisplay)
+	@Field(() => OrchardTaprootAssetDecimalDisplay)
 	decimal_display: OrchardTaprootAssetDecimalDisplay;
 
 	constructor(asset: TaprootAsset) {
@@ -77,13 +77,13 @@ export class OrchardTaprootAsset {
 
 @ObjectType()
 export class OrchardTaprootAssets {
-	@Field((type) => [OrchardTaprootAsset])
+	@Field(() => [OrchardTaprootAsset])
 	assets: OrchardTaprootAsset[];
 
-	@Field((type) => String)
+	@Field(() => String)
 	unconfirmed_transfers: string;
 
-	@Field((type) => String)
+	@Field(() => String)
 	unconfirmed_mints: string;
 
 	constructor(ta_assets: TaprootAssets) {
@@ -95,13 +95,13 @@ export class OrchardTaprootAssets {
 
 @ObjectType()
 export class OrchardTaprootAssetsUtxo {
-	@Field((type) => String)
+	@Field(() => String)
 	id: string;
 
-	@Field((type) => Float)
+	@Field(() => Float)
 	amt_sat: number;
 
-	@Field((type) => [OrchardTaprootAsset])
+	@Field(() => [OrchardTaprootAsset])
 	assets: OrchardTaprootAsset[];
 
 	constructor(ta_utxo: TaprootAssetsUtxos['managed_utxos'][string], key: string) {

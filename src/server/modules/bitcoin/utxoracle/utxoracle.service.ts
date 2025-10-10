@@ -174,7 +174,7 @@ export class BitcoinUTXOracleService {
 		return idx;
 	}
 
-	private async buildHistogram(start: number, end: number, window_txids: Set<string>): Promise<Float64Array> {
+	private async buildHistogram(start: number, end: number, _window_txids: Set<string>): Promise<Float64Array> {
 		const counts = new Float64Array(1 + 200 * 12);
 		const min_btc = this.getMinBtc();
 		const max_btc = this.getMaxBtc();

@@ -7,19 +7,19 @@ import {MintUnit} from '@server/modules/cashu/cashu.enums';
 
 @ObjectType()
 export class OrchardMintKeyset {
-	@Field((type) => ID)
+	@Field(() => ID)
 	id: string;
 
 	@Field()
 	derivation_path: string;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	derivation_path_index: number;
 
-	@Field((type) => UnixTimestamp)
+	@Field(() => UnixTimestamp)
 	valid_from: number;
 
-	@Field((type) => UnixTimestamp, {nullable: true})
+	@Field(() => UnixTimestamp, {nullable: true})
 	valid_to: number;
 
 	@Field()
@@ -28,10 +28,10 @@ export class OrchardMintKeyset {
 	@Field()
 	unit: MintUnit;
 
-	@Field((type) => Int, {nullable: true})
+	@Field(() => Int, {nullable: true})
 	input_fee_ppk: number;
 
-	@Field((type) => Int, {nullable: true})
+	@Field(() => Int, {nullable: true})
 	fees_paid: number;
 
 	constructor(cashu_keyset: CashuMintKeyset) {
@@ -64,10 +64,10 @@ export class OrchardMintKeysetRotation {
 
 @ObjectType()
 export class OrchardMintKeysetProofCount {
-	@Field((type) => ID)
+	@Field(() => ID)
 	id: string;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	count: number;
 
 	constructor(cashu_keyset_proof_count: CashuMintKeysetProofCount) {

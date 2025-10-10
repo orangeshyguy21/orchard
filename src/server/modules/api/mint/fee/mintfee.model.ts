@@ -7,19 +7,19 @@ import {CashuMintFee} from '@server/modules/cashu/mintdb/cashumintdb.types';
 
 @ObjectType()
 export class OrchardMintFee {
-	@Field((type) => MintUnit)
+	@Field(() => MintUnit)
 	unit: string;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	keyset_balance: number;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	keyset_fees_paid: number;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	backend_balance: number;
 
-	@Field((type) => UnixTimestamp)
+	@Field(() => UnixTimestamp)
 	time: number;
 
 	constructor(cashu_mint_fee: CashuMintFee) {

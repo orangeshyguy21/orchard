@@ -6,28 +6,28 @@ import {BitcoinBlock, BitcoinBlockTemplate} from '@server/modules/bitcoin/rpc/bt
 
 @ObjectType()
 export class OrchardBitcoinBlock {
-	@Field((type) => String)
+	@Field(() => String)
 	hash: string;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	height: number;
 
-	@Field((type) => UnixTimestamp)
+	@Field(() => UnixTimestamp)
 	time: number;
 
-	@Field((type) => String)
+	@Field(() => String)
 	chainwork: string;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	nTx: number;
 
-	@Field((type) => Float)
+	@Field(() => Float)
 	weight: number;
 
-	@Field((type) => Float)
+	@Field(() => Float)
 	feerate_low: number;
 
-	@Field((type) => Float)
+	@Field(() => Float)
 	feerate_high: number;
 
 	constructor(obb: BitcoinBlock) {
@@ -127,19 +127,19 @@ export class OrchardBitcoinBlock {
 
 @ObjectType()
 export class OrchardBitcoinBlockTemplate {
-	@Field((type) => Int)
+	@Field(() => Int)
 	height: number;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	nTx: number;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	weight: number;
 
-	@Field((type) => Float)
+	@Field(() => Float)
 	feerate_low: number;
 
-	@Field((type) => Float)
+	@Field(() => Float)
 	feerate_high: number;
 
 	constructor(obbt: BitcoinBlockTemplate) {
