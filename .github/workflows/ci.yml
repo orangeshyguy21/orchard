@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ master, '**' ]
+    branches: [ master ]
   pull_request:
-    branches: [ '**' ]
+    branches: [ master ]
   workflow_dispatch:
 
 concurrency:
@@ -12,7 +12,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-test-lint:
+  lint-test-build:
     runs-on: ubuntu-latest
     env:
       CI: true

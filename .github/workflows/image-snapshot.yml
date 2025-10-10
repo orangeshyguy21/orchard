@@ -1,4 +1,4 @@
-name: Snapshot Docker Images
+name: Docker Image Snapshots
 
 on:
   workflow_dispatch:
@@ -41,7 +41,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          target: final-${{ matrix.flavor }}
+          target: final-mintdb-${{ matrix.flavor }}
           platforms: linux/amd64,linux/arm64
           push: ${{ inputs.push }}
           tags: |
