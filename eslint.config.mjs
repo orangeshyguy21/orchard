@@ -4,7 +4,9 @@ import eslintConfigPrettier from 'eslint-config-prettier';
 import globals from 'globals';
 
 export default [
-    { ignores: ['dist/**', 'node_modules/**'] },
+    {
+        ignores: ['dist/**', 'node_modules/**'],
+    },
 
     // Apply TS-ESLint only to src/**
     ...tseslint.configs.recommendedTypeChecked.map(c => ({
@@ -12,22 +14,22 @@ export default [
         files: ['src/client/**/*.{ts,tsx}', 'src/server/**/*.{ts,tsx}'],
     })),
 
-  {
-    files: ['src/**/*.{ts,tsx}'],
-    languageOptions: {
-        parserOptions: {
-            project: ['./tsconfig.server.json', './tsconfig.client.json'],
-            tsconfigRootDir: import.meta.dirname,
+    {
+        files: ['src/**/*.{ts,tsx}'],
+        languageOptions: {
+            parserOptions: {
+                project: ['./tsconfig.server.json', './tsconfig.client.json'],
+                tsconfigRootDir: import.meta.dirname,
+            },
+            globals: { ...globals.node, ...globals.jest },
         },
-        globals: { ...globals.node, ...globals.jest },
+        rules: {
+            '@typescript-eslint/interface-name-prefix': 'off',
+            '@typescript-eslint/explicit-function-return-type': 'error',
+            '@typescript-eslint/explicit-module-boundary-types': 'off',
+            '@typescript-eslint/no-explicit-any': 'error',
+        },
     },
-    rules: {
-        '@typescript-eslint/interface-name-prefix': 'off',
-        '@typescript-eslint/explicit-function-return-type': 'error',
-        '@typescript-eslint/explicit-module-boundary-types': 'off',
-        '@typescript-eslint/no-explicit-any': 'error',
-    },
-  },
 
-  eslintConfigPrettier,
+    eslintConfigPrettier,
 ];
