@@ -15,8 +15,7 @@
 			[block_count]="block_count"
 			(cancel)="onCancelPendingEvent()"
 			(save)="onSavePendingEvent()"
-		>
-		</orc-nav-primary>
+		></orc-nav-primary>
 		<div class="interior-section-container">
 			<div class="interior-router-outlet-container">
 				<router-outlet></router-outlet>
@@ -37,8 +36,7 @@
 					(command)="onCommand()"
 					(modelChange)="onModelChange($event)"
 					(toggleLog)="onToggleLog()"
-				>
-				</orc-ai-nav>
+				></orc-ai-nav>
 			}
 		</div>
 	</div>
@@ -49,7 +47,6 @@
 			[revision]="ai_revision"
 			[agent_definition]="ai_agent_definition"
 			(clear)="onClearConversation()"
-		>
-		</orc-ai-chat-log>
+		></orc-ai-chat-log>
 	</mat-sidenav>
 </mat-sidenav-container>
