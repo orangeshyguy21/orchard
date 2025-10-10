@@ -1,7 +1,7 @@
 # ---------------
 # Install Dependencies
 # ---------------
-FROM node:22-alpine as deps
+FROM node:22-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
@@ -9,16 +9,16 @@ RUN npm ci
 # ---------------
 # Build App
 # ---------------
-FROM deps as build
+FROM deps AS build
 WORKDIR /app
 COPY . .
 RUN npm run build
 RUN rm -f .env
 
 # ---------------
-# Release App
+# Release App (Postgres variant)
 # ---------------
-FROM node:22-alpine as final-postgres
+FROM node:22-alpine AS final-mintdb-postgres
 WORKDIR /app
 RUN apk add --update --no-cache postgresql-client
 COPY --from=build /app/package*.json ./
@@ -30,7 +30,10 @@ ARG SERVER_PORT=3321
 EXPOSE ${SERVER_PORT}
 CMD ["npm", "run", "start"]
 
-FROM node:22-alpine as final-sqlite
+# ---------------
+# Release App (Sqlite variant)
+# ---------------
+FROM node:22-alpine AS final-mintdb-sqlite
 WORKDIR /app
 COPY --from=build /app/package*.json ./
 COPY --from=build /app/node_modules/ ./node_modules
