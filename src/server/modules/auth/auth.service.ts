@@ -9,8 +9,8 @@ import {OrchardAuthToken, JwtPayload, RefreshTokenPayload} from './auth.types';
 
 @Injectable()
 export class AuthService {
-	private token_ttl: string = '15m';
-	private refresh_ttl: string = '7d';
+	private token_ttl = 15 * 60;
+	private refresh_ttl = 7 * 24 * 60 * 60;
 
 	private blacklist: string[] = [];
 
