@@ -1,0 +1,16 @@
+/* Disable the default full-page transition */
+::view-transition-new(root) {
+    animation: none;
+}
+  
+::view-transition-new(subsection) {
+    animation: fade-in-subsection 100ms ease-in;
+}
+
+@keyframes fade-in-subsection { from { opacity: 0 } to { opacity: 1 } }
+  
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-new(subsection) {
+        animation: none;
+    }
+}
