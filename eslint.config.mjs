@@ -15,7 +15,10 @@ export default [
     })),
 
     {
-        files: ['src/**/*.{ts,tsx}'],
+        files: ['src/client/**/*.{ts,tsx}', 'src/server/**/*.{ts,tsx}'],
+        plugins: {
+            '@typescript-eslint': (await import('typescript-eslint')).default.plugin,
+        },
         languageOptions: {
             parserOptions: {
                 project: ['./tsconfig.server.json', './tsconfig.client.json'],
