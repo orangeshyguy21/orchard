@@ -11,11 +11,11 @@ import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 /* Local Dependencies */
 import {MintKeysetService} from './mintkeyset.service';
-import {OrchardMintKeyset, OrchardMintKeysetProofCount, OrchardMintKeysetRotation} from './mintkeyset.model';
+import {OrchardMintKeyset, OrchardMintKeysetProofCount} from './mintkeyset.model';
 
 describe('MintKeysetService', () => {
 	let mint_keyset_service: MintKeysetService;
-	let mint_service: jest.Mocked<MintService>;
+	let _mint_service: jest.Mocked<MintService>;
 	let mint_db_service: jest.Mocked<CashuMintDatabaseService>;
 	let mint_rpc_service: jest.Mocked<CashuMintRpcService>;
 	let error_service: jest.Mocked<ErrorService>;
@@ -32,10 +32,10 @@ describe('MintKeysetService', () => {
 		}).compile();
 
 		mint_keyset_service = module.get<MintKeysetService>(MintKeysetService);
-		mint_service = module.get(MintService) as any;
-		mint_db_service = module.get(CashuMintDatabaseService) as any;
-		mint_rpc_service = module.get(CashuMintRpcService) as any;
-		error_service = module.get(ErrorService) as any;
+		_mint_service = module.get(MintService);
+		mint_db_service = module.get(CashuMintDatabaseService);
+		mint_rpc_service = module.get(CashuMintRpcService);
+		error_service = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {

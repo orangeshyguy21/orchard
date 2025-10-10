@@ -222,7 +222,7 @@ export class MintSubsectionDashboardChartComponent implements OnChanges, OnDestr
 		const datasets = Object.entries(data_unit_groups_prepended).map(([unit, data], index) => {
 			const data_keyed_by_timestamp = getDataKeyedByTimestamp(data, 'operation_count');
 			const color = this.chartService.getAssetColor(unit, index);
-			const data_raw = getRawData(timestamp_range, data_keyed_by_timestamp, unit);
+			const data_raw = getRawData(timestamp_range, data_keyed_by_timestamp);
 
 			return {
 				data: data_raw,

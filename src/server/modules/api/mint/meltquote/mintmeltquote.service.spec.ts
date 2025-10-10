@@ -10,7 +10,7 @@ import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 /* Local Dependencies */
 import {MintMeltQuoteService} from './mintmeltquote.service';
-import {OrchardMintMeltQuote, OrchardMintNut05Update} from './mintmeltquote.model';
+import {OrchardMintMeltQuote} from './mintmeltquote.model';
 
 describe('MintMeltQuoteService', () => {
 	let mint_melt_quote_service: MintMeltQuoteService;
@@ -30,9 +30,9 @@ describe('MintMeltQuoteService', () => {
 		}).compile();
 
 		mint_melt_quote_service = module.get<MintMeltQuoteService>(MintMeltQuoteService);
-		mint_db_service = module.get(CashuMintDatabaseService) as any;
-		mint_rpc_service = module.get(CashuMintRpcService) as any;
-		error_service = module.get(ErrorService) as any;
+		mint_db_service = module.get(CashuMintDatabaseService);
+		mint_rpc_service = module.get(CashuMintRpcService);
+		error_service = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {

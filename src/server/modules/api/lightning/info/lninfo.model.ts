@@ -6,64 +6,64 @@ import {LightningInfo} from '@server/modules/lightning/lightning/lightning.types
 
 @ObjectType()
 export class OrchardLightningInfo {
-	@Field((type) => String)
+	@Field(() => String)
 	version: string;
 
-	@Field((type) => String)
+	@Field(() => String)
 	commit_hash: string;
 
-	@Field((type) => String)
+	@Field(() => String)
 	identity_pubkey: string;
 
-	@Field((type) => String)
+	@Field(() => String)
 	alias: string;
 
-	@Field((type) => String)
+	@Field(() => String)
 	color: string;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	num_pending_channels: number;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	num_active_channels: number;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	num_inactive_channels: number;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	num_peers: number;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	block_height: number;
 
-	@Field((type) => String)
+	@Field(() => String)
 	block_hash: string;
 
-	@Field((type) => UnixTimestamp)
+	@Field(() => UnixTimestamp)
 	best_header_timestamp: number;
 
-	@Field((type) => Boolean)
+	@Field(() => Boolean)
 	synced_to_chain: boolean;
 
-	@Field((type) => Boolean)
+	@Field(() => Boolean)
 	synced_to_graph: boolean;
 
-	@Field((type) => Boolean)
+	@Field(() => Boolean)
 	testnet: boolean;
 
-	@Field((type) => [OrchardLightningChain])
+	@Field(() => [OrchardLightningChain])
 	chains: OrchardLightningChain[];
 
-	@Field((type) => [String])
+	@Field(() => [String])
 	uris: string[];
 
-	@Field((type) => [OrchardLightningFeature])
+	@Field(() => [OrchardLightningFeature])
 	features: OrchardLightningFeature[];
 
-	@Field((type) => Boolean)
+	@Field(() => Boolean)
 	require_htlc_interceptor: boolean;
 
-	@Field((type) => Boolean)
+	@Field(() => Boolean)
 	store_final_htlc_resolutions: boolean;
 
 	constructor(ln_info: LightningInfo) {
@@ -92,10 +92,10 @@ export class OrchardLightningInfo {
 
 @ObjectType()
 export class OrchardLightningChain {
-	@Field((type) => String)
+	@Field(() => String)
 	chain: string;
 
-	@Field((type) => String)
+	@Field(() => String)
 	network: string;
 
 	constructor(chain: LightningInfo['chains'][number]) {
@@ -106,16 +106,16 @@ export class OrchardLightningChain {
 
 @ObjectType()
 export class OrchardLightningFeature {
-	@Field((type) => Int)
+	@Field(() => Int)
 	bit: number;
 
-	@Field((type) => String)
+	@Field(() => String)
 	name: string;
 
-	@Field((type) => Boolean)
+	@Field(() => Boolean)
 	is_required: boolean;
 
-	@Field((type) => Boolean)
+	@Field(() => Boolean)
 	is_known: boolean;
 
 	constructor(feature: LightningInfo['features'][number], bit: string) {

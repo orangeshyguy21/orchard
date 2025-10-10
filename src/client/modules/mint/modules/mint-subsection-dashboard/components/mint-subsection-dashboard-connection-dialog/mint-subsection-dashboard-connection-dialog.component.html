@@ -4,7 +4,7 @@
 	<div #qr_canvas></div>
 	<div class="p-h-1 p-t-1 flex flex-gap-2 flex-items-center" [formGroup]="qr_options">
 		<mat-slider class="w-full flex-grow" min="0" max="3" step="1" showTickMarks>
-			<input matSliderThumb formControlName="style" (input)="onStyleChange($event)" />
+			<input matSliderThumb formControlName="style" (input)="onStyleChange()" />
 		</mat-slider>
 		<div>
 			<mat-slide-toggle formControlName="image" name="qr_logo" (change)="onImageChange($event)"></mat-slide-toggle>

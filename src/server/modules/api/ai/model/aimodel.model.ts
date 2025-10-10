@@ -45,7 +45,7 @@ export class OrchardAiModel {
 	@Field()
 	model: string;
 
-	@Field((type) => UnixTimestamp)
+	@Field(() => UnixTimestamp)
 	modified_at: number;
 
 	@Field(() => Float)

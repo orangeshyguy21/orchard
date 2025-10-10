@@ -13,7 +13,7 @@ import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {OrchardRes} from '@client/modules/api/types/api.types';
 /* Native Dependencies */
 import {AiChatResponse, AiModelResponse, AiAgentResponse} from '@client/modules/ai/types/ai.types';
-import {AiChatChunk, AiChatToolCall, AiChatMessage} from '@client/modules/ai/classes/ai-chat-chunk.class';
+import {AiChatChunk, AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {AiModel} from '@client/modules/ai/classes/ai-model.class';
 import {AiChatCompiledMessage} from '@client/modules/ai/classes/ai-chat-compiled-message.class';
 import {AiChatConversation} from '@client/modules/ai/classes/ai-chat-conversation.class';
@@ -146,7 +146,7 @@ export class AiService {
 				return response.data.ai_models;
 			}),
 			map((ai_models) => ai_models.map((ai_model) => new AiModel(ai_model))),
-			tap((ai_models) => {
+			tap(() => {
 				this.ai_models_observable = null;
 			}),
 			shareReplay(1),

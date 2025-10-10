@@ -19,7 +19,7 @@ describe('AiAgentService', () => {
 		}).compile();
 
 		ai_agent_service = module.get<AiAgentService>(AiAgentService);
-		error_service = module.get(ErrorService) as any;
+		error_service = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {

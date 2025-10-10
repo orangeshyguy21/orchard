@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {Field, Int, ObjectType} from '@nestjs/graphql';
+import {Field, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
 import {LightningAddressType} from '@server/modules/lightning/lightning.enums';
 import {LightningAddresses} from '@server/modules/lightning/walletkit/lnwalletkit.types';
@@ -7,19 +7,19 @@ import {Base64} from '@server/modules/graphql/scalars/base64.scalar';
 
 @ObjectType()
 export class OrchardLightningAddress {
-	@Field((type) => String)
+	@Field(() => String)
 	address: string;
 
-	@Field((type) => String)
+	@Field(() => String)
 	is_internal: string;
 
-	@Field((type) => Number)
+	@Field(() => Number)
 	balance: number;
 
-	@Field((type) => String)
+	@Field(() => String)
 	derivation_path: string;
 
-	@Field((type) => Base64)
+	@Field(() => Base64)
 	public_key: string;
 
 	constructor(address: LightningAddresses['account_with_addresses'][number]['addresses'][number]) {
@@ -33,16 +33,16 @@ export class OrchardLightningAddress {
 
 @ObjectType()
 export class OrchardLightningAccount {
-	@Field((type) => String)
+	@Field(() => String)
 	name: string;
 
-	@Field((type) => LightningAddressType)
+	@Field(() => LightningAddressType)
 	address_type: LightningAddressType;
 
-	@Field((type) => String)
+	@Field(() => String)
 	derivation_path: string;
 
-	@Field((type) => [OrchardLightningAddress])
+	@Field(() => [OrchardLightningAddress])
 	addresses: OrchardLightningAddress[];
 
 	constructor(account: LightningAddresses['account_with_addresses'][number]) {

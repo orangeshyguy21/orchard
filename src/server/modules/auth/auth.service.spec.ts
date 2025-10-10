@@ -10,7 +10,7 @@ describe('AuthService', () => {
 	let auth_service: AuthService;
 	let config_service: jest.Mocked<ConfigService>;
 	let jwt_service: jest.Mocked<JwtService>;
-	let user_service: jest.Mocked<UserService>;
+	let _user_service: jest.Mocked<UserService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -23,9 +23,9 @@ describe('AuthService', () => {
 		}).compile();
 
 		auth_service = module.get<AuthService>(AuthService);
-		config_service = module.get(ConfigService) as any;
-		jwt_service = module.get(JwtService) as any;
-		user_service = module.get(UserService) as any;
+		config_service = module.get(ConfigService);
+		jwt_service = module.get(JwtService);
+		_user_service = module.get(UserService);
 	});
 
 	it('should be defined', () => {

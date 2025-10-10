@@ -6,16 +6,16 @@ import {BitcoinTransaction} from '@server/modules/bitcoin/rpc/btcrpc.types';
 
 @ObjectType()
 export class OrchardBitcoinMempoolFees {
-	@Field((type) => Float)
+	@Field(() => Float)
 	base: number;
 
-	@Field((type) => Float)
+	@Field(() => Float)
 	modified: number;
 
-	@Field((type) => Float)
+	@Field(() => Float)
 	ancestor: number;
 
-	@Field((type) => Float)
+	@Field(() => Float)
 	descendant: number;
 
 	constructor(fees: BitcoinTransaction['fees']) {
@@ -28,49 +28,49 @@ export class OrchardBitcoinMempoolFees {
 
 @ObjectType()
 export class OrchardBitcoinMempoolTransaction {
-	@Field((type) => ID)
+	@Field(() => ID)
 	txid: string;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	vsize: number;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	weight: number;
 
-	@Field((type) => UnixTimestamp)
+	@Field(() => UnixTimestamp)
 	time: number;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	height: number;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	descendantcount: number;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	descendantsize: number;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	ancestorcount: number;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	ancestorsize: number;
 
-	@Field((type) => String)
+	@Field(() => String)
 	wtxid: string;
 
-	@Field((type) => OrchardBitcoinMempoolFees)
+	@Field(() => OrchardBitcoinMempoolFees)
 	fees: OrchardBitcoinMempoolFees;
 
-	@Field((type) => [String])
+	@Field(() => [String])
 	depends: string[];
 
-	@Field((type) => [String])
+	@Field(() => [String])
 	spentby: string[];
 
-	@Field((type) => Boolean)
+	@Field(() => Boolean)
 	bip125_replaceable: boolean;
 
-	@Field((type) => Boolean)
+	@Field(() => Boolean)
 	unbroadcast: boolean;
 
 	constructor(tx: BitcoinTransaction, txid: string) {

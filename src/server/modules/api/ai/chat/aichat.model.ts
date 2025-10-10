@@ -58,7 +58,7 @@ export class OrchardAiChatChunk {
 	@Field()
 	model: string;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	created_at: number;
 
 	@Field(() => OrchardAiChatMessage)

@@ -75,7 +75,7 @@ export class SettingsSubsectionDashboardAiComponent implements OnChanges {
 	}
 
 	private _filter(value: string): AiModel[] {
-		let filter_value = value.toLowerCase();
+		const filter_value = value.toLowerCase();
 		if (filter_value === this.model?.model) return this.model_options;
 		return this.model_options.filter((option) => option.name.toLowerCase().includes(filter_value));
 	}

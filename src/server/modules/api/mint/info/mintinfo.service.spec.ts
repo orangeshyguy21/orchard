@@ -42,9 +42,9 @@ describe('MintInfoService', () => {
 		}).compile();
 
 		mint_info_service = module.get<MintInfoService>(MintInfoService);
-		mint_api_service = module.get(CashuMintApiService) as any;
-		mint_rpc_service = module.get(CashuMintRpcService) as any;
-		error_service = module.get(ErrorService) as any;
+		mint_api_service = module.get(CashuMintApiService);
+		mint_rpc_service = module.get(CashuMintRpcService);
+		error_service = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {

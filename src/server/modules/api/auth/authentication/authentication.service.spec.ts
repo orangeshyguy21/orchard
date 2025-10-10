@@ -25,8 +25,8 @@ describe('AuthenticationService', () => {
 		}).compile();
 
 		authentication_service = module.get<AuthenticationService>(AuthenticationService);
-		auth_service = module.get(AuthService) as any;
-		error_service = module.get(ErrorService) as any;
+		auth_service = module.get(AuthService);
+		error_service = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {

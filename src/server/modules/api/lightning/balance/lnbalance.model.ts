@@ -5,10 +5,10 @@ import {LightningChannelBalance, LightningCustomChannels} from '@server/modules/
 
 @ObjectType()
 export class OrchardLightningBalanceAmount {
-	@Field((type) => Float)
+	@Field(() => Float)
 	sat: number;
 
-	@Field((type) => Float)
+	@Field(() => Float)
 	msat: number;
 
 	constructor(lnba: {sat: string; msat: string}) {
@@ -19,19 +19,19 @@ export class OrchardLightningBalanceAmount {
 
 @ObjectType()
 export class OrchardCustomChannel {
-	@Field((type) => String)
+	@Field(() => String)
 	chan_id: string;
 
-	@Field((type) => String)
+	@Field(() => String)
 	asset_id: string;
 
-	@Field((type) => String)
+	@Field(() => String)
 	name: string;
 
-	@Field((type) => Float)
+	@Field(() => Float)
 	local_balance: number;
 
-	@Field((type) => Float)
+	@Field(() => Float)
 	remote_balance: number;
 
 	constructor(cc: LightningCustomChannels['open_channels' | 'pending_channels'][string], chan_id: string) {
@@ -45,10 +45,10 @@ export class OrchardCustomChannel {
 
 @ObjectType()
 export class OrchardCustomChannelData {
-	@Field((type) => [OrchardCustomChannel])
+	@Field(() => [OrchardCustomChannel])
 	open_channels: OrchardCustomChannel[];
 
-	@Field((type) => [OrchardCustomChannel])
+	@Field(() => [OrchardCustomChannel])
 	pending_channels: OrchardCustomChannel[];
 
 	constructor(buffer: Buffer) {
@@ -65,7 +65,7 @@ export class OrchardCustomChannelData {
 			if (!custom_channel_data_str) return null;
 			if (custom_channel_data_str.trim().length === 0) return null;
 			return JSON.parse(custom_channel_data_str);
-		} catch (error) {
+		} catch {
 			return null;
 		}
 	}
@@ -73,31 +73,31 @@ export class OrchardCustomChannelData {
 
 @ObjectType()
 export class OrchardLightningBalance {
-	@Field((type) => Float)
+	@Field(() => Float)
 	balance: number;
 
-	@Field((type) => Float)
+	@Field(() => Float)
 	pending_open_balance: number;
 
-	@Field((type) => OrchardLightningBalanceAmount)
+	@Field(() => OrchardLightningBalanceAmount)
 	local_balance: OrchardLightningBalanceAmount;
 
-	@Field((type) => OrchardLightningBalanceAmount)
+	@Field(() => OrchardLightningBalanceAmount)
 	remote_balance: OrchardLightningBalanceAmount;
 
-	@Field((type) => OrchardLightningBalanceAmount)
+	@Field(() => OrchardLightningBalanceAmount)
 	unsettled_local_balance: OrchardLightningBalanceAmount;
 
-	@Field((type) => OrchardLightningBalanceAmount)
+	@Field(() => OrchardLightningBalanceAmount)
 	unsettled_remote_balance: OrchardLightningBalanceAmount;
 
-	@Field((type) => OrchardLightningBalanceAmount)
+	@Field(() => OrchardLightningBalanceAmount)
 	pending_open_local_balance: OrchardLightningBalanceAmount;
 
-	@Field((type) => OrchardLightningBalanceAmount)
+	@Field(() => OrchardLightningBalanceAmount)
 	pending_open_remote_balance: OrchardLightningBalanceAmount;
 
-	@Field((type) => OrchardCustomChannelData)
+	@Field(() => OrchardCustomChannelData)
 	custom_channel_data: OrchardCustomChannelData;
 
 	constructor(lnb: LightningChannelBalance) {

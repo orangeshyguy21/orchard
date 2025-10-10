@@ -25,8 +25,8 @@ describe('LightningBalanceService', () => {
 		}).compile();
 
 		lightning_balance_service = module.get<LightningBalanceService>(LightningBalanceService);
-		lightning_service = module.get(LightningService) as any;
-		error_service = module.get(ErrorService) as any;
+		lightning_service = module.get(LightningService);
+		error_service = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {

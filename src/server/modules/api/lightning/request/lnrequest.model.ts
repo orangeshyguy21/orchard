@@ -6,19 +6,19 @@ import {LightningRequestType} from '@server/modules/lightning/lightning.enums';
 
 @ObjectType()
 export class OrchardLightningRequest {
-	@Field((type) => LightningRequestType)
+	@Field(() => LightningRequestType)
 	type: LightningRequestType;
 
-	@Field((type) => Boolean)
+	@Field(() => Boolean)
 	valid: boolean;
 
-	@Field((type) => Number, {nullable: true})
+	@Field(() => Number, {nullable: true})
 	expiry: number;
 
-	@Field((type) => String, {nullable: true})
+	@Field(() => String, {nullable: true})
 	description: string;
 
-	@Field((type) => Number, {nullable: true})
+	@Field(() => Number, {nullable: true})
 	offer_quantity_max: number;
 
 	constructor(lnrequest: LightningRequest) {

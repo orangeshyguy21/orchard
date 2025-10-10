@@ -23,8 +23,8 @@ describe('LndService', () => {
 		}).compile();
 
 		lnd_service = module.get<LndService>(LndService);
-		config_service = module.get(ConfigService) as any;
-		credential_service = module.get(CredentialService) as any;
+		config_service = module.get(ConfigService);
+		credential_service = module.get(CredentialService);
 	});
 
 	it('should be defined', () => {

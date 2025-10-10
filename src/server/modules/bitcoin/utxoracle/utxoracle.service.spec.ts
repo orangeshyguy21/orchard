@@ -30,8 +30,8 @@ describe('BitcoinUTXOracleService', () => {
 		}).compile();
 
 		bitcoin_utx_oracle_service = module.get<BitcoinUTXOracleService>(BitcoinUTXOracleService);
-		config_service = module.get(ConfigService) as any;
-		bitcoin_rpc_service = module.get(BitcoinRpcService) as any;
+		config_service = module.get(ConfigService);
+		bitcoin_rpc_service = module.get(BitcoinRpcService);
 	});
 
 	it('should be defined', () => {

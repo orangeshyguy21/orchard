@@ -22,8 +22,8 @@ describe('CoreService', () => {
 		}).compile();
 
 		core_service = module.get<CoreService>(CoreService);
-		config_service = module.get(ConfigService) as any;
-		fetch_service = module.get(FetchService) as any;
+		config_service = module.get(ConfigService);
+		fetch_service = module.get(FetchService);
 	});
 
 	it('should be defined', () => {

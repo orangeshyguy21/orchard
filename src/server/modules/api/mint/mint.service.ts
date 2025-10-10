@@ -1,7 +1,5 @@
 /* Core Dependencies */
 import {Injectable, Logger} from '@nestjs/common';
-/* Vendor Dependencies */
-import {Database} from 'better-sqlite3';
 /* Application Dependencies */
 import {CashuMintDatabaseService} from '@server/modules/cashu/mintdb/cashumintdb.service';
 import {OrchardErrorCode} from '@server/modules/error/error.types';

@@ -38,6 +38,7 @@ export class BitcoinSectionComponent implements OnInit, OnDestroy {
 				this.cdr.detectChanges();
 			},
 			error: (error) => {
+				console.error(error);
 				this.error = true;
 				this.loading = false;
 				this.cdr.detectChanges();

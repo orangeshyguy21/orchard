@@ -18,13 +18,14 @@
     "start:server": "NODE_ENV=development nest start --watch",
     "start:server:nowatch": "NODE_ENV=development nest start",
     "start:server:debug": "NODE_ENV=development nest start --debug --watch",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest && ng test --watch=false",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
+    "lint:fix": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "test": "jest && ng test --watch=false --browsers=ChromeHeadless --progress=false",
     "test:server": "jest",
     "test:server:watch": "jest --watch",
     "test:server:cov": "jest --coverage",
     "test:server:e2e": "jest --config ./test/jest-e2e.json",
-    "test:client": "ng test --watch=false",
+    "test:client": "ng test --watch=false --browsers=ChromeHeadless --progress=false",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "watch:client": "NODE_ENV=development ng build --watch --configuration development"
   },
@@ -113,7 +114,8 @@
     "ts-loader": "^9.5.4",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "~5.9.3"
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.46.0"
   },
   "jest": {
     "moduleFileExtensions": [

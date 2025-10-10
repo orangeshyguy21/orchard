@@ -7,22 +7,22 @@ import {MintUnit, MintProofState} from '@server/modules/cashu/cashu.enums';
 
 @ObjectType()
 export class OrchardMintProofGroup {
-	@Field((type) => Int)
+	@Field(() => Int)
 	amount: number;
 
-	@Field((type) => UnixTimestamp)
+	@Field(() => UnixTimestamp)
 	created_time: number;
 
-	@Field((type) => [String])
+	@Field(() => [String])
 	keyset_ids: string[];
 
-	@Field((type) => MintUnit)
+	@Field(() => MintUnit)
 	unit: MintUnit;
 
-	@Field((type) => MintProofState)
+	@Field(() => MintProofState)
 	state: MintProofState;
 
-	@Field((type) => [[Int]])
+	@Field(() => [[Int]])
 	amounts: number[][];
 
 	constructor(cashu_mint_pg: CashuMintProofGroup) {
@@ -37,6 +37,6 @@ export class OrchardMintProofGroup {
 
 @ObjectType()
 export class OrchardMintProofGroupStats {
-	@Field((type) => Float)
+	@Field(() => Float)
 	median: number;
 }

@@ -5,19 +5,19 @@ import {BitcoinNetworkInfo} from '@server/modules/bitcoin/rpc/btcrpc.types';
 
 @ObjectType()
 export class OrchardBitcoinNetwork {
-	@Field((type) => String)
+	@Field(() => String)
 	name: string;
 
-	@Field((type) => Boolean)
+	@Field(() => Boolean)
 	limited: boolean;
 
-	@Field((type) => Boolean)
+	@Field(() => Boolean)
 	reachable: boolean;
 
-	@Field((type) => String)
+	@Field(() => String)
 	proxy: string;
 
-	@Field((type) => Boolean)
+	@Field(() => Boolean)
 	proxy_randomize_credentials: boolean;
 
 	constructor(bn: BitcoinNetworkInfo['networks'][number]) {
@@ -31,13 +31,13 @@ export class OrchardBitcoinNetwork {
 
 @ObjectType()
 export class OrchardBitcoinNetworkAddress {
-	@Field((type) => String)
+	@Field(() => String)
 	address: string;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	port: number;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	score: number;
 
 	constructor(ban: BitcoinNetworkInfo['localaddresses'][number]) {
@@ -49,52 +49,52 @@ export class OrchardBitcoinNetworkAddress {
 
 @ObjectType()
 export class OrchardBitcoinNetworkInfo {
-	@Field((type) => Int)
+	@Field(() => Int)
 	version: number;
 
-	@Field((type) => String)
+	@Field(() => String)
 	subversion: string;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	protocolversion: number;
 
-	@Field((type) => String)
+	@Field(() => String)
 	localservices: string;
 
-	@Field((type) => [String])
+	@Field(() => [String])
 	localservicesnames: string[];
 
-	@Field((type) => Boolean)
+	@Field(() => Boolean)
 	localrelay: boolean;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	timeoffset: number;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	connections: number;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	connections_in: number;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	connections_out: number;
 
-	@Field((type) => Boolean)
+	@Field(() => Boolean)
 	networkactive: boolean;
 
-	@Field((type) => [OrchardBitcoinNetwork])
+	@Field(() => [OrchardBitcoinNetwork])
 	networks: OrchardBitcoinNetwork[];
 
-	@Field((type) => Float)
+	@Field(() => Float)
 	relayfee: number;
 
-	@Field((type) => Float)
+	@Field(() => Float)
 	incrementalfee: number;
 
-	@Field((type) => [OrchardBitcoinNetworkAddress])
+	@Field(() => [OrchardBitcoinNetworkAddress])
 	localaddresses: OrchardBitcoinNetworkAddress[];
 
-	@Field((type) => [String])
+	@Field(() => [String])
 	warnings: string[];
 
 	constructor(bni: BitcoinNetworkInfo) {

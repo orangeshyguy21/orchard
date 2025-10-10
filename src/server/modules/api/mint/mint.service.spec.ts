@@ -24,8 +24,8 @@ describe('MintService', () => {
 		}).compile();
 
 		mint_service = module.get<MintService>(MintService);
-		mint_db_service = module.get(CashuMintDatabaseService) as any;
-		error_service = module.get(ErrorService) as any;
+		mint_db_service = module.get(CashuMintDatabaseService);
+		error_service = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {

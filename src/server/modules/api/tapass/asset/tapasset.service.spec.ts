@@ -25,8 +25,8 @@ describe('TaprootAssetsAssetService', () => {
 		}).compile();
 
 		taproot_assets_asset_service = module.get<TaprootAssetsAssetService>(TaprootAssetsAssetService);
-		tap_service = module.get(TaprootAssetsService) as any;
-		error_service = module.get(ErrorService) as any;
+		tap_service = module.get(TaprootAssetsService);
+		error_service = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {

@@ -281,7 +281,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		const {unit, input_fee_ppk, max_order} = this.form_keyset.value;
 		this.mintService.rotateMintKeysets(unit, input_fee_ppk, max_order).subscribe({
-			next: (response) => {
+			next: () => {
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'SUCCESS',

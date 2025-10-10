@@ -14,7 +14,7 @@ import {OrchardMintFee} from './mintfee.model';
 
 describe('MintfeeService', () => {
 	let mintfee_service: MintfeeService;
-	let mint_service: jest.Mocked<MintService>;
+	let _mint_service: jest.Mocked<MintService>;
 	let mint_db_service: jest.Mocked<CashuMintDatabaseService>;
 	let error_service: jest.Mocked<ErrorService>;
 
@@ -29,9 +29,9 @@ describe('MintfeeService', () => {
 		}).compile();
 
 		mintfee_service = module.get<MintfeeService>(MintfeeService);
-		mint_service = module.get(MintService) as any;
-		mint_db_service = module.get(CashuMintDatabaseService) as any;
-		error_service = module.get(ErrorService) as any;
+		_mint_service = module.get(MintService);
+		mint_db_service = module.get(CashuMintDatabaseService);
+		error_service = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {

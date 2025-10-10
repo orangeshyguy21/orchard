@@ -5,16 +5,16 @@ import {BitcoinFeeEstimate} from '@server/modules/bitcoin/rpc/btcrpc.types';
 
 @ObjectType()
 export class OrchardBitcoinTxFeeEstimate {
-	@Field((type) => Int)
+	@Field(() => Int)
 	target: number;
 
-	@Field((type) => Float, {nullable: true})
+	@Field(() => Float, {nullable: true})
 	feerate: number;
 
-	@Field((type) => [String], {nullable: true})
+	@Field(() => [String], {nullable: true})
 	errors: string[];
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	blocks: number;
 
 	constructor(target: number, obte: BitcoinFeeEstimate) {

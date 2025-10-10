@@ -24,8 +24,8 @@ describe('AiChatService', () => {
 		}).compile();
 
 		ai_chat_service = module.get<AiChatService>(AiChatService);
-		ai_service = module.get(AiService) as any;
-		error_service = module.get(ErrorService) as any;
+		ai_service = module.get(AiService);
+		error_service = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {

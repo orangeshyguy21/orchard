@@ -27,7 +27,7 @@ export class FormNumberSeparatorDirective {
 		ngControl.valueAccessor = this;
 	}
 
-	private _onChange(value: any): void {}
+	private _onChange(_value: any): void {}
 
 	private formatValue(value: string | null) {
 		if (value !== null && value !== '') {

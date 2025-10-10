@@ -150,6 +150,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 				this.cdr.detectChanges();
 			},
 			error: (error) => {
+				console.error(error);
 				this.online_bitcoin = false;
 				this.cdr.detectChanges();
 			},
@@ -187,6 +188,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 				this.cdr.detectChanges();
 			},
 			error: (error) => {
+				console.error(error);
 				this.online_lightning = false;
 				this.cdr.detectChanges();
 			},
@@ -201,6 +203,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 				this.cdr.detectChanges();
 			},
 			error: (error) => {
+				console.error(error);
 				this.online_mint = false;
 				this.cdr.detectChanges();
 			},

@@ -17,7 +17,7 @@ describe('PublicUrlService', () => {
 		}).compile();
 
 		public_url_service = module.get<PublicUrlService>(PublicUrlService);
-		fetch_service = module.get(FetchService) as any;
+		fetch_service = module.get(FetchService);
 	});
 
 	it('should be defined', () => {

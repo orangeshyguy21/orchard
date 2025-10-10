@@ -21,7 +21,7 @@ export class CashuMintRpcService implements OnModuleInit {
 		private nutshellService: NutshellService,
 	) {}
 
-	public async onModuleInit() {
+	public onModuleInit() {
 		this.type = this.configService.get('cashu.type');
 		this.initializeGrpcClient();
 	}

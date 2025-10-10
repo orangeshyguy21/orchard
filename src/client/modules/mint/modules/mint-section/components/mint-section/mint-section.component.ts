@@ -36,6 +36,7 @@ export class MintSectionComponent implements OnInit, OnDestroy {
 	ngOnInit(): void {
 		this.mintService.loadMintInfo().subscribe({
 			error: (error) => {
+				console.error(error);
 				this.error = true;
 				this.loading = false;
 				this.cdr.detectChanges();
@@ -85,6 +86,7 @@ export class MintSectionComponent implements OnInit, OnDestroy {
 				this.cdr.detectChanges();
 			},
 			(error) => {
+				console.error(error);
 				this.error = true;
 				this.loading = false;
 				this.cdr.detectChanges();

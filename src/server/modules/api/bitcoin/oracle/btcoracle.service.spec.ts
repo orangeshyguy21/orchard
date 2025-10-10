@@ -24,8 +24,8 @@ describe('BitcoinOracleService', () => {
 		}).compile();
 
 		bitcoin_oracle_service = module.get<BitcoinOracleService>(BitcoinOracleService);
-		error_service = module.get(ErrorService) as any;
-		utx_oracle = module.get(BitcoinUTXOracleService) as any;
+		error_service = module.get(ErrorService);
+		utx_oracle = module.get(BitcoinUTXOracleService);
 	});
 
 	it('should be defined', () => {

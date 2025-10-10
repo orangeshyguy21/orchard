@@ -14,7 +14,7 @@ import {OrchardMintPromiseGroup} from './mintpromise.model';
 describe('MintPromiseService', () => {
 	let mint_promise_service: MintPromiseService;
 	let mint_db_service: jest.Mocked<CashuMintDatabaseService>;
-	let mint_service: jest.Mocked<MintService>;
+	let _mint_service: jest.Mocked<MintService>;
 	let error_service: jest.Mocked<ErrorService>;
 
 	beforeEach(async () => {
@@ -28,9 +28,9 @@ describe('MintPromiseService', () => {
 		}).compile();
 
 		mint_promise_service = module.get<MintPromiseService>(MintPromiseService);
-		mint_db_service = module.get(CashuMintDatabaseService) as any;
-		mint_service = module.get(MintService) as any;
-		error_service = module.get(ErrorService) as any;
+		mint_db_service = module.get(CashuMintDatabaseService);
+		_mint_service = module.get(MintService);
+		error_service = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {

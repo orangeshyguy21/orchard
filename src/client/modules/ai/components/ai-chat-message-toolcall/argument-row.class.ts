@@ -1,6 +1,3 @@
-/* Native Dependencies */
-import {AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
-
 export class ArgumentRow {
 	field: string;
 	value: string;

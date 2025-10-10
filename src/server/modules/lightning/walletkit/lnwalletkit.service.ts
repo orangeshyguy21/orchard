@@ -6,7 +6,6 @@ import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {LightningType} from '@server/modules/lightning/lightning.enums';
 import {LndService} from '@server/modules/lightning/lnd/lnd.service';
 import {ClnService} from '@server/modules/lightning/cln/cln.service';
-import {LightningAddressType} from '@server/modules/lightning/lightning.enums';
 /* Local Dependencies */
 import {LightningAddresses} from './lnwalletkit.types';
 
