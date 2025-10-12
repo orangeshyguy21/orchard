@@ -12,7 +12,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint-test-build:
+  quality-check:
     runs-on: ubuntu-latest
     env:
       CI: true
@@ -33,6 +33,9 @@ jobs:
 
       - name: Setup Chrome
         uses: browser-actions/setup-chrome@v1
+
+      - name: Format
+        run: npm run format:check
 
       - name: Lint
         run: npm run lint

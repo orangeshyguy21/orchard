@@ -12,6 +12,7 @@
     "build": "NODE_ENV=production nest build && ng build",
     "format": "prettier --write \"src/client/**/*.{ts,html}\" \"src/client/modules/**/*.scss\" \"src/server/**/*.ts\"",
     "format:watch": "nodemon --watch src/client --watch src/server --ext ts,html,scss,json --exec \"npm run format\"",
+    "format:check": "prettier --check \"src/client/**/*.{ts,html}\" \"src/client/modules/**/*.scss\" \"src/server/**/*.ts\"",
     "ng": "ng",
     "start": "NODE_ENV=production node dist/main",
     "start:client": "NODE_ENV=development npx graphql-codegen && ng serve --proxy-config proxy.conf.js",
