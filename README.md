@@ -90,6 +90,8 @@ docker compose up -d
 
 ### Docker images from registery
 
+**Note:** When using registry images, you can specify a version using the `VERSION` environment variable. If not specified, it defaults to `latest` which may not be compatible with older versions of the codebase.
+
 #### Sqlite Cashu Mint
 ```bash
 # Additional env vars
@@ -97,13 +99,13 @@ MINT_DATANAME=mint.sqlite3
 MINT_DATADIR=/path/to/data/directory
 ```
 ```bash
-FLAVOR=sqlite \
+VERSION=latest FLAVOR=sqlite \
 docker compose -f docker-compose.yml -f docker-compose.sqlite.yml -f compose.image.yml up -d
 ```
 
 #### Postgres Cashu Mint
 ```bash
-FLAVOR=postgres \
+VERSION=latest FLAVOR=postgres \
 docker compose -f docker-compose.yml -f compose.image.yml up -d
 ```
 
