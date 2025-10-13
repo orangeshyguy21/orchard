@@ -2,8 +2,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 /* Native Dependencies */
 import {OrcMintSubsectionKeysetsModule} from '@client/modules/mint/modules/mint-subsection-keysets/mint-subsection-keysets.module';
-/* Vendor Dependencies */
-import {provideLuxonDateAdapter} from '@angular/material-luxon-adapter';
 /* Local Dependencies */
 import {MintSubsectionKeysetsRotationPreviewComponent} from './mint-subsection-keysets-rotation-preview.component';
 
@@ -14,7 +12,6 @@ describe('MintSubsectionKeysetsRotationPreviewComponent', () => {
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
 			imports: [OrcMintSubsectionKeysetsModule],
-			providers: [provideLuxonDateAdapter()],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(MintSubsectionKeysetsRotationPreviewComponent);

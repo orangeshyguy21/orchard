@@ -1,6 +1,5 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {provideLuxonDateAdapter} from '@angular/material-luxon-adapter';
 /* Native Dependencies */
 import {OrcLightningGeneralModule} from '@client/modules/lightning/modules/lightning-general/lightning-general.module';
 /* Local Dependencies */
@@ -14,7 +13,6 @@ describe('LightningGeneralChannelComponent', () => {
 		await TestBed.configureTestingModule({
 			imports: [OrcLightningGeneralModule],
 			declarations: [LightningGeneralChannelComponent],
-			providers: [provideLuxonDateAdapter()],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(LightningGeneralChannelComponent);

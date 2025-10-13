@@ -1,8 +1,5 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {provideHttpClient} from '@angular/common/http';
-import {provideHttpClientTesting} from '@angular/common/http/testing';
-import {provideLuxonDateAdapter} from '@angular/material-luxon-adapter';
 import {ActivatedRoute} from '@angular/router';
 import {OrcMintSubsectionConfigModule} from '@client/modules/mint/modules/mint-subsection-config/mint-subsection-config.module';
 /* Vendor Dependencies */
@@ -21,9 +18,6 @@ describe('MintSubsectionConfigComponent', () => {
 			imports: [OrcMintSubsectionConfigModule],
 			declarations: [MintSubsectionConfigComponent],
 			providers: [
-				provideLuxonDateAdapter(),
-				provideHttpClient(),
-				provideHttpClientTesting(),
 				{
 					provide: ActivatedRoute,
 					useValue: {

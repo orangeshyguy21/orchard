@@ -12,9 +12,7 @@ export class ApiService {
 	public gql_socket: WebSocketSubject<any>;
 	public api: string;
 
-	constructor(
-		private configService: ConfigService,
-	) {
+	constructor(private configService: ConfigService) {
 		this.api = `${this.configService.config.api.proxy}/${this.configService.config.api.path}`;
 		this.gql_socket = webSocket({
 			url: `ws://${window.location.host}${this.api}`,

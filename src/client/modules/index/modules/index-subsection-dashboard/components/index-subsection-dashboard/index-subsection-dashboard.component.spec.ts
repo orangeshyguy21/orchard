@@ -1,8 +1,5 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {provideHttpClient} from '@angular/common/http';
-import {provideHttpClientTesting} from '@angular/common/http/testing';
-import {provideLuxonDateAdapter} from '@angular/material-luxon-adapter';
 /* Vendor Dependencies */
 import {MatIconTestingModule} from '@angular/material/icon/testing';
 /* Native Dependencies */
@@ -17,7 +14,6 @@ describe('IndexSubsectionDashboardComponent', () => {
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
 			imports: [OrcIndexSubsectionDashboardModule, MatIconTestingModule],
-			providers: [provideLuxonDateAdapter(), provideHttpClient(), provideHttpClientTesting()],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(IndexSubsectionDashboardComponent);

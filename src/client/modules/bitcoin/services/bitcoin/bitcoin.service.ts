@@ -93,24 +93,26 @@ export class BitcoinService {
 
 		const query = getApiQuery(BITCOIN_BLOCKCHAIN_INFO_QUERY);
 
-		this.bitcoin_blockchain_info_observable = this.http.post<OrchardRes<BitcoinBlockchainInfoResponse>>(this.apiService.api, query).pipe(
-			map((response) => {
-				if (response.errors) throw new OrchardErrors(response.errors);
-				return response.data.bitcoin_blockchain_info;
-			}),
-			map((btc_info) => new BitcoinBlockchainInfo(btc_info)),
-			tap((btc_info) => {
-				this.cache.updateCache(this.CACHE_KEYS.BITCOIN_BLOCKCHAIN_INFO, btc_info);
-				this.bitcoin_blockchain_info_subject.next(btc_info);
-				this.bitcoin_blockchain_info_observable = null;
-			}),
-			shareReplay(1),
-			catchError((error) => {
-				this.bitcoin_blockchain_info_observable = null;
-				this.bitcoin_blockchain_info_subject.next(null);
-				return throwError(() => error);
-			}),
-		);
+		this.bitcoin_blockchain_info_observable = this.http
+			.post<OrchardRes<BitcoinBlockchainInfoResponse>>(this.apiService.api, query)
+			.pipe(
+				map((response) => {
+					if (response.errors) throw new OrchardErrors(response.errors);
+					return response.data.bitcoin_blockchain_info;
+				}),
+				map((btc_info) => new BitcoinBlockchainInfo(btc_info)),
+				tap((btc_info) => {
+					this.cache.updateCache(this.CACHE_KEYS.BITCOIN_BLOCKCHAIN_INFO, btc_info);
+					this.bitcoin_blockchain_info_subject.next(btc_info);
+					this.bitcoin_blockchain_info_observable = null;
+				}),
+				shareReplay(1),
+				catchError((error) => {
+					this.bitcoin_blockchain_info_observable = null;
+					this.bitcoin_blockchain_info_subject.next(null);
+					return throwError(() => error);
+				}),
+			);
 		return this.bitcoin_blockchain_info_observable;
 	}
 

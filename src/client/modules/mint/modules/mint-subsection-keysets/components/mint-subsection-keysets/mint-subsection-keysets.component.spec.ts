@@ -1,9 +1,6 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ActivatedRoute} from '@angular/router';
-import {provideLuxonDateAdapter} from '@angular/material-luxon-adapter';
-import {provideHttpClient} from '@angular/common/http';
-import {provideHttpClientTesting} from '@angular/common/http/testing';
 /* Vendor Dependencies */
 import {of} from 'rxjs';
 /* Native Dependencies */
@@ -42,9 +39,6 @@ describe('MintSubsectionKeysetsComponent', () => {
 						},
 					},
 				},
-				provideLuxonDateAdapter(),
-				provideHttpClient(),
-				provideHttpClientTesting(),
 				{provide: MintService, useValue: mint_service_stub},
 			],
 		}).compileComponents();
