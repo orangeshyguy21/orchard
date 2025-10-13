@@ -8,7 +8,7 @@ import {ApiService} from '@client/modules/api/services/api/api.service';
 import {SettingService} from '@client/modules/settings/services/setting/setting.service';
 import {LocalStorageService} from '@client/modules/cache/services/local-storage/local-storage.service';
 import {OrchardWsRes} from '@client/modules/api/types/api.types';
-import {api, getApiQuery} from '@client/modules/api/helpers/api.helpers';
+import {getApiQuery} from '@client/modules/api/helpers/api.helpers';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {OrchardRes} from '@client/modules/api/types/api.types';
 /* Native Dependencies */
@@ -140,7 +140,7 @@ export class AiService {
 		if (this.ai_models_observable) return this.ai_models_observable;
 		const query = getApiQuery(AI_MODELS_QUERY);
 
-		this.ai_models_observable = this.http.post<OrchardRes<AiModelResponse>>(api, query).pipe(
+		this.ai_models_observable = this.http.post<OrchardRes<AiModelResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.ai_models;
@@ -162,7 +162,7 @@ export class AiService {
 	public getAiAgent(agent: AiAgent): Observable<AiAgentDefinition> {
 		const query = getApiQuery(AI_AGENT_QUERY, {agent});
 
-		return this.http.post<OrchardRes<AiAgentResponse>>(api, query).pipe(
+		return this.http.post<OrchardRes<AiAgentResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.ai_agent;

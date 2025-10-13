@@ -15,9 +15,8 @@ import {toObservable} from '@angular/core/rxjs-interop';
 import {Router} from '@angular/router';
 /* Vendor Dependencies */
 import {Subscription} from 'rxjs';
-/* Application Configuration */
-import {environment} from '@client/configs/configuration';
 /* Application Dependencies */
+import {ConfigService} from '@client/modules/config/services/config.service';
 import {MintService} from '@client/modules/mint/services/mint/mint.service';
 import {MintInfoRpc} from '@client/modules/mint/classes/mint-info-rpc.class';
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
@@ -68,6 +67,7 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 	private dirty_count$ = toObservable(this.dirty_count);
 
 	constructor(
+		private configService: ConfigService,
 		public mintService: MintService,
 		public route: ActivatedRoute,
 		public aiService: AiService,
@@ -113,7 +113,7 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 	}
 
 	orchardOptionalInit(): void {
-		if (environment.ai.enabled) {
+		if (this.configService.config.ai.enabled) {
 			this.subscriptions.add(this.getAgentSubscription());
 			this.subscriptions.add(this.getToolSubscription());
 		}

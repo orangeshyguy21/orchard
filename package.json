@@ -15,7 +15,7 @@
     "format:check": "prettier --check \"src/client/**/*.{ts,html}\" \"src/client/modules/**/*.scss\" \"src/server/**/*.ts\"",
     "ng": "ng",
     "start": "NODE_ENV=production node dist/main",
-    "start:client": "NODE_ENV=development npx graphql-codegen && ng serve --proxy-config proxy.conf.js",
+    "start:client": "node ./scripts/generate-runtime-config.mjs && NODE_ENV=development npx graphql-codegen && ng serve --proxy-config proxy.conf.js",
     "start:server": "NODE_ENV=development nest start --watch",
     "start:server:nowatch": "NODE_ENV=development nest start",
     "start:server:debug": "NODE_ENV=development nest start --debug --watch",

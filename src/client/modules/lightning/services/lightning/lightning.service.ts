@@ -4,10 +4,11 @@ import {HttpClient} from '@angular/common/http';
 /* Vendor Dependencies */
 import {BehaviorSubject, catchError, map, Observable, of, shareReplay, tap, throwError} from 'rxjs';
 /* Application Dependencies */
-import {api, getApiQuery} from '@client/modules/api/helpers/api.helpers';
+import {getApiQuery} from '@client/modules/api/helpers/api.helpers';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {OrchardRes} from '@client/modules/api/types/api.types';
 import {CacheService} from '@client/modules/cache/services/cache/cache.service';
+import {ApiService} from '@client/modules/api/services/api/api.service';
 /* Native Dependencies */
 import {LightningInfo} from '@client/modules/lightning/classes/lightning-info.class';
 import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
@@ -53,6 +54,7 @@ export class LightningService {
 	constructor(
 		private http: HttpClient,
 		private cache: CacheService,
+		private apiService: ApiService,
 	) {
 		this.lightning_info_subject = this.cache.createCache<LightningInfo>(
 			this.CACHE_KEYS.LIGHTNING_INFO,
@@ -75,7 +77,7 @@ export class LightningService {
 
 		const query = getApiQuery(LIGHTNING_INFO_QUERY);
 
-		this.lightning_info_observable = this.http.post<OrchardRes<LightningInfoResponse>>(api, query).pipe(
+		this.lightning_info_observable = this.http.post<OrchardRes<LightningInfoResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.lightning_info;
@@ -105,7 +107,7 @@ export class LightningService {
 
 		const query = getApiQuery(LIGHTNING_BALANCE_QUERY);
 
-		return this.http.post<OrchardRes<LightningBalanceResponse>>(api, query).pipe(
+		return this.http.post<OrchardRes<LightningBalanceResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.lightning_balance;
@@ -128,7 +130,7 @@ export class LightningService {
 
 		const query = getApiQuery(LIGHTNING_WALLET_QUERY);
 
-		return this.http.post<OrchardRes<LightningWalletResponse>>(api, query).pipe(
+		return this.http.post<OrchardRes<LightningWalletResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.lightning_wallet;
@@ -148,7 +150,7 @@ export class LightningService {
 	public getLightningRequest(request: string): Observable<LightningRequest> {
 		const query = getApiQuery(LIGHTNING_REQUEST_QUERY, {request});
 
-		return this.http.post<OrchardRes<LightningRequestResponse>>(api, query).pipe(
+		return this.http.post<OrchardRes<LightningRequestResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.lightning_request;

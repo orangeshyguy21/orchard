@@ -4,10 +4,11 @@ import {HttpClient} from '@angular/common/http';
 /* Vendor Dependencies */
 import {BehaviorSubject, catchError, map, Observable, of, shareReplay, tap, throwError} from 'rxjs';
 /* Application Dependencies */
-import {api, getApiQuery} from '@client/modules/api/helpers/api.helpers';
+import {getApiQuery} from '@client/modules/api/helpers/api.helpers';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {OrchardRes} from '@client/modules/api/types/api.types';
 import {CacheService} from '@client/modules/cache/services/cache/cache.service';
+import {ApiService} from '@client/modules/api/services/api/api.service';
 /* Native Dependencies */
 import {TaprootAssetInfo} from '@client/modules/tapass/classes/taproot-asset-info.class';
 import {TaprootAssets} from '@client/modules/tapass/classes/taproot-assets.class';
@@ -43,6 +44,7 @@ export class TaprootAssetsService {
 	constructor(
 		private http: HttpClient,
 		private cache: CacheService,
+		private apiService: ApiService,
 	) {
 		this.tap_info_subject = this.cache.createCache<TaprootAssetInfo>(
 			this.CACHE_KEYS.TAP_INFO,
@@ -60,7 +62,7 @@ export class TaprootAssetsService {
 
 		const query = getApiQuery(TAP_INFO_QUERY);
 
-		this.tap_info_observable = this.http.post<OrchardRes<TaprootAssetInfoResponse>>(api, query).pipe(
+		this.tap_info_observable = this.http.post<OrchardRes<TaprootAssetInfoResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.taproot_assets_info;
@@ -89,7 +91,7 @@ export class TaprootAssetsService {
 
 		const query = getApiQuery(TAP_ASSETS_QUERY);
 
-		return this.http.post<OrchardRes<TaprootAssetResponse>>(api, query).pipe(
+		return this.http.post<OrchardRes<TaprootAssetResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.taproot_assets;

@@ -18,9 +18,8 @@ import {FormGroup, FormControl, Validators} from '@angular/forms';
 import {toObservable} from '@angular/core/rxjs-interop';
 /* Vendor Dependencies */
 import {Subscription, lastValueFrom, forkJoin} from 'rxjs';
-/* Application Configuration */
-import {environment} from '@client/configs/configuration';
 /* Application Dependencies */
+import {ConfigService} from '@client/modules/config/services/config.service';
 import {EventService} from '@client/modules/event/services/event/event.service';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {OrchardValidators} from '@client/modules/form/validators';
@@ -183,6 +182,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	private dirty_count$ = toObservable(this.dirty_count);
 
 	constructor(
+		private configService: ConfigService,
 		public mintService: MintService,
 		public route: ActivatedRoute,
 		public eventService: EventService,
@@ -224,7 +224,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	}
 
 	orchardOptionalInit(): void {
-		if (environment.ai.enabled) {
+		if (this.configService.config.ai.enabled) {
 			this.subscriptions.add(this.getAgentSubscription());
 			this.subscriptions.add(this.getToolSubscription());
 		}

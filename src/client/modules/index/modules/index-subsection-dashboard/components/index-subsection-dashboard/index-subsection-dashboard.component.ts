@@ -4,9 +4,8 @@ import {Router} from '@angular/router';
 import {FormGroup, FormControl} from '@angular/forms';
 /* Vendor Dependencies */
 import {tap, catchError, finalize, EMPTY, forkJoin, Subscription, firstValueFrom, timer, switchMap, takeWhile} from 'rxjs';
-/* Application Configuration */
-import {environment} from '@client/configs/configuration';
 /* Application Dependencies */
+import {ConfigService} from '@client/modules/config/services/config.service';
 import {BitcoinService} from '@client/modules/bitcoin/services/bitcoin/bitcoin.service';
 import {LightningService} from '@client/modules/lightning/services/lightning/lightning.service';
 import {TaprootAssetsService} from '@client/modules/tapass/services/taproot-assets.service';
@@ -37,11 +36,16 @@ import {OrchardError} from '@client/modules/error/types/error.types';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
-	public enabled_bitcoin = environment.bitcoin.enabled;
-	public enabled_lightning = environment.lightning.enabled;
-	public enabled_taproot_assets = environment.taproot_assets.enabled;
-	public version = environment.mode.version;
-	public enabled_mint = environment.mint.enabled;
+	// public enabled_bitcoin = environment.bitcoin.enabled;
+	// public enabled_lightning = environment.lightning.enabled;
+	// public enabled_taproot_assets = environment.taproot_assets.enabled;
+	// public version = environment.mode.version;
+	// public enabled_mint = environment.mint.enabled;
+	public enabled_bitcoin: boolean;
+	public enabled_lightning: boolean;
+	public enabled_taproot_assets: boolean;
+	public version: string;
+	public enabled_mint: boolean;
 	public enabled_ecash = false;
 
 	public loading_bitcoin: boolean = true;
@@ -95,6 +99,7 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 	private bitcoin_polling_active: boolean = false;
 
 	constructor(
+		private configService: ConfigService,
 		private bitcoinService: BitcoinService,
 		private lightningService: LightningService,
 		private taprootAssetsService: TaprootAssetsService,
@@ -102,7 +107,13 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 		private publicService: PublicService,
 		private router: Router,
 		private cdr: ChangeDetectorRef,
-	) {}
+	) {
+		this.enabled_bitcoin = this.configService.config.bitcoin.enabled;
+		this.enabled_lightning = this.configService.config.lightning.enabled;
+		this.enabled_taproot_assets = this.configService.config.taproot_assets.enabled;
+		this.version = this.configService.config.mode.version;
+		this.enabled_mint = this.configService.config.mint.enabled;
+	}
 
 	/* *******************************************************
 	   Initalization                      

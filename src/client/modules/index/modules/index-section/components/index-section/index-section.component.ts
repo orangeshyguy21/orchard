@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-/* Application Configuration */
-import {environment} from '@client/configs/configuration';
+/* Application Dependencies */
+import {ConfigService} from '@client/modules/config/services/config.service';
 
 @Component({
 	selector: 'orc-index-section',
@@ -11,5 +11,9 @@ import {environment} from '@client/configs/configuration';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IndexSectionComponent {
-	public version = environment.mode.version;
+	public version: string;
+
+	constructor(private configService: ConfigService) {
+		this.version = this.configService.config.mode.version;
+	}
 }

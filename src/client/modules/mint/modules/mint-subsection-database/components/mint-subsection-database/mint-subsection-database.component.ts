@@ -7,11 +7,9 @@ import {DateTime} from 'luxon';
 import {lastValueFrom, Subscription} from 'rxjs';
 import {PageEvent} from '@angular/material/paginator';
 import {MatTableDataSource} from '@angular/material/table';
-/* Application Configuration */
-import {environment} from '@client/configs/configuration';
-import {OrchardErrors} from '@client/modules/error/classes/error.class';
 /* Application Dependencies */
 import {NonNullableMintDatabaseSettings} from '@client/modules/settings/types/setting.types';
+import {ConfigService} from '@client/modules/config/services/config.service';
 import {SettingService} from '@client/modules/settings/services/setting/setting.service';
 import {EventService} from '@client/modules/event/services/event/event.service';
 import {LightningService} from '@client/modules/lightning/services/lightning/lightning.service';
@@ -21,6 +19,7 @@ import {DataType} from '@client/modules/orchard/enums/data.enum';
 import {ComponentCanDeactivate} from '@client/modules/routing/interfaces/routing.interfaces';
 import {AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {LightningRequest} from '@client/modules/lightning/classes/lightning-request.class';
+import {OrchardErrors} from '@client/modules/error/classes/error.class';
 /* Native Dependencies */
 import {MintService} from '@client/modules/mint/services/mint/mint.service';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
@@ -90,6 +89,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 
 	constructor(
 		private route: ActivatedRoute,
+		private configService: ConfigService,
 		private settingService: SettingService,
 		private eventService: EventService,
 		private mintService: MintService,
@@ -113,7 +113,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	}
 
 	orchardOptionalInit(): void {
-		if (environment.ai.enabled) {
+		if (this.configService.config.ai.enabled) {
 			this.subscriptions.add(this.getAgentSubscription());
 			this.subscriptions.add(this.getToolSubscription());
 		}
@@ -414,7 +414,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		this.mintService.loadMintInfo().subscribe((mint_info) => {
 			this.database_version = mint_info.version.replace(/\//g, '-');
 			this.database_timestamp = DateTime.now().toSeconds();
-			this.database_implementation = environment.mint.database_type;
+			this.database_implementation = this.configService.config.mint.database_type;
 			const extension = this.database_implementation === 'sqlite' ? 'db' : 'sql';
 			const filename = `MintDatabaseBackup-${this.database_version}-${DateTime.fromSeconds(this.database_timestamp).toFormat('yyyyMMdd-HHmmss')}.${extension}`;
 			this.form_backup.patchValue({

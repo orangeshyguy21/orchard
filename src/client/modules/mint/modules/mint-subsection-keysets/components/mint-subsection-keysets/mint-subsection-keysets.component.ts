@@ -5,9 +5,8 @@ import {FormGroup, FormControl, Validators} from '@angular/forms';
 /* Vendor Dependencies */
 import {lastValueFrom, forkJoin, Subscription} from 'rxjs';
 import {DateTime} from 'luxon';
-/* Application Configuration */
-import {environment} from '@client/configs/configuration';
 /* Application Dependencies */
+import {ConfigService} from '@client/modules/config/services/config.service';
 import {SettingService} from '@client/modules/settings/services/setting/setting.service';
 import {EventService} from '@client/modules/event/services/event/event.service';
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
@@ -66,6 +65,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 
 	constructor(
 		public route: ActivatedRoute,
+		private configService: ConfigService,
 		private settingService: SettingService,
 		private eventService: EventService,
 		private aiService: AiService,
@@ -87,7 +87,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	}
 
 	orchardOptionalInit(): void {
-		if (environment.ai.enabled) {
+		if (this.configService.config.ai.enabled) {
 			this.subscriptions.add(this.getAgentSubscription());
 			this.subscriptions.add(this.getToolSubscription());
 		}

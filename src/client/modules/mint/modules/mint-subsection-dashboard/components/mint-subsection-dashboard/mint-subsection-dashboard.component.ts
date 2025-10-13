@@ -14,9 +14,8 @@ import {ActivatedRoute, Router} from '@angular/router';
 /* Vendor Dependencies */
 import {forkJoin, lastValueFrom, Subscription, EMPTY, catchError, finalize, tap} from 'rxjs';
 import {DateTime} from 'luxon';
-/* Application Configuration */
-import {environment} from '@client/configs/configuration';
 /* Application Dependencies */
+import {ConfigService} from '@client/modules/config/services/config.service';
 import {SettingService} from '@client/modules/settings/services/setting/setting.service';
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
 import {PublicService} from '@client/modules/public/services/image/public.service';
@@ -73,7 +72,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public mint_analytics_fees: MintAnalytic[] = [];
 	public mint_analytics_fees_pre: MintAnalytic[] = [];
 	public mint_connections: PublicUrl[] = [];
-	public lightning_enabled: boolean = environment.lightning.enabled;
+	public lightning_enabled: boolean;
 	public lightning_balance: LightningBalance | null = null;
 	public locale!: string;
 	// derived data
@@ -102,6 +101,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	private subscriptions: Subscription = new Subscription();
 
 	constructor(
+		private configService: ConfigService,
 		private mintService: MintService,
 		private settingService: SettingService,
 		private publicService: PublicService,
@@ -110,14 +110,16 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		private router: Router,
 		private route: ActivatedRoute,
 		private cdr: ChangeDetectorRef,
-	) {}
+	) {
+		this.lightning_enabled = this.configService.config.lightning.enabled;
+	}
 
 	/* *******************************************************
 	   Initalization                      
 	******************************************************** */
 
 	async ngOnInit(): Promise<void> {
-		this.mint_type = environment.mint.type;
+		this.mint_type = this.configService.config.mint.type;
 		this.mint_info = this.route.snapshot.data['mint_info'];
 		this.mint_balances = this.route.snapshot.data['mint_balances'];
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
@@ -129,7 +131,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	}
 
 	orchardOptionalInit(): void {
-		if (environment.ai.enabled) {
+		if (this.configService.config.ai.enabled) {
 			this.subscriptions.add(this.getAgentSubscription());
 			this.subscriptions.add(this.getToolSubscription());
 		}
@@ -208,7 +210,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		if (!this.mint_info?.urls) return;
 		if (this.mint_info.urls.length === 0) return;
 		const test_urls = this.mint_info.urls.map((url) => {
-			return `${url.replace(/\/$/, '')}${environment.mint.critical_path}`;
+			return `${url.replace(/\/$/, '')}${this.configService.config.mint.critical_path}`;
 		});
 		this.publicService.getPublicUrlsData(test_urls).subscribe((urls) => {
 			this.mint_connections = urls;

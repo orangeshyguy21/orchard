@@ -1,12 +1,11 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
-/* Application Configuration */
-import {environment} from '@client/configs/configuration';
 /* Application Dependencies */
 import {LocalStorageService} from '@client/modules/cache/services/local-storage/local-storage.service';
 import {SettingService} from '@client/modules/settings/services/setting/setting.service';
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
 import {EventService} from '@client/modules/event/services/event/event.service';
+import {ConfigService} from '@client/modules/config/services/config.service';
 import {EventData} from '@client/modules/event/classes/event-data.class';
 import {Locale, Timezone, Theme, ThemeType, Model} from '@client/modules/cache/services/local-storage/local-storage.types';
 import {AiModel} from '@client/modules/ai/classes/ai-model.class';
@@ -21,8 +20,8 @@ import {SettingsCategory} from '@client/modules/settings/enums/category.enum';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsSubsectionDashboardComponent implements OnInit {
-	public version = environment.mode.version;
-	public enabled_ai = environment.ai.enabled;
+	public version: string;
+	public enabled_ai: boolean;
 	public locale: Locale | null = null;
 	public timezone: Timezone | null = null;
 	public theme: Theme | null = null;
@@ -46,8 +45,12 @@ export class SettingsSubsectionDashboardComponent implements OnInit {
 		private settingService: SettingService,
 		private aiService: AiService,
 		private eventService: EventService,
+		private configService: ConfigService,
 		private cdr: ChangeDetectorRef,
-	) {}
+	) {
+		this.version = this.configService.config.mode.version;
+		this.enabled_ai = this.configService.config.ai.enabled;
+	}
 
 	ngOnInit(): void {
 		this.locale = this.localStorageService.getLocale();

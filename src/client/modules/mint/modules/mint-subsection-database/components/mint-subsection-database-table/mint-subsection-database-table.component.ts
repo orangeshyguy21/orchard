@@ -1,10 +1,9 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from '@angular/core';
-/* Application Configuration */
-import {environment} from '@client/configs/configuration';
 /* Vendor Dependencies */
 import {MatSort} from '@angular/material/sort';
 /* Application Dependencies */
+import {ConfigService} from '@client/modules/config/services/config.service';
 import {NonNullableMintDatabaseSettings} from '@client/modules/settings/types/setting.types';
 import {LightningRequest} from '@client/modules/lightning/classes/lightning-request.class';
 /* Native Dependencies */
@@ -41,7 +40,7 @@ export class MintSubsectionDatabaseTableComponent implements OnChanges {
 		return ['unit', 'amount', 'request', 'state', 'created_time'];
 	}
 
-	constructor() {}
+	constructor(private configService: ConfigService) {}
 
 	public ngOnChanges(changes: SimpleChanges): void {
 		if (changes['loading'] && this.loading === false) {
@@ -57,7 +56,7 @@ export class MintSubsectionDatabaseTableComponent implements OnChanges {
 
 	public toggleMore(entity: MintMintQuote | MintMeltQuote) {
 		this.more_entity = this.more_entity === entity ? null : entity;
-		if (!environment.lightning.enabled) return;
+		if (!this.configService.config.lightning.enabled) return;
 		if (this.more_entity) this.updateRequest.emit(this.more_entity.request);
 	}
 }
