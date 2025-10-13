@@ -45,10 +45,10 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          target: final-mintdb-${{ matrix.flavor }}
+          target: final-${{ matrix.flavor }}
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-to: type=gha,mode=maxw
