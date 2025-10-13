@@ -1,8 +1,6 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {provideHttpClient} from '@angular/common/http';
-import {provideHttpClientTesting} from '@angular/common/http/testing';
-import {RouterOutlet, provideRouter} from '@angular/router';
+import {RouterOutlet} from '@angular/router';
 /* Native Dependencies */
 import {OrcIndexSectionModule} from '@client/modules/index/modules/index-section/index-section.module';
 /* Local Dependencies */
@@ -16,7 +14,6 @@ describe('IndexSectionComponent', () => {
 		await TestBed.configureTestingModule({
 			imports: [OrcIndexSectionModule, RouterOutlet],
 			declarations: [IndexSectionComponent],
-			providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(IndexSectionComponent);

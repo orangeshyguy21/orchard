@@ -1,7 +1,5 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {provideHttpClient} from '@angular/common/http';
-import {provideHttpClientTesting} from '@angular/common/http/testing';
 import {provideRouter} from '@angular/router';
 /* Native Dependencies */
 import {OrcBitcoinSectionModule} from '@client/modules/bitcoin/modules/bitcoin-section/bitcoin-section.module';
@@ -15,7 +13,7 @@ describe('BitcoinSectionComponent', () => {
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
 			imports: [OrcBitcoinSectionModule],
-			providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
+			providers: [provideRouter([])],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(BitcoinSectionComponent);
