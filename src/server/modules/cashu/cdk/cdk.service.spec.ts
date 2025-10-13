@@ -107,7 +107,7 @@ describe('CdkService', () => {
 		jest.spyOn(grpc, 'loadPackageDefinition').mockReturnValue({cdk_mint_rpc: {CdkMint: CdkMintMock}} as any);
 		cdk_service.initializeGrpcClient();
 		expect(CdkMintMock).toHaveBeenCalled();
-		const args = (CdkMintMock).mock.calls[0];
+		const args = CdkMintMock.mock.calls[0];
 		expect(args[2]).toMatchObject({
 			'grpc.ssl_target_name_override': 'localhost',
 			'grpc.default_authority': 'localhost',

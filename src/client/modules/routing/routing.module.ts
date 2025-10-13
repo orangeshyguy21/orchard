@@ -69,7 +69,13 @@ const routes: Routes = [
 ];
 
 @NgModule({
-	imports: [RouterModule.forRoot(routes, {enableViewTransitions: true}), MatSidenavModule, OrcNavModule, OrcAiModule, OrcEventGeneralModule],
+	imports: [
+		RouterModule.forRoot(routes, {enableViewTransitions: true}),
+		MatSidenavModule,
+		OrcNavModule,
+		OrcAiModule,
+		OrcEventGeneralModule,
+	],
 	exports: [RouterModule],
 	declarations: [LayoutExteriorComponent, LayoutInteriorComponent],
 })

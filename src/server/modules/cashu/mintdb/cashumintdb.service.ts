@@ -282,7 +282,7 @@ export class CashuMintDatabaseService implements OnModuleInit {
 			this.logger.error(`Error during database backup: ${error}`);
 			try {
 				await fs.unlink(backup_path);
-			} catch  {}
+			} catch {}
 			throw OrchardErrorCode.MintDatabaseBackupError;
 		}
 	}

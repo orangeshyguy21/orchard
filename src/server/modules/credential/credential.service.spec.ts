@@ -54,7 +54,7 @@ describe('CredentialService', () => {
 	it('loadPemOrPath returns a buffer even for loosely invalid base64', () => {
 		const buf = credential_service.loadPemOrPath('base64:***notb64***');
 		expect(Buffer.isBuffer(buf)).toBe(true);
-		expect((buf).length).toBeGreaterThan(0);
+		expect(buf.length).toBeGreaterThan(0);
 	});
 
 	it('loadPemOrPath handles inline PEM with escaped newlines', () => {
@@ -72,7 +72,7 @@ describe('CredentialService', () => {
 	it('loadPemOrPath returns a buffer for arbitrary text', () => {
 		const buf = credential_service.loadPemOrPath('plain-text');
 		expect(Buffer.isBuffer(buf)).toBe(true);
-		expect((buf).length).toBeGreaterThan(0);
+		expect(buf.length).toBeGreaterThan(0);
 	});
 
 	it('loadMacaroonHex returns undefined when value is missing', () => {

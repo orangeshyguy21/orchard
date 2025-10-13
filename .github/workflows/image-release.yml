@@ -12,12 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flavor: [sqlite, postgres]
+        flavor: [mintdb-sqlite, mintdb-postgres]
         include:
-          - flavor: sqlite
-            image: ghcr.io/${{ github.repository }}-sqlite
-          - flavor: postgres
-            image: ghcr.io/${{ github.repository }}-postgres
+          - flavor: mintdb-sqlite
+            image: ghcr.io/${{ github.repository }}-mintdb-sqlite
+          - flavor: mintdb-postgres
+            image: ghcr.io/${{ github.repository }}-mintdb-postgres
     steps:
       - uses: actions/checkout@v4
       - uses: docker/setup-qemu-action@v3
