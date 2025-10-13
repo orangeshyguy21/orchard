@@ -1,5 +1,7 @@
 /* Core Dependencies */
 import fs from 'node:fs/promises';
+import {config} from 'dotenv';
+config({ path: '.env', override: false });
 
 const mode = {
 	production: process.env['NODE_ENV'] === 'production',
@@ -40,7 +42,7 @@ const constants = {
 	},
 };
 
-const config = {
+const runtime_config = {
 	mode,
 	api,
 	bitcoin,
@@ -51,4 +53,4 @@ const config = {
 	constants,
 };
 
-await fs.writeFile(`${process.cwd()}/public/config.json`, JSON.stringify(config, null, 2));
+await fs.writeFile(`${process.cwd()}/public/config.json`, JSON.stringify(runtime_config, null, 2));
