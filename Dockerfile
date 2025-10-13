@@ -13,7 +13,6 @@ FROM deps AS build
 WORKDIR /app
 COPY . .
 RUN npm run build
-RUN rm -f .env
 
 # ---------------
 # Release App (Postgres variant)
@@ -26,6 +25,7 @@ COPY --from=build /app/node_modules/ ./node_modules
 COPY --from=build /app/dist/ ./dist
 COPY --from=build /app/proto/ ./proto
 COPY --from=build /app/public/ ./public
+COPY --from=build /app/scripts/ ./scripts
 ARG SERVER_PORT=3321
 EXPOSE ${SERVER_PORT}
 CMD ["npm", "run", "start"]
@@ -40,6 +40,7 @@ COPY --from=build /app/node_modules/ ./node_modules
 COPY --from=build /app/dist/ ./dist
 COPY --from=build /app/proto/ ./proto
 COPY --from=build /app/public/ ./public
+COPY --from=build /app/scripts/ ./scripts
 ARG SERVER_PORT=3321
 EXPOSE ${SERVER_PORT}
 CMD ["npm", "run", "start"]
