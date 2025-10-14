@@ -1,0 +1,9 @@
+<div class="primary-nav-header">
+	<div (click)="onClick()" class="primary-nav-index">
+		<div class="orchard-logo flex flex-items-center flex-justify-center" [class.logo-highlight]="active()" matRipple>
+			<orc-graphic-orchard-logo height="3.5rem"></orc-graphic-orchard-logo>
+		</div>
+		<div class="primary-nav-chain">{{ chain() }}</div>
+		<div class="primary-nav-blockheight" #flash>{{ block_count() | bitcoinGeneralBlock }}</div>
+	</div>
+</div>

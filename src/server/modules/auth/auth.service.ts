@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable, UnauthorizedException, Logger} from '@nestjs/common';
 import {JwtService} from '@nestjs/jwt';
 import {ConfigService} from '@nestjs/config';
 /* Application Dependencies */
@@ -9,8 +9,10 @@ import {OrchardAuthToken, JwtPayload, RefreshTokenPayload} from './auth.types';
 
 @Injectable()
 export class AuthService {
-	private token_ttl: string = '15m';
-	private refresh_ttl: string = '7d';
+	private readonly logger = new Logger(AuthService.name);
+
+	private token_ttl = 15 * 60;
+	private refresh_ttl = 7 * 24 * 60 * 60;
 
 	private blacklist: string[] = [];
 
@@ -69,6 +71,7 @@ export class AuthService {
 				refresh_token: new_refresh_token,
 			};
 		} catch (error) {
+			this.logger.debug(`Error refreshing token: ${error.message}`);
 			throw new UnauthorizedException('Invalid refresh token');
 		}
 	}
@@ -80,6 +83,7 @@ export class AuthService {
 			this.blacklist.push(refresh_token);
 			return true;
 		} catch (error) {
+			this.logger.debug(`Error revoking token: ${error.message}`);
 			throw new UnauthorizedException('Invalid refresh token');
 		}
 	}
@@ -91,6 +95,7 @@ export class AuthService {
 			if (payload.type !== 'access') throw new UnauthorizedException('Invalid token type - access token required');
 			return payload;
 		} catch (error) {
+			this.logger.debug(`Error validating access token: ${error.message}`);
 			throw new UnauthorizedException('Invalid access token');
 		}
 	}

@@ -7,22 +7,22 @@ import {CashuMintMeltQuote} from '@server/modules/cashu/mintdb/cashumintdb.types
 
 @ObjectType()
 export class OrchardMintMeltQuote {
-	@Field((type) => ID)
+	@Field(() => ID)
 	id: string;
 
-	@Field((type) => MintUnit)
+	@Field(() => MintUnit)
 	unit: string;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	amount: number;
 
 	@Field()
 	request: string;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	fee_reserve: number;
 
-	@Field((type) => MeltQuoteState)
+	@Field(() => MeltQuoteState)
 	state: MeltQuoteState;
 
 	@Field({nullable: true})
@@ -31,16 +31,16 @@ export class OrchardMintMeltQuote {
 	@Field({nullable: true})
 	request_lookup_id: string;
 
-	@Field((type) => Int, {nullable: true})
+	@Field(() => Int, {nullable: true})
 	msat_to_pay: number;
 
-	@Field((type) => UnixTimestamp)
+	@Field(() => UnixTimestamp)
 	created_time: number;
 
-	@Field((type) => UnixTimestamp, {nullable: true})
+	@Field(() => UnixTimestamp, {nullable: true})
 	paid_time: number;
 
-	@Field((type) => MintPaymentMethod)
+	@Field(() => MintPaymentMethod)
 	payment_method: MintPaymentMethod;
 
 	constructor(cashu_mint_melt_quote: CashuMintMeltQuote) {

@@ -44,7 +44,7 @@ export class AiChatService {
 					.map((json_str) => {
 						try {
 							return JSON.parse(json_str);
-						} catch (parse_error) {
+						} catch {
 							throw new OrchardApiError(OrchardErrorCode.AiStreamParseError);
 						}
 					})

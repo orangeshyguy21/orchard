@@ -5,28 +5,28 @@ import {TaprootAssetsInfo} from '@server/modules/tapass/tapass/tapass.types';
 
 @ObjectType()
 export class OrchardTaprootAssetsInfo {
-	@Field((type) => String)
+	@Field(() => String)
 	version: string;
 
-	@Field((type) => String)
+	@Field(() => String)
 	lnd_version: string;
 
-	@Field((type) => String)
+	@Field(() => String)
 	network: string;
 
-	@Field((type) => String)
+	@Field(() => String)
 	lnd_identity_pubkey: string;
 
-	@Field((type) => String)
+	@Field(() => String)
 	node_alias: string;
 
-	@Field((type) => Int)
+	@Field(() => Int)
 	block_height: number;
 
-	@Field((type) => String)
+	@Field(() => String)
 	block_hash: string;
 
-	@Field((type) => Boolean)
+	@Field(() => Boolean)
 	sync_to_chain: boolean;
 
 	constructor(ta_info: TaprootAssetsInfo) {

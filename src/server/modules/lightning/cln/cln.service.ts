@@ -1,12 +1,13 @@
 /* Core Dependencies */
 import {Injectable, Logger} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
-import * as fs from 'fs';
 import * as path from 'path';
 /* Vendor Dependencies */
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 /* Application Dependencies */
+import {CredentialService} from '@server/modules/credential/credential.service';
+/* Native Dependencies */
 import {LightningInfo, LightningChannelBalance, LightningRequest} from '@server/modules/lightning/lightning/lightning.types';
 import {LightningAddresses} from '@server/modules/lightning/walletkit/lnwalletkit.types';
 import {LightningAddressType} from '@server/modules/lightning/lightning.enums';
@@ -18,7 +19,10 @@ export class ClnService {
 	private readonly logger = new Logger(ClnService.name);
 	private lightning_client: grpc.Client | null = null;
 
-	constructor(private configService: ConfigService) {}
+	constructor(
+		private configService: ConfigService,
+		private credentialService: CredentialService,
+	) {}
 
 	private createGrpcCredentials() {
 		const rpc_host = this.configService.get('lightning.host');
@@ -33,13 +37,13 @@ export class ClnService {
 		}
 
 		const rpc_url = `${rpc_host}:${rpc_port}`;
-		const ca_cert_content = fs.readFileSync(ca_cert);
-		const client_cert_content = fs.readFileSync(client_cert);
-		const client_key_content = fs.readFileSync(client_key);
+		const ca_cert_content = this.credentialService.loadPemOrPath(ca_cert);
+		const client_cert_content = this.credentialService.loadPemOrPath(client_cert);
+		const client_key_content = this.credentialService.loadPemOrPath(client_key);
 
 		const ssl_creds = grpc.credentials.createSsl(ca_cert_content, client_key_content, client_cert_content);
 
-		let channel_options: Record<string, any> | undefined = {
+		const channel_options: Record<string, any> | undefined = {
 			'grpc.ssl_target_name_override': 'cln',
 		};
 

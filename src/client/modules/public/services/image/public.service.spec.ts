@@ -1,13 +1,14 @@
+/* Core Dependencies */
 import {TestBed} from '@angular/core/testing';
+/* Local Dependencies */
+import {PublicService} from './public.service';
 
-import {ImageService} from './image.service';
-
-describe('ImageService', () => {
-	let service: ImageService;
+describe('PublicService', () => {
+	let service: PublicService;
 
 	beforeEach(() => {
 		TestBed.configureTestingModule({});
-		service = TestBed.inject(ImageService);
+		service = TestBed.inject(PublicService);
 	});
 
 	it('should be created', () => {

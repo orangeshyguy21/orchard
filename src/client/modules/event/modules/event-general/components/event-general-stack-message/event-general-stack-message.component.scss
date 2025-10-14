@@ -1,0 +1,53 @@
+@use '@styles/molecule/molecule';
+
+.event-stack-message-container {
+	@extend %relative;
+	@extend %border;
+	@extend %border-solid;
+	@extend %orc-outline-border;
+	@extend %orc-corner-extra-large;
+	@extend %p-0-125;
+	@extend %w-max-36;
+
+	&.event-success {
+		.event-switch {
+			@extend %orc-tertiary-container-bg;
+		}
+	}
+
+	&.event-warning {
+		.event-switch {
+			@extend %orc-on-warning-bg;
+		}
+	}
+
+	&.event-error {
+		.event-switch {
+			@extend %orc-on-error-bg;
+		}
+	}
+}
+
+.event-switch {
+	border-radius: 1.5rem;
+	@extend %p-l-1;
+	@extend %p-b-0-5;
+	@extend %p-t-0-5;
+	@extend %p-r-1;
+	@extend %auto-width;
+	@extend %auto-height;
+}
+
+.event-message {
+	@extend %p-t-0-25;
+	@extend %p-b-0-25;
+	@extend %flex;
+	@extend %flex-justify-end;
+}
+
+.event-message-content {
+	display: -webkit-box;
+	-webkit-line-clamp: 4;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}

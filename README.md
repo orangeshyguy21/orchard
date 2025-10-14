@@ -6,6 +6,9 @@
   <br>
   <br>
   <em>Your sovereign bank in cyberspace</em>
+  <p align="center">
+    <img src="public/orchard-readme.jpg" alt="Orchard screenshot" style="max-width: 100%; height: auto;" />
+  </p>
   <br>
 </p>
 
@@ -13,19 +16,13 @@
 
 # Implementation support
 
-- Bitcoin
-  - core
-- Lightning
-  - lnd
-- Cashu Mint
-  - cdk (sqlite, postgreSQL)
-    - Lacks support for fee revenue
-  - nutshell (sqlite, postgreSQL)
-    - Management RPC still in development. Waiting on official release
-- Taproot Assets
-  - tapd
-- AI
-  - ollama
+| Protocol       | Implementation                     | Version                    |
+| -------------- | ---------------------------------- | -------------------------- |
+| Bitcoin        | core                               | (^Satoshi:28.0.0)          |
+| Lightning      | lnd, cln                           | (^v0.19.0-beta), (^v25.02) |
+| Cashu Mint     | cdk, nutshell                      | (^v0.13.0), (^0.17.1)      |
+| Taproot Assets | tapd                               | (^v0.6.1-alpha)            |
+| AI             | ollama                             | (^0.11.11)                 |
 
 <br>
 <br>
@@ -35,7 +32,7 @@
 ## Prerequisites
 
 - Install [Node.js] which includes [Node Package Manager][npm]
-  - Recommended version (v24)
+  - Recommended version (v22)
 
 ## Environment Variables
 ```bash
@@ -44,36 +41,11 @@ mv .env.example .env
 nano .env
 ```
 
-## Environment Variable Options
-```bash
-# --------------------------------------------
-# Environment Configs (required)
-# --------------------------------------------
-
-# --------------------------------------------
-# Orchard Configs (required)
-# --------------------------------------------
-
-# --------------------------------------------
-# Bitcoin Configs (optional)
-# --------------------------------------------
-
-# --------------------------------------------
-# Lightning Configs (optional)
-# --------------------------------------------
-
-# --------------------------------------------
-# Taproot Configs (optional)
-# --------------------------------------------
-
-# --------------------------------------------
-# Cashu Mint Configs (optional)
-# --------------------------------------------
-
-# --------------------------------------------
-# AI Configs (optional)
-# --------------------------------------------
-```
+## Configuration Options
+|           | Orchard | Bitcoin | Lightning  | Taproot Assets | Cashu Mint | AI |
+| --------- | ------- | ------- | ---------- | -------------- | ---------- | -- |
+| Required  | ✅      |         |            |                |            |     |
+| Optional  |         | ✅      | ✅          | ✅             | ✅         | ✅  |
 
 <br>
 <br>
@@ -97,7 +69,9 @@ npm run start
 
 ## Run the application (docker)
 
-### Sqlite Cashu Mint
+### Docker images from source
+
+#### Sqlite Cashu Mint
 ```bash
 # Additional env vars
 MINT_DATANAME=mint.sqlite3
@@ -108,10 +82,31 @@ docker compose build orchard
 docker compose -f docker-compose.yml -f docker-compose.sqlite.yml up -d
 ```
 
-### Postgres Cashu Mint
+#### Postgres Cashu Mint
 ```bash
 docker compose build orchard
 docker compose up -d
+```
+
+### Docker images from registery
+
+**Note:** When using registry images, you can specify a version using the `VERSION` environment variable. If not specified, it defaults to `latest` which may not be compatible with older versions of the codebase.
+
+#### Sqlite Cashu Mint
+```bash
+# Additional env vars
+MINT_DATANAME=mint.sqlite3
+MINT_DATADIR=/path/to/data/directory
+```
+```bash
+VERSION=latest FLAVOR=sqlite \
+docker compose -f docker-compose.yml -f docker-compose.sqlite.yml -f compose.image.yml up -d
+```
+
+#### Postgres Cashu Mint
+```bash
+VERSION=latest FLAVOR=postgres \
+docker compose -f docker-compose.yml -f compose.image.yml up -d
 ```
 
 <br>

@@ -1,0 +1,30 @@
+@use '@styles/molecule/molecule';
+
+:host {
+	@extend %absolute;
+	bottom: 5rem;
+}
+
+.event-stack-container {
+	@extend %relative;
+	@extend %left-1;
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-gap-1;
+}
+
+.animation-enter-left-fade {
+	animation: stack-enter 200ms ease-out both;
+	will-change: transform, opacity;
+}
+
+@keyframes stack-enter {
+	from {
+		opacity: 0;
+		transform: translateX(-1rem);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}

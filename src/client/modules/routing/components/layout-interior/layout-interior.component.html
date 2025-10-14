@@ -1,6 +1,6 @@
 <mat-sidenav-container>
 	<div class="interior-container">
-		<orc-primary-nav
+		<orc-nav-primary
 			[active_section]="active_section"
 			[active_event]="active_event"
 			[enabled_bitcoin]="enabled_bitcoin"
@@ -15,11 +15,11 @@
 			[block_count]="block_count"
 			(cancel)="onCancelPendingEvent()"
 			(save)="onSavePendingEvent()"
-		>
-		</orc-primary-nav>
+		></orc-nav-primary>
 		<div class="interior-section-container">
 			<div class="interior-router-outlet-container">
 				<router-outlet></router-outlet>
+				<orc-event-general-stack [active_event]="active_event"></orc-event-general-stack>
 			</div>
 			@if (ai_enabled) {
 				<orc-ai-nav
@@ -36,8 +36,7 @@
 					(command)="onCommand()"
 					(modelChange)="onModelChange($event)"
 					(toggleLog)="onToggleLog()"
-				>
-				</orc-ai-nav>
+				></orc-ai-nav>
 			}
 		</div>
 	</div>
@@ -48,7 +47,6 @@
 			[revision]="ai_revision"
 			[agent_definition]="ai_agent_definition"
 			(clear)="onClearConversation()"
-		>
-		</orc-ai-chat-log>
+		></orc-ai-chat-log>
 	</mat-sidenav>
 </mat-sidenav-container>

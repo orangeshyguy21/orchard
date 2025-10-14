@@ -12,4 +12,4 @@ import {GraphicAssetComponent} from './components/graphic-asset/graphic-asset.co
 	imports: [CommonModule, MatIconModule],
 	exports: [GraphicOrchardLogoComponent, GraphicAssetComponent],
 })
-export class GraphicModule {}
+export class OrcGraphicModule {}

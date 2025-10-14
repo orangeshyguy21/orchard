@@ -1,0 +1,46 @@
+<div class="flex flex-items-start">
+	<div class="flex-grow flex flex-items-start flex-justify-between">
+		<form class="flex flex-items-center flex-gap-1" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)">
+			<div>
+				<mat-form-field hideRequiredMarker="true" class="primary-form-field">
+					<mat-label>Timezone</mat-label>
+					<input
+						type="text"
+						placeholder="Pick one"
+						aria-label="Number"
+						matInput
+						[formControl]="timezone_control"
+						[matAutocomplete]="auto"
+					/>
+					<mat-autocomplete #auto="matAutocomplete">
+						@for (option of filtered_options | async; track option) {
+							<mat-option [value]="option">{{ option }}</mat-option>
+						}
+					</mat-autocomplete>
+					@if (timezone_control.invalid) {
+						<mat-error class="font-size-xs">{{ timezone_control_error() }}</mat-error>
+					}
+				</mat-form-field>
+			</div>
+			<div class="m-b-1-25">
+				<mat-checkbox [formControl]="system_default_control" (change)="onSystemDefaultChange($event)">
+					Sync with system
+				</mat-checkbox>
+			</div>
+		</form>
+
+		<div class="w-max-18">
+			<orc-form-help-text class="orc-surface-container-high-bg">
+				Select a timezone to display all dates and times relative to your preferred time.
+			</orc-form-help-text>
+		</div>
+	</div>
+
+	<div class="flex-grow-2 w-max-24">
+		<div class="flex flex-items-center flex-justify-center">
+			<div class="orc-outline-color">
+				{{ unix_timestamp_seconds | time }}
+			</div>
+		</div>
+	</div>
+</div>

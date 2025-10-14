@@ -22,16 +22,17 @@
         @extend %flex-column;
         @extend %flex-grow;
         @extend %h-1;
+        @extend %view-transition-name-subsection;
     }
 
-    #{$c}secondary-nav-header {
+    #{$c}nav-secondary-header {
         @extend %flex;
         @extend %flex-row;
         @extend %flex-items-center;
         @extend %flex-gap-1;
     }
 
-    #{$c}secondary-nav-toolbar {
+    #{$c}nav-secondary-toolbar {
         @extend %flex;
         @extend %flex-row;
         @extend %flex-items-center;

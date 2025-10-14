@@ -1,6 +1,5 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, Input, OnInit, ChangeDetectorRef} from '@angular/core';
-import {trigger, transition, style, animate, state} from '@angular/animations';
 /* Vendor Dependencies */
 import {MatTableDataSource} from '@angular/material/table';
 /* Native Dependencies */
@@ -15,35 +14,6 @@ import {ArgumentRow} from './argument-row.class';
 	templateUrl: './ai-chat-message-toolcall.component.html',
 	styleUrl: './ai-chat-message-toolcall.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	// prettier-ignore
-	animations: [
-		trigger('expandCollapse', [
-            state('collapsed', style({
-                height: '0',
-                overflow: 'hidden',
-                opacity: 0,
-            })),
-            state('expanded', style({
-                height: '*',
-                overflow: 'visible',
-                opacity: 1,
-            })),
-            transition('collapsed <=> expanded', [
-                animate('300ms ease-in-out'),
-            ]),
-        ]),
-        trigger('rotateIcon', [
-            state('collapsed', style({
-                transform: 'rotate(0deg)',
-            })),
-            state('expanded', style({
-                transform: 'rotate(180deg)',
-            })),
-            transition('collapsed <=> expanded', [
-                animate('300ms ease-in-out'),
-            ]),
-        ]),
-    ],
 })
 export class AiChatMessageToolcallComponent implements OnInit {
 	@Input() tool_call!: AiChatToolCall;

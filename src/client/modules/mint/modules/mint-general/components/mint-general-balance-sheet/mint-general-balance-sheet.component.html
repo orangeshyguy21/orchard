@@ -1,0 +1,75 @@
+<div>
+	<div class="title-l p-b-1 p-l-1">Balance Sheet</div>
+	<mat-card appearance="outlined" class="overflow-hidden">
+		<div class="p-h-1">
+			<table mat-table [dataSource]="rows" class="orc-feature-table">
+				<ng-container matColumnDef="liabilities">
+					<th mat-header-cell *matHeaderCellDef>Liabilities</th>
+					<td mat-cell *matCellDef="let row">
+						<div class="flex flex-items-center flex-gap-1">
+							<orc-graphic-asset [unit]="row.unit" [height]="'1.75rem'" [custody]="'ecash'"> </orc-graphic-asset>
+							<span class="font-size-m" [innerHTML]="row.liabilities | amount: row.unit : 'mint'"></span>
+						</div>
+					</td>
+				</ng-container>
+
+				<ng-container matColumnDef="assets">
+					<th mat-header-cell *matHeaderCellDef>Assets</th>
+					<td mat-cell *matCellDef="let row">
+						@if (lightning_enabled) {
+							@if (!lightning_loading) {
+								@if (lightning_errors.length > 0) {
+									<div animate.enter="orc-animation-fadein-fast">
+										@for (error of lightning_errors; track error.code) {
+											<orc-error-resolve [error]="error" mode="small"></orc-error-resolve>
+										}
+									</div>
+								} @else {
+									<div animate.enter="orc-animation-fadein-fast" class="flex flex-items-center flex-gap-1">
+										<orc-graphic-asset [unit]="row.unit" [height]="'1.75rem'" [custody]="'lightning'">
+										</orc-graphic-asset>
+										@if (row.assets !== null) {
+											<span
+												class="font-size-m w-min-10"
+												[innerHTML]="row.assets | amount: row.unit : 'lightning'"
+											></span>
+											<span class="font-size-m font-weight-bold orc-outline-color">{{ row.reserve_ratio }}</span>
+										} @else {
+											<span class="font-size-m w-min-10 orc-outline-color">
+												<mat-icon>check_indeterminate_small</mat-icon>
+											</span>
+										}
+									</div>
+								}
+							}
+						} @else {
+							<button mat-stroked-button (click)="navigate.emit()">Lightning Configuration</button>
+						}
+					</td>
+				</ng-container>
+
+				<ng-container matColumnDef="keyset">
+					<th mat-header-cell *matHeaderCellDef>Keyset</th>
+					<td mat-cell *matCellDef="let row">
+						<orc-mint-general-keyset
+							[active]="row.active"
+							[index]="row.derivation_path_index"
+							[input_fee_ppk]="row.input_fee_ppk"
+						>
+						</orc-mint-general-keyset>
+					</td>
+				</ng-container>
+
+				<ng-container matColumnDef="fees">
+					<th mat-header-cell *matHeaderCellDef>Fee revenue</th>
+					<td mat-cell *matCellDef="let row">
+						<span class="font-size-m" [innerHTML]="row.fees | amount: row.unit : 'mint'"></span>
+					</td>
+				</ng-container>
+
+				<tr mat-header-row *matHeaderRowDef="displayed_columns"></tr>
+				<tr mat-row *matRowDef="let row; columns: displayed_columns"></tr>
+			</table>
+		</div>
+	</mat-card>
+</div>

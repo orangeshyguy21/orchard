@@ -1,15 +1,21 @@
 /* Core Dependencies */
 import {enableProdMode} from '@angular/core';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {platformBrowser} from '@angular/platform-browser';
 /* Application Modules */
-import {AppModule} from './app.module';
-/* Application Configuration */
-import {environment} from './configs/configuration';
+import {OrcAppModule} from './app.module';
 
-if (environment.mode.production) enableProdMode();
+(async () => {
+	try {
+		const res = await fetch('config.json', {cache: 'no-store'});
+		if (!res.ok) throw new Error(`config fetch failed: ${res.status}`);
+		const config = await res.json();
+		(window as any).__config__ = config;
+		if (config?.mode?.production) enableProdMode();
+	} catch (error) {
+		console.error('Failed to load runtime config:', error);
+	}
 
-document.addEventListener('DOMContentLoaded', () => {
-	platformBrowserDynamic()
-		.bootstrapModule(AppModule)
+	platformBrowser()
+		.bootstrapModule(OrcAppModule)
 		.catch((err) => console.error(err));
-});
+})();

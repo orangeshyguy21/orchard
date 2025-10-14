@@ -4,8 +4,9 @@ import {RouterModule, Routes} from '@angular/router';
 /* Vendor Dependencies */
 import {MatSidenavModule} from '@angular/material/sidenav';
 /* Application Dependencies */
-import {NavModule} from '@client/modules/nav/nav.module';
-import {AiModule} from '@client/modules/ai/ai.module';
+import {OrcNavModule} from '@client/modules/nav/nav.module';
+import {OrcAiModule} from '@client/modules/ai/ai.module';
+import {OrcEventGeneralModule} from '@client/modules/event/modules/event-general/event-general.module';
 /* Native Dependencies */
 import {LayoutExteriorComponent} from './components/layout-exterior/layout-exterior.component';
 import {LayoutInteriorComponent} from './components/layout-interior/layout-interior.component';
@@ -14,37 +15,40 @@ import {authenticationGuard} from './guards/authentication/authentication.guard'
 const interior_routes = [
 	{
 		path: '',
-		loadChildren: () => import('@client/modules/index/index-app.module').then((m) => m.IndexAppModule),
+		loadChildren: () => import('@client/modules/index/modules/index-section/index-section.module').then((m) => m.OrcIndexSectionModule),
 		canActivateChild: [authenticationGuard],
 	},
 	{
 		path: 'bitcoin',
-		loadChildren: () => import('@client/modules/bitcoin/bitcoin-app.module').then((m) => m.BitcoinAppModule),
+		loadChildren: () =>
+			import('@client/modules/bitcoin/modules/bitcoin-section/bitcoin-section.module').then((m) => m.OrcBitcoinSectionModule),
 		canActivateChild: [authenticationGuard],
 	},
 	{
 		path: 'lightning',
-		loadChildren: () => import('@client/modules/lightning/lightning-app.module').then((m) => m.LightningAppModule),
+		loadChildren: () =>
+			import('@client/modules/lightning/modules/lightning-section/lightning-section.module').then((m) => m.OrcLightningSectionModule),
 		canActivateChild: [authenticationGuard],
 	},
 	{
 		path: 'mint',
-		loadChildren: () => import('@client/modules/mint/mint-app.module').then((m) => m.MintAppModule),
+		loadChildren: () => import('@client/modules/mint/modules/mint-section/mint-section.module').then((m) => m.OrcMintSectionModule),
 		canActivateChild: [authenticationGuard],
 	},
 	{
 		path: 'ecash',
-		loadChildren: () => import('@client/modules/ecash/ecash-app.module').then((m) => m.EcashAppModule),
+		loadChildren: () => import('@client/modules/ecash/modules/ecash-section/ecash-section.module').then((m) => m.OrcEcashSectionModule),
 		canActivateChild: [authenticationGuard],
 	},
 	{
 		path: 'settings',
-		loadChildren: () => import('@client/modules/settings/settings-app.module').then((m) => m.SettingsAppModule),
+		loadChildren: () =>
+			import('@client/modules/settings/modules/settings-section/settings-section.module').then((m) => m.OrcSettingsSectionModule),
 		canActivateChild: [authenticationGuard],
 	},
 	{
 		path: 'event',
-		loadChildren: () => import('@client/modules/event/event-app.module').then((m) => m.EventAppModule),
+		loadChildren: () => import('@client/modules/event/modules/event-section/event-section.module').then((m) => m.OrcEventSectionModule),
 		canActivateChild: [authenticationGuard],
 	},
 ];
@@ -60,13 +64,19 @@ const routes: Routes = [
 	{
 		path: 'authentication',
 		component: LayoutExteriorComponent,
-		loadChildren: () => import('@client/modules/auth/auth-app.module').then((m) => m.AuthAppModule),
+		loadChildren: () => import('@client/modules/auth/modules/auth-section/auth-section.module').then((m) => m.OrcAuthSectionModule),
 	},
 ];
 
 @NgModule({
-	imports: [RouterModule.forRoot(routes), MatSidenavModule, NavModule, AiModule],
+	imports: [
+		RouterModule.forRoot(routes, {enableViewTransitions: true}),
+		MatSidenavModule,
+		OrcNavModule,
+		OrcAiModule,
+		OrcEventGeneralModule,
+	],
 	exports: [RouterModule],
 	declarations: [LayoutExteriorComponent, LayoutInteriorComponent],
 })
-export class RoutingModule {}
+export class OrcRoutingModule {}

@@ -1,0 +1,16 @@
+<div class="mint-name-container">
+	@switch (state) {
+		@case ('loading') {
+			<div class="mint-name-loading orc-animation-shimmer-high"></div>
+		}
+		@case ('error') {
+			<div class="mint-name-error" animate.enter="orc-animation-fadein">Mint Info Error</div>
+		}
+		@case ('name') {
+			<div class="orc-text-button-subtle" (click)="onClick()" animate.enter="orc-animation-fadein">{{ name }}</div>
+		}
+		@case ('unset') {
+			<i class="orc-outline-color" animate.enter="orc-animation-fadein">Untitled Mint</i>
+		}
+	}
+</div>

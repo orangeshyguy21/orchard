@@ -5,12 +5,12 @@
 		</div>
 		<div class="flex-grow">{{ tool_name }}</div>
 		<div>
-			<mat-icon [@rotateIcon]="tool_expanded ? 'expanded' : 'collapsed'">keyboard_arrow_down</mat-icon>
+			<mat-icon class="orc-animation-rotate-toggle" [class.animation-expanded]="tool_expanded">keyboard_arrow_down</mat-icon>
 		</div>
 	</div>
 
-	<div [@expandCollapse]="tool_expanded ? 'expanded' : 'collapsed'">
-		<div class="flex flex-column flex-gap-1 p-t-0-5 p-l-2">
+	<div class="orc-animation-expand-collapse" [class.animation-expanded]="tool_expanded">
+		<div class="orc-animation-expand-collapse-inner flex flex-column flex-gap-1 p-t-0-5 p-l-2">
 			<div class="agent-property">
 				<div class="agent-property-label">Description</div>
 				<div class="agent-property-value">

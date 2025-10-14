@@ -1,0 +1,30 @@
+@use '@styles/molecule/molecule';
+@use '@styles/nucleus/nucleus';
+
+:host {
+	flex-shrink: 0;
+}
+
+.nav-secondary-container {
+	@extend %flex;
+	@extend %flex-row;
+	@extend %flex-items-center;
+	@extend %orc-surface-container-low-bg;
+	@extend %h-3;
+	@extend %p-h-1;
+}
+
+::ng-deep [nav-secondary-header] {
+	@extend %w-min-18;
+}
+
+.nav-secondary-items {
+	@extend %flex-grow;
+	@extend %h-full;
+}
+
+::ng-deep [nav-secondary-items] {
+	@extend %flex;
+	@extend %flex-row;
+	@extend %h-full;
+}

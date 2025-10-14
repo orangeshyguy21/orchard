@@ -1,5 +1,6 @@
+/* Core Dependencies */
 import {TestBed} from '@angular/core/testing';
-
+/* Local Dependencies */
 import {LightningService} from './lightning.service';
 
 describe('LightningService', () => {

@@ -26,13 +26,13 @@ export class PublicUrlService {
 
 		try {
 			response = await this.fetchService.fetchWithProxy(url);
-		} catch (error) {
+		} catch {
 			return new OrchardPublicUrl(null, null, null, has_data);
 		}
 
 		try {
 			parsed_url = new URL(url);
-		} catch (error) {
+		} catch {
 			return new OrchardPublicUrl(null, null, null, has_data);
 		}
 

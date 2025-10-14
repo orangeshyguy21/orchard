@@ -9,3 +9,4 @@
 .vscode
 CHANGELOG.md
 .env.example
+.env

@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, Input, computed, input} from '@angular/core';
-/* Application Configuration */
-import {environment} from '@client/configs/configuration';
+/* Application Dependencies */
+import {ConfigService} from '@client/modules/config/services/config.service';
 
 @Component({
 	selector: 'orc-graphic-asset',
@@ -15,8 +15,6 @@ export class GraphicAssetComponent {
 	@Input() height: string = '2rem';
 	@Input() custody!: 'ecash' | 'lightning' | 'hot' | 'cold';
 	@Input() asset_id!: string | undefined;
-
-	private taproot_assets_map = new Map<string, string>([[environment.constants.taproot_asset_ids.usdt, 'tether.svg']]);
 
 	public lower_unit = computed(() => {
 		return this.unit().toLowerCase();
@@ -68,4 +66,10 @@ export class GraphicAssetComponent {
 	public taproot_asset_image = computed(() => {
 		return `taproot-assets/${this.taproot_assets_map.get(this.asset_id!)}`;
 	});
+
+	private taproot_assets_map: Map<string, string>;
+
+	constructor(private configService: ConfigService) {
+		this.taproot_assets_map = new Map<string, string>([[this.configService.config.constants.taproot_asset_ids['usdt'], 'tether.svg']]);
+	}
 }

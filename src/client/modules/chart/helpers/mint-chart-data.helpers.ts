@@ -102,11 +102,7 @@ export function getAmountData(
 	});
 }
 
-export function getRawData(
-	unqiue_timestamps: number[],
-	data_keyed_by_timestamp: Record<number, number>,
-	unit: string,
-): {x: number; y: number}[] {
+export function getRawData(unqiue_timestamps: number[], data_keyed_by_timestamp: Record<number, number>): {x: number; y: number}[] {
 	return unqiue_timestamps.map((timestamp) => {
 		const val = data_keyed_by_timestamp[timestamp] || 0;
 		return {

@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import {Logger} from '@nestjs/common';
 import {Resolver, Subscription, Query} from '@nestjs/graphql';
-import {OnModuleInit, OnModuleDestroy} from '@nestjs/common';
+// import {OnModuleInit, OnModuleDestroy} from '@nestjs/common';
 /* Vendor Dependencies */
 import {PubSub} from 'graphql-subscriptions';
 /* Local Dependencies */

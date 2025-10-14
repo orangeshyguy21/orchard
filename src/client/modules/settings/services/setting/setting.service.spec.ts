@@ -1,13 +1,14 @@
+/* Core Dependencies */
 import {TestBed} from '@angular/core/testing';
+/* Local Dependencies */
+import {SettingService} from './setting.service';
 
-import {LocaleService} from './locale.service';
-
-describe('LocaleService', () => {
-	let service: LocaleService;
+describe('SettingService', () => {
+	let service: SettingService;
 
 	beforeEach(() => {
 		TestBed.configureTestingModule({});
-		service = TestBed.inject(LocaleService);
+		service = TestBed.inject(SettingService);
 	});
 
 	it('should be created', () => {

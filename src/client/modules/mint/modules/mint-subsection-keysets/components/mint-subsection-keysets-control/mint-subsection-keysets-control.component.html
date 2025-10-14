@@ -1,0 +1,54 @@
+<div class="mint-keyset-control-container">
+	<form [formGroup]="panel" class="panel-form orc-animation-form-reaction" [class.animation-invalid]="height_state === 'invalid'">
+		<div class="flex flex-col flex-gap-1">
+			<div formGroupName="daterange">
+				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic" class="mint-analytic-daterange">
+					<mat-label>Date range</mat-label>
+					<mat-date-range-input [rangePicker]="picker">
+						<input
+							matStartDate
+							formControlName="date_start"
+							placeholder="Start date"
+							(blur)="onDateChange()"
+							(keyup.enter)="onDateChange()"
+						/>
+						<input
+							matEndDate
+							formControlName="date_end"
+							placeholder="End date"
+							(blur)="onDateChange()"
+							(keyup.enter)="onDateChange()"
+						/>
+					</mat-date-range-input>
+					<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+					<mat-date-range-picker #picker [dateClass]="genesis_class" (closed)="onDateChange()"></mat-date-range-picker>
+					@if (panel.get('daterange')?.invalid) {
+						<mat-error class="font-size-xs">Invalid date range</mat-error>
+					}
+				</mat-form-field>
+			</div>
+
+			<div>
+				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
+					<mat-label>Units</mat-label>
+					<mat-select formControlName="units" multiple (selectionChange)="onUnitsChange($event)">
+						@for (unit of unit_options; track unit.value) {
+							<mat-option [value]="unit.value">{{ unit.label }}</mat-option>
+						}
+					</mat-select>
+				</mat-form-field>
+			</div>
+
+			<div>
+				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
+					<mat-label>Keyset State</mat-label>
+					<mat-select formControlName="status" multiple (selectionChange)="onStatusChange($event)">
+						@for (status of status_options; track status.value) {
+							<mat-option [value]="status.value">{{ status.label }}</mat-option>
+						}
+					</mat-select>
+				</mat-form-field>
+			</div>
+		</div>
+	</form>
+</div>

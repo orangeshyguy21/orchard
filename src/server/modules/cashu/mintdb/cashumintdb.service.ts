@@ -68,6 +68,7 @@ export class CashuMintDatabaseService implements OnModuleInit {
 				return {type: MintDatabaseType.postgres, database: client};
 			}
 		} catch (error) {
+			this.logger.debug(error);
 			throw OrchardErrorCode.MintDatabaseConnectionError;
 		}
 	}
@@ -200,9 +201,7 @@ export class CashuMintDatabaseService implements OnModuleInit {
 			this.logger.error(`Error during database backup: ${error.message}`);
 			try {
 				await fs.unlink(backup_path);
-			} catch (cleanup_error) {
-				// Ignore cleanup errors
-			}
+			} catch {}
 			throw error;
 		}
 	}
@@ -226,8 +225,8 @@ export class CashuMintDatabaseService implements OnModuleInit {
 					.then(async () => {
 						try {
 							await fs.unlink(restore_path);
-						} catch (cleanup_error) {
-							this.logger.warn(`Warning: Could not clean up temporary file: ${cleanup_error.message}`);
+						} catch (error) {
+							this.logger.warn(`Warning: Could not clean up temporary file: ${error.message}`);
 						}
 						this.logger.log('Database backup restored successfully');
 						resolve();
@@ -283,9 +282,7 @@ export class CashuMintDatabaseService implements OnModuleInit {
 			this.logger.error(`Error during database backup: ${error}`);
 			try {
 				await fs.unlink(backup_path);
-			} catch (cleanup_error) {
-				// Ignore cleanup errors
-			}
+			} catch {}
 			throw OrchardErrorCode.MintDatabaseBackupError;
 		}
 	}
@@ -319,9 +316,7 @@ export class CashuMintDatabaseService implements OnModuleInit {
 			this.logger.error(`Error restoring PostgreSQL database: ${error}`);
 			try {
 				await fs.unlink(restore_path);
-			} catch (cleanup_error) {
-				// Ignore cleanup errors
-			}
+			} catch {}
 			throw OrchardErrorCode.MintDatabaseRestoreError;
 		}
 	}

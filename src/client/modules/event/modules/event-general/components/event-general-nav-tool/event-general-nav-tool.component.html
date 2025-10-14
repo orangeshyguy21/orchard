@@ -1,0 +1,28 @@
+<div class="flex flex-column flex-items-center relative">
+	@if (morph_state() === 'actionable') {
+		<button type="button" mat-icon-button class="orc-icon-button" (click)="cancel.emit()">
+			<mat-icon>cancel</mat-icon>
+		</button>
+	}
+	<div
+		class="event-nav-tool-container"
+		[class.action-nav-tool-highlight]="highlight()"
+		[class]="container_class()"
+		(mouseenter)="onMouseEnter()"
+		(mouseleave)="onMouseLeave()"
+		(click)="onClick()"
+	>
+		<div class="event-nav-tool-switch">
+			@if (morph_state() === 'actionable') {
+				<div animate.enter="animate-fadein-delayed" class="font-size-xs">{{ active_event()?.message }}</div>
+			}
+			@if (!saving()) {
+				<div animate.enter="animate-enter-scale" class="h-1-75 w-1-75">
+					<mat-icon #icon_collapsed [class.mat-symbol-outline]="!highlight()" class="icon-md">{{ icon() }}</mat-icon>
+				</div>
+			} @else {
+				<mat-spinner [diameter]="25" animate.enter="animate-enter-scale"></mat-spinner>
+			}
+		</div>
+	</div>
+</div>

@@ -1,6 +1,5 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, Input, OnInit, ChangeDetectorRef} from '@angular/core';
-import {trigger, transition, style, animate} from '@angular/animations';
 /* Application Dependencies */
 import {ThemeType} from '@client/modules/cache/services/local-storage/local-storage.types';
 
@@ -10,15 +9,6 @@ import {ThemeType} from '@client/modules/cache/services/local-storage/local-stor
 	templateUrl: './graphic-orchard-logo.component.html',
 	styleUrl: './graphic-orchard-logo.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	// prettier-ignore
-	animations: [
-        trigger('fadeIn', [
-            transition(':enter', [
-                style({ opacity: 0 }),
-                animate('650ms ease-in', style({ opacity: 1 })),
-            ]),
-        ]),
-	],
 })
 export class GraphicOrchardLogoComponent implements OnInit {
 	@Input() height: string = '40px';

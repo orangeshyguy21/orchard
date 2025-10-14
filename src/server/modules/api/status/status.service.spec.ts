@@ -1,7 +1,9 @@
 /* Core Dependencies */
 import {Test, TestingModule} from '@nestjs/testing';
+import {expect} from '@jest/globals';
 /* Local Dependencies */
 import {StatusService} from './status.service';
+import {OrchardStatus} from './status.model';
 
 describe('StatusService', () => {
 	let service: StatusService;
@@ -16,5 +18,12 @@ describe('StatusService', () => {
 
 	it('should be defined', () => {
 		expect(service).toBeDefined();
+	});
+
+	it('returns OrchardStatus with online true and expected title', () => {
+		const result = service.getStatus();
+		expect(result).toBeInstanceOf(OrchardStatus);
+		expect(result.online).toBe(true);
+		expect(result.title).toBe('Orchard Graphql Server');
 	});
 });

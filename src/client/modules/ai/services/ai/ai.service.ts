@@ -8,12 +8,12 @@ import {ApiService} from '@client/modules/api/services/api/api.service';
 import {SettingService} from '@client/modules/settings/services/setting/setting.service';
 import {LocalStorageService} from '@client/modules/cache/services/local-storage/local-storage.service';
 import {OrchardWsRes} from '@client/modules/api/types/api.types';
-import {api, getApiQuery} from '@client/modules/api/helpers/api.helpers';
+import {getApiQuery} from '@client/modules/api/helpers/api.helpers';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {OrchardRes} from '@client/modules/api/types/api.types';
 /* Native Dependencies */
 import {AiChatResponse, AiModelResponse, AiAgentResponse} from '@client/modules/ai/types/ai.types';
-import {AiChatChunk, AiChatToolCall, AiChatMessage} from '@client/modules/ai/classes/ai-chat-chunk.class';
+import {AiChatChunk, AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {AiModel} from '@client/modules/ai/classes/ai-model.class';
 import {AiChatCompiledMessage} from '@client/modules/ai/classes/ai-chat-compiled-message.class';
 import {AiChatConversation} from '@client/modules/ai/classes/ai-chat-conversation.class';
@@ -140,13 +140,13 @@ export class AiService {
 		if (this.ai_models_observable) return this.ai_models_observable;
 		const query = getApiQuery(AI_MODELS_QUERY);
 
-		this.ai_models_observable = this.http.post<OrchardRes<AiModelResponse>>(api, query).pipe(
+		this.ai_models_observable = this.http.post<OrchardRes<AiModelResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.ai_models;
 			}),
 			map((ai_models) => ai_models.map((ai_model) => new AiModel(ai_model))),
-			tap((ai_models) => {
+			tap(() => {
 				this.ai_models_observable = null;
 			}),
 			shareReplay(1),
@@ -162,7 +162,7 @@ export class AiService {
 	public getAiAgent(agent: AiAgent): Observable<AiAgentDefinition> {
 		const query = getApiQuery(AI_AGENT_QUERY, {agent});
 
-		return this.http.post<OrchardRes<AiAgentResponse>>(api, query).pipe(
+		return this.http.post<OrchardRes<AiAgentResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.ai_agent;

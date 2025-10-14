@@ -1,10 +1,10 @@
-<button mat-icon-button type="button" [disabled]="!actionable" (click)="command.emit()">
+<button mat-icon-button type="button" [disabled]="!actionable()" (click)="command.emit()">
 	<mat-icon
+		#icon
 		class="ai-input-action"
-		[class.ai-active]="actionable"
-		[class.shimmer-text]="active_chat"
-		[class.mat-symbol-outline]="!actionable"
-		[@iconAnimation]="active_chat"
-		>{{ active_chat ? 'stop' : 'send' }}</mat-icon
+		[class.ai-active]="actionable()"
+		[class.orc-animation-shimmer-text]="active_chat()"
+		[class.mat-symbol-outline]="!actionable()"
+		>{{ active_chat() ? 'stop' : 'send' }}</mat-icon
 	>
 </button>

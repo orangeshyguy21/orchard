@@ -1,0 +1,173 @@
+<div class="mint-dashboard-container">
+	<div class="mint-dashboard-header p-b-1">
+		<orc-mint-general-balance-sheet
+			[balances]="mint_balances"
+			[keysets]="mint_keysets"
+			[lightning_balance]="lightning_balance ? lightning_balance : null"
+			[lightning_enabled]="lightning_enabled"
+			[lightning_errors]="errors_lightning"
+			[lightning_loading]="loading_lightning"
+			[loading]="loading_static_data"
+			(navigate)="onNavigate('lightning')"
+		></orc-mint-general-balance-sheet>
+		<orc-mint-subsection-dashboard-connections
+			[urls]="mint_info ? mint_info.urls : null"
+			[icon_url]="mint_info ? mint_info.icon_url : null"
+			[time]="mint_info?.time"
+			[mint_name]="mint_info?.name"
+			[mint_connections]="mint_connections"
+			[loading]="loading_static_data"
+		></orc-mint-subsection-dashboard-connections>
+	</div>
+
+	<div class="mint-analytic-control-panel">
+		<div class="flex flex-justify-between flex-gap-1 flex-items-end">
+			<div class="title-l p-1">Nutalytics</div>
+			@if (page_settings) {
+				<orc-mint-subsection-dashboard-control
+					class="flex-grow"
+					[page_settings]="page_settings"
+					[date_start]="page_settings.date_start"
+					[date_end]="page_settings.date_end"
+					[units]="page_settings.units"
+					[interval]="page_settings.interval"
+					[type]="page_settings.type"
+					[keysets]="mint_keysets"
+					[loading]="loading_static_data"
+					[mint_genesis_time]="mint_genesis_time"
+					(dateChange)="onDateChange($event)"
+					(unitsChange)="onUnitsChange($event)"
+					(intervalChange)="onIntervalChange($event)"
+					(typeChange)="onTypeChange($event)"
+				></orc-mint-subsection-dashboard-control>
+			}
+			<!-- <div class="p-b-1">
+				<button mat-icon-button aria-label="Example icon button with a vertical three dot icon">
+					<mat-icon>more_vert</mat-icon>
+				</button>
+			</div> -->
+		</div>
+		<div class="category-rule"></div>
+	</div>
+
+	<div class="flex flex-gap-0-5">
+		<div class="flex-grow grid" #chart_container>
+			<div class="relative chart-balance-sheet">
+				<div class="chart-target nav1" #nav1></div>
+				<div class="mint-analytic-header z-index-1">
+					<div class="mint-analytic-title">Balance Sheet</div>
+				</div>
+				<orc-mint-subsection-dashboard-chart
+					[locale]="locale"
+					[mint_analytics]="mint_analytics_balances"
+					[mint_analytics_pre]="mint_analytics_balances_pre"
+					[page_settings]="page_settings"
+					[mint_genesis_time]="mint_genesis_time"
+					[selected_type]="page_settings ? page_settings.type : undefined"
+					[loading]="loading_dynamic_data"
+				></orc-mint-subsection-dashboard-chart>
+			</div>
+
+			<div class="relative chart-mints">
+				<div class="chart-target nav2" #nav2></div>
+				<div class="mint-analytic-header z-index-1">
+					<div class="mint-analytic-title">Mints &nbsp;&nbsp;<small>deposits</small></div>
+				</div>
+				<orc-mint-subsection-dashboard-chart
+					[locale]="locale"
+					[mint_analytics]="mint_analytics_mints"
+					[mint_analytics_pre]="mint_analytics_mints_pre"
+					[page_settings]="page_settings"
+					[mint_genesis_time]="mint_genesis_time"
+					[selected_type]="page_settings ? page_settings.type : undefined"
+					[loading]="loading_dynamic_data"
+				></orc-mint-subsection-dashboard-chart>
+			</div>
+			<div class="relative chart-melts">
+				<div class="chart-target nav3" #nav3></div>
+				<div class="mint-analytic-header z-index-1">
+					<div class="mint-analytic-title">Melts &nbsp;&nbsp;<small>withdrawals</small></div>
+				</div>
+				<orc-mint-subsection-dashboard-chart
+					[locale]="locale"
+					[mint_analytics]="mint_analytics_melts"
+					[mint_analytics_pre]="mint_analytics_melts_pre"
+					[page_settings]="page_settings"
+					[mint_genesis_time]="mint_genesis_time"
+					[selected_type]="page_settings ? page_settings.type : undefined"
+					[loading]="loading_dynamic_data"
+				></orc-mint-subsection-dashboard-chart>
+			</div>
+			<div class="relative chart-swaps">
+				<div class="chart-target nav4" #nav4></div>
+				<div class="mint-analytic-header z-index-1">
+					<div class="mint-analytic-title w-min-7">Swaps &nbsp;&nbsp;<small>internal</small></div>
+				</div>
+				<orc-mint-subsection-dashboard-chart
+					[locale]="locale"
+					[mint_analytics]="mint_analytics_swaps"
+					[mint_analytics_pre]="mint_analytics_swaps_pre"
+					[page_settings]="page_settings"
+					[mint_genesis_time]="mint_genesis_time"
+					[selected_type]="page_settings ? page_settings.type : undefined"
+					[loading]="loading_dynamic_data"
+				></orc-mint-subsection-dashboard-chart>
+			</div>
+			<div class="relative chart-fee-revenue">
+				<div class="chart-target nav5" #nav5></div>
+				<div class="mint-analytic-header z-index-1">
+					<div class="mint-analytic-title">Fee Revenue</div>
+				</div>
+				<div class="relative">
+					<orc-mint-subsection-dashboard-chart
+						[locale]="locale"
+						[mint_analytics]="mint_analytics_fees"
+						[mint_analytics_pre]="mint_analytics_fees_pre"
+						[page_settings]="page_settings"
+						[mint_genesis_time]="mint_genesis_time"
+						[selected_type]="page_settings ? page_settings.type : undefined"
+						[loading]="loading_dynamic_data"
+					></orc-mint-subsection-dashboard-chart>
+
+					@if (!loading_dynamic_data) {
+						@if (mint_type === 'cdk') {
+							<div class="absolute top-0 right-0 bottom-0 left-0 flex flex-justify-center flex-items-center orc-surface-bg">
+								<div class="flex flex-column flex-items-center flex-gap-1">
+									<div><mat-icon class="icon-lg orc-outline-color">block</mat-icon></div>
+									<div class="font-size-s orc-outline-color">Fee analytics not available for CDK</div>
+								</div>
+							</div>
+						}
+						@if (mint_type === 'nutshell' && mint_fees.length === 0 && mint_fee_revenue) {
+							<div class="absolute top-0 right-0 bottom-0 left-0 flex flex-justify-center flex-items-center orc-surface-bg">
+								<div class="flex flex-column flex-items-center flex-gap-1">
+									<div><mat-icon class="icon-lg orc-outline-color">sound_detection_dog_barking</mat-icon></div>
+									<div class="font-size-s orc-outline-color">Nutshells watchdog required for analytics</div>
+								</div>
+							</div>
+						}
+						@if (mint_type === 'nutshell' && mint_fees.length === 0 && !mint_fee_revenue) {
+							<div class="absolute top-0 right-0 bottom-0 left-0 flex flex-justify-center flex-items-center orc-surface-bg">
+								<div class="flex flex-column flex-items-center flex-gap-1">
+									<div><mat-icon class="icon-lg orc-outline-color">money_off</mat-icon></div>
+									<div class="font-size-s orc-outline-color">No fee revenue</div>
+								</div>
+							</div>
+						}
+					}
+				</div>
+			</div>
+		</div>
+		<div class="w-8 p-t-1">
+			<orc-nav-tertiary
+				class="mint-chart-tertiary-nav"
+				[keys]="tertiary_nav"
+				[items]="tertiary_nav_items"
+				(orderChange)="onTertiaryNavChange($event)"
+				(keySelect)="onTertiaryNavSelect($event)"
+			>
+				<div class="nav-tertiary-title">Charts</div>
+			</orc-nav-tertiary>
+		</div>
+	</div>
+</div>

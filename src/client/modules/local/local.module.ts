@@ -15,4 +15,4 @@ import {BytesPipe} from './pipes/bytes/bytes.pipe';
 	imports: [CommonModule],
 	exports: [TimePipe, AmountPipe, UnitPipe, TruncatePipe, TimeDeltaPipe, TimeAgoPipe, BytesPipe],
 })
-export class LocalModule {}
+export class OrcLocalModule {}

@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {Logger, UseGuards} from '@nestjs/common';
+import {Logger} from '@nestjs/common';
 import {Resolver, Query} from '@nestjs/graphql';
 /* Local Dependencies */
 import {OrchardBitcoinNetworkInfo} from './btcnetwork.model';

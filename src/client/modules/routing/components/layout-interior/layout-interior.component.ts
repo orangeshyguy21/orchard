@@ -6,9 +6,8 @@ import {FormControl} from '@angular/forms';
 import {Subscription, timer, EMPTY} from 'rxjs';
 import {switchMap, catchError, filter, takeWhile} from 'rxjs/operators';
 import {MatSidenav} from '@angular/material/sidenav';
-/* Application Configuration */
-import {environment} from '@client/configs/configuration';
 /* Application Dependencies */
+import {ConfigService} from '@client/modules/config/services/config.service';
 import {SettingService} from '@client/modules/settings/services/setting/setting.service';
 import {BitcoinService} from '@client/modules/bitcoin/services/bitcoin/bitcoin.service';
 import {LightningService} from '@client/modules/lightning/services/lightning/lightning.service';
@@ -39,7 +38,7 @@ import {AiAgent, AiMessageRole} from '@shared/generated.types';
 export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	@ViewChild(MatSidenav) sidenav!: MatSidenav;
 
-	public ai_enabled = environment.ai.enabled;
+	public ai_enabled: boolean;
 	public ai_models: AiModel[] = [];
 	public ai_conversation: AiChatConversation | null = null;
 	public ai_revision: number = 0;
@@ -51,9 +50,9 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	public active_event!: EventData | null;
 	public model!: string | null;
 	public user_content = new FormControl('');
-	public enabled_bitcoin = environment.bitcoin.enabled;
-	public enabled_lightning = environment.lightning.enabled;
-	public enabled_mint = environment.mint.enabled;
+	public enabled_bitcoin: boolean;
+	public enabled_lightning: boolean;
+	public enabled_mint: boolean;
 	public online_bitcoin!: boolean;
 	public online_lightning!: boolean;
 	public online_mint!: boolean;
@@ -72,6 +71,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	private bitcoin_polling_active: boolean = false;
 
 	constructor(
+		private configService: ConfigService,
 		private settingService: SettingService,
 		private bitcoinService: BitcoinService,
 		private lightningService: LightningService,
@@ -82,7 +82,12 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		private router: Router,
 		private route: ActivatedRoute,
 		private cdr: ChangeDetectorRef,
-	) {}
+	) {
+		this.ai_enabled = this.configService.config.ai.enabled;
+		this.enabled_bitcoin = this.configService.config.bitcoin.enabled;
+		this.enabled_lightning = this.configService.config.lightning.enabled;
+		this.enabled_mint = this.configService.config.mint.enabled;
+	}
 
 	/* *******************************************************
 	   Initalization                      
@@ -110,7 +115,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 			this.subscriptions.add(this.getMintInfoSubscription());
 		}
 		// if taproot go get the ids
-		if (environment.ai.enabled) {
+		if (this.ai_enabled) {
 			this.subscriptions.add(this.getAgentSubscription());
 			this.subscriptions.add(this.getActiveAiSubscription());
 			this.subscriptions.add(this.getAiMessagesSubscription());
@@ -150,6 +155,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 				this.cdr.detectChanges();
 			},
 			error: (error) => {
+				console.error(error);
 				this.online_bitcoin = false;
 				this.cdr.detectChanges();
 			},
@@ -187,6 +193,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 				this.cdr.detectChanges();
 			},
 			error: (error) => {
+				console.error(error);
 				this.online_lightning = false;
 				this.cdr.detectChanges();
 			},
@@ -201,6 +208,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 				this.cdr.detectChanges();
 			},
 			error: (error) => {
+				console.error(error);
 				this.online_mint = false;
 				this.cdr.detectChanges();
 			},

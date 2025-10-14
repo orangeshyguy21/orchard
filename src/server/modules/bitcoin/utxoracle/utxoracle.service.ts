@@ -174,7 +174,7 @@ export class BitcoinUTXOracleService {
 		return idx;
 	}
 
-	private async buildHistogram(start: number, end: number, window_txids: Set<string>): Promise<Float64Array> {
+	private async buildHistogram(start: number, end: number, _window_txids: Set<string>): Promise<Float64Array> {
 		const counts = new Float64Array(1 + 200 * 12);
 		const min_btc = this.getMinBtc();
 		const max_btc = this.getMaxBtc();
@@ -212,7 +212,7 @@ export class BitcoinUTXOracleService {
 				// witness length threshold: sum per-input stack and cap at 500 total or item
 				let witness_exceeds = false;
 				for (const v of tx.vin || []) {
-					const w = (v.txinwitness || []) as string[];
+					const w = v.txinwitness || [];
 					if (!w || w.length === 0) continue;
 					let total = 0;
 					for (const item of w) {
@@ -358,7 +358,7 @@ export class BitcoinUTXOracleService {
 
 	private binIndexToAmount(bin_index: number): number {
 		if (bin_index === 0) return 0;
-		let bins: number[] = [0.0];
+		const bins: number[] = [0.0];
 		for (let exponent = -6; exponent < 6; exponent++) {
 			for (let b = 0; b < 200; b++) {
 				const val = 10 ** (exponent + b / 200);
@@ -427,7 +427,7 @@ export class BitcoinUTXOracleService {
 				}
 				let witness_exceeds = false;
 				for (const v of tx.vin || []) {
-					const w = (v.txinwitness || []) as string[];
+					const w = v.txinwitness || [];
 					if (!w || w.length === 0) continue;
 					let total = 0;
 					for (const item of w) {

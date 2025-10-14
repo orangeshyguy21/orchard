@@ -1,6 +1,5 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
-import {trigger, state, style, transition, animate} from '@angular/animations';
 /* Native Dependencies */
 import {formatToolName} from '@client/modules/ai/helpers/tool-name-format';
 /* Shared Dependencies */
@@ -12,35 +11,6 @@ import {OrchardAiAgentTool} from '@shared/generated.types';
 	templateUrl: './ai-agent-definition-tool.component.html',
 	styleUrl: './ai-agent-definition-tool.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	// prettier-ignore
-	animations: [
-		trigger('expandCollapse', [
-            state('collapsed', style({
-                height: '0',
-                overflow: 'hidden',
-                opacity: 0,
-            })),
-            state('expanded', style({
-                height: '*',
-                overflow: 'visible',
-                opacity: 1,
-            })),
-            transition('collapsed <=> expanded', [
-                animate('300ms ease-in-out'),
-            ]),
-        ]),
-        trigger('rotateIcon', [
-            state('collapsed', style({
-                transform: 'rotate(0deg)',
-            })),
-            state('expanded', style({
-                transform: 'rotate(180deg)',
-            })),
-            transition('collapsed <=> expanded', [
-                animate('300ms ease-in-out'),
-            ]),
-        ]),
-    ],
 })
 export class AiAgentDefinitionToolComponent implements OnInit {
 	@Input() public tool!: OrchardAiAgentTool;

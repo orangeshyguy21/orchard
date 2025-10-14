@@ -1,0 +1,89 @@
+@use '@styles/molecule/molecule';
+
+.mint-info-form-icon-container {
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-gap-1;
+}
+
+.mint-info-id-card {
+	@extend %flex;
+	@extend %flex-gap-2;
+}
+
+.mint-info-icon-display {
+	@extend %h-8;
+	@extend %w-8;
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	@extend %orc-corner-full;
+	@extend %border;
+	@extend %trans-bg-border-color-fast;
+}
+
+.unset-icon {
+	@extend %border-dashed;
+	@extend %orc-outline-border;
+	@extend %cursor-pointer;
+
+	&:hover {
+		@extend %orc-surface-container-bg;
+		@extend %orc-on-primary-container-border;
+	}
+}
+
+.load-icon {
+	@extend %border-solid;
+	@extend %orc-outline-variant-border;
+}
+
+.error-icon {
+	@extend %border-solid;
+	@extend %orc-error-color;
+}
+
+.set-icon {
+	@extend %border-solid;
+	@extend %orc-surface-container-lowest-border;
+	@extend %cursor-pointer;
+}
+
+.set-icon-interior {
+	@extend %relative;
+
+	&:hover {
+		.set-icon-update {
+			@extend %opacity-1;
+		}
+	}
+}
+
+.set-icon-update {
+	@extend %absolute;
+	@extend %top-0;
+	@extend %left-0;
+	@extend %w-full;
+	@extend %h-full;
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	@extend %opacity-0;
+	@extend %trans-opacity-fast;
+	@extend %orc-shadow-bg;
+}
+
+.enter-scale {
+	animation: enter-scale 150ms ease-out;
+}
+
+@keyframes enter-scale {
+	from {
+		transform: scale(0.8);
+		opacity: 0.5;
+	}
+	to {
+		transform: scale(1);
+		opacity: 1;
+	}
+}

@@ -3,10 +3,11 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable, tap, map, catchError, throwError} from 'rxjs';
 /* Application Dependencies */
-import {api, getApiQuery} from '@client/modules/api/helpers/api.helpers';
+import {getApiQuery} from '@client/modules/api/helpers/api.helpers';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {OrchardRes} from '@client/modules/api/types/api.types';
 import {LocalStorageService} from '@client/modules/cache/services/local-storage/local-storage.service';
+import {ApiService} from '@client/modules/api/services/api/api.service';
 /* Native Dependencies */
 import {AuthenticationResponse, RefreshAuthenticationResponse, RevokeAuthenticationResponse} from '@client/modules/auth/types/auth.types';
 /* Local Dependencies */
@@ -21,12 +22,13 @@ export class AuthService {
 	constructor(
 		private http: HttpClient,
 		private localStorageService: LocalStorageService,
+		private apiService: ApiService,
 	) {}
 
 	public authenticate(password: string): Observable<OrchardAuthentication> {
 		const query = getApiQuery(AUTHENTICATION_MUTATION, {authentication: {password}});
 
-		return this.http.post<OrchardRes<AuthenticationResponse>>(api, query).pipe(
+		return this.http.post<OrchardRes<AuthenticationResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.authentication;
@@ -49,7 +51,7 @@ export class AuthService {
 		const query = getApiQuery(REFRESH_AUTHENTICATION_MUTATION, {});
 		const headers = {Authorization: `Bearer ${refresh_token}`};
 
-		return this.http.post<OrchardRes<RefreshAuthenticationResponse>>(api, query, {headers}).pipe(
+		return this.http.post<OrchardRes<RefreshAuthenticationResponse>>(this.apiService.api, query, {headers}).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.refresh_authentication;
@@ -73,7 +75,7 @@ export class AuthService {
 		const query = getApiQuery(REVOKE_AUTHENTICATION_MUTATION, {});
 		const headers = {Authorization: `Bearer ${refresh_token}`};
 
-		return this.http.post<OrchardRes<RevokeAuthenticationResponse>>(api, query, {headers}).pipe(
+		return this.http.post<OrchardRes<RevokeAuthenticationResponse>>(this.apiService.api, query, {headers}).pipe(
 			map((response) => {
 				this.clearAuthCache();
 				if (response.errors) throw new OrchardErrors(response.errors);

@@ -1,0 +1,22 @@
+<div>
+	<form [formGroup]="form_group" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)" (keydown.escape)="onCancel($event)">
+		<orc-form-field-dynamic [hot]="form_hot" (submit)="onSubmit($event)" (cancel)="onCancel($event)">
+			<mat-form-field
+				appearance="fill"
+				[ngClass]="form_hot ? 'orc-hot-form-field' : 'orc-cold-form-field'"
+				class="w-full orc-dynamic-form-field"
+			>
+				<mat-label>Description Long</mat-label>
+				<textarea
+					type="text"
+					rows="1"
+					#element_description_long
+					matInput
+					[formControlName]="control_name"
+					[formAutogrow]="true"
+					placeholder="Ex. Describe your mint more"
+				></textarea>
+			</mat-form-field>
+		</orc-form-field-dynamic>
+	</form>
+</div>
