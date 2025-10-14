@@ -14,9 +14,7 @@ describe('MintSubsectionDatabaseComponent', () => {
 		await TestBed.configureTestingModule({
 			imports: [OrcMintSubsectionDatabaseModule],
 			declarations: [MintSubsectionDatabaseComponent],
-			providers: [
-				{provide: ActivatedRoute, useValue: {snapshot: {data: {mint_keysets: []}}}},
-			],
+			providers: [{provide: ActivatedRoute, useValue: {snapshot: {data: {mint_keysets: []}}}}],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(MintSubsectionDatabaseComponent);

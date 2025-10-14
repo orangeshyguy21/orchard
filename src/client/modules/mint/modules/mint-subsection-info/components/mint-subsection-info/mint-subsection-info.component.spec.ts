@@ -13,9 +13,7 @@ describe('MintSubsectionInfoComponent', () => {
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
 			imports: [OrcMintSubsectionInfoModule],
-			providers: [
-				{provide: ActivatedRoute, useValue: {snapshot: {data: {mint_info_rpc: {urls: [], contact: []}}}}},
-			],
+			providers: [{provide: ActivatedRoute, useValue: {snapshot: {data: {mint_info_rpc: {urls: [], contact: []}}}}}],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(MintSubsectionInfoComponent);
