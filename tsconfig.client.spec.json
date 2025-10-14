@@ -9,7 +9,7 @@
       "node"
     ]
   },
-  // "files": ["src/client/test.ts"],
+  "files": ["src/client/test.ts"],
   "include": [
     "src/client/**/*.spec.ts",
     "src/client/**/*.d.ts"

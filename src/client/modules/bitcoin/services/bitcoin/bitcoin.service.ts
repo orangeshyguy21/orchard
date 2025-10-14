@@ -4,10 +4,11 @@ import {HttpClient} from '@angular/common/http';
 /* Vendor Dependencies */
 import {BehaviorSubject, catchError, map, Observable, of, shareReplay, tap, throwError} from 'rxjs';
 /* Application Dependencies */
-import {api, getApiQuery} from '@client/modules/api/helpers/api.helpers';
+import {getApiQuery} from '@client/modules/api/helpers/api.helpers';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {OrchardRes} from '@client/modules/api/types/api.types';
 import {CacheService} from '@client/modules/cache/services/cache/cache.service';
+import {ApiService} from '@client/modules/api/services/api/api.service';
 /* Shared Dependencies */
 import {OrchardBitcoinBlockCount} from '@shared/generated.types';
 /* Native Dependencies */
@@ -72,6 +73,7 @@ export class BitcoinService {
 	constructor(
 		private http: HttpClient,
 		private cache: CacheService,
+		private apiService: ApiService,
 	) {
 		this.bitcoin_block_subject = new BehaviorSubject<BitcoinBlockCount | null>(null);
 		this.bitcoin_blockchain_info_subject = this.cache.createCache<BitcoinBlockchainInfo>(
@@ -91,24 +93,26 @@ export class BitcoinService {
 
 		const query = getApiQuery(BITCOIN_BLOCKCHAIN_INFO_QUERY);
 
-		this.bitcoin_blockchain_info_observable = this.http.post<OrchardRes<BitcoinBlockchainInfoResponse>>(api, query).pipe(
-			map((response) => {
-				if (response.errors) throw new OrchardErrors(response.errors);
-				return response.data.bitcoin_blockchain_info;
-			}),
-			map((btc_info) => new BitcoinBlockchainInfo(btc_info)),
-			tap((btc_info) => {
-				this.cache.updateCache(this.CACHE_KEYS.BITCOIN_BLOCKCHAIN_INFO, btc_info);
-				this.bitcoin_blockchain_info_subject.next(btc_info);
-				this.bitcoin_blockchain_info_observable = null;
-			}),
-			shareReplay(1),
-			catchError((error) => {
-				this.bitcoin_blockchain_info_observable = null;
-				this.bitcoin_blockchain_info_subject.next(null);
-				return throwError(() => error);
-			}),
-		);
+		this.bitcoin_blockchain_info_observable = this.http
+			.post<OrchardRes<BitcoinBlockchainInfoResponse>>(this.apiService.api, query)
+			.pipe(
+				map((response) => {
+					if (response.errors) throw new OrchardErrors(response.errors);
+					return response.data.bitcoin_blockchain_info;
+				}),
+				map((btc_info) => new BitcoinBlockchainInfo(btc_info)),
+				tap((btc_info) => {
+					this.cache.updateCache(this.CACHE_KEYS.BITCOIN_BLOCKCHAIN_INFO, btc_info);
+					this.bitcoin_blockchain_info_subject.next(btc_info);
+					this.bitcoin_blockchain_info_observable = null;
+				}),
+				shareReplay(1),
+				catchError((error) => {
+					this.bitcoin_blockchain_info_observable = null;
+					this.bitcoin_blockchain_info_subject.next(null);
+					return throwError(() => error);
+				}),
+			);
 		return this.bitcoin_blockchain_info_observable;
 	}
 
@@ -119,7 +123,7 @@ export class BitcoinService {
 
 		const query = getApiQuery(BITCOIN_NETWORK_INFO_QUERY);
 
-		return this.http.post<OrchardRes<BitcoinNetworkInfoResponse>>(api, query).pipe(
+		return this.http.post<OrchardRes<BitcoinNetworkInfoResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.bitcoin_network_info;
@@ -138,7 +142,7 @@ export class BitcoinService {
 	public getBitcoinBlockchainInfo(): Observable<BitcoinBlockchainInfo> {
 		const query = getApiQuery(BITCOIN_BLOCKCHAIN_INFO_QUERY);
 
-		return this.http.post<OrchardRes<BitcoinBlockchainInfoResponse>>(api, query).pipe(
+		return this.http.post<OrchardRes<BitcoinBlockchainInfoResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.bitcoin_blockchain_info;
@@ -157,7 +161,7 @@ export class BitcoinService {
 	public getBlockCount(): Observable<OrchardBitcoinBlockCount> {
 		const query = getApiQuery(BITCOIN_BLOCK_COUNT_QUERY);
 
-		return this.http.post<OrchardRes<BitcoinBlockCountResponse>>(api, query).pipe(
+		return this.http.post<OrchardRes<BitcoinBlockCountResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.bitcoin_blockcount;
@@ -176,7 +180,7 @@ export class BitcoinService {
 	public getBlock(hash: string): Observable<BitcoinBlock> {
 		const query = getApiQuery(BITCOIN_BLOCK_QUERY, {hash});
 
-		return this.http.post<OrchardRes<BitcoinBlockResponse>>(api, query).pipe(
+		return this.http.post<OrchardRes<BitcoinBlockResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.bitcoin_block;
@@ -192,7 +196,7 @@ export class BitcoinService {
 	public getBitcoinMempoolTransactions(): Observable<BitcoinTransaction[]> {
 		const query = getApiQuery(BITCOIN_MEMPOOL_TRANSACTIONS_QUERY);
 
-		return this.http.post<OrchardRes<BitcoinMempoolTransactionsResponse>>(api, query).pipe(
+		return this.http.post<OrchardRes<BitcoinMempoolTransactionsResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.bitcoin_mempool_transactions;
@@ -208,7 +212,7 @@ export class BitcoinService {
 	public getBitcoinTransactionFeeEstimates(targets: number[]): Observable<BitcoinTransactionFeeEstimate[]> {
 		const query = getApiQuery(BITCOIN_TRANSACTION_FEE_ESTIMATES_QUERY, {targets});
 
-		return this.http.post<OrchardRes<BitcoinTransactionFeeEstimatesResponse>>(api, query).pipe(
+		return this.http.post<OrchardRes<BitcoinTransactionFeeEstimatesResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.bitcoin_transaction_fee_estimates;
@@ -224,7 +228,7 @@ export class BitcoinService {
 	public getBitcoinBlockTemplate(): Observable<BitcoinBlockTemplate> {
 		const query = getApiQuery(BITCOIN_BLOCK_TEMPLATE_QUERY);
 
-		return this.http.post<OrchardRes<BitcoinBlockTemplateResponse>>(api, query).pipe(
+		return this.http.post<OrchardRes<BitcoinBlockTemplateResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.bitcoin_block_template;

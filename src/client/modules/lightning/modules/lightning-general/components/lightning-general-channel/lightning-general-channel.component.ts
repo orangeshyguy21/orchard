@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, Input, computed} from '@angular/core';
-/* Application Configuration */
-import {environment} from '@client/configs/configuration';
+/* Application Dependencies */
+import {ConfigService} from '@client/modules/config/services/config.service';
 
 @Component({
 	selector: 'orc-lightning-general-channel',
@@ -26,7 +26,7 @@ export class LightningGeneralChannelComponent {
 		if (this.lower_unit() === 'sat') return 'channel-btc';
 		if (this.lower_unit() === 'msat') return 'channel-btc';
 		if (this.lower_unit() === 'btc') return 'channel-btc';
-		if (this.asset_id === environment.constants.taproot_asset_ids.usdt) return 'channel-tether';
+		if (this.asset_id === this.taproot_asset_ids['usdt']) return 'channel-tether';
 		return 'channel-unknown';
 	});
 
@@ -37,4 +37,10 @@ export class LightningGeneralChannelComponent {
 	public percentage_sendable = computed(() => {
 		return (this.sendable / this.size) * 100;
 	});
+
+	public taproot_asset_ids: Record<string, string>;
+
+	constructor(private configService: ConfigService) {
+		this.taproot_asset_ids = this.configService.config.constants.taproot_asset_ids;
+	}
 }

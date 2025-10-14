@@ -1,7 +1,5 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-/* Vendor Dependencies */
-import {provideLuxonDateAdapter} from '@angular/material-luxon-adapter';
 /* Native Dependencies */
 import {OrcMintSubsectionDatabaseModule} from '@client/modules/mint/modules/mint-subsection-database/mint-subsection-database.module';
 /* Local Dependencies */
@@ -14,7 +12,6 @@ describe('MintSubsectionDatabaseControlComponent', () => {
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
 			imports: [OrcMintSubsectionDatabaseModule],
-			providers: [provideLuxonDateAdapter()],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(MintSubsectionDatabaseControlComponent);

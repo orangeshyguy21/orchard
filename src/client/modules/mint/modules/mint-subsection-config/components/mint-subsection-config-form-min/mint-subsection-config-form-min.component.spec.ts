@@ -1,8 +1,6 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-/* Vendor Dependencies */
-import {provideLuxonDateAdapter} from '@angular/material-luxon-adapter';
 /* Native Dependencies */
 import {OrcMintSubsectionConfigModule} from '@client/modules/mint/modules/mint-subsection-config/mint-subsection-config.module';
 /* Local Dependencies */
@@ -15,7 +13,6 @@ describe('MintSubsectionConfigFormMinComponent', () => {
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
 			imports: [OrcMintSubsectionConfigModule],
-			providers: [provideLuxonDateAdapter()],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(MintSubsectionConfigFormMinComponent);

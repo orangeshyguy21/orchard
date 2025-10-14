@@ -1,14 +1,14 @@
 /* Core Dependencies */
 import {TestBed} from '@angular/core/testing';
 /* Local Dependencies */
-import {PublicService} from './public.service';
+import {ConfigService} from './config.service';
 
-describe('PublicService', () => {
-	let service: PublicService;
+describe('ConfigService', () => {
+	let service: ConfigService;
 
 	beforeEach(() => {
 		TestBed.configureTestingModule({});
-		service = TestBed.inject(PublicService);
+		service = TestBed.inject(ConfigService);
 	});
 
 	it('should be created', () => {

@@ -1,7 +1,5 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-/* Vendor Dependencies */
-import {provideLuxonDateAdapter} from '@angular/material-luxon-adapter';
 /* Native Dependencies */
 import {OrcMintSubsectionConfigModule} from '@client/modules/mint/modules/mint-subsection-config/mint-subsection-config.module';
 import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class';
@@ -16,7 +14,6 @@ describe('MintSubsectionConfigChartQuoteTtlComponent', () => {
 		await TestBed.configureTestingModule({
 			imports: [OrcMintSubsectionConfigModule],
 			declarations: [MintSubsectionConfigChartQuoteTtlComponent],
-			providers: [provideLuxonDateAdapter()],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(MintSubsectionConfigChartQuoteTtlComponent);

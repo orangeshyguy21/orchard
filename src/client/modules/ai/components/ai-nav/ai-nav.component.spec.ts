@@ -1,10 +1,6 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {provideHttpClient} from '@angular/common/http';
-import {provideHttpClientTesting} from '@angular/common/http/testing';
 import {FormControl} from '@angular/forms';
-/* Vendor Dependencies */
-import {provideLuxonDateAdapter} from '@angular/material-luxon-adapter';
 /* Native Dependencies */
 import {OrcAiModule} from '@client/modules/ai/ai.module';
 /* Shared Dependencies */
@@ -20,7 +16,6 @@ describe('AiNavComponent', () => {
 		await TestBed.configureTestingModule({
 			imports: [OrcAiModule],
 			declarations: [AiNavComponent],
-			providers: [provideLuxonDateAdapter(), provideHttpClient(), provideHttpClientTesting()],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(AiNavComponent);
