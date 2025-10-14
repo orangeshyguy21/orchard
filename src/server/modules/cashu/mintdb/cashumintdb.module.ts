@@ -1,13 +1,14 @@
 /* Core Dependencies */
 import {Module} from '@nestjs/common';
 /* Application Dependencies */
+import {CredentialModule} from '@server/modules/credential/credential.module';
 import {NutshellModule} from '@server/modules/cashu/nutshell/nutshell.module';
 import {CdkModule} from '@server/modules/cashu/cdk/cdk.module';
 /* Local Dependencies */
 import {CashuMintDatabaseService} from './cashumintdb.service';
 
 @Module({
-	imports: [NutshellModule, CdkModule],
+	imports: [CredentialModule, NutshellModule, CdkModule],
 	providers: [CashuMintDatabaseService],
 	exports: [CashuMintDatabaseService],
 })
