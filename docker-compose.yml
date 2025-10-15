@@ -18,9 +18,12 @@ services:
       - TAPROOT_ASSETS_MACAROON=/app/certs/taproot/orchard.macaroon
       - TAPROOT_ASSETS_CERT=/app/certs/taproot/tls.cert
       # Mint (container paths)
-      - MINT_RPC_KEY=/app/certs/mint/client.key
-      - MINT_RPC_CERT=/app/certs/mint/client.pem
-      - MINT_RPC_CA=/app/certs/mint/ca.pem
+      - MINT_DATABASE_CA=/app/certs/mint/database.ca.pem
+      - MINT_DATABASE_CERT=/app/certs/mint/database.cert.pem
+      - MINT_DATABASE_KEY=/app/certs/mint/database.key.pem
+      - MINT_RPC_KEY=/app/certs/mint/rpc.client.key
+      - MINT_RPC_CERT=/app/certs/mint/rpc.client.pem
+      - MINT_RPC_CA=/app/certs/mint/rpc.ca.pem
     tmpfs:
       - /app/data/tmp
     volumes:
@@ -61,20 +64,38 @@ services:
         bind:
           create_host_path: false
       - type: bind
+        source: ${MINT_DATABASE_CA}
+        target: /app/certs/mint/database.ca.pem
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${MINT_DATABASE_CERT}
+        target: /app/certs/mint/database.cert.pem
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${MINT_DATABASE_KEY}
+        target: /app/certs/mint/database.key.pem
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
         source: ${MINT_RPC_KEY}
-        target: /app/certs/mint/client.key
+        target: /app/certs/mint/rpc.client.key
         read_only: true
         bind:
           create_host_path: false
       - type: bind
         source: ${MINT_RPC_CERT}
-        target: /app/certs/mint/client.pem
+        target: /app/certs/mint/rpc.client.pem
         read_only: true
         bind:
           create_host_path: false
       - type: bind
         source: ${MINT_RPC_CA}
-        target: /app/certs/mint/ca.pem
+        target: /app/certs/mint/rpc.ca.pem
         read_only: true
         bind:
           create_host_path: false
