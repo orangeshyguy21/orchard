@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '.env' });
+require('dotenv').config({ path: '.env', quiet: true });
 
 module.exports = {
 	"/proxy": {

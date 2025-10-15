@@ -40,6 +40,9 @@ export type Config = {
 		api: string;
 		database_type: string;
 		database: string;
+		database_ca: string;
+		database_cert: string;
+		database_key: string;
 		rpc_host: string;
 		rpc_port: string;
 		rpc_key: string;
