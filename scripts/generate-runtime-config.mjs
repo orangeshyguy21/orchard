@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import fs from 'node:fs/promises';
 import {config} from 'dotenv';
-config({ path: '.env', override: false });
+config({ path: '.env', override: false, quiet: true });
 
 const mode = {
 	production: process.env['NODE_ENV'] === 'production',
@@ -29,7 +29,7 @@ const mint = {
 	enabled: process.env['MINT_TYPE'] ? true : false,
 	type: process.env['MINT_TYPE'] || 'cdk',
 	critical_path: '/v1/info',
-	database_type: process.env['MINT_DATABASE']?.includes('postgres://') ? 'postgres' : 'sqlite',
+	database_type: process.env['MINT_DATABASE']?.match(/postgres(ql)?:\/\//) ? 'postgres' : 'sqlite',
 };
 
 const ai = {

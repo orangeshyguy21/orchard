@@ -9,6 +9,7 @@ import DatabaseConstructor from 'better-sqlite3';
 import {spawn} from 'child_process';
 /* Application Dependencies */
 import {MintType} from '@server/modules/cashu/cashu.enums';
+import {CredentialService} from '@server/modules/credential/credential.service';
 import {NutshellService} from '@server/modules/cashu/nutshell/nutshell.service';
 import {CdkService} from '@server/modules/cashu/cdk/cdk.service';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
@@ -44,6 +45,7 @@ export class CashuMintDatabaseService implements OnModuleInit {
 
 	constructor(
 		private configService: ConfigService,
+		private credentialService: CredentialService,
 		private nutshellService: NutshellService,
 		private cdkService: CdkService,
 	) {}
@@ -56,20 +58,83 @@ export class CashuMintDatabaseService implements OnModuleInit {
 	public async getMintDatabase(): Promise<CashuMintDatabase> {
 		try {
 			if (this.configService.get('cashu.database_type') === 'sqlite') {
-				const db = new DatabaseConstructor(this.database, {readonly: true, fileMustExist: true});
-				try {
-					db.pragma('busy_timeout = 5000');
-				} catch {}
-				return {type: MintDatabaseType.sqlite, database: db};
+				return this.createSqliteDatabase();
 			} else {
-				const client = new Client({
-					connectionString: this.database,
-				});
-				return {type: MintDatabaseType.postgres, database: client};
+				return this.createPostgresDatabase();
 			}
 		} catch (error) {
 			this.logger.debug(error);
 			throw OrchardErrorCode.MintDatabaseConnectionError;
+		}
+	}
+
+	private createSqliteDatabase(): CashuMintDatabase {
+		const db = new DatabaseConstructor(this.database, {readonly: true, fileMustExist: true});
+		try {
+			db.pragma('busy_timeout = 5000');
+		} catch {}
+		return {type: MintDatabaseType.sqlite, database: db};
+	}
+
+	private createPostgresDatabase(): CashuMintDatabase {
+		const ssl_config = this.getPostgresSslConfig(this.database);
+		const connection_string = this.cleanConnectionString(this.database, ssl_config);
+		const client = new Client({
+			connectionString: connection_string,
+			ssl: ssl_config,
+		});
+		return {type: MintDatabaseType.postgres, database: client};
+	}
+
+	private cleanConnectionString(connection_string: string, ssl_config: any): string {
+		if (ssl_config === undefined) return connection_string;
+		return connection_string
+			.replace(/[?&]sslmode=[^&]*/gi, '')
+			.replace(/[?]&/, '?') // Fix if sslmode was first param: ?sslmode=x&foo=bar -> ?foo=bar
+			.replace(/[?]$/, ''); // Remove trailing ? if sslmode was only param
+	}
+
+	private getVerifiedSslConfig(): Record<string, any> | true {
+		const ca_cert = this.configService.get('cashu.database_ca');
+		const client_cert = this.configService.get('cashu.database_cert');
+		const client_key = this.configService.get('cashu.database_key');
+
+		if (!ca_cert) {
+			this.logger.warn(
+				'SSL verification requested but MINT_DATABASE_CA not provided. ' +
+					'Connection will likely fail. Use sslmode=require for self-signed certs.',
+			);
+			return true; // Will fail, but let pg library handle the error
+		}
+
+		const ca_content = this.credentialService.loadPemOrPath(ca_cert);
+		const ssl_config: any = {
+			rejectUnauthorized: true,
+			ca: ca_content,
+		};
+		if (client_cert && client_key) {
+			ssl_config.cert = this.credentialService.loadPemOrPath(client_cert);
+			ssl_config.key = this.credentialService.loadPemOrPath(client_key);
+		}
+		return ssl_config;
+	}
+
+	private getPostgresSslConfig(connection_string: string): any {
+		if (!connection_string.includes('ssl')) return undefined;
+		const sslmode_match = connection_string.match(/sslmode=([^&]+)/i);
+		const sslmode = sslmode_match ? sslmode_match[1].toLowerCase() : null;
+		switch (sslmode) {
+			case 'disable':
+				return undefined;
+			case 'allow':
+			case 'prefer':
+			case 'require':
+				return {rejectUnauthorized: false};
+			case 'verify-ca':
+			case 'verify-full':
+				return this.getVerifiedSslConfig();
+			default:
+				return {rejectUnauthorized: false};
 		}
 	}
 

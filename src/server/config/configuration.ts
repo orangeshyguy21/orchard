@@ -58,8 +58,11 @@ export const config = (): Config => {
 	const cashu = {
 		type: process.env.MINT_TYPE,
 		api: replaceLocalhostInDocker(process.env.MINT_API),
-		database_type: process.env.MINT_DATABASE?.includes('postgres://') ? 'postgres' : 'sqlite',
+		database_type: process.env.MINT_DATABASE?.match(/postgres(ql)?:\/\//) ? 'postgres' : 'sqlite',
 		database: replaceLocalhostInDocker(process.env.MINT_DATABASE),
+		database_ca: process.env.MINT_DATABASE_CA,
+		database_cert: process.env.MINT_DATABASE_CERT,
+		database_key: process.env.MINT_DATABASE_KEY,
 		rpc_host: replaceLocalhostInDocker(process.env.MINT_RPC_HOST),
 		rpc_port: process.env.MINT_RPC_PORT,
 		rpc_key: process.env.MINT_RPC_KEY,
