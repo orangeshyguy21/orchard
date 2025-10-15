@@ -332,9 +332,6 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			forkJoin([analytics_outbound_obs, analytics_outbound_pre_obs]),
 		);
 
-		console.log('analytics_outbound', analytics_outbound);
-		console.log('analytics_outbound_pre', analytics_outbound_pre);
-
 		this.lightning_analytics_outbound = analytics_outbound;
 		this.lightning_analytics_outbound_pre = analytics_outbound_pre;
 	}

@@ -59,8 +59,6 @@ export class LightningAnalyticsService {
 
 			return buckets.map((b) => new OrchardLightningAnalytics(series_map.get(b.ts) || 0, b.ts));
 		} catch (error) {
-			console.log('args', args);
-			console.error('Error getting outbound liquidity series:', error);
 			const error_code = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.LightningRpcActionError,
 			});
@@ -76,6 +74,9 @@ export class LightningAnalyticsService {
 
 	private buildTimeBuckets(start_ts: number, end_ts: number, interval: OrchardAnalyticsInterval, timezone: string) {
 		const buckets: {ts: number}[] = [];
+
+		if (interval === OrchardAnalyticsInterval.custom) return [{ts: start_ts}];
+
 		let cursor = DateTime.fromSeconds(end_ts, {zone: 'UTC'});
 		const start_dt = DateTime.fromSeconds(start_ts, {zone: 'UTC'});
 
