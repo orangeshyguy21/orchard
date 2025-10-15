@@ -602,6 +602,13 @@ export type OrchardLightningAddress = {
   public_key: Scalars['Base64']['output'];
 };
 
+export type OrchardLightningAnalytics = {
+  __typename?: 'OrchardLightningAnalytics';
+  amount: Scalars['Float']['output'];
+  created_time: Scalars['Float']['output'];
+  unit: Scalars['String']['output'];
+};
+
 export type OrchardLightningBalance = {
   __typename?: 'OrchardLightningBalance';
   balance: Scalars['Float']['output'];
@@ -1052,6 +1059,7 @@ export type Query = {
   bitcoin_network_info: OrchardBitcoinNetworkInfo;
   bitcoin_oracle: OrchardBitcoinOracle;
   bitcoin_transaction_fee_estimates: Array<OrchardBitcoinTxFeeEstimate>;
+  lightning_analytics_outbound: Array<OrchardLightningAnalytics>;
   lightning_balance: OrchardLightningBalance;
   lightning_info: OrchardLightningInfo;
   lightning_request: OrchardLightningRequest;
@@ -1107,6 +1115,14 @@ export type QueryBitcoin_OracleArgs = {
 
 export type QueryBitcoin_Transaction_Fee_EstimatesArgs = {
   targets: Array<Scalars['Int']['input']>;
+};
+
+
+export type QueryLightning_Analytics_OutboundArgs = {
+  date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  interval?: InputMaybe<MintAnalyticsInterval>;
+  timezone?: InputMaybe<Scalars['Timezone']['input']>;
 };
 
 

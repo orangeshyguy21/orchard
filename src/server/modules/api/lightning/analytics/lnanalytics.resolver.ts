@@ -9,8 +9,6 @@ import {MintAnalyticsInterval} from '@server/modules/cashu/mintdb/cashumintdb.en
 import {OrchardLightningAnalytics} from './lnanalytics.model';
 import {LightningAnalyticsService} from './lnanalytics.service';
 
-type IntervalArg = 'day' | 'week' | 'month';
-
 @Resolver()
 export class LightningAnalyticsResolver {
 	private readonly logger = new Logger(LightningAnalyticsResolver.name);

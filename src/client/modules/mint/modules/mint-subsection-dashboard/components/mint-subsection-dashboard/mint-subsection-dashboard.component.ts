@@ -126,7 +126,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.initMintConnections();
 		this.orchardOptionalInit();
 		this.getMintFees();
-		await this.initMintAnalytics();
+		await this.initAnalytics();
 		this.mint_fee_revenue = this.getMintFeeRevenueState();
 	}
 
@@ -218,7 +218,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	private async initMintAnalytics(): Promise<void> {
+	private async initAnalytics(): Promise<void> {
 		try {
 			this.locale = await this.settingService.getLocale();
 			this.mint_genesis_time = this.getMintGenesisTime();
@@ -226,7 +226,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			this.updateTertiaryNav();
 			this.loading_static_data = false;
 			this.cdr.detectChanges();
-			await this.loadMintAnalytics();
+			await this.loadAnalytics();
 			this.loading_dynamic_data = false;
 			this.cdr.detectChanges();
 		} catch (error) {
@@ -234,7 +234,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	private async loadMintAnalytics(): Promise<void> {
+	private async loadAnalytics(): Promise<void> {
 		const timezone = this.settingService.getTimezone();
 		const analytics_balances_obs = this.mintService.loadMintAnalyticsBalances({
 			units: this.page_settings.units,
@@ -357,7 +357,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			this.mintService.clearDasbhoardCache();
 			this.loading_dynamic_data = true;
 			this.cdr.detectChanges();
-			await this.loadMintAnalytics();
+			await this.loadAnalytics();
 			this.loading_dynamic_data = false;
 			this.cdr.detectChanges();
 		} catch (error) {

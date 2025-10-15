@@ -1,4 +1,10 @@
-import {OrchardLightningInfo, OrchardLightningBalance, OrchardLightningAccount, OrchardLightningRequest} from '@shared/generated.types';
+import {
+	OrchardLightningInfo,
+	OrchardLightningBalance,
+	OrchardLightningAccount,
+	OrchardLightningRequest,
+	OrchardLightningAnalytics,
+} from '@shared/generated.types';
 
 export type LightningInfoResponse = {
 	lightning_info: OrchardLightningInfo;
@@ -14,4 +20,15 @@ export type LightningWalletResponse = {
 
 export type LightningRequestResponse = {
 	lightning_request: OrchardLightningRequest;
+};
+
+export type LightningAnalyticsOutboundResponse = {
+	lightning_analytics_outbound: OrchardLightningAnalytics[];
+};
+
+export type LightningAnalyticsArgs = {
+	date_start?: number;
+	date_end?: number;
+	// interval?: MintAnalyticsInterval; this needs to be OrchardAnalyticsInterval
+	timezone?: string;
 };

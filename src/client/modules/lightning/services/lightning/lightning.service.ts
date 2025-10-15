@@ -14,14 +14,22 @@ import {LightningInfo} from '@client/modules/lightning/classes/lightning-info.cl
 import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
 import {LightningAccount} from '@client/modules/lightning/classes/lightning-account.class';
 import {LightningRequest} from '@client/modules/lightning/classes/lightning-request.class';
+import {LightningAnalytics} from '@client/modules/lightning/classes/lightning-analytics.class';
 import {
 	LightningInfoResponse,
 	LightningBalanceResponse,
 	LightningWalletResponse,
 	LightningRequestResponse,
+	LightningAnalyticsOutboundResponse,
 } from '@client/modules/lightning/types/lightning.types';
 /* Local Dependencies */
-import {LIGHTNING_INFO_QUERY, LIGHTNING_BALANCE_QUERY, LIGHTNING_WALLET_QUERY, LIGHTNING_REQUEST_QUERY} from './lightning.queries';
+import {
+	LIGHTNING_INFO_QUERY,
+	LIGHTNING_BALANCE_QUERY,
+	LIGHTNING_WALLET_QUERY,
+	LIGHTNING_REQUEST_QUERY,
+	LIGHTNING_ANALYTICS_OUTBOUND_QUERY,
+} from './lightning.queries';
 
 @Injectable({
 	providedIn: 'root',
@@ -35,18 +43,21 @@ export class LightningService {
 		LIGHTNING_INFO: 'lightning-info',
 		LIGHTNING_BALANCE: 'lightning-balance',
 		LIGHTNING_ACCOUNTS: 'lightning-accounts',
+		LIGHTNING_ANALYTICS_OUTBOUND: 'lightning-analytics-outbound',
 	};
 
 	private readonly CACHE_DURATIONS = {
 		[this.CACHE_KEYS.LIGHTNING_INFO]: 30 * 60 * 1000, // 30 minutes
 		[this.CACHE_KEYS.LIGHTNING_BALANCE]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.LIGHTNING_ACCOUNTS]: 5 * 60 * 1000, // 5 minutes
+		[this.CACHE_KEYS.LIGHTNING_ANALYTICS_OUTBOUND]: 5 * 60 * 1000, // 5 minutes
 	};
 
 	/* Subjects for caching */
 	private readonly lightning_info_subject: BehaviorSubject<LightningInfo | null>;
 	private readonly lightning_balance_subject: BehaviorSubject<LightningBalance | null>;
 	private readonly lightning_accounts_subject: BehaviorSubject<LightningAccount[] | null>;
+	private readonly lightning_analytics_outbound_subject: BehaviorSubject<LightningAnalytics[] | null>;
 
 	/* Observables for caching (rapid request caching) */
 	private lightning_info_observable!: Observable<LightningInfo> | null;
@@ -67,6 +78,10 @@ export class LightningService {
 		this.lightning_accounts_subject = this.cache.createCache<LightningAccount[]>(
 			this.CACHE_KEYS.LIGHTNING_ACCOUNTS,
 			this.CACHE_DURATIONS[this.CACHE_KEYS.LIGHTNING_ACCOUNTS],
+		);
+		this.lightning_analytics_outbound_subject = this.cache.createCache<LightningAnalytics[]>(
+			this.CACHE_KEYS.LIGHTNING_ANALYTICS_OUTBOUND,
+			this.CACHE_DURATIONS[this.CACHE_KEYS.LIGHTNING_ANALYTICS_OUTBOUND],
 		);
 	}
 
@@ -142,6 +157,32 @@ export class LightningService {
 			}),
 			catchError((error) => {
 				console.error('Error loading lightning wallet:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	public loadLightningAnalyticsOutbound(): Observable<LightningAnalytics[]> {
+		if (this.lightning_analytics_outbound_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.LIGHTNING_ANALYTICS_OUTBOUND)) {
+			return of(this.lightning_analytics_outbound_subject.value);
+		}
+
+		const query = getApiQuery(LIGHTNING_ANALYTICS_OUTBOUND_QUERY);
+
+		return this.http.post<OrchardRes<LightningAnalyticsOutboundResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.lightning_analytics_outbound;
+			}),
+			map((lightning_analytics_outbound) =>
+				lightning_analytics_outbound.map((lightning_analytics) => new LightningAnalytics(lightning_analytics)),
+			),
+			tap((lightning_analytics_outbound) => {
+				this.cache.updateCache(this.CACHE_KEYS.LIGHTNING_ANALYTICS_OUTBOUND, lightning_analytics_outbound);
+				this.lightning_analytics_outbound_subject.next(lightning_analytics_outbound);
+			}),
+			catchError((error) => {
+				console.error('Error loading lightning analytics outbound:', error);
 				return throwError(() => error);
 			}),
 		);
