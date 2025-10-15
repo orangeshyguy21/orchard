@@ -4,6 +4,7 @@ import {expect} from '@jest/globals';
 /* Local Dependencies */
 import {CashuMintDatabaseService} from './cashumintdb.service';
 import {ConfigService} from '@nestjs/config';
+import {CredentialService} from '@server/modules/credential/credential.service';
 import {NutshellService} from '@server/modules/cashu/nutshell/nutshell.service';
 import {CdkService} from '@server/modules/cashu/cdk/cdk.service';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
@@ -38,6 +39,7 @@ describe('CashuMintDatabaseService', () => {
 			providers: [
 				CashuMintDatabaseService,
 				{provide: ConfigService, useValue: {get: jest.fn()}},
+				{provide: CredentialService, useValue: {loadPemOrPath: jest.fn()}},
 				{provide: NutshellService, useValue: {}},
 				{provide: CdkService, useValue: {}},
 			],
