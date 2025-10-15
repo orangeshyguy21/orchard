@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 /* Vendor Dependencies */
-import {forkJoin, lastValueFrom, Subscription, EMPTY, catchError, finalize, tap} from 'rxjs';
+import {forkJoin, lastValueFrom, Subscription, EMPTY, catchError, finalize, tap, Observable} from 'rxjs';
 import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {ConfigService} from '@client/modules/config/services/config.service';
@@ -24,6 +24,7 @@ import {NonNullableMintDashboardSettings} from '@client/modules/settings/types/s
 import {PublicUrl} from '@client/modules/public/classes/public-url.class';
 import {AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
+import {LightningAnalytics} from '@client/modules/lightning/classes/lightning-analytics.class';
 import {OrchardError} from '@client/modules/error/types/error.types';
 import {NavTertiaryItem} from '@client/modules/nav/types/nav-tertiary-item.type';
 /* Native Dependencies */
@@ -71,6 +72,8 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public mint_analytics_swaps_pre: MintAnalytic[] = [];
 	public mint_analytics_fees: MintAnalytic[] = [];
 	public mint_analytics_fees_pre: MintAnalytic[] = [];
+	public lightning_analytics_outbound: LightningAnalytics[] = [];
+	public lightning_analytics_outbound_pre: LightningAnalytics[] = [];
 	public mint_connections: PublicUrl[] = [];
 	public lightning_enabled: boolean;
 	public lightning_balance: LightningBalance | null = null;
@@ -235,77 +238,41 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	}
 
 	private async loadAnalytics(): Promise<void> {
+		const promises: Promise<void>[] = [this.loadMintAnalytics()];
+		if (this.lightning_enabled) promises.push(this.loadLightningAnalytics());
+		await Promise.all(promises);
+	}
+
+	private async loadMintAnalytics(): Promise<void> {
 		const timezone = this.settingService.getTimezone();
-		const analytics_balances_obs = this.mintService.loadMintAnalyticsBalances({
+		const args = {
 			units: this.page_settings.units,
 			date_start: this.page_settings.date_start,
 			date_end: this.page_settings.date_end,
 			interval: this.page_settings.interval,
 			timezone: timezone,
-		});
-		const analytics_balances_pre_obs = this.mintService.loadMintAnalyticsBalances({
+		};
+		const args_pre = {
 			units: this.page_settings.units,
 			date_start: 100000,
 			date_end: this.page_settings.date_start - 1,
 			interval: OrchardAnalyticsInterval.Custom,
 			timezone: timezone,
-		});
-		const analytics_mints_obs = this.mintService.loadMintAnalyticsMints({
-			units: this.page_settings.units,
-			date_start: this.page_settings.date_start,
-			date_end: this.page_settings.date_end,
-			interval: this.page_settings.interval,
-			timezone: timezone,
-		});
-		const analytics_mints_pre_obs = this.mintService.loadMintAnalyticsMints({
-			units: this.page_settings.units,
-			date_start: 100000,
-			date_end: this.page_settings.date_start - 1,
-			interval: OrchardAnalyticsInterval.Custom,
-			timezone: timezone,
-		});
-		const analytics_melts_obs = this.mintService.loadMintAnalyticsMelts({
-			units: this.page_settings.units,
-			date_start: this.page_settings.date_start,
-			date_end: this.page_settings.date_end,
-			interval: this.page_settings.interval,
-			timezone: timezone,
-		});
-		const analytics_melts_pre_obs = this.mintService.loadMintAnalyticsMelts({
-			units: this.page_settings.units,
-			date_start: 100000,
-			date_end: this.page_settings.date_start - 1,
-			interval: OrchardAnalyticsInterval.Custom,
-			timezone: timezone,
-		});
-		const analytics_swaps_obs = this.mintService.loadMintAnalyticsSwaps({
-			units: this.page_settings.units,
-			date_start: this.page_settings.date_start,
-			date_end: this.page_settings.date_end,
-			interval: this.page_settings.interval,
-			timezone: timezone,
-		});
-		const analytics_swaps_pre_obs = this.mintService.loadMintAnalyticsSwaps({
-			units: this.page_settings.units,
-			date_start: 100000,
-			date_end: this.page_settings.date_start - 1,
-			interval: OrchardAnalyticsInterval.Custom,
-			timezone: timezone,
-		});
-		const analytics_fees_obs = this.mintService.loadMintAnalyticsFees({
-			units: this.page_settings.units,
-			date_start: this.page_settings.date_start,
-			date_end: this.page_settings.date_end,
-			interval: this.page_settings.interval,
-			timezone: timezone,
-		});
-		const analytics_fees_pre_obs = this.mintService.loadMintAnalyticsFees({
-			units: this.page_settings.units,
-			date_start: 100000,
-			date_end: this.page_settings.date_start - 1,
-			interval: OrchardAnalyticsInterval.Custom,
-			timezone: timezone,
-		});
+		};
+		const {units: _, ...lightning_args} = args;
+		const {units: __, ...lightning_args_pre} = args_pre;
+
+		const analytics_balances_obs = this.mintService.loadMintAnalyticsBalances(args);
+		const analytics_balances_pre_obs = this.mintService.loadMintAnalyticsBalances(args_pre);
+		const analytics_mints_obs = this.mintService.loadMintAnalyticsMints(args);
+		const analytics_mints_pre_obs = this.mintService.loadMintAnalyticsMints(args_pre);
+		const analytics_melts_obs = this.mintService.loadMintAnalyticsMelts(args);
+		const analytics_melts_pre_obs = this.mintService.loadMintAnalyticsMelts(args_pre);
+		const analytics_swaps_obs = this.mintService.loadMintAnalyticsSwaps(args);
+		const analytics_swaps_pre_obs = this.mintService.loadMintAnalyticsSwaps(args_pre);
+		const analytics_fees_obs = this.mintService.loadMintAnalyticsFees(args);
+		const analytics_fees_pre_obs = this.mintService.loadMintAnalyticsFees(args_pre);
+
 		const [
 			analytics_balances,
 			analytics_balances_pre,
@@ -342,6 +309,34 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.mint_analytics_swaps_pre = analytics_swaps_pre;
 		this.mint_analytics_fees = this.applyMintFees(analytics_fees, analytics_fees_pre);
 		this.mint_analytics_fees_pre = analytics_fees_pre;
+	}
+
+	private async loadLightningAnalytics(): Promise<void> {
+		const timezone = this.settingService.getTimezone();
+		const args = {
+			date_start: this.page_settings.date_start,
+			date_end: this.page_settings.date_end,
+			interval: this.page_settings.interval,
+			timezone: timezone,
+		};
+		const args_pre = {
+			date_start: 100000,
+			date_end: this.page_settings.date_start - 1,
+			interval: OrchardAnalyticsInterval.Custom,
+			timezone: timezone,
+		};
+		const analytics_outbound_obs = this.lightningService.loadLightningAnalyticsOutbound(args);
+		const analytics_outbound_pre_obs = this.lightningService.loadLightningAnalyticsOutbound(args_pre);
+
+		const [analytics_outbound, analytics_outbound_pre] = await lastValueFrom(
+			forkJoin([analytics_outbound_obs, analytics_outbound_pre_obs]),
+		);
+
+		console.log('analytics_outbound', analytics_outbound);
+		console.log('analytics_outbound_pre', analytics_outbound_pre);
+
+		this.lightning_analytics_outbound = analytics_outbound;
+		this.lightning_analytics_outbound_pre = analytics_outbound_pre;
 	}
 
 	private applyMintFees(analytics_fees: MintAnalytic[], analytics_fees_pre: MintAnalytic[]): MintAnalytic[] {

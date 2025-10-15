@@ -59,6 +59,8 @@ export class LightningAnalyticsService {
 
 			return buckets.map((b) => new OrchardLightningAnalytics(series_map.get(b.ts) || 0, b.ts));
 		} catch (error) {
+			console.log('args', args);
+			console.error('Error getting outbound liquidity series:', error);
 			const error_code = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.LightningRpcActionError,
 			});
