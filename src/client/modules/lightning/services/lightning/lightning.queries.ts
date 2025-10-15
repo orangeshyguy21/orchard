@@ -99,7 +99,7 @@ query LightningRequest($request: String!) {
 }`;
 
 export const LIGHTNING_ANALYTICS_OUTBOUND_QUERY = `
-query LightningAnalyticsOutbound($date_start: UnixTimestamp, $date_end: UnixTimestamp, $interval: MintAnalyticsInterval, $timezone: Timezone) {
+query LightningAnalyticsOutbound($date_start: UnixTimestamp, $date_end: UnixTimestamp, $interval: OrchardAnalyticsInterval, $timezone: Timezone) {
     lightning_analytics_outbound(date_start: $date_start, date_end: $date_end, interval: $interval, timezone: $timezone) {
         amount
         unit

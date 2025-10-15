@@ -21,7 +21,7 @@ import {ChartService} from '@client/modules/chart/services/chart/chart.service';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintAnalyticKeyset} from '@client/modules/mint/classes/mint-analytic.class';
 /* Shared Dependencies */
-import {MintAnalyticsInterval} from '@shared/generated.types';
+import {OrchardAnalyticsInterval} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-subsection-keysets-chart',
@@ -34,7 +34,7 @@ export class MintSubsectionKeysetsChartComponent implements OnChanges, OnDestroy
 	@ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
 	@Input() public locale!: string;
-	@Input() public interval!: MintAnalyticsInterval;
+	@Input() public interval!: OrchardAnalyticsInterval;
 	@Input() public keysets!: MintKeyset[];
 	@Input() public keysets_analytics!: MintAnalyticKeyset[];
 	@Input() public keysets_analytics_pre!: MintAnalyticKeyset[];

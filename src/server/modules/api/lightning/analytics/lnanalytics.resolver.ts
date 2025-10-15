@@ -4,7 +4,7 @@ import {Resolver, Query, Args} from '@nestjs/graphql';
 /* Application Dependencies */
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 import {Timezone, TimezoneType} from '@server/modules/graphql/scalars/timezone.scalar';
-import {MintAnalyticsInterval} from '@server/modules/cashu/mintdb/cashumintdb.enums';
+import {OrchardAnalyticsInterval} from '@server/modules/orchard/orchard.enums';
 /* Local Dependencies */
 import {OrchardLightningAnalytics} from './lnanalytics.model';
 import {LightningAnalyticsService} from './lnanalytics.service';
@@ -19,7 +19,7 @@ export class LightningAnalyticsResolver {
 	async lightning_analytics_outbound(
 		@Args('date_start', {type: () => UnixTimestamp, nullable: true}) date_start?: number,
 		@Args('date_end', {type: () => UnixTimestamp, nullable: true}) date_end?: number,
-		@Args('interval', {type: () => MintAnalyticsInterval, nullable: true}) interval?: MintAnalyticsInterval,
+		@Args('interval', {type: () => OrchardAnalyticsInterval, nullable: true}) interval?: OrchardAnalyticsInterval,
 		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
 	): Promise<OrchardLightningAnalytics[]> {
 		const tag = 'GET { lightning_analytics_outbound }';

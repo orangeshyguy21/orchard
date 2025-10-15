@@ -1,26 +1,54 @@
-/* Mint Dashboard Tools */
-export const UpdateMintAnalyticsDateRangeTool = {
+/*******************************************************
+	Generic Tools
+*******************************************************/
+
+export const UpdateAnalyticsDateRangeTool = {
 	type: 'function',
 	function: {
-		name: 'MINT_ANALYTICS_DATE_RANGE_UPDATE',
-		description: `This tool allows you to update the date range over which the mint analytics are calculated.
+		name: 'ANALYTICS_DATE_RANGE_UPDATE',
+		description: `This tool allows you to update the date range over which analytics are calculated.
         Use this when asked for the last x days of data, or the last x weeks of data, or the first week of May for example.`,
 		parameters: {
 			type: 'object',
 			properties: {
 				date_start: {
 					type: 'string',
-					description: 'The start date to calculate the mint analytics. You must provide the date in the format YYYY-MM-DD',
+					description: 'The start date to calculate the analytics. You must provide the date in the format YYYY-MM-DD',
 				},
 				date_end: {
 					type: 'string',
-					description: 'The end date to calculate the mint analytics. You must provide the date in the format YYYY-MM-DD',
+					description: 'The end date to calculate the analytics. You must provide the date in the format YYYY-MM-DD',
 				},
 			},
 			required: ['date_start', 'date_end'],
 		},
 	},
 };
+
+export const UpdateAnalyticsIntervalTool = {
+	type: 'function',
+	function: {
+		name: 'ANALYTICS_INTERVAL_UPDATE',
+		description:
+			'This tool allows you to update the interval of the analytics. Only use this when asked to change the interval of the analytics.',
+		parameters: {
+			type: 'object',
+			properties: {
+				interval: {
+					type: 'string',
+					description: 'The interval of the analytics',
+					enum: ['day', 'week', 'month'],
+				},
+			},
+			required: ['interval'],
+		},
+	},
+};
+
+/*******************************************************
+	Mint Tools
+*******************************************************/
+
 export const UpdateMintAnalyticsUnitsTool = {
 	type: 'function',
 	function: {
@@ -39,25 +67,6 @@ export const UpdateMintAnalyticsUnitsTool = {
 				},
 			},
 			required: ['units'],
-		},
-	},
-};
-export const UpdateMintAnalyticsIntervalTool = {
-	type: 'function',
-	function: {
-		name: 'MINT_ANALYTICS_INTERVAL_UPDATE',
-		description:
-			'This tool allows you to update the interval of the mint analytics. Only use this when asked to change the interval of the mint analytics.',
-		parameters: {
-			type: 'object',
-			properties: {
-				interval: {
-					type: 'string',
-					description: 'The interval of the mint analytics',
-					enum: ['day', 'week', 'month'],
-				},
-			},
-			required: ['interval'],
 		},
 	},
 };
@@ -80,7 +89,6 @@ export const UpdateMintAnalyticsTypeTool = {
 	},
 };
 
-/* Mint Info Tools */
 export const UpdateMintNameTool = {
 	type: 'function',
 	function: {

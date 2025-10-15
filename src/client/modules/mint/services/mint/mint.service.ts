@@ -67,7 +67,7 @@ import {MintAnalytic, MintAnalyticKeyset} from '@client/modules/mint/classes/min
 import {MintFee} from '@client/modules/mint/classes/mint-fee.class';
 import {MintKeysetProofCount} from '@client/modules/mint/classes/mint-keyset-proof-count.class';
 /* Shared Dependencies */
-import {MintAnalyticsInterval, OrchardContact, MintUnit} from '@shared/generated.types';
+import {OrchardAnalyticsInterval, OrchardContact, MintUnit} from '@shared/generated.types';
 /* Local Dependencies */
 import {
 	MINT_INFO_QUERY,
@@ -415,7 +415,7 @@ export class MintService {
 	}
 
 	public loadMintAnalyticsBalances(args: MintAnalyticsArgs) {
-		if (args.interval === MintAnalyticsInterval.Custom) {
+		if (args.interval === OrchardAnalyticsInterval.Custom) {
 			return this.loadGenericMintAnalyticsBalances(
 				args,
 				this.mint_analytics_pre_balances_subject.value,
@@ -458,7 +458,7 @@ export class MintService {
 	}
 
 	public loadMintAnalyticsMints(args: MintAnalyticsArgs) {
-		if (args.interval === MintAnalyticsInterval.Custom) {
+		if (args.interval === OrchardAnalyticsInterval.Custom) {
 			return this.loadGenericMintAnalyticsMints(
 				args,
 				this.mint_analytics_pre_mints_subject.value,
@@ -497,7 +497,7 @@ export class MintService {
 	}
 
 	public loadMintAnalyticsMelts(args: MintAnalyticsArgs) {
-		if (args.interval === MintAnalyticsInterval.Custom) {
+		if (args.interval === OrchardAnalyticsInterval.Custom) {
 			return this.loadGenericMintAnalyticsMelts(
 				args,
 				this.mint_analytics_pre_melts_subject.value,
@@ -536,7 +536,7 @@ export class MintService {
 	}
 
 	public loadMintAnalyticsSwaps(args: MintAnalyticsArgs) {
-		if (args.interval === MintAnalyticsInterval.Custom) {
+		if (args.interval === OrchardAnalyticsInterval.Custom) {
 			return this.loadGenericMintAnalyticsSwaps(
 				args,
 				this.mint_analytics_pre_swaps_subject.value,
@@ -575,7 +575,7 @@ export class MintService {
 	}
 
 	public loadMintAnalyticsFees(args: MintAnalyticsArgs) {
-		if (args.interval === MintAnalyticsInterval.Custom) {
+		if (args.interval === OrchardAnalyticsInterval.Custom) {
 			return this.loadGenericMintAnalyticsFees(
 				args,
 				this.mint_analytics_pre_fees_subject.value,
@@ -660,7 +660,7 @@ export class MintService {
 	}
 
 	public loadMintAnalyticsKeysets(args: MintAnalyticsArgs) {
-		if (args.interval === MintAnalyticsInterval.Custom) {
+		if (args.interval === OrchardAnalyticsInterval.Custom) {
 			return this.loadGenericMintAnalyticsKeysets(
 				args,
 				this.mint_analytics_pre_keysets_subject.value,

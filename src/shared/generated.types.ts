@@ -50,8 +50,8 @@ export type AiChatMessageInput = {
 };
 
 export enum AiFunctionName {
-  MintAnalyticsDateRangeUpdate = 'MINT_ANALYTICS_DATE_RANGE_UPDATE',
-  MintAnalyticsIntervalUpdate = 'MINT_ANALYTICS_INTERVAL_UPDATE',
+  AnalyticsDateRangeUpdate = 'ANALYTICS_DATE_RANGE_UPDATE',
+  AnalyticsIntervalUpdate = 'ANALYTICS_INTERVAL_UPDATE',
   MintAnalyticsTypeUpdate = 'MINT_ANALYTICS_TYPE_UPDATE',
   MintAnalyticsUnitsUpdate = 'MINT_ANALYTICS_UNITS_UPDATE',
   MintBackupFilenameUpdate = 'MINT_BACKUP_FILENAME_UPDATE',
@@ -111,13 +111,6 @@ export enum MeltQuoteState {
   Paid = 'PAID',
   Pending = 'PENDING',
   Unpaid = 'UNPAID'
-}
-
-export enum MintAnalyticsInterval {
-  Custom = 'custom',
-  Day = 'day',
-  Month = 'month',
-  Week = 'week'
 }
 
 export type MintContactUpdateInput = {
@@ -407,6 +400,13 @@ export type OrchardAiModelDetails = {
   parent_model: Scalars['String']['output'];
   quantization_level: Scalars['String']['output'];
 };
+
+export enum OrchardAnalyticsInterval {
+  Custom = 'custom',
+  Day = 'day',
+  Month = 'month',
+  Week = 'week'
+}
 
 export type OrchardAuthentication = {
   __typename?: 'OrchardAuthentication';
@@ -1121,7 +1121,7 @@ export type QueryBitcoin_Transaction_Fee_EstimatesArgs = {
 export type QueryLightning_Analytics_OutboundArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
-  interval?: InputMaybe<MintAnalyticsInterval>;
+  interval?: InputMaybe<OrchardAnalyticsInterval>;
   timezone?: InputMaybe<Scalars['Timezone']['input']>;
 };
 
@@ -1134,7 +1134,7 @@ export type QueryLightning_RequestArgs = {
 export type QueryMint_Analytics_BalancesArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
-  interval?: InputMaybe<MintAnalyticsInterval>;
+  interval?: InputMaybe<OrchardAnalyticsInterval>;
   timezone?: InputMaybe<Scalars['Timezone']['input']>;
   units?: InputMaybe<Array<MintUnit>>;
 };
@@ -1143,7 +1143,7 @@ export type QueryMint_Analytics_BalancesArgs = {
 export type QueryMint_Analytics_FeesArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
-  interval?: InputMaybe<MintAnalyticsInterval>;
+  interval?: InputMaybe<OrchardAnalyticsInterval>;
   timezone?: InputMaybe<Scalars['Timezone']['input']>;
   units?: InputMaybe<Array<MintUnit>>;
 };
@@ -1152,7 +1152,7 @@ export type QueryMint_Analytics_FeesArgs = {
 export type QueryMint_Analytics_KeysetsArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
-  interval?: InputMaybe<MintAnalyticsInterval>;
+  interval?: InputMaybe<OrchardAnalyticsInterval>;
   timezone?: InputMaybe<Scalars['Timezone']['input']>;
 };
 
@@ -1160,7 +1160,7 @@ export type QueryMint_Analytics_KeysetsArgs = {
 export type QueryMint_Analytics_MeltsArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
-  interval?: InputMaybe<MintAnalyticsInterval>;
+  interval?: InputMaybe<OrchardAnalyticsInterval>;
   timezone?: InputMaybe<Scalars['Timezone']['input']>;
   units?: InputMaybe<Array<MintUnit>>;
 };
@@ -1169,7 +1169,7 @@ export type QueryMint_Analytics_MeltsArgs = {
 export type QueryMint_Analytics_MintsArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
-  interval?: InputMaybe<MintAnalyticsInterval>;
+  interval?: InputMaybe<OrchardAnalyticsInterval>;
   timezone?: InputMaybe<Scalars['Timezone']['input']>;
   units?: InputMaybe<Array<MintUnit>>;
 };
@@ -1178,7 +1178,7 @@ export type QueryMint_Analytics_MintsArgs = {
 export type QueryMint_Analytics_SwapsArgs = {
   date_end?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   date_start?: InputMaybe<Scalars['UnixTimestamp']['input']>;
-  interval?: InputMaybe<MintAnalyticsInterval>;
+  interval?: InputMaybe<OrchardAnalyticsInterval>;
   timezone?: InputMaybe<Scalars['Timezone']['input']>;
   units?: InputMaybe<Array<MintUnit>>;
 };

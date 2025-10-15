@@ -6,7 +6,7 @@ import {LightningService} from '@server/modules/lightning/lightning/lightning.se
 import {ErrorService} from '@server/modules/error/error.service';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
-import {MintAnalyticsInterval} from '@server/modules/cashu/mintdb/cashumintdb.enums';
+import {OrchardAnalyticsInterval} from '@server/modules/orchard/orchard.enums';
 /* Local Dependencies */
 import {LightningAnalyticsService} from './lnanalytics.service';
 import {OrchardLightningAnalytics} from './lnanalytics.model';
@@ -111,7 +111,7 @@ describe('LightningAnalyticsService', () => {
 			const args = {
 				date_start: now - 7 * 24 * 3600,
 				date_end: now,
-				interval: MintAnalyticsInterval.day,
+				interval: OrchardAnalyticsInterval.day,
 				timezone: 'UTC',
 			};
 
@@ -155,14 +155,14 @@ describe('LightningAnalyticsService', () => {
 			const result_week = await lightning_analytics_service.getOutboundLiquiditySeries('TAG', {
 				date_start: now - 30 * 24 * 3600,
 				date_end: now,
-				interval: MintAnalyticsInterval.week,
+				interval: OrchardAnalyticsInterval.week,
 			});
 
 			// Act - month interval
 			const result_month = await lightning_analytics_service.getOutboundLiquiditySeries('TAG', {
 				date_start: now - 90 * 24 * 3600,
 				date_end: now,
-				interval: MintAnalyticsInterval.month,
+				interval: OrchardAnalyticsInterval.month,
 			});
 
 			// Assert
@@ -184,7 +184,7 @@ describe('LightningAnalyticsService', () => {
 			const result = await lightning_analytics_service.getOutboundLiquiditySeries('TAG', {
 				date_start: now - 7 * 24 * 3600,
 				date_end: now,
-				interval: MintAnalyticsInterval.day,
+				interval: OrchardAnalyticsInterval.day,
 				timezone: 'America/New_York',
 			});
 
@@ -320,7 +320,7 @@ describe('LightningAnalyticsService', () => {
 			const result = await lightning_analytics_service.getOutboundLiquiditySeries('TAG', {
 				date_start: day_ago - 1,
 				date_end: now_ts,
-				interval: MintAnalyticsInterval.day,
+				interval: OrchardAnalyticsInterval.day,
 			});
 
 			// Assert

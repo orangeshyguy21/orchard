@@ -4,7 +4,7 @@ import {AmountPipe} from '@client/modules/local/pipes/amount/amount.pipe';
 /* Vendor Dependencies */
 import {DateTime, DateTimeUnit} from 'luxon';
 /* Shared Dependencies */
-import {MintAnalyticsInterval} from '@shared/generated.types';
+import {OrchardAnalyticsInterval} from '@shared/generated.types';
 
 type AnalyticsGroup = Record<string, MintAnalytic[]>;
 
@@ -59,7 +59,7 @@ export function getDataKeyedByTimestamp(analytics: MintAnalytic[], metric: strin
 	);
 }
 
-export function getAllPossibleTimestamps(first_timestamp: number, last_timestamp: number, interval: MintAnalyticsInterval): number[] {
+export function getAllPossibleTimestamps(first_timestamp: number, last_timestamp: number, interval: OrchardAnalyticsInterval): number[] {
 	const all_possible_timestamps = [];
 	let current_time = getValidTimestamp(first_timestamp, interval);
 	const last_valid_timestamp = getValidTimestamp(last_timestamp, interval);
@@ -73,15 +73,15 @@ export function getAllPossibleTimestamps(first_timestamp: number, last_timestamp
 	return all_possible_timestamps;
 }
 
-function getValidTimestamp(timestamp: number, interval: MintAnalyticsInterval): number {
+function getValidTimestamp(timestamp: number, interval: OrchardAnalyticsInterval): number {
 	const time_interval = getTimeInterval(interval);
 	return DateTime.fromSeconds(timestamp).startOf(time_interval).toSeconds();
 }
 
-function getNextTimestamp(timestamp: number, interval: MintAnalyticsInterval): number {
-	if (interval === MintAnalyticsInterval.Day) return DateTime.fromSeconds(timestamp).plus({days: 1}).toSeconds();
-	if (interval === MintAnalyticsInterval.Week) return DateTime.fromSeconds(timestamp).plus({weeks: 1}).toSeconds();
-	if (interval === MintAnalyticsInterval.Month) return DateTime.fromSeconds(timestamp).plus({months: 1}).toSeconds();
+function getNextTimestamp(timestamp: number, interval: OrchardAnalyticsInterval): number {
+	if (interval === OrchardAnalyticsInterval.Day) return DateTime.fromSeconds(timestamp).plus({days: 1}).toSeconds();
+	if (interval === OrchardAnalyticsInterval.Week) return DateTime.fromSeconds(timestamp).plus({weeks: 1}).toSeconds();
+	if (interval === OrchardAnalyticsInterval.Month) return DateTime.fromSeconds(timestamp).plus({months: 1}).toSeconds();
 	return DateTime.fromSeconds(timestamp).plus({days: 1}).toSeconds();
 }
 
@@ -118,9 +118,9 @@ export function getYAxisId(unit: string): string {
 	return 'ybtc';
 }
 
-export function getTimeInterval(interval: MintAnalyticsInterval): DateTimeUnit {
+export function getTimeInterval(interval: OrchardAnalyticsInterval): DateTimeUnit {
 	if (!interval) return 'day';
-	if (interval === MintAnalyticsInterval.Week) return 'week';
-	if (interval === MintAnalyticsInterval.Month) return 'month';
+	if (interval === OrchardAnalyticsInterval.Week) return 'week';
+	if (interval === OrchardAnalyticsInterval.Month) return 'month';
 	return 'day';
 }

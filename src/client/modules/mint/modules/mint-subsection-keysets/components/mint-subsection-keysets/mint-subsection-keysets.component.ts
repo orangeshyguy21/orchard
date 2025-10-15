@@ -22,7 +22,7 @@ import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
 import {MintAnalyticKeyset} from '@client/modules/mint/classes/mint-analytic.class';
 import {MintKeysetProofCount} from '@client/modules/mint/classes/mint-keyset-proof-count.class';
 /* Shared Dependencies */
-import {MintUnit, MintAnalyticsInterval, AiFunctionName, AiAgent} from '@shared/generated.types';
+import {MintUnit, OrchardAnalyticsInterval, AiFunctionName, AiAgent} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-subsection-keysets',
@@ -41,7 +41,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 
 	public mint_keysets: MintKeyset[] = [];
 	public locale!: string;
-	public interval!: MintAnalyticsInterval;
+	public interval!: OrchardAnalyticsInterval;
 	public mint_genesis_time: number = 0;
 	public page_settings!: NonNullableMintKeysetsSettings;
 	public loading_static_data: boolean = true;
@@ -159,17 +159,17 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		this.cdr.detectChanges();
 	}
 
-	private getAnalyticsInterval(): MintAnalyticsInterval {
+	private getAnalyticsInterval(): OrchardAnalyticsInterval {
 		const days_diff = DateTime.fromSeconds(this.page_settings.date_end).diff(
 			DateTime.fromSeconds(this.page_settings.date_start),
 			'days',
 		).days;
-		if (days_diff <= 90) return MintAnalyticsInterval.Day;
-		if (days_diff <= 365) return MintAnalyticsInterval.Week;
-		return MintAnalyticsInterval.Month;
+		if (days_diff <= 90) return OrchardAnalyticsInterval.Day;
+		if (days_diff <= 365) return OrchardAnalyticsInterval.Week;
+		return OrchardAnalyticsInterval.Month;
 	}
 
-	private async loadKeysetsAnalytics(timezone: string, interval: MintAnalyticsInterval): Promise<void> {
+	private async loadKeysetsAnalytics(timezone: string, interval: OrchardAnalyticsInterval): Promise<void> {
 		const analytics_keysets_obs = this.mintService.loadMintAnalyticsKeysets({
 			date_start: this.page_settings.date_start,
 			date_end: this.page_settings.date_end,
@@ -179,7 +179,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		const analytics_keysets_pre_obs = this.mintService.loadMintAnalyticsKeysets({
 			date_start: 100000,
 			date_end: this.page_settings.date_start - 1,
-			interval: MintAnalyticsInterval.Custom,
+			interval: OrchardAnalyticsInterval.Custom,
 			timezone: timezone,
 		});
 		const keyset_proof_counts_obs = this.mintService.loadMintKeysetProofCounts({
@@ -372,7 +372,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	}
 
 	private executeAgentFunction(tool_call: AiChatToolCall): void {
-		if (tool_call.function.name === AiFunctionName.MintAnalyticsDateRangeUpdate) {
+		if (tool_call.function.name === AiFunctionName.AnalyticsDateRangeUpdate) {
 			const range = [
 				DateTime.fromFormat(tool_call.function.arguments.date_start, 'yyyy-MM-dd').toSeconds(),
 				DateTime.fromFormat(tool_call.function.arguments.date_end, 'yyyy-MM-dd').toSeconds(),

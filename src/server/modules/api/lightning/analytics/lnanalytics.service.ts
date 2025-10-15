@@ -6,7 +6,7 @@ import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.cla
 import {ErrorService} from '@server/modules/error/error.service';
 import {LightningService} from '@server/modules/lightning/lightning/lightning.service';
 import {TimezoneType} from '@server/modules/graphql/scalars/timezone.scalar';
-import {MintAnalyticsInterval} from '@server/modules/cashu/mintdb/cashumintdb.enums';
+import {OrchardAnalyticsInterval} from '@server/modules/orchard/orchard.enums';
 /* Vendor Dependencies */
 import {DateTime} from 'luxon';
 /* Local Dependencies */
@@ -15,7 +15,7 @@ import {OrchardLightningAnalytics} from './lnanalytics.model';
 type AnalyticsArgs = {
 	date_start?: number;
 	date_end?: number;
-	interval?: MintAnalyticsInterval;
+	interval?: OrchardAnalyticsInterval;
 	timezone?: TimezoneType;
 };
 
@@ -33,7 +33,7 @@ export class LightningAnalyticsService {
 			const timezone = args.timezone || 'UTC';
 			const end_ts = args.date_end ?? Math.floor(Date.now() / 1000);
 			const start_ts = args.date_start ?? end_ts - 30 * 24 * 3600;
-			const interval = args.interval || MintAnalyticsInterval.day;
+			const interval = args.interval || OrchardAnalyticsInterval.day;
 
 			const buckets = this.buildTimeBuckets(start_ts, end_ts, interval, timezone);
 
@@ -72,7 +72,7 @@ export class LightningAnalyticsService {
 		return total_local_sat;
 	}
 
-	private buildTimeBuckets(start_ts: number, end_ts: number, interval: MintAnalyticsInterval, timezone: string) {
+	private buildTimeBuckets(start_ts: number, end_ts: number, interval: OrchardAnalyticsInterval, timezone: string) {
 		const buckets: {ts: number}[] = [];
 		let cursor = DateTime.fromSeconds(end_ts, {zone: 'UTC'});
 		const start_dt = DateTime.fromSeconds(start_ts, {zone: 'UTC'});

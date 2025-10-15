@@ -1,5 +1,5 @@
 /* Shared Dependencies */
-import {MintUnit, MintAnalyticsInterval} from '@shared/generated.types';
+import {MintUnit, OrchardAnalyticsInterval} from '@shared/generated.types';
 /* Application Dependencies */
 import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
 import {MintDataType} from '@client/modules/mint/enums/data-type.enum';
@@ -28,7 +28,7 @@ export enum ThemeType {
 export type MintDashboardSettings = {
 	date_start: number | null;
 	units: MintUnit[] | null;
-	interval: MintAnalyticsInterval | null;
+	interval: OrchardAnalyticsInterval | null;
 	type: ChartType | null;
 	tertiary_nav: string[] | null;
 };

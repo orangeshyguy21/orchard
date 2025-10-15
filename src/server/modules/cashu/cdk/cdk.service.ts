@@ -7,6 +7,7 @@ import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 /* Application Dependencies */
 import {CredentialService} from '@server/modules/credential/credential.service';
+import {OrchardAnalyticsInterval} from '@server/modules/orchard/orchard.enums';
 /* Native Dependencies */
 import {
 	CashuMintDatabase,
@@ -39,7 +40,7 @@ import {
 	queryRow,
 	extractRequestString,
 } from '@server/modules/cashu/mintdb/cashumintdb.helpers';
-import {MintAnalyticsInterval, MintDatabaseType} from '@server/modules/cashu/mintdb/cashumintdb.enums';
+import {MintDatabaseType} from '@server/modules/cashu/mintdb/cashumintdb.enums';
 /* Local Dependencies */
 import {CdkMintProof, CdkMintPromise, CdkMintAnalytics, CdkMintKeysetsAnalytics} from './cdk.types';
 
@@ -478,7 +479,7 @@ export class CdkService {
 	/* Analytics */
 
 	public async getMintAnalyticsBalances(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
-		const interval = args?.interval || MintAnalyticsInterval.day;
+		const interval = args?.interval || OrchardAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
 		const {where_conditions, params} = getAnalyticsConditions({
 			args: args,
@@ -569,7 +570,7 @@ export class CdkService {
 	}
 
 	public async getMintAnalyticsMints(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
-		const interval = args?.interval || MintAnalyticsInterval.day;
+		const interval = args?.interval || OrchardAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
 		const {where_conditions, params} = getAnalyticsConditions({
 			args: args,
@@ -623,7 +624,7 @@ export class CdkService {
 	}
 
 	public async getMintAnalyticsMelts(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
-		const interval = args?.interval || MintAnalyticsInterval.day;
+		const interval = args?.interval || OrchardAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
 		const {where_conditions, params} = getAnalyticsConditions({
 			args: args,
@@ -677,7 +678,7 @@ export class CdkService {
 	}
 
 	public async getMintAnalyticsSwaps(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
-		const interval = args?.interval || MintAnalyticsInterval.day;
+		const interval = args?.interval || OrchardAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
 		const {where_conditions, params} = getAnalyticsConditions({
 			args: args,
@@ -733,7 +734,7 @@ export class CdkService {
 	}
 
 	public async getMintAnalyticsKeysets(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintKeysetsAnalytics[]> {
-		const interval = args?.interval || MintAnalyticsInterval.day;
+		const interval = args?.interval || OrchardAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
 		const {where_conditions, params} = getAnalyticsConditions({
 			args: args,

@@ -7,6 +7,7 @@ import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 /* Application Dependencies */
 import {CredentialService} from '@server/modules/credential/credential.service';
+import {OrchardAnalyticsInterval} from '@server/modules/orchard/orchard.enums';
 /* Native Dependencies */
 import {
 	CashuMintDatabase,
@@ -40,7 +41,6 @@ import {
 	queryRows,
 	queryRow,
 } from '@server/modules/cashu/mintdb/cashumintdb.helpers';
-import {MintAnalyticsInterval} from '@server/modules/cashu/mintdb/cashumintdb.enums';
 import {MintPaymentMethod} from '@server/modules/cashu/cashu.enums';
 /* Local Dependencies */
 import {
@@ -421,7 +421,7 @@ export class NutshellService {
 	/* Analytics */
 
 	public async getMintAnalyticsBalances(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
-		const interval = args?.interval || MintAnalyticsInterval.day;
+		const interval = args?.interval || OrchardAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
 		const {where_conditions, params} = getAnalyticsConditions({
 			args: args,
@@ -496,7 +496,7 @@ export class NutshellService {
 	}
 
 	public async getMintAnalyticsMints(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
-		const interval = args?.interval || MintAnalyticsInterval.day;
+		const interval = args?.interval || OrchardAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
 		const {where_conditions, params} = getAnalyticsConditions({
 			args: args,
@@ -548,7 +548,7 @@ export class NutshellService {
 	}
 
 	public async getMintAnalyticsMelts(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
-		const interval = args?.interval || MintAnalyticsInterval.day;
+		const interval = args?.interval || OrchardAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
 		const {where_conditions, params} = getAnalyticsConditions({
 			args: args,
@@ -600,7 +600,7 @@ export class NutshellService {
 	}
 
 	public async getMintAnalyticsSwaps(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
-		const interval = args?.interval || MintAnalyticsInterval.day;
+		const interval = args?.interval || OrchardAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
 		const {where_conditions, params} = getAnalyticsConditions({
 			args: args,
@@ -654,7 +654,7 @@ export class NutshellService {
 	}
 
 	public async getMintAnalyticsFees(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
-		const interval = args?.interval || MintAnalyticsInterval.day;
+		const interval = args?.interval || OrchardAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
 		const {where_conditions, params} = getAnalyticsConditions({
 			args: args,
@@ -670,7 +670,9 @@ export class NutshellService {
 			db_type: client.type,
 		});
 		const fee_calculation_sql =
-			args?.interval === MintAnalyticsInterval.custom ? `MAX(keyset_fees_paid)` : `(MAX(keyset_fees_paid) - MIN(keyset_fees_paid))`;
+			args?.interval === OrchardAnalyticsInterval.custom
+				? `MAX(keyset_fees_paid)`
+				: `(MAX(keyset_fees_paid) - MIN(keyset_fees_paid))`;
 
 		const sql = `
 			SELECT 
@@ -709,7 +711,7 @@ export class NutshellService {
 	}
 
 	public async getMintAnalyticsKeysets(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintKeysetsAnalytics[]> {
-		const interval = args?.interval || MintAnalyticsInterval.day;
+		const interval = args?.interval || OrchardAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
 		const {where_conditions, params} = getAnalyticsConditions({
 			args: args,

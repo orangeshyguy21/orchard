@@ -35,7 +35,7 @@ import {MintFee} from '@client/modules/mint/classes/mint-fee.class';
 import {MintAnalytic} from '@client/modules/mint/classes/mint-analytic.class';
 import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
 /* Shared Dependencies */
-import {AiFunctionName, MintAnalyticsInterval, MintUnit} from '@shared/generated.types';
+import {AiFunctionName, OrchardAnalyticsInterval, MintUnit} from '@shared/generated.types';
 
 enum NavTertiary {
 	BalanceSheet = 'nav1',
@@ -247,7 +247,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			units: this.page_settings.units,
 			date_start: 100000,
 			date_end: this.page_settings.date_start - 1,
-			interval: MintAnalyticsInterval.Custom,
+			interval: OrchardAnalyticsInterval.Custom,
 			timezone: timezone,
 		});
 		const analytics_mints_obs = this.mintService.loadMintAnalyticsMints({
@@ -261,7 +261,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			units: this.page_settings.units,
 			date_start: 100000,
 			date_end: this.page_settings.date_start - 1,
-			interval: MintAnalyticsInterval.Custom,
+			interval: OrchardAnalyticsInterval.Custom,
 			timezone: timezone,
 		});
 		const analytics_melts_obs = this.mintService.loadMintAnalyticsMelts({
@@ -275,7 +275,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			units: this.page_settings.units,
 			date_start: 100000,
 			date_end: this.page_settings.date_start - 1,
-			interval: MintAnalyticsInterval.Custom,
+			interval: OrchardAnalyticsInterval.Custom,
 			timezone: timezone,
 		});
 		const analytics_swaps_obs = this.mintService.loadMintAnalyticsSwaps({
@@ -289,7 +289,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			units: this.page_settings.units,
 			date_start: 100000,
 			date_end: this.page_settings.date_start - 1,
-			interval: MintAnalyticsInterval.Custom,
+			interval: OrchardAnalyticsInterval.Custom,
 			timezone: timezone,
 		});
 		const analytics_fees_obs = this.mintService.loadMintAnalyticsFees({
@@ -303,7 +303,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			units: this.page_settings.units,
 			date_start: 100000,
 			date_end: this.page_settings.date_start - 1,
-			interval: MintAnalyticsInterval.Custom,
+			interval: OrchardAnalyticsInterval.Custom,
 			timezone: timezone,
 		});
 		const [
@@ -373,7 +373,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		const settings = this.settingService.getMintDashboardSettings();
 		return {
 			type: settings.type ?? ChartType.Summary,
-			interval: settings.interval ?? MintAnalyticsInterval.Day,
+			interval: settings.interval ?? OrchardAnalyticsInterval.Day,
 			units: settings.units ?? this.getSelectedUnits(), // @todo there will be bugs here if a unit is not in the keysets (audit active keysets)
 			date_start: settings.date_start ?? this.getSelectedDateStart(),
 			date_end: settings.date_end ?? this.getSelectedDateEnd(),
@@ -401,7 +401,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	******************************************************** */
 
 	private executeAgentFunction(tool_call: AiChatToolCall): void {
-		if (tool_call.function.name === AiFunctionName.MintAnalyticsDateRangeUpdate) {
+		if (tool_call.function.name === AiFunctionName.AnalyticsDateRangeUpdate) {
 			const range = [
 				DateTime.fromFormat(tool_call.function.arguments.date_start, 'yyyy-MM-dd').toSeconds(),
 				DateTime.fromFormat(tool_call.function.arguments.date_end, 'yyyy-MM-dd').toSeconds(),
@@ -411,7 +411,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		if (tool_call.function.name === AiFunctionName.MintAnalyticsUnitsUpdate) {
 			this.onUnitsChange(tool_call.function.arguments.units);
 		}
-		if (tool_call.function.name === AiFunctionName.MintAnalyticsIntervalUpdate) {
+		if (tool_call.function.name === AiFunctionName.AnalyticsIntervalUpdate) {
 			this.onIntervalChange(tool_call.function.arguments.interval);
 		}
 		if (tool_call.function.name === AiFunctionName.MintAnalyticsTypeUpdate) {
@@ -436,7 +436,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.reloadDynamicData();
 	}
 
-	public onIntervalChange(event: MintAnalyticsInterval): void {
+	public onIntervalChange(event: OrchardAnalyticsInterval): void {
 		this.page_settings.interval = event;
 		this.settingService.setMintDashboardSettings(this.page_settings);
 		this.reloadDynamicData();

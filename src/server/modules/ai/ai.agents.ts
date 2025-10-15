@@ -1,9 +1,9 @@
 /* Local Dependencies */
 import {AiAgent} from './ai.enums';
 import {
-	UpdateMintAnalyticsDateRangeTool,
+	UpdateAnalyticsDateRangeTool,
+	UpdateAnalyticsIntervalTool,
 	UpdateMintAnalyticsUnitsTool,
-	UpdateMintAnalyticsIntervalTool,
 	UpdateMintAnalyticsTypeTool,
 	UpdateMintNameTool,
 	UpdateMintDescriptionTool,
@@ -51,12 +51,7 @@ export const AI_AGENTS = {
 			role: 'system',
 			content: 'You are an agent designed to help adjust parameters used to explore mint analytics.',
 		},
-		tools: [
-			UpdateMintAnalyticsDateRangeTool,
-			UpdateMintAnalyticsUnitsTool,
-			UpdateMintAnalyticsIntervalTool,
-			UpdateMintAnalyticsTypeTool,
-		],
+		tools: [UpdateAnalyticsDateRangeTool, UpdateAnalyticsIntervalTool, UpdateMintAnalyticsUnitsTool, UpdateMintAnalyticsTypeTool],
 	},
 	[AiAgent.MINT_INFO]: {
 		name: 'Mint Info Agent',
@@ -110,7 +105,7 @@ export const AI_AGENTS = {
 			content: `You are an agent designed to help explore data related to mint keysets.
             You will be provided with the current state of the form along with the users request for changes`,
 		},
-		tools: [UpdateMintAnalyticsDateRangeTool, UpdateMintAnalyticsUnitsTool, UpdateMintKeysetStatusTool],
+		tools: [UpdateAnalyticsDateRangeTool, UpdateMintAnalyticsUnitsTool, UpdateMintKeysetStatusTool],
 	},
 	[AiAgent.MINT_KEYSET_ROTATION]: {
 		name: 'Mint Keyset Rotation',
@@ -134,12 +129,7 @@ export const AI_AGENTS = {
 			content: `You are an agent designed to help explore the database of a cashu mint.
             You will be provided with the current state of the form along with the users request for changes`,
 		},
-		tools: [
-			UpdateMintAnalyticsDateRangeTool,
-			UpdateMintAnalyticsUnitsTool,
-			UpdateMintDatabaseDataTypeTool,
-			UpdateMintDatabaseStatesTool,
-		],
+		tools: [UpdateAnalyticsDateRangeTool, UpdateMintAnalyticsUnitsTool, UpdateMintDatabaseDataTypeTool, UpdateMintDatabaseStatesTool],
 	},
 	[AiAgent.MINT_BACKUP]: {
 		name: 'Mint Backup',

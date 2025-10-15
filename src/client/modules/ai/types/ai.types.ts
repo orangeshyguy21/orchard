@@ -2,7 +2,14 @@
 import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
 import {MintDataType} from '@client/modules/mint/enums/data-type.enum';
 /* Shared Dependencies */
-import {OrchardAiChatChunk, OrchardAiModel, OrchardAiAgent, AiFunctionName, MintUnit, MintAnalyticsInterval} from '@shared/generated.types';
+import {
+	OrchardAiChatChunk,
+	OrchardAiModel,
+	OrchardAiAgent,
+	OrchardAnalyticsInterval,
+	AiFunctionName,
+	MintUnit,
+} from '@shared/generated.types';
 
 export type AiChatResponse = {
 	ai_chat: OrchardAiChatChunk;
@@ -17,9 +24,9 @@ export type AiAgentResponse = {
 };
 
 export type AiFunction =
-	| AiFunctionUpdateMintAnalyticsDateRange
+	| AiFunctionUpdateAnalyticsDateRange
+	| AiFunctionUpdateAnalyticsInterval
 	| AiFunctionUpdateMintAnalyticsUnits
-	| AiFunctionUpdateMintAnalyticsInterval
 	| AiFunctionUpdateMintAnalyticsType
 	| AiFunctionUpdateMintName
 	| AiFunctionUpdateMintDescription
@@ -45,11 +52,18 @@ export type AiFunction =
 	| AiFunctionUpdateMintDatabaseStates
 	| AiFunctionUpdateMintBackupFilename;
 
-export type AiFunctionUpdateMintAnalyticsDateRange = {
-	name: AiFunctionName.MintAnalyticsDateRangeUpdate;
+export type AiFunctionUpdateAnalyticsDateRange = {
+	name: AiFunctionName.AnalyticsDateRangeUpdate;
 	arguments: {
 		date_start: string;
 		date_end: string;
+	};
+};
+
+export type AiFunctionUpdateAnalyticsInterval = {
+	name: AiFunctionName.AnalyticsIntervalUpdate;
+	arguments: {
+		interval: OrchardAnalyticsInterval;
 	};
 };
 
@@ -57,13 +71,6 @@ export type AiFunctionUpdateMintAnalyticsUnits = {
 	name: AiFunctionName.MintAnalyticsUnitsUpdate;
 	arguments: {
 		units: MintUnit[];
-	};
-};
-
-export type AiFunctionUpdateMintAnalyticsInterval = {
-	name: AiFunctionName.MintAnalyticsIntervalUpdate;
-	arguments: {
-		interval: MintAnalyticsInterval;
 	};
 };
 

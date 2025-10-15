@@ -4,6 +4,7 @@ import {
 	OrchardLightningAccount,
 	OrchardLightningRequest,
 	OrchardLightningAnalytics,
+	OrchardAnalyticsInterval,
 } from '@shared/generated.types';
 
 export type LightningInfoResponse = {
@@ -29,6 +30,6 @@ export type LightningAnalyticsOutboundResponse = {
 export type LightningAnalyticsArgs = {
 	date_start?: number;
 	date_end?: number;
-	// interval?: MintAnalyticsInterval; this needs to be OrchardAnalyticsInterval
+	interval?: OrchardAnalyticsInterval;
 	timezone?: string;
 };

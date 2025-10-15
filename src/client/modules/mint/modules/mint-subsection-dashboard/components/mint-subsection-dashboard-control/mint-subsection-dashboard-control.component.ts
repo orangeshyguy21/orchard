@@ -12,7 +12,7 @@ import {NonNullableMintDashboardSettings} from '@client/modules/settings/types/s
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
 /* Shared Dependencies */
-import {MintAnalyticsInterval, MintUnit} from '@shared/generated.types';
+import {OrchardAnalyticsInterval, MintUnit} from '@shared/generated.types';
 
 type UnitOption = {
 	label: string;
@@ -20,7 +20,7 @@ type UnitOption = {
 };
 type IntervalOption = {
 	label: string;
-	value: MintAnalyticsInterval;
+	value: OrchardAnalyticsInterval;
 };
 type TypeOption = {
 	label: string;
@@ -39,7 +39,7 @@ export class MintSubsectionDashboardControlComponent implements OnChanges {
 	@Input() date_start?: number;
 	@Input() date_end?: number;
 	@Input() units?: MintUnit[];
-	@Input() interval?: MintAnalyticsInterval;
+	@Input() interval?: OrchardAnalyticsInterval;
 	@Input() type?: ChartType;
 	@Input() keysets!: MintKeyset[];
 	@Input() loading!: boolean;
@@ -47,7 +47,7 @@ export class MintSubsectionDashboardControlComponent implements OnChanges {
 
 	@Output() dateChange = new EventEmitter<number[]>();
 	@Output() unitsChange = new EventEmitter<MintUnit[]>();
-	@Output() intervalChange = new EventEmitter<MintAnalyticsInterval>();
+	@Output() intervalChange = new EventEmitter<OrchardAnalyticsInterval>();
 	@Output() typeChange = new EventEmitter<ChartType>();
 
 	public readonly panel = new FormGroup({
@@ -56,15 +56,15 @@ export class MintSubsectionDashboardControlComponent implements OnChanges {
 			date_end: new FormControl<DateTime | null>(null, [Validators.required]),
 		}),
 		units: new FormControl<MintUnit[] | null>(null, [Validators.required]),
-		interval: new FormControl<MintAnalyticsInterval | null>(null, [Validators.required]),
+		interval: new FormControl<OrchardAnalyticsInterval | null>(null, [Validators.required]),
 		type: new FormControl<ChartType | null>(null, [Validators.required]),
 	});
 
 	public unit_options!: UnitOption[];
 	public interval_options: IntervalOption[] = [
-		{label: 'Day', value: MintAnalyticsInterval.Day},
-		{label: 'Week', value: MintAnalyticsInterval.Week},
-		{label: 'Month', value: MintAnalyticsInterval.Month},
+		{label: 'Day', value: OrchardAnalyticsInterval.Day},
+		{label: 'Week', value: OrchardAnalyticsInterval.Week},
+		{label: 'Month', value: OrchardAnalyticsInterval.Month},
 	];
 	public type_options: TypeOption[] = [
 		{label: 'Summary', value: ChartType.Summary},

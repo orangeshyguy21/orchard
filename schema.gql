@@ -32,8 +32,8 @@ input AiChatMessageInput {
 }
 
 enum AiFunctionName {
-  MINT_ANALYTICS_DATE_RANGE_UPDATE
-  MINT_ANALYTICS_INTERVAL_UPDATE
+  ANALYTICS_DATE_RANGE_UPDATE
+  ANALYTICS_INTERVAL_UPDATE
   MINT_ANALYTICS_TYPE_UPDATE
   MINT_ANALYTICS_UNITS_UPDATE
   MINT_BACKUP_FILENAME_UPDATE
@@ -96,13 +96,6 @@ enum MeltQuoteState {
   PAID
   PENDING
   UNPAID
-}
-
-enum MintAnalyticsInterval {
-  custom
-  day
-  month
-  week
 }
 
 input MintContactUpdateInput {
@@ -293,6 +286,13 @@ type OrchardAiModelDetails {
   parameter_size: String!
   parent_model: String!
   quantization_level: String!
+}
+
+enum OrchardAnalyticsInterval {
+  custom
+  day
+  month
+  week
 }
 
 type OrchardAuthentication {
@@ -870,17 +870,17 @@ type Query {
   bitcoin_network_info: OrchardBitcoinNetworkInfo!
   bitcoin_oracle(date: String!, intraday: Boolean): OrchardBitcoinOracle!
   bitcoin_transaction_fee_estimates(targets: [Int!]!): [OrchardBitcoinTxFeeEstimate!]!
-  lightning_analytics_outbound(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone): [OrchardLightningAnalytics!]!
+  lightning_analytics_outbound(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: OrchardAnalyticsInterval, timezone: Timezone): [OrchardLightningAnalytics!]!
   lightning_balance: OrchardLightningBalance!
   lightning_info: OrchardLightningInfo!
   lightning_request(request: String!): OrchardLightningRequest!
   lightning_wallet: [OrchardLightningAccount!]!
-  mint_analytics_balances(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
-  mint_analytics_fees(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
-  mint_analytics_keysets(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone): [OrchardMintKeysetsAnalytics!]!
-  mint_analytics_melts(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
-  mint_analytics_mints(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
-  mint_analytics_swaps(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
+  mint_analytics_balances(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: OrchardAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
+  mint_analytics_fees(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: OrchardAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
+  mint_analytics_keysets(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: OrchardAnalyticsInterval, timezone: Timezone): [OrchardMintKeysetsAnalytics!]!
+  mint_analytics_melts(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: OrchardAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
+  mint_analytics_mints(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: OrchardAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
+  mint_analytics_swaps(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: OrchardAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
   mint_balances(keyset_id: String): [OrchardMintBalance!]!
   mint_balances_issued: [OrchardMintBalance!]!
   mint_balances_redeemed: [OrchardMintBalance!]!

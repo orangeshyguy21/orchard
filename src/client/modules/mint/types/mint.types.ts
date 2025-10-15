@@ -10,7 +10,7 @@ import {
 	OrchardMintPromiseGroup,
 	OrchardMintKeysetsAnalytics,
 	MintUnit,
-	MintAnalyticsInterval,
+	OrchardAnalyticsInterval,
 	MintQuoteState,
 	MeltQuoteState,
 	MintProofState,
@@ -93,7 +93,7 @@ export type MintAnalyticsArgs = {
 	units?: MintUnit[];
 	date_start?: number;
 	date_end?: number;
-	interval?: MintAnalyticsInterval;
+	interval?: OrchardAnalyticsInterval;
 	timezone?: string;
 };
 
