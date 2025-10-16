@@ -7,7 +7,23 @@ import {LightningType} from '@server/modules/lightning/lightning.enums';
 import {LndService} from '@server/modules/lightning/lnd/lnd.service';
 import {ClnService} from '@server/modules/lightning/cln/cln.service';
 /* Local Dependencies */
-import {LightningInfo, LightningChannelBalance, LightningRequest} from './lightning.types';
+import {
+	LightningInfo,
+	LightningChannelBalance,
+	LightningRequest,
+	ListPaymentsRequest,
+	LightningPayments,
+	ListInvoicesRequest,
+	LightningInvoices,
+	ForwardingHistoryRequest,
+	LightningForwardingHistory,
+	ClosedChannelsRequest,
+	LightningClosedChannels,
+	GetTransactionsRequest,
+	LightningTransactionDetails,
+	ListChannelsRequest,
+	LightningChannels,
+} from './lightning.types';
 
 @Injectable()
 export class LightningService implements OnModuleInit {
@@ -46,35 +62,34 @@ export class LightningService implements OnModuleInit {
 		});
 	}
 
-	// LND-only generic callers for analytics use-cases
-	public async listPayments(request: any): Promise<any> {
-		if (this.type !== 'lnd') throw OrchardErrorCode.LightningSupportError;
-		return this.makeGrpcRequest('ListPayments', request);
+	public async listPayments(request: ListPaymentsRequest): Promise<LightningPayments> {
+		if (this.type === 'lnd') return this.makeGrpcRequest('ListPayments', request);
+		if (this.type === 'cln') throw OrchardErrorCode.LightningSupportError;
 	}
 
-	public async listInvoices(request: any): Promise<any> {
-		if (this.type !== 'lnd') throw OrchardErrorCode.LightningSupportError;
-		return this.makeGrpcRequest('ListInvoices', request);
+	public async listInvoices(request: ListInvoicesRequest): Promise<LightningInvoices> {
+		if (this.type === 'lnd') return this.makeGrpcRequest('ListInvoices', request);
+		if (this.type === 'cln') throw OrchardErrorCode.LightningSupportError;
 	}
 
-	public async forwardingHistory(request: any): Promise<any> {
-		if (this.type !== 'lnd') throw OrchardErrorCode.LightningSupportError;
-		return this.makeGrpcRequest('ForwardingHistory', request);
+	public async forwardingHistory(request: ForwardingHistoryRequest): Promise<LightningForwardingHistory> {
+		if (this.type === 'lnd') return this.makeGrpcRequest('ForwardingHistory', request);
+		if (this.type === 'cln') throw OrchardErrorCode.LightningSupportError;
 	}
 
-	public async closedChannels(request: any): Promise<any> {
-		if (this.type !== 'lnd') throw OrchardErrorCode.LightningSupportError;
-		return this.makeGrpcRequest('ClosedChannels', request);
+	public async closedChannels(request: ClosedChannelsRequest): Promise<LightningClosedChannels> {
+		if (this.type === 'lnd') return this.makeGrpcRequest('ClosedChannels', request);
+		if (this.type === 'cln') throw OrchardErrorCode.LightningSupportError;
 	}
 
-	public async getTransactions(request: any): Promise<any> {
-		if (this.type !== 'lnd') throw OrchardErrorCode.LightningSupportError;
-		return this.makeGrpcRequest('GetTransactions', request);
+	public async getTransactions(request: GetTransactionsRequest): Promise<LightningTransactionDetails> {
+		if (this.type === 'lnd') return this.makeGrpcRequest('GetTransactions', request);
+		if (this.type === 'cln') throw OrchardErrorCode.LightningSupportError;
 	}
 
-	public async listChannels(request: any): Promise<any> {
-		if (this.type !== 'lnd') throw OrchardErrorCode.LightningSupportError;
-		return this.makeGrpcRequest('ListChannels', request);
+	public async listChannels(request: ListChannelsRequest): Promise<LightningChannels> {
+		if (this.type === 'lnd') return this.makeGrpcRequest('ListChannels', request);
+		if (this.type === 'cln') throw OrchardErrorCode.LightningSupportError;
 	}
 
 	async getLightningInfo(): Promise<LightningInfo> {

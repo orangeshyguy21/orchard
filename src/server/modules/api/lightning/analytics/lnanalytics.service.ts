@@ -114,8 +114,8 @@ export class LightningAnalyticsService {
 
 	private async getOutgoingPaymentEvents(start_ts: number, end_ts: number) {
 		const events: {ts: number; delta_sat: number}[] = [];
-		let index_offset = 0;
-		const max_payments = 1000;
+		let index_offset = '0';
+		const max_payments = '1000';
 		while (true) {
 			const res = await this.lightningService.listPayments({
 				include_incomplete: false,
@@ -132,15 +132,15 @@ export class LightningAnalyticsService {
 				const fee_sat = Number(p.fee_sat || 0);
 				events.push({ts, delta_sat: amount_sat + fee_sat}); // backward add
 			}
-			if (!res || !res.first_index_offset || res.payments?.length < max_payments) break;
-			index_offset = Number(res.first_index_offset);
+			if (!res || !res.first_index_offset || res.payments?.length < Number(max_payments)) break;
+			index_offset = res.first_index_offset;
 		}
 		return events;
 	}
 
 	private async getIncomingInvoiceEvents(start_ts: number, end_ts: number) {
 		const events: {ts: number; delta_sat: number}[] = [];
-		let index_offset = 0;
+		let index_offset = '0';
 		const num_max_invoices = 1000;
 		while (true) {
 			const res = await this.lightningService.listInvoices({
@@ -151,15 +151,15 @@ export class LightningAnalyticsService {
 			});
 			for (const inv of res?.invoices || []) {
 				if (!inv.settled) continue;
-				const settle_time = Number(inv.settle_time || inv.settle_date || 0); // seconds
-				const ts = settle_time || Math.floor(Number(inv.creation_date || 0));
+				const settle_date = Number(inv.settle_date || 0); // seconds
+				const ts = settle_date || Math.floor(Number(inv.creation_date || 0));
 				if (ts < start_ts) return events;
 				if (ts > end_ts) continue;
 				const amt_paid_sat = Number(inv.amt_paid_sat || 0);
 				events.push({ts, delta_sat: -amt_paid_sat}); // backward subtract
 			}
 			if (!res || !res.first_index_offset || res.invoices?.length < num_max_invoices) break;
-			index_offset = Number(res.first_index_offset);
+			index_offset = res.first_index_offset;
 		}
 		return events;
 	}
@@ -192,7 +192,7 @@ export class LightningAnalyticsService {
 		for (const ch of res?.channels || []) {
 			const settled_balance = Number(ch.settled_balance || 0);
 			// Estimate close timestamp via closing tx time if available, else skip
-			const closing_txid = ch.closing_tx_hash || ch.closing_txid || ch.close_txid;
+			const closing_txid = ch.closing_tx_hash;
 			if (!closing_txid) continue;
 			const txs = await this.lightningService.getTransactions({start_height: 0, end_height: 0});
 			const tx = (txs?.transactions || []).find((t: any) => t.tx_hash === closing_txid || t.tx_hash === closing_txid?.toLowerCase());
