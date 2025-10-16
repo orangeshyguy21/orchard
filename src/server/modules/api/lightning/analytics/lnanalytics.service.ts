@@ -75,8 +75,6 @@ export class LightningAnalyticsService {
 	private buildTimeBuckets(start_ts: number, end_ts: number, interval: OrchardAnalyticsInterval, timezone: string) {
 		const buckets: {ts: number}[] = [];
 
-		if (interval === OrchardAnalyticsInterval.custom) return [{ts: start_ts}];
-
 		let cursor = DateTime.fromSeconds(end_ts, {zone: 'UTC'});
 		const start_dt = DateTime.fromSeconds(start_ts, {zone: 'UTC'});
 
@@ -107,7 +105,19 @@ export class LightningAnalyticsService {
 			while (events.length && events[0].ts > bucket_ts) {
 				l_sat += events.shift()!.delta_sat;
 			}
-			result.set(bucket_ts, l_sat);
+			// Clamp to 0 since negative liquidity is impossible
+			// Negative values indicate incomplete historical data (e.g., channels opened before tracking started)
+			result.set(bucket_ts, Math.max(0, l_sat));
+		}
+		// Process any remaining events (for buckets before all activity started)
+		// This ensures historical queries before channel opens return 0, not current balance
+		while (events.length) {
+			l_sat += events.shift()!.delta_sat;
+		}
+		// Update the earliest bucket with the fully reconstructed value
+		if (sorted_buckets.length > 0) {
+			const earliest_bucket = sorted_buckets[sorted_buckets.length - 1];
+			result.set(earliest_bucket, Math.max(0, l_sat));
 		}
 		return result;
 	}
@@ -198,7 +208,8 @@ export class LightningAnalyticsService {
 			const tx = (txs?.transactions || []).find((t: any) => t.tx_hash === closing_txid || t.tx_hash === closing_txid?.toLowerCase());
 			const ts = tx ? Number(tx.time_stamp) : 0;
 			if (!ts) continue;
-			if (ts < start_ts || ts > end_ts) continue;
+			// Include ALL channel closes, even before start_ts, to properly reconstruct backward
+			// This ensures we account for channels that existed in the past but are now closed
 			events.push({ts, delta_sat: settled_balance}); // backward add
 		}
 		return events;
@@ -215,7 +226,9 @@ export class LightningAnalyticsService {
 			const estimated_initial_local = initiator_is_local ? Math.max(0, capacity - push_sat - 0) : 0;
 			const lifetime = Number(ch.lifetime || 0); // seconds
 			const open_ts = Math.max(0, Math.floor(Date.now() / 1000) - lifetime);
-			if (open_ts >= start_ts && open_ts <= end_ts) {
+			// Include ALL channel opens, even before start_ts, to properly reconstruct backward
+			// This ensures we don't get negative balances when going back before channels existed
+			if (open_ts > 0) {
 				events.push({ts: open_ts, delta_sat: -estimated_initial_local}); // backward subtract
 			}
 		}

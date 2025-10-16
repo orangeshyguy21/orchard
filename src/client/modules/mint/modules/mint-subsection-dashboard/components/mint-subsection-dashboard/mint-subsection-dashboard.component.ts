@@ -73,7 +73,6 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public mint_analytics_fees: MintAnalytic[] = [];
 	public mint_analytics_fees_pre: MintAnalytic[] = [];
 	public lightning_analytics_outbound: LightningAnalytics[] = [];
-	public lightning_analytics_outbound_pre: LightningAnalytics[] = [];
 	public mint_connections: PublicUrl[] = [];
 	public lightning_enabled: boolean;
 	public lightning_balance: LightningBalance | null = null;
@@ -259,8 +258,6 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			interval: OrchardAnalyticsInterval.Custom,
 			timezone: timezone,
 		};
-		const {units: _, ...lightning_args} = args;
-		const {units: __, ...lightning_args_pre} = args_pre;
 
 		const analytics_balances_obs = this.mintService.loadMintAnalyticsBalances(args);
 		const analytics_balances_pre_obs = this.mintService.loadMintAnalyticsBalances(args_pre);
@@ -319,21 +316,8 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			interval: this.page_settings.interval,
 			timezone: timezone,
 		};
-		const args_pre = {
-			date_start: 100000,
-			date_end: this.page_settings.date_start - 1,
-			interval: OrchardAnalyticsInterval.Custom,
-			timezone: timezone,
-		};
-		const analytics_outbound_obs = this.lightningService.loadLightningAnalyticsOutbound(args);
-		const analytics_outbound_pre_obs = this.lightningService.loadLightningAnalyticsOutbound(args_pre);
-
-		const [analytics_outbound, analytics_outbound_pre] = await lastValueFrom(
-			forkJoin([analytics_outbound_obs, analytics_outbound_pre_obs]),
-		);
-
+		const analytics_outbound = await lastValueFrom(this.lightningService.loadLightningAnalyticsOutbound(args));
 		this.lightning_analytics_outbound = analytics_outbound;
-		this.lightning_analytics_outbound_pre = analytics_outbound_pre;
 	}
 
 	private applyMintFees(analytics_fees: MintAnalytic[], analytics_fees_pre: MintAnalytic[]): MintAnalytic[] {

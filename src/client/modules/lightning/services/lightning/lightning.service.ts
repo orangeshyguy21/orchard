@@ -31,8 +31,6 @@ import {
 	LIGHTNING_REQUEST_QUERY,
 	LIGHTNING_ANALYTICS_OUTBOUND_QUERY,
 } from './lightning.queries';
-/* Shared Dependencies */
-import {OrchardAnalyticsInterval} from '@shared/generated.types';
 
 @Injectable({
 	providedIn: 'root',
@@ -47,7 +45,6 @@ export class LightningService {
 		LIGHTNING_BALANCE: 'lightning-balance',
 		LIGHTNING_ACCOUNTS: 'lightning-accounts',
 		LIGHTNING_ANALYTICS_OUTBOUND: 'lightning-analytics-outbound',
-		LIGHTNING_ANALYTICS_PRE_OUTBOUND: 'lightning-analytics-pre-outbound',
 	};
 
 	private readonly CACHE_DURATIONS = {
@@ -55,7 +52,6 @@ export class LightningService {
 		[this.CACHE_KEYS.LIGHTNING_BALANCE]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.LIGHTNING_ACCOUNTS]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.LIGHTNING_ANALYTICS_OUTBOUND]: 5 * 60 * 1000, // 5 minutes
-		[this.CACHE_KEYS.LIGHTNING_ANALYTICS_PRE_OUTBOUND]: 5 * 60 * 1000, // 5 minutes
 	};
 
 	/* Subjects for caching */
@@ -63,7 +59,6 @@ export class LightningService {
 	private readonly lightning_balance_subject: BehaviorSubject<LightningBalance | null>;
 	private readonly lightning_accounts_subject: BehaviorSubject<LightningAccount[] | null>;
 	private readonly lightning_analytics_outbound_subject: BehaviorSubject<LightningAnalytics[] | null>;
-	private readonly lightning_analytics_pre_outbound_subject: BehaviorSubject<LightningAnalytics[] | null>;
 
 	/* Observables for caching (rapid request caching) */
 	private lightning_info_observable!: Observable<LightningInfo> | null;
@@ -88,10 +83,6 @@ export class LightningService {
 		this.lightning_analytics_outbound_subject = this.cache.createCache<LightningAnalytics[]>(
 			this.CACHE_KEYS.LIGHTNING_ANALYTICS_OUTBOUND,
 			this.CACHE_DURATIONS[this.CACHE_KEYS.LIGHTNING_ANALYTICS_OUTBOUND],
-		);
-		this.lightning_analytics_pre_outbound_subject = this.cache.createCache<LightningAnalytics[]>(
-			this.CACHE_KEYS.LIGHTNING_ANALYTICS_PRE_OUTBOUND,
-			this.CACHE_DURATIONS[this.CACHE_KEYS.LIGHTNING_ANALYTICS_PRE_OUTBOUND],
 		);
 	}
 
@@ -188,29 +179,9 @@ export class LightningService {
 		);
 	}
 
-	public loadLightningAnalyticsOutbound(args: LightningAnalyticsArgs) {
-		if (args.interval === OrchardAnalyticsInterval.Custom) {
-			return this.loadGenericLightningAnalyticsOutbound(
-				args,
-				this.lightning_analytics_pre_outbound_subject.value,
-				this.CACHE_KEYS.LIGHTNING_ANALYTICS_PRE_OUTBOUND,
-			);
-		} else {
-			return this.loadGenericLightningAnalyticsOutbound(
-				args,
-				this.lightning_analytics_outbound_subject.value,
-				this.CACHE_KEYS.LIGHTNING_ANALYTICS_OUTBOUND,
-			);
-		}
-	}
-
-	private loadGenericLightningAnalyticsOutbound(
-		args: LightningAnalyticsArgs,
-		subject_value: LightningAnalytics[] | null,
-		cache_key: string,
-	): Observable<LightningAnalytics[]> {
-		if (subject_value && this.cache.isCacheValid(cache_key)) {
-			return of(subject_value);
+	public loadLightningAnalyticsOutbound(args: LightningAnalyticsArgs): Observable<LightningAnalytics[]> {
+		if (this.lightning_analytics_outbound_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.LIGHTNING_ANALYTICS_OUTBOUND)) {
+			return of(this.lightning_analytics_outbound_subject.value);
 		}
 
 		const query = getApiQuery(LIGHTNING_ANALYTICS_OUTBOUND_QUERY, args);
@@ -224,7 +195,8 @@ export class LightningService {
 				lightning_analytics_outbound.map((lightning_analytics) => new LightningAnalytics(lightning_analytics)),
 			),
 			tap((lightning_analytics_outbound) => {
-				this.cache.updateCache(cache_key, lightning_analytics_outbound);
+				this.cache.updateCache(this.CACHE_KEYS.LIGHTNING_ANALYTICS_OUTBOUND, lightning_analytics_outbound);
+				this.lightning_analytics_outbound_subject.next(lightning_analytics_outbound);
 			}),
 			catchError((error) => {
 				console.error('Error loading lightning analytics outbound:', error);
