@@ -3,16 +3,6 @@
 	<mat-card appearance="outlined" class="overflow-hidden">
 		<div class="p-h-1">
 			<table mat-table [dataSource]="rows" class="orc-feature-table">
-				<ng-container matColumnDef="liabilities">
-					<th mat-header-cell *matHeaderCellDef>Liabilities</th>
-					<td mat-cell *matCellDef="let row">
-						<div class="flex flex-items-center flex-gap-1">
-							<orc-graphic-asset [unit]="row.unit" [height]="'1.75rem'" [custody]="'ecash'"> </orc-graphic-asset>
-							<span class="font-size-m" [innerHTML]="row.liabilities | amount: row.unit : 'mint'"></span>
-						</div>
-					</td>
-				</ng-container>
-
 				<ng-container matColumnDef="assets">
 					<th mat-header-cell *matHeaderCellDef>Assets</th>
 					<td mat-cell *matCellDef="let row">
@@ -29,13 +19,9 @@
 										<orc-graphic-asset [unit]="row.unit" [height]="'1.75rem'" [custody]="'lightning'">
 										</orc-graphic-asset>
 										@if (row.assets !== null) {
-											<span
-												class="font-size-m w-min-10"
-												[innerHTML]="row.assets | amount: row.unit : 'lightning'"
-											></span>
-											<span class="font-size-m font-weight-bold orc-outline-color">{{ row.reserve_ratio }}</span>
+											<span class="font-size-m" [innerHTML]="row.assets | amount: row.unit : 'lightning'"></span>
 										} @else {
-											<span class="font-size-m w-min-10 orc-outline-color">
+											<span class="font-size-m orc-outline-color">
 												<mat-icon>check_indeterminate_small</mat-icon>
 											</span>
 										}
@@ -47,6 +33,43 @@
 						}
 					</td>
 				</ng-container>
+
+				<ng-container matColumnDef="liabilities">
+					<th mat-header-cell *matHeaderCellDef>Liabilities</th>
+					<td mat-cell *matCellDef="let row">
+						<div class="flex flex-items-center flex-gap-1">
+							<orc-graphic-asset [unit]="row.unit" [height]="'1.75rem'" [custody]="'ecash'"> </orc-graphic-asset>
+							<span class="font-size-m w-min-7" [innerHTML]="row.liabilities | amount: row.unit : 'mint'"></span>
+							<span class="font-size-m font-weight-bold orc-outline-color">{{ row.reserve_ratio }}</span>
+						</div>
+					</td>
+				</ng-container>
+
+				<!-- <ng-container matColumnDef="deposit_capacity">
+					<th mat-header-cell *matHeaderCellDef>Receive Capacity</th>
+					<td mat-cell *matCellDef="let row">
+						@if (lightning_enabled) {
+							@if (!lightning_loading) {
+								@if (lightning_errors.length === 0) {
+									<div animate.enter="orc-animation-fadein-fast" class="flex flex-items-center flex-gap-1">
+										<orc-graphic-asset [unit]="row.unit" [height]="'1.75rem'" [custody]="'lightning'">
+										</orc-graphic-asset>
+										@if (row.deposit_capacity !== null) {
+											<span
+												class="font-size-m"
+												[innerHTML]="row.deposit_capacity | amount: row.unit : 'lightning'"
+											></span>
+										} @else {
+											<span class="font-size-m orc-outline-color">
+												<mat-icon>check_indeterminate_small</mat-icon>
+											</span>
+										}
+									</div>
+								}
+							}
+						}
+					</td>
+				</ng-container> -->
 
 				<ng-container matColumnDef="keyset">
 					<th mat-header-cell *matHeaderCellDef>Keyset</th>

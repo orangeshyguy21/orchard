@@ -30,7 +30,7 @@ export class MintGeneralBalanceSheetComponent implements OnChanges {
 	@Input() loading!: boolean;
 
 	public rows: MintGeneralBalanceRow[] = [];
-	public displayed_columns: string[] = ['liabilities', 'assets', 'keyset', 'fees'];
+	public displayed_columns: string[] = ['assets', 'liabilities', 'keyset', 'fees'];
 
 	constructor() {}
 
@@ -40,12 +40,12 @@ export class MintGeneralBalanceSheetComponent implements OnChanges {
 
 	private init(): void {
 		this.rows = this.getRows();
-		if (this.rows[0]?.fees === null) this.displayed_columns = ['liabilities', 'assets', 'keyset'];
+		if (this.rows[0]?.fees === null) this.displayed_columns = ['assets', 'liabilities', 'keyset'];
 	}
 
-	private getAssetBalances(unit: MintUnit): number | null {
+	private getLightningBalance(unit: MintUnit, side: 'local_balance' | 'remote_balance'): number | null {
 		if (unit === MintUnit.Eur || unit === MintUnit.Usd) return null;
-		if (this.lightning_balance) return this.lightning_balance.local_balance.sat;
+		if (this.lightning_balance) return this.lightning_balance[side].sat;
 		return 0;
 	}
 
@@ -55,8 +55,9 @@ export class MintGeneralBalanceSheetComponent implements OnChanges {
 		this.keysets
 			.map((keyset) => {
 				const liability_balance = this.balances.find((balance) => balance.keyset === keyset.id);
-				const asset_balance = this.getAssetBalances(keyset.unit);
-				return new MintGeneralBalanceRow(liability_balance, asset_balance, keyset);
+				const asset_balance = this.getLightningBalance(keyset.unit, 'local_balance');
+				const deposit_capacity = this.getLightningBalance(keyset.unit, 'remote_balance');
+				return new MintGeneralBalanceRow(liability_balance, asset_balance, deposit_capacity, keyset);
 			})
 			.filter((row) => row !== null)
 			.sort((a, b) => b.derivation_path_index - a.derivation_path_index)

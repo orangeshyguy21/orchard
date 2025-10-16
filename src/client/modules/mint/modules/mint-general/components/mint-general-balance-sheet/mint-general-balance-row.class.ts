@@ -13,6 +13,7 @@ export class MintGeneralBalanceRow {
 	derivation_path_index: number;
 	first_seen: number;
 	assets: number | null;
+	deposit_capacity: number | null;
 	fees: number | null;
 
 	public get reserve_ratio(): string | null {
@@ -32,13 +33,14 @@ export class MintGeneralBalanceRow {
 		return `${formatted_ratio} : 1`;
 	}
 
-	constructor(balance: MintBalance | undefined, assets: number | null, keyset: MintKeyset) {
+	constructor(balance: MintBalance | undefined, assets: number | null, deposit_capacity: number | null, keyset: MintKeyset) {
 		this.unit = keyset.unit;
 		this.liabilities = balance?.balance ?? 0;
 		this.fees = keyset.fees_paid ?? null;
 		this.input_fee_ppk = keyset.input_fee_ppk;
 		this.active = keyset.active;
 		this.assets = assets;
+		this.deposit_capacity = deposit_capacity;
 		this.derivation_path_index = keyset.derivation_path_index;
 		this.first_seen = keyset.valid_from;
 	}
