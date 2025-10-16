@@ -45,6 +45,8 @@ export const config = (): Config => {
 		cert: process.env.LIGHTNING_CERT,
 		key: process.env.LIGHTNING_KEY,
 		ca: process.env.LIGHTNING_CA,
+		api_url: replaceLocalhostInDocker(process.env.LIGHTNING_API_URL),
+		api_key: process.env.LIGHTNING_API_KEY,
 	};
 
 	const taproot_assets = {
