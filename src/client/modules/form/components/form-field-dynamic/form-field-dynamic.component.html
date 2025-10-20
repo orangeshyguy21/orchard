@@ -1,7 +1,7 @@
 <div class="dynamic-form-field-container">
 	<ng-content></ng-content>
 	<div class="dynamic-actions" [class.form-hot]="hot()" [class.form-invalid]="invalid() && subscript_sizing() === 'dynamic'">
-		@if (save()) {
+		@if (standalone()) {
 			<button
 				[disabled]="invalid()"
 				type="button"

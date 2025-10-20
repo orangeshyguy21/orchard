@@ -11,7 +11,7 @@ import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
 export class FormFieldDynamicComponent {
 	public hot = input<boolean>(false);
 	public invalid = input<boolean>(false);
-	public save = input<boolean>(true);
+	public standalone = input<boolean>(true);
 	public subscript_sizing = input<'default' | 'dynamic'>('default');
 
 	// @Output() submit = new EventEmitter<Event>();
