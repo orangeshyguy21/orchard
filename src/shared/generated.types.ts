@@ -92,6 +92,12 @@ export type AuthenticationInput = {
   password: Scalars['String']['input'];
 };
 
+export type InitializationInput = {
+  key: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+};
+
 export enum LightningAddressType {
   HybridNestedWitnessPubkeyHash = 'HYBRID_NESTED_WITNESS_PUBKEY_HASH',
   NestedWitnessPubkeyHash = 'NESTED_WITNESS_PUBKEY_HASH',
@@ -208,6 +214,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   ai_chat_abort: OrchardAiChatStream;
   authentication: OrchardAuthentication;
+  initialize: OrchardAuthentication;
   mint_contact_add: OrchardMintContactUpdate;
   mint_contact_remove: OrchardMintContactUpdate;
   mint_database_backup: OrchardMintDatabaseBackup;
@@ -236,6 +243,11 @@ export type MutationAi_Chat_AbortArgs = {
 
 export type MutationAuthenticationArgs = {
   authentication: AuthenticationInput;
+};
+
+
+export type MutationInitializeArgs = {
+  initialize: InitializationInput;
 };
 
 

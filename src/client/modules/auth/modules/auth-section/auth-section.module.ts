@@ -22,9 +22,9 @@ import {AuthSectionComponent} from './components/auth-section/auth-section.compo
 						path: '',
 						canActivate: [initializationGuard],
 						loadChildren: () =>
-							import('@client/modules/auth/modules/auth-subsection-authenticate/auth-subsection-authenticate.module').then(
-								(m) => m.OrcAuthSubsectionAuthenticateModule,
-							),
+							import(
+								'@client/modules/auth/modules/auth-subsection-authentication/auth-subsection-authentication.module'
+							).then((m) => m.OrcAuthSubsectionAuthenticationModule),
 						title: 'Orchard | Authentication',
 						data: {
 							section: 'auth',

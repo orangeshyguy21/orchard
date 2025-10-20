@@ -1,0 +1,25 @@
+<div class="auth-subsection-container p-2">
+	<div class="authentication-form">
+		<div class="orchard-logo-container">
+			<div class="graphic-container">
+				<orc-graphic-orchard-logo height="10rem" [animate]="true"> </orc-graphic-orchard-logo>
+			</div>
+		</div>
+
+		<orc-auth-subsection-authentication-form
+			[form_group]="form_auth"
+			[errors]="errors"
+			(cancel)="onControlCancel($event)"
+			(blur)="onBlur()"
+			(submit)="onSubmit()"
+		></orc-auth-subsection-authentication-form>
+	</div>
+</div>
+
+<!-- <orc-auth-subsection-initialization-form
+			[form_group]="form_init"
+			[errors]="errors"
+			(cancel)="onControlCancel($event)"
+			(blur)="onBlur()"
+			(submit)="onSubmit()"
+		></orc-auth-subsection-initialization-form> -->

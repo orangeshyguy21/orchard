@@ -12,17 +12,19 @@ import {MatButtonModule} from '@angular/material/button';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
+/* Native Dependencies */
+import {OrcAuthSectionGeneralModule} from '@client/modules/auth/modules/auth-section-general/auth-section-general.module';
 /* Local Dependencies */
-import {AuthSubsectionAuthenticateComponent} from './components/auth-subsection-authenticate/auth-subsection-authenticate.component';
-import {AuthSubsectionAuthenticatePasswordComponent} from './components/auth-subsection-authenticate-password/auth-subsection-authenticate-password.component';
+import {AuthSubsectionAuthenticationComponent} from './components/auth-subsection-authentication/auth-subsection-authentication.component';
+import {AuthSubsectionAuthenticationFormComponent} from './components/auth-subsection-authentication-form/auth-subsection-authentication-form.component';
 
 @NgModule({
-	declarations: [AuthSubsectionAuthenticateComponent, AuthSubsectionAuthenticatePasswordComponent],
+	declarations: [AuthSubsectionAuthenticationComponent, AuthSubsectionAuthenticationFormComponent],
 	imports: [
 		CoreRouterModule.forChild([
 			{
 				path: '',
-				component: AuthSubsectionAuthenticateComponent,
+				component: AuthSubsectionAuthenticationComponent,
 			},
 		]),
 		CoreCommonModule,
@@ -34,6 +36,7 @@ import {AuthSubsectionAuthenticatePasswordComponent} from './components/auth-sub
 		MatButtonModule,
 		OrcFormModule,
 		OrcGraphicModule,
+		OrcAuthSectionGeneralModule,
 	],
 })
-export class OrcAuthSubsectionAuthenticateModule {}
+export class OrcAuthSubsectionAuthenticationModule {}

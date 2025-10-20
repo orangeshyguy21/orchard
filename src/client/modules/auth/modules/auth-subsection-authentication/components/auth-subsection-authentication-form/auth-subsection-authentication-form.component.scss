@@ -3,6 +3,7 @@
 .auth-password-container {
 	@extend %p-t-1;
 	padding-left: 5rem;
+	@extend %p-r-2;
 }
 
 .auth-password-form-field {

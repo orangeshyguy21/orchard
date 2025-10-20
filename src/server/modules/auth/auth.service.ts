@@ -110,7 +110,6 @@ export class AuthService {
 
 	public async getInitialization(): Promise<boolean> {
 		const user_count = await this.userService.getUserCount();
-		console.log('user_count', user_count);
 		return user_count !== 0;
 	}
 }
