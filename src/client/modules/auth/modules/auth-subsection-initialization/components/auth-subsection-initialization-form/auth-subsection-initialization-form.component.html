@@ -1,40 +1,63 @@
-<div class="auth-initialization-form-container">
-	<form [formGroup]="form_group()" autocomplete="on">
-		<orc-auth-section-general-formcontrol-password
-			[form_group]="form_group()"
-			[control_name]="'key'"
-			[label]="'Setup Key'"
-			[invalid]="form_group().get('key')?.invalid || false"
-			[dirty]="form_group().get('key')?.dirty || false"
-			[error]="errors().key"
-			(cancel)="onControlCancel('key')"
-		></orc-auth-section-general-formcontrol-password>
-		<orc-auth-section-general-formcontrol-password
-			[form_group]="form_group()"
-			[control_name]="'password'"
-			[label]="'Password'"
-			[invalid]="form_group().get('password')?.invalid || false"
-			[dirty]="form_group().get('password')?.dirty || false"
-			[error]="errors().password"
-			(cancel)="onControlCancel('password')"
-		></orc-auth-section-general-formcontrol-password>
-		<orc-auth-section-general-formcontrol-password
-			[form_group]="form_group()"
-			[control_name]="'password_confirm'"
-			[label]="'Confirm Password'"
-			[invalid]="form_group().get('password_confirm')?.invalid || false"
-			[dirty]="form_group().get('password_confirm')?.dirty || false"
-			[error]="errors().password_confirm"
-			(cancel)="onControlCancel('password_confirm')"
-		></orc-auth-section-general-formcontrol-password>
-		<orc-auth-section-general-formcontrol-name
-			[form_group]="form_group()"
-			[control_name]="'name'"
-			[label]="'Name'"
-			[invalid]="form_group().get('name')?.invalid || false"
-			[dirty]="form_group().get('name')?.dirty || false"
-			[error]="errors().name"
-			(cancel)="onControlCancel('name')"
-		></orc-auth-section-general-formcontrol-name>
-	</form>
+<mat-card appearance="outlined" class="relative overflow-hidden">
+	<mat-card-content class="orc-surface-container-low-bg">
+		<div class="auth-initialization-form-container">
+			<form [formGroup]="form_group()" autocomplete="on">
+				<orc-auth-section-general-formcontrol-password
+					[form_group]="form_group()"
+					[control_name]="'key'"
+					[label]="'Setup Key'"
+					[invalid]="form_group().get('key')?.invalid || false"
+					[dirty]="form_group().get('key')?.dirty || false"
+					[error]="errors().key"
+					[focused_control]="focused_control() === 'key'"
+					(cancel)="onControlCancel('key')"
+					(enter)="focused_control.set('name')"
+					(blur)="blur.emit()"
+				></orc-auth-section-general-formcontrol-password>
+				<orc-auth-section-general-formcontrol-name
+					[form_group]="form_group()"
+					[control_name]="'name'"
+					[label]="'Name'"
+					[invalid]="form_group().get('name')?.invalid || false"
+					[dirty]="form_group().get('name')?.dirty || false"
+					[error]="errors().name"
+					[focused_control]="focused_control() === 'name'"
+					(cancel)="onControlCancel('name')"
+					(enter)="focused_control.set('password')"
+					(blur)="blur.emit()"
+				></orc-auth-section-general-formcontrol-name>
+				<orc-auth-section-general-formcontrol-password
+					[form_group]="form_group()"
+					[control_name]="'password'"
+					[label]="'Password'"
+					[invalid]="form_group().get('password')?.invalid || false"
+					[dirty]="form_group().get('password')?.dirty || false"
+					[error]="errors().password"
+					[focused_control]="focused_control() === 'password'"
+					(cancel)="onControlCancel('password')"
+					(enter)="focused_control.set('password_confirm')"
+					(blur)="blur.emit()"
+				></orc-auth-section-general-formcontrol-password>
+				<orc-auth-section-general-formcontrol-password
+					[form_group]="form_group()"
+					[control_name]="'password_confirm'"
+					[label]="'Confirm Password'"
+					[invalid]="form_group().get('password_confirm')?.invalid || false"
+					[dirty]="form_group().get('password_confirm')?.dirty || false"
+					[error]="errors().password_confirm"
+					[focused_control]="focused_control() === 'password_confirm'"
+					(cancel)="onControlCancel('password_confirm')"
+					(enter)="submit.emit()"
+					(blur)="blur.emit()"
+				></orc-auth-section-general-formcontrol-password>
+			</form>
+		</div>
+	</mat-card-content>
+</mat-card>
+
+<div class="flex flex-justify-center p-t-2">
+	<button type="button" matFab extended class="orc-icon-button" [disabled]="form_group().invalid" (click)="submit.emit()">
+		<mat-icon>save</mat-icon>
+		Initialize
+	</button>
 </div>

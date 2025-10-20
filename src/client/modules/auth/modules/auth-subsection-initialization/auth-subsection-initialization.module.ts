@@ -5,6 +5,8 @@ import {RouterModule as CoreRouterModule} from '@angular/router';
 import {ReactiveFormsModule as CoreReactiveFormsModule} from '@angular/forms';
 /* Vendor Dependencies */
 import {MatCardModule} from '@angular/material/card';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
@@ -26,6 +28,8 @@ import {AuthSubsectionInitializationFormComponent} from './components/auth-subse
 		CoreCommonModule,
 		CoreReactiveFormsModule,
 		MatCardModule,
+		MatButtonModule,
+		MatIconModule,
 		OrcFormModule,
 		OrcGraphicModule,
 		OrcAuthSectionGeneralModule,

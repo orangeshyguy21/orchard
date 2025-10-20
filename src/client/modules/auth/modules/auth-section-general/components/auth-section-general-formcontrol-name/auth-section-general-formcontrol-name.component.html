@@ -12,7 +12,8 @@
 			matInput
 			[formControlName]="control_name()"
 			(focus)="focused.set(true)"
-			(blur)="focused.set(false)"
+			(blur)="onBlur()"
+			(keydown.enter)="enter.emit()"
 			#element_control
 		/>
 		@if (error()) {

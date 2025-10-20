@@ -37,7 +37,7 @@ export class AuthSubsectionInitializationComponent implements OnInit {
 		private readonly settingService: SettingService,
 		private readonly router: Router,
 	) {
-		this.form_init.valueChanges.subscribe(() => {
+		this.form_init.statusChanges.subscribe(() => {
 			this.validateForm();
 		});
 	}
@@ -83,5 +83,13 @@ export class AuthSubsectionInitializationComponent implements OnInit {
 		this.form_init.get(control_name)?.markAsUntouched();
 		this.form_init.get(control_name)?.setErrors(null);
 		this.form_init.get(control_name)?.setValue(null);
+	}
+
+	public onBlur(): void {
+		this.validateForm();
+	}
+
+	public onSubmit(): void {
+		console.log('submit', this.form_init.value);
 	}
 }
