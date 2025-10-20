@@ -1,0 +1,22 @@
+<orc-form-field-dynamic [hot]="hot()" [invalid]="invalid()" (cancel)="onCancel($event)">
+	<mat-form-field
+		appearance="fill"
+		hideRequiredMarker="true"
+		[ngClass]="hot() ? 'orc-hot-form-field' : 'orc-cold-form-field'"
+		class="auth-name-form-field orc-dynamic-form-field"
+		[formGroup]="form_group()"
+	>
+		<mat-label>{{ label() }}</mat-label>
+		<input
+			type="text"
+			matInput
+			[formControlName]="control_name()"
+			(focus)="focused.set(true)"
+			(blur)="focused.set(false)"
+			#element_control
+		/>
+		@if (error()) {
+			<mat-error class="font-size-xs">{{ error() }}</mat-error>
+		}
+	</mat-form-field>
+</orc-form-field-dynamic>

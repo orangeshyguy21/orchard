@@ -1,6 +1,43 @@
 <div class="auth-initialization-form-container">
 	<form [formGroup]="form_group()" autocomplete="on">
-		<orc-form-field-dynamic [hot]="hot_key()" [invalid]="invalid_key()" (cancel)="onControlCancel($event, 'key')">
+		<orc-auth-section-general-formcontrol-password
+			[form_group]="form_group()"
+			[control_name]="'key'"
+			[label]="'Setup Key'"
+			[invalid]="form_group().get('key')?.invalid || false"
+			[dirty]="form_group().get('key')?.dirty || false"
+			[error]="errors().key"
+			(cancel)="onControlCancel('key')"
+		></orc-auth-section-general-formcontrol-password>
+		<orc-auth-section-general-formcontrol-password
+			[form_group]="form_group()"
+			[control_name]="'password'"
+			[label]="'Password'"
+			[invalid]="form_group().get('password')?.invalid || false"
+			[dirty]="form_group().get('password')?.dirty || false"
+			[error]="errors().password"
+			(cancel)="onControlCancel('password')"
+		></orc-auth-section-general-formcontrol-password>
+		<orc-auth-section-general-formcontrol-password
+			[form_group]="form_group()"
+			[control_name]="'password_confirm'"
+			[label]="'Confirm Password'"
+			[invalid]="form_group().get('password_confirm')?.invalid || false"
+			[dirty]="form_group().get('password_confirm')?.dirty || false"
+			[error]="errors().password_confirm"
+			(cancel)="onControlCancel('password_confirm')"
+		></orc-auth-section-general-formcontrol-password>
+		<orc-auth-section-general-formcontrol-name
+			[form_group]="form_group()"
+			[control_name]="'name'"
+			[label]="'Name'"
+			[invalid]="form_group().get('name')?.invalid || false"
+			[dirty]="form_group().get('name')?.dirty || false"
+			[error]="errors().name"
+			(cancel)="onControlCancel('name')"
+		></orc-auth-section-general-formcontrol-name>
+
+		<!-- <orc-form-field-dynamic [hot]="hot_key()" [invalid]="invalid_key()" (cancel)="onControlCancel($event, 'key')">
 			<mat-form-field
 				appearance="fill"
 				hideRequiredMarker="true"
@@ -21,12 +58,11 @@
 					<mat-icon>{{ view_key() ? 'visibility_off' : 'visibility' }}</mat-icon>
 				</button>
 				@if (error_key()) {
-					<!-- <mat-error class="font-size-xs">{{ form_error }}</mat-error> -->
 					<mat-error class="font-size-xs">need error</mat-error>
 				}
 			</mat-form-field>
-		</orc-form-field-dynamic>
-		<orc-form-field-dynamic [hot]="hot_password()" [invalid]="invalid_password()">
+		</orc-form-field-dynamic> -->
+		<!-- <orc-form-field-dynamic [hot]="hot_password()" [invalid]="invalid_password()">
 			<mat-form-field
 				appearance="fill"
 				hideRequiredMarker="true"
@@ -47,12 +83,12 @@
 					<mat-icon>{{ view_password() ? 'visibility_off' : 'visibility' }}</mat-icon>
 				</button>
 				@if (error_password()) {
-					<!-- <mat-error class="font-size-xs">{{ form_error }}</mat-error> -->
+
 					<mat-error class="font-size-xs">need error</mat-error>
 				}
 			</mat-form-field>
-		</orc-form-field-dynamic>
-		<orc-form-field-dynamic [hot]="hot_password_confirm()" [invalid]="invalid_password_confirm()">
+		</orc-form-field-dynamic> -->
+		<!-- <orc-form-field-dynamic [hot]="hot_password_confirm()" [invalid]="invalid_password_confirm()">
 			<mat-form-field
 				appearance="fill"
 				hideRequiredMarker="true"
@@ -73,7 +109,7 @@
 					<mat-icon>{{ view_password_confirm() ? 'visibility_off' : 'visibility' }}</mat-icon>
 				</button>
 				@if (error_password_confirm()) {
-					<!-- <mat-error class="font-size-xs">{{ form_error }}</mat-error> -->
+	
 					<mat-error class="font-size-xs">need error</mat-error>
 				}
 			</mat-form-field>
@@ -95,10 +131,9 @@
 					#element_name
 				/>
 				@if (error_name()) {
-					<!-- <mat-error class="font-size-xs">{{ form_error }}</mat-error> -->
 					<mat-error class="font-size-xs">need error</mat-error>
 				}
 			</mat-form-field>
-		</orc-form-field-dynamic>
+		</orc-form-field-dynamic> -->
 	</form>
 </div>
