@@ -29,6 +29,11 @@ export const config = (): Config => {
 		limit: process.env.THROTTLE_LIMIT || '20',
 	};
 
+	const database = {
+		path: process.env.DATABASE_PATH || 'data/orchard.db',
+		synchronize: process.env.NODE_ENV !== 'production',
+	};
+
 	const bitcoin = {
 		type: process.env.BITCOIN_TYPE,
 		host: replaceLocalhostInDocker(process.env.BITCOIN_RPC_HOST),
@@ -77,6 +82,7 @@ export const config = (): Config => {
 	const config = {
 		mode,
 		server,
+		database,
 		bitcoin,
 		lightning,
 		taproot_assets,

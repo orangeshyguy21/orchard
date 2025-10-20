@@ -1,0 +1,10 @@
+@use '@styles/molecule/molecule';
+
+.auth-initialization-form-container {
+	@extend %p-t-1;
+	padding-left: 5rem;
+}
+
+.auth-initialization-form-field {
+	@extend %w-min-18;
+}

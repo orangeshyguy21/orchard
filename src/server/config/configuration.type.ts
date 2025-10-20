@@ -12,6 +12,10 @@ export type Config = {
 		ttl: string;
 		limit: string;
 	};
+	database: {
+		path: string;
+		synchronize: boolean;
+	};
 	bitcoin: {
 		type: string;
 		host: string;

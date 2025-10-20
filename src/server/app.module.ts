@@ -3,6 +3,7 @@ import {Module, Logger} from '@nestjs/common';
 import {ConfigModule, ConfigService} from '@nestjs/config';
 import {GraphQLModule, registerEnumType} from '@nestjs/graphql';
 import {ApolloDriver, ApolloDriverConfig} from '@nestjs/apollo';
+import {TypeOrmModule} from '@nestjs/typeorm';
 /* Application Modules */
 import {SecurityModule} from './modules/security/security.module';
 import {AuthModule} from './modules/auth/auth.module';
@@ -73,6 +74,16 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 			driver: ApolloDriver,
 			inject: [ConfigService],
 			useFactory: (configService: ConfigService) => initializeGraphQL(configService),
+		}),
+		TypeOrmModule.forRootAsync({
+			inject: [ConfigService],
+			useFactory: (configService: ConfigService) => ({
+				type: 'better-sqlite3',
+				database: configService.get('database.path'),
+				entities: [],
+				synchronize: configService.get('database.synchronize'),
+				autoLoadEntities: true,
+			}),
 		}),
 		SecurityModule,
 		AuthModule,

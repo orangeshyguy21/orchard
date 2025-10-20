@@ -28,12 +28,12 @@ export class AuthSubsectionAuthenticatePasswordComponent {
 		return '';
 	}
 
-	constructor() {}
-
 	public get form_hot(): boolean {
 		if (document.activeElement === this.element_password?.nativeElement) return true;
 		return this.form_group.get(this.control_name)?.dirty ? true : false;
 	}
+
+	constructor() {}
 
 	public onSubmit(event: Event): void {
 		event.preventDefault();

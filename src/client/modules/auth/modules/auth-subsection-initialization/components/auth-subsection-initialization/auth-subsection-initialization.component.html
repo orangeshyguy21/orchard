@@ -8,6 +8,15 @@
 
 		<mat-card appearance="outlined" class="relative overflow-hidden">
 			<mat-card-content class="orc-surface-container-low-bg">
+				<orc-auth-subsection-initialization-form
+					[form_group]="form_init"
+					(cancel)="onControlCancel($event)"
+				></orc-auth-subsection-initialization-form>
+			</mat-card-content>
+		</mat-card>
+
+		<!-- <mat-card appearance="outlined" class="relative overflow-hidden">
+			<mat-card-content class="orc-surface-container-low-bg">
 				<orc-auth-subsection-authenticate-password
 					[form_group]="form_auth"
 					[control_name]="'password'"
@@ -15,6 +24,6 @@
 					(cancel)="onControlCancel($event)"
 				></orc-auth-subsection-authenticate-password>
 			</mat-card-content>
-		</mat-card>
+		</mat-card> -->
 	</div>
 </div>

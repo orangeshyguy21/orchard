@@ -36,13 +36,13 @@ describe('AuthService', () => {
 		config_service.get.mockReturnValue('secret');
 		jwt_service.signAsync.mockResolvedValueOnce('a');
 		jwt_service.signAsync.mockResolvedValueOnce('r');
-		const result = await auth_service.getToken('secret');
+		const result = await auth_service.getToken('secret', 'password');
 		expect(result).toEqual({access_token: 'a', refresh_token: 'r'});
 	});
 
 	it('getToken throws UnauthorizedException on bad password', async () => {
 		config_service.get.mockReturnValue('secret');
-		await expect(auth_service.getToken('wrong')).rejects.toBeInstanceOf(UnauthorizedException);
+		await expect(auth_service.getToken('wrong', 'password')).rejects.toBeInstanceOf(UnauthorizedException);
 	});
 
 	it('refreshToken issues new tokens when valid', async () => {

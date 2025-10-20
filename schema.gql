@@ -70,6 +70,7 @@ enum AiMessageRole {
 }
 
 input AuthenticationInput {
+  name: String!
   password: String!
 }
 
@@ -451,6 +452,10 @@ type OrchardCustomChannel {
 type OrchardCustomChannelData {
   open_channels: [OrchardCustomChannel!]!
   pending_channels: [OrchardCustomChannel!]!
+}
+
+type OrchardInitialization {
+  initialization: Boolean!
 }
 
 type OrchardLightningAccount {
@@ -864,6 +869,7 @@ type Query {
   bitcoin_network_info: OrchardBitcoinNetworkInfo!
   bitcoin_oracle(date: String!, intraday: Boolean): OrchardBitcoinOracle!
   bitcoin_transaction_fee_estimates(targets: [Int!]!): [OrchardBitcoinTxFeeEstimate!]!
+  initialization: OrchardInitialization!
   lightning_balance: OrchardLightningBalance!
   lightning_info: OrchardLightningInfo!
   lightning_request(request: String!): OrchardLightningRequest!

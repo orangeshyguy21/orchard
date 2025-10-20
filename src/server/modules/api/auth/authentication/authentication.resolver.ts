@@ -1,6 +1,6 @@
 /* Core Dependencies */
 import {Logger} from '@nestjs/common';
-import {Resolver, Args, Mutation, Context} from '@nestjs/graphql';
+import {Resolver, Args, Mutation, Context, Query} from '@nestjs/graphql';
 import {UseGuards} from '@nestjs/common';
 import {Throttle, seconds} from '@nestjs/throttler';
 /* Application Dependencies */
@@ -10,7 +10,7 @@ import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.cla
 import {Public} from '@server/modules/security/decorators/auth.decorator';
 /* Local Dependencies */
 import {AuthenticationService} from './authentication.service';
-import {OrchardAuthentication} from './authentication.model';
+import {OrchardAuthentication, OrchardInitialization} from './authentication.model';
 import {AuthenticationInput} from './authentication.input';
 
 @Resolver(() => [OrchardAuthentication])
@@ -18,6 +18,14 @@ export class AuthenticationResolver {
 	private readonly logger = new Logger(AuthenticationResolver.name);
 
 	constructor(private authenticationService: AuthenticationService) {}
+
+	@Public()
+	@Query(() => OrchardInitialization)
+	async initialization() {
+		const tag = 'GET { initialization }';
+		this.logger.debug(tag);
+		return await this.authenticationService.getInitialization(tag);
+	}
 
 	@Public()
 	@Throttle({default: {limit: 4, ttl: seconds(10)}})

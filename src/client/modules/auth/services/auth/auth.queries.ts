@@ -1,3 +1,10 @@
+export const INITIALIZATION_QUERY = `
+query Initialization {
+	initialization {
+		initialization
+	}
+}`;
+
 export const AUTHENTICATION_MUTATION = `
 mutation Authentication($authentication: AuthenticationInput!) {
 	authentication(authentication: $authentication) {

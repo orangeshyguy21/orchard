@@ -88,6 +88,7 @@ export enum AiMessageRole {
 }
 
 export type AuthenticationInput = {
+  name: Scalars['String']['input'];
   password: Scalars['String']['input'];
 };
 
@@ -585,6 +586,11 @@ export type OrchardCustomChannelData = {
   pending_channels: Array<OrchardCustomChannel>;
 };
 
+export type OrchardInitialization = {
+  __typename?: 'OrchardInitialization';
+  initialization: Scalars['Boolean']['output'];
+};
+
 export type OrchardLightningAccount = {
   __typename?: 'OrchardLightningAccount';
   address_type: LightningAddressType;
@@ -1052,6 +1058,7 @@ export type Query = {
   bitcoin_network_info: OrchardBitcoinNetworkInfo;
   bitcoin_oracle: OrchardBitcoinOracle;
   bitcoin_transaction_fee_estimates: Array<OrchardBitcoinTxFeeEstimate>;
+  initialization: OrchardInitialization;
   lightning_balance: OrchardLightningBalance;
   lightning_info: OrchardLightningInfo;
   lightning_request: OrchardLightningRequest;

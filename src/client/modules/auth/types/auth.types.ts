@@ -1,4 +1,8 @@
-import {OrchardAuthentication} from '@shared/generated.types';
+import {OrchardAuthentication, OrchardInitialization} from '@shared/generated.types';
+
+export type InitializationResponse = {
+	initialization: OrchardInitialization;
+};
 
 export type AuthenticationResponse = {
 	authentication: OrchardAuthentication;

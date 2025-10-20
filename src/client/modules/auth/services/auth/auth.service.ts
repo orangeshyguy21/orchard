@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Observable, tap, map, catchError, throwError} from 'rxjs';
+import {Observable, tap, map, catchError, throwError, BehaviorSubject, of} from 'rxjs';
 /* Application Dependencies */
 import {getApiQuery} from '@client/modules/api/helpers/api.helpers';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
@@ -9,9 +9,19 @@ import {OrchardRes} from '@client/modules/api/types/api.types';
 import {LocalStorageService} from '@client/modules/cache/services/local-storage/local-storage.service';
 import {ApiService} from '@client/modules/api/services/api/api.service';
 /* Native Dependencies */
-import {AuthenticationResponse, RefreshAuthenticationResponse, RevokeAuthenticationResponse} from '@client/modules/auth/types/auth.types';
+import {
+	InitializationResponse,
+	AuthenticationResponse,
+	RefreshAuthenticationResponse,
+	RevokeAuthenticationResponse,
+} from '@client/modules/auth/types/auth.types';
 /* Local Dependencies */
-import {AUTHENTICATION_MUTATION, REFRESH_AUTHENTICATION_MUTATION, REVOKE_AUTHENTICATION_MUTATION} from './auth.queries';
+import {
+	INITIALIZATION_QUERY,
+	AUTHENTICATION_MUTATION,
+	REFRESH_AUTHENTICATION_MUTATION,
+	REVOKE_AUTHENTICATION_MUTATION,
+} from './auth.queries';
 /* Shared Dependencies */
 import {OrchardAuthentication} from '@shared/generated.types';
 
@@ -19,11 +29,41 @@ import {OrchardAuthentication} from '@shared/generated.types';
 	providedIn: 'root',
 })
 export class AuthService {
+	private initialization_subject: BehaviorSubject<boolean | null> = new BehaviorSubject<boolean | null>(null);
+
 	constructor(
 		private http: HttpClient,
 		private localStorageService: LocalStorageService,
 		private apiService: ApiService,
 	) {}
+
+	/**
+	 * Gets initialization status. Makes API call only on first access.
+	 * @returns {Observable<boolean>} Observable of initialization state
+	 */
+	public getInitialization(): Observable<boolean> {
+		const current_value = this.initialization_subject.value;
+		if (current_value !== null) {
+			return of(current_value);
+		}
+
+		const query = getApiQuery(INITIALIZATION_QUERY, {});
+		return this.http.post<OrchardRes<InitializationResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				console.log('init response', response);
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.initialization.initialization;
+			}),
+			tap((is_initialized) => {
+				this.initialization_subject.next(is_initialized);
+			}),
+			catchError((error) => {
+				console.error('Error getting initialization:', error);
+				this.initialization_subject.next(false);
+				return throwError(() => error);
+			}),
+		);
+	}
 
 	public authenticate(password: string): Observable<OrchardAuthentication> {
 		const query = getApiQuery(AUTHENTICATION_MUTATION, {authentication: {password}});
@@ -87,6 +127,14 @@ export class AuthService {
 				return throwError(() => error);
 			}),
 		);
+	}
+
+	/**
+	 * Clears the cached initialization state (call after completing initialization)
+	 * @returns {void}
+	 */
+	public clearInitializationCache(): void {
+		this.initialization_subject.next(null);
 	}
 
 	public clearAuthCache(): void {

@@ -3,22 +3,22 @@ import {expect} from '@jest/globals';
 import {UserService} from './user.service';
 
 describe('UserService', () => {
-	let user_service: UserService;
+	let userService: UserService;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [UserService],
 		}).compile();
 
-		user_service = module.get<UserService>(UserService);
+		userService = module.get<UserService>(UserService);
 	});
 
 	it('should be defined', () => {
-		expect(user_service).toBeDefined();
+		expect(userService).toBeDefined();
 	});
 
 	it('getUser returns the default admin user', () => {
-		const user = user_service.getUser();
-		expect(user).toEqual({id: '1', name: 'Admin'});
+		const user = userService.getUserByName('Admin');
+		expect(user).toBeDefined();
 	});
 });

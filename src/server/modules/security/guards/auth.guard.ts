@@ -29,14 +29,14 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
 		if (is_public) return true;
 		const no_headers = this.reflector.getAllAndOverride<boolean>(NO_HEADERS_KEY, [context.getHandler(), context.getClass()]);
 		if (no_headers) return true;
-		const production = this.configService.get<boolean>('mode.production');
-		if (!production) return true;
+		// const production = this.configService.get<boolean>('mode.production');
+		// if (!production) return true;
 		return super.canActivate(context);
 	}
 
 	handleRequest(err: any, user: any) {
-		const production = this.configService.get<boolean>('mode.production');
-		if (!production) return {id: 'dev-user', username: 'dev'};
+		// const production = this.configService.get<boolean>('mode.production');
+		// if (!production) return {id: 'dev-user', username: 'dev'};
 		if (err || !user) throw new OrchardApiError(OrchardErrorCode.AuthenticationError);
 		return user;
 	}

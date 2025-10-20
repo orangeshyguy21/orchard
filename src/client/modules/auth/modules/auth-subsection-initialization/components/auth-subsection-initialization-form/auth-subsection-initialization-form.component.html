@@ -1,0 +1,104 @@
+<div class="auth-initialization-form-container">
+	<form [formGroup]="form_group()" autocomplete="on">
+		<orc-form-field-dynamic [hot]="hot_key()" [invalid]="invalid_key()" (cancel)="onControlCancel($event, 'key')">
+			<mat-form-field
+				appearance="fill"
+				hideRequiredMarker="true"
+				[ngClass]="hot_key() ? 'orc-hot-form-field' : 'orc-cold-form-field'"
+				class="auth-initialization-form-field orc-dynamic-form-field"
+			>
+				<mat-label>Setup Key</mat-label>
+				<input
+					[type]="view_key() ? 'text' : 'password'"
+					matInput
+					[formControlName]="'key'"
+					autocomplete="setup-key"
+					(focus)="focused_key.set(true)"
+					(blur)="focused_key.set(false)"
+					#element_key
+				/>
+				<button type="button" mat-icon-button matSuffix class="orc-icon-button" (click)="toggleControlView('key')">
+					<mat-icon>{{ view_key() ? 'visibility_off' : 'visibility' }}</mat-icon>
+				</button>
+				@if (error_key()) {
+					<!-- <mat-error class="font-size-xs">{{ form_error }}</mat-error> -->
+					<mat-error class="font-size-xs">need error</mat-error>
+				}
+			</mat-form-field>
+		</orc-form-field-dynamic>
+		<orc-form-field-dynamic [hot]="hot_password()" [invalid]="invalid_password()">
+			<mat-form-field
+				appearance="fill"
+				hideRequiredMarker="true"
+				[ngClass]="hot_password() ? 'orc-hot-form-field' : 'orc-cold-form-field'"
+				class="auth-initialization-form-field orc-dynamic-form-field"
+			>
+				<mat-label>Password</mat-label>
+				<input
+					[type]="view_password() ? 'text' : 'password'"
+					matInput
+					[formControlName]="'password'"
+					autocomplete="new-password"
+					(focus)="focused_password.set(true)"
+					(blur)="focused_password.set(false)"
+					#element_password
+				/>
+				<button type="button" mat-icon-button matSuffix class="orc-icon-button" (click)="toggleControlView('password')">
+					<mat-icon>{{ view_password() ? 'visibility_off' : 'visibility' }}</mat-icon>
+				</button>
+				@if (error_password()) {
+					<!-- <mat-error class="font-size-xs">{{ form_error }}</mat-error> -->
+					<mat-error class="font-size-xs">need error</mat-error>
+				}
+			</mat-form-field>
+		</orc-form-field-dynamic>
+		<orc-form-field-dynamic [hot]="hot_password_confirm()" [invalid]="invalid_password_confirm()">
+			<mat-form-field
+				appearance="fill"
+				hideRequiredMarker="true"
+				[ngClass]="hot_password_confirm() ? 'orc-hot-form-field' : 'orc-cold-form-field'"
+				class="auth-initialization-form-field orc-dynamic-form-field"
+			>
+				<mat-label>Confirm Password</mat-label>
+				<input
+					[type]="view_password_confirm() ? 'text' : 'password'"
+					matInput
+					[formControlName]="'password_confirm'"
+					autocomplete="new-password"
+					(focus)="focused_password_confirm.set(true)"
+					(blur)="focused_password_confirm.set(false)"
+					#element_password_confirm
+				/>
+				<button type="button" mat-icon-button matSuffix class="orc-icon-button" (click)="toggleControlView('password_confirm')">
+					<mat-icon>{{ view_password_confirm() ? 'visibility_off' : 'visibility' }}</mat-icon>
+				</button>
+				@if (error_password_confirm()) {
+					<!-- <mat-error class="font-size-xs">{{ form_error }}</mat-error> -->
+					<mat-error class="font-size-xs">need error</mat-error>
+				}
+			</mat-form-field>
+		</orc-form-field-dynamic>
+		<orc-form-field-dynamic [hot]="hot_name()" [invalid]="invalid_name()">
+			<mat-form-field
+				appearance="fill"
+				hideRequiredMarker="true"
+				[ngClass]="hot_name() ? 'orc-hot-form-field' : 'orc-cold-form-field'"
+				class="auth-initialization-form-field orc-dynamic-form-field"
+			>
+				<mat-label>Name</mat-label>
+				<input
+					type="text"
+					matInput
+					[formControlName]="'name'"
+					(focus)="focused_name.set(true)"
+					(blur)="focused_name.set(false)"
+					#element_name
+				/>
+				@if (error_name()) {
+					<!-- <mat-error class="font-size-xs">{{ form_error }}</mat-error> -->
+					<mat-error class="font-size-xs">need error</mat-error>
+				}
+			</mat-form-field>
+		</orc-form-field-dynamic>
+	</form>
+</div>
