@@ -11,6 +11,7 @@ import {ApiService} from '@client/modules/api/services/api/api.service';
 /* Native Dependencies */
 import {
 	InitializationResponse,
+	InitializeResponse,
 	AuthenticationResponse,
 	RefreshAuthenticationResponse,
 	RevokeAuthenticationResponse,
@@ -18,6 +19,7 @@ import {
 /* Local Dependencies */
 import {
 	INITIALIZATION_QUERY,
+	INITIALIZE_MUTATION,
 	AUTHENTICATION_MUTATION,
 	REFRESH_AUTHENTICATION_MUTATION,
 	REVOKE_AUTHENTICATION_MUTATION,
@@ -50,7 +52,6 @@ export class AuthService {
 		const query = getApiQuery(INITIALIZATION_QUERY, {});
 		return this.http.post<OrchardRes<InitializationResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
-				console.log('init response', response);
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.initialization.initialization;
 			}),
@@ -60,6 +61,24 @@ export class AuthService {
 			catchError((error) => {
 				console.error('Error getting initialization:', error);
 				this.initialization_subject.next(false);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	public initialize(key: string, name: string, password: string): Observable<OrchardAuthentication> {
+		const query = getApiQuery(INITIALIZE_MUTATION, {initialize: {key, name, password}});
+		return this.http.post<OrchardRes<InitializeResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.authentication;
+			}),
+			tap((authentication) => {
+				this.localStorageService.setAuthToken(authentication.access_token);
+				this.localStorageService.setRefreshToken(authentication.refresh_token);
+			}),
+			catchError((error) => {
+				console.error('Error initializing:', error);
 				return throwError(() => error);
 			}),
 		);

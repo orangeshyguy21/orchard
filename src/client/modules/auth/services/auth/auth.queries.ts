@@ -5,6 +5,14 @@ query Initialization {
 	}
 }`;
 
+export const INITIALIZE_MUTATION = `
+mutation Initialize($initialize: InitializationInput!) {
+	initialize(initialize: $initialize) {
+		access_token
+		refresh_token
+	}
+}`;
+
 export const AUTHENTICATION_MUTATION = `
 mutation Authentication($authentication: AuthenticationInput!) {
 	authentication(authentication: $authentication) {

@@ -4,6 +4,10 @@ export type InitializationResponse = {
 	initialization: OrchardInitialization;
 };
 
+export type InitializeResponse = {
+	authentication: OrchardAuthentication;
+};
+
 export type AuthenticationResponse = {
 	authentication: OrchardAuthentication;
 };

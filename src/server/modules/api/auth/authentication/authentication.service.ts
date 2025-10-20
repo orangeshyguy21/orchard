@@ -1,13 +1,16 @@
 /* Core Dependencies */
 import {Injectable, Logger} from '@nestjs/common';
+/* Vendor Dependencies */
+import * as bcrypt from 'bcrypt';
 /* Application Dependencies */
 import {AuthService} from '@server/modules/auth/auth.service';
 import {ErrorService} from '@server/modules/error/error.service';
+import {UserService} from '@server/modules/user/user.service';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 /* Local Dependencies */
 import {OrchardAuthentication, OrchardInitialization} from './authentication.model';
-import {AuthenticationInput} from './authentication.input';
+import {InitializationInput, AuthenticationInput} from './authentication.input';
 
 @Injectable()
 export class AuthenticationService {
@@ -16,7 +19,27 @@ export class AuthenticationService {
 	constructor(
 		private authService: AuthService,
 		private errorService: ErrorService,
+		private userService: UserService,
 	) {}
+
+	async initialize(tag: string, initialization: InitializationInput): Promise<OrchardAuthentication> {
+		try {
+			const valid = await this.authService.validateSetupKey(initialization.key);
+			if (!valid) throw OrchardErrorCode.InitializationKeyError;
+			const user = await this.userService.getUserByName(initialization.name);
+			if (user) throw OrchardErrorCode.UniqueUsernameError;
+			const password_hash = await bcrypt.hash(initialization.password, 10);
+			const newuser = await this.userService.createUser(initialization.name, password_hash);
+			const token = await this.authService.getToken(newuser.id, newuser.password_hash);
+			if (!token) throw OrchardErrorCode.AuthenticationError;
+			return new OrchardAuthentication(token);
+		} catch (error) {
+			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+				errord: OrchardErrorCode.AuthenticationError,
+			});
+			throw new OrchardApiError(error_code);
+		}
+	}
 
 	async getInitialization(tag: string): Promise<OrchardInitialization> {
 		try {

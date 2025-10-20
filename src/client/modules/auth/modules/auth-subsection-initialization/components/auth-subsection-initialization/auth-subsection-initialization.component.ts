@@ -21,9 +21,9 @@ export class AuthSubsectionInitializationComponent implements OnInit {
 	public show_surface: boolean = false;
 	public form_init: FormGroup = new FormGroup({
 		key: new FormControl(null, [Validators.required]),
+		name: new FormControl('admin', [Validators.required]),
 		password: new FormControl(null, [Validators.required, Validators.minLength(6), Validators.maxLength(100)]),
 		password_confirm: new FormControl(null, [Validators.required, this.confirmPasswordValidator()]),
-		name: new FormControl(null, [Validators.required]),
 	});
 	public errors: Record<InitializationControl, string | null> = {
 		key: null,
@@ -91,5 +91,13 @@ export class AuthSubsectionInitializationComponent implements OnInit {
 
 	public onSubmit(): void {
 		console.log('submit', this.form_init.value);
+		this.authService.initialize(this.form_init.value.key, this.form_init.value.name, this.form_init.value.password).subscribe({
+			next: (authentication) => {
+				console.log('authentication', authentication);
+			},
+			error: (error) => {
+				console.error('error', error);
+			},
+		});
 	}
 }

@@ -89,6 +89,13 @@ export class AuthService {
 		}
 	}
 
+	public async validateSetupKey(setup_key: string): Promise<boolean> {
+		if (!setup_key) throw new UnauthorizedException('No setup key provided');
+		const key = this.configService.get('server.key');
+		if (setup_key !== key) throw new UnauthorizedException('Invalid setup key');
+		return true;
+	}
+
 	public async validateAccessToken(access_token: string): Promise<JwtPayload> {
 		if (!access_token) throw new UnauthorizedException('No access token provided');
 		try {

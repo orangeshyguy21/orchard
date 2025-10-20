@@ -8,7 +8,7 @@ export type Config = {
 		path: string;
 		proxy: string | undefined;
 		log: string;
-		pass: string;
+		key: string;
 		ttl: string;
 		limit: string;
 	};

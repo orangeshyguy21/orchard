@@ -77,6 +77,12 @@ input AuthenticationInput {
 """Base64 encoded string scalar type"""
 scalar Base64
 
+input InitializationInput {
+  key: String!
+  name: String!
+  password: String!
+}
+
 enum LightningAddressType {
   HYBRID_NESTED_WITNESS_PUBKEY_HASH
   NESTED_WITNESS_PUBKEY_HASH
@@ -192,6 +198,7 @@ input MintUrlUpdateInput {
 type Mutation {
   ai_chat_abort(ai_chat_abort: AiChatAbortInput!): OrchardAiChatStream!
   authentication(authentication: AuthenticationInput!): OrchardAuthentication!
+  initialize(initialize: InitializationInput!): OrchardAuthentication!
   mint_contact_add(mint_contact_update: MintContactUpdateInput!): OrchardMintContactUpdate!
   mint_contact_remove(mint_contact_update: MintContactUpdateInput!): OrchardMintContactUpdate!
   mint_database_backup: OrchardMintDatabaseBackup!

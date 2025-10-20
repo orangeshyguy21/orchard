@@ -11,7 +11,7 @@ import {Public} from '@server/modules/security/decorators/auth.decorator';
 /* Local Dependencies */
 import {AuthenticationService} from './authentication.service';
 import {OrchardAuthentication, OrchardInitialization} from './authentication.model';
-import {AuthenticationInput} from './authentication.input';
+import {InitializationInput, AuthenticationInput} from './authentication.input';
 
 @Resolver(() => [OrchardAuthentication])
 export class AuthenticationResolver {
@@ -25,6 +25,15 @@ export class AuthenticationResolver {
 		const tag = 'GET { initialization }';
 		this.logger.debug(tag);
 		return await this.authenticationService.getInitialization(tag);
+	}
+
+	@Public()
+	@Throttle({default: {limit: 4, ttl: seconds(10)}})
+	@Mutation(() => OrchardAuthentication)
+	async initialize(@Args('initialize') initialize: InitializationInput) {
+		const tag = 'MUTATION { initialize }';
+		this.logger.debug(tag);
+		return await this.authenticationService.initialize(tag, initialize);
 	}
 
 	@Public()
