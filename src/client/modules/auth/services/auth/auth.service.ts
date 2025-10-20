@@ -70,13 +70,12 @@ export class AuthService {
 		const query = getApiQuery(INITIALIZE_MUTATION, {initialize: {key, name, password}});
 		return this.http.post<OrchardRes<InitializeResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
-				console.log('initialize response', response);
 				if (response.errors) throw new OrchardErrors(response.errors);
-				return response.data.authentication;
+				return response.data.initialize;
 			}),
-			tap((authentication) => {
-				this.localStorageService.setAuthToken(authentication.access_token);
-				this.localStorageService.setRefreshToken(authentication.refresh_token);
+			tap((initialize) => {
+				this.localStorageService.setAuthToken(initialize.access_token);
+				this.localStorageService.setRefreshToken(initialize.refresh_token);
 			}),
 			catchError((error) => {
 				console.error('Error initializing:', error);
@@ -90,7 +89,6 @@ export class AuthService {
 
 		return this.http.post<OrchardRes<AuthenticationResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
-				console.log('authenticate response', response);
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.authentication;
 			}),

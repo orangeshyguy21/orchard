@@ -10,21 +10,10 @@ import {UserRole} from './user.enums';
 
 @Injectable()
 export class UserService {
-	// private readonly users = [
-	// 	{
-	// 		id: '1',
-	// 		name: 'Admin',
-	// 	},
-	// ];
-
 	constructor(
 		@InjectRepository(User)
 		private userRepository: Repository<User>,
 	) {}
-
-	// public getUser(): User {
-	// 	return this.users[0];
-	// }
 
 	/**
 	 * Get a user by name (enforced uniqueness)

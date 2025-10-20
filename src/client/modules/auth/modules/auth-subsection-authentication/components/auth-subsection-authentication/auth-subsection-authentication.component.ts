@@ -62,6 +62,7 @@ export class AuthSubsectionAuthenticationComponent implements OnInit {
 				this.openInterior();
 			},
 			error: (error) => {
+				console.error('error in component authentication', error);
 				this.errorControl(error);
 			},
 		});
@@ -83,13 +84,16 @@ export class AuthSubsectionAuthenticationComponent implements OnInit {
 
 	private updateError(control_name: AuthenticateControl, error: ValidationErrors | null): void {
 		if (error?.['required']) this.errors[control_name] = 'Required';
+		if (error?.['incorrect']) this.errors[control_name] = 'Incorrect username or password';
 	}
 
 	private errorControl(error: string | OrchardErrors): void {
-		let error_validation: Record<string, boolean> = {incorrect: true};
+		let error_validation: Record<string, boolean> = {};
 		const has_throttler_error = (error as OrchardErrors)?.errors?.some((err) => err?.code === 10005);
 		if (has_throttler_error) error_validation = {throttler: true};
+		if (!has_throttler_error) error_validation = {incorrect: true};
 		this.form_auth.get('password')?.setErrors(error_validation);
+		this.validateForm();
 	}
 
 	private openInterior(): void {

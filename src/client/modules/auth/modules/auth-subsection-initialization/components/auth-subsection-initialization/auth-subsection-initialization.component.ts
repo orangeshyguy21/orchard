@@ -75,6 +75,8 @@ export class AuthSubsectionInitializationComponent implements OnInit {
 		if (error?.['password_mismatch']) this.errors[control_name] = 'Password mismatch';
 		if (error?.['minlength']) this.errors[control_name] = `Minimum length is ${error['minlength'].requiredLength} characters`;
 		if (error?.['maxlength']) this.errors[control_name] = `Maximum length is ${error['maxlength'].requiredLength} characters`;
+		if (error?.['setup_key']) this.errors[control_name] = 'Invalid setup key';
+		if (error?.['unique_username']) this.errors[control_name] = 'Username already exists';
 	}
 
 	public onControlCancel(control_name: string): void {
@@ -91,12 +93,24 @@ export class AuthSubsectionInitializationComponent implements OnInit {
 
 	public onSubmit(): void {
 		this.authService.initialize(this.form_init.value.key, this.form_init.value.name, this.form_init.value.password).subscribe({
-			next: (authentication) => {
-				console.log('authentication', authentication);
+			next: () => {
+				this.authService.clearInitializationCache();
+				this.router.navigate(['/']);
 			},
 			error: (error) => {
-				console.error('error', error);
+				this.errorControl(error);
 			},
 		});
+	}
+
+	private errorControl(error: string | OrchardErrors): void {
+		let error_validation: Record<string, boolean> = {incorrect: true};
+		const has_setup_key_error = (error as OrchardErrors)?.errors?.some((err) => err?.code === 10006);
+		if (has_setup_key_error) error_validation = {setup_key: true};
+		this.form_init.get('key')?.setErrors(error_validation);
+		const has_unique_username_error = (error as OrchardErrors)?.errors?.some((err) => err?.code === 10007);
+		if (has_unique_username_error) error_validation = {unique_username: true};
+		this.form_init.get('name')?.setErrors(error_validation);
+		this.validateForm();
 	}
 }

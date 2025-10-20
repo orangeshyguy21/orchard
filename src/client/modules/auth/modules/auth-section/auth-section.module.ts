@@ -4,6 +4,7 @@ import {CommonModule as CoreCommonModule} from '@angular/common';
 import {RouterModule as CoreRouterModule} from '@angular/router';
 /* Native Dependencies */
 import {initializationGuard} from '@client/modules/auth/guards/initialization/initialization.guard';
+import {uninitializedGuard} from '@client/modules/auth/guards/uninitialized/uninitialized.guard';
 /* Local Dependencies */
 import {AuthSectionComponent} from './components/auth-section/auth-section.component';
 
@@ -33,6 +34,7 @@ import {AuthSectionComponent} from './components/auth-section/auth-section.compo
 					},
 					{
 						path: 'initialization',
+						canActivate: [uninitializedGuard],
 						loadChildren: () =>
 							import(
 								'@client/modules/auth/modules/auth-subsection-initialization/auth-subsection-initialization.module'

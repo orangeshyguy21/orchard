@@ -5,7 +5,7 @@ export type InitializationResponse = {
 };
 
 export type InitializeResponse = {
-	authentication: OrchardAuthentication;
+	initialize: OrchardAuthentication;
 };
 
 export type AuthenticationResponse = {

@@ -28,9 +28,8 @@ export class AuthenticationService {
 			if (!valid) throw OrchardErrorCode.InitializationKeyError;
 			const user = await this.userService.getUserByName(initialization.name);
 			if (user) throw OrchardErrorCode.UniqueUsernameError;
-			const password_hash = await bcrypt.hash(initialization.password, 10);
-			const newuser = await this.userService.createUser(initialization.name, password_hash);
-			const token = await this.authService.getToken(newuser.id, newuser.password_hash);
+			const newuser = await this.userService.createUser(initialization.name, initialization.password);
+			const token = await this.authService.getToken(newuser.id, initialization.password);
 			if (!token) throw OrchardErrorCode.AuthenticationError;
 			return new OrchardAuthentication(token);
 		} catch (error) {
@@ -55,8 +54,9 @@ export class AuthenticationService {
 
 	async authenticate(tag: string, authentication: AuthenticationInput): Promise<OrchardAuthentication> {
 		try {
-			const token = await this.authService.getToken(authentication.name, authentication.password);
-			console.log('authenticate token', token);
+			const user = await this.userService.getUserByName(authentication.name);
+			if (!user) throw OrchardErrorCode.AuthenticationError;
+			const token = await this.authService.getToken(user.id, authentication.password);
 			if (!token) throw OrchardErrorCode.AuthenticationError;
 			return new OrchardAuthentication(token);
 		} catch (error) {

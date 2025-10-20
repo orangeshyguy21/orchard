@@ -21,13 +21,13 @@ export class AuthService {
 		private userService: UserService,
 	) {}
 
-	public async getToken(name: string, password: string): Promise<OrchardAuthToken> {
-		// const user = await this.userService.getUser();
-		const user = await this.userService.getUserByName(name);
+	public async getToken(id: string, password: string): Promise<OrchardAuthToken> {
+		const user = await this.userService.getUserById(id);
+		if (!user) throw new UnauthorizedException('Invalid user');
 		const valid = await this.userService.validatePassword(user, password);
 		if (!valid) throw new UnauthorizedException('Invalid username or password');
 		const access_payload: JwtPayload = {
-			sub: user.id,
+			sub: id,
 			username: user.name,
 			type: 'access',
 		};
@@ -92,7 +92,7 @@ export class AuthService {
 	public async validateSetupKey(setup_key: string): Promise<boolean> {
 		if (!setup_key) throw new UnauthorizedException('No setup key provided');
 		const key = this.configService.get('server.key');
-		if (setup_key !== key) throw new UnauthorizedException('Invalid setup key');
+		if (setup_key !== key) return false;
 		return true;
 	}
 
