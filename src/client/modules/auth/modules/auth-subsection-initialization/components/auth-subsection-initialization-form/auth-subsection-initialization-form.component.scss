@@ -3,6 +3,7 @@
 .auth-initialization-form-container {
 	@extend %p-t-1;
 	padding-left: 5rem;
+	@extend %p-r-2;
 }
 
 .auth-initialization-form-field {
