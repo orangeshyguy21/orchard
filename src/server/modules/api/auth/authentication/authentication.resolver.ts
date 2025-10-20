@@ -42,7 +42,7 @@ export class AuthenticationResolver {
 	async authentication(@Args('authentication') authentication: AuthenticationInput) {
 		const tag = 'MUTATION { authentication }';
 		this.logger.debug(tag);
-		return await this.authenticationService.getToken(tag, authentication);
+		return await this.authenticationService.authenticate(tag, authentication);
 	}
 
 	@Mutation(() => OrchardAuthentication)

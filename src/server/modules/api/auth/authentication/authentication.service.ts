@@ -53,9 +53,10 @@ export class AuthenticationService {
 		}
 	}
 
-	async getToken(tag: string, authentication: AuthenticationInput): Promise<OrchardAuthentication> {
+	async authenticate(tag: string, authentication: AuthenticationInput): Promise<OrchardAuthentication> {
 		try {
 			const token = await this.authService.getToken(authentication.name, authentication.password);
+			console.log('authenticate token', token);
 			if (!token) throw OrchardErrorCode.AuthenticationError;
 			return new OrchardAuthentication(token);
 		} catch (error) {

@@ -35,14 +35,16 @@ describe('AuthenticationService', () => {
 
 	it('getToken returns OrchardAuthentication on success', async () => {
 		auth_service.getToken.mockResolvedValue({access_token: 'a', refresh_token: 'r'} as any);
-		const result = await authentication_service.getToken('TAG', {password: 'p'} as any);
+		const result = await authentication_service.authenticate('TAG', {name: 'n', password: 'p'} as any);
 		expect(result).toBeInstanceOf(OrchardAuthentication);
 	});
 
 	it('getToken wraps errors via resolveError and throws OrchardApiError', async () => {
 		auth_service.getToken.mockRejectedValue(new Error('boom'));
 		error_service.resolveError.mockReturnValue(OrchardErrorCode.AuthenticationError);
-		await expect(authentication_service.getToken('MY_TAG', {password: 'p'} as any)).rejects.toBeInstanceOf(OrchardApiError);
+		await expect(authentication_service.authenticate('MY_TAG', {name: 'n', password: 'p'} as any)).rejects.toBeInstanceOf(
+			OrchardApiError,
+		);
 		const calls = error_service.resolveError.mock.calls;
 		const [, , tag_arg, code_arg] = calls[calls.length - 1];
 		expect(tag_arg).toBe('MY_TAG');

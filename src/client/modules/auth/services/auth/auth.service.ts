@@ -70,6 +70,7 @@ export class AuthService {
 		const query = getApiQuery(INITIALIZE_MUTATION, {initialize: {key, name, password}});
 		return this.http.post<OrchardRes<InitializeResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
+				console.log('initialize response', response);
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.authentication;
 			}),
@@ -84,11 +85,12 @@ export class AuthService {
 		);
 	}
 
-	public authenticate(password: string): Observable<OrchardAuthentication> {
-		const query = getApiQuery(AUTHENTICATION_MUTATION, {authentication: {password}});
+	public authenticate(name: string, password: string): Observable<OrchardAuthentication> {
+		const query = getApiQuery(AUTHENTICATION_MUTATION, {authentication: {name, password}});
 
 		return this.http.post<OrchardRes<AuthenticationResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
+				console.log('authenticate response', response);
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.authentication;
 			}),

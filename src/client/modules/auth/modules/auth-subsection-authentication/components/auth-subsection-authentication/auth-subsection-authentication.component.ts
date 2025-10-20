@@ -57,7 +57,7 @@ export class AuthSubsectionAuthenticationComponent implements OnInit {
 	}
 
 	public onSubmit(): void {
-		this.authService.authenticate(this.form_auth.value.password).subscribe({
+		this.authService.authenticate(this.form_auth.value.name, this.form_auth.value.password).subscribe({
 			next: () => {
 				this.openInterior();
 			},
