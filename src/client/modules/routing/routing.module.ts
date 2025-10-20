@@ -72,6 +72,7 @@ const routes: Routes = [
 @NgModule({
 	imports: [
 		RouterModule.forRoot(routes, {enableViewTransitions: true}),
+		// RouterModule.forRoot(routes),
 		MatSidenavModule,
 		OrcNavModule,
 		OrcAiModule,

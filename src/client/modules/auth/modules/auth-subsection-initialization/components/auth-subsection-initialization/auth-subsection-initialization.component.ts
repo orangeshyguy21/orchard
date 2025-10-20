@@ -92,6 +92,9 @@ export class AuthSubsectionInitializationComponent implements OnInit {
 	}
 
 	public onSubmit(): void {
+		this.form_init.markAllAsTouched();
+		this.validateForm();
+		if (this.form_init.invalid) return;
 		this.authService.initialize(this.form_init.value.key, this.form_init.value.name, this.form_init.value.password).subscribe({
 			next: () => {
 				this.authService.clearInitializationCache();

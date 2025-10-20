@@ -57,6 +57,9 @@ export class AuthSubsectionAuthenticationComponent implements OnInit {
 	}
 
 	public onSubmit(): void {
+		this.form_auth.markAllAsTouched();
+		this.validateForm();
+		if (this.form_auth.invalid) return;
 		this.authService.authenticate(this.form_auth.value.name, this.form_auth.value.password).subscribe({
 			next: () => {
 				this.openInterior();
