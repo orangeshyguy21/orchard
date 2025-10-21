@@ -13,13 +13,13 @@ import {AiModel} from '@client/modules/ai/classes/ai-model.class';
 import {SettingsCategory} from '@client/modules/settings/enums/category.enum';
 
 @Component({
-	selector: 'orc-settings-subsection-dashboard',
+	selector: 'orc-settings-subsection-device',
 	standalone: false,
-	templateUrl: './settings-subsection-dashboard.component.html',
-	styleUrl: './settings-subsection-dashboard.component.scss',
+	templateUrl: './settings-subsection-device.component.html',
+	styleUrl: './settings-subsection-device.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsSubsectionDashboardComponent implements OnInit {
+export class SettingsSubsectionDeviceComponent implements OnInit {
 	public version: string;
 	public enabled_ai: boolean;
 	public locale: Locale | null = null;

@@ -18,7 +18,7 @@ import {OrcLocalModule} from '@client/modules/local/local.module';
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcAiModule} from '@client/modules/ai/ai.module';
 /* Native Module Dependencies */
-import {SettingsSubsectionDashboardComponent} from './components/settings-subsection-dashboard/settings-subsection-dashboard.component';
+import {SettingsSubsectionDeviceComponent} from './components/settings-subsection-device/settings-subsection-device.component';
 import {SettingsSubsectionDashboardCategoriesComponent} from './components/settings-subsection-dashboard-categories/settings-subsection-dashboard-categories.component';
 import {SettingsSubsectionDashboardTimeComponent} from './components/settings-subsection-dashboard-time/settings-subsection-dashboard-time.component';
 import {SettingsSubsectionDashboardTimeTimezoneComponent} from './components/settings-subsection-dashboard-time-timezone/settings-subsection-dashboard-time-timezone.component';
@@ -28,7 +28,7 @@ import {SettingsSubsectionDashboardAiComponent} from './components/settings-subs
 
 @NgModule({
 	declarations: [
-		SettingsSubsectionDashboardComponent,
+		SettingsSubsectionDeviceComponent,
 		SettingsSubsectionDashboardCategoriesComponent,
 		SettingsSubsectionDashboardTimeComponent,
 		SettingsSubsectionDashboardTimeTimezoneComponent,
@@ -41,7 +41,7 @@ import {SettingsSubsectionDashboardAiComponent} from './components/settings-subs
 			CoreRouterModule.forChild([
 				{
 					path: '',
-					component: SettingsSubsectionDashboardComponent,
+					component: SettingsSubsectionDeviceComponent,
 				},
 			]),
 		],
@@ -61,4 +61,4 @@ import {SettingsSubsectionDashboardAiComponent} from './components/settings-subs
 		OrcAiModule,
 	],
 })
-export class OrcSettingsSubsectionDashboardModule {}
+export class OrcSettingsSubsectionDeviceModule {}
