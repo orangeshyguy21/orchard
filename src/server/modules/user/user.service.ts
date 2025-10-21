@@ -77,7 +77,8 @@ export class UserService {
 		return this.userRepository.save(user);
 	}
 
-	public async updateUser(id: string, update: Partial<User>): Promise<User> {
+	public async updateUser(id: string, update: Partial<User>, password?: string): Promise<User> {
+		if (password) update.password_hash = await bcrypt.hash(password, 10);
 		const existing_user = await this.getUserById(id);
 		if (!existing_user) throw new Error('User not found');
 		return this.userRepository.save({...existing_user, ...update});

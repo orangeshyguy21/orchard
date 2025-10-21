@@ -217,6 +217,8 @@ type Mutation {
   mint_short_description_update(mint_desc_update: MintDescriptionUpdateInput!): OrchardMintDescriptionUpdate!
   mint_url_add(mint_url_update: MintUrlUpdateInput!): OrchardMintUrlUpdate!
   mint_url_remove(mint_url_update: MintUrlUpdateInput!): OrchardMintUrlUpdate!
+  updateUserName(updateUserName: UserNameUpdateInput!): OrchardUser!
+  updateUserPassword(updateUserPassword: UserPasswordUpdateInput!): OrchardUser!
 }
 
 type OrchardAiAgent {
@@ -944,6 +946,17 @@ scalar Timezone
 
 """A Unix timestamp in seconds"""
 scalar UnixTimestamp
+
+input UserNameUpdateInput {
+  id: String!
+  name: String!
+}
+
+input UserPasswordUpdateInput {
+  id: String!
+  password_new: String!
+  password_old: String!
+}
 
 enum UserRole {
   ADMIN

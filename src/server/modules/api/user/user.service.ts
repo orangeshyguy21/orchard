@@ -7,6 +7,7 @@ import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 /* Local Dependencies */
 import {OrchardUser} from './user.model';
+import {UserNameUpdateInput, UserPasswordUpdateInput} from './user.input';
 
 @Injectable()
 export class ApiUserService {
@@ -23,31 +24,35 @@ export class ApiUserService {
 			return new OrchardUser(user);
 		} catch (error) {
 			const error_code = this.errorService.resolveError(this.logger, error, tag, {
-				errord: OrchardErrorCode.AuthenticationError,
+				errord: OrchardErrorCode.UserError,
 			});
 			throw new OrchardApiError(error_code);
 		}
 	}
 
-	async updateUsername(tag: string, id: string, username: string): Promise<OrchardUser> {
+	async updateUserName(tag: string, args: UserNameUpdateInput): Promise<OrchardUser> {
 		try {
-			const user = await this.userService.updateUser(id, {name: username});
+			const user = await this.userService.updateUser(args.id, {name: args.name});
 			return new OrchardUser(user);
 		} catch (error) {
 			const error_code = this.errorService.resolveError(this.logger, error, tag, {
-				errord: OrchardErrorCode.AuthenticationError,
+				errord: OrchardErrorCode.UserError,
 			});
 			throw new OrchardApiError(error_code);
 		}
 	}
 
-	async updateUserPassword(tag: string, id: string, password: string): Promise<OrchardUser> {
+	async updateUserPassword(tag: string, args: UserPasswordUpdateInput): Promise<OrchardUser> {
 		try {
-			const user = await this.userService.updateUser(id, {password_hash: password});
-			return new OrchardUser(user);
+			const user = await this.userService.getUserById(args.id);
+			if (!user) throw OrchardErrorCode.UserError;
+			const valid = await this.userService.validatePassword(user, args.password_old);
+			if (!valid) throw OrchardErrorCode.InvalidPasswordError;
+			const user_updated = await this.userService.updateUser(args.id, {}, args.password_new);
+			return new OrchardUser(user_updated);
 		} catch (error) {
 			const error_code = this.errorService.resolveError(this.logger, error, tag, {
-				errord: OrchardErrorCode.AuthenticationError,
+				errord: OrchardErrorCode.UserError,
 			});
 			throw new OrchardApiError(error_code);
 		}
