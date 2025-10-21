@@ -6,7 +6,7 @@ import {ChartConfiguration, ChartType as ChartJsType} from 'chart.js';
 import {DateTime} from 'luxon';
 import {Subscription} from 'rxjs';
 /* Application Dependencies */
-import {LocalAmountPipe} from '@client/modules/local/pipes/amount/amount.pipe';
+import {LocalAmountPipe} from '@client/modules/local/pipes/local-amount/local-amount.pipe';
 import {DataType} from '@client/modules/orchard/enums/data.enum';
 import {NonNullableMintDatabaseSettings} from '@client/modules/settings/types/setting.types';
 import {getYAxisId} from '@client/modules/chart/helpers/mint-chart-data.helpers';

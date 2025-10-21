@@ -1,6 +1,6 @@
 /* Application Dependencies */
 import {MintAnalytic} from '@client/modules/mint/classes/mint-analytic.class';
-import {LocalAmountPipe} from '@client/modules/local/pipes/amount/amount.pipe';
+import {LocalAmountPipe} from '@client/modules/local/pipes/local-amount/local-amount.pipe';
 /* Vendor Dependencies */
 import {DateTime, DateTimeUnit} from 'luxon';
 /* Shared Dependencies */

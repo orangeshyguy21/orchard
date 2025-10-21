@@ -43,7 +43,7 @@ export class SettingsSubsectionDeviceTimeLocaleComponent implements OnChanges {
 	public locale_control = new FormControl('', [Validators.required]);
 	public system_default_control = new FormControl(true);
 	public unix_timestamp_seconds = Math.floor(Date.now() / 1000);
-	public test = 1000000;
+	public example_amount = 1000000;
 	public filtered_options!: Observable<LocaleOption[]>;
 	public locale_options: LocaleOption[] = [
 		// English Variants

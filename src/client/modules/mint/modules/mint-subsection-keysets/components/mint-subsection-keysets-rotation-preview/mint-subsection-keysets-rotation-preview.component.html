@@ -29,7 +29,10 @@
 		</orc-mint-general-keyset>
 		<div>
 			@if (keyset_out_balance !== undefined) {
-				<span animate.enter="orc-animation-fadein-fast" [innerHTML]="keyset_out_balance | localAmount: keyset_out_unit : 'mint'"></span>
+				<span
+					animate.enter="orc-animation-fadein-fast"
+					[innerHTML]="keyset_out_balance | localAmount: keyset_out_unit : 'mint'"
+				></span>
 			} @else {
 				<div class="h-2 w-6 orc-corner-full orc-animation-shimmer-high"></div>
 			}

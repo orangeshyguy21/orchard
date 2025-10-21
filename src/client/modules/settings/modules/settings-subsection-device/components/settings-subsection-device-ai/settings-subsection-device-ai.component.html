@@ -56,9 +56,9 @@
 									<div class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color">
 										<div>{{ ai_model.model }}</div>
 										<div>{{ ai_model.details.parameter_size }}</div>
-										<div>{{ ai_model.size | bytes }}</div>
+										<div>{{ ai_model.size | dataBytes }}</div>
 										<div>{{ ai_model.details.quantization_level }}</div>
-										<div>{{ ai_model.modified_at | time: 'medium' }}</div>
+										<div>{{ ai_model.modified_at | localTime: 'medium' }}</div>
 									</div>
 								</div>
 							} @else {

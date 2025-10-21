@@ -4,11 +4,11 @@ import {Pipe, PipeTransform} from '@angular/core';
 import {DateTime} from 'luxon';
 
 @Pipe({
-	name: 'time_ago',
+	name: 'localTimeAgo',
 	standalone: false,
 	pure: false,
 })
-export class TimeAgoPipe implements PipeTransform {
+export class LocalTimeAgoPipe implements PipeTransform {
 	transform(timestamp: number | null | undefined): string {
 		if (!timestamp) return '';
 		const date = DateTime.fromSeconds(timestamp);

@@ -21,7 +21,7 @@
 					<tbody>
 						<tr>
 							<td class="font-weight-extra-light orc-outline-color">Date</td>
-							<td #flash_time class="text-nowrap">{{ block()?.time | time: 'medium' }}</td>
+							<td #flash_time class="text-nowrap">{{ block()?.time | localTime: 'medium' }}</td>
 						</tr>
 						<tr>
 							<td class="font-weight-extra-light orc-outline-color text-nowrap">Block height</td>
@@ -32,7 +32,7 @@
 						<tr>
 							<td class="font-weight-extra-light orc-outline-color text-nowrap">Best block</td>
 							<td #flash_hash class="text-nowrap w-min-24">
-								{{ block()?.hash | truncate: 60 : 27 : 10 }}
+								{{ block()?.hash | dataTruncate: 60 : 27 : 10 }}
 							</td>
 						</tr>
 						<tr>

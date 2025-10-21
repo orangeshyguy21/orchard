@@ -21,9 +21,9 @@ import {SettingsSectionComponent} from './components/settings-section/settings-s
 					{
 						path: '',
 						loadChildren: () =>
-							import(
-								'@client/modules/settings/modules/settings-subsection-device/settings-subsection-device.module'
-							).then((m) => m.OrcSettingsSubsectionDeviceModule),
+							import('@client/modules/settings/modules/settings-subsection-device/settings-subsection-device.module').then(
+								(m) => m.OrcSettingsSubsectionDeviceModule,
+							),
 						title: 'Orchard | Device Settings',
 						data: {
 							section: 'settings',

@@ -55,7 +55,7 @@
 						</div>
 						@if (lightning_request()?.expiry) {
 							<div class="flex flex-gap-0-5">
-								<div class="text-nowrap">{{ lightning_request()?.expiry | time: 'medium' }}</div>
+								<div class="text-nowrap">{{ lightning_request()?.expiry | localTime: 'medium' }}</div>
 								<div [class]="expired_class()">{{ expired_message() }}</div>
 							</div>
 						} @else {
@@ -88,8 +88,8 @@
 				<div class="w-6 orc-outline-color font-weight-extra-light">Paid Time:</div>
 				@if (quote().paid_time) {
 					<div class="flex flex-gap-0-5">
-						<div class="text-nowrap">{{ quote().paid_time | time: 'medium' }}</div>
-						<div class="orc-outline-color">{{ quote().created_time | time_delta: quote().paid_time }} after created</div>
+						<div class="text-nowrap">{{ quote().paid_time | localTime: 'medium' }}</div>
+						<div class="orc-outline-color">{{ quote().created_time | localTimeDelta: quote().paid_time }} after created</div>
 					</div>
 				} @else {
 					<div class="orc-outline-variant-color">Not Paid</div>

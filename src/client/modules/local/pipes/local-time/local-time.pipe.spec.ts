@@ -1,10 +1,10 @@
 /* Local Dependencies */
-import {TimePipe} from './time.pipe';
+import {LocalTimePipe} from './local-time.pipe';
 
-describe('TimePipe', () => {
+describe('LocalTimePipe', () => {
 	it('create an instance', () => {
 		const mock_setting_service = {getTimezone: () => 'UTC', getLocale: () => 'en-US'};
-		const pipe = new TimePipe(mock_setting_service as any);
+		const pipe = new LocalTimePipe(mock_setting_service as any);
 		expect(pipe).toBeTruthy();
 	});
 });

@@ -1,5 +1,5 @@
 /* Application Dependencies */
-import {LocalAmountPipe} from '@client/modules/local/pipes/amount/amount.pipe';
+import {LocalAmountPipe} from '@client/modules/local/pipes/local-amount/local-amount.pipe';
 
 /* Native Dependencies */
 import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';

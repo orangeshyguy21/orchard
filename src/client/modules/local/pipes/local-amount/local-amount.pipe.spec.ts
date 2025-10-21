@@ -1,5 +1,5 @@
 /* Local Dependencies */
-import {LocalAmountPipe} from './amount.pipe';
+import {LocalAmountPipe} from './local-amount.pipe';
 
 describe('LocalAmountPipe', () => {
 	it('create an instance', () => {

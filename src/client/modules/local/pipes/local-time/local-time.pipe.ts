@@ -4,11 +4,11 @@ import {Pipe, PipeTransform} from '@angular/core';
 import {SettingService} from '@client/modules/settings/services/setting/setting.service';
 
 @Pipe({
-	name: 'time',
+	name: 'localTime',
 	standalone: false,
 	pure: false,
 })
-export class TimePipe implements PipeTransform {
+export class LocalTimePipe implements PipeTransform {
 	constructor(private settingService: SettingService) {}
 
 	transform(unix_timestamp: number | null | undefined, format: string = 'medium'): string {

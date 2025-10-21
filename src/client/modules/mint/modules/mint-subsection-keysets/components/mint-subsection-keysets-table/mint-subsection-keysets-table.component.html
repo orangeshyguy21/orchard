@@ -34,7 +34,7 @@
 
 					<ng-container matColumnDef="valid_from">
 						<th mat-header-cell *matHeaderCellDef mat-sort-header class="keyset-table-sticky-header">Created</th>
-						<td mat-cell *matCellDef="let keyset">{{ keyset.valid_from | time: 'date-only' }}</td>
+						<td mat-cell *matCellDef="let keyset">{{ keyset.valid_from | localTime: 'date-only' }}</td>
 					</ng-container>
 
 					<ng-container matColumnDef="balance">

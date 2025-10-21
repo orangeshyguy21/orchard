@@ -29,8 +29,8 @@
 							</div>
 							<div class="flex flex-column flex-gap-0-5 font-size-xs">
 								<div>{{ form_group.get('file')?.value?.name }}</div>
-								<div>{{ form_group.get('file')?.value?.lastModified / 1000 | time: 'medium' }}</div>
-								<div>{{ form_group.get('file')?.value?.size | bytes }}</div>
+								<div>{{ form_group.get('file')?.value?.lastModified / 1000 | localTime: 'medium' }}</div>
+								<div>{{ form_group.get('file')?.value?.size | dataBytes }}</div>
 							</div>
 						</div>
 					</div>

@@ -2,11 +2,11 @@
 import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
-	name: 'bytes',
+	name: 'dataBytes',
 	standalone: false,
 	pure: false,
 })
-export class BytesPipe implements PipeTransform {
+export class DataBytesPipe implements PipeTransform {
 	transform(bytes: number | null | undefined): string {
 		if (bytes === 0 || bytes === null || bytes === undefined) return '0 B';
 

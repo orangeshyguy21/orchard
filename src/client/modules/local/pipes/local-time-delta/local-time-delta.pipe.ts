@@ -2,11 +2,11 @@ import {Pipe, PipeTransform} from '@angular/core';
 import {DateTime} from 'luxon';
 
 @Pipe({
-	name: 'time_delta',
+	name: 'localTimeDelta',
 	standalone: false,
 	pure: false,
 })
-export class TimeDeltaPipe implements PipeTransform {
+export class LocalTimeDeltaPipe implements PipeTransform {
 	transform(start_timestamp: number | null | undefined, end_timestamp: number | null | undefined): string {
 		if (!start_timestamp || !end_timestamp) return '';
 

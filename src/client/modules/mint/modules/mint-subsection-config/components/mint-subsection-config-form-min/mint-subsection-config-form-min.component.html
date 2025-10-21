@@ -21,7 +21,7 @@
 				>
 					<mat-label>Min Amount</mat-label>
 					<input type="text" formNumberSeparator matInput [formControlName]="control_name" placeholder="Ex. 1" #element_min />
-					<span matSuffix class="form-suffix-text">{{ unit | unit }}</span>
+					<span matSuffix class="form-suffix-text">{{ unit | localUnit }}</span>
 					@if (
 						form_group.get(control_name)?.invalid &&
 						(form_group.get(control_name)?.dirty || form_group.get(control_name)?.touched)

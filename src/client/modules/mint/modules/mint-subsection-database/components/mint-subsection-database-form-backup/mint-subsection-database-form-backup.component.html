@@ -47,7 +47,7 @@
 								@if (database_implementation && database_version && database_timestamp) {
 									<div>{{ database_implementation }}</div>
 									<div>{{ database_version }}</div>
-									<div>{{ database_timestamp | time: 'medium' }}</div>
+									<div>{{ database_timestamp | localTime: 'medium' }}</div>
 								} @else {
 									<div class="flex flex-column flex-gap-1 orc-outline-color">
 										<div class="h-0-5 w-3 orc-corner-full orc-animation-shimmer-high"></div>

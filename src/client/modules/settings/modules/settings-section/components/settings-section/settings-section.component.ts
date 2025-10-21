@@ -1,8 +1,8 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, WritableSignal, signal, OnInit} from '@angular/core';
-import { Router, Event, ActivatedRoute } from '@angular/router';
+import {Router, Event, ActivatedRoute} from '@angular/router';
 /* Vendor Dependencies */
-import { filter, Subscription } from 'rxjs';
+import {filter, Subscription} from 'rxjs';
 /* Application Dependencies */
 import {ConfigService} from '@client/modules/config/services/config.service';
 
@@ -26,7 +26,6 @@ export class SettingsSectionComponent implements OnInit {
 	) {
 		this.version.set(this.configService.config.mode.version);
 	}
-
 
 	ngOnInit(): void {
 		this.subscriptions.add(this.getRouterSubscription());

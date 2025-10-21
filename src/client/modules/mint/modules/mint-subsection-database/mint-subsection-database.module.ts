@@ -20,6 +20,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {BaseChartDirective as ChartJsBaseChartDirective} from 'ng2-charts';
 /* Application Dependencies */
 import {OrcLocalModule} from '@client/modules/local/local.module';
+import {OrcDataModule} from '@client/modules/data/data.module';
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {OrcMintGeneralModule} from '@client/modules/mint/modules/mint-general/mint-general.module';
@@ -77,6 +78,7 @@ import {MintSubsectionDatabaseTableEcashComponent} from './components/mint-subse
 		MatButtonModule,
 		ChartJsBaseChartDirective,
 		OrcLocalModule,
+		OrcDataModule,
 		OrcFormModule,
 		OrcGraphicModule,
 		OrcMintGeneralModule,
