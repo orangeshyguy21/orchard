@@ -53,7 +53,7 @@ export class AuthService {
 		return this.http.post<OrchardRes<InitializationResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
-				return response.data.initialization.initialization;
+				return response.data.auth_initialization.initialization;
 			}),
 			tap((is_initialized) => {
 				this.initialization_subject.next(is_initialized);
@@ -71,7 +71,7 @@ export class AuthService {
 		return this.http.post<OrchardRes<InitializeResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
-				return response.data.initialize;
+				return response.data.auth_initialize;
 			}),
 			tap((initialize) => {
 				this.localStorageService.setAuthToken(initialize.access_token);
@@ -90,7 +90,7 @@ export class AuthService {
 		return this.http.post<OrchardRes<AuthenticationResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
-				return response.data.authentication;
+				return response.data.auth_authentication;
 			}),
 			tap((authentication) => {
 				this.localStorageService.setAuthToken(authentication.access_token);
@@ -113,7 +113,7 @@ export class AuthService {
 		return this.http.post<OrchardRes<RefreshAuthenticationResponse>>(this.apiService.api, query, {headers}).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
-				return response.data.refresh_authentication;
+				return response.data.auth_authentication_refresh;
 			}),
 			tap((refresh_authentication) => {
 				this.localStorageService.setAuthToken(refresh_authentication.access_token);
@@ -138,7 +138,7 @@ export class AuthService {
 			map((response) => {
 				this.clearAuthCache();
 				if (response.errors) throw new OrchardErrors(response.errors);
-				return response.data.revoke_authentication;
+				return response.data.auth_authentication_revoke;
 			}),
 			catchError((error) => {
 				console.error('Error revoking token:', error);

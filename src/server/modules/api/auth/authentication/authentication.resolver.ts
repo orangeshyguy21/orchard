@@ -9,37 +9,20 @@ import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 import {Public} from '@server/modules/security/decorators/auth.decorator';
 /* Local Dependencies */
-import {AuthenticationService} from './authentication.service';
-import {OrchardAuthentication, OrchardInitialization} from './authentication.model';
-import {InitializationInput, AuthenticationInput} from './authentication.input';
+import {AuthAuthenticationService} from './authentication.service';
+import {OrchardAuthentication} from './authentication.model';
+import {AuthenticationInput} from './authentication.input';
 
 @Resolver(() => [OrchardAuthentication])
-export class AuthenticationResolver {
-	private readonly logger = new Logger(AuthenticationResolver.name);
+export class AuthAuthenticationResolver {
+	private readonly logger = new Logger(AuthAuthenticationResolver.name);
 
-	constructor(private authenticationService: AuthenticationService) {}
-
-	@Public()
-	@Query(() => OrchardInitialization)
-	async initialization() {
-		const tag = 'GET { initialization }';
-		this.logger.debug(tag);
-		return await this.authenticationService.getInitialization(tag);
-	}
+	constructor(private authenticationService: AuthAuthenticationService) {}
 
 	@Public()
 	@Throttle({default: {limit: 4, ttl: seconds(10)}})
 	@Mutation(() => OrchardAuthentication)
-	async initialize(@Args('initialize') initialize: InitializationInput) {
-		const tag = 'MUTATION { initialize }';
-		this.logger.debug(tag);
-		return await this.authenticationService.initialize(tag, initialize);
-	}
-
-	@Public()
-	@Throttle({default: {limit: 4, ttl: seconds(10)}})
-	@Mutation(() => OrchardAuthentication)
-	async authentication(@Args('authentication') authentication: AuthenticationInput) {
+	async auth_authentication(@Args('authentication') authentication: AuthenticationInput) {
 		const tag = 'MUTATION { authentication }';
 		this.logger.debug(tag);
 		return await this.authenticationService.authenticate(tag, authentication);
@@ -47,25 +30,25 @@ export class AuthenticationResolver {
 
 	@Mutation(() => OrchardAuthentication)
 	@UseGuards(GqlRefreshGuard)
-	async refresh_authentication(@Context() context: any) {
+	async auth_authentication_refresh(@Context() context: any) {
 		const tag = 'MUTATION { refresh_authentication }';
 		this.logger.debug(tag);
 		const req = context.req;
 		const user = req?.user;
 		if (!user) throw new OrchardApiError(OrchardErrorCode.AuthenticationExpiredError);
 		if (!user.refresh_token) throw new OrchardApiError(OrchardErrorCode.AuthenticationExpiredError);
-		return await this.authenticationService.refreshToken(tag, user.refresh_token);
+		return await this.authenticationService.refreshAuthentication(tag, user.refresh_token);
 	}
 
 	@Mutation(() => Boolean)
 	@UseGuards(GqlRefreshGuard)
-	async revoke_authentication(@Context() context: any) {
+	async auth_authentication_revoke(@Context() context: any) {
 		const tag = 'MUTATION { revoke_authentication }';
 		this.logger.debug(tag);
 		const req = context.req;
 		const user = req?.user;
 		if (!user) throw new OrchardApiError(OrchardErrorCode.AuthenticationExpiredError);
 		if (!user.refresh_token) throw new OrchardApiError(OrchardErrorCode.AuthenticationExpiredError);
-		return await this.authenticationService.revokeToken(tag, user.refresh_token);
+		return await this.authenticationService.revokeAuthentication(tag, user.refresh_token);
 	}
 }

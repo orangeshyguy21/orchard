@@ -197,8 +197,10 @@ input MintUrlUpdateInput {
 
 type Mutation {
   ai_chat_abort(ai_chat_abort: AiChatAbortInput!): OrchardAiChatStream!
-  authentication(authentication: AuthenticationInput!): OrchardAuthentication!
-  initialize(initialize: InitializationInput!): OrchardAuthentication!
+  auth_authentication(authentication: AuthenticationInput!): OrchardAuthentication!
+  auth_authentication_refresh: OrchardAuthentication!
+  auth_authentication_revoke: Boolean!
+  auth_initialize(initialize: InitializationInput!): OrchardAuthentication!
   mint_contact_add(mint_contact_update: MintContactUpdateInput!): OrchardMintContactUpdate!
   mint_contact_remove(mint_contact_update: MintContactUpdateInput!): OrchardMintContactUpdate!
   mint_database_backup: OrchardMintDatabaseBackup!
@@ -215,8 +217,6 @@ type Mutation {
   mint_short_description_update(mint_desc_update: MintDescriptionUpdateInput!): OrchardMintDescriptionUpdate!
   mint_url_add(mint_url_update: MintUrlUpdateInput!): OrchardMintUrlUpdate!
   mint_url_remove(mint_url_update: MintUrlUpdateInput!): OrchardMintUrlUpdate!
-  refresh_authentication: OrchardAuthentication!
-  revoke_authentication: Boolean!
 }
 
 type OrchardAiAgent {
@@ -868,6 +868,7 @@ type OrchardTaprootAssetsUtxo {
 type Query {
   ai_agent(agent: AiAgent!): OrchardAiAgent!
   ai_models: [OrchardAiModel!]!
+  auth_initialization: OrchardInitialization!
   bitcoin_block(hash: String!): OrchardBitcoinBlock!
   bitcoin_block_template: OrchardBitcoinBlockTemplate!
   bitcoin_blockchain_info: OrchardBitcoinBlockchainInfo!
@@ -876,7 +877,6 @@ type Query {
   bitcoin_network_info: OrchardBitcoinNetworkInfo!
   bitcoin_oracle(date: String!, intraday: Boolean): OrchardBitcoinOracle!
   bitcoin_transaction_fee_estimates(targets: [Int!]!): [OrchardBitcoinTxFeeEstimate!]!
-  initialization: OrchardInitialization!
   lightning_balance: OrchardLightningBalance!
   lightning_info: OrchardLightningInfo!
   lightning_request(request: String!): OrchardLightningRequest!

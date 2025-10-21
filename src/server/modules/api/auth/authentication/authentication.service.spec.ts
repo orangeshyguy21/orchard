@@ -7,24 +7,24 @@ import {ErrorService} from '@server/modules/error/error.service';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 /* Local Dependencies */
-import {AuthenticationService} from './authentication.service';
+import {AuthAuthenticationService} from './authentication.service';
 import {OrchardAuthentication} from './authentication.model';
 
-describe('AuthenticationService', () => {
-	let authentication_service: AuthenticationService;
+describe('AuthAuthenticationService', () => {
+	let authentication_service: AuthAuthenticationService;
 	let auth_service: jest.Mocked<AuthService>;
 	let error_service: jest.Mocked<ErrorService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
-				AuthenticationService,
+				AuthAuthenticationService,
 				{provide: AuthService, useValue: {getToken: jest.fn(), refreshToken: jest.fn(), revokeToken: jest.fn()}},
 				{provide: ErrorService, useValue: {resolveError: jest.fn()}},
 			],
 		}).compile();
 
-		authentication_service = module.get<AuthenticationService>(AuthenticationService);
+		authentication_service = module.get<AuthAuthenticationService>(AuthAuthenticationService);
 		auth_service = module.get(AuthService);
 		error_service = module.get(ErrorService);
 	});
@@ -51,15 +51,15 @@ describe('AuthenticationService', () => {
 		expect(code_arg).toEqual({errord: OrchardErrorCode.AuthenticationError});
 	});
 
-	it('refreshToken returns OrchardAuthentication on success', async () => {
+	it('refreshAuthentication returns OrchardAuthentication on success', async () => {
 		auth_service.refreshToken.mockResolvedValue({access_token: 'a', refresh_token: 'r'} as any);
-		const result = await authentication_service.refreshToken('TAG', 'r');
+		const result = await authentication_service.refreshAuthentication('TAG', 'r');
 		expect(result).toBeInstanceOf(OrchardAuthentication);
 	});
 
-	it('revokeToken returns true on success', async () => {
+	it('revokeAuthentication returns true on success', async () => {
 		auth_service.revokeToken.mockResolvedValue(true as any);
-		const result = await authentication_service.revokeToken('TAG', 'r');
+		const result = await authentication_service.revokeAuthentication('TAG', 'r');
 		expect(result).toBe(true);
 	});
 });

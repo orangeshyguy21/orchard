@@ -1,21 +1,21 @@
 import {OrchardAuthentication, OrchardInitialization} from '@shared/generated.types';
 
 export type InitializationResponse = {
-	initialization: OrchardInitialization;
+	auth_initialization: OrchardInitialization;
 };
 
 export type InitializeResponse = {
-	initialize: OrchardAuthentication;
+	auth_initialize: OrchardAuthentication;
 };
 
 export type AuthenticationResponse = {
-	authentication: OrchardAuthentication;
+	auth_authentication: OrchardAuthentication;
 };
 
 export type RefreshAuthenticationResponse = {
-	refresh_authentication: OrchardAuthentication;
+	auth_authentication_refresh: OrchardAuthentication;
 };
 
 export type RevokeAuthenticationResponse = {
-	revoke_authentication: boolean;
+	auth_authentication_revoke: boolean;
 };

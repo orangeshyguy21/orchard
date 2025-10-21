@@ -5,11 +5,11 @@ import {ErrorModule} from '@server/modules/error/error.module';
 import {AuthModule} from '@server/modules/auth/auth.module';
 import {UserModule} from '@server/modules/user/user.module';
 /* Internal Dependencies */
-import {AuthAuthenticationResolver} from './authentication.resolver';
-import {AuthAuthenticationService} from './authentication.service';
+import {AtuhInitializationResolver} from './initialization.resolver';
+import {AtuhInitializationService} from './initialization.service';
 
 @Module({
 	imports: [ErrorModule, AuthModule, UserModule],
-	providers: [AuthAuthenticationResolver, AuthAuthenticationService],
+	providers: [AtuhInitializationResolver, AtuhInitializationService],
 })
-export class AuthAuthenticationModule {}
+export class AuthInitializationModule {}

@@ -16,3 +16,13 @@ export class OrchardAuthentication {
 		this.refresh_token = token.refresh_token;
 	}
 }
+
+@ObjectType()
+export class OrchardInitialization {
+	@Field()
+	initialization: boolean;
+
+	constructor(initialization: boolean) {
+		this.initialization = initialization;
+	}
+}
