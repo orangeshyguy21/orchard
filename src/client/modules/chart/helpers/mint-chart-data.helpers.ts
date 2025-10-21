@@ -1,6 +1,6 @@
 /* Application Dependencies */
 import {MintAnalytic} from '@client/modules/mint/classes/mint-analytic.class';
-import {AmountPipe} from '@client/modules/local/pipes/amount/amount.pipe';
+import {LocalAmountPipe} from '@client/modules/local/pipes/amount/amount.pipe';
 /* Vendor Dependencies */
 import {DateTime, DateTimeUnit} from 'luxon';
 /* Shared Dependencies */
@@ -94,10 +94,10 @@ export function getAmountData(
 	let running_sum = 0;
 	return unqiue_timestamps.map((timestamp) => {
 		const val = data_keyed_by_timestamp[timestamp] || 0;
-		running_sum += AmountPipe.getConvertedAmount(unit, val);
+		running_sum += LocalAmountPipe.getConvertedAmount(unit, val);
 		return {
 			x: timestamp * 1000,
-			y: cumulative ? running_sum : AmountPipe.getConvertedAmount(unit, val),
+			y: cumulative ? running_sum : LocalAmountPipe.getConvertedAmount(unit, val),
 		};
 	});
 }

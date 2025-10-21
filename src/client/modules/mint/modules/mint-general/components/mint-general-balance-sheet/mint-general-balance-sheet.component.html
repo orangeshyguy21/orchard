@@ -8,7 +8,7 @@
 					<td mat-cell *matCellDef="let row">
 						<div class="flex flex-items-center flex-gap-1">
 							<orc-graphic-asset [unit]="row.unit" [height]="'1.75rem'" [custody]="'ecash'"> </orc-graphic-asset>
-							<span class="font-size-m" [innerHTML]="row.liabilities | amount: row.unit : 'mint'"></span>
+							<span class="font-size-m" [innerHTML]="row.liabilities | localAmount: row.unit : 'mint'"></span>
 						</div>
 					</td>
 				</ng-container>
@@ -31,7 +31,7 @@
 										@if (row.assets !== null) {
 											<span
 												class="font-size-m w-min-10"
-												[innerHTML]="row.assets | amount: row.unit : 'lightning'"
+												[innerHTML]="row.assets | localAmount: row.unit : 'lightning'"
 											></span>
 											<span class="font-size-m font-weight-bold orc-outline-color">{{ row.reserve_ratio }}</span>
 										} @else {
@@ -63,7 +63,7 @@
 				<ng-container matColumnDef="fees">
 					<th mat-header-cell *matHeaderCellDef>Fee revenue</th>
 					<td mat-cell *matCellDef="let row">
-						<span class="font-size-m" [innerHTML]="row.fees | amount: row.unit : 'mint'"></span>
+						<span class="font-size-m" [innerHTML]="row.fees | localAmount: row.unit : 'mint'"></span>
 					</td>
 				</ng-container>
 

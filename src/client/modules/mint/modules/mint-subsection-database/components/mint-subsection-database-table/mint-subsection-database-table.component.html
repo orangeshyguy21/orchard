@@ -18,12 +18,12 @@
 						@if (entity.amount) {
 							<span
 								class="font-size-m w-min-10 text-nowrap"
-								[innerHTML]="entity.amount | amount: entity.unit : 'mint'"
+								[innerHTML]="entity.amount | localAmount: entity.unit : 'mint'"
 							></span>
 						} @else {
 							<span
 								class="font-size-m w-min-10 text-nowrap"
-								[innerHTML]="entity.amount_paid | amount: entity.unit : 'mint'"
+								[innerHTML]="entity.amount_paid | localAmount: entity.unit : 'mint'"
 							></span>
 						}
 					</td>

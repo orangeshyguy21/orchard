@@ -1,20 +1,20 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 /* Native Dependencies */
-import {OrcSettingsSubsectionDashboardModule} from '@client/modules/settings/modules/settings-subsection-dashboard/settings-subsection-dashboard.module';
+import {OrcSettingsSubsectionDeviceModule} from '@client/modules/settings/modules/settings-subsection-device/settings-subsection-device.module';
 /* Local Dependencies */
-import {SettingsSubsectionDashboardTimeLocaleComponent} from './settings-subsection-dashboard-time-locale.component';
+import {SettingsSubsectionDeviceTimeLocaleComponent} from './settings-subsection-device-time-locale.component';
 
-describe('SettingsSubsectionDashboardTimeLocaleComponent', () => {
-	let component: SettingsSubsectionDashboardTimeLocaleComponent;
-	let fixture: ComponentFixture<SettingsSubsectionDashboardTimeLocaleComponent>;
+describe('SettingsSubsectionDeviceTimeLocaleComponent', () => {
+	let component: SettingsSubsectionDeviceTimeLocaleComponent;
+	let fixture: ComponentFixture<SettingsSubsectionDeviceTimeLocaleComponent>;
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			imports: [OrcSettingsSubsectionDashboardModule],
+			imports: [OrcSettingsSubsectionDeviceModule],
 		}).compileComponents();
 
-		fixture = TestBed.createComponent(SettingsSubsectionDashboardTimeLocaleComponent);
+		fixture = TestBed.createComponent(SettingsSubsectionDeviceTimeLocaleComponent);
 		component = fixture.componentInstance;
 		fixture.detectChanges();
 	});

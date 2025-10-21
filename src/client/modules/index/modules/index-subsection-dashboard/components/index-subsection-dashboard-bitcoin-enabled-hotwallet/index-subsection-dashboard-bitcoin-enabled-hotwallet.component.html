@@ -20,7 +20,7 @@
 								</orc-graphic-asset>
 								<span
 									class="text-nowrap font-size-m flex-grow"
-									[innerHTML]="row.amount | amount: row.unit : 'bitcoin'"
+									[innerHTML]="row.amount | localAmount: row.unit : 'bitcoin'"
 								></span>
 							</div>
 						}

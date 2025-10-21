@@ -4,11 +4,11 @@ import {Pipe, PipeTransform} from '@angular/core';
 import {SettingService} from '@client/modules/settings/services/setting/setting.service';
 
 @Pipe({
-	name: 'amount',
+	name: 'localAmount',
 	standalone: false,
 	pure: false,
 })
-export class AmountPipe implements PipeTransform {
+export class LocalAmountPipe implements PipeTransform {
 	constructor(private settingService: SettingService) {}
 
 	transform(amount: number | null, unit: string, section?: string): string {
@@ -44,7 +44,7 @@ export class AmountPipe implements PipeTransform {
 
 	private transformFiat(amount: number, unit: string, locale: string, section?: string): string {
 		let fiat_amount = amount;
-		if (section === 'mint') fiat_amount = AmountPipe.getConvertedAmount(unit, amount);
+		if (section === 'mint') fiat_amount = LocalAmountPipe.getConvertedAmount(unit, amount);
 		const fiat_amount_string = fiat_amount.toLocaleString(locale, {minimumFractionDigits: 2, maximumFractionDigits: 2});
 		const suffix = unit.toUpperCase();
 		return this.transformToHtml(fiat_amount_string, suffix);

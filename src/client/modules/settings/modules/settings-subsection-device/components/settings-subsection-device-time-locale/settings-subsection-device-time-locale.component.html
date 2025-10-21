@@ -24,7 +24,7 @@
 			</div>
 			<div class="m-b-1-25">
 				<mat-checkbox [formControl]="system_default_control" (change)="onSystemDefaultChange($event)">
-					Sync with system
+					Sync with device
 				</mat-checkbox>
 			</div>
 		</form>
@@ -39,7 +39,9 @@
 	<div class="flex-grow-2 w-max-24">
 		<div class="flex flex-items-center flex-justify-center">
 			<div class="orc-outline-color">
-				{{ unix_timestamp_seconds | time: 'short' }}
+				<!-- {{ unix_timestamp_seconds | time: 'short' }} -->
+				
+				<span class="text-nowrap font-size-m" [innerHTML]="test | localAmount: 'sat' : 'lightning'"></span>
 			</div>
 		</div>
 	</div>
