@@ -19,7 +19,7 @@ import {SettingsSectionComponent} from './components/settings-section/settings-s
 				},
 				children: [
 					{
-						path: '',
+						path: 'device',
 						loadChildren: () =>
 							import('@client/modules/settings/modules/settings-subsection-device/settings-subsection-device.module').then(
 								(m) => m.OrcSettingsSubsectionDeviceModule,
@@ -28,6 +28,18 @@ import {SettingsSectionComponent} from './components/settings-section/settings-s
 						data: {
 							section: 'settings',
 							sub_section: 'device',
+						},
+					},
+					{
+						path: 'user',
+						loadChildren: () =>
+							import('@client/modules/settings/modules/settings-subsection-user/settings-subsection-user.module').then(
+								(m) => m.OrcSettingsSubsectionUserModule,
+							),
+						title: 'Orchard | User Settings',
+						data: {
+							section: 'settings',
+							sub_section: 'user',
 						},
 					},
 				],
