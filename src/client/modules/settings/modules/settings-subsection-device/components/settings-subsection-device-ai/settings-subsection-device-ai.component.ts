@@ -20,13 +20,13 @@ import {AiModel} from '@client/modules/ai/classes/ai-model.class';
 import {Model} from '@client/modules/cache/services/local-storage/local-storage.types';
 
 @Component({
-	selector: 'orc-settings-subsection-dashboard-ai',
+	selector: 'orc-settings-subsection-device-ai',
 	standalone: false,
-	templateUrl: './settings-subsection-dashboard-ai.component.html',
-	styleUrl: './settings-subsection-dashboard-ai.component.scss',
+	templateUrl: './settings-subsection-device-ai.component.html',
+	styleUrl: './settings-subsection-device-ai.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsSubsectionDashboardAiComponent implements OnChanges {
+export class SettingsSubsectionDeviceAiComponent implements OnChanges {
 	@ViewChild(MatAutocompleteTrigger) autotrigger!: MatAutocompleteTrigger;
 	@ViewChild(MatAutocomplete) auto!: MatAutocomplete;
 

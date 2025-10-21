@@ -10,13 +10,13 @@ import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 import {SettingsCategory} from '@client/modules/settings/enums/category.enum';
 
 @Component({
-	selector: 'orc-settings-subsection-dashboard-categories',
+	selector: 'orc-settings-subsection-device-categories',
 	standalone: false,
-	templateUrl: './settings-subsection-dashboard-categories.component.html',
-	styleUrl: './settings-subsection-dashboard-categories.component.scss',
+	templateUrl: './settings-subsection-device-categories.component.html',
+	styleUrl: './settings-subsection-device-categories.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsSubsectionDashboardCategoriesComponent {
+export class SettingsSubsectionDeviceCategoriesComponent {
 	@Input() category_filters: SettingsCategory[] = [];
 
 	@Output() updateFilters = new EventEmitter<SettingsCategory[]>();

@@ -25,13 +25,13 @@ type LocaleOption = {
 };
 
 @Component({
-	selector: 'orc-settings-subsection-dashboard-time-locale',
+	selector: 'orc-settings-subsection-device-time-locale',
 	standalone: false,
-	templateUrl: './settings-subsection-dashboard-time-locale.component.html',
-	styleUrl: './settings-subsection-dashboard-time-locale.component.scss',
+	templateUrl: './settings-subsection-device-time-locale.component.html',
+	styleUrl: './settings-subsection-device-time-locale.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsSubsectionDashboardTimeLocaleComponent implements OnChanges {
+export class SettingsSubsectionDeviceTimeLocaleComponent implements OnChanges {
 	@ViewChild(MatAutocompleteTrigger) autotrigger!: MatAutocompleteTrigger;
 	@ViewChild(MatAutocomplete) auto!: MatAutocomplete;
 

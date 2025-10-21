@@ -7,8 +7,8 @@ todo: timezone (UTC - local)
 
 <div class="settings-dashboard-container p-1">
 	<div class="flex flex-column">
-		<orc-settings-subsection-dashboard-categories [category_filters]="category_filters" (updateFilters)="onUpdateFilters($event)">
-		</orc-settings-subsection-dashboard-categories>
+		<orc-settings-subsection-device-categories [category_filters]="category_filters" (updateFilters)="onUpdateFilters($event)">
+		</orc-settings-subsection-device-categories>
 
 		<!-- Location Settings -->
 		@if (category_filters.includes(cat_orchard) || category_filters.includes(cat_local)) {
@@ -25,13 +25,13 @@ todo: timezone (UTC - local)
 				</div>
 				<div class="category-rule"></div>
 			</div>
-			<orc-settings-subsection-dashboard-time
+			<orc-settings-subsection-device-time
 				[locale]="locale"
 				[timezone]="timezone"
 				[loading]="loading_static"
 				(localeChange)="onLocaleChange($event)"
 				(timezoneChange)="onTimezoneChange($event)"
-			></orc-settings-subsection-dashboard-time>
+			></orc-settings-subsection-device-time>
 		}
 
 		<!-- Theme Settings -->
@@ -49,8 +49,8 @@ todo: timezone (UTC - local)
 				</div>
 				<div class="category-rule"></div>
 			</div>
-			<orc-settings-subsection-dashboard-theme [theme]="theme" [loading]="loading_static" (themeChange)="onThemeChange($event)">
-			</orc-settings-subsection-dashboard-theme>
+			<orc-settings-subsection-device-theme [theme]="theme" [loading]="loading_static" (themeChange)="onThemeChange($event)">
+			</orc-settings-subsection-device-theme>
 		}
 
 		<!-- AI Settings -->
@@ -68,14 +68,14 @@ todo: timezone (UTC - local)
 				</div>
 				<div class="category-rule"></div>
 			</div>
-			<orc-settings-subsection-dashboard-ai
+			<orc-settings-subsection-device-ai
 				[enabled]="enabled_ai"
 				[loading]="loading_ai"
 				[error]="error_ai"
 				[model_options]="ai_models"
 				[model]="model"
 				(modelChange)="onModelChange($event)"
-			></orc-settings-subsection-dashboard-ai>
+			></orc-settings-subsection-device-ai>
 		}
 	</div>
 </div>

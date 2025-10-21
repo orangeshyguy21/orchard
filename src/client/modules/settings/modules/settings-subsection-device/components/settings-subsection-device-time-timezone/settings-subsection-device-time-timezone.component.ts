@@ -20,13 +20,13 @@ import {map, startWith} from 'rxjs/operators';
 import {Timezone} from '@client/modules/cache/services/local-storage/local-storage.types';
 
 @Component({
-	selector: 'orc-settings-subsection-dashboard-time-timezone',
+	selector: 'orc-settings-subsection-device-time-timezone',
 	standalone: false,
-	templateUrl: './settings-subsection-dashboard-time-timezone.component.html',
-	styleUrl: './settings-subsection-dashboard-time-timezone.component.scss',
+	templateUrl: './settings-subsection-device-time-timezone.component.html',
+	styleUrl: './settings-subsection-device-time-timezone.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsSubsectionDashboardTimeTimezoneComponent implements OnChanges {
+export class SettingsSubsectionDeviceTimeTimezoneComponent implements OnChanges {
 	@ViewChild(MatAutocompleteTrigger) autotrigger!: MatAutocompleteTrigger;
 	@ViewChild(MatAutocomplete) auto!: MatAutocomplete;
 

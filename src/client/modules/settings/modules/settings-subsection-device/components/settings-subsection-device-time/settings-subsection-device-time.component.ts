@@ -4,13 +4,13 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@
 import {Locale, Timezone} from '@client/modules/cache/services/local-storage/local-storage.types';
 
 @Component({
-	selector: 'orc-settings-subsection-dashboard-time',
+	selector: 'orc-settings-subsection-device-time',
 	standalone: false,
-	templateUrl: './settings-subsection-dashboard-time.component.html',
-	styleUrl: './settings-subsection-dashboard-time.component.scss',
+	templateUrl: './settings-subsection-device-time.component.html',
+	styleUrl: './settings-subsection-device-time.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsSubsectionDashboardTimeComponent {
+export class SettingsSubsectionDeviceTimeComponent {
 	@Input() locale!: Locale | null;
 	@Input() timezone!: Timezone | null;
 	@Input() loading!: boolean;

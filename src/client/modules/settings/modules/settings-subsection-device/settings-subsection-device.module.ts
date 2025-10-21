@@ -19,22 +19,22 @@ import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcAiModule} from '@client/modules/ai/ai.module';
 /* Native Module Dependencies */
 import {SettingsSubsectionDeviceComponent} from './components/settings-subsection-device/settings-subsection-device.component';
-import {SettingsSubsectionDashboardCategoriesComponent} from './components/settings-subsection-dashboard-categories/settings-subsection-dashboard-categories.component';
-import {SettingsSubsectionDashboardTimeComponent} from './components/settings-subsection-dashboard-time/settings-subsection-dashboard-time.component';
-import {SettingsSubsectionDashboardTimeTimezoneComponent} from './components/settings-subsection-dashboard-time-timezone/settings-subsection-dashboard-time-timezone.component';
-import {SettingsSubsectionDashboardTimeLocaleComponent} from './components/settings-subsection-dashboard-time-locale/settings-subsection-dashboard-time-locale.component';
-import {SettingsSubsectionDashboardThemeComponent} from './components/settings-subsection-dashboard-theme/settings-subsection-dashboard-theme.component';
-import {SettingsSubsectionDashboardAiComponent} from './components/settings-subsection-dashboard-ai/settings-subsection-dashboard-ai.component';
+import {SettingsSubsectionDeviceCategoriesComponent} from './components/settings-subsection-device-categories/settings-subsection-device-categories.component';
+import {SettingsSubsectionDeviceTimeComponent} from './components/settings-subsection-device-time/settings-subsection-device-time.component';
+import {SettingsSubsectionDeviceTimeTimezoneComponent} from './components/settings-subsection-device-time-timezone/settings-subsection-device-time-timezone.component';
+import {SettingsSubsectionDeviceTimeLocaleComponent} from './components/settings-subsection-device-time-locale/settings-subsection-device-time-locale.component';
+import {SettingsSubsectionDeviceThemeComponent} from './components/settings-subsection-device-theme/settings-subsection-device-theme.component';
+import {SettingsSubsectionDeviceAiComponent} from './components/settings-subsection-device-ai/settings-subsection-device-ai.component';
 
 @NgModule({
 	declarations: [
 		SettingsSubsectionDeviceComponent,
-		SettingsSubsectionDashboardCategoriesComponent,
-		SettingsSubsectionDashboardTimeComponent,
-		SettingsSubsectionDashboardTimeTimezoneComponent,
-		SettingsSubsectionDashboardTimeLocaleComponent,
-		SettingsSubsectionDashboardThemeComponent,
-		SettingsSubsectionDashboardAiComponent,
+		SettingsSubsectionDeviceCategoriesComponent,
+		SettingsSubsectionDeviceTimeComponent,
+		SettingsSubsectionDeviceTimeTimezoneComponent,
+		SettingsSubsectionDeviceTimeLocaleComponent,
+		SettingsSubsectionDeviceThemeComponent,
+		SettingsSubsectionDeviceAiComponent,
 	],
 	imports: [
 		[

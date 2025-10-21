@@ -8,13 +8,13 @@ import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {Theme, ThemeType} from '@client/modules/cache/services/local-storage/local-storage.types';
 
 @Component({
-	selector: 'orc-settings-subsection-dashboard-theme',
+	selector: 'orc-settings-subsection-device-theme',
 	standalone: false,
-	templateUrl: './settings-subsection-dashboard-theme.component.html',
-	styleUrl: './settings-subsection-dashboard-theme.component.scss',
+	templateUrl: './settings-subsection-device-theme.component.html',
+	styleUrl: './settings-subsection-device-theme.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsSubsectionDashboardThemeComponent {
+export class SettingsSubsectionDeviceThemeComponent {
 	@Input() theme: Theme | null = null;
 	@Input() loading!: boolean;
 
