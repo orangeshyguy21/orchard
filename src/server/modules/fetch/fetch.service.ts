@@ -4,6 +4,7 @@ import {ConfigService} from '@nestjs/config';
 import {Agent} from 'https';
 /* Vendor Dependencies */
 import {SocksProxyAgent} from 'socks-proxy-agent';
+import nodeFetch from 'node-fetch';
 
 @Injectable()
 export class FetchService {
@@ -19,6 +20,7 @@ export class FetchService {
 	}
 
 	async fetchWithProxy(url: string, options?: any) {
-		return this.agent ? fetch(url, {agent: this.agent, ...options}) : fetch(url, options);
+		const useProxy = this.agent && (url.includes('.onion') || url.includes('.i2p'));
+		return useProxy ? (nodeFetch(url, {agent: this.agent, ...options}) as any) : fetch(url, options);
 	}
 }
