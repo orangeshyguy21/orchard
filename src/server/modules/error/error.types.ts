@@ -38,6 +38,9 @@ export enum OrchardErrorCode {
 	TaprootAssetsRpcActionError = 60002,
 	// 60003
 	TaprootAssetsSupportError = 60004,
+	// User Level Errors
+	UserError = 70001,
+	UserInvalidPasswordError = 70002,
 }
 
 export const OrchardErrorMessages: Record<string, string> = {

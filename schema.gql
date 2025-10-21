@@ -865,6 +865,15 @@ type OrchardTaprootAssetsUtxo {
   id: String!
 }
 
+type OrchardUser {
+  active: Boolean!
+  created_at: UnixTimestamp!
+  id: String!
+  name: String!
+  role: UserRole!
+  updated_at: UnixTimestamp!
+}
+
 type Query {
   ai_agent(agent: AiAgent!): OrchardAiAgent!
   ai_models: [OrchardAiModel!]!
@@ -911,6 +920,7 @@ type Query {
   taproot_assets: OrchardTaprootAssets!
   taproot_assets_info: OrchardTaprootAssetsInfo!
   taproot_assets_utxo: [OrchardTaprootAssetsUtxo!]!
+  user(id: String!): [OrchardUser!]!
 }
 
 type Subscription {
@@ -934,3 +944,8 @@ scalar Timezone
 
 """A Unix timestamp in seconds"""
 scalar UnixTimestamp
+
+enum UserRole {
+  ADMIN
+  MEMBER
+}

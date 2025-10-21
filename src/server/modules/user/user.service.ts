@@ -34,6 +34,22 @@ export class UserService {
 	}
 
 	/**
+	 * Get all users
+	 * @returns {Promise<User[]>} The users
+	 */
+	public async getUsers(): Promise<User[]> {
+		return this.userRepository.find();
+	}
+
+	/**
+	 * Check if the first user is the admin
+	 * @returns {Promise<boolean>} Whether the first user is the admin
+	 */
+	public async getUserCount(): Promise<number> {
+		return await this.userRepository.count();
+	}
+
+	/**
 	 * Validate a password
 	 * @param {User} user - The user
 	 * @param {string} password - The password
@@ -61,11 +77,9 @@ export class UserService {
 		return this.userRepository.save(user);
 	}
 
-	/**
-	 * Check if the first user is the admin
-	 * @returns {Promise<boolean>} Whether the first user is the admin
-	 */
-	public async getUserCount(): Promise<number> {
-		return await this.userRepository.count();
+	public async updateUser(id: string, update: Partial<User>): Promise<User> {
+		const existing_user = await this.getUserById(id);
+		if (!existing_user) throw new Error('User not found');
+		return this.userRepository.save({...existing_user, ...update});
 	}
 }

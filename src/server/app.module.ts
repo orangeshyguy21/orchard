@@ -19,6 +19,7 @@ import {TaprootAssetType, TaprootAssetVersion} from './modules/tapass/tapass.enu
 import {MintAnalyticsInterval} from './modules/cashu/mintdb/cashumintdb.enums';
 import {MintUnit, MintQuoteState, MeltQuoteState, MintProofState, MintPaymentMethod} from './modules/cashu/cashu.enums';
 import {AiAgent, AiMessageRole, AiFunctionName} from './modules/ai/ai.enums';
+import {UserRole} from './modules/user/user.enums';
 /* Application Configuration */
 import {config} from './config/configuration';
 
@@ -36,6 +37,7 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 	registerEnumType(AiAgent, {name: 'AiAgent'});
 	registerEnumType(AiMessageRole, {name: 'AiMessageRole'});
 	registerEnumType(AiFunctionName, {name: 'AiFunctionName'});
+	registerEnumType(UserRole, {name: 'UserRole'});
 
 	const path = configService.get('server.path');
 	const is_production = configService.get('mode.production');
