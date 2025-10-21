@@ -13,8 +13,8 @@ import {OrchardInitialization} from './initialization.model';
 import {InitializationInput} from './initialization.input';
 
 @Injectable()
-export class AtuhInitializationService {
-	private readonly logger = new Logger(AtuhInitializationService.name);
+export class AuthInitializationService {
+	private readonly logger = new Logger(AuthInitializationService.name);
 
 	constructor(
 		private authService: AuthService,

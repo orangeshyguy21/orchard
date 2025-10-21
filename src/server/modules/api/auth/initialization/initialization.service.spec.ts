@@ -8,13 +8,13 @@ import {UserService} from '@server/modules/user/user.service';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 /* Local Dependencies */
-import {AtuhInitializationService} from './initialization.service';
+import {AuthInitializationService} from './initialization.service';
 import {OrchardAuthentication} from '../authentication/authentication.model';
 import {OrchardInitialization} from './initialization.model';
 import {InitializationInput} from './initialization.input';
 
 describe('AtuhInitializationService', () => {
-	let initialization_service: AtuhInitializationService;
+	let initialization_service: AuthInitializationService;
 	let auth_service: jest.Mocked<AuthService>;
 	let error_service: jest.Mocked<ErrorService>;
 	let user_service: jest.Mocked<UserService>;
@@ -22,7 +22,7 @@ describe('AtuhInitializationService', () => {
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
-				AtuhInitializationService,
+				AuthInitializationService,
 				{
 					provide: AuthService,
 					useValue: {
@@ -42,7 +42,7 @@ describe('AtuhInitializationService', () => {
 			],
 		}).compile();
 
-		initialization_service = module.get<AtuhInitializationService>(AtuhInitializationService);
+		initialization_service = module.get<AuthInitializationService>(AuthInitializationService);
 		auth_service = module.get(AuthService);
 		error_service = module.get(ErrorService);
 		user_service = module.get(UserService);

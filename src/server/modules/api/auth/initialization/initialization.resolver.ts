@@ -7,15 +7,15 @@ import {Public} from '@server/modules/security/decorators/auth.decorator';
 /* Native Dependencies */
 import {OrchardAuthentication} from '@server/modules/api/auth/authentication/authentication.model';
 /* Local Dependencies */
-import {AtuhInitializationService} from './initialization.service';
+import {AuthInitializationService} from './initialization.service';
 import {OrchardInitialization} from './initialization.model';
 import {InitializationInput} from './initialization.input';
 
 @Resolver(() => [OrchardAuthentication])
-export class AtuhInitializationResolver {
-	private readonly logger = new Logger(AtuhInitializationResolver.name);
+export class AuthInitializationResolver {
+	private readonly logger = new Logger(AuthInitializationResolver.name);
 
-	constructor(private initializationService: AtuhInitializationService) {}
+	constructor(private initializationService: AuthInitializationService) {}
 
 	@Public()
 	@Query(() => OrchardInitialization)
