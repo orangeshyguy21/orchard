@@ -18,6 +18,8 @@ describe('NavPrimaryComponent', () => {
 
 		fixture = TestBed.createComponent(NavPrimaryComponent);
 		component = fixture.componentInstance;
+
+		fixture.componentRef.setInput('user_name', 'TestUser');
 		fixture.detectChanges();
 	});
 

@@ -1,5 +1,8 @@
+/* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-
+/* Native Dependencies */
+import {OrcSettingsSubsectionUserModule} from '@client/modules/settings/modules/settings-subsection-user/settings-subsection-user.module';
+/* Local Dependencies */
 import {SettingsSubsectionUserComponent} from './settings-subsection-user.component';
 
 describe('SettingsSubsectionUserComponent', () => {
@@ -8,7 +11,7 @@ describe('SettingsSubsectionUserComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [SettingsSubsectionUserComponent],
+			imports: [OrcSettingsSubsectionUserModule],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(SettingsSubsectionUserComponent);
