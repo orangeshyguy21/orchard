@@ -10,9 +10,9 @@ import {Router} from '@angular/router';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavPrimaryHeaderComponent {
+	public user_name = input.required<string | null>();
 	public active = input.required<boolean>();
 	public block_count = input.required<number>();
-	public chain = input.required<string>();
 
 	@ViewChild('flash', {read: ElementRef}) flash!: ElementRef<HTMLElement>;
 

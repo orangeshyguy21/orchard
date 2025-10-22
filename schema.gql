@@ -922,7 +922,7 @@ type Query {
   taproot_assets: OrchardTaprootAssets!
   taproot_assets_info: OrchardTaprootAssetsInfo!
   taproot_assets_utxo: [OrchardTaprootAssetsUtxo!]!
-  user(id: String!): [OrchardUser!]!
+  user: OrchardUser!
 }
 
 type Subscription {

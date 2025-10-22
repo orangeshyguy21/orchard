@@ -1,5 +1,5 @@
 export const USER_QUERY = `{
-    user(id: $id){
+    user{
         id
         name
         role

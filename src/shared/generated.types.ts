@@ -1127,7 +1127,7 @@ export type Query = {
   taproot_assets: OrchardTaprootAssets;
   taproot_assets_info: OrchardTaprootAssetsInfo;
   taproot_assets_utxo: Array<OrchardTaprootAssetsUtxo>;
-  user: Array<OrchardUser>;
+  user: OrchardUser;
 };
 
 
@@ -1313,11 +1313,6 @@ export type QueryPublic_ImageArgs = {
 
 export type QueryPublic_UrlsArgs = {
   urls: Array<Scalars['String']['input']>;
-};
-
-
-export type QueryUserArgs = {
-  id: Scalars['String']['input'];
 };
 
 export type Subscription = {

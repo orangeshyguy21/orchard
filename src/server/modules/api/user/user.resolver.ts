@@ -1,6 +1,6 @@
 /* Core Dependencies */
 import {Logger} from '@nestjs/common';
-import {Resolver, Query, Mutation, Args} from '@nestjs/graphql';
+import {Resolver, Query, Mutation, Args, Context} from '@nestjs/graphql';
 /* Local Dependencies */
 import {ApiUserService} from './user.service';
 import {OrchardUser} from './user.model';
@@ -12,11 +12,12 @@ export class ApiUserResolver {
 
 	constructor(private apiUserService: ApiUserService) {}
 
-	@Query(() => [OrchardUser])
-	async user(@Args('id') id: string): Promise<OrchardUser> {
+	@Query(() => OrchardUser)
+	async user(@Context() context: any): Promise<OrchardUser> {
 		const tag = 'GET { user }';
 		this.logger.debug(tag);
-		return await this.apiUserService.getUser(tag, id);
+		const user = context.req.user;
+		return await this.apiUserService.getUser(tag, user.id);
 	}
 
 	@Mutation(() => OrchardUser)

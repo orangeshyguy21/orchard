@@ -8,6 +8,7 @@ import {switchMap, catchError, filter, takeWhile} from 'rxjs/operators';
 import {MatSidenav} from '@angular/material/sidenav';
 /* Application Dependencies */
 import {ConfigService} from '@client/modules/config/services/config.service';
+import {UserService} from '@client/modules/user/services/user/user.service';
 import {SettingService} from '@client/modules/settings/services/setting/setting.service';
 import {BitcoinService} from '@client/modules/bitcoin/services/bitcoin/bitcoin.service';
 import {LightningService} from '@client/modules/lightning/services/lightning/lightning.service';
@@ -16,6 +17,7 @@ import {AiService} from '@client/modules/ai/services/ai/ai.service';
 import {EventService} from '@client/modules/event/services/event/event.service';
 import {ChartService} from '@client/modules/chart/services/chart/chart.service';
 import {EventData} from '@client/modules/event/classes/event-data.class';
+import {User} from '@client/modules/user/classes/user.class';
 import {BitcoinBlockchainInfo} from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
 import {BitcoinBlockCount} from '@client/modules/bitcoin/classes/bitcoin-blockcount.class';
 import {LightningInfo} from '@client/modules/lightning/classes/lightning-info.class';
@@ -38,6 +40,7 @@ import {AiAgent, AiMessageRole} from '@shared/generated.types';
 export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	@ViewChild(MatSidenav) sidenav!: MatSidenav;
 
+	public user_name!: string;
 	public ai_enabled: boolean;
 	public ai_models: AiModel[] = [];
 	public ai_conversation: AiChatConversation | null = null;
@@ -59,7 +62,6 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	public syncing_bitcoin!: boolean;
 	public syncing_lightning!: boolean;
 	public block_count!: number;
-	public chain!: string;
 
 	public get ai_actionable(): boolean {
 		if (this.active_chat) return true;
@@ -72,6 +74,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	constructor(
 		private configService: ConfigService,
+		private userService: UserService,
 		private settingService: SettingService,
 		private bitcoinService: BitcoinService,
 		private lightningService: LightningService,
@@ -94,8 +97,10 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	******************************************************** */
 
 	ngOnInit(): void {
+		this.userService.loadUser().subscribe();
 		this.subscriptions.add(this.getRouterSubscription());
 		this.subscriptions.add(this.getEventSubscription());
+		this.subscriptions.add(this.getUserSubscription());
 		this.orchardOptionalInit();
 	}
 
@@ -145,11 +150,25 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		});
 	}
 
+	private getUserSubscription(): Subscription {
+		return this.userService.user$.subscribe({
+			next: (user: User | null) => {
+				if (user === undefined || user === null) return;
+				this.user_name = user.name;
+				this.cdr.detectChanges();
+			},
+			error: (error) => {
+				console.error(error);
+				this.user_name = '';
+				this.cdr.detectChanges();
+			},
+		});
+	}
+
 	private getBitcoinBlockchainInfoSubscription(): Subscription {
 		return this.bitcoinService.bitcoin_blockchain_info$.subscribe({
 			next: (info: BitcoinBlockchainInfo | null) => {
 				if (info === undefined) return;
-				this.chain = info?.chain || '';
 				this.online_bitcoin = info !== null ? true : false;
 				this.syncing_bitcoin = info?.initialblockdownload ? true : false;
 				this.cdr.detectChanges();

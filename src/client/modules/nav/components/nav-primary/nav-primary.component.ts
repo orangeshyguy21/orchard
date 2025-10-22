@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input, Output, EventEmitter} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, Output, EventEmitter, input} from '@angular/core';
 /* Application Dependencies */
 import {EventData} from 'src/client/modules/event/classes/event-data.class';
 
@@ -11,6 +11,7 @@ import {EventData} from 'src/client/modules/event/classes/event-data.class';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavPrimaryComponent {
+	public user_name = input.required<string | null>();
 	@Input() active_section!: string;
 	@Input() active_event!: EventData | null;
 	@Input() enabled_bitcoin!: boolean;
@@ -23,7 +24,6 @@ export class NavPrimaryComponent {
 	@Input() syncing_lightning!: boolean;
 	@Input() syncing_mint!: boolean;
 	@Input() block_count!: number;
-	@Input() chain!: string;
 
 	@Output() save = new EventEmitter<void>();
 	@Output() cancel = new EventEmitter<void>();
