@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 /* Native Dependencies */
-import {OrcSettingsSubsectionDashboardModule} from '@client/modules/settings/modules/settings-subsection-dashboard/settings-subsection-dashboard.module';
+import {OrcSettingsSubsectionDeviceModule} from '@client/modules/settings/modules/settings-subsection-device/settings-subsection-device.module';
 /* Local Dependencies */
 import {SettingsSubsectionDeviceAiComponent} from './settings-subsection-device-ai.component';
 
@@ -11,7 +11,7 @@ describe('SettingsSubsectionDeviceAiComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			imports: [OrcSettingsSubsectionDashboardModule],
+			imports: [OrcSettingsSubsectionDeviceModule],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(SettingsSubsectionDeviceAiComponent);

@@ -18,7 +18,14 @@ describe('AuthService', () => {
 				AuthService,
 				{provide: ConfigService, useValue: {get: jest.fn()}},
 				{provide: JwtService, useValue: {signAsync: jest.fn(), verifyAsync: jest.fn()}},
-				{provide: UserService, useValue: {getUser: jest.fn().mockResolvedValue({id: '1', name: 'Admin'})}},
+				{
+					provide: UserService,
+					useValue: {
+						getUserById: jest.fn().mockResolvedValue({id: '1', name: 'Admin'}),
+						validatePassword: jest.fn().mockResolvedValue(true),
+						getUserCount: jest.fn().mockResolvedValue(1),
+					},
+				},
 			],
 		}).compile();
 
@@ -33,20 +40,19 @@ describe('AuthService', () => {
 	});
 
 	it('getToken returns tokens when password matches', async () => {
-		config_service.get.mockReturnValue('secret');
 		jwt_service.signAsync.mockResolvedValueOnce('a');
 		jwt_service.signAsync.mockResolvedValueOnce('r');
-		const result = await auth_service.getToken('secret', 'password');
+		const result = await auth_service.getToken('1', 'password');
 		expect(result).toEqual({access_token: 'a', refresh_token: 'r'});
 	});
 
 	it('getToken throws UnauthorizedException on bad password', async () => {
-		config_service.get.mockReturnValue('secret');
-		await expect(auth_service.getToken('wrong', 'password')).rejects.toBeInstanceOf(UnauthorizedException);
+		_user_service.validatePassword.mockResolvedValueOnce(false);
+		await expect(auth_service.getToken('1', 'wrong_password')).rejects.toBeInstanceOf(UnauthorizedException);
 	});
 
 	it('refreshToken issues new tokens when valid', async () => {
-		jwt_service.verifyAsync.mockResolvedValue({type: 'refresh'} as any);
+		jwt_service.verifyAsync.mockResolvedValue({type: 'refresh', sub: '1', username: 'Admin'} as any);
 		jwt_service.signAsync.mockResolvedValueOnce('a2');
 		jwt_service.signAsync.mockResolvedValueOnce('r2');
 		const result = await auth_service.refreshToken('refresh');
@@ -54,7 +60,7 @@ describe('AuthService', () => {
 	});
 
 	it('revokeToken adds token to blacklist for valid refresh token', async () => {
-		jwt_service.verifyAsync.mockResolvedValue({type: 'refresh'} as any);
+		jwt_service.verifyAsync.mockResolvedValue({type: 'refresh', sub: '1', username: 'Admin'} as any);
 		const ok = await auth_service.revokeToken('refresh');
 		expect(ok).toBe(true);
 	});

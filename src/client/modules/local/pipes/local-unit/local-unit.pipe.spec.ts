@@ -1,8 +1,8 @@
-import {UnitPipe} from './unit.pipe';
+import {LocalUnitPipe} from './local-unit.pipe';
 
-describe('UnitPipe', () => {
+describe('LocalUnitPipe', () => {
 	it('create an instance', () => {
-		const pipe = new UnitPipe();
+		const pipe = new LocalUnitPipe();
 		expect(pipe).toBeTruthy();
 	});
 });

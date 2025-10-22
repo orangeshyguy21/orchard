@@ -1,5 +1,8 @@
+/* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-
+/* Native Dependencies */
+import {OrcAuthGeneralModule} from '@client/modules/auth/modules/auth-general/auth-general.module';
+/* Local Dependencies */
 import {AuthGeneralFormcontrolNameComponent} from './auth-general-formcontrol-name.component';
 
 describe('AuthGeneralFormcontrolNameComponent', () => {
@@ -8,7 +11,7 @@ describe('AuthGeneralFormcontrolNameComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [AuthGeneralFormcontrolNameComponent],
+			imports: [OrcAuthGeneralModule],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(AuthGeneralFormcontrolNameComponent);
