@@ -1,5 +1,6 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, output} from '@angular/core';
+import {FormGroup} from '@angular/forms';
 /* Vendor Dependencies */
 import {MatDialog} from '@angular/material/dialog';
 /* Native Dependencies */
@@ -13,11 +14,17 @@ import {SettingsSubsectionUserUserPasswordDialogComponent} from '@client/modules
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsSubsectionUserUserPasswordComponent {
+	public save = output<void>();
+
 	constructor(private readonly dialog: MatDialog) {}
 
 	public onChangePassword(): void {
-		this.dialog.open(SettingsSubsectionUserUserPasswordDialogComponent, {
-			width: '400px',
+		const dialog_ref = this.dialog.open(SettingsSubsectionUserUserPasswordDialogComponent);
+		dialog_ref.afterClosed().subscribe((form_password: FormGroup) => {
+			if (form_password) {
+				// Handle the save result here
+				console.log('Password saved:', form_password);
+			}
 		});
 	}
 }

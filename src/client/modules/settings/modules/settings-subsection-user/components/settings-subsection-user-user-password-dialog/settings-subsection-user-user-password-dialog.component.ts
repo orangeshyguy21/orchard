@@ -1,6 +1,8 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
 import {FormGroup, FormControl, Validators, ValidationErrors} from '@angular/forms';
+/* Vendor Dependencies */
+import {MatDialogRef} from '@angular/material/dialog';
 /* Application Dependencies */
 import {passwordMatch} from '@client/modules/form/validators/password-match';
 
@@ -27,7 +29,7 @@ export class SettingsSubsectionUserUserPasswordDialogComponent {
 
 	public focused_control = signal<PasswordControl | null>(null);
 
-	constructor() {}
+	constructor(private readonly dialog_ref: MatDialogRef<SettingsSubsectionUserUserPasswordDialogComponent>) {}
 
 	public onControlCancel(control_name: string): void {
 		if (!control_name) return;
@@ -67,5 +69,10 @@ export class SettingsSubsectionUserUserPasswordDialogComponent {
 		if (error?.['maxlength']) this.errors[control_name] = `Maximum length is ${error['maxlength'].requiredLength} characters`;
 		if (error?.['setup_key']) this.errors[control_name] = 'Invalid setup key';
 		if (error?.['unique_username']) this.errors[control_name] = 'Username already exists';
+	}
+
+	public onSave(): void {
+		if (this.form_password.invalid) return;
+		this.dialog_ref.close(this.form_password.value);
 	}
 }

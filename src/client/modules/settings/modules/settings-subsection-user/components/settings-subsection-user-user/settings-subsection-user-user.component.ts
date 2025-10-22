@@ -17,4 +17,5 @@ export class SettingsSubsectionUserUserComponent {
 
 	public cancel_user_name = output<string>();
 	public submit_user_name = output<void>();
+	public save_user_password = output<void>();
 }

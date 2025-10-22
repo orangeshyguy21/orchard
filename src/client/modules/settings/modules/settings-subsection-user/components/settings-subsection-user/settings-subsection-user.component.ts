@@ -115,6 +115,10 @@ export class SettingsSubsectionUserComponent implements OnInit, OnDestroy {
 		});
 	}
 
+	public onSaveUserPassword(): void {
+		console.log('onSaveUserPassword');
+	}
+
 	private evaluateDirtyCount(): void {
 		const contrtol_count = Object.keys(this.form_user_name.controls)
 			.filter((key) => this.form_user_name.get(key) instanceof FormControl)
