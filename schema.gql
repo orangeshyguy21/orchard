@@ -948,12 +948,10 @@ scalar Timezone
 scalar UnixTimestamp
 
 input UserNameUpdateInput {
-  id: String!
   name: String!
 }
 
 input UserPasswordUpdateInput {
-  id: String!
   password_new: String!
   password_old: String!
 }

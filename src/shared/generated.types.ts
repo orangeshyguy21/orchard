@@ -1338,12 +1338,10 @@ export enum TaprootAssetVersion {
 }
 
 export type UserNameUpdateInput = {
-  id: Scalars['String']['input'];
   name: Scalars['String']['input'];
 };
 
 export type UserPasswordUpdateInput = {
-  id: Scalars['String']['input'];
   password_new: Scalars['String']['input'];
   password_old: Scalars['String']['input'];
 };

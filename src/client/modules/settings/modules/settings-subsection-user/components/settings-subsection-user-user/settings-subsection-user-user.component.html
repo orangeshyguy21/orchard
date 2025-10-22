@@ -1,0 +1,16 @@
+<div class="p-2">
+	<mat-card appearance="outlined" class="relative overflow-hidden">
+		<mat-card-content class="orc-surface-container-low-bg">
+			<div class="p-l-1 p-r-1 p-t-1 flex flex-column flex-gap-1">
+				<orc-settings-subsection-user-user-name
+					[form_group]="form_group_user_name()"
+					[control_name]="'name'"
+					[invalid]="form_group_user_name().get('name')?.invalid || false"
+					[dirty]="form_group_user_name().get('name')?.dirty || false"
+					(cancel)="cancel_user_name.emit($event)"
+					(submit)="submit_user_name.emit()"
+				></orc-settings-subsection-user-user-name>
+			</div>
+		</mat-card-content>
+	</mat-card>
+</div>

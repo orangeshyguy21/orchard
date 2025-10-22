@@ -21,16 +21,21 @@ export class ApiUserResolver {
 	}
 
 	@Mutation(() => OrchardUser)
-	async updateUserName(@Args('updateUserName') updateUserName: UserNameUpdateInput): Promise<OrchardUser> {
+	async updateUserName(@Context() context: any, @Args('updateUserName') updateUserName: UserNameUpdateInput): Promise<OrchardUser> {
 		const tag = 'MUTATION { updateUserName }';
 		this.logger.debug(tag);
-		return await this.apiUserService.updateUserName(tag, updateUserName);
+		const user = context.req.user;
+		return await this.apiUserService.updateUserName(tag, user.id, updateUserName);
 	}
 
 	@Mutation(() => OrchardUser)
-	async updateUserPassword(@Args('updateUserPassword') updateUserPassword: UserPasswordUpdateInput): Promise<OrchardUser> {
+	async updateUserPassword(
+		@Context() context: any,
+		@Args('updateUserPassword') updateUserPassword: UserPasswordUpdateInput,
+	): Promise<OrchardUser> {
 		const tag = 'MUTATION { updateUserPassword }';
 		this.logger.debug(tag);
-		return await this.apiUserService.updateUserPassword(tag, updateUserPassword);
+		const user = context.req.user;
+		return await this.apiUserService.updateUserPassword(tag, user.id, updateUserPassword);
 	}
 }

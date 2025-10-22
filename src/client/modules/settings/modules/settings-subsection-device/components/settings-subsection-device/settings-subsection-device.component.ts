@@ -59,10 +59,15 @@ export class SettingsSubsectionDeviceComponent implements OnInit {
 		this.model = this.localStorageService.getModel();
 		this.loading_static = false;
 		this.cdr.detectChanges();
+		this.orchardOptionalInit();
+	}
+
+	private orchardOptionalInit(): void {
 		this.getModels();
 	}
 
 	private getModels() {
+		if (!this.enabled_ai) return;
 		this.aiService.getAiModels().subscribe(
 			(models: AiModel[]) => {
 				this.ai_models = models;

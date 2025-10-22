@@ -13,9 +13,9 @@ import {ApiService} from '@client/modules/api/services/api/api.service';
 import {OrchardUser} from '@shared/generated.types';
 /* Native Dependencies */
 import {User} from '@client/modules/user/classes/user.class';
-import {UserResponse} from '@client/modules/user/types/user.types';
+import {UserResponse, UserNameUpdateResponse} from '@client/modules/user/types/user.types';
 /* Local Dependencies */
-import {USER_QUERY} from './user.queries';
+import {USER_QUERY, USER_NAME_UPDATE_MUTATION} from './user.queries';
 
 @Injectable({
 	providedIn: 'root',
@@ -25,10 +25,9 @@ export class UserService {
 		return this.user_subject.asObservable();
 	}
 
-	public readonly CACHE_KEYS = {
+	private readonly CACHE_KEYS = {
 		USER: 'user',
 	};
-
 	private readonly CACHE_DURATIONS = {
 		[this.CACHE_KEYS.USER]: 1 * 60 * 1000, // 1 minute
 	};
@@ -45,6 +44,10 @@ export class UserService {
 		private apiService: ApiService,
 	) {
 		this.user_subject = this.cache.createCache<OrchardUser>(this.CACHE_KEYS.USER, this.CACHE_DURATIONS[this.CACHE_KEYS.USER]);
+	}
+
+	public clearUserCache() {
+		this.cache.clearCache(this.CACHE_KEYS.USER);
 	}
 
 	public loadUser(): Observable<OrchardUser> {
@@ -72,5 +75,19 @@ export class UserService {
 			}),
 		);
 		return this.user_observable;
+	}
+
+	public updateUserName(name: string): Observable<OrchardUser> {
+		const query = getApiQuery(USER_NAME_UPDATE_MUTATION, {name});
+		return this.http.post<OrchardRes<UserNameUpdateResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.user_name_update;
+			}),
+			catchError((error) => {
+				console.error('Error updating user name:', error);
+				return throwError(() => error);
+			}),
+		);
 	}
 }

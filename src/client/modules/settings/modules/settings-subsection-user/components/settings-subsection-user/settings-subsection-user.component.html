@@ -12,12 +12,9 @@
 		</div>
 		<div class="category-rule"></div>
 	</div>
-	form and stuff
-	<!-- <orc-settings-subsection-device-time
-		[locale]="locale"
-		[timezone]="timezone"
-		[loading]="loading_static"
-		(localeChange)="onLocaleChange($event)"
-		(timezoneChange)="onTimezoneChange($event)"
-	></orc-settings-subsection-device-time> -->
+	<orc-settings-subsection-user-user
+		[form_group_user_name]="form_user_name"
+		(cancel_user_name)="onCancelUserName($event)"
+		(submit_user_name)="onSubmitUserName()"
+	></orc-settings-subsection-user-user>
 </div>

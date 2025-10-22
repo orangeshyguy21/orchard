@@ -1,0 +1,42 @@
+<div class="flex flex-items-start">
+	<div class="flex-grow flex flex-items-start flex-justify-between">
+		<form [formGroup]="form_group()" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)">
+			<orc-form-field-dynamic [hot]="hot()" [invalid]="invalid()" (cancel)="onCancel($event)" (submit)="submit.emit()">
+				<mat-form-field
+					hideRequiredMarker="true"
+					class="primary-form-field"
+					[ngClass]="hot() ? 'orc-hot-form-field' : 'orc-cold-form-field'"
+				>
+					<mat-label>Username</mat-label>
+					<input
+						type="text"
+						aria-label="Username"
+						matInput
+						[formControlName]="control_name()"
+						(focus)="focused.set(true)"
+						(blur)="focused.set(false)"
+						#element_control
+					/>
+					@if (invalid()) {
+						<mat-error class="font-size-xs">{{
+							control()?.errors?.['required'] ? 'Required' : 'Maximum length is 100 characters'
+						}}</mat-error>
+					}
+				</mat-form-field>
+			</orc-form-field-dynamic>
+		</form>
+
+		<div class="w-max-18">
+			<orc-form-help-text class="orc-surface-container-high-bg"> Change your username to identify yourself. </orc-form-help-text>
+		</div>
+	</div>
+
+	<div class="flex-grow-2 w-max-24">
+		<div class="flex flex-items-center flex-justify-center">
+			something?
+			<!-- <div class="orc-outline-color">
+				{{ unix_timestamp_seconds | localTime }}
+			</div> -->
+		</div>
+	</div>
+</div>

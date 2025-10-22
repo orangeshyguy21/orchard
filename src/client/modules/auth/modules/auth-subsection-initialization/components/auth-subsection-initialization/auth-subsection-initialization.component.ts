@@ -21,7 +21,7 @@ export class AuthSubsectionInitializationComponent implements OnInit {
 	public show_surface: boolean = false;
 	public form_init: FormGroup = new FormGroup({
 		key: new FormControl(null, [Validators.required]),
-		name: new FormControl('admin', [Validators.required]),
+		name: new FormControl('admin', [Validators.required, Validators.maxLength(100)]),
 		password: new FormControl(null, [Validators.required, Validators.minLength(6), Validators.maxLength(100)]),
 		password_confirm: new FormControl(null, [Validators.required, this.confirmPasswordValidator()]),
 	});

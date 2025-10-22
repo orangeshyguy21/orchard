@@ -30,9 +30,9 @@ export class ApiUserService {
 		}
 	}
 
-	async updateUserName(tag: string, args: UserNameUpdateInput): Promise<OrchardUser> {
+	async updateUserName(tag: string, id: string, args: UserNameUpdateInput): Promise<OrchardUser> {
 		try {
-			const user = await this.userService.updateUser(args.id, {name: args.name});
+			const user = await this.userService.updateUser(id, {name: args.name});
 			return new OrchardUser(user);
 		} catch (error) {
 			const error_code = this.errorService.resolveError(this.logger, error, tag, {
@@ -42,13 +42,13 @@ export class ApiUserService {
 		}
 	}
 
-	async updateUserPassword(tag: string, args: UserPasswordUpdateInput): Promise<OrchardUser> {
+	async updateUserPassword(tag: string, id: string, args: UserPasswordUpdateInput): Promise<OrchardUser> {
 		try {
-			const user = await this.userService.getUserById(args.id);
+			const user = await this.userService.getUserById(id);
 			if (!user) throw OrchardErrorCode.UserError;
 			const valid = await this.userService.validatePassword(user, args.password_old);
 			if (!valid) throw OrchardErrorCode.InvalidPasswordError;
-			const user_updated = await this.userService.updateUser(args.id, {}, args.password_new);
+			const user_updated = await this.userService.updateUser(id, {}, args.password_new);
 			return new OrchardUser(user_updated);
 		} catch (error) {
 			const error_code = this.errorService.resolveError(this.logger, error, tag, {
