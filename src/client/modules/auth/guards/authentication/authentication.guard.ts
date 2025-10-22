@@ -5,7 +5,7 @@ import {map, catchError, of} from 'rxjs';
 /* Application Dependencies */
 import {AuthService} from '@client/modules/auth/services/auth/auth.service';
 
-export const authenticationGuard: CanActivateFn = (route, state) => {
+export const authenticationGuard: CanActivateFn = (_, state) => {
 	const authService = inject(AuthService);
 	const router = inject(Router);
 	if (authService.isAuthenticated()) return true;

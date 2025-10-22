@@ -91,7 +91,7 @@ export class SettingsSubsectionUserComponent implements OnInit, OnDestroy {
 		}
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		this.userService.updateUserName(this.form_user_name.value.name).subscribe({
-			next: (user: User) => {
+			next: () => {
 				this.userService.clearUserCache();
 				this.userService.loadUser().subscribe();
 				this.eventService.registerEvent(
@@ -118,7 +118,7 @@ export class SettingsSubsectionUserComponent implements OnInit, OnDestroy {
 	public onSaveUserPassword(form_password: FormGroup): void {
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		this.userService.updateUserPassword(form_password.value.password_current, form_password.value.password_new).subscribe({
-			next: (user: User) => {
+			next: () => {
 				this.userService.clearUserCache();
 				this.userService.loadUser().subscribe();
 				this.eventService.registerEvent(

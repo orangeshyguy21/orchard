@@ -24,27 +24,15 @@ export class GqlAuthorizationGuard implements CanActivate {
 	 * @returns {boolean} Whether the request can proceed
 	 */
 	canActivate(context: ExecutionContext): boolean {
-		// Check if route is public
 		const is_public = this.reflector.getAllAndOverride<boolean>(PUBLIC_KEY, [context.getHandler(), context.getClass()]);
 		if (is_public) return true;
-
-		// Get required roles from decorator
 		const required_roles = this.reflector.getAllAndOverride<UserRole[]>(ROLES_KEY, [context.getHandler(), context.getClass()]);
-
-		// If no roles are required, allow access
 		if (!required_roles || required_roles.length === 0) return true;
-
-		// Extract user from request
 		const ctx = GqlExecutionContext.create(context);
 		const {user} = ctx.getContext().req;
-
-		// User should already be authenticated by authentication guard
 		if (!user) throw new OrchardApiError(OrchardErrorCode.AuthenticationError);
-
-		// Check if user has any of the required roles
 		const has_role = required_roles.some((role) => user.role === role);
 		if (!has_role) throw new OrchardApiError(OrchardErrorCode.AuthorizationError);
-
 		return true;
 	}
 }

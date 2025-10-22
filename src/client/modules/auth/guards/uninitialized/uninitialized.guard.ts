@@ -6,7 +6,7 @@ import {map, catchError, of} from 'rxjs';
 /* Application Dependencies */
 import {AuthService} from '@client/modules/auth/services/auth/auth.service';
 
-export const uninitializedGuard: CanActivateFn = (route, state) => {
+export const uninitializedGuard: CanActivateFn = () => {
 	const authService = inject(AuthService);
 	const router = inject(Router);
 	return authService.getInitialization().pipe(
