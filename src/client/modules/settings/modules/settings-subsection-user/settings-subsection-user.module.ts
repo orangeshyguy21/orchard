@@ -8,15 +8,24 @@ import {MatChipsModule} from '@angular/material/chips';
 import {MatCardModule} from '@angular/material/card';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
+import {OrcLocalModule} from '@client/modules/local/local.module';
 /* Native Module Dependencies */
 import {SettingsSubsectionUserComponent} from './components/settings-subsection-user/settings-subsection-user.component';
 import {SettingsSubsectionUserUserComponent} from './components/settings-subsection-user-user/settings-subsection-user-user.component';
 import {SettingsSubsectionUserUserNameComponent} from './components/settings-subsection-user-user-name/settings-subsection-user-user-name.component';
+import {SettingsSubsectionUserUserPasswordComponent} from './components/settings-subsection-user-user-password/settings-subsection-user-user-password.component';
 
 @NgModule({
-	declarations: [SettingsSubsectionUserComponent, SettingsSubsectionUserUserComponent, SettingsSubsectionUserUserNameComponent],
+	declarations: [
+		SettingsSubsectionUserComponent,
+		SettingsSubsectionUserUserComponent,
+		SettingsSubsectionUserUserNameComponent,
+		SettingsSubsectionUserUserPasswordComponent,
+	],
 	imports: [
 		[
 			CoreRouterModule.forChild([
@@ -32,7 +41,10 @@ import {SettingsSubsectionUserUserNameComponent} from './components/settings-sub
 		MatCardModule,
 		MatFormFieldModule,
 		MatInputModule,
+		MatButtonModule,
+		MatIconModule,
 		OrcFormModule,
+		OrcLocalModule,
 	],
 })
 export class OrcSettingsSubsectionUserModule {}

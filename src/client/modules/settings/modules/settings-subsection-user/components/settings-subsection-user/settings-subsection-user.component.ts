@@ -22,11 +22,12 @@ export class SettingsSubsectionUserComponent implements OnInit, OnDestroy {
 		name: new FormControl(null, [Validators.required, Validators.maxLength(100)]),
 	});
 
+	public user = signal<User | null>(null);
+
 	private dirty_count: WritableSignal<number> = signal(0);
 
 	private active_event: EventData | null = null;
 	private subscriptions: Subscription = new Subscription();
-	private user: User | null = null;
 
 	constructor(
 		private userService: UserService,
@@ -46,7 +47,7 @@ export class SettingsSubsectionUserComponent implements OnInit, OnDestroy {
 	private getUserSubscription(): Subscription {
 		return this.userService.user$.subscribe((user) => {
 			if (user === undefined || user === null) return;
-			this.user = new User(user);
+			this.user.set(new User(user));
 			this.setUserNameFrom();
 		});
 	}
@@ -68,7 +69,7 @@ export class SettingsSubsectionUserComponent implements OnInit, OnDestroy {
 	}
 
 	private setUserNameFrom(): void {
-		this.form_user_name.setValue({name: this.user?.name}, {emitEvent: false});
+		this.form_user_name.setValue({name: this.user()?.name}, {emitEvent: false});
 	}
 
 	public onCancelUserName(control_name: string): void {

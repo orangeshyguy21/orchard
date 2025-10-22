@@ -18,25 +18,16 @@
 						#element_control
 					/>
 					@if (invalid()) {
-						<mat-error class="font-size-xs">{{
-							control()?.errors?.['required'] ? 'Required' : 'Maximum length is 100 characters'
-						}}</mat-error>
+						<mat-error class="font-size-xs">Invalid username</mat-error>
 					}
 				</mat-form-field>
 			</orc-form-field-dynamic>
 		</form>
 
 		<div class="w-max-18">
-			<orc-form-help-text class="orc-surface-container-high-bg"> Change your username to identify yourself. </orc-form-help-text>
-		</div>
-	</div>
-
-	<div class="flex-grow-2 w-max-24">
-		<div class="flex flex-items-center flex-justify-center">
-			something?
-			<!-- <div class="orc-outline-color">
-				{{ unix_timestamp_seconds | localTime }}
-			</div> -->
+			<orc-form-help-text class="orc-surface-container-high-bg">
+				Change your username to identify this user account
+			</orc-form-help-text>
 		</div>
 	</div>
 </div>

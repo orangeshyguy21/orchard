@@ -13,6 +13,7 @@
 		<div class="category-rule"></div>
 	</div>
 	<orc-settings-subsection-user-user
+		[user]="user()"
 		[form_group_user_name]="form_user_name"
 		(cancel_user_name)="onCancelUserName($event)"
 		(submit_user_name)="onSubmitUserName()"
