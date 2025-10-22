@@ -12,7 +12,7 @@ import {PUBLIC_KEY} from '@server/modules/security/decorators/auth.decorator';
 import {NO_HEADERS_KEY} from '@server/modules/security/decorators/auth.decorator';
 
 @Injectable()
-export class GqlAuthGuard extends AuthGuard('jwt') {
+export class GqlAuthenticationGuard extends AuthGuard('jwt') {
 	constructor(
 		private configService: ConfigService,
 		private reflector: Reflector,

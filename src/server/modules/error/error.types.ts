@@ -8,6 +8,7 @@ export enum OrchardErrorCode {
 	InitializationKeyError = 10006,
 	UniqueUsernameError = 10007,
 	InvalidPasswordError = 10008,
+	AuthorizationError = 10009,
 	// Bitcoin Level Errors
 	BitcoinRPCError = 20001,
 	// Lightning Level Errors
@@ -51,6 +52,7 @@ export const OrchardErrorMessages: Record<string, string> = {
 	[OrchardErrorCode.InitializationKeyError]: 'InitializationKeyError',
 	[OrchardErrorCode.UniqueUsernameError]: 'UniqueUsernameError',
 	[OrchardErrorCode.InvalidPasswordError]: 'InvalidPasswordError',
+	[OrchardErrorCode.AuthorizationError]: 'AuthorizationError',
 	[OrchardErrorCode.BitcoinRPCError]: 'BitcoinRPCError',
 	[OrchardErrorCode.LightningRpcConnectionError]: 'LightningRpcConnectionError',
 	[OrchardErrorCode.LightningRpcActionError]: 'LightningRpcActionError',
