@@ -14,17 +14,14 @@ import {SettingsSubsectionUserUserPasswordDialogComponent} from '@client/modules
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsSubsectionUserUserPasswordComponent {
-	public save = output<void>();
+	public save = output<FormGroup>();
 
 	constructor(private readonly dialog: MatDialog) {}
 
 	public onChangePassword(): void {
 		const dialog_ref = this.dialog.open(SettingsSubsectionUserUserPasswordDialogComponent);
 		dialog_ref.afterClosed().subscribe((form_password: FormGroup) => {
-			if (form_password) {
-				// Handle the save result here
-				console.log('Password saved:', form_password);
-			}
+			if (form_password) this.save.emit(form_password);
 		});
 	}
 }

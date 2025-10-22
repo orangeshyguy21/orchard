@@ -115,8 +115,29 @@ export class SettingsSubsectionUserComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	public onSaveUserPassword(): void {
-		console.log('onSaveUserPassword');
+	public onSaveUserPassword(form_password: FormGroup): void {
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		this.userService.updateUserPassword(form_password.value.password_current, form_password.value.password_new).subscribe({
+			next: (user: User) => {
+				this.userService.clearUserCache();
+				this.userService.loadUser().subscribe();
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'SUCCESS',
+						message: 'User password updated!',
+					}),
+				);
+				this.evaluateDirtyCount();
+			},
+			error: (error: OrchardErrors) => {
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'ERROR',
+						message: error.errors[0].message,
+					}),
+				);
+			},
+		});
 	}
 
 	private evaluateDirtyCount(): void {

@@ -73,6 +73,6 @@ export class SettingsSubsectionUserUserPasswordDialogComponent {
 
 	public onSave(): void {
 		if (this.form_password.invalid) return;
-		this.dialog_ref.close(this.form_password.value);
+		this.dialog_ref.close(this.form_password);
 	}
 }

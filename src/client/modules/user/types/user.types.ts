@@ -7,3 +7,7 @@ export type UserResponse = {
 export type UserNameUpdateResponse = {
 	user_name_update: OrchardUser;
 };
+
+export type UserPasswordUpdateResponse = {
+	user_password_update: OrchardUser;
+};

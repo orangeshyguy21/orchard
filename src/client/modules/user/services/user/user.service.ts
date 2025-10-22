@@ -13,9 +13,9 @@ import {ApiService} from '@client/modules/api/services/api/api.service';
 import {OrchardUser} from '@shared/generated.types';
 /* Native Dependencies */
 import {User} from '@client/modules/user/classes/user.class';
-import {UserResponse, UserNameUpdateResponse} from '@client/modules/user/types/user.types';
+import {UserResponse, UserNameUpdateResponse, UserPasswordUpdateResponse} from '@client/modules/user/types/user.types';
 /* Local Dependencies */
-import {USER_QUERY, USER_NAME_UPDATE_MUTATION} from './user.queries';
+import {USER_QUERY, USER_NAME_UPDATE_MUTATION, USER_PASSWORD_UPDATE_MUTATION} from './user.queries';
 
 @Injectable({
 	providedIn: 'root',
@@ -86,6 +86,20 @@ export class UserService {
 			}),
 			catchError((error) => {
 				console.error('Error updating user name:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	public updateUserPassword(password_old: string, password_new: string): Observable<OrchardUser> {
+		const query = getApiQuery(USER_PASSWORD_UPDATE_MUTATION, {password_old, password_new});
+		return this.http.post<OrchardRes<UserPasswordUpdateResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.user_password_update;
+			}),
+			catchError((error) => {
+				console.error('Error updating user password:', error);
 				return throwError(() => error);
 			}),
 		);
