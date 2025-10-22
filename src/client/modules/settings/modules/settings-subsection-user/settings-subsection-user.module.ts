@@ -9,7 +9,7 @@ import {MatCardModule} from '@angular/material/card';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
-import {MatIconModule} from '@angular/material/icon';
+import {MatDialogModule} from '@angular/material/dialog';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcLocalModule} from '@client/modules/local/local.module';
@@ -18,6 +18,7 @@ import {SettingsSubsectionUserComponent} from './components/settings-subsection-
 import {SettingsSubsectionUserUserComponent} from './components/settings-subsection-user-user/settings-subsection-user-user.component';
 import {SettingsSubsectionUserUserNameComponent} from './components/settings-subsection-user-user-name/settings-subsection-user-user-name.component';
 import {SettingsSubsectionUserUserPasswordComponent} from './components/settings-subsection-user-user-password/settings-subsection-user-user-password.component';
+import {SettingsSubsectionUserUserPasswordDialogComponent} from './components/settings-subsection-user-user-password-dialog/settings-subsection-user-user-password-dialog.component';
 
 @NgModule({
 	declarations: [
@@ -25,6 +26,7 @@ import {SettingsSubsectionUserUserPasswordComponent} from './components/settings
 		SettingsSubsectionUserUserComponent,
 		SettingsSubsectionUserUserNameComponent,
 		SettingsSubsectionUserUserPasswordComponent,
+		SettingsSubsectionUserUserPasswordDialogComponent,
 	],
 	imports: [
 		[
@@ -42,7 +44,7 @@ import {SettingsSubsectionUserUserPasswordComponent} from './components/settings
 		MatFormFieldModule,
 		MatInputModule,
 		MatButtonModule,
-		MatIconModule,
+		MatDialogModule,
 		OrcFormModule,
 		OrcLocalModule,
 	],
