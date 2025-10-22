@@ -13,6 +13,7 @@ import {MatDialogModule} from '@angular/material/dialog';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcLocalModule} from '@client/modules/local/local.module';
+import {OrcAuthGeneralModule} from '@client/modules/auth/modules/auth-general/auth-general.module';
 /* Native Module Dependencies */
 import {SettingsSubsectionUserComponent} from './components/settings-subsection-user/settings-subsection-user.component';
 import {SettingsSubsectionUserUserComponent} from './components/settings-subsection-user-user/settings-subsection-user-user.component';
@@ -47,6 +48,7 @@ import {SettingsSubsectionUserUserPasswordDialogComponent} from './components/se
 		MatDialogModule,
 		OrcFormModule,
 		OrcLocalModule,
+		OrcAuthGeneralModule,
 	],
 })
 export class OrcSettingsSubsectionUserModule {}

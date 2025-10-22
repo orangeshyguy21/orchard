@@ -2,7 +2,7 @@
 	<mat-card-content class="orc-surface-container-low-bg">
 		<div class="auth-initialization-form-container">
 			<form [formGroup]="form_group()">
-				<orc-auth-section-general-formcontrol-password
+				<orc-auth-general-formcontrol-password
 					[form_group]="form_group()"
 					[control_name]="'key'"
 					[label]="'Setup Key'"
@@ -13,8 +13,8 @@
 					(cancel)="onControlCancel('key')"
 					(enter)="focused_control.set('name')"
 					(blur)="blur.emit()"
-				></orc-auth-section-general-formcontrol-password>
-				<orc-auth-section-general-formcontrol-name
+				></orc-auth-general-formcontrol-password>
+				<orc-auth-general-formcontrol-name
 					[form_group]="form_group()"
 					[control_name]="'name'"
 					[label]="'Username'"
@@ -25,8 +25,8 @@
 					(cancel)="onControlCancel('name')"
 					(enter)="focused_control.set('password')"
 					(blur)="blur.emit()"
-				></orc-auth-section-general-formcontrol-name>
-				<orc-auth-section-general-formcontrol-password
+				></orc-auth-general-formcontrol-name>
+				<orc-auth-general-formcontrol-password
 					[form_group]="form_group()"
 					[control_name]="'password'"
 					[label]="'Password'"
@@ -37,8 +37,8 @@
 					(cancel)="onControlCancel('password')"
 					(enter)="focused_control.set('password_confirm')"
 					(blur)="blur.emit()"
-				></orc-auth-section-general-formcontrol-password>
-				<orc-auth-section-general-formcontrol-password
+				></orc-auth-general-formcontrol-password>
+				<orc-auth-general-formcontrol-password
 					[form_group]="form_group()"
 					[control_name]="'password_confirm'"
 					[label]="'Confirm Password'"
@@ -49,7 +49,7 @@
 					(cancel)="onControlCancel('password_confirm')"
 					(enter)="submit.emit()"
 					(blur)="blur.emit()"
-				></orc-auth-section-general-formcontrol-password>
+				></orc-auth-general-formcontrol-password>
 			</form>
 		</div>
 	</mat-card-content>

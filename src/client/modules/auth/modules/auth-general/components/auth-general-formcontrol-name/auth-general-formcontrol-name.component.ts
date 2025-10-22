@@ -3,13 +3,13 @@ import {ChangeDetectionStrategy, Component, input, output, ViewChild, ElementRef
 import {FormGroup} from '@angular/forms';
 
 @Component({
-	selector: 'orc-auth-section-general-formcontrol-name',
+	selector: 'orc-auth-general-formcontrol-name',
 	standalone: false,
-	templateUrl: './auth-section-general-formcontrol-name.component.html',
-	styleUrl: './auth-section-general-formcontrol-name.component.scss',
+	templateUrl: './auth-general-formcontrol-name.component.html',
+	styleUrl: './auth-general-formcontrol-name.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AuthSectionGeneralFormcontrolNameComponent {
+export class AuthGeneralFormcontrolNameComponent {
 	public form_group = input.required<FormGroup>();
 	public control_name = input.required<string>();
 	public label = input.required<string>();

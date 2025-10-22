@@ -13,7 +13,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 /* Native Dependencies */
-import {OrcAuthSectionGeneralModule} from '@client/modules/auth/modules/auth-section-general/auth-section-general.module';
+import {OrcAuthGeneralModule} from '@client/modules/auth/modules/auth-general/auth-general.module';
 /* Local Dependencies */
 import {AuthSubsectionAuthenticationComponent} from './components/auth-subsection-authentication/auth-subsection-authentication.component';
 import {AuthSubsectionAuthenticationFormComponent} from './components/auth-subsection-authentication-form/auth-subsection-authentication-form.component';
@@ -36,7 +36,7 @@ import {AuthSubsectionAuthenticationFormComponent} from './components/auth-subse
 		MatButtonModule,
 		OrcFormModule,
 		OrcGraphicModule,
-		OrcAuthSectionGeneralModule,
+		OrcAuthGeneralModule,
 	],
 })
 export class OrcAuthSubsectionAuthenticationModule {}

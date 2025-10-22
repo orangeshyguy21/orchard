@@ -10,12 +10,12 @@ import {MatButtonModule} from '@angular/material/button';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
 /* Local Dependencies */
-import {AuthSectionGeneralFormcontrolPasswordComponent} from './components/auth-section-general-formcontrol-password/auth-section-general-formcontrol-password.component';
-import {AuthSectionGeneralFormcontrolNameComponent} from './components/auth-section-general-formcontrol-name/auth-section-general-formcontrol-name.component';
+import {AuthGeneralFormcontrolPasswordComponent} from './components/auth-general-formcontrol-password/auth-general-formcontrol-password.component';
+import {AuthGeneralFormcontrolNameComponent} from './components/auth-general-formcontrol-name/auth-general-formcontrol-name.component';
 
 @NgModule({
-	declarations: [AuthSectionGeneralFormcontrolPasswordComponent, AuthSectionGeneralFormcontrolNameComponent],
+	declarations: [AuthGeneralFormcontrolPasswordComponent, AuthGeneralFormcontrolNameComponent],
 	imports: [CoreCommonModule, CoreReactiveFormsModule, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule, OrcFormModule],
-	exports: [AuthSectionGeneralFormcontrolPasswordComponent, AuthSectionGeneralFormcontrolNameComponent],
+	exports: [AuthGeneralFormcontrolPasswordComponent, AuthGeneralFormcontrolNameComponent],
 })
-export class OrcAuthSectionGeneralModule {}
+export class OrcAuthGeneralModule {}
