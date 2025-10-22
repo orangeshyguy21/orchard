@@ -1,11 +1,12 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {FormGroup, FormControl, Validators, AbstractControl, ValidationErrors, ValidatorFn} from '@angular/forms';
+import {FormGroup, FormControl, Validators, ValidationErrors} from '@angular/forms';
 import {Router} from '@angular/router';
 /* Application Dependencies */
 import {SettingService} from '@client/modules/settings/services/setting/setting.service';
 import {ThemeType} from '@client/modules/cache/services/local-storage/local-storage.types';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
+import {passwordMatch} from '@client/modules/form/validators/password-match';
 /* Native Dependencies */
 import {AuthService} from '@client/modules/auth/services/auth/auth.service';
 import {InitializeControl} from '@client/modules/auth/modules/auth-subsection-initialization/types/initialize-control.type';
@@ -23,7 +24,7 @@ export class AuthSubsectionInitializationComponent implements OnInit {
 		key: new FormControl(null, [Validators.required]),
 		name: new FormControl('admin', [Validators.required, Validators.maxLength(100)]),
 		password: new FormControl(null, [Validators.required, Validators.minLength(6), Validators.maxLength(100)]),
-		password_confirm: new FormControl(null, [Validators.required, this.confirmPasswordValidator()]),
+		password_confirm: new FormControl(null, [Validators.required, passwordMatch('password')]),
 	});
 	public errors: Record<InitializeControl, string | null> = {
 		key: null,
@@ -45,15 +46,6 @@ export class AuthSubsectionInitializationComponent implements OnInit {
 	ngOnInit(): void {
 		const theme = this.settingService.getTheme();
 		this.show_surface = theme === ThemeType.LIGHT_MODE;
-	}
-
-	private confirmPasswordValidator(): ValidatorFn {
-		return (control: AbstractControl): ValidationErrors | null => {
-			if (!control.parent) return null;
-			const password = control.parent.get('password');
-			if (!password) return null;
-			return password.value === control.value ? null : {password_mismatch: true};
-		};
 	}
 
 	private validateForm(): void {
