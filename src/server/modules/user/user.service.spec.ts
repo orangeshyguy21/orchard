@@ -186,6 +186,7 @@ describe('UserService', () => {
 				...existing_user,
 				password_hash: 'new_hashed_password',
 			});
+			expect(updated.password_hash).toBe('new_hashed_password');
 		});
 
 		it('throws error when user not found', async () => {
