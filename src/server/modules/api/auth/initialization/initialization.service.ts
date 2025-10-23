@@ -24,6 +24,8 @@ export class AuthInitializationService {
 
 	async initialize(tag: string, initialization: InitializationInput): Promise<OrchardAuthentication> {
 		try {
+			const initialized = await this.authService.getInitialization();
+			if (initialized) throw OrchardErrorCode.InitializationError;
 			const valid = await this.authService.validateSetupKey(initialization.key);
 			if (!valid) throw OrchardErrorCode.InitializationKeyError;
 			const user = await this.userService.getUserByName(initialization.name);
