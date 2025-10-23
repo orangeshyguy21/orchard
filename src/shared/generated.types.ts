@@ -1348,5 +1348,6 @@ export type UserPasswordUpdateInput = {
 
 export enum UserRole {
   Admin = 'ADMIN',
-  Member = 'MEMBER'
+  Groundskeeper = 'GROUNDSKEEPER',
+  Reader = 'READER'
 }

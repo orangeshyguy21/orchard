@@ -16,7 +16,7 @@ export class User {
 
 	@Column({
 		type: 'text',
-		default: UserRole.MEMBER,
+		default: UserRole.READER,
 	})
 	role: UserRole;
 

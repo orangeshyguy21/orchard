@@ -8,8 +8,8 @@ import {ConfigService} from '@nestjs/config';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 /* Native Dependencies */
-import {PUBLIC_KEY} from '@server/modules/security/decorators/auth.decorator';
-import {NO_HEADERS_KEY} from '@server/modules/security/decorators/auth.decorator';
+import {PUBLIC_KEY} from '@server/modules/auth/decorators/auth.decorator';
+import {NO_HEADERS_KEY} from '@server/modules/auth/decorators/auth.decorator';
 
 @Injectable()
 export class GqlAuthenticationGuard extends AuthGuard('jwt') {

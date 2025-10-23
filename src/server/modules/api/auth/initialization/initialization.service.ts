@@ -6,6 +6,7 @@ import {ErrorService} from '@server/modules/error/error.service';
 import {UserService} from '@server/modules/user/user.service';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
+import {UserRole} from '@server/modules/user/user.enums';
 /* Native Dependencies */
 import {OrchardAuthentication} from '@server/modules/api/auth/authentication/authentication.model';
 /* Local Dependencies */
@@ -30,7 +31,7 @@ export class AuthInitializationService {
 			if (!valid) throw OrchardErrorCode.InitializationKeyError;
 			const user = await this.userService.getUserByName(initialization.name);
 			if (user) throw OrchardErrorCode.UniqueUsernameError;
-			const newuser = await this.userService.createUser(initialization.name, initialization.password);
+			const newuser = await this.userService.createUser(initialization.name, initialization.password, UserRole.GROUNDSKEEPER);
 			const token = await this.authService.getToken(newuser.id, initialization.password);
 			if (!token) throw OrchardErrorCode.AuthenticationError;
 			return new OrchardAuthentication(token);

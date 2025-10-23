@@ -8,7 +8,7 @@ import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 import {UserRole} from '@server/modules/user/user.enums';
 /* Native Dependencies */
-import {ROLES_KEY, PUBLIC_KEY} from '@server/modules/security/decorators/auth.decorator';
+import {ROLES_KEY, PUBLIC_KEY} from '@server/modules/auth/decorators/auth.decorator';
 
 /**
  * Authorization guard that verifies user permissions

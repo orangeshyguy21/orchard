@@ -65,10 +65,9 @@ export class UserService {
 	 * @param {string} password - The password of the user
 	 * @returns {Promise<User>} The created user
 	 */
-	public async createUser(name: string, password: string): Promise<User> {
+	public async createUser(name: string, password: string, role: UserRole): Promise<User> {
 		const password_hash = await bcrypt.hash(password, 10);
 		const user_count = await this.userRepository.count();
-		const role = user_count === 0 ? UserRole.ADMIN : UserRole.MEMBER;
 		const user = this.userRepository.create({
 			name,
 			password_hash,

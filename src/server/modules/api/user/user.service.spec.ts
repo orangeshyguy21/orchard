@@ -24,7 +24,7 @@ describe('ApiUserService', () => {
 			id: '1',
 			name: 'TestUser',
 			password_hash: 'hashed',
-			role: UserRole.MEMBER,
+			role: UserRole.READER,
 			active: true,
 			created_at: new Date('2024-01-01'),
 			updated_at: new Date('2024-01-02'),
@@ -67,7 +67,7 @@ describe('ApiUserService', () => {
 			expect(result).toBeInstanceOf(OrchardUser);
 			expect(result.id).toBe('1');
 			expect(result.name).toBe('TestUser');
-			expect(result.role).toBe(UserRole.MEMBER);
+			expect(result.role).toBe(UserRole.READER);
 			expect(result.active).toBe(true);
 			expect(user_service.getUserById).toHaveBeenCalledWith('1');
 		});

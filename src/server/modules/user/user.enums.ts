@@ -1,4 +1,5 @@
 export enum UserRole {
+	GROUNDSKEEPER = 'groundkeeper',
 	ADMIN = 'admin',
-	MEMBER = 'member',
+	READER = 'reader',
 }

@@ -54,7 +54,7 @@ describe('UserService', () => {
 
 	describe('getUserById', () => {
 		it('returns user when found', async () => {
-			const mock_user = {id: '123', name: 'TestUser', role: UserRole.MEMBER} as User;
+			const mock_user = {id: '123', name: 'TestUser', role: UserRole.READER} as User;
 			mockRepository.findOne.mockResolvedValue(mock_user);
 			const user = await userService.getUserById('123');
 			expect(user).toBeDefined();
@@ -73,7 +73,7 @@ describe('UserService', () => {
 		it('returns all users', async () => {
 			const mock_users = [
 				{id: '1', name: 'Admin', role: UserRole.ADMIN} as User,
-				{id: '2', name: 'User1', role: UserRole.MEMBER} as User,
+				{id: '2', name: 'User1', role: UserRole.READER} as User,
 			];
 			mockRepository.find.mockResolvedValue(mock_users);
 			const users = await userService.getUsers();
@@ -128,7 +128,7 @@ describe('UserService', () => {
 			mockRepository.create.mockReturnValue(mock_created_user);
 			mockRepository.save.mockResolvedValue({...mock_created_user, id: '1'});
 
-			const user = await userService.createUser('Admin', 'password123');
+			const user = await userService.createUser('Admin', 'password123', UserRole.ADMIN);
 
 			expect(bcrypt.hash).toHaveBeenCalledWith('password123', 10);
 			expect(mockRepository.create).toHaveBeenCalledWith({
@@ -143,24 +143,24 @@ describe('UserService', () => {
 		it('creates subsequent users as members', async () => {
 			mockRepository.count.mockResolvedValue(1);
 			(bcrypt.hash as jest.Mock).mockResolvedValue('hashed_password');
-			const mock_created_user = {name: 'User1', password_hash: 'hashed_password', role: UserRole.MEMBER};
+			const mock_created_user = {name: 'User1', password_hash: 'hashed_password', role: UserRole.READER};
 			mockRepository.create.mockReturnValue(mock_created_user);
 			mockRepository.save.mockResolvedValue({...mock_created_user, id: '2'});
 
-			const user = await userService.createUser('User1', 'password456');
+			const user = await userService.createUser('User1', 'password456', UserRole.READER);
 
 			expect(mockRepository.create).toHaveBeenCalledWith({
 				name: 'User1',
 				password_hash: 'hashed_password',
-				role: UserRole.MEMBER,
+				role: UserRole.READER,
 			});
-			expect(user.role).toBe(UserRole.MEMBER);
+			expect(user.role).toBe(UserRole.READER);
 		});
 	});
 
 	describe('updateUser', () => {
 		it('updates user without password change', async () => {
-			const existing_user = {id: '1', name: 'OldName', role: UserRole.MEMBER} as User;
+			const existing_user = {id: '1', name: 'OldName', role: UserRole.READER} as User;
 			mockRepository.findOne.mockResolvedValue(existing_user);
 			mockRepository.save.mockResolvedValue({...existing_user, name: 'NewName'});
 

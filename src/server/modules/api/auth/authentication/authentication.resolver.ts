@@ -7,7 +7,7 @@ import {Throttle, seconds} from '@nestjs/throttler';
 import {GqlRefreshGuard} from '@server/modules/security/guards/refresh.guard';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
-import {Public} from '@server/modules/security/decorators/auth.decorator';
+import {Public} from '@server/modules/auth/decorators/auth.decorator';
 /* Local Dependencies */
 import {AuthAuthenticationService} from './authentication.service';
 import {OrchardAuthentication} from './authentication.model';

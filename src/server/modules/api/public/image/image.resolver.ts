@@ -2,7 +2,7 @@
 import {Logger} from '@nestjs/common';
 import {Resolver, Query, Args} from '@nestjs/graphql';
 /* Application Dependencies */
-import {Public} from '@server/modules/security/decorators/auth.decorator';
+import {Public} from '@server/modules/auth/decorators/auth.decorator';
 /* Local Dependencies */
 import {PublicImageService} from './image.service';
 import {OrchardPublicImage} from './image.model';
