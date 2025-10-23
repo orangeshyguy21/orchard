@@ -7,6 +7,7 @@ import {getApiQuery} from '@client/modules/api/helpers/api.helpers';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {OrchardRes} from '@client/modules/api/types/api.types';
 import {LocalStorageService} from '@client/modules/cache/services/local-storage/local-storage.service';
+import {ConfigService} from '@client/modules/config/services/config.service';
 import {ApiService} from '@client/modules/api/services/api/api.service';
 /* Native Dependencies */
 import {
@@ -36,6 +37,7 @@ export class AuthService {
 	constructor(
 		private http: HttpClient,
 		private localStorageService: LocalStorageService,
+		private configService: ConfigService,
 		private apiService: ApiService,
 	) {}
 
@@ -162,18 +164,9 @@ export class AuthService {
 	}
 
 	public isAuthenticated(): boolean {
-		return this.hasValidToken();
-	}
-
-	public getAuthHeaders(): Record<string, string> {
-		const token = this.localStorageService.getAuthToken();
-		return token ? {Authorization: 'Bearer ' + token} : {};
-	}
-
-	private hasValidToken(): boolean {
+		if (!this.configService.config.mode.production) return true;
 		const token = this.localStorageService.getAuthToken();
 		if (!token) return false;
-
 		try {
 			const payload = JSON.parse(atob(token.split('.')[1]));
 			const expiration_time = payload.exp * 1000;
@@ -181,5 +174,10 @@ export class AuthService {
 		} catch {
 			return false;
 		}
+	}
+
+	public getAuthHeaders(): Record<string, string> {
+		const token = this.localStorageService.getAuthToken();
+		return token ? {Authorization: 'Bearer ' + token} : {};
 	}
 }

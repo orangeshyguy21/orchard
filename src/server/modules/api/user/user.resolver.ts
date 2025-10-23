@@ -1,6 +1,9 @@
 /* Core Dependencies */
 import {Logger} from '@nestjs/common';
 import {Resolver, Query, Mutation, Args, Context} from '@nestjs/graphql';
+/* Application Dependencies */
+import {OrchardErrorCode} from '@server/modules/error/error.types';
+import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 /* Local Dependencies */
 import {ApiUserService} from './user.service';
 import {OrchardUser} from './user.model';
@@ -17,6 +20,7 @@ export class ApiUserResolver {
 		const tag = 'GET { user }';
 		this.logger.debug(tag);
 		const user = context.req.user;
+		if (!user) throw new OrchardApiError(OrchardErrorCode.UserError);
 		return await this.apiUserService.getUser(tag, user.id);
 	}
 
@@ -25,6 +29,7 @@ export class ApiUserResolver {
 		const tag = 'MUTATION { updateUserName }';
 		this.logger.debug(tag);
 		const user = context.req.user;
+		if (!user) throw new OrchardApiError(OrchardErrorCode.UserError);
 		return await this.apiUserService.updateUserName(tag, user.id, updateUserName);
 	}
 
@@ -36,6 +41,7 @@ export class ApiUserResolver {
 		const tag = 'MUTATION { updateUserPassword }';
 		this.logger.debug(tag);
 		const user = context.req.user;
+		if (!user) throw new OrchardApiError(OrchardErrorCode.UserError);
 		return await this.apiUserService.updateUserPassword(tag, user.id, updateUserPassword);
 	}
 }

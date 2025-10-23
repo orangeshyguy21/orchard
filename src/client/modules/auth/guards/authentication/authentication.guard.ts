@@ -11,8 +11,7 @@ export const authenticationGuard: CanActivateFn = (_, state) => {
 	if (authService.isAuthenticated()) return true;
 	return authService.refreshToken().pipe(
 		map(() => true),
-		catchError((error) => {
-			console.error('Error refreshing token in authentication guard:', error);
+		catchError((_error) => {
 			const current_url = state.url;
 			router.navigate(['/authentication'], {
 				state: {interior_destination: current_url},
