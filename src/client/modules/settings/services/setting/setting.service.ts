@@ -11,6 +11,7 @@ import {
 	AllMintDatabaseSettings,
 	AllMintKeysetsSettings,
 	AllMintConfigSettings,
+	AllSettingsDeviceSettings,
 } from '@client/modules/settings/types/setting.types';
 
 @Injectable({
@@ -137,5 +138,13 @@ export class SettingService {
 			date_end: date_end,
 			page: page,
 		};
+	}
+
+	/* Page: Settings Device */
+	public getSettingsDeviceSettings(): AllSettingsDeviceSettings {
+		return this.localStorageService.getSettingsDeviceSettings();
+	}
+	public setSettingsDeviceSettings(settings: AllSettingsDeviceSettings): void {
+		this.localStorageService.setSettingsDeviceSettings(settings);
 	}
 }

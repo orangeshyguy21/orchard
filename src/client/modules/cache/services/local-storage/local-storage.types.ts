@@ -49,3 +49,7 @@ export type MintDatabaseSettings = {
 	units: MintUnit[] | null;
 	states: string[] | null;
 };
+
+export type SettingsDeviceSettings = {
+	tertiary_nav: string[] | null;
+};

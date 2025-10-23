@@ -17,6 +17,7 @@ import {MatCardModule} from '@angular/material/card';
 import {OrcLocalModule} from '@client/modules/local/local.module';
 import {OrcDataModule} from '@client/modules/data/data.module';
 import {OrcFormModule} from '@client/modules/form/form.module';
+import {OrcNavModule} from '@client/modules/nav/nav.module';
 import {OrcAiModule} from '@client/modules/ai/ai.module';
 /* Native Module Dependencies */
 import {SettingsSubsectionDeviceComponent} from './components/settings-subsection-device/settings-subsection-device.component';
@@ -60,6 +61,7 @@ import {SettingsSubsectionDeviceAiComponent} from './components/settings-subsect
 		OrcLocalModule,
 		OrcDataModule,
 		OrcFormModule,
+		OrcNavModule,
 		OrcAiModule,
 	],
 })

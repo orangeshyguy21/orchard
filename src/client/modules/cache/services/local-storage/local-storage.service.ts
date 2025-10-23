@@ -10,6 +10,7 @@ import {
 	MintKeysetsSettings,
 	MintDatabaseSettings,
 	MintConfigSettings,
+	SettingsDeviceSettings,
 } from './local-storage.types';
 
 @Injectable({
@@ -30,6 +31,8 @@ export class LocalStorageService {
 		MINT_CONFIG_KEY: 'v0.mint.config.settings',
 		MINT_KEYSETS_KEY: 'v0.mint.keysets.settings',
 		MINT_DATABASE_KEY: 'v0.mint.database.settings',
+		/* Settings Settings */
+		SETTINGS_DEVICE_KEY: 'v0.settings.device.settings',
 	};
 
 	constructor() {}
@@ -110,6 +113,11 @@ export class LocalStorageService {
 		if (!settings) return {date_start: null, type: null, units: null, states: null};
 		return settings;
 	}
+	getSettingsDeviceSettings(): SettingsDeviceSettings {
+		const settings = this.getItem<SettingsDeviceSettings>(this.STORAGE_KEYS.SETTINGS_DEVICE_KEY);
+		if (!settings) return {tertiary_nav: null};
+		return settings;
+	}
 
 	setAuthToken(token: string | null): void {
 		this.setItem(this.STORAGE_KEYS.AUTH_TOKEN_KEY, token);
@@ -140,6 +148,9 @@ export class LocalStorageService {
 	}
 	setMintDatabaseSettings(settings: MintDatabaseSettings): void {
 		this.setItem(this.STORAGE_KEYS.MINT_DATABASE_KEY, settings);
+	}
+	setSettingsDeviceSettings(settings: SettingsDeviceSettings): void {
+		this.setItem(this.STORAGE_KEYS.SETTINGS_DEVICE_KEY, settings);
 	}
 
 	/**
