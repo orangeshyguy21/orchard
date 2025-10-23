@@ -99,13 +99,14 @@ export class AuthSubsectionInitializationComponent implements OnInit {
 	}
 
 	private errorControl(error: string | OrchardErrors): void {
-		let error_validation: Record<string, boolean> = {incorrect: true};
 		const has_setup_key_error = (error as OrchardErrors)?.errors?.some((err) => err?.code === 10006);
-		if (has_setup_key_error) error_validation = {setup_key: true};
-		this.form_init.get('key')?.setErrors(error_validation);
+		if (has_setup_key_error) {
+			this.form_init.get('key')?.setErrors({setup_key: true});
+		}
 		const has_unique_username_error = (error as OrchardErrors)?.errors?.some((err) => err?.code === 10007);
-		if (has_unique_username_error) error_validation = {unique_username: true};
-		this.form_init.get('name')?.setErrors(error_validation);
+		if (has_unique_username_error) {
+			this.form_init.get('name')?.setErrors({unique_username: true});
+		}
 		this.validateForm();
 	}
 }

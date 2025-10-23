@@ -30,7 +30,7 @@ export const config = (): Config => {
 	};
 
 	const database = {
-		path: process.env.DATABASE_PATH || 'data/orchard.db',
+		path: `${process.env.DATABASE_DIR || 'data'}/orchard.db`,
 		synchronize: process.env.NODE_ENV !== 'production',
 	};
 
