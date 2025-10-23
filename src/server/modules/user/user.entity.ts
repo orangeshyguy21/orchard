@@ -8,10 +8,10 @@ export class User {
 	@PrimaryGeneratedColumn('uuid')
 	id: string;
 
-	@Column({unique: true})
+	@Column({unique: true, length: 50})
 	name: string;
 
-	@Column()
+	@Column({length: 60})
 	password_hash: string;
 
 	@Column({
@@ -22,6 +22,9 @@ export class User {
 
 	@Column({default: true})
 	active: boolean;
+
+	@Column({type: 'text', nullable: true, length: 100})
+	label: string | null;
 
 	@CreateDateColumn()
 	created_at: Date;

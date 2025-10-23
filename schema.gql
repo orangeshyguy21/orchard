@@ -871,6 +871,7 @@ type OrchardUser {
   active: Boolean!
   created_at: UnixTimestamp!
   id: String!
+  label: String
   name: String!
   role: UserRole!
   updated_at: UnixTimestamp!

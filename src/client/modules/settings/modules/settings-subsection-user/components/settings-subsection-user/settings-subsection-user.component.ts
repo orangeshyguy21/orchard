@@ -19,7 +19,7 @@ import {OrchardErrors} from '@client/modules/error/classes/error.class';
 })
 export class SettingsSubsectionUserComponent implements OnInit, OnDestroy {
 	public form_user_name: FormGroup = new FormGroup({
-		name: new FormControl(null, [Validators.required, Validators.maxLength(100)]),
+		name: new FormControl(null, [Validators.required, Validators.maxLength(50)]),
 	});
 
 	public user = signal<User | null>(null);
