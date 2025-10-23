@@ -5,6 +5,11 @@ export enum OrchardErrorCode {
 	AuthenticationExpiredError = 10003,
 	PublicAssetError = 10004,
 	ThrottlerError = 10005,
+	InitializationKeyError = 10006,
+	UniqueUsernameError = 10007,
+	InvalidPasswordError = 10008,
+	AuthorizationError = 10009,
+	InitializationError = 10010,
 	// Bitcoin Level Errors
 	BitcoinRPCError = 20001,
 	// Lightning Level Errors
@@ -35,6 +40,8 @@ export enum OrchardErrorCode {
 	TaprootAssetsRpcActionError = 60002,
 	// 60003
 	TaprootAssetsSupportError = 60004,
+	// User Level Errors
+	UserError = 70001,
 }
 
 export const OrchardErrorMessages: Record<string, string> = {
@@ -43,6 +50,11 @@ export const OrchardErrorMessages: Record<string, string> = {
 	[OrchardErrorCode.AuthenticationExpiredError]: 'AuthenticationExpiredError',
 	[OrchardErrorCode.PublicAssetError]: 'PublicAssetError',
 	[OrchardErrorCode.ThrottlerError]: 'ThrottlerError',
+	[OrchardErrorCode.InitializationKeyError]: 'InitializationKeyError',
+	[OrchardErrorCode.UniqueUsernameError]: 'UniqueUsernameError',
+	[OrchardErrorCode.InvalidPasswordError]: 'InvalidPasswordError',
+	[OrchardErrorCode.AuthorizationError]: 'AuthorizationError',
+	[OrchardErrorCode.InitializationError]: 'InitializationError',
 	[OrchardErrorCode.BitcoinRPCError]: 'BitcoinRPCError',
 	[OrchardErrorCode.LightningRpcConnectionError]: 'LightningRpcConnectionError',
 	[OrchardErrorCode.LightningRpcActionError]: 'LightningRpcActionError',
@@ -64,4 +76,5 @@ export const OrchardErrorMessages: Record<string, string> = {
 	[OrchardErrorCode.TaprootAssetsRpcConnectionError]: 'TaprootAssetsRpcConnectionError',
 	[OrchardErrorCode.TaprootAssetsRpcActionError]: 'TaprootAssetsRpcActionError',
 	[OrchardErrorCode.TaprootAssetsSupportError]: 'TaprootAssetsSupportError',
+	[OrchardErrorCode.UserError]: 'UserError',
 };

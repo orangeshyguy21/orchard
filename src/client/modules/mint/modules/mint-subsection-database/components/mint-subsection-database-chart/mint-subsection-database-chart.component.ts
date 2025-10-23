@@ -6,7 +6,7 @@ import {ChartConfiguration, ChartType as ChartJsType} from 'chart.js';
 import {DateTime} from 'luxon';
 import {Subscription} from 'rxjs';
 /* Application Dependencies */
-import {AmountPipe} from '@client/modules/local/pipes/amount/amount.pipe';
+import {LocalAmountPipe} from '@client/modules/local/pipes/local-amount/local-amount.pipe';
 import {DataType} from '@client/modules/orchard/enums/data.enum';
 import {NonNullableMintDatabaseSettings} from '@client/modules/settings/types/setting.types';
 import {getYAxisId} from '@client/modules/chart/helpers/mint-chart-data.helpers';
@@ -180,7 +180,7 @@ export class MintSubsectionDatabaseChartComponent implements OnChanges, OnDestro
 			const custom_opacity = this.chartService.hexToRgba(color.border, 0.75);
 			const data_prepped = data.map((entity) => ({
 				x: (entity.created_time ?? 0) * 1000,
-				y: AmountPipe.getConvertedAmount(unit, this.getEffectiveAmount(entity)),
+				y: LocalAmountPipe.getConvertedAmount(unit, this.getEffectiveAmount(entity)),
 				state: 'state' in entity ? entity.state : undefined,
 			}));
 			const yAxisID = getYAxisId(unit);

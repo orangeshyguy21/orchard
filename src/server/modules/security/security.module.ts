@@ -3,8 +3,10 @@ import {Module} from '@nestjs/common';
 import {APP_GUARD} from '@nestjs/core';
 import {ConfigService} from '@nestjs/config';
 import {ThrottlerModule} from '@nestjs/throttler';
+/* Application Dependencies */
+import {GqlAuthenticationGuard} from '@server/modules/auth/guards/authentication.guard';
+import {GqlAuthorizationGuard} from '@server/modules/auth/guards/authorization.guard';
 /* Local Dependencies */
-import {GqlAuthGuard} from './guards/auth.guard';
 import {GqlThrottlerGuard} from './guards/throttler.guard';
 
 @Module({
@@ -20,7 +22,8 @@ import {GqlThrottlerGuard} from './guards/throttler.guard';
 		}),
 	],
 	providers: [
-		{provide: APP_GUARD, useClass: GqlAuthGuard},
+		{provide: APP_GUARD, useClass: GqlAuthenticationGuard},
+		{provide: APP_GUARD, useClass: GqlAuthorizationGuard},
 		{provide: APP_GUARD, useClass: GqlThrottlerGuard},
 	],
 })

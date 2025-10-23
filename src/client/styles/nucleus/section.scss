@@ -22,7 +22,6 @@
         @extend %flex-column;
         @extend %flex-grow;
         @extend %h-1;
-        @extend %view-transition-name-subsection;
     }
 
     #{$c}nav-secondary-header {

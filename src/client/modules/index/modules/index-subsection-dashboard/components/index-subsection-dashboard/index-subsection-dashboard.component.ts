@@ -36,11 +36,6 @@ import {OrchardError} from '@client/modules/error/types/error.types';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
-	// public enabled_bitcoin = environment.bitcoin.enabled;
-	// public enabled_lightning = environment.lightning.enabled;
-	// public enabled_taproot_assets = environment.taproot_assets.enabled;
-	// public version = environment.mode.version;
-	// public enabled_mint = environment.mint.enabled;
 	public enabled_bitcoin: boolean;
 	public enabled_lightning: boolean;
 	public enabled_taproot_assets: boolean;

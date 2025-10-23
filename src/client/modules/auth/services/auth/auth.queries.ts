@@ -1,20 +1,35 @@
+export const INITIALIZATION_QUERY = `
+query AuthInitialization {
+	auth_initialization {
+		initialization
+	}
+}`;
+
+export const INITIALIZE_MUTATION = `
+mutation AuthInitialize($initialize: InitializationInput!) {
+	auth_initialize(initialize: $initialize) {
+		access_token
+		refresh_token
+	}
+}`;
+
 export const AUTHENTICATION_MUTATION = `
-mutation Authentication($authentication: AuthenticationInput!) {
-	authentication(authentication: $authentication) {
+mutation AuthAuthentication($authentication: AuthenticationInput!) {
+	auth_authentication(authentication: $authentication) {
 		access_token
 		refresh_token
 	}
 }`;
 
 export const REFRESH_AUTHENTICATION_MUTATION = `
-mutation RefreshAuthentication {
-	refresh_authentication {
+mutation AuthAuthenticationRefresh {
+	auth_authentication_refresh {
 		access_token
 		refresh_token
 	}
 }`;
 
 export const REVOKE_AUTHENTICATION_MUTATION = `
-mutation RevokeAuthentication {
-	revoke_authentication
+mutation AuthAuthenticationRevoke {
+	auth_authentication_revoke
 }`;

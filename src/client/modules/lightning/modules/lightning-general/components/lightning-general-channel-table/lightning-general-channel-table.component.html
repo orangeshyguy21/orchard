@@ -15,7 +15,7 @@
 					<ng-container matColumnDef="receive">
 						<th mat-header-cell *matHeaderCellDef></th>
 						<td mat-cell *matCellDef="let row">
-							<span class="text-nowrap font-size-m" [innerHTML]="row.recievable | amount: row.unit : 'lightning'"></span>
+							<span class="text-nowrap font-size-m" [innerHTML]="row.recievable | localAmount: row.unit : 'lightning'"></span>
 						</td>
 					</ng-container>
 
@@ -45,7 +45,7 @@
 					<ng-container matColumnDef="send">
 						<th mat-header-cell *matHeaderCellDef></th>
 						<td mat-cell *matCellDef="let row">
-							<span class="text-nowrap font-size-m" [innerHTML]="row.sendable | amount: row.unit : 'lightning'"></span>
+							<span class="text-nowrap font-size-m" [innerHTML]="row.sendable | localAmount: row.unit : 'lightning'"></span>
 						</td>
 					</ng-container>
 

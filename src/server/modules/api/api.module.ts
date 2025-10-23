@@ -4,7 +4,8 @@ import {Module} from '@nestjs/common';
 // Orchard Endpoints
 import {StatusModule} from './status/status.module';
 // Auth Endpoints
-import {AuthenticationModule} from './auth/authentication/authentication.module';
+import {AuthInitializationModule} from './auth/initialization/initialization.module';
+import {AuthAuthenticationModule} from './auth/authentication/authentication.module';
 // Bitcoin Endpoints
 import {BitcoinNetworkModule} from './bitcoin/network/btcnetwork.module';
 import {BitcoinBlockchainModule} from './bitcoin/blockchain/btcblockchain.module';
@@ -40,11 +41,14 @@ import {AiChatModule} from './ai/chat/aichat.module';
 // Image Endpoints
 import {PublicImageModule} from './public/image/image.module';
 import {PublicUrlModule} from './public/url/url.module';
+// User Endpoints
+import {ApiUserModule} from './user/user.module';
 
 @Module({
 	imports: [
 		StatusModule,
-		AuthenticationModule,
+		AuthInitializationModule,
+		AuthAuthenticationModule,
 		BitcoinNetworkModule,
 		BitcoinBlockchainModule,
 		BitcoinBlockModule,
@@ -74,6 +78,7 @@ import {PublicUrlModule} from './public/url/url.module';
 		AiChatModule,
 		PublicImageModule,
 		PublicUrlModule,
+		ApiUserModule,
 	],
 })
 export class ApiModule {}

@@ -13,6 +13,7 @@ import {MatDialogModule} from '@angular/material/dialog';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatSliderModule} from '@angular/material/slider';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {MatButtonModule} from '@angular/material/button';
 import {BaseChartDirective as ChartJsBaseChartDirective} from 'ng2-charts';
 /* Application Dependencies */
 import {OrcNavModule} from '@client/modules/nav/nav.module';
@@ -52,6 +53,7 @@ import {MintSubsectionDashboardConnectionDialogComponent} from './components/min
 		MatTooltipModule,
 		MatSliderModule,
 		MatSlideToggleModule,
+		MatButtonModule,
 		ChartJsBaseChartDirective,
 		OrcNavModule,
 		OrcMintGeneralModule,

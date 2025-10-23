@@ -110,6 +110,7 @@
     #{$c}p-l-0-75 { padding-left: 0.75rem; }
     #{$c}p-l-1 { padding-left: 1rem; }
     #{$c}p-l-2 { padding-left: 2rem; }
+    #{$c}p-l-3 { padding-left: 3rem; }
     #{$c}p-r-0-5 { padding-right: 0.5rem; }
     #{$c}p-r-0-75 { padding-right: 0.75rem; }
     #{$c}p-r-1 { padding-right: 1rem; }
@@ -119,9 +120,7 @@
     #{$c}z-index-0 { z-index: 0; }
     #{$c}z-index-1 { z-index: 1; }
     #{$c}z-index-2 { z-index: 2; }
-    #{$c}z-index-3 { z-index: 3; }
-    #{$c}z-index-4 { z-index: 4; }
-    // #{$c}z-index-5 { z-index: 5; }
+    #{$c}z-index-top { z-index: 9999; }
 
     // Absolute Positioning
     #{$c}bottom-0 { bottom: 0; }

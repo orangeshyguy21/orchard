@@ -4,6 +4,7 @@ import {
 	MintKeysetsSettings,
 	MintDatabaseSettings,
 	MintConfigSettings,
+	SettingsDeviceSettings,
 } from '@client/modules/cache/services/local-storage/local-storage.types';
 
 /* Page: Mint Dashboard */
@@ -39,4 +40,10 @@ export type AllMintDatabaseSettings = MintDatabaseSettings & {
 };
 export type NonNullableMintDatabaseSettings = {
 	[K in keyof AllMintDatabaseSettings]: NonNullable<AllMintDatabaseSettings[K]>;
+};
+
+/* Page: Settings Device */
+export type AllSettingsDeviceSettings = SettingsDeviceSettings;
+export type NonNullableSettingsDeviceSettings = {
+	[K in keyof AllSettingsDeviceSettings]: NonNullable<AllSettingsDeviceSettings[K]>;
 };

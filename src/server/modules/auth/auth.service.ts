@@ -13,7 +13,6 @@ export class AuthService {
 
 	private token_ttl = 15 * 60;
 	private refresh_ttl = 7 * 24 * 60 * 60;
-
 	private blacklist: string[] = [];
 
 	constructor(
@@ -22,12 +21,13 @@ export class AuthService {
 		private userService: UserService,
 	) {}
 
-	async getToken(pass: string): Promise<OrchardAuthToken> {
-		const user = await this.userService.getUser();
-		const admin_pass = this.configService.get('server.pass');
-		if (admin_pass !== pass) throw new UnauthorizedException();
+	public async getToken(id: string, password: string): Promise<OrchardAuthToken> {
+		const user = await this.userService.getUserById(id);
+		if (!user) throw new UnauthorizedException('Invalid user');
+		const valid = await this.userService.validatePassword(user, password);
+		if (!valid) throw new UnauthorizedException('Invalid username or password');
 		const access_payload: JwtPayload = {
-			sub: user.id,
+			sub: id,
 			username: user.name,
 			type: 'access',
 		};
@@ -46,12 +46,13 @@ export class AuthService {
 		};
 	}
 
-	async refreshToken(refresh_token: string): Promise<OrchardAuthToken> {
+	public async refreshToken(refresh_token: string): Promise<OrchardAuthToken> {
 		try {
 			if (this.blacklist.includes(refresh_token)) throw new UnauthorizedException('Invalid refresh token');
 			const payload = await this.jwtService.verifyAsync<RefreshTokenPayload>(refresh_token);
 			if (payload.type !== 'refresh') throw new UnauthorizedException('Invalid token type');
-			const user = await this.userService.getUser();
+			const user = await this.userService.getUserById(payload.sub);
+			if (!user) throw new UnauthorizedException('Invalid user');
 			const access_payload: JwtPayload = {
 				sub: user.id,
 				username: user.name,
@@ -76,7 +77,7 @@ export class AuthService {
 		}
 	}
 
-	async revokeToken(refresh_token: string): Promise<boolean> {
+	public async revokeToken(refresh_token: string): Promise<boolean> {
 		try {
 			const payload = await this.jwtService.verifyAsync<RefreshTokenPayload>(refresh_token);
 			if (payload.type !== 'refresh') throw new UnauthorizedException('Invalid token type');
@@ -88,7 +89,14 @@ export class AuthService {
 		}
 	}
 
-	async validateAccessToken(access_token: string): Promise<JwtPayload> {
+	public async validateSetupKey(setup_key: string): Promise<boolean> {
+		if (!setup_key) throw new UnauthorizedException('No setup key provided');
+		const key = this.configService.get('server.key');
+		if (setup_key !== key) return false;
+		return true;
+	}
+
+	public async validateAccessToken(access_token: string): Promise<JwtPayload> {
 		if (!access_token) throw new UnauthorizedException('No access token provided');
 		try {
 			const payload = await this.jwtService.verifyAsync<JwtPayload>(access_token);
@@ -98,5 +106,10 @@ export class AuthService {
 			this.logger.debug(`Error validating access token: ${error.message}`);
 			throw new UnauthorizedException('Invalid access token');
 		}
+	}
+
+	public async getInitialization(): Promise<boolean> {
+		const user_count = await this.userService.getUserCount();
+		return user_count !== 0;
 	}
 }

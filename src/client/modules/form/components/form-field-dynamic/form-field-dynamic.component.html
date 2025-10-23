@@ -1,20 +1,24 @@
 <div class="dynamic-form-field-container">
 	<ng-content></ng-content>
-	<div class="dynamic-actions" [class.form-hot]="hot" [class.form-invalid]="invalid && subscript_sizing === 'dynamic'">
+	<div class="dynamic-actions" [class.form-hot]="hot()" [class.form-invalid]="invalid() && subscript_sizing() === 'dynamic'">
+		@if (standalone()) {
+			<button
+				[disabled]="invalid()"
+				type="button"
+				tabindex="-1"
+				mat-icon-button
+				[class.m-b-1-25]="subscript_sizing() === 'default'"
+				class="orc-icon-button"
+				(click)="submit.emit($event)"
+			>
+				<mat-icon>save</mat-icon>
+			</button>
+		}
 		<button
-			[disabled]="invalid"
 			type="button"
+			tabindex="-1"
 			mat-icon-button
-			[class.m-b-1-25]="subscript_sizing === 'default'"
-			class="orc-icon-button"
-			(click)="submit.emit($event)"
-		>
-			<mat-icon>save</mat-icon>
-		</button>
-		<button
-			type="button"
-			mat-icon-button
-			[class.m-b-1-25]="subscript_sizing === 'default'"
+			[class.m-b-1-25]="subscript_sizing() === 'default'"
 			class="orc-icon-button"
 			(click)="cancel.emit($event)"
 		>

@@ -2,6 +2,7 @@
 
 :host {
 	@extend %absolute;
+	@extend %z-index-top;
 	bottom: 5rem;
 }
 

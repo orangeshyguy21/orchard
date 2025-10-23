@@ -28,6 +28,12 @@ services:
       - /app/data/tmp
     volumes:
       - type: bind
+        source: ${DATABASE_DIR:-./data}
+        target: /app/data
+        read_only: false
+        bind:
+          create_host_path: true
+      - type: bind
         source: ${LIGHTNING_MACAROON}
         target: /app/certs/lightning/orchard.macaroon
         read_only: true

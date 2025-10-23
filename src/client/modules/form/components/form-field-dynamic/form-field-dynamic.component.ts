@@ -1,4 +1,5 @@
-import {ChangeDetectionStrategy, Component, Input, Output, EventEmitter} from '@angular/core';
+/* Core Dependencies */
+import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
 
 @Component({
 	selector: 'orc-form-field-dynamic',
@@ -8,10 +9,13 @@ import {ChangeDetectionStrategy, Component, Input, Output, EventEmitter} from '@
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormFieldDynamicComponent {
-	@Input() hot!: boolean;
-	@Input() invalid!: boolean;
-	@Input() subscript_sizing: 'default' | 'dynamic' = 'default';
+	public hot = input<boolean>(false);
+	public invalid = input<boolean>(false);
+	public standalone = input<boolean>(true);
+	public subscript_sizing = input<'default' | 'dynamic'>('default');
 
-	@Output() submit = new EventEmitter<Event>();
-	@Output() cancel = new EventEmitter<Event>();
+	// @Output() submit = new EventEmitter<Event>();
+	// @Output() cancel = new EventEmitter<Event>();
+	public submit = output<Event>();
+	public cancel = output<Event>();
 }

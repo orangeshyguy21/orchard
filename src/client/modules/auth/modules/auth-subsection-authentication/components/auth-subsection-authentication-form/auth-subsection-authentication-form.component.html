@@ -1,0 +1,39 @@
+<mat-card appearance="outlined" class="relative overflow-hidden">
+	<mat-card-content class="orc-surface-container-low-bg">
+		<div class="auth-password-container">
+			<form [formGroup]="form_group()" autocomplete="on">
+				<orc-auth-general-formcontrol-name
+					[form_group]="form_group()"
+					[control_name]="'name'"
+					[label]="'Username'"
+					[invalid]="form_group().get('name')?.invalid || false"
+					[dirty]="form_group().get('name')?.dirty || false"
+					[error]="errors().name"
+					[focused_control]="focused_control() === 'name'"
+					(cancel)="onControlCancel('name')"
+					(enter)="focused_control.set('password')"
+					(blur)="blur.emit()"
+				></orc-auth-general-formcontrol-name>
+				<orc-auth-general-formcontrol-password
+					[form_group]="form_group()"
+					[control_name]="'password'"
+					[label]="'Password'"
+					[invalid]="form_group().get('password')?.invalid || false"
+					[dirty]="form_group().get('password')?.dirty || false"
+					[error]="errors().password"
+					[focused_control]="focused_control() === 'password'"
+					(cancel)="onControlCancel('password')"
+					(enter)="submit.emit()"
+					(blur)="blur.emit()"
+				></orc-auth-general-formcontrol-password>
+			</form>
+		</div>
+	</mat-card-content>
+</mat-card>
+
+<div class="flex flex-justify-center p-t-2">
+	<button type="button" matFab extended class="orc-icon-button" [disabled]="form_group().invalid" (click)="submit.emit()">
+		<mat-icon>key</mat-icon>
+		Login
+	</button>
+</div>

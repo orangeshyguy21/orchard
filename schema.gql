@@ -70,11 +70,18 @@ enum AiMessageRole {
 }
 
 input AuthenticationInput {
+  name: String!
   password: String!
 }
 
 """Base64 encoded string scalar type"""
 scalar Base64
+
+input InitializationInput {
+  key: String!
+  name: String!
+  password: String!
+}
 
 enum LightningAddressType {
   HYBRID_NESTED_WITNESS_PUBKEY_HASH
@@ -190,7 +197,10 @@ input MintUrlUpdateInput {
 
 type Mutation {
   ai_chat_abort(ai_chat_abort: AiChatAbortInput!): OrchardAiChatStream!
-  authentication(authentication: AuthenticationInput!): OrchardAuthentication!
+  auth_authentication(authentication: AuthenticationInput!): OrchardAuthentication!
+  auth_authentication_refresh: OrchardAuthentication!
+  auth_authentication_revoke: Boolean!
+  auth_initialize(initialize: InitializationInput!): OrchardAuthentication!
   mint_contact_add(mint_contact_update: MintContactUpdateInput!): OrchardMintContactUpdate!
   mint_contact_remove(mint_contact_update: MintContactUpdateInput!): OrchardMintContactUpdate!
   mint_database_backup: OrchardMintDatabaseBackup!
@@ -207,8 +217,8 @@ type Mutation {
   mint_short_description_update(mint_desc_update: MintDescriptionUpdateInput!): OrchardMintDescriptionUpdate!
   mint_url_add(mint_url_update: MintUrlUpdateInput!): OrchardMintUrlUpdate!
   mint_url_remove(mint_url_update: MintUrlUpdateInput!): OrchardMintUrlUpdate!
-  refresh_authentication: OrchardAuthentication!
-  revoke_authentication: Boolean!
+  updateUserName(updateUserName: UserNameUpdateInput!): OrchardUser!
+  updateUserPassword(updateUserPassword: UserPasswordUpdateInput!): OrchardUser!
 }
 
 type OrchardAiAgent {
@@ -451,6 +461,10 @@ type OrchardCustomChannel {
 type OrchardCustomChannelData {
   open_channels: [OrchardCustomChannel!]!
   pending_channels: [OrchardCustomChannel!]!
+}
+
+type OrchardInitialization {
+  initialization: Boolean!
 }
 
 type OrchardLightningAccount {
@@ -853,9 +867,20 @@ type OrchardTaprootAssetsUtxo {
   id: String!
 }
 
+type OrchardUser {
+  active: Boolean!
+  created_at: UnixTimestamp!
+  id: String!
+  label: String
+  name: String!
+  role: UserRole!
+  updated_at: UnixTimestamp!
+}
+
 type Query {
   ai_agent(agent: AiAgent!): OrchardAiAgent!
   ai_models: [OrchardAiModel!]!
+  auth_initialization: OrchardInitialization!
   bitcoin_block(hash: String!): OrchardBitcoinBlock!
   bitcoin_block_template: OrchardBitcoinBlockTemplate!
   bitcoin_blockchain_info: OrchardBitcoinBlockchainInfo!
@@ -898,6 +923,7 @@ type Query {
   taproot_assets: OrchardTaprootAssets!
   taproot_assets_info: OrchardTaprootAssetsInfo!
   taproot_assets_utxo: [OrchardTaprootAssetsUtxo!]!
+  user: OrchardUser!
 }
 
 type Subscription {
@@ -921,3 +947,18 @@ scalar Timezone
 
 """A Unix timestamp in seconds"""
 scalar UnixTimestamp
+
+input UserNameUpdateInput {
+  name: String!
+}
+
+input UserPasswordUpdateInput {
+  password_new: String!
+  password_old: String!
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  READER
+}

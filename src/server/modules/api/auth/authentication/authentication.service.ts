@@ -3,6 +3,7 @@ import {Injectable, Logger} from '@nestjs/common';
 /* Application Dependencies */
 import {AuthService} from '@server/modules/auth/auth.service';
 import {ErrorService} from '@server/modules/error/error.service';
+import {UserService} from '@server/modules/user/user.service';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 /* Local Dependencies */
@@ -10,17 +11,20 @@ import {OrchardAuthentication} from './authentication.model';
 import {AuthenticationInput} from './authentication.input';
 
 @Injectable()
-export class AuthenticationService {
-	private readonly logger = new Logger(AuthenticationService.name);
+export class AuthAuthenticationService {
+	private readonly logger = new Logger(AuthAuthenticationService.name);
 
 	constructor(
 		private authService: AuthService,
 		private errorService: ErrorService,
+		private userService: UserService,
 	) {}
 
-	async getToken(tag: string, authentication: AuthenticationInput): Promise<OrchardAuthentication> {
+	async authenticate(tag: string, authentication: AuthenticationInput): Promise<OrchardAuthentication> {
 		try {
-			const token = await this.authService.getToken(authentication.password);
+			const user = await this.userService.getUserByName(authentication.name);
+			if (!user) throw OrchardErrorCode.AuthenticationError;
+			const token = await this.authService.getToken(user.id, authentication.password);
 			if (!token) throw OrchardErrorCode.AuthenticationError;
 			return new OrchardAuthentication(token);
 		} catch (error) {
@@ -31,7 +35,7 @@ export class AuthenticationService {
 		}
 	}
 
-	async refreshToken(tag: string, refresh_token: string): Promise<OrchardAuthentication> {
+	async refreshAuthentication(tag: string, refresh_token: string): Promise<OrchardAuthentication> {
 		try {
 			const token = await this.authService.refreshToken(refresh_token);
 			if (!token) throw OrchardErrorCode.AuthenticationExpiredError;
@@ -44,7 +48,7 @@ export class AuthenticationService {
 		}
 	}
 
-	async revokeToken(tag: string, token: string): Promise<boolean> {
+	async revokeAuthentication(tag: string, token: string): Promise<boolean> {
 		try {
 			return this.authService.revokeToken(token);
 		} catch (error) {

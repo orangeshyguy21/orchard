@@ -1,5 +1,5 @@
 /* Application Dependencies */
-import {AmountPipe} from '@client/modules/local/pipes/amount/amount.pipe';
+import {LocalAmountPipe} from '@client/modules/local/pipes/local-amount/local-amount.pipe';
 
 /* Native Dependencies */
 import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
@@ -17,7 +17,7 @@ export class MintGeneralBalanceRow {
 
 	public get reserve_ratio(): string | null {
 		if (this.assets === null) return null;
-		const ratio = this.assets / AmountPipe.getConvertedAmount(this.unit, this.liabilities);
+		const ratio = this.assets / LocalAmountPipe.getConvertedAmount(this.unit, this.liabilities);
 		if (ratio === Infinity) return '∞ : 1';
 		let formatted_ratio: string;
 		if (ratio > 3) {

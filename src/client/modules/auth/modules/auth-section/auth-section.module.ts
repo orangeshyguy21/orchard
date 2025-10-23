@@ -2,6 +2,9 @@
 import {NgModule} from '@angular/core';
 import {CommonModule as CoreCommonModule} from '@angular/common';
 import {RouterModule as CoreRouterModule} from '@angular/router';
+/* Native Dependencies */
+import {initializationGuard} from '@client/modules/auth/guards/initialization/initialization.guard';
+import {uninitializedGuard} from '@client/modules/auth/guards/uninitialized/uninitialized.guard';
 /* Local Dependencies */
 import {AuthSectionComponent} from './components/auth-section/auth-section.component';
 
@@ -18,14 +21,28 @@ import {AuthSectionComponent} from './components/auth-section/auth-section.compo
 				children: [
 					{
 						path: '',
+						canActivate: [initializationGuard],
 						loadChildren: () =>
-							import('@client/modules/auth/modules/auth-subsection-authenticate/auth-subsection-authenticate.module').then(
-								(m) => m.OrcAuthSubsectionAuthenticateModule,
-							),
-						title: 'Orchard | Auth',
+							import(
+								'@client/modules/auth/modules/auth-subsection-authentication/auth-subsection-authentication.module'
+							).then((m) => m.OrcAuthSubsectionAuthenticationModule),
+						title: 'Orchard | Authentication',
 						data: {
 							section: 'auth',
 							sub_section: 'authentication',
+						},
+					},
+					{
+						path: 'initialization',
+						canActivate: [uninitializedGuard],
+						loadChildren: () =>
+							import(
+								'@client/modules/auth/modules/auth-subsection-initialization/auth-subsection-initialization.module'
+							).then((m) => m.OrcAuthSubsectionInitializationModule),
+						title: 'Orchard | Initialization',
+						data: {
+							section: 'auth',
+							sub_section: 'initialization',
 						},
 					},
 				],

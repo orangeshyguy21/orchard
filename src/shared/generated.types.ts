@@ -88,6 +88,13 @@ export enum AiMessageRole {
 }
 
 export type AuthenticationInput = {
+  name: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+};
+
+export type InitializationInput = {
+  key: Scalars['String']['input'];
+  name: Scalars['String']['input'];
   password: Scalars['String']['input'];
 };
 
@@ -206,7 +213,10 @@ export type MintUrlUpdateInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   ai_chat_abort: OrchardAiChatStream;
-  authentication: OrchardAuthentication;
+  auth_authentication: OrchardAuthentication;
+  auth_authentication_refresh: OrchardAuthentication;
+  auth_authentication_revoke: Scalars['Boolean']['output'];
+  auth_initialize: OrchardAuthentication;
   mint_contact_add: OrchardMintContactUpdate;
   mint_contact_remove: OrchardMintContactUpdate;
   mint_database_backup: OrchardMintDatabaseBackup;
@@ -223,8 +233,8 @@ export type Mutation = {
   mint_short_description_update: OrchardMintDescriptionUpdate;
   mint_url_add: OrchardMintUrlUpdate;
   mint_url_remove: OrchardMintUrlUpdate;
-  refresh_authentication: OrchardAuthentication;
-  revoke_authentication: Scalars['Boolean']['output'];
+  updateUserName: OrchardUser;
+  updateUserPassword: OrchardUser;
 };
 
 
@@ -233,8 +243,13 @@ export type MutationAi_Chat_AbortArgs = {
 };
 
 
-export type MutationAuthenticationArgs = {
+export type MutationAuth_AuthenticationArgs = {
   authentication: AuthenticationInput;
+};
+
+
+export type MutationAuth_InitializeArgs = {
+  initialize: InitializationInput;
 };
 
 
@@ -310,6 +325,16 @@ export type MutationMint_Url_AddArgs = {
 
 export type MutationMint_Url_RemoveArgs = {
   mint_url_update: MintUrlUpdateInput;
+};
+
+
+export type MutationUpdateUserNameArgs = {
+  updateUserName: UserNameUpdateInput;
+};
+
+
+export type MutationUpdateUserPasswordArgs = {
+  updateUserPassword: UserPasswordUpdateInput;
 };
 
 export type OrchardAiAgent = {
@@ -583,6 +608,11 @@ export type OrchardCustomChannelData = {
   __typename?: 'OrchardCustomChannelData';
   open_channels: Array<OrchardCustomChannel>;
   pending_channels: Array<OrchardCustomChannel>;
+};
+
+export type OrchardInitialization = {
+  __typename?: 'OrchardInitialization';
+  initialization: Scalars['Boolean']['output'];
 };
 
 export type OrchardLightningAccount = {
@@ -1040,10 +1070,22 @@ export type OrchardTaprootAssetsUtxo = {
   id: Scalars['String']['output'];
 };
 
+export type OrchardUser = {
+  __typename?: 'OrchardUser';
+  active: Scalars['Boolean']['output'];
+  created_at: Scalars['UnixTimestamp']['output'];
+  id: Scalars['String']['output'];
+  label?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  role: UserRole;
+  updated_at: Scalars['UnixTimestamp']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
   ai_agent: OrchardAiAgent;
   ai_models: Array<OrchardAiModel>;
+  auth_initialization: OrchardInitialization;
   bitcoin_block: OrchardBitcoinBlock;
   bitcoin_block_template: OrchardBitcoinBlockTemplate;
   bitcoin_blockchain_info: OrchardBitcoinBlockchainInfo;
@@ -1086,6 +1128,7 @@ export type Query = {
   taproot_assets: OrchardTaprootAssets;
   taproot_assets_info: OrchardTaprootAssetsInfo;
   taproot_assets_utxo: Array<OrchardTaprootAssetsUtxo>;
+  user: OrchardUser;
 };
 
 
@@ -1293,4 +1336,19 @@ export enum TaprootAssetType {
 export enum TaprootAssetVersion {
   AssetVersionV0 = 'ASSET_VERSION_V0',
   AssetVersionV1 = 'ASSET_VERSION_V1'
+}
+
+export type UserNameUpdateInput = {
+  name: Scalars['String']['input'];
+};
+
+export type UserPasswordUpdateInput = {
+  password_new: Scalars['String']['input'];
+  password_old: Scalars['String']['input'];
+};
+
+export enum UserRole {
+  Admin = 'ADMIN',
+  Manager = 'MANAGER',
+  Reader = 'READER'
 }

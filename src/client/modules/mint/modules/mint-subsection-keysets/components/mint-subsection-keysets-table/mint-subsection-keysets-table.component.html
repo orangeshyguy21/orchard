@@ -34,20 +34,20 @@
 
 					<ng-container matColumnDef="valid_from">
 						<th mat-header-cell *matHeaderCellDef mat-sort-header class="keyset-table-sticky-header">Created</th>
-						<td mat-cell *matCellDef="let keyset">{{ keyset.valid_from | time: 'date-only' }}</td>
+						<td mat-cell *matCellDef="let keyset">{{ keyset.valid_from | localTime: 'date-only' }}</td>
 					</ng-container>
 
 					<ng-container matColumnDef="balance">
 						<th mat-header-cell *matHeaderCellDef mat-sort-header class="keyset-table-sticky-header">Balance</th>
 						<td mat-cell *matCellDef="let keyset">
-							<span class="font-size-m w-min-10" [innerHTML]="keyset.balance | amount: keyset.unit : 'mint'"></span>
+							<span class="font-size-m w-min-10" [innerHTML]="keyset.balance | localAmount: keyset.unit : 'mint'"></span>
 						</td>
 					</ng-container>
 
 					<ng-container matColumnDef="fees">
 						<th mat-header-cell *matHeaderCellDef mat-sort-header class="keyset-table-sticky-header">Fee revenue</th>
 						<td mat-cell *matCellDef="let keyset">
-							<span class="font-size-m w-min-10" [innerHTML]="keyset.fees_paid | amount: keyset.unit : 'mint'"></span>
+							<span class="font-size-m w-min-10" [innerHTML]="keyset.fees_paid | localAmount: keyset.unit : 'mint'"></span>
 						</td>
 					</ng-container>
 

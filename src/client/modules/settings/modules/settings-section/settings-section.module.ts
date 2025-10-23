@@ -15,19 +15,31 @@ import {SettingsSectionComponent} from './components/settings-section/settings-s
 				path: '',
 				component: SettingsSectionComponent,
 				data: {
-					section: 'event',
+					section: 'settings',
 				},
 				children: [
 					{
-						path: '',
+						path: 'device',
 						loadChildren: () =>
-							import(
-								'@client/modules/settings/modules/settings-subsection-dashboard/settings-subsection-dashboard.module'
-							).then((m) => m.OrcSettingsSubsectionDashboardModule),
-						title: 'Orchard | Settings',
+							import('@client/modules/settings/modules/settings-subsection-device/settings-subsection-device.module').then(
+								(m) => m.OrcSettingsSubsectionDeviceModule,
+							),
+						title: 'Orchard | Device Settings',
 						data: {
-							section: 'event',
-							sub_section: 'dashboard',
+							section: 'settings',
+							sub_section: 'device',
+						},
+					},
+					{
+						path: 'user',
+						loadChildren: () =>
+							import('@client/modules/settings/modules/settings-subsection-user/settings-subsection-user.module').then(
+								(m) => m.OrcSettingsSubsectionUserModule,
+							),
+						title: 'Orchard | User Settings',
+						data: {
+							section: 'settings',
+							sub_section: 'user',
 						},
 					},
 				],

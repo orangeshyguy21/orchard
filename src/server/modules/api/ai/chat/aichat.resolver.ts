@@ -6,7 +6,7 @@ import {OnModuleInit} from '@nestjs/common';
 import {PubSub} from 'graphql-subscriptions';
 /* Application Dependencies */
 import {AuthService} from '@server/modules/auth/auth.service';
-import {NoHeaders} from '@server/modules/security/decorators/auth.decorator';
+import {NoHeaders} from '@server/modules/auth/decorators/auth.decorator';
 /* Local Dependencies */
 import {AiChatService} from './aichat.service';
 import {OrchardAiChatChunk, OrchardAiChatStream} from './aichat.model';

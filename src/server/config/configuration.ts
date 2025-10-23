@@ -24,9 +24,14 @@ export const config = (): Config => {
 		path: process.env.BASE_PATH || 'api',
 		proxy: process.env.TOR_PROXY_SERVER || undefined,
 		log: process.env.LOG_LEVEL || 'info',
-		pass: process.env.ADMIN_PASSWORD,
+		key: process.env.SETUP_KEY || process.env.ADMIN_PASSWORD,
 		ttl: process.env.THROTTLE_TTL || '60000',
 		limit: process.env.THROTTLE_LIMIT || '20',
+	};
+
+	const database = {
+		path: `${process.env.DATABASE_DIR || 'data'}/orchard.db`,
+		synchronize: process.env.NODE_ENV !== 'production',
 	};
 
 	const bitcoin = {
@@ -77,6 +82,7 @@ export const config = (): Config => {
 	const config = {
 		mode,
 		server,
+		database,
 		bitcoin,
 		lightning,
 		taproot_assets,

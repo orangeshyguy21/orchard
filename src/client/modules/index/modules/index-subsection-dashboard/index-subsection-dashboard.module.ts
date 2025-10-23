@@ -14,6 +14,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 /* Application Dependencies */
 import {OrcLocalModule} from '@client/modules/local/local.module';
+import {OrcDataModule} from '@client/modules/data/data.module';
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {OrcErrorModule} from '@client/modules/error/error.module';
 import {OrcNavModule} from '@client/modules/nav/nav.module';
@@ -83,6 +84,7 @@ import {IndexSubsectionDashboardMintEnabledInfoComponent} from './components/ind
 		MatFormFieldModule,
 		MatSelectModule,
 		OrcLocalModule,
+		OrcDataModule,
 		OrcGraphicModule,
 		OrcErrorModule,
 		OrcNavModule,

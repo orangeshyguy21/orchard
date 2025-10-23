@@ -16,7 +16,7 @@ import {RefreshTokenStrategy} from './strategy/refresh.strategy';
 		UserModule,
 		JwtModule.registerAsync({
 			useFactory: async (configService: ConfigService) => ({
-				secret: configService.get('server.pass'),
+				secret: configService.get('server.key'),
 			}),
 			inject: [ConfigService],
 		}),

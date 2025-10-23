@@ -20,7 +20,7 @@
 
 				<div class="flex flex-justify-center orc-outline-color">
 					@if (!is_template) {
-						<div>{{ $any(this.block).time | time_ago }}</div>
+						<div>{{ $any(this.block).time | localTimeAgo }}</div>
 					} @else {
 						<div>~ 10 minutes</div>
 					}
