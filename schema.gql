@@ -958,6 +958,6 @@ input UserPasswordUpdateInput {
 
 enum UserRole {
   ADMIN
-  GROUNDSKEEPER
+  MANAGER
   READER
 }

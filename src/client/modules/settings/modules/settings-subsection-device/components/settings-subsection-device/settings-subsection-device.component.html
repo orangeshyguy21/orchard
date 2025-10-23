@@ -1,8 +1,8 @@
 <div class="flex flex-column">
-	<orc-settings-subsection-device-categories
+	<!-- <orc-settings-subsection-device-categories
 		[category_filters]="category_filters"
 		(updateFilters)="onUpdateFilters($event)"
-	></orc-settings-subsection-device-categories>
+	></orc-settings-subsection-device-categories> -->
 
 	<!-- Location Settings -->
 	@if (category_filters.includes(cat_orchard) || category_filters.includes(cat_local)) {
@@ -12,10 +12,10 @@
 					<div class="title-l">Location</div>
 					<div class="font-size-xs orc-outline-color">Settings for local display and timezone</div>
 				</div>
-				<mat-chip-set aria-label="Location categories">
+				<!-- <mat-chip-set aria-label="Location categories">
 					<mat-chip disabled>Orchard</mat-chip>
 					<mat-chip disabled>Local</mat-chip>
-				</mat-chip-set>
+				</mat-chip-set> -->
 			</div>
 			<div class="category-rule"></div>
 		</div>
@@ -36,10 +36,10 @@
 					<div class="title-l">Theme</div>
 					<div class="font-size-xs orc-outline-color">Settings for the appearance of the application</div>
 				</div>
-				<mat-chip-set aria-label="Theme categories">
+				<!-- <mat-chip-set aria-label="Theme categories">
 					<mat-chip disabled>Orchard</mat-chip>
 					<mat-chip disabled>Local</mat-chip>
-				</mat-chip-set>
+				</mat-chip-set> -->
 			</div>
 			<div class="category-rule"></div>
 		</div>
@@ -58,10 +58,10 @@
 					<div class="title-l">AI</div>
 					<div class="font-size-xs orc-outline-color">Settings for the AI agents</div>
 				</div>
-				<mat-chip-set aria-label="AI categories">
+				<!-- <mat-chip-set aria-label="AI categories">
 					<mat-chip disabled>Orchard</mat-chip>
 					<mat-chip disabled>Local</mat-chip>
-				</mat-chip-set>
+				</mat-chip-set> -->
 			</div>
 			<div class="category-rule"></div>
 		</div>

@@ -31,8 +31,8 @@ export class AuthInitializationService {
 			if (!valid) throw OrchardErrorCode.InitializationKeyError;
 			const user = await this.userService.getUserByName(initialization.name);
 			if (user) throw OrchardErrorCode.UniqueUsernameError;
-			const newuser = await this.userService.createUser(initialization.name, initialization.password, UserRole.GROUNDSKEEPER);
-			const token = await this.authService.getToken(newuser.id, initialization.password);
+			const admin = await this.userService.createUser(initialization.name, initialization.password, UserRole.ADMIN);
+			const token = await this.authService.getToken(admin.id, initialization.password);
 			if (!token) throw OrchardErrorCode.AuthenticationError;
 			return new OrchardAuthentication(token);
 		} catch (error) {
