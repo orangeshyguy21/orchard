@@ -1,5 +1,5 @@
 /* Vendor Dependencies */
-import {Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn} from 'typeorm';
+import {Entity, Column, PrimaryGeneratedColumn, Index, CreateDateColumn, UpdateDateColumn} from 'typeorm';
 /* Local Dependencies */
 import {UserRole} from './user.enums';
 
@@ -21,6 +21,7 @@ export class User {
 	role: UserRole;
 
 	@Column({default: true})
+	@Index()
 	active: boolean;
 
 	@Column({type: 'text', nullable: true, length: 100})

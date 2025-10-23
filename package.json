@@ -28,7 +28,11 @@
     "test:server:e2e": "jest --config ./test/jest-e2e.json",
     "test:client": "ng test --watch=false --browsers=ChromeHeadless --progress=false",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "watch:client": "NODE_ENV=development ng build --watch --configuration development"
+    "watch:client": "NODE_ENV=development ng build --watch --configuration development",
+    "migration:generate": "NODE_ENV=development ts-node --project tsconfig.server.json -r tsconfig-paths/register node_modules/typeorm/cli.js migration:generate -d src/server/database/data-source.ts",
+    "migration:run": "NODE_ENV=development ts-node --project tsconfig.server.json -r tsconfig-paths/register node_modules/typeorm/cli.js migration:run -d src/server/database/data-source.ts",
+    "migration:revert": "NODE_ENV=development ts-node --project tsconfig.server.json -r tsconfig-paths/register node_modules/typeorm/cli.js migration:revert -d src/server/database/data-source.ts",
+    "migration:show": "NODE_ENV=development ts-node --project tsconfig.server.json -r tsconfig-paths/register node_modules/typeorm/cli.js migration:show -d src/server/database/data-source.ts"
   },
   "dependencies": {
     "@angular/animations": "^20.3.4",

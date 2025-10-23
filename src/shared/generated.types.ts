@@ -1075,6 +1075,7 @@ export type OrchardUser = {
   active: Scalars['Boolean']['output'];
   created_at: Scalars['UnixTimestamp']['output'];
   id: Scalars['String']['output'];
+  label?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   role: UserRole;
   updated_at: Scalars['UnixTimestamp']['output'];

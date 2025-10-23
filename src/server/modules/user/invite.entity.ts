@@ -1,10 +1,11 @@
 /* Vendor Dependencies */
-import {Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, OneToOne, JoinColumn} from 'typeorm';
+import {Entity, Column, PrimaryGeneratedColumn, Index, CreateDateColumn, ManyToOne, OneToOne, JoinColumn} from 'typeorm';
 /* Local Dependencies */
 import {User} from './user.entity';
 import {UserRole} from './user.enums';
 
 @Entity('invites')
+@Index(['used', 'expires_at'])
 export class Invite {
 	@PrimaryGeneratedColumn('uuid')
 	id: string;

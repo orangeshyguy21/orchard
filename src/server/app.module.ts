@@ -85,6 +85,8 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 				entities: [],
 				synchronize: configService.get('database.synchronize'),
 				autoLoadEntities: true,
+				migrations: ['dist/database/migrations/*.js'],
+				migrationsRun: configService.get('mode.production'),
 			}),
 		}),
 		SecurityModule,
