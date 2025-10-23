@@ -24,7 +24,7 @@ describe('SettingsSubsectionUserUserComponent', () => {
 		const mock_user = new User({
 			id: '1',
 			name: 'TestUser',
-			role: UserRole.Member,
+			role: UserRole.Admin,
 			active: true,
 			created_at: Date.now() / 1000,
 			updated_at: Date.now() / 1000,

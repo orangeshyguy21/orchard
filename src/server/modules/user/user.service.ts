@@ -67,7 +67,6 @@ export class UserService {
 	 */
 	public async createUser(name: string, password: string, role: UserRole): Promise<User> {
 		const password_hash = await bcrypt.hash(password, 10);
-		const user_count = await this.userRepository.count();
 		const user = this.userRepository.create({
 			name,
 			password_hash,

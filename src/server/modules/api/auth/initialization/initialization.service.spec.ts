@@ -7,6 +7,7 @@ import {ErrorService} from '@server/modules/error/error.service';
 import {UserService} from '@server/modules/user/user.service';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
+import {UserRole} from '@server/modules/user/user.enums';
 /* Local Dependencies */
 import {AuthInitializationService} from './initialization.service';
 import {OrchardAuthentication} from '../authentication/authentication.model';
@@ -70,7 +71,7 @@ describe('AtuhInitializationService', () => {
 			expect(result).toBeInstanceOf(OrchardAuthentication);
 			expect(auth_service.validateSetupKey).toHaveBeenCalledWith(mock_input.key);
 			expect(user_service.getUserByName).toHaveBeenCalledWith(mock_input.name);
-			expect(user_service.createUser).toHaveBeenCalledWith(mock_input.name, mock_input.password);
+			expect(user_service.createUser).toHaveBeenCalledWith(mock_input.name, mock_input.password, UserRole.ADMIN);
 			expect(auth_service.getToken).toHaveBeenCalledWith('user-id', mock_input.password);
 		});
 
