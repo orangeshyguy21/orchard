@@ -13,9 +13,9 @@ import {ApiService} from '@client/modules/api/services/api/api.service';
 import {OrchardUser} from '@shared/generated.types';
 /* Native Dependencies */
 import {User} from '@client/modules/user/classes/user.class';
-import {UserResponse, UserNameUpdateResponse, UserPasswordUpdateResponse} from '@client/modules/user/types/user.types';
+import {UserResponse, UsersResponse, UserNameUpdateResponse, UserPasswordUpdateResponse} from '@client/modules/user/types/user.types';
 /* Local Dependencies */
-import {USER_QUERY, USER_NAME_UPDATE_MUTATION, USER_PASSWORD_UPDATE_MUTATION} from './user.queries';
+import {USER_QUERY, USERS_QUERY, USER_NAME_UPDATE_MUTATION, USER_PASSWORD_UPDATE_MUTATION} from './user.queries';
 
 @Injectable({
 	providedIn: 'root',
@@ -27,14 +27,16 @@ export class UserService {
 
 	private readonly CACHE_KEYS = {
 		USER: 'user',
+		USERS: 'users',
 	};
 	private readonly CACHE_DURATIONS = {
 		[this.CACHE_KEYS.USER]: 1 * 60 * 1000, // 1 minute
+		[this.CACHE_KEYS.USERS]: 10 * 60 * 1000, // 10 minutes
 	};
 
 	/* Subjects for caching */
 	private readonly user_subject!: BehaviorSubject<OrchardUser | null>;
-
+	private readonly users_subject!: BehaviorSubject<OrchardUser[] | null>;
 	/* Observables for caching (rapid request caching) */
 	private user_observable!: Observable<OrchardUser> | null;
 
@@ -44,10 +46,12 @@ export class UserService {
 		private apiService: ApiService,
 	) {
 		this.user_subject = this.cache.createCache<OrchardUser>(this.CACHE_KEYS.USER, this.CACHE_DURATIONS[this.CACHE_KEYS.USER]);
+		this.users_subject = this.cache.createCache<OrchardUser[]>(this.CACHE_KEYS.USERS, this.CACHE_DURATIONS[this.CACHE_KEYS.USERS]);
 	}
 
 	public clearUserCache() {
 		this.cache.clearCache(this.CACHE_KEYS.USER);
+		this.cache.clearCache(this.CACHE_KEYS.USERS);
 	}
 
 	public loadUser(): Observable<OrchardUser> {
@@ -75,6 +79,26 @@ export class UserService {
 			}),
 		);
 		return this.user_observable;
+	}
+
+	public loadUsers(): Observable<OrchardUser[]> {
+		if (this.users_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.USERS)) return of(this.users_subject.value);
+
+		const query = getApiQuery(USERS_QUERY);
+		return this.http.post<OrchardRes<UsersResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.users;
+			}),
+			map((users) => users.map((user) => new User(user))),
+			tap((users) => {
+				this.cache.updateCache(this.CACHE_KEYS.USERS, users);
+				this.users_subject.next(users);
+			}),
+			catchError((error) => {
+				return throwError(() => error);
+			}),
+		);
 	}
 
 	public updateUserName(name: string): Observable<OrchardUser> {

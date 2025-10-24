@@ -1129,6 +1129,7 @@ export type Query = {
   taproot_assets_info: OrchardTaprootAssetsInfo;
   taproot_assets_utxo: Array<OrchardTaprootAssetsUtxo>;
   user: OrchardUser;
+  users: Array<OrchardUser>;
 };
 
 

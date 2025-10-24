@@ -30,6 +30,18 @@ export class ApiUserService {
 		}
 	}
 
+	async getUsers(tag: string): Promise<OrchardUser[]> {
+		try {
+			const users = await this.userService.getUsers();
+			return users.map((user) => new OrchardUser(user));
+		} catch (error) {
+			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+				errord: OrchardErrorCode.UserError,
+			});
+			throw new OrchardApiError(error_code);
+		}
+	}
+
 	async updateUserName(tag: string, id: string, args: UserNameUpdateInput): Promise<OrchardUser> {
 		try {
 			const user = await this.userService.updateUser(id, {name: args.name});

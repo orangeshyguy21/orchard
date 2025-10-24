@@ -4,6 +4,10 @@ export type UserResponse = {
 	user: OrchardUser;
 };
 
+export type UsersResponse = {
+	users: OrchardUser[];
+};
+
 export type UserNameUpdateResponse = {
 	user_name_update: OrchardUser;
 };

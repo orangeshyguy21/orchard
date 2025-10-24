@@ -924,6 +924,7 @@ type Query {
   taproot_assets_info: OrchardTaprootAssetsInfo!
   taproot_assets_utxo: [OrchardTaprootAssetsUtxo!]!
   user: OrchardUser!
+  users: [OrchardUser!]!
 }
 
 type Subscription {

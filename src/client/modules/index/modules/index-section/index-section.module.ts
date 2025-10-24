@@ -27,7 +27,19 @@ import {IndexSectionComponent} from './components/index-section/index-section.co
 						title: 'Orchard',
 						data: {
 							section: 'index',
-							sub_section: 'dashboard',
+							sub_section: 'home',
+						},
+					},
+					{
+						path: 'crew',
+						loadChildren: () =>
+							import('@client/modules/index/modules/index-subsection-crew/index-subsection-crew.module').then(
+								(m) => m.OrcIndexSubsectionCrewModule,
+							),
+						title: 'Orchard | Crew',
+						data: {
+							section: 'index',
+							sub_section: 'crew',
 						},
 					},
 				],

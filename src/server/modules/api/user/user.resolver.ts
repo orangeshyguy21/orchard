@@ -24,6 +24,13 @@ export class ApiUserResolver {
 		return await this.apiUserService.getUser(tag, user.id);
 	}
 
+	@Query(() => [OrchardUser])
+	async users(): Promise<OrchardUser[]> {
+		const tag = 'GET { users }';
+		this.logger.debug(tag);
+		return await this.apiUserService.getUsers(tag);
+	}
+
 	@Mutation(() => OrchardUser)
 	async updateUserName(@Context() context: any, @Args('updateUserName') updateUserName: UserNameUpdateInput): Promise<OrchardUser> {
 		const tag = 'MUTATION { updateUserName }';
