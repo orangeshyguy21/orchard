@@ -32,9 +32,13 @@ export class GqlAuthenticationGuard extends AuthGuard('jwt') {
 		return super.canActivate(context);
 	}
 
-	handleRequest(err: any, user: any) {
+	handleRequest(err: any, user: any, _info: any, context: ExecutionContext) {
 		const production = this.configService.get<boolean>('mode.production');
-		if (!production && !user) return {id: 'dev-user', username: 'dev'};
+		if (!production && !user && !err) {
+			const request = this.getRequest(context);
+			const has_auth_header = request.headers?.authorization;
+			if (!has_auth_header) return {id: 'dev-user', name: 'dev'};
+		}
 		if (err || !user) throw new OrchardApiError(OrchardErrorCode.AuthenticationError);
 		return user;
 	}

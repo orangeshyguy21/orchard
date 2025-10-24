@@ -1,9 +1,9 @@
 /* Core Dependencies */
 import {Injectable} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
+import {Readable} from 'stream';
 /* Application Dependencies */
-import {FetchService} from '../fetch/fetch.service';
-
+import {FetchService} from '@server/modules/fetch/fetch.service';
 /* Local Dependencies */
 import {AiModel, AiMessage} from './ai.types';
 import {AI_AGENTS} from './ai.agents';
@@ -30,7 +30,12 @@ export class AiService {
 		return data.models;
 	}
 
-	async streamChat(model: string, agent: AiAgent | null, messages: AiMessage[], signal?: AbortSignal) {
+	async streamChat(
+		model: string,
+		agent: AiAgent | null,
+		messages: AiMessage[],
+		signal?: AbortSignal,
+	): Promise<ReadableStream<Uint8Array>> {
 		if (!agent) agent = AiAgent.DEFAULT;
 		const tools = AI_AGENTS[agent].tools;
 		const system_message = AI_AGENTS[agent].system_message;
@@ -48,6 +53,8 @@ export class AiService {
 			}),
 			signal: combined_signal,
 		});
-		return response.body;
+
+		const nodeStream = response.body as Readable;
+		return Readable.toWeb(nodeStream) as ReadableStream<Uint8Array>;
 	}
 }
