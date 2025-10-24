@@ -9,7 +9,6 @@ import {FetchService} from './fetch.service';
 
 describe('FetchService', () => {
 	let fetch_service: FetchService;
-	let config_service: jest.Mocked<ConfigService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -17,7 +16,6 @@ describe('FetchService', () => {
 		}).compile();
 
 		fetch_service = module.get<FetchService>(FetchService);
-		config_service = module.get(ConfigService);
 	});
 
 	it('should be defined', () => {
