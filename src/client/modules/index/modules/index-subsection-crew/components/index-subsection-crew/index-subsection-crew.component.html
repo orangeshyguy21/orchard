@@ -1,0 +1,29 @@
+<div class="index-subsection-crew-container">
+	<div class="flex flex-gap-1">
+		<div class="grid flex-grow" #crew_container>
+			<div class="crew-invites nav1" #nav1>
+				<div class="sticky-section z-index-1">
+					<div class="flex flex-justify-between flex-items-end p-b-0-5">
+						<div>
+							<div class="title-l">Invites</div>
+							<div class="font-size-xs orc-outline-color">Send and manage user invites</div>
+						</div>
+					</div>
+					<div class="category-rule"></div>
+				</div>
+				<!-- stuff -->
+			</div>
+		</div>
+		<div class="p-r-1 p-t-2">
+			<orc-nav-tertiary
+				class="crew-tertiary-nav"
+				[keys]="page_settings.tertiary_nav"
+				[items]="tertiary_nav_items"
+				(orderChange)="onTertiaryNavChange($event)"
+				(keySelect)="onTertiaryNavSelect($event)"
+			>
+				<div class="nav-tertiary-title">Sections</div>
+			</orc-nav-tertiary>
+		</div>
+	</div>
+</div>

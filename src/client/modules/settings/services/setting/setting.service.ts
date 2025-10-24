@@ -7,6 +7,7 @@ import {Settings} from 'luxon';
 import {LocalStorageService} from '@client/modules/cache/services/local-storage/local-storage.service';
 import {ThemeType} from '@client/modules/cache/services/local-storage/local-storage.types';
 import {
+	AllIndexCrewSettings,
 	AllMintDashboardSettings,
 	AllMintDatabaseSettings,
 	AllMintKeysetsSettings,
@@ -81,6 +82,14 @@ export class SettingService {
 	}
 	public setModel(model: string | null): void {
 		this.localStorageService.setModel({model: model});
+	}
+
+	/* Page: Index Crew */
+	public getIndexCrewSettings(): AllIndexCrewSettings {
+		return this.localStorageService.getIndexCrewSettings();
+	}
+	public setIndexCrewSettings(settings: AllIndexCrewSettings): void {
+		this.localStorageService.setIndexCrewSettings(settings);
 	}
 
 	/* Page: Mint Dashboard */

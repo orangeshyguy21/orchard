@@ -3,11 +3,11 @@ import {NgModule} from '@angular/core';
 import {CommonModule as CoreCommonModule} from '@angular/common';
 import {RouterModule as CoreRouterModule} from '@angular/router';
 import {ReactiveFormsModule as CoreReactiveFormsModule} from '@angular/forms';
-import {IndexSubsectionCrewComponent} from './index-subsection-crew/index-subsection-crew.component';
+import {IndexSubsectionCrewComponent} from './components/index-subsection-crew/index-subsection-crew.component';
 /* Vendor Dependencies */
 
 /* Application Dependencies */
-
+import {OrcNavModule} from '@client/modules/nav/nav.module';
 /* Local Dependencies */
 
 @NgModule({
@@ -23,6 +23,7 @@ import {IndexSubsectionCrewComponent} from './index-subsection-crew/index-subsec
 		],
 		CoreCommonModule,
 		CoreReactiveFormsModule,
+		OrcNavModule,
 	],
 })
 export class OrcIndexSubsectionCrewModule {}

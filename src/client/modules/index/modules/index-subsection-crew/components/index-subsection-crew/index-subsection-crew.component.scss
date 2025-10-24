@@ -6,7 +6,13 @@
 	@extend %flex-grow;
 }
 
-.sticky-setting {
+.index-subsection-crew-container {
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-grow;
+}
+
+.sticky-section {
 	@extend %orc-surface-bg;
 	@extend %sticky;
 	@extend %p-l-2;
@@ -14,13 +20,9 @@
 	@extend %top-0;
 }
 
-.settings-tertiary-nav {
+.crew-tertiary-nav {
 	@extend %sticky;
 	@extend %z-index-1;
-	top: 3rem;
-	height: calc(100vh - 9rem);
-	@extend %overflow-y-auto;
-	@extend %block;
 }
 
 .nav-tertiary-title {
@@ -30,12 +32,9 @@
 	@extend %p-l-0-25;
 }
 
-.settings-location {
+.crew-invites {
 	grid-area: nav1;
 }
-.settings-theme {
+.crew-users {
 	grid-area: nav2;
-}
-.settings-ai {
-	grid-area: nav3;
 }

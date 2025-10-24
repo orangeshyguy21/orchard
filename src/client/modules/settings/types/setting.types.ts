@@ -1,11 +1,18 @@
 /* Application Dependencies */
 import {
+	IndexCrewSettings,
 	MintDashboardSettings,
 	MintKeysetsSettings,
 	MintDatabaseSettings,
 	MintConfigSettings,
 	SettingsDeviceSettings,
 } from '@client/modules/cache/services/local-storage/local-storage.types';
+
+/* Page: Index Crew */
+export type AllIndexCrewSettings = IndexCrewSettings;
+export type NonNullableIndexCrewSettings = {
+	[K in keyof AllIndexCrewSettings]: NonNullable<AllIndexCrewSettings[K]>;
+};
 
 /* Page: Mint Dashboard */
 export type AllMintDashboardSettings = MintDashboardSettings & {
