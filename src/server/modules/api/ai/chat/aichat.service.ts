@@ -31,7 +31,7 @@ export class AiChatService {
 			const signal = controller.signal;
 			const body = await this.aiService.streamChat(ai_chat.model, ai_chat.agent, ai_chat.messages, signal);
 			if (!body) throw new OrchardApiError(OrchardErrorCode.AiError);
-			const reader = body.getReader();
+			const reader = (body as any).getReader();
 			const decoder = new TextDecoder();
 
 			while (true) {

@@ -1,6 +1,8 @@
 /* Core Dependencies */
 import {Injectable} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
+/* Vendor Dependencies */
+import {Response} from 'node-fetch';
 /* Application Dependencies */
 import {FetchService} from '../fetch/fetch.service';
 
@@ -30,7 +32,7 @@ export class AiService {
 		return data.models;
 	}
 
-	async streamChat(model: string, agent: AiAgent | null, messages: AiMessage[], signal?: AbortSignal) {
+	async streamChat(model: string, agent: AiAgent | null, messages: AiMessage[], signal?: AbortSignal): Promise<Response['body']> {
 		if (!agent) agent = AiAgent.DEFAULT;
 		const tools = AI_AGENTS[agent].tools;
 		const system_message = AI_AGENTS[agent].system_message;
