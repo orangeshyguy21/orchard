@@ -34,7 +34,8 @@ export class AuthSubsectionAuthenticationComponent implements OnInit {
 		private readonly settingService: SettingService,
 		private readonly router: Router,
 	) {
-		this.form_auth.statusChanges.subscribe(() => {
+		this.form_auth.valueChanges.subscribe(() => {
+			this.clearErrors();
 			this.validateForm();
 		});
 	}
@@ -87,7 +88,14 @@ export class AuthSubsectionAuthenticationComponent implements OnInit {
 
 	private updateError(control_name: AuthenticateControl, error: ValidationErrors | null): void {
 		if (error?.['required']) this.errors[control_name] = 'Required';
+		if (error?.['throttler']) this.errors[control_name] = 'Too many attempts, please try again later';
 		if (error?.['incorrect']) this.errors[control_name] = 'Incorrect username or password';
+	}
+
+	private clearErrors(): void {
+		const password_control = this.form_auth.get('password');
+		password_control?.setErrors(null, {emitEvent: false});
+		this.errors.password = null;
 	}
 
 	private errorControl(error: string | OrchardErrors): void {
@@ -95,7 +103,7 @@ export class AuthSubsectionAuthenticationComponent implements OnInit {
 		const has_throttler_error = (error as OrchardErrors)?.errors?.some((err) => err?.code === 10005);
 		if (has_throttler_error) error_validation = {throttler: true};
 		if (!has_throttler_error) error_validation = {incorrect: true};
-		this.form_auth.get('password')?.setErrors(error_validation);
+		this.form_auth.get('password')?.setErrors(error_validation, {emitEvent: false});
 		this.validateForm();
 	}
 
