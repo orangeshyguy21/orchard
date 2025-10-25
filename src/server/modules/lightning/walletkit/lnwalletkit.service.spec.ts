@@ -5,6 +5,7 @@ import {ConfigService} from '@nestjs/config';
 /* Native Dependencies */
 import {LndService} from '@server/modules/lightning/lnd/lnd.service';
 import {ClnService} from '@server/modules/lightning/cln/cln.service';
+import {LnbitsService} from '@server/modules/lightning/lnbits/lnbits.service';
 /* Local Dependencies */
 import {LightningWalletKitService} from './lnwalletkit.service';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
@@ -14,6 +15,7 @@ describe('LightningWalletKitService', () => {
 	let config_service: jest.Mocked<ConfigService>;
 	let lnd_service: jest.Mocked<LndService>;
 	let cln_service: jest.Mocked<ClnService>;
+	let lnbits_service: jest.Mocked<LnbitsService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -22,6 +24,14 @@ describe('LightningWalletKitService', () => {
 				{provide: ConfigService, useValue: {get: jest.fn()}},
 				{provide: LndService, useValue: {initializeWalletKitClient: jest.fn()}},
 				{provide: ClnService, useValue: {initializeWalletKitClient: jest.fn(), mapClnAddresses: jest.fn()}},
+				{
+					provide: LnbitsService,
+					useValue: {
+						initializeWalletKitClient: jest.fn(),
+						mapLnbitsAddresses: jest.fn(),
+						getLnbitsBtcAddress: jest.fn(),
+					},
+				},
 			],
 		}).compile();
 
@@ -29,6 +39,7 @@ describe('LightningWalletKitService', () => {
 		config_service = module.get(ConfigService);
 		lnd_service = module.get(LndService);
 		cln_service = module.get(ClnService);
+		lnbits_service = module.get(LnbitsService);
 	});
 
 	it('should be defined', () => {

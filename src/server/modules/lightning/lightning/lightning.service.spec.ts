@@ -5,6 +5,7 @@ import {ConfigService} from '@nestjs/config';
 /* Native Dependencies */
 import {LndService} from '@server/modules/lightning/lnd/lnd.service';
 import {ClnService} from '@server/modules/lightning/cln/cln.service';
+import {LnbitsService} from '@server/modules/lightning/lnbits/lnbits.service';
 /* Local Dependencies */
 import {LightningService} from './lightning.service';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
@@ -14,6 +15,7 @@ describe('LightningService', () => {
 	let config_service: jest.Mocked<ConfigService>;
 	let lnd_service: jest.Mocked<LndService>;
 	let cln_service: jest.Mocked<ClnService>;
+	let lnbits_service: jest.Mocked<LnbitsService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -30,6 +32,18 @@ describe('LightningService', () => {
 						mapClnRequest: jest.fn(),
 					},
 				},
+				{
+					provide: LnbitsService,
+					useValue: {
+						initializeLightningClient: jest.fn(),
+						mapLnbitsInfo: jest.fn(),
+						mapLnbitsChannelBalance: jest.fn(),
+						mapLnbitsRequest: jest.fn(),
+						getLnbitsInfo: jest.fn(),
+						getLnbitsBalance: jest.fn(),
+						decodeLnbitsInvoice: jest.fn(),
+					},
+				},
 			],
 		}).compile();
 
@@ -37,6 +51,7 @@ describe('LightningService', () => {
 		config_service = module.get(ConfigService);
 		lnd_service = module.get(LndService);
 		cln_service = module.get(ClnService);
+		lnbits_service = module.get(LnbitsService);
 	});
 
 	it('should be defined', () => {
