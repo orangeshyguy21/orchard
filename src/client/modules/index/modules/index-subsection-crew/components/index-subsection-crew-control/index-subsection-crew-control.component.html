@@ -1,0 +1,12 @@
+<div class="crew-control-container">
+	<form [formGroup]="form_group()" class="panel-form orc-animation-form-reaction" [class.animation-invalid]="form_group().invalid">
+		<div class="flex flex-col flex-gap-1">
+			<div class="flex-grow">
+				<mat-form-field [hideRequiredMarker]="true" class="search-field">
+					<mat-label><mat-icon>search</mat-icon> Search</mat-label>
+					<input matInput formControlName="filter" />
+				</mat-form-field>
+			</div>
+		</div>
+	</form>
+</div>

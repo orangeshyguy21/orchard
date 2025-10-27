@@ -1,29 +1,58 @@
 <div class="index-subsection-crew-container">
-	<div class="flex flex-gap-1">
-		<div class="grid flex-grow" #crew_container>
-			<div class="crew-invites nav1" #nav1>
-				<div class="sticky-section z-index-1">
-					<div class="flex flex-justify-between flex-items-end p-b-0-5">
-						<div>
-							<div class="title-l">Invites</div>
-							<div class="font-size-xs orc-outline-color">Send and manage user invites</div>
-						</div>
-					</div>
-					<div class="category-rule"></div>
+	<div class="crew-control p-t-1">
+		<div class="flex flex-justify-between flex-gap-2 flex-items-start">
+			<orc-index-subsection-crew-control class="flex-grow" [form_group]="panel"></orc-index-subsection-crew-control>
+			<div>
+				<div class="flex flex-items-center flex-gap-0-5 relative">
+					<button
+						type="button"
+						matFab
+						extended
+						class="orc-icon-button"
+						(click)="onInvite()"
+						(keydown.enter)="$event.preventDefault(); $event.stopPropagation()"
+					>
+						<mat-icon>person_add</mat-icon>
+						Invite User
+					</button>
 				</div>
-				<!-- stuff -->
 			</div>
 		</div>
-		<div class="p-r-1 p-t-2">
-			<orc-nav-tertiary
-				class="crew-tertiary-nav"
-				[keys]="page_settings.tertiary_nav"
-				[items]="tertiary_nav_items"
-				(orderChange)="onTertiaryNavChange($event)"
-				(keySelect)="onTertiaryNavSelect($event)"
-			>
-				<div class="nav-tertiary-title">Sections</div>
-			</orc-nav-tertiary>
+		<div class="category-rule"></div>
+	</div>
+	<div class="orc-animation-collapsible" [class.animation-open]="form_open()">
+		<div class="orc-animation-collapsible-inner">
+			<div class="index-subsection-crew-form-target" #invite_form></div>
+			<orc-index-subsection-crew-form-invite
+				[form_group]="form_invite"
+				[open]="form_open()"
+				(close)="onCloseInvite()"
+				(cancel)="onCancel($event)"
+			></orc-index-subsection-crew-form-invite>
+			<!-- <orc-mint-subsection-database-form-backup
+				[active]="form_mode === 'CREATE'"
+				[form_group]="form_backup"
+				[database_version]="database_version"
+				[database_timestamp]="database_timestamp"
+				[database_implementation]="database_implementation"
+				(close)="onClose()"
+			></orc-mint-subsection-database-form-backup> -->
 		</div>
 	</div>
 </div>
+
+<!-- 
+<div class="orc-animation-collapsible" [class.animation-open]="keysets_rotation">
+    <div class="orc-animation-collapsible-inner">
+        <div class="mint-keyset-form-target" #keyset_form></div>
+        <orc-mint-subsection-keysets-form
+            [form_group]="form_keyset"
+            [unit_options]="unit_options"
+            [keyset_out]="keyset_out"
+            [keyset_out_balance]="keyset_out_balance"
+            [median_notes]="median_notes"
+            (updateUnit)="onUpdateUnit($event)"
+            (close)="onCloseRotation()"
+        ></orc-mint-subsection-keysets-form>
+    </div>
+</div> -->

@@ -1,0 +1,131 @@
+<div class="crew-form-invite-container p-t-1">
+	<mat-card appearance="outlined" class="relative overflow-hidden">
+		<mat-card-content class="orc-surface-container-low-bg">
+			<div class="absolute top-0-5 right-0-5">
+				<button mat-icon-button (click)="close.emit()">
+					<mat-icon>close</mat-icon>
+				</button>
+			</div>
+
+			<div class="p-b-2">
+				<div class="title-l">Invite User</div>
+				<div class="font-size-xs orc-outline-color">Invite a new user to your crew with activation codes</div>
+			</div>
+
+			<form
+				class="flex flex-column flex-gap-1"
+				[formGroup]="form_group()"
+				(ngSubmit)="$event.preventDefault()"
+				(keydown.enter)="$event.preventDefault()"
+			>
+				<div class="flex flex-gap-2">
+					<div class="flex-1">
+						<div class="flex flex-items-center flex-gap-0-5 p-b-1">
+							<div class="title-form-section">User</div>
+							<mat-icon class="icon-sm">info</mat-icon>
+						</div>
+
+						<div class="flex flex-gap-2">
+							<mat-form-field appearance="fill" hideRequiredMarker="true" class="orc-dynamic-form-field orc-hot-form-field">
+								<mat-label>Role</mat-label>
+								<mat-select formControlName="role">
+									@for (role of user_role_options; track role.value) {
+										<mat-option [value]="role.value">{{ role.label }}</mat-option>
+									}
+								</mat-select>
+							</mat-form-field>
+
+							<orc-form-field-dynamic
+								class="flex-grow"
+								[hot]="focused_label() || form_group().get('label')?.dirty || false"
+								[invalid]="form_group().get('label')?.invalid || false"
+								[standalone]="false"
+								(cancel)="cancel.emit('label')"
+							>
+								<mat-form-field
+									appearance="fill"
+									hideRequiredMarker="true"
+									[ngClass]="
+										focused_label() || form_group().get('label')?.dirty || false
+											? 'orc-hot-form-field'
+											: 'orc-cold-form-field'
+									"
+									class="form-user-label orc-dynamic-form-field"
+								>
+									<mat-label>Label</mat-label>
+									<textarea
+										rows="1"
+										matInput
+										formControlName="label"
+										[formAutogrow]="true"
+										(focus)="focused_label.set(true)"
+										(blur)="focused_label.set(false)"
+									></textarea>
+									@if (
+										form_group().get('label')?.invalid &&
+										(form_group().get('label')?.dirty || form_group().get('label')?.touched)
+									) {
+										<mat-error class="font-size-xs"
+											>Max length is
+											{{ form_group().get('label')?.getError('maxlength')?.requiredLength }} characters</mat-error
+										>
+									}
+								</mat-form-field>
+							</orc-form-field-dynamic>
+						</div>
+					</div>
+
+					<div class="flex-1 flex flex-column flex-gap-1">
+						<div class="flex flex-items-center flex-gap-0-5">
+							<div class="title-form-section">Invite Expiration</div>
+							<mat-icon class="icon-sm">info</mat-icon>
+						</div>
+
+						<div class="flex flex-gap-1">
+							<mat-form-field appearance="fill" hideRequiredMarker="true" class="orc-dynamic-form-field orc-hot-form-field">
+								<mat-label>Date</mat-label>
+								<input matInput [matDatepicker]="picker" formControlName="expiration_date" />
+								<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+								<mat-datepicker #picker></mat-datepicker>
+								@if (
+									form_group().get('expiration_date')?.invalid &&
+									(form_group().get('expiration_date')?.dirty || form_group().get('expiration_date')?.touched)
+								) {
+									<mat-error class="font-size-xs">Invalid date</mat-error>
+								}
+							</mat-form-field>
+							<div class="p-t-1">at</div>
+							<mat-form-field hideRequiredMarker="true" class="primary-form-field">
+								<mat-label>Time</mat-label>
+								<input
+									type="text"
+									placeholder="Select time"
+									aria-label="Time"
+									matInput
+									formControlName="expiration_time"
+									[matAutocomplete]="auto"
+								/>
+								<mat-autocomplete #auto="matAutocomplete" [displayWith]="displayTime">
+									@for (option of filtered_options | async; track option.value) {
+										<mat-option [value]="option.value">{{ option.label }}</mat-option>
+									}
+								</mat-autocomplete>
+								@if (
+									form_group().get('expiration_time')?.invalid &&
+									(form_group().get('expiration_time')?.dirty || form_group().get('expiration_time')?.touched)
+								) {
+									<mat-error class="font-size-xs">Invalid time</mat-error>
+								}
+							</mat-form-field>
+							<div class="p-t-0-5">
+								<mat-checkbox formControlName="expiration_enabled" (change)="onExpirationEnabledChange($event)"
+									>Expires</mat-checkbox
+								>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+		</mat-card-content>
+	</mat-card>
+</div>

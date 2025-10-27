@@ -1,6 +1,12 @@
 <div class="mint-data-control-container">
 	<form [formGroup]="panel" class="panel-form orc-animation-form-reaction" [class.animation-invalid]="height_state === 'invalid'">
 		<div class="flex flex-col flex-gap-1">
+			<div class="flex-grow">
+				<mat-form-field [hideRequiredMarker]="true" class="search-field">
+					<mat-label><mat-icon>search</mat-icon> Search</mat-label>
+					<input matInput formControlName="filter" (input)="filterChange.emit($event)" />
+				</mat-form-field>
+			</div>
 			<div formGroupName="daterange">
 				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic" class="mint-analytic-daterange">
 					<mat-label>Date range</mat-label>
@@ -61,13 +67,6 @@
 							<mat-option [value]="state">{{ state }}</mat-option>
 						}
 					</mat-select>
-				</mat-form-field>
-			</div>
-
-			<div class="flex-grow">
-				<mat-form-field [hideRequiredMarker]="true" class="search-field">
-					<mat-label><mat-icon>search</mat-icon> Search</mat-label>
-					<input matInput formControlName="filter" (input)="filterChange.emit($event)" />
 				</mat-form-field>
 			</div>
 		</div>
