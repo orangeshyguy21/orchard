@@ -147,9 +147,8 @@ export class IndexSubsectionCrewComponent implements OnInit {
 		const {label, role, expiration_enabled, expiration_date, expiration_time} = this.form_invite.value;
 		console.log('label', label);
 		console.log('role', role);
-		console.log('expiration_enabled', expiration_enabled);
-		console.log('expiration_date', expiration_date);
-		console.log('expiration_time', expiration_time);
+		const expiration_timestamp = this.getExpirationTimestamp(expiration_enabled, expiration_date, expiration_time);
+		console.log('expiration_timestamp', expiration_timestamp);
 		// this.mintService.rotateMintKeysets(unit, input_fee_ppk, max_order).subscribe({
 		// 	next: () => {
 		// 		this.eventService.registerEvent(
@@ -168,6 +167,23 @@ export class IndexSubsectionCrewComponent implements OnInit {
 		// 		);
 		// 	},
 		// });
+	}
+
+	private getExpirationTimestamp(
+		expiration_enabled: boolean,
+		expiration_date: DateTime | null,
+		expiration_time: number | null,
+	): number | null {
+		if (!expiration_enabled) return null;
+		if (!expiration_date || !expiration_time) return null;
+		return expiration_date
+			.set({
+				hour: expiration_time,
+				minute: 0,
+				second: 0,
+				millisecond: 0,
+			})
+			.toSeconds();
 	}
 
 	private onSuccessEvent(): void {
