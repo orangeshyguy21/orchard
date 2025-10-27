@@ -1,5 +1,5 @@
 export const USER_QUERY = `{
-    user{
+    crew_user{
         id
         name
         role
@@ -10,7 +10,7 @@ export const USER_QUERY = `{
 }`;
 
 export const USERS_QUERY = `{
-    users {
+    crew_users {
         id
         name
         role
@@ -21,8 +21,8 @@ export const USERS_QUERY = `{
 }`;
 
 export const USER_NAME_UPDATE_MUTATION = `
-mutation updateUserName($name: String!) {
-    updateUserName(updateUserName: {name: $name}) {
+mutation crew_user_update_name($name: String!) {
+    crew_user_update_name(updateUserName: {name: $name}) {
         id
         name
         role
@@ -33,8 +33,8 @@ mutation updateUserName($name: String!) {
 }`;
 
 export const USER_PASSWORD_UPDATE_MUTATION = `
-mutation updateUserPassword($password_old: String!, $password_new: String!) {
-    updateUserPassword(updateUserPassword: {password_old: $password_old, password_new: $password_new}) {
+mutation crew_user_update_password($password_old: String!, $password_new: String!) {
+    crew_user_update_password(updateUserPassword: {password_old: $password_old, password_new: $password_new}) {
         id
         name
         role

@@ -1,6 +1,6 @@
-import {OrchardUser, UserRole} from '@shared/generated.types';
+import {OrchardCrewUser, UserRole} from '@shared/generated.types';
 
-export class User implements OrchardUser {
+export class User implements OrchardCrewUser {
 	id: string;
 	name: string;
 	role: UserRole;
@@ -8,7 +8,7 @@ export class User implements OrchardUser {
 	created_at: number;
 	updated_at: number;
 
-	constructor(ou: OrchardUser) {
+	constructor(ou: OrchardCrewUser) {
 		this.id = ou.id;
 		this.name = ou.name;
 		this.role = ou.role;

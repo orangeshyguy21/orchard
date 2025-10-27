@@ -4,11 +4,11 @@ import {Module} from '@nestjs/common';
 import {ErrorModule} from '@server/modules/error/error.module';
 import {UserModule} from '@server/modules/user/user.module';
 /* Local Dependencies */
-import {ApiUserService} from './user.service';
-import {ApiUserResolver} from './user.resolver';
+import {CrewUserService} from './crewuser.service';
+import {CrewUserResolver} from './crewuser.resolver';
 
 @Module({
 	imports: [ErrorModule, UserModule],
-	providers: [ApiUserResolver, ApiUserService],
+	providers: [CrewUserResolver, CrewUserService],
 })
-export class ApiUserModule {}
+export class CrewUserModule {}

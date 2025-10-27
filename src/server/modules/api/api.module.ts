@@ -41,8 +41,9 @@ import {AiChatModule} from './ai/chat/aichat.module';
 // Image Endpoints
 import {PublicImageModule} from './public/image/image.module';
 import {PublicUrlModule} from './public/url/url.module';
-// User Endpoints
-import {ApiUserModule} from './user/user.module';
+// Crew Endpoints
+import {CrewUserModule} from './crew/crewuser/crewuser.module';
+import {CrewInviteModule} from './crew/crewinvite/crewinvite.module';
 
 @Module({
 	imports: [
@@ -78,7 +79,8 @@ import {ApiUserModule} from './user/user.module';
 		AiChatModule,
 		PublicImageModule,
 		PublicUrlModule,
-		ApiUserModule,
+		CrewUserModule,
+		CrewInviteModule,
 	],
 })
 export class ApiModule {}

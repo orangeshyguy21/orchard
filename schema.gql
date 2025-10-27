@@ -201,6 +201,8 @@ type Mutation {
   auth_authentication_refresh: OrchardAuthentication!
   auth_authentication_revoke: Boolean!
   auth_initialize(initialize: InitializationInput!): OrchardAuthentication!
+  crew_user_update_name(updateUserName: UserNameUpdateInput!): OrchardCrewUser!
+  crew_user_update_password(updateUserPassword: UserPasswordUpdateInput!): OrchardCrewUser!
   mint_contact_add(mint_contact_update: MintContactUpdateInput!): OrchardMintContactUpdate!
   mint_contact_remove(mint_contact_update: MintContactUpdateInput!): OrchardMintContactUpdate!
   mint_database_backup: OrchardMintDatabaseBackup!
@@ -217,8 +219,6 @@ type Mutation {
   mint_short_description_update(mint_desc_update: MintDescriptionUpdateInput!): OrchardMintDescriptionUpdate!
   mint_url_add(mint_url_update: MintUrlUpdateInput!): OrchardMintUrlUpdate!
   mint_url_remove(mint_url_update: MintUrlUpdateInput!): OrchardMintUrlUpdate!
-  updateUserName(updateUserName: UserNameUpdateInput!): OrchardUser!
-  updateUserPassword(updateUserPassword: UserPasswordUpdateInput!): OrchardUser!
 }
 
 type OrchardAiAgent {
@@ -448,6 +448,29 @@ type OrchardCachedEndpoint {
 type OrchardContact {
   info: String!
   method: String!
+}
+
+type OrchardCrewInvite {
+  claimed_by_id: String
+  created_at: UnixTimestamp!
+  created_by_id: String!
+  expires_at: UnixTimestamp
+  id: String!
+  label: String
+  role: UserRole!
+  token: String!
+  used: Boolean!
+  used_at: UnixTimestamp
+}
+
+type OrchardCrewUser {
+  active: Boolean!
+  created_at: UnixTimestamp!
+  id: String!
+  label: String
+  name: String!
+  role: UserRole!
+  updated_at: UnixTimestamp!
 }
 
 type OrchardCustomChannel {
@@ -867,16 +890,6 @@ type OrchardTaprootAssetsUtxo {
   id: String!
 }
 
-type OrchardUser {
-  active: Boolean!
-  created_at: UnixTimestamp!
-  id: String!
-  label: String
-  name: String!
-  role: UserRole!
-  updated_at: UnixTimestamp!
-}
-
 type Query {
   ai_agent(agent: AiAgent!): OrchardAiAgent!
   ai_models: [OrchardAiModel!]!
@@ -889,6 +902,9 @@ type Query {
   bitcoin_network_info: OrchardBitcoinNetworkInfo!
   bitcoin_oracle(date: String!, intraday: Boolean): OrchardBitcoinOracle!
   bitcoin_transaction_fee_estimates(targets: [Int!]!): [OrchardBitcoinTxFeeEstimate!]!
+  crew_user: OrchardCrewUser!
+  crew_users: [OrchardCrewUser!]!
+  invites: [OrchardCrewInvite!]!
   lightning_balance: OrchardLightningBalance!
   lightning_info: OrchardLightningInfo!
   lightning_request(request: String!): OrchardLightningRequest!
@@ -923,8 +939,6 @@ type Query {
   taproot_assets: OrchardTaprootAssets!
   taproot_assets_info: OrchardTaprootAssetsInfo!
   taproot_assets_utxo: [OrchardTaprootAssetsUtxo!]!
-  user: OrchardUser!
-  users: [OrchardUser!]!
 }
 
 type Subscription {

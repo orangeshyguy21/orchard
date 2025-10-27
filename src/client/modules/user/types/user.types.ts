@@ -1,17 +1,17 @@
-import {OrchardUser} from '@shared/generated.types';
+import {OrchardCrewUser} from '@shared/generated.types';
 
-export type UserResponse = {
-	user: OrchardUser;
+export type CrewUserResponse = {
+	crew_user: OrchardCrewUser;
 };
 
-export type UsersResponse = {
-	users: OrchardUser[];
+export type CrewUsersResponse = {
+	crew_users: OrchardCrewUser[];
 };
 
-export type UserNameUpdateResponse = {
-	user_name_update: OrchardUser;
+export type CrewUserNameUpdateResponse = {
+	crew_user_name_update: OrchardCrewUser;
 };
 
-export type UserPasswordUpdateResponse = {
-	user_password_update: OrchardUser;
+export type CrewUserPasswordUpdateResponse = {
+	crew_user_password_update: OrchardCrewUser;
 };

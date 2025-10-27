@@ -6,7 +6,7 @@ import {UserRole} from '@server/modules/user/user.enums';
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 
 @ObjectType()
-export class OrchardUser {
+export class OrchardCrewUser {
 	@Field()
 	id: string;
 

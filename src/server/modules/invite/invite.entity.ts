@@ -1,8 +1,8 @@
 /* Vendor Dependencies */
 import {Entity, Column, PrimaryGeneratedColumn, Index, CreateDateColumn, ManyToOne, OneToOne, JoinColumn} from 'typeorm';
-/* Local Dependencies */
-import {User} from './user.entity';
-import {UserRole} from './user.enums';
+/* Application Dependencies */
+import {UserRole} from '@server/modules/user/user.enums';
+import {User} from '@server/modules/user/user.entity';
 
 @Entity('invites')
 @Index(['used', 'expires_at'])
@@ -10,7 +10,7 @@ export class Invite {
 	@PrimaryGeneratedColumn('uuid')
 	id: string;
 
-	@Column({unique: true, length: 8})
+	@Column({unique: true, length: 12})
 	token: string; // unique 8-char invite code
 
 	@Column({type: 'text', nullable: true, length: 100})
