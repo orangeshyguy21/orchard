@@ -17,7 +17,7 @@ export class CrewUserResolver {
 
 	@Query(() => OrchardCrewUser)
 	async crew_user(@Context() context: any): Promise<OrchardCrewUser> {
-		const tag = 'GET { user }';
+		const tag = 'GET { crew_user }';
 		this.logger.debug(tag);
 		const user = context.req.user;
 		if (!user) throw new OrchardApiError(OrchardErrorCode.UserError);
@@ -26,7 +26,7 @@ export class CrewUserResolver {
 
 	@Query(() => [OrchardCrewUser])
 	async crew_users(): Promise<OrchardCrewUser[]> {
-		const tag = 'GET { users }';
+		const tag = 'GET { crew_users }';
 		this.logger.debug(tag);
 		return await this.crewUserService.getUsers(tag);
 	}
@@ -36,7 +36,7 @@ export class CrewUserResolver {
 		@Context() context: any,
 		@Args('updateUserName') updateUserName: UserNameUpdateInput,
 	): Promise<OrchardCrewUser> {
-		const tag = 'MUTATION { updateUserName }';
+		const tag = 'MUTATION { crew_user_update_name }';
 		this.logger.debug(tag);
 		const user = context.req.user;
 		if (!user) throw new OrchardApiError(OrchardErrorCode.UserError);
@@ -48,7 +48,7 @@ export class CrewUserResolver {
 		@Context() context: any,
 		@Args('updateUserPassword') updateUserPassword: UserPasswordUpdateInput,
 	): Promise<OrchardCrewUser> {
-		const tag = 'MUTATION { updateUserPassword }';
+		const tag = 'MUTATION { crew_user_update_password }';
 		this.logger.debug(tag);
 		const user = context.req.user;
 		if (!user) throw new OrchardApiError(OrchardErrorCode.UserError);

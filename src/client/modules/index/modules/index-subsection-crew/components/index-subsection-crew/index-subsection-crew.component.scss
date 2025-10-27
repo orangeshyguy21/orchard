@@ -20,3 +20,16 @@
 	@extend %top-0;
 	@extend %z-index-1;
 }
+
+.crew-table {
+	@extend %p-v-1;
+	@extend %flex-grow;
+	@extend %flex;
+	@extend %flex-column;
+
+	mat-card {
+		@extend %flex-grow;
+		@extend %flex;
+		@extend %flex-column;
+	}
+}

@@ -2,7 +2,7 @@
 import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 /* Application Dependencies */
-import {User} from '@client/modules/user/classes/user.class';
+import {User} from '@client/modules/crew/classes/user.class';
 
 @Component({
 	selector: 'orc-settings-subsection-user-user',

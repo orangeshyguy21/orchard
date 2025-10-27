@@ -10,20 +10,32 @@ import {OrchardRes} from '@client/modules/api/types/api.types';
 import {CacheService} from '@client/modules/cache/services/cache/cache.service';
 import {ApiService} from '@client/modules/api/services/api/api.service';
 /* Native Dependencies */
-import {User} from '@client/modules/user/classes/user.class';
+import {User} from '@client/modules/crew/classes/user.class';
+import {Invite} from '@client/modules/crew/classes/invite.class';
 import {
 	CrewUserResponse,
 	CrewUsersResponse,
 	CrewUserNameUpdateResponse,
 	CrewUserPasswordUpdateResponse,
-} from '@client/modules/user/types/user.types';
+	CrewInvitesResponse,
+	CrewInviteCreateResponse,
+} from '@client/modules/crew/types/crew.types';
 /* Local Dependencies */
-import {USER_QUERY, USERS_QUERY, USER_NAME_UPDATE_MUTATION, USER_PASSWORD_UPDATE_MUTATION} from './user.queries';
+import {
+	USER_QUERY,
+	USERS_QUERY,
+	USER_NAME_UPDATE_MUTATION,
+	USER_PASSWORD_UPDATE_MUTATION,
+	INVITS_QUERY,
+	INVITE_CREATE_MUTATION,
+} from './crew.queries';
+/* Shared Dependencies */
+import {UserRole} from '@shared/generated.types';
 
 @Injectable({
 	providedIn: 'root',
 })
-export class UserService {
+export class CrewService {
 	public get user$(): Observable<User | null> {
 		return this.user_subject.asObservable();
 	}
@@ -31,15 +43,18 @@ export class UserService {
 	private readonly CACHE_KEYS = {
 		USER: 'user',
 		USERS: 'users',
+		INVITES: 'invites',
 	};
 	private readonly CACHE_DURATIONS = {
 		[this.CACHE_KEYS.USER]: 1 * 60 * 1000, // 1 minute
 		[this.CACHE_KEYS.USERS]: 10 * 60 * 1000, // 10 minutes
+		[this.CACHE_KEYS.INVITES]: 10 * 60 * 1000, // 10 minutes
 	};
 
 	/* Subjects for caching */
 	private readonly user_subject!: BehaviorSubject<User | null>;
 	private readonly users_subject!: BehaviorSubject<User[] | null>;
+	private readonly invites_subject!: BehaviorSubject<Invite[] | null>;
 	/* Observables for caching (rapid request caching) */
 	private user_observable!: Observable<User> | null;
 
@@ -50,11 +65,15 @@ export class UserService {
 	) {
 		this.user_subject = this.cache.createCache<User>(this.CACHE_KEYS.USER, this.CACHE_DURATIONS[this.CACHE_KEYS.USER]);
 		this.users_subject = this.cache.createCache<User[]>(this.CACHE_KEYS.USERS, this.CACHE_DURATIONS[this.CACHE_KEYS.USERS]);
+		this.invites_subject = this.cache.createCache<Invite[]>(this.CACHE_KEYS.INVITES, this.CACHE_DURATIONS[this.CACHE_KEYS.INVITES]);
 	}
 
 	public clearUserCache() {
 		this.cache.clearCache(this.CACHE_KEYS.USER);
 		this.cache.clearCache(this.CACHE_KEYS.USERS);
+	}
+	public clearInvitesCache() {
+		this.cache.clearCache(this.CACHE_KEYS.INVITES);
 	}
 
 	public loadUser(): Observable<User> {
@@ -104,6 +123,25 @@ export class UserService {
 		);
 	}
 
+	public loadInvites(): Observable<Invite[]> {
+		if (this.invites_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.INVITES)) return of(this.invites_subject.value);
+		const query = getApiQuery(INVITS_QUERY);
+		return this.http.post<OrchardRes<CrewInvitesResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.crew_invites;
+			}),
+			map((invites) => invites.map((invite) => new Invite(invite))),
+			tap((invites) => {
+				this.cache.updateCache(this.CACHE_KEYS.INVITES, invites);
+				this.invites_subject.next(invites);
+			}),
+			catchError((error) => {
+				return throwError(() => error);
+			}),
+		);
+	}
+
 	public updateUserName(name: string): Observable<User> {
 		const query = getApiQuery(USER_NAME_UPDATE_MUTATION, {name});
 		return this.http.post<OrchardRes<CrewUserNameUpdateResponse>>(this.apiService.api, query).pipe(
@@ -127,6 +165,19 @@ export class UserService {
 			}),
 			catchError((error) => {
 				console.error('Error updating user password:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	public createInvite(role: UserRole, label: string | null = null, expires_at: number | null = null): Observable<Invite> {
+		const query = getApiQuery(INVITE_CREATE_MUTATION, {createInvite: {role, label, expires_at}});
+		return this.http.post<OrchardRes<CrewInviteCreateResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return new Invite(response.data.crew_invite_create);
+			}),
+			catchError((error) => {
 				return throwError(() => error);
 			}),
 		);

@@ -39,6 +39,18 @@
 			></orc-mint-subsection-database-form-backup> -->
 		</div>
 	</div>
+
+	<div class="crew-table">
+		<mat-card appearance="outlined">
+			<orc-index-subsection-crew-table [data]="data()" [loading]="loading()"></orc-index-subsection-crew-table>
+
+			<!-- @if (!loading_dynamic_data && data.source.data.length === 0) {
+				<div class="no-data-overlay" animate.enter="orc-animation-fadein">
+					<mat-icon class="icon-lg mat-symbol-outline orc-outline-color">bar_chart_off</mat-icon>
+				</div>
+			} -->
+		</mat-card>
+	</div>
 </div>
 
 <!-- 

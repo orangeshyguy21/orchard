@@ -43,3 +43,32 @@ mutation crew_user_update_password($password_old: String!, $password_new: String
         updated_at
     }
 }`;
+
+export const INVITS_QUERY = `{
+    crew_invites {
+        id
+        token
+        label
+        role
+        created_by_id
+        claimed_by_id
+        used
+        used_at
+        expires_at
+    }
+}`;
+
+export const INVITE_CREATE_MUTATION = `
+mutation crew_invite_create($createInvite: InviteCreateInput!) {
+    crew_invite_create(createInvite: $createInvite) {
+        id
+        token
+        label
+        role
+        created_by_id
+        claimed_by_id
+        used
+        used_at
+        expires_at
+    }
+}`;

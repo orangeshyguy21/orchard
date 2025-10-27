@@ -1,4 +1,4 @@
-import {OrchardCrewUser} from '@shared/generated.types';
+import {OrchardCrewUser, OrchardCrewInvite} from '@shared/generated.types';
 
 export type CrewUserResponse = {
 	crew_user: OrchardCrewUser;
@@ -14,4 +14,12 @@ export type CrewUserNameUpdateResponse = {
 
 export type CrewUserPasswordUpdateResponse = {
 	crew_user_password_update: OrchardCrewUser;
+};
+
+export type CrewInvitesResponse = {
+	crew_invites: OrchardCrewInvite[];
+};
+
+export type CrewInviteCreateResponse = {
+	crew_invite_create: OrchardCrewInvite;
 };

@@ -13,15 +13,23 @@ import {MatSelectModule} from '@angular/material/select';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatTableModule} from '@angular/material/table';
+import {MatSortModule} from '@angular/material/sort';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
 /* Local Dependencies */
 import {IndexSubsectionCrewComponent} from './components/index-subsection-crew/index-subsection-crew.component';
 import {IndexSubsectionCrewControlComponent} from './components/index-subsection-crew-control/index-subsection-crew-control.component';
 import {IndexSubsectionCrewFormInviteComponent} from './components/index-subsection-crew-form-invite/index-subsection-crew-form-invite.component';
+import {IndexSubsectionCrewTableComponent} from './components/index-subsection-crew-table/index-subsection-crew-table.component';
 
 @NgModule({
-	declarations: [IndexSubsectionCrewComponent, IndexSubsectionCrewControlComponent, IndexSubsectionCrewFormInviteComponent],
+	declarations: [
+		IndexSubsectionCrewComponent,
+		IndexSubsectionCrewControlComponent,
+		IndexSubsectionCrewFormInviteComponent,
+		IndexSubsectionCrewTableComponent,
+	],
 	imports: [
 		[
 			CoreRouterModule.forChild([
@@ -42,6 +50,8 @@ import {IndexSubsectionCrewFormInviteComponent} from './components/index-subsect
 		MatDatepickerModule,
 		MatAutocompleteModule,
 		MatCheckboxModule,
+		MatTableModule,
+		MatSortModule,
 		OrcFormModule,
 	],
 })

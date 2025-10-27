@@ -3,13 +3,18 @@ import {ChangeDetectionStrategy, Component, OnInit, signal, HostListener, ViewCh
 import {FormGroup, FormControl, Validators} from '@angular/forms';
 /* Vendor Dependencies */
 import {DateTime} from 'luxon';
-import {Subscription} from 'rxjs';
+import {Subscription, lastValueFrom, forkJoin} from 'rxjs';
+import {MatTableDataSource} from '@angular/material/table';
 /* Application Dependencies */
 import {SettingService} from '@client/modules/settings/services/setting/setting.service';
 import {EventService} from '@client/modules/event/services/event/event.service';
 import {ConfigService} from '@client/modules/config/services/config.service';
+import {CrewService} from '@client/modules/crew/services/crew/crew.service';
 import {EventData} from '@client/modules/event/classes/event-data.class';
 import {NonNullableIndexCrewSettings} from '@client/modules/settings/types/setting.types';
+import {User} from '@client/modules/crew/classes/user.class';
+import {Invite} from '@client/modules/crew/classes/invite.class';
+import {OrchardErrors} from '@client/modules/error/classes/error.class';
 /* Shared Dependencies */
 import {UserRole} from '@shared/generated.types';
 
@@ -29,7 +34,8 @@ export class IndexSubsectionCrewComponent implements OnInit {
 	@ViewChild('invite_form', {static: false}) invite_form!: ElementRef;
 
 	public form_open = signal<boolean>(false);
-
+	public loading = signal<boolean>(true);
+	public data = signal<MatTableDataSource<Invite | User>>(new MatTableDataSource<Invite | User>([]));
 	public page_settings!: NonNullableIndexCrewSettings;
 	public readonly panel = new FormGroup({
 		filter: new FormControl<string>(''),
@@ -49,6 +55,7 @@ export class IndexSubsectionCrewComponent implements OnInit {
 		private settingService: SettingService,
 		private eventService: EventService,
 		private configService: ConfigService,
+		private crewService: CrewService,
 	) {}
 
 	/* *******************************************************
@@ -57,6 +64,7 @@ export class IndexSubsectionCrewComponent implements OnInit {
 
 	ngOnInit(): void {
 		// this.page_settings = this.getPageSettings();\
+		this.loadCrewData();
 		this.subscriptions.add(this.getEventSubscription());
 		this.orchardOptionalInit();
 	}
@@ -91,6 +99,20 @@ export class IndexSubsectionCrewComponent implements OnInit {
 				if (event_data.confirmed !== null) event_data.confirmed ? this.onConfirmedEvent() : this.onCloseInvite();
 			}
 		});
+	}
+
+	/* *******************************************************
+	   Data                      
+	******************************************************** */
+
+	private async loadCrewData(): Promise<void> {
+		const users_obs = this.crewService.loadUsers();
+		const invites_obs = this.crewService.loadInvites();
+		const [users, invites] = await lastValueFrom(forkJoin([users_obs, invites_obs]));
+		this.data.set(new MatTableDataSource([...users, ...invites]));
+		this.loading.set(false);
+		console.log('users', users);
+		console.log('invites', invites);
 	}
 
 	/* *******************************************************
@@ -145,28 +167,26 @@ export class IndexSubsectionCrewComponent implements OnInit {
 		}
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		const {label, role, expiration_enabled, expiration_date, expiration_time} = this.form_invite.value;
-		console.log('label', label);
-		console.log('role', role);
 		const expiration_timestamp = this.getExpirationTimestamp(expiration_enabled, expiration_date, expiration_time);
-		console.log('expiration_timestamp', expiration_timestamp);
-		// this.mintService.rotateMintKeysets(unit, input_fee_ppk, max_order).subscribe({
-		// 	next: () => {
-		// 		this.eventService.registerEvent(
-		// 			new EventData({
-		// 				type: 'SUCCESS',
-		// 				message: 'Rotation complete!',
-		// 			}),
-		// 		);
-		// 	},
-		// 	error: (error: OrchardErrors) => {
-		// 		this.eventService.registerEvent(
-		// 			new EventData({
-		// 				type: 'ERROR',
-		// 				message: error.errors[0].message,
-		// 			}),
-		// 		);
-		// 	},
-		// });
+		this.crewService.createInvite(role, label, expiration_timestamp).subscribe({
+			next: (invite) => {
+				console.log('invite', invite);
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'SUCCESS',
+						message: 'Rotation complete!',
+					}),
+				);
+			},
+			error: (error: OrchardErrors) => {
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'ERROR',
+						message: error.errors[0].message,
+					}),
+				);
+			},
+		});
 	}
 
 	private getExpirationTimestamp(
