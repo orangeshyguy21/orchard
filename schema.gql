@@ -477,7 +477,6 @@ type OrchardCrewUser {
   label: String
   name: String!
   role: UserRole!
-  updated_at: UnixTimestamp!
 }
 
 type OrchardCustomChannel {

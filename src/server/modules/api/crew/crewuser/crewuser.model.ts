@@ -25,16 +25,12 @@ export class OrchardCrewUser {
 	@Field(() => UnixTimestamp)
 	created_at: number;
 
-	@Field(() => UnixTimestamp)
-	updated_at: number;
-
 	constructor(user: User) {
 		this.id = user.id;
 		this.name = user.name;
 		this.role = user.role;
 		this.active = user.active;
 		this.label = user.label;
-		this.created_at = user.created_at.getTime() / 1000;
-		this.updated_at = user.updated_at.getTime() / 1000;
+		this.created_at = user.created_at;
 	}
 }

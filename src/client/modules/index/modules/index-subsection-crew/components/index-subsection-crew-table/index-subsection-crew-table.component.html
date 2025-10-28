@@ -77,15 +77,15 @@
 						@let crew_entity = asCrewEntity(entity);
 						<div class="flex flex-items-center flex-gap-0-5">
 							@if (crew_entity.entity_type === CrewEntityType.INVITE) {
-								<button mat-icon-button class="orc-icon-button">
+								<button mat-icon-button class="orc-icon-button" (click)="onViewToken($event, entity)">
 									<mat-icon>confirmation_number</mat-icon>
 								</button>
 							}
-							<button mat-icon-button class="orc-icon-button">
+							<button mat-icon-button class="orc-icon-button" (click)="onEdit($event, entity)">
 								<mat-icon>edit</mat-icon>
 							</button>
 
-							<button mat-icon-button class="orc-icon-button">
+							<button mat-icon-button class="orc-icon-button" (click)="onDelete($event, entity)">
 								<mat-icon>delete_forever</mat-icon>
 							</button>
 						</div>
@@ -97,30 +97,20 @@
 						<div class="more-entity-wrapper" [class.more-entity-wrapper-expanded]="more_entity()?.id === entity.id">
 							<div class="more-entity-content">
 								@if (more_entity()?.id === entity.id) {
-									<div animate.enter="orc-animation-fadein">
-										{{ entity | json }}
-										<!-- @switch (data.type) {
-											@case ('MintMints') {
-												<orc-mint-subsection-database-table-mint
-													[quote]="entity"
-													[loading]="loading_more"
-													[lightning_request]="lightning_request"
-												></orc-mint-subsection-database-table-mint>
+									<div animate.enter="orc-animation-fadein" class="flex-grow">
+										@switch (more_entity_type()) {
+											@case (MoreEntityType.TOKEN) {
+												<orc-index-subsection-crew-table-invite
+													[invite]="entity"
+												></orc-index-subsection-crew-table-invite>
 											}
-											@case ('MintMelts') {
-												<orc-mint-subsection-database-table-melt
-													[quote]="entity"
-													[loading]="loading_more"
-													[lightning_request]="lightning_request"
-												></orc-mint-subsection-database-table-melt>
+											@case (MoreEntityType.EDIT_INVITE) {
+												show edit invite form
 											}
-											@default {
-												<orc-mint-subsection-database-table-ecash
-													[group]="entity"
-													[keysets]="keysets"
-												></orc-mint-subsection-database-table-ecash>
+											@case (MoreEntityType.EDIT_USER) {
+												show edit user form
 											}
-										} -->
+										}
 									</div>
 								}
 							</div>
@@ -134,7 +124,7 @@
 					*matRowDef="let row; columns: displayed_columns"
 					class="entity-row"
 					[class.expanded]="more_entity === row"
-					(click)="toggleMore(row)"
+					(click)="onToggleMore(row)"
 				></tr>
 				<tr mat-row *matRowDef="let row; columns: ['more_detail']" class="more-entity-row"></tr>
 			</table>

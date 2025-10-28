@@ -23,6 +23,7 @@ export class CrewInviteService {
 	async getInvites(tag: string): Promise<OrchardCrewInvite[]> {
 		try {
 			const invites = await this.inviteService.getInvites();
+			console.log('Server got invites', invites);
 			return invites.map((invite) => new OrchardCrewInvite(invite));
 		} catch (error) {
 			const error_code = this.errorService.resolveError(this.logger, error, tag, {
@@ -34,8 +35,7 @@ export class CrewInviteService {
 
 	async createInvite(tag: string, user_id: string, createInvite: InviteCreateInput): Promise<OrchardCrewInvite> {
 		try {
-			const expires_at = createInvite.expires_at ? DateTime.fromSeconds(createInvite.expires_at).toJSDate() : null;
-			const invite = await this.inviteService.createInvite(user_id, createInvite.role, createInvite.label, expires_at);
+			const invite = await this.inviteService.createInvite(user_id, createInvite.role, createInvite.label, createInvite.expires_at);
 			return new OrchardCrewInvite(invite);
 		} catch (error) {
 			const error_code = this.errorService.resolveError(this.logger, error, tag, {

@@ -21,6 +21,11 @@
 	@extend %z-index-1;
 }
 
+.index-subsection-crew-form-target {
+	@extend %relative;
+	top: -87px;
+}
+
 .crew-table {
 	@extend %p-v-1;
 	@extend %flex-grow;

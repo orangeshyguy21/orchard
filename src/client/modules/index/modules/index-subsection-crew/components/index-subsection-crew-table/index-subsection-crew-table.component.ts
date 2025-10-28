@@ -8,10 +8,14 @@ import {DateTime} from 'luxon';
 import {Invite} from '@client/modules/crew/classes/invite.class';
 import {User} from '@client/modules/crew/classes/user.class';
 
-// Local enum for this table only
 enum CrewEntityType {
 	USER = 'USER',
 	INVITE = 'INVITE',
+}
+enum MoreEntityType {
+	TOKEN = 'TOKEN',
+	EDIT_USER = 'EDIT_USER',
+	EDIT_INVITE = 'EDIT_INVITE',
 }
 
 // Local discriminated union types
@@ -33,17 +37,27 @@ export class IndexSubsectionCrewTableComponent {
 	public loading = input.required<boolean>();
 
 	public more_entity = signal<Invite | User | null>(null);
+	public more_entity_type = signal<MoreEntityType | null>(null);
 	public now = DateTime.now().toSeconds();
 	public readonly CrewEntityType = CrewEntityType;
+	public readonly MoreEntityType = MoreEntityType;
+	public readonly displayed_columns = ['user', 'label', 'created', 'state', 'actions'];
 
-	public displayed_columns = ['user', 'label', 'created', 'state', 'actions'];
+	private previous_data_length = 0;
 
 	constructor() {
 		effect(() => {
 			if (this.loading() === false) {
-				console.log('sorting', this.data().data);
 				this.data().sort = this.sort;
 			}
+
+			const current_data = this.data().data;
+			const current_length = current_data.length;
+			if (current_length === this.previous_data_length + 1) {
+				const new_entity = current_data[0];
+				this.onNewEntityAdded(new_entity);
+			}
+			this.previous_data_length = current_length;
 		});
 	}
 
@@ -58,11 +72,48 @@ export class IndexSubsectionCrewTableComponent {
 			: ({...entity, entity_type: CrewEntityType.INVITE} as InviteEntity);
 	}
 
-	public toggleMore(entity: Invite | User) {
+	/**
+	 * Reacts when a single new entity (invite or user) is added
+	 * @param {Invite | User} entity - the newly added entity
+	 */
+	private onNewEntityAdded(entity: Invite | User): void {
+		const crew_entity = this.asCrewEntity(entity);
+		if (crew_entity.entity_type === CrewEntityType.INVITE) {
+			this.onViewToken(null, entity as Invite);
+		}
+	}
+
+	public onToggleMore(entity: Invite | User) {
+		const entity_type = this.asCrewEntity(entity).entity_type;
+		const more_entity_type = entity_type === CrewEntityType.INVITE ? MoreEntityType.TOKEN : MoreEntityType.EDIT_USER;
+		this.more_entity_type.set(more_entity_type);
 		this.more_entity.set(this.more_entity() === entity ? null : entity);
 	}
-}
 
-// psychiatry
-// local_florist
-// nature
+	public onViewToken(event: MouseEvent | null, entity: Invite) {
+		if (event) {
+			event.stopPropagation();
+			event.preventDefault();
+		}
+		this.more_entity_type.set(MoreEntityType.TOKEN);
+		this.more_entity.set(entity);
+	}
+
+	public onEdit(event: MouseEvent, entity: Invite | User) {
+		event.stopPropagation();
+		event.preventDefault();
+		const entity_type = this.asCrewEntity(entity).entity_type;
+		const more_entity_type = entity_type === CrewEntityType.INVITE ? MoreEntityType.EDIT_INVITE : MoreEntityType.EDIT_USER;
+		this.more_entity_type.set(more_entity_type);
+		this.more_entity.set(entity);
+		// this.more_entity_type.set(MoreEntityType.EDIT_INVITE);
+		// this.more_entity.set(entity);
+	}
+
+	public onDelete(event: MouseEvent, entity: Invite | User) {
+		event.stopPropagation();
+		event.preventDefault();
+		console.log('delete', entity);
+		// dialog
+	}
+}

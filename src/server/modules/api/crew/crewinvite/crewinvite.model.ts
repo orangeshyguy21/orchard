@@ -45,8 +45,8 @@ export class OrchardCrewInvite {
 		this.created_by_id = invite.created_by.id;
 		this.claimed_by_id = invite.claimed_by?.id || null;
 		this.used = invite.used;
-		this.used_at = invite.used_at ? invite.used_at.getTime() / 1000 : null;
-		this.expires_at = invite.expires_at ? invite.expires_at.getTime() / 1000 : null;
-		this.created_at = invite.created_at.getTime() / 1000;
+		this.used_at = invite.used_at;
+		this.expires_at = invite.expires_at;
+		this.created_at = invite.created_at;
 	}
 }

@@ -50,6 +50,7 @@ export class IndexSubsectionCrewComponent implements OnInit {
 
 	private active_event: EventData | null = null;
 	private subscriptions: Subscription = new Subscription();
+	private new_invite: Invite | null = null;
 
 	constructor(
 		private settingService: SettingService,
@@ -112,8 +113,6 @@ export class IndexSubsectionCrewComponent implements OnInit {
 		const combined_data = [...users, ...invites].sort((a, b) => b.created_at - a.created_at);
 		this.data.set(new MatTableDataSource(combined_data));
 		this.loading.set(false);
-		console.log('users', users);
-		console.log('invites', invites);
 	}
 
 	/* *******************************************************
@@ -171,9 +170,7 @@ export class IndexSubsectionCrewComponent implements OnInit {
 		const expiration_timestamp = this.getExpirationTimestamp(expiration_enabled, expiration_date, expiration_time);
 		this.crewService.createInvite(role, label, expiration_timestamp).subscribe({
 			next: (invite) => {
-				const current_data = this.data().data;
-				const updated_data = [invite, ...current_data].sort((a, b) => b.created_at - a.created_at);
-				this.data.set(new MatTableDataSource(updated_data));
+				this.new_invite = invite;
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'SUCCESS',
@@ -182,6 +179,7 @@ export class IndexSubsectionCrewComponent implements OnInit {
 				);
 			},
 			error: (error: OrchardErrors) => {
+				this.new_invite = null;
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'ERROR',
@@ -210,13 +208,9 @@ export class IndexSubsectionCrewComponent implements OnInit {
 	}
 
 	private onSuccessEvent(): void {
-		//d o something here
-		// this.keysets_rotation = false;
-		// this.cdr.detectChanges();
-		// this.reloadDynamicData();
-		// this.mintService.loadMintKeysets().subscribe((mint_keysets) => {
-		// 	this.mint_keysets = mint_keysets;
-		// 	this.resetForm();
-		// });
+		if (!this.new_invite) return;
+		const current_data = this.data().data;
+		const updated_data = [this.new_invite, ...current_data].sort((a, b) => b.created_at - a.created_at);
+		this.data.set(new MatTableDataSource(updated_data));
 	}
 }

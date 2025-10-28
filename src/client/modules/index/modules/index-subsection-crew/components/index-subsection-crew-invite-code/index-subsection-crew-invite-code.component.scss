@@ -1,8 +1,0 @@
-@use '@styles/molecule/molecule';
-
-.crew-invite-code-container {
-	@extend %p-t-2;
-	@extend %flex;
-	@extend %flex-items-center;
-	@extend %flex-justify-center;
-}

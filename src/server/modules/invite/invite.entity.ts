@@ -1,5 +1,5 @@
 /* Vendor Dependencies */
-import {Entity, Column, PrimaryGeneratedColumn, Index, CreateDateColumn, ManyToOne, OneToOne, JoinColumn} from 'typeorm';
+import {Entity, Column, PrimaryGeneratedColumn, Index, ManyToOne, OneToOne, JoinColumn} from 'typeorm';
 /* Application Dependencies */
 import {UserRole} from '@server/modules/user/user.enums';
 import {User} from '@server/modules/user/user.entity';
@@ -31,11 +31,11 @@ export class Invite {
 	used: boolean; // whether the invite has been claimed
 
 	@Column({nullable: true})
-	used_at: Date | null; // when the invite was claimed
+	used_at: number | null; // when the invite was claimed
 
 	@Column({nullable: true})
-	expires_at: Date | null; // optional expiration date
+	expires_at: number | null; // optional expiration date
 
-	@CreateDateColumn()
-	created_at: Date;
+	@Column({type: 'integer'})
+	created_at: number;
 }

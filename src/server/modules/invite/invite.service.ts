@@ -3,6 +3,7 @@ import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 /* Vendor Dependencies */
 import {Repository, MoreThan} from 'typeorm';
+import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {UserRole} from '@server/modules/user/user.enums';
 import {User} from '@server/modules/user/user.entity';
@@ -16,19 +17,12 @@ export class InviteService {
 		private inviteRepository: Repository<Invite>,
 	) {}
 
-	// /**
-	//  * Get all invites
-	//  * @returns {Promise<Invite[]>} The invites
-	//  */
-	// public async getInvites(): Promise<Invite[]> {
-	// 	return this.inviteRepository.find();
-	// }
-
 	/**
 	 * Get all active invites (unclaimed and not expired)
 	 * @returns {Promise<Invite[]>} The active invites
 	 */
 	public async getInvites(): Promise<Invite[]> {
+		const now = DateTime.now().toSeconds();
 		return this.inviteRepository.find({
 			where: [
 				{
@@ -37,7 +31,7 @@ export class InviteService {
 				},
 				{
 					used: false,
-					expires_at: MoreThan(new Date()), // expires in the future
+					expires_at: MoreThan(now), // expires in the future
 				},
 			],
 			relations: ['created_by'], // include creator info for the API model
@@ -59,9 +53,10 @@ export class InviteService {
 		created_by_id: string,
 		role: UserRole = UserRole.READER,
 		label: string | null = null,
-		expires_at: Date | null = null,
+		expires_at: number | null = null,
 	): Promise<Invite> {
 		const token = await this.generateUniqueToken();
+		const created_at = Math.floor(DateTime.now().toSeconds());
 		const invite = this.inviteRepository.create({
 			token,
 			label,
@@ -71,6 +66,7 @@ export class InviteService {
 			used: false,
 			used_at: null,
 			claimed_by: null,
+			created_at,
 		});
 		return this.inviteRepository.save(invite);
 	}

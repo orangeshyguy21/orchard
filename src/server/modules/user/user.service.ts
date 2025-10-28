@@ -4,6 +4,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 /* Vendor Dependencies */
 import {Repository} from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import {DateTime} from 'luxon';
 /* Local Dependencies */
 import {User} from './user.entity';
 import {UserRole} from './user.enums';
@@ -67,10 +68,12 @@ export class UserService {
 	 */
 	public async createUser(name: string, password: string, role: UserRole): Promise<User> {
 		const password_hash = await bcrypt.hash(password, 10);
+		const created_at = Math.floor(DateTime.now().toSeconds());
 		const user = this.userRepository.create({
 			name,
 			password_hash,
 			role,
+			created_at,
 		});
 		return this.userRepository.save(user);
 	}

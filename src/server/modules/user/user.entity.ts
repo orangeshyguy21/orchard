@@ -1,5 +1,5 @@
 /* Vendor Dependencies */
-import {Entity, Column, PrimaryGeneratedColumn, Index, CreateDateColumn, UpdateDateColumn} from 'typeorm';
+import {Entity, Column, PrimaryGeneratedColumn, Index} from 'typeorm';
 /* Local Dependencies */
 import {UserRole} from './user.enums';
 
@@ -27,9 +27,6 @@ export class User {
 	@Column({type: 'text', nullable: true, length: 100})
 	label: string | null;
 
-	@CreateDateColumn()
-	created_at: Date;
-
-	@UpdateDateColumn()
-	updated_at: Date;
+	@Column({type: 'integer'})
+	created_at: number;
 }

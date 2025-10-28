@@ -33,6 +33,7 @@ export class CrewUserService {
 	async getUsers(tag: string): Promise<OrchardCrewUser[]> {
 		try {
 			const users = await this.userService.getUsers();
+			console.log('Server got users', users);
 			return users.map((user) => new OrchardCrewUser(user));
 		} catch (error) {
 			const error_code = this.errorService.resolveError(this.logger, error, tag, {
