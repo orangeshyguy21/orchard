@@ -98,6 +98,12 @@ export type InitializationInput = {
   password: Scalars['String']['input'];
 };
 
+export type InviteCreateInput = {
+  expires_at?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  label?: InputMaybe<Scalars['String']['input']>;
+  role: UserRole;
+};
+
 export enum LightningAddressType {
   HybridNestedWitnessPubkeyHash = 'HYBRID_NESTED_WITNESS_PUBKEY_HASH',
   NestedWitnessPubkeyHash = 'NESTED_WITNESS_PUBKEY_HASH',
@@ -217,6 +223,7 @@ export type Mutation = {
   auth_authentication_refresh: OrchardAuthentication;
   auth_authentication_revoke: Scalars['Boolean']['output'];
   auth_initialize: OrchardAuthentication;
+  crew_invite_create: OrchardCrewInvite;
   crew_user_update_name: OrchardCrewUser;
   crew_user_update_password: OrchardCrewUser;
   mint_contact_add: OrchardMintContactUpdate;
@@ -250,6 +257,11 @@ export type MutationAuth_AuthenticationArgs = {
 
 export type MutationAuth_InitializeArgs = {
   initialize: InitializationInput;
+};
+
+
+export type MutationCrew_Invite_CreateArgs = {
+  createInvite: InviteCreateInput;
 };
 
 
@@ -1108,9 +1120,9 @@ export type Query = {
   bitcoin_network_info: OrchardBitcoinNetworkInfo;
   bitcoin_oracle: OrchardBitcoinOracle;
   bitcoin_transaction_fee_estimates: Array<OrchardBitcoinTxFeeEstimate>;
+  crew_invites: Array<OrchardCrewInvite>;
   crew_user: OrchardCrewUser;
   crew_users: Array<OrchardCrewUser>;
-  invites: Array<OrchardCrewInvite>;
   lightning_balance: OrchardLightningBalance;
   lightning_info: OrchardLightningInfo;
   lightning_request: OrchardLightningRequest;

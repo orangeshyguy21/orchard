@@ -17,6 +17,7 @@ import {MatTableModule} from '@angular/material/table';
 import {MatSortModule} from '@angular/material/sort';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
+import {OrcLocalModule} from '@client/modules/local/local.module';
 /* Local Dependencies */
 import {IndexSubsectionCrewComponent} from './components/index-subsection-crew/index-subsection-crew.component';
 import {IndexSubsectionCrewControlComponent} from './components/index-subsection-crew-control/index-subsection-crew-control.component';
@@ -53,6 +54,7 @@ import {IndexSubsectionCrewTableComponent} from './components/index-subsection-c
 		MatTableModule,
 		MatSortModule,
 		OrcFormModule,
+		OrcLocalModule,
 	],
 })
 export class OrcIndexSubsectionCrewModule {}

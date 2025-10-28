@@ -2,17 +2,92 @@
 	@if (!loading() && data()) {
 		<div class="p-h-1 flex flex-column flex-grow flex-justify-between" animate.enter="orc-animation-fadein">
 			<table mat-table multiTemplateDataRows [dataSource]="data()" matSort class="orc-feature-table">
-				<ng-container matColumnDef="test">
-					<th mat-header-cell *matHeaderCellDef class="data-table-sticky-header">Test</th>
+				<ng-container matColumnDef="user">
+					<th mat-header-cell *matHeaderCellDef class="crew-sticky-header">User</th>
 					<td mat-cell *matCellDef="let entity">
-						{{ entity | json }}
+						<div class="flex flex-items-center flex-gap-1">
+							<div class="user-icon">
+								<mat-icon>person</mat-icon>
+							</div>
+							<div class="flex flex-column flex-gap-0-5">
+								<span class="text-sm"> {{ entity.name }} </span>
+								<span class="text-sm"> {{ entity.role }} </span>
+							</div>
+						</div>
+					</td>
+				</ng-container>
+
+				<ng-container matColumnDef="label">
+					<th mat-header-cell *matHeaderCellDef mat-sort-header class="data-table-sticky-header">Label</th>
+					<td mat-cell *matCellDef="let entity">
+						<div>{{ entity.label }}</div>
+					</td>
+				</ng-container>
+
+				<ng-container matColumnDef="created">
+					<th mat-header-cell *matHeaderCellDef mat-sort-header class="data-table-sticky-header">Created</th>
+					<td mat-cell *matCellDef="let entity">
+						<span class="text-sm text-nowrap"> {{ entity.created_at | localTime: 'short' }} </span>
+					</td>
+				</ng-container>
+
+				<ng-container matColumnDef="state">
+					<th mat-header-cell *matHeaderCellDef mat-sort-header class="data-table-sticky-header">State</th>
+					<td mat-cell *matCellDef="let entity">
+						@if (entity.name) {
+							<div class="flex">
+								<div class="label-state" [ngClass]="{'label-success': entity.active, 'label-default': !entity.active}">
+									{{ entity.active ? 'Active' : 'Inactive' }}
+								</div>
+							</div>
+						} @else {
+							<div class="flex flex-items-center flex-gap-1">
+								<div class="flex">
+									<div class="label-state label-warning">Pending</div>
+								</div>
+								<div class="text-sm text-nowrap orc-outline-color">
+									Exipres in {{ entity.expires_at | localTimeDelta: now }}
+								</div>
+							</div>
+						}
+					</td>
+				</ng-container>
+
+				<!-- <div class="flex">
+                    <div
+                        [ngClass]="{
+                            'label-state': true,
+                            'label-success':
+                                (data.type === 'MintMints' && entity.state === 'ISSUED') ||
+                                (data.type === 'MintMelts' && entity.state === 'PAID') ||
+                                (data.type === 'MintProofGroups' && entity.state === 'SPENT'),
+                            'label-intermediate': data.type === 'MintMints' && entity.state === 'PAID',
+                            'label-warning': entity.state === 'PENDING',
+                            'label-default': entity.state === 'UNPAID',
+                        }"
+                    >
+                        {{ entity.state }}
+                    </div>
+                </div> -->
+
+				<ng-container matColumnDef="actions">
+					<th mat-header-cell *matHeaderCellDef mat-sort-header class="data-table-sticky-header">Actions</th>
+					<td mat-cell *matCellDef="let entity">
+						<div class="flex flex-items-center flex-gap-0-5">
+							<button mat-icon-button class="orc-icon-button">
+								<mat-icon>edit</mat-icon>
+							</button>
+							<button mat-icon-button class="orc-icon-button">
+								<mat-icon>delete_forever</mat-icon>
+							</button>
+						</div>
 					</td>
 				</ng-container>
 
 				<ng-container matColumnDef="more_detail">
 					<td mat-cell *matCellDef="let entity" [attr.colspan]="displayed_columns.length">
 						<div class="more-entity-wrapper" [class.more-entity-wrapper-expanded]="more_entity()?.id === entity.id">
-							<div class="more-entity-content">hello more</div>
+							<div class="more-entity-content">{{ entity | json }}</div>
 						</div>
 					</td>
 				</ng-container>

@@ -11,8 +11,20 @@
 	@extend %relative;
 }
 
-.data-table-sticky-header {
+.crew-sticky-header {
 	top: 86px !important;
+}
+
+.user-icon {
+	@extend %orc-primary-bg;
+	@extend %orc-on-primary-color;
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	@extend %flex-gap-1;
+	@extend %w-2;
+	@extend %h-2;
+	@extend %orc-corner-full;
 }
 
 // these can be generalized i think

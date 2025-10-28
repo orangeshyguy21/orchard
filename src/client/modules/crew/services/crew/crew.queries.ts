@@ -55,6 +55,7 @@ export const INVITS_QUERY = `{
         used
         used_at
         expires_at
+        created_at
     }
 }`;
 

@@ -174,7 +174,7 @@ export class IndexSubsectionCrewComponent implements OnInit {
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'SUCCESS',
-						message: 'Rotation complete!',
+						message: 'Invite created!',
 					}),
 				);
 			},

@@ -3,6 +3,7 @@ import {ChangeDetectionStrategy, Component, effect, input, signal, ViewChild} fr
 /* Vendor Dependencies */
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
+import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {Invite} from '@client/modules/crew/classes/invite.class';
 import {User} from '@client/modules/crew/classes/user.class';
@@ -21,8 +22,9 @@ export class IndexSubsectionCrewTableComponent {
 	public loading = input.required<boolean>();
 
 	public more_entity = signal<Invite | User | null>(null);
+	public now = DateTime.now().toSeconds();
 
-	public displayed_columns = ['test'];
+	public displayed_columns = ['user', 'label', 'created', 'state', 'actions'];
 
 	constructor() {
 		effect(() => {
@@ -37,3 +39,7 @@ export class IndexSubsectionCrewTableComponent {
 		this.more_entity.set(this.more_entity() === entity ? null : entity);
 	}
 }
+
+// psychiatry
+// local_florist
+// nature
