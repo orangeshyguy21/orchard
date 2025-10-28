@@ -23,6 +23,7 @@ import {IndexSubsectionCrewComponent} from './components/index-subsection-crew/i
 import {IndexSubsectionCrewControlComponent} from './components/index-subsection-crew-control/index-subsection-crew-control.component';
 import {IndexSubsectionCrewFormInviteComponent} from './components/index-subsection-crew-form-invite/index-subsection-crew-form-invite.component';
 import {IndexSubsectionCrewTableComponent} from './components/index-subsection-crew-table/index-subsection-crew-table.component';
+import {IndexSubsectionCrewInviteCodeComponent} from './components/index-subsection-crew-invite-code/index-subsection-crew-invite-code.component';
 
 @NgModule({
 	declarations: [
@@ -30,6 +31,7 @@ import {IndexSubsectionCrewTableComponent} from './components/index-subsection-c
 		IndexSubsectionCrewControlComponent,
 		IndexSubsectionCrewFormInviteComponent,
 		IndexSubsectionCrewTableComponent,
+		IndexSubsectionCrewInviteCodeComponent,
 	],
 	imports: [
 		[

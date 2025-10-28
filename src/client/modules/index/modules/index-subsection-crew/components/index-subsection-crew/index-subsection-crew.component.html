@@ -29,42 +29,12 @@
 				(close)="onCloseInvite()"
 				(cancel)="onCancel($event)"
 			></orc-index-subsection-crew-form-invite>
-			<!-- <orc-mint-subsection-database-form-backup
-				[active]="form_mode === 'CREATE'"
-				[form_group]="form_backup"
-				[database_version]="database_version"
-				[database_timestamp]="database_timestamp"
-				[database_implementation]="database_implementation"
-				(close)="onClose()"
-			></orc-mint-subsection-database-form-backup> -->
 		</div>
 	</div>
 
 	<div class="crew-table">
 		<mat-card appearance="outlined">
 			<orc-index-subsection-crew-table [data]="data()" [loading]="loading()"></orc-index-subsection-crew-table>
-
-			<!-- @if (!loading_dynamic_data && data.source.data.length === 0) {
-				<div class="no-data-overlay" animate.enter="orc-animation-fadein">
-					<mat-icon class="icon-lg mat-symbol-outline orc-outline-color">bar_chart_off</mat-icon>
-				</div>
-			} -->
 		</mat-card>
 	</div>
 </div>
-
-<!-- 
-<div class="orc-animation-collapsible" [class.animation-open]="keysets_rotation">
-    <div class="orc-animation-collapsible-inner">
-        <div class="mint-keyset-form-target" #keyset_form></div>
-        <orc-mint-subsection-keysets-form
-            [form_group]="form_keyset"
-            [unit_options]="unit_options"
-            [keyset_out]="keyset_out"
-            [keyset_out_balance]="keyset_out_balance"
-            [median_notes]="median_notes"
-            (updateUnit)="onUpdateUnit($event)"
-            (close)="onCloseRotation()"
-        ></orc-mint-subsection-keysets-form>
-    </div>
-</div> -->

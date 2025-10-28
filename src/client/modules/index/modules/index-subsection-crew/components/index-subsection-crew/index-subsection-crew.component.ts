@@ -109,7 +109,8 @@ export class IndexSubsectionCrewComponent implements OnInit {
 		const users_obs = this.crewService.loadUsers();
 		const invites_obs = this.crewService.loadInvites();
 		const [users, invites] = await lastValueFrom(forkJoin([users_obs, invites_obs]));
-		this.data.set(new MatTableDataSource([...users, ...invites]));
+		const combined_data = [...users, ...invites].sort((a, b) => b.created_at - a.created_at);
+		this.data.set(new MatTableDataSource(combined_data));
 		this.loading.set(false);
 		console.log('users', users);
 		console.log('invites', invites);
@@ -124,14 +125,13 @@ export class IndexSubsectionCrewComponent implements OnInit {
 	}
 
 	public onOpenInvite(): void {
-		const today = DateTime.now();
 		const now = DateTime.now();
 		const eight_hours_from_now = now.plus({hours: 8});
 		const expiration_time = eight_hours_from_now.hour;
 		this.form_invite.reset();
 		this.form_invite.get('role')?.setValue(UserRole.Reader);
 		this.form_invite.get('expiration_enabled')?.setValue(true);
-		this.form_invite.get('expiration_date')?.setValue(today);
+		this.form_invite.get('expiration_date')?.setValue(eight_hours_from_now);
 		this.form_invite.get('expiration_time')?.setValue(expiration_time);
 		this.form_open.set(!this.form_open());
 		this.eventService.registerEvent(
@@ -166,11 +166,14 @@ export class IndexSubsectionCrewComponent implements OnInit {
 			);
 		}
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		this.form_open.set(false);
 		const {label, role, expiration_enabled, expiration_date, expiration_time} = this.form_invite.value;
 		const expiration_timestamp = this.getExpirationTimestamp(expiration_enabled, expiration_date, expiration_time);
 		this.crewService.createInvite(role, label, expiration_timestamp).subscribe({
 			next: (invite) => {
-				console.log('invite', invite);
+				const current_data = this.data().data;
+				const updated_data = [invite, ...current_data].sort((a, b) => b.created_at - a.created_at);
+				this.data.set(new MatTableDataSource(updated_data));
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'SUCCESS',

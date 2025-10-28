@@ -54,7 +54,9 @@ export class IndexSubsectionCrewFormInviteComponent implements OnInit {
 	constructor(private settingService: SettingService) {
 		effect(() => {
 			if (this.open()) {
-				this.time_auto.options.find((option) => option.value === this.form_group().get('expiration_time')?.value)?.select();
+				setTimeout(() => {
+					this.time_auto.options.find((option) => option.value === this.form_group().get('expiration_time')?.value)?.select();
+				}, 100);
 			}
 		});
 	}

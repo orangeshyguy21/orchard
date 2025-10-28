@@ -8,6 +8,17 @@ import {DateTime} from 'luxon';
 import {Invite} from '@client/modules/crew/classes/invite.class';
 import {User} from '@client/modules/crew/classes/user.class';
 
+// Local enum for this table only
+enum CrewEntityType {
+	USER = 'USER',
+	INVITE = 'INVITE',
+}
+
+// Local discriminated union types
+type UserEntity = User & {entity_type: CrewEntityType.USER};
+type InviteEntity = Invite & {entity_type: CrewEntityType.INVITE};
+type CrewEntity = UserEntity | InviteEntity;
+
 @Component({
 	selector: 'orc-index-subsection-crew-table',
 	standalone: false,
@@ -23,6 +34,7 @@ export class IndexSubsectionCrewTableComponent {
 
 	public more_entity = signal<Invite | User | null>(null);
 	public now = DateTime.now().toSeconds();
+	public readonly CrewEntityType = CrewEntityType;
 
 	public displayed_columns = ['user', 'label', 'created', 'state', 'actions'];
 
@@ -33,6 +45,17 @@ export class IndexSubsectionCrewTableComponent {
 				this.data().sort = this.sort;
 			}
 		});
+	}
+
+	/**
+	 * Helper method to add type discriminator to entities
+	 * @param {Invite | User} entity - the crew entity
+	 * @returns {CrewEntity} entity with explicit type
+	 */
+	public asCrewEntity(entity: Invite | User): CrewEntity {
+		return 'name' in entity && entity.name !== undefined
+			? ({...entity, entity_type: CrewEntityType.USER} as UserEntity)
+			: ({...entity, entity_type: CrewEntityType.INVITE} as InviteEntity);
 	}
 
 	public toggleMore(entity: Invite | User) {

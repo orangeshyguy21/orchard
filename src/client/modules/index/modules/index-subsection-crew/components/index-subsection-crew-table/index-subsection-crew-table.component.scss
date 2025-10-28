@@ -15,9 +15,7 @@
 	top: 86px !important;
 }
 
-.user-icon {
-	@extend %orc-primary-bg;
-	@extend %orc-on-primary-color;
+.crew-icon {
 	@extend %flex;
 	@extend %flex-items-center;
 	@extend %flex-justify-center;
@@ -25,6 +23,16 @@
 	@extend %w-2;
 	@extend %h-2;
 	@extend %orc-corner-full;
+}
+
+.user-icon {
+	@extend %orc-primary-bg;
+	@extend %orc-on-primary-color;
+}
+
+.invite-icon {
+	@extend %orc-neutral-bg;
+	@extend %orc-surface-container-high-color;
 }
 
 // these can be generalized i think
