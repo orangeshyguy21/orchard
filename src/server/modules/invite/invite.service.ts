@@ -22,15 +22,16 @@ export class InviteService {
 	 * @returns {Promise<Invite[]>} The active invites
 	 */
 	public async getInvites(): Promise<Invite[]> {
-		const now = DateTime.now().toSeconds();
+		const now = Math.floor(DateTime.now().toSeconds());
+		console.log('Server getting invites', now);
 		return this.inviteRepository.find({
 			where: [
 				{
-					used: false,
+					used_at: null,
 					expires_at: null, // never expires
 				},
 				{
-					used: false,
+					used_at: null,
 					expires_at: MoreThan(now), // expires in the future
 				},
 			],
@@ -63,7 +64,6 @@ export class InviteService {
 			role,
 			created_by: {id: created_by_id} as User,
 			expires_at,
-			used: false,
 			used_at: null,
 			claimed_by: null,
 			created_at,

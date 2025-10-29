@@ -5,7 +5,7 @@ import {UserRole} from '@server/modules/user/user.enums';
 import {User} from '@server/modules/user/user.entity';
 
 @Entity('invites')
-@Index(['used', 'expires_at'])
+@Index(['used_at', 'expires_at'])
 export class Invite {
 	@PrimaryGeneratedColumn('uuid')
 	id: string;
@@ -27,13 +27,10 @@ export class Invite {
 	@JoinColumn({name: 'claimed_by_id'})
 	claimed_by: User | null; // user who claimed the invite
 
-	@Column({default: false})
-	used: boolean; // whether the invite has been claimed
-
 	@Column({nullable: true})
 	used_at: number | null; // when the invite was claimed
 
-	@Column({nullable: true})
+	@Column({type: 'integer', nullable: true})
 	expires_at: number | null; // optional expiration date
 
 	@Column({type: 'integer'})

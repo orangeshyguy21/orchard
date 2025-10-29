@@ -7,7 +7,6 @@ export class Invite implements OrchardCrewInvite {
 	role: UserRole;
 	created_by_id: string;
 	claimed_by_id: string | null;
-	used: boolean;
 	used_at: number | null;
 	expires_at: number | null;
 	created_at: number;
@@ -19,7 +18,6 @@ export class Invite implements OrchardCrewInvite {
 		this.role = oi.role;
 		this.created_by_id = oi.created_by_id;
 		this.claimed_by_id = oi.claimed_by_id ?? null;
-		this.used = oi.used;
 		this.used_at = oi.used_at ?? null;
 		this.expires_at = oi.expires_at ?? null;
 		this.created_at = oi.created_at;

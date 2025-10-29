@@ -15,6 +15,9 @@ import {NonNullableIndexCrewSettings} from '@client/modules/settings/types/setti
 import {User} from '@client/modules/crew/classes/user.class';
 import {Invite} from '@client/modules/crew/classes/invite.class';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
+/* Native Dependencies */
+import {CrewEntity} from '@client/modules/index/modules/index-subsection-crew/enums/crew-entity.enum';
+import {EntityOption, RoleOption} from '@client/modules/index/modules/index-subsection-crew/types/crew-panel.types';
 /* Shared Dependencies */
 import {UserRole} from '@shared/generated.types';
 
@@ -39,7 +42,18 @@ export class IndexSubsectionCrewComponent implements OnInit {
 	public page_settings!: NonNullableIndexCrewSettings;
 	public readonly panel = new FormGroup({
 		filter: new FormControl<string>(''),
+		entity: new FormControl<CrewEntity[]>([CrewEntity.USER, CrewEntity.INVITE]),
+		role: new FormControl<UserRole[]>([UserRole.Admin, UserRole.Manager, UserRole.Reader]),
 	});
+	public entity_options: EntityOption[] = [
+		{label: 'Users', value: CrewEntity.USER},
+		{label: 'Invites', value: CrewEntity.INVITE},
+	];
+	public role_options: RoleOption[] = [
+		{label: 'Admin', value: UserRole.Admin},
+		{label: 'Manager', value: UserRole.Manager},
+		{label: 'Reader', value: UserRole.Reader},
+	];
 	public form_invite: FormGroup = new FormGroup({
 		label: new FormControl<string>('', [Validators.maxLength(255)]),
 		role: new FormControl<UserRole>(UserRole.Reader, [Validators.required]),
@@ -164,10 +178,19 @@ export class IndexSubsectionCrewComponent implements OnInit {
 				}),
 			);
 		}
-		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		this.form_open.set(false);
 		const {label, role, expiration_enabled, expiration_date, expiration_time} = this.form_invite.value;
 		const expiration_timestamp = this.getExpirationTimestamp(expiration_enabled, expiration_date, expiration_time);
+		const now = Math.floor(DateTime.now().toSeconds());
+		if (expiration_timestamp && expiration_timestamp < now) {
+			return this.eventService.registerEvent(
+				new EventData({
+					type: 'WARNING',
+					message: 'Expiration date is in the past',
+				}),
+			);
+		}
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		this.form_open.set(false);
 		this.crewService.createInvite(role, label, expiration_timestamp).subscribe({
 			next: (invite) => {
 				this.new_invite = invite;
@@ -212,5 +235,13 @@ export class IndexSubsectionCrewComponent implements OnInit {
 		const current_data = this.data().data;
 		const updated_data = [this.new_invite, ...current_data].sort((a, b) => b.created_at - a.created_at);
 		this.data.set(new MatTableDataSource(updated_data));
+	}
+
+	public onEditInvite(invite: Invite): void {
+		console.log('edit invite', invite);
+	}
+
+	public onEditUser(user: User): void {
+		console.log('edit user', user);
 	}
 }

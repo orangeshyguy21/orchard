@@ -617,7 +617,6 @@ export type OrchardCrewInvite = {
   label?: Maybe<Scalars['String']['output']>;
   role: UserRole;
   token: Scalars['String']['output'];
-  used: Scalars['Boolean']['output'];
   used_at?: Maybe<Scalars['UnixTimestamp']['output']>;
 };
 
@@ -629,7 +628,6 @@ export type OrchardCrewUser = {
   label?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   role: UserRole;
-  updated_at: Scalars['UnixTimestamp']['output'];
 };
 
 export type OrchardCustomChannel = {

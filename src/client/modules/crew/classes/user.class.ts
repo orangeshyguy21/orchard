@@ -6,7 +6,6 @@ export class User implements OrchardCrewUser {
 	role: UserRole;
 	active: boolean;
 	created_at: number;
-	updated_at: number;
 
 	constructor(ou: OrchardCrewUser) {
 		this.id = ou.id;
@@ -14,6 +13,5 @@ export class User implements OrchardCrewUser {
 		this.role = ou.role;
 		this.active = ou.active;
 		this.created_at = ou.created_at;
-		this.updated_at = ou.updated_at;
 	}
 }

@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, effect, input, signal, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, input, signal, output, ViewChild} from '@angular/core';
 /* Vendor Dependencies */
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
@@ -7,11 +7,9 @@ import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {Invite} from '@client/modules/crew/classes/invite.class';
 import {User} from '@client/modules/crew/classes/user.class';
+/* Native Dependencies */
+import {CrewEntity} from '@client/modules/index/modules/index-subsection-crew/enums/crew-entity.enum';
 
-enum CrewEntityType {
-	USER = 'USER',
-	INVITE = 'INVITE',
-}
 enum MoreEntityType {
 	TOKEN = 'TOKEN',
 	EDIT_USER = 'EDIT_USER',
@@ -19,9 +17,9 @@ enum MoreEntityType {
 }
 
 // Local discriminated union types
-type UserEntity = User & {entity_type: CrewEntityType.USER};
-type InviteEntity = Invite & {entity_type: CrewEntityType.INVITE};
-type CrewEntity = UserEntity | InviteEntity;
+type UserTableEntity = User & {entity_type: CrewEntity.USER};
+type InviteTableEntity = Invite & {entity_type: CrewEntity.INVITE};
+type CrewTableEntity = UserTableEntity | InviteTableEntity;
 
 @Component({
 	selector: 'orc-index-subsection-crew-table',
@@ -36,10 +34,13 @@ export class IndexSubsectionCrewTableComponent {
 	public data = input.required<MatTableDataSource<Invite | User>>();
 	public loading = input.required<boolean>();
 
+	public editInvite = output<Invite>();
+	public editUser = output<User>();
+
 	public more_entity = signal<Invite | User | null>(null);
 	public more_entity_type = signal<MoreEntityType | null>(null);
 	public now = DateTime.now().toSeconds();
-	public readonly CrewEntityType = CrewEntityType;
+	public readonly CrewEntity = CrewEntity;
 	public readonly MoreEntityType = MoreEntityType;
 	public readonly displayed_columns = ['user', 'label', 'created', 'state', 'actions'];
 
@@ -64,12 +65,12 @@ export class IndexSubsectionCrewTableComponent {
 	/**
 	 * Helper method to add type discriminator to entities
 	 * @param {Invite | User} entity - the crew entity
-	 * @returns {CrewEntity} entity with explicit type
+	 * @returns {CrewTableEntity} entity with explicit type
 	 */
-	public asCrewEntity(entity: Invite | User): CrewEntity {
+	public asCrewEntity(entity: Invite | User): CrewTableEntity {
 		return 'name' in entity && entity.name !== undefined
-			? ({...entity, entity_type: CrewEntityType.USER} as UserEntity)
-			: ({...entity, entity_type: CrewEntityType.INVITE} as InviteEntity);
+			? ({...entity, entity_type: CrewEntity.USER} as UserTableEntity)
+			: ({...entity, entity_type: CrewEntity.INVITE} as InviteTableEntity);
 	}
 
 	/**
@@ -78,14 +79,14 @@ export class IndexSubsectionCrewTableComponent {
 	 */
 	private onNewEntityAdded(entity: Invite | User): void {
 		const crew_entity = this.asCrewEntity(entity);
-		if (crew_entity.entity_type === CrewEntityType.INVITE) {
+		if (crew_entity.entity_type === CrewEntity.INVITE) {
 			this.onViewToken(null, entity as Invite);
 		}
 	}
 
 	public onToggleMore(entity: Invite | User) {
 		const entity_type = this.asCrewEntity(entity).entity_type;
-		const more_entity_type = entity_type === CrewEntityType.INVITE ? MoreEntityType.TOKEN : MoreEntityType.EDIT_USER;
+		const more_entity_type = entity_type === CrewEntity.INVITE ? MoreEntityType.TOKEN : MoreEntityType.EDIT_USER;
 		this.more_entity_type.set(more_entity_type);
 		this.more_entity.set(this.more_entity() === entity ? null : entity);
 	}
@@ -103,11 +104,16 @@ export class IndexSubsectionCrewTableComponent {
 		event.stopPropagation();
 		event.preventDefault();
 		const entity_type = this.asCrewEntity(entity).entity_type;
-		const more_entity_type = entity_type === CrewEntityType.INVITE ? MoreEntityType.EDIT_INVITE : MoreEntityType.EDIT_USER;
+		let more_entity_type;
+		if (entity_type === CrewEntity.INVITE) {
+			this.editInvite.emit(entity as Invite);
+			more_entity_type = MoreEntityType.EDIT_INVITE;
+		} else {
+			this.editUser.emit(entity as User);
+			more_entity_type = MoreEntityType.EDIT_USER;
+		}
 		this.more_entity_type.set(more_entity_type);
 		this.more_entity.set(entity);
-		// this.more_entity_type.set(MoreEntityType.EDIT_INVITE);
-		// this.more_entity.set(entity);
 	}
 
 	public onDelete(event: MouseEvent, entity: Invite | User) {

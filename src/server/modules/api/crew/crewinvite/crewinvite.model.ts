@@ -25,9 +25,6 @@ export class OrchardCrewInvite {
 	@Field({nullable: true})
 	claimed_by_id: string | null; // ID of user who claimed invite
 
-	@Field()
-	used: boolean; // whether invite has been claimed
-
 	@Field(() => UnixTimestamp, {nullable: true})
 	used_at: number | null; // when invite was claimed
 
@@ -44,7 +41,6 @@ export class OrchardCrewInvite {
 		this.role = invite.role;
 		this.created_by_id = invite.created_by.id;
 		this.claimed_by_id = invite.claimed_by?.id || null;
-		this.used = invite.used;
 		this.used_at = invite.used_at;
 		this.expires_at = invite.expires_at;
 		this.created_at = invite.created_at;

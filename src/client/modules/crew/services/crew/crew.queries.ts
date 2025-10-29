@@ -48,7 +48,6 @@ export const INVITS_QUERY = `{
         role
         created_by_id
         claimed_by_id
-        used
         used_at
         expires_at
         created_at
@@ -64,7 +63,6 @@ mutation crew_invite_create($createInvite: InviteCreateInput!) {
         role
         created_by_id
         claimed_by_id
-        used
         used_at
         expires_at
     }

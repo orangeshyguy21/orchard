@@ -48,6 +48,7 @@ export class IndexSubsectionCrewFormInviteComponent implements OnInit {
 		{value: UserRole.Reader, label: 'Reader'},
 	];
 	public time_options: TimeOption[] = [];
+	public today = DateTime.now();
 
 	public filtered_options!: Observable<TimeOption[]>;
 

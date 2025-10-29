@@ -76,7 +76,7 @@
 					<td mat-cell *matCellDef="let entity">
 						@let crew_entity = asCrewEntity(entity);
 						<div class="flex flex-items-center flex-gap-0-5">
-							@if (crew_entity.entity_type === CrewEntityType.INVITE) {
+							@if (crew_entity.entity_type === CrewEntity.INVITE) {
 								<button mat-icon-button class="orc-icon-button" (click)="onViewToken($event, entity)">
 									<mat-icon>confirmation_number</mat-icon>
 								</button>
@@ -105,7 +105,12 @@
 												></orc-index-subsection-crew-table-invite>
 											}
 											@case (MoreEntityType.EDIT_INVITE) {
-												show edit invite form
+												<!-- <orc-index-subsection-crew-form-invite
+													[form_group]="form_invite"
+													[open]="true"
+													(close)="onCloseInvite()"
+													(cancel)="onCancel($event)"
+												></orc-index-subsection-crew-form-invite> -->
 											}
 											@case (MoreEntityType.EDIT_USER) {
 												show edit user form

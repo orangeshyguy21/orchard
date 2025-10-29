@@ -1,7 +1,12 @@
 <div class="index-subsection-crew-container">
 	<div class="crew-control p-t-1">
 		<div class="flex flex-justify-between flex-gap-2 flex-items-start">
-			<orc-index-subsection-crew-control class="flex-grow" [form_group]="panel"></orc-index-subsection-crew-control>
+			<orc-index-subsection-crew-control
+				class="flex-grow"
+				[form_group]="panel"
+				[entity_options]="entity_options"
+				[role_options]="role_options"
+			></orc-index-subsection-crew-control>
 			<div>
 				<div class="flex flex-items-center flex-gap-0-5 relative">
 					<button
@@ -34,7 +39,12 @@
 
 	<div class="crew-table">
 		<mat-card appearance="outlined">
-			<orc-index-subsection-crew-table [data]="data()" [loading]="loading()"></orc-index-subsection-crew-table>
+			<orc-index-subsection-crew-table
+				[data]="data()"
+				[loading]="loading()"
+				(editInvite)="onEditInvite($event)"
+				(editUser)="onEditUser($event)"
+			></orc-index-subsection-crew-table>
 		</mat-card>
 	</div>
 </div>

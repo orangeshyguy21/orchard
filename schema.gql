@@ -466,7 +466,6 @@ type OrchardCrewInvite {
   label: String
   role: UserRole!
   token: String!
-  used: Boolean!
   used_at: UnixTimestamp
 }
 
