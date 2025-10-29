@@ -1,6 +1,7 @@
 /* Core Dependencies */
 import {Logger} from '@nestjs/common';
 import {Resolver, Query, Context, Mutation, Args} from '@nestjs/graphql';
+import {Throttle, minutes} from '@nestjs/throttler';
 /* Application Dependencies */
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
@@ -27,6 +28,7 @@ export class CrewInviteResolver {
 	}
 
 	@Roles(UserRole.ADMIN)
+	@Throttle({default: {limit: 10, ttl: minutes(1)}})
 	@Mutation(() => OrchardCrewInvite)
 	async crew_invite_create(@Context() context: any, @Args('createInvite') createInvite: InviteCreateInput): Promise<OrchardCrewInvite> {
 		const tag = 'MUTATION { crew_invite_create }';

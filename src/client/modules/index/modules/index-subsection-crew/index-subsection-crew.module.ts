@@ -16,6 +16,8 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatTableModule} from '@angular/material/table';
 import {MatSortModule} from '@angular/material/sort';
 import {MatRippleModule} from '@angular/material/core';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatTooltipModule} from '@angular/material/tooltip';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcLocalModule} from '@client/modules/local/local.module';
@@ -25,6 +27,7 @@ import {IndexSubsectionCrewControlComponent} from './components/index-subsection
 import {IndexSubsectionCrewFormInviteComponent} from './components/index-subsection-crew-form-invite/index-subsection-crew-form-invite.component';
 import {IndexSubsectionCrewTableComponent} from './components/index-subsection-crew-table/index-subsection-crew-table.component';
 import {IndexSubsectionCrewTableInviteComponent} from './components/index-subsection-crew-table-invite/index-subsection-crew-table-invite.component';
+import {IndexSubsectionCrewFormUserComponent} from './components/index-subsection-crew-form-user/index-subsection-crew-form-user.component';
 
 @NgModule({
 	declarations: [
@@ -33,6 +36,7 @@ import {IndexSubsectionCrewTableInviteComponent} from './components/index-subsec
 		IndexSubsectionCrewFormInviteComponent,
 		IndexSubsectionCrewTableComponent,
 		IndexSubsectionCrewTableInviteComponent,
+		IndexSubsectionCrewFormUserComponent,
 	],
 	imports: [
 		[
@@ -57,6 +61,8 @@ import {IndexSubsectionCrewTableInviteComponent} from './components/index-subsec
 		MatTableModule,
 		MatSortModule,
 		MatRippleModule,
+		MatDialogModule,
+		MatTooltipModule,
 		OrcFormModule,
 		OrcLocalModule,
 	],

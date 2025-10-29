@@ -17,7 +17,6 @@ enum MoreEntityType {
 	EDIT_INVITE = 'EDIT_INVITE',
 }
 
-// Local discriminated union types
 type UserTableEntity = User & {entity_type: CrewEntity.USER};
 type InviteTableEntity = Invite & {entity_type: CrewEntity.INVITE};
 type CrewTableEntity = UserTableEntity | InviteTableEntity;

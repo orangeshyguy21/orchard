@@ -77,15 +77,33 @@
 						@let crew_entity = asCrewEntity(entity);
 						<div class="flex flex-items-center flex-gap-0-5">
 							@if (crew_entity.entity_type === CrewEntity.INVITE) {
-								<button mat-icon-button class="orc-icon-button" (click)="onViewToken($event, entity)">
+								<button
+									mat-icon-button
+									class="orc-icon-button"
+									matTooltip="View Code"
+									matTooltipPosition="above"
+									(click)="onViewToken($event, entity)"
+								>
 									<mat-icon>confirmation_number</mat-icon>
 								</button>
 							}
-							<button mat-icon-button class="orc-icon-button" (click)="onEdit($event, entity)">
+							<button
+								mat-icon-button
+								class="orc-icon-button"
+								matTooltip="Edit"
+								matTooltipPosition="above"
+								(click)="onEdit($event, entity)"
+							>
 								<mat-icon>edit</mat-icon>
 							</button>
 
-							<button mat-icon-button class="orc-icon-button" (click)="onDelete($event, entity)">
+							<button
+								mat-icon-button
+								class="orc-icon-button"
+								matTooltip="Delete"
+								matTooltipPosition="above"
+								(click)="onDelete($event, entity)"
+							>
 								<mat-icon>delete_forever</mat-icon>
 							</button>
 						</div>
@@ -116,7 +134,7 @@
 												</div>
 											}
 											@case (MoreEntityType.EDIT_USER) {
-												show edit user form
+												<orc-index-subsection-crew-form-user></orc-index-subsection-crew-form-user>
 											}
 										}
 									</div>

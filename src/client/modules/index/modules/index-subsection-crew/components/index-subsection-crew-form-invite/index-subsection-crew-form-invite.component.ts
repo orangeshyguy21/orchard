@@ -114,12 +114,6 @@ export class IndexSubsectionCrewFormInviteComponent implements OnInit {
 		return option ? option.label : '';
 	};
 
-	public onCancelLabel(event: Event): void {
-		event.preventDefault();
-		this.focused_label.set(false);
-		// emit event to clear from parent
-	}
-
 	public onExpirationEnabledChange(event: MatCheckboxChange): void {
 		const expiration_enabled = event.checked;
 		if (expiration_enabled) {
