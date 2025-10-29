@@ -45,6 +45,19 @@ import {AuthSectionComponent} from './components/auth-section/auth-section.compo
 							sub_section: 'initialization',
 						},
 					},
+					{
+						path: 'invite',
+						canActivate: [initializationGuard],
+						loadChildren: () =>
+							import('@client/modules/auth/modules/auth-subsection-invite/auth-subsection-invite.module').then(
+								(m) => m.OrcAuthSubsectionInviteModule,
+							),
+						title: 'Orchard | Invite',
+						data: {
+							section: 'auth',
+							sub_section: 'invite',
+						},
+					},
 				],
 			},
 		]),
