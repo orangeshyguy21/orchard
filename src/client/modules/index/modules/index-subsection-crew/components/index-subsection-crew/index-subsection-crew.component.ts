@@ -34,6 +34,7 @@ export class IndexSubsectionCrewComponent implements OnInit {
 
 	@ViewChild('invite_form', {static: false}) invite_form!: ElementRef;
 
+	public id_user = signal<string | null>(null);
 	public form_dirty = signal<boolean>(false);
 	public form_invite_create_open = signal<boolean>(false);
 	public table_form_id = signal<string | null>(null);
@@ -67,6 +68,10 @@ export class IndexSubsectionCrewComponent implements OnInit {
 		expiration_date: new FormControl<DateTime | null>({value: null, disabled: false}, [Validators.required]),
 		expiration_time: new FormControl<number | null>({value: null, disabled: false}, [Validators.required]),
 	});
+	public form_user_edit: FormGroup = new FormGroup({
+		label: new FormControl<string>('', [Validators.maxLength(255)]),
+		role: new FormControl<UserRole>(UserRole.Reader, [Validators.required]),
+	});
 
 	private active_event: EventData | null = null;
 	private subscriptions: Subscription = new Subscription();
@@ -89,6 +94,7 @@ export class IndexSubsectionCrewComponent implements OnInit {
 
 	ngOnInit(): void {
 		this.loadCrewData();
+		this.subscriptions.add(this.getUserSubscription());
 		this.subscriptions.add(this.getEventSubscription());
 		this.subscriptions.add(this.getFormSubscription());
 		this.orchardOptionalInit();
@@ -104,6 +110,19 @@ export class IndexSubsectionCrewComponent implements OnInit {
 	/* *******************************************************
 		Subscriptions                      
 	******************************************************** */
+
+	private getUserSubscription(): Subscription {
+		return this.crewService.user$.subscribe({
+			next: (user: User | null) => {
+				if (user === undefined || user === null) return;
+				this.id_user.set(user.id);
+			},
+			error: (error) => {
+				console.error(error);
+				this.id_user.set(null);
+			},
+		});
+	}
 
 	private getEventSubscription(): Subscription {
 		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
@@ -362,7 +381,18 @@ export class IndexSubsectionCrewComponent implements OnInit {
 	}
 
 	public onEditUser(user: User): void {
-		console.log('edit user', user);
+		this.onCloseInvite();
+		this.table_form_id.set(user.id);
+		this.form_user_edit.get('label')?.setValue(user.label);
+		this.form_user_edit.get('role')?.setValue(user.role);
+	}
+
+	public onDeleteInvite(invite: Invite): void {
+		console.log('delete invite', invite);
+	}
+
+	public onDeleteUser(user: User): void {
+		console.log('delete user', user);
 	}
 
 	private createPendingEvent(dirty: boolean): void {

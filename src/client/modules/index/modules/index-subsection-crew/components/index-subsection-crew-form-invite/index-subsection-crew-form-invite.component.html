@@ -46,7 +46,7 @@
 								>
 									<mat-label>Role</mat-label>
 									<mat-select formControlName="role">
-										@for (role of user_role_options; track role.value) {
+										@for (role of role_options(); track role.value) {
 											<mat-option [value]="role.value">{{ role.label }}</mat-option>
 										}
 									</mat-select>

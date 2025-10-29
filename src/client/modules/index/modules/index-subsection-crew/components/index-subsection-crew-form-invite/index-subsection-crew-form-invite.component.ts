@@ -9,9 +9,8 @@ import {MatAutocompleteTrigger, MatAutocomplete} from '@angular/material/autocom
 import {MatCheckboxChange} from '@angular/material/checkbox';
 /* Application Dependencies */
 import {SettingService} from '@client/modules/settings/services/setting/setting.service';
-import {Invite} from '@client/modules/crew/classes/invite.class';
-/* Shared Dependencies */
-import {UserRole} from '@shared/generated.types';
+/* Native Dependencies */
+import {RoleOption} from '@client/modules/index/modules/index-subsection-crew/types/crew-panel.types';
 
 type TimeOption = {
 	value: number;
@@ -32,6 +31,7 @@ export class IndexSubsectionCrewFormInviteComponent implements OnInit {
 	public form_group = input.required<FormGroup>();
 	public open = input.required<boolean>();
 	public mode = input.required<'create' | 'edit'>();
+	public role_options = input.required<RoleOption[]>();
 
 	public close = output<void>();
 	public cancel = output<'label' | 'role' | 'expiration'>();
@@ -40,11 +40,6 @@ export class IndexSubsectionCrewFormInviteComponent implements OnInit {
 	public focused_label = signal<boolean>(false);
 	public focused_expireation = signal<boolean>(false);
 
-	public user_role_options: {value: UserRole; label: string}[] = [
-		{value: UserRole.Admin, label: 'Admin'},
-		{value: UserRole.Manager, label: 'Manager'},
-		{value: UserRole.Reader, label: 'Reader'},
-	];
 	public time_options: TimeOption[] = [];
 	public today = DateTime.now();
 

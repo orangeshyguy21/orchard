@@ -10,6 +10,7 @@ import {Invite} from '@client/modules/crew/classes/invite.class';
 import {User} from '@client/modules/crew/classes/user.class';
 /* Native Dependencies */
 import {CrewEntity} from '@client/modules/index/modules/index-subsection-crew/enums/crew-entity.enum';
+import {RoleOption} from '@client/modules/index/modules/index-subsection-crew/types/crew-panel.types';
 
 enum MoreEntityType {
 	TOKEN = 'TOKEN',
@@ -32,13 +33,18 @@ export class IndexSubsectionCrewTableComponent {
 	@ViewChild(MatSort) sort!: MatSort;
 
 	public data = input.required<MatTableDataSource<Invite | User>>();
+	public id_user = input.required<string | null>();
 	public loading = input.required<boolean>();
 	public form_invite = input.required<FormGroup>();
+	public form_user = input.required<FormGroup>();
+	public role_options = input.required<RoleOption[]>();
 	public create_open = input.required<boolean>();
 	public table_form_id = input.required<string | null>();
 
 	public editInvite = output<Invite>();
 	public editUser = output<User>();
+	public deleteInvite = output<Invite>();
+	public deleteUser = output<User>();
 
 	public more_entity = signal<Invite | User | null>(null);
 	public more_entity_type = signal<MoreEntityType | null>(null);
@@ -130,8 +136,12 @@ export class IndexSubsectionCrewTableComponent {
 	public onDelete(event: MouseEvent, entity: Invite | User) {
 		event.stopPropagation();
 		event.preventDefault();
-		console.log('delete', entity);
-		// dialog
+		const entity_type = this.asCrewEntity(entity).entity_type;
+		if (entity_type === CrewEntity.INVITE) {
+			this.deleteInvite.emit(entity as Invite);
+		} else {
+			this.deleteUser.emit(entity as User);
+		}
 	}
 
 	public onCloseInvite(entity: Invite): void {
@@ -140,6 +150,14 @@ export class IndexSubsectionCrewTableComponent {
 		this.form_invite().markAsPristine();
 		this.form_invite().markAsUntouched();
 		this.form_invite().updateValueAndValidity();
+	}
+
+	public onCloseUser(entity: User): void {
+		this.onToggleMore(entity);
+		this.form_user().reset();
+		this.form_user().markAsPristine();
+		this.form_user().markAsUntouched();
+		this.form_user().updateValueAndValidity();
 	}
 
 	public onCancelInviteControl(control_name: 'label' | 'role' | 'expiration'): void {

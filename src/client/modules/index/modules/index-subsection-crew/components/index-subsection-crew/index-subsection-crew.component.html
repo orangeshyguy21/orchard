@@ -32,6 +32,7 @@
 				[form_group]="form_invite_create"
 				[open]="form_invite_create_open()"
 				[mode]="'create'"
+				[role_options]="role_options"
 				(close)="onCloseInvite()"
 				(cancel)="onCancel($event)"
 			></orc-index-subsection-crew-form-invite>
@@ -42,12 +43,17 @@
 		<mat-card appearance="outlined">
 			<orc-index-subsection-crew-table
 				[data]="data()"
+				[id_user]="id_user()"
 				[loading]="loading()"
 				[create_open]="form_invite_create_open()"
+				[role_options]="role_options"
 				[form_invite]="form_invite_edit"
+				[form_user]="form_user_edit"
 				[table_form_id]="table_form_id()"
 				(editInvite)="onEditInvite($event)"
 				(editUser)="onEditUser($event)"
+				(deleteInvite)="onDeleteInvite($event)"
+				(deleteUser)="onDeleteUser($event)"
 			></orc-index-subsection-crew-table>
 		</mat-card>
 	</div>
