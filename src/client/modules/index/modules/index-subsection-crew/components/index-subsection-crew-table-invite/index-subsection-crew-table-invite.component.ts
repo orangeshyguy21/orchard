@@ -18,12 +18,11 @@ export class IndexSubsectionCrewTableInviteComponent implements AfterViewInit {
 
 	public invite = input.required<Invite>();
 
-	// public copy_animation_state = signal<'visible' | 'hidden'>('hidden');
 	public show_copy_token = signal(false);
 	public show_copy_url = signal(false);
 
 	public invite_url = computed(() => {
-		return `${window.location.origin}/invite/${this.invite().token}`;
+		return `${window.location.origin}/authentication/invite/${this.invite().token}`;
 	});
 
 	public qr_code!: QRCodeStyling;
