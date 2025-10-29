@@ -146,13 +146,14 @@
 												</div>
 											}
 											@case (MoreEntityType.EDIT_USER) {
-												<orc-index-subsection-crew-form-user
-													[form_group]="form_user()"
-													[id_user]="id_user()"
-													[id_entity]="entity.id"
-													[role_options]="role_options()"
-													(close)="onCloseUser(entity)"
-												></orc-index-subsection-crew-form-user>
+												<div class="p-b-1">
+													<orc-index-subsection-crew-form-user
+														[id_user]="id_user()"
+														[id_entity]="entity.id"
+														[role_options]="role_options()"
+														(close)="onCloseUser(entity)"
+													></orc-index-subsection-crew-form-user>
+												</div>
 											}
 										}
 									</div>
