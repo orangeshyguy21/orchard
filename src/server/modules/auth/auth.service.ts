@@ -29,11 +29,13 @@ export class AuthService {
 		const access_payload: JwtPayload = {
 			sub: id,
 			username: user.name,
+			role: user.role,
 			type: 'access',
 		};
 		const refresh_payload: RefreshTokenPayload = {
 			sub: user.id,
 			username: user.name,
+			role: user.role,
 			type: 'refresh',
 		};
 		const [access_token, refresh_token] = await Promise.all([
@@ -56,11 +58,13 @@ export class AuthService {
 			const access_payload: JwtPayload = {
 				sub: user.id,
 				username: user.name,
+				role: user.role,
 				type: 'access',
 			};
 			const new_refresh_payload: RefreshTokenPayload = {
 				sub: user.id,
 				username: user.name,
+				role: user.role,
 				type: 'refresh',
 			};
 			const [new_access_token, new_refresh_token] = await Promise.all([

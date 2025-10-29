@@ -1,5 +1,6 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, effect, input, signal, output, ViewChild} from '@angular/core';
+import {FormGroup} from '@angular/forms';
 /* Vendor Dependencies */
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
@@ -33,6 +34,9 @@ export class IndexSubsectionCrewTableComponent {
 
 	public data = input.required<MatTableDataSource<Invite | User>>();
 	public loading = input.required<boolean>();
+	public form_invite = input.required<FormGroup>();
+	public create_open = input.required<boolean>();
+	public table_form_id = input.required<string | null>();
 
 	public editInvite = output<Invite>();
 	public editUser = output<User>();
@@ -50,6 +54,14 @@ export class IndexSubsectionCrewTableComponent {
 		effect(() => {
 			if (this.loading() === false) {
 				this.data().sort = this.sort;
+			}
+
+			if (this.create_open()) {
+				this.more_entity.set(null);
+			}
+
+			if (this.table_form_id() === null) {
+				this.more_entity.set(null);
 			}
 
 			const current_data = this.data().data;
@@ -121,5 +133,22 @@ export class IndexSubsectionCrewTableComponent {
 		event.preventDefault();
 		console.log('delete', entity);
 		// dialog
+	}
+
+	public onCloseInvite(entity: Invite): void {
+		this.onToggleMore(entity);
+		this.form_invite().reset();
+		this.form_invite().markAsPristine();
+		this.form_invite().markAsUntouched();
+		this.form_invite().updateValueAndValidity();
+	}
+
+	public onCancelInviteControl(control_name: keyof Invite): void {
+		this.form_invite()
+			.get(control_name)
+			?.setValue((this.more_entity() as Invite)?.[control_name]);
+		this.form_invite().get(control_name)?.markAsPristine();
+		this.form_invite().get(control_name)?.markAsUntouched();
+		this.form_invite().get(control_name)?.updateValueAndValidity();
 	}
 }

@@ -23,6 +23,7 @@ export class AuthStrategy extends PassportStrategy(Strategy) {
 		return {
 			id: payload.sub,
 			name: payload.username,
+			role: payload.role,
 			auth_token,
 		};
 	}

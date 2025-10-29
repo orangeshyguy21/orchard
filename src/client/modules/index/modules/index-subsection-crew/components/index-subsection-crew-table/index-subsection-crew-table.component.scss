@@ -67,4 +67,6 @@ tr.more-entity-row {
 .more-entity-content {
 	@extend %flex;
 	@extend %h-min-0;
+	@extend %font-size-m;
+	line-height: 1.4;
 }

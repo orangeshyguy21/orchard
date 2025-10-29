@@ -19,6 +19,7 @@ import {
 	CrewUserPasswordUpdateResponse,
 	CrewInvitesResponse,
 	CrewInviteCreateResponse,
+	CrewInviteUpdateResponse,
 } from '@client/modules/crew/types/crew.types';
 /* Local Dependencies */
 import {
@@ -28,6 +29,7 @@ import {
 	USER_PASSWORD_UPDATE_MUTATION,
 	INVITS_QUERY,
 	INVITE_CREATE_MUTATION,
+	INVITE_UPDATE_MUTATION,
 } from './crew.queries';
 /* Shared Dependencies */
 import {UserRole} from '@shared/generated.types';
@@ -176,6 +178,24 @@ export class CrewService {
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return new Invite(response.data.crew_invite_create);
+			}),
+			catchError((error) => {
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	public updateInvite(
+		id: string,
+		label: string | null = null,
+		role: UserRole | null = null,
+		expires_at: number | null = null,
+	): Observable<Invite> {
+		const query = getApiQuery(INVITE_UPDATE_MUTATION, {updateInvite: {id, label, role, expires_at}});
+		return this.http.post<OrchardRes<CrewInviteUpdateResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return new Invite(response.data.crew_invite_update);
 			}),
 			catchError((error) => {
 				return throwError(() => error);

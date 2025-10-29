@@ -1,17 +1,15 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, OnInit, signal, HostListener, ViewChild, ElementRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, signal, effect, HostListener, ViewChild, ElementRef} from '@angular/core';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
 /* Vendor Dependencies */
 import {DateTime} from 'luxon';
 import {Subscription, lastValueFrom, forkJoin} from 'rxjs';
 import {MatTableDataSource} from '@angular/material/table';
 /* Application Dependencies */
-import {SettingService} from '@client/modules/settings/services/setting/setting.service';
 import {EventService} from '@client/modules/event/services/event/event.service';
 import {ConfigService} from '@client/modules/config/services/config.service';
 import {CrewService} from '@client/modules/crew/services/crew/crew.service';
 import {EventData} from '@client/modules/event/classes/event-data.class';
-import {NonNullableIndexCrewSettings} from '@client/modules/settings/types/setting.types';
 import {User} from '@client/modules/crew/classes/user.class';
 import {Invite} from '@client/modules/crew/classes/invite.class';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
@@ -36,10 +34,11 @@ export class IndexSubsectionCrewComponent implements OnInit {
 
 	@ViewChild('invite_form', {static: false}) invite_form!: ElementRef;
 
-	public form_open = signal<boolean>(false);
+	public form_dirty = signal<boolean>(false);
+	public form_invite_create_open = signal<boolean>(false);
+	public table_form_id = signal<string | null>(null);
 	public loading = signal<boolean>(true);
 	public data = signal<MatTableDataSource<Invite | User>>(new MatTableDataSource<Invite | User>([]));
-	public page_settings!: NonNullableIndexCrewSettings;
 	public readonly panel = new FormGroup({
 		filter: new FormControl<string>(''),
 		entity: new FormControl<CrewEntity[]>([CrewEntity.USER, CrewEntity.INVITE]),
@@ -54,7 +53,14 @@ export class IndexSubsectionCrewComponent implements OnInit {
 		{label: 'Manager', value: UserRole.Manager},
 		{label: 'Reader', value: UserRole.Reader},
 	];
-	public form_invite: FormGroup = new FormGroup({
+	public form_invite_create: FormGroup = new FormGroup({
+		label: new FormControl<string>('', [Validators.maxLength(255)]),
+		role: new FormControl<UserRole>(UserRole.Reader, [Validators.required]),
+		expiration_enabled: new FormControl<boolean>(true, [Validators.required]),
+		expiration_date: new FormControl<DateTime | null>({value: null, disabled: false}, [Validators.required]),
+		expiration_time: new FormControl<number | null>({value: null, disabled: false}, [Validators.required]),
+	});
+	public form_invite_edit: FormGroup = new FormGroup({
 		label: new FormControl<string>('', [Validators.maxLength(255)]),
 		role: new FormControl<UserRole>(UserRole.Reader, [Validators.required]),
 		expiration_enabled: new FormControl<boolean>(true, [Validators.required]),
@@ -67,20 +73,24 @@ export class IndexSubsectionCrewComponent implements OnInit {
 	private new_invite: Invite | null = null;
 
 	constructor(
-		private settingService: SettingService,
 		private eventService: EventService,
 		private configService: ConfigService,
 		private crewService: CrewService,
-	) {}
+	) {
+		effect(() => {
+			const dirty = this.form_dirty();
+			this.createPendingEvent(dirty);
+		});
+	}
 
 	/* *******************************************************
 	   Initalization                      
 	******************************************************** */
 
 	ngOnInit(): void {
-		// this.page_settings = this.getPageSettings();\
 		this.loadCrewData();
 		this.subscriptions.add(this.getEventSubscription());
+		this.subscriptions.add(this.getFormSubscription());
 		this.orchardOptionalInit();
 	}
 
@@ -100,7 +110,7 @@ export class IndexSubsectionCrewComponent implements OnInit {
 			this.active_event = event_data;
 			if (event_data === null) {
 				setTimeout(() => {
-					if (!this.form_open()) return;
+					if (!this.form_invite_create_open()) return;
 					this.eventService.registerEvent(
 						new EventData({
 							type: 'PENDING',
@@ -113,6 +123,12 @@ export class IndexSubsectionCrewComponent implements OnInit {
 				if (event_data.type === 'SUCCESS') this.onSuccessEvent();
 				if (event_data.confirmed !== null) event_data.confirmed ? this.onConfirmedEvent() : this.onCloseInvite();
 			}
+		});
+	}
+
+	private getFormSubscription(): Subscription {
+		return this.form_invite_edit.valueChanges.subscribe(() => {
+			this.evaluateDirtyCount();
 		});
 	}
 
@@ -134,19 +150,19 @@ export class IndexSubsectionCrewComponent implements OnInit {
 	******************************************************** */
 
 	public onInvite(): void {
-		!this.form_open() ? this.onOpenInvite() : this.onCloseInvite();
+		!this.form_invite_create_open() ? this.onOpenInvite() : this.onCloseInvite();
 	}
 
 	public onOpenInvite(): void {
 		const now = DateTime.now();
 		const eight_hours_from_now = now.plus({hours: 8});
 		const expiration_time = eight_hours_from_now.hour;
-		this.form_invite.reset();
-		this.form_invite.get('role')?.setValue(UserRole.Reader);
-		this.form_invite.get('expiration_enabled')?.setValue(true);
-		this.form_invite.get('expiration_date')?.setValue(eight_hours_from_now);
-		this.form_invite.get('expiration_time')?.setValue(expiration_time);
-		this.form_open.set(!this.form_open());
+		this.form_invite_create.reset();
+		this.form_invite_create.get('role')?.setValue(UserRole.Reader);
+		this.form_invite_create.get('expiration_enabled')?.setValue(true);
+		this.form_invite_create.get('expiration_date')?.setValue(eight_hours_from_now);
+		this.form_invite_create.get('expiration_time')?.setValue(expiration_time);
+		this.form_invite_create_open.set(!this.form_invite_create_open());
 		this.eventService.registerEvent(
 			new EventData({
 				type: 'PENDING',
@@ -161,16 +177,23 @@ export class IndexSubsectionCrewComponent implements OnInit {
 	}
 
 	public onCloseInvite(): void {
-		this.form_open.set(false);
+		this.form_invite_create_open.set(false);
 		this.eventService.registerEvent(null);
 	}
 
 	public onCancel(control_name: string): void {
-		this.form_invite.get(control_name)?.reset();
+		this.form_invite_create.get(control_name)?.reset();
 	}
 
 	private onConfirmedEvent(): void {
-		if (this.form_invite.invalid) {
+		if (this.form_invite_create_open()) this.createInvite();
+		else {
+			if (this.form_invite_edit.dirty) this.updateInvite();
+		}
+	}
+
+	private createInvite(): void {
+		if (this.form_invite_create.invalid) {
 			return this.eventService.registerEvent(
 				new EventData({
 					type: 'WARNING',
@@ -178,7 +201,7 @@ export class IndexSubsectionCrewComponent implements OnInit {
 				}),
 			);
 		}
-		const {label, role, expiration_enabled, expiration_date, expiration_time} = this.form_invite.value;
+		const {label, role, expiration_enabled, expiration_date, expiration_time} = this.form_invite_create.value;
 		const expiration_timestamp = this.getExpirationTimestamp(expiration_enabled, expiration_date, expiration_time);
 		const now = Math.floor(DateTime.now().toSeconds());
 		if (expiration_timestamp && expiration_timestamp < now) {
@@ -190,7 +213,7 @@ export class IndexSubsectionCrewComponent implements OnInit {
 			);
 		}
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		this.form_open.set(false);
+		this.form_invite_create_open.set(false);
 		this.crewService.createInvite(role, label, expiration_timestamp).subscribe({
 			next: (invite) => {
 				this.new_invite = invite;
@@ -203,6 +226,60 @@ export class IndexSubsectionCrewComponent implements OnInit {
 			},
 			error: (error: OrchardErrors) => {
 				this.new_invite = null;
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'ERROR',
+						message: error.errors[0].message,
+					}),
+				);
+			},
+		});
+	}
+
+	private updateInvite(): void {
+		if (this.form_invite_edit.invalid) {
+			return this.eventService.registerEvent(
+				new EventData({
+					type: 'WARNING',
+					message: 'Invalid invite',
+				}),
+			);
+		}
+		const {label, role, expiration_enabled, expiration_date, expiration_time} = this.form_invite_edit.value;
+		const expiration_timestamp = this.getExpirationTimestamp(expiration_enabled, expiration_date, expiration_time);
+		const now = Math.floor(DateTime.now().toSeconds());
+		if (expiration_timestamp && expiration_timestamp < now) {
+			return this.eventService.registerEvent(
+				new EventData({
+					type: 'WARNING',
+					message: 'Expiration date is in the past',
+				}),
+			);
+		}
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		this.form_invite_edit.markAsPristine();
+		this.form_dirty.set(false);
+		if (!this.table_form_id()) return;
+		this.crewService.updateInvite(this.table_form_id()!, label, role, expiration_timestamp).subscribe({
+			next: (updated_invite) => {
+				// Update the invite in the data table
+				const current_data = this.data().data;
+				const updated_data = current_data.map((item) => {
+					if (item instanceof Invite && item.id === updated_invite.id) {
+						return updated_invite;
+					}
+					return item;
+				});
+				this.data.set(new MatTableDataSource(updated_data));
+				this.table_form_id.set(null);
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'SUCCESS',
+						message: 'Invite updated!',
+					}),
+				);
+			},
+			error: (error: OrchardErrors) => {
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'ERROR',
@@ -238,10 +315,46 @@ export class IndexSubsectionCrewComponent implements OnInit {
 	}
 
 	public onEditInvite(invite: Invite): void {
-		console.log('edit invite', invite);
+		this.onCloseInvite();
+		this.table_form_id.set(invite.id);
+		this.form_invite_edit.get('role')?.setValue(invite.role);
+		this.form_invite_edit.get('label')?.setValue(invite.label);
+		if (invite.expires_at !== null) {
+			const expiration_datetime = DateTime.fromSeconds(invite.expires_at);
+			const expiration_hour = expiration_datetime.hour;
+			this.form_invite_edit.get('expiration_enabled')?.setValue(true);
+			this.form_invite_edit.get('expiration_date')?.setValue(expiration_datetime);
+			this.form_invite_edit.get('expiration_time')?.setValue(expiration_hour);
+		} else {
+			const now = DateTime.now();
+			const eight_hours_from_now = now.plus({hours: 8});
+			const expiration_time = eight_hours_from_now.hour;
+			this.form_invite_edit.get('expiration_enabled')?.setValue(false);
+			this.form_invite_edit.get('expiration_date')?.setValue(eight_hours_from_now);
+			this.form_invite_edit.get('expiration_time')?.setValue(expiration_time);
+		}
 	}
 
 	public onEditUser(user: User): void {
 		console.log('edit user', user);
+	}
+
+	private createPendingEvent(dirty: boolean): void {
+		if (!dirty && this.active_event?.type !== 'PENDING') return;
+		if (!dirty) return this.eventService.registerEvent(null);
+		const message = 'update';
+		this.eventService.registerEvent(
+			new EventData({
+				type: 'PENDING',
+				message: message,
+			}),
+		);
+	}
+
+	private evaluateDirtyCount(): void {
+		const contrtol_count = Object.keys(this.form_invite_edit.controls)
+			.filter((key) => this.form_invite_edit.get(key) instanceof FormControl)
+			.filter((key) => this.form_invite_edit.get(key)?.dirty).length;
+		this.form_dirty.set(contrtol_count > 0);
 	}
 }

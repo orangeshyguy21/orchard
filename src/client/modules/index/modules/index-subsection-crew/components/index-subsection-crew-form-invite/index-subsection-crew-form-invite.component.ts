@@ -5,10 +5,11 @@ import {FormGroup} from '@angular/forms';
 import {DateTime} from 'luxon';
 import {Observable} from 'rxjs';
 import {startWith, map} from 'rxjs/operators';
-import {MatAutocompleteTrigger, MatAutocompleteSelectedEvent, MatAutocomplete} from '@angular/material/autocomplete';
+import {MatAutocompleteTrigger, MatAutocomplete} from '@angular/material/autocomplete';
 import {MatCheckboxChange} from '@angular/material/checkbox';
 /* Application Dependencies */
 import {SettingService} from '@client/modules/settings/services/setting/setting.service';
+import {Invite} from '@client/modules/crew/classes/invite.class';
 /* Shared Dependencies */
 import {UserRole} from '@shared/generated.types';
 
@@ -30,9 +31,10 @@ export class IndexSubsectionCrewFormInviteComponent implements OnInit {
 
 	public form_group = input.required<FormGroup>();
 	public open = input.required<boolean>();
+	public mode = input.required<'create' | 'edit'>();
 
 	public close = output<void>();
-	public cancel = output<string>();
+	public cancel = output<keyof Invite>();
 
 	public focused_label = signal<boolean>(false);
 

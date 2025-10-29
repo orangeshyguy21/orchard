@@ -9,7 +9,7 @@ import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 /* Local Dependencies */
 import {OrchardCrewInvite} from './crewinvite.model';
-import {InviteCreateInput} from './crewinvite.input';
+import {InviteCreateInput, InviteUpdateInput} from './crewinvite.input';
 
 @Injectable()
 export class CrewInviteService {
@@ -23,11 +23,10 @@ export class CrewInviteService {
 	async getInvites(tag: string): Promise<OrchardCrewInvite[]> {
 		try {
 			const invites = await this.inviteService.getInvites();
-			console.log('Server got invites', invites);
 			return invites.map((invite) => new OrchardCrewInvite(invite));
 		} catch (error) {
 			const error_code = this.errorService.resolveError(this.logger, error, tag, {
-				errord: OrchardErrorCode.UserError,
+				errord: OrchardErrorCode.InviteError,
 			});
 			throw new OrchardApiError(error_code);
 		}
@@ -39,7 +38,19 @@ export class CrewInviteService {
 			return new OrchardCrewInvite(invite);
 		} catch (error) {
 			const error_code = this.errorService.resolveError(this.logger, error, tag, {
-				errord: OrchardErrorCode.UserError,
+				errord: OrchardErrorCode.InviteError,
+			});
+			throw new OrchardApiError(error_code);
+		}
+	}
+
+	async updateInvite(tag: string, updateInvite: InviteUpdateInput): Promise<OrchardCrewInvite> {
+		try {
+			const invite = await this.inviteService.updateInvite(updateInvite.id, updateInvite);
+			return new OrchardCrewInvite(invite);
+		} catch (error) {
+			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+				errord: OrchardErrorCode.InviteError,
 			});
 			throw new OrchardApiError(error_code);
 		}

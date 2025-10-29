@@ -23,7 +23,6 @@ export class InviteService {
 	 */
 	public async getInvites(): Promise<Invite[]> {
 		const now = Math.floor(DateTime.now().toSeconds());
-		console.log('Server getting invites', now);
 		return this.inviteRepository.find({
 			where: [
 				{
@@ -68,6 +67,33 @@ export class InviteService {
 			claimed_by: null,
 			created_at,
 		});
+		return this.inviteRepository.save(invite);
+	}
+
+	/**
+	 * Update an existing invite (can only update unclaimed invites)
+	 * @param {string} invite_id - The ID of the invite to update
+	 * @param {Partial<{label: string | null, role: UserRole, expires_at: number | null}>} updates - Fields to update
+	 * @returns {Promise<Invite>} The updated invite
+	 * @throws {Error} If invite not found or already claimed
+	 */
+	public async updateInvite(
+		invite_id: string,
+		updates: Partial<{
+			label: string | null;
+			role: UserRole;
+			expires_at: number | null;
+		}>,
+	): Promise<Invite> {
+		const invite = await this.inviteRepository.findOne({
+			where: {id: invite_id},
+			relations: ['created_by'],
+		});
+		if (!invite) throw new Error('Invite not found');
+		if (invite.used_at !== null) throw new Error('Cannot update an invite that has already been claimed');
+		if (updates.label !== undefined) invite.label = updates.label;
+		if (updates.role !== undefined) invite.role = updates.role;
+		if (updates.expires_at !== undefined) invite.expires_at = updates.expires_at;
 		return this.inviteRepository.save(invite);
 	}
 

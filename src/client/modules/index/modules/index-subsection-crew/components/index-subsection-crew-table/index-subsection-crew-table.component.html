@@ -105,12 +105,15 @@
 												></orc-index-subsection-crew-table-invite>
 											}
 											@case (MoreEntityType.EDIT_INVITE) {
-												<!-- <orc-index-subsection-crew-form-invite
-													[form_group]="form_invite"
-													[open]="true"
-													(close)="onCloseInvite()"
-													(cancel)="onCancel($event)"
-												></orc-index-subsection-crew-form-invite> -->
+												<div class="p-b-1">
+													<orc-index-subsection-crew-form-invite
+														[form_group]="form_invite()"
+														[open]="true"
+														[mode]="'edit'"
+														(close)="onCloseInvite(entity)"
+														(cancel)="onCancelInviteControl($event)"
+													></orc-index-subsection-crew-form-invite>
+												</div>
 											}
 											@case (MoreEntityType.EDIT_USER) {
 												show edit user form

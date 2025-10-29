@@ -65,5 +65,21 @@ mutation crew_invite_create($createInvite: InviteCreateInput!) {
         claimed_by_id
         used_at
         expires_at
+        created_at
+    }
+}`;
+
+export const INVITE_UPDATE_MUTATION = `
+mutation crew_invite_update($updateInvite: InviteUpdateInput!) {
+    crew_invite_update(updateInvite: $updateInvite) {
+        id
+        token
+        label
+        role
+        created_by_id
+        claimed_by_id
+        used_at
+        expires_at
+        created_at
     }
 }`;

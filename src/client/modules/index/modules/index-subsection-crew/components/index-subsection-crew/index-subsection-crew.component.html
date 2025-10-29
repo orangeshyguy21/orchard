@@ -25,12 +25,13 @@
 		</div>
 		<div class="category-rule"></div>
 	</div>
-	<div class="orc-animation-collapsible" [class.animation-open]="form_open()">
+	<div class="orc-animation-collapsible" [class.animation-open]="form_invite_create_open()">
 		<div class="orc-animation-collapsible-inner">
 			<div class="index-subsection-crew-form-target" #invite_form></div>
 			<orc-index-subsection-crew-form-invite
-				[form_group]="form_invite"
-				[open]="form_open()"
+				[form_group]="form_invite_create"
+				[open]="form_invite_create_open()"
+				[mode]="'create'"
 				(close)="onCloseInvite()"
 				(cancel)="onCancel($event)"
 			></orc-index-subsection-crew-form-invite>
@@ -42,6 +43,9 @@
 			<orc-index-subsection-crew-table
 				[data]="data()"
 				[loading]="loading()"
+				[create_open]="form_invite_create_open()"
+				[form_invite]="form_invite_edit"
+				[table_form_id]="table_form_id()"
 				(editInvite)="onEditInvite($event)"
 				(editUser)="onEditUser($event)"
 			></orc-index-subsection-crew-table>

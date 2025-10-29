@@ -15,3 +15,18 @@ export class InviteCreateInput {
 	@Field(() => UnixTimestamp, {nullable: true})
 	expires_at?: number;
 }
+
+@InputType()
+export class InviteUpdateInput {
+	@Field()
+	id: string;
+
+	@Field({nullable: true})
+	label?: string;
+
+	@Field(() => UserRole, {nullable: true})
+	role: UserRole;
+
+	@Field(() => UnixTimestamp, {nullable: true})
+	expires_at?: number;
+}

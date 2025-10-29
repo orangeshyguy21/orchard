@@ -89,6 +89,13 @@ input InviteCreateInput {
   role: UserRole!
 }
 
+input InviteUpdateInput {
+  expires_at: UnixTimestamp
+  id: String!
+  label: String
+  role: UserRole
+}
+
 enum LightningAddressType {
   HYBRID_NESTED_WITNESS_PUBKEY_HASH
   NESTED_WITNESS_PUBKEY_HASH
@@ -208,6 +215,7 @@ type Mutation {
   auth_authentication_revoke: Boolean!
   auth_initialize(initialize: InitializationInput!): OrchardAuthentication!
   crew_invite_create(createInvite: InviteCreateInput!): OrchardCrewInvite!
+  crew_invite_update(updateInvite: InviteUpdateInput!): OrchardCrewInvite!
   crew_user_update_name(updateUserName: UserNameUpdateInput!): OrchardCrewUser!
   crew_user_update_password(updateUserPassword: UserPasswordUpdateInput!): OrchardCrewUser!
   mint_contact_add(mint_contact_update: MintContactUpdateInput!): OrchardMintContactUpdate!

@@ -6,7 +6,6 @@ import {
 	Locale,
 	Theme,
 	Model,
-	IndexCrewSettings,
 	MintDashboardSettings,
 	MintKeysetsSettings,
 	MintDatabaseSettings,
@@ -27,8 +26,6 @@ export class LocalStorageService {
 		LOCALE_KEY: 'v0.setting.locale',
 		THEME_KEY: 'v0.setting.theme',
 		MODEL_KEY: 'v0.setting.model',
-		/* Index Settings */
-		INDEX_CREW_KEY: 'v0.index.crew.settings',
 		/* Mint Settings */
 		MINT_DASHBOARD_KEY: 'v0.mint.dashboard.settings',
 		MINT_CONFIG_KEY: 'v0.mint.config.settings',
@@ -96,11 +93,6 @@ export class LocalStorageService {
 		if (!model) return {model: null};
 		return model;
 	}
-	getIndexCrewSettings(): IndexCrewSettings {
-		const settings = this.getItem<IndexCrewSettings>(this.STORAGE_KEYS.INDEX_CREW_KEY);
-		if (!settings) return {tertiary_nav: null};
-		return settings;
-	}
 	getMintDashboardSettings(): MintDashboardSettings {
 		const settings = this.getItem<MintDashboardSettings>(this.STORAGE_KEYS.MINT_DASHBOARD_KEY);
 		if (!settings) return {date_start: null, units: null, interval: null, type: null, tertiary_nav: null};
@@ -144,9 +136,6 @@ export class LocalStorageService {
 	}
 	setModel(model: Model): void {
 		this.setItem(this.STORAGE_KEYS.MODEL_KEY, model);
-	}
-	setIndexCrewSettings(settings: IndexCrewSettings): void {
-		this.setItem(this.STORAGE_KEYS.INDEX_CREW_KEY, settings);
 	}
 	setMintDashboardSettings(settings: MintDashboardSettings): void {
 		this.setItem(this.STORAGE_KEYS.MINT_DASHBOARD_KEY, settings);

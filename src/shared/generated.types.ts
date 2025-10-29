@@ -104,6 +104,13 @@ export type InviteCreateInput = {
   role: UserRole;
 };
 
+export type InviteUpdateInput = {
+  expires_at?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  id: Scalars['String']['input'];
+  label?: InputMaybe<Scalars['String']['input']>;
+  role?: InputMaybe<UserRole>;
+};
+
 export enum LightningAddressType {
   HybridNestedWitnessPubkeyHash = 'HYBRID_NESTED_WITNESS_PUBKEY_HASH',
   NestedWitnessPubkeyHash = 'NESTED_WITNESS_PUBKEY_HASH',
@@ -224,6 +231,7 @@ export type Mutation = {
   auth_authentication_revoke: Scalars['Boolean']['output'];
   auth_initialize: OrchardAuthentication;
   crew_invite_create: OrchardCrewInvite;
+  crew_invite_update: OrchardCrewInvite;
   crew_user_update_name: OrchardCrewUser;
   crew_user_update_password: OrchardCrewUser;
   mint_contact_add: OrchardMintContactUpdate;
@@ -262,6 +270,11 @@ export type MutationAuth_InitializeArgs = {
 
 export type MutationCrew_Invite_CreateArgs = {
   createInvite: InviteCreateInput;
+};
+
+
+export type MutationCrew_Invite_UpdateArgs = {
+  updateInvite: InviteUpdateInput;
 };
 
 

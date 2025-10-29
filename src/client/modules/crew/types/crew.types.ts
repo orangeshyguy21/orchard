@@ -23,3 +23,7 @@ export type CrewInvitesResponse = {
 export type CrewInviteCreateResponse = {
 	crew_invite_create: OrchardCrewInvite;
 };
+
+export type CrewInviteUpdateResponse = {
+	crew_invite_update: OrchardCrewInvite;
+};

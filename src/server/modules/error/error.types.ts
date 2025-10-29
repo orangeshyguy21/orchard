@@ -42,6 +42,8 @@ export enum OrchardErrorCode {
 	TaprootAssetsSupportError = 60004,
 	// User Level Errors
 	UserError = 70001,
+	// Invite Level Errors
+	InviteError = 80001,
 }
 
 export const OrchardErrorMessages: Record<string, string> = {
@@ -77,4 +79,5 @@ export const OrchardErrorMessages: Record<string, string> = {
 	[OrchardErrorCode.TaprootAssetsRpcActionError]: 'TaprootAssetsRpcActionError',
 	[OrchardErrorCode.TaprootAssetsSupportError]: 'TaprootAssetsSupportError',
 	[OrchardErrorCode.UserError]: 'UserError',
+	[OrchardErrorCode.InviteError]: 'InviteError',
 };
