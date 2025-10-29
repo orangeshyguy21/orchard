@@ -23,6 +23,7 @@ export class CrewInviteService {
 	async getInvites(tag: string): Promise<OrchardCrewInvite[]> {
 		try {
 			const invites = await this.inviteService.getInvites();
+			console.log('invites', invites);
 			return invites.map((invite) => new OrchardCrewInvite(invite));
 		} catch (error) {
 			const error_code = this.errorService.resolveError(this.logger, error, tag, {

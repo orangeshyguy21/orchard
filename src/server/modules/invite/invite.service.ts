@@ -2,7 +2,7 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 /* Vendor Dependencies */
-import {Repository, MoreThan} from 'typeorm';
+import {Repository, MoreThan, IsNull} from 'typeorm';
 import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {UserRole} from '@server/modules/user/user.enums';
@@ -26,11 +26,11 @@ export class InviteService {
 		return this.inviteRepository.find({
 			where: [
 				{
-					used_at: null,
-					expires_at: null, // never expires
+					used_at: IsNull(),
+					expires_at: IsNull(), // never expires
 				},
 				{
-					used_at: null,
+					used_at: IsNull(),
 					expires_at: MoreThan(now), // expires in the future
 				},
 			],

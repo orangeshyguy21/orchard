@@ -181,8 +181,32 @@ export class IndexSubsectionCrewComponent implements OnInit {
 		this.eventService.registerEvent(null);
 	}
 
-	public onCancel(control_name: string): void {
-		this.form_invite_create.get(control_name)?.reset();
+	public onCancel(control_name: 'label' | 'role' | 'expiration'): void {
+		if (control_name === 'role') {
+			this.form_invite_create.get('role')?.setValue(UserRole.Reader);
+			this.form_invite_create.get(control_name)?.markAsPristine();
+			this.form_invite_create.get(control_name)?.markAsUntouched();
+			this.form_invite_create.get(control_name)?.updateValueAndValidity();
+		}
+		if (control_name === 'label') {
+			this.form_invite_create.get('label')?.setValue('');
+			this.form_invite_create.get(control_name)?.markAsPristine();
+			this.form_invite_create.get(control_name)?.markAsUntouched();
+			this.form_invite_create.get(control_name)?.updateValueAndValidity();
+		}
+		if (control_name === 'expiration') {
+			const now = DateTime.now();
+			const eight_hours_from_now = now.plus({hours: 8});
+			const expiration_time = eight_hours_from_now.hour;
+			this.form_invite_create.get('expiration_time')?.setValue(expiration_time);
+			this.form_invite_create.get('expiration_date')?.setValue(eight_hours_from_now);
+			this.form_invite_create.get('expiration_time')?.markAsPristine();
+			this.form_invite_create.get('expiration_time')?.markAsUntouched();
+			this.form_invite_create.get('expiration_time')?.updateValueAndValidity();
+			this.form_invite_create.get('expiration_date')?.markAsPristine();
+			this.form_invite_create.get('expiration_date')?.markAsUntouched();
+			this.form_invite_create.get('expiration_date')?.updateValueAndValidity();
+		}
 	}
 
 	private onConfirmedEvent(): void {
@@ -332,6 +356,8 @@ export class IndexSubsectionCrewComponent implements OnInit {
 			this.form_invite_edit.get('expiration_enabled')?.setValue(false);
 			this.form_invite_edit.get('expiration_date')?.setValue(eight_hours_from_now);
 			this.form_invite_edit.get('expiration_time')?.setValue(expiration_time);
+			this.form_invite_edit.get('expiration_date')?.disable();
+			this.form_invite_edit.get('expiration_time')?.disable();
 		}
 	}
 

@@ -34,15 +34,11 @@ export class IndexSubsectionCrewFormInviteComponent implements OnInit {
 	public mode = input.required<'create' | 'edit'>();
 
 	public close = output<void>();
-	public cancel = output<keyof Invite>();
+	public cancel = output<'label' | 'role' | 'expiration'>();
 
+	public focused_role = signal<boolean>(false);
 	public focused_label = signal<boolean>(false);
-
-	public dirty_label = computed(() => {
-		const control = this.form_group().get('label');
-		if (!control) return false;
-		return control.dirty;
-	});
+	public focused_expireation = signal<boolean>(false);
 
 	public user_role_options: {value: UserRole; label: string}[] = [
 		{value: UserRole.Admin, label: 'Admin'},

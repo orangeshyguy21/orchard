@@ -142,12 +142,29 @@ export class IndexSubsectionCrewTableComponent {
 		this.form_invite().updateValueAndValidity();
 	}
 
-	public onCancelInviteControl(control_name: keyof Invite): void {
-		this.form_invite()
-			.get(control_name)
-			?.setValue((this.more_entity() as Invite)?.[control_name]);
-		this.form_invite().get(control_name)?.markAsPristine();
-		this.form_invite().get(control_name)?.markAsUntouched();
-		this.form_invite().get(control_name)?.updateValueAndValidity();
+	public onCancelInviteControl(control_name: 'label' | 'role' | 'expiration'): void {
+		const invite = this.more_entity() as Invite;
+		if (control_name === 'label' || control_name === 'role') {
+			this.form_invite().get(control_name)?.setValue(invite[control_name]);
+			this.form_invite().get(control_name)?.markAsPristine();
+			this.form_invite().get(control_name)?.markAsUntouched();
+			this.form_invite().get(control_name)?.updateValueAndValidity();
+		}
+		if (control_name === 'expiration' && invite.expires_at !== null) {
+			const expiration_datetime = DateTime.fromSeconds(invite.expires_at);
+			const expiration_hour = expiration_datetime.hour;
+			this.form_invite().get('expiration_enabled')?.setValue(true);
+			this.form_invite().get('expiration_date')?.setValue(expiration_datetime);
+			this.form_invite().get('expiration_time')?.setValue(expiration_hour);
+			this.form_invite().get('expiration_enabled')?.markAsPristine();
+			this.form_invite().get('expiration_enabled')?.markAsUntouched();
+			this.form_invite().get('expiration_enabled')?.updateValueAndValidity();
+			this.form_invite().get('expiration_date')?.markAsPristine();
+			this.form_invite().get('expiration_date')?.markAsUntouched();
+			this.form_invite().get('expiration_date')?.updateValueAndValidity();
+			this.form_invite().get('expiration_time')?.markAsPristine();
+			this.form_invite().get('expiration_time')?.markAsUntouched();
+			this.form_invite().get('expiration_time')?.updateValueAndValidity();
+		}
 	}
 }
