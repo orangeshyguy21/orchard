@@ -1,7 +1,5 @@
 /* Core Dependencies */
 import {Injectable, Logger} from '@nestjs/common';
-/* Vendor Dependencies */
-import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {ErrorService} from '@server/modules/error/error.service';
 import {InviteService} from '@server/modules/invite/invite.service';

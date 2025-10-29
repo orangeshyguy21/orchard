@@ -66,7 +66,6 @@ export class AuthSubsectionAuthenticationComponent implements OnInit {
 				this.openInterior();
 			},
 			error: (error) => {
-				console.error('error in component authentication', error);
 				this.errorControl(error);
 			},
 		});

@@ -12,6 +12,10 @@ export type AuthenticationResponse = {
 	auth_authentication: OrchardAuthentication;
 };
 
+export type SignupResponse = {
+	auth_signup: OrchardAuthentication;
+};
+
 export type RefreshAuthenticationResponse = {
 	auth_authentication_refresh: OrchardAuthentication;
 };

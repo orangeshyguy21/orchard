@@ -73,7 +73,7 @@ export class AuthSubsectionInviteComponent implements OnInit {
 		if (error?.['password_mismatch']) this.errors[control_name] = 'Password mismatch';
 		if (error?.['minlength']) this.errors[control_name] = `Minimum length is ${error['minlength'].requiredLength} characters`;
 		if (error?.['maxlength']) this.errors[control_name] = `Maximum length is ${error['maxlength'].requiredLength} characters`;
-		if (error?.['setup_key']) this.errors[control_name] = 'Invalid setup key';
+		if (error?.['invite_key']) this.errors[control_name] = 'Invalid invite key';
 		if (error?.['unique_username']) this.errors[control_name] = 'Username already exists';
 	}
 
@@ -93,21 +93,20 @@ export class AuthSubsectionInviteComponent implements OnInit {
 		this.form_invite.markAllAsTouched();
 		this.validateForm();
 		if (this.form_invite.invalid) return;
-		// this.authService.initialize(this.form_invite.value.key, this.form_invite.value.name, this.form_invite.value.password).subscribe({
-		// 	next: () => {
-		// 		this.authService.clearInitializationCache();
-		// 		this.router.navigate(['/']);
-		// 	},
-		// 	error: (error) => {
-		// 		this.errorControl(error);
-		// 	},
-		// });
+		this.authService.signup(this.form_invite.value.key, this.form_invite.value.name, this.form_invite.value.password).subscribe({
+			next: () => {
+				this.router.navigate(['/']);
+			},
+			error: (error) => {
+				this.errorControl(error);
+			},
+		});
 	}
 
 	private errorControl(error: string | OrchardErrors): void {
-		const has_setup_key_error = (error as OrchardErrors)?.errors?.some((err) => err?.code === 10006);
-		if (has_setup_key_error) {
-			this.form_invite.get('key')?.setErrors({setup_key: true});
+		const has_invite_key_error = (error as OrchardErrors)?.errors?.some((err) => err?.code === 80003);
+		if (has_invite_key_error) {
+			this.form_invite.get('key')?.setErrors({invite_key: true});
 		}
 		const has_unique_username_error = (error as OrchardErrors)?.errors?.some((err) => err?.code === 10007);
 		if (has_unique_username_error) {
@@ -116,3 +115,5 @@ export class AuthSubsectionInviteComponent implements OnInit {
 		this.validateForm();
 	}
 }
+
+// DPjqsdYwtmBQ

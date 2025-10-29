@@ -122,4 +122,44 @@ export class InviteService {
 
 		return token;
 	}
+
+	/**
+	 * Validate an invite token (throws error if invalid)
+	 * @param {string} token - The invite token to validate
+	 * @returns {Promise<Invite>} The valid invite
+	 * @throws {Error} If invite is not found, already claimed, or expired
+	 */
+	public async getValidInvite(token: string): Promise<Invite | null> {
+		// Find the invite by token
+		const invite = await this.inviteRepository.findOne({
+			where: {token},
+			relations: ['created_by'],
+		});
+		if (!invite) return null;
+		if (invite.used_at !== null) return null;
+		if (invite.expires_at !== null) {
+			const now = Math.floor(DateTime.now().toSeconds());
+			if (invite.expires_at <= now) return null;
+		}
+		return invite;
+	}
+
+	/**
+	 * Mark an invite as claimed by a user
+	 * @param {string} invite_id - The ID of the invite to claim
+	 * @param {string} claimed_by_id - The ID of the user claiming the invite
+	 * @returns {Promise<Invite>} The updated invite
+	 * @throws {Error} If invite not found or already claimed
+	 */
+	public async claimInvite(invite_id: string, claimed_by_id: string): Promise<Invite> {
+		const invite = await this.inviteRepository.findOne({
+			where: {id: invite_id},
+			relations: ['created_by'],
+		});
+		if (!invite) throw new Error('Invite not found');
+		if (invite.used_at !== null) throw new Error('Invite has already been claimed');
+		invite.used_at = Math.floor(DateTime.now().toSeconds());
+		invite.claimed_by = {id: claimed_by_id} as User;
+		return this.inviteRepository.save(invite);
+	}
 }

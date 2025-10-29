@@ -35,15 +35,15 @@ export class CrewInviteResolver {
 		this.logger.debug(tag);
 		const user = context.req.user;
 		if (!user) throw new OrchardApiError(OrchardErrorCode.UserError);
+		if (createInvite.role === UserRole.ADMIN) throw new OrchardApiError(OrchardErrorCode.InviteNoAdminError);
 		return await this.crewInviteService.createInvite(tag, user.id, createInvite);
 	}
 
 	@Roles(UserRole.ADMIN)
 	@Mutation(() => OrchardCrewInvite)
-	async crew_invite_update(@Context() context: any, @Args('updateInvite') updateInvite: InviteUpdateInput): Promise<OrchardCrewInvite> {
+	async crew_invite_update(@Args('updateInvite') updateInvite: InviteUpdateInput): Promise<OrchardCrewInvite> {
 		const tag = 'MUTATION { crew_invite_update }';
-		const user = context.req.user;
-		console.log(user);
+		if (updateInvite.role === UserRole.ADMIN) throw new OrchardApiError(OrchardErrorCode.InviteNoAdminError);
 		this.logger.debug(tag);
 		return await this.crewInviteService.updateInvite(tag, updateInvite);
 	}

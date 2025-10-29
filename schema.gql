@@ -69,6 +69,12 @@ enum AiMessageRole {
   USER
 }
 
+input AuthSignupInput {
+  key: String!
+  name: String!
+  password: String!
+}
+
 input AuthenticationInput {
   name: String!
   password: String!
@@ -214,6 +220,7 @@ type Mutation {
   auth_authentication_refresh: OrchardAuthentication!
   auth_authentication_revoke: Boolean!
   auth_initialize(initialize: InitializationInput!): OrchardAuthentication!
+  auth_signup(signup: AuthSignupInput!): OrchardAuthentication!
   crew_invite_create(createInvite: InviteCreateInput!): OrchardCrewInvite!
   crew_invite_update(updateInvite: InviteUpdateInput!): OrchardCrewInvite!
   crew_user_update_name(updateUserName: UserNameUpdateInput!): OrchardCrewUser!

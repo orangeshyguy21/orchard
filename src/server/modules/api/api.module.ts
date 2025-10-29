@@ -6,6 +6,7 @@ import {StatusModule} from './status/status.module';
 // Auth Endpoints
 import {AuthInitializationModule} from './auth/initialization/initialization.module';
 import {AuthAuthenticationModule} from './auth/authentication/authentication.module';
+import {AuthSignupModule} from './auth/signup/authsignup.module';
 // Bitcoin Endpoints
 import {BitcoinNetworkModule} from './bitcoin/network/btcnetwork.module';
 import {BitcoinBlockchainModule} from './bitcoin/blockchain/btcblockchain.module';
@@ -50,6 +51,7 @@ import {CrewInviteModule} from './crew/crewinvite/crewinvite.module';
 		StatusModule,
 		AuthInitializationModule,
 		AuthAuthenticationModule,
+		AuthSignupModule,
 		BitcoinNetworkModule,
 		BitcoinBlockchainModule,
 		BitcoinBlockModule,
