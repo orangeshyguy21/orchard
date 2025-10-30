@@ -29,7 +29,7 @@ export class AuthSignupService {
 			if (!invite) throw OrchardErrorCode.InviteInvalidError;
 			const user = await this.userService.getUserByName(signup.name);
 			if (user) throw OrchardErrorCode.UniqueUsernameError;
-			const new_user = await this.userService.createUser(signup.name, signup.password, invite.role);
+			const new_user = await this.userService.createUser(signup.name, signup.password, invite.role, invite.label);
 			await this.inviteService.claimInvite(invite.id, new_user.id);
 			const token = await this.authService.getToken(new_user.id, signup.password);
 			if (!token) throw OrchardErrorCode.AuthenticationError;

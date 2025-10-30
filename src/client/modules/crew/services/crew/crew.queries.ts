@@ -4,6 +4,7 @@ export const USER_QUERY = `{
         name
         role
         active
+        label
         created_at
     }
 }`;
@@ -14,6 +15,7 @@ export const USERS_QUERY = `{
         name
         role
         active
+        label
         created_at
     }
 }`;
@@ -25,6 +27,7 @@ mutation crew_user_update_name($name: String!) {
         name
         role
         active
+        label
         created_at
     }
 }`;
@@ -36,6 +39,7 @@ mutation crew_user_update_password($password_old: String!, $password_new: String
         name
         role
         active
+        label
         created_at
     }
 }`;
