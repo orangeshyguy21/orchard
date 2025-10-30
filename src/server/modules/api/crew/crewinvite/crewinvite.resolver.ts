@@ -18,6 +18,7 @@ export class CrewInviteResolver {
 
 	constructor(private crewInviteService: CrewInviteService) {}
 
+	@Roles(UserRole.ADMIN)
 	@Query(() => [OrchardCrewInvite])
 	async crew_invites(@Context() context: any): Promise<OrchardCrewInvite[]> {
 		const tag = 'GET { crew_invites }';

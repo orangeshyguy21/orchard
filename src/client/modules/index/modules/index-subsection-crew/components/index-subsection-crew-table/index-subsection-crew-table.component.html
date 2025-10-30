@@ -148,6 +148,7 @@
 											@case (MoreEntityType.EDIT_USER) {
 												<div class="p-b-1">
 													<orc-index-subsection-crew-form-user
+														[form_group]="form_user()"
 														[id_user]="id_user()"
 														[id_entity]="entity.id"
 														[role_options]="role_options()"

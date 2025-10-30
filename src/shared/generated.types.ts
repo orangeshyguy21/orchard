@@ -87,6 +87,12 @@ export enum AiMessageRole {
   User = 'USER'
 }
 
+export type AuthSignupInput = {
+  key: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+};
+
 export type AuthenticationInput = {
   name: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -230,6 +236,7 @@ export type Mutation = {
   auth_authentication_refresh: OrchardAuthentication;
   auth_authentication_revoke: Scalars['Boolean']['output'];
   auth_initialize: OrchardAuthentication;
+  auth_signup: OrchardAuthentication;
   crew_invite_create: OrchardCrewInvite;
   crew_invite_update: OrchardCrewInvite;
   crew_user_update_name: OrchardCrewUser;
@@ -265,6 +272,11 @@ export type MutationAuth_AuthenticationArgs = {
 
 export type MutationAuth_InitializeArgs = {
   initialize: InitializationInput;
+};
+
+
+export type MutationAuth_SignupArgs = {
+  signup: AuthSignupInput;
 };
 
 

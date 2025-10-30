@@ -3,7 +3,7 @@ import {ChangeDetectionStrategy, Component, OnInit, signal, effect, HostListener
 import {FormGroup, FormControl, Validators} from '@angular/forms';
 /* Vendor Dependencies */
 import {DateTime} from 'luxon';
-import {Subscription, lastValueFrom, forkJoin} from 'rxjs';
+import {Subscription, lastValueFrom, forkJoin, catchError, of} from 'rxjs';
 import {MatTableDataSource} from '@angular/material/table';
 /* Application Dependencies */
 import {EventService} from '@client/modules/event/services/event/event.service';
@@ -155,9 +155,25 @@ export class IndexSubsectionCrewComponent implements OnInit {
 	   Data                      
 	******************************************************** */
 
+	/**
+	 * Loads crew data (users and invites) and combines into a single sorted table
+	 * Allows partial failure - if one endpoint fails, the other will still display
+	 * Invites can fail due to authorization errors, but users will still be displayed
+	 * @returns {Promise<void>}
+	 */
 	private async loadCrewData(): Promise<void> {
-		const users_obs = this.crewService.loadUsers();
-		const invites_obs = this.crewService.loadInvites();
+		const users_obs = this.crewService.loadUsers().pipe(
+			catchError((error) => {
+				console.error('Failed to load users:', error);
+				return of([]);
+			}),
+		);
+		const invites_obs = this.crewService.loadInvites().pipe(
+			catchError((error) => {
+				console.error('Failed to load invites:', error);
+				return of([]);
+			}),
+		);
 		const [users, invites] = await lastValueFrom(forkJoin([users_obs, invites_obs]));
 		const combined_data = [...users, ...invites].sort((a, b) => b.created_at - a.created_at);
 		this.data.set(new MatTableDataSource(combined_data));
