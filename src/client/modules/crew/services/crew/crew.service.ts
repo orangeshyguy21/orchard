@@ -17,6 +17,7 @@ import {
 	CrewUsersResponse,
 	CrewUserNameUpdateResponse,
 	CrewUserPasswordUpdateResponse,
+	CrewUserUpdateResponse,
 	CrewInvitesResponse,
 	CrewInviteCreateResponse,
 	CrewInviteUpdateResponse,
@@ -27,6 +28,7 @@ import {
 	USERS_QUERY,
 	USER_NAME_UPDATE_MUTATION,
 	USER_PASSWORD_UPDATE_MUTATION,
+	USER_UPDATE_MUTATION,
 	INVITS_QUERY,
 	INVITE_CREATE_MUTATION,
 	INVITE_UPDATE_MUTATION,
@@ -171,6 +173,21 @@ export class CrewService {
 			}),
 		);
 	}
+
+	public updateUser(id: string, label: string | null = null, role: UserRole | null = null, active: boolean | null = null): Observable<User> {
+		const query = getApiQuery(USER_UPDATE_MUTATION, {updateUser: {id, label, role, active}});
+		return this.http.post<OrchardRes<CrewUserUpdateResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return new User(response.data.crew_user_update);
+			}),
+			catchError((error) => {
+				console.error('Error updating user:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+	
 
 	public createInvite(role: UserRole, label: string | null = null, expires_at: number | null = null): Observable<Invite> {
 		const query = getApiQuery(INVITE_CREATE_MUTATION, {createInvite: {role, label, expires_at}});

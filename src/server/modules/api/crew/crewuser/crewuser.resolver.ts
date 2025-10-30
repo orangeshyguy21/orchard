@@ -4,10 +4,12 @@ import {Resolver, Query, Mutation, Args, Context} from '@nestjs/graphql';
 /* Application Dependencies */
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
+import {UserRole} from '@server/modules/user/user.enums';
+import {Roles} from '@server/modules/auth/decorators/auth.decorator';
 /* Local Dependencies */
 import {CrewUserService} from './crewuser.service';
 import {OrchardCrewUser} from './crewuser.model';
-import {UserNameUpdateInput, UserPasswordUpdateInput} from './crewuser.input';
+import {UserNameUpdateInput, UserPasswordUpdateInput, UserUpdateInput} from './crewuser.input';
 
 @Resolver()
 export class CrewUserResolver {
@@ -53,5 +55,16 @@ export class CrewUserResolver {
 		const user = context.req.user;
 		if (!user) throw new OrchardApiError(OrchardErrorCode.UserError);
 		return await this.crewUserService.updateUserPassword(tag, user.id, updateUserPassword);
+	}
+
+	@Roles(UserRole.ADMIN)
+	@Mutation(() => OrchardCrewUser)
+	async crew_user_update(
+		@Context() context: any,
+		@Args('updateUser') updateUser: UserUpdateInput,
+	): Promise<OrchardCrewUser> {
+		const tag = 'MUTATION { crew_user_update }';
+		this.logger.debug(tag);
+		return await this.crewUserService.updateUser(tag, updateUser);
 	}
 }

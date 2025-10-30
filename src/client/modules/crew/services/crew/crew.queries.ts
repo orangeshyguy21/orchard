@@ -44,6 +44,18 @@ mutation crew_user_update_password($password_old: String!, $password_new: String
     }
 }`;
 
+export const USER_UPDATE_MUTATION = `
+mutation crew_user_update($updateUser: UserUpdateInput!) {
+    crew_user_update(updateUser: $updateUser) {
+        id
+        name
+        role
+        active
+        label
+        created_at
+    }
+}`;
+
 export const INVITS_QUERY = `{
     crew_invites {
         id

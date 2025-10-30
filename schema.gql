@@ -223,6 +223,7 @@ type Mutation {
   auth_signup(signup: AuthSignupInput!): OrchardAuthentication!
   crew_invite_create(createInvite: InviteCreateInput!): OrchardCrewInvite!
   crew_invite_update(updateInvite: InviteUpdateInput!): OrchardCrewInvite!
+  crew_user_update(updateUser: UserUpdateInput!): OrchardCrewUser!
   crew_user_update_name(updateUserName: UserNameUpdateInput!): OrchardCrewUser!
   crew_user_update_password(updateUserPassword: UserPasswordUpdateInput!): OrchardCrewUser!
   mint_contact_add(mint_contact_update: MintContactUpdateInput!): OrchardMintContactUpdate!
@@ -996,4 +997,11 @@ enum UserRole {
   ADMIN
   MANAGER
   READER
+}
+
+input UserUpdateInput {
+  active: Boolean
+  id: String!
+  label: String
+  role: UserRole
 }

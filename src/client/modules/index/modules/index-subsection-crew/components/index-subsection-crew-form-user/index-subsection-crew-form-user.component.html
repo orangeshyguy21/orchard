@@ -94,10 +94,57 @@
 									}
 								</mat-form-field>
 							</orc-form-field-dynamic>
+
+							<!-- <div>
+								<mat-radio-group formControlName="active" aria-label="Change user status">
+									<mat-radio-button [value]="true">
+										<div class="flex">
+											<div class="label-state label-success">Active</div>
+										</div>
+									</mat-radio-button>
+									<mat-radio-button [value]="false">
+										<div class="flex">
+											<div class="label-state label-default">Inactive</div>
+										</div>
+									</mat-radio-button>
+								</mat-radio-group>
+							</div> -->
 						</div>
 					</div>
 
 					<div class="flex-1 flex flex-column flex-gap-1">
+						<div class="flex flex-items-center flex-gap-0-5">
+							<div class="title-form-section">User Status</div>
+							<mat-icon class="icon-sm">info</mat-icon>
+						</div>
+
+						<div>
+							<!-- <mat-radio-group formControlName="active" aria-label="Change user status">
+								<mat-radio-button [value]="true">
+									<div class="flex">
+										<div class="label-state label-success">Active</div>
+									</div>
+								</mat-radio-button>
+								<mat-radio-button [value]="false">
+									<div class="flex">
+										<div class="label-state label-default">Inactive</div>
+									</div>
+								</mat-radio-button>
+							</mat-radio-group> -->
+
+							<mat-slide-toggle formControlName="active">
+								<div class="p-l-1">
+									@if (form_group().get('active')?.value) {
+										<div class="label-state label-success">Active</div>
+									} @else {
+										<div class="label-state label-default">Inactive</div>
+									}
+								</div>
+							</mat-slide-toggle>
+						</div>
+					</div>
+
+					<!-- <div class="flex-1 flex flex-column flex-gap-1">
 						<div class="flex flex-items-center flex-gap-0-5">
 							<div class="title-form-section">User Actions</div>
 							<mat-icon class="icon-sm">info</mat-icon>
@@ -107,7 +154,7 @@
 							<button matButton="filled">Deactivate</button>
 							<button matButton="filled">Delete</button>
 						</div>
-					</div>
+					</div> -->
 				</div>
 			</form>
 		</mat-card-content>

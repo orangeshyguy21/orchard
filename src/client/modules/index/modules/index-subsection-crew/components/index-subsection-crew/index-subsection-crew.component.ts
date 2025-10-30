@@ -50,7 +50,6 @@ export class IndexSubsectionCrewComponent implements OnInit {
 		{label: 'Invites', value: CrewEntity.INVITE},
 	];
 	public role_options: RoleOption[] = [
-		{label: 'Admin', value: UserRole.Admin},
 		{label: 'Manager', value: UserRole.Manager},
 		{label: 'Reader', value: UserRole.Reader},
 	];
@@ -71,6 +70,7 @@ export class IndexSubsectionCrewComponent implements OnInit {
 	public form_user_edit: FormGroup = new FormGroup({
 		label: new FormControl<string>('', [Validators.maxLength(255)]),
 		role: new FormControl<UserRole>(UserRole.Reader, [Validators.required]),
+		active: new FormControl<boolean>(true, [Validators.required]),
 	});
 
 	private active_event: EventData | null = null;
@@ -96,7 +96,8 @@ export class IndexSubsectionCrewComponent implements OnInit {
 		this.loadCrewData();
 		this.subscriptions.add(this.getUserSubscription());
 		this.subscriptions.add(this.getEventSubscription());
-		this.subscriptions.add(this.getFormSubscription());
+		this.subscriptions.add(this.getInviteFormSubscription());
+		this.subscriptions.add(this.getUserFormSubscription());
 		this.orchardOptionalInit();
 	}
 
@@ -145,8 +146,15 @@ export class IndexSubsectionCrewComponent implements OnInit {
 		});
 	}
 
-	private getFormSubscription(): Subscription {
+	private getInviteFormSubscription(): Subscription {
 		return this.form_invite_edit.valueChanges.subscribe(() => {
+			this.evaluateDirtyCount();
+		});
+	}
+
+	private getUserFormSubscription(): Subscription {
+		return this.form_user_edit.valueChanges.subscribe(() => {
+			console.log('user form dirty');
 			this.evaluateDirtyCount();
 		});
 	}
@@ -248,6 +256,7 @@ export class IndexSubsectionCrewComponent implements OnInit {
 		if (this.form_invite_create_open()) this.createInvite();
 		else {
 			if (this.form_invite_edit.dirty) this.updateInvite();
+			if (this.form_user_edit.dirty) this.updateUser();
 		}
 	}
 
@@ -321,7 +330,6 @@ export class IndexSubsectionCrewComponent implements OnInit {
 		if (!this.table_form_id()) return;
 		this.crewService.updateInvite(this.table_form_id()!, label, role, expiration_timestamp).subscribe({
 			next: (updated_invite) => {
-				// Update the invite in the data table
 				const current_data = this.data().data;
 				const updated_data = current_data.map((item) => {
 					if (item instanceof Invite && item.id === updated_invite.id) {
@@ -349,6 +357,48 @@ export class IndexSubsectionCrewComponent implements OnInit {
 		});
 	}
 
+	private updateUser(): void {
+		if (this.form_user_edit.invalid) {
+			return this.eventService.registerEvent(
+				new EventData({
+					type: 'WARNING',
+					message: 'Invalid user',
+				}),
+			);
+		}
+		const {label, role, active} = this.form_user_edit.value;
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		this.form_user_edit.markAsPristine();
+		this.form_dirty.set(false);
+		if (!this.table_form_id()) return;
+		this.crewService.updateUser(this.table_form_id()!, label, role, active).subscribe({
+			next: (updated_user) => {
+				const current_data = this.data().data;
+				const updated_data = current_data.map((item) => {
+					if (item instanceof User && item.id === updated_user.id) {
+						return updated_user;
+					}
+					return item;
+				});
+				this.data.set(new MatTableDataSource(updated_data));
+				this.table_form_id.set(null);
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'SUCCESS',
+						message: 'User updated!',
+					}),
+				);
+			},
+			error: (error: OrchardErrors) => {
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'ERROR',
+						message: error.errors[0].message,
+					}),
+				);
+			},
+		});
+	}
 	private getExpirationTimestamp(
 		expiration_enabled: boolean,
 		expiration_date: DateTime | null,
@@ -401,6 +451,7 @@ export class IndexSubsectionCrewComponent implements OnInit {
 		this.table_form_id.set(user.id);
 		this.form_user_edit.get('label')?.setValue(user.label);
 		this.form_user_edit.get('role')?.setValue(user.role);
+		this.form_user_edit.get('active')?.setValue(user.active);
 	}
 
 	public onDeleteInvite(invite: Invite): void {
@@ -424,9 +475,13 @@ export class IndexSubsectionCrewComponent implements OnInit {
 	}
 
 	private evaluateDirtyCount(): void {
-		const contrtol_count = Object.keys(this.form_invite_edit.controls)
+		const invite_control_count = Object.keys(this.form_invite_edit.controls)
 			.filter((key) => this.form_invite_edit.get(key) instanceof FormControl)
 			.filter((key) => this.form_invite_edit.get(key)?.dirty).length;
-		this.form_dirty.set(contrtol_count > 0);
+		const user_control_count = Object.keys(this.form_user_edit.controls)
+			.filter((key) => this.form_user_edit.get(key) instanceof FormControl)
+			.filter((key) => this.form_user_edit.get(key)?.dirty).length;
+		const control_count = invite_control_count + user_control_count;
+		this.form_dirty.set(control_count > 0);
 	}
 }

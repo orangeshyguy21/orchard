@@ -7,7 +7,7 @@ import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 /* Local Dependencies */
 import {OrchardCrewUser} from './crewuser.model';
-import {UserNameUpdateInput, UserPasswordUpdateInput} from './crewuser.input';
+import {UserNameUpdateInput, UserPasswordUpdateInput, UserUpdateInput} from './crewuser.input';
 
 @Injectable()
 export class CrewUserService {
@@ -33,7 +33,6 @@ export class CrewUserService {
 	async getUsers(tag: string): Promise<OrchardCrewUser[]> {
 		try {
 			const users = await this.userService.getUsers();
-			console.log('Server got users', users);
 			return users.map((user) => new OrchardCrewUser(user));
 		} catch (error) {
 			const error_code = this.errorService.resolveError(this.logger, error, tag, {
@@ -63,6 +62,18 @@ export class CrewUserService {
 			if (!valid) throw OrchardErrorCode.InvalidPasswordError;
 			const user_updated = await this.userService.updateUser(id, {}, args.password_new);
 			return new OrchardCrewUser(user_updated);
+		} catch (error) {
+			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+				errord: OrchardErrorCode.UserError,
+			});
+			throw new OrchardApiError(error_code);
+		}
+	}
+
+	async updateUser(tag: string, args: UserUpdateInput): Promise<OrchardCrewUser> {
+		try {
+			const user = await this.userService.updateUser(args.id, args);
+			return new OrchardCrewUser(user);
 		} catch (error) {
 			const error_code = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.UserError,

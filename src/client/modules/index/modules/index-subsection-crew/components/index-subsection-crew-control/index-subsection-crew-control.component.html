@@ -9,7 +9,7 @@
 			</div>
 			<div>
 				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
-					<mat-label>Entity</mat-label>
+					<mat-label>State</mat-label>
 					<mat-select formControlName="entity" multiple>
 						@for (entity of entity_options(); track entity.value) {
 							<mat-option [value]="entity.value">{{ entity.label }}</mat-option>

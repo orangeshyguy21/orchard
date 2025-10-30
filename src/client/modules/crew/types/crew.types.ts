@@ -16,6 +16,10 @@ export type CrewUserPasswordUpdateResponse = {
 	crew_user_password_update: OrchardCrewUser;
 };
 
+export type CrewUserUpdateResponse = {
+	crew_user_update: OrchardCrewUser;
+};
+
 export type CrewInvitesResponse = {
 	crew_invites: OrchardCrewInvite[];
 };

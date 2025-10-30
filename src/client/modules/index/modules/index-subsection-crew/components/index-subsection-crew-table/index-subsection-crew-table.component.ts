@@ -185,4 +185,12 @@ export class IndexSubsectionCrewTableComponent {
 			this.form_invite().get('expiration_time')?.updateValueAndValidity();
 		}
 	}
+
+	public onCancelUserControl(control_name: 'label' | 'role' | 'active'): void {
+		const user = this.more_entity() as User;
+		this.form_user().get(control_name)?.setValue(user[control_name]);
+		this.form_user().get(control_name)?.markAsPristine();
+		this.form_user().get(control_name)?.markAsUntouched();
+		this.form_user().get(control_name)?.updateValueAndValidity();
+	}
 }

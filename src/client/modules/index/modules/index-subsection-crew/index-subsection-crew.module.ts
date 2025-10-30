@@ -18,6 +18,8 @@ import {MatSortModule} from '@angular/material/sort';
 import {MatRippleModule} from '@angular/material/core';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatRadioModule} from '@angular/material/radio';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcLocalModule} from '@client/modules/local/local.module';
@@ -63,6 +65,8 @@ import {IndexSubsectionCrewFormUserComponent} from './components/index-subsectio
 		MatRippleModule,
 		MatDialogModule,
 		MatTooltipModule,
+		MatRadioModule,
+		MatSlideToggleModule,
 		OrcFormModule,
 		OrcLocalModule,
 	],
