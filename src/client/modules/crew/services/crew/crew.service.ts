@@ -21,6 +21,7 @@ import {
 	CrewInvitesResponse,
 	CrewInviteCreateResponse,
 	CrewInviteUpdateResponse,
+	CrewInviteDeleteResponse,
 } from '@client/modules/crew/types/crew.types';
 /* Local Dependencies */
 import {
@@ -32,6 +33,7 @@ import {
 	INVITS_QUERY,
 	INVITE_CREATE_MUTATION,
 	INVITE_UPDATE_MUTATION,
+	INVITE_DELETE_MUTATION,
 } from './crew.queries';
 /* Shared Dependencies */
 import {UserRole} from '@shared/generated.types';
@@ -174,7 +176,12 @@ export class CrewService {
 		);
 	}
 
-	public updateUser(id: string, label: string | null = null, role: UserRole | null = null, active: boolean | null = null): Observable<User> {
+	public updateUser(
+		id: string,
+		label: string | null = null,
+		role: UserRole | null = null,
+		active: boolean | null = null,
+	): Observable<User> {
 		const query = getApiQuery(USER_UPDATE_MUTATION, {updateUser: {id, label, role, active}});
 		return this.http.post<OrchardRes<CrewUserUpdateResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
@@ -187,7 +194,6 @@ export class CrewService {
 			}),
 		);
 	}
-	
 
 	public createInvite(role: UserRole, label: string | null = null, expires_at: number | null = null): Observable<Invite> {
 		const query = getApiQuery(INVITE_CREATE_MUTATION, {createInvite: {role, label, expires_at}});
@@ -213,6 +219,19 @@ export class CrewService {
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return new Invite(response.data.crew_invite_update);
+			}),
+			catchError((error) => {
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	public deleteInvite(id: string): Observable<boolean> {
+		const query = getApiQuery(INVITE_DELETE_MUTATION, {id});
+		return this.http.post<OrchardRes<CrewInviteDeleteResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.crew_invite_delete;
 			}),
 			catchError((error) => {
 				return throwError(() => error);

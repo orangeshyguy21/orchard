@@ -1,0 +1,13 @@
+<mat-dialog-content>
+	<div class="flex flex-column flex-gap-1 flex-items-center p-2">
+		<mat-icon class="mat-symbol-outline orc-error-color icon-lg">delete_forever</mat-icon>
+		<div class="text-center">
+			Are you sure you want to delete invite <span class="font-weight-bold">{{ data.invite.token }}</span
+			>? This action cannot be undone.
+		</div>
+	</div>
+</mat-dialog-content>
+<mat-dialog-actions>
+	<button mat-button mat-dialog-close>Cancel</button>
+	<button mat-button [mat-dialog-close]="true"><span class="orc-error-color">Delete</span></button>
+</mat-dialog-actions>

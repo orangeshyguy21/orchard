@@ -59,10 +59,7 @@ export class CrewUserResolver {
 
 	@Roles(UserRole.ADMIN)
 	@Mutation(() => OrchardCrewUser)
-	async crew_user_update(
-		@Context() context: any,
-		@Args('updateUser') updateUser: UserUpdateInput,
-	): Promise<OrchardCrewUser> {
+	async crew_user_update(@Context() context: any, @Args('updateUser') updateUser: UserUpdateInput): Promise<OrchardCrewUser> {
 		const tag = 'MUTATION { crew_user_update }';
 		this.logger.debug(tag);
 		return await this.crewUserService.updateUser(tag, updateUser);

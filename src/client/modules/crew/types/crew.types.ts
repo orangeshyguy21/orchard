@@ -31,3 +31,7 @@ export type CrewInviteCreateResponse = {
 export type CrewInviteUpdateResponse = {
 	crew_invite_update: OrchardCrewInvite;
 };
+
+export type CrewInviteDeleteResponse = {
+	crew_invite_delete: boolean;
+};

@@ -162,4 +162,19 @@ export class InviteService {
 		invite.claimed_by = {id: claimed_by_id} as User;
 		return this.inviteRepository.save(invite);
 	}
+
+	/**
+	 * Delete an invite (only unclaimed invites can be deleted)
+	 * @param {string} invite_id - The ID of the invite to delete
+	 * @returns {Promise<void>}
+	 * @throws {Error} If invite not found or already claimed
+	 */
+	public async deleteInvite(invite_id: string): Promise<void> {
+		const invite = await this.inviteRepository.findOne({
+			where: {id: invite_id},
+		});
+		if (!invite) throw new Error('Invite not found');
+		if (invite.used_at !== null) throw new Error('Cannot delete an invite that has already been claimed');
+		await this.inviteRepository.remove(invite);
+	}
 }

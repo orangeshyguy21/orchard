@@ -5,6 +5,7 @@ import {FormGroup, FormControl, Validators} from '@angular/forms';
 import {DateTime} from 'luxon';
 import {Subscription, lastValueFrom, forkJoin, catchError, of} from 'rxjs';
 import {MatTableDataSource} from '@angular/material/table';
+import {MatDialog} from '@angular/material/dialog';
 /* Application Dependencies */
 import {EventService} from '@client/modules/event/services/event/event.service';
 import {ConfigService} from '@client/modules/config/services/config.service';
@@ -16,6 +17,8 @@ import {OrchardErrors} from '@client/modules/error/classes/error.class';
 /* Native Dependencies */
 import {CrewEntity} from '@client/modules/index/modules/index-subsection-crew/enums/crew-entity.enum';
 import {EntityOption, RoleOption} from '@client/modules/index/modules/index-subsection-crew/types/crew-panel.types';
+import {IndexSubsectionCrewDialogUserComponent} from '@client/modules/index/modules/index-subsection-crew/components/index-subsection-crew-dialog-user/index-subsection-crew-dialog-user.component';
+import {IndexSubsectionCrewDialogInviteComponent} from '@client/modules/index/modules/index-subsection-crew/components/index-subsection-crew-dialog-invite/index-subsection-crew-dialog-invite.component';
 /* Shared Dependencies */
 import {UserRole} from '@shared/generated.types';
 
@@ -81,6 +84,7 @@ export class IndexSubsectionCrewComponent implements OnInit {
 		private eventService: EventService,
 		private configService: ConfigService,
 		private crewService: CrewService,
+		private dialog: MatDialog,
 	) {
 		effect(() => {
 			const dirty = this.form_dirty();
@@ -455,11 +459,53 @@ export class IndexSubsectionCrewComponent implements OnInit {
 	}
 
 	public onDeleteInvite(invite: Invite): void {
-		console.log('delete invite', invite);
+		const dialog_ref = this.dialog.open(IndexSubsectionCrewDialogInviteComponent, {
+			data: {
+				invite: invite,
+			},
+		});
+		dialog_ref.afterClosed().subscribe((confirmed) => {
+			if (confirmed === true) this.deleteInvite(invite);
+		});
 	}
 
 	public onDeleteUser(user: User): void {
-		console.log('delete user', user);
+		const dialog_ref = this.dialog.open(IndexSubsectionCrewDialogUserComponent, {
+			data: {
+				user: user,
+			},
+		});
+		dialog_ref.afterClosed().subscribe((confirmed) => {
+			if (confirmed === true) {
+				// this.deleteUser(user);
+				console.log('delete user', user);
+			}
+		});
+	}
+
+	private deleteInvite(invite: Invite): void {
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		this.crewService.deleteInvite(invite.id).subscribe({
+			next: () => {
+				const current_data = this.data().data;
+				const updated_data = current_data.filter((item) => item.id !== invite.id);
+				this.data.set(new MatTableDataSource(updated_data));
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'SUCCESS',
+						message: 'Invite deleted!',
+					}),
+				);
+			},
+			error: (error: OrchardErrors) => {
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'ERROR',
+						message: error.errors[0].message,
+					}),
+				);
+			},
+		});
 	}
 
 	private createPendingEvent(dirty: boolean): void {

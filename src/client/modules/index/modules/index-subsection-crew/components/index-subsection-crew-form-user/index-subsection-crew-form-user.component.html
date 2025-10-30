@@ -1,12 +1,6 @@
 <div class="crew-form-invite-container p-t-1">
 	<mat-card appearance="outlined" class="relative overflow-hidden">
 		<mat-card-content class="orc-surface-container-low-bg relative">
-			@if (id_user() === id_entity()) {
-				<div class="disabled-overlay z-index-1">
-					<div class="orc-outline-color font-weight-bold">CANNOT UPDATE YOUR USER</div>
-					<mat-icon class="icon-lg mat-symbol-outline orc-outline-color">block</mat-icon>
-				</div>
-			}
 			<div class="absolute z-index-2 top-0-5 right-0-5">
 				<button mat-icon-button (click)="close.emit()">
 					<mat-icon>close</mat-icon>
@@ -94,21 +88,6 @@
 									}
 								</mat-form-field>
 							</orc-form-field-dynamic>
-
-							<!-- <div>
-								<mat-radio-group formControlName="active" aria-label="Change user status">
-									<mat-radio-button [value]="true">
-										<div class="flex">
-											<div class="label-state label-success">Active</div>
-										</div>
-									</mat-radio-button>
-									<mat-radio-button [value]="false">
-										<div class="flex">
-											<div class="label-state label-default">Inactive</div>
-										</div>
-									</mat-radio-button>
-								</mat-radio-group>
-							</div> -->
 						</div>
 					</div>
 
@@ -119,19 +98,6 @@
 						</div>
 
 						<div>
-							<!-- <mat-radio-group formControlName="active" aria-label="Change user status">
-								<mat-radio-button [value]="true">
-									<div class="flex">
-										<div class="label-state label-success">Active</div>
-									</div>
-								</mat-radio-button>
-								<mat-radio-button [value]="false">
-									<div class="flex">
-										<div class="label-state label-default">Inactive</div>
-									</div>
-								</mat-radio-button>
-							</mat-radio-group> -->
-
 							<mat-slide-toggle formControlName="active">
 								<div class="p-l-1">
 									@if (form_group().get('active')?.value) {
@@ -143,18 +109,6 @@
 							</mat-slide-toggle>
 						</div>
 					</div>
-
-					<!-- <div class="flex-1 flex flex-column flex-gap-1">
-						<div class="flex flex-items-center flex-gap-0-5">
-							<div class="title-form-section">User Actions</div>
-							<mat-icon class="icon-sm">info</mat-icon>
-						</div>
-
-						<div class="flex flex-gap-1">
-							<button matButton="filled">Deactivate</button>
-							<button matButton="filled">Delete</button>
-						</div>
-					</div> -->
 				</div>
 			</form>
 		</mat-card-content>

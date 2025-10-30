@@ -13,7 +13,6 @@ import {RoleOption} from '@client/modules/index/modules/index-subsection-crew/ty
 })
 export class IndexSubsectionCrewFormUserComponent {
 	public form_group = input.required<FormGroup>();
-	public id_user = input.required<string | null>();
 	public id_entity = input.required<string | null>();
 	public role_options = input.required<RoleOption[]>();
 

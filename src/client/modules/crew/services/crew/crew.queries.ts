@@ -99,3 +99,8 @@ mutation crew_invite_update($updateInvite: InviteUpdateInput!) {
         created_at
     }
 }`;
+
+export const INVITE_DELETE_MUTATION = `
+mutation crew_invite_delete($id: String!) {
+    crew_invite_delete(id: $id)
+}`;

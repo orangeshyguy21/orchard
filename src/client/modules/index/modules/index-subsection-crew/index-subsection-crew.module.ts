@@ -18,7 +18,6 @@ import {MatSortModule} from '@angular/material/sort';
 import {MatRippleModule} from '@angular/material/core';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatTooltipModule} from '@angular/material/tooltip';
-import {MatRadioModule} from '@angular/material/radio';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
@@ -30,6 +29,8 @@ import {IndexSubsectionCrewFormInviteComponent} from './components/index-subsect
 import {IndexSubsectionCrewTableComponent} from './components/index-subsection-crew-table/index-subsection-crew-table.component';
 import {IndexSubsectionCrewTableInviteComponent} from './components/index-subsection-crew-table-invite/index-subsection-crew-table-invite.component';
 import {IndexSubsectionCrewFormUserComponent} from './components/index-subsection-crew-form-user/index-subsection-crew-form-user.component';
+import {IndexSubsectionCrewDialogUserComponent} from './components/index-subsection-crew-dialog-user/index-subsection-crew-dialog-user.component';
+import {IndexSubsectionCrewDialogInviteComponent} from './components/index-subsection-crew-dialog-invite/index-subsection-crew-dialog-invite.component';
 
 @NgModule({
 	declarations: [
@@ -39,6 +40,8 @@ import {IndexSubsectionCrewFormUserComponent} from './components/index-subsectio
 		IndexSubsectionCrewTableComponent,
 		IndexSubsectionCrewTableInviteComponent,
 		IndexSubsectionCrewFormUserComponent,
+		IndexSubsectionCrewDialogUserComponent,
+		IndexSubsectionCrewDialogInviteComponent,
 	],
 	imports: [
 		[
@@ -65,7 +68,6 @@ import {IndexSubsectionCrewFormUserComponent} from './components/index-subsectio
 		MatRippleModule,
 		MatDialogModule,
 		MatTooltipModule,
-		MatRadioModule,
 		MatSlideToggleModule,
 		OrcFormModule,
 		OrcLocalModule,

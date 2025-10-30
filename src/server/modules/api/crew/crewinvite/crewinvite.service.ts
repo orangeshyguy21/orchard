@@ -53,4 +53,15 @@ export class CrewInviteService {
 			throw new OrchardApiError(error_code);
 		}
 	}
+
+	async deleteInvite(tag: string, invite_id: string): Promise<void> {
+		try {
+			await this.inviteService.deleteInvite(invite_id);
+		} catch (error) {
+			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+				errord: OrchardErrorCode.InviteError,
+			});
+			throw new OrchardApiError(error_code);
+		}
+	}
 }

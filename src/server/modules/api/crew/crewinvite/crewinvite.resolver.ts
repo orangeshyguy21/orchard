@@ -48,4 +48,13 @@ export class CrewInviteResolver {
 		this.logger.debug(tag);
 		return await this.crewInviteService.updateInvite(tag, updateInvite);
 	}
+
+	@Roles(UserRole.ADMIN)
+	@Mutation(() => Boolean)
+	async crew_invite_delete(@Args('id') id: string): Promise<boolean> {
+		const tag = 'MUTATION { crew_invite_delete }';
+		this.logger.debug(tag);
+		await this.crewInviteService.deleteInvite(tag, id);
+		return true;
+	}
 }
