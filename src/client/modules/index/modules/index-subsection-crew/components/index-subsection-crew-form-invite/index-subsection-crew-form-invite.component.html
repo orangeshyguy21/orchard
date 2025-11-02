@@ -29,7 +29,7 @@
 
 						<div class="flex flex-gap-2">
 							<orc-form-field-dynamic
-								[hot]="focused_role() || form_group().get('role')?.dirty || false"
+								[hot]="mode() === 'edit' && (focused_role() || form_group().get('role')?.dirty || false)"
 								[invalid]="form_group().get('role')?.invalid || false"
 								[standalone]="false"
 								(cancel)="cancel.emit('role')"
@@ -38,7 +38,7 @@
 									appearance="fill"
 									hideRequiredMarker="true"
 									[ngClass]="
-										focused_role() || form_group().get('role')?.dirty || false
+										mode() === 'create' || focused_role() || form_group().get('role')?.dirty || false
 											? 'orc-hot-form-field'
 											: 'orc-cold-form-field'
 									"
@@ -102,10 +102,11 @@
 						<div class="flex flex-gap-1">
 							<orc-form-field-dynamic
 								[hot]="
-									focused_expireation() ||
-									form_group().get('expiration_date')?.dirty ||
-									form_group().get('expiration_time')?.dirty ||
-									false
+									mode() === 'edit' &&
+									(focused_expireation() ||
+										form_group().get('expiration_date')?.dirty ||
+										form_group().get('expiration_time')?.dirty ||
+										false)
 								"
 								[invalid]="
 									form_group().get('expiration_date')?.invalid || form_group().get('expiration_time')?.invalid || false
@@ -117,6 +118,7 @@
 									<mat-form-field
 										hideRequiredMarker="true"
 										[ngClass]="
+											mode() === 'create' ||
 											focused_expireation() ||
 											form_group().get('expiration_date')?.dirty ||
 											form_group().get('expiration_time')?.dirty ||
@@ -150,6 +152,7 @@
 									<mat-form-field
 										hideRequiredMarker="true"
 										[ngClass]="
+											mode() === 'create' ||
 											focused_expireation() ||
 											form_group().get('expiration_date')?.dirty ||
 											form_group().get('expiration_time')?.dirty ||

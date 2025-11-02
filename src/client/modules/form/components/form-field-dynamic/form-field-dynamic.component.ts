@@ -14,8 +14,6 @@ export class FormFieldDynamicComponent {
 	public standalone = input<boolean>(true);
 	public subscript_sizing = input<'default' | 'dynamic'>('default');
 
-	// @Output() submit = new EventEmitter<Event>();
-	// @Output() cancel = new EventEmitter<Event>();
 	public submit = output<Event>();
 	public cancel = output<Event>();
 }
