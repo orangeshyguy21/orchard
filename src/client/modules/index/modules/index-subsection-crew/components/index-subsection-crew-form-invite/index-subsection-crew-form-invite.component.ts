@@ -39,6 +39,8 @@ export class IndexSubsectionCrewFormInviteComponent implements OnInit {
 	public focused_role = signal<boolean>(false);
 	public focused_label = signal<boolean>(false);
 	public focused_expireation = signal<boolean>(false);
+	public help_user = signal<boolean>(false);
+	public help_expiration = signal<boolean>(false);
 
 	public time_options: TimeOption[] = [];
 	public today = DateTime.now();
