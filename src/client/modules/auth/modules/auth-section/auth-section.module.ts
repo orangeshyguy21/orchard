@@ -33,7 +33,7 @@ import {AuthSectionComponent} from './components/auth-section/auth-section.compo
 						},
 					},
 					{
-						path: 'initialization',
+						path: 'setup',
 						canActivate: [uninitializedGuard],
 						loadChildren: () =>
 							import(
@@ -46,16 +46,16 @@ import {AuthSectionComponent} from './components/auth-section/auth-section.compo
 						},
 					},
 					{
-						path: 'invite',
+						path: 'signup',
 						canActivate: [initializationGuard],
 						loadChildren: () =>
 							import('@client/modules/auth/modules/auth-subsection-invite/auth-subsection-invite.module').then(
 								(m) => m.OrcAuthSubsectionInviteModule,
 							),
-						title: 'Orchard | Invite',
+						title: 'Orchard | Signup',
 						data: {
 							section: 'auth',
-							sub_section: 'invite',
+							sub_section: 'signup',
 						},
 					},
 				],

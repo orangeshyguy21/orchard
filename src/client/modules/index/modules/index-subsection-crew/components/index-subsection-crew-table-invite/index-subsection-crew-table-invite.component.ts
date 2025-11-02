@@ -22,7 +22,7 @@ export class IndexSubsectionCrewTableInviteComponent implements AfterViewInit {
 	public show_copy_url = signal(false);
 
 	public invite_url = computed(() => {
-		return `${window.location.origin}/authentication/invite/${this.invite().token}`;
+		return `${window.location.origin}/auth/signup/${this.invite().token}`;
 	});
 
 	public qr_code!: QRCodeStyling;

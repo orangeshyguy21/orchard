@@ -12,14 +12,14 @@ export const initializationGuard: CanActivateFn = () => {
 	return authService.getInitialization().pipe(
 		map((is_initialized) => {
 			if (!is_initialized) {
-				router.navigate(['authentication/initialization']);
+				router.navigate(['auth/setup']);
 				return false;
 			}
 			return true;
 		}),
 		catchError((error) => {
 			console.error('Error checking initialization:', error);
-			router.navigate(['authentication/initialization']);
+			router.navigate(['auth/setup']);
 			return of(false);
 		}),
 	);

@@ -63,7 +63,7 @@ const routes: Routes = [
 		children: interior_routes,
 	},
 	{
-		path: 'authentication',
+		path: 'auth',
 		component: LayoutExteriorComponent,
 		loadChildren: () => import('@client/modules/auth/modules/auth-section/auth-section.module').then((m) => m.OrcAuthSectionModule),
 	},

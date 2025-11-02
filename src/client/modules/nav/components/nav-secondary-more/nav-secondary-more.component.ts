@@ -19,6 +19,6 @@ export class NavSecondaryMoreComponent {
 
 	logout() {
 		this.authService.revokeToken().subscribe();
-		this.router.navigate(['/authentication']);
+		this.router.navigate(['/auth']);
 	}
 }

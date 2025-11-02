@@ -19,7 +19,7 @@ export const uninitializedGuard: CanActivateFn = () => {
 		}),
 		catchError((error) => {
 			console.error('Error checking initialization:', error);
-			router.navigate(['authentication']);
+			router.navigate(['auth']);
 			return of(false);
 		}),
 	);

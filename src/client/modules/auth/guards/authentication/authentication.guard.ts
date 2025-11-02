@@ -13,7 +13,7 @@ export const authenticationGuard: CanActivateFn = (_, state) => {
 		map(() => true),
 		catchError((_error) => {
 			const current_url = state.url;
-			router.navigate(['/authentication'], {
+			router.navigate(['/auth'], {
 				state: {interior_destination: current_url},
 			});
 			return of(false);
