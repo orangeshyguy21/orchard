@@ -4,6 +4,8 @@ import {Resolver, Query, Mutation, Args, Int} from '@nestjs/graphql';
 /* Application Dependencies */
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 import {MintUnit, MeltQuoteState} from '@server/modules/cashu/cashu.enums';
+import {Roles} from '@server/modules/auth/decorators/auth.decorator';
+import {UserRole} from '@server/modules/user/user.enums';
 /* Local Dependencies */
 import {MintMeltQuoteService} from './mintmeltquote.service';
 import {OrchardMintMeltQuote} from './mintmeltquote.model';
@@ -30,6 +32,7 @@ export class MintMeltQuoteResolver {
 		return await this.mintMeltQuoteService.getMintMeltQuotes(tag, {units, states, date_start, date_end, page, page_size});
 	}
 
+	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@Mutation(() => OrchardMintNut05Update)
 	async mint_nut05_update(@Args('mint_nut05_update') mint_nut05_update: MintNut05UpdateInput): Promise<OrchardMintNut05Update> {
 		const tag = 'MUTATION { mint_nut05_update }';

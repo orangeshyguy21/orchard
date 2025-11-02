@@ -1,17 +1,17 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {AuthSubsectionInviteComponent} from './auth-subsection-invite.component';
+import {AuthSubsectionSignupComponent} from './auth-subsection-signup.component';
 
-describe('AuthSubsectionInviteComponent', () => {
-	let component: AuthSubsectionInviteComponent;
-	let fixture: ComponentFixture<AuthSubsectionInviteComponent>;
+describe('AuthSubsectionSignupComponent', () => {
+	let component: AuthSubsectionSignupComponent;
+	let fixture: ComponentFixture<AuthSubsectionSignupComponent>;
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [AuthSubsectionInviteComponent],
+			declarations: [AuthSubsectionSignupComponent],
 		}).compileComponents();
 
-		fixture = TestBed.createComponent(AuthSubsectionInviteComponent);
+		fixture = TestBed.createComponent(AuthSubsectionSignupComponent);
 		component = fixture.componentInstance;
 		fixture.detectChanges();
 	});

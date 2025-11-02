@@ -1,6 +1,9 @@
 /* Core Dependencies */
 import {Logger} from '@nestjs/common';
 import {Resolver, Query, Mutation, Args} from '@nestjs/graphql';
+/* Application Dependencies */
+import {Roles} from '@server/modules/auth/decorators/auth.decorator';
+import {UserRole} from '@server/modules/user/user.enums';
 /* Local Dependencies */
 import {MintInfoService} from './mintinfo.service';
 import {
@@ -42,6 +45,7 @@ export class MintInfoResolver {
 		return await this.mintInfoService.getMintInfoRpc(tag);
 	}
 
+	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@Mutation(() => OrchardMintNameUpdate)
 	async mint_name_update(@Args('mint_name_update') mint_name_update: MintNameUpdateInput): Promise<OrchardMintNameUpdate> {
 		const tag = 'MUTATION { mint_name_update }';
@@ -49,6 +53,7 @@ export class MintInfoResolver {
 		return await this.mintInfoService.updateMintName(tag, mint_name_update);
 	}
 
+	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@Mutation(() => OrchardMintIconUpdate)
 	async mint_icon_update(@Args('mint_icon_update') mint_icon_update: MintIconUpdateInput): Promise<OrchardMintIconUpdate> {
 		const tag = 'MUTATION { mint_icon_update }';
@@ -56,6 +61,7 @@ export class MintInfoResolver {
 		return await this.mintInfoService.updateMintIcon(tag, mint_icon_update);
 	}
 
+	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@Mutation(() => OrchardMintDescriptionUpdate)
 	async mint_short_description_update(
 		@Args('mint_desc_update') mint_desc_update: MintDescriptionUpdateInput,
@@ -65,6 +71,7 @@ export class MintInfoResolver {
 		return await this.mintInfoService.updateMintShortDescription(tag, mint_desc_update);
 	}
 
+	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@Mutation(() => OrchardMintDescriptionUpdate)
 	async mint_long_description_update(
 		@Args('mint_desc_update') mint_desc_update: MintDescriptionUpdateInput,
@@ -74,6 +81,7 @@ export class MintInfoResolver {
 		return await this.mintInfoService.updateMintLongDescription(tag, mint_desc_update);
 	}
 
+	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@Mutation(() => OrchardMintMotdUpdate)
 	async mint_motd_update(@Args('mint_motd_update') mint_motd_update: MintMotdUpdateInput): Promise<OrchardMintMotdUpdate> {
 		const tag = 'MUTATION { mint_motd_update }';
@@ -81,6 +89,7 @@ export class MintInfoResolver {
 		return await this.mintInfoService.updateMintMotd(tag, mint_motd_update);
 	}
 
+	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@Mutation(() => OrchardMintUrlUpdate)
 	async mint_url_add(@Args('mint_url_update') mint_url_update: MintUrlUpdateInput): Promise<OrchardMintUrlUpdate> {
 		const tag = 'MUTATION { mint_url_add }';
@@ -88,6 +97,7 @@ export class MintInfoResolver {
 		return await this.mintInfoService.addMintUrl(tag, mint_url_update);
 	}
 
+	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@Mutation(() => OrchardMintUrlUpdate)
 	async mint_url_remove(@Args('mint_url_update') mint_url_update: MintUrlUpdateInput): Promise<OrchardMintUrlUpdate> {
 		const tag = 'MUTATION { mint_url_remove }';
@@ -95,6 +105,7 @@ export class MintInfoResolver {
 		return await this.mintInfoService.removeMintUrl(tag, mint_url_update);
 	}
 
+	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@Mutation(() => OrchardMintContactUpdate)
 	async mint_contact_add(@Args('mint_contact_update') mint_contact_update: MintContactUpdateInput): Promise<OrchardMintContactUpdate> {
 		const tag = 'MUTATION { mint_contact_add }';
@@ -102,6 +113,7 @@ export class MintInfoResolver {
 		return await this.mintInfoService.addMintContact(tag, mint_contact_update);
 	}
 
+	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@Mutation(() => OrchardMintContactUpdate)
 	async mint_contact_remove(@Args('mint_contact_update') mint_contact_update: MintContactUpdateInput): Promise<OrchardMintContactUpdate> {
 		const tag = 'MUTATION { mint_contact_remove }';

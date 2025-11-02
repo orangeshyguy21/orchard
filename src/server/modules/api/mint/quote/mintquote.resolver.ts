@@ -1,6 +1,9 @@
 /* Core Dependencies */
 import {Logger} from '@nestjs/common';
 import {Resolver, Query, Args, Mutation} from '@nestjs/graphql';
+/* Application Dependencies */
+import {Roles} from '@server/modules/auth/decorators/auth.decorator';
+import {UserRole} from '@server/modules/user/user.enums';
 /* Local Dependencies */
 import {MintQuoteService} from './mintquote.service';
 import {OrchardMintQuoteTtls} from './mintquote.model';
@@ -19,6 +22,7 @@ export class MintQuoteResolver {
 		return await this.mintQuoteService.getMintQuoteTtl(tag);
 	}
 
+	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@Mutation(() => OrchardMintQuoteTtls)
 	async mint_quote_ttl_update(
 		@Args('mint_quote_ttl_update') mint_quote_ttl_update: MintQuoteTtlUpdateInput,
