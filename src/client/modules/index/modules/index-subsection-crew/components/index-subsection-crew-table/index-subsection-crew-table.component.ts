@@ -58,7 +58,11 @@ export class IndexSubsectionCrewTableComponent {
 	constructor() {
 		effect(() => {
 			if (this.loading() === false) {
-				this.data().sort = this.sort;
+				// console.log('sort', this.sort);
+				setTimeout(() => {
+					this.data().sort = this.sort;
+				});
+				// this.data().sort = this.sort;
 			}
 
 			if (this.create_open()) {

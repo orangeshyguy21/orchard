@@ -4,7 +4,7 @@
 			<orc-index-subsection-crew-control
 				class="flex-grow"
 				[form_group]="panel"
-				[entity_options]="entity_options"
+				[state_options]="state_options"
 				[role_options]="role_options"
 			></orc-index-subsection-crew-control>
 			<div>
@@ -33,7 +33,7 @@
 				[open]="form_invite_create_open()"
 				[mode]="'create'"
 				[role_options]="role_options"
-				(close)="onCloseInvite()"
+				(close)="onCloseInviteForm()"
 				(cancel)="onCancel($event)"
 			></orc-index-subsection-crew-form-invite>
 		</div>

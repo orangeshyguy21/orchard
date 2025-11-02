@@ -238,7 +238,9 @@ export type Mutation = {
   auth_initialize: OrchardAuthentication;
   auth_signup: OrchardAuthentication;
   crew_invite_create: OrchardCrewInvite;
+  crew_invite_delete: Scalars['Boolean']['output'];
   crew_invite_update: OrchardCrewInvite;
+  crew_user_update: OrchardCrewUser;
   crew_user_update_name: OrchardCrewUser;
   crew_user_update_password: OrchardCrewUser;
   mint_contact_add: OrchardMintContactUpdate;
@@ -285,8 +287,18 @@ export type MutationCrew_Invite_CreateArgs = {
 };
 
 
+export type MutationCrew_Invite_DeleteArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type MutationCrew_Invite_UpdateArgs = {
   updateInvite: InviteUpdateInput;
+};
+
+
+export type MutationCrew_User_UpdateArgs = {
+  updateUser: UserUpdateInput;
 };
 
 
@@ -1403,3 +1415,10 @@ export enum UserRole {
   Manager = 'MANAGER',
   Reader = 'READER'
 }
+
+export type UserUpdateInput = {
+  active?: InputMaybe<Scalars['Boolean']['input']>;
+  id: Scalars['String']['input'];
+  label?: InputMaybe<Scalars['String']['input']>;
+  role?: InputMaybe<UserRole>;
+};
