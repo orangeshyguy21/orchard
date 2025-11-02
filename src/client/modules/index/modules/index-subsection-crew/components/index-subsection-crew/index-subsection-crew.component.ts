@@ -155,9 +155,7 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 
 	private getPanelFormSubscription(): Subscription {
 		return this.panel.valueChanges.subscribe(() => {
-			let filter = this.panel.get('filter')?.value;
-			filter = filter ? filter?.trim().toLowerCase() : '';
-			this.data().filter = filter;
+			this.applyFilters();
 		});
 	}
 
@@ -178,7 +176,7 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 	******************************************************** */
 
 	/**
-	 * Loads crew data (users and invites) and combines into a single sorted table
+	 * Loads crew data (users and invites) and combines into a single table
 	 * Allows partial failure - if one endpoint fails, the other will still display
 	 * Invites can fail due to authorization errors, but users will still be displayed
 	 * @returns {Promise<void>}
@@ -197,9 +195,56 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 			}),
 		);
 		const [users, invites] = await lastValueFrom(forkJoin([users_obs, invites_obs]));
-		const combined_data = [...users, ...invites].sort((a, b) => b.created_at - a.created_at);
-		this.data.set(new MatTableDataSource(combined_data));
-		this.loading.set(false);
+		const combined_data = [...users, ...invites];
+
+		// First load: setup data source with predicates
+		if (this.data().data.length === 0) {
+			this.setupDataSource();
+		}
+
+		// Update data (preserves sort/filter automatically)
+		this.data().data = combined_data;
+		if (this.loading()) {
+			this.loading.set(false);
+		}
+	}
+
+	/**
+	 * Sets up filter and sort configuration for the data source (called once on init)
+	 */
+	private setupDataSource(): void {
+		const data_source = this.data();
+
+		data_source.filterPredicate = (entity: Invite | User, filter_string: string) => {
+			const {text, state, role} = JSON.parse(filter_string);
+			const now = DateTime.now().toSeconds();
+			const entity_state =
+				'name' in entity
+					? entity.active
+						? CrewState.ACTIVE
+						: CrewState.INACTIVE
+					: entity.expires_at && entity.expires_at < now
+						? CrewState.INACTIVE
+						: CrewState.PENDING;
+			const searchable = `${'name' in entity ? entity.name : ''} ${entity.label || ''} ${entity.role}`.toLowerCase();
+			return searchable.includes(text) && state.includes(entity_state) && role.includes(entity.role);
+		};
+
+		data_source.sortingDataAccessor = (entity: Invite | User, column_id: string) => {
+			const now = DateTime.now().toSeconds();
+			switch (column_id) {
+				case 'created':
+					return entity.created_at;
+				case 'state':
+					return 'name' in entity ? (entity.active ? 2 : 0) : entity.expires_at && entity.expires_at < now ? 0 : 1;
+				case 'user':
+					return 'name' in entity ? entity.name : '';
+				case 'label':
+					return entity.label || '';
+				default:
+					return (entity as any)[column_id];
+			}
+		};
 	}
 
 	private createInvite(): void {
@@ -474,14 +519,29 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 		}
 	}
 
+	// private async eventSuccess(): Promise<void> {
+	// 	if (this.new_invite) {
+	// 		const current_data = this.data().data;
+	// 		const updated_data = [this.new_invite, ...current_data];
+	// 		const data_source = new MatTableDataSource(updated_data);
+	// 		data_source.filterPredicate = this.data().filterPredicate;
+	// 		data_source.sortingDataAccessor = this.data().sortingDataAccessor;
+	// 		this.data.set(data_source);
+	// 		this.applyFilters();
+	// 	} else {
+	// 		this.loading.set(true);
+	// 		this.crewService.clearInvitesCache();
+	// 		this.crewService.clearUserCache();
+	// 		this.loadCrewData();
+	// 	}
+	// }
+
 	private async eventSuccess(): Promise<void> {
-		// if (!this.new_invite) return;
 		if (this.new_invite) {
 			const current_data = this.data().data;
-			const updated_data = [this.new_invite, ...current_data].sort((a, b) => b.created_at - a.created_at);
-			this.data.set(new MatTableDataSource(updated_data));
+			this.data().data = [this.new_invite, ...current_data];
 		} else {
-			this.loading.set(true);
+			// this.loading.set(true);
 			this.crewService.clearInvitesCache();
 			this.crewService.clearUserCache();
 			this.loadCrewData();

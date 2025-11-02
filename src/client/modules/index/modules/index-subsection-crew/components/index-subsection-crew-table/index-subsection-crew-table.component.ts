@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, effect, input, signal, output, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, input, signal, output, ViewChild, computed} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 /* Vendor Dependencies */
 import {MatSort} from '@angular/material/sort';
@@ -33,6 +33,7 @@ export class IndexSubsectionCrewTableComponent {
 	@ViewChild(MatSort) sort!: MatSort;
 
 	public data = input.required<MatTableDataSource<Invite | User>>();
+	public data_length = input.required<number>();
 	public id_user = input.required<string | null>();
 	public loading = input.required<boolean>();
 	public form_invite = input.required<FormGroup>();
@@ -58,11 +59,9 @@ export class IndexSubsectionCrewTableComponent {
 	constructor() {
 		effect(() => {
 			if (this.loading() === false) {
-				// console.log('sort', this.sort);
 				setTimeout(() => {
 					this.data().sort = this.sort;
 				});
-				// this.data().sort = this.sort;
 			}
 
 			if (this.create_open()) {
@@ -74,12 +73,12 @@ export class IndexSubsectionCrewTableComponent {
 			}
 
 			const current_data = this.data().data;
-			const current_length = current_data.length;
-			if (current_length === this.previous_data_length + 1) {
+			const new_data_length = this.data_length();
+			if (new_data_length === this.previous_data_length + 1) {
 				const new_entity = current_data[0];
 				this.onNewEntityAdded(new_entity);
 			}
-			this.previous_data_length = current_length;
+			this.previous_data_length = new_data_length;
 		});
 	}
 
