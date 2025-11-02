@@ -9,25 +9,25 @@ import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {passwordMatch} from '@client/modules/form/validators/password-match';
 /* Native Dependencies */
 import {AuthService} from '@client/modules/auth/services/auth/auth.service';
-import {InviteControl} from '@client/modules/auth/modules/auth-subsection-invite/types/invite-control.type';
+import {SignupControl} from '@client/modules/auth/modules/auth-subsection-signup/types/signup-control.type';
 
 @Component({
-	selector: 'orc-auth-subsection-invite',
+	selector: 'orc-auth-subsection-signup',
 	standalone: false,
-	templateUrl: './auth-subsection-invite.component.html',
-	styleUrl: './auth-subsection-invite.component.scss',
+	templateUrl: './auth-subsection-signup.component.html',
+	styleUrl: './auth-subsection-signup.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AuthSubsectionInviteComponent implements OnInit {
+export class AuthSubsectionSignupComponent implements OnInit {
 	public show_surface: boolean = false;
 
-	public form_invite: FormGroup = new FormGroup({
+	public form_signup: FormGroup = new FormGroup({
 		key: new FormControl(null, [Validators.required]),
 		name: new FormControl(null, [Validators.required, Validators.maxLength(50)]),
 		password: new FormControl(null, [Validators.required, Validators.minLength(6), Validators.maxLength(100)]),
 		password_confirm: new FormControl(null, [Validators.required, passwordMatch('password')]),
 	});
-	public errors: Record<InviteControl, string | null> = {
+	public errors: Record<SignupControl, string | null> = {
 		key: null,
 		name: null,
 		password: null,
@@ -42,9 +42,9 @@ export class AuthSubsectionInviteComponent implements OnInit {
 	) {
 		this.route.params.subscribe((params) => {
 			const key = params['key'];
-			if (key) this.form_invite.get('key')?.setValue(key);
+			if (key) this.form_signup.get('key')?.setValue(key);
 		});
-		this.form_invite.valueChanges.subscribe(() => {
+		this.form_signup.valueChanges.subscribe(() => {
 			this.validateForm();
 		});
 	}
@@ -55,20 +55,20 @@ export class AuthSubsectionInviteComponent implements OnInit {
 	}
 
 	private validateForm(): void {
-		if (!this.form_invite.invalid) return;
+		if (!this.form_signup.invalid) return;
 		Object.keys(this.errors).forEach((control_name) => {
-			this.validateFormControl(control_name as InviteControl);
+			this.validateFormControl(control_name as SignupControl);
 		});
 	}
 
-	private validateFormControl(control_name: InviteControl): void {
-		const control = this.form_invite.get(control_name);
+	private validateFormControl(control_name: SignupControl): void {
+		const control = this.form_signup.get(control_name);
 		if (!control) return;
 		const should_show_error = control?.invalid && (control?.dirty || control?.touched);
 		if (should_show_error) this.updateError(control_name, control.errors);
 	}
 
-	private updateError(control_name: InviteControl, error: ValidationErrors | null): void {
+	private updateError(control_name: SignupControl, error: ValidationErrors | null): void {
 		if (error?.['required']) this.errors[control_name] = 'Required';
 		if (error?.['password_mismatch']) this.errors[control_name] = 'Password mismatch';
 		if (error?.['minlength']) this.errors[control_name] = `Minimum length is ${error['minlength'].requiredLength} characters`;
@@ -79,10 +79,10 @@ export class AuthSubsectionInviteComponent implements OnInit {
 
 	public onControlCancel(control_name: string): void {
 		if (!control_name) return;
-		this.form_invite.get(control_name)?.markAsPristine();
-		this.form_invite.get(control_name)?.markAsUntouched();
-		this.form_invite.get(control_name)?.setErrors(null);
-		this.form_invite.get(control_name)?.setValue(null);
+		this.form_signup.get(control_name)?.markAsPristine();
+		this.form_signup.get(control_name)?.markAsUntouched();
+		this.form_signup.get(control_name)?.setErrors(null);
+		this.form_signup.get(control_name)?.setValue(null);
 	}
 
 	public onBlur(): void {
@@ -90,10 +90,10 @@ export class AuthSubsectionInviteComponent implements OnInit {
 	}
 
 	public onSubmit(): void {
-		this.form_invite.markAllAsTouched();
+		this.form_signup.markAllAsTouched();
 		this.validateForm();
-		if (this.form_invite.invalid) return;
-		this.authService.signup(this.form_invite.value.key, this.form_invite.value.name, this.form_invite.value.password).subscribe({
+		if (this.form_signup.invalid) return;
+		this.authService.signup(this.form_signup.value.key, this.form_signup.value.name, this.form_signup.value.password).subscribe({
 			next: () => {
 				this.router.navigate(['/']);
 			},
@@ -106,14 +106,12 @@ export class AuthSubsectionInviteComponent implements OnInit {
 	private errorControl(error: string | OrchardErrors): void {
 		const has_invite_key_error = (error as OrchardErrors)?.errors?.some((err) => err?.code === 80003);
 		if (has_invite_key_error) {
-			this.form_invite.get('key')?.setErrors({invite_key: true});
+			this.form_signup.get('key')?.setErrors({invite_key: true});
 		}
 		const has_unique_username_error = (error as OrchardErrors)?.errors?.some((err) => err?.code === 10007);
 		if (has_unique_username_error) {
-			this.form_invite.get('name')?.setErrors({unique_username: true});
+			this.form_signup.get('name')?.setErrors({unique_username: true});
 		}
 		this.validateForm();
 	}
 }
-
-// DPjqsdYwtmBQ

@@ -15,20 +15,20 @@ import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 /* Native Dependencies */
 import {OrcAuthGeneralModule} from '@client/modules/auth/modules/auth-general/auth-general.module';
 /* Local Dependencies */
-import {AuthSubsectionInviteComponent} from './components/auth-subsection-invite/auth-subsection-invite.component';
-import {AuthSubsectionInviteFormComponent} from './components/auth-subsection-invite-form/auth-subsection-invite-form.component';
+import {AuthSubsectionSignupComponent} from './components/auth-subsection-signup/auth-subsection-signup.component';
+import {AuthSubsectionSignupFormComponent} from './components/auth-subsection-signup-form/auth-subsection-signup-form.component';
 
 @NgModule({
-	declarations: [AuthSubsectionInviteComponent, AuthSubsectionInviteFormComponent],
+	declarations: [AuthSubsectionSignupComponent, AuthSubsectionSignupFormComponent],
 	imports: [
 		CoreRouterModule.forChild([
 			{
 				path: ':key',
-				component: AuthSubsectionInviteComponent,
+				component: AuthSubsectionSignupComponent,
 			},
 			{
 				path: '',
-				component: AuthSubsectionInviteComponent,
+				component: AuthSubsectionSignupComponent,
 			},
 		]),
 		CoreCommonModule,
@@ -43,4 +43,4 @@ import {AuthSubsectionInviteFormComponent} from './components/auth-subsection-in
 		OrcAuthGeneralModule,
 	],
 })
-export class OrcAuthSubsectionInviteModule {}
+export class OrcAuthSubsectionSignupModule {}

@@ -49,8 +49,8 @@ import {AuthSectionComponent} from './components/auth-section/auth-section.compo
 						path: 'signup',
 						canActivate: [initializationGuard],
 						loadChildren: () =>
-							import('@client/modules/auth/modules/auth-subsection-invite/auth-subsection-invite.module').then(
-								(m) => m.OrcAuthSubsectionInviteModule,
+							import('@client/modules/auth/modules/auth-subsection-signup/auth-subsection-signup.module').then(
+								(m) => m.OrcAuthSubsectionSignupModule,
 							),
 						title: 'Orchard | Signup',
 						data: {
