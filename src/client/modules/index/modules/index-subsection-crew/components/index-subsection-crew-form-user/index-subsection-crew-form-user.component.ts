@@ -21,4 +21,6 @@ export class IndexSubsectionCrewFormUserComponent {
 
 	public focused_role = signal<boolean>(false);
 	public focused_label = signal<boolean>(false);
+	public help_user = signal<boolean>(false);
+	public help_status = signal<boolean>(false);
 }
