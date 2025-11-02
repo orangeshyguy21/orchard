@@ -58,6 +58,10 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 		{label: 'Manager', value: UserRole.Manager},
 		{label: 'Reader', value: UserRole.Reader},
 	];
+	public role_options_invite: RoleOption[] = [
+		{label: 'Manager', value: UserRole.Manager},
+		{label: 'Reader', value: UserRole.Reader},
+	];
 	public form_invite_create: FormGroup = new FormGroup({
 		label: new FormControl<string>('', [Validators.maxLength(255)]),
 		role: new FormControl<UserRole>(UserRole.Reader, [Validators.required]),
@@ -196,17 +200,9 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 		);
 		const [users, invites] = await lastValueFrom(forkJoin([users_obs, invites_obs]));
 		const combined_data = [...users, ...invites];
-
-		// First load: setup data source with predicates
-		if (this.data().data.length === 0) {
-			this.setupDataSource();
-		}
-
-		// Update data (preserves sort/filter automatically)
+		if (this.data().data.length === 0) this.setupDataSource();
 		this.data().data = combined_data;
-		if (this.loading()) {
-			this.loading.set(false);
-		}
+		if (this.loading()) this.loading.set(false);
 	}
 
 	/**
@@ -214,7 +210,6 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 	 */
 	private setupDataSource(): void {
 		const data_source = this.data();
-
 		data_source.filterPredicate = (entity: Invite | User, filter_string: string) => {
 			const {text, state, role} = JSON.parse(filter_string);
 			const now = DateTime.now().toSeconds();
@@ -393,6 +388,28 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 		});
 	}
 
+	private deleteUser(user: User): void {
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		this.crewService.deleteUser(user.id).subscribe({
+			next: () => {
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'SUCCESS',
+						message: 'User deleted!',
+					}),
+				);
+			},
+			error: (error: OrchardErrors) => {
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'ERROR',
+						message: error.errors[0].message,
+					}),
+				);
+			},
+		});
+	}
+
 	private getExpirationTimestamp(
 		expiration_enabled: boolean,
 		expiration_date: DateTime | null,
@@ -500,10 +517,7 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 			},
 		});
 		dialog_ref.afterClosed().subscribe((confirmed) => {
-			if (confirmed === true) {
-				// this.deleteUser(user);
-				console.log('delete user', user);
-			}
+			if (confirmed === true) this.deleteUser(user);
 		});
 	}
 

@@ -20,6 +20,9 @@ export type CrewUserUpdateResponse = {
 	crew_user_update: OrchardCrewUser;
 };
 
+export type CrewUserDeleteResponse = {
+	crew_user_delete: boolean;
+};
 export type CrewInvitesResponse = {
 	crew_invites: OrchardCrewInvite[];
 };

@@ -61,7 +61,20 @@ export class CrewUserResolver {
 	@Mutation(() => OrchardCrewUser)
 	async crew_user_update(@Context() context: any, @Args('updateUser') updateUser: UserUpdateInput): Promise<OrchardCrewUser> {
 		const tag = 'MUTATION { crew_user_update }';
+		const user = context.req.user;
+		if (user.id === updateUser.id) throw new OrchardApiError(OrchardErrorCode.UserInvalidOperationError);
 		this.logger.debug(tag);
 		return await this.crewUserService.updateUser(tag, updateUser);
+	}
+
+	@Roles(UserRole.ADMIN)
+	@Mutation(() => Boolean)
+	async crew_user_delete(@Context() context: any, @Args('id') id: string): Promise<boolean> {
+		const tag = 'MUTATION { crew_user_delete }';
+		const user = context.req.user;
+		if (user.id === id) throw new OrchardApiError(OrchardErrorCode.UserInvalidOperationError);
+		this.logger.debug(tag);
+		await this.crewUserService.deleteUser(tag, id);
+		return true;
 	}
 }

@@ -56,6 +56,11 @@ mutation crew_user_update($updateUser: UserUpdateInput!) {
     }
 }`;
 
+export const USER_DELETE_MUTATION = `
+mutation crew_user_delete($id: String!) {
+    crew_user_delete(id: $id)
+}`;
+
 export const INVITS_QUERY = `{
     crew_invites {
         id

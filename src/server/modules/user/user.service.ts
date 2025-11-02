@@ -85,4 +85,15 @@ export class UserService {
 		if (!existing_user) throw new Error('User not found');
 		return this.userRepository.save({...existing_user, ...update});
 	}
+
+	/**
+	 * Delete a user by id
+	 * @param {string} id - The id of the user to delete
+	 * @returns {Promise<void>} Promise that resolves when user is deleted
+	 */
+	public async deleteUser(id: string): Promise<void> {
+		const user = await this.getUserById(id);
+		if (!user) throw new Error('User not found');
+		await this.userRepository.remove(user);
+	}
 }

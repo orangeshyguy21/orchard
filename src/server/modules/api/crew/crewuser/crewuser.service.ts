@@ -81,4 +81,15 @@ export class CrewUserService {
 			throw new OrchardApiError(error_code);
 		}
 	}
+
+	async deleteUser(tag: string, id: string): Promise<void> {
+		try {
+			await this.userService.deleteUser(id);
+		} catch (error) {
+			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+				errord: OrchardErrorCode.UserError,
+			});
+			throw new OrchardApiError(error_code);
+		}
+	}
 }

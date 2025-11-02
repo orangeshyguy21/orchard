@@ -18,6 +18,7 @@ import {
 	CrewUserNameUpdateResponse,
 	CrewUserPasswordUpdateResponse,
 	CrewUserUpdateResponse,
+	CrewUserDeleteResponse,
 	CrewInvitesResponse,
 	CrewInviteCreateResponse,
 	CrewInviteUpdateResponse,
@@ -30,6 +31,7 @@ import {
 	USER_NAME_UPDATE_MUTATION,
 	USER_PASSWORD_UPDATE_MUTATION,
 	USER_UPDATE_MUTATION,
+	USER_DELETE_MUTATION,
 	INVITS_QUERY,
 	INVITE_CREATE_MUTATION,
 	INVITE_UPDATE_MUTATION,
@@ -190,6 +192,20 @@ export class CrewService {
 			}),
 			catchError((error) => {
 				console.error('Error updating user:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	public deleteUser(id: string): Observable<boolean> {
+		const query = getApiQuery(USER_DELETE_MUTATION, {id});
+		return this.http.post<OrchardRes<CrewUserDeleteResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.crew_user_delete;
+			}),
+			catchError((error) => {
+				console.error('Error deleting user:', error);
 				return throwError(() => error);
 			}),
 		);

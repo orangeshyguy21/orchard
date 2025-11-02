@@ -224,6 +224,7 @@ type Mutation {
   crew_invite_create(createInvite: InviteCreateInput!): OrchardCrewInvite!
   crew_invite_delete(id: String!): Boolean!
   crew_invite_update(updateInvite: InviteUpdateInput!): OrchardCrewInvite!
+  crew_user_delete(id: String!): Boolean!
   crew_user_update(updateUser: UserUpdateInput!): OrchardCrewUser!
   crew_user_update_name(updateUserName: UserNameUpdateInput!): OrchardCrewUser!
   crew_user_update_password(updateUserPassword: UserPasswordUpdateInput!): OrchardCrewUser!
