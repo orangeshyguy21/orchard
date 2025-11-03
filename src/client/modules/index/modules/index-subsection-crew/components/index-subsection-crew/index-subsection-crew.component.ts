@@ -10,9 +10,11 @@ import {MatDialog} from '@angular/material/dialog';
 import {EventService} from '@client/modules/event/services/event/event.service';
 import {ConfigService} from '@client/modules/config/services/config.service';
 import {CrewService} from '@client/modules/crew/services/crew/crew.service';
+import {AiService} from '@client/modules/ai/services/ai/ai.service';
 import {EventData} from '@client/modules/event/classes/event-data.class';
 import {User} from '@client/modules/crew/classes/user.class';
 import {Invite} from '@client/modules/crew/classes/invite.class';
+import {AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 /* Native Dependencies */
 import {CrewState} from '@client/modules/index/modules/index-subsection-crew/enums/crew-entity.enum';
@@ -20,7 +22,14 @@ import {StateOption, RoleOption} from '@client/modules/index/modules/index-subse
 import {IndexSubsectionCrewDialogUserComponent} from '@client/modules/index/modules/index-subsection-crew/components/index-subsection-crew-dialog-user/index-subsection-crew-dialog-user.component';
 import {IndexSubsectionCrewDialogInviteComponent} from '@client/modules/index/modules/index-subsection-crew/components/index-subsection-crew-dialog-invite/index-subsection-crew-dialog-invite.component';
 /* Shared Dependencies */
-import {UserRole} from '@shared/generated.types';
+import {UserRole, AiAgent, AiFunctionName} from '@shared/generated.types';
+
+export enum CrewFormType {
+	INVITE_CREATE = 'INVITE_CREATE',
+	INVITE_EDIT = 'INVITE_EDIT',
+	USER_EDIT = 'USER_EDIT',
+	NONE = 'NONE',
+}
 
 @Component({
 	selector: 'orc-index-subsection-crew',
@@ -85,11 +94,13 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 	private active_event: EventData | null = null;
 	private subscriptions: Subscription = new Subscription();
 	private new_invite: Invite | null = null;
+	private table_form_type: CrewFormType | null = null;
 
 	constructor(
 		private eventService: EventService,
 		private configService: ConfigService,
 		private crewService: CrewService,
+		private aiService: AiService,
 		private dialog: MatDialog,
 	) {
 		effect(() => {
@@ -114,8 +125,8 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 
 	orchardOptionalInit(): void {
 		if (this.configService.config.ai.enabled) {
-			// this.subscriptions.add(this.getAgentSubscription());
-			// this.subscriptions.add(this.getToolSubscription());
+			this.subscriptions.add(this.getAgentSubscription());
+			this.subscriptions.add(this.getToolSubscription());
 		}
 	}
 
@@ -172,6 +183,31 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 	private getUserFormSubscription(): Subscription {
 		return this.form_user_edit.valueChanges.subscribe(() => {
 			this.evaluateDirtyCount();
+		});
+	}
+
+	private getAgentSubscription(): Subscription {
+		return this.aiService.agent_requests$.subscribe(({agent, content}) => {
+			const form_type = this.getActiveFormType();
+			const form_group = this.getActiveFormGroup();
+			if (!form_group) return this.hireAnalyticsAgent(agent, content);
+			switch (form_type) {
+				case CrewFormType.INVITE_CREATE:
+					return this.hireInviteAgent(AiAgent.IndexCrewInvite, form_group, content);
+				case CrewFormType.INVITE_EDIT:
+					return this.hireInviteAgent(AiAgent.IndexCrewInvite, form_group, content);
+				case CrewFormType.USER_EDIT:
+					return this.hireUserAgent(AiAgent.IndexCrewUser, content);
+				case CrewFormType.NONE:
+				default:
+					return this.hireAnalyticsAgent(agent, content);
+			}
+		});
+	}
+
+	private getToolSubscription(): Subscription {
+		return this.aiService.tool_calls$.subscribe((tool_call: AiChatToolCall) => {
+			this.executeAgentFunction(tool_call);
 		});
 	}
 
@@ -470,6 +506,7 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 
 	public onEditInvite(invite: Invite): void {
 		this.onCloseInviteForm();
+		this.table_form_type = CrewFormType.INVITE_EDIT;
 		this.table_form_id.set(invite.id);
 		this.form_invite_edit.get('role')?.setValue(invite.role);
 		this.form_invite_edit.get('label')?.setValue(invite.label);
@@ -493,6 +530,7 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 
 	public onEditUser(user: User): void {
 		this.onCloseInviteForm();
+		this.table_form_type = CrewFormType.USER_EDIT;
 		this.table_form_id.set(user.id);
 		this.form_user_edit.get('label')?.setValue(user.label);
 		this.form_user_edit.get('role')?.setValue(user.role);
@@ -521,6 +559,10 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 		});
 	}
 
+	public onCloseTableForm(): void {
+		this.table_form_id.set(null);
+	}
+
 	/* *******************************************************
 		Events                     
 	******************************************************** */
@@ -533,29 +575,11 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	// private async eventSuccess(): Promise<void> {
-	// 	if (this.new_invite) {
-	// 		const current_data = this.data().data;
-	// 		const updated_data = [this.new_invite, ...current_data];
-	// 		const data_source = new MatTableDataSource(updated_data);
-	// 		data_source.filterPredicate = this.data().filterPredicate;
-	// 		data_source.sortingDataAccessor = this.data().sortingDataAccessor;
-	// 		this.data.set(data_source);
-	// 		this.applyFilters();
-	// 	} else {
-	// 		this.loading.set(true);
-	// 		this.crewService.clearInvitesCache();
-	// 		this.crewService.clearUserCache();
-	// 		this.loadCrewData();
-	// 	}
-	// }
-
 	private async eventSuccess(): Promise<void> {
 		if (this.new_invite) {
 			const current_data = this.data().data;
 			this.data().data = [this.new_invite, ...current_data];
 		} else {
-			// this.loading.set(true);
 			this.crewService.clearInvitesCache();
 			this.crewService.clearUserCache();
 			this.loadCrewData();
@@ -612,6 +636,37 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 		this.form_dirty.set(control_count > 0);
 	}
 
+	/**
+	 * Determines which form is currently open based on component state
+	 * @returns {CrewFormType} The type of form currently open
+	 */
+	private getActiveFormType(): CrewFormType {
+		if (this.form_invite_create_open()) return CrewFormType.INVITE_CREATE;
+		if (this.table_form_id()) {
+			if (this.table_form_type === CrewFormType.INVITE_EDIT) return CrewFormType.INVITE_EDIT;
+			if (this.table_form_type === CrewFormType.USER_EDIT) return CrewFormType.USER_EDIT;
+		}
+		return CrewFormType.NONE;
+	}
+
+	/**
+	 * Returns the active form group based on which form is currently open
+	 * @returns {FormGroup | null} The active form group or null if no form is open
+	 */
+	private getActiveFormGroup(): FormGroup | null {
+		const form_type = this.getActiveFormType();
+		switch (form_type) {
+			case CrewFormType.INVITE_CREATE:
+				return this.form_invite_create;
+			case CrewFormType.INVITE_EDIT:
+				return this.form_invite_edit;
+			case CrewFormType.USER_EDIT:
+				return this.form_user_edit;
+			default:
+				return null;
+		}
+	}
+
 	/* *******************************************************
 		Table                
 	******************************************************** */
@@ -625,6 +680,85 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 			state: this.panel.get('state')?.value || [],
 			role: this.panel.get('role')?.value || [],
 		});
+	}
+
+	/* *******************************************************
+		AI                     
+	******************************************************** */
+
+	private hireAnalyticsAgent(agent: AiAgent, content: string | null): void {
+		let context = `* **Current Search:** ${this.panel.get('filter')?.value || ''}\n`;
+		context += `* **Current State:** ${this.panel.get('state')?.value || []}\n`;
+		context += `* **Current Role:** ${this.panel.get('role')?.value || []}\n`;
+		this.aiService.openAiSocket(agent, content, context);
+	}
+
+	private hireInviteAgent(agent: AiAgent, form: FormGroup, content: string | null): void {
+		let context = `* **Current Date:** ${DateTime.now().toISO()}\n`;
+		context += `* **Current Label:** ${form.get('label')?.value || ''}\n`;
+		context += `* **Current Role:** ${form.get('role')?.value || UserRole.Reader}\n`;
+		context += `* **Current Expiration Enabled:** ${form.get('expiration_enabled')?.value || true}\n`;
+		context += `* **Current Expiration Date:** ${form.get('expiration_date')?.value || null}\n`;
+		context += `* **Current Expiration Time:** ${form.get('expiration_time')?.value || null}\n`;
+		this.aiService.openAiSocket(agent, content, context);
+	}
+
+	private hireUserAgent(agent: AiAgent, content: string | null): void {
+		let context = `* **Current Label:** ${this.form_user_edit.get('label')?.value || ''}\n`;
+		context += `* **Current Role:** ${this.form_user_edit.get('role')?.value || UserRole.Reader}\n`;
+		context += `* **Current Active:** ${this.form_user_edit.get('active')?.value || true}\n`;
+		this.aiService.openAiSocket(agent, content, context);
+	}
+
+	private executeAgentFunction(tool_call: AiChatToolCall): void {
+		if (tool_call.function.name === AiFunctionName.UpdateSearch) {
+			this.panel.get('filter')?.setValue(tool_call.function.arguments.search);
+			this.applyFilters();
+		}
+		if (tool_call.function.name === AiFunctionName.CrewStatesUpdate) {
+			this.panel.get('state')?.setValue(tool_call.function.arguments.states as CrewState[]);
+			this.applyFilters();
+		}
+		if (tool_call.function.name === AiFunctionName.CrewRolesUpdate) {
+			this.panel.get('role')?.setValue(tool_call.function.arguments.roles as UserRole[]);
+			this.applyFilters();
+		}
+
+		const form_group = this.getActiveFormGroup();
+		if (!form_group) return;
+
+		if (tool_call.function.name === AiFunctionName.CrewInviteRoleUpdate) {
+			form_group.get('role')?.setValue(tool_call.function.arguments.role as UserRole);
+			form_group.get('role')?.markAsDirty();
+		}
+		if (tool_call.function.name === AiFunctionName.CrewInviteExpirationEnabledUpdate) {
+			form_group.get('expiration_enabled')?.setValue(tool_call.function.arguments.expiration_enabled as boolean);
+			form_group.get('expiration_enabled')?.markAsDirty();
+			if (tool_call.function.arguments.expiration_enabled as boolean) {
+				form_group.get('expiration_date')?.enable();
+				form_group.get('expiration_time')?.enable();
+			} else {
+				form_group.get('expiration_date')?.disable();
+				form_group.get('expiration_time')?.disable();
+			}
+		}
+		if (tool_call.function.name === AiFunctionName.CrewInviteExpirationUpdate) {
+			form_group.get('expiration_date')?.setValue(DateTime.fromISO(tool_call.function.arguments.expiration_datetime));
+			form_group.get('expiration_time')?.setValue(form_group.get('expiration_date')?.value?.hour || null);
+			form_group.get('expiration_date')?.markAsDirty();
+			form_group.get('expiration_time')?.markAsDirty();
+		}
+		if (tool_call.function.name === AiFunctionName.CrewLabelUpdate) {
+			form_group.get('label')?.setValue(tool_call.function.arguments.label as string);
+			form_group.get('label')?.markAsDirty();
+		}
+
+		if (tool_call.function.name === AiFunctionName.CrewUserActiveUpdate) {
+			form_group.get('active')?.setValue(tool_call.function.arguments.active as boolean);
+			form_group.get('active')?.markAsDirty();
+		}
+
+		this.evaluateDirtyCount();
 	}
 
 	ngOnDestroy(): void {

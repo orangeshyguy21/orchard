@@ -46,6 +46,7 @@ export class IndexSubsectionCrewTableComponent {
 	public editUser = output<User>();
 	public deleteInvite = output<Invite>();
 	public deleteUser = output<User>();
+	public closeForm = output<void>();
 
 	public more_entity = signal<Invite | User | null>(null);
 	public more_entity_type = signal<MoreEntityType | null>(null);
@@ -149,6 +150,7 @@ export class IndexSubsectionCrewTableComponent {
 
 	public onCloseInvite(entity: Invite): void {
 		this.onToggleMore(entity);
+		this.closeForm.emit();
 		this.form_invite().reset();
 		this.form_invite().markAsPristine();
 		this.form_invite().markAsUntouched();
@@ -157,6 +159,7 @@ export class IndexSubsectionCrewTableComponent {
 
 	public onCloseUser(entity: User): void {
 		this.onToggleMore(entity);
+		this.closeForm.emit();
 		this.form_user().reset();
 		this.form_user().markAsPristine();
 		this.form_user().markAsUntouched();

@@ -6,6 +6,8 @@ import {RouterModule as CoreRouterModule} from '@angular/router';
 import {OrcNavModule} from '@client/modules/nav/nav.module';
 /* Local Dependencies */
 import {IndexSectionComponent} from './components/index-section/index-section.component';
+/* Shared Dependencies */
+import {AiAgent} from '@shared/generated.types';
 
 @NgModule({
 	declarations: [IndexSectionComponent],
@@ -40,6 +42,7 @@ import {IndexSectionComponent} from './components/index-section/index-section.co
 						data: {
 							section: 'index',
 							sub_section: 'crew',
+							agent: AiAgent.IndexCrew,
 						},
 					},
 				],

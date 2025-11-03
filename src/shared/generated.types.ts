@@ -22,6 +22,9 @@ export type Scalars = {
 
 export enum AiAgent {
   Default = 'DEFAULT',
+  IndexCrew = 'INDEX_CREW',
+  IndexCrewInvite = 'INDEX_CREW_INVITE',
+  IndexCrewUser = 'INDEX_CREW_USER',
   MintBackup = 'MINT_BACKUP',
   MintConfig = 'MINT_CONFIG',
   MintDashboard = 'MINT_DASHBOARD',
@@ -50,6 +53,13 @@ export type AiChatMessageInput = {
 };
 
 export enum AiFunctionName {
+  CrewInviteExpirationEnabledUpdate = 'CREW_INVITE_EXPIRATION_ENABLED_UPDATE',
+  CrewInviteExpirationUpdate = 'CREW_INVITE_EXPIRATION_UPDATE',
+  CrewInviteRoleUpdate = 'CREW_INVITE_ROLE_UPDATE',
+  CrewLabelUpdate = 'CREW_LABEL_UPDATE',
+  CrewRolesUpdate = 'CREW_ROLES_UPDATE',
+  CrewStatesUpdate = 'CREW_STATES_UPDATE',
+  CrewUserActiveUpdate = 'CREW_USER_ACTIVE_UPDATE',
   MintAnalyticsDateRangeUpdate = 'MINT_ANALYTICS_DATE_RANGE_UPDATE',
   MintAnalyticsIntervalUpdate = 'MINT_ANALYTICS_INTERVAL_UPDATE',
   MintAnalyticsTypeUpdate = 'MINT_ANALYTICS_TYPE_UPDATE',
@@ -76,7 +86,8 @@ export enum AiFunctionName {
   MintQuoteTtlUpdate = 'MINT_QUOTE_TTL_UPDATE',
   MintUrlAdd = 'MINT_URL_ADD',
   MintUrlRemove = 'MINT_URL_REMOVE',
-  MintUrlUpdate = 'MINT_URL_UPDATE'
+  MintUrlUpdate = 'MINT_URL_UPDATE',
+  UpdateSearch = 'UPDATE_SEARCH'
 }
 
 export enum AiMessageRole {
@@ -240,6 +251,7 @@ export type Mutation = {
   crew_invite_create: OrchardCrewInvite;
   crew_invite_delete: Scalars['Boolean']['output'];
   crew_invite_update: OrchardCrewInvite;
+  crew_user_delete: Scalars['Boolean']['output'];
   crew_user_update: OrchardCrewUser;
   crew_user_update_name: OrchardCrewUser;
   crew_user_update_password: OrchardCrewUser;
@@ -294,6 +306,11 @@ export type MutationCrew_Invite_DeleteArgs = {
 
 export type MutationCrew_Invite_UpdateArgs = {
   updateInvite: InviteUpdateInput;
+};
+
+
+export type MutationCrew_User_DeleteArgs = {
+  id: Scalars['String']['input'];
 };
 
 

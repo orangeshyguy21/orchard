@@ -17,6 +17,14 @@ export type AiAgentResponse = {
 };
 
 export type AiFunction =
+	| AiFunctionUpdateSearch
+	| AiFunctionUpdateCrewStates
+	| AiFunctionUpdateCrewRoles
+	| AiFunctionUpdateCrewInviteRole
+	| AiFunctionUpdateCrewInviteExpirationEnabled
+	| AiFunctionUpdateCrewInviteExpiration
+	| AiFunctionUpdateCrewLabel
+	| AiFunctionUpdateCrewUserActive
 	| AiFunctionUpdateMintAnalyticsDateRange
 	| AiFunctionUpdateMintAnalyticsUnits
 	| AiFunctionUpdateMintAnalyticsInterval
@@ -44,6 +52,62 @@ export type AiFunction =
 	| AiFunctionUpdateMintDatabaseDataType
 	| AiFunctionUpdateMintDatabaseStates
 	| AiFunctionUpdateMintBackupFilename;
+
+export type AiFunctionUpdateSearch = {
+	name: AiFunctionName.UpdateSearch;
+	arguments: {
+		search: string;
+	};
+};
+
+export type AiFunctionUpdateCrewStates = {
+	name: AiFunctionName.CrewStatesUpdate;
+	arguments: {
+		states: string[];
+	};
+};
+
+export type AiFunctionUpdateCrewRoles = {
+	name: AiFunctionName.CrewRolesUpdate;
+	arguments: {
+		roles: string[];
+	};
+};
+
+export type AiFunctionUpdateCrewInviteRole = {
+	name: AiFunctionName.CrewInviteRoleUpdate;
+	arguments: {
+		role: string;
+	};
+};
+
+export type AiFunctionUpdateCrewInviteExpirationEnabled = {
+	name: AiFunctionName.CrewInviteExpirationEnabledUpdate;
+	arguments: {
+		expiration_enabled: boolean;
+	};
+};
+
+export type AiFunctionUpdateCrewInviteExpiration = {
+	name: AiFunctionName.CrewInviteExpirationUpdate;
+	arguments: {
+		expiration_datetime: string;
+	};
+};
+
+export type AiFunctionUpdateCrewLabel = {
+	name: AiFunctionName.CrewLabelUpdate;
+	arguments: {
+		label: string;
+	};
+};
+
+export type AiFunctionUpdateCrewUserActive = {
+	name: AiFunctionName.CrewUserActiveUpdate;
+	arguments: {
+		active: boolean;
+	};
+};
 
 export type AiFunctionUpdateMintAnalyticsDateRange = {
 	name: AiFunctionName.MintAnalyticsDateRangeUpdate;
