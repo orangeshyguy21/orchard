@@ -347,7 +347,7 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 		this.form_dirty.set(false);
 		if (!this.table_form_id()) return;
 		this.crewService.updateInvite(this.table_form_id()!, label, role, expiration_timestamp).subscribe({
-			next: (updated_invite) => {
+			next: (_updated_invite) => {
 				this.table_form_id.set(null);
 				this.eventService.registerEvent(
 					new EventData({
@@ -382,7 +382,7 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 		this.form_dirty.set(false);
 		if (!this.table_form_id()) return;
 		this.crewService.updateUser(this.table_form_id()!, label, role, active).subscribe({
-			next: (updated_user) => {
+			next: (_updated_user) => {
 				this.table_form_id.set(null);
 				this.eventService.registerEvent(
 					new EventData({

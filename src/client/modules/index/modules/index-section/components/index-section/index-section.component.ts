@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, WritableSignal, signal, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, WritableSignal, signal, OnInit, OnDestroy} from '@angular/core';
 import {Router, Event, ActivatedRoute} from '@angular/router';
 /* Vendor Dependencies */
 import {filter, Subscription} from 'rxjs';
@@ -13,7 +13,7 @@ import {ConfigService} from '@client/modules/config/services/config.service';
 	styleUrl: './index-section.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class IndexSectionComponent {
+export class IndexSectionComponent implements OnInit, OnDestroy {
 	public version: WritableSignal<string> = signal('');
 	public active_sub_section: WritableSignal<string> = signal('');
 
@@ -46,5 +46,9 @@ export class IndexSectionComponent {
 		}
 		if (route.snapshot.data['sub_section'] === 'error') return route.snapshot.data['origin'] || '';
 		return route.snapshot.data['sub_section'] || '';
+	}
+
+	ngOnDestroy(): void {
+		this.subscriptions.unsubscribe();
 	}
 }

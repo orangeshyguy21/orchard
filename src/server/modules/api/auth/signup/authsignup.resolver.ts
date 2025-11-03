@@ -1,6 +1,6 @@
 /* Core Dependencies */
 import {Logger} from '@nestjs/common';
-import {Resolver, Args, Mutation, Query} from '@nestjs/graphql';
+import {Resolver, Args, Mutation} from '@nestjs/graphql';
 import {Throttle, seconds} from '@nestjs/throttler';
 /* Application Dependencies */
 import {Public} from '@server/modules/auth/decorators/auth.decorator';
