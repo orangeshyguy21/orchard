@@ -3,6 +3,7 @@ import {
 	ChangeDetectionStrategy,
 	Component,
 	OnInit,
+	OnDestroy,
 	WritableSignal,
 	signal,
 	ChangeDetectorRef,
@@ -65,7 +66,7 @@ enum TertiaryNav {
 	styleUrl: './mint-subsection-config.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintSubsectionConfigComponent implements ComponentCanDeactivate, OnInit, AfterViewInit {
+export class MintSubsectionConfigComponent implements ComponentCanDeactivate, OnInit, OnDestroy, AfterViewInit {
 	@ViewChildren('nav4,nav5,nav7,nav8,nav9,nav10,nav11,nav12,nav14,nav15,nav17,nav19,nav20') nav_elements!: QueryList<ElementRef>;
 	@ViewChild('nut_container', {static: false}) nut_container!: ElementRef;
 
@@ -924,5 +925,9 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 
 	private setNavItemStatus(nav_key: TertiaryNav, condition: boolean): void {
 		this.tertiary_nav_items[nav_key].status = condition ? NavTertiaryItemStatus.Enabled : NavTertiaryItemStatus.Disabled;
+	}
+
+	ngOnDestroy(): void {
+		this.subscriptions.unsubscribe();
 	}
 }

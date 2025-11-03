@@ -22,7 +22,9 @@ export const pendingEventGuard: CanDeactivateFn<ComponentCanDeactivate> = (compo
 	return dialog_ref.afterClosed().pipe(
 		map((decision) => {
 			if (decision === true) {
-				eventService.registerEvent(null);
+				setTimeout(() => {
+					eventService.registerEvent(null);
+				}, 100);
 				return true;
 			} else {
 				return false;
