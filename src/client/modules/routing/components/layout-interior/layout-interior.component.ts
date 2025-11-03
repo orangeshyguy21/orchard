@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, signal} from '@angular/core';
 import {Event, Router, ActivatedRoute, ActivatedRouteSnapshot} from '@angular/router';
 import {FormControl} from '@angular/forms';
 /* Vendor Dependencies */
@@ -45,7 +45,6 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	public ai_models: AiModel[] = [];
 	public ai_conversation: AiChatConversation | null = null;
 	public ai_revision: number = 0;
-	public ai_agent_definition: AiAgentDefinition | null = null;
 	public ai_tool_calls: number = 0;
 	public active_chat!: boolean;
 	public active_section!: string;
@@ -62,6 +61,9 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	public syncing_bitcoin!: boolean;
 	public syncing_lightning!: boolean;
 	public block_count!: number;
+
+	// public ai_agent_definition: AiAgentDefinition | null = null;
+	public ai_agent_definition = signal<AiAgentDefinition | null>(null);
 
 	public get ai_actionable(): boolean {
 		if (this.active_chat) return true;
@@ -388,9 +390,9 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	private openChatLog(): void {
 		this.sidenav.open();
-		this.aiService.getAiAgent(this.active_agent).subscribe((agent: AiAgentDefinition) => {
-			this.ai_agent_definition = agent;
-			this.cdr.detectChanges();
+		const resolved_agent = this.ai_conversation?.agent || this.active_agent;
+		this.aiService.getAiAgent(resolved_agent).subscribe((agent: AiAgentDefinition) => {
+			this.ai_agent_definition.set(agent);
 		});
 	}
 	private closeChatLog(): void {

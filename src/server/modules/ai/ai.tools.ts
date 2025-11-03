@@ -130,8 +130,8 @@ export const UpdateCrewLabelTool = {
 					description: 'The label of the crew',
 				},
 			},
+			required: ['label'],
 		},
-		required: ['label'],
 	},
 };
 export const UpdateCrewUserActiveTool = {
