@@ -8,7 +8,10 @@
 /public/config.json
 
 # data
-/data
+/data/*
+!/data/tmp/
+/data/tmp/*
+!/data/tmp/.gitkeep
 
 # Logs
 logs
