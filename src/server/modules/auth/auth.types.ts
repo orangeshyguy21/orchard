@@ -11,6 +11,8 @@ export type JwtPayload = {
 	username: string;
 	role: UserRole;
 	type: 'access' | 'refresh';
+	exp?: number; // JWT expiration timestamp
+	iat?: number; // JWT issued at timestamp
 };
 
 export type RefreshTokenPayload = {
@@ -18,4 +20,6 @@ export type RefreshTokenPayload = {
 	username: string;
 	role: UserRole;
 	type: 'refresh';
+	exp?: number; // JWT expiration timestamp
+	iat?: number; // JWT issued at timestamp
 };

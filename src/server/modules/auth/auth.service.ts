@@ -2,10 +2,16 @@
 import {Injectable, UnauthorizedException, Logger} from '@nestjs/common';
 import {JwtService} from '@nestjs/jwt';
 import {ConfigService} from '@nestjs/config';
+import * as crypto from 'crypto';
+/* Vendor Dependencies */
+import {InjectRepository} from '@nestjs/typeorm';
+import {Repository, LessThan} from 'typeorm';
+import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {UserService} from '@server/modules/user/user.service';
 /* Local Dependencies */
 import {OrchardAuthToken, JwtPayload, RefreshTokenPayload} from './auth.types';
+import {TokenBlacklist} from './token-blacklist.entity';
 
 @Injectable()
 export class AuthService {
@@ -13,13 +19,36 @@ export class AuthService {
 
 	private token_ttl = 15 * 60;
 	private refresh_ttl = 7 * 24 * 60 * 60;
-	private blacklist: string[] = [];
 
 	constructor(
 		private configService: ConfigService,
 		private jwtService: JwtService,
 		private userService: UserService,
+		@InjectRepository(TokenBlacklist)
+		private tokenBlacklistRepository: Repository<TokenBlacklist>,
 	) {}
+
+	/**
+	 * Hash a token for secure storage
+	 * @param {string} token - JWT token to hash
+	 * @returns {string} SHA-256 hash of the token
+	 */
+	private hashToken(token: string): string {
+		return crypto.createHash('sha256').update(token).digest('hex');
+	}
+
+	/**
+	 * Check if a token is blacklisted
+	 * @param {string} token - JWT token to check
+	 * @returns {Promise<boolean>} true if token is blacklisted
+	 */
+	private async isTokenBlacklisted(token: string): Promise<boolean> {
+		const token_hash = this.hashToken(token);
+		const blacklisted = await this.tokenBlacklistRepository.findOne({
+			where: {token_hash},
+		});
+		return !!blacklisted;
+	}
 
 	public async getToken(id: string, password: string): Promise<OrchardAuthToken> {
 		const user = await this.userService.getUserById(id);
@@ -51,12 +80,13 @@ export class AuthService {
 
 	public async refreshToken(refresh_token: string): Promise<OrchardAuthToken> {
 		try {
-			if (this.blacklist.includes(refresh_token)) throw new UnauthorizedException('Invalid refresh token');
+			if (await this.isTokenBlacklisted(refresh_token)) throw new UnauthorizedException('Token has been revoked');
 			const payload = await this.jwtService.verifyAsync<RefreshTokenPayload>(refresh_token);
 			if (payload.type !== 'refresh') throw new UnauthorizedException('Invalid token type');
 			const user = await this.userService.getUserById(payload.sub);
 			if (!user) throw new UnauthorizedException('Invalid user');
 			if (!user.active) throw new UnauthorizedException('User account has been deactivated');
+			await this.revokeToken(refresh_token);
 			const access_payload: JwtPayload = {
 				sub: user.id,
 				username: user.name,
@@ -79,6 +109,7 @@ export class AuthService {
 			};
 		} catch (error) {
 			this.logger.debug(`Error refreshing token: ${error.message}`);
+			if (error instanceof UnauthorizedException) throw error;
 			throw new UnauthorizedException('Invalid refresh token');
 		}
 	}
@@ -87,12 +118,34 @@ export class AuthService {
 		try {
 			const payload = await this.jwtService.verifyAsync<RefreshTokenPayload>(refresh_token);
 			if (payload.type !== 'refresh') throw new UnauthorizedException('Invalid token type');
-			this.blacklist.push(refresh_token);
+			const token_hash = this.hashToken(refresh_token);
+			const now = Math.floor(DateTime.now().toSeconds());
+
+			await this.tokenBlacklistRepository.save({
+				token_hash,
+				user_id: payload.sub,
+				expires_at: payload.exp,
+				revoked_at: now,
+			});
+
 			return true;
 		} catch (error) {
 			this.logger.debug(`Error revoking token: ${error.message}`);
+			if (error instanceof UnauthorizedException) throw error;
 			throw new UnauthorizedException('Invalid refresh token');
 		}
+	}
+
+	/**
+	 * Clean up expired tokens from blacklist (call periodically via cron)
+	 * @returns {Promise<number>} number of tokens removed
+	 */
+	public async cleanupExpiredTokens(): Promise<number> {
+		const now = Math.floor(DateTime.now().toSeconds());
+		const result = await this.tokenBlacklistRepository.delete({
+			expires_at: LessThan(now),
+		});
+		return result.affected || 0;
 	}
 
 	public async validateSetupKey(setup_key: string): Promise<boolean> {
@@ -110,6 +163,7 @@ export class AuthService {
 			return payload;
 		} catch (error) {
 			this.logger.debug(`Error validating access token: ${error.message}`);
+			if (error instanceof UnauthorizedException) throw error;
 			throw new UnauthorizedException('Invalid access token');
 		}
 	}
