@@ -135,6 +135,8 @@ describe('UserService', () => {
 				name: 'Admin',
 				password_hash: 'hashed_password',
 				role: UserRole.ADMIN,
+				label: null,
+				created_at: expect.any(Number),
 			});
 			expect(user.id).toBe('1');
 			expect(user.role).toBe(UserRole.ADMIN);
@@ -153,6 +155,8 @@ describe('UserService', () => {
 				name: 'User1',
 				password_hash: 'hashed_password',
 				role: UserRole.READER,
+				label: null,
+				created_at: expect.any(Number),
 			});
 			expect(user.role).toBe(UserRole.READER);
 		});
