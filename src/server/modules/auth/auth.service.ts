@@ -108,13 +108,8 @@ export class AuthService {
 				refresh_token: new_refresh_token,
 			};
 		} catch (error) {
-			// Re-throw UnauthorizedException with specific messages
-			if (error instanceof UnauthorizedException) {
-				this.logger.debug(`Error refreshing token: ${error.message}`);
-				throw error;
-			}
-			// Catch other errors (like JWT verification failures)
 			this.logger.debug(`Error refreshing token: ${error.message}`);
+			if (error instanceof UnauthorizedException) throw error;
 			throw new UnauthorizedException('Invalid refresh token');
 		}
 	}
@@ -135,13 +130,8 @@ export class AuthService {
 
 			return true;
 		} catch (error) {
-			// Re-throw UnauthorizedException with specific messages
-			if (error instanceof UnauthorizedException) {
-				this.logger.debug(`Error revoking token: ${error.message}`);
-				throw error;
-			}
-			// Catch other errors (like JWT verification failures)
 			this.logger.debug(`Error revoking token: ${error.message}`);
+			if (error instanceof UnauthorizedException) throw error;
 			throw new UnauthorizedException('Invalid refresh token');
 		}
 	}
@@ -173,6 +163,7 @@ export class AuthService {
 			return payload;
 		} catch (error) {
 			this.logger.debug(`Error validating access token: ${error.message}`);
+			if (error instanceof UnauthorizedException) throw error;
 			throw new UnauthorizedException('Invalid access token');
 		}
 	}
