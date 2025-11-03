@@ -1,5 +1,8 @@
+/* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-
+/* Native Dependencies */
+import {OrcIndexSubsectionCrewModule} from '@client/modules/index/modules/index-subsection-crew/index-subsection-crew.module';
+/* Local Dependencies */
 import {IndexSubsectionCrewComponent} from './index-subsection-crew.component';
 
 describe('IndexSubsectionCrewComponent', () => {
@@ -8,7 +11,7 @@ describe('IndexSubsectionCrewComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [IndexSubsectionCrewComponent],
+			imports: [OrcIndexSubsectionCrewModule],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(IndexSubsectionCrewComponent);
