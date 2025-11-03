@@ -31,6 +31,7 @@ import {ComponentCanDeactivate} from '@client/modules/routing/interfaces/routing
 import {NonNullableMintConfigSettings} from '@client/modules/settings/types/setting.types';
 import {NavTertiaryItem} from '@client/modules/nav/types/nav-tertiary-item.type';
 import {NavTertiaryItemStatus} from '@client/modules/nav/enums/nav-tertiary-item-status.enum';
+import {LocalAmountPipe} from '@client/modules/local/pipes/local-amount/local-amount.pipe';
 /* Native Dependencies */
 import {MintService} from '@client/modules/mint/services/mint/mint.service';
 import {MintInfo} from '@client/modules/mint/classes/mint-info.class';
@@ -92,11 +93,11 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	public form_config: FormGroup = new FormGroup({
 		minting: new FormGroup({
 			enabled: new FormControl(),
-			mint_ttl: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(3600), OrchardValidators.micros]),
+			mint_ttl: new FormControl(null, [Validators.min(0), Validators.max(3600), OrchardValidators.micros]),
 		}),
 		melting: new FormGroup({
 			enabled: new FormControl(),
-			melt_ttl: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(3600), OrchardValidators.micros]),
+			melt_ttl: new FormControl(null, [Validators.min(0), Validators.max(3600), OrchardValidators.micros]),
 		}),
 	});
 	public tertiary_nav_revision: number = 0;
@@ -305,11 +306,23 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 					method.unit === 'sat' ? min_validators.push(OrchardValidators.integer) : min_validators.push(OrchardValidators.cents);
 					const max_validators = [Validators.required, OrchardValidators.minGreaterThan('min_amount')];
 					method.unit === 'sat' ? max_validators.push(OrchardValidators.integer) : max_validators.push(OrchardValidators.cents);
+
+					const min_value =
+						method.min_amount !== null && method.min_amount !== undefined
+							? LocalAmountPipe.getConvertedAmount(unit, method.min_amount)
+							: method.min_amount;
+					const max_value =
+						method.max_amount !== null && method.max_amount !== undefined
+							? LocalAmountPipe.getConvertedAmount(unit, method.max_amount)
+							: method.max_amount;
+					const formatted_min = method.unit === 'sat' ? min_value : Number(min_value ?? 0).toFixed(2);
+					const formatted_max = method.unit === 'sat' ? max_value : Number(max_value ?? 0).toFixed(2);
+
 					(this.form_minting.get(unit) as FormGroup).addControl(
 						method.method,
 						new FormGroup({
-							min_amount: new FormControl(method.min_amount, min_validators),
-							max_amount: new FormControl(method.max_amount, max_validators),
+							min_amount: new FormControl(formatted_min, min_validators),
+							max_amount: new FormControl(formatted_max, max_validators),
 							description: new FormControl(method.description),
 						}),
 					);
@@ -324,11 +337,23 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 					method.unit === 'sat' ? min_validators.push(OrchardValidators.integer) : min_validators.push(OrchardValidators.cents);
 					const max_validators = [Validators.required, OrchardValidators.minGreaterThan('min_amount')];
 					method.unit === 'sat' ? max_validators.push(OrchardValidators.integer) : max_validators.push(OrchardValidators.cents);
+
+					const min_value =
+						method.min_amount !== null && method.min_amount !== undefined
+							? LocalAmountPipe.getConvertedAmount(unit, method.min_amount)
+							: method.min_amount;
+					const max_value =
+						method.max_amount !== null && method.max_amount !== undefined
+							? LocalAmountPipe.getConvertedAmount(unit, method.max_amount)
+							: method.max_amount;
+					const formatted_min = method.unit === 'sat' ? min_value : Number(min_value ?? 0).toFixed(2);
+					const formatted_max = method.unit === 'sat' ? max_value : Number(max_value ?? 0).toFixed(2);
+
 					(this.form_melting.get(unit) as FormGroup).addControl(
 						method.method,
 						new FormGroup({
-							min_amount: new FormControl(method.min_amount, min_validators),
-							max_amount: new FormControl(method.max_amount, max_validators),
+							min_amount: new FormControl(formatted_min, min_validators),
+							max_amount: new FormControl(formatted_max, max_validators),
 							amountless: new FormControl({value: method.amountless, disabled: true}),
 						}),
 					);
@@ -441,6 +466,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 
 	private evaluateDirtyCount(): void {
 		let count = 0;
+		this.dirty_count.set(count);
 
 		const countDirtyControls = (group: FormGroup): number => {
 			return Object.keys(group.controls).reduce((acc, key) => {
