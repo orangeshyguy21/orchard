@@ -29,14 +29,12 @@
 									<div>role:</div>
 									<div>active:</div>
 									<div>created at:</div>
-									<div>updated at:</div>
 								</div>
 								<div class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color">
 									<div>{{ user()?.name }}</div>
 									<div>{{ user()?.role }}</div>
 									<div>{{ user()?.active }}</div>
 									<div>{{ user()?.created_at | localTime: 'medium' }}</div>
-									<div>{{ user()?.updated_at | localTime: 'medium' }}</div>
 								</div>
 							</div>
 						} @else {

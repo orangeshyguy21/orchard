@@ -33,7 +33,7 @@ import {AuthSectionComponent} from './components/auth-section/auth-section.compo
 						},
 					},
 					{
-						path: 'initialization',
+						path: 'setup',
 						canActivate: [uninitializedGuard],
 						loadChildren: () =>
 							import(
@@ -43,6 +43,19 @@ import {AuthSectionComponent} from './components/auth-section/auth-section.compo
 						data: {
 							section: 'auth',
 							sub_section: 'initialization',
+						},
+					},
+					{
+						path: 'signup',
+						canActivate: [initializationGuard],
+						loadChildren: () =>
+							import('@client/modules/auth/modules/auth-subsection-signup/auth-subsection-signup.module').then(
+								(m) => m.OrcAuthSubsectionSignupModule,
+							),
+						title: 'Orchard | Signup',
+						data: {
+							section: 'auth',
+							sub_section: 'signup',
 						},
 					},
 				],

@@ -22,6 +22,9 @@ export type Scalars = {
 
 export enum AiAgent {
   Default = 'DEFAULT',
+  IndexCrew = 'INDEX_CREW',
+  IndexCrewInvite = 'INDEX_CREW_INVITE',
+  IndexCrewUser = 'INDEX_CREW_USER',
   MintBackup = 'MINT_BACKUP',
   MintConfig = 'MINT_CONFIG',
   MintDashboard = 'MINT_DASHBOARD',
@@ -50,6 +53,13 @@ export type AiChatMessageInput = {
 };
 
 export enum AiFunctionName {
+  CrewInviteExpirationEnabledUpdate = 'CREW_INVITE_EXPIRATION_ENABLED_UPDATE',
+  CrewInviteExpirationUpdate = 'CREW_INVITE_EXPIRATION_UPDATE',
+  CrewInviteRoleUpdate = 'CREW_INVITE_ROLE_UPDATE',
+  CrewLabelUpdate = 'CREW_LABEL_UPDATE',
+  CrewRolesUpdate = 'CREW_ROLES_UPDATE',
+  CrewStatesUpdate = 'CREW_STATES_UPDATE',
+  CrewUserActiveUpdate = 'CREW_USER_ACTIVE_UPDATE',
   MintAnalyticsDateRangeUpdate = 'MINT_ANALYTICS_DATE_RANGE_UPDATE',
   MintAnalyticsIntervalUpdate = 'MINT_ANALYTICS_INTERVAL_UPDATE',
   MintAnalyticsTypeUpdate = 'MINT_ANALYTICS_TYPE_UPDATE',
@@ -76,7 +86,8 @@ export enum AiFunctionName {
   MintQuoteTtlUpdate = 'MINT_QUOTE_TTL_UPDATE',
   MintUrlAdd = 'MINT_URL_ADD',
   MintUrlRemove = 'MINT_URL_REMOVE',
-  MintUrlUpdate = 'MINT_URL_UPDATE'
+  MintUrlUpdate = 'MINT_URL_UPDATE',
+  UpdateSearch = 'UPDATE_SEARCH'
 }
 
 export enum AiMessageRole {
@@ -87,6 +98,12 @@ export enum AiMessageRole {
   User = 'USER'
 }
 
+export type AuthSignupInput = {
+  key: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+};
+
 export type AuthenticationInput = {
   name: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -96,6 +113,19 @@ export type InitializationInput = {
   key: Scalars['String']['input'];
   name: Scalars['String']['input'];
   password: Scalars['String']['input'];
+};
+
+export type InviteCreateInput = {
+  expires_at?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  label?: InputMaybe<Scalars['String']['input']>;
+  role: UserRole;
+};
+
+export type InviteUpdateInput = {
+  expires_at?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  id: Scalars['String']['input'];
+  label?: InputMaybe<Scalars['String']['input']>;
+  role?: InputMaybe<UserRole>;
 };
 
 export enum LightningAddressType {
@@ -217,6 +247,14 @@ export type Mutation = {
   auth_authentication_refresh: OrchardAuthentication;
   auth_authentication_revoke: Scalars['Boolean']['output'];
   auth_initialize: OrchardAuthentication;
+  auth_signup: OrchardAuthentication;
+  crew_invite_create: OrchardCrewInvite;
+  crew_invite_delete: Scalars['Boolean']['output'];
+  crew_invite_update: OrchardCrewInvite;
+  crew_user_delete: Scalars['Boolean']['output'];
+  crew_user_update: OrchardCrewUser;
+  crew_user_update_name: OrchardCrewUser;
+  crew_user_update_password: OrchardCrewUser;
   mint_contact_add: OrchardMintContactUpdate;
   mint_contact_remove: OrchardMintContactUpdate;
   mint_database_backup: OrchardMintDatabaseBackup;
@@ -233,8 +271,6 @@ export type Mutation = {
   mint_short_description_update: OrchardMintDescriptionUpdate;
   mint_url_add: OrchardMintUrlUpdate;
   mint_url_remove: OrchardMintUrlUpdate;
-  updateUserName: OrchardUser;
-  updateUserPassword: OrchardUser;
 };
 
 
@@ -250,6 +286,46 @@ export type MutationAuth_AuthenticationArgs = {
 
 export type MutationAuth_InitializeArgs = {
   initialize: InitializationInput;
+};
+
+
+export type MutationAuth_SignupArgs = {
+  signup: AuthSignupInput;
+};
+
+
+export type MutationCrew_Invite_CreateArgs = {
+  createInvite: InviteCreateInput;
+};
+
+
+export type MutationCrew_Invite_DeleteArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationCrew_Invite_UpdateArgs = {
+  updateInvite: InviteUpdateInput;
+};
+
+
+export type MutationCrew_User_DeleteArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationCrew_User_UpdateArgs = {
+  updateUser: UserUpdateInput;
+};
+
+
+export type MutationCrew_User_Update_NameArgs = {
+  updateUserName: UserNameUpdateInput;
+};
+
+
+export type MutationCrew_User_Update_PasswordArgs = {
+  updateUserPassword: UserPasswordUpdateInput;
 };
 
 
@@ -325,16 +401,6 @@ export type MutationMint_Url_AddArgs = {
 
 export type MutationMint_Url_RemoveArgs = {
   mint_url_update: MintUrlUpdateInput;
-};
-
-
-export type MutationUpdateUserNameArgs = {
-  updateUserName: UserNameUpdateInput;
-};
-
-
-export type MutationUpdateUserPasswordArgs = {
-  updateUserPassword: UserPasswordUpdateInput;
 };
 
 export type OrchardAiAgent = {
@@ -593,6 +659,29 @@ export type OrchardContact = {
   __typename?: 'OrchardContact';
   info: Scalars['String']['output'];
   method: Scalars['String']['output'];
+};
+
+export type OrchardCrewInvite = {
+  __typename?: 'OrchardCrewInvite';
+  claimed_by_id?: Maybe<Scalars['String']['output']>;
+  created_at: Scalars['UnixTimestamp']['output'];
+  created_by_id: Scalars['String']['output'];
+  expires_at?: Maybe<Scalars['UnixTimestamp']['output']>;
+  id: Scalars['String']['output'];
+  label?: Maybe<Scalars['String']['output']>;
+  role: UserRole;
+  token: Scalars['String']['output'];
+  used_at?: Maybe<Scalars['UnixTimestamp']['output']>;
+};
+
+export type OrchardCrewUser = {
+  __typename?: 'OrchardCrewUser';
+  active: Scalars['Boolean']['output'];
+  created_at: Scalars['UnixTimestamp']['output'];
+  id: Scalars['String']['output'];
+  label?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  role: UserRole;
 };
 
 export type OrchardCustomChannel = {
@@ -1070,17 +1159,6 @@ export type OrchardTaprootAssetsUtxo = {
   id: Scalars['String']['output'];
 };
 
-export type OrchardUser = {
-  __typename?: 'OrchardUser';
-  active: Scalars['Boolean']['output'];
-  created_at: Scalars['UnixTimestamp']['output'];
-  id: Scalars['String']['output'];
-  label?: Maybe<Scalars['String']['output']>;
-  name: Scalars['String']['output'];
-  role: UserRole;
-  updated_at: Scalars['UnixTimestamp']['output'];
-};
-
 export type Query = {
   __typename?: 'Query';
   ai_agent: OrchardAiAgent;
@@ -1094,6 +1172,9 @@ export type Query = {
   bitcoin_network_info: OrchardBitcoinNetworkInfo;
   bitcoin_oracle: OrchardBitcoinOracle;
   bitcoin_transaction_fee_estimates: Array<OrchardBitcoinTxFeeEstimate>;
+  crew_invites: Array<OrchardCrewInvite>;
+  crew_user: OrchardCrewUser;
+  crew_users: Array<OrchardCrewUser>;
   lightning_balance: OrchardLightningBalance;
   lightning_info: OrchardLightningInfo;
   lightning_request: OrchardLightningRequest;
@@ -1128,7 +1209,6 @@ export type Query = {
   taproot_assets: OrchardTaprootAssets;
   taproot_assets_info: OrchardTaprootAssetsInfo;
   taproot_assets_utxo: Array<OrchardTaprootAssetsUtxo>;
-  user: OrchardUser;
 };
 
 
@@ -1352,3 +1432,10 @@ export enum UserRole {
   Manager = 'MANAGER',
   Reader = 'READER'
 }
+
+export type UserUpdateInput = {
+  active?: InputMaybe<Scalars['Boolean']['input']>;
+  id: Scalars['String']['input'];
+  label?: InputMaybe<Scalars['String']['input']>;
+  role?: InputMaybe<UserRole>;
+};

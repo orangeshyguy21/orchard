@@ -13,6 +13,14 @@ mutation AuthInitialize($initialize: InitializationInput!) {
 	}
 }`;
 
+export const SIGNUP_MUTATION = `
+mutation AuthSignup($signup: AuthSignupInput!) {
+	auth_signup(signup: $signup) {
+		access_token
+		refresh_token
+	}
+}`;
+
 export const AUTHENTICATION_MUTATION = `
 mutation AuthAuthentication($authentication: AuthenticationInput!) {
 	auth_authentication(authentication: $authentication) {

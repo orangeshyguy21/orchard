@@ -6,6 +6,7 @@ import {StatusModule} from './status/status.module';
 // Auth Endpoints
 import {AuthInitializationModule} from './auth/initialization/initialization.module';
 import {AuthAuthenticationModule} from './auth/authentication/authentication.module';
+import {AuthSignupModule} from './auth/signup/authsignup.module';
 // Bitcoin Endpoints
 import {BitcoinNetworkModule} from './bitcoin/network/btcnetwork.module';
 import {BitcoinBlockchainModule} from './bitcoin/blockchain/btcblockchain.module';
@@ -41,14 +42,16 @@ import {AiChatModule} from './ai/chat/aichat.module';
 // Image Endpoints
 import {PublicImageModule} from './public/image/image.module';
 import {PublicUrlModule} from './public/url/url.module';
-// User Endpoints
-import {ApiUserModule} from './user/user.module';
+// Crew Endpoints
+import {CrewUserModule} from './crew/crewuser/crewuser.module';
+import {CrewInviteModule} from './crew/crewinvite/crewinvite.module';
 
 @Module({
 	imports: [
 		StatusModule,
 		AuthInitializationModule,
 		AuthAuthenticationModule,
+		AuthSignupModule,
 		BitcoinNetworkModule,
 		BitcoinBlockchainModule,
 		BitcoinBlockModule,
@@ -78,7 +81,8 @@ import {ApiUserModule} from './user/user.module';
 		AiChatModule,
 		PublicImageModule,
 		PublicUrlModule,
-		ApiUserModule,
+		CrewUserModule,
+		CrewInviteModule,
 	],
 })
 export class ApiModule {}

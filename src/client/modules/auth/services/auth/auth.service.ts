@@ -16,12 +16,14 @@ import {
 	AuthenticationResponse,
 	RefreshAuthenticationResponse,
 	RevokeAuthenticationResponse,
+	SignupResponse,
 } from '@client/modules/auth/types/auth.types';
 /* Local Dependencies */
 import {
 	INITIALIZATION_QUERY,
 	INITIALIZE_MUTATION,
 	AUTHENTICATION_MUTATION,
+	SIGNUP_MUTATION,
 	REFRESH_AUTHENTICATION_MUTATION,
 	REVOKE_AUTHENTICATION_MUTATION,
 } from './auth.queries';
@@ -100,6 +102,24 @@ export class AuthService {
 			}),
 			catchError((error) => {
 				console.error('Error authenticating:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	public signup(key: string, name: string, password: string): Observable<OrchardAuthentication> {
+		const query = getApiQuery(SIGNUP_MUTATION, {signup: {key, name, password}});
+		return this.http.post<OrchardRes<SignupResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.auth_signup;
+			}),
+			tap((signup) => {
+				this.localStorageService.setAuthToken(signup.access_token);
+				this.localStorageService.setRefreshToken(signup.refresh_token);
+			}),
+			catchError((error) => {
+				console.error('Error signing up:', error);
 				return throwError(() => error);
 			}),
 		);

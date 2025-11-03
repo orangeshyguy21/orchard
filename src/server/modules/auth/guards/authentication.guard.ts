@@ -7,6 +7,7 @@ import {ConfigService} from '@nestjs/config';
 /* Application Dependencies */
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
+import {UserRole} from '@server/modules/user/user.enums';
 /* Native Dependencies */
 import {PUBLIC_KEY} from '@server/modules/auth/decorators/auth.decorator';
 import {NO_HEADERS_KEY} from '@server/modules/auth/decorators/auth.decorator';
@@ -37,7 +38,7 @@ export class GqlAuthenticationGuard extends AuthGuard('jwt') {
 		if (!production && !user && !err) {
 			const request = this.getRequest(context);
 			const has_auth_header = request.headers?.authorization;
-			if (!has_auth_header) return {id: 'dev-user', name: 'dev'};
+			if (!has_auth_header) return {id: 'dev-user', name: 'dev', role: UserRole.ADMIN};
 		}
 		if (err || !user) throw new OrchardApiError(OrchardErrorCode.AuthenticationError);
 		return user;

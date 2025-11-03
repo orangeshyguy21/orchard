@@ -1,0 +1,6 @@
+@use '@styles/molecule/molecule';
+
+.form-user-label {
+	@extend %w-full;
+	@extend %w-max-18;
+}

@@ -1,0 +1,66 @@
+<div class="p-v-1">
+	<div class="flex flex-column flex-gap-1">
+		<div class="flex flex-gap-2">
+			<div class="flex-1 flex flex-items-center flex-justify-center">
+				<div class="flex flex-justify-center title-m">Invite Key</div>
+			</div>
+			<div class="flex-1 flex flex-items-center flex-justify-center">
+				<div class="flex flex-justify-center title-m">Invite Link</div>
+			</div>
+		</div>
+		<div class="flex flex-gap-2">
+			<div class="flex-1 flex flex-items-center flex-justify-center">
+				<div class="flex flex-column flex-gap-1">
+					<mat-card appearance="outlined" class="relative overflow-hidden cursor-pointer" (click)="onCopyToken()">
+						<mat-card-content class="orc-surface-container-low-bg">
+							<div class="flex flex-items-center flex-justify-center p-v-1 p-h-2">
+								<div class="font-size-xxl font-weight-bold orc-text-button">{{ invite().token }}</div>
+							</div>
+						</mat-card-content>
+					</mat-card>
+					<div class="flex flex-justify-center">
+						<div class="relative w-4">
+							<div
+								class="orc-animation-feedback absolute left-0 top-0 flex flex-gap-0-25 flex-row flex-align-center orc-outline-color"
+								[class.animation-visible]="show_copy_token()"
+							>
+								<div class="font-size-s text-nowrap">Copied</div>
+								<mat-icon class="icon-sm">content_copy</mat-icon>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="flex-1 flex flex-items-center flex-justify-center">
+				<div class="flex flex-column flex-gap-1">
+					<div class="mega-string w-max-36 orc-text-button" (click)="onCopyUrl()">
+						{{ invite_url() }}
+					</div>
+					<div class="flex flex-justify-center">
+						<div class="qrcode-action orc-corner-medium">
+							<div
+								#qr_canvas
+								matRipple
+								[matRippleCentered]="false"
+								[matRippleDisabled]="false"
+								[matRippleUnbounded]="false"
+								(click)="onCopyUrl()"
+							></div>
+						</div>
+					</div>
+					<div class="flex flex-justify-center">
+						<div class="relative w-4">
+							<div
+								class="orc-animation-feedback absolute left-0 top-0 flex flex-gap-0-25 flex-row flex-align-center orc-outline-color"
+								[class.animation-visible]="show_copy_url()"
+							>
+								<div class="font-size-s text-nowrap">Copied</div>
+								<mat-icon class="icon-sm">content_copy</mat-icon>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

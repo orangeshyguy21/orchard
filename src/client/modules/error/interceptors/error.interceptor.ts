@@ -22,7 +22,7 @@ export const errorInterceptor: HttpInterceptorFn = (request: HttpRequest<unknown
 		catchError((error) => {
 			if (error.type === 'refresh_error') {
 				authService.clearAuthCache();
-				router.navigate(['/authentication']);
+				router.navigate(['/auth']);
 			}
 
 			if (error.type === 'auth_error') {
@@ -36,7 +36,7 @@ export const errorInterceptor: HttpInterceptorFn = (request: HttpRequest<unknown
 					}),
 					catchError((refresh_error) => {
 						authService.clearAuthCache();
-						router.navigate(['/authentication']);
+						router.navigate(['/auth']);
 						return throwError(() => refresh_error);
 					}),
 				);

@@ -3,6 +3,8 @@ import {Logger} from '@nestjs/common';
 import {Resolver, Query, Mutation, Args} from '@nestjs/graphql';
 /* Application Dependencies */
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
+import {Roles} from '@server/modules/auth/decorators/auth.decorator';
+import {UserRole} from '@server/modules/user/user.enums';
 /* Local Dependencies */
 import {MintKeysetService} from './mintkeyset.service';
 import {OrchardMintKeyset, OrchardMintKeysetProofCount} from './mintkeyset.model';
@@ -33,6 +35,7 @@ export class MintKeysetResolver {
 		return await this.mintKeysetService.getMintKeysetProofCounts(tag, {date_start, date_end, id_keysets});
 	}
 
+	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@Mutation(() => OrchardMintKeysetRotation)
 	async mint_rotate_keyset(@Args('mint_rotate_keyset') mint_rotate_keyset: MintRotateKeysetInput): Promise<OrchardMintKeysetRotation> {
 		const tag = 'MUTATION { mint_rotate_keyset }';

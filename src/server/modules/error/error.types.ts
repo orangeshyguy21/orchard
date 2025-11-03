@@ -10,6 +10,7 @@ export enum OrchardErrorCode {
 	InvalidPasswordError = 10008,
 	AuthorizationError = 10009,
 	InitializationError = 10010,
+	SignupError = 10011,
 	// Bitcoin Level Errors
 	BitcoinRPCError = 20001,
 	// Lightning Level Errors
@@ -42,6 +43,11 @@ export enum OrchardErrorCode {
 	TaprootAssetsSupportError = 60004,
 	// User Level Errors
 	UserError = 70001,
+	UserInvalidOperationError = 70002,
+	// Invite Level Errors
+	InviteError = 80001,
+	InviteNoAdminError = 80002,
+	InviteInvalidError = 80003,
 }
 
 export const OrchardErrorMessages: Record<string, string> = {
@@ -55,6 +61,7 @@ export const OrchardErrorMessages: Record<string, string> = {
 	[OrchardErrorCode.InvalidPasswordError]: 'InvalidPasswordError',
 	[OrchardErrorCode.AuthorizationError]: 'AuthorizationError',
 	[OrchardErrorCode.InitializationError]: 'InitializationError',
+	[OrchardErrorCode.SignupError]: 'SignupError',
 	[OrchardErrorCode.BitcoinRPCError]: 'BitcoinRPCError',
 	[OrchardErrorCode.LightningRpcConnectionError]: 'LightningRpcConnectionError',
 	[OrchardErrorCode.LightningRpcActionError]: 'LightningRpcActionError',
@@ -77,4 +84,8 @@ export const OrchardErrorMessages: Record<string, string> = {
 	[OrchardErrorCode.TaprootAssetsRpcActionError]: 'TaprootAssetsRpcActionError',
 	[OrchardErrorCode.TaprootAssetsSupportError]: 'TaprootAssetsSupportError',
 	[OrchardErrorCode.UserError]: 'UserError',
+	[OrchardErrorCode.UserInvalidOperationError]: 'UserInvalidOperationError',
+	[OrchardErrorCode.InviteError]: 'InviteError',
+	[OrchardErrorCode.InviteNoAdminError]: 'InviteNoAdminError',
+	[OrchardErrorCode.InviteInvalidError]: 'InviteInvalidError',
 };

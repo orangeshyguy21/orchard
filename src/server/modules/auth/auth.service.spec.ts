@@ -1,10 +1,15 @@
+/* Core Dependencies */
 import {Test, TestingModule} from '@nestjs/testing';
 import {expect} from '@jest/globals';
-import {AuthService} from './auth.service';
+import {UnauthorizedException} from '@nestjs/common';
+/* Vendor Dependencies */
 import {ConfigService} from '@nestjs/config';
 import {JwtService} from '@nestjs/jwt';
+/* Application Dependencies */
 import {UserService} from '@server/modules/user/user.service';
-import {UnauthorizedException} from '@nestjs/common';
+import {UserRole} from '@server/modules/user/user.enums';
+/* Local Dependencies */
+import {AuthService} from './auth.service';
 
 describe('AuthService', () => {
 	let authService: AuthService;
@@ -20,7 +25,7 @@ describe('AuthService', () => {
 				{
 					provide: UserService,
 					useValue: {
-						getUserById: jest.fn().mockResolvedValue({id: '1', name: 'Admin'}),
+						getUserById: jest.fn().mockResolvedValue({id: '1', name: 'Admin', role: UserRole.ADMIN, active: true}),
 						validatePassword: jest.fn().mockResolvedValue(true),
 						getUserCount: jest.fn().mockResolvedValue(1),
 					},
@@ -51,7 +56,7 @@ describe('AuthService', () => {
 	});
 
 	it('refreshToken issues new tokens when valid', async () => {
-		jwtService.verifyAsync.mockResolvedValue({type: 'refresh', sub: '1', username: 'Admin'} as any);
+		jwtService.verifyAsync.mockResolvedValue({type: 'refresh', sub: '1', username: 'Admin', role: UserRole.ADMIN} as any);
 		jwtService.signAsync.mockResolvedValueOnce('a2');
 		jwtService.signAsync.mockResolvedValueOnce('r2');
 		const result = await authService.refreshToken('refresh');
@@ -59,7 +64,7 @@ describe('AuthService', () => {
 	});
 
 	it('revokeToken adds token to blacklist for valid refresh token', async () => {
-		jwtService.verifyAsync.mockResolvedValue({type: 'refresh', sub: '1', username: 'Admin'} as any);
+		jwtService.verifyAsync.mockResolvedValue({type: 'refresh', sub: '1', username: 'Admin', role: UserRole.ADMIN} as any);
 		const ok = await authService.revokeToken('refresh');
 		expect(ok).toBe(true);
 	});

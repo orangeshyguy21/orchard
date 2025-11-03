@@ -24,16 +24,19 @@ export class AuthService {
 	public async getToken(id: string, password: string): Promise<OrchardAuthToken> {
 		const user = await this.userService.getUserById(id);
 		if (!user) throw new UnauthorizedException('Invalid user');
+		if (!user.active) throw new UnauthorizedException('User account has been deactivated');
 		const valid = await this.userService.validatePassword(user, password);
 		if (!valid) throw new UnauthorizedException('Invalid username or password');
 		const access_payload: JwtPayload = {
 			sub: id,
 			username: user.name,
+			role: user.role,
 			type: 'access',
 		};
 		const refresh_payload: RefreshTokenPayload = {
 			sub: user.id,
 			username: user.name,
+			role: user.role,
 			type: 'refresh',
 		};
 		const [access_token, refresh_token] = await Promise.all([
@@ -53,14 +56,17 @@ export class AuthService {
 			if (payload.type !== 'refresh') throw new UnauthorizedException('Invalid token type');
 			const user = await this.userService.getUserById(payload.sub);
 			if (!user) throw new UnauthorizedException('Invalid user');
+			if (!user.active) throw new UnauthorizedException('User account has been deactivated');
 			const access_payload: JwtPayload = {
 				sub: user.id,
 				username: user.name,
+				role: user.role,
 				type: 'access',
 			};
 			const new_refresh_payload: RefreshTokenPayload = {
 				sub: user.id,
 				username: user.name,
+				role: user.role,
 				type: 'refresh',
 			};
 			const [new_access_token, new_refresh_token] = await Promise.all([

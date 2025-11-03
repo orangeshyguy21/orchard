@@ -4,10 +4,10 @@ import {FormGroup, FormControl, Validators} from '@angular/forms';
 /* Vendor Dependencies */
 import {Subscription} from 'rxjs';
 /* Application Dependencies */
-import {UserService} from '@client/modules/user/services/user/user.service';
+import {CrewService} from '@client/modules/crew/services/crew/crew.service';
 import {EventService} from '@client/modules/event/services/event/event.service';
 import {EventData} from '@client/modules/event/classes/event-data.class';
-import {User} from '@client/modules/user/classes/user.class';
+import {User} from '@client/modules/crew/classes/user.class';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 
 @Component({
@@ -30,7 +30,7 @@ export class SettingsSubsectionUserComponent implements OnInit, OnDestroy {
 	private subscriptions: Subscription = new Subscription();
 
 	constructor(
-		private userService: UserService,
+		private crewService: CrewService,
 		private eventService: EventService,
 	) {
 		effect(() => {
@@ -45,7 +45,7 @@ export class SettingsSubsectionUserComponent implements OnInit, OnDestroy {
 	}
 
 	private getUserSubscription(): Subscription {
-		return this.userService.user$.subscribe((user) => {
+		return this.crewService.user$.subscribe((user) => {
 			if (user === undefined || user === null) return;
 			this.user.set(new User(user));
 			this.setUserNameFrom();
@@ -90,14 +90,14 @@ export class SettingsSubsectionUserComponent implements OnInit, OnDestroy {
 			);
 		}
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		this.userService.updateUserName(this.form_user_name.value.name).subscribe({
+		this.crewService.updateUserName(this.form_user_name.value.name).subscribe({
 			next: () => {
-				this.userService.clearUserCache();
-				this.userService.loadUser().subscribe();
+				this.crewService.clearUserCache();
+				this.crewService.loadUser().subscribe();
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'SUCCESS',
-						message: 'User name updated!',
+						message: 'Username updated!',
 					}),
 				);
 				this.setUserNameFrom();
@@ -117,10 +117,10 @@ export class SettingsSubsectionUserComponent implements OnInit, OnDestroy {
 
 	public onSaveUserPassword(form_password: FormGroup): void {
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		this.userService.updateUserPassword(form_password.value.password_current, form_password.value.password_new).subscribe({
+		this.crewService.updateUserPassword(form_password.value.password_current, form_password.value.password_new).subscribe({
 			next: () => {
-				this.userService.clearUserCache();
-				this.userService.loadUser().subscribe();
+				this.crewService.clearUserCache();
+				this.crewService.loadUser().subscribe();
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'SUCCESS',

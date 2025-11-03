@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, signal} from '@angular/core';
 import {Event, Router, ActivatedRoute, ActivatedRouteSnapshot} from '@angular/router';
 import {FormControl} from '@angular/forms';
 /* Vendor Dependencies */
@@ -8,7 +8,7 @@ import {switchMap, catchError, filter, takeWhile} from 'rxjs/operators';
 import {MatSidenav} from '@angular/material/sidenav';
 /* Application Dependencies */
 import {ConfigService} from '@client/modules/config/services/config.service';
-import {UserService} from '@client/modules/user/services/user/user.service';
+import {CrewService} from '@client/modules/crew/services/crew/crew.service';
 import {SettingService} from '@client/modules/settings/services/setting/setting.service';
 import {BitcoinService} from '@client/modules/bitcoin/services/bitcoin/bitcoin.service';
 import {LightningService} from '@client/modules/lightning/services/lightning/lightning.service';
@@ -17,7 +17,7 @@ import {AiService} from '@client/modules/ai/services/ai/ai.service';
 import {EventService} from '@client/modules/event/services/event/event.service';
 import {ChartService} from '@client/modules/chart/services/chart/chart.service';
 import {EventData} from '@client/modules/event/classes/event-data.class';
-import {User} from '@client/modules/user/classes/user.class';
+import {User} from '@client/modules/crew/classes/user.class';
 import {BitcoinBlockchainInfo} from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
 import {BitcoinBlockCount} from '@client/modules/bitcoin/classes/bitcoin-blockcount.class';
 import {LightningInfo} from '@client/modules/lightning/classes/lightning-info.class';
@@ -45,7 +45,6 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	public ai_models: AiModel[] = [];
 	public ai_conversation: AiChatConversation | null = null;
 	public ai_revision: number = 0;
-	public ai_agent_definition: AiAgentDefinition | null = null;
 	public ai_tool_calls: number = 0;
 	public active_chat!: boolean;
 	public active_section!: string;
@@ -63,6 +62,9 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	public syncing_lightning!: boolean;
 	public block_count!: number;
 
+	// public ai_agent_definition: AiAgentDefinition | null = null;
+	public ai_agent_definition = signal<AiAgentDefinition | null>(null);
+
 	public get ai_actionable(): boolean {
 		if (this.active_chat) return true;
 		if (this.user_content.value) return true;
@@ -74,7 +76,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	constructor(
 		private configService: ConfigService,
-		private userService: UserService,
+		private crewService: CrewService,
 		private settingService: SettingService,
 		private bitcoinService: BitcoinService,
 		private lightningService: LightningService,
@@ -97,7 +99,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	******************************************************** */
 
 	ngOnInit(): void {
-		this.userService.loadUser().subscribe();
+		this.crewService.loadUser().subscribe();
 		this.subscriptions.add(this.getRouterSubscription());
 		this.subscriptions.add(this.getEventSubscription());
 		this.subscriptions.add(this.getUserSubscription());
@@ -151,7 +153,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	}
 
 	private getUserSubscription(): Subscription {
-		return this.userService.user$.subscribe({
+		return this.crewService.user$.subscribe({
 			next: (user: User | null) => {
 				if (user === undefined || user === null) return;
 				this.user_name = user.name;
@@ -388,9 +390,9 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	private openChatLog(): void {
 		this.sidenav.open();
-		this.aiService.getAiAgent(this.active_agent).subscribe((agent: AiAgentDefinition) => {
-			this.ai_agent_definition = agent;
-			this.cdr.detectChanges();
+		const resolved_agent = this.ai_conversation?.agent || this.active_agent;
+		this.aiService.getAiAgent(resolved_agent).subscribe((agent: AiAgentDefinition) => {
+			this.ai_agent_definition.set(agent);
 		});
 	}
 	private closeChatLog(): void {

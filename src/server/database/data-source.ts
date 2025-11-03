@@ -2,7 +2,7 @@
 import {DataSource} from 'typeorm';
 /* Application Dependencies */
 import {User} from '../modules/user/user.entity';
-import {Invite} from '../modules/user/invite.entity';
+import {Invite} from '../modules/invite/invite.entity';
 
 export const AppDataSource = new DataSource({
 	type: 'better-sqlite3',

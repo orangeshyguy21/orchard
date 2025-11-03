@@ -1,0 +1,7 @@
+@use '@styles/molecule/molecule';
+
+.auth-invite-form-container {
+	@extend %p-t-1;
+	padding-left: 5rem;
+	@extend %p-r-2;
+}

@@ -1,6 +1,11 @@
 @use '@styles/molecule/molecule';
 @use '@styles/nucleus/nucleus';
 
+:host {
+	@extend %orc-corner-small;
+	@extend %overflow-hidden;
+}
+
 .help-text-container {
 	@extend %orc-corner-small;
 	@extend %inherit-bg;

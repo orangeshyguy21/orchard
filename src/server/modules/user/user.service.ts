@@ -4,6 +4,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 /* Vendor Dependencies */
 import {Repository} from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import {DateTime} from 'luxon';
 /* Local Dependencies */
 import {User} from './user.entity';
 import {UserRole} from './user.enums';
@@ -65,12 +66,15 @@ export class UserService {
 	 * @param {string} password - The password of the user
 	 * @returns {Promise<User>} The created user
 	 */
-	public async createUser(name: string, password: string, role: UserRole): Promise<User> {
+	public async createUser(name: string, password: string, role: UserRole, label: string | null = null): Promise<User> {
 		const password_hash = await bcrypt.hash(password, 10);
+		const created_at = Math.floor(DateTime.now().toSeconds());
 		const user = this.userRepository.create({
 			name,
 			password_hash,
 			role,
+			label,
+			created_at,
 		});
 		return this.userRepository.save(user);
 	}
@@ -80,5 +84,16 @@ export class UserService {
 		const existing_user = await this.getUserById(id);
 		if (!existing_user) throw new Error('User not found');
 		return this.userRepository.save({...existing_user, ...update});
+	}
+
+	/**
+	 * Delete a user by id
+	 * @param {string} id - The id of the user to delete
+	 * @returns {Promise<void>} Promise that resolves when user is deleted
+	 */
+	public async deleteUser(id: string): Promise<void> {
+		const user = await this.getUserById(id);
+		if (!user) throw new Error('User not found');
+		await this.userRepository.remove(user);
 	}
 }
