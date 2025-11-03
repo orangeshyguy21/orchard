@@ -63,6 +63,7 @@ export class CrewUserResolver {
 		const tag = 'MUTATION { crew_user_update }';
 		const user = context.req.user;
 		if (user.id === updateUser.id) throw new OrchardApiError(OrchardErrorCode.UserInvalidOperationError);
+		if (updateUser.role === UserRole.ADMIN) throw new OrchardApiError(OrchardErrorCode.UserInvalidOperationError);
 		this.logger.debug(tag);
 		return await this.crewUserService.updateUser(tag, updateUser);
 	}

@@ -4,6 +4,7 @@ import {FormGroup, FormControl, Validators, ValidationErrors} from '@angular/for
 import {Router} from '@angular/router';
 /* Application Dependencies */
 import {SettingService} from '@client/modules/settings/services/setting/setting.service';
+import {CrewService} from '@client/modules/crew/services/crew/crew.service';
 import {ThemeType} from '@client/modules/cache/services/local-storage/local-storage.types';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 /* Native Dependencies */
@@ -32,6 +33,7 @@ export class AuthSubsectionAuthenticationComponent implements OnInit {
 	constructor(
 		private readonly authService: AuthService,
 		private readonly settingService: SettingService,
+		private readonly crewService: CrewService,
 		private readonly router: Router,
 	) {
 		this.form_auth.valueChanges.subscribe(() => {
@@ -61,6 +63,7 @@ export class AuthSubsectionAuthenticationComponent implements OnInit {
 		this.form_auth.markAllAsTouched();
 		this.validateForm();
 		if (this.form_auth.invalid) return;
+		this.crewService.clearUserCache();
 		this.authService.authenticate(this.form_auth.value.name, this.form_auth.value.password).subscribe({
 			next: () => {
 				this.openInterior();
