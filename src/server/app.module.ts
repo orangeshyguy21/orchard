@@ -3,13 +3,16 @@ import {Module, Logger} from '@nestjs/common';
 import {ConfigModule, ConfigService} from '@nestjs/config';
 import {GraphQLModule, registerEnumType} from '@nestjs/graphql';
 import {ApolloDriver, ApolloDriverConfig} from '@nestjs/apollo';
+/* Vendor Dependencies */
 import {TypeOrmModule} from '@nestjs/typeorm';
+import {ScheduleModule} from '@nestjs/schedule';
 /* Application Modules */
 import {SecurityModule} from './modules/security/security.module';
 import {AuthModule} from './modules/auth/auth.module';
 import {ApiModule} from './modules/api/api.module';
 import {FetchModule} from './modules/fetch/fetch.module';
 import {WebserverModule} from './modules/webserver/webserver.module';
+import {TaskModule} from './modules/task/task.module';
 /* Custom Graphql Type Definitions */
 import {UnixTimestamp} from './modules/graphql/scalars/unixtimestamp.scalar';
 import {Timezone} from './modules/graphql/scalars/timezone.scalar';
@@ -89,12 +92,13 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 				migrationsRun: configService.get('mode.production'),
 			}),
 		}),
+		ScheduleModule.forRoot(),
 		SecurityModule,
 		AuthModule,
 		ApiModule,
 		FetchModule,
-		// SseModule,
 		WebserverModule,
+		TaskModule,
 	],
 	providers: [Logger],
 })
