@@ -97,7 +97,7 @@ export class SettingsSubsectionUserComponent implements OnInit, OnDestroy {
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'SUCCESS',
-						message: 'User name updated!',
+						message: 'Username updated!',
 					}),
 				);
 				this.setUserNameFrom();

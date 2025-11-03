@@ -9,11 +9,11 @@ export type CrewUsersResponse = {
 };
 
 export type CrewUserNameUpdateResponse = {
-	crew_user_name_update: OrchardCrewUser;
+	crew_user_update_name: OrchardCrewUser;
 };
 
 export type CrewUserPasswordUpdateResponse = {
-	crew_user_password_update: OrchardCrewUser;
+	crew_user_update_password: OrchardCrewUser;
 };
 
 export type CrewUserUpdateResponse = {

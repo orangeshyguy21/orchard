@@ -155,7 +155,7 @@ export class CrewService {
 		return this.http.post<OrchardRes<CrewUserNameUpdateResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
-				return new User(response.data.crew_user_name_update);
+				return new User(response.data.crew_user_update_name);
 			}),
 			catchError((error) => {
 				console.error('Error updating user name:', error);
@@ -169,7 +169,7 @@ export class CrewService {
 		return this.http.post<OrchardRes<CrewUserPasswordUpdateResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
-				return new User(response.data.crew_user_password_update);
+				return new User(response.data.crew_user_update_password);
 			}),
 			catchError((error) => {
 				console.error('Error updating user password:', error);
