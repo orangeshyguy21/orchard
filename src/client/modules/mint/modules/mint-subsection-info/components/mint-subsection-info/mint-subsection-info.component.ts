@@ -184,6 +184,7 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 	******************************************************** */
 
 	private evaluateDirtyCount(): void {
+		this.dirty_count.set(0);
 		const contrtol_count = Object.keys(this.form_info.controls)
 			.filter((key) => this.form_info.get(key) instanceof FormControl)
 			.filter((key) => this.form_info.get(key)?.dirty).length;

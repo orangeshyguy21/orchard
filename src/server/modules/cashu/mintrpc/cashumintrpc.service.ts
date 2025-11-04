@@ -54,7 +54,8 @@ export class CashuMintRpcService implements OnModuleInit {
 	}
 
 	async getQuoteTtl(): Promise<{mint_ttl: number; melt_ttl: number}> {
-		return this.makeGrpcRequest('GetQuoteTtl', {});
+		if (this.type === 'cdk') return this.makeGrpcRequest('GetQuoteTtl', {});
+		if (this.type === 'nutshell') return {mint_ttl: null, melt_ttl: null};
 	}
 
 	async updateName({name}: {name: string | null}): Promise<{}> {

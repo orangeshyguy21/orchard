@@ -11,6 +11,8 @@ import {User} from '@client/modules/crew/classes/user.class';
 /* Native Dependencies */
 import {CrewEntity} from '@client/modules/index/modules/index-subsection-crew/enums/crew-entity.enum';
 import {RoleOption} from '@client/modules/index/modules/index-subsection-crew/types/crew-panel.types';
+/* Shared Dependencies */
+import {UserRole} from '@shared/generated.types';
 
 enum MoreEntityType {
 	TOKEN = 'TOKEN',
@@ -54,6 +56,7 @@ export class IndexSubsectionCrewTableComponent {
 	public readonly CrewEntity = CrewEntity;
 	public readonly MoreEntityType = MoreEntityType;
 	public readonly displayed_columns = ['user', 'label', 'created', 'state', 'actions'];
+	public readonly UserRole = UserRole;
 
 	private previous_data_length = 0;
 

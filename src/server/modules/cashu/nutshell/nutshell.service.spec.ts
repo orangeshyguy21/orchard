@@ -51,7 +51,7 @@ describe('NutshellService', () => {
 		expect(client).toBeUndefined();
 	});
 
-	it('initializes client when credentials present', () => {
+	it('initializes client with mTLS when rpc_mtls is true', () => {
 		config_service.get.mockImplementation((key: string) => {
 			switch (key) {
 				case 'cashu.rpc_key':
@@ -60,6 +60,8 @@ describe('NutshellService', () => {
 					return 'CERT';
 				case 'cashu.rpc_ca':
 					return 'CA';
+				case 'cashu.rpc_mtls':
+					return true;
 				case 'cashu.rpc_host':
 					return 'localhost';
 				case 'cashu.rpc_port':
@@ -78,7 +80,7 @@ describe('NutshellService', () => {
 		expect(loadPackageDefinition).toHaveBeenCalled();
 	});
 
-	it('initializes client with docker host channel options', () => {
+	it('initializes client with docker host channel options when using mTLS', () => {
 		config_service.get.mockImplementation((key: string) => {
 			switch (key) {
 				case 'cashu.rpc_key':
@@ -87,6 +89,8 @@ describe('NutshellService', () => {
 					return 'CERT';
 				case 'cashu.rpc_ca':
 					return 'CA';
+				case 'cashu.rpc_mtls':
+					return true;
 				case 'cashu.rpc_host':
 					return 'host.docker.internal';
 				case 'cashu.rpc_port':
@@ -108,6 +112,29 @@ describe('NutshellService', () => {
 		});
 	});
 
+	it('initializes client with insecure connection when rpc_mtls is false', () => {
+		config_service.get.mockImplementation((key: string) => {
+			switch (key) {
+				case 'cashu.rpc_mtls':
+					return false;
+				case 'cashu.rpc_host':
+					return 'localhost';
+				case 'cashu.rpc_port':
+					return 3333;
+				default:
+					return undefined as any;
+			}
+		});
+		const createInsecure = jest.spyOn(grpc.credentials, 'createInsecure').mockReturnValue({} as any);
+		const createSsl = jest.spyOn(grpc.credentials, 'createSsl').mockReturnValue({} as any);
+		const loadSync = jest.spyOn(require('@grpc/proto-loader'), 'loadSync').mockReturnValue({} as any);
+		jest.spyOn(grpc, 'loadPackageDefinition').mockReturnValue({cashu: {Mint: jest.fn()}} as any);
+		nutshell_service.initializeGrpcClient();
+		expect(createInsecure).toHaveBeenCalled();
+		expect(createSsl).not.toHaveBeenCalled();
+		expect(loadSync).toHaveBeenCalled();
+	});
+
 	it('initializeGrpcClient logs error and returns undefined when loader throws', () => {
 		config_service.get.mockImplementation((key: string) => {
 			switch (key) {
@@ -117,6 +144,8 @@ describe('NutshellService', () => {
 					return 'CERT';
 				case 'cashu.rpc_ca':
 					return 'CA';
+				case 'cashu.rpc_mtls':
+					return true;
 				case 'cashu.rpc_host':
 					return 'localhost';
 				case 'cashu.rpc_port':
@@ -137,7 +166,7 @@ describe('NutshellService', () => {
 		expect(logger_error).toHaveBeenCalled();
 	});
 
-	it('initializeGrpcClient uses correct proto path and buffers', () => {
+	it('initializeGrpcClient uses correct proto path and buffers with mTLS', () => {
 		config_service.get.mockImplementation((key: string) => {
 			switch (key) {
 				case 'cashu.rpc_key':
@@ -146,6 +175,8 @@ describe('NutshellService', () => {
 					return 'CERT';
 				case 'cashu.rpc_ca':
 					return 'CA';
+				case 'cashu.rpc_mtls':
+					return true;
 				case 'cashu.rpc_host':
 					return 'localhost';
 				case 'cashu.rpc_port':
