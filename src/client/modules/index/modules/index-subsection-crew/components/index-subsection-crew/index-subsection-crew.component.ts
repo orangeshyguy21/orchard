@@ -152,14 +152,12 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 			this.active_event = event_data;
 			if (event_data === null) {
 				setTimeout(() => {
-					if (!this.form_invite_create_open()) return;
-					this.eventService.registerEvent(
-						new EventData({
-							type: 'PENDING',
-							message: 'Save',
-						}),
-					);
-				}, 1000);
+					if (this.form_invite_create_open()) {
+						this.form_dirty.set(true);
+					} else {
+						this.evaluateDirtyCount();
+					}
+				}, 100);
 			}
 			if (event_data) {
 				if (event_data.type === 'SUCCESS') this.eventSuccess();
@@ -343,11 +341,11 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 			);
 		}
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		this.form_invite_edit.markAsPristine();
-		this.form_dirty.set(false);
 		if (!this.table_form_id()) return;
 		this.crewService.updateInvite(this.table_form_id()!, label, role, expiration_timestamp).subscribe({
 			next: (_updated_invite) => {
+				this.form_invite_edit.markAsPristine();
+				this.form_dirty.set(false);
 				this.table_form_id.set(null);
 				this.eventService.registerEvent(
 					new EventData({
@@ -378,11 +376,11 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 		}
 		const {label, role, active} = this.form_user_edit.value;
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		this.form_user_edit.markAsPristine();
-		this.form_dirty.set(false);
 		if (!this.table_form_id()) return;
 		this.crewService.updateUser(this.table_form_id()!, label, role, active).subscribe({
 			next: (_updated_user) => {
+				this.form_user_edit.markAsPristine();
+				this.form_dirty.set(false);
 				this.table_form_id.set(null);
 				this.eventService.registerEvent(
 					new EventData({
@@ -626,6 +624,7 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 	}
 
 	private evaluateDirtyCount(): void {
+		this.form_dirty.set(false);
 		const invite_control_count = Object.keys(this.form_invite_edit.controls)
 			.filter((key) => this.form_invite_edit.get(key) instanceof FormControl)
 			.filter((key) => this.form_invite_edit.get(key)?.dirty).length;

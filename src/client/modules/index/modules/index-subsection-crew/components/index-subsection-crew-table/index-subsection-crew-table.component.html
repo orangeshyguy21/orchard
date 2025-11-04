@@ -142,15 +142,32 @@
 											}
 											@case (MoreEntityType.EDIT_USER) {
 												@if (id_user() !== entity.id) {
-													<div class="p-b-1">
-														<orc-index-subsection-crew-form-user
-															[form_group]="form_user()"
-															[id_entity]="entity.id"
-															[role_options]="role_options()"
-															(close)="onCloseUser(entity)"
-															(cancel)="onCancelUserControl($event)"
-														></orc-index-subsection-crew-form-user>
-													</div>
+													@if (entity.role !== UserRole.Admin) {
+														<div class="p-b-1">
+															<orc-index-subsection-crew-form-user
+																[form_group]="form_user()"
+																[id_entity]="entity.id"
+																[role_options]="role_options()"
+																(close)="onCloseUser(entity)"
+																(cancel)="onCancelUserControl($event)"
+															></orc-index-subsection-crew-form-user>
+														</div>
+													} @else {
+														<div class="p-v-1">
+															<mat-card appearance="outlined" class="relative overflow-hidden">
+																<mat-card-content class="orc-surface-container-low-bg relative h-min-6">
+																	<div class="disabled-overlay z-index-1">
+																		<div class="orc-outline-color font-weight-bold">
+																			ADMIN EDIT DISABLED
+																		</div>
+																		<mat-icon class="icon-lg mat-symbol-outline orc-outline-color"
+																			>block</mat-icon
+																		>
+																	</div>
+																</mat-card-content>
+															</mat-card>
+														</div>
+													}
 												} @else {
 													<div class="p-v-1">
 														<mat-card appearance="outlined" class="relative overflow-hidden">
