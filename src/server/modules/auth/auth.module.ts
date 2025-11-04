@@ -20,7 +20,7 @@ import {TokenBlacklist} from './token-blacklist.entity';
 		TypeOrmModule.forFeature([TokenBlacklist]),
 		JwtModule.registerAsync({
 			useFactory: async (configService: ConfigService) => ({
-				secret: configService.get('server.key'),
+				secret: configService.get('server.jwt_secret'),
 			}),
 			inject: [ConfigService],
 		}),

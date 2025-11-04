@@ -10,6 +10,7 @@ export type Config = {
 		proxy: string | undefined;
 		log: string;
 		key: string;
+		jwt_secret: string;
 		ttl: string;
 		limit: string;
 	};

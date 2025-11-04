@@ -200,4 +200,8 @@ export class AuthService {
 		const token = this.localStorageService.getAuthToken();
 		return token ? {Authorization: 'Bearer ' + token} : {};
 	}
+
+	public getRefreshToken(): string | null {
+		return this.localStorageService.getRefreshToken() || null;
+	}
 }
