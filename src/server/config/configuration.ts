@@ -16,6 +16,7 @@ const replaceLocalhostInDocker = (host: string | undefined): string | undefined 
 export const config = (): Config => {
 	const mode = {
 		production: process.env.NODE_ENV === 'production',
+		version: `orchard/${process.env['npm_package_version'] || '1.0.0'}`,
 	};
 
 	const server = {

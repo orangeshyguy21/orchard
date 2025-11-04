@@ -35,10 +35,12 @@ async function bootstrap() {
 	const port = configService.get<number>('server.port');
 	const path = configService.get<string>('server.path');
 	const host = configService.get<string>('server.host');
+	const version = configService.get<string>('mode.version');
 	app.setGlobalPrefix(path);
 	await app.listen(port, host);
 	const logger = new Logger('OrchardApplication');
 	validation(app, configService, logger);
+	logger.log(`Application version ${version}`);
 	logger.log(`Application is running on: ${host}:${port}`);
 }
 

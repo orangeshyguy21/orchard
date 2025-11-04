@@ -1,6 +1,7 @@
 export type Config = {
 	mode: {
 		production: boolean;
+		version: string;
 	};
 	server: {
 		host: string;
