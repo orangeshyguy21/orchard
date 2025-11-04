@@ -70,6 +70,7 @@ export const config = (): Config => {
 		database_key: process.env.MINT_DATABASE_KEY,
 		rpc_host: replaceLocalhostInDocker(process.env.MINT_RPC_HOST),
 		rpc_port: process.env.MINT_RPC_PORT,
+		rpc_mtls: process.env.MINT_RPC_KEY && process.env.MINT_RPC_CERT && process.env.MINT_RPC_CA ? true : false,
 		rpc_key: process.env.MINT_RPC_KEY,
 		rpc_cert: process.env.MINT_RPC_CERT,
 		rpc_ca: process.env.MINT_RPC_CA,

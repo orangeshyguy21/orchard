@@ -49,6 +49,7 @@ export type Config = {
 		database_key: string;
 		rpc_host: string;
 		rpc_port: string;
+		rpc_mtls: boolean;
 		rpc_key: string;
 		rpc_cert: string;
 		rpc_ca: string;
