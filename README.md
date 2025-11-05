@@ -20,7 +20,7 @@
 | -------------- | ---------------------------------- | -------------------------- |
 | Bitcoin        | core (knots compatible)            | (^Satoshi:28.0.0)          |
 | Lightning      | lnd, cln                           | (^v0.19.0-beta), (^v25.02) |
-| Cashu Mint     | cdk, nutshell                      | (^v0.13.0), (^0.17.1)      |
+| Cashu Mint     | cdk, nutshell                      | (^v0.13.3), (^0.18.1)      |
 | Taproot Assets | tapd                               | (^v0.6.1-alpha)            |
 | AI             | ollama                             | (^0.11.11)                 |
 
@@ -68,6 +68,9 @@ npm run start
 ```
 
 ## Run the application (docker)
+
+**Note:** The nutshell mint rpc can be run in insecure mode, omitting the need for certs.<br>
+To allow this in a docker container set `MINT_RPC_MTLS=false` in .env
 
 ### Docker images from source
 

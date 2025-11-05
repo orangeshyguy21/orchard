@@ -201,6 +201,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		try {
 			this.mintService.clearKeysetsCache();
 			this.loading_dynamic_data = true;
+			this.cdr.detectChanges();
 			this.interval = this.getAnalyticsInterval();
 			const timezone = this.settingService.getTimezone();
 			this.cdr.detectChanges();
@@ -300,14 +301,14 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		});
 	}
 
-	private onSuccessEvent(): void {
+	private async onSuccessEvent(): Promise<void> {
 		this.keysets_rotation = false;
 		this.cdr.detectChanges();
-		this.reloadDynamicData();
-		this.mintService.loadMintKeysets().subscribe((mint_keysets) => {
-			this.mint_keysets = mint_keysets;
-			this.resetForm();
-		});
+		this.mintService.clearKeysetsCache();
+		const mint_keysets = await lastValueFrom(this.mintService.loadMintKeysets());
+		this.mint_keysets = mint_keysets;
+		this.resetForm();
+		await this.reloadDynamicData();
 	}
 
 	private initKeysetsRotation(): void {

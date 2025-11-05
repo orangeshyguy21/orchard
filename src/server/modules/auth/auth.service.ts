@@ -72,6 +72,7 @@ export class AuthService {
 			this.jwtService.signAsync(access_payload, {expiresIn: this.token_ttl}),
 			this.jwtService.signAsync(refresh_payload, {expiresIn: this.refresh_ttl}),
 		]);
+
 		return {
 			access_token,
 			refresh_token,
@@ -93,7 +94,7 @@ export class AuthService {
 				role: user.role,
 				type: 'access',
 			};
-			const new_refresh_payload: RefreshTokenPayload = {
+			const refresh_payload: RefreshTokenPayload = {
 				sub: user.id,
 				username: user.name,
 				role: user.role,
@@ -101,7 +102,7 @@ export class AuthService {
 			};
 			const [new_access_token, new_refresh_token] = await Promise.all([
 				this.jwtService.signAsync(access_payload, {expiresIn: this.token_ttl}),
-				this.jwtService.signAsync(new_refresh_payload, {expiresIn: this.refresh_ttl}),
+				this.jwtService.signAsync(refresh_payload, {expiresIn: this.refresh_ttl}),
 			]);
 			return {
 				access_token: new_access_token,

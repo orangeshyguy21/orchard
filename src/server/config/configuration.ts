@@ -1,5 +1,20 @@
+/* Core Dependencies */
+import {createHash, hkdfSync} from 'crypto';
 /* Local Dependencies */
 import {Config} from './configuration.type';
+
+/**
+ * Derive a cryptographic secret from the base key using HKDF
+ * @param {string} base_key - The base key to derive from
+ * @param {string} info - Context info for derivation (e.g., 'jwt-access', 'jwt-refresh')
+ * @returns {string} Derived key as base64 string
+ */
+const deriveSecret = (base_key: string, info: string): string => {
+	const salt = 'orchard-jwt-derivation';
+	const key_material = createHash('sha256').update(base_key).digest();
+	const derived = Buffer.from(hkdfSync('sha256', key_material, salt, info, 32));
+	return derived.toString('base64');
+};
 
 const replaceLocalhostInDocker = (host: string | undefined): string | undefined => {
 	if (!host) return host;
@@ -13,18 +28,30 @@ const replaceLocalhostInDocker = (host: string | undefined): string | undefined 
 		.replace(/::1(?=[:/]|$)/g, 'host.docker.internal');
 };
 
+const getMintRpcMtls = (): boolean => {
+	if (process.env.DOCKER_ENV) {
+		return process.env.MINT_RPC_MTLS !== 'false';
+	} else {
+		return !!(process.env.MINT_RPC_KEY && process.env.MINT_RPC_CERT && process.env.MINT_RPC_CA);
+	}
+};
+
 export const config = (): Config => {
+	const base_key = process.env.SETUP_KEY || process.env.ADMIN_PASSWORD;
+
 	const mode = {
 		production: process.env.NODE_ENV === 'production',
+		version: `orchard/${process.env['npm_package_version'] || '1.0.0'}`,
 	};
 
 	const server = {
-		host: process.env.SERVER_HOST || 'http://localhost',
+		host: process.env.SERVER_HOST || 'localhost',
 		port: process.env.SERVER_PORT || '3321',
 		path: process.env.BASE_PATH || 'api',
 		proxy: process.env.TOR_PROXY_SERVER || undefined,
-		log: process.env.LOG_LEVEL || 'info',
-		key: process.env.SETUP_KEY || process.env.ADMIN_PASSWORD,
+		log: process.env.LOG_LEVEL || 'warn',
+		key: base_key,
+		jwt_secret: deriveSecret(base_key, 'jwt-access-token'),
 		ttl: process.env.THROTTLE_TTL || '60000',
 		limit: process.env.THROTTLE_LIMIT || '20',
 	};
@@ -70,7 +97,7 @@ export const config = (): Config => {
 		database_key: process.env.MINT_DATABASE_KEY,
 		rpc_host: replaceLocalhostInDocker(process.env.MINT_RPC_HOST),
 		rpc_port: process.env.MINT_RPC_PORT,
-		rpc_mtls: process.env.MINT_RPC_KEY && process.env.MINT_RPC_CERT && process.env.MINT_RPC_CA ? true : false,
+		rpc_mtls: getMintRpcMtls(),
 		rpc_key: process.env.MINT_RPC_KEY,
 		rpc_cert: process.env.MINT_RPC_CERT,
 		rpc_ca: process.env.MINT_RPC_CA,
