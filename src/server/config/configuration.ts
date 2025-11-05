@@ -37,11 +37,11 @@ export const config = (): Config => {
 	};
 
 	const server = {
-		host: process.env.SERVER_HOST || 'http://localhost',
+		host: process.env.SERVER_HOST || 'localhost',
 		port: process.env.SERVER_PORT || '3321',
 		path: process.env.BASE_PATH || 'api',
 		proxy: process.env.TOR_PROXY_SERVER || undefined,
-		log: process.env.LOG_LEVEL || 'info',
+		log: process.env.LOG_LEVEL || 'warn',
 		key: base_key,
 		jwt_secret: deriveSecret(base_key, 'jwt-access-token'),
 		ttl: process.env.THROTTLE_TTL || '60000',
