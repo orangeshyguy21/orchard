@@ -69,6 +69,9 @@ npm run start
 
 ## Run the application (docker)
 
+**Note:** The nutshell mint rpc can be run in insecure mode, omitting the need for certs.<br>
+To allow this in a docker container set `MINT_RPC_MTLS=false` in .env
+
 ### Docker images from source
 
 #### Sqlite Cashu Mint

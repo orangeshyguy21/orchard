@@ -28,6 +28,14 @@ const replaceLocalhostInDocker = (host: string | undefined): string | undefined 
 		.replace(/::1(?=[:/]|$)/g, 'host.docker.internal');
 };
 
+const getMintRpcMtls = (): boolean => {
+	if (process.env.DOCKER_ENV) {
+		return process.env.MINT_RPC_MTLS !== 'false';
+	} else {
+		return !!(process.env.MINT_RPC_KEY && process.env.MINT_RPC_CERT && process.env.MINT_RPC_CA);
+	}
+};
+
 export const config = (): Config => {
 	const base_key = process.env.SETUP_KEY || process.env.ADMIN_PASSWORD;
 
@@ -89,7 +97,7 @@ export const config = (): Config => {
 		database_key: process.env.MINT_DATABASE_KEY,
 		rpc_host: replaceLocalhostInDocker(process.env.MINT_RPC_HOST),
 		rpc_port: process.env.MINT_RPC_PORT,
-		rpc_mtls: process.env.MINT_RPC_KEY && process.env.MINT_RPC_CERT && process.env.MINT_RPC_CA ? true : false,
+		rpc_mtls: getMintRpcMtls(),
 		rpc_key: process.env.MINT_RPC_KEY,
 		rpc_cert: process.env.MINT_RPC_CERT,
 		rpc_ca: process.env.MINT_RPC_CA,
