@@ -101,7 +101,7 @@ export class MintSubsectionDashboardChartComponent implements OnChanges, OnDestr
 				break;
 			case ChartType.Volume:
 				this.chart_type = 'bar';
-				this.chart_data = this.getAmountChartData();
+				this.chart_data = this.getAmountChartData(false);
 				this.chart_options = this.getAmountChartOptions();
 				break;
 		}
@@ -114,7 +114,7 @@ export class MintSubsectionDashboardChartComponent implements OnChanges, OnDestr
 		}, 50);
 	}
 
-	private getAmountChartData(): ChartConfiguration['data'] {
+	private getAmountChartData(prepend: boolean = true): ChartConfiguration['data'] {
 		if (!this.page_settings) return {datasets: []};
 		if (
 			(!this.mint_analytics || this.mint_analytics.length === 0) &&
@@ -127,7 +127,9 @@ export class MintSubsectionDashboardChartComponent implements OnChanges, OnDestr
 		const timestamp_last = DateTime.fromSeconds(this.page_settings.date_end).startOf(time_interval).toSeconds();
 		const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.page_settings.interval);
 		const data_unit_groups = groupAnalyticsByUnit(this.mint_analytics);
-		const data_unit_groups_prepended = prependData(data_unit_groups, this.mint_analytics_pre, timestamp_first);
+		const data_unit_groups_prepended = prepend
+			? prependData(data_unit_groups, this.mint_analytics_pre, timestamp_first)
+			: data_unit_groups;
 		const datasets = Object.entries(data_unit_groups_prepended).map(([unit, data], index) => {
 			const data_keyed_by_timestamp = getDataKeyedByTimestamp(data, 'amount');
 			const color = this.chartService.getAssetColor(unit, index);
@@ -140,8 +142,8 @@ export class MintSubsectionDashboardChartComponent implements OnChanges, OnDestr
 				label: unit.toUpperCase(),
 				backgroundColor: color.bg,
 				borderColor: color.border,
-				borderWidth: 2,
-				borderRadius: 3,
+				borderWidth: 1,
+				borderRadius: 0,
 				pointBackgroundColor: color.border,
 				pointBorderColor: color.border,
 				pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
@@ -166,18 +168,21 @@ export class MintSubsectionDashboardChartComponent implements OnChanges, OnDestr
 		const y_axis = getYAxis(units);
 		const scales: ScaleChartOptions<'line'>['scales'] = {};
 		scales['x'] = getXAxisConfig(this.page_settings.interval, this.locale);
-		if (y_axis.includes('ybtc'))
+		if (y_axis.includes('ybtc')) {
 			scales['ybtc'] = getBtcYAxisConfig({
 				grid_color: this.chartService.getGridColor(),
 				begin_at_zero: true,
+				mark_zero_color: this.chartService.getGridColor('--mat-sys-surface-container-high'),
 			});
-		if (y_axis.includes('yfiat'))
+		}
+		if (y_axis.includes('yfiat')) {
 			scales['yfiat'] = getFiatYAxisConfig({
 				units,
 				show_grid: !y_axis.includes('ybtc'),
 				grid_color: this.chartService.getGridColor(),
 				begin_at_zero: true,
 			});
+		}
 
 		return {
 			responsive: true,
@@ -230,7 +235,7 @@ export class MintSubsectionDashboardChartComponent implements OnChanges, OnDestr
 				backgroundColor: color.bg,
 				borderColor: color.border,
 				borderWidth: 1,
-				borderRadius: 3,
+				borderRadius: 0,
 				pointBackgroundColor: color.border,
 				pointBorderColor: color.border,
 				pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
@@ -267,6 +272,17 @@ export class MintSubsectionDashboardChartComponent implements OnChanges, OnDestr
 					ticks: {
 						stepSize: 1,
 						precision: 0,
+					},
+					grid: {
+						display: true,
+						lineWidth: (context: any) => {
+							return context.tick.value === 0 ? 2 : 1;
+						},
+						color: (context: any) => {
+							return context.tick.value === 0
+								? this.chartService.getGridColor('--mat-sys-surface-container-high')
+								: this.chartService.getGridColor();
+						},
 					},
 				},
 			},

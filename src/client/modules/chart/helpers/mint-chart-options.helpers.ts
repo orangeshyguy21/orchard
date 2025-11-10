@@ -100,7 +100,15 @@ export function getXAxisConfig(selected_interval: MintAnalyticsInterval, locale:
 	};
 }
 
-export function getBtcYAxisConfig({grid_color, begin_at_zero}: {grid_color: string; begin_at_zero?: boolean}): any {
+export function getBtcYAxisConfig({
+	grid_color,
+	begin_at_zero,
+	mark_zero_color,
+}: {
+	grid_color: string;
+	begin_at_zero?: boolean;
+	mark_zero_color?: string;
+}): any {
 	return {
 		position: 'left',
 		title: {
@@ -110,7 +118,15 @@ export function getBtcYAxisConfig({grid_color, begin_at_zero}: {grid_color: stri
 		beginAtZero: begin_at_zero ?? false,
 		grid: {
 			display: true, // Enable gridlines for ybtc axis
-			color: grid_color,
+			drawBorder: (context: any) => {
+				return mark_zero_color ? true : false;
+			},
+			lineWidth: (context: any) => {
+				return mark_zero_color ? (context.tick.value === 0 ? 2 : 1) : 1;
+			},
+			color: (context: any) => {
+				return mark_zero_color ? (context.tick.value === 0 ? mark_zero_color : grid_color) : grid_color;
+			},
 		},
 	};
 }
