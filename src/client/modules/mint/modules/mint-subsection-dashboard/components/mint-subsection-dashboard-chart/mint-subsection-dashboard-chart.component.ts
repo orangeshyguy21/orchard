@@ -202,6 +202,14 @@ export class MintSubsectionDashboardChartComponent implements OnChanges, OnDestr
 					callbacks: {
 						title: getTooltipTitle,
 						label: (context: any) => getTooltipLabel(context, this.locale),
+						labelColor: (context: any) => {
+							return {
+								borderColor: context.dataset.borderColor,
+								backgroundColor: context.dataset.borderColor,
+								borderWidth: 2,
+								borderRadius: 0,
+							};
+						},
 					},
 				},
 				legend: {
@@ -294,6 +302,14 @@ export class MintSubsectionDashboardChartComponent implements OnChanges, OnDestr
 					callbacks: {
 						title: getTooltipTitle,
 						label: (context: any) => getTooltipLabel(context, this.locale),
+						labelColor: (context: any) => {
+							return {
+								borderColor: context.dataset.borderColor,
+								backgroundColor: context.dataset.borderColor,
+								borderWidth: 2,
+								borderRadius: 0,
+							};
+						},
 					},
 				},
 				legend: {

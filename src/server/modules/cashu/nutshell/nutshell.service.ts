@@ -685,7 +685,6 @@ export class NutshellService {
 				${time_group_sql} AS time_group,
 				unit,
 				${fee_calculation_sql} AS amount,
-				COUNT(DISTINCT time) AS operation_count,
 				MIN(time) as min_created_time
 			FROM 
 				balance_log
@@ -708,7 +707,7 @@ export class NutshellService {
 					unit: row.unit,
 					amount: row.amount,
 					created_time: timestamp,
-					operation_count: row.operation_count,
+					operation_count: 0,
 				};
 			});
 		} catch (err) {
