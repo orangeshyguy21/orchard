@@ -4,6 +4,9 @@
 	@extend %flex;
 	@extend %flex-row;
 	@extend %h-full;
+	@extend %w-full;
+	@extend %w-vw;
+	@extend %overflow-hidden;
 }
 
 .interior-section-container {
@@ -11,10 +14,14 @@
 	@extend %flex;
 	@extend %flex-column;
 	@extend %h-dvh;
+	@extend %w-full;
+	@extend %overflow-hidden;
 }
 
 .interior-router-outlet-container {
 	@extend %flex-grow;
 	@extend %flex;
 	@extend %flex-column;
+	@extend %w-min-0;
+	@extend %overflow-hidden;
 }

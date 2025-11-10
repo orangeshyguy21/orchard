@@ -28,7 +28,7 @@
 				@for (unit of minting_units; track unit) {
 					<div class="sticky-method z-index-1">
 						<div class="flex flex-items-center flex-gap-0-5 p-b-0-5">
-							<div class="font-size-xs orc-outline-color">{{ unit | titlecase }} Configuration</div>
+							<div class="font-size-xs orc-outline-color">{{ unit | localUnit: true }} Configuration</div>
 							<orc-graphic-asset [unit]="unit" [height]="'1rem'"> </orc-graphic-asset>
 						</div>
 					</div>
@@ -103,7 +103,7 @@
 				@for (unit of melting_units; track unit) {
 					<div class="sticky-method z-index-1">
 						<div class="flex flex-items-center flex-gap-0-5 p-b-0-5">
-							<div class="font-size-xs orc-outline-color">{{ unit | titlecase }} Configuration</div>
+							<div class="font-size-xs orc-outline-color">{{ unit | localUnit: true }} Configuration</div>
 							<orc-graphic-asset [unit]="unit" [height]="'1rem'"> </orc-graphic-asset>
 						</div>
 					</div>

@@ -8,7 +8,7 @@
 					<td mat-cell *matCellDef="let row">
 						<div class="flex flex-items-center flex-gap-1">
 							<orc-graphic-asset [unit]="row.unit" [height]="'1.75rem'" [custody]="'ecash'"> </orc-graphic-asset>
-							<span class="font-size-m" [innerHTML]="row.liabilities | localAmount: row.unit : 'mint'"></span>
+							<span class="font-size-m text-nowrap" [innerHTML]="row.liabilities | localAmount: row.unit : 'mint'"></span>
 						</div>
 					</td>
 				</ng-container>
@@ -30,10 +30,12 @@
 										</orc-graphic-asset>
 										@if (row.assets !== null) {
 											<span
-												class="font-size-m w-min-10"
+												class="font-size-m w-min-10 text-nowrap"
 												[innerHTML]="row.assets | localAmount: row.unit : 'lightning'"
 											></span>
-											<span class="font-size-m font-weight-bold orc-outline-color">{{ row.reserve_ratio }}</span>
+											<span class="font-size-m font-weight-bold orc-outline-color text-nowrap">{{
+												row.reserve_ratio
+											}}</span>
 										} @else {
 											<span class="font-size-m w-min-10 orc-outline-color">
 												<mat-icon>check_indeterminate_small</mat-icon>
@@ -63,7 +65,7 @@
 				<ng-container matColumnDef="fees">
 					<th mat-header-cell *matHeaderCellDef>Fee revenue</th>
 					<td mat-cell *matCellDef="let row">
-						<span class="font-size-m" [innerHTML]="row.fees | localAmount: row.unit : 'mint'"></span>
+						<span class="font-size-m text-nowrap" [innerHTML]="row.fees | localAmount: row.unit : 'mint'"></span>
 					</td>
 				</ng-container>
 
