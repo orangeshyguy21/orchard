@@ -4,7 +4,7 @@
 			<div formGroupName="daterange">
 				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic" class="mint-analytic-daterange">
 					<mat-label>Date range</mat-label>
-					<mat-date-range-input [rangePicker]="picker" (dateChange)="onTest()">
+					<mat-date-range-input [rangePicker]="picker">
 						<input
 							matStartDate
 							formControlName="date_start"

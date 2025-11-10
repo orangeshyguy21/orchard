@@ -137,10 +137,6 @@ export class MintSubsectionDashboardControlComponent implements OnChanges {
 		this.dateChange.emit([date_start, date_end]);
 	}
 
-	public onTest(): void {
-		console.log('onTest');
-	}
-
 	public onUnitsChange(event: MatSelectChange): void {
 		if (this.panel.invalid) return;
 		const is_valid = this.isValidChange();

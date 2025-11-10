@@ -13,6 +13,9 @@
 	@extend %flex-grow;
 	@extend %flex-column;
 	@extend %w-full;
+	@extend %border-left;
+	@extend %border-left-solid;
+	@extend %orc-surface-border;
 }
 
 .ai-chat-log-main {

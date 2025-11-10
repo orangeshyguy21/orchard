@@ -43,11 +43,6 @@ export class SettingsSubsectionUserUserPasswordDialogComponent {
 		this.validateForm();
 	}
 
-	public focusSaveButton(): void {
-		console.log('focusSaveButton');
-		// this.focused_control.set(null);
-	}
-
 	private validateForm(): void {
 		if (!this.form_password.invalid) return;
 		Object.keys(this.errors).forEach((control_name) => {

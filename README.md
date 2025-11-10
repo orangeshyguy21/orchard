@@ -133,3 +133,10 @@ npm run start:client
 ```bash
 npm run start:server
 ```
+
+### Tests
+```bash
+npm run format
+npm run lint
+npm run test
+```

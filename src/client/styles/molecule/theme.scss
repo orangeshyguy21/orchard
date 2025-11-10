@@ -97,6 +97,7 @@
     #{$c}orc-corner-small-top { border-radius: 0.5rem 0.5rem 0 0; }
 
     // Borders
+    #{$c}orc-surface-border { border-color: var(--mat-sys-surface); }
     #{$c}orc-surface-tint-border { border-color: var(--mat-sys-surface-tint); }
     #{$c}orc-surface-variant-border { border-color: var(--mat-sys-surface-variant); }
     #{$c}orc-outline-border { border-color: var(--mat-sys-outline); }

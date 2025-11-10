@@ -9,6 +9,9 @@
 	@extend %orc-surface-container-low-bg;
 	@extend %p-h-1;
 	@extend %p-l-1;
+	@extend %border-top;
+	@extend %border-top-solid;
+	@extend %orc-surface-border;
 }
 
 .ai-user-input {
