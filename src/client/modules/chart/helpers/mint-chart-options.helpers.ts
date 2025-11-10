@@ -118,7 +118,7 @@ export function getBtcYAxisConfig({
 		beginAtZero: begin_at_zero ?? false,
 		grid: {
 			display: true, // Enable gridlines for ybtc axis
-			drawBorder: (context: any) => {
+			drawBorder: (_context: any) => {
 				return mark_zero_color ? true : false;
 			},
 			lineWidth: (context: any) => {
