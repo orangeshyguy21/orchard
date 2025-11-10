@@ -38,7 +38,7 @@ export class AiChatResolver implements OnModuleInit {
 		this.logger.debug(tag);
 		try {
 			await this.authService.validateAccessToken(ai_chat.auth);
-		} catch (error) {
+		} catch {
 			throw new OrchardApiError(OrchardErrorCode.AuthenticationError);
 		}
 		this.aiChatService.streamChat(tag, ai_chat);
