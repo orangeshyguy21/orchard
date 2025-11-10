@@ -52,6 +52,7 @@
 
     // Width
     #{$c}w-full { width: 100%; }
+    #{$c}w-vw { width: 100vw; }
     #{$c}w-0 { width: 0; }
     #{$c}w-0-25 { width: 0.25rem; }
     #{$c}w-0-5 { width: 0.5rem; }
@@ -65,6 +66,7 @@
     #{$c}w-5 { width: 5rem; }
     #{$c}w-6 { width: 6rem; }
     #{$c}w-8 { width: 8rem; }
+    #{$c}w-min-0 { min-width: 0; }
     #{$c}w-min-3 { min-width: 3rem; }
     #{$c}w-min-5 { min-width: 5rem; }
     #{$c}w-min-7 { min-width: 7rem; }

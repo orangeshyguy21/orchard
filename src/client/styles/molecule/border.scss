@@ -9,13 +9,23 @@
     #{$c}border-transparent { border-color: transparent; }
     #{$c}border-radius-4 { border-radius: 4rem; }
 
-    // Border Bottom
-    #{$c}border-bottom { border-bottom-width: 1px; }
-    #{$c}border-bottom-solid { border-bottom-style: solid; }
+
+    // Top Border
+    #{$c}border-top { border-top-width: 1px; }
+    #{$c}border-top-solid { border-top-style: solid; }
 
     // Right Border
     #{$c}border-right { border-right-width: 1px; }
     #{$c}border-right-solid { border-right-style: solid; }
+
+    // Border Bottom
+    #{$c}border-bottom { border-bottom-width: 1px; }
+    #{$c}border-bottom-solid { border-bottom-style: solid; }
+
+    // Left Border
+    #{$c}border-left { border-left-width: 1px; }
+    #{$c}border-left-solid { border-left-style: solid; }
+
 
     // Outline
     #{$c}outline-none { outline: none; }
