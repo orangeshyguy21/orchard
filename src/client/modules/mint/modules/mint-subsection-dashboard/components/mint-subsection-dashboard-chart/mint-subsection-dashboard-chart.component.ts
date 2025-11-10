@@ -92,7 +92,6 @@ export class MintSubsectionDashboardChartComponent implements OnChanges, OnDestr
 				this.chart_type = 'line';
 				this.chart_data = this.getAmountChartData();
 				this.chart_options = this.getAmountChartOptions();
-				if (this.chart_options?.plugins) this.chart_options.plugins.annotation = this.getAnnotations();
 				break;
 			case ChartType.Operations:
 				this.chart_type = 'bar';
@@ -105,6 +104,7 @@ export class MintSubsectionDashboardChartComponent implements OnChanges, OnDestr
 				this.chart_options = this.getAmountChartOptions();
 				break;
 		}
+		if (this.chart_options?.plugins) this.chart_options.plugins.annotation = this.getAnnotations();
 		setTimeout(() => {
 			this.chart?.chart?.resize();
 		});
