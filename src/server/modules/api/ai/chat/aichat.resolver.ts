@@ -7,6 +7,8 @@ import {PubSub} from 'graphql-subscriptions';
 /* Application Dependencies */
 import {AuthService} from '@server/modules/auth/auth.service';
 import {NoHeaders} from '@server/modules/auth/decorators/auth.decorator';
+import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
+import {OrchardErrorCode} from '@server/modules/error/error.types';
 /* Local Dependencies */
 import {AiChatService} from './aichat.service';
 import {OrchardAiChatChunk, OrchardAiChatStream} from './aichat.model';
@@ -37,7 +39,7 @@ export class AiChatResolver implements OnModuleInit {
 		try {
 			await this.authService.validateAccessToken(ai_chat.auth);
 		} catch (error) {
-			throw error;
+			throw new OrchardApiError(OrchardErrorCode.AuthenticationError);
 		}
 		this.aiChatService.streamChat(tag, ai_chat);
 		return pubSub.asyncIterableIterator('ai_chat');

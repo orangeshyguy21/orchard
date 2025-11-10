@@ -1,12 +1,14 @@
 /* Core Dependencies */
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
+import {Router} from '@angular/router';
 /* Vendor Dependencies */
 import {Observable, catchError, Subscription, Subject, map, tap, throwError, shareReplay} from 'rxjs';
 /* Application Dependencies */
 import {ApiService} from '@client/modules/api/services/api/api.service';
 import {SettingService} from '@client/modules/settings/services/setting/setting.service';
 import {LocalStorageService} from '@client/modules/cache/services/local-storage/local-storage.service';
+import {AuthService} from '@client/modules/auth/services/auth/auth.service';
 import {OrchardWsRes} from '@client/modules/api/types/api.types';
 import {getApiQuery} from '@client/modules/api/helpers/api.helpers';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
@@ -58,6 +60,8 @@ export class AiService {
 		private apiService: ApiService,
 		private settingService: SettingService,
 		private localStorageService: LocalStorageService,
+		private authService: AuthService,
+		private router: Router,
 		private http: HttpClient,
 	) {}
 
@@ -96,6 +100,14 @@ export class AiService {
 		this.active_subject.next(true);
 		this.subscription = this.apiService.gql_socket.subscribe({
 			next: (response: OrchardWsRes<AiChatResponse>) => {
+				if (response.type === 'data' && response.payload?.errors) {
+					const has_auth_error = response.payload.errors.some((err: any) => err.extensions?.code === 10002);
+					if (has_auth_error) {
+						this.closeAiSocket();
+						this.retryAiSocket(agent, content, context);
+						return;
+					}
+				}
 				if (response.type === 'data' && response?.payload?.data?.ai_chat) {
 					const chunk = new AiChatChunk(response.payload.data.ai_chat, subscription_id);
 					this.message_subject.next(chunk);
@@ -222,6 +234,23 @@ export class AiService {
 	private getFullContext(context: string, role: AiMessageRole): string {
 		if (role === AiMessageRole.System) return `## Initial Form State\n\n${context}`;
 		return `## Updated Form State\n\n${context}`;
+	}
+
+	private retryAiSocket(agent: AiAgent, content: string | null, context: string | undefined): void {
+		this.closeAiSocket();
+		this.authService
+			.refreshToken()
+			.pipe(
+				tap(() => {
+					this.openAiSocket(agent, content, context);
+				}),
+				catchError((refresh_error) => {
+					this.authService.clearAuthCache();
+					this.router.navigate(['/auth']);
+					return throwError(() => refresh_error);
+				}),
+			)
+			.subscribe();
 	}
 
 	public clearConversation(): void {
