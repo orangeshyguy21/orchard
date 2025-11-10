@@ -2,6 +2,7 @@
 import {ChangeDetectionStrategy, Component, Input, ChangeDetectorRef, OnChanges, SimpleChanges} from '@angular/core';
 /* Vendor Dependencies */
 import {marked} from 'marked';
+import {DateTime} from 'luxon';
 /* Native Dependencies */
 import {AiChatCompiledMessage} from '@client/modules/ai/classes/ai-chat-compiled-message.class';
 import {AiAgentDefinition} from '@client/modules/ai/classes/ai-agent-definition.class';
@@ -54,11 +55,11 @@ export class AiChatMessageAssistantComponent implements OnChanges {
 
 	private async parseNewThinkingContent(): Promise<void> {
 		if (!this.message?.thinking) return;
-		if (!this.think_start) this.think_start = Date.now();
+		if (!this.think_start) this.think_start = DateTime.now().toMillis();
 		this.marked_thinking_content = await this.updateMarkedContent(this.message.thinking);
 		this.marked_content = await this.updateMarkedContent(this.message.content);
 		if (this.message.done) {
-			this.think_end = Date.now();
+			this.think_end = DateTime.now().toMillis();
 			this.finalizeMessage();
 		}
 	}
@@ -77,13 +78,14 @@ export class AiChatMessageAssistantComponent implements OnChanges {
 			this.marked_thinking_content = await this.updateMarkedContent(content.substring(think_start + 7));
 			return;
 		}
-		if (!this.think_end) this.think_end = Date.now();
+		if (!this.think_end) this.think_end = DateTime.now().toMillis();
 		this.marked_thinking_content = await this.updateMarkedContent(content.substring(think_start + 7, think_end));
 		this.marked_content = await this.updateMarkedContent(content.substring(think_end + 8));
 		if (this.message.done) this.finalizeMessage();
 	}
 
 	private finalizeMessage(): void {
+		if (!this.last_message) return;
 		this.think_duration = this.think_end - this.think_start;
 		this.cdr.markForCheck();
 	}
