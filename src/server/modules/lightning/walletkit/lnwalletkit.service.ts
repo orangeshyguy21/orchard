@@ -6,6 +6,7 @@ import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {LightningType} from '@server/modules/lightning/lightning.enums';
 import {LndService} from '@server/modules/lightning/lnd/lnd.service';
 import {ClnService} from '@server/modules/lightning/cln/cln.service';
+import {LnbitsService} from '@server/modules/lightning/lnbits/lnbits.service';
 /* Local Dependencies */
 import {LightningAddresses} from './lnwalletkit.types';
 
@@ -14,22 +15,25 @@ export class LightningWalletKitService implements OnModuleInit {
 	private readonly logger = new Logger(LightningWalletKitService.name);
 
 	private grpc_client: any = null;
+	private http_client: any = null;
 	private type: LightningType;
 
 	constructor(
 		private configService: ConfigService,
 		private lndService: LndService,
 		private clnService: ClnService,
+		private lnbitsService: LnbitsService,
 	) {}
 
 	public async onModuleInit() {
 		this.type = this.configService.get('lightning.type');
-		this.initializeGrpcClients();
+		this.initializeClients();
 	}
 
-	private initializeGrpcClients() {
+	private initializeClients() {
 		if (this.type === 'lnd') this.grpc_client = this.lndService.initializeWalletKitClient();
 		if (this.type === 'cln') this.grpc_client = this.clnService.initializeWalletKitClient();
+		if (this.type === 'lnbits') this.http_client = this.lnbitsService.initializeWalletKitClient();
 	}
 
 	private makeGrpcRequest(method: string, request: any): Promise<any> {
@@ -48,5 +52,6 @@ export class LightningWalletKitService implements OnModuleInit {
 	async getLightningAddresses(): Promise<LightningAddresses> {
 		if (this.type === 'lnd') return this.makeGrpcRequest('ListAddresses', {});
 		if (this.type === 'cln') return this.clnService.mapClnAddresses(await this.makeGrpcRequest('ListAddresses', {}));
+		if (this.type === 'lnbits') return this.lnbitsService.mapLnbitsAddresses(await this.lnbitsService.getLnbitsBtcAddress());
 	}
 }

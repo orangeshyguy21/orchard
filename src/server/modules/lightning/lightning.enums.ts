@@ -1,6 +1,7 @@
 export enum LightningType {
 	LND = 'lnd',
 	CLN = 'cln',
+	LNBITS = 'lnbits',
 }
 
 export enum LightningAddressType {
