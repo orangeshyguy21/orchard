@@ -59,7 +59,7 @@ message MintQuote {
     optional int64 amount = 2;
     string unit = 3;
     string request = 4;
-    string state = 5;  // UNPAID, PAID, ISSUED (computed)
+    string state = 5; 
     optional string request_lookup_id = 6;
     optional string pubkey = 7;
     int64 created_time = 8;
@@ -140,7 +140,7 @@ message ListMintQuotesRequest {
     // Filtering
     optional int64 creation_date_start = 4;
     optional int64 creation_date_end = 5;
-    repeated string states = 6;  // UNPAID, PAID, ISSUED
+    repeated string states = 6;
     repeated string units = 7;
 }
 
@@ -166,7 +166,7 @@ message ListMeltQuotesRequest {
     // Filtering
     optional int64 creation_date_start = 4;
     optional int64 creation_date_end = 5;
-    repeated string states = 6;  // UNPAID, PENDING, PAID, FAILED
+    repeated string states = 6; 
     repeated string units = 7;
 }
 
@@ -191,7 +191,7 @@ message ListProofsRequest {
     // Filtering
     optional int64 creation_date_start = 4;
     optional int64 creation_date_end = 5;
-    repeated string states = 6;  // UNSPENT, SPENT, PENDING
+    repeated string states = 6;
     repeated string units = 7;
     repeated string keyset_ids = 8;
     optional bool melted_only = 9;  // Only proofs with quote_id
@@ -203,7 +203,7 @@ message CountProofsRequest {
     repeated string states = 3;
     repeated string units = 4;
     repeated string keyset_ids = 5;
-    optional bool melted_only = 6;  // Add this
+    optional bool melted_only = 6;
 }
 
 // Blind Signature Requests - with pagination
@@ -237,7 +237,7 @@ message GetKeysetsResponse {
     repeated Keyset keysets = 1;
 }
 
-// Paginated Responses (LND-style)
+// Paginated Responses
 message ListMintQuotesResponse {
     repeated MintQuote quotes = 1;
     int64 last_index_offset = 2;
