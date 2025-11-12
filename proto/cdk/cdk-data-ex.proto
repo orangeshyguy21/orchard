@@ -25,7 +25,7 @@ service CdkMintData {
     rpc ListProofs(ListProofsRequest) returns (ListProofsResponse) {}
     rpc GetProofsCount(CountProofsRequest) returns (CountResponse) {}
     
-    // Blind Signature (Promise) Operations - paginated lists (flat records)
+    // Blind Signature Operations
     rpc ListBlindSignatures(ListBlindSignaturesRequest) returns (ListBlindSignaturesResponse) {}
     rpc GetBlindSignaturesCount(CountBlindSignaturesRequest) returns (CountResponse) {}
     
@@ -35,7 +35,7 @@ service CdkMintData {
 }
 
 message Balance {
-    string keyset = 1;
+    string unit = 1;
     int64 balance = 2;
 }
 
@@ -48,10 +48,12 @@ message Keyset {
     optional string derivation_path = 6;
     optional int32 derivation_path_index = 7;
     optional int64 input_fee_ppk = 8;
+    optional int64 fees_paid = 9;
+    optional int64 balance = 10;
     // Optionally included if include_proof_counts=true in request
     // Used to signal to operator the weight of any given keyset
     // I use proof counts to indicate 'weight' but there could be a better way (bytes etc)
-    optional int64 proof_count = 9;
+    optional int64 proof_count = 11;
 }
 
 message MintQuote {
@@ -111,12 +113,16 @@ message BlindSignature {
 
 // Balance Requests - no pagination
 message GetBalancesRequest {
-    optional string keyset_id = 1;
+    optional string unit = 1; 
 }
 
-message GetBalancesIssuedRequest {}
+message GetBalancesIssuedRequest {
+    optional string unit = 1; 
+}
 
-message GetBalancesRedeemedRequest {}
+message GetBalancesRedeemedRequest {
+    optional string unit = 1; 
+}
 
 // Keyset Requests - no pagination
 message GetKeysetsRequest {
@@ -124,10 +130,12 @@ message GetKeysetsRequest {
     repeated string units = 1;
     // Only return active keysets
     optional bool active_only = 2;
+    // Inlcude balance
+    optional bool include_balance = 3;
     // Include auth keysets (by default they are excluded)
-    optional bool include_auth = 3;
+    optional bool include_auth = 4;
     // Include proof counts for each keyset (adds proof_count field)
-    optional bool include_proof_counts = 4;
+    optional bool include_proof_counts = 5;
 }
 
 // Mint Quote Requests - with pagination
