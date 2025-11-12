@@ -28,6 +28,9 @@ service CdkMintData {
     // Blind Signature Operations
     rpc ListBlindSignatures(ListBlindSignaturesRequest) returns (ListBlindSignaturesResponse) {}
     rpc GetBlindSignaturesCount(CountBlindSignaturesRequest) returns (CountResponse) {}
+
+    // Fee Operations
+    rpc GetFees(GetFeesRequest) returns (GetFeesResponse) {}
     
     // Database Backup Operations
     rpc ExportDatabaseBackup(ExportDatabaseBackupRequest) returns (DatabaseBackupSnapshot) {}
@@ -107,6 +110,11 @@ message BlindSignature {
     optional string quote_id = 6;  // mint_quote reference
     optional string dleq_e = 7;
     optional string dleq_s = 8;
+}
+
+message Fee {
+    string unit = 1;
+    int64 fees_paid = 2;
 }
 
 // Request Messages
@@ -235,6 +243,12 @@ message CountBlindSignaturesRequest {
     repeated string keyset_ids = 4;
 }
 
+message GetFeesRequest {
+    repeated string units = 1;          // Filter by units
+    optional int64 date_start = 2;      // Time range
+    optional int64 date_end = 3;
+}
+
 // Response Messages
 
 message GetBalancesResponse {
@@ -280,6 +294,10 @@ message ListBlindSignaturesResponse {
 
 message CountResponse {
     int64 count = 1;
+}
+
+message GetFeesResponse {
+    repeated Fee fees = 1;
 }
 
 // Database Backup Requests
