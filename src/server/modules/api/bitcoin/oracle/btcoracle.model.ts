@@ -21,25 +21,25 @@ export class OrchardBitcoinOraclePrice {
 @ObjectType()
 export class OrchardBitcoinOracleBackfillStream {
 	@Field(() => String)
-	stream_id: string;
+	id: string;
 }
 
 @ObjectType()
 export class OrchardBitcoinOracleBackfillProgress {
 	@Field(() => String)
-	stream_id: string;
+	id: string;
 
 	@Field(() => String)
 	status: 'started' | 'processing' | 'completed' | 'aborted' | 'error';
 
 	@Field(() => UnixTimestamp, {nullable: true})
-	start_timestamp?: number;
+	start_date?: number;
 
 	@Field(() => UnixTimestamp, {nullable: true})
-	end_timestamp?: number;
+	end_date?: number;
 
 	@Field(() => UnixTimestamp, {nullable: true})
-	date_timestamp?: number;
+	date?: number;
 
 	@Field(() => Int, {nullable: true})
 	price?: number;

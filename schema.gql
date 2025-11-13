@@ -446,22 +446,22 @@ type OrchardBitcoinNetworkInfo {
 }
 
 type OrchardBitcoinOracleBackfillProgress {
-  date_timestamp: UnixTimestamp
-  end_timestamp: UnixTimestamp
+  date: UnixTimestamp
+  end_date: UnixTimestamp
   error: String
   failed: Int
+  id: String!
   price: Int
   processed: Int
-  start_timestamp: UnixTimestamp
+  start_date: UnixTimestamp
   status: String!
-  stream_id: String!
   success: Boolean
   successful: Int
   total_days: Int
 }
 
 type OrchardBitcoinOracleBackfillStream {
-  stream_id: String!
+  id: String!
 }
 
 type OrchardBitcoinOraclePrice {

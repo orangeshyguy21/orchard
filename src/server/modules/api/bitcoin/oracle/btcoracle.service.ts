@@ -44,27 +44,27 @@ export class BitcoinOracleService {
 	/**
 	 * Stream backfill oracle prices for a date range and save to database
 	 */
-	public async streamBackfillOracle(tag: string, stream_id: string, start_timestamp: number, end_timestamp: number): Promise<void> {
+	public async streamBackfillOracle(tag: string, id: string, start_date: number, end_date: number): Promise<void> {
 		try {
 			const controller = new AbortController();
-			this.active_streams.set(stream_id, controller);
+			this.active_streams.set(id, controller);
 			const signal = controller.signal;
 
-			const validation_error = await this.validateBackfillRequest(start_timestamp, end_timestamp);
+			const validation_error = await this.validateBackfillRequest(start_date, end_date);
 			if (validation_error) {
-				this.emitUpdate(stream_id, {status: 'error', error: validation_error});
-				this.active_streams.delete(stream_id);
+				this.emitUpdate(id, {status: 'error', error: validation_error});
+				this.active_streams.delete(id);
 				return;
 			}
 
-			const start = DateTime.fromSeconds(start_timestamp, {zone: 'utc'}).startOf('day');
-			const end = DateTime.fromSeconds(end_timestamp, {zone: 'utc'}).startOf('day');
+			const start = DateTime.fromSeconds(start_date, {zone: 'utc'}).startOf('day');
+			const end = DateTime.fromSeconds(end_date, {zone: 'utc'}).startOf('day');
 			const total_days = Math.floor(end.diff(start, 'days').days) + 1;
 
-			this.emitUpdate(stream_id, {
+			this.emitUpdate(id, {
 				status: 'started',
-				start_timestamp,
-				end_timestamp,
+				start_date,
+				end_date,
 				total_days,
 				processed: 0,
 				successful: 0,
@@ -76,46 +76,46 @@ export class BitcoinOracleService {
 
 			while (current <= end) {
 				if (signal.aborted) {
-					this.logger.log(`Backfill aborted for stream ${stream_id}`);
-					this.emitUpdate(stream_id, {
+					this.logger.log(`Backfill aborted for stream ${id}`);
+					this.emitUpdate(id, {
 						status: 'aborted',
-						start_timestamp,
-						end_timestamp,
+						start_date,
+						end_date,
 						total_days,
 						...stats,
 					});
-					this.active_streams.delete(stream_id);
+					this.active_streams.delete(id);
 					return;
 				}
 
-				await this.processBackfillDay(stream_id, current, total_days, stats);
+				await this.processBackfillDay(id, current, total_days, stats);
 				current = current.plus({days: 1});
 			}
 
-			this.emitUpdate(stream_id, {
+			this.emitUpdate(id, {
 				status: 'completed',
-				start_timestamp,
-				end_timestamp,
+				start_date,
+				end_date,
 				total_days,
 				...stats,
 			});
-			this.active_streams.delete(stream_id);
+			this.active_streams.delete(id);
 		} catch (error) {
-			this.active_streams.delete(stream_id);
+			this.active_streams.delete(id);
 			this.logger.error(`Backfill stream error: ${error.message}`, error.stack);
-			this.emitUpdate(stream_id, {status: 'error', error: error.message});
+			this.emitUpdate(id, {status: 'error', error: error.message});
 		}
 	}
 
 	/**
 	 * Abort a running backfill stream
 	 */
-	public abortBackfillStream(stream_id: string): OrchardBitcoinOracleBackfillStream {
-		const controller = this.active_streams.get(stream_id);
+	public abortBackfillStream(id: string): OrchardBitcoinOracleBackfillStream {
+		const controller = this.active_streams.get(id);
 		if (!controller) throw new OrchardApiError(OrchardErrorCode.BitcoinRPCError);
 		controller.abort();
-		this.active_streams.delete(stream_id);
-		return {stream_id};
+		this.active_streams.delete(id);
+		return {id};
 	}
 
 	/**
@@ -161,7 +161,7 @@ export class BitcoinOracleService {
 			stats.processed++;
 			this.emitUpdate(stream_id, {
 				status: 'processing',
-				date_timestamp,
+				date: date_timestamp,
 				price: result.central_price,
 				success: true,
 				total_days,
@@ -174,7 +174,7 @@ export class BitcoinOracleService {
 			this.logger.error(`Failed to backfill ${date_str}: ${error.message}`);
 			this.emitUpdate(stream_id, {
 				status: 'processing',
-				date_timestamp,
+				date: date_timestamp,
 				success: false,
 				error: error.message,
 				total_days,
@@ -186,7 +186,7 @@ export class BitcoinOracleService {
 	/**
 	 * Emit a backfill update event
 	 */
-	private emitUpdate(stream_id: string, data: Partial<OrchardBitcoinOracleBackfillProgress>): void {
-		this.event_emitter.emit('oracle.backfill.update', new OrchardBitcoinOracleBackfillProgress({stream_id, ...data}));
+	private emitUpdate(id: string, data: Partial<OrchardBitcoinOracleBackfillProgress>): void {
+		this.event_emitter.emit('oracle.backfill.update', new OrchardBitcoinOracleBackfillProgress({id, ...data}));
 	}
 }
