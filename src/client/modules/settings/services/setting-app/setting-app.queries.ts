@@ -8,3 +8,14 @@ export const SETTINGS_QUERY = `
         }
     }
 `;
+
+export const SETTING_UPDATE_MUTATION = `
+    mutation SettingUpdate($key: SettingKey!, $value: String!) {
+        setting_update(key: $key, value: $value) {
+            key
+            value
+            description
+            value_type
+        }
+    }
+`;

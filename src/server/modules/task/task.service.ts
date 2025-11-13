@@ -6,9 +6,11 @@ import {Cron} from '@nestjs/schedule';
 import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {AuthService} from '@server/modules/auth/auth.service';
+import {SettingService} from '@server/modules/setting/setting.service';
 import {BitcoinRpcService} from '@server/modules/bitcoin/rpc/btcrpc.service';
 import {BitcoinUTXOracleService} from '@server/modules/bitcoin/utxoracle/utxoracle.service';
 import {BitcoinType} from '@server/modules/bitcoin/bitcoin.enums';
+import {SettingKey} from '@server/modules/setting/setting.enums';
 
 @Injectable()
 export class TaskService {
@@ -16,6 +18,7 @@ export class TaskService {
 
 	constructor(
 		private authService: AuthService,
+		private settingService: SettingService,
 		private bitcoinRpcService: BitcoinRpcService,
 		private bitcoinUTXOracleService: BitcoinUTXOracleService,
 		private configService: ConfigService,
@@ -49,6 +52,12 @@ export class TaskService {
 		const bitcoin_type = this.configService.get<BitcoinType>('bitcoin.type');
 		if (!bitcoin_type) {
 			this.logger.debug('Bitcoin not configured, skipping oracle job');
+			return;
+		}
+
+		const bitcoin_oracle_enabled = await this.settingService.getSetting(SettingKey.BITCOIN_ORACLE);
+		if (!bitcoin_oracle_enabled) {
+			this.logger.debug('Bitcoin oracle is not enabled, skipping oracle job');
 			return;
 		}
 

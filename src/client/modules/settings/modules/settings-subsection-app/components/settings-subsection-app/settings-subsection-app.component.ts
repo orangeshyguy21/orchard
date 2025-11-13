@@ -7,6 +7,7 @@ import {Subscription} from 'rxjs';
 import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {EventService} from '@client/modules/event/services/event/event.service';
 import {EventData} from '@client/modules/event/classes/event-data.class';
+import {OrchardErrors} from '@client/modules/error/classes/error.class';
 /* Native Dependencies */
 import {Setting} from '@client/modules/settings/classes/setting.class';
 /* Shared Dependencies */
@@ -106,29 +107,27 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 			);
 		}
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		// this.crewService.updateUserName(this.form_user_name.value.name).subscribe({
-		// 	next: () => {
-		// 		this.crewService.clearUserCache();
-		// 		this.crewService.loadUser().subscribe();
-		// 		this.eventService.registerEvent(
-		// 			new EventData({
-		// 				type: 'SUCCESS',
-		// 				message: 'Username updated!',
-		// 			}),
-		// 		);
-		// 		this.setUserNameFrom();
-		// 		this.form_user_name.markAsPristine();
-		// 		this.evaluateDirtyCount();
-		// 	},
-		// 	error: (error: OrchardErrors) => {
-		// 		this.eventService.registerEvent(
-		// 			new EventData({
-		// 				type: 'ERROR',
-		// 				message: error.errors[0].message,
-		// 			}),
-		// 		);
-		// 	},
-		// });
+		this.settingAppService.updateSetting(SettingKey.BitcoinOracle, this.form_bitcoin.value.oracle_enabled.toString()).subscribe({
+			next: () => {
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'SUCCESS',
+						message: 'Settings updated!',
+					}),
+				);
+				this.form_bitcoin.markAsPristine();
+				this.evaluateDirtyCount();
+			},
+			error: (error: OrchardErrors) => {
+				console.error(error);
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'ERROR',
+						message: error.errors[0].message,
+					}),
+				);
+			},
+		});
 	}
 
 	private onUnconfirmedEvent(): void {

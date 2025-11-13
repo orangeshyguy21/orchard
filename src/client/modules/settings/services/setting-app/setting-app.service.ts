@@ -10,11 +10,11 @@ import {OrchardRes} from '@client/modules/api/types/api.types';
 import {ApiService} from '@client/modules/api/services/api/api.service';
 /* Native Dependencies */
 import {Setting} from '@client/modules/settings/classes/setting.class';
-import {AppSettingsResponse} from '@client/modules/settings/types/setting-app.types';
+import {SettingsResponse, SettingUpdateResponse} from '@client/modules/settings/types/setting-app.types';
 /* Local Dependencies */
-import {SETTINGS_QUERY} from './setting-app.queries';
+import {SETTINGS_QUERY, SETTING_UPDATE_MUTATION} from './setting-app.queries';
 /* Shared Dependencies */
-import {SettingValue} from '@shared/generated.types';
+import {SettingKey, SettingValue} from '@shared/generated.types';
 
 @Injectable({
 	providedIn: 'root',
@@ -27,12 +27,26 @@ export class SettingAppService {
 
 	public getSettings(): Observable<Setting[]> {
 		const query = getApiQuery(SETTINGS_QUERY);
-		return this.http.post<OrchardRes<AppSettingsResponse>>(this.apiService.api, query).pipe(
+		return this.http.post<OrchardRes<SettingsResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.settings;
 			}),
 			map((settings) => settings.map((setting) => new Setting(setting))),
+			catchError((error) => {
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	public updateSetting(key: SettingKey, value: string): Observable<Setting> {
+		const query = getApiQuery(SETTING_UPDATE_MUTATION, {key, value});
+		return this.http.post<OrchardRes<SettingUpdateResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.setting_update;
+			}),
+			map((setting) => new Setting(setting)),
 			catchError((error) => {
 				return throwError(() => error);
 			}),

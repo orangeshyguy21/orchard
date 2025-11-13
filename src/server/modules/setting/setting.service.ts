@@ -55,6 +55,15 @@ export class SettingService implements OnModuleInit {
 	}
 
 	/**
+	 * Get a setting by key
+	 * @param {SettingKey} key - The setting key to get
+	 * @returns {Promise<Setting>} The setting
+	 */
+	public async getSetting(key: SettingKey): Promise<Setting> {
+		return this.settingRepository.findOne({where: {key}});
+	}
+
+	/**
 	 * Update a setting by key
 	 * @param {SettingKey} key - The setting key to update
 	 * @param {string} value - The new value for the setting

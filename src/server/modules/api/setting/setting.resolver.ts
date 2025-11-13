@@ -24,7 +24,7 @@ export class SettingResolver {
 
 	@Mutation(() => OrchardSetting)
 	@Roles(UserRole.ADMIN)
-	async setting_update(@Args('key') key: SettingKey, @Args('value') value: string): Promise<OrchardSetting> {
+	async setting_update(@Args('key', {type: () => SettingKey}) key: SettingKey, @Args('value') value: string): Promise<OrchardSetting> {
 		const tag = 'UPDATE { setting }';
 		this.logger.debug(tag);
 		return await this.settingService.updateSetting(tag, key, value);
