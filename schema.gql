@@ -232,6 +232,7 @@ type Mutation {
   auth_authentication_revoke: Boolean!
   auth_initialize(initialize: InitializationInput!): OrchardAuthentication!
   auth_signup(signup: AuthSignupInput!): OrchardAuthentication!
+  bitcoin_oracle_backfill_abort(id: String!): OrchardBitcoinOracleBackfillStream!
   crew_invite_create(createInvite: InviteCreateInput!): OrchardCrewInvite!
   crew_invite_delete(id: String!): Boolean!
   crew_invite_update(updateInvite: InviteUpdateInput!): OrchardCrewInvite!
@@ -444,29 +445,28 @@ type OrchardBitcoinNetworkInfo {
   warnings: [String!]!
 }
 
-type OrchardBitcoinOracle {
-  block_window: OrchardBitcoinOracleBlockWindow!
-  bounds: OrchardBitcoinOracleBounds!
-  central_price: Float!
-  deviation_pct: Float!
-  intraday: [OrchardBitcoinOracleIntradayPoint!]
-  rough_price_estimate: Float!
+type OrchardBitcoinOracleBackfillProgress {
+  date_timestamp: UnixTimestamp
+  end_timestamp: UnixTimestamp
+  error: String
+  failed: Int
+  price: Int
+  processed: Int
+  start_timestamp: UnixTimestamp
+  status: String!
+  stream_id: String!
+  success: Boolean
+  successful: Int
+  total_days: Int
 }
 
-type OrchardBitcoinOracleBlockWindow {
-  end: Int!
-  start: Int!
+type OrchardBitcoinOracleBackfillStream {
+  stream_id: String!
 }
 
-type OrchardBitcoinOracleBounds {
-  max: Float!
-  min: Float!
-}
-
-type OrchardBitcoinOracleIntradayPoint {
-  block_height: Int!
+type OrchardBitcoinOraclePrice {
+  date: UnixTimestamp!
   price: Float!
-  timestamp: Int!
 }
 
 type OrchardBitcoinTxFeeEstimate {
@@ -934,7 +934,7 @@ type Query {
   bitcoin_blockcount: OrchardBitcoinBlockCount!
   bitcoin_mempool_transactions: [OrchardBitcoinMempoolTransaction!]!
   bitcoin_network_info: OrchardBitcoinNetworkInfo!
-  bitcoin_oracle(date: String!, intraday: Boolean): OrchardBitcoinOracle!
+  bitcoin_oracle(end_date: UnixTimestamp, start_date: UnixTimestamp!): [OrchardBitcoinOraclePrice!]!
   bitcoin_transaction_fee_estimates(targets: [Int!]!): [OrchardBitcoinTxFeeEstimate!]!
   crew_invites: [OrchardCrewInvite!]!
   crew_user: OrchardCrewUser!
@@ -977,6 +977,7 @@ type Query {
 
 type Subscription {
   ai_chat(ai_chat: AiChatInput!): OrchardAiChatChunk!
+  bitcoin_oracle_backfill(auth: String!, end_date: UnixTimestamp!, id: String!, start_date: UnixTimestamp!): OrchardBitcoinOracleBackfillProgress!
   blockCount: OrchardBitcoinBlockCount!
 }
 

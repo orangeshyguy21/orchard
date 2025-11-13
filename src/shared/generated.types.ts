@@ -622,6 +622,22 @@ export type OrchardBitcoinOracle = {
   rough_price_estimate: Scalars['Float']['output'];
 };
 
+export type OrchardBitcoinOracleBackfillProgress = {
+  __typename?: 'OrchardBitcoinOracleBackfillProgress';
+  date_timestamp?: Maybe<Scalars['UnixTimestamp']['output']>;
+  end_timestamp?: Maybe<Scalars['UnixTimestamp']['output']>;
+  error?: Maybe<Scalars['String']['output']>;
+  failed?: Maybe<Scalars['Int']['output']>;
+  price?: Maybe<Scalars['Int']['output']>;
+  processed?: Maybe<Scalars['Int']['output']>;
+  start_timestamp?: Maybe<Scalars['UnixTimestamp']['output']>;
+  status: Scalars['String']['output'];
+  stream_id: Scalars['String']['output'];
+  success?: Maybe<Scalars['Boolean']['output']>;
+  successful?: Maybe<Scalars['Int']['output']>;
+  total_days?: Maybe<Scalars['Int']['output']>;
+};
+
 export type OrchardBitcoinOracleBlockWindow = {
   __typename?: 'OrchardBitcoinOracleBlockWindow';
   end: Scalars['Int']['output'];
@@ -1223,7 +1239,7 @@ export type QueryBitcoin_BlockArgs = {
 
 
 export type QueryBitcoin_OracleArgs = {
-  date: Scalars['String']['input'];
+  date: Scalars['UnixTimestamp']['input'];
   intraday?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
@@ -1399,12 +1415,20 @@ export type QueryPublic_UrlsArgs = {
 export type Subscription = {
   __typename?: 'Subscription';
   ai_chat: OrchardAiChatChunk;
+  bitcoin_oracle_backfill: OrchardBitcoinOracleBackfillProgress;
   blockCount: OrchardBitcoinBlockCount;
 };
 
 
 export type SubscriptionAi_ChatArgs = {
   ai_chat: AiChatInput;
+};
+
+
+export type SubscriptionBitcoin_Oracle_BackfillArgs = {
+  end_date: Scalars['UnixTimestamp']['input'];
+  start_date: Scalars['UnixTimestamp']['input'];
+  stream_id: Scalars['String']['input'];
 };
 
 export enum TaprootAssetType {

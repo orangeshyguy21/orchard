@@ -1,16 +1,25 @@
 /* Core Dependencies */
 import {Injectable} from '@nestjs/common';
-import {ConfigService} from '@nestjs/config';
+/* Vendor Dependencies */
+import {InjectRepository} from '@nestjs/typeorm';
+import {Repository, Between} from 'typeorm';
+import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {BitcoinRpcService} from '@server/modules/bitcoin/rpc/btcrpc.service';
 /* Local Dependencies */
 import {UTXOracleRunOptions, UTXOracleResult} from './utxoracle.types';
+import {UTXOracle} from './utxoracle.entity';
 
 @Injectable()
 export class BitcoinUTXOracleService {
+	private readonly DEFAULT_RECENT_BLOCKS = 144; // ~1 day of blocks
+	private readonly MIN_OUTPUT_BTC = 1e-5; // 0.00001 BTC
+	private readonly MAX_OUTPUT_BTC = 1e5; // 100,000 BTC
+
 	constructor(
-		private config_service: ConfigService,
-		private btc_rpc: BitcoinRpcService,
+		private bitcoinRpcService: BitcoinRpcService,
+		@InjectRepository(UTXOracle)
+		private utxOracleRepository: Repository<UTXOracle>,
 	) {}
 
 	public async runOracle(options: UTXOracleRunOptions): Promise<UTXOracleResult> {
@@ -19,16 +28,57 @@ export class BitcoinUTXOracleService {
 		return this.runRecentMode(options);
 	}
 
-	private getDefaultRecentBlocks(): number {
-		const env_val = this.config_service.get<string>('ORACLE_DEFAULT_RECENT_BLOCKS');
-		const parsed = env_val ? parseInt(env_val, 10) : NaN;
-		return Number.isFinite(parsed) && parsed > 0 ? parsed : 144;
+	/**
+	 * Save oracle price to database for a specific date
+	 * @param {number} date_timestamp - Unix timestamp in seconds (midnight UTC)
+	 * @param {number} price - Central price from oracle
+	 * @returns {Promise<OraclePrice>} Saved oracle price record
+	 */
+	public async saveOraclePrice(date_timestamp: number, price: number): Promise<UTXOracle> {
+		const existing = await this.utxOracleRepository.findOne({where: {date: date_timestamp}});
+
+		if (existing) {
+			await this.utxOracleRepository.update(existing.id, {price});
+			return this.utxOracleRepository.findOne({where: {id: existing.id}});
+		} else {
+			const utxOracle = this.utxOracleRepository.create({
+				date: date_timestamp,
+				price,
+			});
+			return this.utxOracleRepository.save(utxOracle);
+		}
+	}
+
+	/**
+	 * Get oracle price for a specific date
+	 * @param {number} date_timestamp - Unix timestamp in seconds
+	 * @returns {Promise<UTXOracle | null>} Oracle price record or null
+	 */
+	public async getOraclePrice(date_timestamp: number): Promise<UTXOracle | null> {
+		return this.utxOracleRepository.findOne({where: {date: date_timestamp}});
+	}
+
+	/**
+	 * Get oracle prices for a date range
+	 * @param {number} start_timestamp - Start date Unix timestamp (inclusive)
+	 * @param {number} end_timestamp - End date Unix timestamp (inclusive)
+	 * @returns {Promise<UTXOracle[]>} Array of oracle price records, sorted by date ascending
+	 */
+	public async getOraclePriceRange(start_timestamp: number, end_timestamp: number): Promise<UTXOracle[]> {
+		return this.utxOracleRepository.find({
+			where: {
+				date: Between(start_timestamp, end_timestamp),
+			},
+			order: {
+				date: 'ASC',
+			},
+		});
 	}
 
 	private async runRecentMode(options: UTXOracleRunOptions): Promise<UTXOracleResult> {
-		const recent_blocks = options.recent_blocks || this.getDefaultRecentBlocks();
+		const recent_blocks = options.recent_blocks ?? this.DEFAULT_RECENT_BLOCKS;
 		const include_intraday = options.intraday === true;
-		const tip = await this.btc_rpc.getBitcoinBlockCount();
+		const tip = await this.bitcoinRpcService.getBitcoinBlockCount();
 		const consensus_tip = tip - 6;
 		const start = Math.max(0, consensus_tip - recent_blocks);
 		const end = consensus_tip;
@@ -69,18 +119,17 @@ export class BitcoinUTXOracleService {
 		};
 	}
 
-	private async findBlockWindowForDate(date_str: string): Promise<{start: number; end: number}> {
-		const tip = await this.btc_rpc.getBitcoinBlockCount();
+	private async findBlockWindowForDate(timestamp: number): Promise<{start: number; end: number}> {
+		const tip = await this.bitcoinRpcService.getBitcoinBlockCount();
 		const consensus_tip = tip - 6;
-		// Parse UTC midnight for date_str
-		const [y, m, d] = date_str.split('-').map((x) => parseInt(x, 10));
-		if (!y || !m || !d) throw new Error('Invalid date format. Expected YYYY-MM-DD');
-		const ts0 = Date.UTC(y, m - 1, d, 0, 0, 0) / 1000;
-		const ts1 = ts0 + 24 * 60 * 60;
+		const dt = DateTime.fromSeconds(timestamp, {zone: 'utc'});
+		const midnight = dt.startOf('day');
+		const ts0 = midnight.toSeconds();
+		const ts1 = midnight.plus({days: 1}).toSeconds();
 
 		const get_time = async (height: number): Promise<number> => {
-			const h = await this.btc_rpc.getBitcoinBlockHash(height);
-			const header = await this.btc_rpc.getBitcoinBlockHeader(h);
+			const h = await this.bitcoinRpcService.getBitcoinBlockHash(height);
+			const header = await this.bitcoinRpcService.getBitcoinBlockHeader(h);
 			return header.time as number;
 		};
 
@@ -135,8 +184,8 @@ export class BitcoinUTXOracleService {
 	private async collectWindowTxids(start: number, end: number): Promise<Set<string>> {
 		const set = new Set<string>();
 		for (let height = start; height <= end; height++) {
-			const hash = await this.btc_rpc.getBitcoinBlockHash(height);
-			const block = await this.btc_rpc.getBitcoinBlock(hash);
+			const hash = await this.bitcoinRpcService.getBitcoinBlockHash(height);
+			const block = await this.bitcoinRpcService.getBitcoinBlock(hash);
 			for (const tx of block.tx) set.add(tx.txid);
 		}
 		return set;
@@ -176,13 +225,13 @@ export class BitcoinUTXOracleService {
 
 	private async buildHistogram(start: number, end: number, _window_txids: Set<string>): Promise<Float64Array> {
 		const counts = new Float64Array(1 + 200 * 12);
-		const min_btc = this.getMinBtc();
-		const max_btc = this.getMaxBtc();
+		const min_btc = this.MIN_OUTPUT_BTC;
+		const max_btc = this.MAX_OUTPUT_BTC;
 		const seen_txids = new Set<string>();
 
 		for (let height = start; height <= end; height++) {
-			const hash = await this.btc_rpc.getBitcoinBlockHash(height);
-			const block = await this.btc_rpc.getBitcoinBlock(hash);
+			const hash = await this.bitcoinRpcService.getBitcoinBlockHash(height);
+			const block = await this.bitcoinRpcService.getBitcoinBlock(hash);
 			for (const tx of block.tx) {
 				// coinbase detection
 				const is_coinbase = (tx.vin || []).some((v: any) => v.coinbase !== undefined || (!v.txid && v.vout === undefined));
@@ -239,18 +288,6 @@ export class BitcoinUTXOracleService {
 			}
 		}
 		return counts;
-	}
-
-	private getMinBtc(): number {
-		const v = this.config_service.get<string>('ORACLE_MIN_OUTPUT_BTC');
-		const n = v ? Number(v) : NaN;
-		return Number.isFinite(n) ? n : 1e-5;
-	}
-
-	private getMaxBtc(): number {
-		const v = this.config_service.get<string>('ORACLE_MAX_OUTPUT_BTC');
-		const n = v ? Number(v) : NaN;
-		return Number.isFinite(n) ? n : 1e5;
 	}
 
 	private smoothAndNormalize(counts: Float64Array): void {
@@ -398,8 +435,8 @@ export class BitcoinUTXOracleService {
 		const seen_txids = new Set<string>();
 
 		for (let height = start; height <= end; height++) {
-			const hash = await this.btc_rpc.getBitcoinBlockHash(height);
-			const block = await this.btc_rpc.getBitcoinBlock(hash);
+			const hash = await this.bitcoinRpcService.getBitcoinBlockHash(height);
+			const block = await this.bitcoinRpcService.getBitcoinBlock(hash);
 			const timestamp = block.time;
 			for (const tx of block.tx) {
 				const is_coinbase = (tx.vin || []).some((v: any) => v.coinbase !== undefined || (!v.txid && v.vout === undefined));

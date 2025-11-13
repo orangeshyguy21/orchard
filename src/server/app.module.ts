@@ -49,7 +49,10 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 		autoSchemaFile: is_production ? true : 'schema.gql',
 		sortSchema: true,
 		path: path,
-		installSubscriptionHandlers: true,
+		subscriptions: {
+			'graphql-ws': true,
+			'subscriptions-transport-ws': false,
+		},
 		playground: !is_production,
 		resolvers: {
 			UnixTimestamp: UnixTimestamp,

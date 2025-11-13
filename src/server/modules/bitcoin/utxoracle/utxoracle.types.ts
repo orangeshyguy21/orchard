@@ -1,5 +1,5 @@
 export type UTXOracleRunOptions = {
-	date?: string; // YYYY-MM-DD in UTC
+	date?: number; // Unix timestamp in seconds (midnight UTC)
 	recent_blocks?: number; // defaults to 144
 	intraday?: boolean; // include intraday data in result
 };
