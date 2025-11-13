@@ -4,6 +4,7 @@
 			<orc-settings-subsection-app-bitcoin-oracle
 				[form_group]="form_group()"
 				[control_name]="'oracle_enabled'"
+				[oracle_price]="oracle_price()"
 				(update)="update_oracle.emit()"
 			></orc-settings-subsection-app-bitcoin-oracle>
 		</mat-card-content>

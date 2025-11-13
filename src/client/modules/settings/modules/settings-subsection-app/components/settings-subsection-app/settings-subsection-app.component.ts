@@ -9,6 +9,7 @@ import {EventService} from '@client/modules/event/services/event/event.service';
 import {BitcoinService} from '@client/modules/bitcoin/services/bitcoin/bitcoin.service';
 import {EventData} from '@client/modules/event/classes/event-data.class';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
+import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle-price.class';
 /* Native Dependencies */
 import {Setting} from '@client/modules/settings/classes/setting.class';
 /* Shared Dependencies */
@@ -30,6 +31,7 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 	public form_bitcoin: FormGroup = new FormGroup({
 		oracle_enabled: new FormControl(false, [Validators.required]),
 	});
+	public bitcoin_oracle_price = signal<BitcoinOraclePrice | null>(null);
 
 	private active_event: EventData | null = null;
 	private subscriptions: Subscription = new Subscription();
@@ -60,10 +62,7 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 
 	private async getBitcoinOracle(): Promise<void> {
 		const bitcoin_oracle_price = await firstValueFrom(this.bitcoinService.loadBitcoinOraclePrice());
-		console.log(bitcoin_oracle_price);
-		// this.form_bitcoin.patchValue({
-		// 	oracle_price: bitcoin_oracle_price.price,
-		// });
+		this.bitcoin_oracle_price.set(bitcoin_oracle_price);
 	}
 
 	private getEventSubscription(): Subscription {

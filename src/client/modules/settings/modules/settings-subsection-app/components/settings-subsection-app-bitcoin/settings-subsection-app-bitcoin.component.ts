@@ -1,6 +1,8 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
 import {FormGroup} from '@angular/forms';
+/* Application Dependencies */
+import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle-price.class';
 
 @Component({
 	selector: 'orc-settings-subsection-app-bitcoin',
@@ -11,5 +13,6 @@ import {FormGroup} from '@angular/forms';
 })
 export class SettingsSubsectionAppBitcoinComponent {
 	public form_group = input.required<FormGroup>();
+	public oracle_price = input.required<BitcoinOraclePrice | null>();
 	public update_oracle = output<void>();
 }

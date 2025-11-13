@@ -10,6 +10,7 @@
 	</div>
 	<orc-settings-subsection-app-bitcoin
 		[form_group]="form_bitcoin"
+		[oracle_price]="bitcoin_oracle_price()"
 		(update_oracle)="onUpdateBitcoinOracle()"
 	></orc-settings-subsection-app-bitcoin>
 	<!-- <orc-settings-subsection-user-user
