@@ -874,6 +874,13 @@ type OrchardPublicUrl {
   url: String
 }
 
+type OrchardSetting {
+  description: String
+  key: String!
+  value: String!
+  value_type: SettingValue!
+}
+
 type OrchardStatus {
   online: Boolean!
   title: String!
@@ -969,10 +976,18 @@ type Query {
   mint_quote_ttl: OrchardMintQuoteTtls!
   public_image(url: String!): OrchardPublicImage!
   public_urls(urls: [String!]!): [OrchardPublicUrl!]!
+  settings: [OrchardSetting!]!
   status: OrchardStatus!
   taproot_assets: OrchardTaprootAssets!
   taproot_assets_info: OrchardTaprootAssetsInfo!
   taproot_assets_utxo: [OrchardTaprootAssetsUtxo!]!
+}
+
+enum SettingValue {
+  BOOLEAN
+  JSON
+  NUMBER
+  STRING
 }
 
 type Subscription {

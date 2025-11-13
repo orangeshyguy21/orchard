@@ -45,6 +45,8 @@ import {PublicUrlModule} from './public/url/url.module';
 // Crew Endpoints
 import {CrewUserModule} from './crew/crewuser/crewuser.module';
 import {CrewInviteModule} from './crew/crewinvite/crewinvite.module';
+// Setting Endpoints
+import {ApiSettingModule} from './setting/setting.module';
 
 @Module({
 	imports: [
@@ -83,6 +85,7 @@ import {CrewInviteModule} from './crew/crewinvite/crewinvite.module';
 		PublicUrlModule,
 		CrewUserModule,
 		CrewInviteModule,
+		ApiSettingModule,
 	],
 })
 export class ApiModule {}

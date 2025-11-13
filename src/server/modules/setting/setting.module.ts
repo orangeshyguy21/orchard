@@ -1,0 +1,14 @@
+/* Core Dependencies */
+import {Module} from '@nestjs/common';
+/* Vendor Dependencies */
+import {TypeOrmModule} from '@nestjs/typeorm';
+/* Local Dependencies */
+import {SettingService} from './setting.service';
+import {Setting} from './setting.entity';
+
+@Module({
+	imports: [TypeOrmModule.forFeature([Setting])],
+	providers: [SettingService],
+	exports: [SettingService],
+})
+export class SettingModule {}
