@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, OnInit, OnDestroy, WritableSignal, signal, effect} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, OnDestroy, WritableSignal, signal, effect, HostListener} from '@angular/core';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
 /* Vendor Dependencies */
 import {Subscription} from 'rxjs';
@@ -9,6 +9,7 @@ import {EventService} from '@client/modules/event/services/event/event.service';
 import {EventData} from '@client/modules/event/classes/event-data.class';
 import {User} from '@client/modules/crew/classes/user.class';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
+import {ComponentCanDeactivate} from '@client/modules/routing/interfaces/routing.interfaces';
 
 @Component({
 	selector: 'orc-settings-subsection-user',
@@ -17,7 +18,12 @@ import {OrchardErrors} from '@client/modules/error/classes/error.class';
 	styleUrl: './settings-subsection-user.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsSubsectionUserComponent implements OnInit, OnDestroy {
+export class SettingsSubsectionUserComponent implements ComponentCanDeactivate, OnInit, OnDestroy {
+	@HostListener('window:beforeunload')
+	canDeactivate(): boolean {
+		return this.active_event?.type !== 'PENDING';
+	}
+
 	public form_user_name: FormGroup = new FormGroup({
 		name: new FormControl(null, [Validators.required, Validators.maxLength(50)]),
 	});
