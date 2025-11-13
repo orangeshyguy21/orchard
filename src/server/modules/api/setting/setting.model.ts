@@ -2,12 +2,12 @@
 import {Field, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
 import {Setting} from '@server/modules/setting/setting.entity';
-import {SettingValue} from '@server/modules/setting/setting.enums';
+import {SettingValue, SettingKey} from '@server/modules/setting/setting.enums';
 
 @ObjectType()
 export class OrchardSetting {
-	@Field()
-	key: string;
+	@Field(() => SettingKey)
+	key: SettingKey;
 
 	@Field()
 	value: string;

@@ -876,7 +876,7 @@ type OrchardPublicUrl {
 
 type OrchardSetting {
   description: String
-  key: String!
+  key: SettingKey!
   value: String!
   value_type: SettingValue!
 }
@@ -981,6 +981,10 @@ type Query {
   taproot_assets: OrchardTaprootAssets!
   taproot_assets_info: OrchardTaprootAssetsInfo!
   taproot_assets_utxo: [OrchardTaprootAssetsUtxo!]!
+}
+
+enum SettingKey {
+  BITCOIN_ORACLE
 }
 
 enum SettingValue {
