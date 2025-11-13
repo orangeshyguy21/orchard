@@ -2,10 +2,11 @@
 import {ChangeDetectionStrategy, Component, HostListener, WritableSignal, signal, effect, OnInit, OnDestroy} from '@angular/core';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
 /* Vendor Dependencies */
-import {Subscription} from 'rxjs';
+import {Subscription, firstValueFrom} from 'rxjs';
 /* Application Dependencies */
 import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {EventService} from '@client/modules/event/services/event/event.service';
+import {BitcoinService} from '@client/modules/bitcoin/services/bitcoin/bitcoin.service';
 import {EventData} from '@client/modules/event/classes/event-data.class';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 /* Native Dependencies */
@@ -38,22 +39,31 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 	constructor(
 		private settingAppService: SettingAppService,
 		private eventService: EventService,
+		private bitcoinService: BitcoinService,
 	) {
 		effect(() => {
 			this.createPendingEvent(this.dirty_count());
 		});
 	}
 
-	ngOnInit(): void {
+	async ngOnInit(): Promise<void> {
 		this.subscriptions.add(this.getEventSubscription());
-		this.getSettings();
+		await this.getSettings();
+		this.getBitcoinOracle();
 	}
 
-	private getSettings(): void {
-		this.settingAppService.getSettings().subscribe((settings) => {
-			this.initial_settings = settings;
-			this.initSettingForms(settings);
-		});
+	private async getSettings(): Promise<void> {
+		const settings = await firstValueFrom(this.settingAppService.getSettings());
+		this.initial_settings = settings;
+		this.initSettingForms(settings);
+	}
+
+	private async getBitcoinOracle(): Promise<void> {
+		const bitcoin_oracle_price = await firstValueFrom(this.bitcoinService.loadBitcoinOraclePrice());
+		console.log(bitcoin_oracle_price);
+		// this.form_bitcoin.patchValue({
+		// 	oracle_price: bitcoin_oracle_price.price,
+		// });
 	}
 
 	private getEventSubscription(): Subscription {

@@ -6,6 +6,7 @@ import {
 	OrchardBitcoinMempoolTransaction,
 	OrchardBitcoinTxFeeEstimate,
 	OrchardBitcoinBlockTemplate,
+	OrchardBitcoinOraclePrice,
 } from '@shared/generated.types';
 
 export type BitcoinBlockchainInfoResponse = {
@@ -34,4 +35,8 @@ export type BitcoinTransactionFeeEstimatesResponse = {
 
 export type BitcoinBlockTemplateResponse = {
 	bitcoin_block_template: OrchardBitcoinBlockTemplate;
+};
+
+export type BitcoinOraclePriceResponse = {
+	bitcoin_oracle: OrchardBitcoinOraclePrice[];
 };

@@ -3,6 +3,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 /* Vendor Dependencies */
 import {BehaviorSubject, catchError, map, Observable, of, shareReplay, tap, throwError} from 'rxjs';
+import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {getApiQuery} from '@client/modules/api/helpers/api.helpers';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
@@ -19,6 +20,7 @@ import {BitcoinBlock} from '@client/modules/bitcoin/classes/bitcoin-block.class'
 import {BitcoinTransaction} from '@client/modules/bitcoin/classes/bitcoin-transaction.class';
 import {BitcoinTransactionFeeEstimate} from '@client/modules/bitcoin/classes/bitcoin-transaction-fee-estimate.class';
 import {BitcoinBlockTemplate} from '@client/modules/bitcoin/classes/bitcoin-block-template.class';
+import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle-price.class';
 import {
 	BitcoinBlockchainInfoResponse,
 	BitcoinBlockCountResponse,
@@ -27,6 +29,7 @@ import {
 	BitcoinMempoolTransactionsResponse,
 	BitcoinTransactionFeeEstimatesResponse,
 	BitcoinBlockTemplateResponse,
+	BitcoinOraclePriceResponse,
 } from '@client/modules/bitcoin/types/bitcoin.types';
 /* Local Dependencies */
 import {
@@ -37,6 +40,7 @@ import {
 	BITCOIN_MEMPOOL_TRANSACTIONS_QUERY,
 	BITCOIN_TRANSACTION_FEE_ESTIMATES_QUERY,
 	BITCOIN_BLOCK_TEMPLATE_QUERY,
+	BITCOIN_ORACLE_PRICE_QUERY,
 } from './bitcoin.queries';
 
 @Injectable({
@@ -49,24 +53,29 @@ export class BitcoinService {
 	public get bitcoin_blockchain_info$(): Observable<BitcoinBlockchainInfo | null> {
 		return this.bitcoin_blockchain_info_subject.asObservable();
 	}
+	public get bitcoin_price$(): Observable<BitcoinOraclePrice | null> {
+		return this.bitcoin_oracle_price_subject.asObservable();
+	}
 
 	public readonly CACHE_KEYS = {
 		BITCOIN_BLOCKCOUNT: 'bitcoin-blockcount',
 		BITCOIN_BLOCKCHAIN_INFO: 'bitcoin-blockchain-info',
 		BITCOIN_NETWORK_INFO: 'bitcoin-network-info',
+		BITCOIN_ORACLE_PRICE: 'bitcoin-oracle-price',
 	};
 
 	private readonly CACHE_DURATIONS = {
 		[this.CACHE_KEYS.BITCOIN_BLOCKCOUNT]: 1 * 60 * 1000, // 1 minute
 		[this.CACHE_KEYS.BITCOIN_BLOCKCHAIN_INFO]: 30 * 60 * 1000, // 30 minutes
 		[this.CACHE_KEYS.BITCOIN_NETWORK_INFO]: 30 * 60 * 1000, // 30 minutes
+		[this.CACHE_KEYS.BITCOIN_ORACLE_PRICE]: 60 * 60 * 1000, // 60 minutes
 	};
 
 	/* Subjects for caching */
 	private readonly bitcoin_block_subject!: BehaviorSubject<BitcoinBlockCount | null>;
 	private readonly bitcoin_blockchain_info_subject: BehaviorSubject<BitcoinBlockchainInfo | null>;
 	private readonly bitcoin_network_info_subject: BehaviorSubject<BitcoinNetworkInfo | null>;
-
+	private readonly bitcoin_oracle_price_subject: BehaviorSubject<BitcoinOraclePrice | null>;
 	/* Observables for caching (rapid request caching) */
 	private bitcoin_blockchain_info_observable!: Observable<BitcoinBlockchainInfo> | null;
 
@@ -83,6 +92,10 @@ export class BitcoinService {
 		this.bitcoin_network_info_subject = this.cache.createCache<BitcoinNetworkInfo>(
 			this.CACHE_KEYS.BITCOIN_NETWORK_INFO,
 			this.CACHE_DURATIONS[this.CACHE_KEYS.BITCOIN_NETWORK_INFO],
+		);
+		this.bitcoin_oracle_price_subject = this.cache.createCache<BitcoinOraclePrice>(
+			this.CACHE_KEYS.BITCOIN_ORACLE_PRICE,
+			this.CACHE_DURATIONS[this.CACHE_KEYS.BITCOIN_ORACLE_PRICE],
 		);
 	}
 
@@ -236,6 +249,27 @@ export class BitcoinService {
 			map((block_template) => new BitcoinBlockTemplate(block_template)),
 			catchError((error) => {
 				console.error('Error loading bitcoin block template:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	public loadBitcoinOraclePrice(): Observable<BitcoinOraclePrice> {
+		const yesterday = DateTime.utc().minus({days: 1}).startOf('day');
+		const start_date = Math.floor(yesterday.toSeconds());
+		const query = getApiQuery(BITCOIN_ORACLE_PRICE_QUERY, {start_date});
+
+		return this.http.post<OrchardRes<BitcoinOraclePriceResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.bitcoin_oracle;
+			}),
+			map((bitcoin_oracle_prices) => new BitcoinOraclePrice(bitcoin_oracle_prices[0])),
+			tap((bitcoin_oracle_price) => {
+				this.bitcoin_oracle_price_subject.next(bitcoin_oracle_price);
+			}),
+			catchError((error) => {
+				console.error('Error loading bitcoin oracle price:', error);
 				return throwError(() => error);
 			}),
 		);

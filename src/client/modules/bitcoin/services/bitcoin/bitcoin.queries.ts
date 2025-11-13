@@ -112,3 +112,11 @@ export const BITCOIN_BLOCK_TEMPLATE_QUERY = `{
         feerate_high
     }
 }`;
+
+export const BITCOIN_ORACLE_PRICE_QUERY = `
+query BitcoinOraclePrice($start_date: UnixTimestamp!) {
+    bitcoin_oracle(start_date: $start_date){
+        date
+        price
+    }
+}`;
