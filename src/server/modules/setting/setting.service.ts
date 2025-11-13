@@ -6,6 +6,7 @@ import {Repository} from 'typeorm';
 /* Local Dependencies */
 import {Setting} from './setting.entity';
 import {DEFAULT_SETTINGS} from './setting.config';
+import {SettingKey} from './setting.enums';
 
 @Injectable()
 export class SettingService implements OnModuleInit {
@@ -51,5 +52,22 @@ export class SettingService implements OnModuleInit {
 	 */
 	public async getSettings(): Promise<Setting[]> {
 		return this.settingRepository.find();
+	}
+
+	/**
+	 * Update a setting by key
+	 * @param {SettingKey} key - The setting key to update
+	 * @param {string} value - The new value for the setting
+	 * @returns {Promise<Setting>} The updated setting
+	 */
+	public async updateSetting(key: SettingKey, value: string): Promise<Setting> {
+		const setting = await this.settingRepository.findOne({
+			where: {key},
+		});
+		if (!setting) throw new Error(`Setting with key ${key} not found`);
+		setting.value = value;
+		const updated_setting = await this.settingRepository.save(setting);
+		this.logger.debug(`Updated setting: ${key} = ${value}`);
+		return updated_setting;
 	}
 }
