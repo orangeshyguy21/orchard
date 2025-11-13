@@ -3,7 +3,7 @@ import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {FormGroup, FormControl, Validators, ValidationErrors} from '@angular/forms';
 import {Router} from '@angular/router';
 /* Application Dependencies */
-import {SettingService} from '@client/modules/settings/services/setting/setting.service';
+import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {ThemeType} from '@client/modules/cache/services/local-storage/local-storage.types';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {passwordMatch} from '@client/modules/form/validators/password-match';
@@ -35,7 +35,7 @@ export class AuthSubsectionInitializationComponent implements OnInit {
 
 	constructor(
 		private readonly authService: AuthService,
-		private readonly settingService: SettingService,
+		private readonly settingDeviceService: SettingDeviceService,
 		private readonly router: Router,
 	) {
 		this.form_init.statusChanges.subscribe(() => {
@@ -44,7 +44,7 @@ export class AuthSubsectionInitializationComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
-		const theme = this.settingService.getTheme();
+		const theme = this.settingDeviceService.getTheme();
 		this.show_surface = theme === ThemeType.LIGHT_MODE;
 	}
 

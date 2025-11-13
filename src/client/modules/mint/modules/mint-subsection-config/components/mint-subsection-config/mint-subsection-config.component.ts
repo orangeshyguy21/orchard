@@ -26,7 +26,7 @@ import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {OrchardValidators} from '@client/modules/form/validators';
 import {EventData} from '@client/modules/event/classes/event-data.class';
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
-import {SettingService} from '@client/modules/settings/services/setting/setting.service';
+import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {ComponentCanDeactivate} from '@client/modules/routing/interfaces/routing.interfaces';
 import {NonNullableMintConfigSettings} from '@client/modules/settings/types/setting.types';
@@ -189,7 +189,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		public route: ActivatedRoute,
 		public eventService: EventService,
 		public aiService: AiService,
-		public settingService: SettingService,
+		public settingDeviceService: SettingDeviceService,
 		public cdr: ChangeDetectorRef,
 	) {}
 
@@ -233,7 +233,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	}
 
 	private getPageSettings(): NonNullableMintConfigSettings {
-		const settings = this.settingService.getMintConfigSettings();
+		const settings = this.settingDeviceService.getMintConfigSettings();
 		return {
 			tertiary_nav: settings.tertiary_nav ?? Object.values(TertiaryNav),
 		};
@@ -441,7 +441,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	******************************************************** */
 
 	private async initChartData(): Promise<void> {
-		this.locale = this.settingService.getLocale();
+		this.locale = this.settingDeviceService.getLocale();
 		await this.loadChartData();
 		this.data_loading = false;
 		this.cdr.detectChanges();
@@ -879,7 +879,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 
 	public onTertiaryNavChange(event: string[]): void {
 		this.page_settings.tertiary_nav = event;
-		this.settingService.setMintConfigSettings(this.page_settings);
+		this.settingDeviceService.setMintConfigSettings(this.page_settings);
 		this.updateTertiaryNav();
 	}
 

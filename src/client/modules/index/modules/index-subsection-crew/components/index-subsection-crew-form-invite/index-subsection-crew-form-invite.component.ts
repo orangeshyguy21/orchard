@@ -8,7 +8,7 @@ import {startWith, map} from 'rxjs/operators';
 import {MatAutocompleteTrigger, MatAutocomplete} from '@angular/material/autocomplete';
 import {MatCheckboxChange} from '@angular/material/checkbox';
 /* Application Dependencies */
-import {SettingService} from '@client/modules/settings/services/setting/setting.service';
+import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 /* Native Dependencies */
 import {RoleOption} from '@client/modules/index/modules/index-subsection-crew/types/crew-panel.types';
 
@@ -47,7 +47,7 @@ export class IndexSubsectionCrewFormInviteComponent implements OnInit {
 
 	public filtered_options!: Observable<TimeOption[]>;
 
-	constructor(private settingService: SettingService) {
+	constructor(private settingDeviceService: SettingDeviceService) {
 		effect(() => {
 			if (this.open()) {
 				setTimeout(() => {
@@ -67,7 +67,7 @@ export class IndexSubsectionCrewFormInviteComponent implements OnInit {
 	 * @returns {TimeOption[]} Array of time options with value and formatted label
 	 */
 	private generateTimeOptions(): TimeOption[] {
-		const locale = this.settingService.getLocale();
+		const locale = this.settingDeviceService.getLocale();
 		const options: TimeOption[] = [];
 
 		for (let hour = 0; hour < 24; hour++) {

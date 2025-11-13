@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import {Pipe, PipeTransform} from '@angular/core';
 /* Application Dependencies */
-import {SettingService} from '@client/modules/settings/services/setting/setting.service';
+import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 
 @Pipe({
 	name: 'localAmount',
@@ -9,11 +9,11 @@ import {SettingService} from '@client/modules/settings/services/setting/setting.
 	pure: false,
 })
 export class LocalAmountPipe implements PipeTransform {
-	constructor(private settingService: SettingService) {}
+	constructor(private settingDeviceService: SettingDeviceService) {}
 
 	transform(amount: number | null, unit: string, section?: string): string {
 		if (amount === null || amount === undefined) return '';
-		const locale = this.settingService.getLocale();
+		const locale = this.settingDeviceService.getLocale();
 		const unit_lower = unit.toLowerCase();
 
 		switch (unit_lower) {

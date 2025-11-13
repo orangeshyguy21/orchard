@@ -17,7 +17,7 @@ import {
 @Injectable({
 	providedIn: 'root',
 })
-export class SettingService {
+export class SettingDeviceService {
 	public mint_dashboard_short_settings: Record<string, number | null> = {
 		date_end: null,
 	};

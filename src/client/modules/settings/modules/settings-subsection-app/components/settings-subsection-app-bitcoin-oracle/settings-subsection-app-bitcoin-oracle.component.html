@@ -1,0 +1,19 @@
+<div class="flex flex-items-center flex-gap-2">
+	<div class="flex-1">
+		<div [formGroup]="form_group()" class="flex flex-items-center flex-gap-2">
+			<div class="flex-1 flex flex-items-center flex-grow">
+				<mat-slide-toggle [formControlName]="control_name()" name="oracle_enabled" (change)="update.emit()"> </mat-slide-toggle>
+				<div class="p-l-1 font-size-s">Price Oracle Enabled</div>
+			</div>
+			<div class="flex-1">
+				<orc-form-help-text class="orc-surface-container-high-bg">
+					<div class="flex flex-column flex-gap-0-5">
+						<div>Enables sovereign bitcoin USD pricing</div>
+						<div>UTXOracle runs locally to extract price data directly from your bitcoin node</div>
+					</div>
+				</orc-form-help-text>
+			</div>
+		</div>
+	</div>
+	<div class="flex-1 flex flex-justify-center">price?</div>
+</div>

@@ -5,14 +5,13 @@
 				<div class="title-l">Bitcoin</div>
 				<div class="font-size-xs orc-outline-color">Optional bitcoin settings</div>
 			</div>
-			<!-- <mat-chip-set aria-label="Location categories">
-				<mat-chip disabled>Orchard</mat-chip>
-				<mat-chip disabled>Local</mat-chip>
-			</mat-chip-set> -->
 		</div>
 		<div class="category-rule"></div>
 	</div>
-	<orc-index-subsection-app-bitcoin></orc-index-subsection-app-bitcoin>
+	<orc-settings-subsection-app-bitcoin
+		[form_group]="form_bitcoin"
+		(update_oracle)="onUpdateBitcoinOracle()"
+	></orc-settings-subsection-app-bitcoin>
 	<!-- <orc-settings-subsection-user-user
 		[user]="user()"
 		[form_group_user_name]="form_user_name"

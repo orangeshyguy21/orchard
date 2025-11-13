@@ -6,7 +6,7 @@ import {Router} from '@angular/router';
 import {Observable, catchError, Subscription, Subject, map, tap, throwError, shareReplay} from 'rxjs';
 /* Application Dependencies */
 import {ApiService} from '@client/modules/api/services/api/api.service';
-import {SettingService} from '@client/modules/settings/services/setting/setting.service';
+import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {LocalStorageService} from '@client/modules/cache/services/local-storage/local-storage.service';
 import {AuthService} from '@client/modules/auth/services/auth/auth.service';
 import {OrchardWsRes} from '@client/modules/api/types/api.types';
@@ -58,7 +58,7 @@ export class AiService {
 
 	constructor(
 		private apiService: ApiService,
-		private settingService: SettingService,
+		private settingDeviceService: SettingDeviceService,
 		private localStorageService: LocalStorageService,
 		private authService: AuthService,
 		private router: Router,
@@ -66,7 +66,7 @@ export class AiService {
 	) {}
 
 	public getFunctionModel(): Observable<AiModel | null> {
-		const set_model = this.settingService.getModel();
+		const set_model = this.settingDeviceService.getModel();
 		return this.getAiModels().pipe(
 			map((models) => {
 				if (models.find((model) => model.model === set_model)) {
@@ -95,7 +95,7 @@ export class AiService {
 
 	public openAiSocket(agent: AiAgent, content: string | null, context?: string): void {
 		const subscription_id = crypto.randomUUID();
-		const ai_model = this.settingService.getModel();
+		const ai_model = this.settingDeviceService.getModel();
 		this.subscription_id = subscription_id;
 		this.active_subject.next(true);
 		this.subscription = this.apiService.gql_socket.subscribe({

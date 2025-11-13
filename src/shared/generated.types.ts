@@ -248,6 +248,7 @@ export type Mutation = {
   auth_authentication_revoke: Scalars['Boolean']['output'];
   auth_initialize: OrchardAuthentication;
   auth_signup: OrchardAuthentication;
+  bitcoin_oracle_backfill_abort: OrchardBitcoinOracleBackfillStream;
   crew_invite_create: OrchardCrewInvite;
   crew_invite_delete: Scalars['Boolean']['output'];
   crew_invite_update: OrchardCrewInvite;
@@ -291,6 +292,11 @@ export type MutationAuth_InitializeArgs = {
 
 export type MutationAuth_SignupArgs = {
   signup: AuthSignupInput;
+};
+
+
+export type MutationBitcoin_Oracle_Backfill_AbortArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -612,49 +618,31 @@ export type OrchardBitcoinNetworkInfo = {
   warnings: Array<Scalars['String']['output']>;
 };
 
-export type OrchardBitcoinOracle = {
-  __typename?: 'OrchardBitcoinOracle';
-  block_window: OrchardBitcoinOracleBlockWindow;
-  bounds: OrchardBitcoinOracleBounds;
-  central_price: Scalars['Float']['output'];
-  deviation_pct: Scalars['Float']['output'];
-  intraday?: Maybe<Array<OrchardBitcoinOracleIntradayPoint>>;
-  rough_price_estimate: Scalars['Float']['output'];
-};
-
 export type OrchardBitcoinOracleBackfillProgress = {
   __typename?: 'OrchardBitcoinOracleBackfillProgress';
-  date_timestamp?: Maybe<Scalars['UnixTimestamp']['output']>;
-  end_timestamp?: Maybe<Scalars['UnixTimestamp']['output']>;
+  date?: Maybe<Scalars['UnixTimestamp']['output']>;
+  end_date?: Maybe<Scalars['UnixTimestamp']['output']>;
   error?: Maybe<Scalars['String']['output']>;
   failed?: Maybe<Scalars['Int']['output']>;
+  id: Scalars['String']['output'];
   price?: Maybe<Scalars['Int']['output']>;
   processed?: Maybe<Scalars['Int']['output']>;
-  start_timestamp?: Maybe<Scalars['UnixTimestamp']['output']>;
+  start_date?: Maybe<Scalars['UnixTimestamp']['output']>;
   status: Scalars['String']['output'];
-  stream_id: Scalars['String']['output'];
   success?: Maybe<Scalars['Boolean']['output']>;
   successful?: Maybe<Scalars['Int']['output']>;
   total_days?: Maybe<Scalars['Int']['output']>;
 };
 
-export type OrchardBitcoinOracleBlockWindow = {
-  __typename?: 'OrchardBitcoinOracleBlockWindow';
-  end: Scalars['Int']['output'];
-  start: Scalars['Int']['output'];
+export type OrchardBitcoinOracleBackfillStream = {
+  __typename?: 'OrchardBitcoinOracleBackfillStream';
+  id: Scalars['String']['output'];
 };
 
-export type OrchardBitcoinOracleBounds = {
-  __typename?: 'OrchardBitcoinOracleBounds';
-  max: Scalars['Float']['output'];
-  min: Scalars['Float']['output'];
-};
-
-export type OrchardBitcoinOracleIntradayPoint = {
-  __typename?: 'OrchardBitcoinOracleIntradayPoint';
-  block_height: Scalars['Int']['output'];
+export type OrchardBitcoinOraclePrice = {
+  __typename?: 'OrchardBitcoinOraclePrice';
+  date: Scalars['UnixTimestamp']['output'];
   price: Scalars['Float']['output'];
-  timestamp: Scalars['Int']['output'];
 };
 
 export type OrchardBitcoinTxFeeEstimate = {
@@ -1118,6 +1106,14 @@ export type OrchardPublicUrl = {
   url?: Maybe<Scalars['String']['output']>;
 };
 
+export type OrchardSetting = {
+  __typename?: 'OrchardSetting';
+  description?: Maybe<Scalars['String']['output']>;
+  key: SettingKey;
+  value: Scalars['String']['output'];
+  value_type: SettingValue;
+};
+
 export type OrchardStatus = {
   __typename?: 'OrchardStatus';
   online: Scalars['Boolean']['output'];
@@ -1186,7 +1182,7 @@ export type Query = {
   bitcoin_blockcount: OrchardBitcoinBlockCount;
   bitcoin_mempool_transactions: Array<OrchardBitcoinMempoolTransaction>;
   bitcoin_network_info: OrchardBitcoinNetworkInfo;
-  bitcoin_oracle: OrchardBitcoinOracle;
+  bitcoin_oracle: Array<OrchardBitcoinOraclePrice>;
   bitcoin_transaction_fee_estimates: Array<OrchardBitcoinTxFeeEstimate>;
   crew_invites: Array<OrchardCrewInvite>;
   crew_user: OrchardCrewUser;
@@ -1221,6 +1217,7 @@ export type Query = {
   mint_quote_ttl: OrchardMintQuoteTtls;
   public_image: OrchardPublicImage;
   public_urls: Array<OrchardPublicUrl>;
+  settings: Array<OrchardSetting>;
   status: OrchardStatus;
   taproot_assets: OrchardTaprootAssets;
   taproot_assets_info: OrchardTaprootAssetsInfo;
@@ -1239,8 +1236,8 @@ export type QueryBitcoin_BlockArgs = {
 
 
 export type QueryBitcoin_OracleArgs = {
-  date: Scalars['UnixTimestamp']['input'];
-  intraday?: InputMaybe<Scalars['Boolean']['input']>;
+  end_date?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+  start_date: Scalars['UnixTimestamp']['input'];
 };
 
 
@@ -1412,6 +1409,17 @@ export type QueryPublic_UrlsArgs = {
   urls: Array<Scalars['String']['input']>;
 };
 
+export enum SettingKey {
+  BitcoinOracle = 'BITCOIN_ORACLE'
+}
+
+export enum SettingValue {
+  Boolean = 'BOOLEAN',
+  Json = 'JSON',
+  Number = 'NUMBER',
+  String = 'STRING'
+}
+
 export type Subscription = {
   __typename?: 'Subscription';
   ai_chat: OrchardAiChatChunk;
@@ -1426,9 +1434,10 @@ export type SubscriptionAi_ChatArgs = {
 
 
 export type SubscriptionBitcoin_Oracle_BackfillArgs = {
+  auth: Scalars['String']['input'];
   end_date: Scalars['UnixTimestamp']['input'];
+  id: Scalars['String']['input'];
   start_date: Scalars['UnixTimestamp']['input'];
-  stream_id: Scalars['String']['input'];
 };
 
 export enum TaprootAssetType {

@@ -7,19 +7,21 @@ import {ReactiveFormsModule as CoreReactiveFormsModule} from '@angular/forms';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatCardModule} from '@angular/material/card';
 /* Application Dependencies */
+import {OrcFormModule} from '@client/modules/form/form.module';
 import {pendingEventGuard} from '@client/modules/event/guards/pending-event.guard';
 /* Native Module Dependencies */
-import {IndexSubsectionAppComponent} from './components/index-subsection-app/index-subsection-app.component';
-import {IndexSubsectionAppBitcoinComponent} from './components/index-subsection-app-bitcoin/index-subsection-app-bitcoin.component';
+import {SettingsSubsectionAppComponent} from './components/settings-subsection-app/settings-subsection-app.component';
+import {SettingsSubsectionAppBitcoinComponent} from './components/settings-subsection-app-bitcoin/settings-subsection-app-bitcoin.component';
+import {SettingsSubsectionAppBitcoinOracleComponent} from './components/settings-subsection-app-bitcoin-oracle/settings-subsection-app-bitcoin-oracle.component';
 
 @NgModule({
-	declarations: [IndexSubsectionAppComponent, IndexSubsectionAppBitcoinComponent],
+	declarations: [SettingsSubsectionAppComponent, SettingsSubsectionAppBitcoinComponent, SettingsSubsectionAppBitcoinOracleComponent],
 	imports: [
 		[
 			CoreRouterModule.forChild([
 				{
 					path: '',
-					component: IndexSubsectionAppComponent,
+					component: SettingsSubsectionAppComponent,
 					canDeactivate: [pendingEventGuard],
 				},
 			]),
@@ -28,6 +30,7 @@ import {IndexSubsectionAppBitcoinComponent} from './components/index-subsection-
 		CoreReactiveFormsModule,
 		MatCardModule,
 		MatSlideToggleModule,
+		OrcFormModule,
 	],
 })
 export class OrcSettingsSubsectionAppModule {}

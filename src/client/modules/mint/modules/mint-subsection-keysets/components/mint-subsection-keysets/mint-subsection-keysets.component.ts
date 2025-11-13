@@ -7,7 +7,7 @@ import {lastValueFrom, forkJoin, Subscription} from 'rxjs';
 import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {ConfigService} from '@client/modules/config/services/config.service';
-import {SettingService} from '@client/modules/settings/services/setting/setting.service';
+import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {EventService} from '@client/modules/event/services/event/event.service';
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
 import {EventData} from '@client/modules/event/classes/event-data.class';
@@ -66,7 +66,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	constructor(
 		public route: ActivatedRoute,
 		private configService: ConfigService,
-		private settingService: SettingService,
+		private settingDeviceService: SettingDeviceService,
 		private eventService: EventService,
 		private aiService: AiService,
 		private mintService: MintService,
@@ -147,11 +147,11 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	******************************************************** */
 
 	private async initKeysetsAnalytics(): Promise<void> {
-		this.locale = this.settingService.getLocale();
+		this.locale = this.settingDeviceService.getLocale();
 		this.mint_genesis_time = this.getMintGenesisTime();
 		this.page_settings = this.getPageSettings();
 		this.interval = this.getAnalyticsInterval();
-		const timezone = this.settingService.getTimezone();
+		const timezone = this.settingDeviceService.getTimezone();
 		this.loading_static_data = false;
 		this.cdr.detectChanges();
 		await this.loadKeysetsAnalytics(timezone, this.interval);
@@ -203,7 +203,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 			this.loading_dynamic_data = true;
 			this.cdr.detectChanges();
 			this.interval = this.getAnalyticsInterval();
-			const timezone = this.settingService.getTimezone();
+			const timezone = this.settingDeviceService.getTimezone();
 			this.cdr.detectChanges();
 			await this.loadKeysetsAnalytics(timezone, this.interval);
 			this.loading_dynamic_data = false;
@@ -333,7 +333,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	******************************************************** */
 
 	private getPageSettings(): NonNullableMintKeysetsSettings {
-		const settings = this.settingService.getMintKeysetsSettings();
+		const settings = this.settingDeviceService.getMintKeysetsSettings();
 		return {
 			units: settings.units ?? this.getSelectedUnits(), // @todo there will be bugs here if a unit is not in the keysets (audit active keysets)
 			date_start: settings.date_start ?? this.mint_genesis_time,
@@ -414,19 +414,19 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	public onDateChange(event: number[]): void {
 		this.page_settings.date_start = event[0];
 		this.page_settings.date_end = event[1];
-		this.settingService.setMintKeysetsSettings(this.page_settings);
+		this.settingDeviceService.setMintKeysetsSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
 
 	public onUnitsChange(event: MintUnit[]): void {
 		this.page_settings.units = event;
-		this.settingService.setMintKeysetsSettings(this.page_settings);
+		this.settingDeviceService.setMintKeysetsSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
 
 	public onStatusChange(event: boolean[]): void {
 		this.page_settings.status = event;
-		this.settingService.setMintKeysetsSettings(this.page_settings);
+		this.settingDeviceService.setMintKeysetsSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
 

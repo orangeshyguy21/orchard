@@ -1,0 +1,11 @@
+<div class="p-2">
+	<mat-card appearance="outlined" class="relative overflow-hidden">
+		<mat-card-content class="orc-surface-container-low-bg">
+			<orc-settings-subsection-app-bitcoin-oracle
+				[form_group]="form_group()"
+				[control_name]="'oracle_enabled'"
+				(update)="update_oracle.emit()"
+			></orc-settings-subsection-app-bitcoin-oracle>
+		</mat-card-content>
+	</mat-card>
+</div>

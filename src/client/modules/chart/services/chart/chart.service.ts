@@ -5,7 +5,7 @@ import {Observable, Subject} from 'rxjs';
 /* Application Dependencies */
 import {DataType} from '@client/modules/orchard/enums/data.enum';
 import {ThemeService} from '@client/modules/settings/services/theme/theme.service';
-import {SettingService} from '@client/modules/settings/services/setting/setting.service';
+import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 /* Shared Dependencies */
 import {MintQuoteState, MeltQuoteState} from '@shared/generated.types';
 
@@ -41,11 +41,11 @@ export class ChartService {
 
 	constructor(
 		private themeService: ThemeService,
-		private settingService: SettingService,
+		private settingDeviceService: SettingDeviceService,
 	) {}
 
 	public getAssetColor(asset: string, data_index: number): {bg: string; border: string} {
-		const theme = this.settingService.getTheme();
+		const theme = this.settingDeviceService.getTheme();
 		const asset_lower = asset.toLowerCase();
 		const color_var = this.asset_map[asset_lower];
 		if (color_var === undefined) return this.fallback_colors[data_index % this.fallback_colors.length];
@@ -59,25 +59,25 @@ export class ChartService {
 	}
 
 	public getPointHoverBackgroundColor(): string {
-		const theme = this.settingService.getTheme();
+		const theme = this.settingDeviceService.getTheme();
 		const colorhex = this.themeService.getThemeColor('--mat-sys-surface', theme);
 		return colorhex;
 	}
 
 	public getGridColor(token: string = '--mat-sys-surface-container'): string {
-		const theme = this.settingService.getTheme();
+		const theme = this.settingDeviceService.getTheme();
 		const colorhex = this.themeService.getThemeColor(token, theme);
 		return colorhex;
 	}
 
 	public getAnnotationBorderColor(): string {
-		const theme = this.settingService.getTheme();
+		const theme = this.settingDeviceService.getTheme();
 		const colorhex = this.themeService.getThemeColor('--mat-sys-outline', theme);
 		return colorhex;
 	}
 
 	public getFormAnnotationConfig(hot: boolean): any {
-		const theme = this.settingService.getTheme();
+		const theme = this.settingDeviceService.getTheme();
 		if (hot)
 			return {
 				border_color: this.themeService.getThemeColor('--mat-sys-primary', theme),
