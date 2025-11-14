@@ -627,11 +627,17 @@ export type OrchardBitcoinNetworkInfo = {
 
 export type OrchardBitcoinOracleBackfillProgress = {
   __typename?: 'OrchardBitcoinOracleBackfillProgress';
+  block_height?: Maybe<Scalars['Int']['output']>;
+  blocks_total?: Maybe<Scalars['Int']['output']>;
   date?: Maybe<Scalars['UnixTimestamp']['output']>;
   end_date?: Maybe<Scalars['UnixTimestamp']['output']>;
   error?: Maybe<Scalars['String']['output']>;
   failed?: Maybe<Scalars['Int']['output']>;
   id: Scalars['String']['output'];
+  oracle_message?: Maybe<Scalars['String']['output']>;
+  oracle_stage?: Maybe<Scalars['String']['output']>;
+  oracle_stage_progress?: Maybe<Scalars['Float']['output']>;
+  oracle_total_progress?: Maybe<Scalars['Float']['output']>;
   price?: Maybe<Scalars['Int']['output']>;
   processed?: Maybe<Scalars['Int']['output']>;
   start_date?: Maybe<Scalars['UnixTimestamp']['output']>;
@@ -1244,7 +1250,7 @@ export type QueryBitcoin_BlockArgs = {
 
 export type QueryBitcoin_OracleArgs = {
   end_date?: InputMaybe<Scalars['UnixTimestamp']['input']>;
-  start_date: Scalars['UnixTimestamp']['input'];
+  start_date?: InputMaybe<Scalars['UnixTimestamp']['input']>;
 };
 
 

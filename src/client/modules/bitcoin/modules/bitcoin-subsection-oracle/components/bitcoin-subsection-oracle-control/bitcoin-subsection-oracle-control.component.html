@@ -1,0 +1,18 @@
+<div class="bitcoin-oracle-control-container">
+	<form [formGroup]="form_group()" class="panel-form orc-animation-form-reaction" [class.animation-invalid]="form_group().invalid">
+		<div formGroupName="daterange">
+			<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic" class="bitcoin-oracle-daterange">
+				<mat-label>Date range</mat-label>
+				<mat-date-range-input [rangePicker]="picker">
+					<input matStartDate formControlName="date_start" placeholder="Start date" />
+					<input matEndDate formControlName="date_end" placeholder="End date" />
+				</mat-date-range-input>
+				<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+				<mat-date-range-picker #picker></mat-date-range-picker>
+				@if (form_group().get('daterange')?.invalid) {
+					<mat-error class="font-size-xs">Invalid date range</mat-error>
+				}
+			</mat-form-field>
+		</div>
+	</form>
+</div>

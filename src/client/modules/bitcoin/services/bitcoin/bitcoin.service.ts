@@ -255,9 +255,7 @@ export class BitcoinService {
 	}
 
 	public loadBitcoinOraclePrice(): Observable<BitcoinOraclePrice> {
-		const yesterday = DateTime.utc().minus({days: 1}).startOf('day');
-		const start_date = Math.floor(yesterday.toSeconds());
-		const query = getApiQuery(BITCOIN_ORACLE_PRICE_QUERY, {start_date});
+		const query = getApiQuery(BITCOIN_ORACLE_PRICE_QUERY);
 
 		return this.http.post<OrchardRes<BitcoinOraclePriceResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
@@ -270,6 +268,24 @@ export class BitcoinService {
 			}),
 			catchError((error) => {
 				console.error('Error loading bitcoin oracle price:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	public getBitcoinOraclePriceRange(start_date: number, end_date: number): Observable<BitcoinOraclePrice[]> {
+		const query = getApiQuery(BITCOIN_ORACLE_PRICE_QUERY, {start_date, end_date});
+
+		return this.http.post<OrchardRes<BitcoinOraclePriceResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.bitcoin_oracle;
+			}),
+			map((bitcoin_oracle_prices) =>
+				bitcoin_oracle_prices.map((bitcoin_oracle_price) => new BitcoinOraclePrice(bitcoin_oracle_price)),
+			),
+			catchError((error) => {
+				console.error('Error loading bitcoin oracle price range:', error);
 				return throwError(() => error);
 			}),
 		);

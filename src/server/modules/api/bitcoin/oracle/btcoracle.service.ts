@@ -25,13 +25,13 @@ export class BitcoinOracleService {
 		private bitcoinRpcService: BitcoinRpcService,
 	) {}
 
-	public async getOracle(tag: string, start_timestamp: number, end_timestamp?: number): Promise<OrchardBitcoinOraclePrice[]> {
+	public async getOracle(tag: string, start_timestamp?: number, end_timestamp?: number): Promise<OrchardBitcoinOraclePrice[]> {
 		try {
-			if (end_timestamp) {
+			if (start_timestamp && end_timestamp) {
 				const prices = await this.bitcoinUTXOracleService.getOraclePriceRange(start_timestamp, end_timestamp);
 				return prices.map((price) => new OrchardBitcoinOraclePrice(price));
 			} else {
-				const price = await this.bitcoinUTXOracleService.getOraclePrice(start_timestamp);
+				const price = await this.bitcoinUTXOracleService.getOraclePrice();
 				return price ? [new OrchardBitcoinOraclePrice(price)] : [];
 			}
 		} catch (error) {

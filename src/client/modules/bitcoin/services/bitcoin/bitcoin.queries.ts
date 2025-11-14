@@ -114,8 +114,8 @@ export const BITCOIN_BLOCK_TEMPLATE_QUERY = `{
 }`;
 
 export const BITCOIN_ORACLE_PRICE_QUERY = `
-query BitcoinOraclePrice($start_date: UnixTimestamp!) {
-    bitcoin_oracle(start_date: $start_date){
+query BitcoinOraclePrice($start_date: UnixTimestamp, $end_date: UnixTimestamp) {
+    bitcoin_oracle(start_date: $start_date, end_date: $end_date){
         date
         price
     }

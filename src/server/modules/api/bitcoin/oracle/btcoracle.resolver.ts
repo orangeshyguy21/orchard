@@ -35,7 +35,7 @@ export class BitcoinOracleResolver implements OnModuleInit {
 
 	@Query(() => [OrchardBitcoinOraclePrice])
 	async bitcoin_oracle(
-		@Args('start_date', {type: () => UnixTimestamp}) start_date: number,
+		@Args('start_date', {type: () => UnixTimestamp, nullable: true}) start_date?: number,
 		@Args('end_date', {type: () => UnixTimestamp, nullable: true}) end_date?: number,
 	): Promise<OrchardBitcoinOraclePrice[]> {
 		const tag = 'GET { bitcoin_oracle }';

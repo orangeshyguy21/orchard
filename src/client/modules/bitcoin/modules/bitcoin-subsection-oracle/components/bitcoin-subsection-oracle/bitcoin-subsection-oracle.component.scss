@@ -1,0 +1,13 @@
+@use '@styles/molecule/molecule';
+
+:host {
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-grow;
+}
+
+.bitcoin-subsection-oracle-container {
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-grow;
+}

@@ -52,12 +52,15 @@ export class BitcoinUTXOracleService {
 	}
 
 	/**
-	 * Get oracle price for a specific date
-	 * @param {number} date_timestamp - Unix timestamp in seconds
+	 * Get most recent oracle price
 	 * @returns {Promise<UTXOracle | null>} Oracle price record or null
 	 */
-	public async getOraclePrice(date_timestamp: number): Promise<UTXOracle | null> {
-		return this.utxOracleRepository.findOne({where: {date: date_timestamp}});
+	public async getOraclePrice(): Promise<UTXOracle | null> {
+		const records = await this.utxOracleRepository.find({
+			order: {date: 'DESC'},
+			take: 1,
+		});
+		return records[0] || null;
 	}
 
 	/**

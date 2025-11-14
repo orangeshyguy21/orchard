@@ -7,6 +7,7 @@ import {Settings} from 'luxon';
 import {LocalStorageService} from '@client/modules/cache/services/local-storage/local-storage.service';
 import {ThemeType} from '@client/modules/cache/services/local-storage/local-storage.types';
 import {
+	AllBitcoinOracleSettings,
 	AllMintDashboardSettings,
 	AllMintDatabaseSettings,
 	AllMintKeysetsSettings,
@@ -18,6 +19,9 @@ import {
 	providedIn: 'root',
 })
 export class SettingDeviceService {
+	public bitcoin_oracle_short_settings: Record<string, number | null> = {
+		date_end: null,
+	};
 	public mint_dashboard_short_settings: Record<string, number | null> = {
 		date_end: null,
 	};
@@ -81,6 +85,22 @@ export class SettingDeviceService {
 	}
 	public setModel(model: string | null): void {
 		this.localStorageService.setModel({model: model});
+	}
+
+	/* Page: Bitcoin Oracle */
+	public getBitcoinOracleSettings(): AllBitcoinOracleSettings {
+		const long_term_settings = this.localStorageService.getBitcoinOracleSettings();
+		return {
+			...long_term_settings,
+			...this.bitcoin_oracle_short_settings,
+		} as AllBitcoinOracleSettings;
+	}
+	public setBitcoinOracleSettings(settings: AllBitcoinOracleSettings): void {
+		const {date_end, ...long_settings} = settings;
+		this.localStorageService.setBitcoinOracleSettings(long_settings);
+		this.bitcoin_oracle_short_settings = {
+			date_end: date_end,
+		};
 	}
 
 	/* Page: Mint Dashboard */

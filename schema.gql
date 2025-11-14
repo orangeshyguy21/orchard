@@ -948,7 +948,7 @@ type Query {
   bitcoin_blockcount: OrchardBitcoinBlockCount!
   bitcoin_mempool_transactions: [OrchardBitcoinMempoolTransaction!]!
   bitcoin_network_info: OrchardBitcoinNetworkInfo!
-  bitcoin_oracle(end_date: UnixTimestamp, start_date: UnixTimestamp!): [OrchardBitcoinOraclePrice!]!
+  bitcoin_oracle(end_date: UnixTimestamp, start_date: UnixTimestamp): [OrchardBitcoinOraclePrice!]!
   bitcoin_transaction_fee_estimates(targets: [Int!]!): [OrchardBitcoinTxFeeEstimate!]!
   crew_invites: [OrchardCrewInvite!]!
   crew_user: OrchardCrewUser!
