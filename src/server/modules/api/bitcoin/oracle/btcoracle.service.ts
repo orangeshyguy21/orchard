@@ -9,6 +9,7 @@ import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 import {BitcoinUTXOracleService} from '@server/modules/bitcoin/utxoracle/utxoracle.service';
 import {BitcoinRpcService} from '@server/modules/bitcoin/rpc/btcrpc.service';
+import {UTXOracleProgress} from '@server/modules/bitcoin/utxoracle/utxoracle.types';
 /* Local Dependencies */
 import {OrchardBitcoinOracleBackfillStream, OrchardBitcoinOracleBackfillProgress, OrchardBitcoinOraclePrice} from './btcoracle.model';
 
@@ -155,7 +156,26 @@ export class BitcoinOracleService {
 
 		try {
 			this.logger.log(`Backfilling oracle for ${date_str} (timestamp: ${date_timestamp})...`);
-			const result = await this.bitcoinUTXOracleService.runOracle({date: date_timestamp, intraday: false});
+			const progress_callback = (oracle_progress: UTXOracleProgress) => {
+				this.emitUpdate(stream_id, {
+					status: 'processing',
+					date: date_timestamp,
+					total_days,
+					...stats,
+					// Pass through oracle-specific progress
+					oracle_stage: oracle_progress.stage,
+					oracle_stage_progress: oracle_progress.stage_progress,
+					oracle_total_progress: oracle_progress.total_progress,
+					oracle_message: oracle_progress.message,
+					block_height: oracle_progress.block_height,
+					blocks_total: oracle_progress.blocks_total,
+				});
+			};
+			const result = await this.bitcoinUTXOracleService.runOracle({
+				date: date_timestamp,
+				intraday: false,
+				progress_callback,
+			});
 			await this.bitcoinUTXOracleService.saveOraclePrice(date_timestamp, result.central_price);
 			stats.successful++;
 			stats.processed++;

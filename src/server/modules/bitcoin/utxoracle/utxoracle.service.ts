@@ -9,6 +9,7 @@ import {BitcoinRpcService} from '@server/modules/bitcoin/rpc/btcrpc.service';
 /* Local Dependencies */
 import {UTXOracleRunOptions, UTXOracleResult} from './utxoracle.types';
 import {UTXOracle} from './utxoracle.entity';
+import {UTXOracleProgressTracker} from './utxoracle.progress';
 
 @Injectable()
 export class BitcoinUTXOracleService {
@@ -23,9 +24,10 @@ export class BitcoinUTXOracleService {
 	) {}
 
 	public async runOracle(options: UTXOracleRunOptions): Promise<UTXOracleResult> {
+		const progress = new UTXOracleProgressTracker(options.progress_callback);
 		const date = options.date;
-		if (date) return this.runDateMode(options);
-		return this.runRecentMode(options);
+		if (date) return this.runDateMode(options, progress);
+		return this.runRecentMode(options, progress);
 	}
 
 	/**
@@ -75,18 +77,26 @@ export class BitcoinUTXOracleService {
 		});
 	}
 
-	private async runRecentMode(options: UTXOracleRunOptions): Promise<UTXOracleResult> {
+	private async runRecentMode(options: UTXOracleRunOptions, progress: UTXOracleProgressTracker): Promise<UTXOracleResult> {
+		const report_connection = progress.createConnectionTracker();
+		report_connection(); // 0% - Start connecting
+		report_connection(); // 20% - Validate credentials
 		const recent_blocks = options.recent_blocks ?? this.DEFAULT_RECENT_BLOCKS;
+		report_connection(); // 40% - Getting block count
 		const include_intraday = options.intraday === true;
 		const tip = await this.bitcoinRpcService.getBitcoinBlockCount();
+		report_connection(); // 60% - Getting consensus tip
 		const consensus_tip = tip - 6;
 		const start = Math.max(0, consensus_tip - recent_blocks);
 		const end = consensus_tip;
+		report_connection(); // 80% - Getting block header (if needed)
+		report_connection(); // 100% - Connected to node
 
 		const {central_price, rough_price_estimate, deviation_pct, bounds, intraday} = await this.computeWindow(
 			start,
 			end,
 			include_intraday,
+			progress,
 		);
 
 		const result: UTXOracleResult = {
@@ -100,14 +110,26 @@ export class BitcoinUTXOracleService {
 		return result;
 	}
 
-	private async runDateMode(options: UTXOracleRunOptions): Promise<UTXOracleResult> {
+	private async runDateMode(options: UTXOracleRunOptions, progress: UTXOracleProgressTracker): Promise<UTXOracleResult> {
 		if (!options.date) throw new Error('Date mode requires options.date in YYYY-MM-DD');
+		const report_connection = progress.createConnectionTracker();
+		report_connection(); // 0% - Start connecting
+		report_connection(); // 20% - Validate credentials
+		report_connection(); // 40% - Getting block count
+		const tip = await this.bitcoinRpcService.getBitcoinBlockCount();
+		const consensus_tip = tip - 6;
+		report_connection(); // 60% - Getting consensus tip
+		const tip_hash = await this.bitcoinRpcService.getBitcoinBlockHash(consensus_tip);
+		report_connection(); // 80% - Getting block header
+		await this.bitcoinRpcService.getBitcoinBlockHeader(tip_hash);
+		report_connection(); // 100% - Connected
 		const include_intraday = options.intraday === true;
-		const {start, end} = await this.findBlockWindowForDate(options.date);
+		const {start, end} = await this.findBlockWindowForDate(options.date, progress);
 		const {central_price, rough_price_estimate, deviation_pct, bounds, intraday} = await this.computeWindow(
 			start,
 			end,
 			include_intraday,
+			progress,
 		);
 		return {
 			central_price,
@@ -119,20 +141,21 @@ export class BitcoinUTXOracleService {
 		};
 	}
 
-	private async findBlockWindowForDate(timestamp: number): Promise<{start: number; end: number}> {
+	private async findBlockWindowForDate(timestamp: number, progress: UTXOracleProgressTracker): Promise<{start: number; end: number}> {
 		const tip = await this.bitcoinRpcService.getBitcoinBlockCount();
 		const consensus_tip = tip - 6;
 		const dt = DateTime.fromSeconds(timestamp, {zone: 'utc'});
 		const midnight = dt.startOf('day');
 		const ts0 = midnight.toSeconds();
 		const ts1 = midnight.plus({days: 1}).toSeconds();
+		const date_str = dt.toFormat('MMM dd, yyyy');
 
 		const get_time = async (height: number): Promise<number> => {
 			const h = await this.bitcoinRpcService.getBitcoinBlockHash(height);
 			const header = await this.bitcoinRpcService.getBitcoinBlockHeader(h);
 			return header.time as number;
 		};
-
+		progress.emit('finding_start', 0, `Finding first block on ${date_str}`); // 0% - Finding first block
 		const lower_bound = async (target_ts: number): Promise<number> => {
 			let lo = 0;
 			let hi = consensus_tip;
@@ -144,10 +167,12 @@ export class BitcoinUTXOracleService {
 			}
 			return lo;
 		};
-
 		const start = await lower_bound(ts0);
+		progress.emit('finding_start', 100, `Found first block on ${date_str}`); // 100% - Found first block
+		progress.emit('finding_end', 0, `Finding last block on ${date_str}`); // 0% - Finding last block
 		const end_plus_one = await lower_bound(ts1);
 		const end = Math.max(start, end_plus_one - 1);
+		progress.emit('finding_end', 100, `Found last block on ${date_str}`); // 100% - Found last block
 		return {start, end};
 	}
 
@@ -155,6 +180,7 @@ export class BitcoinUTXOracleService {
 		start: number,
 		end: number,
 		include_intraday: boolean,
+		progress: UTXOracleProgressTracker,
 	): Promise<{
 		central_price: number;
 		rough_price_estimate: number;
@@ -162,14 +188,17 @@ export class BitcoinUTXOracleService {
 		bounds: {min: number; max: number};
 		intraday: Array<{block_height: number; timestamp: number; price: number}>;
 	}> {
+		progress.emit('loading_transactions', 0, 'Loading every transaction from every block'); // 0% - Loading transactions
 		// Pre-scan window txids to detect same-day inputs
-		const window_txids = await this.collectWindowTxids(start, end);
+		const window_txids = await this.collectWindowTxids(start, end, progress);
 		// 1) Build histogram from v2 block txs with filters
-		const histogram = await this.buildHistogram(start, end, window_txids);
+		const histogram = await this.buildHistogram(start, end, window_txids, progress);
 		// 2) Smooth/normalize
 		this.smoothAndNormalize(histogram);
+		progress.emit('loading_transactions', 90, 'Computing rough price estimate'); // 90% - Computing rough price estimate
 		// 3) Slide stencils and compute rough price (neighbor-weighted)
 		const rough_price_estimate = this.computeRoughPrice(histogram);
+		progress.emit('computing_prices', 0, 'Finding central price'); // 0% - Finding central price
 		// 4) Create intraday points and compute central price + deviation
 		const {central_price, deviation_pct, bounds, intraday} = await this.computeCentralPrice(
 			start,
@@ -177,16 +206,27 @@ export class BitcoinUTXOracleService {
 			rough_price_estimate,
 			window_txids,
 			include_intraday,
+			progress,
 		);
+		progress.emit('computing_prices', 100, 'Completed computing window'); // 100% - Completed computing window
 		return {central_price, rough_price_estimate, deviation_pct, bounds, intraday};
 	}
 
-	private async collectWindowTxids(start: number, end: number): Promise<Set<string>> {
+	private async collectWindowTxids(start: number, end: number, progress: UTXOracleProgressTracker): Promise<Set<string>> {
 		const set = new Set<string>();
+		const report_progress = progress.createBlockIterator(
+			'loading_transactions',
+			start,
+			end,
+			'Pre-scanning transactions ({current}/{total})',
+			0,
+			20, // takes 20% of loading_transactions stage
+		);
 		for (let height = start; height <= end; height++) {
 			const hash = await this.bitcoinRpcService.getBitcoinBlockHash(height);
 			const block = await this.bitcoinRpcService.getBitcoinBlock(hash);
 			for (const tx of block.tx) set.add(tx.txid);
+			report_progress(height);
 		}
 		return set;
 	}
@@ -223,11 +263,17 @@ export class BitcoinUTXOracleService {
 		return idx;
 	}
 
-	private async buildHistogram(start: number, end: number, _window_txids: Set<string>): Promise<Float64Array> {
+	private async buildHistogram(
+		start: number,
+		end: number,
+		_window_txids: Set<string>,
+		progress: UTXOracleProgressTracker,
+	): Promise<Float64Array> {
 		const counts = new Float64Array(1 + 200 * 12);
 		const min_btc = this.MIN_OUTPUT_BTC;
 		const max_btc = this.MAX_OUTPUT_BTC;
 		const seen_txids = new Set<string>();
+		const report_progress = progress.createBlockIterator('computing_prices', start, end, 'Finding prices and rendering plot', 0, 100);
 
 		for (let height = start; height <= end; height++) {
 			const hash = await this.bitcoinRpcService.getBitcoinBlockHash(height);
@@ -286,6 +332,7 @@ export class BitcoinUTXOracleService {
 				}
 				if (tx.txid) seen_txids.add(tx.txid);
 			}
+			report_progress(height);
 		}
 		return counts;
 	}
@@ -413,6 +460,7 @@ export class BitcoinUTXOracleService {
 		rough: number,
 		window_txids: Set<string>,
 		include_intraday: boolean,
+		progress: UTXOracleProgressTracker,
 	): Promise<{
 		central_price: number;
 		deviation_pct: number;
@@ -433,6 +481,7 @@ export class BitcoinUTXOracleService {
 		const prices_blocks: number[] = [];
 		const prices_times: number[] = [];
 		const seen_txids = new Set<string>();
+		const report_progress = progress.createBlockIterator('computing_prices', start, end, 'Finding prices and rendering plot', 0, 100);
 
 		for (let height = start; height <= end; height++) {
 			const hash = await this.bitcoinRpcService.getBitcoinBlockHash(height);
@@ -509,6 +558,7 @@ export class BitcoinUTXOracleService {
 				}
 				if (tx.txid) seen_txids.add(tx.txid);
 			}
+			report_progress(height);
 		}
 
 		const pct_range_tight = 0.05;

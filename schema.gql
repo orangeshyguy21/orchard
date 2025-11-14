@@ -447,11 +447,17 @@ type OrchardBitcoinNetworkInfo {
 }
 
 type OrchardBitcoinOracleBackfillProgress {
+  block_height: Int
+  blocks_total: Int
   date: UnixTimestamp
   end_date: UnixTimestamp
   error: String
   failed: Int
   id: String!
+  oracle_message: String
+  oracle_stage: String
+  oracle_stage_progress: Float
+  oracle_total_progress: Float
   price: Int
   processed: Int
   start_date: UnixTimestamp
