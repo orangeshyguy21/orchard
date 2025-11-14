@@ -11,3 +11,8 @@
 	@extend %flex-column;
 	@extend %flex-grow;
 }
+
+.bitcoin-subsection-oracle-form-target {
+	@extend %relative;
+	top: -87px;
+}

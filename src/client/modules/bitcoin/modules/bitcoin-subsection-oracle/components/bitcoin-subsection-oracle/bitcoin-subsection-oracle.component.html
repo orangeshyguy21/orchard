@@ -5,30 +5,6 @@
 				<div>PRICE</div>
 				<orc-bitcoin-subsection-oracle-control [form_group]="control"></orc-bitcoin-subsection-oracle-control>
 			</div>
-
-			<!-- @if (page_settings) {
-				<orc-mint-subsection-database-control
-					class="flex-grow"
-					[page_settings]="page_settings"
-					[filter]="filter"
-					[unit_options]="unit_options"
-					[state_options]="state_options"
-					[state_enabled]="state_enabled"
-					[date_start]="page_settings.date_start"
-					[date_end]="page_settings.date_end"
-					[units]="page_settings.units"
-					[type]="page_settings.type"
-					[states]="page_settings.states"
-					[loading]="loading_static_data"
-					[mint_genesis_time]="mint_genesis_time"
-					[keysets]="mint_keysets"
-					(dateChange)="onDateChange($event)"
-					(typeChange)="onTypeChange($event)"
-					(unitsChange)="onUnitsChange($event)"
-					(statesChange)="onStatesChange($event)"
-					(filterChange)="onFilterChange($event)"
-				></orc-mint-subsection-database-control>
-			} -->
 			<div>
 				<div class="flex flex-items-center flex-gap-0-5 relative">
 					<button
@@ -36,6 +12,7 @@
 						matFab
 						extended
 						class="orc-icon-button text-nowrap"
+						(click)="onBackfill()"
 						(keydown.enter)="$event.preventDefault(); $event.stopPropagation()"
 					>
 						<mat-icon>history</mat-icon>
@@ -45,6 +22,21 @@
 			</div>
 		</div>
 		<div class="category-rule"></div>
+	</div>
+
+	<div class="orc-animation-collapsible" [class.animation-open]="form_open()">
+		<div class="orc-animation-collapsible-inner">
+			<div class="bitcoin-subsection-oracle-form-target" #backfill_form></div>
+			backfill form
+			<!-- <orc-index-subsection-crew-form-invite
+				[form_group]="form_invite_create"
+				[open]="form_invite_create_open()"
+				[mode]="'create'"
+				[role_options]="role_options_invite"
+				(close)="onCloseInviteForm()"
+				(cancel)="onCancel($event)"
+			></orc-index-subsection-crew-form-invite> -->
+		</div>
 	</div>
 
 	<!-- <div class="orc-animation-collapsible" [class.animation-open]="form_mode === 'CREATE'">
@@ -80,4 +72,6 @@
 		[loading]="loading_dynamic_data"
 		[state_enabled]="state_enabled"
 	></orc-mint-subsection-database-chart> -->
+
+	<orc-bitcoin-subsection-oracle-chart [data]="data()" [loading]="loading()"></orc-bitcoin-subsection-oracle-chart>
 </div>
