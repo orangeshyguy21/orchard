@@ -272,6 +272,7 @@ export type Mutation = {
   mint_short_description_update: OrchardMintDescriptionUpdate;
   mint_url_add: OrchardMintUrlUpdate;
   mint_url_remove: OrchardMintUrlUpdate;
+  setting_update: OrchardSetting;
 };
 
 
@@ -407,6 +408,12 @@ export type MutationMint_Url_AddArgs = {
 
 export type MutationMint_Url_RemoveArgs = {
   mint_url_update: MintUrlUpdateInput;
+};
+
+
+export type MutationSetting_UpdateArgs = {
+  key: SettingKey;
+  value: Scalars['String']['input'];
 };
 
 export type OrchardAiAgent = {

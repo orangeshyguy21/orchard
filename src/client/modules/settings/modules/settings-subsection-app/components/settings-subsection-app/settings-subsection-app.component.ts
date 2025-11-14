@@ -55,7 +55,7 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 	}
 
 	private async getSettings(): Promise<void> {
-		const settings = await firstValueFrom(this.settingAppService.getSettings());
+		const settings = await firstValueFrom(this.settingAppService.loadSettings());
 		this.initial_settings = settings;
 		this.initSettingForms(settings);
 	}
