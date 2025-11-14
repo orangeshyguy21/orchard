@@ -43,6 +43,10 @@ export class SettingAppService {
 		this.settings_subject = this.cache.createCache<Setting[]>(this.CACHE_KEYS.SETTINGS, this.CACHE_DURATIONS[this.CACHE_KEYS.SETTINGS]);
 	}
 
+	public clearSettingsCache() {
+		this.cache.clearCache(this.CACHE_KEYS.SETTINGS);
+	}
+
 	public loadSettings(): Observable<Setting[]> {
 		if (this.settings_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.SETTINGS)) {
 			return of(this.settings_subject.value);

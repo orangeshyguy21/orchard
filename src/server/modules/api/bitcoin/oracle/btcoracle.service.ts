@@ -162,7 +162,6 @@ export class BitcoinOracleService {
 					date: date_timestamp,
 					total_days,
 					...stats,
-					// Pass through oracle-specific progress
 					oracle_stage: oracle_progress.stage,
 					oracle_stage_progress: oracle_progress.stage_progress,
 					oracle_total_progress: oracle_progress.total_progress,

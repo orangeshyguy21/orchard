@@ -126,6 +126,8 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 				);
 				this.form_bitcoin.markAsPristine();
 				this.evaluateDirtyCount();
+				this.settingAppService.clearSettingsCache();
+				this.getSettings();
 			},
 			error: (error: OrchardErrors) => {
 				console.error(error);
