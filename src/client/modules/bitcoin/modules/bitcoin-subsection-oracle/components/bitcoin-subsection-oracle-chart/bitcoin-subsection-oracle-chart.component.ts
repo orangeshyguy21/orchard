@@ -20,6 +20,8 @@ import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle
 export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 	public loading = input.required<boolean>();
 	public data = input.required<BitcoinOraclePrice[]>();
+	public date_start = input.required<number>();
+	public date_end = input.required<number>();
 
 	public chart_type!: ChartJsType;
 	public chart_data!: ChartConfiguration['data'];

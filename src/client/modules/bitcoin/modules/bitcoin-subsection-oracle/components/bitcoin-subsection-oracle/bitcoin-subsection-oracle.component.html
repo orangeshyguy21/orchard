@@ -46,14 +46,6 @@
 			></orc-index-subsection-crew-form-invite> -->
 		</div>
 	</div>
-
-	<!-- <div animate.enter="orc-animation-fadein" class="flex flex-gap-0-5 flex-column flex-justify-center flex-items-center">
-        <div class="font-size-3 font-weight-bold">${{ oracle_price()?.price | number: '1.0-0' }}</div>
-        <div class="font-size-s orc-outline-color">
-            Price for {{ this.oracle_price()!.date | timeUtc: 'date-only' }} <small>UTC</small>
-        </div>
-    </div> -->
-
 	<!-- <div class="orc-animation-collapsible" [class.animation-open]="form_mode === 'CREATE'">
 		<div class="orc-animation-collapsible-inner">
 			<div class="mint-database-form-target" #backup_form></div>
@@ -88,5 +80,10 @@
 		[state_enabled]="state_enabled"
 	></orc-mint-subsection-database-chart> -->
 
-	<orc-bitcoin-subsection-oracle-chart [data]="data()" [loading]="loading()"></orc-bitcoin-subsection-oracle-chart>
+	<orc-bitcoin-subsection-oracle-chart
+		[data]="data()"
+		[loading]="loading()"
+		[date_start]="page_settings.date_start"
+		[date_end]="page_settings.date_end"
+	></orc-bitcoin-subsection-oracle-chart>
 </div>

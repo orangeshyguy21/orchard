@@ -1,8 +1,9 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, OnInit, signal, computed, ViewChild, ElementRef, HostListener} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, OnDestroy, signal, computed, ViewChild, ElementRef, HostListener} from '@angular/core';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
 /* Vendor Dependencies */
 import {DateTime} from 'luxon';
+import {Subscription} from 'rxjs';
 /* Application Dependencies */
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {NonNullableBitcoinOracleSettings} from '@client/modules/settings/types/setting.types';
@@ -18,7 +19,7 @@ import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle
 	styleUrl: './bitcoin-subsection-oracle.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BitcoinSubsectionOracleComponent implements OnInit {
+export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 	@HostListener('window:beforeunload')
 	canDeactivate(): boolean {
 		return this.active_event?.type !== 'PENDING';
@@ -42,6 +43,7 @@ export class BitcoinSubsectionOracleComponent implements OnInit {
 	});
 
 	private active_event: EventData | null = null;
+	private subscriptions: Subscription = new Subscription();
 
 	constructor(
 		private bitcoinService: BitcoinService,
@@ -53,6 +55,7 @@ export class BitcoinSubsectionOracleComponent implements OnInit {
 	******************************************************** */
 
 	ngOnInit(): void {
+		this.subscriptions.add(this.getControlSubscription());
 		this.page_settings = this.getPageSettings();
 		this.initializeControl();
 		this.getOracleData();
@@ -67,12 +70,25 @@ export class BitcoinSubsectionOracleComponent implements OnInit {
 	}
 
 	private initializeControl(): void {
-		// const date_end_converted = DateTime.fromSeconds(this.page_settings.date_end, {zone: 'utc'});
-		// const date_start_converted = DateTime.fromSeconds(this.page_settings.date_start, {zone: 'utc'});
 		const date_end_converted = DateTime.fromSeconds(this.page_settings.date_end, {zone: 'utc'}).toUTC();
 		const date_start_converted = DateTime.fromSeconds(this.page_settings.date_start, {zone: 'utc'}).toUTC();
 		this.control.get('daterange')?.get('date_start')?.setValue(date_start_converted);
 		this.control.get('daterange')?.get('date_end')?.setValue(date_end_converted);
+	}
+
+	/* *******************************************************
+		Subscriptions                      
+	******************************************************** */
+
+	private getControlSubscription(): Subscription {
+		return this.control.valueChanges.subscribe(() => {
+			if (this.control.invalid) return;
+			this.page_settings.date_start = this.control.get('daterange')?.get('date_start')?.value?.toSeconds() ?? 0;
+			this.page_settings.date_end = this.control.get('daterange')?.get('date_end')?.value?.toSeconds() ?? 0;
+			this.settingDeviceService.setBitcoinOracleSettings(this.page_settings);
+			this.loading.set(true);
+			this.getOracleData();
+		});
 	}
 
 	/* *******************************************************
@@ -111,5 +127,13 @@ export class BitcoinSubsectionOracleComponent implements OnInit {
 
 	private onCloseBackfillForm(): void {
 		this.form_open.set(false);
+	}
+
+	/* *******************************************************
+		Destruction                      
+	******************************************************** */
+
+	ngOnDestroy(): void {
+		this.subscriptions.unsubscribe();
 	}
 }
