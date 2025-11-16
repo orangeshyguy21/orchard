@@ -8,6 +8,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatCardModule} from '@angular/material/card';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
+import {OrcTimeModule} from '@client/modules/time/time.module';
 import {pendingEventGuard} from '@client/modules/event/guards/pending-event.guard';
 /* Native Module Dependencies */
 import {SettingsSubsectionAppComponent} from './components/settings-subsection-app/settings-subsection-app.component';
@@ -31,6 +32,7 @@ import {SettingsSubsectionAppBitcoinOracleComponent} from './components/settings
 		MatCardModule,
 		MatSlideToggleModule,
 		OrcFormModule,
+		OrcTimeModule,
 	],
 })
 export class OrcSettingsSubsectionAppModule {}

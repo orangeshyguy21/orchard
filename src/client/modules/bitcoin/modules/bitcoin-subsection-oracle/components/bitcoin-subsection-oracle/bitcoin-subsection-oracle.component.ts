@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, OnInit, signal, ViewChild, ElementRef, HostListener} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, signal, computed, ViewChild, ElementRef, HostListener} from '@angular/core';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
 /* Vendor Dependencies */
 import {DateTime} from 'luxon';
@@ -37,6 +37,10 @@ export class BitcoinSubsectionOracleComponent implements OnInit {
 	public loading = signal<boolean>(true);
 	public form_open = signal<boolean>(false);
 
+	public latest_oracle = computed(() => {
+		return this.data().length > 0 ? (this.data().at(-1) ?? null) : null;
+	});
+
 	private active_event: EventData | null = null;
 
 	constructor(
@@ -63,8 +67,10 @@ export class BitcoinSubsectionOracleComponent implements OnInit {
 	}
 
 	private initializeControl(): void {
-		const date_end_converted = DateTime.fromSeconds(this.page_settings.date_end, {zone: 'utc'});
-		const date_start_converted = DateTime.fromSeconds(this.page_settings.date_start, {zone: 'utc'});
+		// const date_end_converted = DateTime.fromSeconds(this.page_settings.date_end, {zone: 'utc'});
+		// const date_start_converted = DateTime.fromSeconds(this.page_settings.date_start, {zone: 'utc'});
+		const date_end_converted = DateTime.fromSeconds(this.page_settings.date_end, {zone: 'utc'}).toUTC();
+		const date_start_converted = DateTime.fromSeconds(this.page_settings.date_start, {zone: 'utc'}).toUTC();
 		this.control.get('daterange')?.get('date_start')?.setValue(date_start_converted);
 		this.control.get('daterange')?.get('date_end')?.setValue(date_end_converted);
 	}

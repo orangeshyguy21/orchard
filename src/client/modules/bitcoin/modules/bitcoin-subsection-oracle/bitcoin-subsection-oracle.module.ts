@@ -1,5 +1,6 @@
 /* Core Dependencies */
 import {NgModule} from '@angular/core';
+import {CommonModule as CoreCommonModule} from '@angular/common';
 import {RouterModule as CoreRouterModule} from '@angular/router';
 import {ReactiveFormsModule as CoreReactiveFormsModule} from '@angular/forms';
 /* Vendor Dependencies */
@@ -9,6 +10,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {BaseChartDirective as ChartJsBaseChartDirective} from 'ng2-charts';
 /* Application Dependencies */
+import {OrcTimeModule} from '@client/modules/time/time.module';
 import {OrcSettingsGeneralModule} from '@client/modules/settings/modules/settings-general/settings-general.module';
 /* Local Dependencies */
 import {BitcoinSubsectionOracleComponent} from './components/bitcoin-subsection-oracle/bitcoin-subsection-oracle.component';
@@ -24,12 +26,14 @@ import {BitcoinSubsectionOracleChartComponent} from './components/bitcoin-subsec
 				component: BitcoinSubsectionOracleComponent,
 			},
 		]),
+		CoreCommonModule,
 		CoreReactiveFormsModule,
 		MatIconModule,
 		MatButtonModule,
 		MatFormFieldModule,
 		MatDatepickerModule,
 		ChartJsBaseChartDirective,
+		OrcTimeModule,
 		OrcSettingsGeneralModule,
 	],
 	exports: [],

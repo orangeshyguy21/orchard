@@ -21,7 +21,9 @@
 		@if (oracle_price()) {
 			<div animate.enter="orc-animation-fadein" class="flex flex-gap-0-5 flex-column flex-justify-center flex-items-center">
 				<div class="font-size-3 font-weight-bold">${{ oracle_price()?.price | number: '1.0-0' }}</div>
-				<div class="font-size-s orc-outline-color">Price for {{ oracle_price_date() }} <small>UTC</small></div>
+				<div class="font-size-s orc-outline-color">
+					Price for {{ this.oracle_price()!.date | timeUtc: 'date-only' }} <small>UTC</small>
+				</div>
 			</div>
 		}
 	</div>

@@ -194,14 +194,7 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 					},
 				},
 				legend: {
-					display: true,
-					position: 'top',
-					labels: {
-						padding: 15,
-						font: {
-							size: 12,
-						},
-					},
+					display: false,
 				},
 			},
 			interaction: {
