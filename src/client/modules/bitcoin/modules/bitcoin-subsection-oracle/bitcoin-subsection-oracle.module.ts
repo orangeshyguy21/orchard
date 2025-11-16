@@ -8,6 +8,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MAT_LUXON_DATE_ADAPTER_OPTIONS} from '@angular/material-luxon-adapter';
 import {BaseChartDirective as ChartJsBaseChartDirective} from 'ng2-charts';
 /* Application Dependencies */
 import {OrcTimeModule} from '@client/modules/time/time.module';
@@ -35,6 +36,14 @@ import {BitcoinSubsectionOracleChartComponent} from './components/bitcoin-subsec
 		ChartJsBaseChartDirective,
 		OrcTimeModule,
 		OrcSettingsGeneralModule,
+	],
+	providers: [
+		{
+			provide: MAT_LUXON_DATE_ADAPTER_OPTIONS,
+			useValue: {
+				defaultOutputCalendar: 'utc',
+			},
+		},
 	],
 	exports: [],
 })

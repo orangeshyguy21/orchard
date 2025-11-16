@@ -5,7 +5,9 @@
 				<orc-bitcoin-subsection-oracle-control [form_group]="control"></orc-bitcoin-subsection-oracle-control>
 				<div class="p-b-1" animate.enter="orc-animation-fadein">
 					<div class="title-l">Latest Price</div>
-					<div class="orc-outline-color font-size-s">{{ latest_oracle()?.date | timeUtc: 'date-only' }} <small>UTC</small></div>
+					<div class="orc-outline-color font-size-s">
+						{{ latest_oracle()?.date | timeUtc: 'date-only' }} <small class="font-weight-bold">UTC</small>
+					</div>
 				</div>
 				<div class="p-b-1" animate.enter="orc-animation-fadein">
 					<div class="font-weight-bold font-size-xxl">${{ latest_oracle()?.price | number: '1.0-0' }}</div>
