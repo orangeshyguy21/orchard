@@ -6,4 +6,37 @@
 
 .graphic-oracle-container {
 	@extend %flex;
+
+	.oracle-base {
+		fill: var(--mat-sys-primary-container);
+	}
+
+	.oracle-eye {
+		fill: var(--mat-sys-surface-container-low);
+	}
+
+	.oracle-block {
+		fill: var(--mat-sys-primary-container);
+	}
+
+	&.processing {
+		.oracle-block {
+			fill: var(--mat-sys-surface-container-low);
+			animation: pulse 3s ease-in-out infinite;
+		}
+
+		.oracle-eye {
+			fill: var(--mat-sys-primary-container);
+		}
+	}
+}
+
+@keyframes pulse {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.4;
+	}
 }
