@@ -323,6 +323,7 @@ export class BitcoinService {
 
 		this.backfill_subscription = this.apiService.gql_socket.subscribe({
 			next: (response: OrchardWsRes<BitcoinOracleBackfillProgressResponse>) => {
+				console.log('BACKFILL SOCKET RESPONSE:', response);
 				if (response.type === 'data' && response.payload?.errors) {
 					const has_auth_error = response.payload.errors.some((err: any) => err.extensions?.code === 10002);
 					if (has_auth_error) {

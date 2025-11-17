@@ -144,6 +144,7 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 
 	private getEventSubscription(): Subscription {
 		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
+			console.log('EVENT DATA:', event_data);
 			this.active_event = event_data;
 			if (event_data === null) this.evaluateDirtyForm();
 			if (event_data && event_data.confirmed !== null) {
@@ -157,6 +158,7 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 	 */
 	private getBackfillProgressSubscription(): Subscription {
 		return this.bitcoinService.backfill_progress$.subscribe((progress) => {
+			console.log('BACKFILL PROGRESS:', progress);
 			this.backfill_progress.set(progress);
 			if (progress.status === 'completed') this.getOracleData();
 			if (progress.status === 'error') {
@@ -260,12 +262,14 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 	 * Submit the backfill form and start the backfill process
 	 */
 	public submitBackfill(): void {
+		console.log('SUBMIT BACKFILL');
 		if (this.backfill_form.invalid) return;
 		const date_start = this.backfill_form.get('date_start')?.value;
 		const date_end = this.backfill_form.get('date_end')?.value;
 		if (!date_start) return;
 		const start_timestamp = Math.floor(date_start.toUTC().startOf('day').toSeconds());
 		const end_timestamp = date_end ? Math.floor(date_end.toUTC().startOf('day').toSeconds()) : null;
+		console.log('OPENING BACKFILL SOCKET');
 		this.bitcoinService.openBackfillSocket(start_timestamp, end_timestamp);
 
 		// Mark form as pristine since we're submitting

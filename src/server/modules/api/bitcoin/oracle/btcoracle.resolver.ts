@@ -44,13 +44,13 @@ export class BitcoinOracleResolver implements OnModuleInit {
 	}
 
 	@Subscription(() => OrchardBitcoinOracleBackfillProgress)
-	@Throttle({default: {limit: 1, ttl: minutes(1)}})
+	@Throttle({default: {limit: 3, ttl: minutes(1)}})
 	@NoHeaders()
 	async bitcoin_oracle_backfill(
 		@Args('id', {type: () => String}) id: string,
 		@Args('auth', {type: () => String}) auth: string,
 		@Args('start_date', {type: () => UnixTimestamp}) start_date: number,
-		@Args('end_date', {type: () => UnixTimestamp}) end_date: number,
+		@Args('end_date', {type: () => UnixTimestamp, nullable: true}) end_date?: number,
 	) {
 		const tag = `SUBSCRIPTION { bitcoin_oracle_backfill } stream ${id}`;
 		this.logger.debug(tag);

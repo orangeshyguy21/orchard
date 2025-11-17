@@ -45,13 +45,14 @@ export class BitcoinOracleService {
 	/**
 	 * Stream backfill oracle prices for a date range and save to database
 	 */
-	public async streamBackfillOracle(tag: string, id: string, start_date: number, end_date: number): Promise<void> {
+	public async streamBackfillOracle(tag: string, id: string, start_date: number, end_date?: number | null): Promise<void> {
 		try {
 			const controller = new AbortController();
 			this.active_streams.set(id, controller);
 			const signal = controller.signal;
+			const effective_end_date = end_date ?? start_date;
 
-			const validation_error = await this.validateBackfillRequest(start_date, end_date);
+			const validation_error = await this.validateBackfillRequest(start_date, effective_end_date);
 			if (validation_error) {
 				this.emitUpdate(id, {status: 'error', error: validation_error});
 				this.active_streams.delete(id);
@@ -59,13 +60,13 @@ export class BitcoinOracleService {
 			}
 
 			const start = DateTime.fromSeconds(start_date, {zone: 'utc'}).startOf('day');
-			const end = DateTime.fromSeconds(end_date, {zone: 'utc'}).startOf('day');
+			const end = DateTime.fromSeconds(effective_end_date, {zone: 'utc'}).startOf('day');
 			const total_days = Math.floor(end.diff(start, 'days').days) + 1;
 
 			this.emitUpdate(id, {
 				status: 'started',
 				start_date,
-				end_date,
+				end_date: effective_end_date,
 				total_days,
 				processed: 0,
 				successful: 0,
@@ -81,7 +82,7 @@ export class BitcoinOracleService {
 					this.emitUpdate(id, {
 						status: 'aborted',
 						start_date,
-						end_date,
+						end_date: effective_end_date,
 						total_days,
 						...stats,
 					});
@@ -96,7 +97,7 @@ export class BitcoinOracleService {
 			this.emitUpdate(id, {
 				status: 'completed',
 				start_date,
-				end_date,
+				end_date: effective_end_date,
 				total_days,
 				...stats,
 			});

@@ -1003,7 +1003,7 @@ enum SettingValue {
 
 type Subscription {
   ai_chat(ai_chat: AiChatInput!): OrchardAiChatChunk!
-  bitcoin_oracle_backfill(auth: String!, end_date: UnixTimestamp!, id: String!, start_date: UnixTimestamp!): OrchardBitcoinOracleBackfillProgress!
+  bitcoin_oracle_backfill(auth: String!, end_date: UnixTimestamp, id: String!, start_date: UnixTimestamp!): OrchardBitcoinOracleBackfillProgress!
   blockCount: OrchardBitcoinBlockCount!
 }
 
