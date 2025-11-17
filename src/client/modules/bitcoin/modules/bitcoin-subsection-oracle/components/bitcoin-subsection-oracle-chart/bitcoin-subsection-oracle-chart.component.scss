@@ -1,27 +1,30 @@
 @use '@styles/molecule/molecule';
 @use '@styles/nucleus/nucleus';
 
-// .bitcoin-oracle-chart-container {
-// 	@extend %p-v-1;
-// 	@extend %relative;
-// 	max-height: max(80vh, 180px);
-// 	min-height: 300px;
-
-// 	canvas {
-// 		max-height: max(80vh, 180px);
-// 		min-height: 300px;
-// 	}
-// }
-
 .bitcoin-oracle-chart-container {
 	@extend %p-v-1;
 	@extend %relative;
-	height: 75vh;
+	height: calc(100vh - 11rem);
 	min-height: 300px;
+	transition:
+		height 200ms ease-out,
+		min-height 200ms ease-out;
+
+	&.enabled-ai {
+		height: calc(100vh - 14rem);
+	}
+
+	&.form-open {
+		height: 50vh; // Or whatever height you prefer when form is open
+		min-height: 250px;
+	}
 
 	canvas {
 		height: 100%;
 		min-height: 300px;
+		transition:
+			height 200ms ease-out,
+			min-height 200ms ease-out;
 	}
 }
 

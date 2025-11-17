@@ -1,5 +1,5 @@
 <div class="bitcoin-subsection-oracle-container p-h-1">
-	<div class="mint-database-control p-t-1">
+	<div class="oracle-control p-t-1">
 		<div class="flex flex-justify-between flex-gap-2 flex-items-start">
 			<div class="flex flex-gap-2 flex-items-center">
 				<orc-bitcoin-subsection-oracle-control [form_group]="control"></orc-bitcoin-subsection-oracle-control>
@@ -34,56 +34,22 @@
 
 	<div class="orc-animation-collapsible" [class.animation-open]="form_open()">
 		<div class="orc-animation-collapsible-inner">
-			<div class="bitcoin-subsection-oracle-form-target" #backfill_form></div>
-			backfill form
-			<!-- <orc-index-subsection-crew-form-invite
-				[form_group]="form_invite_create"
-				[open]="form_invite_create_open()"
-				[mode]="'create'"
-				[role_options]="role_options_invite"
-				(close)="onCloseInviteForm()"
-				(cancel)="onCancel($event)"
-			></orc-index-subsection-crew-form-invite> -->
+			<div class="bitcoin-subsection-oracle-form-target" #backfill_form_target></div>
+			<orc-bitcoin-subsection-oracle-form
+				[form_group]="backfill_form"
+				(close)="onCloseForm()"
+				(cancel)="onCancelForm($event)"
+			></orc-bitcoin-subsection-oracle-form>
 		</div>
 	</div>
-	<!-- <div class="orc-animation-collapsible" [class.animation-open]="form_mode === 'CREATE'">
-		<div class="orc-animation-collapsible-inner">
-			<div class="mint-database-form-target" #backup_form></div>
-			<orc-mint-subsection-database-form-backup
-				[active]="form_mode === 'CREATE'"
-				[form_group]="form_backup"
-				[database_version]="database_version"
-				[database_timestamp]="database_timestamp"
-				[database_implementation]="database_implementation"
-				(close)="onClose()"
-			></orc-mint-subsection-database-form-backup>
-		</div>
-	</div>
-	<div class="orc-animation-collapsible" [class.animation-open]="form_mode === 'RESTORE'">
-		<div class="orc-animation-collapsible-inner">
-			<div class="mint-database-form-target" #restore_form></div>
-			<orc-mint-subsection-database-form-restore
-				[active]="form_mode === 'RESTORE'"
-				[form_group]="form_restore"
-				(close)="onClose()"
-			></orc-mint-subsection-database-form-restore>
-		</div>
-	</div>
-
-	<orc-mint-subsection-database-chart
-		[locale]="locale"
-		[data]="data"
-		[filter]="filter"
-		[page_settings]="page_settings"
-		[mint_genesis_time]="mint_genesis_time"
-		[loading]="loading_dynamic_data"
-		[state_enabled]="state_enabled"
-	></orc-mint-subsection-database-chart> -->
 
 	<orc-bitcoin-subsection-oracle-chart
 		[data]="data()"
 		[loading]="loading()"
+		[date_today]="date_today()"
 		[date_start]="page_settings.date_start"
 		[date_end]="page_settings.date_end"
+		[form_open]="form_open()"
+		[enabled_ai]="enabled_ai()"
 	></orc-bitcoin-subsection-oracle-chart>
 </div>
