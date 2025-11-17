@@ -22,11 +22,16 @@
 	&.processing {
 		.oracle-block {
 			fill: var(--mat-sys-surface-container-low);
-			animation: pulse 3s ease-in-out infinite;
+			animation:
+				pulse 3s ease-in-out infinite,
+				rotate 3s linear infinite;
+			transform-box: fill-box;
+			transform-origin: center;
 		}
 
 		.oracle-eye {
 			fill: var(--mat-sys-primary-container);
+			animation: pulse 3s ease-in-out infinite;
 		}
 	}
 }
@@ -38,5 +43,14 @@
 	}
 	50% {
 		opacity: 0.4;
+	}
+}
+
+@keyframes rotate {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
 	}
 }
