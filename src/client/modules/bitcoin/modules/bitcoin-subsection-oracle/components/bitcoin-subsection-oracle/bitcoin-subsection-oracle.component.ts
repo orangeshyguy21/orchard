@@ -213,6 +213,15 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 		!this.form_open() ? this.openForm() : this.onCloseForm();
 	}
 
+	public onBackfillDate(date: number): void {
+		this.openForm();
+		this.backfill_form.get('date_start')?.setValue(DateTime.fromSeconds(date, {zone: 'utc'}));
+		this.backfill_form.get('date_start')?.markAsDirty();
+		this.backfill_form.get('date_start')?.markAsTouched();
+		this.backfill_form.get('date_start')?.updateValueAndValidity();
+		this.evaluateDirtyForm();
+	}
+
 	/* *******************************************************
 		Form                  
 	******************************************************** */

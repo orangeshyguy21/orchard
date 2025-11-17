@@ -1,8 +1,7 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, effect, signal, WritableSignal, OnDestroy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output, effect, signal, WritableSignal, OnDestroy} from '@angular/core';
 /* Vendor Dependencies */
-import {BaseChartDirective} from 'ng2-charts';
-import {ChartConfiguration, ScaleChartOptions, ChartType as ChartJsType} from 'chart.js';
+import {ChartConfiguration, ChartType as ChartJsType} from 'chart.js';
 import {DateTime} from 'luxon';
 import {Subscription} from 'rxjs';
 /* Application Dependencies */
@@ -25,6 +24,8 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 	public date_end = input.required<number>();
 	public form_open = input.required<boolean>();
 	public enabled_ai = input.required<boolean>();
+
+	public backfill_date = output<number>();
 
 	public chart_type!: ChartJsType;
 	public chart_data!: ChartConfiguration['data'];
@@ -287,6 +288,37 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 
 		return {
 			maintainAspectRatio: false,
+			onClick: (event: any, elements: any[]) => {
+				if (elements.length > 0) {
+					const clicked_element = elements[0];
+					const dataset_index = clicked_element.datasetIndex;
+					const data_index = clicked_element.index;
+
+					const dataset = this.chart_data.datasets[dataset_index];
+					if (dataset.label === 'BTC/USD (Estimated)') {
+						const data_point = dataset.data[data_index] as {x: number; y: number};
+						const date_unix = Math.floor(data_point.x / 1000);
+						this.backfill_date.emit(date_unix);
+					}
+				}
+			},
+			onHover: (event: any, elements: any[]) => {
+				const canvas = event.native?.target as HTMLCanvasElement;
+				if (canvas) {
+					if (elements.length > 0) {
+						const hovered_element = elements[0];
+						const dataset = this.chart_data.datasets[hovered_element.datasetIndex];
+						// Only show pointer cursor for interpolated data
+						if (dataset.label === 'BTC/USD (Estimated)') {
+							canvas.style.cursor = 'pointer';
+						} else {
+							canvas.style.cursor = 'default';
+						}
+					} else {
+						canvas.style.cursor = 'default';
+					}
+				}
+			},
 			elements: {
 				line: {
 					tension: 0.4,
