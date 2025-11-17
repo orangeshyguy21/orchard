@@ -1,0 +1,9 @@
+@use '@styles/molecule/molecule';
+
+:host {
+	@extend %flex;
+}
+
+.graphic-oracle-container {
+	@extend %flex;
+}
