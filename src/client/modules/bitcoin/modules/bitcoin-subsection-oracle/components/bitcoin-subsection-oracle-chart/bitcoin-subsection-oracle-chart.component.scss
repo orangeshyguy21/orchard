@@ -21,15 +21,26 @@
 		min-height: 300px;
 	}
 
+	// &.animations-enabled {
+	// 	transition:
+	// 		height 200ms ease-out,
+	// 		min-height 200ms ease-out;
+
+	// 	canvas {
+	// 		transition:
+	// 			height 200ms ease-out,
+	// 			min-height 200ms ease-out;
+	// 	}
+	// }
 	&.animations-enabled {
 		transition:
-			height 200ms ease-out,
-			min-height 200ms ease-out;
+			height 50ms ease-out,
+			min-height 50ms ease-out;
 
 		canvas {
 			transition:
-				height 200ms ease-out,
-				min-height 200ms ease-out;
+				height 50ms ease-out,
+				min-height 50ms ease-out;
 		}
 	}
 }
