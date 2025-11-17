@@ -1,17 +1,17 @@
 /* Core Dependencies */
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
+import {Router} from '@angular/router';
 /* Vendor Dependencies */
-import {BehaviorSubject, catchError, map, Observable, of, shareReplay, tap, throwError} from 'rxjs';
-import {DateTime} from 'luxon';
+import {BehaviorSubject, catchError, map, Observable, of, shareReplay, tap, throwError, Subject, Subscription} from 'rxjs';
 /* Application Dependencies */
 import {getApiQuery} from '@client/modules/api/helpers/api.helpers';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
-import {OrchardRes} from '@client/modules/api/types/api.types';
+import {OrchardRes, OrchardWsRes} from '@client/modules/api/types/api.types';
 import {CacheService} from '@client/modules/cache/services/cache/cache.service';
 import {ApiService} from '@client/modules/api/services/api/api.service';
-/* Shared Dependencies */
-import {OrchardBitcoinBlockCount} from '@shared/generated.types';
+import {LocalStorageService} from '@client/modules/cache/services/local-storage/local-storage.service';
+import {AuthService} from '@client/modules/auth/services/auth/auth.service';
 /* Native Dependencies */
 import {BitcoinBlockCount} from '@client/modules/bitcoin/classes/bitcoin-blockcount.class';
 import {BitcoinBlockchainInfo} from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
@@ -21,6 +21,7 @@ import {BitcoinTransaction} from '@client/modules/bitcoin/classes/bitcoin-transa
 import {BitcoinTransactionFeeEstimate} from '@client/modules/bitcoin/classes/bitcoin-transaction-fee-estimate.class';
 import {BitcoinBlockTemplate} from '@client/modules/bitcoin/classes/bitcoin-block-template.class';
 import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle-price.class';
+import {BitcoinOracleBackfillProgress} from '@client/modules/bitcoin/classes/bitcoin-oracle-backfill-progress.class';
 import {
 	BitcoinBlockchainInfoResponse,
 	BitcoinBlockCountResponse,
@@ -30,6 +31,7 @@ import {
 	BitcoinTransactionFeeEstimatesResponse,
 	BitcoinBlockTemplateResponse,
 	BitcoinOraclePriceResponse,
+	BitcoinOracleBackfillProgressResponse,
 } from '@client/modules/bitcoin/types/bitcoin.types';
 /* Local Dependencies */
 import {
@@ -41,7 +43,10 @@ import {
 	BITCOIN_TRANSACTION_FEE_ESTIMATES_QUERY,
 	BITCOIN_BLOCK_TEMPLATE_QUERY,
 	BITCOIN_ORACLE_PRICE_QUERY,
+	BITCOIN_ORACLE_BACKFILL_SUBSCRIPTION,
 } from './bitcoin.queries';
+/* Shared Dependencies */
+import {OrchardBitcoinBlockCount} from '@shared/generated.types';
 
 @Injectable({
 	providedIn: 'root',
@@ -55,6 +60,12 @@ export class BitcoinService {
 	}
 	public get bitcoin_price$(): Observable<BitcoinOraclePrice | null> {
 		return this.bitcoin_oracle_price_subject.asObservable();
+	}
+	public get backfill_progress$(): Observable<BitcoinOracleBackfillProgress> {
+		return this.backfill_progress_subject.asObservable();
+	}
+	public get backfill_active$(): Observable<boolean> {
+		return this.backfill_active_subject.asObservable();
 	}
 
 	public readonly CACHE_KEYS = {
@@ -78,11 +89,19 @@ export class BitcoinService {
 	private readonly bitcoin_oracle_price_subject: BehaviorSubject<BitcoinOraclePrice | null>;
 	/* Observables for caching (rapid request caching) */
 	private bitcoin_blockchain_info_observable!: Observable<BitcoinBlockchainInfo> | null;
+	/* Observables for backfill */
+	private backfill_subscription?: Subscription;
+	private backfill_subscription_id?: string | null;
+	private backfill_progress_subject = new Subject<BitcoinOracleBackfillProgress>();
+	private backfill_active_subject = new Subject<boolean>();
 
 	constructor(
 		private http: HttpClient,
 		private cache: CacheService,
 		private apiService: ApiService,
+		private localStorageService: LocalStorageService,
+		private authService: AuthService,
+		private router: Router,
 	) {
 		this.bitcoin_block_subject = new BehaviorSubject<BitcoinBlockCount | null>(null);
 		this.bitcoin_blockchain_info_subject = this.cache.createCache<BitcoinBlockchainInfo>(
@@ -289,5 +308,93 @@ export class BitcoinService {
 				return throwError(() => error);
 			}),
 		);
+	}
+
+	/**
+	 * Open a websocket subscription for bitcoin oracle backfill
+	 * @param {number} start_date - Unix timestamp for start date
+	 * @param {number} end_date - Unix timestamp for end date
+	 */
+	public openBackfillSocket(start_date: number, end_date?: number | null): void {
+		const subscription_id = crypto.randomUUID();
+		const auth_token = this.localStorageService.getAuthToken();
+		this.backfill_subscription_id = subscription_id;
+		this.backfill_active_subject.next(true);
+
+		this.backfill_subscription = this.apiService.gql_socket.subscribe({
+			next: (response: OrchardWsRes<BitcoinOracleBackfillProgressResponse>) => {
+				if (response.type === 'data' && response.payload?.errors) {
+					const has_auth_error = response.payload.errors.some((err: any) => err.extensions?.code === 10002);
+					if (has_auth_error) {
+						this.closeBackfillSocket();
+						this.retryBackfillSocket(start_date, end_date);
+						return;
+					}
+				}
+				if (response.type === 'data' && response?.payload?.data?.bitcoin_oracle_backfill) {
+					const progress = new BitcoinOracleBackfillProgress(response.payload.data.bitcoin_oracle_backfill);
+					this.backfill_progress_subject.next(new BitcoinOracleBackfillProgress(progress));
+					if (progress.status === 'completed' || progress.status === 'error' || progress.status === 'aborted') {
+						this.closeBackfillSocket();
+					}
+				}
+			},
+			error: (error) => {
+				console.error('Backfill socket error:', error);
+				this.backfill_subscription_id = null;
+				this.backfill_active_subject.next(false);
+			},
+		});
+
+		this.apiService.gql_socket.next({type: 'connection_init', payload: {}});
+		this.apiService.gql_socket.next({
+			id: subscription_id,
+			type: 'start',
+			payload: {
+				query: BITCOIN_ORACLE_BACKFILL_SUBSCRIPTION,
+				variables: {
+					id: subscription_id,
+					auth: auth_token,
+					start_date: start_date,
+					end_date: end_date,
+				},
+			},
+		});
+	}
+
+	/**
+	 * Close the bitcoin oracle backfill websocket subscription
+	 */
+	public closeBackfillSocket(): void {
+		if (!this.backfill_subscription) return;
+		this.backfill_subscription?.unsubscribe();
+		this.apiService.gql_socket.next({
+			id: this.backfill_subscription_id,
+			type: 'stop',
+		});
+		this.backfill_subscription_id = null;
+		this.backfill_active_subject.next(false);
+	}
+
+	/**
+	 * Retry the backfill socket after refreshing the auth token
+	 * @param {number} start_date - Unix timestamp for start date
+	 * @param {number} end_date - Unix timestamp for end date
+	 */
+	private retryBackfillSocket(start_date: number, end_date?: number | null): void {
+		this.closeBackfillSocket();
+		this.authService
+			.refreshToken()
+			.pipe(
+				tap(() => {
+					this.openBackfillSocket(start_date, end_date);
+				}),
+				catchError((refresh_error) => {
+					this.authService.clearAuthCache();
+					this.router.navigate(['/auth']);
+					return throwError(() => refresh_error);
+				}),
+			)
+			.subscribe();
 	}
 }

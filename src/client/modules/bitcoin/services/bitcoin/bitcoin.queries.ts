@@ -120,3 +120,28 @@ query BitcoinOraclePrice($start_date: UnixTimestamp, $end_date: UnixTimestamp) {
         price
     }
 }`;
+
+export const BITCOIN_ORACLE_BACKFILL_SUBSCRIPTION = `
+    subscription BitcoinOracleBackfill($id: String!, $auth: String!, $start_date: UnixTimestamp!, $end_date: UnixTimestamp!) {
+        bitcoin_oracle_backfill(id: $id, auth: $auth, start_date: $start_date, end_date: $end_date) {
+            id
+            status
+            start_date
+            end_date
+            total_days
+            processed
+            successful
+            failed
+            date
+            price
+            success
+            error
+            oracle_stage
+            oracle_stage_progress
+            oracle_total_progress
+            oracle_message
+            block_height
+            blocks_total
+        }
+    }
+`;

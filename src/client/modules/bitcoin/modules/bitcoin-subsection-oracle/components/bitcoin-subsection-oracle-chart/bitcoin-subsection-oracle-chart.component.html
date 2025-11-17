@@ -1,4 +1,9 @@
-<div class="bitcoin-oracle-chart-container" [class.form-open]="form_open()" [class.enabled-ai]="enabled_ai()">
+<div
+	class="bitcoin-oracle-chart-container"
+	[class.form-open]="form_open()"
+	[class.enabled-ai]="enabled_ai()"
+	animate.enter="orc-animation-fadein"
+>
 	@if (displayed()) {
 		<canvas baseChart [data]="chart_data" [options]="chart_options" [type]="chart_type"></canvas>
 	}

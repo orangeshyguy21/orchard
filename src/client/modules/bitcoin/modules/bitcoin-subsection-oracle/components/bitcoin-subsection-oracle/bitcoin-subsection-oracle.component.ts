@@ -25,6 +25,7 @@ import {EventData} from '@client/modules/event/classes/event-data.class';
 import {BitcoinService} from '@client/modules/bitcoin/services/bitcoin/bitcoin.service';
 import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle-price.class';
 import {BackfillOracleControl} from '@client/modules/bitcoin/modules/bitcoin-subsection-oracle/types/backfill-oracle-control.type';
+import {BitcoinOracleBackfillProgress} from '@client/modules/bitcoin/classes/bitcoin-oracle-backfill-progress.class';
 
 @Component({
 	selector: 'orc-bitcoin-subsection-oracle',
@@ -57,6 +58,8 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 	public form_open = signal<boolean>(false);
 	public date_today = signal<number>(Math.floor(DateTime.utc().startOf('day').toSeconds()));
 	public enabled_ai = signal<boolean>(false);
+	public backfill_active = signal<boolean>(false);
+	public backfill_progress = signal<BitcoinOracleBackfillProgress | null>(null);
 
 	public latest_oracle = computed(() => {
 		return this.data().length > 0 ? (this.data().at(-1) ?? null) : null;
@@ -87,6 +90,8 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 		this.subscriptions.add(this.getControlSubscription());
 		this.subscriptions.add(this.getBackfillSubscription());
 		this.subscriptions.add(this.getEventSubscription());
+		this.subscriptions.add(this.getBackfillProgressSubscription());
+		this.subscriptions.add(this.getBackfillActiveSubscription());
 		this.page_settings = this.getPageSettings();
 		this.initializeControl();
 		this.getOracleData();
@@ -140,7 +145,44 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 	private getEventSubscription(): Subscription {
 		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
 			this.active_event = event_data;
+			if (event_data === null) this.evaluateDirtyForm();
+			if (event_data && event_data.confirmed !== null) {
+				event_data.confirmed ? this.submitBackfill() : this.eventUnconfirmed();
+			}
 		});
+	}
+
+	/**
+	 * Subscribe to backfill progress updates
+	 */
+	private getBackfillProgressSubscription(): Subscription {
+		return this.bitcoinService.backfill_progress$.subscribe((progress) => {
+			this.backfill_progress.set(progress);
+			if (progress.status === 'completed') this.getOracleData();
+			if (progress.status === 'error') {
+				console.error('Backfill error:', progress.error);
+				// Show error notification or update UI (TODO: Implement)
+			}
+		});
+	}
+
+	/**
+	 * Subscribe to backfill active state
+	 */
+	private getBackfillActiveSubscription(): Subscription {
+		return this.bitcoinService.backfill_active$.subscribe((active) => {
+			this.backfill_active.set(active);
+		});
+	}
+
+	/* *******************************************************
+		Events                      
+	******************************************************** */
+
+	private eventUnconfirmed(): void {
+		this.backfill_form.reset();
+		this.backfill_form.get('date_end')?.disable({emitEvent: false});
+		this.evaluateDirtyForm();
 	}
 
 	/* *******************************************************
@@ -214,11 +256,37 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 		);
 	}
 
+	/**
+	 * Submit the backfill form and start the backfill process
+	 */
+	public submitBackfill(): void {
+		if (this.backfill_form.invalid) return;
+		const date_start = this.backfill_form.get('date_start')?.value;
+		const date_end = this.backfill_form.get('date_end')?.value;
+		if (!date_start) return;
+		const start_timestamp = Math.floor(date_start.toUTC().startOf('day').toSeconds());
+		const end_timestamp = date_end ? Math.floor(date_end.toUTC().startOf('day').toSeconds()) : null;
+		this.bitcoinService.openBackfillSocket(start_timestamp, end_timestamp);
+
+		// Mark form as pristine since we're submitting
+		this.backfill_form.markAsPristine();
+		this.dirty_form.set(false);
+	}
+
+	/**
+	 * Cancel/abort the backfill process
+	 */
+	public abortBackfill(): void {
+		this.bitcoinService.closeBackfillSocket();
+		this.backfill_progress.set(null);
+	}
+
 	/* *******************************************************
 		Destruction                      
 	******************************************************** */
 
 	ngOnDestroy(): void {
 		this.subscriptions.unsubscribe();
+		if (this.backfill_active()) this.bitcoinService.closeBackfillSocket();
 	}
 }
