@@ -12,7 +12,7 @@
 	}
 
 	&.form-open {
-		height: 50vh; // Or whatever height you prefer when form is open
+		height: calc(100vh - 35rem);
 		min-height: 250px;
 	}
 
