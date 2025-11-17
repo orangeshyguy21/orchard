@@ -90,10 +90,16 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 		// Calculate interpolated data for missing dates
 		const interpolated_data = this.getInterpolatedData(formatted_data);
 
-		const datasets: any[] = [
-			{
+		// Split data into chunks based on missing days
+		const data_chunks = this.splitDataIntoChunks(formatted_data);
+
+		const datasets: any[] = [];
+
+		// Create a separate dataset for each continuous chunk of data
+		for (const chunk of data_chunks) {
+			datasets.push({
 				label: 'BTC/USD',
-				data: formatted_data,
+				data: chunk,
 				backgroundColor: color.bg,
 				borderColor: color.border,
 				borderWidth: 2,
@@ -109,8 +115,8 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 				},
 				tension: 0.4,
 				yAxisID: 'y',
-			},
-		];
+			});
+		}
 
 		// Add interpolated dataset if there are missing dates
 		if (interpolated_data.length > 0) {
@@ -133,6 +139,46 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 		return {
 			datasets: datasets,
 		};
+	}
+
+	/**
+	 * Splits data into separate chunks when there are missing days between consecutive points
+	 * @param {Array<{x: number, y: number}>} formatted_data - Sorted array of data points
+	 * @returns {Array<Array<{x: number, y: number}>>} Array of data chunks, each representing continuous data
+	 */
+	private splitDataIntoChunks(formatted_data: Array<{x: number; y: number}>): Array<Array<{x: number; y: number}>> {
+		if (formatted_data.length === 0) {
+			return [];
+		}
+
+		const chunks: Array<Array<{x: number; y: number}>> = [];
+		let current_chunk: Array<{x: number; y: number}> = [formatted_data[0]];
+
+		const one_day_ms = 86400000; // 24 hours in milliseconds
+
+		for (let i = 1; i < formatted_data.length; i++) {
+			const previous_point = formatted_data[i - 1];
+			const current_point = formatted_data[i];
+
+			// Check if there's a gap (more than 1 day) between consecutive points
+			const time_diff = current_point.x - previous_point.x;
+
+			if (time_diff > one_day_ms) {
+				// Gap detected - save current chunk and start a new one
+				chunks.push(current_chunk);
+				current_chunk = [current_point];
+			} else {
+				// No gap - add to current chunk
+				current_chunk.push(current_point);
+			}
+		}
+
+		// Don't forget to add the last chunk
+		if (current_chunk.length > 0) {
+			chunks.push(current_chunk);
+		}
+
+		return chunks;
 	}
 
 	/**
