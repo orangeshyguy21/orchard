@@ -30,6 +30,7 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 	public chart_data!: ChartConfiguration['data'];
 	public chart_options!: ChartConfiguration['options'];
 	public displayed: WritableSignal<boolean> = signal(true);
+	public animations_enabled: WritableSignal<boolean> = signal(false);
 
 	private subscriptions: Subscription = new Subscription();
 
@@ -40,6 +41,9 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 			const done_loading = !this.loading();
 			if (done_loading) this.init();
 		});
+		setTimeout(() => {
+			this.animations_enabled.set(true);
+		}, 100);
 	}
 
 	private getRemoveSubscription(): Subscription {

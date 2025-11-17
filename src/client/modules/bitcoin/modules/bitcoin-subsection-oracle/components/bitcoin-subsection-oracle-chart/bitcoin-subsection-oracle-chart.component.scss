@@ -6,9 +6,6 @@
 	@extend %relative;
 	height: calc(100vh - 11rem);
 	min-height: 300px;
-	transition:
-		height 200ms ease-out,
-		min-height 200ms ease-out;
 
 	&.enabled-ai {
 		height: calc(100vh - 14rem);
@@ -22,9 +19,18 @@
 	canvas {
 		height: 100%;
 		min-height: 300px;
+	}
+
+	&.animations-enabled {
 		transition:
 			height 200ms ease-out,
 			min-height 200ms ease-out;
+
+		canvas {
+			transition:
+				height 200ms ease-out,
+				min-height 200ms ease-out;
+		}
 	}
 }
 
