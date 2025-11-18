@@ -44,6 +44,16 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 			const done_loading = !this.loading();
 			if (done_loading) this.init();
 		});
+		effect(() => {
+			// React to changes in form state and backfill dates
+			this.form_open();
+			this.backfill_date_start();
+			this.backfill_date_end();
+
+			if (!this.loading()) {
+				this.init();
+			}
+		});
 		setTimeout(() => {
 			this.animations_enabled.set(true);
 		}, 100);
@@ -334,6 +344,51 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 			},
 		};
 
+		// Build annotations for backfill range
+		const annotations: any = {};
+
+		if (this.form_open() && this.backfill_date_start() !== null) {
+			const start_millis = DateTime.fromSeconds(this.backfill_date_start()!, {zone: 'utc'}).startOf('day').toMillis();
+			const end_date = this.backfill_date_end();
+
+			if (end_date !== null) {
+				// Draw a rectangle for the range
+				const end_millis = DateTime.fromSeconds(end_date, {zone: 'utc'}).startOf('day').toMillis();
+
+				annotations.backfill_range = {
+					type: 'box',
+					xMin: start_millis,
+					xMax: end_millis,
+					backgroundColor: 'rgba(255, 165, 0, 0.1)',
+					borderColor: 'rgba(255, 165, 0, 0.5)',
+					borderWidth: 2,
+					borderDash: [5, 5],
+					label: {
+						display: true,
+						content: 'Backfill Range',
+						position: 'start',
+						color: 'rgba(255, 165, 0, 0.8)',
+					},
+				};
+			} else {
+				// Draw a vertical line for just the start date
+				annotations.backfill_line = {
+					type: 'line',
+					scaleID: 'x',
+					value: start_millis,
+					borderColor: 'rgba(255, 165, 0, 0.8)',
+					borderWidth: 2,
+					borderDash: [5, 5],
+					label: {
+						display: true,
+						content: 'Backfill Date',
+						position: 'start',
+						color: 'rgba(255, 165, 0, 0.8)',
+					},
+				};
+			}
+		}
+
 		return {
 			maintainAspectRatio: false,
 			onClick: (event: any, elements: any[]) => {
@@ -375,6 +430,9 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 			},
 			scales: scales,
 			plugins: {
+				annotation: {
+					annotations: annotations,
+				},
 				tooltip: {
 					enabled: true,
 					mode: 'nearest',

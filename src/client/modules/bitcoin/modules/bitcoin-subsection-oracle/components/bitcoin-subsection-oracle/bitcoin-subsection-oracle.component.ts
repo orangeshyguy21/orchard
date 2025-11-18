@@ -60,19 +60,11 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 	public enabled_ai = signal<boolean>(false);
 	public backfill_active = signal<boolean>(false);
 	public backfill_progress = signal<BitcoinOracleBackfillProgress | null>(null);
+	public backfill_date_start = signal<number | null>(null);
+	public backfill_date_end = signal<number | null>(null);
 
 	public latest_oracle = computed(() => {
 		return this.data().length > 0 ? (this.data().at(-1) ?? null) : null;
-	});
-	public backfill_date_start = computed(() => {
-		return this.backfill_form.get('date_start')?.value
-			? Math.floor(this.backfill_form.get('date_start')?.value?.toUTC().startOf('day').toSeconds() ?? 0)
-			: null;
-	});
-	public backfill_date_end = computed(() => {
-		return this.backfill_form.get('date_end')?.value
-			? Math.floor(this.backfill_form.get('date_end')?.value?.toUTC().startOf('day').toSeconds() ?? 0)
-			: null;
 	});
 
 	private dirty_form = signal<boolean>(false);
@@ -148,6 +140,8 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 			}
 			const backfill_date_start = Math.floor(this.backfill_form.get('date_start')?.value?.toUTC().startOf('day').toSeconds() ?? 0);
 			const backfill_date_end = Math.floor(this.backfill_form.get('date_end')?.value?.toUTC().startOf('day').toSeconds() ?? 0);
+			this.backfill_date_start.set(backfill_date_start);
+			this.backfill_date_end.set(backfill_date_end === 0 ? null : backfill_date_end);
 			const update_date_start = Math.min(backfill_date_start, this.page_settings.date_start);
 			const update_date_end = Math.max(backfill_date_end, this.page_settings.date_end);
 			if (update_date_start !== this.page_settings.date_start || update_date_end !== this.page_settings.date_end) {
