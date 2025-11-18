@@ -153,7 +153,6 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 
 	private getEventSubscription(): Subscription {
 		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
-			console.log('EVENT DATA:', event_data);
 			this.active_event = event_data;
 			if (event_data === null) this.evaluateDirtyForm();
 			if (event_data && event_data.confirmed !== null) {

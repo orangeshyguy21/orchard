@@ -73,7 +73,6 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 
 	private init(): void {
 		if (this.loading()) return;
-		console.log('INIT CHART');
 		this.chart_type.set('line');
 		this.chart_data.set(this.getChartData());
 		this.chart_options.set(this.getChartOptions());
