@@ -64,6 +64,16 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 	public latest_oracle = computed(() => {
 		return this.data().length > 0 ? (this.data().at(-1) ?? null) : null;
 	});
+	public backfill_date_start = computed(() => {
+		return this.backfill_form.get('date_start')?.value
+			? Math.floor(this.backfill_form.get('date_start')?.value?.toUTC().startOf('day').toSeconds() ?? 0)
+			: null;
+	});
+	public backfill_date_end = computed(() => {
+		return this.backfill_form.get('date_end')?.value
+			? Math.floor(this.backfill_form.get('date_end')?.value?.toUTC().startOf('day').toSeconds() ?? 0)
+			: null;
+	});
 
 	private dirty_form = signal<boolean>(false);
 	private active_event: EventData | null = null;

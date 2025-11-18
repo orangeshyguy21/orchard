@@ -22,6 +22,8 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 	public date_today = input.required<number>();
 	public date_start = input.required<number>();
 	public date_end = input.required<number>();
+	public backfill_date_start = input.required<number | null>();
+	public backfill_date_end = input.required<number | null>();
 	public form_open = input.required<boolean>();
 	public enabled_ai = input.required<boolean>();
 
