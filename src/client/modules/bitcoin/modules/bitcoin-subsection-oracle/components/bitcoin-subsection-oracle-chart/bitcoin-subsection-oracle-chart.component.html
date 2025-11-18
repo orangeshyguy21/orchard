@@ -2,11 +2,11 @@
 	class="bitcoin-oracle-chart-container"
 	[class.form-open]="form_open()"
 	[class.enabled-ai]="enabled_ai()"
-	[class.animations-enabled]="animations_enabled()"
+	[class.animations-embedded-enabled]="animations_embedded_enabled()"
 	animate.enter="orc-animation-fadein"
 >
 	@if (displayed()) {
-		<canvas baseChart [data]="chart_data" [options]="chart_options" [type]="chart_type"></canvas>
+		<canvas baseChart [data]="chart_data()" [options]="chart_options()" [type]="chart_type()"></canvas>
 	}
 	@if (!loading() && data().length === 0) {
 		<div class="no-data-overlay" animate.enter="orc-animation-fadein-fast" animate.leave="orc-animation-fadeout-fast">

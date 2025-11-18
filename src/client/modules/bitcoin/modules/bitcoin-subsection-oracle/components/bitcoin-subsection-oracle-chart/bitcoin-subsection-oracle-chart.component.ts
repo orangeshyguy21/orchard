@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, output, effect, signal, WritableSignal, OnDestroy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output, effect, signal, untracked, WritableSignal, OnDestroy} from '@angular/core';
 /* Vendor Dependencies */
 import {ChartConfiguration, ChartType as ChartJsType} from 'chart.js';
 import {DateTime} from 'luxon';
@@ -29,13 +29,14 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 
 	public backfill_date = output<number>();
 
-	public chart_type!: ChartJsType;
-	public chart_data!: ChartConfiguration['data'];
-	public chart_options!: ChartConfiguration['options'];
+	public chart_type: WritableSignal<ChartJsType> = signal('line');
+	public chart_data: WritableSignal<ChartConfiguration['data']> = signal({datasets: []});
+	public chart_options: WritableSignal<ChartConfiguration['options']> = signal({});
 	public displayed: WritableSignal<boolean> = signal(true);
-	public animations_enabled: WritableSignal<boolean> = signal(false);
+	public animations_embedded_enabled: WritableSignal<boolean> = signal(false);
 
 	private subscriptions: Subscription = new Subscription();
+	private animations_chart_enabled: boolean = true;
 
 	constructor(private chartService: ChartService) {
 		this.subscriptions.add(this.getRemoveSubscription());
@@ -50,12 +51,12 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 			this.backfill_date_start();
 			this.backfill_date_end();
 
-			if (!this.loading()) {
-				this.init();
+			if (!this.loading() && this.form_open() && this.backfill_date_start() !== null) {
+				untracked(() => this.init());
 			}
 		});
 		setTimeout(() => {
-			this.animations_enabled.set(true);
+			this.animations_embedded_enabled.set(true);
 		}, 100);
 	}
 
@@ -72,9 +73,11 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 
 	private init(): void {
 		if (this.loading()) return;
-		this.chart_type = 'line';
-		this.chart_data = this.getChartData();
-		this.chart_options = this.getChartOptions();
+		console.log('INIT CHART');
+		this.chart_type.set('line');
+		this.chart_data.set(this.getChartData());
+		this.chart_options.set(this.getChartOptions());
+		this.animations_chart_enabled = false;
 	}
 
 	/**
@@ -196,7 +199,7 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 	/**
 	 * Calculates interpolated values for missing dates in the data range
 	 * @param {Array<{x: number, y: number}>} formatted_data - Sorted array of existing data points
-	 * @returns {Array<{x: number, y: number, is_today?: boolean}>} Array of interpolated points
+	 * @returns {Array<{x: number, y: number, is_today?: boolean}>} Array of interpolated pointsmaintainAspectRatio
 	 */
 	private getInterpolatedData(formatted_data: Array<{x: number; y: number}>): Array<{x: number; y: number; is_today?: boolean}> {
 		if (formatted_data.length === 0) {
@@ -291,7 +294,7 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 	 * @returns {ChartConfiguration['options']} Chart configuration options
 	 */
 	private getChartOptions(): ChartConfiguration['options'] {
-		if (!this.chart_data || this.chart_data.datasets.length === 0) {
+		if (!this.chart_data() || this.chart_data().datasets.length === 0) {
 			return {};
 		}
 
@@ -350,6 +353,7 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 		if (this.form_open() && this.backfill_date_start() !== null) {
 			const start_millis = DateTime.fromSeconds(this.backfill_date_start()!, {zone: 'utc'}).startOf('day').toMillis();
 			const end_date = this.backfill_date_end();
+			const config = this.chartService.getFormAnnotationConfig(true);
 
 			if (end_date !== null) {
 				// Draw a rectangle for the range
@@ -359,15 +363,19 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 					type: 'box',
 					xMin: start_millis,
 					xMax: end_millis,
-					backgroundColor: 'rgba(255, 165, 0, 0.1)',
-					borderColor: 'rgba(255, 165, 0, 0.5)',
+					backgroundColor: this.chartService.hexToRgba(config.label_bg_color, 0.25),
+					borderColor: this.chartService.hexToRgba(config.label_bg_color, 0.8),
 					borderWidth: 2,
 					borderDash: [5, 5],
 					label: {
 						display: true,
-						content: 'Backfill Range',
+						content: 'Backfill Dates',
 						position: 'start',
-						color: 'rgba(255, 165, 0, 0.8)',
+						color: config.text_color,
+						font: {
+							size: 12,
+							weight: '300',
+						},
 					},
 				};
 			} else {
@@ -376,20 +384,59 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 					type: 'line',
 					scaleID: 'x',
 					value: start_millis,
-					borderColor: 'rgba(255, 165, 0, 0.8)',
+					borderColor: this.chartService.hexToRgba(config.label_bg_color, 0.8),
 					borderWidth: 2,
 					borderDash: [5, 5],
 					label: {
 						display: true,
 						content: 'Backfill Date',
 						position: 'start',
-						color: 'rgba(255, 165, 0, 0.8)',
+						backgroundColor: this.chartService.hexToRgba(config.label_bg_color, 0.5),
+						color: config.text_color,
+						font: {
+							size: 12,
+							weight: '300',
+						},
+						borderColor: config.label_border_color,
+						borderWidth: 1,
 					},
 				};
 			}
 		}
 
-		return {
+		// private getAnnotations(): any {
+		// 	const min_x_value = this.findMinimumXValue(this.chart_data);
+		// 	const milli_genesis_time = DateTime.fromSeconds(this.mint_genesis_time).startOf('day').toMillis();
+		// 	const display = milli_genesis_time >= min_x_value ? true : false;
+		// 	const config = this.chartService.getFormAnnotationConfig(false);
+		// 	return {
+		// 		annotations: {
+		// 			annotation: {
+		// 				type: 'line',
+		// 				borderColor: config.border_color,
+		// 				borderWidth: config.border_width,
+		// 				display: display,
+		// 				label: {
+		// 					display: true,
+		// 					content: 'Mint Genesis',
+		// 					position: 'start',
+		// 					backgroundColor: config.label_bg_color,
+		// 					color: config.text_color,
+		// 					font: {
+		// 						size: 12,
+		// 						weight: '300',
+		// 					},
+		// 					borderColor: config.label_border_color,
+		// 					borderWidth: 1,
+		// 				},
+		// 				scaleID: 'x',
+		// 				value: milli_genesis_time,
+		// 			},
+		// 		},
+		// 	};
+		// }
+
+		const chart_options: ChartConfiguration['options'] = {
 			maintainAspectRatio: false,
 			onClick: (event: any, elements: any[]) => {
 				if (elements.length > 0) {
@@ -397,7 +444,7 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 					const dataset_index = clicked_element.datasetIndex;
 					const data_index = clicked_element.index;
 
-					const dataset = this.chart_data.datasets[dataset_index];
+					const dataset = this.chart_data().datasets[dataset_index];
 					if (dataset.label === 'BTC/USD (Estimated)') {
 						const data_point = dataset.data[data_index] as {x: number; y: number};
 						const date_unix = Math.floor(data_point.x / 1000);
@@ -410,7 +457,7 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 				if (canvas) {
 					if (elements.length > 0) {
 						const hovered_element = elements[0];
-						const dataset = this.chart_data.datasets[hovered_element.datasetIndex];
+						const dataset = this.chart_data().datasets[hovered_element.datasetIndex];
 						// Only show pointer cursor for interpolated data
 						if (dataset.label === 'BTC/USD (Estimated)') {
 							canvas.style.cursor = 'pointer';
@@ -484,6 +531,8 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 				intersect: false,
 			},
 		};
+		if (!this.animations_chart_enabled) chart_options.animation = false;
+		return chart_options;
 	}
 
 	ngOnDestroy(): void {

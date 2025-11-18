@@ -13,6 +13,8 @@ import {BackfillOracleControl} from '@client/modules/bitcoin/modules/bitcoin-sub
 })
 export class BitcoinSubsectionOracleFormComponent {
 	public form_group = input.required<FormGroup>();
+	public active = input.required<boolean>();
+
 	public close = output<void>();
 	public cancel = output<BackfillOracleControl>();
 

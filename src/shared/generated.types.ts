@@ -1448,7 +1448,7 @@ export type SubscriptionAi_ChatArgs = {
 
 export type SubscriptionBitcoin_Oracle_BackfillArgs = {
   auth: Scalars['String']['input'];
-  end_date: Scalars['UnixTimestamp']['input'];
+  end_date?: InputMaybe<Scalars['UnixTimestamp']['input']>;
   id: Scalars['String']['input'];
   start_date: Scalars['UnixTimestamp']['input'];
 };

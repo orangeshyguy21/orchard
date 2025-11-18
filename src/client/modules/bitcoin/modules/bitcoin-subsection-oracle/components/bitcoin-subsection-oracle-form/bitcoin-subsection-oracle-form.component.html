@@ -57,7 +57,7 @@
 									"
 									class="orc-dynamic-form-field"
 								>
-									<mat-label>Range end</mat-label>
+									<mat-label>Select an end date</mat-label>
 									<input
 										formControlName="date_end"
 										matInput
@@ -74,7 +74,7 @@
 				</div>
 				<div class="flex h-min-18">
 					<div class="h-full flex flex-items-center flex-justify-center">
-						<orc-graphic-oracle height="13rem" [processing]="true"></orc-graphic-oracle>
+						<orc-graphic-oracle height="13rem" [processing]="active()"></orc-graphic-oracle>
 					</div>
 				</div>
 			</div>

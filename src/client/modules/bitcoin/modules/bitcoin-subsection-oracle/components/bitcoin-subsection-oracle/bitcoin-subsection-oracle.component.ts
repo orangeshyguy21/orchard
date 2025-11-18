@@ -261,6 +261,8 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 		this.form_open.set(false);
 		this.backfill_form.reset();
 		this.backfill_form.get('date_end')?.disable({emitEvent: false});
+		this.backfill_date_start.set(null);
+		this.backfill_date_end.set(null);
 		this.eventService.registerEvent(null);
 	}
 
@@ -288,14 +290,12 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 	 * Submit the backfill form and start the backfill process
 	 */
 	public submitBackfill(): void {
-		console.log('SUBMIT BACKFILL');
 		if (this.backfill_form.invalid) return;
 		const date_start = this.backfill_form.get('date_start')?.value;
 		const date_end = this.backfill_form.get('date_end')?.value;
 		if (!date_start) return;
 		const start_timestamp = Math.floor(date_start.toUTC().startOf('day').toSeconds());
 		const end_timestamp = date_end ? Math.floor(date_end.toUTC().startOf('day').toSeconds()) : null;
-		console.log('OPENING BACKFILL SOCKET');
 		this.bitcoinService.openBackfillSocket(start_timestamp, end_timestamp);
 
 		// Mark form as pristine since we're submitting
