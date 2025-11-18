@@ -124,9 +124,7 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 			);
 			const new_date_end = Math.floor(this.control.get('daterange')?.get('date_end')?.value?.toUTC().startOf('day').toSeconds() ?? 0);
 			if (new_date_start === this.page_settings.date_start && new_date_end === this.page_settings.date_end) return;
-			this.page_settings.date_start = new_date_start;
-			this.page_settings.date_end = new_date_end;
-			this.settingDeviceService.setBitcoinOracleSettings(this.page_settings);
+			this.updateRange(new_date_start, new_date_end);
 		});
 	}
 
@@ -137,6 +135,13 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 				this.backfill_form.get('date_end')?.enable({emitEvent: false});
 			} else {
 				this.backfill_form.get('date_end')?.disable({emitEvent: false});
+			}
+			const backfill_date_start = Math.floor(this.backfill_form.get('date_start')?.value?.toUTC().startOf('day').toSeconds() ?? 0);
+			const backfill_date_end = Math.floor(this.backfill_form.get('date_end')?.value?.toUTC().startOf('day').toSeconds() ?? 0);
+			const update_date_start = Math.min(backfill_date_start, this.page_settings.date_start);
+			const update_date_end = Math.max(backfill_date_end, this.page_settings.date_end);
+			if (update_date_start !== this.page_settings.date_start || update_date_end !== this.page_settings.date_end) {
+				this.updateRange(update_date_start, update_date_end);
 			}
 			this.evaluateDirtyForm();
 		});
@@ -203,6 +208,14 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 				// Handle error appropriately (show notification, update UI, etc.)
 			},
 		});
+	}
+
+	private updateRange(date_start: number, date_end: number): void {
+		this.page_settings.date_start = date_start;
+		this.page_settings.date_end = date_end;
+		this.settingDeviceService.setBitcoinOracleSettings(this.page_settings);
+		this.loading.set(true);
+		this.getOracleData();
 	}
 
 	/* *******************************************************
