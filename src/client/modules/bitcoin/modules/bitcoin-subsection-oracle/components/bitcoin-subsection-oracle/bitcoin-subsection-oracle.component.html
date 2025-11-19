@@ -2,7 +2,11 @@
 	<div class="oracle-control p-t-1">
 		<div class="flex flex-justify-between flex-gap-2 flex-items-start">
 			<div class="flex flex-gap-2 flex-items-center">
-				<orc-bitcoin-subsection-oracle-control [form_group]="control"></orc-bitcoin-subsection-oracle-control>
+				<orc-bitcoin-subsection-oracle-control
+					[form_group]="control"
+					[min_date]="min_date()"
+					[max_date]="max_date()"
+				></orc-bitcoin-subsection-oracle-control>
 				<div class="p-b-1" animate.enter="orc-animation-fadein">
 					<div class="title-l">Latest Price</div>
 					<div class="orc-outline-color font-size-s">
@@ -39,6 +43,10 @@
 				[form_group]="backfill_form"
 				[running]="backfill_running()"
 				[progress]="backfill_progress()"
+				[min_date]="min_date()"
+				[max_date]="max_date()"
+				[date_start_max]="date_start_max()"
+				[date_end_min]="date_end_min()"
 				(close)="onCloseForm()"
 				(cancel)="onCancelForm($event)"
 			></orc-bitcoin-subsection-oracle-form>

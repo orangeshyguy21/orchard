@@ -34,6 +34,8 @@
 										formControlName="date_start"
 										matInput
 										[matDatepicker]="start_picker"
+										[min]="min_date()"
+										[max]="date_start_max()"
 										(focus)="focused_date_start.set(true)"
 										(blur)="focused_date_start.set(false)"
 									/>
@@ -62,6 +64,8 @@
 										formControlName="date_end"
 										matInput
 										[matDatepicker]="end_picker"
+										[min]="date_end_min()"
+										[max]="max_date()"
 										(focus)="focused_date_end.set(true)"
 										(blur)="focused_date_end.set(false)"
 									/>

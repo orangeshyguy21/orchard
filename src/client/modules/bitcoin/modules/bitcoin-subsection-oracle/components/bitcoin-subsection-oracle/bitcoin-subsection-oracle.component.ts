@@ -62,6 +62,10 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 	public backfill_progress = signal<BitcoinOracleBackfillProgress | null>(null);
 	public backfill_date_start = signal<number | null>(null);
 	public backfill_date_end = signal<number | null>(null);
+	public min_date = signal<DateTime>(DateTime.utc(2020, 7, 27).startOf('day')); // First valid date: July 27th, 2020 UTC
+	public max_date = signal<DateTime>(DateTime.utc().endOf('day')); // Current date: today UTC
+	public date_start_max = signal<DateTime>(this.max_date());
+	public date_end_min = signal<DateTime>(this.min_date());
 
 	public latest_oracle = computed(() => {
 		return this.data().length > 0 ? (this.data().at(-1) ?? null) : null;
@@ -80,6 +84,13 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 		effect(() => {
 			const dirty = this.dirty_form();
 			this.createPendingEvent(dirty);
+		});
+		effect(() => {
+			const backfill_running = this.backfill_running();
+			if (backfill_running) {
+				this.backfill_form.get('date_start')?.disable({emitEvent: false});
+				this.backfill_form.get('date_end')?.disable({emitEvent: false});
+			}
 		});
 	}
 
@@ -133,6 +144,8 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 	private getBackfillSubscription(): Subscription {
 		return this.backfill_form.valueChanges.subscribe(() => {
 			if (this.backfill_form.invalid) return;
+			this.calculateDateStartMax();
+			this.calculateDateEndMin();
 			if (this.backfill_form.get('date_start')?.value) {
 				this.backfill_form.get('date_end')?.enable({emitEvent: false});
 			} else {
@@ -168,7 +181,16 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 		return this.bitcoinService.backfill_progress$.subscribe((progress) => {
 			console.log('BACKFILL PROGRESS:', progress);
 			this.backfill_progress.set(progress);
-			if (progress.status === 'completed') this.getOracleData();
+			if (progress.price !== null) {
+				const data = this.data();
+				data.push(
+					new BitcoinOraclePrice({
+						date: progress.date,
+						price: progress.price,
+					}),
+				);
+				this.data.set(data);
+			}
 			if (progress.status === 'error') {
 				console.error('Backfill error:', progress.error);
 				// Show error notification or update UI (TODO: Implement)
@@ -245,6 +267,26 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 	private evaluateDirtyForm(): void {
 		const dirty = this.backfill_form.get('date_start')?.dirty || this.backfill_form.get('date_end')?.dirty;
 		this.dirty_form.set(dirty ?? false);
+	}
+
+	private calculateDateStartMax(): void {
+		const date_end_value = this.backfill_form.get('date_end')?.value;
+		if (date_end_value) {
+			const day_before = date_end_value.minus({days: 1});
+			this.date_start_max.set(day_before < this.max_date() ? day_before : this.max_date());
+		} else {
+			this.date_start_max.set(this.max_date());
+		}
+	}
+
+	private calculateDateEndMin(): void {
+		const date_start_value = this.backfill_form.get('date_start')?.value;
+		if (date_start_value) {
+			const day_after = date_start_value.plus({days: 1});
+			this.date_end_min.set(day_after > this.min_date() ? day_after : this.min_date());
+		} else {
+			this.date_end_min.set(this.min_date());
+		}
 	}
 
 	private openForm(): void {
