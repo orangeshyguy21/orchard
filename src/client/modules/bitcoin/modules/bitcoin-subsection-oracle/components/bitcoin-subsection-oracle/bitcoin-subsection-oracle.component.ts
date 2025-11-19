@@ -271,10 +271,29 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 
 	public onBackfillDate(date: number): void {
 		this.openForm();
-		this.backfill_form.get('date_start')?.setValue(DateTime.fromSeconds(date, {zone: 'utc'}));
-		this.backfill_form.get('date_start')?.markAsDirty();
-		this.backfill_form.get('date_start')?.markAsTouched();
-		this.backfill_form.get('date_start')?.updateValueAndValidity();
+		const date_start_value = this.backfill_form.get('date_start')?.value;
+		const date_start_timestamp = date_start_value ? Math.floor(date_start_value.toUTC().startOf('day').toSeconds()) : null;
+		if (date_start_timestamp === null) {
+			this.backfill_form.get('date_start')?.setValue(DateTime.fromSeconds(date, {zone: 'utc'}));
+			this.backfill_form.get('date_start')?.markAsDirty();
+			this.backfill_form.get('date_start')?.markAsTouched();
+			this.backfill_form.get('date_start')?.updateValueAndValidity();
+			this.evaluateDirtyForm();
+			return;
+		}
+		if (date < date_start_timestamp) {
+			this.backfill_form.get('date_start')?.setValue(DateTime.fromSeconds(date, {zone: 'utc'}));
+			this.backfill_form.get('date_start')?.markAsDirty();
+			this.backfill_form.get('date_start')?.markAsTouched();
+			this.backfill_form.get('date_start')?.updateValueAndValidity();
+			this.backfill_form.get('date_end')?.setValue(null);
+			this.evaluateDirtyForm();
+			return;
+		}
+		this.backfill_form.get('date_end')?.setValue(DateTime.fromSeconds(date, {zone: 'utc'}));
+		this.backfill_form.get('date_end')?.markAsDirty();
+		this.backfill_form.get('date_end')?.markAsTouched();
+		this.backfill_form.get('date_end')?.updateValueAndValidity();
 		this.evaluateDirtyForm();
 	}
 
