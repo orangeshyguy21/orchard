@@ -179,18 +179,8 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 	 */
 	private getBackfillProgressSubscription(): Subscription {
 		return this.bitcoinService.backfill_progress$.subscribe((progress) => {
-			console.log('BACKFILL PROGRESS:', progress);
 			this.backfill_progress.set(progress);
-			if (progress.price !== null) {
-				const data = this.data();
-				data.push(
-					new BitcoinOraclePrice({
-						date: progress.date,
-						price: progress.price,
-					}),
-				);
-				this.data.set(data);
-			}
+			if (progress.price !== null) this.getOracleData();
 			if (progress.status === 'error') {
 				console.error('Backfill error:', progress.error);
 				// Show error notification or update UI (TODO: Implement)

@@ -9,11 +9,11 @@ export class UTXOracleProgressTracker {
 
 	// Define relative weights for each stage
 	private readonly STAGE_WEIGHTS = {
-		connecting: 4,
-		finding_start: 3,
-		finding_end: 3,
-		loading_transactions: 45,
-		computing_prices: 45,
+		connecting: 1,
+		finding_start: 1,
+		finding_end: 1,
+		loading_transactions: 47,
+		computing_prices: 50,
 	};
 
 	private readonly total_weight: number;
