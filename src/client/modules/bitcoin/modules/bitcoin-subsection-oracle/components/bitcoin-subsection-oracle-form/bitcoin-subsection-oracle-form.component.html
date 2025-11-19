@@ -78,7 +78,11 @@
 				</div>
 				<div class="flex h-min-18">
 					<div class="h-full flex flex-items-center flex-justify-center">
-						<orc-graphic-oracle height="13rem" [running]="running()"></orc-graphic-oracle>
+						<orc-graphic-oracle
+							height="13rem"
+							[running]="running()"
+							[completed]="progress()?.status === UtxOracleProgressStatus.Completed"
+						></orc-graphic-oracle>
 					</div>
 				</div>
 				<div class="flex flex-grow">

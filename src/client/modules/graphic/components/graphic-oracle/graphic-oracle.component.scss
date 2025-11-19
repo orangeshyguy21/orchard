@@ -34,6 +34,16 @@
 			animation: pulse-reverse 3s ease-in-out infinite;
 		}
 	}
+
+	&.completed {
+		.oracle-block {
+			fill: var(--mat-sys-surface-container-low);
+		}
+
+		.oracle-eye {
+			fill: var(--mat-sys-primary-container);
+		}
+	}
 }
 
 @keyframes pulse {

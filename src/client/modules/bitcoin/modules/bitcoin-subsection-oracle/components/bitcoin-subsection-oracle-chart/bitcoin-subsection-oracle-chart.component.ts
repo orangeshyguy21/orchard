@@ -32,7 +32,7 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 	public chart_type: WritableSignal<ChartJsType> = signal('line');
 	public chart_data: WritableSignal<ChartConfiguration['data']> = signal({datasets: []});
 	public chart_options: WritableSignal<ChartConfiguration['options']> = signal({});
-	public displayed: WritableSignal<boolean> = signal(true);
+	public displayed: WritableSignal<boolean> = signal(false);
 	public animations_embedded_enabled: WritableSignal<boolean> = signal(false);
 
 	private subscriptions: Subscription = new Subscription();
@@ -77,6 +77,9 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 		this.chart_data.set(this.getChartData());
 		this.chart_options.set(this.getChartOptions());
 		this.animations_chart_enabled = false;
+		setTimeout(() => {
+			this.displayed.set(true);
+		}, 50);
 	}
 
 	/**

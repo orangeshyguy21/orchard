@@ -1,11 +1,13 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, output, signal, computed} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output, signal} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 /* Vendor Dependencies */
 import {DateTime} from 'luxon';
 /* Native Dependencies */
 import {BackfillOracleControl} from '@client/modules/bitcoin/modules/bitcoin-subsection-oracle/types/backfill-oracle-control.type';
 import {BitcoinOracleBackfillProgress} from '@client/modules/bitcoin/classes/bitcoin-oracle-backfill-progress.class';
+/* Shared Dependencies */
+import {UtxOracleProgressStatus} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-bitcoin-subsection-oracle-form',
@@ -28,4 +30,6 @@ export class BitcoinSubsectionOracleFormComponent {
 
 	public focused_date_start = signal<boolean>(false);
 	public focused_date_end = signal<boolean>(false);
+
+	public UtxOracleProgressStatus = UtxOracleProgressStatus;
 }
