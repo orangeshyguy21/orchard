@@ -136,10 +136,9 @@ export const BITCOIN_ORACLE_BACKFILL_SUBSCRIPTION = `
             price
             success
             error
-            oracle_stage
-            oracle_stage_progress
-            oracle_total_progress
-            oracle_message
+            date_progress
+            overall_progress
+            message
         }
     }
 `;

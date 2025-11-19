@@ -15,8 +15,6 @@ export type UTXOracleResult = {
 };
 
 export type UTXOracleProgress = {
-	stage: 'connecting' | 'finding_start' | 'finding_end' | 'loading_transactions' | 'computing_prices';
-	stage_progress: number;
-	total_progress: number;
+	date_progress: number; // 0-100, progress for current date
 	message?: string;
 };

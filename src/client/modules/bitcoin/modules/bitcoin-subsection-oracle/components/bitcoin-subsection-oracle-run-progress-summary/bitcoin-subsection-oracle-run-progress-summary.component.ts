@@ -11,6 +11,6 @@ import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 export class BitcoinSubsectionOracleRunProgressSummaryComponent {
 	public date = input.required<number>();
 	public progress = input.required<number>();
-	public success = input.required<boolean>();
-	public error = input.required<string>();
+	public successful = input.required<number>();
+	public failed = input.required<number>();
 }

@@ -158,15 +158,15 @@ export class BitcoinOracleService {
 		try {
 			this.logger.log(`Backfilling oracle for ${date_str} (timestamp: ${date_timestamp})...`);
 			const progress_callback = (oracle_progress: UTXOracleProgress) => {
+				const overall_progress = ((stats.processed + oracle_progress.date_progress / 100) / total_days) * 100;
 				this.emitUpdate(stream_id, {
 					status: 'processing',
 					date: date_timestamp,
 					total_days,
 					...stats,
-					oracle_stage: oracle_progress.stage,
-					oracle_stage_progress: oracle_progress.stage_progress,
-					oracle_total_progress: oracle_progress.total_progress,
-					oracle_message: oracle_progress.message,
+					date_progress: oracle_progress.date_progress,
+					overall_progress: Math.min(100, Math.max(0, overall_progress)),
+					message: oracle_progress.message,
 				});
 			};
 			const result = await this.bitcoinUTXOracleService.runOracle({

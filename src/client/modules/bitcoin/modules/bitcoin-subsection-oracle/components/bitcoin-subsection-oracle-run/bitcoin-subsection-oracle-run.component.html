@@ -15,21 +15,21 @@
 			@if (running()) {
 				<orc-bitcoin-subsection-oracle-run-progress-date
 					animate.enter="orc-animation-fadein"
-					[message]="progress()?.oracle_message ?? ''"
-					[progress]="progress()?.oracle_stage_progress ?? 0"
+					[message]="progress()?.message ?? ''"
+					[progress]="progress()?.date_progress ?? 0"
 				></orc-bitcoin-subsection-oracle-run-progress-date>
 			}
 		</div>
-		<div class="h-min-3">
-			@if (running()) {
-				<orc-bitcoin-subsection-oracle-run-progress-summary
-					animate.enter="orc-animation-fadein"
-					[date]="progress()?.date ?? 0"
-					[progress]="progress()?.oracle_total_progress ?? 0"
-					[success]="progress()?.success ?? false"
-					[error]="progress()?.error ?? ''"
-				></orc-bitcoin-subsection-oracle-run-progress-summary>
-			}
+		<div class="progress-summary-container">
+			<!-- @if (running()) { -->
+			<orc-bitcoin-subsection-oracle-run-progress-summary
+				animate.enter="orc-animation-fadein"
+				[date]="progress()?.date ?? 0"
+				[progress]="progress()?.overall_progress ?? 0"
+				[successful]="progress()?.successful ?? 0"
+				[failed]="progress()?.failed ?? 0"
+			></orc-bitcoin-subsection-oracle-run-progress-summary>
+			<!-- } -->
 		</div>
 	</div>
 </div>

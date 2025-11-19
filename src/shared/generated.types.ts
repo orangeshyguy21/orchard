@@ -628,14 +628,13 @@ export type OrchardBitcoinNetworkInfo = {
 export type OrchardBitcoinOracleBackfillProgress = {
   __typename?: 'OrchardBitcoinOracleBackfillProgress';
   date?: Maybe<Scalars['UnixTimestamp']['output']>;
+  date_progress?: Maybe<Scalars['Float']['output']>;
   end_date?: Maybe<Scalars['UnixTimestamp']['output']>;
   error?: Maybe<Scalars['String']['output']>;
   failed?: Maybe<Scalars['Int']['output']>;
   id: Scalars['String']['output'];
-  oracle_message?: Maybe<Scalars['String']['output']>;
-  oracle_stage?: Maybe<Scalars['String']['output']>;
-  oracle_stage_progress?: Maybe<Scalars['Float']['output']>;
-  oracle_total_progress?: Maybe<Scalars['Float']['output']>;
+  message?: Maybe<Scalars['String']['output']>;
+  overall_progress?: Maybe<Scalars['Float']['output']>;
   price?: Maybe<Scalars['Int']['output']>;
   processed?: Maybe<Scalars['Int']['output']>;
   start_date?: Maybe<Scalars['UnixTimestamp']['output']>;

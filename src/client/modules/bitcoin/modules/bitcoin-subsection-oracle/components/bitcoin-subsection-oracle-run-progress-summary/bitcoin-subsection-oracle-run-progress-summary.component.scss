@@ -2,6 +2,7 @@
 
 .progress-background {
 	@extend %absolute;
+	@extend %z-index-2;
 	@extend %top-0;
 	@extend %flex;
 	@extend %flex-items-center;

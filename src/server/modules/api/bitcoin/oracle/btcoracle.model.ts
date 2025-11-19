@@ -62,18 +62,14 @@ export class OrchardBitcoinOracleBackfillProgress {
 	@Field(() => Int, {nullable: true})
 	failed?: number;
 
-	// Oracle algorithm progress fields
-	@Field(() => String, {nullable: true})
-	oracle_stage?: 'connecting' | 'finding_start' | 'finding_end' | 'loading_transactions' | 'computing_prices';
+	@Field(() => Float, {nullable: true})
+	date_progress?: number; // 0-100
 
 	@Field(() => Float, {nullable: true})
-	oracle_stage_progress?: number; // 0-100
-
-	@Field(() => Float, {nullable: true})
-	oracle_total_progress?: number; // 0-100
+	overall_progress?: number; // 0-100
 
 	@Field(() => String, {nullable: true})
-	oracle_message?: string;
+	message?: string;
 
 	constructor(data: Partial<OrchardBitcoinOracleBackfillProgress>) {
 		Object.assign(this, data);

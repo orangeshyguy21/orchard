@@ -9,6 +9,6 @@ import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BitcoinSubsectionOracleRunProgressDateComponent {
-	public message = input<string>('');
+	public message = input<string>('Starting...');
 	public progress = input.required<number | null>();
 }
