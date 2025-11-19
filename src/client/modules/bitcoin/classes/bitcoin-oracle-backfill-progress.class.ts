@@ -1,9 +1,9 @@
 /* Shared Dependencies */
-import {OrchardBitcoinOracleBackfillProgress} from '@shared/generated.types';
+import {OrchardBitcoinOracleBackfillProgress, UtxOracleProgressStatus} from '@shared/generated.types';
 
 export class BitcoinOracleBackfillProgress implements OrchardBitcoinOracleBackfillProgress {
 	public id: string;
-	public status: string;
+	public status: UtxOracleProgressStatus;
 	public start_date: number | null;
 	public end_date: number | null;
 	public total_days: number | null;

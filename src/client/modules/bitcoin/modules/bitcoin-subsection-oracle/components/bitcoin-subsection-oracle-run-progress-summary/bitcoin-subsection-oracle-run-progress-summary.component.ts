@@ -1,5 +1,7 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, computed} from '@angular/core';
+/* Shared Dependencies */
+import {UtxOracleProgressStatus} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-bitcoin-subsection-oracle-run-progress-summary',
@@ -13,4 +15,16 @@ export class BitcoinSubsectionOracleRunProgressSummaryComponent {
 	public progress = input.required<number>();
 	public successful = input.required<number>();
 	public failed = input.required<number>();
+	public status = input.required<UtxOracleProgressStatus | null>();
+
+	public UtxOracleProgressStatus = UtxOracleProgressStatus;
+
+	public progress_displayed = computed(() => {
+		const progress = this.progress();
+		const status = this.status();
+		if (progress === null) return 0;
+		if (progress) return progress;
+		if (status === UtxOracleProgressStatus.Completed) return 100;
+		return progress;
+	});
 }

@@ -458,7 +458,7 @@ type OrchardBitcoinOracleBackfillProgress {
   price: Int
   processed: Int
   start_date: UnixTimestamp
-  status: String!
+  status: UTXOracleProgressStatus!
   success: Boolean
   successful: Int
   total_days: Int
@@ -1017,6 +1017,14 @@ enum TaprootAssetVersion {
 
 """Timezone custom scalar type based on IANA timezone database"""
 scalar Timezone
+
+enum UTXOracleProgressStatus {
+  ABORTED
+  COMPLETED
+  ERROR
+  PROCESSING
+  STARTED
+}
 
 """A Unix timestamp in seconds"""
 scalar UnixTimestamp

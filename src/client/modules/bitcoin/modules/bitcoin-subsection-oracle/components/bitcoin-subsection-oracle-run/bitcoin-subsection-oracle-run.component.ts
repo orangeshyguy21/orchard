@@ -27,4 +27,7 @@ export class BitcoinSubsectionOracleRunComponent {
 	public reveal_dates = computed(() => {
 		return this.date_start() !== null;
 	});
+	public reveal_progress = computed(() => {
+		return this.progress() !== null;
+	});
 }

@@ -369,7 +369,7 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 					label: {
 						display: true,
 						content: 'Backfill Dates',
-						position: 'start',
+						position: 'middle',
 						color: config.text_color,
 						font: {
 							size: 12,
@@ -389,7 +389,7 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 					label: {
 						display: true,
 						content: 'Backfill Date',
-						position: 'start',
+						position: 'middle',
 						backgroundColor: this.chartService.hexToRgba(config.label_bg_color, 0.5),
 						color: config.text_color,
 						font: {
@@ -402,38 +402,6 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 				};
 			}
 		}
-
-		// private getAnnotations(): any {
-		// 	const min_x_value = this.findMinimumXValue(this.chart_data);
-		// 	const milli_genesis_time = DateTime.fromSeconds(this.mint_genesis_time).startOf('day').toMillis();
-		// 	const display = milli_genesis_time >= min_x_value ? true : false;
-		// 	const config = this.chartService.getFormAnnotationConfig(false);
-		// 	return {
-		// 		annotations: {
-		// 			annotation: {
-		// 				type: 'line',
-		// 				borderColor: config.border_color,
-		// 				borderWidth: config.border_width,
-		// 				display: display,
-		// 				label: {
-		// 					display: true,
-		// 					content: 'Mint Genesis',
-		// 					position: 'start',
-		// 					backgroundColor: config.label_bg_color,
-		// 					color: config.text_color,
-		// 					font: {
-		// 						size: 12,
-		// 						weight: '300',
-		// 					},
-		// 					borderColor: config.label_border_color,
-		// 					borderWidth: 1,
-		// 				},
-		// 				scaleID: 'x',
-		// 				value: milli_genesis_time,
-		// 			},
-		// 		},
-		// 	};
-		// }
 
 		const chart_options: ChartConfiguration['options'] = {
 			maintainAspectRatio: false,

@@ -638,7 +638,7 @@ export type OrchardBitcoinOracleBackfillProgress = {
   price?: Maybe<Scalars['Int']['output']>;
   processed?: Maybe<Scalars['Int']['output']>;
   start_date?: Maybe<Scalars['UnixTimestamp']['output']>;
-  status: Scalars['String']['output'];
+  status: UtxOracleProgressStatus;
   success?: Maybe<Scalars['Boolean']['output']>;
   successful?: Maybe<Scalars['Int']['output']>;
   total_days?: Maybe<Scalars['Int']['output']>;
@@ -1459,6 +1459,14 @@ export enum TaprootAssetType {
 export enum TaprootAssetVersion {
   AssetVersionV0 = 'ASSET_VERSION_V0',
   AssetVersionV1 = 'ASSET_VERSION_V1'
+}
+
+export enum UtxOracleProgressStatus {
+  Aborted = 'ABORTED',
+  Completed = 'COMPLETED',
+  Error = 'ERROR',
+  Processing = 'PROCESSING',
+  Started = 'STARTED'
 }
 
 export type UserNameUpdateInput = {

@@ -3,6 +3,7 @@ import {Field, Float, Int, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 import {UTXOracle} from '@server/modules/bitcoin/utxoracle/utxoracle.entity';
+import {UTXOracleProgressStatus} from '@server/modules/bitcoin/utxoracle/utxoracle.enums';
 
 @ObjectType()
 export class OrchardBitcoinOraclePrice {
@@ -29,8 +30,8 @@ export class OrchardBitcoinOracleBackfillProgress {
 	@Field(() => String)
 	id: string;
 
-	@Field(() => String)
-	status: 'started' | 'processing' | 'completed' | 'aborted' | 'error';
+	@Field(() => UTXOracleProgressStatus)
+	status: UTXOracleProgressStatus;
 
 	@Field(() => UnixTimestamp, {nullable: true})
 	start_date?: number;

@@ -26,6 +26,8 @@ import {BitcoinService} from '@client/modules/bitcoin/services/bitcoin/bitcoin.s
 import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle-price.class';
 import {BackfillOracleControl} from '@client/modules/bitcoin/modules/bitcoin-subsection-oracle/types/backfill-oracle-control.type';
 import {BitcoinOracleBackfillProgress} from '@client/modules/bitcoin/classes/bitcoin-oracle-backfill-progress.class';
+/* Shared Dependencies */
+import {UtxOracleProgressStatus} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-bitcoin-subsection-oracle',
@@ -141,28 +143,54 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 		});
 	}
 
+	/**
+	 * Subscribe to backfill form changes and handle:
+	 * - Date boundary calculations
+	 * - Form state management (enable/disable end date)
+	 * - Signal updates for backfill dates
+	 * - Chart range expansion if needed
+	 */
 	private getBackfillSubscription(): Subscription {
 		return this.backfill_form.valueChanges.subscribe(() => {
 			if (this.backfill_form.invalid) return;
 			this.calculateDateStartMax();
 			this.calculateDateEndMin();
-			if (this.backfill_form.get('date_start')?.value) {
-				this.backfill_form.get('date_end')?.enable({emitEvent: false});
-			} else {
-				this.backfill_form.get('date_end')?.disable({emitEvent: false});
-			}
-			const backfill_date_start = Math.floor(this.backfill_form.get('date_start')?.value?.toUTC().startOf('day').toSeconds() ?? 0);
-			const backfill_date_end = Math.floor(this.backfill_form.get('date_end')?.value?.toUTC().startOf('day').toSeconds() ?? 0);
-			this.backfill_date_start.set(backfill_date_start);
-			this.backfill_date_end.set(backfill_date_end === 0 ? null : backfill_date_end);
-			const update_date_start = Math.min(backfill_date_start, this.page_settings.date_start);
-			const update_date_end = Math.max(backfill_date_end, this.page_settings.date_end);
-			if (update_date_start !== this.page_settings.date_start || update_date_end !== this.page_settings.date_end) {
-				this.updateRange(update_date_start, update_date_end);
-			}
+			this.handleBackfillFormState();
+			const timestamps = this.extractBackfillTimestamps();
+			this.backfill_date_start.set(timestamps.start);
+			this.backfill_date_end.set(timestamps.end);
 			this.evaluateDirtyForm();
+			this.expandChartRangeIfNeeded(timestamps);
 		});
 	}
+
+	// private getBackfillSubscription(): Subscription {
+	// 	return this.backfill_form.valueChanges.subscribe(() => {
+	// 		if (this.backfill_form.invalid) return;
+	// 		this.calculateDateStartMax();
+	// 		this.calculateDateEndMin();
+	// 		if (this.backfill_form.get('date_start')?.value) {
+	// 			this.backfill_form.get('date_end')?.enable({emitEvent: false});
+	// 		} else {
+	// 			this.backfill_form.get('date_end')?.disable({emitEvent: false});
+	// 		}
+	// 		const backfill_date_start_val = this.backfill_form.get('date_start')?.value;
+	// 		const backfill_date_end_val = this.backfill_form.get('date_end')?.value;
+	// 		const backfill_date_start = backfill_date_start_val
+	// 			? Math.floor(backfill_date_start_val.toUTC().startOf('day').toSeconds())
+	// 			: null;
+	// 		const backfill_date_end = backfill_date_end_val ? Math.floor(backfill_date_end_val.toUTC().startOf('day').toSeconds()) : null;
+	// 		this.backfill_date_start.set(backfill_date_start);
+	// 		this.backfill_date_end.set(backfill_date_end);
+	// 		this.evaluateDirtyForm();
+	// 		if (backfill_date_start === null && backfill_date_end === null) return;
+	// 		const update_date_start = Math.min(backfill_date_start, this.page_settings.date_start);
+	// 		const update_date_end = Math.max(backfill_date_end, this.page_settings.date_end);
+	// 		if (update_date_start !== this.page_settings.date_start || update_date_end !== this.page_settings.date_end) {
+	// 			this.updateRange(update_date_start, update_date_end);
+	// 		}
+	// 	});
+	// }
 
 	private getEventSubscription(): Subscription {
 		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
@@ -181,7 +209,7 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 		return this.bitcoinService.backfill_progress$.subscribe((progress) => {
 			this.backfill_progress.set(progress);
 			if (progress.price !== null) this.getOracleData();
-			if (progress.status === 'error') {
+			if (progress.status === UtxOracleProgressStatus.Error) {
 				console.error('Backfill error:', progress.error);
 				// Show error notification or update UI (TODO: Implement)
 			}
@@ -290,11 +318,15 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 
 	public onCloseForm(): void {
 		this.form_open.set(false);
-		this.backfill_form.reset();
-		this.backfill_form.get('date_end')?.disable({emitEvent: false});
-		this.backfill_date_start.set(null);
-		this.backfill_date_end.set(null);
-		this.eventService.registerEvent(null);
+		if (!this.backfill_running()) {
+			this.backfill_form.reset();
+			this.backfill_form.get('date_start')?.enable({emitEvent: false});
+			this.backfill_form.get('date_end')?.disable({emitEvent: false});
+			this.backfill_date_start.set(null);
+			this.backfill_date_end.set(null);
+			this.eventService.registerEvent(null);
+			this.backfill_progress.set(null);
+		}
 	}
 
 	public onCancelForm(control_name: BackfillOracleControl): void {
@@ -315,6 +347,47 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 				message: message,
 			}),
 		);
+	}
+
+	/**
+	 * Enable/disable the end date field based on whether start date is set
+	 */
+	private handleBackfillFormState(): void {
+		const has_start_date = !!this.backfill_form.get('date_start')?.value;
+		const date_end_control = this.backfill_form.get('date_end');
+		if (has_start_date) {
+			date_end_control?.enable({emitEvent: false});
+		} else {
+			date_end_control?.disable({emitEvent: false});
+		}
+	}
+
+	/**
+	 * Extract DateTime values from form and convert to Unix timestamps
+	 * @returns {object} Object with start and end timestamps (or null)
+	 */
+	private extractBackfillTimestamps(): {start: number | null; end: number | null} {
+		const date_start_value = this.backfill_form.get('date_start')?.value;
+		const date_end_value = this.backfill_form.get('date_end')?.value;
+		return {
+			start: date_start_value ? Math.floor(date_start_value.toUTC().startOf('day').toSeconds()) : null,
+			end: date_end_value ? Math.floor(date_end_value.toUTC().startOf('day').toSeconds()) : null,
+		};
+	}
+
+	/**
+	 * Expand the chart date range if backfill dates extend beyond current view
+	 * @param {object} timestamps - The backfill start and end timestamps
+	 */
+	private expandChartRangeIfNeeded(timestamps: {start: number | null; end: number | null}): void {
+		if (timestamps.start === null) return;
+		const new_start = Math.min(timestamps.start, this.page_settings.date_start);
+		const new_end = Math.max(
+			timestamps.end ?? timestamps.start, // If no end date, use start date
+			this.page_settings.date_end,
+		);
+		const range_changed = new_start !== this.page_settings.date_start || new_end !== this.page_settings.date_end;
+		if (range_changed) this.updateRange(new_start, new_end);
 	}
 
 	/**

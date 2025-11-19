@@ -10,6 +10,7 @@ import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.cla
 import {BitcoinUTXOracleService} from '@server/modules/bitcoin/utxoracle/utxoracle.service';
 import {BitcoinRpcService} from '@server/modules/bitcoin/rpc/btcrpc.service';
 import {UTXOracleProgress} from '@server/modules/bitcoin/utxoracle/utxoracle.types';
+import {UTXOracleProgressStatus} from '@server/modules/bitcoin/utxoracle/utxoracle.enums';
 /* Local Dependencies */
 import {OrchardBitcoinOracleBackfillStream, OrchardBitcoinOracleBackfillProgress, OrchardBitcoinOraclePrice} from './btcoracle.model';
 
@@ -54,7 +55,7 @@ export class BitcoinOracleService {
 
 			const validation_error = await this.validateBackfillRequest(start_date, effective_end_date);
 			if (validation_error) {
-				this.emitUpdate(id, {status: 'error', error: validation_error});
+				this.emitUpdate(id, {status: UTXOracleProgressStatus.ERROR, error: validation_error});
 				this.active_streams.delete(id);
 				return;
 			}
@@ -64,7 +65,7 @@ export class BitcoinOracleService {
 			const total_days = Math.floor(end.diff(start, 'days').days) + 1;
 
 			this.emitUpdate(id, {
-				status: 'started',
+				status: UTXOracleProgressStatus.STARTED,
 				start_date,
 				end_date: effective_end_date,
 				total_days,
@@ -80,7 +81,7 @@ export class BitcoinOracleService {
 				if (signal.aborted) {
 					this.logger.log(`Backfill aborted for stream ${id}`);
 					this.emitUpdate(id, {
-						status: 'aborted',
+						status: UTXOracleProgressStatus.ABORTED,
 						start_date,
 						end_date: effective_end_date,
 						total_days,
@@ -95,7 +96,7 @@ export class BitcoinOracleService {
 			}
 
 			this.emitUpdate(id, {
-				status: 'completed',
+				status: UTXOracleProgressStatus.COMPLETED,
 				start_date,
 				end_date: effective_end_date,
 				total_days,
@@ -105,7 +106,7 @@ export class BitcoinOracleService {
 		} catch (error) {
 			this.active_streams.delete(id);
 			this.logger.error(`Backfill stream error: ${error.message}`, error.stack);
-			this.emitUpdate(id, {status: 'error', error: error.message});
+			this.emitUpdate(id, {status: UTXOracleProgressStatus.ERROR, error: error.message});
 		}
 	}
 
@@ -160,7 +161,7 @@ export class BitcoinOracleService {
 			const progress_callback = (oracle_progress: UTXOracleProgress) => {
 				const overall_progress = ((stats.processed + oracle_progress.date_progress / 100) / total_days) * 100;
 				this.emitUpdate(stream_id, {
-					status: 'processing',
+					status: UTXOracleProgressStatus.PROCESSING,
 					date: date_timestamp,
 					total_days,
 					...stats,
@@ -178,7 +179,7 @@ export class BitcoinOracleService {
 			stats.successful++;
 			stats.processed++;
 			this.emitUpdate(stream_id, {
-				status: 'processing',
+				status: UTXOracleProgressStatus.PROCESSING,
 				date: date_timestamp,
 				price: result.central_price,
 				success: true,
@@ -191,7 +192,7 @@ export class BitcoinOracleService {
 			stats.processed++;
 			this.logger.error(`Failed to backfill ${date_str}: ${error.message}`);
 			this.emitUpdate(stream_id, {
-				status: 'processing',
+				status: UTXOracleProgressStatus.PROCESSING,
 				date: date_timestamp,
 				success: false,
 				error: error.message,

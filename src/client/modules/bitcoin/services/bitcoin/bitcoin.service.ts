@@ -46,7 +46,7 @@ import {
 	BITCOIN_ORACLE_BACKFILL_SUBSCRIPTION,
 } from './bitcoin.queries';
 /* Shared Dependencies */
-import {OrchardBitcoinBlockCount} from '@shared/generated.types';
+import {OrchardBitcoinBlockCount, UtxOracleProgressStatus} from '@shared/generated.types';
 
 @Injectable({
 	providedIn: 'root',
@@ -334,7 +334,11 @@ export class BitcoinService {
 				if (response.type === 'data' && response?.payload?.data?.bitcoin_oracle_backfill) {
 					const progress = new BitcoinOracleBackfillProgress(response.payload.data.bitcoin_oracle_backfill);
 					this.backfill_progress_subject.next(new BitcoinOracleBackfillProgress(progress));
-					if (progress.status === 'completed' || progress.status === 'error' || progress.status === 'aborted') {
+					if (
+						progress.status === UtxOracleProgressStatus.Completed ||
+						progress.status === UtxOracleProgressStatus.Error ||
+						progress.status === UtxOracleProgressStatus.Aborted
+					) {
 						this.closeBackfillSocket();
 					}
 				}

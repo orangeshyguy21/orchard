@@ -6,29 +6,33 @@
 					<div class="title-l">{{ date_end() ? 'Dates' : 'Date' }}</div>
 					<div class="flex flex-row flex-items-center flex-gap-0-5 font-size-s orc-outline-color">
 						<div>{{ date_start_stamp() | timeUtc: 'date-only' }}</div>
-						<mat-icon>check_indeterminate_small</mat-icon>
+						@if (date_end_stamp()) {
+							<mat-icon>check_indeterminate_small</mat-icon>
+						}
 						<div>{{ date_end_stamp() | timeUtc: 'date-only' }}</div>
 					</div>
 				</div>
 			}
 		</div>
 		<div class="h-min-3">
-			@if (running()) {
+			@if (reveal_progress()) {
 				<orc-bitcoin-subsection-oracle-run-progress-date
 					animate.enter="orc-animation-fadein"
-					[message]="progress()?.message ?? ''"
+					[message]="progress()?.message ?? null"
 					[progress]="progress()?.date_progress ?? 0"
+					[status]="progress()?.status ?? null"
 				></orc-bitcoin-subsection-oracle-run-progress-date>
 			}
 		</div>
 		<div class="progress-summary-container">
-			@if (running()) {
+			@if (reveal_progress()) {
 				<orc-bitcoin-subsection-oracle-run-progress-summary
 					animate.enter="orc-animation-fadein"
 					[date]="progress()?.date ?? 0"
 					[progress]="progress()?.overall_progress ?? 0"
 					[successful]="progress()?.successful ?? 0"
 					[failed]="progress()?.failed ?? 0"
+					[status]="progress()?.status ?? null"
 				></orc-bitcoin-subsection-oracle-run-progress-summary>
 			}
 		</div>
