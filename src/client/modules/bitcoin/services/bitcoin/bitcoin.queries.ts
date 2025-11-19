@@ -140,8 +140,6 @@ export const BITCOIN_ORACLE_BACKFILL_SUBSCRIPTION = `
             oracle_stage_progress
             oracle_total_progress
             oracle_message
-            block_height
-            blocks_total
         }
     }
 `;

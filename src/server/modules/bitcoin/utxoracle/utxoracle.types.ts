@@ -19,6 +19,4 @@ export type UTXOracleProgress = {
 	stage_progress: number;
 	total_progress: number;
 	message?: string;
-	block_height?: number;
-	blocks_total?: number;
 };

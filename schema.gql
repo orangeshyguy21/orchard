@@ -447,8 +447,6 @@ type OrchardBitcoinNetworkInfo {
 }
 
 type OrchardBitcoinOracleBackfillProgress {
-  block_height: Int
-  blocks_total: Int
   date: UnixTimestamp
   end_date: UnixTimestamp
   error: String

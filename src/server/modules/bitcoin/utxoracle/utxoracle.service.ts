@@ -158,7 +158,7 @@ export class BitcoinUTXOracleService {
 			const header = await this.bitcoinRpcService.getBitcoinBlockHeader(h);
 			return header.time as number;
 		};
-		progress.emit('finding_start', 0, `Finding first block on ${date_str}`); // 0% - Finding first block
+		progress.emit('finding_start', 0, `Finding first block on ${date_str}...`); // 0% - Finding first block
 		const lower_bound = async (target_ts: number): Promise<number> => {
 			let lo = 0;
 			let hi = consensus_tip;
@@ -172,7 +172,7 @@ export class BitcoinUTXOracleService {
 		};
 		const start = await lower_bound(ts0);
 		progress.emit('finding_start', 100, `Found first block on ${date_str}`); // 100% - Found first block
-		progress.emit('finding_end', 0, `Finding last block on ${date_str}`); // 0% - Finding last block
+		progress.emit('finding_end', 0, `Finding last block on ${date_str}...`); // 0% - Finding last block
 		const end_plus_one = await lower_bound(ts1);
 		const end = Math.max(start, end_plus_one - 1);
 		progress.emit('finding_end', 100, `Found last block on ${date_str}`); // 100% - Found last block
@@ -191,14 +191,14 @@ export class BitcoinUTXOracleService {
 		bounds: {min: number; max: number};
 		intraday: Array<{block_height: number; timestamp: number; price: number}>;
 	}> {
-		progress.emit('loading_transactions', 0, 'Loading every transaction from every block'); // 0% - Loading transactions
+		progress.emit('loading_transactions', 0, 'Loading transactions from the block window...'); // 0% - Loading transactions
 		// Pre-scan window txids to detect same-day inputs
 		const window_txids = await this.collectWindowTxids(start, end, progress);
 		// 1) Build histogram from v2 block txs with filters
 		const histogram = await this.buildHistogram(start, end, window_txids, progress);
 		// 2) Smooth/normalize
 		this.smoothAndNormalize(histogram);
-		progress.emit('loading_transactions', 90, 'Computing rough price estimate'); // 90% - Computing rough price estimate
+		progress.emit('loading_transactions', 90, 'Computing rough price estimate...'); // 90% - Computing rough price estimate
 		// 3) Slide stencils and compute rough price (neighbor-weighted)
 		const rough_price_estimate = this.computeRoughPrice(histogram);
 		progress.emit('computing_prices', 0, 'Finding central price'); // 0% - Finding central price
@@ -221,7 +221,7 @@ export class BitcoinUTXOracleService {
 			'loading_transactions',
 			start,
 			end,
-			'Pre-scanning transactions ({current}/{total})',
+			'Pre-scanning transactions in block {height} ({current}/{total})',
 			0,
 			20, // takes 20% of loading_transactions stage
 		);
@@ -276,7 +276,14 @@ export class BitcoinUTXOracleService {
 		const min_btc = this.MIN_OUTPUT_BTC;
 		const max_btc = this.MAX_OUTPUT_BTC;
 		const seen_txids = new Set<string>();
-		const report_progress = progress.createBlockIterator('computing_prices', start, end, 'Finding prices and rendering plot', 0, 100);
+		const report_progress = progress.createBlockIterator(
+			'computing_prices',
+			start,
+			end,
+			'Analyzing transaction patterns in block {height} ({current}/{total})',
+			0,
+			100,
+		);
 
 		for (let height = start; height <= end; height++) {
 			const hash = await this.bitcoinRpcService.getBitcoinBlockHash(height);
@@ -484,7 +491,14 @@ export class BitcoinUTXOracleService {
 		const prices_blocks: number[] = [];
 		const prices_times: number[] = [];
 		const seen_txids = new Set<string>();
-		const report_progress = progress.createBlockIterator('computing_prices', start, end, 'Finding prices and rendering plot', 0, 100);
+		const report_progress = progress.createBlockIterator(
+			'computing_prices',
+			start,
+			end,
+			'Finding price points in block {height} ({current}/{total})',
+			0,
+			100,
+		);
 
 		for (let height = start; height <= end; height++) {
 			const hash = await this.bitcoinRpcService.getBitcoinBlockHash(height);

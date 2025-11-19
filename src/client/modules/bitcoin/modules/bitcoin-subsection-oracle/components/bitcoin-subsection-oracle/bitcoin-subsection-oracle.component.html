@@ -37,7 +37,8 @@
 			<div class="bitcoin-subsection-oracle-form-target" #backfill_form_target></div>
 			<orc-bitcoin-subsection-oracle-form
 				[form_group]="backfill_form"
-				[active]="backfill_active()"
+				[running]="backfill_running()"
+				[progress]="backfill_progress()"
 				(close)="onCloseForm()"
 				(cancel)="onCancelForm($event)"
 			></orc-bitcoin-subsection-oracle-form>

@@ -1,0 +1,6 @@
+@use '@styles/molecule/molecule';
+
+.progress-message {
+	@extend %font-size-xs;
+	@extend %orc-outline-color;
+}

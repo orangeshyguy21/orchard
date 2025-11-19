@@ -1,0 +1,40 @@
+<div class="bitcoin-subsection-oracle-run-progress-summary-container">
+	<div class="flex flex-row flex-gap-4 flex-items-center">
+		<div class="relative">
+			<mat-progress-spinner class="orc-default-progress-spinner" mode="determinate" [value]="100" [diameter]="90" [strokeWidth]="15">
+			</mat-progress-spinner>
+			<div class="progress-background">
+				<div>
+					<mat-progress-spinner
+						class="orc-default-progress-spinner"
+						mode="determinate"
+						[value]="progress()"
+						[diameter]="90"
+						[strokeWidth]="15"
+					></mat-progress-spinner>
+				</div>
+				<div class="absolute">
+					<div class="flex flex-items-center font-size-xs">10.99%</div>
+				</div>
+			</div>
+		</div>
+		<div>
+			<div class="flex flex-column flex-gap-1 flex-items-center">
+				<div class="title-l">Processing</div>
+				<div class="font-size-s orc-outline-color">{{ date() | timeUtc: 'date-only' }}</div>
+			</div>
+		</div>
+		<div>
+			<div class="flex flex-column flex-gap-1 flex-items-center">
+				<div class="title-l">Succesful</div>
+				<div class="font-size-s orc-outline-color">{{ success() }}</div>
+			</div>
+		</div>
+		<div>
+			<div class="flex flex-column flex-gap-1 flex-items-center">
+				<div class="title-l">Failed</div>
+				<div class="font-size-s orc-outline-color">{{ error() }}</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -19,7 +19,7 @@
 		fill: var(--mat-sys-primary-container);
 	}
 
-	&.processing {
+	&.running {
 		.oracle-block {
 			fill: var(--mat-sys-surface-container-low);
 			animation:

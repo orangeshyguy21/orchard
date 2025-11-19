@@ -58,7 +58,7 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 	public form_open = signal<boolean>(false);
 	public date_today = signal<number>(Math.floor(DateTime.utc().startOf('day').toSeconds()));
 	public enabled_ai = signal<boolean>(false);
-	public backfill_active = signal<boolean>(false);
+	public backfill_running = signal<boolean>(false);
 	public backfill_progress = signal<BitcoinOracleBackfillProgress | null>(null);
 	public backfill_date_start = signal<number | null>(null);
 	public backfill_date_end = signal<number | null>(null);
@@ -181,7 +181,7 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 	 */
 	private getBackfillActiveSubscription(): Subscription {
 		return this.bitcoinService.backfill_active$.subscribe((active) => {
-			this.backfill_active.set(active);
+			this.backfill_running.set(active);
 		});
 	}
 
@@ -316,6 +316,6 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 
 	ngOnDestroy(): void {
 		this.subscriptions.unsubscribe();
-		if (this.backfill_active()) this.bitcoinService.closeBackfillSocket();
+		if (this.backfill_running()) this.bitcoinService.closeBackfillSocket();
 	}
 }

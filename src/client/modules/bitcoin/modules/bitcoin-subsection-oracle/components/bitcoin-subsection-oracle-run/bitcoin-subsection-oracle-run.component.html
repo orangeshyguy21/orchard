@@ -1,0 +1,35 @@
+<div class="bitcoin-subsection-oracle-run-container flex flex-grow">
+	<div class="flex flex-grow flex-column flex-gap-1">
+		<div class="h-min-3">
+			@if (reveal_dates()) {
+				<div class="flex flex-column" animate.enter="orc-animation-fadein">
+					<div class="title-l">{{ date_end() ? 'Dates' : 'Date' }}</div>
+					<div class="flex flex-row flex-gap-1 font-size-s orc-outline-color">
+						<div>{{ date_start_stamp() | timeUtc: 'date-only' }}</div>
+						<div>{{ date_end_stamp() | timeUtc: 'date-only' }}</div>
+					</div>
+				</div>
+			}
+		</div>
+		<div class="h-min-3">
+			@if (running()) {
+				<orc-bitcoin-subsection-oracle-run-progress-date
+					animate.enter="orc-animation-fadein"
+					[message]="progress()?.oracle_message ?? ''"
+					[progress]="progress()?.oracle_stage_progress ?? 0"
+				></orc-bitcoin-subsection-oracle-run-progress-date>
+			}
+		</div>
+		<div class="h-min-3">
+			@if (running()) {
+				<orc-bitcoin-subsection-oracle-run-progress-summary
+					animate.enter="orc-animation-fadein"
+					[date]="progress()?.date ?? 0"
+					[progress]="progress()?.oracle_total_progress ?? 0"
+					[success]="progress()?.success ?? false"
+					[error]="progress()?.error ?? ''"
+				></orc-bitcoin-subsection-oracle-run-progress-summary>
+			}
+		</div>
+	</div>
+</div>

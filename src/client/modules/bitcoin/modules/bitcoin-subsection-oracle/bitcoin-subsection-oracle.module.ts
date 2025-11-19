@@ -10,6 +10,8 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatInputModule} from '@angular/material/input';
 import {MatCardModule} from '@angular/material/card';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MAT_LUXON_DATE_ADAPTER_OPTIONS} from '@angular/material-luxon-adapter';
 import {BaseChartDirective as ChartJsBaseChartDirective} from 'ng2-charts';
 /* Application Dependencies */
@@ -22,6 +24,9 @@ import {BitcoinSubsectionOracleComponent} from './components/bitcoin-subsection-
 import {BitcoinSubsectionOracleControlComponent} from './components/bitcoin-subsection-oracle-control/bitcoin-subsection-oracle-control.component';
 import {BitcoinSubsectionOracleChartComponent} from './components/bitcoin-subsection-oracle-chart/bitcoin-subsection-oracle-chart.component';
 import {BitcoinSubsectionOracleFormComponent} from './components/bitcoin-subsection-oracle-form/bitcoin-subsection-oracle-form.component';
+import {BitcoinSubsectionOracleRunComponent} from './components/bitcoin-subsection-oracle-run/bitcoin-subsection-oracle-run.component';
+import {BitcoinSubsectionOracleRunProgressDateComponent} from './components/bitcoin-subsection-oracle-run-progress-date/bitcoin-subsection-oracle-run-progress-date.component';
+import {BitcoinSubsectionOracleRunProgressSummaryComponent} from './components/bitcoin-subsection-oracle-run-progress-summary/bitcoin-subsection-oracle-run-progress-summary.component';
 
 @NgModule({
 	declarations: [
@@ -29,6 +34,9 @@ import {BitcoinSubsectionOracleFormComponent} from './components/bitcoin-subsect
 		BitcoinSubsectionOracleControlComponent,
 		BitcoinSubsectionOracleChartComponent,
 		BitcoinSubsectionOracleFormComponent,
+		BitcoinSubsectionOracleRunComponent,
+		BitcoinSubsectionOracleRunProgressDateComponent,
+		BitcoinSubsectionOracleRunProgressSummaryComponent,
 	],
 	imports: [
 		CoreRouterModule.forChild([
@@ -45,6 +53,8 @@ import {BitcoinSubsectionOracleFormComponent} from './components/bitcoin-subsect
 		MatDatepickerModule,
 		MatInputModule,
 		MatCardModule,
+		MatProgressBarModule,
+		MatProgressSpinnerModule,
 		ChartJsBaseChartDirective,
 		OrcTimeModule,
 		OrcFormModule,

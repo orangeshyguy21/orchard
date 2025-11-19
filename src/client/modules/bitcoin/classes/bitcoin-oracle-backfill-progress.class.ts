@@ -18,8 +18,6 @@ export class BitcoinOracleBackfillProgress implements OrchardBitcoinOracleBackfi
 	public oracle_stage_progress: number | null;
 	public oracle_total_progress: number | null;
 	public oracle_message: string | null;
-	public block_height: number | null;
-	public blocks_total: number | null;
 
 	constructor(bobp: OrchardBitcoinOracleBackfillProgress) {
 		this.id = bobp.id;
@@ -38,7 +36,5 @@ export class BitcoinOracleBackfillProgress implements OrchardBitcoinOracleBackfi
 		this.oracle_stage_progress = bobp.oracle_stage_progress ?? null;
 		this.oracle_total_progress = bobp.oracle_total_progress ?? null;
 		this.oracle_message = bobp.oracle_message ?? null;
-		this.block_height = bobp.block_height ?? null;
-		this.blocks_total = bobp.blocks_total ?? null;
 	}
 }

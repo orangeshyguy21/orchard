@@ -22,12 +22,7 @@ export class UTXOracleProgressTracker {
 	/**
 	 * Emit progress for a stage
 	 */
-	public emit(
-		stage: keyof typeof this.STAGES,
-		stage_progress: number,
-		message?: string,
-		extra?: {block_height?: number; blocks_total?: number},
-	): void {
+	public emit(stage: keyof typeof this.STAGES, stage_progress: number, message?: string): void {
 		if (!this.callback) return;
 		const stage_def = this.STAGES[stage];
 		const [start, end] = stage_def.range;
@@ -37,7 +32,6 @@ export class UTXOracleProgressTracker {
 			stage_progress,
 			total_progress: Math.min(100, Math.max(0, total_progress)),
 			message,
-			...extra,
 		});
 	}
 
@@ -81,11 +75,11 @@ export class UTXOracleProgressTracker {
 			const blocks_processed = current_block - start_block + 1;
 			const iterator_progress = (blocks_processed / total_blocks) * 100;
 			const stage_progress = progress_offset + (iterator_progress / 100) * progress_range;
-			const message = message_template.replace('{current}', blocks_processed.toString()).replace('{total}', total_blocks.toString());
-			this.emit(stage, stage_progress, message, {
-				block_height: current_block,
-				blocks_total: total_blocks,
-			});
+			const message = message_template
+				.replace('{height}', current_block.toString())
+				.replace('{current}', blocks_processed.toString())
+				.replace('{total}', total_blocks.toString());
+			this.emit(stage, stage_progress, message);
 		};
 	}
 

@@ -10,5 +10,5 @@ import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 })
 export class GraphicOracleComponent {
 	public height = input.required<string>();
-	public processing = input.required<boolean>();
+	public running = input.required<boolean>();
 }

@@ -75,12 +75,6 @@ export class OrchardBitcoinOracleBackfillProgress {
 	@Field(() => String, {nullable: true})
 	oracle_message?: string;
 
-	@Field(() => Int, {nullable: true})
-	block_height?: number;
-
-	@Field(() => Int, {nullable: true})
-	blocks_total?: number;
-
 	constructor(data: Partial<OrchardBitcoinOracleBackfillProgress>) {
 		Object.assign(this, data);
 	}

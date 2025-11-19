@@ -167,8 +167,6 @@ export class BitcoinOracleService {
 					oracle_stage_progress: oracle_progress.stage_progress,
 					oracle_total_progress: oracle_progress.total_progress,
 					oracle_message: oracle_progress.message,
-					block_height: oracle_progress.block_height,
-					blocks_total: oracle_progress.blocks_total,
 				});
 			};
 			const result = await this.bitcoinUTXOracleService.runOracle({
