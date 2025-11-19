@@ -4,8 +4,9 @@
 			@if (reveal_dates()) {
 				<div class="flex flex-column" animate.enter="orc-animation-fadein">
 					<div class="title-l">{{ date_end() ? 'Dates' : 'Date' }}</div>
-					<div class="flex flex-row flex-gap-1 font-size-s orc-outline-color">
+					<div class="flex flex-row flex-items-center flex-gap-0-5 font-size-s orc-outline-color">
 						<div>{{ date_start_stamp() | timeUtc: 'date-only' }}</div>
+						<mat-icon>check_indeterminate_small</mat-icon>
 						<div>{{ date_end_stamp() | timeUtc: 'date-only' }}</div>
 					</div>
 				</div>
@@ -21,15 +22,15 @@
 			}
 		</div>
 		<div class="progress-summary-container">
-			<!-- @if (running()) { -->
-			<orc-bitcoin-subsection-oracle-run-progress-summary
-				animate.enter="orc-animation-fadein"
-				[date]="progress()?.date ?? 0"
-				[progress]="progress()?.overall_progress ?? 0"
-				[successful]="progress()?.successful ?? 0"
-				[failed]="progress()?.failed ?? 0"
-			></orc-bitcoin-subsection-oracle-run-progress-summary>
-			<!-- } -->
+			@if (running()) {
+				<orc-bitcoin-subsection-oracle-run-progress-summary
+					animate.enter="orc-animation-fadein"
+					[date]="progress()?.date ?? 0"
+					[progress]="progress()?.overall_progress ?? 0"
+					[successful]="progress()?.successful ?? 0"
+					[failed]="progress()?.failed ?? 0"
+				></orc-bitcoin-subsection-oracle-run-progress-summary>
+			}
 		</div>
 	</div>
 </div>

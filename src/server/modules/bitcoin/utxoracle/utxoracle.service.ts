@@ -277,12 +277,12 @@ export class BitcoinUTXOracleService {
 		const max_btc = this.MAX_OUTPUT_BTC;
 		const seen_txids = new Set<string>();
 		const report_progress = progress.createBlockIterator(
-			'computing_prices',
+			'loading_transactions', // Changed from 'computing_prices'
 			start,
 			end,
 			'Analyzing transaction patterns in block {height} ({current}/{total})',
-			0,
-			100,
+			20, // Start at 20% of loading_transactions stage
+			80, // Use remaining 80% of loading_transactions stage
 		);
 
 		for (let height = start; height <= end; height++) {
