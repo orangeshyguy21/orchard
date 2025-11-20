@@ -152,7 +152,6 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 	 */
 	private getBackfillSubscription(): Subscription {
 		return this.backfill_form.valueChanges.subscribe(() => {
-			if (this.backfill_form.invalid) return;
 			this.calculateDateStartMax();
 			this.calculateDateEndMin();
 			this.handleBackfillFormState();
@@ -163,34 +162,6 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 			this.expandChartRangeIfNeeded(timestamps);
 		});
 	}
-
-	// private getBackfillSubscription(): Subscription {
-	// 	return this.backfill_form.valueChanges.subscribe(() => {
-	// 		if (this.backfill_form.invalid) return;
-	// 		this.calculateDateStartMax();
-	// 		this.calculateDateEndMin();
-	// 		if (this.backfill_form.get('date_start')?.value) {
-	// 			this.backfill_form.get('date_end')?.enable({emitEvent: false});
-	// 		} else {
-	// 			this.backfill_form.get('date_end')?.disable({emitEvent: false});
-	// 		}
-	// 		const backfill_date_start_val = this.backfill_form.get('date_start')?.value;
-	// 		const backfill_date_end_val = this.backfill_form.get('date_end')?.value;
-	// 		const backfill_date_start = backfill_date_start_val
-	// 			? Math.floor(backfill_date_start_val.toUTC().startOf('day').toSeconds())
-	// 			: null;
-	// 		const backfill_date_end = backfill_date_end_val ? Math.floor(backfill_date_end_val.toUTC().startOf('day').toSeconds()) : null;
-	// 		this.backfill_date_start.set(backfill_date_start);
-	// 		this.backfill_date_end.set(backfill_date_end);
-	// 		this.evaluateDirtyForm();
-	// 		if (backfill_date_start === null && backfill_date_end === null) return;
-	// 		const update_date_start = Math.min(backfill_date_start, this.page_settings.date_start);
-	// 		const update_date_end = Math.max(backfill_date_end, this.page_settings.date_end);
-	// 		if (update_date_start !== this.page_settings.date_start || update_date_end !== this.page_settings.date_end) {
-	// 			this.updateRange(update_date_start, update_date_end);
-	// 		}
-	// 	});
-	// }
 
 	private getEventSubscription(): Subscription {
 		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
@@ -232,6 +203,7 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 	private eventUnconfirmed(): void {
 		this.backfill_form.reset();
 		this.backfill_form.get('date_end')?.disable({emitEvent: false});
+		this.form_open.set(false);
 		this.evaluateDirtyForm();
 	}
 
