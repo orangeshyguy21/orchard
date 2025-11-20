@@ -413,13 +413,10 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 					const clicked_element = elements[0];
 					const dataset_index = clicked_element.datasetIndex;
 					const data_index = clicked_element.index;
-
 					const dataset = this.chart_data().datasets[dataset_index];
-					if (dataset.label === 'BTC/USD (Estimated)') {
-						const data_point = dataset.data[data_index] as {x: number; y: number};
-						const date_unix = Math.floor(data_point.x / 1000);
-						this.backfill_date.emit(date_unix);
-					}
+					const data_point = dataset.data[data_index] as {x: number; y: number};
+					const date_unix = Math.floor(data_point.x / 1000);
+					this.backfill_date.emit(date_unix);
 				}
 			},
 			onHover: (event: any, elements: any[]) => {

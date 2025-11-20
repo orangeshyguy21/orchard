@@ -4,11 +4,57 @@
 	@extend %flex;
 }
 
+// .graphic-oracle-container {
+// 	@extend %flex;
+
+// 	.oracle-base {
+// 		fill: var(--mat-sys-primary-container);
+// 	}
+
+// 	.oracle-eye {
+// 		fill: var(--mat-sys-surface-container-low);
+// 	}
+
+// 	.oracle-block {
+// 		fill: var(--mat-sys-surface-container-low);
+// 	}
+
+// 	.oracle-orb {
+// 		fill: var(--mat-sys-surface-container-low);
+// 	}
+
+// 	&.running {
+// 		.oracle-block {
+// 			fill: var(--mat-sys-primary-container);
+// 			animation:
+// 				pulse 3s ease-in-out infinite,
+// 				rotate 3s linear infinite;
+// 			transform-box: fill-box;
+// 			transform-origin: center;
+// 		}
+
+// 		.oracle-eye {
+// 			fill: var(--mat-sys-primary-container);
+// 			animation: pulse 3s ease-in-out infinite;
+// 		}
+// 	}
+
+// 	&.completed {
+// 		.oracle-block {
+// 			fill: var(--mat-sys-primary-container);
+// 		}
+
+// 		.oracle-eye {
+// 			fill: var(--mat-sys-primary-container);
+// 		}
+// 	}
+// }
+
 .graphic-oracle-container {
 	@extend %flex;
 
 	.oracle-base {
-		fill: var(--mat-sys-primary-container);
+		fill: var(--mat-sys-surface-container-low);
 	}
 
 	.oracle-eye {
@@ -25,7 +71,7 @@
 
 	&.running {
 		.oracle-block {
-			fill: var(--mat-sys-primary-container);
+			@extend %orc-brand-lightest-fill;
 			animation:
 				pulse 3s ease-in-out infinite,
 				rotate 3s linear infinite;
@@ -34,18 +80,18 @@
 		}
 
 		.oracle-eye {
-			fill: var(--mat-sys-primary-container);
+			@extend %orc-brand-lightest-fill;
 			animation: pulse 3s ease-in-out infinite;
 		}
 	}
 
 	&.completed {
 		.oracle-block {
-			fill: var(--mat-sys-primary-container);
+			@extend %orc-brand-lightest-fill;
 		}
 
 		.oracle-eye {
-			fill: var(--mat-sys-primary-container);
+			@extend %orc-brand-lightest-fill;
 		}
 	}
 }
