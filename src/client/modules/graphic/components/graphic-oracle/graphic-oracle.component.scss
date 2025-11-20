@@ -16,12 +16,16 @@
 	}
 
 	.oracle-block {
-		fill: var(--mat-sys-primary-container);
+		fill: var(--mat-sys-surface-container-low);
+	}
+
+	.oracle-orb {
+		fill: var(--mat-sys-surface-container-low);
 	}
 
 	&.running {
 		.oracle-block {
-			fill: var(--mat-sys-surface-container-low);
+			fill: var(--mat-sys-primary-container);
 			animation:
 				pulse 3s ease-in-out infinite,
 				rotate 3s linear infinite;
@@ -31,13 +35,13 @@
 
 		.oracle-eye {
 			fill: var(--mat-sys-primary-container);
-			animation: pulse-reverse 3s ease-in-out infinite;
+			animation: pulse 3s ease-in-out infinite;
 		}
 	}
 
 	&.completed {
 		.oracle-block {
-			fill: var(--mat-sys-surface-container-low);
+			fill: var(--mat-sys-primary-container);
 		}
 
 		.oracle-eye {
@@ -53,16 +57,6 @@
 	}
 	50% {
 		opacity: 0.4;
-	}
-}
-
-@keyframes pulse-reverse {
-	0%,
-	100% {
-		opacity: 0.4;
-	}
-	50% {
-		opacity: 1;
 	}
 }
 
