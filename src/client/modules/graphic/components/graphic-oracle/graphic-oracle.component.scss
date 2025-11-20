@@ -4,52 +4,6 @@
 	@extend %flex;
 }
 
-// .graphic-oracle-container {
-// 	@extend %flex;
-
-// 	.oracle-base {
-// 		fill: var(--mat-sys-primary-container);
-// 	}
-
-// 	.oracle-eye {
-// 		fill: var(--mat-sys-surface-container-low);
-// 	}
-
-// 	.oracle-block {
-// 		fill: var(--mat-sys-surface-container-low);
-// 	}
-
-// 	.oracle-orb {
-// 		fill: var(--mat-sys-surface-container-low);
-// 	}
-
-// 	&.running {
-// 		.oracle-block {
-// 			fill: var(--mat-sys-primary-container);
-// 			animation:
-// 				pulse 3s ease-in-out infinite,
-// 				rotate 3s linear infinite;
-// 			transform-box: fill-box;
-// 			transform-origin: center;
-// 		}
-
-// 		.oracle-eye {
-// 			fill: var(--mat-sys-primary-container);
-// 			animation: pulse 3s ease-in-out infinite;
-// 		}
-// 	}
-
-// 	&.completed {
-// 		.oracle-block {
-// 			fill: var(--mat-sys-primary-container);
-// 		}
-
-// 		.oracle-eye {
-// 			fill: var(--mat-sys-primary-container);
-// 		}
-// 	}
-// }
-
 .graphic-oracle-container {
 	@extend %flex;
 
@@ -69,11 +23,39 @@
 		fill: var(--mat-sys-surface-container-low);
 	}
 
+	.lightest-fill,
+	.light-fill,
+	.medium-fill,
+	.dark-fill,
+	.darkest-fill {
+		transition: fill 1s ease-in-out;
+	}
+
+	&.stone {
+		.lightest-fill {
+			fill: var(--mat-sys-primary-container);
+		}
+		.light-fill {
+			fill: var(--mat-sys-primary-container);
+		}
+		.medium-fill {
+			fill: var(--mat-sys-primary-container);
+		}
+		.dark-fill {
+			fill: var(--mat-sys-primary-container);
+		}
+		.darkest-fill {
+			fill: var(--mat-sys-primary-container);
+		}
+	}
+
 	&.running {
 		.oracle-block {
 			@extend %orc-brand-lightest-fill;
+			opacity: 0.4;
+			transition: fill 1s ease-in-out;
 			animation:
-				pulse 3s ease-in-out infinite,
+				pulse 3s ease-in-out 1s infinite,
 				rotate 3s linear infinite;
 			transform-box: fill-box;
 			transform-origin: center;
@@ -81,7 +63,9 @@
 
 		.oracle-eye {
 			@extend %orc-brand-lightest-fill;
-			animation: pulse 3s ease-in-out infinite;
+			opacity: 0.4;
+			transition: fill 1s ease-in-out;
+			animation: pulse 3s ease-in-out 1s infinite;
 		}
 	}
 
@@ -91,7 +75,7 @@
 		}
 
 		.oracle-eye {
-			@extend %orc-brand-lightest-fill;
+			fill: var(--mat-sys-primary-container);
 		}
 	}
 }
@@ -99,10 +83,10 @@
 @keyframes pulse {
 	0%,
 	100% {
-		opacity: 1;
+		opacity: 0.4;
 	}
 	50% {
-		opacity: 0.4;
+		opacity: 1;
 	}
 }
 
