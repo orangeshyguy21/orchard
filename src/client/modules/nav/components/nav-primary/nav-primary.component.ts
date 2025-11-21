@@ -27,6 +27,7 @@ export class NavPrimaryComponent {
 
 	@Output() save = new EventEmitter<void>();
 	@Output() cancel = new EventEmitter<void>();
+	@Output() abort = new EventEmitter<void>();
 
 	constructor() {}
 }

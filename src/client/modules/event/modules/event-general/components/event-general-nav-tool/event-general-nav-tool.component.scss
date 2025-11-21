@@ -16,6 +16,12 @@
 		}
 	}
 
+	&.nav-tool-subscribed {
+		.event-nav-tool-switch {
+			@extend %orc-primary-container-bg;
+		}
+	}
+
 	&.nav-tool-success {
 		.event-nav-tool-switch {
 			@extend %orc-tertiary-container-bg;

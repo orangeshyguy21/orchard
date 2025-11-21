@@ -16,13 +16,44 @@
 			@if (morph_state() === 'actionable') {
 				<div animate.enter="animate-fadein-delayed" class="font-size-xs">{{ active_event()?.message }}</div>
 			}
-			@if (!saving()) {
+			@if (saving()) {
+				@if (subscribed()) {
+					@if (moused()) {
+						<div animate.enter="animate-enter-scale" class="h-1-75 w-1-75">
+							<mat-icon class="icon-md">stop</mat-icon>
+						</div>
+					} @else {
+						<mat-spinner
+							[diameter]="25"
+							animate.enter="animate-enter-scale"
+							mode="determinate"
+							[value]="active_event()?.progress"
+						></mat-spinner>
+					}
+				} @else {
+					<mat-spinner [diameter]="25" animate.enter="animate-enter-scale"></mat-spinner>
+				}
+			} @else {
+				<div animate.enter="animate-enter-scale" class="h-1-75 w-1-75">
+					<mat-icon #icon_collapsed [class.mat-symbol-outline]="!highlight()" class="icon-md">{{ icon() }}</mat-icon>
+				</div>
+			}
+			<!-- @if (!saving()) {
 				<div animate.enter="animate-enter-scale" class="h-1-75 w-1-75">
 					<mat-icon #icon_collapsed [class.mat-symbol-outline]="!highlight()" class="icon-md">{{ icon() }}</mat-icon>
 				</div>
 			} @else {
-				<mat-spinner [diameter]="25" animate.enter="animate-enter-scale"></mat-spinner>
-			}
+				@if (!subscribed()) {
+					<mat-spinner [diameter]="25" animate.enter="animate-enter-scale"></mat-spinner>
+				} @else {
+					<mat-spinner
+						[diameter]="25"
+						animate.enter="animate-enter-scale"
+						mode="determinate"
+						[value]="active_event()?.progress"
+					></mat-spinner>
+				}
+			} -->
 		</div>
 	</div>
 </div>

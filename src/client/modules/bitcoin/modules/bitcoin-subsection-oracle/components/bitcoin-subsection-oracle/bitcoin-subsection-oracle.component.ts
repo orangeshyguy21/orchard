@@ -165,6 +165,7 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 
 	private getEventSubscription(): Subscription {
 		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
+			console.log('event_data', event_data);
 			this.active_event = event_data;
 			if (event_data === null) this.evaluateDirtyForm();
 			if (event_data && event_data.confirmed !== null) {
@@ -180,9 +181,30 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 		return this.bitcoinService.backfill_progress$.subscribe((progress) => {
 			this.backfill_progress.set(progress);
 			if (progress.price !== null) this.getOracleData();
+			if (progress.status === UtxOracleProgressStatus.Processing) {
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'SUBSCRIBED',
+						progress: progress.overall_progress,
+					}),
+				);
+			}
 			if (progress.status === UtxOracleProgressStatus.Error) {
 				console.error('Backfill error:', progress.error);
-				// Show error notification or update UI (TODO: Implement)
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'ERROR',
+						message: 'Backfill error: ' + progress.error,
+					}),
+				);
+			}
+			if (progress.status === UtxOracleProgressStatus.Completed) {
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'SUCCESS',
+						message: 'Backfill completed!',
+					}),
+				);
 			}
 		});
 	}
@@ -392,8 +414,6 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 		const start_timestamp = Math.floor(date_start.toUTC().startOf('day').toSeconds());
 		const end_timestamp = date_end ? Math.floor(date_end.toUTC().startOf('day').toSeconds()) : null;
 		this.bitcoinService.openBackfillSocket(start_timestamp, end_timestamp);
-
-		// Mark form as pristine since we're submitting
 		this.backfill_form.markAsPristine();
 		this.dirty_form.set(false);
 	}

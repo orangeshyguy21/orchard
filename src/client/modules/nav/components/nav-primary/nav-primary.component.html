@@ -15,6 +15,11 @@
 		[syncing_bitcoin]="syncing_bitcoin"
 		[syncing_lightning]="syncing_lightning"
 	></orc-nav-primary-items>
-	<orc-nav-primary-footer [active_section]="active_section" [active_event]="active_event" (save)="save.emit()" (cancel)="cancel.emit()">
-	</orc-nav-primary-footer>
+	<orc-nav-primary-footer
+		[active_section]="active_section"
+		[active_event]="active_event"
+		(save)="save.emit()"
+		(cancel)="cancel.emit()"
+		(abort)="abort.emit()"
+	></orc-nav-primary-footer>
 </div>
