@@ -371,6 +371,8 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 			this.backfill_date_end.set(null);
 			this.eventService.registerEvent(null);
 			this.backfill_progress.set(null);
+		} else {
+			this.abortBackfill();
 		}
 	}
 
