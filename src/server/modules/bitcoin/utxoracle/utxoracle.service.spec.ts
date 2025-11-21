@@ -2,17 +2,31 @@
 import {Test, TestingModule} from '@nestjs/testing';
 import {expect} from '@jest/globals';
 import {ConfigService} from '@nestjs/config';
+import {getRepositoryToken} from '@nestjs/typeorm';
 /* Application Dependencies */
 import {BitcoinRpcService} from '@server/modules/bitcoin/rpc/btcrpc.service';
 /* Local Dependencies */
 import {BitcoinUTXOracleService} from './utxoracle.service';
+import {UTXOracle} from './utxoracle.entity';
 
 describe('BitcoinUTXOracleService', () => {
 	let bitcoin_utx_oracle_service: BitcoinUTXOracleService;
 	let config_service: jest.Mocked<ConfigService>;
 	let bitcoin_rpc_service: jest.Mocked<BitcoinRpcService>;
 
+	// mock repository for UTXOracle
+	const mock_repository = {
+		findOne: jest.fn(),
+		find: jest.fn(),
+		create: jest.fn(),
+		save: jest.fn(),
+		update: jest.fn(),
+	};
+
 	beforeEach(async () => {
+		// reset all mocks before each test
+		jest.clearAllMocks();
+
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				BitcoinUTXOracleService,
@@ -25,6 +39,10 @@ describe('BitcoinUTXOracleService', () => {
 						getBitcoinBlockHeader: jest.fn(),
 						getBitcoinBlock: jest.fn(),
 					},
+				},
+				{
+					provide: getRepositoryToken(UTXOracle),
+					useValue: mock_repository,
 				},
 			],
 		}).compile();
