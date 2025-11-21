@@ -48,6 +48,8 @@ export enum OrchardErrorCode {
 	InviteError = 80001,
 	InviteNoAdminError = 80002,
 	InviteInvalidError = 80003,
+	// Settings Level Errors
+	SettingError = 90001,
 }
 
 export const OrchardErrorMessages: Record<string, string> = {
@@ -88,4 +90,5 @@ export const OrchardErrorMessages: Record<string, string> = {
 	[OrchardErrorCode.InviteError]: 'InviteError',
 	[OrchardErrorCode.InviteNoAdminError]: 'InviteNoAdminError',
 	[OrchardErrorCode.InviteInvalidError]: 'InviteInvalidError',
+	[OrchardErrorCode.SettingError]: 'SettingError',
 };

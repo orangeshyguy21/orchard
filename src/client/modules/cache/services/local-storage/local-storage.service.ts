@@ -6,6 +6,7 @@ import {
 	Locale,
 	Theme,
 	Model,
+	BitcoinOracleSettings,
 	MintDashboardSettings,
 	MintKeysetsSettings,
 	MintDatabaseSettings,
@@ -26,6 +27,8 @@ export class LocalStorageService {
 		LOCALE_KEY: 'v0.setting.locale',
 		THEME_KEY: 'v0.setting.theme',
 		MODEL_KEY: 'v0.setting.model',
+		/* Bitcoin Oracle Settings */
+		BITCOIN_ORACLE_KEY: 'v0.bitcoin.oracle.settings',
 		/* Mint Settings */
 		MINT_DASHBOARD_KEY: 'v0.mint.dashboard.settings',
 		MINT_CONFIG_KEY: 'v0.mint.config.settings',
@@ -93,6 +96,11 @@ export class LocalStorageService {
 		if (!model) return {model: null};
 		return model;
 	}
+	getBitcoinOracleSettings(): BitcoinOracleSettings {
+		const settings = this.getItem<BitcoinOracleSettings>(this.STORAGE_KEYS.BITCOIN_ORACLE_KEY);
+		if (!settings) return {date_start: null};
+		return settings;
+	}
 	getMintDashboardSettings(): MintDashboardSettings {
 		const settings = this.getItem<MintDashboardSettings>(this.STORAGE_KEYS.MINT_DASHBOARD_KEY);
 		if (!settings) return {date_start: null, units: null, interval: null, type: null, tertiary_nav: null};
@@ -136,6 +144,9 @@ export class LocalStorageService {
 	}
 	setModel(model: Model): void {
 		this.setItem(this.STORAGE_KEYS.MODEL_KEY, model);
+	}
+	setBitcoinOracleSettings(settings: BitcoinOracleSettings): void {
+		this.setItem(this.STORAGE_KEYS.BITCOIN_ORACLE_KEY, settings);
 	}
 	setMintDashboardSettings(settings: MintDashboardSettings): void {
 		this.setItem(this.STORAGE_KEYS.MINT_DASHBOARD_KEY, settings);

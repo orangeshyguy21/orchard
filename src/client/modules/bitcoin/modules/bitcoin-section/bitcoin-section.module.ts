@@ -34,6 +34,19 @@ import {BitcoinSectionComponent} from './components/bitcoin-section/bitcoin-sect
 							sub_section: 'dashboard',
 						},
 					},
+					{
+						path: 'oracle',
+						loadChildren: () =>
+							import('@client/modules/bitcoin/modules/bitcoin-subsection-oracle/bitcoin-subsection-oracle.module').then(
+								(m) => m.OrcBitcoinSubsectionOracleModule,
+							),
+						title: 'Orchard | Bitcoin Oracle',
+						canActivate: [enabledGuard],
+						data: {
+							section: 'bitcoin',
+							sub_section: 'oracle',
+						},
+					},
 				],
 			},
 			{

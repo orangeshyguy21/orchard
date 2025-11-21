@@ -1,16 +1,5 @@
 /* Core Dependencies */
-import {
-	ChangeDetectionStrategy,
-	Component,
-	EventEmitter,
-	input,
-	signal,
-	computed,
-	effect,
-	Output,
-	ViewChild,
-	ElementRef,
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, signal, computed, effect, output, ViewChild, ElementRef} from '@angular/core';
 import {Router} from '@angular/router';
 /* Application Dependencies */
 import {EventData} from '@client/modules/event/classes/event-data.class';
@@ -27,8 +16,9 @@ export class EventGeneralNavToolComponent {
 	public active = input<boolean>(false);
 	public active_event = input<EventData | null>(null);
 
-	@Output() save: EventEmitter<void> = new EventEmitter();
-	@Output() cancel: EventEmitter<void> = new EventEmitter();
+	public save = output<void>();
+	public cancel = output<void>();
+	public abort = output<void>();
 
 	@ViewChild('icon_collapsed', {read: ElementRef}) icon_collapsed!: ElementRef<HTMLElement>;
 	@ViewChild('icon_expanded', {read: ElementRef}) icon_expanded!: ElementRef<HTMLElement>;
@@ -37,7 +27,8 @@ export class EventGeneralNavToolComponent {
 
 	public highlight = computed(() => this.active() || this.moused());
 	public pending_event = computed(() => this.active_event()?.type === 'PENDING');
-	public saving = computed(() => this.active_event()?.type === 'SAVING');
+	public saving = computed(() => this.active_event()?.type === 'SAVING' || this.active_event()?.type === 'SUBSCRIBED');
+	public subscribed = computed(() => this.active_event()?.type === 'SUBSCRIBED');
 	public icon = computed(() => {
 		const active_event = this.active_event();
 		if (!active_event) return 'save_clock';
@@ -50,6 +41,7 @@ export class EventGeneralNavToolComponent {
 	public container_class = computed(() => {
 		const event_type = this.active_event()?.type;
 		if (event_type === 'SAVING') return 'nav-tool-saving';
+		if (event_type === 'SUBSCRIBED') return 'nav-tool-subscribed';
 		if (event_type === 'SUCCESS') return 'nav-tool-success';
 		if (event_type === 'WARNING') return 'nav-tool-warning';
 		if (event_type === 'ERROR') return 'nav-tool-error';
@@ -61,6 +53,7 @@ export class EventGeneralNavToolComponent {
 		if (active_event?.type === 'PENDING' && active_event?.message) return 'actionable';
 		return 'default';
 	});
+	// public progress = computed(() => this.active_event()?.progress ?? null);
 
 	constructor(private router: Router) {
 		effect(() => {
@@ -79,6 +72,7 @@ export class EventGeneralNavToolComponent {
 
 	public onClick() {
 		if (this.pending_event()) return this.save.emit();
+		if (this.subscribed()) return this.abort.emit();
 		this.router.navigate([this.navroute()]);
 	}
 

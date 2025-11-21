@@ -1,11 +1,20 @@
 /* Application Dependencies */
 import {
+	BitcoinOracleSettings,
 	MintDashboardSettings,
 	MintKeysetsSettings,
 	MintDatabaseSettings,
 	MintConfigSettings,
 	SettingsDeviceSettings,
 } from '@client/modules/cache/services/local-storage/local-storage.types';
+
+/* Page: Bitcoin Oracle */
+export type AllBitcoinOracleSettings = BitcoinOracleSettings & {
+	date_end: number | null;
+};
+export type NonNullableBitcoinOracleSettings = {
+	[K in keyof AllBitcoinOracleSettings]: NonNullable<AllBitcoinOracleSettings[K]>;
+};
 
 /* Page: Mint Dashboard */
 export type AllMintDashboardSettings = MintDashboardSettings & {

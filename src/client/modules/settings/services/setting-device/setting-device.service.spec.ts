@@ -1,14 +1,14 @@
 /* Core Dependencies */
 import {TestBed} from '@angular/core/testing';
 /* Local Dependencies */
-import {SettingService} from './setting.service';
+import {SettingDeviceService} from './setting-device.service';
 
 describe('SettingService', () => {
-	let service: SettingService;
+	let service: SettingDeviceService;
 
 	beforeEach(() => {
 		TestBed.configureTestingModule({});
-		service = TestBed.inject(SettingService);
+		service = TestBed.inject(SettingDeviceService);
 	});
 
 	it('should be created', () => {

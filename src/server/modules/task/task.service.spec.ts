@@ -2,8 +2,12 @@
 import {Test, TestingModule} from '@nestjs/testing';
 import {expect} from '@jest/globals';
 import {Logger} from '@nestjs/common';
+import {ConfigService} from '@nestjs/config';
 /* Application Dependencies */
 import {AuthService} from '@server/modules/auth/auth.service';
+import {SettingService} from '@server/modules/setting/setting.service';
+import {BitcoinRpcService} from '@server/modules/bitcoin/rpc/btcrpc.service';
+import {BitcoinUTXOracleService} from '@server/modules/bitcoin/utxoracle/utxoracle.service';
 /* Local Dependencies */
 import {TaskService} from './task.service';
 
@@ -20,6 +24,31 @@ describe('TaskService', () => {
 					provide: AuthService,
 					useValue: {
 						cleanupExpiredTokens: jest.fn(),
+					},
+				},
+				{
+					provide: SettingService,
+					useValue: {
+						getSetting: jest.fn(),
+					},
+				},
+				{
+					provide: BitcoinRpcService,
+					useValue: {
+						getBitcoinBlockchainInfo: jest.fn(),
+					},
+				},
+				{
+					provide: BitcoinUTXOracleService,
+					useValue: {
+						runOracle: jest.fn(),
+						saveOraclePrice: jest.fn(),
+					},
+				},
+				{
+					provide: ConfigService,
+					useValue: {
+						get: jest.fn(),
 					},
 				},
 			],

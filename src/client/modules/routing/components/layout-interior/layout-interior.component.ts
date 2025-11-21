@@ -9,7 +9,7 @@ import {MatSidenav} from '@angular/material/sidenav';
 /* Application Dependencies */
 import {ConfigService} from '@client/modules/config/services/config.service';
 import {CrewService} from '@client/modules/crew/services/crew/crew.service';
-import {SettingService} from '@client/modules/settings/services/setting/setting.service';
+import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {BitcoinService} from '@client/modules/bitcoin/services/bitcoin/bitcoin.service';
 import {LightningService} from '@client/modules/lightning/services/lightning/lightning.service';
 import {MintService} from '@client/modules/mint/services/mint/mint.service';
@@ -77,7 +77,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	constructor(
 		private configService: ConfigService,
 		private crewService: CrewService,
-		private settingService: SettingService,
+		private settingDeviceService: SettingDeviceService,
 		private bitcoinService: BitcoinService,
 		private lightningService: LightningService,
 		private mintService: MintService,
@@ -127,11 +127,11 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 			this.subscriptions.add(this.getActiveAiSubscription());
 			this.subscriptions.add(this.getAiMessagesSubscription());
 			this.subscriptions.add(this.getAiConversationSubscription());
-			this.model = this.settingService.getModel();
+			this.model = this.settingDeviceService.getModel();
 			if (!this.model) {
 				this.aiService.getFunctionModel().subscribe((model) => {
 					this.model = model?.model || null;
-					this.settingService.setModel(this.model);
+					this.settingDeviceService.setModel(this.model);
 					this.cdr.detectChanges();
 				});
 			}
@@ -268,7 +268,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	private getEventSubscription(): Subscription {
 		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
 			this.active_event = event_data;
-			if (this.active_section === 'settings') this.model = this.settingService.getModel();
+			if (this.active_section === 'settings') this.model = this.settingDeviceService.getModel();
 			this.cdr.detectChanges();
 		});
 	}
@@ -283,6 +283,11 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	}
 
 	public onCancelPendingEvent(): void {
+		this.active_event!.confirmed = false;
+		this.eventService.registerEvent(this.active_event);
+	}
+
+	public onAbortSubscribedEvent(): void {
 		this.active_event!.confirmed = false;
 		this.eventService.registerEvent(this.active_event);
 	}
@@ -344,14 +349,14 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	}
 
 	public stopChat(): void {
-		this.aiService.closeAiSocket();
+		this.aiService.abortAiSocket(this.ai_conversation?.id);
 		if (this.ai_conversation) this.aiService.updateConversation(this.ai_conversation);
 		this.cdr.detectChanges();
 	}
 
 	public onModelChange(model: string): void {
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		this.settingService.setModel(model);
+		this.settingDeviceService.setModel(model);
 		this.model = model;
 		this.eventService.registerEvent(
 			new EventData({

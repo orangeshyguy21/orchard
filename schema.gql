@@ -16,10 +16,6 @@ enum AiAgent {
   MINT_KEYSET_ROTATION
 }
 
-input AiChatAbortInput {
-  id: String!
-}
-
 input AiChatInput {
   agent: AiAgent
   auth: String!
@@ -226,12 +222,13 @@ input MintUrlUpdateInput {
 }
 
 type Mutation {
-  ai_chat_abort(ai_chat_abort: AiChatAbortInput!): OrchardAiChatStream!
+  ai_chat_abort(id: String!): OrchardAiChatStream!
   auth_authentication(authentication: AuthenticationInput!): OrchardAuthentication!
   auth_authentication_refresh: OrchardAuthentication!
   auth_authentication_revoke: Boolean!
   auth_initialize(initialize: InitializationInput!): OrchardAuthentication!
   auth_signup(signup: AuthSignupInput!): OrchardAuthentication!
+  bitcoin_oracle_backfill_abort(id: String!): OrchardBitcoinOracleBackfillStream!
   crew_invite_create(createInvite: InviteCreateInput!): OrchardCrewInvite!
   crew_invite_delete(id: String!): Boolean!
   crew_invite_update(updateInvite: InviteUpdateInput!): OrchardCrewInvite!
@@ -255,6 +252,7 @@ type Mutation {
   mint_short_description_update(mint_desc_update: MintDescriptionUpdateInput!): OrchardMintDescriptionUpdate!
   mint_url_add(mint_url_update: MintUrlUpdateInput!): OrchardMintUrlUpdate!
   mint_url_remove(mint_url_update: MintUrlUpdateInput!): OrchardMintUrlUpdate!
+  setting_update(key: SettingKey!, value: String!): OrchardSetting!
 }
 
 type OrchardAiAgent {
@@ -444,29 +442,31 @@ type OrchardBitcoinNetworkInfo {
   warnings: [String!]!
 }
 
-type OrchardBitcoinOracle {
-  block_window: OrchardBitcoinOracleBlockWindow!
-  bounds: OrchardBitcoinOracleBounds!
-  central_price: Float!
-  deviation_pct: Float!
-  intraday: [OrchardBitcoinOracleIntradayPoint!]
-  rough_price_estimate: Float!
+type OrchardBitcoinOracleBackfillProgress {
+  date: UnixTimestamp
+  date_progress: Float
+  end_date: UnixTimestamp
+  error: String
+  failed: Int
+  id: String!
+  message: String
+  overall_progress: Float
+  price: Int
+  processed: Int
+  start_date: UnixTimestamp
+  status: UTXOracleProgressStatus!
+  success: Boolean
+  successful: Int
+  total_days: Int
 }
 
-type OrchardBitcoinOracleBlockWindow {
-  end: Int!
-  start: Int!
+type OrchardBitcoinOracleBackfillStream {
+  id: String!
 }
 
-type OrchardBitcoinOracleBounds {
-  max: Float!
-  min: Float!
-}
-
-type OrchardBitcoinOracleIntradayPoint {
-  block_height: Int!
+type OrchardBitcoinOraclePrice {
+  date: UnixTimestamp!
   price: Float!
-  timestamp: Int!
 }
 
 type OrchardBitcoinTxFeeEstimate {
@@ -874,6 +874,13 @@ type OrchardPublicUrl {
   url: String
 }
 
+type OrchardSetting {
+  description: String
+  key: SettingKey!
+  value: String!
+  value_type: SettingValue!
+}
+
 type OrchardStatus {
   online: Boolean!
   title: String!
@@ -934,7 +941,7 @@ type Query {
   bitcoin_blockcount: OrchardBitcoinBlockCount!
   bitcoin_mempool_transactions: [OrchardBitcoinMempoolTransaction!]!
   bitcoin_network_info: OrchardBitcoinNetworkInfo!
-  bitcoin_oracle(date: String!, intraday: Boolean): OrchardBitcoinOracle!
+  bitcoin_oracle(end_date: UnixTimestamp, start_date: UnixTimestamp): [OrchardBitcoinOraclePrice!]!
   bitcoin_transaction_fee_estimates(targets: [Int!]!): [OrchardBitcoinTxFeeEstimate!]!
   crew_invites: [OrchardCrewInvite!]!
   crew_user: OrchardCrewUser!
@@ -969,14 +976,27 @@ type Query {
   mint_quote_ttl: OrchardMintQuoteTtls!
   public_image(url: String!): OrchardPublicImage!
   public_urls(urls: [String!]!): [OrchardPublicUrl!]!
+  settings: [OrchardSetting!]!
   status: OrchardStatus!
   taproot_assets: OrchardTaprootAssets!
   taproot_assets_info: OrchardTaprootAssetsInfo!
   taproot_assets_utxo: [OrchardTaprootAssetsUtxo!]!
 }
 
+enum SettingKey {
+  BITCOIN_ORACLE
+}
+
+enum SettingValue {
+  BOOLEAN
+  JSON
+  NUMBER
+  STRING
+}
+
 type Subscription {
   ai_chat(ai_chat: AiChatInput!): OrchardAiChatChunk!
+  bitcoin_oracle_backfill(auth: String!, end_date: UnixTimestamp, id: String!, start_date: UnixTimestamp!): OrchardBitcoinOracleBackfillProgress!
   blockCount: OrchardBitcoinBlockCount!
 }
 
@@ -993,6 +1013,14 @@ enum TaprootAssetVersion {
 
 """Timezone custom scalar type based on IANA timezone database"""
 scalar Timezone
+
+enum UTXOracleProgressStatus {
+  ABORTED
+  COMPLETED
+  ERROR
+  PROCESSING
+  STARTED
+}
 
 """A Unix timestamp in seconds"""
 scalar UnixTimestamp

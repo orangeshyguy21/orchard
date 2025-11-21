@@ -42,6 +42,18 @@ import {SettingsSectionComponent} from './components/settings-section/settings-s
 							sub_section: 'user',
 						},
 					},
+					{
+						path: 'app',
+						loadChildren: () =>
+							import('@client/modules/settings/modules/settings-subsection-app/settings-subsection-app.module').then(
+								(m) => m.OrcSettingsSubsectionAppModule,
+							),
+						title: 'Orchard | App Settings',
+						data: {
+							section: 'settings',
+							sub_section: 'app',
+						},
+					},
 				],
 			},
 		]),

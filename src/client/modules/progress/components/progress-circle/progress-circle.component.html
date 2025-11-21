@@ -1,0 +1,26 @@
+<div class="relative">
+	<mat-progress-spinner
+		[ngClass]="background_color()"
+		mode="determinate"
+		[value]="100"
+		[diameter]="diameter()"
+		[strokeWidth]="stroke_width()"
+	>
+	</mat-progress-spinner>
+	<div class="progress-background">
+		<div>
+			<mat-progress-spinner
+				[ngClass]="progress_color()"
+				mode="determinate"
+				[value]="value()"
+				[diameter]="diameter()"
+				[strokeWidth]="stroke_width()"
+			></mat-progress-spinner>
+		</div>
+		<div class="absolute">
+			<div class="flex flex-items-center">
+				<ng-content></ng-content>
+			</div>
+		</div>
+	</div>
+</div>

@@ -13,7 +13,7 @@ import {
 } from '@angular/core';
 /* Application Dependencies */
 import {LocalStorageService} from '@client/modules/cache/services/local-storage/local-storage.service';
-import {SettingService} from '@client/modules/settings/services/setting/setting.service';
+import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
 import {EventService} from '@client/modules/event/services/event/event.service';
 import {ConfigService} from '@client/modules/config/services/config.service';
@@ -71,7 +71,7 @@ export class SettingsSubsectionDeviceComponent implements OnInit, AfterViewInit 
 
 	constructor(
 		private localStorageService: LocalStorageService,
-		private settingService: SettingService,
+		private settingDeviceService: SettingDeviceService,
 		private aiService: AiService,
 		private eventService: EventService,
 		private configService: ConfigService,
@@ -105,7 +105,7 @@ export class SettingsSubsectionDeviceComponent implements OnInit, AfterViewInit 
 	}
 
 	private getPageSettings(): NonNullableSettingsDeviceSettings {
-		const settings = this.settingService.getSettingsDeviceSettings();
+		const settings = this.settingDeviceService.getSettingsDeviceSettings();
 		return {
 			tertiary_nav: settings.tertiary_nav ?? Object.values(NavTertiary),
 		};
@@ -140,7 +140,7 @@ export class SettingsSubsectionDeviceComponent implements OnInit, AfterViewInit 
 	public onLocaleChange(locale: string | null) {
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		this.localStorageService.setLocale({code: locale});
-		this.settingService.setLocale();
+		this.settingDeviceService.setLocale();
 		this.locale = this.localStorageService.getLocale();
 		this.eventService.registerEvent(
 			new EventData({
@@ -153,7 +153,7 @@ export class SettingsSubsectionDeviceComponent implements OnInit, AfterViewInit 
 	public onTimezoneChange(timezone: string | null) {
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		this.localStorageService.setTimezone({tz: timezone});
-		this.settingService.setTimezone();
+		this.settingDeviceService.setTimezone();
 		this.timezone = this.localStorageService.getTimezone();
 		this.eventService.registerEvent(
 			new EventData({
@@ -166,7 +166,7 @@ export class SettingsSubsectionDeviceComponent implements OnInit, AfterViewInit 
 	public onThemeChange(theme: ThemeType | null) {
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		this.localStorageService.setTheme({type: theme});
-		this.settingService.setTheme();
+		this.settingDeviceService.setTheme();
 		this.theme = this.localStorageService.getTheme();
 		this.eventService.registerEvent(
 			new EventData({
@@ -194,7 +194,7 @@ export class SettingsSubsectionDeviceComponent implements OnInit, AfterViewInit 
 
 	public onTertiaryNavChange(event: string[]): void {
 		this.page_settings.tertiary_nav = event;
-		this.settingService.setSettingsDeviceSettings(this.page_settings);
+		this.settingDeviceService.setSettingsDeviceSettings(this.page_settings);
 		this.updateTertiaryNav();
 	}
 

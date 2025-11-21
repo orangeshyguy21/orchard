@@ -16,12 +16,28 @@
 			@if (morph_state() === 'actionable') {
 				<div animate.enter="animate-fadein-delayed" class="font-size-xs">{{ active_event()?.message }}</div>
 			}
-			@if (!saving()) {
+			@if (saving()) {
+				@if (subscribed()) {
+					@if (moused()) {
+						<div animate.enter="animate-enter-scale" class="h-1-75 w-1-75">
+							<mat-icon class="icon-md">stop</mat-icon>
+						</div>
+					} @else {
+						<orc-progress-circle
+							animate.enter="animate-enter-scale"
+							[value]="active_event()?.progress ?? null"
+							[diameter]="25"
+							[stroke_width]="3"
+							[background_color]="'orc-default-progress-spinner'"
+						></orc-progress-circle>
+					}
+				} @else {
+					<mat-spinner [diameter]="25" animate.enter="animate-enter-scale"></mat-spinner>
+				}
+			} @else {
 				<div animate.enter="animate-enter-scale" class="h-1-75 w-1-75">
 					<mat-icon #icon_collapsed [class.mat-symbol-outline]="!highlight()" class="icon-md">{{ icon() }}</mat-icon>
 				</div>
-			} @else {
-				<mat-spinner [diameter]="25" animate.enter="animate-enter-scale"></mat-spinner>
 			}
 		</div>
 	</div>

@@ -32,9 +32,3 @@ export class AiChatInput {
 	@Field(() => [AiChatMessageInput])
 	messages: AiChatMessageInput[];
 }
-
-@InputType()
-export class AiChatAbortInput {
-	@Field()
-	id: string;
-}

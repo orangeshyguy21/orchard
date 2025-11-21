@@ -16,7 +16,7 @@ import {forkJoin, lastValueFrom, Subscription, EMPTY, catchError, finalize, tap}
 import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {ConfigService} from '@client/modules/config/services/config.service';
-import {SettingService} from '@client/modules/settings/services/setting/setting.service';
+import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
 import {PublicService} from '@client/modules/public/services/image/public.service';
 import {LightningService} from '@client/modules/lightning/services/lightning/lightning.service';
@@ -103,7 +103,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	constructor(
 		private configService: ConfigService,
 		private mintService: MintService,
-		private settingService: SettingService,
+		private settingDeviceService: SettingDeviceService,
 		private publicService: PublicService,
 		private lightningService: LightningService,
 		private aiService: AiService,
@@ -220,7 +220,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 
 	private async initMintAnalytics(): Promise<void> {
 		try {
-			this.locale = await this.settingService.getLocale();
+			this.locale = await this.settingDeviceService.getLocale();
 			this.mint_genesis_time = this.getMintGenesisTime();
 			this.page_settings = this.getPageSettings();
 			this.updateTertiaryNav();
@@ -235,7 +235,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	}
 
 	private async loadMintAnalytics(): Promise<void> {
-		const timezone = this.settingService.getTimezone();
+		const timezone = this.settingDeviceService.getTimezone();
 		const analytics_balances_obs = this.mintService.loadMintAnalyticsBalances({
 			units: this.page_settings.units,
 			date_start: this.page_settings.date_start,
@@ -370,7 +370,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	******************************************************** */
 
 	private getPageSettings(): NonNullableMintDashboardSettings {
-		const settings = this.settingService.getMintDashboardSettings();
+		const settings = this.settingDeviceService.getMintDashboardSettings();
 		return {
 			type: settings.type ?? ChartType.Summary,
 			interval: settings.interval ?? MintAnalyticsInterval.Day,
@@ -426,25 +426,25 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public onDateChange(event: number[]): void {
 		this.page_settings.date_start = event[0];
 		this.page_settings.date_end = event[1];
-		this.settingService.setMintDashboardSettings(this.page_settings);
+		this.settingDeviceService.setMintDashboardSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
 
 	public onUnitsChange(event: MintUnit[]): void {
 		this.page_settings.units = event;
-		this.settingService.setMintDashboardSettings(this.page_settings);
+		this.settingDeviceService.setMintDashboardSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
 
 	public onIntervalChange(event: MintAnalyticsInterval): void {
 		this.page_settings.interval = event;
-		this.settingService.setMintDashboardSettings(this.page_settings);
+		this.settingDeviceService.setMintDashboardSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
 
 	public onTypeChange(event: ChartType): void {
 		this.page_settings.type = event;
-		this.settingService.setMintDashboardSettings(this.page_settings);
+		this.settingDeviceService.setMintDashboardSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
 
@@ -458,7 +458,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 
 	public onTertiaryNavChange(event: string[]): void {
 		this.page_settings.tertiary_nav = event;
-		this.settingService.setMintDashboardSettings(this.page_settings);
+		this.settingDeviceService.setMintDashboardSettings(this.page_settings);
 		this.updateTertiaryNav();
 	}
 

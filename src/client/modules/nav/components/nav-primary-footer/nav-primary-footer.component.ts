@@ -16,4 +16,5 @@ export class NavPrimaryFooterComponent {
 
 	@Output() save: EventEmitter<void> = new EventEmitter();
 	@Output() cancel: EventEmitter<void> = new EventEmitter();
+	@Output() abort: EventEmitter<void> = new EventEmitter();
 }

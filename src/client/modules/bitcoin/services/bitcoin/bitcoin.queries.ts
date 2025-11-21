@@ -112,3 +112,40 @@ export const BITCOIN_BLOCK_TEMPLATE_QUERY = `{
         feerate_high
     }
 }`;
+
+export const BITCOIN_ORACLE_PRICE_QUERY = `
+query BitcoinOraclePrice($start_date: UnixTimestamp, $end_date: UnixTimestamp) {
+    bitcoin_oracle(start_date: $start_date, end_date: $end_date){
+        date
+        price
+    }
+}`;
+
+export const BITCOIN_ORACLE_BACKFILL_SUBSCRIPTION = `
+    subscription BitcoinOracleBackfill($id: String!, $auth: String!, $start_date: UnixTimestamp!, $end_date: UnixTimestamp) {
+        bitcoin_oracle_backfill(id: $id, auth: $auth, start_date: $start_date, end_date: $end_date) {
+            id
+            status
+            start_date
+            end_date
+            total_days
+            processed
+            successful
+            failed
+            date
+            price
+            success
+            error
+            date_progress
+            overall_progress
+            message
+        }
+    }
+`;
+
+export const BITCOIN_ORACLE_BACKFILL_ABORT_MUTATION = `
+mutation BitcoinOracleBackfillAbort($id: String!) {
+    bitcoin_oracle_backfill_abort(id: $id) {
+        id
+    }
+}`;

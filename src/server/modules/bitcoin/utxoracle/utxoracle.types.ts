@@ -1,7 +1,8 @@
 export type UTXOracleRunOptions = {
-	date?: string; // YYYY-MM-DD in UTC
+	date?: number; // Unix timestamp in seconds (midnight UTC)
 	recent_blocks?: number; // defaults to 144
 	intraday?: boolean; // include intraday data in result
+	progress_callback?: (progress: UTXOracleProgress) => void;
 };
 
 export type UTXOracleResult = {
@@ -11,4 +12,9 @@ export type UTXOracleResult = {
 	bounds: {min: number; max: number};
 	block_window: {start: number; end: number};
 	intraday?: Array<{block_height: number; timestamp: number; price: number}>;
+};
+
+export type UTXOracleProgress = {
+	date_progress: number; // 0-100, progress for current date
+	message?: string;
 };

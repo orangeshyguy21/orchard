@@ -1,0 +1,23 @@
+<div class="flex flex-column">
+	<div class="sticky-setting z-index-1">
+		<div class="flex flex-justify-between flex-items-end p-b-0-5">
+			<div>
+				<div class="title-l">Bitcoin</div>
+				<div class="font-size-xs orc-outline-color">Optional bitcoin settings</div>
+			</div>
+		</div>
+		<div class="category-rule"></div>
+	</div>
+	<orc-settings-subsection-app-bitcoin
+		[form_group]="form_bitcoin"
+		[oracle_price]="bitcoin_oracle_price()"
+		(update_oracle)="onUpdateBitcoinOracle()"
+	></orc-settings-subsection-app-bitcoin>
+	<!-- <orc-settings-subsection-user-user
+		[user]="user()"
+		[form_group_user_name]="form_user_name"
+		(cancel_user_name)="onCancelUserName($event)"
+		(submit_user_name)="onSubmitUserName()"
+		(save_user_password)="onSaveUserPassword($event)"
+	></orc-settings-subsection-user-user> -->
+</div>

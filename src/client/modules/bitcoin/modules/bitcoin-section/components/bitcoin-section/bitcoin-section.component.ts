@@ -1,12 +1,17 @@
 /* Core Dependencies */
-import {Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef, OnDestroy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, OnInit, OnDestroy, signal, WritableSignal} from '@angular/core';
 import {Router, Event, ActivatedRoute} from '@angular/router';
+/* Vendor Dependencies */
+import {filter, Subscription} from 'rxjs';
+/* Application Dependencies */
+import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
+import {Setting} from '@client/modules/settings/classes/setting.class';
 /* Native Dependencies */
 import {BitcoinService} from '@client/modules/bitcoin/services/bitcoin/bitcoin.service';
 import {BitcoinNetworkInfo} from '@client/modules/bitcoin/classes/bitcoin-network-info.class';
 import {BitcoinBlockchainInfo} from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
-/* Vendor Dependencies */
-import {filter, Subscription} from 'rxjs';
+/* Shared Dependencies */
+import {SettingKey} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-bitcoin-section',
@@ -16,32 +21,37 @@ import {filter, Subscription} from 'rxjs';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BitcoinSectionComponent implements OnInit, OnDestroy {
-	public bitcoin_blockchain_info: BitcoinBlockchainInfo | null = null;
-	public bitcoin_network_info: BitcoinNetworkInfo | null = null;
-	public active_sub_section: string = '';
-	public loading: boolean = true;
-	public error: boolean = false;
+	public bitcoin_blockchain_info: WritableSignal<BitcoinBlockchainInfo | null> = signal(null);
+	public bitcoin_network_info: WritableSignal<BitcoinNetworkInfo | null> = signal(null);
+	public active_sub_section: WritableSignal<string> = signal('');
+	public show_oracle: WritableSignal<boolean> = signal(false);
 
 	private subscriptions: Subscription = new Subscription();
 
 	constructor(
 		private bitcoinService: BitcoinService,
+		private settingAppService: SettingAppService,
 		private router: Router,
 		private route: ActivatedRoute,
-		private cdr: ChangeDetectorRef,
 	) {}
 
 	ngOnInit(): void {
 		this.bitcoinService.loadBitcoinNetworkInfo().subscribe({
 			next: (info: BitcoinNetworkInfo) => {
-				this.bitcoin_network_info = info;
-				this.cdr.detectChanges();
+				this.bitcoin_network_info.set(info);
 			},
 			error: (error) => {
 				console.error(error);
-				this.error = true;
-				this.loading = false;
-				this.cdr.detectChanges();
+			},
+		});
+		this.settingAppService.loadSettings().subscribe({
+			next: (settings: Setting[]) => {
+				const oracle_setting = settings.find((setting: Setting) => setting.key === SettingKey.BitcoinOracle);
+				const oracle_enabled = oracle_setting ? this.settingAppService.parseSettingValue(oracle_setting) : false;
+				this.show_oracle.set(oracle_enabled);
+			},
+			error: (error) => {
+				console.error(error);
 			},
 		});
 		this.bitcoinService.loadBitcoinBlockchainInfo().subscribe();
@@ -51,8 +61,7 @@ export class BitcoinSectionComponent implements OnInit, OnDestroy {
 
 	private getBitcoinBlockchainInfoSubscription(): Subscription {
 		return this.bitcoinService.bitcoin_blockchain_info$.subscribe((info: BitcoinBlockchainInfo | null) => {
-			if (info) this.bitcoin_blockchain_info = info;
-			this.cdr.detectChanges();
+			if (info) this.bitcoin_blockchain_info.set(info);
 		});
 	}
 
@@ -70,8 +79,7 @@ export class BitcoinSectionComponent implements OnInit, OnDestroy {
 			route = route.firstChild;
 		}
 		if (!route.snapshot.data) return;
-		this.active_sub_section = route.snapshot.data['sub_section'] || '';
-		this.cdr.detectChanges();
+		this.active_sub_section.set(route.snapshot.data['sub_section'] || '');
 	}
 
 	ngOnDestroy(): void {

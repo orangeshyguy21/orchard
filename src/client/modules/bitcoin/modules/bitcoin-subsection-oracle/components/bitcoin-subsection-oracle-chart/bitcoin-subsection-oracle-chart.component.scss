@@ -1,0 +1,59 @@
+@use '@styles/molecule/molecule';
+@use '@styles/nucleus/nucleus';
+
+.bitcoin-oracle-chart-container {
+	@extend %p-v-1;
+	@extend %relative;
+	height: calc(100vh - 11rem);
+	min-height: 300px;
+
+	&.enabled-ai {
+		height: calc(100vh - 14rem);
+	}
+
+	&.form-open {
+		height: calc(100vh - 35rem);
+		min-height: 250px;
+	}
+
+	canvas {
+		height: 100%;
+		min-height: 300px;
+	}
+
+	// &.animations-enabled {
+	// 	transition:
+	// 		height 200ms ease-out,
+	// 		min-height 200ms ease-out;
+
+	// 	canvas {
+	// 		transition:
+	// 			height 200ms ease-out,
+	// 			min-height 200ms ease-out;
+	// 	}
+	// }
+	&.animations-embedded-enabled {
+		transition:
+			height 50ms ease-out,
+			min-height 50ms ease-out;
+
+		canvas {
+			transition:
+				height 50ms ease-out,
+				min-height 50ms ease-out;
+		}
+	}
+}
+
+.no-data-overlay {
+	@extend %absolute;
+	@extend %top-0;
+	@extend %left-0;
+	@extend %right-0;
+	@extend %bottom-0;
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-gap-1;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+}

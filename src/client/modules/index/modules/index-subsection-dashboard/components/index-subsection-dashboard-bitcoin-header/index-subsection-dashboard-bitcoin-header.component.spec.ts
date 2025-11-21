@@ -21,11 +21,15 @@ describe('IndexSubsectionDashboardBitcoinHeaderComponent', () => {
 
 		fixture = TestBed.createComponent(IndexSubsectionDashboardBitcoinHeaderComponent);
 		component = fixture.componentInstance;
-		component.enabled = true;
-		component.loading = false;
-		component.error = false;
-		component.network_info = {subversion: 'Satoshi:26.0'} as unknown as BitcoinNetworkInfo;
-		component.blockchain_info = {initialblockdownload: false} as unknown as BitcoinBlockchainInfo;
+
+		// set inputs using modern signal-based input API
+		fixture.componentRef.setInput('enabled', true);
+		fixture.componentRef.setInput('enabled_oracle', false);
+		fixture.componentRef.setInput('loading', false);
+		fixture.componentRef.setInput('error', false);
+		fixture.componentRef.setInput('network_info', {subversion: 'Satoshi:26.0'} as unknown as BitcoinNetworkInfo);
+		fixture.componentRef.setInput('blockchain_info', {initialblockdownload: false} as unknown as BitcoinBlockchainInfo);
+
 		fixture.detectChanges();
 	});
 

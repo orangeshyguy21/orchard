@@ -23,6 +23,8 @@ import {MintAnalyticsInterval} from './modules/cashu/mintdb/cashumintdb.enums';
 import {MintUnit, MintQuoteState, MeltQuoteState, MintProofState, MintPaymentMethod} from './modules/cashu/cashu.enums';
 import {AiAgent, AiMessageRole, AiFunctionName} from './modules/ai/ai.enums';
 import {UserRole} from './modules/user/user.enums';
+import {SettingKey, SettingValue} from './modules/setting/setting.enums';
+import {UTXOracleProgressStatus} from './modules/bitcoin/utxoracle/utxoracle.enums';
 /* Application Configuration */
 import {config} from './config/configuration';
 
@@ -41,6 +43,9 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 	registerEnumType(AiMessageRole, {name: 'AiMessageRole'});
 	registerEnumType(AiFunctionName, {name: 'AiFunctionName'});
 	registerEnumType(UserRole, {name: 'UserRole'});
+	registerEnumType(SettingKey, {name: 'SettingKey'});
+	registerEnumType(SettingValue, {name: 'SettingValue'});
+	registerEnumType(UTXOracleProgressStatus, {name: 'UTXOracleProgressStatus'});
 
 	const path = configService.get('server.path');
 	const is_production = configService.get('mode.production');
@@ -49,7 +54,10 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 		autoSchemaFile: is_production ? true : 'schema.gql',
 		sortSchema: true,
 		path: path,
-		installSubscriptionHandlers: true,
+		subscriptions: {
+			'graphql-ws': true,
+			'subscriptions-transport-ws': false,
+		},
 		playground: !is_production,
 		resolvers: {
 			UnixTimestamp: UnixTimestamp,

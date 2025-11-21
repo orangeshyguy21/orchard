@@ -72,3 +72,11 @@ export const AI_AGENT_QUERY = `
         }
     }
 `;
+
+export const AI_CHAT_ABORT_MUTATION = `
+    mutation AiChatAbort($id: String!) {
+        ai_chat_abort(id: $id) {
+            id
+        }
+    }
+`;

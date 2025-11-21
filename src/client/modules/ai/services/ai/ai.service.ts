@@ -3,10 +3,10 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
 /* Vendor Dependencies */
-import {Observable, catchError, Subscription, Subject, map, tap, throwError, shareReplay} from 'rxjs';
+import {Observable, catchError, Subscription, Subject, map, tap, throwError, shareReplay, finalize} from 'rxjs';
 /* Application Dependencies */
 import {ApiService} from '@client/modules/api/services/api/api.service';
-import {SettingService} from '@client/modules/settings/services/setting/setting.service';
+import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {LocalStorageService} from '@client/modules/cache/services/local-storage/local-storage.service';
 import {AuthService} from '@client/modules/auth/services/auth/auth.service';
 import {OrchardWsRes} from '@client/modules/api/types/api.types';
@@ -14,14 +14,14 @@ import {getApiQuery} from '@client/modules/api/helpers/api.helpers';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {OrchardRes} from '@client/modules/api/types/api.types';
 /* Native Dependencies */
-import {AiChatResponse, AiModelResponse, AiAgentResponse} from '@client/modules/ai/types/ai.types';
+import {AiChatResponse, AiModelResponse, AiAgentResponse, AiChatAbortResponse} from '@client/modules/ai/types/ai.types';
 import {AiChatChunk, AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {AiModel} from '@client/modules/ai/classes/ai-model.class';
 import {AiChatCompiledMessage} from '@client/modules/ai/classes/ai-chat-compiled-message.class';
 import {AiChatConversation} from '@client/modules/ai/classes/ai-chat-conversation.class';
 import {AiAgentDefinition} from '@client/modules/ai/classes/ai-agent-definition.class';
 /* Local Dependencies */
-import {AI_CHAT_SUBSCRIPTION, AI_MODELS_QUERY, AI_AGENT_QUERY} from './ai.queries';
+import {AI_CHAT_SUBSCRIPTION, AI_MODELS_QUERY, AI_AGENT_QUERY, AI_CHAT_ABORT_MUTATION} from './ai.queries';
 /* Shared Dependencies */
 import {AiAgent, AiMessageRole} from '@shared/generated.types';
 
@@ -58,7 +58,7 @@ export class AiService {
 
 	constructor(
 		private apiService: ApiService,
-		private settingService: SettingService,
+		private settingDeviceService: SettingDeviceService,
 		private localStorageService: LocalStorageService,
 		private authService: AuthService,
 		private router: Router,
@@ -66,7 +66,7 @@ export class AiService {
 	) {}
 
 	public getFunctionModel(): Observable<AiModel | null> {
-		const set_model = this.settingService.getModel();
+		const set_model = this.settingDeviceService.getModel();
 		return this.getAiModels().pipe(
 			map((models) => {
 				if (models.find((model) => model.model === set_model)) {
@@ -78,24 +78,13 @@ export class AiService {
 		);
 	}
 
-	public closeAiSocket(): void {
-		if (!this.subscription) return;
-		this.subscription?.unsubscribe();
-		this.apiService.gql_socket.next({
-			id: this.subscription_id,
-			type: 'stop',
-		});
-		this.subscription_id = null;
-		this.active_subject.next(false);
-	}
-
 	public requestAgent(agent: AiAgent, content: string | null): void {
 		this.agent_subject.next({agent, content});
 	}
 
 	public openAiSocket(agent: AiAgent, content: string | null, context?: string): void {
 		const subscription_id = crypto.randomUUID();
-		const ai_model = this.settingService.getModel();
+		const ai_model = this.settingDeviceService.getModel();
 		this.subscription_id = subscription_id;
 		this.active_subject.next(true);
 		this.subscription = this.apiService.gql_socket.subscribe({
@@ -146,6 +135,39 @@ export class AiService {
 				},
 			},
 		});
+	}
+
+	public abortAiSocket(id?: string): void {
+		const subscription_id = id || this.subscription_id;
+		if (!subscription_id) return;
+		const query = getApiQuery(AI_CHAT_ABORT_MUTATION, {id});
+		this.http
+			.post<OrchardRes<AiChatAbortResponse>>(this.apiService.api, query)
+			.pipe(
+				map((response) => {
+					if (response.errors) throw new OrchardErrors(response.errors);
+					return response.data.ai_chat_abort;
+				}),
+				catchError((error) => {
+					console.error('Error aborting ai socket:', error);
+					return throwError(() => error);
+				}),
+				finalize(() => {
+					this.closeAiSocket();
+				}),
+			)
+			.subscribe();
+	}
+
+	private closeAiSocket(): void {
+		if (!this.subscription) return;
+		this.subscription?.unsubscribe();
+		this.apiService.gql_socket.next({
+			id: this.subscription_id,
+			type: 'stop',
+		});
+		this.subscription_id = null;
+		this.active_subject.next(false);
 	}
 
 	public getAiModels(): Observable<AiModel[]> {

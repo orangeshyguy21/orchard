@@ -1,0 +1,107 @@
+@use '@styles/molecule/molecule';
+
+:host {
+	@extend %flex;
+}
+
+.graphic-oracle-container {
+	@extend %flex;
+
+	.oracle-base {
+		fill: var(--mat-sys-surface-container-low);
+	}
+
+	.oracle-eye {
+		fill: var(--mat-sys-surface-container-low);
+	}
+
+	.oracle-block {
+		fill: var(--mat-sys-surface-container-low);
+	}
+
+	.oracle-orb {
+		fill: var(--mat-sys-surface-container-low);
+	}
+
+	.lightest-fill,
+	.light-fill,
+	.medium-fill,
+	.dark-fill,
+	.darkest-fill {
+		transition: fill 1s ease-in-out;
+	}
+
+	&.stone {
+		.lightest-fill {
+			fill: var(--mat-sys-primary-container);
+		}
+		.light-fill {
+			fill: var(--mat-sys-primary-container);
+		}
+		.medium-fill {
+			fill: var(--mat-sys-primary-container);
+		}
+		.dark-fill {
+			fill: var(--mat-sys-primary-container);
+		}
+		.darkest-fill {
+			fill: var(--mat-sys-primary-container);
+		}
+	}
+
+	&.running {
+		.oracle-eye {
+			@extend %orc-brand-lightest-fill;
+			opacity: 0.4;
+			transition: fill 1s ease-in-out;
+			animation: pulse 3s ease-in-out 1s infinite;
+		}
+		.oracle-block {
+			@extend %orc-brand-lightest-fill;
+			opacity: 0.4;
+			transition: fill 1s ease-in-out;
+			animation:
+				pulse 3s ease-in-out 1s infinite,
+				rotate 3s linear infinite;
+			transform-box: fill-box;
+			transform-origin: center;
+		}
+	}
+
+	&.completed {
+		.oracle-eye {
+			fill: var(--mat-sys-surface-container-low);
+		}
+		.oracle-block {
+			@extend %orc-brand-lightest-fill;
+		}
+	}
+
+	&.error {
+		.oracle-eye {
+			fill: var(--mat-sys-surface-container-low);
+		}
+		.oracle-block {
+			fill: var(--mat-sys-error);
+		}
+	}
+}
+
+@keyframes pulse {
+	0%,
+	100% {
+		opacity: 0.4;
+	}
+	50% {
+		opacity: 1;
+	}
+}
+
+@keyframes rotate {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}

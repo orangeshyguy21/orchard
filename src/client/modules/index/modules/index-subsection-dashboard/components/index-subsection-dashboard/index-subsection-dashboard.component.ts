@@ -1,11 +1,12 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef, OnDestroy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef, OnDestroy, signal} from '@angular/core';
 import {Router} from '@angular/router';
 import {FormGroup, FormControl} from '@angular/forms';
 /* Vendor Dependencies */
 import {tap, catchError, finalize, EMPTY, forkJoin, Subscription, firstValueFrom, timer, switchMap, takeWhile} from 'rxjs';
 /* Application Dependencies */
 import {ConfigService} from '@client/modules/config/services/config.service';
+import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {BitcoinService} from '@client/modules/bitcoin/services/bitcoin/bitcoin.service';
 import {LightningService} from '@client/modules/lightning/services/lightning/lightning.service';
 import {TaprootAssetsService} from '@client/modules/tapass/services/taproot-assets.service';
@@ -27,6 +28,9 @@ import {MintInfo} from '@client/modules/mint/classes/mint-info.class';
 import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {OrchardError} from '@client/modules/error/types/error.types';
+import {Setting} from '@client/modules/settings/classes/setting.class';
+/* Shared Dependencies */
+import {SettingKey} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-index-subsection-dashboard',
@@ -37,6 +41,7 @@ import {OrchardError} from '@client/modules/error/types/error.types';
 })
 export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public enabled_bitcoin: boolean;
+	public enabled_bitcoin_oracle = signal<boolean>(false);
 	public enabled_lightning: boolean;
 	public enabled_taproot_assets: boolean;
 	public version: string;
@@ -95,6 +100,7 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 
 	constructor(
 		private configService: ConfigService,
+		private settingAppService: SettingAppService,
 		private bitcoinService: BitcoinService,
 		private lightningService: LightningService,
 		private taprootAssetsService: TaprootAssetsService,
@@ -115,6 +121,7 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 	******************************************************** */
 
 	ngOnInit(): void {
+		this.getSettings();
 		this.orchardOptionalInit();
 	}
 
@@ -152,6 +159,19 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 	/* *******************************************************
 		Data                      
 	******************************************************** */
+
+	private async getSettings(): Promise<void> {
+		this.settingAppService.loadSettings().subscribe({
+			next: (settings: Setting[]) => {
+				const oracle_setting = settings.find((setting: Setting) => setting.key === SettingKey.BitcoinOracle);
+				const oracle_enabled = oracle_setting ? this.settingAppService.parseSettingValue(oracle_setting) : false;
+				this.enabled_bitcoin_oracle.set(oracle_enabled);
+			},
+			error: (error) => {
+				console.error(error);
+			},
+		});
+	}
 
 	private getBitcoin(): void {
 		forkJoin({

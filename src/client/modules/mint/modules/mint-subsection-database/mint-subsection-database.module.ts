@@ -15,7 +15,7 @@ import {MatTableModule} from '@angular/material/table';
 import {MatSortModule} from '@angular/material/sort';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatRippleModule} from '@angular/material/core';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+// import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatButtonModule} from '@angular/material/button';
 import {BaseChartDirective as ChartJsBaseChartDirective} from 'ng2-charts';
 /* Application Dependencies */
@@ -23,6 +23,7 @@ import {OrcLocalModule} from '@client/modules/local/local.module';
 import {OrcDataModule} from '@client/modules/data/data.module';
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
+import {OrcProgressModule} from '@client/modules/progress/progress.module';
 import {OrcMintGeneralModule} from '@client/modules/mint/modules/mint-general/mint-general.module';
 import {OrcMintSectionGeneralModule} from '@client/modules/mint/modules/mint-section-general/mint-section-general.module';
 import {pendingEventGuard} from '@client/modules/event/guards/pending-event.guard';
@@ -74,13 +75,14 @@ import {MintSubsectionDatabaseTableEcashComponent} from './components/mint-subse
 		MatSortModule,
 		MatPaginatorModule,
 		MatRippleModule,
-		MatProgressSpinnerModule,
+		// MatProgressSpinnerModule,
 		MatButtonModule,
 		ChartJsBaseChartDirective,
 		OrcLocalModule,
 		OrcDataModule,
 		OrcFormModule,
 		OrcGraphicModule,
+		OrcProgressModule,
 		OrcMintGeneralModule,
 		OrcMintSectionGeneralModule,
 	],

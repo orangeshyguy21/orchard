@@ -4,7 +4,7 @@ import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import Chart from 'chart.js/auto';
 /* Application Dependencies */
-import {SettingService} from '@client/modules/settings/services/setting/setting.service';
+import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {GraphicService} from '@client/modules/graphic/services/graphic/graphic.service';
 
 Chart.register(annotationPlugin);
@@ -18,12 +18,12 @@ Chart.register(annotationPlugin);
 })
 export class AppComponent implements OnInit {
 	constructor(
-		private settingService: SettingService,
+		private settingDeviceService: SettingDeviceService,
 		private graphicService: GraphicService,
 	) {}
 
 	ngOnInit(): void {
 		this.graphicService.init();
-		this.settingService.init();
+		this.settingDeviceService.init();
 	}
 }

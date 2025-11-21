@@ -1,0 +1,6 @@
+<div class="bitcoin-subsection-oracle-run-progress-date-container">
+	<div class="flex flex-column flex-gap-0-5">
+		<div class="progress-message" [class.error]="status() === UtxOracleProgressStatus.Error">{{ message_displayed() }}</div>
+		<mat-progress-bar class="orc-progress-bar" mode="determinate" [value]="progress_displayed()"></mat-progress-bar>
+	</div>
+</div>

@@ -2,7 +2,15 @@
 import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
 import {MintDataType} from '@client/modules/mint/enums/data-type.enum';
 /* Shared Dependencies */
-import {OrchardAiChatChunk, OrchardAiModel, OrchardAiAgent, AiFunctionName, MintUnit, MintAnalyticsInterval} from '@shared/generated.types';
+import {
+	OrchardAiChatChunk,
+	OrchardAiModel,
+	OrchardAiAgent,
+	AiFunctionName,
+	MintUnit,
+	MintAnalyticsInterval,
+	OrchardAiChatStream,
+} from '@shared/generated.types';
 
 export type AiChatResponse = {
 	ai_chat: OrchardAiChatChunk;
@@ -14,6 +22,10 @@ export type AiModelResponse = {
 
 export type AiAgentResponse = {
 	ai_agent: OrchardAiAgent;
+};
+
+export type AiChatAbortResponse = {
+	ai_chat_abort: OrchardAiChatStream;
 };
 
 export type AiFunction =

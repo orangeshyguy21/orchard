@@ -10,7 +10,7 @@ import {MatTableDataSource} from '@angular/material/table';
 /* Application Dependencies */
 import {NonNullableMintDatabaseSettings} from '@client/modules/settings/types/setting.types';
 import {ConfigService} from '@client/modules/config/services/config.service';
-import {SettingService} from '@client/modules/settings/services/setting/setting.service';
+import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {EventService} from '@client/modules/event/services/event/event.service';
 import {LightningService} from '@client/modules/lightning/services/lightning/lightning.service';
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
@@ -90,7 +90,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	constructor(
 		private route: ActivatedRoute,
 		private configService: ConfigService,
-		private settingService: SettingService,
+		private settingDeviceService: SettingDeviceService,
 		private eventService: EventService,
 		private mintService: MintService,
 		private lightningService: LightningService,
@@ -163,7 +163,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	******************************************************** */
 
 	private getPageSettings(): NonNullableMintDatabaseSettings {
-		const settings = this.settingService.getMintDatabaseSettings();
+		const settings = this.settingDeviceService.getMintDatabaseSettings();
 		const type = settings.type ?? MintDataType.MintMints;
 		return {
 			type: type,
@@ -210,7 +210,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	******************************************************** */
 
 	private async initData(): Promise<void> {
-		this.locale = this.settingService.getLocale();
+		this.locale = this.settingDeviceService.getLocale();
 		this.mint_genesis_time = this.getMintGenesisTime();
 		this.page_settings = this.getPageSettings();
 		this.state_options = this.getDefaultStates(this.page_settings.type);
@@ -324,7 +324,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	public onDateChange(event: number[]): void {
 		this.page_settings.date_start = event[0];
 		this.page_settings.date_end = event[1];
-		this.settingService.setMintDatabaseSettings(this.page_settings);
+		this.settingDeviceService.setMintDatabaseSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
 
@@ -332,26 +332,26 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		const default_states = this.getDefaultStates(event);
 		this.page_settings.type = event;
 		this.page_settings.states = default_states;
-		this.settingService.setMintDatabaseSettings(this.page_settings);
+		this.settingDeviceService.setMintDatabaseSettings(this.page_settings);
 		this.state_options = default_states;
 		this.reloadDynamicData();
 	}
 
 	public onUnitsChange(event: MintUnit[]): void {
 		this.page_settings.units = event;
-		this.settingService.setMintDatabaseSettings(this.page_settings);
+		this.settingDeviceService.setMintDatabaseSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
 
 	public onStatesChange(event: string[]): void {
 		this.page_settings.states = event;
-		this.settingService.setMintDatabaseSettings(this.page_settings);
+		this.settingDeviceService.setMintDatabaseSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
 
 	public onPage(event: PageEvent): void {
 		this.page_settings.page = event.pageIndex + 1;
-		this.settingService.setMintDatabaseSettings(this.page_settings);
+		this.settingDeviceService.setMintDatabaseSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
 

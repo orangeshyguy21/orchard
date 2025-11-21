@@ -18,6 +18,7 @@ import {OrcDataModule} from '@client/modules/data/data.module';
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {OrcErrorModule} from '@client/modules/error/error.module';
 import {OrcNavModule} from '@client/modules/nav/nav.module';
+import {OrcProgressModule} from '@client/modules/progress/progress.module';
 import {OrcBitcoinGeneralModule} from '@client/modules/bitcoin/modules/bitcoin-general/bitcoin-general.module';
 import {OrcLightningGeneralModule} from '@client/modules/lightning/modules/lightning-general/lightning-general.module';
 import {OrcMintGeneralModule} from '@client/modules/mint/modules/mint-general/mint-general.module';
@@ -88,6 +89,7 @@ import {IndexSubsectionDashboardMintEnabledInfoComponent} from './components/ind
 		OrcGraphicModule,
 		OrcErrorModule,
 		OrcNavModule,
+		OrcProgressModule,
 		OrcMintGeneralModule,
 		OrcBitcoinGeneralModule,
 		OrcLightningGeneralModule,

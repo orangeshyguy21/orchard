@@ -1,0 +1,41 @@
+<div class="bitcoin-subsection-oracle-run-container flex flex-grow">
+	<div class="flex flex-grow flex-column flex-gap-1">
+		<div class="h-min-3">
+			@if (reveal_dates()) {
+				<div class="flex flex-column" animate.enter="orc-animation-fadein">
+					<div class="title-l">{{ date_end() ? 'Dates' : 'Date' }}</div>
+					<div class="flex flex-row flex-items-center flex-gap-0-5 font-size-s orc-outline-color">
+						<div>{{ date_start_stamp() | timeUtc: 'date-only' }}</div>
+						@if (date_end_stamp()) {
+							<mat-icon>check_indeterminate_small</mat-icon>
+						}
+						<div>{{ date_end_stamp() | timeUtc: 'date-only' }}</div>
+					</div>
+				</div>
+			}
+		</div>
+		<div class="h-min-3">
+			@if (reveal_progress()) {
+				<orc-bitcoin-subsection-oracle-run-progress-date
+					animate.enter="orc-animation-fadein"
+					[message]="progress()?.message ?? null"
+					[progress]="progress()?.date_progress ?? 0"
+					[status]="progress()?.status ?? null"
+					[error]="progress()?.error ?? null"
+				></orc-bitcoin-subsection-oracle-run-progress-date>
+			}
+		</div>
+		<div class="progress-summary-container">
+			@if (reveal_progress()) {
+				<orc-bitcoin-subsection-oracle-run-progress-summary
+					animate.enter="orc-animation-fadein"
+					[date]="progress()?.date ?? 0"
+					[progress]="progress()?.overall_progress ?? 0"
+					[successful]="progress()?.successful ?? 0"
+					[failed]="progress()?.failed ?? 0"
+					[status]="progress()?.status ?? null"
+				></orc-bitcoin-subsection-oracle-run-progress-summary>
+			}
+		</div>
+	</div>
+</div>

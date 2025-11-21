@@ -25,6 +25,10 @@ export enum ThemeType {
 	LIGHT_MODE = 'light-mode',
 }
 
+export type BitcoinOracleSettings = {
+	date_start: number | null;
+};
+
 export type MintDashboardSettings = {
 	date_start: number | null;
 	units: MintUnit[] | null;
