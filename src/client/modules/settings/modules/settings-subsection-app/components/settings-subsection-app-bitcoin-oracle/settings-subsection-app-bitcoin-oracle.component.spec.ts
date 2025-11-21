@@ -1,5 +1,8 @@
+/* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-
+/* Native Dependencies */
+import {OrcSettingsSubsectionAppModule} from '@client/modules/settings/modules/settings-subsection-app/settings-subsection-app.module';
+/* Local Dependencies */
 import {SettingsSubsectionAppBitcoinOracleComponent} from './settings-subsection-app-bitcoin-oracle.component';
 
 describe('SettingsSubsectionAppBitcoinOracleComponent', () => {
@@ -8,7 +11,7 @@ describe('SettingsSubsectionAppBitcoinOracleComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [SettingsSubsectionAppBitcoinOracleComponent],
+			imports: [OrcSettingsSubsectionAppModule],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(SettingsSubsectionAppBitcoinOracleComponent);

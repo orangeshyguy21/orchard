@@ -1,5 +1,8 @@
+/* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-
+/* Native Dependencies */
+import {OrcBitcoinSubsectionOracleModule} from '@client/modules/bitcoin/modules/bitcoin-subsection-oracle/bitcoin-subsection-oracle.module';
+/* Local Dependencies */
 import {BitcoinSubsectionOracleControlComponent} from './bitcoin-subsection-oracle-control.component';
 
 describe('BitcoinSubsectionOracleControlComponent', () => {
@@ -8,7 +11,7 @@ describe('BitcoinSubsectionOracleControlComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [BitcoinSubsectionOracleControlComponent],
+			imports: [OrcBitcoinSubsectionOracleModule],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(BitcoinSubsectionOracleControlComponent);

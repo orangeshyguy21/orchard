@@ -2,7 +2,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 /* Native Dependencies */
 import {OrcBitcoinSubsectionOracleModule} from '@client/modules/bitcoin/modules/bitcoin-subsection-oracle/bitcoin-subsection-oracle.module';
-/* Application Dependencies */
+/* Local Dependencies */
 import {BitcoinSubsectionOracleComponent} from './bitcoin-subsection-oracle.component';
 
 describe('BitcoinSubsectionOracleComponent', () => {
