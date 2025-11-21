@@ -200,9 +200,10 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'ERROR',
-						message: 'Backfill error: ' + progress.error,
+						message: 'Backfill error',
 					}),
 				);
+				// this.resolveBackfillFormState();
 			}
 			if (progress.status === UtxOracleProgressStatus.Completed) {
 				this.eventService.registerEvent(
@@ -386,6 +387,23 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 			date_end_control?.disable({emitEvent: false});
 		}
 	}
+
+	// private resolveBackfillFormState(): void {
+	// 	const date_start = this.backfill_form.get('date_start')?.value;
+	// 	const date_end = this.backfill_form.get('date_end')?.value;
+	// 	if (date_start) {
+	// 		this.backfill_form.get('date_start')?.enable({emitEvent: false});
+	// 		this.backfill_form.get('date_start')?.markAsDirty();
+	// 		this.backfill_form.get('date_start')?.markAsTouched();
+	// 		this.backfill_form.get('date_start')?.updateValueAndValidity();
+	// 	}
+	// 	if (date_end) {
+	// 		this.backfill_form.get('date_end')?.enable({emitEvent: false});
+	// 		this.backfill_form.get('date_end')?.markAsPristine();
+	// 		this.backfill_form.get('date_end')?.markAsUntouched();
+	// 		this.backfill_form.get('date_end')?.updateValueAndValidity();
+	// 	}
+	// }
 
 	/**
 	 * Extract DateTime values from form and convert to Unix timestamps

@@ -13,13 +13,14 @@ import {UtxOracleProgressStatus} from '@shared/generated.types';
 export class BitcoinSubsectionOracleRunProgressDateComponent {
 	public message = input.required<string | null>();
 	public progress = input.required<number | null>();
+	public error = input.required<string | null>();
 	public status = input.required<UtxOracleProgressStatus | null>();
 
 	public message_displayed = computed(() => {
 		const message = this.message();
 		const status = this.status();
 		if (message) return message;
-		if (status === UtxOracleProgressStatus.Error) return 'Error';
+		if (status === UtxOracleProgressStatus.Error) return this.error();
 		if (status === UtxOracleProgressStatus.Aborted) return 'Aborted';
 		if (status === UtxOracleProgressStatus.Completed) return 'Completed';
 		if (status === UtxOracleProgressStatus.Processing) return 'Processing';
@@ -35,4 +36,6 @@ export class BitcoinSubsectionOracleRunProgressDateComponent {
 		if (status === UtxOracleProgressStatus.Completed) return 100;
 		return progress;
 	});
+
+	public UtxOracleProgressStatus = UtxOracleProgressStatus;
 }

@@ -3,4 +3,8 @@
 .progress-message {
 	@extend %font-size-xs;
 	@extend %orc-outline-color;
+
+	&.error {
+		@extend %orc-error-color;
+	}
 }
