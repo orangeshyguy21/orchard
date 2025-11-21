@@ -16,7 +16,7 @@ import {DEFAULT_SETTINGS} from './setting.config';
  */
 describe('SettingService', () => {
 	let service: SettingService;
-	let repository: Repository<Setting>;
+	let _repository: Repository<Setting>;
 
 	// mock data for testing
 	const mock_setting: Setting = {
@@ -48,7 +48,7 @@ describe('SettingService', () => {
 		}).compile();
 
 		service = module.get<SettingService>(SettingService);
-		repository = module.get<Repository<Setting>>(getRepositoryToken(Setting));
+		_repository = module.get<Repository<Setting>>(getRepositoryToken(Setting));
 	});
 
 	/**

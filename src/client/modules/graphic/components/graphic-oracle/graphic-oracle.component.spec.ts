@@ -1,7 +1,5 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-/* Shared Dependencies */
-import {UtxOracleProgressStatus} from '@shared/generated.types';
 /* Native Dependencies */
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 /* Local Dependencies */

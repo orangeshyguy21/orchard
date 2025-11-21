@@ -56,7 +56,8 @@ export class BitcoinOracleResolver implements OnModuleInit {
 		this.logger.debug(tag);
 		try {
 			const payload = await this.authService.validateAccessToken(auth);
-			if (payload.role !== UserRole.ADMIN) throw new OrchardApiError(OrchardErrorCode.AuthorizationError);
+			const approved_roles = [UserRole.ADMIN, UserRole.MANAGER];
+			if (!approved_roles.includes(payload.role)) throw new OrchardApiError(OrchardErrorCode.AuthorizationError);
 		} catch (error) {
 			if (error instanceof OrchardApiError) throw error;
 			throw new OrchardApiError(OrchardErrorCode.AuthenticationError);
