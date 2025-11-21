@@ -165,11 +165,14 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 
 	private getEventSubscription(): Subscription {
 		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
-			console.log('event_data', event_data);
 			this.active_event = event_data;
 			if (event_data === null) this.evaluateDirtyForm();
 			if (event_data && event_data.confirmed !== null) {
-				event_data.confirmed ? this.submitBackfill() : this.eventUnconfirmed();
+				if (event_data.type === 'SUBSCRIBED') {
+					if (event_data.confirmed === false) this.abortBackfill();
+				} else {
+					event_data.confirmed ? this.submitBackfill() : this.eventUnconfirmed();
+				}
 			}
 		});
 	}
@@ -181,13 +184,16 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 		return this.bitcoinService.backfill_progress$.subscribe((progress) => {
 			this.backfill_progress.set(progress);
 			if (progress.price !== null) this.getOracleData();
-			if (progress.status === UtxOracleProgressStatus.Processing) {
+			if (progress.status === UtxOracleProgressStatus.Started) {
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'SUBSCRIBED',
-						progress: progress.overall_progress,
+						progress: 0,
 					}),
 				);
+			}
+			if (progress.status === UtxOracleProgressStatus.Processing) {
+				this.eventService.updateEvent({progress: progress.overall_progress});
 			}
 			if (progress.status === UtxOracleProgressStatus.Error) {
 				console.error('Backfill error:', progress.error);
@@ -227,6 +233,12 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 		this.backfill_form.get('date_end')?.disable({emitEvent: false});
 		this.form_open.set(false);
 		this.evaluateDirtyForm();
+	}
+
+	private abortBackfill(): void {
+		this.bitcoinService.closeBackfillSocket();
+		this.backfill_progress.set(null);
+		this.eventService.registerEvent(null);
 	}
 
 	/* *******************************************************
@@ -416,14 +428,6 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 		this.bitcoinService.openBackfillSocket(start_timestamp, end_timestamp);
 		this.backfill_form.markAsPristine();
 		this.dirty_form.set(false);
-	}
-
-	/**
-	 * Cancel/abort the backfill process
-	 */
-	public abortBackfill(): void {
-		this.bitcoinService.closeBackfillSocket();
-		this.backfill_progress.set(null);
 	}
 
 	/* *******************************************************

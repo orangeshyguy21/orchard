@@ -288,7 +288,8 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	}
 
 	public onAbortSubscribedEvent(): void {
-		console.log('onAbortSubscribedEvent');
+		this.active_event!.confirmed = false;
+		this.eventService.registerEvent(this.active_event);
 	}
 
 	/* *******************************************************
