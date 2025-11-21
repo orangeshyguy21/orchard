@@ -2,7 +2,8 @@
 	class="graphic-oracle-container graphic-orchard-logo-container"
 	[class.stone]="!running()"
 	[class.running]="running()"
-	[class.completed]="completed()"
+	[class.completed]="status() === UtxOracleProgressStatus.Completed"
+	[class.error]="status() === UtxOracleProgressStatus.Error"
 >
 	<svg [attr.height]="height()" id="oracle" data-name="graphic-oracle" viewBox="0 0 1149.61 1130.84">
 		@if (surface()) {
@@ -265,3 +266,12 @@
 		</g>
 	</svg>
 </div>
+
+@switch (status()) {
+	@case (UtxOracleProgressStatus.Completed) {
+		<div>Completed</div>
+	}
+	@case (UtxOracleProgressStatus.Error) {
+		<div>Error</div>
+	}
+}
