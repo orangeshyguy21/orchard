@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input, computed} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, computed} from '@angular/core';
 /* Application Dependencies */
 import {BitcoinNetworkInfo} from '@client/modules/bitcoin/classes/bitcoin-network-info.class';
 import {BitcoinBlockchainInfo} from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
@@ -12,15 +12,16 @@ import {BitcoinBlockchainInfo} from '@client/modules/bitcoin/classes/bitcoin-blo
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IndexSubsectionDashboardBitcoinHeaderComponent {
-	@Input() enabled!: boolean;
-	@Input() loading!: boolean;
-	@Input() network_info!: BitcoinNetworkInfo | null;
-	@Input() blockchain_info!: BitcoinBlockchainInfo | null;
-	@Input() error!: boolean;
+	public enabled = input.required<boolean>();
+	public enabled_oracle = input.required<boolean>();
+	public loading = input.required<boolean>();
+	public network_info = input.required<BitcoinNetworkInfo | null>();
+	public blockchain_info = input.required<BitcoinBlockchainInfo | null>();
+	public error = input.required<boolean>();
 
 	public state = computed(() => {
-		if (this.error) return 'offline';
-		if (this.blockchain_info?.initialblockdownload) return 'syncing';
+		if (this.error()) return 'offline';
+		if (this.blockchain_info()?.initialblockdownload) return 'syncing';
 		return 'online';
 	});
 }
