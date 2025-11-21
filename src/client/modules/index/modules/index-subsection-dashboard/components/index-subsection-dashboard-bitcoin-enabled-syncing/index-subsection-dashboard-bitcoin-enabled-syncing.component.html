@@ -2,20 +2,12 @@
 	<div class="title-l">Syncing</div>
 	<div class="p-t-1">
 		<div class="flex flex-gap-1">
-			<div class="relative">
-				<mat-progress-spinner mode="determinate" [value]="sync_progress()" [diameter]="200" [strokeWidth]="20">
-				</mat-progress-spinner>
-				<div class="progress-background">
-					<div class="spinner">
-						<mat-progress-spinner mode="determinate" [value]="100" [diameter]="200" [strokeWidth]="20"> </mat-progress-spinner>
-					</div>
-					<div class="progress-number">
-						<div #flash_height_one class="text-nowrap font-size-l font-weight-bold">
-							{{ blockchain_info()?.verificationprogress | percent: '1.0-2' }}
-						</div>
-					</div>
+			<orc-progress-circle [value]="sync_progress()" [diameter]="200" [stroke_width]="20">
+				<div #flash_height_one class="text-nowrap font-size-l font-weight-bold">
+					{{ blockchain_info()?.verificationprogress | percent: '1.0-2' }}
 				</div>
-			</div>
+			</orc-progress-circle>
+
 			<div class="orc-info-table">
 				<table>
 					<tbody>

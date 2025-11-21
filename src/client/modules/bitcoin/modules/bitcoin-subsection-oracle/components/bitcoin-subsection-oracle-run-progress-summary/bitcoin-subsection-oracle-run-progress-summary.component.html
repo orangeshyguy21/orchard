@@ -1,23 +1,8 @@
 <div class="bitcoin-subsection-oracle-run-progress-summary-container">
 	<div class="flex flex-row flex-gap-4 flex-items-center">
-		<div class="relative">
-			<mat-progress-spinner class="orc-default-progress-spinner" mode="determinate" [value]="100" [diameter]="90" [strokeWidth]="15">
-			</mat-progress-spinner>
-			<div class="progress-background">
-				<div>
-					<mat-progress-spinner
-						class="orc-intermediate-progress-spinner"
-						mode="determinate"
-						[value]="progress_displayed()"
-						[diameter]="90"
-						[strokeWidth]="15"
-					></mat-progress-spinner>
-				</div>
-				<div class="absolute">
-					<div class="flex flex-items-center font-size-xs orc-outline-color">{{ progress_displayed() | number: '1.0-0' }}%</div>
-				</div>
-			</div>
-		</div>
+		<orc-progress-circle [value]="progress_displayed()" [diameter]="90" [stroke_width]="15">
+			<div class="font-size-xs orc-outline-color">{{ progress_displayed() | number: '1.0-0' }}%</div>
+		</orc-progress-circle>
 		<div>
 			<div class="flex flex-column flex-gap-1 flex-items-center">
 				<div class="title-l">Processing</div>

@@ -11,13 +11,13 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatInputModule} from '@angular/material/input';
 import {MatCardModule} from '@angular/material/card';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MAT_LUXON_DATE_ADAPTER_OPTIONS} from '@angular/material-luxon-adapter';
 import {BaseChartDirective as ChartJsBaseChartDirective} from 'ng2-charts';
 /* Application Dependencies */
 import {OrcTimeModule} from '@client/modules/time/time.module';
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
+import {OrcProgressModule} from '@client/modules/progress/progress.module';
 import {OrcSettingsGeneralModule} from '@client/modules/settings/modules/settings-general/settings-general.module';
 /* Local Dependencies */
 import {BitcoinSubsectionOracleComponent} from './components/bitcoin-subsection-oracle/bitcoin-subsection-oracle.component';
@@ -54,11 +54,11 @@ import {BitcoinSubsectionOracleRunProgressSummaryComponent} from './components/b
 		MatInputModule,
 		MatCardModule,
 		MatProgressBarModule,
-		MatProgressSpinnerModule,
 		ChartJsBaseChartDirective,
 		OrcTimeModule,
 		OrcFormModule,
 		OrcGraphicModule,
+		OrcProgressModule,
 		OrcSettingsGeneralModule,
 	],
 	providers: [

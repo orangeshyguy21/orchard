@@ -1,9 +1,0 @@
-@use '@styles/molecule/molecule';
-
-.issuance-background {
-	@extend %absolute;
-	@extend %top-0;
-	@extend %flex;
-	@extend %flex-items-center;
-	@extend %flex-justify-center;
-}

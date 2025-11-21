@@ -1,16 +1,5 @@
 /* Core Dependencies */
-import {
-	ChangeDetectionStrategy,
-	Component,
-	EventEmitter,
-	input,
-	signal,
-	computed,
-	effect,
-	output,
-	ViewChild,
-	ElementRef,
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, signal, computed, effect, output, ViewChild, ElementRef} from '@angular/core';
 import {Router} from '@angular/router';
 /* Application Dependencies */
 import {EventData} from '@client/modules/event/classes/event-data.class';
@@ -64,6 +53,7 @@ export class EventGeneralNavToolComponent {
 		if (active_event?.type === 'PENDING' && active_event?.message) return 'actionable';
 		return 'default';
 	});
+	// public progress = computed(() => this.active_event()?.progress ?? null);
 
 	constructor(private router: Router) {
 		effect(() => {

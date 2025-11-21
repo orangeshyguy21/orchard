@@ -97,6 +97,12 @@
 }
 
 /* Specific Progress Spinner Overrides */
+.orc-background-progress-spinner{
+	@include mat.progress-spinner-overrides((
+		active-indicator-color: var(--mat-sys-secondary-container),
+	));
+}
+
 .orc-default-progress-spinner{
 	@include mat.progress-spinner-overrides((
 		active-indicator-color: var(--mat-sys-surface-container-highest),

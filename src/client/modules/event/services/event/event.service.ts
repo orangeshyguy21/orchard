@@ -27,12 +27,6 @@ export class EventService {
 		this.emitEvent(event_data);
 	}
 
-	public updateEvent(updates: Partial<EventData>): void {
-		if (!this.active_event) return;
-		Object.assign(this.active_event, updates);
-		this.active_event_subject.next(this.active_event);
-	}
-
 	private emitEvent(event_data: EventData): void {
 		this.active_event = event_data;
 		event_data.created_at = Math.floor(DateTime.now().toSeconds());

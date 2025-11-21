@@ -193,7 +193,12 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 				);
 			}
 			if (progress.status === UtxOracleProgressStatus.Processing) {
-				this.eventService.updateEvent({progress: progress.overall_progress});
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'SUBSCRIBED',
+						progress: progress.overall_progress ?? 0,
+					}),
+				);
 			}
 			if (progress.status === UtxOracleProgressStatus.Error) {
 				console.error('Backfill error:', progress.error);
