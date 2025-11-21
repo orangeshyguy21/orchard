@@ -326,10 +326,21 @@ export class BitcoinService {
 		this.backfill_subscription = this.apiService.gql_socket.subscribe({
 			next: (response: OrchardWsRes<BitcoinOracleBackfillProgressResponse>) => {
 				if (response.type === 'data' && response.payload?.errors) {
+					const has_throttle_error = response.payload.errors.some((err: any) => err.extensions?.code === 10005);
 					const has_auth_error = response.payload.errors.some((err: any) => err.extensions?.code === 10002);
 					if (has_auth_error) {
 						this.closeBackfillSocket();
 						this.retryBackfillSocket(start_date, end_date);
+						return;
+					}
+					if (has_throttle_error) {
+						const progress = new BitcoinOracleBackfillProgress({
+							id: subscription_id,
+							status: UtxOracleProgressStatus.Error,
+							error: 'Throttle limit reached. Please try again later.',
+						});
+						this.backfill_progress_subject.next(progress);
+						this.closeBackfillSocket();
 						return;
 					}
 				}

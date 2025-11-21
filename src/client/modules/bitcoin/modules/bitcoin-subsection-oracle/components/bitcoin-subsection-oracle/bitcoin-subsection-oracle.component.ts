@@ -203,7 +203,6 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 						message: 'Backfill error',
 					}),
 				);
-				// this.resolveBackfillFormState();
 			}
 			if (progress.status === UtxOracleProgressStatus.Completed) {
 				this.eventService.registerEvent(
@@ -228,6 +227,21 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 	/* *******************************************************
 		Events                      
 	******************************************************** */
+
+	/**
+	 * Submit the backfill form and start the backfill process
+	 */
+	public submitBackfill(): void {
+		if (this.backfill_form.invalid) return;
+		const date_start = this.backfill_form.get('date_start')?.value;
+		const date_end = this.backfill_form.get('date_end')?.value;
+		if (!date_start) return;
+		const start_timestamp = Math.floor(date_start.toUTC().startOf('day').toSeconds());
+		const end_timestamp = date_end ? Math.floor(date_end.toUTC().startOf('day').toSeconds()) : null;
+		this.bitcoinService.openBackfillSocket(start_timestamp, end_timestamp);
+		this.backfill_form.markAsPristine();
+		this.dirty_form.set(false);
+	}
 
 	private eventUnconfirmed(): void {
 		this.backfill_form.reset();
@@ -388,23 +402,6 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	// private resolveBackfillFormState(): void {
-	// 	const date_start = this.backfill_form.get('date_start')?.value;
-	// 	const date_end = this.backfill_form.get('date_end')?.value;
-	// 	if (date_start) {
-	// 		this.backfill_form.get('date_start')?.enable({emitEvent: false});
-	// 		this.backfill_form.get('date_start')?.markAsDirty();
-	// 		this.backfill_form.get('date_start')?.markAsTouched();
-	// 		this.backfill_form.get('date_start')?.updateValueAndValidity();
-	// 	}
-	// 	if (date_end) {
-	// 		this.backfill_form.get('date_end')?.enable({emitEvent: false});
-	// 		this.backfill_form.get('date_end')?.markAsPristine();
-	// 		this.backfill_form.get('date_end')?.markAsUntouched();
-	// 		this.backfill_form.get('date_end')?.updateValueAndValidity();
-	// 	}
-	// }
-
 	/**
 	 * Extract DateTime values from form and convert to Unix timestamps
 	 * @returns {object} Object with start and end timestamps (or null)
@@ -431,21 +428,6 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 		);
 		const range_changed = new_start !== this.page_settings.date_start || new_end !== this.page_settings.date_end;
 		if (range_changed) this.updateRange(new_start, new_end);
-	}
-
-	/**
-	 * Submit the backfill form and start the backfill process
-	 */
-	public submitBackfill(): void {
-		if (this.backfill_form.invalid) return;
-		const date_start = this.backfill_form.get('date_start')?.value;
-		const date_end = this.backfill_form.get('date_end')?.value;
-		if (!date_start) return;
-		const start_timestamp = Math.floor(date_start.toUTC().startOf('day').toSeconds());
-		const end_timestamp = date_end ? Math.floor(date_end.toUTC().startOf('day').toSeconds()) : null;
-		this.bitcoinService.openBackfillSocket(start_timestamp, end_timestamp);
-		this.backfill_form.markAsPristine();
-		this.dirty_form.set(false);
 	}
 
 	/* *******************************************************
