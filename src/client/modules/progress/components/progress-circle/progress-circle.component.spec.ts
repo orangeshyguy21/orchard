@@ -16,6 +16,10 @@ describe('ProgressCircleComponent', () => {
 
 		fixture = TestBed.createComponent(ProgressCircleComponent);
 		component = fixture.componentInstance;
+
+		// set all required inputs using modern signal-based input API
+		fixture.componentRef.setInput('value', 50);
+
 		fixture.detectChanges();
 	});
 

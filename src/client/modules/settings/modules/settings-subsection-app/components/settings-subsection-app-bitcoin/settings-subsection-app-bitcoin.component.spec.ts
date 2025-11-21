@@ -1,5 +1,6 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {FormGroup, FormControl} from '@angular/forms';
 /* Native Dependencies */
 import {OrcSettingsSubsectionAppModule} from '@client/modules/settings/modules/settings-subsection-app/settings-subsection-app.module';
 /* Local Dependencies */
@@ -16,6 +17,15 @@ describe('SettingsSubsectionAppBitcoinComponent', () => {
 
 		fixture = TestBed.createComponent(SettingsSubsectionAppBitcoinComponent);
 		component = fixture.componentInstance;
+
+		// set all required inputs using modern signal-based input API
+		const mock_form_group = new FormGroup({
+			oracle_enabled: new FormControl(false),
+		});
+
+		fixture.componentRef.setInput('form_group', mock_form_group);
+		fixture.componentRef.setInput('oracle_price', null);
+
 		fixture.detectChanges();
 	});
 

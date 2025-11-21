@@ -139,13 +139,14 @@ describe('TimeUtcPipe', () => {
 	 * Test UTC timezone handling
 	 */
 	it('should format timestamp in UTC timezone', () => {
-		// arrange - Unix epoch: Jan 1, 1970 00:00:00 UTC
-		const timestamp = 0;
+		// arrange - Jan 1, 2024 00:00:00 UTC (midnight)
+		const timestamp = 1704067200;
 
-		// act - if working, should show Jan 1, 1970
+		// act - format in date-only to check UTC is used
 		const result = pipe.transform(timestamp, 'date-only');
 
-		// assert - would be different date if not UTC
+		// assert - should contain date information
 		expect(result).toBeTruthy();
+		expect(result).toContain('2024');
 	});
 });
