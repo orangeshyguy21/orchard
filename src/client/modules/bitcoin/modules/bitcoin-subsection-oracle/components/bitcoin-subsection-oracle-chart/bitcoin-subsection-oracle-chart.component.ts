@@ -124,7 +124,7 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 				pointBorderColor: color.border,
 				pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
 				pointHoverBorderColor: color.border,
-				pointRadius: 3,
+				pointRadius: 2,
 				pointHoverRadius: 5,
 				fill: {
 					target: 'origin',
@@ -146,8 +146,8 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 				pointBorderColor: 'rgba(128, 128, 128, 0.8)',
 				pointHoverBackgroundColor: 'rgba(128, 128, 128, 1)',
 				pointHoverBorderColor: 'rgba(128, 128, 128, 1)',
-				pointRadius: 4,
-				pointHoverRadius: 6,
+				pointRadius: 3,
+				pointHoverRadius: 5,
 				showLine: false,
 				yAxisID: 'y',
 			});
