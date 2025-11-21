@@ -16,10 +16,6 @@ enum AiAgent {
   MINT_KEYSET_ROTATION
 }
 
-input AiChatAbortInput {
-  id: String!
-}
-
 input AiChatInput {
   agent: AiAgent
   auth: String!
@@ -226,7 +222,7 @@ input MintUrlUpdateInput {
 }
 
 type Mutation {
-  ai_chat_abort(ai_chat_abort: AiChatAbortInput!): OrchardAiChatStream!
+  ai_chat_abort(id: String!): OrchardAiChatStream!
   auth_authentication(authentication: AuthenticationInput!): OrchardAuthentication!
   auth_authentication_refresh: OrchardAuthentication!
   auth_authentication_revoke: Boolean!

@@ -349,7 +349,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	}
 
 	public stopChat(): void {
-		this.aiService.closeAiSocket();
+		this.aiService.abortAiSocket(this.ai_conversation?.id);
 		if (this.ai_conversation) this.aiService.updateConversation(this.ai_conversation);
 		this.cdr.detectChanges();
 	}

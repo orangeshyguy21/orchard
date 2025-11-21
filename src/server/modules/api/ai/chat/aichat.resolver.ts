@@ -12,7 +12,7 @@ import {OrchardErrorCode} from '@server/modules/error/error.types';
 /* Local Dependencies */
 import {AiChatService} from './aichat.service';
 import {OrchardAiChatChunk, OrchardAiChatStream} from './aichat.model';
-import {AiChatInput, AiChatAbortInput} from './aichat.input';
+import {AiChatInput} from './aichat.input';
 
 const pubSub = new PubSub();
 
@@ -46,9 +46,9 @@ export class AiChatResolver implements OnModuleInit {
 	}
 
 	@Mutation(() => OrchardAiChatStream)
-	async ai_chat_abort(@Args('ai_chat_abort') ai_chat_abort: AiChatAbortInput): Promise<OrchardAiChatStream> {
-		const tag = `MUTATION { ai_chat_abort } for stream ${ai_chat_abort.id}`;
+	async ai_chat_abort(@Args('id', {type: () => String}) id: string): Promise<OrchardAiChatStream> {
+		const tag = `MUTATION { ai_chat_abort } for stream ${id}`;
 		this.logger.debug(tag);
-		return this.aiChatService.abortStream(ai_chat_abort.id);
+		return this.aiChatService.abortStream(id);
 	}
 }

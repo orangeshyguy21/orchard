@@ -59,7 +59,7 @@ export class AiChatService {
 			return true;
 		} catch (error) {
 			this.active_streams.delete(ai_chat.id);
-			if (error instanceof DOMException && error.name === 'AbortError') {
+			if (error.name === 'AbortError' || error.type === 'aborted') {
 				this.logger.debug(`Chat was aborted for stream ${ai_chat.id}`);
 				return false;
 			}

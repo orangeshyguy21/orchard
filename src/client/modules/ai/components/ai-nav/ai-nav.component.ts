@@ -49,7 +49,7 @@ export class AiNavComponent {
 	}
 
 	public stopChat(): void {
-		this.aiService.closeAiSocket();
+		this.aiService.abortAiSocket();
 		this.cdr.detectChanges();
 	}
 }
