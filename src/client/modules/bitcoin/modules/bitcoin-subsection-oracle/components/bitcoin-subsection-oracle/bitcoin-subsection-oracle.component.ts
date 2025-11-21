@@ -236,7 +236,7 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 	}
 
 	private abortBackfill(): void {
-		this.bitcoinService.closeBackfillSocket();
+		this.bitcoinService.abortBackfillSocket();
 		this.backfill_progress.set(null);
 		this.eventService.registerEvent(null);
 	}
@@ -436,6 +436,6 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 
 	ngOnDestroy(): void {
 		this.subscriptions.unsubscribe();
-		if (this.backfill_running()) this.bitcoinService.closeBackfillSocket();
+		if (this.backfill_running()) this.bitcoinService.abortBackfillSocket();
 	}
 }

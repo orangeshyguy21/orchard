@@ -3,7 +3,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
 /* Vendor Dependencies */
-import {BehaviorSubject, catchError, map, Observable, of, shareReplay, tap, throwError, Subject, Subscription} from 'rxjs';
+import {BehaviorSubject, catchError, map, Observable, of, shareReplay, tap, throwError, Subject, Subscription, finalize} from 'rxjs';
 /* Application Dependencies */
 import {getApiQuery} from '@client/modules/api/helpers/api.helpers';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
@@ -32,6 +32,7 @@ import {
 	BitcoinBlockTemplateResponse,
 	BitcoinOraclePriceResponse,
 	BitcoinOracleBackfillProgressResponse,
+	BitcoinOracleBackfillAbortResponse,
 } from '@client/modules/bitcoin/types/bitcoin.types';
 /* Local Dependencies */
 import {
@@ -44,6 +45,7 @@ import {
 	BITCOIN_BLOCK_TEMPLATE_QUERY,
 	BITCOIN_ORACLE_PRICE_QUERY,
 	BITCOIN_ORACLE_BACKFILL_SUBSCRIPTION,
+	BITCOIN_ORACLE_BACKFILL_ABORT_MUTATION,
 } from './bitcoin.queries';
 /* Shared Dependencies */
 import {OrchardBitcoinBlockCount, UtxOracleProgressStatus} from '@shared/generated.types';
@@ -366,10 +368,31 @@ export class BitcoinService {
 		});
 	}
 
+	public abortBackfillSocket(): void {
+		if (!this.backfill_subscription_id) return;
+		const query = getApiQuery(BITCOIN_ORACLE_BACKFILL_ABORT_MUTATION, {id: this.backfill_subscription_id});
+		this.http
+			.post<OrchardRes<BitcoinOracleBackfillAbortResponse>>(this.apiService.api, query)
+			.pipe(
+				map((response) => {
+					if (response.errors) throw new OrchardErrors(response.errors);
+					return response.data.bitcoin_oracle_backfill_abort;
+				}),
+				catchError((error) => {
+					console.error('Error aborting bitcoin oracle backfill socket:', error);
+					return throwError(() => error);
+				}),
+				finalize(() => {
+					this.closeBackfillSocket();
+				}),
+			)
+			.subscribe();
+	}
+
 	/**
 	 * Close the bitcoin oracle backfill websocket subscription
 	 */
-	public closeBackfillSocket(): void {
+	private closeBackfillSocket(): void {
 		if (!this.backfill_subscription) return;
 		this.backfill_subscription?.unsubscribe();
 		this.apiService.gql_socket.next({

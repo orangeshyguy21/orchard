@@ -142,3 +142,10 @@ export const BITCOIN_ORACLE_BACKFILL_SUBSCRIPTION = `
         }
     }
 `;
+
+export const BITCOIN_ORACLE_BACKFILL_ABORT_MUTATION = `
+mutation BitcoinOracleBackfillAbort($id: String!) {
+    bitcoin_oracle_backfill_abort(id: $id) {
+        id
+    }
+}`;
