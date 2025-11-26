@@ -33,6 +33,8 @@ export type Config = {
 		cert: string;
 		key: string;
 		ca: string;
+		api_url: string;
+		api_key: string;
 	};
 	taproot_assets: {
 		type: string;
