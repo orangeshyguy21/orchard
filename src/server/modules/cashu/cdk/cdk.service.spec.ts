@@ -63,6 +63,8 @@ describe('CdkService', () => {
 					return 'CERT';
 				case 'cashu.rpc_ca':
 					return 'CA';
+				case 'cashu.rpc_mtls':
+					return true;
 				case 'cashu.rpc_host':
 					return 'localhost';
 				case 'cashu.rpc_port':
@@ -93,6 +95,8 @@ describe('CdkService', () => {
 					return 'CERT';
 				case 'cashu.rpc_ca':
 					return 'CA';
+				case 'cashu.rpc_mtls':
+					return true;
 				case 'cashu.rpc_host':
 					return 'host.docker.internal';
 				case 'cashu.rpc_port':
@@ -114,15 +118,12 @@ describe('CdkService', () => {
 		});
 	});
 
-	it('returns undefined when CA is missing (warns and exits early)', () => {
+	it('initializes client with insecure credentials when rpc_mtls is false', () => {
+		const CdkMintMock = jest.fn();
 		config_service.get.mockImplementation((key: string) => {
 			switch (key) {
-				case 'cashu.rpc_key':
-					return 'KEY';
-				case 'cashu.rpc_cert':
-					return 'CERT';
-				case 'cashu.rpc_ca':
-					return undefined;
+				case 'cashu.rpc_mtls':
+					return false;
 				case 'cashu.rpc_host':
 					return 'localhost';
 				case 'cashu.rpc_port':
@@ -131,14 +132,17 @@ describe('CdkService', () => {
 					return undefined as any;
 			}
 		});
-		const warn_spy = jest.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined as any);
+		const log_spy = jest.spyOn(Logger.prototype, 'log').mockImplementation(() => undefined as any);
+		const createInsecure = jest.spyOn(grpc.credentials, 'createInsecure').mockReturnValue({} as any);
 		const createSsl = jest.spyOn(grpc.credentials, 'createSsl').mockReturnValue({} as any);
-		(createSsl as jest.Mock).mockClear();
+		jest.spyOn(require('@grpc/proto-loader'), 'loadSync').mockReturnValue({} as any);
+		jest.spyOn(grpc, 'loadPackageDefinition').mockReturnValue({cdk_mint_rpc: {CdkMint: CdkMintMock}} as any);
 		const client = cdk_service.initializeGrpcClient();
-		expect(client).toBeUndefined();
-		expect(warn_spy).toHaveBeenCalled();
+		expect(client).toBeDefined();
+		expect(createInsecure).toHaveBeenCalled();
 		expect(createSsl).not.toHaveBeenCalled();
 		expect(credential_service.loadPemOrPath).not.toHaveBeenCalled();
+		expect(log_spy).toHaveBeenCalledWith('Mint gRPC client initialized with INSECURE connection');
 	});
 
 	it('logs error and returns undefined if proto load fails', () => {
