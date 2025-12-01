@@ -55,13 +55,14 @@ export class CdkService {
 	public initializeGrpcClient(): grpc.Client {
 		const rpc_key = this.configService.get('cashu.rpc_key');
 		const rpc_cert = this.configService.get('cashu.rpc_cert');
+		const rpc_mtls = this.configService.get('cashu.rpc_mtls');
 		const rpc_ca = this.configService.get('cashu.rpc_ca');
 		const rpc_host = this.configService.get('cashu.rpc_host');
 		const rpc_port = this.configService.get('cashu.rpc_port');
 		const rpc_url = `${rpc_host}:${rpc_port}`;
 
-		if (!rpc_key || !rpc_cert || !rpc_ca || !rpc_host || !rpc_port) {
-			this.logger.warn('Missing RPC credentials, secure connection cannot be established');
+		if (!rpc_host || !rpc_port) {
+			this.logger.warn('Missing RPC host or port, connection cannot be established');
 			return;
 		}
 
@@ -75,21 +76,78 @@ export class CdkService {
 				oneofs: true,
 			});
 			const mint_proto: any = grpc.loadPackageDefinition(package_definition).cdk_mint_rpc;
-			const key_content = this.credentialService.loadPemOrPath(rpc_key);
-			const cert_content = this.credentialService.loadPemOrPath(rpc_cert);
-			const ca_content = rpc_ca ? this.credentialService.loadPemOrPath(rpc_ca) : undefined;
-			const ssl_credentials = grpc.credentials.createSsl(ca_content, key_content, cert_content);
-
+			let credentials: grpc.ChannelCredentials;
 			let channel_options: Record<string, any> | undefined = undefined;
-			if (rpc_host?.includes('host.docker.internal')) {
-				channel_options = {
-					'grpc.ssl_target_name_override': 'localhost',
-					'grpc.default_authority': 'localhost',
-				};
+
+			if (rpc_mtls) {
+				const key_content = this.credentialService.loadPemOrPath(rpc_key);
+				const cert_content = this.credentialService.loadPemOrPath(rpc_cert);
+				const ca_content = this.credentialService.loadPemOrPath(rpc_ca);
+				credentials = grpc.credentials.createSsl(ca_content, key_content, cert_content);
+				if (rpc_host?.includes('host.docker.internal')) {
+					channel_options = {
+						'grpc.ssl_target_name_override': 'localhost',
+						'grpc.default_authority': 'localhost',
+					};
+				}
+				this.logger.log('Mint gRPC client initialized with TLS certificate authentication');
+			} else {
+				credentials = grpc.credentials.createInsecure();
+				this.logger.log('Mint gRPC client initialized with INSECURE connection');
 			}
 
-			this.logger.log('Mint gRPC client initialized with TLS certificate authentication');
-			return new mint_proto.CdkMint(rpc_url, ssl_credentials, channel_options);
+			return new mint_proto.CdkMint(rpc_url, credentials, channel_options);
+		} catch (error) {
+			this.logger.error(`Failed to initialize gRPC client: ${error.message}`);
+		}
+	}
+
+	public testinitializeGrpcClient(): grpc.Client {
+		const rpc_key = this.configService.get('cashu.rpc_key');
+		const rpc_cert = this.configService.get('cashu.rpc_cert');
+		const rpc_mtls = this.configService.get('cashu.rpc_mtls');
+		const rpc_ca = this.configService.get('cashu.rpc_ca');
+		const rpc_host = this.configService.get('cashu.rpc_host');
+		const rpc_port = this.configService.get('cashu.rpc_port');
+		const rpc_url = `${rpc_host}:${rpc_port}`;
+
+		if (!rpc_host || !rpc_port) {
+			this.logger.warn('Missing RPC host or port, connection cannot be established');
+			return;
+		}
+
+		try {
+			const proto_path = path.join(process.cwd(), 'proto/nutshell/management.proto');
+			const package_definition = protoLoader.loadSync(proto_path, {
+				keepCase: true,
+				longs: String,
+				enums: String,
+				defaults: true,
+				oneofs: true,
+			});
+			const mint_proto: any = grpc.loadPackageDefinition(package_definition).cashu;
+
+			let credentials: grpc.ChannelCredentials;
+			let channel_options: Record<string, any> | undefined = undefined;
+
+			if (rpc_mtls) {
+				const key_content = this.credentialService.loadPemOrPath(rpc_key);
+				const cert_content = this.credentialService.loadPemOrPath(rpc_cert);
+				const ca_content = this.credentialService.loadPemOrPath(rpc_ca);
+				credentials = grpc.credentials.createSsl(ca_content, key_content, cert_content);
+				if (rpc_host?.includes('host.docker.internal')) {
+					channel_options = {
+						'grpc.ssl_target_name_override': 'localhost',
+						'grpc.default_authority': 'localhost',
+					};
+				}
+				this.logger.log('Mint gRPC client initialized with TLS certificate authentication');
+			} else {
+				credentials = grpc.credentials.createInsecure();
+				this.logger.log('Mint gRPC client initialized with INSECURE connection');
+			}
+
+			return new mint_proto.Mint(rpc_url, credentials, channel_options);
 		} catch (error) {
 			this.logger.error(`Failed to initialize gRPC client: ${error.message}`);
 		}

@@ -34,10 +34,6 @@ export enum AiAgent {
   MintKeysetRotation = 'MINT_KEYSET_ROTATION'
 }
 
-export type AiChatAbortInput = {
-  id: Scalars['String']['input'];
-};
-
 export type AiChatInput = {
   agent?: InputMaybe<AiAgent>;
   auth: Scalars['String']['input'];
@@ -277,7 +273,7 @@ export type Mutation = {
 
 
 export type MutationAi_Chat_AbortArgs = {
-  ai_chat_abort: AiChatAbortInput;
+  id: Scalars['String']['input'];
 };
 
 
