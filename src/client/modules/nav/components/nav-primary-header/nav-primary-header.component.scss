@@ -1,5 +1,5 @@
-@use '@styles/molecule/molecule';
-@use '@styles/nucleus/nucleus';
+@use 'molecule/molecule';
+@use 'nucleus/nucleus';
 
 .primary-nav-header {
 	@extend %p-t-0-5;

@@ -17,14 +17,16 @@
       "prefix": "orc",
       "architect": {
         "build": {
-          "builder": "@angular-builders/custom-webpack:browser",
+          "builder": "@angular/build:application",
           "options": {
-            "customWebpackConfig": {
-              "path": "src/client/webpack.config.ts"
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/client/styles"
+              ]
             },
             "outputPath": "dist/client",
             "index": "src/client/index.html",
-            "main": "src/client/main.ts",
+            "browser": "src/client/main.ts",
             "polyfills": [
               "zone.js"
             ],
@@ -66,7 +68,7 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-builders/custom-webpack:dev-server",
+          "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
               "buildTarget": "client:build:production"
@@ -78,13 +80,15 @@
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n"
+          "builder": "@angular/build:extract-i18n"
         },
         "test": {
-          "builder": "@angular-builders/custom-webpack:karma",
+          "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "customWebpackConfig": {
-              "path": "src/client/webpack.config.ts"
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/client/styles"
+              ]
             },
             "main": "src/client/test.ts",
             "polyfills": [

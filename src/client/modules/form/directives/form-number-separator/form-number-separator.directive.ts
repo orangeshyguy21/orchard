@@ -50,8 +50,9 @@ export class FormNumberSeparatorDirective {
 		this.elementRef.nativeElement.value = this._value;
 	}
 
-	@HostListener('input', ['$event.target.value'])
-	onInput(value: string) {
+	@HostListener('input', ['$event'])
+	onInput(event: Event) {
+		const value = (event.target as HTMLInputElement).value;
 		this._value = value.replace(/[^\d.-]/g, '');
 		this._value === '' ? this._onChange(null) : this._onChange(Number(this._value));
 	}

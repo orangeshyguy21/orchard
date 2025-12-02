@@ -1,4 +1,4 @@
-@use '@styles/molecule/molecule';
+@use 'molecule/molecule';
 
 .bitcoin-utxo-stack-container {
 	@extend %relative; /* creates a stacking context */

@@ -54,7 +54,7 @@ const runtime_config = {
 };
 
 if (process.env.NODE_ENV === 'production') {
-	const output_path = `${process.cwd()}/dist/client/config.json`;
+	const output_path = `${process.cwd()}/dist/client/browser/config.json`;
 	await fs.writeFile(output_path, JSON.stringify(runtime_config, null, 2));
 } else {
 	const output_path = `${process.cwd()}/public/config.json`;

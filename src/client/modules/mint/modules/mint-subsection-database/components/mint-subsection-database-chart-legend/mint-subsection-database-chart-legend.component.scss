@@ -1,4 +1,4 @@
-@use '@styles/molecule/molecule';
+@use 'molecule/molecule';
 
 .mint-data-chart-legend-container {
 	@extend %flex;

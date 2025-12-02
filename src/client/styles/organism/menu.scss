@@ -1,6 +1,5 @@
-@use '@styles/molecule/molecule';
+@use 'molecule/molecule';
 
-// should be orc
 .orc-bottom-nav-menu{
     @extend %relative;
     @extend %bottom-0-5;

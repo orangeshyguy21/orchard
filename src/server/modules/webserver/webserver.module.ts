@@ -10,7 +10,7 @@ import * as path from 'path';
 			inject: [ConfigService],
 			useFactory: (configService: ConfigService) => [
 				{
-					rootPath: path.join(process.cwd(), 'dist', 'client'),
+					rootPath: path.join(process.cwd(), 'dist', 'client', 'browser'),
 					exclude: [`/${configService.get('server.path')}`],
 				},
 			],
