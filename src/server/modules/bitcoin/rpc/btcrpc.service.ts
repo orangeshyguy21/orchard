@@ -19,6 +19,7 @@ export class BitcoinRpcService implements OnModuleInit {
 	private readonly logger = new Logger(BitcoinRpcService.name);
 
 	private type: BitcoinType;
+	private chain: string; // stores the chain type (main, test, regtest, signet)
 
 	constructor(
 		private configService: ConfigService,
@@ -28,10 +29,25 @@ export class BitcoinRpcService implements OnModuleInit {
 	public async onModuleInit() {
 		this.type = this.configService.get('bitcoin.type');
 		this.initializeRpc();
+		await this.initializeChain();
 	}
 
 	private initializeRpc() {
 		if (this.type === BitcoinType.CORE) this.coreService.initializeRpc();
+	}
+
+	/**
+	 * Fetches and stores the chain type for use in RPC calls that require it
+	 * Falls back gracefully if Bitcoin Core is not available during startup
+	 */
+	private async initializeChain(): Promise<void> {
+		try {
+			const blockchain_info = await this.getBitcoinBlockchainInfo();
+			this.chain = blockchain_info.chain;
+			this.logger.log(`Initialized on chain: ${this.chain}`);
+		} catch (error) {
+			this.logger.warn(`Failed to fetch chain info during init: ${error.message}`);
+		}
 	}
 
 	/* *******************************************************
@@ -83,13 +99,20 @@ export class BitcoinRpcService implements OnModuleInit {
 	******************************************************** */
 
 	public async getBitcoinBlockTemplate(): Promise<BitcoinBlockTemplate> {
-		if (this.type === BitcoinType.CORE)
+		if (this.type === BitcoinType.CORE) {
+			if (!this.chain) {
+				const blockchain_info = await this.getBitcoinBlockchainInfo();
+				this.chain = blockchain_info.chain;
+			}
+			const rules = ['segwit'];
+			if (this.chain === 'signet') rules.push('signet');
 			return this.coreService.makeRpcRequest('getblocktemplate', [
 				{
-					rules: ['segwit'],
+					rules,
 					mode: 'template',
 				},
 			]);
+		}
 	}
 
 	/* *******************************************************
