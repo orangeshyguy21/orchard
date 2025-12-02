@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, computed} from '@angular/core';
 /* Native Dependencies */
 import {BitcoinBlock} from '@client/modules/bitcoin/classes/bitcoin-block.class';
 import {BitcoinBlockTemplate} from '@client/modules/bitcoin/classes/bitcoin-block-template.class';
@@ -12,11 +12,11 @@ import {BitcoinBlockTemplate} from '@client/modules/bitcoin/classes/bitcoin-bloc
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BitcoinGeneralBlockComponent {
-	@Input() block?: BitcoinBlock | BitcoinBlockTemplate;
-	@Input() height?: number;
-	@Input() is_template: boolean = false;
+	public block = input<BitcoinBlock | BitcoinBlockTemplate>();
+	public height = input<number>();
+	public is_template = input<boolean>(false);
 
-	public get fullness(): number {
-		return (this.block?.weight ?? 0) / 4000000;
-	}
+	public fullness = computed(() => {
+		return (this.block()?.weight ?? 0) / 4000000;
+	});
 }

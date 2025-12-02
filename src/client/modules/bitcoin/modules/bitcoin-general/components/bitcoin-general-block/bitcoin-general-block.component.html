@@ -1,32 +1,32 @@
 <div class="bitcoin-block-container">
-	@if (!is_template) {
+	@if (!is_template()) {
 		<div class="block-header">
-			<div class="block-height">{{ block?.height | bitcoinGeneralBlock }}</div>
+			<div class="block-height">{{ block()?.height | bitcoinGeneralBlock }}</div>
 		</div>
 	}
-	<div class="block" [ngClass]="{'block-template': is_template}">
+	<div class="block" [ngClass]="{'block-template': is_template()}">
 		<div class="block-content">
 			<div class="flex flex-column flex-gap-0-5 flex-align-center">
 				<div class="block-feerange">
-					<div>{{ block?.feerate_low | bitcoinGeneralFeerate }}</div>
+					<div>{{ block()?.feerate_low | bitcoinGeneralFeerate }}</div>
 					<div>-</div>
-					<div>{{ block?.feerate_high | bitcoinGeneralFeerate }}</div>
+					<div>{{ block()?.feerate_high | bitcoinGeneralFeerate }}</div>
 					<div>sat/vB</div>
 				</div>
 
 				<div class="flex flex-justify-center orc-outline-color">
-					<div>{{ block?.nTx | number }} transactions</div>
+					<div>{{ block()?.nTx | number }} {{ block()?.nTx === 1 ? 'transaction' : 'transactions' }}</div>
 				</div>
 
 				<div class="flex flex-justify-center orc-outline-color">
-					@if (!is_template) {
-						<div>{{ $any(this.block).time | localTimeAgo }}</div>
+					@if (!is_template()) {
+						<div>{{ $any(this.block()).time | localTimeAgo }}</div>
 					} @else {
 						<div>~ 10 minutes</div>
 					}
 				</div>
 			</div>
 		</div>
-		<div class="block-fullness" [style.height]="fullness | percent"></div>
+		<div class="block-fullness" [style.height]="fullness() | percent"></div>
 	</div>
 </div>

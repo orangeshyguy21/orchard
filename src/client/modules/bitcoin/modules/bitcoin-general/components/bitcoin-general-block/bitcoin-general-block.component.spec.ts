@@ -16,7 +16,7 @@ describe('BitcoinGeneralBlockComponent', () => {
 
 		fixture = TestBed.createComponent(BitcoinGeneralBlockComponent);
 		component = fixture.componentInstance;
-		component.is_template = true;
+		fixture.componentRef.setInput('is_template', true);
 		fixture.detectChanges();
 	});
 
