@@ -1,4 +1,4 @@
-@use '@styles/molecule/molecule';
+@use 'molecule/molecule';
 
 .active-model-option {
 	@extend %orc-surface-variant-bg;

@@ -1,4 +1,4 @@
-@use '@styles/molecule/molecule';
+@use 'molecule/molecule';
 
 .message-summary {
 	@extend %flex;

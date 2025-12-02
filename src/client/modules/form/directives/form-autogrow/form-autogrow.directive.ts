@@ -41,7 +41,7 @@ export class FormAutogrowDirective implements OnInit, DoCheck {
 	/**
 	 * Listen for keyevents and grow if the textarea is overflowing
 	 */
-	@HostListener('document:keydown', ['$event'])
+	@HostListener('document:keydown')
 	onKeydown() {
 		if (this._autogrow === false) return;
 		this.grow();
@@ -52,7 +52,7 @@ export class FormAutogrowDirective implements OnInit, DoCheck {
 	 * @param event
 	 * @returns
 	 */
-	@HostListener('paste', ['$event'])
+	@HostListener('paste')
 	onPaste() {
 		if (this._autogrow === false) return;
 		setTimeout(() => {

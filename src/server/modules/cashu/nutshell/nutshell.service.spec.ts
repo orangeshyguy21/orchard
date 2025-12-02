@@ -5,6 +5,8 @@ import {ConfigService} from '@nestjs/config';
 import {Logger} from '@nestjs/common';
 /* Application Dependencies */
 import {CredentialService} from '@server/modules/credential/credential.service';
+import {MintDatabaseType} from '@server/modules/cashu/mintdb/cashumintdb.enums';
+import {MintAnalyticsInterval} from '@server/modules/cashu/mintdb/cashumintdb.enums';
 /* Local Dependencies */
 import {NutshellService} from './nutshell.service';
 import * as grpc from '@grpc/grpc-js';
@@ -271,7 +273,12 @@ describe('NutshellService', () => {
 			{quote: 'q2', checking_id: 'c2', state: 'PENDING', paid_time: 'pt', created_time: 'ct', amount: 7},
 		]);
 		const out = await nutshell_service.getMintMintQuotes({type: 'sqlite'} as any, {states: ['ISSUED']} as any);
-		expect(helpers.buildDynamicQuery).toHaveBeenCalledWith('sqlite', 'mint_quotes', {states: ['ISSUED']}, expect.any(Object));
+		expect(helpers.buildDynamicQuery).toHaveBeenCalledWith(
+			MintDatabaseType.sqlite,
+			'mint_quotes',
+			{states: ['ISSUED']},
+			expect.any(Object),
+		);
 		expect(out[0]).toMatchObject({id: 'q1', request_lookup_id: 'c1', amount_paid: 5, amount_issued: 5});
 		expect(out[0].issued_time).toBe(1);
 		expect(out[1].issued_time).toBeNull();
@@ -285,7 +292,12 @@ describe('NutshellService', () => {
 		(helpers.buildDynamicQuery as jest.Mock).mockReturnValueOnce({sql: 'S2', params: ['P2']});
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([{quote: 'q1', checking_id: 'c1', paid_time: 'pt', created_time: 'ct'}]);
 		const out = await nutshell_service.getMintMeltQuotes({type: 'postgres'} as any, {states: ['PAID']} as any);
-		expect(helpers.buildDynamicQuery).toHaveBeenCalledWith('postgres', 'melt_quotes', {states: ['PAID']}, expect.any(Object));
+		expect(helpers.buildDynamicQuery).toHaveBeenCalledWith(
+			MintDatabaseType.postgres,
+			'melt_quotes',
+			{states: ['PAID']},
+			expect.any(Object),
+		);
 		expect(out[0]).toMatchObject({id: 'q1', request_lookup_id: 'c1', payment_preimage: null, msat_to_pay: null});
 		(helpers.queryRows as jest.Mock).mockImplementationOnce(() => {
 			throw new Error('err2');
@@ -383,11 +395,11 @@ describe('NutshellService', () => {
 		]);
 		await nutshell_service.getMintAnalyticsBalances({type: 'sqlite'} as any, {interval: 'month', timezone: 'America/New_York'} as any);
 		expect(helpers.getAnalyticsTimeGroupSql).toHaveBeenLastCalledWith({
-			interval: 'month',
+			interval: MintAnalyticsInterval.month,
 			timezone: 'America/New_York',
 			time_column: 'created',
 			group_by: 'unit',
-			db_type: 'sqlite',
+			db_type: MintDatabaseType.sqlite,
 		});
 	});
 
