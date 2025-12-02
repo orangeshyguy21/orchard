@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {enableProdMode, provideZoneChangeDetection} from '@angular/core';
+import {enableProdMode} from '@angular/core';
 import {platformBrowser} from '@angular/platform-browser';
 /* Application Modules */
 import {OrcAppModule} from './app.module';
@@ -16,6 +16,6 @@ import {OrcAppModule} from './app.module';
 	}
 
 	platformBrowser()
-		.bootstrapModule(OrcAppModule, {applicationProviders: [provideZoneChangeDetection()]})
+		.bootstrapModule(OrcAppModule)
 		.catch((err) => console.error(err));
 })();
