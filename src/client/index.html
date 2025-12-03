@@ -70,290 +70,194 @@
 				height: 100%;
 			}
 
-			/* Smooth wave animation - circular distance from traveling peak */
-			/* Steeper falloff: 0=100%, 1=55%, 2=30%, 3=15%, 4+=8% */
-			/* Circular wrap: element 9 is 1 step from element 1 */
+			/* Continuous motion wave - bigger deltas, floor 0.08 */
+			/* Curve: 1.00 → 0.70 → 0.30 → 0.18 → 0.12 → 0.08 */
 
-			@keyframes wave1 {
+			@keyframes band1 {
 				0%,
 				100% {
 					opacity: 1;
 				}
-				11% {
-					opacity: 0.55;
+				10% {
+					opacity: 0.7;
 				}
-				22% {
+				20% {
 					opacity: 0.3;
 				}
-				33% {
-					opacity: 0.15;
+				30% {
+					opacity: 0.18;
 				}
-				44%,
-				55% {
+				40% {
+					opacity: 0.12;
+				}
+				50% {
 					opacity: 0.08;
 				}
-				66% {
-					opacity: 0.15;
+				60% {
+					opacity: 0.12;
 				}
-				77% {
+				70% {
+					opacity: 0.18;
+				}
+				80% {
 					opacity: 0.3;
 				}
-				88% {
-					opacity: 0.55;
+				90% {
+					opacity: 0.7;
 				}
 			}
-			@keyframes wave2 {
+			@keyframes band2 {
 				0%,
 				100% {
-					opacity: 0.55;
-				}
-				11% {
-					opacity: 1;
-				}
-				22% {
-					opacity: 0.55;
-				}
-				33% {
 					opacity: 0.3;
 				}
-				44% {
-					opacity: 0.15;
+				10% {
+					opacity: 0.7;
 				}
-				55%,
-				66% {
+				20% {
+					opacity: 1;
+				}
+				30% {
+					opacity: 0.7;
+				}
+				40% {
+					opacity: 0.3;
+				}
+				50% {
+					opacity: 0.18;
+				}
+				60% {
+					opacity: 0.12;
+				}
+				70% {
 					opacity: 0.08;
 				}
-				77% {
-					opacity: 0.15;
+				80% {
+					opacity: 0.12;
 				}
-				88% {
-					opacity: 0.3;
-				}
-			}
-			@keyframes wave3 {
-				0%,
-				100% {
-					opacity: 0.3;
-				}
-				11% {
-					opacity: 0.55;
-				}
-				22% {
-					opacity: 1;
-				}
-				33% {
-					opacity: 0.55;
-				}
-				44% {
-					opacity: 0.3;
-				}
-				55% {
-					opacity: 0.15;
-				}
-				66%,
-				77% {
-					opacity: 0.08;
-				}
-				88% {
-					opacity: 0.15;
+				90% {
+					opacity: 0.18;
 				}
 			}
-			@keyframes wave4 {
+			@keyframes band3 {
 				0%,
 				100% {
-					opacity: 0.15;
+					opacity: 0.12;
 				}
-				11% {
+				10% {
+					opacity: 0.18;
+				}
+				20% {
 					opacity: 0.3;
 				}
-				22% {
-					opacity: 0.55;
+				30% {
+					opacity: 0.7;
 				}
-				33% {
+				40% {
 					opacity: 1;
 				}
-				44% {
-					opacity: 0.55;
+				50% {
+					opacity: 0.7;
 				}
-				55% {
+				60% {
 					opacity: 0.3;
 				}
-				66% {
-					opacity: 0.15;
+				70% {
+					opacity: 0.18;
 				}
-				77%,
-				88% {
+				80% {
+					opacity: 0.12;
+				}
+				90% {
 					opacity: 0.08;
 				}
 			}
-			@keyframes wave5 {
+			@keyframes band4 {
 				0%,
-				88%,
 				100% {
+					opacity: 0.12;
+				}
+				10% {
 					opacity: 0.08;
 				}
-				11% {
-					opacity: 0.15;
+				20% {
+					opacity: 0.12;
 				}
-				22% {
+				30% {
+					opacity: 0.18;
+				}
+				40% {
 					opacity: 0.3;
 				}
-				33% {
-					opacity: 0.55;
+				50% {
+					opacity: 0.7;
 				}
-				44% {
+				60% {
 					opacity: 1;
 				}
-				55% {
-					opacity: 0.55;
+				70% {
+					opacity: 0.7;
 				}
-				66% {
+				80% {
 					opacity: 0.3;
 				}
-				77% {
-					opacity: 0.15;
+				90% {
+					opacity: 0.18;
 				}
 			}
-			@keyframes wave6 {
-				0%,
-				11%,
-				100% {
-					opacity: 0.08;
-				}
-				22% {
-					opacity: 0.15;
-				}
-				33% {
-					opacity: 0.3;
-				}
-				44% {
-					opacity: 0.55;
-				}
-				55% {
-					opacity: 1;
-				}
-				66% {
-					opacity: 0.55;
-				}
-				77% {
-					opacity: 0.3;
-				}
-				88% {
-					opacity: 0.15;
-				}
-			}
-			@keyframes wave7 {
-				0%,
-				100% {
-					opacity: 0.15;
-				}
-				11%,
-				22% {
-					opacity: 0.08;
-				}
-				33% {
-					opacity: 0.15;
-				}
-				44% {
-					opacity: 0.3;
-				}
-				55% {
-					opacity: 0.55;
-				}
-				66% {
-					opacity: 1;
-				}
-				77% {
-					opacity: 0.55;
-				}
-				88% {
-					opacity: 0.3;
-				}
-			}
-			@keyframes wave8 {
+			@keyframes band5 {
 				0%,
 				100% {
 					opacity: 0.3;
 				}
-				11% {
-					opacity: 0.15;
+				10% {
+					opacity: 0.18;
 				}
-				22%,
-				33% {
+				20% {
+					opacity: 0.12;
+				}
+				30% {
 					opacity: 0.08;
 				}
-				44% {
-					opacity: 0.15;
+				40% {
+					opacity: 0.12;
 				}
-				55% {
+				50% {
+					opacity: 0.18;
+				}
+				60% {
 					opacity: 0.3;
 				}
-				66% {
-					opacity: 0.55;
+				70% {
+					opacity: 0.7;
 				}
-				77% {
+				80% {
 					opacity: 1;
 				}
-				88% {
-					opacity: 0.55;
-				}
-			}
-			@keyframes wave9 {
-				0%,
-				100% {
-					opacity: 0.55;
-				}
-				11% {
-					opacity: 0.3;
-				}
-				22% {
-					opacity: 0.15;
-				}
-				33%,
-				44% {
-					opacity: 0.08;
-				}
-				55% {
-					opacity: 0.15;
-				}
-				66% {
-					opacity: 0.3;
-				}
-				77% {
-					opacity: 0.55;
-				}
-				88% {
-					opacity: 1;
+				90% {
+					opacity: 0.7;
 				}
 			}
 
-			/* Sweep order: left-darkest → left-dark → left-medium → left-light → top → right-light → right-medium → right-dark → right-darkest */
-			#left-darkest {
-				animation: wave1 2s linear infinite;
+			/* Bottom to top: darkest → dark → medium → light → lightest */
+			#left-darkest,
+			#right-darkest {
+				animation: band1 2s linear infinite;
 			}
-			#left-dark {
-				animation: wave2 2s linear infinite;
+			#left-dark,
+			#right-dark {
+				animation: band2 2s linear infinite;
 			}
-			#left-medium {
-				animation: wave3 2s linear infinite;
+			#left-medium,
+			#right-medium {
+				animation: band3 2s linear infinite;
 			}
-			#left-light {
-				animation: wave4 2s linear infinite;
+			#left-light,
+			#right-light {
+				animation: band4 2s linear infinite;
 			}
 			#top-lightest {
-				animation: wave5 2s linear infinite;
-			}
-			#right-light {
-				animation: wave6 2s linear infinite;
-			}
-			#right-medium {
-				animation: wave7 2s linear infinite;
-			}
-			#right-dark {
-				animation: wave8 2s linear infinite;
-			}
-			#right-darkest {
-				animation: wave9 2s linear infinite;
+				animation: band5 2s linear infinite;
 			}
 		</style>
 	</head>
