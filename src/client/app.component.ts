@@ -60,7 +60,7 @@ export class AppComponent implements OnInit {
 	 * Dismisses the bootstrap loading overlay with a polished transition:
 	 * 1. Waits for the circular wave animation to reach the start of a cycle (position 0)
 	 * 2. Triggers "lock" animation where each band stays at 100% after the wave passes
-	 * 3. After full cycle completes (~2s), fades out and removes the overlay
+	 * 3. After full cycle completes (~1.2s), fades out and removes the overlay
 	 */
 	private dismissBootstrapOverlay(): void {
 		console.log('dismissBootstrapOverlay');
@@ -70,7 +70,7 @@ export class AppComponent implements OnInit {
 		const tracking_band = document.getElementById('left-darkest');
 		if (!tracking_band) {
 			overlay.classList.add('fade-out');
-			setTimeout(() => overlay.remove(), 2000);
+			setTimeout(() => overlay.remove(), 600);
 			return;
 		}
 
@@ -78,11 +78,11 @@ export class AppComponent implements OnInit {
 			'animationiteration',
 			() => {
 				overlay.classList.add('ready');
-				// Wait for full lock cycle (2s) - last band peaks at 89% (~1.78s)
+				// Wait for full lock cycle (1.2s) - last band peaks at 89% (~1.07s)
 				setTimeout(() => {
 					overlay.classList.add('fade-out');
-					setTimeout(() => overlay.remove(), 800);
-				}, 2000);
+					setTimeout(() => overlay.remove(), 600);
+				}, 1200);
 			},
 			{once: true},
 		);
