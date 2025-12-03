@@ -75,204 +75,351 @@
 				height: 100%;
 			}
 
-			/* Continuous motion wave - bigger deltas, floor 0.08 */
-			/* Curve: 1.00 → 0.70 → 0.30 → 0.18 → 0.12 → 0.08 */
+			/* ========================================
+			   CIRCULAR WAVE ANIMATION
+			   Wave travels: left-darkest → left-dark → left-medium → left-light
+			                 → top-lightest → right-light → right-medium
+			                 → right-dark → right-darkest → (loop)
+			   9 positions, each ~11% apart in the cycle
+			   ======================================== */
 
-			@keyframes band1 {
+			/* Position 0: left-darkest (peaks at 0%) */
+			@keyframes circle-pos-0 {
 				0%,
 				100% {
 					opacity: 1;
 				}
-				10% {
-					opacity: 0.7;
+				11% {
+					opacity: 0.5;
 				}
-				20% {
-					opacity: 0.3;
+				22% {
+					opacity: 0.2;
 				}
-				30% {
-					opacity: 0.18;
+				33% {
+					opacity: 0.1;
 				}
-				40% {
-					opacity: 0.12;
-				}
-				50% {
+				44% {
 					opacity: 0.08;
 				}
-				60% {
-					opacity: 0.12;
-				}
-				70% {
-					opacity: 0.18;
-				}
-				80% {
-					opacity: 0.3;
-				}
-				90% {
-					opacity: 0.7;
-				}
-			}
-			@keyframes band2 {
-				0%,
-				100% {
-					opacity: 0.3;
-				}
-				10% {
-					opacity: 0.7;
-				}
-				20% {
-					opacity: 1;
-				}
-				30% {
-					opacity: 0.7;
-				}
-				40% {
-					opacity: 0.3;
-				}
-				50% {
-					opacity: 0.18;
-				}
-				60% {
-					opacity: 0.12;
-				}
-				70% {
+				56% {
 					opacity: 0.08;
 				}
-				80% {
-					opacity: 0.12;
+				67% {
+					opacity: 0.1;
 				}
-				90% {
-					opacity: 0.18;
+				78% {
+					opacity: 0.2;
 				}
-			}
-			@keyframes band3 {
-				0%,
-				100% {
-					opacity: 0.12;
-				}
-				10% {
-					opacity: 0.18;
-				}
-				20% {
-					opacity: 0.3;
-				}
-				30% {
-					opacity: 0.7;
-				}
-				40% {
-					opacity: 1;
-				}
-				50% {
-					opacity: 0.7;
-				}
-				60% {
-					opacity: 0.3;
-				}
-				70% {
-					opacity: 0.18;
-				}
-				80% {
-					opacity: 0.12;
-				}
-				90% {
-					opacity: 0.08;
-				}
-			}
-			@keyframes band4 {
-				0%,
-				100% {
-					opacity: 0.12;
-				}
-				10% {
-					opacity: 0.08;
-				}
-				20% {
-					opacity: 0.12;
-				}
-				30% {
-					opacity: 0.18;
-				}
-				40% {
-					opacity: 0.3;
-				}
-				50% {
-					opacity: 0.7;
-				}
-				60% {
-					opacity: 1;
-				}
-				70% {
-					opacity: 0.7;
-				}
-				80% {
-					opacity: 0.3;
-				}
-				90% {
-					opacity: 0.18;
-				}
-			}
-			@keyframes band5 {
-				0%,
-				100% {
-					opacity: 0.3;
-				}
-				10% {
-					opacity: 0.18;
-				}
-				20% {
-					opacity: 0.12;
-				}
-				30% {
-					opacity: 0.08;
-				}
-				40% {
-					opacity: 0.12;
-				}
-				50% {
-					opacity: 0.18;
-				}
-				60% {
-					opacity: 0.3;
-				}
-				70% {
-					opacity: 0.7;
-				}
-				80% {
-					opacity: 1;
-				}
-				90% {
-					opacity: 0.7;
+				89% {
+					opacity: 0.5;
 				}
 			}
 
-			/* Bottom to top: darkest → dark → medium → light → lightest */
-			#left-darkest,
-			#right-darkest {
-				animation: band1 2s linear infinite;
+			/* Position 1: left-dark (peaks at 11%) */
+			@keyframes circle-pos-1 {
+				0%,
+				100% {
+					opacity: 0.5;
+				}
+				11% {
+					opacity: 1;
+				}
+				22% {
+					opacity: 0.5;
+				}
+				33% {
+					opacity: 0.2;
+				}
+				44% {
+					opacity: 0.1;
+				}
+				56% {
+					opacity: 0.08;
+				}
+				67% {
+					opacity: 0.08;
+				}
+				78% {
+					opacity: 0.1;
+				}
+				89% {
+					opacity: 0.2;
+				}
 			}
-			#left-dark,
-			#right-dark {
-				animation: band2 2s linear infinite;
+
+			/* Position 2: left-medium (peaks at 22%) */
+			@keyframes circle-pos-2 {
+				0%,
+				100% {
+					opacity: 0.2;
+				}
+				11% {
+					opacity: 0.5;
+				}
+				22% {
+					opacity: 1;
+				}
+				33% {
+					opacity: 0.5;
+				}
+				44% {
+					opacity: 0.2;
+				}
+				56% {
+					opacity: 0.1;
+				}
+				67% {
+					opacity: 0.08;
+				}
+				78% {
+					opacity: 0.08;
+				}
+				89% {
+					opacity: 0.1;
+				}
 			}
-			#left-medium,
-			#right-medium {
-				animation: band3 2s linear infinite;
+
+			/* Position 3: left-light (peaks at 33%) */
+			@keyframes circle-pos-3 {
+				0%,
+				100% {
+					opacity: 0.1;
+				}
+				11% {
+					opacity: 0.2;
+				}
+				22% {
+					opacity: 0.5;
+				}
+				33% {
+					opacity: 1;
+				}
+				44% {
+					opacity: 0.5;
+				}
+				56% {
+					opacity: 0.2;
+				}
+				67% {
+					opacity: 0.1;
+				}
+				78% {
+					opacity: 0.08;
+				}
+				89% {
+					opacity: 0.08;
+				}
 			}
-			#left-light,
-			#right-light {
-				animation: band4 2s linear infinite;
+
+			/* Position 4: top-lightest (peaks at 44%) */
+			@keyframes circle-pos-4 {
+				0%,
+				100% {
+					opacity: 0.08;
+				}
+				11% {
+					opacity: 0.1;
+				}
+				22% {
+					opacity: 0.2;
+				}
+				33% {
+					opacity: 0.5;
+				}
+				44% {
+					opacity: 1;
+				}
+				56% {
+					opacity: 0.5;
+				}
+				67% {
+					opacity: 0.2;
+				}
+				78% {
+					opacity: 0.1;
+				}
+				89% {
+					opacity: 0.08;
+				}
+			}
+
+			/* Position 5: right-light (peaks at 56%) */
+			@keyframes circle-pos-5 {
+				0%,
+				100% {
+					opacity: 0.08;
+				}
+				11% {
+					opacity: 0.08;
+				}
+				22% {
+					opacity: 0.1;
+				}
+				33% {
+					opacity: 0.2;
+				}
+				44% {
+					opacity: 0.5;
+				}
+				56% {
+					opacity: 1;
+				}
+				67% {
+					opacity: 0.5;
+				}
+				78% {
+					opacity: 0.2;
+				}
+				89% {
+					opacity: 0.1;
+				}
+			}
+
+			/* Position 6: right-medium (peaks at 67%) */
+			@keyframes circle-pos-6 {
+				0%,
+				100% {
+					opacity: 0.1;
+				}
+				11% {
+					opacity: 0.08;
+				}
+				22% {
+					opacity: 0.08;
+				}
+				33% {
+					opacity: 0.1;
+				}
+				44% {
+					opacity: 0.2;
+				}
+				56% {
+					opacity: 0.5;
+				}
+				67% {
+					opacity: 1;
+				}
+				78% {
+					opacity: 0.5;
+				}
+				89% {
+					opacity: 0.2;
+				}
+			}
+
+			/* Position 7: right-dark (peaks at 78%) */
+			@keyframes circle-pos-7 {
+				0%,
+				100% {
+					opacity: 0.2;
+				}
+				11% {
+					opacity: 0.1;
+				}
+				22% {
+					opacity: 0.08;
+				}
+				33% {
+					opacity: 0.08;
+				}
+				44% {
+					opacity: 0.1;
+				}
+				56% {
+					opacity: 0.2;
+				}
+				67% {
+					opacity: 0.5;
+				}
+				78% {
+					opacity: 1;
+				}
+				89% {
+					opacity: 0.5;
+				}
+			}
+
+			/* Position 8: right-darkest (peaks at 89%) */
+			@keyframes circle-pos-8 {
+				0%,
+				100% {
+					opacity: 0.5;
+				}
+				11% {
+					opacity: 0.2;
+				}
+				22% {
+					opacity: 0.1;
+				}
+				33% {
+					opacity: 0.08;
+				}
+				44% {
+					opacity: 0.08;
+				}
+				56% {
+					opacity: 0.1;
+				}
+				67% {
+					opacity: 0.2;
+				}
+				78% {
+					opacity: 0.5;
+				}
+				89% {
+					opacity: 1;
+				}
+			}
+
+			/* Circular animation assignments */
+			#left-darkest {
+				animation: circle-pos-0 2s linear infinite;
+			}
+			#left-dark {
+				animation: circle-pos-1 2s linear infinite;
+			}
+			#left-medium {
+				animation: circle-pos-2 2s linear infinite;
+			}
+			#left-light {
+				animation: circle-pos-3 2s linear infinite;
 			}
 			#top-lightest {
-				animation: band5 2s linear infinite;
+				animation: circle-pos-4 2s linear infinite;
+			}
+			#right-light {
+				animation: circle-pos-5 2s linear infinite;
+			}
+			#right-medium {
+				animation: circle-pos-6 2s linear infinite;
+			}
+			#right-dark {
+				animation: circle-pos-7 2s linear infinite;
+			}
+			#right-darkest {
+				animation: circle-pos-8 2s linear infinite;
 			}
 
 			/* ========================================
-			   SOLIDIFY ANIMATIONS - "Power Up" Effect
-			   Start from each band's 0% opacity value
+			   LOCK ANIMATIONS - Progressive Fill Effect
+			   Wave continues but each band locks at 100% after peak
+			   Creates a "filling up" effect around the circle
 			   ======================================== */
 
-			@keyframes solidify-band1 {
-				/* band1 starts at 1, already full */
+			/* Position 0: left-darkest (peaks at 0%, locks immediately) */
+			@keyframes lock-pos-0 {
+				0%,
+				100% {
+					opacity: 1;
+				}
+			}
+
+			/* Position 1: left-dark (peaks at 11%) */
+			@keyframes lock-pos-1 {
 				0% {
+					opacity: 0.5;
+				}
+				11% {
 					opacity: 1;
 				}
 				100% {
@@ -280,73 +427,208 @@
 				}
 			}
 
-			@keyframes solidify-band2 {
-				/* band2 starts at 0.3 */
+			/* Position 2: left-medium (peaks at 22%) */
+			@keyframes lock-pos-2 {
 				0% {
-					opacity: 0.3;
+					opacity: 0.2;
+				}
+				11% {
+					opacity: 0.5;
+				}
+				22% {
+					opacity: 1;
 				}
 				100% {
 					opacity: 1;
 				}
 			}
 
-			@keyframes solidify-band3 {
-				/* band3 starts at 0.12 */
+			/* Position 3: left-light (peaks at 33%) */
+			@keyframes lock-pos-3 {
 				0% {
-					opacity: 0.12;
+					opacity: 0.1;
+				}
+				11% {
+					opacity: 0.2;
+				}
+				22% {
+					opacity: 0.5;
+				}
+				33% {
+					opacity: 1;
 				}
 				100% {
 					opacity: 1;
 				}
 			}
 
-			@keyframes solidify-band4 {
-				/* band4 starts at 0.12 */
+			/* Position 4: top-lightest (peaks at 44%) */
+			@keyframes lock-pos-4 {
 				0% {
-					opacity: 0.12;
+					opacity: 0.08;
+				}
+				11% {
+					opacity: 0.1;
+				}
+				22% {
+					opacity: 0.2;
+				}
+				33% {
+					opacity: 0.5;
+				}
+				44% {
+					opacity: 1;
 				}
 				100% {
 					opacity: 1;
 				}
 			}
 
-			@keyframes solidify-band5 {
-				/* band5 starts at 0.3 */
+			/* Position 5: right-light (peaks at 56%) */
+			@keyframes lock-pos-5 {
 				0% {
-					opacity: 0.3;
+					opacity: 0.08;
+				}
+				11% {
+					opacity: 0.08;
+				}
+				22% {
+					opacity: 0.1;
+				}
+				33% {
+					opacity: 0.2;
+				}
+				44% {
+					opacity: 0.5;
+				}
+				56% {
+					opacity: 1;
 				}
 				100% {
 					opacity: 1;
 				}
 			}
 
-			/* When .ready is added, switch from pulse to solidify */
-			.orc-bootstrap-overlay.ready #left-darkest,
-			.orc-bootstrap-overlay.ready #right-darkest {
-				animation: solidify-band1 0.25s ease-out both;
+			/* Position 6: right-medium (peaks at 67%) */
+			@keyframes lock-pos-6 {
+				0% {
+					opacity: 0.1;
+				}
+				11% {
+					opacity: 0.08;
+				}
+				22% {
+					opacity: 0.08;
+				}
+				33% {
+					opacity: 0.1;
+				}
+				44% {
+					opacity: 0.2;
+				}
+				56% {
+					opacity: 0.5;
+				}
+				67% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 1;
+				}
 			}
 
-			.orc-bootstrap-overlay.ready #left-dark,
-			.orc-bootstrap-overlay.ready #right-dark {
-				animation: solidify-band2 0.25s ease-out both;
-				animation-delay: 0.15s;
+			/* Position 7: right-dark (peaks at 78%) */
+			@keyframes lock-pos-7 {
+				0% {
+					opacity: 0.2;
+				}
+				11% {
+					opacity: 0.1;
+				}
+				22% {
+					opacity: 0.08;
+				}
+				33% {
+					opacity: 0.08;
+				}
+				44% {
+					opacity: 0.1;
+				}
+				56% {
+					opacity: 0.2;
+				}
+				67% {
+					opacity: 0.5;
+				}
+				78% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 1;
+				}
 			}
 
-			.orc-bootstrap-overlay.ready #left-medium,
-			.orc-bootstrap-overlay.ready #right-medium {
-				animation: solidify-band3 0.25s ease-out both;
-				animation-delay: 0.3s;
+			/* Position 8: right-darkest (peaks at 89%) */
+			@keyframes lock-pos-8 {
+				0% {
+					opacity: 0.5;
+				}
+				11% {
+					opacity: 0.2;
+				}
+				22% {
+					opacity: 0.1;
+				}
+				33% {
+					opacity: 0.08;
+				}
+				44% {
+					opacity: 0.08;
+				}
+				56% {
+					opacity: 0.1;
+				}
+				67% {
+					opacity: 0.2;
+				}
+				78% {
+					opacity: 0.5;
+				}
+				89% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 1;
+				}
 			}
 
-			.orc-bootstrap-overlay.ready #left-light,
-			.orc-bootstrap-overlay.ready #right-light {
-				animation: solidify-band4 0.25s ease-out both;
-				animation-delay: 0.45s;
+			/* When .ready is added, switch to lock animations */
+			.orc-bootstrap-overlay.ready #left-darkest {
+				animation: lock-pos-0 2s linear forwards;
 			}
-
+			.orc-bootstrap-overlay.ready #left-dark {
+				animation: lock-pos-1 2s linear forwards;
+			}
+			.orc-bootstrap-overlay.ready #left-medium {
+				animation: lock-pos-2 2s linear forwards;
+			}
+			.orc-bootstrap-overlay.ready #left-light {
+				animation: lock-pos-3 2s linear forwards;
+			}
 			.orc-bootstrap-overlay.ready #top-lightest {
-				animation: solidify-band5 0.25s ease-out both;
-				animation-delay: 0.6s;
+				animation: lock-pos-4 2s linear forwards;
+			}
+			.orc-bootstrap-overlay.ready #right-light {
+				animation: lock-pos-5 2s linear forwards;
+			}
+			.orc-bootstrap-overlay.ready #right-medium {
+				animation: lock-pos-6 2s linear forwards;
+			}
+			.orc-bootstrap-overlay.ready #right-dark {
+				animation: lock-pos-7 2s linear forwards;
+			}
+			.orc-bootstrap-overlay.ready #right-darkest {
+				animation: lock-pos-8 2s linear forwards;
 			}
 		</style>
 	</head>
