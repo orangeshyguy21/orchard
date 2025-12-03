@@ -1,6 +1,6 @@
 /* Core Dependencies */
 import {NgModule} from '@angular/core';
-import {RouterModule, Routes} from '@angular/router';
+import {RouterModule, Routes, PreloadAllModules} from '@angular/router';
 /* Vendor Dependencies */
 import {MatSidenavModule} from '@angular/material/sidenav';
 /* Application Dependencies */
@@ -12,7 +12,6 @@ import {initializationGuard} from '@client/modules/auth/guards/initialization/in
 /* Native Dependencies */
 import {LayoutExteriorComponent} from './components/layout-exterior/layout-exterior.component';
 import {LayoutInteriorComponent} from './components/layout-interior/layout-interior.component';
-import {SiblingPreloadStrategy} from './strategy/sibling-preload.strategy';
 
 const interior_routes = [
 	{
@@ -75,7 +74,7 @@ const routes: Routes = [
 		// RouterModule.forRoot(routes, {enableViewTransitions: true}),
 		// RouterModule.forRoot(routes),
 		RouterModule.forRoot(routes, {
-			preloadingStrategy: SiblingPreloadStrategy,
+			preloadingStrategy: PreloadAllModules,
 		}),
 		MatSidenavModule,
 		OrcNavModule,
