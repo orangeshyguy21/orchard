@@ -55,7 +55,7 @@
 				display: flex;
 				justify-content: center;
 				align-items: center;
-				transition: 0.5s opacity 1s ease-out;
+				transition: 0.4s opacity 0.3s ease-out;
 			}
 
 			.orc-bootstrap-overlay.fade-out {
@@ -258,6 +258,90 @@
 			}
 			#top-lightest {
 				animation: band5 2s linear infinite;
+			}
+
+			/* ========================================
+			   SOLIDIFY ANIMATIONS - "Power Up" Effect
+			   Start from each band's 0% opacity value
+			   ======================================== */
+
+			@keyframes solidify-band1 {
+				/* band1 starts at 1, already full */
+				0% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 1;
+				}
+			}
+
+			@keyframes solidify-band2 {
+				/* band2 starts at 0.3 */
+				0% {
+					opacity: 0.3;
+				}
+				100% {
+					opacity: 1;
+				}
+			}
+
+			@keyframes solidify-band3 {
+				/* band3 starts at 0.12 */
+				0% {
+					opacity: 0.12;
+				}
+				100% {
+					opacity: 1;
+				}
+			}
+
+			@keyframes solidify-band4 {
+				/* band4 starts at 0.12 */
+				0% {
+					opacity: 0.12;
+				}
+				100% {
+					opacity: 1;
+				}
+			}
+
+			@keyframes solidify-band5 {
+				/* band5 starts at 0.3 */
+				0% {
+					opacity: 0.3;
+				}
+				100% {
+					opacity: 1;
+				}
+			}
+
+			/* When .ready is added, switch from pulse to solidify */
+			.orc-bootstrap-overlay.ready #left-darkest,
+			.orc-bootstrap-overlay.ready #right-darkest {
+				animation: solidify-band1 0.25s ease-out both;
+			}
+
+			.orc-bootstrap-overlay.ready #left-dark,
+			.orc-bootstrap-overlay.ready #right-dark {
+				animation: solidify-band2 0.25s ease-out both;
+				animation-delay: 0.15s;
+			}
+
+			.orc-bootstrap-overlay.ready #left-medium,
+			.orc-bootstrap-overlay.ready #right-medium {
+				animation: solidify-band3 0.25s ease-out both;
+				animation-delay: 0.3s;
+			}
+
+			.orc-bootstrap-overlay.ready #left-light,
+			.orc-bootstrap-overlay.ready #right-light {
+				animation: solidify-band4 0.25s ease-out both;
+				animation-delay: 0.45s;
+			}
+
+			.orc-bootstrap-overlay.ready #top-lightest {
+				animation: solidify-band5 0.25s ease-out both;
+				animation-delay: 0.6s;
 			}
 		</style>
 	</head>

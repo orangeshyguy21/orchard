@@ -28,10 +28,33 @@ export class AppComponent implements OnInit {
 		this.dismissBootstrapOverlay();
 	}
 
+	/**
+	 * Dismisses the bootstrap loading overlay with a polished transition:
+	 * 1. Waits for the current pulse animation cycle to complete
+	 * 2. Triggers "solidify" animation that brings all bands to full opacity
+	 * 3. Fades out and removes the overlay
+	 */
 	private dismissBootstrapOverlay(): void {
 		const overlay = document.getElementById('orc-bootstrap-overlay');
 		if (!overlay) return;
-		overlay.classList.add('fade-out');
-		setTimeout(() => overlay.remove(), 2000);
+
+		const tracking_band = document.getElementById('left-darkest');
+		if (!tracking_band) {
+			overlay.classList.add('fade-out');
+			setTimeout(() => overlay.remove(), 2000);
+			return;
+		}
+
+		tracking_band.addEventListener(
+			'animationiteration',
+			() => {
+				overlay.classList.add('ready');
+				setTimeout(() => {
+					overlay.classList.add('fade-out');
+					setTimeout(() => overlay.remove(), 800);
+				}, 1000);
+			},
+			{once: true},
+		);
 	}
 }
