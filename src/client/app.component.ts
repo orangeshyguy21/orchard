@@ -52,7 +52,7 @@ export class AppComponent implements OnInit {
 				setTimeout(() => {
 					overlay.classList.add('fade-out');
 					setTimeout(() => overlay.remove(), 800);
-				}, 1000);
+				}, 750);
 			},
 			{once: true},
 		);
