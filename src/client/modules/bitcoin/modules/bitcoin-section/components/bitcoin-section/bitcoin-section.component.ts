@@ -1,6 +1,6 @@
 /* Core Dependencies */
 import {Component, ChangeDetectionStrategy, OnInit, OnDestroy, signal, WritableSignal} from '@angular/core';
-import {Router, Event, ActivatedRoute} from '@angular/router';
+import {Router, Event, ActivatedRoute, NavigationStart} from '@angular/router';
 /* Vendor Dependencies */
 import {filter, Subscription} from 'rxjs';
 /* Application Dependencies */
@@ -67,19 +67,25 @@ export class BitcoinSectionComponent implements OnInit, OnDestroy {
 
 	private getRouterSubscription(): Subscription {
 		return this.router.events.pipe(filter((event: Event) => 'routerEvent' in event || 'type' in event)).subscribe((event) => {
-			this.setSubSection(event);
+			this.active_sub_section.set(this.getSubSection(event));
 		});
 	}
 
-	private setSubSection(event: Event): void {
+	private getSubSection(event: Event): string {
+		if (event instanceof NavigationStart) {
+			const segments = event.url.split('/').filter(Boolean);
+			if (segments[0] !== 'index') return this.active_sub_section();
+			return segments[1] || 'dashboard';
+		}
+
 		const router_event = 'routerEvent' in event ? event.routerEvent : event;
-		if (router_event.type !== 1) return;
+		if (router_event.type !== 1) return this.active_sub_section();
 		let route = this.route.root;
 		while (route.firstChild) {
 			route = route.firstChild;
 		}
-		if (!route.snapshot.data) return;
-		this.active_sub_section.set(route.snapshot.data['sub_section'] || '');
+		if (route.snapshot.data['sub_section'] === 'error') return route.snapshot.data['origin'] || '';
+		return route.snapshot.data['sub_section'] || '';
 	}
 
 	ngOnDestroy(): void {

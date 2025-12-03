@@ -1,6 +1,6 @@
 /* Core Dependencies */
 import {Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef, OnDestroy} from '@angular/core';
-import {Router, Event, ActivatedRoute} from '@angular/router';
+import {Router, Event, ActivatedRoute, NavigationStart} from '@angular/router';
 /* Vendor Dependencies */
 import {filter, Subscription} from 'rxjs';
 /* Application Dependencies */
@@ -62,8 +62,14 @@ export class MintSectionComponent implements OnInit, OnDestroy {
 	}
 
 	private getSubSection(event: Event): string {
+		if (event instanceof NavigationStart) {
+			const segments = event.url.split('/').filter(Boolean);
+			if (segments[0] !== 'mint') return this.active_sub_section;
+			return segments[1] || 'dashboard';
+		}
+
 		const router_event = 'routerEvent' in event ? event.routerEvent : event;
-		if (router_event.type !== 1) return '';
+		if (router_event.type !== 1) return this.active_sub_section;
 		let route = this.route.root;
 		while (route.firstChild) {
 			route = route.firstChild;

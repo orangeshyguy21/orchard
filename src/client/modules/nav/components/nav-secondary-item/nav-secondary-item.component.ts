@@ -12,7 +12,7 @@ import {Router} from '@angular/router';
 export class NavSecondaryItemComponent {
 	public name = input.required<string>();
 	public navroute = input.required<string>();
-	public active = input.required<boolean>();
+	public active = input<boolean>(false);
 
 	public moused = signal<boolean>(false);
 

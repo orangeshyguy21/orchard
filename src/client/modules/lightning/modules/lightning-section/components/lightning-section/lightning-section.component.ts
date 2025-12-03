@@ -1,6 +1,6 @@
 /* Core Dependencies */
-import {Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef, OnDestroy} from '@angular/core';
-import {Router, Event, ActivatedRoute} from '@angular/router';
+import {Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef, OnDestroy, WritableSignal, signal} from '@angular/core';
+import {Router, Event, ActivatedRoute, NavigationStart} from '@angular/router';
 /* Native Dependencies */
 import {LightningService} from '@client/modules/lightning/services/lightning/lightning.service';
 import {LightningInfo} from '@client/modules/lightning/classes/lightning-info.class';
@@ -16,7 +16,7 @@ import {filter, Subscription} from 'rxjs';
 })
 export class LightningSectionComponent implements OnInit, OnDestroy {
 	public lightning_info: LightningInfo | null = null;
-	public active_sub_section: string = '';
+	public active_sub_section: WritableSignal<string> = signal('');
 	public loading: boolean = true;
 	public error: boolean = false;
 
@@ -51,20 +51,25 @@ export class LightningSectionComponent implements OnInit, OnDestroy {
 
 	private getRouterSubscription(): Subscription {
 		return this.router.events.pipe(filter((event: Event) => 'routerEvent' in event || 'type' in event)).subscribe((event) => {
-			this.setSubSection(event);
+			this.active_sub_section.set(this.getSubSection(event));
 		});
 	}
 
-	private setSubSection(event: Event): void {
+	private getSubSection(event: Event): string {
+		if (event instanceof NavigationStart) {
+			const segments = event.url.split('/').filter(Boolean);
+			if (segments[0] !== 'lightning') return this.active_sub_section();
+			return segments[1] || 'dashboard';
+		}
+
 		const router_event = 'routerEvent' in event ? event.routerEvent : event;
-		if (router_event.type !== 1) return;
+		if (router_event.type !== 1) return this.active_sub_section();
 		let route = this.route.root;
 		while (route.firstChild) {
 			route = route.firstChild;
 		}
-		if (!route.snapshot.data) return;
-		this.active_sub_section = route.snapshot.data['sub_section'] || '';
-		this.cdr.detectChanges();
+		if (route.snapshot.data['sub_section'] === 'error') return route.snapshot.data['origin'] || '';
+		return route.snapshot.data['sub_section'] || '';
 	}
 
 	ngOnDestroy(): void {
