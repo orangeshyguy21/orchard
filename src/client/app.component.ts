@@ -46,7 +46,9 @@ export class AppComponent implements OnInit {
 			.subscribe(() => {
 				// Wait for the lazy-loaded component to render
 				afterNextRender(
-					() => {
+					async () => {
+						// Wait for all fonts to be loaded
+						await document.fonts.ready;
 						this.dismissBootstrapOverlay();
 					},
 					{injector: this.injector},
