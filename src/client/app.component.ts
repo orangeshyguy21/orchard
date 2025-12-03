@@ -1,6 +1,8 @@
 /* Core Dependencies */
-import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
+import {Component, ChangeDetectionStrategy, OnInit, Injector, afterNextRender} from '@angular/core';
+import {Router, NavigationEnd} from '@angular/router';
 /* Vendor Dependencies */
+import {filter, take} from 'rxjs/operators';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import {Chart} from 'chart.js/auto';
 /* Application Dependencies */
@@ -20,12 +22,36 @@ export class AppComponent implements OnInit {
 	constructor(
 		private settingDeviceService: SettingDeviceService,
 		private graphicService: GraphicService,
+		private router: Router,
+		private injector: Injector,
 	) {}
 
 	ngOnInit(): void {
 		this.graphicService.init();
 		this.settingDeviceService.init();
-		this.dismissBootstrapOverlay();
+		// this.dismissBootstrapOverlay();
+		this.waitForAppReady();
+	}
+
+	/**
+	 * Waits for the first route navigation to complete (lazy module loaded)
+	 * then waits for the component to render before dismissing the overlay
+	 */
+	private waitForAppReady(): void {
+		this.router.events
+			.pipe(
+				filter((event) => event instanceof NavigationEnd),
+				take(1),
+			)
+			.subscribe(() => {
+				// Wait for the lazy-loaded component to render
+				afterNextRender(
+					() => {
+						this.dismissBootstrapOverlay();
+					},
+					{injector: this.injector},
+				);
+			});
 	}
 
 	/**
@@ -35,6 +61,7 @@ export class AppComponent implements OnInit {
 	 * 3. Fades out and removes the overlay
 	 */
 	private dismissBootstrapOverlay(): void {
+		console.log('dismissBootstrapOverlay');
 		const overlay = document.getElementById('orc-bootstrap-overlay');
 		if (!overlay) return;
 
