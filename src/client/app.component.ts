@@ -29,7 +29,6 @@ export class AppComponent implements OnInit {
 	ngOnInit(): void {
 		this.graphicService.init();
 		this.settingDeviceService.init();
-		// this.dismissBootstrapOverlay();
 		this.waitForAppReady();
 	}
 
@@ -63,7 +62,6 @@ export class AppComponent implements OnInit {
 	 * 3. After full cycle completes (~1.2s), fades out and removes the overlay
 	 */
 	private dismissBootstrapOverlay(): void {
-		console.log('dismissBootstrapOverlay');
 		const overlay = document.getElementById('orc-bootstrap-overlay');
 		if (!overlay) return;
 
