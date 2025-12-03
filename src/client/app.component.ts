@@ -30,8 +30,8 @@ export class AppComponent implements OnInit {
 
 	private dismissBootstrapOverlay(): void {
 		const overlay = document.getElementById('orc-bootstrap-overlay');
-		if (!overlay) return;
-		overlay.classList.add('fade-out');
-		setTimeout(() => overlay.remove(), 4000);
+		// if (!overlay) return;
+		// overlay.classList.add('fade-out');
+		// setTimeout(() => overlay.remove(), 4000);
 	}
 }

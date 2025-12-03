@@ -69,12 +69,298 @@
 				align-items: center;
 				height: 100%;
 			}
+
+			/* Smooth wave animation - circular distance from traveling peak */
+			/* Steeper falloff: 0=100%, 1=55%, 2=30%, 3=15%, 4+=8% */
+			/* Circular wrap: element 9 is 1 step from element 1 */
+
+			@keyframes wave1 {
+				0%,
+				100% {
+					opacity: 1;
+				}
+				11% {
+					opacity: 0.55;
+				}
+				22% {
+					opacity: 0.3;
+				}
+				33% {
+					opacity: 0.15;
+				}
+				44%,
+				55% {
+					opacity: 0.08;
+				}
+				66% {
+					opacity: 0.15;
+				}
+				77% {
+					opacity: 0.3;
+				}
+				88% {
+					opacity: 0.55;
+				}
+			}
+			@keyframes wave2 {
+				0%,
+				100% {
+					opacity: 0.55;
+				}
+				11% {
+					opacity: 1;
+				}
+				22% {
+					opacity: 0.55;
+				}
+				33% {
+					opacity: 0.3;
+				}
+				44% {
+					opacity: 0.15;
+				}
+				55%,
+				66% {
+					opacity: 0.08;
+				}
+				77% {
+					opacity: 0.15;
+				}
+				88% {
+					opacity: 0.3;
+				}
+			}
+			@keyframes wave3 {
+				0%,
+				100% {
+					opacity: 0.3;
+				}
+				11% {
+					opacity: 0.55;
+				}
+				22% {
+					opacity: 1;
+				}
+				33% {
+					opacity: 0.55;
+				}
+				44% {
+					opacity: 0.3;
+				}
+				55% {
+					opacity: 0.15;
+				}
+				66%,
+				77% {
+					opacity: 0.08;
+				}
+				88% {
+					opacity: 0.15;
+				}
+			}
+			@keyframes wave4 {
+				0%,
+				100% {
+					opacity: 0.15;
+				}
+				11% {
+					opacity: 0.3;
+				}
+				22% {
+					opacity: 0.55;
+				}
+				33% {
+					opacity: 1;
+				}
+				44% {
+					opacity: 0.55;
+				}
+				55% {
+					opacity: 0.3;
+				}
+				66% {
+					opacity: 0.15;
+				}
+				77%,
+				88% {
+					opacity: 0.08;
+				}
+			}
+			@keyframes wave5 {
+				0%,
+				88%,
+				100% {
+					opacity: 0.08;
+				}
+				11% {
+					opacity: 0.15;
+				}
+				22% {
+					opacity: 0.3;
+				}
+				33% {
+					opacity: 0.55;
+				}
+				44% {
+					opacity: 1;
+				}
+				55% {
+					opacity: 0.55;
+				}
+				66% {
+					opacity: 0.3;
+				}
+				77% {
+					opacity: 0.15;
+				}
+			}
+			@keyframes wave6 {
+				0%,
+				11%,
+				100% {
+					opacity: 0.08;
+				}
+				22% {
+					opacity: 0.15;
+				}
+				33% {
+					opacity: 0.3;
+				}
+				44% {
+					opacity: 0.55;
+				}
+				55% {
+					opacity: 1;
+				}
+				66% {
+					opacity: 0.55;
+				}
+				77% {
+					opacity: 0.3;
+				}
+				88% {
+					opacity: 0.15;
+				}
+			}
+			@keyframes wave7 {
+				0%,
+				100% {
+					opacity: 0.15;
+				}
+				11%,
+				22% {
+					opacity: 0.08;
+				}
+				33% {
+					opacity: 0.15;
+				}
+				44% {
+					opacity: 0.3;
+				}
+				55% {
+					opacity: 0.55;
+				}
+				66% {
+					opacity: 1;
+				}
+				77% {
+					opacity: 0.55;
+				}
+				88% {
+					opacity: 0.3;
+				}
+			}
+			@keyframes wave8 {
+				0%,
+				100% {
+					opacity: 0.3;
+				}
+				11% {
+					opacity: 0.15;
+				}
+				22%,
+				33% {
+					opacity: 0.08;
+				}
+				44% {
+					opacity: 0.15;
+				}
+				55% {
+					opacity: 0.3;
+				}
+				66% {
+					opacity: 0.55;
+				}
+				77% {
+					opacity: 1;
+				}
+				88% {
+					opacity: 0.55;
+				}
+			}
+			@keyframes wave9 {
+				0%,
+				100% {
+					opacity: 0.55;
+				}
+				11% {
+					opacity: 0.3;
+				}
+				22% {
+					opacity: 0.15;
+				}
+				33%,
+				44% {
+					opacity: 0.08;
+				}
+				55% {
+					opacity: 0.15;
+				}
+				66% {
+					opacity: 0.3;
+				}
+				77% {
+					opacity: 0.55;
+				}
+				88% {
+					opacity: 1;
+				}
+			}
+
+			/* Sweep order: left-darkest → left-dark → left-medium → left-light → top → right-light → right-medium → right-dark → right-darkest */
+			#left-darkest {
+				animation: wave1 2s linear infinite;
+			}
+			#left-dark {
+				animation: wave2 2s linear infinite;
+			}
+			#left-medium {
+				animation: wave3 2s linear infinite;
+			}
+			#left-light {
+				animation: wave4 2s linear infinite;
+			}
+			#top-lightest {
+				animation: wave5 2s linear infinite;
+			}
+			#right-light {
+				animation: wave6 2s linear infinite;
+			}
+			#right-medium {
+				animation: wave7 2s linear infinite;
+			}
+			#right-dark {
+				animation: wave8 2s linear infinite;
+			}
+			#right-darkest {
+				animation: wave9 2s linear infinite;
+			}
 		</style>
 	</head>
 	<body>
 		<!-- Bootstrap loader - overlay that persists until Angular signals ready -->
 		<div id="orc-bootstrap-overlay" class="orc-bootstrap-overlay">
-			<svg id="graphic-orchard-logo" data-name="graphic-orchard-logo" height="160" viewBox="0 0 190 190">
+			<svg id="orc-bootstrap-orchard-logo" data-name="graphic-orchard-logo" height="160" viewBox="0 0 190 190">
 				<rect class="orc-bootstrap-surface-fill" x="0" y="0" width="190" height="190" rx="95" ry="95" />
 				<g>
 					<path
