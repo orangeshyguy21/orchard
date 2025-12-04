@@ -78,6 +78,7 @@ const ICONS = [
   'visibility_off',
   'warning',
   'wifi_off',
+  'vpn_lock_2',
 ];
 
 // Sort alphabetically and remove duplicates
