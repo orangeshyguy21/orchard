@@ -6,7 +6,6 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 /* Application Dependencies */
 import {OrcNavModule} from '@client/modules/nav/nav.module';
 import {OrcAiModule} from '@client/modules/ai/ai.module';
-import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {OrcEventGeneralModule} from '@client/modules/event/modules/event-general/event-general.module';
 import {authenticationGuard} from '@client/modules/auth/guards/authentication/authentication.guard';
 import {initializationGuard} from '@client/modules/auth/guards/initialization/initialization.guard';
@@ -79,7 +78,6 @@ const routes: Routes = [
 		MatSidenavModule,
 		OrcNavModule,
 		OrcAiModule,
-		OrcGraphicModule,
 		OrcEventGeneralModule,
 	],
 	exports: [RouterModule],

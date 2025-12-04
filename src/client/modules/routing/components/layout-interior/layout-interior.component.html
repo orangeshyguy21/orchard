@@ -20,9 +20,7 @@
 		<div class="interior-section-container">
 			<div class="interior-router-outlet-container">
 				@if (overlayed()) {
-					<div class="orc-route-overlay" animate.leave="orc-route-animation-overlay">
-						<orc-graphic-orchard-logo height="10rem"></orc-graphic-orchard-logo>
-					</div>
+					<div class="orc-route-overlay" animate.leave="orc-route-animation-overlay"></div>
 				}
 				<router-outlet></router-outlet>
 				<orc-event-general-stack [active_event]="active_event"></orc-event-general-stack>
