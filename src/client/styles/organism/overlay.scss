@@ -1,0 +1,12 @@
+@use 'molecule/molecule';
+
+.orc-route-overlay{
+    @extend %absolute;
+    @extend %inset-0;
+    @extend %z-index-top;
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-justify-center;
+    @extend %transparent-bg;
+    @extend %blur-medium;    
+}

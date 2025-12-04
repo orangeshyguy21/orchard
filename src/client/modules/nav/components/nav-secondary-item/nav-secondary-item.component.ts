@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, signal, computed} from '@angular/core';
 import {Router} from '@angular/router';
 
 @Component({
@@ -10,32 +10,25 @@ import {Router} from '@angular/router';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavSecondaryItemComponent {
-	@Input() name!: string;
-	@Input() navroute!: string;
-	@Input() active: boolean = false;
+	public name = input.required<string>();
+	public navroute = input.required<string>();
+	public active = input<boolean>(false);
 
-	public moused = false;
+	public moused = signal<boolean>(false);
 
-	public get highlight() {
-		return this.active || this.moused;
-	}
+	public highlight = computed(() => this.active() || this.moused());
 
-	constructor(
-		private changeDetectorRef: ChangeDetectorRef,
-		private router: Router,
-	) {}
+	constructor(private router: Router) {}
 
 	public onMouseEnter() {
-		this.moused = true;
-		this.changeDetectorRef.detectChanges();
+		this.moused.set(true);
 	}
 
 	public onMouseLeave() {
-		this.moused = false;
-		this.changeDetectorRef.detectChanges();
+		this.moused.set(false);
 	}
 
 	public onClick() {
-		this.router.navigate([this.navroute]);
+		this.router.navigate([this.navroute()]);
 	}
 }

@@ -15,14 +15,8 @@
 	@extend %flex-gap-2;
 }
 
-.orchard-logo-container {
-	@extend %relative;
+.authentication-form {
 	@extend %flex;
+	@extend %flex-column;
 	@extend %flex-items-center;
-	@extend %flex-justify-center;
-}
-
-.graphic-container {
-	@extend %absolute;
-	@extend %bottom-1;
 }

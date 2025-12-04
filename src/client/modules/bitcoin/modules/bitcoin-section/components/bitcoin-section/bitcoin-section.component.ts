@@ -1,6 +1,6 @@
 /* Core Dependencies */
 import {Component, ChangeDetectionStrategy, OnInit, OnDestroy, signal, WritableSignal} from '@angular/core';
-import {Router, Event, ActivatedRoute} from '@angular/router';
+import {Router, Event, ActivatedRoute, NavigationStart, NavigationEnd, NavigationCancel, NavigationError} from '@angular/router';
 /* Vendor Dependencies */
 import {filter, Subscription} from 'rxjs';
 /* Application Dependencies */
@@ -25,6 +25,7 @@ export class BitcoinSectionComponent implements OnInit, OnDestroy {
 	public bitcoin_network_info: WritableSignal<BitcoinNetworkInfo | null> = signal(null);
 	public active_sub_section: WritableSignal<string> = signal('');
 	public show_oracle: WritableSignal<boolean> = signal(false);
+	public overlayed: WritableSignal<boolean> = signal(false);
 
 	private subscriptions: Subscription = new Subscription();
 
@@ -57,6 +58,7 @@ export class BitcoinSectionComponent implements OnInit, OnDestroy {
 		this.bitcoinService.loadBitcoinBlockchainInfo().subscribe();
 		this.subscriptions.add(this.getBitcoinBlockchainInfoSubscription());
 		this.subscriptions.add(this.getRouterSubscription());
+		this.subscriptions.add(this.getOverlaySubscription());
 	}
 
 	private getBitcoinBlockchainInfoSubscription(): Subscription {
@@ -67,19 +69,42 @@ export class BitcoinSectionComponent implements OnInit, OnDestroy {
 
 	private getRouterSubscription(): Subscription {
 		return this.router.events.pipe(filter((event: Event) => 'routerEvent' in event || 'type' in event)).subscribe((event) => {
-			this.setSubSection(event);
+			this.active_sub_section.set(this.getSubSection(event));
 		});
 	}
 
-	private setSubSection(event: Event): void {
+	/**
+	 * Subscribes to router events to control overlay visibility
+	 * Shows overlay on navigation start, hides on end/cancel/error
+	 * @returns {Subscription} router events subscription
+	 */
+	private getOverlaySubscription(): Subscription {
+		return this.router.events.subscribe((event) => {
+			if (event instanceof NavigationStart) {
+				const segments = event.url.split('/').filter(Boolean);
+				if (segments[0] === 'bitcoin') this.overlayed.set(true);
+			}
+			if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
+				this.overlayed.set(false);
+			}
+		});
+	}
+
+	private getSubSection(event: Event): string {
+		if (event instanceof NavigationStart) {
+			const segments = event.url.split('/').filter(Boolean);
+			if (segments[0] !== 'bitcoin') return this.active_sub_section();
+			return segments[1] || 'dashboard';
+		}
+
 		const router_event = 'routerEvent' in event ? event.routerEvent : event;
-		if (router_event.type !== 1) return;
+		if (router_event.type !== 1) return this.active_sub_section();
 		let route = this.route.root;
 		while (route.firstChild) {
 			route = route.firstChild;
 		}
-		if (!route.snapshot.data) return;
-		this.active_sub_section.set(route.snapshot.data['sub_section'] || '');
+		if (route.snapshot.data['sub_section'] === 'error') return route.snapshot.data['origin'] || '';
+		return route.snapshot.data['sub_section'] || '';
 	}
 
 	ngOnDestroy(): void {

@@ -14,6 +14,9 @@
 	</orc-nav-secondary>
 
 	<div class="subsection-container">
+		@if (overlayed()) {
+			<div class="orc-route-overlay" animate.enter="orc-route-animation-overlay-in" animate.leave="orc-route-animation-overlay"></div>
+		}
 		<router-outlet></router-outlet>
 	</div>
 </section>

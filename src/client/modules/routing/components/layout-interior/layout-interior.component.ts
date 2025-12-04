@@ -1,6 +1,15 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, signal} from '@angular/core';
-import {Event, Router, ActivatedRoute, ActivatedRouteSnapshot} from '@angular/router';
+import {
+	Event,
+	Router,
+	ActivatedRoute,
+	ActivatedRouteSnapshot,
+	NavigationStart,
+	NavigationEnd,
+	NavigationCancel,
+	NavigationError,
+} from '@angular/router';
 import {FormControl} from '@angular/forms';
 /* Vendor Dependencies */
 import {Subscription, timer, EMPTY} from 'rxjs';
@@ -62,8 +71,8 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	public syncing_lightning!: boolean;
 	public block_count!: number;
 
-	// public ai_agent_definition: AiAgentDefinition | null = null;
 	public ai_agent_definition = signal<AiAgentDefinition | null>(null);
+	public overlayed = signal(false);
 
 	public get ai_actionable(): boolean {
 		if (this.active_chat) return true;
@@ -101,6 +110,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	ngOnInit(): void {
 		this.crewService.loadUser().subscribe();
 		this.subscriptions.add(this.getRouterSubscription());
+		this.subscriptions.add(this.getOverlaySubscription());
 		this.subscriptions.add(this.getEventSubscription());
 		this.subscriptions.add(this.getUserSubscription());
 		this.orchardOptionalInit();
@@ -149,6 +159,25 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 			this.setSection(route_data);
 			this.setAgent(route_data);
 			this.onClearConversation();
+		});
+	}
+
+	/**
+	 * Subscribes to router events to control overlay visibility
+	 * Shows overlay on navigation start, hides on end/cancel/error
+	 * @returns {Subscription} router events subscription
+	 */
+	private getOverlaySubscription(): Subscription {
+		return this.router.events.subscribe((event) => {
+			if (event instanceof NavigationStart) {
+				const segments = event.url.split('/').filter(Boolean);
+				const index_routes = [undefined, 'crew'];
+				const segment = index_routes.includes(segments[0]) ? 'index' : segments[0];
+				if (segment !== this.active_section) this.overlayed.set(true);
+			}
+			if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
+				this.overlayed.set(false);
+			}
 		});
 	}
 
