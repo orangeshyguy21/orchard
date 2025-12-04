@@ -1,7 +1,8 @@
 /* Core Dependencies */
-import {Component, ChangeDetectionStrategy, OnInit, Injector, afterNextRender} from '@angular/core';
-import {Router, NavigationEnd} from '@angular/router';
+import {Component, ChangeDetectionStrategy, OnInit, Injector, afterNextRender, signal, OnDestroy} from '@angular/core';
+import {Router, NavigationEnd, NavigationStart, NavigationCancel, NavigationError} from '@angular/router';
 /* Vendor Dependencies */
+import {Subscription} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import {Chart} from 'chart.js/auto';
@@ -18,7 +19,12 @@ Chart.register(annotationPlugin);
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	standalone: false,
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
+	public overlayed = signal(false);
+
+	private current_layout: 'interior' | 'exterior' | null = null;
+	private subscriptions: Subscription = new Subscription();
+
 	constructor(
 		private settingDeviceService: SettingDeviceService,
 		private graphicService: GraphicService,
@@ -27,9 +33,41 @@ export class AppComponent implements OnInit {
 	) {}
 
 	ngOnInit(): void {
+		this.subscriptions.add(this.getOverlaySubscription());
 		this.graphicService.init();
 		this.settingDeviceService.init();
 		this.waitForAppReady();
+	}
+
+	/**
+	 * Subscribes to router events to control overlay visibility
+	 * Shows overlay on navigation start, hides on end/cancel/error
+	 * @returns {Subscription} router events subscription
+	 */
+	private getOverlaySubscription(): Subscription {
+		return this.router.events.subscribe((event) => {
+			if (event instanceof NavigationStart) {
+				const target_layout = this.getLayoutType(event.url);
+				const is_layout_change = this.current_layout !== target_layout && this.current_layout !== null;
+				if (is_layout_change) this.overlayed.set(true);
+			}
+			if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
+				this.current_layout = this.getLayoutType(event.url);
+				setTimeout(() => {
+					this.overlayed.set(false);
+				});
+			}
+		});
+	}
+
+	/**
+	 * Determines if a URL belongs to exterior or interior layout
+	 * @param {string} url - the route URL
+	 * @returns {'exterior' | 'interior'} the layout type
+	 */
+	private getLayoutType(url: string): 'exterior' | 'interior' {
+		const segments = url.split('/').filter(Boolean);
+		return segments[0] === 'auth' ? 'exterior' : 'interior';
 	}
 
 	/**
@@ -84,5 +122,9 @@ export class AppComponent implements OnInit {
 			},
 			{once: true},
 		);
+	}
+
+	ngOnDestroy(): void {
+		this.subscriptions.unsubscribe();
 	}
 }

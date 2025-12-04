@@ -148,8 +148,8 @@
 
 .orc-route-animation-overlay {
 	animation-name: fadeout;
+    animation-delay: 100ms;
     animation-duration: 300ms;
     animation-timing-function: ease-out;
-    animation-delay: 100ms;        // <-- delay before animation starts
     animation-fill-mode: forwards;
 }
