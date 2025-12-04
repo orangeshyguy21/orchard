@@ -153,3 +153,10 @@
     animation-timing-function: ease-out;
     animation-fill-mode: forwards;
 }
+
+.orc-route-animation-overlay-in {
+	animation-name: fadein;
+    animation-duration: 300ms;
+    animation-timing-function: ease-in;
+    animation-fill-mode: forwards;
+}
