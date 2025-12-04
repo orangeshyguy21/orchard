@@ -12,6 +12,7 @@ import {initializationGuard} from '@client/modules/auth/guards/initialization/in
 /* Native Dependencies */
 import {LayoutExteriorComponent} from './components/layout-exterior/layout-exterior.component';
 import {LayoutInteriorComponent} from './components/layout-interior/layout-interior.component';
+import {SectionPreloadStrategy} from './strategy/section-preload.strategy';
 
 const interior_routes = [
 	{
@@ -71,10 +72,8 @@ const routes: Routes = [
 
 @NgModule({
 	imports: [
-		// RouterModule.forRoot(routes, {enableViewTransitions: true}),
-		// RouterModule.forRoot(routes),
 		RouterModule.forRoot(routes, {
-			preloadingStrategy: PreloadAllModules,
+			preloadingStrategy: SectionPreloadStrategy,
 		}),
 		MatSidenavModule,
 		OrcNavModule,
