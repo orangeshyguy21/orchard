@@ -22,6 +22,7 @@
         @extend %flex-column;
         @extend %flex-grow;
         @extend %h-1;
+        @extend %relative;
     }
 
     #{$c}nav-secondary-header {

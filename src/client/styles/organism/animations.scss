@@ -56,6 +56,10 @@
 	animation: fadeout 150ms ease-out both;
 }
 
+.orc-animation-fadeout {
+	animation: fadeout 300ms ease-out both;
+}
+
 @keyframes fadein {
 	from { opacity: 0; }
 	to   { opacity: 1; }
@@ -138,4 +142,14 @@
     &.animation-invalid {
         height: 71px; /* invalid state height */
     }
+}
+
+/* Overlay */
+
+.orc-route-animation-overlay {
+	animation-name: fadeout;
+    animation-duration: 300ms;
+    animation-timing-function: ease-out;
+    animation-delay: 100ms;        // <-- delay before animation starts
+    animation-fill-mode: forwards;
 }

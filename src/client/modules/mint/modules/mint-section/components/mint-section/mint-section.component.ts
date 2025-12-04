@@ -1,6 +1,6 @@
 /* Core Dependencies */
-import {Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef, OnDestroy} from '@angular/core';
-import {Router, Event, ActivatedRoute, NavigationStart} from '@angular/router';
+import {Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef, OnDestroy, signal} from '@angular/core';
+import {Router, Event, ActivatedRoute, NavigationStart, NavigationEnd, NavigationCancel, NavigationError} from '@angular/router';
 /* Vendor Dependencies */
 import {filter, Subscription} from 'rxjs';
 /* Application Dependencies */
@@ -23,6 +23,8 @@ export class MintSectionComponent implements OnInit, OnDestroy {
 	public loading: boolean = true;
 	public error: boolean = false;
 
+	public overlayed = signal(false);
+
 	private subscriptions: Subscription = new Subscription();
 
 	constructor(
@@ -44,6 +46,7 @@ export class MintSectionComponent implements OnInit, OnDestroy {
 		});
 		this.subscriptions.add(this.getMintInfoSubscription());
 		this.subscriptions.add(this.getRouterSubscription());
+		this.subscriptions.add(this.getOverlaySubscription());
 	}
 
 	private getMintInfoSubscription(): Subscription {
@@ -58,6 +61,23 @@ export class MintSectionComponent implements OnInit, OnDestroy {
 		return this.router.events.pipe(filter((event: Event) => 'routerEvent' in event || 'type' in event)).subscribe((event) => {
 			this.active_sub_section = this.getSubSection(event);
 			this.cdr.detectChanges();
+		});
+	}
+
+	/**
+	 * Subscribes to router events to control overlay visibility
+	 * Shows overlay on navigation start, hides on end/cancel/error
+	 * @returns {Subscription} router events subscription
+	 */
+	private getOverlaySubscription(): Subscription {
+		return this.router.events.subscribe((event) => {
+			if (event instanceof NavigationStart) {
+				const segments = event.url.split('/').filter(Boolean);
+				if (segments[0] === 'mint') this.overlayed.set(true);
+			}
+			if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
+				this.overlayed.set(false);
+			}
 		});
 	}
 

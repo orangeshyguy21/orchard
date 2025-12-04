@@ -16,4 +16,5 @@
     #{$c}auto-width { width: auto; }
     #{$c}auto-height { height: auto; }
     #{$c}isolated { isolation: isolate; }
+    #{$c}blur-medium { backdrop-filter: blur(4px); }
 }
