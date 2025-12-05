@@ -71,7 +71,7 @@ export class OrchardLightningInfo {
 		this.commit_hash = ln_info.commit_hash;
 		this.identity_pubkey = ln_info.identity_pubkey;
 		this.alias = ln_info.alias;
-		this.color = ln_info.color;
+		this.color = ln_info.color?.startsWith('#') ? ln_info.color : `#${ln_info.color}`;
 		this.num_pending_channels = ln_info.num_pending_channels;
 		this.num_active_channels = ln_info.num_active_channels;
 		this.num_inactive_channels = ln_info.num_inactive_channels;

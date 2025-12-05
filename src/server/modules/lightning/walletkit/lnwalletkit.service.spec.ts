@@ -50,7 +50,10 @@ describe('LightningWalletKitService', () => {
 	});
 
 	it('delegates to CLN and maps addresses', async () => {
-		const client = {ListAddresses: jest.fn((req: any, cb: any) => cb(null, {addresses: []}))};
+		const client = {
+			ListAddresses: jest.fn((req: any, cb: any) => cb(null, {addresses: []})),
+			ListFunds: jest.fn((req: any, cb: any) => cb(null, {outputs: []})),
+		};
 		(cln_service.initializeWalletKitClient as jest.Mock).mockReturnValue(client);
 		(cln_service.mapClnAddresses as jest.Mock).mockReturnValue({account_with_addresses: []});
 		config_service.get.mockReturnValue('cln');
