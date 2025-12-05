@@ -43,9 +43,18 @@ export class ClnService {
 
 		const ssl_creds = grpc.credentials.createSsl(ca_cert_content, client_key_content, client_cert_content);
 
-		const channel_options: Record<string, any> | undefined = {
-			'grpc.ssl_target_name_override': 'cln',
-		};
+		let channel_options: Record<string, any> | undefined = undefined;
+		if (rpc_host?.includes('host.docker.internal')) {
+			channel_options = {
+				'grpc.ssl_target_name_override': 'cln',
+				'grpc.default_authority': 'cln',
+			};
+		} else {
+			channel_options = {
+				'grpc.ssl_target_name_override': 'localhost',
+				'grpc.default_authority': 'localhost',
+			};
+		}
 
 		return {rpc_url, creds: ssl_creds, channel_options};
 	}
@@ -198,13 +207,32 @@ export class ClnService {
 		};
 	}
 
-	public mapClnAddresses(addresses: any): LightningAddresses {
+	/**
+	 * Maps CLN addresses and funds to the LightningAddresses format
+	 * Combines address list with UTXO outputs to get per-address balances
+	 * @param {any} addresses - CLN ListAddresses response
+	 * @param {any} funds - CLN ListFunds response
+	 * @returns {LightningAddresses} Mapped addresses with balances
+	 */
+	public mapClnAddresses(addresses: any, funds: any): LightningAddresses {
 		const entries: any[] = Array.isArray(addresses?.addresses) ? addresses.addresses : [];
+		const outputs: any[] = Array.isArray(funds?.outputs) ? funds.outputs : [];
+
+		// Build a map of address -> total balance (in sats)
+		const balance_map = new Map<string, number>();
+		for (const output of outputs) {
+			const addr = output?.address;
+			if (!addr) continue;
+			// amount_msat is in millisatoshis, convert to sats
+			const amount_msat = output?.amount_msat?.msat ?? output?.amount_msat ?? 0;
+			const amount_sat = Math.floor(Number(amount_msat) / 1000);
+			balance_map.set(addr, (balance_map.get(addr) ?? 0) + amount_sat);
+		}
 
 		const mkAddress = (addr: string) => ({
 			address: addr,
 			is_internal: 'false',
-			balance: 0,
+			balance: balance_map.get(addr) ?? 0,
 			derivation_path: '',
 			public_key: Buffer.alloc(0),
 		});

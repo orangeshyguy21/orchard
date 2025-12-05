@@ -84,13 +84,23 @@ describe('ClnService', () => {
 		expect(out.uris[0]).toMatch(/@127.0.0.1:9735$/);
 	});
 
-	it('mapClnAddresses groups bech32 and p2tr', () => {
+	it('mapClnAddresses groups bech32 and p2tr with balances', () => {
 		const addresses = {
 			addresses: [{bech32: 'b1'}, {p2tr: 't1'}],
 		};
-		const out = cln_service.mapClnAddresses(addresses);
+		const funds = {
+			outputs: [
+				{address: 'b1', amount_msat: {msat: 50000000}}, // 50000 sats
+				{address: 'b1', amount_msat: {msat: 30000000}}, // 30000 sats
+				{address: 't1', amount_msat: 10000000}, // 10000 sats (raw format)
+			],
+		};
+		const out = cln_service.mapClnAddresses(addresses, funds);
 		expect(out.account_with_addresses.length).toBe(2);
-		expect(out.account_with_addresses[0].addresses[0].address).toBeDefined();
+		expect(out.account_with_addresses[0].addresses[0].address).toBe('b1');
+		expect(out.account_with_addresses[0].addresses[0].balance).toBe(80000); // 50000 + 30000
+		expect(out.account_with_addresses[1].addresses[0].address).toBe('t1');
+		expect(out.account_with_addresses[1].addresses[0].balance).toBe(10000);
 	});
 
 	it('mapClnRequest maps validity and description', () => {

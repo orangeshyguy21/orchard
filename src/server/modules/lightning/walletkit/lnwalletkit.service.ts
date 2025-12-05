@@ -47,6 +47,11 @@ export class LightningWalletKitService implements OnModuleInit {
 
 	async getLightningAddresses(): Promise<LightningAddresses> {
 		if (this.type === 'lnd') return this.makeGrpcRequest('ListAddresses', {});
-		if (this.type === 'cln') return this.clnService.mapClnAddresses(await this.makeGrpcRequest('ListAddresses', {}));
+		if (this.type === 'cln') {
+			return this.clnService.mapClnAddresses(
+				await this.makeGrpcRequest('ListAddresses', {}),
+				await this.makeGrpcRequest('ListFunds', {}),
+			);
+		}
 	}
 }
