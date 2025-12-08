@@ -13,7 +13,6 @@ export type Config = {
 		jwt_secret: string;
 		ttl: string;
 		limit: string;
-		compression: boolean;
 	};
 	database: {
 		path: string;

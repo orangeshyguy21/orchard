@@ -1,6 +1,15 @@
 /* Core Dependencies */
 import {Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef, OnDestroy, signal} from '@angular/core';
-import {Router, Event, ActivatedRoute, NavigationStart, NavigationEnd, NavigationCancel, NavigationError} from '@angular/router';
+import {
+	Router,
+	Event,
+	ActivatedRoute,
+	NavigationStart,
+	NavigationEnd,
+	NavigationCancel,
+	NavigationError,
+	RouteConfigLoadStart,
+} from '@angular/router';
 /* Vendor Dependencies */
 import {filter, Subscription} from 'rxjs';
 /* Application Dependencies */
@@ -77,6 +86,10 @@ export class MintSectionComponent implements OnInit, OnDestroy {
 			}
 			if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
 				this.overlayed.set(false);
+			}
+
+			if (event instanceof RouteConfigLoadStart) {
+				console.log('RouteConfigLoadStart', event);
 			}
 		});
 	}

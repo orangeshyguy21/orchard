@@ -2,7 +2,6 @@
 import {NestFactory} from '@nestjs/core';
 import {ConfigService} from '@nestjs/config';
 import {Logger, ConsoleLogger, LogLevel, INestApplication} from '@nestjs/common';
-import compression from 'compression';
 /* Vendor Dependencies */
 import * as express from 'express';
 /* Application */
@@ -24,8 +23,6 @@ const log_levels: Record<string, LogLevel[]> = {
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
 	const configService = app.get(ConfigService);
-	const compression_enabled = configService.get<boolean>('server.compression');
-	if (compression_enabled) app.use(compression());
 	app.use(express.json({limit: '10mb'}));
 	app.use(express.urlencoded({limit: '10mb', extended: true}));
 	const loglevel = configService.get<string>('server.log') || 'info';

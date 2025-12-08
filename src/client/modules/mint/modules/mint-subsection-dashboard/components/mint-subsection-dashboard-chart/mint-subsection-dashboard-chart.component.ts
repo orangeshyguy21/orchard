@@ -51,7 +51,7 @@ export class MintSubsectionDashboardChartComponent implements OnChanges, OnDestr
 	public chart_type!: ChartJsType;
 	public chart_data!: ChartConfiguration['data'];
 	public chart_options!: ChartConfiguration['options'];
-	public displayed: boolean = false;
+	public displayed: boolean = true;
 
 	private subscriptions: Subscription = new Subscription();
 
