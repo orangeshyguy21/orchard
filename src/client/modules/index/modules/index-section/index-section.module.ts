@@ -2,6 +2,8 @@
 import {NgModule} from '@angular/core';
 import {CommonModule as CoreCommonModule} from '@angular/common';
 import {RouterModule as CoreRouterModule} from '@angular/router';
+/* Vendor Dependencies */
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 /* Application Dependencies */
 import {OrcNavModule} from '@client/modules/nav/nav.module';
 /* Local Dependencies */
@@ -49,6 +51,7 @@ import {AiAgent} from '@shared/generated.types';
 			},
 		]),
 		CoreCommonModule,
+		MatProgressSpinnerModule,
 		OrcNavModule,
 	],
 })

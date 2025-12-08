@@ -4,6 +4,7 @@ import {CommonModule as CoreCommonModule} from '@angular/common';
 import {RouterModule as CoreRouterModule} from '@angular/router';
 /* Vendor Dependencies */
 import {MatIconModule} from '@angular/material/icon';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 /* Application Dependencies */
 import {OrcNavModule} from '@client/modules/nav/nav.module';
 import {enabledGuard} from '@client/modules/routing/guards/enabled/enabled.guard';
@@ -64,6 +65,7 @@ import {BitcoinSectionComponent} from './components/bitcoin-section/bitcoin-sect
 		]),
 		CoreCommonModule,
 		MatIconModule,
+		MatProgressSpinnerModule,
 		OrcNavModule,
 	],
 })
