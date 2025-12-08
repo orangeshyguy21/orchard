@@ -4,6 +4,10 @@
 	@extend %absolute;
 	@extend %z-index-top;
 	bottom: 5rem;
+
+	&.ai_enabled {
+		bottom: 2rem;
+	}
 }
 
 .event-stack-container {

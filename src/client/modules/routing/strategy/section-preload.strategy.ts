@@ -25,23 +25,17 @@ export class SectionPreloadStrategy implements PreloadingStrategy {
 	preload(route: Route, load: () => Observable<any>): Observable<any> {
 		const route_section = route.data?.['section'] || null;
 		const active_section = this.getActiveSection();
-
 		// no section data - skip preloading
-		if (!route_section) {
-			return of(null);
-		}
-
+		if (!route_section) return of(null);
 		// if this route belongs to the active section, preload it with a small delay
 		if (route_section === active_section) {
 			this.preloaded_sections.add(route_section);
-			return timer(100).pipe(mergeMap(() => load()));
+			return timer(1500).pipe(mergeMap(() => load()));
 		}
-
 		// if we've previously visited this section, preload its routes
 		if (this.preloaded_sections.has(route_section)) {
-			return timer(100).pipe(mergeMap(() => load()));
+			return timer(1500).pipe(mergeMap(() => load()));
 		}
-
 		// otherwise, don't preload yet
 		return of(null);
 	}
@@ -53,18 +47,14 @@ export class SectionPreloadStrategy implements PreloadingStrategy {
 	private getActiveSection(): string | null {
 		let route = this.router.routerState.root;
 
-		// traverse to the deepest activated child
 		while (route.firstChild) {
 			route = route.firstChild;
 		}
 
-		// walk back up to find the first route with section data
 		let current: typeof route | null = route;
 		while (current) {
 			const section = current.snapshot.data?.['section'];
-			if (section) {
-				return section;
-			}
+			if (section) return section;
 			current = current.parent;
 		}
 
