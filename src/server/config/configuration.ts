@@ -54,6 +54,7 @@ export const config = (): Config => {
 		jwt_secret: deriveSecret(base_key, 'jwt-access-token'),
 		ttl: process.env.THROTTLE_TTL || '60000',
 		limit: process.env.THROTTLE_LIMIT || '20',
+		compression: process.env.SERVER_COMPRESSION === 'true',
 	};
 
 	const database = {
