@@ -3,6 +3,7 @@ import {NgModule, inject} from '@angular/core';
 import {RouterModule as CoreRouterModule, Router, ResolveFn, ActivatedRouteSnapshot, RouterStateSnapshot} from '@angular/router';
 /* Vendor Dependencies */
 import {catchError, of} from 'rxjs';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 /* Application Dependencies */
 import {errorResolveGuard} from '@client/modules/error/guards/error-resolve.guard';
 import {enabledGuard} from '@client/modules/routing/guards/enabled/enabled.guard';
@@ -215,6 +216,7 @@ const mintQuoteTtlsResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, st
 				},
 			},
 		]),
+		MatProgressSpinnerModule,
 		OrcNavModule,
 		OrcMintGeneralModule,
 	],

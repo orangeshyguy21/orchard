@@ -24,10 +24,12 @@
 						class="orc-route-overlay"
 						animate.enter="orc-route-animation-overlay-in"
 						animate.leave="orc-route-animation-overlay"
-					></div>
+					>
+						<mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
+					</div>
 				}
 				<router-outlet></router-outlet>
-				<orc-event-general-stack [active_event]="active_event"></orc-event-general-stack>
+				<orc-event-general-stack [active_event]="active_event" [class.ai_enabled]="ai_enabled"></orc-event-general-stack>
 			</div>
 			@if (ai_enabled) {
 				<orc-ai-nav

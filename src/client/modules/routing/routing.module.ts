@@ -3,6 +3,7 @@ import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 /* Vendor Dependencies */
 import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 /* Application Dependencies */
 import {OrcNavModule} from '@client/modules/nav/nav.module';
 import {OrcAiModule} from '@client/modules/ai/ai.module';
@@ -76,6 +77,7 @@ const routes: Routes = [
 			preloadingStrategy: SectionPreloadStrategy,
 		}),
 		MatSidenavModule,
+		MatProgressSpinnerModule,
 		OrcNavModule,
 		OrcAiModule,
 		OrcEventGeneralModule,

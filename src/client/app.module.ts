@@ -20,6 +20,7 @@ import {
 	Legend,
 } from 'chart.js';
 import 'chartjs-adapter-luxon';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 /* Application Dependencies */
 import {OrcRoutingModule} from './modules/routing/routing.module';
 import {authInterceptor} from './modules/auth/interceptors/auth.interceptor';
@@ -29,7 +30,7 @@ import {AppComponent} from './app.component';
 
 @NgModule({
 	declarations: [AppComponent],
-	imports: [CoreRouterOutlet, CoreBrowserModule, OrcRoutingModule],
+	imports: [CoreRouterOutlet, CoreBrowserModule, MatProgressSpinnerModule, OrcRoutingModule],
 	providers: [
 		provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
 		provideLuxonDateAdapter(),
