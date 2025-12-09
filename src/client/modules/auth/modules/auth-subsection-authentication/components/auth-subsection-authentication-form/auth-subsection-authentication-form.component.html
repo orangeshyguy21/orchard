@@ -1,5 +1,9 @@
-<div class="flex flex-justify-center p-b-2">
-	<div class="title-l font-size-xxl font-weight-semi-bold">Authenticate</div>
+<div class="flex flex-column flex-items-center flex-gap-0-5 p-b-2">
+	<div class="title-l">Orchard Login</div>
+	<div class="font-size-xs orc-outline-color">
+		Don't have an account?
+		<a [routerLink]="['/auth', 'signup']" class="orc-text-button">Sign up</a>
+	</div>
 </div>
 
 <mat-card appearance="outlined" class="relative overflow-hidden">
