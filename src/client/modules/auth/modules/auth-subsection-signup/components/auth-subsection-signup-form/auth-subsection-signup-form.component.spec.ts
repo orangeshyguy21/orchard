@@ -1,6 +1,7 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormGroup, FormControl} from '@angular/forms';
+import {provideRouter} from '@angular/router';
 /* Native Dependencies */
 import {OrcAuthSubsectionSignupModule} from '@client/modules/auth/modules/auth-subsection-signup/auth-subsection-signup.module';
 /* Local Dependencies */
@@ -13,6 +14,7 @@ describe('AuthSubsectionSignupFormComponent', () => {
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
 			imports: [OrcAuthSubsectionSignupModule],
+			providers: [provideRouter([])],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(AuthSubsectionSignupFormComponent);

@@ -1,5 +1,6 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {provideRouter} from '@angular/router';
 /* Native Dependencies */
 import {OrcAuthSubsectionAuthenticationModule} from '@client/modules/auth/modules/auth-subsection-authentication/auth-subsection-authentication.module';
 /* Local Dependencies */
@@ -12,6 +13,7 @@ describe('AuthSubsectionAuthenticationComponent', () => {
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
 			imports: [OrcAuthSubsectionAuthenticationModule],
+			providers: [provideRouter([])],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(AuthSubsectionAuthenticationComponent);

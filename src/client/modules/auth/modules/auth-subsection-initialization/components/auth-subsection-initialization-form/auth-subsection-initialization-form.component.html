@@ -1,5 +1,6 @@
-<div class="flex flex-justify-center p-b-2">
-	<div class="title-l font-size-xxl font-weight-semi-bold">Orchard Setup</div>
+<div class="flex flex-column flex-items-center flex-gap-0-5 p-b-2">
+	<div class="title-l">Orchard Setup</div>
+	<div class="font-size-xs orc-outline-color">Setup the admin user for your Orchard using your secret setup key</div>
 </div>
 
 <mat-card appearance="outlined" class="relative overflow-hidden">
@@ -62,6 +63,6 @@
 <div class="flex flex-justify-center p-t-2">
 	<button type="button" matFab extended class="orc-icon-button" [disabled]="form_group().invalid" (click)="submit.emit()">
 		<mat-icon>save</mat-icon>
-		Initialize
+		Start
 	</button>
 </div>

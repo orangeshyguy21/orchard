@@ -2,6 +2,8 @@
 import {NgModule} from '@angular/core';
 import {CommonModule as CoreCommonModule} from '@angular/common';
 import {RouterModule as CoreRouterModule} from '@angular/router';
+/* Vendor Dependencies */
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 /* Native Dependencies */
 import {initializationGuard} from '@client/modules/auth/guards/initialization/initialization.guard';
 import {uninitializedGuard} from '@client/modules/auth/guards/uninitialized/uninitialized.guard';
@@ -62,6 +64,7 @@ import {AuthSectionComponent} from './components/auth-section/auth-section.compo
 			},
 		]),
 		CoreCommonModule,
+		MatProgressSpinnerModule,
 	],
 })
 export class OrcAuthSectionModule {}
