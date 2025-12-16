@@ -4,7 +4,7 @@ import {MatIconTestingModule} from '@angular/material/icon/testing';
 /* Native Dependencies */
 import {OrcMintSectionGeneralModule} from '@client/modules/mint/modules/mint-section-general/mint-section-general.module';
 /* Shared Dependencies */
-import {MintPaymentMethod} from '@shared/generated.types';
+
 /* Local Dependencies */
 import {MintSectionGeneralPaymentMethodComponent} from './mint-section-general-payment-method.component';
 
@@ -20,7 +20,7 @@ describe('MintSectionGeneralPaymentMethodComponent', () => {
 
 		fixture = TestBed.createComponent(MintSectionGeneralPaymentMethodComponent);
 		component = fixture.componentInstance;
-		fixture.componentRef.setInput('payment_method', 'bolt11' as MintPaymentMethod);
+		fixture.componentRef.setInput('payment_method', 'bolt11');
 		fixture.detectChanges();
 	});
 

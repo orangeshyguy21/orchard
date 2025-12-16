@@ -1,7 +1,6 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 /* Shared Dependencies */
-import {MintPaymentMethod} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-section-general-payment-method',
@@ -11,6 +10,6 @@ import {MintPaymentMethod} from '@shared/generated.types';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintSectionGeneralPaymentMethodComponent {
-	public payment_method = input.required<MintPaymentMethod>();
+	public payment_method = input.required<string>();
 	public icon_size = input<string>('icon-sm');
 }

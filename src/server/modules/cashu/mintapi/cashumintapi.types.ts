@@ -1,4 +1,4 @@
-import {MintUnit, MintPaymentMethod} from '@server/modules/cashu/cashu.enums';
+import {MintUnit} from '@server/modules/cashu/cashu.enums';
 
 export type CashuMintInfo = {
 	name: string;
@@ -64,7 +64,7 @@ export type CashuContact = {
 };
 
 export type CashuNut4Method = {
-	method: MintPaymentMethod;
+	method: string;
 	unit: MintUnit;
 	description: boolean;
 	min_amount?: number;
@@ -72,7 +72,7 @@ export type CashuNut4Method = {
 };
 
 export type CashuNut5Method = {
-	method: MintPaymentMethod;
+	method: string;
 	unit: MintUnit;
 	amountless?: boolean;
 	min_amount?: number;
@@ -80,12 +80,12 @@ export type CashuNut5Method = {
 };
 
 export type CashuNut15Method = {
-	method: MintPaymentMethod;
+	method: string;
 	unit: MintUnit;
 };
 
 export type CashuNutSupported = {
-	method: MintPaymentMethod;
+	method: string;
 	unit: MintUnit;
 	commands?: string[];
 };

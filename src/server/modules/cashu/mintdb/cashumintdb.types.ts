@@ -2,7 +2,7 @@
 import {Database} from 'better-sqlite3';
 import {Client} from 'pg';
 /* Native Dependencies */
-import {MintUnit, MintQuoteState, MeltQuoteState, MintProofState, MintPaymentMethod} from '@server/modules/cashu/cashu.enums';
+import {MintUnit, MintQuoteState, MeltQuoteState, MintProofState} from '@server/modules/cashu/cashu.enums';
 /* Local Dependencies */
 import {MintDatabaseType} from '@server/modules/cashu/mintdb/cashumintdb.enums';
 
@@ -46,7 +46,7 @@ export type CashuMintMintQuote = {
 	paid_time: number | null;
 	amount_paid: number;
 	amount_issued: number;
-	payment_method: MintPaymentMethod;
+	payment_method: string;
 };
 
 export type CashuMintMeltQuote = {
@@ -61,7 +61,7 @@ export type CashuMintMeltQuote = {
 	msat_to_pay: number | null;
 	created_time: number;
 	paid_time: number | null;
-	payment_method: MintPaymentMethod;
+	payment_method: string;
 };
 
 export type CashuMintProofGroup = {

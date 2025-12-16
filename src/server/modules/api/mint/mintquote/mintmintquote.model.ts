@@ -2,7 +2,7 @@
 import {Field, Int, ID, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
-import {MintUnit, MintQuoteState, MintPaymentMethod} from '@server/modules/cashu/cashu.enums';
+import {MintUnit, MintQuoteState} from '@server/modules/cashu/cashu.enums';
 import {CashuMintMintQuote} from '@server/modules/cashu/mintdb/cashumintdb.types';
 
 @ObjectType()
@@ -43,8 +43,8 @@ export class OrchardMintMintQuote {
 	@Field(() => Int)
 	amount_issued: number;
 
-	@Field(() => MintPaymentMethod)
-	payment_method: MintPaymentMethod;
+	@Field(() => String)
+	payment_method: string;
 
 	constructor(cashu_mint_mint_quote: CashuMintMintQuote) {
 		this.id = cashu_mint_mint_quote.id;
