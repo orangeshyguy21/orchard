@@ -25,9 +25,9 @@ import {AuthSectionComponent} from './components/auth-section/auth-section.compo
 						path: '',
 						canActivate: [initializationGuard],
 						loadChildren: () =>
-							import(
-								'@client/modules/auth/modules/auth-subsection-authentication/auth-subsection-authentication.module'
-							).then((m) => m.OrcAuthSubsectionAuthenticationModule),
+							import('@client/modules/auth/modules/auth-subsection-authentication/auth-subsection-authentication.module').then(
+								(m) => m.OrcAuthSubsectionAuthenticationModule,
+							),
 						title: 'Orchard | Authentication',
 						data: {
 							section: 'auth',
@@ -38,9 +38,9 @@ import {AuthSectionComponent} from './components/auth-section/auth-section.compo
 						path: 'setup',
 						canActivate: [uninitializedGuard],
 						loadChildren: () =>
-							import(
-								'@client/modules/auth/modules/auth-subsection-initialization/auth-subsection-initialization.module'
-							).then((m) => m.OrcAuthSubsectionInitializationModule),
+							import('@client/modules/auth/modules/auth-subsection-initialization/auth-subsection-initialization.module').then(
+								(m) => m.OrcAuthSubsectionInitializationModule,
+							),
 						title: 'Orchard | Initialization',
 						data: {
 							section: 'auth',
