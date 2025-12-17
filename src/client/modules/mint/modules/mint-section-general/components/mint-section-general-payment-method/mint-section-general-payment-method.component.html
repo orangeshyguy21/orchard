@@ -1,9 +1,13 @@
-<div class="mint-payment-method-container">
-	@if (payment_method() == 'bolt11') {
+@switch (payment_method()) {
+	@case ('bolt11') {
 		<div>BOLT 11</div>
 		<mat-icon [class]="icon_size()">bolt</mat-icon>
-	} @else {
+	}
+	@case ('bolt12') {
 		<div>BOLT 12</div>
 		<mat-icon [class]="icon_size()" [svgIcon]="'double_bolt'"></mat-icon>
 	}
-</div>
+	@default {
+		<div>{{ payment_method() }}</div>
+	}
+}
