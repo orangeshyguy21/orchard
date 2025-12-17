@@ -452,3 +452,11 @@ query MintFees($limit: Int) {
 		time
 	}
 }`;
+
+export const MINT_NUT04_QUOTE_UPDATE_MUTATION = `
+mutation MintNut04QuoteUpdate($mint_nut04_quote_update: MintNut04QuoteUpdateInput!) {
+	mint_nut04_quote_update(mint_nut04_quote_update: $mint_nut04_quote_update) {
+		quote_id
+		state
+	}
+}`;

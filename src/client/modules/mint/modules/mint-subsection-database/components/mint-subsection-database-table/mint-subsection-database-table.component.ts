@@ -30,6 +30,7 @@ export class MintSubsectionDatabaseTableComponent implements OnChanges {
 	@Input() public lightning_request!: LightningRequest | null;
 
 	@Output() public updateRequest = new EventEmitter<string>();
+	@Output() public setQuoteStatePaid = new EventEmitter<string>();
 
 	public more_entity!: MintMintQuote | MintMeltQuote | null;
 
@@ -58,5 +59,9 @@ export class MintSubsectionDatabaseTableComponent implements OnChanges {
 		this.more_entity = this.more_entity === entity ? null : entity;
 		if (!this.configService.config.lightning.enabled) return;
 		if (this.more_entity) this.updateRequest.emit(this.more_entity.request);
+	}
+
+	public onSetQuoteStatePaid(quote_id: string) {
+		this.setQuoteStatePaid.emit(quote_id);
 	}
 }

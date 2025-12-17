@@ -99,6 +99,7 @@
 				[lightning_request]="lightning_request"
 				[loading_more]="loading_more"
 				(updateRequest)="onMoreRequest($event)"
+				(setQuoteStatePaid)="onSetQuoteStatePaid($event)"
 			></orc-mint-subsection-database-table>
 
 			@if (!loading_dynamic_data && data.source.data.length === 0) {
