@@ -24,9 +24,9 @@ import {LightningSectionComponent} from './components/lightning-section/lightnin
 					{
 						path: '',
 						loadChildren: () =>
-							import('@client/modules/lightning/modules/lightning-subsection-dashboard/lightning-subsection-dashboard.module').then(
-								(m) => m.OrcLightningSubsectionDashboardModule,
-							),
+							import(
+								'@client/modules/lightning/modules/lightning-subsection-dashboard/lightning-subsection-dashboard.module'
+							).then((m) => m.OrcLightningSubsectionDashboardModule),
 						title: 'Orchard | Lightning',
 						canActivate: [enabledGuard],
 						data: {
