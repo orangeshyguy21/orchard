@@ -1,5 +1,5 @@
 /* Shared Dependencies */
-import {OrchardMintMintQuote, MintQuoteState, MintUnit, MintPaymentMethod} from '@shared/generated.types';
+import {OrchardMintMintQuote, MintQuoteState, MintUnit} from '@shared/generated.types';
 
 export class MintMintQuote implements OrchardMintMintQuote {
 	public id: string;
@@ -14,7 +14,7 @@ export class MintMintQuote implements OrchardMintMintQuote {
 	public paid_time: number | null;
 	public amount_paid: number;
 	public amount_issued: number;
-	public payment_method: MintPaymentMethod;
+	public payment_method: string;
 
 	constructor(mint_mint_quote: OrchardMintMintQuote) {
 		this.id = mint_mint_quote.id;

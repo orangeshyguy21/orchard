@@ -12,7 +12,7 @@ import {
 	CashuNutSupported,
 } from '@server/modules/cashu/mintapi/cashumintapi.types';
 import {CashuMintInfoRpc} from '@server/modules/cashu/mintrpc/cashumintrpc.types';
-import {MintUnit, MintPaymentMethod} from '@server/modules/cashu/cashu.enums';
+import {MintUnit} from '@server/modules/cashu/cashu.enums';
 
 @ObjectType()
 export class OrchardNutSupported {
@@ -219,8 +219,8 @@ export class OrchardContact {
 
 @ObjectType()
 export class OrchardNut4Method {
-	@Field(() => MintPaymentMethod)
-	method: MintPaymentMethod;
+	@Field(() => String)
+	method: string;
 
 	@Field()
 	unit: string;
@@ -245,8 +245,8 @@ export class OrchardNut4Method {
 
 @ObjectType()
 export class OrchardNut5Method {
-	@Field(() => MintPaymentMethod)
-	method: MintPaymentMethod;
+	@Field(() => String)
+	method: string;
 
 	@Field()
 	unit: string;
@@ -271,8 +271,8 @@ export class OrchardNut5Method {
 
 @ObjectType()
 export class OrchardNut15Method {
-	@Field(() => MintPaymentMethod)
-	method: MintPaymentMethod;
+	@Field(() => String)
+	method: string;
 
 	@Field(() => MintUnit)
 	unit: MintUnit;
@@ -285,8 +285,8 @@ export class OrchardNut15Method {
 
 @ObjectType()
 export class OrchardNut17Supported {
-	@Field(() => MintPaymentMethod)
-	method: MintPaymentMethod;
+	@Field(() => String)
+	method: string;
 
 	@Field()
 	unit: string;

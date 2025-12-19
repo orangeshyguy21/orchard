@@ -3,1046 +3,1137 @@
 # ------------------------------------------------------
 
 enum AiAgent {
-  DEFAULT
-  INDEX_CREW
-  INDEX_CREW_INVITE
-  INDEX_CREW_USER
-  MINT_BACKUP
-  MINT_CONFIG
-  MINT_DASHBOARD
-  MINT_DATABASE
-  MINT_INFO
-  MINT_KEYSETS
-  MINT_KEYSET_ROTATION
+	DEFAULT
+	INDEX_CREW
+	INDEX_CREW_INVITE
+	INDEX_CREW_USER
+	MINT_BACKUP
+	MINT_CONFIG
+	MINT_DASHBOARD
+	MINT_DATABASE
+	MINT_INFO
+	MINT_KEYSETS
+	MINT_KEYSET_ROTATION
 }
 
 input AiChatInput {
-  agent: AiAgent
-  auth: String!
-  id: String!
-  messages: [AiChatMessageInput!]!
-  model: String!
+	agent: AiAgent
+	auth: String!
+	id: String!
+	messages: [AiChatMessageInput!]!
+	model: String!
 }
 
 input AiChatMessageInput {
-  content: String!
-  role: AiMessageRole!
-  thinking: String
+	content: String!
+	role: AiMessageRole!
+	thinking: String
 }
 
 enum AiFunctionName {
-  CREW_INVITE_EXPIRATION_ENABLED_UPDATE
-  CREW_INVITE_EXPIRATION_UPDATE
-  CREW_INVITE_ROLE_UPDATE
-  CREW_LABEL_UPDATE
-  CREW_ROLES_UPDATE
-  CREW_STATES_UPDATE
-  CREW_USER_ACTIVE_UPDATE
-  MINT_ANALYTICS_DATE_RANGE_UPDATE
-  MINT_ANALYTICS_INTERVAL_UPDATE
-  MINT_ANALYTICS_TYPE_UPDATE
-  MINT_ANALYTICS_UNITS_UPDATE
-  MINT_BACKUP_FILENAME_UPDATE
-  MINT_CONTACT_ADD
-  MINT_CONTACT_REMOVE
-  MINT_CONTACT_UPDATE
-  MINT_DATABASE_DATA_TYPE_UPDATE
-  MINT_DATABASE_STATES_UPDATE
-  MINT_DESCRIPTION_LONG_UPDATE
-  MINT_DESCRIPTION_UPDATE
-  MINT_ENABLED_UPDATE
-  MINT_ICON_URL_UPDATE
-  MINT_KEYSET_ROTATION_INPUT_FEE_PPK_UPDATE
-  MINT_KEYSET_ROTATION_MAX_ORDER_UPDATE
-  MINT_KEYSET_ROTATION_UNIT_UPDATE
-  MINT_KEYSET_STATUS_UPDATE
-  MINT_METHOD_DESCRIPTION_UPDATE
-  MINT_METHOD_MAX_UPDATE
-  MINT_METHOD_MIN_UPDATE
-  MINT_MOTD_UPDATE
-  MINT_NAME_UPDATE
-  MINT_QUOTE_TTL_UPDATE
-  MINT_URL_ADD
-  MINT_URL_REMOVE
-  MINT_URL_UPDATE
-  UPDATE_SEARCH
+	CREW_INVITE_EXPIRATION_ENABLED_UPDATE
+	CREW_INVITE_EXPIRATION_UPDATE
+	CREW_INVITE_ROLE_UPDATE
+	CREW_LABEL_UPDATE
+	CREW_ROLES_UPDATE
+	CREW_STATES_UPDATE
+	CREW_USER_ACTIVE_UPDATE
+	MINT_ANALYTICS_DATE_RANGE_UPDATE
+	MINT_ANALYTICS_INTERVAL_UPDATE
+	MINT_ANALYTICS_TYPE_UPDATE
+	MINT_ANALYTICS_UNITS_UPDATE
+	MINT_BACKUP_FILENAME_UPDATE
+	MINT_CONTACT_ADD
+	MINT_CONTACT_REMOVE
+	MINT_CONTACT_UPDATE
+	MINT_DATABASE_DATA_TYPE_UPDATE
+	MINT_DATABASE_STATES_UPDATE
+	MINT_DESCRIPTION_LONG_UPDATE
+	MINT_DESCRIPTION_UPDATE
+	MINT_ENABLED_UPDATE
+	MINT_ICON_URL_UPDATE
+	MINT_KEYSET_ROTATION_INPUT_FEE_PPK_UPDATE
+	MINT_KEYSET_ROTATION_MAX_ORDER_UPDATE
+	MINT_KEYSET_ROTATION_UNIT_UPDATE
+	MINT_KEYSET_STATUS_UPDATE
+	MINT_METHOD_DESCRIPTION_UPDATE
+	MINT_METHOD_MAX_UPDATE
+	MINT_METHOD_MIN_UPDATE
+	MINT_MOTD_UPDATE
+	MINT_NAME_UPDATE
+	MINT_QUOTE_TTL_UPDATE
+	MINT_URL_ADD
+	MINT_URL_REMOVE
+	MINT_URL_UPDATE
+	UPDATE_SEARCH
 }
 
 enum AiMessageRole {
-  ASSISTANT
-  ERROR
-  FUNCTION
-  SYSTEM
-  USER
+	ASSISTANT
+	ERROR
+	FUNCTION
+	SYSTEM
+	USER
 }
 
 input AuthSignupInput {
-  key: String!
-  name: String!
-  password: String!
+	key: String!
+	name: String!
+	password: String!
 }
 
 input AuthenticationInput {
-  name: String!
-  password: String!
+	name: String!
+	password: String!
 }
 
-"""Base64 encoded string scalar type"""
+"""
+Base64 encoded string scalar type
+"""
 scalar Base64
 
 input InitializationInput {
-  key: String!
-  name: String!
-  password: String!
+	key: String!
+	name: String!
+	password: String!
 }
 
 input InviteCreateInput {
-  expires_at: UnixTimestamp
-  label: String
-  role: UserRole!
+	expires_at: UnixTimestamp
+	label: String
+	role: UserRole!
 }
 
 input InviteUpdateInput {
-  expires_at: UnixTimestamp
-  id: String!
-  label: String
-  role: UserRole
+	expires_at: UnixTimestamp
+	id: String!
+	label: String
+	role: UserRole
 }
 
 enum LightningAddressType {
-  HYBRID_NESTED_WITNESS_PUBKEY_HASH
-  NESTED_WITNESS_PUBKEY_HASH
-  TAPROOT_PUBKEY
-  UNKOWN
-  WITNESS_PUBKEY_HASH
+	HYBRID_NESTED_WITNESS_PUBKEY_HASH
+	NESTED_WITNESS_PUBKEY_HASH
+	TAPROOT_PUBKEY
+	UNKOWN
+	WITNESS_PUBKEY_HASH
 }
 
 enum LightningRequestType {
-  BOLT11_INVOICE
-  BOLT12_INVOICE
-  BOLT12_INVOICE_REQUEST
-  BOLT12_OFFER
-  UNKNOWN
+	BOLT11_INVOICE
+	BOLT12_INVOICE
+	BOLT12_INVOICE_REQUEST
+	BOLT12_OFFER
+	UNKNOWN
 }
 
 enum MeltQuoteState {
-  PAID
-  PENDING
-  UNPAID
+	PAID
+	PENDING
+	UNPAID
 }
 
 enum MintAnalyticsInterval {
-  custom
-  day
-  month
-  week
+	custom
+	day
+	month
+	week
 }
 
 input MintContactUpdateInput {
-  info: String!
-  method: String!
+	info: String!
+	method: String!
 }
 
 input MintDescriptionUpdateInput {
-  description: String!
+	description: String!
 }
 
 input MintIconUpdateInput {
-  icon_url: String!
+	icon_url: String!
 }
 
 input MintMotdUpdateInput {
-  motd: String
+	motd: String
 }
 
 input MintNameUpdateInput {
-  name: String
+	name: String
 }
 
 input MintNut04QuoteUpdateInput {
-  quote_id: String!
-  state: String!
+	quote_id: String!
+	state: String!
 }
 
 input MintNut04UpdateInput {
-  description: Boolean
-  disabled: Boolean
-  max_amount: Int
-  method: String!
-  min_amount: Int
-  unit: String!
+	description: Boolean
+	disabled: Boolean
+	max_amount: Int
+	method: String!
+	min_amount: Int
+	unit: String!
 }
 
 input MintNut05UpdateInput {
-  disabled: Boolean
-  max_amount: Int
-  method: String!
-  min_amount: Int
-  unit: String!
-}
-
-enum MintPaymentMethod {
-  bolt11
-  bolt12
+	disabled: Boolean
+	max_amount: Int
+	method: String!
+	min_amount: Int
+	unit: String!
 }
 
 enum MintProofState {
-  SPENT
+	SPENT
 }
 
 enum MintQuoteState {
-  ISSUED
-  PAID
-  PENDING
-  UNPAID
+	ISSUED
+	PAID
+	PENDING
+	UNPAID
 }
 
 input MintQuoteTtlUpdateInput {
-  melt_ttl: Int
-  mint_ttl: Int
+	melt_ttl: Int
+	mint_ttl: Int
 }
 
 input MintRotateKeysetInput {
-  input_fee_ppk: Int
-  max_order: Int
-  unit: String!
+	input_fee_ppk: Int
+	max_order: Int
+	unit: String!
 }
 
 enum MintUnit {
-  auth
-  btc
-  eur
-  msat
-  sat
-  usd
+	auth
+	btc
+	eur
+	msat
+	sat
+	usd
 }
 
 input MintUrlUpdateInput {
-  url: String!
+	url: String!
 }
 
 type Mutation {
-  ai_chat_abort(id: String!): OrchardAiChatStream!
-  auth_authentication(authentication: AuthenticationInput!): OrchardAuthentication!
-  auth_authentication_refresh: OrchardAuthentication!
-  auth_authentication_revoke: Boolean!
-  auth_initialize(initialize: InitializationInput!): OrchardAuthentication!
-  auth_signup(signup: AuthSignupInput!): OrchardAuthentication!
-  bitcoin_oracle_backfill_abort(id: String!): OrchardBitcoinOracleBackfillStream!
-  crew_invite_create(createInvite: InviteCreateInput!): OrchardCrewInvite!
-  crew_invite_delete(id: String!): Boolean!
-  crew_invite_update(updateInvite: InviteUpdateInput!): OrchardCrewInvite!
-  crew_user_delete(id: String!): Boolean!
-  crew_user_update(updateUser: UserUpdateInput!): OrchardCrewUser!
-  crew_user_update_name(updateUserName: UserNameUpdateInput!): OrchardCrewUser!
-  crew_user_update_password(updateUserPassword: UserPasswordUpdateInput!): OrchardCrewUser!
-  mint_contact_add(mint_contact_update: MintContactUpdateInput!): OrchardMintContactUpdate!
-  mint_contact_remove(mint_contact_update: MintContactUpdateInput!): OrchardMintContactUpdate!
-  mint_database_backup: OrchardMintDatabaseBackup!
-  mint_database_restore(filebase64: Base64!): OrchardMintDatabaseRestore!
-  mint_icon_update(mint_icon_update: MintIconUpdateInput!): OrchardMintIconUpdate!
-  mint_long_description_update(mint_desc_update: MintDescriptionUpdateInput!): OrchardMintDescriptionUpdate!
-  mint_motd_update(mint_motd_update: MintMotdUpdateInput!): OrchardMintMotdUpdate!
-  mint_name_update(mint_name_update: MintNameUpdateInput!): OrchardMintNameUpdate!
-  mint_nut04_quote_update(mint_nut04_quote_update: MintNut04QuoteUpdateInput!): OrchardMintNut04QuoteUpdate!
-  mint_nut04_update(mint_nut04_update: MintNut04UpdateInput!): OrchardMintNut04Update!
-  mint_nut05_update(mint_nut05_update: MintNut05UpdateInput!): OrchardMintNut05Update!
-  mint_quote_ttl_update(mint_quote_ttl_update: MintQuoteTtlUpdateInput!): OrchardMintQuoteTtls!
-  mint_rotate_keyset(mint_rotate_keyset: MintRotateKeysetInput!): OrchardMintKeysetRotation!
-  mint_short_description_update(mint_desc_update: MintDescriptionUpdateInput!): OrchardMintDescriptionUpdate!
-  mint_url_add(mint_url_update: MintUrlUpdateInput!): OrchardMintUrlUpdate!
-  mint_url_remove(mint_url_update: MintUrlUpdateInput!): OrchardMintUrlUpdate!
-  setting_update(key: SettingKey!, value: String!): OrchardSetting!
+	ai_chat_abort(id: String!): OrchardAiChatStream!
+	auth_authentication(authentication: AuthenticationInput!): OrchardAuthentication!
+	auth_authentication_refresh: OrchardAuthentication!
+	auth_authentication_revoke: Boolean!
+	auth_initialize(initialize: InitializationInput!): OrchardAuthentication!
+	auth_signup(signup: AuthSignupInput!): OrchardAuthentication!
+	bitcoin_oracle_backfill_abort(id: String!): OrchardBitcoinOracleBackfillStream!
+	crew_invite_create(createInvite: InviteCreateInput!): OrchardCrewInvite!
+	crew_invite_delete(id: String!): Boolean!
+	crew_invite_update(updateInvite: InviteUpdateInput!): OrchardCrewInvite!
+	crew_user_delete(id: String!): Boolean!
+	crew_user_update(updateUser: UserUpdateInput!): OrchardCrewUser!
+	crew_user_update_name(updateUserName: UserNameUpdateInput!): OrchardCrewUser!
+	crew_user_update_password(updateUserPassword: UserPasswordUpdateInput!): OrchardCrewUser!
+	mint_contact_add(mint_contact_update: MintContactUpdateInput!): OrchardMintContactUpdate!
+	mint_contact_remove(mint_contact_update: MintContactUpdateInput!): OrchardMintContactUpdate!
+	mint_database_backup: OrchardMintDatabaseBackup!
+	mint_database_restore(filebase64: Base64!): OrchardMintDatabaseRestore!
+	mint_icon_update(mint_icon_update: MintIconUpdateInput!): OrchardMintIconUpdate!
+	mint_long_description_update(mint_desc_update: MintDescriptionUpdateInput!): OrchardMintDescriptionUpdate!
+	mint_motd_update(mint_motd_update: MintMotdUpdateInput!): OrchardMintMotdUpdate!
+	mint_name_update(mint_name_update: MintNameUpdateInput!): OrchardMintNameUpdate!
+	mint_nut04_quote_update(mint_nut04_quote_update: MintNut04QuoteUpdateInput!): OrchardMintNut04QuoteUpdate!
+	mint_nut04_update(mint_nut04_update: MintNut04UpdateInput!): OrchardMintNut04Update!
+	mint_nut05_update(mint_nut05_update: MintNut05UpdateInput!): OrchardMintNut05Update!
+	mint_quote_ttl_update(mint_quote_ttl_update: MintQuoteTtlUpdateInput!): OrchardMintQuoteTtls!
+	mint_rotate_keyset(mint_rotate_keyset: MintRotateKeysetInput!): OrchardMintKeysetRotation!
+	mint_short_description_update(mint_desc_update: MintDescriptionUpdateInput!): OrchardMintDescriptionUpdate!
+	mint_url_add(mint_url_update: MintUrlUpdateInput!): OrchardMintUrlUpdate!
+	mint_url_remove(mint_url_update: MintUrlUpdateInput!): OrchardMintUrlUpdate!
+	setting_update(key: SettingKey!, value: String!): OrchardSetting!
 }
 
 type OrchardAiAgent {
-  description: String!
-  icon: String!
-  name: String!
-  section: String
-  system_message: OrchardAiAgentSystemMessage!
-  tools: [OrchardAiAgentTool!]!
+	description: String!
+	icon: String!
+	name: String!
+	section: String
+	system_message: OrchardAiAgentSystemMessage!
+	tools: [OrchardAiAgentTool!]!
 }
 
 type OrchardAiAgentSystemMessage {
-  content: String!
-  role: String!
+	content: String!
+	role: String!
 }
 
 type OrchardAiAgentTool {
-  function: OrchardAiAgentToolFunction!
-  type: String!
+	function: OrchardAiAgentToolFunction!
+	type: String!
 }
 
 type OrchardAiAgentToolFunction {
-  description: String!
-  name: String!
-  parameters: OrchardAiAgentToolParameters!
+	description: String!
+	name: String!
+	parameters: OrchardAiAgentToolParameters!
 }
 
 type OrchardAiAgentToolParameters {
-  properties: String!
-  required: [String!]!
-  type: String!
+	properties: String!
+	required: [String!]!
+	type: String!
 }
 
 type OrchardAiChatChunk {
-  created_at: Int!
-  done: Boolean!
-  done_reason: String
-  eval_count: Float
-  eval_duration: Float
-  id: String!
-  load_duration: Float
-  message: OrchardAiChatMessage!
-  model: String!
-  prompt_eval_count: Float
-  prompt_eval_duration: Float
-  total_duration: Float
+	created_at: Int!
+	done: Boolean!
+	done_reason: String
+	eval_count: Float
+	eval_duration: Float
+	id: String!
+	load_duration: Float
+	message: OrchardAiChatMessage!
+	model: String!
+	prompt_eval_count: Float
+	prompt_eval_duration: Float
+	total_duration: Float
 }
 
 type OrchardAiChatFunction {
-  arguments: String!
-  name: AiFunctionName!
+	arguments: String!
+	name: AiFunctionName!
 }
 
 type OrchardAiChatMessage {
-  content: String!
-  role: AiMessageRole!
-  thinking: String
-  tool_calls: [OrchardAiChatToolCall!]
+	content: String!
+	role: AiMessageRole!
+	thinking: String
+	tool_calls: [OrchardAiChatToolCall!]
 }
 
 type OrchardAiChatStream {
-  id: String!
+	id: String!
 }
 
 type OrchardAiChatToolCall {
-  function: OrchardAiChatFunction!
+	function: OrchardAiChatFunction!
 }
 
 type OrchardAiModel {
-  details: OrchardAiModelDetails!
-  digest: String!
-  model: String!
-  modified_at: UnixTimestamp!
-  name: String!
-  size: Float!
+	details: OrchardAiModelDetails!
+	digest: String!
+	model: String!
+	modified_at: UnixTimestamp!
+	name: String!
+	size: Float!
 }
 
 type OrchardAiModelDetails {
-  families: [String!]!
-  family: String!
-  format: String!
-  parameter_size: String!
-  parent_model: String!
-  quantization_level: String!
+	families: [String!]!
+	family: String!
+	format: String!
+	parameter_size: String!
+	parent_model: String!
+	quantization_level: String!
 }
 
 type OrchardAuthentication {
-  access_token: String!
-  refresh_token: String!
+	access_token: String!
+	refresh_token: String!
 }
 
 type OrchardBitcoinBlock {
-  chainwork: String!
-  feerate_high: Float!
-  feerate_low: Float!
-  hash: String!
-  height: Int!
-  nTx: Int!
-  time: UnixTimestamp!
-  weight: Float!
+	chainwork: String!
+	feerate_high: Float!
+	feerate_low: Float!
+	hash: String!
+	height: Int!
+	nTx: Int!
+	time: UnixTimestamp!
+	weight: Float!
 }
 
 type OrchardBitcoinBlockCount {
-  height: Int!
+	height: Int!
 }
 
 type OrchardBitcoinBlockTemplate {
-  feerate_high: Float!
-  feerate_low: Float!
-  height: Int!
-  nTx: Int!
-  weight: Int!
+	feerate_high: Float!
+	feerate_low: Float!
+	height: Int!
+	nTx: Int!
+	weight: Int!
 }
 
 type OrchardBitcoinBlockchainInfo {
-  automatic_pruning: Boolean
-  bestblockhash: String!
-  blocks: Int!
-  chain: String!
-  chainwork: String!
-  difficulty: Float!
-  headers: Int!
-  initialblockdownload: Boolean!
-  prune_target_size: Int
-  pruned: Boolean!
-  pruneheight: Int
-  size_on_disk: Float!
-  verificationprogress: Float!
-  warnings: [String!]!
+	automatic_pruning: Boolean
+	bestblockhash: String!
+	blocks: Int!
+	chain: String!
+	chainwork: String!
+	difficulty: Float!
+	headers: Int!
+	initialblockdownload: Boolean!
+	prune_target_size: Int
+	pruned: Boolean!
+	pruneheight: Int
+	size_on_disk: Float!
+	verificationprogress: Float!
+	warnings: [String!]!
 }
 
 type OrchardBitcoinMempoolFees {
-  ancestor: Float!
-  base: Float!
-  descendant: Float!
-  modified: Float!
+	ancestor: Float!
+	base: Float!
+	descendant: Float!
+	modified: Float!
 }
 
 type OrchardBitcoinMempoolTransaction {
-  ancestorcount: Int!
-  ancestorsize: Int!
-  bip125_replaceable: Boolean!
-  depends: [String!]!
-  descendantcount: Int!
-  descendantsize: Int!
-  fees: OrchardBitcoinMempoolFees!
-  height: Int!
-  spentby: [String!]!
-  time: UnixTimestamp!
-  txid: ID!
-  unbroadcast: Boolean!
-  vsize: Int!
-  weight: Int!
-  wtxid: String!
+	ancestorcount: Int!
+	ancestorsize: Int!
+	bip125_replaceable: Boolean!
+	depends: [String!]!
+	descendantcount: Int!
+	descendantsize: Int!
+	fees: OrchardBitcoinMempoolFees!
+	height: Int!
+	spentby: [String!]!
+	time: UnixTimestamp!
+	txid: ID!
+	unbroadcast: Boolean!
+	vsize: Int!
+	weight: Int!
+	wtxid: String!
 }
 
 type OrchardBitcoinNetwork {
-  limited: Boolean!
-  name: String!
-  proxy: String!
-  proxy_randomize_credentials: Boolean!
-  reachable: Boolean!
+	limited: Boolean!
+	name: String!
+	proxy: String!
+	proxy_randomize_credentials: Boolean!
+	reachable: Boolean!
 }
 
 type OrchardBitcoinNetworkAddress {
-  address: String!
-  port: Int!
-  score: Int!
+	address: String!
+	port: Int!
+	score: Int!
 }
 
 type OrchardBitcoinNetworkInfo {
-  connections: Int!
-  connections_in: Int!
-  connections_out: Int!
-  incrementalfee: Float!
-  localaddresses: [OrchardBitcoinNetworkAddress!]!
-  localrelay: Boolean!
-  localservices: String!
-  localservicesnames: [String!]!
-  networkactive: Boolean!
-  networks: [OrchardBitcoinNetwork!]!
-  protocolversion: Int!
-  relayfee: Float!
-  subversion: String!
-  timeoffset: Int!
-  version: Int!
-  warnings: [String!]!
+	connections: Int!
+	connections_in: Int!
+	connections_out: Int!
+	incrementalfee: Float!
+	localaddresses: [OrchardBitcoinNetworkAddress!]!
+	localrelay: Boolean!
+	localservices: String!
+	localservicesnames: [String!]!
+	networkactive: Boolean!
+	networks: [OrchardBitcoinNetwork!]!
+	protocolversion: Int!
+	relayfee: Float!
+	subversion: String!
+	timeoffset: Int!
+	version: Int!
+	warnings: [String!]!
 }
 
 type OrchardBitcoinOracleBackfillProgress {
-  date: UnixTimestamp
-  date_progress: Float
-  end_date: UnixTimestamp
-  error: String
-  failed: Int
-  id: String!
-  message: String
-  overall_progress: Float
-  price: Int
-  processed: Int
-  start_date: UnixTimestamp
-  status: UTXOracleProgressStatus!
-  success: Boolean
-  successful: Int
-  total_days: Int
+	date: UnixTimestamp
+	date_progress: Float
+	end_date: UnixTimestamp
+	error: String
+	failed: Int
+	id: String!
+	message: String
+	overall_progress: Float
+	price: Int
+	processed: Int
+	start_date: UnixTimestamp
+	status: UTXOracleProgressStatus!
+	success: Boolean
+	successful: Int
+	total_days: Int
 }
 
 type OrchardBitcoinOracleBackfillStream {
-  id: String!
+	id: String!
 }
 
 type OrchardBitcoinOraclePrice {
-  date: UnixTimestamp!
-  price: Float!
+	date: UnixTimestamp!
+	price: Float!
 }
 
 type OrchardBitcoinTxFeeEstimate {
-  blocks: Int!
-  errors: [String!]
-  feerate: Float
-  target: Int!
+	blocks: Int!
+	errors: [String!]
+	feerate: Float
+	target: Int!
 }
 
 type OrchardCachedEndpoint {
-  method: String!
-  path: String!
+	method: String!
+	path: String!
 }
 
 type OrchardContact {
-  info: String!
-  method: String!
+	info: String!
+	method: String!
 }
 
 type OrchardCrewInvite {
-  claimed_by_id: String
-  created_at: UnixTimestamp!
-  created_by_id: String!
-  expires_at: UnixTimestamp
-  id: String!
-  label: String
-  role: UserRole!
-  token: String!
-  used_at: UnixTimestamp
+	claimed_by_id: String
+	created_at: UnixTimestamp!
+	created_by_id: String!
+	expires_at: UnixTimestamp
+	id: String!
+	label: String
+	role: UserRole!
+	token: String!
+	used_at: UnixTimestamp
 }
 
 type OrchardCrewUser {
-  active: Boolean!
-  created_at: UnixTimestamp!
-  id: String!
-  label: String
-  name: String!
-  role: UserRole!
+	active: Boolean!
+	created_at: UnixTimestamp!
+	id: String!
+	label: String
+	name: String!
+	role: UserRole!
 }
 
 type OrchardCustomChannel {
-  asset_id: String!
-  chan_id: String!
-  local_balance: Float!
-  name: String!
-  remote_balance: Float!
+	asset_id: String!
+	chan_id: String!
+	local_balance: Float!
+	name: String!
+	remote_balance: Float!
 }
 
 type OrchardCustomChannelData {
-  open_channels: [OrchardCustomChannel!]!
-  pending_channels: [OrchardCustomChannel!]!
+	open_channels: [OrchardCustomChannel!]!
+	pending_channels: [OrchardCustomChannel!]!
 }
 
 type OrchardInitialization {
-  initialization: Boolean!
+	initialization: Boolean!
 }
 
 type OrchardLightningAccount {
-  address_type: LightningAddressType!
-  addresses: [OrchardLightningAddress!]!
-  derivation_path: String!
-  name: String!
+	address_type: LightningAddressType!
+	addresses: [OrchardLightningAddress!]!
+	derivation_path: String!
+	name: String!
 }
 
 type OrchardLightningAddress {
-  address: String!
-  balance: Float!
-  derivation_path: String!
-  is_internal: String!
-  public_key: Base64!
+	address: String!
+	balance: Float!
+	derivation_path: String!
+	is_internal: String!
+	public_key: Base64!
 }
 
 type OrchardLightningBalance {
-  balance: Float!
-  custom_channel_data: OrchardCustomChannelData!
-  local_balance: OrchardLightningBalanceAmount!
-  pending_open_balance: Float!
-  pending_open_local_balance: OrchardLightningBalanceAmount!
-  pending_open_remote_balance: OrchardLightningBalanceAmount!
-  remote_balance: OrchardLightningBalanceAmount!
-  unsettled_local_balance: OrchardLightningBalanceAmount!
-  unsettled_remote_balance: OrchardLightningBalanceAmount!
+	balance: Float!
+	custom_channel_data: OrchardCustomChannelData!
+	local_balance: OrchardLightningBalanceAmount!
+	pending_open_balance: Float!
+	pending_open_local_balance: OrchardLightningBalanceAmount!
+	pending_open_remote_balance: OrchardLightningBalanceAmount!
+	remote_balance: OrchardLightningBalanceAmount!
+	unsettled_local_balance: OrchardLightningBalanceAmount!
+	unsettled_remote_balance: OrchardLightningBalanceAmount!
 }
 
 type OrchardLightningBalanceAmount {
-  msat: Float!
-  sat: Float!
+	msat: Float!
+	sat: Float!
 }
 
 type OrchardLightningChain {
-  chain: String!
-  network: String!
+	chain: String!
+	network: String!
 }
 
 type OrchardLightningFeature {
-  bit: Int!
-  is_known: Boolean!
-  is_required: Boolean!
-  name: String!
+	bit: Int!
+	is_known: Boolean!
+	is_required: Boolean!
+	name: String!
 }
 
 type OrchardLightningInfo {
-  alias: String!
-  best_header_timestamp: UnixTimestamp!
-  block_hash: String!
-  block_height: Int!
-  chains: [OrchardLightningChain!]!
-  color: String!
-  commit_hash: String!
-  features: [OrchardLightningFeature!]!
-  identity_pubkey: String!
-  num_active_channels: Int!
-  num_inactive_channels: Int!
-  num_peers: Int!
-  num_pending_channels: Int!
-  require_htlc_interceptor: Boolean!
-  store_final_htlc_resolutions: Boolean!
-  synced_to_chain: Boolean!
-  synced_to_graph: Boolean!
-  testnet: Boolean!
-  uris: [String!]!
-  version: String!
+	alias: String!
+	best_header_timestamp: UnixTimestamp!
+	block_hash: String!
+	block_height: Int!
+	chains: [OrchardLightningChain!]!
+	color: String!
+	commit_hash: String!
+	features: [OrchardLightningFeature!]!
+	identity_pubkey: String!
+	num_active_channels: Int!
+	num_inactive_channels: Int!
+	num_peers: Int!
+	num_pending_channels: Int!
+	require_htlc_interceptor: Boolean!
+	store_final_htlc_resolutions: Boolean!
+	synced_to_chain: Boolean!
+	synced_to_graph: Boolean!
+	testnet: Boolean!
+	uris: [String!]!
+	version: String!
 }
 
 type OrchardLightningRequest {
-  description: String
-  expiry: Float
-  offer_quantity_max: Float
-  type: LightningRequestType!
-  valid: Boolean!
+	description: String
+	expiry: Float
+	offer_quantity_max: Float
+	type: LightningRequestType!
+	valid: Boolean!
 }
 
 type OrchardMintAnalytics {
-  amount: Int!
-  created_time: UnixTimestamp!
-  operation_count: Int!
-  unit: MintUnit!
+	amount: Int!
+	created_time: UnixTimestamp!
+	operation_count: Int!
+	unit: MintUnit!
 }
 
 type OrchardMintBalance {
-  balance: Int!
-  keyset: String!
+	balance: Int!
+	keyset: String!
 }
 
 type OrchardMintContactUpdate {
-  info: String!
-  method: String!
+	info: String!
+	method: String!
 }
 
 type OrchardMintCount {
-  count: Int!
+	count: Int!
 }
 
 type OrchardMintDatabaseBackup {
-  filebase64: Base64!
+	filebase64: Base64!
 }
 
 type OrchardMintDatabaseRestore {
-  success: Boolean!
+	success: Boolean!
 }
 
 type OrchardMintDescriptionUpdate {
-  description: String!
+	description: String!
 }
 
 type OrchardMintFee {
-  backend_balance: Int!
-  keyset_balance: Int!
-  keyset_fees_paid: Int!
-  time: UnixTimestamp!
-  unit: MintUnit!
+	backend_balance: Int!
+	keyset_balance: Int!
+	keyset_fees_paid: Int!
+	time: UnixTimestamp!
+	unit: MintUnit!
 }
 
 type OrchardMintIconUpdate {
-  icon_url: String!
+	icon_url: String!
 }
 
 type OrchardMintInfo {
-  contact: [OrchardContact!]
-  description: String
-  description_long: String
-  icon_url: String
-  name: String!
-  nuts: OrchardNuts!
-  pubkey: String
-  time: UnixTimestamp
-  tos_url: String
-  urls: [String!]
-  version: String!
+	contact: [OrchardContact!]
+	description: String
+	description_long: String
+	icon_url: String
+	name: String!
+	nuts: OrchardNuts!
+	pubkey: String
+	time: UnixTimestamp
+	tos_url: String
+	urls: [String!]
+	version: String!
 }
 
 type OrchardMintInfoRpc {
-  contact: [OrchardContact!]!
-  description: String
-  description_long: String
-  icon_url: String
-  motd: String
-  name: String
-  total_issued: String
-  total_redeemed: String
-  urls: [String!]!
-  version: String!
+	contact: [OrchardContact!]!
+	description: String
+	description_long: String
+	icon_url: String
+	motd: String
+	name: String
+	total_issued: String
+	total_redeemed: String
+	urls: [String!]!
+	version: String!
 }
 
 type OrchardMintKeyset {
-  active: Boolean!
-  derivation_path: String!
-  derivation_path_index: Int!
-  fees_paid: Int
-  id: ID!
-  input_fee_ppk: Int
-  unit: String!
-  valid_from: UnixTimestamp!
-  valid_to: UnixTimestamp
+	active: Boolean!
+	derivation_path: String!
+	derivation_path_index: Int!
+	fees_paid: Int
+	id: ID!
+	input_fee_ppk: Int
+	unit: String!
+	valid_from: UnixTimestamp!
+	valid_to: UnixTimestamp
 }
 
 type OrchardMintKeysetProofCount {
-  count: Int!
-  id: ID!
+	count: Int!
+	id: ID!
 }
 
 type OrchardMintKeysetRotation {
-  id: String!
-  input_fee_ppk: Int
-  max_order: Int
-  unit: String!
+	id: String!
+	input_fee_ppk: Int
+	max_order: Int
+	unit: String!
 }
 
 type OrchardMintKeysetsAnalytics {
-  amount: Int!
-  created_time: UnixTimestamp!
-  keyset_id: String!
+	amount: Int!
+	created_time: UnixTimestamp!
+	keyset_id: String!
 }
 
 type OrchardMintMeltQuote {
-  amount: Int!
-  created_time: UnixTimestamp!
-  fee_reserve: Int!
-  id: ID!
-  msat_to_pay: Int
-  paid_time: UnixTimestamp
-  payment_method: MintPaymentMethod!
-  payment_preimage: String
-  request: String!
-  request_lookup_id: String
-  state: MeltQuoteState!
-  unit: MintUnit!
+	amount: Int!
+	created_time: UnixTimestamp!
+	fee_reserve: Int!
+	id: ID!
+	msat_to_pay: Int
+	paid_time: UnixTimestamp
+	payment_method: String!
+	payment_preimage: String
+	request: String!
+	request_lookup_id: String
+	state: MeltQuoteState!
+	unit: MintUnit!
 }
 
 type OrchardMintMintQuote {
-  amount: Int
-  amount_issued: Int!
-  amount_paid: Int!
-  created_time: UnixTimestamp!
-  id: ID!
-  issued_time: UnixTimestamp
-  paid_time: UnixTimestamp
-  payment_method: MintPaymentMethod!
-  pubkey: String
-  request: String!
-  request_lookup_id: String
-  state: MintQuoteState!
-  unit: MintUnit!
+	amount: Int
+	amount_issued: Int!
+	amount_paid: Int!
+	created_time: UnixTimestamp!
+	id: ID!
+	issued_time: UnixTimestamp
+	paid_time: UnixTimestamp
+	payment_method: String!
+	pubkey: String
+	request: String!
+	request_lookup_id: String
+	state: MintQuoteState!
+	unit: MintUnit!
 }
 
 type OrchardMintMotdUpdate {
-  motd: String
+	motd: String
 }
 
 type OrchardMintNameUpdate {
-  name: String
+	name: String
 }
 
 type OrchardMintNut04QuoteUpdate {
-  quote_id: String!
-  state: String!
+	quote_id: String!
+	state: String!
 }
 
 type OrchardMintNut04Update {
-  description: Boolean
-  disabled: Boolean
-  max_amount: Int
-  method: String!
-  min_amount: Int
-  unit: String!
+	description: Boolean
+	disabled: Boolean
+	max_amount: Int
+	method: String!
+	min_amount: Int
+	unit: String!
 }
 
 type OrchardMintNut05Update {
-  disabled: Boolean
-  max_amount: Int
-  method: String!
-  min_amount: Int
-  unit: String!
+	disabled: Boolean
+	max_amount: Int
+	method: String!
+	min_amount: Int
+	unit: String!
 }
 
 type OrchardMintPromiseGroup {
-  amount: Int!
-  amounts: [[Int!]!]!
-  created_time: UnixTimestamp!
-  keyset_ids: [String!]!
-  unit: MintUnit!
+	amount: Int!
+	amounts: [[Int!]!]!
+	created_time: UnixTimestamp!
+	keyset_ids: [String!]!
+	unit: MintUnit!
 }
 
 type OrchardMintProofGroup {
-  amount: Int!
-  amounts: [[Int!]!]!
-  created_time: UnixTimestamp!
-  keyset_ids: [String!]!
-  state: MintProofState!
-  unit: MintUnit!
+	amount: Int!
+	amounts: [[Int!]!]!
+	created_time: UnixTimestamp!
+	keyset_ids: [String!]!
+	state: MintProofState!
+	unit: MintUnit!
 }
 
 type OrchardMintProofGroupStats {
-  median: Float!
+	median: Float!
 }
 
 type OrchardMintQuoteTtls {
-  melt_ttl: Int
-  mint_ttl: Int
+	melt_ttl: Int
+	mint_ttl: Int
 }
 
 type OrchardMintUrlUpdate {
-  url: String!
+	url: String!
 }
 
 type OrchardNut4 {
-  disabled: Boolean!
-  methods: [OrchardNut4Method!]!
+	disabled: Boolean!
+	methods: [OrchardNut4Method!]!
 }
 
 type OrchardNut4Method {
-  description: Boolean
-  max_amount: Float
-  method: MintPaymentMethod!
-  min_amount: Float
-  unit: String!
+	description: Boolean
+	max_amount: Float
+	method: String!
+	min_amount: Float
+	unit: String!
 }
 
 type OrchardNut5 {
-  disabled: Boolean!
-  methods: [OrchardNut5Method!]!
+	disabled: Boolean!
+	methods: [OrchardNut5Method!]!
 }
 
 type OrchardNut5Method {
-  amountless: Boolean
-  max_amount: Float
-  method: MintPaymentMethod!
-  min_amount: Float
-  unit: String!
+	amountless: Boolean
+	max_amount: Float
+	method: String!
+	min_amount: Float
+	unit: String!
 }
 
 type OrchardNut15 {
-  methods: [OrchardNut15Method!]!
+	methods: [OrchardNut15Method!]!
 }
 
 type OrchardNut15Method {
-  method: MintPaymentMethod!
-  unit: MintUnit!
+	method: String!
+	unit: MintUnit!
 }
 
 type OrchardNut17 {
-  supported: [OrchardNut17Supported!]!
+	supported: [OrchardNut17Supported!]!
 }
 
 type OrchardNut17Supported {
-  commands: [String!]!
-  method: MintPaymentMethod!
-  unit: String!
+	commands: [String!]!
+	method: String!
+	unit: String!
 }
 
 type OrchardNut19 {
-  cached_endpoints: [OrchardCachedEndpoint!]!
-  ttl: Float!
+	cached_endpoints: [OrchardCachedEndpoint!]!
+	ttl: Float!
 }
 
 type OrchardNutSupported {
-  supported: Boolean!
+	supported: Boolean!
 }
 
 type OrchardNuts {
-  nut4: OrchardNut4!
-  nut5: OrchardNut5!
-  nut7: OrchardNutSupported!
-  nut8: OrchardNutSupported!
-  nut9: OrchardNutSupported!
-  nut10: OrchardNutSupported!
-  nut11: OrchardNutSupported!
-  nut12: OrchardNutSupported!
-  nut14: OrchardNutSupported
-  nut15: OrchardNut15
-  nut17: OrchardNut17
-  nut19: OrchardNut19
-  nut20: OrchardNutSupported
+	nut4: OrchardNut4!
+	nut5: OrchardNut5!
+	nut7: OrchardNutSupported!
+	nut8: OrchardNutSupported!
+	nut9: OrchardNutSupported!
+	nut10: OrchardNutSupported!
+	nut11: OrchardNutSupported!
+	nut12: OrchardNutSupported!
+	nut14: OrchardNutSupported
+	nut15: OrchardNut15
+	nut17: OrchardNut17
+	nut19: OrchardNut19
+	nut20: OrchardNutSupported
 }
 
 type OrchardPublicImage {
-  data: String
-  type: String!
+	data: String
+	type: String!
 }
 
 type OrchardPublicUrl {
-  has_data: Boolean!
-  ip_address: String
-  status: Int
-  url: String
+	has_data: Boolean!
+	ip_address: String
+	status: Int
+	url: String
 }
 
 type OrchardSetting {
-  description: String
-  key: SettingKey!
-  value: String!
-  value_type: SettingValue!
+	description: String
+	key: SettingKey!
+	value: String!
+	value_type: SettingValue!
 }
 
 type OrchardStatus {
-  online: Boolean!
-  title: String!
+	online: Boolean!
+	title: String!
 }
 
 type OrchardTaprootAsset {
-  amount: String!
-  asset_genesis: OrchardTaprootAssetGenesis!
-  asset_group: String
-  decimal_display: OrchardTaprootAssetDecimalDisplay!
-  is_burn: Boolean!
-  is_spent: Boolean!
-  version: TaprootAssetVersion!
+	amount: String!
+	asset_genesis: OrchardTaprootAssetGenesis!
+	asset_group: String
+	decimal_display: OrchardTaprootAssetDecimalDisplay!
+	is_burn: Boolean!
+	is_spent: Boolean!
+	version: TaprootAssetVersion!
 }
 
 type OrchardTaprootAssetDecimalDisplay {
-  decimal_display: Int!
+	decimal_display: Int!
 }
 
 type OrchardTaprootAssetGenesis {
-  asset_id: Base64!
-  asset_type: TaprootAssetType!
-  genesis_point: String!
-  name: String!
-  output_index: Int!
+	asset_id: Base64!
+	asset_type: TaprootAssetType!
+	genesis_point: String!
+	name: String!
+	output_index: Int!
 }
 
 type OrchardTaprootAssets {
-  assets: [OrchardTaprootAsset!]!
-  unconfirmed_mints: String!
-  unconfirmed_transfers: String!
+	assets: [OrchardTaprootAsset!]!
+	unconfirmed_mints: String!
+	unconfirmed_transfers: String!
 }
 
 type OrchardTaprootAssetsInfo {
-  block_hash: String!
-  block_height: Int!
-  lnd_identity_pubkey: String!
-  lnd_version: String!
-  network: String!
-  node_alias: String!
-  sync_to_chain: Boolean!
-  version: String!
+	block_hash: String!
+	block_height: Int!
+	lnd_identity_pubkey: String!
+	lnd_version: String!
+	network: String!
+	node_alias: String!
+	sync_to_chain: Boolean!
+	version: String!
 }
 
 type OrchardTaprootAssetsUtxo {
-  amt_sat: Float!
-  assets: [OrchardTaprootAsset!]!
-  id: String!
+	amt_sat: Float!
+	assets: [OrchardTaprootAsset!]!
+	id: String!
 }
 
 type Query {
-  ai_agent(agent: AiAgent!): OrchardAiAgent!
-  ai_models: [OrchardAiModel!]!
-  auth_initialization: OrchardInitialization!
-  bitcoin_block(hash: String!): OrchardBitcoinBlock!
-  bitcoin_block_template: OrchardBitcoinBlockTemplate!
-  bitcoin_blockchain_info: OrchardBitcoinBlockchainInfo!
-  bitcoin_blockcount: OrchardBitcoinBlockCount!
-  bitcoin_mempool_transactions: [OrchardBitcoinMempoolTransaction!]!
-  bitcoin_network_info: OrchardBitcoinNetworkInfo!
-  bitcoin_oracle(end_date: UnixTimestamp, start_date: UnixTimestamp): [OrchardBitcoinOraclePrice!]!
-  bitcoin_transaction_fee_estimates(targets: [Int!]!): [OrchardBitcoinTxFeeEstimate!]!
-  crew_invites: [OrchardCrewInvite!]!
-  crew_user: OrchardCrewUser!
-  crew_users: [OrchardCrewUser!]!
-  lightning_balance: OrchardLightningBalance!
-  lightning_info: OrchardLightningInfo!
-  lightning_request(request: String!): OrchardLightningRequest!
-  lightning_wallet: [OrchardLightningAccount!]!
-  mint_analytics_balances(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
-  mint_analytics_fees(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
-  mint_analytics_keysets(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone): [OrchardMintKeysetsAnalytics!]!
-  mint_analytics_melts(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
-  mint_analytics_mints(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
-  mint_analytics_swaps(date_end: UnixTimestamp, date_start: UnixTimestamp, interval: MintAnalyticsInterval, timezone: Timezone, units: [MintUnit!]): [OrchardMintAnalytics!]!
-  mint_balances(keyset_id: String): [OrchardMintBalance!]!
-  mint_balances_issued: [OrchardMintBalance!]!
-  mint_balances_redeemed: [OrchardMintBalance!]!
-  mint_count_melt_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, states: [MeltQuoteState!], units: [MintUnit!]): OrchardMintCount!
-  mint_count_mint_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, states: [MintQuoteState!], units: [MintUnit!]): OrchardMintCount!
-  mint_count_promise_groups(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!], units: [MintUnit!]): OrchardMintCount!
-  mint_count_proof_groups(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!], states: [MintProofState!], units: [MintUnit!]): OrchardMintCount!
-  mint_fees(limit: Int): [OrchardMintFee!]!
-  mint_info: OrchardMintInfo!
-  mint_info_rpc: OrchardMintInfoRpc!
-  mint_keyset_proof_counts(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!]): [OrchardMintKeysetProofCount!]!
-  mint_keysets: [OrchardMintKeyset!]!
-  mint_melt_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, page: Int, page_size: Int, states: [MeltQuoteState!], units: [MintUnit!]): [OrchardMintMeltQuote!]!
-  mint_mint_quotes(date_end: UnixTimestamp, date_start: UnixTimestamp, page: Int, page_size: Int, states: [MintQuoteState!], units: [MintUnit!]): [OrchardMintMintQuote!]!
-  mint_promise_groups(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!], page: Int, page_size: Int, units: [MintUnit!]): [OrchardMintPromiseGroup!]!
-  mint_proof_group_stats(unit: MintUnit!): OrchardMintProofGroupStats!
-  mint_proof_groups(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!], page: Int, page_size: Int, states: [MintProofState!], units: [MintUnit!]): [OrchardMintProofGroup!]!
-  mint_quote_ttl: OrchardMintQuoteTtls!
-  public_image(url: String!): OrchardPublicImage!
-  public_urls(urls: [String!]!): [OrchardPublicUrl!]!
-  settings: [OrchardSetting!]!
-  status: OrchardStatus!
-  taproot_assets: OrchardTaprootAssets!
-  taproot_assets_info: OrchardTaprootAssetsInfo!
-  taproot_assets_utxo: [OrchardTaprootAssetsUtxo!]!
+	ai_agent(agent: AiAgent!): OrchardAiAgent!
+	ai_models: [OrchardAiModel!]!
+	auth_initialization: OrchardInitialization!
+	bitcoin_block(hash: String!): OrchardBitcoinBlock!
+	bitcoin_block_template: OrchardBitcoinBlockTemplate!
+	bitcoin_blockchain_info: OrchardBitcoinBlockchainInfo!
+	bitcoin_blockcount: OrchardBitcoinBlockCount!
+	bitcoin_mempool_transactions: [OrchardBitcoinMempoolTransaction!]!
+	bitcoin_network_info: OrchardBitcoinNetworkInfo!
+	bitcoin_oracle(end_date: UnixTimestamp, start_date: UnixTimestamp): [OrchardBitcoinOraclePrice!]!
+	bitcoin_transaction_fee_estimates(targets: [Int!]!): [OrchardBitcoinTxFeeEstimate!]!
+	crew_invites: [OrchardCrewInvite!]!
+	crew_user: OrchardCrewUser!
+	crew_users: [OrchardCrewUser!]!
+	lightning_balance: OrchardLightningBalance!
+	lightning_info: OrchardLightningInfo!
+	lightning_request(request: String!): OrchardLightningRequest!
+	lightning_wallet: [OrchardLightningAccount!]!
+	mint_analytics_balances(
+		date_end: UnixTimestamp
+		date_start: UnixTimestamp
+		interval: MintAnalyticsInterval
+		timezone: Timezone
+		units: [MintUnit!]
+	): [OrchardMintAnalytics!]!
+	mint_analytics_fees(
+		date_end: UnixTimestamp
+		date_start: UnixTimestamp
+		interval: MintAnalyticsInterval
+		timezone: Timezone
+		units: [MintUnit!]
+	): [OrchardMintAnalytics!]!
+	mint_analytics_keysets(
+		date_end: UnixTimestamp
+		date_start: UnixTimestamp
+		interval: MintAnalyticsInterval
+		timezone: Timezone
+	): [OrchardMintKeysetsAnalytics!]!
+	mint_analytics_melts(
+		date_end: UnixTimestamp
+		date_start: UnixTimestamp
+		interval: MintAnalyticsInterval
+		timezone: Timezone
+		units: [MintUnit!]
+	): [OrchardMintAnalytics!]!
+	mint_analytics_mints(
+		date_end: UnixTimestamp
+		date_start: UnixTimestamp
+		interval: MintAnalyticsInterval
+		timezone: Timezone
+		units: [MintUnit!]
+	): [OrchardMintAnalytics!]!
+	mint_analytics_swaps(
+		date_end: UnixTimestamp
+		date_start: UnixTimestamp
+		interval: MintAnalyticsInterval
+		timezone: Timezone
+		units: [MintUnit!]
+	): [OrchardMintAnalytics!]!
+	mint_balances(keyset_id: String): [OrchardMintBalance!]!
+	mint_balances_issued: [OrchardMintBalance!]!
+	mint_balances_redeemed: [OrchardMintBalance!]!
+	mint_count_melt_quotes(
+		date_end: UnixTimestamp
+		date_start: UnixTimestamp
+		states: [MeltQuoteState!]
+		units: [MintUnit!]
+	): OrchardMintCount!
+	mint_count_mint_quotes(
+		date_end: UnixTimestamp
+		date_start: UnixTimestamp
+		states: [MintQuoteState!]
+		units: [MintUnit!]
+	): OrchardMintCount!
+	mint_count_promise_groups(
+		date_end: UnixTimestamp
+		date_start: UnixTimestamp
+		id_keysets: [String!]
+		units: [MintUnit!]
+	): OrchardMintCount!
+	mint_count_proof_groups(
+		date_end: UnixTimestamp
+		date_start: UnixTimestamp
+		id_keysets: [String!]
+		states: [MintProofState!]
+		units: [MintUnit!]
+	): OrchardMintCount!
+	mint_fees(limit: Int): [OrchardMintFee!]!
+	mint_info: OrchardMintInfo!
+	mint_info_rpc: OrchardMintInfoRpc!
+	mint_keyset_proof_counts(date_end: UnixTimestamp, date_start: UnixTimestamp, id_keysets: [String!]): [OrchardMintKeysetProofCount!]!
+	mint_keysets: [OrchardMintKeyset!]!
+	mint_melt_quotes(
+		date_end: UnixTimestamp
+		date_start: UnixTimestamp
+		page: Int
+		page_size: Int
+		states: [MeltQuoteState!]
+		units: [MintUnit!]
+	): [OrchardMintMeltQuote!]!
+	mint_mint_quotes(
+		date_end: UnixTimestamp
+		date_start: UnixTimestamp
+		page: Int
+		page_size: Int
+		states: [MintQuoteState!]
+		units: [MintUnit!]
+	): [OrchardMintMintQuote!]!
+	mint_promise_groups(
+		date_end: UnixTimestamp
+		date_start: UnixTimestamp
+		id_keysets: [String!]
+		page: Int
+		page_size: Int
+		units: [MintUnit!]
+	): [OrchardMintPromiseGroup!]!
+	mint_proof_group_stats(unit: MintUnit!): OrchardMintProofGroupStats!
+	mint_proof_groups(
+		date_end: UnixTimestamp
+		date_start: UnixTimestamp
+		id_keysets: [String!]
+		page: Int
+		page_size: Int
+		states: [MintProofState!]
+		units: [MintUnit!]
+	): [OrchardMintProofGroup!]!
+	mint_quote_ttl: OrchardMintQuoteTtls!
+	public_image(url: String!): OrchardPublicImage!
+	public_urls(urls: [String!]!): [OrchardPublicUrl!]!
+	settings: [OrchardSetting!]!
+	status: OrchardStatus!
+	taproot_assets: OrchardTaprootAssets!
+	taproot_assets_info: OrchardTaprootAssetsInfo!
+	taproot_assets_utxo: [OrchardTaprootAssetsUtxo!]!
 }
 
 enum SettingKey {
-  BITCOIN_ORACLE
+	BITCOIN_ORACLE
 }
 
 enum SettingValue {
-  BOOLEAN
-  JSON
-  NUMBER
-  STRING
+	BOOLEAN
+	JSON
+	NUMBER
+	STRING
 }
 
 type Subscription {
-  ai_chat(ai_chat: AiChatInput!): OrchardAiChatChunk!
-  bitcoin_oracle_backfill(auth: String!, end_date: UnixTimestamp, id: String!, start_date: UnixTimestamp!): OrchardBitcoinOracleBackfillProgress!
-  blockCount: OrchardBitcoinBlockCount!
+	ai_chat(ai_chat: AiChatInput!): OrchardAiChatChunk!
+	bitcoin_oracle_backfill(
+		auth: String!
+		end_date: UnixTimestamp
+		id: String!
+		start_date: UnixTimestamp!
+	): OrchardBitcoinOracleBackfillProgress!
+	blockCount: OrchardBitcoinBlockCount!
 }
 
 enum TaprootAssetType {
-  COLLECTIBLE
-  NORMAL
-  TAPD
+	COLLECTIBLE
+	NORMAL
+	TAPD
 }
 
 enum TaprootAssetVersion {
-  ASSET_VERSION_V0
-  ASSET_VERSION_V1
+	ASSET_VERSION_V0
+	ASSET_VERSION_V1
 }
 
-"""Timezone custom scalar type based on IANA timezone database"""
+"""
+Timezone custom scalar type based on IANA timezone database
+"""
 scalar Timezone
 
 enum UTXOracleProgressStatus {
-  ABORTED
-  COMPLETED
-  ERROR
-  PROCESSING
-  STARTED
+	ABORTED
+	COMPLETED
+	ERROR
+	PROCESSING
+	STARTED
 }
 
-"""A Unix timestamp in seconds"""
+"""
+A Unix timestamp in seconds
+"""
 scalar UnixTimestamp
 
 input UserNameUpdateInput {
-  name: String!
+	name: String!
 }
 
 input UserPasswordUpdateInput {
-  password_new: String!
-  password_old: String!
+	password_new: String!
+	password_old: String!
 }
 
 enum UserRole {
-  ADMIN
-  MANAGER
-  READER
+	ADMIN
+	MANAGER
+	READER
 }
 
 input UserUpdateInput {
-  active: Boolean
-  id: String!
-  label: String
-  role: UserRole
+	active: Boolean
+	id: String!
+	label: String
+	role: UserRole
 }

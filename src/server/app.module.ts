@@ -20,7 +20,7 @@ import {Base64} from './modules/graphql/scalars/base64.scalar';
 import {LightningAddressType, LightningRequestType} from './modules/lightning/lightning.enums';
 import {TaprootAssetType, TaprootAssetVersion} from './modules/tapass/tapass.enums';
 import {MintAnalyticsInterval} from './modules/cashu/mintdb/cashumintdb.enums';
-import {MintUnit, MintQuoteState, MeltQuoteState, MintProofState, MintPaymentMethod} from './modules/cashu/cashu.enums';
+import {MintUnit, MintQuoteState, MeltQuoteState, MintProofState} from './modules/cashu/cashu.enums';
 import {AiAgent, AiMessageRole, AiFunctionName} from './modules/ai/ai.enums';
 import {UserRole} from './modules/user/user.enums';
 import {SettingKey, SettingValue} from './modules/setting/setting.enums';
@@ -33,7 +33,6 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 	registerEnumType(MintQuoteState, {name: 'MintQuoteState'});
 	registerEnumType(MeltQuoteState, {name: 'MeltQuoteState'});
 	registerEnumType(MintProofState, {name: 'MintProofState'});
-	registerEnumType(MintPaymentMethod, {name: 'MintPaymentMethod'});
 	registerEnumType(MintAnalyticsInterval, {name: 'MintAnalyticsInterval'});
 	registerEnumType(TaprootAssetType, {name: 'TaprootAssetType'});
 	registerEnumType(TaprootAssetVersion, {name: 'TaprootAssetVersion'});
