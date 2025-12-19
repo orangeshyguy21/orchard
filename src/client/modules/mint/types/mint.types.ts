@@ -24,6 +24,7 @@ import {
 	OrchardMintContactUpdate,
 	OrchardMintNut04Update,
 	OrchardMintNut05Update,
+	OrchardMintNut04QuoteUpdate,
 	OrchardMintKeysetRotation,
 	OrchardMintDatabaseBackup,
 	OrchardMintDatabaseRestore,
@@ -236,4 +237,8 @@ export type MintProofGroupStatsResponse = {
 
 export type MintFeesResponse = {
 	mint_fees: OrchardMintFee[];
+};
+
+export type MintNut04QuoteUpdateResponse = {
+	mint_nut04_quote_update: OrchardMintNut04QuoteUpdate;
 };

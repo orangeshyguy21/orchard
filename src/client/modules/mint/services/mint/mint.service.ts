@@ -42,6 +42,7 @@ import {
 	MintQuoteTtlUpdateResponse,
 	MintNut04UpdateResponse,
 	MintNut05UpdateResponse,
+	MintNut04QuoteUpdateResponse,
 	MintKeysetRotationResponse,
 	MintMintQuotesDataResponse,
 	MintMeltQuotesDataResponse,
@@ -102,6 +103,7 @@ import {
 	MINT_QUOTE_TTL_MUTATION,
 	MINT_NUT04_UPDATE_MUTATION,
 	MINT_NUT05_UPDATE_MUTATION,
+	MINT_NUT04_QUOTE_UPDATE_MUTATION,
 	MINT_KEYSETS_ROTATION_MUTATION,
 	MINT_DATABASE_BACKUP_MUTATION,
 	MINT_DATABASE_RESTORE_MUTATION,
@@ -1128,6 +1130,21 @@ export class MintService {
 			}),
 			catchError((error) => {
 				console.error('Error updating mint:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	public updateMintNut04Quote(quote_id: string, state: string): Observable<MintNut04QuoteUpdateResponse> {
+		const query = getApiQuery(MINT_NUT04_QUOTE_UPDATE_MUTATION, {mint_nut04_quote_update: {quote_id, state}});
+
+		return this.http.post<OrchardRes<MintNut04QuoteUpdateResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error updating mint nut04 quote:', error);
 				return throwError(() => error);
 			}),
 		);

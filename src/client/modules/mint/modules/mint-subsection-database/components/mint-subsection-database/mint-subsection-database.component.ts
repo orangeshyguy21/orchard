@@ -381,6 +381,28 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		this.getLightningRequest(request);
 	}
 
+	public onSetQuoteStatePaid(quote_id: string): void {
+		this.mintService.updateMintNut04Quote(quote_id, 'PAID').subscribe({
+			next: () => {
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'SUCCESS',
+						message: 'Quote state updated to PAID',
+					}),
+				);
+				this.reloadDynamicData();
+			},
+			error: (errors: OrchardErrors) => {
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'ERROR',
+						message: errors.errors[0].message,
+					}),
+				);
+			},
+		});
+	}
+
 	/* *******************************************************
 		Database Forms                
 	******************************************************** */
