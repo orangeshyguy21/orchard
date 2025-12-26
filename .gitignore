@@ -6,6 +6,7 @@
 /out-tsc
 /bazel-out
 /public/config.json
+/schema.gql
 
 # data
 /data/*
