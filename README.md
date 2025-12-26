@@ -36,7 +36,7 @@
 
 ## Environment Variables
 ```bash
-mv .env.example .env
+cp .env.example .env
 # edit .env file
 nano .env
 ```
