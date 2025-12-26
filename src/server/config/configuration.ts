@@ -11,6 +11,7 @@ import {Config} from './configuration.type';
  */
 const deriveSecret = (base_key: string, info: string): string => {
 	const salt = 'orchard-jwt-derivation';
+	// lgtm[js/insufficient-password-hash] - This is key derivation for JWT secrets, not password storage
 	const key_material = createHash('sha256').update(base_key).digest();
 	const derived = Buffer.from(hkdfSync('sha256', key_material, salt, info, 32));
 	return derived.toString('base64');
