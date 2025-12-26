@@ -88,7 +88,7 @@
 													[quote]="entity"
 													[loading]="loading_more"
 													[lightning_request]="lightning_request"
-													(setStatePaid)="onSetQuoteStatePaid($event)"
+													(setStatePaid)="setQuoteStatePaid.emit($event)"
 												></orc-mint-subsection-database-table-mint>
 											}
 											@case ('MintMelts') {

@@ -60,8 +60,4 @@ export class MintSubsectionDatabaseTableComponent implements OnChanges {
 		if (!this.configService.config.lightning.enabled) return;
 		if (this.more_entity) this.updateRequest.emit(this.more_entity.request);
 	}
-
-	public onSetQuoteStatePaid(quote_id: string) {
-		this.setQuoteStatePaid.emit(quote_id);
-	}
 }
