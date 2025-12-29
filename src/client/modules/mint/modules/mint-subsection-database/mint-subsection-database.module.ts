@@ -15,8 +15,9 @@ import {MatTableModule} from '@angular/material/table';
 import {MatSortModule} from '@angular/material/sort';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatRippleModule} from '@angular/material/core';
-// import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatButtonModule} from '@angular/material/button';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatDialogModule} from '@angular/material/dialog';
 import {BaseChartDirective as ChartJsBaseChartDirective} from 'ng2-charts';
 /* Application Dependencies */
 import {OrcLocalModule} from '@client/modules/local/local.module';
@@ -39,6 +40,7 @@ import {MintSubsectionDatabaseTableMintComponent} from './components/mint-subsec
 import {MintSubsectionDatabaseTableMintBolt12Component} from './components/mint-subsection-database-table-mint-bolt12/mint-subsection-database-table-mint-bolt12.component';
 import {MintSubsectionDatabaseTableMeltComponent} from './components/mint-subsection-database-table-melt/mint-subsection-database-table-melt.component';
 import {MintSubsectionDatabaseTableEcashComponent} from './components/mint-subsection-database-table-ecash/mint-subsection-database-table-ecash.component';
+import {MintSubsectionDatabaseDialogQuoteComponent} from './components/mint-subsection-database-dialog-quote/mint-subsection-database-dialog-quote.component';
 
 @NgModule({
 	declarations: [
@@ -53,6 +55,7 @@ import {MintSubsectionDatabaseTableEcashComponent} from './components/mint-subse
 		MintSubsectionDatabaseTableMintBolt12Component,
 		MintSubsectionDatabaseTableMeltComponent,
 		MintSubsectionDatabaseTableEcashComponent,
+		MintSubsectionDatabaseDialogQuoteComponent,
 	],
 	imports: [
 		CoreRouterModule.forChild([
@@ -75,7 +78,8 @@ import {MintSubsectionDatabaseTableEcashComponent} from './components/mint-subse
 		MatSortModule,
 		MatPaginatorModule,
 		MatRippleModule,
-		// MatProgressSpinnerModule,
+		MatTooltipModule,
+		MatDialogModule,
 		MatButtonModule,
 		ChartJsBaseChartDirective,
 		OrcLocalModule,

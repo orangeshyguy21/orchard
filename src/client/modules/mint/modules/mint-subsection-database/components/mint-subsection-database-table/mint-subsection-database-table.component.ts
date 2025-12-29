@@ -11,6 +11,8 @@ import {MintSubsectionDatabaseData} from '@client/modules/mint/modules/mint-subs
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class';
 import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
+/* Shared Dependencies */
+import {MintQuoteState, MeltQuoteState} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-subsection-database-table',
@@ -30,12 +32,15 @@ export class MintSubsectionDatabaseTableComponent implements OnChanges {
 	@Input() public lightning_request!: LightningRequest | null;
 
 	@Output() public updateRequest = new EventEmitter<string>();
-	@Output() public setQuoteStatePaid = new EventEmitter<string>();
+	@Output() public setQuoteStatePaid = new EventEmitter<MintMintQuote | MintMeltQuote>();
 
 	public more_entity!: MintMintQuote | MintMeltQuote | null;
+	public MintQuoteState = MintQuoteState;
+	public MeltQuoteState = MeltQuoteState;
 
 	public get displayed_columns(): string[] {
-		if (this.data.type === 'MintMints' || this.data.type === 'MintMelts') return ['unit', 'amount', 'request', 'state', 'created_time'];
+		if (this.data.type === 'MintMints' || this.data.type === 'MintMelts')
+			return ['unit', 'amount', 'request', 'state', 'created_time', 'actions'];
 		if (this.data.type === 'MintProofGroups') return ['unit', 'amount', 'ecash', 'state', 'created_time'];
 		if (this.data.type === 'MintPromiseGroups') return ['unit', 'amount', 'ecash', 'created_time'];
 		return ['unit', 'amount', 'request', 'state', 'created_time'];
@@ -59,5 +64,11 @@ export class MintSubsectionDatabaseTableComponent implements OnChanges {
 		this.more_entity = this.more_entity === entity ? null : entity;
 		if (!this.configService.config.lightning.enabled) return;
 		if (this.more_entity) this.updateRequest.emit(this.more_entity.request);
+	}
+
+	public onSetQuoteStatePaid(event: MouseEvent, entity: MintMintQuote | MintMeltQuote) {
+		event.stopPropagation();
+		event.preventDefault();
+		this.setQuoteStatePaid.emit(entity);
 	}
 }

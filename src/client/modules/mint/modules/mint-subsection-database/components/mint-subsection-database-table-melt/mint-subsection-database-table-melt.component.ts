@@ -1,5 +1,15 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, ElementRef, input, computed, AfterViewInit, ViewChild, ChangeDetectorRef} from '@angular/core';
+import {
+	ChangeDetectionStrategy,
+	Component,
+	ElementRef,
+	input,
+	computed,
+	AfterViewInit,
+	ViewChild,
+	ChangeDetectorRef,
+	output,
+} from '@angular/core';
 /* Vendor Dependencies */
 import QRCodeStyling from 'qr-code-styling';
 import {DateTime} from 'luxon';
@@ -31,8 +41,14 @@ export class MintSubsectionDatabaseTableMeltComponent implements AfterViewInit {
 	public loading = input.required<boolean>();
 	public lightning_request = input<LightningRequest | null>(null);
 
+	public setStatePaid = output<MintMeltQuote>();
+
 	public qr_code!: QRCodeStyling;
 	public copy_animation_state: 'visible' | 'hidden' = 'hidden';
+
+	public can_set_paid = computed(() => {
+		return this.quote().state === MeltQuoteState.Unpaid;
+	});
 
 	private expired_state = computed((): ExpiredState => {
 		const lr = this.lightning_request();
@@ -117,5 +133,11 @@ export class MintSubsectionDatabaseTableMeltComponent implements AfterViewInit {
 			this.copy_animation_state = 'hidden';
 			this.cdr.detectChanges();
 		}, 1000);
+	}
+
+	public onSetStatePaid(event: Event): void {
+		event.stopPropagation();
+		event.preventDefault();
+		this.setStatePaid.emit(this.quote());
 	}
 }

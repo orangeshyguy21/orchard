@@ -5,8 +5,8 @@ export enum MintType {
 
 export enum MintQuoteState {
 	UNPAID = 'UNPAID',
-	PAID = 'PAID',
 	PENDING = 'PENDING',
+	PAID = 'PAID',
 	ISSUED = 'ISSUED',
 }
 
