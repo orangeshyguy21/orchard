@@ -43,6 +43,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Generate Types
+        run: npm run generate:types
+
       - name: Test
         run: npm run test
 
