@@ -10,9 +10,9 @@ import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.cla
 import {AiChatService} from './aichat.service';
 
 describe('AiChatService', () => {
-	let ai_chat_service: AiChatService;
-	let ai_service: jest.Mocked<AiService>;
-	let error_service: jest.Mocked<ErrorService>;
+	let aiChatService: AiChatService;
+	let aiService: jest.Mocked<AiService>;
+	let errorService: jest.Mocked<ErrorService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -23,13 +23,13 @@ describe('AiChatService', () => {
 			],
 		}).compile();
 
-		ai_chat_service = module.get<AiChatService>(AiChatService);
-		ai_service = module.get(AiService);
-		error_service = module.get(ErrorService);
+		aiChatService = module.get<AiChatService>(AiChatService);
+		aiService = module.get(AiService);
+		errorService = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {
-		expect(ai_chat_service).toBeDefined();
+		expect(aiChatService).toBeDefined();
 	});
 
 	it('streams chat and emits parsed chunks', async () => {
@@ -47,13 +47,13 @@ describe('AiChatService', () => {
 				.mockResolvedValueOnce({done: true, value: undefined}),
 		};
 		const body = {getReader: () => reader} as any;
-		ai_service.streamChat.mockResolvedValue(body);
+		aiService.streamChat.mockResolvedValue(body);
 
 		const received: any[] = [];
-		ai_chat_service.onChatUpdate((chunk) => received.push(chunk));
+		aiChatService.onChatUpdate((chunk) => received.push(chunk));
 
 		// Act
-		const ok = await ai_chat_service.streamChat('TAG', {id: '1', model: 'm', agent: null, messages: []} as any);
+		const ok = await aiChatService.streamChat('TAG', {id: '1', model: 'm', agent: null, messages: []} as any);
 
 		// Assert
 		expect(ok).toBe(true);
@@ -61,12 +61,12 @@ describe('AiChatService', () => {
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError for stream errors', async () => {
-		ai_service.streamChat.mockRejectedValue(new Error('boom'));
-		error_service.resolveError.mockReturnValue(OrchardErrorCode.AiError);
-		await expect(ai_chat_service.streamChat('MY_TAG', {id: '1', model: 'm', agent: null, messages: []} as any)).rejects.toBeInstanceOf(
+		aiService.streamChat.mockRejectedValue(new Error('boom'));
+		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.AiError});
+		await expect(aiChatService.streamChat('MY_TAG', {id: '1', model: 'm', agent: null, messages: []} as any)).rejects.toBeInstanceOf(
 			OrchardApiError,
 		);
-		const calls = error_service.resolveError.mock.calls;
+		const calls = errorService.resolveError.mock.calls;
 		const [, , tag_arg, code_arg] = calls[calls.length - 1];
 		expect(tag_arg).toBe('MY_TAG');
 		expect(code_arg).toEqual({errord: OrchardErrorCode.AiError});

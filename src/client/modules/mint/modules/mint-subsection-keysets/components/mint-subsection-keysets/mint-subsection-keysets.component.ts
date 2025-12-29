@@ -290,11 +290,11 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 					}),
 				);
 			},
-			error: (error: OrchardErrors) => {
+			error: (errors: OrchardErrors) => {
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'ERROR',
-						message: error.errors[0].message,
+						message: errors.errors[0].getFullError(),
 					}),
 				);
 			},

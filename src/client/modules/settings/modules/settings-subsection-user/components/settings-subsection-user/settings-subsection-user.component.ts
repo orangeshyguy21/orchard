@@ -110,11 +110,11 @@ export class SettingsSubsectionUserComponent implements ComponentCanDeactivate, 
 				this.form_user_name.markAsPristine();
 				this.evaluateDirtyCount();
 			},
-			error: (error: OrchardErrors) => {
+			error: (errors: OrchardErrors) => {
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'ERROR',
-						message: error.errors[0].message,
+						message: errors.errors[0].getFullError(),
 					}),
 				);
 			},
@@ -135,11 +135,11 @@ export class SettingsSubsectionUserComponent implements ComponentCanDeactivate, 
 				);
 				this.evaluateDirtyCount();
 			},
-			error: (error: OrchardErrors) => {
+			error: (errors: OrchardErrors) => {
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'ERROR',
-						message: error.errors[0].message,
+						message: errors.errors[0].getFullError(),
 					}),
 				);
 			},

@@ -11,9 +11,9 @@ import {LightningBalanceService} from './lnbalance.service';
 import {OrchardLightningBalance} from './lnbalance.model';
 
 describe('LightningBalanceService', () => {
-	let lightning_balance_service: LightningBalanceService;
-	let lightning_service: jest.Mocked<LightningService>;
-	let error_service: jest.Mocked<ErrorService>;
+	let lightningBalanceService: LightningBalanceService;
+	let lightningService: jest.Mocked<LightningService>;
+	let errorService: jest.Mocked<ErrorService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -24,18 +24,18 @@ describe('LightningBalanceService', () => {
 			],
 		}).compile();
 
-		lightning_balance_service = module.get<LightningBalanceService>(LightningBalanceService);
-		lightning_service = module.get(LightningService);
-		error_service = module.get(ErrorService);
+		lightningBalanceService = module.get<LightningBalanceService>(LightningBalanceService);
+		lightningService = module.get(LightningService);
+		errorService = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {
-		expect(lightning_balance_service).toBeDefined();
+		expect(lightningBalanceService).toBeDefined();
 	});
 
 	it('returns OrchardLightningBalance on success', async () => {
 		// Arrange: minimal valid LightningChannelBalance shape
-		lightning_service.getLightningChannelBalance.mockResolvedValue({
+		lightningService.getLightningChannelBalance.mockResolvedValue({
 			balance: '0',
 			pending_open_balance: '0',
 			local_balance: {sat: '0', msat: '0'},
@@ -48,24 +48,24 @@ describe('LightningBalanceService', () => {
 		} as any);
 
 		// Act
-		const result = await lightning_balance_service.getLightningChannelBalance('TAG');
+		const result = await lightningBalanceService.getLightningChannelBalance('TAG');
 
 		// Assert
 		expect(result).toBeInstanceOf(OrchardLightningBalance);
-		expect(lightning_service.getLightningChannelBalance).toHaveBeenCalledTimes(1);
+		expect(lightningService.getLightningChannelBalance).toHaveBeenCalledTimes(1);
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError', async () => {
 		// Arrange
 		const rpc_error = new Error('boom');
-		lightning_service.getLightningChannelBalance.mockRejectedValue(rpc_error);
-		error_service.resolveError.mockReturnValue(OrchardErrorCode.LightningRpcActionError);
+		lightningService.getLightningChannelBalance.mockRejectedValue(rpc_error);
+		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.LightningRpcActionError});
 
 		// Act
-		await expect(lightning_balance_service.getLightningChannelBalance('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
+		await expect(lightningBalanceService.getLightningChannelBalance('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
 
 		// Assert
-		const calls = error_service.resolveError.mock.calls;
+		const calls = errorService.resolveError.mock.calls;
 		const [, , tag_arg, code_arg] = calls[calls.length - 1];
 		expect(tag_arg).toBe('MY_TAG');
 		expect(code_arg).toEqual({errord: OrchardErrorCode.LightningRpcActionError});

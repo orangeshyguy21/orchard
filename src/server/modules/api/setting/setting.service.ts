@@ -23,10 +23,10 @@ export class ApiSettingService {
 			const settings = await this.settingService.getSettings();
 			return settings.map((setting) => new OrchardSetting(setting));
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.SettingError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 
@@ -35,10 +35,10 @@ export class ApiSettingService {
 			const setting = await this.settingService.updateSetting(key, value);
 			return new OrchardSetting(setting);
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.SettingError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 }

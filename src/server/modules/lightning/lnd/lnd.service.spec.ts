@@ -9,9 +9,9 @@ import {LndService} from './lnd.service';
 import * as grpc from '@grpc/grpc-js';
 
 describe('LndService', () => {
-	let lnd_service: LndService;
-	let config_service: jest.Mocked<ConfigService>;
-	let credential_service: jest.Mocked<CredentialService>;
+	let lndService: LndService;
+	let configService: jest.Mocked<ConfigService>;
+	let credentialService: jest.Mocked<CredentialService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -22,22 +22,22 @@ describe('LndService', () => {
 			],
 		}).compile();
 
-		lnd_service = module.get<LndService>(LndService);
-		config_service = module.get(ConfigService);
-		credential_service = module.get(CredentialService);
+		lndService = module.get<LndService>(LndService);
+		configService = module.get(ConfigService);
+		credentialService = module.get(CredentialService);
 	});
 
 	it('should be defined', () => {
-		expect(lnd_service).toBeDefined();
+		expect(lndService).toBeDefined();
 	});
 
 	it('returns undefined client when credentials missing', () => {
-		const client = lnd_service.initializeLightningClient();
+		const client = lndService.initializeLightningClient();
 		expect(client).toBeUndefined();
 	});
 
 	it('initializes client when credentials present', () => {
-		config_service.get.mockImplementation((key: string) => {
+		configService.get.mockImplementation((key: string) => {
 			switch (key) {
 				case 'lightning.host':
 					return 'localhost';
@@ -51,8 +51,8 @@ describe('LndService', () => {
 					return undefined as any;
 			}
 		});
-		credential_service.loadMacaroonHex.mockReturnValue('00');
-		credential_service.loadPemOrPath.mockReturnValue(Buffer.from('cert'));
+		credentialService.loadMacaroonHex.mockReturnValue('00');
+		credentialService.loadPemOrPath.mockReturnValue(Buffer.from('cert'));
 		const createFromMetadataGenerator = jest.spyOn(grpc.credentials, 'createFromMetadataGenerator').mockReturnValue({} as any);
 		const createSsl = jest.spyOn(grpc.credentials, 'createSsl').mockReturnValue({} as any);
 		const combine = jest.spyOn(grpc.credentials, 'combineChannelCredentials').mockReturnValue({} as any);
@@ -60,8 +60,8 @@ describe('LndService', () => {
 		const loadPackageDefinition = jest
 			.spyOn(grpc, 'loadPackageDefinition')
 			.mockReturnValue({lnrpc: {Lightning: jest.fn()}, walletrpc: {WalletKit: jest.fn()}} as any);
-		lnd_service.initializeLightningClient();
-		lnd_service.initializeWalletKitClient();
+		lndService.initializeLightningClient();
+		lndService.initializeWalletKitClient();
 		expect(createFromMetadataGenerator).toHaveBeenCalled();
 		expect(createSsl).toHaveBeenCalled();
 		expect(combine).toHaveBeenCalled();
@@ -71,7 +71,7 @@ describe('LndService', () => {
 
 	it('mapLndRequest constructs a LightningRequest', () => {
 		const req = {description: 'x', expiry: 60};
-		const out = lnd_service.mapLndRequest(req as any);
+		const out = lndService.mapLndRequest(req as any);
 		expect(out.valid).toBe(true);
 		expect(out.description).toBeDefined();
 	});

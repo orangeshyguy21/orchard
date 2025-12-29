@@ -12,10 +12,9 @@ import {MintBalanceService} from './mintbalance.service';
 import {OrchardMintBalance} from './mintbalance.model';
 
 describe('MintBalanceService', () => {
-	let mint_balance_service: MintBalanceService;
-	let mint_db_service: jest.Mocked<CashuMintDatabaseService>;
-	let _mint_service: jest.Mocked<MintService>;
-	let error_service: jest.Mocked<ErrorService>;
+	let mintBalanceService: MintBalanceService;
+	let mintDbService: jest.Mocked<CashuMintDatabaseService>;
+	let errorService: jest.Mocked<ErrorService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -30,37 +29,36 @@ describe('MintBalanceService', () => {
 			],
 		}).compile();
 
-		mint_balance_service = module.get<MintBalanceService>(MintBalanceService);
-		mint_db_service = module.get(CashuMintDatabaseService);
-		_mint_service = module.get(MintService);
-		error_service = module.get(ErrorService);
+		mintBalanceService = module.get<MintBalanceService>(MintBalanceService);
+		mintDbService = module.get(CashuMintDatabaseService);
+		errorService = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {
-		expect(mint_balance_service).toBeDefined();
+		expect(mintBalanceService).toBeDefined();
 	});
 
 	it('getMintBalances maps to OrchardMintBalance[]', async () => {
-		mint_db_service.getMintBalances.mockResolvedValue([{keyset: 'k', balance: 1}] as any);
-		const result = await mint_balance_service.getMintBalances('TAG', 'k');
+		mintDbService.getMintBalances.mockResolvedValue([{keyset: 'k', balance: 1}] as any);
+		const result = await mintBalanceService.getMintBalances('TAG', 'k');
 		expect(result[0]).toBeInstanceOf(OrchardMintBalance);
 	});
 
 	it('getIssuedMintBalances maps to OrchardMintBalance[]', async () => {
-		mint_db_service.getMintBalancesIssued.mockResolvedValue([{keyset: 'k', balance: 1}] as any);
-		const result = await mint_balance_service.getIssuedMintBalances('TAG');
+		mintDbService.getMintBalancesIssued.mockResolvedValue([{keyset: 'k', balance: 1}] as any);
+		const result = await mintBalanceService.getIssuedMintBalances('TAG');
 		expect(result[0]).toBeInstanceOf(OrchardMintBalance);
 	});
 
 	it('getRedeemedMintBalances maps to OrchardMintBalance[]', async () => {
-		mint_db_service.getMintBalancesRedeemed.mockResolvedValue([{keyset: 'k', balance: 1}] as any);
-		const result = await mint_balance_service.getRedeemedMintBalances('TAG');
+		mintDbService.getMintBalancesRedeemed.mockResolvedValue([{keyset: 'k', balance: 1}] as any);
+		const result = await mintBalanceService.getRedeemedMintBalances('TAG');
 		expect(result[0]).toBeInstanceOf(OrchardMintBalance);
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError', async () => {
-		mint_db_service.getMintBalances.mockRejectedValue(new Error('boom'));
-		error_service.resolveError.mockReturnValue(OrchardErrorCode.MintDatabaseSelectError);
-		await expect(mint_balance_service.getMintBalances('MY_TAG', 'k')).rejects.toBeInstanceOf(OrchardApiError);
+		mintDbService.getMintBalances.mockRejectedValue(new Error('boom'));
+		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.MintDatabaseSelectError});
+		await expect(mintBalanceService.getMintBalances('MY_TAG', 'k')).rejects.toBeInstanceOf(OrchardApiError);
 	});
 });

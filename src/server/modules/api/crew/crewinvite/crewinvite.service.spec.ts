@@ -17,9 +17,9 @@ import {OrchardCrewInvite} from './crewinvite.model';
 import {InviteCreateInput, InviteUpdateInput} from './crewinvite.input';
 
 describe('CrewInviteService', () => {
-	let crew_invite_service: CrewInviteService;
-	let invite_service: jest.Mocked<InviteService>;
-	let error_service: jest.Mocked<ErrorService>;
+	let crewInviteService: CrewInviteService;
+	let inviteService: jest.Mocked<InviteService>;
+	let errorService: jest.Mocked<ErrorService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -38,13 +38,13 @@ describe('CrewInviteService', () => {
 			],
 		}).compile();
 
-		crew_invite_service = module.get<CrewInviteService>(CrewInviteService);
-		invite_service = module.get(InviteService);
-		error_service = module.get(ErrorService);
+		crewInviteService = module.get<CrewInviteService>(CrewInviteService);
+		inviteService = module.get(InviteService);
+		errorService = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {
-		expect(crew_invite_service).toBeDefined();
+		expect(crewInviteService).toBeDefined();
 	});
 
 	describe('getInvites', () => {
@@ -74,9 +74,9 @@ describe('CrewInviteService', () => {
 				} as Invite,
 			];
 
-			invite_service.getInvites.mockResolvedValue(mock_invites);
+			inviteService.getInvites.mockResolvedValue(mock_invites);
 
-			const result = await crew_invite_service.getInvites('TEST_TAG');
+			const result = await crewInviteService.getInvites('TEST_TAG');
 
 			expect(result).toHaveLength(2);
 			expect(result[0]).toBeInstanceOf(OrchardCrewInvite);
@@ -85,25 +85,25 @@ describe('CrewInviteService', () => {
 			expect(result[0].created_by_id).toBe('user1');
 			expect(result[1]).toBeInstanceOf(OrchardCrewInvite);
 			expect(result[1].id).toBe('2');
-			expect(invite_service.getInvites).toHaveBeenCalled();
+			expect(inviteService.getInvites).toHaveBeenCalled();
 		});
 
 		it('returns empty array when no invites', async () => {
-			invite_service.getInvites.mockResolvedValue([]);
+			inviteService.getInvites.mockResolvedValue([]);
 
-			const result = await crew_invite_service.getInvites('TEST_TAG');
+			const result = await crewInviteService.getInvites('TEST_TAG');
 
 			expect(result).toHaveLength(0);
 		});
 
 		it('throws OrchardApiError when service fails', async () => {
 			const error = new Error('Database error');
-			invite_service.getInvites.mockRejectedValue(error);
-			error_service.resolveError.mockReturnValue(OrchardErrorCode.InviteError);
+			inviteService.getInvites.mockRejectedValue(error);
+			errorService.resolveError.mockReturnValue({code: OrchardErrorCode.InviteError});
 
-			await expect(crew_invite_service.getInvites('ERROR_TAG')).rejects.toBeInstanceOf(OrchardApiError);
+			await expect(crewInviteService.getInvites('ERROR_TAG')).rejects.toBeInstanceOf(OrchardApiError);
 
-			expect(error_service.resolveError).toHaveBeenCalledWith(expect.anything(), error, 'ERROR_TAG', {
+			expect(errorService.resolveError).toHaveBeenCalledWith(expect.anything(), error, 'ERROR_TAG', {
 				errord: OrchardErrorCode.InviteError,
 			});
 		});
@@ -129,9 +129,9 @@ describe('CrewInviteService', () => {
 				created_at: Math.floor(DateTime.now().toSeconds()),
 			} as Invite;
 
-			invite_service.createInvite.mockResolvedValue(mock_created_invite);
+			inviteService.createInvite.mockResolvedValue(mock_created_invite);
 
-			const result = await crew_invite_service.createInvite('CREATE_TAG', 'admin1', create_input);
+			const result = await crewInviteService.createInvite('CREATE_TAG', 'admin1', create_input);
 
 			expect(result).toBeInstanceOf(OrchardCrewInvite);
 			expect(result.id).toBe('123');
@@ -139,7 +139,7 @@ describe('CrewInviteService', () => {
 			expect(result.label).toBe('New Invite');
 			expect(result.role).toBe(UserRole.READER);
 			expect(result.created_by_id).toBe('admin1');
-			expect(invite_service.createInvite).toHaveBeenCalledWith('admin1', UserRole.READER, 'New Invite', create_input.expires_at);
+			expect(inviteService.createInvite).toHaveBeenCalledWith('admin1', UserRole.READER, 'New Invite', create_input.expires_at);
 		});
 
 		it('creates invite with minimal input', async () => {
@@ -159,14 +159,14 @@ describe('CrewInviteService', () => {
 				created_at: Math.floor(DateTime.now().toSeconds()),
 			} as Invite;
 
-			invite_service.createInvite.mockResolvedValue(mock_created_invite);
+			inviteService.createInvite.mockResolvedValue(mock_created_invite);
 
-			const result = await crew_invite_service.createInvite('CREATE_TAG', 'admin2', create_input);
+			const result = await crewInviteService.createInvite('CREATE_TAG', 'admin2', create_input);
 
 			expect(result).toBeInstanceOf(OrchardCrewInvite);
 			expect(result.label).toBeNull();
 			expect(result.expires_at).toBeNull();
-			expect(invite_service.createInvite).toHaveBeenCalledWith('admin2', UserRole.MANAGER, undefined, undefined);
+			expect(inviteService.createInvite).toHaveBeenCalledWith('admin2', UserRole.MANAGER, undefined, undefined);
 		});
 
 		it('throws OrchardApiError when creation fails', async () => {
@@ -175,12 +175,12 @@ describe('CrewInviteService', () => {
 			};
 
 			const error = new Error('Creation failed');
-			invite_service.createInvite.mockRejectedValue(error);
-			error_service.resolveError.mockReturnValue(OrchardErrorCode.InviteError);
+			inviteService.createInvite.mockRejectedValue(error);
+			errorService.resolveError.mockReturnValue({code: OrchardErrorCode.InviteError});
 
-			await expect(crew_invite_service.createInvite('ERROR_TAG', 'admin1', create_input)).rejects.toBeInstanceOf(OrchardApiError);
+			await expect(crewInviteService.createInvite('ERROR_TAG', 'admin1', create_input)).rejects.toBeInstanceOf(OrchardApiError);
 
-			expect(error_service.resolveError).toHaveBeenCalledWith(expect.anything(), error, 'ERROR_TAG', {
+			expect(errorService.resolveError).toHaveBeenCalledWith(expect.anything(), error, 'ERROR_TAG', {
 				errord: OrchardErrorCode.InviteError,
 			});
 		});
@@ -207,15 +207,15 @@ describe('CrewInviteService', () => {
 				created_at: Math.floor(DateTime.now().minus({days: 1}).toSeconds()),
 			} as Invite;
 
-			invite_service.updateInvite.mockResolvedValue(mock_updated_invite);
+			inviteService.updateInvite.mockResolvedValue(mock_updated_invite);
 
-			const result = await crew_invite_service.updateInvite('UPDATE_TAG', update_input);
+			const result = await crewInviteService.updateInvite('UPDATE_TAG', update_input);
 
 			expect(result).toBeInstanceOf(OrchardCrewInvite);
 			expect(result.id).toBe('789');
 			expect(result.label).toBe('Updated Label');
 			expect(result.role).toBe(UserRole.MANAGER);
-			expect(invite_service.updateInvite).toHaveBeenCalledWith('789', update_input);
+			expect(inviteService.updateInvite).toHaveBeenCalledWith('789', update_input);
 		});
 
 		it('updates invite with partial fields', async () => {
@@ -237,13 +237,13 @@ describe('CrewInviteService', () => {
 				created_at: Math.floor(DateTime.now().minus({days: 2}).toSeconds()),
 			} as Invite;
 
-			invite_service.updateInvite.mockResolvedValue(mock_updated_invite);
+			inviteService.updateInvite.mockResolvedValue(mock_updated_invite);
 
-			const result = await crew_invite_service.updateInvite('UPDATE_TAG', update_input);
+			const result = await crewInviteService.updateInvite('UPDATE_TAG', update_input);
 
 			expect(result).toBeInstanceOf(OrchardCrewInvite);
 			expect(result.label).toBe('Only Label Changed');
-			expect(invite_service.updateInvite).toHaveBeenCalledWith('999', update_input);
+			expect(inviteService.updateInvite).toHaveBeenCalledWith('999', update_input);
 		});
 
 		it('throws OrchardApiError when update fails', async () => {
@@ -253,12 +253,12 @@ describe('CrewInviteService', () => {
 			};
 
 			const error = new Error('Update failed');
-			invite_service.updateInvite.mockRejectedValue(error);
-			error_service.resolveError.mockReturnValue(OrchardErrorCode.InviteError);
+			inviteService.updateInvite.mockRejectedValue(error);
+			errorService.resolveError.mockReturnValue({code: OrchardErrorCode.InviteError});
 
-			await expect(crew_invite_service.updateInvite('ERROR_TAG', update_input)).rejects.toBeInstanceOf(OrchardApiError);
+			await expect(crewInviteService.updateInvite('ERROR_TAG', update_input)).rejects.toBeInstanceOf(OrchardApiError);
 
-			expect(error_service.resolveError).toHaveBeenCalledWith(expect.anything(), error, 'ERROR_TAG', {
+			expect(errorService.resolveError).toHaveBeenCalledWith(expect.anything(), error, 'ERROR_TAG', {
 				errord: OrchardErrorCode.InviteError,
 			});
 		});
@@ -266,21 +266,21 @@ describe('CrewInviteService', () => {
 
 	describe('deleteInvite', () => {
 		it('deletes invite successfully', async () => {
-			invite_service.deleteInvite.mockResolvedValue(undefined);
+			inviteService.deleteInvite.mockResolvedValue(undefined);
 
-			await crew_invite_service.deleteInvite('DELETE_TAG', '123');
+			await crewInviteService.deleteInvite('DELETE_TAG', '123');
 
-			expect(invite_service.deleteInvite).toHaveBeenCalledWith('123');
+			expect(inviteService.deleteInvite).toHaveBeenCalledWith('123');
 		});
 
 		it('throws OrchardApiError when deletion fails', async () => {
 			const error = new Error('Deletion failed');
-			invite_service.deleteInvite.mockRejectedValue(error);
-			error_service.resolveError.mockReturnValue(OrchardErrorCode.InviteError);
+			inviteService.deleteInvite.mockRejectedValue(error);
+			errorService.resolveError.mockReturnValue({code: OrchardErrorCode.InviteError});
 
-			await expect(crew_invite_service.deleteInvite('ERROR_TAG', 'invalid')).rejects.toBeInstanceOf(OrchardApiError);
+			await expect(crewInviteService.deleteInvite('ERROR_TAG', 'invalid')).rejects.toBeInstanceOf(OrchardApiError);
 
-			expect(error_service.resolveError).toHaveBeenCalledWith(expect.anything(), error, 'ERROR_TAG', {
+			expect(errorService.resolveError).toHaveBeenCalledWith(expect.anything(), error, 'ERROR_TAG', {
 				errord: OrchardErrorCode.InviteError,
 			});
 		});

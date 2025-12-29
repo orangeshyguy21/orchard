@@ -26,10 +26,10 @@ export class MintfeeService {
 				const cashu_fees: CashuMintFee[] = await this.cashuMintDatabaseService.getMintFees(client, limit);
 				return cashu_fees.map((cf) => new OrchardMintFee(cf));
 			} catch (error) {
-				const error_code = this.errorService.resolveError(this.logger, error, tag, {
+				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});
-				throw new OrchardApiError(error_code);
+				throw new OrchardApiError(orchard_error);
 			}
 		});
 	}

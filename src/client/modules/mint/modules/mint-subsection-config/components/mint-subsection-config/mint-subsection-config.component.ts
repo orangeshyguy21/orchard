@@ -807,11 +807,11 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		this.dirty_count.set(0);
 	}
 
-	private onError(error: OrchardErrors): void {
+	private onError(errors: OrchardErrors): void {
 		this.eventService.registerEvent(
 			new EventData({
 				type: 'ERROR',
-				message: error.errors[0].message,
+				message: errors.errors[0].getFullError(),
 			}),
 		);
 	}

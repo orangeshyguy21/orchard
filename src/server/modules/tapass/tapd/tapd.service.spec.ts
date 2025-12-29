@@ -9,9 +9,9 @@ import {TapdService} from './tapd.service';
 import * as grpc from '@grpc/grpc-js';
 
 describe('TapdService', () => {
-	let tapd_service: TapdService;
-	let config_service: jest.Mocked<ConfigService>;
-	let credential_service: jest.Mocked<CredentialService>;
+	let tapdService: TapdService;
+	let configService: jest.Mocked<ConfigService>;
+	let credentialService: jest.Mocked<CredentialService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -22,27 +22,27 @@ describe('TapdService', () => {
 			],
 		}).compile();
 
-		tapd_service = module.get<TapdService>(TapdService);
-		config_service = module.get(ConfigService);
-		credential_service = module.get(CredentialService);
+		tapdService = module.get<TapdService>(TapdService);
+		configService = module.get(ConfigService);
+		credentialService = module.get(CredentialService);
 	});
 
 	it('should be defined', () => {
-		expect(tapd_service).toBeDefined();
+		expect(tapdService).toBeDefined();
 	});
 
 	it('returns undefined client when credentials missing', () => {
-		config_service.get.mockReturnValueOnce(undefined);
-		config_service.get.mockReturnValueOnce(undefined);
-		config_service.get.mockReturnValueOnce(undefined);
-		config_service.get.mockReturnValueOnce(undefined);
-		const client = tapd_service.initializeTaprootAssetsClient();
+		configService.get.mockReturnValueOnce(undefined);
+		configService.get.mockReturnValueOnce(undefined);
+		configService.get.mockReturnValueOnce(undefined);
+		configService.get.mockReturnValueOnce(undefined);
+		const client = tapdService.initializeTaprootAssetsClient();
 		expect(client).toBeUndefined();
 	});
 
 	it('initializes client when credentials present', () => {
 		// Provide config
-		config_service.get.mockImplementation((key: string) => {
+		configService.get.mockImplementation((key: string) => {
 			switch (key) {
 				case 'taproot_assets.host':
 					return 'localhost';
@@ -56,8 +56,8 @@ describe('TapdService', () => {
 					return undefined as any;
 			}
 		});
-		credential_service.loadMacaroonHex.mockReturnValue('00');
-		credential_service.loadPemOrPath.mockReturnValue(Buffer.from('cert'));
+		credentialService.loadMacaroonHex.mockReturnValue('00');
+		credentialService.loadPemOrPath.mockReturnValue(Buffer.from('cert'));
 
 		// Spy on grpc to avoid real calls
 		const metadata_add = jest.spyOn((grpc.Metadata as any).prototype, 'add').mockImplementation(() => undefined);
@@ -72,7 +72,7 @@ describe('TapdService', () => {
 			.spyOn(grpc, 'loadPackageDefinition')
 			.mockReturnValue({taprpc: {TaprootAssets: client_ctor}} as any);
 
-		tapd_service.initializeTaprootAssetsClient();
+		tapdService.initializeTaprootAssetsClient();
 
 		expect(createFromMetadataGenerator).toHaveBeenCalled();
 		expect(createSsl).toHaveBeenCalled();

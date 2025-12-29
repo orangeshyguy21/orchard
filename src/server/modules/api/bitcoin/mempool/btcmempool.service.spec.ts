@@ -11,9 +11,9 @@ import {BitcoinMempoolService} from './btcmempool.service';
 import {OrchardBitcoinMempoolTransaction} from './btcmempool.model';
 
 describe('BitcoinMempoolService', () => {
-	let bitcoin_mempool_service: BitcoinMempoolService;
-	let bitcoin_rpc_service: jest.Mocked<BitcoinRpcService>;
-	let error_service: jest.Mocked<ErrorService>;
+	let bitcoinMempoolService: BitcoinMempoolService;
+	let bitcoinRpcService: jest.Mocked<BitcoinRpcService>;
+	let errorService: jest.Mocked<ErrorService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -24,17 +24,17 @@ describe('BitcoinMempoolService', () => {
 			],
 		}).compile();
 
-		bitcoin_mempool_service = module.get<BitcoinMempoolService>(BitcoinMempoolService);
-		bitcoin_rpc_service = module.get(BitcoinRpcService);
-		error_service = module.get(ErrorService);
+		bitcoinMempoolService = module.get<BitcoinMempoolService>(BitcoinMempoolService);
+		bitcoinRpcService = module.get(BitcoinRpcService);
+		errorService = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {
-		expect(bitcoin_mempool_service).toBeDefined();
+		expect(bitcoinMempoolService).toBeDefined();
 	});
 
 	it('returns OrchardBitcoinMempoolTransaction[]', async () => {
-		bitcoin_rpc_service.getBitcoinMempool.mockResolvedValue({
+		bitcoinRpcService.getBitcoinMempool.mockResolvedValue({
 			txid1: {
 				vsize: 100,
 				weight: 400,
@@ -52,15 +52,15 @@ describe('BitcoinMempoolService', () => {
 				unbroadcast: false,
 			},
 		} as any);
-		const result = await bitcoin_mempool_service.getBitcoinMempoolTransactions('TAG');
+		const result = await bitcoinMempoolService.getBitcoinMempoolTransactions('TAG');
 		expect(result[0]).toBeInstanceOf(OrchardBitcoinMempoolTransaction);
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError', async () => {
-		bitcoin_rpc_service.getBitcoinMempool.mockRejectedValue(new Error('boom'));
-		error_service.resolveError.mockReturnValue(OrchardErrorCode.BitcoinRPCError);
-		await expect(bitcoin_mempool_service.getBitcoinMempoolTransactions('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
-		const calls = error_service.resolveError.mock.calls;
+		bitcoinRpcService.getBitcoinMempool.mockRejectedValue(new Error('boom'));
+		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.BitcoinRPCError});
+		await expect(bitcoinMempoolService.getBitcoinMempoolTransactions('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
+		const calls = errorService.resolveError.mock.calls;
 		const [, , tag_arg, code_arg] = calls[calls.length - 1];
 		expect(tag_arg).toBe('MY_TAG');
 		expect(code_arg).toEqual({errord: OrchardErrorCode.BitcoinRPCError});

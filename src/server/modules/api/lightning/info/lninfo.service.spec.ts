@@ -11,9 +11,9 @@ import {LightningInfoService} from './lninfo.service';
 import {OrchardLightningInfo} from './lninfo.model';
 
 describe('LightningInfoService', () => {
-	let lightning_info_service: LightningInfoService;
-	let lightning_service: jest.Mocked<LightningService>;
-	let error_service: jest.Mocked<ErrorService>;
+	let lightningInfoService: LightningInfoService;
+	let lightningService: jest.Mocked<LightningService>;
+	let errorService: jest.Mocked<ErrorService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -24,13 +24,13 @@ describe('LightningInfoService', () => {
 			],
 		}).compile();
 
-		lightning_info_service = module.get<LightningInfoService>(LightningInfoService);
-		lightning_service = module.get(LightningService);
-		error_service = module.get(ErrorService);
+		lightningInfoService = module.get<LightningInfoService>(LightningInfoService);
+		lightningService = module.get(LightningService);
+		errorService = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {
-		expect(lightning_info_service).toBeDefined();
+		expect(lightningInfoService).toBeDefined();
 	});
 
 	it('returns OrchardLightningInfo on success', async () => {
@@ -57,28 +57,28 @@ describe('LightningInfoService', () => {
 			store_final_htlc_resolutions: false,
 			features: {},
 		};
-		lightning_service.getLightningInfo.mockResolvedValue(rpc_info);
+		lightningService.getLightningInfo.mockResolvedValue(rpc_info);
 
 		// Act
-		const result = await lightning_info_service.getLightningInfo('TAG');
+		const result = await lightningInfoService.getLightningInfo('TAG');
 
 		// Assert
 		expect(result).toBeInstanceOf(OrchardLightningInfo);
-		expect(lightning_service.getLightningInfo).toHaveBeenCalledTimes(1);
+		expect(lightningService.getLightningInfo).toHaveBeenCalledTimes(1);
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError', async () => {
 		// Arrange
 		const rpc_error = new Error('boom');
-		lightning_service.getLightningInfo.mockRejectedValue(rpc_error);
-		error_service.resolveError.mockReturnValue(OrchardErrorCode.LightningRpcActionError);
+		lightningService.getLightningInfo.mockRejectedValue(rpc_error);
+		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.LightningRpcActionError});
 
 		// Act
-		await expect(lightning_info_service.getLightningInfo('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
+		await expect(lightningInfoService.getLightningInfo('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
 
 		// Assert
-		expect(error_service.resolveError).toHaveBeenCalled();
-		const calls = error_service.resolveError.mock.calls;
+		expect(errorService.resolveError).toHaveBeenCalled();
+		const calls = errorService.resolveError.mock.calls;
 		const [, , tag_arg, code_arg] = calls[calls.length - 1];
 		expect(tag_arg).toBe('MY_TAG');
 		expect(code_arg).toEqual({errord: OrchardErrorCode.LightningRpcActionError});

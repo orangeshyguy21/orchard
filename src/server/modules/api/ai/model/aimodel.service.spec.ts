@@ -11,9 +11,9 @@ import {AiModelService} from './aimodel.service';
 import {OrchardAiModel} from './aimodel.model';
 
 describe('AiModelService', () => {
-	let ai_model_service: AiModelService;
-	let ai_service: jest.Mocked<AiService>;
-	let error_service: jest.Mocked<ErrorService>;
+	let aiModelService: AiModelService;
+	let aiService: jest.Mocked<AiService>;
+	let errorService: jest.Mocked<ErrorService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -24,26 +24,26 @@ describe('AiModelService', () => {
 			],
 		}).compile();
 
-		ai_model_service = module.get<AiModelService>(AiModelService);
-		ai_service = module.get(AiService);
-		error_service = module.get(ErrorService);
+		aiModelService = module.get<AiModelService>(AiModelService);
+		aiService = module.get(AiService);
+		errorService = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {
-		expect(ai_model_service).toBeDefined();
+		expect(aiModelService).toBeDefined();
 	});
 
 	it('returns OrchardAiModel[] on success', async () => {
-		ai_service.getModels.mockResolvedValue([{name: 'm'}] as any);
-		const result = await ai_model_service.getModels('TAG');
+		aiService.getModels.mockResolvedValue([{name: 'm'}] as any);
+		const result = await aiModelService.getModels('TAG');
 		expect(result[0]).toBeInstanceOf(OrchardAiModel);
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError', async () => {
-		ai_service.getModels.mockRejectedValue(new Error('boom'));
-		error_service.resolveError.mockReturnValue(OrchardErrorCode.AiError);
-		await expect(ai_model_service.getModels('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
-		const calls = error_service.resolveError.mock.calls;
+		aiService.getModels.mockRejectedValue(new Error('boom'));
+		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.AiError});
+		await expect(aiModelService.getModels('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
+		const calls = errorService.resolveError.mock.calls;
 		const [, , tag_arg, code_arg] = calls[calls.length - 1];
 		expect(tag_arg).toBe('MY_TAG');
 		expect(code_arg).toEqual({errord: OrchardErrorCode.AiError});

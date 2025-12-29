@@ -10,9 +10,9 @@ import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.cla
 import {MintQuoteService} from './mintquote.service';
 
 describe('MintQuoteService', () => {
-	let mint_quote_service: MintQuoteService;
-	let mint_rpc_service: jest.Mocked<CashuMintRpcService>;
-	let error_service: jest.Mocked<ErrorService>;
+	let mintQuoteService: MintQuoteService;
+	let mintRpcService: jest.Mocked<CashuMintRpcService>;
+	let errorService: jest.Mocked<ErrorService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -23,31 +23,31 @@ describe('MintQuoteService', () => {
 			],
 		}).compile();
 
-		mint_quote_service = module.get<MintQuoteService>(MintQuoteService);
-		mint_rpc_service = module.get(CashuMintRpcService);
-		error_service = module.get(ErrorService);
+		mintQuoteService = module.get<MintQuoteService>(MintQuoteService);
+		mintRpcService = module.get(CashuMintRpcService);
+		errorService = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {
-		expect(mint_quote_service).toBeDefined();
+		expect(mintQuoteService).toBeDefined();
 	});
 
 	it('getMintQuoteTtl returns OrchardMintQuoteTtls', async () => {
-		mint_rpc_service.getQuoteTtl.mockResolvedValue({mint_ttl: 1, melt_ttl: 2} as any);
-		const result = await mint_quote_service.getMintQuoteTtl('TAG');
+		mintRpcService.getQuoteTtl.mockResolvedValue({mint_ttl: 1, melt_ttl: 2} as any);
+		const result = await mintQuoteService.getMintQuoteTtl('TAG');
 		expect(result).toEqual({mint_ttl: 1, melt_ttl: 2});
 	});
 
 	it('updateMintQuoteTtl returns input and calls RPC', async () => {
 		const input = {mint_ttl: 1, melt_ttl: 2} as any;
-		const result = await mint_quote_service.updateMintQuoteTtl('TAG', input);
+		const result = await mintQuoteService.updateMintQuoteTtl('TAG', input);
 		expect(result).toEqual(input);
-		expect(mint_rpc_service.updateQuoteTtl).toHaveBeenCalled();
+		expect(mintRpcService.updateQuoteTtl).toHaveBeenCalled();
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError', async () => {
-		mint_rpc_service.getQuoteTtl.mockRejectedValue(new Error('boom'));
-		error_service.resolveError.mockReturnValue(OrchardErrorCode.MintRpcActionError);
-		await expect(mint_quote_service.getMintQuoteTtl('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
+		mintRpcService.getQuoteTtl.mockRejectedValue(new Error('boom'));
+		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.MintRpcActionError});
+		await expect(mintQuoteService.getMintQuoteTtl('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
 	});
 });

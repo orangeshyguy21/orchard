@@ -13,10 +13,9 @@ import {MintDatabaseService} from './mintdatabase.service';
 import {OrchardMintDatabaseBackup, OrchardMintDatabaseRestore} from './mintdatabase.model';
 
 describe('MintDatabaseService', () => {
-	let mint_database_service: MintDatabaseService;
-	let _mint_service: jest.Mocked<MintService>;
-	let mint_db_service: jest.Mocked<CashuMintDatabaseService>;
-	let error_service: jest.Mocked<ErrorService>;
+	let mintDatabaseService: MintDatabaseService;
+	let mintDbService: jest.Mocked<CashuMintDatabaseService>;
+	let errorService: jest.Mocked<ErrorService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -28,33 +27,32 @@ describe('MintDatabaseService', () => {
 			],
 		}).compile();
 
-		mint_database_service = module.get<MintDatabaseService>(MintDatabaseService);
-		_mint_service = module.get(MintService);
-		mint_db_service = module.get(CashuMintDatabaseService);
-		error_service = module.get(ErrorService);
+		mintDatabaseService = module.get<MintDatabaseService>(MintDatabaseService);
+		mintDbService = module.get(CashuMintDatabaseService);
+		errorService = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {
-		expect(mint_database_service).toBeDefined();
+		expect(mintDatabaseService).toBeDefined();
 	});
 
 	it('createMintDatabaseBackup returns OrchardMintDatabaseBackup', async () => {
-		mint_db_service.createBackup.mockResolvedValue(Buffer.from('file'));
-		const result = await mint_database_service.createMintDatabaseBackup('TAG');
+		mintDbService.createBackup.mockResolvedValue(Buffer.from('file'));
+		const result = await mintDatabaseService.createMintDatabaseBackup('TAG');
 		expect(result).toBeInstanceOf(OrchardMintDatabaseBackup);
 		expect(result.filebase64).toBe(Buffer.from('file').toString('base64'));
 	});
 
 	it('restoreMintDatabaseBackup returns OrchardMintDatabaseRestore', async () => {
-		mint_db_service.restoreBackup.mockResolvedValue(undefined as any);
-		const result = await mint_database_service.restoreMintDatabaseBackup('TAG', 'Zm8=');
+		mintDbService.restoreBackup.mockResolvedValue(undefined as any);
+		const result = await mintDatabaseService.restoreMintDatabaseBackup('TAG', 'Zm8=');
 		expect(result).toBeInstanceOf(OrchardMintDatabaseRestore);
 		expect(result.success).toBe(true);
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError on backup failure', async () => {
-		mint_db_service.createBackup.mockRejectedValue(new Error('boom'));
-		error_service.resolveError.mockReturnValue(OrchardErrorCode.MintDatabaseBackupError);
-		await expect(mint_database_service.createMintDatabaseBackup('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
+		mintDbService.createBackup.mockRejectedValue(new Error('boom'));
+		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.MintDatabaseBackupError});
+		await expect(mintDatabaseService.createMintDatabaseBackup('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
 	});
 });

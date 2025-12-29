@@ -11,9 +11,9 @@ import {LightningRequestService} from './lnrequest.service';
 import {OrchardLightningRequest} from './lnrequest.model';
 
 describe('LightningRequestService', () => {
-	let lightning_request_service: LightningRequestService;
-	let lightning_service: jest.Mocked<LightningService>;
-	let error_service: jest.Mocked<ErrorService>;
+	let lightningRequestService: LightningRequestService;
+	let lightningService: jest.Mocked<LightningService>;
+	let errorService: jest.Mocked<ErrorService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -24,38 +24,38 @@ describe('LightningRequestService', () => {
 			],
 		}).compile();
 
-		lightning_request_service = module.get<LightningRequestService>(LightningRequestService);
-		lightning_service = module.get(LightningService);
-		error_service = module.get(ErrorService);
+		lightningRequestService = module.get<LightningRequestService>(LightningRequestService);
+		lightningService = module.get(LightningService);
+		errorService = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {
-		expect(lightning_request_service).toBeDefined();
+		expect(lightningRequestService).toBeDefined();
 	});
 
 	it('returns OrchardLightningRequest on success', async () => {
 		// Arrange
-		lightning_service.getLightningRequest.mockResolvedValue({} as any);
+		lightningService.getLightningRequest.mockResolvedValue({} as any);
 
 		// Act
-		const result = await lightning_request_service.getLightningRequest('TAG', 'REQ');
+		const result = await lightningRequestService.getLightningRequest('TAG', 'REQ');
 
 		// Assert
 		expect(result).toBeInstanceOf(OrchardLightningRequest);
-		expect(lightning_service.getLightningRequest).toHaveBeenCalledWith('REQ');
+		expect(lightningService.getLightningRequest).toHaveBeenCalledWith('REQ');
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError', async () => {
 		// Arrange
 		const rpc_error = new Error('boom');
-		lightning_service.getLightningRequest.mockRejectedValue(rpc_error);
-		error_service.resolveError.mockReturnValue(OrchardErrorCode.LightningRpcActionError);
+		lightningService.getLightningRequest.mockRejectedValue(rpc_error);
+		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.LightningRpcActionError});
 
 		// Act
-		await expect(lightning_request_service.getLightningRequest('MY_TAG', 'REQ')).rejects.toBeInstanceOf(OrchardApiError);
+		await expect(lightningRequestService.getLightningRequest('MY_TAG', 'REQ')).rejects.toBeInstanceOf(OrchardApiError);
 
 		// Assert
-		const calls = error_service.resolveError.mock.calls;
+		const calls = errorService.resolveError.mock.calls;
 		const [, , tag_arg, code_arg] = calls[calls.length - 1];
 		expect(tag_arg).toBe('MY_TAG');
 		expect(code_arg).toEqual({errord: OrchardErrorCode.LightningRpcActionError});

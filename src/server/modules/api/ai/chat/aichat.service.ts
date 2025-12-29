@@ -68,10 +68,10 @@ export class AiChatService {
 				return false;
 			}
 			this.logger.debug(`Error streaming chat`, error);
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.AiError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 

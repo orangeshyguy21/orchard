@@ -30,11 +30,9 @@ const replaceLocalhostInDocker = (host: string | undefined): string | undefined 
 };
 
 const getMintRpcMtls = (): boolean => {
-	if (process.env.DOCKER_ENV) {
-		return process.env.MINT_RPC_MTLS !== 'false';
-	} else {
-		return !!(process.env.MINT_RPC_KEY && process.env.MINT_RPC_CERT && process.env.MINT_RPC_CA);
-	}
+	if (process.env.MINT_RPC_MTLS === 'true') return true;
+	if (process.env.MINT_RPC_MTLS === 'false') return false;
+	return !!(process.env.MINT_RPC_KEY && process.env.MINT_RPC_CERT && process.env.MINT_RPC_CA);
 };
 
 export const config = (): Config => {

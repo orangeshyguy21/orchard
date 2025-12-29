@@ -393,10 +393,11 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 				this.reloadDynamicData();
 			},
 			error: (errors: OrchardErrors) => {
+				console.error('Error updating quote state:', errors);
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'ERROR',
-						message: errors.errors[0].message,
+						message: errors.errors[0].getFullError(),
 					}),
 				);
 			},
@@ -496,7 +497,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'ERROR',
-						message: errors.errors[0].message,
+						message: errors.errors[0].getFullError(),
 					}),
 				);
 			},
@@ -525,7 +526,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'ERROR',
-						message: errors.errors[0].message,
+						message: errors.errors[0].getFullError(),
 					}),
 				);
 			},

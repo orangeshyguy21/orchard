@@ -8,9 +8,9 @@ import {FetchService} from '@server/modules/fetch/fetch.service';
 import {CoreService} from './core.service';
 
 describe('CoreService', () => {
-	let core_service: CoreService;
-	let config_service: jest.Mocked<ConfigService>;
-	let fetch_service: jest.Mocked<FetchService>;
+	let coreService: CoreService;
+	let configService: jest.Mocked<ConfigService>;
+	let fetchService: jest.Mocked<FetchService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -21,17 +21,17 @@ describe('CoreService', () => {
 			],
 		}).compile();
 
-		core_service = module.get<CoreService>(CoreService);
-		config_service = module.get(ConfigService);
-		fetch_service = module.get(FetchService);
+		coreService = module.get<CoreService>(CoreService);
+		configService = module.get(ConfigService);
+		fetchService = module.get(FetchService);
 	});
 
 	it('should be defined', () => {
-		expect(core_service).toBeDefined();
+		expect(coreService).toBeDefined();
 	});
 
 	it('initializeRpc builds rpc url and auth headers', async () => {
-		config_service.get.mockImplementation((key: string) => {
+		configService.get.mockImplementation((key: string) => {
 			switch (key) {
 				case 'bitcoin.user':
 					return 'rpcuser';
@@ -47,12 +47,12 @@ describe('CoreService', () => {
 		});
 		// mock response of fetch
 		const fake_json = jest.fn().mockResolvedValue({result: 'ok'});
-		fetch_service.fetchWithProxy.mockResolvedValue({json: fake_json} as any);
+		fetchService.fetchWithProxy.mockResolvedValue({json: fake_json} as any);
 
-		core_service.initializeRpc();
-		await core_service.makeRpcRequest('getblockcount', []);
+		coreService.initializeRpc();
+		await coreService.makeRpcRequest('getblockcount', []);
 
-		const [url, options] = fetch_service.fetchWithProxy.mock.calls[0];
+		const [url, options] = fetchService.fetchWithProxy.mock.calls[0];
 		expect(url).toBe('http://127.0.0.1:18443/');
 		expect(options.method).toBe('POST');
 		expect(options.headers['Content-Type']).toBe('application/json');
@@ -65,13 +65,13 @@ describe('CoreService', () => {
 
 	it('makeRpcRequest returns inner result', async () => {
 		// minimal setup to avoid dependency on initializeRpc assertions
-		config_service.get.mockReturnValueOnce('user');
-		config_service.get.mockReturnValueOnce('pass');
-		config_service.get.mockReturnValueOnce('http://h');
-		config_service.get.mockReturnValueOnce(8332 as any);
-		core_service.initializeRpc();
-		fetch_service.fetchWithProxy.mockResolvedValue({json: jest.fn().mockResolvedValue({result: 123})} as any);
-		const out = await core_service.makeRpcRequest('getblockcount', []);
+		configService.get.mockReturnValueOnce('user');
+		configService.get.mockReturnValueOnce('pass');
+		configService.get.mockReturnValueOnce('http://h');
+		configService.get.mockReturnValueOnce(8332 as any);
+		coreService.initializeRpc();
+		fetchService.fetchWithProxy.mockResolvedValue({json: jest.fn().mockResolvedValue({result: 123})} as any);
+		const out = await coreService.makeRpcRequest('getblockcount', []);
 		expect(out).toBe(123);
 	});
 });

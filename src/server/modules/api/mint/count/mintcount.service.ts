@@ -31,10 +31,10 @@ export class MintCountService {
 				const count: number = await this.cashuMintDatabaseService.getMintCountMintQuotes(client, args);
 				return new OrchardMintCount(count);
 			} catch (error) {
-				const error_code = this.errorService.resolveError(this.logger, error, tag, {
+				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});
-				throw new OrchardApiError(error_code);
+				throw new OrchardApiError(orchard_error);
 			}
 		});
 	}
@@ -45,10 +45,10 @@ export class MintCountService {
 				const count: number = await this.cashuMintDatabaseService.getMintCountMeltQuotes(client, args);
 				return new OrchardMintCount(count);
 			} catch (error) {
-				const error_code = this.errorService.resolveError(this.logger, error, tag, {
+				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});
-				throw new OrchardApiError(error_code);
+				throw new OrchardApiError(orchard_error);
 			}
 		});
 	}
@@ -59,10 +59,10 @@ export class MintCountService {
 				const count: number = await this.cashuMintDatabaseService.getMintCountProofGroups(client, args);
 				return new OrchardMintCount(count);
 			} catch (error) {
-				const error_code = this.errorService.resolveError(this.logger, error, tag, {
+				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});
-				throw new OrchardApiError(error_code);
+				throw new OrchardApiError(orchard_error);
 			}
 		});
 	}
@@ -73,10 +73,10 @@ export class MintCountService {
 				const count: number = await this.cashuMintDatabaseService.getMintCountPromiseGroups(client, args);
 				return new OrchardMintCount(count);
 			} catch (error) {
-				const error_code = this.errorService.resolveError(this.logger, error, tag, {
+				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});
-				throw new OrchardApiError(error_code);
+				throw new OrchardApiError(orchard_error);
 			}
 		});
 	}

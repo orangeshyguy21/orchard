@@ -11,10 +11,10 @@ import {CashuMintRpcService} from './cashumintrpc.service';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 
 describe('CashuMintRpcService', () => {
-	let cashu_mint_rpc_service: CashuMintRpcService;
-	let config_service: jest.Mocked<ConfigService>;
-	let cdk_service: jest.Mocked<CdkService>;
-	let nutshell_service: jest.Mocked<NutshellService>;
+	let cashuMintRpcService: CashuMintRpcService;
+	let configService: jest.Mocked<ConfigService>;
+	let cdkService: jest.Mocked<CdkService>;
+	let nutshellService: jest.Mocked<NutshellService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -26,69 +26,80 @@ describe('CashuMintRpcService', () => {
 			],
 		}).compile();
 
-		cashu_mint_rpc_service = module.get<CashuMintRpcService>(CashuMintRpcService);
-		config_service = module.get(ConfigService);
-		cdk_service = module.get(CdkService);
-		nutshell_service = module.get(NutshellService);
+		cashuMintRpcService = module.get<CashuMintRpcService>(CashuMintRpcService);
+		configService = module.get(ConfigService);
+		cdkService = module.get(CdkService);
+		nutshellService = module.get(NutshellService);
 	});
 
 	it('should be defined', () => {
-		expect(cashu_mint_rpc_service).toBeDefined();
+		expect(cashuMintRpcService).toBeDefined();
 	});
 
 	it('throws connection error when no client initialized', async () => {
-		config_service.get.mockReturnValue('cdk');
-		await cashu_mint_rpc_service.onModuleInit();
-		await expect(cashu_mint_rpc_service.getMintInfo()).rejects.toBe(OrchardErrorCode.MintRpcConnectionError);
+		configService.get.mockReturnValue('cdk');
+		await cashuMintRpcService.onModuleInit();
+		await expect(cashuMintRpcService.getMintInfo()).rejects.toBe(OrchardErrorCode.MintRpcConnectionError);
 	});
 
 	it('delegates to CDK and maps getMintInfo', async () => {
 		const client = {GetInfo: jest.fn((req: any, cb: any) => cb(null, {long_description: 'L'}))};
-		(cdk_service.initializeGrpcClient as jest.Mock).mockReturnValue(client);
-		config_service.get.mockReturnValue('cdk');
-		await cashu_mint_rpc_service.onModuleInit();
-		const out = await cashu_mint_rpc_service.getMintInfo();
+		(cdkService.initializeGrpcClient as jest.Mock).mockReturnValue(client);
+		configService.get.mockReturnValue('cdk');
+		await cashuMintRpcService.onModuleInit();
+		const out = await cashuMintRpcService.getMintInfo();
 		expect(out.description_long).toBe('L');
 	});
 
 	it('initializes nutshell client when type is nutshell', async () => {
 		const client = {GetInfo: jest.fn((req: any, cb: any) => cb(null, {long_description: 'X'}))};
-		(nutshell_service.initializeGrpcClient as jest.Mock).mockReturnValue(client);
-		config_service.get.mockReturnValue('nutshell');
-		await cashu_mint_rpc_service.onModuleInit();
-		const out = await cashu_mint_rpc_service.getMintInfo();
-		expect(nutshell_service.initializeGrpcClient).toHaveBeenCalledTimes(1);
+		(nutshellService.initializeGrpcClient as jest.Mock).mockReturnValue(client);
+		configService.get.mockReturnValue('nutshell');
+		await cashuMintRpcService.onModuleInit();
+		const out = await cashuMintRpcService.getMintInfo();
+		expect(nutshellService.initializeGrpcClient).toHaveBeenCalledTimes(1);
 		expect(out.description_long).toBe('X');
 	});
 
 	it('unknown type yields connection error', async () => {
-		config_service.get.mockReturnValue('unknown');
-		await cashu_mint_rpc_service.onModuleInit();
-		await expect(cashu_mint_rpc_service.getMintInfo()).rejects.toBe(OrchardErrorCode.MintRpcConnectionError);
+		configService.get.mockReturnValue('unknown');
+		await cashuMintRpcService.onModuleInit();
+		await expect(cashuMintRpcService.getMintInfo()).rejects.toBe(OrchardErrorCode.MintRpcConnectionError);
 	});
 
 	it('maps UNAVAILABLE and INTERNAL errors correctly', async () => {
 		const client = {
-			GetInfo: jest.fn((req: any, cb: any) => cb(new Error('14 UNAVAILABLE'), null)),
+			GetInfo: jest.fn((req: any, cb: any) => cb({code: 14, message: '14 UNAVAILABLE', details: 'Service unavailable'}, null)),
 		};
-		(cdk_service.initializeGrpcClient as jest.Mock).mockReturnValue(client);
-		config_service.get.mockReturnValue('cdk');
-		await cashu_mint_rpc_service.onModuleInit();
-		await expect(cashu_mint_rpc_service.getMintInfo()).rejects.toBe(OrchardErrorCode.MintRpcConnectionError);
+		(cdkService.initializeGrpcClient as jest.Mock).mockReturnValue(client);
+		configService.get.mockReturnValue('cdk');
+		await cashuMintRpcService.onModuleInit();
+		await expect(cashuMintRpcService.getMintInfo()).rejects.toEqual({
+			code: OrchardErrorCode.MintRpcConnectionError,
+			details: 'Service unavailable',
+		});
 
-		client.GetInfo.mockImplementationOnce((req: any, cb: any) => cb(new Error('13 INTERNAL'), null));
-		await expect(cashu_mint_rpc_service.getMintInfo()).rejects.toBe(OrchardErrorCode.MintRpcInternalError);
+		client.GetInfo.mockImplementationOnce((req: any, cb: any) =>
+			cb({code: 13, message: '13 INTERNAL', details: 'Internal error'}, null),
+		);
+		await expect(cashuMintRpcService.getMintInfo()).rejects.toEqual({
+			code: OrchardErrorCode.MintRpcInternalError,
+			details: 'Internal error',
+		});
 	});
 
 	it('maps UNIMPLEMENTED to MintSupportError and logs', async () => {
 		const debug_spy = jest.spyOn(Logger.prototype, 'debug').mockImplementation(() => {});
 		const client = {
-			GetInfo: jest.fn((req: any, cb: any) => cb(new Error('12 UNIMPLEMENTED'), null)),
+			GetInfo: jest.fn((req: any, cb: any) => cb({code: 12, message: '12 UNIMPLEMENTED', details: 'Not implemented'}, null)),
 		};
-		(cdk_service.initializeGrpcClient as jest.Mock).mockReturnValue(client);
-		config_service.get.mockReturnValue('cdk');
-		await cashu_mint_rpc_service.onModuleInit();
-		await expect(cashu_mint_rpc_service.getMintInfo()).rejects.toBe(OrchardErrorCode.MintSupportError);
+		(cdkService.initializeGrpcClient as jest.Mock).mockReturnValue(client);
+		configService.get.mockReturnValue('cdk');
+		await cashuMintRpcService.onModuleInit();
+		await expect(cashuMintRpcService.getMintInfo()).rejects.toEqual({
+			code: OrchardErrorCode.MintSupportError,
+			details: 'Not implemented',
+		});
 		expect(debug_spy).toHaveBeenCalled();
 		debug_spy.mockRestore();
 	});
@@ -96,72 +107,72 @@ describe('CashuMintRpcService', () => {
 	it('passes through unknown errors', async () => {
 		const err = new Error('boom');
 		const client = {GetInfo: jest.fn((req: any, cb: any) => cb(err, null))};
-		(cdk_service.initializeGrpcClient as jest.Mock).mockReturnValue(client);
-		config_service.get.mockReturnValue('cdk');
-		await cashu_mint_rpc_service.onModuleInit();
-		await expect(cashu_mint_rpc_service.getMintInfo()).rejects.toBe(err);
+		(cdkService.initializeGrpcClient as jest.Mock).mockReturnValue(client);
+		configService.get.mockReturnValue('cdk');
+		await cashuMintRpcService.onModuleInit();
+		await expect(cashuMintRpcService.getMintInfo()).rejects.toBe(err);
 	});
 
 	it('unsupported method maps to support error', async () => {
-		(cdk_service.initializeGrpcClient as jest.Mock).mockReturnValue({} as any);
-		config_service.get.mockReturnValue('cdk');
-		await cashu_mint_rpc_service.onModuleInit();
-		await expect(cashu_mint_rpc_service.getMintInfo()).rejects.toBe(OrchardErrorCode.MintSupportError);
+		(cdkService.initializeGrpcClient as jest.Mock).mockReturnValue({} as any);
+		configService.get.mockReturnValue('cdk');
+		await cashuMintRpcService.onModuleInit();
+		await expect(cashuMintRpcService.getMintInfo()).rejects.toBe(OrchardErrorCode.MintSupportError);
 	});
 
 	it('getQuoteTtl forwards empty request', async () => {
 		const client = {GetQuoteTtl: jest.fn((req: any, cb: any) => cb(null, {mint_ttl: 1, melt_ttl: 2}))};
-		(cdk_service.initializeGrpcClient as jest.Mock).mockReturnValue(client);
-		config_service.get.mockReturnValue('cdk');
-		await cashu_mint_rpc_service.onModuleInit();
-		await cashu_mint_rpc_service.getQuoteTtl();
+		(cdkService.initializeGrpcClient as jest.Mock).mockReturnValue(client);
+		configService.get.mockReturnValue('cdk');
+		await cashuMintRpcService.onModuleInit();
+		await cashuMintRpcService.getQuoteTtl();
 		expect(client.GetQuoteTtl).toHaveBeenCalledWith({}, expect.any(Function));
 	});
 
 	it('updateName sends name including null', async () => {
 		const client: any = {UpdateName: jest.fn((req: any, cb: any) => cb(null, {}))};
-		(cdk_service.initializeGrpcClient as jest.Mock).mockReturnValue(client);
-		config_service.get.mockReturnValue('cdk');
-		await cashu_mint_rpc_service.onModuleInit();
-		await cashu_mint_rpc_service.updateName({name: 'mint'});
+		(cdkService.initializeGrpcClient as jest.Mock).mockReturnValue(client);
+		configService.get.mockReturnValue('cdk');
+		await cashuMintRpcService.onModuleInit();
+		await cashuMintRpcService.updateName({name: 'mint'});
 		expect(client.UpdateName).toHaveBeenCalledWith({name: 'mint'}, expect.any(Function));
-		await cashu_mint_rpc_service.updateName({name: null});
+		await cashuMintRpcService.updateName({name: null});
 		expect(client.UpdateName).toHaveBeenCalledWith({name: null}, expect.any(Function));
 	});
 
 	it('updateMotd sends motd', async () => {
 		const client: any = {UpdateMotd: jest.fn((req: any, cb: any) => cb(null, {}))};
-		(cdk_service.initializeGrpcClient as jest.Mock).mockReturnValue(client);
-		config_service.get.mockReturnValue('cdk');
-		await cashu_mint_rpc_service.onModuleInit();
-		await cashu_mint_rpc_service.updateMotd({motd: 'hi'});
+		(cdkService.initializeGrpcClient as jest.Mock).mockReturnValue(client);
+		configService.get.mockReturnValue('cdk');
+		await cashuMintRpcService.onModuleInit();
+		await cashuMintRpcService.updateMotd({motd: 'hi'});
 		expect(client.UpdateMotd).toHaveBeenCalledWith({motd: 'hi'}, expect.any(Function));
 	});
 
 	it('updateShortDescription sends description', async () => {
 		const client: any = {UpdateShortDescription: jest.fn((req: any, cb: any) => cb(null, {}))};
-		(cdk_service.initializeGrpcClient as jest.Mock).mockReturnValue(client);
-		config_service.get.mockReturnValue('cdk');
-		await cashu_mint_rpc_service.onModuleInit();
-		await cashu_mint_rpc_service.updateShortDescription({description: 'd'});
+		(cdkService.initializeGrpcClient as jest.Mock).mockReturnValue(client);
+		configService.get.mockReturnValue('cdk');
+		await cashuMintRpcService.onModuleInit();
+		await cashuMintRpcService.updateShortDescription({description: 'd'});
 		expect(client.UpdateShortDescription).toHaveBeenCalledWith({description: 'd'}, expect.any(Function));
 	});
 
 	it('updateLongDescription sends description', async () => {
 		const client: any = {UpdateLongDescription: jest.fn((req: any, cb: any) => cb(null, {}))};
-		(cdk_service.initializeGrpcClient as jest.Mock).mockReturnValue(client);
-		config_service.get.mockReturnValue('cdk');
-		await cashu_mint_rpc_service.onModuleInit();
-		await cashu_mint_rpc_service.updateLongDescription({description: 'dd'});
+		(cdkService.initializeGrpcClient as jest.Mock).mockReturnValue(client);
+		configService.get.mockReturnValue('cdk');
+		await cashuMintRpcService.onModuleInit();
+		await cashuMintRpcService.updateLongDescription({description: 'dd'});
 		expect(client.UpdateLongDescription).toHaveBeenCalledWith({description: 'dd'}, expect.any(Function));
 	});
 
 	it('updateIconUrl sends icon_url', async () => {
 		const client: any = {UpdateIconUrl: jest.fn((req: any, cb: any) => cb(null, {}))};
-		(cdk_service.initializeGrpcClient as jest.Mock).mockReturnValue(client);
-		config_service.get.mockReturnValue('cdk');
-		await cashu_mint_rpc_service.onModuleInit();
-		await cashu_mint_rpc_service.updateIconUrl({icon_url: 'http://x'});
+		(cdkService.initializeGrpcClient as jest.Mock).mockReturnValue(client);
+		configService.get.mockReturnValue('cdk');
+		await cashuMintRpcService.onModuleInit();
+		await cashuMintRpcService.updateIconUrl({icon_url: 'http://x'});
 		expect(client.UpdateIconUrl).toHaveBeenCalledWith({icon_url: 'http://x'}, expect.any(Function));
 	});
 
@@ -170,12 +181,12 @@ describe('CashuMintRpcService', () => {
 			AddUrl: jest.fn((req: any, cb: any) => cb(null, {})),
 			RemoveUrl: jest.fn((req: any, cb: any) => cb(null, {})),
 		};
-		(cdk_service.initializeGrpcClient as jest.Mock).mockReturnValue(client);
-		config_service.get.mockReturnValue('cdk');
-		await cashu_mint_rpc_service.onModuleInit();
-		await cashu_mint_rpc_service.addUrl({url: 'u'});
+		(cdkService.initializeGrpcClient as jest.Mock).mockReturnValue(client);
+		configService.get.mockReturnValue('cdk');
+		await cashuMintRpcService.onModuleInit();
+		await cashuMintRpcService.addUrl({url: 'u'});
 		expect(client.AddUrl).toHaveBeenCalledWith({url: 'u'}, expect.any(Function));
-		await cashu_mint_rpc_service.removeUrl({url: 'u'});
+		await cashuMintRpcService.removeUrl({url: 'u'});
 		expect(client.RemoveUrl).toHaveBeenCalledWith({url: 'u'}, expect.any(Function));
 	});
 
@@ -184,28 +195,28 @@ describe('CashuMintRpcService', () => {
 			AddContact: jest.fn((req: any, cb: any) => cb(null, {})),
 			RemoveContact: jest.fn((req: any, cb: any) => cb(null, {})),
 		};
-		(cdk_service.initializeGrpcClient as jest.Mock).mockReturnValue(client);
-		config_service.get.mockReturnValue('cdk');
-		await cashu_mint_rpc_service.onModuleInit();
-		await cashu_mint_rpc_service.addContact({method: 'nostr', info: 'npub'});
+		(cdkService.initializeGrpcClient as jest.Mock).mockReturnValue(client);
+		configService.get.mockReturnValue('cdk');
+		await cashuMintRpcService.onModuleInit();
+		await cashuMintRpcService.addContact({method: 'nostr', info: 'npub'});
 		expect(client.AddContact).toHaveBeenCalledWith({method: 'nostr', info: 'npub'}, expect.any(Function));
-		await cashu_mint_rpc_service.removeContact({method: 'nostr', info: 'npub'});
+		await cashuMintRpcService.removeContact({method: 'nostr', info: 'npub'});
 		expect(client.RemoveContact).toHaveBeenCalledWith({method: 'nostr', info: 'npub'}, expect.any(Function));
 	});
 
 	it('updateNut04 builds request with optional fields correctly', async () => {
 		const client: any = {UpdateNut04: jest.fn((req: any, cb: any) => cb(null, {}))};
-		(cdk_service.initializeGrpcClient as jest.Mock).mockReturnValue(client);
-		config_service.get.mockReturnValue('cdk');
-		await cashu_mint_rpc_service.onModuleInit();
-		await cashu_mint_rpc_service.updateNut04({unit: 'sat', method: 'bolt11'});
+		(cdkService.initializeGrpcClient as jest.Mock).mockReturnValue(client);
+		configService.get.mockReturnValue('cdk');
+		await cashuMintRpcService.onModuleInit();
+		await cashuMintRpcService.updateNut04({unit: 'sat', method: 'bolt11'});
 		expect(client.UpdateNut04).toHaveBeenCalledWith({unit: 'sat', method: 'bolt11'}, expect.any(Function));
-		await cashu_mint_rpc_service.updateNut04({unit: 'sat', method: 'bolt11', disabled: true, min_amount: 1, max_amount: 10});
+		await cashuMintRpcService.updateNut04({unit: 'sat', method: 'bolt11', disabled: true, min_amount: 1, max_amount: 10});
 		expect(client.UpdateNut04).toHaveBeenCalledWith(
 			{unit: 'sat', method: 'bolt11', disabled: true, min_amount: 1, max_amount: 10},
 			expect.any(Function),
 		);
-		await cashu_mint_rpc_service.updateNut04({unit: 'sat', method: 'bolt11', description: true});
+		await cashuMintRpcService.updateNut04({unit: 'sat', method: 'bolt11', description: true});
 		expect(client.UpdateNut04).toHaveBeenCalledWith(
 			{unit: 'sat', method: 'bolt11', options: {description: true}},
 			expect.any(Function),
@@ -214,41 +225,41 @@ describe('CashuMintRpcService', () => {
 
 	it('updateNut05 builds request with optional fields correctly', async () => {
 		const client: any = {UpdateNut05: jest.fn((req: any, cb: any) => cb(null, {}))};
-		(cdk_service.initializeGrpcClient as jest.Mock).mockReturnValue(client);
-		config_service.get.mockReturnValue('cdk');
-		await cashu_mint_rpc_service.onModuleInit();
-		await cashu_mint_rpc_service.updateNut05({unit: 'sat', method: 'bolt11'});
+		(cdkService.initializeGrpcClient as jest.Mock).mockReturnValue(client);
+		configService.get.mockReturnValue('cdk');
+		await cashuMintRpcService.onModuleInit();
+		await cashuMintRpcService.updateNut05({unit: 'sat', method: 'bolt11'});
 		expect(client.UpdateNut05).toHaveBeenCalledWith({unit: 'sat', method: 'bolt11'}, expect.any(Function));
-		await cashu_mint_rpc_service.updateNut05({unit: 'sat', method: 'bolt11', disabled: true, min_amount: 1, max_amount: 10});
+		await cashuMintRpcService.updateNut05({unit: 'sat', method: 'bolt11', disabled: true, min_amount: 1, max_amount: 10});
 		expect(client.UpdateNut05).toHaveBeenCalledWith(
 			{unit: 'sat', method: 'bolt11', disabled: true, min_amount: 1, max_amount: 10},
 			expect.any(Function),
 		);
-		await cashu_mint_rpc_service.updateNut05({unit: 'sat', method: 'bolt11', amountless: true});
+		await cashuMintRpcService.updateNut05({unit: 'sat', method: 'bolt11', amountless: true});
 		expect(client.UpdateNut05).toHaveBeenCalledWith({unit: 'sat', method: 'bolt11', options: {amountless: true}}, expect.any(Function));
 	});
 
 	it('updateQuoteTtl sends only provided fields', async () => {
 		const client: any = {UpdateQuoteTtl: jest.fn((req: any, cb: any) => cb(null, {}))};
-		(cdk_service.initializeGrpcClient as jest.Mock).mockReturnValue(client);
-		config_service.get.mockReturnValue('cdk');
-		await cashu_mint_rpc_service.onModuleInit();
-		await cashu_mint_rpc_service.updateQuoteTtl({});
+		(cdkService.initializeGrpcClient as jest.Mock).mockReturnValue(client);
+		configService.get.mockReturnValue('cdk');
+		await cashuMintRpcService.onModuleInit();
+		await cashuMintRpcService.updateQuoteTtl({});
 		expect(client.UpdateQuoteTtl).toHaveBeenCalledWith({}, expect.any(Function));
-		await cashu_mint_rpc_service.updateQuoteTtl({mint_ttl: 100});
+		await cashuMintRpcService.updateQuoteTtl({mint_ttl: 100});
 		expect(client.UpdateQuoteTtl).toHaveBeenCalledWith({mint_ttl: 100}, expect.any(Function));
-		await cashu_mint_rpc_service.updateQuoteTtl({melt_ttl: 200});
+		await cashuMintRpcService.updateQuoteTtl({melt_ttl: 200});
 		expect(client.UpdateQuoteTtl).toHaveBeenCalledWith({melt_ttl: 200}, expect.any(Function));
-		await cashu_mint_rpc_service.updateQuoteTtl({mint_ttl: 100, melt_ttl: 200});
+		await cashuMintRpcService.updateQuoteTtl({mint_ttl: 100, melt_ttl: 200});
 		expect(client.UpdateQuoteTtl).toHaveBeenCalledWith({mint_ttl: 100, melt_ttl: 200}, expect.any(Function));
 	});
 
 	it('updateNut04Quote sends quote_id and state', async () => {
 		const client: any = {UpdateNut04Quote: jest.fn((req: any, cb: any) => cb(null, {quote_id: 'q', state: 's'}))};
-		(cdk_service.initializeGrpcClient as jest.Mock).mockReturnValue(client);
-		config_service.get.mockReturnValue('cdk');
-		await cashu_mint_rpc_service.onModuleInit();
-		await cashu_mint_rpc_service.updateNut04Quote({quote_id: 'q', state: 's'});
+		(cdkService.initializeGrpcClient as jest.Mock).mockReturnValue(client);
+		configService.get.mockReturnValue('cdk');
+		await cashuMintRpcService.onModuleInit();
+		await cashuMintRpcService.updateNut04Quote({quote_id: 'q', state: 's'});
 		expect(client.UpdateNut04Quote).toHaveBeenCalledWith({quote_id: 'q', state: 's'}, expect.any(Function));
 	});
 
@@ -256,16 +267,16 @@ describe('CashuMintRpcService', () => {
 		const client: any = {
 			RotateNextKeyset: jest.fn((req: any, cb: any) => cb(null, {id: '1', unit: 'sat', max_order: 1, input_fee_ppk: 2})),
 		};
-		(cdk_service.initializeGrpcClient as jest.Mock).mockReturnValue(client);
-		config_service.get.mockReturnValue('cdk');
-		await cashu_mint_rpc_service.onModuleInit();
-		await cashu_mint_rpc_service.rotateNextKeyset({unit: 'sat'});
+		(cdkService.initializeGrpcClient as jest.Mock).mockReturnValue(client);
+		configService.get.mockReturnValue('cdk');
+		await cashuMintRpcService.onModuleInit();
+		await cashuMintRpcService.rotateNextKeyset({unit: 'sat'});
 		expect(client.RotateNextKeyset).toHaveBeenCalledWith({unit: 'sat'}, expect.any(Function));
-		await cashu_mint_rpc_service.rotateNextKeyset({unit: 'sat', max_order: 10});
+		await cashuMintRpcService.rotateNextKeyset({unit: 'sat', max_order: 10});
 		expect(client.RotateNextKeyset).toHaveBeenCalledWith({unit: 'sat', max_order: 10}, expect.any(Function));
-		await cashu_mint_rpc_service.rotateNextKeyset({unit: 'sat', input_fee_ppk: 5});
+		await cashuMintRpcService.rotateNextKeyset({unit: 'sat', input_fee_ppk: 5});
 		expect(client.RotateNextKeyset).toHaveBeenCalledWith({unit: 'sat', input_fee_ppk: 5}, expect.any(Function));
-		await cashu_mint_rpc_service.rotateNextKeyset({unit: 'sat', max_order: 10, input_fee_ppk: 5});
+		await cashuMintRpcService.rotateNextKeyset({unit: 'sat', max_order: 10, input_fee_ppk: 5});
 		expect(client.RotateNextKeyset).toHaveBeenCalledWith({unit: 'sat', max_order: 10, input_fee_ppk: 5}, expect.any(Function));
 	});
 });

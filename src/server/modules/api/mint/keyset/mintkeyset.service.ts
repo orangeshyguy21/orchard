@@ -30,10 +30,10 @@ export class MintKeysetService {
 				const cashu_keysets: CashuMintKeyset[] = await this.cashuMintDatabaseService.getMintKeysets(client);
 				return cashu_keysets.map((ck) => new OrchardMintKeyset(ck));
 			} catch (error) {
-				const error_code = this.errorService.resolveError(this.logger, error, tag, {
+				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});
-				throw new OrchardApiError(error_code);
+				throw new OrchardApiError(orchard_error);
 			}
 		});
 	}
@@ -47,10 +47,10 @@ export class MintKeysetService {
 				);
 				return cashu_keyset_proof_counts.map((ckpc) => new OrchardMintKeysetProofCount(ckpc));
 			} catch (error) {
-				const error_code = this.errorService.resolveError(this.logger, error, tag, {
+				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});
-				throw new OrchardApiError(error_code);
+				throw new OrchardApiError(orchard_error);
 			}
 		});
 	}
@@ -59,10 +59,10 @@ export class MintKeysetService {
 		try {
 			return await this.cashuMintRpcService.rotateNextKeyset(mint_rotate_keyset);
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintRpcActionError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 }

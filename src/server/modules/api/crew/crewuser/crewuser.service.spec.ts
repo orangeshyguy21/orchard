@@ -14,9 +14,9 @@ import {OrchardCrewUser} from './crewuser.model';
 import {UserNameUpdateInput, UserPasswordUpdateInput} from './crewuser.input';
 
 describe('CrewUserService', () => {
-	let crew_user_service: CrewUserService;
-	let error_service: jest.Mocked<ErrorService>;
-	let user_service: jest.Mocked<UserService>;
+	let crewUserService: CrewUserService;
+	let errorService: jest.Mocked<ErrorService>;
+	let userService: jest.Mocked<UserService>;
 
 	// helper method to create mock user
 	const createMockUser = (overrides?: Partial<User>): User => {
@@ -48,37 +48,37 @@ describe('CrewUserService', () => {
 			],
 		}).compile();
 
-		crew_user_service = module.get<CrewUserService>(CrewUserService);
-		error_service = module.get(ErrorService);
-		user_service = module.get(UserService);
+		crewUserService = module.get<CrewUserService>(CrewUserService);
+		errorService = module.get(ErrorService);
+		userService = module.get(UserService);
 	});
 
 	it('should be defined', () => {
-		expect(crew_user_service).toBeDefined();
+		expect(crewUserService).toBeDefined();
 	});
 
 	describe('getUser', () => {
 		it('returns OrchardCrewUser on success', async () => {
 			const mock_user = createMockUser();
-			user_service.getUserById.mockResolvedValue(mock_user);
+			userService.getUserById.mockResolvedValue(mock_user);
 
-			const result = await crew_user_service.getUser('TAG', '1');
+			const result = await crewUserService.getUser('TAG', '1');
 
 			expect(result).toBeInstanceOf(OrchardCrewUser);
 			expect(result.id).toBe('1');
 			expect(result.name).toBe('TestUser');
 			expect(result.role).toBe(UserRole.READER);
 			expect(result.active).toBe(true);
-			expect(user_service.getUserById).toHaveBeenCalledWith('1');
+			expect(userService.getUserById).toHaveBeenCalledWith('1');
 		});
 
 		it('wraps errors via resolveError and throws OrchardApiError', async () => {
-			user_service.getUserById.mockRejectedValue(new Error('Database error'));
-			error_service.resolveError.mockReturnValue(OrchardErrorCode.UserError);
+			userService.getUserById.mockRejectedValue(new Error('Database error'));
+			errorService.resolveError.mockReturnValue({code: OrchardErrorCode.UserError});
 
-			await expect(crew_user_service.getUser('GET_USER_TAG', '1')).rejects.toBeInstanceOf(OrchardApiError);
+			await expect(crewUserService.getUser('GET_USER_TAG', '1')).rejects.toBeInstanceOf(OrchardApiError);
 
-			const calls = error_service.resolveError.mock.calls;
+			const calls = errorService.resolveError.mock.calls;
 			const [, , tag_arg, code_arg] = calls[calls.length - 1];
 			expect(tag_arg).toBe('GET_USER_TAG');
 			expect(code_arg).toEqual({errord: OrchardErrorCode.UserError});
@@ -88,24 +88,24 @@ describe('CrewUserService', () => {
 	describe('updateUserName', () => {
 		it('returns OrchardCrewUser with updated name on success', async () => {
 			const mock_user = createMockUser({name: 'NewName'});
-			user_service.updateUser.mockResolvedValue(mock_user);
+			userService.updateUser.mockResolvedValue(mock_user);
 
 			const input: UserNameUpdateInput = {name: 'NewName'};
-			const result = await crew_user_service.updateUserName('TAG', '1', input);
+			const result = await crewUserService.updateUserName('TAG', '1', input);
 
 			expect(result).toBeInstanceOf(OrchardCrewUser);
 			expect(result.name).toBe('NewName');
-			expect(user_service.updateUser).toHaveBeenCalledWith('1', {name: 'NewName'});
+			expect(userService.updateUser).toHaveBeenCalledWith('1', {name: 'NewName'});
 		});
 
 		it('wraps errors via resolveError and throws OrchardApiError', async () => {
-			user_service.updateUser.mockRejectedValue(new Error('Update failed'));
-			error_service.resolveError.mockReturnValue(OrchardErrorCode.UserError);
+			userService.updateUser.mockRejectedValue(new Error('Update failed'));
+			errorService.resolveError.mockReturnValue({code: OrchardErrorCode.UserError});
 
 			const input: UserNameUpdateInput = {name: 'NewName'};
-			await expect(crew_user_service.updateUserName('UPDATE_TAG', '1', input)).rejects.toBeInstanceOf(OrchardApiError);
+			await expect(crewUserService.updateUserName('UPDATE_TAG', '1', input)).rejects.toBeInstanceOf(OrchardApiError);
 
-			const calls = error_service.resolveError.mock.calls;
+			const calls = errorService.resolveError.mock.calls;
 			const [, , tag_arg, code_arg] = calls[calls.length - 1];
 			expect(tag_arg).toBe('UPDATE_TAG');
 			expect(code_arg).toEqual({errord: OrchardErrorCode.UserError});
@@ -116,50 +116,50 @@ describe('CrewUserService', () => {
 		it('returns OrchardCrewUser with updated password on success', async () => {
 			const mock_user = createMockUser();
 			const mock_updated_user = createMockUser({password_hash: 'new_hashed'});
-			user_service.getUserById.mockResolvedValue(mock_user);
-			user_service.validatePassword.mockResolvedValue(true);
-			user_service.updateUser.mockResolvedValue(mock_updated_user);
+			userService.getUserById.mockResolvedValue(mock_user);
+			userService.validatePassword.mockResolvedValue(true);
+			userService.updateUser.mockResolvedValue(mock_updated_user);
 
 			const input: UserPasswordUpdateInput = {password_old: 'old_pass', password_new: 'new_pass'};
-			const result = await crew_user_service.updateUserPassword('TAG', '1', input);
+			const result = await crewUserService.updateUserPassword('TAG', '1', input);
 
 			expect(result).toBeInstanceOf(OrchardCrewUser);
-			expect(user_service.getUserById).toHaveBeenCalledWith('1');
-			expect(user_service.validatePassword).toHaveBeenCalledWith(mock_user, 'old_pass');
-			expect(user_service.updateUser).toHaveBeenCalledWith('1', {}, 'new_pass');
+			expect(userService.getUserById).toHaveBeenCalledWith('1');
+			expect(userService.validatePassword).toHaveBeenCalledWith(mock_user, 'old_pass');
+			expect(userService.updateUser).toHaveBeenCalledWith('1', {}, 'new_pass');
 		});
 
 		it('throws OrchardApiError when user not found', async () => {
-			user_service.getUserById.mockResolvedValue(null);
-			error_service.resolveError.mockReturnValue(OrchardErrorCode.UserError);
+			userService.getUserById.mockResolvedValue(null);
+			errorService.resolveError.mockReturnValue({code: OrchardErrorCode.UserError});
 
 			const input: UserPasswordUpdateInput = {password_old: 'old_pass', password_new: 'new_pass'};
-			await expect(crew_user_service.updateUserPassword('TAG', '1', input)).rejects.toBeInstanceOf(OrchardApiError);
+			await expect(crewUserService.updateUserPassword('TAG', '1', input)).rejects.toBeInstanceOf(OrchardApiError);
 		});
 
 		it('throws OrchardApiError when old password is invalid', async () => {
 			const mock_user = createMockUser();
-			user_service.getUserById.mockResolvedValue(mock_user);
-			user_service.validatePassword.mockResolvedValue(false);
-			error_service.resolveError.mockReturnValue(OrchardErrorCode.InvalidPasswordError);
+			userService.getUserById.mockResolvedValue(mock_user);
+			userService.validatePassword.mockResolvedValue(false);
+			errorService.resolveError.mockReturnValue({code: OrchardErrorCode.InvalidPasswordError});
 
 			const input: UserPasswordUpdateInput = {password_old: 'wrong_pass', password_new: 'new_pass'};
-			await expect(crew_user_service.updateUserPassword('TAG', '1', input)).rejects.toBeInstanceOf(OrchardApiError);
+			await expect(crewUserService.updateUserPassword('TAG', '1', input)).rejects.toBeInstanceOf(OrchardApiError);
 
-			expect(user_service.validatePassword).toHaveBeenCalledWith(mock_user, 'wrong_pass');
+			expect(userService.validatePassword).toHaveBeenCalledWith(mock_user, 'wrong_pass');
 		});
 
 		it('wraps errors via resolveError with correct tag', async () => {
 			const mock_user = createMockUser();
-			user_service.getUserById.mockResolvedValue(mock_user);
-			user_service.validatePassword.mockResolvedValue(true);
-			user_service.updateUser.mockRejectedValue(new Error('Update failed'));
-			error_service.resolveError.mockReturnValue(OrchardErrorCode.UserError);
+			userService.getUserById.mockResolvedValue(mock_user);
+			userService.validatePassword.mockResolvedValue(true);
+			userService.updateUser.mockRejectedValue(new Error('Update failed'));
+			errorService.resolveError.mockReturnValue({code: OrchardErrorCode.UserError});
 
 			const input: UserPasswordUpdateInput = {password_old: 'old_pass', password_new: 'new_pass'};
-			await expect(crew_user_service.updateUserPassword('PWD_UPDATE_TAG', '1', input)).rejects.toBeInstanceOf(OrchardApiError);
+			await expect(crewUserService.updateUserPassword('PWD_UPDATE_TAG', '1', input)).rejects.toBeInstanceOf(OrchardApiError);
 
-			const calls = error_service.resolveError.mock.calls;
+			const calls = errorService.resolveError.mock.calls;
 			const [, , tag_arg, code_arg] = calls[calls.length - 1];
 			expect(tag_arg).toBe('PWD_UPDATE_TAG');
 			expect(code_arg).toEqual({errord: OrchardErrorCode.UserError});

@@ -13,10 +13,9 @@ import {MintfeeService} from './mintfee.service';
 import {OrchardMintFee} from './mintfee.model';
 
 describe('MintfeeService', () => {
-	let mintfee_service: MintfeeService;
-	let _mint_service: jest.Mocked<MintService>;
-	let mint_db_service: jest.Mocked<CashuMintDatabaseService>;
-	let error_service: jest.Mocked<ErrorService>;
+	let mintFeeService: MintfeeService;
+	let mintDbService: jest.Mocked<CashuMintDatabaseService>;
+	let errorService: jest.Mocked<ErrorService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -28,29 +27,28 @@ describe('MintfeeService', () => {
 			],
 		}).compile();
 
-		mintfee_service = module.get<MintfeeService>(MintfeeService);
-		_mint_service = module.get(MintService);
-		mint_db_service = module.get(CashuMintDatabaseService);
-		error_service = module.get(ErrorService);
+		mintFeeService = module.get<MintfeeService>(MintfeeService);
+		mintDbService = module.get(CashuMintDatabaseService);
+		errorService = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {
-		expect(mintfee_service).toBeDefined();
+		expect(mintFeeService).toBeDefined();
 	});
 
 	it('returns OrchardMintFee[] on success', async () => {
-		mint_db_service.getMintFees.mockResolvedValue([{unit: 'sat', fee: 1}] as any);
-		const result = await mintfee_service.getMintFees('TAG', 1);
+		mintDbService.getMintFees.mockResolvedValue([{unit: 'sat', fee: 1}] as any);
+		const result = await mintFeeService.getMintFees('TAG', 1);
 		expect(Array.isArray(result)).toBe(true);
 		expect(result[0]).toBeInstanceOf(OrchardMintFee);
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError', async () => {
 		const err = new Error('boom');
-		mint_db_service.getMintFees.mockRejectedValue(err);
-		error_service.resolveError.mockReturnValue(OrchardErrorCode.MintDatabaseSelectError);
-		await expect(mintfee_service.getMintFees('MY_TAG', 1)).rejects.toBeInstanceOf(OrchardApiError);
-		const calls = error_service.resolveError.mock.calls;
+		mintDbService.getMintFees.mockRejectedValue(err);
+		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.MintDatabaseSelectError});
+		await expect(mintFeeService.getMintFees('MY_TAG', 1)).rejects.toBeInstanceOf(OrchardApiError);
+		const calls = errorService.resolveError.mock.calls;
 		const [, , tag_arg, code_arg] = calls[calls.length - 1];
 		expect(tag_arg).toBe('MY_TAG');
 		expect(code_arg).toEqual({errord: OrchardErrorCode.MintDatabaseSelectError});

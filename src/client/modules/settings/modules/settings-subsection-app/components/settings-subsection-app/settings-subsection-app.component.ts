@@ -129,12 +129,11 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 				this.settingAppService.clearSettingsCache();
 				this.getSettings();
 			},
-			error: (error: OrchardErrors) => {
-				console.error(error);
+			error: (errors: OrchardErrors) => {
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'ERROR',
-						message: error.errors[0].message,
+						message: errors.errors[0].getFullError(),
 					}),
 				);
 			},

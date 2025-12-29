@@ -11,9 +11,9 @@ import {BitcoinBlockchainService} from './btcblockchain.service';
 import {OrchardBitcoinBlockchainInfo, OrchardBitcoinBlockCount} from './btcblockchain.model';
 
 describe('BitcoinBlockchainService', () => {
-	let bitcoin_blockchain_service: BitcoinBlockchainService;
-	let bitcoin_rpc_service: jest.Mocked<BitcoinRpcService>;
-	let error_service: jest.Mocked<ErrorService>;
+	let bitcoinBlockchainService: BitcoinBlockchainService;
+	let bitcoinRpcService: jest.Mocked<BitcoinRpcService>;
+	let errorService: jest.Mocked<ErrorService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -24,17 +24,17 @@ describe('BitcoinBlockchainService', () => {
 			],
 		}).compile();
 
-		bitcoin_blockchain_service = module.get<BitcoinBlockchainService>(BitcoinBlockchainService);
-		bitcoin_rpc_service = module.get(BitcoinRpcService);
-		error_service = module.get(ErrorService);
+		bitcoinBlockchainService = module.get<BitcoinBlockchainService>(BitcoinBlockchainService);
+		bitcoinRpcService = module.get(BitcoinRpcService);
+		errorService = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {
-		expect(bitcoin_blockchain_service).toBeDefined();
+		expect(bitcoinBlockchainService).toBeDefined();
 	});
 
 	it('getBlockchainInfo returns OrchardBitcoinBlockchainInfo', async () => {
-		bitcoin_rpc_service.getBitcoinBlockchainInfo.mockResolvedValue({
+		bitcoinRpcService.getBitcoinBlockchainInfo.mockResolvedValue({
 			chain: 'regtest',
 			blocks: 1,
 			headers: 1,
@@ -50,22 +50,22 @@ describe('BitcoinBlockchainService', () => {
 			prune_target_size: null,
 			warnings: '',
 		} as any);
-		const result = await bitcoin_blockchain_service.getBlockchainInfo('TAG');
+		const result = await bitcoinBlockchainService.getBlockchainInfo('TAG');
 		expect(result).toBeInstanceOf(OrchardBitcoinBlockchainInfo);
 	});
 
 	it('getBlockCount returns OrchardBitcoinBlockCount', async () => {
-		bitcoin_rpc_service.getBitcoinBlockCount.mockResolvedValue(123 as any);
-		const result = await bitcoin_blockchain_service.getBlockCount('TAG');
+		bitcoinRpcService.getBitcoinBlockCount.mockResolvedValue(123 as any);
+		const result = await bitcoinBlockchainService.getBlockCount('TAG');
 		expect(result).toBeInstanceOf(OrchardBitcoinBlockCount);
 		expect(result.height).toBe(123);
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError', async () => {
-		bitcoin_rpc_service.getBitcoinBlockchainInfo.mockRejectedValue(new Error('boom'));
-		error_service.resolveError.mockReturnValue(OrchardErrorCode.BitcoinRPCError);
-		await expect(bitcoin_blockchain_service.getBlockchainInfo('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
-		const calls = error_service.resolveError.mock.calls;
+		bitcoinRpcService.getBitcoinBlockchainInfo.mockRejectedValue(new Error('boom'));
+		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.BitcoinRPCError});
+		await expect(bitcoinBlockchainService.getBlockchainInfo('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
+		const calls = errorService.resolveError.mock.calls;
 		const [, , tag_arg, code_arg] = calls[calls.length - 1];
 		expect(tag_arg).toBe('MY_TAG');
 		expect(code_arg).toEqual({errord: OrchardErrorCode.BitcoinRPCError});

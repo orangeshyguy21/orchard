@@ -22,10 +22,10 @@ export class BitcoinBlockService {
 			const block = await this.bitcoinRpcService.getBitcoinBlock(hash);
 			return new OrchardBitcoinBlock(block);
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.BitcoinRPCError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 
@@ -34,10 +34,10 @@ export class BitcoinBlockService {
 			const block_template = await this.bitcoinRpcService.getBitcoinBlockTemplate();
 			return new OrchardBitcoinBlockTemplate(block_template);
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.BitcoinRPCError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 

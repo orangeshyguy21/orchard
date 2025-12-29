@@ -13,21 +13,21 @@ export class PublicImageService {
 	private readonly logger = new Logger(PublicImageService.name);
 
 	constructor(
-		private fetch_service: FetchService,
+		private fetchService: FetchService,
 		private errorService: ErrorService,
 	) {}
 
 	async getImageData(tag: string, url: string): Promise<OrchardPublicImage> {
 		try {
-			const response = await this.fetch_service.fetchWithProxy(url);
+			const response = await this.fetchService.fetchWithProxy(url);
 			const content_type = response.headers.get('content-type');
 			const buffer = Buffer.from(await response.arrayBuffer());
 			return new OrchardPublicImage(buffer, content_type || 'image/jpeg');
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.PublicAssetError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 }

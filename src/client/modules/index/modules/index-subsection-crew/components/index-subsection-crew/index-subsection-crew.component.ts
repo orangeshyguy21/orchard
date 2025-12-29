@@ -308,12 +308,12 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 					}),
 				);
 			},
-			error: (error: OrchardErrors) => {
+			error: (errors: OrchardErrors) => {
 				this.new_invite = null;
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'ERROR',
-						message: error.errors[0].message,
+						message: errors.errors[0].getFullError(),
 					}),
 				);
 			},
@@ -354,11 +354,11 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 					}),
 				);
 			},
-			error: (error: OrchardErrors) => {
+			error: (errors: OrchardErrors) => {
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'ERROR',
-						message: error.errors[0].message,
+						message: errors.errors[0].getFullError(),
 					}),
 				);
 			},
@@ -389,11 +389,11 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 					}),
 				);
 			},
-			error: (error: OrchardErrors) => {
+			error: (errors: OrchardErrors) => {
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'ERROR',
-						message: error.errors[0].message,
+						message: errors.errors[0].getFullError(),
 					}),
 				);
 			},
@@ -411,11 +411,11 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 					}),
 				);
 			},
-			error: (error: OrchardErrors) => {
+			error: (errors: OrchardErrors) => {
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'ERROR',
-						message: error.errors[0].message,
+						message: errors.errors[0].getFullError(),
 					}),
 				);
 			},
@@ -433,11 +433,11 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 					}),
 				);
 			},
-			error: (error: OrchardErrors) => {
+			error: (errors: OrchardErrors) => {
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'ERROR',
-						message: error.errors[0].message,
+						message: errors.errors[0].getFullError(),
 					}),
 				);
 			},

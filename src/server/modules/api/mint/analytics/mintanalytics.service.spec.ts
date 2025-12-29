@@ -8,7 +8,7 @@ import {ErrorService} from '@server/modules/error/error.service';
 import {MintAnalyticsService} from './mintanalytics.service';
 
 describe('MintAnalyticsService', () => {
-	let mint_analytics_service: MintAnalyticsService;
+	let mintAnalyticsService: MintAnalyticsService;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -30,10 +30,10 @@ describe('MintAnalyticsService', () => {
 			],
 		}).compile();
 
-		mint_analytics_service = module.get<MintAnalyticsService>(MintAnalyticsService);
+		mintAnalyticsService = module.get<MintAnalyticsService>(MintAnalyticsService);
 	});
 
 	it('should be defined', () => {
-		expect(mint_analytics_service).toBeDefined();
+		expect(mintAnalyticsService).toBeDefined();
 	});
 });

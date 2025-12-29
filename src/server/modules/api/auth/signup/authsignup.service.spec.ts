@@ -18,11 +18,11 @@ import {AuthSignupService} from './authsignup.service';
 import {AuthSignupInput} from './authsignup.input';
 
 describe('AuthSignupService', () => {
-	let auth_signup_service: AuthSignupService;
-	let auth_service: jest.Mocked<AuthService>;
-	let error_service: jest.Mocked<ErrorService>;
-	let user_service: jest.Mocked<UserService>;
-	let invite_service: jest.Mocked<InviteService>;
+	let authSignupService: AuthSignupService;
+	let authService: jest.Mocked<AuthService>;
+	let errorService: jest.Mocked<ErrorService>;
+	let userService: jest.Mocked<UserService>;
+	let inviteService: jest.Mocked<InviteService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -57,15 +57,15 @@ describe('AuthSignupService', () => {
 			],
 		}).compile();
 
-		auth_signup_service = module.get<AuthSignupService>(AuthSignupService);
-		auth_service = module.get(AuthService);
-		error_service = module.get(ErrorService);
-		user_service = module.get(UserService);
-		invite_service = module.get(InviteService);
+		authSignupService = module.get<AuthSignupService>(AuthSignupService);
+		authService = module.get(AuthService);
+		errorService = module.get(ErrorService);
+		userService = module.get(UserService);
+		inviteService = module.get(InviteService);
 	});
 
 	it('should be defined', () => {
-		expect(auth_signup_service).toBeDefined();
+		expect(authSignupService).toBeDefined();
 	});
 
 	describe('signup', () => {
@@ -101,21 +101,21 @@ describe('AuthSignupService', () => {
 				refresh_token: 'refresh_token_456',
 			};
 
-			invite_service.getValidInvite.mockResolvedValue(mock_invite);
-			user_service.getUserByName.mockResolvedValue(null);
-			user_service.createUser.mockResolvedValue(mock_user);
-			invite_service.claimInvite.mockResolvedValue(mock_invite);
-			auth_service.getToken.mockResolvedValue(mock_token);
+			inviteService.getValidInvite.mockResolvedValue(mock_invite);
+			userService.getUserByName.mockResolvedValue(null);
+			userService.createUser.mockResolvedValue(mock_user);
+			inviteService.claimInvite.mockResolvedValue(mock_invite);
+			authService.getToken.mockResolvedValue(mock_token);
 
-			const result = await auth_signup_service.signup('SIGNUP_TAG', signup_input);
+			const result = await authSignupService.signup('SIGNUP_TAG', signup_input);
 
 			expect(result.access_token).toBe('access_token_123');
 			expect(result.refresh_token).toBe('refresh_token_456');
-			expect(invite_service.getValidInvite).toHaveBeenCalledWith('VALID123TOKN');
-			expect(user_service.getUserByName).toHaveBeenCalledWith('NewUser');
-			expect(user_service.createUser).toHaveBeenCalledWith('NewUser', 'password123', UserRole.READER, 'Test User');
-			expect(invite_service.claimInvite).toHaveBeenCalledWith('invite-id', 'new-user-id');
-			expect(auth_service.getToken).toHaveBeenCalledWith('new-user-id', 'password123');
+			expect(inviteService.getValidInvite).toHaveBeenCalledWith('VALID123TOKN');
+			expect(userService.getUserByName).toHaveBeenCalledWith('NewUser');
+			expect(userService.createUser).toHaveBeenCalledWith('NewUser', 'password123', UserRole.READER, 'Test User');
+			expect(inviteService.claimInvite).toHaveBeenCalledWith('invite-id', 'new-user-id');
+			expect(authService.getToken).toHaveBeenCalledWith('new-user-id', 'password123');
 		});
 
 		it('throws OrchardApiError when invite is invalid', async () => {
@@ -125,13 +125,13 @@ describe('AuthSignupService', () => {
 				password: 'password123',
 			};
 
-			invite_service.getValidInvite.mockResolvedValue(null);
-			error_service.resolveError.mockReturnValue(OrchardErrorCode.InviteInvalidError);
+			inviteService.getValidInvite.mockResolvedValue(null);
+			errorService.resolveError.mockReturnValue({code: OrchardErrorCode.InviteInvalidError});
 
-			await expect(auth_signup_service.signup('SIGNUP_TAG', signup_input)).rejects.toBeInstanceOf(OrchardApiError);
+			await expect(authSignupService.signup('SIGNUP_TAG', signup_input)).rejects.toBeInstanceOf(OrchardApiError);
 
-			expect(invite_service.getValidInvite).toHaveBeenCalledWith('INVALID1TOKN');
-			expect(error_service.resolveError).toHaveBeenCalledWith(expect.anything(), OrchardErrorCode.InviteInvalidError, 'SIGNUP_TAG', {
+			expect(inviteService.getValidInvite).toHaveBeenCalledWith('INVALID1TOKN');
+			expect(errorService.resolveError).toHaveBeenCalledWith(expect.anything(), OrchardErrorCode.InviteInvalidError, 'SIGNUP_TAG', {
 				errord: OrchardErrorCode.SignupError,
 			});
 		});
@@ -157,14 +157,14 @@ describe('AuthSignupService', () => {
 				role: UserRole.READER,
 			} as User;
 
-			invite_service.getValidInvite.mockResolvedValue(mock_invite);
-			user_service.getUserByName.mockResolvedValue(existing_user);
-			error_service.resolveError.mockReturnValue(OrchardErrorCode.UniqueUsernameError);
+			inviteService.getValidInvite.mockResolvedValue(mock_invite);
+			userService.getUserByName.mockResolvedValue(existing_user);
+			errorService.resolveError.mockReturnValue({code: OrchardErrorCode.UniqueUsernameError});
 
-			await expect(auth_signup_service.signup('SIGNUP_TAG', signup_input)).rejects.toBeInstanceOf(OrchardApiError);
+			await expect(authSignupService.signup('SIGNUP_TAG', signup_input)).rejects.toBeInstanceOf(OrchardApiError);
 
-			expect(user_service.getUserByName).toHaveBeenCalledWith('ExistingUser');
-			expect(error_service.resolveError).toHaveBeenCalledWith(expect.anything(), OrchardErrorCode.UniqueUsernameError, 'SIGNUP_TAG', {
+			expect(userService.getUserByName).toHaveBeenCalledWith('ExistingUser');
+			expect(errorService.resolveError).toHaveBeenCalledWith(expect.anything(), OrchardErrorCode.UniqueUsernameError, 'SIGNUP_TAG', {
 				errord: OrchardErrorCode.SignupError,
 			});
 		});
@@ -190,16 +190,16 @@ describe('AuthSignupService', () => {
 				role: UserRole.READER,
 			} as User;
 
-			invite_service.getValidInvite.mockResolvedValue(mock_invite);
-			user_service.getUserByName.mockResolvedValue(null);
-			user_service.createUser.mockResolvedValue(mock_user);
-			invite_service.claimInvite.mockResolvedValue(mock_invite);
-			auth_service.getToken.mockResolvedValue(null as any);
-			error_service.resolveError.mockReturnValue(OrchardErrorCode.AuthenticationError);
+			inviteService.getValidInvite.mockResolvedValue(mock_invite);
+			userService.getUserByName.mockResolvedValue(null);
+			userService.createUser.mockResolvedValue(mock_user);
+			inviteService.claimInvite.mockResolvedValue(mock_invite);
+			authService.getToken.mockResolvedValue(null as any);
+			errorService.resolveError.mockReturnValue({code: OrchardErrorCode.AuthenticationError});
 
-			await expect(auth_signup_service.signup('SIGNUP_TAG', signup_input)).rejects.toBeInstanceOf(OrchardApiError);
+			await expect(authSignupService.signup('SIGNUP_TAG', signup_input)).rejects.toBeInstanceOf(OrchardApiError);
 
-			expect(error_service.resolveError).toHaveBeenCalledWith(expect.anything(), OrchardErrorCode.AuthenticationError, 'SIGNUP_TAG', {
+			expect(errorService.resolveError).toHaveBeenCalledWith(expect.anything(), OrchardErrorCode.AuthenticationError, 'SIGNUP_TAG', {
 				errord: OrchardErrorCode.SignupError,
 			});
 		});
@@ -212,12 +212,12 @@ describe('AuthSignupService', () => {
 			};
 
 			const error = new Error('Unexpected error');
-			invite_service.getValidInvite.mockRejectedValue(error);
-			error_service.resolveError.mockReturnValue(OrchardErrorCode.SignupError);
+			inviteService.getValidInvite.mockRejectedValue(error);
+			errorService.resolveError.mockReturnValue({code: OrchardErrorCode.SignupError});
 
-			await expect(auth_signup_service.signup('SIGNUP_TAG', signup_input)).rejects.toBeInstanceOf(OrchardApiError);
+			await expect(authSignupService.signup('SIGNUP_TAG', signup_input)).rejects.toBeInstanceOf(OrchardApiError);
 
-			expect(error_service.resolveError).toHaveBeenCalledWith(expect.anything(), error, 'SIGNUP_TAG', {
+			expect(errorService.resolveError).toHaveBeenCalledWith(expect.anything(), error, 'SIGNUP_TAG', {
 				errord: OrchardErrorCode.SignupError,
 			});
 		});

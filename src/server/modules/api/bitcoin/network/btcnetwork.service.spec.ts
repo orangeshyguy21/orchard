@@ -10,9 +10,9 @@ import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.cla
 import {BitcoinNetworkService} from './btcnetwork.service';
 
 describe('BitcoinNetworkService', () => {
-	let bitcoin_network_service: BitcoinNetworkService;
-	let bitcoin_rpc_service: jest.Mocked<BitcoinRpcService>;
-	let error_service: jest.Mocked<ErrorService>;
+	let bitcoinNetworkService: BitcoinNetworkService;
+	let bitcoinRpcService: jest.Mocked<BitcoinRpcService>;
+	let errorService: jest.Mocked<ErrorService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -26,13 +26,13 @@ describe('BitcoinNetworkService', () => {
 			],
 		}).compile();
 
-		bitcoin_network_service = module.get<BitcoinNetworkService>(BitcoinNetworkService);
-		bitcoin_rpc_service = module.get(BitcoinRpcService);
-		error_service = module.get(ErrorService);
+		bitcoinNetworkService = module.get<BitcoinNetworkService>(BitcoinNetworkService);
+		bitcoinRpcService = module.get(BitcoinRpcService);
+		errorService = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {
-		expect(bitcoin_network_service).toBeDefined();
+		expect(bitcoinNetworkService).toBeDefined();
 	});
 
 	it('maps network info and normalizes warnings to an array', async () => {
@@ -55,10 +55,10 @@ describe('BitcoinNetworkService', () => {
 			localaddresses: [{address: '127.0.0.1', port: 8333, score: 1}],
 			warnings: 'all good', // string form
 		};
-		bitcoin_rpc_service.getBitcoinNetworkInfo.mockResolvedValue(rpc_info);
+		bitcoinRpcService.getBitcoinNetworkInfo.mockResolvedValue(rpc_info);
 
 		// Act
-		const result = await bitcoin_network_service.getBitcoinNetworkInfo();
+		const result = await bitcoinNetworkService.getBitcoinNetworkInfo();
 
 		// Assert
 		expect(result.version).toBe(1);
@@ -73,15 +73,15 @@ describe('BitcoinNetworkService', () => {
 	it('wraps RPC errors via resolveError and throws OrchardApiError (default tag)', async () => {
 		// Arrange
 		const rpc_error = new Error('rpc failed');
-		bitcoin_rpc_service.getBitcoinNetworkInfo.mockRejectedValue(rpc_error);
-		error_service.resolveError.mockReturnValue(OrchardErrorCode.BitcoinRPCError);
+		bitcoinRpcService.getBitcoinNetworkInfo.mockRejectedValue(rpc_error);
+		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.BitcoinRPCError});
 
 		// Act
-		await expect(bitcoin_network_service.getBitcoinNetworkInfo()).rejects.toBeInstanceOf(OrchardApiError);
+		await expect(bitcoinNetworkService.getBitcoinNetworkInfo()).rejects.toBeInstanceOf(OrchardApiError);
 
 		// Assert
-		expect(error_service.resolveError).toHaveBeenCalled();
-		const [, , tag_arg, code_arg] = error_service.resolveError.mock.calls[0];
+		expect(errorService.resolveError).toHaveBeenCalled();
+		const [, , tag_arg, code_arg] = errorService.resolveError.mock.calls[0];
 		expect(tag_arg).toBe('GET { bitcoin_network_info }'); // default tag
 		expect(code_arg).toEqual({errord: OrchardErrorCode.BitcoinRPCError});
 	});
@@ -89,14 +89,14 @@ describe('BitcoinNetworkService', () => {
 	it('uses custom tag in errors', async () => {
 		// Arrange
 		const rpc_error = new Error('rpc failed');
-		bitcoin_rpc_service.getBitcoinNetworkInfo.mockRejectedValue(rpc_error);
-		error_service.resolveError.mockReturnValue(OrchardErrorCode.BitcoinRPCError);
+		bitcoinRpcService.getBitcoinNetworkInfo.mockRejectedValue(rpc_error);
+		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.BitcoinRPCError});
 
 		// Act
-		await expect(bitcoin_network_service.getBitcoinNetworkInfo('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
+		await expect(bitcoinNetworkService.getBitcoinNetworkInfo('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
 
 		// Assert
-		const calls = error_service.resolveError.mock.calls;
+		const calls = errorService.resolveError.mock.calls;
 		const [, , tag_arg] = calls[calls.length - 1];
 		expect(tag_arg).toBe('MY_TAG');
 	});
