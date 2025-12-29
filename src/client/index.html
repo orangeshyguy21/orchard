@@ -15,6 +15,7 @@
 				if (!theme) {
 					theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light-mode' : 'dark-mode';
 				}
+				if (!stored) theme = 'dark-mode';
 				document.documentElement.classList.add(`orc-bootstrap-${theme}`);
 			})();
 		</script>

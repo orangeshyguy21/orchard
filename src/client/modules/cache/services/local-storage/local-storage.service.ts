@@ -6,6 +6,7 @@ import {
 	Locale,
 	Theme,
 	Model,
+	ThemeType,
 	BitcoinOracleSettings,
 	MintDashboardSettings,
 	MintKeysetsSettings,
@@ -88,7 +89,7 @@ export class LocalStorageService {
 	}
 	getTheme(): Theme {
 		const theme = this.getItem<Theme>(this.STORAGE_KEYS.THEME_KEY);
-		if (!theme) return {type: null};
+		if (!theme) return {type: ThemeType.DARK_MODE};
 		return theme;
 	}
 	getModel(): Model {
