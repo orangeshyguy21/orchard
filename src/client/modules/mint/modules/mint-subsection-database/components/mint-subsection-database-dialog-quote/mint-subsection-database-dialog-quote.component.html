@@ -7,8 +7,8 @@
 			<span class="font-weight-bold">{{ data.quote.id }}</span>
 		</div>
 		<div class="text-center">
-			This will force this quote’s state to <strong>PAID</strong>. The mint will then continue and attempt to complete the mint/melt
-			process for the user. This action cannot be undone.
+			This will force this {{ quote_type() }} quote’s state to <strong>PAID</strong>. The mint will then continue and attempt to
+			complete the {{ quote_type() }} process for the user. This action cannot be undone.
 		</div>
 	</div>
 </mat-dialog-content>

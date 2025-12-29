@@ -53,7 +53,8 @@ export class MintMintQuoteService {
 
 	async updateMintNut04Quote(tag: string, mint_nut04_quote_update: MintNut04QuoteUpdateInput): Promise<OrchardMintNut04QuoteUpdate> {
 		try {
-			return await this.cashuMintRpcService.updateNut04Quote(mint_nut04_quote_update);
+			await this.cashuMintRpcService.updateNut04Quote(mint_nut04_quote_update);
+			return mint_nut04_quote_update;
 		} catch (error) {
 			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintRpcActionError,

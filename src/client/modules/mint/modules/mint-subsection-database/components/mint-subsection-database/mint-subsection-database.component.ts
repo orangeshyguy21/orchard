@@ -391,6 +391,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		const dialog_ref = this.dialog.open(MintSubsectionDatabaseDialogQuoteComponent, {
 			data: {
 				quote: quote,
+				type: is_mint_quote ? DataType.MintMints : DataType.MintMelts,
 			},
 		});
 		dialog_ref.afterClosed().subscribe((confirmed) => {
