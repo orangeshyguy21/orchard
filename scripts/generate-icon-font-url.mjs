@@ -81,6 +81,7 @@ const ICONS = [
   'vpn_lock_2',
   'spa',
   'credit_score',
+  'refresh',
 ];
 
 // Sort alphabetically and remove duplicates

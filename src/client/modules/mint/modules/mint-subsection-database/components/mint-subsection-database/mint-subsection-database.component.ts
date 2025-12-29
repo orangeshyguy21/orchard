@@ -372,6 +372,9 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	public onRestore(): void {
 		this.form_mode !== FormMode.RESTORE ? this.initRestoreBackup() : this.onClose();
 	}
+	public onRefresh(): void {
+		this.reloadDynamicData();
+	}
 
 	public onClose(): void {
 		this.form_backup.reset();
