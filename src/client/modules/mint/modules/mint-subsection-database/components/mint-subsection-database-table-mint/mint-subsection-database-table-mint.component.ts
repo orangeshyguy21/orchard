@@ -137,6 +137,7 @@ export class MintSubsectionDatabaseTableMintComponent implements AfterViewInit {
 
 	public onSetStatePaid(event: Event): void {
 		event.stopPropagation();
+		event.preventDefault();
 		this.setStatePaid.emit(this.quote());
 	}
 }
