@@ -173,6 +173,12 @@ export class CashuMintRpcService implements OnModuleInit {
 		return this.makeGrpcRequest('UpdateNut04Quote', {quote_id, state});
 	}
 
+	async updateNut05Quote({quote_id, state}: {quote_id: string; state: string}): Promise<{quote_id: string; state: string}> {
+		if (this.type === 'cdk')
+			throw {code: OrchardErrorCode.MintSupportError, details: 'Updating melt quotes is not supported in CDK mints'};
+		if (this.type === 'nutshell') return this.makeGrpcRequest('UpdateNut05Quote', {quote_id, state});
+	}
+
 	async rotateNextKeyset({
 		unit,
 		max_order,

@@ -387,18 +387,42 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	}
 
 	public onSetQuoteStatePaid(quote: MintMintQuote | MintMeltQuote): void {
+		const is_mint_quote = this.data.type === DataType.MintMints;
 		const dialog_ref = this.dialog.open(MintSubsectionDatabaseDialogQuoteComponent, {
 			data: {
 				quote: quote,
 			},
 		});
 		dialog_ref.afterClosed().subscribe((confirmed) => {
-			if (confirmed === true) this.updateQuoteStatePaid(quote.id);
+			if (confirmed === true) is_mint_quote ? this.updateMintQuoteStatePaid(quote.id) : this.updateMeltQuoteStatePaid(quote.id);
 		});
 	}
 
-	public updateQuoteStatePaid(quote_id: string): void {
+	private updateMintQuoteStatePaid(quote_id: string): void {
 		this.mintService.updateMintNut04Quote(quote_id, 'PAID').subscribe({
+			next: () => {
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'SUCCESS',
+						message: 'Quote state updated to PAID',
+					}),
+				);
+				this.reloadDynamicData();
+			},
+			error: (errors: OrchardErrors) => {
+				console.error('Error updating quote state:', errors);
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'ERROR',
+						message: errors.errors[0].getFullError(),
+					}),
+				);
+			},
+		});
+	}
+
+	private updateMeltQuoteStatePaid(quote_id: string): void {
+		this.mintService.updateMintNut05Quote(quote_id, 'PAID').subscribe({
 			next: () => {
 				this.eventService.registerEvent(
 					new EventData({

@@ -18,3 +18,12 @@ export class MintNut05UpdateInput {
 	@Field(() => Int, {nullable: true})
 	max_amount: number;
 }
+
+@InputType()
+export class MintNut05QuoteUpdateInput {
+	@Field()
+	quote_id: string;
+
+	@Field()
+	state: string;
+}

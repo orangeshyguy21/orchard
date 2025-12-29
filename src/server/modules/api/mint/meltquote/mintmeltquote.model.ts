@@ -76,3 +76,12 @@ export class OrchardMintNut05Update {
 	@Field(() => Int, {nullable: true})
 	max_amount: number;
 }
+
+@ObjectType()
+export class OrchardMintNut05QuoteUpdate {
+	@Field()
+	quote_id: string;
+
+	@Field()
+	state: string;
+}
