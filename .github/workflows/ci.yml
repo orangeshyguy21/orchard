@@ -38,6 +38,9 @@ jobs:
         uses: browser-actions/setup-chrome@v1
 
       - name: Format
+        env:
+            SETUP_KEY: ci-placeholder-key
+            DATABASE_DIR: /tmp
         run: npm run format:check
 
       - name: Lint
