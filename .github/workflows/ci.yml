@@ -20,6 +20,8 @@ jobs:
     env:
       CI: true
       NODE_OPTIONS: --max_old_space_size=4096
+      SETUP_KEY: ci-placeholder-key
+      DATABASE_DIR: /tmp
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,9 +40,6 @@ jobs:
         uses: browser-actions/setup-chrome@v1
 
       - name: Format
-        env:
-            SETUP_KEY: ci-placeholder-key
-            DATABASE_DIR: /tmp
         run: npm run format:check
 
       - name: Lint
