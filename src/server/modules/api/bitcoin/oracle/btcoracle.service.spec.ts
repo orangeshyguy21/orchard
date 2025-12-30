@@ -11,9 +11,9 @@ import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.cla
 import {BitcoinOracleService} from './btcoracle.service';
 
 describe('BitcoinOracleService', () => {
-	let bitcoin_oracle_service: BitcoinOracleService;
-	let error_service: jest.Mocked<ErrorService>;
-	let utx_oracle: jest.Mocked<BitcoinUTXOracleService>;
+	let bitcoinOracleService: BitcoinOracleService;
+	let errorService: jest.Mocked<ErrorService>;
+	let utxOracle: jest.Mocked<BitcoinUTXOracleService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -38,9 +38,9 @@ describe('BitcoinOracleService', () => {
 			],
 		}).compile();
 
-		bitcoin_oracle_service = module.get<BitcoinOracleService>(BitcoinOracleService);
-		error_service = module.get(ErrorService);
-		utx_oracle = module.get(BitcoinUTXOracleService);
+		bitcoinOracleService = module.get<BitcoinOracleService>(BitcoinOracleService);
+		errorService = module.get(ErrorService);
+		utxOracle = module.get(BitcoinUTXOracleService);
 	});
 
 	afterEach(() => {
@@ -48,33 +48,33 @@ describe('BitcoinOracleService', () => {
 	});
 
 	it('should be defined', () => {
-		expect(bitcoin_oracle_service).toBeDefined();
+		expect(bitcoinOracleService).toBeDefined();
 	});
 
 	it('returns single oracle price when no timestamps provided', async () => {
 		// arrange
 		const mock_price = {id: '1', date: 1234567890, price: 50000};
-		utx_oracle.getOraclePrice.mockResolvedValue(mock_price as any);
+		utxOracle.getOraclePrice.mockResolvedValue(mock_price as any);
 
 		// act
-		const result = await bitcoin_oracle_service.getOracle('TAG');
+		const result = await bitcoinOracleService.getOracle('TAG');
 
 		// assert
 		expect(result).toHaveLength(1);
 		expect(result[0]).toHaveProperty('price', 50000);
-		expect(utx_oracle.getOraclePrice).toHaveBeenCalledTimes(1);
+		expect(utxOracle.getOraclePrice).toHaveBeenCalledTimes(1);
 	});
 
 	it('returns empty array when no oracle price exists', async () => {
 		// arrange
-		utx_oracle.getOraclePrice.mockResolvedValue(null);
+		utxOracle.getOraclePrice.mockResolvedValue(null);
 
 		// act
-		const result = await bitcoin_oracle_service.getOracle('TAG');
+		const result = await bitcoinOracleService.getOracle('TAG');
 
 		// assert
 		expect(result).toEqual([]);
-		expect(utx_oracle.getOraclePrice).toHaveBeenCalledTimes(1);
+		expect(utxOracle.getOraclePrice).toHaveBeenCalledTimes(1);
 	});
 
 	it('returns price range when timestamps provided', async () => {
@@ -83,27 +83,27 @@ describe('BitcoinOracleService', () => {
 			{id: '1', date: 1234567890, price: 50000},
 			{id: '2', date: 1234654290, price: 51000},
 		];
-		utx_oracle.getOraclePriceRange.mockResolvedValue(mock_prices as any);
+		utxOracle.getOraclePriceRange.mockResolvedValue(mock_prices as any);
 
 		// act
-		const result = await bitcoin_oracle_service.getOracle('TAG', 1234567890, 1234654290);
+		const result = await bitcoinOracleService.getOracle('TAG', 1234567890, 1234654290);
 
 		// assert
 		expect(result).toHaveLength(2);
 		expect(result[0]).toHaveProperty('price', 50000);
 		expect(result[1]).toHaveProperty('price', 51000);
-		expect(utx_oracle.getOraclePriceRange).toHaveBeenCalledWith(1234567890, 1234654290);
+		expect(utxOracle.getOraclePriceRange).toHaveBeenCalledWith(1234567890, 1234654290);
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError', async () => {
 		// arrange
 		const error = new Error('boom');
-		utx_oracle.getOraclePrice.mockRejectedValue(error);
-		error_service.resolveError.mockReturnValue(OrchardErrorCode.BitcoinRPCError);
+		utxOracle.getOraclePrice.mockRejectedValue(error);
+		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.BitcoinRPCError});
 
 		// act & assert
-		await expect(bitcoin_oracle_service.getOracle('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
-		expect(error_service.resolveError).toHaveBeenCalledWith(expect.anything(), error, 'MY_TAG', {
+		await expect(bitcoinOracleService.getOracle('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
+		expect(errorService.resolveError).toHaveBeenCalledWith(expect.anything(), error, 'MY_TAG', {
 			errord: OrchardErrorCode.BitcoinRPCError,
 		});
 	});

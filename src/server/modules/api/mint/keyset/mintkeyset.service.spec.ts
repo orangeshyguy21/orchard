@@ -14,11 +14,10 @@ import {MintKeysetService} from './mintkeyset.service';
 import {OrchardMintKeyset, OrchardMintKeysetProofCount} from './mintkeyset.model';
 
 describe('MintKeysetService', () => {
-	let mint_keyset_service: MintKeysetService;
-	let _mint_service: jest.Mocked<MintService>;
-	let mint_db_service: jest.Mocked<CashuMintDatabaseService>;
-	let mint_rpc_service: jest.Mocked<CashuMintRpcService>;
-	let error_service: jest.Mocked<ErrorService>;
+	let mintKeysetService: MintKeysetService;
+	let mintDbService: jest.Mocked<CashuMintDatabaseService>;
+	let mintRpcService: jest.Mocked<CashuMintRpcService>;
+	let errorService: jest.Mocked<ErrorService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -31,40 +30,39 @@ describe('MintKeysetService', () => {
 			],
 		}).compile();
 
-		mint_keyset_service = module.get<MintKeysetService>(MintKeysetService);
-		_mint_service = module.get(MintService);
-		mint_db_service = module.get(CashuMintDatabaseService);
-		mint_rpc_service = module.get(CashuMintRpcService);
-		error_service = module.get(ErrorService);
+		mintKeysetService = module.get<MintKeysetService>(MintKeysetService);
+		mintDbService = module.get(CashuMintDatabaseService);
+		mintRpcService = module.get(CashuMintRpcService);
+		errorService = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {
-		expect(mint_keyset_service).toBeDefined();
+		expect(mintKeysetService).toBeDefined();
 	});
 
 	it('getMintKeysets returns OrchardMintKeyset[]', async () => {
-		mint_db_service.getMintKeysets.mockResolvedValue([{id: 'k'}] as any);
-		const result = await mint_keyset_service.getMintKeysets('TAG');
+		mintDbService.getMintKeysets.mockResolvedValue([{id: 'k'}] as any);
+		const result = await mintKeysetService.getMintKeysets('TAG');
 		expect(result[0]).toBeInstanceOf(OrchardMintKeyset);
 	});
 
 	it('getMintKeysetProofCounts returns OrchardMintKeysetProofCount[]', async () => {
-		mint_db_service.getMintKeysetProofCounts.mockResolvedValue([{id: 'k', count: 1}] as any);
-		const result = await mint_keyset_service.getMintKeysetProofCounts('TAG', {} as any);
+		mintDbService.getMintKeysetProofCounts.mockResolvedValue([{id: 'k', count: 1}] as any);
+		const result = await mintKeysetService.getMintKeysetProofCounts('TAG', {} as any);
 		expect(result[0]).toBeInstanceOf(OrchardMintKeysetProofCount);
 	});
 
 	it('mintRotateKeyset returns input on success', async () => {
-		mint_rpc_service.rotateNextKeyset.mockResolvedValue({} as any);
-		const result = await mint_keyset_service.mintRotateKeyset('TAG', {unit: 'sat'} as any);
+		mintRpcService.rotateNextKeyset.mockResolvedValue({} as any);
+		const result = await mintKeysetService.mintRotateKeyset('TAG', {unit: 'sat'} as any);
 		expect(result).toBeDefined();
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError (db)', async () => {
-		mint_db_service.getMintKeysets.mockRejectedValue(new Error('boom'));
-		error_service.resolveError.mockReturnValue(OrchardErrorCode.MintDatabaseSelectError);
-		await expect(mint_keyset_service.getMintKeysets('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
-		const calls = error_service.resolveError.mock.calls;
+		mintDbService.getMintKeysets.mockRejectedValue(new Error('boom'));
+		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.MintDatabaseSelectError});
+		await expect(mintKeysetService.getMintKeysets('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
+		const calls = errorService.resolveError.mock.calls;
 		const [, , tag_arg, code_arg] = calls[calls.length - 1];
 		expect(tag_arg).toBe('MY_TAG');
 		expect(code_arg).toEqual({errord: OrchardErrorCode.MintDatabaseSelectError});

@@ -10,8 +10,8 @@ import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.cla
 import {MintService} from '@server/modules/api/mint/mint.service';
 import {ErrorService} from '@server/modules/error/error.service';
 /* Local Dependencies */
-import {OrchardMintMeltQuote, OrchardMintNut05Update} from './mintmeltquote.model';
-import {MintNut05UpdateInput} from './mintmeltquote.input';
+import {OrchardMintMeltQuote, OrchardMintNut05Update, OrchardMintNut05QuoteUpdate} from './mintmeltquote.model';
+import {MintNut05UpdateInput, MintNut05QuoteUpdateInput} from './mintmeltquote.input';
 
 @Injectable()
 export class MintMeltQuoteService {
@@ -30,10 +30,10 @@ export class MintMeltQuoteService {
 				const cashu_melt_quotes: CashuMintMeltQuote[] = await this.cashuMintDatabaseService.getMintMeltQuotes(client, args);
 				return cashu_melt_quotes.map((cmq) => new OrchardMintMeltQuote(cmq));
 			} catch (error) {
-				const error_code = this.errorService.resolveError(this.logger, error, tag, {
+				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});
-				throw new OrchardApiError(error_code);
+				throw new OrchardApiError(orchard_error);
 			}
 		});
 	}
@@ -43,10 +43,22 @@ export class MintMeltQuoteService {
 			await this.cashuMintRpcService.updateNut05(mint_nut05_update);
 			return mint_nut05_update;
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintRpcActionError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
+		}
+	}
+
+	async updateMintNut05Quote(tag: string, mint_nut05_quote_update: MintNut05QuoteUpdateInput): Promise<OrchardMintNut05QuoteUpdate> {
+		try {
+			await this.cashuMintRpcService.updateNut05Quote(mint_nut05_quote_update);
+			return mint_nut05_quote_update;
+		} catch (error) {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
+				errord: OrchardErrorCode.MintRpcActionError,
+			});
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 }

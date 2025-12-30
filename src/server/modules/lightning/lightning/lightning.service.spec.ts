@@ -10,10 +10,10 @@ import {LightningService} from './lightning.service';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 
 describe('LightningService', () => {
-	let lightning_service: LightningService;
-	let config_service: jest.Mocked<ConfigService>;
-	let lnd_service: jest.Mocked<LndService>;
-	let cln_service: jest.Mocked<ClnService>;
+	let lightningService: LightningService;
+	let configService: jest.Mocked<ConfigService>;
+	let lndService: jest.Mocked<LndService>;
+	let clnService: jest.Mocked<ClnService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -33,20 +33,20 @@ describe('LightningService', () => {
 			],
 		}).compile();
 
-		lightning_service = module.get<LightningService>(LightningService);
-		config_service = module.get(ConfigService);
-		lnd_service = module.get(LndService);
-		cln_service = module.get(ClnService);
+		lightningService = module.get<LightningService>(LightningService);
+		configService = module.get(ConfigService);
+		lndService = module.get(LndService);
+		clnService = module.get(ClnService);
 	});
 
 	it('should be defined', () => {
-		expect(lightning_service).toBeDefined();
+		expect(lightningService).toBeDefined();
 	});
 
 	it('throws connection error when no client initialized', async () => {
-		config_service.get.mockReturnValueOnce('lnd');
-		await lightning_service.onModuleInit();
-		await expect(lightning_service.getLightningInfo()).rejects.toBe(OrchardErrorCode.LightningRpcConnectionError);
+		configService.get.mockReturnValueOnce('lnd');
+		await lightningService.onModuleInit();
+		await expect(lightningService.getLightningInfo()).rejects.toBe(OrchardErrorCode.LightningRpcConnectionError);
 	});
 
 	it('delegates to LND when type is lnd', async () => {
@@ -54,12 +54,12 @@ describe('LightningService', () => {
 			GetInfo: jest.fn((req: any, cb: any) => cb(null, {version: 'v'})),
 			DecodePayReq: jest.fn((req: any, cb: any) => cb(null, {valid: true})),
 		};
-		(lnd_service.initializeLightningClient as jest.Mock).mockReturnValue(client);
-		config_service.get.mockReturnValue('lnd');
-		await lightning_service.onModuleInit();
-		await expect(lightning_service.getLightningInfo()).resolves.toEqual({version: 'v'});
-		(lnd_service.mapLndRequest as jest.Mock).mockReturnValue({valid: true});
-		const decoded = await lightning_service.getLightningRequest('bolt11');
+		(lndService.initializeLightningClient as jest.Mock).mockReturnValue(client);
+		configService.get.mockReturnValue('lnd');
+		await lightningService.onModuleInit();
+		await expect(lightningService.getLightningInfo()).resolves.toEqual({version: 'v'});
+		(lndService.mapLndRequest as jest.Mock).mockReturnValue({valid: true});
+		const decoded = await lightningService.getLightningRequest('bolt11');
 		expect(decoded).toEqual({valid: true});
 	});
 
@@ -70,30 +70,30 @@ describe('LightningService', () => {
 			ListPeerChannels: jest.fn((req: any, cb: any) => cb(null, {channels: []})),
 			Decode: jest.fn((req: any, cb: any) => cb(null, {valid: true})),
 		};
-		(cln_service.initializeLightningClient as jest.Mock).mockReturnValue(client);
-		(cln_service.mapClnInfo as jest.Mock).mockResolvedValue({version: 'v2'});
-		(cln_service.mapClnChannelBalance as jest.Mock).mockResolvedValue({balance: '0'});
-		(cln_service.mapClnRequest as jest.Mock).mockReturnValue({valid: true});
-		config_service.get.mockReturnValue('cln');
-		await lightning_service.onModuleInit();
-		await expect(lightning_service.getLightningInfo()).resolves.toEqual({version: 'v2'});
-		await expect(lightning_service.getLightningChannelBalance()).resolves.toEqual({balance: '0'});
-		await expect(lightning_service.getLightningRequest('str')).resolves.toEqual({valid: true});
+		(clnService.initializeLightningClient as jest.Mock).mockReturnValue(client);
+		(clnService.mapClnInfo as jest.Mock).mockResolvedValue({version: 'v2'});
+		(clnService.mapClnChannelBalance as jest.Mock).mockResolvedValue({balance: '0'});
+		(clnService.mapClnRequest as jest.Mock).mockReturnValue({valid: true});
+		configService.get.mockReturnValue('cln');
+		await lightningService.onModuleInit();
+		await expect(lightningService.getLightningInfo()).resolves.toEqual({version: 'v2'});
+		await expect(lightningService.getLightningChannelBalance()).resolves.toEqual({balance: '0'});
+		await expect(lightningService.getLightningRequest('str')).resolves.toEqual({valid: true});
 	});
 
 	it('maps UNAVAILABLE error to connection code', async () => {
 		const client = {GetInfo: jest.fn((req: any, cb: any) => cb(new Error('14 UNAVAILABLE'), null))};
-		(lnd_service.initializeLightningClient as jest.Mock).mockReturnValue(client);
-		config_service.get.mockReturnValue('lnd');
-		await lightning_service.onModuleInit();
-		await expect(lightning_service.getLightningInfo()).rejects.toBe(OrchardErrorCode.LightningRpcConnectionError);
+		(lndService.initializeLightningClient as jest.Mock).mockReturnValue(client);
+		configService.get.mockReturnValue('lnd');
+		await lightningService.onModuleInit();
+		await expect(lightningService.getLightningInfo()).rejects.toBe(OrchardErrorCode.LightningRpcConnectionError);
 	});
 
 	it('unsupported method rejects with support error', async () => {
 		const client = {} as any;
-		(lnd_service.initializeLightningClient as jest.Mock).mockReturnValue(client);
-		config_service.get.mockReturnValue('lnd');
-		await lightning_service.onModuleInit();
-		await expect(lightning_service.getLightningChannelBalance()).rejects.toBe(OrchardErrorCode.LightningSupportError);
+		(lndService.initializeLightningClient as jest.Mock).mockReturnValue(client);
+		configService.get.mockReturnValue('lnd');
+		await lightningService.onModuleInit();
+		await expect(lightningService.getLightningChannelBalance()).rejects.toBe(OrchardErrorCode.LightningSupportError);
 	});
 });

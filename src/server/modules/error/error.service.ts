@@ -7,12 +7,29 @@ import {OrchardErrorCode, OrchardErrorMessages} from './error.types';
 export class ErrorService {
 	constructor() {}
 
-	public resolveError(logger: Logger, error: any, msg: string, {errord}: {errord: OrchardErrorCode}) {
-		logger.error(msg);
-		logger.debug(`${msg}: ${error}`);
-		let error_code = errord;
-		const matching_key = Object.keys(OrchardErrorMessages).find((key) => !isNaN(Number(key)) && error === Number(key));
-		if (matching_key) error_code = Number(matching_key);
-		return error_code;
+	public resolveError(
+		logger: Logger,
+		error: any,
+		tag: string,
+		{errord}: {errord: OrchardErrorCode},
+	): {code: OrchardErrorCode; details?: string} {
+		// logger.error(tag);
+		// logger.debug(`${tag}: ${error}`);
+		const normalized = this.normalizeError(error);
+		const matching_key = Object.keys(OrchardErrorMessages).find((key) => !isNaN(Number(key)) && normalized.code === Number(key));
+		return {
+			code: matching_key ? Number(matching_key) : errord,
+			details: normalized.details,
+		};
+	}
+
+	private normalizeError(error: any): {code: OrchardErrorCode | null; details?: string} {
+		if (error?.code !== undefined && error?.details) {
+			return {code: error.code, details: error.details};
+		}
+		if (typeof error === 'number') {
+			return {code: error};
+		}
+		return {code: null};
 	}
 }

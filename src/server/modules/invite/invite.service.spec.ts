@@ -12,7 +12,7 @@ import {InviteService} from './invite.service';
 import {Invite} from './invite.entity';
 
 describe('InviteService', () => {
-	let invite_service: InviteService;
+	let inviteService: InviteService;
 	let mock_repository: any;
 
 	beforeEach(async () => {
@@ -28,11 +28,11 @@ describe('InviteService', () => {
 			providers: [InviteService, {provide: getRepositoryToken(Invite), useValue: mock_repository}],
 		}).compile();
 
-		invite_service = module.get<InviteService>(InviteService);
+		inviteService = module.get<InviteService>(InviteService);
 	});
 
 	it('should be defined', () => {
-		expect(invite_service).toBeDefined();
+		expect(inviteService).toBeDefined();
 	});
 
 	describe('getInvites', () => {
@@ -59,7 +59,7 @@ describe('InviteService', () => {
 			];
 			mock_repository.find.mockResolvedValue(mock_invites);
 
-			const invites = await invite_service.getInvites();
+			const invites = await inviteService.getInvites();
 
 			expect(invites).toHaveLength(2);
 			expect(invites[0].token).toBe('ABC123DEF456');
@@ -75,7 +75,7 @@ describe('InviteService', () => {
 		it('returns empty array when no active invites', async () => {
 			mock_repository.find.mockResolvedValue([]);
 
-			const invites = await invite_service.getInvites();
+			const invites = await inviteService.getInvites();
 
 			expect(invites).toHaveLength(0);
 		});
@@ -99,7 +99,7 @@ describe('InviteService', () => {
 			mock_repository.create.mockReturnValue(mock_created_invite);
 			mock_repository.save.mockResolvedValue(mock_created_invite);
 
-			const invite = await invite_service.createInvite('user1');
+			const invite = await inviteService.createInvite('user1');
 
 			expect(invite.role).toBe(UserRole.READER);
 			expect(invite.label).toBeNull();
@@ -126,7 +126,7 @@ describe('InviteService', () => {
 			mock_repository.create.mockReturnValue(mock_created_invite);
 			mock_repository.save.mockResolvedValue(mock_created_invite);
 
-			const invite = await invite_service.createInvite('admin1', UserRole.MANAGER, 'Custom Label', expires_at);
+			const invite = await inviteService.createInvite('admin1', UserRole.MANAGER, 'Custom Label', expires_at);
 
 			expect(invite.role).toBe(UserRole.MANAGER);
 			expect(invite.label).toBe('Custom Label');
@@ -157,7 +157,7 @@ describe('InviteService', () => {
 			mock_repository.create.mockReturnValue(mock_created_invite);
 			mock_repository.save.mockResolvedValue(mock_created_invite);
 
-			const invite = await invite_service.createInvite('user1');
+			const invite = await inviteService.createInvite('user1');
 
 			expect(invite.token).toBeDefined();
 			expect(invite.token).toHaveLength(12);
@@ -183,7 +183,7 @@ describe('InviteService', () => {
 				role: UserRole.MANAGER,
 			});
 
-			const updated = await invite_service.updateInvite('1', {
+			const updated = await inviteService.updateInvite('1', {
 				label: 'New Label',
 				role: UserRole.MANAGER,
 			});
@@ -211,7 +211,7 @@ describe('InviteService', () => {
 				expires_at: new_expiration,
 			});
 
-			const updated = await invite_service.updateInvite('1', {
+			const updated = await inviteService.updateInvite('1', {
 				expires_at: new_expiration,
 			});
 
@@ -221,7 +221,7 @@ describe('InviteService', () => {
 		it('throws error when invite not found', async () => {
 			mock_repository.findOne.mockResolvedValue(null);
 
-			await expect(invite_service.updateInvite('999', {label: 'New Label'})).rejects.toThrow('Invite not found');
+			await expect(inviteService.updateInvite('999', {label: 'New Label'})).rejects.toThrow('Invite not found');
 		});
 
 		it('throws error when updating claimed invite', async () => {
@@ -237,7 +237,7 @@ describe('InviteService', () => {
 
 			mock_repository.findOne.mockResolvedValue(claimed_invite);
 
-			await expect(invite_service.updateInvite('1', {label: 'New Label'})).rejects.toThrow(
+			await expect(inviteService.updateInvite('1', {label: 'New Label'})).rejects.toThrow(
 				'Cannot update an invite that has already been claimed',
 			);
 		});
@@ -257,7 +257,7 @@ describe('InviteService', () => {
 
 			mock_repository.findOne.mockResolvedValue(valid_invite);
 
-			const invite = await invite_service.getValidInvite('VALID123TOKN');
+			const invite = await inviteService.getValidInvite('VALID123TOKN');
 
 			expect(invite).toBeDefined();
 			expect(invite?.token).toBe('VALID123TOKN');
@@ -281,7 +281,7 @@ describe('InviteService', () => {
 
 			mock_repository.findOne.mockResolvedValue(valid_invite);
 
-			const invite = await invite_service.getValidInvite('FUTURE12EXPR');
+			const invite = await inviteService.getValidInvite('FUTURE12EXPR');
 
 			expect(invite).toBeDefined();
 			expect(invite?.expires_at).toBe(future_expiry);
@@ -290,7 +290,7 @@ describe('InviteService', () => {
 		it('returns null when invite not found', async () => {
 			mock_repository.findOne.mockResolvedValue(null);
 
-			const invite = await invite_service.getValidInvite('NOTFOUND123');
+			const invite = await inviteService.getValidInvite('NOTFOUND123');
 
 			expect(invite).toBeNull();
 		});
@@ -309,7 +309,7 @@ describe('InviteService', () => {
 
 			mock_repository.findOne.mockResolvedValue(claimed_invite);
 
-			const invite = await invite_service.getValidInvite('CLAIMED12345');
+			const invite = await inviteService.getValidInvite('CLAIMED12345');
 
 			expect(invite).toBeNull();
 		});
@@ -328,7 +328,7 @@ describe('InviteService', () => {
 
 			mock_repository.findOne.mockResolvedValue(expired_invite);
 
-			const invite = await invite_service.getValidInvite('EXPIRED12345');
+			const invite = await inviteService.getValidInvite('EXPIRED12345');
 
 			expect(invite).toBeNull();
 		});
@@ -354,7 +354,7 @@ describe('InviteService', () => {
 				claimed_by: {id: 'user2'} as User,
 			});
 
-			const claimed = await invite_service.claimInvite('1', 'user2');
+			const claimed = await inviteService.claimInvite('1', 'user2');
 
 			expect(claimed.used_at).toBeDefined();
 			expect(claimed.claimed_by).toBeDefined();
@@ -365,7 +365,7 @@ describe('InviteService', () => {
 		it('throws error when invite not found', async () => {
 			mock_repository.findOne.mockResolvedValue(null);
 
-			await expect(invite_service.claimInvite('999', 'user2')).rejects.toThrow('Invite not found');
+			await expect(inviteService.claimInvite('999', 'user2')).rejects.toThrow('Invite not found');
 		});
 
 		it('throws error when invite already claimed', async () => {
@@ -381,7 +381,7 @@ describe('InviteService', () => {
 
 			mock_repository.findOne.mockResolvedValue(claimed_invite);
 
-			await expect(invite_service.claimInvite('1', 'user3')).rejects.toThrow('Invite has already been claimed');
+			await expect(inviteService.claimInvite('1', 'user3')).rejects.toThrow('Invite has already been claimed');
 		});
 	});
 
@@ -400,7 +400,7 @@ describe('InviteService', () => {
 			mock_repository.findOne.mockResolvedValue(unclaimed_invite);
 			mock_repository.remove.mockResolvedValue(unclaimed_invite);
 
-			await invite_service.deleteInvite('1');
+			await inviteService.deleteInvite('1');
 
 			expect(mock_repository.remove).toHaveBeenCalledWith(unclaimed_invite);
 		});
@@ -408,7 +408,7 @@ describe('InviteService', () => {
 		it('throws error when invite not found', async () => {
 			mock_repository.findOne.mockResolvedValue(null);
 
-			await expect(invite_service.deleteInvite('999')).rejects.toThrow('Invite not found');
+			await expect(inviteService.deleteInvite('999')).rejects.toThrow('Invite not found');
 		});
 
 		it('throws error when deleting claimed invite', async () => {
@@ -424,7 +424,7 @@ describe('InviteService', () => {
 
 			mock_repository.findOne.mockResolvedValue(claimed_invite);
 
-			await expect(invite_service.deleteInvite('1')).rejects.toThrow('Cannot delete an invite that has already been claimed');
+			await expect(inviteService.deleteInvite('1')).rejects.toThrow('Cannot delete an invite that has already been claimed');
 		});
 	});
 });

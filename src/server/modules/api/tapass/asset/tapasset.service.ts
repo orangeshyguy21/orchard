@@ -24,10 +24,10 @@ export class TaprootAssetsAssetService {
 			const ta_assets: TaprootAssets = await this.taprootAssetsService.getListTaprootAssets();
 			return new OrchardTaprootAssets(ta_assets);
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.TaprootAssetsRpcActionError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 
@@ -36,10 +36,10 @@ export class TaprootAssetsAssetService {
 			const ta_utxos: TaprootAssetsUtxos = await this.taprootAssetsService.getListTaprootAssetsUtxos();
 			return Object.entries(ta_utxos.managed_utxos).map(([key, utxo]) => new OrchardTaprootAssetsUtxo(utxo, key));
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.TaprootAssetsRpcActionError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 }

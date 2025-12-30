@@ -7,6 +7,7 @@ import {DateTime} from 'luxon';
 import {lastValueFrom, Subscription} from 'rxjs';
 import {PageEvent} from '@angular/material/paginator';
 import {MatTableDataSource} from '@angular/material/table';
+import {MatDialog} from '@angular/material/dialog';
 /* Application Dependencies */
 import {NonNullableMintDatabaseSettings} from '@client/modules/settings/types/setting.types';
 import {ConfigService} from '@client/modules/config/services/config.service';
@@ -23,8 +24,11 @@ import {OrchardErrors} from '@client/modules/error/classes/error.class';
 /* Native Dependencies */
 import {MintService} from '@client/modules/mint/services/mint/mint.service';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
+import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class';
+import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
 import {MintDataType} from '@client/modules/mint/enums/data-type.enum';
 import {MintSubsectionDatabaseData} from '@client/modules/mint/modules/mint-subsection-database/classes/mint-subsection-database-data.class';
+import {MintSubsectionDatabaseDialogQuoteComponent} from '@client/modules/mint/modules/mint-subsection-database/components/mint-subsection-database-dialog-quote/mint-subsection-database-dialog-quote.component';
 /* Shared Dependencies */
 import {MintUnit, MintQuoteState, MeltQuoteState, MintProofState, AiAgent, AiFunctionName} from '@shared/generated.types';
 
@@ -95,6 +99,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		private mintService: MintService,
 		private lightningService: LightningService,
 		private aiService: AiService,
+		private dialog: MatDialog,
 		private cdr: ChangeDetectorRef,
 	) {}
 
@@ -367,6 +372,9 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	public onRestore(): void {
 		this.form_mode !== FormMode.RESTORE ? this.initRestoreBackup() : this.onClose();
 	}
+	public onRefresh(): void {
+		this.reloadDynamicData();
+	}
 
 	public onClose(): void {
 		this.form_backup.reset();
@@ -381,7 +389,20 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		this.getLightningRequest(request);
 	}
 
-	public onSetQuoteStatePaid(quote_id: string): void {
+	public onSetQuoteStatePaid(quote: MintMintQuote | MintMeltQuote): void {
+		const is_mint_quote = this.data.type === DataType.MintMints;
+		const dialog_ref = this.dialog.open(MintSubsectionDatabaseDialogQuoteComponent, {
+			data: {
+				quote: quote,
+				type: is_mint_quote ? DataType.MintMints : DataType.MintMelts,
+			},
+		});
+		dialog_ref.afterClosed().subscribe((confirmed) => {
+			if (confirmed === true) is_mint_quote ? this.updateMintQuoteStatePaid(quote.id) : this.updateMeltQuoteStatePaid(quote.id);
+		});
+	}
+
+	private updateMintQuoteStatePaid(quote_id: string): void {
 		this.mintService.updateMintNut04Quote(quote_id, 'PAID').subscribe({
 			next: () => {
 				this.eventService.registerEvent(
@@ -393,10 +414,34 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 				this.reloadDynamicData();
 			},
 			error: (errors: OrchardErrors) => {
+				console.error('Error updating quote state:', errors);
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'ERROR',
-						message: errors.errors[0].message,
+						message: errors.errors[0].getFullError(),
+					}),
+				);
+			},
+		});
+	}
+
+	private updateMeltQuoteStatePaid(quote_id: string): void {
+		this.mintService.updateMintNut05Quote(quote_id, 'PAID').subscribe({
+			next: () => {
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'SUCCESS',
+						message: 'Quote state updated to PAID',
+					}),
+				);
+				this.reloadDynamicData();
+			},
+			error: (errors: OrchardErrors) => {
+				console.error('Error updating quote state:', errors);
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'ERROR',
+						message: errors.errors[0].getFullError(),
 					}),
 				);
 			},
@@ -496,7 +541,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'ERROR',
-						message: errors.errors[0].message,
+						message: errors.errors[0].getFullError(),
 					}),
 				);
 			},
@@ -525,7 +570,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 				this.eventService.registerEvent(
 					new EventData({
 						type: 'ERROR',
-						message: errors.errors[0].message,
+						message: errors.errors[0].getFullError(),
 					}),
 				);
 			},

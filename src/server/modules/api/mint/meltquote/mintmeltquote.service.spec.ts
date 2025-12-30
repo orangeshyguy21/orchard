@@ -13,10 +13,10 @@ import {MintMeltQuoteService} from './mintmeltquote.service';
 import {OrchardMintMeltQuote} from './mintmeltquote.model';
 
 describe('MintMeltQuoteService', () => {
-	let mint_melt_quote_service: MintMeltQuoteService;
-	let mint_db_service: jest.Mocked<CashuMintDatabaseService>;
-	let mint_rpc_service: jest.Mocked<CashuMintRpcService>;
-	let error_service: jest.Mocked<ErrorService>;
+	let mintMeltQuoteService: MintMeltQuoteService;
+	let mintDbService: jest.Mocked<CashuMintDatabaseService>;
+	let mintRpcService: jest.Mocked<CashuMintRpcService>;
+	let errorService: jest.Mocked<ErrorService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -29,34 +29,34 @@ describe('MintMeltQuoteService', () => {
 			],
 		}).compile();
 
-		mint_melt_quote_service = module.get<MintMeltQuoteService>(MintMeltQuoteService);
-		mint_db_service = module.get(CashuMintDatabaseService);
-		mint_rpc_service = module.get(CashuMintRpcService);
-		error_service = module.get(ErrorService);
+		mintMeltQuoteService = module.get<MintMeltQuoteService>(MintMeltQuoteService);
+		mintDbService = module.get(CashuMintDatabaseService);
+		mintRpcService = module.get(CashuMintRpcService);
+		errorService = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {
-		expect(mint_melt_quote_service).toBeDefined();
+		expect(mintMeltQuoteService).toBeDefined();
 	});
 
 	it('getMintMeltQuotes returns OrchardMintMeltQuote[]', async () => {
-		mint_db_service.getMintMeltQuotes.mockResolvedValue([{id: 'q', unit: 'sat'}] as any);
-		const result = await mint_melt_quote_service.getMintMeltQuotes('TAG', {} as any);
+		mintDbService.getMintMeltQuotes.mockResolvedValue([{id: 'q', unit: 'sat'}] as any);
+		const result = await mintMeltQuoteService.getMintMeltQuotes('TAG', {} as any);
 		expect(result[0]).toBeInstanceOf(OrchardMintMeltQuote);
 	});
 
 	it('updateMintNut05 returns input and calls RPC', async () => {
 		const input = {unit: 'sat', method: 'bolt11'} as any;
-		const result = await mint_melt_quote_service.updateMintNut05('TAG', input);
+		const result = await mintMeltQuoteService.updateMintNut05('TAG', input);
 		expect(result).toEqual(input);
-		expect(mint_rpc_service.updateNut05).toHaveBeenCalled();
+		expect(mintRpcService.updateNut05).toHaveBeenCalled();
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError', async () => {
-		mint_db_service.getMintMeltQuotes.mockRejectedValue(new Error('boom'));
-		error_service.resolveError.mockReturnValue(OrchardErrorCode.MintDatabaseSelectError);
-		await expect(mint_melt_quote_service.getMintMeltQuotes('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
-		const calls = error_service.resolveError.mock.calls;
+		mintDbService.getMintMeltQuotes.mockRejectedValue(new Error('boom'));
+		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.MintDatabaseSelectError});
+		await expect(mintMeltQuoteService.getMintMeltQuotes('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
+		const calls = errorService.resolveError.mock.calls;
 		const [, , tag_arg, code_arg] = calls[calls.length - 1];
 		expect(tag_arg).toBe('MY_TAG');
 		expect(code_arg).toEqual({errord: OrchardErrorCode.MintDatabaseSelectError});

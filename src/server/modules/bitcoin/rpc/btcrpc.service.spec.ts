@@ -9,9 +9,9 @@ import {BitcoinRpcService} from './btcrpc.service';
 import {BitcoinType} from '@server/modules/bitcoin/bitcoin.enums';
 
 describe('BitcoinRpcService', () => {
-	let bitcoin_rpc_service: BitcoinRpcService;
-	let config_service: jest.Mocked<ConfigService>;
-	let core_service: jest.Mocked<CoreService>;
+	let bitcoinRpcService: BitcoinRpcService;
+	let configService: jest.Mocked<ConfigService>;
+	let coreService: jest.Mocked<CoreService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -22,63 +22,63 @@ describe('BitcoinRpcService', () => {
 			],
 		}).compile();
 
-		bitcoin_rpc_service = module.get<BitcoinRpcService>(BitcoinRpcService);
-		config_service = module.get(ConfigService);
-		core_service = module.get(CoreService);
+		bitcoinRpcService = module.get<BitcoinRpcService>(BitcoinRpcService);
+		configService = module.get(ConfigService);
+		coreService = module.get(CoreService);
 		// make service think we're CORE
-		config_service.get.mockReturnValue(BitcoinType.CORE);
-		await bitcoin_rpc_service.onModuleInit();
+		configService.get.mockReturnValue(BitcoinType.CORE);
+		await bitcoinRpcService.onModuleInit();
 	});
 
 	it('should be defined', () => {
-		expect(bitcoin_rpc_service).toBeDefined();
+		expect(bitcoinRpcService).toBeDefined();
 	});
 
 	it('initializes CORE rpc on module init', async () => {
-		expect(core_service.initializeRpc).toHaveBeenCalled();
+		expect(coreService.initializeRpc).toHaveBeenCalled();
 	});
 
 	it('delegates blockchain calls to CoreService', async () => {
-		core_service.makeRpcRequest.mockResolvedValueOnce(100);
-		await expect(bitcoin_rpc_service.getBitcoinBlockCount()).resolves.toBe(100);
-		expect(core_service.makeRpcRequest).toHaveBeenCalledWith('getblockcount', []);
+		coreService.makeRpcRequest.mockResolvedValueOnce(100);
+		await expect(bitcoinRpcService.getBitcoinBlockCount()).resolves.toBe(100);
+		expect(coreService.makeRpcRequest).toHaveBeenCalledWith('getblockcount', []);
 
-		core_service.makeRpcRequest.mockResolvedValueOnce({chain: 'regtest'} as any);
-		await bitcoin_rpc_service.getBitcoinBlockchainInfo();
-		expect(core_service.makeRpcRequest).toHaveBeenCalledWith('getblockchaininfo', []);
+		coreService.makeRpcRequest.mockResolvedValueOnce({chain: 'regtest'} as any);
+		await bitcoinRpcService.getBitcoinBlockchainInfo();
+		expect(coreService.makeRpcRequest).toHaveBeenCalledWith('getblockchaininfo', []);
 
-		core_service.makeRpcRequest.mockResolvedValueOnce({} as any);
-		await bitcoin_rpc_service.getBitcoinBlock('h');
-		expect(core_service.makeRpcRequest).toHaveBeenCalledWith('getblock', ['h', 2]);
+		coreService.makeRpcRequest.mockResolvedValueOnce({} as any);
+		await bitcoinRpcService.getBitcoinBlock('h');
+		expect(coreService.makeRpcRequest).toHaveBeenCalledWith('getblock', ['h', 2]);
 
-		core_service.makeRpcRequest.mockResolvedValueOnce('h');
-		await bitcoin_rpc_service.getBitcoinBlockHash(5);
-		expect(core_service.makeRpcRequest).toHaveBeenCalledWith('getblockhash', [5]);
+		coreService.makeRpcRequest.mockResolvedValueOnce('h');
+		await bitcoinRpcService.getBitcoinBlockHash(5);
+		expect(coreService.makeRpcRequest).toHaveBeenCalledWith('getblockhash', [5]);
 
-		core_service.makeRpcRequest.mockResolvedValueOnce({} as any);
-		await bitcoin_rpc_service.getBitcoinBlockHeader('h');
-		expect(core_service.makeRpcRequest).toHaveBeenCalledWith('getblockheader', ['h', true]);
+		coreService.makeRpcRequest.mockResolvedValueOnce({} as any);
+		await bitcoinRpcService.getBitcoinBlockHeader('h');
+		expect(coreService.makeRpcRequest).toHaveBeenCalledWith('getblockheader', ['h', true]);
 
-		core_service.makeRpcRequest.mockResolvedValueOnce('raw');
-		await bitcoin_rpc_service.getBitcoinBlockRaw('h');
-		expect(core_service.makeRpcRequest).toHaveBeenCalledWith('getblock', ['h', 0]);
+		coreService.makeRpcRequest.mockResolvedValueOnce('raw');
+		await bitcoinRpcService.getBitcoinBlockRaw('h');
+		expect(coreService.makeRpcRequest).toHaveBeenCalledWith('getblock', ['h', 0]);
 	});
 
 	it('delegates network/mempool/mining/utilities calls', async () => {
-		core_service.makeRpcRequest.mockResolvedValueOnce({} as any);
-		await bitcoin_rpc_service.getBitcoinNetworkInfo();
-		expect(core_service.makeRpcRequest).toHaveBeenCalledWith('getnetworkinfo', []);
+		coreService.makeRpcRequest.mockResolvedValueOnce({} as any);
+		await bitcoinRpcService.getBitcoinNetworkInfo();
+		expect(coreService.makeRpcRequest).toHaveBeenCalledWith('getnetworkinfo', []);
 
-		core_service.makeRpcRequest.mockResolvedValueOnce({} as any);
-		await bitcoin_rpc_service.getBitcoinMempool();
-		expect(core_service.makeRpcRequest).toHaveBeenCalledWith('getrawmempool', [true]);
+		coreService.makeRpcRequest.mockResolvedValueOnce({} as any);
+		await bitcoinRpcService.getBitcoinMempool();
+		expect(coreService.makeRpcRequest).toHaveBeenCalledWith('getrawmempool', [true]);
 
-		core_service.makeRpcRequest.mockResolvedValueOnce({} as any);
-		await bitcoin_rpc_service.getBitcoinBlockTemplate();
-		expect(core_service.makeRpcRequest).toHaveBeenCalledWith('getblocktemplate', [{rules: ['segwit'], mode: 'template'}]);
+		coreService.makeRpcRequest.mockResolvedValueOnce({} as any);
+		await bitcoinRpcService.getBitcoinBlockTemplate();
+		expect(coreService.makeRpcRequest).toHaveBeenCalledWith('getblocktemplate', [{rules: ['segwit'], mode: 'template'}]);
 
-		core_service.makeRpcRequest.mockResolvedValueOnce({} as any);
-		await bitcoin_rpc_service.getBitcoinFeeEstimate(6);
-		expect(core_service.makeRpcRequest).toHaveBeenCalledWith('estimatesmartfee', [6]);
+		coreService.makeRpcRequest.mockResolvedValueOnce({} as any);
+		await bitcoinRpcService.getBitcoinFeeEstimate(6);
+		expect(coreService.makeRpcRequest).toHaveBeenCalledWith('estimatesmartfee', [6]);
 	});
 });

@@ -26,9 +26,10 @@ export enum OrchardErrorCode {
 	MintRpcConnectionError = 40005,
 	MintRpcActionError = 40006,
 	MintRpcInternalError = 40007,
-	MintDatabaseBackupError = 40008,
-	MintDatabaseRestoreError = 40009,
-	MintDatabaseRestoreInvalidError = 40010,
+	MintRpcInvalidArgumentError = 40008,
+	MintDatabaseBackupError = 40009,
+	MintDatabaseRestoreError = 40010,
+	MintDatabaseRestoreInvalidError = 40011,
 	// Ecash Level Errors
 
 	// AI Level Errors

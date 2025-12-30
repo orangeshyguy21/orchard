@@ -35,10 +35,10 @@ export class AuthSignupService {
 			if (!token) throw OrchardErrorCode.AuthenticationError;
 			return new OrchardAuthentication(token);
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.SignupError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 }

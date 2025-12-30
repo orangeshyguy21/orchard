@@ -460,3 +460,11 @@ mutation MintNut04QuoteUpdate($mint_nut04_quote_update: MintNut04QuoteUpdateInpu
 		state
 	}
 }`;
+
+export const MINT_NUT05_QUOTE_UPDATE_MUTATION = `
+mutation MintNut05QuoteUpdate($mint_nut05_quote_update: MintNut05QuoteUpdateInput!) {
+	mint_nut05_quote_update(mint_nut05_quote_update: $mint_nut05_quote_update) {
+		quote_id
+		state
+	}
+}`;

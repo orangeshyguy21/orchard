@@ -30,10 +30,10 @@ export class MintAnalyticsService {
 				);
 				return cashu_mint_analytics.map((cma) => new OrchardMintAnalytics(cma));
 			} catch (error) {
-				const error_code = this.errorService.resolveError(this.logger, error, tag, {
+				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});
-				throw new OrchardApiError(error_code);
+				throw new OrchardApiError(orchard_error);
 			}
 		});
 	}
@@ -44,10 +44,10 @@ export class MintAnalyticsService {
 				const cashu_mint_analytics: CashuMintAnalytics[] = await this.cashuMintDatabaseService.getMintAnalyticsMints(client, args);
 				return cashu_mint_analytics.map((cma) => new OrchardMintAnalytics(cma));
 			} catch (error) {
-				const error_code = this.errorService.resolveError(this.logger, error, tag, {
+				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});
-				throw new OrchardApiError(error_code);
+				throw new OrchardApiError(orchard_error);
 			}
 		});
 	}
@@ -58,10 +58,10 @@ export class MintAnalyticsService {
 				const cashu_mint_analytics: CashuMintAnalytics[] = await this.cashuMintDatabaseService.getMintAnalyticsMelts(client, args);
 				return cashu_mint_analytics.map((cma) => new OrchardMintAnalytics(cma));
 			} catch (error) {
-				const error_code = this.errorService.resolveError(this.logger, error, tag, {
+				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});
-				throw new OrchardApiError(error_code);
+				throw new OrchardApiError(orchard_error);
 			}
 		});
 	}
@@ -72,10 +72,10 @@ export class MintAnalyticsService {
 				const cashu_mint_analytics: CashuMintAnalytics[] = await this.cashuMintDatabaseService.getMintAnalyticsSwaps(client, args);
 				return cashu_mint_analytics.map((cma) => new OrchardMintAnalytics(cma));
 			} catch (error) {
-				const error_code = this.errorService.resolveError(this.logger, error, tag, {
+				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});
-				throw new OrchardApiError(error_code);
+				throw new OrchardApiError(orchard_error);
 			}
 		});
 	}
@@ -86,10 +86,10 @@ export class MintAnalyticsService {
 				const cashu_mint_analytics: CashuMintAnalytics[] = await this.cashuMintDatabaseService.getMintAnalyticsFees(client, args);
 				return cashu_mint_analytics.map((cma) => new OrchardMintAnalytics(cma));
 			} catch (error) {
-				const error_code = this.errorService.resolveError(this.logger, error, tag, {
+				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});
-				throw new OrchardApiError(error_code);
+				throw new OrchardApiError(orchard_error);
 			}
 		});
 	}
@@ -103,10 +103,10 @@ export class MintAnalyticsService {
 				);
 				return cashu_mint_analytics.map((cma) => new OrchardMintKeysetsAnalytics(cma));
 			} catch (error) {
-				const error_code = this.errorService.resolveError(this.logger, error, tag, {
+				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});
-				throw new OrchardApiError(error_code);
+				throw new OrchardApiError(orchard_error);
 			}
 		});
 	}

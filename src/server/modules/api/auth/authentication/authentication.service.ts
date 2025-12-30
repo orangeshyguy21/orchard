@@ -28,10 +28,10 @@ export class AuthAuthenticationService {
 			if (!token) throw OrchardErrorCode.AuthenticationError;
 			return new OrchardAuthentication(token);
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.AuthenticationError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 
@@ -41,10 +41,10 @@ export class AuthAuthenticationService {
 			if (!token) throw OrchardErrorCode.AuthenticationExpiredError;
 			return new OrchardAuthentication(token);
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.AuthenticationExpiredError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 
@@ -52,10 +52,10 @@ export class AuthAuthenticationService {
 		try {
 			return this.authService.revokeToken(token);
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.AuthenticationExpiredError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 }

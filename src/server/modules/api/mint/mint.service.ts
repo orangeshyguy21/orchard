@@ -23,10 +23,10 @@ export class MintService {
 			client = await this.cashuMintDatabaseService.getMintDatabase();
 			if (client.type === 'postgres') await client.database.connect();
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, 'Error connecting to mint database', {
+			const orchard_error = this.errorService.resolveError(this.logger, error, 'Error connecting to mint database', {
 				errord: OrchardErrorCode.MintDatabaseConnectionError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 
 		try {

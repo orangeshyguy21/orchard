@@ -12,10 +12,9 @@ import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.cla
 import {OrchardMintPromiseGroup} from './mintpromise.model';
 
 describe('MintPromiseService', () => {
-	let mint_promise_service: MintPromiseService;
-	let mint_db_service: jest.Mocked<CashuMintDatabaseService>;
-	let _mint_service: jest.Mocked<MintService>;
-	let error_service: jest.Mocked<ErrorService>;
+	let mintPromiseService: MintPromiseService;
+	let mintDbService: jest.Mocked<CashuMintDatabaseService>;
+	let errorService: jest.Mocked<ErrorService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -27,25 +26,24 @@ describe('MintPromiseService', () => {
 			],
 		}).compile();
 
-		mint_promise_service = module.get<MintPromiseService>(MintPromiseService);
-		mint_db_service = module.get(CashuMintDatabaseService);
-		_mint_service = module.get(MintService);
-		error_service = module.get(ErrorService);
+		mintPromiseService = module.get<MintPromiseService>(MintPromiseService);
+		mintDbService = module.get(CashuMintDatabaseService);
+		errorService = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {
-		expect(mint_promise_service).toBeDefined();
+		expect(mintPromiseService).toBeDefined();
 	});
 
 	it('getMintPromiseGroups returns OrchardMintPromiseGroup[]', async () => {
-		mint_db_service.getMintPromiseGroups.mockResolvedValue([{amounts: [[1]]}] as any);
-		const result = await mint_promise_service.getMintPromiseGroups('TAG', {} as any);
+		mintDbService.getMintPromiseGroups.mockResolvedValue([{amounts: [[1]]}] as any);
+		const result = await mintPromiseService.getMintPromiseGroups('TAG', {} as any);
 		expect(result[0]).toBeInstanceOf(OrchardMintPromiseGroup);
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError', async () => {
-		mint_db_service.getMintPromiseGroups.mockRejectedValue(new Error('boom'));
-		error_service.resolveError.mockReturnValue(OrchardErrorCode.MintDatabaseSelectError);
-		await expect(mint_promise_service.getMintPromiseGroups('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
+		mintDbService.getMintPromiseGroups.mockRejectedValue(new Error('boom'));
+		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.MintDatabaseSelectError});
+		await expect(mintPromiseService.getMintPromiseGroups('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
 	});
 });

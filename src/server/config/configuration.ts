@@ -11,6 +11,7 @@ import {Config} from './configuration.type';
  */
 const deriveSecret = (base_key: string, info: string): string => {
 	const salt = 'orchard-jwt-derivation';
+	// lgtm[js/insufficient-password-hash] - This is key derivation for JWT secrets, not password storage
 	const key_material = createHash('sha256').update(base_key).digest();
 	const derived = Buffer.from(hkdfSync('sha256', key_material, salt, info, 32));
 	return derived.toString('base64');
@@ -29,11 +30,9 @@ const replaceLocalhostInDocker = (host: string | undefined): string | undefined 
 };
 
 const getMintRpcMtls = (): boolean => {
-	if (process.env.DOCKER_ENV) {
-		return process.env.MINT_RPC_MTLS !== 'false';
-	} else {
-		return !!(process.env.MINT_RPC_KEY && process.env.MINT_RPC_CERT && process.env.MINT_RPC_CA);
-	}
+	if (process.env.MINT_RPC_MTLS === 'true') return true;
+	if (process.env.MINT_RPC_MTLS === 'false') return false;
+	return !!(process.env.MINT_RPC_KEY && process.env.MINT_RPC_CERT && process.env.MINT_RPC_CA);
 };
 
 export const config = (): Config => {

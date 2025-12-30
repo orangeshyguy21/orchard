@@ -9,9 +9,9 @@ import {TaprootAssetsService} from './tapass.service';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 
 describe('TaprootAssetsService', () => {
-	let taproot_assets_service: TaprootAssetsService;
-	let config_service: jest.Mocked<ConfigService>;
-	let tapd_service: jest.Mocked<TapdService>;
+	let taprootAssetsService: TaprootAssetsService;
+	let configService: jest.Mocked<ConfigService>;
+	let tapdService: jest.Mocked<TapdService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -22,15 +22,15 @@ describe('TaprootAssetsService', () => {
 			],
 		}).compile();
 
-		taproot_assets_service = module.get<TaprootAssetsService>(TaprootAssetsService);
-		config_service = module.get(ConfigService);
-		tapd_service = module.get(TapdService);
-		config_service.get.mockReturnValue('tapd');
-		await taproot_assets_service.onModuleInit();
+		taprootAssetsService = module.get<TaprootAssetsService>(TaprootAssetsService);
+		configService = module.get(ConfigService);
+		tapdService = module.get(TapdService);
+		configService.get.mockReturnValue('tapd');
+		await taprootAssetsService.onModuleInit();
 	});
 
 	it('should be defined', () => {
-		expect(taproot_assets_service).toBeDefined();
+		expect(taprootAssetsService).toBeDefined();
 	});
 
 	it('throws connection error when no client initialized', async () => {
@@ -53,26 +53,26 @@ describe('TaprootAssetsService', () => {
 			ListAssets: jest.fn((req: any, cb: any) => cb(null, {assets: []})),
 			ListUtxos: jest.fn((req: any, cb: any) => cb(null, {utxos: []})),
 		};
-		tapd_service.initializeTaprootAssetsClient.mockReturnValue(client as any);
-		await taproot_assets_service.onModuleInit();
-		await expect(taproot_assets_service.getTaprootAssetsInfo()).resolves.toEqual({version: 'v'});
-		await expect(taproot_assets_service.getListTaprootAssets()).resolves.toEqual({assets: []});
-		await expect(taproot_assets_service.getListTaprootAssetsUtxos()).resolves.toEqual({utxos: []});
+		tapdService.initializeTaprootAssetsClient.mockReturnValue(client as any);
+		await taprootAssetsService.onModuleInit();
+		await expect(taprootAssetsService.getTaprootAssetsInfo()).resolves.toEqual({version: 'v'});
+		await expect(taprootAssetsService.getListTaprootAssets()).resolves.toEqual({assets: []});
+		await expect(taprootAssetsService.getListTaprootAssetsUtxos()).resolves.toEqual({utxos: []});
 	});
 
 	it('maps UNAVAILABLE error to connection error code', async () => {
 		const client = {
 			GetInfo: jest.fn((req: any, cb: any) => cb(new Error('14 UNAVAILABLE: upstream down'), null)),
 		};
-		tapd_service.initializeTaprootAssetsClient.mockReturnValue(client as any);
-		await taproot_assets_service.onModuleInit();
-		await expect(taproot_assets_service.getTaprootAssetsInfo()).rejects.toBe(OrchardErrorCode.TaprootAssetsRpcConnectionError);
+		tapdService.initializeTaprootAssetsClient.mockReturnValue(client as any);
+		await taprootAssetsService.onModuleInit();
+		await expect(taprootAssetsService.getTaprootAssetsInfo()).rejects.toBe(OrchardErrorCode.TaprootAssetsRpcConnectionError);
 	});
 
 	it('rejects with error for unsupported method', async () => {
 		const bad_client = {} as any;
-		tapd_service.initializeTaprootAssetsClient.mockReturnValue(bad_client);
-		await taproot_assets_service.onModuleInit();
-		await expect(taproot_assets_service.getTaprootAssetsInfo()).rejects.toBe(OrchardErrorCode.TaprootAssetsSupportError);
+		tapdService.initializeTaprootAssetsClient.mockReturnValue(bad_client);
+		await taprootAssetsService.onModuleInit();
+		await expect(taprootAssetsService.getTaprootAssetsInfo()).rejects.toBe(OrchardErrorCode.TaprootAssetsSupportError);
 	});
 });

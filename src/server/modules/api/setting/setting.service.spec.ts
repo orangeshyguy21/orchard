@@ -15,9 +15,9 @@ import {ApiSettingService} from './setting.service';
  * Tests the API wrapper layer for settings
  */
 describe('ApiSettingService', () => {
-	let api_setting_service: ApiSettingService;
-	let setting_service: jest.Mocked<SettingService>;
-	let error_service: jest.Mocked<ErrorService>;
+	let apiSettingService: ApiSettingService;
+	let settingService: jest.Mocked<SettingService>;
+	let errorService: jest.Mocked<ErrorService>;
 
 	// mock data for testing
 	const mock_setting = {
@@ -47,9 +47,9 @@ describe('ApiSettingService', () => {
 			],
 		}).compile();
 
-		api_setting_service = module.get<ApiSettingService>(ApiSettingService);
-		setting_service = module.get(SettingService);
-		error_service = module.get(ErrorService);
+		apiSettingService = module.get<ApiSettingService>(ApiSettingService);
+		settingService = module.get(SettingService);
+		errorService = module.get(ErrorService);
 	});
 
 	afterEach(() => {
@@ -60,7 +60,7 @@ describe('ApiSettingService', () => {
 	 * Test service instantiation
 	 */
 	it('should be defined', () => {
-		expect(api_setting_service).toBeDefined();
+		expect(apiSettingService).toBeDefined();
 	});
 
 	/**
@@ -70,38 +70,38 @@ describe('ApiSettingService', () => {
 		it('should return settings wrapped in OrchardSetting models', async () => {
 			// arrange
 			const mock_settings = [mock_setting];
-			setting_service.getSettings.mockResolvedValue(mock_settings as any);
+			settingService.getSettings.mockResolvedValue(mock_settings as any);
 
 			// act
-			const result = await api_setting_service.getSettings('TEST_TAG');
+			const result = await apiSettingService.getSettings('TEST_TAG');
 
 			// assert
 			expect(result).toHaveLength(1);
 			expect(result[0]).toHaveProperty('key', SettingKey.BITCOIN_ORACLE);
-			expect(setting_service.getSettings).toHaveBeenCalledTimes(1);
+			expect(settingService.getSettings).toHaveBeenCalledTimes(1);
 		});
 
 		it('should handle empty settings list', async () => {
 			// arrange
-			setting_service.getSettings.mockResolvedValue([]);
+			settingService.getSettings.mockResolvedValue([]);
 
 			// act
-			const result = await api_setting_service.getSettings('TEST_TAG');
+			const result = await apiSettingService.getSettings('TEST_TAG');
 
 			// assert
 			expect(result).toEqual([]);
-			expect(setting_service.getSettings).toHaveBeenCalledTimes(1);
+			expect(settingService.getSettings).toHaveBeenCalledTimes(1);
 		});
 
 		it('should wrap errors and throw OrchardApiError', async () => {
 			// arrange
 			const error = new Error('Database error');
-			setting_service.getSettings.mockRejectedValue(error);
-			error_service.resolveError.mockReturnValue(OrchardErrorCode.SettingError);
+			settingService.getSettings.mockRejectedValue(error);
+			errorService.resolveError.mockReturnValue({code: OrchardErrorCode.SettingError});
 
 			// act & assert
-			await expect(api_setting_service.getSettings('ERROR_TAG')).rejects.toBeInstanceOf(OrchardApiError);
-			expect(error_service.resolveError).toHaveBeenCalledWith(expect.anything(), error, 'ERROR_TAG', {
+			await expect(apiSettingService.getSettings('ERROR_TAG')).rejects.toBeInstanceOf(OrchardApiError);
+			expect(errorService.resolveError).toHaveBeenCalledWith(expect.anything(), error, 'ERROR_TAG', {
 				errord: OrchardErrorCode.SettingError,
 			});
 		});
@@ -114,42 +114,42 @@ describe('ApiSettingService', () => {
 		it('should update setting and return OrchardSetting model', async () => {
 			// arrange
 			const updated_setting = {...mock_setting, value: 'false'};
-			setting_service.updateSetting.mockResolvedValue(updated_setting as any);
+			settingService.updateSetting.mockResolvedValue(updated_setting as any);
 
 			// act
-			const result = await api_setting_service.updateSetting('UPDATE_TAG', SettingKey.BITCOIN_ORACLE, 'false');
+			const result = await apiSettingService.updateSetting('UPDATE_TAG', SettingKey.BITCOIN_ORACLE, 'false');
 
 			// assert
 			expect(result).toHaveProperty('key', SettingKey.BITCOIN_ORACLE);
 			expect(result).toHaveProperty('value', 'false');
-			expect(setting_service.updateSetting).toHaveBeenCalledWith(SettingKey.BITCOIN_ORACLE, 'false');
+			expect(settingService.updateSetting).toHaveBeenCalledWith(SettingKey.BITCOIN_ORACLE, 'false');
 		});
 
 		it('should wrap errors and throw OrchardApiError', async () => {
 			// arrange
 			const error = new Error('Update failed');
-			setting_service.updateSetting.mockRejectedValue(error);
-			error_service.resolveError.mockReturnValue(OrchardErrorCode.SettingError);
+			settingService.updateSetting.mockRejectedValue(error);
+			errorService.resolveError.mockReturnValue({code: OrchardErrorCode.SettingError});
 
 			// act & assert
-			await expect(api_setting_service.updateSetting('ERROR_TAG', SettingKey.BITCOIN_ORACLE, 'invalid')).rejects.toBeInstanceOf(
+			await expect(apiSettingService.updateSetting('ERROR_TAG', SettingKey.BITCOIN_ORACLE, 'invalid')).rejects.toBeInstanceOf(
 				OrchardApiError,
 			);
-			expect(error_service.resolveError).toHaveBeenCalledWith(expect.anything(), error, 'ERROR_TAG', {
+			expect(errorService.resolveError).toHaveBeenCalledWith(expect.anything(), error, 'ERROR_TAG', {
 				errord: OrchardErrorCode.SettingError,
 			});
 		});
 
 		it('should pass correct parameters to underlying service', async () => {
 			// arrange
-			setting_service.updateSetting.mockResolvedValue(mock_setting as any);
+			settingService.updateSetting.mockResolvedValue(mock_setting as any);
 
 			// act
-			await api_setting_service.updateSetting('TAG', SettingKey.BITCOIN_ORACLE, 'new_value');
+			await apiSettingService.updateSetting('TAG', SettingKey.BITCOIN_ORACLE, 'new_value');
 
 			// assert
-			expect(setting_service.updateSetting).toHaveBeenCalledTimes(1);
-			expect(setting_service.updateSetting).toHaveBeenCalledWith(SettingKey.BITCOIN_ORACLE, 'new_value');
+			expect(settingService.updateSetting).toHaveBeenCalledTimes(1);
+			expect(settingService.updateSetting).toHaveBeenCalledWith(SettingKey.BITCOIN_ORACLE, 'new_value');
 		});
 	});
 });

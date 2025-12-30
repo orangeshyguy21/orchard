@@ -9,8 +9,8 @@ import {UserRole} from '@server/modules/user/user.enums';
 /* Local Dependencies */
 import {MintMeltQuoteService} from './mintmeltquote.service';
 import {OrchardMintMeltQuote} from './mintmeltquote.model';
-import {MintNut05UpdateInput} from './mintmeltquote.input';
-import {OrchardMintNut05Update} from './mintmeltquote.model';
+import {MintNut05UpdateInput, MintNut05QuoteUpdateInput} from './mintmeltquote.input';
+import {OrchardMintNut05Update, OrchardMintNut05QuoteUpdate} from './mintmeltquote.model';
 
 @Resolver()
 export class MintMeltQuoteResolver {
@@ -38,5 +38,15 @@ export class MintMeltQuoteResolver {
 		const tag = 'MUTATION { mint_nut05_update }';
 		this.logger.debug(tag);
 		return await this.mintMeltQuoteService.updateMintNut05(tag, mint_nut05_update);
+	}
+
+	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@Mutation(() => OrchardMintNut05QuoteUpdate)
+	async mint_nut05_quote_update(
+		@Args('mint_nut05_quote_update') mint_nut05_quote_update: MintNut05QuoteUpdateInput,
+	): Promise<OrchardMintNut05QuoteUpdate> {
+		const tag = 'MUTATION { mint_nut05_quote_update }';
+		this.logger.debug(tag);
+		return await this.mintMeltQuoteService.updateMintNut05Quote(tag, mint_nut05_quote_update);
 	}
 }

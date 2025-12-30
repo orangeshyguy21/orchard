@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, effect, input, output, ViewChild} from '@angular/core';
 /* Vendor Dependencies */
 import {MatSort} from '@angular/material/sort';
 /* Application Dependencies */
@@ -11,6 +11,8 @@ import {MintSubsectionDatabaseData} from '@client/modules/mint/modules/mint-subs
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class';
 import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
+/* Shared Dependencies */
+import {MintQuoteState, MeltQuoteState} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-subsection-database-table',
@@ -19,49 +21,75 @@ import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class'
 	styleUrl: './mint-subsection-database-table.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintSubsectionDatabaseTableComponent implements OnChanges {
+export class MintSubsectionDatabaseTableComponent {
 	@ViewChild(MatSort) sort!: MatSort;
 
-	@Input() public data!: MintSubsectionDatabaseData;
-	@Input() public page_settings!: NonNullableMintDatabaseSettings;
-	@Input() public keysets!: MintKeyset[];
-	@Input() public loading!: boolean;
-	@Input() public loading_more!: boolean;
-	@Input() public lightning_request!: LightningRequest | null;
+	/* Inputs */
+	public data = input.required<MintSubsectionDatabaseData>(); // table data source with type
+	public page_settings = input.required<NonNullableMintDatabaseSettings>(); // pagination and filter settings
+	public keysets = input.required<MintKeyset[]>(); // available keysets for ecash display
+	public loading = input.required<boolean>(); // loading state for initial data
+	public loading_more = input.required<boolean>(); // loading state for expanded row details
+	public lightning_request = input.required<LightningRequest | null>(); // lightning request for invoice lookup
 
-	@Output() public updateRequest = new EventEmitter<string>();
-	@Output() public setQuoteStatePaid = new EventEmitter<string>();
+	/* Outputs */
+	public updateRequest = output<string>(); // emits request string for invoice updates
+	public setQuoteStatePaid = output<MintMintQuote | MintMeltQuote>(); // emits quote to mark as paid
 
-	public more_entity!: MintMintQuote | MintMeltQuote | null;
+	/* State */
+	public more_entity!: MintMintQuote | MintMeltQuote | null; // currently expanded row entity
+	public MintQuoteState = MintQuoteState;
+	public MeltQuoteState = MeltQuoteState;
 
-	public get displayed_columns(): string[] {
-		if (this.data.type === 'MintMints' || this.data.type === 'MintMelts') return ['unit', 'amount', 'request', 'state', 'created_time'];
-		if (this.data.type === 'MintProofGroups') return ['unit', 'amount', 'ecash', 'state', 'created_time'];
-		if (this.data.type === 'MintPromiseGroups') return ['unit', 'amount', 'ecash', 'created_time'];
+	/**
+	 * Computes the displayed columns based on the data type
+	 * @returns array of column names to display
+	 */
+	public displayed_columns = computed(() => {
+		const data_type = this.data().type;
+		if (data_type === 'MintMints' || data_type === 'MintMelts')
+			return ['unit', 'amount', 'request', 'state', 'created_time', 'actions'];
+		if (data_type === 'MintProofGroups') return ['unit', 'amount', 'ecash', 'state', 'created_time'];
+		if (data_type === 'MintPromiseGroups') return ['unit', 'amount', 'ecash', 'created_time'];
 		return ['unit', 'amount', 'request', 'state', 'created_time'];
-	}
+	});
 
-	constructor(private configService: ConfigService) {}
-
-	public ngOnChanges(changes: SimpleChanges): void {
-		if (changes['loading'] && this.loading === false) {
-			this.init();
-		}
-	}
-
-	private init(): any {
-		setTimeout(() => {
-			this.data.source.sort = this.sort;
+	constructor(private configService: ConfigService) {
+		effect(() => {
+			const is_loading = this.loading();
+			if (!is_loading) {
+				this.init();
+			}
 		});
 	}
 
-	public toggleMore(entity: MintMintQuote | MintMeltQuote) {
+	/**
+	 * Initializes the table sort after data has loaded
+	 */
+	private init(): void {
+		setTimeout(() => {
+			this.data().source.sort = this.sort;
+		});
+	}
+
+	/**
+	 * Toggles the expanded detail row for a quote entity
+	 * @param entity - the quote to toggle
+	 */
+	public toggleMore(entity: MintMintQuote | MintMeltQuote): void {
 		this.more_entity = this.more_entity === entity ? null : entity;
 		if (!this.configService.config.lightning.enabled) return;
 		if (this.more_entity) this.updateRequest.emit(this.more_entity.request);
 	}
 
-	public onSetQuoteStatePaid(quote_id: string) {
-		this.setQuoteStatePaid.emit(quote_id);
+	/**
+	 * Handles the set quote state to paid action
+	 * @param event - mouse event to stop propagation
+	 * @param entity - quote entity to mark as paid
+	 */
+	public onSetQuoteStatePaid(event: MouseEvent, entity: MintMintQuote | MintMeltQuote): void {
+		event.stopPropagation();
+		event.preventDefault();
+		this.setQuoteStatePaid.emit(entity);
 	}
 }

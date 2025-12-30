@@ -7,7 +7,7 @@ import {FetchService} from '@server/modules/fetch/fetch.service';
 import {AiService} from './ai.service';
 
 describe('AiService', () => {
-	let ai_service: AiService;
+	let aiService: AiService;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -18,10 +18,10 @@ describe('AiService', () => {
 			],
 		}).compile();
 
-		ai_service = module.get<AiService>(AiService);
+		aiService = module.get<AiService>(AiService);
 	});
 
 	it('should be defined', () => {
-		expect(ai_service).toBeDefined();
+		expect(aiService).toBeDefined();
 	});
 });

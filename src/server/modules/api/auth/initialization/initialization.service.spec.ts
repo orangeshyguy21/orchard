@@ -15,10 +15,10 @@ import {OrchardInitialization} from './initialization.model';
 import {InitializationInput} from './initialization.input';
 
 describe('AtuhInitializationService', () => {
-	let initialization_service: AuthInitializationService;
-	let auth_service: jest.Mocked<AuthService>;
-	let error_service: jest.Mocked<ErrorService>;
-	let user_service: jest.Mocked<UserService>;
+	let initializationService: AuthInitializationService;
+	let authService: jest.Mocked<AuthService>;
+	let errorService: jest.Mocked<ErrorService>;
+	let userService: jest.Mocked<UserService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -43,14 +43,14 @@ describe('AtuhInitializationService', () => {
 			],
 		}).compile();
 
-		initialization_service = module.get<AuthInitializationService>(AuthInitializationService);
-		auth_service = module.get(AuthService);
-		error_service = module.get(ErrorService);
-		user_service = module.get(UserService);
+		initializationService = module.get<AuthInitializationService>(AuthInitializationService);
+		authService = module.get(AuthService);
+		errorService = module.get(ErrorService);
+		userService = module.get(UserService);
 	});
 
 	it('should be defined', () => {
-		expect(initialization_service).toBeDefined();
+		expect(initializationService).toBeDefined();
 	});
 
 	describe('initialize', () => {
@@ -61,60 +61,60 @@ describe('AtuhInitializationService', () => {
 		};
 
 		it('returns OrchardAuthentication on successful initialization', async () => {
-			auth_service.validateSetupKey.mockResolvedValue(true);
-			user_service.getUserByName.mockResolvedValue(null);
-			user_service.createUser.mockResolvedValue({id: 'user-id', name: 'testuser'} as any);
-			auth_service.getToken.mockResolvedValue({access_token: 'a', refresh_token: 'r'} as any);
+			authService.validateSetupKey.mockResolvedValue(true);
+			userService.getUserByName.mockResolvedValue(null);
+			userService.createUser.mockResolvedValue({id: 'user-id', name: 'testuser'} as any);
+			authService.getToken.mockResolvedValue({access_token: 'a', refresh_token: 'r'} as any);
 
-			const result = await initialization_service.initialize('TAG', mock_input);
+			const result = await initializationService.initialize('TAG', mock_input);
 
 			expect(result).toBeInstanceOf(OrchardAuthentication);
-			expect(auth_service.validateSetupKey).toHaveBeenCalledWith(mock_input.key);
-			expect(user_service.getUserByName).toHaveBeenCalledWith(mock_input.name);
-			expect(user_service.createUser).toHaveBeenCalledWith(mock_input.name, mock_input.password, UserRole.ADMIN);
-			expect(auth_service.getToken).toHaveBeenCalledWith('user-id', mock_input.password);
+			expect(authService.validateSetupKey).toHaveBeenCalledWith(mock_input.key);
+			expect(userService.getUserByName).toHaveBeenCalledWith(mock_input.name);
+			expect(userService.createUser).toHaveBeenCalledWith(mock_input.name, mock_input.password, UserRole.ADMIN);
+			expect(authService.getToken).toHaveBeenCalledWith('user-id', mock_input.password);
 		});
 
 		it('throws OrchardApiError when setup key is invalid', async () => {
-			auth_service.validateSetupKey.mockResolvedValue(false);
-			error_service.resolveError.mockReturnValue(OrchardErrorCode.InitializationKeyError);
+			authService.validateSetupKey.mockResolvedValue(false);
+			errorService.resolveError.mockReturnValue({code: OrchardErrorCode.InitializationKeyError});
 
-			await expect(initialization_service.initialize('TAG', mock_input)).rejects.toBeInstanceOf(OrchardApiError);
+			await expect(initializationService.initialize('TAG', mock_input)).rejects.toBeInstanceOf(OrchardApiError);
 
-			expect(auth_service.validateSetupKey).toHaveBeenCalledWith(mock_input.key);
-			expect(user_service.getUserByName).not.toHaveBeenCalled();
+			expect(authService.validateSetupKey).toHaveBeenCalledWith(mock_input.key);
+			expect(userService.getUserByName).not.toHaveBeenCalled();
 		});
 
 		it('throws OrchardApiError when username already exists', async () => {
-			auth_service.validateSetupKey.mockResolvedValue(true);
-			user_service.getUserByName.mockResolvedValue({id: 'existing-user', name: 'testuser'} as any);
-			error_service.resolveError.mockReturnValue(OrchardErrorCode.UniqueUsernameError);
+			authService.validateSetupKey.mockResolvedValue(true);
+			userService.getUserByName.mockResolvedValue({id: 'existing-user', name: 'testuser'} as any);
+			errorService.resolveError.mockReturnValue({code: OrchardErrorCode.UniqueUsernameError});
 
-			await expect(initialization_service.initialize('TAG', mock_input)).rejects.toBeInstanceOf(OrchardApiError);
+			await expect(initializationService.initialize('TAG', mock_input)).rejects.toBeInstanceOf(OrchardApiError);
 
-			expect(user_service.getUserByName).toHaveBeenCalledWith(mock_input.name);
-			expect(user_service.createUser).not.toHaveBeenCalled();
+			expect(userService.getUserByName).toHaveBeenCalledWith(mock_input.name);
+			expect(userService.createUser).not.toHaveBeenCalled();
 		});
 
 		it('throws OrchardApiError when token generation fails', async () => {
-			auth_service.validateSetupKey.mockResolvedValue(true);
-			user_service.getUserByName.mockResolvedValue(null);
-			user_service.createUser.mockResolvedValue({id: 'user-id', name: 'testuser'} as any);
-			auth_service.getToken.mockResolvedValue(null);
-			error_service.resolveError.mockReturnValue(OrchardErrorCode.AuthenticationError);
+			authService.validateSetupKey.mockResolvedValue(true);
+			userService.getUserByName.mockResolvedValue(null);
+			userService.createUser.mockResolvedValue({id: 'user-id', name: 'testuser'} as any);
+			authService.getToken.mockResolvedValue(null);
+			errorService.resolveError.mockReturnValue({code: OrchardErrorCode.AuthenticationError});
 
-			await expect(initialization_service.initialize('TAG', mock_input)).rejects.toBeInstanceOf(OrchardApiError);
+			await expect(initializationService.initialize('TAG', mock_input)).rejects.toBeInstanceOf(OrchardApiError);
 
-			expect(auth_service.getToken).toHaveBeenCalledWith('user-id', mock_input.password);
+			expect(authService.getToken).toHaveBeenCalledWith('user-id', mock_input.password);
 		});
 
 		it('wraps unexpected errors via resolveError and throws OrchardApiError', async () => {
-			auth_service.validateSetupKey.mockRejectedValue(new Error('unexpected error'));
-			error_service.resolveError.mockReturnValue(OrchardErrorCode.AuthenticationError);
+			authService.validateSetupKey.mockRejectedValue(new Error('unexpected error'));
+			errorService.resolveError.mockReturnValue({code: OrchardErrorCode.AuthenticationError});
 
-			await expect(initialization_service.initialize('MY_TAG', mock_input)).rejects.toBeInstanceOf(OrchardApiError);
+			await expect(initializationService.initialize('MY_TAG', mock_input)).rejects.toBeInstanceOf(OrchardApiError);
 
-			const calls = error_service.resolveError.mock.calls;
+			const calls = errorService.resolveError.mock.calls;
 			const [, , tag_arg, code_arg] = calls[calls.length - 1];
 			expect(tag_arg).toBe('MY_TAG');
 			expect(code_arg).toEqual({errord: OrchardErrorCode.AuthenticationError});
@@ -123,32 +123,32 @@ describe('AtuhInitializationService', () => {
 
 	describe('getInitialization', () => {
 		it('returns OrchardInitialization with true when system needs initialization', async () => {
-			auth_service.getInitialization.mockResolvedValue(true);
+			authService.getInitialization.mockResolvedValue(true);
 
-			const result = await initialization_service.getInitialization('TAG');
+			const result = await initializationService.getInitialization('TAG');
 
 			expect(result).toBeInstanceOf(OrchardInitialization);
 			expect(result.initialization).toBe(true);
-			expect(auth_service.getInitialization).toHaveBeenCalled();
+			expect(authService.getInitialization).toHaveBeenCalled();
 		});
 
 		it('returns OrchardInitialization with false when system is already initialized', async () => {
-			auth_service.getInitialization.mockResolvedValue(false);
+			authService.getInitialization.mockResolvedValue(false);
 
-			const result = await initialization_service.getInitialization('TAG');
+			const result = await initializationService.getInitialization('TAG');
 
 			expect(result).toBeInstanceOf(OrchardInitialization);
 			expect(result.initialization).toBe(false);
-			expect(auth_service.getInitialization).toHaveBeenCalled();
+			expect(authService.getInitialization).toHaveBeenCalled();
 		});
 
 		it('wraps errors via resolveError and throws OrchardApiError', async () => {
-			auth_service.getInitialization.mockRejectedValue(new Error('database error'));
-			error_service.resolveError.mockReturnValue(OrchardErrorCode.AuthenticationError);
+			authService.getInitialization.mockRejectedValue(new Error('database error'));
+			errorService.resolveError.mockReturnValue({code: OrchardErrorCode.AuthenticationError});
 
-			await expect(initialization_service.getInitialization('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
+			await expect(initializationService.getInitialization('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
 
-			const calls = error_service.resolveError.mock.calls;
+			const calls = errorService.resolveError.mock.calls;
 			const [, , tag_arg, code_arg] = calls[calls.length - 1];
 			expect(tag_arg).toBe('MY_TAG');
 			expect(code_arg).toEqual({errord: OrchardErrorCode.AuthenticationError});

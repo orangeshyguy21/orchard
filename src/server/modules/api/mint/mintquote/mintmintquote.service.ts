@@ -31,10 +31,10 @@ export class MintMintQuoteService {
 				const cashu_mint_quotes: CashuMintMintQuote[] = await this.cashuMintDatabaseService.getMintMintQuotes(client, args);
 				return cashu_mint_quotes.map((cmq) => new OrchardMintMintQuote(cmq));
 			} catch (error) {
-				const error_code = this.errorService.resolveError(this.logger, error, tag, {
+				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});
-				throw new OrchardApiError(error_code);
+				throw new OrchardApiError(orchard_error);
 			}
 		});
 	}
@@ -44,21 +44,22 @@ export class MintMintQuoteService {
 			await this.cashuMintRpcService.updateNut04(mint_nut04_update);
 			return mint_nut04_update;
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintRpcActionError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 
 	async updateMintNut04Quote(tag: string, mint_nut04_quote_update: MintNut04QuoteUpdateInput): Promise<OrchardMintNut04QuoteUpdate> {
 		try {
-			return await this.cashuMintRpcService.updateNut04Quote(mint_nut04_quote_update);
+			await this.cashuMintRpcService.updateNut04Quote(mint_nut04_quote_update);
+			return mint_nut04_quote_update;
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintRpcActionError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 }

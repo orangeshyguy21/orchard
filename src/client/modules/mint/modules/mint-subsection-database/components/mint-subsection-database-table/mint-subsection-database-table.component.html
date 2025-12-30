@@ -1,7 +1,7 @@
 <div class="mint-data-table-container">
-	@if (!loading && data.source) {
+	@if (!loading() && data().source) {
 		<div class="p-h-1 flex flex-column flex-grow flex-justify-between" animate.enter="orc-animation-fadein">
-			<table mat-table multiTemplateDataRows [dataSource]="$any(data.source)" matSort class="orc-feature-table">
+			<table mat-table multiTemplateDataRows [dataSource]="$any(data().source)" matSort class="orc-feature-table">
 				<ng-container matColumnDef="unit">
 					<th mat-header-cell *matHeaderCellDef class="data-table-sticky-header">Unit</th>
 					<td mat-cell *matCellDef="let entity">
@@ -57,10 +57,10 @@
 								[ngClass]="{
 									'label-state': true,
 									'label-success':
-										(data.type === 'MintMints' && entity.state === 'ISSUED') ||
-										(data.type === 'MintMelts' && entity.state === 'PAID') ||
-										(data.type === 'MintProofGroups' && entity.state === 'SPENT'),
-									'label-intermediate': data.type === 'MintMints' && entity.state === 'PAID',
+										(data().type === 'MintMints' && entity.state === 'ISSUED') ||
+										(data().type === 'MintMelts' && entity.state === 'PAID') ||
+										(data().type === 'MintProofGroups' && entity.state === 'SPENT'),
+									'label-intermediate': data().type === 'MintMints' && entity.state === 'PAID',
 									'label-warning': entity.state === 'PENDING',
 									'label-default': entity.state === 'UNPAID',
 								}"
@@ -76,32 +76,52 @@
 					<td mat-cell *matCellDef="let entity">{{ entity.created_time | localTime: 'medium' }}</td>
 				</ng-container>
 
+				<ng-container matColumnDef="actions">
+					<th mat-header-cell *matHeaderCellDef class="data-table-sticky-header">Actions</th>
+					<td mat-cell *matCellDef="let entity">
+						<div class="flex flex-items-center flex-gap-0-5">
+							@if (entity.state === MintQuoteState.Unpaid || entity.state === MeltQuoteState.Unpaid) {
+								<button
+									mat-icon-button
+									class="orc-icon-button"
+									matTooltip="Set as Paid"
+									matTooltipPosition="left"
+									(click)="onSetQuoteStatePaid($event, entity)"
+								>
+									<mat-icon>credit_score</mat-icon>
+								</button>
+							}
+						</div>
+					</td>
+				</ng-container>
+
 				<ng-container matColumnDef="more_detail">
-					<td mat-cell *matCellDef="let entity" [attr.colspan]="displayed_columns.length">
+					<td mat-cell *matCellDef="let entity" [attr.colspan]="displayed_columns().length">
 						<div class="more-entity-wrapper" [class.more-entity-wrapper-expanded]="more_entity?.id === entity.id">
 							<div class="more-entity-content">
 								@if (more_entity?.id === entity.id) {
 									<div animate.enter="orc-animation-fadein">
-										@switch (data.type) {
+										@switch (data().type) {
 											@case ('MintMints') {
 												<orc-mint-subsection-database-table-mint
 													[quote]="entity"
-													[loading]="loading_more"
-													[lightning_request]="lightning_request"
-													(setStatePaid)="onSetQuoteStatePaid($event)"
+													[loading]="loading_more()"
+													[lightning_request]="lightning_request()"
+													(setStatePaid)="setQuoteStatePaid.emit($event)"
 												></orc-mint-subsection-database-table-mint>
 											}
 											@case ('MintMelts') {
 												<orc-mint-subsection-database-table-melt
 													[quote]="entity"
-													[loading]="loading_more"
-													[lightning_request]="lightning_request"
+													[loading]="loading_more()"
+													[lightning_request]="lightning_request()"
+													(setStatePaid)="setQuoteStatePaid.emit($event)"
 												></orc-mint-subsection-database-table-melt>
 											}
 											@default {
 												<orc-mint-subsection-database-table-ecash
 													[group]="entity"
-													[keysets]="keysets"
+													[keysets]="keysets()"
 												></orc-mint-subsection-database-table-ecash>
 											}
 										}
@@ -112,10 +132,10 @@
 					</td>
 				</ng-container>
 
-				<tr mat-header-row *matHeaderRowDef="displayed_columns; sticky: true"></tr>
+				<tr mat-header-row *matHeaderRowDef="displayed_columns(); sticky: true"></tr>
 				<tr
 					mat-row
-					*matRowDef="let row; columns: displayed_columns"
+					*matRowDef="let row; columns: displayed_columns()"
 					class="entity-row"
 					[class.expanded]="more_entity === row"
 					(click)="toggleMore(row)"

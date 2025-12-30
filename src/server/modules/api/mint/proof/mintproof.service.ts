@@ -30,10 +30,10 @@ export class MintProofService {
 				const cashu_mint_pgs: CashuMintProofGroup[] = await this.cashuMintDatabaseService.getMintProofGroups(client, args);
 				return cashu_mint_pgs.map((cpg) => new OrchardMintProofGroup(cpg));
 			} catch (error) {
-				const error_code = this.errorService.resolveError(this.logger, error, tag, {
+				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});
-				throw new OrchardApiError(error_code);
+				throw new OrchardApiError(orchard_error);
 			}
 		});
 	}
@@ -52,10 +52,10 @@ export class MintProofService {
 					median: median(notes_used),
 				};
 			} catch (error) {
-				const error_code = this.errorService.resolveError(this.logger, error, tag, {
+				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});
-				throw new OrchardApiError(error_code);
+				throw new OrchardApiError(orchard_error);
 			}
 		});
 	}

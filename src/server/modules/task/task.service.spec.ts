@@ -12,8 +12,8 @@ import {BitcoinUTXOracleService} from '@server/modules/bitcoin/utxoracle/utxorac
 import {TaskService} from './task.service';
 
 describe('TaskService', () => {
-	let task_service: TaskService;
-	let auth_service: jest.Mocked<AuthService>;
+	let taskService: TaskService;
+	let authService: jest.Mocked<AuthService>;
 	let logger_spy: jest.SpyInstance;
 
 	beforeEach(async () => {
@@ -54,8 +54,8 @@ describe('TaskService', () => {
 			],
 		}).compile();
 
-		task_service = module.get<TaskService>(TaskService);
-		auth_service = module.get(AuthService);
+		taskService = module.get<TaskService>(TaskService);
+		authService = module.get(AuthService);
 
 		// Spy on logger methods
 		logger_spy = jest.spyOn(Logger.prototype, 'log').mockImplementation();
@@ -67,47 +67,47 @@ describe('TaskService', () => {
 	});
 
 	it('should be defined', () => {
-		expect(task_service).toBeDefined();
+		expect(taskService).toBeDefined();
 	});
 
 	describe('cleanupExpiredTokens', () => {
 		it('should cleanup tokens and log success', async () => {
 			// Arrange
 			const expected_count = 42;
-			auth_service.cleanupExpiredTokens.mockResolvedValue(expected_count);
+			authService.cleanupExpiredTokens.mockResolvedValue(expected_count);
 
 			// Act
-			await task_service.cleanupExpiredTokens();
+			await taskService.cleanupExpiredTokens();
 
 			// Assert
-			expect(auth_service.cleanupExpiredTokens).toHaveBeenCalledTimes(1);
+			expect(authService.cleanupExpiredTokens).toHaveBeenCalledTimes(1);
 			expect(logger_spy).toHaveBeenCalledWith('Starting expired token cleanup...');
 			expect(logger_spy).toHaveBeenCalledWith(`Cleaned up ${expected_count} expired tokens`);
 		});
 
 		it('should log zero when no tokens are cleaned up', async () => {
 			// Arrange
-			auth_service.cleanupExpiredTokens.mockResolvedValue(0);
+			authService.cleanupExpiredTokens.mockResolvedValue(0);
 
 			// Act
-			await task_service.cleanupExpiredTokens();
+			await taskService.cleanupExpiredTokens();
 
 			// Assert
-			expect(auth_service.cleanupExpiredTokens).toHaveBeenCalledTimes(1);
+			expect(authService.cleanupExpiredTokens).toHaveBeenCalledTimes(1);
 			expect(logger_spy).toHaveBeenCalledWith('Cleaned up 0 expired tokens');
 		});
 
 		it('should log error when cleanup fails', async () => {
 			// Arrange
 			const error = new Error('Database connection failed');
-			auth_service.cleanupExpiredTokens.mockRejectedValue(error);
+			authService.cleanupExpiredTokens.mockRejectedValue(error);
 			const error_spy = jest.spyOn(Logger.prototype, 'error');
 
 			// Act
-			await task_service.cleanupExpiredTokens();
+			await taskService.cleanupExpiredTokens();
 
 			// Assert
-			expect(auth_service.cleanupExpiredTokens).toHaveBeenCalledTimes(1);
+			expect(authService.cleanupExpiredTokens).toHaveBeenCalledTimes(1);
 			expect(error_spy).toHaveBeenCalledWith('Error cleaning up tokens: Database connection failed');
 		});
 	});

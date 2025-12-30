@@ -9,9 +9,9 @@ import {ClnService} from './cln.service';
 import * as grpc from '@grpc/grpc-js';
 
 describe('ClnService', () => {
-	let cln_service: ClnService;
-	let config_service: jest.Mocked<ConfigService>;
-	let credential_service: jest.Mocked<CredentialService>;
+	let clnService: ClnService;
+	let configService: jest.Mocked<ConfigService>;
+	let credentialService: jest.Mocked<CredentialService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -22,22 +22,22 @@ describe('ClnService', () => {
 			],
 		}).compile();
 
-		cln_service = module.get<ClnService>(ClnService);
-		config_service = module.get(ConfigService);
-		credential_service = module.get(CredentialService);
+		clnService = module.get<ClnService>(ClnService);
+		configService = module.get(ConfigService);
+		credentialService = module.get(CredentialService);
 	});
 
 	it('should be defined', () => {
-		expect(cln_service).toBeDefined();
+		expect(clnService).toBeDefined();
 	});
 
 	it('returns undefined client when credentials missing', () => {
-		const client = cln_service.initializeLightningClient();
+		const client = clnService.initializeLightningClient();
 		expect(client).toBeUndefined();
 	});
 
 	it('initializes mTLS client when credentials present', () => {
-		config_service.get.mockImplementation((key: string) => {
+		configService.get.mockImplementation((key: string) => {
 			switch (key) {
 				case 'lightning.host':
 					return 'cln';
@@ -53,11 +53,11 @@ describe('ClnService', () => {
 					return undefined as any;
 			}
 		});
-		credential_service.loadPemOrPath.mockReturnValue(Buffer.from('x'));
+		credentialService.loadPemOrPath.mockReturnValue(Buffer.from('x'));
 		const createSsl = jest.spyOn(grpc.credentials, 'createSsl').mockReturnValue({} as any);
 		const loadSync = jest.spyOn(require('@grpc/proto-loader'), 'loadSync').mockReturnValue({} as any);
 		const loadPackageDefinition = jest.spyOn(grpc, 'loadPackageDefinition').mockReturnValue({cln: {Node: jest.fn()}} as any);
-		cln_service.initializeLightningClient();
+		clnService.initializeLightningClient();
 		expect(createSsl).toHaveBeenCalled();
 		expect(loadSync).toHaveBeenCalled();
 		expect(loadPackageDefinition).toHaveBeenCalled();
@@ -77,7 +77,7 @@ describe('ClnService', () => {
 			num_peers: 4,
 			blockheight: 5,
 		};
-		const out = await cln_service.mapClnInfo(info);
+		const out = await clnService.mapClnInfo(info);
 		expect(out.identity_pubkey).toBe('aabb');
 		expect(out.color).toBe('aabbcc');
 		expect(out.testnet).toBe(true);
@@ -95,7 +95,7 @@ describe('ClnService', () => {
 				{address: 't1', amount_msat: 10000000}, // 10000 sats (raw format)
 			],
 		};
-		const out = cln_service.mapClnAddresses(addresses, funds);
+		const out = clnService.mapClnAddresses(addresses, funds);
 		expect(out.account_with_addresses.length).toBe(2);
 		expect(out.account_with_addresses[0].addresses[0].address).toBe('b1');
 		expect(out.account_with_addresses[0].addresses[0].balance).toBe(80000); // 50000 + 30000
@@ -105,7 +105,7 @@ describe('ClnService', () => {
 
 	it('mapClnRequest maps validity and description', () => {
 		const req = {item_type: 'offer', valid: true, description: 'hello'};
-		const out = cln_service.mapClnRequest(req);
+		const out = clnService.mapClnRequest(req);
 		expect(out.valid).toBe(true);
 		expect(out.description).toBeDefined();
 	});

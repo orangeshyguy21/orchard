@@ -23,10 +23,10 @@ export class CrewInviteService {
 			const invites = await this.inviteService.getInvites();
 			return invites.map((invite) => new OrchardCrewInvite(invite));
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.InviteError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 
@@ -35,10 +35,10 @@ export class CrewInviteService {
 			const invite = await this.inviteService.createInvite(user_id, createInvite.role, createInvite.label, createInvite.expires_at);
 			return new OrchardCrewInvite(invite);
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.InviteError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 
@@ -47,10 +47,10 @@ export class CrewInviteService {
 			const invite = await this.inviteService.updateInvite(updateInvite.id, updateInvite);
 			return new OrchardCrewInvite(invite);
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.InviteError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 
@@ -58,10 +58,10 @@ export class CrewInviteService {
 		try {
 			await this.inviteService.deleteInvite(invite_id);
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.InviteError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 }

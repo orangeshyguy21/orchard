@@ -10,9 +10,9 @@ import {BitcoinUTXOracleService} from './utxoracle.service';
 import {UTXOracle} from './utxoracle.entity';
 
 describe('BitcoinUTXOracleService', () => {
-	let bitcoin_utx_oracle_service: BitcoinUTXOracleService;
-	let config_service: jest.Mocked<ConfigService>;
-	let bitcoin_rpc_service: jest.Mocked<BitcoinRpcService>;
+	let bitcoinUtxOracleService: BitcoinUTXOracleService;
+	let configService: jest.Mocked<ConfigService>;
+	let bitcoinRpcService: jest.Mocked<BitcoinRpcService>;
 
 	// mock repository for UTXOracle
 	const mock_repository = {
@@ -47,18 +47,18 @@ describe('BitcoinUTXOracleService', () => {
 			],
 		}).compile();
 
-		bitcoin_utx_oracle_service = module.get<BitcoinUTXOracleService>(BitcoinUTXOracleService);
-		config_service = module.get(ConfigService);
-		bitcoin_rpc_service = module.get(BitcoinRpcService);
+		bitcoinUtxOracleService = module.get<BitcoinUTXOracleService>(BitcoinUTXOracleService);
+		configService = module.get(ConfigService);
+		bitcoinRpcService = module.get(BitcoinRpcService);
 	});
 
 	it('should be defined', () => {
-		expect(bitcoin_utx_oracle_service).toBeDefined();
+		expect(bitcoinUtxOracleService).toBeDefined();
 	});
 
 	it('runOracle recent mode returns structured result', async () => {
-		config_service.get.mockReturnValue(undefined);
-		bitcoin_rpc_service.getBitcoinBlockCount.mockResolvedValue(1000);
+		configService.get.mockReturnValue(undefined);
+		bitcoinRpcService.getBitcoinBlockCount.mockResolvedValue(1000);
 		// stub blocks in consensus window [1000-6-144 .. 1000-6]
 		const mk_block = (height: number) => ({
 			time: 1700000000 + height,
@@ -67,10 +67,10 @@ describe('BitcoinUTXOracleService', () => {
 				{txid: `t${height}`, vin: [{txid: `p${height}`, vout: 0}], vout: [{value: 0.01}, {value: 0.02}]},
 			],
 		});
-		bitcoin_rpc_service.getBitcoinBlockHash.mockImplementation(async (h: number) => `h${h}`);
-		bitcoin_rpc_service.getBitcoinBlock.mockImplementation(async (_hash: string) => mk_block(parseInt(_hash.slice(1))) as any);
+		bitcoinRpcService.getBitcoinBlockHash.mockImplementation(async (h: number) => `h${h}`);
+		bitcoinRpcService.getBitcoinBlock.mockImplementation(async (_hash: string) => mk_block(parseInt(_hash.slice(1))) as any);
 
-		const out = await bitcoin_utx_oracle_service.runOracle({});
+		const out = await bitcoinUtxOracleService.runOracle({});
 		expect(out.block_window.start).toBeGreaterThan(0);
 		expect(out.block_window.end).toBeGreaterThan(out.block_window.start);
 		expect(typeof out.central_price).toBe('number');
@@ -80,6 +80,6 @@ describe('BitcoinUTXOracleService', () => {
 	});
 
 	it('runOracle date mode validates format', async () => {
-		await expect(bitcoin_utx_oracle_service.runOracle({date: 'bad'} as any)).rejects.toThrow();
+		await expect(bitcoinUtxOracleService.runOracle({date: 'bad'} as any)).rejects.toThrow();
 	});
 });

@@ -13,10 +13,10 @@ import {MintMintQuoteService} from './mintmintquote.service';
 import {OrchardMintMintQuote} from './mintmintquote.model';
 
 describe('MintMintQuoteService', () => {
-	let mint_mint_quote_service: MintMintQuoteService;
-	let mint_db_service: jest.Mocked<CashuMintDatabaseService>;
-	let mint_rpc_service: jest.Mocked<CashuMintRpcService>;
-	let error_service: jest.Mocked<ErrorService>;
+	let mintMintQuoteService: MintMintQuoteService;
+	let mintDbService: jest.Mocked<CashuMintDatabaseService>;
+	let mintRpcService: jest.Mocked<CashuMintRpcService>;
+	let errorService: jest.Mocked<ErrorService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -29,40 +29,40 @@ describe('MintMintQuoteService', () => {
 			],
 		}).compile();
 
-		mint_mint_quote_service = module.get<MintMintQuoteService>(MintMintQuoteService);
-		mint_db_service = module.get(CashuMintDatabaseService);
-		mint_rpc_service = module.get(CashuMintRpcService);
-		error_service = module.get(ErrorService);
+		mintMintQuoteService = module.get<MintMintQuoteService>(MintMintQuoteService);
+		mintDbService = module.get(CashuMintDatabaseService);
+		mintRpcService = module.get(CashuMintRpcService);
+		errorService = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {
-		expect(mint_mint_quote_service).toBeDefined();
+		expect(mintMintQuoteService).toBeDefined();
 	});
 
 	it('getMintMintQuotes returns OrchardMintMintQuote[]', async () => {
-		mint_db_service.getMintMintQuotes.mockResolvedValue([{id: 'q', unit: 'sat'}] as any);
-		const result = await mint_mint_quote_service.getMintMintQuotes('TAG', {} as any);
+		mintDbService.getMintMintQuotes.mockResolvedValue([{id: 'q', unit: 'sat'}] as any);
+		const result = await mintMintQuoteService.getMintMintQuotes('TAG', {} as any);
 		expect(result[0]).toBeInstanceOf(OrchardMintMintQuote);
 	});
 
 	it('updateMintNut04 returns input and calls RPC', async () => {
 		const input = {unit: 'sat', method: 'bolt11'} as any;
-		const result = await mint_mint_quote_service.updateMintNut04('TAG', input);
+		const result = await mintMintQuoteService.updateMintNut04('TAG', input);
 		expect(result).toEqual(input);
-		expect(mint_rpc_service.updateNut04).toHaveBeenCalled();
+		expect(mintRpcService.updateNut04).toHaveBeenCalled();
 	});
 
 	it('updateMintNut04Quote returns result from RPC', async () => {
-		mint_rpc_service.updateNut04Quote.mockResolvedValue({quote_id: '1', state: 'PAID'} as any);
-		const result = await mint_mint_quote_service.updateMintNut04Quote('TAG', {quote_id: '1', state: 'PAID'} as any);
+		mintRpcService.updateNut04Quote.mockResolvedValue({quote_id: '1', state: 'PAID'} as any);
+		const result = await mintMintQuoteService.updateMintNut04Quote('TAG', {quote_id: '1', state: 'PAID'} as any);
 		expect(result).toEqual({quote_id: '1', state: 'PAID'});
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError', async () => {
-		mint_db_service.getMintMintQuotes.mockRejectedValue(new Error('boom'));
-		error_service.resolveError.mockReturnValue(OrchardErrorCode.MintDatabaseSelectError);
-		await expect(mint_mint_quote_service.getMintMintQuotes('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
-		const calls = error_service.resolveError.mock.calls;
+		mintDbService.getMintMintQuotes.mockRejectedValue(new Error('boom'));
+		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.MintDatabaseSelectError});
+		await expect(mintMintQuoteService.getMintMintQuotes('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
+		const calls = errorService.resolveError.mock.calls;
 		const [, , tag_arg, code_arg] = calls[calls.length - 1];
 		expect(tag_arg).toBe('MY_TAG');
 		expect(code_arg).toEqual({errord: OrchardErrorCode.MintDatabaseSelectError});

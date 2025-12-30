@@ -10,10 +10,10 @@ import {LightningWalletKitService} from './lnwalletkit.service';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 
 describe('LightningWalletKitService', () => {
-	let lightning_wallet_kit_service: LightningWalletKitService;
-	let config_service: jest.Mocked<ConfigService>;
-	let lnd_service: jest.Mocked<LndService>;
-	let cln_service: jest.Mocked<ClnService>;
+	let lightningWalletKitService: LightningWalletKitService;
+	let configService: jest.Mocked<ConfigService>;
+	let lndService: jest.Mocked<LndService>;
+	let clnService: jest.Mocked<ClnService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -25,28 +25,28 @@ describe('LightningWalletKitService', () => {
 			],
 		}).compile();
 
-		lightning_wallet_kit_service = module.get<LightningWalletKitService>(LightningWalletKitService);
-		config_service = module.get(ConfigService);
-		lnd_service = module.get(LndService);
-		cln_service = module.get(ClnService);
+		lightningWalletKitService = module.get<LightningWalletKitService>(LightningWalletKitService);
+		configService = module.get(ConfigService);
+		lndService = module.get(LndService);
+		clnService = module.get(ClnService);
 	});
 
 	it('should be defined', () => {
-		expect(lightning_wallet_kit_service).toBeDefined();
+		expect(lightningWalletKitService).toBeDefined();
 	});
 
 	it('throws connection error when no client', async () => {
-		config_service.get.mockReturnValue('lnd');
-		await lightning_wallet_kit_service.onModuleInit();
-		await expect(lightning_wallet_kit_service.getLightningAddresses()).rejects.toBe(OrchardErrorCode.LightningRpcConnectionError);
+		configService.get.mockReturnValue('lnd');
+		await lightningWalletKitService.onModuleInit();
+		await expect(lightningWalletKitService.getLightningAddresses()).rejects.toBe(OrchardErrorCode.LightningRpcConnectionError);
 	});
 
 	it('delegates to LND and returns addresses', async () => {
 		const client = {ListAddresses: jest.fn((req: any, cb: any) => cb(null, {account_with_addresses: []}))};
-		(lnd_service.initializeWalletKitClient as jest.Mock).mockReturnValue(client);
-		config_service.get.mockReturnValue('lnd');
-		await lightning_wallet_kit_service.onModuleInit();
-		await expect(lightning_wallet_kit_service.getLightningAddresses()).resolves.toEqual({account_with_addresses: []});
+		(lndService.initializeWalletKitClient as jest.Mock).mockReturnValue(client);
+		configService.get.mockReturnValue('lnd');
+		await lightningWalletKitService.onModuleInit();
+		await expect(lightningWalletKitService.getLightningAddresses()).resolves.toEqual({account_with_addresses: []});
 	});
 
 	it('delegates to CLN and maps addresses', async () => {
@@ -54,26 +54,26 @@ describe('LightningWalletKitService', () => {
 			ListAddresses: jest.fn((req: any, cb: any) => cb(null, {addresses: []})),
 			ListFunds: jest.fn((req: any, cb: any) => cb(null, {outputs: []})),
 		};
-		(cln_service.initializeWalletKitClient as jest.Mock).mockReturnValue(client);
-		(cln_service.mapClnAddresses as jest.Mock).mockReturnValue({account_with_addresses: []});
-		config_service.get.mockReturnValue('cln');
-		await lightning_wallet_kit_service.onModuleInit();
-		await expect(lightning_wallet_kit_service.getLightningAddresses()).resolves.toEqual({account_with_addresses: []});
+		(clnService.initializeWalletKitClient as jest.Mock).mockReturnValue(client);
+		(clnService.mapClnAddresses as jest.Mock).mockReturnValue({account_with_addresses: []});
+		configService.get.mockReturnValue('cln');
+		await lightningWalletKitService.onModuleInit();
+		await expect(lightningWalletKitService.getLightningAddresses()).resolves.toEqual({account_with_addresses: []});
 	});
 
 	it('maps UNAVAILABLE error to connection code', async () => {
 		const client = {ListAddresses: jest.fn((req: any, cb: any) => cb(new Error('14 UNAVAILABLE'), null))};
-		(lnd_service.initializeWalletKitClient as jest.Mock).mockReturnValue(client);
-		config_service.get.mockReturnValue('lnd');
-		await lightning_wallet_kit_service.onModuleInit();
-		await expect(lightning_wallet_kit_service.getLightningAddresses()).rejects.toBe(OrchardErrorCode.LightningRpcConnectionError);
+		(lndService.initializeWalletKitClient as jest.Mock).mockReturnValue(client);
+		configService.get.mockReturnValue('lnd');
+		await lightningWalletKitService.onModuleInit();
+		await expect(lightningWalletKitService.getLightningAddresses()).rejects.toBe(OrchardErrorCode.LightningRpcConnectionError);
 	});
 
 	it('unsupported method rejects with support error', async () => {
 		const client = {} as any;
-		(lnd_service.initializeWalletKitClient as jest.Mock).mockReturnValue(client);
-		config_service.get.mockReturnValue('lnd');
-		await lightning_wallet_kit_service.onModuleInit();
-		await expect(lightning_wallet_kit_service.getLightningAddresses()).rejects.toBe(OrchardErrorCode.LightningSupportError);
+		(lndService.initializeWalletKitClient as jest.Mock).mockReturnValue(client);
+		configService.get.mockReturnValue('lnd');
+		await lightningWalletKitService.onModuleInit();
+		await expect(lightningWalletKitService.getLightningAddresses()).rejects.toBe(OrchardErrorCode.LightningSupportError);
 	});
 });

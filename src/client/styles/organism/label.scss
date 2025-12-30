@@ -18,6 +18,13 @@
     @extend %p-h-0-75;
     @extend %font-weight-semi-bold;
 
+    &.label-l{
+        @extend %orc-corner-large;
+        @extend %font-size-l;
+        @extend %p-v-0-5;
+        @extend %p-h-1;
+    }
+
     &.label-success{
         @extend %orc-inverse-tertiary-bg;
     }

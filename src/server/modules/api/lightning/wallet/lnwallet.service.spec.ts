@@ -11,9 +11,9 @@ import {LightningWalletService} from './lnwallet.service';
 import {OrchardLightningAccount} from './lnwallet.model';
 
 describe('LightningWalletService', () => {
-	let lightning_wallet_service: LightningWalletService;
-	let walletkit_service: jest.Mocked<LightningWalletKitService>;
-	let error_service: jest.Mocked<ErrorService>;
+	let lightningWalletService: LightningWalletService;
+	let walletkitService: jest.Mocked<LightningWalletKitService>;
+	let errorService: jest.Mocked<ErrorService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -24,17 +24,17 @@ describe('LightningWalletService', () => {
 			],
 		}).compile();
 
-		lightning_wallet_service = module.get<LightningWalletService>(LightningWalletService);
-		walletkit_service = module.get(LightningWalletKitService);
-		error_service = module.get(ErrorService);
+		lightningWalletService = module.get<LightningWalletService>(LightningWalletService);
+		walletkitService = module.get(LightningWalletKitService);
+		errorService = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {
-		expect(lightning_wallet_service).toBeDefined();
+		expect(lightningWalletService).toBeDefined();
 	});
 
 	it('returns OrchardLightningAccount[] on success', async () => {
-		walletkit_service.getLightningAddresses.mockResolvedValue({
+		walletkitService.getLightningAddresses.mockResolvedValue({
 			account_with_addresses: [
 				{
 					name: 'bech32',
@@ -44,16 +44,16 @@ describe('LightningWalletService', () => {
 				},
 			],
 		} as any);
-		const result = await lightning_wallet_service.getListAccounts('TAG');
+		const result = await lightningWalletService.getListAccounts('TAG');
 		expect(Array.isArray(result)).toBe(true);
 		expect(result[0]).toBeInstanceOf(OrchardLightningAccount);
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError', async () => {
-		walletkit_service.getLightningAddresses.mockRejectedValue(new Error('boom'));
-		error_service.resolveError.mockReturnValue(OrchardErrorCode.LightningRpcActionError);
-		await expect(lightning_wallet_service.getListAccounts('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
-		const calls = error_service.resolveError.mock.calls;
+		walletkitService.getLightningAddresses.mockRejectedValue(new Error('boom'));
+		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.LightningRpcActionError});
+		await expect(lightningWalletService.getListAccounts('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
+		const calls = errorService.resolveError.mock.calls;
 		const [, , tag_arg, code_arg] = calls[calls.length - 1];
 		expect(tag_arg).toBe('MY_TAG');
 		expect(code_arg).toEqual({errord: OrchardErrorCode.LightningRpcActionError});

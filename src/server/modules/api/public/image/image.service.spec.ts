@@ -11,9 +11,9 @@ import {PublicImageService} from './image.service';
 import {OrchardPublicImage} from './image.model';
 
 describe('PublicImageService', () => {
-	let public_image_service: PublicImageService;
-	let fetch_service: jest.Mocked<FetchService>;
-	let error_service: jest.Mocked<ErrorService>;
+	let publicImageService: PublicImageService;
+	let fetchService: jest.Mocked<FetchService>;
+	let errorService: jest.Mocked<ErrorService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -24,13 +24,13 @@ describe('PublicImageService', () => {
 			],
 		}).compile();
 
-		public_image_service = module.get<PublicImageService>(PublicImageService);
-		fetch_service = module.get(FetchService);
-		error_service = module.get(ErrorService);
+		publicImageService = module.get<PublicImageService>(PublicImageService);
+		fetchService = module.get(FetchService);
+		errorService = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {
-		expect(public_image_service).toBeDefined();
+		expect(publicImageService).toBeDefined();
 	});
 
 	it('returns OrchardPublicImage with content type and buffer', async () => {
@@ -40,16 +40,16 @@ describe('PublicImageService', () => {
 			headers: {get: (k: string) => headers.get(k) || null},
 			arrayBuffer: async () => new TextEncoder().encode('data').buffer,
 		} as any;
-		fetch_service.fetchWithProxy.mockResolvedValue(response);
-		const result = await public_image_service.getImageData('TAG', 'https://example.com/i.png');
+		fetchService.fetchWithProxy.mockResolvedValue(response);
+		const result = await publicImageService.getImageData('TAG', 'https://example.com/i.png');
 		expect(result).toBeInstanceOf(OrchardPublicImage);
 		expect(result.type).toBe('image/png');
 		expect(result.data?.startsWith('data:image/png;base64,')).toBe(true);
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError', async () => {
-		fetch_service.fetchWithProxy.mockRejectedValue(new Error('boom'));
-		error_service.resolveError.mockReturnValue(OrchardErrorCode.PublicAssetError);
-		await expect(public_image_service.getImageData('MY_TAG', 'https://ex/i.png')).rejects.toBeInstanceOf(OrchardApiError);
+		fetchService.fetchWithProxy.mockRejectedValue(new Error('boom'));
+		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.PublicAssetError});
+		await expect(publicImageService.getImageData('MY_TAG', 'https://ex/i.png')).rejects.toBeInstanceOf(OrchardApiError);
 	});
 });

@@ -47,7 +47,7 @@ describe('AuthAuthenticationService', () => {
 	it('getToken wraps errors via resolveError and throws OrchardApiError', async () => {
 		userService.getUserByName.mockResolvedValue({id: '123'} as any);
 		authService.getToken.mockRejectedValue(new Error('boom'));
-		errorService.resolveError.mockReturnValue(OrchardErrorCode.AuthenticationError);
+		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.AuthenticationError});
 		await expect(authenticationService.authenticate('MY_TAG', {name: 'n', password: 'p'} as any)).rejects.toBeInstanceOf(
 			OrchardApiError,
 		);

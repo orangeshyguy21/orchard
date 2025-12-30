@@ -1,6 +1,8 @@
 /* Core Dependencies */
 import {Injectable, Logger, OnModuleInit} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
+/* Vendor Dependencies */
+import {ServiceError, status} from '@grpc/grpc-js';
 /* Application Dependencies */
 import {CdkService} from '@server/modules/cashu/cdk/cdk.service';
 import {NutshellService} from '@server/modules/cashu/nutshell/nutshell.service';
@@ -36,12 +38,28 @@ export class CashuMintRpcService implements OnModuleInit {
 
 		return new Promise((resolve, reject) => {
 			if (!(method in this.grpc_client)) reject(OrchardErrorCode.MintSupportError);
-			this.grpc_client[method](request, (error: Error | null, response: any) => {
-				if (error) this.logger.debug('error', error);
-				if (error && error?.message?.includes('14 UNAVAILABLE')) reject(OrchardErrorCode.MintRpcConnectionError);
-				if (error && error?.message?.includes('13 INTERNAL')) reject(OrchardErrorCode.MintRpcInternalError);
-				if (error && error?.message?.includes('12 UNIMPLEMENTED')) reject(OrchardErrorCode.MintSupportError);
-				if (error) reject(error);
+			this.grpc_client[method](request, (error: ServiceError | null, response: any) => {
+				if (error) {
+					this.logger.debug(`gRPC error: ${error.message}`);
+
+					switch (error.code) {
+						case status.INVALID_ARGUMENT:
+							reject({code: OrchardErrorCode.MintRpcInvalidArgumentError, details: error.details});
+							break;
+						case status.UNIMPLEMENTED:
+							reject({code: OrchardErrorCode.MintSupportError, details: error.details});
+							break;
+						case status.INTERNAL:
+							reject({code: OrchardErrorCode.MintRpcInternalError, details: error.details});
+							break;
+						case status.UNAVAILABLE:
+							reject({code: OrchardErrorCode.MintRpcConnectionError, details: error.details});
+							break;
+						default:
+							reject(error);
+					}
+					return;
+				}
 				resolve(response);
 			});
 		});
@@ -153,6 +171,12 @@ export class CashuMintRpcService implements OnModuleInit {
 
 	async updateNut04Quote({quote_id, state}: {quote_id: string; state: string}): Promise<{quote_id: string; state: string}> {
 		return this.makeGrpcRequest('UpdateNut04Quote', {quote_id, state});
+	}
+
+	async updateNut05Quote({quote_id, state}: {quote_id: string; state: string}): Promise<{quote_id: string; state: string}> {
+		if (this.type === 'cdk')
+			throw {code: OrchardErrorCode.MintSupportError, details: 'Updating melt quotes is not supported in CDK mints'};
+		if (this.type === 'nutshell') return this.makeGrpcRequest('UpdateNut05Quote', {quote_id, state});
 	}
 
 	async rotateNextKeyset({

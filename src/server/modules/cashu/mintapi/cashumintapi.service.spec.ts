@@ -7,9 +7,9 @@ import {ConfigService} from '@nestjs/config';
 import {FetchService} from '@server/modules/fetch/fetch.service';
 
 describe('CashuMintApiService', () => {
-	let cashu_mint_api_service: CashuMintApiService;
-	let config_service: jest.Mocked<ConfigService>;
-	let fetch_service: jest.Mocked<FetchService>;
+	let cashuMintApiService: CashuMintApiService;
+	let configService: jest.Mocked<ConfigService>;
+	let fetchService: jest.Mocked<FetchService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -20,21 +20,21 @@ describe('CashuMintApiService', () => {
 			],
 		}).compile();
 
-		cashu_mint_api_service = module.get<CashuMintApiService>(CashuMintApiService);
-		config_service = module.get(ConfigService);
-		fetch_service = module.get(FetchService);
+		cashuMintApiService = module.get<CashuMintApiService>(CashuMintApiService);
+		configService = module.get(ConfigService);
+		fetchService = module.get(FetchService);
 	});
 
 	it('should be defined', () => {
-		expect(cashu_mint_api_service).toBeDefined();
+		expect(cashuMintApiService).toBeDefined();
 	});
 
 	it('fetches mint info from configured endpoint', async () => {
-		config_service.get.mockReturnValue('https://mint');
+		configService.get.mockReturnValue('https://mint');
 		const json = jest.fn().mockResolvedValue({name: 'Mint'});
-		fetch_service.fetchWithProxy.mockResolvedValue({json} as any);
-		const out = await cashu_mint_api_service.getMintInfo();
-		expect(fetch_service.fetchWithProxy).toHaveBeenCalledWith('https://mint/v1/info', {
+		fetchService.fetchWithProxy.mockResolvedValue({json} as any);
+		const out = await cashuMintApiService.getMintInfo();
+		expect(fetchService.fetchWithProxy).toHaveBeenCalledWith('https://mint/v1/info', {
 			method: 'GET',
 			headers: {'Content-Type': 'application/json'},
 		});
@@ -42,45 +42,45 @@ describe('CashuMintApiService', () => {
 	});
 
 	it('calls config with expected key and parses json once', async () => {
-		config_service.get.mockReturnValue('https://mint');
+		configService.get.mockReturnValue('https://mint');
 		const json = jest.fn().mockResolvedValue({ok: true});
-		fetch_service.fetchWithProxy.mockResolvedValue({json} as any);
-		await cashu_mint_api_service.getMintInfo();
-		expect(config_service.get).toHaveBeenCalledTimes(1);
-		expect(config_service.get).toHaveBeenCalledWith('cashu.api');
+		fetchService.fetchWithProxy.mockResolvedValue({json} as any);
+		await cashuMintApiService.getMintInfo();
+		expect(configService.get).toHaveBeenCalledTimes(1);
+		expect(configService.get).toHaveBeenCalledWith('cashu.api');
 		expect(json).toHaveBeenCalledTimes(1);
 	});
 
 	it('propagates fetchWithProxy rejection', async () => {
-		config_service.get.mockReturnValue('https://mint');
-		fetch_service.fetchWithProxy.mockRejectedValueOnce(new Error('network'));
-		await expect(cashu_mint_api_service.getMintInfo()).rejects.toThrow('network');
+		configService.get.mockReturnValue('https://mint');
+		fetchService.fetchWithProxy.mockRejectedValueOnce(new Error('network'));
+		await expect(cashuMintApiService.getMintInfo()).rejects.toThrow('network');
 	});
 
 	it('propagates response.json rejection', async () => {
-		config_service.get.mockReturnValue('https://mint');
+		configService.get.mockReturnValue('https://mint');
 		const json = jest.fn().mockRejectedValueOnce(new Error('bad json'));
-		fetch_service.fetchWithProxy.mockResolvedValue({json} as any);
-		await expect(cashu_mint_api_service.getMintInfo()).rejects.toThrow('bad json');
+		fetchService.fetchWithProxy.mockResolvedValue({json} as any);
+		await expect(cashuMintApiService.getMintInfo()).rejects.toThrow('bad json');
 	});
 
 	it('builds request url without trailing slash', async () => {
-		config_service.get.mockReturnValue('https://mint');
+		configService.get.mockReturnValue('https://mint');
 		const json = jest.fn().mockResolvedValue({});
-		fetch_service.fetchWithProxy.mockResolvedValue({json} as any);
-		await cashu_mint_api_service.getMintInfo();
-		expect(fetch_service.fetchWithProxy).toHaveBeenCalledWith('https://mint/v1/info', {
+		fetchService.fetchWithProxy.mockResolvedValue({json} as any);
+		await cashuMintApiService.getMintInfo();
+		expect(fetchService.fetchWithProxy).toHaveBeenCalledWith('https://mint/v1/info', {
 			method: 'GET',
 			headers: {'Content-Type': 'application/json'},
 		});
 	});
 
 	it('builds request url with trailing slash (current double-slash behavior)', async () => {
-		config_service.get.mockReturnValue('https://mint/');
+		configService.get.mockReturnValue('https://mint/');
 		const json = jest.fn().mockResolvedValue({});
-		fetch_service.fetchWithProxy.mockResolvedValue({json} as any);
-		await cashu_mint_api_service.getMintInfo();
-		expect(fetch_service.fetchWithProxy).toHaveBeenCalledWith('https://mint//v1/info', {
+		fetchService.fetchWithProxy.mockResolvedValue({json} as any);
+		await cashuMintApiService.getMintInfo();
+		expect(fetchService.fetchWithProxy).toHaveBeenCalledWith('https://mint//v1/info', {
 			method: 'GET',
 			headers: {'Content-Type': 'application/json'},
 		});

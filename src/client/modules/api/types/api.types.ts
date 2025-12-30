@@ -5,7 +5,7 @@ import {OrchardStatus} from '@shared/generated.types';
 
 export type OrchardRes<T> = {
 	data: T;
-	errors?: {message: string; extensions: {code: number}}[];
+	errors?: {message: string; extensions: {code: number; details?: string}}[];
 };
 
 export type OrchardWsRes<T> = {

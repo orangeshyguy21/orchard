@@ -41,7 +41,7 @@ export class MintSubsectionDatabaseTableMintComponent implements AfterViewInit {
 	public loading = input.required<boolean>();
 	public lightning_request = input<LightningRequest | null>(null);
 
-	public setStatePaid = output<string>();
+	public setStatePaid = output<MintMintQuote>();
 
 	public qr_code!: QRCodeStyling;
 	public copy_animation_state: 'visible' | 'hidden' = 'hidden';
@@ -137,6 +137,7 @@ export class MintSubsectionDatabaseTableMintComponent implements AfterViewInit {
 
 	public onSetStatePaid(event: Event): void {
 		event.stopPropagation();
-		this.setStatePaid.emit(this.quote().id);
+		event.preventDefault();
+		this.setStatePaid.emit(this.quote());
 	}
 }

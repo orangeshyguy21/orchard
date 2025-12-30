@@ -11,9 +11,9 @@ import {TaprootAssetsAssetService} from './tapasset.service';
 import {OrchardTaprootAssets, OrchardTaprootAssetsUtxo} from './tapasset.model';
 
 describe('TaprootAssetsAssetService', () => {
-	let taproot_assets_asset_service: TaprootAssetsAssetService;
-	let tap_service: jest.Mocked<TaprootAssetsService>;
-	let error_service: jest.Mocked<ErrorService>;
+	let taprootAssetsAssetService: TaprootAssetsAssetService;
+	let tapService: jest.Mocked<TaprootAssetsService>;
+	let errorService: jest.Mocked<ErrorService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -24,17 +24,17 @@ describe('TaprootAssetsAssetService', () => {
 			],
 		}).compile();
 
-		taproot_assets_asset_service = module.get<TaprootAssetsAssetService>(TaprootAssetsAssetService);
-		tap_service = module.get(TaprootAssetsService);
-		error_service = module.get(ErrorService);
+		taprootAssetsAssetService = module.get<TaprootAssetsAssetService>(TaprootAssetsAssetService);
+		tapService = module.get(TaprootAssetsService);
+		errorService = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {
-		expect(taproot_assets_asset_service).toBeDefined();
+		expect(taprootAssetsAssetService).toBeDefined();
 	});
 
 	it('getTaprootAssets returns OrchardTaprootAssets', async () => {
-		tap_service.getListTaprootAssets.mockResolvedValue({
+		tapService.getListTaprootAssets.mockResolvedValue({
 			assets: [
 				{
 					version: 0 as any,
@@ -55,12 +55,12 @@ describe('TaprootAssetsAssetService', () => {
 			unconfirmed_transfers: '0',
 			unconfirmed_mints: '0',
 		} as any);
-		const result = await taproot_assets_asset_service.getTaprootAssets('TAG');
+		const result = await taprootAssetsAssetService.getTaprootAssets('TAG');
 		expect(result).toBeInstanceOf(OrchardTaprootAssets);
 	});
 
 	it('getTaprootAssetsUtxo returns OrchardTaprootAssetsUtxo[]', async () => {
-		tap_service.getListTaprootAssetsUtxos.mockResolvedValue({
+		tapService.getListTaprootAssetsUtxos.mockResolvedValue({
 			managed_utxos: {
 				'txid:0': {
 					amt_sat: '0',
@@ -84,16 +84,16 @@ describe('TaprootAssetsAssetService', () => {
 				},
 			},
 		} as any);
-		const result = await taproot_assets_asset_service.getTaprootAssetsUtxo('TAG');
+		const result = await taprootAssetsAssetService.getTaprootAssetsUtxo('TAG');
 		expect(Array.isArray(result)).toBe(true);
 		expect(result[0]).toBeInstanceOf(OrchardTaprootAssetsUtxo);
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError', async () => {
-		tap_service.getListTaprootAssets.mockRejectedValue(new Error('boom'));
-		error_service.resolveError.mockReturnValue(OrchardErrorCode.TaprootAssetsRpcActionError);
-		await expect(taproot_assets_asset_service.getTaprootAssets('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
-		const calls = error_service.resolveError.mock.calls;
+		tapService.getListTaprootAssets.mockRejectedValue(new Error('boom'));
+		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.TaprootAssetsRpcActionError});
+		await expect(taprootAssetsAssetService.getTaprootAssets('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
+		const calls = errorService.resolveError.mock.calls;
 		const [, , tag_arg, code_arg] = calls[calls.length - 1];
 		expect(tag_arg).toBe('MY_TAG');
 		expect(code_arg).toEqual({errord: OrchardErrorCode.TaprootAssetsRpcActionError});

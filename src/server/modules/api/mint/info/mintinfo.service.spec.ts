@@ -12,10 +12,10 @@ import {MintInfoService} from './mintinfo.service';
 import {OrchardMintInfo, OrchardMintInfoRpc} from './mintinfo.model';
 
 describe('MintInfoService', () => {
-	let mint_info_service: MintInfoService;
-	let mint_api_service: jest.Mocked<CashuMintApiService>;
-	let mint_rpc_service: jest.Mocked<CashuMintRpcService>;
-	let error_service: jest.Mocked<ErrorService>;
+	let mintInfoService: MintInfoService;
+	let mintApiService: jest.Mocked<CashuMintApiService>;
+	let mintRpcService: jest.Mocked<CashuMintRpcService>;
+	let errorService: jest.Mocked<ErrorService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -41,19 +41,19 @@ describe('MintInfoService', () => {
 			],
 		}).compile();
 
-		mint_info_service = module.get<MintInfoService>(MintInfoService);
-		mint_api_service = module.get(CashuMintApiService);
-		mint_rpc_service = module.get(CashuMintRpcService);
-		error_service = module.get(ErrorService);
+		mintInfoService = module.get<MintInfoService>(MintInfoService);
+		mintApiService = module.get(CashuMintApiService);
+		mintRpcService = module.get(CashuMintRpcService);
+		errorService = module.get(ErrorService);
 	});
 
 	it('should be defined', () => {
-		expect(mint_info_service).toBeDefined();
+		expect(mintInfoService).toBeDefined();
 	});
 
 	it('getMintInfo returns OrchardMintInfo on success', async () => {
 		// minimal shape for OrchardMintInfo mapping
-		mint_api_service.getMintInfo.mockResolvedValue({
+		mintApiService.getMintInfo.mockResolvedValue({
 			name: 'm',
 			pubkey: 'p',
 			version: 'v',
@@ -75,12 +75,12 @@ describe('MintInfoService', () => {
 				'12': {supported: true},
 			},
 		} as any);
-		const result = await mint_info_service.getMintInfo('TAG');
+		const result = await mintInfoService.getMintInfo('TAG');
 		expect(result).toBeInstanceOf(OrchardMintInfo);
 	});
 
 	it('getMintInfoRpc returns OrchardMintInfoRpc on success', async () => {
-		mint_rpc_service.getMintInfo.mockResolvedValue({
+		mintRpcService.getMintInfo.mockResolvedValue({
 			name: 'm',
 			version: 'v',
 			description: 'd',
@@ -92,37 +92,37 @@ describe('MintInfoService', () => {
 			icon_url: 'u',
 			urls: [],
 		} as any);
-		const result = await mint_info_service.getMintInfoRpc('TAG');
+		const result = await mintInfoService.getMintInfoRpc('TAG');
 		expect(result).toBeInstanceOf(OrchardMintInfoRpc);
 	});
 
 	it('update operations call RPC and return inputs', async () => {
-		await mint_info_service.updateMintName('TAG', {name: 'x'} as any);
-		await mint_info_service.updateMintIcon('TAG', {icon_url: 'u'} as any);
-		await mint_info_service.updateMintShortDescription('TAG', {description: 's'} as any);
-		await mint_info_service.updateMintLongDescription('TAG', {description: 'l'} as any);
-		await mint_info_service.updateMintMotd('TAG', {motd: 'm'} as any);
-		await mint_info_service.addMintUrl('TAG', {url: 'u'} as any);
-		await mint_info_service.removeMintUrl('TAG', {url: 'u'} as any);
-		await mint_info_service.addMintContact('TAG', {method: 'm', info: 'i'} as any);
-		await mint_info_service.removeMintContact('TAG', {method: 'm', info: 'i'} as any);
-		expect(mint_rpc_service.updateName).toHaveBeenCalled();
-		expect(mint_rpc_service.updateIconUrl).toHaveBeenCalled();
-		expect(mint_rpc_service.updateShortDescription).toHaveBeenCalled();
-		expect(mint_rpc_service.updateLongDescription).toHaveBeenCalled();
-		expect(mint_rpc_service.updateMotd).toHaveBeenCalled();
-		expect(mint_rpc_service.addUrl).toHaveBeenCalled();
-		expect(mint_rpc_service.removeUrl).toHaveBeenCalled();
-		expect(mint_rpc_service.addContact).toHaveBeenCalled();
-		expect(mint_rpc_service.removeContact).toHaveBeenCalled();
+		await mintInfoService.updateMintName('TAG', {name: 'x'} as any);
+		await mintInfoService.updateMintIcon('TAG', {icon_url: 'u'} as any);
+		await mintInfoService.updateMintShortDescription('TAG', {description: 's'} as any);
+		await mintInfoService.updateMintLongDescription('TAG', {description: 'l'} as any);
+		await mintInfoService.updateMintMotd('TAG', {motd: 'm'} as any);
+		await mintInfoService.addMintUrl('TAG', {url: 'u'} as any);
+		await mintInfoService.removeMintUrl('TAG', {url: 'u'} as any);
+		await mintInfoService.addMintContact('TAG', {method: 'm', info: 'i'} as any);
+		await mintInfoService.removeMintContact('TAG', {method: 'm', info: 'i'} as any);
+		expect(mintRpcService.updateName).toHaveBeenCalled();
+		expect(mintRpcService.updateIconUrl).toHaveBeenCalled();
+		expect(mintRpcService.updateShortDescription).toHaveBeenCalled();
+		expect(mintRpcService.updateLongDescription).toHaveBeenCalled();
+		expect(mintRpcService.updateMotd).toHaveBeenCalled();
+		expect(mintRpcService.addUrl).toHaveBeenCalled();
+		expect(mintRpcService.removeUrl).toHaveBeenCalled();
+		expect(mintRpcService.addContact).toHaveBeenCalled();
+		expect(mintRpcService.removeContact).toHaveBeenCalled();
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError (getMintInfo)', async () => {
 		const err = new Error('boom');
-		mint_api_service.getMintInfo.mockRejectedValue(err);
-		error_service.resolveError.mockReturnValue(OrchardErrorCode.MintPublicApiError);
-		await expect(mint_info_service.getMintInfo('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
-		const calls = error_service.resolveError.mock.calls;
+		mintApiService.getMintInfo.mockRejectedValue(err);
+		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.MintPublicApiError});
+		await expect(mintInfoService.getMintInfo('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
+		const calls = errorService.resolveError.mock.calls;
 		const [, , tag_arg, code_arg] = calls[calls.length - 1];
 		expect(tag_arg).toBe('MY_TAG');
 		expect(code_arg).toEqual({errord: OrchardErrorCode.MintPublicApiError});

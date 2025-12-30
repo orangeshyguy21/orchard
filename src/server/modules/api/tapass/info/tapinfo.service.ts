@@ -23,10 +23,10 @@ export class TaprootAssetsInfoService {
 			const ta_info: TaprootAssetsInfo = await this.taprootAssetsService.getTaprootAssetsInfo();
 			return new OrchardTaprootAssetsInfo(ta_info);
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.TaprootAssetsRpcActionError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 }

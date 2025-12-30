@@ -6,6 +6,8 @@
 /out-tsc
 /bazel-out
 /public/config.json
+/schema.gql
+/src/shared/generated.types.ts
 
 # data
 /data/*

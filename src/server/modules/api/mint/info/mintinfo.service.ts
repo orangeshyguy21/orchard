@@ -43,10 +43,10 @@ export class MintInfoService {
 			const cashu_info: CashuMintInfo = await this.cashuMintApiService.getMintInfo();
 			return new OrchardMintInfo(cashu_info);
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintPublicApiError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 
@@ -55,10 +55,10 @@ export class MintInfoService {
 			const cashu_info: CashuMintInfoRpc = await this.cashuMintRpcService.getMintInfo();
 			return new OrchardMintInfoRpc(cashu_info);
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintRpcActionError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 
@@ -67,10 +67,10 @@ export class MintInfoService {
 			await this.cashuMintRpcService.updateName(mint_name_update);
 			return mint_name_update;
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintRpcActionError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 
@@ -79,10 +79,10 @@ export class MintInfoService {
 			await this.cashuMintRpcService.updateIconUrl(mint_icon_update);
 			return mint_icon_update;
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintRpcActionError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 
@@ -91,10 +91,10 @@ export class MintInfoService {
 			await this.cashuMintRpcService.updateShortDescription(mint_desc_update);
 			return mint_desc_update;
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintRpcActionError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 
@@ -103,10 +103,10 @@ export class MintInfoService {
 			await this.cashuMintRpcService.updateLongDescription(mint_desc_update);
 			return mint_desc_update;
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintRpcActionError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 
@@ -115,10 +115,10 @@ export class MintInfoService {
 			await this.cashuMintRpcService.updateMotd(mint_motd_update);
 			return mint_motd_update;
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintRpcActionError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 
@@ -127,10 +127,10 @@ export class MintInfoService {
 			await this.cashuMintRpcService.addUrl(mint_url_update);
 			return mint_url_update;
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintRpcActionError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 
@@ -139,10 +139,10 @@ export class MintInfoService {
 			await this.cashuMintRpcService.removeUrl(mint_url_update);
 			return mint_url_update;
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintRpcActionError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 
@@ -151,10 +151,10 @@ export class MintInfoService {
 			await this.cashuMintRpcService.addContact(mint_contact_update);
 			return mint_contact_update;
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintRpcActionError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 
@@ -163,10 +163,10 @@ export class MintInfoService {
 			await this.cashuMintRpcService.removeContact(mint_contact_update);
 			return mint_contact_update;
 		} catch (error) {
-			const error_code = this.errorService.resolveError(this.logger, error, tag, {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintRpcActionError,
 			});
-			throw new OrchardApiError(error_code);
+			throw new OrchardApiError(orchard_error);
 		}
 	}
 }
