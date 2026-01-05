@@ -19,9 +19,9 @@ describe('MintSubsectionConfigFormEnabledComponent', () => {
 
 		fixture = TestBed.createComponent(MintSubsectionConfigFormEnabledComponent);
 		component = fixture.componentInstance;
-		component.nut = 'nut4';
-		component.form_group = new FormGroup({enabled: new FormControl(false)}) as any;
-		component.enabled = false;
+		fixture.componentRef.setInput('nut', 'nut4');
+		fixture.componentRef.setInput('form_group', new FormGroup({enabled: new FormControl(false)}));
+		fixture.componentRef.setInput('enabled', false);
 		fixture.detectChanges();
 	});
 
