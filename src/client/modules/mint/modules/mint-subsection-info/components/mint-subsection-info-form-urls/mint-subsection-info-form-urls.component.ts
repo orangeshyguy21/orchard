@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input, Output, EventEmitter} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output, signal} from '@angular/core';
 import {FormGroup, FormArray} from '@angular/forms';
 /* Application Dependencies */
 import {MintInfoRpc} from '@client/modules/mint/classes/mint-info-rpc.class';
@@ -12,42 +12,41 @@ import {MintInfoRpc} from '@client/modules/mint/classes/mint-info-rpc.class';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintSubsectionInfoFormUrlsComponent {
-	@Input() form_group!: FormGroup;
-	@Input() form_array!: FormArray;
-	@Input() array_name!: keyof MintInfoRpc;
-	@Input() array_length!: number; // forces update on array length change
+	public form_group = input.required<FormGroup>(); // form group containing the urls controls
+	public form_array = input.required<FormArray>(); // form array containing url entries
+	public array_name = input.required<keyof MintInfoRpc>(); // name of the form array to bind
+	public array_length = input.required<number>(); // current length of the form array
 
-	@Output() update = new EventEmitter<{array_name: keyof MintInfoRpc; control_index: number}>();
-	@Output() cancel = new EventEmitter<{array_name: keyof MintInfoRpc; control_index: number}>();
-	@Output() remove = new EventEmitter<{array_name: keyof MintInfoRpc; control_index: number}>();
-	@Output() addControl = new EventEmitter<void>();
+	public update = output<{array_name: keyof MintInfoRpc; control_index: number}>(); // emitted when a url is updated
+	public cancel = output<{array_name: keyof MintInfoRpc; control_index: number}>(); // emitted when a url edit is cancelled
+	public remove = output<{array_name: keyof MintInfoRpc; control_index: number}>(); // emitted when a url is removed
+	public addControl = output<void>(); // emitted when a new url is added
 
-	public added_index!: number;
-
-	constructor() {}
+	public added_index = signal<number>(0); // index of the newly added url
+	public help_status = signal<boolean>(false); // tracks if the help is visible
 
 	public onAddControl(): void {
-		this.added_index = this.form_array.length;
+		this.added_index.set(this.form_array().length);
 		this.addControl.emit();
 	}
 
 	public onControlUpdate(index: number): void {
 		this.update.emit({
-			array_name: this.array_name,
+			array_name: this.array_name(),
 			control_index: index,
 		});
 	}
 
 	public onControlCancel(index: number): void {
 		this.cancel.emit({
-			array_name: this.array_name,
+			array_name: this.array_name(),
 			control_index: index,
 		});
 	}
 
 	public onControlRemove(index: number): void {
 		this.remove.emit({
-			array_name: this.array_name,
+			array_name: this.array_name(),
 			control_index: index,
 		});
 	}

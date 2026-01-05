@@ -1,14 +1,29 @@
 <div class="mint-info-form-urls-container">
-	<div class="title-form-section p-b-1">Connection URLs</div>
+	<div class="title-form-section p-b-1 flex flex-items-center flex-gap-0-5 cursor-pointer" (click)="help_status.set(!help_status())">
+		<span>Connection URLs</span>
+		<mat-icon class="icon-sm icon-dynamic-fill">info</mat-icon>
+	</div>
+
+	<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
+		<div class="orc-animation-expand-collapse-inner">
+			<div class="flex p-t-0-5 p-b-2">
+				<orc-form-help-text class="orc-surface-container-high-bg">
+					<div class="p-b-1">Updates the connection URLs for this mint.</div>
+					<div>Connection URLs inform how users can connect to your mint.</div>
+					<div>You can add multiple URLs to provide redundancy and improve accessibility.</div>
+				</orc-form-help-text>
+			</div>
+		</div>
+	</div>
 
 	<div class="flex flex-column flex-gap-1">
-		@for (url_control of form_array.controls; track $index) {
+		@for (url_control of form_array().controls; track $index) {
 			<orc-mint-subsection-info-form-url
-				[form_group]="form_group"
-				[form_array]="form_array"
+				[form_group]="form_group()"
+				[form_array]="form_array()"
 				[array_name]="'urls'"
 				[control_index]="$index"
-				[focused]="added_index === $index"
+				[focused]="added_index() === $index"
 				(update)="onControlUpdate($event)"
 				(cancel)="onControlCancel($event)"
 				(remove)="onControlRemove($event)"
