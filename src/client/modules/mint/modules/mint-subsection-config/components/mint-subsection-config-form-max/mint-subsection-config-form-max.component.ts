@@ -1,6 +1,22 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input, Output, EventEmitter, ViewChild, ElementRef, computed} from '@angular/core';
+import {
+	ChangeDetectionStrategy,
+	ChangeDetectorRef,
+	Component,
+	computed,
+	effect,
+	ElementRef,
+	inject,
+	input,
+	OnDestroy,
+	OnInit,
+	output,
+	signal,
+	viewChild,
+} from '@angular/core';
 import {FormGroup} from '@angular/forms';
+/* Vendor Dependencies */
+import {Subscription} from 'rxjs';
 /* Application Dependencies */
 import {OrchardNut4Method, OrchardNut5Method} from '@shared/generated.types';
 
@@ -11,58 +27,103 @@ import {OrchardNut4Method, OrchardNut5Method} from '@shared/generated.types';
 	styleUrl: './mint-subsection-config-form-max.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintSubsectionConfigFormMaxComponent {
-	@Input() form_group!: FormGroup;
-	@Input() control_name!: keyof OrchardNut4Method | keyof OrchardNut5Method;
-	@Input() unit!: string;
-	@Input() nut!: 'nut4' | 'nut5';
+export class MintSubsectionConfigFormMaxComponent implements OnInit, OnDestroy {
+	public form_group = input.required<FormGroup>(); // form group containing the max amount control
+	public control_name = input.required<keyof OrchardNut4Method | keyof OrchardNut5Method>(); // name of the form control to bind
+	public unit = input.required<string>(); // unit to display (e.g. 'sat')
+	public nut = input.required<'nut4' | 'nut5'>(); // which nut configuration this controls
 
-	@Output() update = new EventEmitter<keyof OrchardNut4Method | keyof OrchardNut5Method>();
-	@Output() cancel = new EventEmitter<keyof OrchardNut4Method | keyof OrchardNut5Method>();
-	@Output() hot = new EventEmitter<boolean>();
+	public update = output<keyof OrchardNut4Method | keyof OrchardNut5Method>(); // emitted when form is submitted
+	public cancel = output<keyof OrchardNut4Method | keyof OrchardNut5Method>(); // emitted when form is cancelled
+	public hot = output<boolean>(); // emitted when form hot state changes
 
-	@ViewChild('element_max') element_max!: ElementRef<HTMLInputElement>;
+	public element_max = viewChild.required<ElementRef<HTMLInputElement>>('element_max'); // reference to the input element
 
-	public get form_error(): string {
-		if (this.form_group.get(this.control_name)?.hasError('required')) return 'Required';
-		if (this.form_group.get(this.control_name)?.hasError('min'))
-			return `Must be at least ${this.form_group.get(this.control_name)?.getError('min')?.min}`;
-		if (this.form_group.get(this.control_name)?.hasError('orchardInteger')) return 'Must be a whole number';
-		if (this.form_group.get(this.control_name)?.hasError('orchardCents')) return 'Must have 2 decimals';
-		if (this.form_group.get(this.control_name)?.errors) return 'Invalid amount';
-		return '';
-	}
+	public focused_max = signal<boolean>(false); // tracks if the input is focused
+	public control_dirty = signal<boolean>(false); // tracks if the control is dirty
+	public control_touched = signal<boolean>(false); // tracks if the control has been touched
+	public form_error = signal<string>(''); // current form error message
+	public help_status = signal<boolean>(false); // tracks if the help is visible
+
+	public form_hot = computed(() => {
+		if (this.focused_max()) return true;
+		return this.control_dirty();
+	});
+
+	public control_invalid = computed(() => {
+		if (this.focused_max()) return false;
+		return (this.form_group().get(this.control_name())?.invalid && (this.control_dirty() || this.control_touched())) ?? false;
+	});
 
 	public help_text = computed(() => {
-		if (this.nut === 'nut4') return 'Configure the maximum amount of ecash that can be minted per deposit invoice.';
-		if (this.nut === 'nut5') return 'Configure the maximum amount of ecash that can be melted per withdrawal invoice.';
+		if (this.nut() === 'nut4') return 'Configure the maximum amount of ecash that can be minted per deposit invoice.';
+		if (this.nut() === 'nut5') return 'Configure the maximum amount of ecash that can be melted per withdrawal invoice.';
 		return '';
 	});
 
-	public get form_hot(): boolean {
-		if (document.activeElement === this.element_max?.nativeElement) {
-			this.hot.emit(true);
-			return true;
-		}
-		if (this.form_group?.get(this.control_name)?.dirty) {
-			this.hot.emit(true);
-			return true;
-		}
-		this.hot.emit(false);
-		return false;
+	private cdr = inject(ChangeDetectorRef);
+	private subscription: Subscription = new Subscription();
+
+	constructor() {
+		effect(() => {
+			this.hot.emit(this.form_hot());
+		});
 	}
 
-	constructor() {}
+	ngOnInit(): void {
+		this.subscription.add(
+			this.form_group().valueChanges.subscribe(() => {
+				this.control_dirty.set(this.form_group().get(this.control_name())?.dirty ?? false);
+				this.updateFormError();
+				this.cdr.detectChanges();
+			}),
+		);
+	}
+
+	public onFocus(): void {
+		this.focused_max.set(true);
+	}
+
+	public onBlur(): void {
+		this.focused_max.set(false);
+		this.control_touched.set(true);
+		this.updateFormError();
+	}
 
 	public onSubmit(event: Event): void {
 		event.preventDefault();
-		this.update.emit(this.control_name);
-		this.element_max.nativeElement.blur();
+		this.update.emit(this.control_name());
+		this.element_max().nativeElement.blur();
+		this.control_dirty.set(false);
+		this.control_touched.set(false);
 	}
 
 	public onCancel(event: Event): void {
 		event.preventDefault();
-		this.cancel.emit(this.control_name);
-		this.element_max.nativeElement.blur();
+		this.cancel.emit(this.control_name());
+		this.element_max().nativeElement.blur();
+		this.control_dirty.set(false);
+		this.control_touched.set(false);
+	}
+
+	private updateFormError(): void {
+		const control = this.form_group().get(this.control_name());
+		if (control?.hasError('required')) {
+			this.form_error.set('Required');
+		} else if (control?.hasError('min')) {
+			this.form_error.set(`Must be at least ${control.getError('min')?.min}`);
+		} else if (control?.hasError('orchardInteger')) {
+			this.form_error.set('Must be a whole number');
+		} else if (control?.hasError('orchardCents')) {
+			this.form_error.set('Must have 2 decimals');
+		} else if (control?.errors) {
+			this.form_error.set('Invalid amount');
+		} else {
+			this.form_error.set('');
+		}
+	}
+
+	ngOnDestroy(): void {
+		this.subscription.unsubscribe();
 	}
 }
