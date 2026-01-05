@@ -82,6 +82,8 @@ const ICONS = [
   'spa',
   'credit_score',
   'refresh',
+  'add_comment',
+  'chat_bubble',
 ];
 
 // Sort alphabetically and remove duplicates
