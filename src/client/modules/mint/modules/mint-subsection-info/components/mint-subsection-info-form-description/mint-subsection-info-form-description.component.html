@@ -1,22 +1,43 @@
-<div>
-	<form [formGroup]="form_group" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)" (keydown.escape)="onCancel($event)">
-		<orc-form-field-dynamic [hot]="form_hot" (submit)="onSubmit($event)" (cancel)="onCancel($event)">
+<div class="mint-info-form-description-container">
+	<form [formGroup]="form_group()" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)" (keydown.escape)="onCancel($event)">
+		<orc-form-field-dynamic
+			[hot]="focused_description() || form_group().get(control_name())?.dirty || false"
+			[invalid]="form_group().get(control_name())?.invalid || false"
+			(submit)="onSubmit($event)"
+			(cancel)="onCancel($event)"
+		>
 			<mat-form-field
 				appearance="fill"
-				[ngClass]="form_hot ? 'orc-hot-form-field' : 'orc-cold-form-field'"
+				[ngClass]="
+					focused_description() || form_group().get(control_name())?.dirty || false ? 'orc-hot-form-field' : 'orc-cold-form-field'
+				"
 				class="w-full orc-dynamic-form-field"
 			>
-				<mat-label>Description</mat-label>
+				<mat-label class="flex flex-items-center flex-gap-0-5 cursor-pointer" (click)="help_status.set(!help_status())">
+					<span>Description</span>
+					<mat-icon class="icon-sm icon-dynamic-fill">info</mat-icon>
+				</mat-label>
 				<textarea
-					type="text"
 					rows="1"
 					#element_description
 					matInput
-					[formControlName]="control_name"
+					[formControlName]="control_name()"
 					[formAutogrow]="true"
 					placeholder="Ex. Describe your mint"
+					(focus)="focused_description.set(true)"
+					(blur)="focused_description.set(false)"
 				></textarea>
 			</mat-form-field>
 		</orc-form-field-dynamic>
+		<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
+			<div class="orc-animation-expand-collapse-inner">
+				<div class="flex p-t-0-5">
+					<orc-form-help-text class="orc-surface-container-high-bg">
+						<div class="p-b-1">Updates the description for this mint.</div>
+						<div>A description provides additional context about your mint in wallet interfaces.</div>
+					</orc-form-help-text>
+				</div>
+			</div>
+		</div>
 	</form>
 </div>
