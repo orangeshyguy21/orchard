@@ -17,13 +17,13 @@ describe('MintSubsectionConfigFormQuoteTtlComponent', () => {
 
 		fixture = TestBed.createComponent(MintSubsectionConfigFormQuoteTtlComponent);
 		component = fixture.componentInstance;
-		component.nut = 'nut4';
-		component.form_group = new FormGroup({mint_ttl: new FormControl(0)}) as any;
-		component.control_name = 'mint_ttl' as any;
-		component.disabled = false;
-		component.locale = 'en-US';
-		component.loading = true;
-		component.quotes = [] as any;
+		fixture.componentRef.setInput('nut', 'nut4');
+		fixture.componentRef.setInput('form_group', new FormGroup({mint_ttl: new FormControl(0)}));
+		fixture.componentRef.setInput('control_name', 'mint_ttl');
+		fixture.componentRef.setInput('disabled', false);
+		fixture.componentRef.setInput('locale', 'en-US');
+		fixture.componentRef.setInput('loading', true);
+		fixture.componentRef.setInput('quotes', []);
 		fixture.detectChanges();
 	});
 
