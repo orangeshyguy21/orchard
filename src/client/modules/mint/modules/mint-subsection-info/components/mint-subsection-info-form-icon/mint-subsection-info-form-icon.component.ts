@@ -2,14 +2,16 @@
 import {
 	ChangeDetectionStrategy,
 	Component,
-	Input,
-	ViewChild,
 	ElementRef,
-	Output,
-	EventEmitter,
+	ChangeDetectorRef,
 	OnInit,
 	OnDestroy,
-	ChangeDetectorRef,
+	afterNextRender,
+	input,
+	output,
+	signal,
+	computed,
+	viewChild,
 } from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {Subject, debounceTime, takeUntil} from 'rxjs';
@@ -24,95 +26,109 @@ import {MintInfoRpc} from '@client/modules/mint/classes/mint-info-rpc.class';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintSubsectionInfoFormIconComponent implements OnInit, OnDestroy {
-	@Input() form_group!: FormGroup;
-	@Input() control_name!: keyof MintInfoRpc;
-	@Input() icon_url: string | null = null;
-	@Input() focused: boolean = false;
+	public form_group = input.required<FormGroup>(); // form group containing the icon control
+	public control_name = input.required<keyof MintInfoRpc>(); // name of the form control to bind
+	public icon_url = input<string | null>(null); // current icon URL value
+	public focused = input<boolean>(false); // whether to auto-focus the input on init
 
-	@Output() update = new EventEmitter<keyof MintInfoRpc>();
-	@Output() cancel = new EventEmitter<keyof MintInfoRpc>();
+	public update = output<keyof MintInfoRpc>(); // emitted when form is submitted
+	public cancel = output<keyof MintInfoRpc>(); // emitted when form is cancelled
 
-	@ViewChild('element_icon_url') element_icon_url!: ElementRef<HTMLInputElement>;
+	public element_icon_url = viewChild.required<ElementRef<HTMLTextAreaElement>>('element_icon_url'); // reference to the textarea element
 
-	public form_ready: boolean = false;
+	public focused_icon = signal<boolean>(false); // tracks if the icon input is focused
+	public help_status = signal<boolean>(false); // tracks if the help is visible
+	public form_ready = signal<boolean>(false); // tracks if the form is ready
 
-	private url_loading: boolean = false;
-	private url_valid: boolean = true;
-	private form_url!: string;
-	private destroy$ = new Subject<void>();
-	private LOAD_ICON_SLEEP: number = 500;
+	private url_loading = signal<boolean>(false); // tracks if the icon URL is loading
+	private url_valid = signal<boolean>(true); // tracks if the icon URL is valid
+	private form_url = signal<string>(''); // form URL value for display
+	private destroy$ = new Subject<void>(); // subject for cleanup
+	private LOAD_ICON_SLEEP: number = 500; // delay for icon loading
 
-	public get display_icon_url(): string {
-		if (this.form_url !== undefined) return this.form_url;
-		return this.icon_url || '';
-	}
+	public display_icon_url = computed(() => {
+		const form_value = this.form_url();
+		if (form_value) return form_value;
+		return this.icon_url() || '';
+	});
 
-	public get icon_state(): string {
-		if (this.url_loading) return 'loading';
-		if (!this.display_icon_url) return 'unset';
-		return this.url_valid ? 'set' : 'error';
-	}
+	public icon_state = computed(() => {
+		if (this.url_loading()) return 'loading';
+		if (!this.display_icon_url()) return 'unset';
+		return this.url_valid() ? 'set' : 'error';
+	});
 
-	constructor(private cdr: ChangeDetectorRef) {}
-
-	ngOnInit(): void {
-		setTimeout(() => {
-			this.form_ready = true;
-			if (this.focused) this.element_icon_url.nativeElement.focus();
+	constructor(private cdr: ChangeDetectorRef) {
+		afterNextRender(() => {
+			this.form_ready.set(true);
+			if (this.focused()) this.element_icon_url().nativeElement.focus();
 			this.cdr.detectChanges();
 		});
-		this.form_group
-			.get(this.control_name)
+	}
+
+	ngOnInit(): void {
+		this.form_group()
+			.get(this.control_name())
 			?.valueChanges.pipe(debounceTime(this.LOAD_ICON_SLEEP), takeUntil(this.destroy$))
 			.subscribe((value) => {
 				this.renderIconUrl(value);
 			});
 	}
 
-	public get form_hot(): boolean {
-		if (document.activeElement === this.element_icon_url?.nativeElement) return true;
-		return this.form_group.get(this.control_name)?.dirty ? true : false;
-	}
-
+	/**
+	 * Handles icon click by focusing the textarea
+	 */
 	public onIconClick(): void {
-		this.element_icon_url.nativeElement.focus();
+		this.element_icon_url().nativeElement.focus();
 	}
 
+	/**
+	 * Handles form submission by emitting update event and blurring the textarea
+	 * @param {Event} event - the form submit event
+	 */
 	public onSubmit(event: Event): void {
 		event.preventDefault();
-		this.update.emit(this.control_name);
-		this.element_icon_url.nativeElement.blur();
+		this.update.emit(this.control_name());
+		this.element_icon_url().nativeElement.blur();
 	}
 
+	/**
+	 * Handles form cancellation by emitting cancel event and blurring the textarea
+	 * @param {Event} event - the cancel event
+	 */
 	public onCancel(event: Event): void {
 		event.preventDefault();
-		this.cancel.emit(this.control_name);
-		this.element_icon_url.nativeElement.blur();
-		this.form_url = this.icon_url || '';
+		this.cancel.emit(this.control_name());
+		this.element_icon_url().nativeElement.blur();
+		this.form_url.set(this.icon_url() || '');
 		this.cdr.detectChanges();
 	}
 
+	/**
+	 * Renders the icon URL by loading the image and validating it
+	 * @param {string} url - the URL to render
+	 */
 	private renderIconUrl(url: string): void {
-		this.form_url = url;
+		this.form_url.set(url);
 		this.cdr.detectChanges();
 		if (!url) return;
-		this.url_loading = true;
+		this.url_loading.set(true);
 		this.cdr.detectChanges();
 		const img = new Image();
 		img.src = url;
 
 		img.onload = () => {
 			setTimeout(() => {
-				this.url_loading = false;
-				this.url_valid = true;
+				this.url_loading.set(false);
+				this.url_valid.set(true);
 				this.cdr.detectChanges();
 			}, this.LOAD_ICON_SLEEP);
 		};
 		img.onerror = () => {
 			setTimeout(() => {
-				this.url_loading = false;
-				this.url_valid = false;
-				this.form_group.get(this.control_name)?.setErrors({error: 'Invalid URL'}); // todo this doesn't go until blur...
+				this.url_loading.set(false);
+				this.url_valid.set(false);
+				this.form_group().get(this.control_name())?.setErrors({error: 'Invalid URL'});
 				this.cdr.detectChanges();
 			}, this.LOAD_ICON_SLEEP);
 		};
