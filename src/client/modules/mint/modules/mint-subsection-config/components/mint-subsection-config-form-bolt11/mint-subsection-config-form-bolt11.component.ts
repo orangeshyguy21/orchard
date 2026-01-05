@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, ChangeDetectorRef} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, effect, inject, input, output, signal} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 /* Application Dependencies */
@@ -15,89 +15,100 @@ import {OrchardNut4Method, OrchardNut5Method} from '@shared/generated.types';
 	styleUrl: './mint-subsection-config-form-bolt11.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintSubsectionConfigFormBolt11Component implements OnChanges {
-	@Input() nut!: 'nut4' | 'nut5';
-	@Input() unit!: string;
-	@Input() method!: string;
-	@Input() form_group!: FormGroup;
-	@Input() form_status!: boolean;
-	@Input() locale!: string;
-	@Input() loading!: boolean;
-	@Input() quotes!: MintMintQuote[] | MintMeltQuote[];
+export class MintSubsectionConfigFormBolt11Component {
+	public nut = input.required<'nut4' | 'nut5'>(); // which nut configuration this controls
+	public unit = input.required<string>(); // unit to display (e.g. 'sat')
+	public method = input.required<string>(); // payment method (e.g. 'bolt11')
+	public form_group = input.required<FormGroup>(); // form group containing the bolt11 controls
+	public form_status = input<boolean>(false); // whether the form is in a specific status
+	public locale = input.required<string>(); // locale for number formatting
+	public loading = input.required<boolean>(); // whether data is loading
+	public quotes = input.required<MintMintQuote[] | MintMeltQuote[]>(); // quotes to display in chart
 
-	@Output() update = new EventEmitter<{
+	public update = output<{
 		nut: 'nut4' | 'nut5';
 		unit: string;
 		method: string;
 		control_name: keyof OrchardNut4Method | keyof OrchardNut5Method;
 		form_group: FormGroup;
-	}>();
-	@Output() cancel = new EventEmitter<{
+	}>(); // emitted when form is submitted
+	public cancel = output<{
 		nut: 'nut4' | 'nut5';
 		unit: string;
 		method: string;
 		control_name: keyof OrchardNut4Method | keyof OrchardNut5Method;
 		form_group: FormGroup;
-	}>();
+	}>(); // emitted when form is cancelled
 
-	public min_hot: boolean = false;
-	public max_hot: boolean = false;
+	public min_hot = signal<boolean>(false); // tracks if min input is hot
+	public max_hot = signal<boolean>(false); // tracks if max input is hot
 
-	public get form_bolt11(): FormGroup {
-		return this.form_group.get(this.unit)?.get(this.method) as FormGroup;
-	}
+	public form_bolt11 = computed(() => {
+		return this.form_group().get(this.unit())?.get(this.method()) as FormGroup;
+	});
 
-	public get toggle_control(): keyof OrchardNut4Method | keyof OrchardNut5Method {
-		return this.nut === 'nut4' ? 'description' : 'amountless';
-	}
+	public toggle_control = computed((): keyof OrchardNut4Method | keyof OrchardNut5Method => {
+		return this.nut() === 'nut4' ? 'description' : 'amountless';
+	});
 
-	public get toggle_control_name(): string {
-		return this.nut === 'nut4' ? 'Description' : 'Amountless';
-	}
+	public toggle_control_name = computed(() => {
+		return this.nut() === 'nut4' ? 'Description' : 'Amountless';
+	});
 
-	constructor(private cdr: ChangeDetectorRef) {}
-
-	ngOnChanges(changes: SimpleChanges): void {
-		if (changes['form_status'] && this.form_status === true) {
-			this.form_bolt11.get(this.toggle_control)?.disable();
+	public toggle_help_text = computed(() => {
+		if (this.nut() === 'nut4') {
+			return 'Allow users to add a description to bolt11 minting invoices.';
 		}
+		return 'Indicates whether the bolt11 payment method backend supports paying amountless invoices.<br>Not configurable. On/Off determined by lightning backend.';
+	});
+
+	public help_status = signal<boolean>(false); // tracks if the help is visible
+
+	private cdr = inject(ChangeDetectorRef);
+
+	constructor() {
+		effect(() => {
+			if (this.form_status() === true) {
+				this.form_bolt11().get(this.toggle_control())?.disable();
+			}
+		});
 	}
 
 	public onMinHot(event: boolean): void {
 		setTimeout(() => {
-			this.min_hot = event;
+			this.min_hot.set(event);
 			this.cdr.markForCheck();
 		});
 	}
 
 	public onMaxHot(event: boolean): void {
 		setTimeout(() => {
-			this.max_hot = event;
+			this.max_hot.set(event);
 			this.cdr.markForCheck();
 		});
 	}
 
 	public onUpdate(control_name: keyof OrchardNut4Method | keyof OrchardNut5Method): void {
 		this.update.emit({
-			nut: this.nut,
-			unit: this.unit,
-			method: this.method,
-			form_group: this.form_group,
+			nut: this.nut(),
+			unit: this.unit(),
+			method: this.method(),
+			form_group: this.form_group(),
 			control_name: control_name,
 		});
 	}
 
 	public onToggle(event: MatSlideToggleChange): void {
-		this.form_bolt11.get(this.toggle_control)?.setValue(event.checked);
-		this.onUpdate(this.toggle_control);
+		this.form_bolt11().get(this.toggle_control())?.setValue(event.checked);
+		this.onUpdate(this.toggle_control());
 	}
 
 	public onCancel(control_name: keyof OrchardNut4Method | keyof OrchardNut5Method): void {
 		this.cancel.emit({
-			nut: this.nut,
-			unit: this.unit,
-			method: this.method,
-			form_group: this.form_group,
+			nut: this.nut(),
+			unit: this.unit(),
+			method: this.method(),
+			form_group: this.form_group(),
 			control_name: control_name,
 		});
 	}

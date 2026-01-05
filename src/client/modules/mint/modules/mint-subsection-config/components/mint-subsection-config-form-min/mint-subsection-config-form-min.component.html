@@ -1,40 +1,53 @@
 <div class="mint-config-form-min-container">
-	<div class="flex flex-gap-2">
+	<div class="flex flex-column">
 		<form
-			class="flex-grow flex-1"
-			[formGroup]="form_group"
+			class="flex-1 flex-grow"
+			[formGroup]="form_group()"
 			(ngSubmit)="onSubmit($event)"
 			(keydown.enter)="onSubmit($event)"
 			(keydown.escape)="onCancel($event)"
 		>
 			<orc-form-field-dynamic
-				[hot]="form_hot"
-				[invalid]="form_group.get(control_name)?.invalid || false"
+				[hot]="form_hot()"
+				[invalid]="control_invalid()"
 				(submit)="onSubmit($event)"
 				(cancel)="onCancel($event)"
 			>
 				<mat-form-field
 					appearance="fill"
 					hideRequiredMarker="true"
-					[ngClass]="form_hot ? 'orc-hot-form-field' : 'orc-cold-form-field'"
+					[ngClass]="form_hot() ? 'orc-hot-form-field' : 'orc-cold-form-field'"
 					class="mint-min-form-field orc-dynamic-form-field"
 				>
-					<mat-label>Min Amount</mat-label>
-					<input type="text" formNumberSeparator matInput [formControlName]="control_name" placeholder="Ex. 1" #element_min />
-					<span matSuffix class="form-suffix-text">{{ unit | localUnit }}</span>
-					@if (
-						form_group.get(control_name)?.invalid &&
-						(form_group.get(control_name)?.dirty || form_group.get(control_name)?.touched)
-					) {
-						<mat-error class="font-size-xs">{{ form_error }}</mat-error>
+					<mat-label class="flex flex-items-center flex-gap-0-5 cursor-pointer" (click)="help_status.set(!help_status())">
+						<span>Min Amount</span>
+						<mat-icon class="icon-sm icon-dynamic-fill">info</mat-icon>
+					</mat-label>
+					<input
+						type="text"
+						formNumberSeparator
+						matInput
+						[formControlName]="control_name()"
+						(focus)="onFocus()"
+						(blur)="onBlur()"
+						placeholder="Ex. 1"
+						#element_min
+					/>
+					<span matSuffix class="form-suffix-text">{{ unit() | localUnit }}</span>
+					@if (control_invalid()) {
+						<mat-error class="font-size-xs">{{ form_error() }}</mat-error>
 					}
 				</mat-form-field>
 			</orc-form-field-dynamic>
 		</form>
-		<div class="flex-1">
-			<orc-form-help-text class="orc-surface-container-high-bg">
-				{{ help_text() }}
-			</orc-form-help-text>
+		<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
+			<div class="orc-animation-expand-collapse-inner">
+				<div class="flex p-t-0-5 p-b-1">
+					<orc-form-help-text class="orc-surface-container-high-bg">
+						<div [innerHTML]="help_text()"></div>
+					</orc-form-help-text>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>

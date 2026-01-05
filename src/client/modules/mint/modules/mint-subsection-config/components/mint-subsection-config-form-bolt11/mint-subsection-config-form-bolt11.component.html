@@ -5,58 +5,56 @@
 		</div>
 		<div class="flex flex-column flex-gap-1">
 			<orc-mint-subsection-config-form-max
-				[form_group]="form_bolt11"
+				[form_group]="form_bolt11()"
 				[control_name]="'max_amount'"
-				[unit]="unit"
-				[nut]="nut"
+				[unit]="unit()"
+				[nut]="nut()"
 				(update)="onUpdate($event)"
 				(cancel)="onCancel($event)"
 				(hot)="onMaxHot($event)"
 			></orc-mint-subsection-config-form-max>
 			<orc-mint-subsection-config-form-min
-				[form_group]="form_bolt11"
+				[form_group]="form_bolt11()"
 				[control_name]="'min_amount'"
-				[unit]="unit"
-				[nut]="nut"
+				[unit]="unit()"
+				[nut]="nut()"
 				(update)="onUpdate($event)"
 				(cancel)="onCancel($event)"
 				(hot)="onMinHot($event)"
 			></orc-mint-subsection-config-form-min>
-			<div class="flex flex-items-center flex-gap-2">
-				<form [formGroup]="form_bolt11" class="flex-1 flex flex-items-center flex-grow">
-					<mat-slide-toggle [formControlName]="this.toggle_control" (change)="onToggle($event)" [name]="this.toggle_control">
+			<div class="flex flex-column">
+				<form [formGroup]="form_bolt11()" class="flex flex-items-center flex-grow flex-gap-1">
+					<mat-slide-toggle [formControlName]="toggle_control()" (change)="onToggle($event)" [name]="toggle_control()">
 					</mat-slide-toggle>
-					<div class="p-l-1 font-size-s">
-						{{ this.toggle_control_name }}
+					<div class="font-size-s">
+						{{ toggle_control_name() }}
 					</div>
+					<mat-icon class="icon-sm icon-dynamic-fill cursor-pointer" (click)="help_status.set(!help_status())">info</mat-icon>
 				</form>
-				<div class="flex-1">
-					<orc-form-help-text class="orc-surface-container-high-bg">
-						@if (this.nut === 'nut4') {
-							Allow users to add a description to bolt11 minting invoices.
-						} @else {
-							<div class="flex flex-column flex-gap-0-5">
-								<span>Indicates whether the bolt11 payment method backend supports paying amountless invoices.</span>
-								<span>Not configurable. On/Off determined by lightning backend.</span>
-							</div>
-						}
-					</orc-form-help-text>
+				<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
+					<div class="orc-animation-expand-collapse-inner">
+						<div class="flex p-t-2 p-b-1">
+							<orc-form-help-text class="orc-surface-container-high-bg">
+								<div [innerHTML]="toggle_help_text()"></div>
+							</orc-form-help-text>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 	<div class="flex-1">
 		<orc-mint-subsection-config-chart-method
-			[nut]="nut"
-			[loading]="loading"
-			[quotes]="quotes"
-			[locale]="locale"
-			[unit]="unit"
-			[method]="method"
-			[min_amount]="form_bolt11.get('min_amount')?.value"
-			[max_amount]="form_bolt11.get('max_amount')?.value"
-			[min_hot]="min_hot"
-			[max_hot]="max_hot"
+			[nut]="nut()"
+			[loading]="loading()"
+			[quotes]="quotes()"
+			[locale]="locale()"
+			[unit]="unit()"
+			[method]="method()"
+			[min_amount]="form_bolt11().get('min_amount')?.value"
+			[max_amount]="form_bolt11().get('max_amount')?.value"
+			[min_hot]="min_hot()"
+			[max_hot]="max_hot()"
 		></orc-mint-subsection-config-chart-method>
 	</div>
 </div>
