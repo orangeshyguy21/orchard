@@ -47,8 +47,10 @@ import {AiAgent, AiMessageRole} from '@shared/generated.types';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayoutInteriorComponent implements OnInit, OnDestroy {
-	@ViewChild(MatSidenav) sidenav!: MatSidenav;
+	@ViewChild('primarySidenav') primarySidenav!: MatSidenav;
+	@ViewChild('aiSidenav') sidenav!: MatSidenav;
 
+	public primary_nav_open = signal(true);
 	public user_name!: string;
 	public ai_enabled: boolean;
 	public ai_models: AiModel[] = [];

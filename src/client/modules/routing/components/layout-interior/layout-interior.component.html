@@ -1,5 +1,5 @@
 <mat-sidenav-container>
-	<div class="interior-container">
+	<mat-sidenav #primarySidenav mode="side" position="start" class="primary-sidenav" [opened]="primary_nav_open()">
 		<orc-nav-primary
 			[active_section]="active_section"
 			[active_event]="active_event"
@@ -17,6 +17,8 @@
 			(abort)="onAbortSubscribedEvent()"
 			(save)="onSavePendingEvent()"
 		></orc-nav-primary>
+	</mat-sidenav>
+	<div class="interior-container">
 		<div class="interior-section-container">
 			<div class="interior-router-outlet-container">
 				@if (overlayed()) {
@@ -50,7 +52,7 @@
 			}
 		</div>
 	</div>
-	<mat-sidenav mode="side" position="end">
+	<mat-sidenav #aiSidenav mode="side" position="end">
 		<orc-ai-chat-log
 			[conversation]="ai_conversation"
 			[active_chat]="active_chat"

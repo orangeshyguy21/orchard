@@ -25,3 +25,8 @@
 	@extend %overflow-hidden;
 	@extend %relative;
 }
+
+.primary-sidenav {
+	@extend %w-7;
+	@extend %transparent-bg;
+}

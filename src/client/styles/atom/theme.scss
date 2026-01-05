@@ -217,6 +217,10 @@
 		border-top-left-radius: 0rem;
 		border-bottom-left-radius: 0rem;
 	}
+    .mat-drawer.mat-drawer-side{
+		border-top-right-radius: 0rem;
+		border-bottom-right-radius: 0rem;
+	}
 }
 
 :root {
