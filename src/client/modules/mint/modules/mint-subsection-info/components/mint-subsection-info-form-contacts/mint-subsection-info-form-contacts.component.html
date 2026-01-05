@@ -1,15 +1,30 @@
 <div class="mint-info-form-urls-container">
-	<div class="title-form-section p-b-1">Contact Information</div>
+	<div class="title-form-section p-b-1 flex flex-items-center flex-gap-0-5 cursor-pointer" (click)="help_status.set(!help_status())">
+		<span>Contact Information</span>
+		<mat-icon class="icon-sm icon-dynamic-fill">info</mat-icon>
+	</div>
+
+	<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
+		<div class="orc-animation-expand-collapse-inner">
+			<div class="flex p-t-0-5 p-b-2">
+				<orc-form-help-text class="orc-surface-container-high-bg">
+					<div class="p-b-1">Updates the contact information for this mint.</div>
+					<div>Contact information allows users to contact you for support or other inquiries.</div>
+					<div>You can add multiple contact methods, such as email, or social media links.</div>
+				</orc-form-help-text>
+			</div>
+		</div>
+	</div>
 
 	<div class="flex flex-column flex-gap-1">
-		@for (contact_control of form_array.controls; track $index) {
+		@for (contact_control of form_array().controls; track $index) {
 			<orc-mint-subsection-info-form-contact
-				[form_group]="form_group"
-				[form_array]="form_array"
+				[form_group]="form_group()"
+				[form_array]="form_array()"
 				[array_name]="'contact'"
 				[subgroup_index]="$index"
-				[focused]="added_index === $index"
-				[init_method]="added_method"
+				[focused]="added_index() === $index"
+				[init_method]="added_method()"
 				(update)="onControlUpdate($event)"
 				(cancel)="onControlCancel($event)"
 				(remove)="onControlRemove($event)"

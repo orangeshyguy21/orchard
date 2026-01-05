@@ -17,7 +17,7 @@ describe('MintSubsectionInfoFormContactsComponent', () => {
 
 		fixture = TestBed.createComponent(MintSubsectionInfoFormContactsComponent);
 		component = fixture.componentInstance;
-		component.form_group = new FormGroup({
+		const form_group = new FormGroup({
 			contact: new FormArray([
 				new FormGroup({
 					method: new FormControl('email', [Validators.required]),
@@ -25,9 +25,10 @@ describe('MintSubsectionInfoFormContactsComponent', () => {
 				}),
 			]),
 		});
-		component.form_array = component.form_group.get('contact') as FormArray;
-		component.array_name = 'contact' as any;
-		component.array_length = 1;
+		fixture.componentRef.setInput('form_group', form_group);
+		fixture.componentRef.setInput('form_array', form_group.get('contact') as FormArray);
+		fixture.componentRef.setInput('array_name', 'contact');
+		fixture.componentRef.setInput('array_length', 1);
 		fixture.detectChanges();
 	});
 
