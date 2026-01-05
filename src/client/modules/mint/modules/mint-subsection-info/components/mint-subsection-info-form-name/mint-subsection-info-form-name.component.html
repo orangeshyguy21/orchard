@@ -1,24 +1,38 @@
 <div class="mint-info-form-name-container">
-	<form [formGroup]="form_group" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)" (keydown.escape)="onCancel($event)">
+	<form [formGroup]="form_group()" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)" (keydown.escape)="onCancel($event)">
 		<orc-form-field-dynamic
-			[hot]="form_hot"
-			[invalid]="form_group.get(control_name)?.invalid || false"
+			[hot]="focused_name() || form_group().get(control_name())?.dirty || false"
+			[invalid]="form_group().get(control_name())?.invalid || false"
 			(submit)="onSubmit($event)"
 			(cancel)="onCancel($event)"
 		>
 			<mat-form-field
 				appearance="fill"
-				[ngClass]="form_hot ? 'orc-hot-form-field' : 'orc-cold-form-field'"
+				[ngClass]="
+					focused_name() || form_group().get(control_name())?.dirty || false ? 'orc-hot-form-field' : 'orc-cold-form-field'
+				"
 				class="mint-name-form-field orc-dynamic-form-field"
 			>
-				<mat-label>Name</mat-label>
-				<input type="text" matInput [formControlName]="control_name" placeholder="Ex. My Mint" #element_name />
+				<mat-label class="flex flex-items-center flex-gap-0-5 cursor-pointer" (click)="help_status.set(!help_status())">
+					<span>Name</span>
+					<mat-icon class="icon-sm">info</mat-icon>
+				</mat-label>
+				<input
+					type="text"
+					matInput
+					[formControlName]="control_name()"
+					placeholder="Ex. My Mint"
+					#element_name
+					(focus)="focused_name.set(true)"
+					(blur)="focused_name.set(false)"
+				/>
 				@if (
-					form_group.get(control_name)?.invalid && (form_group.get(control_name)?.dirty || form_group.get(control_name)?.touched)
+					form_group().get(control_name())?.invalid &&
+					(form_group().get(control_name())?.dirty || form_group().get(control_name())?.touched)
 				) {
 					<mat-error class="font-size-xs">
-						@if (form_group.get(control_name)?.hasError('maxlength')) {
-							Name cannot exceed {{ form_group.get(control_name)?.getError('maxlength')?.requiredLength }} characters
+						@if (form_group().get(control_name())?.hasError('maxlength')) {
+							Name cannot exceed {{ form_group().get(control_name())?.getError('maxlength')?.requiredLength }} characters
 						} @else {
 							Invalid name
 						}
@@ -26,5 +40,15 @@
 				}
 			</mat-form-field>
 		</orc-form-field-dynamic>
+		<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
+			<div class="orc-animation-expand-collapse-inner">
+				<div class="flex p-t-0-5">
+					<orc-form-help-text class="orc-surface-container-high-bg">
+						<div class="p-b-1">Update the name for this mint.</div>
+						<div>A name identifies the mint in wallet interfaces.</div>
+					</orc-form-help-text>
+				</div>
+			</div>
+		</div>
 	</form>
 </div>

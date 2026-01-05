@@ -57,9 +57,7 @@ export class MintSubsectionDatabaseTableComponent {
 	constructor(private configService: ConfigService) {
 		effect(() => {
 			const is_loading = this.loading();
-			if (!is_loading) {
-				this.init();
-			}
+			if (!is_loading) this.init();
 		});
 	}
 
