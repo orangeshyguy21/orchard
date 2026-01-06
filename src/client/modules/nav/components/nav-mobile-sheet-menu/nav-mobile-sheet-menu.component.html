@@ -1,13 +1,10 @@
 <div class="nav-mobile-sheet-menu-container">
-	<orc-nav-primary-items
-		[active_section]="data.active_section"
-		[enabled_bitcoin]="data.enabled_bitcoin"
-		[enabled_lightning]="data.enabled_lightning"
-		[enabled_mint]="data.enabled_mint"
-		[online_bitcoin]="data.online_bitcoin"
-		[online_lightning]="data.online_lightning"
-		[online_mint]="data.online_mint"
-		[syncing_bitcoin]="data.syncing_bitcoin"
-		[syncing_lightning]="data.syncing_lightning"
-	></orc-nav-primary-items>
+	{{ data.active_section }}
+	<mat-nav-list>
+		@for (item of data.items; track item.navroute) {
+			<a [routerLink]="item.navroute" mat-list-item [class.active]="item.navroute === data.active_section">
+				<span matListItemTitle>{{ item.name }}</span>
+			</a>
+		}
+	</mat-nav-list>
 </div>

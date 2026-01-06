@@ -1,6 +1,7 @@
 /* Core Dependencies */
 import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {CommonModule as CoreCommonModule} from '@angular/common';
+import {RouterModule as CoreRouterModule} from '@angular/router';
 /* Vendor Dependencies */
 import {MatIconModule} from '@angular/material/icon';
 import {MatRippleModule} from '@angular/material/core';
@@ -49,7 +50,8 @@ import {NavMobileSheetMenuComponent} from './components/nav-mobile-sheet-menu/na
 		NavMobileSheetMenuComponent,
 	],
 	imports: [
-		CommonModule,
+		CoreCommonModule,
+		CoreRouterModule,
 		MatIconModule,
 		MatRippleModule,
 		MatButtonModule,

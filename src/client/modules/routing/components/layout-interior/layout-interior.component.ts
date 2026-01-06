@@ -51,27 +51,29 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	@ViewChild('primarySidenav') primarySidenav!: MatSidenav;
 	@ViewChild('aiSidenav') sidenav!: MatSidenav;
 
-	public user_name!: string;
-	public ai_enabled: boolean;
-	public ai_models: AiModel[] = [];
-	public ai_conversation: AiChatConversation | null = null;
-	public ai_revision: number = 0;
-	public ai_tool_calls: number = 0;
-	public active_chat!: boolean;
-	public active_section!: string;
-	public active_agent!: AiAgent;
-	public active_event!: EventData | null;
-	public model!: string | null;
-	public user_content = new FormControl('');
-	public enabled_bitcoin: boolean;
-	public enabled_lightning: boolean;
-	public enabled_mint: boolean;
-	public online_bitcoin!: boolean;
-	public online_lightning!: boolean;
-	public online_mint!: boolean;
-	public syncing_bitcoin!: boolean;
-	public syncing_lightning!: boolean;
-	public block_count!: number;
+	public ai_user_content = new FormControl('');
+
+	public user_name = signal<string>('');
+	public ai_enabled = signal<boolean>(false);
+	public ai_models = signal<AiModel[]>([]);
+	public ai_conversation = signal<AiChatConversation | null>(null);
+	public ai_revision = signal<number>(0);
+	public ai_tool_calls = signal<number>(0);
+	public ai_model = signal<string | null>(null);
+	public active_chat = signal<boolean>(false);
+	public active_section = signal<string>('');
+	public active_sub_section = signal<string>('');
+	public active_agent = signal<AiAgent>(AiAgent.Default);
+	public active_event = signal<EventData | null>(null);
+	public enabled_bitcoin = signal<boolean>(false);
+	public enabled_lightning = signal<boolean>(false);
+	public enabled_mint = signal<boolean>(false);
+	public online_bitcoin = signal<boolean>(false);
+	public online_lightning = signal<boolean>(false);
+	public online_mint = signal<boolean>(false);
+	public syncing_bitcoin = signal<boolean>(false);
+	public syncing_lightning = signal<boolean>(false);
+	public block_count = signal<number>(0);
 
 	public ai_agent_definition = signal<AiAgentDefinition | null>(null);
 	public overlayed = signal(false);
@@ -81,11 +83,11 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	public show_mobile_nav = computed(() => !this.desktop_nav_open() && !this.show_mobile_agent());
 
-	public get ai_actionable(): boolean {
-		if (this.active_chat) return true;
-		if (this.user_content.value) return true;
+	public ai_actionable = computed(() => {
+		if (this.active_chat()) return true;
+		if (this.ai_user_content.value) return true;
 		return false;
-	}
+	});
 
 	private subscriptions: Subscription = new Subscription();
 	private bitcoin_polling_active: boolean = false;
@@ -105,10 +107,10 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		private route: ActivatedRoute,
 		private cdr: ChangeDetectorRef,
 	) {
-		this.ai_enabled = this.configService.config.ai.enabled;
-		this.enabled_bitcoin = this.configService.config.bitcoin.enabled;
-		this.enabled_lightning = this.configService.config.lightning.enabled;
-		this.enabled_mint = this.configService.config.mint.enabled;
+		this.ai_enabled.set(this.configService.config.ai.enabled);
+		this.enabled_bitcoin.set(this.configService.config.bitcoin.enabled);
+		this.enabled_lightning.set(this.configService.config.lightning.enabled);
+		this.enabled_mint.set(this.configService.config.mint.enabled);
 	}
 
 	/* *******************************************************
@@ -126,32 +128,31 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	}
 
 	private orchardOptionalInit(): void {
-		if (this.enabled_bitcoin) {
+		if (this.enabled_bitcoin()) {
 			this.bitcoin_polling_active = true;
 			this.bitcoinService.loadBitcoinBlockchainInfo().subscribe();
 			this.subscriptions.add(this.getBitcoinBlockchainInfoSubscription());
 			this.subscriptions.add(this.getBitcoinBlockCountSubscription());
 		}
-		if (this.enabled_lightning) {
+		if (this.enabled_lightning()) {
 			this.lightningService.loadLightningInfo().subscribe();
 			this.subscriptions.add(this.getLightningInfoSubscription());
 		}
-		if (this.enabled_mint) {
+		if (this.enabled_mint()) {
 			this.mintService.loadMintInfo().subscribe();
 			this.subscriptions.add(this.getMintInfoSubscription());
 		}
 		// if taproot go get the ids
-		if (this.ai_enabled) {
+		if (this.ai_enabled()) {
 			this.subscriptions.add(this.getAgentSubscription());
 			this.subscriptions.add(this.getActiveAiSubscription());
 			this.subscriptions.add(this.getAiMessagesSubscription());
 			this.subscriptions.add(this.getAiConversationSubscription());
-			this.model = this.settingDeviceService.getModel();
-			if (!this.model) {
+			this.ai_model.set(this.settingDeviceService.getModel());
+			if (!this.ai_model()) {
 				this.aiService.getFunctionModel().subscribe((model) => {
-					this.model = model?.model || null;
-					this.settingDeviceService.setModel(this.model);
-					this.cdr.detectChanges();
+					this.ai_model.set(model?.model || null);
+					this.settingDeviceService.setModel(this.ai_model());
 				});
 			}
 			this.getModels();
@@ -166,6 +167,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		return this.router.events.pipe(filter((event: Event) => 'routerEvent' in event || 'type' in event)).subscribe((event) => {
 			const route_data = this.getRouteData(event);
 			this.setSection(route_data);
+			this.setSubSection(route_data);
 			this.setAgent(route_data);
 			this.onClearConversation();
 		});
@@ -182,7 +184,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 				const segments = event.url.split('/').filter(Boolean);
 				const index_routes = [undefined, 'crew'];
 				const segment = index_routes.includes(segments[0]) ? 'index' : segments[0];
-				if (segment !== this.active_section) this.overlayed.set(true);
+				if (segment !== this.active_section()) this.overlayed.set(true);
 			}
 			if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
 				this.overlayed.set(false);
@@ -194,13 +196,11 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		return this.crewService.user$.subscribe({
 			next: (user: User | null) => {
 				if (user === undefined || user === null) return;
-				this.user_name = user.name;
-				this.cdr.detectChanges();
+				this.user_name.set(user.name);
 			},
 			error: (error) => {
 				console.error(error);
-				this.user_name = '';
-				this.cdr.detectChanges();
+				this.user_name.set('');
 			},
 		});
 	}
@@ -218,14 +218,12 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		return this.bitcoinService.bitcoin_blockchain_info$.subscribe({
 			next: (info: BitcoinBlockchainInfo | null) => {
 				if (info === undefined) return;
-				this.online_bitcoin = info !== null ? true : false;
-				this.syncing_bitcoin = info?.initialblockdownload ? true : false;
-				this.cdr.detectChanges();
+				this.online_bitcoin.set(info !== null ? true : false);
+				this.syncing_bitcoin.set(info?.initialblockdownload ? true : false);
 			},
 			error: (error) => {
 				console.error(error);
-				this.online_bitcoin = false;
-				this.cdr.detectChanges();
+				this.online_bitcoin.set(false);
 			},
 		});
 	}
@@ -246,8 +244,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 			)
 			.subscribe({
 				next: async (block_count: BitcoinBlockCount) => {
-					this.block_count = block_count.height;
-					this.cdr.detectChanges();
+					this.block_count.set(block_count.height);
 				},
 			});
 	}
@@ -256,14 +253,12 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		return this.lightningService.lightning_info$.subscribe({
 			next: (info: LightningInfo | null) => {
 				if (info === undefined) return;
-				this.online_lightning = info !== null ? true : false;
-				this.syncing_lightning = info?.synced_to_chain && info?.synced_to_graph ? false : true;
-				this.cdr.detectChanges();
+				this.online_lightning.set(info !== null ? true : false);
+				this.syncing_lightning.set(info?.synced_to_chain && info?.synced_to_graph ? false : true);
 			},
 			error: (error) => {
 				console.error(error);
-				this.online_lightning = false;
-				this.cdr.detectChanges();
+				this.online_lightning.set(false);
 			},
 		});
 	}
@@ -272,13 +267,11 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		return this.mintService.mint_info$.subscribe({
 			next: (info: MintInfo | null) => {
 				if (info === undefined) return;
-				this.online_mint = info !== null ? true : false;
-				this.cdr.detectChanges();
+				this.online_mint.set(info !== null ? true : false);
 			},
 			error: (error) => {
 				console.error(error);
-				this.online_mint = false;
-				this.cdr.detectChanges();
+				this.online_mint.set(false);
 			},
 		});
 	}
@@ -291,7 +284,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	private getActiveAiSubscription(): Subscription {
 		return this.aiService.active$.subscribe((active: boolean) => {
-			this.active_chat = active;
+			this.active_chat.set(active);
 			this.cdr.detectChanges();
 		});
 	}
@@ -300,22 +293,22 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		return this.aiService.messages$.subscribe((chunk: AiChatChunk) => {
 			this.assembleMessages(chunk);
 			this.countToolCalls(chunk);
-			if (chunk.done && this.ai_conversation) this.aiService.updateConversation(this.ai_conversation);
+			const conversation = this.ai_conversation();
+			if (chunk.done && conversation) this.aiService.updateConversation(conversation);
 		});
 	}
 
 	private getAiConversationSubscription(): Subscription {
 		return this.aiService.conversation$.subscribe((conversation: AiChatConversation | null) => {
-			this.ai_conversation = conversation;
-			this.ai_revision = 0;
-			this.cdr.detectChanges();
+			this.ai_conversation.set(conversation);
+			this.ai_revision.set(0);
 		});
 	}
 
 	private getEventSubscription(): Subscription {
 		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
-			this.active_event = event_data;
-			if (this.active_section === 'settings') this.model = this.settingDeviceService.getModel();
+			this.active_event.set(event_data);
+			if (this.active_section() === 'settings') this.ai_model.set(this.settingDeviceService.getModel());
 			this.cdr.detectChanges();
 		});
 	}
@@ -325,18 +318,18 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	******************************************************** */
 
 	public onSavePendingEvent(): void {
-		this.active_event!.confirmed = true;
-		this.eventService.registerEvent(this.active_event);
+		this.active_event()!.confirmed = true;
+		this.eventService.registerEvent(this.active_event());
 	}
 
 	public onCancelPendingEvent(): void {
-		this.active_event!.confirmed = false;
-		this.eventService.registerEvent(this.active_event);
+		this.active_event()!.confirmed = false;
+		this.eventService.registerEvent(this.active_event());
 	}
 
 	public onAbortSubscribedEvent(): void {
-		this.active_event!.confirmed = false;
-		this.eventService.registerEvent(this.active_event);
+		this.active_event()!.confirmed = false;
+		this.eventService.registerEvent(this.active_event());
 	}
 
 	/* *******************************************************
@@ -355,8 +348,12 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	private setSection(route_data: ActivatedRouteSnapshot['data'] | null): void {
 		if (!route_data) return;
-		this.active_section = route_data['section'] || '';
-		this.cdr.detectChanges();
+		this.active_section.set(route_data['section'] || '');
+	}
+
+	private setSubSection(route_data: ActivatedRouteSnapshot['data'] | null): void {
+		if (!route_data) return;
+		this.active_sub_section.set(route_data['sub_section'] || '');
 	}
 
 	/* *******************************************************
@@ -365,19 +362,17 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	private setAgent(route_data: ActivatedRouteSnapshot['data'] | null): void {
 		if (!route_data) return;
-		this.active_agent = route_data['agent'] || AiAgent.Default;
-		this.cdr.detectChanges();
+		this.active_agent.set(route_data['agent'] || AiAgent.Default);
 	}
 
 	private getModels(): void {
 		this.aiService.getAiModels().subscribe((models: AiModel[]) => {
-			this.ai_models = models;
-			this.cdr.detectChanges();
+			this.ai_models.set(models);
 		});
 	}
 
 	public onCommand(): void {
-		this.active_chat ? this.stopChat() : this.startChat();
+		this.active_chat() ? this.stopChat() : this.startChat();
 	}
 
 	public onToggleLog(): void {
@@ -389,60 +384,56 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	}
 
 	private startChat() {
-		if (!this.user_content.value) return;
-		const agent = this.active_agent || AiAgent.Default;
-		this.aiService.requestAgent(agent, this.user_content.value);
-		this.user_content.reset();
+		if (!this.ai_user_content.value) return;
+		const agent = this.active_agent() || AiAgent.Default;
+		this.aiService.requestAgent(agent, this.ai_user_content.value);
+		this.ai_user_content.reset();
 	}
 
 	public stopChat(): void {
-		this.aiService.abortAiSocket(this.ai_conversation?.id);
-		if (this.ai_conversation) this.aiService.updateConversation(this.ai_conversation);
-		this.cdr.detectChanges();
+		this.aiService.abortAiSocket(this.ai_conversation()?.id);
+		const conversation = this.ai_conversation();
+		if (conversation) this.aiService.updateConversation(conversation);
 	}
 
 	public onModelChange(model: string): void {
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		this.settingDeviceService.setModel(model);
-		this.model = model;
+		this.ai_model.set(model);
 		this.eventService.registerEvent(
 			new EventData({
 				type: 'SUCCESS',
 				message: 'Model updated!',
 			}),
 		);
-		this.cdr.detectChanges();
 	}
 
 	public onClearConversation(): void {
 		this.closeChatLog();
 		this.aiService.clearConversation();
-		this.ai_tool_calls = 0;
-		this.cdr.detectChanges();
+		this.ai_tool_calls.set(0);
 	}
 
 	private assembleMessages(chunk: AiChatChunk): void {
 		if (
-			this.ai_conversation!.messages.length > 0 &&
-			this.ai_conversation!.messages[this.ai_conversation!.messages.length - 1].role !== AiMessageRole.Assistant
+			this.ai_conversation()!.messages.length > 0 &&
+			this.ai_conversation()!.messages[this.ai_conversation()!.messages.length - 1].role !== AiMessageRole.Assistant
 		) {
-			this.ai_conversation!.messages.push(new AiChatCompiledMessage(this.ai_conversation!.id, chunk.message));
+			this.ai_conversation()!.messages.push(new AiChatCompiledMessage(this.ai_conversation()!.id, chunk.message));
 		} else {
-			const last_message = this.ai_conversation!.messages[this.ai_conversation!.messages.length - 1];
+			const last_message = this.ai_conversation()!.messages[this.ai_conversation()!.messages.length - 1];
 			last_message.integrateChunk(chunk);
 		}
-		this.ai_revision++;
-		this.cdr.detectChanges();
+		this.ai_revision.update((revision) => revision + 1);
 	}
 
 	private countToolCalls(chunk: AiChatChunk): void {
-		this.ai_tool_calls += chunk.message.tool_calls?.length || 0;
-		this.cdr.detectChanges();
+		this.ai_tool_calls.update((tool_calls) => tool_calls + (chunk.message.tool_calls?.length || 0));
 	}
 
 	private openChatLog(): void {
 		this.sidenav.open();
-		const resolved_agent = this.ai_conversation?.agent || this.active_agent;
+		const resolved_agent = this.ai_conversation()?.agent || this.active_agent();
 		this.aiService.getAiAgent(resolved_agent).subscribe((agent: AiAgentDefinition) => {
 			this.ai_agent_definition.set(agent);
 		});

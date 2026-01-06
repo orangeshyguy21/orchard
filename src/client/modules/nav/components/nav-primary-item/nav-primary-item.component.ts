@@ -43,6 +43,6 @@ export class NavPrimaryItemComponent {
 	}
 
 	public onClick() {
-		this.router.navigate([this.navroute]);
+		this.router.navigate([this.navroute()]);
 	}
 }

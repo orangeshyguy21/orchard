@@ -1,9 +1,11 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, output, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
 /* Vendor Dependencies */
 import {MatBottomSheet} from '@angular/material/bottom-sheet';
 /* Application Dependencies */
 import {EventData} from 'src/client/modules/event/classes/event-data.class';
+/* Native Dependencies */
+import {NavSecondaryItem} from '@client/modules/nav/types/nav-secondary-item.type';
 /* Components */
 import {NavMobileSheetProfileComponent} from '../nav-mobile-sheet-profile/nav-mobile-sheet-profile.component';
 import {NavMobileSheetMenuComponent} from '../nav-mobile-sheet-menu/nav-mobile-sheet-menu.component';
@@ -41,21 +43,67 @@ export class NavMobileComponent {
 	public abort = output<void>();
 	public showAgent = output<void>();
 
+	private menuItems: Record<string, NavSecondaryItem[]> = {
+		index: [
+			{
+				name: 'Home',
+				navroute: '',
+			},
+			{
+				name: 'Crew',
+				navroute: 'crew',
+			},
+		],
+		bitcoin: [
+			{
+				name: 'Dashboard',
+				navroute: 'bitcoin',
+			},
+		],
+		lightning: [
+			{
+				name: 'Dashboard',
+				navroute: 'lightning',
+			},
+		],
+		mint: [
+			{
+				name: 'Dashboard',
+				navroute: 'mint',
+			},
+			{
+				name: 'Info',
+				navroute: 'mint/info',
+			},
+			{
+				name: 'Config',
+				navroute: 'mint/config',
+			},
+			{
+				name: 'Keysets',
+				navroute: 'mint/keysets',
+			},
+			{
+				name: 'Database',
+				navroute: 'mint/database',
+			},
+		],
+		ecash: [
+			{
+				name: 'Dashboard',
+				navroute: 'ecash',
+			},
+		],
+	};
+
 	constructor(private bottomSheet: MatBottomSheet) {}
 
 	public onMenuClick() {
+		const items = this.menuItems[this.active_section()];
 		this.bottomSheet.open(NavMobileSheetMenuComponent, {
 			data: {
+				items: items,
 				active_section: this.active_section(),
-				enabled_ai: this.enabled_ai(),
-				enabled_bitcoin: this.enabled_bitcoin(),
-				enabled_lightning: this.enabled_lightning(),
-				enabled_mint: this.enabled_mint(),
-				online_bitcoin: this.online_bitcoin(),
-				online_lightning: this.online_lightning(),
-				online_mint: this.online_mint(),
-				syncing_bitcoin: this.syncing_bitcoin(),
-				syncing_lightning: this.syncing_lightning(),
 			},
 		});
 	}
