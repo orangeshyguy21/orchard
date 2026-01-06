@@ -67,13 +67,14 @@
 			}
 		</div>
 	</div>
-	<mat-sidenav #aiSidenav mode="side" position="end">
+	<mat-sidenav #aiSidenav [mode]="ai_sidenav_mode()" position="end" class="ai-sidenav" [class.mobile-agent]="!desktop_nav_open()">
 		<orc-ai-chat-log
 			[conversation]="ai_conversation"
 			[active_chat]="active_chat"
 			[revision]="ai_revision"
 			[agent_definition]="ai_agent_definition()"
 			(clear)="onClearConversation()"
+			(close)="closeChatLog()"
 		></orc-ai-chat-log>
 	</mat-sidenav>
 </mat-sidenav-container>

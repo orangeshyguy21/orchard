@@ -30,3 +30,9 @@
 	@extend %w-7;
 	@extend %transparent-bg;
 }
+
+.ai-sidenav {
+	&.mobile-agent {
+		width: 100vw;
+	}
+}

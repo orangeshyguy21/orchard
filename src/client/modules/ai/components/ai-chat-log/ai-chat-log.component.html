@@ -2,11 +2,11 @@
 	<mat-accordion displayMode="flat" class="orc-low-accordion orc-fullscreen-accordion flex-grow">
 		<mat-expansion-panel [expanded]="view() === 0" (opened)="setView(0)" (closed)="setView(1)">
 			<mat-expansion-panel-header>
-				<orc-ai-agent [agent]="agent_definition"></orc-ai-agent>
+				<orc-ai-agent [agent]="agent_definition()"></orc-ai-agent>
 			</mat-expansion-panel-header>
 			<div>
 				<div class="ai-chat-log-main">
-					<orc-ai-agent-definition [agent]="agent_definition"></orc-ai-agent-definition>
+					<orc-ai-agent-definition [agent]="agent_definition()"></orc-ai-agent-definition>
 				</div>
 			</div>
 		</mat-expansion-panel>
@@ -16,7 +16,7 @@
 		<mat-expansion-panel [expanded]="view() === 1" disabled>
 			<mat-expansion-panel-header> Chat Log </mat-expansion-panel-header>
 			<div class="ai-chat-log-main">
-				@for (message of conversation?.messages; track message.id; let i = $index) {
+				@for (message of conversation()?.messages; track message.id; let i = $index) {
 					@switch (message.role) {
 						@case ('SYSTEM') {
 							<orc-ai-chat-message-system [message]="message"> </orc-ai-chat-message-system>
@@ -27,11 +27,11 @@
 						@case ('ASSISTANT') {
 							<orc-ai-chat-message-assistant
 								[message]="message"
-								[revision]="revision"
-								[active_chat]="active_chat"
-								[agent]="agent_definition"
+								[revision]="revision()"
+								[active_chat]="active_chat()"
+								[agent]="agent_definition()"
 								[index]="i"
-								[conversation_length]="conversation?.messages?.length"
+								[conversation_length]="conversation()?.messages?.length"
 							></orc-ai-chat-message-assistant>
 						}
 						@case ('ERROR') {
@@ -46,7 +46,10 @@
 		<div class="category-rule"></div>
 	</div>
 	<div class="ai-chat-log-footer">
-		<button mat-button (click)="clear.emit()">
+		<button mat-icon-button type="button" (click)="close.emit()">
+			<mat-icon>close</mat-icon>
+		</button>
+		<button mat-button type="button" (click)="clear.emit()">
 			<div class="orc-outline-color font-size-xs">clear conversation</div>
 		</button>
 	</div>

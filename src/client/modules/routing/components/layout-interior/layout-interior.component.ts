@@ -77,6 +77,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	public overlayed = signal(false);
 	public desktop_nav_open = signal(true);
 	public show_mobile_agent = signal(false);
+	public ai_sidenav_mode = signal<'side' | 'over'>('side');
 
 	public show_mobile_nav = computed(() => !this.desktop_nav_open() && !this.show_mobile_agent());
 
@@ -206,7 +207,9 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	private getBreakpointSubscription(): Subscription {
 		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
+			const is_xlarge = this.breakpointObserver.isMatched(Breakpoints.XLarge);
 			this.desktop_nav_open.set(result.matches);
+			this.ai_sidenav_mode.set(is_xlarge ? 'side' : 'over');
 			if (this.desktop_nav_open()) this.show_mobile_agent.set(false);
 		});
 	}
@@ -444,7 +447,8 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 			this.ai_agent_definition.set(agent);
 		});
 	}
-	private closeChatLog(): void {
+
+	public closeChatLog(): void {
 		this.sidenav.close();
 	}
 
