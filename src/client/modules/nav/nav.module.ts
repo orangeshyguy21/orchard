@@ -28,6 +28,7 @@ import {NavTertiaryItemComponent} from './components/nav-tertiary-item/nav-terti
 import {NavMobileComponent} from './components/nav-mobile/nav-mobile.component';
 import {NavMobileItemComponent} from './components/nav-mobile-item/nav-mobile-item.component';
 import {NavMobileSheetProfileComponent} from './components/nav-mobile-sheet-profile/nav-mobile-sheet-profile.component';
+import {NavMobileSheetMenuComponent} from './components/nav-mobile-sheet-menu/nav-mobile-sheet-menu.component';
 
 @NgModule({
 	declarations: [
@@ -45,6 +46,7 @@ import {NavMobileSheetProfileComponent} from './components/nav-mobile-sheet-prof
 		NavMobileComponent,
 		NavMobileItemComponent,
 		NavMobileSheetProfileComponent,
+		NavMobileSheetMenuComponent,
 	],
 	imports: [
 		CommonModule,

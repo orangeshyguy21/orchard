@@ -1,21 +1,21 @@
 <div
 	class="primary-nav-item-container"
-	[class.primary-nav-item-highlight]="highlight"
+	[class.primary-nav-item-highlight]="highlight()"
 	(mouseenter)="onMouseEnter()"
 	(mouseleave)="onMouseLeave()"
 	(click)="onClick()"
 >
 	<div class="primary-nav-item-indicator">
-		<div [ngClass]="indicator_class" class="indicator-circle"></div>
+		<div [ngClass]="indicator_class()" class="indicator-circle"></div>
 	</div>
 	<div class="primary-nav-item-icon">
-		@if (mode === 'default') {
-			<mat-icon [class.mat-symbol-outline]="!highlight" class="icon-md">{{ icon }}</mat-icon>
-		} @else if (mode === 'svg') {
-			<mat-icon class="w-1-5 h-1-5" [svgIcon]="active_svg_icon"></mat-icon>
+		@if (mode() === 'default') {
+			<mat-icon [class.mat-symbol-outline]="!highlight()" class="icon-md">{{ icon() }}</mat-icon>
+		} @else if (mode() === 'svg') {
+			<mat-icon class="w-1-5 h-1-5" [svgIcon]="active_svg_icon()"></mat-icon>
 		}
 	</div>
 	<div class="primary-nav-item-name">
-		{{ name }}
+		{{ name() }}
 	</div>
 </div>
