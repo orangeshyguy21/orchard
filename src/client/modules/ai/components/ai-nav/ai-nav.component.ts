@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input, ChangeDetectorRef, Output, EventEmitter} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
 import {FormControl} from '@angular/forms';
 /* Native Dependencies */
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
@@ -15,45 +15,51 @@ import {AiAgent} from '@shared/generated.types';
 	styleUrl: './ai-nav.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	host: {
-		'[class.collapsed]': '!opened',
+		'[class.collapsed]': '!opened()',
 	},
 })
 export class AiNavComponent {
-	@Input() active_agent!: AiAgent;
-	@Input() active_chat!: boolean;
-	@Input() model!: string | null;
-	@Input() model_options!: AiModel[];
-	@Input() actionable!: boolean;
-	@Input() content!: FormControl;
-	@Input() conversation!: AiChatConversation | null;
-	@Input() message_length!: number | undefined;
-	@Input() tool_length!: number;
-	@Input() log_open!: boolean | undefined;
-	@Input() opened: boolean = false;
+	/* Inputs */
+	public active_agent = input.required<AiAgent>();
+	public active_chat = input.required<boolean>();
+	public model = input.required<string | null>();
+	public model_options = input.required<AiModel[]>();
+	public actionable = input.required<boolean>();
+	public content = input.required<FormControl>();
+	public conversation = input.required<AiChatConversation | null>();
+	public message_length = input<number>();
+	public tool_length = input.required<number>();
+	public log_open = input<boolean>();
+	public opened = input<boolean>(false);
 
-	@Output() command = new EventEmitter<void>();
-	@Output() modelChange = new EventEmitter<string>();
-	@Output() toggleLog = new EventEmitter<void>();
+	/* Outputs */
+	public command = output<void>();
+	public modelChange = output<string>();
+	public toggleLog = output<void>();
 
-	constructor(
-		public aiService: AiService,
-		private cdr: ChangeDetectorRef,
-	) {}
+	constructor(private aiService: AiService) {}
 
-	// @todo ai service active should probably be an observable
+	/**
+	 * Handles the command action - starts or stops chat based on current state
+	 */
 	public onCommand(): void {
-		this.active_chat ? this.stopChat() : this.startChat();
+		this.active_chat() ? this.stopChat() : this.startChat();
 	}
 
-	private startChat() {
-		if (!this.content.value) return;
-		const agent = this.active_agent || AiAgent.Default;
-		this.aiService.requestAgent(agent, this.content.value);
-		this.content.reset();
+	/**
+	 * Initiates a chat request with the AI service
+	 */
+	private startChat(): void {
+		if (!this.content().value) return;
+		const agent = this.active_agent() || AiAgent.Default;
+		this.aiService.requestAgent(agent, this.content().value);
+		this.content().reset();
 	}
 
+	/**
+	 * Aborts the current AI chat session
+	 */
 	public stopChat(): void {
 		this.aiService.abortAiSocket();
-		this.cdr.detectChanges();
 	}
 }
