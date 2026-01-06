@@ -1,4 +1,4 @@
-<div class="flex flex-column flex-items-center relative">
+<div class="flex flex-items-center relative" [ngClass]="{'flex-row': mode() === 'mobile', 'flex-column': mode() === 'desktop'}">
 	@if (morph_state() === 'actionable') {
 		<button type="button" mat-icon-button class="orc-icon-button" (click)="cancel.emit()">
 			<mat-icon>cancel</mat-icon>

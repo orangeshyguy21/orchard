@@ -15,6 +15,7 @@ export class EventGeneralNavToolComponent {
 	public navroute = input.required<string>();
 	public active = input<boolean>(false);
 	public active_event = input<EventData | null>(null);
+	public mode = input<'desktop' | 'mobile'>('desktop');
 
 	public save = output<void>();
 	public cancel = output<void>();
@@ -53,7 +54,6 @@ export class EventGeneralNavToolComponent {
 		if (active_event?.type === 'PENDING' && active_event?.message) return 'actionable';
 		return 'default';
 	});
-	// public progress = computed(() => this.active_event()?.progress ?? null);
 
 	constructor(private router: Router) {
 		effect(() => {

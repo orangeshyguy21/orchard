@@ -33,7 +33,15 @@
 				<router-outlet></router-outlet>
 				<orc-event-general-stack [active_event]="active_event" [class.ai_enabled]="ai_enabled"></orc-event-general-stack>
 			</div>
-			<orc-nav-mobile [opened]="!desktop_nav_open()"></orc-nav-mobile>
+			<orc-nav-mobile
+				[opened]="!desktop_nav_open()"
+				[active_section]="active_section"
+				[block_count]="block_count"
+				[active_event]="active_event"
+				(save)="onSavePendingEvent()"
+				(cancel)="onCancelPendingEvent()"
+				(abort)="onAbortSubscribedEvent()"
+			></orc-nav-mobile>
 			@if (ai_enabled) {
 				<orc-ai-nav
 					[active_agent]="active_agent"

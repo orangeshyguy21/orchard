@@ -16,11 +16,12 @@
 .nav-mobile-container {
 	@extend %flex;
 	@extend %flex-row;
-	@extend %flex-items-start;
+	@extend %flex-items-center;
+	@extend %flex-justify-between;
 	@extend %flex-gap-1;
 	@extend %orc-surface-container-low-bg;
 	@extend %p-h-1;
-	@extend %p-l-1;
+	@extend %p-v-0-5;
 	@extend %border-top;
 	@extend %border-top-solid;
 	@extend %orc-surface-border;

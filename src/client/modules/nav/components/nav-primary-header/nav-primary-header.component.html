@@ -1,9 +1,11 @@
-<div class="primary-nav-header">
-	<div (click)="onClick()" class="primary-nav-index">
+<div class="primary-nav-header" [class.primary-nav-header-mobile]="mode() === 'mobile'">
+	<div (click)="onClick()" class="primary-nav-index" [class.primary-nav-index-mobile]="mode() === 'mobile'">
 		<div class="orchard-logo flex flex-items-center flex-justify-center" [class.logo-highlight]="active()" matRipple>
-			<orc-graphic-orchard-logo height="3.5rem"></orc-graphic-orchard-logo>
+			<orc-graphic-orchard-logo [height]="graphic_height()"></orc-graphic-orchard-logo>
 		</div>
-		<div class="primary-nav-chain">{{ user_name() }}</div>
+		@if (user_name()) {
+			<div class="primary-nav-chain">{{ user_name() }}</div>
+		}
 		<div class="primary-nav-blockheight" #flash>{{ block_count() | bitcoinGeneralBlock }}</div>
 	</div>
 </div>

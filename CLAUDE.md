@@ -84,6 +84,7 @@ npm run migration:revert      # Revert last migration
 - For variables use snake_case
 - For css class names use kebab-case
 - In Angular, use modern signals, inputs, and outputs
+- In Angular, services are defined in the constructor
 - When writing scss, always try to use the global style system designed to inherit commont styles for consistency. For ex: @extend %flex;
 - Include JSDoc comments for functions
 - Keep your code DRY and avoid deep nesting and triangles of doom.
