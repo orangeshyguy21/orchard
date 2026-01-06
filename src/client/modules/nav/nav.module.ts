@@ -24,6 +24,7 @@ import {NavSecondaryMoreComponent} from './components/nav-secondary-more/nav-sec
 import {NavTertiaryComponent} from './components/nav-tertiary/nav-tertiary.component';
 import {NavTertiaryItemComponent} from './components/nav-tertiary-item/nav-tertiary-item.component';
 import {NavMobileComponent} from './components/nav-mobile/nav-mobile.component';
+import {NavMobileItemComponent} from './components/nav-mobile-item/nav-mobile-item.component';
 
 @NgModule({
 	declarations: [
@@ -39,6 +40,7 @@ import {NavMobileComponent} from './components/nav-mobile/nav-mobile.component';
 		NavTertiaryComponent,
 		NavTertiaryItemComponent,
 		NavMobileComponent,
+		NavMobileItemComponent,
 	],
 	imports: [
 		CommonModule,

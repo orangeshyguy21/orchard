@@ -19,6 +19,7 @@ export class NavMobileComponent {
 	public active_section = input.required<string>();
 	public block_count = input.required<number>();
 	public active_event = input.required<EventData | null>();
+	public user_name = input.required<string>();
 
 	/* Outputs */
 	public save = output<void>();
