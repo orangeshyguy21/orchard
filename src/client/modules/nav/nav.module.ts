@@ -7,6 +7,8 @@ import {MatRippleModule} from '@angular/material/core';
 import {MatButtonModule} from '@angular/material/button';
 import {MatMenuModule} from '@angular/material/menu';
 import {DragDropModule} from '@angular/cdk/drag-drop';
+import {MatBottomSheetModule} from '@angular/material/bottom-sheet';
+import {MatListModule} from '@angular/material/list';
 /* Application Dependencies */
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {OrcBitcoinGeneralModule} from '@client/modules/bitcoin/modules/bitcoin-general/bitcoin-general.module';
@@ -25,6 +27,7 @@ import {NavTertiaryComponent} from './components/nav-tertiary/nav-tertiary.compo
 import {NavTertiaryItemComponent} from './components/nav-tertiary-item/nav-tertiary-item.component';
 import {NavMobileComponent} from './components/nav-mobile/nav-mobile.component';
 import {NavMobileItemComponent} from './components/nav-mobile-item/nav-mobile-item.component';
+import {NavMobileSheetProfileComponent} from './components/nav-mobile-sheet-profile/nav-mobile-sheet-profile.component';
 
 @NgModule({
 	declarations: [
@@ -41,6 +44,7 @@ import {NavMobileItemComponent} from './components/nav-mobile-item/nav-mobile-it
 		NavTertiaryItemComponent,
 		NavMobileComponent,
 		NavMobileItemComponent,
+		NavMobileSheetProfileComponent,
 	],
 	imports: [
 		CommonModule,
@@ -48,6 +52,8 @@ import {NavMobileItemComponent} from './components/nav-mobile-item/nav-mobile-it
 		MatRippleModule,
 		MatButtonModule,
 		MatMenuModule,
+		MatBottomSheetModule,
+		MatListModule,
 		DragDropModule,
 		OrcGraphicModule,
 		OrcBitcoinGeneralModule,

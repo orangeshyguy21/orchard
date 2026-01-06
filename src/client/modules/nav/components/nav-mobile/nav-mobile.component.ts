@@ -1,7 +1,10 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
+/* Vendor Dependencies */
+import {MatBottomSheet} from '@angular/material/bottom-sheet';
 /* Application Dependencies */
 import {EventData} from 'src/client/modules/event/classes/event-data.class';
+import {NavMobileSheetProfileComponent} from '../nav-mobile-sheet-profile/nav-mobile-sheet-profile.component';
 
 @Component({
 	selector: 'orc-nav-mobile',
@@ -25,4 +28,18 @@ export class NavMobileComponent {
 	public save = output<void>();
 	public cancel = output<void>();
 	public abort = output<void>();
+
+	constructor(private bottomSheet: MatBottomSheet) {}
+
+	public onMenuClick() {
+		console.log('menu clicked');
+	}
+
+	public onAgentClick() {
+		console.log('agent clicked');
+	}
+
+	public onProfileClick() {
+		this.bottomSheet.open(NavMobileSheetProfileComponent);
+	}
 }

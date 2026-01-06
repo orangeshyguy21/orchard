@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
 
 @Component({
 	selector: 'orc-nav-mobile-item',
@@ -11,4 +11,6 @@ import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 export class NavMobileItemComponent {
 	public icon = input.required<string>();
 	public name = input.required<string>();
+
+	public clicked = output<void>();
 }
