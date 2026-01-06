@@ -1,22 +1,9 @@
 /* Core Dependencies */
-import {
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	computed,
-	effect,
-	ElementRef,
-	inject,
-	input,
-	OnDestroy,
-	OnInit,
-	output,
-	signal,
-	viewChild,
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, effect, ElementRef, input, output, signal, viewChild} from '@angular/core';
+import {toObservable, toSignal} from '@angular/core/rxjs-interop';
 import {FormGroup} from '@angular/forms';
 /* Vendor Dependencies */
-import {Subscription} from 'rxjs';
+import {startWith, switchMap} from 'rxjs';
 /* Application Dependencies */
 import {OrchardNut4Method, OrchardNut5Method} from '@shared/generated.types';
 
@@ -27,7 +14,7 @@ import {OrchardNut4Method, OrchardNut5Method} from '@shared/generated.types';
 	styleUrl: './mint-subsection-config-form-min.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintSubsectionConfigFormMinComponent implements OnInit, OnDestroy {
+export class MintSubsectionConfigFormMinComponent {
 	public form_group = input.required<FormGroup>(); // form group containing the min amount control
 	public control_name = input.required<keyof OrchardNut4Method | keyof OrchardNut5Method>(); // name of the form control to bind
 	public unit = input.required<string>(); // unit to display (e.g. 'sat')
@@ -40,10 +27,26 @@ export class MintSubsectionConfigFormMinComponent implements OnInit, OnDestroy {
 	public element_min = viewChild.required<ElementRef<HTMLInputElement>>('element_min'); // reference to the input element
 
 	public focused_min = signal<boolean>(false); // tracks if the input is focused
-	public control_dirty = signal<boolean>(false); // tracks if the control is dirty
 	public control_touched = signal<boolean>(false); // tracks if the control has been touched
-	public form_error = signal<string>(''); // current form error message
 	public help_status = signal<boolean>(false); // tracks if the help is visible
+
+	private formChanges = toSignal(toObservable(this.form_group).pipe(switchMap((fg) => fg.valueChanges.pipe(startWith(fg.value)))));
+
+	public control_dirty = computed(() => {
+		this.formChanges();
+		return this.form_group().get(this.control_name())?.dirty ?? false;
+	});
+
+	public form_error = computed(() => {
+		this.formChanges();
+		const control = this.form_group().get(this.control_name());
+		if (control?.hasError('required')) return 'Required';
+		if (control?.hasError('min')) return `Must be at least ${control.getError('min')?.min}`;
+		if (control?.hasError('orchardInteger')) return 'Must be a whole number';
+		if (control?.hasError('orchardCents')) return 'Must have 2 decimals';
+		if (control?.errors) return 'Invalid amount';
+		return '';
+	});
 
 	public form_hot = computed(() => {
 		if (this.focused_min()) return true;
@@ -61,23 +64,10 @@ export class MintSubsectionConfigFormMinComponent implements OnInit, OnDestroy {
 		return '';
 	});
 
-	private cdr = inject(ChangeDetectorRef);
-	private subscription: Subscription = new Subscription();
-
 	constructor() {
 		effect(() => {
 			this.hot.emit(this.form_hot());
 		});
-	}
-
-	ngOnInit(): void {
-		this.subscription.add(
-			this.form_group().valueChanges.subscribe(() => {
-				this.control_dirty.set(this.form_group().get(this.control_name())?.dirty ?? false);
-				this.updateFormError();
-				this.cdr.detectChanges();
-			}),
-		);
 	}
 
 	public onFocus(): void {
@@ -87,43 +77,23 @@ export class MintSubsectionConfigFormMinComponent implements OnInit, OnDestroy {
 	public onBlur(): void {
 		this.focused_min.set(false);
 		this.control_touched.set(true);
-		this.updateFormError();
 	}
 
 	public onSubmit(event: Event): void {
 		event.preventDefault();
 		this.update.emit(this.control_name());
 		this.element_min().nativeElement.blur();
-		this.control_dirty.set(false);
+		this.form_group().get(this.control_name())?.markAsPristine();
 		this.control_touched.set(false);
+		this.focused_min.set(false);
 	}
 
 	public onCancel(event: Event): void {
 		event.preventDefault();
 		this.cancel.emit(this.control_name());
 		this.element_min().nativeElement.blur();
-		this.control_dirty.set(false);
+		this.form_group().get(this.control_name())?.markAsPristine();
 		this.control_touched.set(false);
-	}
-
-	private updateFormError(): void {
-		const control = this.form_group().get(this.control_name());
-		if (control?.hasError('required')) {
-			this.form_error.set('Required');
-		} else if (control?.hasError('min')) {
-			this.form_error.set(`Must be at least ${control.getError('min')?.min}`);
-		} else if (control?.hasError('orchardInteger')) {
-			this.form_error.set('Must be a whole number');
-		} else if (control?.hasError('orchardCents')) {
-			this.form_error.set('Must have 2 decimals');
-		} else if (control?.errors) {
-			this.form_error.set('Invalid amount');
-		} else {
-			this.form_error.set('');
-		}
-	}
-
-	ngOnDestroy(): void {
-		this.subscription.unsubscribe();
+		this.focused_min.set(false);
 	}
 }

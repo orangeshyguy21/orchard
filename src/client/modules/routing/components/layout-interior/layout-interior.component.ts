@@ -14,6 +14,7 @@ import {FormControl} from '@angular/forms';
 /* Vendor Dependencies */
 import {Subscription, timer, EMPTY} from 'rxjs';
 import {switchMap, catchError, filter, takeWhile} from 'rxjs/operators';
+import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 import {MatSidenav} from '@angular/material/sidenav';
 /* Application Dependencies */
 import {ConfigService} from '@client/modules/config/services/config.service';
@@ -95,6 +96,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		private aiService: AiService,
 		private eventService: EventService,
 		private chartService: ChartService,
+		private breakpointObserver: BreakpointObserver,
 		private router: Router,
 		private route: ActivatedRoute,
 		private cdr: ChangeDetectorRef,
@@ -115,6 +117,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		this.subscriptions.add(this.getOverlaySubscription());
 		this.subscriptions.add(this.getEventSubscription());
 		this.subscriptions.add(this.getUserSubscription());
+		this.subscriptions.add(this.getBreakpointSubscription());
 		this.orchardOptionalInit();
 	}
 
@@ -195,6 +198,12 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 				this.user_name = '';
 				this.cdr.detectChanges();
 			},
+		});
+	}
+
+	private getBreakpointSubscription(): Subscription {
+		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
+			this.primary_nav_open.set(result.matches);
 		});
 	}
 

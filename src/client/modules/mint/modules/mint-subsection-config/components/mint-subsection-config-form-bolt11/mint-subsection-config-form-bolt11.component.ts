@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, effect, inject, input, output, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, effect, input, output, signal} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 /* Application Dependencies */
@@ -64,8 +64,6 @@ export class MintSubsectionConfigFormBolt11Component {
 
 	public help_status = signal<boolean>(false); // tracks if the help is visible
 
-	private cdr = inject(ChangeDetectorRef);
-
 	constructor() {
 		effect(() => {
 			if (this.form_status() === true) {
@@ -77,14 +75,12 @@ export class MintSubsectionConfigFormBolt11Component {
 	public onMinHot(event: boolean): void {
 		setTimeout(() => {
 			this.min_hot.set(event);
-			this.cdr.markForCheck();
 		});
 	}
 
 	public onMaxHot(event: boolean): void {
 		setTimeout(() => {
 			this.max_hot.set(event);
-			this.cdr.markForCheck();
 		});
 	}
 
