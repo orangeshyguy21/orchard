@@ -22,7 +22,7 @@ export class MintSubsectionInfoFormContactsComponent {
 	public remove = output<{array_name: keyof MintInfoRpc; control_index: number}>(); // emitted when a contact is removed
 	public addControl = output<void>(); // emitted when a new contact is added
 
-	public added_index = signal<number>(0); // index of the newly added contact
+	public added_index = signal<number | null>(null); // index of the newly added contact
 	public added_method = signal<string>('email'); // method of the newly added contact
 	public help_status = signal<boolean>(false); // tracks if the help is visible
 

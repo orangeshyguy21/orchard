@@ -7,15 +7,13 @@
 	<div
 		class="event-nav-tool-container"
 		[class.action-nav-tool-highlight]="highlight()"
+		[class.mobile-mode]="mode() === 'mobile'"
 		[class]="container_class()"
 		(mouseenter)="onMouseEnter()"
 		(mouseleave)="onMouseLeave()"
 		(click)="onClick()"
 	>
-		<div class="event-nav-tool-switch">
-			@if (morph_state() === 'actionable') {
-				<div animate.enter="animate-fadein-delayed" class="font-size-xs">{{ active_event()?.message }}</div>
-			}
+		<div class="event-nav-tool-switch" [class.mobile-mode]="mode() === 'mobile'">
 			@if (saving()) {
 				@if (subscribed()) {
 					@if (moused()) {
@@ -38,6 +36,9 @@
 				<div animate.enter="animate-enter-scale" class="h-1-75 w-1-75">
 					<mat-icon #icon_collapsed [class.mat-symbol-outline]="!highlight()" class="icon-md">{{ icon() }}</mat-icon>
 				</div>
+			}
+			@if (morph_state() === 'actionable') {
+				<div animate.enter="animate-fadein-delayed" class="font-size-xs">{{ active_event()?.message }}</div>
 			}
 		</div>
 	</div>
