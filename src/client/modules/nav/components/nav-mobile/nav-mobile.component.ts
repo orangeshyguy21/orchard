@@ -23,6 +23,7 @@ export class NavMobileComponent {
 	public block_count = input.required<number>();
 	public active_event = input.required<EventData | null>();
 	public user_name = input.required<string>();
+	public ai_enabled = input.required<boolean>();
 
 	/* Outputs */
 	public save = output<void>();
@@ -37,6 +38,10 @@ export class NavMobileComponent {
 
 	public onAgentClick() {
 		console.log('agent clicked');
+	}
+
+	public onSettingsClick() {
+		console.log('settings clicked');
 	}
 
 	public onProfileClick() {

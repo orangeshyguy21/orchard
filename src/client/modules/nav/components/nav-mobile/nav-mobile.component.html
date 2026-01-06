@@ -13,6 +13,10 @@
 		(abort)="abort.emit()"
 	></orc-event-general-nav-tool>
 
-	<orc-nav-mobile-item icon="spa" name="Agent" (clicked)="onAgentClick()"></orc-nav-mobile-item>
+	@if (ai_enabled()) {
+		<orc-nav-mobile-item icon="spa" name="Agent" (clicked)="onAgentClick()"></orc-nav-mobile-item>
+	} @else {
+		<orc-nav-mobile-item icon="settings" name="Settings" (clicked)="onSettingsClick()"></orc-nav-mobile-item>
+	}
 	<orc-nav-mobile-item icon="person" [name]="user_name()" (clicked)="onProfileClick()"></orc-nav-mobile-item>
 </div>
