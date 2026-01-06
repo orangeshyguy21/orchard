@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output, signal, effect} from '@angular/core';
 import {FormControl} from '@angular/forms';
 /* Native Dependencies */
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
@@ -31,13 +31,23 @@ export class AiNavComponent {
 	public tool_length = input.required<number>();
 	public log_open = input<boolean>();
 	public opened = input<boolean>(false);
+	public mobile_agent = input.required<boolean>();
 
 	/* Outputs */
 	public command = output<void>();
 	public modelChange = output<string>();
 	public toggleLog = output<void>();
+	public hideAgent = output<void>();
 
-	constructor(private aiService: AiService) {}
+	public focus = signal<boolean>(false);
+
+	constructor(private aiService: AiService) {
+		effect(() => {
+			if (this.mobile_agent()) {
+				this.focus.set(true);
+			}
+		});
+	}
 
 	/**
 	 * Handles the command action - starts or stops chat based on current state
@@ -61,5 +71,13 @@ export class AiNavComponent {
 	 */
 	public stopChat(): void {
 		this.aiService.abortAiSocket();
+	}
+
+	/**
+	 * Hides the agent and resets the focus
+	 */
+	public onHideAgent(): void {
+		this.focus.set(false);
+		this.hideAgent.emit();
 	}
 }

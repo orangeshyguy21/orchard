@@ -22,7 +22,7 @@ export class MintSubsectionInfoFormUrlsComponent {
 	public remove = output<{array_name: keyof MintInfoRpc; control_index: number}>(); // emitted when a url is removed
 	public addControl = output<void>(); // emitted when a new url is added
 
-	public added_index = signal<number>(0); // index of the newly added url
+	public added_index = signal<number | null>(null); // index of the newly added url
 	public help_status = signal<boolean>(false); // tracks if the help is visible
 
 	public onAddControl(): void {

@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output, signal} from '@angular/core';
 /* Vendor Dependencies */
 import {MatBottomSheet} from '@angular/material/bottom-sheet';
 /* Application Dependencies */
@@ -29,6 +29,7 @@ export class NavMobileComponent {
 	public save = output<void>();
 	public cancel = output<void>();
 	public abort = output<void>();
+	public showAgent = output<void>();
 
 	constructor(private bottomSheet: MatBottomSheet) {}
 
@@ -37,7 +38,7 @@ export class NavMobileComponent {
 	}
 
 	public onAgentClick() {
-		console.log('agent clicked');
+		this.showAgent.emit();
 	}
 
 	public onSettingsClick() {

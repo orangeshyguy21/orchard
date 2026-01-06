@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, signal} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, signal, computed} from '@angular/core';
 import {
 	Event,
 	Router,
@@ -51,7 +51,6 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	@ViewChild('primarySidenav') primarySidenav!: MatSidenav;
 	@ViewChild('aiSidenav') sidenav!: MatSidenav;
 
-	public desktop_nav_open = signal(true);
 	public user_name!: string;
 	public ai_enabled: boolean;
 	public ai_models: AiModel[] = [];
@@ -76,6 +75,10 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	public ai_agent_definition = signal<AiAgentDefinition | null>(null);
 	public overlayed = signal(false);
+	public desktop_nav_open = signal(true);
+	public show_mobile_agent = signal(false);
+
+	public show_mobile_nav = computed(() => !this.desktop_nav_open() && !this.show_mobile_agent());
 
 	public get ai_actionable(): boolean {
 		if (this.active_chat) return true;
@@ -204,6 +207,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	private getBreakpointSubscription(): Subscription {
 		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
 			this.desktop_nav_open.set(result.matches);
+			if (this.desktop_nav_open()) this.show_mobile_agent.set(false);
 		});
 	}
 
@@ -442,6 +446,14 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	}
 	private closeChatLog(): void {
 		this.sidenav.close();
+	}
+
+	public onShowAgent(): void {
+		this.show_mobile_agent.set(true);
+	}
+
+	public onHideAgent(): void {
+		this.show_mobile_agent.set(false);
 	}
 
 	/* *******************************************************

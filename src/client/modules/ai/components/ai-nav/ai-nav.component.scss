@@ -33,6 +33,20 @@
 		pointer-events: none;
 		@extend %opacity-0;
 	}
+
+	&.mobile-agent {
+		@extend %flex-column;
+		@extend %flex-gap-0;
+
+		.ai-user-input {
+			@extend %w-full;
+		}
+
+		.ai-action-bar {
+			@extend %w-full;
+			@extend %flex-justify-between;
+		}
+	}
 }
 
 .ai-user-input {

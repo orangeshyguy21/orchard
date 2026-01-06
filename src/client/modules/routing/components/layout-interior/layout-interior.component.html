@@ -34,12 +34,13 @@
 				<orc-event-general-stack [active_event]="active_event" [class.ai_enabled]="ai_enabled"></orc-event-general-stack>
 			</div>
 			<orc-nav-mobile
-				[opened]="!desktop_nav_open()"
+				[opened]="show_mobile_nav()"
 				[active_section]="active_section"
 				[block_count]="block_count"
 				[active_event]="active_event"
 				[user_name]="user_name"
 				[ai_enabled]="ai_enabled"
+				(showAgent)="onShowAgent()"
 				(save)="onSavePendingEvent()"
 				(cancel)="onCancelPendingEvent()"
 				(abort)="onAbortSubscribedEvent()"
@@ -56,10 +57,12 @@
 					[tool_length]="ai_tool_calls"
 					[message_length]="ai_conversation?.messages?.length"
 					[log_open]="sidenav ? sidenav.opened : false"
-					[opened]="desktop_nav_open()"
+					[mobile_agent]="show_mobile_agent()"
+					[opened]="!show_mobile_nav()"
 					(command)="onCommand()"
 					(modelChange)="onModelChange($event)"
 					(toggleLog)="onToggleLog()"
+					(hideAgent)="onHideAgent()"
 				></orc-ai-nav>
 			}
 		</div>
