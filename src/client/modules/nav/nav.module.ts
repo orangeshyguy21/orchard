@@ -23,6 +23,7 @@ import {NavSecondaryItemComponent} from './components/nav-secondary-item/nav-sec
 import {NavSecondaryMoreComponent} from './components/nav-secondary-more/nav-secondary-more.component';
 import {NavTertiaryComponent} from './components/nav-tertiary/nav-tertiary.component';
 import {NavTertiaryItemComponent} from './components/nav-tertiary-item/nav-tertiary-item.component';
+import {NavMobileComponent} from './components/nav-mobile/nav-mobile.component';
 
 @NgModule({
 	declarations: [
@@ -37,6 +38,7 @@ import {NavTertiaryItemComponent} from './components/nav-tertiary-item/nav-terti
 		NavSecondaryMoreComponent,
 		NavTertiaryComponent,
 		NavTertiaryItemComponent,
+		NavMobileComponent,
 	],
 	imports: [
 		CommonModule,
@@ -49,6 +51,13 @@ import {NavTertiaryItemComponent} from './components/nav-tertiary-item/nav-terti
 		OrcBitcoinGeneralModule,
 		OrcEventGeneralModule,
 	],
-	exports: [NavPrimaryComponent, NavSecondaryComponent, NavSecondaryItemComponent, NavSecondaryMoreComponent, NavTertiaryComponent],
+	exports: [
+		NavPrimaryComponent,
+		NavSecondaryComponent,
+		NavSecondaryItemComponent,
+		NavSecondaryMoreComponent,
+		NavTertiaryComponent,
+		NavMobileComponent,
+	],
 })
 export class OrcNavModule {}

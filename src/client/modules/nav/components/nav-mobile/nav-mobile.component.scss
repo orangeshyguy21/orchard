@@ -4,8 +4,8 @@
 :host {
 	@extend %block;
 	@extend %overflow-hidden;
-	@extend %h-max-3;
 	flex-shrink: 0;
+	max-height: 20rem;
 	transition: max-height 200ms ease;
 
 	&.collapsed {
@@ -13,35 +13,24 @@
 	}
 }
 
-.nav-secondary-container {
+.nav-mobile-container {
 	@extend %flex;
 	@extend %flex-row;
-	@extend %flex-items-center;
+	@extend %flex-items-start;
+	@extend %flex-gap-1;
 	@extend %orc-surface-container-low-bg;
-	@extend %h-3;
 	@extend %p-h-1;
+	@extend %p-l-1;
+	@extend %border-top;
+	@extend %border-top-solid;
+	@extend %orc-surface-border;
 	transition:
 		transform 200ms ease,
 		opacity 200ms ease;
 
 	&.collapsed {
-		transform: translateY(-100%);
+		transform: translateY(100%);
 		pointer-events: none;
 		@extend %opacity-0;
 	}
-}
-
-::ng-deep [nav-secondary-header] {
-	@extend %w-min-18;
-}
-
-.nav-secondary-items {
-	@extend %flex-grow;
-	@extend %h-full;
-}
-
-::ng-deep [nav-secondary-items] {
-	@extend %flex;
-	@extend %flex-row;
-	@extend %h-full;
 }

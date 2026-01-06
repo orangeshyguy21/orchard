@@ -51,7 +51,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	@ViewChild('primarySidenav') primarySidenav!: MatSidenav;
 	@ViewChild('aiSidenav') sidenav!: MatSidenav;
 
-	public primary_nav_open = signal(true);
+	public desktop_nav_open = signal(true);
 	public user_name!: string;
 	public ai_enabled: boolean;
 	public ai_models: AiModel[] = [];
@@ -203,7 +203,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	private getBreakpointSubscription(): Subscription {
 		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
-			this.primary_nav_open.set(result.matches);
+			this.desktop_nav_open.set(result.matches);
 		});
 	}
 

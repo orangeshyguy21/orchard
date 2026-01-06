@@ -1,5 +1,5 @@
 <mat-sidenav-container>
-	<mat-sidenav #primarySidenav mode="side" position="start" class="primary-sidenav" [opened]="primary_nav_open()">
+	<mat-sidenav #primarySidenav mode="side" position="start" class="primary-sidenav" [opened]="desktop_nav_open()">
 		<orc-nav-primary
 			[active_section]="active_section"
 			[active_event]="active_event"
@@ -33,6 +33,7 @@
 				<router-outlet></router-outlet>
 				<orc-event-general-stack [active_event]="active_event" [class.ai_enabled]="ai_enabled"></orc-event-general-stack>
 			</div>
+			<orc-nav-mobile [opened]="!desktop_nav_open()"></orc-nav-mobile>
 			@if (ai_enabled) {
 				<orc-ai-nav
 					[active_agent]="active_agent"
@@ -45,6 +46,7 @@
 					[tool_length]="ai_tool_calls"
 					[message_length]="ai_conversation?.messages?.length"
 					[log_open]="sidenav ? sidenav.opened : false"
+					[opened]="desktop_nav_open()"
 					(command)="onCommand()"
 					(modelChange)="onModelChange($event)"
 					(toggleLog)="onToggleLog()"

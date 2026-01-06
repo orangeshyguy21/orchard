@@ -14,6 +14,9 @@ import {AiAgent} from '@shared/generated.types';
 	templateUrl: './ai-nav.component.html',
 	styleUrl: './ai-nav.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
+	host: {
+		'[class.collapsed]': '!opened',
+	},
 })
 export class AiNavComponent {
 	@Input() active_agent!: AiAgent;
@@ -26,6 +29,7 @@ export class AiNavComponent {
 	@Input() message_length!: number | undefined;
 	@Input() tool_length!: number;
 	@Input() log_open!: boolean | undefined;
+	@Input() opened: boolean = false;
 
 	@Output() command = new EventEmitter<void>();
 	@Output() modelChange = new EventEmitter<string>();
