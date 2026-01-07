@@ -1,0 +1,43 @@
+@use 'molecule/molecule';
+
+.form-filter-menu-container {
+	@extend %flex;
+	@extend %flex-column;
+}
+
+.form-filter-menu-header {
+	@extend %relative;
+	@extend %flex-shrink-0;
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	@extend %h-3;
+	@extend %border-bottom;
+	@extend %border-bottom-solid;
+	@extend %orc-outline-variant-border;
+}
+
+.form-filter-close {
+	@extend %absolute;
+	@extend %top-0-5;
+	@extend %right-0-5;
+}
+
+.form-filter-menu-content {
+	@extend %flex;
+	@extend %flex-column;
+	@extend %overflow-hidden;
+	@extend %overflow-y-auto;
+	max-height: 24rem;
+}
+
+.form-filter-menu-footer {
+	@extend %flex-shrink-0;
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-end;
+	@extend %h-3;
+	@extend %border-top;
+	@extend %border-top-solid;
+	@extend %orc-outline-variant-border;
+}

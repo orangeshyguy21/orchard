@@ -20,3 +20,13 @@
         min-width: 12rem;
     }
 }
+
+.orc-filter-menu-rule{
+    @extend %border;
+    @extend %border-solid;
+    @extend %orc-outline-variant-border;
+}
+
+.orc-filter-menu-section{
+    @extend %p-1;
+}

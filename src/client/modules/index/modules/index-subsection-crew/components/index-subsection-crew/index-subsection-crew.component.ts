@@ -46,6 +46,7 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 
 	@ViewChild('invite_form', {static: false}) invite_form!: ElementRef;
 
+	public filter_count = signal<number>(0);
 	public id_user = signal<string | null>(null);
 	public form_dirty = signal<boolean>(false);
 	public form_invite_create_open = signal<boolean>(false);
@@ -54,8 +55,8 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 	public data = signal<MatTableDataSource<Invite | User>>(new MatTableDataSource<Invite | User>([]));
 	public readonly panel = new FormGroup({
 		filter: new FormControl<string>(''),
-		state: new FormControl<CrewState[]>([CrewState.ACTIVE, CrewState.INACTIVE, CrewState.PENDING]),
-		role: new FormControl<UserRole[]>([UserRole.Admin, UserRole.Manager, UserRole.Reader]),
+		state: new FormControl<CrewState[]>([]),
+		role: new FormControl<UserRole[]>([]),
 	});
 	public state_options: StateOption[] = [
 		{label: 'Active', value: CrewState.ACTIVE},
@@ -674,11 +675,15 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 	 * Applies all active filters (text, state, role) to the table data
 	 */
 	private applyFilters(): void {
-		this.data().filter = JSON.stringify({
-			text: (this.panel.get('filter')?.value || '').trim().toLowerCase(),
-			state: this.panel.get('state')?.value || [],
-			role: this.panel.get('role')?.value || [],
-		});
+		const text = (this.panel.get('filter')?.value || '').trim().toLowerCase();
+		let state = this.panel.get('state')?.value || [];
+		let role = this.panel.get('role')?.value || [];
+		const state_count = state.length > 0 ? 1 : 0;
+		const role_count = role.length > 0 ? 1 : 0;
+		this.filter_count.set(state_count + role_count);
+		if (state.length === 0) state = [CrewState.ACTIVE, CrewState.INACTIVE, CrewState.PENDING];
+		if (role.length === 0) role = [UserRole.Admin, UserRole.Manager, UserRole.Reader];
+		this.data().filter = JSON.stringify({text, state, role});
 	}
 
 	/* *******************************************************

@@ -6,7 +6,7 @@
 
 .panel {
 	@extend %flex-grow;
-	@extend %flex-shrink;
+	@extend %flex-shrink-1;
 }
 
 .panel-blockchain {

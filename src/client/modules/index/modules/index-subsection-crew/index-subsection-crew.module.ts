@@ -19,6 +19,7 @@ import {MatRippleModule} from '@angular/material/core';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {MatMenuModule} from '@angular/material/menu';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcLocalModule} from '@client/modules/local/local.module';
@@ -69,6 +70,7 @@ import {IndexSubsectionCrewDialogInviteComponent} from './components/index-subse
 		MatDialogModule,
 		MatTooltipModule,
 		MatSlideToggleModule,
+		MatMenuModule,
 		OrcFormModule,
 		OrcLocalModule,
 	],

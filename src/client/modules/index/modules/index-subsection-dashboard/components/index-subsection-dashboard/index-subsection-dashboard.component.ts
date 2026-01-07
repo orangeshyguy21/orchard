@@ -201,7 +201,6 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 
 	private getBreakpointSubscription(): Subscription {
 		return this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium]).subscribe((result) => {
-			// const is_xsmall = this.breakpointObserver.isMatched(Breakpoints.XSmall);
 			this.mobile_view.set(result.matches);
 		});
 	}
