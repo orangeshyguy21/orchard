@@ -1,8 +1,15 @@
 <div class="nav-mobile-sheet-menu-container">
-	{{ data.active_section }}
+	{{ data.active_sub_section }}
 	<mat-nav-list>
 		@for (item of data.items; track item.navroute) {
-			<a [routerLink]="item.navroute" mat-list-item [class.active]="item.navroute === data.active_section">
+			<a
+				[routerLink]="item.navroute"
+				mat-list-item
+				[class.active]="
+					(item.subsection === data.active_sub_section && !navigated_subsection()) || navigated_subsection() === item.subsection
+				"
+				(click)="onItemClick(item)"
+			>
 				<span matListItemTitle>{{ item.name }}</span>
 			</a>
 		}

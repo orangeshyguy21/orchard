@@ -1,8 +1,7 @@
 @use 'molecule/molecule';
 
 .nav-mobile-sheet-menu-container {
-	a.active {
-		background-color: var(--mat-sidenav-container-background-color);
-		// or whatever active styles you want
+	.active {
+		@extend %orc-primary-container-bg;
 	}
 }

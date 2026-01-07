@@ -24,6 +24,7 @@ export class NavMobileComponent {
 	/* Inputs */
 	public opened = input.required<boolean>();
 	public active_section = input.required<string>();
+	public active_sub_section = input.required<string>();
 	public active_event = input.required<EventData | null>();
 	public enabled_ai = input.required<boolean>();
 	public enabled_bitcoin = input.required<boolean>();
@@ -48,50 +49,60 @@ export class NavMobileComponent {
 			{
 				name: 'Home',
 				navroute: '',
+				subsection: 'home',
 			},
 			{
 				name: 'Crew',
 				navroute: 'crew',
+				subsection: 'crew',
 			},
 		],
 		bitcoin: [
 			{
 				name: 'Dashboard',
 				navroute: 'bitcoin',
+				subsection: 'dashboard',
 			},
 		],
 		lightning: [
 			{
 				name: 'Dashboard',
 				navroute: 'lightning',
+				subsection: 'dashboard',
 			},
 		],
 		mint: [
 			{
 				name: 'Dashboard',
 				navroute: 'mint',
+				subsection: 'dashboard',
 			},
 			{
 				name: 'Info',
 				navroute: 'mint/info',
+				subsection: 'info',
 			},
 			{
 				name: 'Config',
 				navroute: 'mint/config',
+				subsection: 'config',
 			},
 			{
 				name: 'Keysets',
 				navroute: 'mint/keysets',
+				subsection: 'keysets',
 			},
 			{
 				name: 'Database',
 				navroute: 'mint/database',
+				subsection: 'database',
 			},
 		],
 		ecash: [
 			{
 				name: 'Dashboard',
 				navroute: 'ecash',
+				subsection: 'dashboard',
 			},
 		],
 	};
@@ -101,9 +112,14 @@ export class NavMobileComponent {
 	public onMenuClick() {
 		const items = this.menuItems[this.active_section()];
 		this.bottomSheet.open(NavMobileSheetMenuComponent, {
+			autoFocus: false,
 			data: {
 				items: items,
-				active_section: this.active_section(),
+				active_sub_section: this.active_sub_section(),
+				enabled: this.getSectionEnabled(this.active_section()),
+				online: this.getSectionOnline(this.active_section()),
+				syncing: this.getSectionSyncing(this.active_section()),
+				icon: this.getSectionIcon(this.active_section()),
 			},
 		});
 	}
@@ -118,5 +134,57 @@ export class NavMobileComponent {
 
 	public onProfileClick() {
 		this.bottomSheet.open(NavMobileSheetProfileComponent);
+	}
+
+	private getSectionEnabled(section: string): boolean {
+		switch (section) {
+			case 'bitcoin':
+				return this.enabled_bitcoin();
+			case 'lightning':
+				return this.enabled_lightning();
+			case 'mint':
+				return this.enabled_mint();
+			default:
+				return false;
+		}
+	}
+
+	private getSectionOnline(section: string): boolean {
+		switch (section) {
+			case 'bitcoin':
+				return this.online_bitcoin();
+			case 'lightning':
+				return this.online_lightning();
+			case 'mint':
+				return this.online_mint();
+			default:
+				return false;
+		}
+	}
+
+	private getSectionSyncing(section: string): boolean {
+		switch (section) {
+			case 'bitcoin':
+				return this.syncing_bitcoin();
+			case 'lightning':
+				return this.syncing_lightning();
+			default:
+				return false;
+		}
+	}
+
+	private getSectionIcon(section: string): string {
+		switch (section) {
+			case 'bitcoin':
+				return 'bitcoin';
+			case 'lightning':
+				return 'bolt';
+			case 'mint':
+				return 'account_balance';
+			case 'ecash':
+				return 'payments';
+			default:
+				return 'home';
+		}
 	}
 }
