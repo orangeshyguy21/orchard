@@ -1,7 +1,12 @@
 <div class="nav-mobile-container" [class.collapsed]="!opened()">
-	<orc-nav-primary-header [active]="active_section() === 'index'" [block_count]="block_count()" mode="mobile"></orc-nav-primary-header>
+	<orc-nav-primary-header
+		[active]="active_section() === 'index'"
+		[block_count]="block_count()"
+		mode="mobile"
+		(click)="onMenuSectionClick()"
+	></orc-nav-primary-header>
 
-	<orc-nav-mobile-item icon="menu" name="Menu" (clicked)="onMenuClick()"></orc-nav-mobile-item>
+	<orc-nav-mobile-item icon="menu" name="Menu" (clicked)="onMenuSubsectionClick()"></orc-nav-mobile-item>
 
 	<orc-event-general-nav-tool
 		navroute="event"

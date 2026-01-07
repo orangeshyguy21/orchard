@@ -24,13 +24,6 @@ export class NavPrimaryItemComponent {
 	public highlight = computed(() => this.active() || this.moused());
 	public icon_outline = computed(() => `${this.icon()}_outline`);
 	public active_svg_icon = computed(() => (this.highlight() ? this.icon() : this.icon_outline()));
-	public indicator_class = computed(() => {
-		if (!this.enabled()) return '';
-		if (this.online() === false) return 'trans-bg-medium orc-status-inactive-bg';
-		if (this.syncing()) return 'trans-bg-medium orc-status-warning-bg';
-		if (this.online() === true) return 'trans-bg-medium orc-status-active-bg';
-		return 'orc-animation-shimmer-highest';
-	});
 
 	constructor(private router: Router) {}
 

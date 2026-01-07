@@ -1,0 +1,15 @@
+@use 'molecule/molecule';
+
+.indicator-circle {
+	@extend %orc-corner-full;
+
+	&.indicator-circle-small {
+		height: 0.5rem;
+		width: 0.5rem;
+	}
+
+	&.indicator-circle-medium {
+		@extend %w-1;
+		@extend %h-1;
+	}
+}

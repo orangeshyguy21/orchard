@@ -1,6 +1,6 @@
 @use 'molecule/molecule';
 
-.nav-mobile-sheet-menu-container {
+.nav-mobile-sheet-menu-section-container {
 	.active {
 		@extend %orc-primary-container-bg;
 	}

@@ -1,0 +1,31 @@
+@use 'molecule/molecule';
+
+.nav-mobile-sheet-menu-subsection-container {
+	.active {
+		@extend %orc-primary-container-bg;
+	}
+}
+
+.nav-mobile-sheet-active-section {
+	@extend %flex;
+	@extend %flex-row;
+	@extend %flex-items-center;
+	@extend %flex-justify-between;
+	@extend %p-1;
+	@extend %border-bottom;
+	@extend %border-bottom-solid;
+	border-bottom-color: var(--mat-sys-outline-variant);
+}
+
+.nav-mobile-sheet-section-header {
+	@extend %flex;
+	@extend %flex-row;
+	@extend %flex-items-center;
+	@extend %flex-gap-1;
+}
+
+.indicator-circle {
+	@extend %w-1;
+	@extend %h-1;
+	@extend %orc-corner-full;
+}

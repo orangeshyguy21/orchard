@@ -47,6 +47,7 @@ export class NavPrimaryHeaderComponent {
 	}
 
 	public onClick() {
+		if (this.mode() === 'mobile') return;
 		this.router.navigate(['/']);
 	}
 }

@@ -6,7 +6,7 @@
 	(click)="onClick()"
 >
 	<div class="primary-nav-item-indicator">
-		<div [ngClass]="indicator_class()" class="indicator-circle"></div>
+		<orc-nav-primary-status [size]="'small'" [enabled]="enabled()" [online]="online()" [syncing]="syncing()"></orc-nav-primary-status>
 	</div>
 	<div class="primary-nav-item-icon">
 		@if (mode() === 'default') {

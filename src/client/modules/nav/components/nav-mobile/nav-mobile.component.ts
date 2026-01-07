@@ -8,7 +8,8 @@ import {EventData} from 'src/client/modules/event/classes/event-data.class';
 import {NavSecondaryItem} from '@client/modules/nav/types/nav-secondary-item.type';
 /* Components */
 import {NavMobileSheetProfileComponent} from '../nav-mobile-sheet-profile/nav-mobile-sheet-profile.component';
-import {NavMobileSheetMenuComponent} from '../nav-mobile-sheet-menu/nav-mobile-sheet-menu.component';
+import {NavMobileSheetMenuSectionComponent} from '../nav-mobile-sheet-menu-section/nav-mobile-sheet-menu-section.component';
+import {NavMobileSheetMenuSubsectionComponent} from '../nav-mobile-sheet-menu-subsection/nav-mobile-sheet-menu-subsection.component';
 
 @Component({
 	selector: 'orc-nav-mobile',
@@ -109,9 +110,27 @@ export class NavMobileComponent {
 
 	constructor(private bottomSheet: MatBottomSheet) {}
 
-	public onMenuClick() {
+	public onMenuSectionClick() {
+		console.log('menu section clicked');
+		this.bottomSheet.open(NavMobileSheetMenuSectionComponent, {
+			autoFocus: false,
+			data: {
+				active_section: this.active_section(),
+				enabled_bitcoin: this.enabled_bitcoin(),
+				enabled_lightning: this.enabled_lightning(),
+				enabled_mint: this.enabled_mint(),
+				online_bitcoin: this.online_bitcoin(),
+				online_lightning: this.online_lightning(),
+				online_mint: this.online_mint(),
+				syncing_bitcoin: this.syncing_bitcoin(),
+				syncing_lightning: this.syncing_lightning(),
+			},
+		});
+	}
+
+	public onMenuSubsectionClick() {
 		const items = this.menuItems[this.active_section()];
-		this.bottomSheet.open(NavMobileSheetMenuComponent, {
+		this.bottomSheet.open(NavMobileSheetMenuSubsectionComponent, {
 			autoFocus: false,
 			data: {
 				items: items,
@@ -120,6 +139,7 @@ export class NavMobileComponent {
 				online: this.getSectionOnline(this.active_section()),
 				syncing: this.getSectionSyncing(this.active_section()),
 				icon: this.getSectionIcon(this.active_section()),
+				name: this.getSectionName(this.active_section()),
 			},
 		});
 	}
@@ -185,6 +205,21 @@ export class NavMobileComponent {
 				return 'payments';
 			default:
 				return 'home';
+		}
+	}
+
+	private getSectionName(section: string): string {
+		switch (section) {
+			case 'bitcoin':
+				return 'Bitcoin';
+			case 'lightning':
+				return 'Lightning';
+			case 'mint':
+				return 'Mint';
+			case 'ecash':
+				return 'E-Cash';
+			default:
+				return 'Home';
 		}
 	}
 }
