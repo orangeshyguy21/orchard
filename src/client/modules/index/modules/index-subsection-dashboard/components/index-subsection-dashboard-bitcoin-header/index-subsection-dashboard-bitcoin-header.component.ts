@@ -1,8 +1,10 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, computed} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, computed, signal, effect} from '@angular/core';
 /* Vendor Dependencies */
 import {MatBottomSheet} from '@angular/material/bottom-sheet';
 /* Application Dependencies */
+import {NavService} from '@client/modules/nav/services/nav/nav.service';
+import {NavSecondaryItem} from '@client/modules/nav/types/nav-secondary-item.type';
 import {BitcoinNetworkInfo} from '@client/modules/bitcoin/classes/bitcoin-network-info.class';
 import {BitcoinBlockchainInfo} from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
 /* Components */
@@ -24,33 +26,37 @@ export class IndexSubsectionDashboardBitcoinHeaderComponent {
 	public error = input.required<boolean>();
 	public mobile_view = input.required<boolean>();
 
+	public items = signal<NavSecondaryItem[]>([]);
+
 	public state = computed(() => {
 		if (this.error()) return 'offline';
 		if (this.blockchain_info()?.initialblockdownload) return 'syncing';
 		return 'online';
 	});
 
-	constructor(private bottomSheet: MatBottomSheet) {}
+	constructor(
+		private bottomSheet: MatBottomSheet,
+		private navService: NavService,
+	) {
+		effect(() => {
+			const enabled_oracle = this.enabled_oracle();
+			const items = this.navService.getMenuItems('bitcoin');
+			if (enabled_oracle) {
+				items.push({
+					name: 'Oracle',
+					navroute: 'bitcoin/oracle',
+					subsection: 'oracle',
+				});
+			}
+			this.items.set(items);
+		});
+	}
 
 	public onMenuClick() {
-		const items = [
-			{
-				name: 'Dashboard',
-				navroute: 'bitcoin',
-				subsection: 'dashboard',
-			},
-		];
-		if (this.enabled_oracle()) {
-			items.push({
-				name: 'Oracle',
-				navroute: 'bitcoin/oracle',
-				subsection: 'oracle',
-			});
-		}
 		this.bottomSheet.open(NavMobileSheetMenuSubsectionComponent, {
 			autoFocus: false,
 			data: {
-				items: items,
+				items: this.items(),
 				active_sub_section: '',
 				enabled: this.enabled(),
 				online: !this.error(),

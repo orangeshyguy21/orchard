@@ -7,7 +7,7 @@ import {SettingAppService} from '@client/modules/settings/services/setting-app/s
 import {EventData} from 'src/client/modules/event/classes/event-data.class';
 import {Setting} from '@client/modules/settings/classes/setting.class';
 /* Native Dependencies */
-import {NavSecondaryItem} from '@client/modules/nav/types/nav-secondary-item.type';
+import {NavService} from '@client/modules/nav/services/nav/nav.service';
 /* Components */
 import {NavMobileSheetProfileComponent} from '../nav-mobile-sheet-profile/nav-mobile-sheet-profile.component';
 import {NavMobileSheetMenuSectionComponent} from '../nav-mobile-sheet-menu-section/nav-mobile-sheet-menu-section.component';
@@ -50,72 +50,11 @@ export class NavMobileComponent {
 	public showAgent = output<void>();
 
 	private show_oracle: boolean = false;
-	private menuItems: Record<string, NavSecondaryItem[]> = {
-		index: [
-			{
-				name: 'Home',
-				navroute: '',
-				subsection: 'home',
-			},
-			{
-				name: 'Crew',
-				navroute: 'crew',
-				subsection: 'crew',
-			},
-		],
-		bitcoin: [
-			{
-				name: 'Dashboard',
-				navroute: 'bitcoin',
-				subsection: 'dashboard',
-			},
-		],
-		lightning: [
-			{
-				name: 'Dashboard',
-				navroute: 'lightning',
-				subsection: 'dashboard',
-			},
-		],
-		mint: [
-			{
-				name: 'Dashboard',
-				navroute: 'mint',
-				subsection: 'dashboard',
-			},
-			{
-				name: 'Info',
-				navroute: 'mint/info',
-				subsection: 'info',
-			},
-			{
-				name: 'Config',
-				navroute: 'mint/config',
-				subsection: 'config',
-			},
-			{
-				name: 'Keysets',
-				navroute: 'mint/keysets',
-				subsection: 'keysets',
-			},
-			{
-				name: 'Database',
-				navroute: 'mint/database',
-				subsection: 'database',
-			},
-		],
-		ecash: [
-			{
-				name: 'Dashboard',
-				navroute: 'ecash',
-				subsection: 'dashboard',
-			},
-		],
-	};
 
 	constructor(
 		private bottomSheet: MatBottomSheet,
 		private settingAppService: SettingAppService,
+		private navService: NavService,
 	) {
 		effect(() => {
 			const active_section = this.active_section();
@@ -143,7 +82,7 @@ export class NavMobileComponent {
 	}
 
 	public onMenuSubsectionClick() {
-		const items = [...this.menuItems[this.active_section()]];
+		const items = this.navService.getMenuItems(this.active_section());
 		if (this.active_section() === 'bitcoin' && this.show_oracle) {
 			items.push({
 				name: 'Oracle',

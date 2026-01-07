@@ -22,9 +22,8 @@
 	</div>
 	@if (!mobile_view()) {
 		<div class="flex-grow flex h-3">
-			<orc-nav-secondary-item name="Dashboard" navroute="bitcoin"> </orc-nav-secondary-item>
-			@if (enabled_oracle()) {
-				<orc-nav-secondary-item name="Oracle" navroute="bitcoin/oracle"> </orc-nav-secondary-item>
+			@for (item of items(); track item.navroute) {
+				<orc-nav-secondary-item [name]="item.name" [navroute]="item.navroute"> </orc-nav-secondary-item>
 			}
 		</div>
 	}

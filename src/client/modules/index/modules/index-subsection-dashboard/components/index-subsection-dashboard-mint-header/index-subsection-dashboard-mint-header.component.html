@@ -1,36 +1,41 @@
-<div class="index-mint-header-container">
-	<div class="flex flex-items-center flex-gap-0-5 p-b-0-5 w-min-10">
+<div class="index-mint-header-container" [class.mobile-header]="mobile_view()">
+	<div class="header-box flex flex-items-center flex-gap-0-5 p-b-0-5">
 		<mat-icon class="mat-symbol-outline">account_balance</mat-icon>
 		<div class="title-l">Mint</div>
 	</div>
-	<div class="p-b-0-5 w-min-10">
-		@if (enabled && !loading) {
+	<div class="header-box p-b-0-5">
+		@if (enabled() && !loading()) {
 			<div animate.enter="orc-animation-fadein" class="flex flex-gap-1">
 				<div class="flex flex-items-center flex-gap-0-5">
-					@switch (state()) {
-						@case ('offline') {
-							<mat-icon class="icon-sm orc-status-error-color">circle</mat-icon>
-							<div class="orc-outline-color">offline</div>
-						}
-						@default {
-							<mat-icon class="icon-sm orc-status-active-color">circle</mat-icon>
-							<div class="orc-outline-color">online</div>
-						}
+					<orc-nav-primary-status
+						[size]="mobile_view() ? 'medium' : 'small'"
+						[enabled]="enabled() || false"
+						[online]="!error()"
+					></orc-nav-primary-status>
+					@if (!mobile_view()) {
+						<div class="orc-outline-color">{{ state() }}</div>
 					}
 				</div>
 			</div>
 		}
 	</div>
-	<div class="flex-grow flex h-3">
-		<orc-nav-secondary-item name="Dashboard" navroute="mint"> </orc-nav-secondary-item>
-		<orc-nav-secondary-item name="Info" navroute="mint/info"> </orc-nav-secondary-item>
-		<orc-nav-secondary-item name="Config" navroute="mint/config"> </orc-nav-secondary-item>
-		<orc-nav-secondary-item name="Keysets" navroute="mint/keysets"> </orc-nav-secondary-item>
-		<orc-nav-secondary-item name="Database" navroute="mint/database"> </orc-nav-secondary-item>
-	</div>
+	@if (!mobile_view()) {
+		<div class="flex-grow flex h-3">
+			@for (item of items(); track item.navroute) {
+				<orc-nav-secondary-item [name]="item.name" [navroute]="item.navroute"> </orc-nav-secondary-item>
+			}
+		</div>
+	}
 	<div>
-		@if (enabled && !loading) {
-			<div animate.enter="orc-animation-fadein" class="orc-outline-color font-size-xs p-b-0-5">{{ info.version }}</div>
+		@if (enabled() && !loading()) {
+			<div animate.enter="orc-animation-fadein" class="orc-outline-color font-size-xs p-b-0-5">{{ info()?.version }}</div>
 		}
 	</div>
+	@if (mobile_view()) {
+		<div class="flex-grow flex flex-items-center flex-justify-end">
+			<button mat-icon-button class="orc-icon-button" (click)="onMenuClick()">
+				<mat-icon>menu</mat-icon>
+			</button>
+		</div>
+	}
 </div>
