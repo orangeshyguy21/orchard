@@ -61,26 +61,3 @@ export class IndexSubsectionDashboardBitcoinHeaderComponent {
 		});
 	}
 }
-
-// public onMenuSubsectionClick() {
-//     const items = [...this.menuItems[this.active_section()]];
-//     if (this.active_section() === 'bitcoin' && this.show_oracle) {
-//         items.push({
-//             name: 'Oracle',
-//             navroute: 'bitcoin/oracle',
-//             subsection: 'oracle',
-//         });
-//     }
-//     this.bottomSheet.open(NavMobileSheetMenuSubsectionComponent, {
-//         autoFocus: false,
-//         data: {
-//             items: items,
-//             active_sub_section: this.active_sub_section(),
-//             enabled: this.getSectionEnabled(this.active_section()),
-//             online: this.getSectionOnline(this.active_section()),
-//             syncing: this.getSectionSyncing(this.active_section()),
-//             icon: this.getSectionIcon(this.active_section()),
-//             name: this.getSectionName(this.active_section()),
-//         },
-//     });
-// }
