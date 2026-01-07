@@ -21,6 +21,7 @@ import {NavPrimaryFooterComponent} from './components/nav-primary-footer/nav-pri
 import {NavPrimaryItemsComponent} from './components/nav-primary-items/nav-primary-items.component';
 import {NavPrimaryItemComponent} from './components/nav-primary-item/nav-primary-item.component';
 import {NavPrimaryToolComponent} from './components/nav-primary-tool/nav-primary-tool.component';
+import {NavPrimaryStatusComponent} from './components/nav-primary-status/nav-primary-status.component';
 import {NavSecondaryComponent} from './components/nav-secondary/nav-secondary.component';
 import {NavSecondaryItemComponent} from './components/nav-secondary-item/nav-secondary-item.component';
 import {NavSecondaryMoreComponent} from './components/nav-secondary-more/nav-secondary-more.component';
@@ -31,7 +32,6 @@ import {NavMobileItemComponent} from './components/nav-mobile-item/nav-mobile-it
 import {NavMobileSheetProfileComponent} from './components/nav-mobile-sheet-profile/nav-mobile-sheet-profile.component';
 import {NavMobileSheetMenuSubsectionComponent} from './components/nav-mobile-sheet-menu-subsection/nav-mobile-sheet-menu-subsection.component';
 import {NavMobileSheetMenuSectionComponent} from './components/nav-mobile-sheet-menu-section/nav-mobile-sheet-menu-section.component';
-import {NavPrimaryStatusComponent} from './components/nav-primary-status/nav-primary-status.component';
 
 @NgModule({
 	declarations: [
@@ -41,6 +41,7 @@ import {NavPrimaryStatusComponent} from './components/nav-primary-status/nav-pri
 		NavPrimaryItemsComponent,
 		NavPrimaryItemComponent,
 		NavPrimaryToolComponent,
+		NavPrimaryStatusComponent,
 		NavSecondaryComponent,
 		NavSecondaryItemComponent,
 		NavSecondaryMoreComponent,
@@ -51,7 +52,6 @@ import {NavPrimaryStatusComponent} from './components/nav-primary-status/nav-pri
 		NavMobileSheetProfileComponent,
 		NavMobileSheetMenuSubsectionComponent,
 		NavMobileSheetMenuSectionComponent,
-		NavPrimaryStatusComponent,
 	],
 	imports: [
 		CoreCommonModule,
@@ -69,6 +69,7 @@ import {NavPrimaryStatusComponent} from './components/nav-primary-status/nav-pri
 	],
 	exports: [
 		NavPrimaryComponent,
+		NavPrimaryStatusComponent,
 		NavSecondaryComponent,
 		NavSecondaryItemComponent,
 		NavSecondaryMoreComponent,

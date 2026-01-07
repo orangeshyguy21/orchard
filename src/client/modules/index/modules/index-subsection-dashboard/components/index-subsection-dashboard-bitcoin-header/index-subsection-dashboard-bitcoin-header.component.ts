@@ -1,8 +1,12 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, input, computed} from '@angular/core';
+/* Vendor Dependencies */
+import {MatBottomSheet} from '@angular/material/bottom-sheet';
 /* Application Dependencies */
 import {BitcoinNetworkInfo} from '@client/modules/bitcoin/classes/bitcoin-network-info.class';
 import {BitcoinBlockchainInfo} from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
+/* Components */
+import {NavMobileSheetMenuSubsectionComponent} from '@client/modules/nav/components/nav-mobile-sheet-menu-subsection/nav-mobile-sheet-menu-subsection.component';
 
 @Component({
 	selector: 'orc-index-subsection-dashboard-bitcoin-header',
@@ -18,10 +22,65 @@ export class IndexSubsectionDashboardBitcoinHeaderComponent {
 	public network_info = input.required<BitcoinNetworkInfo | null>();
 	public blockchain_info = input.required<BitcoinBlockchainInfo | null>();
 	public error = input.required<boolean>();
+	public mobile_view = input.required<boolean>();
 
 	public state = computed(() => {
 		if (this.error()) return 'offline';
 		if (this.blockchain_info()?.initialblockdownload) return 'syncing';
 		return 'online';
 	});
+
+	constructor(private bottomSheet: MatBottomSheet) {}
+
+	public onMenuClick() {
+		const items = [
+			{
+				name: 'Dashboard',
+				navroute: 'bitcoin',
+				subsection: 'dashboard',
+			},
+		];
+		if (this.enabled_oracle()) {
+			items.push({
+				name: 'Oracle',
+				navroute: 'bitcoin/oracle',
+				subsection: 'oracle',
+			});
+		}
+		this.bottomSheet.open(NavMobileSheetMenuSubsectionComponent, {
+			autoFocus: false,
+			data: {
+				items: items,
+				active_sub_section: '',
+				enabled: this.enabled(),
+				online: !this.error(),
+				syncing: this.blockchain_info()?.initialblockdownload ?? false,
+				icon: 'bitcoin',
+				name: 'Bitcoin',
+			},
+		});
+	}
 }
+
+// public onMenuSubsectionClick() {
+//     const items = [...this.menuItems[this.active_section()]];
+//     if (this.active_section() === 'bitcoin' && this.show_oracle) {
+//         items.push({
+//             name: 'Oracle',
+//             navroute: 'bitcoin/oracle',
+//             subsection: 'oracle',
+//         });
+//     }
+//     this.bottomSheet.open(NavMobileSheetMenuSubsectionComponent, {
+//         autoFocus: false,
+//         data: {
+//             items: items,
+//             active_sub_section: this.active_sub_section(),
+//             enabled: this.getSectionEnabled(this.active_section()),
+//             online: this.getSectionOnline(this.active_section()),
+//             syncing: this.getSectionSyncing(this.active_section()),
+//             icon: this.getSectionIcon(this.active_section()),
+//             name: this.getSectionName(this.active_section()),
+//         },
+//     });
+// }

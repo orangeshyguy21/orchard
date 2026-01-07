@@ -3,3 +3,13 @@
 .bitcoin-enabled-container {
 	min-height: 16rem;
 }
+
+.panel {
+	@extend %flex-grow;
+	@extend %flex-shrink;
+}
+
+.panel-blockchain {
+	@extend %flex;
+	@extend %flex-justify-center;
+}

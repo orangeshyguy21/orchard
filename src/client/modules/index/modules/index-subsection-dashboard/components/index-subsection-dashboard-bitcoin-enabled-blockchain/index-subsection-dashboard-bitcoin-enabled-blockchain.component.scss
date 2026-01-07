@@ -1,5 +1,11 @@
 @use 'molecule/molecule';
 
+.blockchain-content {
+	row-gap: 4rem;
+	column-gap: 1rem;
+	@extend %flex-justify-center;
+}
+
 .target-form-field {
 	min-width: 16rem;
 }

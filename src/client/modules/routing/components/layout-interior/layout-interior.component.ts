@@ -11,10 +11,10 @@ import {
 	NavigationError,
 } from '@angular/router';
 import {FormControl} from '@angular/forms';
+import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 /* Vendor Dependencies */
 import {Subscription, timer, EMPTY} from 'rxjs';
 import {switchMap, catchError, filter, takeWhile} from 'rxjs/operators';
-import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 import {MatSidenav} from '@angular/material/sidenav';
 /* Application Dependencies */
 import {ConfigService} from '@client/modules/config/services/config.service';
