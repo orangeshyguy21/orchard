@@ -12,6 +12,7 @@ import {EventData} from '@client/modules/event/classes/event-data.class';
 })
 export class EventGeneralStackComponent {
 	public active_event = input<EventData | null>(null);
+
 	public stack = signal<EventData[]>([]);
 	public moused = signal<boolean>(false);
 

@@ -31,7 +31,11 @@
 					</div>
 				}
 				<router-outlet></router-outlet>
-				<orc-event-general-stack [active_event]="active_event()" [class.ai_enabled]="ai_enabled()"></orc-event-general-stack>
+				<orc-event-general-stack
+					[active_event]="active_event()"
+					[class.ai-enabled]="ai_enabled()"
+					[class.mobile]="!desktop_nav_open()"
+				></orc-event-general-stack>
 			</div>
 			<orc-nav-mobile
 				[opened]="show_mobile_nav()"

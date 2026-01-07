@@ -5,8 +5,18 @@
 	@extend %z-index-top;
 	bottom: 5rem;
 
-	&.ai_enabled {
+	&.ai-enabled {
 		bottom: 2rem;
+	}
+
+	&.mobile {
+		bottom: 2rem !important;
+		left: 50%;
+		transform: translateX(-50%);
+
+		.animation-enter-fade {
+			animation-name: stack-enter-mobile;
+		}
 	}
 }
 
@@ -18,7 +28,7 @@
 	@extend %flex-gap-1;
 }
 
-.animation-enter-left-fade {
+.animation-enter-fade {
 	animation: stack-enter 200ms ease-out both;
 	will-change: transform, opacity;
 }
@@ -31,5 +41,16 @@
 	to {
 		opacity: 1;
 		transform: translateX(0);
+	}
+}
+
+@keyframes stack-enter-mobile {
+	from {
+		opacity: 0;
+		transform: translateY(1rem);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
 	}
 }
