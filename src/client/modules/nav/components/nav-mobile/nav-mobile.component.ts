@@ -1,15 +1,19 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output, effect} from '@angular/core';
 /* Vendor Dependencies */
 import {MatBottomSheet} from '@angular/material/bottom-sheet';
 /* Application Dependencies */
+import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {EventData} from 'src/client/modules/event/classes/event-data.class';
+import {Setting} from '@client/modules/settings/classes/setting.class';
 /* Native Dependencies */
 import {NavSecondaryItem} from '@client/modules/nav/types/nav-secondary-item.type';
 /* Components */
 import {NavMobileSheetProfileComponent} from '../nav-mobile-sheet-profile/nav-mobile-sheet-profile.component';
 import {NavMobileSheetMenuSectionComponent} from '../nav-mobile-sheet-menu-section/nav-mobile-sheet-menu-section.component';
 import {NavMobileSheetMenuSubsectionComponent} from '../nav-mobile-sheet-menu-subsection/nav-mobile-sheet-menu-subsection.component';
+/* Shared Dependencies */
+import {SettingKey} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-nav-mobile',
@@ -45,6 +49,7 @@ export class NavMobileComponent {
 	public abort = output<void>();
 	public showAgent = output<void>();
 
+	private show_oracle: boolean = false;
 	private menuItems: Record<string, NavSecondaryItem[]> = {
 		index: [
 			{
@@ -108,10 +113,19 @@ export class NavMobileComponent {
 		],
 	};
 
-	constructor(private bottomSheet: MatBottomSheet) {}
+	constructor(
+		private bottomSheet: MatBottomSheet,
+		private settingAppService: SettingAppService,
+	) {
+		effect(() => {
+			const active_section = this.active_section();
+			if (active_section === 'bitcoin') {
+				this.getOracleEnabled();
+			}
+		});
+	}
 
 	public onMenuSectionClick() {
-		console.log('menu section clicked');
 		this.bottomSheet.open(NavMobileSheetMenuSectionComponent, {
 			autoFocus: false,
 			data: {
@@ -129,7 +143,14 @@ export class NavMobileComponent {
 	}
 
 	public onMenuSubsectionClick() {
-		const items = this.menuItems[this.active_section()];
+		const items = [...this.menuItems[this.active_section()]];
+		if (this.active_section() === 'bitcoin' && this.show_oracle) {
+			items.push({
+				name: 'Oracle',
+				navroute: 'bitcoin/oracle',
+				subsection: 'oracle',
+			});
+		}
 		this.bottomSheet.open(NavMobileSheetMenuSubsectionComponent, {
 			autoFocus: false,
 			data: {
@@ -154,6 +175,15 @@ export class NavMobileComponent {
 
 	public onProfileClick() {
 		this.bottomSheet.open(NavMobileSheetProfileComponent);
+	}
+
+	private getOracleEnabled(): void {
+		this.settingAppService.loadSettings().subscribe({
+			next: (settings: Setting[]) => {
+				const oracle_setting = settings.find((setting: Setting) => setting.key === SettingKey.BitcoinOracle);
+				this.show_oracle = oracle_setting ? this.settingAppService.parseSettingValue(oracle_setting) : false;
+			},
+		});
 	}
 
 	private getSectionEnabled(section: string): boolean {
@@ -204,7 +234,7 @@ export class NavMobileComponent {
 			case 'ecash':
 				return 'payments';
 			default:
-				return 'home';
+				return 'index';
 		}
 	}
 
@@ -219,7 +249,7 @@ export class NavMobileComponent {
 			case 'ecash':
 				return 'E-Cash';
 			default:
-				return 'Home';
+				return 'Orchard';
 		}
 	}
 }

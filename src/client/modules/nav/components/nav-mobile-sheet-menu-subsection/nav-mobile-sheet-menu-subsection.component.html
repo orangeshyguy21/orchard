@@ -1,7 +1,17 @@
 <div class="nav-mobile-sheet-menu-subsection-container">
 	<div class="nav-mobile-sheet-active-section">
 		<div class="nav-mobile-sheet-section-header">
-			<mat-icon>{{ data.icon }}</mat-icon>
+			@switch (data.icon) {
+				@case ('bitcoin') {
+					<mat-icon svgIcon="bitcoin"></mat-icon>
+				}
+				@case ('index') {
+					<orc-graphic-orchard-logo height="2.5rem"></orc-graphic-orchard-logo>
+				}
+				@default {
+					<mat-icon>{{ data.icon }}</mat-icon>
+				}
+			}
 			<span>{{ data.name }}</span>
 		</div>
 		<div class="nav-mobile-sheet-section-status">
