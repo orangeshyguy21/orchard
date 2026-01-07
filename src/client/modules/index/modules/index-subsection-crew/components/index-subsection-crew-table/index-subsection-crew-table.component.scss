@@ -9,10 +9,12 @@
 
 .crew-table-container {
 	@extend %relative;
+	@extend %overflow-auto;
+	max-height: calc(100vh - 215px); // or calc(100vh - Xpx)
 }
 
 .crew-sticky-header {
-	top: 86px !important;
+	top: 0px !important;
 }
 
 .crew-icon {
