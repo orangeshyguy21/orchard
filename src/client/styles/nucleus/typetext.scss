@@ -24,4 +24,10 @@
         @extend %text-normal;
         @extend %line-height-1-4;
     }
+
+    #{$c}text-ellipsis {
+        @extend %overflow-hidden;
+        @extend %text-nowrap;
+        @extend %text-overflow-ellipsis;
+    }
 }

@@ -34,6 +34,7 @@
     #{$c}text-break-all { word-break: break-all; }
     #{$c}text-wrap-break { word-wrap: break-word; }
     #{$c}text-overflow-break { overflow-wrap: break-word; }
+    #{$c}text-overflow-ellipsis { text-overflow: ellipsis; }
 
     // Line Height
     #{$c}line-height-1-4 { line-height: 1.4; }

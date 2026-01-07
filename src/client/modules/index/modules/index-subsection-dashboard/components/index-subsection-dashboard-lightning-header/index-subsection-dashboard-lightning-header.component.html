@@ -27,7 +27,9 @@
 	}
 	<div>
 		@if (enabled() && !loading()) {
-			<div animate.enter="orc-animation-fadein" class="orc-outline-color font-size-xs">{{ lightning_info().version }}</div>
+			<div animate.enter="orc-animation-fadein" class="orc-outline-color font-size-xs protocol-version">
+				{{ lightning_info().version }}
+			</div>
 		}
 	</div>
 	@if (mobile_view()) {

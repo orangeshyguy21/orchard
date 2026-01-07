@@ -12,6 +12,11 @@
 		.header-box {
 			@extend %w-min-0;
 		}
+
+		.protocol-version {
+			@extend %text-ellipsis;
+			@extend %w-max-10;
+		}
 	}
 }
 
