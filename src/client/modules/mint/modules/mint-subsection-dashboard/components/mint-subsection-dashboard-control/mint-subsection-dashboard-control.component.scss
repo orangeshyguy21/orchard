@@ -4,8 +4,12 @@
 	@extend %p-b-1;
 }
 
-.mint-analytic-daterange {
+.big-form-field {
 	@extend %w-min-18;
+}
+
+.small-form-field {
+	@extend %w-7;
 }
 
 .panel-form {

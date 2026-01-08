@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, Output, EventEmitter, viewChild, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, viewChild, signal, input, output, effect, untracked} from '@angular/core';
 import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 /* Vendor Dependencies */
@@ -11,7 +11,6 @@ import {MatMenuTrigger} from '@angular/material/menu';
 import {NonNullableMintDashboardSettings} from '@client/modules/settings/types/setting.types';
 /* Native Dependencies */
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
-import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
 /* Shared Dependencies */
 import {MintAnalyticsInterval, MintUnit} from '@shared/generated.types';
 
@@ -23,10 +22,6 @@ type IntervalOption = {
 	label: string;
 	value: MintAnalyticsInterval;
 };
-type TypeOption = {
-	label: string;
-	value: ChartType;
-};
 
 @Component({
 	selector: 'orc-mint-subsection-dashboard-control',
@@ -35,19 +30,20 @@ type TypeOption = {
 	styleUrl: './mint-subsection-dashboard-control.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintSubsectionDashboardControlComponent implements OnChanges {
-	@Input() page_settings!: NonNullableMintDashboardSettings;
-	@Input() date_start?: number;
-	@Input() date_end?: number;
-	@Input() units?: MintUnit[];
-	@Input() interval?: MintAnalyticsInterval;
-	@Input() keysets!: MintKeyset[];
-	@Input() loading!: boolean;
-	@Input() mint_genesis_time!: number;
+export class MintSubsectionDashboardControlComponent {
+	public page_settings = input.required<NonNullableMintDashboardSettings>();
+	public date_start = input<number>();
+	public date_end = input<number>();
+	public units = input<MintUnit[]>();
+	public interval = input<MintAnalyticsInterval>();
+	public keysets = input.required<MintKeyset[]>();
+	public loading = input.required<boolean>();
+	public mint_genesis_time = input.required<number>();
+	public mobile_view = input.required<boolean>();
 
-	@Output() dateChange = new EventEmitter<number[]>();
-	@Output() unitsChange = new EventEmitter<MintUnit[]>();
-	@Output() intervalChange = new EventEmitter<MintAnalyticsInterval>();
+	public dateChange = output<number[]>();
+	public unitsChange = output<MintUnit[]>();
+	public intervalChange = output<MintAnalyticsInterval>();
 
 	public filter_count = signal(0);
 
@@ -70,7 +66,8 @@ export class MintSubsectionDashboardControlComponent implements OnChanges {
 		if (view !== 'month') return '';
 		const unix_seconds = cellDate.toSeconds();
 		const unix_next_day = unix_seconds + 86400 - 1;
-		if (unix_seconds <= this.mint_genesis_time && unix_next_day >= this.mint_genesis_time) return 'mint-genesis-date-class';
+		const genesis_time = this.mint_genesis_time();
+		if (unix_seconds <= genesis_time && unix_next_day >= genesis_time) return 'mint-genesis-date-class';
 		return '';
 	};
 
@@ -79,6 +76,7 @@ export class MintSubsectionDashboardControlComponent implements OnChanges {
 	}
 
 	private filter_menu_trigger = viewChild(MatMenuTrigger);
+	private initialized = false;
 
 	constructor() {
 		this.panel
@@ -88,36 +86,57 @@ export class MintSubsectionDashboardControlComponent implements OnChanges {
 				const group = this.panel.get('daterange');
 				group?.markAllAsTouched();
 			});
-	}
 
-	ngOnChanges(changes: SimpleChanges): void {
-		if (changes['loading'] && !this.loading) this.initForm();
-		if (
-			changes['date_start'] &&
-			this.date_start &&
-			this.panel.controls.daterange.get('date_start')?.value?.toSeconds() !== this.date_start
-		) {
-			this.panel.controls.daterange.get('date_start')?.setValue(DateTime.fromSeconds(this.date_start));
-		}
-		if (changes['date_end'] && this.date_end && this.panel.controls.daterange.get('date_end')?.value?.toSeconds() !== this.date_end) {
-			this.panel.controls.daterange.get('date_end')?.setValue(DateTime.fromSeconds(this.date_end));
-		}
-		if (changes['units'] && this.units && !this.areUnitsEqual(this.getSelectedUnits(), this.units)) {
-			this.setUnitFilters(this.units);
-		}
-		if (changes['interval'] && this.interval && this.panel.controls.interval.value !== this.interval) {
-			this.panel.controls.interval.setValue(this.interval);
-		}
+		// Initialize form when loading becomes false
+		effect(() => {
+			if (this.loading() !== false) return;
+			if (this.initialized) return;
+			this.initialized = true;
+			untracked(() => this.initForm());
+		});
+
+		// Sync date_start input to form
+		effect(() => {
+			const date_start = this.date_start();
+			if (!date_start) return;
+			if (this.panel.controls.daterange.get('date_start')?.value?.toSeconds() === date_start) return;
+			this.panel.controls.daterange.get('date_start')?.setValue(DateTime.fromSeconds(date_start));
+		});
+
+		// Sync date_end input to form
+		effect(() => {
+			const date_end = this.date_end();
+			if (!date_end) return;
+			if (this.panel.controls.daterange.get('date_end')?.value?.toSeconds() === date_end) return;
+			this.panel.controls.daterange.get('date_end')?.setValue(DateTime.fromSeconds(date_end));
+		});
+
+		// Sync units input to form
+		effect(() => {
+			const units = this.units();
+			if (!units) return;
+			if (this.areUnitsEqual(this.getSelectedUnits(), units)) return;
+			this.setUnitFilters(units);
+		});
+
+		// Sync interval input to form
+		effect(() => {
+			const interval = this.interval();
+			if (!interval) return;
+			if (this.panel.controls.interval.value === interval) return;
+			this.panel.controls.interval.setValue(interval);
+		});
 	}
 
 	private initForm(): void {
-		const unique_units = Array.from(new Set(this.keysets.map((keyset) => keyset.unit)));
+		const settings = this.page_settings();
+		const unique_units = Array.from(new Set(this.keysets().map((keyset) => keyset.unit)));
 		this.unit_options = unique_units.map((unit) => ({label: unit.toUpperCase(), value: unit}));
 		this.buildUnitFilters();
-		this.panel.controls.daterange.controls.date_start.setValue(DateTime.fromSeconds(this.page_settings.date_start));
-		this.panel.controls.daterange.controls.date_end.setValue(DateTime.fromSeconds(this.page_settings.date_end));
-		this.setUnitFilters(this.page_settings.units);
-		this.panel.controls.interval.setValue(this.page_settings.interval);
+		this.panel.controls.daterange.controls.date_start.setValue(DateTime.fromSeconds(settings.date_start));
+		this.panel.controls.daterange.controls.date_end.setValue(DateTime.fromSeconds(settings.date_end));
+		this.setUnitFilters(settings.units);
+		this.panel.controls.interval.setValue(settings.interval);
 	}
 
 	/** Builds the FormArray controls based on unit_options */
@@ -177,15 +196,16 @@ export class MintSubsectionDashboardControlComponent implements OnChanges {
 	}
 
 	private isValidChange(): boolean {
+		const settings = this.page_settings();
 		// validations
 		if (this.panel.controls.daterange.controls.date_start.value === null) return false;
 		if (this.panel.controls.daterange.controls.date_end.value === null) return false;
 		if (this.panel.controls.interval.value === null) return false;
 		// change checks
-		if (this.panel.controls.daterange.controls.date_start.value.toSeconds() !== this.page_settings.date_start) return true;
-		if (this.panel.controls.daterange.controls.date_end.value.toSeconds() !== this.page_settings.date_end) return true;
-		if (!this.areUnitsEqual(this.getSelectedUnits(), this.page_settings.units)) return true;
-		if (this.panel.controls.interval.value !== this.page_settings.interval) return true;
+		if (this.panel.controls.daterange.controls.date_start.value.toSeconds() !== settings.date_start) return true;
+		if (this.panel.controls.daterange.controls.date_end.value.toSeconds() !== settings.date_end) return true;
+		if (!this.areUnitsEqual(this.getSelectedUnits(), settings.units)) return true;
+		if (this.panel.controls.interval.value !== settings.interval) return true;
 		return false;
 	}
 

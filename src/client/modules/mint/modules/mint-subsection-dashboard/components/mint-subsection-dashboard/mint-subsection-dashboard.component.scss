@@ -12,6 +12,7 @@ $analytics-offset: 86px;
 .mint-dashboard-header {
 	@extend %flex;
 	@extend %flex-gap-2;
+	@extend %flex-wrap;
 }
 
 .mint-analytic-control-panel {

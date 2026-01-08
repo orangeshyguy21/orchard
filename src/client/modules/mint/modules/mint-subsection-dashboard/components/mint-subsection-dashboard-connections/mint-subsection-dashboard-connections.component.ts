@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ElementRef, input, viewChild, effect, signal} from '@angular/core';
 import {Router} from '@angular/router';
 import {FormControl} from '@angular/forms';
 /* Vendor Dependencies */
@@ -21,21 +21,26 @@ import {Connection} from './mint-subsection-dashboard-connections.classes';
 	templateUrl: './mint-subsection-dashboard-connections.component.html',
 	styleUrl: './mint-subsection-dashboard-connections.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
+	host: {
+		'[class.flex-grow]': 'mobile_view()',
+	},
 })
 export class MintSubsectionDashboardConnectionsComponent {
-	@Input() urls!: string[] | null;
-	@Input() icon_url!: string | null;
-	@Input() time: number | undefined;
-	@Input() mint_name: string | undefined;
-	@Input() loading!: boolean;
-	@Input() mint_connections!: PublicUrl[];
+	public urls = input<string[] | null>(null);
+	public icon_url = input<string | null>(null);
+	public time = input<number | undefined>(undefined);
+	public mint_name = input<string | undefined>(undefined);
+	public loading = input.required<boolean>();
+	public mint_connections = input.required<PublicUrl[]>();
+	public mobile_view = input.required<boolean>();
 
-	@ViewChild('qr_canvas', {static: false}) qr_canvas!: ElementRef;
+	public qr_canvas = viewChild<ElementRef>('qr_canvas');
 
 	public qr_data: FormControl = new FormControl('');
 	public qr_code!: QRCodeStyling;
-	public connections: Connection[] = [];
-	public copy_animation_state: 'visible' | 'hidden' = 'hidden';
+
+	public connections = signal<Connection[]>([]);
+	public copy_animation_state = signal<'visible' | 'hidden'>('hidden');
 
 	private copy_timeout: any;
 	private qr_primary_color: string;
@@ -44,7 +49,6 @@ export class MintSubsectionDashboardConnectionsComponent {
 	private icon_data: string | undefined = undefined;
 
 	constructor(
-		private changeDetectorRef: ChangeDetectorRef,
 		private themeService: ThemeService,
 		private publicService: PublicService,
 		private dialog: MatDialog,
@@ -52,20 +56,21 @@ export class MintSubsectionDashboardConnectionsComponent {
 	) {
 		this.qr_primary_color = this.themeService.getThemeColor('--mat-sys-surface') || '#000000';
 		this.qr_corner_dot_color = this.themeService.getThemeColor('--mat-sys-surface-container-highest') || '#000000';
-	}
 
-	ngOnChanges(): void {
-		if (this.loading !== false) return;
-		if (this.qr_code) return;
-		this.init();
-		this.initQR();
-		this.loadImage();
+		effect(() => {
+			if (this.loading() !== false) return;
+			if (this.qr_code) return;
+			this.init();
+			this.initQR();
+			this.loadImage();
+		});
 	}
 
 	private init(): void {
-		this.connections = this.urls?.map((url) => new Connection(url, this.getDisplayedUrl(url))) ?? [];
-		if (this.connections.length > 0) this.qr_data.setValue(this.connections[0].url);
-		this.changeDetectorRef.detectChanges();
+		const urls = this.urls();
+		if (!urls) return;
+		this.connections.set(urls.map((url) => new Connection(url, this.getDisplayedUrl(url))) ?? []);
+		if (this.connections().length > 0) this.qr_data.setValue(this.connections()[0].url);
 	}
 
 	private getDisplayedUrl(url: string): string {
@@ -84,7 +89,7 @@ export class MintSubsectionDashboardConnectionsComponent {
 	}
 
 	private initQR(): void {
-		if (this.connections.length === 0) return;
+		if (this.connections().length === 0) return;
 
 		this.qr_code = new QRCodeStyling({
 			width: 195,
@@ -122,17 +127,20 @@ export class MintSubsectionDashboardConnectionsComponent {
 			},
 		});
 
-		this.qr_code.append(this.qr_canvas.nativeElement);
+		setTimeout(() => {
+			this.qr_code.append(this.qr_canvas()?.nativeElement);
+		});
 	}
 
 	private async loadImage(): Promise<void> {
+		const icon_url = this.icon_url();
 		if (!this.qr_code) return;
-		if (!this.icon_url) {
+		if (!icon_url) {
 			return this.qr_code.update({
 				image: this.placeholder_icon_url,
 			});
 		}
-		const image = await firstValueFrom(this.publicService.getPublicImageData(this.icon_url));
+		const image = await firstValueFrom(this.publicService.getPublicImageData(icon_url));
 		this.icon_data = image?.data ?? undefined;
 		this.qr_code.update({
 			image: this.icon_data ?? undefined,
@@ -149,7 +157,7 @@ export class MintSubsectionDashboardConnectionsComponent {
 	}
 
 	private async animateFade(): Promise<void> {
-		const qr_el = this.qr_canvas?.nativeElement as HTMLElement;
+		const qr_el = this.qr_canvas()?.nativeElement as HTMLElement;
 		if (!qr_el || !this.qr_code) return;
 		for (const anim of qr_el.getAnimations()) anim.cancel();
 		const fade_out = qr_el.animate([{opacity: 1}, {opacity: 0}], {duration: 150, easing: 'ease-out', fill: 'forwards'});
@@ -164,11 +172,9 @@ export class MintSubsectionDashboardConnectionsComponent {
 
 	private showCopyMessage(): void {
 		if (this.copy_timeout) clearTimeout(this.copy_timeout);
-		this.copy_animation_state = 'visible';
-		this.changeDetectorRef.detectChanges();
+		this.copy_animation_state.set('visible');
 		this.copy_timeout = setTimeout(() => {
-			this.copy_animation_state = 'hidden';
-			this.changeDetectorRef.detectChanges();
+			this.copy_animation_state.set('hidden');
 		}, 1000);
 	}
 
@@ -182,7 +188,7 @@ export class MintSubsectionDashboardConnectionsComponent {
 	public onQRClick(): void {
 		this.dialog.open(MintSubsectionDashboardConnectionDialogComponent, {
 			data: {
-				connection: this.connections.find((connection) => connection.url === this.qr_data.value),
+				connection: this.connections().find((connection) => connection.url === this.qr_data.value),
 				primary_color: this.qr_primary_color,
 				corner_dot_color: this.qr_corner_dot_color,
 				icon_data: this.icon_data ?? this.placeholder_icon_url,

@@ -8,6 +8,7 @@
 			[lightning_errors]="errors_lightning"
 			[lightning_loading]="loading_lightning"
 			[loading]="loading_static_data"
+			[mobile]="mobile_view()"
 			(navigate)="onNavigate('lightning')"
 		></orc-mint-general-balance-sheet>
 		<orc-mint-subsection-dashboard-connections
@@ -17,12 +18,15 @@
 			[mint_name]="mint_info?.name"
 			[mint_connections]="mint_connections"
 			[loading]="loading_static_data"
+			[mobile_view]="mobile_view()"
 		></orc-mint-subsection-dashboard-connections>
 	</div>
 
 	<div class="mint-analytic-control-panel">
 		<div class="flex flex-justify-between flex-gap-1 flex-items-end">
-			<div class="title-l p-1">Nutalytics</div>
+			@if (!mobile_view()) {
+				<div class="title-l p-1">Nutalytics</div>
+			}
 			@if (page_settings()) {
 				<orc-mint-subsection-dashboard-control
 					class="flex-grow"
@@ -34,10 +38,19 @@
 					[keysets]="mint_keysets"
 					[loading]="loading_static_data"
 					[mint_genesis_time]="mint_genesis_time"
+					[mobile_view]="mobile_view()"
 					(dateChange)="onDateChange($event)"
 					(unitsChange)="onUnitsChange($event)"
 					(intervalChange)="onIntervalChange($event)"
 				></orc-mint-subsection-dashboard-control>
+			}
+			@if (mobile_view()) {
+				<div class="p-b-1-5">
+					<button matButton type="button" [matMenuTriggerFor]="chart_order_menu">
+						<mat-icon>menu</mat-icon>
+						<span class="text-nowrap font-size-s">Charts</span>
+					</button>
+				</div>
 			}
 		</div>
 		<div class="category-rule"></div>
@@ -201,17 +214,19 @@
 				</div>
 			</div>
 		</div>
-		<div class="w-8 p-t-1">
-			<orc-nav-tertiary
-				class="mint-chart-tertiary-nav"
-				[keys]="tertiary_nav()"
-				[items]="tertiary_nav_items"
-				(orderChange)="onTertiaryNavChange($event)"
-				(keySelect)="onTertiaryNavSelect($event)"
-			>
-				<div class="nav-tertiary-title">Charts</div>
-			</orc-nav-tertiary>
-		</div>
+		@if (!mobile_view()) {
+			<div class="w-8 p-t-1">
+				<orc-nav-tertiary
+					class="mint-chart-tertiary-nav"
+					[keys]="tertiary_nav()"
+					[items]="tertiary_nav_items"
+					(orderChange)="onTertiaryNavChange($event)"
+					(keySelect)="onTertiaryNavSelect($event)"
+				>
+					<div class="nav-tertiary-title">Charts</div>
+				</orc-nav-tertiary>
+			</div>
+		}
 	</div>
 </div>
 
@@ -224,4 +239,14 @@
 			</button>
 		}
 	</ng-template>
+</mat-menu>
+
+<mat-menu #chart_order_menu="matMenu" yPosition="below" xPosition="before" class="orc-sticky-menu w-min-10 p-1">
+	<orc-nav-tertiary
+		class="mint-chart-tertiary-nav"
+		[keys]="tertiary_nav()"
+		[items]="tertiary_nav_items"
+		(orderChange)="onTertiaryNavChange($event)"
+		(keySelect)="onTertiaryNavSelect($event)"
+	></orc-nav-tertiary>
 </mat-menu>

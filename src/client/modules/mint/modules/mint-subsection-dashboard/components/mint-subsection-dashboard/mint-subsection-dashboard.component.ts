@@ -14,6 +14,7 @@ import {
 	WritableSignal,
 } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
+import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 /* Vendor Dependencies */
 import {forkJoin, lastValueFrom, Subscription, EMPTY, catchError, finalize, tap} from 'rxjs';
 import {DateTime} from 'luxon';
@@ -106,6 +107,8 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		fee_revenue: [ChartType.Totals, ChartType.Volume],
 	};
 
+	public mobile_view = signal<boolean>(false);
+
 	public tertiary_nav = computed(() => this.page_settings().tertiary_nav || []);
 	public type_balance_sheet = computed(() => this.page_settings().type.balance_sheet || ChartType.Totals);
 	public type_mints = computed(() => this.page_settings().type.mints || ChartType.Volume);
@@ -122,6 +125,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		private publicService: PublicService,
 		private lightningService: LightningService,
 		private aiService: AiService,
+		private breakpointObserver: BreakpointObserver,
 		private router: Router,
 		private route: ActivatedRoute,
 		private cdr: ChangeDetectorRef,
@@ -145,6 +149,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.getMintFees();
 		await this.initMintAnalytics();
 		this.mint_fee_revenue = this.getMintFeeRevenueState();
+		this.subscriptions.add(this.getBreakpointSubscription());
 	}
 
 	orchardOptionalInit(): void {
@@ -204,6 +209,12 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 				}),
 			)
 			.subscribe();
+	}
+
+	private getBreakpointSubscription(): Subscription {
+		return this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium]).subscribe((result) => {
+			this.mobile_view.set(result.matches);
+		});
 	}
 
 	/* *******************************************************

@@ -2,7 +2,7 @@
 	<form [formGroup]="panel" class="panel-form orc-animation-form-reaction" [class.animation-invalid]="height_state === 'invalid'">
 		<div class="flex flex-col flex-gap-1">
 			<div formGroupName="daterange">
-				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic" class="mint-analytic-daterange">
+				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic" [class.big-form-field]="!mobile_view()">
 					<mat-label>Date range</mat-label>
 					<mat-date-range-input [rangePicker]="picker">
 						<input
@@ -28,21 +28,25 @@
 				</mat-form-field>
 			</div>
 
-			<div>
-				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
-					<mat-label>Interval</mat-label>
-					<mat-select formControlName="interval" (selectionChange)="onIntervalChange($event)">
-						@for (interval of interval_options; track interval.value) {
-							<mat-option [value]="interval.value">{{ interval.label }}</mat-option>
-						}
-					</mat-select>
-				</mat-form-field>
-			</div>
+			@if (!mobile_view()) {
+				<div>
+					<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
+						<mat-label>Interval</mat-label>
+						<mat-select formControlName="interval" (selectionChange)="onIntervalChange($event)">
+							@for (interval of interval_options; track interval.value) {
+								<mat-option [value]="interval.value">{{ interval.label }}</mat-option>
+							}
+						</mat-select>
+					</mat-form-field>
+				</div>
+			}
 
 			<div class="p-t-0-5">
 				<button matButton type="button" [matMenuTriggerFor]="filter_menu">
 					<mat-icon>tune</mat-icon>
-					<span class="text-nowrap font-size-s">Filters {{ filter_count() > 0 ? `(${filter_count()})` : '' }}</span>
+					<span class="text-nowrap font-size-s"
+						>{{ mobile_view() ? '' : 'Filters' }} {{ filter_count() > 0 ? `(${filter_count()})` : '' }}</span
+					>
 				</button>
 			</div>
 		</div>
@@ -51,6 +55,23 @@
 
 <mat-menu #filter_menu="matMenu" yPosition="below" class="orc-sticky-menu orc-filter-menu">
 	<orc-form-filter-menu (click)="$event.stopPropagation()" (clear)="onClearFilter()" (close)="onCloseFilter()">
+		@if (mobile_view()) {
+			<div class="orc-filter-menu-section">
+				<form [formGroup]="panel">
+					<div>
+						<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic" class="w-full">
+							<mat-label>Interval</mat-label>
+							<mat-select formControlName="interval" (selectionChange)="onIntervalChange($event)">
+								@for (interval of interval_options; track interval.value) {
+									<mat-option [value]="interval.value">{{ interval.label }}</mat-option>
+								}
+							</mat-select>
+						</mat-form-field>
+					</div>
+				</form>
+			</div>
+			<div class="orc-filter-menu-rule"></div>
+		}
 		<div class="orc-filter-menu-section">
 			<div>Units</div>
 			<div class="filter-options">
