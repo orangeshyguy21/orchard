@@ -18,4 +18,8 @@
 	&.form-invalid {
 		@extend %m-b-1-25;
 	}
+
+	@media (max-width: 600px) {
+		display: none;
+	}
 }
