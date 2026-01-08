@@ -31,7 +31,7 @@ export class LocalStorageService {
 		/* Bitcoin Oracle Settings */
 		BITCOIN_ORACLE_KEY: 'v0.bitcoin.oracle.settings',
 		/* Mint Settings */
-		MINT_DASHBOARD_KEY: 'v0.mint.dashboard.settings',
+		MINT_DASHBOARD_KEY: 'v1.mint.dashboard.settings',
 		MINT_CONFIG_KEY: 'v0.mint.config.settings',
 		MINT_KEYSETS_KEY: 'v0.mint.keysets.settings',
 		MINT_DATABASE_KEY: 'v0.mint.database.settings',
@@ -104,7 +104,14 @@ export class LocalStorageService {
 	}
 	getMintDashboardSettings(): MintDashboardSettings {
 		const settings = this.getItem<MintDashboardSettings>(this.STORAGE_KEYS.MINT_DASHBOARD_KEY);
-		if (!settings) return {date_start: null, units: null, interval: null, type: null, tertiary_nav: null};
+		if (!settings)
+			return {
+				date_start: null,
+				units: null,
+				interval: null,
+				type: {balance_sheet: null, mints: null, melts: null, swaps: null, fee_revenue: null},
+				tertiary_nav: null,
+			};
 		return settings;
 	}
 	getMintConfigSettings(): MintConfigSettings {

@@ -14,9 +14,13 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatSliderModule} from '@angular/material/slider';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatButtonModule} from '@angular/material/button';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 import {BaseChartDirective as ChartJsBaseChartDirective} from 'ng2-charts';
 /* Application Dependencies */
 import {OrcNavModule} from '@client/modules/nav/nav.module';
+import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcMintGeneralModule} from '@client/modules/mint/modules/mint-general/mint-general.module';
 /* Local Dependencies */
 import {MintSubsectionDashboardComponent} from './components/mint-subsection-dashboard/mint-subsection-dashboard.component';
@@ -54,8 +58,12 @@ import {MintSubsectionDashboardConnectionDialogComponent} from './components/min
 		MatSliderModule,
 		MatSlideToggleModule,
 		MatButtonModule,
+		MatButtonToggleModule,
+		MatMenuModule,
+		MatCheckboxModule,
 		ChartJsBaseChartDirective,
 		OrcNavModule,
+		OrcFormModule,
 		OrcMintGeneralModule,
 	],
 	exports: [],

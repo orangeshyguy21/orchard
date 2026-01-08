@@ -26,13 +26,20 @@ $analytics-offset: 86px;
 	@extend %sticky;
 	@extend %title-m;
 	@extend %flex;
+	@extend %flex-justify-between;
 	top: $analytics-offset;
 }
 
 .mint-analytic-title {
 	@extend %orc-surface-bg;
 	@extend %p-1;
-	@extend %orc-corner-full-end;
+	@extend %orc-corner-extra-large-bottom;
+}
+
+.mint-analytic-selector {
+	@extend %orc-surface-bg;
+	@extend %p-0-5;
+	@extend %orc-corner-extra-large-bottom;
 }
 
 .mint-chart-tertiary-nav {
@@ -51,6 +58,16 @@ $analytics-offset: 86px;
 .chart-target {
 	@extend %relative;
 	top: -$analytics-offset;
+}
+
+.active-chart-option {
+	@extend %orc-surface-variant-bg;
+
+	&.mat-mdc-menu-item {
+		&:hover {
+			@extend %orc-surface-variant-bg;
+		}
+	}
 }
 
 .chart-balance-sheet {

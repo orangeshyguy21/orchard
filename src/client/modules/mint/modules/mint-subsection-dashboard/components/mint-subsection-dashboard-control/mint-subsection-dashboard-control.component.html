@@ -30,17 +30,6 @@
 
 			<div>
 				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
-					<mat-label>Units</mat-label>
-					<mat-select formControlName="units" multiple (selectionChange)="onUnitsChange($event)">
-						@for (unit of unit_options; track unit.value) {
-							<mat-option [value]="unit.value">{{ unit.label }}</mat-option>
-						}
-					</mat-select>
-				</mat-form-field>
-			</div>
-
-			<div>
-				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
 					<mat-label>Interval</mat-label>
 					<mat-select formControlName="interval" (selectionChange)="onIntervalChange($event)">
 						@for (interval of interval_options; track interval.value) {
@@ -50,16 +39,27 @@
 				</mat-form-field>
 			</div>
 
-			<div>
-				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
-					<mat-label>Type</mat-label>
-					<mat-select formControlName="type" (selectionChange)="onTypeChange($event)">
-						@for (type of type_options; track type.value) {
-							<mat-option [value]="type.value">{{ type.label }}</mat-option>
-						}
-					</mat-select>
-				</mat-form-field>
+			<div class="p-t-0-5">
+				<button matButton type="button" [matMenuTriggerFor]="filter_menu">
+					<mat-icon>tune</mat-icon>
+					<span class="text-nowrap font-size-s">Filters {{ filter_count() > 0 ? `(${filter_count()})` : '' }}</span>
+				</button>
 			</div>
 		</div>
 	</form>
 </div>
+
+<mat-menu #filter_menu="matMenu" yPosition="below" class="orc-sticky-menu orc-filter-menu">
+	<orc-form-filter-menu (click)="$event.stopPropagation()" (clear)="onClearFilter()" (close)="onCloseFilter()">
+		<div class="orc-filter-menu-section">
+			<div>Units</div>
+			<div class="filter-options">
+				@for (unit of unit_options; track unit.value; let i = $index) {
+					<mat-checkbox [formControl]="panel.controls.units.at(i)" (change)="onUnitsChange()">
+						{{ unit.label }}
+					</mat-checkbox>
+				}
+			</div>
+		</div>
+	</orc-form-filter-menu>
+</mat-menu>

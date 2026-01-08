@@ -9,6 +9,9 @@ import {
 	ElementRef,
 	ViewChildren,
 	QueryList,
+	signal,
+	computed,
+	WritableSignal,
 } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 /* Vendor Dependencies */
@@ -44,6 +47,8 @@ enum NavTertiary {
 	Swaps = 'nav4',
 	FeeRevenue = 'nav5',
 }
+
+type ChartKey = 'balance_sheet' | 'mints' | 'melts' | 'swaps' | 'fee_revenue';
 
 @Component({
 	selector: 'orc-mint-subsection-dashboard',
@@ -85,7 +90,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public errors_lightning: OrchardError[] = [];
 	public mint_fee_revenue: boolean = false;
 	// charts
-	public page_settings!: NonNullableMintDashboardSettings;
+	public page_settings: WritableSignal<NonNullableMintDashboardSettings>;
 	public tertiary_nav_items: Record<NavTertiary, NavTertiaryItem> = {
 		[NavTertiary.BalanceSheet]: {title: 'Balance Sheet'},
 		[NavTertiary.Mints]: {title: 'Mints'},
@@ -93,10 +98,20 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		[NavTertiary.Swaps]: {title: 'Swaps'},
 		[NavTertiary.FeeRevenue]: {title: 'Fee Revenue'},
 	};
+	public chart_type_options: Record<string, ChartType[]> = {
+		balance_sheet: [ChartType.Totals, ChartType.Volume, ChartType.Operations],
+		mints: [ChartType.Totals, ChartType.Volume, ChartType.Operations],
+		melts: [ChartType.Totals, ChartType.Volume, ChartType.Operations],
+		swaps: [ChartType.Totals, ChartType.Volume, ChartType.Operations],
+		fee_revenue: [ChartType.Totals, ChartType.Volume],
+	};
 
-	public get tertiary_nav(): string[] {
-		return this.page_settings?.tertiary_nav || [];
-	}
+	public tertiary_nav = computed(() => this.page_settings().tertiary_nav || []);
+	public type_balance_sheet = computed(() => this.page_settings().type.balance_sheet || ChartType.Totals);
+	public type_mints = computed(() => this.page_settings().type.mints || ChartType.Volume);
+	public type_melts = computed(() => this.page_settings().type.melts || ChartType.Volume);
+	public type_swaps = computed(() => this.page_settings().type.swaps || ChartType.Volume);
+	public type_fee_revenue = computed(() => this.page_settings().type.fee_revenue || ChartType.Volume);
 
 	private subscriptions: Subscription = new Subscription();
 
@@ -112,6 +127,12 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		private cdr: ChangeDetectorRef,
 	) {
 		this.lightning_enabled = this.configService.config.lightning.enabled;
+		this.mint_type = this.configService.config.mint.type;
+		this.mint_info = this.route.snapshot.data['mint_info'];
+		this.mint_balances = this.route.snapshot.data['mint_balances'];
+		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
+		this.mint_genesis_time = this.getMintGenesisTime();
+		this.page_settings = signal(this.getPageSettings());
 	}
 
 	/* *******************************************************
@@ -119,10 +140,6 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	******************************************************** */
 
 	async ngOnInit(): Promise<void> {
-		this.mint_type = this.configService.config.mint.type;
-		this.mint_info = this.route.snapshot.data['mint_info'];
-		this.mint_balances = this.route.snapshot.data['mint_balances'];
-		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
 		this.initMintConnections();
 		this.orchardOptionalInit();
 		this.getMintFees();
@@ -154,11 +171,11 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	private getAgentSubscription(): Subscription {
 		return this.aiService.agent_requests$.subscribe(({agent, content}) => {
 			let context = `* **Current Date:** ${DateTime.now().toFormat('yyyy-MM-dd')}\n`;
-			context += `* **Date Start:** ${DateTime.fromSeconds(this.page_settings.date_start).toFormat('yyyy-MM-dd')}\n`;
-			context += `* **Date End:** ${DateTime.fromSeconds(this.page_settings.date_end).toFormat('yyyy-MM-dd')}\n`;
-			context += `* **Interval:** ${this.page_settings.interval}\n`;
-			context += `* **Units:** ${this.page_settings.units.join(', ')}\n`;
-			context += `* **Type:** ${this.page_settings.type}`;
+			context += `* **Date Start:** ${DateTime.fromSeconds(this.page_settings().date_start).toFormat('yyyy-MM-dd')}\n`;
+			context += `* **Date End:** ${DateTime.fromSeconds(this.page_settings().date_end).toFormat('yyyy-MM-dd')}\n`;
+			context += `* **Interval:** ${this.page_settings().interval}\n`;
+			context += `* **Units:** ${this.page_settings().units.join(', ')}\n`;
+			// context += `* **Type:** ${this.page_settings.type}`;
 			this.aiService.openAiSocket(agent, content, context);
 		});
 	}
@@ -221,8 +238,6 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	private async initMintAnalytics(): Promise<void> {
 		try {
 			this.locale = await this.settingDeviceService.getLocale();
-			this.mint_genesis_time = this.getMintGenesisTime();
-			this.page_settings = this.getPageSettings();
 			this.updateTertiaryNav();
 			this.loading_static_data = false;
 			this.cdr.detectChanges();
@@ -237,72 +252,72 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	private async loadMintAnalytics(): Promise<void> {
 		const timezone = this.settingDeviceService.getTimezone();
 		const analytics_balances_obs = this.mintService.loadMintAnalyticsBalances({
-			units: this.page_settings.units,
-			date_start: this.page_settings.date_start,
-			date_end: this.page_settings.date_end,
-			interval: this.page_settings.interval,
+			units: this.page_settings().units,
+			date_start: this.page_settings().date_start,
+			date_end: this.page_settings().date_end,
+			interval: this.page_settings().interval,
 			timezone: timezone,
 		});
 		const analytics_balances_pre_obs = this.mintService.loadMintAnalyticsBalances({
-			units: this.page_settings.units,
+			units: this.page_settings().units,
 			date_start: 100000,
-			date_end: this.page_settings.date_start - 1,
+			date_end: this.page_settings().date_start - 1,
 			interval: MintAnalyticsInterval.Custom,
 			timezone: timezone,
 		});
 		const analytics_mints_obs = this.mintService.loadMintAnalyticsMints({
-			units: this.page_settings.units,
-			date_start: this.page_settings.date_start,
-			date_end: this.page_settings.date_end,
-			interval: this.page_settings.interval,
+			units: this.page_settings().units,
+			date_start: this.page_settings().date_start,
+			date_end: this.page_settings().date_end,
+			interval: this.page_settings().interval,
 			timezone: timezone,
 		});
 		const analytics_mints_pre_obs = this.mintService.loadMintAnalyticsMints({
-			units: this.page_settings.units,
+			units: this.page_settings().units,
 			date_start: 100000,
-			date_end: this.page_settings.date_start - 1,
+			date_end: this.page_settings().date_start - 1,
 			interval: MintAnalyticsInterval.Custom,
 			timezone: timezone,
 		});
 		const analytics_melts_obs = this.mintService.loadMintAnalyticsMelts({
-			units: this.page_settings.units,
-			date_start: this.page_settings.date_start,
-			date_end: this.page_settings.date_end,
-			interval: this.page_settings.interval,
+			units: this.page_settings().units,
+			date_start: this.page_settings().date_start,
+			date_end: this.page_settings().date_end,
+			interval: this.page_settings().interval,
 			timezone: timezone,
 		});
 		const analytics_melts_pre_obs = this.mintService.loadMintAnalyticsMelts({
-			units: this.page_settings.units,
+			units: this.page_settings().units,
 			date_start: 100000,
-			date_end: this.page_settings.date_start - 1,
+			date_end: this.page_settings().date_start - 1,
 			interval: MintAnalyticsInterval.Custom,
 			timezone: timezone,
 		});
 		const analytics_swaps_obs = this.mintService.loadMintAnalyticsSwaps({
-			units: this.page_settings.units,
-			date_start: this.page_settings.date_start,
-			date_end: this.page_settings.date_end,
-			interval: this.page_settings.interval,
+			units: this.page_settings().units,
+			date_start: this.page_settings().date_start,
+			date_end: this.page_settings().date_end,
+			interval: this.page_settings().interval,
 			timezone: timezone,
 		});
 		const analytics_swaps_pre_obs = this.mintService.loadMintAnalyticsSwaps({
-			units: this.page_settings.units,
+			units: this.page_settings().units,
 			date_start: 100000,
-			date_end: this.page_settings.date_start - 1,
+			date_end: this.page_settings().date_start - 1,
 			interval: MintAnalyticsInterval.Custom,
 			timezone: timezone,
 		});
 		const analytics_fees_obs = this.mintService.loadMintAnalyticsFees({
-			units: this.page_settings.units,
-			date_start: this.page_settings.date_start,
-			date_end: this.page_settings.date_end,
-			interval: this.page_settings.interval,
+			units: this.page_settings().units,
+			date_start: this.page_settings().date_start,
+			date_end: this.page_settings().date_end,
+			interval: this.page_settings().interval,
 			timezone: timezone,
 		});
 		const analytics_fees_pre_obs = this.mintService.loadMintAnalyticsFees({
-			units: this.page_settings.units,
+			units: this.page_settings().units,
 			date_start: 100000,
-			date_end: this.page_settings.date_start - 1,
+			date_end: this.page_settings().date_start - 1,
 			interval: MintAnalyticsInterval.Custom,
 			timezone: timezone,
 		});
@@ -372,17 +387,19 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	private getPageSettings(): NonNullableMintDashboardSettings {
 		const settings = this.settingDeviceService.getMintDashboardSettings();
 		return {
-			type: settings.type ?? ChartType.Summary,
+			type: {
+				balance_sheet: settings.type?.balance_sheet ?? ChartType.Totals,
+				mints: settings.type?.mints ?? ChartType.Volume,
+				melts: settings.type?.melts ?? ChartType.Volume,
+				swaps: settings.type?.swaps ?? ChartType.Volume,
+				fee_revenue: settings.type?.fee_revenue ?? ChartType.Volume,
+			},
 			interval: settings.interval ?? MintAnalyticsInterval.Day,
-			units: settings.units ?? this.getSelectedUnits(), // @todo there will be bugs here if a unit is not in the keysets (audit active keysets)
+			units: settings.units ?? [],
 			date_start: settings.date_start ?? this.getSelectedDateStart(),
 			date_end: settings.date_end ?? this.getSelectedDateEnd(),
 			tertiary_nav: settings.tertiary_nav ?? Object.values(NavTertiary),
 		};
-	}
-
-	private getSelectedUnits(): MintUnit[] {
-		return Array.from(new Set(this.mint_keysets.map((keyset) => keyset.unit)));
 	}
 
 	private getSelectedDateStart(): number {
@@ -394,6 +411,10 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	private getSelectedDateEnd(): number {
 		const today = DateTime.now().endOf('day');
 		return Math.floor(today.toSeconds());
+	}
+
+	public getChartType(key: ChartKey): ChartType | null {
+		return this.page_settings().type[key];
 	}
 
 	/* *******************************************************
@@ -414,9 +435,9 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		if (tool_call.function.name === AiFunctionName.MintAnalyticsIntervalUpdate) {
 			this.onIntervalChange(tool_call.function.arguments.interval);
 		}
-		if (tool_call.function.name === AiFunctionName.MintAnalyticsTypeUpdate) {
-			this.onTypeChange(tool_call.function.arguments.type);
-		}
+		// if (tool_call.function.name === AiFunctionName.MintAnalyticsTypeUpdate) {
+		// 	this.onTypeChange(tool_call.function.arguments.type);
+		// }
 	}
 
 	/* *******************************************************
@@ -424,28 +445,37 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	******************************************************** */
 
 	public onDateChange(event: number[]): void {
-		this.page_settings.date_start = event[0];
-		this.page_settings.date_end = event[1];
-		this.settingDeviceService.setMintDashboardSettings(this.page_settings);
+		const current = this.page_settings();
+		const updated = {...current, date_start: event[0], date_end: event[1]};
+		this.page_settings.set(updated);
+		this.settingDeviceService.setMintDashboardSettings(updated);
 		this.reloadDynamicData();
 	}
 
 	public onUnitsChange(event: MintUnit[]): void {
-		this.page_settings.units = event;
-		this.settingDeviceService.setMintDashboardSettings(this.page_settings);
+		const current = this.page_settings();
+		const updated = {...current, units: event};
+		this.page_settings.set(updated);
+		this.settingDeviceService.setMintDashboardSettings(updated);
 		this.reloadDynamicData();
 	}
 
 	public onIntervalChange(event: MintAnalyticsInterval): void {
-		this.page_settings.interval = event;
-		this.settingDeviceService.setMintDashboardSettings(this.page_settings);
+		const current = this.page_settings();
+		const updated = {...current, interval: event};
+		this.page_settings.set(updated);
+		this.settingDeviceService.setMintDashboardSettings(updated);
 		this.reloadDynamicData();
 	}
 
-	public onTypeChange(event: ChartType): void {
-		this.page_settings.type = event;
-		this.settingDeviceService.setMintDashboardSettings(this.page_settings);
-		this.reloadDynamicData();
+	public onChartTypeChange(key: ChartKey, type: ChartType): void {
+		const current = this.page_settings();
+		const updated = {
+			...current,
+			type: {...current.type, [key]: type},
+		};
+		this.page_settings.set(updated);
+		this.settingDeviceService.setMintDashboardSettings(updated);
 	}
 
 	public onNavigate(route: string): void {
@@ -457,8 +487,10 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	******************************************************** */
 
 	public onTertiaryNavChange(event: string[]): void {
-		this.page_settings.tertiary_nav = event;
-		this.settingDeviceService.setMintDashboardSettings(this.page_settings);
+		const current = this.page_settings();
+		const updated = {...current, tertiary_nav: event};
+		this.page_settings.set(updated);
+		this.settingDeviceService.setMintDashboardSettings(updated);
 		this.updateTertiaryNav();
 	}
 
@@ -467,7 +499,9 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	}
 
 	private updateTertiaryNav(): void {
-		const tertiary_nav = this.page_settings.tertiary_nav.map((area) => `"${area}"`).join(' ');
+		const tertiary_nav = this.page_settings()
+			.tertiary_nav.map((area) => `"${area}"`)
+			.join(' ');
 		this.chart_container.nativeElement.style.gridTemplateAreas = `${tertiary_nav}`;
 	}
 

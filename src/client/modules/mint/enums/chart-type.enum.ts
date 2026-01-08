@@ -1,5 +1,5 @@
 export enum ChartType {
-	Summary = 'summary',
-	Operations = 'operations',
+	Totals = 'totals',
 	Volume = 'volume',
+	Operations = 'operations',
 }

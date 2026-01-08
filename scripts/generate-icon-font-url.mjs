@@ -16,6 +16,7 @@ const ICONS = [
   'arrow_drop_down',
   'attach_money',
   'autorenew',
+  'bar_chart',
   'bar_chart_off',
   'block',
   'bolt',
