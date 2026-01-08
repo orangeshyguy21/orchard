@@ -180,7 +180,6 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			context += `* **Date End:** ${DateTime.fromSeconds(this.page_settings().date_end).toFormat('yyyy-MM-dd')}\n`;
 			context += `* **Interval:** ${this.page_settings().interval}\n`;
 			context += `* **Units:** ${this.page_settings().units.join(', ')}\n`;
-			// context += `* **Type:** ${this.page_settings.type}`;
 			this.aiService.openAiSocket(agent, content, context);
 		});
 	}
@@ -212,8 +211,8 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	}
 
 	private getBreakpointSubscription(): Subscription {
-		return this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium]).subscribe((result) => {
-			this.mobile_view.set(result.matches);
+		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
+			this.mobile_view.set(!result.matches);
 		});
 	}
 
@@ -446,9 +445,6 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		if (tool_call.function.name === AiFunctionName.MintAnalyticsIntervalUpdate) {
 			this.onIntervalChange(tool_call.function.arguments.interval);
 		}
-		// if (tool_call.function.name === AiFunctionName.MintAnalyticsTypeUpdate) {
-		// 	this.onTypeChange(tool_call.function.arguments.type);
-		// }
 	}
 
 	/* *******************************************************

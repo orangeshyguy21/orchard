@@ -13,6 +13,7 @@ import {ActivatedRoute} from '@angular/router';
 import {FormGroup, FormControl, Validators, FormArray} from '@angular/forms';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {Router} from '@angular/router';
+import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 /* Vendor Dependencies */
 import {Subscription} from 'rxjs';
 /* Application Dependencies */
@@ -61,6 +62,8 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 		return this.form_info.get('contact') as FormArray;
 	}
 
+	public mobile_view = signal(false);
+
 	private subscriptions: Subscription = new Subscription();
 	private active_event: EventData | null = null;
 	private dirty_count: WritableSignal<number> = signal(0);
@@ -72,6 +75,7 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 		public route: ActivatedRoute,
 		public aiService: AiService,
 		public eventService: EventService,
+		public breakpointObserver: BreakpointObserver,
 		public cdr: ChangeDetectorRef,
 		public router: Router,
 	) {
@@ -109,6 +113,7 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 		this.subscriptions.add(this.getEventSubscription());
 		this.subscriptions.add(this.getFormSubscription());
 		this.subscriptions.add(this.getDirtyCountSubscription());
+		this.subscriptions.add(this.getBreakpointSubscription());
 		this.orchardOptionalInit();
 	}
 
@@ -176,6 +181,12 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 	private getDirtyCountSubscription(): Subscription {
 		return this.dirty_count$.subscribe((count) => {
 			this.createPendingEvent(count);
+		});
+	}
+
+	private getBreakpointSubscription(): Subscription {
+		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
+			this.mobile_view.set(!result.matches);
 		});
 	}
 
