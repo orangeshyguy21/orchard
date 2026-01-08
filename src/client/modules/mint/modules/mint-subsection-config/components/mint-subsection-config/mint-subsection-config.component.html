@@ -1,6 +1,6 @@
 <div class="mint-subsection-config-container">
 	<div class="flex flex-gap-0-5">
-		<div class="grid" #nut_container>
+		<div class="grid" #nut_container [class.mobile-view]="mobile_view()">
 			<!-- NUT 04 -->
 			<div class="nav4" #nav4>
 				<div class="sticky-nut z-index-1">
@@ -12,6 +12,7 @@
 					[nut]="'nut4'"
 					[enabled]="form_minting.get('enabled')?.value"
 					[form_group]="form_minting"
+					[mobile_view]="mobile_view()"
 					(update)="onEnabledUpdate($event)"
 				></orc-mint-subsection-config-form-enabled>
 				<orc-mint-subsection-config-form-quote-ttl
@@ -22,6 +23,7 @@
 					[locale]="locale"
 					[loading]="data_loading"
 					[quotes]="mint_quotes"
+					[mobile_view]="mobile_view()"
 					(update)="onTtlUpdate($event)"
 					(cancel)="onTtlCancel($event)"
 				></orc-mint-subsection-config-form-quote-ttl>
@@ -32,7 +34,7 @@
 							<orc-graphic-asset [unit]="unit" [height]="'1rem'"> </orc-graphic-asset>
 						</div>
 					</div>
-					<div class="p-l-2 p-r-1 p-b-2">
+					<div class="nut-wrapper">
 						<mat-card appearance="outlined" class="relative overflow-hidden">
 							<mat-card-content class="orc-surface-container-low-bg">
 								<div class="flex flex-column flex-gap-2">
@@ -87,7 +89,12 @@
 					<div class="font-size-xs orc-outline-color p-b-0-5">Configure withdrawing from the mint</div>
 					<div class="category-rule"></div>
 				</div>
-				<orc-mint-subsection-config-form-enabled [nut]="'nut5'" [form_group]="form_melting" (update)="onEnabledUpdate($event)">
+				<orc-mint-subsection-config-form-enabled
+					[nut]="'nut5'"
+					[form_group]="form_melting"
+					[mobile_view]="mobile_view()"
+					(update)="onEnabledUpdate($event)"
+				>
 				</orc-mint-subsection-config-form-enabled>
 				<orc-mint-subsection-config-form-quote-ttl
 					[nut]="'nut5'"
@@ -96,6 +103,7 @@
 					[disabled]="mint_info?.nuts?.nut5?.disabled"
 					[locale]="locale"
 					[loading]="data_loading"
+					[mobile_view]="mobile_view()"
 					[quotes]="melt_quotes"
 					(update)="onTtlUpdate($event)"
 					(cancel)="onTtlCancel($event)"
@@ -107,7 +115,7 @@
 							<orc-graphic-asset [unit]="unit" [height]="'1rem'"> </orc-graphic-asset>
 						</div>
 					</div>
-					<div class="p-l-2 p-r-1 p-b-2">
+					<div class="nut-wrapper">
 						<mat-card appearance="outlined" class="relative overflow-hidden">
 							<mat-card-content class="orc-surface-container-low-bg">
 								<div class="flex flex-column flex-gap-2">
@@ -167,6 +175,7 @@
 					[nut_index]="'07'"
 					[nut_icon]="'pageview'"
 					[supported]="mint_info?.nuts?.nut7?.supported"
+					[mobile_view]="mobile_view()"
 				>
 					<div class="flex flex-column flex-gap-0-5">
 						<span>
@@ -191,6 +200,7 @@
 					[nut_index]="'08'"
 					[nut_icon]="'arrow_circle_left'"
 					[supported]="mint_info?.nuts?.nut8?.supported"
+					[mobile_view]="mobile_view()"
 				>
 					<div class="flex flex-column flex-gap-0-5">
 						<span>
@@ -215,6 +225,7 @@
 					[nut_index]="'09'"
 					[nut_icon]="'password'"
 					[supported]="mint_info?.nuts?.nut9?.supported"
+					[mobile_view]="mobile_view()"
 				>
 					<div class="flex flex-column flex-gap-0-5">
 						<span>
@@ -240,6 +251,7 @@
 					[nut_index]="'10'"
 					[nut_icon]="'flowsheet'"
 					[supported]="mint_info?.nuts?.nut10?.supported"
+					[mobile_view]="mobile_view()"
 				>
 					<div class="flex flex-column flex-gap-0-5">
 						<span>
@@ -264,6 +276,7 @@
 					[nut_index]="'11'"
 					[nut_icon]="'key'"
 					[supported]="mint_info?.nuts?.nut11?.supported"
+					[mobile_view]="mobile_view()"
 				>
 					<div class="flex flex-column flex-gap-0-5">
 						<span>
@@ -288,6 +301,7 @@
 					[nut_index]="'12'"
 					[nut_icon]="'wifi_off'"
 					[supported]="mint_info?.nuts?.nut12?.supported"
+					[mobile_view]="mobile_view()"
 				>
 					<div class="flex flex-column flex-gap-0-5">
 						<span>
@@ -312,6 +326,7 @@
 					[nut_index]="'14'"
 					[nut_icon]="'lock_clock'"
 					[supported]="mint_info?.nuts?.nut14?.supported"
+					[mobile_view]="mobile_view()"
 				>
 					<div class="flex flex-column flex-gap-0-5">
 						<span>
@@ -334,6 +349,7 @@
 					[nut_index]="'15'"
 					[nut_icon]="'thunderstorm'"
 					[supported]="mint_info?.nuts?.nut15?.methods?.length === 0 ? false : true"
+					[mobile_view]="mobile_view()"
 				>
 					<div class="flex flex-column flex-gap-0-5">
 						<span>
@@ -350,7 +366,7 @@
 						</div>
 					</div>
 
-					<div class="p-l-2 p-r-1 p-b-2">
+					<div class="nut-wrapper">
 						<div class="flex flex-items-center flex-justify-evenly flex-gap-2">
 							@for (nut15_method of nut15_methods; track nut15_method.unit) {
 								<orc-mint-subsection-config-nut15-method
@@ -373,6 +389,7 @@
 					[nut_index]="'17'"
 					[nut_icon]="'electrical_services'"
 					[supported]="mint_info?.nuts?.nut17?.supported ? true : false"
+					[mobile_view]="mobile_view()"
 				>
 					<div class="flex flex-column flex-gap-0-5">
 						<span>
@@ -389,7 +406,7 @@
 						</div>
 					</div>
 
-					<div class="p-l-2 p-r-1 p-b-2">
+					<div class="nut-wrapper">
 						<div class="flex flex-items-center flex-justify-evenly flex-gap-2">
 							@for (unit_group of nut17_commands; track unit_group.unit) {
 								<orc-mint-subsection-config-nut17-commands
@@ -414,6 +431,7 @@
 					[nut_index]="'19'"
 					[nut_icon]="'download_for_offline'"
 					[supported]="mint_info?.nuts?.nut19 ? true : false"
+					[mobile_view]="mobile_view()"
 				>
 					<div class="flex flex-column flex-gap-0-5">
 						<span>
@@ -441,6 +459,7 @@
 					[nut_index]="'20'"
 					[nut_icon]="'stylus_note'"
 					[supported]="mint_info?.nuts?.nut20?.supported"
+					[mobile_view]="mobile_view()"
 				>
 					<div class="flex flex-column flex-gap-0-5">
 						<span>
@@ -452,17 +471,19 @@
 				</orc-mint-subsection-config-nut-supported>
 			</div>
 		</div>
-		<div class="p-r-1">
-			<orc-nav-tertiary
-				class="nut-tertiary-nav"
-				[keys]="page_settings.tertiary_nav"
-				[items]="tertiary_nav_items"
-				[revision]="tertiary_nav_revision"
-				(orderChange)="onTertiaryNavChange($event)"
-				(keySelect)="onTertiaryNavSelect($event)"
-			>
-				<div class="nav-tertiary-title">Features</div>
-			</orc-nav-tertiary>
-		</div>
+		@if (!mobile_view()) {
+			<div class="p-r-1">
+				<orc-nav-tertiary
+					class="nut-tertiary-nav"
+					[keys]="page_settings.tertiary_nav"
+					[items]="tertiary_nav_items"
+					[revision]="tertiary_nav_revision"
+					(orderChange)="onTertiaryNavChange($event)"
+					(keySelect)="onTertiaryNavSelect($event)"
+				>
+					<div class="nav-tertiary-title">Features</div>
+				</orc-nav-tertiary>
+			</div>
+		}
 	</div>
 </div>

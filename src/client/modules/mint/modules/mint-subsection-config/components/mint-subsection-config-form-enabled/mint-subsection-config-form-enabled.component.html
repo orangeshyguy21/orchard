@@ -1,4 +1,4 @@
-<div class="p-v-2 p-l-2 p-r-1">
+<div class="p-v-2 p-r-1" [ngClass]="{'p-l-1': mobile_view(), 'p-l-2': !mobile_view()}">
 	<mat-card appearance="outlined" class="relative overflow-hidden">
 		<mat-card-content class="orc-surface-container-low-bg">
 			<div class="flex flex-items-center flex-gap-2">

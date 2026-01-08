@@ -19,6 +19,7 @@ export class MintSubsectionConfigFormEnabledComponent {
 	public nut = input.required<'nut4' | 'nut5'>(); // which nut configuration this controls
 	public form_group = input.required<FormGroup>(); // form group containing the enabled control
 	public enabled = input<boolean>(true); // current enabled state
+	public mobile_view = input<boolean>(false); // whether the mobile view is active
 
 	public update = output<{form_group: FormGroup; nut: 'nut4' | 'nut5'}>(); // emitted when the enabled state changes
 

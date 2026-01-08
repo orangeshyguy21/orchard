@@ -30,6 +30,12 @@
 	top: 57px;
 }
 
+.nut-wrapper {
+	@extend %p-l-2;
+	@extend %p-r-1;
+	@extend %p-b-2;
+}
+
 .nut-tertiary-nav {
 	@extend %sticky;
 	@extend %z-index-1;
@@ -44,6 +50,20 @@
 	@extend %orc-on-surface-variant-color;
 	@extend %p-b-0-5;
 	@extend %p-l-0-25;
+}
+
+.mobile-view {
+	.sticky-nut {
+		@extend %p-l-1;
+		@extend %p-t-1;
+	}
+	.sticky-method {
+		@extend %p-l-1;
+		top: 41px;
+	}
+	.nut-wrapper {
+		@extend %p-l-1;
+	}
 }
 
 .nav4 {
