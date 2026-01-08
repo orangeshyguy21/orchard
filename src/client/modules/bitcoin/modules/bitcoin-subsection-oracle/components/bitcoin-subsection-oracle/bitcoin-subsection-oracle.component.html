@@ -7,15 +7,17 @@
 					[min_date]="min_date()"
 					[max_date]="max_date()"
 				></orc-bitcoin-subsection-oracle-control>
-				<div class="p-b-1" animate.enter="orc-animation-fadein">
-					<div class="title-l">Latest Price</div>
-					<div class="orc-outline-color font-size-s">
-						{{ latest_oracle()?.date | timeUtc: 'date-only' }} <small class="font-weight-bold">UTC</small>
+				@if (!mobile_view()) {
+					<div class="p-b-1" animate.enter="orc-animation-fadein">
+						<div class="title-l">Latest Price</div>
+						<div class="orc-outline-color font-size-s">
+							{{ latest_oracle()?.date | timeUtc: 'date-only' }} <small class="font-weight-bold">UTC</small>
+						</div>
 					</div>
-				</div>
-				<div class="p-b-1" animate.enter="orc-animation-fadein">
-					<div class="font-weight-bold font-size-xxl">${{ latest_oracle()?.price | number: '1.0-0' }}</div>
-				</div>
+					<div class="p-b-1" animate.enter="orc-animation-fadein">
+						<div class="font-weight-bold font-size-xxl">${{ latest_oracle()?.price | number: '1.0-0' }}</div>
+					</div>
+				}
 			</div>
 			<div>
 				<div class="flex flex-items-center flex-gap-0-5 relative">
@@ -47,22 +49,38 @@
 				[max_date]="max_date()"
 				[date_start_max]="date_start_max()"
 				[date_end_min]="date_end_min()"
+				[mobile_view]="mobile_view()"
 				(close)="onCloseForm()"
 				(cancel)="onCancelForm($event)"
 			></orc-bitcoin-subsection-oracle-form>
 		</div>
 	</div>
 
-	<orc-bitcoin-subsection-oracle-chart
-		[data]="data()"
-		[loading]="loading()"
-		[date_today]="date_today()"
-		[date_start]="page_settings.date_start"
-		[date_end]="page_settings.date_end"
-		[backfill_date_start]="backfill_date_start()"
-		[backfill_date_end]="backfill_date_end()"
-		[form_open]="form_open()"
-		[enabled_ai]="enabled_ai()"
-		(backfill_date)="onBackfillDate($event)"
-	></orc-bitcoin-subsection-oracle-chart>
+	<div class="relative">
+		@if (mobile_view()) {
+			<div class="mobile-latest-price flex flex-gap-2 flex-items-center" animate.enter="orc-animation-fadein">
+				<div class="p-b-1">
+					<div class="title-l text-nowrap">Latest Price</div>
+					<div class="orc-outline-color font-size-s text-nowrap">
+						{{ latest_oracle()?.date | timeUtc: 'date-only' }} <small class="font-weight-bold">UTC</small>
+					</div>
+				</div>
+				<div class="p-b-1">
+					<div class="font-weight-bold font-size-xxl">${{ latest_oracle()?.price | number: '1.0-0' }}</div>
+				</div>
+			</div>
+		}
+		<orc-bitcoin-subsection-oracle-chart
+			[data]="data()"
+			[loading]="loading()"
+			[date_today]="date_today()"
+			[date_start]="page_settings.date_start"
+			[date_end]="page_settings.date_end"
+			[backfill_date_start]="backfill_date_start()"
+			[backfill_date_end]="backfill_date_end()"
+			[form_open]="form_open()"
+			[enabled_ai]="enabled_ai()"
+			(backfill_date)="onBackfillDate($event)"
+		></orc-bitcoin-subsection-oracle-chart>
+	</div>
 </div>

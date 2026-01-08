@@ -1,0 +1,10 @@
+@use 'molecule/molecule';
+
+.mobile-oracle {
+	@extend %flex-grow;
+	@extend %flex-justify-center;
+}
+
+.oracle-wrapper {
+	// margin: -4rem;
+}

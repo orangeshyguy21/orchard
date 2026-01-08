@@ -12,6 +12,7 @@ import {
 	effect,
 } from '@angular/core';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
+import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 /* Vendor Dependencies */
 import {DateTime} from 'luxon';
 import {Subscription} from 'rxjs';
@@ -68,6 +69,7 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 	public max_date = signal<DateTime>(DateTime.utc().endOf('day')); // Current date: today UTC
 	public date_start_max = signal<DateTime>(this.max_date());
 	public date_end_min = signal<DateTime>(this.min_date());
+	public mobile_view = signal<boolean>(false);
 
 	public latest_oracle = computed(() => {
 		return this.data().length > 0 ? (this.data().at(-1) ?? null) : null;
@@ -82,6 +84,7 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 		private settingDeviceService: SettingDeviceService,
 		private eventService: EventService,
 		private configService: ConfigService,
+		private breakpointObserver: BreakpointObserver,
 	) {
 		effect(() => {
 			const dirty = this.dirty_form();
@@ -107,6 +110,7 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 		this.subscriptions.add(this.getEventSubscription());
 		this.subscriptions.add(this.getBackfillProgressSubscription());
 		this.subscriptions.add(this.getBackfillActiveSubscription());
+		this.subscriptions.add(this.getBreakpointSubscription());
 		this.page_settings = this.getPageSettings();
 		this.initializeControl();
 		this.getOracleData();
@@ -226,6 +230,12 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 	private getBackfillActiveSubscription(): Subscription {
 		return this.bitcoinService.backfill_active$.subscribe((active) => {
 			this.backfill_running.set(active);
+		});
+	}
+
+	private getBreakpointSubscription(): Subscription {
+		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
+			this.mobile_view.set(!result.matches);
 		});
 	}
 

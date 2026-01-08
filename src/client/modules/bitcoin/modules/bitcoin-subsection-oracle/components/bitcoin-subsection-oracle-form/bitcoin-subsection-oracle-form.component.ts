@@ -24,6 +24,7 @@ export class BitcoinSubsectionOracleFormComponent {
 	public max_date = input.required<DateTime>();
 	public date_start_max = input.required<DateTime>();
 	public date_end_min = input.required<DateTime>();
+	public mobile_view = input.required<boolean>();
 
 	public close = output<void>();
 	public cancel = output<BackfillOracleControl>();
