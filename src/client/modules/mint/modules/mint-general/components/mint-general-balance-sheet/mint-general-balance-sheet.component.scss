@@ -2,4 +2,9 @@
 
 :host {
 	@extend %flex-grow;
+	@extend %w-min-0;
+}
+
+.balance-sheet-scroll-wrapper {
+	overflow-x: auto;
 }

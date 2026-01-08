@@ -3,6 +3,7 @@
 .mint-connections-form {
 	@extend %flex;
 	@extend %flex-gap-1;
+	@extend %flex-wrap;
 }
 
 .mint-connection-urls {
