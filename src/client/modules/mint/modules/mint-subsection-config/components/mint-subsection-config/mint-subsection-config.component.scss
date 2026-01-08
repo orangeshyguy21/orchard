@@ -43,6 +43,7 @@
 	height: calc(100vh - 9rem);
 	@extend %overflow-y-auto;
 	@extend %block;
+	min-width: 14rem;
 }
 
 .nav-tertiary-title {
@@ -64,6 +65,13 @@
 	.nut-wrapper {
 		@extend %p-l-1;
 	}
+}
+
+.mobile-mint-config-nav {
+	@extend %fixed;
+	@extend %z-index-2;
+	@extend %right-2;
+	@extend %top-1;
 }
 
 .nav4 {

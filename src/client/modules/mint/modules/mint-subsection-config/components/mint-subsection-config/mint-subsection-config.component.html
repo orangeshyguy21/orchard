@@ -1,4 +1,12 @@
 <div class="mint-subsection-config-container">
+	@if (mobile_view()) {
+		<div class="mobile-mint-config-nav">
+			<button matButton type="button" [matMenuTriggerFor]="nut_menu">
+				<mat-icon>menu</mat-icon>
+				<span class="text-nowrap font-size-s">Features</span>
+			</button>
+		</div>
+	}
 	<div class="flex flex-gap-0-5">
 		<div class="grid" #nut_container [class.mobile-view]="mobile_view()">
 			<!-- NUT 04 -->
@@ -472,18 +480,29 @@
 			</div>
 		</div>
 		@if (!mobile_view()) {
-			<div class="p-r-1">
-				<orc-nav-tertiary
-					class="nut-tertiary-nav"
-					[keys]="page_settings.tertiary_nav"
-					[items]="tertiary_nav_items"
-					[revision]="tertiary_nav_revision"
-					(orderChange)="onTertiaryNavChange($event)"
-					(keySelect)="onTertiaryNavSelect($event)"
-				>
-					<div class="nav-tertiary-title">Features</div>
-				</orc-nav-tertiary>
-			</div>
+			<orc-nav-tertiary
+				class="nut-tertiary-nav"
+				[keys]="page_settings.tertiary_nav"
+				[items]="tertiary_nav_items"
+				[revision]="tertiary_nav_revision"
+				(orderChange)="onTertiaryNavChange($event)"
+				(keySelect)="onTertiaryNavSelect($event)"
+			>
+				<div class="nav-tertiary-title">Features</div>
+			</orc-nav-tertiary>
 		}
 	</div>
 </div>
+
+<mat-menu #nut_menu="matMenu" yPosition="below" xPosition="before" class="orc-sticky-menu">
+	<div class="p-l-1 p-t-0-5">
+		<orc-nav-tertiary
+			class="nut-tertiary-nav"
+			[keys]="page_settings.tertiary_nav"
+			[items]="tertiary_nav_items"
+			[revision]="tertiary_nav_revision"
+			(orderChange)="onTertiaryNavChange($event)"
+			(keySelect)="onTertiaryNavSelect($event)"
+		></orc-nav-tertiary>
+	</div>
+</mat-menu>
