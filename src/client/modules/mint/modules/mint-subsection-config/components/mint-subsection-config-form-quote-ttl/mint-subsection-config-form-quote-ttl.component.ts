@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, computed, ElementRef, input, output, signal, viewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, ElementRef, input, output, signal, viewChild, effect} from '@angular/core';
 import {toObservable, toSignal} from '@angular/core/rxjs-interop';
 import {FormGroup} from '@angular/forms';
 /* Vendor Dependencies */
@@ -8,6 +8,9 @@ import {startWith, switchMap} from 'rxjs';
 import {MintQuoteTtls} from '@client/modules/mint/classes/mint-quote-ttls.class';
 import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
 import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class';
+import {avg, median, max, min} from '@client/modules/math/helpers';
+/* Shared Dependencies */
+import {MintQuoteState, MeltQuoteState} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-subsection-config-form-quote-ttl',
@@ -34,6 +37,17 @@ export class MintSubsectionConfigFormQuoteTtlComponent {
 	public focused_quote_ttl = signal<boolean>(false); // tracks if the input is focused
 	public control_touched = signal<boolean>(false); // tracks if the control has been touched
 	public help_status = signal<boolean>(false); // tracks if the help is visible
+	public stats = signal<{
+		avg: number;
+		median: number;
+		max: number;
+		min: number;
+	}>({
+		avg: 0,
+		median: 0,
+		max: 0,
+		min: 0,
+	});
 
 	private formChanges = toSignal(toObservable(this.form_group).pipe(switchMap((fg) => fg.valueChanges.pipe(startWith(fg.value)))));
 
@@ -70,6 +84,51 @@ export class MintSubsectionConfigFormQuoteTtlComponent {
 			return 'Configure the time to live for checking withdraw invoices.<br> Invoices paid after this time will be checked less often.';
 		return '';
 	});
+
+	constructor() {
+		effect(() => {
+			const loading = this.loading();
+			if (!loading) this.setStats();
+		});
+	}
+
+	private setStats(): void {
+		const deltas = this.getDeltas();
+		const stats = this.getStats(deltas);
+		this.stats.set(stats);
+	}
+
+	private getDeltas(): Record<string, number>[] {
+		if (this.quotes().length === 0) return [];
+		const quotes = this.nut() === 'nut4' ? (this.quotes() as MintMintQuote[]) : (this.quotes() as MintMeltQuote[]);
+		const valid_state = this.nut() === 'nut4' ? MintQuoteState.Issued : MeltQuoteState.Paid;
+		const valid_quotes = quotes
+			.filter((quote) => quote.state === valid_state && quote.created_time && quote.created_time > 0)
+			.sort((a, b) => (a.created_time ?? 0) - (b.created_time ?? 0));
+		return valid_quotes.map((quote) => {
+			const created_time = quote.created_time ?? 0;
+			const end_time = quote instanceof MintMintQuote ? (quote.issued_time ?? quote.paid_time ?? 0) : (quote.paid_time ?? 0);
+			return {
+				created_time,
+				delta: end_time - created_time,
+			};
+		});
+	}
+
+	private getStats(deltas: Record<string, number>[]): {
+		avg: number;
+		median: number;
+		max: number;
+		min: number;
+	} {
+		const values = deltas.map((delta) => delta['delta']);
+		return {
+			avg: avg(values),
+			median: median(values),
+			max: max(values),
+			min: min(values),
+		};
+	}
 
 	public onFocus(): void {
 		this.focused_quote_ttl.set(true);

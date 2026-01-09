@@ -66,7 +66,16 @@
 						</div>
 					</div>
 				</div>
-				<div class="flex-1">
+				<div class="flex-1 flex flex-column flex-gap-0-5">
+					<div class="flex flex-justify-center">
+						<div class="font-size-xs orc-outline-color">{{ nut() === 'nut4' ? 'Mint' : 'Melt' }} Quote Processing Times</div>
+					</div>
+					<orc-mint-subsection-config-form-quote-ttl-stats
+						[nut]="nut()"
+						[loading]="loading()"
+						[quotes]="quotes()"
+						[stats]="stats()"
+					></orc-mint-subsection-config-form-quote-ttl-stats>
 					<orc-mint-subsection-config-chart-quote-ttl
 						[nut]="nut()"
 						[loading]="loading()"

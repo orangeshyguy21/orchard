@@ -24,7 +24,6 @@ export class MintSubsectionConfigFormQuoteTtlHintComponent {
 	constructor() {
 		effect(() => {
 			const loading = this.loading();
-			console.log('loading', loading);
 			if (!loading) this.setCoverage();
 		});
 
@@ -35,10 +34,8 @@ export class MintSubsectionConfigFormQuoteTtlHintComponent {
 	}
 
 	private setCoverage(): void {
-		console.log('setCoverage');
 		const deltas = this.getDeltas();
 		const coverage = this.getCoverage(deltas);
-		console.log('coverage', coverage);
 		this.coverage.set(coverage);
 	}
 

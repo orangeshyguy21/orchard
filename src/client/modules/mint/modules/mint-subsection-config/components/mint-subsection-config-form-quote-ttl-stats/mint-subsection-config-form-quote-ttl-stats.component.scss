@@ -1,0 +1,27 @@
+@use 'molecule/molecule';
+
+.quote-stats-container {
+	@extend %flex;
+	@extend %flex-row;
+	@extend %flex-gap-0-5;
+	@extend %flex-items-center;
+	@extend %flex-justify-evenly;
+	@extend %font-size-xs;
+	@extend %orc-outline-color;
+}
+
+.quote-stats-item {
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-gap-0-25;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+}
+
+.quote-stats-item-label {
+	@extend %font-weight-extra-light;
+}
+
+.quote-stats-item-value {
+	@extend %font-weight-semi-bold;
+}
