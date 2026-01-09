@@ -110,17 +110,19 @@
 					}
 				</div>
 			</div>
-			<div class="orc-filter-menu-rule"></div>
-			<div class="orc-filter-menu-section">
-				<div>States</div>
-				<div class="filter-options">
-					@for (state of state_options(); track state; let i = $index) {
-						<mat-checkbox [formControl]="panel.controls.states.at(i)" (change)="onStatesChange()">
-							{{ state }}
-						</mat-checkbox>
-					}
+			@if (state_options().length > 0) {
+				<div class="orc-filter-menu-rule"></div>
+				<div class="orc-filter-menu-section">
+					<div>States</div>
+					<div class="filter-options">
+						@for (state of state_options(); track state; let i = $index) {
+							<mat-checkbox [formControl]="panel.controls.states.at(i)" (change)="onStatesChange()">
+								{{ state }}
+							</mat-checkbox>
+						}
+					</div>
 				</div>
-			</div>
+			}
 		</form>
 	</orc-form-filter-menu>
 </mat-menu>
