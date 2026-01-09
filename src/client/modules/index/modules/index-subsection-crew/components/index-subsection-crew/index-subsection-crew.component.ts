@@ -1,6 +1,7 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, OnInit, signal, effect, HostListener, ViewChild, ElementRef, OnDestroy} from '@angular/core';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
+import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 /* Vendor Dependencies */
 import {DateTime} from 'luxon';
 import {Subscription, lastValueFrom, forkJoin, catchError, of} from 'rxjs';
@@ -53,6 +54,7 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 	public table_form_id = signal<string | null>(null);
 	public loading = signal<boolean>(true);
 	public data = signal<MatTableDataSource<Invite | User>>(new MatTableDataSource<Invite | User>([]));
+	public mobile_view = signal<boolean>(false);
 	public readonly panel = new FormGroup({
 		filter: new FormControl<string>(''),
 		state: new FormControl<CrewState[]>([]),
@@ -103,6 +105,7 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 		private crewService: CrewService,
 		private aiService: AiService,
 		private dialog: MatDialog,
+		private breakpointObserver: BreakpointObserver,
 	) {
 		effect(() => {
 			const dirty = this.form_dirty();
@@ -121,6 +124,7 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 		this.subscriptions.add(this.getPanelFormSubscription());
 		this.subscriptions.add(this.getInviteFormSubscription());
 		this.subscriptions.add(this.getUserFormSubscription());
+		this.subscriptions.add(this.getBreakpointSubscription());
 		this.orchardOptionalInit();
 	}
 
@@ -207,6 +211,12 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 	private getToolSubscription(): Subscription {
 		return this.aiService.tool_calls$.subscribe((tool_call: AiChatToolCall) => {
 			this.executeAgentFunction(tool_call);
+		});
+	}
+
+	private getBreakpointSubscription(): Subscription {
+		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
+			this.mobile_view.set(!result.matches);
 		});
 	}
 

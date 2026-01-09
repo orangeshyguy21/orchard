@@ -3,18 +3,8 @@
 
 .mint-keyset-table-container {
 	@extend %p-b-1;
-
-	mat-card {
-		@extend %overflow-hidden;
-	}
-}
-
-.table-wrapper {
-	@extend %relative;
-	@extend %overflow-auto;
-	max-height: calc(100vh - 215px);
 }
 
 .keyset-table-sticky-header {
-	top: 0px !important;
+	top: 86px !important;
 }

@@ -251,16 +251,16 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		Form                      
 	******************************************************** */
 
-	private resetForm(): void {
+	private resetForm(unit?: MintUnit): void {
 		this.form_keyset.markAsPristine();
-		const default_unit = this.getDefaultUnit();
-		const default_input_fee_ppk = this.getDefaultInputFeePpk(default_unit);
-		const default_max_order = 32;
-		this.keyset_out = this.getKeysetOut(default_unit);
+		const form_unit = unit ?? this.getDefaultUnit();
+		const form_input_fee_ppk = this.getKeysetInputFeePpk(form_unit);
+		const form_max_order = 32;
+		this.keyset_out = this.getKeysetOut(form_unit);
 		this.form_keyset.patchValue({
-			unit: default_unit,
-			input_fee_ppk: default_input_fee_ppk,
-			max_order: default_max_order,
+			unit: form_unit,
+			input_fee_ppk: form_input_fee_ppk,
+			max_order: form_max_order,
 		});
 	}
 
@@ -276,7 +276,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		).unit;
 	}
 
-	private getDefaultInputFeePpk(unit: MintUnit): number {
+	private getKeysetInputFeePpk(unit: MintUnit): number {
 		const active_keyset = this.mint_keysets.find((keyset) => keyset.unit === unit && keyset.active);
 		return active_keyset?.input_fee_ppk ?? 1000;
 	}
@@ -448,6 +448,11 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 
 	public onRotation(): void {
 		!this.keysets_rotation ? this.initKeysetsRotation() : this.onCloseRotation();
+	}
+
+	public onRotationUnit(unit: MintUnit): void {
+		this.resetForm(unit);
+		this.initKeysetsRotation();
 	}
 
 	public onCloseRotation(): void {

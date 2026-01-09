@@ -9,7 +9,7 @@
 				[filter_count]="filter_count()"
 			></orc-index-subsection-crew-control>
 			<div>
-				<div class="flex flex-items-center flex-gap-0-5 relative">
+				@if (!mobile_view()) {
 					<button
 						type="button"
 						matFab
@@ -21,7 +21,17 @@
 						<mat-icon>person_add</mat-icon>
 						<span class="text-nowrap">Invite User</span>
 					</button>
-				</div>
+				} @else {
+					<button
+						type="button"
+						matFab
+						class="orc-icon-button"
+						(click)="onInvite()"
+						(keydown.enter)="$event.preventDefault(); $event.stopPropagation()"
+					>
+						<mat-icon>person_add</mat-icon>
+					</button>
+				}
 			</div>
 		</div>
 		<div class="category-rule"></div>
