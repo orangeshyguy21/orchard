@@ -1,34 +1,33 @@
 <div class="mint-analytic-control-panel-container">
 	<form [formGroup]="panel" class="panel-form orc-animation-form-reaction" [class.animation-invalid]="height_state === 'invalid'">
 		<div class="flex flex-col flex-gap-1">
-			<div formGroupName="daterange">
-				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic" [class.big-form-field]="!mobile_view()">
-					<mat-label>Date range</mat-label>
-					<mat-date-range-input [rangePicker]="picker">
-						<input
-							matStartDate
-							formControlName="date_start"
-							placeholder="Start date"
-							(blur)="onDateChange()"
-							(keyup.enter)="onDateChange()"
-						/>
-						<input
-							matEndDate
-							formControlName="date_end"
-							placeholder="End date"
-							(blur)="onDateChange()"
-							(keyup.enter)="onDateChange()"
-						/>
-					</mat-date-range-input>
-					<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-					<mat-date-range-picker #picker [dateClass]="genesis_class" (closed)="onDateChange()"></mat-date-range-picker>
-					@if (panel.get('daterange')?.invalid) {
-						<mat-error class="font-size-xs">Invalid date range</mat-error>
-					}
-				</mat-form-field>
-			</div>
-
 			@if (!mobile_view()) {
+				<div formGroupName="daterange">
+					<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic" class="big-form-field">
+						<mat-label>Date range</mat-label>
+						<mat-date-range-input [rangePicker]="picker">
+							<input
+								matStartDate
+								formControlName="date_start"
+								placeholder="Start date"
+								(blur)="onDateChange()"
+								(keyup.enter)="onDateChange()"
+							/>
+							<input
+								matEndDate
+								formControlName="date_end"
+								placeholder="End date"
+								(blur)="onDateChange()"
+								(keyup.enter)="onDateChange()"
+							/>
+						</mat-date-range-input>
+						<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+						<mat-date-range-picker #picker [dateClass]="genesis_class" (closed)="onDateChange()"></mat-date-range-picker>
+						@if (panel.get('daterange')?.invalid) {
+							<mat-error class="font-size-xs">Invalid date range</mat-error>
+						}
+					</mat-form-field>
+				</div>
 				<div>
 					<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
 						<mat-label>Interval</mat-label>
@@ -44,9 +43,7 @@
 			<div class="p-t-0-5">
 				<button matButton type="button" [matMenuTriggerFor]="filter_menu">
 					<mat-icon>tune</mat-icon>
-					<span class="text-nowrap font-size-s"
-						>{{ mobile_view() ? '' : 'Filters' }} {{ filter_count() > 0 ? `(${filter_count()})` : '' }}</span
-					>
+					<span class="text-nowrap font-size-s">Filters {{ filter_count() > 0 ? `(${filter_count()})` : '' }}</span>
 				</button>
 			</div>
 		</div>
@@ -56,8 +53,35 @@
 <mat-menu #filter_menu="matMenu" yPosition="below" class="orc-sticky-menu orc-filter-menu">
 	<orc-form-filter-menu (click)="$event.stopPropagation()" (clear)="onClearFilter()" (close)="onCloseFilter()">
 		@if (mobile_view()) {
-			<div class="orc-filter-menu-section">
-				<form [formGroup]="panel">
+			<form [formGroup]="panel">
+				<div formGroupName="daterange" class="p-1">
+					<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic" class="w-full">
+						<mat-label>Date range</mat-label>
+						<mat-date-range-input [rangePicker]="picker">
+							<input
+								matStartDate
+								formControlName="date_start"
+								placeholder="Start date"
+								(blur)="onDateChange()"
+								(keyup.enter)="onDateChange()"
+							/>
+							<input
+								matEndDate
+								formControlName="date_end"
+								placeholder="End date"
+								(blur)="onDateChange()"
+								(keyup.enter)="onDateChange()"
+							/>
+						</mat-date-range-input>
+						<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+						<mat-date-range-picker #picker [dateClass]="genesis_class" (closed)="onDateChange()"></mat-date-range-picker>
+						@if (panel.get('daterange')?.invalid) {
+							<mat-error class="font-size-xs">Invalid date range</mat-error>
+						}
+					</mat-form-field>
+				</div>
+				<div class="orc-filter-menu-rule"></div>
+				<div class="orc-filter-menu-section">
 					<div>
 						<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic" class="w-full">
 							<mat-label>Interval</mat-label>
@@ -68,9 +92,9 @@
 							</mat-select>
 						</mat-form-field>
 					</div>
-				</form>
-			</div>
-			<div class="orc-filter-menu-rule"></div>
+				</div>
+				<div class="orc-filter-menu-rule"></div>
+			</form>
 		}
 		<div class="orc-filter-menu-section">
 			<div>Units</div>

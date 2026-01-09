@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output, signal} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 /* Vendor Dependencies */
 import {MatSelectChange} from '@angular/material/select';
@@ -25,6 +25,10 @@ export class MintSubsectionKeysetsFormComponent {
 
 	@Output() close = new EventEmitter<void>();
 	@Output() updateUnit = new EventEmitter<MintUnit>();
+
+	public help_unit = signal<boolean>(false);
+	public help_fee = signal<boolean>(true);
+	public help_max_order = signal<boolean>(true);
 
 	public get fee_error(): string {
 		if (this.form_group.get('input_fee_ppk')?.hasError('required')) return 'Required';
