@@ -38,6 +38,7 @@ import {MintSubsectionConfigNutSupportedComponent} from './components/mint-subse
 import {MintSubsectionConfigNut15MethodComponent} from './components/mint-subsection-config-nut15-method/mint-subsection-config-nut15-method.component';
 import {MintSubsectionConfigNut17CommandsComponent} from './components/mint-subsection-config-nut17-commands/mint-subsection-config-nut17-commands.component';
 import {MintSubsectionConfigNut19Component} from './components/mint-subsection-config-nut19/mint-subsection-config-nut19.component';
+import {MintSubsectionConfigFormQuoteTtlHintComponent} from './components/mint-subsection-config-form-quote-ttl-hint/mint-subsection-config-form-quote-ttl-hint.component';
 
 @NgModule({
 	declarations: [
@@ -56,6 +57,7 @@ import {MintSubsectionConfigNut19Component} from './components/mint-subsection-c
 		MintSubsectionConfigNut15MethodComponent,
 		MintSubsectionConfigNut17CommandsComponent,
 		MintSubsectionConfigNut19Component,
+		MintSubsectionConfigFormQuoteTtlHintComponent,
 	],
 	imports: [
 		CoreRouterModule.forChild([

@@ -33,7 +33,7 @@ export class MintSubsectionConfigFormQuoteTtlComponent {
 
 	public focused_quote_ttl = signal<boolean>(false); // tracks if the input is focused
 	public control_touched = signal<boolean>(false); // tracks if the control has been touched
-	public help_status = signal<boolean>(true); // tracks if the help is visible
+	public help_status = signal<boolean>(false); // tracks if the help is visible
 
 	private formChanges = toSignal(toObservable(this.form_group).pipe(switchMap((fg) => fg.valueChanges.pipe(startWith(fg.value)))));
 

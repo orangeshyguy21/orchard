@@ -25,7 +25,7 @@
 								>
 									<mat-label
 										class="flex flex-items-center flex-gap-0-5 cursor-pointer"
-										(click)="help_status.set(!help_status())"
+										(click)="$event.preventDefault(); help_status.set(!help_status()); $event.stopPropagation()"
 									>
 										<span>Quote TTL</span>
 										<mat-icon class="icon-sm icon-dynamic-fill">info</mat-icon>
@@ -41,6 +41,14 @@
 										#element_quote_ttl
 									/>
 									<span matSuffix class="form-suffix-text">seconds</span>
+									<mat-hint class="font-size-xs orc-outline-color">
+										<orc-mint-subsection-config-form-quote-ttl-hint
+											[nut]="nut()"
+											[quotes]="quotes()"
+											[loading]="loading()"
+											[quote_ttl]="form_group().get(control_name())?.value"
+										></orc-mint-subsection-config-form-quote-ttl-hint>
+									</mat-hint>
 									@if (control_invalid()) {
 										<mat-error class="font-size-xs">{{ form_error() }}</mat-error>
 									}

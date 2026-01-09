@@ -1,15 +1,5 @@
 /* Core Dependencies */
-import {
-	ChangeDetectionStrategy,
-	Component,
-	HostListener,
-	Input,
-	ViewChild,
-	OnChanges,
-	OnDestroy,
-	SimpleChanges,
-	ChangeDetectorRef,
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, ViewChild, OnChanges, OnDestroy, SimpleChanges, ChangeDetectorRef} from '@angular/core';
 /* Vendor Dependencies */
 import {BaseChartDirective} from 'ng2-charts';
 import {ChartConfiguration, ChartType as ChartJsType} from 'chart.js';
@@ -36,7 +26,6 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnChanges, On
 
 	@Input() nut!: 'nut4' | 'nut5';
 	@Input() quotes: MintMintQuote[] | MintMeltQuote[] = [];
-
 	@Input() loading!: boolean;
 	@Input() locale!: string;
 	@Input() quote_ttl!: number;
@@ -61,19 +50,6 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnChanges, On
 	};
 
 	private subscriptions: Subscription = new Subscription();
-	private resize_timeout: ReturnType<typeof setTimeout> | null = null;
-
-	@HostListener('window:resize')
-	onWindowResize(): void {
-		if (!this.displayed) return;
-		this.displayed = false;
-		this.cdr.detectChanges();
-		if (this.resize_timeout) clearTimeout(this.resize_timeout);
-		this.resize_timeout = setTimeout(() => {
-			this.displayed = true;
-			this.cdr.detectChanges();
-		}, 1000);
-	}
 
 	constructor(
 		private chartService: ChartService,
@@ -298,6 +274,5 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnChanges, On
 
 	ngOnDestroy(): void {
 		this.subscriptions.unsubscribe();
-		if (this.resize_timeout) clearTimeout(this.resize_timeout);
 	}
 }
