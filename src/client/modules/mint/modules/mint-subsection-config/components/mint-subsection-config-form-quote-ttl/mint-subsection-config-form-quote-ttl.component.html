@@ -43,9 +43,7 @@
 									<span matSuffix class="form-suffix-text">seconds</span>
 									<mat-hint class="font-size-xs orc-outline-color">
 										<orc-mint-subsection-config-form-quote-ttl-hint
-											[nut]="nut()"
-											[quotes]="quotes()"
-											[loading]="loading()"
+											[deltas]="stat_deltas()"
 											[quote_ttl]="form_group().get(control_name())?.value"
 										></orc-mint-subsection-config-form-quote-ttl-hint>
 									</mat-hint>
@@ -71,9 +69,7 @@
 						<div class="font-size-xs orc-outline-color">{{ nut() === 'nut4' ? 'Mint' : 'Melt' }} Quote Processing Times</div>
 					</div>
 					<orc-mint-subsection-config-form-quote-ttl-stats
-						[nut]="nut()"
 						[loading]="loading()"
-						[quotes]="quotes()"
 						[stats]="stats()"
 					></orc-mint-subsection-config-form-quote-ttl-stats>
 					<orc-mint-subsection-config-chart-quote-ttl

@@ -1,12 +1,15 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input, Output, EventEmitter, SimpleChanges, ChangeDetectorRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output, effect, signal, computed, ChangeDetectorRef} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 /* Application Dependencies */
 import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class';
 import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
+import {avg, median, max, min} from '@client/modules/math/helpers';
+/* Native Dependencies */
+import {MintConfigStats} from '@client/modules/mint/modules/mint-subsection-config/types/mint-config-stats.type';
 /* Shared Dependencies */
-import {OrchardNut4Method, OrchardNut5Method} from '@shared/generated.types';
+import {MintQuoteState, MeltQuoteState, OrchardNut4Method, OrchardNut5Method} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-subsection-config-form-bolt12',
@@ -16,23 +19,23 @@ import {OrchardNut4Method, OrchardNut5Method} from '@shared/generated.types';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintSubsectionConfigFormBolt12Component {
-	@Input() nut!: 'nut4' | 'nut5';
-	@Input() unit!: string;
-	@Input() method!: string;
-	@Input() form_group!: FormGroup;
-	@Input() form_status!: boolean;
-	@Input() locale!: string;
-	@Input() loading!: boolean;
-	@Input() quotes!: MintMintQuote[] | MintMeltQuote[];
+	public nut = input.required<'nut4' | 'nut5'>();
+	public unit = input.required<string>();
+	public method = input.required<string>();
+	public form_group = input.required<FormGroup>();
+	public form_status = input<boolean>(false);
+	public locale = input.required<string>();
+	public loading = input.required<boolean>();
+	public quotes = input.required<MintMintQuote[] | MintMeltQuote[]>();
 
-	@Output() update = new EventEmitter<{
+	public update = output<{
 		nut: 'nut4' | 'nut5';
 		unit: string;
 		method: string;
 		control_name: keyof OrchardNut4Method | keyof OrchardNut5Method;
 		form_group: FormGroup;
 	}>();
-	@Output() cancel = new EventEmitter<{
+	public cancel = output<{
 		nut: 'nut4' | 'nut5';
 		unit: string;
 		method: string;
@@ -40,64 +43,116 @@ export class MintSubsectionConfigFormBolt12Component {
 		form_group: FormGroup;
 	}>();
 
-	public min_hot: boolean = false;
-	public max_hot: boolean = false;
+	public min_hot = signal<boolean>(false);
+	public max_hot = signal<boolean>(false);
+	public stat_amounts = signal<Record<string, number>[]>([]); // amounts for the stats
+	public stats = signal<MintConfigStats>({
+		avg: 0,
+		median: 0,
+		max: 0,
+		min: 0,
+	}); // stats for the quote ttl
 
-	public get form_bolt12(): FormGroup {
-		return this.form_group.get(this.unit)?.get(this.method) as FormGroup;
+	public form_bolt12 = computed<FormGroup>(() => {
+		return this.form_group().get(this.unit())?.get(this.method()) as FormGroup;
+	});
+
+	public toggle_control = computed<keyof OrchardNut4Method | keyof OrchardNut5Method>(() => {
+		return this.nut() === 'nut4' ? 'description' : 'amountless';
+	});
+
+	public toggle_control_name = computed<string>(() => {
+		return this.nut() === 'nut4' ? 'Description' : 'Amountless';
+	});
+
+	constructor(private cdr: ChangeDetectorRef) {
+		effect(() => {
+			if (this.form_status() === true) {
+				this.form_bolt12().get(this.toggle_control())?.disable();
+			}
+		});
+		effect(() => {
+			const loading = this.loading();
+			if (!loading) this.setStats();
+		});
 	}
 
-	public get toggle_control(): keyof OrchardNut4Method | keyof OrchardNut5Method {
-		return this.nut === 'nut4' ? 'description' : 'amountless';
+	private setStats(): void {
+		const amounts = this.getAmounts();
+		this.stat_amounts.set(amounts);
+		const stats = this.getStats(amounts);
+		this.stats.set(stats);
 	}
 
-	public get toggle_control_name(): string {
-		return this.nut === 'nut4' ? 'Description' : 'Amountless';
+	private getAmounts(): Record<string, number>[] {
+		if (this.quotes().length === 0) return [];
+		const quotes = this.nut() === 'nut4' ? (this.quotes() as MintMintQuote[]) : (this.quotes() as MintMeltQuote[]);
+		const valid_state = this.nut() === 'nut4' ? MintQuoteState.Issued : MeltQuoteState.Paid;
+		const valid_quotes = quotes
+			.filter((quote) => quote.state === valid_state && quote.created_time && quote.created_time > 0 && quote.unit === this.unit())
+			.sort((a, b) => (a.created_time ?? 0) - (b.created_time ?? 0));
+
+		return valid_quotes.map((quote) => ({
+			created_time: quote.created_time ?? 0,
+			amount: this.getEffectiveAmount(quote),
+		}));
 	}
 
-	constructor(private cdr: ChangeDetectorRef) {}
+	private getEffectiveAmount(entity: MintMintQuote | MintMeltQuote): number {
+		if (entity instanceof MintMintQuote) return entity.amount_issued;
+		return entity.amount;
+	}
 
-	ngOnChanges(changes: SimpleChanges): void {
-		if (changes['form_status'] && this.form_status === true) {
-			this.form_bolt12.get(this.toggle_control)?.disable();
-		}
+	private getStats(amounts: Record<string, number>[]): {
+		avg: number;
+		median: number;
+		max: number;
+		min: number;
+	} {
+		const values = amounts.map((amount) => amount['amount']);
+		return {
+			avg: avg(values),
+			median: median(values),
+			max: max(values),
+			min: min(values),
+		};
 	}
 
 	public onMinHot(event: boolean): void {
 		setTimeout(() => {
-			this.min_hot = event;
+			this.min_hot.set(event);
 			this.cdr.markForCheck();
 		});
 	}
 
 	public onMaxHot(event: boolean): void {
 		setTimeout(() => {
-			this.max_hot = event;
+			this.max_hot.set(event);
 			this.cdr.markForCheck();
 		});
 	}
 
 	public onUpdate(control_name: keyof OrchardNut4Method | keyof OrchardNut5Method): void {
 		this.update.emit({
-			nut: this.nut,
-			unit: this.unit,
-			method: this.method,
-			form_group: this.form_group,
+			nut: this.nut(),
+			unit: this.unit(),
+			method: this.method(),
+			form_group: this.form_group(),
 			control_name: control_name,
 		});
 	}
 
 	public onToggle(event: MatSlideToggleChange): void {
-		this.form_bolt12.get(this.toggle_control)?.setValue(event.checked);
-		this.onUpdate(this.toggle_control);
+		this.form_bolt12().get(this.toggle_control())?.setValue(event.checked);
+		this.onUpdate(this.toggle_control());
 	}
 
 	public onCancel(control_name: keyof OrchardNut4Method | keyof OrchardNut5Method): void {
 		this.cancel.emit({
-			nut: this.nut,
-			unit: this.unit,
-			method: this.method,
-			form_group: this.form_group,
+			nut: this.nut(),
+			unit: this.unit(),
+			method: this.method(),
+			form_group: this.form_group(),
 			control_name: control_name,
 		});
 	}

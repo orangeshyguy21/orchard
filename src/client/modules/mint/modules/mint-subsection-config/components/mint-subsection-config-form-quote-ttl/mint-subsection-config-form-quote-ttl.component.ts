@@ -39,6 +39,7 @@ export class MintSubsectionConfigFormQuoteTtlComponent {
 	public focused_quote_ttl = signal<boolean>(false); // tracks if the input is focused
 	public control_touched = signal<boolean>(false); // tracks if the control has been touched
 	public help_status = signal<boolean>(false); // tracks if the help is visible
+	public stat_deltas = signal<Record<string, number>[]>([]); // deltas for the stats
 	public stats = signal<MintConfigStats>({
 		avg: 0,
 		median: 0,
@@ -91,6 +92,7 @@ export class MintSubsectionConfigFormQuoteTtlComponent {
 
 	private setStats(): void {
 		const deltas = this.getDeltas();
+		this.stat_deltas.set(deltas);
 		const stats = this.getStats(deltas);
 		this.stats.set(stats);
 	}

@@ -18,9 +18,6 @@ export class MintSubsectionConfigFormLimitHintComponent {
 	constructor() {
 		effect(() => {
 			const limit = this.limit();
-			// console.log('limit', limit);
-			// console.log('amounts', this.amounts());
-			// console.log('type', this.type());
 			if (limit) this.setHint();
 		});
 	}

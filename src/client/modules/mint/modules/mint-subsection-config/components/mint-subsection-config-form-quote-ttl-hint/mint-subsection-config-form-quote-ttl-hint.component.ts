@@ -14,19 +14,12 @@ import {MintQuoteState, MeltQuoteState} from '@shared/generated.types';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintSubsectionConfigFormQuoteTtlHintComponent {
-	public nut = input.required<'nut4' | 'nut5'>();
-	public quotes = input.required<MintMintQuote[] | MintMeltQuote[]>();
-	public loading = input.required<boolean>();
+	public deltas = input.required<Record<string, number>[]>();
 	public quote_ttl = input.required<number>();
 
 	public coverage = signal<number | null>(null);
 
 	constructor() {
-		effect(() => {
-			const loading = this.loading();
-			if (!loading) this.setCoverage();
-		});
-
 		effect(() => {
 			const quote_ttl = this.quote_ttl();
 			if (quote_ttl) this.setCoverage();
@@ -34,26 +27,8 @@ export class MintSubsectionConfigFormQuoteTtlHintComponent {
 	}
 
 	private setCoverage(): void {
-		const deltas = this.getDeltas();
-		const coverage = this.getCoverage(deltas);
+		const coverage = this.getCoverage(this.deltas());
 		this.coverage.set(coverage);
-	}
-
-	private getDeltas(): Record<string, number>[] {
-		if (this.quotes().length === 0) return [];
-		const quotes = this.nut() === 'nut4' ? (this.quotes() as MintMintQuote[]) : (this.quotes() as MintMeltQuote[]);
-		const valid_state = this.nut() === 'nut4' ? MintQuoteState.Issued : MeltQuoteState.Paid;
-		const valid_quotes = quotes
-			.filter((quote) => quote.state === valid_state && quote.created_time && quote.created_time > 0)
-			.sort((a, b) => (a.created_time ?? 0) - (b.created_time ?? 0));
-		return valid_quotes.map((quote) => {
-			const created_time = quote.created_time ?? 0;
-			const end_time = quote instanceof MintMintQuote ? (quote.issued_time ?? quote.paid_time ?? 0) : (quote.paid_time ?? 0);
-			return {
-				created_time,
-				delta: end_time - created_time,
-			};
-		});
 	}
 
 	private getCoverage(deltas: Record<string, number>[]): number {

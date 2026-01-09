@@ -11,6 +11,7 @@ import {avg, median, max, min} from '@client/modules/math/helpers';
 /* Native Dependencies */
 import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class';
 import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
+import {MintConfigStats} from '@client/modules/mint/modules/mint-subsection-config/types/mint-config-stats.type';
 /* Shared Dependencies */
 import {MintQuoteState, MeltQuoteState} from '@shared/generated.types';
 
@@ -34,6 +35,7 @@ export class MintSubsectionConfigChartMethodComponent implements OnChanges, OnDe
 	@Input() max_amount!: number;
 	@Input() min_hot!: boolean;
 	@Input() max_hot!: boolean;
+	@Input() stats!: MintConfigStats;
 
 	public chart_type!: ChartJsType;
 	public chart_data!: ChartConfiguration['data'];

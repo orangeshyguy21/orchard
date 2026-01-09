@@ -14,8 +14,6 @@ import {MintConfigStats} from '@client/modules/mint/modules/mint-subsection-conf
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintSubsectionConfigFormQuoteTtlStatsComponent {
-	public nut = input.required<'nut4' | 'nut5'>();
-	public quotes = input.required<MintMintQuote[] | MintMeltQuote[]>();
 	public loading = input.required<boolean>();
 	public stats = input.required<MintConfigStats>();
 }
