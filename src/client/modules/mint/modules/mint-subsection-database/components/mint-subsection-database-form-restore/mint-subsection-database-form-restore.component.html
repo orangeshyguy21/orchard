@@ -6,11 +6,13 @@
 					<mat-icon>close</mat-icon>
 				</button>
 			</div>
-			<div class="flex flex-gap-2 p-h-1">
-				<div class="flex-1 flex flex-row flex-items-center flex-gap-2">
+			<div class="flex flex-gap-2 p-h-1 flex-wrap">
+				<div class="flex-1 flex flex-row flex-items-center flex-gap-2 flex-wrap">
 					<form class="flex">
 						<div>
-							<button mat-stroked-button (click)="fileInput.click()" type="button">Select Backup</button>
+							<button mat-stroked-button (click)="fileInput.click()" type="button">
+								<span class="text-nowrap">Select Backup</span>
+							</button>
 							@if (form_group.get('file')?.invalid && (form_group.get('file')?.dirty || form_group.get('file')?.touched)) {
 								<mat-error class="font-size-xs">{{ file_error() }}</mat-error>
 							}
@@ -24,7 +26,7 @@
 						<div class="flex flex-justify-center flex-items-center flex-gap-1" [class.invisible]="!file_quorum">
 							<div class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color font-weight-extra-light">
 								<div>File:</div>
-								<div>Last Modified:</div>
+								<div class="text-nowrap">Last Modified:</div>
 								<div>Size:</div>
 							</div>
 							<div class="flex flex-column flex-gap-0-5 font-size-xs">
@@ -36,11 +38,11 @@
 					</div>
 				</div>
 				<div class="flex-1 p-r-1">
-					<orc-form-help-text class="orc-surface-container-high-bg w-max-18">
+					<orc-form-help-text class="orc-surface-container-high-bg w-max-18 w-min-18">
 						<div class="title-m">Restoring from backup</div>
 						<ol class="list-gap-0-25 p-l-1">
 							<li><span class="orc-status-warning-color">Shut down the mint</span></li>
-							<li>Select a backup file (match current mint version)</li>
+							<li class="text-nowrap">Select a backup file (match current mint version)</li>
 							<li>Restore the backup</li>
 							<li>Start the mint</li>
 						</ol>
