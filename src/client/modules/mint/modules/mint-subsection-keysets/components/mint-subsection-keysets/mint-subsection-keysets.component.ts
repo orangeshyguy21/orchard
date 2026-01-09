@@ -1,7 +1,18 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnDestroy, HostListener, ViewChild, ElementRef} from '@angular/core';
+import {
+	ChangeDetectionStrategy,
+	ChangeDetectorRef,
+	Component,
+	OnInit,
+	OnDestroy,
+	HostListener,
+	ViewChild,
+	ElementRef,
+	signal,
+} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
+import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 /* Vendor Dependencies */
 import {lastValueFrom, forkJoin, Subscription} from 'rxjs';
 import {DateTime} from 'luxon';
@@ -59,6 +70,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		input_fee_ppk: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(100000)]),
 		max_order: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(255)]),
 	});
+	public mobile_view = signal<boolean>(false);
 
 	private active_event: EventData | null = null;
 	private subscriptions: Subscription = new Subscription();
@@ -71,6 +83,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		private aiService: AiService,
 		private mintService: MintService,
 		private cdr: ChangeDetectorRef,
+		private breakpointObserver: BreakpointObserver,
 	) {}
 
 	/* *******************************************************
@@ -83,6 +96,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		this.resetForm();
 		this.initKeysetsAnalytics();
 		this.subscriptions.add(this.getEventSubscription());
+		this.subscriptions.add(this.getBreakpointSubscription());
 		this.orchardOptionalInit();
 	}
 
@@ -142,6 +156,12 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		});
 	}
 
+	private getBreakpointSubscription(): Subscription {
+		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
+			this.mobile_view.set(!result.matches);
+		});
+	}
+
 	/* *******************************************************
 		Data                      
 	******************************************************** */
@@ -191,10 +211,6 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		const [analytics_keysets, analytics_keysets_pre, keysets_proof_counts] = await lastValueFrom(
 			forkJoin([analytics_keysets_obs, analytics_keysets_pre_obs, keyset_proof_counts_obs]),
 		);
-
-		console.log('analytics_keysets', analytics_keysets);
-		console.log('analytics_keysets_pre', analytics_keysets_pre);
-		console.log('keysets_proof_counts', keysets_proof_counts);
 
 		this.keysets_analytics = analytics_keysets;
 		this.keysets_analytics_pre = analytics_keysets_pre;

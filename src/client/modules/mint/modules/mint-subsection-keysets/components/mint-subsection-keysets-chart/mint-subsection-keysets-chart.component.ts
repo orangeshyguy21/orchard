@@ -91,8 +91,6 @@ export class MintSubsectionKeysetsChartComponent implements OnDestroy {
 		const valid_analytics = this.keysets_analytics().filter((analytic) => valid_keysets_ids.includes(analytic.keyset_id));
 		const valid_analytics_pre = this.keysets_analytics_pre().filter((analytic) => valid_keysets_ids.includes(analytic.keyset_id));
 		const data = this.getChartData(valid_analytics, valid_analytics_pre);
-		console.log('data', data);
-		console.log('valid_keysets_ids', valid_keysets_ids);
 		this.chart_data.set(data);
 		const options = this.getChartOptions(valid_keysets_ids, data);
 		if (options?.plugins) options.plugins.annotation = this.getAnnotations(data);
