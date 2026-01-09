@@ -41,6 +41,7 @@ import {MintSubsectionConfigNut19Component} from './components/mint-subsection-c
 import {MintSubsectionConfigFormQuoteTtlHintComponent} from './components/mint-subsection-config-form-quote-ttl-hint/mint-subsection-config-form-quote-ttl-hint.component';
 import {MintSubsectionConfigFormQuoteTtlStatsComponent} from './components/mint-subsection-config-form-quote-ttl-stats/mint-subsection-config-form-quote-ttl-stats.component';
 import {MintSubsectionConfigFormQuoteTtlStatComponent} from './components/mint-subsection-config-form-quote-ttl-stat/mint-subsection-config-form-quote-ttl-stat.component';
+import {MintSubsectionConfigFormLimitHintComponent} from './components/mint-subsection-config-form-limit-hint/mint-subsection-config-form-limit-hint.component';
 
 @NgModule({
 	declarations: [
@@ -62,6 +63,7 @@ import {MintSubsectionConfigFormQuoteTtlStatComponent} from './components/mint-s
 		MintSubsectionConfigFormQuoteTtlHintComponent,
 		MintSubsectionConfigFormQuoteTtlStatsComponent,
 		MintSubsectionConfigFormQuoteTtlStatComponent,
+		MintSubsectionConfigFormLimitHintComponent,
 	],
 	imports: [
 		CoreRouterModule.forChild([

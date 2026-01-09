@@ -34,6 +34,13 @@
 						#element_min
 					/>
 					<span matSuffix class="form-suffix-text">{{ unit() | localUnit }}</span>
+					<mat-hint class="font-size-xs orc-outline-color">
+						<orc-mint-subsection-config-form-limit-hint
+							[amounts]="stat_amounts()"
+							[limit]="form_group().get(control_name())?.value"
+							[type]="'min'"
+						></orc-mint-subsection-config-form-limit-hint>
+					</mat-hint>
 					@if (control_invalid()) {
 						<mat-error class="font-size-xs">{{ form_error() }}</mat-error>
 					}

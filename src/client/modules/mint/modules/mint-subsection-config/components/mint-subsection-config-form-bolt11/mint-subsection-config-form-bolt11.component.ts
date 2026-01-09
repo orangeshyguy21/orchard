@@ -5,8 +5,11 @@ import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 /* Application Dependencies */
 import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class';
 import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
+import {avg, median, max, min} from '@client/modules/math/helpers';
+/* Native Dependencies */
+import {MintConfigStats} from '@client/modules/mint/modules/mint-subsection-config/types/mint-config-stats.type';
 /* Shared Dependencies */
-import {OrchardNut4Method, OrchardNut5Method} from '@shared/generated.types';
+import {MintQuoteState, MeltQuoteState, OrchardNut4Method, OrchardNut5Method} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-subsection-config-form-bolt11',
@@ -42,6 +45,13 @@ export class MintSubsectionConfigFormBolt11Component {
 
 	public min_hot = signal<boolean>(false); // tracks if min input is hot
 	public max_hot = signal<boolean>(false); // tracks if max input is hot
+	public stat_amounts = signal<Record<string, number>[]>([]); // amounts for the stats
+	public stats = signal<MintConfigStats>({
+		avg: 0,
+		median: 0,
+		max: 0,
+		min: 0,
+	}); // stats for the quote ttl
 
 	public form_bolt11 = computed(() => {
 		return this.form_group().get(this.unit())?.get(this.method()) as FormGroup;
@@ -70,6 +80,51 @@ export class MintSubsectionConfigFormBolt11Component {
 				this.form_bolt11().get(this.toggle_control())?.disable();
 			}
 		});
+		effect(() => {
+			const loading = this.loading();
+			if (!loading) this.setStats();
+		});
+	}
+
+	private setStats(): void {
+		const amounts = this.getAmounts();
+		this.stat_amounts.set(amounts);
+		const stats = this.getStats(amounts);
+		this.stats.set(stats);
+	}
+
+	private getAmounts(): Record<string, number>[] {
+		if (this.quotes().length === 0) return [];
+		const quotes = this.nut() === 'nut4' ? (this.quotes() as MintMintQuote[]) : (this.quotes() as MintMeltQuote[]);
+		const valid_state = this.nut() === 'nut4' ? MintQuoteState.Issued : MeltQuoteState.Paid;
+		const valid_quotes = quotes
+			.filter((quote) => quote.state === valid_state && quote.created_time && quote.created_time > 0 && quote.unit === this.unit())
+			.sort((a, b) => (a.created_time ?? 0) - (b.created_time ?? 0));
+
+		return valid_quotes.map((quote) => ({
+			created_time: quote.created_time ?? 0,
+			amount: this.getEffectiveAmount(quote),
+		}));
+	}
+
+	private getEffectiveAmount(entity: MintMintQuote | MintMeltQuote): number {
+		if (entity instanceof MintMintQuote) return entity.amount_issued;
+		return entity.amount;
+	}
+
+	private getStats(amounts: Record<string, number>[]): {
+		avg: number;
+		median: number;
+		max: number;
+		min: number;
+	} {
+		const values = amounts.map((amount) => amount['amount']);
+		return {
+			avg: avg(values),
+			median: median(values),
+			max: max(values),
+			min: min(values),
+		};
 	}
 
 	public onMinHot(event: boolean): void {

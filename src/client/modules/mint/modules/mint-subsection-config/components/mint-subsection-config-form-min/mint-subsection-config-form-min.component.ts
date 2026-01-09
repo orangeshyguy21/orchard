@@ -19,6 +19,7 @@ export class MintSubsectionConfigFormMinComponent {
 	public control_name = input.required<keyof OrchardNut4Method | keyof OrchardNut5Method>(); // name of the form control to bind
 	public unit = input.required<string>(); // unit to display (e.g. 'sat')
 	public nut = input.required<'nut4' | 'nut5'>(); // which nut configuration this controls
+	public stat_amounts = input.required<Record<string, number>[]>(); // amounts for the stats
 
 	public update = output<keyof OrchardNut4Method | keyof OrchardNut5Method>(); // emitted when form is submitted
 	public cancel = output<keyof OrchardNut4Method | keyof OrchardNut5Method>(); // emitted when form is cancelled
