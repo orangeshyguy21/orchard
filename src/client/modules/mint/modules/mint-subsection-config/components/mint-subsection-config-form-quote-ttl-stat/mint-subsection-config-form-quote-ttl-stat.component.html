@@ -1,0 +1,6 @@
+<div class="quote-stats-item">
+	@if (loading()) {
+		<div class="loading-stat-overlay orc-animation-shimmer-highest" [animate.leave]="'orc-animation-fadeout-slow'"></div>
+	}
+	<ng-content></ng-content>
+</div>

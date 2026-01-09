@@ -9,6 +9,8 @@ import {MintQuoteTtls} from '@client/modules/mint/classes/mint-quote-ttls.class'
 import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
 import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class';
 import {avg, median, max, min} from '@client/modules/math/helpers';
+/* Native Dependencies */
+import {MintConfigStats} from '@client/modules/mint/modules/mint-subsection-config/types/mint-config-stats.type';
 /* Shared Dependencies */
 import {MintQuoteState, MeltQuoteState} from '@shared/generated.types';
 
@@ -37,17 +39,12 @@ export class MintSubsectionConfigFormQuoteTtlComponent {
 	public focused_quote_ttl = signal<boolean>(false); // tracks if the input is focused
 	public control_touched = signal<boolean>(false); // tracks if the control has been touched
 	public help_status = signal<boolean>(false); // tracks if the help is visible
-	public stats = signal<{
-		avg: number;
-		median: number;
-		max: number;
-		min: number;
-	}>({
+	public stats = signal<MintConfigStats>({
 		avg: 0,
 		median: 0,
 		max: 0,
 		min: 0,
-	});
+	}); // stats for the quote ttl
 
 	private formChanges = toSignal(toObservable(this.form_group).pipe(switchMap((fg) => fg.valueChanges.pipe(startWith(fg.value)))));
 
