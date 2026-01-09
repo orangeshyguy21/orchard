@@ -335,15 +335,11 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	private getPageSettings(): NonNullableMintKeysetsSettings {
 		const settings = this.settingDeviceService.getMintKeysetsSettings();
 		return {
-			units: settings.units ?? this.getSelectedUnits(), // @todo there will be bugs here if a unit is not in the keysets (audit active keysets)
+			units: settings.units ?? [],
 			date_start: settings.date_start ?? this.mint_genesis_time,
 			date_end: settings.date_end ?? this.getSelectedDateEnd(),
-			status: settings.status ?? [false, true],
+			status: settings.status ?? [],
 		};
-	}
-
-	private getSelectedUnits(): MintUnit[] {
-		return Array.from(new Set(this.mint_keysets.map((keyset) => keyset.unit)));
 	}
 
 	private getSelectedDateEnd(): number {

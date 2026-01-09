@@ -43,10 +43,12 @@ export class MintSubsectionKeysetsTableComponent implements OnChanges {
 	}
 
 	private init(): any {
+		const status_filter = this.page_settings?.status ?? [];
+		const units_filter = this.page_settings?.units ?? [];
 		const keyset_rows = this.keysets
 			.filter((keyset) => this.page_settings?.date_end >= keyset.valid_from)
-			.filter((keyset) => this.page_settings?.status.includes(keyset.active))
-			.filter((keyset) => this.page_settings?.units.includes(keyset.unit))
+			.filter((keyset) => !status_filter.length || status_filter.includes(keyset.active))
+			.filter((keyset) => !units_filter.length || units_filter.includes(keyset.unit))
 			.sort((a, b) => b.derivation_path_index - a.derivation_path_index)
 			.map((keyset) => {
 				const keyset_analytics = this.keysets_analytics.filter((analytic) => analytic.keyset_id === keyset.id);

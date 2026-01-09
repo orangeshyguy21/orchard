@@ -78,9 +78,11 @@ export class MintSubsectionKeysetsChartComponent implements OnChanges, OnDestroy
 
 	private async init(): Promise<void> {
 		this.chart_type = 'line';
+		const status_filter = this.page_settings?.status ?? [];
+		const units_filter = this.page_settings?.units ?? [];
 		const valid_keysets_ids = this.keysets
-			.filter((keyset) => this.page_settings?.status.includes(keyset.active))
-			.filter((keyset) => this.page_settings?.units.includes(keyset.unit))
+			.filter((keyset) => !status_filter.length || status_filter.includes(keyset.active))
+			.filter((keyset) => !units_filter.length || units_filter.includes(keyset.unit))
 			.map((keyset) => keyset.id);
 		const valid_analytics = this.keysets_analytics.filter((analytic) => valid_keysets_ids.includes(analytic.keyset_id));
 		const valid_analytics_pre = this.keysets_analytics_pre.filter((analytic) => valid_keysets_ids.includes(analytic.keyset_id));

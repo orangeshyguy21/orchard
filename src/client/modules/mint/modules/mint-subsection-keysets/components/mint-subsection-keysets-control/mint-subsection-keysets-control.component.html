@@ -1,5 +1,5 @@
 <div class="mint-keyset-control-container">
-	<form [formGroup]="panel" class="panel-form orc-animation-form-reaction" [class.animation-invalid]="height_state === 'invalid'">
+	<form [formGroup]="panel" class="panel-form orc-animation-form-reaction" [class.animation-invalid]="height_state() === 'invalid'">
 		<div class="flex flex-col flex-gap-1">
 			<div formGroupName="daterange">
 				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic" class="mint-analytic-daterange">
@@ -28,27 +28,40 @@
 				</mat-form-field>
 			</div>
 
-			<div>
-				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
-					<mat-label>Units</mat-label>
-					<mat-select formControlName="units" multiple (selectionChange)="onUnitsChange($event)">
-						@for (unit of unit_options; track unit.value) {
-							<mat-option [value]="unit.value">{{ unit.label }}</mat-option>
-						}
-					</mat-select>
-				</mat-form-field>
-			</div>
-
-			<div>
-				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
-					<mat-label>Keyset State</mat-label>
-					<mat-select formControlName="status" multiple (selectionChange)="onStatusChange($event)">
-						@for (status of status_options; track status.value) {
-							<mat-option [value]="status.value">{{ status.label }}</mat-option>
-						}
-					</mat-select>
-				</mat-form-field>
+			<div class="p-t-0-5">
+				<button matButton type="button" [matMenuTriggerFor]="filter_menu">
+					<mat-icon>tune</mat-icon>
+					<span class="text-nowrap font-size-s">Filters {{ filter_count() > 0 ? `(${filter_count()})` : '' }}</span>
+				</button>
 			</div>
 		</div>
 	</form>
 </div>
+
+<mat-menu #filter_menu="matMenu" yPosition="below" class="orc-sticky-menu orc-filter-menu">
+	<orc-form-filter-menu (click)="$event.stopPropagation()" (clear)="onClearFilter()" (close)="onCloseFilter()">
+		<form [formGroup]="panel">
+			<div class="orc-filter-menu-section">
+				<div>Units</div>
+				<div class="filter-options">
+					@for (unit of unit_options(); track unit.value; let i = $index) {
+						<mat-checkbox [formControl]="panel.controls.units.at(i)" (change)="onUnitsChange()">
+							{{ unit.label }}
+						</mat-checkbox>
+					}
+				</div>
+			</div>
+			<div class="orc-filter-menu-rule"></div>
+			<div class="orc-filter-menu-section">
+				<div>Status</div>
+				<div class="filter-options">
+					@for (status of status_options; track status.value; let i = $index) {
+						<mat-checkbox [formControl]="panel.controls.status.at(i)" (change)="onStatusChange()">
+							{{ status.label }}
+						</mat-checkbox>
+					}
+				</div>
+			</div>
+		</form>
+	</orc-form-filter-menu>
+</mat-menu>
