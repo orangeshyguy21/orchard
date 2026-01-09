@@ -8,7 +8,7 @@
 						<mat-select-trigger>
 							{{ panel.get('type')?.value ? getSelectedTypeLabel(panel.get('type')?.value) : '' }}
 						</mat-select-trigger>
-						@for (type of type_options; track type) {
+						@for (type of type_options(); track type) {
 							<mat-option [value]="type.value">
 								<div class="option-main">{{ type.label }}</div>
 								<div class="option-helper">{{ type.helper }}</div>
@@ -49,11 +49,17 @@
 					}
 				</mat-form-field>
 			</div>
-			<div>
+			<div class="p-t-0-5">
+				<button matButton type="button" [matMenuTriggerFor]="filter_menu">
+					<mat-icon>tune</mat-icon>
+					<span class="text-nowrap font-size-s">Filters {{ filter_count() > 0 ? `(${filter_count()})` : '' }}</span>
+				</button>
+			</div>
+			<!-- <div>
 				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
 					<mat-label>Units</mat-label>
 					<mat-select formControlName="units" multiple (selectionChange)="onUnitsChange($event)">
-						@for (unit of unit_options; track unit.value) {
+						@for (unit of unit_options(); track unit.value) {
 							<mat-option [value]="unit.value">{{ unit.label }}</mat-option>
 						}
 					</mat-select>
@@ -63,12 +69,18 @@
 				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
 					<mat-label>States</mat-label>
 					<mat-select formControlName="states" multiple (selectionChange)="onStatesChange($event)">
-						@for (state of state_options; track state) {
+						@for (state of state_options(); track state) {
 							<mat-option [value]="state">{{ state }}</mat-option>
 						}
 					</mat-select>
 				</mat-form-field>
-			</div>
+			</div> -->
 		</div>
 	</form>
 </div>
+
+<mat-menu #filter_menu="matMenu" yPosition="below" class="orc-sticky-menu orc-filter-menu">
+	<orc-form-filter-menu (click)="$event.stopPropagation()" (clear)="onClearFilter()" (close)="onCloseFilter()">
+		<form [formGroup]="panel">hello world</form>
+	</orc-form-filter-menu>
+</mat-menu>

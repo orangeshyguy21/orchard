@@ -46,6 +46,8 @@ export class MintSubsectionKeysetsControlComponent {
 	public readonly unitsChange = output<MintUnit[]>();
 	public readonly statusChange = output<boolean[]>();
 
+	private readonly filter_menu_trigger = viewChild(MatMenuTrigger);
+
 	/* Form */
 	public readonly panel = new FormGroup({
 		daterange: new FormGroup({
@@ -70,9 +72,6 @@ export class MintSubsectionKeysetsControlComponent {
 		return this.panel?.invalid ? 'invalid' : 'valid';
 	}
 
-	private readonly filter_menu_trigger = viewChild(MatMenuTrigger);
-	private initialized = false;
-
 	constructor() {
 		this.panel
 			.get('daterange')
@@ -85,8 +84,6 @@ export class MintSubsectionKeysetsControlComponent {
 		/* Effect: Initialize form when loading completes */
 		effect(() => {
 			if (this.loading() !== false) return;
-			if (this.initialized) return;
-			this.initialized = true;
 			untracked(() => this.initForm());
 		});
 
