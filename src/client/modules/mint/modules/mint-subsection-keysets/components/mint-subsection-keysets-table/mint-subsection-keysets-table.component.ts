@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, effect, input, output, signal, viewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, input, output, signal, computed, viewChild} from '@angular/core';
 /* Vendor Dependencies */
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
@@ -30,11 +30,18 @@ export class MintSubsectionKeysetsTableComponent {
 	readonly keysets_proof_counts = input.required<MintKeysetProofCount[]>();
 	readonly page_settings = input.required<NonNullableMintKeysetsSettings>();
 	readonly loading = input.required<boolean>();
+	readonly mobile_view = input.required<boolean>();
 
 	readonly rotateKeyset = output<MintUnit>();
 
-	readonly displayed_columns = signal(['keyset', 'input_fee_ppk', 'valid_from', 'balance', 'fees', 'proofs', 'actions']);
 	readonly data_source = signal(new MatTableDataSource<MintSubsectionKeysetsTableRow>([]));
+	public more_entity = signal<MintKeyset | null>(null); // currently expanded row entity
+
+	public displayed_columns = computed(() => {
+		const mobile = this.mobile_view();
+		if (mobile) return ['keyset', 'balance'];
+		return ['keyset', 'input_fee_ppk', 'valid_from', 'balance', 'fees', 'proofs', 'actions'];
+	});
 
 	constructor() {
 		effect(() => {
@@ -71,9 +78,14 @@ export class MintSubsectionKeysetsTableComponent {
 			});
 
 		this.data_source.set(new MatTableDataSource(keyset_rows));
+	}
 
-		if (keyset_rows[0]?.fees_paid === null) {
-			this.displayed_columns.set(['keyset', 'input_fee_ppk', 'valid_from', 'balance', 'proofs', 'actions']);
-		}
+	/**
+	 * Toggles the expanded detail row for a quote entity
+	 * @param entity - the quote to toggle
+	 */
+	public toggleMore(entity: MintKeyset): void {
+		console.log('toggleMore', entity);
+		this.more_entity.set(this.more_entity() === entity ? null : entity);
 	}
 }
