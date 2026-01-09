@@ -8,6 +8,7 @@ import {
 	Output,
 	SimpleChanges,
 	computed,
+	signal,
 	ViewChild,
 } from '@angular/core';
 import {FormControl, Validators} from '@angular/forms';
@@ -40,6 +41,7 @@ export class SettingsSubsectionDeviceTimeTimezoneComponent implements OnChanges 
 	public timezone_options: string[] = (Intl as any).supportedValuesOf('timeZone');
 	public filtered_options!: Observable<string[]>;
 	public unix_timestamp_seconds = Math.floor(Date.now() / 1000);
+	public help_status = signal<boolean>(false);
 
 	private system_timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 

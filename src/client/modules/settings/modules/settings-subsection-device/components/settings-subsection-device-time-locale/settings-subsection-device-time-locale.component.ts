@@ -6,6 +6,7 @@ import {
 	Input,
 	OnChanges,
 	Output,
+	signal,
 	SimpleChanges,
 	EventEmitter,
 	ViewChild,
@@ -45,6 +46,7 @@ export class SettingsSubsectionDeviceTimeLocaleComponent implements OnChanges {
 	public unix_timestamp_seconds = Math.floor(Date.now() / 1000);
 	public example_amount = 1000000;
 	public filtered_options!: Observable<LocaleOption[]>;
+	public help_status = signal<boolean>(false);
 	public locale_options: LocaleOption[] = [
 		// English Variants
 		{code: 'en-US', country: 'English (United States)'},

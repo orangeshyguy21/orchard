@@ -1,39 +1,44 @@
-<div class="p-t-2 p-b-2 p-l-2">
-	<mat-card appearance="outlined" class="relative overflow-hidden">
-		<mat-card-content class="orc-surface-container-low-bg">
-			<div class="flex flex-items-start p-l-1 p-r-1 p-t-1">
-				<div class="flex-grow flex flex-items-start flex-justify-between">
-					<form class="flex-grow flex flex-items-center flex-gap-1">
-						<div class="w-min-18 m-b-1-25 flex flex-items-center flex-gap-1">
-							<mat-icon [class.mat-symbol-outline]="theme_control.value">dark_mode</mat-icon>
-							<mat-slide-toggle [formControl]="theme_control" (change)="onThemeChange($event)" name="theme">
-							</mat-slide-toggle>
-							<mat-icon [class.mat-symbol-outline]="!theme_control.value">light_mode</mat-icon>
-						</div>
-						<div class="m-b-1-25">
-							<mat-checkbox [formControl]="system_default_control" (change)="onSystemDefaultChange($event)">
-								Sync with device
-							</mat-checkbox>
-						</div>
-					</form>
-
-					<div class="w-max-18">
-						<orc-form-help-text class="orc-surface-container-high-bg">
-							Select a theme to customize the appearance of the application.
-						</orc-form-help-text>
+<mat-card appearance="outlined" class="relative overflow-hidden">
+	<mat-card-content class="orc-surface-container-low-bg">
+		<div class="flex flex-items-start p-l-1 p-r-1 p-t-1 flex-wrap">
+			<div class="flex-grow flex flex-items-start flex-justify-between flex-column">
+				<form class="flex-grow flex flex-items-center flex-gap-1 flex-wrap">
+					<div class="w-min-18 m-b-1-25 flex flex-items-center flex-gap-1">
+						<mat-icon [class.mat-symbol-outline]="theme_control.value">dark_mode</mat-icon>
+						<mat-slide-toggle [formControl]="theme_control" (change)="onThemeChange($event)" name="theme"> </mat-slide-toggle>
+						<mat-icon [class.mat-symbol-outline]="!theme_control.value">light_mode</mat-icon>
 					</div>
-				</div>
-
-				<div class="flex-grow-2 w-max-24">
-					<div class="flex flex-items-center flex-justify-center flex-gap-1">
-						<div class="theme-sample orc-primary-bg"></div>
-						<div class="theme-sample orc-primary-container-bg"></div>
-						<div class="theme-sample orc-on-primary-bg"></div>
-						<div class="theme-sample orc-on-primary-fixed-bg"></div>
-						<div class="theme-sample orc-surface-bg"></div>
+					<div class="m-b-1-25 flex flex-items-center flex-gap-1">
+						<mat-checkbox [formControl]="system_default_control" (change)="onSystemDefaultChange($event)">
+							<span class="text-nowrap">Sync with device</span>
+						</mat-checkbox>
+						<div class="flex">
+							<mat-icon class="icon-sm icon-dynamic-fill cursor-pointer" (click)="help_status.set(!help_status())"
+								>info</mat-icon
+							>
+						</div>
+					</div>
+				</form>
+				<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
+					<div class="orc-animation-expand-collapse-inner">
+						<div class="flex p-t-0-5 p-b-1">
+							<orc-form-help-text class="orc-surface-container-high-bg">
+								Select a theme to customize the appearance of the application.
+							</orc-form-help-text>
+						</div>
 					</div>
 				</div>
 			</div>
-		</mat-card-content>
-	</mat-card>
-</div>
+
+			<div class="flex-grow-2 w-max-24">
+				<div class="flex flex-items-center flex-justify-center flex-gap-1">
+					<div class="theme-sample orc-primary-bg"></div>
+					<div class="theme-sample orc-primary-container-bg"></div>
+					<div class="theme-sample orc-on-primary-bg"></div>
+					<div class="theme-sample orc-on-primary-fixed-bg"></div>
+					<div class="theme-sample orc-surface-bg"></div>
+				</div>
+			</div>
+		</div>
+	</mat-card-content>
+</mat-card>

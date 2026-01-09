@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output, SimpleChanges, signal} from '@angular/core';
 import {FormControl} from '@angular/forms';
 /* Vendor Dependencies */
 import {MatCheckboxChange} from '@angular/material/checkbox';
@@ -22,6 +22,7 @@ export class SettingsSubsectionDeviceThemeComponent {
 
 	public theme_control = new FormControl<boolean>(false);
 	public system_default_control = new FormControl<boolean>(true);
+	public help_status = signal<boolean>(false);
 
 	private prefers_light_theme = window.matchMedia('(prefers-color-scheme: light)').matches;
 

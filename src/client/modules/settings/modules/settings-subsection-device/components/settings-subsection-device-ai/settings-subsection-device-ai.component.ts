@@ -6,6 +6,7 @@ import {
 	Input,
 	OnChanges,
 	Output,
+	signal,
 	computed,
 	SimpleChanges,
 	ViewChild,
@@ -41,6 +42,7 @@ export class SettingsSubsectionDeviceAiComponent implements OnChanges {
 	public model_control = new FormControl('', [Validators.required]);
 	public filtered_options!: Observable<AiModel[]>;
 	public ai_model!: AiModel | null;
+	public help_status = signal<boolean>(true);
 
 	public model_control_error = computed(() => {
 		if (this.model_control.hasError('required')) return 'required';

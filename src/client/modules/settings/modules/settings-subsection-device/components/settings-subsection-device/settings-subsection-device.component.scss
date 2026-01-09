@@ -14,13 +14,20 @@
 	@extend %top-0;
 }
 
+.settings-box {
+	@extend %p-t-2;
+	@extend %p-b-2;
+	@extend %p-l-2;
+}
+
 .settings-tertiary-nav {
 	@extend %sticky;
 	@extend %z-index-1;
 	top: 3rem;
-	height: calc(100vh - 9rem);
-	@extend %overflow-y-auto;
-	@extend %block;
+}
+
+.settings-tertiary-nav-mobile {
+	min-height: 8rem;
 }
 
 .nav-tertiary-title {
@@ -28,6 +35,24 @@
 	@extend %orc-on-surface-variant-color;
 	@extend %p-b-0-5;
 	@extend %p-l-0-25;
+}
+
+.mobile-settings-nav {
+	@extend %fixed;
+	@extend %z-index-2;
+	@extend %right-2;
+	@extend %top-1;
+}
+
+.mobile-view {
+	.sticky-setting {
+		@extend %p-l-1;
+		@extend %p-t-1;
+		@extend %p-r-1;
+	}
+	.settings-box {
+		@extend %p-1;
+	}
 }
 
 .settings-location {
