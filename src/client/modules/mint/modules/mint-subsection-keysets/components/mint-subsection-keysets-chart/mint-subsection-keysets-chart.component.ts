@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy, SimpleChanges, ViewChild, ChangeDetectorRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ChangeDetectorRef, effect, input, signal, viewChild, OnDestroy} from '@angular/core';
 /* Vendor Dependencies */
 import {BaseChartDirective} from 'ng2-charts';
 import {ChartConfiguration, ScaleChartOptions, ChartType as ChartJsType} from 'chart.js';
@@ -30,21 +30,24 @@ import {MintAnalyticsInterval} from '@shared/generated.types';
 	styleUrl: './mint-subsection-keysets-chart.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintSubsectionKeysetsChartComponent implements OnChanges, OnDestroy {
-	@ViewChild(BaseChartDirective) chart?: BaseChartDirective;
+export class MintSubsectionKeysetsChartComponent implements OnDestroy {
+	/* View Children */
+	public readonly chart = viewChild(BaseChartDirective);
 
-	@Input() public locale!: string;
-	@Input() public interval!: MintAnalyticsInterval;
-	@Input() public keysets!: MintKeyset[];
-	@Input() public keysets_analytics!: MintAnalyticKeyset[];
-	@Input() public keysets_analytics_pre!: MintAnalyticKeyset[];
-	@Input() public page_settings!: NonNullableMintKeysetsSettings | undefined;
-	@Input() public mint_genesis_time!: number;
-	@Input() public loading!: boolean;
+	/* Inputs */
+	public readonly locale = input.required<string>();
+	public readonly interval = input.required<MintAnalyticsInterval>();
+	public readonly keysets = input.required<MintKeyset[]>();
+	public readonly keysets_analytics = input.required<MintAnalyticKeyset[]>();
+	public readonly keysets_analytics_pre = input.required<MintAnalyticKeyset[]>();
+	public readonly page_settings = input<NonNullableMintKeysetsSettings>();
+	public readonly mint_genesis_time = input.required<number>();
+	public readonly loading = input.required<boolean>();
 
-	public chart_type!: ChartJsType;
-	public chart_data!: ChartConfiguration['data'];
-	public chart_options!: ChartConfiguration['options'];
+	/* State */
+	public readonly chart_type = signal<ChartJsType>('line');
+	public readonly chart_data = signal<ChartConfiguration['data']>({datasets: []});
+	public readonly chart_options = signal<ChartConfiguration['options']>({});
 	public displayed: boolean = true;
 
 	private subscriptions: Subscription = new Subscription();
@@ -55,12 +58,12 @@ export class MintSubsectionKeysetsChartComponent implements OnChanges, OnDestroy
 	) {
 		this.subscriptions.add(this.getRemoveSubscription());
 		this.subscriptions.add(this.getAddSubscription());
-	}
 
-	public ngOnChanges(changes: SimpleChanges): void {
-		if (changes['loading'] && this.loading === false) {
+		/* Effect: Initialize chart when loading completes */
+		effect(() => {
+			if (this.loading() !== false) return;
 			this.init();
-		}
+		});
 	}
 
 	private getRemoveSubscription(): Subscription {
@@ -69,6 +72,7 @@ export class MintSubsectionKeysetsChartComponent implements OnChanges, OnDestroy
 			this.cdr.detectChanges();
 		});
 	}
+
 	private getAddSubscription(): Subscription {
 		return this.chartService.onResizeEnd().subscribe(() => {
 			this.displayed = true;
@@ -76,28 +80,35 @@ export class MintSubsectionKeysetsChartComponent implements OnChanges, OnDestroy
 		});
 	}
 
-	private async init(): Promise<void> {
-		this.chart_type = 'line';
-		const status_filter = this.page_settings?.status ?? [];
-		const units_filter = this.page_settings?.units ?? [];
-		const valid_keysets_ids = this.keysets
+	private init(): void {
+		const settings = this.page_settings();
+		const status_filter = settings?.status ?? [];
+		const units_filter = settings?.units ?? [];
+		const valid_keysets_ids = this.keysets()
 			.filter((keyset) => !status_filter.length || status_filter.includes(keyset.active))
 			.filter((keyset) => !units_filter.length || units_filter.includes(keyset.unit))
 			.map((keyset) => keyset.id);
-		const valid_analytics = this.keysets_analytics.filter((analytic) => valid_keysets_ids.includes(analytic.keyset_id));
-		const valid_analytics_pre = this.keysets_analytics_pre.filter((analytic) => valid_keysets_ids.includes(analytic.keyset_id));
-		this.chart_data = this.getChartData(valid_analytics, valid_analytics_pre);
-		this.chart_options = this.getChartOptions(valid_keysets_ids);
-		if (this.chart_options?.plugins) this.chart_options.plugins.annotation = this.getAnnotations();
+		const valid_analytics = this.keysets_analytics().filter((analytic) => valid_keysets_ids.includes(analytic.keyset_id));
+		const valid_analytics_pre = this.keysets_analytics_pre().filter((analytic) => valid_keysets_ids.includes(analytic.keyset_id));
+		const data = this.getChartData(valid_analytics, valid_analytics_pre);
+		console.log('data', data);
+		console.log('valid_keysets_ids', valid_keysets_ids);
+		this.chart_data.set(data);
+		const options = this.getChartOptions(valid_keysets_ids, data);
+		if (options?.plugins) options.plugins.annotation = this.getAnnotations(data);
+		this.chart_options.set(options);
 	}
 
 	private getChartData(valid_analytics: MintAnalyticKeyset[], valid_analytics_pre: MintAnalyticKeyset[]): ChartConfiguration['data'] {
-		if (!this.page_settings) return {datasets: []};
+		const settings = this.page_settings();
+		if (!settings) return {datasets: []};
 		if ((!valid_analytics || valid_analytics.length === 0) && (!valid_analytics_pre || valid_analytics_pre.length === 0))
 			return {datasets: []};
-		const time_interval = getTimeInterval(this.interval);
-		const timestamp_first = DateTime.fromSeconds(this.page_settings.date_start).startOf(time_interval).toSeconds();
-		const timestamp_last = DateTime.fromSeconds(this.page_settings.date_end).startOf(time_interval).toSeconds();
+		const interval = this.interval();
+		const keysets = this.keysets();
+		const time_interval = getTimeInterval(interval);
+		const timestamp_first = DateTime.fromSeconds(settings.date_start).startOf(time_interval).toSeconds();
+		const timestamp_last = DateTime.fromSeconds(settings.date_end).startOf(time_interval).toSeconds();
 		const data_keyset_groups = valid_analytics.reduce(
 			(groups, analytic) => {
 				const id = analytic.keyset_id;
@@ -109,13 +120,13 @@ export class MintSubsectionKeysetsChartComponent implements OnChanges, OnDestroy
 		);
 		const data_keyset_groups_prepended = this.prependData(data_keyset_groups, valid_analytics_pre, timestamp_first);
 		const datasets = Object.entries(data_keyset_groups_prepended).map(([keyset_id, data], index) => {
-			const keyset = this.keysets.find((k) => k.id === keyset_id);
+			const keyset = keysets.find((k) => k.id === keyset_id);
 			const unit = keyset?.unit || '';
 			const keyset_genesis_time = keyset
 				? DateTime.fromSeconds(keyset.valid_from).startOf(time_interval).toSeconds()
 				: timestamp_first;
 			const min_x = Math.max(keyset_genesis_time, timestamp_first);
-			const timestamp_range = getAllPossibleTimestamps(min_x, timestamp_last, this.interval);
+			const timestamp_range = getAllPossibleTimestamps(min_x, timestamp_last, interval);
 			const data_keyed_by_timestamp = data.reduce(
 				(acc, item) => {
 					acc[item.created_time] = item.amount;
@@ -124,7 +135,7 @@ export class MintSubsectionKeysetsChartComponent implements OnChanges, OnDestroy
 				{} as Record<string, number>,
 			);
 			const color = this.chartService.getAssetColor(unit, index);
-			const cumulative = this.chart_type === 'line';
+			const cumulative = this.chart_type() === 'line';
 			let data_prepped = getAmountData(timestamp_range, data_keyed_by_timestamp, unit, cumulative);
 
 			if (data_prepped[0].x === keyset_genesis_time * 1000) {
@@ -132,7 +143,9 @@ export class MintSubsectionKeysetsChartComponent implements OnChanges, OnDestroy
 			}
 
 			if (keyset && !keyset.active) {
-				const successor_keyset = this.keysets.find((k) => k.derivation_path_index === keyset?.derivation_path_index + 1);
+				const successor_keyset = keysets.find(
+					(k) => k.unit === keyset.unit && k.derivation_path_index === keyset.derivation_path_index + 1,
+				);
 				const successor_keyset_genesis_time = successor_keyset
 					? DateTime.fromSeconds(successor_keyset.valid_from).startOf(time_interval).toSeconds()
 					: timestamp_last;
@@ -175,38 +188,34 @@ export class MintSubsectionKeysetsChartComponent implements OnChanges, OnDestroy
 		timestamp_first: number,
 	): Record<string, MintAnalyticKeyset[]> {
 		if (preceding_data.length === 0) return analytics;
-		if (Object.keys(analytics).length === 0)
-			return preceding_data.reduce(
-				(groups, analytic) => {
-					analytic.created_time = timestamp_first;
-					groups[analytic.keyset_id] = groups[analytic.keyset_id] || [];
-					groups[analytic.keyset_id].push(analytic);
-					return groups;
-				},
-				{} as Record<string, MintAnalyticKeyset[]>,
-			);
 
-		for (const id in analytics) {
-			const analytics_for_id = analytics[id];
-			const preceding_data_for_id = preceding_data.find((p) => p.keyset_id === id);
-			if (!preceding_data_for_id) continue;
-			preceding_data_for_id.created_time = timestamp_first;
-			const matching_datapoint = analytics_for_id.find((a) => a.created_time === preceding_data_for_id.created_time);
+		for (const preceding of preceding_data) {
+			preceding.created_time = timestamp_first;
+			const analytics_for_id = analytics[preceding.keyset_id];
+			if (!analytics_for_id) {
+				analytics[preceding.keyset_id] = [preceding];
+				continue;
+			}
+			const matching_datapoint = analytics_for_id.find((a) => a.created_time === preceding.created_time);
 			if (!matching_datapoint) {
-				analytics_for_id.unshift(preceding_data_for_id);
+				analytics_for_id.unshift(preceding);
 			} else {
-				matching_datapoint.amount = matching_datapoint.amount + preceding_data_for_id.amount;
+				matching_datapoint.amount = matching_datapoint.amount + preceding.amount;
 			}
 		}
 		return analytics;
 	}
 
-	private getChartOptions(valid_keysets_ids: string[]): ChartConfiguration['options'] {
-		if (!this.chart_data || this.chart_data.datasets.length === 0 || !this.page_settings) return {};
-		const units = this.keysets.filter((keyset) => valid_keysets_ids.includes(keyset.id)).map((keyset) => keyset.unit.toUpperCase());
+	private getChartOptions(valid_keysets_ids: string[], data: ChartConfiguration['data']): ChartConfiguration['options'] {
+		const settings = this.page_settings();
+		if (!data || data.datasets.length === 0 || !settings) return {};
+		const locale = this.locale();
+		const units = this.keysets()
+			.filter((keyset) => valid_keysets_ids.includes(keyset.id))
+			.map((keyset) => keyset.unit.toUpperCase());
 		const y_axis = getYAxis(units);
 		const scales: ScaleChartOptions<'line'>['scales'] = {};
-		scales['x'] = getXAxisConfig(this.interval, this.locale);
+		scales['x'] = getXAxisConfig(this.interval(), locale);
 		if (y_axis.includes('ybtc')) {
 			scales['ybtc'] = getBtcYAxisConfig({
 				grid_color: this.chartService.getGridColor(),
@@ -238,7 +247,7 @@ export class MintSubsectionKeysetsChartComponent implements OnChanges, OnDestroy
 					intersect: false,
 					callbacks: {
 						title: getTooltipTitle,
-						label: (context: any) => getTooltipLabel(context, this.locale),
+						label: (context: any) => getTooltipLabel(context, locale),
 					},
 				},
 				legend: {
@@ -260,15 +269,16 @@ export class MintSubsectionKeysetsChartComponent implements OnChanges, OnDestroy
 		};
 	}
 
-	private getAnnotations(): any {
-		const min_x_value = this.findMinimumXValue(this.chart_data) / 1000;
-		const max_x_value = this.findMaximumXValue(this.chart_data) / 1000;
+	private getAnnotations(data: ChartConfiguration['data']): any {
+		const settings = this.page_settings();
+		const min_x_value = this.findMinimumXValue(data) / 1000;
+		const max_x_value = this.findMaximumXValue(data) / 1000;
 		const config = this.chartService.getFormAnnotationConfig(false);
 		const annotations: Record<string, any> = {};
-		this.keysets
+		this.keysets()
 			.filter((keyset) => keyset.valid_from >= min_x_value && keyset.valid_from <= max_x_value)
-			.filter((keyset) => this.page_settings?.status.includes(keyset.active))
-			.filter((keyset) => this.page_settings?.units.includes(keyset.unit))
+			.filter((keyset) => settings?.status.includes(keyset.active))
+			.filter((keyset) => settings?.units.includes(keyset.unit))
 			.forEach((keyset) => {
 				const milli_keyset_time = DateTime.fromSeconds(keyset.valid_from).startOf('day').toMillis();
 				const display_keyset = milli_keyset_time >= min_x_value ? true : false;
@@ -312,7 +322,7 @@ export class MintSubsectionKeysetsChartComponent implements OnChanges, OnDestroy
 	}
 
 	private getAnnotationLabel(keyset: MintKeyset): string {
-		if (this.mint_genesis_time === keyset.valid_from) return `Mint Genesis`;
+		if (this.mint_genesis_time() === keyset.valid_from) return `Mint Genesis`;
 		return `${keyset.unit.toUpperCase()} Rotation ${keyset.derivation_path_index}`;
 	}
 
