@@ -39,8 +39,8 @@ import {MintSubsectionConfigNut15MethodComponent} from './components/mint-subsec
 import {MintSubsectionConfigNut17CommandsComponent} from './components/mint-subsection-config-nut17-commands/mint-subsection-config-nut17-commands.component';
 import {MintSubsectionConfigNut19Component} from './components/mint-subsection-config-nut19/mint-subsection-config-nut19.component';
 import {MintSubsectionConfigFormQuoteTtlHintComponent} from './components/mint-subsection-config-form-quote-ttl-hint/mint-subsection-config-form-quote-ttl-hint.component';
-import {MintSubsectionConfigFormQuoteTtlStatsComponent} from './components/mint-subsection-config-form-quote-ttl-stats/mint-subsection-config-form-quote-ttl-stats.component';
-import {MintSubsectionConfigFormQuoteTtlStatComponent} from './components/mint-subsection-config-form-quote-ttl-stat/mint-subsection-config-form-quote-ttl-stat.component';
+import {MintSubsectionConfigStatsComponent} from './components/mint-subsection-config-stats/mint-subsection-config-stats.component';
+import {MintSubsectionConfigStatComponent} from './components/mint-subsection-config-stat/mint-subsection-config-stat.component';
 import {MintSubsectionConfigFormLimitHintComponent} from './components/mint-subsection-config-form-limit-hint/mint-subsection-config-form-limit-hint.component';
 
 @NgModule({
@@ -61,8 +61,8 @@ import {MintSubsectionConfigFormLimitHintComponent} from './components/mint-subs
 		MintSubsectionConfigNut17CommandsComponent,
 		MintSubsectionConfigNut19Component,
 		MintSubsectionConfigFormQuoteTtlHintComponent,
-		MintSubsectionConfigFormQuoteTtlStatsComponent,
-		MintSubsectionConfigFormQuoteTtlStatComponent,
+		MintSubsectionConfigStatsComponent,
+		MintSubsectionConfigStatComponent,
 		MintSubsectionConfigFormLimitHintComponent,
 	],
 	imports: [

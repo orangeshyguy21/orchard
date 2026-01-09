@@ -26,11 +26,17 @@
 			></orc-mint-subsection-config-form-min>
 		</div>
 	</div>
-	<div class="flex-1">
+	<div class="flex-1 flex flex-column flex-gap-0-5">
+		<div class="flex flex-justify-center">
+			<div class="font-size-xs orc-outline-color">
+				{{ method() | titlecase }} {{ nut() === 'nut4' ? 'Mint' : 'Melt' }} Quote Amounts
+			</div>
+		</div>
+		<orc-mint-subsection-config-stats [loading]="loading()" [stats]="stats()" [unit]="unit()"></orc-mint-subsection-config-stats>
 		<orc-mint-subsection-config-chart-method
 			[nut]="nut()"
 			[loading]="loading()"
-			[quotes]="quotes()"
+			[quotes]="valid_quotes()"
 			[locale]="locale()"
 			[unit]="unit()"
 			[method]="method()"
@@ -38,6 +44,8 @@
 			[max_amount]="form_bolt12().get('max_amount')?.value"
 			[min_hot]="min_hot()"
 			[max_hot]="max_hot()"
+			[amounts]="stat_amounts()"
+			[stats]="stats()"
 		></orc-mint-subsection-config-chart-method>
 	</div>
 </div>

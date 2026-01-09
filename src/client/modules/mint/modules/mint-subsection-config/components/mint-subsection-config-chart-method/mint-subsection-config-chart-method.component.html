@@ -1,51 +1,23 @@
 <div class="flex flex-column flex-gap-1">
-	<div class="flex flex-justify-center">
-		<div class="font-size-xs orc-outline-color">{{ method | titlecase }} {{ nut === 'nut4' ? 'Mint' : 'Melt' }} Quote Amounts</div>
-	</div>
 	<div class="flex flex-gap-1 relative">
 		<div class="flex-grow">
 			<div class="mint-method-chart-container">
-				@if (displayed) {
-					<canvas baseChart [data]="chart_data" [options]="chart_options" [type]="chart_type"></canvas>
+				@if (displayed()) {
+					<canvas baseChart [data]="chart_data()" [options]="chart_options()" [type]="chart_type()"></canvas>
 				}
 			</div>
 		</div>
-		<div class="flex flex-justify-center flex-items-center flex-gap-0-5">
-			<div class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color font-weight-extra-light">
-				<div>avg:</div>
-				<div>median:</div>
-				<div>min:</div>
-				<div>max:</div>
-				<div>over_max:</div>
-				<div>under_min:</div>
-			</div>
-			<div class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color">
-				@if (!loading && quotes.length > 0) {
-					<div>{{ metrics.avg | number: '1.0-0' }}</div>
-					<div>{{ metrics.median | number: '1.0-0' }}</div>
-					<div>{{ metrics.min | number: '1.0-0' }}</div>
-					<div>{{ metrics.max | number: '1.0-0' }}</div>
-					<div>{{ metrics.over_max | number: '1.0-0' }}</div>
-					<div>{{ metrics.under_min | number: '1.0-0' }}</div>
-				} @else {
-					<div class="flex flex-column flex-gap-1">
-						<div class="h-0-5 w-3 orc-corner-full orc-animation-shimmer-high"></div>
-						<div class="h-0-5 w-3 orc-corner-full orc-animation-shimmer-high"></div>
-						<div class="h-0-5 w-3 orc-corner-full orc-animation-shimmer-high"></div>
-						<div class="h-0-5 w-3 orc-corner-full orc-animation-shimmer-high"></div>
-						<div class="h-0-5 w-3 orc-corner-full orc-animation-shimmer-high"></div>
-					</div>
-				}
-			</div>
+		<div class="flex flex-column flex-gap-0-5">
+			@if (!loading() && quotes().length === 0) {
+				<div
+					class="no-data-overlay orc-surface-container-low-bg tester"
+					animate.enter="orc-animation-fadein-fast"
+					animate.leave="orc-animation-fadeout-fast"
+				>
+					<mat-icon class="icon-lg mat-symbol-outline orc-outline-variant-color">bar_chart_off</mat-icon>
+					<div class="font-size-xs orc-outline-variant-color">No data available</div>
+				</div>
+			}
 		</div>
-		@if (!loading && quotes.length === 0) {
-			<div
-				class="no-data-overlay orc-surface-container-low-bg"
-				animate.enter="orc-animation-fadein-fast"
-				animate.leave="orc-animation-fadeout-fast"
-			>
-				<mat-icon class="icon-lg mat-symbol-outline orc-outline-color">bar_chart_off</mat-icon>
-			</div>
-		}
 	</div>
 </div>

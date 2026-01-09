@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, effect, viewChild, OnDestroy, ChangeDetectorRef, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, effect, viewChild, OnDestroy, signal} from '@angular/core';
 /* Vendor Dependencies */
 import {BaseChartDirective} from 'ng2-charts';
 import {ChartConfiguration, ChartType as ChartJsType} from 'chart.js';
@@ -12,8 +12,6 @@ import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class'
 import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
 /* Native Dependencies */
 import {MintConfigStats} from '@client/modules/mint/modules/mint-subsection-config/types/mint-config-stats.type';
-/* Shared Dependencies */
-import {MintQuoteState, MeltQuoteState} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-subsection-config-chart-quote-ttl',
@@ -25,12 +23,13 @@ import {MintQuoteState, MeltQuoteState} from '@shared/generated.types';
 export class MintSubsectionConfigChartQuoteTtlComponent implements OnDestroy {
 	chart = viewChild(BaseChartDirective);
 
-	nut = input.required<'nut4' | 'nut5'>();
-	quotes = input<MintMintQuote[] | MintMeltQuote[]>([]);
-	loading = input.required<boolean>();
-	locale = input.required<string>();
-	quote_ttl = input.required<number>();
-	form_hot = input.required<boolean>();
+	public nut = input.required<'nut4' | 'nut5'>();
+	public quotes = input<MintMintQuote[] | MintMeltQuote[]>([]);
+	public loading = input.required<boolean>();
+	public locale = input.required<string>();
+	public quote_ttl = input.required<number>();
+	public form_hot = input.required<boolean>();
+	public deltas = input.required<Record<string, number>[]>();
 
 	public chart_type!: ChartJsType;
 	public chart_data!: ChartConfiguration['data'];
@@ -41,10 +40,7 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnDestroy {
 	private subscriptions: Subscription = new Subscription();
 	private initialized = false;
 
-	constructor(
-		private chartService: ChartService,
-		private cdr: ChangeDetectorRef,
-	) {
+	constructor(private chartService: ChartService) {
 		this.subscriptions.add(this.getRemoveSubscription());
 		this.subscriptions.add(this.getAddSubscription());
 
@@ -74,43 +70,23 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnDestroy {
 	private getRemoveSubscription(): Subscription {
 		return this.chartService.onResizeStart().subscribe(() => {
 			this.displayed.set(false);
-			this.cdr.detectChanges();
 		});
 	}
 	private getAddSubscription(): Subscription {
 		return this.chartService.onResizeEnd().subscribe(() => {
 			this.displayed.set(true);
-			this.cdr.detectChanges();
 		});
 	}
 
 	private async init(): Promise<void> {
 		this.chart_type = 'scatter';
-		const deltas = this.getDeltas();
-		this.chart_data = this.getChartData(deltas);
+		this.chart_data = this.getChartData(this.deltas());
 		this.initOptions();
 	}
 
 	private initOptions(): void {
 		this.chart_options = this.getChartOptions();
 		if (this.chart_options?.plugins) this.chart_options.plugins.annotation = this.getFormAnnotation();
-	}
-
-	private getDeltas(): Record<string, number>[] {
-		if (this.quotes().length === 0) return [];
-		const quotes = this.nut() === 'nut4' ? (this.quotes() as MintMintQuote[]) : (this.quotes() as MintMeltQuote[]);
-		const valid_state = this.nut() === 'nut4' ? MintQuoteState.Issued : MeltQuoteState.Paid;
-		const valid_quotes = quotes
-			.filter((quote) => quote.state === valid_state && quote.created_time && quote.created_time > 0)
-			.sort((a, b) => (a.created_time ?? 0) - (b.created_time ?? 0));
-		return valid_quotes.map((quote) => {
-			const created_time = quote.created_time ?? 0;
-			const end_time = quote instanceof MintMintQuote ? (quote.issued_time ?? quote.paid_time ?? 0) : (quote.paid_time ?? 0);
-			return {
-				created_time,
-				delta: end_time - created_time,
-			};
-		});
 	}
 
 	private getChartData(deltas: Record<string, number>[]): ChartConfiguration['data'] {

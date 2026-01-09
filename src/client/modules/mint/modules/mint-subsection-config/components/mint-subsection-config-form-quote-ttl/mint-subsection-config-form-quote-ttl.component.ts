@@ -83,6 +83,14 @@ export class MintSubsectionConfigFormQuoteTtlComponent {
 		return '';
 	});
 
+	public valid_quotes = computed(() => {
+		const quotes = this.nut() === 'nut4' ? (this.quotes() as MintMintQuote[]) : (this.quotes() as MintMeltQuote[]);
+		const valid_state = this.nut() === 'nut4' ? MintQuoteState.Issued : MeltQuoteState.Paid;
+		return quotes
+			.filter((quote) => quote.state === valid_state && quote.created_time && quote.created_time > 0)
+			.sort((a, b) => (a.created_time ?? 0) - (b.created_time ?? 0)) as MintMintQuote[] | MintMeltQuote[];
+	});
+
 	constructor() {
 		effect(() => {
 			const loading = this.loading();
@@ -98,12 +106,8 @@ export class MintSubsectionConfigFormQuoteTtlComponent {
 	}
 
 	private getDeltas(): Record<string, number>[] {
-		if (this.quotes().length === 0) return [];
-		const quotes = this.nut() === 'nut4' ? (this.quotes() as MintMintQuote[]) : (this.quotes() as MintMeltQuote[]);
-		const valid_state = this.nut() === 'nut4' ? MintQuoteState.Issued : MeltQuoteState.Paid;
-		const valid_quotes = quotes
-			.filter((quote) => quote.state === valid_state && quote.created_time && quote.created_time > 0)
-			.sort((a, b) => (a.created_time ?? 0) - (b.created_time ?? 0));
+		const valid_quotes = this.valid_quotes();
+		if (valid_quotes.length === 0) return [];
 		return valid_quotes.map((quote) => {
 			const created_time = quote.created_time ?? 0;
 			const end_time = quote instanceof MintMintQuote ? (quote.issued_time ?? quote.paid_time ?? 0) : (quote.paid_time ?? 0);

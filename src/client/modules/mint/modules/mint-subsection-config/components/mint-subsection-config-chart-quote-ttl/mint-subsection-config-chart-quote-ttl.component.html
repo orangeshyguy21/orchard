@@ -7,13 +7,15 @@
 				}
 			</div>
 		</div>
+
 		@if (!loading() && quotes().length === 0) {
 			<div
 				class="no-data-overlay orc-surface-container-low-bg"
 				animate.enter="orc-animation-fadein-fast"
 				animate.leave="orc-animation-fadeout-fast"
 			>
-				<mat-icon class="icon-lg mat-symbol-outline orc-outline-color">bar_chart_off</mat-icon>
+				<mat-icon class="icon-lg mat-symbol-outline orc-outline-variant-color">bar_chart_off</mat-icon>
+				<div class="font-size-xs orc-outline-variant-color">No data available</div>
 			</div>
 		}
 	</div>
