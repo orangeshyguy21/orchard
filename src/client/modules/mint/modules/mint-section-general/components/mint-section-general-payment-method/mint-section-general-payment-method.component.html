@@ -1,11 +1,11 @@
 <div class="mint-payment-method-container">
 	@switch (payment_method()) {
 		@case ('bolt11') {
-			<div>BOLT 11</div>
+			<div class="text-nowrap">BOLT 11</div>
 			<mat-icon [class]="icon_size()">bolt</mat-icon>
 		}
 		@case ('bolt12') {
-			<div>BOLT 12</div>
+			<div class="text-nowrap">BOLT 12</div>
 			<mat-icon [class]="icon_size()" [svgIcon]="'double_bolt'"></mat-icon>
 		}
 		@default {

@@ -34,7 +34,7 @@ export class LocalStorageService {
 		MINT_DASHBOARD_KEY: 'v1.mint.dashboard.settings',
 		MINT_CONFIG_KEY: 'v0.mint.config.settings',
 		MINT_KEYSETS_KEY: 'v1.mint.keysets.settings',
-		MINT_DATABASE_KEY: 'v0.mint.database.settings',
+		MINT_DATABASE_KEY: 'v1.mint.database.settings',
 		/* Settings Settings */
 		SETTINGS_DEVICE_KEY: 'v0.settings.device.settings',
 	};

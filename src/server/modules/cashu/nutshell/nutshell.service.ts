@@ -159,7 +159,7 @@ export class NutshellService {
 
 	public async getMintMintQuotes(client: CashuMintDatabase, args?: CashuMintMintQuotesArgs): Promise<CashuMintMintQuote[]> {
 		const field_mappings = {
-			unit: 'unit',
+			units: 'unit',
 			date_start: 'created_time',
 			date_end: 'created_time',
 			states: 'state',

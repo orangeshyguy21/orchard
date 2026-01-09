@@ -1,12 +1,12 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, effect, input, output, signal, untracked, viewChild} from '@angular/core';
-import {FormGroup, FormControl, Validators} from '@angular/forms';
+import {ChangeDetectionStrategy, Component, effect, input, output, signal, viewChild} from '@angular/core';
+import {FormGroup, FormControl, FormArray, Validators} from '@angular/forms';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 /* Vendor Dependencies */
 import {DateTime} from 'luxon';
 import {MatCalendarCellClassFunction} from '@angular/material/datepicker';
-import {MatSelectChange} from '@angular/material/select';
 import {MatMenuTrigger} from '@angular/material/menu';
+import {MatSelectChange} from '@angular/material/select';
 /* Application Dependencies */
 import {NonNullableMintDatabaseSettings} from '@client/modules/settings/types/setting.types';
 import {MintDataType} from '@client/modules/mint/enums/data-type.enum';
@@ -42,6 +42,7 @@ export class MintSubsectionDatabaseControlComponent {
 	public readonly loading = input.required<boolean>();
 	public readonly mint_genesis_time = input.required<number>();
 	public readonly keysets = input.required<MintKeyset[]>();
+	public readonly mobile_view = input<boolean>();
 
 	/* Outputs */
 	public readonly dateChange = output<number[]>();
@@ -59,14 +60,14 @@ export class MintSubsectionDatabaseControlComponent {
 			date_start: new FormControl<DateTime | null>(null, [Validators.required]),
 			date_end: new FormControl<DateTime | null>(null, [Validators.required]),
 		}),
-		units: new FormControl<MintUnit[] | null>(null, [Validators.required]),
-		states: new FormControl<string[] | null>(null, [Validators.required]),
+		units: new FormArray<FormControl<boolean>>([]),
+		states: new FormArray<FormControl<boolean>>([]),
 		filter: new FormControl<string>(''),
 	});
 
 	/* State */
-	public type_options = signal<TypeOption[]>([]);
-	public filter_count = signal(0);
+	public readonly type_options = signal<TypeOption[]>([]);
+	public readonly filter_count = signal(0);
 
 	public get height_state(): string {
 		return this.panel?.invalid ? 'invalid' : 'valid';
@@ -84,13 +85,17 @@ export class MintSubsectionDatabaseControlComponent {
 		/* Effect: Initialize form when loading completes */
 		effect(() => {
 			if (this.loading() !== false) return;
-			untracked(() => this.initForm());
+			this.initForm();
 		});
 
 		/* Effect: Sync state_enabled input to form */
 		effect(() => {
 			const enabled = this.state_enabled();
-			enabled ? this.panel.controls.states.enable() : this.panel.controls.states.disable();
+			if (enabled) {
+				this.panel.controls.states.enable();
+			} else {
+				this.panel.controls.states.disable();
+			}
 		});
 
 		/* Effect: Sync date_start input to form */
@@ -121,27 +126,92 @@ export class MintSubsectionDatabaseControlComponent {
 		effect(() => {
 			const units = this.units();
 			if (!units) return;
-			if (this.panel.controls.units.value === units) return;
-			this.panel.controls.units.setValue(units);
+			if (this.areUnitsEqual(this.getSelectedUnits(), units)) return;
+			this.setUnitFilters(units);
 		});
 
 		/* Effect: Sync states input to form */
 		effect(() => {
 			const states = this.states();
 			if (!states) return;
-			if (this.panel.controls.states.value === states) return;
-			this.panel.controls.states.setValue(states);
+			if (this.areStatesEqual(this.getSelectedStates(), states)) return;
+			this.setStateFilters(states);
 		});
 	}
 
 	private initForm(): void {
 		const settings = this.page_settings();
 		this.type_options.set(this.getTypeOptions());
+		this.buildUnitFilters();
+		this.buildStateFilters();
 		this.panel.controls.type.setValue(settings.type);
 		this.panel.controls.daterange.controls.date_start.setValue(DateTime.fromSeconds(settings.date_start));
 		this.panel.controls.daterange.controls.date_end.setValue(DateTime.fromSeconds(settings.date_end));
-		this.panel.controls.units.setValue(settings.units);
-		this.panel.controls.states.setValue(settings.states);
+		this.setUnitFilters(settings.units);
+		this.setStateFilters(settings.states);
+		this.updateFilterCount();
+	}
+
+	/** Builds the FormArray controls based on unit_options */
+	private buildUnitFilters(): void {
+		this.panel.controls.units.clear();
+		this.unit_options().forEach(() => {
+			this.panel.controls.units.push(new FormControl(false, {nonNullable: true}));
+		});
+	}
+
+	/** Sets the FormArray values based on selected units */
+	private setUnitFilters(selected_units: MintUnit[]): void {
+		this.unit_options().forEach((option, index) => {
+			const is_selected = selected_units.includes(option.value as MintUnit);
+			this.panel.controls.units.at(index).setValue(is_selected);
+		});
+	}
+
+	/** Gets the selected units from the FormArray */
+	public getSelectedUnits(): MintUnit[] {
+		const options = this.unit_options();
+		if (!options.length) return [];
+		return options.filter((_, index) => this.panel.controls.units.at(index).value).map((option) => option.value as MintUnit);
+	}
+
+	/** Compares two unit arrays for equality */
+	private areUnitsEqual(a: MintUnit[], b: MintUnit[]): boolean {
+		if (a.length !== b.length) return false;
+		const sorted_a = [...a].sort();
+		const sorted_b = [...b].sort();
+		return sorted_a.every((unit, index) => unit === sorted_b[index]);
+	}
+
+	/** Builds the FormArray controls based on state_options */
+	private buildStateFilters(): void {
+		this.panel.controls.states.clear();
+		this.state_options().forEach(() => {
+			this.panel.controls.states.push(new FormControl(false, {nonNullable: true}));
+		});
+	}
+
+	/** Sets the FormArray values based on selected states */
+	private setStateFilters(selected_states: string[]): void {
+		this.state_options().forEach((option, index) => {
+			const is_selected = selected_states.includes(option);
+			this.panel.controls.states.at(index).setValue(is_selected);
+		});
+	}
+
+	/** Gets the selected states from the FormArray */
+	public getSelectedStates(): string[] {
+		const options = this.state_options();
+		if (!options.length) return [];
+		return options.filter((_, index) => this.panel.controls.states.at(index).value);
+	}
+
+	/** Compares two state arrays for equality */
+	private areStatesEqual(a: string[], b: string[]): boolean {
+		if (a.length !== b.length) return false;
+		const sorted_a = [...a].sort();
+		const sorted_b = [...b].sort();
+		return sorted_a.every((state, index) => state === sorted_b[index]);
 	}
 
 	public onDateChange(): void {
@@ -162,24 +232,34 @@ export class MintSubsectionDatabaseControlComponent {
 		this.typeChange.emit(event.value);
 	}
 
-	public onUnitsChange(event: MatSelectChange): void {
-		if (this.panel.invalid) return;
+	public onUnitsChange(): void {
+		const selected_units = this.getSelectedUnits();
 		const is_valid = this.isValidChange();
 		if (!is_valid) return;
-		this.unitsChange.emit(event.value);
+		this.updateFilterCount();
+		this.unitsChange.emit(selected_units);
 	}
 
-	public onStatesChange(event: MatSelectChange): void {
-		if (this.panel.invalid) return;
+	public onStatesChange(): void {
+		const selected_states = this.getSelectedStates();
 		const is_valid = this.isValidChange();
 		if (!is_valid) return;
-		this.statesChange.emit(event.value);
+		this.updateFilterCount();
+		this.statesChange.emit(selected_states);
 	}
 
 	public onClearFilter(): void {
-		// this.panel.controls.units.setValue(null);
-		// this.panel.controls.states.setValue(null);
-		// this.filter_count.set(0);
+		this.unitsChange.emit([]);
+		this.statesChange.emit([]);
+		this.filter_count.set(0);
+		this.filter_menu_trigger()?.closeMenu();
+	}
+
+	private updateFilterCount(): void {
+		let count = 0;
+		if (this.getSelectedUnits().length > 0) count++;
+		if (this.getSelectedStates().length > 0) count++;
+		this.filter_count.set(count);
 	}
 
 	public onCloseFilter(): void {
@@ -228,14 +308,12 @@ export class MintSubsectionDatabaseControlComponent {
 		if (this.panel.controls.type.value === null) return false;
 		if (this.panel.controls.daterange.controls.date_start.value === null) return false;
 		if (this.panel.controls.daterange.controls.date_end.value === null) return false;
-		if (this.panel.controls.units.value === null) return false;
-		if (this.panel.controls.states.value === null) return false;
 		// change checks
 		if (this.panel.controls.type.value !== settings.type) return true;
 		if (this.panel.controls.daterange.controls.date_start.value.toSeconds() !== settings.date_start) return true;
 		if (this.panel.controls.daterange.controls.date_end.value.toSeconds() !== settings.date_end) return true;
-		if (this.panel.controls.units.value !== settings.units) return true;
-		if (this.panel.controls.states.value !== settings.states) return true;
+		if (!this.areUnitsEqual(this.getSelectedUnits(), settings.units)) return true;
+		if (!this.areStatesEqual(this.getSelectedStates(), settings.states)) return true;
 		return false;
 	}
 }

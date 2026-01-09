@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, ChangeDetectorRef, effect, input, signal, viewChild, OnDestroy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, input, signal, viewChild, OnDestroy} from '@angular/core';
 /* Vendor Dependencies */
 import {BaseChartDirective} from 'ng2-charts';
 import {ChartConfiguration, ScaleChartOptions, ChartType as ChartJsType} from 'chart.js';
@@ -48,14 +48,11 @@ export class MintSubsectionKeysetsChartComponent implements OnDestroy {
 	public readonly chart_type = signal<ChartJsType>('line');
 	public readonly chart_data = signal<ChartConfiguration['data']>({datasets: []});
 	public readonly chart_options = signal<ChartConfiguration['options']>({});
-	public displayed: boolean = true;
+	public readonly displayed = signal<boolean>(true);
 
 	private subscriptions: Subscription = new Subscription();
 
-	constructor(
-		private chartService: ChartService,
-		private cdr: ChangeDetectorRef,
-	) {
+	constructor(private chartService: ChartService) {
 		this.subscriptions.add(this.getRemoveSubscription());
 		this.subscriptions.add(this.getAddSubscription());
 
@@ -68,15 +65,13 @@ export class MintSubsectionKeysetsChartComponent implements OnDestroy {
 
 	private getRemoveSubscription(): Subscription {
 		return this.chartService.onResizeStart().subscribe(() => {
-			this.displayed = false;
-			this.cdr.detectChanges();
+			this.displayed.set(false);
 		});
 	}
 
 	private getAddSubscription(): Subscription {
 		return this.chartService.onResizeEnd().subscribe(() => {
-			this.displayed = true;
-			this.cdr.detectChanges();
+			this.displayed.set(true);
 		});
 	}
 

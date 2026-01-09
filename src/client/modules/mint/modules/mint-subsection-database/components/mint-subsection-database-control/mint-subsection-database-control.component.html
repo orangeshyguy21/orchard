@@ -2,7 +2,7 @@
 	<form [formGroup]="panel" class="panel-form orc-animation-form-reaction" [class.animation-invalid]="height_state === 'invalid'">
 		<div class="flex flex-col flex-gap-1">
 			<div>
-				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
+				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic" [class.mobile-form-field]="mobile_view()">
 					<mat-label>Data</mat-label>
 					<mat-select formControlName="type" (selectionChange)="onTypeChange($event)">
 						<mat-select-trigger>
@@ -17,70 +17,110 @@
 					</mat-select>
 				</mat-form-field>
 			</div>
-			<div class="flex-grow">
-				<mat-form-field [hideRequiredMarker]="true" class="search-field">
-					<mat-label><mat-icon>search</mat-icon> Search</mat-label>
-					<input matInput formControlName="filter" (input)="filterChange.emit($event)" />
-				</mat-form-field>
-			</div>
-			<div formGroupName="daterange">
-				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic" class="mint-analytic-daterange">
-					<mat-label>Date range</mat-label>
-					<mat-date-range-input [rangePicker]="picker">
-						<input
-							matStartDate
-							formControlName="date_start"
-							placeholder="Start date"
-							(blur)="onDateChange()"
-							(keyup.enter)="onDateChange()"
-						/>
-						<input
-							matEndDate
-							formControlName="date_end"
-							placeholder="End date"
-							(blur)="onDateChange()"
-							(keyup.enter)="onDateChange()"
-						/>
-					</mat-date-range-input>
-					<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-					<mat-date-range-picker #picker [dateClass]="genesisClass" (closed)="onDateChange()"></mat-date-range-picker>
-					@if (panel.get('daterange')?.invalid) {
-						<mat-error class="font-size-xs">Invalid date range</mat-error>
-					}
-				</mat-form-field>
-			</div>
+			@if (!mobile_view()) {
+				<div class="flex-grow">
+					<mat-form-field [hideRequiredMarker]="true" class="search-field">
+						<mat-label><mat-icon>search</mat-icon> Search</mat-label>
+						<input matInput formControlName="filter" (input)="filterChange.emit($event)" />
+					</mat-form-field>
+				</div>
+				<div formGroupName="daterange">
+					<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
+						<mat-label>Date range</mat-label>
+						<mat-date-range-input [rangePicker]="picker">
+							<input
+								matStartDate
+								formControlName="date_start"
+								placeholder="Start date"
+								(blur)="onDateChange()"
+								(keyup.enter)="onDateChange()"
+							/>
+							<input
+								matEndDate
+								formControlName="date_end"
+								placeholder="End date"
+								(blur)="onDateChange()"
+								(keyup.enter)="onDateChange()"
+							/>
+						</mat-date-range-input>
+						<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+						<mat-date-range-picker #picker [dateClass]="genesisClass" (closed)="onDateChange()"></mat-date-range-picker>
+						@if (panel.get('daterange')?.invalid) {
+							<mat-error class="font-size-xs">Invalid date range</mat-error>
+						}
+					</mat-form-field>
+				</div>
+			}
 			<div class="p-t-0-5">
 				<button matButton type="button" [matMenuTriggerFor]="filter_menu">
 					<mat-icon>tune</mat-icon>
 					<span class="text-nowrap font-size-s">Filters {{ filter_count() > 0 ? `(${filter_count()})` : '' }}</span>
 				</button>
 			</div>
-			<!-- <div>
-				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
-					<mat-label>Units</mat-label>
-					<mat-select formControlName="units" multiple (selectionChange)="onUnitsChange($event)">
-						@for (unit of unit_options(); track unit.value) {
-							<mat-option [value]="unit.value">{{ unit.label }}</mat-option>
-						}
-					</mat-select>
-				</mat-form-field>
-			</div>
-			<div>
-				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
-					<mat-label>States</mat-label>
-					<mat-select formControlName="states" multiple (selectionChange)="onStatesChange($event)">
-						@for (state of state_options(); track state) {
-							<mat-option [value]="state">{{ state }}</mat-option>
-						}
-					</mat-select>
-				</mat-form-field>
-			</div> -->
 		</div>
 	</form>
 </div>
 
 <mat-menu #filter_menu="matMenu" yPosition="below" class="orc-sticky-menu orc-filter-menu">
 	<orc-form-filter-menu (click)="$event.stopPropagation()" (clear)="onClearFilter()" (close)="onCloseFilter()">
-		<form [formGroup]="panel">hello world</form>
+		<form [formGroup]="panel">
+			@if (mobile_view()) {
+				<div class="p-1">
+					<mat-form-field [hideRequiredMarker]="true" class="search-field" subscriptSizing="dynamic">
+						<mat-label><mat-icon>search</mat-icon> Search</mat-label>
+						<input matInput formControlName="filter" (input)="filterChange.emit($event)" />
+					</mat-form-field>
+				</div>
+				<div class="orc-filter-menu-rule"></div>
+				<div formGroupName="daterange" class="p-1">
+					<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
+						<mat-label>Date range</mat-label>
+						<mat-date-range-input [rangePicker]="picker">
+							<input
+								matStartDate
+								formControlName="date_start"
+								placeholder="Start date"
+								(blur)="onDateChange()"
+								(keyup.enter)="onDateChange()"
+							/>
+							<input
+								matEndDate
+								formControlName="date_end"
+								placeholder="End date"
+								(blur)="onDateChange()"
+								(keyup.enter)="onDateChange()"
+							/>
+						</mat-date-range-input>
+						<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+						<mat-date-range-picker #picker [dateClass]="genesisClass" (closed)="onDateChange()"></mat-date-range-picker>
+						@if (panel.get('daterange')?.invalid) {
+							<mat-error class="font-size-xs">Invalid date range</mat-error>
+						}
+					</mat-form-field>
+				</div>
+				<div class="orc-filter-menu-rule"></div>
+			}
+			<div class="orc-filter-menu-section">
+				<div>Units</div>
+				<div class="filter-options">
+					@for (unit of unit_options(); track unit.value; let i = $index) {
+						<mat-checkbox [formControl]="panel.controls.units.at(i)" (change)="onUnitsChange()">
+							{{ unit.label }}
+						</mat-checkbox>
+					}
+				</div>
+			</div>
+			<div class="orc-filter-menu-rule"></div>
+			<div class="orc-filter-menu-section">
+				<div>States</div>
+				<div class="filter-options">
+					@for (state of state_options(); track state; let i = $index) {
+						<mat-checkbox [formControl]="panel.controls.states.at(i)" (change)="onStatesChange()">
+							{{ state }}
+						</mat-checkbox>
+					}
+				</div>
+			</div>
+		</form>
 	</orc-form-filter-menu>
 </mat-menu>

@@ -17,6 +17,7 @@
 					[loading]="loading_static_data"
 					[mint_genesis_time]="mint_genesis_time"
 					[keysets]="mint_keysets"
+					[mobile_view]="mobile_view()"
 					(dateChange)="onDateChange($event)"
 					(typeChange)="onTypeChange($event)"
 					(unitsChange)="onUnitsChange($event)"
@@ -26,17 +27,30 @@
 			}
 			<div>
 				<div class="flex flex-items-center flex-gap-0-5 relative">
-					<button
-						type="button"
-						matFab
-						extended
-						class="orc-icon-button text-nowrap"
-						(click)="onCreate()"
-						(keydown.enter)="$event.preventDefault(); $event.stopPropagation()"
-					>
-						<mat-icon>database</mat-icon>
-						Create Backup
-					</button>
+					@if (!mobile_view()) {
+						<button
+							type="button"
+							matFab
+							extended
+							class="orc-icon-button text-nowrap"
+							(click)="onCreate()"
+							(keydown.enter)="$event.preventDefault(); $event.stopPropagation()"
+						>
+							<mat-icon>database</mat-icon>
+							Create Backup
+						</button>
+					} @else {
+						<button
+							type="button"
+							matFab
+							class="orc-icon-button text-nowrap"
+							(click)="onCreate()"
+							(keydown.enter)="$event.preventDefault(); $event.stopPropagation()"
+						>
+							<mat-icon>database</mat-icon>
+						</button>
+					}
+
 					<button mat-icon-button type="button" class="orc-icon-button" [matMenuTriggerFor]="advanced_menu">
 						<mat-icon>more_vert</mat-icon>
 					</button>
@@ -104,6 +118,7 @@
 				[loading]="loading_dynamic_data"
 				[lightning_request]="lightning_request"
 				[loading_more]="loading_more"
+				[mobile_view]="mobile_view()"
 				(updateRequest)="onMoreRequest($event)"
 				(setQuoteStatePaid)="onSetQuoteStatePaid($event)"
 			></orc-mint-subsection-database-table>

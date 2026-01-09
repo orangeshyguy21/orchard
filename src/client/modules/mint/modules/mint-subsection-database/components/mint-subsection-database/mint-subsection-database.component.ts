@@ -1,7 +1,18 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef, HostListener, OnDestroy, ViewChild, ElementRef} from '@angular/core';
+import {
+	ChangeDetectionStrategy,
+	Component,
+	OnInit,
+	ChangeDetectorRef,
+	HostListener,
+	OnDestroy,
+	ViewChild,
+	ElementRef,
+	signal,
+} from '@angular/core';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
 import {ActivatedRoute} from '@angular/router';
+import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 /* Vendor Dependencies */
 import {DateTime} from 'luxon';
 import {lastValueFrom, Subscription} from 'rxjs';
@@ -77,6 +88,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	public database_timestamp!: number;
 	public database_implementation!: string;
 	public lightning_request!: LightningRequest | null;
+	public mobile_view = signal<boolean>(false);
 
 	private active_event: EventData | null = null;
 	private subscriptions: Subscription = new Subscription();
@@ -99,6 +111,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		private mintService: MintService,
 		private lightningService: LightningService,
 		private aiService: AiService,
+		private breakpointObserver: BreakpointObserver,
 		private dialog: MatDialog,
 		private cdr: ChangeDetectorRef,
 	) {}
@@ -114,6 +127,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		this.initData();
 		this.subscriptions.add(this.getEventSubscription());
 		this.subscriptions.add(this.getFormSubscription());
+		this.subscriptions.add(this.getBreakpointSubscription());
 		this.orchardOptionalInit();
 	}
 
@@ -163,6 +177,12 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		});
 	}
 
+	private getBreakpointSubscription(): Subscription {
+		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
+			this.mobile_view.set(!result.matches);
+		});
+	}
+
 	/* *******************************************************
 		Controls                      
 	******************************************************** */
@@ -176,8 +196,8 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 			date_end: settings.date_end ?? this.getDefaultDateEnd(),
 			page: settings.page ?? 1,
 			page_size: settings.page_size ?? 100,
-			units: settings.units ?? this.getDefaultUnits(),
-			states: settings.states ?? this.getDefaultStates(type),
+			units: settings.units ?? [],
+			states: settings.states ?? [],
 		};
 	}
 
@@ -189,10 +209,6 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	private getDefaultDateEnd(): number {
 		const today = DateTime.now().endOf('day');
 		return Math.floor(today.toSeconds());
-	}
-
-	private getDefaultUnits(): MintUnit[] {
-		return Array.from(new Set(this.mint_keysets.map((keyset) => keyset.unit)));
 	}
 
 	private getDefaultStates(type: MintDataType): string[] {
@@ -234,12 +250,13 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	}
 
 	private async getMintsData(): Promise<void> {
+		console.log('getMintsData', this.page_settings.units);
 		const mint_mint_quotes_data = await lastValueFrom(
 			this.mintService.getMintMintQuotesData({
 				date_start: this.page_settings.date_start,
 				date_end: this.page_settings.date_end,
-				units: this.page_settings.units,
-				states: this.page_settings.states as MintQuoteState[],
+				units: this.page_settings.units.length > 0 ? this.page_settings.units : undefined,
+				states: this.page_settings.states.length > 0 ? (this.page_settings.states as MintQuoteState[]) : undefined,
 				page: this.page_settings.page,
 				page_size: this.page_settings.page_size,
 			}),
@@ -256,8 +273,8 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 			this.mintService.getMintMeltQuotesData({
 				date_start: this.page_settings.date_start,
 				date_end: this.page_settings.date_end,
-				units: this.page_settings.units,
-				states: this.page_settings.states as MeltQuoteState[],
+				units: this.page_settings.units.length > 0 ? this.page_settings.units : undefined,
+				states: this.page_settings.states.length > 0 ? (this.page_settings.states as MeltQuoteState[]) : undefined,
 				page: this.page_settings.page,
 				page_size: this.page_settings.page_size,
 			}),
@@ -274,8 +291,8 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 			this.mintService.getMintProofGroupsData({
 				date_start: this.page_settings.date_start,
 				date_end: this.page_settings.date_end,
-				units: this.page_settings.units,
-				states: this.page_settings.states as MintProofState[],
+				units: this.page_settings.units.length > 0 ? this.page_settings.units : undefined,
+				states: this.page_settings.states.length > 0 ? (this.page_settings.states as MintProofState[]) : undefined,
 				page: this.page_settings.page,
 				page_size: this.page_settings.page_size,
 			}),
@@ -292,7 +309,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 			this.mintService.getMintPromiseGroupsData({
 				date_start: this.page_settings.date_start,
 				date_end: this.page_settings.date_end,
-				units: this.page_settings.units,
+				units: this.page_settings.units.length > 0 ? this.page_settings.units : undefined,
 				page: this.page_settings.page,
 				page_size: this.page_settings.page_size,
 			}),

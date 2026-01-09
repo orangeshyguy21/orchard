@@ -31,6 +31,7 @@ export class MintSubsectionDatabaseTableComponent {
 	public loading = input.required<boolean>(); // loading state for initial data
 	public loading_more = input.required<boolean>(); // loading state for expanded row details
 	public lightning_request = input.required<LightningRequest | null>(); // lightning request for invoice lookup
+	public mobile_view = input.required<boolean>(); // mobile view flag
 
 	/* Outputs */
 	public updateRequest = output<string>(); // emits request string for invoice updates
@@ -46,12 +47,7 @@ export class MintSubsectionDatabaseTableComponent {
 	 * @returns array of column names to display
 	 */
 	public displayed_columns = computed(() => {
-		const data_type = this.data().type;
-		if (data_type === 'MintMints' || data_type === 'MintMelts')
-			return ['unit', 'amount', 'request', 'state', 'created_time', 'actions'];
-		if (data_type === 'MintProofGroups') return ['unit', 'amount', 'ecash', 'state', 'created_time'];
-		if (data_type === 'MintPromiseGroups') return ['unit', 'amount', 'ecash', 'created_time'];
-		return ['unit', 'amount', 'request', 'state', 'created_time'];
+		return this.getDisplayedColumns();
 	});
 
 	constructor(private configService: ConfigService) {
@@ -68,6 +64,22 @@ export class MintSubsectionDatabaseTableComponent {
 		setTimeout(() => {
 			this.data().source.sort = this.sort;
 		});
+	}
+
+	private getDisplayedColumns(): string[] {
+		// if (this.mobile_view()) {
+		// 	return ['unit', 'amount', 'request', 'state', 'created_time'];
+		// }
+		const mobile = this.mobile_view();
+		const data_type = this.data().type;
+		if (data_type === 'MintMints' || data_type === 'MintMelts') {
+			if (mobile) return ['unit', 'amount', 'state'];
+			return ['unit', 'amount', 'request', 'state', 'created_time', 'actions'];
+		}
+
+		if (data_type === 'MintProofGroups') return ['unit', 'amount', 'ecash', 'state', 'created_time'];
+		if (data_type === 'MintPromiseGroups') return ['unit', 'amount', 'ecash', 'created_time'];
+		return ['unit', 'amount', 'request', 'state', 'created_time'];
 	}
 
 	/**
