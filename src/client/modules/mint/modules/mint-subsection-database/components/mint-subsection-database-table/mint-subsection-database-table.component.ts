@@ -75,11 +75,11 @@ export class MintSubsectionDatabaseTableComponent {
 		}
 
 		if (data_type === 'MintProofGroups') {
-			if (mobile) return ['unit', 'amount', 'state'];
+			if (mobile) return ['unit', 'amount', 'ecash', 'state'];
 			return ['unit', 'amount', 'ecash', 'state', 'created_time'];
 		}
 		if (data_type === 'MintPromiseGroups') {
-			if (mobile) return ['unit', 'amount'];
+			if (mobile) return ['unit', 'amount', 'ecash'];
 			return ['unit', 'amount', 'ecash', 'created_time'];
 		}
 		if (mobile) return ['unit', 'amount', 'state'];
