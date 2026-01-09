@@ -1,6 +1,6 @@
-<div class="nut-spec" [class.disabled]="!supported" matRipple (click)="onNutClick()">
-	<div>NUT {{ nut_index }}</div>
-	<div class="flex label-nut" [ngClass]="supported ? 'label-fill' : 'label-outline'">
+<div class="nut-spec" [class.disabled]="!supported()" matRipple (click)="onNutClick()">
+	<div class="text-nowrap">NUT {{ nut_index() }}</div>
+	<div class="flex label-nut" [ngClass]="supported() ? 'label-fill' : 'label-outline'">
 		<ng-content></ng-content>
 	</div>
 </div>
