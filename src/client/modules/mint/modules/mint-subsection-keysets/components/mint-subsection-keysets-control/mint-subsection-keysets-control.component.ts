@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, computed, effect, input, output, signal, untracked, viewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, input, output, signal, untracked, viewChild} from '@angular/core';
 import {FormControl, FormGroup, FormArray, Validators} from '@angular/forms';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 /* Vendor Dependencies */
@@ -65,7 +65,9 @@ export class MintSubsectionKeysetsControlComponent {
 		{label: 'Active', value: true},
 		{label: 'Inactive', value: false},
 	];
-	public readonly height_state = computed(() => (this.panel?.invalid ? 'invalid' : 'valid'));
+	public get height_state(): string {
+		return this.panel?.invalid ? 'invalid' : 'valid';
+	}
 
 	private readonly filter_menu_trigger = viewChild(MatMenuTrigger);
 	private initialized = false;
@@ -129,6 +131,7 @@ export class MintSubsectionKeysetsControlComponent {
 		this.panel.controls.daterange.controls.date_end.setValue(DateTime.fromSeconds(settings.date_end));
 		this.setUnitFilters(settings.units);
 		this.setStatusFilters(settings.status);
+		this.updateFilterCount();
 	}
 
 	/** Builds the FormArray controls based on unit_options */

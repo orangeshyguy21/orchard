@@ -192,6 +192,10 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 			forkJoin([analytics_keysets_obs, analytics_keysets_pre_obs, keyset_proof_counts_obs]),
 		);
 
+		console.log('analytics_keysets', analytics_keysets);
+		console.log('analytics_keysets_pre', analytics_keysets_pre);
+		console.log('keysets_proof_counts', keysets_proof_counts);
+
 		this.keysets_analytics = analytics_keysets;
 		this.keysets_analytics_pre = analytics_keysets_pre;
 		this.keysets_proof_counts = keysets_proof_counts;

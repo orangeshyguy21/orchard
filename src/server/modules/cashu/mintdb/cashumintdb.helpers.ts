@@ -243,12 +243,12 @@ export function getAnalyticsTimeGroupStamp({
 	interval,
 	timezone,
 }: {
-	min_created_time: number;
+	min_created_time: number | Date;
 	time_group: string;
 	interval: CashuMintAnalyticsArgs['interval'];
 	timezone: CashuMintAnalyticsArgs['timezone'];
 }): number {
-	if (interval === 'custom') return min_created_time;
+	if (interval === 'custom') return convertDateToUnixTimestamp(min_created_time);
 	const datetime = DateTime.fromFormat(time_group, 'yyyy-MM-dd', {zone: timezone}).startOf('day');
 	return Math.floor(datetime.toSeconds());
 }
