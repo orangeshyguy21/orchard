@@ -67,9 +67,6 @@ export class MintSubsectionDatabaseTableComponent {
 	}
 
 	private getDisplayedColumns(): string[] {
-		// if (this.mobile_view()) {
-		// 	return ['unit', 'amount', 'request', 'state', 'created_time'];
-		// }
 		const mobile = this.mobile_view();
 		const data_type = this.data().type;
 		if (data_type === 'MintMints' || data_type === 'MintMelts') {
@@ -77,8 +74,15 @@ export class MintSubsectionDatabaseTableComponent {
 			return ['unit', 'amount', 'request', 'state', 'created_time', 'actions'];
 		}
 
-		if (data_type === 'MintProofGroups') return ['unit', 'amount', 'ecash', 'state', 'created_time'];
-		if (data_type === 'MintPromiseGroups') return ['unit', 'amount', 'ecash', 'created_time'];
+		if (data_type === 'MintProofGroups') {
+			if (mobile) return ['unit', 'amount', 'state'];
+			return ['unit', 'amount', 'ecash', 'state', 'created_time'];
+		}
+		if (data_type === 'MintPromiseGroups') {
+			if (mobile) return ['unit', 'amount'];
+			return ['unit', 'amount', 'ecash', 'created_time'];
+		}
+		if (mobile) return ['unit', 'amount', 'state'];
 		return ['unit', 'amount', 'request', 'state', 'created_time'];
 	}
 
