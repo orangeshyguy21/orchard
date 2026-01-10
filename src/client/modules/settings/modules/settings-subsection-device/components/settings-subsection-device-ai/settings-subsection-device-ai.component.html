@@ -55,14 +55,16 @@
 
 						@if (ai_model) {
 							<div class="flex flex-justify-center flex-items-center flex-gap-1">
-								<div class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color font-weight-extra-light">
+								<div
+									class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color font-weight-extra-light text-nowrap"
+								>
 									<div>model:</div>
-									<div class="text-nowrap">parameter size:</div>
-									<div class="text-nowrap">model size:</div>
-									<div class="text-nowrap">quantization level:</div>
-									<div class="text-nowrap">last modified:</div>
+									<div>parameter size:</div>
+									<div>model size:</div>
+									<div>quantization level:</div>
+									<div>last modified:</div>
 								</div>
-								<div class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color">
+								<div class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color text-nowrap">
 									<div>{{ ai_model.model }}</div>
 									<div>{{ ai_model.details.parameter_size }}</div>
 									<div>{{ ai_model.size | dataBytes }}</div>
