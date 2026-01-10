@@ -12,6 +12,7 @@
 			<div class="flex flex-wrap">
 				<!-- NUT 04 -->
 				<div class="nav4 flex-1" #nav4>
+					<!-- NUT 04 ENABLED -->
 					<div class="sticky-nut z-index-1">
 						<div class="title-l">Minting</div>
 						<div class="font-size-xs orc-outline-color p-b-0-5">Configure depositing to the mint</div>
@@ -24,6 +25,8 @@
 						[mobile_view]="mobile_view()"
 						(update)="onEnabledUpdate($event)"
 					></orc-mint-subsection-config-form-enabled>
+
+					<!-- NUT 04 QUOTE TTL -->
 					<div class="sticky-config z-index-1">
 						<div class="flex flex-items-center flex-gap-0-5 p-b-0-5">
 							<div class="font-size-xs orc-outline-color">Configure Mint Quote TTL</div>
@@ -42,57 +45,83 @@
 						(cancel)="onTtlCancel($event)"
 					></orc-mint-subsection-config-form-quote-ttl>
 					@for (unit of minting_units; track unit) {
-						<div class="sticky-config z-index-1">
-							<div class="flex flex-items-center flex-gap-0-5 p-b-0-5">
-								<div class="font-size-xs orc-outline-color">{{ unit | localUnit: true }} Configuration</div>
-								<orc-graphic-asset [unit]="unit" [height]="'1rem'"> </orc-graphic-asset>
+						<!-- NUT 04 BOLT 11 -->
+						@if (method_index.includes(`nut4:${unit}:bolt11`)) {
+							<div class="sticky-config z-index-1">
+								<div class="flex flex-items-center flex-gap-0-5 p-b-0-5">
+									<div class="font-size-xs orc-outline-color">{{ unit | localUnit: true }} Configuration</div>
+									<orc-graphic-asset [unit]="unit" [height]="'1rem'"> </orc-graphic-asset>
+									<div class="font-size-xs orc-outline-color">Bolt 11</div>
+									<mat-icon class="icon-sm orc-outline-color">bolt</mat-icon>
+								</div>
 							</div>
-						</div>
-						<div class="nut-wrapper">
-							<mat-card appearance="outlined" class="relative overflow-hidden">
-								<mat-card-content class="orc-surface-container-low-bg">
-									<div class="flex flex-column flex-gap-2">
-										@if (method_index.includes(`nut4:${unit}:bolt11`)) {
-											<orc-mint-subsection-config-form-bolt11
-												class="flex-1"
-												[nut]="'nut4'"
-												[unit]="unit"
-												[method]="'bolt11'"
-												[form_group]="form_minting"
-												[locale]="locale"
-												[loading]="data_loading"
-												[quotes]="mint_quotes_bolt11"
-												(update)="onMethodUpdate($event)"
-												(cancel)="onMethodCancel($event)"
-											></orc-mint-subsection-config-form-bolt11>
+							<div class="nut-wrapper">
+								<mat-card appearance="outlined" class="relative overflow-hidden">
+									<mat-card-content class="orc-surface-container-low-bg">
+										<orc-mint-subsection-config-form-bolt11
+											class="flex-1"
+											[nut]="'nut4'"
+											[unit]="unit"
+											[method]="'bolt11'"
+											[form_group]="form_minting"
+											[locale]="locale"
+											[loading]="data_loading"
+											[quotes]="mint_quotes_bolt11"
+											(update)="onMethodUpdate($event)"
+											(cancel)="onMethodCancel($event)"
+										></orc-mint-subsection-config-form-bolt11>
+										@if (mint_info?.nuts?.nut4?.disabled) {
+											<div
+												class="disabled-overlay"
+												animate.enter="orc-animation-fadein-fast"
+												animate.leave="orc-animation-fadeout-fast"
+											>
+												<div class="orc-outline-color font-weight-bold">MINTING DISABLED</div>
+											</div>
 										}
-										@if (method_index.includes(`nut4:${unit}:bolt12`)) {
-											<orc-mint-subsection-config-form-bolt12
-												class="flex-1"
-												[nut]="'nut4'"
-												[unit]="unit"
-												[method]="'bolt12'"
-												[form_group]="form_minting"
-												[locale]="locale"
-												[loading]="data_loading"
-												[quotes]="mint_quotes_bolt12"
-												(update)="onMethodUpdate($event)"
-												(cancel)="onMethodCancel($event)"
-											></orc-mint-subsection-config-form-bolt12>
+									</mat-card-content>
+								</mat-card>
+							</div>
+						}
+
+						<!-- NUT 04 BOLT 12 -->
+						@if (method_index.includes(`nut4:${unit}:bolt12`)) {
+							<div class="sticky-config z-index-1">
+								<div class="flex flex-items-center flex-gap-0-5 p-b-0-5">
+									<div class="font-size-xs orc-outline-color">{{ unit | localUnit: true }} Configuration</div>
+									<orc-graphic-asset [unit]="unit" [height]="'1rem'"> </orc-graphic-asset>
+									<div class="font-size-xs orc-outline-color">Bolt 12</div>
+									<mat-icon class="icon-sm orc-outline-color" [svgIcon]="'double_bolt'"></mat-icon>
+								</div>
+							</div>
+							<div class="nut-wrapper">
+								<mat-card appearance="outlined" class="relative overflow-hidden">
+									<mat-card-content class="orc-surface-container-low-bg">
+										<orc-mint-subsection-config-form-bolt12
+											class="flex-1"
+											[nut]="'nut4'"
+											[unit]="unit"
+											[method]="'bolt12'"
+											[form_group]="form_minting"
+											[locale]="locale"
+											[loading]="data_loading"
+											[quotes]="mint_quotes_bolt12"
+											(update)="onMethodUpdate($event)"
+											(cancel)="onMethodCancel($event)"
+										></orc-mint-subsection-config-form-bolt12>
+										@if (mint_info?.nuts?.nut4?.disabled) {
+											<div
+												class="disabled-overlay"
+												animate.enter="orc-animation-fadein-fast"
+												animate.leave="orc-animation-fadeout-fast"
+											>
+												<div class="orc-outline-color font-weight-bold">MINTING DISABLED</div>
+											</div>
 										}
-									</div>
-									@if (mint_info?.nuts?.nut4?.disabled) {
-										<div
-											class="disabled-overlay"
-											animate.enter="orc-animation-fadein-fast"
-											animate.leave="orc-animation-fadeout-fast"
-										>
-											<div class="orc-outline-color font-weight-bold">MINTING DISABLED</div>
-										</div>
-									}
-								</mat-card-content>
-							</mat-card>
-						</div>
+									</mat-card-content>
+								</mat-card>
+							</div>
+						}
 					}
 				</div>
 
@@ -103,6 +132,8 @@
 						<div class="font-size-xs orc-outline-color p-b-0-5">Configure withdrawing from the mint</div>
 						<div class="category-rule"></div>
 					</div>
+
+					<!-- NUT 05 ENABLED -->
 					<orc-mint-subsection-config-form-enabled
 						[nut]="'nut5'"
 						[form_group]="form_melting"
@@ -110,6 +141,8 @@
 						(update)="onEnabledUpdate($event)"
 					>
 					</orc-mint-subsection-config-form-enabled>
+
+					<!-- NUT 05 QUOTE TTL -->
 					<div class="sticky-config z-index-1">
 						<div class="flex flex-items-center flex-gap-0-5 p-b-0-5">
 							<div class="font-size-xs orc-outline-color">Configure Melt Quote TTL</div>
@@ -128,58 +161,88 @@
 						(cancel)="onTtlCancel($event)"
 					></orc-mint-subsection-config-form-quote-ttl>
 					@for (unit of melting_units; track unit) {
-						<div class="sticky-config z-index-1">
-							<div class="flex flex-items-center flex-gap-0-5 p-b-0-5">
-								<div class="font-size-xs orc-outline-color">{{ unit | localUnit: true }} Configuration</div>
-								<orc-graphic-asset [unit]="unit" [height]="'1rem'"> </orc-graphic-asset>
+						<!-- NUT 05 BOLT 11 -->
+						@if (method_index.includes(`nut5:${unit}:bolt11`)) {
+							<div class="sticky-config z-index-1">
+								<div class="flex flex-items-center flex-gap-0-5 p-b-0-5">
+									<div class="font-size-xs orc-outline-color">{{ unit | localUnit: true }} Configuration</div>
+									<orc-graphic-asset [unit]="unit" [height]="'1rem'"> </orc-graphic-asset>
+									<div class="font-size-xs orc-outline-color">Bolt 11</div>
+									<mat-icon class="icon-sm orc-outline-color">bolt</mat-icon>
+								</div>
 							</div>
-						</div>
-						<div class="nut-wrapper">
-							<mat-card appearance="outlined" class="relative overflow-hidden">
-								<mat-card-content class="orc-surface-container-low-bg">
-									<div class="flex flex-column flex-gap-2">
-										@if (method_index.includes(`nut5:${unit}:bolt11`)) {
-											<orc-mint-subsection-config-form-bolt11
-												class="flex-1"
-												[nut]="'nut5'"
-												[unit]="unit"
-												[method]="'bolt11'"
-												[form_group]="form_melting"
-												[form_status]="form_melting.get('enabled')?.value"
-												[locale]="locale"
-												[loading]="data_loading"
-												[quotes]="melt_quotes_bolt11"
-												(update)="onMethodUpdate($event)"
-												(cancel)="onMethodCancel($event)"
-											></orc-mint-subsection-config-form-bolt11>
+
+							<div class="nut-wrapper">
+								<mat-card appearance="outlined" class="relative overflow-hidden">
+									<mat-card-content class="orc-surface-container-low-bg">
+										<orc-mint-subsection-config-form-bolt11
+											class="flex-1"
+											[nut]="'nut5'"
+											[unit]="unit"
+											[method]="'bolt11'"
+											[form_group]="form_melting"
+											[form_status]="form_melting.get('enabled')?.value"
+											[locale]="locale"
+											[loading]="data_loading"
+											[quotes]="melt_quotes_bolt11"
+											(update)="onMethodUpdate($event)"
+											(cancel)="onMethodCancel($event)"
+										></orc-mint-subsection-config-form-bolt11>
+
+										@if (mint_info?.nuts?.nut5?.disabled) {
+											<div
+												class="disabled-overlay"
+												animate.enter="orc-animation-fadein-fast"
+												animate.leave="orc-animation-fadeout-fast"
+											>
+												<div class="orc-outline-color font-weight-bold">MELTING DISABLED</div>
+											</div>
 										}
-										@if (method_index.includes(`nut5:${unit}:bolt12`)) {
-											<orc-mint-subsection-config-form-bolt12
-												class="flex-1"
-												[nut]="'nut5'"
-												[unit]="unit"
-												[method]="'bolt12'"
-												[form_group]="form_melting"
-												[locale]="locale"
-												[loading]="data_loading"
-												[quotes]="melt_quotes_bolt12"
-												(update)="onMethodUpdate($event)"
-												(cancel)="onMethodCancel($event)"
-											></orc-mint-subsection-config-form-bolt12>
+									</mat-card-content>
+								</mat-card>
+							</div>
+						}
+
+						<!-- NUT 05 BOLT 12 -->
+						@if (method_index.includes(`nut5:${unit}:bolt12`)) {
+							<div class="sticky-config z-index-1">
+								<div class="flex flex-items-center flex-gap-0-5 p-b-0-5">
+									<div class="font-size-xs orc-outline-color">{{ unit | localUnit: true }} Configuration</div>
+									<orc-graphic-asset [unit]="unit" [height]="'1rem'"> </orc-graphic-asset>
+									<div class="font-size-xs orc-outline-color">Bolt 12</div>
+									<mat-icon class="icon-sm orc-outline-color" [svgIcon]="'double_bolt'"></mat-icon>
+								</div>
+							</div>
+
+							<div class="nut-wrapper">
+								<mat-card appearance="outlined" class="relative overflow-hidden">
+									<mat-card-content class="orc-surface-container-low-bg">
+										<orc-mint-subsection-config-form-bolt12
+											class="flex-1"
+											[nut]="'nut5'"
+											[unit]="unit"
+											[method]="'bolt12'"
+											[form_group]="form_melting"
+											[locale]="locale"
+											[loading]="data_loading"
+											[quotes]="melt_quotes_bolt12"
+											(update)="onMethodUpdate($event)"
+											(cancel)="onMethodCancel($event)"
+										></orc-mint-subsection-config-form-bolt12>
+
+										@if (mint_info?.nuts?.nut5?.disabled) {
+											<div
+												class="disabled-overlay"
+												animate.enter="orc-animation-fadein-fast"
+												animate.leave="orc-animation-fadeout-fast"
+											>
+												<div class="orc-outline-color font-weight-bold">MELTING DISABLED</div>
+											</div>
 										}
-									</div>
-									@if (mint_info?.nuts?.nut5?.disabled) {
-										<div
-											class="disabled-overlay"
-											animate.enter="orc-animation-fadein-fast"
-											animate.leave="orc-animation-fadeout-fast"
-										>
-											<div class="orc-outline-color font-weight-bold">MELTING DISABLED</div>
-										</div>
-									}
-								</mat-card-content>
-							</mat-card>
-						</div>
+									</mat-card-content>
+								</mat-card>
+							</div>
+						}
 					}
 				</div>
 			</div>
