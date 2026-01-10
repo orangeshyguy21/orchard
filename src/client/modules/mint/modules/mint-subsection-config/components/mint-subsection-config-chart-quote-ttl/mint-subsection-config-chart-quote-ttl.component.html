@@ -2,8 +2,13 @@
 	<div class="flex flex-gap-1 relative">
 		<div class="flex-grow">
 			<div class="mint-quote-ttl-chart-container">
+				<div class="chart-stats-container">
+					<ng-content></ng-content>
+				</div>
 				@if (displayed()) {
-					<canvas baseChart [data]="chart_data" [options]="chart_options" [type]="chart_type"></canvas>
+					<div animate.enter="orc-animation-fadein" animate.leave="orc-animation-fadeout-fast">
+						<canvas baseChart [data]="chart_data" [options]="chart_options" [type]="chart_type"></canvas>
+					</div>
 				}
 			</div>
 		</div>
@@ -15,7 +20,7 @@
 				animate.leave="orc-animation-fadeout-fast"
 			>
 				<mat-icon class="icon-lg mat-symbol-outline orc-outline-variant-color">bar_chart_off</mat-icon>
-				<div class="font-size-xs orc-outline-variant-color">No data available</div>
+				<div class="font-size-xs orc-outline-variant-color">No {{ nut() === 'nut4' ? 'mint' : 'melt' }} quotes</div>
 			</div>
 		}
 	</div>

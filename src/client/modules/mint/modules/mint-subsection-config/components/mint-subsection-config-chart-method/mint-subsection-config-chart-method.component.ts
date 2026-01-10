@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, viewChild, OnDestroy, effect, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, viewChild, OnDestroy, effect, signal, HostListener} from '@angular/core';
 /* Vendor Dependencies */
 import {BaseChartDirective} from 'ng2-charts';
 import {ChartConfiguration, ChartType as ChartJsType} from 'chart.js';
@@ -38,10 +38,11 @@ export class MintSubsectionConfigChartMethodComponent implements OnDestroy {
 	public chart_type = signal<ChartJsType>('scatter');
 	public chart_data = signal<ChartConfiguration['data']>({datasets: []});
 	public chart_options = signal<ChartConfiguration['options']>({});
-	public displayed = signal<boolean>(true);
+	public displayed = signal<boolean>(false);
 
 	private subscriptions: Subscription = new Subscription();
 	private initialized = false;
+	private resize_timeout: ReturnType<typeof setTimeout> | null = null;
 
 	constructor(private chartService: ChartService) {
 		this.subscriptions.add(this.getRemoveSubscription());
@@ -50,6 +51,7 @@ export class MintSubsectionConfigChartMethodComponent implements OnDestroy {
 		effect(() => {
 			const loading = this.loading();
 			if (loading === false && !this.initialized) {
+				this.displayed.set(true);
 				this.initialized = true;
 				this.init();
 			}
@@ -64,6 +66,22 @@ export class MintSubsectionConfigChartMethodComponent implements OnDestroy {
 				this.initOptions();
 			}
 		});
+	}
+
+	/**
+	 * Handles window resize events by hiding the chart during resize
+	 * and showing it again after a debounce delay to prevent layout instability
+	 */
+	@HostListener('window:resize')
+	onWindowResize(): void {
+		if (!this.initialized) return;
+		this.displayed.set(false);
+		if (this.resize_timeout) {
+			clearTimeout(this.resize_timeout);
+		}
+		this.resize_timeout = setTimeout(() => {
+			this.displayed.set(true);
+		}, 150);
 	}
 
 	private getRemoveSubscription(): Subscription {
@@ -252,5 +270,6 @@ export class MintSubsectionConfigChartMethodComponent implements OnDestroy {
 
 	ngOnDestroy(): void {
 		this.subscriptions.unsubscribe();
+		if (this.resize_timeout) clearTimeout(this.resize_timeout);
 	}
 }

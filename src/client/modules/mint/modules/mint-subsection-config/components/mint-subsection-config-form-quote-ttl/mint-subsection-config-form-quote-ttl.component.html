@@ -1,8 +1,26 @@
 <div class="p-r-1 p-b-2" [ngClass]="{'p-l-1': mobile_view(), 'p-l-2': !mobile_view()}">
 	<mat-card appearance="outlined" class="relative overflow-hidden">
 		<mat-card-content class="orc-surface-container-low-bg">
-			<div class="flex flex-gap-2 flex-wrap">
-				<div class="flex-1 flex flex-column flex-gap-2">
+			<div class="flex flex-gap-column-2 flex-wrap">
+				<div class="flex-1 flex flex-column flex-gap-0-5">
+					<orc-mint-subsection-config-chart-quote-ttl
+						[nut]="nut()"
+						[loading]="loading()"
+						[quotes]="valid_quotes()"
+						[locale]="locale()"
+						[form_hot]="form_hot()"
+						[quote_ttl]="form_group().get(control_name())?.value"
+						[deltas]="stat_deltas()"
+						[stats]="stats()"
+					>
+						<orc-mint-subsection-config-stats
+							[loading]="loading()"
+							[stats]="stats()"
+							[unit]="'s'"
+						></orc-mint-subsection-config-stats>
+					</orc-mint-subsection-config-chart-quote-ttl>
+				</div>
+				<div class="flex-1 flex flex-column flex-gap-2 p-l-1">
 					<div class="flex flex-column">
 						<form
 							class="flex-grow"
@@ -27,7 +45,7 @@
 										class="flex flex-items-center flex-gap-0-5 cursor-pointer"
 										(click)="$event.preventDefault(); help_status.set(!help_status()); $event.stopPropagation()"
 									>
-										<span>Quote TTL</span>
+										<span>{{ nut() === 'nut4' ? 'Mint' : 'Melt' }} Quote TTL</span>
 										<mat-icon class="icon-sm icon-dynamic-fill">info</mat-icon>
 									</mat-label>
 									<input
@@ -63,26 +81,6 @@
 							</div>
 						</div>
 					</div>
-				</div>
-				<div class="flex-1 flex flex-column flex-gap-0-5">
-					<div class="flex flex-justify-center">
-						<div class="font-size-xs orc-outline-color">{{ nut() === 'nut4' ? 'Mint' : 'Melt' }} Quote Processing Times</div>
-					</div>
-					<orc-mint-subsection-config-stats
-						[loading]="loading()"
-						[stats]="stats()"
-						[unit]="'s'"
-					></orc-mint-subsection-config-stats>
-					<orc-mint-subsection-config-chart-quote-ttl
-						[nut]="nut()"
-						[loading]="loading()"
-						[quotes]="valid_quotes()"
-						[locale]="locale()"
-						[form_hot]="form_hot()"
-						[quote_ttl]="form_group().get(control_name())?.value"
-						[deltas]="stat_deltas()"
-						[stats]="stats()"
-					></orc-mint-subsection-config-chart-quote-ttl>
 				</div>
 			</div>
 			@if (disabled()) {

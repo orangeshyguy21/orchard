@@ -3,7 +3,9 @@
 		<div class="flex-grow">
 			<div class="mint-method-chart-container">
 				@if (displayed()) {
-					<canvas baseChart [data]="chart_data()" [options]="chart_options()" [type]="chart_type()"></canvas>
+					<div animate.enter="orc-animation-fadein" animate.leave="orc-animation-fadeout-fast">
+						<canvas baseChart [data]="chart_data()" [options]="chart_options()" [type]="chart_type()"></canvas>
+					</div>
 				}
 			</div>
 		</div>

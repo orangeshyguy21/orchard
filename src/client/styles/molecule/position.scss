@@ -27,6 +27,11 @@
     #{$c}flex-gap-1-5 { gap: 1.5rem; }
     #{$c}flex-gap-2 { gap: 2rem; }
     #{$c}flex-gap-4 { gap: 4rem; }
+    #{$c}flex-gap-row-1 { row-gap: 1rem; }
+    #{$c}flex-gap-row-2 { row-gap: 2rem; }
+    #{$c}flex-gap-column-1 { column-gap: 1rem; }
+    #{$c}flex-gap-column-2 { column-gap: 2rem; }
+
     #{$c}flex-shrink-0 { flex-shrink: 0; }
     #{$c}flex-shrink-1 { flex-shrink: 1; }
     #{$c}flex-basis-0 { flex-basis: 0; }

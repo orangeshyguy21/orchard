@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, effect, viewChild, OnDestroy, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, effect, viewChild, OnDestroy, signal, HostListener} from '@angular/core';
 /* Vendor Dependencies */
 import {BaseChartDirective} from 'ng2-charts';
 import {ChartConfiguration, ChartType as ChartJsType} from 'chart.js';
@@ -34,11 +34,12 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnDestroy {
 	public chart_type!: ChartJsType;
 	public chart_data!: ChartConfiguration['data'];
 	public chart_options!: ChartConfiguration['options'];
-	public displayed = signal<boolean>(true);
+	public displayed = signal<boolean>(false);
 	public stats = input.required<MintConfigStats>();
 
 	private subscriptions: Subscription = new Subscription();
 	private initialized = false;
+	private resize_timeout: ReturnType<typeof setTimeout> | null = null;
 
 	constructor(private chartService: ChartService) {
 		this.subscriptions.add(this.getRemoveSubscription());
@@ -47,6 +48,7 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnDestroy {
 		effect(() => {
 			const loading = this.loading();
 			if (!loading && !this.initialized) {
+				this.displayed.set(true);
 				this.initialized = true;
 				this.init();
 			}
@@ -65,6 +67,22 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnDestroy {
 				this.initOptions();
 			}
 		});
+	}
+
+	/**
+	 * Handles window resize events by hiding the chart during resize
+	 * and showing it again after a debounce delay to prevent layout instability
+	 */
+	@HostListener('window:resize')
+	onWindowResize(): void {
+		if (!this.initialized) return;
+		this.displayed.set(false);
+		if (this.resize_timeout) {
+			clearTimeout(this.resize_timeout);
+		}
+		this.resize_timeout = setTimeout(() => {
+			this.displayed.set(true);
+		}, 150);
 	}
 
 	private getRemoveSubscription(): Subscription {
@@ -229,5 +247,6 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnDestroy {
 
 	ngOnDestroy(): void {
 		this.subscriptions.unsubscribe();
+		if (this.resize_timeout) clearTimeout(this.resize_timeout);
 	}
 }

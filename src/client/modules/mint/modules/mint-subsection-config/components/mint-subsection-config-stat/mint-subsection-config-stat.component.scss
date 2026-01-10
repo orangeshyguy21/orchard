@@ -9,13 +9,12 @@
 	@extend %flex-gap-0-25;
 	@extend %flex-items-center;
 	@extend %flex-justify-center;
-	@extend %orc-surface-container-high-bg;
+	@extend %orc-fog-high-bg;
 	@extend %w-min-3;
 	@extend %orc-corner-extra-small;
 	@extend %p-0-25;
 	@extend %p-h-0-5;
 	@extend %p-v-0-25;
-
 	transition: background-color 800ms ease;
 }
 
