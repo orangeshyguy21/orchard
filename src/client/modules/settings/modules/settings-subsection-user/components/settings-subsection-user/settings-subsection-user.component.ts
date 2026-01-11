@@ -1,6 +1,7 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, OnInit, OnDestroy, WritableSignal, signal, effect, HostListener} from '@angular/core';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
+import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 /* Vendor Dependencies */
 import {Subscription} from 'rxjs';
 /* Application Dependencies */
@@ -29,6 +30,7 @@ export class SettingsSubsectionUserComponent implements ComponentCanDeactivate, 
 	});
 
 	public user = signal<User | null>(null);
+	public mobile_view = signal(false);
 
 	private dirty_count: WritableSignal<number> = signal(0);
 
@@ -38,6 +40,7 @@ export class SettingsSubsectionUserComponent implements ComponentCanDeactivate, 
 	constructor(
 		private crewService: CrewService,
 		private eventService: EventService,
+		private breakpointObserver: BreakpointObserver,
 	) {
 		effect(() => {
 			this.createPendingEvent(this.dirty_count());
@@ -48,6 +51,7 @@ export class SettingsSubsectionUserComponent implements ComponentCanDeactivate, 
 		this.subscriptions.add(this.getUserSubscription());
 		this.subscriptions.add(this.getEventSubscription());
 		this.subscriptions.add(this.getFormSubscription());
+		this.subscriptions.add(this.getBreakpointSubscription());
 	}
 
 	private getUserSubscription(): Subscription {
@@ -71,6 +75,12 @@ export class SettingsSubsectionUserComponent implements ComponentCanDeactivate, 
 	private getFormSubscription(): Subscription {
 		return this.form_user_name.valueChanges.subscribe(() => {
 			this.evaluateDirtyCount();
+		});
+	}
+
+	private getBreakpointSubscription(): Subscription {
+		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
+			this.mobile_view.set(!result.matches);
 		});
 	}
 

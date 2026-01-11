@@ -7,7 +7,13 @@
 					class="primary-form-field"
 					[ngClass]="hot() ? 'orc-hot-form-field' : 'orc-cold-form-field'"
 				>
-					<mat-label>Username</mat-label>
+					<mat-label
+						class="flex flex-items-center flex-gap-0-5 cursor-pointer"
+						(click)="$event.preventDefault(); $event.stopPropagation(); help_status.set(!help_status())"
+					>
+						<span>Username</span>
+						<mat-icon class="icon-sm icon-dynamic-fill">info</mat-icon>
+					</mat-label>
 					<input
 						type="text"
 						aria-label="Username"
@@ -22,12 +28,15 @@
 					}
 				</mat-form-field>
 			</orc-form-field-dynamic>
+			<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
+				<div class="orc-animation-expand-collapse-inner">
+					<div class="flex p-t-0-5 p-b-1 w-max-18">
+						<orc-form-help-text class="orc-surface-container-high-bg">
+							<div>Change your username to identify this user account</div>
+						</orc-form-help-text>
+					</div>
+				</div>
+			</div>
 		</form>
-
-		<div class="w-max-18">
-			<orc-form-help-text class="orc-surface-container-high-bg">
-				Change your username to identify this user account
-			</orc-form-help-text>
-		</div>
 	</div>
 </div>

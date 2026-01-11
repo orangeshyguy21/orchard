@@ -16,7 +16,16 @@
 }
 
 .settings-box {
-	@extend %p-t-2;
-	@extend %p-b-2;
-	@extend %p-l-2;
+	@extend %p-2;
+}
+
+.mobile-view {
+	.sticky-setting {
+		@extend %p-l-1;
+		@extend %p-t-1;
+		@extend %p-r-1;
+	}
+	.settings-box {
+		@extend %p-1;
+	}
 }

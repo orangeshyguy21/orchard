@@ -1,4 +1,4 @@
-<div class="flex flex-column">
+<div class="flex flex-column" [class.mobile-view]="mobile_view()">
 	<div class="sticky-setting z-index-1">
 		<div class="flex flex-justify-between flex-items-end p-b-0-5">
 			<div>
@@ -8,11 +8,13 @@
 		</div>
 		<div class="category-rule"></div>
 	</div>
-	<orc-settings-subsection-user-user
-		[user]="user()"
-		[form_group_user_name]="form_user_name"
-		(cancel_user_name)="onCancelUserName($event)"
-		(submit_user_name)="onSubmitUserName()"
-		(save_user_password)="onSaveUserPassword($event)"
-	></orc-settings-subsection-user-user>
+	<div class="settings-box">
+		<orc-settings-subsection-user-user
+			[user]="user()"
+			[form_group_user_name]="form_user_name"
+			(cancel_user_name)="onCancelUserName($event)"
+			(submit_user_name)="onSubmitUserName()"
+			(save_user_password)="onSaveUserPassword($event)"
+		></orc-settings-subsection-user-user>
+	</div>
 </div>
