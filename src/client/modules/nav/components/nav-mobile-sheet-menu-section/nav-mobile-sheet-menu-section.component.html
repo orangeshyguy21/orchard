@@ -96,5 +96,23 @@
 				<orc-nav-primary-status [size]="'small'"></orc-nav-primary-status>
 			</div>
 		</a>
+		<a
+			mat-list-item
+			routerLink="/settings"
+			(click)="onItemClick('settings')"
+			(mouseenter)="hovered.set('settings')"
+			(mouseleave)="hovered.set('')"
+			[class.active]="active_section() === 'settings'"
+		>
+			<div class="flex flex-items-center flex-justify-between">
+				<div class="flex flex-items-center flex-gap-1">
+					<mat-icon class="icon-md" [class.mat-symbol-outline]="active_section() !== 'settings' && hovered() !== 'settings'"
+						>settings</mat-icon
+					>
+					<span>Settings</span>
+				</div>
+				<orc-nav-primary-status [size]="'small'"></orc-nav-primary-status>
+			</div>
+		</a>
 	</mat-nav-list>
 </div>
