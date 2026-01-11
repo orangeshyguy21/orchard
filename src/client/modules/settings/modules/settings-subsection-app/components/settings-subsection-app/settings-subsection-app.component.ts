@@ -1,6 +1,7 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, HostListener, WritableSignal, signal, effect, OnInit, OnDestroy} from '@angular/core';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
+import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 /* Vendor Dependencies */
 import {Subscription, firstValueFrom} from 'rxjs';
 /* Application Dependencies */
@@ -32,6 +33,7 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 		oracle_enabled: new FormControl(false, [Validators.required]),
 	});
 	public bitcoin_oracle_price = signal<BitcoinOraclePrice | null>(null);
+	public mobile_view = signal(false);
 
 	private active_event: EventData | null = null;
 	private subscriptions: Subscription = new Subscription();
@@ -42,6 +44,7 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 		private settingAppService: SettingAppService,
 		private eventService: EventService,
 		private bitcoinService: BitcoinService,
+		private breakpointObserver: BreakpointObserver,
 	) {
 		effect(() => {
 			this.createPendingEvent(this.dirty_count());
@@ -50,6 +53,7 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 
 	async ngOnInit(): Promise<void> {
 		this.subscriptions.add(this.getEventSubscription());
+		this.subscriptions.add(this.getBreakpointSubscription());
 		await this.getSettings();
 		this.getBitcoinOracle();
 	}
@@ -72,6 +76,12 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 			if (event_data && event_data.confirmed !== null) {
 				event_data.confirmed ? this.onConfirmedEvent() : this.onUnconfirmedEvent();
 			}
+		});
+	}
+
+	private getBreakpointSubscription(): Subscription {
+		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
+			this.mobile_view.set(!result.matches);
 		});
 	}
 

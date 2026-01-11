@@ -1,11 +1,21 @@
-<div class="flex flex-items-center flex-gap-2 p-l-1">
+<div class="flex flex-gap-2 p-l-1 flex-wrap">
 	<div class="flex-1">
-		<div [formGroup]="form_group()" class="flex flex-items-center flex-gap-2">
-			<div class="flex-1 flex flex-items-center flex-grow" animate.enter="orc-animation-fadein">
+		<div [formGroup]="form_group()" class="flex flex-column">
+			<div class="p-t-1 flex flex-items-center flex-grow flex-gap-1" animate.enter="orc-animation-fadein">
 				<mat-slide-toggle [formControlName]="control_name()" name="oracle_enabled" (change)="update.emit()"> </mat-slide-toggle>
-				<div class="p-l-1 font-size-s">Price Oracle Enabled</div>
+				<div class="font-size-s text-nowrap">Price Oracle Enabled</div>
+				<mat-icon class="icon-sm icon-dynamic-fill cursor-pointer" (click)="help_status.set(!help_status())">info</mat-icon>
 			</div>
-			<div class="flex-1">
+			<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
+				<div class="orc-animation-expand-collapse-inner">
+					<div class="flex p-t-2 p-b-1 w-max-18">
+						<orc-form-help-text class="orc-surface-container-high-bg">
+							A task runs daily at 12:00 AM UTC to calcualte the previous days price using only data from your bitcoin node
+						</orc-form-help-text>
+					</div>
+				</div>
+			</div>
+			<!-- <div class="flex-1">
 				<orc-form-help-text class="orc-surface-container-high-bg">
 					<div class="flex flex-column flex-gap-0-5">
 						<div>Enables sovereign bitcoin USD pricing</div>
@@ -14,7 +24,7 @@
 						</div>
 					</div>
 				</orc-form-help-text>
-			</div>
+			</div> -->
 		</div>
 	</div>
 	<div class="flex-1 flex flex-justify-center">
@@ -28,3 +38,23 @@
 		}
 	</div>
 </div>
+
+<!-- <div class="flex flex-column p-l-1">
+    <form [formGroup]="form_bolt11()" class="flex flex-items-center flex-gap-1">
+        <mat-slide-toggle [formControlName]="toggle_control()" (change)="onToggle($event)" [name]="toggle_control()">
+        </mat-slide-toggle>
+        <div class="font-size-s">
+            {{ toggle_control_name() }}
+        </div>
+        <mat-icon class="icon-sm icon-dynamic-fill cursor-pointer" (click)="help_status.set(!help_status())">info</mat-icon>
+    </form>
+    <div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
+        <div class="orc-animation-expand-collapse-inner">
+            <div class="flex p-t-2 p-b-1">
+                <orc-form-help-text class="orc-surface-container-high-bg">
+                    <div [innerHTML]="toggle_help_text()"></div>
+                </orc-form-help-text>
+            </div>
+        </div>
+    </div>
+</div> -->
