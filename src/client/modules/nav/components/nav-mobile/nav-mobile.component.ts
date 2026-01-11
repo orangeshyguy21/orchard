@@ -172,6 +172,8 @@ export class NavMobileComponent {
 				return 'account_balance';
 			case 'ecash':
 				return 'payments';
+			case 'settings':
+				return 'settings';
 			default:
 				return 'index';
 		}
@@ -187,6 +189,8 @@ export class NavMobileComponent {
 				return 'Mint';
 			case 'ecash':
 				return 'E-Cash';
+			case 'settings':
+				return 'Settings';
 			default:
 				return 'Orchard';
 		}

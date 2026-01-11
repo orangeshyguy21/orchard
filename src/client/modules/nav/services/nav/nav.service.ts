@@ -68,6 +68,23 @@ export class NavService {
 				subsection: 'dashboard',
 			},
 		],
+		settings: [
+			{
+				name: 'Device',
+				navroute: 'settings/device',
+				subsection: 'device',
+			},
+			{
+				name: 'User',
+				navroute: 'settings/user',
+				subsection: 'user',
+			},
+			{
+				name: 'App',
+				navroute: 'settings/app',
+				subsection: 'app',
+			},
+		],
 	};
 
 	public getMenuItems(section: string): NavSecondaryItem[] {

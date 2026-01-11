@@ -1,4 +1,4 @@
-<div class="flex flex-items-start flex-wrap flex-gap-1">
+<div class="flex flex-items-start flex-wrap flex-gap-column-1">
 	<div class="flex-grow flex flex-items-start flex-justify-between flex-column">
 		<form class="flex flex-items-center flex-gap-1 flex-wrap" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)">
 			<div>
@@ -45,7 +45,7 @@
 	</div>
 
 	<div class="flex-grow">
-		<div class="flex flex-items-center flex-justify-center p-b-1">
+		<div class="flex flex-items-center flex-justify-center p-v-1">
 			<div class="orc-outline-color">
 				<span class="text-nowrap font-size-m" [innerHTML]="example_amount | localAmount: 'sat' : 'lightning'"></span>
 			</div>
