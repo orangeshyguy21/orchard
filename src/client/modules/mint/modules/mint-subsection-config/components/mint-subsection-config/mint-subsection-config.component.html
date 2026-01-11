@@ -525,7 +525,10 @@
 					</div>
 				</orc-mint-subsection-config-nut-supported>
 				@if (mint_info?.nuts?.nut19) {
-					<orc-mint-subsection-config-nut19 [nut19]="mint_info?.nuts?.nut19"></orc-mint-subsection-config-nut19>
+					<orc-mint-subsection-config-nut19
+						[nut19]="mint_info?.nuts?.nut19"
+						[mobile_view]="mobile_view()"
+					></orc-mint-subsection-config-nut19>
 				}
 			</div>
 

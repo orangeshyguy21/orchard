@@ -1,6 +1,6 @@
 <div class="flex flex-wrap-reverse flex-gap-column-2">
 	<div class="flex flex-column flex-gap-2 flex-1">
-		<div class="flex flex-row flex-gap-1">
+		<div class="flex flex-row flex-gap-1 flex-wrap">
 			<div class="flex flex-column flex-gap-1 p-l-1">
 				<orc-mint-subsection-config-form-max
 					[form_group]="form_bolt11()"
@@ -24,7 +24,7 @@
 				></orc-mint-subsection-config-form-min>
 			</div>
 
-			<div class="flex flex-column">
+			<div class="flex flex-column p-l-1">
 				<form [formGroup]="form_bolt11()" class="flex flex-items-center flex-gap-1">
 					<mat-slide-toggle [formControlName]="toggle_control()" (change)="onToggle($event)" [name]="toggle_control()">
 					</mat-slide-toggle>
