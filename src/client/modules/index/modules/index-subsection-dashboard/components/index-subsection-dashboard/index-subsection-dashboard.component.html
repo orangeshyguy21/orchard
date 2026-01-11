@@ -1,4 +1,4 @@
-<div class="flex flex-column">
+<div class="flex flex-column" [class.mobile-view]="mobile_view()">
 	<div class="sticky-section z-index-1">
 		<orc-index-subsection-dashboard-bitcoin-header
 			[enabled]="enabled_bitcoin"
@@ -12,7 +12,7 @@
 		<div class="category-rule"></div>
 	</div>
 
-	<div class="relative">
+	<div class="index-block relative">
 		@if (enabled_bitcoin) {
 			<orc-index-subsection-dashboard-bitcoin-enabled
 				[loading]="preparing_bitcoin"
@@ -58,7 +58,7 @@
 		<div class="category-rule"></div>
 	</div>
 
-	<div class="relative">
+	<div class="relative index-block">
 		@if (enabled_lightning) {
 			<orc-index-subsection-dashboard-lightning-enabled
 				[loading]="preparing_lightning"
@@ -99,7 +99,7 @@
 		<div class="category-rule"></div>
 	</div>
 
-	<div class="relative">
+	<div class="relative index-block">
 		@if (enabled_mint) {
 			<orc-index-subsection-dashboard-mint-enabled
 				[loading]="loading_mint"
@@ -112,6 +112,7 @@
 				[lightning_enabled]="enabled_lightning"
 				[lightning_errors]="errors_lightning"
 				[lightning_loading]="preparing_lightning"
+				[mobile_view]="mobile_view()"
 				(navigate)="onNavigate($event)"
 			></orc-index-subsection-dashboard-mint-enabled>
 		} @else {
@@ -131,7 +132,7 @@
 		<div class="category-rule"></div>
 	</div>
 
-	<div class="relative">
+	<div class="relative index-block">
 		@if (enabled_ecash) {
 			<orc-index-subsection-dashboard-ecash-enabled></orc-index-subsection-dashboard-ecash-enabled>
 		} @else {

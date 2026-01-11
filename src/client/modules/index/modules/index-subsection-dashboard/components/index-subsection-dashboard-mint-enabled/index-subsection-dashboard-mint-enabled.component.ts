@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChanges, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output, effect, signal} from '@angular/core';
 /* Application Dependencies */
 import {MintInfo} from '@client/modules/mint/classes/mint-info.class';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
@@ -19,40 +19,42 @@ type Liabilities = {
 	styleUrl: './index-subsection-dashboard-mint-enabled.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class IndexSubsectionDashboardMintEnabledComponent implements OnChanges {
-	@Input() loading!: boolean;
-	@Input() loading_icon!: boolean;
-	@Input() info!: MintInfo | null;
-	@Input() keysets!: MintKeyset[];
-	@Input() balances!: MintBalance[];
-	@Input() icon_data!: string | null;
-	@Input() lightning_balance!: LightningBalance | null;
-	@Input() lightning_enabled!: boolean;
-	@Input() lightning_errors!: OrchardError[];
-	@Input() lightning_loading!: boolean;
+export class IndexSubsectionDashboardMintEnabledComponent {
+	public loading = input.required<boolean>();
+	public loading_icon = input.required<boolean>();
+	public info = input.required<MintInfo | null>();
+	public keysets = input.required<MintKeyset[]>();
+	public balances = input.required<MintBalance[]>();
+	public icon_data = input.required<string | null>();
+	public lightning_balance = input.required<LightningBalance | null>();
+	public lightning_enabled = input.required<boolean>();
+	public lightning_errors = input.required<OrchardError[]>();
+	public lightning_loading = input.required<boolean>();
+	public mobile_view = input.required<boolean>();
 
-	@Output() navigate: EventEmitter<string> = new EventEmitter<string>();
+	public navigate = output<string>();
 
-	public liabilities!: Liabilities[] | null;
+	public liabilities = signal<Liabilities[] | null>(null);
 
-	constructor() {}
-
-	ngOnChanges(changes: SimpleChanges): void {
-		if (changes['loading'] && !this.loading) {
+	constructor() {
+		effect(() => {
+			if (!this.loading()) return;
 			this.init();
-		}
+		});
 	}
 
 	private init(): void {
-		this.liabilities = this.getLiabilities();
+		this.liabilities.set(this.getLiabilities());
 	}
 
 	private getLiabilities(): Liabilities[] | null {
-		if (!this.balances || !this.keysets) return null;
+		const balances = this.balances();
+		const keysets = this.keysets();
+		if (!balances || !keysets) return null;
 
-		const grouped_liabilities = this.balances.reduce(
+		const grouped_liabilities = balances.reduce(
 			(acc, balance) => {
-				const keyset = this.keysets.find((k) => k.id === balance.keyset);
+				const keyset = keysets.find((k) => k.id === balance.keyset);
 				if (!keyset) return acc;
 				if (!acc[keyset.unit]) {
 					acc[keyset.unit] = {

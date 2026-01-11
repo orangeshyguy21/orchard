@@ -1,21 +1,22 @@
 <div class="mint-enabled-container">
-	@if (!loading) {
-		<div animate.enter="orc-animation-fadein" class="flex flex-wrap flex-gap-4 p-2">
+	@if (!loading()) {
+		<div animate.enter="orc-animation-fadein" class="flex flex-wrap flex-gap-column-4 flex-gap-row-2">
 			<orc-index-subsection-dashboard-mint-enabled-info
-				[loading]="loading_icon"
-				[icon_data]="icon_data"
-				[info]="info"
+				[loading]="loading_icon()"
+				[icon_data]="icon_data()"
+				[info]="info()"
 			></orc-index-subsection-dashboard-mint-enabled-info>
 
-			<div class="flex-grow">
+			<div class="flex-grow w-min-0">
 				<orc-mint-general-balance-sheet
-					[balances]="balances"
-					[keysets]="keysets"
-					[lightning_balance]="lightning_balance"
-					[lightning_enabled]="lightning_enabled"
-					[lightning_errors]="lightning_errors"
-					[lightning_loading]="lightning_loading"
-					[loading]="loading"
+					[balances]="balances()"
+					[keysets]="keysets()"
+					[lightning_balance]="lightning_balance()"
+					[lightning_enabled]="lightning_enabled()"
+					[lightning_errors]="lightning_errors()"
+					[lightning_loading]="lightning_loading()"
+					[loading]="loading()"
+					[mobile]="mobile_view()"
 					(navigate)="navigate.emit('lightning')"
 				></orc-mint-general-balance-sheet>
 			</div>
