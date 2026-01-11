@@ -2,7 +2,7 @@
 import {ChangeDetectionStrategy, Component, input, effect, viewChild, OnDestroy, signal, HostListener} from '@angular/core';
 /* Vendor Dependencies */
 import {BaseChartDirective} from 'ng2-charts';
-import {ChartConfiguration, ChartType as ChartJsType} from 'chart.js';
+import {ChartConfiguration, ChartType as ChartJsType, Plugin} from 'chart.js';
 import {Subscription} from 'rxjs';
 /* Application Dependencies */
 import {ChartService} from '@client/modules/chart/services/chart/chart.service';
@@ -34,6 +34,7 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnDestroy {
 	public chart_type!: ChartJsType;
 	public chart_data!: ChartConfiguration['data'];
 	public chart_options!: ChartConfiguration['options'];
+	public chart_plugins: Plugin[] = [];
 	public displayed = signal<boolean>(false);
 	public stats = input.required<MintConfigStats>();
 
@@ -97,9 +98,19 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnDestroy {
 	}
 
 	private async init(): Promise<void> {
-		this.chart_type = 'scatter';
+		this.chart_type = 'line';
+		this.initGlowPlugin();
 		this.chart_data = this.getChartData(this.deltas());
 		this.initOptions();
+	}
+
+	/**
+	 * Creates the glow effect plugin for chart points
+	 */
+	private initGlowPlugin(): void {
+		const color_index = this.nut() === 'nut4' ? 0 : 4;
+		const color = this.chartService.getThemeColor(color_index);
+		this.chart_plugins = [this.chartService.createGlowPlugin(color.border)];
 	}
 
 	private initOptions(): void {
@@ -111,19 +122,27 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnDestroy {
 		if (deltas.length === 0) return {datasets: []};
 		const color_index = this.nut() === 'nut4' ? 0 : 4;
 		const color = this.chartService.getThemeColor(color_index);
-		const data_prepped = deltas.map((delta) => ({
-			x: delta['created_time'] * 1000,
-			y: delta['delta'],
-		}));
+		const muted_color = this.chartService.getMutedColor(color.border);
+		const data_prepped = deltas
+			.map((delta) => ({
+				x: delta['created_time'] * 1000,
+				y: delta['delta'],
+			}))
+			.sort((a, b) => a.x - b.x);
 		const dataset = {
 			data: data_prepped,
-			borderColor: color.border,
-			pointBackgroundColor: color.border,
-			pointBorderColor: color.border,
+			borderColor: muted_color,
+			borderWidth: 2,
+			backgroundColor: (context: any) => this.chartService.createAreaGradient(context, color.border),
+			fill: true,
+			pointBackgroundColor: muted_color,
+			pointBorderColor: muted_color,
+			pointBorderWidth: 2,
 			pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
 			pointHoverBorderColor: color.border,
-			pointRadius: 3,
-			pointHoverRadius: 4,
+			pointHoverBorderWidth: 3,
+			pointRadius: 4,
+			pointHoverRadius: 6,
 			tension: 0.4,
 		};
 		return {datasets: [dataset]};
@@ -189,8 +208,14 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnDestroy {
 			responsive: true,
 			elements: {
 				line: {
-					tension: 0.5,
+					tension: 0.4,
 					cubicInterpolationMode: 'monotone',
+				},
+				point: {
+					radius: 5,
+					hoverRadius: 7,
+					borderWidth: 2,
+					hoverBorderWidth: 3,
 				},
 			},
 			scales: scales,
@@ -212,6 +237,10 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnDestroy {
 				mode: 'index',
 				axis: 'x',
 				intersect: false,
+			},
+			animation: {
+				duration: 750,
+				easing: 'easeOutQuart',
 			},
 		};
 	}

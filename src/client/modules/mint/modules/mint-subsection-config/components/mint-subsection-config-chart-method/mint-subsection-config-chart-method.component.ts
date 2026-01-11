@@ -2,7 +2,7 @@
 import {ChangeDetectionStrategy, Component, input, viewChild, OnDestroy, effect, signal, HostListener} from '@angular/core';
 /* Vendor Dependencies */
 import {BaseChartDirective} from 'ng2-charts';
-import {ChartConfiguration, ChartType as ChartJsType} from 'chart.js';
+import {ChartConfiguration, ChartType as ChartJsType, Plugin} from 'chart.js';
 import {Subscription} from 'rxjs';
 /* Application Dependencies */
 import {ChartService} from '@client/modules/chart/services/chart/chart.service';
@@ -35,9 +35,10 @@ export class MintSubsectionConfigChartMethodComponent implements OnDestroy {
 	public stats = input.required<MintConfigStats>();
 	public amounts = input.required<Record<string, number>[]>();
 
-	public chart_type = signal<ChartJsType>('scatter');
+	public chart_type = signal<ChartJsType>('line');
 	public chart_data = signal<ChartConfiguration['data']>({datasets: []});
 	public chart_options = signal<ChartConfiguration['options']>({});
+	public chart_plugins: Plugin[] = [];
 	public displayed = signal<boolean>(false);
 
 	private subscriptions: Subscription = new Subscription();
@@ -96,9 +97,18 @@ export class MintSubsectionConfigChartMethodComponent implements OnDestroy {
 	}
 
 	private async init(): Promise<void> {
-		this.chart_type.set('scatter');
+		this.chart_type.set('line');
+		this.initGlowPlugin();
 		this.chart_data.set(this.getChartData(this.amounts()));
 		this.initOptions();
+	}
+
+	/**
+	 * Creates the glow effect plugin for chart points
+	 */
+	private initGlowPlugin(): void {
+		const color = this.chartService.getAssetColor(this.unit(), 0);
+		this.chart_plugins = [this.chartService.createGlowPlugin(color.border)];
 	}
 
 	private initOptions(): void {
@@ -109,20 +119,28 @@ export class MintSubsectionConfigChartMethodComponent implements OnDestroy {
 
 	private getChartData(amounts: Record<string, number>[]): ChartConfiguration['data'] {
 		if (amounts.length === 0) return {datasets: []};
-		const data_prepped = amounts.map((amount) => ({
-			x: amount['created_time'] * 1000,
-			y: amount['amount'],
-		}));
 		const color = this.chartService.getAssetColor(this.unit(), 0);
+		const muted_color = this.chartService.getMutedColor(color.border);
+		const data_prepped = amounts
+			.map((amount) => ({
+				x: amount['created_time'] * 1000,
+				y: amount['amount'],
+			}))
+			.sort((a, b) => a.x - b.x);
 		const dataset = {
 			data: data_prepped,
-			borderColor: color.border,
-			pointBackgroundColor: color.border,
-			pointBorderColor: color.border,
+			borderColor: muted_color,
+			borderWidth: 2,
+			backgroundColor: (context: any) => this.chartService.createAreaGradient(context, color.border),
+			fill: true,
+			pointBackgroundColor: muted_color,
+			pointBorderColor: muted_color,
+			pointBorderWidth: 2,
 			pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
 			pointHoverBorderColor: color.border,
-			pointRadius: 3,
-			pointHoverRadius: 4,
+			pointHoverBorderWidth: 3,
+			pointRadius: 4,
+			pointHoverRadius: 6,
 			tension: 0.4,
 		};
 
@@ -190,8 +208,14 @@ export class MintSubsectionConfigChartMethodComponent implements OnDestroy {
 			responsive: true,
 			elements: {
 				line: {
-					tension: 0.5,
+					tension: 0.4,
 					cubicInterpolationMode: 'monotone',
+				},
+				point: {
+					radius: 4,
+					hoverRadius: 6,
+					borderWidth: 2,
+					hoverBorderWidth: 3,
 				},
 			},
 			scales: scales,
@@ -213,6 +237,10 @@ export class MintSubsectionConfigChartMethodComponent implements OnDestroy {
 				mode: 'index',
 				axis: 'x',
 				intersect: false,
+			},
+			animation: {
+				duration: 750,
+				easing: 'easeOutQuart',
 			},
 		};
 	}

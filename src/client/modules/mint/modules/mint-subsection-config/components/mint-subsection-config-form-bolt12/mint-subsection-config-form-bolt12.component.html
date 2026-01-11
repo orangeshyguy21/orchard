@@ -1,22 +1,4 @@
-<div class="flex flex-wrap flex-gap-column-2">
-	<div class="flex-1">
-		<orc-mint-subsection-config-chart-method
-			[nut]="nut()"
-			[loading]="loading()"
-			[quotes]="valid_quotes()"
-			[locale]="locale()"
-			[unit]="unit()"
-			[method]="method()"
-			[min_amount]="form_bolt12().get('min_amount')?.value"
-			[max_amount]="form_bolt12().get('max_amount')?.value"
-			[min_hot]="min_hot()"
-			[max_hot]="max_hot()"
-			[amounts]="stat_amounts()"
-			[stats]="stats()"
-		>
-			<orc-mint-subsection-config-stats [loading]="loading()" [stats]="stats()" [unit]="unit()"></orc-mint-subsection-config-stats>
-		</orc-mint-subsection-config-chart-method>
-	</div>
+<div class="flex flex-wrap-reverse flex-gap-column-2">
 	<div class="flex flex-column flex-gap-2 flex-1">
 		<div class="flex flex-column flex-gap-1 p-l-1">
 			<orc-mint-subsection-config-form-max
@@ -40,5 +22,23 @@
 				(hot)="onMinHot($event)"
 			></orc-mint-subsection-config-form-min>
 		</div>
+	</div>
+	<div class="flex-1">
+		<orc-mint-subsection-config-chart-method
+			[nut]="nut()"
+			[loading]="loading()"
+			[quotes]="valid_quotes()"
+			[locale]="locale()"
+			[unit]="unit()"
+			[method]="method()"
+			[min_amount]="form_bolt12().get('min_amount')?.value"
+			[max_amount]="form_bolt12().get('max_amount')?.value"
+			[min_hot]="min_hot()"
+			[max_hot]="max_hot()"
+			[amounts]="stat_amounts()"
+			[stats]="stats()"
+		>
+			<orc-mint-subsection-config-stats [loading]="loading()" [stats]="stats()" [unit]="unit()"></orc-mint-subsection-config-stats>
+		</orc-mint-subsection-config-chart-method>
 	</div>
 </div>

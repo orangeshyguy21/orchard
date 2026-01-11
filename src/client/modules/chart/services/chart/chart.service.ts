@@ -2,6 +2,7 @@
 import {Injectable} from '@angular/core';
 /* Vendor Dependencies */
 import {Observable, Subject} from 'rxjs';
+import {Plugin} from 'chart.js';
 /* Application Dependencies */
 import {DataType} from '@client/modules/orchard/enums/data.enum';
 import {ThemeService} from '@client/modules/settings/services/theme/theme.service';
@@ -127,5 +128,68 @@ export class ChartService {
 	}
 	public onResizeEnd(): Observable<void> {
 		return this.resize_end_subject.asObservable();
+	}
+
+	/**
+	 * Converts rgb() string to hex format
+	 */
+	public rgbToHex(rgb: string): string {
+		const match = rgb.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+		if (!match) return '#ffffff';
+		const r = parseInt(match[1], 10).toString(16).padStart(2, '0');
+		const g = parseInt(match[2], 10).toString(16).padStart(2, '0');
+		const b = parseInt(match[3], 10).toString(16).padStart(2, '0');
+		return `#${r}${g}${b}`;
+	}
+
+	/**
+	 * Gets a muted version of a color with specified opacity
+	 */
+	public getMutedColor(border_color: string, opacity: number = 0.6): string {
+		const hex_color = border_color.startsWith('#') ? border_color : this.rgbToHex(border_color);
+		return this.hexToRgba(hex_color, opacity);
+	}
+
+	/**
+	 * Creates a vertical gradient for chart area fill (fades from bottom to top)
+	 */
+	public createAreaGradient(
+		context: any,
+		border_color: string,
+		top_opacity: number = 0.01,
+		bottom_opacity: number = 0.2,
+	): CanvasGradient | string {
+		const chart = context.chart;
+		const {ctx, chartArea} = chart;
+		if (!chartArea) return 'transparent';
+		const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+		const hex_color = border_color.startsWith('#') ? border_color : this.rgbToHex(border_color);
+		const rgba_top = this.hexToRgba(hex_color, top_opacity);
+		const rgba_bottom = this.hexToRgba(hex_color, bottom_opacity);
+		gradient.addColorStop(0, rgba_top);
+		gradient.addColorStop(1, rgba_bottom);
+		return gradient;
+	}
+
+	/**
+	 * Creates a glow effect plugin for chart points
+	 */
+	public createGlowPlugin(border_color: string, opacity: number = 0.35, blur: number = 10): Plugin {
+		const hex_color = border_color.startsWith('#') ? border_color : this.rgbToHex(border_color);
+		const glow_color = this.hexToRgba(hex_color, opacity);
+		return {
+			id: 'pointGlow',
+			beforeDatasetsDraw: (chart: any) => {
+				const ctx = chart.ctx;
+				ctx.save();
+				ctx.shadowColor = glow_color;
+				ctx.shadowBlur = blur;
+				ctx.shadowOffsetX = 0;
+				ctx.shadowOffsetY = 0;
+			},
+			afterDatasetsDraw: (chart: any) => {
+				chart.ctx.restore();
+			},
+		};
 	}
 }
