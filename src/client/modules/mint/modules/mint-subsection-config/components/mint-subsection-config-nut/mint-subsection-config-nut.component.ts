@@ -13,6 +13,6 @@ export class MintSubsectionConfigNutComponent {
 	public supported = input.required<boolean>();
 
 	onNutClick() {
-		window.open(`https://github.com/cashubtc/nuts/blob/main/${this.nut_index}.md`, '_blank');
+		window.open(`https://github.com/cashubtc/nuts/blob/main/${this.nut_index()}.md`, '_blank');
 	}
 }

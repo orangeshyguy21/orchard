@@ -8,8 +8,8 @@
 			(keydown.escape)="onCancel($event)"
 		>
 			<orc-form-field-dynamic
-				[hot]="form_hot()"
-				[invalid]="control_invalid()"
+				[hot]="form_hot() ?? false"
+				[invalid]="control_invalid() ?? false"
 				(submit)="onSubmit($event)"
 				(cancel)="onCancel($event)"
 			>

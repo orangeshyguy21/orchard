@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, computed, effect, ElementRef, input, output, signal, viewChild} from '@angular/core';
 import {toObservable, toSignal} from '@angular/core/rxjs-interop';
-import {FormGroup} from '@angular/forms';
+import {FormGroup, ValidationErrors} from '@angular/forms';
 /* Vendor Dependencies */
 import {startWith, switchMap} from 'rxjs';
 /* Application Dependencies */
@@ -17,6 +17,9 @@ import {OrchardNut4Method, OrchardNut5Method} from '@shared/generated.types';
 export class MintSubsectionConfigFormMinComponent {
 	public form_group = input.required<FormGroup>(); // form group containing the min amount control
 	public control_name = input.required<keyof OrchardNut4Method | keyof OrchardNut5Method>(); // name of the form control to bind
+	public control_dirty = input.required<boolean | undefined>(); // whether the control is dirty
+	public control_invalid = input.required<boolean | undefined>(); // whether the control is invalid
+	public control_errors = input.required<ValidationErrors | null | undefined>(); // errors for the control
 	public unit = input.required<string>(); // unit to display (e.g. 'sat')
 	public nut = input.required<'nut4' | 'nut5'>(); // which nut configuration this controls
 	public stat_amounts = input.required<Record<string, number>[]>(); // amounts for the stats
@@ -31,32 +34,20 @@ export class MintSubsectionConfigFormMinComponent {
 	public control_touched = signal<boolean>(false); // tracks if the control has been touched
 	public help_status = signal<boolean>(false); // tracks if the help is visible
 
-	private formChanges = toSignal(toObservable(this.form_group).pipe(switchMap((fg) => fg.valueChanges.pipe(startWith(fg.value)))));
-
-	public control_dirty = computed(() => {
-		this.formChanges();
-		return this.form_group().get(this.control_name())?.dirty ?? false;
-	});
-
 	public form_error = computed(() => {
-		this.formChanges();
-		const control = this.form_group().get(this.control_name());
-		if (control?.hasError('required')) return 'Required';
-		if (control?.hasError('min')) return `Must be at least ${control.getError('min')?.min}`;
-		if (control?.hasError('orchardInteger')) return 'Must be a whole number';
-		if (control?.hasError('orchardCents')) return 'Must have 2 decimals';
-		if (control?.errors) return 'Invalid amount';
-		return '';
+		const errors = this.control_errors();
+		if (!errors) return '';
+		if (errors['required']) return 'Required';
+		if (errors['min']) return `Must be at least ${errors['min']?.min}`;
+		if (errors['orchardInteger']) return 'Must be a whole number';
+		if (errors['orchardCents']) return 'Must have 2 decimals';
+		if (errors['orchardMicros']) return 'Invalid format';
+		return 'Invalid amount';
 	});
 
 	public form_hot = computed(() => {
 		if (this.focused_min()) return true;
 		return this.control_dirty();
-	});
-
-	public control_invalid = computed(() => {
-		if (this.focused_min()) return false;
-		return (this.form_group().get(this.control_name())?.invalid && (this.control_dirty() || this.control_touched())) ?? false;
 	});
 
 	public help_text = computed(() => {
@@ -67,7 +58,7 @@ export class MintSubsectionConfigFormMinComponent {
 
 	constructor() {
 		effect(() => {
-			this.hot.emit(this.form_hot());
+			this.hot.emit(this.form_hot() ?? false);
 		});
 	}
 

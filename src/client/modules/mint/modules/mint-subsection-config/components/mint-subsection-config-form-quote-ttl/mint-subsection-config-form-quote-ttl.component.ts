@@ -1,9 +1,6 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, computed, ElementRef, input, output, signal, viewChild, effect} from '@angular/core';
-import {toObservable, toSignal} from '@angular/core/rxjs-interop';
-import {FormGroup} from '@angular/forms';
-/* Vendor Dependencies */
-import {startWith, switchMap} from 'rxjs';
+import {FormGroup, ValidationErrors} from '@angular/forms';
 /* Application Dependencies */
 import {MintQuoteTtls} from '@client/modules/mint/classes/mint-quote-ttls.class';
 import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
@@ -25,6 +22,9 @@ export class MintSubsectionConfigFormQuoteTtlComponent {
 	public nut = input.required<'nut4' | 'nut5'>(); // which nut configuration this controls
 	public form_group = input.required<FormGroup>(); // form group containing the quote ttl control
 	public control_name = input.required<keyof MintQuoteTtls>(); // name of the form control to bind
+	public control_dirty = input.required<boolean | undefined>(); // whether the control is dirty
+	public control_invalid = input.required<boolean | undefined>(); // whether the control is invalid
+	public control_errors = input.required<ValidationErrors | null | undefined>(); // errors for the control
 	public disabled = input<boolean | undefined>(undefined); // whether the form is disabled
 	public locale = input.required<string>(); // locale for number formatting
 	public loading = input.required<boolean>(); // whether data is loading
@@ -47,32 +47,19 @@ export class MintSubsectionConfigFormQuoteTtlComponent {
 		min: 0,
 	}); // stats for the quote ttl
 
-	private formChanges = toSignal(toObservable(this.form_group).pipe(switchMap((fg) => fg.valueChanges.pipe(startWith(fg.value)))));
-
-	public control_dirty = computed(() => {
-		this.formChanges();
-		return this.form_group().get(this.control_name())?.dirty ?? false;
-	});
-
 	public form_error = computed(() => {
-		this.formChanges();
-		const control = this.form_group().get(this.control_name());
-		if (control?.hasError('required')) return 'Required';
-		if (control?.hasError('min')) return `Must be at least ${control.getError('min')?.min}`;
-		if (control?.hasError('max')) return `Cannot exceed ${control.getError('max')?.max}`;
-		if (control?.hasError('orchardMicros')) return 'Invalid format';
-		if (control?.errors) return 'Invalid TTL';
-		return '';
+		const errors = this.control_errors();
+		if (!errors) return '';
+		if (errors['required']) return 'Required';
+		if (errors['min']) return `Must be at least ${errors['min']?.min}`;
+		if (errors['max']) return `Cannot exceed ${errors['max']?.max}`;
+		if (errors['orchardMicros']) return 'Invalid format';
+		return 'Invalid TTL';
 	});
 
 	public form_hot = computed(() => {
 		if (this.focused_quote_ttl()) return true;
-		return this.control_dirty();
-	});
-
-	public control_invalid = computed(() => {
-		if (this.focused_quote_ttl()) return false;
-		return (this.form_group().get(this.control_name())?.invalid && (this.control_dirty() || this.control_touched())) ?? false;
+		return this.control_dirty() ?? false;
 	});
 
 	public help_text = computed(() => {

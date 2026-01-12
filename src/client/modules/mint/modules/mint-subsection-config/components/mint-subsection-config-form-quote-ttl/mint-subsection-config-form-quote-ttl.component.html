@@ -13,7 +13,7 @@
 						>
 							<orc-form-field-dynamic
 								[hot]="form_hot()"
-								[invalid]="control_invalid()"
+								[invalid]="control_invalid() ?? false"
 								(submit)="onSubmit($event)"
 								(cancel)="onCancel($event)"
 							>

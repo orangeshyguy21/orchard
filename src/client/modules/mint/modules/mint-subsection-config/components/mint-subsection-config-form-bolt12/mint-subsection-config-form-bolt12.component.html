@@ -4,6 +4,9 @@
 			<orc-mint-subsection-config-form-max
 				[form_group]="form_bolt12()"
 				[control_name]="'max_amount'"
+				[control_dirty]="form_bolt12().get('max_amount')?.dirty"
+				[control_invalid]="form_bolt12().get('max_amount')?.invalid"
+				[control_errors]="form_bolt12().get('max_amount')?.errors"
 				[unit]="unit()"
 				[nut]="nut()"
 				[stat_amounts]="stat_amounts()"
@@ -14,6 +17,9 @@
 			<orc-mint-subsection-config-form-min
 				[form_group]="form_bolt12()"
 				[control_name]="'min_amount'"
+				[control_dirty]="form_bolt12().get('min_amount')?.dirty"
+				[control_invalid]="form_bolt12().get('min_amount')?.invalid"
+				[control_errors]="form_bolt12().get('min_amount')?.errors"
 				[unit]="unit()"
 				[nut]="nut()"
 				[stat_amounts]="stat_amounts()"
