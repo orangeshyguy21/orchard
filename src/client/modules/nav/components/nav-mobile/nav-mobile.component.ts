@@ -1,5 +1,6 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, input, output, effect} from '@angular/core';
+import {Router} from '@angular/router';
 /* Vendor Dependencies */
 import {MatBottomSheet} from '@angular/material/bottom-sheet';
 /* Application Dependencies */
@@ -55,6 +56,7 @@ export class NavMobileComponent {
 		private bottomSheet: MatBottomSheet,
 		private settingAppService: SettingAppService,
 		private navService: NavService,
+		private router: Router,
 	) {
 		effect(() => {
 			const active_section = this.active_section();
@@ -109,7 +111,7 @@ export class NavMobileComponent {
 	}
 
 	public onSettingsClick() {
-		console.log('settings clicked');
+		this.router.navigate(['/settings']);
 	}
 
 	public onProfileClick() {
