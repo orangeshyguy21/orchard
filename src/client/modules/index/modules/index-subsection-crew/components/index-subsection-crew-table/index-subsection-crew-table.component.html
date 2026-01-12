@@ -72,7 +72,6 @@
 				<ng-container matColumnDef="actions">
 					<th mat-header-cell *matHeaderCellDef class="crew-sticky-header">Actions</th>
 					<td mat-cell *matCellDef="let entity">
-						@let crew_entity = asCrewEntity(entity);
 						@if (id_user() !== entity.id) {
 							<div class="flex flex-items-center flex-gap-0-5">
 								<button

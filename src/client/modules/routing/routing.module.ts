@@ -7,12 +7,13 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 /* Application Dependencies */
 import {OrcNavModule} from '@client/modules/nav/nav.module';
 import {OrcAiModule} from '@client/modules/ai/ai.module';
+import {OrcLayoutModule} from '@client/modules/layout/layout.module';
 import {OrcEventGeneralModule} from '@client/modules/event/modules/event-general/event-general.module';
 import {authenticationGuard} from '@client/modules/auth/guards/authentication/authentication.guard';
 import {initializationGuard} from '@client/modules/auth/guards/initialization/initialization.guard';
+import {LayoutInteriorComponent} from '@client/modules/layout/components/layout-interior/layout-interior.component';
+import {LayoutExteriorComponent} from '@client/modules/layout/components/layout-exterior/layout-exterior.component';
 /* Native Dependencies */
-import {LayoutExteriorComponent} from './components/layout-exterior/layout-exterior.component';
-import {LayoutInteriorComponent} from './components/layout-interior/layout-interior.component';
 import {SectionPreloadStrategy} from './strategy/section-preload.strategy';
 
 const interior_routes = [
@@ -80,9 +81,10 @@ const routes: Routes = [
 		MatProgressSpinnerModule,
 		OrcNavModule,
 		OrcAiModule,
+		OrcLayoutModule,
 		OrcEventGeneralModule,
 	],
 	exports: [RouterModule],
-	declarations: [LayoutExteriorComponent, LayoutInteriorComponent],
+	declarations: [],
 })
 export class OrcRoutingModule {}

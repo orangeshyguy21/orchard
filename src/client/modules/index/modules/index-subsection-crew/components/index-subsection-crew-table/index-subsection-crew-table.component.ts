@@ -96,7 +96,7 @@ export class IndexSubsectionCrewTableComponent {
 	 * @param {Invite | User} entity - the crew entity
 	 * @returns {CrewTableEntity} entity with explicit type
 	 */
-	public asCrewEntity(entity: Invite | User): CrewTableEntity {
+	private asCrewEntity(entity: Invite | User): CrewTableEntity {
 		return 'name' in entity && entity.name !== undefined
 			? ({...entity, entity_type: CrewEntity.USER} as UserTableEntity)
 			: ({...entity, entity_type: CrewEntity.INVITE} as InviteTableEntity);
