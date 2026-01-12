@@ -37,6 +37,7 @@
 	&.mobile-agent {
 		@extend %flex-column;
 		@extend %flex-gap-0;
+		@extend %p-b-0-5;
 
 		.ai-user-input {
 			@extend %w-full;
