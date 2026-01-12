@@ -353,6 +353,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	public onTypeChange(event: MintDataType): void {
 		const default_states = this.getDefaultStates(event);
 		this.page_settings.type = event;
+		this.settingDeviceService.setMintDatabaseSettings(this.page_settings);
 		this.state_options = default_states;
 		this.reloadDynamicData();
 	}

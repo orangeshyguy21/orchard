@@ -2,7 +2,7 @@
 import {ChangeDetectionStrategy, Component, effect, input, signal, viewChild, OnDestroy} from '@angular/core';
 /* Vendor Dependencies */
 import {BaseChartDirective} from 'ng2-charts';
-import {ChartConfiguration, ScaleChartOptions, ChartType as ChartJsType} from 'chart.js';
+import {ChartConfiguration, ScaleChartOptions, ChartType as ChartJsType, Plugin} from 'chart.js';
 import {DateTime} from 'luxon';
 import {Subscription} from 'rxjs';
 /* Application Dependencies */
@@ -48,6 +48,7 @@ export class MintSubsectionKeysetsChartComponent implements OnDestroy {
 	public readonly chart_type = signal<ChartJsType>('line');
 	public readonly chart_data = signal<ChartConfiguration['data']>({datasets: []});
 	public readonly chart_options = signal<ChartConfiguration['options']>({});
+	public readonly chart_plugins = signal<Plugin[]>([]);
 	public readonly displayed = signal<boolean>(true);
 
 	private subscriptions: Subscription = new Subscription();
@@ -79,10 +80,10 @@ export class MintSubsectionKeysetsChartComponent implements OnDestroy {
 		const settings = this.page_settings();
 		const status_filter = settings?.status ?? [];
 		const units_filter = settings?.units ?? [];
-		const valid_keysets_ids = this.keysets()
+		const valid_keysets = this.keysets()
 			.filter((keyset) => !status_filter.length || status_filter.includes(keyset.active))
-			.filter((keyset) => !units_filter.length || units_filter.includes(keyset.unit))
-			.map((keyset) => keyset.id);
+			.filter((keyset) => !units_filter.length || units_filter.includes(keyset.unit));
+		const valid_keysets_ids = valid_keysets.map((keyset) => keyset.id);
 		const valid_analytics = this.keysets_analytics().filter((analytic) => valid_keysets_ids.includes(analytic.keyset_id));
 		const valid_analytics_pre = this.keysets_analytics_pre().filter((analytic) => valid_keysets_ids.includes(analytic.keyset_id));
 		const data = this.getChartData(valid_analytics, valid_analytics_pre);
@@ -90,6 +91,27 @@ export class MintSubsectionKeysetsChartComponent implements OnDestroy {
 		const options = this.getChartOptions(valid_keysets_ids, data);
 		if (options?.plugins) options.plugins.annotation = this.getAnnotations(data);
 		this.chart_options.set(options);
+		this.initGlowPlugin(valid_keysets, data);
+	}
+
+	/**
+	 * Creates the glow effect plugin for active keysets only (not dashed/inactive ones)
+	 */
+	private initGlowPlugin(valid_keysets: MintKeyset[], data: ChartConfiguration['data']): void {
+		if (!data?.datasets || data.datasets.length === 0) {
+			this.chart_plugins.set([]);
+			return;
+		}
+		const first_active_dataset = data.datasets.find((dataset) => {
+			const keyset = valid_keysets.find((k) => dataset.label?.includes(`Gen ${k.derivation_path_index}`));
+			return keyset?.active === true;
+		});
+		if (!first_active_dataset) {
+			this.chart_plugins.set([]);
+			return;
+		}
+		const color = first_active_dataset.borderColor as string;
+		this.chart_plugins.set(color ? [this.chartService.createGlowPlugin(color)] : []);
 	}
 
 	private getChartData(valid_analytics: MintAnalyticKeyset[], valid_analytics_pre: MintAnalyticKeyset[]): ChartConfiguration['data'] {
@@ -148,27 +170,28 @@ export class MintSubsectionKeysetsChartComponent implements OnDestroy {
 			}
 			const yAxisID = getYAxisId(unit);
 			const label = keyset ? `${unit.toUpperCase()} Gen ${keyset.derivation_path_index}` : keyset_id;
+			const is_active = keyset?.active ?? true;
+			const muted_color = this.chartService.getMutedColor(color.border);
 
 			return {
 				data: data_prepped,
 				label: label,
-				backgroundColor: color.bg,
-				borderColor: color.border,
+				backgroundColor: is_active ? (context: any) => this.chartService.createAreaGradient(context, color.border) : color.bg,
+				borderColor: muted_color,
 				borderWidth: 2,
 				borderRadius: 3,
-				pointBackgroundColor: color.border,
-				pointBorderColor: color.border,
+				pointBackgroundColor: muted_color,
+				pointBorderColor: muted_color,
+				pointBorderWidth: 2,
 				pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
 				pointHoverBorderColor: color.border,
+				pointHoverBorderWidth: 3,
 				pointRadius: 0,
 				pointHoverRadius: 4,
-				fill: {
-					target: 'origin',
-					above: color.bg,
-				},
+				fill: true,
 				tension: 0.4,
 				yAxisID: yAxisID,
-				borderDash: keyset && !keyset.active ? [5, 5] : undefined,
+				borderDash: !is_active ? [5, 5] : undefined,
 			};
 		});
 

@@ -2,7 +2,7 @@
 import {ChangeDetectionStrategy, Component, input, effect, OnDestroy, ViewChild, ChangeDetectorRef} from '@angular/core';
 /* Vendor Dependencies */
 import {BaseChartDirective} from 'ng2-charts';
-import {ChartConfiguration, ScaleChartOptions, ChartType as ChartJsType} from 'chart.js';
+import {ChartConfiguration, ScaleChartOptions, ChartType as ChartJsType, Plugin} from 'chart.js';
 import {DateTime} from 'luxon';
 import {Subscription} from 'rxjs';
 /* Application Dependencies */
@@ -51,6 +51,7 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy {
 	public chart_type!: ChartJsType;
 	public chart_data!: ChartConfiguration['data'];
 	public chart_options!: ChartConfiguration['options'];
+	public chart_plugins: Plugin[] = [];
 	public displayed: boolean = true;
 
 	private subscriptions: Subscription = new Subscription();
@@ -93,16 +94,19 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy {
 				this.chart_type = 'line';
 				this.chart_data = this.getAmountChartData();
 				this.chart_options = this.getAmountChartOptions();
+				this.initGlowPlugin();
 				break;
 			case ChartType.Operations:
 				this.chart_type = 'bar';
 				this.chart_data = this.getOperationsChartData();
 				this.chart_options = this.getOperationsChartOptions();
+				this.chart_plugins = [];
 				break;
 			case ChartType.Volume:
 				this.chart_type = 'bar';
 				this.chart_data = this.getAmountChartData(false);
 				this.chart_options = this.getAmountChartOptions();
+				this.chart_plugins = [];
 				break;
 		}
 		if (this.chart_options?.plugins) this.chart_options.plugins.annotation = this.getAnnotations();
@@ -113,6 +117,18 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy {
 			this.displayed = true;
 			this.cdr.detectChanges();
 		}, 50);
+	}
+
+	/**
+	 * Creates the glow effect plugin for chart points (line charts only)
+	 */
+	private initGlowPlugin(): void {
+		if (!this.chart_data?.datasets || this.chart_data.datasets.length === 0) {
+			this.chart_plugins = [];
+			return;
+		}
+		const first_color = this.chart_data.datasets[0]?.borderColor as string;
+		this.chart_plugins = first_color ? [this.chartService.createGlowPlugin(first_color)] : [];
 	}
 
 	private getAmountChartData(prepend: boolean = true): ChartConfiguration['data'] {
@@ -138,23 +154,23 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy {
 			const data_prepped = getAmountData(timestamp_range, data_keyed_by_timestamp, unit, cumulative);
 			const yAxisID = getYAxisId(unit);
 
+			const muted_color = this.chartService.getMutedColor(color.border);
 			return {
 				data: data_prepped,
 				label: unit.toUpperCase(),
-				backgroundColor: color.bg,
-				borderColor: color.border,
-				borderWidth: 1,
+				backgroundColor: (context: any) => this.chartService.createAreaGradient(context, color.border),
+				borderColor: muted_color,
+				borderWidth: 2,
 				borderRadius: 0,
-				pointBackgroundColor: color.border,
-				pointBorderColor: color.border,
+				pointBackgroundColor: muted_color,
+				pointBorderColor: muted_color,
+				pointBorderWidth: 2,
 				pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
 				pointHoverBorderColor: color.border,
-				pointRadius: 0, // Add point size (radius in pixels)
-				pointHoverRadius: 4, // Optional: size when hovered
-				fill: {
-					target: 'origin',
-					above: color.bg,
-				},
+				pointHoverBorderWidth: 3,
+				pointRadius: 0,
+				pointHoverRadius: 4,
+				fill: true,
 				tension: 0.4,
 				yAxisID: yAxisID,
 			};
