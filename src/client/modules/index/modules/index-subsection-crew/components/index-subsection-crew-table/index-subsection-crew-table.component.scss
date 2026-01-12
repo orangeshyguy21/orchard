@@ -9,12 +9,10 @@
 
 .crew-table-container {
 	@extend %relative;
-	@extend %overflow-auto;
-	max-height: calc(100vh - 215px);
 }
 
 .crew-sticky-header {
-	top: 0px !important;
+	top: 86px !important;
 }
 
 .crew-icon {
@@ -38,20 +36,22 @@
 }
 
 // these can be generalized i think
-tr.entity-row {
-	@extend %cursor-pointer;
-}
+.mobile-keyset-table {
+	tr.entity-row {
+		@extend %cursor-pointer;
+	}
 
-tr.entity-row:not(.expanded):hover {
-	@extend %orc-surface-container-low-bg;
-}
+	tr.entity-row:not(.expanded):hover {
+		@extend %orc-surface-container-low-bg;
+	}
 
-tr.entity-row:not(.expanded):active {
-	@extend %orc-surface-container-high-bg;
-}
+	tr.entity-row:not(.expanded):active {
+		@extend %orc-surface-container-high-bg;
+	}
 
-tr.more-entity-row {
-	@extend %h-0;
+	tr.more-entity-row {
+		@extend %h-0;
+	}
 }
 
 .more-entity-wrapper {

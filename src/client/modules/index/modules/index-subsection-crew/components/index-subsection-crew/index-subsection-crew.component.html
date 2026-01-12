@@ -9,7 +9,7 @@
 				[filter_count]="filter_count()"
 			></orc-index-subsection-crew-control>
 			<div>
-				@if (!mobile_view()) {
+				@if (device_type() === 'desktop') {
 					<button
 						type="button"
 						matFab
@@ -62,6 +62,7 @@
 				[form_invite]="form_invite_edit"
 				[form_user]="form_user_edit"
 				[table_form_id]="table_form_id()"
+				[device_desktop]="device_type() === 'desktop'"
 				(editInvite)="onEditInvite($event)"
 				(editUser)="onEditUser($event)"
 				(deleteInvite)="onDeleteInvite($event)"

@@ -23,6 +23,7 @@ import {MatMenuModule} from '@angular/material/menu';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcLocalModule} from '@client/modules/local/local.module';
+import {OrcCrewModule} from '@client/modules/crew/crew.module';
 /* Local Dependencies */
 import {IndexSubsectionCrewComponent} from './components/index-subsection-crew/index-subsection-crew.component';
 import {IndexSubsectionCrewControlComponent} from './components/index-subsection-crew-control/index-subsection-crew-control.component';
@@ -32,6 +33,7 @@ import {IndexSubsectionCrewTableInviteComponent} from './components/index-subsec
 import {IndexSubsectionCrewFormUserComponent} from './components/index-subsection-crew-form-user/index-subsection-crew-form-user.component';
 import {IndexSubsectionCrewDialogUserComponent} from './components/index-subsection-crew-dialog-user/index-subsection-crew-dialog-user.component';
 import {IndexSubsectionCrewDialogInviteComponent} from './components/index-subsection-crew-dialog-invite/index-subsection-crew-dialog-invite.component';
+import {IndexSubsectionCrewTableUserComponent} from './components/index-subsection-crew-table-user/index-subsection-crew-table-user.component';
 
 @NgModule({
 	declarations: [
@@ -43,6 +45,7 @@ import {IndexSubsectionCrewDialogInviteComponent} from './components/index-subse
 		IndexSubsectionCrewFormUserComponent,
 		IndexSubsectionCrewDialogUserComponent,
 		IndexSubsectionCrewDialogInviteComponent,
+		IndexSubsectionCrewTableUserComponent,
 	],
 	imports: [
 		[
@@ -73,6 +76,7 @@ import {IndexSubsectionCrewDialogInviteComponent} from './components/index-subse
 		MatMenuModule,
 		OrcFormModule,
 		OrcLocalModule,
+		OrcCrewModule,
 	],
 })
 export class OrcIndexSubsectionCrewModule {}

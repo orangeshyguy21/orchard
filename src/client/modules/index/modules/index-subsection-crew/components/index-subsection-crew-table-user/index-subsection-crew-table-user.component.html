@@ -1,0 +1,32 @@
+<div class="crew-table-user-container p-v-1">
+	<div class="flex flex-gap-2 flex-wrap">
+		@if (!device_desktop()) {
+			<div class="flex-1 flex flex-gap-1 p-t-0-5">
+				<div class="w-6 orc-outline-color font-weight-extra-light">Created:</div>
+				<span class="text-nowrap"> {{ user().created_at | localTime: 'short' }} </span>
+			</div>
+		}
+		@if (!is_admin() && !is_self()) {
+			<div class="flex-1 flex flex-gap-1">
+				<div class="w-6 orc-outline-color font-weight-extra-light p-t-0-5">Actions:</div>
+				<div class="flex flex-gap-1 flex-wrap">
+					<button mat-stroked-button color="primary" (click)="editUser.emit(user())">
+						<mat-icon class="mat-symbol-outline">edit</mat-icon>
+						<span class="text-nowrap">Edit user</span>
+					</button>
+					<button mat-stroked-button color="primary" (click)="deleteUser.emit(user())">
+						<mat-icon class="mat-symbol-outline">delete_forever</mat-icon>
+						<span class="text-nowrap">Delete user</span>
+					</button>
+				</div>
+			</div>
+		} @else {
+			<div class="flex-1 flex flex-gap-1 p-t-0-5">
+				<div class="w-6 orc-outline-color font-weight-extra-light">Actions:</div>
+				<div class="flex flex-gap-1 flex-wrap">
+					<span class="text-nowrap orc-outline-variant-color">actions disabled</span>
+				</div>
+			</div>
+		}
+	</div>
+</div>

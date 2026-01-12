@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, effect, input, signal, output, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, input, signal, output, computed, ViewChild} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 /* Vendor Dependencies */
 import {MatSort} from '@angular/material/sort';
@@ -15,7 +15,8 @@ import {RoleOption} from '@client/modules/index/modules/index-subsection-crew/ty
 import {UserRole} from '@shared/generated.types';
 
 enum MoreEntityType {
-	TOKEN = 'TOKEN',
+	VIEW_TOKEN = 'VIEW_TOKEN',
+	VIEW_USER = 'VIEW_USER',
 	EDIT_USER = 'EDIT_USER',
 	EDIT_INVITE = 'EDIT_INVITE',
 }
@@ -43,6 +44,7 @@ export class IndexSubsectionCrewTableComponent {
 	public role_options = input.required<RoleOption[]>();
 	public create_open = input.required<boolean>();
 	public table_form_id = input.required<string | null>();
+	public device_desktop = input.required<boolean>();
 
 	public editInvite = output<Invite>();
 	public editUser = output<User>();
@@ -55,8 +57,11 @@ export class IndexSubsectionCrewTableComponent {
 	public now = DateTime.now().toSeconds();
 	public readonly CrewEntity = CrewEntity;
 	public readonly MoreEntityType = MoreEntityType;
-	public readonly displayed_columns = ['user', 'label', 'created', 'state', 'actions'];
 	public readonly UserRole = UserRole;
+
+	public displayed_columns = computed(() => {
+		return this.device_desktop() ? ['user', 'label', 'created', 'state', 'actions'] : ['user', 'label', 'state'];
+	});
 
 	private previous_data_length = 0;
 
@@ -104,29 +109,23 @@ export class IndexSubsectionCrewTableComponent {
 	private onNewEntityAdded(entity: Invite | User): void {
 		const crew_entity = this.asCrewEntity(entity);
 		if (crew_entity.entity_type === CrewEntity.INVITE) {
-			this.onViewToken(null, entity as Invite);
+			this.viewToken(entity as Invite);
 		}
 	}
 
 	public onToggleMore(entity: Invite | User) {
 		const entity_type = this.asCrewEntity(entity).entity_type;
-		const more_entity_type = entity_type === CrewEntity.INVITE ? MoreEntityType.TOKEN : MoreEntityType.EDIT_USER;
+		const more_entity_type = entity_type === CrewEntity.INVITE ? MoreEntityType.VIEW_TOKEN : MoreEntityType.VIEW_USER;
 		this.more_entity_type.set(more_entity_type);
 		this.more_entity.set(this.more_entity() === entity ? null : entity);
 	}
 
-	public onViewToken(event: MouseEvent | null, entity: Invite) {
-		if (event) {
-			event.stopPropagation();
-			event.preventDefault();
-		}
-		this.more_entity_type.set(MoreEntityType.TOKEN);
+	private viewToken(entity: Invite) {
+		this.more_entity_type.set(MoreEntityType.VIEW_TOKEN);
 		this.more_entity.set(entity);
 	}
 
-	public onEdit(event: MouseEvent, entity: Invite | User) {
-		event.stopPropagation();
-		event.preventDefault();
+	public onEdit(entity: Invite | User) {
 		const entity_type = this.asCrewEntity(entity).entity_type;
 		let more_entity_type;
 		if (entity_type === CrewEntity.INVITE) {
@@ -140,9 +139,7 @@ export class IndexSubsectionCrewTableComponent {
 		this.more_entity.set(entity);
 	}
 
-	public onDelete(event: MouseEvent, entity: Invite | User) {
-		event.stopPropagation();
-		event.preventDefault();
+	public onDelete(entity: Invite | User) {
 		const entity_type = this.asCrewEntity(entity).entity_type;
 		if (entity_type === CrewEntity.INVITE) {
 			this.deleteInvite.emit(entity as Invite);

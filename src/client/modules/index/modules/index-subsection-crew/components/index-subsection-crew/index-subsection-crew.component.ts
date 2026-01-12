@@ -17,6 +17,7 @@ import {User} from '@client/modules/crew/classes/user.class';
 import {Invite} from '@client/modules/crew/classes/invite.class';
 import {AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Native Dependencies */
 import {CrewState} from '@client/modules/index/modules/index-subsection-crew/enums/crew-entity.enum';
 import {StateOption, RoleOption} from '@client/modules/index/modules/index-subsection-crew/types/crew-panel.types';
@@ -54,7 +55,7 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 	public table_form_id = signal<string | null>(null);
 	public loading = signal<boolean>(true);
 	public data = signal<MatTableDataSource<Invite | User>>(new MatTableDataSource<Invite | User>([]));
-	public mobile_view = signal<boolean>(false);
+	public device_type = signal<DeviceType>('desktop');
 	public readonly panel = new FormGroup({
 		filter: new FormControl<string>(''),
 		state: new FormControl<CrewState[]>([]),
@@ -216,7 +217,7 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 
 	private getBreakpointSubscription(): Subscription {
 		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
-			this.mobile_view.set(!result.matches);
+			this.device_type.set(result.matches ? 'desktop' : 'tablet');
 		});
 	}
 
