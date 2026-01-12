@@ -1,13 +1,14 @@
 <div class="flex flex-column flex-items-center flex-gap-0-5 p-b-2">
 	<div class="title-l">Orchard Setup</div>
-	<div class="font-size-xs orc-outline-color">Setup the admin user for your Orchard using your secret setup key</div>
+	<div class="font-size-xs orc-outline-color text-center">Setup the admin user for your Orchard using your secret setup key</div>
 </div>
 
-<mat-card appearance="outlined" class="relative overflow-hidden">
+<mat-card appearance="outlined" class="relative overflow-hidden" [class.phone-view]="phone_view()">
 	<mat-card-content class="orc-surface-container-low-bg">
-		<div class="auth-initialization-form-container">
+		<div class="auth-initialization-container">
 			<form [formGroup]="form_group()">
 				<orc-auth-general-formcontrol-password
+					class="auth-form-field"
 					[form_group]="form_group()"
 					[control_name]="'key'"
 					[label]="'Setup Key'"
@@ -20,6 +21,7 @@
 					(blur)="blur.emit()"
 				></orc-auth-general-formcontrol-password>
 				<orc-auth-general-formcontrol-name
+					class="auth-form-field"
 					[form_group]="form_group()"
 					[control_name]="'name'"
 					[label]="'Username'"
@@ -32,6 +34,7 @@
 					(blur)="blur.emit()"
 				></orc-auth-general-formcontrol-name>
 				<orc-auth-general-formcontrol-password
+					class="auth-form-field"
 					[form_group]="form_group()"
 					[control_name]="'password'"
 					[label]="'Password'"
@@ -44,6 +47,7 @@
 					(blur)="blur.emit()"
 				></orc-auth-general-formcontrol-password>
 				<orc-auth-general-formcontrol-password
+					class="auth-form-field"
 					[form_group]="form_group()"
 					[control_name]="'password_confirm'"
 					[label]="'Confirm Password'"

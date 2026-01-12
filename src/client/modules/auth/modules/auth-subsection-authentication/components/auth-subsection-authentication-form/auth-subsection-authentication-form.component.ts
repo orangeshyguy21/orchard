@@ -14,6 +14,7 @@ import {AuthenticateControl} from '@client/modules/auth/modules/auth-subsection-
 export class AuthSubsectionAuthenticationFormComponent {
 	public form_group = input.required<FormGroup>();
 	public errors = input.required<Record<AuthenticateControl, string | null>>();
+	public phone_view = input.required<boolean>();
 
 	public cancel = output<AuthenticateControl>();
 	public submit = output<void>();

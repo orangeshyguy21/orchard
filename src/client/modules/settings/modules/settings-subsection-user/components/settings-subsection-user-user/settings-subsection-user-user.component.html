@@ -11,6 +11,7 @@
 					(submit)="submit_user_name.emit()"
 				></orc-settings-subsection-user-user-name>
 				<orc-settings-subsection-user-user-password
+					[view]="view()"
 					(save)="save_user_password.emit($event)"
 				></orc-settings-subsection-user-user-password>
 			</div>

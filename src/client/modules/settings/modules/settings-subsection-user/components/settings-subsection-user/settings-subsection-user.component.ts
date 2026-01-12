@@ -30,7 +30,7 @@ export class SettingsSubsectionUserComponent implements ComponentCanDeactivate, 
 	});
 
 	public user = signal<User | null>(null);
-	public mobile_view = signal(false);
+	public view = signal<'desktop' | 'mobile' | 'phone'>('desktop');
 
 	private dirty_count: WritableSignal<number> = signal(0);
 
@@ -79,8 +79,14 @@ export class SettingsSubsectionUserComponent implements ComponentCanDeactivate, 
 	}
 
 	private getBreakpointSubscription(): Subscription {
-		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
-			this.mobile_view.set(!result.matches);
+		return this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium]).subscribe((result) => {
+			if (result.breakpoints[Breakpoints.XSmall]) {
+				this.view.set('phone');
+			} else if (result.breakpoints[Breakpoints.Small] || result.breakpoints[Breakpoints.Medium]) {
+				this.view.set('mobile');
+			} else {
+				this.view.set('desktop');
+			}
 		});
 	}
 

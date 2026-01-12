@@ -1,8 +1,8 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, signal, Inject} from '@angular/core';
 import {FormGroup, FormControl, Validators, ValidationErrors} from '@angular/forms';
 /* Vendor Dependencies */
-import {MatDialogRef} from '@angular/material/dialog';
+import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 /* Application Dependencies */
 import {passwordMatch} from '@client/modules/form/validators/password-match';
 
@@ -29,7 +29,10 @@ export class SettingsSubsectionUserUserPasswordDialogComponent {
 
 	public focused_control = signal<PasswordControl | null>(null);
 
-	constructor(private readonly dialog_ref: MatDialogRef<SettingsSubsectionUserUserPasswordDialogComponent>) {}
+	constructor(
+		private readonly dialog_ref: MatDialogRef<SettingsSubsectionUserUserPasswordDialogComponent>,
+		@Inject(MAT_DIALOG_DATA) public data: {phone_view: boolean},
+	) {}
 
 	public onControlCancel(control_name: string): void {
 		if (!control_name) return;

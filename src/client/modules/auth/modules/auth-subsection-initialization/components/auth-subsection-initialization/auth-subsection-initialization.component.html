@@ -3,6 +3,7 @@
 		<orc-auth-subsection-initialization-form
 			[form_group]="form_init"
 			[errors]="errors"
+			[phone_view]="phone_view()"
 			(cancel)="onControlCancel($event)"
 			(blur)="onBlur()"
 			(submit)="onSubmit()"

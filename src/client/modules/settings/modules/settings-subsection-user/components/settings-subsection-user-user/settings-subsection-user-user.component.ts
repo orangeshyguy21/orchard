@@ -14,6 +14,7 @@ import {User} from '@client/modules/crew/classes/user.class';
 export class SettingsSubsectionUserUserComponent {
 	public user = input.required<User | null>();
 	public form_group_user_name = input.required<FormGroup>();
+	public view = input.required<string>();
 
 	public cancel_user_name = output<string>();
 	public submit_user_name = output<void>();

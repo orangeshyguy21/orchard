@@ -141,8 +141,8 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnDestroy {
 			pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
 			pointHoverBorderColor: color.border,
 			pointHoverBorderWidth: 3,
-			pointRadius: 4,
-			pointHoverRadius: 6,
+			pointRadius: 2,
+			pointHoverRadius: 4,
 			tension: 0.4,
 		};
 		return {datasets: [dataset]};
@@ -212,8 +212,8 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnDestroy {
 					cubicInterpolationMode: 'monotone',
 				},
 				point: {
-					radius: 5,
-					hoverRadius: 7,
+					radius: 2,
+					hoverRadius: 4,
 					borderWidth: 2,
 					hoverBorderWidth: 3,
 				},

@@ -14,6 +14,7 @@ import {InitializeControl} from '@client/modules/auth/modules/auth-subsection-in
 export class AuthSubsectionInitializationFormComponent {
 	public form_group = input.required<FormGroup>();
 	public errors = input.required<Record<InitializeControl, string | null>>();
+	public phone_view = input.required<boolean>();
 
 	public cancel = output<InitializeControl>();
 	public submit = output<void>();

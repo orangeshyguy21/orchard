@@ -36,7 +36,7 @@ import {AuthSectionComponent} from './components/auth-section/auth-section.compo
 					},
 					{
 						path: 'setup',
-						canActivate: [uninitializedGuard],
+						// canActivate: [uninitializedGuard],
 						loadChildren: () =>
 							import('@client/modules/auth/modules/auth-subsection-initialization/auth-subsection-initialization.module').then(
 								(m) => m.OrcAuthSubsectionInitializationModule,

@@ -1,7 +1,10 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, OnDestroy, signal} from '@angular/core';
 import {FormGroup, FormControl, Validators, ValidationErrors} from '@angular/forms';
 import {Router} from '@angular/router';
+import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
+/* Vendor Dependencies */
+import {Subscription} from 'rxjs';
 /* Application Dependencies */
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {ThemeType} from '@client/modules/cache/services/local-storage/local-storage.types';
@@ -18,7 +21,7 @@ import {InitializeControl} from '@client/modules/auth/modules/auth-subsection-in
 	styleUrl: './auth-subsection-initialization.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AuthSubsectionInitializationComponent implements OnInit {
+export class AuthSubsectionInitializationComponent implements OnInit, OnDestroy {
 	public show_surface: boolean = false;
 	public form_init: FormGroup = new FormGroup({
 		key: new FormControl(null, [Validators.required]),
@@ -33,9 +36,15 @@ export class AuthSubsectionInitializationComponent implements OnInit {
 		name: null,
 	};
 
+	public mobile_view = signal(false);
+	public phone_view = signal(false);
+
+	private subscriptions: Subscription = new Subscription();
+
 	constructor(
 		private readonly authService: AuthService,
 		private readonly settingDeviceService: SettingDeviceService,
+		private readonly breakpointObserver: BreakpointObserver,
 		private readonly router: Router,
 	) {
 		this.form_init.statusChanges.subscribe(() => {
@@ -44,8 +53,17 @@ export class AuthSubsectionInitializationComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
+		this.subscriptions.add(this.getBreakpointSubscription());
 		const theme = this.settingDeviceService.getTheme();
 		this.show_surface = theme === ThemeType.LIGHT_MODE;
+	}
+
+	public getBreakpointSubscription(): Subscription {
+		return this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium]).subscribe((result) => {
+			this.mobile_view.set(result.matches);
+			const phone_view = result.breakpoints[Breakpoints.XSmall];
+			this.phone_view.set(phone_view);
+		});
 	}
 
 	private validateForm(): void {
@@ -108,5 +126,9 @@ export class AuthSubsectionInitializationComponent implements OnInit {
 			this.form_init.get('name')?.setErrors({unique_username: true});
 		}
 		this.validateForm();
+	}
+
+	public ngOnDestroy(): void {
+		this.subscriptions.unsubscribe();
 	}
 }
