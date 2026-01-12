@@ -53,7 +53,10 @@
 				"
 				class="w-full orc-dynamic-form-field"
 			>
-				<mat-label class="flex flex-items-center flex-gap-0-5 cursor-pointer" (click)="help_status.set(!help_status())">
+				<mat-label
+					class="flex flex-items-center flex-gap-0-5 cursor-pointer"
+					(click)="$event.preventDefault(); help_status.set(!help_status()); $event.stopPropagation()"
+				>
 					<span>Icon URL</span>
 					<mat-icon class="icon-sm icon-dynamic-fill">info</mat-icon>
 				</mat-label>
