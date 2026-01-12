@@ -2,7 +2,7 @@
 	<div class="title-l p-l-1">Channel Summary</div>
 	@if (data_source.data.length > 0) {
 		<mat-card appearance="outlined" class="overflow-hidden">
-			<div class="p-h-1">
+			<div class="p-h-1 ln-channel-scroll-wrapper">
 				<table mat-table [dataSource]="data_source" class="orc-feature-table">
 					<ng-container matColumnDef="unit">
 						<th mat-header-cell *matHeaderCellDef></th>
