@@ -117,6 +117,7 @@ export class MintSubsectionDashboardControlComponent {
 			if (!units) return;
 			if (this.areUnitsEqual(this.getSelectedUnits(), units)) return;
 			this.setUnitFilters(units);
+			this.updateFilterCount();
 		});
 
 		// Sync interval input to form
@@ -136,6 +137,7 @@ export class MintSubsectionDashboardControlComponent {
 		this.panel.controls.daterange.controls.date_start.setValue(DateTime.fromSeconds(settings.date_start));
 		this.panel.controls.daterange.controls.date_end.setValue(DateTime.fromSeconds(settings.date_end));
 		this.setUnitFilters(settings.units);
+		this.updateFilterCount();
 		this.panel.controls.interval.setValue(settings.interval);
 	}
 
@@ -184,7 +186,7 @@ export class MintSubsectionDashboardControlComponent {
 		const selected_units = this.getSelectedUnits();
 		const is_valid = this.isValidChange();
 		if (!is_valid) return;
-		this.filter_count.set(selected_units.length > 0 ? 1 : 0);
+		this.updateFilterCount();
 		this.unitsChange.emit(selected_units);
 	}
 
@@ -207,6 +209,10 @@ export class MintSubsectionDashboardControlComponent {
 		if (!this.areUnitsEqual(this.getSelectedUnits(), settings.units)) return true;
 		if (this.panel.controls.interval.value !== settings.interval) return true;
 		return false;
+	}
+
+	private updateFilterCount(): void {
+		this.filter_count.set(this.getSelectedUnits().length > 0 ? 1 : 0);
 	}
 
 	public onClearFilter(): void {

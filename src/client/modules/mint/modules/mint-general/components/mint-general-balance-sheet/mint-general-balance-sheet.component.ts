@@ -25,7 +25,7 @@ export class MintGeneralBalanceSheetComponent {
 	public keysets = input.required<MintKeyset[]>();
 	public lightning_balance = input.required<LightningBalance | null>();
 	public lightning_enabled = input.required<boolean>();
-	public lightning_errors = input.required<OrchardError[]>();
+	public lightning_errors = input<OrchardError[]>([]);
 	public lightning_loading = input.required<boolean>();
 	public loading = input.required<boolean>();
 	public device_desktop = input.required<boolean>();
