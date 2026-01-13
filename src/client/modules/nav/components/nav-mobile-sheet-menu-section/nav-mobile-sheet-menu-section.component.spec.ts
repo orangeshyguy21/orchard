@@ -3,6 +3,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {provideRouter} from '@angular/router';
 /* Vendor Dependencies */
 import {MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA} from '@angular/material/bottom-sheet';
+import {MatIconTestingModule} from '@angular/material/icon/testing';
 /* Native Dependencies */
 import {OrcNavModule} from '@client/modules/nav/nav.module';
 /* Local Dependencies */
@@ -18,7 +19,7 @@ describe('NavMobileSheetMenuSectionComponent', () => {
 		};
 
 		await TestBed.configureTestingModule({
-			imports: [OrcNavModule],
+			imports: [OrcNavModule, MatIconTestingModule],
 			providers: [
 				provideRouter([]),
 				{provide: MatBottomSheetRef, useValue: mock_bottom_sheet_ref},

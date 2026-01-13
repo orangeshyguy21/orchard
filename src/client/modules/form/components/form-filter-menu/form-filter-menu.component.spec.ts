@@ -1,5 +1,8 @@
+/* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-
+/* Native Dependencies */
+import {OrcFormModule} from '@client/modules/form/form.module';
+/* Local Dependencies */
 import {FormFilterMenuComponent} from './form-filter-menu.component';
 
 describe('FormFilterMenuComponent', () => {
@@ -8,7 +11,7 @@ describe('FormFilterMenuComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [FormFilterMenuComponent],
+			imports: [OrcFormModule],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(FormFilterMenuComponent);
