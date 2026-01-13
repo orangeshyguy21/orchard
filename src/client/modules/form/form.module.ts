@@ -13,6 +13,7 @@ import {FormFieldDynamicComponent} from './components/form-field-dynamic/form-fi
 import {FormArrayAddItemComponent} from './components/form-array-add-item/form-array-add-item.component';
 import {FormHelpTextComponent} from './components/form-help-text/form-help-text.component';
 import {FormFilterMenuComponent} from './components/form-filter-menu/form-filter-menu.component';
+import {FormErrorComponent} from './components/form-error/form-error.component';
 
 @NgModule({
 	declarations: [
@@ -22,6 +23,7 @@ import {FormFilterMenuComponent} from './components/form-filter-menu/form-filter
 		FormArrayAddItemComponent,
 		FormHelpTextComponent,
 		FormFilterMenuComponent,
+		FormErrorComponent,
 	],
 	imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatButtonModule, MatIconModule],
 	exports: [
@@ -31,6 +33,7 @@ import {FormFilterMenuComponent} from './components/form-filter-menu/form-filter
 		FormArrayAddItemComponent,
 		FormHelpTextComponent,
 		FormFilterMenuComponent,
+		FormErrorComponent,
 	],
 })
 export class OrcFormModule {}

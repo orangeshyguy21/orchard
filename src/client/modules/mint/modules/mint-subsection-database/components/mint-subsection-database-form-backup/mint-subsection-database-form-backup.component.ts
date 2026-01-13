@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output, computed} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output, computed} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 
 @Component({
@@ -10,19 +10,19 @@ import {FormGroup} from '@angular/forms';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintSubsectionDatabaseFormBackupComponent {
-	@Input() active!: boolean;
-	@Input() form_group!: FormGroup;
-	@Input() database_version!: string;
-	@Input() database_timestamp!: number;
-	@Input() database_implementation!: string;
+	public readonly active = input.required<boolean>();
+	public readonly form_group = input.required<FormGroup>();
+	public readonly database_version = input.required<string>();
+	public readonly database_timestamp = input.required<number>();
+	public readonly database_implementation = input.required<string>();
 
-	@Output() close = new EventEmitter<void>();
+	public readonly close = output<void>();
 
 	public filename_error = computed(() => {
-		if (this.form_group.get('filename')?.hasError('required')) return 'Required';
-		if (this.form_group.get('filename')?.hasError('maxlength'))
-			return `Must be less than ${this.form_group.get('filename')?.getError('maxlength')?.requiredLength} characters`;
-		if (this.form_group.get('filename')?.errors) return 'Invalid';
+		if (this.form_group().get('filename')?.hasError('required')) return 'Required';
+		if (this.form_group().get('filename')?.hasError('maxlength'))
+			return `Must be less than ${this.form_group().get('filename')?.getError('maxlength')?.requiredLength} characters`;
+		if (this.form_group().get('filename')?.errors) return 'Invalid';
 		return '';
 	});
 }

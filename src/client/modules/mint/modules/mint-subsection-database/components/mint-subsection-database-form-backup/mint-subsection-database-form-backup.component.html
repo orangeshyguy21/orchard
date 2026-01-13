@@ -10,7 +10,7 @@
 				<div class="flex-1">
 					<form
 						class="flex-grow flex flex-column flex-gap-1"
-						[formGroup]="form_group"
+						[formGroup]="form_group()"
 						(ngSubmit)="$event.preventDefault()"
 						(keydown.enter)="$event.preventDefault()"
 					>
@@ -22,12 +22,9 @@
 							>
 								<mat-label>File name</mat-label>
 								<input type="text" matInput formControlName="filename" />
-								@if (
-									form_group.get('filename')?.invalid &&
-									(form_group.get('filename')?.dirty || form_group.get('filename')?.touched)
-								) {
-									<mat-error class="font-size-xs">{{ filename_error() }}</mat-error>
-								}
+								<mat-error>
+									<orc-form-error [errors]="form_group().get('filename')?.errors">Invalid</orc-form-error>
+								</mat-error>
 							</mat-form-field>
 						</div>
 					</form>
@@ -44,10 +41,10 @@
 								<div>Timestamp:</div>
 							</div>
 							<div class="flex flex-column flex-gap-0-5 font-size-xs text-nowrap">
-								@if (database_implementation && database_version && database_timestamp) {
-									<div>{{ database_implementation }}</div>
-									<div>{{ database_version }}</div>
-									<div>{{ database_timestamp | localTime: 'medium' }}</div>
+								@if (database_implementation() && database_version() && database_timestamp()) {
+									<div>{{ database_implementation() }}</div>
+									<div>{{ database_version() }}</div>
+									<div>{{ database_timestamp() | localTime: 'medium' }}</div>
 								} @else {
 									<div class="flex flex-column flex-gap-1 orc-outline-color">
 										<div class="h-0-5 w-3 orc-corner-full orc-animation-shimmer-high"></div>
