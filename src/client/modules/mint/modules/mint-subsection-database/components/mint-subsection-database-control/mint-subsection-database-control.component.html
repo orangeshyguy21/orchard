@@ -18,8 +18,8 @@
 				</mat-form-field>
 			</div>
 			@if (device_desktop()) {
-				<div class="flex-grow">
-					<mat-form-field [hideRequiredMarker]="true" class="search-field">
+				<div class="flex-grow search-field">
+					<mat-form-field [hideRequiredMarker]="true" class="w-full">
 						<mat-label><mat-icon>search</mat-icon> Search</mat-label>
 						<input matInput formControlName="filter" (input)="filterChange.emit($event)" />
 					</mat-form-field>

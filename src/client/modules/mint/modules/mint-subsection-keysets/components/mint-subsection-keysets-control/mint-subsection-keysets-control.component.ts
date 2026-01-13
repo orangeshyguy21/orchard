@@ -109,6 +109,7 @@ export class MintSubsectionKeysetsControlComponent {
 			if (!units) return;
 			if (this.areUnitsEqual(this.getSelectedUnits(), units)) return;
 			this.setUnitFilters(units);
+			this.updateFilterCount();
 		});
 
 		/* Effect: Sync status input to form */
@@ -117,6 +118,7 @@ export class MintSubsectionKeysetsControlComponent {
 			if (!status) return;
 			if (this.areStatusEqual(this.getSelectedStatus(), status)) return;
 			this.setStatusFilters(status);
+			this.updateFilterCount();
 		});
 	}
 

@@ -128,6 +128,7 @@ export class MintSubsectionDatabaseControlComponent {
 			if (!units) return;
 			if (this.areUnitsEqual(this.getSelectedUnits(), units)) return;
 			this.setUnitFilters(units);
+			this.updateFilterCount();
 		});
 
 		/* Effect: Sync states input to form */
@@ -136,6 +137,7 @@ export class MintSubsectionDatabaseControlComponent {
 			if (!states) return;
 			if (this.areStatesEqual(this.getSelectedStates(), states)) return;
 			this.setStateFilters(states);
+			this.updateFilterCount();
 		});
 	}
 
