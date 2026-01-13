@@ -17,10 +17,13 @@ describe('MintSubsectionInfoFormNameComponent', () => {
 
 		fixture = TestBed.createComponent(MintSubsectionInfoFormNameComponent);
 		component = fixture.componentInstance;
-		component.form_group = new FormGroup({
-			name: new FormControl('', [Validators.required]),
-		});
-		component.control_name = 'name' as any;
+		fixture.componentRef.setInput(
+			'form_group',
+			new FormGroup({
+				name: new FormControl('', [Validators.required]),
+			}),
+		);
+		fixture.componentRef.setInput('control_name', 'name');
 		fixture.detectChanges();
 	});
 

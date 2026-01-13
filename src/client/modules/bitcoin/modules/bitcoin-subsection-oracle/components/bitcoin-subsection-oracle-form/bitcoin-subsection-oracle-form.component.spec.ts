@@ -36,6 +36,7 @@ describe('BitcoinSubsectionOracleFormComponent', () => {
 		fixture.componentRef.setInput('max_date', max_date);
 		fixture.componentRef.setInput('date_start_max', max_date);
 		fixture.componentRef.setInput('date_end_min', min_date);
+		fixture.componentRef.setInput('device_desktop', true);
 
 		fixture.detectChanges();
 	});

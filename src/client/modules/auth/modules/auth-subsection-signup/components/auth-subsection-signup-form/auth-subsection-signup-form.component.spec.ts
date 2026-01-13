@@ -36,6 +36,7 @@ describe('AuthSubsectionSignupFormComponent', () => {
 			password: null,
 			password_confirm: null,
 		});
+		fixture.componentRef.setInput('device_mobile', false);
 
 		fixture.detectChanges();
 	});

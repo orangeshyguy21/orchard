@@ -17,13 +17,16 @@ describe('MintSubsectionDatabaseFormBackupComponent', () => {
 
 		fixture = TestBed.createComponent(MintSubsectionDatabaseFormBackupComponent);
 		component = fixture.componentInstance;
-		component.active = true;
-		component.form_group = new FormGroup({
-			filename: new FormControl('backup', [Validators.required, Validators.maxLength(64)]),
-		});
-		component.database_version = '1.0.0';
-		component.database_timestamp = Date.now() / 1000;
-		component.database_implementation = 'sqlite';
+		fixture.componentRef.setInput('active', true);
+		fixture.componentRef.setInput(
+			'form_group',
+			new FormGroup({
+				filename: new FormControl('backup', [Validators.required, Validators.maxLength(64)]),
+			}),
+		);
+		fixture.componentRef.setInput('database_version', '1.0.0');
+		fixture.componentRef.setInput('database_timestamp', Date.now() / 1000);
+		fixture.componentRef.setInput('database_implementation', 'sqlite');
 		fixture.detectChanges();
 	});
 

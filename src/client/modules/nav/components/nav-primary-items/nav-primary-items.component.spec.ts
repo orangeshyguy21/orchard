@@ -18,15 +18,15 @@ describe('NavPrimaryItemsComponent', () => {
 
 		fixture = TestBed.createComponent(NavPrimaryItemsComponent);
 		component = fixture.componentInstance;
-		component.active_section = '';
-		component.enabled_bitcoin = false;
-		component.enabled_lightning = false;
-		component.enabled_mint = false;
-		component.online_bitcoin = false;
-		component.online_lightning = false;
-		component.online_mint = false;
-		component.syncing_bitcoin = false;
-		component.syncing_lightning = false;
+		fixture.componentRef.setInput('active_section', '');
+		fixture.componentRef.setInput('enabled_bitcoin', false);
+		fixture.componentRef.setInput('enabled_lightning', false);
+		fixture.componentRef.setInput('enabled_mint', false);
+		fixture.componentRef.setInput('online_bitcoin', false);
+		fixture.componentRef.setInput('online_lightning', false);
+		fixture.componentRef.setInput('online_mint', false);
+		fixture.componentRef.setInput('syncing_bitcoin', false);
+		fixture.componentRef.setInput('syncing_lightning', false);
 		fixture.detectChanges();
 	});
 

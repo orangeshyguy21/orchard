@@ -37,6 +37,7 @@ describe('MintSubsectionDatabaseTableComponent', () => {
 		fixture.componentRef.setInput('loading', false);
 		fixture.componentRef.setInput('loading_more', false);
 		fixture.componentRef.setInput('lightning_request', null);
+		fixture.componentRef.setInput('device_desktop', true);
 		fixture.detectChanges();
 	});
 

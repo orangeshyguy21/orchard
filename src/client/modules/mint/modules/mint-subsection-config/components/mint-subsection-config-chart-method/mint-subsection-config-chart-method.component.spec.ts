@@ -18,16 +18,18 @@ describe('MintSubsectionConfigChartMethodComponent', () => {
 
 		fixture = TestBed.createComponent(MintSubsectionConfigChartMethodComponent);
 		component = fixture.componentInstance;
-		component.nut = 'nut4';
-		component.quotes = [new MintMintQuote({id: '1', amount_issued: 1, state: 'ISSUED', created_time: 1, unit: 'sat'} as any)];
-		component.loading = false;
-		component.locale = 'en-US';
-		component.unit = 'sat';
-		component.method = 'bolt11';
-		component.min_amount = 0;
-		component.max_amount = 10;
-		component.min_hot = false;
-		component.max_hot = false;
+		fixture.componentRef.setInput('nut', 'nut4');
+		fixture.componentRef.setInput('quotes', [
+			new MintMintQuote({id: '1', amount_issued: 1, state: 'ISSUED', created_time: 1, unit: 'sat'} as any),
+		]);
+		fixture.componentRef.setInput('loading', false);
+		fixture.componentRef.setInput('locale', 'en-US');
+		fixture.componentRef.setInput('unit', 'sat');
+		fixture.componentRef.setInput('method', 'bolt11');
+		fixture.componentRef.setInput('min_amount', 0);
+		fixture.componentRef.setInput('max_amount', 10);
+		fixture.componentRef.setInput('min_hot', false);
+		fixture.componentRef.setInput('max_hot', false);
 		fixture.detectChanges();
 	});
 

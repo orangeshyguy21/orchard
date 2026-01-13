@@ -17,12 +17,15 @@ describe('MintSubsectionInfoFormIconComponent', () => {
 
 		fixture = TestBed.createComponent(MintSubsectionInfoFormIconComponent);
 		component = fixture.componentInstance;
-		component.form_group = new FormGroup({
-			icon_url: new FormControl('', [Validators.required]),
-		});
-		component.control_name = 'icon_url' as any;
-		component.icon_url = null;
-		component.focused = false;
+		fixture.componentRef.setInput(
+			'form_group',
+			new FormGroup({
+				icon_url: new FormControl('', [Validators.required]),
+			}),
+		);
+		fixture.componentRef.setInput('control_name', 'icon_url');
+		fixture.componentRef.setInput('icon_url', null);
+		fixture.componentRef.setInput('focused', false);
 		fixture.detectChanges();
 	});
 

@@ -29,6 +29,7 @@ describe('IndexSubsectionDashboardBitcoinHeaderComponent', () => {
 		fixture.componentRef.setInput('error', false);
 		fixture.componentRef.setInput('network_info', {subversion: 'Satoshi:26.0'} as unknown as BitcoinNetworkInfo);
 		fixture.componentRef.setInput('blockchain_info', {initialblockdownload: false} as unknown as BitcoinBlockchainInfo);
+		fixture.componentRef.setInput('device_desktop', true);
 
 		fixture.detectChanges();
 	});

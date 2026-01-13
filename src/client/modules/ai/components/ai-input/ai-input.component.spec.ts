@@ -18,9 +18,9 @@ describe('AiInputComponent', () => {
 
 		fixture = TestBed.createComponent(AiInputComponent);
 		component = fixture.componentInstance;
-		component.content = new FormControl('');
-		component.model = 'test-model';
-		component.active_chat = false;
+		fixture.componentRef.setInput('content', new FormControl(''));
+		fixture.componentRef.setInput('model', 'test-model');
+		fixture.componentRef.setInput('active_chat', false);
 		fixture.detectChanges();
 	});
 

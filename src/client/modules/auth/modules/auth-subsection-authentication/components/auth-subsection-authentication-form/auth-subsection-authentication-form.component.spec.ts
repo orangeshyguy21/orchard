@@ -28,6 +28,7 @@ describe('AuthSubsectionAuthenticationFormComponent', () => {
 
 		fixture.componentRef.setInput('form_group', form_group);
 		fixture.componentRef.setInput('errors', errors);
+		fixture.componentRef.setInput('device_mobile', false);
 		fixture.detectChanges();
 	});
 

@@ -20,6 +20,9 @@ describe('MintSubsectionConfigFormQuoteTtlComponent', () => {
 		fixture.componentRef.setInput('nut', 'nut4');
 		fixture.componentRef.setInput('form_group', new FormGroup({mint_ttl: new FormControl(0)}));
 		fixture.componentRef.setInput('control_name', 'mint_ttl');
+		fixture.componentRef.setInput('control_dirty', false);
+		fixture.componentRef.setInput('control_invalid', false);
+		fixture.componentRef.setInput('control_errors', null);
 		fixture.componentRef.setInput('disabled', false);
 		fixture.componentRef.setInput('locale', 'en-US');
 		fixture.componentRef.setInput('loading', true);

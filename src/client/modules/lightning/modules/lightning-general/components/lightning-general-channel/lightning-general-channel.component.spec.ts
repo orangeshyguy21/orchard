@@ -17,10 +17,10 @@ describe('LightningGeneralChannelComponent', () => {
 
 		fixture = TestBed.createComponent(LightningGeneralChannelComponent);
 		component = fixture.componentInstance;
-		component.size = 100;
-		component.recievable = 50;
-		component.sendable = 50;
-		component.unit = 'sat';
+		fixture.componentRef.setInput('size', 100);
+		fixture.componentRef.setInput('recievable', 50);
+		fixture.componentRef.setInput('sendable', 50);
+		fixture.componentRef.setInput('unit', 'sat');
 		fixture.detectChanges();
 	});
 

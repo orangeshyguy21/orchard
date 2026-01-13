@@ -17,10 +17,13 @@ describe('MintSubsectionInfoFormDescriptionLongComponent', () => {
 
 		fixture = TestBed.createComponent(MintSubsectionInfoFormDescriptionLongComponent);
 		component = fixture.componentInstance;
-		component.form_group = new FormGroup({
-			description_long: new FormControl('', [Validators.required]),
-		});
-		component.control_name = 'description_long' as any;
+		fixture.componentRef.setInput(
+			'form_group',
+			new FormGroup({
+				description_long: new FormControl('', [Validators.required]),
+			}),
+		);
+		fixture.componentRef.setInput('control_name', 'description_long');
 		fixture.detectChanges();
 	});
 

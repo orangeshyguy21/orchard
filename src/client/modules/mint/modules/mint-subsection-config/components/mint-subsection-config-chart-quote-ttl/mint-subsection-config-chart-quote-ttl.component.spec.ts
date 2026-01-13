@@ -18,14 +18,14 @@ describe('MintSubsectionConfigChartQuoteTtlComponent', () => {
 
 		fixture = TestBed.createComponent(MintSubsectionConfigChartQuoteTtlComponent);
 		component = fixture.componentInstance;
-		component.nut = 'nut4';
-		component.quotes = [
+		fixture.componentRef.setInput('nut', 'nut4');
+		fixture.componentRef.setInput('quotes', [
 			new MintMintQuote({id: '1', amount_issued: 1, state: 'ISSUED', created_time: 1, issued_time: 2, unit: 'sat'} as any),
-		];
-		component.loading = false;
-		component.locale = 'en-US';
-		component.quote_ttl = 10;
-		component.form_hot = false;
+		]);
+		fixture.componentRef.setInput('loading', false);
+		fixture.componentRef.setInput('locale', 'en-US');
+		fixture.componentRef.setInput('quote_ttl', 10);
+		fixture.componentRef.setInput('form_hot', false);
 		fixture.detectChanges();
 	});
 

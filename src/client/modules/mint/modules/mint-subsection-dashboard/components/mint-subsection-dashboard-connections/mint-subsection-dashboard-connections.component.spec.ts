@@ -18,6 +18,9 @@ describe('MintSubsectionDashboardConnectionsComponent', () => {
 
 		fixture = TestBed.createComponent(MintSubsectionDashboardConnectionsComponent);
 		component = fixture.componentInstance;
+		fixture.componentRef.setInput('loading', true);
+		fixture.componentRef.setInput('mint_connections', []);
+		fixture.componentRef.setInput('device_desktop', true);
 		fixture.detectChanges();
 	});
 

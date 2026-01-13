@@ -26,6 +26,10 @@ describe('MintSubsectionConfigFormMaxComponent', () => {
 			}),
 		);
 		fixture.componentRef.setInput('control_name', 'max_amount');
+		fixture.componentRef.setInput('control_dirty', false);
+		fixture.componentRef.setInput('control_invalid', false);
+		fixture.componentRef.setInput('control_errors', null);
+		fixture.componentRef.setInput('stat_amounts', []);
 		fixture.detectChanges();
 	});
 
