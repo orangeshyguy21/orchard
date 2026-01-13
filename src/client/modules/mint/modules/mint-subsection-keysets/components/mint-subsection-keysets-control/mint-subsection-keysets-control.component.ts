@@ -39,7 +39,7 @@ export class MintSubsectionKeysetsControlComponent {
 	public readonly keysets = input.required<MintKeyset[]>();
 	public readonly loading = input.required<boolean>();
 	public readonly mint_genesis_time = input.required<number>();
-	public readonly mobile_view = input.required<boolean>();
+	public readonly device_desktop = input.required<boolean>();
 
 	/* Outputs */
 	public readonly dateChange = output<number[]>();

@@ -21,7 +21,7 @@ export class IndexSubsectionDashboardMintHeaderComponent implements OnInit {
 	public loading = input<boolean>();
 	public info = input<MintInfo>();
 	public error = input<boolean>();
-	public mobile_view = input<boolean>();
+	public device_desktop = input<boolean>();
 
 	public items = signal<NavSecondaryItem[]>([]);
 

@@ -26,6 +26,7 @@ import {Locale, Timezone, Theme, ThemeType, Model} from '@client/modules/cache/s
 import {AiModel} from '@client/modules/ai/classes/ai-model.class';
 import {NonNullableSettingsDeviceSettings} from '@client/modules/settings/types/setting.types';
 import {NavTertiaryItem} from '@client/modules/nav/types/nav-tertiary-item.type';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 
 enum NavTertiary {
 	Location = 'nav1',
@@ -55,7 +56,7 @@ export class SettingsSubsectionDeviceComponent implements OnInit, AfterViewInit,
 	readonly loading_ai = signal(true);
 	readonly error_ai = signal(false);
 	readonly page_settings = signal<NonNullableSettingsDeviceSettings | null>(null);
-	readonly mobile_view = signal(false);
+	readonly device_type = signal<DeviceType>('desktop');
 
 	readonly tertiary_nav_items: Record<NavTertiary, NavTertiaryItem> = {
 		[NavTertiary.Location]: {title: 'Location'},
@@ -134,7 +135,7 @@ export class SettingsSubsectionDeviceComponent implements OnInit, AfterViewInit,
 
 	private getBreakpointSubscription(): Subscription {
 		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
-			this.mobile_view.set(!result.matches);
+			this.device_type.set(result.matches ? 'desktop' : 'tablet');
 		});
 	}
 

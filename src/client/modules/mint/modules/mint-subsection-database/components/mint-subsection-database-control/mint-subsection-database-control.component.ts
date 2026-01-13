@@ -42,7 +42,7 @@ export class MintSubsectionDatabaseControlComponent {
 	public readonly loading = input.required<boolean>();
 	public readonly mint_genesis_time = input.required<number>();
 	public readonly keysets = input.required<MintKeyset[]>();
-	public readonly mobile_view = input<boolean>();
+	public readonly device_desktop = input<boolean>();
 
 	/* Outputs */
 	public readonly dateChange = output<number[]>();

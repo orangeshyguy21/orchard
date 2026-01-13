@@ -34,6 +34,7 @@ import {NonNullableMintConfigSettings} from '@client/modules/settings/types/sett
 import {NavTertiaryItem} from '@client/modules/nav/types/nav-tertiary-item.type';
 import {NavTertiaryItemStatus} from '@client/modules/nav/enums/nav-tertiary-item-status.enum';
 import {LocalAmountPipe} from '@client/modules/local/pipes/local-amount/local-amount.pipe';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Native Dependencies */
 import {MintService} from '@client/modules/mint/services/mint/mint.service';
 import {MintInfo} from '@client/modules/mint/classes/mint-info.class';
@@ -179,7 +180,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		return this.form_config.get('melting') as FormGroup;
 	}
 
-	public mobile_view = signal(false);
+	public device_type = signal<DeviceType>('desktop');
 
 	private subscriptions: Subscription = new Subscription();
 	private active_event: EventData | null = null;
@@ -443,7 +444,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 
 	private getBreakpointSubscription(): Subscription {
 		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
-			this.mobile_view.set(!result.matches);
+			this.device_type.set(result.matches ? 'desktop' : 'tablet');
 		});
 	}
 

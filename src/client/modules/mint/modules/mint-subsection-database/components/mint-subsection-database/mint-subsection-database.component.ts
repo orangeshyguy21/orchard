@@ -32,6 +32,7 @@ import {ComponentCanDeactivate} from '@client/modules/routing/interfaces/routing
 import {AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {LightningRequest} from '@client/modules/lightning/classes/lightning-request.class';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Native Dependencies */
 import {MintService} from '@client/modules/mint/services/mint/mint.service';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
@@ -88,7 +89,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	public database_timestamp!: number;
 	public database_implementation!: string;
 	public lightning_request!: LightningRequest | null;
-	public mobile_view = signal<boolean>(false);
+	public device_type = signal<DeviceType>('desktop');
 
 	private active_event: EventData | null = null;
 	private subscriptions: Subscription = new Subscription();
@@ -179,7 +180,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 
 	private getBreakpointSubscription(): Subscription {
 		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
-			this.mobile_view.set(!result.matches);
+			this.device_type.set(result.matches ? 'desktop' : 'tablet');
 		});
 	}
 
@@ -250,7 +251,6 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	}
 
 	private async getMintsData(): Promise<void> {
-		console.log('getMintsData', this.page_settings.units);
 		const mint_mint_quotes_data = await lastValueFrom(
 			this.mintService.getMintMintQuotesData({
 				date_start: this.page_settings.date_start,

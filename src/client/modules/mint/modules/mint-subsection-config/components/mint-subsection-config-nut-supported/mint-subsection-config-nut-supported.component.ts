@@ -12,7 +12,7 @@ export class MintSubsectionConfigNutSupportedComponent {
 	public supported = input<boolean | undefined>(undefined);
 	public nut_index = input.required<string>();
 	public nut_icon = input.required<string>();
-	public mobile_view = input<boolean>(false);
+	public device_desktop = input<boolean>(false);
 
 	public help_status = signal<boolean>(false); // tracks if the help is visible
 }

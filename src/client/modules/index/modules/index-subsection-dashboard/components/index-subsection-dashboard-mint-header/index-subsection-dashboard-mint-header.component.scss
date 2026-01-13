@@ -6,7 +6,7 @@
 	@extend %flex-items-center;
 	@extend %flex-gap-0-5;
 
-	&.mobile-header {
+	&.tablet-header {
 		@extend %flex-gap-2;
 
 		.header-box {

@@ -1,4 +1,4 @@
-<div class="flex flex-column" [class.mobile-view]="view() === 'mobile'">
+<div class="flex flex-column" [class.tablet-view]="device_type() !== 'desktop'">
 	<div class="sticky-setting z-index-1">
 		<div class="flex flex-justify-between flex-items-end p-b-0-5">
 			<div>
@@ -12,7 +12,7 @@
 		<orc-settings-subsection-user-user
 			[user]="user()"
 			[form_group_user_name]="form_user_name"
-			[view]="view()"
+			[device_type]="device_type()"
 			(cancel_user_name)="onCancelUserName($event)"
 			(submit_user_name)="onSubmitUserName()"
 			(save_user_password)="onSaveUserPassword($event)"

@@ -31,7 +31,7 @@ export class MintSubsectionDatabaseTableComponent {
 	public loading = input.required<boolean>(); // loading state for initial data
 	public loading_more = input.required<boolean>(); // loading state for expanded row details
 	public lightning_request = input.required<LightningRequest | null>(); // lightning request for invoice lookup
-	public mobile_view = input.required<boolean>(); // mobile view flag
+	public device_desktop = input.required<boolean>(); // mobile view flag
 
 	/* Outputs */
 	public updateRequest = output<string>(); // emits request string for invoice updates
@@ -67,7 +67,7 @@ export class MintSubsectionDatabaseTableComponent {
 	}
 
 	private getDisplayedColumns(): string[] {
-		const mobile = this.mobile_view();
+		const mobile = !this.device_desktop();
 		const data_type = this.data().type;
 		if (data_type === 'MintMints' || data_type === 'MintMelts') {
 			if (mobile) return ['unit', 'amount', 'state'];

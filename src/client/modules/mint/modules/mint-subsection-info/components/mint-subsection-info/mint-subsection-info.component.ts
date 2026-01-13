@@ -26,6 +26,7 @@ import {EventService} from '@client/modules/event/services/event/event.service';
 import {EventData} from '@client/modules/event/classes/event-data.class';
 import {ComponentCanDeactivate} from '@client/modules/routing/interfaces/routing.interfaces';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Shared Dependencies */
 import {AiFunctionName, OrchardContact} from '@shared/generated.types';
 
@@ -62,7 +63,7 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 		return this.form_info.get('contact') as FormArray;
 	}
 
-	public mobile_view = signal(false);
+	public device_type = signal<DeviceType>('desktop');
 
 	private subscriptions: Subscription = new Subscription();
 	private active_event: EventData | null = null;
@@ -186,7 +187,7 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 
 	private getBreakpointSubscription(): Subscription {
 		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
-			this.mobile_view.set(!result.matches);
+			this.device_type.set(result.matches ? 'desktop' : 'tablet');
 		});
 	}
 

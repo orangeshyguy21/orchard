@@ -26,6 +26,7 @@ import {AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {NonNullableMintKeysetsSettings} from '@client/modules/settings/types/setting.types';
 import {ComponentCanDeactivate} from '@client/modules/routing/interfaces/routing.interfaces';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Native Dependencies */
 import {MintService} from '@client/modules/mint/services/mint/mint.service';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
@@ -70,7 +71,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		input_fee_ppk: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(100000)]),
 		max_order: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(255)]),
 	});
-	public mobile_view = signal<boolean>(false);
+	public device_type = signal<DeviceType>('desktop');
 
 	private active_event: EventData | null = null;
 	private subscriptions: Subscription = new Subscription();
@@ -158,7 +159,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 
 	private getBreakpointSubscription(): Subscription {
 		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
-			this.mobile_view.set(!result.matches);
+			this.device_type.set(result.matches ? 'desktop' : 'tablet');
 		});
 	}
 

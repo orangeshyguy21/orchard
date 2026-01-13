@@ -29,7 +29,7 @@ export class MintSubsectionConfigFormQuoteTtlComponent {
 	public locale = input.required<string>(); // locale for number formatting
 	public loading = input.required<boolean>(); // whether data is loading
 	public quotes = input.required<MintMintQuote[] | MintMeltQuote[]>(); // quotes to display in chart
-	public mobile_view = input<boolean>(false); // whether the mobile view is active
+	public device_desktop = input<boolean>(false); // whether the desktop view is active
 
 	public update = output<{form_group: FormGroup; control_name: keyof MintQuoteTtls}>(); // emitted when form is submitted
 	public cancel = output<{form_group: FormGroup; control_name: keyof MintQuoteTtls}>(); // emitted when form is cancelled

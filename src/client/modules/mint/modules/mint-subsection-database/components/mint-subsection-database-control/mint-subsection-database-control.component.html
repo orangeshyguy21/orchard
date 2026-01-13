@@ -2,7 +2,7 @@
 	<form [formGroup]="panel" class="panel-form orc-animation-form-reaction" [class.animation-invalid]="height_state === 'invalid'">
 		<div class="flex flex-col flex-gap-1">
 			<div>
-				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic" [class.mobile-form-field]="mobile_view()">
+				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic" [class.mobile-form-field]="!device_desktop()">
 					<mat-label>Data</mat-label>
 					<mat-select formControlName="type" (selectionChange)="onTypeChange($event)">
 						<mat-select-trigger>
@@ -17,7 +17,7 @@
 					</mat-select>
 				</mat-form-field>
 			</div>
-			@if (!mobile_view()) {
+			@if (device_desktop()) {
 				<div class="flex-grow">
 					<mat-form-field [hideRequiredMarker]="true" class="search-field">
 						<mat-label><mat-icon>search</mat-icon> Search</mat-label>
@@ -64,7 +64,7 @@
 <mat-menu #filter_menu="matMenu" yPosition="below" class="orc-sticky-menu orc-filter-menu">
 	<orc-form-filter-menu (click)="$event.stopPropagation()" (clear)="onClearFilter()" (close)="onCloseFilter()">
 		<form [formGroup]="panel">
-			@if (mobile_view()) {
+			@if (!device_desktop()) {
 				<div class="p-1">
 					<mat-form-field [hideRequiredMarker]="true" class="search-field" subscriptSizing="dynamic">
 						<mat-label><mat-icon>search</mat-icon> Search</mat-label>

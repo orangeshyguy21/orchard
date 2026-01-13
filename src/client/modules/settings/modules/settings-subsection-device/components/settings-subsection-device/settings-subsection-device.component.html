@@ -1,5 +1,5 @@
 <div class="flex flex-gap-2">
-	@if (mobile_view()) {
+	@if (device_type() !== 'desktop') {
 		<div class="mobile-settings-nav">
 			<button matButton type="button" [matMenuTriggerFor]="settings_menu">
 				<mat-icon>menu</mat-icon>
@@ -7,7 +7,7 @@
 			</button>
 		</div>
 	}
-	<div class="grid flex-grow" #settings_container [class.mobile-view]="mobile_view()">
+	<div class="grid flex-grow" #settings_container [class.tablet-view]="device_type() !== 'desktop'">
 		<div class="settings-location nav1" #nav1>
 			<div class="sticky-setting z-index-1">
 				<div class="flex flex-justify-between flex-items-end p-b-0-5">
@@ -70,7 +70,7 @@
 			</div>
 		</div>
 	</div>
-	@if (!mobile_view()) {
+	@if (device_type() === 'desktop') {
 		<div class="p-r-2">
 			<orc-nav-tertiary
 				class="settings-tertiary-nav"

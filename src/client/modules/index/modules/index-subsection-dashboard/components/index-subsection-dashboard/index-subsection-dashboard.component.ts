@@ -30,6 +30,7 @@ import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {OrchardError} from '@client/modules/error/types/error.types';
 import {Setting} from '@client/modules/settings/classes/setting.class';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Shared Dependencies */
 import {SettingKey} from '@shared/generated.types';
 
@@ -48,7 +49,7 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public version: string;
 	public enabled_mint: boolean;
 	public enabled_ecash = false;
-	public mobile_view = signal<boolean>(false);
+	public device_type = signal<DeviceType>('desktop');
 
 	public loading_bitcoin: boolean = true;
 	public loading_lightning: boolean = true;
@@ -201,7 +202,7 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 
 	private getBreakpointSubscription(): Subscription {
 		return this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium]).subscribe((result) => {
-			this.mobile_view.set(result.matches);
+			this.device_type.set(result.matches ? 'tablet' : 'desktop');
 		});
 	}
 

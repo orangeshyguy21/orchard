@@ -76,7 +76,7 @@
 						</div>
 					</form>
 				</div>
-				<div class="flex flex-items-center flex-justify-center oracle-wrapper" [class.mobile-oracle]="mobile_view()">
+				<div class="flex flex-items-center flex-justify-center oracle-wrapper" [class.tablet-oracle]="!device_desktop()">
 					<div>
 						<orc-graphic-oracle height="18rem" [running]="running()" [status]="progress()?.status ?? null"></orc-graphic-oracle>
 					</div>

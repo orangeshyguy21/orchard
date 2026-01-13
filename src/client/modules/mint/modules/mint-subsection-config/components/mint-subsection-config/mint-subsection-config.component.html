@@ -1,5 +1,5 @@
 <div class="mint-subsection-config-container">
-	@if (mobile_view()) {
+	@if (device_type() !== 'desktop') {
 		<div class="mobile-mint-config-nav">
 			<button matButton type="button" [matMenuTriggerFor]="nut_menu">
 				<mat-icon>menu</mat-icon>
@@ -8,7 +8,7 @@
 		</div>
 	}
 	<div class="flex flex-gap-0-5">
-		<div class="grid" #nut_container [class.mobile-view]="mobile_view()">
+		<div class="grid" #nut_container [class.tablet-view]="device_type() !== 'desktop'">
 			<div class="flex flex-wrap">
 				<!-- NUT 04 -->
 				<div class="nav4 flex-1" #nav4>
@@ -22,7 +22,7 @@
 						[nut]="'nut4'"
 						[enabled]="form_minting.get('enabled')?.value"
 						[form_group]="form_minting"
-						[mobile_view]="mobile_view()"
+						[device_desktop]="device_type() === 'desktop'"
 						(update)="onEnabledUpdate($event)"
 					></orc-mint-subsection-config-form-enabled>
 
@@ -43,7 +43,7 @@
 						[locale]="locale"
 						[loading]="data_loading"
 						[quotes]="mint_quotes"
-						[mobile_view]="mobile_view()"
+						[device_desktop]="device_type() === 'desktop'"
 						(update)="onTtlUpdate($event)"
 						(cancel)="onTtlCancel($event)"
 					></orc-mint-subsection-config-form-quote-ttl>
@@ -140,7 +140,7 @@
 					<orc-mint-subsection-config-form-enabled
 						[nut]="'nut5'"
 						[form_group]="form_melting"
-						[mobile_view]="mobile_view()"
+						[device_desktop]="device_type() === 'desktop'"
 						(update)="onEnabledUpdate($event)"
 					>
 					</orc-mint-subsection-config-form-enabled>
@@ -161,7 +161,7 @@
 						[disabled]="mint_info?.nuts?.nut5?.disabled"
 						[locale]="locale"
 						[loading]="data_loading"
-						[mobile_view]="mobile_view()"
+						[device_desktop]="device_type() === 'desktop'"
 						[quotes]="melt_quotes"
 						(update)="onTtlUpdate($event)"
 						(cancel)="onTtlCancel($event)"
@@ -264,7 +264,7 @@
 					[nut_index]="'07'"
 					[nut_icon]="'pageview'"
 					[supported]="mint_info?.nuts?.nut7?.supported"
-					[mobile_view]="mobile_view()"
+					[device_desktop]="device_type() === 'desktop'"
 				>
 					<div class="flex flex-column flex-gap-0-5">
 						<span>
@@ -289,7 +289,7 @@
 					[nut_index]="'08'"
 					[nut_icon]="'arrow_circle_left'"
 					[supported]="mint_info?.nuts?.nut8?.supported"
-					[mobile_view]="mobile_view()"
+					[device_desktop]="device_type() === 'desktop'"
 				>
 					<div class="flex flex-column flex-gap-0-5">
 						<span>
@@ -314,7 +314,7 @@
 					[nut_index]="'09'"
 					[nut_icon]="'password'"
 					[supported]="mint_info?.nuts?.nut9?.supported"
-					[mobile_view]="mobile_view()"
+					[device_desktop]="device_type() === 'desktop'"
 				>
 					<div class="flex flex-column flex-gap-0-5">
 						<span>
@@ -340,7 +340,7 @@
 					[nut_index]="'10'"
 					[nut_icon]="'flowsheet'"
 					[supported]="mint_info?.nuts?.nut10?.supported"
-					[mobile_view]="mobile_view()"
+					[device_desktop]="device_type() === 'desktop'"
 				>
 					<div class="flex flex-column flex-gap-0-5">
 						<span>
@@ -365,7 +365,7 @@
 					[nut_index]="'11'"
 					[nut_icon]="'key'"
 					[supported]="mint_info?.nuts?.nut11?.supported"
-					[mobile_view]="mobile_view()"
+					[device_desktop]="device_type() === 'desktop'"
 				>
 					<div class="flex flex-column flex-gap-0-5">
 						<span>
@@ -390,7 +390,7 @@
 					[nut_index]="'12'"
 					[nut_icon]="'wifi_off'"
 					[supported]="mint_info?.nuts?.nut12?.supported"
-					[mobile_view]="mobile_view()"
+					[device_desktop]="device_type() === 'desktop'"
 				>
 					<div class="flex flex-column flex-gap-0-5">
 						<span>
@@ -415,7 +415,7 @@
 					[nut_index]="'14'"
 					[nut_icon]="'lock_clock'"
 					[supported]="mint_info?.nuts?.nut14?.supported"
-					[mobile_view]="mobile_view()"
+					[device_desktop]="device_type() === 'desktop'"
 				>
 					<div class="flex flex-column flex-gap-0-5">
 						<span>
@@ -438,7 +438,7 @@
 					[nut_index]="'15'"
 					[nut_icon]="'thunderstorm'"
 					[supported]="mint_info?.nuts?.nut15?.methods?.length === 0 ? false : true"
-					[mobile_view]="mobile_view()"
+					[device_desktop]="device_type() === 'desktop'"
 				>
 					<div class="flex flex-column flex-gap-0-5">
 						<span>
@@ -478,7 +478,7 @@
 					[nut_index]="'17'"
 					[nut_icon]="'electrical_services'"
 					[supported]="mint_info?.nuts?.nut17?.supported ? true : false"
-					[mobile_view]="mobile_view()"
+					[device_desktop]="device_type() === 'desktop'"
 				>
 					<div class="flex flex-column flex-gap-0-5">
 						<span>
@@ -520,7 +520,7 @@
 					[nut_index]="'19'"
 					[nut_icon]="'download_for_offline'"
 					[supported]="mint_info?.nuts?.nut19 ? true : false"
-					[mobile_view]="mobile_view()"
+					[device_desktop]="device_type() === 'desktop'"
 				>
 					<div class="flex flex-column flex-gap-0-5">
 						<span>
@@ -533,7 +533,7 @@
 				@if (mint_info?.nuts?.nut19) {
 					<orc-mint-subsection-config-nut19
 						[nut19]="mint_info?.nuts?.nut19"
-						[mobile_view]="mobile_view()"
+						[device_desktop]="device_type() === 'desktop'"
 					></orc-mint-subsection-config-nut19>
 				}
 			</div>
@@ -551,7 +551,7 @@
 					[nut_index]="'20'"
 					[nut_icon]="'stylus_note'"
 					[supported]="mint_info?.nuts?.nut20?.supported"
-					[mobile_view]="mobile_view()"
+					[device_desktop]="device_type() === 'desktop'"
 				>
 					<div class="flex flex-column flex-gap-0-5">
 						<span>
@@ -563,7 +563,7 @@
 				</orc-mint-subsection-config-nut-supported>
 			</div>
 		</div>
-		@if (!mobile_view()) {
+		@if (device_type() === 'desktop') {
 			<orc-nav-tertiary
 				class="nut-tertiary-nav"
 				[keys]="page_settings.tertiary_nav"

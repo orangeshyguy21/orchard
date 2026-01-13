@@ -11,6 +11,7 @@ import {BitcoinService} from '@client/modules/bitcoin/services/bitcoin/bitcoin.s
 import {EventData} from '@client/modules/event/classes/event-data.class';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle-price.class';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Native Dependencies */
 import {Setting} from '@client/modules/settings/classes/setting.class';
 /* Shared Dependencies */
@@ -33,7 +34,7 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 		oracle_enabled: new FormControl(false, [Validators.required]),
 	});
 	public bitcoin_oracle_price = signal<BitcoinOraclePrice | null>(null);
-	public mobile_view = signal(false);
+	public device_type = signal<DeviceType>('desktop');
 
 	private active_event: EventData | null = null;
 	private subscriptions: Subscription = new Subscription();
@@ -81,7 +82,7 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 
 	private getBreakpointSubscription(): Subscription {
 		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
-			this.mobile_view.set(!result.matches);
+			this.device_type.set(result.matches ? 'desktop' : 'tablet');
 		});
 	}
 

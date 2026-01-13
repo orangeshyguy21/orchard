@@ -1,4 +1,4 @@
-<div class="index-bitcoin-header-container" [class.mobile-header]="mobile_view()">
+<div class="index-bitcoin-header-container" [class.tablet-header]="!device_desktop()">
 	<div class="header-box flex flex-items-center flex-gap-0-5 p-b-0-5">
 		<mat-icon [svgIcon]="'bitcoin_outline'"></mat-icon>
 		<div class="title-l">Bitcoin</div>
@@ -8,19 +8,19 @@
 			<div animate.enter="orc-animation-fadein" class="flex flex-gap-1">
 				<div class="flex flex-items-center flex-gap-0-5">
 					<orc-nav-primary-status
-						[size]="mobile_view() ? 'medium' : 'small'"
+						[size]="!device_desktop() ? 'medium' : 'small'"
 						[enabled]="enabled()"
 						[online]="!error()"
 						[syncing]="blockchain_info()?.initialblockdownload ?? false"
 					></orc-nav-primary-status>
-					@if (!mobile_view()) {
+					@if (device_desktop()) {
 						<div class="orc-outline-color">{{ state() }}</div>
 					}
 				</div>
 			</div>
 		}
 	</div>
-	@if (!mobile_view()) {
+	@if (device_desktop()) {
 		<div class="flex-grow flex h-3">
 			@for (item of items(); track item.navroute) {
 				<orc-nav-secondary-item [name]="item.name" [navroute]="item.navroute"> </orc-nav-secondary-item>
@@ -34,7 +34,7 @@
 			</div>
 		}
 	</div>
-	@if (mobile_view()) {
+	@if (!device_desktop()) {
 		<div class="flex-grow flex flex-items-center flex-justify-end">
 			<button mat-icon-button class="orc-icon-button" (click)="onMenuClick()">
 				<mat-icon>menu</mat-icon>

@@ -32,7 +32,6 @@ export class AiInputComponent {
 
 		effect(() => {
 			if (this.focus()) {
-				console.log('focus', this.focus());
 				setTimeout(() => {
 					this.input_el()?.nativeElement.focus();
 				}, 100);

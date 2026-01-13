@@ -1,4 +1,4 @@
-<div class="flex flex-column" [class.mobile-view]="mobile_view()">
+<div class="flex flex-column" [class.tablet-view]="device_type() === 'tablet'">
 	<div class="sticky-section z-index-1">
 		<orc-index-subsection-dashboard-bitcoin-header
 			[enabled]="enabled_bitcoin"
@@ -7,7 +7,7 @@
 			[blockchain_info]="bitcoin_blockchain_info"
 			[enabled_oracle]="enabled_bitcoin_oracle()"
 			[error]="errors_bitcoin.length ? true : false"
-			[mobile_view]="mobile_view()"
+			[device_desktop]="device_type() === 'desktop'"
 		></orc-index-subsection-dashboard-bitcoin-header>
 		<div class="category-rule"></div>
 	</div>
@@ -53,7 +53,7 @@
 			[loading]="preparing_lightning"
 			[lightning_info]="lightning_info!"
 			[error]="errors_lightning.length ? true : false"
-			[mobile_view]="mobile_view()"
+			[device_desktop]="device_type() === 'desktop'"
 		></orc-index-subsection-dashboard-lightning-header>
 		<div class="category-rule"></div>
 	</div>
@@ -94,7 +94,7 @@
 			[loading]="preparing_mint"
 			[info]="mint_info!"
 			[error]="errors_mint.length ? true : false"
-			[mobile_view]="mobile_view()"
+			[device_desktop]="device_type() === 'desktop'"
 		></orc-index-subsection-dashboard-mint-header>
 		<div class="category-rule"></div>
 	</div>
@@ -112,7 +112,7 @@
 				[lightning_enabled]="enabled_lightning"
 				[lightning_errors]="errors_lightning"
 				[lightning_loading]="preparing_lightning"
-				[mobile_view]="mobile_view()"
+				[device_desktop]="device_type() === 'desktop'"
 				(navigate)="onNavigate($event)"
 			></orc-index-subsection-dashboard-mint-enabled>
 		} @else {

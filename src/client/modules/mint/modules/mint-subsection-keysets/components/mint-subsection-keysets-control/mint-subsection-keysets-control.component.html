@@ -1,7 +1,7 @@
 <div class="mint-keyset-control-container">
 	<form [formGroup]="panel" class="panel-form orc-animation-form-reaction" [class.animation-invalid]="height_state === 'invalid'">
 		<div class="flex flex-col flex-gap-1">
-			@if (!mobile_view()) {
+			@if (device_desktop()) {
 				<div formGroupName="daterange">
 					<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic" class="mint-analytic-daterange">
 						<mat-label>Date range</mat-label>
@@ -43,7 +43,7 @@
 <mat-menu #filter_menu="matMenu" yPosition="below" class="orc-sticky-menu orc-filter-menu">
 	<orc-form-filter-menu (click)="$event.stopPropagation()" (clear)="onClearFilter()" (close)="onCloseFilter()">
 		<form [formGroup]="panel">
-			@if (mobile_view()) {
+			@if (!device_desktop()) {
 				<div formGroupName="daterange" class="p-1">
 					<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
 						<mat-label>Date range</mat-label>

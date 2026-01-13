@@ -7,7 +7,7 @@
 					[min_date]="min_date()"
 					[max_date]="max_date()"
 				></orc-bitcoin-subsection-oracle-control>
-				@if (!mobile_view()) {
+				@if (device_type() === 'desktop') {
 					<div class="p-b-1" animate.enter="orc-animation-fadein">
 						<div class="title-l">Latest Price</div>
 						<div class="orc-outline-color font-size-s">
@@ -49,7 +49,7 @@
 				[max_date]="max_date()"
 				[date_start_max]="date_start_max()"
 				[date_end_min]="date_end_min()"
-				[mobile_view]="mobile_view()"
+				[device_desktop]="device_type() === 'desktop'"
 				(close)="onCloseForm()"
 				(cancel)="onCancelForm($event)"
 			></orc-bitcoin-subsection-oracle-form>
@@ -57,7 +57,7 @@
 	</div>
 
 	<div class="relative">
-		@if (mobile_view()) {
+		@if (device_type() !== 'desktop') {
 			<div class="mobile-latest-price flex flex-gap-2 flex-items-center" animate.enter="orc-animation-fadein">
 				<div class="p-b-1">
 					<div class="title-l text-nowrap">Latest Price</div>

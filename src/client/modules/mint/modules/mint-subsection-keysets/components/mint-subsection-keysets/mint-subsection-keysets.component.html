@@ -12,14 +12,14 @@
 					[keysets]="mint_keysets"
 					[loading]="loading_static_data"
 					[mint_genesis_time]="mint_genesis_time"
-					[mobile_view]="mobile_view()"
+					[device_desktop]="device_type() === 'desktop'"
 					(dateChange)="onDateChange($event)"
 					(unitsChange)="onUnitsChange($event)"
 					(statusChange)="onStatusChange($event)"
 				></orc-mint-subsection-keysets-control>
 			}
 
-			@if (!mobile_view()) {
+			@if (device_type() === 'desktop') {
 				<button
 					type="button"
 					class="text-nowrap"
@@ -78,7 +78,7 @@
 		[keysets_analytics_pre]="keysets_analytics_pre"
 		[keysets_proof_counts]="keysets_proof_counts"
 		[page_settings]="page_settings"
-		[mobile_view]="mobile_view()"
+		[device_desktop]="device_type() === 'desktop'"
 		[loading]="loading_dynamic_data"
 		(rotateKeyset)="onRotationUnit($event)"
 	></orc-mint-subsection-keysets-table>

@@ -30,7 +30,7 @@ export class MintSubsectionKeysetsTableComponent {
 	readonly keysets_proof_counts = input.required<MintKeysetProofCount[]>();
 	readonly page_settings = input.required<NonNullableMintKeysetsSettings>();
 	readonly loading = input.required<boolean>();
-	readonly mobile_view = input.required<boolean>();
+	readonly device_desktop = input.required<boolean>();
 
 	readonly rotateKeyset = output<MintUnit>();
 
@@ -38,7 +38,7 @@ export class MintSubsectionKeysetsTableComponent {
 	public more_entity = signal<MintKeyset | null>(null); // currently expanded row entity
 
 	public displayed_columns = computed(() => {
-		const mobile = this.mobile_view();
+		const mobile = !this.device_desktop();
 		if (mobile) return ['keyset', 'balance'];
 		return ['keyset', 'input_fee_ppk', 'valid_from', 'balance', 'fees', 'proofs', 'actions'];
 	});
@@ -85,7 +85,6 @@ export class MintSubsectionKeysetsTableComponent {
 	 * @param entity - the quote to toggle
 	 */
 	public toggleMore(entity: MintKeyset): void {
-		console.log('toggleMore', entity);
 		this.more_entity.set(this.more_entity() === entity ? null : entity);
 	}
 }

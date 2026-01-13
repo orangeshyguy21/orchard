@@ -22,7 +22,7 @@ import {Connection} from './mint-subsection-dashboard-connections.classes';
 	styleUrl: './mint-subsection-dashboard-connections.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	host: {
-		'[class.flex-grow]': 'mobile_view()',
+		'[class.flex-grow]': '!device_desktop()',
 	},
 })
 export class MintSubsectionDashboardConnectionsComponent {
@@ -32,7 +32,7 @@ export class MintSubsectionDashboardConnectionsComponent {
 	public mint_name = input<string | undefined>(undefined);
 	public loading = input.required<boolean>();
 	public mint_connections = input.required<PublicUrl[]>();
-	public mobile_view = input.required<boolean>();
+	public device_desktop = input.required<boolean>();
 
 	public qr_canvas = viewChild<ElementRef>('qr_canvas');
 

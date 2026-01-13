@@ -3,6 +3,8 @@ import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 /* Vendor Dependencies */
 import {MatDialog} from '@angular/material/dialog';
+/* Application Dependencies */
+import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Native Dependencies */
 import {SettingsSubsectionUserUserPasswordDialogComponent} from '@client/modules/settings/modules/settings-subsection-user/components/settings-subsection-user-user-password-dialog/settings-subsection-user-user-password-dialog.component';
 
@@ -14,7 +16,7 @@ import {SettingsSubsectionUserUserPasswordDialogComponent} from '@client/modules
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsSubsectionUserUserPasswordComponent {
-	public view = input.required<string>();
+	public device_type = input.required<DeviceType>();
 
 	public save = output<FormGroup>();
 
@@ -23,7 +25,7 @@ export class SettingsSubsectionUserUserPasswordComponent {
 	public onChangePassword(): void {
 		const dialog_ref = this.dialog.open(SettingsSubsectionUserUserPasswordDialogComponent, {
 			data: {
-				phone_view: this.view() === 'phone' ? true : false,
+				device_mobile: this.device_type() === 'mobile' ? true : false,
 			},
 		});
 		dialog_ref.afterClosed().subscribe((form_password: FormGroup) => {

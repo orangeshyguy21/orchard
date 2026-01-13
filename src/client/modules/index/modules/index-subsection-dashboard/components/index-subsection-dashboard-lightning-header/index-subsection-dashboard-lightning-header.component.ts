@@ -21,7 +21,7 @@ export class IndexSubsectionDashboardLightningHeaderComponent implements OnInit 
 	public loading = input.required<boolean>();
 	public lightning_info = input.required<LightningInfo>();
 	public error = input.required<boolean>();
-	public mobile_view = input.required<boolean>();
+	public device_desktop = input.required<boolean>();
 
 	public items = signal<NavSecondaryItem[]>([]);
 

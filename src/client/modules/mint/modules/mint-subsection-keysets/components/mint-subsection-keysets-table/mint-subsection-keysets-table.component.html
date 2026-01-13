@@ -4,11 +4,11 @@
 			<div class="p-h-1" animate.enter="orc-animation-fadein">
 				<table
 					mat-table
-					[multiTemplateDataRows]="mobile_view()"
+					[multiTemplateDataRows]="!device_desktop()"
 					[dataSource]="data_source()"
 					matSort
 					class="orc-feature-table"
-					[class.orc-expandable-table]="mobile_view()"
+					[class.orc-expandable-table]="!device_desktop()"
 				>
 					<ng-container matColumnDef="keyset">
 						<th mat-header-cell *matHeaderCellDef class="keyset-table-sticky-header">Keyset</th>
@@ -23,7 +23,7 @@
 									>
 									</orc-mint-general-keyset>
 								</div>
-								@if (!mobile_view()) {
+								@if (device_desktop()) {
 									<span class="text-sm orc-outline-variant-color"> {{ keyset.id }} </span>
 								}
 							</div>
@@ -176,7 +176,7 @@
 						[class.expanded]="more_entity() === row"
 						(click)="toggleMore(row)"
 					></tr>
-					@if (mobile_view()) {
+					@if (!device_desktop()) {
 						<tr mat-row *matRowDef="let row; columns: ['more_detail']" class="more-entity-row"></tr>
 					}
 				</table>

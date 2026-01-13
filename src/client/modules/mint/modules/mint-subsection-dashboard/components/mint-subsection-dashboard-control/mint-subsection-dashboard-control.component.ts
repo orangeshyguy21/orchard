@@ -39,7 +39,7 @@ export class MintSubsectionDashboardControlComponent {
 	public keysets = input.required<MintKeyset[]>();
 	public loading = input.required<boolean>();
 	public mint_genesis_time = input.required<number>();
-	public mobile_view = input.required<boolean>();
+	public device_desktop = input.required<boolean>();
 
 	public dateChange = output<number[]>();
 	public unitsChange = output<MintUnit[]>();

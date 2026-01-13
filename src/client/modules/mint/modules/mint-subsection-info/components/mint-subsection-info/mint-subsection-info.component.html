@@ -1,4 +1,4 @@
-<div class="mint-subsection-info-container" [ngClass]="{'p-2': !mobile_view(), 'p-1': mobile_view()}">
+<div class="mint-subsection-info-container" [ngClass]="{'p-2': device_type() === 'desktop', 'p-1': device_type() !== 'desktop'}">
 	<mat-card appearance="outlined" class="relative overflow-hidden flex-grow flex">
 		<mat-card-content class="orc-surface-container-low-bg flex-grow flex">
 			<div class="h-full flex flex-column flex-gap-1">

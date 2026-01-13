@@ -31,14 +31,14 @@
 										@if (row.assets !== null) {
 											<span
 												class="font-size-m text-nowrap"
-												[class.w-min-10]="!mobile()"
+												[class.w-min-10]="device_desktop()"
 												[innerHTML]="row.assets | localAmount: row.unit : 'lightning'"
 											></span>
 											<span class="font-size-m font-weight-bold orc-outline-color text-nowrap">{{
 												row.reserve_ratio
 											}}</span>
 										} @else {
-											<span class="font-size-m orc-outline-color" [class.w-min-10]="!mobile()">
+											<span class="font-size-m orc-outline-color" [class.w-min-10]="device_desktop()">
 												<mat-icon>check_indeterminate_small</mat-icon>
 											</span>
 										}

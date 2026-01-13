@@ -24,7 +24,7 @@ export class IndexSubsectionDashboardBitcoinHeaderComponent {
 	public network_info = input.required<BitcoinNetworkInfo | null>();
 	public blockchain_info = input.required<BitcoinBlockchainInfo | null>();
 	public error = input.required<boolean>();
-	public mobile_view = input.required<boolean>();
+	public device_desktop = input.required<boolean>();
 
 	public items = signal<NavSecondaryItem[]>([]);
 

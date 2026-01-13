@@ -30,7 +30,7 @@ export class IndexSubsectionDashboardMintEnabledComponent {
 	public lightning_enabled = input.required<boolean>();
 	public lightning_errors = input.required<OrchardError[]>();
 	public lightning_loading = input.required<boolean>();
-	public mobile_view = input.required<boolean>();
+	public device_desktop = input.required<boolean>();
 
 	public navigate = output<string>();
 

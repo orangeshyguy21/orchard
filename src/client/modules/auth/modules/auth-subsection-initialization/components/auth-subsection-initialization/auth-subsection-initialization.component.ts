@@ -10,6 +10,7 @@ import {SettingDeviceService} from '@client/modules/settings/services/setting-de
 import {ThemeType} from '@client/modules/cache/services/local-storage/local-storage.types';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {passwordMatch} from '@client/modules/form/validators/password-match';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Native Dependencies */
 import {AuthService} from '@client/modules/auth/services/auth/auth.service';
 import {InitializeControl} from '@client/modules/auth/modules/auth-subsection-initialization/types/initialize-control.type';
@@ -36,8 +37,7 @@ export class AuthSubsectionInitializationComponent implements OnInit, OnDestroy 
 		name: null,
 	};
 
-	public mobile_view = signal(false);
-	public phone_view = signal(false);
+	public device_type = signal<DeviceType>('desktop');
 
 	private subscriptions: Subscription = new Subscription();
 
@@ -60,9 +60,13 @@ export class AuthSubsectionInitializationComponent implements OnInit, OnDestroy 
 
 	public getBreakpointSubscription(): Subscription {
 		return this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium]).subscribe((result) => {
-			this.mobile_view.set(result.matches);
-			const phone_view = result.breakpoints[Breakpoints.XSmall];
-			this.phone_view.set(phone_view);
+			if (result.breakpoints[Breakpoints.XSmall]) {
+				this.device_type.set('mobile');
+			} else if (result.breakpoints[Breakpoints.Small] || result.breakpoints[Breakpoints.Medium]) {
+				this.device_type.set('tablet');
+			} else {
+				this.device_type.set('desktop');
+			}
 		});
 	}
 

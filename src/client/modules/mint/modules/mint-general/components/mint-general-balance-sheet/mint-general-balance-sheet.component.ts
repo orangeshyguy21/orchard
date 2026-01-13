@@ -28,7 +28,7 @@ export class MintGeneralBalanceSheetComponent {
 	public lightning_errors = input.required<OrchardError[]>();
 	public lightning_loading = input.required<boolean>();
 	public loading = input.required<boolean>();
-	public mobile = input<boolean>(false);
+	public device_desktop = input.required<boolean>();
 
 	public rows = signal<MintGeneralBalanceRow[]>([]);
 	public displayed_columns = signal<string[]>(['liabilities', 'assets', 'keyset', 'fees']);

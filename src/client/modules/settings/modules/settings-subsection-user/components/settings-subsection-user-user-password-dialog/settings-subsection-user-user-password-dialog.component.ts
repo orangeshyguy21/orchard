@@ -31,7 +31,7 @@ export class SettingsSubsectionUserUserPasswordDialogComponent {
 
 	constructor(
 		private readonly dialog_ref: MatDialogRef<SettingsSubsectionUserUserPasswordDialogComponent>,
-		@Inject(MAT_DIALOG_DATA) public data: {phone_view: boolean},
+		@Inject(MAT_DIALOG_DATA) public data: {device_mobile: boolean},
 	) {}
 
 	public onControlCancel(control_name: string): void {

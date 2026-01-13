@@ -8,7 +8,7 @@
 			[lightning_errors]="errors_lightning"
 			[lightning_loading]="loading_lightning"
 			[loading]="loading_static_data"
-			[mobile]="mobile_view()"
+			[device_desktop]="device_type() === 'desktop'"
 			(navigate)="onNavigate('lightning')"
 		></orc-mint-general-balance-sheet>
 		<orc-mint-subsection-dashboard-connections
@@ -18,13 +18,13 @@
 			[mint_name]="mint_info?.name"
 			[mint_connections]="mint_connections"
 			[loading]="loading_static_data"
-			[mobile_view]="mobile_view()"
+			[device_desktop]="device_type() === 'desktop'"
 		></orc-mint-subsection-dashboard-connections>
 	</div>
 
 	<div class="mint-analytic-control-panel">
 		<div class="flex flex-justify-between flex-gap-1 flex-items-end">
-			@if (!mobile_view()) {
+			@if (device_type() === 'desktop') {
 				<div class="title-l p-1">Nutalytics</div>
 			}
 			@if (page_settings()) {
@@ -38,13 +38,13 @@
 					[keysets]="mint_keysets"
 					[loading]="loading_static_data"
 					[mint_genesis_time]="mint_genesis_time"
-					[mobile_view]="mobile_view()"
+					[device_desktop]="device_type() === 'desktop'"
 					(dateChange)="onDateChange($event)"
 					(unitsChange)="onUnitsChange($event)"
 					(intervalChange)="onIntervalChange($event)"
 				></orc-mint-subsection-dashboard-control>
 			}
-			@if (mobile_view()) {
+			@if (device_type() === 'tablet') {
 				<div class="p-b-1-5">
 					<button matButton type="button" [matMenuTriggerFor]="chart_order_menu">
 						<mat-icon>menu</mat-icon>
@@ -214,7 +214,7 @@
 				</div>
 			</div>
 		</div>
-		@if (!mobile_view()) {
+		@if (device_type() === 'desktop') {
 			<div class="w-8 p-t-1">
 				<orc-nav-tertiary
 					class="mint-chart-tertiary-nav"

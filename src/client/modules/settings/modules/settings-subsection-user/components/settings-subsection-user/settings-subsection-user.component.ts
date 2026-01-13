@@ -11,6 +11,7 @@ import {EventData} from '@client/modules/event/classes/event-data.class';
 import {User} from '@client/modules/crew/classes/user.class';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {ComponentCanDeactivate} from '@client/modules/routing/interfaces/routing.interfaces';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 
 @Component({
 	selector: 'orc-settings-subsection-user',
@@ -30,7 +31,7 @@ export class SettingsSubsectionUserComponent implements ComponentCanDeactivate, 
 	});
 
 	public user = signal<User | null>(null);
-	public view = signal<'desktop' | 'mobile' | 'phone'>('desktop');
+	public device_type = signal<DeviceType>('desktop');
 
 	private dirty_count: WritableSignal<number> = signal(0);
 
@@ -81,11 +82,11 @@ export class SettingsSubsectionUserComponent implements ComponentCanDeactivate, 
 	private getBreakpointSubscription(): Subscription {
 		return this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium]).subscribe((result) => {
 			if (result.breakpoints[Breakpoints.XSmall]) {
-				this.view.set('phone');
+				this.device_type.set('mobile');
 			} else if (result.breakpoints[Breakpoints.Small] || result.breakpoints[Breakpoints.Medium]) {
-				this.view.set('mobile');
+				this.device_type.set('tablet');
 			} else {
-				this.view.set('desktop');
+				this.device_type.set('desktop');
 			}
 		});
 	}
