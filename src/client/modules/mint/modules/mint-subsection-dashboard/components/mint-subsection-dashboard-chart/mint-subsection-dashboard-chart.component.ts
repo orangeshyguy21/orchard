@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, effect, OnDestroy, ViewChild, ChangeDetectorRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, OnDestroy, OnChanges, SimpleChanges, ViewChild, signal} from '@angular/core';
 /* Vendor Dependencies */
 import {BaseChartDirective} from 'ng2-charts';
 import {ChartConfiguration, ScaleChartOptions, ChartType as ChartJsType, Plugin} from 'chart.js';
@@ -37,7 +37,7 @@ import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
 	styleUrl: './mint-subsection-dashboard-chart.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintSubsectionDashboardChartComponent implements OnDestroy {
+export class MintSubsectionDashboardChartComponent implements OnDestroy, OnChanges {
 	@ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
 	public locale = input.required<string>();
@@ -52,38 +52,33 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy {
 	public chart_data!: ChartConfiguration['data'];
 	public chart_options!: ChartConfiguration['options'];
 	public chart_plugins: Plugin[] = [];
-	public displayed: boolean = true;
+	public displayed = signal<boolean>(true);
 
 	private subscriptions: Subscription = new Subscription();
 
-	constructor(
-		private chartService: ChartService,
-		private cdr: ChangeDetectorRef,
-	) {
-		effect(() => {
-			const loading = this.loading();
-			if (loading === false) this.init();
-		});
-
-		effect(() => {
-			const _selected_type = this.selected_type();
-			this.init();
-		});
-
+	constructor(private chartService: ChartService) {
 		this.subscriptions.add(this.getRemoveSubscription());
 		this.subscriptions.add(this.getAddSubscription());
 	}
 
+	ngOnChanges(changes: SimpleChanges): void {
+		if (changes['loading'] && !changes['loading'].firstChange) {
+			if (this.loading() === false) this.init();
+		}
+		if (changes['selected_type'] && !changes['selected_type'].firstChange) {
+			console.log('Chart type changed');
+			this.init();
+		}
+	}
+
 	private getRemoveSubscription(): Subscription {
 		return this.chartService.onResizeStart().subscribe(() => {
-			this.displayed = false;
-			this.cdr.detectChanges();
+			this.displayed.set(false);
 		});
 	}
 	private getAddSubscription(): Subscription {
 		return this.chartService.onResizeEnd().subscribe(() => {
-			this.displayed = true;
-			this.cdr.detectChanges();
+			this.displayed.set(true);
 		});
 	}
 
@@ -114,8 +109,7 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy {
 			this.chart?.chart?.resize();
 		});
 		setTimeout(() => {
-			this.displayed = true;
-			this.cdr.detectChanges();
+			this.displayed.set(true);
 		}, 50);
 	}
 

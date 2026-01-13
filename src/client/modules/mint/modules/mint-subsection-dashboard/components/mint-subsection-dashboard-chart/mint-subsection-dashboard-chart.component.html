@@ -1,5 +1,5 @@
 <div class="mint-analytic-chart-container">
-	@if (displayed) {
+	@if (displayed()) {
 		<canvas baseChart [data]="chart_data" [options]="chart_options" [type]="chart_type" [plugins]="chart_plugins"></canvas>
 	}
 	@if (!loading && mint_analytics.length === 0 && mint_analytics_pre.length === 0) {

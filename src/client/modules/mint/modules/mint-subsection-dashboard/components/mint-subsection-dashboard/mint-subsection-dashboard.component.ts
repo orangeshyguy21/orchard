@@ -379,6 +379,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	}
 
 	private async reloadDynamicData(): Promise<void> {
+		console.log('Reloading dynamic data');
 		try {
 			this.mintService.clearDasbhoardCache();
 			this.loading_dynamic_data = true;
