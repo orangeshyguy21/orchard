@@ -66,7 +66,6 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy, OnChang
 			if (this.loading() === false) this.init();
 		}
 		if (changes['selected_type'] && !changes['selected_type'].firstChange) {
-			console.log('Chart type changed');
 			this.init();
 		}
 	}
@@ -137,9 +136,13 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy, OnChang
 		const timestamp_first = DateTime.fromSeconds(this.page_settings().date_start).startOf(time_interval).toSeconds();
 		const timestamp_last = DateTime.fromSeconds(this.page_settings().date_end).startOf(time_interval).toSeconds();
 		const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.page_settings().interval);
-		const data_unit_groups = groupAnalyticsByUnit(this.mint_analytics());
+		const data_unit_groups = groupAnalyticsByUnit(this.mint_analytics().map((a) => ({...a})));
 		const data_unit_groups_prepended = prepend
-			? prependData(data_unit_groups, this.mint_analytics_pre(), timestamp_first)
+			? prependData(
+					data_unit_groups,
+					this.mint_analytics_pre().map((a) => ({...a})),
+					timestamp_first,
+				)
 			: data_unit_groups;
 		const datasets = Object.entries(data_unit_groups_prepended).map(([unit, data], index) => {
 			const data_keyed_by_timestamp = getDataKeyedByTimestamp(data, 'amount');
@@ -241,7 +244,7 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy, OnChang
 		const timestamp_first = DateTime.fromSeconds(this.page_settings().date_start).startOf('day').toSeconds();
 		const timestamp_last = DateTime.fromSeconds(this.page_settings().date_end).startOf('day').toSeconds();
 		const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.page_settings().interval);
-		const data_unit_groups = groupAnalyticsByUnit(this.mint_analytics());
+		const data_unit_groups = groupAnalyticsByUnit(this.mint_analytics().map((a) => ({...a})));
 		const data_unit_groups_prepended = prependData(data_unit_groups, this.mint_analytics_pre(), timestamp_first);
 		const datasets = Object.entries(data_unit_groups_prepended).map(([unit, data], index) => {
 			const data_keyed_by_timestamp = getDataKeyedByTimestamp(data, 'operation_count');

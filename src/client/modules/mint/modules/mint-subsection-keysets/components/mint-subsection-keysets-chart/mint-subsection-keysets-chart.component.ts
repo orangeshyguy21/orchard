@@ -133,7 +133,11 @@ export class MintSubsectionKeysetsChartComponent implements OnDestroy {
 			},
 			{} as Record<string, MintAnalyticKeyset[]>,
 		);
-		const data_keyset_groups_prepended = this.prependData(data_keyset_groups, valid_analytics_pre, timestamp_first);
+		const data_keyset_groups_prepended = this.prependData(
+			data_keyset_groups,
+			valid_analytics_pre.map((a) => ({...a})),
+			timestamp_first,
+		);
 		const datasets = Object.entries(data_keyset_groups_prepended).map(([keyset_id, data], index) => {
 			const keyset = keysets.find((k) => k.id === keyset_id);
 			const unit = keyset?.unit || '';
