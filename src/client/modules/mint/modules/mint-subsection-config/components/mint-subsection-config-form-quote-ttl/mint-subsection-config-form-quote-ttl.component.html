@@ -25,7 +25,7 @@
 								>
 									<mat-label
 										class="flex flex-items-center flex-gap-0-5 cursor-pointer"
-										(click)="$event.preventDefault(); help_status.set(!help_status()); $event.stopPropagation()"
+										(click)="$event.preventDefault(); $event.stopPropagation(); help_status.set(!help_status())"
 									>
 										<span>{{ nut() === 'nut4' ? 'Mint' : 'Melt' }} Quote TTL</span>
 										<mat-icon class="icon-sm icon-dynamic-fill">info</mat-icon>

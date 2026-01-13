@@ -97,18 +97,9 @@ export class MintSubsectionConfigChartMethodComponent implements OnDestroy {
 	}
 
 	private async init(): Promise<void> {
-		this.chart_type.set('line');
-		this.initGlowPlugin();
+		this.chart_type.set('scatter');
 		this.chart_data.set(this.getChartData(this.amounts()));
 		this.initOptions();
-	}
-
-	/**
-	 * Creates the glow effect plugin for chart points
-	 */
-	private initGlowPlugin(): void {
-		const color = this.chartService.getAssetColor(this.unit(), 0);
-		this.chart_plugins = [this.chartService.createGlowPlugin(color.border)];
 	}
 
 	private initOptions(): void {
@@ -129,21 +120,17 @@ export class MintSubsectionConfigChartMethodComponent implements OnDestroy {
 			.sort((a, b) => a.x - b.x);
 		const dataset = {
 			data: data_prepped,
+			backgroundColor: muted_color,
 			borderColor: muted_color,
-			borderWidth: 2,
-			backgroundColor: (context: any) => this.chartService.createAreaGradient(context, color.border),
-			fill: true,
 			pointBackgroundColor: muted_color,
 			pointBorderColor: muted_color,
-			pointBorderWidth: 2,
+			pointBorderWidth: 1,
 			pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
 			pointHoverBorderColor: color.border,
-			pointHoverBorderWidth: 3,
-			pointRadius: 2,
-			pointHoverRadius: 4,
-			tension: 0.4,
+			pointHoverBorderWidth: 2,
+			pointRadius: 3,
+			pointHoverRadius: 5,
 		};
-
 		return {datasets: [dataset]};
 	}
 
@@ -186,6 +173,7 @@ export class MintSubsectionConfigChartMethodComponent implements OnDestroy {
 		scales['y'] = {
 			position: 'left',
 			type: use_log_scale ? 'logarithmic' : 'linear',
+			min: use_log_scale ? 1 : undefined,
 			title: {
 				display: true,
 				text: this.unit(),
@@ -207,23 +195,19 @@ export class MintSubsectionConfigChartMethodComponent implements OnDestroy {
 		return {
 			responsive: true,
 			elements: {
-				line: {
-					tension: 0.4,
-					cubicInterpolationMode: 'monotone',
-				},
 				point: {
-					radius: 2,
-					hoverRadius: 4,
-					borderWidth: 2,
-					hoverBorderWidth: 3,
+					radius: 3,
+					hoverRadius: 5,
+					borderWidth: 1,
+					hoverBorderWidth: 2,
 				},
 			},
 			scales: scales,
 			plugins: {
 				tooltip: {
 					enabled: true,
-					mode: 'index',
-					intersect: false,
+					mode: 'nearest',
+					intersect: true,
 					callbacks: {
 						title: getTooltipTitleExact,
 						label: (context: any) => getTooltipLabel(context, this.locale()),
@@ -234,9 +218,8 @@ export class MintSubsectionConfigChartMethodComponent implements OnDestroy {
 				},
 			},
 			interaction: {
-				mode: 'index',
-				axis: 'x',
-				intersect: false,
+				mode: 'nearest',
+				intersect: true,
 			},
 			animation: {
 				duration: 750,
