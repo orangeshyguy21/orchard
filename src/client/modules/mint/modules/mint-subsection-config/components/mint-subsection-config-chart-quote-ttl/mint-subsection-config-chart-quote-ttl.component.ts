@@ -112,7 +112,7 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnDestroy {
 		if (deltas.length === 0) return {datasets: []};
 		const color_index = this.nut() === 'nut4' ? 0 : 4;
 		const color = this.chartService.getThemeColor(color_index);
-		const muted_color = this.chartService.getMutedColor(color.border);
+		const muted_color = this.chartService.getMutedColor(color.border, 0.5);
 		const data_prepped = deltas
 			.map((delta) => ({
 				x: delta['created_time'] * 1000,
@@ -157,39 +157,15 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnDestroy {
 					day: 'MMM d',
 				},
 			},
-			grid: {
-				display: true,
-				color: this.chartService.getGridColor(),
-			},
+			display: false,
 			min: min_time,
 			max: max_time,
-			ticks: {
-				source: 'auto', // Ensures ticks are generated uniformly
-				autoSkip: false, // Show all ticks for the chosen unit
-				maxRotation: 0,
-				minRotation: 0,
-			},
 		};
 		scales['y'] = {
-			position: 'left',
 			type: use_log_scale ? 'logarithmic' : 'linear',
 			min: use_log_scale ? 1 : undefined,
-			title: {
-				display: true,
-				text: 'seconds',
-			},
+			display: false,
 			beginAtZero: !use_log_scale,
-			grid: {
-				display: true,
-				color: this.chartService.getGridColor(),
-			},
-			ticks: use_log_scale
-				? {
-						callback: function (value: number): string | null {
-							return value === 1 || Math.log10(value) % 1 === 0 ? value.toString() : null;
-						},
-					}
-				: {},
 		};
 
 		return {
