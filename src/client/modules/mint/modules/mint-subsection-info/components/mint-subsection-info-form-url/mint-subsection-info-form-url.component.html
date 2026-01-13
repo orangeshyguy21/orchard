@@ -34,13 +34,9 @@
 							<button type="button" mat-icon-button matSuffix class="orc-icon-button" (click)="onRemove($event)">
 								<mat-icon>delete_forever</mat-icon>
 							</button>
-							@if (control_invalid()) {
-								<mat-error class="font-size-xs">
-									@if (form_array().at(control_index()).hasError('required')) {
-										URL is required
-									} @else {
-										Invalid URL
-									}
+							@if (control_invalid() && form_array().at(control_index())) {
+								<mat-error>
+									<orc-form-error [errors]="form_array().at(control_index()).errors">Invalid URL</orc-form-error>
 								</mat-error>
 							}
 						</mat-form-field>

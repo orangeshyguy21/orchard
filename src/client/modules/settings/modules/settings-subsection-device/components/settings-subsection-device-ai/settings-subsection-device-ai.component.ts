@@ -1,16 +1,5 @@
 /* Core Dependencies */
-import {
-	ChangeDetectionStrategy,
-	Component,
-	EventEmitter,
-	Input,
-	OnChanges,
-	Output,
-	signal,
-	computed,
-	SimpleChanges,
-	ViewChild,
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, signal, SimpleChanges, ViewChild} from '@angular/core';
 import {FormControl, Validators} from '@angular/forms';
 /* Vendor Dependencies */
 import {Observable} from 'rxjs';
@@ -43,12 +32,6 @@ export class SettingsSubsectionDeviceAiComponent implements OnChanges {
 	public filtered_options!: Observable<AiModel[]>;
 	public ai_model!: AiModel | null;
 	public help_status = signal<boolean>(true);
-
-	public model_control_error = computed(() => {
-		if (this.model_control.hasError('required')) return 'required';
-		if (this.model_control.hasError('invalid_model')) return 'invalid model';
-		return '';
-	});
 
 	constructor() {}
 
@@ -88,7 +71,7 @@ export class SettingsSubsectionDeviceAiComponent implements OnChanges {
 	}
 
 	public onModelChange(value: string | null): void {
-		if (value === null) return this.model_control.setErrors({required: true});
+		if (value === null || value === '') return this.model_control.setErrors({required: true});
 		if (!this.model_options.some((option) => option.model === value)) return this.model_control.setErrors({invalid_model: true});
 		this.modelChange.emit(value);
 		this.setFilteredOptions();

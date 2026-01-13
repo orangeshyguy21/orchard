@@ -25,18 +25,9 @@
 					(focus)="focused_name.set(true)"
 					(blur)="focused_name.set(false)"
 				/>
-				@if (
-					form_group().get(control_name())?.invalid &&
-					(form_group().get(control_name())?.dirty || form_group().get(control_name())?.touched)
-				) {
-					<mat-error class="font-size-xs">
-						@if (form_group().get(control_name())?.hasError('maxlength')) {
-							Name cannot exceed {{ form_group().get(control_name())?.getError('maxlength')?.requiredLength }} characters
-						} @else {
-							Invalid name
-						}
-					</mat-error>
-				}
+				<mat-error>
+					<orc-form-error [errors]="form_group().get(control_name())?.errors">Invalid name</orc-form-error>
+				</mat-error>
 			</mat-form-field>
 		</orc-form-field-dynamic>
 		<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">

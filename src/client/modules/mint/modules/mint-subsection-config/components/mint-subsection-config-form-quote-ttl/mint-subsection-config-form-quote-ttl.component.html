@@ -43,9 +43,9 @@
 											[quote_ttl]="form_group().get(control_name())?.value"
 										></orc-mint-subsection-config-form-quote-ttl-hint>
 									</mat-hint>
-									@if (control_invalid()) {
-										<mat-error class="font-size-xs">{{ form_error() }}</mat-error>
-									}
+									<mat-error>
+										<orc-form-error [errors]="form_group().get(control_name())?.errors">Invalid TTL</orc-form-error>
+									</mat-error>
 								</mat-form-field>
 							</orc-form-field-dynamic>
 						</form>

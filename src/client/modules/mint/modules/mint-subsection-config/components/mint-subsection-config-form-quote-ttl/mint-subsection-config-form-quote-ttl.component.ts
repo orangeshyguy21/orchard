@@ -47,16 +47,6 @@ export class MintSubsectionConfigFormQuoteTtlComponent {
 		min: 0,
 	}); // stats for the quote ttl
 
-	public form_error = computed(() => {
-		const errors = this.control_errors();
-		if (!errors) return '';
-		if (errors['required']) return 'Required';
-		if (errors['min']) return `Must be at least ${errors['min']?.min}`;
-		if (errors['max']) return `Cannot exceed ${errors['max']?.max}`;
-		if (errors['orchardMicros']) return 'Invalid format';
-		return 'Invalid TTL';
-	});
-
 	public form_hot = computed(() => {
 		if (this.focused_quote_ttl()) return true;
 		return this.control_dirty() ?? false;

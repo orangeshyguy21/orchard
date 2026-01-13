@@ -17,9 +17,9 @@
 							<mat-option [value]="option.code">{{ option.code }} - {{ option.country }}</mat-option>
 						}
 					</mat-autocomplete>
-					@if (locale_control.invalid) {
-						<mat-error class="font-size-xs">{{ locale_control_error() }}</mat-error>
-					}
+					<mat-error>
+						<orc-form-error [errors]="locale_control.errors">Invalid locale</orc-form-error>
+					</mat-error>
 				</mat-form-field>
 			</div>
 			<div class="m-b-1-25 flex flex-items-center flex-gap-1">

@@ -17,9 +17,10 @@
 							<mat-option [value]="option">{{ option }}</mat-option>
 						}
 					</mat-autocomplete>
-					@if (timezone_control.invalid) {
-						<mat-error class="font-size-xs">{{ timezone_control_error() }}</mat-error>
-					}
+					{{ timezone_control.errors | json }}
+					<mat-error>
+						<orc-form-error [errors]="timezone_control.errors">Invalid timezone</orc-form-error>
+					</mat-error>
 				</mat-form-field>
 			</div>
 			<div class="m-b-1-25 flex flex-items-center flex-gap-1">

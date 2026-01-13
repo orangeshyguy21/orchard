@@ -24,9 +24,9 @@
 						(blur)="focused.set(false)"
 						#element_control
 					/>
-					@if (invalid()) {
-						<mat-error class="font-size-xs">Invalid username</mat-error>
-					}
+					<mat-error>
+						<orc-form-error [errors]="form_group().get(control_name())?.errors">Invalid username</orc-form-error>
+					</mat-error>
 				</mat-form-field>
 			</orc-form-field-dynamic>
 			<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">

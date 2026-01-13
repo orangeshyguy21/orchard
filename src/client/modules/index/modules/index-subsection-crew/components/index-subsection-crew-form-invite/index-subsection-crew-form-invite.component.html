@@ -101,15 +101,9 @@
 										(focus)="focused_label.set(true)"
 										(blur)="focused_label.set(false)"
 									></textarea>
-									@if (
-										form_group().get('label')?.invalid &&
-										(form_group().get('label')?.dirty || form_group().get('label')?.touched)
-									) {
-										<mat-error class="font-size-xs"
-											>Max length is
-											{{ form_group().get('label')?.getError('maxlength')?.requiredLength }} characters</mat-error
-										>
-									}
+									<mat-error>
+										<orc-form-error [errors]="form_group().get('label')?.errors"> Invalid label </orc-form-error>
+									</mat-error>
 								</mat-form-field>
 							</orc-form-field-dynamic>
 						</div>
@@ -182,12 +176,11 @@
 										/>
 										<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
 										<mat-datepicker #picker></mat-datepicker>
-										@if (
-											form_group().get('expiration_date')?.invalid &&
-											(form_group().get('expiration_date')?.dirty || form_group().get('expiration_date')?.touched)
-										) {
-											<mat-error class="font-size-xs">Invalid date</mat-error>
-										}
+										<mat-error>
+											<orc-form-error [errors]="form_group().get('expiration_date')?.errors">
+												Invalid date
+											</orc-form-error>
+										</mat-error>
 									</mat-form-field>
 									<div class="flex flex-gap-1">
 										<div
@@ -220,17 +213,16 @@
 												(focus)="focused_expireation.set(true)"
 												(blur)="focused_expireation.set(false)"
 											/>
-											<mat-autocomplete #auto="matAutocomplete" [displayWith]="displayTime">
+											<mat-autocomplete #auto="matAutocomplete" [displayWith]="displayTime" requireSelection>
 												@for (option of filtered_options | async; track option.value) {
 													<mat-option [value]="option.value">{{ option.label }}</mat-option>
 												}
 											</mat-autocomplete>
-											@if (
-												form_group().get('expiration_time')?.invalid &&
-												(form_group().get('expiration_time')?.dirty || form_group().get('expiration_time')?.touched)
-											) {
-												<mat-error class="font-size-xs">Invalid time</mat-error>
-											}
+											<mat-error>
+												<orc-form-error [errors]="form_group().get('expiration_time')?.errors">
+													Invalid time
+												</orc-form-error>
+											</mat-error>
 										</mat-form-field>
 									</div>
 								</div>

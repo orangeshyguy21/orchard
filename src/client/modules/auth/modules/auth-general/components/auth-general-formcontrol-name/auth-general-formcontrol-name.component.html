@@ -16,8 +16,6 @@
 			(keydown.enter)="enter.emit()"
 			#element_control
 		/>
-		@if (error()) {
-			<mat-error class="font-size-xs">{{ error() }}</mat-error>
-		}
+		<mat-error class="font-size-xs">{{ error() }}</mat-error>
 	</mat-form-field>
 </orc-form-field-dynamic>

@@ -23,9 +23,7 @@
 						</mat-date-range-input>
 						<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
 						<mat-date-range-picker #picker [dateClass]="genesis_class" (closed)="onDateChange()"></mat-date-range-picker>
-						@if (panel.get('daterange')?.invalid) {
-							<mat-error class="font-size-xs">Invalid date range</mat-error>
-						}
+						<mat-error class="font-size-xs">Invalid date range</mat-error>
 					</mat-form-field>
 				</div>
 			}
@@ -65,9 +63,7 @@
 						</mat-date-range-input>
 						<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
 						<mat-date-range-picker #picker [dateClass]="genesis_class" (closed)="onDateChange()"></mat-date-range-picker>
-						@if (panel.get('daterange')?.invalid) {
-							<mat-error class="font-size-xs">Invalid date range</mat-error>
-						}
+						<mat-error class="font-size-xs">Invalid date range</mat-error>
 					</mat-form-field>
 				</div>
 				<div class="orc-filter-menu-rule"></div>

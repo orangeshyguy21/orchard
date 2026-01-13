@@ -1,16 +1,5 @@
 /* Core Dependencies */
-import {
-	ChangeDetectionStrategy,
-	Component,
-	EventEmitter,
-	Input,
-	OnChanges,
-	Output,
-	SimpleChanges,
-	computed,
-	signal,
-	ViewChild,
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, signal, ViewChild} from '@angular/core';
 import {FormControl, Validators} from '@angular/forms';
 /* Vendor Dependencies */
 import {MatCheckboxChange} from '@angular/material/checkbox';
@@ -44,12 +33,6 @@ export class SettingsSubsectionDeviceTimeTimezoneComponent implements OnChanges 
 	public help_status = signal<boolean>(false);
 
 	private system_timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-	public timezone_control_error = computed(() => {
-		if (this.timezone_control.hasError('required')) return 'required';
-		if (this.timezone_control.hasError('invalid_timezone')) return 'invalid timezone';
-		return '';
-	});
 
 	constructor() {}
 
@@ -103,7 +86,7 @@ export class SettingsSubsectionDeviceTimeTimezoneComponent implements OnChanges 
 	}
 
 	public onTimezoneChange(value: string | null): void {
-		if (value === null) return this.timezone_control.setErrors({required: true});
+		if (value === null || value === '') return this.timezone_control.setErrors({required: true});
 		if (!this.timezone_options.includes(value)) return this.timezone_control.setErrors({invalid_timezone: true});
 		this.timezoneChange.emit(value);
 		if (value !== this.system_timezone) this.system_default_control.setValue(false);

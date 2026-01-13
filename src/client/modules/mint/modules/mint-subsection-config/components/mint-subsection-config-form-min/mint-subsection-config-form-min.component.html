@@ -40,9 +40,9 @@
 							[type]="'min'"
 						></orc-mint-subsection-config-form-limit-hint>
 					</mat-hint>
-					@if (control_invalid()) {
-						<mat-error class="font-size-xs">{{ form_error() }}</mat-error>
-					}
+					<mat-error>
+						<orc-form-error [errors]="control_errors()">Invalid amount</orc-form-error>
+					</mat-error>
 				</mat-form-field>
 			</orc-form-field-dynamic>
 		</form>

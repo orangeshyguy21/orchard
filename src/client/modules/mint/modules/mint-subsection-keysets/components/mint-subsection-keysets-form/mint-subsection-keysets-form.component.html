@@ -82,12 +82,11 @@
 												></span
 											></span>
 										</mat-hint>
-										@if (
-											form_group.get('input_fee_ppk')?.invalid &&
-											(form_group.get('input_fee_ppk')?.dirty || form_group.get('input_fee_ppk')?.touched)
-										) {
-											<mat-error class="font-size-xs">{{ fee_error }}</mat-error>
-										}
+										<mat-error>
+											<orc-form-error [errors]="form_group.get('input_fee_ppk')?.errors">
+												Invalid input fee PPK
+											</orc-form-error>
+										</mat-error>
 									</mat-form-field>
 									<div class="p-t-0-5">
 										<button
@@ -128,12 +127,11 @@
 										<mat-hint class="font-size-xs orc-outline-color"
 											><span class="font-weight-bold">1 - 255</span> are allowed</mat-hint
 										>
-										@if (
-											form_group.get('max_order')?.invalid &&
-											(form_group.get('max_order')?.dirty || form_group.get('max_order')?.touched)
-										) {
-											<mat-error class="font-size-xs">{{ max_order_error }}</mat-error>
-										}
+										<mat-error>
+											<orc-form-error [errors]="form_group.get('max_order')?.errors">
+												Invalid max order
+											</orc-form-error>
+										</mat-error>
 									</mat-form-field>
 									<div class="p-t-0-5">
 										<button

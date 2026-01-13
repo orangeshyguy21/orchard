@@ -97,13 +97,6 @@ export class SettingsSubsectionDeviceTimeLocaleComponent implements OnChanges {
 		{code: 'id-ID', country: 'Indonesian (Indonesia)'},
 	];
 
-	// this is a great way to handle errors in a reactive way
-	public locale_control_error = computed(() => {
-		if (this.locale_control.hasError('required')) return 'required';
-		if (this.locale_control.hasError('invalid_locale')) return 'invalid locale';
-		return '';
-	});
-
 	private system_locale = Intl.DateTimeFormat().resolvedOptions().locale;
 
 	constructor() {}
@@ -158,7 +151,7 @@ export class SettingsSubsectionDeviceTimeLocaleComponent implements OnChanges {
 	}
 
 	public onLocaleChange(value: string | null): void {
-		if (value === null) return this.locale_control.setErrors({required: true});
+		if (value === null || value === '') return this.locale_control.setErrors({required: true});
 		if (!this.locale_options.some((option) => option.code === value)) return this.locale_control.setErrors({invalid_locale: true});
 		this.localeChange.emit(value);
 		if (value !== this.system_locale) this.system_default_control.setValue(false);

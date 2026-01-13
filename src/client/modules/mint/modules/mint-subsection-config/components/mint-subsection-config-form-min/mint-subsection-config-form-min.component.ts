@@ -31,16 +31,16 @@ export class MintSubsectionConfigFormMinComponent {
 	public control_touched = signal<boolean>(false); // tracks if the control has been touched
 	public help_status = signal<boolean>(false); // tracks if the help is visible
 
-	public form_error = computed(() => {
-		const errors = this.control_errors();
-		if (!errors) return '';
-		if (errors['required']) return 'Required';
-		if (errors['min']) return `Must be at least ${errors['min']?.min}`;
-		if (errors['orchardInteger']) return 'Must be a whole number';
-		if (errors['orchardCents']) return 'Must have 2 decimals';
-		if (errors['orchardMicros']) return 'Invalid format';
-		return 'Invalid amount';
-	});
+	// public form_error = computed(() => {
+	// 	const errors = this.control_errors();
+	// 	if (!errors) return '';
+	// 	if (errors['required']) return 'Required';
+	// 	if (errors['min']) return `Must be at least ${errors['min']?.min}`;
+	// 	if (errors['orchardInteger']) return 'Must be a whole number';
+	// 	if (errors['orchardCents']) return 'Must have 2 decimals';
+	// 	if (errors['orchardMicros']) return 'Invalid format';
+	// 	return 'Invalid amount';
+	// });
 
 	public form_hot = computed(() => {
 		if (this.focused_min()) return true;

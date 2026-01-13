@@ -99,15 +99,9 @@
 										(focus)="focused_label.set(true)"
 										(blur)="focused_label.set(false)"
 									></textarea>
-									@if (
-										form_group().get('label')?.invalid &&
-										(form_group().get('label')?.dirty || form_group().get('label')?.touched)
-									) {
-										<mat-error class="font-size-xs"
-											>Max length is
-											{{ form_group().get('label')?.getError('maxlength')?.requiredLength }} characters</mat-error
-										>
-									}
+									<mat-error>
+										<orc-form-error [errors]="form_group().get('label')?.errors">Invalid label</orc-form-error>
+									</mat-error>
 								</mat-form-field>
 							</orc-form-field-dynamic>
 						</div>

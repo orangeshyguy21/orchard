@@ -24,9 +24,9 @@
 									</mat-option>
 								}
 							</mat-autocomplete>
-							@if (model_control.invalid) {
-								<mat-error class="font-size-xs">{{ model_control_error() }}</mat-error>
-							}
+							<mat-error>
+								<orc-form-error [errors]="model_control.errors">Invalid model</orc-form-error>
+							</mat-error>
 						</mat-form-field>
 						<div class="p-t-0-5">
 							<button

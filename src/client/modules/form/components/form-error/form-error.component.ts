@@ -19,6 +19,8 @@ export class FormErrorComponent {
 		if (errors['required']) return 'Required';
 		if (errors['maxlength']) return `Must be less than ${errors['maxlength'].requiredLength} characters`;
 		if (errors['minlength']) return `Must be at least ${errors['minlength'].requiredLength} characters`;
+		if (errors['min']) return `Must be at least ${errors['min']?.min}`;
+		if (errors['max']) return `Cannot be greater than ${errors['max']?.max}`;
 		if (errors['orchardInteger']) return 'Must be a whole number';
 		if (errors['orchardCents']) return 'Must have 2 decimals';
 		if (errors['orchardMicros']) return 'Invalid format';
@@ -35,3 +37,13 @@ export class FormErrorComponent {
 //     if (this.form_group().get('filename')?.errors) return 'Invalid';
 //     return '';
 // });
+
+// public get max_order_error(): string {
+//     if (this.form_group.get('max_order')?.hasError('required')) return 'Required';
+//     if (this.form_group.get('max_order')?.hasError('min'))
+//         return `Must be at least ${this.form_group.get('max_order')?.getError('min')?.min}`;
+//     if (this.form_group.get('max_order')?.hasError('max'))
+//         return `Must be at most ${this.form_group.get('max_order')?.getError('max')?.max}`;
+//     if (this.form_group.get('max_order')?.errors) return 'Invalid';
+//     return '';
+// }

@@ -13,9 +13,6 @@
 							<button mat-stroked-button (click)="fileInput.click()" type="button">
 								<span class="text-nowrap">Select Backup</span>
 							</button>
-							@if (form_group.get('file')?.invalid && (form_group.get('file')?.dirty || form_group.get('file')?.touched)) {
-								<mat-error class="font-size-xs">{{ file_error() }}</mat-error>
-							}
 							<input #fileInput type="file" hidden (change)="onFileSelected($event)" accept=".db,.sqlite,.sql,.backup" />
 						</div>
 					</form>
