@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, computed, effect, input, output, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, input, output, signal, SimpleChanges, OnChanges} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 /* Application Dependencies */
@@ -18,7 +18,7 @@ import {MintQuoteState, MeltQuoteState, OrchardNut4Method, OrchardNut5Method} fr
 	styleUrl: './mint-subsection-config-form-bolt11.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintSubsectionConfigFormBolt11Component {
+export class MintSubsectionConfigFormBolt11Component implements OnChanges {
 	public nut = input.required<'nut4' | 'nut5'>(); // which nut configuration this controls
 	public unit = input.required<string>(); // unit to display (e.g. 'sat')
 	public method = input.required<string>(); // payment method (e.g. 'bolt11')
@@ -82,16 +82,13 @@ export class MintSubsectionConfigFormBolt11Component {
 
 	public help_status = signal<boolean>(false); // tracks if the help is visible
 
-	constructor() {
-		effect(() => {
-			if (this.form_status() === true) {
-				this.form_bolt11().get(this.toggle_control())?.disable();
-			}
-		});
-		effect(() => {
-			const loading = this.loading();
-			if (!loading) this.setStats();
-		});
+	ngOnChanges(changes: SimpleChanges): void {
+		if (changes['form_status'] && this.form_status() === true) {
+			this.form_bolt11().get(this.toggle_control())?.disable();
+		}
+		if (changes['loading'] && this.loading() === false) {
+			this.setStats();
+		}
 	}
 
 	private setStats(): void {

@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, output, effect, signal, computed, ChangeDetectorRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output, signal, computed, SimpleChanges, OnChanges} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 /* Application Dependencies */
@@ -18,7 +18,7 @@ import {MintQuoteState, MeltQuoteState, OrchardNut4Method, OrchardNut5Method} fr
 	styleUrl: './mint-subsection-config-form-bolt12.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintSubsectionConfigFormBolt12Component {
+export class MintSubsectionConfigFormBolt12Component implements OnChanges {
 	public nut = input.required<'nut4' | 'nut5'>();
 	public unit = input.required<string>();
 	public method = input.required<string>();
@@ -73,16 +73,13 @@ export class MintSubsectionConfigFormBolt12Component {
 			.sort((a, b) => (a.created_time ?? 0) - (b.created_time ?? 0)) as MintMintQuote[] | MintMeltQuote[];
 	});
 
-	constructor(private cdr: ChangeDetectorRef) {
-		effect(() => {
-			if (this.form_status() === true) {
-				this.form_bolt12().get(this.toggle_control())?.disable();
-			}
-		});
-		effect(() => {
-			const loading = this.loading();
-			if (!loading) this.setStats();
-		});
+	ngOnChanges(changes: SimpleChanges): void {
+		if (changes['form_status'] && this.form_status() === true) {
+			this.form_bolt12().get(this.toggle_control())?.disable();
+		}
+		if (changes['loading'] && this.loading() === false) {
+			this.setStats();
+		}
 	}
 
 	private setStats(): void {
@@ -124,14 +121,12 @@ export class MintSubsectionConfigFormBolt12Component {
 	public onMinHot(event: boolean): void {
 		setTimeout(() => {
 			this.min_hot.set(event);
-			this.cdr.markForCheck();
 		});
 	}
 
 	public onMaxHot(event: boolean): void {
 		setTimeout(() => {
 			this.max_hot.set(event);
-			this.cdr.markForCheck();
 		});
 	}
 

@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, output, computed} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 
 @Component({
@@ -17,12 +17,4 @@ export class MintSubsectionDatabaseFormBackupComponent {
 	public readonly database_implementation = input.required<string>();
 
 	public readonly close = output<void>();
-
-	public filename_error = computed(() => {
-		if (this.form_group().get('filename')?.hasError('required')) return 'Required';
-		if (this.form_group().get('filename')?.hasError('maxlength'))
-			return `Must be less than ${this.form_group().get('filename')?.getError('maxlength')?.requiredLength} characters`;
-		if (this.form_group().get('filename')?.errors) return 'Invalid';
-		return '';
-	});
 }

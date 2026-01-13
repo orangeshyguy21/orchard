@@ -79,6 +79,7 @@
 					</orc-mint-subsection-config-chart-quote-ttl>
 				</div>
 			</div>
+			{{ disabled() | json }}
 			@if (disabled()) {
 				<div class="disabled-overlay" animate.enter="orc-animation-fadein-fast" animate.leave="orc-animation-fadeout-fast">
 					<div class="orc-outline-color font-weight-bold">MINTING DISABLED</div>

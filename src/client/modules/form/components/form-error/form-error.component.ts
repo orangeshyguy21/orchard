@@ -27,23 +27,3 @@ export class FormErrorComponent {
 		return '';
 	});
 }
-
-// { "maxlength": { "requiredLength": 1000, "actualLength": 1104 } }
-
-// public filename_error = computed(() => {
-//     if (this.form_group().get('filename')?.hasError('required')) return 'Required';
-//     if (this.form_group().get('filename')?.hasError('maxlength'))
-//         return `Must be less than ${this.form_group().get('filename')?.getError('maxlength')?.requiredLength} characters`;
-//     if (this.form_group().get('filename')?.errors) return 'Invalid';
-//     return '';
-// });
-
-// public get max_order_error(): string {
-//     if (this.form_group.get('max_order')?.hasError('required')) return 'Required';
-//     if (this.form_group.get('max_order')?.hasError('min'))
-//         return `Must be at least ${this.form_group.get('max_order')?.getError('min')?.min}`;
-//     if (this.form_group.get('max_order')?.hasError('max'))
-//         return `Must be at most ${this.form_group.get('max_order')?.getError('max')?.max}`;
-//     if (this.form_group.get('max_order')?.errors) return 'Invalid';
-//     return '';
-// }
