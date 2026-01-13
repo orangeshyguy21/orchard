@@ -1,7 +1,9 @@
 <div class="mint-info-form-urls-container">
-	<div class="title-form-section p-b-1 flex flex-items-center flex-gap-0-5 cursor-pointer" (click)="help_status.set(!help_status())">
+	<div class="title-form-section p-b-1 flex flex-items-center flex-gap-0-5 cursor-pointer">
 		<span>Contact Information</span>
-		<mat-icon class="icon-sm icon-dynamic-fill">info</mat-icon>
+		<button type="button" tabindex="-1" mat-icon-button class="orc-icon-button" (click)="help_status.set(!help_status())">
+			<mat-icon class="orc-outline-color">info</mat-icon>
+		</button>
 	</div>
 
 	<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">

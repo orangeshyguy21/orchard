@@ -4,7 +4,9 @@
 			<div class="p-t-1 flex flex-items-center flex-grow flex-gap-1" animate.enter="orc-animation-fadein">
 				<mat-slide-toggle [formControlName]="control_name()" name="oracle_enabled" (change)="update.emit()"> </mat-slide-toggle>
 				<div class="font-size-s text-nowrap">Price Oracle Enabled</div>
-				<mat-icon class="icon-sm icon-dynamic-fill cursor-pointer" (click)="help_status.set(!help_status())">info</mat-icon>
+				<button type="button" tabindex="-1" mat-icon-button class="orc-icon-button" (click)="help_status.set(!help_status())">
+					<mat-icon class="orc-outline-color">info</mat-icon>
+				</button>
 			</div>
 			<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
 				<div class="orc-animation-expand-collapse-inner">

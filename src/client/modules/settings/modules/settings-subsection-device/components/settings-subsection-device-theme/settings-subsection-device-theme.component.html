@@ -13,9 +13,15 @@
 							<span class="text-nowrap">Sync with device</span>
 						</mat-checkbox>
 						<div class="flex">
-							<mat-icon class="icon-sm icon-dynamic-fill cursor-pointer" (click)="help_status.set(!help_status())"
-								>info</mat-icon
+							<button
+								type="button"
+								tabindex="-1"
+								mat-icon-button
+								class="orc-icon-button"
+								(click)="help_status.set(!help_status())"
 							>
+								<mat-icon class="orc-outline-color">info</mat-icon>
+							</button>
 						</div>
 					</div>
 				</form>

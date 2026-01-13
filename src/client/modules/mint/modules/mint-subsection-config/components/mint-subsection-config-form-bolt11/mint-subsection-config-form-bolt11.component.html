@@ -37,7 +37,9 @@
 					<div class="font-size-s">
 						{{ toggle_control_name() }}
 					</div>
-					<mat-icon class="icon-sm icon-dynamic-fill cursor-pointer" (click)="help_status.set(!help_status())">info</mat-icon>
+					<button type="button" tabindex="-1" mat-icon-button class="orc-icon-button" (click)="help_status.set(!help_status())">
+						<mat-icon class="orc-outline-color">info</mat-icon>
+					</button>
 				</form>
 				<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
 					<div class="orc-animation-expand-collapse-inner">

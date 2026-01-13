@@ -15,27 +15,36 @@
 						(keydown.enter)="$event.preventDefault()"
 					>
 						<div class="flex flex-row flex-gap-1 flex-wrap">
-							<mat-form-field
-								appearance="fill"
-								hideRequiredMarker="true"
-								class="keyset-form-field orc-dynamic-form-field orc-hot-form-field"
-							>
-								<mat-label
-									class="flex flex-items-center flex-gap-0-5 cursor-pointer"
-									(click)="$event.stopPropagation(); $event.preventDefault(); help_unit.set(!help_unit())"
-								>
-									<span>Unit</span>
-									<mat-icon class="icon-sm icon-dynamic-fill">info</mat-icon>
-								</mat-label>
-								<mat-select formControlName="unit" (selectionChange)="onUnitChange($event)">
-									@for (unit of unit_options; track unit.value) {
-										<mat-option [value]="unit.value">{{ unit.label }}</mat-option>
-									}
-								</mat-select>
-							</mat-form-field>
+							<div>
+								<div class="flex flex-row flex-gap-0-5">
+									<mat-form-field
+										appearance="fill"
+										hideRequiredMarker="true"
+										class="keyset-form-field orc-dynamic-form-field orc-hot-form-field"
+									>
+										<mat-label>Unit</mat-label>
+										<mat-select formControlName="unit" (selectionChange)="onUnitChange($event)">
+											@for (unit of unit_options; track unit.value) {
+												<mat-option [value]="unit.value">{{ unit.label }}</mat-option>
+											}
+										</mat-select>
+									</mat-form-field>
+									<div class="p-t-0-5">
+										<button
+											type="button"
+											tabindex="-1"
+											mat-icon-button
+											class="orc-icon-button"
+											(click)="help_unit.set(!help_unit())"
+										>
+											<mat-icon class="orc-outline-color">info</mat-icon>
+										</button>
+									</div>
+								</div>
+							</div>
 							<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_unit()">
 								<div class="orc-animation-expand-collapse-inner">
-									<div class="flex p-t-0-5 p-b-1 w-max-18">
+									<div class="flex p-b-1 w-max-18">
 										<orc-form-help-text class="orc-surface-container-high-bg">
 											<div>
 												The unit of the keyset to rotate. Only existing units can be rotated. New units must be set
@@ -47,38 +56,55 @@
 							</div>
 						</div>
 						<div class="flex flex-row flex-gap-1 flex-wrap">
-							<mat-form-field
-								appearance="fill"
-								hideRequiredMarker="true"
-								class="keyset-form-field orc-dynamic-form-field orc-hot-form-field"
-							>
-								<mat-label
-									class="flex flex-items-center flex-gap-0-5 cursor-pointer"
-									(click)="$event.stopPropagation(); $event.preventDefault(); help_fee.set(!help_fee())"
-								>
-									<span>Input Fee PPK</span>
-									<mat-icon class="icon-sm icon-dynamic-fill">info</mat-icon>
-								</mat-label>
-								<input type="text" formNumberSeparator matInput formControlName="input_fee_ppk" placeholder="Ex. 100" />
-								<mat-hint class="font-size-xs orc-outline-color">
-									<span
-										>Median transaction fee would be
-										<span
-											class="font-weight-bold"
-											[innerHTML]="keyset_in_fee_estimate | localAmount: form_group.get('unit')?.value : 'mint'"
-										></span
-									></span>
-								</mat-hint>
-								@if (
-									form_group.get('input_fee_ppk')?.invalid &&
-									(form_group.get('input_fee_ppk')?.dirty || form_group.get('input_fee_ppk')?.touched)
-								) {
-									<mat-error class="font-size-xs">{{ fee_error }}</mat-error>
-								}
-							</mat-form-field>
+							<div>
+								<div class="flex flex-row flex-gap-0-5">
+									<mat-form-field
+										appearance="fill"
+										hideRequiredMarker="true"
+										class="keyset-form-field orc-dynamic-form-field orc-hot-form-field"
+									>
+										<mat-label>Input Fee PPK</mat-label>
+										<input
+											type="text"
+											formNumberSeparator
+											matInput
+											formControlName="input_fee_ppk"
+											placeholder="Ex. 100"
+										/>
+										<mat-hint class="font-size-xs orc-outline-color">
+											<span
+												>Median transaction fee would be
+												<span
+													class="font-weight-bold"
+													[innerHTML]="
+														keyset_in_fee_estimate | localAmount: form_group.get('unit')?.value : 'mint'
+													"
+												></span
+											></span>
+										</mat-hint>
+										@if (
+											form_group.get('input_fee_ppk')?.invalid &&
+											(form_group.get('input_fee_ppk')?.dirty || form_group.get('input_fee_ppk')?.touched)
+										) {
+											<mat-error class="font-size-xs">{{ fee_error }}</mat-error>
+										}
+									</mat-form-field>
+									<div class="p-t-0-5">
+										<button
+											type="button"
+											tabindex="-1"
+											mat-icon-button
+											class="orc-icon-button"
+											(click)="help_fee.set(!help_fee())"
+										>
+											<mat-icon class="orc-outline-color">info</mat-icon>
+										</button>
+									</div>
+								</div>
+							</div>
 							<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_fee()">
 								<div class="orc-animation-expand-collapse-inner">
-									<div class="flex p-t-0-5 p-b-1 w-max-18">
+									<div class="flex p-b-1 w-max-18">
 										<orc-form-help-text class="orc-surface-container-high-bg">
 											<div>
 												The transaction fee charged by a keyset is based on the number of ecash notes used in the
@@ -90,32 +116,42 @@
 							</div>
 						</div>
 						<div class="flex flex-row flex-gap-1 flex-wrap">
-							<mat-form-field
-								appearance="fill"
-								hideRequiredMarker="true"
-								class="keyset-form-field orc-dynamic-form-field orc-hot-form-field"
-							>
-								<mat-label
-									class="flex flex-items-center flex-gap-0-5 cursor-pointer"
-									(click)="$event.stopPropagation(); $event.preventDefault(); help_max_order.set(!help_max_order())"
-								>
-									<span>Max Order</span>
-									<mat-icon class="icon-sm icon-dynamic-fill">info</mat-icon>
-								</mat-label>
-								<input type="text" matInput formControlName="max_order" placeholder="Ex. 32" />
-								<mat-hint class="font-size-xs orc-outline-color"
-									><span class="font-weight-bold">1 - 255</span> are allowed</mat-hint
-								>
-								@if (
-									form_group.get('max_order')?.invalid &&
-									(form_group.get('max_order')?.dirty || form_group.get('max_order')?.touched)
-								) {
-									<mat-error class="font-size-xs">{{ max_order_error }}</mat-error>
-								}
-							</mat-form-field>
+							<div>
+								<div class="flex flex-row flex-gap-0-5">
+									<mat-form-field
+										appearance="fill"
+										hideRequiredMarker="true"
+										class="keyset-form-field orc-dynamic-form-field orc-hot-form-field"
+									>
+										<mat-label>Max order</mat-label>
+										<input type="text" matInput formControlName="max_order" placeholder="Ex. 32" />
+										<mat-hint class="font-size-xs orc-outline-color"
+											><span class="font-weight-bold">1 - 255</span> are allowed</mat-hint
+										>
+										@if (
+											form_group.get('max_order')?.invalid &&
+											(form_group.get('max_order')?.dirty || form_group.get('max_order')?.touched)
+										) {
+											<mat-error class="font-size-xs">{{ max_order_error }}</mat-error>
+										}
+									</mat-form-field>
+									<div class="p-t-0-5">
+										<button
+											type="button"
+											tabindex="-1"
+											mat-icon-button
+											class="orc-icon-button"
+											(click)="help_max_order.set(!help_max_order())"
+										>
+											<mat-icon class="orc-outline-color">info</mat-icon>
+										</button>
+									</div>
+								</div>
+							</div>
+
 							<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_max_order()">
 								<div class="orc-animation-expand-collapse-inner">
-									<div class="flex p-t-0-5 p-b-1 w-max-18">
+									<div class="flex p-b-1 w-max-18">
 										<orc-form-help-text class="orc-surface-container-high-bg">
 											<div>
 												The max order determines the range of ecash denominations that this keyset can create.

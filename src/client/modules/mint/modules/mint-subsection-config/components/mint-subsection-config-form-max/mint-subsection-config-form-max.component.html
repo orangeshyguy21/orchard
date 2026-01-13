@@ -10,8 +10,10 @@
 			<orc-form-field-dynamic
 				[hot]="form_hot() ?? false"
 				[invalid]="control_invalid() ?? false"
+				[info]="true"
 				(submit)="onSubmit($event)"
 				(cancel)="onCancel($event)"
+				(inform)="help_status.set(!help_status())"
 			>
 				<mat-form-field
 					appearance="fill"
@@ -19,13 +21,7 @@
 					[ngClass]="form_hot() ? 'orc-hot-form-field' : 'orc-cold-form-field'"
 					class="mint-max-form-field orc-dynamic-form-field"
 				>
-					<mat-label
-						class="flex flex-items-center flex-gap-0-5 cursor-pointer"
-						(click)="$event.preventDefault(); help_status.set(!help_status()); $event.stopPropagation()"
-					>
-						<span>Max Amount</span>
-						<mat-icon class="icon-sm icon-dynamic-fill">info</mat-icon>
-					</mat-label>
+					<mat-label>Max amount</mat-label>
 					<input
 						type="text"
 						matInput

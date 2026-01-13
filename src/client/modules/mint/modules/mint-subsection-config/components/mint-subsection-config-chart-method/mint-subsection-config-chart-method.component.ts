@@ -1,5 +1,15 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, viewChild, OnDestroy, effect, signal, HostListener} from '@angular/core';
+import {
+	ChangeDetectionStrategy,
+	Component,
+	input,
+	viewChild,
+	OnDestroy,
+	signal,
+	HostListener,
+	SimpleChanges,
+	OnChanges,
+} from '@angular/core';
 /* Vendor Dependencies */
 import {BaseChartDirective} from 'ng2-charts';
 import {ChartConfiguration, ChartType as ChartJsType, Plugin} from 'chart.js';
@@ -19,7 +29,7 @@ import {MintConfigStats} from '@client/modules/mint/modules/mint-subsection-conf
 	styleUrl: './mint-subsection-config-chart-method.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintSubsectionConfigChartMethodComponent implements OnDestroy {
+export class MintSubsectionConfigChartMethodComponent implements OnChanges, OnDestroy {
 	public chart = viewChild(BaseChartDirective);
 
 	public nut = input.required<'nut4' | 'nut5'>();
@@ -42,31 +52,30 @@ export class MintSubsectionConfigChartMethodComponent implements OnDestroy {
 	public displayed = signal<boolean>(false);
 
 	private subscriptions: Subscription = new Subscription();
-	private initialized = false;
 	private resize_timeout: ReturnType<typeof setTimeout> | null = null;
 
 	constructor(private chartService: ChartService) {
 		this.subscriptions.add(this.getRemoveSubscription());
 		this.subscriptions.add(this.getAddSubscription());
+	}
 
-		effect(() => {
-			const loading = this.loading();
-			if (loading === false && !this.initialized) {
-				this.displayed.set(true);
-				this.initialized = true;
-				this.init();
-			}
-		});
-
-		effect(() => {
-			this.min_amount();
-			this.max_amount();
-			this.min_hot();
-			this.max_hot();
-			if (this.initialized) {
-				this.initOptions();
-			}
-		});
+	public ngOnChanges(changes: SimpleChanges): void {
+		if (changes['loading'] && this.loading() === false) {
+			this.init();
+			this.displayed.set(true);
+		}
+		if (changes['min_amount'] && !changes['min_amount'].firstChange) {
+			this.initOptions();
+		}
+		if (changes['max_amount'] && !changes['max_amount'].firstChange) {
+			this.initOptions();
+		}
+		if (changes['min_hot'] && !changes['min_hot'].firstChange) {
+			this.initOptions();
+		}
+		if (changes['max_hot'] && !changes['max_hot'].firstChange) {
+			this.initOptions();
+		}
 	}
 
 	/**
@@ -75,7 +84,6 @@ export class MintSubsectionConfigChartMethodComponent implements OnDestroy {
 	 */
 	@HostListener('window:resize')
 	onWindowResize(): void {
-		if (!this.initialized) return;
 		this.displayed.set(false);
 		if (this.resize_timeout) {
 			clearTimeout(this.resize_timeout);

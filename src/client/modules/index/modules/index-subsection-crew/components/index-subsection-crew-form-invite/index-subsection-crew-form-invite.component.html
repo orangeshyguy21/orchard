@@ -23,9 +23,17 @@
 				<div class="flex flex-gap-2 flex-wrap">
 					<div class="flex-1">
 						<div class="flex">
-							<div class="flex flex-items-center flex-gap-0-5 cursor-pointer" (click)="help_user.set(!help_user())">
+							<div class="flex flex-items-center flex-gap-0-5">
 								<div class="title-form-section">User</div>
-								<mat-icon class="icon-sm">info</mat-icon>
+								<button
+									type="button"
+									tabindex="-1"
+									mat-icon-button
+									class="orc-icon-button"
+									(click)="help_user.set(!help_user())"
+								>
+									<mat-icon class="orc-outline-color">info</mat-icon>
+								</button>
 							</div>
 						</div>
 
@@ -109,12 +117,17 @@
 
 					<div class="flex-1">
 						<div class="flex">
-							<div
-								class="flex flex-items-center flex-gap-0-5 cursor-pointer"
-								(click)="help_expiration.set(!help_expiration())"
-							>
+							<div class="flex flex-items-center flex-gap-0-5">
 								<div class="title-form-section">Invite Expiration</div>
-								<mat-icon class="icon-sm">info</mat-icon>
+								<button
+									type="button"
+									tabindex="-1"
+									mat-icon-button
+									class="orc-icon-button"
+									(click)="help_expiration.set(!help_expiration())"
+								>
+									<mat-icon class="orc-outline-color">info</mat-icon>
+								</button>
 							</div>
 						</div>
 

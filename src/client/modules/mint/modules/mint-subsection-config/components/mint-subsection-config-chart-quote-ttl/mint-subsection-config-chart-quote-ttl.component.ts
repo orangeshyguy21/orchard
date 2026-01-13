@@ -1,5 +1,15 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, effect, viewChild, OnDestroy, signal, HostListener} from '@angular/core';
+import {
+	ChangeDetectionStrategy,
+	Component,
+	input,
+	viewChild,
+	OnDestroy,
+	signal,
+	HostListener,
+	SimpleChanges,
+	OnChanges,
+} from '@angular/core';
 /* Vendor Dependencies */
 import {BaseChartDirective} from 'ng2-charts';
 import {ChartConfiguration, ChartType as ChartJsType, Plugin} from 'chart.js';
@@ -20,7 +30,7 @@ import {MintConfigStats} from '@client/modules/mint/modules/mint-subsection-conf
 	styleUrl: './mint-subsection-config-chart-quote-ttl.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintSubsectionConfigChartQuoteTtlComponent implements OnDestroy {
+export class MintSubsectionConfigChartQuoteTtlComponent implements OnChanges, OnDestroy {
 	chart = viewChild(BaseChartDirective);
 
 	public nut = input.required<'nut4' | 'nut5'>();
@@ -39,35 +49,24 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnDestroy {
 	public stats = input.required<MintConfigStats>();
 
 	private subscriptions: Subscription = new Subscription();
-	private initialized = false;
 	private resize_timeout: ReturnType<typeof setTimeout> | null = null;
 
 	constructor(private chartService: ChartService) {
 		this.subscriptions.add(this.getRemoveSubscription());
 		this.subscriptions.add(this.getAddSubscription());
+	}
 
-		effect(() => {
-			const loading = this.loading();
-			if (!loading && !this.initialized) {
-				this.displayed.set(true);
-				this.initialized = true;
-				this.init();
-			}
-		});
-
-		effect(() => {
-			const quote_ttl = this.quote_ttl();
-			if (this.initialized && quote_ttl !== undefined) {
-				this.initOptions();
-			}
-		});
-
-		effect(() => {
-			const form_hot = this.form_hot();
-			if (this.initialized && form_hot !== undefined) {
-				this.initOptions();
-			}
-		});
+	public ngOnChanges(changes: SimpleChanges): void {
+		if (changes['loading'] && this.loading() === false) {
+			this.displayed.set(true);
+			this.init();
+		}
+		if (changes['quote_ttl'] && !changes['quote_ttl'].firstChange) {
+			this.initOptions();
+		}
+		if (changes['form_hot'] && !changes['form_hot'].firstChange) {
+			this.initOptions();
+		}
 	}
 
 	/**
@@ -76,7 +75,6 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnDestroy {
 	 */
 	@HostListener('window:resize')
 	onWindowResize(): void {
-		if (!this.initialized) return;
 		this.displayed.set(false);
 		if (this.resize_timeout) {
 			clearTimeout(this.resize_timeout);

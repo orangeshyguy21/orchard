@@ -103,14 +103,11 @@
 									<div class="flex-grow flex flex-items-center flex-justify-center">
 										<div class="flex flex-items-center flex-gap-1 p-v-1">
 											<orc-graphic-asset [unit]="keyset.unit" [height]="'1.5rem'"> </orc-graphic-asset>
-											<div class="w-min-12">
-												<orc-mint-general-keyset
-													[active]="keyset.active"
-													[index]="keyset.derivation_path_index"
-													[input_fee_ppk]="keyset.input_fee_ppk"
-												>
-												</orc-mint-general-keyset>
-											</div>
+											<orc-mint-general-keyset
+												[active]="keyset.active"
+												[index]="keyset.derivation_path_index"
+												[input_fee_ppk]="keyset.input_fee_ppk"
+											></orc-mint-general-keyset>
 											<span class="text-sm orc-outline-variant-color"> {{ keyset.id }} </span>
 										</div>
 									</div>

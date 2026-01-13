@@ -43,8 +43,10 @@
 		<orc-form-field-dynamic
 			[hot]="focused_icon() || form_group().get(control_name())?.dirty || false"
 			[invalid]="form_group().get(control_name())?.invalid || false"
+			[info]="true"
 			(submit)="onSubmit($event)"
 			(cancel)="onCancel($event)"
+			(inform)="help_status.set(!help_status())"
 		>
 			<mat-form-field
 				appearance="fill"
@@ -53,13 +55,7 @@
 				"
 				class="w-full orc-dynamic-form-field"
 			>
-				<mat-label
-					class="flex flex-items-center flex-gap-0-5 cursor-pointer"
-					(click)="$event.preventDefault(); help_status.set(!help_status()); $event.stopPropagation()"
-				>
-					<span>Icon URL</span>
-					<mat-icon class="icon-sm icon-dynamic-fill">info</mat-icon>
-				</mat-label>
+				<mat-label>Icon URL</mat-label>
 				<textarea
 					rows="1"
 					#element_icon_url

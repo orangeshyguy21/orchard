@@ -4,6 +4,25 @@
 	@extend %flex;
 	@extend %flex-items-center;
 	@extend %flex-gap-0-5;
+	@extend %relative;
+
+	.form-hot {
+		.dynamic-actions {
+			@extend %visible;
+		}
+		.dynamic-info {
+			@extend %invisible;
+		}
+	}
+
+	.form-invalid {
+		.dynamic-actions {
+			@extend %m-b-1-25;
+		}
+		.dynamic-info {
+			@extend %m-b-1-25;
+		}
+	}
 }
 
 .dynamic-actions {
@@ -11,15 +30,16 @@
 	@extend %flex-items-center;
 	@extend %invisible;
 
-	&.form-hot {
-		@extend %visible;
-	}
-
-	&.form-invalid {
-		@extend %m-b-1-25;
-	}
-
 	@media (max-width: 599px) {
 		display: none;
+	}
+}
+
+.dynamic-info {
+	@extend %absolute;
+	@extend %visible;
+
+	@media (max-width: 599px) {
+		position: relative;
 	}
 }

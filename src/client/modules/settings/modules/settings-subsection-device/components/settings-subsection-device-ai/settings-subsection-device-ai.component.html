@@ -3,15 +3,9 @@
 		<div class="p-l-1 p-r-1 p-t-1 flex flex-column flex-gap-1">
 			<div class="flex flex-items-start flex-gap-2 flex-wrap">
 				<div class="flex-1 flex flex-items-start flex-justify-between flex-column">
-					<form (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)">
+					<form (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)" class="flex flex-row flex-gap-0-5">
 						<mat-form-field hideRequiredMarker="true" class="primary-form-field">
-							<mat-label
-								class="flex flex-items-center flex-gap-0-5 cursor-pointer"
-								(click)="$event.stopPropagation(); $event.preventDefault(); help_status.set(!help_status())"
-							>
-								<span>Agent model</span>
-								<mat-icon class="icon-sm icon-dynamic-fill">info</mat-icon>
-							</mat-label>
+							<mat-label>Agent model</mat-label>
 							<input
 								type="text"
 								placeholder="Select model"
@@ -34,6 +28,17 @@
 								<mat-error class="font-size-xs">{{ model_control_error() }}</mat-error>
 							}
 						</mat-form-field>
+						<div class="p-t-0-5">
+							<button
+								type="button"
+								tabindex="-1"
+								mat-icon-button
+								class="orc-icon-button"
+								(click)="help_status.set(!help_status())"
+							>
+								<mat-icon class="orc-outline-color">info</mat-icon>
+							</button>
+						</div>
 					</form>
 
 					<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">

@@ -8,9 +8,15 @@
 							<mat-slide-toggle [checked]="supported()" [disabled]="true" [name]="'supported_' + nut_index()">
 							</mat-slide-toggle>
 							<div class="p-l-1 font-size-s">Supported</div>
-							<mat-icon class="icon-sm icon-dynamic-fill cursor-pointer" (click)="help_status.set(!help_status())"
-								>info</mat-icon
+							<button
+								type="button"
+								tabindex="-1"
+								mat-icon-button
+								class="orc-icon-button"
+								(click)="help_status.set(!help_status())"
 							>
+								<mat-icon class="orc-outline-color">info</mat-icon>
+							</button>
 						</div>
 						<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
 							<div class="orc-animation-expand-collapse-inner">

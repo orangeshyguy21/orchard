@@ -5,18 +5,12 @@
 				<div class="flex-1 flex flex-column flex-gap-2">
 					<div class="flex flex-column flex-gap-2">
 						<form class="flex-grow">
-							<orc-form-field-dynamic>
+							<orc-form-field-dynamic [info]="true" (inform)="help_status.set(!help_status())">
 								<mat-form-field
 									appearance="fill"
 									class="mint-quote-ttl-form-field orc-dynamic-form-field orc-cold-form-field"
 								>
-									<mat-label
-										class="flex flex-items-center flex-gap-0-5 cursor-pointer"
-										(click)="$event.preventDefault(); help_status.set(!help_status()); $event.stopPropagation()"
-									>
-										<span>Cache TTL</span>
-										<mat-icon class="icon-sm icon-dynamic-fill">info</mat-icon>
-									</mat-label>
+									<mat-label>Cache TTL</mat-label>
 									<input type="number" [value]="nut19()?.ttl" matInput [disabled]="true" />
 									<span matSuffix class="form-suffix-text">seconds</span>
 								</mat-form-field>
