@@ -13,15 +13,14 @@
 	@extend %p-h-1;
 	@extend %p-v-0-5;
 	@extend %cursor-pointer;
-
 	@extend %orc-primary-bg;
 	@extend %orc-on-primary-color;
-	font-size: 2.5rem;
-
 	@extend %flex-grow;
 	@extend %flex;
 	@extend %flex-items-center;
 	@extend %flex-justify-between;
+	@extend %flex-gap-2;
+	font-size: 2.5rem;
 
 	&.disabled {
 		@extend %orc-outline-variant-bg;

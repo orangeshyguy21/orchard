@@ -1,4 +1,4 @@
-<div class="flex flex-column">
+<div class="flex flex-column" [class.tablet-view]="device_type() !== 'desktop'">
 	<div class="sticky-setting z-index-1">
 		<div class="flex flex-justify-between flex-items-end p-b-0-5">
 			<div>
@@ -8,9 +8,11 @@
 		</div>
 		<div class="category-rule"></div>
 	</div>
-	<orc-settings-subsection-app-bitcoin
-		[form_group]="form_bitcoin"
-		[oracle_price]="bitcoin_oracle_price()"
-		(update_oracle)="onUpdateBitcoinOracle()"
-	></orc-settings-subsection-app-bitcoin>
+	<div class="settings-box">
+		<orc-settings-subsection-app-bitcoin
+			[form_group]="form_bitcoin"
+			[oracle_price]="bitcoin_oracle_price()"
+			(update_oracle)="onUpdateBitcoinOracle()"
+		></orc-settings-subsection-app-bitcoin>
+	</div>
 </div>

@@ -17,10 +17,11 @@ describe('MintSubsectionInfoFormUrlsComponent', () => {
 
 		fixture = TestBed.createComponent(MintSubsectionInfoFormUrlsComponent);
 		component = fixture.componentInstance;
-		component.form_group = new FormGroup({urls: new FormArray<FormControl<string | null>>([new FormControl('')])});
-		component.form_array = component.form_group.get('urls') as FormArray;
-		component.array_name = 'urls' as any;
-		component.array_length = 1;
+		const form_group = new FormGroup({urls: new FormArray<FormControl<string | null>>([new FormControl('')])});
+		fixture.componentRef.setInput('form_group', form_group);
+		fixture.componentRef.setInput('form_array', form_group.get('urls') as FormArray);
+		fixture.componentRef.setInput('array_name', 'urls');
+		fixture.componentRef.setInput('array_length', 1);
 		fixture.detectChanges();
 	});
 

@@ -2,6 +2,7 @@
 import {ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef, OnDestroy, signal} from '@angular/core';
 import {Router} from '@angular/router';
 import {FormGroup, FormControl} from '@angular/forms';
+import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 /* Vendor Dependencies */
 import {tap, catchError, finalize, EMPTY, forkJoin, Subscription, firstValueFrom, timer, switchMap, takeWhile} from 'rxjs';
 /* Application Dependencies */
@@ -29,6 +30,7 @@ import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {OrchardError} from '@client/modules/error/types/error.types';
 import {Setting} from '@client/modules/settings/classes/setting.class';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Shared Dependencies */
 import {SettingKey} from '@shared/generated.types';
 
@@ -47,6 +49,7 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public version: string;
 	public enabled_mint: boolean;
 	public enabled_ecash = false;
+	public device_type = signal<DeviceType>('desktop');
 
 	public loading_bitcoin: boolean = true;
 	public loading_lightning: boolean = true;
@@ -106,6 +109,7 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 		private taprootAssetsService: TaprootAssetsService,
 		private mintService: MintService,
 		private publicService: PublicService,
+		private breakpointObserver: BreakpointObserver,
 		private router: Router,
 		private cdr: ChangeDetectorRef,
 	) {
@@ -123,6 +127,7 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 	ngOnInit(): void {
 		this.getSettings();
 		this.orchardOptionalInit();
+		this.subscriptions.add(this.getBreakpointSubscription());
 	}
 
 	private orchardOptionalInit(): void {
@@ -154,6 +159,51 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.loading_mint_icon = this.enabled_mint ? true : false;
 		if (this.enabled_mint) this.getMint();
 		this.cdr.detectChanges();
+	}
+
+	/* *******************************************************
+		Subscriptions                      
+	******************************************************** */
+
+	private getBitcoinBlockSubscription(): Subscription {
+		return this.bitcoinService.bitcoin_blockcount$.subscribe((blockcount: BitcoinBlockCount | null) => {
+			if (!blockcount) return;
+			if (this.bitcoin_blockcount && blockcount.height > this.bitcoin_blockcount?.height) this.refreshBitcoinMempool();
+			this.bitcoin_blockcount = blockcount;
+			this.cdr.detectChanges();
+		});
+	}
+
+	private getBitcoinBlockchainSubscription(): Subscription {
+		this.bitcoin_polling_active = true;
+		this.loading_bitcoin = false;
+		this.cdr.detectChanges();
+		return timer(0, 5000)
+			.pipe(
+				takeWhile(() => this.bitcoin_polling_active),
+				switchMap(() =>
+					this.bitcoinService.getBitcoinBlockchainInfo().pipe(
+						catchError((error) => {
+							console.error('Failed to fetch blockchain info, polling stopped:', error);
+							this.bitcoin_polling_active = false;
+							return EMPTY;
+						}),
+					),
+				),
+			)
+			.subscribe({
+				next: async (blockchain_info: BitcoinBlockchainInfo) => {
+					this.bitcoin_blockchain_info = blockchain_info;
+					this.getBitcoinBlock();
+					this.cdr.detectChanges();
+				},
+			});
+	}
+
+	private getBreakpointSubscription(): Subscription {
+		return this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium]).subscribe((result) => {
+			this.device_type.set(result.matches ? 'tablet' : 'desktop');
+		});
 	}
 
 	/* *******************************************************
@@ -225,46 +275,11 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 			.subscribe();
 	}
 
-	private getBitcoinBlockSubscription(): Subscription {
-		return this.bitcoinService.bitcoin_blockcount$.subscribe((blockcount: BitcoinBlockCount | null) => {
-			if (!blockcount) return;
-			if (this.bitcoin_blockcount && blockcount.height > this.bitcoin_blockcount?.height) this.refreshBitcoinMempool();
-			this.bitcoin_blockcount = blockcount;
-			this.cdr.detectChanges();
-		});
-	}
-
 	private refreshBitcoinMempool(): void {
 		this.bitcoinService.getBitcoinBlockchainInfo().subscribe((blockchain_info: BitcoinBlockchainInfo) => {
 			this.bitcoin_blockchain_info = blockchain_info;
 			this.getBitcoinMempool();
 		});
-	}
-
-	private getBitcoinBlockchainSubscription(): Subscription {
-		this.bitcoin_polling_active = true;
-		this.loading_bitcoin = false;
-		this.cdr.detectChanges();
-		return timer(0, 5000)
-			.pipe(
-				takeWhile(() => this.bitcoin_polling_active),
-				switchMap(() =>
-					this.bitcoinService.getBitcoinBlockchainInfo().pipe(
-						catchError((error) => {
-							console.error('Failed to fetch blockchain info, polling stopped:', error);
-							this.bitcoin_polling_active = false;
-							return EMPTY;
-						}),
-					),
-				),
-			)
-			.subscribe({
-				next: async (blockchain_info: BitcoinBlockchainInfo) => {
-					this.bitcoin_blockchain_info = blockchain_info;
-					this.getBitcoinBlock();
-					this.cdr.detectChanges();
-				},
-			});
 	}
 
 	private getBitcoinBlock(): void {

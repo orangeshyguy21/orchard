@@ -1,0 +1,26 @@
+<div class="quote-stats-container">
+	<orc-mint-subsection-config-stat [loading]="loading()">
+		<div class="font-weight-extra-light">avg</div>
+		<div>
+			<span class="font-weight-semi-bold">{{ stats().avg | number: '1.0-0' }}</span> {{ unit() | localUnit }}
+		</div>
+	</orc-mint-subsection-config-stat>
+	<orc-mint-subsection-config-stat [loading]="loading()">
+		<div class="font-weight-extra-light">median</div>
+		<div>
+			<span class="font-weight-semi-bold">{{ stats().median | number: '1.0-0' }}</span> {{ unit() | localUnit }}
+		</div>
+	</orc-mint-subsection-config-stat>
+	<orc-mint-subsection-config-stat [loading]="loading()">
+		<div class="font-weight-extra-light">max</div>
+		<div>
+			<span class="font-weight-semi-bold">{{ stats().max | number: '1.0-0' }}</span> {{ unit() | localUnit }}
+		</div>
+	</orc-mint-subsection-config-stat>
+	<orc-mint-subsection-config-stat [loading]="loading()">
+		<div class="font-weight-extra-light">min</div>
+		<div>
+			<span class="font-weight-semi-bold">{{ stats().min | number: '1.0-0' }}</span> {{ unit() | localUnit }}
+		</div>
+	</orc-mint-subsection-config-stat>
+</div>

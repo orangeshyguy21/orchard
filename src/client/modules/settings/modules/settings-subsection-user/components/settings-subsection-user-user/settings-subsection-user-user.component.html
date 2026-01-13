@@ -1,47 +1,46 @@
-<div class="p-2">
-	<mat-card appearance="outlined" class="relative overflow-hidden">
-		<mat-card-content class="orc-surface-container-low-bg">
-			<div class="p-1 flex flex-row flex-gap-2">
-				<div class="flex-grow flex flex-column flex-gap-1">
-					<orc-settings-subsection-user-user-name
-						[form_group]="form_group_user_name()"
-						[control_name]="'name'"
-						[invalid]="form_group_user_name().get('name')?.invalid || false"
-						[dirty]="form_group_user_name().get('name')?.dirty || false"
-						(cancel)="cancel_user_name.emit($event)"
-						(submit)="submit_user_name.emit()"
-					></orc-settings-subsection-user-user-name>
-					<orc-settings-subsection-user-user-password
-						(save)="save_user_password.emit($event)"
-					></orc-settings-subsection-user-user-password>
-				</div>
-				<div class="flex flex-justify-center w-min-36">
-					<div class="ai-model-description flex-grow flex flex-column flex-gap-1 w-max-24 p-b-1">
-						<div class="flex flex-justify-center model-detail-header">
-							<div class="font-size-xs orc-outline-color">User Details</div>
-						</div>
-
-						@if (user()) {
-							<div class="flex flex-justify-center flex-items-center flex-gap-1">
-								<div class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color font-weight-extra-light">
-									<div>name:</div>
-									<div>role:</div>
-									<div>active:</div>
-									<div>created at:</div>
-								</div>
-								<div class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color">
-									<div>{{ user()?.name }}</div>
-									<div>{{ user()?.role }}</div>
-									<div>{{ user()?.active }}</div>
-									<div>{{ user()?.created_at | localTime: 'medium' }}</div>
-								</div>
-							</div>
-						} @else {
-							<div class="flex flex-justify-center orc-outline-variant-color p-v-2">No user found</div>
-						}
+<mat-card appearance="outlined" class="relative overflow-hidden">
+	<mat-card-content class="orc-surface-container-low-bg">
+		<div class="p-1 flex flex-row flex-gap-2 flex-wrap">
+			<div class="flex-1 flex-grow flex flex-column flex-gap-1">
+				<orc-settings-subsection-user-user-name
+					[form_group]="form_group_user_name()"
+					[control_name]="'name'"
+					[invalid]="form_group_user_name().get('name')?.invalid || false"
+					[dirty]="form_group_user_name().get('name')?.dirty || false"
+					(cancel)="cancel_user_name.emit($event)"
+					(submit)="submit_user_name.emit()"
+				></orc-settings-subsection-user-user-name>
+				<orc-settings-subsection-user-user-password
+					[device_type]="device_type()"
+					(save)="save_user_password.emit($event)"
+				></orc-settings-subsection-user-user-password>
+			</div>
+			<div class="flex-1 flex flex-justify-center">
+				<div class="flex-grow flex flex-column flex-gap-1 w-max-24 p-b-1">
+					<div class="flex flex-justify-center model-detail-header">
+						<div class="font-size-xs orc-outline-color">User Details</div>
 					</div>
+
+					@if (user()) {
+						<div class="flex flex-justify-center flex-items-center flex-gap-1 text-nowrap">
+							<div class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color font-weight-extra-light">
+								<div>name:</div>
+								<div>role:</div>
+								<div>active:</div>
+								<div>created at:</div>
+							</div>
+							<div class="flex flex-column flex-gap-0-5 font-size-xs orc-outline-color">
+								<div>{{ user()?.name }}</div>
+								<div>{{ user()?.role }}</div>
+								<div>{{ user()?.active }}</div>
+								<div>{{ user()?.created_at | localTime: 'medium' }}</div>
+							</div>
+						</div>
+					} @else {
+						<div class="flex flex-justify-center orc-outline-variant-color p-v-2">No user found</div>
+					}
 				</div>
 			</div>
-		</mat-card-content>
-	</mat-card>
-</div>
+		</div>
+	</mat-card-content>
+</mat-card>

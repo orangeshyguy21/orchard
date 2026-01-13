@@ -12,7 +12,6 @@ import {
 	UpdateMintAnalyticsDateRangeTool,
 	UpdateMintAnalyticsUnitsTool,
 	UpdateMintAnalyticsIntervalTool,
-	UpdateMintAnalyticsTypeTool,
 	UpdateMintNameTool,
 	UpdateMintDescriptionTool,
 	UpdateMintIconUrlTool,
@@ -103,12 +102,7 @@ export const AI_AGENTS = {
 			role: 'system',
 			content: 'You are an agent designed to help adjust parameters used to explore mint analytics.',
 		},
-		tools: [
-			UpdateMintAnalyticsDateRangeTool,
-			UpdateMintAnalyticsUnitsTool,
-			UpdateMintAnalyticsIntervalTool,
-			UpdateMintAnalyticsTypeTool,
-		],
+		tools: [UpdateMintAnalyticsDateRangeTool, UpdateMintAnalyticsUnitsTool, UpdateMintAnalyticsIntervalTool],
 	},
 	[AiAgent.MINT_INFO]: {
 		name: 'Mint Info Agent',

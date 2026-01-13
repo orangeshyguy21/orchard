@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input, Output, EventEmitter, ViewChild, ElementRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ElementRef, input, output, signal, viewChild} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 /* Application Dependencies */
 import {MintInfoRpc} from '@client/modules/mint/classes/mint-info-rpc.class';
@@ -12,30 +12,34 @@ import {MintInfoRpc} from '@client/modules/mint/classes/mint-info-rpc.class';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintSubsectionInfoFormDescriptionLongComponent {
-	@Input() form_group!: FormGroup;
-	@Input() control_name!: keyof MintInfoRpc;
+	public form_group = input.required<FormGroup>(); // form group containing the long description control
+	public control_name = input.required<keyof MintInfoRpc>(); // name of the form control to bind
 
-	@Output() update = new EventEmitter<keyof MintInfoRpc>();
-	@Output() cancel = new EventEmitter<keyof MintInfoRpc>();
+	public update = output<keyof MintInfoRpc>(); // emitted when form is submitted
+	public cancel = output<keyof MintInfoRpc>(); // emitted when form is cancelled
 
-	@ViewChild('element_description_long') element_description_long!: ElementRef<HTMLInputElement>;
+	public element_description_long = viewChild.required<ElementRef<HTMLTextAreaElement>>('element_description_long'); // reference to the textarea element
 
-	constructor() {}
+	public focused_description_long = signal<boolean>(false); // tracks if the long description textarea is focused
+	public help_status = signal<boolean>(false); // tracks if the help is visible
 
-	public get form_hot(): boolean {
-		if (document.activeElement === this.element_description_long?.nativeElement) return true;
-		return this.form_group.get(this.control_name)?.dirty ? true : false;
-	}
-
+	/**
+	 * Handles form submission by emitting update event and blurring the textarea
+	 * @param {Event} event - the form submit event
+	 */
 	public onSubmit(event: Event): void {
 		event.preventDefault();
-		this.update.emit(this.control_name);
-		this.element_description_long.nativeElement.blur();
+		this.update.emit(this.control_name());
+		this.element_description_long().nativeElement.blur();
 	}
 
+	/**
+	 * Handles form cancellation by emitting cancel event and blurring the textarea
+	 * @param {Event} event - the cancel event
+	 */
 	public onCancel(event: Event): void {
 		event.preventDefault();
-		this.cancel.emit(this.control_name);
-		this.element_description_long.nativeElement.blur();
+		this.cancel.emit(this.control_name());
+		this.element_description_long().nativeElement.blur();
 	}
 }

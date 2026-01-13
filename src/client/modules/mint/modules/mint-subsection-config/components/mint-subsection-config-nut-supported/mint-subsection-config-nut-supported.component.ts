@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, signal} from '@angular/core';
 
 @Component({
 	selector: 'orc-mint-subsection-config-nut-supported',
@@ -9,7 +9,10 @@ import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintSubsectionConfigNutSupportedComponent {
-	@Input() supported!: boolean | undefined;
-	@Input() nut_index!: string;
-	@Input() nut_icon!: string;
+	public supported = input<boolean | undefined>(undefined);
+	public nut_index = input.required<string>();
+	public nut_icon = input.required<string>();
+	public device_desktop = input<boolean>(false);
+
+	public help_status = signal<boolean>(false); // tracks if the help is visible
 }

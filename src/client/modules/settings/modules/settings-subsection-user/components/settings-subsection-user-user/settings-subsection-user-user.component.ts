@@ -3,6 +3,7 @@ import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 /* Application Dependencies */
 import {User} from '@client/modules/crew/classes/user.class';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 
 @Component({
 	selector: 'orc-settings-subsection-user-user',
@@ -14,6 +15,7 @@ import {User} from '@client/modules/crew/classes/user.class';
 export class SettingsSubsectionUserUserComponent {
 	public user = input.required<User | null>();
 	public form_group_user_name = input.required<FormGroup>();
+	public device_type = input.required<DeviceType>();
 
 	public cancel_user_name = output<string>();
 	public submit_user_name = output<void>();

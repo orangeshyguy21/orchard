@@ -11,6 +11,10 @@
 	}
 }
 
+.ln-channel-scroll-wrapper {
+	overflow-x: auto;
+}
+
 .lightning-channels-divider {
 	@extend %absolute;
 	top: -0.5em;
@@ -37,4 +41,8 @@
 	@extend %flex;
 	@extend %flex-items-center;
 	@extend %flex-justify-center;
+}
+
+.mat-column-channel {
+	@extend %w-min-18;
 }

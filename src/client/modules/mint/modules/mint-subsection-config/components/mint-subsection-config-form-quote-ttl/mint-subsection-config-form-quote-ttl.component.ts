@@ -1,10 +1,16 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input, Output, EventEmitter, ViewChild, ElementRef, computed} from '@angular/core';
-import {FormGroup} from '@angular/forms';
+import {ChangeDetectionStrategy, Component, computed, ElementRef, input, output, signal, viewChild, effect} from '@angular/core';
+import {FormGroup, ValidationErrors} from '@angular/forms';
 /* Application Dependencies */
 import {MintQuoteTtls} from '@client/modules/mint/classes/mint-quote-ttls.class';
 import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
 import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class';
+import {avg, median, max, min} from '@client/modules/math/helpers';
+/* Native Dependencies */
+import {MintConfigStats} from '@client/modules/mint/modules/mint-subsection-config/types/mint-config-stats.type';
+/* Shared Dependencies */
+import {MintQuoteState, MeltQuoteState} from '@shared/generated.types';
+
 @Component({
 	selector: 'orc-mint-subsection-config-form-quote-ttl',
 	standalone: false,
@@ -13,54 +19,121 @@ import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class'
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintSubsectionConfigFormQuoteTtlComponent {
-	@Input() nut!: 'nut4' | 'nut5';
-	@Input() form_group!: FormGroup;
-	@Input() control_name!: keyof MintQuoteTtls;
-	@Input() disabled!: boolean | undefined;
-	@Input() locale!: string;
-	@Input() loading!: boolean;
-	@Input() quotes!: MintMintQuote[] | MintMeltQuote[];
+	public nut = input.required<'nut4' | 'nut5'>(); // which nut configuration this controls
+	public form_group = input.required<FormGroup>(); // form group containing the quote ttl control
+	public control_name = input.required<keyof MintQuoteTtls>(); // name of the form control to bind
+	public control_dirty = input.required<boolean | undefined>(); // whether the control is dirty
+	public control_invalid = input.required<boolean | undefined>(); // whether the control is invalid
+	public control_errors = input.required<ValidationErrors | null | undefined>(); // errors for the control
+	public disabled = input<boolean | undefined>(undefined); // whether the form is disabled
+	public locale = input.required<string>(); // locale for number formatting
+	public loading = input.required<boolean>(); // whether data is loading
+	public quotes = input.required<MintMintQuote[] | MintMeltQuote[]>(); // quotes to display in chart
+	public device_desktop = input<boolean>(false); // whether the desktop view is active
 
-	@Output() update = new EventEmitter<{form_group: FormGroup; control_name: keyof MintQuoteTtls}>();
-	@Output() cancel = new EventEmitter<{form_group: FormGroup; control_name: keyof MintQuoteTtls}>();
+	public update = output<{form_group: FormGroup; control_name: keyof MintQuoteTtls}>(); // emitted when form is submitted
+	public cancel = output<{form_group: FormGroup; control_name: keyof MintQuoteTtls}>(); // emitted when form is cancelled
 
-	@ViewChild('element_quote_ttl') element_quote_ttl!: ElementRef<HTMLInputElement>;
+	public element_quote_ttl = viewChild.required<ElementRef<HTMLInputElement>>('element_quote_ttl'); // reference to the input element
 
-	public get form_error(): string {
-		if (this.form_group.get(this.control_name)?.hasError('required')) return 'Required';
-		if (this.form_group.get(this.control_name)?.hasError('min'))
-			return `Must be at least ${this.form_group.get(this.control_name)?.getError('min')?.min}`;
-		if (this.form_group.get(this.control_name)?.hasError('max'))
-			return `Cannot exceed ${this.form_group.get(this.control_name)?.getError('max')?.max}`;
-		if (this.form_group.get(this.control_name)?.hasError('orchardMicros')) return 'Invalid format';
-		if (this.form_group.get(this.control_name)?.errors) return 'Invalid TTL';
-		return '';
-	}
+	public focused_quote_ttl = signal<boolean>(false); // tracks if the input is focused
+	public control_touched = signal<boolean>(false); // tracks if the control has been touched
+	public help_status = signal<boolean>(false); // tracks if the help is visible
+	public stat_deltas = signal<Record<string, number>[]>([]); // deltas for the stats
+	public stats = signal<MintConfigStats>({
+		avg: 0,
+		median: 0,
+		max: 0,
+		min: 0,
+	}); // stats for the quote ttl
+
+	public form_hot = computed(() => {
+		if (this.focused_quote_ttl()) return true;
+		return this.control_dirty() ?? false;
+	});
 
 	public help_text = computed(() => {
-		if (this.nut === 'nut4')
-			return 'Configure the time to live for checking deposit invoices. Invoices paid after this time will be checked less often.';
-		if (this.nut === 'nut5')
-			return 'Configure the time to live for checking withdraw invoices. Invoices paid after this time will be checked less often.';
+		if (this.nut() === 'nut4')
+			return 'Configure the time to live for checking deposit invoices.<br> Invoices paid after this time will be checked less often.';
+		if (this.nut() === 'nut5')
+			return 'Configure the time to live for checking withdraw invoices.<br> Invoices paid after this time will be checked less often.';
 		return '';
 	});
 
-	constructor() {}
+	public valid_quotes = computed(() => {
+		const quotes = this.nut() === 'nut4' ? (this.quotes() as MintMintQuote[]) : (this.quotes() as MintMeltQuote[]);
+		const valid_state = this.nut() === 'nut4' ? MintQuoteState.Issued : MeltQuoteState.Paid;
+		return quotes
+			.filter((quote) => quote.state === valid_state && quote.created_time && quote.created_time > 0)
+			.sort((a, b) => (a.created_time ?? 0) - (b.created_time ?? 0)) as MintMintQuote[] | MintMeltQuote[];
+	});
 
-	public get form_hot(): boolean {
-		if (document.activeElement === this.element_quote_ttl?.nativeElement) return true;
-		return this.form_group.get(this.control_name)?.dirty ? true : false;
+	constructor() {
+		effect(() => {
+			const loading = this.loading();
+			if (!loading) this.setStats();
+		});
+	}
+
+	private setStats(): void {
+		const deltas = this.getDeltas();
+		this.stat_deltas.set(deltas);
+		const stats = this.getStats(deltas);
+		this.stats.set(stats);
+	}
+
+	private getDeltas(): Record<string, number>[] {
+		const valid_quotes = this.valid_quotes();
+		if (valid_quotes.length === 0) return [];
+		return valid_quotes.map((quote) => {
+			const created_time = quote.created_time ?? 0;
+			const end_time = quote instanceof MintMintQuote ? (quote.issued_time ?? quote.paid_time ?? 0) : (quote.paid_time ?? 0);
+			return {
+				created_time,
+				delta: end_time - created_time,
+			};
+		});
+	}
+
+	private getStats(deltas: Record<string, number>[]): {
+		avg: number;
+		median: number;
+		max: number;
+		min: number;
+	} {
+		const values = deltas.map((delta) => delta['delta']);
+		return {
+			avg: avg(values),
+			median: median(values),
+			max: max(values),
+			min: min(values),
+		};
+	}
+
+	public onFocus(): void {
+		this.focused_quote_ttl.set(true);
+	}
+
+	public onBlur(): void {
+		this.focused_quote_ttl.set(false);
+		this.control_touched.set(true);
 	}
 
 	public onSubmit(event: Event): void {
 		event.preventDefault();
-		this.update.emit({form_group: this.form_group, control_name: this.control_name});
-		this.element_quote_ttl.nativeElement.blur();
+		this.update.emit({form_group: this.form_group(), control_name: this.control_name()});
+		this.element_quote_ttl().nativeElement.blur();
+		this.form_group().get(this.control_name())?.markAsPristine();
+		this.control_touched.set(false);
+		this.focused_quote_ttl.set(false);
 	}
 
 	public onCancel(event: Event): void {
 		event.preventDefault();
-		this.cancel.emit({form_group: this.form_group, control_name: this.control_name});
-		this.element_quote_ttl.nativeElement.blur();
+		this.cancel.emit({form_group: this.form_group(), control_name: this.control_name()});
+		this.element_quote_ttl().nativeElement.blur();
+		this.form_group().get(this.control_name())?.markAsPristine();
+		this.control_touched.set(false);
+		this.focused_quote_ttl.set(false);
 	}
 }

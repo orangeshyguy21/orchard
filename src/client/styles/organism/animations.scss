@@ -60,6 +60,10 @@
 	animation: fadeout 300ms ease-out both;
 }
 
+.orc-animation-fadeout-slow {
+	animation: fadeout 800ms ease-out both;
+}
+
 @keyframes fadein {
 	from { opacity: 0; }
 	to   { opacity: 1; }

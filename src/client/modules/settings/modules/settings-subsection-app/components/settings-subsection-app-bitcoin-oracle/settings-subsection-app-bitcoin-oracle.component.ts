@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output, signal} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 /* Application Dependencies */
 import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle-price.class';
@@ -16,4 +16,6 @@ export class SettingsSubsectionAppBitcoinOracleComponent {
 	public control_name = input.required<string>();
 	public oracle_price = input.required<BitcoinOraclePrice | null>();
 	public update = output<void>();
+
+	public help_status = signal<boolean>(false);
 }

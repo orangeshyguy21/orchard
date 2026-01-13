@@ -1,0 +1,6 @@
+@use 'molecule/molecule';
+
+.tablet-oracle {
+	@extend %flex-grow;
+	@extend %flex-justify-center;
+}

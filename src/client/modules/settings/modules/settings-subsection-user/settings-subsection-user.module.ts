@@ -10,6 +10,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
 import {MatDialogModule} from '@angular/material/dialog';
+import {MatIconModule} from '@angular/material/icon';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcLocalModule} from '@client/modules/local/local.module';
@@ -48,6 +49,7 @@ import {SettingsSubsectionUserUserPasswordDialogComponent} from './components/se
 		MatInputModule,
 		MatButtonModule,
 		MatDialogModule,
+		MatIconModule,
 		OrcFormModule,
 		OrcLocalModule,
 		OrcAuthGeneralModule,

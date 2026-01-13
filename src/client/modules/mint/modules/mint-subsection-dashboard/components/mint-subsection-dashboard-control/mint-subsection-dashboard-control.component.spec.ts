@@ -16,6 +16,11 @@ describe('MintSubsectionDashboardControlComponent', () => {
 
 		fixture = TestBed.createComponent(MintSubsectionDashboardControlComponent);
 		component = fixture.componentInstance;
+		fixture.componentRef.setInput('page_settings', {date_start: 0, date_end: 0, units: [], interval: 'day'});
+		fixture.componentRef.setInput('keysets', []);
+		fixture.componentRef.setInput('loading', true);
+		fixture.componentRef.setInput('mint_genesis_time', 0);
+		fixture.componentRef.setInput('device_desktop', true);
 		fixture.detectChanges();
 	});
 

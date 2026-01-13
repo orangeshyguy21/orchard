@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output, signal} from '@angular/core';
 /* Native Dependencies */
 import {AiChatConversation} from '@client/modules/ai/classes/ai-chat-conversation.class';
 import {AiAgentDefinition} from '@client/modules/ai/classes/ai-agent-definition.class';
@@ -12,12 +12,13 @@ import {AiAgentDefinition} from '@client/modules/ai/classes/ai-agent-definition.
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AiChatLogComponent {
-	@Input() public conversation!: AiChatConversation | null;
-	@Input() public active_chat!: boolean;
-	@Input() public revision!: number;
-	@Input() public agent_definition!: AiAgentDefinition | null;
+	public conversation = input.required<AiChatConversation | null>();
+	public active_chat = input.required<boolean>();
+	public revision = input.required<number>();
+	public agent_definition = input.required<AiAgentDefinition | null>();
 
-	@Output() public clear = new EventEmitter<void>();
+	public clear = output<void>();
+	public close = output<void>();
 
 	public view = signal(1);
 

@@ -1,0 +1,27 @@
+@use 'molecule/molecule';
+@use 'nucleus/nucleus';
+
+.quote-stats-item {
+	@extend %relative;
+	@extend %overflow-hidden;
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-gap-0-25;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	@extend %orc-fog-high-bg;
+	@extend %w-min-3;
+	@extend %orc-corner-extra-small;
+	@extend %p-0-25;
+	@extend %p-h-0-5;
+	@extend %p-v-0-25;
+	transition: background-color 800ms ease;
+}
+
+.loading-stat-overlay {
+	@extend %absolute;
+	@extend %top-0;
+	@extend %left-0;
+	@extend %right-0;
+	@extend %bottom-0;
+}

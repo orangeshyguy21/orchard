@@ -2,23 +2,34 @@
 
 .mint-quote-ttl-chart-container {
 	@extend %relative;
-	max-height: 225px;
+	max-height: 180px;
 	min-height: 225px;
+	min-width: 200px;
 
 	canvas {
-		max-height: 225px;
+		max-height: 180px;
 	}
+}
+
+.chart-stats-container {
+	@extend %absolute;
+	@extend %top-0;
+	@extend %right-1;
 }
 
 .no-data-overlay {
 	@extend %absolute;
 	@extend %top-0;
-	@extend %left-0;
-	@extend %right-0;
-	@extend %bottom-0;
+	@extend %left-1;
+	@extend %right-1;
+	@extend %bottom-1;
 	@extend %flex;
 	@extend %flex-column;
 	@extend %flex-gap-1;
 	@extend %flex-items-center;
 	@extend %flex-justify-center;
+	@extend %border;
+	@extend %border-solid;
+	@extend %orc-outline-variant-border;
+	@extend %orc-corner-small;
 }

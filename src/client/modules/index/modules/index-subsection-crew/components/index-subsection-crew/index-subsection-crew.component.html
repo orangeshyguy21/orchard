@@ -6,9 +6,10 @@
 				[form_group]="panel"
 				[state_options]="state_options"
 				[role_options]="role_options"
+				[filter_count]="filter_count()"
 			></orc-index-subsection-crew-control>
 			<div>
-				<div class="flex flex-items-center flex-gap-0-5 relative">
+				@if (device_type() === 'desktop') {
 					<button
 						type="button"
 						matFab
@@ -18,9 +19,19 @@
 						(keydown.enter)="$event.preventDefault(); $event.stopPropagation()"
 					>
 						<mat-icon>person_add</mat-icon>
-						Invite User
+						<span class="text-nowrap">Invite User</span>
 					</button>
-				</div>
+				} @else {
+					<button
+						type="button"
+						matFab
+						class="orc-icon-button"
+						(click)="onInvite()"
+						(keydown.enter)="$event.preventDefault(); $event.stopPropagation()"
+					>
+						<mat-icon>person_add</mat-icon>
+					</button>
+				}
 			</div>
 		</div>
 		<div class="category-rule"></div>
@@ -51,6 +62,7 @@
 				[form_invite]="form_invite_edit"
 				[form_user]="form_user_edit"
 				[table_form_id]="table_form_id()"
+				[device_desktop]="device_type() === 'desktop'"
 				(editInvite)="onEditInvite($event)"
 				(editUser)="onEditUser($event)"
 				(deleteInvite)="onDeleteInvite($event)"

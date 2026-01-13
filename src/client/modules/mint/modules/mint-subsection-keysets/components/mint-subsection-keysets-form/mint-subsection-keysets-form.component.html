@@ -6,7 +6,7 @@
 					<mat-icon>close</mat-icon>
 				</button>
 			</div>
-			<div class="flex flex-gap-2">
+			<div class="flex flex-gap-2 flex-wrap">
 				<div class="flex-1">
 					<form
 						class="flex-grow flex-1 flex flex-column flex-gap-1"
@@ -14,78 +14,149 @@
 						(ngSubmit)="$event.preventDefault()"
 						(keydown.enter)="$event.preventDefault()"
 					>
-						<div class="flex flex-gap-2">
-							<mat-form-field
-								appearance="fill"
-								hideRequiredMarker="true"
-								class="keyset-form-field orc-dynamic-form-field orc-hot-form-field p-r-2"
-							>
-								<mat-label>Unit</mat-label>
-								<mat-select formControlName="unit" (selectionChange)="onUnitChange($event)">
-									@for (unit of unit_options; track unit.value) {
-										<mat-option [value]="unit.value">{{ unit.label }}</mat-option>
-									}
-								</mat-select>
-							</mat-form-field>
-							<div class="flex-1">
-								<orc-form-help-text class="orc-surface-container-high-bg">
-									The unit of the keyset to rotate. Only existing units can be rotated. New units must be set in the mint
-									config.
-								</orc-form-help-text>
-							</div>
-						</div>
-						<div class="flex flex-gap-2">
-							<mat-form-field
-								appearance="fill"
-								hideRequiredMarker="true"
-								class="keyset-form-field orc-dynamic-form-field orc-hot-form-field p-r-2"
-							>
-								<mat-label>Input Fee PPK</mat-label>
-								<input type="text" formNumberSeparator matInput formControlName="input_fee_ppk" placeholder="Ex. 100" />
-								@if (
-									form_group.get('input_fee_ppk')?.invalid &&
-									(form_group.get('input_fee_ppk')?.dirty || form_group.get('input_fee_ppk')?.touched)
-								) {
-									<mat-error class="font-size-xs">{{ fee_error }}</mat-error>
-								}
-							</mat-form-field>
-							<div class="flex-1">
-								<orc-form-help-text class="orc-surface-container-high-bg">
-									<div class="flex flex-column flex-gap-0-5">
-										<span
-											>The transaction fee charged by a keyset is based on the number of ecash notes used in the
-											transaction.</span
+						<div class="flex flex-row flex-gap-1 flex-wrap">
+							<div>
+								<div class="flex flex-row flex-gap-0-5">
+									<mat-form-field
+										appearance="fill"
+										hideRequiredMarker="true"
+										class="keyset-form-field orc-dynamic-form-field orc-hot-form-field"
+									>
+										<mat-label>Unit</mat-label>
+										<mat-select formControlName="unit" (selectionChange)="onUnitChange($event)">
+											@for (unit of unit_options; track unit.value) {
+												<mat-option [value]="unit.value">{{ unit.label }}</mat-option>
+											}
+										</mat-select>
+									</mat-form-field>
+									<div class="p-t-0-5">
+										<button
+											type="button"
+											tabindex="-1"
+											mat-icon-button
+											class="orc-icon-button"
+											(click)="help_unit.set(!help_unit())"
 										>
-										<span
-											>Median fee estimate:
-											<span
-												[innerHTML]="keyset_in_fee_estimate | localAmount: form_group.get('unit')?.value : 'mint'"
-											></span
-										></span>
+											<mat-icon class="orc-outline-color">info</mat-icon>
+										</button>
 									</div>
-								</orc-form-help-text>
+								</div>
+							</div>
+							<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_unit()">
+								<div class="orc-animation-expand-collapse-inner">
+									<div class="flex p-b-1 w-max-18">
+										<orc-form-help-text class="orc-surface-container-high-bg">
+											<div>
+												The unit of the keyset to rotate. Only existing units can be rotated. New units must be set
+												in the mint config.
+											</div>
+										</orc-form-help-text>
+									</div>
+								</div>
 							</div>
 						</div>
-						<div class="flex flex-gap-2">
-							<mat-form-field
-								appearance="fill"
-								hideRequiredMarker="true"
-								class="keyset-form-field orc-dynamic-form-field orc-hot-form-field p-r-2"
-							>
-								<mat-label>Max Order</mat-label>
-								<input type="text" matInput formControlName="max_order" placeholder="Ex. 32" />
-								<mat-hint class="font-size-xs orc-outline-color">0 - 255</mat-hint>
-								@if (
-									form_group.get('max_order')?.invalid &&
-									(form_group.get('max_order')?.dirty || form_group.get('max_order')?.touched)
-								) {
-									<mat-error class="font-size-xs">{{ max_order_error }}</mat-error>
-								}
-							</mat-form-field>
-							<div class="flex-1">
-								<orc-form-help-text class="orc-surface-container-high-bg">
-									The max order determines the range of ecash denominations that this keyset can create.
-								</orc-form-help-text>
+						<div class="flex flex-row flex-gap-1 flex-wrap">
+							<div>
+								<div class="flex flex-row flex-gap-0-5">
+									<mat-form-field
+										appearance="fill"
+										hideRequiredMarker="true"
+										class="keyset-form-field orc-dynamic-form-field orc-hot-form-field"
+									>
+										<mat-label>Input Fee PPK</mat-label>
+										<input
+											type="text"
+											formNumberSeparator
+											matInput
+											formControlName="input_fee_ppk"
+											placeholder="Ex. 100"
+										/>
+										<mat-hint class="font-size-xs orc-outline-color">
+											<span
+												>Median transaction fee would be
+												<span
+													class="font-weight-bold"
+													[innerHTML]="
+														keyset_in_fee_estimate | localAmount: form_group.get('unit')?.value : 'mint'
+													"
+												></span
+											></span>
+										</mat-hint>
+										<mat-error>
+											<orc-form-error [errors]="form_group.get('input_fee_ppk')?.errors">
+												Invalid input fee PPK
+											</orc-form-error>
+										</mat-error>
+									</mat-form-field>
+									<div class="p-t-0-5">
+										<button
+											type="button"
+											tabindex="-1"
+											mat-icon-button
+											class="orc-icon-button"
+											(click)="help_fee.set(!help_fee())"
+										>
+											<mat-icon class="orc-outline-color">info</mat-icon>
+										</button>
+									</div>
+								</div>
+							</div>
+							<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_fee()">
+								<div class="orc-animation-expand-collapse-inner">
+									<div class="flex p-b-1 w-max-18">
+										<orc-form-help-text class="orc-surface-container-high-bg">
+											<div>
+												The transaction fee charged by a keyset is based on the number of ecash notes used in the
+												transaction.
+											</div>
+										</orc-form-help-text>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="flex flex-row flex-gap-1 flex-wrap">
+							<div>
+								<div class="flex flex-row flex-gap-0-5">
+									<mat-form-field
+										appearance="fill"
+										hideRequiredMarker="true"
+										class="keyset-form-field orc-dynamic-form-field orc-hot-form-field"
+									>
+										<mat-label>Max order</mat-label>
+										<input type="text" matInput formControlName="max_order" placeholder="Ex. 32" />
+										<mat-hint class="font-size-xs orc-outline-color"
+											><span class="font-weight-bold">1 - 255</span> are allowed</mat-hint
+										>
+										<mat-error>
+											<orc-form-error [errors]="form_group.get('max_order')?.errors">
+												Invalid max order
+											</orc-form-error>
+										</mat-error>
+									</mat-form-field>
+									<div class="p-t-0-5">
+										<button
+											type="button"
+											tabindex="-1"
+											mat-icon-button
+											class="orc-icon-button"
+											(click)="help_max_order.set(!help_max_order())"
+										>
+											<mat-icon class="orc-outline-color">info</mat-icon>
+										</button>
+									</div>
+								</div>
+							</div>
+
+							<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_max_order()">
+								<div class="orc-animation-expand-collapse-inner">
+									<div class="flex p-b-1 w-max-18">
+										<orc-form-help-text class="orc-surface-container-high-bg">
+											<div>
+												The max order determines the range of ecash denominations that this keyset can create.
+											</div>
+										</orc-form-help-text>
+									</div>
+								</div>
 							</div>
 						</div>
 					</form>

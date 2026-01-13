@@ -1,0 +1,7 @@
+@if (errors()) {
+	@if (known_error()) {
+		{{ known_error() }}
+	} @else {
+		<ng-content></ng-content>
+	}
+}

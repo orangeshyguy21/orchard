@@ -1,6 +1,18 @@
 @use 'molecule/molecule';
 @use 'nucleus/nucleus';
 
+:host {
+	@extend %block;
+	@extend %overflow-hidden;
+	flex-shrink: 0;
+	max-height: 20rem;
+	transition: max-height 200ms ease;
+
+	&.collapsed {
+		@extend %h-max-0;
+	}
+}
+
 .ai-nav-container {
 	@extend %flex;
 	@extend %flex-row;
@@ -12,6 +24,30 @@
 	@extend %border-top;
 	@extend %border-top-solid;
 	@extend %orc-surface-border;
+	transition:
+		transform 200ms ease,
+		opacity 200ms ease;
+
+	&.collapsed {
+		transform: translateY(100%);
+		pointer-events: none;
+		@extend %opacity-0;
+	}
+
+	&.mobile-agent {
+		@extend %flex-column;
+		@extend %flex-gap-0;
+		@extend %p-b-0-5;
+
+		.ai-user-input {
+			@extend %w-full;
+		}
+
+		.ai-action-bar {
+			@extend %w-full;
+			@extend %flex-justify-between;
+		}
+	}
 }
 
 .ai-user-input {

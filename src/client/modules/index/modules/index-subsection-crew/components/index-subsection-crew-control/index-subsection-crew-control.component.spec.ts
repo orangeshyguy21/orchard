@@ -29,6 +29,7 @@ describe('IndexSubsectionCrewControlComponent', () => {
 		);
 		fixture.componentRef.setInput('state_options', []);
 		fixture.componentRef.setInput('role_options', []);
+		fixture.componentRef.setInput('filter_count', 0);
 
 		fixture.detectChanges();
 	});

@@ -16,6 +16,13 @@ describe('MintGeneralBalanceSheetComponent', () => {
 
 		fixture = TestBed.createComponent(MintGeneralBalanceSheetComponent);
 		component = fixture.componentInstance;
+		fixture.componentRef.setInput('balances', []);
+		fixture.componentRef.setInput('keysets', []);
+		fixture.componentRef.setInput('lightning_balance', null);
+		fixture.componentRef.setInput('lightning_enabled', false);
+		fixture.componentRef.setInput('lightning_loading', false);
+		fixture.componentRef.setInput('loading', true);
+		fixture.componentRef.setInput('device_desktop', true);
 		fixture.detectChanges();
 	});
 

@@ -1,7 +1,22 @@
 @use 'molecule/molecule';
 
-.auth-invite-form-container {
+.auth-form-container {
 	@extend %p-t-1;
 	padding-left: 5rem;
 	@extend %p-r-2;
+}
+
+.auth-form-field {
+	min-width: 20rem;
+	@extend %block;
+}
+
+.mobile-view {
+	.auth-form-container {
+		@extend %p-r-1;
+		@extend %p-l-1;
+	}
+	.auth-form-field {
+		@extend %w-min-0;
+	}
 }

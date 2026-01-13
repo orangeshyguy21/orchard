@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, signal} from '@angular/core';
 /* Shared Dependencies */
 import {OrchardNut19} from '@shared/generated.types';
 
@@ -11,5 +11,8 @@ import {OrchardNut19} from '@shared/generated.types';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintSubsectionConfigNut19Component {
-	@Input() nut19!: OrchardNut19 | undefined | null;
+	public nut19 = input.required<OrchardNut19 | undefined | null>();
+	public device_desktop = input<boolean>(false);
+
+	public help_status = signal<boolean>(false); // tracks if the help is visible
 }

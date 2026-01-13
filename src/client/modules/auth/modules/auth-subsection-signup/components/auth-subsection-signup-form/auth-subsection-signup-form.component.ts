@@ -14,6 +14,7 @@ import {SignupControl} from '@client/modules/auth/modules/auth-subsection-signup
 export class AuthSubsectionSignupFormComponent {
 	public form_group = input.required<FormGroup>();
 	public errors = input.required<Record<SignupControl, string | null>>();
+	public device_mobile = input.required<boolean>();
 
 	public cancel = output<SignupControl>();
 	public submit = output<void>();

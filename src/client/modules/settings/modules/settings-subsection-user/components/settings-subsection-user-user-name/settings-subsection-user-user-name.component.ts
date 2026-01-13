@@ -21,6 +21,7 @@ export class SettingsSubsectionUserUserNameComponent {
 	public submit = output<void>();
 
 	public focused = signal<boolean>(false);
+	public help_status = signal<boolean>(false);
 
 	public hot = computed(() => {
 		return this.focused() || this.dirty();

@@ -17,6 +17,7 @@ import {
 import {ActivatedRoute} from '@angular/router';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
 import {toObservable} from '@angular/core/rxjs-interop';
+import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 /* Vendor Dependencies */
 import {Subscription, lastValueFrom, forkJoin} from 'rxjs';
 /* Application Dependencies */
@@ -33,6 +34,7 @@ import {NonNullableMintConfigSettings} from '@client/modules/settings/types/sett
 import {NavTertiaryItem} from '@client/modules/nav/types/nav-tertiary-item.type';
 import {NavTertiaryItemStatus} from '@client/modules/nav/enums/nav-tertiary-item-status.enum';
 import {LocalAmountPipe} from '@client/modules/local/pipes/local-amount/local-amount.pipe';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Native Dependencies */
 import {MintService} from '@client/modules/mint/services/mint/mint.service';
 import {MintInfo} from '@client/modules/mint/classes/mint-info.class';
@@ -178,6 +180,8 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		return this.form_config.get('melting') as FormGroup;
 	}
 
+	public device_type = signal<DeviceType>('desktop');
+
 	private subscriptions: Subscription = new Subscription();
 	private active_event: EventData | null = null;
 	private dirty_count: WritableSignal<number> = signal(0);
@@ -190,6 +194,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		public eventService: EventService,
 		public aiService: AiService,
 		public settingDeviceService: SettingDeviceService,
+		public breakpointObserver: BreakpointObserver,
 		public cdr: ChangeDetectorRef,
 	) {}
 
@@ -218,6 +223,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		this.subscriptions.add(this.getEventSubscription());
 		this.subscriptions.add(this.getFormSubscription());
 		this.subscriptions.add(this.getDirtyCountSubscription());
+		this.subscriptions.add(this.getBreakpointSubscription());
 		this.orchardOptionalInit();
 	}
 
@@ -433,6 +439,12 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	private getDirtyCountSubscription(): Subscription {
 		return this.dirty_count$.subscribe((count) => {
 			this.createPendingEvent(count);
+		});
+	}
+
+	private getBreakpointSubscription(): Subscription {
+		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
+			this.device_type.set(result.matches ? 'desktop' : 'tablet');
 		});
 	}
 

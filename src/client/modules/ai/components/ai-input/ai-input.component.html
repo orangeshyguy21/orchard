@@ -1,13 +1,14 @@
 <div class="ai-input-container">
-	@if (!active_chat) {
+	@if (!active_chat()) {
 		<form class="ai-input-form" (keydown.enter)="onSubmit($event)" (ngSubmit)="onSubmit()">
 			<textarea
+				#inputEl
 				rows="1"
 				matInput
-				[placeholder]="placeholder"
+				[placeholder]="placeholder()"
 				class="ai-input"
-				[class.ai-input-empty]="!content.value"
-				[formControl]="content"
+				[class.ai-input-empty]="!content().value"
+				[formControl]="content()"
 				[style.fontSize]="'smaller'"
 				[formAutogrow]="true"
 			></textarea>

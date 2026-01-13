@@ -21,6 +21,11 @@ import {SettingsSectionComponent} from './components/settings-section/settings-s
 				},
 				children: [
 					{
+						path: '',
+						redirectTo: 'device',
+						pathMatch: 'full',
+					},
+					{
 						path: 'device',
 						loadChildren: () =>
 							import('@client/modules/settings/modules/settings-subsection-device/settings-subsection-device.module').then(

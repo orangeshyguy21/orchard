@@ -17,12 +17,19 @@ describe('MintSubsectionConfigFormMaxComponent', () => {
 
 		fixture = TestBed.createComponent(MintSubsectionConfigFormMaxComponent);
 		component = fixture.componentInstance;
-		component.unit = 'sat';
-		component.nut = 'nut4';
-		component.form_group = new FormGroup({
-			max_amount: new FormControl(0, [Validators.required]),
-		});
-		component.control_name = 'max_amount' as any;
+		fixture.componentRef.setInput('unit', 'sat');
+		fixture.componentRef.setInput('nut', 'nut4');
+		fixture.componentRef.setInput(
+			'form_group',
+			new FormGroup({
+				max_amount: new FormControl(0, [Validators.required]),
+			}),
+		);
+		fixture.componentRef.setInput('control_name', 'max_amount');
+		fixture.componentRef.setInput('control_dirty', false);
+		fixture.componentRef.setInput('control_invalid', false);
+		fixture.componentRef.setInput('control_errors', null);
+		fixture.componentRef.setInput('stat_amounts', []);
 		fixture.detectChanges();
 	});
 

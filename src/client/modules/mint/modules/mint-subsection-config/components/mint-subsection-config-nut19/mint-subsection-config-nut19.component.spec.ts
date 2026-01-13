@@ -16,7 +16,7 @@ describe('MintSubsectionConfigNut19Component', () => {
 
 		fixture = TestBed.createComponent(MintSubsectionConfigNut19Component);
 		component = fixture.componentInstance;
-		(component as any).nut19 = {ttl: 0, cached_endpoints: []} as any;
+		fixture.componentRef.setInput('nut19', {ttl: 0, cached_endpoints: []});
 		fixture.detectChanges();
 	});
 

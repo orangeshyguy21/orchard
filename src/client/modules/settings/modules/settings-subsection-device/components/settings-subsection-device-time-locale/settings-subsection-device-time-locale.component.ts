@@ -1,15 +1,5 @@
 /* Core Dependencies */
-import {
-	ChangeDetectionStrategy,
-	Component,
-	computed,
-	Input,
-	OnChanges,
-	Output,
-	SimpleChanges,
-	EventEmitter,
-	ViewChild,
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, Output, signal, SimpleChanges, EventEmitter, ViewChild} from '@angular/core';
 import {FormControl, Validators} from '@angular/forms';
 /* Vendor Dependencies */
 import {MatCheckboxChange} from '@angular/material/checkbox';
@@ -45,6 +35,7 @@ export class SettingsSubsectionDeviceTimeLocaleComponent implements OnChanges {
 	public unix_timestamp_seconds = Math.floor(Date.now() / 1000);
 	public example_amount = 1000000;
 	public filtered_options!: Observable<LocaleOption[]>;
+	public help_status = signal<boolean>(false);
 	public locale_options: LocaleOption[] = [
 		// English Variants
 		{code: 'en-US', country: 'English (United States)'},
@@ -94,13 +85,6 @@ export class SettingsSubsectionDeviceTimeLocaleComponent implements OnChanges {
 		{code: 'bn-IN', country: 'Bengali (India)'},
 		{code: 'id-ID', country: 'Indonesian (Indonesia)'},
 	];
-
-	// this is a great way to handle errors in a reactive way
-	public locale_control_error = computed(() => {
-		if (this.locale_control.hasError('required')) return 'required';
-		if (this.locale_control.hasError('invalid_locale')) return 'invalid locale';
-		return '';
-	});
 
 	private system_locale = Intl.DateTimeFormat().resolvedOptions().locale;
 
@@ -156,7 +140,7 @@ export class SettingsSubsectionDeviceTimeLocaleComponent implements OnChanges {
 	}
 
 	public onLocaleChange(value: string | null): void {
-		if (value === null) return this.locale_control.setErrors({required: true});
+		if (value === null || value === '') return this.locale_control.setErrors({required: true});
 		if (!this.locale_options.some((option) => option.code === value)) return this.locale_control.setErrors({invalid_locale: true});
 		this.localeChange.emit(value);
 		if (value !== this.system_locale) this.system_default_control.setValue(false);

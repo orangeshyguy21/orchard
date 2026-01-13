@@ -1,7 +1,18 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnDestroy, HostListener, ViewChild, ElementRef} from '@angular/core';
+import {
+	ChangeDetectionStrategy,
+	ChangeDetectorRef,
+	Component,
+	OnInit,
+	OnDestroy,
+	HostListener,
+	ViewChild,
+	ElementRef,
+	signal,
+} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
+import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 /* Vendor Dependencies */
 import {lastValueFrom, forkJoin, Subscription} from 'rxjs';
 import {DateTime} from 'luxon';
@@ -15,6 +26,7 @@ import {AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {NonNullableMintKeysetsSettings} from '@client/modules/settings/types/setting.types';
 import {ComponentCanDeactivate} from '@client/modules/routing/interfaces/routing.interfaces';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Native Dependencies */
 import {MintService} from '@client/modules/mint/services/mint/mint.service';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
@@ -59,6 +71,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		input_fee_ppk: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(100000)]),
 		max_order: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(255)]),
 	});
+	public device_type = signal<DeviceType>('desktop');
 
 	private active_event: EventData | null = null;
 	private subscriptions: Subscription = new Subscription();
@@ -71,6 +84,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		private aiService: AiService,
 		private mintService: MintService,
 		private cdr: ChangeDetectorRef,
+		private breakpointObserver: BreakpointObserver,
 	) {}
 
 	/* *******************************************************
@@ -83,6 +97,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		this.resetForm();
 		this.initKeysetsAnalytics();
 		this.subscriptions.add(this.getEventSubscription());
+		this.subscriptions.add(this.getBreakpointSubscription());
 		this.orchardOptionalInit();
 	}
 
@@ -139,6 +154,12 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	private getToolSubscription(): Subscription {
 		return this.aiService.tool_calls$.subscribe((tool_call: AiChatToolCall) => {
 			this.executeAgentFunction(tool_call);
+		});
+	}
+
+	private getBreakpointSubscription(): Subscription {
+		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
+			this.device_type.set(result.matches ? 'desktop' : 'tablet');
 		});
 	}
 
@@ -231,16 +252,16 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		Form                      
 	******************************************************** */
 
-	private resetForm(): void {
+	private resetForm(unit?: MintUnit): void {
 		this.form_keyset.markAsPristine();
-		const default_unit = this.getDefaultUnit();
-		const default_input_fee_ppk = this.getDefaultInputFeePpk(default_unit);
-		const default_max_order = 32;
-		this.keyset_out = this.getKeysetOut(default_unit);
+		const form_unit = unit ?? this.getDefaultUnit();
+		const form_input_fee_ppk = this.getKeysetInputFeePpk(form_unit);
+		const form_max_order = 32;
+		this.keyset_out = this.getKeysetOut(form_unit);
 		this.form_keyset.patchValue({
-			unit: default_unit,
-			input_fee_ppk: default_input_fee_ppk,
-			max_order: default_max_order,
+			unit: form_unit,
+			input_fee_ppk: form_input_fee_ppk,
+			max_order: form_max_order,
 		});
 	}
 
@@ -256,7 +277,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		).unit;
 	}
 
-	private getDefaultInputFeePpk(unit: MintUnit): number {
+	private getKeysetInputFeePpk(unit: MintUnit): number {
 		const active_keyset = this.mint_keysets.find((keyset) => keyset.unit === unit && keyset.active);
 		return active_keyset?.input_fee_ppk ?? 1000;
 	}
@@ -335,15 +356,11 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	private getPageSettings(): NonNullableMintKeysetsSettings {
 		const settings = this.settingDeviceService.getMintKeysetsSettings();
 		return {
-			units: settings.units ?? this.getSelectedUnits(), // @todo there will be bugs here if a unit is not in the keysets (audit active keysets)
+			units: settings.units ?? [],
 			date_start: settings.date_start ?? this.mint_genesis_time,
 			date_end: settings.date_end ?? this.getSelectedDateEnd(),
-			status: settings.status ?? [false, true],
+			status: settings.status ?? [],
 		};
-	}
-
-	private getSelectedUnits(): MintUnit[] {
-		return Array.from(new Set(this.mint_keysets.map((keyset) => keyset.unit)));
 	}
 
 	private getSelectedDateEnd(): number {
@@ -432,6 +449,11 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 
 	public onRotation(): void {
 		!this.keysets_rotation ? this.initKeysetsRotation() : this.onCloseRotation();
+	}
+
+	public onRotationUnit(unit: MintUnit): void {
+		this.resetForm(unit);
+		this.initKeysetsRotation();
 	}
 
 	public onCloseRotation(): void {

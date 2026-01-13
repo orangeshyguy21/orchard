@@ -1,6 +1,7 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, OnInit, signal, effect, HostListener, ViewChild, ElementRef, OnDestroy} from '@angular/core';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
+import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 /* Vendor Dependencies */
 import {DateTime} from 'luxon';
 import {Subscription, lastValueFrom, forkJoin, catchError, of} from 'rxjs';
@@ -16,6 +17,7 @@ import {User} from '@client/modules/crew/classes/user.class';
 import {Invite} from '@client/modules/crew/classes/invite.class';
 import {AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Native Dependencies */
 import {CrewState} from '@client/modules/index/modules/index-subsection-crew/enums/crew-entity.enum';
 import {StateOption, RoleOption} from '@client/modules/index/modules/index-subsection-crew/types/crew-panel.types';
@@ -46,16 +48,18 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 
 	@ViewChild('invite_form', {static: false}) invite_form!: ElementRef;
 
+	public filter_count = signal<number>(0);
 	public id_user = signal<string | null>(null);
 	public form_dirty = signal<boolean>(false);
 	public form_invite_create_open = signal<boolean>(false);
 	public table_form_id = signal<string | null>(null);
 	public loading = signal<boolean>(true);
 	public data = signal<MatTableDataSource<Invite | User>>(new MatTableDataSource<Invite | User>([]));
+	public device_type = signal<DeviceType>('desktop');
 	public readonly panel = new FormGroup({
 		filter: new FormControl<string>(''),
-		state: new FormControl<CrewState[]>([CrewState.ACTIVE, CrewState.INACTIVE, CrewState.PENDING]),
-		role: new FormControl<UserRole[]>([UserRole.Admin, UserRole.Manager, UserRole.Reader]),
+		state: new FormControl<CrewState[]>([]),
+		role: new FormControl<UserRole[]>([]),
 	});
 	public state_options: StateOption[] = [
 		{label: 'Active', value: CrewState.ACTIVE},
@@ -102,6 +106,7 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 		private crewService: CrewService,
 		private aiService: AiService,
 		private dialog: MatDialog,
+		private breakpointObserver: BreakpointObserver,
 	) {
 		effect(() => {
 			const dirty = this.form_dirty();
@@ -120,6 +125,7 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 		this.subscriptions.add(this.getPanelFormSubscription());
 		this.subscriptions.add(this.getInviteFormSubscription());
 		this.subscriptions.add(this.getUserFormSubscription());
+		this.subscriptions.add(this.getBreakpointSubscription());
 		this.orchardOptionalInit();
 	}
 
@@ -206,6 +212,12 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 	private getToolSubscription(): Subscription {
 		return this.aiService.tool_calls$.subscribe((tool_call: AiChatToolCall) => {
 			this.executeAgentFunction(tool_call);
+		});
+	}
+
+	private getBreakpointSubscription(): Subscription {
+		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
+			this.device_type.set(result.matches ? 'desktop' : 'tablet');
 		});
 	}
 
@@ -674,11 +686,15 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 	 * Applies all active filters (text, state, role) to the table data
 	 */
 	private applyFilters(): void {
-		this.data().filter = JSON.stringify({
-			text: (this.panel.get('filter')?.value || '').trim().toLowerCase(),
-			state: this.panel.get('state')?.value || [],
-			role: this.panel.get('role')?.value || [],
-		});
+		const text = (this.panel.get('filter')?.value || '').trim().toLowerCase();
+		let state = this.panel.get('state')?.value || [];
+		let role = this.panel.get('role')?.value || [];
+		const state_count = state.length > 0 ? 1 : 0;
+		const role_count = role.length > 0 ? 1 : 0;
+		this.filter_count.set(state_count + role_count);
+		if (state.length === 0) state = [CrewState.ACTIVE, CrewState.INACTIVE, CrewState.PENDING];
+		if (role.length === 0) role = [UserRole.Admin, UserRole.Manager, UserRole.Reader];
+		this.data().filter = JSON.stringify({text, state, role});
 	}
 
 	/* *******************************************************

@@ -32,6 +32,7 @@ describe('IndexSubsectionCrewTableInviteComponent', () => {
 		});
 
 		fixture.componentRef.setInput('invite', mock_invite);
+		fixture.componentRef.setInput('device_desktop', true);
 		fixture.detectChanges();
 	});
 

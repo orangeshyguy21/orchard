@@ -1,12 +1,16 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, OnDestroy, signal} from '@angular/core';
 import {FormGroup, FormControl, Validators, ValidationErrors} from '@angular/forms';
 import {Router} from '@angular/router';
+import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
+/* Vendor Dependencies */
+import {Subscription} from 'rxjs';
 /* Application Dependencies */
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {CrewService} from '@client/modules/crew/services/crew/crew.service';
 import {ThemeType} from '@client/modules/cache/services/local-storage/local-storage.types';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Native Dependencies */
 import {AuthService} from '@client/modules/auth/services/auth/auth.service';
 import {AuthenticateControl} from '@client/modules/auth/modules/auth-subsection-authentication/types/authenticate-control.type';
@@ -18,7 +22,7 @@ import {AuthenticateControl} from '@client/modules/auth/modules/auth-subsection-
 	styleUrl: './auth-subsection-authentication.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AuthSubsectionAuthenticationComponent implements OnInit {
+export class AuthSubsectionAuthenticationComponent implements OnInit, OnDestroy {
 	public show_surface: boolean = false;
 
 	public form_auth: FormGroup = new FormGroup({
@@ -30,11 +34,16 @@ export class AuthSubsectionAuthenticationComponent implements OnInit {
 		password: null,
 	};
 
+	public device_type = signal<DeviceType>('desktop');
+
+	private subscriptions: Subscription = new Subscription();
+
 	constructor(
 		private readonly authService: AuthService,
 		private readonly settingDeviceService: SettingDeviceService,
 		private readonly crewService: CrewService,
 		private readonly router: Router,
+		private readonly breakpointObserver: BreakpointObserver,
 	) {
 		this.form_auth.valueChanges.subscribe(() => {
 			this.clearErrors();
@@ -43,8 +52,21 @@ export class AuthSubsectionAuthenticationComponent implements OnInit {
 	}
 
 	public ngOnInit(): void {
+		this.subscriptions.add(this.getBreakpointSubscription());
 		const theme = this.settingDeviceService.getTheme();
 		this.show_surface = theme === ThemeType.LIGHT_MODE;
+	}
+
+	public getBreakpointSubscription(): Subscription {
+		return this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium]).subscribe((result) => {
+			if (result.breakpoints[Breakpoints.XSmall]) {
+				this.device_type.set('mobile');
+			} else if (result.breakpoints[Breakpoints.Small] || result.breakpoints[Breakpoints.Medium]) {
+				this.device_type.set('tablet');
+			} else {
+				this.device_type.set('desktop');
+			}
+		});
 	}
 
 	public onControlCancel(control_name: string): void {
@@ -112,5 +134,9 @@ export class AuthSubsectionAuthenticationComponent implements OnInit {
 	private openInterior(): void {
 		const interior_destination = history.state?.interior_destination;
 		this.router.navigate([interior_destination || '/']);
+	}
+
+	public ngOnDestroy(): void {
+		this.subscriptions.unsubscribe();
 	}
 }

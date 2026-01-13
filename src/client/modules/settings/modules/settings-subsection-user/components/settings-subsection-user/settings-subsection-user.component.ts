@@ -1,6 +1,7 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, OnInit, OnDestroy, WritableSignal, signal, effect, HostListener} from '@angular/core';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
+import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 /* Vendor Dependencies */
 import {Subscription} from 'rxjs';
 /* Application Dependencies */
@@ -10,6 +11,7 @@ import {EventData} from '@client/modules/event/classes/event-data.class';
 import {User} from '@client/modules/crew/classes/user.class';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {ComponentCanDeactivate} from '@client/modules/routing/interfaces/routing.interfaces';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 
 @Component({
 	selector: 'orc-settings-subsection-user',
@@ -29,6 +31,7 @@ export class SettingsSubsectionUserComponent implements ComponentCanDeactivate, 
 	});
 
 	public user = signal<User | null>(null);
+	public device_type = signal<DeviceType>('desktop');
 
 	private dirty_count: WritableSignal<number> = signal(0);
 
@@ -38,6 +41,7 @@ export class SettingsSubsectionUserComponent implements ComponentCanDeactivate, 
 	constructor(
 		private crewService: CrewService,
 		private eventService: EventService,
+		private breakpointObserver: BreakpointObserver,
 	) {
 		effect(() => {
 			this.createPendingEvent(this.dirty_count());
@@ -48,6 +52,7 @@ export class SettingsSubsectionUserComponent implements ComponentCanDeactivate, 
 		this.subscriptions.add(this.getUserSubscription());
 		this.subscriptions.add(this.getEventSubscription());
 		this.subscriptions.add(this.getFormSubscription());
+		this.subscriptions.add(this.getBreakpointSubscription());
 	}
 
 	private getUserSubscription(): Subscription {
@@ -71,6 +76,18 @@ export class SettingsSubsectionUserComponent implements ComponentCanDeactivate, 
 	private getFormSubscription(): Subscription {
 		return this.form_user_name.valueChanges.subscribe(() => {
 			this.evaluateDirtyCount();
+		});
+	}
+
+	private getBreakpointSubscription(): Subscription {
+		return this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium]).subscribe((result) => {
+			if (result.breakpoints[Breakpoints.XSmall]) {
+				this.device_type.set('mobile');
+			} else if (result.breakpoints[Breakpoints.Small] || result.breakpoints[Breakpoints.Medium]) {
+				this.device_type.set('tablet');
+			} else {
+				this.device_type.set('desktop');
+			}
 		});
 	}
 

@@ -13,6 +13,9 @@ import {MatCardModule} from '@angular/material/card';
 import {MatTableModule} from '@angular/material/table';
 import {MatSortModule} from '@angular/material/sort';
 import {MatButtonModule} from '@angular/material/button';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatTooltipModule} from '@angular/material/tooltip';
 import {BaseChartDirective as ChartJsBaseChartDirective} from 'ng2-charts';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
@@ -55,6 +58,9 @@ import {MintSubsectionKeysetsRotationPreviewComponent} from './components/mint-s
 		MatCardModule,
 		MatTableModule,
 		MatButtonModule,
+		MatMenuModule,
+		MatCheckboxModule,
+		MatTooltipModule,
 		MatSortModule,
 		ChartJsBaseChartDirective,
 		OrcFormModule,

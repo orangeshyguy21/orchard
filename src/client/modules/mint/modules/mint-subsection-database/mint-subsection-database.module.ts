@@ -18,6 +18,7 @@ import {MatRippleModule} from '@angular/material/core';
 import {MatButtonModule} from '@angular/material/button';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatDialogModule} from '@angular/material/dialog';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 import {BaseChartDirective as ChartJsBaseChartDirective} from 'ng2-charts';
 /* Application Dependencies */
 import {OrcLocalModule} from '@client/modules/local/local.module';
@@ -80,6 +81,7 @@ import {MintSubsectionDatabaseDialogQuoteComponent} from './components/mint-subs
 		MatRippleModule,
 		MatTooltipModule,
 		MatDialogModule,
+		MatCheckboxModule,
 		MatButtonModule,
 		ChartJsBaseChartDirective,
 		OrcLocalModule,

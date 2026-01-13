@@ -22,12 +22,18 @@
 	@extend %top-0;
 }
 
-.sticky-method {
+.sticky-config {
 	@extend %orc-surface-bg;
 	@extend %sticky;
 	@extend %p-l-2;
 	@extend %p-r-1;
 	top: 57px;
+}
+
+.nut-wrapper {
+	@extend %p-l-2;
+	@extend %p-r-1;
+	@extend %p-b-2;
 }
 
 .nut-tertiary-nav {
@@ -37,6 +43,7 @@
 	height: calc(100vh - 9rem);
 	@extend %overflow-y-auto;
 	@extend %block;
+	min-width: 14rem;
 }
 
 .nav-tertiary-title {
@@ -44,6 +51,27 @@
 	@extend %orc-on-surface-variant-color;
 	@extend %p-b-0-5;
 	@extend %p-l-0-25;
+}
+
+.tablet-view {
+	.sticky-nut {
+		@extend %p-l-1;
+		@extend %p-t-1;
+	}
+	.sticky-config {
+		@extend %p-l-1;
+		top: 41px;
+	}
+	.nut-wrapper {
+		@extend %p-l-1;
+	}
+}
+
+.mobile-mint-config-nav {
+	@extend %fixed;
+	@extend %z-index-2;
+	@extend %right-2;
+	@extend %top-1;
 }
 
 .nav4 {

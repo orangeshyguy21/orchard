@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 
 @Component({
 	selector: 'orc-mint-subsection-config-nut',
@@ -9,10 +9,10 @@ import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintSubsectionConfigNutComponent {
-	@Input() nut_index!: string;
-	@Input() supported!: boolean;
+	public nut_index = input.required<string>();
+	public supported = input.required<boolean>();
 
 	onNutClick() {
-		window.open(`https://github.com/cashubtc/nuts/blob/main/${this.nut_index}.md`, '_blank');
+		window.open(`https://github.com/cashubtc/nuts/blob/main/${this.nut_index()}.md`, '_blank');
 	}
 }

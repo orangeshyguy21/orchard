@@ -1,28 +1,44 @@
 <div class="dynamic-form-field-container">
 	<ng-content></ng-content>
-	<div class="dynamic-actions" [class.form-hot]="hot()" [class.form-invalid]="invalid() && subscript_sizing() === 'dynamic'">
-		@if (standalone()) {
+	<div class="flex flex-column relative" [class.form-hot]="hot()" [class.form-invalid]="invalid() && subscript_sizing() === 'dynamic'">
+		<div class="dynamic-actions">
+			@if (standalone()) {
+				<button
+					[disabled]="invalid()"
+					type="button"
+					tabindex="-1"
+					mat-icon-button
+					[class.m-b-1-25]="subscript_sizing() === 'default'"
+					class="orc-icon-button"
+					(click)="submit.emit($event)"
+				>
+					<mat-icon>save</mat-icon>
+				</button>
+			}
 			<button
-				[disabled]="invalid()"
 				type="button"
 				tabindex="-1"
 				mat-icon-button
 				[class.m-b-1-25]="subscript_sizing() === 'default'"
 				class="orc-icon-button"
-				(click)="submit.emit($event)"
+				(click)="cancel.emit($event)"
 			>
-				<mat-icon>save</mat-icon>
+				<mat-icon>cancel</mat-icon>
 			</button>
+		</div>
+		@if (info()) {
+			<div class="dynamic-info">
+				<button
+					type="button"
+					tabindex="-1"
+					mat-icon-button
+					[class.m-b-1-25]="subscript_sizing() === 'default'"
+					class="orc-icon-button"
+					(click)="inform.emit($event)"
+				>
+					<mat-icon class="orc-outline-color">info</mat-icon>
+				</button>
+			</div>
 		}
-		<button
-			type="button"
-			tabindex="-1"
-			mat-icon-button
-			[class.m-b-1-25]="subscript_sizing() === 'default'"
-			class="orc-icon-button"
-			(click)="cancel.emit($event)"
-		>
-			<mat-icon>cancel</mat-icon>
-		</button>
 	</div>
 </div>

@@ -1,39 +1,42 @@
 <div class="mint-info-form-url-container">
-	<form [formGroup]="form_group" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)" (keydown.escape)="onCancel($event)">
-		<ng-container [formArrayName]="array_name">
+	<form [formGroup]="form_group()" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)" (keydown.escape)="onCancel($event)">
+		<ng-container [formArrayName]="array_name()">
 			<div class="flex flex-items-center flex-gap-1">
-				<div [class.m-b-1-25]="control_invalid" class="flex flex-items-center">
-					@if (url_icon === 'tor') {
-						<mat-icon class="orc-outline-color" [svgIcon]="url_icon"></mat-icon>
+				<div [class.m-b-1-25]="control_invalid()" class="flex flex-items-center">
+					@if (url_icon() === 'tor') {
+						<mat-icon class="orc-outline-color" [svgIcon]="url_icon()"></mat-icon>
 					} @else {
-						<mat-icon class="orc-outline-color">{{ url_icon }}</mat-icon>
+						<mat-icon class="orc-outline-color">{{ url_icon() }}</mat-icon>
 					}
 				</div>
 				<div class="flex-grow">
 					<orc-form-field-dynamic
-						[hot]="form_hot"
-						[invalid]="control_invalid"
+						[hot]="form_hot()"
+						[invalid]="control_invalid()"
 						[subscript_sizing]="'dynamic'"
 						(submit)="onSubmit($event)"
 						(cancel)="onCancel($event)"
 					>
 						<mat-form-field
 							appearance="fill"
-							[ngClass]="form_hot ? 'orc-hot-form-field' : 'orc-cold-form-field'"
+							[ngClass]="form_hot() ? 'orc-hot-form-field' : 'orc-cold-form-field'"
 							subscriptSizing="dynamic"
 							class="orc-dynamic-form-field orc-array-form-field w-full"
 						>
-							<input type="text" matInput [formControlName]="control_index" #element_url />
+							<input
+								type="text"
+								matInput
+								[formControlName]="control_index()"
+								(focus)="onFocus()"
+								(blur)="onBlur()"
+								#element_url
+							/>
 							<button type="button" mat-icon-button matSuffix class="orc-icon-button" (click)="onRemove($event)">
 								<mat-icon>delete_forever</mat-icon>
 							</button>
-							@if (control_invalid) {
-								<mat-error class="font-size-xs">
-									@if (form_array.at(control_index).hasError('required')) {
-										URL is required
-									} @else {
-										Invalid URL
-									}
+							@if (control_invalid() && form_array().at(control_index())) {
+								<mat-error>
+									<orc-form-error [errors]="form_array().at(control_index()).errors">Invalid URL</orc-form-error>
 								</mat-error>
 							}
 						</mat-form-field>

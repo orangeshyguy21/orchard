@@ -31,6 +31,6 @@
 .ai-chat-log-footer {
 	@extend %flex;
 	@extend %flex-items-center;
-	@extend %flex-justify-center;
+	@extend %flex-justify-evenly;
 	@extend %h-3;
 }

@@ -33,8 +33,14 @@ export type MintDashboardSettings = {
 	date_start: number | null;
 	units: MintUnit[] | null;
 	interval: MintAnalyticsInterval | null;
-	type: ChartType | null;
 	tertiary_nav: string[] | null;
+	type: {
+		balance_sheet: ChartType | null;
+		mints: ChartType | null;
+		melts: ChartType | null;
+		swaps: ChartType | null;
+		fee_revenue: ChartType | null;
+	};
 };
 
 export type MintConfigSettings = {

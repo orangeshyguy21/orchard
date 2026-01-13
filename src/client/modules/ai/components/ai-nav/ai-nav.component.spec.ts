@@ -20,15 +20,16 @@ describe('AiNavComponent', () => {
 
 		fixture = TestBed.createComponent(AiNavComponent);
 		component = fixture.componentInstance;
-		component.active_agent = AiAgent.Default;
-		component.active_chat = false;
-		component.model = null;
-		component.model_options = [] as any;
-		component.actionable = false;
-		component.content = new FormControl('');
-		component.conversation = null;
-		component.tool_length = 0;
-		component.log_open = false;
+		fixture.componentRef.setInput('active_agent', AiAgent.Default);
+		fixture.componentRef.setInput('active_chat', false);
+		fixture.componentRef.setInput('model', null);
+		fixture.componentRef.setInput('model_options', []);
+		fixture.componentRef.setInput('actionable', false);
+		fixture.componentRef.setInput('content', new FormControl(''));
+		fixture.componentRef.setInput('conversation', null);
+		fixture.componentRef.setInput('tool_length', 0);
+		fixture.componentRef.setInput('log_open', false);
+		fixture.componentRef.setInput('mobile_agent', false);
 		fixture.detectChanges();
 	});
 

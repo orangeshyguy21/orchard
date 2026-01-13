@@ -5,21 +5,21 @@
 				class="mint-info-icon-display"
 				matRipple
 				[ngClass]="{
-					'load-icon': icon_state === 'loading',
-					'error-icon': icon_state === 'error',
-					'set-icon': icon_state === 'set',
-					'unset-icon orc-icon-button': icon_state === 'unset',
+					'load-icon': icon_state() === 'loading',
+					'error-icon': icon_state() === 'error',
+					'set-icon': icon_state() === 'set',
+					'unset-icon orc-icon-button': icon_state() === 'unset',
 				}"
 			>
-				@switch (icon_state) {
+				@switch (icon_state()) {
 					@case ('loading') {
-						<mat-spinner [animate.enter]="form_ready ? 'enter-scale' : null" [diameter]="35"></mat-spinner>
+						<mat-spinner [animate.enter]="form_ready() ? 'enter-scale' : null" [diameter]="35"></mat-spinner>
 					}
 					@case ('error') {
-						<mat-icon [animate.enter]="form_ready ? 'enter-scale' : null" class="icon-lg mat-symbol-outline">error</mat-icon>
+						<mat-icon [animate.enter]="form_ready() ? 'enter-scale' : null" class="icon-lg mat-symbol-outline">error</mat-icon>
 					}
 					@case ('unset') {
-						<mat-icon [animate.enter]="form_ready ? 'enter-scale' : null" class="icon-lg mat-symbol-outline"
+						<mat-icon [animate.enter]="form_ready() ? 'enter-scale' : null" class="icon-lg mat-symbol-outline"
 							>add_photo_alternate</mat-icon
 						>
 					}
@@ -28,35 +28,56 @@
 							<div class="set-icon-update">
 								<mat-icon class="icon-lg">edit</mat-icon>
 							</div>
-							<img [src]="display_icon_url" class="h-8 mint-icon-url" />
+							<img [src]="display_icon_url()" class="h-8 mint-icon-url" />
 						</div>
 					}
 				}
 			</div>
 		</div>
-		<div class="flex flex-grow flex-column flex-gap-1">
+		<div class="mint-info-id-card-content">
 			<ng-content></ng-content>
 		</div>
 	</div>
 
-	<form [formGroup]="form_group" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)" (keydown.escape)="onCancel($event)">
-		<orc-form-field-dynamic [hot]="form_hot" (submit)="onSubmit($event)" (cancel)="onCancel($event)">
+	<form [formGroup]="form_group()" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)" (keydown.escape)="onCancel($event)">
+		<orc-form-field-dynamic
+			[hot]="focused_icon() || form_group().get(control_name())?.dirty || false"
+			[invalid]="form_group().get(control_name())?.invalid || false"
+			[info]="true"
+			(submit)="onSubmit($event)"
+			(cancel)="onCancel($event)"
+			(inform)="help_status.set(!help_status())"
+		>
 			<mat-form-field
 				appearance="fill"
-				[ngClass]="form_hot ? 'orc-hot-form-field' : 'orc-cold-form-field'"
+				[ngClass]="
+					focused_icon() || form_group().get(control_name())?.dirty || false ? 'orc-hot-form-field' : 'orc-cold-form-field'
+				"
 				class="w-full orc-dynamic-form-field"
 			>
 				<mat-label>Icon URL</mat-label>
 				<textarea
-					type="text"
 					rows="1"
 					#element_icon_url
 					matInput
-					[formControlName]="control_name"
+					[formControlName]="control_name()"
 					[formAutogrow]="true"
 					placeholder="Ex. https://example.com/icon.png"
+					(focus)="focused_icon.set(true)"
+					(blur)="focused_icon.set(false)"
 				></textarea>
 			</mat-form-field>
 		</orc-form-field-dynamic>
+		<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
+			<div class="orc-animation-expand-collapse-inner">
+				<div class="flex p-t-0-5 p-b-1">
+					<orc-form-help-text class="orc-surface-container-high-bg">
+						<div class="p-b-1">Updates the icon for this mint.</div>
+						<div>An icon provides visual identification for your mint in wallet interfaces.</div>
+						<div>The icon must be a valid URL to an image file.</div>
+					</orc-form-help-text>
+				</div>
+			</div>
+		</div>
 	</form>
 </div>

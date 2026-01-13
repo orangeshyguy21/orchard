@@ -17,10 +17,10 @@ describe('AiChatLogComponent', () => {
 
 		fixture = TestBed.createComponent(AiChatLogComponent);
 		component = fixture.componentInstance;
-		component.conversation = {messages: []} as any;
-		component.active_chat = false;
-		component.revision = 0;
-		component.agent_definition = null as any;
+		fixture.componentRef.setInput('conversation', {messages: []});
+		fixture.componentRef.setInput('active_chat', false);
+		fixture.componentRef.setInput('revision', 0);
+		fixture.componentRef.setInput('agent_definition', null);
 		fixture.detectChanges();
 	});
 

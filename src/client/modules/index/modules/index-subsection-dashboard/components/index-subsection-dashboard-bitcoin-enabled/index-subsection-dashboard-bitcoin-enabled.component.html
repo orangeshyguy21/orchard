@@ -1,13 +1,13 @@
 <div class="bitcoin-enabled-container">
 	@if (!loading) {
-		<div animate.enter="orc-animation-fadein" class="flex flex-gap-4 p-2">
-			<div class="flex-1">
+		<div animate.enter="orc-animation-fadein" class="flex flex-wrap flex-gap-column-4 flex-gap-row-2">
+			<div class="panel panel-info">
 				<orc-index-subsection-dashboard-bitcoin-enabled-info
 					[blockchain_info]="blockchain_info"
 					[blockcount]="blockcount"
 				></orc-index-subsection-dashboard-bitcoin-enabled-info>
 			</div>
-			<div class="flex-1">
+			<div class="panel panel-hotwallet">
 				<orc-index-subsection-dashboard-bitcoin-enabled-hotwallet
 					[enabled_lightning]="enabled_lightning"
 					[enabled_taproot_assets]="enabled_taproot_assets"
@@ -17,7 +17,7 @@
 					[taproot_assets]="taproot_assets"
 				></orc-index-subsection-dashboard-bitcoin-enabled-hotwallet>
 			</div>
-			<div class="flex-1">
+			<div class="panel panel-blockchain">
 				@if (!blockchain_info?.is_synced) {
 					<orc-index-subsection-dashboard-bitcoin-enabled-syncing
 						[blockchain_info]="blockchain_info"

@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input, Output, EventEmitter, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
 /* Application Dependencies */
 import {EventData} from 'src/client/modules/event/classes/event-data.class';
 
@@ -11,23 +11,22 @@ import {EventData} from 'src/client/modules/event/classes/event-data.class';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavPrimaryComponent {
+	/* Inputs */
 	public user_name = input.required<string | null>();
-	@Input() active_section!: string;
-	@Input() active_event!: EventData | null;
-	@Input() enabled_bitcoin!: boolean;
-	@Input() enabled_lightning!: boolean;
-	@Input() enabled_mint!: boolean;
-	@Input() online_bitcoin!: boolean;
-	@Input() online_lightning!: boolean;
-	@Input() online_mint!: boolean;
-	@Input() syncing_bitcoin!: boolean;
-	@Input() syncing_lightning!: boolean;
-	@Input() syncing_mint!: boolean;
-	@Input() block_count!: number;
+	public active_section = input.required<string>();
+	public active_event = input.required<EventData | null>();
+	public enabled_bitcoin = input.required<boolean>();
+	public enabled_lightning = input.required<boolean>();
+	public enabled_mint = input.required<boolean>();
+	public online_bitcoin = input.required<boolean>();
+	public online_lightning = input.required<boolean>();
+	public online_mint = input.required<boolean>();
+	public syncing_bitcoin = input.required<boolean>();
+	public syncing_lightning = input.required<boolean>();
+	public block_count = input.required<number>();
 
-	@Output() save = new EventEmitter<void>();
-	@Output() cancel = new EventEmitter<void>();
-	@Output() abort = new EventEmitter<void>();
-
-	constructor() {}
+	/* Outputs */
+	public save = output<void>();
+	public cancel = output<void>();
+	public abort = output<void>();
 }

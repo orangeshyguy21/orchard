@@ -1,3 +1,5 @@
+@use 'molecule/molecule';
+
 .orc-info-table{
     th, td {
         min-height: 2rem;
@@ -12,4 +14,22 @@
     tr{
         height: 2rem;
     }
+}
+
+.orc-expandable-table {
+    tr.entity-row {
+		@extend %cursor-pointer;
+	}
+
+	tr.entity-row:not(.expanded):hover {
+		@extend %orc-surface-container-low-bg;
+	}
+
+	tr.entity-row:not(.expanded):active {
+		@extend %orc-surface-container-high-bg;
+	}
+
+	tr.more-entity-row {
+		@extend %h-0;
+	}
 }

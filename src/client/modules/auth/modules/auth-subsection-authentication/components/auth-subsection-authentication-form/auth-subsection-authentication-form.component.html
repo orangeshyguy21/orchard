@@ -6,11 +6,12 @@
 	</div>
 </div>
 
-<mat-card appearance="outlined" class="relative overflow-hidden">
+<mat-card appearance="outlined" class="relative overflow-hidden" [class.mobile-view]="device_mobile()">
 	<mat-card-content class="orc-surface-container-low-bg">
 		<div class="auth-password-container">
 			<form [formGroup]="form_group()" autocomplete="on">
 				<orc-auth-general-formcontrol-name
+					class="auth-form-field"
 					[form_group]="form_group()"
 					[control_name]="'name'"
 					[label]="'Username'"
@@ -23,6 +24,7 @@
 					(blur)="blur.emit()"
 				></orc-auth-general-formcontrol-name>
 				<orc-auth-general-formcontrol-password
+					class="auth-form-field"
 					[form_group]="form_group()"
 					[control_name]="'password'"
 					[label]="'Password'"

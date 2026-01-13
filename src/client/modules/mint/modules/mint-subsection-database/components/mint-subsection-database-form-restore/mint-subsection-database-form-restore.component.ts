@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output, computed, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output, signal} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 
 @Component({
@@ -16,12 +16,6 @@ export class MintSubsectionDatabaseFormRestoreComponent {
 	@Output() close = new EventEmitter<void>();
 
 	public file_loading = signal<number | null>(null);
-
-	public file_error = computed(() => {
-		if (this.form_group.get('file')?.hasError('required')) return 'Required';
-		if (this.form_group.get('file')?.errors) return 'Invalid';
-		return '';
-	});
 
 	public get file_quorum(): boolean {
 		if (this.file_loading() !== null && this.file_loading() !== 100) return false;

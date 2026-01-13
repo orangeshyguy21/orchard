@@ -1,8 +1,9 @@
-<div class="auth-subsection-invite-container p-2">
+<div class="auth-subsection-invite-container" [ngClass]="device_type() === 'mobile' ? 'p-1' : 'p-2'">
 	<div class="authentication-form">
 		<orc-auth-subsection-signup-form
 			[form_group]="form_signup"
 			[errors]="errors"
+			[device_mobile]="device_type() === 'mobile'"
 			(cancel)="onControlCancel($event)"
 			(blur)="onBlur()"
 			(submit)="onSubmit()"

@@ -1,16 +1,16 @@
 <div class="mint-connections-container">
 	<div class="title-l p-b-0-5">Connections</div>
 
-	@if (connections.length > 0) {
+	@if (connections().length > 0) {
 		<div class="mint-connections-form">
 			<div>
 				<div class="mint-connection-urls">
-					@for (connection of connections; track connection.url; let i = $index) {
+					@for (connection of connections(); track connection.url; let i = $index) {
 						<div class="flex flex-items-center flex-gap-0-5">
 							<orc-mint-subsection-dashboard-connection-status
-								[public_url]="mint_connections[i]"
+								[public_url]="mint_connections()[i]"
 							></orc-mint-subsection-dashboard-connection-status>
-							<div class="orc-text-button" (click)="onSelectConnection(connection)">
+							<div class="orc-text-button text-nowrap" (click)="onSelectConnection(connection)">
 								{{ connection.displayed_url }}
 							</div>
 						</div>
@@ -19,22 +19,24 @@
 				<div class="relative">
 					<div
 						class="orc-animation-feedback absolute top-1 flex flex-gap-0-25 flex-row flex-align-center orc-outline-color"
-						[class.animation-visible]="copy_animation_state === 'visible'"
+						[class.animation-visible]="copy_animation_state() === 'visible'"
 					>
 						<div class="font-size-s">URL copied</div>
 						<mat-icon class="icon-sm">content_copy</mat-icon>
 					</div>
 				</div>
 			</div>
-			<div class="qrcode-action orc-corner-large">
-				<div
-					#qr_canvas
-					matRipple
-					[matRippleCentered]="false"
-					[matRippleDisabled]="false"
-					[matRippleUnbounded]="false"
-					(click)="onQRClick()"
-				></div>
+			<div class="flex-grow flex flex-justify-center">
+				<div class="qrcode-action orc-corner-large">
+					<div
+						#qr_canvas
+						matRipple
+						[matRippleCentered]="false"
+						[matRippleDisabled]="false"
+						[matRippleUnbounded]="false"
+						(click)="onQRClick()"
+					></div>
+				</div>
 			</div>
 		</div>
 	} @else {

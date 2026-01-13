@@ -1,7 +1,14 @@
 <div class="flex flex-items-start">
 	<div class="flex-grow flex flex-items-start flex-justify-between">
 		<form [formGroup]="form_group()" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)">
-			<orc-form-field-dynamic [hot]="hot()" [invalid]="invalid()" (cancel)="onCancel($event)" (submit)="submit.emit()">
+			<orc-form-field-dynamic
+				[hot]="hot()"
+				[invalid]="invalid()"
+				[info]="true"
+				(cancel)="onCancel($event)"
+				(submit)="submit.emit()"
+				(inform)="help_status.set(!help_status())"
+			>
 				<mat-form-field
 					hideRequiredMarker="true"
 					class="primary-form-field"
@@ -17,17 +24,20 @@
 						(blur)="focused.set(false)"
 						#element_control
 					/>
-					@if (invalid()) {
-						<mat-error class="font-size-xs">Invalid username</mat-error>
-					}
+					<mat-error>
+						<orc-form-error [errors]="form_group().get(control_name())?.errors">Invalid username</orc-form-error>
+					</mat-error>
 				</mat-form-field>
 			</orc-form-field-dynamic>
+			<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
+				<div class="orc-animation-expand-collapse-inner">
+					<div class="flex p-t-0-5 p-b-1 w-max-18">
+						<orc-form-help-text class="orc-surface-container-high-bg">
+							<div>Change your username to identify this user account</div>
+						</orc-form-help-text>
+					</div>
+				</div>
+			</div>
 		</form>
-
-		<div class="w-max-18">
-			<orc-form-help-text class="orc-surface-container-high-bg">
-				Change your username to identify this user account
-			</orc-form-help-text>
-		</div>
 	</div>
 </div>

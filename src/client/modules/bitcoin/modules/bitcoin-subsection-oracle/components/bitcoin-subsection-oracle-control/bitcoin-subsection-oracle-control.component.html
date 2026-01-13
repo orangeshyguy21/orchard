@@ -9,9 +9,7 @@
 				</mat-date-range-input>
 				<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
 				<mat-date-range-picker #picker></mat-date-range-picker>
-				@if (form_group().get('daterange')?.invalid) {
-					<mat-error class="font-size-xs">Invalid date range</mat-error>
-				}
+				<mat-error class="font-size-xs">Invalid date range</mat-error>
 			</mat-form-field>
 		</div>
 	</form>

@@ -16,10 +16,10 @@ describe('IndexSubsectionDashboardMintHeaderComponent', () => {
 
 		fixture = TestBed.createComponent(IndexSubsectionDashboardMintHeaderComponent);
 		component = fixture.componentInstance;
-		component.enabled = false;
-		component.loading = true;
-		component.info = {version: ''} as any;
-		component.error = false;
+		fixture.componentRef.setInput('enabled', false);
+		fixture.componentRef.setInput('loading', true);
+		fixture.componentRef.setInput('info', {version: ''});
+		fixture.componentRef.setInput('error', false);
 		fixture.detectChanges();
 	});
 

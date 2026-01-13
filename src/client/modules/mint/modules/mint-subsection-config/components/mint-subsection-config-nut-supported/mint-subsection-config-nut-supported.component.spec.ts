@@ -16,9 +16,9 @@ describe('MintSubsectionConfigNutSupportedComponent', () => {
 
 		fixture = TestBed.createComponent(MintSubsectionConfigNutSupportedComponent);
 		component = fixture.componentInstance;
-		component.supported = true;
-		component.nut_index = 'nut4';
-		component.nut_icon = 'bolt';
+		fixture.componentRef.setInput('supported', true);
+		fixture.componentRef.setInput('nut_index', 'nut4');
+		fixture.componentRef.setInput('nut_icon', 'bolt');
 		fixture.detectChanges();
 	});
 

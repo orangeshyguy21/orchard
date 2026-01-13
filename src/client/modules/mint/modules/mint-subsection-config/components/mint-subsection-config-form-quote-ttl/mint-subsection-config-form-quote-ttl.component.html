@@ -1,66 +1,86 @@
-<div class="p-l-2 p-r-1 p-b-2">
+<div class="p-r-1 p-b-2" [ngClass]="{'p-l-1': !device_desktop(), 'p-l-2': device_desktop()}">
 	<mat-card appearance="outlined" class="relative overflow-hidden">
 		<mat-card-content class="orc-surface-container-low-bg">
-			<div class="flex flex-gap-2">
-				<div class="flex-1 flex flex-column flex-gap-2">
-					<div class="flex flex-gap-2">
+			<div class="flex flex-gap-column-2 flex-wrap-reverse">
+				<div class="flex-1 flex flex-column flex-gap-2 p-l-1">
+					<div class="flex flex-column">
 						<form
-							class="flex-grow flex-1"
-							[formGroup]="form_group"
+							class="flex-grow"
+							[formGroup]="form_group()"
 							(ngSubmit)="onSubmit($event)"
 							(keydown.enter)="onSubmit($event)"
 							(keydown.escape)="onCancel($event)"
 						>
 							<orc-form-field-dynamic
-								[hot]="form_hot"
-								[invalid]="form_group.get(control_name)?.invalid || false"
+								[hot]="form_hot()"
+								[invalid]="control_invalid() ?? false"
+								[info]="true"
 								(submit)="onSubmit($event)"
 								(cancel)="onCancel($event)"
+								(inform)="help_status.set(!help_status())"
 							>
 								<mat-form-field
 									appearance="fill"
 									hideRequiredMarker="true"
-									[ngClass]="form_hot ? 'orc-hot-form-field' : 'orc-cold-form-field'"
+									[ngClass]="form_hot() ? 'orc-hot-form-field' : 'orc-cold-form-field'"
 									class="mint-quote-ttl-form-field orc-dynamic-form-field"
 								>
-									<mat-label>Quote TTL</mat-label>
+									<mat-label>{{ nut() === 'nut4' ? 'Mint' : 'Melt' }} quote TTL</mat-label>
 									<input
 										type="text"
 										formNumberSeparator
 										matInput
-										[formControlName]="control_name"
+										[formControlName]="control_name()"
+										(focus)="onFocus()"
+										(blur)="onBlur()"
 										placeholder="Ex. 30"
 										#element_quote_ttl
 									/>
 									<span matSuffix class="form-suffix-text">seconds</span>
-									@if (
-										form_group.get(control_name)?.invalid &&
-										(form_group.get(control_name)?.dirty || form_group.get(control_name)?.touched)
-									) {
-										<mat-error class="font-size-xs">{{ form_error }}</mat-error>
-									}
+									<mat-hint class="font-size-xs orc-outline-color">
+										<orc-mint-subsection-config-form-quote-ttl-hint
+											[deltas]="stat_deltas()"
+											[quote_ttl]="form_group().get(control_name())?.value"
+										></orc-mint-subsection-config-form-quote-ttl-hint>
+									</mat-hint>
+									<mat-error>
+										<orc-form-error [errors]="form_group().get(control_name())?.errors">Invalid TTL</orc-form-error>
+									</mat-error>
 								</mat-form-field>
 							</orc-form-field-dynamic>
 						</form>
-						<div class="flex-1">
-							<orc-form-help-text class="orc-surface-container-high-bg">
-								{{ help_text() }}
-							</orc-form-help-text>
+						<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
+							<div class="orc-animation-expand-collapse-inner">
+								<div class="flex p-t-0-5">
+									<orc-form-help-text class="orc-surface-container-high-bg">
+										<div [innerHTML]="help_text()"></div>
+									</orc-form-help-text>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
-				<div class="flex-1">
+				<div class="flex-1 flex flex-column flex-gap-0-5">
 					<orc-mint-subsection-config-chart-quote-ttl
-						[nut]="nut"
-						[loading]="loading"
-						[quotes]="quotes"
-						[locale]="locale"
-						[form_hot]="form_hot"
-						[quote_ttl]="form_group.get(control_name)?.value"
-					></orc-mint-subsection-config-chart-quote-ttl>
+						[nut]="nut()"
+						[loading]="loading()"
+						[quotes]="valid_quotes()"
+						[locale]="locale()"
+						[form_hot]="form_hot()"
+						[quote_ttl]="form_group().get(control_name())?.value"
+						[deltas]="stat_deltas()"
+						[stats]="stats()"
+					>
+						<orc-mint-subsection-config-stats
+							[loading]="loading()"
+							[stats]="stats()"
+							[unit]="'s'"
+						></orc-mint-subsection-config-stats>
+					</orc-mint-subsection-config-chart-quote-ttl>
 				</div>
 			</div>
-			@if (disabled) {
+			{{ disabled() | json }}
+			@if (disabled()) {
 				<div class="disabled-overlay" animate.enter="orc-animation-fadein-fast" animate.leave="orc-animation-fadeout-fast">
 					<div class="orc-outline-color font-weight-bold">MINTING DISABLED</div>
 				</div>

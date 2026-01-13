@@ -12,22 +12,36 @@
 					[keysets]="mint_keysets"
 					[loading]="loading_static_data"
 					[mint_genesis_time]="mint_genesis_time"
+					[device_desktop]="device_type() === 'desktop'"
 					(dateChange)="onDateChange($event)"
 					(unitsChange)="onUnitsChange($event)"
 					(statusChange)="onStatusChange($event)"
 				></orc-mint-subsection-keysets-control>
 			}
-			<button
-				type="button"
-				class="text-nowrap"
-				matFab
-				extended
-				(click)="onRotation()"
-				(keydown.enter)="$event.preventDefault(); $event.stopPropagation()"
-			>
-				<mat-icon>switch_access_shortcut_add</mat-icon>
-				Keyset Rotation
-			</button>
+
+			@if (device_type() === 'desktop') {
+				<button
+					type="button"
+					class="text-nowrap"
+					matFab
+					extended
+					(click)="onRotation()"
+					(keydown.enter)="$event.preventDefault(); $event.stopPropagation()"
+				>
+					<mat-icon>switch_access_shortcut_add</mat-icon>
+					Keyset Rotation
+				</button>
+			} @else {
+				<button
+					type="button"
+					class="text-nowrap"
+					matFab
+					(click)="onRotation()"
+					(keydown.enter)="$event.preventDefault(); $event.stopPropagation()"
+				>
+					<mat-icon>switch_access_shortcut_add</mat-icon>
+				</button>
+			}
 		</div>
 		<div class="category-rule"></div>
 	</div>
@@ -64,6 +78,8 @@
 		[keysets_analytics_pre]="keysets_analytics_pre"
 		[keysets_proof_counts]="keysets_proof_counts"
 		[page_settings]="page_settings"
+		[device_desktop]="device_type() === 'desktop'"
 		[loading]="loading_dynamic_data"
+		(rotateKeyset)="onRotationUnit($event)"
 	></orc-mint-subsection-keysets-table>
 </div>

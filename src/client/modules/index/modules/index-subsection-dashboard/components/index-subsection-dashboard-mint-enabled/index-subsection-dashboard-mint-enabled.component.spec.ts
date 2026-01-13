@@ -16,7 +16,17 @@ describe('IndexSubsectionDashboardMintEnabledComponent', () => {
 
 		fixture = TestBed.createComponent(IndexSubsectionDashboardMintEnabledComponent);
 		component = fixture.componentInstance;
-		component.loading = true;
+		fixture.componentRef.setInput('loading', false);
+		fixture.componentRef.setInput('loading_icon', false);
+		fixture.componentRef.setInput('info', null);
+		fixture.componentRef.setInput('keysets', []);
+		fixture.componentRef.setInput('balances', []);
+		fixture.componentRef.setInput('icon_data', null);
+		fixture.componentRef.setInput('lightning_balance', null);
+		fixture.componentRef.setInput('lightning_enabled', false);
+		fixture.componentRef.setInput('lightning_errors', []);
+		fixture.componentRef.setInput('lightning_loading', false);
+		fixture.componentRef.setInput('device_desktop', true);
 		fixture.detectChanges();
 	});
 

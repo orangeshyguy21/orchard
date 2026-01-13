@@ -39,6 +39,7 @@
     // Background Colors (with transparency)
     #{$c}orc-shadow-bg { background-color: color-mix(in srgb, var(--mat-sys-shadow), transparent 50%); }
     #{$c}orc-fog-bg { background-color: color-mix(in srgb, var(--mat-sys-surface-container), transparent 50%); }
+    #{$c}orc-fog-high-bg { background-color: color-mix(in srgb, var(--mat-sys-surface-container-high), transparent 50%); }
 
     // Text Colors
     #{$c}orc-asset-btc-color { color: var(--orc-asset-btc); }
@@ -61,7 +62,6 @@
     #{$c}orc-on-surface-variant-color { color: var(--mat-sys-on-surface-variant); }
     #{$c}orc-primary-fixed-dim-color { color: var(--mat-sys-primary-fixed-dim); }
     #{$c}orc-tertiary-container-color { color: var(--mat-sys-tertiary-container); }
-    // #{$c}orc-inverse-secondary-color { color: var(--mat-sys-inverse-secondary); }
     #{$c}orc-error-container-color { color: var(--mat-sys-error-container); }
     #{$c}orc-status-active-color { color: var(--orc-status-active); }
     #{$c}orc-status-warning-color { color: var(--orc-status-warning); }
@@ -84,14 +84,14 @@
     // Border Radius
     #{$c}orc-corner-extra-large { border-radius: var(--mat-sys-corner-extra-large); }
     #{$c}orc-corner-extra-large-top { border-radius: var(--mat-sys-corner-extra-large-top); }
+    #{$c}orc-corner-extra-large-bottom { border-radius: 0 0 var(--mat-sys-corner-extra-large) var(--mat-sys-corner-extra-large); }
     #{$c}orc-corner-extra-small { border-radius: var(--mat-sys-corner-extra-small); }
     #{$c}orc-corner-extra-small-top { border-radius: var(--mat-sys-corner-extra-small-top); }
     #{$c}orc-corner-full { border-radius: var(--mat-sys-corner-full); }
-    #{$c}orc-corner-full-end { border-radius: 0 var(--mat-sys-corner-full) var(--mat-sys-corner-full) 0; }
     #{$c}orc-corner-large { border-radius: var(--mat-sys-corner-large); }
-    #{$c}orc-corner-large-end { border-radius: var(--mat-sys-corner-large-end); }
     #{$c}orc-corner-large-start { border-radius: var(--mat-sys-corner-large-start); }
     #{$c}orc-corner-large-top { border-radius: var(--mat-sys-corner-large-top); }
+    #{$c}orc-corner-large-bottom { border-radius: 0 0 var(--mat-sys-corner-large) var(--mat-sys-corner-large); }
     #{$c}orc-corner-medium { border-radius: var(--mat-sys-corner-medium); }
     #{$c}orc-corner-none { border-radius: var(--mat-sys-corner-none); }
     #{$c}orc-corner-small { border-radius: var(--mat-sys-corner-small); }

@@ -7,3 +7,9 @@
 .search-field {
 	@extend %w-full;
 }
+
+.filter-options {
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-gap-0-5;
+}

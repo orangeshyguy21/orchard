@@ -17,22 +17,25 @@ describe('MintSubsectionConfigFormBolt12Component', () => {
 
 		fixture = TestBed.createComponent(MintSubsectionConfigFormBolt12Component);
 		component = fixture.componentInstance;
-		component.nut = 'nut5';
-		component.unit = 'sat';
-		component.method = 'mint';
-		component.form_group = new FormGroup({
-			sat: new FormGroup({
-				mint: new FormGroup({
-					min_amount: new FormControl(0),
-					max_amount: new FormControl(0),
-					amountless: new FormControl(false),
+		fixture.componentRef.setInput('nut', 'nut5');
+		fixture.componentRef.setInput('unit', 'sat');
+		fixture.componentRef.setInput('method', 'mint');
+		fixture.componentRef.setInput(
+			'form_group',
+			new FormGroup({
+				sat: new FormGroup({
+					mint: new FormGroup({
+						min_amount: new FormControl(0),
+						max_amount: new FormControl(0),
+						amountless: new FormControl(false),
+					}),
 				}),
 			}),
-		});
-		component.form_status = false;
-		component.locale = 'en-US';
-		component.loading = true;
-		component.quotes = [] as any;
+		);
+		fixture.componentRef.setInput('form_status', false);
+		fixture.componentRef.setInput('locale', 'en-US');
+		fixture.componentRef.setInput('loading', true);
+		fixture.componentRef.setInput('quotes', []);
 		fixture.detectChanges();
 	});
 

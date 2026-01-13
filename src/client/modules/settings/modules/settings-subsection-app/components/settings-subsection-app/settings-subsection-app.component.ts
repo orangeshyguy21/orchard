@@ -1,6 +1,7 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, HostListener, WritableSignal, signal, effect, OnInit, OnDestroy} from '@angular/core';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
+import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 /* Vendor Dependencies */
 import {Subscription, firstValueFrom} from 'rxjs';
 /* Application Dependencies */
@@ -10,6 +11,7 @@ import {BitcoinService} from '@client/modules/bitcoin/services/bitcoin/bitcoin.s
 import {EventData} from '@client/modules/event/classes/event-data.class';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle-price.class';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Native Dependencies */
 import {Setting} from '@client/modules/settings/classes/setting.class';
 /* Shared Dependencies */
@@ -32,6 +34,7 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 		oracle_enabled: new FormControl(false, [Validators.required]),
 	});
 	public bitcoin_oracle_price = signal<BitcoinOraclePrice | null>(null);
+	public device_type = signal<DeviceType>('desktop');
 
 	private active_event: EventData | null = null;
 	private subscriptions: Subscription = new Subscription();
@@ -42,6 +45,7 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 		private settingAppService: SettingAppService,
 		private eventService: EventService,
 		private bitcoinService: BitcoinService,
+		private breakpointObserver: BreakpointObserver,
 	) {
 		effect(() => {
 			this.createPendingEvent(this.dirty_count());
@@ -50,6 +54,7 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 
 	async ngOnInit(): Promise<void> {
 		this.subscriptions.add(this.getEventSubscription());
+		this.subscriptions.add(this.getBreakpointSubscription());
 		await this.getSettings();
 		this.getBitcoinOracle();
 	}
@@ -72,6 +77,12 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 			if (event_data && event_data.confirmed !== null) {
 				event_data.confirmed ? this.onConfirmedEvent() : this.onUnconfirmedEvent();
 			}
+		});
+	}
+
+	private getBreakpointSubscription(): Subscription {
+		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
+			this.device_type.set(result.matches ? 'desktop' : 'tablet');
 		});
 	}
 

@@ -35,6 +35,7 @@ describe('SettingsSubsectionUserUserComponent', () => {
 
 		fixture.componentRef.setInput('user', mock_user);
 		fixture.componentRef.setInput('form_group_user_name', form_group);
+		fixture.componentRef.setInput('device_type', {desktop: true, mobile: false, tablet: false});
 		fixture.detectChanges();
 	});
 

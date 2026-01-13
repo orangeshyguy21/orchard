@@ -9,6 +9,14 @@
 .mint-info-id-card {
 	@extend %flex;
 	@extend %flex-gap-2;
+	flex-wrap: wrap;
+}
+
+.mint-info-id-card-content {
+	@extend %flex;
+	@extend %flex-grow;
+	@extend %flex-column;
+	@extend %flex-gap-1;
 }
 
 .mint-info-icon-display {

@@ -1,10 +1,10 @@
 <div class="lightning-enabled-container">
 	@if (!loading) {
-		<div animate.enter="orc-animation-fadein" class="flex flex-gap-4 p-2">
+		<div animate.enter="orc-animation-fadein" class="flex flex-wrap flex-gap-column-4 flex-gap-row-2">
 			<orc-index-subsection-dashboard-lightning-enabled-info
 				[lightning_info]="lightning_info"
 			></orc-index-subsection-dashboard-lightning-enabled-info>
-			<div class="flex-grow">
+			<div class="flex-grow w-min-0">
 				<orc-lightning-general-channel-table
 					[enabled_taproot_assets]="enabled_taproot_assets"
 					[lightning_balance]="lightning_balance"

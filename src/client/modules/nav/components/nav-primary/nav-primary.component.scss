@@ -1,11 +1,17 @@
 @use 'molecule/molecule';
 
+:host {
+	@extend %flex;
+	@extend %h-full;
+	@extend %w-full;
+}
+
 .primary-nav-container {
 	@extend %orc-surface-container-low-bg;
 	@extend %flex;
 	@extend %flex-column;
 	@extend %flex-items-center;
-	@extend %w-min-7;
+	@extend %w-full;
 	@extend %h-dvh;
 	@extend %border-right;
 	@extend %border-right-solid;

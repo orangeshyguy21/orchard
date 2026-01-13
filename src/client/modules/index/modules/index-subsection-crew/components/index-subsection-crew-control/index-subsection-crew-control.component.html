@@ -7,26 +7,38 @@
 					<input matInput formControlName="filter" />
 				</mat-form-field>
 			</div>
-			<div>
-				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
-					<mat-label>State</mat-label>
-					<mat-select formControlName="state" multiple>
-						@for (state of state_options(); track state.value) {
-							<mat-option [value]="state.value">{{ state.label }}</mat-option>
-						}
-					</mat-select>
-				</mat-form-field>
-			</div>
-			<div>
-				<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
-					<mat-label>Role</mat-label>
-					<mat-select formControlName="role" multiple>
-						@for (role of role_options(); track role.value) {
-							<mat-option [value]="role.value">{{ role.label }}</mat-option>
-						}
-					</mat-select>
-				</mat-form-field>
+			<div class="p-t-0-5">
+				<button matButton type="button" [matMenuTriggerFor]="filter_menu">
+					<mat-icon>tune</mat-icon>
+					<span class="text-nowrap font-size-s">Filters {{ filter_count() > 0 ? `(${filter_count()})` : '' }}</span>
+				</button>
 			</div>
 		</div>
 	</form>
 </div>
+
+<mat-menu #filter_menu="matMenu" yPosition="below" class="orc-sticky-menu orc-filter-menu">
+	<orc-form-filter-menu (click)="$event.stopPropagation()" (clear)="onClearFilter()" (close)="onCloseFilter()">
+		<div class="orc-filter-menu-section">
+			<div>State</div>
+			<div class="filter-options">
+				@for (state of state_options(); track state.value) {
+					<mat-checkbox [checked]="isStateSelected(state.value)" (change)="onStateToggle(state.value)">
+						{{ state.label }}
+					</mat-checkbox>
+				}
+			</div>
+		</div>
+		<div class="orc-filter-menu-rule"></div>
+		<div class="orc-filter-menu-section">
+			<div>Role</div>
+			<div class="filter-options">
+				@for (role of role_options(); track role.value) {
+					<mat-checkbox [checked]="isRoleSelected(role.value)" (change)="onRoleToggle(role.value)">
+						{{ role.label }}
+					</mat-checkbox>
+				}
+			</div>
+		</div>
+	</orc-form-filter-menu>
+</mat-menu>

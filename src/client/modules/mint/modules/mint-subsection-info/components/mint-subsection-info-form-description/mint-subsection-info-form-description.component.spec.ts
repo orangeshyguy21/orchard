@@ -17,8 +17,8 @@ describe('MintSubsectionInfoFormDescriptionComponent', () => {
 
 		fixture = TestBed.createComponent(MintSubsectionInfoFormDescriptionComponent);
 		component = fixture.componentInstance;
-		component.form_group = new FormGroup({description: new FormControl('')});
-		component.control_name = 'description';
+		fixture.componentRef.setInput('form_group', new FormGroup({description: new FormControl('')}));
+		fixture.componentRef.setInput('control_name', 'description');
 		fixture.detectChanges();
 	});
 

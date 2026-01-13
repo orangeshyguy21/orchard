@@ -1,0 +1,16 @@
+<div class="form-filter-menu-container">
+	<div class="form-filter-menu-header">
+		<div class="title-l">Filters</div>
+		<div class="form-filter-close">
+			<button mat-icon-button type="button" (click)="close.emit()">
+				<mat-icon>close</mat-icon>
+			</button>
+		</div>
+	</div>
+	<div class="form-filter-menu-content">
+		<ng-content></ng-content>
+	</div>
+	<div class="form-filter-menu-footer">
+		<button matButton type="button" (click)="clear.emit()">Clear all</button>
+	</div>
+</div>

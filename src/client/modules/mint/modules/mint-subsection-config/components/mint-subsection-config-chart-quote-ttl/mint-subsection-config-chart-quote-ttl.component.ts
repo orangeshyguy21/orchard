@@ -1,18 +1,27 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input, ViewChild, OnChanges, OnDestroy, SimpleChanges, ChangeDetectorRef} from '@angular/core';
+import {
+	ChangeDetectionStrategy,
+	Component,
+	input,
+	viewChild,
+	OnDestroy,
+	signal,
+	HostListener,
+	SimpleChanges,
+	OnChanges,
+} from '@angular/core';
 /* Vendor Dependencies */
 import {BaseChartDirective} from 'ng2-charts';
-import {ChartConfiguration, ChartType as ChartJsType} from 'chart.js';
+import {ChartConfiguration, ChartType as ChartJsType, Plugin} from 'chart.js';
 import {Subscription} from 'rxjs';
 /* Application Dependencies */
 import {ChartService} from '@client/modules/chart/services/chart/chart.service';
 import {getTooltipLabel, getTooltipTitleExact} from '@client/modules/chart/helpers/mint-chart-options.helpers';
-import {avg, median, max, min} from '@client/modules/math/helpers';
 /* Native Dependencies */
 import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class';
 import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
-/* Shared Dependencies */
-import {MintQuoteState, MeltQuoteState} from '@shared/generated.types';
+/* Native Dependencies */
+import {MintConfigStats} from '@client/modules/mint/modules/mint-subsection-config/types/mint-config-stats.type';
 
 @Component({
 	selector: 'orc-mint-subsection-config-chart-quote-ttl',
@@ -22,76 +31,73 @@ import {MintQuoteState, MeltQuoteState} from '@shared/generated.types';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintSubsectionConfigChartQuoteTtlComponent implements OnChanges, OnDestroy {
-	@ViewChild(BaseChartDirective) chart?: BaseChartDirective;
+	chart = viewChild(BaseChartDirective);
 
-	@Input() nut!: 'nut4' | 'nut5';
-	@Input() quotes: MintMintQuote[] | MintMeltQuote[] = [];
-
-	@Input() loading!: boolean;
-	@Input() locale!: string;
-	@Input() quote_ttl!: number;
-	@Input() form_hot!: boolean;
+	public nut = input.required<'nut4' | 'nut5'>();
+	public quotes = input<MintMintQuote[] | MintMeltQuote[]>([]);
+	public loading = input.required<boolean>();
+	public locale = input.required<string>();
+	public quote_ttl = input.required<number>();
+	public form_hot = input.required<boolean>();
+	public deltas = input.required<Record<string, number>[]>();
 
 	public chart_type!: ChartJsType;
 	public chart_data!: ChartConfiguration['data'];
 	public chart_options!: ChartConfiguration['options'];
-	public displayed: boolean = true;
-	public metrics: {
-		avg: number;
-		median: number;
-		max: number;
-		min: number;
-		coverage: number;
-	} = {
-		avg: 0,
-		median: 0,
-		max: 0,
-		min: 0,
-		coverage: 0,
-	};
+	public chart_plugins: Plugin[] = [];
+	public displayed = signal<boolean>(false);
+	public stats = input.required<MintConfigStats>();
 
 	private subscriptions: Subscription = new Subscription();
+	private resize_timeout: ReturnType<typeof setTimeout> | null = null;
 
-	constructor(
-		private chartService: ChartService,
-		private cdr: ChangeDetectorRef,
-	) {
+	constructor(private chartService: ChartService) {
 		this.subscriptions.add(this.getRemoveSubscription());
 		this.subscriptions.add(this.getAddSubscription());
 	}
 
 	public ngOnChanges(changes: SimpleChanges): void {
-		if (changes['loading'] && this.loading === false) {
+		if (changes['loading'] && this.loading() === false) {
+			this.displayed.set(true);
 			this.init();
 		}
 		if (changes['quote_ttl'] && !changes['quote_ttl'].firstChange) {
 			this.initOptions();
-			const deltas = this.getDeltas();
-			this.metrics = this.getMetrics(deltas);
 		}
 		if (changes['form_hot'] && !changes['form_hot'].firstChange) {
 			this.initOptions();
 		}
 	}
 
+	/**
+	 * Handles window resize events by hiding the chart during resize
+	 * and showing it again after a debounce delay to prevent layout instability
+	 */
+	@HostListener('window:resize')
+	onWindowResize(): void {
+		this.displayed.set(false);
+		if (this.resize_timeout) {
+			clearTimeout(this.resize_timeout);
+		}
+		this.resize_timeout = setTimeout(() => {
+			this.displayed.set(true);
+		}, 150);
+	}
+
 	private getRemoveSubscription(): Subscription {
 		return this.chartService.onResizeStart().subscribe(() => {
-			this.displayed = false;
-			this.cdr.detectChanges();
+			this.displayed.set(false);
 		});
 	}
 	private getAddSubscription(): Subscription {
 		return this.chartService.onResizeEnd().subscribe(() => {
-			this.displayed = true;
-			this.cdr.detectChanges();
+			this.displayed.set(true);
 		});
 	}
 
 	private async init(): Promise<void> {
 		this.chart_type = 'scatter';
-		const deltas = this.getDeltas();
-		this.metrics = this.getMetrics(deltas);
-		this.chart_data = this.getChartData(deltas);
+		this.chart_data = this.getChartData(this.deltas());
 		this.initOptions();
 	}
 
@@ -100,59 +106,29 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnChanges, On
 		if (this.chart_options?.plugins) this.chart_options.plugins.annotation = this.getFormAnnotation();
 	}
 
-	private getDeltas(): Record<string, number>[] {
-		if (this.quotes.length === 0) return [];
-		const quotes = this.nut === 'nut4' ? (this.quotes as MintMintQuote[]) : (this.quotes as MintMeltQuote[]);
-		const valid_state = this.nut === 'nut4' ? MintQuoteState.Issued : MeltQuoteState.Paid;
-		const valid_quotes = quotes
-			.filter((quote) => quote.state === valid_state && quote.created_time && quote.created_time > 0)
-			.sort((a, b) => (a.created_time ?? 0) - (b.created_time ?? 0));
-		return valid_quotes.map((quote) => {
-			const created_time = quote.created_time ?? 0;
-			const end_time = quote instanceof MintMintQuote ? (quote.issued_time ?? quote.paid_time ?? 0) : (quote.paid_time ?? 0);
-			return {
-				created_time,
-				delta: end_time - created_time,
-			};
-		});
-	}
-
-	private getMetrics(deltas: Record<string, number>[]): {
-		avg: number;
-		median: number;
-		max: number;
-		min: number;
-		coverage: number;
-	} {
-		const values = deltas.map((delta) => delta['delta']);
-		const values_under_ttl = values.filter((value) => value <= this.quote_ttl);
-		return {
-			avg: avg(values),
-			median: median(values),
-			max: max(values),
-			min: min(values),
-			coverage: (values_under_ttl.length / values.length) * 100,
-		};
-	}
-
 	private getChartData(deltas: Record<string, number>[]): ChartConfiguration['data'] {
 		if (deltas.length === 0) return {datasets: []};
-		const color_index = this.nut === 'nut4' ? 0 : 4;
+		const color_index = this.nut() === 'nut4' ? 0 : 4;
 		const color = this.chartService.getThemeColor(color_index);
-		const data_prepped = deltas.map((delta) => ({
-			x: delta['created_time'] * 1000,
-			y: delta['delta'],
-		}));
+		const muted_color = this.chartService.getMutedColor(color.border, 0.5);
+		const data_prepped = deltas
+			.map((delta) => ({
+				x: delta['created_time'] * 1000,
+				y: delta['delta'],
+			}))
+			.sort((a, b) => a.x - b.x);
 		const dataset = {
 			data: data_prepped,
-			borderColor: color.border,
-			pointBackgroundColor: color.border,
-			pointBorderColor: color.border,
+			backgroundColor: muted_color,
+			borderColor: muted_color,
+			pointBackgroundColor: muted_color,
+			pointBorderColor: muted_color,
+			pointBorderWidth: 1,
 			pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
 			pointHoverBorderColor: color.border,
+			pointHoverBorderWidth: 2,
 			pointRadius: 3,
-			pointHoverRadius: 4,
-			tension: 0.4,
+			pointHoverRadius: 5,
 		};
 		return {datasets: [dataset]};
 	}
@@ -165,7 +141,7 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnChanges, On
 		const span_days = (max_time - min_time) / (1000 * 60 * 60 * 24);
 		const time_unit = span_days > 90 ? 'month' : span_days > 21 ? 'week' : 'day';
 		const step_size = 1;
-		const use_log_scale = this.metrics.max / this.metrics.min >= 100;
+		const use_log_scale = this.stats().max / this.stats().min >= 100;
 
 		const scales: any = {};
 		scales['x'] = {
@@ -179,57 +155,36 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnChanges, On
 					day: 'MMM d',
 				},
 			},
-			grid: {
-				display: true,
-				color: this.chartService.getGridColor(),
-			},
+			display: false,
 			min: min_time,
 			max: max_time,
-			ticks: {
-				source: 'auto', // Ensures ticks are generated uniformly
-				autoSkip: false, // Show all ticks for the chosen unit
-				maxRotation: 0,
-				minRotation: 0,
-			},
 		};
 		scales['y'] = {
-			position: 'left',
 			type: use_log_scale ? 'logarithmic' : 'linear',
-			title: {
-				display: true,
-				text: 'seconds',
-			},
+			min: use_log_scale ? 1 : undefined,
+			display: false,
 			beginAtZero: !use_log_scale,
-			grid: {
-				display: true,
-				color: this.chartService.getGridColor(),
-			},
-			ticks: use_log_scale
-				? {
-						callback: function (value: number): string | null {
-							return value === 1 || Math.log10(value) % 1 === 0 ? value.toString() : null;
-						},
-					}
-				: {},
 		};
 
 		return {
 			responsive: true,
 			elements: {
-				line: {
-					tension: 0.5,
-					cubicInterpolationMode: 'monotone',
+				point: {
+					radius: 3,
+					hoverRadius: 5,
+					borderWidth: 1,
+					hoverBorderWidth: 2,
 				},
 			},
 			scales: scales,
 			plugins: {
 				tooltip: {
 					enabled: true,
-					mode: 'index',
-					intersect: false,
+					mode: 'nearest',
+					intersect: true,
 					callbacks: {
 						title: getTooltipTitleExact,
-						label: (context: any) => getTooltipLabel(context, this.locale),
+						label: (context: any) => getTooltipLabel(context, this.locale()),
 					},
 				},
 				legend: {
@@ -237,15 +192,18 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnChanges, On
 				},
 			},
 			interaction: {
-				mode: 'index',
-				axis: 'x',
-				intersect: false,
+				mode: 'nearest',
+				intersect: true,
+			},
+			animation: {
+				duration: 750,
+				easing: 'easeOutQuart',
 			},
 		};
 	}
 
 	private getFormAnnotation(): any {
-		const config = this.chartService.getFormAnnotationConfig(this.form_hot);
+		const config = this.chartService.getFormAnnotationConfig(this.form_hot());
 		return {
 			annotations: {
 				ttl: {
@@ -267,7 +225,7 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnChanges, On
 						borderWidth: 1,
 					},
 					scaleID: 'y',
-					value: this.quote_ttl,
+					value: this.quote_ttl(),
 				},
 			},
 		};
@@ -275,5 +233,6 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnChanges, On
 
 	ngOnDestroy(): void {
 		this.subscriptions.unsubscribe();
+		if (this.resize_timeout) clearTimeout(this.resize_timeout);
 	}
 }

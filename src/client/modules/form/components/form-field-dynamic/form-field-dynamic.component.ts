@@ -12,8 +12,10 @@ export class FormFieldDynamicComponent {
 	public hot = input<boolean>(false);
 	public invalid = input<boolean>(false);
 	public standalone = input<boolean>(true);
+	public info = input<boolean>(false);
 	public subscript_sizing = input<'default' | 'dynamic'>('default');
 
 	public submit = output<Event>();
 	public cancel = output<Event>();
+	public inform = output<Event>();
 }

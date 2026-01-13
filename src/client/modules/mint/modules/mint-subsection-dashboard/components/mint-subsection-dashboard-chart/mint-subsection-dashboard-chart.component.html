@@ -1,6 +1,6 @@
 <div class="mint-analytic-chart-container">
-	@if (displayed) {
-		<canvas baseChart [data]="chart_data" [options]="chart_options" [type]="chart_type"></canvas>
+	@if (displayed()) {
+		<canvas baseChart [data]="chart_data" [options]="chart_options" [type]="chart_type" [plugins]="chart_plugins"></canvas>
 	}
 	@if (!loading && mint_analytics.length === 0 && mint_analytics_pre.length === 0) {
 		<div class="no-data-overlay" animate.enter="orc-animation-fadein-fast" animate.leave="orc-animation-fadeout-fast">

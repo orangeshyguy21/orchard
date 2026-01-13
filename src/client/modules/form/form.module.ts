@@ -12,6 +12,8 @@ import {FormNumberSeparatorDirective} from './directives/form-number-separator/f
 import {FormFieldDynamicComponent} from './components/form-field-dynamic/form-field-dynamic.component';
 import {FormArrayAddItemComponent} from './components/form-array-add-item/form-array-add-item.component';
 import {FormHelpTextComponent} from './components/form-help-text/form-help-text.component';
+import {FormFilterMenuComponent} from './components/form-filter-menu/form-filter-menu.component';
+import {FormErrorComponent} from './components/form-error/form-error.component';
 
 @NgModule({
 	declarations: [
@@ -20,6 +22,8 @@ import {FormHelpTextComponent} from './components/form-help-text/form-help-text.
 		FormFieldDynamicComponent,
 		FormArrayAddItemComponent,
 		FormHelpTextComponent,
+		FormFilterMenuComponent,
+		FormErrorComponent,
 	],
 	imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatButtonModule, MatIconModule],
 	exports: [
@@ -28,6 +32,8 @@ import {FormHelpTextComponent} from './components/form-help-text/form-help-text.
 		FormFieldDynamicComponent,
 		FormArrayAddItemComponent,
 		FormHelpTextComponent,
+		FormFilterMenuComponent,
+		FormErrorComponent,
 	],
 })
 export class OrcFormModule {}

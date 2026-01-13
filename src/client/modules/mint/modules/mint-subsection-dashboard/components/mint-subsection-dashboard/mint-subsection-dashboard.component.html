@@ -8,6 +8,7 @@
 			[lightning_errors]="errors_lightning"
 			[lightning_loading]="loading_lightning"
 			[loading]="loading_static_data"
+			[device_desktop]="device_type() === 'desktop'"
 			(navigate)="onNavigate('lightning')"
 		></orc-mint-general-balance-sheet>
 		<orc-mint-subsection-dashboard-connections
@@ -17,35 +18,40 @@
 			[mint_name]="mint_info?.name"
 			[mint_connections]="mint_connections"
 			[loading]="loading_static_data"
+			[device_desktop]="device_type() === 'desktop'"
 		></orc-mint-subsection-dashboard-connections>
 	</div>
 
 	<div class="mint-analytic-control-panel">
 		<div class="flex flex-justify-between flex-gap-1 flex-items-end">
-			<div class="title-l p-1">Nutalytics</div>
-			@if (page_settings) {
+			@if (device_type() === 'desktop') {
+				<div class="title-l p-1">Nutalytics</div>
+			}
+			@if (page_settings()) {
 				<orc-mint-subsection-dashboard-control
 					class="flex-grow"
-					[page_settings]="page_settings"
-					[date_start]="page_settings.date_start"
-					[date_end]="page_settings.date_end"
-					[units]="page_settings.units"
-					[interval]="page_settings.interval"
-					[type]="page_settings.type"
+					[page_settings]="page_settings()"
+					[date_start]="page_settings().date_start"
+					[date_end]="page_settings().date_end"
+					[units]="page_settings().units"
+					[interval]="page_settings().interval"
 					[keysets]="mint_keysets"
 					[loading]="loading_static_data"
 					[mint_genesis_time]="mint_genesis_time"
+					[device_desktop]="device_type() === 'desktop'"
 					(dateChange)="onDateChange($event)"
 					(unitsChange)="onUnitsChange($event)"
 					(intervalChange)="onIntervalChange($event)"
-					(typeChange)="onTypeChange($event)"
 				></orc-mint-subsection-dashboard-control>
 			}
-			<!-- <div class="p-b-1">
-				<button mat-icon-button aria-label="Example icon button with a vertical three dot icon">
-					<mat-icon>more_vert</mat-icon>
-				</button>
-			</div> -->
+			@if (device_type() === 'tablet') {
+				<div class="p-b-1-5">
+					<button matButton type="button" [matMenuTriggerFor]="chart_order_menu">
+						<mat-icon>menu</mat-icon>
+						<span class="text-nowrap font-size-s">Charts</span>
+					</button>
+				</div>
+			}
 		</div>
 		<div class="category-rule"></div>
 	</div>
@@ -56,14 +62,27 @@
 				<div class="chart-target nav1" #nav1></div>
 				<div class="mint-analytic-header z-index-1">
 					<div class="mint-analytic-title">Balance Sheet</div>
+					<div class="flex">
+						<div class="mint-analytic-selector">
+							<button
+								matButton
+								type="button"
+								[matMenuTriggerFor]="chart_type_menu"
+								[matMenuTriggerData]="{chart: 'balance_sheet'}"
+							>
+								<mat-icon>bar_chart</mat-icon>
+								<span class="text-nowrap font-size-s">{{ type_balance_sheet() | titlecase }}</span>
+							</button>
+						</div>
+					</div>
 				</div>
 				<orc-mint-subsection-dashboard-chart
 					[locale]="locale"
 					[mint_analytics]="mint_analytics_balances"
 					[mint_analytics_pre]="mint_analytics_balances_pre"
-					[page_settings]="page_settings"
+					[page_settings]="page_settings()"
 					[mint_genesis_time]="mint_genesis_time"
-					[selected_type]="page_settings ? page_settings.type : undefined"
+					[selected_type]="type_balance_sheet()"
 					[loading]="loading_dynamic_data"
 				></orc-mint-subsection-dashboard-chart>
 			</div>
@@ -72,14 +91,22 @@
 				<div class="chart-target nav2" #nav2></div>
 				<div class="mint-analytic-header z-index-1">
 					<div class="mint-analytic-title">Mints &nbsp;&nbsp;<small>deposits</small></div>
+					<div class="flex">
+						<div class="mint-analytic-selector">
+							<button matButton type="button" [matMenuTriggerFor]="chart_type_menu" [matMenuTriggerData]="{chart: 'mints'}">
+								<mat-icon>bar_chart</mat-icon>
+								<span class="text-nowrap font-size-s">{{ type_mints() | titlecase }}</span>
+							</button>
+						</div>
+					</div>
 				</div>
 				<orc-mint-subsection-dashboard-chart
 					[locale]="locale"
 					[mint_analytics]="mint_analytics_mints"
 					[mint_analytics_pre]="mint_analytics_mints_pre"
-					[page_settings]="page_settings"
+					[page_settings]="page_settings()"
 					[mint_genesis_time]="mint_genesis_time"
-					[selected_type]="page_settings ? page_settings.type : undefined"
+					[selected_type]="type_mints()"
 					[loading]="loading_dynamic_data"
 				></orc-mint-subsection-dashboard-chart>
 			</div>
@@ -87,14 +114,22 @@
 				<div class="chart-target nav3" #nav3></div>
 				<div class="mint-analytic-header z-index-1">
 					<div class="mint-analytic-title">Melts &nbsp;&nbsp;<small>withdrawals</small></div>
+					<div class="flex">
+						<div class="mint-analytic-selector">
+							<button matButton type="button" [matMenuTriggerFor]="chart_type_menu" [matMenuTriggerData]="{chart: 'melts'}">
+								<mat-icon>bar_chart</mat-icon>
+								<span class="text-nowrap font-size-s">{{ type_melts() | titlecase }}</span>
+							</button>
+						</div>
+					</div>
 				</div>
 				<orc-mint-subsection-dashboard-chart
 					[locale]="locale"
 					[mint_analytics]="mint_analytics_melts"
 					[mint_analytics_pre]="mint_analytics_melts_pre"
-					[page_settings]="page_settings"
+					[page_settings]="page_settings()"
 					[mint_genesis_time]="mint_genesis_time"
-					[selected_type]="page_settings ? page_settings.type : undefined"
+					[selected_type]="type_melts()"
 					[loading]="loading_dynamic_data"
 				></orc-mint-subsection-dashboard-chart>
 			</div>
@@ -102,14 +137,22 @@
 				<div class="chart-target nav4" #nav4></div>
 				<div class="mint-analytic-header z-index-1">
 					<div class="mint-analytic-title w-min-7">Swaps &nbsp;&nbsp;<small>internal</small></div>
+					<div class="flex">
+						<div class="mint-analytic-selector">
+							<button matButton type="button" [matMenuTriggerFor]="chart_type_menu" [matMenuTriggerData]="{chart: 'swaps'}">
+								<mat-icon>bar_chart</mat-icon>
+								<span class="text-nowrap font-size-s">{{ type_swaps() | titlecase }}</span>
+							</button>
+						</div>
+					</div>
 				</div>
 				<orc-mint-subsection-dashboard-chart
 					[locale]="locale"
 					[mint_analytics]="mint_analytics_swaps"
 					[mint_analytics_pre]="mint_analytics_swaps_pre"
-					[page_settings]="page_settings"
+					[page_settings]="page_settings()"
 					[mint_genesis_time]="mint_genesis_time"
-					[selected_type]="page_settings ? page_settings.type : undefined"
+					[selected_type]="type_swaps()"
 					[loading]="loading_dynamic_data"
 				></orc-mint-subsection-dashboard-chart>
 			</div>
@@ -117,15 +160,28 @@
 				<div class="chart-target nav5" #nav5></div>
 				<div class="mint-analytic-header z-index-1">
 					<div class="mint-analytic-title">Fee Revenue</div>
+					<div class="flex">
+						<div class="mint-analytic-selector">
+							<button
+								matButton
+								type="button"
+								[matMenuTriggerFor]="chart_type_menu"
+								[matMenuTriggerData]="{chart: 'fee_revenue'}"
+							>
+								<mat-icon>bar_chart</mat-icon>
+								<span class="text-nowrap font-size-s">{{ type_fee_revenue() | titlecase }}</span>
+							</button>
+						</div>
+					</div>
 				</div>
 				<div class="relative">
 					<orc-mint-subsection-dashboard-chart
 						[locale]="locale"
 						[mint_analytics]="mint_analytics_fees"
 						[mint_analytics_pre]="mint_analytics_fees_pre"
-						[page_settings]="page_settings"
+						[page_settings]="page_settings()"
 						[mint_genesis_time]="mint_genesis_time"
-						[selected_type]="page_settings ? page_settings.type : undefined"
+						[selected_type]="type_fee_revenue()"
 						[loading]="loading_dynamic_data"
 					></orc-mint-subsection-dashboard-chart>
 
@@ -158,16 +214,39 @@
 				</div>
 			</div>
 		</div>
-		<div class="w-8 p-t-1">
-			<orc-nav-tertiary
-				class="mint-chart-tertiary-nav"
-				[keys]="tertiary_nav"
-				[items]="tertiary_nav_items"
-				(orderChange)="onTertiaryNavChange($event)"
-				(keySelect)="onTertiaryNavSelect($event)"
-			>
-				<div class="nav-tertiary-title">Charts</div>
-			</orc-nav-tertiary>
-		</div>
+		@if (device_type() === 'desktop') {
+			<div class="w-8 p-t-1">
+				<orc-nav-tertiary
+					class="mint-chart-tertiary-nav"
+					[keys]="tertiary_nav()"
+					[items]="tertiary_nav_items"
+					(orderChange)="onTertiaryNavChange($event)"
+					(keySelect)="onTertiaryNavSelect($event)"
+				>
+					<div class="nav-tertiary-title">Charts</div>
+				</orc-nav-tertiary>
+			</div>
+		}
 	</div>
 </div>
+
+<mat-menu #chart_type_menu="matMenu" yPosition="below" xPosition="before">
+	<ng-template matMenuContent let-chart="chart">
+		@for (option of chart_type_options[chart]; track option) {
+			<button mat-menu-item [class.active-chart-option]="option === getChartType(chart)" (click)="onChartTypeChange(chart, option)">
+				<mat-icon>{{ option === getChartType(chart) ? 'check' : '' }}</mat-icon>
+				{{ option | titlecase }}
+			</button>
+		}
+	</ng-template>
+</mat-menu>
+
+<mat-menu #chart_order_menu="matMenu" yPosition="below" xPosition="before" class="orc-sticky-menu w-min-10 p-1">
+	<orc-nav-tertiary
+		class="mint-chart-tertiary-nav"
+		[keys]="tertiary_nav()"
+		[items]="tertiary_nav_items"
+		(orderChange)="onTertiaryNavChange($event)"
+		(keySelect)="onTertiaryNavSelect($event)"
+	></orc-nav-tertiary>
+</mat-menu>

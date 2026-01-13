@@ -12,6 +12,7 @@ import {
 	effect,
 } from '@angular/core';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
+import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 /* Vendor Dependencies */
 import {DateTime} from 'luxon';
 import {Subscription} from 'rxjs';
@@ -21,6 +22,7 @@ import {EventService} from '@client/modules/event/services/event/event.service';
 import {ConfigService} from '@client/modules/config/services/config.service';
 import {NonNullableBitcoinOracleSettings} from '@client/modules/settings/types/setting.types';
 import {EventData} from '@client/modules/event/classes/event-data.class';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Native Dependencies */
 import {BitcoinService} from '@client/modules/bitcoin/services/bitcoin/bitcoin.service';
 import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle-price.class';
@@ -68,6 +70,7 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 	public max_date = signal<DateTime>(DateTime.utc().endOf('day')); // Current date: today UTC
 	public date_start_max = signal<DateTime>(this.max_date());
 	public date_end_min = signal<DateTime>(this.min_date());
+	public device_type = signal<DeviceType>('desktop');
 
 	public latest_oracle = computed(() => {
 		return this.data().length > 0 ? (this.data().at(-1) ?? null) : null;
@@ -82,6 +85,7 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 		private settingDeviceService: SettingDeviceService,
 		private eventService: EventService,
 		private configService: ConfigService,
+		private breakpointObserver: BreakpointObserver,
 	) {
 		effect(() => {
 			const dirty = this.dirty_form();
@@ -107,6 +111,7 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 		this.subscriptions.add(this.getEventSubscription());
 		this.subscriptions.add(this.getBackfillProgressSubscription());
 		this.subscriptions.add(this.getBackfillActiveSubscription());
+		this.subscriptions.add(this.getBreakpointSubscription());
 		this.page_settings = this.getPageSettings();
 		this.initializeControl();
 		this.getOracleData();
@@ -226,6 +231,12 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 	private getBackfillActiveSubscription(): Subscription {
 		return this.bitcoinService.backfill_active$.subscribe((active) => {
 			this.backfill_running.set(active);
+		});
+	}
+
+	private getBreakpointSubscription(): Subscription {
+		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
+			this.device_type.set(result.matches ? 'desktop' : 'tablet');
 		});
 	}
 

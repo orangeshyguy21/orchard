@@ -6,6 +6,8 @@ import {ReactiveFormsModule as CoreReactiveFormsModule} from '@angular/forms';
 /* Vendor Dependencies */
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatCardModule} from '@angular/material/card';
+import {MatIconModule} from '@angular/material/icon';
+import {MatButtonModule} from '@angular/material/button';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcTimeModule} from '@client/modules/time/time.module';
@@ -31,6 +33,8 @@ import {SettingsSubsectionAppBitcoinOracleComponent} from './components/settings
 		CoreReactiveFormsModule,
 		MatCardModule,
 		MatSlideToggleModule,
+		MatIconModule,
+		MatButtonModule,
 		OrcFormModule,
 		OrcTimeModule,
 	],

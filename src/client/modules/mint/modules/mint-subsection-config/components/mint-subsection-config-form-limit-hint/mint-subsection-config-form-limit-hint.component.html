@@ -1,0 +1,4 @@
+@if (limit() !== null && amounts().length > 0) {
+	<span class="font-weight-bold">{{ limit_hint() | number: '1.0-0' }}</span> of latest quotes are
+	{{ type() === 'min' ? 'below' : 'above' }}
+}

@@ -2,7 +2,15 @@
 @use 'nucleus/nucleus';
 
 :host {
+	@extend %block;
+	@extend %overflow-hidden;
+	@extend %h-max-3;
 	flex-shrink: 0;
+	transition: max-height 200ms ease;
+
+	&.collapsed {
+		@extend %h-max-0;
+	}
 }
 
 .nav-secondary-container {
@@ -12,6 +20,15 @@
 	@extend %orc-surface-container-low-bg;
 	@extend %h-3;
 	@extend %p-h-1;
+	transition:
+		transform 200ms ease,
+		opacity 200ms ease;
+
+	&.collapsed {
+		transform: translateY(-100%);
+		pointer-events: none;
+		@extend %opacity-0;
+	}
 }
 
 ::ng-deep [nav-secondary-header] {

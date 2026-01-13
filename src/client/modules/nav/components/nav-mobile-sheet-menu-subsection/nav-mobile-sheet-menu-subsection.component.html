@@ -1,0 +1,40 @@
+<div class="nav-mobile-sheet-menu-subsection-container">
+	<div class="nav-mobile-sheet-active-section">
+		<div class="nav-mobile-sheet-section-header">
+			@switch (data.icon) {
+				@case ('bitcoin') {
+					<mat-icon svgIcon="bitcoin"></mat-icon>
+				}
+				@case ('index') {
+					<orc-graphic-orchard-logo height="2.5rem"></orc-graphic-orchard-logo>
+				}
+				@default {
+					<mat-icon>{{ data.icon }}</mat-icon>
+				}
+			}
+			<span>{{ data.name }}</span>
+		</div>
+		<div class="nav-mobile-sheet-section-status">
+			<orc-nav-primary-status
+				[size]="'medium'"
+				[enabled]="data.enabled"
+				[online]="data.online"
+				[syncing]="data.syncing"
+			></orc-nav-primary-status>
+		</div>
+	</div>
+	<mat-nav-list>
+		@for (item of data.items; track item.navroute) {
+			<a
+				[routerLink]="item.navroute"
+				mat-list-item
+				[class.active]="
+					(item.subsection === data.active_sub_section && !navigated_subsection()) || navigated_subsection() === item.subsection
+				"
+				(click)="onItemClick(item)"
+			>
+				<span matListItemTitle>{{ item.name }}</span>
+			</a>
+		}
+	</mat-nav-list>
+</div>

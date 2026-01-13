@@ -1,0 +1,27 @@
+<div class="nav-mobile-container" [class.collapsed]="!opened()">
+	<orc-nav-primary-header
+		[active]="active_section() === 'index'"
+		[block_count]="block_count()"
+		mode="mobile"
+		(click)="onMenuSectionClick()"
+	></orc-nav-primary-header>
+
+	<orc-nav-mobile-item icon="menu" name="Menu" (clicked)="onMenuSubsectionClick()"></orc-nav-mobile-item>
+
+	<orc-event-general-nav-tool
+		navroute="event"
+		mode="mobile"
+		[active_event]="active_event()"
+		[active]="active_section() === 'event'"
+		(save)="save.emit()"
+		(cancel)="cancel.emit()"
+		(abort)="abort.emit()"
+	></orc-event-general-nav-tool>
+
+	@if (enabled_ai()) {
+		<orc-nav-mobile-item icon="spa" name="Agent" (clicked)="onAgentClick()"></orc-nav-mobile-item>
+	} @else {
+		<orc-nav-mobile-item icon="settings" name="Settings" (clicked)="onSettingsClick()"></orc-nav-mobile-item>
+	}
+	<orc-nav-mobile-item icon="person" [name]="user_name()" (clicked)="onProfileClick()"></orc-nav-mobile-item>
+</div>

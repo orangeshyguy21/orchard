@@ -1,7 +1,8 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, AfterViewInit, ViewChild, ElementRef, signal, computed} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, AfterViewInit, ViewChild, ElementRef, signal, computed, output} from '@angular/core';
 /* Vendor Dependencies */
 import QRCodeStyling from 'qr-code-styling';
+import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {ThemeService} from '@client/modules/settings/services/theme/theme.service';
 import {Invite} from '@client/modules/crew/classes/invite.class';
@@ -17,9 +18,14 @@ export class IndexSubsectionCrewTableInviteComponent implements AfterViewInit {
 	@ViewChild('qr_canvas', {static: false}) qr_canvas!: ElementRef;
 
 	public invite = input.required<Invite>();
+	public device_desktop = input.required<boolean>();
+
+	public editInvite = output<Invite>();
+	public deleteInvite = output<Invite>();
 
 	public show_copy_token = signal(false);
 	public show_copy_url = signal(false);
+	public now = signal(DateTime.now().toSeconds());
 
 	public invite_url = computed(() => {
 		return `${window.location.origin}/auth/signup/${this.invite().token}`;

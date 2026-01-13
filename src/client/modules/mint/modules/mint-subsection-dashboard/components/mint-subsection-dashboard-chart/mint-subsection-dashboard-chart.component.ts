@@ -1,8 +1,8 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy, SimpleChanges, ViewChild, ChangeDetectorRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, OnDestroy, OnChanges, SimpleChanges, ViewChild, signal} from '@angular/core';
 /* Vendor Dependencies */
 import {BaseChartDirective} from 'ng2-charts';
-import {ChartConfiguration, ScaleChartOptions, ChartType as ChartJsType} from 'chart.js';
+import {ChartConfiguration, ScaleChartOptions, ChartType as ChartJsType, Plugin} from 'chart.js';
 import {DateTime} from 'luxon';
 import {Subscription} from 'rxjs';
 /* Application Dependencies */
@@ -37,35 +37,33 @@ import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
 	styleUrl: './mint-subsection-dashboard-chart.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintSubsectionDashboardChartComponent implements OnChanges, OnDestroy {
+export class MintSubsectionDashboardChartComponent implements OnDestroy, OnChanges {
 	@ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
-	@Input() public locale!: string;
-	@Input() public mint_analytics!: MintAnalytic[];
-	@Input() public mint_analytics_pre!: MintAnalytic[];
-	@Input() public page_settings!: NonNullableMintDashboardSettings | undefined;
-	@Input() public mint_genesis_time!: number;
-	@Input() public selected_type!: ChartType | undefined;
-	@Input() public loading!: boolean;
+	public locale = input.required<string>();
+	public mint_analytics = input.required<MintAnalytic[]>();
+	public mint_analytics_pre = input.required<MintAnalytic[]>();
+	public page_settings = input.required<NonNullableMintDashboardSettings>();
+	public mint_genesis_time = input.required<number>();
+	public selected_type = input.required<ChartType | null | undefined>();
+	public loading = input.required<boolean>();
 
 	public chart_type!: ChartJsType;
 	public chart_data!: ChartConfiguration['data'];
 	public chart_options!: ChartConfiguration['options'];
-	public displayed: boolean = true;
+	public chart_plugins: Plugin[] = [];
+	public displayed = signal<boolean>(true);
 
 	private subscriptions: Subscription = new Subscription();
 
-	constructor(
-		private chartService: ChartService,
-		private cdr: ChangeDetectorRef,
-	) {
+	constructor(private chartService: ChartService) {
 		this.subscriptions.add(this.getRemoveSubscription());
 		this.subscriptions.add(this.getAddSubscription());
 	}
 
-	public ngOnChanges(changes: SimpleChanges): void {
-		if (changes['loading'] && this.loading === false) {
-			this.init();
+	ngOnChanges(changes: SimpleChanges): void {
+		if (changes['loading'] && !changes['loading'].firstChange) {
+			if (this.loading() === false) this.init();
 		}
 		if (changes['selected_type'] && !changes['selected_type'].firstChange) {
 			this.init();
@@ -74,34 +72,35 @@ export class MintSubsectionDashboardChartComponent implements OnChanges, OnDestr
 
 	private getRemoveSubscription(): Subscription {
 		return this.chartService.onResizeStart().subscribe(() => {
-			this.displayed = false;
-			this.cdr.detectChanges();
+			this.displayed.set(false);
 		});
 	}
 	private getAddSubscription(): Subscription {
 		return this.chartService.onResizeEnd().subscribe(() => {
-			this.displayed = true;
-			this.cdr.detectChanges();
+			this.displayed.set(true);
 		});
 	}
 
 	private init(): void {
-		if (this.mint_analytics.length === 0 && this.mint_analytics_pre.length === 0) return;
-		switch (this.selected_type) {
-			case ChartType.Summary:
+		if (this.mint_analytics().length === 0 && this.mint_analytics_pre().length === 0) return;
+		switch (this.selected_type()) {
+			case ChartType.Totals:
 				this.chart_type = 'line';
 				this.chart_data = this.getAmountChartData();
 				this.chart_options = this.getAmountChartOptions();
+				this.initGlowPlugin();
 				break;
 			case ChartType.Operations:
 				this.chart_type = 'bar';
 				this.chart_data = this.getOperationsChartData();
 				this.chart_options = this.getOperationsChartOptions();
+				this.chart_plugins = [];
 				break;
 			case ChartType.Volume:
 				this.chart_type = 'bar';
 				this.chart_data = this.getAmountChartData(false);
 				this.chart_options = this.getAmountChartOptions();
+				this.chart_plugins = [];
 				break;
 		}
 		if (this.chart_options?.plugins) this.chart_options.plugins.annotation = this.getAnnotations();
@@ -109,26 +108,41 @@ export class MintSubsectionDashboardChartComponent implements OnChanges, OnDestr
 			this.chart?.chart?.resize();
 		});
 		setTimeout(() => {
-			this.displayed = true;
-			this.cdr.detectChanges();
+			this.displayed.set(true);
 		}, 50);
 	}
 
+	/**
+	 * Creates the glow effect plugin for chart points (line charts only)
+	 */
+	private initGlowPlugin(): void {
+		if (!this.chart_data?.datasets || this.chart_data.datasets.length === 0) {
+			this.chart_plugins = [];
+			return;
+		}
+		const first_color = this.chart_data.datasets[0]?.borderColor as string;
+		this.chart_plugins = first_color ? [this.chartService.createGlowPlugin(first_color)] : [];
+	}
+
 	private getAmountChartData(prepend: boolean = true): ChartConfiguration['data'] {
-		if (!this.page_settings) return {datasets: []};
+		if (!this.page_settings()) return {datasets: []};
 		if (
-			(!this.mint_analytics || this.mint_analytics.length === 0) &&
-			(!this.mint_analytics_pre || this.mint_analytics_pre.length === 0)
+			(!this.mint_analytics() || this.mint_analytics().length === 0) &&
+			(!this.mint_analytics_pre() || this.mint_analytics_pre().length === 0)
 		) {
 			return {datasets: []};
 		}
-		const time_interval = getTimeInterval(this.page_settings.interval);
-		const timestamp_first = DateTime.fromSeconds(this.page_settings.date_start).startOf(time_interval).toSeconds();
-		const timestamp_last = DateTime.fromSeconds(this.page_settings.date_end).startOf(time_interval).toSeconds();
-		const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.page_settings.interval);
-		const data_unit_groups = groupAnalyticsByUnit(this.mint_analytics);
+		const time_interval = getTimeInterval(this.page_settings().interval);
+		const timestamp_first = DateTime.fromSeconds(this.page_settings().date_start).startOf(time_interval).toSeconds();
+		const timestamp_last = DateTime.fromSeconds(this.page_settings().date_end).startOf(time_interval).toSeconds();
+		const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.page_settings().interval);
+		const data_unit_groups = groupAnalyticsByUnit(this.mint_analytics().map((a) => ({...a})));
 		const data_unit_groups_prepended = prepend
-			? prependData(data_unit_groups, this.mint_analytics_pre, timestamp_first)
+			? prependData(
+					data_unit_groups,
+					this.mint_analytics_pre().map((a) => ({...a})),
+					timestamp_first,
+				)
 			: data_unit_groups;
 		const datasets = Object.entries(data_unit_groups_prepended).map(([unit, data], index) => {
 			const data_keyed_by_timestamp = getDataKeyedByTimestamp(data, 'amount');
@@ -137,23 +151,23 @@ export class MintSubsectionDashboardChartComponent implements OnChanges, OnDestr
 			const data_prepped = getAmountData(timestamp_range, data_keyed_by_timestamp, unit, cumulative);
 			const yAxisID = getYAxisId(unit);
 
+			const muted_color = this.chartService.getMutedColor(color.border);
 			return {
 				data: data_prepped,
 				label: unit.toUpperCase(),
-				backgroundColor: color.bg,
-				borderColor: color.border,
-				borderWidth: 1,
+				backgroundColor: (context: any) => this.chartService.createAreaGradient(context, color.border),
+				borderColor: muted_color,
+				borderWidth: 2,
 				borderRadius: 0,
-				pointBackgroundColor: color.border,
-				pointBorderColor: color.border,
+				pointBackgroundColor: muted_color,
+				pointBorderColor: muted_color,
+				pointBorderWidth: 2,
 				pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
 				pointHoverBorderColor: color.border,
-				pointRadius: 0, // Add point size (radius in pixels)
-				pointHoverRadius: 4, // Optional: size when hovered
-				fill: {
-					target: 'origin',
-					above: color.bg,
-				},
+				pointHoverBorderWidth: 3,
+				pointRadius: 0,
+				pointHoverRadius: 4,
+				fill: true,
 				tension: 0.4,
 				yAxisID: yAxisID,
 			};
@@ -167,7 +181,7 @@ export class MintSubsectionDashboardChartComponent implements OnChanges, OnDestr
 		const units = this.chart_data.datasets.map((item) => item.label);
 		const y_axis = getYAxis(units);
 		const scales: ScaleChartOptions<'line'>['scales'] = {};
-		scales['x'] = getXAxisConfig(this.page_settings.interval, this.locale);
+		scales['x'] = getXAxisConfig(this.page_settings().interval, this.locale());
 		if (y_axis.includes('ybtc')) {
 			scales['ybtc'] = getBtcYAxisConfig({
 				grid_color: this.chartService.getGridColor(),
@@ -201,7 +215,7 @@ export class MintSubsectionDashboardChartComponent implements OnChanges, OnDestr
 					intersect: false,
 					callbacks: {
 						title: getTooltipTitle,
-						label: (context: any) => getTooltipLabel(context, this.locale),
+						label: (context: any) => getTooltipLabel(context, this.locale()),
 						labelColor: (context: any) => {
 							return {
 								borderColor: context.dataset.borderColor,
@@ -226,12 +240,12 @@ export class MintSubsectionDashboardChartComponent implements OnChanges, OnDestr
 	}
 
 	private getOperationsChartData(): ChartConfiguration['data'] {
-		if (!this.mint_analytics || this.mint_analytics.length === 0 || !this.page_settings) return {datasets: []};
-		const timestamp_first = DateTime.fromSeconds(this.page_settings.date_start).startOf('day').toSeconds();
-		const timestamp_last = DateTime.fromSeconds(this.page_settings.date_end).startOf('day').toSeconds();
-		const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.page_settings.interval);
-		const data_unit_groups = groupAnalyticsByUnit(this.mint_analytics);
-		const data_unit_groups_prepended = prependData(data_unit_groups, this.mint_analytics_pre, timestamp_first);
+		if (!this.mint_analytics() || this.mint_analytics().length === 0 || !this.page_settings()) return {datasets: []};
+		const timestamp_first = DateTime.fromSeconds(this.page_settings().date_start).startOf('day').toSeconds();
+		const timestamp_last = DateTime.fromSeconds(this.page_settings().date_end).startOf('day').toSeconds();
+		const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.page_settings().interval);
+		const data_unit_groups = groupAnalyticsByUnit(this.mint_analytics().map((a) => ({...a})));
+		const data_unit_groups_prepended = prependData(data_unit_groups, this.mint_analytics_pre(), timestamp_first);
 		const datasets = Object.entries(data_unit_groups_prepended).map(([unit, data], index) => {
 			const data_keyed_by_timestamp = getDataKeyedByTimestamp(data, 'operation_count');
 			const color = this.chartService.getAssetColor(unit, index);
@@ -260,14 +274,14 @@ export class MintSubsectionDashboardChartComponent implements OnChanges, OnDestr
 	}
 
 	private getOperationsChartOptions(): ChartConfiguration['options'] {
-		if (!this.chart_data || this.chart_data.datasets.length === 0 || !this.page_settings) return {};
+		if (!this.chart_data || this.chart_data.datasets.length === 0 || !this.page_settings()) return {};
 
 		return {
 			responsive: true,
 			maintainAspectRatio: false,
 			scales: {
 				x: {
-					...getXAxisConfig(this.page_settings.interval, this.locale),
+					...getXAxisConfig(this.page_settings().interval, this.locale()),
 					stacked: true,
 				},
 				y: {
@@ -301,7 +315,7 @@ export class MintSubsectionDashboardChartComponent implements OnChanges, OnDestr
 					intersect: false,
 					callbacks: {
 						title: getTooltipTitle,
-						label: (context: any) => getTooltipLabel(context, this.locale),
+						label: (context: any) => getTooltipLabel(context, this.locale()),
 						labelColor: (context: any) => {
 							return {
 								borderColor: context.dataset.borderColor,
@@ -327,7 +341,7 @@ export class MintSubsectionDashboardChartComponent implements OnChanges, OnDestr
 
 	private getAnnotations(): any {
 		const min_x_value = this.findMinimumXValue(this.chart_data);
-		const milli_genesis_time = DateTime.fromSeconds(this.mint_genesis_time).startOf('day').toMillis();
+		const milli_genesis_time = DateTime.fromSeconds(this.mint_genesis_time()).startOf('day').toMillis();
 		const display = milli_genesis_time >= min_x_value ? true : false;
 		const config = this.chartService.getFormAnnotationConfig(false);
 		return {

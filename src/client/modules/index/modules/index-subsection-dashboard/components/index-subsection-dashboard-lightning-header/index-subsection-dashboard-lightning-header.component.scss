@@ -5,4 +5,21 @@
 	@extend %flex;
 	@extend %flex-items-center;
 	@extend %flex-gap-0-5;
+
+	&.tablet-header {
+		@extend %flex-gap-2;
+
+		.header-box {
+			@extend %w-min-0;
+		}
+
+		.protocol-version {
+			@extend %text-ellipsis;
+			@extend %w-max-10;
+		}
+	}
+}
+
+.header-box {
+	@extend %w-min-10;
 }

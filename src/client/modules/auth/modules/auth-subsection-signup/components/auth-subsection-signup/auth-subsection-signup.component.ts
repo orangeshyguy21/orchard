@@ -1,12 +1,16 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, OnDestroy, signal} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormGroup, FormControl, Validators, ValidationErrors} from '@angular/forms';
+import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
+/* Vendor Dependencies */
+import {Subscription} from 'rxjs';
 /* Application Dependencies */
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {ThemeType} from '@client/modules/cache/services/local-storage/local-storage.types';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {passwordMatch} from '@client/modules/form/validators/password-match';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Native Dependencies */
 import {AuthService} from '@client/modules/auth/services/auth/auth.service';
 import {SignupControl} from '@client/modules/auth/modules/auth-subsection-signup/types/signup-control.type';
@@ -18,8 +22,12 @@ import {SignupControl} from '@client/modules/auth/modules/auth-subsection-signup
 	styleUrl: './auth-subsection-signup.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AuthSubsectionSignupComponent implements OnInit {
+export class AuthSubsectionSignupComponent implements OnInit, OnDestroy {
 	public show_surface: boolean = false;
+
+	public device_type = signal<DeviceType>('desktop');
+
+	private subscriptions: Subscription = new Subscription();
 
 	public form_signup: FormGroup = new FormGroup({
 		key: new FormControl(null, [Validators.required]),
@@ -37,6 +45,7 @@ export class AuthSubsectionSignupComponent implements OnInit {
 	constructor(
 		private readonly authService: AuthService,
 		private readonly settingDeviceService: SettingDeviceService,
+		private readonly breakpointObserver: BreakpointObserver,
 		private readonly router: Router,
 		private route: ActivatedRoute,
 	) {
@@ -50,8 +59,21 @@ export class AuthSubsectionSignupComponent implements OnInit {
 	}
 
 	public ngOnInit(): void {
+		this.subscriptions.add(this.getBreakpointSubscription());
 		const theme = this.settingDeviceService.getTheme();
 		this.show_surface = theme === ThemeType.LIGHT_MODE;
+	}
+
+	public getBreakpointSubscription(): Subscription {
+		return this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium]).subscribe((result) => {
+			if (result.breakpoints[Breakpoints.XSmall]) {
+				this.device_type.set('mobile');
+			} else if (result.breakpoints[Breakpoints.Small] || result.breakpoints[Breakpoints.Medium]) {
+				this.device_type.set('tablet');
+			} else {
+				this.device_type.set('desktop');
+			}
+		});
 	}
 
 	private validateForm(): void {
@@ -113,5 +135,9 @@ export class AuthSubsectionSignupComponent implements OnInit {
 			this.form_signup.get('name')?.setErrors({unique_username: true});
 		}
 		this.validateForm();
+	}
+
+	public ngOnDestroy(): void {
+		this.subscriptions.unsubscribe();
 	}
 }

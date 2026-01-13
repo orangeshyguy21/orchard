@@ -4,13 +4,17 @@ import {
 	ChangeDetectorRef,
 	Component,
 	OnInit,
+	OnDestroy,
 	computed,
-	ViewChildren,
-	ViewChild,
-	QueryList,
 	ElementRef,
 	AfterViewInit,
+	signal,
+	viewChild,
+	viewChildren,
 } from '@angular/core';
+import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
+/* Vendor Dependencies */
+import {Subscription} from 'rxjs';
 /* Application Dependencies */
 import {LocalStorageService} from '@client/modules/cache/services/local-storage/local-storage.service';
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
@@ -22,8 +26,7 @@ import {Locale, Timezone, Theme, ThemeType, Model} from '@client/modules/cache/s
 import {AiModel} from '@client/modules/ai/classes/ai-model.class';
 import {NonNullableSettingsDeviceSettings} from '@client/modules/settings/types/setting.types';
 import {NavTertiaryItem} from '@client/modules/nav/types/nav-tertiary-item.type';
-/* Native Dependencies */
-import {SettingsCategory} from '@client/modules/settings/enums/category.enum';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 
 enum NavTertiary {
 	Location = 'nav1',
@@ -38,36 +41,31 @@ enum NavTertiary {
 	styleUrl: './settings-subsection-device.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsSubsectionDeviceComponent implements OnInit, AfterViewInit {
-	@ViewChildren('nav1,nav2,nav3') nav_elements!: QueryList<ElementRef>;
-	@ViewChild('settings_container', {static: false}) settings_container!: ElementRef;
+export class SettingsSubsectionDeviceComponent implements OnInit, AfterViewInit, OnDestroy {
+	readonly nav_elements = viewChildren<ElementRef>('nav1,nav2,nav3');
+	readonly settings_container = viewChild<ElementRef>('settings_container');
 
 	public version: string;
 	public enabled_ai: boolean;
-	public locale: Locale | null = null;
-	public timezone: Timezone | null = null;
-	public theme: Theme | null = null;
-	public model: Model | null = null;
-	public ai_models: AiModel[] = [];
-	public loading_static: boolean = true;
-	public loading_ai: boolean = true;
-	public error_ai: boolean = false;
-	public category_filters: SettingsCategory[] = [
-		SettingsCategory.Orchard,
-		SettingsCategory.Bitcoin,
-		SettingsCategory.Lightning,
-		SettingsCategory.Mint,
-		SettingsCategory.Ecash,
-	];
-	public cat_orchard = SettingsCategory.Orchard;
-	public cat_local = SettingsCategory.Local;
-	public page_settings!: NonNullableSettingsDeviceSettings;
-	public tertiary_nav_items: Record<NavTertiary, NavTertiaryItem> = {
+	readonly locale = signal<Locale | null>(null);
+	readonly timezone = signal<Timezone | null>(null);
+	readonly theme = signal<Theme | null>(null);
+	readonly model = signal<Model | null>(null);
+	readonly ai_models = signal<AiModel[]>([]);
+	readonly loading_static = signal(true);
+	readonly loading_ai = signal(true);
+	readonly error_ai = signal(false);
+	readonly page_settings = signal<NonNullableSettingsDeviceSettings | null>(null);
+	readonly device_type = signal<DeviceType>('desktop');
+
+	readonly tertiary_nav_items: Record<NavTertiary, NavTertiaryItem> = {
 		[NavTertiary.Location]: {title: 'Location'},
 		[NavTertiary.Theme]: {title: 'Theme'},
 		[NavTertiary.AI]: {title: 'AI'},
 	};
-	public tertiary_nav = computed<string[]>(() => this.page_settings?.tertiary_nav || []);
+	readonly tertiary_nav = computed<string[]>(() => this.page_settings()?.tertiary_nav || []);
+
+	private subscriptions: Subscription = new Subscription();
 
 	constructor(
 		private localStorageService: LocalStorageService,
@@ -75,6 +73,7 @@ export class SettingsSubsectionDeviceComponent implements OnInit, AfterViewInit 
 		private aiService: AiService,
 		private eventService: EventService,
 		private configService: ConfigService,
+		private breakpointObserver: BreakpointObserver,
 		private cdr: ChangeDetectorRef,
 	) {
 		this.version = this.configService.config.mode.version;
@@ -82,16 +81,17 @@ export class SettingsSubsectionDeviceComponent implements OnInit, AfterViewInit 
 	}
 
 	/* *******************************************************
-	   Initalization                      
+	   Initalization
 	******************************************************** */
 
 	ngOnInit(): void {
-		this.page_settings = this.getPageSettings();
-		this.locale = this.localStorageService.getLocale();
-		this.timezone = this.localStorageService.getTimezone();
-		this.theme = this.localStorageService.getTheme();
-		this.model = this.localStorageService.getModel();
-		this.loading_static = false;
+		this.subscriptions.add(this.getBreakpointSubscription());
+		this.page_settings.set(this.getPageSettings());
+		this.locale.set(this.localStorageService.getLocale());
+		this.timezone.set(this.localStorageService.getTimezone());
+		this.theme.set(this.localStorageService.getTheme());
+		this.model.set(this.localStorageService.getModel());
+		this.loading_static.set(false);
 		this.cdr.detectChanges();
 		this.orchardOptionalInit();
 	}
@@ -111,37 +111,43 @@ export class SettingsSubsectionDeviceComponent implements OnInit, AfterViewInit 
 		};
 	}
 
-	private getModels() {
+	private getModels(): void {
 		if (!this.enabled_ai) return;
-		this.aiService.getAiModels().subscribe(
-			(models: AiModel[]) => {
-				this.ai_models = models;
-				this.error_ai = false;
-				this.loading_ai = false;
+		this.aiService.getAiModels().subscribe({
+			next: (models: AiModel[]) => {
+				this.ai_models.set(models);
+				this.error_ai.set(false);
+				this.loading_ai.set(false);
 				this.cdr.detectChanges();
 			},
-			(error) => {
+			error: (error) => {
 				console.error(error);
-				this.error_ai = true;
-				this.loading_ai = false;
+				this.error_ai.set(true);
+				this.loading_ai.set(false);
 				this.cdr.detectChanges();
 			},
-		);
+		});
 	}
 
 	/* *******************************************************
-		Actions Up                     
+		Subscriptions
 	******************************************************** */
 
-	public onUpdateFilters(filters: SettingsCategory[]) {
-		this.category_filters = filters;
+	private getBreakpointSubscription(): Subscription {
+		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
+			this.device_type.set(result.matches ? 'desktop' : 'tablet');
+		});
 	}
 
-	public onLocaleChange(locale: string | null) {
+	/* *******************************************************
+		Actions Up
+	******************************************************** */
+
+	public onLocaleChange(locale: string | null): void {
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		this.localStorageService.setLocale({code: locale});
 		this.settingDeviceService.setLocale();
-		this.locale = this.localStorageService.getLocale();
+		this.locale.set(this.localStorageService.getLocale());
 		this.eventService.registerEvent(
 			new EventData({
 				type: 'SUCCESS',
@@ -150,11 +156,11 @@ export class SettingsSubsectionDeviceComponent implements OnInit, AfterViewInit 
 		);
 	}
 
-	public onTimezoneChange(timezone: string | null) {
+	public onTimezoneChange(timezone: string | null): void {
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		this.localStorageService.setTimezone({tz: timezone});
 		this.settingDeviceService.setTimezone();
-		this.timezone = this.localStorageService.getTimezone();
+		this.timezone.set(this.localStorageService.getTimezone());
 		this.eventService.registerEvent(
 			new EventData({
 				type: 'SUCCESS',
@@ -163,11 +169,11 @@ export class SettingsSubsectionDeviceComponent implements OnInit, AfterViewInit 
 		);
 	}
 
-	public onThemeChange(theme: ThemeType | null) {
+	public onThemeChange(theme: ThemeType | null): void {
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		this.localStorageService.setTheme({type: theme});
 		this.settingDeviceService.setTheme();
-		this.theme = this.localStorageService.getTheme();
+		this.theme.set(this.localStorageService.getTheme());
 		this.eventService.registerEvent(
 			new EventData({
 				type: 'SUCCESS',
@@ -176,10 +182,10 @@ export class SettingsSubsectionDeviceComponent implements OnInit, AfterViewInit 
 		);
 	}
 
-	public onModelChange(model: string | null) {
+	public onModelChange(model: string | null): void {
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		this.localStorageService.setModel({model: model});
-		this.model = this.localStorageService.getModel();
+		this.model.set(this.localStorageService.getModel());
 		this.eventService.registerEvent(
 			new EventData({
 				type: 'SUCCESS',
@@ -189,12 +195,13 @@ export class SettingsSubsectionDeviceComponent implements OnInit, AfterViewInit 
 	}
 
 	/* *******************************************************
-		Tertiary Nav                      
+		Tertiary Nav
 	******************************************************** */
 
 	public onTertiaryNavChange(event: string[]): void {
-		this.page_settings.tertiary_nav = event;
-		this.settingDeviceService.setSettingsDeviceSettings(this.page_settings);
+		this.page_settings.update((settings) => (settings ? {...settings, tertiary_nav: event} : null));
+		const current = this.page_settings();
+		if (current) this.settingDeviceService.setSettingsDeviceSettings(current);
 		this.updateTertiaryNav();
 	}
 
@@ -203,17 +210,24 @@ export class SettingsSubsectionDeviceComponent implements OnInit, AfterViewInit 
 	}
 
 	private updateTertiaryNav(): void {
-		const tertiary_nav = this.page_settings.tertiary_nav.map((area) => `"${area}"`).join(' ');
-		this.settings_container.nativeElement.style.gridTemplateAreas = `${tertiary_nav}`;
+		const settings = this.page_settings();
+		const container = this.settings_container();
+		if (!settings || !container) return;
+		const tertiary_nav = settings.tertiary_nav.map((area) => `"${area}"`).join(' ');
+		container.nativeElement.style.gridTemplateAreas = `${tertiary_nav}`;
 	}
 
-	private scrollToSettings(nav_item: NavTertiary) {
-		const target_element = this.nav_elements.find((el) => el.nativeElement.classList.contains(nav_item));
+	private scrollToSettings(nav_item: NavTertiary): void {
+		const target_element = this.nav_elements().find((el) => el.nativeElement.classList.contains(nav_item));
 		if (!target_element?.nativeElement) return;
 		target_element.nativeElement.scrollIntoView({
 			behavior: 'smooth',
 			block: 'start',
 			inline: 'nearest',
 		});
+	}
+
+	ngOnDestroy(): void {
+		this.subscriptions.unsubscribe();
 	}
 }

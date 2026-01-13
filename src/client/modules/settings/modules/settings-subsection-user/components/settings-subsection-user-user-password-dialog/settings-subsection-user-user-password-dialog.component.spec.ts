@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 /* Vendor Dependencies */
-import {MatDialogRef} from '@angular/material/dialog';
+import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 /* Native Dependencies */
 import {OrcSettingsSubsectionUserModule} from '@client/modules/settings/modules/settings-subsection-user/settings-subsection-user.module';
 /* Local Dependencies */
@@ -18,7 +18,10 @@ describe('SettingsSubsectionUserUserPasswordDialogComponent', () => {
 
 		await TestBed.configureTestingModule({
 			imports: [OrcSettingsSubsectionUserModule],
-			providers: [{provide: MatDialogRef, useValue: mock_dialog_ref}],
+			providers: [
+				{provide: MatDialogRef, useValue: mock_dialog_ref},
+				{provide: MAT_DIALOG_DATA, useValue: {device_mobile: false}},
+			],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(SettingsSubsectionUserUserPasswordDialogComponent);

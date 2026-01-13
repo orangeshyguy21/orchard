@@ -16,6 +16,7 @@ const ICONS = [
   'arrow_drop_down',
   'attach_money',
   'autorenew',
+  'bar_chart',
   'bar_chart_off',
   'block',
   'bolt',
@@ -82,6 +83,9 @@ const ICONS = [
   'spa',
   'credit_score',
   'refresh',
+  'add_comment',
+  'chat_bubble',
+  'tune',
 ];
 
 // Sort alphabetically and remove duplicates

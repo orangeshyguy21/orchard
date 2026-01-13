@@ -20,6 +20,17 @@ describe('NavPrimaryComponent', () => {
 		component = fixture.componentInstance;
 
 		fixture.componentRef.setInput('user_name', 'TestUser');
+		fixture.componentRef.setInput('active_section', 'index');
+		fixture.componentRef.setInput('active_event', null);
+		fixture.componentRef.setInput('enabled_bitcoin', true);
+		fixture.componentRef.setInput('enabled_lightning', true);
+		fixture.componentRef.setInput('enabled_mint', true);
+		fixture.componentRef.setInput('online_bitcoin', true);
+		fixture.componentRef.setInput('online_lightning', true);
+		fixture.componentRef.setInput('online_mint', true);
+		fixture.componentRef.setInput('syncing_bitcoin', false);
+		fixture.componentRef.setInput('syncing_lightning', false);
+		fixture.componentRef.setInput('block_count', 0);
 		fixture.detectChanges();
 	});
 

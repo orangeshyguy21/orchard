@@ -1,4 +1,5 @@
 @use 'molecule/molecule';
+@use 'nucleus/nucleus';
 
 :host {
 	@extend %flex;
@@ -22,4 +23,15 @@
 	@extend %sticky;
 	@extend %top-0;
 	@extend %z-index-1;
+}
+
+.mobile-latest-price {
+	@extend %absolute;
+	@extend %orc-surface-bg;
+	@extend %top-1;
+	@extend %z-index-1;
+	@extend %p-h-1;
+	@extend %orc-corner-full;
+	left: 50%;
+	transform: translateX(-50%);
 }

@@ -1,22 +1,29 @@
-<div class="ai-nav-container">
+<div class="ai-nav-container" [class.collapsed]="!opened()" [class.mobile-agent]="mobile_agent()">
 	<div class="ai-user-input">
 		<orc-ai-input
-			[active_agent]="active_agent"
-			[active_chat]="active_chat"
-			[model]="model"
-			[content]="content"
+			[active_agent]="active_agent()"
+			[active_chat]="active_chat()"
+			[model]="model()"
+			[content]="content()"
+			[focus]="focus()"
 			(chat)="command.emit()"
 		></orc-ai-input>
 	</div>
 
 	<div class="ai-action-bar">
-		<orc-ai-model [model]="model" [model_options]="model_options" (modelChange)="modelChange.emit($event)"></orc-ai-model>
-		<orc-ai-command [actionable]="actionable" [active_chat]="active_chat" (command)="command.emit()"></orc-ai-command>
+		<orc-ai-model [model]="model()" [model_options]="model_options()" (modelChange)="modelChange.emit($event)"></orc-ai-model>
+		<orc-ai-command [actionable]="actionable()" [active_chat]="active_chat()" (command)="command.emit()"></orc-ai-command>
+		@if (mobile_agent()) {
+			<ng-content></ng-content>
+			<button mat-icon-button type="button" (click)="onHideAgent()">
+				<mat-icon>close</mat-icon>
+			</button>
+		}
 		<orc-ai-conversation-hud
-			[conversation]="conversation"
-			[message_length]="message_length"
-			[tool_length]="tool_length"
-			[log_open]="log_open"
+			[conversation]="conversation()"
+			[message_length]="message_length()"
+			[tool_length]="tool_length()"
+			[log_open]="log_open()"
 			(toggle)="toggleLog.emit()"
 		></orc-ai-conversation-hud>
 	</div>

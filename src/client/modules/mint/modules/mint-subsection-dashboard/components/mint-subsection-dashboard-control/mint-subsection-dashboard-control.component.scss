@@ -4,11 +4,21 @@
 	@extend %p-b-1;
 }
 
-.mint-analytic-daterange {
+.big-form-field {
 	@extend %w-min-18;
+}
+
+.small-form-field {
+	@extend %w-7;
 }
 
 .panel-form {
 	@extend %flex;
 	@extend %flex-justify-between;
+}
+
+.filter-options {
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-gap-0-5;
 }

@@ -1,19 +1,21 @@
-<div class="flex flex-items-center flex-gap-2 p-l-1">
+<div class="flex flex-gap-2 p-l-1 flex-wrap">
 	<div class="flex-1">
-		<div [formGroup]="form_group()" class="flex flex-items-center flex-gap-2">
-			<div class="flex-1 flex flex-items-center flex-grow" animate.enter="orc-animation-fadein">
+		<div [formGroup]="form_group()" class="flex flex-column">
+			<div class="p-t-1 flex flex-items-center flex-grow flex-gap-1" animate.enter="orc-animation-fadein">
 				<mat-slide-toggle [formControlName]="control_name()" name="oracle_enabled" (change)="update.emit()"> </mat-slide-toggle>
-				<div class="p-l-1 font-size-s">Price Oracle Enabled</div>
+				<div class="font-size-s text-nowrap">Price Oracle Enabled</div>
+				<button type="button" tabindex="-1" mat-icon-button class="orc-icon-button" (click)="help_status.set(!help_status())">
+					<mat-icon class="orc-outline-color">info</mat-icon>
+				</button>
 			</div>
-			<div class="flex-1">
-				<orc-form-help-text class="orc-surface-container-high-bg">
-					<div class="flex flex-column flex-gap-0-5">
-						<div>Enables sovereign bitcoin USD pricing</div>
-						<div>
+			<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
+				<div class="orc-animation-expand-collapse-inner">
+					<div class="flex p-t-2 p-b-1 w-max-18">
+						<orc-form-help-text class="orc-surface-container-high-bg">
 							A task runs daily at 12:00 AM UTC to calcualte the previous days price using only data from your bitcoin node
-						</div>
+						</orc-form-help-text>
 					</div>
-				</orc-form-help-text>
+				</div>
 			</div>
 		</div>
 	</div>

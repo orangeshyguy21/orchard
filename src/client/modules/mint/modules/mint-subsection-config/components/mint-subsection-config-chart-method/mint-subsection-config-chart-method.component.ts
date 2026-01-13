@@ -1,18 +1,26 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input, ViewChild, OnChanges, OnDestroy, SimpleChanges, ChangeDetectorRef} from '@angular/core';
+import {
+	ChangeDetectionStrategy,
+	Component,
+	input,
+	viewChild,
+	OnDestroy,
+	signal,
+	HostListener,
+	SimpleChanges,
+	OnChanges,
+} from '@angular/core';
 /* Vendor Dependencies */
 import {BaseChartDirective} from 'ng2-charts';
-import {ChartConfiguration, ChartType as ChartJsType} from 'chart.js';
+import {ChartConfiguration, ChartType as ChartJsType, Plugin} from 'chart.js';
 import {Subscription} from 'rxjs';
 /* Application Dependencies */
 import {ChartService} from '@client/modules/chart/services/chart/chart.service';
 import {getTooltipLabel, getTooltipTitleExact} from '@client/modules/chart/helpers/mint-chart-options.helpers';
-import {avg, median, max, min} from '@client/modules/math/helpers';
 /* Native Dependencies */
 import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class';
 import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
-/* Shared Dependencies */
-import {MintQuoteState, MeltQuoteState} from '@shared/generated.types';
+import {MintConfigStats} from '@client/modules/mint/modules/mint-subsection-config/types/mint-config-stats.type';
 
 @Component({
 	selector: 'orc-mint-subsection-config-chart-method',
@@ -22,62 +30,45 @@ import {MintQuoteState, MeltQuoteState} from '@shared/generated.types';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintSubsectionConfigChartMethodComponent implements OnChanges, OnDestroy {
-	@ViewChild(BaseChartDirective) chart?: BaseChartDirective;
+	public chart = viewChild(BaseChartDirective);
 
-	@Input() nut!: 'nut4' | 'nut5';
-	@Input() quotes!: MintMintQuote[] | MintMeltQuote[];
-	@Input() loading!: boolean;
-	@Input() locale!: string;
-	@Input() unit!: string;
-	@Input() method!: string;
-	@Input() min_amount!: number;
-	@Input() max_amount!: number;
-	@Input() min_hot!: boolean;
-	@Input() max_hot!: boolean;
+	public nut = input.required<'nut4' | 'nut5'>();
+	public quotes = input.required<MintMintQuote[] | MintMeltQuote[]>();
+	public loading = input.required<boolean>();
+	public locale = input.required<string>();
+	public unit = input.required<string>();
+	public method = input.required<string>();
+	public min_amount = input.required<number>();
+	public max_amount = input.required<number>();
+	public min_hot = input.required<boolean>();
+	public max_hot = input.required<boolean>();
+	public stats = input.required<MintConfigStats>();
+	public amounts = input.required<Record<string, number>[]>();
 
-	public chart_type!: ChartJsType;
-	public chart_data!: ChartConfiguration['data'];
-	public chart_options!: ChartConfiguration['options'];
-	public displayed: boolean = true;
-	public metrics: {
-		avg: number;
-		median: number;
-		max: number;
-		min: number;
-		over_max: number;
-		under_min: number;
-	} = {
-		avg: 0,
-		median: 0,
-		max: 0,
-		min: 0,
-		over_max: 0,
-		under_min: 0,
-	};
+	public chart_type = signal<ChartJsType>('line');
+	public chart_data = signal<ChartConfiguration['data']>({datasets: []});
+	public chart_options = signal<ChartConfiguration['options']>({});
+	public chart_plugins: Plugin[] = [];
+	public displayed = signal<boolean>(false);
 
 	private subscriptions: Subscription = new Subscription();
+	private resize_timeout: ReturnType<typeof setTimeout> | null = null;
 
-	constructor(
-		private chartService: ChartService,
-		private cdr: ChangeDetectorRef,
-	) {
+	constructor(private chartService: ChartService) {
 		this.subscriptions.add(this.getRemoveSubscription());
 		this.subscriptions.add(this.getAddSubscription());
 	}
 
 	public ngOnChanges(changes: SimpleChanges): void {
-		if (changes['loading'] && this.loading === false) {
+		if (changes['loading'] && this.loading() === false) {
 			this.init();
+			this.displayed.set(true);
 		}
 		if (changes['min_amount'] && !changes['min_amount'].firstChange) {
 			this.initOptions();
-			const amounts = this.getAmounts();
-			this.metrics = this.getMetrics(amounts);
 		}
 		if (changes['max_amount'] && !changes['max_amount'].firstChange) {
 			this.initOptions();
-			const amounts = this.getAmounts();
-			this.metrics = this.getMetrics(amounts);
 		}
 		if (changes['min_hot'] && !changes['min_hot'].firstChange) {
 			this.initOptions();
@@ -87,100 +78,79 @@ export class MintSubsectionConfigChartMethodComponent implements OnChanges, OnDe
 		}
 	}
 
+	/**
+	 * Handles window resize events by hiding the chart during resize
+	 * and showing it again after a debounce delay to prevent layout instability
+	 */
+	@HostListener('window:resize')
+	onWindowResize(): void {
+		this.displayed.set(false);
+		if (this.resize_timeout) {
+			clearTimeout(this.resize_timeout);
+		}
+		this.resize_timeout = setTimeout(() => {
+			this.displayed.set(true);
+		}, 150);
+	}
+
 	private getRemoveSubscription(): Subscription {
 		return this.chartService.onResizeStart().subscribe(() => {
-			this.displayed = false;
-			this.cdr.detectChanges();
+			this.displayed.set(false);
 		});
 	}
 	private getAddSubscription(): Subscription {
 		return this.chartService.onResizeEnd().subscribe(() => {
-			this.displayed = true;
-			this.cdr.detectChanges();
+			this.displayed.set(true);
 		});
 	}
 
 	private async init(): Promise<void> {
-		this.chart_type = 'scatter';
-		const amounts = this.getAmounts();
-		this.metrics = this.getMetrics(amounts);
-		this.chart_data = this.getChartData(amounts);
+		this.chart_type.set('scatter');
+		this.chart_data.set(this.getChartData(this.amounts()));
 		this.initOptions();
 	}
 
 	private initOptions(): void {
-		this.chart_options = this.getChartOptions();
-		if (this.chart_options?.plugins) this.chart_options.plugins.annotation = this.getFormAnnotation();
-	}
-
-	private getAmounts(): Record<string, number>[] {
-		if (this.quotes.length === 0) return [];
-		const quotes = this.nut === 'nut4' ? (this.quotes as MintMintQuote[]) : (this.quotes as MintMeltQuote[]);
-		const valid_state = this.nut === 'nut4' ? MintQuoteState.Issued : MeltQuoteState.Paid;
-		const valid_quotes = quotes
-			.filter((quote) => quote.state === valid_state && quote.created_time && quote.created_time > 0 && quote.unit === this.unit)
-			.sort((a, b) => (a.created_time ?? 0) - (b.created_time ?? 0));
-
-		return valid_quotes.map((quote) => ({
-			created_time: quote.created_time ?? 0,
-			amount: this.getEffectiveAmount(quote),
-		}));
-	}
-
-	private getEffectiveAmount(entity: MintMintQuote | MintMeltQuote): number {
-		if (entity instanceof MintMintQuote) return entity.amount_issued;
-		return entity.amount;
-	}
-
-	private getMetrics(amounts: Record<string, number>[]): {
-		avg: number;
-		median: number;
-		max: number;
-		min: number;
-		over_max: number;
-		under_min: number;
-	} {
-		const values = amounts.map((amount) => amount['amount']);
-		return {
-			avg: avg(values),
-			median: median(values),
-			max: max(values),
-			min: min(values),
-			over_max: values.filter((value) => value > this.max_amount).length,
-			under_min: values.filter((value) => value < this.min_amount).length,
-		};
+		const options = this.getChartOptions();
+		if (options?.plugins) options.plugins.annotation = this.getFormAnnotation();
+		this.chart_options.set(options);
 	}
 
 	private getChartData(amounts: Record<string, number>[]): ChartConfiguration['data'] {
 		if (amounts.length === 0) return {datasets: []};
-		const data_prepped = amounts.map((amount) => ({
-			x: amount['created_time'] * 1000,
-			y: amount['amount'],
-		}));
-		const color = this.chartService.getAssetColor(this.unit, 0);
+		const color = this.chartService.getAssetColor(this.unit(), 0);
+		const muted_color = this.chartService.getMutedColor(color.border, 0.5);
+		const data_prepped = amounts
+			.map((amount) => ({
+				x: amount['created_time'] * 1000,
+				y: amount['amount'],
+			}))
+			.sort((a, b) => a.x - b.x);
 		const dataset = {
 			data: data_prepped,
-			borderColor: color.border,
-			pointBackgroundColor: color.border,
-			pointBorderColor: color.border,
+			backgroundColor: muted_color,
+			borderColor: muted_color,
+			pointBackgroundColor: muted_color,
+			pointBorderColor: muted_color,
+			pointBorderWidth: 1,
 			pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
 			pointHoverBorderColor: color.border,
+			pointHoverBorderWidth: 2,
 			pointRadius: 3,
-			pointHoverRadius: 4,
-			tension: 0.4,
+			pointHoverRadius: 5,
 		};
-
 		return {datasets: [dataset]};
 	}
 
 	private getChartOptions(): ChartConfiguration['options'] {
-		if (!this.chart_data || this.chart_data.datasets.length === 0) return {};
-		const data = (this.chart_data.datasets[0]?.data as {x: number; y: number}[]) || [];
+		const chart_data = this.chart_data();
+		if (!chart_data || chart_data.datasets.length === 0) return {};
+		const data = (chart_data.datasets[0]?.data as {x: number; y: number}[]) || [];
 		const min_time = data.length ? Math.min(...data.map((d) => d.x)) : Date.now();
 		const max_time = data.length ? Math.max(...data.map((d) => d.x)) : Date.now();
 		const span_days = (max_time - min_time) / (1000 * 60 * 60 * 24);
 		const time_unit = span_days > 90 ? 'month' : span_days > 21 ? 'week' : 'day';
-		const use_log_scale = this.metrics.max / this.metrics.min >= 100;
+		const use_log_scale = this.stats().max / this.stats().min >= 100;
 		const step_size = 1;
 
 		const scales: any = {};
@@ -195,57 +165,36 @@ export class MintSubsectionConfigChartMethodComponent implements OnChanges, OnDe
 					day: 'MMM d',
 				},
 			},
-			grid: {
-				display: true,
-				color: this.chartService.getGridColor(),
-			},
+			display: false,
 			min: min_time,
 			max: max_time,
-			ticks: {
-				source: 'auto', // Ensures ticks are generated uniformly
-				autoSkip: false, // Show all ticks for the chosen unit
-				maxRotation: 0,
-				minRotation: 0,
-			},
 		};
 		scales['y'] = {
-			position: 'left',
 			type: use_log_scale ? 'logarithmic' : 'linear',
-			title: {
-				display: true,
-				text: this.unit,
-			},
+			min: use_log_scale ? 1 : undefined,
+			display: false,
 			beginAtZero: !use_log_scale,
-			grid: {
-				display: true,
-				color: this.chartService.getGridColor(),
-			},
-			ticks: use_log_scale
-				? {
-						callback: function (value: number): string | null {
-							return value === 1 || Math.log10(value) % 1 === 0 ? value.toString() : null;
-						},
-					}
-				: {},
 		};
 
 		return {
 			responsive: true,
 			elements: {
-				line: {
-					tension: 0.5,
-					cubicInterpolationMode: 'monotone',
+				point: {
+					radius: 3,
+					hoverRadius: 5,
+					borderWidth: 1,
+					hoverBorderWidth: 2,
 				},
 			},
 			scales: scales,
 			plugins: {
 				tooltip: {
 					enabled: true,
-					mode: 'index',
-					intersect: false,
+					mode: 'nearest',
+					intersect: true,
 					callbacks: {
 						title: getTooltipTitleExact,
-						label: (context: any) => getTooltipLabel(context, this.locale),
+						label: (context: any) => getTooltipLabel(context, this.locale()),
 					},
 				},
 				legend: {
@@ -253,16 +202,19 @@ export class MintSubsectionConfigChartMethodComponent implements OnChanges, OnDe
 				},
 			},
 			interaction: {
-				mode: 'index',
-				axis: 'x',
-				intersect: false,
+				mode: 'nearest',
+				intersect: true,
+			},
+			animation: {
+				duration: 750,
+				easing: 'easeOutQuart',
 			},
 		};
 	}
 
 	private getFormAnnotation(): any {
-		const min_config = this.chartService.getFormAnnotationConfig(this.min_hot);
-		const max_config = this.chartService.getFormAnnotationConfig(this.max_hot);
+		const min_config = this.chartService.getFormAnnotationConfig(this.min_hot());
+		const max_config = this.chartService.getFormAnnotationConfig(this.max_hot());
 		return {
 			annotations: {
 				min: {
@@ -284,7 +236,7 @@ export class MintSubsectionConfigChartMethodComponent implements OnChanges, OnDe
 						borderWidth: 1,
 					},
 					scaleID: 'y',
-					value: this.min_amount,
+					value: this.min_amount(),
 				},
 				max: {
 					type: 'line',
@@ -305,7 +257,7 @@ export class MintSubsectionConfigChartMethodComponent implements OnChanges, OnDe
 						borderWidth: 1,
 					},
 					scaleID: 'y',
-					value: this.max_amount,
+					value: this.max_amount(),
 				},
 			},
 		};
@@ -313,5 +265,6 @@ export class MintSubsectionConfigChartMethodComponent implements OnChanges, OnDe
 
 	ngOnDestroy(): void {
 		this.subscriptions.unsubscribe();
+		if (this.resize_timeout) clearTimeout(this.resize_timeout);
 	}
 }

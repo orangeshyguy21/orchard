@@ -17,14 +17,21 @@ describe('MintSubsectionConfigFormMinComponent', () => {
 
 		fixture = TestBed.createComponent(MintSubsectionConfigFormMinComponent);
 		component = fixture.componentInstance;
-		component.nut = 'nut4';
-		component.unit = 'sat';
-		component.form_group = new FormGroup({
-			min_amount: new FormControl(0, [Validators.required]),
-			max_amount: new FormControl(100, [Validators.required]),
-			description: new FormControl(false),
-		});
-		component.control_name = 'min_amount' as any;
+		fixture.componentRef.setInput('nut', 'nut4');
+		fixture.componentRef.setInput('unit', 'sat');
+		fixture.componentRef.setInput(
+			'form_group',
+			new FormGroup({
+				min_amount: new FormControl(0, [Validators.required]),
+				max_amount: new FormControl(100, [Validators.required]),
+				description: new FormControl(false),
+			}),
+		);
+		fixture.componentRef.setInput('control_name', 'min_amount');
+		fixture.componentRef.setInput('control_dirty', false);
+		fixture.componentRef.setInput('control_invalid', false);
+		fixture.componentRef.setInput('control_errors', null);
+		fixture.componentRef.setInput('stat_amounts', []);
 		fixture.detectChanges();
 	});
 

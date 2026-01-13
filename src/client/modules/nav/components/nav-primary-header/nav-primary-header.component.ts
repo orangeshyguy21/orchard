@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, ViewChild, ElementRef, effect} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, ViewChild, ElementRef, effect, computed} from '@angular/core';
 import {Router} from '@angular/router';
 
 @Component({
@@ -10,11 +10,14 @@ import {Router} from '@angular/router';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavPrimaryHeaderComponent {
-	public user_name = input.required<string | null>();
+	public user_name = input<string | null>();
 	public active = input.required<boolean>();
 	public block_count = input.required<number>();
+	public mode = input<'desktop' | 'mobile'>('desktop');
 
 	@ViewChild('flash', {read: ElementRef}) flash!: ElementRef<HTMLElement>;
+
+	public graphic_height = computed(() => (this.mode() === 'mobile' ? '2.5rem' : '3.5rem'));
 
 	private polling_blocks: boolean = false;
 
@@ -44,6 +47,7 @@ export class NavPrimaryHeaderComponent {
 	}
 
 	public onClick() {
+		if (this.mode() === 'mobile') return;
 		this.router.navigate(['/']);
 	}
 }

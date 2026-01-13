@@ -1,22 +1,21 @@
-<div class="flex flex-column">
+<div class="flex flex-column" [class.tablet-view]="device_type() !== 'desktop'">
 	<div class="sticky-setting z-index-1">
 		<div class="flex flex-justify-between flex-items-end p-b-0-5">
 			<div>
 				<div class="title-l">User</div>
 				<div class="font-size-xs orc-outline-color">Settings for your user account</div>
 			</div>
-			<!-- <mat-chip-set aria-label="Location categories">
-				<mat-chip disabled>Orchard</mat-chip>
-				<mat-chip disabled>Local</mat-chip>
-			</mat-chip-set> -->
 		</div>
 		<div class="category-rule"></div>
 	</div>
-	<orc-settings-subsection-user-user
-		[user]="user()"
-		[form_group_user_name]="form_user_name"
-		(cancel_user_name)="onCancelUserName($event)"
-		(submit_user_name)="onSubmitUserName()"
-		(save_user_password)="onSaveUserPassword($event)"
-	></orc-settings-subsection-user-user>
+	<div class="settings-box">
+		<orc-settings-subsection-user-user
+			[user]="user()"
+			[form_group_user_name]="form_user_name"
+			[device_type]="device_type()"
+			(cancel_user_name)="onCancelUserName($event)"
+			(submit_user_name)="onSubmitUserName()"
+			(save_user_password)="onSaveUserPassword($event)"
+		></orc-settings-subsection-user-user>
+	</div>
 </div>

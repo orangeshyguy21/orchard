@@ -16,6 +16,10 @@
 	@extend %top-0;
 }
 
+.index-block {
+	@extend %p-2;
+}
+
 .index-section-error {
 	@extend %orc-surface-bg;
 	@extend %absolute;
@@ -26,4 +30,17 @@
 	@extend %flex;
 	@extend %flex-items-center;
 	@extend %flex-justify-center;
+}
+
+.tablet-view {
+	.sticky-section {
+		@extend %p-l-1;
+		@extend %p-t-1;
+		@extend %p-r-1;
+	}
+
+	.index-block {
+		@extend %p-h-1;
+		@extend %p-v-2;
+	}
 }

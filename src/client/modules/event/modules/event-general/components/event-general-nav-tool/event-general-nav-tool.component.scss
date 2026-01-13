@@ -36,6 +36,16 @@
 			@extend %w-5;
 			@extend %h-5;
 		}
+
+		&.mobile-mode {
+			@extend %orc-corner-full;
+			.event-nav-tool-switch {
+				@extend %orc-corner-full;
+				width: auto;
+				@extend %h-2-5;
+				@extend %p-h-1;
+			}
+		}
 	}
 
 	&.nav-tool-warning {
@@ -73,6 +83,10 @@
 	@extend %border-transparent;
 	@extend %orc-on-surface-variant-color;
 	transition: all 0.15s ease-in-out;
+
+	&.mobile-mode {
+		@extend %flex-row;
+	}
 }
 
 .animate-enter-scale {

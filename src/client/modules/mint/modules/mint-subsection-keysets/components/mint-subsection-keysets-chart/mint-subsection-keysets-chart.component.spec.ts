@@ -16,12 +16,13 @@ describe('MintSubsectionKeysetsChartComponent', () => {
 
 		fixture = TestBed.createComponent(MintSubsectionKeysetsChartComponent);
 		component = fixture.componentInstance;
-		component.loading = true; // avoid init path
-		(component as any).keysets_analytics = [];
-		(component as any).keysets_analytics_pre = [];
-		(component as any).chart_type = 'line';
-		(component as any).chart_data = {datasets: []};
-		(component as any).chart_options = {};
+		fixture.componentRef.setInput('loading', true);
+		fixture.componentRef.setInput('locale', 'en-US');
+		fixture.componentRef.setInput('interval', 'day');
+		fixture.componentRef.setInput('keysets', []);
+		fixture.componentRef.setInput('keysets_analytics', []);
+		fixture.componentRef.setInput('keysets_analytics_pre', []);
+		fixture.componentRef.setInput('mint_genesis_time', 0);
 		fixture.detectChanges();
 	});
 
