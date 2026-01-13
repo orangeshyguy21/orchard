@@ -66,7 +66,7 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy {
 		});
 
 		effect(() => {
-			const selected_type = this.selected_type();
+			const _selected_type = this.selected_type();
 			this.init();
 		});
 

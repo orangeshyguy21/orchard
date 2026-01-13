@@ -12,7 +12,6 @@ import {
 	UpdateMintAnalyticsDateRangeTool,
 	UpdateMintAnalyticsUnitsTool,
 	UpdateMintAnalyticsIntervalTool,
-	UpdateMintAnalyticsTypeTool,
 	UpdateMintNameTool,
 	UpdateMintDescriptionTool,
 	UpdateMintIconUrlTool,

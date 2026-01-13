@@ -1,9 +1,6 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, computed, effect, ElementRef, input, output, signal, viewChild} from '@angular/core';
-import {toObservable, toSignal} from '@angular/core/rxjs-interop';
 import {FormGroup, ValidationErrors} from '@angular/forms';
-/* Vendor Dependencies */
-import {startWith, switchMap} from 'rxjs';
 /* Application Dependencies */
 import {OrchardNut4Method, OrchardNut5Method} from '@shared/generated.types';
 

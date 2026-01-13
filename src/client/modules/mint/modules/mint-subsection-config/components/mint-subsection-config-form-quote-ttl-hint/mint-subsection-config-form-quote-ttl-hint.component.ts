@@ -1,10 +1,5 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, input, effect, signal} from '@angular/core';
-/* Application Dependencies */
-import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class';
-import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
-/* Shared Dependencies */
-import {MintQuoteState, MeltQuoteState} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-subsection-config-form-quote-ttl-hint',

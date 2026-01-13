@@ -1,6 +1,5 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, Inject, signal, computed} from '@angular/core';
-import {Router} from '@angular/router';
 /* Vendor Dependencies */
 import {MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA} from '@angular/material/bottom-sheet';
 /* Native Dependencies */
