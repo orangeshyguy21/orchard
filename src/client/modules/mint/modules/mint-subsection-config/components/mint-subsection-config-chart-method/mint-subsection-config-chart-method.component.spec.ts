@@ -30,6 +30,8 @@ describe('MintSubsectionConfigChartMethodComponent', () => {
 		fixture.componentRef.setInput('max_amount', 10);
 		fixture.componentRef.setInput('min_hot', false);
 		fixture.componentRef.setInput('max_hot', false);
+		fixture.componentRef.setInput('stats', {min: 1, max: 10});
+		fixture.componentRef.setInput('amounts', [{created_time: 1, amount: 100}]);
 		fixture.detectChanges();
 	});
 

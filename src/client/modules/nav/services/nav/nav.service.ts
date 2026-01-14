@@ -88,6 +88,6 @@ export class NavService {
 	};
 
 	public getMenuItems(section: string): NavSecondaryItem[] {
-		return this.menuItems[section];
+		return structuredClone(this.menuItems[section]);
 	}
 }

@@ -26,6 +26,8 @@ describe('MintSubsectionConfigChartQuoteTtlComponent', () => {
 		fixture.componentRef.setInput('locale', 'en-US');
 		fixture.componentRef.setInput('quote_ttl', 10);
 		fixture.componentRef.setInput('form_hot', false);
+		fixture.componentRef.setInput('deltas', [{created_time: 1, delta: 1}]);
+		fixture.componentRef.setInput('stats', {min: 1, max: 10});
 		fixture.detectChanges();
 	});
 
