@@ -1,4 +1,4 @@
-<div class="mint-info-form-contact-container">
+<div class="mint-info-form-contact-container" [class.mobile-contact-container]="device_mobile()">
 	<form [formGroup]="form_group" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)" (keydown.escape)="onCancel($event)">
 		<ng-container [formArrayName]="array_name">
 			<div [formGroupName]="subgroup_index">
@@ -9,13 +9,13 @@
 					(submit)="onSubmit($event)"
 					(cancel)="onCancel($event)"
 				>
-					<div class="flex flex-items-top flex-grow flex-gap-1">
+					<div class="flex flex-items-top flex-grow flex-gap-1 multi-form-field-container">
 						<div class="method-select-container">
 							<mat-form-field
 								appearance="fill"
 								[ngClass]="method_form_hot ? 'orc-hot-form-field' : 'orc-cold-form-field'"
 								subscriptSizing="dynamic"
-								class="orc-dynamic-form-field orc-array-select w-6"
+								class="orc-dynamic-form-field orc-array-select contact-type-select-form-field"
 							>
 								<mat-select formControlName="method" panelClass="w-min-10" class="w-3" #element_method>
 									<mat-select-trigger>
@@ -27,6 +27,7 @@
 													{{ method_option?.icon }}
 												</mat-icon>
 											}
+											<span class="contact-type-select-label">{{ method_option?.label }}</span>
 										</div>
 									</mat-select-trigger>
 									@for (option of options; track option.method) {

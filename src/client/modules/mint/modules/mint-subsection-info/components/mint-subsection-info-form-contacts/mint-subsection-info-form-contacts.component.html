@@ -27,15 +27,17 @@
 				[subgroup_index]="$index"
 				[focused]="added_index() === $index"
 				[init_method]="added_method()"
+				[device_mobile]="device_mobile()"
 				(update)="onControlUpdate($event)"
 				(cancel)="onControlCancel($event)"
 				(remove)="onControlRemove($event)"
 			></orc-mint-subsection-info-form-contact>
 		}
-
-		<orc-form-array-add-item (addControl)="onAddControl()">
-			<mat-icon class="orc-outline-color">add</mat-icon>
-			<span>New Contact</span>
-		</orc-form-array-add-item>
+		<div class="flex">
+			<button matButton="tonal" (click)="onAddControl()">
+				<mat-icon class="orc-outline-color">add</mat-icon>
+				<span class="font-size-s">New Contact</span>
+			</button>
+		</div>
 	</div>
 </div>

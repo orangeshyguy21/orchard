@@ -1,6 +1,7 @@
 @use 'molecule/molecule';
 @use 'nucleus/nucleus';
 
+// this needs to be generalized, whole file needs orc prefixes
 button.mint-genesis-date-class {
     outline: 1px solid var(--mat-sys-outline);
     border-radius: 50%;
@@ -28,4 +29,12 @@ button.mint-genesis-date-class {
 .option-helper{
     @extend %font-size-xs;
     @extend %orc-outline-color;
+}
+
+.orc-small-form-field-wrapper{
+    @extend %w-min-18;
+
+    @media (max-width: 599px) {
+		min-width: unset;
+	}
 }

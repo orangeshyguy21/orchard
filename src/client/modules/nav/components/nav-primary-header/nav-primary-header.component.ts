@@ -17,7 +17,7 @@ export class NavPrimaryHeaderComponent {
 
 	@ViewChild('flash', {read: ElementRef}) flash!: ElementRef<HTMLElement>;
 
-	public graphic_height = computed(() => (this.mode() === 'mobile' ? '2.5rem' : '3.5rem'));
+	public graphic_height = computed(() => (this.mode() === 'mobile' ? '1.5rem' : '3.5rem'));
 
 	private polling_blocks: boolean = false;
 

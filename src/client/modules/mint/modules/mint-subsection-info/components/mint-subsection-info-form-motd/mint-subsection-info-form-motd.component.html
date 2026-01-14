@@ -23,9 +23,11 @@
 				(click)="onClick($event)"
 				matRipple
 			>
-				<mat-icon class="icon-lg" [class.mat-symbol-outline]="motd_state !== 'unset'">{{
-					motd_state === 'unset' ? 'add_comment' : 'chat_bubble'
-				}}</mat-icon>
+				@if (!device_mobile()) {
+					<mat-icon class="icon-lg" [class.mat-symbol-outline]="motd_state !== 'unset'">{{
+						motd_state === 'unset' ? 'add_comment' : 'chat_bubble'
+					}}</mat-icon>
+				}
 				<div class="flex-grow flex flex-column flex-gap-0-5 p-v-1">
 					<div>Message of the Day</div>
 					<textarea

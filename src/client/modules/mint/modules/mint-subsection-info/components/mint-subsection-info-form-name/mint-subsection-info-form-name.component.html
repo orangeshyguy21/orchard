@@ -8,27 +8,29 @@
 			(cancel)="onCancel($event)"
 			(inform)="help_status.set(!help_status())"
 		>
-			<mat-form-field
-				appearance="fill"
-				[ngClass]="
-					focused_name() || form_group().get(control_name())?.dirty || false ? 'orc-hot-form-field' : 'orc-cold-form-field'
-				"
-				class="mint-name-form-field orc-dynamic-form-field"
-			>
-				<mat-label>Name</mat-label>
-				<input
-					type="text"
-					matInput
-					[formControlName]="control_name()"
-					placeholder="Ex. My Mint"
-					#element_name
-					(focus)="focused_name.set(true)"
-					(blur)="focused_name.set(false)"
-				/>
-				<mat-error>
-					<orc-form-error [errors]="form_group().get(control_name())?.errors">Invalid name</orc-form-error>
-				</mat-error>
-			</mat-form-field>
+			<div class="orc-small-form-field-wrapper">
+				<mat-form-field
+					appearance="fill"
+					[ngClass]="
+						focused_name() || form_group().get(control_name())?.dirty || false ? 'orc-hot-form-field' : 'orc-cold-form-field'
+					"
+					class="orc-dynamic-form-field w-full"
+				>
+					<mat-label>Name</mat-label>
+					<input
+						type="text"
+						matInput
+						[formControlName]="control_name()"
+						placeholder="Ex. My Mint"
+						#element_name
+						(focus)="focused_name.set(true)"
+						(blur)="focused_name.set(false)"
+					/>
+					<mat-error>
+						<orc-form-error [errors]="form_group().get(control_name())?.errors">Invalid name</orc-form-error>
+					</mat-error>
+				</mat-form-field>
+			</div>
 		</orc-form-field-dynamic>
 		<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
 			<div class="orc-animation-expand-collapse-inner">
