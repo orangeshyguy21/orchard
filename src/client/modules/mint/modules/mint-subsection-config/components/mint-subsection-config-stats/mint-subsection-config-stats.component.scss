@@ -8,6 +8,7 @@
 	@extend %flex-justify-center;
 	@extend %font-size-xs;
 	@extend %orc-outline-color;
+	@extend %text-nowrap;
 }
 
 .quote-stats-item-label {

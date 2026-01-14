@@ -1,6 +1,7 @@
 @use 'molecule/molecule';
 
 .mint-method-chart-container {
+	overflow: hidden;
 	@extend %relative;
 	max-height: 180px;
 	min-height: 225px;
