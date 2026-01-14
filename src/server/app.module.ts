@@ -57,7 +57,6 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 			'graphql-ws': true,
 			'subscriptions-transport-ws': false,
 		},
-		playground: !is_production,
 		resolvers: {
 			UnixTimestamp: UnixTimestamp,
 			Timezone: Timezone,
