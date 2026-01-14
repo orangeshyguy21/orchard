@@ -11,6 +11,7 @@
 }
 
 .primary-nav-index {
+	@extend %relative;
 	@extend %p-v-1;
 	@extend %p-h-0-5;
 	@extend %cursor-pointer;
@@ -35,11 +36,18 @@
 	}
 
 	&.primary-nav-index-mobile {
-		@extend %p-0;
+		padding-top: 0;
+		padding-left: 0;
+		padding-right: 0;
+		padding-bottom: 14px;
 		height: unset;
+		min-width: unset;
 
 		.primary-nav-blockheight {
 			@extend %font-size-xs;
+			@extend %absolute;
+			@extend %z-index-1;
+			top: 1.5rem;
 		}
 	}
 }

@@ -35,3 +35,17 @@
 		@extend %opacity-0;
 	}
 }
+
+.mobile-nav-item-left,
+.mobile-nav-item-right {
+	transition: transform 0.3s ease;
+}
+
+.mobile-pending-event-state {
+	.mobile-nav-item-left {
+		transform: translateX(-100vw);
+	}
+	.mobile-nav-item-right {
+		transform: translateX(100vw);
+	}
+}

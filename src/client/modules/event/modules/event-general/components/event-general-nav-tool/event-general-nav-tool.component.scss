@@ -2,6 +2,17 @@
 @use 'nucleus/nucleus';
 
 .event-nav-tool-container {
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %relative;
+	@extend %flex-column;
+
+	&.mobile-mode {
+		@extend %flex-row;
+	}
+}
+
+.event-nav-tool {
 	@extend %relative;
 	@extend %border;
 	@extend %border-solid;
@@ -35,16 +46,6 @@
 			@extend %orc-corner-medium;
 			@extend %w-5;
 			@extend %h-5;
-		}
-
-		&.mobile-mode {
-			@extend %orc-corner-full;
-			.event-nav-tool-switch {
-				@extend %orc-corner-full;
-				width: auto;
-				@extend %h-2-5;
-				@extend %p-h-1;
-			}
 		}
 	}
 
@@ -83,9 +84,38 @@
 	@extend %border-transparent;
 	@extend %orc-on-surface-variant-color;
 	transition: all 0.15s ease-in-out;
+}
 
-	&.mobile-mode {
+.event-nav-tool-actionable-container {
+	@extend %relative;
+}
+
+.mobile-mode {
+	.event-nav-tool-switch {
 		@extend %flex-row;
+	}
+
+	.event-nav-tool {
+		&.nav-tool-highlight {
+			&.mobile-mode {
+				@extend %orc-corner-full;
+				.event-nav-tool-switch {
+					@extend %orc-corner-full;
+					width: auto;
+					@extend %h-2-5;
+					@extend %p-h-1;
+				}
+			}
+		}
+	}
+
+	.event-nav-tool-actionable-container {
+		button {
+			@extend %absolute;
+			@extend %right-1;
+			top: 50%;
+			transform: translateY(-50%);
+		}
 	}
 }
 

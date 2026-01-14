@@ -37,6 +37,8 @@ import {AiModel} from '@client/modules/ai/classes/ai-model.class';
 import {AiChatConversation} from '@client/modules/ai/classes/ai-chat-conversation.class';
 import {AiChatCompiledMessage} from '@client/modules/ai/classes/ai-chat-compiled-message.class';
 import {AiAgentDefinition} from '@client/modules/ai/classes/ai-agent-definition.class';
+/* Native Dependencies */
+import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Shared Dependencies */
 import {AiAgent, AiMessageRole} from '@shared/generated.types';
 
@@ -77,10 +79,11 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	public ai_agent_definition = signal<AiAgentDefinition | null>(null);
 	public overlayed = signal(false);
-	public desktop_nav_open = signal(true);
 	public show_mobile_agent = signal(false);
-	public ai_sidenav_mode = signal<'side' | 'over'>('side');
+	public device_type = signal<DeviceType>('desktop');
 
+	public desktop_nav_open = computed(() => this.device_type() === 'desktop');
+	public ai_sidenav_mode = computed(() => (this.device_type() === 'desktop' ? 'side' : 'over'));
 	public show_mobile_nav = computed(() => !this.desktop_nav_open() && !this.show_mobile_agent());
 
 	public ai_actionable = computed(() => {
@@ -205,11 +208,15 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	private getBreakpointSubscription(): Subscription {
-		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
-			const is_xlarge = this.breakpointObserver.isMatched(Breakpoints.XLarge);
-			this.desktop_nav_open.set(result.matches);
-			this.ai_sidenav_mode.set(is_xlarge ? 'side' : 'over');
+	public getBreakpointSubscription(): Subscription {
+		return this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium]).subscribe((result) => {
+			if (result.breakpoints[Breakpoints.XSmall]) {
+				this.device_type.set('mobile');
+			} else if (result.breakpoints[Breakpoints.Small] || result.breakpoints[Breakpoints.Medium]) {
+				this.device_type.set('tablet');
+			} else {
+				this.device_type.set('desktop');
+			}
 			if (this.desktop_nav_open()) this.show_mobile_agent.set(false);
 		});
 	}
