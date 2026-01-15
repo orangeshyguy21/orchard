@@ -64,7 +64,6 @@ type ChartKey = 'balance_sheet' | 'mints' | 'melts' | 'swaps' | 'fee_revenue';
 export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	@ViewChildren('nav1,nav2,nav3,nav4,nav5') nav_elements!: QueryList<ElementRef>;
 	@ViewChild('chart_container', {static: false}) chart_container!: ElementRef;
-	@ViewChild('chart_order_menu') chart_order_menu!: MatMenu;
 
 	// data
 	public mint_info: MintInfo | null = null;
@@ -506,7 +505,6 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	}
 
 	public onTertiaryNavSelect(event: string): void {
-		this.chart_order_menu?.close.emit();
 		this.scrollToChart(event as NavTertiary);
 	}
 
