@@ -21,6 +21,7 @@ describe('MintSubsectionDatabaseTableMintComponent', () => {
 			state: 0,
 		} as any);
 		fixture.componentRef.setInput('loading', false);
+		fixture.componentRef.setInput('device_desktop', true);
 		fixture.detectChanges();
 	});
 

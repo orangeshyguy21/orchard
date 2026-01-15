@@ -18,8 +18,8 @@ describe('AiModelComponent', () => {
 
 		fixture = TestBed.createComponent(AiModelComponent);
 		component = fixture.componentInstance;
-		component.model = 'model-a';
-		component.model_options = [
+		fixture.componentRef.setInput('model', 'model-a');
+		fixture.componentRef.setInput('model_options', [
 			new AiModel({
 				model: 'model-a',
 				modified_at: Date.now(),
@@ -36,7 +36,8 @@ describe('AiModelComponent', () => {
 				digest: 'y',
 				details: {parameter_size: '2B'} as any,
 			} as any),
-		];
+		]);
+		fixture.componentRef.setInput('device_mobile', false);
 		fixture.detectChanges();
 	});
 
