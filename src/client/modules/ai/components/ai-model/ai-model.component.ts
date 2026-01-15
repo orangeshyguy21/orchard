@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input, Output, EventEmitter} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
 /* Application Dependencies */
 import {AiModel} from '@client/modules/ai/classes/ai-model.class';
 
@@ -11,8 +11,9 @@ import {AiModel} from '@client/modules/ai/classes/ai-model.class';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AiModelComponent {
-	@Input() model!: string | null;
-	@Input() model_options!: AiModel[];
+	public model = input.required<string | null>();
+	public model_options = input.required<AiModel[]>();
+	public device_mobile = input.required<boolean>();
 
-	@Output() modelChange = new EventEmitter<string>();
+	public modelChange = output<string>();
 }

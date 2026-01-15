@@ -456,6 +456,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	public onHideAgent(): void {
 		this.show_mobile_agent.set(false);
+		if (this.active_event()?.type === 'PENDING') this.onCancelPendingEvent();
 	}
 
 	/* *******************************************************

@@ -5,6 +5,7 @@ import {FormControl} from '@angular/forms';
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
 import {AiModel} from '@client/modules/ai/classes/ai-model.class';
 import {AiChatConversation} from '@client/modules/ai/classes/ai-chat-conversation.class';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Shared Dependencies */
 import {AiAgent} from '@shared/generated.types';
 
@@ -31,7 +32,9 @@ export class AiNavComponent {
 	public tool_length = input.required<number>();
 	public log_open = input<boolean>();
 	public opened = input<boolean>(false);
+	public device_type = input.required<DeviceType>();
 	public mobile_agent = input.required<boolean>();
+	public event_pending = input<boolean>(false);
 
 	/* Outputs */
 	public command = output<void>();

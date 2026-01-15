@@ -61,6 +61,9 @@ export class MintSubsectionKeysetsChartComponent implements OnDestroy {
 		effect(() => {
 			if (this.loading() !== false) return;
 			this.init();
+			setTimeout(() => {
+				this.chart()?.chart?.resize();
+			}, 50);
 		});
 	}
 

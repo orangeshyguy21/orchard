@@ -15,7 +15,7 @@ export class EventGeneralNavToolComponent {
 	public navroute = input.required<string>();
 	public active = input<boolean>(false);
 	public active_event = input<EventData | null>(null);
-	public mode = input<'desktop' | 'mobile'>('desktop');
+	public mode = input<'desktop' | 'mobile' | 'mobile-ai'>('desktop');
 
 	public save = output<void>();
 	public cancel = output<void>();
@@ -26,6 +26,10 @@ export class EventGeneralNavToolComponent {
 
 	public moused = signal<boolean>(false);
 
+	public mode_layout = computed(() => {
+		if (this.mode() === 'mobile-ai' || this.mode() === 'mobile') return 'mobile';
+		return 'desktop';
+	});
 	public highlight = computed(() => this.active() || this.moused());
 	public pending_event = computed(() => this.active_event()?.type === 'PENDING');
 	public saving = computed(() => this.active_event()?.type === 'SAVING' || this.active_event()?.type === 'SUBSCRIBED');
