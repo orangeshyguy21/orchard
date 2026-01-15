@@ -524,7 +524,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 				block: 'start',
 				inline: 'nearest',
 			});
-		});
+		}, 5);
 	}
 
 	/* *******************************************************
