@@ -21,17 +21,16 @@
 			</div>
 			<div>
 				<div class="flex flex-items-center flex-gap-0-5 relative">
-					<button
-						type="button"
-						matFab
-						extended
-						class="orc-icon-button text-nowrap"
-						(click)="onBackfill()"
-						(keydown.enter)="$event.preventDefault(); $event.stopPropagation()"
-					>
-						<mat-icon>history</mat-icon>
-						Backfill Prices
-					</button>
+					@if (device_type() === 'desktop') {
+						<button type="button" matFab extended class="orc-icon-button text-nowrap" (click)="onBackfill()">
+							<mat-icon>history</mat-icon>
+							Backfill Prices
+						</button>
+					} @else {
+						<button type="button" matFab class="orc-icon-button text-nowrap" (click)="onBackfill()">
+							<mat-icon>history</mat-icon>
+						</button>
+					}
 				</div>
 			</div>
 		</div>
@@ -58,14 +57,18 @@
 
 	<div class="relative">
 		@if (device_type() !== 'desktop') {
-			<div class="mobile-latest-price flex flex-gap-2 flex-items-center" animate.enter="orc-animation-fadein">
-				<div class="p-b-1">
+			<div
+				class="tablet-latest-price flex flex-gap-2 flex-items-center"
+				[class.mobile-latest-price]="device_type() === 'mobile'"
+				animate.enter="orc-animation-fadein"
+			>
+				<div>
 					<div class="title-l text-nowrap">Latest Price</div>
 					<div class="orc-outline-color font-size-s text-nowrap">
 						{{ latest_oracle()?.date | timeUtc: 'date-only' }} <small class="font-weight-bold">UTC</small>
 					</div>
 				</div>
-				<div class="p-b-1">
+				<div>
 					<div class="font-weight-bold font-size-xxl">${{ latest_oracle()?.price | number: '1.0-0' }}</div>
 				</div>
 			</div>
@@ -84,3 +87,30 @@
 		></orc-bitcoin-subsection-oracle-chart>
 	</div>
 </div>
+
+<!-- @switch (device_type()) {
+    @case ('desktop') {
+        <button
+            type="button"
+            matFab
+            extended
+            class="orc-icon-button text-nowrap"
+            (click)="onCreate()"
+            (keydown.enter)="$event.preventDefault(); $event.stopPropagation()"
+        >
+            <mat-icon>database</mat-icon>
+            Create Backup
+        </button>
+    }
+    @case ('tablet') {
+        <button
+            type="button"
+            matFab
+            class="orc-icon-button text-nowrap"
+            (click)="onCreate()"
+            (keydown.enter)="$event.preventDefault(); $event.stopPropagation()"
+        >
+            <mat-icon>database</mat-icon>
+        </button>
+    }
+} -->

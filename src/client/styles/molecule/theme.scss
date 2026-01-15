@@ -38,6 +38,7 @@
     #{$c}orc-neutral-bg { background-color: var(--mat-sys-neutral); }
     // Background Colors (with transparency)
     #{$c}orc-shadow-bg { background-color: color-mix(in srgb, var(--mat-sys-shadow), transparent 50%); }
+    #{$c}orc-fog-surface-bg { background-color: color-mix(in srgb, var(--mat-sys-surface), transparent 50%); }
     #{$c}orc-fog-bg { background-color: color-mix(in srgb, var(--mat-sys-surface-container), transparent 50%); }
     #{$c}orc-fog-high-bg { background-color: color-mix(in srgb, var(--mat-sys-surface-container-high), transparent 50%); }
 
