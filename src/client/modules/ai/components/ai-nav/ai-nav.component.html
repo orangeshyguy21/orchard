@@ -11,13 +11,21 @@
 	</div>
 
 	<div class="ai-action-bar">
-		<orc-ai-model [model]="model()" [model_options]="model_options()" (modelChange)="modelChange.emit($event)"></orc-ai-model>
-		<orc-ai-command [actionable]="actionable()" [active_chat]="active_chat()" (command)="command.emit()"></orc-ai-command>
+		<orc-ai-model
+			[model]="model()"
+			[model_options]="model_options()"
+			[device_mobile]="device_type() === 'mobile'"
+			(modelChange)="modelChange.emit($event)"
+		></orc-ai-model>
+
 		@if (mobile_agent()) {
-			<ng-content></ng-content>
-			<button mat-icon-button type="button" (click)="onHideAgent()">
-				<mat-icon>close</mat-icon>
+			<button mat-icon-button type="button" (click)="onHideAgent()" class="orc-icon-button">
+				<mat-icon class="orc-outline-color">{{ event_pending() ? 'cancel' : 'close' }}</mat-icon>
 			</button>
+			<ng-content></ng-content>
+			<orc-ai-command [actionable]="actionable()" [active_chat]="active_chat()" (command)="command.emit()"></orc-ai-command>
+		} @else {
+			<orc-ai-command [actionable]="actionable()" [active_chat]="active_chat()" (command)="command.emit()"></orc-ai-command>
 		}
 		<orc-ai-conversation-hud
 			[conversation]="conversation()"

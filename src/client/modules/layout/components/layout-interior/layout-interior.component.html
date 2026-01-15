@@ -71,8 +71,10 @@
 					[tool_length]="ai_tool_calls()"
 					[message_length]="ai_conversation()?.messages?.length"
 					[log_open]="sidenav ? sidenav.opened : false"
+					[device_type]="device_type()"
 					[mobile_agent]="show_mobile_agent()"
 					[opened]="!show_mobile_nav()"
+					[event_pending]="active_event()?.type === 'PENDING'"
 					(command)="onCommand()"
 					(modelChange)="onModelChange($event)"
 					(toggleLog)="onToggleLog()"
@@ -80,7 +82,7 @@
 				>
 					<orc-event-general-nav-tool
 						navroute="event"
-						mode="mobile"
+						mode="mobile-ai"
 						[active_event]="active_event()"
 						[active]="active_section() === 'event'"
 						(save)="onSavePendingEvent()"

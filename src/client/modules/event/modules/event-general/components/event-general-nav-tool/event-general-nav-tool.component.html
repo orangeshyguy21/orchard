@@ -1,5 +1,5 @@
-<div class="flex flex-items-center relative event-nav-tool-container" [class.mobile-mode]="mode() === 'mobile'">
-	@if (morph_state() === 'actionable') {
+<div class="flex flex-items-center relative event-nav-tool-container" [class.mobile-mode]="mode_layout() === 'mobile'">
+	@if (morph_state() === 'actionable' && mode() !== 'mobile-ai') {
 		<div class="event-nav-tool-actionable-container">
 			<button type="button" mat-icon-button class="orc-icon-button" (click)="cancel.emit()">
 				<mat-icon>cancel</mat-icon>
@@ -14,7 +14,7 @@
 		(mouseleave)="onMouseLeave()"
 		(click)="onClick()"
 	>
-		<div class="event-nav-tool-switch" [class.mobile-mode]="mode() === 'mobile'">
+		<div class="event-nav-tool-switch" [class.mobile-mode]="mode_layout() === 'mobile'">
 			@if (saving()) {
 				@if (subscribed()) {
 					@if (moused()) {

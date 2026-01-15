@@ -15,7 +15,6 @@ describe('AiNavComponent', () => {
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
 			imports: [OrcAiModule],
-			declarations: [AiNavComponent],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(AiNavComponent);
@@ -29,6 +28,7 @@ describe('AiNavComponent', () => {
 		fixture.componentRef.setInput('conversation', null);
 		fixture.componentRef.setInput('tool_length', 0);
 		fixture.componentRef.setInput('log_open', false);
+		fixture.componentRef.setInput('device_type', 'desktop');
 		fixture.componentRef.setInput('mobile_agent', false);
 		fixture.detectChanges();
 	});

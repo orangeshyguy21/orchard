@@ -15,7 +15,6 @@ describe('MintSubsectionDatabaseTableComponent', () => {
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
 			imports: [OrcMintSubsectionDatabaseModule],
-			declarations: [MintSubsectionDatabaseTableComponent],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(MintSubsectionDatabaseTableComponent);

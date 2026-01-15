@@ -1,13 +1,20 @@
-<button mat-button type="button" [matMenuTriggerFor]="model_menu">
-	<div class="orc-outline-color font-size-xs">{{ model }}</div>
-</button>
+@if (device_mobile()) {
+	<button mat-icon-button type="button" [matMenuTriggerFor]="model_menu" class="orc-icon-button">
+		<mat-icon class="orc-outline-color">spa</mat-icon>
+	</button>
+} @else {
+	<button mat-button type="button" [matMenuTriggerFor]="model_menu">
+		<div class="orc-outline-color font-size-xs">{{ model() }}</div>
+	</button>
+}
+
 <mat-menu #model_menu="matMenu" yPosition="above" class="orc-bottom-nav-menu">
-	@for (option of model_options; track option.model) {
-		<button mat-menu-item [class.active-model-option]="option.model === model" (click)="modelChange.emit(option.model)">
+	@for (option of model_options(); track option.model) {
+		<button mat-menu-item [class.active-model-option]="option.model === model()" (click)="modelChange.emit(option.model)">
 			<div class="flex flex-items-center flex-gap-1 font-weight-light">
 				<div class="orc-outline-color w-min-3">{{ option.details.parameter_size }}</div>
 				<div class="flex-grow text-nowrap">{{ option.name }}</div>
-				<mat-icon>{{ option.model === model ? 'check' : '' }}</mat-icon>
+				<mat-icon>{{ option.model === model() ? 'check' : '' }}</mat-icon>
 			</div>
 		</button>
 	}

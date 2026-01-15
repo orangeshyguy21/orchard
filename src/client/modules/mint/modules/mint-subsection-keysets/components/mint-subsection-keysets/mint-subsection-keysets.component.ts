@@ -187,10 +187,8 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	}
 
 	private getAnalyticsInterval(): MintAnalyticsInterval {
-		const days_diff = DateTime.fromSeconds(this.page_settings.date_end).diff(
-			DateTime.fromSeconds(this.page_settings.date_start),
-			'days',
-		).days;
+		const effective_date_start = Math.max(this.page_settings.date_start, this.mint_genesis_time);
+		const days_diff = DateTime.fromSeconds(this.page_settings.date_end).diff(DateTime.fromSeconds(effective_date_start), 'days').days;
 		if (days_diff <= 90) return MintAnalyticsInterval.Day;
 		if (days_diff <= 365) return MintAnalyticsInterval.Week;
 		return MintAnalyticsInterval.Month;

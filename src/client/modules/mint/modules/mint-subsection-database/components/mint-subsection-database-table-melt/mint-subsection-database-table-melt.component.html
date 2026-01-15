@@ -12,100 +12,111 @@
 				></div>
 			</div>
 		</div>
-		<div class="flex flex-column flex-gap-1">
-			<div class="flex flex-gap-1">
-				<div class="w-8 orc-outline-color font-weight-extra-light">Melt Quote ID:</div>
-				<div class="mega-string orc-text-button" (click)="onCopy(quote().id)">{{ quote().id }}</div>
-			</div>
-			<div class="flex flex-gap-1">
-				<div class="w-8 orc-outline-color font-weight-extra-light">Fee Reserve:</div>
-				<div [innerHTML]="quote().fee_reserve | localAmount: quote().unit : 'mint'"></div>
-			</div>
-			<div class="flex flex-gap-1">
-				<div class="w-8 orc-outline-color font-weight-extra-light">Msat to Pay:</div>
-				@if (quote().msat_to_pay) {
-					<div>{{ quote().msat_to_pay | localAmount: 'msat' }}</div>
-				} @else {
-					<div class="orc-outline-variant-color">Null</div>
-				}
-			</div>
-			<!-- <div class="flex flex-gap-1">
-				<div class="w-8 orc-outline-color font-weight-extra-light">Payment Preimage:</div>
-				@if (quote.payment_preimage) {
-					<div class="orc-text-button" (click)="onCopy(quote.payment_preimage)">{{ quote.payment_preimage }}</div>
-				} @else {
-					<div class="orc-outline-variant-color">Null</div>
-				}
-			</div>
-			<div class="flex flex-gap-1">
-				<div class="w-8 orc-outline-color font-weight-extra-light">Request Lookup ID:</div>
-				<div class="orc-text-button" (click)="onCopy(quote.request_lookup_id)">{{ quote.request_lookup_id }}</div>
-			</div> -->
-			<div class="flex flex-gap-1">
-				<div class="w-8 orc-outline-color font-weight-extra-light">
-					{{ quote().payment_method == 'bolt11' ? 'Bolt 11 Invoice' : 'Bolt 12 Offer' }}:
+		<div class="flex flex-gap-2 flex-wrap-reverse">
+			<div class="flex flex-column flex-gap-1">
+				<div class="flex flex-gap-1">
+					<div class="w-8 orc-outline-color font-weight-extra-light">Melt Quote ID:</div>
+					<div class="mega-string orc-text-button" (click)="onCopy(quote().id)">{{ quote().id }}</div>
 				</div>
-				<div class="mega-string w-max-36 orc-text-button" (click)="onCopy(quote().request)">{{ quote().request }}</div>
-			</div>
-			@if (lightning_request() && !loading()) {
-				<div animate.enter="orc-animation-fadein-fast" class="flex flex-column flex-gap-1">
-					<div class="flex flex-gap-1">
-						<div class="w-8 orc-outline-color font-weight-extra-light text-nowrap">
-							{{ quote().payment_method == 'bolt11' ? 'Bolt 11 Expiry' : 'Bolt 12 Expiry' }}:
-						</div>
-						@if (lightning_request()?.expiry) {
-							<div class="flex flex-gap-0-5 flex-wrap">
-								<div class="text-nowrap">{{ lightning_request()?.expiry | localTime: 'medium' }}</div>
-								<div class="text-nowrap" [ngClass]="expired_class()">{{ expired_message() }}</div>
-							</div>
-						} @else {
-							<div class="orc-outline-variant-color">No Expiry</div>
-						}
-					</div>
-					@if (lightning_request()?.description) {
-						<div class="flex flex-gap-1 flex-wrap">
-							<div class="w-8 orc-outline-color font-weight-extra-light">Description</div>
-							<div>{{ lightning_request()?.description }}</div>
-						</div>
+				<div class="flex flex-gap-1">
+					<div class="w-8 orc-outline-color font-weight-extra-light">Fee Reserve:</div>
+					<div [innerHTML]="quote().fee_reserve | localAmount: quote().unit : 'mint'"></div>
+				</div>
+				<div class="flex flex-gap-1">
+					<div class="w-8 orc-outline-color font-weight-extra-light">Msat to Pay:</div>
+					@if (quote().msat_to_pay) {
+						<div>{{ quote().msat_to_pay | localAmount: 'msat' }}</div>
+					} @else {
+						<div class="orc-outline-variant-color">Null</div>
 					}
 				</div>
-			}
-			<div class="flex flex-gap-1">
-				<div class="w-8"></div>
-				<div class="relative">
-					<div
-						class="orc-animation-feedback absolute top-0 flex flex-gap-0-25 flex-row flex-align-center orc-outline-color"
-						[class.animation-visible]="copy_animation_state === 'visible'"
-					>
-						<div class="font-size-s text-nowrap">Copied</div>
-						<mat-icon class="icon-sm">content_copy</mat-icon>
+				<div class="flex flex-gap-1">
+					<div class="w-8 orc-outline-color font-weight-extra-light">Payment Preimage:</div>
+					@if (quote().payment_preimage) {
+						<div class="orc-text-button" (click)="onCopy(quote().payment_preimage)">{{ quote().payment_preimage }}</div>
+					} @else {
+						<div class="orc-outline-variant-color">Null</div>
+					}
+				</div>
+				<div class="flex flex-gap-1">
+					<div class="w-8 orc-outline-color font-weight-extra-light">Request Lookup ID:</div>
+					<div class="mega-string orc-text-button" (click)="onCopy(quote().request_lookup_id)">
+						{{ quote().request_lookup_id }}
+					</div>
+				</div>
+				<div class="flex flex-gap-1">
+					<div class="w-8 orc-outline-color font-weight-extra-light">
+						{{ quote().payment_method == 'bolt11' ? 'Bolt 11 Invoice' : 'Bolt 12 Offer' }}:
+					</div>
+					<div class="mega-string w-max-36 orc-text-button" (click)="onCopy(quote().request)">{{ quote().request }}</div>
+				</div>
+				@if (lightning_request() && !loading()) {
+					<div animate.enter="orc-animation-fadein-fast" class="flex flex-column flex-gap-1">
+						<div class="flex flex-gap-1">
+							<div class="w-8 orc-outline-color font-weight-extra-light text-nowrap">
+								{{ quote().payment_method == 'bolt11' ? 'Bolt 11 Expiry' : 'Bolt 12 Expiry' }}:
+							</div>
+							@if (lightning_request()?.expiry) {
+								<div class="flex flex-gap-0-5 flex-wrap">
+									<div class="text-nowrap">{{ lightning_request()?.expiry | localTime: 'medium' }}</div>
+									<div class="text-nowrap" [ngClass]="expired_class()">{{ expired_message() }}</div>
+								</div>
+							} @else {
+								<div class="orc-outline-variant-color">No Expiry</div>
+							}
+						</div>
+						@if (lightning_request()?.description) {
+							<div class="flex flex-gap-1 flex-wrap">
+								<div class="w-8 orc-outline-color font-weight-extra-light">Description</div>
+								<div>{{ lightning_request()?.description }}</div>
+							</div>
+						}
+					</div>
+				}
+				<div class="flex flex-gap-1">
+					<div class="w-8"></div>
+					<div class="relative">
+						<div
+							class="orc-animation-feedback absolute top-0 flex flex-gap-0-25 flex-row flex-align-center orc-outline-color"
+							[class.animation-visible]="copy_animation_state === 'visible'"
+						>
+							<div class="font-size-s text-nowrap">Copied</div>
+							<mat-icon class="icon-sm">content_copy</mat-icon>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
 
-		<div class="flex flex-column flex-gap-1">
-			<div class="flex flex-gap-1">
-				<div class="w-6 orc-outline-color font-weight-extra-light">Paid Time:</div>
-				@if (quote().paid_time) {
-					<div class="flex flex-gap-0-5">
-						<div class="text-nowrap">{{ quote().paid_time | localTime: 'medium' }}</div>
-						<div class="orc-outline-color">{{ quote().created_time | localTimeDelta: quote().paid_time }} after created</div>
+			<div class="flex flex-column flex-gap-1">
+				@if (!device_desktop()) {
+					<div class="flex flex-gap-1">
+						<div class="w-6 orc-outline-color font-weight-extra-light">Created Time:</div>
+						<div class="text-nowrap">{{ quote().created_time | localTime: 'medium' }}</div>
 					</div>
-				} @else {
-					<div class="orc-outline-variant-color">Not Paid</div>
+				}
+				<div class="flex flex-gap-1">
+					<div class="w-6 orc-outline-color font-weight-extra-light">Paid Time:</div>
+					@if (quote().paid_time) {
+						<div class="flex flex-gap-0-5 flex-wrap">
+							<div class="text-nowrap">{{ quote().paid_time | localTime: 'medium' }}</div>
+							<div class="orc-outline-color">
+								{{ quote().created_time | localTimeDelta: quote().paid_time }} after created
+							</div>
+						</div>
+					} @else {
+						<div class="orc-outline-variant-color">Not Paid</div>
+					}
+				</div>
+				@if (can_set_paid()) {
+					<div class="flex flex-gap-1">
+						<div class="w-6 orc-outline-color font-weight-extra-light p-t-0-5">Actions:</div>
+						<button mat-stroked-button color="primary" (click)="onSetStatePaid($event)">
+							<mat-icon class="mat-symbol-outline">credit_score</mat-icon>
+							Set as Paid
+						</button>
+					</div>
 				}
 			</div>
 		</div>
-
-		@if (can_set_paid()) {
-			<div class="flex flex-gap-1">
-				<div class="w-6 orc-outline-color font-weight-extra-light p-t-0-5">Actions:</div>
-				<button mat-stroked-button color="primary" (click)="onSetStatePaid($event)">
-					<mat-icon class="mat-symbol-outline">credit_score</mat-icon>
-					Set as Paid
-				</button>
-			</div>
-		}
 	</div>
 </div>
