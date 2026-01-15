@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, Output, EventEmitter} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, input, Output, EventEmitter} from '@angular/core';
 /* Vendor Dependencies */
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 /* Native Dependencies */
@@ -16,6 +16,7 @@ export class NavTertiaryComponent {
 	@Input() keys: string[] = [];
 	@Input() items: Record<string, NavTertiaryItem> = {};
 	@Input() revision?: number = 0;
+	public draggable = input<boolean>(true);
 
 	@Output() orderChange = new EventEmitter<string[]>();
 	@Output() keySelect = new EventEmitter<string>();
