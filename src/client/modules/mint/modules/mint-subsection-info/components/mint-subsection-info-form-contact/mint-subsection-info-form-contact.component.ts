@@ -3,6 +3,7 @@ import {
 	ChangeDetectionStrategy,
 	Component,
 	Input,
+	input,
 	ViewChild,
 	ElementRef,
 	Output,
@@ -35,6 +36,7 @@ export class MintSubsectionInfoFormContactComponent implements AfterViewInit {
 	@Input() subgroup_index!: number;
 	@Input() focused!: boolean;
 	@Input() init_method!: string;
+	public device_mobile = input.required<boolean>(); // whether the device is mobile
 
 	@Output() update = new EventEmitter<number>();
 	@Output() cancel = new EventEmitter<number>();

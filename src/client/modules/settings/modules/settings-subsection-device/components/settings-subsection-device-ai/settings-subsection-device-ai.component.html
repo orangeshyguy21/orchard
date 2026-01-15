@@ -4,30 +4,32 @@
 			<div class="flex flex-items-start flex-gap-2 flex-wrap">
 				<div class="flex-1 flex flex-items-start flex-justify-between flex-column">
 					<form (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)" class="flex flex-row flex-gap-0-5">
-						<mat-form-field hideRequiredMarker="true" class="primary-form-field">
-							<mat-label>Agent model</mat-label>
-							<input
-								type="text"
-								placeholder="Select model"
-								aria-label="Model"
-								matInput
-								[formControl]="model_control"
-								[matAutocomplete]="auto"
-							/>
-							<mat-autocomplete #auto="matAutocomplete">
-								@for (option of filtered_options | async; track option.model) {
-									<mat-option [value]="option.model">
-										<div class="flex flex-items-center flex-gap-1">
-											<div class="orc-outline-color w-min-3">{{ option.details.parameter_size }}</div>
-											<div>{{ option.name }}</div>
-										</div>
-									</mat-option>
-								}
-							</mat-autocomplete>
-							<mat-error>
-								<orc-form-error [errors]="model_control.errors">Invalid model</orc-form-error>
-							</mat-error>
-						</mat-form-field>
+						<div class="orc-small-form-field-wrapper">
+							<mat-form-field hideRequiredMarker="true" class="w-full">
+								<mat-label>Agent model</mat-label>
+								<input
+									type="text"
+									placeholder="Select model"
+									aria-label="Model"
+									matInput
+									[formControl]="model_control"
+									[matAutocomplete]="auto"
+								/>
+								<mat-autocomplete #auto="matAutocomplete">
+									@for (option of filtered_options | async; track option.model) {
+										<mat-option [value]="option.model">
+											<div class="flex flex-items-center flex-gap-1">
+												<div class="orc-outline-color w-min-3">{{ option.details.parameter_size }}</div>
+												<div>{{ option.name }}</div>
+											</div>
+										</mat-option>
+									}
+								</mat-autocomplete>
+								<mat-error>
+									<orc-form-error [errors]="model_control.errors">Invalid model</orc-form-error>
+								</mat-error>
+							</mat-form-field>
+						</div>
 						<div class="p-t-0-5">
 							<button
 								type="button"

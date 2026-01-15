@@ -242,11 +242,13 @@
 </mat-menu>
 
 <mat-menu #chart_order_menu="matMenu" yPosition="below" xPosition="before" class="orc-sticky-menu w-min-10 p-1">
-	<orc-nav-tertiary
-		class="mint-chart-tertiary-nav"
-		[keys]="tertiary_nav()"
-		[items]="tertiary_nav_items"
-		(orderChange)="onTertiaryNavChange($event)"
-		(keySelect)="onTertiaryNavSelect($event)"
-	></orc-nav-tertiary>
+	<div>
+		<orc-nav-tertiary
+			class="mint-chart-tertiary-nav"
+			[keys]="tertiary_nav()"
+			[items]="tertiary_nav_items"
+			(orderChange)="onTertiaryNavChange($event)"
+			(keySelect)="onTertiaryNavSelect($event)"
+		></orc-nav-tertiary>
+	</div>
 </mat-menu>

@@ -17,18 +17,21 @@
 						<div class="flex flex-row flex-gap-1 flex-wrap">
 							<div>
 								<div class="flex flex-row flex-gap-0-5">
-									<mat-form-field
-										appearance="fill"
-										hideRequiredMarker="true"
-										class="keyset-form-field orc-dynamic-form-field orc-hot-form-field"
-									>
-										<mat-label>Unit</mat-label>
-										<mat-select formControlName="unit" (selectionChange)="onUnitChange($event)">
-											@for (unit of unit_options; track unit.value) {
-												<mat-option [value]="unit.value">{{ unit.label }}</mat-option>
-											}
-										</mat-select>
-									</mat-form-field>
+									<div class="orc-small-form-field-wrapper">
+										<mat-form-field
+											appearance="fill"
+											hideRequiredMarker="true"
+											class="w-full orc-dynamic-form-field orc-hot-form-field"
+										>
+											<mat-label>Unit</mat-label>
+											<mat-select formControlName="unit" (selectionChange)="onUnitChange($event)">
+												@for (unit of unit_options; track unit.value) {
+													<mat-option [value]="unit.value">{{ unit.label }}</mat-option>
+												}
+											</mat-select>
+										</mat-form-field>
+									</div>
+
 									<div class="p-t-0-5">
 										<button
 											type="button"
@@ -58,36 +61,38 @@
 						<div class="flex flex-row flex-gap-1 flex-wrap">
 							<div>
 								<div class="flex flex-row flex-gap-0-5">
-									<mat-form-field
-										appearance="fill"
-										hideRequiredMarker="true"
-										class="keyset-form-field orc-dynamic-form-field orc-hot-form-field"
-									>
-										<mat-label>Input Fee PPK</mat-label>
-										<input
-											type="text"
-											formNumberSeparator
-											matInput
-											formControlName="input_fee_ppk"
-											placeholder="Ex. 100"
-										/>
-										<mat-hint class="font-size-xs orc-outline-color">
-											<span
-												>Median transaction fee would be
+									<div class="orc-small-form-field-wrapper">
+										<mat-form-field
+											appearance="fill"
+											hideRequiredMarker="true"
+											class="w-full orc-dynamic-form-field orc-hot-form-field"
+										>
+											<mat-label>Input Fee PPK</mat-label>
+											<input
+												type="text"
+												formNumberSeparator
+												matInput
+												formControlName="input_fee_ppk"
+												placeholder="Ex. 100"
+											/>
+											<mat-hint class="font-size-xs orc-outline-color">
 												<span
-													class="font-weight-bold"
-													[innerHTML]="
-														keyset_in_fee_estimate | localAmount: form_group.get('unit')?.value : 'mint'
-													"
-												></span
-											></span>
-										</mat-hint>
-										<mat-error>
-											<orc-form-error [errors]="form_group.get('input_fee_ppk')?.errors">
-												Invalid input fee PPK
-											</orc-form-error>
-										</mat-error>
-									</mat-form-field>
+													>Median tx fee would be
+													<span
+														class="font-weight-bold"
+														[innerHTML]="
+															keyset_in_fee_estimate | localAmount: form_group.get('unit')?.value : 'mint'
+														"
+													></span
+												></span>
+											</mat-hint>
+											<mat-error>
+												<orc-form-error [errors]="form_group.get('input_fee_ppk')?.errors">
+													Invalid input fee PPK
+												</orc-form-error>
+											</mat-error>
+										</mat-form-field>
+									</div>
 									<div class="p-t-0-5">
 										<button
 											type="button"
@@ -117,22 +122,24 @@
 						<div class="flex flex-row flex-gap-1 flex-wrap">
 							<div>
 								<div class="flex flex-row flex-gap-0-5">
-									<mat-form-field
-										appearance="fill"
-										hideRequiredMarker="true"
-										class="keyset-form-field orc-dynamic-form-field orc-hot-form-field"
-									>
-										<mat-label>Max order</mat-label>
-										<input type="text" matInput formControlName="max_order" placeholder="Ex. 32" />
-										<mat-hint class="font-size-xs orc-outline-color"
-											><span class="font-weight-bold">1 - 255</span> are allowed</mat-hint
+									<div class="orc-small-form-field-wrapper">
+										<mat-form-field
+											appearance="fill"
+											hideRequiredMarker="true"
+											class="w-full orc-dynamic-form-field orc-hot-form-field"
 										>
-										<mat-error>
-											<orc-form-error [errors]="form_group.get('max_order')?.errors">
-												Invalid max order
-											</orc-form-error>
-										</mat-error>
-									</mat-form-field>
+											<mat-label>Max order</mat-label>
+											<input type="text" matInput formControlName="max_order" placeholder="Ex. 32" />
+											<mat-hint class="font-size-xs orc-outline-color"
+												><span class="font-weight-bold">1 - 255</span> are allowed</mat-hint
+											>
+											<mat-error>
+												<orc-form-error [errors]="form_group.get('max_order')?.errors">
+													Invalid max order
+												</orc-form-error>
+											</mat-error>
+										</mat-form-field>
+									</div>
 									<div class="p-t-0-5">
 										<button
 											type="button"

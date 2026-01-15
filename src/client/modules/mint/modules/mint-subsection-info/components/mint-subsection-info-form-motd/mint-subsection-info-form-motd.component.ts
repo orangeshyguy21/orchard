@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input, ViewChild, ElementRef, Output, EventEmitter} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, ViewChild, ElementRef, Output, EventEmitter, input} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 /* Application Dependencies */
 import {MintInfoRpc} from '@client/modules/mint/classes/mint-info-rpc.class';
@@ -16,6 +16,7 @@ export class MintSubsectionInfoFormMotdComponent {
 	@Input() form_group!: FormGroup;
 	@Input() control_name!: keyof MintInfoRpc;
 	@Input() motd!: string | null;
+	public device_mobile = input.required<boolean>();
 
 	@Output() update = new EventEmitter<keyof MintInfoRpc>();
 	@Output() cancel = new EventEmitter<keyof MintInfoRpc>();

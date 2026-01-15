@@ -1,5 +1,5 @@
 <div class="mint-info-form-urls-container">
-	<div class="title-form-section p-b-1 flex flex-items-center flex-gap-0-5 cursor-pointer" (click)="help_status.set(!help_status())">
+	<div class="title-form-section p-b-1 flex flex-items-center flex-gap-0-5 cursor-pointer">
 		<span>Connection URLs</span>
 		<button type="button" tabindex="-1" mat-icon-button class="orc-icon-button" (click)="help_status.set(!help_status())">
 			<mat-icon class="orc-outline-color">info</mat-icon>
@@ -32,12 +32,11 @@
 			></orc-mint-subsection-info-form-url>
 		}
 
-		<div class="flex flex-row flex-gap-1">
-			<mat-icon class="orc-outline-color"></mat-icon>
-			<orc-form-array-add-item (addControl)="onAddControl()">
+		<div class="flex">
+			<button matButton="tonal" (click)="onAddControl()">
 				<mat-icon class="orc-outline-color">add</mat-icon>
-				<span>New URL</span>
-			</orc-form-array-add-item>
+				<span class="font-size-s">New URL</span>
+			</button>
 		</div>
 	</div>
 </div>

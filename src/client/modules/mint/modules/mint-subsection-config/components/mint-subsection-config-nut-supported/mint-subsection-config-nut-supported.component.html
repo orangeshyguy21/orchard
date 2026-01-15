@@ -1,10 +1,10 @@
 <div class="p-v-2 p-r-1" [ngClass]="{'p-l-1': !device_desktop(), 'p-l-2': device_desktop()}">
 	<mat-card appearance="outlined" class="relative overflow-hidden">
 		<mat-card-content class="orc-surface-container-low-bg">
-			<div class="flex flex-items-center flex-gap-2 flex-wrap-reverse">
+			<div class="flex flex-items-end flex-gap-2 flex-wrap-reverse">
 				<div class="flex-1">
-					<div class="flex flex-items-center flex-gap-2">
-						<div class="flex flex-items-center flex-gap-1">
+					<div class="flex flex-items-start flex-gap-1 flex-wrap">
+						<div class="flex flex-items-center flex-gap-1 p-t-1 p-l-1">
 							<mat-slide-toggle [checked]="supported()" [disabled]="true" [name]="'supported_' + nut_index()">
 							</mat-slide-toggle>
 							<div class="p-l-1 font-size-s">Supported</div>
@@ -20,7 +20,7 @@
 						</div>
 						<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
 							<div class="orc-animation-expand-collapse-inner">
-								<div class="flex p-t-0-5 p-b-1">
+								<div class="flex p-t-0-5 p-b-1 w-max-24">
 									<orc-form-help-text class="orc-surface-container-high-bg">
 										<ng-content></ng-content>
 									</orc-form-help-text>

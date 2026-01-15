@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, output, effect} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output, effect, computed} from '@angular/core';
 import {Router} from '@angular/router';
 /* Vendor Dependencies */
 import {MatBottomSheet} from '@angular/material/bottom-sheet';
@@ -7,6 +7,7 @@ import {MatBottomSheet} from '@angular/material/bottom-sheet';
 import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {EventData} from 'src/client/modules/event/classes/event-data.class';
 import {Setting} from '@client/modules/settings/classes/setting.class';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Native Dependencies */
 import {NavService} from '@client/modules/nav/services/nav/nav.service';
 /* Components */
@@ -43,12 +44,20 @@ export class NavMobileComponent {
 	public syncing_lightning = input.required<boolean>();
 	public block_count = input.required<number>();
 	public user_name = input.required<string>();
+	public device_type = input.required<DeviceType>();
 
 	/* Outputs */
 	public save = output<void>();
 	public cancel = output<void>();
 	public abort = output<void>();
 	public showAgent = output<void>();
+
+	public mobile_pending_event_state = computed(() => {
+		const device_type = this.device_type();
+		const active_event = this.active_event();
+		if (device_type === 'mobile' && active_event?.type === 'PENDING') return true;
+		return false;
+	});
 
 	private show_oracle: boolean = false;
 

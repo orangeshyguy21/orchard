@@ -1,0 +1,26 @@
+@use 'molecule/molecule';
+
+.mobile-contact-container {
+	@extend %p-b-1;
+
+	.multi-form-field-container {
+		@extend %flex-wrap;
+	}
+
+	.contact-type-select-form-field {
+		@extend %w-full;
+	}
+
+	.contact-type-select-label {
+		@extend %block;
+	}
+}
+
+.contact-type-select-form-field {
+	@extend %w-6;
+}
+
+.contact-type-select-label {
+	@extend %hidden;
+	@extend %p-l-1;
+}

@@ -1,8 +1,8 @@
 <div class="flex flex-items-start flex-wrap flex-gap-column-1">
 	<div class="flex-grow flex flex-column flex-items-start flex-justify-between">
 		<form class="flex flex-items-center flex-gap-1 flex-wrap" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)">
-			<div>
-				<mat-form-field hideRequiredMarker="true" class="primary-form-field">
+			<div class="orc-small-form-field-wrapper">
+				<mat-form-field hideRequiredMarker="true" class="w-full">
 					<mat-label>Timezone</mat-label>
 					<input
 						type="text"
@@ -17,7 +17,6 @@
 							<mat-option [value]="option">{{ option }}</mat-option>
 						}
 					</mat-autocomplete>
-					{{ timezone_control.errors | json }}
 					<mat-error>
 						<orc-form-error [errors]="timezone_control.errors">Invalid timezone</orc-form-error>
 					</mat-error>

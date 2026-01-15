@@ -1,6 +1,6 @@
 <div class="mint-subsection-database-container p-h-1">
 	<div class="mint-database-control p-t-1">
-		<div class="flex flex-justify-between flex-gap-2 flex-items-start">
+		<div class="flex flex-justify-between flex-gap-2 flex-items-center">
 			@if (page_settings) {
 				<orc-mint-subsection-database-control
 					class="flex-grow"
@@ -25,30 +25,33 @@
 					(filterChange)="onFilterChange($event)"
 				></orc-mint-subsection-database-control>
 			}
-			<div>
+			<div class="p-b-1">
 				<div class="flex flex-items-center flex-gap-0-5 relative">
-					@if (device_type() === 'desktop') {
-						<button
-							type="button"
-							matFab
-							extended
-							class="orc-icon-button text-nowrap"
-							(click)="onCreate()"
-							(keydown.enter)="$event.preventDefault(); $event.stopPropagation()"
-						>
-							<mat-icon>database</mat-icon>
-							Create Backup
-						</button>
-					} @else {
-						<button
-							type="button"
-							matFab
-							class="orc-icon-button text-nowrap"
-							(click)="onCreate()"
-							(keydown.enter)="$event.preventDefault(); $event.stopPropagation()"
-						>
-							<mat-icon>database</mat-icon>
-						</button>
+					@switch (device_type()) {
+						@case ('desktop') {
+							<button
+								type="button"
+								matFab
+								extended
+								class="orc-icon-button text-nowrap"
+								(click)="onCreate()"
+								(keydown.enter)="$event.preventDefault(); $event.stopPropagation()"
+							>
+								<mat-icon>database</mat-icon>
+								Create Backup
+							</button>
+						}
+						@case ('tablet') {
+							<button
+								type="button"
+								matFab
+								class="orc-icon-button text-nowrap"
+								(click)="onCreate()"
+								(keydown.enter)="$event.preventDefault(); $event.stopPropagation()"
+							>
+								<mat-icon>database</mat-icon>
+							</button>
+						}
 					}
 
 					<button mat-icon-button type="button" class="orc-icon-button" [matMenuTriggerFor]="advanced_menu">
@@ -56,6 +59,14 @@
 					</button>
 
 					<mat-menu #advanced_menu="matMenu" yPosition="below" class="orc-sticky-menu orc-more-menu">
+						@if (device_type() === 'mobile') {
+							<button mat-menu-item (click)="onCreate()">
+								<div class="flex flex-items-center flex-gap-0-5">
+									<mat-icon>database</mat-icon>
+									<span>Create Backup</span>
+								</div>
+							</button>
+						}
 						<button mat-menu-item (click)="onRestore()">
 							<div class="flex flex-items-center flex-gap-0-5">
 								<mat-icon>restore</mat-icon>

@@ -19,34 +19,36 @@
 								(cancel)="onCancel($event)"
 								(inform)="help_status.set(!help_status())"
 							>
-								<mat-form-field
-									appearance="fill"
-									hideRequiredMarker="true"
-									[ngClass]="form_hot() ? 'orc-hot-form-field' : 'orc-cold-form-field'"
-									class="mint-quote-ttl-form-field orc-dynamic-form-field"
-								>
-									<mat-label>{{ nut() === 'nut4' ? 'Mint' : 'Melt' }} quote TTL</mat-label>
-									<input
-										type="text"
-										formNumberSeparator
-										matInput
-										[formControlName]="control_name()"
-										(focus)="onFocus()"
-										(blur)="onBlur()"
-										placeholder="Ex. 30"
-										#element_quote_ttl
-									/>
-									<span matSuffix class="form-suffix-text">seconds</span>
-									<mat-hint class="font-size-xs orc-outline-color">
-										<orc-mint-subsection-config-form-quote-ttl-hint
-											[deltas]="stat_deltas()"
-											[quote_ttl]="form_group().get(control_name())?.value"
-										></orc-mint-subsection-config-form-quote-ttl-hint>
-									</mat-hint>
-									<mat-error>
-										<orc-form-error [errors]="form_group().get(control_name())?.errors">Invalid TTL</orc-form-error>
-									</mat-error>
-								</mat-form-field>
+								<div class="orc-small-form-field-wrapper">
+									<mat-form-field
+										appearance="fill"
+										hideRequiredMarker="true"
+										[ngClass]="form_hot() ? 'orc-hot-form-field' : 'orc-cold-form-field'"
+										class="w-full orc-dynamic-form-field"
+									>
+										<mat-label>{{ nut() === 'nut4' ? 'Mint' : 'Melt' }} quote TTL</mat-label>
+										<input
+											type="text"
+											formNumberSeparator
+											matInput
+											[formControlName]="control_name()"
+											(focus)="onFocus()"
+											(blur)="onBlur()"
+											placeholder="Ex. 30"
+											#element_quote_ttl
+										/>
+										<span matSuffix class="form-suffix-text">{{ device_desktop() ? 'seconds' : 's' }}</span>
+										<mat-hint class="font-size-xs orc-outline-color">
+											<orc-mint-subsection-config-form-quote-ttl-hint
+												[deltas]="stat_deltas()"
+												[quote_ttl]="form_group().get(control_name())?.value"
+											></orc-mint-subsection-config-form-quote-ttl-hint>
+										</mat-hint>
+										<mat-error>
+											<orc-form-error [errors]="form_group().get(control_name())?.errors">Invalid TTL</orc-form-error>
+										</mat-error>
+									</mat-form-field>
+								</div>
 							</orc-form-field-dynamic>
 						</form>
 						<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
@@ -79,7 +81,6 @@
 					</orc-mint-subsection-config-chart-quote-ttl>
 				</div>
 			</div>
-			{{ disabled() | json }}
 			@if (disabled()) {
 				<div class="disabled-overlay" animate.enter="orc-animation-fadein-fast" animate.leave="orc-animation-fadeout-fast">
 					<div class="orc-outline-color font-weight-bold">MINTING DISABLED</div>

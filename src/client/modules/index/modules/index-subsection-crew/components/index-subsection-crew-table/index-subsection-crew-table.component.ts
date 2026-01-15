@@ -8,6 +8,7 @@ import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {Invite} from '@client/modules/crew/classes/invite.class';
 import {User} from '@client/modules/crew/classes/user.class';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Native Dependencies */
 import {CrewEntity} from '@client/modules/index/modules/index-subsection-crew/enums/crew-entity.enum';
 import {RoleOption} from '@client/modules/index/modules/index-subsection-crew/types/crew-panel.types';
@@ -44,7 +45,7 @@ export class IndexSubsectionCrewTableComponent {
 	public role_options = input.required<RoleOption[]>();
 	public create_open = input.required<boolean>();
 	public table_form_id = input.required<string | null>();
-	public device_desktop = input.required<boolean>();
+	public device_type = input.required<DeviceType>();
 
 	public editInvite = output<Invite>();
 	public editUser = output<User>();
@@ -60,7 +61,10 @@ export class IndexSubsectionCrewTableComponent {
 	public readonly UserRole = UserRole;
 
 	public displayed_columns = computed(() => {
-		return this.device_desktop() ? ['user', 'label', 'created', 'state', 'actions'] : ['user', 'label', 'state'];
+		const device_type = this.device_type();
+		if (device_type === 'desktop') return ['user', 'label', 'created', 'state', 'actions'];
+		if (device_type === 'tablet') return ['user', 'label', 'created', 'state'];
+		return ['user', 'state'];
 	});
 
 	private previous_data_length = 0;

@@ -16,6 +16,7 @@ export class MintSubsectionInfoFormContactsComponent {
 	public form_array = input.required<FormArray>(); // form array containing contact entries
 	public array_name = input.required<keyof MintInfoRpc>(); // name of the form array to bind
 	public array_length = input.required<number>(); // current length of the form array
+	public device_mobile = input.required<boolean>(); // whether the device is mobile
 
 	public update = output<{array_name: keyof MintInfoRpc; control_index: number}>(); // emitted when a contact is updated
 	public cancel = output<{array_name: keyof MintInfoRpc; control_index: number}>(); // emitted when a contact edit is cancelled

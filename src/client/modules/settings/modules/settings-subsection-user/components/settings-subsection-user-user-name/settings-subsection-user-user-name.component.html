@@ -9,25 +9,27 @@
 				(submit)="submit.emit()"
 				(inform)="help_status.set(!help_status())"
 			>
-				<mat-form-field
-					hideRequiredMarker="true"
-					class="primary-form-field"
-					[ngClass]="hot() ? 'orc-hot-form-field' : 'orc-cold-form-field'"
-				>
-					<mat-label>Username</mat-label>
-					<input
-						type="text"
-						aria-label="Username"
-						matInput
-						[formControlName]="control_name()"
-						(focus)="focused.set(true)"
-						(blur)="focused.set(false)"
-						#element_control
-					/>
-					<mat-error>
-						<orc-form-error [errors]="form_group().get(control_name())?.errors">Invalid username</orc-form-error>
-					</mat-error>
-				</mat-form-field>
+				<div class="orc-small-form-field-wrapper">
+					<mat-form-field
+						hideRequiredMarker="true"
+						class="w-full"
+						[ngClass]="hot() ? 'orc-hot-form-field' : 'orc-cold-form-field'"
+					>
+						<mat-label>Username</mat-label>
+						<input
+							type="text"
+							aria-label="Username"
+							matInput
+							[formControlName]="control_name()"
+							(focus)="focused.set(true)"
+							(blur)="focused.set(false)"
+							#element_control
+						/>
+						<mat-error>
+							<orc-form-error [errors]="form_group().get(control_name())?.errors">Invalid username</orc-form-error>
+						</mat-error>
+					</mat-form-field>
+				</div>
 			</orc-form-field-dynamic>
 			<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
 				<div class="orc-animation-expand-collapse-inner">

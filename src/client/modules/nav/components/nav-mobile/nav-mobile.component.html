@@ -1,12 +1,13 @@
-<div class="nav-mobile-container" [class.collapsed]="!opened()">
+<div class="nav-mobile-container" [class.collapsed]="!opened()" [class.mobile-pending-event-state]="mobile_pending_event_state()">
 	<orc-nav-primary-header
+		class="mobile-nav-item-left"
 		[active]="active_section() === 'index'"
 		[block_count]="block_count()"
 		mode="mobile"
 		(click)="onMenuSectionClick()"
 	></orc-nav-primary-header>
 
-	<orc-nav-mobile-item icon="menu" name="Menu" (clicked)="onMenuSubsectionClick()"></orc-nav-mobile-item>
+	<orc-nav-mobile-item icon="menu" name="Menu" (clicked)="onMenuSubsectionClick()" class="mobile-nav-item-left"></orc-nav-mobile-item>
 
 	<orc-event-general-nav-tool
 		navroute="event"
@@ -19,9 +20,19 @@
 	></orc-event-general-nav-tool>
 
 	@if (enabled_ai()) {
-		<orc-nav-mobile-item icon="spa" name="Agent" (clicked)="onAgentClick()"></orc-nav-mobile-item>
+		<orc-nav-mobile-item icon="spa" name="Agent" (clicked)="onAgentClick()" class="mobile-nav-item-right"></orc-nav-mobile-item>
 	} @else {
-		<orc-nav-mobile-item icon="settings" name="Settings" (clicked)="onSettingsClick()"></orc-nav-mobile-item>
+		<orc-nav-mobile-item
+			icon="settings"
+			name="Settings"
+			(clicked)="onSettingsClick()"
+			class="mobile-nav-item-right"
+		></orc-nav-mobile-item>
 	}
-	<orc-nav-mobile-item icon="person" [name]="user_name()" (clicked)="onProfileClick()"></orc-nav-mobile-item>
+	<orc-nav-mobile-item
+		icon="person"
+		[name]="user_name()"
+		(clicked)="onProfileClick()"
+		class="mobile-nav-item-right"
+	></orc-nav-mobile-item>
 </div>

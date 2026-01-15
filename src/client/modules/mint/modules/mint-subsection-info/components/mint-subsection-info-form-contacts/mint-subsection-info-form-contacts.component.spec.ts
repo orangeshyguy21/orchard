@@ -29,6 +29,7 @@ describe('MintSubsectionInfoFormContactsComponent', () => {
 		fixture.componentRef.setInput('form_array', form_group.get('contact') as FormArray);
 		fixture.componentRef.setInput('array_name', 'contact');
 		fixture.componentRef.setInput('array_length', 1);
+		fixture.componentRef.setInput('device_mobile', false);
 		fixture.detectChanges();
 	});
 

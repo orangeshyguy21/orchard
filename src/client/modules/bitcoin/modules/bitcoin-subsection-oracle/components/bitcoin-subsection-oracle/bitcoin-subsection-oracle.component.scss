@@ -25,13 +25,20 @@
 	@extend %z-index-1;
 }
 
-.mobile-latest-price {
+.tablet-latest-price {
 	@extend %absolute;
-	@extend %orc-surface-bg;
+	@extend %orc-fog-surface-bg;
 	@extend %top-1;
 	@extend %z-index-1;
 	@extend %p-h-1;
-	@extend %orc-corner-full;
+	@extend %p-v-1;
+	@extend %orc-corner-extra-large;
+	@extend %flex-gap-2;
 	left: 50%;
 	transform: translateX(-50%);
+
+	&.mobile-latest-price {
+		@extend %flex-column;
+		@extend %flex-gap-1;
+	}
 }

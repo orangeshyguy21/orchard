@@ -1,13 +1,14 @@
-<div class="flex flex-items-center relative" [ngClass]="{'flex-row': mode() === 'mobile', 'flex-column': mode() === 'desktop'}">
+<div class="flex flex-items-center relative event-nav-tool-container" [class.mobile-mode]="mode() === 'mobile'">
 	@if (morph_state() === 'actionable') {
-		<button type="button" mat-icon-button class="orc-icon-button" (click)="cancel.emit()">
-			<mat-icon>cancel</mat-icon>
-		</button>
+		<div class="event-nav-tool-actionable-container">
+			<button type="button" mat-icon-button class="orc-icon-button" (click)="cancel.emit()">
+				<mat-icon>cancel</mat-icon>
+			</button>
+		</div>
 	}
 	<div
-		class="event-nav-tool-container"
+		class="event-nav-tool"
 		[class.action-nav-tool-highlight]="highlight()"
-		[class.mobile-mode]="mode() === 'mobile'"
 		[class]="container_class()"
 		(mouseenter)="onMouseEnter()"
 		(mouseleave)="onMouseLeave()"
@@ -38,7 +39,7 @@
 				</div>
 			}
 			@if (morph_state() === 'actionable') {
-				<div animate.enter="animate-fadein-delayed" class="font-size-xs">{{ active_event()?.message }}</div>
+				<div animate.enter="animate-fadein-delayed" class="font-size-xs text-nowrap">{{ active_event()?.message }}</div>
 			}
 		</div>
 	</div>

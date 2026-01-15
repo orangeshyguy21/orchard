@@ -15,7 +15,7 @@
 
 		.protocol-version {
 			@extend %text-ellipsis;
-			@extend %w-max-10;
+			max-width: 5rem;
 		}
 	}
 }
