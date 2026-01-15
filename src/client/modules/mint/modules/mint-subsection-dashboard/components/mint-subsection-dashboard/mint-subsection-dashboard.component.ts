@@ -518,10 +518,12 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	private scrollToChart(nav_item: NavTertiary) {
 		const target_element = this.nav_elements.find((el) => el.nativeElement.classList.contains(nav_item));
 		if (!target_element?.nativeElement) return;
-		target_element.nativeElement.scrollIntoView({
-			behavior: 'smooth',
-			block: 'start',
-			inline: 'nearest',
+		setTimeout(() => {
+			target_element.nativeElement.scrollIntoView({
+				behavior: 'smooth',
+				block: 'start',
+				inline: 'nearest',
+			});
 		});
 	}
 
