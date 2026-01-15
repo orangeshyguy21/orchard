@@ -3,7 +3,7 @@
 		<div class="flex flex-items-start p-l-1 p-r-1 p-t-1 flex-wrap flex-gap-2">
 			<div class="flex-grow flex flex-items-start flex-justify-between flex-column">
 				<form class="flex-grow flex flex-items-center flex-gap-1 flex-wrap">
-					<div class="w-min-18 m-b-1-25 flex flex-items-center flex-gap-1">
+					<div class="w-min-10 m-b-1-25 flex flex-items-center flex-gap-1">
 						<mat-icon [class.mat-symbol-outline]="theme_control.value">dark_mode</mat-icon>
 						<mat-slide-toggle [formControl]="theme_control" (change)="onThemeChange($event)" name="theme"> </mat-slide-toggle>
 						<mat-icon [class.mat-symbol-outline]="!theme_control.value">light_mode</mat-icon>

@@ -1,8 +1,8 @@
 <div class="flex flex-items-start flex-wrap flex-gap-column-1">
 	<div class="flex-grow flex flex-items-start flex-justify-between flex-column">
 		<form class="flex flex-items-center flex-gap-1 flex-wrap" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)">
-			<div>
-				<mat-form-field hideRequiredMarker="true" class="primary-form-field">
+			<div class="orc-small-form-field-wrapper">
+				<mat-form-field hideRequiredMarker="true" class="w-full">
 					<mat-label>Locale</mat-label>
 					<input
 						type="text"
