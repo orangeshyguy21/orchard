@@ -7,6 +7,7 @@
 				[state_options]="state_options"
 				[role_options]="role_options"
 				[filter_count]="filter_count()"
+				[device_mobile]="device_type() === 'mobile'"
 			></orc-index-subsection-crew-control>
 			<div>
 				@if (device_type() === 'desktop') {
@@ -62,7 +63,7 @@
 				[form_invite]="form_invite_edit"
 				[form_user]="form_user_edit"
 				[table_form_id]="table_form_id()"
-				[device_desktop]="device_type() === 'desktop'"
+				[device_type]="device_type()"
 				(editInvite)="onEditInvite($event)"
 				(editUser)="onEditUser($event)"
 				(deleteInvite)="onDeleteInvite($event)"

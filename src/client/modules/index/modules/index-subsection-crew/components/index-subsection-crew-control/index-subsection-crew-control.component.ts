@@ -20,6 +20,7 @@ export class IndexSubsectionCrewControlComponent {
 	public state_options = input.required<StateOption[]>();
 	public role_options = input.required<RoleOption[]>();
 	public filter_count = input.required<number>();
+	public device_mobile = input.required<boolean>();
 
 	private filter_menu_trigger = viewChild(MatMenuTrigger);
 

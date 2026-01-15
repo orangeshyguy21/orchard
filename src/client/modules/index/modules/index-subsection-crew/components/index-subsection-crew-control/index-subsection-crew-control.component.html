@@ -1,12 +1,14 @@
 <div class="crew-control-container">
 	<form [formGroup]="form_group()" class="panel-form orc-animation-form-reaction" [class.animation-invalid]="form_group().invalid">
 		<div class="flex flex-col flex-gap-1">
-			<div class="flex-grow w-max-36">
-				<mat-form-field [hideRequiredMarker]="true" class="search-field">
-					<mat-label><mat-icon>search</mat-icon> Search</mat-label>
-					<input matInput formControlName="filter" />
-				</mat-form-field>
-			</div>
+			@if (!device_mobile()) {
+				<div class="flex-grow w-max-36">
+					<mat-form-field [hideRequiredMarker]="true" class="search-field">
+						<mat-label><mat-icon>search</mat-icon> Search</mat-label>
+						<input matInput formControlName="filter" />
+					</mat-form-field>
+				</div>
+			}
 			<div class="p-t-0-5">
 				<button matButton type="button" [matMenuTriggerFor]="filter_menu">
 					<mat-icon>tune</mat-icon>
@@ -19,6 +21,17 @@
 
 <mat-menu #filter_menu="matMenu" yPosition="below" class="orc-sticky-menu orc-filter-menu">
 	<orc-form-filter-menu (click)="$event.stopPropagation()" (clear)="onClearFilter()" (close)="onCloseFilter()">
+		@if (device_mobile()) {
+			<div class="orc-filter-menu-section">
+				<form [formGroup]="form_group()">
+					<mat-form-field [hideRequiredMarker]="true" class="search-field" subscriptSizing="dynamic">
+						<mat-label><mat-icon>search</mat-icon> Search</mat-label>
+						<input matInput formControlName="filter" />
+					</mat-form-field>
+				</form>
+			</div>
+			<div class="orc-filter-menu-rule"></div>
+		}
 		<div class="orc-filter-menu-section">
 			<div>State</div>
 			<div class="filter-options">

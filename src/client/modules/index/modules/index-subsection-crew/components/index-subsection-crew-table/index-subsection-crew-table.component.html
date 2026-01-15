@@ -59,7 +59,7 @@
 								<div class="flex">
 									<div class="label-state label-warning">Pending</div>
 								</div>
-								@if (entity.expires_at && device_desktop()) {
+								@if (entity.expires_at && device_type() === 'desktop') {
 									<div class="text-nowrap orc-outline-color">
 										Exipres in {{ entity.expires_at | localTimeDelta: now }}
 									</div>
@@ -108,7 +108,9 @@
 											@case (MoreEntityType.VIEW_TOKEN) {
 												<orc-index-subsection-crew-table-invite
 													[invite]="entity"
-													[device_desktop]="device_desktop()"
+													[device_desktop]="device_type() === 'desktop'"
+													(editInvite)="onEdit(entity)"
+													(deleteInvite)="onDelete(entity)"
 												></orc-index-subsection-crew-table-invite>
 											}
 											@case (MoreEntityType.VIEW_USER) {
@@ -116,7 +118,7 @@
 													[user]="entity"
 													[is_self]="id_user() === entity.id"
 													[is_admin]="entity.role === UserRole.Admin"
-													[device_desktop]="device_desktop()"
+													[device_desktop]="device_type() === 'desktop'"
 													(editUser)="onEdit(entity)"
 													(deleteUser)="onDelete(entity)"
 												></orc-index-subsection-crew-table-user>
