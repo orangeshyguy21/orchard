@@ -48,7 +48,7 @@
 				[max_date]="max_date()"
 				[date_start_max]="date_start_max()"
 				[date_end_min]="date_end_min()"
-				[device_desktop]="device_type() === 'desktop'"
+				[device_mobile]="device_type() === 'mobile'"
 				(close)="onCloseForm()"
 				(cancel)="onCancelForm($event)"
 			></orc-bitcoin-subsection-oracle-form>
@@ -87,30 +87,3 @@
 		></orc-bitcoin-subsection-oracle-chart>
 	</div>
 </div>
-
-<!-- @switch (device_type()) {
-    @case ('desktop') {
-        <button
-            type="button"
-            matFab
-            extended
-            class="orc-icon-button text-nowrap"
-            (click)="onCreate()"
-            (keydown.enter)="$event.preventDefault(); $event.stopPropagation()"
-        >
-            <mat-icon>database</mat-icon>
-            Create Backup
-        </button>
-    }
-    @case ('tablet') {
-        <button
-            type="button"
-            matFab
-            class="orc-icon-button text-nowrap"
-            (click)="onCreate()"
-            (keydown.enter)="$event.preventDefault(); $event.stopPropagation()"
-        >
-            <mat-icon>database</mat-icon>
-        </button>
-    }
-} -->

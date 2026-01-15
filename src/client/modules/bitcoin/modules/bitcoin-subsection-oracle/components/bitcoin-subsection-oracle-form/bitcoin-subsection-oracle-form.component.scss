@@ -1,8 +1,9 @@
 @use 'molecule/molecule';
 
-.tablet-oracle {
+.mobile-oracle {
 	@extend %flex-grow;
 	@extend %flex-justify-center;
+	@extend %w-full;
 }
 
 .oracle-clamp {
