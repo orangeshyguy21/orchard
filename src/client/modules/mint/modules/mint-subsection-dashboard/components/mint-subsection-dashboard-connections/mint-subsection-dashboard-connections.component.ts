@@ -10,6 +10,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {ThemeService} from '@client/modules/settings/services/theme/theme.service';
 import {PublicService} from '@client/modules/public/services/image/public.service';
 import {PublicUrl} from '@client/modules/public/classes/public-url.class';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Native Dependencies */
 import {MintSubsectionDashboardConnectionDialogComponent} from '../mint-subsection-dashboard-connection-dialog/mint-subsection-dashboard-connection-dialog.component';
 /* Local Dependencies */
@@ -22,7 +23,7 @@ import {Connection} from './mint-subsection-dashboard-connections.classes';
 	styleUrl: './mint-subsection-dashboard-connections.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	host: {
-		'[class.flex-grow]': '!device_desktop()',
+		'[class.flex-grow]': 'device_type() !== "desktop"',
 	},
 })
 export class MintSubsectionDashboardConnectionsComponent {
@@ -32,7 +33,7 @@ export class MintSubsectionDashboardConnectionsComponent {
 	public mint_name = input<string | undefined>(undefined);
 	public loading = input.required<boolean>();
 	public mint_connections = input.required<PublicUrl[]>();
-	public device_desktop = input.required<boolean>();
+	public device_type = input.required<DeviceType>();
 
 	public qr_canvas = viewChild<ElementRef>('qr_canvas');
 
@@ -193,6 +194,7 @@ export class MintSubsectionDashboardConnectionsComponent {
 				corner_dot_color: this.qr_corner_dot_color,
 				icon_data: this.icon_data ?? this.placeholder_icon_url,
 				mint_name: this.mint_name,
+				device_mobile: this.device_type() === 'mobile',
 			},
 		});
 	}
