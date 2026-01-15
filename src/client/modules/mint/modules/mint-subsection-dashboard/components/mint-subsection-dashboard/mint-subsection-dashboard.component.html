@@ -227,6 +227,16 @@
 				</orc-nav-tertiary>
 			</div>
 		}
+		<mat-menu #chart_order_menu="matMenu" yPosition="below" xPosition="before" class="orc-sticky-menu w-min-10">
+			<div class="p-l-1 p-t-0-5 chart-tertiary-nav-mobile">
+				<orc-nav-tertiary
+					[keys]="tertiary_nav()"
+					[items]="tertiary_nav_items"
+					(orderChange)="onTertiaryNavChange($event)"
+					(keySelect)="onTertiaryNavSelect($event)"
+				></orc-nav-tertiary>
+			</div>
+		</mat-menu>
 	</div>
 </div>
 
@@ -239,15 +249,4 @@
 			</button>
 		}
 	</ng-template>
-</mat-menu>
-
-<mat-menu #chart_order_menu="matMenu" yPosition="below" xPosition="before" class="orc-sticky-menu w-min-10">
-	<div class="p-l-1 p-t-0-5 chart-tertiary-nav-mobile">
-		<orc-nav-tertiary
-			[keys]="tertiary_nav()"
-			[items]="tertiary_nav_items"
-			(orderChange)="onTertiaryNavChange($event)"
-			(keySelect)="onTertiaryNavSelect($event)"
-		></orc-nav-tertiary>
-	</div>
 </mat-menu>
