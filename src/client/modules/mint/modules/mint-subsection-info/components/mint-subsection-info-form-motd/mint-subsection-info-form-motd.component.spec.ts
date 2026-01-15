@@ -20,6 +20,7 @@ describe('MintSubsectionInfoFormMotdComponent', () => {
 		component.form_group = new FormGroup({motd: new FormControl('', [Validators.required])});
 		component.control_name = 'motd' as any;
 		component.motd = null;
+		fixture.componentRef.setInput('device_mobile', false);
 		fixture.detectChanges();
 	});
 

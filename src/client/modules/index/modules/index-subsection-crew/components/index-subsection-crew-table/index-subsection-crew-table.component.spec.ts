@@ -42,7 +42,7 @@ describe('IndexSubsectionCrewTableComponent', () => {
 		fixture.componentRef.setInput('role_options', []);
 		fixture.componentRef.setInput('create_open', false);
 		fixture.componentRef.setInput('table_form_id', null);
-		fixture.componentRef.setInput('device_desktop', true);
+		fixture.componentRef.setInput('device_type', 'desktop');
 
 		fixture.detectChanges();
 	});

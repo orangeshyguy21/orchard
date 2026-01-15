@@ -30,6 +30,7 @@ describe('MintSubsectionInfoFormContactComponent', () => {
 		component.subgroup_index = 0;
 		component.focused = false;
 		component.init_method = 'email';
+		fixture.componentRef.setInput('device_mobile', false);
 		fixture.detectChanges();
 	});
 

@@ -22,7 +22,7 @@ describe('MintSubsectionKeysetsTableComponent', () => {
 		fixture.componentRef.setInput('keysets_proof_counts', []);
 		fixture.componentRef.setInput('page_settings', {date_end: 0, status: [], units: []});
 		fixture.componentRef.setInput('loading', true);
-		fixture.componentRef.setInput('device_desktop', true);
+		fixture.componentRef.setInput('device_type', 'desktop');
 		fixture.detectChanges();
 	});
 

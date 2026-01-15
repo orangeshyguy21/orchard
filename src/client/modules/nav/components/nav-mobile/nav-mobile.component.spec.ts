@@ -31,6 +31,7 @@ describe('NavMobileComponent', () => {
 		fixture.componentRef.setInput('syncing_lightning', false);
 		fixture.componentRef.setInput('block_count', 0);
 		fixture.componentRef.setInput('user_name', 'TestUser');
+		fixture.componentRef.setInput('device_type', 'mobile');
 		fixture.detectChanges();
 	});
 
