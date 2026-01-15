@@ -49,6 +49,10 @@ $analytics-offset: 86px;
 	top: calc(#{$analytics-offset} + 1rem);
 }
 
+.chart-tertiary-nav-mobile {
+	min-height: 12rem;
+}
+
 .nav-tertiary-title {
 	@extend %font-size-m;
 	@extend %orc-on-surface-variant-color;

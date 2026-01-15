@@ -18,7 +18,7 @@
 			[mint_name]="mint_info?.name"
 			[mint_connections]="mint_connections"
 			[loading]="loading_static_data"
-			[device_desktop]="device_type() === 'desktop'"
+			[device_type]="device_type()"
 		></orc-mint-subsection-dashboard-connections>
 	</div>
 
@@ -241,11 +241,12 @@
 	</ng-template>
 </mat-menu>
 
-<mat-menu #chart_order_menu="matMenu" yPosition="below" xPosition="before" class="orc-sticky-menu w-min-10 p-1">
-	<div>
+<mat-menu #chart_order_menu="matMenu" yPosition="below" xPosition="before" class="orc-sticky-menu w-min-10">
+	<div class="p-l-1 p-t-0-5 chart-tertiary-nav-mobile">
 		<orc-nav-tertiary
 			[keys]="tertiary_nav()"
 			[items]="tertiary_nav_items"
+			[draggable]="false"
 			(orderChange)="onTertiaryNavChange($event)"
 			(keySelect)="onTertiaryNavSelect($event)"
 		></orc-nav-tertiary>

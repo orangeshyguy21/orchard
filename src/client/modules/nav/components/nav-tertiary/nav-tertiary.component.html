@@ -8,6 +8,7 @@
 				[status]="items[key].status"
 				(click)="onClick(key)"
 				cdkDrag
+				[cdkDragDisabled]="!draggable()"
 			>
 				<div class="drop-placeholder" *cdkDragPlaceholder>
 					<orc-nav-tertiary-item

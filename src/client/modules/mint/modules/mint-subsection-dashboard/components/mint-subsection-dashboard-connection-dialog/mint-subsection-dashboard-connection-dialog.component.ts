@@ -52,10 +52,11 @@ export class MintSubsectionDashboardConnectionDialogComponent implements OnInit 
 		const themeless_primary_color = this.themeService.extractThemeColor(this.data.primary_color, ThemeType.DARK_MODE);
 		const themeless_corner_dot_color = this.themeService.extractThemeColor(this.data.corner_dot_color, ThemeType.DARK_MODE);
 		const themeless_bg = this.themeService.getThemeColor('--mat-sys-on-secondary-container', ThemeType.DARK_MODE);
+		const size = this.data.device_mobile ? 295 : 395;
 
 		this.qr_code = new QRCodeStyling({
-			width: 395,
-			height: 395,
+			width: size,
+			height: size,
 			type: 'svg',
 			data: this.data.connection.url,
 			image: this.data.icon_data,

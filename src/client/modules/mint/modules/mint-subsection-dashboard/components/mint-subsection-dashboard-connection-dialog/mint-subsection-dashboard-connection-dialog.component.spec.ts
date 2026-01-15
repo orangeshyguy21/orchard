@@ -25,6 +25,7 @@ describe('MintSubsectionDashboardConnectionDialogComponent', () => {
 						icon_data: null,
 						mint_name: 'Test Mint',
 						connection: {url: 'https://example.com'},
+						device_mobile: false,
 					},
 				},
 			],

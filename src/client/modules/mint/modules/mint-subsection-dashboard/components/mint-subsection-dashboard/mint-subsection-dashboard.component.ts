@@ -211,12 +211,17 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			.subscribe();
 	}
 
-	private getBreakpointSubscription(): Subscription {
-		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
-			this.device_type.set(result.matches ? 'desktop' : 'tablet');
+	public getBreakpointSubscription(): Subscription {
+		return this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium]).subscribe((result) => {
+			if (result.breakpoints[Breakpoints.XSmall]) {
+				this.device_type.set('mobile');
+			} else if (result.breakpoints[Breakpoints.Small] || result.breakpoints[Breakpoints.Medium]) {
+				this.device_type.set('tablet');
+			} else {
+				this.device_type.set('desktop');
+			}
 		});
 	}
-
 	/* *******************************************************
 		Data                      
 	******************************************************** */
@@ -516,11 +521,13 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	private scrollToChart(nav_item: NavTertiary) {
 		const target_element = this.nav_elements.find((el) => el.nativeElement.classList.contains(nav_item));
 		if (!target_element?.nativeElement) return;
-		target_element.nativeElement.scrollIntoView({
-			behavior: 'smooth',
-			block: 'start',
-			inline: 'nearest',
-		});
+		setTimeout(() => {
+			target_element.nativeElement.scrollIntoView({
+				behavior: 'smooth',
+				block: 'start',
+				inline: 'nearest',
+			});
+		}, 5);
 	}
 
 	/* *******************************************************
