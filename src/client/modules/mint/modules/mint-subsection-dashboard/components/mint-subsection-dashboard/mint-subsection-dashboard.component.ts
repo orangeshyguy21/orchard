@@ -14,6 +14,8 @@ import {
 	WritableSignal,
 } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
+/* Vendor Dependencies */
+import {MatMenu} from '@angular/material/menu';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 /* Vendor Dependencies */
 import {forkJoin, lastValueFrom, Subscription, EMPTY, catchError, finalize, tap} from 'rxjs';
@@ -62,6 +64,7 @@ type ChartKey = 'balance_sheet' | 'mints' | 'melts' | 'swaps' | 'fee_revenue';
 export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	@ViewChildren('nav1,nav2,nav3,nav4,nav5') nav_elements!: QueryList<ElementRef>;
 	@ViewChild('chart_container', {static: false}) chart_container!: ElementRef;
+	@ViewChild('chart_order_menu') chart_order_menu!: MatMenu;
 
 	// data
 	public mint_info: MintInfo | null = null;
@@ -503,6 +506,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	}
 
 	public onTertiaryNavSelect(event: string): void {
+		this.chart_order_menu?.close.emit();
 		this.scrollToChart(event as NavTertiary);
 	}
 
