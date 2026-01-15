@@ -62,13 +62,9 @@ export class IndexSubsectionCrewTableComponent {
 
 	public displayed_columns = computed(() => {
 		const device_type = this.device_type();
-		if (device_type === 'desktop') {
-			return ['user', 'label', 'created', 'state', 'actions'];
-		} else if (device_type === 'tablet') {
-			return ['user', 'label', 'created', 'state'];
-		} else {
-			return ['user', 'state'];
-		}
+		if (device_type === 'desktop') return ['user', 'label', 'created', 'state', 'actions'];
+		if (device_type === 'tablet') return ['user', 'label', 'created', 'state'];
+		return ['user', 'state'];
 	});
 
 	private previous_data_length = 0;

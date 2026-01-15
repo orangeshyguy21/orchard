@@ -17,6 +17,10 @@
 		.animation-enter-fade {
 			animation-name: stack-enter-mobile;
 		}
+
+		.event-stack-container {
+			@extend %left-0;
+		}
 	}
 }
 

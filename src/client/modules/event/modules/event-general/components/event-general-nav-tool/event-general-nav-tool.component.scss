@@ -97,14 +97,12 @@
 
 	.event-nav-tool {
 		&.nav-tool-highlight {
-			&.mobile-mode {
+			@extend %orc-corner-full;
+			.event-nav-tool-switch {
 				@extend %orc-corner-full;
-				.event-nav-tool-switch {
-					@extend %orc-corner-full;
-					width: auto;
-					@extend %h-2-5;
-					@extend %p-h-1;
-				}
+				width: auto;
+				@extend %h-2-5;
+				@extend %p-h-1;
 			}
 		}
 	}
