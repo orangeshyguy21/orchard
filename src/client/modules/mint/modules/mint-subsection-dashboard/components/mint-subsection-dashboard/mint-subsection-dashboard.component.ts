@@ -14,7 +14,6 @@ import {
 	WritableSignal,
 } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-/* Vendor Dependencies */
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 /* Vendor Dependencies */
 import {forkJoin, lastValueFrom, Subscription, EMPTY, catchError, finalize, tap} from 'rxjs';
