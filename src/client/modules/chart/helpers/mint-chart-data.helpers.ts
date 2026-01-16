@@ -33,17 +33,22 @@ export function prependData(analytics: AnalyticsGroup, preceding_data: MintAnaly
 			{} as Record<string, MintAnalytic[]>,
 		);
 
-	for (const unit in analytics) {
+	for (const preceding_item of preceding_data) {
+		const unit = preceding_item.unit;
+		preceding_item.created_time = timestamp_first;
+		preceding_item.operation_count = 0;
+
+		if (!analytics[unit]) {
+			analytics[unit] = [preceding_item];
+			continue;
+		}
+
 		const analytics_for_unit = analytics[unit];
-		const preceding_data_for_unit = preceding_data.find((p) => p.unit === unit);
-		if (!preceding_data_for_unit) continue;
-		preceding_data_for_unit.created_time = timestamp_first;
-		const matching_datapoint = analytics_for_unit.find((a) => a.created_time === preceding_data_for_unit.created_time);
-		preceding_data_for_unit.operation_count = 0;
+		const matching_datapoint = analytics_for_unit.find((a) => a.created_time === preceding_item.created_time);
 		if (!matching_datapoint) {
-			analytics_for_unit.unshift(preceding_data_for_unit);
+			analytics_for_unit.unshift(preceding_item);
 		} else {
-			matching_datapoint.amount = matching_datapoint.amount + preceding_data_for_unit.amount;
+			matching_datapoint.amount = matching_datapoint.amount + preceding_item.amount;
 		}
 	}
 	return analytics;

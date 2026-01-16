@@ -1,7 +1,19 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, output, effect, signal, untracked, WritableSignal, OnDestroy} from '@angular/core';
+import {
+	ChangeDetectionStrategy,
+	Component,
+	input,
+	output,
+	effect,
+	signal,
+	untracked,
+	viewChild,
+	WritableSignal,
+	OnDestroy,
+} from '@angular/core';
 /* Vendor Dependencies */
-import {ChartConfiguration, ChartType as ChartJsType} from 'chart.js';
+import {BaseChartDirective} from 'ng2-charts';
+import {ChartConfiguration, ChartType as ChartJsType, Plugin} from 'chart.js';
 import {DateTime} from 'luxon';
 import {Subscription} from 'rxjs';
 /* Application Dependencies */
@@ -17,6 +29,8 @@ import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
+	public chart = viewChild(BaseChartDirective);
+
 	public loading = input.required<boolean>();
 	public data = input.required<BitcoinOraclePrice[]>();
 	public date_today = input.required<number>();
@@ -32,6 +46,7 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 	public chart_type: WritableSignal<ChartJsType> = signal('line');
 	public chart_data: WritableSignal<ChartConfiguration['data']> = signal({datasets: []});
 	public chart_options: WritableSignal<ChartConfiguration['options']> = signal({});
+	public chart_plugins: WritableSignal<Plugin[]> = signal([]);
 	public displayed: WritableSignal<boolean> = signal(false);
 	public animations_embedded_enabled: WritableSignal<boolean> = signal(false);
 
@@ -76,10 +91,27 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 		this.chart_type.set('line');
 		this.chart_data.set(this.getChartData());
 		this.chart_options.set(this.getChartOptions());
+		this.initGlowPlugin();
 		this.animations_chart_enabled = false;
+		setTimeout(() => {
+			this.chart()?.chart?.resize();
+		});
 		setTimeout(() => {
 			this.displayed.set(true);
 		}, 50);
+	}
+
+	/**
+	 * Creates the glow effect plugin for chart points (line charts only)
+	 */
+	private initGlowPlugin(): void {
+		const chart_data = this.chart_data();
+		if (!chart_data?.datasets || chart_data.datasets.length === 0) {
+			this.chart_plugins.set([]);
+			return;
+		}
+		const first_color = chart_data.datasets[0]?.borderColor as string;
+		this.chart_plugins.set(first_color ? [this.chartService.createGlowPlugin(first_color)] : []);
 	}
 
 	/**
@@ -113,23 +145,23 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 		const datasets: any[] = [];
 
 		// Create a separate dataset for each continuous chunk of data
+		const muted_color = this.chartService.getMutedColor(color.border);
 		for (const chunk of data_chunks) {
 			datasets.push({
 				label: 'BTC/USD',
 				data: chunk,
-				backgroundColor: color.bg,
-				borderColor: color.border,
+				backgroundColor: (context: any) => this.chartService.createAreaGradient(context, color.border),
+				borderColor: muted_color,
 				borderWidth: 2,
-				pointBackgroundColor: color.border,
-				pointBorderColor: color.border,
+				pointBackgroundColor: muted_color,
+				pointBorderColor: muted_color,
+				pointBorderWidth: 2,
 				pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
 				pointHoverBorderColor: color.border,
-				pointRadius: 2,
+				pointHoverBorderWidth: 3,
+				pointRadius: 0,
 				pointHoverRadius: 5,
-				fill: {
-					target: 'origin',
-					above: color.bg,
-				},
+				fill: true,
 				tension: 0.4,
 				yAxisID: 'y',
 			});
@@ -146,7 +178,7 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 				pointBorderColor: 'rgba(128, 128, 128, 0.8)',
 				pointHoverBackgroundColor: 'rgba(128, 128, 128, 1)',
 				pointHoverBorderColor: 'rgba(128, 128, 128, 1)',
-				pointRadius: 3,
+				pointRadius: 2,
 				pointHoverRadius: 5,
 				showLine: false,
 				yAxisID: 'y',

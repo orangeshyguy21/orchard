@@ -115,6 +115,7 @@ export class MintSubsectionDashboardControlComponent {
 		effect(() => {
 			const units = this.units();
 			if (!units) return;
+			if (!this.initialized) return;
 			if (this.areUnitsEqual(this.getSelectedUnits(), units)) return;
 			this.setUnitFilters(units);
 			this.updateFilterCount();
