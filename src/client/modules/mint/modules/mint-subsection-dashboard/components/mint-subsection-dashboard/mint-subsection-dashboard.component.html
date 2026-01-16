@@ -44,7 +44,7 @@
 					(intervalChange)="onIntervalChange($event)"
 				></orc-mint-subsection-dashboard-control>
 			}
-			@if (device_type() === 'tablet') {
+			@if (device_type() !== 'desktop') {
 				<div class="p-b-1-5">
 					<button matButton type="button" [matMenuTriggerFor]="chart_order_menu">
 						<mat-icon>menu</mat-icon>
