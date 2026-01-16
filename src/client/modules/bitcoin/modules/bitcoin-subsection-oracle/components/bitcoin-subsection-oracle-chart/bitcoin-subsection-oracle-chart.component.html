@@ -6,7 +6,7 @@
 	animate.enter="orc-animation-fadein"
 >
 	@if (displayed()) {
-		<canvas baseChart [data]="chart_data()" [options]="chart_options()" [type]="chart_type()"></canvas>
+		<canvas baseChart [data]="chart_data()" [options]="chart_options()" [type]="chart_type()" [plugins]="chart_plugins()"></canvas>
 	}
 	@if (!loading() && data().length === 0) {
 		<div class="no-data-overlay" animate.enter="orc-animation-fadein-fast" animate.leave="orc-animation-fadeout-fast">
