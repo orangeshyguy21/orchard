@@ -12,6 +12,7 @@ RUN npm ci
 FROM deps AS build
 WORKDIR /app
 COPY . .
+ENV SETUP_KEY=build-time-placeholder
 RUN npm run build
 
 # ---------------

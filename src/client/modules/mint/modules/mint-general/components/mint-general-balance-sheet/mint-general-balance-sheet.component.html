@@ -18,7 +18,7 @@
 					<td mat-cell *matCellDef="let row">
 						@if (lightning_enabled()) {
 							@if (!lightning_loading()) {
-								@if (lightning_errors().length > 0) {
+								@if (lightning_errors() && lightning_errors().length > 0) {
 									<div animate.enter="orc-animation-fadein-fast">
 										@for (error of lightning_errors(); track error.code) {
 											<orc-error-resolve [error]="error" mode="small"></orc-error-resolve>
