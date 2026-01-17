@@ -6,7 +6,9 @@ import {
 	Locale,
 	Theme,
 	Model,
+	Currency,
 	ThemeType,
+	CurrencyType,
 	BitcoinOracleSettings,
 	MintDashboardSettings,
 	MintKeysetsSettings,
@@ -28,6 +30,7 @@ export class LocalStorageService {
 		LOCALE_KEY: 'v0.setting.locale',
 		THEME_KEY: 'v0.setting.theme',
 		MODEL_KEY: 'v0.setting.model',
+		CURRENCY_KEY: 'v0.setting.currency',
 		/* Bitcoin Oracle Settings */
 		BITCOIN_ORACLE_KEY: 'v0.bitcoin.oracle.settings',
 		/* Mint Settings */
@@ -36,7 +39,7 @@ export class LocalStorageService {
 		MINT_KEYSETS_KEY: 'v1.mint.keysets.settings',
 		MINT_DATABASE_KEY: 'v1.mint.database.settings',
 		/* Settings Settings */
-		SETTINGS_DEVICE_KEY: 'v0.settings.device.settings',
+		SETTINGS_DEVICE_KEY: 'v1.settings.device.settings',
 	};
 
 	constructor() {}
@@ -97,6 +100,11 @@ export class LocalStorageService {
 		if (!model) return {model: null};
 		return model;
 	}
+	getCurrency(): Currency {
+		const currency = this.getItem<Currency>(this.STORAGE_KEYS.CURRENCY_KEY);
+		if (!currency) return {type_btc: CurrencyType.GLYPH, type_fiat: CurrencyType.GLYPH};
+		return currency;
+	}
 	getBitcoinOracleSettings(): BitcoinOracleSettings {
 		const settings = this.getItem<BitcoinOracleSettings>(this.STORAGE_KEYS.BITCOIN_ORACLE_KEY);
 		if (!settings) return {date_start: null};
@@ -152,6 +160,9 @@ export class LocalStorageService {
 	}
 	setModel(model: Model): void {
 		this.setItem(this.STORAGE_KEYS.MODEL_KEY, model);
+	}
+	setCurrency(currency: Currency): void {
+		this.setItem(this.STORAGE_KEYS.CURRENCY_KEY, currency);
 	}
 	setBitcoinOracleSettings(settings: BitcoinOracleSettings): void {
 		this.setItem(this.STORAGE_KEYS.BITCOIN_ORACLE_KEY, settings);

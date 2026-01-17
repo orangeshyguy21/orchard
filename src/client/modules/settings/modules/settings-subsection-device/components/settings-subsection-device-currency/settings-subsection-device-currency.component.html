@@ -1,0 +1,58 @@
+<mat-card appearance="outlined" class="relative overflow-hidden">
+	<mat-card-content class="orc-surface-container-low-bg">
+		<div class="flex flex-items-start flex-wrap flex-gap-column-1 p-l-1 p-t-1">
+			<div class="flex-grow flex flex-column flex-items-start flex-justify-between">
+				<form class="flex flex-items-center flex-gap-1 flex-wrap" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)">
+					<div class="orc-small-form-field-wrapper">
+						<mat-form-field hideRequiredMarker="true" class="w-full">
+							<mat-label>Currency display</mat-label>
+							<mat-select [formControl]="currency_control" (selectionChange)="currencyChange.emit(currency_control.value)">
+								<mat-select-trigger>
+									<div class="flex flex-gap-2" [innerHTML]="getSelectedCurrencyLabel(currency_control.value)"></div>
+								</mat-select-trigger>
+								@for (option of options(); track option.value) {
+									<mat-option [value]="option.value">
+										<div class="option-main">{{ option.label }}</div>
+										<div class="option-helper">{{ option.details }}</div>
+									</mat-option>
+								}
+							</mat-select>
+						</mat-form-field>
+					</div>
+					<div class="m-b-1-25">
+						<div class="flex">
+							<button
+								type="button"
+								tabindex="-1"
+								mat-icon-button
+								class="orc-icon-button"
+								(click)="help_status.set(!help_status())"
+							>
+								<mat-icon class="orc-outline-color">info</mat-icon>
+							</button>
+						</div>
+					</div>
+				</form>
+				<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
+					<div class="orc-animation-expand-collapse-inner">
+						<div class="flex p-t-0-5 p-b-1">
+							<orc-form-help-text class="orc-surface-container-high-bg">
+								Select a timezone to display all dates and times relative to your preferred time.
+								<br />
+								Syncing with device will use the timezone of your device.
+							</orc-form-help-text>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="flex-grow">
+				<div class="flex flex-items-center flex-justify-center p-v-1">
+					<div class="">
+						<span class="text-nowrap font-size-m" [innerHTML]="example_amount() | localAmount: unit()"></span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</mat-card-content>
+</mat-card>

@@ -22,7 +22,15 @@ import {AiService} from '@client/modules/ai/services/ai/ai.service';
 import {EventService} from '@client/modules/event/services/event/event.service';
 import {ConfigService} from '@client/modules/config/services/config.service';
 import {EventData} from '@client/modules/event/classes/event-data.class';
-import {Locale, Timezone, Theme, ThemeType, Model} from '@client/modules/cache/services/local-storage/local-storage.types';
+import {
+	Locale,
+	Timezone,
+	Theme,
+	ThemeType,
+	Model,
+	Currency,
+	CurrencyType,
+} from '@client/modules/cache/services/local-storage/local-storage.types';
 import {AiModel} from '@client/modules/ai/classes/ai-model.class';
 import {NonNullableSettingsDeviceSettings} from '@client/modules/settings/types/setting.types';
 import {NavTertiaryItem} from '@client/modules/nav/types/nav-tertiary-item.type';
@@ -31,7 +39,8 @@ import {DeviceType} from '@client/modules/layout/types/device.types';
 enum NavTertiary {
 	Location = 'nav1',
 	Theme = 'nav2',
-	AI = 'nav3',
+	Currency = 'nav3',
+	AI = 'nav4',
 }
 
 @Component({
@@ -42,7 +51,7 @@ enum NavTertiary {
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsSubsectionDeviceComponent implements OnInit, AfterViewInit, OnDestroy {
-	readonly nav_elements = viewChildren<ElementRef>('nav1,nav2,nav3');
+	readonly nav_elements = viewChildren<ElementRef>('nav1,nav2,nav3,nav4');
 	readonly settings_container = viewChild<ElementRef>('settings_container');
 
 	public version: string;
@@ -51,6 +60,7 @@ export class SettingsSubsectionDeviceComponent implements OnInit, AfterViewInit,
 	readonly timezone = signal<Timezone | null>(null);
 	readonly theme = signal<Theme | null>(null);
 	readonly model = signal<Model | null>(null);
+	readonly currency = signal<Currency | null>(null);
 	readonly ai_models = signal<AiModel[]>([]);
 	readonly loading_static = signal(true);
 	readonly loading_ai = signal(true);
@@ -61,9 +71,19 @@ export class SettingsSubsectionDeviceComponent implements OnInit, AfterViewInit,
 	readonly tertiary_nav_items: Record<NavTertiary, NavTertiaryItem> = {
 		[NavTertiary.Location]: {title: 'Location'},
 		[NavTertiary.Theme]: {title: 'Theme'},
+		[NavTertiary.Currency]: {title: 'Currency'},
 		[NavTertiary.AI]: {title: 'AI'},
 	};
 	readonly tertiary_nav = computed<string[]>(() => this.page_settings()?.tertiary_nav || []);
+	readonly currency_btc = computed<CurrencyType>(() => {
+		const _currency = this.currency();
+		const settings_currency = this.settingDeviceService.getCurrency();
+		return settings_currency.type_btc;
+	});
+	readonly locale_display = computed<string>(() => {
+		const _locale = this.locale();
+		return this.settingDeviceService.getLocale();
+	});
 
 	private subscriptions: Subscription = new Subscription();
 
@@ -91,6 +111,7 @@ export class SettingsSubsectionDeviceComponent implements OnInit, AfterViewInit,
 		this.timezone.set(this.localStorageService.getTimezone());
 		this.theme.set(this.localStorageService.getTheme());
 		this.model.set(this.localStorageService.getModel());
+		this.currency.set(this.localStorageService.getCurrency());
 		this.loading_static.set(false);
 		this.cdr.detectChanges();
 		this.orchardOptionalInit();
@@ -178,6 +199,20 @@ export class SettingsSubsectionDeviceComponent implements OnInit, AfterViewInit,
 			new EventData({
 				type: 'SUCCESS',
 				message: 'Theme updated!',
+			}),
+		);
+	}
+
+	public onCurrencyChange(currency: CurrencyType | null, mode: keyof Currency): void {
+		console.log(currency, mode);
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		this.localStorageService.setCurrency({...this.localStorageService.getCurrency(), [mode]: currency});
+		this.settingDeviceService.setCurrency();
+		this.currency.set(this.localStorageService.getCurrency());
+		this.eventService.registerEvent(
+			new EventData({
+				type: 'SUCCESS',
+				message: 'Currency updated!',
 			}),
 		);
 	}

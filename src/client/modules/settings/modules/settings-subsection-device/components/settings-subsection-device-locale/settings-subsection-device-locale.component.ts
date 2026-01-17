@@ -1,5 +1,16 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input, OnChanges, Output, signal, SimpleChanges, EventEmitter, ViewChild} from '@angular/core';
+import {
+	ChangeDetectionStrategy,
+	Component,
+	Input,
+	OnChanges,
+	Output,
+	signal,
+	input,
+	SimpleChanges,
+	EventEmitter,
+	ViewChild,
+} from '@angular/core';
 import {FormControl, Validators} from '@angular/forms';
 /* Vendor Dependencies */
 import {MatCheckboxChange} from '@angular/material/checkbox';
@@ -7,7 +18,7 @@ import {MatAutocompleteTrigger, MatAutocomplete} from '@angular/material/autocom
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 /* Application Dependencies */
-import {Locale} from '@client/modules/cache/services/local-storage/local-storage.types';
+import {Locale, CurrencyType} from '@client/modules/cache/services/local-storage/local-storage.types';
 
 type LocaleOption = {
 	code: string;
@@ -15,27 +26,26 @@ type LocaleOption = {
 };
 
 @Component({
-	selector: 'orc-settings-subsection-device-time-locale',
+	selector: 'orc-settings-subsection-device-locale',
 	standalone: false,
-	templateUrl: './settings-subsection-device-time-locale.component.html',
-	styleUrl: './settings-subsection-device-time-locale.component.scss',
+	templateUrl: './settings-subsection-device-locale.component.html',
+	styleUrl: './settings-subsection-device-locale.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsSubsectionDeviceTimeLocaleComponent implements OnChanges {
+export class SettingsSubsectionDeviceLocaleComponent implements OnChanges {
 	@ViewChild(MatAutocompleteTrigger) autotrigger!: MatAutocompleteTrigger;
 	@ViewChild(MatAutocomplete) auto!: MatAutocomplete;
 
 	@Input() locale!: Locale | null;
 	@Input() loading!: boolean;
+	public readonly currency_btc = input.required<CurrencyType>();
 
 	@Output() localeChange = new EventEmitter<string | null>();
 
 	public locale_control = new FormControl('', [Validators.required]);
 	public system_default_control = new FormControl(true);
 	public unix_timestamp_seconds = Math.floor(Date.now() / 1000);
-	public example_amount = 1000000;
 	public filtered_options!: Observable<LocaleOption[]>;
-	public help_status = signal<boolean>(false);
 	public locale_options: LocaleOption[] = [
 		// English Variants
 		{code: 'en-US', country: 'English (United States)'},
@@ -86,12 +96,16 @@ export class SettingsSubsectionDeviceTimeLocaleComponent implements OnChanges {
 		{code: 'id-ID', country: 'Indonesian (Indonesia)'},
 	];
 
+	public help_status = signal<boolean>(false);
+	public readonly example_amount = signal<number>(1500000);
+
 	private system_locale = Intl.DateTimeFormat().resolvedOptions().locale;
 
 	constructor() {}
 
 	ngOnChanges(changes: SimpleChanges): void {
 		if (changes['loading'] && this.loading === false) this.init();
+		if (changes['currency_btc'] && this.currency_btc()) this.example_amount.set(this.example_amount());
 	}
 
 	private init() {

@@ -24,21 +24,21 @@ import {OrcAiModule} from '@client/modules/ai/ai.module';
 /* Native Module Dependencies */
 import {SettingsSubsectionDeviceComponent} from './components/settings-subsection-device/settings-subsection-device.component';
 import {SettingsSubsectionDeviceCategoriesComponent} from './components/settings-subsection-device-categories/settings-subsection-device-categories.component';
-import {SettingsSubsectionDeviceTimeComponent} from './components/settings-subsection-device-time/settings-subsection-device-time.component';
-import {SettingsSubsectionDeviceTimeTimezoneComponent} from './components/settings-subsection-device-time-timezone/settings-subsection-device-time-timezone.component';
-import {SettingsSubsectionDeviceTimeLocaleComponent} from './components/settings-subsection-device-time-locale/settings-subsection-device-time-locale.component';
+import {SettingsSubsectionDeviceTimezoneComponent} from './components/settings-subsection-device-timezone/settings-subsection-device-timezone.component';
+import {SettingsSubsectionDeviceLocaleComponent} from './components/settings-subsection-device-locale/settings-subsection-device-locale.component';
 import {SettingsSubsectionDeviceThemeComponent} from './components/settings-subsection-device-theme/settings-subsection-device-theme.component';
 import {SettingsSubsectionDeviceAiComponent} from './components/settings-subsection-device-ai/settings-subsection-device-ai.component';
+import {SettingsSubsectionDeviceCurrencyComponent} from './components/settings-subsection-device-currency/settings-subsection-device-currency.component';
 
 @NgModule({
 	declarations: [
 		SettingsSubsectionDeviceComponent,
 		SettingsSubsectionDeviceCategoriesComponent,
-		SettingsSubsectionDeviceTimeComponent,
-		SettingsSubsectionDeviceTimeTimezoneComponent,
-		SettingsSubsectionDeviceTimeLocaleComponent,
+		SettingsSubsectionDeviceTimezoneComponent,
+		SettingsSubsectionDeviceLocaleComponent,
 		SettingsSubsectionDeviceThemeComponent,
 		SettingsSubsectionDeviceAiComponent,
+		SettingsSubsectionDeviceCurrencyComponent,
 	],
 	imports: [
 		[

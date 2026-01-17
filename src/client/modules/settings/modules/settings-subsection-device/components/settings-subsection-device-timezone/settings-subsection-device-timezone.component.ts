@@ -1,5 +1,16 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, signal, ViewChild} from '@angular/core';
+import {
+	ChangeDetectionStrategy,
+	Component,
+	EventEmitter,
+	Input,
+	input,
+	OnChanges,
+	Output,
+	SimpleChanges,
+	signal,
+	ViewChild,
+} from '@angular/core';
 import {FormControl, Validators} from '@angular/forms';
 /* Vendor Dependencies */
 import {MatCheckboxChange} from '@angular/material/checkbox';
@@ -10,18 +21,19 @@ import {map, startWith} from 'rxjs/operators';
 import {Timezone} from '@client/modules/cache/services/local-storage/local-storage.types';
 
 @Component({
-	selector: 'orc-settings-subsection-device-time-timezone',
+	selector: 'orc-settings-subsection-device-timezone',
 	standalone: false,
-	templateUrl: './settings-subsection-device-time-timezone.component.html',
-	styleUrl: './settings-subsection-device-time-timezone.component.scss',
+	templateUrl: './settings-subsection-device-timezone.component.html',
+	styleUrl: './settings-subsection-device-timezone.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsSubsectionDeviceTimeTimezoneComponent implements OnChanges {
+export class SettingsSubsectionDeviceTimezoneComponent implements OnChanges {
 	@ViewChild(MatAutocompleteTrigger) autotrigger!: MatAutocompleteTrigger;
 	@ViewChild(MatAutocomplete) auto!: MatAutocomplete;
 
 	@Input() timezone!: Timezone | null;
 	@Input() loading!: boolean;
+	public readonly locale = input.required<string>();
 
 	@Output() timezoneChange = new EventEmitter<string | null>();
 
@@ -29,7 +41,7 @@ export class SettingsSubsectionDeviceTimeTimezoneComponent implements OnChanges 
 	public system_default_control = new FormControl(true);
 	public timezone_options: string[] = (Intl as any).supportedValuesOf('timeZone');
 	public filtered_options!: Observable<string[]>;
-	public unix_timestamp_seconds = Math.floor(Date.now() / 1000);
+	public unix_timestamp_seconds = signal<number>(Math.floor(Date.now() / 1000));
 	public help_status = signal<boolean>(false);
 
 	private system_timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -38,6 +50,7 @@ export class SettingsSubsectionDeviceTimeTimezoneComponent implements OnChanges 
 
 	ngOnChanges(changes: SimpleChanges): void {
 		if (changes['loading'] && this.loading === false) this.init();
+		if (changes['locale']) this.unix_timestamp_seconds.set(Math.floor(Date.now() / 1000));
 	}
 
 	private init() {

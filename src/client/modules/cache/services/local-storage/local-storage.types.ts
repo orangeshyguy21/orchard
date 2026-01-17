@@ -20,9 +20,19 @@ export type Model = {
 	model: string | null;
 };
 
+export type Currency = {
+	type_btc: CurrencyType;
+	type_fiat: CurrencyType;
+};
+
 export enum ThemeType {
 	DARK_MODE = 'dark-mode',
 	LIGHT_MODE = 'light-mode',
+}
+
+export enum CurrencyType {
+	CODE = 'code',
+	GLYPH = 'glyph',
 }
 
 export type BitcoinOracleSettings = {

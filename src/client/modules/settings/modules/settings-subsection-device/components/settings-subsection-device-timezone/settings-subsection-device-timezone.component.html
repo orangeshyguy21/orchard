@@ -1,0 +1,66 @@
+<mat-card appearance="outlined" class="relative overflow-hidden">
+	<mat-card-content class="orc-surface-container-low-bg">
+		<div class="flex flex-items-start flex-wrap flex-gap-column-1 p-l-1 p-t-1 p-r-1">
+			<div class="flex-grow flex flex-column flex-items-start flex-justify-between">
+				<form class="flex flex-items-center flex-gap-1 flex-wrap" (ngSubmit)="onSubmit($event)" (keydown.enter)="onSubmit($event)">
+					<div class="orc-small-form-field-wrapper">
+						<mat-form-field hideRequiredMarker="true" class="w-full">
+							<mat-label>Timezone</mat-label>
+							<input
+								type="text"
+								placeholder="Pick one"
+								aria-label="Number"
+								matInput
+								[formControl]="timezone_control"
+								[matAutocomplete]="auto"
+							/>
+							<mat-autocomplete #auto="matAutocomplete">
+								@for (option of filtered_options | async; track option) {
+									<mat-option [value]="option">{{ option }}</mat-option>
+								}
+							</mat-autocomplete>
+							<mat-error>
+								<orc-form-error [errors]="timezone_control.errors">Invalid timezone</orc-form-error>
+							</mat-error>
+						</mat-form-field>
+					</div>
+					<div class="m-b-1-25 flex flex-items-center flex-gap-1">
+						<mat-checkbox [formControl]="system_default_control" (change)="onSystemDefaultChange($event)">
+							<span class="text-nowrap">Sync with device</span>
+						</mat-checkbox>
+						<div class="flex">
+							<button
+								type="button"
+								tabindex="-1"
+								mat-icon-button
+								class="orc-icon-button"
+								(click)="help_status.set(!help_status())"
+							>
+								<mat-icon class="orc-outline-color">info</mat-icon>
+							</button>
+						</div>
+					</div>
+				</form>
+				<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
+					<div class="orc-animation-expand-collapse-inner">
+						<div class="flex p-t-0-5 p-b-1">
+							<orc-form-help-text class="orc-surface-container-high-bg">
+								Select a timezone to display all dates and times relative to your preferred time.
+								<br />
+								Syncing with device will use the timezone of your device.
+							</orc-form-help-text>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="flex-grow">
+				<div class="flex flex-items-center flex-justify-center p-v-1">
+					<div class="orc-outline-color">
+						{{ unix_timestamp_seconds() | localTime }}
+					</div>
+				</div>
+			</div>
+		</div>
+	</mat-card-content>
+</mat-card>

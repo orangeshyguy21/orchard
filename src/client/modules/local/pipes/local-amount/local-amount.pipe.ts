@@ -2,6 +2,7 @@
 import {Pipe, PipeTransform} from '@angular/core';
 /* Application Dependencies */
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
+import {CurrencyType} from '@client/modules/cache/services/local-storage/local-storage.types';
 
 @Pipe({
 	name: 'localAmount',
@@ -14,45 +15,58 @@ export class LocalAmountPipe implements PipeTransform {
 	transform(amount: number | null, unit: string, section?: string): string {
 		if (amount === null || amount === undefined) return '';
 		const locale = this.settingDeviceService.getLocale();
+		const currency = this.settingDeviceService.getCurrency();
 		const unit_lower = unit.toLowerCase();
 
 		switch (unit_lower) {
 			case 'sat':
-				return this.transformSat(amount, locale);
+				return this.transformSat(amount, locale, currency.type_btc);
 			case 'btc':
 				return this.transformBtc(amount, unit, locale);
 			case 'usd':
-				return this.transformFiat(amount, unit, locale, section);
+				return this.transformFiat(amount, unit, locale, currency.type_fiat, section);
 			case 'eur':
-				return this.transformFiat(amount, unit, locale, section);
+				return this.transformFiat(amount, unit, locale, currency.type_fiat, section);
 			default:
-				return this.transformToHtml(amount.toLocaleString(), unit);
+				return this.formatStandard(amount.toLocaleString(), unit);
 		}
 	}
 
-	private transformSat(amount: number, locale: string): string {
-		const suffix = amount === 1 ? 'sat' : 'sats';
+	private transformSat(amount: number, locale: string, currency: CurrencyType): string {
 		const sat_string = amount.toLocaleString(locale);
-		return this.transformToHtml(sat_string, suffix);
+		switch (currency) {
+			case CurrencyType.GLYPH:
+				return this.formatPreceding(sat_string, '₿');
+			case CurrencyType.CODE:
+				return this.formatStandard(sat_string, 'sat');
+			default:
+				return this.formatStandard(sat_string, 'sat');
+		}
 	}
 
 	private transformBtc(amount: number, unit: string, locale: string): string {
 		const suffix = 'BTC';
 		const btc_string = amount.toLocaleString(locale, {minimumFractionDigits: 8, maximumFractionDigits: 8});
-		return this.transformToHtml(btc_string, suffix);
+		return this.formatStandard(btc_string, suffix);
 	}
 
-	private transformFiat(amount: number, unit: string, locale: string, section?: string): string {
+	private transformFiat(amount: number, unit: string, locale: string, currency: CurrencyType, section?: string): string {
 		let fiat_amount = amount;
 		if (section === 'mint') fiat_amount = LocalAmountPipe.getConvertedAmount(unit, amount);
 		const fiat_amount_string = fiat_amount.toLocaleString(locale, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-		const suffix = unit.toUpperCase();
-		return this.transformToHtml(fiat_amount_string, suffix);
+		switch (currency) {
+			case CurrencyType.GLYPH:
+				return this.formatPreceding(fiat_amount_string, this.getCurrencySymbol(unit));
+			case CurrencyType.CODE:
+				return this.formatStandard(fiat_amount_string, unit.toUpperCase());
+			default:
+				return this.formatStandard(fiat_amount_string, unit.toUpperCase());
+		}
 	}
 
-	private transformToHtml(amount_string: string, unit: string): string {
+	private formatStandard(amount_string: string, unit: string): string {
 		return `
-			<span class="orc-amount-container">
+			<span class="orc-amount-standard">
 				<span class="orc-amount">
 					${amount_string}
 				</span>
@@ -61,6 +75,28 @@ export class LocalAmountPipe implements PipeTransform {
 				</span>
 			</span>
 		`;
+	}
+
+	private formatPreceding(amount_string: string, unit: string): string {
+		return `
+            <span class="orc-unit">
+                ${unit}
+            </span>
+            <span class="orc-amount">
+                ${amount_string}
+            </span>
+        `;
+	}
+
+	private getCurrencySymbol(unit: string): string {
+		switch (unit) {
+			case 'usd':
+				return '$';
+			case 'eur':
+				return '€';
+			default:
+				return unit.toUpperCase();
+		}
 	}
 
 	public static getConvertedAmount(unit: string, amount: number): number {
