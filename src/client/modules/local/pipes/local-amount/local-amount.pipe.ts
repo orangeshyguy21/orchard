@@ -3,6 +3,8 @@ import {Pipe, PipeTransform} from '@angular/core';
 /* Application Dependencies */
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {CurrencyType} from '@client/modules/cache/services/local-storage/local-storage.types';
+/* Native Dependencies */
+import {getCurrencySymbol} from '@client/modules/local/helpers/local.helpers';
 
 @Pipe({
 	name: 'localAmount',
@@ -56,7 +58,7 @@ export class LocalAmountPipe implements PipeTransform {
 		const fiat_amount_string = fiat_amount.toLocaleString(locale, {minimumFractionDigits: 2, maximumFractionDigits: 2});
 		switch (currency) {
 			case CurrencyType.GLYPH:
-				return this.formatPreceding(fiat_amount_string, this.getCurrencySymbol(unit.toLowerCase()));
+				return this.formatPreceding(fiat_amount_string, getCurrencySymbol(unit.toLowerCase()));
 			case CurrencyType.CODE:
 				return this.formatStandard(fiat_amount_string, unit.toUpperCase());
 			default:
@@ -86,17 +88,6 @@ export class LocalAmountPipe implements PipeTransform {
                 ${amount_string}
             </span>
         `;
-	}
-
-	private getCurrencySymbol(unit: string): string {
-		switch (unit) {
-			case 'usd':
-				return '$';
-			case 'eur':
-				return '€';
-			default:
-				return unit.toUpperCase();
-		}
 	}
 
 	public static getConvertedAmount(unit: string, amount: number): number {
