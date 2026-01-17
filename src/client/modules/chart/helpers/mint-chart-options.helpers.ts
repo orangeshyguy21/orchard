@@ -30,6 +30,26 @@ function getTimeTicks(timestamp: number): string {
 	});
 }
 
+/**
+ * Formats a number with K/M/B suffixes for axis labels
+ * @param value - The numeric value to format
+ * @param locale - The locale string for number formatting
+ * @returns Formatted string with appropriate suffix (K, M, B)
+ */
+export function formatAxisValue(value: number, locale?: string): string {
+	const abs_value = Math.abs(value);
+	if (abs_value >= 1_000_000_000) {
+		return (value / 1_000_000_000).toLocaleString(locale, {maximumFractionDigits: 1}) + 'B';
+	}
+	if (abs_value >= 1_000_000) {
+		return (value / 1_000_000).toLocaleString(locale, {maximumFractionDigits: 1}) + 'M';
+	}
+	if (abs_value >= 1_000) {
+		return (value / 1_000).toLocaleString(locale, {maximumFractionDigits: 1}) + 'k';
+	}
+	return value.toLocaleString(locale);
+}
+
 export function getYAxis(units: (string | undefined)[]): string[] {
 	const lower_units = units.map((unit) => unit?.toLowerCase());
 	const y_axis: string[] = [];
@@ -104,10 +124,12 @@ export function getBtcYAxisConfig({
 	grid_color,
 	begin_at_zero,
 	mark_zero_color,
+	locale,
 }: {
 	grid_color: string;
 	begin_at_zero?: boolean;
 	mark_zero_color?: string;
+	locale?: string;
 }): any {
 	return {
 		position: 'left',
@@ -116,6 +138,9 @@ export function getBtcYAxisConfig({
 			text: 'SAT',
 		},
 		beginAtZero: begin_at_zero ?? false,
+		ticks: {
+			callback: (value: string | number) => formatAxisValue(Number(value), locale),
+		},
 		grid: {
 			display: true, // Enable gridlines for ybtc axis
 			drawBorder: (_context: any) => {
@@ -136,11 +161,13 @@ export function getFiatYAxisConfig({
 	show_grid,
 	grid_color,
 	begin_at_zero,
+	locale,
 }: {
 	units: (string | undefined)[];
 	show_grid: boolean;
 	grid_color: string;
 	begin_at_zero?: boolean;
+	locale?: string;
 }): any {
 	return {
 		position: 'right',
@@ -149,32 +176,12 @@ export function getFiatYAxisConfig({
 			text: getFiatAxisLabel(units),
 		},
 		beginAtZero: begin_at_zero ?? false,
+		ticks: {
+			callback: (value: string | number) => formatAxisValue(Number(value), locale),
+		},
 		grid: {
 			display: show_grid,
 			color: grid_color,
 		},
 	};
 }
-
-// const border_color = this.form_hot ? '#D5C4AC' : '#4c463d';
-// const border_width = this.form_hot ? 2 : 1;
-// const text_color = this.form_hot ? '#D5C4AC' : 'rgb(235, 225, 213)';
-// const label_bg_color = this.form_hot ? '#695D49' : 'rgb(29, 27, 26)';
-// const label_border_color = this.form_hot ? null : '#4c463d';
-
-// export function getFormAnnotationConfig(hot: boolean): any {
-//     if( hot ) return {
-//         border_color: '#D5C4AC',
-//         border_width: 2,
-//         text_color: '#D5C4AC',
-//         label_bg_color: '#695D49',
-//         label_border_color: null
-//     }
-//     return {
-//         border_color: '#4c463d',
-//         border_width: 1,
-//         text_color: 'rgb(235, 225, 213)',
-//         label_bg_color: 'rgb(29, 27, 26)',
-//         label_border_color: '#4c463d'
-//     }
-// }

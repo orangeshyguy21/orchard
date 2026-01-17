@@ -4,7 +4,7 @@ import {Pipe, PipeTransform} from '@angular/core';
 @Pipe({
 	name: 'bitcoinGeneralBlock',
 	standalone: false,
-	pure: false,
+	pure: true,
 })
 export class BitcoinGeneralBlockPipe implements PipeTransform {
 	transform(value: number | string | undefined | null): string {

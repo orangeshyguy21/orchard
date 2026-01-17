@@ -120,8 +120,8 @@ export class MintSubsectionConfigFormBolt11Component implements OnChanges {
 	} {
 		const values = amounts.map((amount) => amount['amount']);
 		return {
-			avg: avg(values),
-			median: median(values),
+			avg: avg(values, true),
+			median: median(values, true),
 			max: max(values),
 			min: min(values),
 		};

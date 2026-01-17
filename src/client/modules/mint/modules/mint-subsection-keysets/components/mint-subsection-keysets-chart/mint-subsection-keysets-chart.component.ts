@@ -243,6 +243,7 @@ export class MintSubsectionKeysetsChartComponent implements OnDestroy {
 			scales['ybtc'] = getBtcYAxisConfig({
 				grid_color: this.chartService.getGridColor(),
 				begin_at_zero: true,
+				locale,
 			});
 		}
 		if (y_axis.includes('yfiat')) {
@@ -251,6 +252,7 @@ export class MintSubsectionKeysetsChartComponent implements OnDestroy {
 				show_grid: !y_axis.includes('ybtc'),
 				grid_color: this.chartService.getGridColor(),
 				begin_at_zero: true,
+				locale,
 			});
 		}
 

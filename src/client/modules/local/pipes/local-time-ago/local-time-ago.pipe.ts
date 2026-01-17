@@ -6,7 +6,7 @@ import {DateTime} from 'luxon';
 @Pipe({
 	name: 'localTimeAgo',
 	standalone: false,
-	pure: false,
+	pure: true,
 })
 export class LocalTimeAgoPipe implements PipeTransform {
 	transform(timestamp: number | null | undefined): string {

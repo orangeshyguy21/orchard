@@ -57,6 +57,7 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 		date_start: new FormControl<DateTime | null>(null, [Validators.required]),
 		date_end: new FormControl<DateTime | null>({value: null, disabled: true}),
 	});
+	public locale = signal<string>('');
 	public data = signal<BitcoinOraclePrice[]>([]);
 	public loading = signal<boolean>(true);
 	public form_open = signal<boolean>(false);
@@ -106,6 +107,7 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 
 	ngOnInit(): void {
 		this.enabled_ai.set(this.configService.config.ai.enabled);
+		this.locale.set(this.settingDeviceService.getLocale());
 		this.subscriptions.add(this.getControlSubscription());
 		this.subscriptions.add(this.getBackfillSubscription());
 		this.subscriptions.add(this.getEventSubscription());

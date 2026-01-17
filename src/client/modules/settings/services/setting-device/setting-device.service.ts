@@ -5,7 +5,7 @@ import {DateAdapter} from '@angular/material/core';
 import {Settings} from 'luxon';
 /* Application Dependencies */
 import {LocalStorageService} from '@client/modules/cache/services/local-storage/local-storage.service';
-import {ThemeType} from '@client/modules/cache/services/local-storage/local-storage.types';
+import {ThemeType, CurrencyType, Currency} from '@client/modules/cache/services/local-storage/local-storage.types';
 import {
 	AllBitcoinOracleSettings,
 	AllMintDashboardSettings,
@@ -33,6 +33,12 @@ export class SettingDeviceService {
 		page: null,
 	};
 
+	/* In-memory cache for frequently accessed settings */
+	private cached_locale: string | null = null;
+	private cached_timezone: string | null = null;
+	private cached_theme: ThemeType | null = null;
+	private cached_currency: Currency | null = null;
+
 	constructor(
 		private dateAdapter: DateAdapter<Date>,
 		private localStorageService: LocalStorageService,
@@ -46,10 +52,13 @@ export class SettingDeviceService {
 
 	/* Locale */
 	public getLocale(): string {
+		if (this.cached_locale !== null) return this.cached_locale;
 		const system_locale = Intl.DateTimeFormat().resolvedOptions().locale;
-		return this.localStorageService.getLocale().code ?? system_locale;
+		this.cached_locale = this.localStorageService.getLocale().code ?? system_locale;
+		return this.cached_locale;
 	}
 	public setLocale(): void {
+		this.cached_locale = null;
 		const locale = this.getLocale();
 		this.dateAdapter.setLocale(locale);
 		Settings.defaultLocale = locale;
@@ -57,24 +66,28 @@ export class SettingDeviceService {
 
 	/* Timezone */
 	public getTimezone(): string {
+		if (this.cached_timezone !== null) return this.cached_timezone;
 		const system_timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-		return this.localStorageService.getTimezone().tz ?? system_timezone;
+		this.cached_timezone = this.localStorageService.getTimezone().tz ?? system_timezone;
+		return this.cached_timezone;
 	}
 	public setTimezone(): void {
+		this.cached_timezone = null;
 		const timezone = this.getTimezone();
 		Settings.defaultZone = timezone;
 	}
 
 	/* Theme */
 	public getTheme(): ThemeType {
+		if (this.cached_theme !== null) return this.cached_theme;
 		const prefers_light_theme = window.matchMedia('(prefers-color-scheme: light)').matches;
 		const theme = this.localStorageService.getTheme();
-		if (theme.type === null) return prefers_light_theme ? ThemeType.LIGHT_MODE : ThemeType.DARK_MODE;
-		return theme.type;
+		this.cached_theme = theme.type === null ? (prefers_light_theme ? ThemeType.LIGHT_MODE : ThemeType.DARK_MODE) : theme.type;
+		return this.cached_theme;
 	}
 	public setTheme(): void {
+		this.cached_theme = null;
 		const theme = this.getTheme();
-		if (theme === null) return document.body.classList.remove(ThemeType.LIGHT_MODE, ThemeType.DARK_MODE);
 		document.body.classList.remove(ThemeType.LIGHT_MODE, ThemeType.DARK_MODE);
 		document.body.classList.add(theme);
 	}
@@ -85,6 +98,19 @@ export class SettingDeviceService {
 	}
 	public setModel(model: string | null): void {
 		this.localStorageService.setModel({model: model});
+	}
+
+	/* Currency */
+	public getCurrency(): Currency {
+		if (this.cached_currency !== null) return this.cached_currency;
+		const currency = this.localStorageService.getCurrency();
+		this.cached_currency = currency ?? {type_btc: CurrencyType.GLYPH, type_fiat: CurrencyType.GLYPH};
+		return this.cached_currency;
+	}
+	public setCurrency(): void {
+		this.cached_currency = null;
+		const currency = this.getCurrency();
+		this.localStorageService.setCurrency(currency);
 	}
 
 	/* Page: Bitcoin Oracle */

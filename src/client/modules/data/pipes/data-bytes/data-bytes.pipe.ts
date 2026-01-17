@@ -4,7 +4,7 @@ import {Pipe, PipeTransform} from '@angular/core';
 @Pipe({
 	name: 'dataBytes',
 	standalone: false,
-	pure: false,
+	pure: true,
 })
 export class DataBytesPipe implements PipeTransform {
 	transform(bytes: number | null | undefined): string {

@@ -16,6 +16,7 @@ import {
 	getFiatYAxisConfig,
 	getTooltipTitleExact,
 	getTooltipLabel,
+	formatAxisValue,
 } from '@client/modules/chart/helpers/mint-chart-options.helpers';
 import {ChartService} from '@client/modules/chart/services/chart/chart.service';
 /* Native Dependencies */
@@ -232,16 +233,18 @@ export class MintSubsectionDatabaseChartComponent implements OnChanges, OnDestro
 			scales['ybtc'] = {
 				...getBtcYAxisConfig({
 					grid_color: this.chartService.getGridColor(),
+					locale: this.locale,
 				}),
 				type: use_log_scale ? 'logarithmic' : 'linear',
 				beginAtZero: !use_log_scale,
 				ticks: use_log_scale
 					? {
-							callback: function (value: number): string | null {
-								return value === 1 || Math.log10(value) % 1 === 0 ? value.toString() : null;
+							callback: (value: string | number): string | null => {
+								const num = Number(value);
+								return num === 1 || Math.log10(num) % 1 === 0 ? formatAxisValue(num, this.locale) : null;
 							},
 						}
-					: {},
+					: {callback: (value: string | number) => formatAxisValue(Number(value), this.locale)},
 			};
 		if (y_axis.includes('yfiat'))
 			scales['yfiat'] = {
@@ -249,16 +252,18 @@ export class MintSubsectionDatabaseChartComponent implements OnChanges, OnDestro
 					units,
 					show_grid: !y_axis.includes('ybtc'),
 					grid_color: this.chartService.getGridColor(),
+					locale: this.locale,
 				}),
 				type: use_log_scale ? 'logarithmic' : 'linear',
 				beginAtZero: !use_log_scale,
 				ticks: use_log_scale
 					? {
-							callback: function (value: number): string | null {
-								return value === 1 || Math.log10(value) % 1 === 0 ? value.toString() : null;
+							callback: (value: string | number): string | null => {
+								const num = Number(value);
+								return num === 1 || Math.log10(num) % 1 === 0 ? formatAxisValue(num, this.locale) : null;
 							},
 						}
-					: {},
+					: {callback: (value: string | number) => formatAxisValue(Number(value), this.locale)},
 			};
 
 		scales['x'] = {

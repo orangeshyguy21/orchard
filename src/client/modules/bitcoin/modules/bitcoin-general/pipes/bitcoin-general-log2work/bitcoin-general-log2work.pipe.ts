@@ -4,7 +4,7 @@ import {Pipe, PipeTransform} from '@angular/core';
 @Pipe({
 	name: 'bitcoinGeneralLog2work',
 	standalone: false,
-	pure: false,
+	pure: true,
 })
 export class BitcoinGeneralLog2workPipe implements PipeTransform {
 	transform(chainwork: string | null | undefined): number {
