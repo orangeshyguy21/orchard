@@ -24,6 +24,7 @@ import {
 	getFiatYAxisConfig,
 	getTooltipTitle,
 	getTooltipLabel,
+	formatAxisValue,
 } from '@client/modules/chart/helpers/mint-chart-options.helpers';
 import {ChartService} from '@client/modules/chart/services/chart/chart.service';
 /* Native Dependencies */
@@ -296,7 +297,7 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy, OnChang
 					ticks: {
 						stepSize: 1,
 						precision: 0,
-						callback: (value: string | number) => Number(value).toLocaleString(this.locale()),
+						callback: (value: string | number) => formatAxisValue(Number(value), this.locale()),
 					},
 					grid: {
 						display: true,

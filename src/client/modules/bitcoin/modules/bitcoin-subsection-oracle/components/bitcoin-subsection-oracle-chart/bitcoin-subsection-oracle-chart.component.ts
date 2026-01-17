@@ -18,6 +18,7 @@ import {DateTime} from 'luxon';
 import {Subscription} from 'rxjs';
 /* Application Dependencies */
 import {ChartService} from '@client/modules/chart/services/chart/chart.service';
+import {formatAxisValue} from '@client/modules/chart/helpers/mint-chart-options.helpers';
 /* Native Dependencies */
 import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle-price.class';
 
@@ -376,7 +377,7 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 				},
 				ticks: {
 					callback: (value: string | number) => {
-						return Number(value).toLocaleString(this.locale());
+						return formatAxisValue(Number(value), this.locale());
 					},
 				},
 			},
