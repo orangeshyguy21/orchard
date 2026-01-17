@@ -104,10 +104,12 @@ export function getBtcYAxisConfig({
 	grid_color,
 	begin_at_zero,
 	mark_zero_color,
+	locale,
 }: {
 	grid_color: string;
 	begin_at_zero?: boolean;
 	mark_zero_color?: string;
+	locale?: string;
 }): any {
 	return {
 		position: 'left',
@@ -116,6 +118,9 @@ export function getBtcYAxisConfig({
 			text: 'SAT',
 		},
 		beginAtZero: begin_at_zero ?? false,
+		ticks: {
+			callback: (value: string | number) => Number(value).toLocaleString(locale),
+		},
 		grid: {
 			display: true, // Enable gridlines for ybtc axis
 			drawBorder: (_context: any) => {
@@ -136,11 +141,13 @@ export function getFiatYAxisConfig({
 	show_grid,
 	grid_color,
 	begin_at_zero,
+	locale,
 }: {
 	units: (string | undefined)[];
 	show_grid: boolean;
 	grid_color: string;
 	begin_at_zero?: boolean;
+	locale?: string;
 }): any {
 	return {
 		position: 'right',
@@ -149,6 +156,9 @@ export function getFiatYAxisConfig({
 			text: getFiatAxisLabel(units),
 		},
 		beginAtZero: begin_at_zero ?? false,
+		ticks: {
+			callback: (value: string | number) => Number(value).toLocaleString(locale),
+		},
 		grid: {
 			display: show_grid,
 			color: grid_color,

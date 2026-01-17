@@ -31,6 +31,7 @@ import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle
 export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 	public chart = viewChild(BaseChartDirective);
 
+	public locale = input.required<string>();
 	public loading = input.required<boolean>();
 	public data = input.required<BitcoinOraclePrice[]>();
 	public date_today = input.required<number>();
@@ -374,8 +375,8 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 					color: this.chartService.getGridColor(),
 				},
 				ticks: {
-					callback: function (value: any) {
-						return '$' + value.toLocaleString();
+					callback: (value: string | number) => {
+						return Number(value).toLocaleString(this.locale());
 					},
 				},
 			},
@@ -511,7 +512,7 @@ export class BitcoinSubsectionOracleChartComponent implements OnDestroy {
 							}
 
 							// For actual data points, show the price
-							const price_label = `${context.dataset.label}: $${value.toLocaleString('en-US', {
+							const price_label = `${context.dataset.label}: $${value.toLocaleString(this.locale(), {
 								minimumFractionDigits: 2,
 								maximumFractionDigits: 2,
 							})}`;

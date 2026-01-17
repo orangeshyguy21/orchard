@@ -187,6 +187,7 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy, OnChang
 				grid_color: this.chartService.getGridColor(),
 				begin_at_zero: true,
 				mark_zero_color: this.chartService.getGridColor('--mat-sys-surface-container-high'),
+				locale: this.locale(),
 			});
 		}
 		if (y_axis.includes('yfiat')) {
@@ -195,6 +196,7 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy, OnChang
 				show_grid: !y_axis.includes('ybtc'),
 				grid_color: this.chartService.getGridColor(),
 				begin_at_zero: true,
+				locale: this.locale(),
 			});
 		}
 
@@ -294,6 +296,7 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy, OnChang
 					ticks: {
 						stepSize: 1,
 						precision: 0,
+						callback: (value: string | number) => Number(value).toLocaleString(this.locale()),
 					},
 					grid: {
 						display: true,
