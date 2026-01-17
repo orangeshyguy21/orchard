@@ -1,21 +1,29 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentRef} from '@angular/core';
 /* Native Dependencies */
 import {OrcSettingsSubsectionDeviceModule} from '@client/modules/settings/modules/settings-subsection-device/settings-subsection-device.module';
 /* Local Dependencies */
-import {SettingsSubsectionDeviceTimeTimezoneComponent} from './settings-subsection-device-time-timezone.component';
+import {SettingsSubsectionDeviceTimezoneComponent} from './settings-subsection-device-timezone.component';
 
-describe('SettingsSubsectionDeviceTimeTimezoneComponent', () => {
-	let component: SettingsSubsectionDeviceTimeTimezoneComponent;
-	let fixture: ComponentFixture<SettingsSubsectionDeviceTimeTimezoneComponent>;
+describe('SettingsSubsectionDeviceTimezoneComponent', () => {
+	let component: SettingsSubsectionDeviceTimezoneComponent;
+	let componentRef: ComponentRef<SettingsSubsectionDeviceTimezoneComponent>;
+	let fixture: ComponentFixture<SettingsSubsectionDeviceTimezoneComponent>;
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
 			imports: [OrcSettingsSubsectionDeviceModule],
 		}).compileComponents();
 
-		fixture = TestBed.createComponent(SettingsSubsectionDeviceTimeTimezoneComponent);
+		fixture = TestBed.createComponent(SettingsSubsectionDeviceTimezoneComponent);
 		component = fixture.componentInstance;
+		componentRef = fixture.componentRef;
+
+		component.timezone = {tz: 'America/New_York'};
+		component.loading = false;
+		componentRef.setInput('locale', 'en-US');
+
 		fixture.detectChanges();
 	});
 

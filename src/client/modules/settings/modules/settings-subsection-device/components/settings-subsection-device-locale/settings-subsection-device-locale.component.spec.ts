@@ -3,18 +3,18 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 /* Native Dependencies */
 import {OrcSettingsSubsectionDeviceModule} from '@client/modules/settings/modules/settings-subsection-device/settings-subsection-device.module';
 /* Local Dependencies */
-import {SettingsSubsectionDeviceTimeLocaleComponent} from './settings-subsection-device-time-locale.component';
+import {SettingsSubsectionDeviceLocaleComponent} from './settings-subsection-device-locale.component';
 
-describe('SettingsSubsectionDeviceTimeLocaleComponent', () => {
-	let component: SettingsSubsectionDeviceTimeLocaleComponent;
-	let fixture: ComponentFixture<SettingsSubsectionDeviceTimeLocaleComponent>;
+describe('SettingsSubsectionDeviceLocaleComponent', () => {
+	let component: SettingsSubsectionDeviceLocaleComponent;
+	let fixture: ComponentFixture<SettingsSubsectionDeviceLocaleComponent>;
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
 			imports: [OrcSettingsSubsectionDeviceModule],
 		}).compileComponents();
 
-		fixture = TestBed.createComponent(SettingsSubsectionDeviceTimeLocaleComponent);
+		fixture = TestBed.createComponent(SettingsSubsectionDeviceLocaleComponent);
 		component = fixture.componentInstance;
 		fixture.detectChanges();
 	});

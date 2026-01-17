@@ -80,7 +80,7 @@ export class SettingsSubsectionDeviceTimezoneComponent implements OnChanges {
 		this.initTimezone(this.timezone?.tz);
 		this.setFilteredOptions();
 		setTimeout(() => {
-			this.auto.options.find((option) => option.value === this.timezone?.tz)?.select();
+			this.auto?.options?.find((option) => option.value === this.timezone?.tz)?.select();
 		});
 		this.timezone_control.valueChanges.subscribe((value) => {
 			this.onTimezoneChange(value);
@@ -132,7 +132,7 @@ export class SettingsSubsectionDeviceTimezoneComponent implements OnChanges {
 		this.autotrigger.closePanel();
 		this.onTimezoneChange(this.timezone_control.value);
 		setTimeout(() => {
-			this.auto.options.find((option) => option.value === this.timezone?.tz)?.select();
+			this.auto?.options?.find((option) => option.value === this.timezone?.tz)?.select();
 		});
 	}
 }
