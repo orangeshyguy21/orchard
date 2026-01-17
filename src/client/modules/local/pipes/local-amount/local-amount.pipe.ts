@@ -7,7 +7,7 @@ import {CurrencyType} from '@client/modules/cache/services/local-storage/local-s
 @Pipe({
 	name: 'localAmount',
 	standalone: false,
-	pure: false,
+	pure: true,
 })
 export class LocalAmountPipe implements PipeTransform {
 	constructor(private settingDeviceService: SettingDeviceService) {}
@@ -22,7 +22,7 @@ export class LocalAmountPipe implements PipeTransform {
 			case 'sat':
 				return this.transformSat(amount, locale, currency.type_btc);
 			case 'btc':
-				return this.transformBtc(amount, unit, locale);
+				return this.transformBtc(amount, locale);
 			case 'usd':
 				return this.transformFiat(amount, unit, locale, currency.type_fiat, section);
 			case 'eur':
@@ -44,7 +44,7 @@ export class LocalAmountPipe implements PipeTransform {
 		}
 	}
 
-	private transformBtc(amount: number, unit: string, locale: string): string {
+	private transformBtc(amount: number, locale: string): string {
 		const suffix = 'BTC';
 		const btc_string = amount.toLocaleString(locale, {minimumFractionDigits: 8, maximumFractionDigits: 8});
 		return this.formatStandard(btc_string, suffix);

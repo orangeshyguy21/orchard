@@ -4,7 +4,7 @@ import {DateTime} from 'luxon';
 @Pipe({
 	name: 'localTimeDelta',
 	standalone: false,
-	pure: false,
+	pure: true,
 })
 export class LocalTimeDeltaPipe implements PipeTransform {
 	transform(start_timestamp: number | null | undefined, end_timestamp: number | null | undefined): string {

@@ -6,7 +6,7 @@ import {SettingDeviceService} from '@client/modules/settings/services/setting-de
 @Pipe({
 	name: 'localTime',
 	standalone: false,
-	pure: false,
+	pure: true,
 })
 export class LocalTimePipe implements PipeTransform {
 	constructor(private settingDeviceService: SettingDeviceService) {}

@@ -30,7 +30,7 @@ export class SettingsSubsectionDeviceCurrencyComponent implements OnChanges {
 		return this.mode() === 'type_btc' ? 'sat' : 'USD';
 	});
 	public readonly example_amount = computed<number>(() => {
-		return this.mode() === 'type_btc' ? 1500000 : 1500;
+		return this.mode() === 'type_btc' ? 58200 : 128.55;
 	});
 	public readonly options = computed<CurrencyOption[]>(() => {
 		if (this.mode() === 'type_btc') {
