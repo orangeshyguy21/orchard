@@ -6,7 +6,6 @@ import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class';
 import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
 import {avg, median, max, min} from '@client/modules/math/helpers';
-import {LocalAmountPipe} from '@client/modules/local/pipes/local-amount/local-amount.pipe';
 /* Native Dependencies */
 import {MintConfigStats} from '@client/modules/mint/modules/mint-subsection-config/types/mint-config-stats.type';
 /* Shared Dependencies */
@@ -109,8 +108,8 @@ export class MintSubsectionConfigFormBolt11Component implements OnChanges {
 	}
 
 	private getEffectiveAmount(entity: MintMintQuote | MintMeltQuote): number {
-		if (entity instanceof MintMintQuote) return LocalAmountPipe.getConvertedAmount(this.unit(), entity.amount_issued);
-		return LocalAmountPipe.getConvertedAmount(this.unit(), entity.amount);
+		if (entity instanceof MintMintQuote) return entity.amount_issued;
+		return entity.amount;
 	}
 
 	private getStats(amounts: Record<string, number>[]): {
@@ -121,8 +120,8 @@ export class MintSubsectionConfigFormBolt11Component implements OnChanges {
 	} {
 		const values = amounts.map((amount) => amount['amount']);
 		return {
-			avg: avg(values),
-			median: median(values),
+			avg: avg(values, true),
+			median: median(values, true),
 			max: max(values),
 			min: min(values),
 		};

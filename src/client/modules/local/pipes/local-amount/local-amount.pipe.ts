@@ -14,7 +14,7 @@ import {getCurrencySymbol} from '@client/modules/local/helpers/local.helpers';
 export class LocalAmountPipe implements PipeTransform {
 	constructor(private settingDeviceService: SettingDeviceService) {}
 
-	transform(amount: number | null, unit: string, section?: string): string {
+	transform(amount: number | null, unit: string, section?: string, abbreviate: boolean = false): string {
 		if (amount === null || amount === undefined) return '';
 		const locale = this.settingDeviceService.getLocale();
 		const currency = this.settingDeviceService.getCurrency();
@@ -22,20 +22,37 @@ export class LocalAmountPipe implements PipeTransform {
 
 		switch (unit_lower) {
 			case 'sat':
-				return this.transformSat(amount, locale, currency.type_btc);
+				return this.transformSat(amount, locale, currency.type_btc, abbreviate);
 			case 'btc':
 				return this.transformBtc(amount, locale);
 			case 'usd':
-				return this.transformFiat(amount, unit, locale, currency.type_fiat, section);
+				return this.transformFiat(amount, unit, locale, currency.type_fiat, section, abbreviate);
 			case 'eur':
-				return this.transformFiat(amount, unit, locale, currency.type_fiat, section);
+				return this.transformFiat(amount, unit, locale, currency.type_fiat, section, abbreviate);
 			default:
 				return this.formatStandard(amount.toLocaleString(), unit);
 		}
 	}
 
-	private transformSat(amount: number, locale: string, currency: CurrencyType): string {
-		const sat_string = amount.toLocaleString(locale);
+	/**
+	 * Abbreviates a number with K/M/B suffixes
+	 */
+	private abbreviateAmount(value: number, locale: string): string {
+		const abs_value = Math.abs(value);
+		if (abs_value >= 1_000_000_000) {
+			return (value / 1_000_000_000).toLocaleString(locale, {maximumFractionDigits: 1}) + 'B';
+		}
+		if (abs_value >= 1_000_000) {
+			return (value / 1_000_000).toLocaleString(locale, {maximumFractionDigits: 1}) + 'M';
+		}
+		if (abs_value >= 1_000) {
+			return (value / 1_000).toLocaleString(locale, {maximumFractionDigits: 1}) + 'k';
+		}
+		return value.toLocaleString(locale);
+	}
+
+	private transformSat(amount: number, locale: string, currency: CurrencyType, abbreviate: boolean): string {
+		const sat_string = abbreviate ? this.abbreviateAmount(amount, locale) : amount.toLocaleString(locale);
 		switch (currency) {
 			case CurrencyType.GLYPH:
 				return this.formatPreceding(sat_string, '₿');
@@ -52,10 +69,19 @@ export class LocalAmountPipe implements PipeTransform {
 		return this.formatStandard(btc_string, suffix);
 	}
 
-	private transformFiat(amount: number, unit: string, locale: string, currency: CurrencyType, section?: string): string {
+	private transformFiat(
+		amount: number,
+		unit: string,
+		locale: string,
+		currency: CurrencyType,
+		section?: string,
+		abbreviate: boolean = false,
+	): string {
 		let fiat_amount = amount;
 		if (section === 'mint') fiat_amount = LocalAmountPipe.getConvertedAmount(unit, amount);
-		const fiat_amount_string = fiat_amount.toLocaleString(locale, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+		const fiat_amount_string = abbreviate
+			? this.abbreviateAmount(fiat_amount, locale)
+			: fiat_amount.toLocaleString(locale, {minimumFractionDigits: 2, maximumFractionDigits: 2});
 		switch (currency) {
 			case CurrencyType.GLYPH:
 				return this.formatPreceding(fiat_amount_string, getCurrencySymbol(unit.toLowerCase()));

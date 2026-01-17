@@ -16,7 +16,7 @@ export class LocalUnitPipe implements PipeTransform {
 	private trailingUnit(unit_lower: string): string {
 		switch (unit_lower) {
 			case 'sat':
-				return 'sats';
+				return 'sat';
 			case 'btc':
 				return 'BTC';
 			case 'usd':
@@ -31,7 +31,7 @@ export class LocalUnitPipe implements PipeTransform {
 	private titleUnit(unit_lower: string): string {
 		switch (unit_lower) {
 			case 'sat':
-				return 'Sat';
+				return 'SAT';
 			case 'btc':
 				return 'BTC';
 			case 'usd':

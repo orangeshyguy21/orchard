@@ -2,25 +2,25 @@
 	<orc-mint-subsection-config-stat [loading]="loading()">
 		<div class="font-weight-extra-light">avg</div>
 		<div>
-			<span class="font-weight-semi-bold" [innerHTML]="stats().avg | localAmount: unit() : 'mint'"></span>
+			<span class="font-weight-semi-bold" [innerHTML]="stats().avg | localAmount: unit() : 'mint' : true"></span>
 		</div>
 	</orc-mint-subsection-config-stat>
 	<orc-mint-subsection-config-stat [loading]="loading()">
 		<div class="font-weight-extra-light">median</div>
 		<div>
-			<span class="font-weight-semi-bold" [innerHTML]="stats().median | localAmount: unit() : 'mint'"></span>
+			<span class="font-weight-semi-bold" [innerHTML]="stats().median | localAmount: unit() : 'mint' : true"></span>
 		</div>
 	</orc-mint-subsection-config-stat>
 	<orc-mint-subsection-config-stat [loading]="loading()">
 		<div class="font-weight-extra-light">max</div>
 		<div>
-			<span class="font-weight-semi-bold" [innerHTML]="stats().max | localAmount: unit() : 'mint'"></span>
+			<span class="font-weight-semi-bold" [innerHTML]="stats().max | localAmount: unit() : 'mint' : true"></span>
 		</div>
 	</orc-mint-subsection-config-stat>
 	<orc-mint-subsection-config-stat [loading]="loading()">
 		<div class="font-weight-extra-light">min</div>
 		<div>
-			<span class="font-weight-semi-bold" [innerHTML]="stats().min | localAmount: unit() : 'mint'"></span>
+			<span class="font-weight-semi-bold" [innerHTML]="stats().min | localAmount: unit() : 'mint' : true"></span>
 		</div>
 	</orc-mint-subsection-config-stat>
 </div>
