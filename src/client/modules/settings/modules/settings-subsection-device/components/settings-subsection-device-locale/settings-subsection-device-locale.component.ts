@@ -1,16 +1,5 @@
 /* Core Dependencies */
-import {
-	ChangeDetectionStrategy,
-	Component,
-	Input,
-	OnChanges,
-	Output,
-	signal,
-	input,
-	SimpleChanges,
-	EventEmitter,
-	ViewChild,
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ElementRef, OnChanges, output, signal, input, SimpleChanges, viewChild} from '@angular/core';
 import {FormControl, Validators} from '@angular/forms';
 /* Vendor Dependencies */
 import {MatCheckboxChange} from '@angular/material/checkbox';
@@ -33,14 +22,15 @@ type LocaleOption = {
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsSubsectionDeviceLocaleComponent implements OnChanges {
-	@ViewChild(MatAutocompleteTrigger) autotrigger!: MatAutocompleteTrigger;
-	@ViewChild(MatAutocomplete) auto!: MatAutocomplete;
+	readonly autotrigger = viewChild<MatAutocompleteTrigger>('autotrigger');
+	readonly auto = viewChild<MatAutocomplete>('auto');
+	readonly flash = viewChild<ElementRef>('flash');
 
-	@Input() locale!: Locale | null;
-	@Input() loading!: boolean;
+	public readonly locale = input.required<Locale | null | undefined>();
+	public readonly loading = input.required<boolean>();
 	public readonly currency_btc = input.required<CurrencyType>();
 
-	@Output() localeChange = new EventEmitter<string | null>();
+	public readonly localeChange = output<string | null>();
 
 	public locale_control = new FormControl('', [Validators.required]);
 	public system_default_control = new FormControl(true);
@@ -104,17 +94,20 @@ export class SettingsSubsectionDeviceLocaleComponent implements OnChanges {
 	constructor() {}
 
 	ngOnChanges(changes: SimpleChanges): void {
-		if (changes['loading'] && this.loading === false) this.init();
-		if (changes['currency_btc'] && this.currency_btc()) this.example_amount.set(this.example_amount());
+		if (changes['loading'] && this.loading() === false) this.init();
+		if (changes['currency_btc'] && this.currency_btc()) this.flashExampleAmount();
+		if (changes['locale'] && this.locale()) this.flashExampleAmount();
 	}
 
 	private init() {
-		if (this.locale === null) return;
-		this.initLocale(this.locale?.code);
-		this.initCheckbox(this.locale?.code);
+		if (this.locale() === null) return;
+		this.initLocale(this.locale()?.code);
+		this.initCheckbox(this.locale()?.code);
 		this.setFilteredOptions();
 		setTimeout(() => {
-			this.auto.options.find((option) => option.value === this.locale?.code)?.select();
+			this.auto()
+				?.options.find((option) => option.value === this.locale()?.code)
+				?.select();
 		});
 		this.locale_control.valueChanges.subscribe((value) => {
 			this.onLocaleChange(value);
@@ -130,18 +123,38 @@ export class SettingsSubsectionDeviceLocaleComponent implements OnChanges {
 
 	private _filter(value: string): LocaleOption[] {
 		const filter_value = value.toLowerCase();
-		if (filter_value === this.locale?.code) return this.locale_options;
+		if (filter_value === this.locale()?.code) return this.locale_options;
 		return this.locale_options.filter((option) => option.country.toLowerCase().includes(filter_value));
 	}
 
-	private initCheckbox(code: string | null) {
-		const is_system_default = code === null ? true : false;
+	private initCheckbox(code: string | null | undefined) {
+		const is_system_default = code === null || code === undefined ? true : false;
 		this.system_default_control.setValue(is_system_default);
 	}
 
-	private initLocale(code: string | null) {
-		const display_code = code === null ? navigator.language : code;
+	private initLocale(code: string | null | undefined) {
+		const display_code = code === null || code === undefined ? navigator.language : code;
 		this.locale_control.setValue(display_code);
+	}
+
+	private flashExampleAmount(): void {
+		this.example_amount.set(0);
+		setTimeout(() => {
+			this.example_amount.set(1500000);
+			this.animateFlash();
+		});
+	}
+
+	private animateFlash(): void {
+		const flash = this.flash()?.nativeElement;
+		if (!flash) return;
+		for (const anim of flash.getAnimations()) anim.cancel();
+		flash
+			.animate([{opacity: 1}, {opacity: 0.1}], {duration: 200, easing: 'ease-out', fill: 'forwards'})
+			.finished.catch(() => {})
+			.finally(() => {
+				flash.animate([{opacity: 0.1}, {opacity: 1}], {duration: 400, easing: 'ease-in', fill: 'forwards'});
+			});
 	}
 
 	public onSystemDefaultChange(event: MatCheckboxChange) {
@@ -163,10 +176,12 @@ export class SettingsSubsectionDeviceLocaleComponent implements OnChanges {
 
 	public onSubmit(event: Event): void {
 		event.preventDefault();
-		this.autotrigger.closePanel();
+		this.autotrigger()?.closePanel();
 		this.onLocaleChange(this.locale_control.value);
 		setTimeout(() => {
-			this.auto.options.find((option) => option.value === this.locale?.code)?.select();
+			this.auto()
+				?.options.find((option) => option.value === this.locale()?.code)
+				?.select();
 		});
 	}
 }

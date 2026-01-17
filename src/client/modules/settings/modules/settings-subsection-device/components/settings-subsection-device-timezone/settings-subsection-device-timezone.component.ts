@@ -2,6 +2,7 @@
 import {
 	ChangeDetectionStrategy,
 	Component,
+	ElementRef,
 	EventEmitter,
 	Input,
 	input,
@@ -9,6 +10,7 @@ import {
 	Output,
 	SimpleChanges,
 	signal,
+	viewChild,
 	ViewChild,
 } from '@angular/core';
 import {FormControl, Validators} from '@angular/forms';
@@ -44,13 +46,32 @@ export class SettingsSubsectionDeviceTimezoneComponent implements OnChanges {
 	public unix_timestamp_seconds = signal<number>(Math.floor(Date.now() / 1000));
 	public help_status = signal<boolean>(false);
 
+	readonly flash = viewChild<ElementRef>('flash');
+
 	private system_timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 	constructor() {}
 
 	ngOnChanges(changes: SimpleChanges): void {
 		if (changes['loading'] && this.loading === false) this.init();
-		if (changes['locale']) this.unix_timestamp_seconds.set(Math.floor(Date.now() / 1000));
+		if (changes['locale']) this.flashTimestamp();
+	}
+
+	private flashTimestamp(): void {
+		this.unix_timestamp_seconds.set(Math.floor(Date.now() / 1000));
+		this.animateFlash();
+	}
+
+	private animateFlash(): void {
+		const flash = this.flash()?.nativeElement;
+		if (!flash) return;
+		for (const anim of flash.getAnimations()) anim.cancel();
+		flash
+			.animate([{opacity: 1}, {opacity: 0.1}], {duration: 200, easing: 'ease-out', fill: 'forwards'})
+			.finished.catch(() => {})
+			.finally(() => {
+				flash.animate([{opacity: 0.1}, {opacity: 1}], {duration: 400, easing: 'ease-in', fill: 'forwards'});
+			});
 	}
 
 	private init() {

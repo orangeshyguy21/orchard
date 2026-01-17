@@ -79,6 +79,7 @@
 						<orc-settings-subsection-device-currency
 							[currency]="currency()"
 							[loading]="loading_static()"
+							[locale]="locale_display()"
 							mode="type_btc"
 							(currencyChange)="onCurrencyChange($event, 'type_btc')"
 						></orc-settings-subsection-device-currency>
@@ -89,6 +90,7 @@
 						<orc-settings-subsection-device-currency
 							[currency]="currency()"
 							[loading]="loading_static()"
+							[locale]="locale_display()"
 							mode="type_fiat"
 							(currencyChange)="onCurrencyChange($event, 'type_fiat')"
 						></orc-settings-subsection-device-currency>
