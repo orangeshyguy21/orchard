@@ -56,7 +56,7 @@ export class LocalAmountPipe implements PipeTransform {
 		const fiat_amount_string = fiat_amount.toLocaleString(locale, {minimumFractionDigits: 2, maximumFractionDigits: 2});
 		switch (currency) {
 			case CurrencyType.GLYPH:
-				return this.formatPreceding(fiat_amount_string, this.getCurrencySymbol(unit));
+				return this.formatPreceding(fiat_amount_string, this.getCurrencySymbol(unit.toLowerCase()));
 			case CurrencyType.CODE:
 				return this.formatStandard(fiat_amount_string, unit.toUpperCase());
 			default:
