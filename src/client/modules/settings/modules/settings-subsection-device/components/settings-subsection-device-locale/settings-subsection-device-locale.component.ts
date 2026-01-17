@@ -95,8 +95,8 @@ export class SettingsSubsectionDeviceLocaleComponent implements OnChanges {
 
 	ngOnChanges(changes: SimpleChanges): void {
 		if (changes['loading'] && this.loading() === false) this.init();
-		if (changes['currency_btc'] && this.currency_btc()) this.flashExampleAmount();
-		if (changes['locale'] && this.locale()) this.flashExampleAmount();
+		if (changes['currency_btc'] && !changes['currency_btc'].firstChange && this.currency_btc()) this.flashExampleAmount();
+		if (changes['locale'] && !changes['locale'].firstChange && this.locale()) this.flashExampleAmount();
 	}
 
 	private init() {
