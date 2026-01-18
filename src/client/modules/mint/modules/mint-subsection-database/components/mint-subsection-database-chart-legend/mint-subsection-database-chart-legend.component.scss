@@ -51,3 +51,9 @@
 		border-bottom: 1rem solid var(--mat-sys-surface-bright);
 	}
 }
+
+.mobile-legend {
+	@extend %h-1;
+	@extend %flex;
+	@extend %flex-items-center;
+}

@@ -1,5 +1,15 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy, SimpleChanges, ViewChild, ChangeDetectorRef} from '@angular/core';
+import {
+	ChangeDetectionStrategy,
+	Component,
+	Input,
+	input,
+	OnChanges,
+	OnDestroy,
+	SimpleChanges,
+	ViewChild,
+	ChangeDetectorRef,
+} from '@angular/core';
 /* Vendor Dependencies */
 import {BaseChartDirective} from 'ng2-charts';
 import {ChartConfiguration, ChartType as ChartJsType} from 'chart.js';
@@ -43,6 +53,7 @@ export class MintSubsectionDatabaseChartComponent implements OnChanges, OnDestro
 	@Input() public mint_genesis_time!: number;
 	@Input() public loading!: boolean;
 	@Input() public state_enabled!: boolean;
+	public readonly device_mobile = input.required<boolean>();
 
 	public chart_type!: ChartJsType;
 	public chart_data!: ChartConfiguration['data'];

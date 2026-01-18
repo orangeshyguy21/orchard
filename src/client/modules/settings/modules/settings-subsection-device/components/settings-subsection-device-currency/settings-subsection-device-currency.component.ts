@@ -68,6 +68,7 @@ export class SettingsSubsectionDeviceCurrencyComponent implements OnChanges {
 
 	ngOnChanges(changes: SimpleChanges): void {
 		if (changes['loading'] && this.loading() === false) this.init();
+		if (changes['mode'] && this.mode()) this.example_amount.set(EXAMPLE_AMOUNT[this.mode()]);
 		if (changes['currency'] && !changes['currency'].firstChange && this.currency()) this.flashExampleAmount();
 		if (changes['locale'] && !changes['locale'].firstChange && this.locale()) this.flashExampleAmount();
 	}
