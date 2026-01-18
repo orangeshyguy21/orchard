@@ -128,6 +128,7 @@ export class MintSubsectionConfigChartMethodComponent implements OnChanges, OnDe
 			}))
 			.sort((a, b) => a.x - b.x);
 		const dataset = {
+			label: this.unit().toUpperCase(),
 			data: data_prepped,
 			backgroundColor: muted_color,
 			borderColor: muted_color,
