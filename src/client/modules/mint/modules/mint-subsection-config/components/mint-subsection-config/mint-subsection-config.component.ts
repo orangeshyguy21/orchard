@@ -589,11 +589,16 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	}): void {
 		form_group.get(unit)?.get(method)?.get(control_name)?.markAsPristine();
 		const nut_method = this.mint_info?.nuts[nut].methods.find((nut_method) => nut_method.unit === unit && nut_method.method === method);
-		const old_val =
+		const raw_val =
 			nut === 'nut4'
 				? (nut_method as OrchardNut4Method)?.[control_name as keyof OrchardNut4Method]
 				: (nut_method as OrchardNut5Method)?.[control_name as keyof OrchardNut5Method];
-		form_group.get(unit)?.get(method)?.get(control_name)?.setValue(old_val);
+		const converted_val =
+			raw_val !== null && raw_val !== undefined && typeof raw_val === 'number'
+				? LocalAmountPipe.getConvertedAmount(unit, raw_val)
+				: raw_val;
+		const formatted_val = unit === 'sat' || typeof converted_val !== 'number' ? converted_val : Number(converted_val).toFixed(2);
+		form_group.get(unit)?.get(method)?.get(control_name)?.setValue(formatted_val);
 	}
 
 	private onUnconfirmedEvent(): void {

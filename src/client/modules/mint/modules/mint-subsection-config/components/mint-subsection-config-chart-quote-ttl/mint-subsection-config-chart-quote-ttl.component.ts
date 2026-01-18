@@ -118,6 +118,7 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnChanges, On
 			}))
 			.sort((a, b) => a.x - b.x);
 		const dataset = {
+			label: 'Processing time',
 			data: data_prepped,
 			backgroundColor: muted_color,
 			borderColor: muted_color,
@@ -184,7 +185,7 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnChanges, On
 					intersect: true,
 					callbacks: {
 						title: getTooltipTitleExact,
-						label: (context: any) => getTooltipLabel(context, this.locale()),
+						label: (context: any) => getTooltipLabel(context, this.locale()) + ' seconds',
 					},
 				},
 				legend: {

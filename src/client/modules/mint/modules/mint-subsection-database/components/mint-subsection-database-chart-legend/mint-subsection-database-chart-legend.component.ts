@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, ChangeDetectorRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, input, OnChanges, SimpleChanges, ChangeDetectorRef} from '@angular/core';
 /* Vendor Dependencies */
 import {Chart, ChartConfiguration} from 'chart.js';
 /* Application Dependencies */
@@ -28,6 +28,7 @@ export class MintSubsectionDatabaseChartLegendComponent implements OnChanges {
 	@Input() public chart!: Chart | undefined;
 	@Input() public chart_data!: ChartConfiguration['data'];
 	@Input() public state_enabled!: boolean;
+	public readonly device_mobile = input.required<boolean>();
 
 	public datasets_legend!: LegendDataset[];
 	public states_legend!: LegendState[];

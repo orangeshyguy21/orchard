@@ -25,6 +25,7 @@ describe('MintSubsectionDatabaseChartComponent', () => {
 		component.mint_genesis_time = 0;
 		component.loading = false;
 		component.state_enabled = false;
+		fixture.componentRef.setInput('device_mobile', false);
 		fixture.detectChanges();
 	});
 

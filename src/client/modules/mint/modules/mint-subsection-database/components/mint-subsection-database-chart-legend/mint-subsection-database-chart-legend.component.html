@@ -1,26 +1,65 @@
-<div class="mint-data-chart-legend-container">
-	<div class="flex flex-items-center flex-justify-center flex-gap-2">
-		<div class="font-weight-light font-size-xs">Units</div>
-		<div class="flex flex-items-center flex-justify-center flex-gap-1">
-			@for (dataset of datasets_legend; track dataset.label) {
-				<div class="legend-item">
-					<div class="legend-item-visual default" [style.background-color]="dataset.color"></div>
-					<div class="legend-item-label">{{ dataset.label }}</div>
-				</div>
-			}
-		</div>
-	</div>
-	@if (state_enabled) {
+@if (!device_mobile()) {
+	<div class="mint-data-chart-legend-container">
 		<div class="flex flex-items-center flex-justify-center flex-gap-2">
-			<div class="font-weight-light font-size-xs">States</div>
+			<div class="font-weight-light font-size-xs">Units</div>
 			<div class="flex flex-items-center flex-justify-center flex-gap-1">
-				@for (state of states_legend; track state.label) {
+				@for (dataset of datasets_legend; track dataset.label) {
 					<div class="legend-item">
-						<div class="legend-item-visual" [ngClass]="state.shape"></div>
-						<div class="legend-item-label">{{ state.label }}</div>
+						<div class="legend-item-visual default" [style.background-color]="dataset.color"></div>
+						<div class="legend-item-label">{{ dataset.label }}</div>
 					</div>
 				}
 			</div>
 		</div>
-	}
-</div>
+		@if (state_enabled) {
+			<div class="flex flex-items-center flex-justify-center flex-gap-2">
+				<div class="font-weight-light font-size-xs">States</div>
+				<div class="flex flex-items-center flex-justify-center flex-gap-1">
+					@for (state of states_legend; track state.label) {
+						<div class="legend-item">
+							<div class="legend-item-visual" [ngClass]="state.shape"></div>
+							<div class="legend-item-label">{{ state.label }}</div>
+						</div>
+					}
+				</div>
+			</div>
+		}
+	</div>
+} @else {
+	<div class="mobile-legend">
+		<button matButton type="button" [matMenuTriggerFor]="legend_menu">
+			<span class="text-nowrap font-size-s orc-outline-color">Legend</span>
+		</button>
+	</div>
+}
+
+<mat-menu #legend_menu="matMenu" yPosition="below">
+	<div class="flex flex-column flex-gap-1 p-1">
+		<div class="flex flex-column flex-gap-0-5">
+			<div class="font-weight-light font-size-xs">Units</div>
+			<div class="category-rule"></div>
+			<div class="flex flex-column flex-gap-1">
+				@for (dataset of datasets_legend; track dataset.label) {
+					<div class="legend-item">
+						<div class="legend-item-visual default" [style.background-color]="dataset.color"></div>
+						<div class="legend-item-label">{{ dataset.label }}</div>
+					</div>
+				}
+			</div>
+		</div>
+		@if (state_enabled) {
+			<div class="flex flex-column flex-gap-0-5">
+				<div class="font-weight-light font-size-xs">States</div>
+				<div class="category-rule"></div>
+				<div class="flex flex-column flex-gap-1">
+					@for (state of states_legend; track state.label) {
+						<div class="legend-item">
+							<div class="legend-item-visual" [ngClass]="state.shape"></div>
+							<div class="legend-item-label">{{ state.label }}</div>
+						</div>
+					}
+				</div>
+			</div>
+		}
+	</div>
+</mat-menu>

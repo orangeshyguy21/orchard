@@ -24,6 +24,7 @@ describe('MintSubsectionDatabaseChartLegendComponent', () => {
 		component.chart = {} as Chart;
 		component.chart_data = {datasets: []};
 		component.state_enabled = false;
+		fixture.componentRef.setInput('device_mobile', false);
 		fixture.detectChanges();
 	});
 

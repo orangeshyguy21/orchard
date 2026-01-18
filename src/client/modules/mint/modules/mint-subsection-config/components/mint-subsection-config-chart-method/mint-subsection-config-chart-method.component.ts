@@ -17,6 +17,7 @@ import {Subscription} from 'rxjs';
 /* Application Dependencies */
 import {ChartService} from '@client/modules/chart/services/chart/chart.service';
 import {getTooltipLabel, getTooltipTitleExact} from '@client/modules/chart/helpers/mint-chart-options.helpers';
+import {LocalAmountPipe} from '@client/modules/local/pipes/local-amount/local-amount.pipe';
 /* Native Dependencies */
 import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class';
 import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
@@ -123,10 +124,11 @@ export class MintSubsectionConfigChartMethodComponent implements OnChanges, OnDe
 		const data_prepped = amounts
 			.map((amount) => ({
 				x: amount['created_time'] * 1000,
-				y: amount['amount'],
+				y: LocalAmountPipe.getConvertedAmount(this.unit(), amount['amount']),
 			}))
 			.sort((a, b) => a.x - b.x);
 		const dataset = {
+			label: this.unit().toUpperCase(),
 			data: data_prepped,
 			backgroundColor: muted_color,
 			borderColor: muted_color,
@@ -169,9 +171,11 @@ export class MintSubsectionConfigChartMethodComponent implements OnChanges, OnDe
 			min: min_time,
 			max: max_time,
 		};
+		const y_max = Math.max(LocalAmountPipe.getConvertedAmount(this.unit(), this.stats().max), this.max_amount());
 		scales['y'] = {
 			type: use_log_scale ? 'logarithmic' : 'linear',
 			min: use_log_scale ? 1 : undefined,
+			max: y_max,
 			display: false,
 			beginAtZero: !use_log_scale,
 		};
