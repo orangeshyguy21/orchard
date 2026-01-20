@@ -375,7 +375,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 
 	public onPage(event: PageEvent): void {
 		this.page_settings.page = event.pageIndex + 1;
-        this.page_settings.page_size = event.pageSize;
+		this.page_settings.page_size = event.pageSize;
 		this.settingDeviceService.setMintDatabaseSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
