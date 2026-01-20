@@ -1,6 +1,6 @@
 <div class="mint-subsection-database-container p-h-1">
 	<div class="mint-database-control p-t-1">
-		<div class="flex flex-justify-between flex-gap-2 flex-items-center">
+		<div class="flex flex-justify-between flex-gap-2 flex-items-start">
 			@if (page_settings) {
 				<orc-mint-subsection-database-control
 					class="flex-grow"
@@ -25,7 +25,7 @@
 					(filterChange)="onFilterChange($event)"
 				></orc-mint-subsection-database-control>
 			}
-			<div class="p-b-1">
+			<div>
 				<div class="flex flex-items-center flex-gap-0-5 relative">
 					@switch (device_type()) {
 						@case ('desktop') {
@@ -146,9 +146,10 @@
 				<mat-paginator
 					class="orc-feature-paginator"
 					(page)="onPage($event)"
-					[hidePageSize]="true"
+					[hidePageSize]="device_type() === 'mobile'"
 					[length]="count"
-					[pageSize]="page_size"
+					[pageSize]="page_settings.page_size"
+                    [pageSizeOptions]="[10, 25, 50, 100, 250, 500]"
 					[pageIndex]="page_settings.page - 1"
 					showFirstLastButtons
 				></mat-paginator>

@@ -95,9 +95,6 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	private subscriptions: Subscription = new Subscription();
 	private backup_encoded: string = '';
 
-	public get page_size(): number {
-		return this.data?.source?.data?.length ?? 0;
-	}
 	public get state_enabled(): boolean {
 		return (
 			this.data?.type === DataType.MintMints || this.data?.type === DataType.MintMelts || this.data?.type === DataType.MintProofGroups
@@ -378,6 +375,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 
 	public onPage(event: PageEvent): void {
 		this.page_settings.page = event.pageIndex + 1;
+        this.page_settings.page_size = event.pageSize;
 		this.settingDeviceService.setMintDatabaseSettings(this.page_settings);
 		this.reloadDynamicData();
 	}
