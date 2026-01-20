@@ -58,6 +58,8 @@
 	@include mat.paginator-overrides((
 		container-text-size: 0.875rem,
 		container-size: 2.5rem,
+        form-field-container-height: 1.5rem,
+        form-field-container-vertical-padding: 0.25rem,
 	));
 }
 
