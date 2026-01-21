@@ -1,0 +1,48 @@
+/* Core Dependencies */
+import {Field, ObjectType} from '@nestjs/graphql';
+/* Application Dependencies */
+import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
+/* Native Dependencies */
+import {LightningAnalyticsMetric} from '@server/modules/lightning/analytics/lnanalytics.enums';
+
+@ObjectType()
+export class OrchardLightningAnalytics {
+	@Field(() => LightningAnalyticsMetric)
+	metric: LightningAnalyticsMetric;
+
+	@Field(() => String)
+	amount_msat: string;
+
+	@Field(() => UnixTimestamp)
+	date: number;
+
+	constructor(metric: LightningAnalyticsMetric, amount_msat: string, date: number) {
+		this.metric = metric;
+		this.amount_msat = amount_msat;
+		this.date = date;
+	}
+}
+
+@ObjectType()
+export class OrchardLightningAnalyticsBackfillStatus {
+	@Field(() => Boolean)
+	is_running: boolean;
+
+	@Field(() => UnixTimestamp, {nullable: true})
+	current_hour?: number;
+
+	@Field(() => UnixTimestamp, {nullable: true})
+	target_hour?: number;
+
+	@Field(() => Number, {nullable: true})
+	hours_completed?: number;
+
+	@Field(() => Number, {nullable: true})
+	hours_remaining?: number;
+
+	@Field(() => UnixTimestamp, {nullable: true})
+	started_at?: number;
+
+	@Field(() => Number, {nullable: true})
+	errors?: number;
+}

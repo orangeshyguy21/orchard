@@ -47,3 +47,91 @@ export type LightningRequest = {
 	description: string | null;
 	offer_quantity_max: number | null;
 };
+
+/* ============================================
+   Common Lightning Types for Analytics
+   These abstract differences between LND and CLN
+   ============================================ */
+
+/**
+ * Common payment type (outgoing payments)
+ * Nullable fields indicate data that may not be available from all backends
+ */
+export type LightningPayment = {
+	payment_hash: string;
+	value_msat: string;
+	fee_msat: string;
+	status: 'pending' | 'succeeded' | 'failed';
+	creation_time: number; // seconds since epoch
+};
+
+/**
+ * Common invoice type (incoming payments)
+ */
+export type LightningInvoice = {
+	payment_hash: string;
+	value_msat: string;
+	amt_paid_msat: string;
+	state: 'open' | 'settled' | 'canceled' | 'accepted';
+	creation_date: number; // seconds since epoch
+	settle_date: number | null; // seconds since epoch (if settled)
+};
+
+/**
+ * Common forwarding event type (routing fees earned)
+ */
+export type LightningForward = {
+	timestamp: number; // seconds since epoch
+	amt_in_msat: string;
+	amt_out_msat: string;
+	fee_msat: string;
+};
+
+/**
+ * Common open channel type
+ */
+export type LightningChannel = {
+	channel_point: string; // funding txid:index
+	chan_id: string;
+	capacity: string; // total channel capacity (sats)
+	local_balance: string; // current local balance (sats)
+	remote_balance: string; // current remote balance (sats)
+	initiator: boolean | null; // true if we opened (CLN may not have this for old channels)
+	push_amount_sat: string | null; // amount pushed on open (may not be available)
+	private: boolean;
+	active: boolean;
+	funding_txid: string; // for timestamp lookup
+};
+
+/**
+ * Common closed channel type
+ */
+export type LightningClosedChannel = {
+	channel_point: string;
+	chan_id: string;
+	capacity: string;
+	close_height: number; // block height of close (need to convert to timestamp)
+	settled_balance: string; // what we got back (sats)
+	time_locked_balance: string | null;
+	close_type: 'cooperative' | 'local_force' | 'remote_force' | 'breach' | 'funding_canceled' | 'abandoned' | 'unknown';
+	open_initiator: 'local' | 'remote' | 'both' | 'unknown';
+	funding_txid: string; // for open timestamp lookup
+};
+
+/**
+ * Common transaction type for timestamp lookups
+ */
+export type LightningTransaction = {
+	tx_hash: string;
+	time_stamp: number; // seconds since epoch
+};
+
+/**
+ * Arguments for fetching historical lightning data
+ */
+export type LightningHistoryArgs = {
+	start_time?: number; // unix timestamp in seconds
+	end_time?: number; // unix timestamp in seconds
+	index_offset?: number;
+	max_results?: number;
+};

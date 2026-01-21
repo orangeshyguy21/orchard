@@ -9,6 +9,7 @@ import {AuthService} from '@server/modules/auth/auth.service';
 import {SettingService} from '@server/modules/setting/setting.service';
 import {BitcoinRpcService} from '@server/modules/bitcoin/rpc/btcrpc.service';
 import {BitcoinUTXOracleService} from '@server/modules/bitcoin/utxoracle/utxoracle.service';
+import {LightningAnalyticsService} from '@server/modules/lightning/analytics/lnanalytics.service';
 import {BitcoinType} from '@server/modules/bitcoin/bitcoin.enums';
 import {SettingKey} from '@server/modules/setting/setting.enums';
 
@@ -21,6 +22,7 @@ export class TaskService {
 		private settingService: SettingService,
 		private bitcoinRpcService: BitcoinRpcService,
 		private bitcoinUTXOracleService: BitcoinUTXOracleService,
+		private lightningAnalyticsService: LightningAnalyticsService,
 		private configService: ConfigService,
 	) {}
 
@@ -86,6 +88,32 @@ export class TaskService {
 			this.logger.log(`Oracle job completed for ${date_str}: price=${result.central_price}`);
 		} catch (error) {
 			this.logger.error(`Error running daily oracle: ${error.message}`, error.stack);
+		}
+	}
+
+	/**
+	 * Cache lightning analytics for the previous complete hour at 5 minutes past each hour
+	 */
+	@Cron('5 * * * *', {
+		name: 'hourly-lightning-analytics',
+		timeZone: 'UTC',
+	})
+	async runHourlyLightningAnalytics() {
+		const lightning_type = this.configService.get<string>('lightning.type');
+		if (!lightning_type) {
+			this.logger.debug('Lightning not configured, skipping analytics job');
+			return;
+		}
+
+		this.logger.log('Starting hourly lightning analytics job...');
+		try {
+			const previous_hour = DateTime.utc().minus({hours: 1}).startOf('hour');
+			const hour_timestamp = Math.floor(previous_hour.toSeconds());
+			this.logger.log(`Caching analytics for hour: ${previous_hour.toISO()} (timestamp: ${hour_timestamp})`);
+			await this.lightningAnalyticsService.cacheHourlyAnalytics(hour_timestamp);
+			this.logger.log(`Lightning analytics cached for ${previous_hour.toISO()}`);
+		} catch (error) {
+			this.logger.error(`Error caching lightning analytics: ${error.message}`, error.stack);
 		}
 	}
 }
