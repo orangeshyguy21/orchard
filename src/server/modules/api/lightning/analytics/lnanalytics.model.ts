@@ -7,18 +7,22 @@ import {LightningAnalyticsMetric} from '@server/modules/lightning/analytics/lnan
 
 @ObjectType()
 export class OrchardLightningAnalytics {
+	@Field(() => String)
+	unit: string;
+
 	@Field(() => LightningAnalyticsMetric)
 	metric: LightningAnalyticsMetric;
 
 	@Field(() => String)
-	amount_msat: string;
+	amount: string;
 
 	@Field(() => UnixTimestamp)
 	date: number;
 
-	constructor(metric: LightningAnalyticsMetric, amount_msat: string, date: number) {
+	constructor(unit: string, metric: LightningAnalyticsMetric, amount: string, date: number) {
+		this.unit = unit;
 		this.metric = metric;
-		this.amount_msat = amount_msat;
+		this.amount = amount;
 		this.date = date;
 	}
 }

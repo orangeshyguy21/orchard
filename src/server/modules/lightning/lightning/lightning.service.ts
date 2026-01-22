@@ -214,9 +214,13 @@ export class LightningService implements OnModuleInit {
 
 	/**
 	 * Determines the node's birthdate by finding the earliest funding transaction
-	 * @returns Unix timestamp in seconds of the earliest channel funding, or 0 if none found
+	 * Falls back to January 1, 2018 if no transactions found (e.g., remote-opened channels)
+	 * @returns Unix timestamp in seconds of the earliest channel funding
 	 */
 	async getNodeBirthdate(): Promise<number> {
+		// Fallback: January 1, 2018 00:00:00 UTC (Lightning Network mainnet launched March 2018)
+		const FALLBACK_BIRTHDATE = 1514764800;
+
 		const [open_channels, closed_channels, transactions] = await Promise.all([
 			this.getChannels(),
 			this.getClosedChannels(),
@@ -246,7 +250,12 @@ export class LightningService implements OnModuleInit {
 			}
 		}
 
-		return earliest === Number.MAX_SAFE_INTEGER ? 0 : earliest;
+		if (earliest === Number.MAX_SAFE_INTEGER) {
+			this.logger.debug('No funding transactions found in wallet, using fallback birthdate (2018-01-01)');
+			return FALLBACK_BIRTHDATE;
+		}
+
+		return earliest;
 	}
 
 	/**

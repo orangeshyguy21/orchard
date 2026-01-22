@@ -2,7 +2,7 @@
 import {Injectable, Logger, OnModuleInit} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 /* Vendor Dependencies */
-import {Repository, Between, In} from 'typeorm';
+import {Repository, Between, In, IsNull} from 'typeorm';
 /* Application Dependencies */
 import {LightningService} from '@server/modules/lightning/lightning/lightning.service';
 import {
@@ -16,7 +16,7 @@ import {
 /* Local Dependencies */
 import {LightningAnalytics} from './lnanalytics.entity';
 import {LightningAnalyticsMetric} from './lnanalytics.enums';
-import {HourlyMetrics, LightningAnalyticsBackfillStatus} from './lnanalytics.interfaces';
+import {GroupedHourlyMetrics, LightningAnalyticsBackfillStatus} from './lnanalytics.interfaces';
 
 const BACKFILL_SLEEP_MS = 100;
 const BACKFILL_MAX_CONSECUTIVE_ERRORS = 10;
@@ -82,25 +82,41 @@ export class LightningAnalyticsService implements OnModuleInit {
 
 	/**
 	 * Gets cached analytics for a date range
+	 * @param group_key - null for BTC, string for Taproot Assets, undefined for all
 	 */
-	async getCachedAnalytics(date_start: number, date_end: number, metrics: LightningAnalyticsMetric[]): Promise<LightningAnalytics[]> {
+	async getCachedAnalytics(
+		date_start: number,
+		date_end: number,
+		metrics: LightningAnalyticsMetric[],
+		group_key?: string | null,
+	): Promise<LightningAnalytics[]> {
 		if (date_end < date_start) return [];
 
 		const node_pubkey = await this.getNodePubkey();
+		const where: any = {
+			node_pubkey,
+			date: Between(this.getHourStart(date_start), this.getHourStart(date_end)),
+			metric: In(metrics),
+		};
+
+		// Handle group_key filtering: null = BTC only, string = specific asset, undefined = all
+		if (group_key === null) {
+			where.group_key = IsNull();
+		} else if (group_key !== undefined) {
+			where.group_key = group_key;
+		}
+
 		return this.lightningAnalyticsRepository.find({
-			where: {
-				node_pubkey,
-				date: Between(this.getHourStart(date_start), this.getHourStart(date_end)),
-				metric: In(metrics),
-			},
+			where,
 			order: {date: 'ASC'},
 		});
 	}
 
 	/**
 	 * Computes metrics for a specific hour by fetching raw data from the lightning node
+	 * Returns grouped metrics for both BTC (group_key=null) and Taproot Asset groups
 	 */
-	async computeHourlyAnalytics(hour_start: number): Promise<HourlyMetrics> {
+	async computeHourlyAnalytics(hour_start: number): Promise<GroupedHourlyMetrics[]> {
 		const hour_end = hour_start + 3600;
 
 		const [payments, invoices, forwards, channels, closed_channels, transactions] = await Promise.all([
@@ -114,13 +130,50 @@ export class LightningAnalyticsService implements OnModuleInit {
 
 		const tx_timestamps = this.buildTxTimestampMap(transactions);
 
-		return {
-			payments_out_msat: this.sumPaymentsOut(payments),
-			invoices_in_msat: this.sumInvoicesIn(invoices),
-			forward_fees_msat: this.sumForwardFees(forwards),
-			channel_opens_msat: this.sumChannelOpens(channels, closed_channels, tx_timestamps, hour_start, hour_end),
-			channel_closes_msat: this.sumChannelCloses(closed_channels, tx_timestamps, hour_start, hour_end),
-		};
+		// Build asset_id → group_key mapping from all channels (open and closed)
+		const asset_to_group = this.buildAssetToGroupKeyMap(channels, closed_channels);
+
+		// Collect all unique group_keys from channels, closed channels, payments, and invoices
+		const group_keys = this.collectAllGroupKeys(channels, closed_channels, payments, invoices, asset_to_group);
+
+		const results: GroupedHourlyMetrics[] = [];
+
+		// BTC metrics (group_key = null, unit = 'msat')
+		const btc_channels = channels.filter((c) => !c.asset);
+		const btc_closed_channels = closed_channels.filter((c) => !c.asset);
+		results.push({
+			group_key: null,
+			unit: 'msat',
+			metrics: {
+				payments_out: this.sumPaymentsOut(payments, null, asset_to_group),
+				invoices_in: this.sumInvoicesIn(invoices, null, asset_to_group),
+				forward_fees: this.sumForwardFees(forwards), // Forwards are BTC-only (LND ForwardingHistory API lacks Taproot Asset data)
+				channel_opens: this.sumChannelOpens(btc_channels, btc_closed_channels, tx_timestamps, hour_start, hour_end),
+				channel_closes: this.sumChannelCloses(btc_closed_channels, tx_timestamps, hour_start, hour_end),
+			},
+		});
+
+		// Taproot Asset metrics for each group_key
+		for (const group_key of Array.from(group_keys)) {
+			const asset_channels = channels.filter((c) => c.asset?.group_key === group_key);
+			const asset_closed_channels = closed_channels.filter((c) => c.asset?.group_key === group_key);
+			const first_asset = asset_channels[0]?.asset || asset_closed_channels[0]?.asset;
+			const unit = first_asset?.name || 'asset';
+
+			results.push({
+				group_key,
+				unit,
+				metrics: {
+					payments_out: this.sumPaymentsOut(payments, group_key, asset_to_group),
+					invoices_in: this.sumInvoicesIn(invoices, group_key, asset_to_group),
+					forward_fees: BigInt(0), // LND ForwardingHistory API doesn't include Taproot Asset data; needs RFQ event subscription
+					channel_opens: this.sumAssetChannelOpens(asset_channels, asset_closed_channels, tx_timestamps, hour_start, hour_end),
+					channel_closes: this.sumAssetChannelCloses(asset_closed_channels, tx_timestamps, hour_start, hour_end),
+				},
+			});
+		}
+
+		return results;
 	}
 
 	/**
@@ -128,30 +181,39 @@ export class LightningAnalyticsService implements OnModuleInit {
 	 */
 	async computeAndBuildEntities(hour_start: number): Promise<LightningAnalytics[]> {
 		const node_pubkey = await this.getNodePubkey();
-		const metrics = await this.computeHourlyAnalytics(hour_start);
-		return this.metricsToEntities(hour_start, metrics, node_pubkey);
+		const grouped_metrics = await this.computeHourlyAnalytics(hour_start);
+		return this.groupedMetricsToEntities(hour_start, grouped_metrics, node_pubkey);
 	}
 
 	/**
-	 * Converts HourlyMetrics to LightningAnalytics entities
+	 * Converts GroupedHourlyMetrics[] to LightningAnalytics entities
 	 */
-	private metricsToEntities(hour_start: number, metrics: HourlyMetrics, node_pubkey: string): LightningAnalytics[] {
+	private groupedMetricsToEntities(
+		hour_start: number,
+		grouped_metrics: GroupedHourlyMetrics[],
+		node_pubkey: string,
+	): LightningAnalytics[] {
 		const entities: LightningAnalytics[] = [];
-		const metric_map: {metric: LightningAnalyticsMetric; value: bigint}[] = [
-			{metric: LightningAnalyticsMetric.payments_out, value: metrics.payments_out_msat},
-			{metric: LightningAnalyticsMetric.invoices_in, value: metrics.invoices_in_msat},
-			{metric: LightningAnalyticsMetric.forward_fees, value: metrics.forward_fees_msat},
-			{metric: LightningAnalyticsMetric.channel_opens, value: metrics.channel_opens_msat},
-			{metric: LightningAnalyticsMetric.channel_closes, value: metrics.channel_closes_msat},
-		];
 
-		for (const {metric, value} of metric_map) {
-			const entity = new LightningAnalytics();
-			entity.node_pubkey = node_pubkey;
-			entity.metric = metric;
-			entity.date = hour_start;
-			entity.amount_msat = value.toString();
-			entities.push(entity);
+		for (const group of grouped_metrics) {
+			const metric_map: {metric: LightningAnalyticsMetric; value: bigint}[] = [
+				{metric: LightningAnalyticsMetric.payments_out, value: group.metrics.payments_out},
+				{metric: LightningAnalyticsMetric.invoices_in, value: group.metrics.invoices_in},
+				{metric: LightningAnalyticsMetric.forward_fees, value: group.metrics.forward_fees},
+				{metric: LightningAnalyticsMetric.channel_opens, value: group.metrics.channel_opens},
+				{metric: LightningAnalyticsMetric.channel_closes, value: group.metrics.channel_closes},
+			];
+
+			for (const {metric, value} of metric_map) {
+				const entity = new LightningAnalytics();
+				entity.node_pubkey = node_pubkey;
+				entity.group_key = group.group_key;
+				entity.unit = group.unit;
+				entity.metric = metric;
+				entity.date = hour_start;
+				entity.amount = value.toString();
+				entities.push(entity);
+			}
 		}
 
 		return entities;
@@ -163,22 +225,33 @@ export class LightningAnalyticsService implements OnModuleInit {
 	 */
 	async cacheHourlyAnalytics(hour_start: number): Promise<void> {
 		const node_pubkey = await this.getNodePubkey();
-		const metrics = await this.computeHourlyAnalytics(hour_start);
-		const entities = this.metricsToEntities(hour_start, metrics, node_pubkey);
+		const grouped_metrics = await this.computeHourlyAnalytics(hour_start);
+		const entities = this.groupedMetricsToEntities(hour_start, grouped_metrics, node_pubkey);
 		const now = Math.floor(Date.now() / 1000);
 
 		for (const entity of entities) {
-			const is_zero = entity.amount_msat === '0';
-			const existing = await this.lightningAnalyticsRepository.findOne({
-				where: {node_pubkey, metric: entity.metric, date: entity.date},
-			});
+			const is_zero = entity.amount === '0';
+			const where_clause: any = {
+				node_pubkey,
+				unit: entity.unit,
+				metric: entity.metric,
+				date: entity.date,
+			};
+			// Handle group_key: null needs IsNull(), string needs exact match
+			if (entity.group_key === null) {
+				where_clause.group_key = IsNull();
+			} else {
+				where_clause.group_key = entity.group_key;
+			}
+
+			const existing = await this.lightningAnalyticsRepository.findOne({where: where_clause});
 
 			if (existing) {
 				if (is_zero) {
 					// Remove existing record if new value is zero
 					await this.lightningAnalyticsRepository.remove(existing);
 				} else {
-					existing.amount_msat = entity.amount_msat;
+					existing.amount = entity.amount;
 					existing.attempts = existing.attempts + 1;
 					existing.updated_at = now;
 					await this.lightningAnalyticsRepository.save(existing);
@@ -301,21 +374,65 @@ export class LightningAnalyticsService implements OnModuleInit {
 		return Math.floor(timestamp / 3600) * 3600;
 	}
 
-	private sumPaymentsOut(payments: LightningPayment[]): bigint {
+	/**
+	 * Sums outgoing payments for a specific group_key
+	 * @param group_key null for BTC payments, string for Taproot Asset payments
+	 * @param asset_to_group Map of asset_id to group_key for resolving payment assets
+	 */
+	private sumPaymentsOut(
+		payments: LightningPayment[],
+		group_key: string | null,
+		asset_to_group: Map<string, string>,
+	): bigint {
 		let total = BigInt(0);
 		for (const p of payments) {
-			if (p.status === 'succeeded') {
-				total += BigInt(p.value_msat) + BigInt(p.fee_msat);
+			if (p.status !== 'succeeded') continue;
+
+			if (group_key === null) {
+				// BTC: only payments without asset_balances
+				if (p.asset_balances.length === 0) {
+					total += BigInt(p.value_msat) + BigInt(p.fee_msat);
+				}
+			} else {
+				// Taproot Asset: sum amounts for matching group_key
+				for (const ab of p.asset_balances) {
+					const ab_group = asset_to_group.get(ab.asset_id);
+					if (ab_group === group_key) {
+						total += BigInt(ab.amount);
+					}
+				}
 			}
 		}
 		return total;
 	}
 
-	private sumInvoicesIn(invoices: LightningInvoice[]): bigint {
+	/**
+	 * Sums incoming invoices for a specific group_key
+	 * @param group_key null for BTC invoices, string for Taproot Asset invoices
+	 * @param asset_to_group Map of asset_id to group_key for resolving invoice assets
+	 */
+	private sumInvoicesIn(
+		invoices: LightningInvoice[],
+		group_key: string | null,
+		asset_to_group: Map<string, string>,
+	): bigint {
 		let total = BigInt(0);
 		for (const i of invoices) {
-			if (i.state === 'settled') {
-				total += BigInt(i.amt_paid_msat);
+			if (i.state !== 'settled') continue;
+
+			if (group_key === null) {
+				// BTC: only invoices without asset_balances
+				if (i.asset_balances.length === 0) {
+					total += BigInt(i.amt_paid_msat);
+				}
+			} else {
+				// Taproot Asset: sum amounts for matching group_key
+				for (const ab of i.asset_balances) {
+					const ab_group = asset_to_group.get(ab.asset_id);
+					if (ab_group === group_key) {
+						total += BigInt(ab.amount);
+					}
+				}
 			}
 		}
 		return total;
@@ -352,21 +469,17 @@ export class LightningAnalyticsService implements OnModuleInit {
 
 	private sumChannelCloses(
 		closed_channels: LightningClosedChannel[],
-		_tx_timestamps: Map<string, number>,
-		_hour_start: number,
-		_hour_end: number,
+		tx_timestamps: Map<string, number>,
+		hour_start: number,
+		hour_end: number,
 	): bigint {
 		let total = BigInt(0);
 
 		for (const channel of closed_channels) {
-			// For closes, we'd need close timestamp, but CLN doesn't provide close_height reliably
-			// For now, use the close_height if available (would need block timestamp lookup)
-			// This is a simplified version - full implementation would convert close_height to timestamp
-			const close_time = channel.close_height;
-			if (close_time === 0) continue;
+			// Look up close timestamp from transaction map using closing_txid
+			const close_time = tx_timestamps.get(channel.closing_txid);
+			if (!close_time || close_time < hour_start || close_time >= hour_end) continue;
 
-			// Simplified: assume close happened in this hour if we have data
-			// Full implementation would convert block height to timestamp
 			const settled_msat = BigInt(channel.settled_balance) * BigInt(1000);
 			total += settled_msat;
 		}
@@ -416,6 +529,131 @@ export class LightningAnalyticsService implements OnModuleInit {
 			}
 		}
 		return map;
+	}
+
+	/**
+	 * Builds a map from asset_id to group_key using channel data
+	 * This allows looking up the group_key for an asset_id in payments/invoices
+	 */
+	private buildAssetToGroupKeyMap(
+		channels: LightningChannel[],
+		closed_channels: LightningClosedChannel[],
+	): Map<string, string> {
+		const map = new Map<string, string>();
+
+		for (const channel of channels) {
+			if (channel.asset) {
+				map.set(channel.asset.asset_id, channel.asset.group_key);
+			}
+		}
+
+		for (const channel of closed_channels) {
+			if (channel.asset) {
+				map.set(channel.asset.asset_id, channel.asset.group_key);
+			}
+		}
+
+		return map;
+	}
+
+	/**
+	 * Collects all unique group_keys from channels, closed channels, payments, and invoices
+	 */
+	private collectAllGroupKeys(
+		channels: LightningChannel[],
+		closed_channels: LightningClosedChannel[],
+		payments: LightningPayment[],
+		invoices: LightningInvoice[],
+		asset_to_group: Map<string, string>,
+	): Set<string> {
+		const group_keys = new Set<string>();
+
+		// From open channels
+		for (const channel of channels) {
+			if (channel.asset?.group_key) {
+				group_keys.add(channel.asset.group_key);
+			}
+		}
+
+		// From closed channels
+		for (const channel of closed_channels) {
+			if (channel.asset?.group_key) {
+				group_keys.add(channel.asset.group_key);
+			}
+		}
+
+		// From payments (via asset_id → group_key mapping)
+		for (const payment of payments) {
+			for (const ab of payment.asset_balances) {
+				const group_key = asset_to_group.get(ab.asset_id);
+				if (group_key) {
+					group_keys.add(group_key);
+				}
+			}
+		}
+
+		// From invoices (via asset_id → group_key mapping)
+		for (const invoice of invoices) {
+			for (const ab of invoice.asset_balances) {
+				const group_key = asset_to_group.get(ab.asset_id);
+				if (group_key) {
+					group_keys.add(group_key);
+				}
+			}
+		}
+
+		return group_keys;
+	}
+
+	/**
+	 * Sums Taproot Asset channel opens (initial local balance in asset units)
+	 */
+	private sumAssetChannelOpens(
+		open_channels: LightningChannel[],
+		closed_channels: LightningClosedChannel[],
+		tx_timestamps: Map<string, number>,
+		hour_start: number,
+		hour_end: number,
+	): bigint {
+		let total = BigInt(0);
+		const all_channels = [...open_channels, ...closed_channels];
+
+		for (const channel of all_channels) {
+			const open_time = tx_timestamps.get(channel.funding_txid);
+			if (!open_time || open_time < hour_start || open_time >= hour_end) continue;
+
+			// For Taproot Asset channels, use the asset's local_balance
+			if ('asset' in channel && channel.asset) {
+				total += BigInt(channel.asset.local_balance);
+			}
+		}
+
+		return total;
+	}
+
+	/**
+	 * Sums Taproot Asset channel closes (settled balance in asset units)
+	 */
+	private sumAssetChannelCloses(
+		closed_channels: LightningClosedChannel[],
+		tx_timestamps: Map<string, number>,
+		hour_start: number,
+		hour_end: number,
+	): bigint {
+		let total = BigInt(0);
+
+		for (const channel of closed_channels) {
+			// Look up close timestamp from transaction map using closing_txid
+			const close_time = tx_timestamps.get(channel.closing_txid);
+			if (!close_time || close_time < hour_start || close_time >= hour_end) continue;
+
+			// For Taproot Asset channels, use the asset's local_balance as settled
+			if (channel.asset) {
+				total += BigInt(channel.asset.local_balance);
+			}
+		}
+
+		return total;
 	}
 
 	private sleep(ms: number): Promise<void> {

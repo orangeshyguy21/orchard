@@ -13,7 +13,7 @@ import {Entity, Column, PrimaryGeneratedColumn, Index} from 'typeorm';
  * - channel_closes: settled balance on close (removes liquidity from pool)
  */
 @Entity('analytics_lightning')
-@Index(['node_pubkey', 'metric', 'date'], {unique: true})
+@Index(['node_pubkey', 'group_key', 'unit', 'metric', 'date'], {unique: true})
 export class LightningAnalytics {
 	@PrimaryGeneratedColumn('uuid')
 	id: string;
@@ -21,6 +21,14 @@ export class LightningAnalytics {
 	// Lightning node public key (identity_pubkey)
 	@Column({type: 'text'})
 	node_pubkey: string;
+
+	// Taproot Asset group key (null for regular lightning/BTC channels)
+	@Column({type: 'text', nullable: true})
+	group_key: string | null;
+
+	// Asset unit: 'msat' for regular lightning, or taproot asset unit (e.g., 'usd')
+	@Column({type: 'text', default: 'msat'})
+	unit: string;
 
 	// Metric type: payments_out, invoices_in, forward_fees, channel_opens, channel_closes
 	@Column({type: 'text'})
@@ -30,9 +38,9 @@ export class LightningAnalytics {
 	@Column({type: 'integer'})
 	date: number;
 
-	// Total amount in millisatoshis for this hour
+	// Total amount in smallest unit (msat for lightning, or asset-specific smallest unit)
 	@Column({type: 'bigint'})
-	amount_msat: string;
+	amount: string;
 
 	// Number of times we tried to compute this hour (for tracking problematic periods)
 	@Column({type: 'integer', default: 0})

@@ -42,7 +42,9 @@ export class ApiLightningAnalyticsService {
 			live = await this.lightningAnalyticsService.computeAndBuildEntities(current_hour_start);
 		}
 
-		const all_data = [...cached, ...live].filter((d) => metrics.includes(d.metric as LightningAnalyticsMetric));
+		const all_data = [...cached, ...live].filter(
+			(d) => metrics.includes(d.metric as LightningAnalyticsMetric) && d.amount !== '0',
+		);
 
 		return this.aggregateByInterval(all_data, args.interval ?? LightningAnalyticsInterval.hour, args.timezone);
 	}
@@ -62,11 +64,11 @@ export class ApiLightningAnalyticsService {
 		timezone?: string,
 	): OrchardLightningAnalytics[] {
 		if (interval === LightningAnalyticsInterval.hour) {
-			return data.map((d) => new OrchardLightningAnalytics(d.metric as LightningAnalyticsMetric, d.amount_msat, d.date));
+			return data.map((d) => new OrchardLightningAnalytics(d.unit, d.metric as LightningAnalyticsMetric, d.amount, d.date));
 		}
 
 		const tz = timezone ?? 'UTC';
-		const buckets = new Map<string, {metric: LightningAnalyticsMetric; amount_msat: bigint; date: number}>();
+		const buckets = new Map<string, {unit: string; metric: LightningAnalyticsMetric; amount: bigint; date: number}>();
 
 		for (const d of data) {
 			const dt = DateTime.fromSeconds(d.date, {zone: tz});
@@ -86,15 +88,16 @@ export class ApiLightningAnalyticsService {
 					bucket_start = dt.startOf('hour');
 			}
 
-			const key = `${d.metric}:${bucket_start.toSeconds()}`;
+			const key = `${d.unit}:${d.metric}:${bucket_start.toSeconds()}`;
 			const existing = buckets.get(key);
 
 			if (existing) {
-				existing.amount_msat += BigInt(d.amount_msat);
+				existing.amount += BigInt(d.amount);
 			} else {
 				buckets.set(key, {
+					unit: d.unit,
 					metric: d.metric as LightningAnalyticsMetric,
-					amount_msat: BigInt(d.amount_msat),
+					amount: BigInt(d.amount),
 					date: bucket_start.toSeconds(),
 				});
 			}
@@ -102,6 +105,6 @@ export class ApiLightningAnalyticsService {
 
 		return Array.from(buckets.values())
 			.sort((a, b) => a.date - b.date)
-			.map((b) => new OrchardLightningAnalytics(b.metric, b.amount_msat.toString(), b.date));
+			.map((b) => new OrchardLightningAnalytics(b.unit, b.metric, b.amount.toString(), b.date));
 	}
 }
