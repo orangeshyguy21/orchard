@@ -46,7 +46,7 @@ export class ApiLightningAnalyticsService {
 			(d) => metrics.includes(d.metric as LightningAnalyticsMetric) && d.amount !== '0',
 		);
 
-		return this.aggregateByInterval(all_data, args.interval ?? LightningAnalyticsInterval.hour, args.timezone);
+		return this.aggregateByInterval(all_data, args.interval ?? LightningAnalyticsInterval.hour, args.timezone, date_start);
 	}
 
 	/**
@@ -62,6 +62,7 @@ export class ApiLightningAnalyticsService {
 		data: LightningAnalytics[],
 		interval: LightningAnalyticsInterval,
 		timezone?: string,
+		date_start?: number,
 	): OrchardLightningAnalytics[] {
 		if (interval === LightningAnalyticsInterval.hour) {
 			return data.map((d) => new OrchardLightningAnalytics(d.unit, d.metric as LightningAnalyticsMetric, d.amount, d.date));
@@ -71,40 +72,44 @@ export class ApiLightningAnalyticsService {
 		const buckets = new Map<string, {unit: string; metric: LightningAnalyticsMetric; amount: bigint; date: number}>();
 
 		for (const d of data) {
-			const dt = DateTime.fromSeconds(d.date, {zone: tz});
-			let bucket_start: DateTime;
-
-			switch (interval) {
-				case LightningAnalyticsInterval.day:
-					bucket_start = dt.startOf('day');
-					break;
-				case LightningAnalyticsInterval.week:
-					bucket_start = dt.startOf('week');
-					break;
-				case LightningAnalyticsInterval.month:
-					bucket_start = dt.startOf('month');
-					break;
-				default:
-					bucket_start = dt.startOf('hour');
-			}
-
-			const key = `${d.unit}:${d.metric}:${bucket_start.toSeconds()}`;
+			const bucket_date = this.getBucketDate(d.date, interval, tz, date_start, data);
+			const key = interval === LightningAnalyticsInterval.custom ? `${d.unit}:${d.metric}` : `${d.unit}:${d.metric}:${bucket_date}`;
 			const existing = buckets.get(key);
 
 			if (existing) {
 				existing.amount += BigInt(d.amount);
 			} else {
-				buckets.set(key, {
-					unit: d.unit,
-					metric: d.metric as LightningAnalyticsMetric,
-					amount: BigInt(d.amount),
-					date: bucket_start.toSeconds(),
-				});
+				buckets.set(key, {unit: d.unit, metric: d.metric as LightningAnalyticsMetric, amount: BigInt(d.amount), date: bucket_date});
 			}
 		}
 
 		return Array.from(buckets.values())
 			.sort((a, b) => a.date - b.date)
 			.map((b) => new OrchardLightningAnalytics(b.unit, b.metric, b.amount.toString(), b.date));
+	}
+
+	private getBucketDate(
+		date: number,
+		interval: LightningAnalyticsInterval,
+		timezone: string,
+		date_start?: number,
+		data?: LightningAnalytics[],
+	): number {
+		if (interval === LightningAnalyticsInterval.custom) {
+			return date_start ?? (data?.length ? Math.min(...data.map((d) => d.date)) : 0);
+		}
+
+		const dt = DateTime.fromSeconds(date, {zone: timezone});
+
+		switch (interval) {
+			case LightningAnalyticsInterval.day:
+				return dt.startOf('day').toSeconds();
+			case LightningAnalyticsInterval.week:
+				return dt.startOf('week').toSeconds();
+			case LightningAnalyticsInterval.month:
+				return dt.startOf('month').toSeconds();
+			default:
+				return dt.startOf('hour').toSeconds();
+		}
 	}
 }

@@ -14,14 +14,25 @@ import {LightningInfo} from '@client/modules/lightning/classes/lightning-info.cl
 import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
 import {LightningAccount} from '@client/modules/lightning/classes/lightning-account.class';
 import {LightningRequest} from '@client/modules/lightning/classes/lightning-request.class';
+import {LightningAnalytic} from '@client/modules/lightning/classes/lightning-analytic.class';
 import {
 	LightningInfoResponse,
 	LightningBalanceResponse,
 	LightningWalletResponse,
 	LightningRequestResponse,
+	LightningAnalyticsResponse,
+	LightningAnalyticsArgs,
 } from '@client/modules/lightning/types/lightning.types';
+/* Shared Dependencies */
+import {LightningAnalyticsInterval} from '@shared/generated.types';
 /* Local Dependencies */
-import {LIGHTNING_INFO_QUERY, LIGHTNING_BALANCE_QUERY, LIGHTNING_WALLET_QUERY, LIGHTNING_REQUEST_QUERY} from './lightning.queries';
+import {
+	LIGHTNING_INFO_QUERY,
+	LIGHTNING_BALANCE_QUERY,
+	LIGHTNING_WALLET_QUERY,
+	LIGHTNING_REQUEST_QUERY,
+	LIGHTNING_ANALYTICS_QUERY,
+} from './lightning.queries';
 
 @Injectable({
 	providedIn: 'root',
@@ -35,18 +46,24 @@ export class LightningService {
 		LIGHTNING_INFO: 'lightning-info',
 		LIGHTNING_BALANCE: 'lightning-balance',
 		LIGHTNING_ACCOUNTS: 'lightning-accounts',
+		LIGHTNING_ANALYTICS: 'lightning-analytics',
+		LIGHTNING_ANALYTICS_PRE: 'lightning-analytics-pre',
 	};
 
 	private readonly CACHE_DURATIONS = {
 		[this.CACHE_KEYS.LIGHTNING_INFO]: 30 * 60 * 1000, // 30 minutes
 		[this.CACHE_KEYS.LIGHTNING_BALANCE]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.LIGHTNING_ACCOUNTS]: 5 * 60 * 1000, // 5 minutes
+		[this.CACHE_KEYS.LIGHTNING_ANALYTICS]: 5 * 60 * 1000, // 5 minutes
+		[this.CACHE_KEYS.LIGHTNING_ANALYTICS_PRE]: 5 * 60 * 1000, // 5 minutes
 	};
 
 	/* Subjects for caching */
 	private readonly lightning_info_subject: BehaviorSubject<LightningInfo | null>;
 	private readonly lightning_balance_subject: BehaviorSubject<LightningBalance | null>;
 	private readonly lightning_accounts_subject: BehaviorSubject<LightningAccount[] | null>;
+	private readonly lightning_analytics_subject: BehaviorSubject<LightningAnalytic[] | null>;
+	private readonly lightning_analytics_pre_subject: BehaviorSubject<LightningAnalytic[] | null>;
 
 	/* Observables for caching (rapid request caching) */
 	private lightning_info_observable!: Observable<LightningInfo> | null;
@@ -68,6 +85,19 @@ export class LightningService {
 			this.CACHE_KEYS.LIGHTNING_ACCOUNTS,
 			this.CACHE_DURATIONS[this.CACHE_KEYS.LIGHTNING_ACCOUNTS],
 		);
+		this.lightning_analytics_subject = this.cache.createCache<LightningAnalytic[]>(
+			this.CACHE_KEYS.LIGHTNING_ANALYTICS,
+			this.CACHE_DURATIONS[this.CACHE_KEYS.LIGHTNING_ANALYTICS],
+		);
+		this.lightning_analytics_pre_subject = this.cache.createCache<LightningAnalytic[]>(
+			this.CACHE_KEYS.LIGHTNING_ANALYTICS_PRE,
+			this.CACHE_DURATIONS[this.CACHE_KEYS.LIGHTNING_ANALYTICS_PRE],
+		);
+	}
+
+    public clearAnalyticsCache(): void {
+		this.cache.clearCache(this.CACHE_KEYS.LIGHTNING_ANALYTICS);
+		this.cache.clearCache(this.CACHE_KEYS.LIGHTNING_ANALYTICS_PRE);
 	}
 
 	public loadLightningInfo(): Observable<LightningInfo> {
@@ -158,6 +188,48 @@ export class LightningService {
 			map((ln_request) => new LightningRequest(ln_request)),
 			catchError((error) => {
 				console.error('Error loading lightning request:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	public loadLightningAnalytics(args: LightningAnalyticsArgs): Observable<LightningAnalytic[]> {
+		if (args.interval === LightningAnalyticsInterval.Custom) {
+			return this.loadGenericLightningAnalytics(
+				args,
+				this.lightning_analytics_pre_subject.value,
+				this.CACHE_KEYS.LIGHTNING_ANALYTICS_PRE,
+			);
+		}
+		return this.loadGenericLightningAnalytics(
+			args,
+			this.lightning_analytics_subject.value,
+			this.CACHE_KEYS.LIGHTNING_ANALYTICS,
+		);
+	}
+
+	private loadGenericLightningAnalytics(
+		args: LightningAnalyticsArgs,
+		subject_value: LightningAnalytic[] | null,
+		cache_key: string,
+	): Observable<LightningAnalytic[]> {
+		if (subject_value && this.cache.isCacheValid(cache_key)) {
+			return of(subject_value);
+		}
+
+		const query = getApiQuery(LIGHTNING_ANALYTICS_QUERY, args);
+
+		return this.http.post<OrchardRes<LightningAnalyticsResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.lightning_analytics;
+			}),
+			map((lightning_analytics) => lightning_analytics.map((la) => new LightningAnalytic(la))),
+			tap((lightning_analytics) => {
+				this.cache.updateCache(cache_key, lightning_analytics);
+			}),
+			catchError((error) => {
+				console.error('Error loading lightning analytics:', error);
 				return throwError(() => error);
 			}),
 		);

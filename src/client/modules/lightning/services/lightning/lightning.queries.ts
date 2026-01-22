@@ -97,3 +97,13 @@ query LightningRequest($request: String!) {
         offer_quantity_max
     }
 }`;
+
+export const LIGHTNING_ANALYTICS_QUERY = `
+query LightningAnalytics($date_start: UnixTimestamp, $date_end: UnixTimestamp, $interval: LightningAnalyticsInterval, $timezone: Timezone, $metrics: [LightningAnalyticsMetric!]) {
+	lightning_analytics(date_start: $date_start, date_end: $date_end, interval: $interval, timezone: $timezone, metrics: $metrics) {
+		unit
+		metric
+		amount
+		date
+	}
+}`;

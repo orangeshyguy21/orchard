@@ -28,6 +28,8 @@ import {NonNullableMintDashboardSettings} from '@client/modules/settings/types/s
 import {PublicUrl} from '@client/modules/public/classes/public-url.class';
 import {AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
+import {LightningAnalytic} from '@client/modules/lightning/classes/lightning-analytic.class';
+import {LightningAnalyticsArgs} from '@client/modules/lightning/types/lightning.types';
 import {OrchardError} from '@client/modules/error/types/error.types';
 import {NavTertiaryItem} from '@client/modules/nav/types/nav-tertiary-item.type';
 import {DeviceType} from '@client/modules/layout/types/device.types';
@@ -40,7 +42,7 @@ import {MintFee} from '@client/modules/mint/classes/mint-fee.class';
 import {MintAnalytic} from '@client/modules/mint/classes/mint-analytic.class';
 import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
 /* Shared Dependencies */
-import {AiFunctionName, MintAnalyticsInterval, MintUnit} from '@shared/generated.types';
+import {AiFunctionName, MintAnalyticsInterval, MintUnit, LightningAnalyticsInterval} from '@shared/generated.types';
 
 enum NavTertiary {
 	BalanceSheet = 'nav1',
@@ -81,6 +83,8 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public mint_connections: PublicUrl[] = [];
 	public lightning_enabled: boolean;
 	public lightning_balance: LightningBalance | null = null;
+	public lightning_analytics: LightningAnalytic[] = [];
+	public lightning_analytics_pre: LightningAnalytic[] = [];
 	public locale!: string;
 	// derived data
 	public mint_genesis_time: number = 0;
@@ -148,7 +152,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.initMintConnections();
 		this.orchardOptionalInit();
 		this.getMintFees();
-		await this.initMintAnalytics();
+		await this.initAnalytics();
 		this.mint_fee_revenue = this.getMintFeeRevenueState();
 		this.subscriptions.add(this.getBreakpointSubscription());
 	}
@@ -251,17 +255,18 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	private async initMintAnalytics(): Promise<void> {
+	private async initAnalytics(): Promise<void> {
 		try {
 			this.locale = await this.settingDeviceService.getLocale();
 			this.updateTertiaryNav();
 			this.loading_static_data = false;
 			this.cdr.detectChanges();
 			await this.loadMintAnalytics();
+			if (this.lightning_enabled) await this.loadLightningAnalytics();
 			this.loading_dynamic_data = false;
 			this.cdr.detectChanges();
 		} catch (error) {
-			console.error('ERROR IN INIT MINT ANALYTICS:', error);
+			console.error('ERROR IN INIT ANALYTICS:', error);
 		}
 	}
 
@@ -373,6 +378,32 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.mint_analytics_swaps_pre = analytics_swaps_pre;
 		this.mint_analytics_fees = this.applyMintFees(analytics_fees, analytics_fees_pre);
 		this.mint_analytics_fees_pre = analytics_fees_pre;
+	}
+
+	private async loadLightningAnalytics(): Promise<void> {
+		const timezone = this.settingDeviceService.getTimezone();
+        const interval = this.page_settings().interval as unknown as LightningAnalyticsInterval;
+		const args: LightningAnalyticsArgs = {
+			date_start: this.page_settings().date_start,
+			date_end: this.page_settings().date_end,
+			interval: interval,
+			timezone: timezone,
+		};
+		const [analytics, analytics_pre] = await lastValueFrom(
+			forkJoin([
+				this.lightningService.loadLightningAnalytics(args),
+				this.lightningService.loadLightningAnalytics({
+					...args,
+					date_start: 100000,
+					date_end: this.page_settings().date_start - 1,
+					interval: LightningAnalyticsInterval.Custom,
+				}),
+			]),
+		);
+		console.log('analytics', analytics);
+		console.log('analytics_pre', analytics_pre);
+		this.lightning_analytics = analytics;
+		this.lightning_analytics_pre = analytics_pre;
 	}
 
 	private applyMintFees(analytics_fees: MintAnalytic[], analytics_fees_pre: MintAnalytic[]): MintAnalytic[] {
