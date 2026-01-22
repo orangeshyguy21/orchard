@@ -400,8 +400,6 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 				}),
 			]),
 		);
-		console.log('analytics', analytics);
-		console.log('analytics_pre', analytics_pre);
 		this.lightning_analytics = analytics;
 		this.lightning_analytics_pre = analytics_pre;
 	}

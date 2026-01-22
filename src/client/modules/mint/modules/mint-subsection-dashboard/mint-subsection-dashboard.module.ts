@@ -29,11 +29,13 @@ import {MintSubsectionDashboardControlComponent} from './components/mint-subsect
 import {MintSubsectionDashboardConnectionsComponent} from './components/mint-subsection-dashboard-connections/mint-subsection-dashboard-connections.component';
 import {MintSubsectionDashboardConnectionStatusComponent} from './components/mint-subsection-dashboard-connection-status/mint-subsection-dashboard-connection-status.component';
 import {MintSubsectionDashboardConnectionDialogComponent} from './components/mint-subsection-dashboard-connection-dialog/mint-subsection-dashboard-connection-dialog.component';
+import {MintSubsectionDashboardBalancesheetChartComponent} from './components/mint-subsection-dashboard-balancesheet-chart/mint-subsection-dashboard-balancesheet-chart.component';
 
 @NgModule({
 	declarations: [
 		MintSubsectionDashboardComponent,
 		MintSubsectionDashboardChartComponent,
+		MintSubsectionDashboardBalancesheetChartComponent,
 		MintSubsectionDashboardControlComponent,
 		MintSubsectionDashboardConnectionsComponent,
 		MintSubsectionDashboardConnectionStatusComponent,

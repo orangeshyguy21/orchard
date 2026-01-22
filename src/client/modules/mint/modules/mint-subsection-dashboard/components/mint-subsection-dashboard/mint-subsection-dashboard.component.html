@@ -76,15 +76,18 @@
 						</div>
 					</div>
 				</div>
-				<orc-mint-subsection-dashboard-chart
+				<orc-mint-subsection-dashboard-balancesheet-chart
 					[locale]="locale"
 					[mint_analytics]="mint_analytics_balances"
 					[mint_analytics_pre]="mint_analytics_balances_pre"
+					[lightning_analytics]="lightning_analytics"
+					[lightning_analytics_pre]="lightning_analytics_pre"
 					[page_settings]="page_settings()"
 					[mint_genesis_time]="mint_genesis_time"
 					[selected_type]="type_balance_sheet()"
 					[loading]="loading_dynamic_data"
-				></orc-mint-subsection-dashboard-chart>
+					[lightning_enabled]="lightning_enabled"
+				></orc-mint-subsection-dashboard-balancesheet-chart>
 			</div>
 
 			<div class="relative chart-mints">
