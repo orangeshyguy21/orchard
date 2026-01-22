@@ -54,6 +54,27 @@ export type LightningRequest = {
    ============================================ */
 
 /**
+ * Taproot Asset balance in an HTLC (from custom_channel_data)
+ */
+export type LightningAssetBalance = {
+	asset_id: string;
+	amount: string; // in asset's smallest unit
+};
+
+/**
+ * Taproot Asset channel data (parsed from custom_channel_data)
+ */
+export type LightningChannelAsset = {
+	group_key: string;
+	asset_id: string;
+	name: string;
+	local_balance: string;
+	remote_balance: string;
+	capacity: string;
+	decimal_display: number;
+};
+
+/**
  * Common payment type (outgoing payments)
  * Nullable fields indicate data that may not be available from all backends
  */
@@ -63,6 +84,7 @@ export type LightningPayment = {
 	fee_msat: string;
 	status: 'pending' | 'succeeded' | 'failed';
 	creation_time: number; // seconds since epoch
+	asset_balances: LightningAssetBalance[]; // Taproot Asset amounts (empty for BTC-only)
 };
 
 /**
@@ -75,6 +97,7 @@ export type LightningInvoice = {
 	state: 'open' | 'settled' | 'canceled' | 'accepted';
 	creation_date: number; // seconds since epoch
 	settle_date: number | null; // seconds since epoch (if settled)
+	asset_balances: LightningAssetBalance[]; // Taproot Asset amounts (empty for BTC-only)
 };
 
 /**
@@ -101,6 +124,7 @@ export type LightningChannel = {
 	private: boolean;
 	active: boolean;
 	funding_txid: string; // for timestamp lookup
+	asset: LightningChannelAsset | null; // Taproot Asset data (null for regular BTC channels)
 };
 
 /**
@@ -116,6 +140,8 @@ export type LightningClosedChannel = {
 	close_type: 'cooperative' | 'local_force' | 'remote_force' | 'breach' | 'funding_canceled' | 'abandoned' | 'unknown';
 	open_initiator: 'local' | 'remote' | 'both' | 'unknown';
 	funding_txid: string; // for open timestamp lookup
+	closing_txid: string; // for close timestamp lookup
+	asset: LightningChannelAsset | null; // Taproot Asset data (null for regular BTC channels)
 };
 
 /**

@@ -22,9 +22,23 @@ export interface LightningAnalyticsBackfillStatus {
 }
 
 export interface HourlyMetrics {
-	payments_out_msat: bigint;
-	invoices_in_msat: bigint;
-	forward_fees_msat: bigint;
-	channel_opens_msat: bigint;
-	channel_closes_msat: bigint;
+	payments_out: bigint;
+	invoices_in: bigint;
+	forward_fees: bigint;
+	channel_opens: bigint;
+	channel_closes: bigint;
 }
+
+/**
+ * Grouped hourly metrics keyed by group_key (null for BTC, string for Taproot Assets)
+ */
+export interface GroupedHourlyMetrics {
+	group_key: string | null;
+	unit: string;
+	metrics: HourlyMetrics;
+}
+
+/**
+ * Maps asset_id to group_key for Taproot Assets
+ */
+export type AssetIdToGroupKeyMap = Map<string, string>;

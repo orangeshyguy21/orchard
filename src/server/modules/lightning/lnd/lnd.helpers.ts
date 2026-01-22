@@ -7,6 +7,8 @@ import {
 	LightningChannel,
 	LightningClosedChannel,
 	LightningTransaction,
+	LightningChannelAsset,
+	LightningAssetBalance,
 } from '@server/modules/lightning/lightning/lightning.types';
 /* Local Dependencies */
 import {
@@ -75,6 +77,7 @@ export function mapLndPayments(response: LndListPaymentsResponse): LightningPaym
 		fee_msat: p.fee_msat ?? '0',
 		status: mapLndPaymentStatus(p.status),
 		creation_time: Math.floor(Number(p.creation_time_ns ?? 0) / 1_000_000_000),
+		asset_balances: extractPaymentAssetBalances(p.htlcs),
 	}));
 }
 
@@ -107,6 +110,7 @@ export function mapLndInvoices(response: LndListInvoicesResponse): LightningInvo
 		state: mapLndInvoiceState(i.state),
 		creation_date: Number(i.creation_date ?? 0),
 		settle_date: i.settle_date ? Number(i.settle_date) : null,
+		asset_balances: extractInvoiceAssetBalances(i.htlcs),
 	}));
 }
 
@@ -133,6 +137,77 @@ function extractLndFundingTxid(channel_point: string): string {
 }
 
 /**
+ * Parses custom_channel_data from LND channels to extract Taproot Asset info
+ */
+function parseLndCustomChannelData(custom_channel_data: Buffer): LightningChannelAsset | null {
+	if (!custom_channel_data || custom_channel_data.length === 0) return null;
+	try {
+		const json_str = custom_channel_data.toString('utf8');
+		const data = JSON.parse(json_str);
+		if (!data.group_key) return null;
+
+		const asset_info = data.assets?.[0] || {};
+		return {
+			group_key: data.group_key ?? '',
+			asset_id: asset_info.asset_genesis?.asset_id ?? data.asset_id ?? '',
+			name: asset_info.asset_genesis?.name ?? '',
+			local_balance: String(data.local_balance ?? asset_info.local_balance ?? '0'),
+			remote_balance: String(data.remote_balance ?? asset_info.remote_balance ?? '0'),
+			capacity: String(data.capacity ?? '0'),
+			decimal_display: asset_info.decimal_display?.decimal_display ?? 0,
+		};
+	} catch {
+		return null;
+	}
+}
+
+/**
+ * Parses HTLC custom_channel_data to extract asset balances
+ */
+function parseHtlcAssetBalances(custom_channel_data: Buffer): LightningAssetBalance[] {
+	if (!custom_channel_data || custom_channel_data.length === 0) return [];
+	try {
+		const json_str = custom_channel_data.toString('utf8');
+		const data = JSON.parse(json_str);
+		if (!data.balances || !Array.isArray(data.balances)) return [];
+		return data.balances.map((b: {asset_id: string; amount: string}) => ({
+			asset_id: b.asset_id ?? '',
+			amount: String(b.amount ?? '0'),
+		}));
+	} catch {
+		return [];
+	}
+}
+
+/**
+ * Extracts asset balances from payment HTLCs
+ */
+function extractPaymentAssetBalances(htlcs: LndPayment['htlcs']): LightningAssetBalance[] {
+	if (!htlcs || htlcs.length === 0) return [];
+	for (const htlc of htlcs) {
+		if (htlc.route?.custom_channel_data) {
+			const balances = parseHtlcAssetBalances(htlc.route.custom_channel_data);
+			if (balances.length > 0) return balances;
+		}
+	}
+	return [];
+}
+
+/**
+ * Extracts asset balances from invoice HTLCs
+ */
+function extractInvoiceAssetBalances(htlcs: LndInvoice['htlcs']): LightningAssetBalance[] {
+	if (!htlcs || htlcs.length === 0) return [];
+	for (const htlc of htlcs) {
+		if (htlc.custom_channel_data) {
+			const balances = parseHtlcAssetBalances(htlc.custom_channel_data);
+			if (balances.length > 0) return balances;
+		}
+	}
+	return [];
+}
+
+/**
  * Maps LND ListChannelsResponse to common LightningChannel[]
  */
 export function mapLndChannels(response: LndListChannelsResponse): LightningChannel[] {
@@ -148,6 +223,7 @@ export function mapLndChannels(response: LndListChannelsResponse): LightningChan
 		private: c.private ?? false,
 		active: c.active ?? false,
 		funding_txid: extractLndFundingTxid(c.channel_point),
+		asset: parseLndCustomChannelData(c.custom_channel_data),
 	}));
 }
 
@@ -205,6 +281,8 @@ export function mapLndClosedChannels(response: LndClosedChannelsResponse): Light
 		close_type: mapLndCloseType(c.close_type),
 		open_initiator: mapLndInitiator(c.open_initiator),
 		funding_txid: extractLndFundingTxid(c.channel_point),
+		closing_txid: c.closing_tx_hash ?? '',
+		asset: parseLndCustomChannelData(c.custom_channel_data),
 	}));
 }
 

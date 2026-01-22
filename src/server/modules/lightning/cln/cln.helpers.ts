@@ -115,6 +115,7 @@ function mapClnPaymentStatus(status: ClnPayStatus): LightningPayment['status'] {
 
 /**
  * Maps CLN ListPaysResponse to common LightningPayment[]
+ * Note: CLN does not support Taproot Assets, so asset_balances is always empty
  */
 export function mapClnPayments(response: ClnListPaysResponse): LightningPayment[] {
 	const pays = response?.pays ?? [];
@@ -124,6 +125,7 @@ export function mapClnPayments(response: ClnListPaysResponse): LightningPayment[
 		fee_msat: (BigInt(extractMsat(p.amount_sent_msat)) - BigInt(extractMsat(p.amount_msat))).toString(),
 		status: mapClnPaymentStatus(p.status),
 		creation_time: p.created_at ?? 0,
+		asset_balances: [], // CLN does not support Taproot Assets
 	}));
 }
 
@@ -144,6 +146,7 @@ function mapClnInvoiceState(status: ClnInvoiceStatus): LightningInvoice['state']
 
 /**
  * Maps CLN ListInvoicesResponse to common LightningInvoice[]
+ * Note: CLN does not support Taproot Assets, so asset_balances is always empty
  */
 export function mapClnInvoices(response: ClnListInvoicesResponse): LightningInvoice[] {
 	const invoices = response?.invoices ?? [];
@@ -154,6 +157,7 @@ export function mapClnInvoices(response: ClnListInvoicesResponse): LightningInvo
 		state: mapClnInvoiceState(i.status),
 		creation_date: i.created_index ?? 0, // CLN doesn't have creation_date directly, use created_index or expires_at - expiry
 		settle_date: i.paid_at ?? null,
+		asset_balances: [], // CLN does not support Taproot Assets
 	}));
 }
 
@@ -191,6 +195,7 @@ function mapClnOpener(opener: ClnChannelSide): boolean {
 
 /**
  * Maps CLN ListPeerChannelsResponse to common LightningChannel[]
+ * Note: CLN does not support Taproot Assets, so asset is always null
  */
 export function mapClnChannels(response: ClnListPeerChannelsResponse): LightningChannel[] {
 	const channels = response?.channels ?? [];
@@ -205,6 +210,7 @@ export function mapClnChannels(response: ClnListPeerChannelsResponse): Lightning
 		private: c.private ?? false,
 		active: c.peer_connected ?? false,
 		funding_txid: extractClnFundingTxid(c.funding_txid),
+		asset: null, // CLN does not support Taproot Assets
 	}));
 }
 
@@ -244,6 +250,7 @@ function mapClnInitiator(opener: ClnChannelSide): LightningClosedChannel['open_i
 
 /**
  * Maps CLN ListClosedChannelsResponse to common LightningClosedChannel[]
+ * Note: CLN does not support Taproot Assets, so asset is always null
  */
 export function mapClnClosedChannels(response: ClnListClosedChannelsResponse): LightningClosedChannel[] {
 	const channels = response?.closedchannels ?? [];
@@ -257,6 +264,8 @@ export function mapClnClosedChannels(response: ClnListClosedChannelsResponse): L
 		close_type: mapClnCloseType(c.close_cause),
 		open_initiator: mapClnInitiator(c.opener),
 		funding_txid: extractClnFundingTxid(c.funding_txid),
+		closing_txid: '', // CLN doesn't expose closing_tx_hash in ListClosedChannels
+		asset: null, // CLN does not support Taproot Assets
 	}));
 }
 
