@@ -1,0 +1,65 @@
+@use 'molecule/molecule';
+
+.mint-balance-chart-container {
+	@extend %p-b-1;
+	@extend %relative;
+	max-height: max(calc(100vh - 530px), 300px);
+	min-height: 300px;
+
+	canvas {
+		height: 100% !important;
+		width: 100% !important;
+	}
+}
+
+.no-data-overlay {
+	@extend %absolute;
+	@extend %top-0;
+	@extend %left-0;
+	@extend %right-0;
+	@extend %bottom-0;
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-gap-1;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+}
+
+.legend-item {
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-gap-0-5;
+    @extend %cursor-pointer;
+}
+
+.legend-item-visual {
+    @extend %w-2-5;
+    @extend %border;
+    height: 10px;
+    border-width: 2px;
+
+	&.default {
+        @extend %border-solid;
+	}
+
+	&.dashed {
+		@extend %border-dashed;
+	}
+}
+
+.legend-item-label {
+	@extend %font-size-xs;
+    @extend %orc-outline-color;
+
+    &.hidden-dataset {
+        text-decoration: line-through;
+        opacity: 0.5;
+    }
+}
+
+.mobile-legend {
+	@extend %h-1;
+	@extend %flex;
+	@extend %flex-items-center;
+    @extend %flex-justify-center;
+}

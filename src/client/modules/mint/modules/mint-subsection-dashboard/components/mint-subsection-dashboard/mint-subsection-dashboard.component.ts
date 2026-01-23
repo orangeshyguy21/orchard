@@ -29,6 +29,7 @@ import {PublicUrl} from '@client/modules/public/classes/public-url.class';
 import {AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
 import {LightningAnalytic} from '@client/modules/lightning/classes/lightning-analytic.class';
+import {LightningAnalyticsBackfillStatus} from '@client/modules/lightning/classes/lightning-analytics-backfill-status.class';
 import {LightningAnalyticsArgs} from '@client/modules/lightning/types/lightning.types';
 import {OrchardError} from '@client/modules/error/types/error.types';
 import {NavTertiaryItem} from '@client/modules/nav/types/nav-tertiary-item.type';
@@ -85,6 +86,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public lightning_balance: LightningBalance | null = null;
 	public lightning_analytics: LightningAnalytic[] = [];
 	public lightning_analytics_pre: LightningAnalytic[] = [];
+	public lightning_analytics_backfill_status: LightningAnalyticsBackfillStatus | null = null;
 	public locale!: string;
 	// derived data
 	public mint_genesis_time: number = 0;
@@ -389,7 +391,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			interval: interval,
 			timezone: timezone,
 		};
-		const [analytics, analytics_pre] = await lastValueFrom(
+		const [analytics, analytics_pre, backfill_status] = await lastValueFrom(
 			forkJoin([
 				this.lightningService.loadLightningAnalytics(args),
 				this.lightningService.loadLightningAnalytics({
@@ -398,12 +400,12 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 					date_end: this.page_settings().date_start - 1,
 					interval: LightningAnalyticsInterval.Custom,
 				}),
+				this.lightningService.loadLightningAnalyticsBackfillStatus(),
 			]),
 		);
-		console.log('analytics', analytics);
-		console.log('analytics_pre', analytics_pre);
 		this.lightning_analytics = analytics;
 		this.lightning_analytics_pre = analytics_pre;
+		this.lightning_analytics_backfill_status = backfill_status;
 	}
 
 	private applyMintFees(analytics_fees: MintAnalytic[], analytics_fees_pre: MintAnalytic[]): MintAnalytic[] {
@@ -417,9 +419,11 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	private async reloadDynamicData(): Promise<void> {
 		try {
 			this.mintService.clearDasbhoardCache();
+			this.lightningService.clearAnalyticsCache();
 			this.loading_dynamic_data = true;
 			this.cdr.detectChanges();
 			await this.loadMintAnalytics();
+            if (this.lightning_enabled) await this.loadLightningAnalytics();
 			this.loading_dynamic_data = false;
 			this.cdr.detectChanges();
 		} catch (error) {

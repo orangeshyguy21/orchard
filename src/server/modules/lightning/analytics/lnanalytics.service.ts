@@ -72,7 +72,7 @@ export class LightningAnalyticsService implements OnModuleInit {
 			this.logger.log('No cached analytics found, starting full backfill');
 			this.runBackfill();
 		} else {
-			const current_hour = this.getHourStart(Math.floor(Date.now() / 1000));
+			const current_hour = DateTime.utc().startOf('hour').toSeconds();
 			const gap_hours = Math.floor((current_hour - last_cached) / 3600) - 1;
 			if (gap_hours > 0) {
 				this.logger.log(`Found ${gap_hours} hour gap, starting gap backfill`);
@@ -94,9 +94,11 @@ export class LightningAnalyticsService implements OnModuleInit {
 		if (date_end < date_start) return [];
 
 		const node_pubkey = await this.getNodePubkey();
+        const start_hour = DateTime.fromSeconds(date_start, {zone: 'UTC'}).startOf('hour').toSeconds();
+        const end_hour = DateTime.fromSeconds(date_end, {zone: 'UTC'}).startOf('hour').toSeconds();
 		const where: any = {
 			node_pubkey,
-			date: Between(this.getHourStart(date_start), this.getHourStart(date_end)),
+			date: Between(start_hour, end_hour),
 			metric: In(metrics),
 		};
 
@@ -278,7 +280,7 @@ export class LightningAnalyticsService implements OnModuleInit {
 		}
 		const start_hour = await this.resolveBackfillStartHour(from_hour);
 		if (start_hour === null) return;
-		const current_hour = this.getHourStart(DateTime.utc().toSeconds());
+		const current_hour = DateTime.utc().startOf('hour').toSeconds();
 		const total_hours = Math.floor((current_hour - start_hour) / 3600);
 		this.initBackfillStatus(start_hour, current_hour, total_hours);
 		this.logger.log(`Starting backfill from ${DateTime.fromSeconds(start_hour).toISO()} (${total_hours} hours)`);
@@ -351,13 +353,13 @@ export class LightningAnalyticsService implements OnModuleInit {
 	 * @returns The hour timestamp to start from, or null if backfill should be skipped
 	 */
 	private async resolveBackfillStartHour(from_hour?: number): Promise<number | null> {
-		if (from_hour !== undefined) return this.getHourStart(from_hour);
+		if (from_hour !== undefined) return DateTime.fromSeconds(from_hour, {zone: 'UTC'}).startOf('hour').toSeconds();
 		const birthdate = await this.lightningService.getNodeBirthdate();
 		if (birthdate === 0) {
 			this.logger.warn('Could not determine node birthdate, skipping backfill');
 			return null;
 		}
-		return this.getHourStart(birthdate);
+		return DateTime.fromSeconds(birthdate, {zone: 'UTC'}).startOf('hour').toSeconds();
 	}
 
 	/**
@@ -367,13 +369,6 @@ export class LightningAnalyticsService implements OnModuleInit {
 		const node_pubkey = await this.getNodePubkey();
 		const count = await this.lightningAnalyticsRepository.count({where: {node_pubkey}});
 		return count > 0;
-	}
-
-	/**
-	 * Returns the hour start timestamp for a given timestamp
-	 */
-	getHourStart(timestamp: number): number {
-		return DateTime.fromSeconds(timestamp, {zone: 'UTC'}).startOf('hour').toSeconds();
 	}
 
 	/**

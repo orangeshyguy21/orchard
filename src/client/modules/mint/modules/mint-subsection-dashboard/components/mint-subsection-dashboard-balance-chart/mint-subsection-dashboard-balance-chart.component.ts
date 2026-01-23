@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, OnDestroy, OnChanges, SimpleChanges, ViewChild, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, OnDestroy, OnChanges, SimpleChanges, ViewChild, signal, computed} from '@angular/core';
 /* Vendor Dependencies */
 import {BaseChartDirective} from 'ng2-charts';
 import {ChartConfiguration, ScaleChartOptions, ChartType as ChartJsType, Plugin} from 'chart.js';
@@ -21,6 +21,7 @@ import {
 	getOutboundLiquidityData,
 	getOutboundLiquidityVolumeData,
 	getInitialOutboundMsat,
+	correctLastPointWithLiveBalance,
 } from '@client/modules/chart/helpers/lightning-chart-data.helpers';
 import {
 	getXAxisConfig,
@@ -31,24 +32,30 @@ import {
 	getTooltipLabel,
 } from '@client/modules/chart/helpers/mint-chart-options.helpers';
 import {ChartService} from '@client/modules/chart/services/chart/chart.service';
+import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
+import {LightningAnalyticsBackfillStatus} from '@client/modules/lightning/classes/lightning-analytics-backfill-status.class';
 /* Native Dependencies */
 import {MintAnalytic} from '@client/modules/mint/classes/mint-analytic.class';
 import {LightningAnalytic} from '@client/modules/lightning/classes/lightning-analytic.class';
 import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
+/* Shared Dependencies */
+import {LightningAnalyticsInterval} from '@shared/generated.types';
 
 @Component({
-	selector: 'orc-mint-subsection-dashboard-balancesheet-chart',
+	selector: 'orc-mint-subsection-dashboard-balance-chart',
 	standalone: false,
-	templateUrl: './mint-subsection-dashboard-balancesheet-chart.component.html',
-	styleUrl: './mint-subsection-dashboard-balancesheet-chart.component.scss',
+	templateUrl: './mint-subsection-dashboard-balance-chart.component.html',
+	styleUrl: './mint-subsection-dashboard-balance-chart.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintSubsectionDashboardBalancesheetChartComponent implements OnDestroy, OnChanges {
+export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, OnChanges {
 	@ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
 	public locale = input.required<string>();
 	public mint_analytics = input.required<MintAnalytic[]>();
 	public mint_analytics_pre = input.required<MintAnalytic[]>();
+	public lightning_balance = input.required<LightningBalance | null>();
+	public lightning_analytics_backfill_status = input.required<LightningAnalyticsBackfillStatus | null>();
 	public lightning_analytics = input.required<LightningAnalytic[]>();
 	public lightning_analytics_pre = input.required<LightningAnalytic[]>();
 	public page_settings = input.required<NonNullableMintDashboardSettings>();
@@ -56,12 +63,25 @@ export class MintSubsectionDashboardBalancesheetChartComponent implements OnDest
 	public selected_type = input.required<ChartType | null | undefined>();
 	public loading = input.required<boolean>();
 	public lightning_enabled = input.required<boolean>();
+    public device_mobile = input.required<boolean>();
 
 	public chart_type!: ChartJsType;
-	public chart_data!: ChartConfiguration['data'];
+	public chart_data = signal<ChartConfiguration['data']>({datasets: []});
 	public chart_options!: ChartConfiguration['options'];
 	public chart_plugins: Plugin[] = [];
 	public displayed = signal<boolean>(true);
+    public hidden_datasets = signal<Set<number>>(new Set());
+
+	public liability_datasets = computed(() =>
+		this.chart_data().datasets
+			?.map((d, i) => ({...d, _index: i}))
+			.filter((d) => d.backgroundColor) ?? []
+	);
+	public asset_datasets = computed(() =>
+		this.chart_data().datasets
+			?.map((d, i) => ({...d, _index: i}))
+			.filter((d) => !d.backgroundColor) ?? []
+	);
 
 	private subscriptions: Subscription = new Subscription();
 
@@ -99,19 +119,19 @@ export class MintSubsectionDashboardBalancesheetChartComponent implements OnDest
 		switch (this.selected_type()) {
 			case ChartType.Totals:
 				this.chart_type = 'line';
-				this.chart_data = this.getBalanceSheetTotalsData();
+				this.chart_data.set(this.getBalanceSheetTotalsData());
 				this.chart_options = this.getBalanceSheetChartOptions();
 				this.initGlowPlugin();
 				break;
 			case ChartType.Volume:
 				this.chart_type = 'bar';
-				this.chart_data = this.getBalanceSheetVolumeData();
+				this.chart_data.set(this.getBalanceSheetVolumeData());
 				this.chart_options = this.getBalanceSheetChartOptions();
 				this.chart_plugins = [];
 				break;
 			case ChartType.Operations:
 				this.chart_type = 'bar';
-				this.chart_data = this.getBalanceSheetOperationsData();
+				this.chart_data.set(this.getBalanceSheetOperationsData());
 				this.chart_options = this.getBalanceSheetOperationsOptions();
 				this.chart_plugins = [];
 				break;
@@ -130,11 +150,12 @@ export class MintSubsectionDashboardBalancesheetChartComponent implements OnDest
 	 * Creates the glow effect plugin for chart points (line charts only)
 	 */
 	private initGlowPlugin(): void {
-		if (!this.chart_data?.datasets || this.chart_data.datasets.length === 0) {
+		const data = this.chart_data();
+		if (!data?.datasets || data.datasets.length === 0) {
 			this.chart_plugins = [];
 			return;
 		}
-		const first_color = this.chart_data.datasets[0]?.borderColor as string;
+		const first_color = data.datasets[0]?.borderColor as string;
 		this.chart_plugins = first_color ? [this.chartService.createGlowPlugin(first_color)] : [];
 	}
 
@@ -188,18 +209,19 @@ export class MintSubsectionDashboardBalancesheetChartComponent implements OnDest
 			});
 		});
 
-		// Asset dataset (lightning outbound capacity) - dashed line, no fill
+		// Asset dataset (lightning outbound capacity)
 		if (this.lightning_enabled() && (this.lightning_analytics().length > 0 || this.lightning_analytics_pre().length > 0)) {
 			const initial_outbound_msat = getInitialOutboundMsat(this.lightning_analytics_pre());
-			const asset_data = getOutboundLiquidityData(timestamp_range, this.lightning_analytics(), initial_outbound_msat);
+			const raw_asset_data = getOutboundLiquidityData(timestamp_range, this.lightning_analytics(), initial_outbound_msat);
+			const live_balance_sat = this.lightning_balance()?.local_balance?.sat ?? null;
+			const interval = this.page_settings().interval as unknown as LightningAnalyticsInterval;
+			const asset_data = correctLastPointWithLiveBalance(raw_asset_data, live_balance_sat, interval);
 			const asset_color = this.chartService.getAssetColor('sat', 0);
 			const muted_asset_color = this.chartService.getMutedColor(asset_color.border);
 
-            console.log('asset_data', asset_data);
-
 			datasets.push({
 				data: asset_data,
-				label: 'sat (asset)',
+				label: 'SAT',
 				borderColor: muted_asset_color,
 				borderWidth: 2,
 				borderDash: [6, 4],
@@ -260,7 +282,7 @@ export class MintSubsectionDashboardBalancesheetChartComponent implements OnDest
 
 			datasets.push({
 				data: asset_data,
-				label: 'sat (asset)',
+				label: 'SAT',
 				backgroundColor: 'transparent',
 				borderColor: asset_color.border,
 				borderWidth: 2,
@@ -316,9 +338,10 @@ export class MintSubsectionDashboardBalancesheetChartComponent implements OnDest
 	 * Gets chart options for balance sheet (totals and volume)
 	 */
 	private getBalanceSheetChartOptions(): ChartConfiguration['options'] {
-		if (!this.chart_data || this.chart_data.datasets.length === 0 || !this.page_settings) return {};
+		const data = this.chart_data();
+		if (!data || data.datasets.length === 0 || !this.page_settings) return {};
 
-		const units = this.chart_data.datasets.map((item) => item.label);
+		const units = data.datasets.map((item) => item.label);
 		const y_axis = getYAxis(units);
 		const scales: ScaleChartOptions<'line'>['scales'] = {};
 		scales['x'] = getXAxisConfig(this.page_settings().interval, this.locale());
@@ -370,8 +393,7 @@ export class MintSubsectionDashboardBalancesheetChartComponent implements OnDest
 					},
 				},
 				legend: {
-					display: true,
-					position: 'top',
+					display: false,
 				},
 			},
 			interaction: {
@@ -386,7 +408,8 @@ export class MintSubsectionDashboardBalancesheetChartComponent implements OnDest
 	 * Gets chart options for operations chart
 	 */
 	private getBalanceSheetOperationsOptions(): ChartConfiguration['options'] {
-		if (!this.chart_data || this.chart_data.datasets.length === 0 || !this.page_settings()) return {};
+		const data = this.chart_data();
+		if (!data || data.datasets.length === 0 || !this.page_settings()) return {};
 
 		return {
 			responsive: true,
@@ -435,8 +458,7 @@ export class MintSubsectionDashboardBalancesheetChartComponent implements OnDest
 					},
 				},
 				legend: {
-					display: true,
-					position: 'top',
+					display: false,
 				},
 			},
 			interaction: {
@@ -448,7 +470,7 @@ export class MintSubsectionDashboardBalancesheetChartComponent implements OnDest
 	}
 
 	private getAnnotations(): any {
-		const min_x_value = this.findMinimumXValue(this.chart_data);
+		const min_x_value = this.findMinimumXValue(this.chart_data());
 		const milli_genesis_time = DateTime.fromSeconds(this.mint_genesis_time()).startOf('day').toMillis();
 		const display = milli_genesis_time >= min_x_value;
 		const config = this.chartService.getFormAnnotationConfig(false);
@@ -485,6 +507,20 @@ export class MintSubsectionDashboardBalancesheetChartComponent implements OnDest
 		const all_x_values = chartData.datasets.flatMap((dataset) => dataset.data.map((point: any) => point.x));
 		return Math.min(...all_x_values);
 	}
+
+    public toggleDataset(dataset: any): void {
+        const chart = this.chart?.chart;
+        if (!chart) return;
+        const index = dataset._index;
+        const is_visible = chart.isDatasetVisible(index);
+        chart.setDatasetVisibility(index, !is_visible);
+        chart.update();
+        this.hidden_datasets.update(set => {
+            const new_set = new Set(set);
+            is_visible ? new_set.add(index) : new_set.delete(index);
+            return new_set;
+        });
+    }
 
 	ngOnDestroy(): void {
 		this.subscriptions.unsubscribe();

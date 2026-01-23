@@ -25,17 +25,17 @@ import {OrcMintGeneralModule} from '@client/modules/mint/modules/mint-general/mi
 /* Local Dependencies */
 import {MintSubsectionDashboardComponent} from './components/mint-subsection-dashboard/mint-subsection-dashboard.component';
 import {MintSubsectionDashboardChartComponent} from './components/mint-subsection-dashboard-chart/mint-subsection-dashboard-chart.component';
+import {MintSubsectionDashboardBalanceChartComponent} from './components/mint-subsection-dashboard-balance-chart/mint-subsection-dashboard-balance-chart.component';
 import {MintSubsectionDashboardControlComponent} from './components/mint-subsection-dashboard-control/mint-subsection-dashboard-control.component';
 import {MintSubsectionDashboardConnectionsComponent} from './components/mint-subsection-dashboard-connections/mint-subsection-dashboard-connections.component';
 import {MintSubsectionDashboardConnectionStatusComponent} from './components/mint-subsection-dashboard-connection-status/mint-subsection-dashboard-connection-status.component';
 import {MintSubsectionDashboardConnectionDialogComponent} from './components/mint-subsection-dashboard-connection-dialog/mint-subsection-dashboard-connection-dialog.component';
-import {MintSubsectionDashboardBalancesheetChartComponent} from './components/mint-subsection-dashboard-balancesheet-chart/mint-subsection-dashboard-balancesheet-chart.component';
 
 @NgModule({
 	declarations: [
 		MintSubsectionDashboardComponent,
 		MintSubsectionDashboardChartComponent,
-		MintSubsectionDashboardBalancesheetChartComponent,
+		MintSubsectionDashboardBalanceChartComponent,
 		MintSubsectionDashboardControlComponent,
 		MintSubsectionDashboardConnectionsComponent,
 		MintSubsectionDashboardConnectionStatusComponent,

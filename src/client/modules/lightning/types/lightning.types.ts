@@ -4,6 +4,7 @@ import {
 	OrchardLightningAccount,
 	OrchardLightningRequest,
 	OrchardLightningAnalytics,
+	OrchardLightningAnalyticsBackfillStatus,
 	LightningAnalyticsInterval,
 	LightningAnalyticsMetric,
 } from '@shared/generated.types';
@@ -34,4 +35,8 @@ export type LightningAnalyticsArgs = {
 	interval?: LightningAnalyticsInterval;
 	timezone?: string;
 	metrics?: LightningAnalyticsMetric[];
+};
+
+export type LightningAnalyticsBackfillStatusResponse = {
+	lightning_analytics_backfill_status: OrchardLightningAnalyticsBackfillStatus;
 };

@@ -159,3 +159,21 @@ function getNextLightningTimestamp(timestamp: number, interval: LightningAnalyti
 	if (interval === LightningAnalyticsInterval.Month) return DateTime.fromSeconds(timestamp).plus({months: 1}).toSeconds();
 	return DateTime.fromSeconds(timestamp).plus({days: 1}).toSeconds();
 }
+
+/**
+ * Corrects the last data point with the real-time lightning balance if it's at the current period start.
+ * The analytics data for the current period may be incomplete, so we use the live balance instead.
+ */
+export function correctLastPointWithLiveBalance(
+	data: {x: number; y: number}[],
+	live_balance_sat: number | null,
+	interval: LightningAnalyticsInterval,
+): {x: number; y: number}[] {
+	if (data.length === 0 || live_balance_sat === null) return data;
+	const last_point = data[data.length - 1];
+	const last_timestamp_sec = last_point.x / 1000;
+	const time_unit = getLightningTimeInterval(interval);
+	const current_period_start = DateTime.now().startOf(time_unit).toSeconds();
+	if (last_timestamp_sec !== current_period_start) return data;
+	return [...data.slice(0, -1), {x: last_point.x, y: live_balance_sat}];
+}

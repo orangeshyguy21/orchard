@@ -22,9 +22,8 @@ export class ApiLightningAnalyticsService {
 	async getAnalytics(tag: string, args: LightningAnalyticsArgs): Promise<OrchardLightningAnalytics[]> {
 		this.logger.debug(tag);
 
-		const now = Math.floor(Date.now() / 1000);
-		const current_hour_start = this.lightningAnalyticsService.getHourStart(now);
-
+		const now = DateTime.utc().toSeconds();
+		const current_hour_start = DateTime.fromSeconds(now, {zone: 'UTC'}).startOf('hour').toSeconds();
 		const date_start = args.date_start ?? 0;
 		const date_end = args.date_end ?? now;
 		const metrics = args.metrics ?? Object.values(LightningAnalyticsMetric);
@@ -69,19 +68,20 @@ export class ApiLightningAnalyticsService {
 		}
 
 		const tz = timezone ?? 'UTC';
-		const buckets = new Map<string, {unit: string; metric: LightningAnalyticsMetric; amount: bigint; date: number}>();
+		type Bucket = {unit: string; metric: LightningAnalyticsMetric; amount: bigint; date: number};
 
-		for (const d of data) {
+		const buckets = data.reduce((acc, d) => {
 			const bucket_date = this.getBucketDate(d.date, interval, tz, date_start, data);
 			const key = interval === LightningAnalyticsInterval.custom ? `${d.unit}:${d.metric}` : `${d.unit}:${d.metric}:${bucket_date}`;
-			const existing = buckets.get(key);
+			const existing = acc.get(key);
 
 			if (existing) {
 				existing.amount += BigInt(d.amount);
 			} else {
-				buckets.set(key, {unit: d.unit, metric: d.metric as LightningAnalyticsMetric, amount: BigInt(d.amount), date: bucket_date});
+				acc.set(key, {unit: d.unit, metric: d.metric as LightningAnalyticsMetric, amount: BigInt(d.amount), date: bucket_date});
 			}
-		}
+			return acc;
+		}, new Map<string, Bucket>());
 
 		return Array.from(buckets.values())
 			.sort((a, b) => a.date - b.date)

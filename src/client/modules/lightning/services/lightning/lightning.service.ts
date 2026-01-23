@@ -15,12 +15,14 @@ import {LightningBalance} from '@client/modules/lightning/classes/lightning-bala
 import {LightningAccount} from '@client/modules/lightning/classes/lightning-account.class';
 import {LightningRequest} from '@client/modules/lightning/classes/lightning-request.class';
 import {LightningAnalytic} from '@client/modules/lightning/classes/lightning-analytic.class';
+import {LightningAnalyticsBackfillStatus} from '@client/modules/lightning/classes/lightning-analytics-backfill-status.class';
 import {
 	LightningInfoResponse,
 	LightningBalanceResponse,
 	LightningWalletResponse,
 	LightningRequestResponse,
 	LightningAnalyticsResponse,
+	LightningAnalyticsBackfillStatusResponse,
 	LightningAnalyticsArgs,
 } from '@client/modules/lightning/types/lightning.types';
 /* Shared Dependencies */
@@ -32,6 +34,7 @@ import {
 	LIGHTNING_WALLET_QUERY,
 	LIGHTNING_REQUEST_QUERY,
 	LIGHTNING_ANALYTICS_QUERY,
+	LIGHTNING_ANALYTICS_BACKFILL_STATUS_QUERY,
 } from './lightning.queries';
 
 @Injectable({
@@ -205,6 +208,22 @@ export class LightningService {
 			args,
 			this.lightning_analytics_subject.value,
 			this.CACHE_KEYS.LIGHTNING_ANALYTICS,
+		);
+	}
+
+	public loadLightningAnalyticsBackfillStatus(): Observable<LightningAnalyticsBackfillStatus> {
+		const query = getApiQuery(LIGHTNING_ANALYTICS_BACKFILL_STATUS_QUERY);
+
+		return this.http.post<OrchardRes<LightningAnalyticsBackfillStatusResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.lightning_analytics_backfill_status;
+			}),
+			map((status) => new LightningAnalyticsBackfillStatus(status)),
+			catchError((error) => {
+				console.error('Error loading lightning analytics backfill status:', error);
+				return throwError(() => error);
+			}),
 		);
 	}
 
