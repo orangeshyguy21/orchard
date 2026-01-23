@@ -264,4 +264,58 @@ export class LightningService implements OnModuleInit {
 	isConfigured(): boolean {
 		return this.type != null && this.grpc_client != null;
 	}
+
+	/**
+	 * Gets all payments with automatic pagination
+	 */
+	async getAllPayments(args?: Omit<LightningHistoryArgs, 'index_offset' | 'max_results'>): Promise<LightningPayment[]> {
+		const all_payments: LightningPayment[] = [];
+		const batch_size = 1000;
+		let offset = 0;
+
+		while (true) {
+			const batch = await this.getPayments({...args, index_offset: offset, max_results: batch_size});
+			all_payments.push(...batch);
+			if (batch.length < batch_size) break;
+			offset += batch.length;
+		}
+
+		return all_payments;
+	}
+
+	/**
+	 * Gets all invoices with automatic pagination
+	 */
+	async getAllInvoices(args?: Omit<LightningHistoryArgs, 'index_offset' | 'max_results'>): Promise<LightningInvoice[]> {
+		const all_invoices: LightningInvoice[] = [];
+		const batch_size = 1000;
+		let offset = 0;
+
+		while (true) {
+			const batch = await this.getInvoices({...args, index_offset: offset, max_results: batch_size});
+			all_invoices.push(...batch);
+			if (batch.length < batch_size) break;
+			offset += batch.length;
+		}
+
+		return all_invoices;
+	}
+
+	/**
+	 * Gets all forwards with automatic pagination
+	 */
+	async getAllForwards(args?: Omit<LightningHistoryArgs, 'index_offset' | 'max_results'>): Promise<LightningForward[]> {
+		const all_forwards: LightningForward[] = [];
+		const batch_size = 1000;
+		let offset = 0;
+
+		while (true) {
+			const batch = await this.getForwards({...args, index_offset: offset, max_results: batch_size});
+			all_forwards.push(...batch);
+			if (batch.length < batch_size) break;
+			offset += batch.length;
+		}
+
+		return all_forwards;
+	}
 }

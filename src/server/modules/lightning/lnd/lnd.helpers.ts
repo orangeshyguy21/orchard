@@ -146,15 +146,15 @@ function parseLndCustomChannelData(custom_channel_data: Buffer): LightningChanne
 		const data = JSON.parse(json_str);
 		if (!data.group_key) return null;
 
-		const asset_info = data.assets?.[0] || {};
+		const asset_info = data.funding_assets?.[0] || {};
 		return {
 			group_key: data.group_key ?? '',
-			asset_id: asset_info.asset_genesis?.asset_id ?? data.asset_id ?? '',
+			asset_id: asset_info.asset_genesis?.asset_id ?? '',
 			name: asset_info.asset_genesis?.name ?? '',
-			local_balance: String(data.local_balance ?? asset_info.local_balance ?? '0'),
-			remote_balance: String(data.remote_balance ?? asset_info.remote_balance ?? '0'),
+			local_balance: String(data.local_balance ?? '0'),
+			remote_balance: String(data.remote_balance ?? '0'),
 			capacity: String(data.capacity ?? '0'),
-			decimal_display: asset_info.decimal_display?.decimal_display ?? 0,
+			decimal_display: asset_info.decimal_display ?? 0,
 		};
 	} catch {
 		return null;

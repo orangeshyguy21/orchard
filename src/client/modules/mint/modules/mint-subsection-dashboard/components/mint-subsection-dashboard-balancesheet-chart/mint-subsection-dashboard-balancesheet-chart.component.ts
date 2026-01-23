@@ -15,17 +15,18 @@ import {
 	getRawData,
 	getAllPossibleTimestamps,
 	getTimeInterval,
+	getYAxisId,
 } from '@client/modules/chart/helpers/mint-chart-data.helpers';
 import {
 	getOutboundLiquidityData,
 	getOutboundLiquidityVolumeData,
 	getInitialOutboundMsat,
-	getLightningTimestamps,
-	getLightningTimeInterval,
 } from '@client/modules/chart/helpers/lightning-chart-data.helpers';
 import {
 	getXAxisConfig,
+	getYAxis,
 	getBtcYAxisConfig,
+	getFiatYAxisConfig,
 	getTooltipTitle,
 	getTooltipLabel,
 } from '@client/modules/chart/helpers/mint-chart-options.helpers';
@@ -34,8 +35,6 @@ import {ChartService} from '@client/modules/chart/services/chart/chart.service';
 import {MintAnalytic} from '@client/modules/mint/classes/mint-analytic.class';
 import {LightningAnalytic} from '@client/modules/lightning/classes/lightning-analytic.class';
 import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
-/* Shared Dependencies */
-import {LightningAnalyticsInterval} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-subsection-dashboard-balancesheet-chart',
@@ -141,7 +140,7 @@ export class MintSubsectionDashboardBalancesheetChartComponent implements OnDest
 
 	/**
 	 * Gets the balance sheet totals (cumulative) chart data
-	 * Includes liability (mint balance) and asset (lightning outbound) for sat unit only
+	 * Includes all unit liabilities and asset (lightning outbound) for sat
 	 */
 	private getBalanceSheetTotalsData(): ChartConfiguration['data'] {
 		if (!this.page_settings()) return {datasets: []};
@@ -153,60 +152,57 @@ export class MintSubsectionDashboardBalancesheetChartComponent implements OnDest
 
 		const datasets: any[] = [];
 
-		// Liability dataset (mint balance for sat unit)
-		const sat_analytics = this.mint_analytics().filter((a) => a.unit === 'sat');
-		const sat_analytics_pre = this.mint_analytics_pre().filter((a) => a.unit === 'sat');
+		// Liability datasets for all units (mint balances)
+		const data_unit_groups = groupAnalyticsByUnit(this.mint_analytics().map((a) => ({...a})));
+		const data_unit_groups_prepended = prependData(
+			data_unit_groups,
+			this.mint_analytics_pre().map((a) => ({...a})),
+			timestamp_first,
+		);
 
-		if (sat_analytics.length > 0 || sat_analytics_pre.length > 0) {
-			const data_unit_groups = groupAnalyticsByUnit(sat_analytics.map((a) => ({...a})));
-			const data_unit_groups_prepended = prependData(
-				data_unit_groups,
-				sat_analytics_pre.map((a) => ({...a})),
-				timestamp_first,
-			);
+		Object.entries(data_unit_groups_prepended).forEach(([unit, data], index) => {
+			const data_keyed_by_timestamp = getDataKeyedByTimestamp(data, 'amount');
+			const liability_data = getAmountData(timestamp_range, data_keyed_by_timestamp, unit, true);
+			const color = this.chartService.getAssetColor(unit, index);
+			const muted_color = this.chartService.getMutedColor(color.border);
+			const yAxisID = getYAxisId(unit);
 
-			if (data_unit_groups_prepended['sat']) {
-				const data_keyed_by_timestamp = getDataKeyedByTimestamp(data_unit_groups_prepended['sat'], 'amount');
-				const liability_data = getAmountData(timestamp_range, data_keyed_by_timestamp, 'sat', true);
-				const liability_color = this.chartService.getAssetColor('liability', 0);
-				const muted_liability_color = this.chartService.getMutedColor(liability_color.border);
+			datasets.push({
+				data: liability_data,
+				label: unit.toUpperCase(),
+				backgroundColor: (context: any) => this.chartService.createAreaGradient(context, color.border),
+				borderColor: muted_color,
+				borderWidth: 2,
+				borderRadius: 0,
+				pointBackgroundColor: muted_color,
+				pointBorderColor: muted_color,
+				pointBorderWidth: 2,
+				pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
+				pointHoverBorderColor: color.border,
+				pointHoverBorderWidth: 3,
+				pointRadius: 0,
+				pointHoverRadius: 4,
+				fill: true,
+				tension: 0.4,
+				yAxisID: yAxisID,
+			});
+		});
 
-				datasets.push({
-					data: liability_data,
-					label: 'sat (liability)',
-					backgroundColor: (context: any) => this.chartService.createAreaGradient(context, liability_color.border),
-					borderColor: muted_liability_color,
-					borderWidth: 2,
-					borderRadius: 0,
-					pointBackgroundColor: muted_liability_color,
-					pointBorderColor: muted_liability_color,
-					pointBorderWidth: 2,
-					pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
-					pointHoverBorderColor: liability_color.border,
-					pointHoverBorderWidth: 3,
-					pointRadius: 0,
-					pointHoverRadius: 4,
-					fill: true,
-					tension: 0.4,
-					yAxisID: 'ybtc',
-				});
-			}
-		}
-
-		// Asset dataset (lightning outbound capacity)
+		// Asset dataset (lightning outbound capacity) - dashed line, no fill
 		if (this.lightning_enabled() && (this.lightning_analytics().length > 0 || this.lightning_analytics_pre().length > 0)) {
 			const initial_outbound_msat = getInitialOutboundMsat(this.lightning_analytics_pre());
 			const asset_data = getOutboundLiquidityData(timestamp_range, this.lightning_analytics(), initial_outbound_msat);
-			const asset_color = this.chartService.getAssetColor('asset', 1);
+			const asset_color = this.chartService.getAssetColor('sat', 0);
 			const muted_asset_color = this.chartService.getMutedColor(asset_color.border);
+
+            console.log('asset_data', asset_data);
 
 			datasets.push({
 				data: asset_data,
 				label: 'sat (asset)',
-				backgroundColor: (context: any) => this.chartService.createAreaGradient(context, asset_color.border),
 				borderColor: muted_asset_color,
 				borderWidth: 2,
-				borderRadius: 0,
+				borderDash: [6, 4],
 				pointBackgroundColor: muted_asset_color,
 				pointBorderColor: muted_asset_color,
 				pointBorderWidth: 2,
@@ -215,7 +211,7 @@ export class MintSubsectionDashboardBalancesheetChartComponent implements OnDest
 				pointHoverBorderWidth: 3,
 				pointRadius: 0,
 				pointHoverRadius: 4,
-				fill: true,
+				fill: false,
 				tension: 0.4,
 				yAxisID: 'ybtc',
 			});
@@ -237,39 +233,37 @@ export class MintSubsectionDashboardBalancesheetChartComponent implements OnDest
 
 		const datasets: any[] = [];
 
-		// Liability dataset (mint balance for sat unit - non cumulative)
-		const sat_analytics = this.mint_analytics().filter((a) => a.unit === 'sat');
+		// Liability datasets for all units (non cumulative)
+		const data_unit_groups = groupAnalyticsByUnit(this.mint_analytics().map((a) => ({...a})));
 
-		if (sat_analytics.length > 0) {
-			const data_unit_groups = groupAnalyticsByUnit(sat_analytics.map((a) => ({...a})));
-			if (data_unit_groups['sat']) {
-				const data_keyed_by_timestamp = getDataKeyedByTimestamp(data_unit_groups['sat'], 'amount');
-				const liability_data = getAmountData(timestamp_range, data_keyed_by_timestamp, 'sat', false);
-				const liability_color = this.chartService.getAssetColor('liability', 0);
+		Object.entries(data_unit_groups).forEach(([unit, data], index) => {
+			const data_keyed_by_timestamp = getDataKeyedByTimestamp(data, 'amount');
+			const volume_data = getAmountData(timestamp_range, data_keyed_by_timestamp, unit, false);
+			const color = this.chartService.getAssetColor(unit, index);
+			const yAxisID = getYAxisId(unit);
 
-				datasets.push({
-					data: liability_data,
-					label: 'sat (liability)',
-					backgroundColor: liability_color.bg,
-					borderColor: liability_color.border,
-					borderWidth: 1,
-					borderRadius: 0,
-					yAxisID: 'ybtc',
-				});
-			}
-		}
+			datasets.push({
+				data: volume_data,
+				label: unit.toUpperCase(),
+				backgroundColor: color.bg,
+				borderColor: color.border,
+				borderWidth: 1,
+				borderRadius: 0,
+				yAxisID: yAxisID,
+			});
+		});
 
-		// Asset dataset (lightning outbound - non cumulative)
+		// Asset dataset (lightning outbound - non cumulative) - outline style
 		if (this.lightning_enabled() && this.lightning_analytics().length > 0) {
 			const asset_data = getOutboundLiquidityVolumeData(timestamp_range, this.lightning_analytics());
-			const asset_color = this.chartService.getAssetColor('asset', 1);
+			const asset_color = this.chartService.getAssetColor('sat', 0);
 
 			datasets.push({
 				data: asset_data,
 				label: 'sat (asset)',
-				backgroundColor: asset_color.bg,
+				backgroundColor: 'transparent',
 				borderColor: asset_color.border,
-				borderWidth: 1,
+				borderWidth: 2,
 				borderRadius: 0,
 				yAxisID: 'ybtc',
 			});
@@ -288,16 +282,8 @@ export class MintSubsectionDashboardBalancesheetChartComponent implements OnDest
 		const timestamp_last = DateTime.fromSeconds(this.page_settings().date_end).startOf('day').toSeconds();
 		const timestamp_range = getAllPossibleTimestamps(timestamp_first, timestamp_last, this.page_settings().interval);
 
-		// Only sat unit for operations
-		const sat_analytics = this.mint_analytics().filter((a) => a.unit === 'sat');
-		if (sat_analytics.length === 0) return {datasets: []};
-
-		const data_unit_groups = groupAnalyticsByUnit(sat_analytics.map((a) => ({...a})));
-		const data_unit_groups_prepended = prependData(
-			data_unit_groups,
-			this.mint_analytics_pre().filter((a) => a.unit === 'sat'),
-			timestamp_first,
-		);
+		const data_unit_groups = groupAnalyticsByUnit(this.mint_analytics().map((a) => ({...a})));
+		const data_unit_groups_prepended = prependData(data_unit_groups, this.mint_analytics_pre(), timestamp_first);
 
 		const datasets = Object.entries(data_unit_groups_prepended).map(([unit, data], index) => {
 			const data_keyed_by_timestamp = getDataKeyedByTimestamp(data, 'operation_count');
@@ -306,7 +292,7 @@ export class MintSubsectionDashboardBalancesheetChartComponent implements OnDest
 
 			return {
 				data: data_raw,
-				label: 'sat (operations)',
+				label: unit.toUpperCase(),
 				backgroundColor: color.bg,
 				borderColor: color.border,
 				borderWidth: 1,
@@ -332,14 +318,28 @@ export class MintSubsectionDashboardBalancesheetChartComponent implements OnDest
 	private getBalanceSheetChartOptions(): ChartConfiguration['options'] {
 		if (!this.chart_data || this.chart_data.datasets.length === 0 || !this.page_settings) return {};
 
+		const units = this.chart_data.datasets.map((item) => item.label);
+		const y_axis = getYAxis(units);
 		const scales: ScaleChartOptions<'line'>['scales'] = {};
 		scales['x'] = getXAxisConfig(this.page_settings().interval, this.locale());
-		scales['ybtc'] = getBtcYAxisConfig({
-			grid_color: this.chartService.getGridColor(),
-			begin_at_zero: true,
-			mark_zero_color: this.chartService.getGridColor('--mat-sys-surface-container-high'),
-			locale: this.locale(),
-		});
+
+		if (y_axis.includes('ybtc')) {
+			scales['ybtc'] = getBtcYAxisConfig({
+				grid_color: this.chartService.getGridColor(),
+				begin_at_zero: true,
+				mark_zero_color: this.chartService.getGridColor('--mat-sys-surface-container-high'),
+				locale: this.locale(),
+			});
+		}
+		if (y_axis.includes('yfiat')) {
+			scales['yfiat'] = getFiatYAxisConfig({
+				units,
+				show_grid: !y_axis.includes('ybtc'),
+				grid_color: this.chartService.getGridColor(),
+				begin_at_zero: true,
+				locale: this.locale(),
+			});
+		}
 
 		return {
 			responsive: true,

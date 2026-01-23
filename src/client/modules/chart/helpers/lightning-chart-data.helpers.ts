@@ -57,6 +57,7 @@ export function msatToSat(msat: number): number {
 
 /**
  * Creates cumulative outbound liquidity data points for charting.
+ * Filters to only msat unit for sat calculations.
  * Returns array of {x: timestamp_ms, y: sat_amount} sorted by timestamp.
  */
 export function getOutboundLiquidityData(
@@ -64,7 +65,9 @@ export function getOutboundLiquidityData(
 	analytics: LightningAnalytic[],
 	initial_outbound_msat: number = 0,
 ): {x: number; y: number}[] {
-	const grouped = groupLightningAnalyticsByTimestamp(analytics);
+	// Filter to only msat unit for sat liquidity
+	const msat_analytics = analytics.filter((a) => a.unit === 'msat');
+	const grouped = groupLightningAnalyticsByTimestamp(msat_analytics);
 	let running_sum = initial_outbound_msat;
 
 	return unique_timestamps.map((timestamp) => {
@@ -80,13 +83,16 @@ export function getOutboundLiquidityData(
 
 /**
  * Creates raw (non-cumulative) outbound liquidity data points for volume charts.
+ * Filters to only msat unit for sat calculations.
  * Returns array of {x: timestamp_ms, y: sat_amount} sorted by timestamp.
  */
 export function getOutboundLiquidityVolumeData(
 	unique_timestamps: number[],
 	analytics: LightningAnalytic[],
 ): {x: number; y: number}[] {
-	const grouped = groupLightningAnalyticsByTimestamp(analytics);
+	// Filter to only msat unit for sat liquidity
+	const msat_analytics = analytics.filter((a) => a.unit === 'msat');
+	const grouped = groupLightningAnalyticsByTimestamp(msat_analytics);
 
 	return unique_timestamps.map((timestamp) => {
 		const analytics_at_timestamp = grouped[timestamp] || [];
@@ -100,9 +106,11 @@ export function getOutboundLiquidityVolumeData(
 
 /**
  * Gets the initial outbound liquidity from the pre-period analytics
+ * Filters to only msat unit for sat calculations.
  */
 export function getInitialOutboundMsat(analytics_pre: LightningAnalytic[]): number {
-	return calculateOutboundLiquidity(analytics_pre);
+	const msat_analytics = analytics_pre.filter((a) => a.unit === 'msat');
+	return calculateOutboundLiquidity(msat_analytics);
 }
 
 /**
