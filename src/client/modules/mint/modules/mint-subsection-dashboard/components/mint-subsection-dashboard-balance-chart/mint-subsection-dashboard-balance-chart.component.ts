@@ -75,12 +75,12 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 	public liability_datasets = computed(() =>
 		this.chart_data().datasets
 			?.map((d, i) => ({...d, _index: i}))
-			.filter((d) => d.backgroundColor) ?? []
+			.filter((d) => (d as any)._type === 'liability') ?? []
 	);
 	public asset_datasets = computed(() =>
 		this.chart_data().datasets
 			?.map((d, i) => ({...d, _index: i}))
-			.filter((d) => !d.backgroundColor) ?? []
+			.filter((d) => (d as any)._type === 'asset') ?? []
 	);
 
 	private subscriptions: Subscription = new Subscription();
@@ -191,6 +191,7 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 			datasets.push({
 				data: liability_data,
 				label: unit.toUpperCase(),
+				_type: 'liability',
 				backgroundColor: (context: any) => this.chartService.createAreaGradient(context, color.border),
 				borderColor: muted_color,
 				borderWidth: 2,
@@ -222,6 +223,7 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 			datasets.push({
 				data: asset_data,
 				label: 'SAT',
+				_type: 'asset',
 				borderColor: muted_asset_color,
 				borderWidth: 2,
 				borderDash: [6, 4],
@@ -267,7 +269,8 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 			datasets.push({
 				data: volume_data,
 				label: unit.toUpperCase(),
-				backgroundColor: color.bg,
+				_type: 'liability',
+				backgroundColor: (context: any) => this.chartService.createAreaGradient(context, color.border),
 				borderColor: color.border,
 				borderWidth: 1,
 				borderRadius: 0,
@@ -283,9 +286,11 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 			datasets.push({
 				data: asset_data,
 				label: 'SAT',
-				backgroundColor: 'transparent',
+				_type: 'asset',
+				backgroundColor: this.chartService.createStripePattern(asset_color.border),
 				borderColor: asset_color.border,
-				borderWidth: 2,
+				borderWidth: 1,
+				borderSkipped: false,
 				borderRadius: 0,
 				yAxisID: 'ybtc',
 			});
@@ -315,7 +320,8 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 			return {
 				data: data_raw,
 				label: unit.toUpperCase(),
-				backgroundColor: color.bg,
+				_type: 'liability',
+				backgroundColor: (context: any) => this.chartService.createAreaGradient(context, color.border),
 				borderColor: color.border,
 				borderWidth: 1,
 				borderRadius: 0,
@@ -379,17 +385,32 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 					enabled: true,
 					mode: 'index',
 					intersect: false,
+					itemSort: (a: any, b: any) => {
+						const type_order: Record<string, number> = {asset: 0, liability: 1};
+						return (type_order[a.dataset._type] ?? 2) - (type_order[b.dataset._type] ?? 2);
+					},
 					callbacks: {
 						title: getTooltipTitle,
-						label: (context: any) => getTooltipLabel(context, this.locale()),
-						labelColor: (context: any) => {
-							return {
-								borderColor: context.dataset.borderColor,
-								backgroundColor: context.dataset.borderColor,
-								borderWidth: 2,
-								borderRadius: 0,
-							};
+						beforeLabel: (context: any) => {
+							const type = context.dataset._type;
+							const all_items = context.chart.tooltip.dataPoints;
+							const sorted = [...all_items].sort((a: any, b: any) => {
+								const order: Record<string, number> = {asset: 0, liability: 1};
+								return (order[a.dataset._type] ?? 2) - (order[b.dataset._type] ?? 2);
+							});
+							const first_of_type = sorted.find((p: any) => p.dataset._type === type);
+							if (first_of_type?.datasetIndex === context.datasetIndex) {
+								return type === 'asset' ? 'Assets' : 'Liabilities';
+							}
+							return '';
 						},
+						label: (context: any) => getTooltipLabel(context, this.locale()),
+						labelColor: (context: any) => ({
+							borderColor: context.dataset.borderColor,
+							backgroundColor: context.dataset.borderColor,
+							borderWidth: 2,
+							borderRadius: 0,
+						}),
 					},
 				},
 				legend: {

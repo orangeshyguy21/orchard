@@ -257,7 +257,7 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy, OnChang
 			return {
 				data: data_raw,
 				label: unit.toUpperCase(),
-				backgroundColor: color.bg,
+				backgroundColor: (context: any) => this.chartService.createAreaGradient(context, color.border),
 				borderColor: color.border,
 				borderWidth: 1,
 				borderRadius: 0,

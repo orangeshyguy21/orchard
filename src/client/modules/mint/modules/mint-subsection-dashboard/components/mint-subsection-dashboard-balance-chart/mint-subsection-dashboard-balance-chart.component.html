@@ -1,20 +1,22 @@
 <div class="mint-balance-chart-container">
     @if (!device_mobile()) {
         <div class="flex flex-justify-evenly flex-gap-1">
-            <div class="flex flex-items-center flex-gap-2">
-                <div class="font-weight-light font-size-xs">Assets</div>
-                <div class="flex flex-items-center flex-justify-center flex-gap-1">
-                    @for (dataset of asset_datasets(); track dataset.label) {
-                        <div class="legend-item" (click)="toggleDataset(dataset)">
-                            <div class="legend-item-visual dashed" [style.border-color]="dataset.borderColor"></div>
-                            <div class="legend-item-label" [class.hidden-dataset]="hidden_datasets().has(dataset._index)">{{ dataset.label }}</div>
-                        </div>
-                    }
-                    @if (lightning_analytics_backfill_status() && lightning_analytics_backfill_status()?.is_running) {
-                        <div class="orc-outline-color font-size-xs">Archiving...</div>
-                    }
+            @if (asset_datasets().length > 0) {
+                <div class="flex flex-items-center flex-gap-2">
+                    <div class="font-weight-light font-size-xs">Assets</div>
+                    <div class="flex flex-items-center flex-justify-center flex-gap-1">
+                        @for (dataset of asset_datasets(); track dataset.label) {
+                            <div class="legend-item" (click)="toggleDataset(dataset)">
+                                <div class="legend-item-visual dashed" [style.border-color]="dataset.borderColor"></div>
+                                <div class="legend-item-label" [class.hidden-dataset]="hidden_datasets().has(dataset._index)">{{ dataset.label }}</div>
+                            </div>
+                        }
+                        @if (lightning_analytics_backfill_status() && lightning_analytics_backfill_status()?.is_running) {
+                            <div class="orc-outline-color font-size-xs">Archiving...</div>
+                        }
+                    </div>
                 </div>
-            </div>
+            }
             <div class="flex flex-items-center flex-gap-2">
                 <div class="font-weight-light font-size-xs">Liabilities</div>
                 <div class="flex flex-items-center flex-justify-center flex-gap-1">

@@ -172,6 +172,39 @@ export class ChartService {
 	}
 
 	/**
+	 * Creates a diagonal stripe canvas pattern for chart fills
+	 */
+	public createStripePattern(color: string, stripe_width: number = 4, gap: number = 6, opacity: number = 0.3): CanvasPattern | string {
+		const canvas = document.createElement('canvas');
+		const size = stripe_width + gap;
+		canvas.width = size;
+		canvas.height = size;
+		const ctx = canvas.getContext('2d');
+		if (!ctx) return 'transparent';
+
+		const hex_color = color.startsWith('#') ? color : this.rgbToHex(color);
+		const stripe_color = this.hexToRgba(hex_color, opacity);
+
+		ctx.strokeStyle = stripe_color;
+		ctx.lineWidth = stripe_width;
+		ctx.beginPath();
+		ctx.moveTo(0, size);
+		ctx.lineTo(size, 0);
+		ctx.stroke();
+		ctx.beginPath();
+		ctx.moveTo(-size, size);
+		ctx.lineTo(size, -size);
+		ctx.stroke();
+		ctx.beginPath();
+		ctx.moveTo(0, size * 2);
+		ctx.lineTo(size * 2, 0);
+		ctx.stroke();
+
+		const pattern = ctx.createPattern(canvas, 'repeat');
+		return pattern || 'transparent';
+	}
+
+	/**
 	 * Creates a glow effect plugin for chart points
 	 */
 	public createGlowPlugin(border_color: string, opacity: number = 0.35, blur: number = 10): Plugin {
