@@ -34,14 +34,7 @@ export class ApiLightningAnalyticsService {
 			Math.min(date_end, current_hour_start - 1),
 			metrics,
 		);
-
-		// If requesting current hour, compute live
-		let live: LightningAnalytics[] = [];
-		if (date_end >= current_hour_start) {
-			live = await this.lightningAnalyticsService.computeAndBuildEntities(current_hour_start);
-		}
-
-		const all_data = [...cached, ...live].filter(
+		const all_data = cached.filter(
 			(d) => metrics.includes(d.metric as LightningAnalyticsMetric) && d.amount !== '0',
 		);
 

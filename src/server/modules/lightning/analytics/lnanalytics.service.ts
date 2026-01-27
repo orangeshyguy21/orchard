@@ -1,11 +1,13 @@
 /* Core Dependencies */
-import {Injectable, Logger, OnModuleInit} from '@nestjs/common';
+import {Injectable, Logger, OnApplicationBootstrap} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 /* Vendor Dependencies */
-import {Repository, Between, In, IsNull} from 'typeorm';
+import {Repository, DataSource, EntityManager, Between, In} from 'typeorm';
 import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {LightningService} from '@server/modules/lightning/lightning/lightning.service';
+import {BitcoinRpcService} from '@server/modules/bitcoin/rpc/btcrpc.service';
+import {AnalyticsCheckpoint} from '@server/modules/analytics/analytics-checkpoint.entity';
 import {
 	LightningPayment,
 	LightningInvoice,
@@ -17,15 +19,15 @@ import {
 /* Local Dependencies */
 import {LightningAnalytics} from './lnanalytics.entity';
 import {LightningAnalyticsMetric} from './lnanalytics.enums';
-import {GroupedHourlyMetrics, LightningAnalyticsBackfillStatus} from './lnanalytics.interfaces';
+import {LightningAnalyticsBackfillStatus} from './lnanalytics.interfaces';
 
-const BACKFILL_SLEEP_MS = 100;
-const BACKFILL_MAX_CONSECUTIVE_ERRORS = 10;
-const BACKFILL_INITIAL_BACKOFF_MS = 1000;
-const BACKFILL_MAX_BACKOFF_MS = 32000;
+const BATCH_SIZE = 100;
+const MAX_PENDING_RECORDS = 100_000;
+const FORCE_FLUSH_COUNT = 10;
+const RESCAN_RECORDS = 1000;
 
 @Injectable()
-export class LightningAnalyticsService implements OnModuleInit {
+export class LightningAnalyticsService implements OnApplicationBootstrap {
 	private readonly logger = new Logger(LightningAnalyticsService.name);
 	private backfill_status: LightningAnalyticsBackfillStatus = {is_running: false};
 	private node_pubkey: string | null = null;
@@ -33,8 +35,26 @@ export class LightningAnalyticsService implements OnModuleInit {
 	constructor(
 		@InjectRepository(LightningAnalytics)
 		private lightningAnalyticsRepository: Repository<LightningAnalytics>,
+		@InjectRepository(AnalyticsCheckpoint)
+		private checkpointRepository: Repository<AnalyticsCheckpoint>,
+		private dataSource: DataSource,
 		private lightningService: LightningService,
+		private bitcoinRpcService: BitcoinRpcService,
 	) {}
+
+	async onApplicationBootstrap() {
+		if (!this.lightningService.isConfigured()) {
+			this.logger.log('Lightning not configured, skipping auto-backfill');
+			return;
+		}
+
+		try {
+			// Use streaming backfill which handles checkpoint-based resumption
+			this.runStreamingBackfill();
+		} catch (error) {
+			this.logger.error('Error during lightning analytics auto-backfill', error);
+		}
+	}
 
 	/**
 	 * Gets the current node's public key, caching it for subsequent calls
@@ -61,26 +81,6 @@ export class LightningAnalyticsService implements OnModuleInit {
 		return result ? result.date : null;
 	}
 
-	async onModuleInit() {
-		if (!this.lightningService.isConfigured()) {
-			this.logger.log('Lightning not configured, skipping auto-backfill');
-			return;
-		}
-
-		const last_cached = await this.getLastCachedHour();
-		if (last_cached === null) {
-			this.logger.log('No cached analytics found, starting full backfill');
-			this.runBackfill();
-		} else {
-			const current_hour = DateTime.utc().startOf('hour').toSeconds();
-			const gap_hours = Math.floor((current_hour - last_cached) / 3600) - 1;
-			if (gap_hours > 0) {
-				this.logger.log(`Found ${gap_hours} hour gap, starting gap backfill`);
-				this.runBackfill(last_cached + 3600);
-			}
-		}
-	}
-
 	/**
 	 * Gets cached analytics for a date range
 	 * @param group_key - null for BTC, string for Taproot Assets, undefined for all
@@ -102,9 +102,9 @@ export class LightningAnalyticsService implements OnModuleInit {
 			metric: In(metrics),
 		};
 
-		// Handle group_key filtering: null = BTC only, string = specific asset, undefined = all
+		// Handle group_key filtering: null = BTC only (empty string in DB), string = specific asset, undefined = all
 		if (group_key === null) {
-			where.group_key = IsNull();
+			where.group_key = '';
 		} else if (group_key !== undefined) {
 			where.group_key = group_key;
 		}
@@ -116,250 +116,10 @@ export class LightningAnalyticsService implements OnModuleInit {
 	}
 
 	/**
-	 * Computes metrics for a specific hour by fetching raw data from the lightning node
-	 * Returns grouped metrics for both BTC (group_key=null) and Taproot Asset groups
-	 */
-	async computeHourlyAnalytics(hour_start: number): Promise<GroupedHourlyMetrics[]> {
-		const hour_end = DateTime.fromSeconds(hour_start, {zone: 'UTC'}).plus({hours: 1}).toSeconds();
-
-		const [payments, invoices, forwards, channels, closed_channels, transactions] = await Promise.all([
-			this.lightningService.getAllPayments({start_time: hour_start, end_time: hour_end}),
-			this.lightningService.getAllInvoices({start_time: hour_start, end_time: hour_end}),
-			this.lightningService.getAllForwards({start_time: hour_start, end_time: hour_end}),
-			this.lightningService.getChannels(),
-			this.lightningService.getClosedChannels(),
-			this.lightningService.getTransactions(),
-		]);
-
-		const tx_timestamps = this.buildTxTimestampMap(transactions);
-		const asset_to_group = this.buildAssetToGroupKeyMap(channels, closed_channels);
-		const group_to_name = this.buildGroupKeyToNameMap(channels, closed_channels);
-		const group_keys = this.collectAllGroupKeys(channels, closed_channels, payments, invoices, asset_to_group);
-
-		// BTC metrics (group_key = null, unit = 'msat')
-		// All channels have BTC capacity (even Taproot Asset channels use BTC for anchor/HTLC)
-		const btc_metrics: GroupedHourlyMetrics = {
-			group_key: null,
-			unit: 'msat',
-			metrics: {
-				payments_out: this.sumPaymentsOut(payments, null, asset_to_group),
-				invoices_in: this.sumInvoicesIn(invoices, null, asset_to_group),
-				forward_fees: this.sumForwardFees(forwards),
-				channel_opens: this.sumChannelOpens(channels, closed_channels, tx_timestamps, hour_start, hour_end),
-				channel_closes: this.sumChannelCloses(closed_channels, tx_timestamps, hour_start, hour_end),
-			},
-		};
-
-		// Taproot Asset metrics for each group_key
-		const asset_metrics = Array.from(group_keys).map((group_key) => {
-			const asset_channels = channels.filter((c) => c.asset?.group_key === group_key);
-			const asset_closed_channels = closed_channels.filter((c) => c.asset?.group_key === group_key);
-			return {
-				group_key,
-				unit: group_to_name.get(group_key) || group_key,
-				metrics: {
-					payments_out: this.sumPaymentsOut(payments, group_key, asset_to_group),
-					invoices_in: this.sumInvoicesIn(invoices, group_key, asset_to_group),
-					forward_fees: BigInt(0), // LND ForwardingHistory API lacks Taproot Asset data
-					channel_opens: this.sumAssetChannelOpens(asset_channels, asset_closed_channels, tx_timestamps, hour_start, hour_end),
-					channel_closes: this.sumAssetChannelCloses(asset_closed_channels, tx_timestamps, hour_start, hour_end),
-				},
-			};
-		});
-
-		return [btc_metrics, ...asset_metrics];
-	}
-
-	/**
-	 * Computes metrics and converts them to entities for a specific hour
-	 */
-	async computeAndBuildEntities(hour_start: number): Promise<LightningAnalytics[]> {
-		const node_pubkey = await this.getNodePubkey();
-		const grouped_metrics = await this.computeHourlyAnalytics(hour_start);
-		return this.groupedMetricsToEntities(hour_start, grouped_metrics, node_pubkey);
-	}
-
-	/**
-	 * Converts GroupedHourlyMetrics[] to LightningAnalytics entities
-	 */
-	private groupedMetricsToEntities(
-		hour_start: number,
-		grouped_metrics: GroupedHourlyMetrics[],
-		node_pubkey: string,
-	): LightningAnalytics[] {
-		const metric_keys: LightningAnalyticsMetric[] = [
-			LightningAnalyticsMetric.payments_out,
-			LightningAnalyticsMetric.invoices_in,
-			LightningAnalyticsMetric.forward_fees,
-			LightningAnalyticsMetric.channel_opens,
-			LightningAnalyticsMetric.channel_closes,
-		];
-
-		return grouped_metrics.flatMap((group) =>
-			metric_keys.map((metric) => {
-				const entity = new LightningAnalytics();
-				entity.node_pubkey = node_pubkey;
-				entity.group_key = group.group_key;
-				entity.unit = group.unit;
-				entity.metric = metric;
-				entity.date = hour_start;
-				entity.amount = group.metrics[metric].toString();
-				return entity;
-			}),
-		);
-	}
-
-	/**
-	 * Caches analytics for a specific hour
-	 * Only stores metrics with non-zero amounts to optimize storage
-	 */
-	async cacheHourlyAnalytics(hour_start: number): Promise<void> {
-		const node_pubkey = await this.getNodePubkey();
-		const grouped_metrics = await this.computeHourlyAnalytics(hour_start);
-		const entities = this.groupedMetricsToEntities(hour_start, grouped_metrics, node_pubkey);
-		const now = DateTime.utc().toSeconds();
-		await Promise.all(entities.map((entity) => this.upsertAnalyticsEntity(entity, now)));
-	}
-
-	/**
-	 * Upserts a single analytics entity
-	 */
-	private async upsertAnalyticsEntity(entity: LightningAnalytics, now: number): Promise<void> {
-		const where = this.buildEntityWhereClause(entity);
-		const existing = await this.lightningAnalyticsRepository.findOne({where});
-		const is_zero = entity.amount === '0';
-
-		if (existing && is_zero) {
-			await this.lightningAnalyticsRepository.remove(existing);
-			return;
-		}
-
-		if (existing) {
-			existing.amount = entity.amount;
-			existing.attempts = existing.attempts + 1;
-			existing.updated_at = now;
-			await this.lightningAnalyticsRepository.save(existing);
-			return;
-		}
-
-		if (!is_zero) {
-			entity.attempts = 1;
-			entity.updated_at = now;
-			await this.lightningAnalyticsRepository.save(entity);
-		}
-	}
-
-	/**
-	 * Builds a TypeORM where clause for finding an analytics entity
-	 */
-	private buildEntityWhereClause(entity: LightningAnalytics) {
-		return {
-			node_pubkey: entity.node_pubkey,
-			group_key: entity.group_key === null ? IsNull() : entity.group_key,
-			unit: entity.unit,
-			metric: entity.metric,
-			date: entity.date,
-		};
-	}
-
-	/**
 	 * Gets the current backfill status
 	 */
 	getBackfillStatus(): LightningAnalyticsBackfillStatus {
 		return {...this.backfill_status};
-	}
-
-	/**
-	 * Runs backfill from a starting point to current hour
-	 * @param from_hour Optional starting hour timestamp. If not provided, starts from node birthdate.
-	 */
-	async runBackfill(from_hour?: number): Promise<void> {
-		if (this.backfill_status.is_running) {
-			this.logger.warn('Backfill already running');
-			return;
-		}
-		const start_hour = await this.resolveBackfillStartHour(from_hour);
-		if (start_hour === null) return;
-		const current_hour = DateTime.utc().startOf('hour').toSeconds();
-		const total_hours = Math.floor((current_hour - start_hour) / 3600);
-		this.initBackfillStatus(start_hour, current_hour, total_hours);
-		this.logger.log(`Starting backfill from ${DateTime.fromSeconds(start_hour).toISO()} (${total_hours} hours)`);
-
-		try {
-			await this.executeBackfillLoop(start_hour, current_hour);
-			this.logger.log(`Backfill complete: ${this.backfill_status.hours_completed} hours cached, ${this.backfill_status.errors} errors`);
-		} finally {
-			this.backfill_status.is_running = false;
-		}
-	}
-
-	private initBackfillStatus(start_hour: number, target_hour: number, total_hours: number): void {
-		this.backfill_status = {
-			is_running: true,
-			started_at: DateTime.utc().toSeconds(),
-			hours_completed: 0,
-			errors: 0,
-			current_hour: start_hour,
-			target_hour,
-			hours_remaining: total_hours,
-		};
-	}
-
-	private async executeBackfillLoop(start_hour: number, current_hour: number): Promise<void> {
-		let consecutive_errors = 0;
-		let backoff_ms = BACKFILL_INITIAL_BACKOFF_MS;
-
-		for (let hour = start_hour; hour < current_hour; hour += 3600) {
-			this.updateBackfillProgress(hour, current_hour);
-
-			const result = await this.processBackfillHour(hour);
-			if (result.success) {
-				consecutive_errors = 0;
-				backoff_ms = BACKFILL_INITIAL_BACKOFF_MS;
-				await this.sleep(BACKFILL_SLEEP_MS);
-				continue;
-			}
-
-			consecutive_errors++;
-			if (consecutive_errors >= BACKFILL_MAX_CONSECUTIVE_ERRORS) {
-				this.logger.error(`Backfill killed after ${BACKFILL_MAX_CONSECUTIVE_ERRORS} consecutive errors`);
-				break;
-			}
-
-			await this.sleep(backoff_ms);
-			backoff_ms = Math.min(backoff_ms * 2, BACKFILL_MAX_BACKOFF_MS);
-		}
-	}
-
-	private updateBackfillProgress(hour: number, current_hour: number): void {
-		this.backfill_status.current_hour = hour;
-		this.backfill_status.hours_remaining = Math.floor((current_hour - hour) / 3600);
-	}
-
-	private async processBackfillHour(hour: number): Promise<{success: boolean}> {
-		try {
-			await this.cacheHourlyAnalytics(hour);
-			this.backfill_status.hours_completed++;
-			return {success: true};
-		} catch (error) {
-			this.backfill_status.errors++;
-			this.logger.error(`Backfill error for hour ${hour}: ${error.message}`);
-			return {success: false};
-		}
-	}
-
-	/**
-	 * Resolves the starting hour for backfill
-	 * @returns The hour timestamp to start from, or null if backfill should be skipped
-	 */
-	private async resolveBackfillStartHour(from_hour?: number): Promise<number | null> {
-		if (from_hour !== undefined) return DateTime.fromSeconds(from_hour, {zone: 'UTC'}).startOf('hour').toSeconds();
-		const birthdate = await this.lightningService.getNodeBirthdate();
-		if (birthdate === 0) {
-			this.logger.warn('Could not determine node birthdate, skipping backfill');
-			return null;
-		}
-		return DateTime.fromSeconds(birthdate, {zone: 'UTC'}).startOf('hour').toSeconds();
 	}
 
 	/**
@@ -372,7 +132,7 @@ export class LightningAnalyticsService implements OnModuleInit {
 	}
 
 	/**
-	 * Sums outgoing payments for a specific group_key
+	 * Sums outgoing payments for a specific group_key (null = BTC only)
 	 */
 	private sumPaymentsOut(
 		payments: LightningPayment[],
@@ -387,18 +147,14 @@ export class LightningAnalyticsService implements OnModuleInit {
 				.reduce((sum, p) => sum + BigInt(p.value_msat) + BigInt(p.fee_msat), BigInt(0));
 		}
 
-		return succeeded.reduce(
-			(sum, p) =>
-				sum +
-				p.asset_balances
-					.filter((ab) => asset_to_group.get(ab.asset_id) === group_key)
-					.reduce((s, ab) => s + BigInt(ab.amount), BigInt(0)),
-			BigInt(0),
-		);
+		return succeeded
+			.flatMap((p) => p.asset_balances)
+			.filter((ab) => asset_to_group.get(ab.asset_id) === group_key)
+			.reduce((sum, ab) => sum + BigInt(ab.amount), BigInt(0));
 	}
 
 	/**
-	 * Sums incoming invoices for a specific group_key
+	 * Sums incoming invoices for a specific group_key (null = BTC only)
 	 */
 	private sumInvoicesIn(
 		invoices: LightningInvoice[],
@@ -413,79 +169,45 @@ export class LightningAnalyticsService implements OnModuleInit {
 				.reduce((sum, i) => sum + BigInt(i.amt_paid_msat), BigInt(0));
 		}
 
-		return settled.reduce(
-			(sum, i) =>
-				sum +
-				i.asset_balances
-					.filter((ab) => asset_to_group.get(ab.asset_id) === group_key)
-					.reduce((s, ab) => s + BigInt(ab.amount), BigInt(0)),
-			BigInt(0),
-		);
+		return settled
+			.flatMap((i) => i.asset_balances)
+			.filter((ab) => asset_to_group.get(ab.asset_id) === group_key)
+			.reduce((sum, ab) => sum + BigInt(ab.amount), BigInt(0));
 	}
 
 	private sumForwardFees(forwards: LightningForward[]): bigint {
 		return forwards.reduce((sum, f) => sum + BigInt(f.fee_msat), BigInt(0));
 	}
 
-	private sumChannelOpens(
-		open_channels: LightningChannel[],
-		closed_channels: LightningClosedChannel[],
-		tx_timestamps: Map<string, number>,
-		hour_start: number,
-		hour_end: number,
-	): bigint {
-		const in_range = (txid: string) => this.isTimestampInRange(tx_timestamps.get(txid), hour_start, hour_end);
-		return [...open_channels, ...closed_channels]
-			.filter((c) => in_range(c.funding_txid))
-			.reduce((sum, c) => sum + this.computeInitialLocalBalance(c), BigInt(0));
+	/**
+	 * Converts satoshis to millisatoshis
+	 */
+	private satToMsat(sats: number | string): bigint {
+		return BigInt(sats) * BigInt(1000);
 	}
 
-	private sumChannelCloses(
-		closed_channels: LightningClosedChannel[],
-		tx_timestamps: Map<string, number>,
-		hour_start: number,
-		hour_end: number,
-	): bigint {
-		const in_range = (txid: string) => this.isTimestampInRange(tx_timestamps.get(txid), hour_start, hour_end);
-		return closed_channels
-			.filter((c) => in_range(c.closing_txid))
-			.reduce((sum, c) => sum + BigInt(c.settled_balance) * BigInt(1000), BigInt(0));
-	}
-
-	private isTimestampInRange(timestamp: number | undefined, start: number, end: number): boolean {
-		return timestamp !== undefined && timestamp >= start && timestamp < end;
-	}
-
+	/**
+	 * Computes the initial local balance when a channel was opened
+	 */
 	private computeInitialLocalBalance(channel: LightningChannel | LightningClosedChannel): bigint {
-		const capacity_msat = BigInt(channel.capacity) * BigInt(1000);
+		const capacity_msat = this.satToMsat(channel.capacity);
 
-		// For LightningChannel
+		// LightningChannel with known initiator
 		if ('initiator' in channel && channel.initiator !== null) {
-			const push_msat = channel.push_amount_sat ? BigInt(channel.push_amount_sat) * BigInt(1000) : BigInt(0);
-			if (channel.initiator === true) {
-				return capacity_msat - push_msat;
-			} else {
-				return push_msat;
-			}
+			const push_msat = channel.push_amount_sat ? this.satToMsat(channel.push_amount_sat) : BigInt(0);
+			return channel.initiator ? capacity_msat - push_msat : push_msat;
 		}
 
-		// For LightningClosedChannel
+		// LightningClosedChannel with known initiator
 		if ('open_initiator' in channel) {
-			const closed = channel as LightningClosedChannel;
-			if (closed.open_initiator === 'local') {
-				return capacity_msat;
-			} else if (closed.open_initiator === 'remote') {
-				return BigInt(0);
-			}
+			const {open_initiator} = channel as LightningClosedChannel;
+			if (open_initiator === 'local') return capacity_msat;
+			if (open_initiator === 'remote') return BigInt(0);
 		}
 
-		// Unknown initiator - use current/settled balance as approximation
-		if ('local_balance' in channel) {
-			return BigInt((channel as LightningChannel).local_balance) * BigInt(1000);
-		}
-		if ('settled_balance' in channel) {
-			return BigInt((channel as LightningClosedChannel).settled_balance) * BigInt(1000);
-		}
+		// Fallback: use current/settled balance as approximation
+		if ('local_balance' in channel) return this.satToMsat((channel as LightningChannel).local_balance);
+		if ('settled_balance' in channel) return this.satToMsat((channel as LightningClosedChannel).settled_balance);
 
 		return BigInt(0);
 	}
@@ -528,64 +250,601 @@ export class LightningAnalyticsService implements OnModuleInit {
 	}
 
 	/**
-	 * Collects all unique group_keys from channels, closed channels, payments, and invoices
+	 * Upserts an analytics metric if amount > 0
 	 */
-	private collectAllGroupKeys(
+	private async upsertMetric(
+		repo: Repository<LightningAnalytics>,
+		params: {
+			node_pubkey: string;
+			group_key: string;
+			unit: string;
+			metric: LightningAnalyticsMetric;
+			hour: number;
+			amount: bigint;
+		},
+	): Promise<void> {
+		if (params.amount <= BigInt(0)) return;
+
+		await repo.upsert(
+			{
+				node_pubkey: params.node_pubkey,
+				group_key: params.group_key,
+				unit: params.unit,
+				metric: params.metric,
+				date: params.hour,
+				amount: params.amount.toString(),
+				updated_at: Math.floor(DateTime.utc().toSeconds()),
+			},
+			{conflictPaths: ['node_pubkey', 'group_key', 'unit', 'metric', 'date']},
+		);
+	}
+
+	/* ============================================
+	   Streaming Backfill Methods
+	   ============================================ */
+
+	/**
+	 * Gets the checkpoint for a specific data type
+	 */
+	async getCheckpoint(data_type: string): Promise<number> {
+		const node_pubkey = await this.getNodePubkey();
+		const result = await this.checkpointRepository.findOne({
+			where: {module: 'lightning', scope: node_pubkey, data_type},
+		});
+		return result?.last_index ?? 0;
+	}
+
+	/**
+	 * Saves the checkpoint for a specific data type
+	 */
+	private async saveCheckpoint(data_type: string, index: number): Promise<void> {
+		const node_pubkey = await this.getNodePubkey();
+		await this.checkpointRepository.upsert(
+			{
+				module: 'lightning',
+				scope: node_pubkey,
+				data_type,
+				last_index: index,
+				updated_at: Math.floor(DateTime.utc().toSeconds()),
+			},
+			['module', 'scope', 'data_type'],
+		);
+	}
+
+	/**
+	 * Runs the streaming backfill - fetches data in batches, buckets by hour, inserts when complete
+	 */
+	async runStreamingBackfill(): Promise<void> {
+		if (this.backfill_status.is_running) {
+			this.logger.warn('Backfill already running');
+			return;
+		}
+
+		this.backfill_status = {is_running: true, started_at: DateTime.utc().toSeconds(), hours_completed: 0, errors: 0};
+		this.logger.log('Starting streaming backfill');
+
+		try {
+			const current_hour = DateTime.utc().startOf('hour').toSeconds();
+
+			// Fetch static data once
+			const [channels, closed_channels, transactions] = await Promise.all([
+				this.lightningService.getChannels(),
+				this.lightningService.getClosedChannels(),
+				this.lightningService.getTransactions(),
+			]);
+			const tx_timestamps = this.buildTxTimestampMap(transactions);
+
+			// Stream and bucket each data type
+			await this.streamAndBucketPayments(current_hour, channels, closed_channels);
+			await this.streamAndBucketInvoices(current_hour, channels, closed_channels);
+			await this.streamAndBucketForwards(current_hour, channels, closed_channels);
+
+			// Handle channel opens/closes
+			await this.backfillChannelMetrics(channels, closed_channels, tx_timestamps, current_hour);
+
+			this.logger.log(`Streaming backfill complete: ${this.backfill_status.hours_completed} hours cached`);
+		} catch (error) {
+			this.logger.error('Streaming backfill error', error);
+			this.backfill_status.errors++;
+		} finally {
+			this.backfill_status.is_running = false;
+		}
+	}
+
+	/**
+	 * Streams payments and buckets them by hour
+	 */
+	private async streamAndBucketPayments(
+		current_hour: number,
 		channels: LightningChannel[],
 		closed_channels: LightningClosedChannel[],
+	): Promise<void> {
+		let offset = await this.getCheckpoint('payments');
+		const pending_bucket: Map<number, LightningPayment[]> = new Map();
+		const asset_to_group = this.buildAssetToGroupKeyMap(channels, closed_channels);
+		const group_to_name = this.buildGroupKeyToNameMap(channels, closed_channels);
+
+		while (true) {
+			const batch = await this.lightningService.getPayments({index_offset: offset, max_results: BATCH_SIZE});
+
+			if (batch.length === 0) {
+				await this.flushPaymentBuckets(pending_bucket, asset_to_group, group_to_name);
+				break;
+			}
+
+			// Bucket by hour
+			for (const payment of batch) {
+				const hour = DateTime.fromSeconds(payment.creation_time, {zone: 'UTC'}).startOf('hour').toSeconds();
+				if (hour >= current_hour) continue;
+
+				if (!pending_bucket.has(hour)) pending_bucket.set(hour, []);
+				pending_bucket.get(hour)!.push(payment);
+			}
+
+			// Use MIN timestamp for safe flush boundary (avoid race condition)
+			let min_timestamp = Infinity;
+			for (const payment of batch) {
+				min_timestamp = Math.min(min_timestamp, payment.creation_time);
+			}
+			const safe_boundary = DateTime.fromSeconds(min_timestamp, {zone: 'UTC'}).startOf('hour').toSeconds();
+			const complete_hours = Array.from(pending_bucket.keys()).filter((h) => h < safe_boundary);
+
+			// Flush complete hours within transaction
+			if (complete_hours.length > 0) {
+				await this.dataSource.transaction(async (manager) => {
+					for (const hour of complete_hours.sort((a, b) => a - b)) {
+						await this.insertPaymentMetrics(manager, hour, pending_bucket.get(hour)!, asset_to_group, group_to_name);
+						pending_bucket.delete(hour);
+						this.backfill_status.hours_completed++;
+					}
+				});
+			}
+
+			// Memory safeguard
+			const total_pending = Array.from(pending_bucket.values()).reduce((sum, arr) => sum + arr.length, 0);
+			if (total_pending > MAX_PENDING_RECORDS) {
+				this.logger.warn(`Pending bucket exceeded ${MAX_PENDING_RECORDS}, force-flushing oldest hours`);
+				await this.forceFlushOldestHours(pending_bucket, asset_to_group, group_to_name, 'payments');
+			}
+
+			offset += batch.length;
+
+			if (batch.length < BATCH_SIZE) {
+				await this.flushPaymentBuckets(pending_bucket, asset_to_group, group_to_name);
+				await this.saveCheckpoint('payments', offset);
+				break;
+			}
+
+			// Save checkpoint after each full batch
+			await this.saveCheckpoint('payments', offset);
+		}
+	}
+
+	/**
+	 * Streams invoices and buckets them by settle_date (not creation_date)
+	 */
+	private async streamAndBucketInvoices(
+		current_hour: number,
+		channels: LightningChannel[],
+		closed_channels: LightningClosedChannel[],
+	): Promise<void> {
+		let offset = await this.getCheckpoint('invoices');
+		const pending_bucket: Map<number, LightningInvoice[]> = new Map();
+		const asset_to_group = this.buildAssetToGroupKeyMap(channels, closed_channels);
+		const group_to_name = this.buildGroupKeyToNameMap(channels, closed_channels);
+
+		while (true) {
+			const batch = await this.lightningService.getInvoices({index_offset: offset, max_results: BATCH_SIZE});
+
+			if (batch.length === 0) {
+				await this.flushInvoiceBuckets(pending_bucket, asset_to_group, group_to_name);
+				break;
+			}
+
+			// Bucket by settle_date (when payment was received), not creation_date
+			for (const invoice of batch) {
+				if (invoice.state !== 'settled' || !invoice.settle_date) continue;
+				const hour = DateTime.fromSeconds(invoice.settle_date, {zone: 'UTC'}).startOf('hour').toSeconds();
+				if (hour >= current_hour) continue;
+
+				if (!pending_bucket.has(hour)) pending_bucket.set(hour, []);
+				pending_bucket.get(hour)!.push(invoice);
+			}
+
+			// Use MIN settle_date for safe flush boundary
+			let min_timestamp = Infinity;
+			for (const invoice of batch) {
+				if (invoice.settle_date) min_timestamp = Math.min(min_timestamp, invoice.settle_date);
+			}
+			const safe_boundary =
+				min_timestamp === Infinity ? current_hour : DateTime.fromSeconds(min_timestamp, {zone: 'UTC'}).startOf('hour').toSeconds();
+			const complete_hours = Array.from(pending_bucket.keys()).filter((h) => h < safe_boundary);
+
+			if (complete_hours.length > 0) {
+				await this.dataSource.transaction(async (manager) => {
+					for (const hour of complete_hours.sort((a, b) => a - b)) {
+						await this.insertInvoiceMetrics(manager, hour, pending_bucket.get(hour)!, asset_to_group, group_to_name);
+						pending_bucket.delete(hour);
+						this.backfill_status.hours_completed++;
+					}
+				});
+			}
+
+			// Memory safeguard
+			const total_pending = Array.from(pending_bucket.values()).reduce((sum, arr) => sum + arr.length, 0);
+			if (total_pending > MAX_PENDING_RECORDS) {
+				this.logger.warn(`Pending bucket exceeded ${MAX_PENDING_RECORDS}, force-flushing oldest hours`);
+				await this.forceFlushOldestHours(pending_bucket, asset_to_group, group_to_name, 'invoices');
+			}
+
+			offset += batch.length;
+
+			if (batch.length < BATCH_SIZE) {
+				await this.flushInvoiceBuckets(pending_bucket, asset_to_group, group_to_name);
+				await this.saveCheckpoint('invoices', offset);
+				break;
+			}
+
+			await this.saveCheckpoint('invoices', offset);
+		}
+	}
+
+	/**
+	 * Streams forwards and buckets them by hour
+	 */
+	private async streamAndBucketForwards(
+		current_hour: number,
+		_channels: LightningChannel[],
+		_closed_channels: LightningClosedChannel[],
+	): Promise<void> {
+		let offset = await this.getCheckpoint('forwards');
+		const pending_bucket: Map<number, LightningForward[]> = new Map();
+
+		while (true) {
+			const batch = await this.lightningService.getForwards({index_offset: offset, max_results: BATCH_SIZE});
+
+			if (batch.length === 0) {
+				await this.flushForwardBuckets(pending_bucket);
+				break;
+			}
+
+			// Bucket by timestamp
+			for (const forward of batch) {
+				const hour = DateTime.fromSeconds(forward.timestamp, {zone: 'UTC'}).startOf('hour').toSeconds();
+				if (hour >= current_hour) continue;
+
+				if (!pending_bucket.has(hour)) pending_bucket.set(hour, []);
+				pending_bucket.get(hour)!.push(forward);
+			}
+
+			// Use MIN timestamp for safe flush boundary
+			let min_timestamp = Infinity;
+			for (const forward of batch) {
+				min_timestamp = Math.min(min_timestamp, forward.timestamp);
+			}
+			const safe_boundary = DateTime.fromSeconds(min_timestamp, {zone: 'UTC'}).startOf('hour').toSeconds();
+			const complete_hours = Array.from(pending_bucket.keys()).filter((h) => h < safe_boundary);
+
+			if (complete_hours.length > 0) {
+				await this.dataSource.transaction(async (manager) => {
+					for (const hour of complete_hours.sort((a, b) => a - b)) {
+						await this.insertForwardMetrics(manager, hour, pending_bucket.get(hour)!);
+						pending_bucket.delete(hour);
+						this.backfill_status.hours_completed++;
+					}
+				});
+			}
+
+			// Memory safeguard
+			const total_pending = Array.from(pending_bucket.values()).reduce((sum, arr) => sum + arr.length, 0);
+			if (total_pending > MAX_PENDING_RECORDS) {
+				this.logger.warn(`Pending bucket exceeded ${MAX_PENDING_RECORDS}, force-flushing oldest hours`);
+				const oldest_hours = Array.from(pending_bucket.keys()).sort((a, b) => a - b).slice(0, FORCE_FLUSH_COUNT);
+				for (const hour of oldest_hours) {
+					await this.insertForwardMetrics(null, hour, pending_bucket.get(hour)!);
+					pending_bucket.delete(hour);
+				}
+			}
+
+			offset += batch.length;
+
+			if (batch.length < BATCH_SIZE) {
+				await this.flushForwardBuckets(pending_bucket);
+				await this.saveCheckpoint('forwards', offset);
+				break;
+			}
+
+			await this.saveCheckpoint('forwards', offset);
+		}
+	}
+
+	/**
+	 * Flushes all remaining payment buckets
+	 */
+	private async flushPaymentBuckets(
+		pending_bucket: Map<number, LightningPayment[]>,
+		asset_to_group: Map<string, string>,
+		group_to_name: Map<string, string>,
+	): Promise<void> {
+		for (const [hour, payments] of Array.from(pending_bucket)) {
+			await this.insertPaymentMetrics(null, hour, payments, asset_to_group, group_to_name);
+			this.backfill_status.hours_completed++;
+		}
+		pending_bucket.clear();
+	}
+
+	/**
+	 * Flushes all remaining invoice buckets
+	 */
+	private async flushInvoiceBuckets(
+		pending_bucket: Map<number, LightningInvoice[]>,
+		asset_to_group: Map<string, string>,
+		group_to_name: Map<string, string>,
+	): Promise<void> {
+		for (const [hour, invoices] of Array.from(pending_bucket)) {
+			await this.insertInvoiceMetrics(null, hour, invoices, asset_to_group, group_to_name);
+			this.backfill_status.hours_completed++;
+		}
+		pending_bucket.clear();
+	}
+
+	/**
+	 * Flushes all remaining forward buckets
+	 */
+	private async flushForwardBuckets(pending_bucket: Map<number, LightningForward[]>): Promise<void> {
+		for (const [hour, forwards] of Array.from(pending_bucket)) {
+			await this.insertForwardMetrics(null, hour, forwards);
+			this.backfill_status.hours_completed++;
+		}
+		pending_bucket.clear();
+	}
+
+	/**
+	 * Force flushes oldest hours when memory limit exceeded
+	 */
+	private async forceFlushOldestHours(
+		pending_bucket: Map<number, LightningPayment[] | LightningInvoice[]>,
+		asset_to_group: Map<string, string>,
+		group_to_name: Map<string, string>,
+		data_type: 'payments' | 'invoices',
+	): Promise<void> {
+		const oldest_hours = Array.from(pending_bucket.keys()).sort((a, b) => a - b).slice(0, FORCE_FLUSH_COUNT);
+		for (const hour of oldest_hours) {
+			const records = pending_bucket.get(hour)!;
+			if (data_type === 'payments') {
+				await this.insertPaymentMetrics(null, hour, records as LightningPayment[], asset_to_group, group_to_name);
+			} else {
+				await this.insertInvoiceMetrics(null, hour, records as LightningInvoice[], asset_to_group, group_to_name);
+			}
+			pending_bucket.delete(hour);
+		}
+	}
+
+	/**
+	 * Inserts payment metrics for a specific hour
+	 */
+	private async insertPaymentMetrics(
+		manager: EntityManager | null,
+		hour: number,
 		payments: LightningPayment[],
+		asset_to_group: Map<string, string>,
+		group_to_name: Map<string, string>,
+	): Promise<void> {
+		const node_pubkey = await this.getNodePubkey();
+		const repo = manager ? manager.getRepository(LightningAnalytics) : this.lightningAnalyticsRepository;
+
+		// BTC metrics
+		await this.upsertMetric(repo, {
+			node_pubkey,
+			group_key: '',
+			unit: 'msat',
+			metric: LightningAnalyticsMetric.payments_out,
+			hour,
+			amount: this.sumPaymentsOut(payments, null, asset_to_group),
+		});
+
+		// Asset metrics per group
+		for (const group_key of Array.from(this.collectGroupKeys(payments, asset_to_group))) {
+			await this.upsertMetric(repo, {
+				node_pubkey,
+				group_key,
+				unit: group_to_name.get(group_key) || group_key,
+				metric: LightningAnalyticsMetric.payments_out,
+				hour,
+				amount: this.sumPaymentsOut(payments, group_key, asset_to_group),
+			});
+		}
+	}
+
+	/**
+	 * Inserts invoice metrics for a specific hour
+	 */
+	private async insertInvoiceMetrics(
+		manager: EntityManager | null,
+		hour: number,
 		invoices: LightningInvoice[],
 		asset_to_group: Map<string, string>,
+		group_to_name: Map<string, string>,
+	): Promise<void> {
+		const node_pubkey = await this.getNodePubkey();
+		const repo = manager ? manager.getRepository(LightningAnalytics) : this.lightningAnalyticsRepository;
+
+		// BTC metrics
+		await this.upsertMetric(repo, {
+			node_pubkey,
+			group_key: '',
+			unit: 'msat',
+			metric: LightningAnalyticsMetric.invoices_in,
+			hour,
+			amount: this.sumInvoicesIn(invoices, null, asset_to_group),
+		});
+
+		// Asset metrics per group
+		for (const group_key of Array.from(this.collectGroupKeys(invoices, asset_to_group))) {
+			await this.upsertMetric(repo, {
+				node_pubkey,
+				group_key,
+				unit: group_to_name.get(group_key) || group_key,
+				metric: LightningAnalyticsMetric.invoices_in,
+				hour,
+				amount: this.sumInvoicesIn(invoices, group_key, asset_to_group),
+			});
+		}
+	}
+
+	/**
+	 * Inserts forward fee metrics for a specific hour
+	 */
+	private async insertForwardMetrics(
+		manager: EntityManager | null,
+		hour: number,
+		forwards: LightningForward[],
+	): Promise<void> {
+		const node_pubkey = await this.getNodePubkey();
+		const repo = manager ? manager.getRepository(LightningAnalytics) : this.lightningAnalyticsRepository;
+
+		await this.upsertMetric(repo, {
+			node_pubkey,
+			group_key: '',
+			unit: 'msat',
+			metric: LightningAnalyticsMetric.forward_fees,
+			hour,
+			amount: this.sumForwardFees(forwards),
+		});
+	}
+
+	/**
+	 * Gets transaction timestamp from map or falls back to Bitcoin RPC
+	 * Useful for remote-opened channels where the funding tx isn't in our wallet
+	 */
+	private async getTxTimestamp(txid: string, tx_timestamps: Map<string, number>): Promise<number | null> {
+		const cached = tx_timestamps.get(txid);
+		if (cached) return cached;
+
+		if (this.bitcoinRpcService.isConfigured()) {
+			try {
+				const tx = await this.bitcoinRpcService.getTransaction(txid);
+				if (tx?.blocktime) {
+					tx_timestamps.set(txid, tx.blocktime);
+					return tx.blocktime;
+				}
+			} catch {
+				// Transaction not found or RPC error
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Backfills channel open/close metrics using transaction timestamps
+	 * Handles both BTC and Taproot Asset channels
+	 * Falls back to Bitcoin RPC for remote-opened channels not in our wallet
+	 */
+	private async backfillChannelMetrics(
+		channels: LightningChannel[],
+		closed_channels: LightningClosedChannel[],
+		tx_timestamps: Map<string, number>,
+		current_hour: number,
+	): Promise<void> {
+		const node_pubkey = await this.getNodePubkey();
+		const group_to_name = this.buildGroupKeyToNameMap(channels, closed_channels);
+
+		// Aggregate metrics: Map<hour, Map<group_key, amount>>
+		const opens_by_hour: Map<number, Map<string, bigint>> = new Map();
+		const closes_by_hour: Map<number, Map<string, bigint>> = new Map();
+
+		// Helper to accumulate into nested map
+		const accumulate = (map: Map<number, Map<string, bigint>>, hour: number, group_key: string, amount: bigint) => {
+			if (!map.has(hour)) map.set(hour, new Map());
+			const group_map = map.get(hour)!;
+			group_map.set(group_key, (group_map.get(group_key) ?? BigInt(0)) + amount);
+		};
+
+		// Process channel opens (both open and closed channels had an open event)
+		for (const channel of [...channels, ...closed_channels]) {
+			const timestamp = await this.getTxTimestamp(channel.funding_txid, tx_timestamps);
+			if (!timestamp) continue;
+			const hour = DateTime.fromSeconds(timestamp, {zone: 'UTC'}).startOf('hour').toSeconds();
+			if (hour >= current_hour) continue;
+
+			// BTC balance (empty string = BTC group_key)
+			accumulate(opens_by_hour, hour, '', this.computeInitialLocalBalance(channel));
+
+			// Asset balance (only for Taproot Asset channels)
+			if (channel.asset?.group_key) {
+				accumulate(opens_by_hour, hour, channel.asset.group_key, BigInt(channel.asset.local_balance));
+			}
+		}
+
+		// Process channel closes
+		for (const channel of closed_channels) {
+			const timestamp = await this.getTxTimestamp(channel.closing_txid, tx_timestamps);
+			if (!timestamp) continue;
+			const hour = DateTime.fromSeconds(timestamp, {zone: 'UTC'}).startOf('hour').toSeconds();
+			if (hour >= current_hour) continue;
+
+			// BTC balance
+			accumulate(closes_by_hour, hour, '', this.satToMsat(channel.settled_balance));
+
+			// Asset balance
+			if (channel.asset?.group_key) {
+				accumulate(closes_by_hour, hour, channel.asset.group_key, BigInt(channel.asset.local_balance));
+			}
+		}
+
+		// Insert all metrics
+		const insert_metrics = async (
+			metrics_map: Map<number, Map<string, bigint>>,
+			metric: LightningAnalyticsMetric,
+		) => {
+			for (const [hour, group_map] of Array.from(metrics_map.entries())) {
+				for (const [group_key, amount] of Array.from(group_map.entries())) {
+					await this.upsertMetric(this.lightningAnalyticsRepository, {
+						node_pubkey,
+						group_key,
+						unit: group_key === '' ? 'msat' : group_to_name.get(group_key) || group_key,
+						metric,
+						hour,
+						amount,
+					});
+				}
+			}
+		};
+
+		await insert_metrics(opens_by_hour, LightningAnalyticsMetric.channel_opens);
+		await insert_metrics(closes_by_hour, LightningAnalyticsMetric.channel_closes);
+	}
+
+	/**
+	 * Collects unique group keys from items with asset_balances
+	 */
+	private collectGroupKeys<T extends {asset_balances: {asset_id: string}[]}>(
+		items: T[],
+		asset_to_group: Map<string, string>,
 	): Set<string> {
-		const channel_keys = [...channels, ...closed_channels]
-			.filter((c) => c.asset?.group_key)
-			.map((c) => c.asset!.group_key);
-
-		const payment_keys = payments
-			.flatMap((p) => p.asset_balances)
-			.map((ab) => asset_to_group.get(ab.asset_id))
-			.filter((gk): gk is string => gk !== undefined);
-
-		const invoice_keys = invoices
-			.flatMap((i) => i.asset_balances)
-			.map((ab) => asset_to_group.get(ab.asset_id))
-			.filter((gk): gk is string => gk !== undefined);
-
-		return new Set([...channel_keys, ...payment_keys, ...invoice_keys]);
+		const keys = new Set<string>();
+		for (const item of items) {
+			for (const ab of item.asset_balances) {
+				const gk = asset_to_group.get(ab.asset_id);
+				if (gk) keys.add(gk);
+			}
+		}
+		return keys;
 	}
 
 	/**
-	 * Sums Taproot Asset channel opens (initial local balance in asset units)
+	 * Re-scans recent records to catch pending invoices/payments that have since settled.
+	 * Resets checkpoints back by RESCAN_RECORDS to re-process recent data.
+	 * Call this daily to catch any lagging settlements.
 	 */
-	private sumAssetChannelOpens(
-		open_channels: LightningChannel[],
-		closed_channels: LightningClosedChannel[],
-		tx_timestamps: Map<string, number>,
-		hour_start: number,
-		hour_end: number,
-	): bigint {
-		const in_range = (txid: string) => this.isTimestampInRange(tx_timestamps.get(txid), hour_start, hour_end);
-		return [...open_channels, ...closed_channels]
-			.filter((c) => in_range(c.funding_txid) && c.asset)
-			.reduce((sum, c) => sum + BigInt(c.asset!.local_balance), BigInt(0));
-	}
-
-	/**
-	 * Sums Taproot Asset channel closes (settled balance in asset units)
-	 */
-	private sumAssetChannelCloses(
-		closed_channels: LightningClosedChannel[],
-		tx_timestamps: Map<string, number>,
-		hour_start: number,
-		hour_end: number,
-	): bigint {
-		const in_range = (txid: string) => this.isTimestampInRange(tx_timestamps.get(txid), hour_start, hour_end);
-		return closed_channels
-			.filter((c) => in_range(c.closing_txid) && c.asset)
-			.reduce((sum, c) => sum + BigInt(c.asset!.local_balance), BigInt(0));
-	}
-
-	private sleep(ms: number): Promise<void> {
-		return new Promise((resolve) => setTimeout(resolve, ms));
+	async rescanRecentRecords(): Promise<void> {
+		this.logger.log(`Resetting checkpoints to re-scan last ${RESCAN_RECORDS} records`);
+		const payments_checkpoint = await this.getCheckpoint('payments');
+		const invoices_checkpoint = await this.getCheckpoint('invoices');
+		const forwards_checkpoint = await this.getCheckpoint('forwards');
+		await this.saveCheckpoint('payments', Math.max(0, payments_checkpoint - RESCAN_RECORDS));
+		await this.saveCheckpoint('invoices', Math.max(0, invoices_checkpoint - RESCAN_RECORDS));
+		await this.saveCheckpoint('forwards', Math.max(0, forwards_checkpoint - RESCAN_RECORDS));
+		await this.runStreamingBackfill();
 	}
 }

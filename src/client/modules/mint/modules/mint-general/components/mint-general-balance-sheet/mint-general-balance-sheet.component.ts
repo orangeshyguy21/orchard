@@ -31,7 +31,7 @@ export class MintGeneralBalanceSheetComponent {
 	public device_desktop = input.required<boolean>();
 
 	public rows = signal<MintGeneralBalanceRow[]>([]);
-	public displayed_columns = signal<string[]>(['liabilities', 'assets', 'keyset', 'fees']);
+	public displayed_columns = signal<string[]>(['assets', 'liabilities', 'keyset', 'fees']);
 
 	constructor() {
 		effect(() => {
@@ -43,7 +43,7 @@ export class MintGeneralBalanceSheetComponent {
 	private init(): void {
 		const rows = this.getRows();
 		this.rows.set(rows);
-		if (rows[0]?.fees === null) this.displayed_columns.set(['liabilities', 'assets', 'keyset']);
+		if (rows[0]?.fees === null) this.displayed_columns.set(['assets', 'liabilities', 'keyset']);
 	}
 
 	private getAssetBalances(unit: MintUnit): number | null {

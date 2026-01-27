@@ -124,7 +124,7 @@ export function mapClnPayments(response: ClnListPaysResponse): LightningPayment[
 		value_msat: extractMsat(p.amount_msat),
 		fee_msat: (BigInt(extractMsat(p.amount_sent_msat)) - BigInt(extractMsat(p.amount_msat))).toString(),
 		status: mapClnPaymentStatus(p.status),
-		creation_time: p.created_at ?? 0,
+		creation_time: Number(p.created_at) || 0,
 		asset_balances: [], // CLN does not support Taproot Assets
 	}));
 }
@@ -155,8 +155,8 @@ export function mapClnInvoices(response: ClnListInvoicesResponse): LightningInvo
 		value_msat: extractMsat(i.amount_msat),
 		amt_paid_msat: extractMsat(i.amount_received_msat),
 		state: mapClnInvoiceState(i.status),
-		creation_date: i.created_index ?? 0, // CLN doesn't have creation_date directly, use created_index or expires_at - expiry
-		settle_date: i.paid_at ?? null,
+		creation_date: Number(i.created_index) || 0, // CLN doesn't have creation_date directly, use created_index or expires_at - expiry
+		settle_date: i.paid_at ? Number(i.paid_at) : null,
 		asset_balances: [], // CLN does not support Taproot Assets
 	}));
 }
@@ -170,7 +170,7 @@ export function mapClnForwards(response: ClnListForwardsResponse): LightningForw
 	return forwards
 		.filter((f: ClnForward) => f.status === ClnForwardStatus.SETTLED)
 		.map((f: ClnForward) => ({
-			timestamp: Math.floor(f.received_time ?? 0),
+			timestamp: Math.floor(Number(f.received_time) || 0),
 			amt_in_msat: extractMsat(f.in_msat),
 			amt_out_msat: extractMsat(f.out_msat),
 			fee_msat: extractMsat(f.fee_msat),
@@ -264,7 +264,7 @@ export function mapClnClosedChannels(response: ClnListClosedChannelsResponse): L
 		close_type: mapClnCloseType(c.close_cause),
 		open_initiator: mapClnInitiator(c.opener),
 		funding_txid: extractClnFundingTxid(c.funding_txid),
-		closing_txid: '', // CLN doesn't expose closing_tx_hash in ListClosedChannels
+		closing_txid: c.last_commitment_txid ? extractClnFundingTxid(c.last_commitment_txid) : '',
 		asset: null, // CLN does not support Taproot Assets
 	}));
 }
@@ -276,6 +276,7 @@ export function mapClnTransactions(response: ClnListTransactionsResponse): Light
 	const transactions = response?.transactions ?? [];
 	return transactions.map((t: ClnTransaction) => ({
 		tx_hash: bufferToHex(Buffer.from(t.hash).reverse()), // Reverse for display order
-		time_stamp: 0, // CLN doesn't provide timestamp in ListTransactions, need to get from block
+		time_stamp: 0, // Will be enriched from Bitcoin RPC or estimated
+		block_height: t.blockheight ?? undefined,
 	}));
 }

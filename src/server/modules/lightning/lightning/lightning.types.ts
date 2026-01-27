@@ -150,6 +150,7 @@ export type LightningClosedChannel = {
 export type LightningTransaction = {
 	tx_hash: string;
 	time_stamp: number; // seconds since epoch
+	block_height?: number; // optional, used for enrichment from Bitcoin RPC
 };
 
 /**

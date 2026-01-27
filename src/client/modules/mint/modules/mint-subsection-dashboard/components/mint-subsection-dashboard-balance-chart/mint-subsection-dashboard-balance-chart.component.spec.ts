@@ -1,6 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {MintSubsectionDashboardBalanceChartComponent} from './mint-subsection-dashboard-balancesheet-chart.component';
+import {MintSubsectionDashboardBalanceChartComponent} from './mint-subsection-dashboard-balance-chart.component';
 
 describe('MintSubsectionDashboardBalanceChartComponent', () => {
 	let component: MintSubsectionDashboardBalanceChartComponent;

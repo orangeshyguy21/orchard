@@ -33,20 +33,11 @@ export class OrchardLightningAnalyticsBackfillStatus {
 	is_running: boolean;
 
 	@Field(() => UnixTimestamp, {nullable: true})
-	current_hour?: number;
-
-	@Field(() => UnixTimestamp, {nullable: true})
-	target_hour?: number;
-
-	@Field(() => Number, {nullable: true})
-	hours_completed?: number;
-
-	@Field(() => Number, {nullable: true})
-	hours_remaining?: number;
-
-	@Field(() => UnixTimestamp, {nullable: true})
 	started_at?: number;
 
 	@Field(() => Number, {nullable: true})
 	errors?: number;
+
+	@Field(() => Number, {nullable: true})
+	hours_completed?: number;
 }

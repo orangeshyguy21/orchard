@@ -111,11 +111,8 @@ query LightningAnalytics($date_start: UnixTimestamp, $date_end: UnixTimestamp, $
 export const LIGHTNING_ANALYTICS_BACKFILL_STATUS_QUERY = `{
 	lightning_analytics_backfill_status {
 		is_running
-		current_hour
-		target_hour
-		hours_completed
-		hours_remaining
 		started_at
 		errors
+		hours_completed
 	}
 }`;

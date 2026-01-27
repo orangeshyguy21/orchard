@@ -3,6 +3,7 @@ import {Injectable, Logger, OnModuleInit} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
 /* Application Dependencies */
 import {OrchardErrorCode} from '@server/modules/error/error.types';
+import {BitcoinRpcService} from '@server/modules/bitcoin/rpc/btcrpc.service';
 import {LightningType} from '@server/modules/lightning/lightning.enums';
 import {LndService} from '@server/modules/lightning/lnd/lnd.service';
 import {ClnService} from '@server/modules/lightning/cln/cln.service';
@@ -45,6 +46,7 @@ export class LightningService implements OnModuleInit {
 
 	constructor(
 		private configService: ConfigService,
+		private bitcoinRpcService: BitcoinRpcService,
 		private lndService: LndService,
 		private clnService: ClnService,
 	) {}
@@ -114,10 +116,14 @@ export class LightningService implements OnModuleInit {
 			return mapLndPayments(await this.makeGrpcRequest('ListPayments', request));
 		}
 		if (this.type === 'cln') {
-			const request = {
-				index: args?.index_offset ? args.index_offset : undefined,
-				limit: args?.max_results ? args.max_results : undefined,
-			};
+			// CLN pagination: index is enum (CREATED/UPDATED), start is offset position
+			// Both index and limit must be specified together
+			const request: any = {};
+			if (args?.max_results) {
+				request.index = 'CREATED';
+				request.start = args?.index_offset ?? 0;
+				request.limit = args.max_results;
+			}
 			return mapClnPayments(await this.makeGrpcRequest('ListPays', request));
 		}
 		return [];
@@ -138,10 +144,14 @@ export class LightningService implements OnModuleInit {
 			return mapLndInvoices(await this.makeGrpcRequest('ListInvoices', request));
 		}
 		if (this.type === 'cln') {
-			const request = {
-				index: args?.index_offset ? args.index_offset : undefined,
-				limit: args?.max_results ? args.max_results : undefined,
-			};
+			// CLN pagination: index is enum (CREATED/UPDATED), start is offset position
+			// Both index and limit must be specified together
+			const request: any = {};
+			if (args?.max_results) {
+				request.index = 'CREATED';
+				request.start = args?.index_offset ?? 0;
+				request.limit = args.max_results;
+			}
 			return mapClnInvoices(await this.makeGrpcRequest('ListInvoices', request));
 		}
 		return [];
@@ -162,11 +172,14 @@ export class LightningService implements OnModuleInit {
 			return mapLndForwards(await this.makeGrpcRequest('ForwardingHistory', request));
 		}
 		if (this.type === 'cln') {
-			const request = {
-				status: 'settled',
-				index: args?.index_offset ? args.index_offset : undefined,
-				limit: args?.max_results ? args.max_results : undefined,
-			};
+			// CLN pagination: index is enum (CREATED/UPDATED), start is offset position
+			// Both index and limit must be specified together
+			const request: any = {status: 'SETTLED'};
+			if (args?.max_results) {
+				request.index = 'CREATED';
+				request.start = args?.index_offset ?? 0;
+				request.limit = args.max_results;
+			}
 			return mapClnForwards(await this.makeGrpcRequest('ListForwards', request));
 		}
 		return [];
@@ -207,9 +220,64 @@ export class LightningService implements OnModuleInit {
 			return mapLndTransactions(await this.makeGrpcRequest('GetTransactions', {}));
 		}
 		if (this.type === 'cln') {
-			return mapClnTransactions(await this.makeGrpcRequest('ListTransactions', {}));
+			const transactions = mapClnTransactions(await this.makeGrpcRequest('ListTransactions', {}));
+			return this.enrichClnTransactionTimestamps(transactions);
 		}
 		return [];
+	}
+
+	/**
+	 * Enriches CLN transactions with timestamps from Bitcoin RPC or estimation
+	 * CLN doesn't provide timestamps in ListTransactions, only blockheight
+	 */
+	private async enrichClnTransactionTimestamps(transactions: LightningTransaction[]): Promise<LightningTransaction[]> {
+		// Bitcoin genesis timestamp (block 0)
+		const GENESIS_TIMESTAMP = 1231006505;
+		const AVG_BLOCK_TIME = 600; // 10 minutes in seconds
+
+		// Try to get current block info for better estimation
+		let current_block_height: number | null = null;
+		let current_timestamp: number | null = null;
+
+		if (this.bitcoinRpcService.isConfigured()) {
+			try {
+				const block_count = await this.bitcoinRpcService.getBitcoinBlockCount();
+				current_block_height = block_count;
+				current_timestamp = Math.floor(Date.now() / 1000);
+			} catch {
+				// Fall back to estimation
+			}
+		}
+
+		for (const tx of transactions) {
+			if (tx.time_stamp > 0) continue; // Already has timestamp
+			if (!tx.block_height) continue; // No block height to work with
+
+			// Try Bitcoin RPC first
+			if (this.bitcoinRpcService.isConfigured()) {
+				try {
+					const timestamp = await this.bitcoinRpcService.getBlockTimestamp(tx.block_height);
+					if (timestamp) {
+						tx.time_stamp = timestamp;
+						continue;
+					}
+				} catch {
+					// Fall through to estimation
+				}
+			}
+
+			// Estimate timestamp from blockheight
+			if (current_block_height && current_timestamp) {
+				// Estimate backwards from current block
+				const blocks_ago = current_block_height - tx.block_height;
+				tx.time_stamp = current_timestamp - blocks_ago * AVG_BLOCK_TIME;
+			} else {
+				// Estimate forwards from genesis
+				tx.time_stamp = GENESIS_TIMESTAMP + tx.block_height * AVG_BLOCK_TIME;
+			}
+		}
+
+		return transactions;
 	}
 
 	/**

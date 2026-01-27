@@ -15,21 +15,11 @@ export class MintGeneralBalanceRow {
 	assets: number | null;
 	fees: number | null;
 
-	public get reserve_ratio(): string | null {
+    public get reserve(): number | null {
 		if (this.assets === null) return null;
-		const ratio = this.assets / LocalAmountPipe.getConvertedAmount(this.unit, this.liabilities);
-		if (ratio === Infinity) return '∞ : 1';
-		let formatted_ratio: string;
-		if (ratio > 3) {
-			formatted_ratio = Math.round(ratio).toString();
-		} else {
-			formatted_ratio = Number.isInteger(ratio)
-				? ratio.toString()
-				: ratio.toFixed(1).endsWith('.0')
-					? Math.floor(ratio).toString()
-					: ratio.toFixed(1);
-		}
-		return `${formatted_ratio} : 1`;
+		const percentage = LocalAmountPipe.getConvertedAmount(this.unit, this.liabilities) / this.assets;
+		if (percentage === Infinity) return 0;
+		return Math.ceil(percentage * 100) / 100;
 	}
 
 	constructor(balance: MintBalance | undefined, assets: number | null, keyset: MintKeyset) {

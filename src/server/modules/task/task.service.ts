@@ -92,7 +92,8 @@ export class TaskService {
 	}
 
 	/**
-	 * Cache lightning analytics for the previous complete hour at 5 minutes past each hour
+	 * Update lightning analytics at 5 minutes past each hour
+	 * Uses streaming backfill which is checkpoint-based and works with both LND and CLN
 	 */
 	@Cron('5 * * * *', {
 		name: 'hourly-lightning-analytics',
@@ -105,15 +106,36 @@ export class TaskService {
 			return;
 		}
 
-		this.logger.log('Starting hourly lightning analytics job...');
+		this.logger.log('Starting lightning analytics update...');
 		try {
-			const previous_hour = DateTime.utc().minus({hours: 1}).startOf('hour');
-			const hour_timestamp = Math.floor(previous_hour.toSeconds());
-			this.logger.log(`Caching analytics for hour: ${previous_hour.toISO()} (timestamp: ${hour_timestamp})`);
-			await this.lightningAnalyticsService.cacheHourlyAnalytics(hour_timestamp);
-			this.logger.log(`Lightning analytics cached for ${previous_hour.toISO()}`);
+			await this.lightningAnalyticsService.runStreamingBackfill();
+			this.logger.log('Lightning analytics update complete');
 		} catch (error) {
-			this.logger.error(`Error caching lightning analytics: ${error.message}`, error.stack);
+			this.logger.error(`Error updating lightning analytics: ${error.message}`, error.stack);
+		}
+	}
+
+	/**
+	 * Daily rescan of recent lightning records to catch pending invoices/payments that settled
+	 * Runs at 3am UTC
+	 */
+	@Cron('0 3 * * *', {
+		name: 'daily-lightning-analytics-rescan',
+		timeZone: 'UTC',
+	})
+	async runDailyLightningAnalyticsRescan() {
+		const lightning_type = this.configService.get<string>('lightning.type');
+		if (!lightning_type) {
+			this.logger.debug('Lightning not configured, skipping analytics rescan');
+			return;
+		}
+
+		this.logger.log('Starting daily lightning analytics rescan...');
+		try {
+			await this.lightningAnalyticsService.rescanRecentRecords();
+			this.logger.log('Daily lightning analytics rescan complete');
+		} catch (error) {
+			this.logger.error(`Error during lightning analytics rescan: ${error.message}`, error.stack);
 		}
 	}
 }

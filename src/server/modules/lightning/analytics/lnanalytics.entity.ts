@@ -22,9 +22,9 @@ export class LightningAnalytics {
 	@Column({type: 'text'})
 	node_pubkey: string;
 
-	// Taproot Asset group key (null for regular lightning/BTC channels)
-	@Column({type: 'text', nullable: true})
-	group_key: string | null;
+	// Taproot Asset group key (empty string for regular lightning/BTC channels)
+	@Column({type: 'text', default: ''})
+	group_key: string;
 
 	// Asset unit: 'msat' for regular lightning, or taproot asset unit (e.g., 'usd')
 	@Column({type: 'text', default: 'msat'})
@@ -41,10 +41,6 @@ export class LightningAnalytics {
 	// Total amount in smallest unit (msat for lightning, or asset-specific smallest unit)
 	@Column({type: 'bigint'})
 	amount: string;
-
-	// Number of times we tried to compute this hour (for tracking problematic periods)
-	@Column({type: 'integer', default: 0})
-	attempts: number;
 
 	// Last time this record was updated (unix timestamp)
 	@Column({type: 'integer'})

@@ -13,12 +13,9 @@ export interface LightningAnalyticsArgs {
 
 export interface LightningAnalyticsBackfillStatus {
 	is_running: boolean;
-	current_hour?: number;
-	target_hour?: number;
-	hours_completed?: number;
-	hours_remaining?: number;
 	started_at?: number;
 	errors?: number;
+	hours_completed?: number;
 }
 
 export interface HourlyMetrics {
@@ -27,15 +24,6 @@ export interface HourlyMetrics {
 	forward_fees: bigint;
 	channel_opens: bigint;
 	channel_closes: bigint;
-}
-
-/**
- * Grouped hourly metrics keyed by group_key (null for BTC, string for Taproot Assets)
- */
-export interface GroupedHourlyMetrics {
-	group_key: string | null;
-	unit: string;
-	metrics: HourlyMetrics;
 }
 
 /**
