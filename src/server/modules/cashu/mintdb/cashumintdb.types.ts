@@ -19,6 +19,7 @@ type CashuMintPostgresDatabase = {
 export type CashuMintBalance = {
 	keyset: string;
 	balance: number;
+	unit: MintUnit;
 };
 
 export type CashuMintKeyset = {

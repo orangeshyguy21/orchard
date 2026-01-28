@@ -29,10 +29,7 @@ import {MintInfo} from '@client/modules/mint/classes/mint-info.class';
 import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {OrchardError} from '@client/modules/error/types/error.types';
-import {Setting} from '@client/modules/settings/classes/setting.class';
 import {DeviceType} from '@client/modules/layout/types/device.types';
-/* Shared Dependencies */
-import {SettingKey} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-index-subsection-dashboard',
@@ -43,7 +40,7 @@ import {SettingKey} from '@shared/generated.types';
 })
 export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public enabled_bitcoin: boolean;
-	public enabled_bitcoin_oracle = signal<boolean>(false);
+	public enabled_bitcoin_oracle: boolean;
 	public enabled_lightning: boolean;
 	public enabled_taproot_assets: boolean;
 	public version: string;
@@ -118,6 +115,7 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.enabled_taproot_assets = this.configService.config.taproot_assets.enabled;
 		this.version = this.configService.config.mode.version;
 		this.enabled_mint = this.configService.config.mint.enabled;
+        this.enabled_bitcoin_oracle = this.settingAppService.getSetting('bitcoin_oracle');
 	}
 
 	/* *******************************************************
@@ -125,7 +123,6 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 	******************************************************** */
 
 	ngOnInit(): void {
-		this.getSettings();
 		this.orchardOptionalInit();
 		this.subscriptions.add(this.getBreakpointSubscription());
 	}
@@ -209,19 +206,6 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 	/* *******************************************************
 		Data                      
 	******************************************************** */
-
-	private async getSettings(): Promise<void> {
-		this.settingAppService.loadSettings().subscribe({
-			next: (settings: Setting[]) => {
-				const oracle_setting = settings.find((setting: Setting) => setting.key === SettingKey.BitcoinOracle);
-				const oracle_enabled = oracle_setting ? this.settingAppService.parseSettingValue(oracle_setting) : false;
-				this.enabled_bitcoin_oracle.set(oracle_enabled);
-			},
-			error: (error) => {
-				console.error(error);
-			},
-		});
-	}
 
 	private getBitcoin(): void {
 		forkJoin({

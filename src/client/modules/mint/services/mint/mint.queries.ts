@@ -111,6 +111,7 @@ query MintBalances($keyset_id: String) {
     mint_balances(keyset_id: $keyset_id) {
         balance
     	keyset
+        balance_oracle
     }
 }`;
 

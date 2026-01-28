@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, output, effect, computed} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output, effect, computed, signal} from '@angular/core';
 import {Router} from '@angular/router';
 /* Vendor Dependencies */
 import {MatBottomSheet} from '@angular/material/bottom-sheet';
@@ -52,6 +52,8 @@ export class NavMobileComponent {
 	public abort = output<void>();
 	public showAgent = output<void>();
 
+    public show_oracle = signal<boolean>(false);
+
 	public mobile_pending_event_state = computed(() => {
 		const device_type = this.device_type();
 		const active_event = this.active_event();
@@ -59,7 +61,7 @@ export class NavMobileComponent {
 		return false;
 	});
 
-	private show_oracle: boolean = false;
+
 
 	constructor(
 		private bottomSheet: MatBottomSheet,
@@ -94,7 +96,7 @@ export class NavMobileComponent {
 
 	public onMenuSubsectionClick() {
 		const items = this.navService.getMenuItems(this.active_section());
-		if (this.active_section() === 'bitcoin' && this.show_oracle) {
+		if (this.active_section() === 'bitcoin' && this.show_oracle()) {
 			items.push({
 				name: 'Oracle',
 				navroute: 'bitcoin/oracle',
@@ -128,12 +130,7 @@ export class NavMobileComponent {
 	}
 
 	private getOracleEnabled(): void {
-		this.settingAppService.loadSettings().subscribe({
-			next: (settings: Setting[]) => {
-				const oracle_setting = settings.find((setting: Setting) => setting.key === SettingKey.BitcoinOracle);
-				this.show_oracle = oracle_setting ? this.settingAppService.parseSettingValue(oracle_setting) : false;
-			},
-		});
+		this.show_oracle.set(this.settingAppService.getSetting('bitcoin_oracle'));
 	}
 
 	private getSectionEnabled(section: string): boolean {

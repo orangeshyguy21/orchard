@@ -5,15 +5,13 @@ import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 /* Vendor Dependencies */
 import {Subscription, firstValueFrom} from 'rxjs';
 /* Application Dependencies */
-import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
+import {SettingAppService, ParsedAppSettings} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {EventService} from '@client/modules/event/services/event/event.service';
 import {BitcoinService} from '@client/modules/bitcoin/services/bitcoin/bitcoin.service';
 import {EventData} from '@client/modules/event/classes/event-data.class';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle-price.class';
 import {DeviceType} from '@client/modules/layout/types/device.types';
-/* Native Dependencies */
-import {Setting} from '@client/modules/settings/classes/setting.class';
 /* Shared Dependencies */
 import {SettingKey} from '@shared/generated.types';
 
@@ -39,7 +37,7 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 	private active_event: EventData | null = null;
 	private subscriptions: Subscription = new Subscription();
 	private dirty_count: WritableSignal<number> = signal(0);
-	private initial_settings: Setting[] = [];
+	private initial_settings!: ParsedAppSettings;
 
 	constructor(
 		private settingAppService: SettingAppService,
@@ -52,17 +50,16 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	async ngOnInit(): Promise<void> {
+	ngOnInit(): void {
 		this.subscriptions.add(this.getEventSubscription());
 		this.subscriptions.add(this.getBreakpointSubscription());
-		await this.getSettings();
+		this.getSettings();
 		this.getBitcoinOracle();
 	}
 
-	private async getSettings(): Promise<void> {
-		const settings = await firstValueFrom(this.settingAppService.loadSettings());
-		this.initial_settings = settings;
-		this.initSettingForms(settings);
+	private getSettings(): void {
+		this.initial_settings = this.settingAppService.getParsedSettings();
+		this.initSettingForms(this.initial_settings);
 	}
 
 	private async getBitcoinOracle(): Promise<void> {
@@ -86,11 +83,9 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	private initSettingForms(settings: Setting[]): void {
-		const bitcoin_oracle_setting = settings.find((setting) => setting.key === SettingKey.BitcoinOracle);
-		if (!bitcoin_oracle_setting) return;
+	private initSettingForms(settings: ParsedAppSettings): void {
 		this.form_bitcoin.patchValue({
-			oracle_enabled: this.settingAppService.parseSettingValue(bitcoin_oracle_setting),
+			oracle_enabled: settings.bitcoin_oracle,
 		});
 	}
 
@@ -137,7 +132,6 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 				);
 				this.form_bitcoin.markAsPristine();
 				this.evaluateDirtyCount();
-				this.settingAppService.clearSettingsCache();
 				this.getSettings();
 			},
 			error: (errors: OrchardErrors) => {

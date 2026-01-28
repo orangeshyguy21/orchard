@@ -21,6 +21,7 @@ import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {ConfigService} from '@client/modules/config/services/config.service';
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
+import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
 import {PublicService} from '@client/modules/public/services/image/public.service';
 import {LightningService} from '@client/modules/lightning/services/lightning/lightning.service';
@@ -34,6 +35,7 @@ import {LightningAnalyticsArgs} from '@client/modules/lightning/types/lightning.
 import {OrchardError} from '@client/modules/error/types/error.types';
 import {NavTertiaryItem} from '@client/modules/nav/types/nav-tertiary-item.type';
 import {DeviceType} from '@client/modules/layout/types/device.types';
+import {Setting} from '@client/modules/settings/classes/setting.class';
 /* Native Dependencies */
 import {MintService} from '@client/modules/mint/services/mint/mint.service';
 import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
@@ -43,7 +45,7 @@ import {MintFee} from '@client/modules/mint/classes/mint-fee.class';
 import {MintAnalytic} from '@client/modules/mint/classes/mint-analytic.class';
 import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
 /* Shared Dependencies */
-import {AiFunctionName, MintAnalyticsInterval, MintUnit, LightningAnalyticsInterval} from '@shared/generated.types';
+import {AiFunctionName, MintAnalyticsInterval, MintUnit, LightningAnalyticsInterval, SettingKey} from '@shared/generated.types';
 
 enum NavTertiary {
 	BalanceSheet = 'nav1',
@@ -88,6 +90,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public lightning_analytics_pre: LightningAnalytic[] = [];
 	public lightning_analytics_backfill_status: LightningAnalyticsBackfillStatus | null = null;
 	public locale!: string;
+    public enabled_bitcoin_oracle: boolean;
 	// derived data
 	public mint_genesis_time: number = 0;
 	// state
@@ -116,6 +119,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 
 	public device_type = signal<DeviceType>('desktop');
 
+
 	public tertiary_nav = computed(() => this.page_settings().tertiary_nav || []);
 	public type_balance_sheet = computed(() => this.page_settings().type.balance_sheet || ChartType.Totals);
 	public type_mints = computed(() => this.page_settings().type.mints || ChartType.Volume);
@@ -129,6 +133,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		private configService: ConfigService,
 		private mintService: MintService,
 		private settingDeviceService: SettingDeviceService,
+        private settingAppService: SettingAppService,
 		private publicService: PublicService,
 		private lightningService: LightningService,
 		private aiService: AiService,
@@ -144,6 +149,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
 		this.mint_genesis_time = this.getMintGenesisTime();
 		this.page_settings = signal(this.getPageSettings());
+        this.enabled_bitcoin_oracle = this.settingAppService.getSetting('bitcoin_oracle');
 	}
 
 	/* *******************************************************
@@ -432,7 +438,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	}
 
 	/* *******************************************************
-		Page Settings                      
+		Settings                      
 	******************************************************** */
 
 	private getPageSettings(): NonNullableMintDashboardSettings {

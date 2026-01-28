@@ -1,11 +1,13 @@
 import {OrchardMintBalance} from '@shared/generated.types';
 
 export class MintBalance implements OrchardMintBalance {
+    keyset: string;
 	balance: number;
-	keyset: string;
+    balance_oracle: number;
 
 	constructor(omb: OrchardMintBalance) {
+        this.keyset = omb?.keyset || '';
 		this.balance = omb?.balance || 0;
-		this.keyset = omb?.keyset || '';
+		this.balance_oracle = omb?.balance_oracle || 0;
 	}
 }
