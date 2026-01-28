@@ -1,6 +1,164 @@
 <div>
 	<div class="title-l p-b-1 p-l-1">Balance Sheet</div>
-	<mat-card appearance="outlined" class="overflow-hidden">
+
+    <div class="flex flex-column flex-gap-1">
+        <div class="flex flex-justify-between p-r-2">
+            <div class="w-min-12 text-center font-size-xs">Assets</div>
+            <div class="w-min-12 text-center font-size-xs">Liabilities</div>
+            @if (device_type() === 'desktop') {
+                <div class="w-min-12 text-center font-size-xs">Active Keyset</div>
+            }
+        </div>
+    
+        @for (row of rows(); track row.unit) {
+            <mat-card appearance="outlined" class="relative overflow-hidden">
+                <mat-card-content class="orc-surface-container-low-bg cursor-pointer" matRipple (click)="toggleExpanded(row.unit)">
+                    <div class="flex flex-items-center flex-gap-1">
+                        <div class="flex-grow flex flex-justify-between">
+                            @if (lightning_enabled()) {
+                                @if (!lightning_loading()) {
+                                    @if (lightning_errors() && lightning_errors().length > 0) {
+                                        <div animate.enter="orc-animation-fadein-fast">
+                                            @for (error of lightning_errors(); track error.code) {
+                                                <orc-error-resolve [error]="error" mode="small"></orc-error-resolve>
+                                            }
+                                        </div>
+                                    } @else {
+                                        <div animate.enter="orc-animation-fadein-fast" class="flex flex-items-center flex-gap-2">
+                                            <orc-graphic-asset class="low-bg" [unit]="row.unit" [height]="'2.5rem'" [custody]="'lightning'">
+                                            </orc-graphic-asset>
+                                            @if (row.assets !== null) {
+                                                <div class="flex flex-column">
+                                                    <span
+                                                        class="font-size-l text-nowrap"
+                                                        [innerHTML]="row.assets | localAmount: row.unit : 'lightning'"
+                                                    ></span>
+                                                    <div class="font-size-xs orc-outline-color text-nowrap">Lightning send capacity</div>
+                                                </div>
+                                                
+                                            } @else {
+                                                <span class="font-size-m orc-outline-color">
+                                                    <mat-icon>check_indeterminate_small</mat-icon>
+                                                </span>
+                                            }
+                                        </div>
+                                    }
+                                }
+                            } @else {
+                                <button mat-stroked-button (click)="navigate.emit()">Lightning Configuration</button>
+                            }
+                            <div class="flex flex-items-center flex-gap-2">
+                                <orc-graphic-asset class="low-bg" [unit]="row.unit" [height]="'2.5rem'" [custody]="'ecash'"> </orc-graphic-asset>
+                                <div class="flex flex-column">
+                                    <span class="font-size-l text-nowrap" [innerHTML]="row.liabilities | localAmount: row.unit : 'mint'"></span>
+                                    <div class="font-size-xs orc-outline-color text-nowrap">Unspent ecash</div>
+                                </div>
+                                @if (device_type() === 'desktop') {
+                                    <span class="font-size-m orc-outline-color text-nowrap">{{
+                                        row.reserve | percent
+                                    }}</span>
+                                }
+                            </div>
+                            @if (device_type() === 'desktop') {
+                                <orc-mint-general-keyset
+                                    class="high-bg"
+                                    [active]="row.active"
+                                    [index]="row.derivation_path_index"
+                                    [input_fee_ppk]="row.input_fee_ppk"
+                                ></orc-mint-general-keyset>
+                            }
+                        </div>
+                        <div>
+                            <button
+                                type="button"
+                                tabindex="-1"
+                                mat-icon-button
+                                class="orc-icon-button orc-animation-rotate-toggle"
+                                [class.animation-expanded]="expanded()[row.unit]"
+                            >
+                                <mat-icon>keyboard_arrow_down</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="orc-animation-expand-collapse" [class.animation-expanded]="expanded()[row.unit]">
+                        <div class="orc-animation-expand-collapse-inner p-t-1">
+                            <div class="category-rule"></div>
+                            @if (device_type() !== 'desktop') {
+                                <div class="p-t-1 flex flex-column flex-items-center flex-gap-0-5">
+                                    <orc-mint-general-keyset
+                                        class="high-bg"
+                                        [active]="row.active"
+                                        [index]="row.derivation_path_index"
+                                        [input_fee_ppk]="row.input_fee_ppk"
+                                    ></orc-mint-general-keyset>
+                                    <div class="font-size-xs orc-outline-color">Active keyset</div>
+                                </div>
+                            }
+                            <div class="flex flex-row flex-gap-1 p-t-1 flex-wrap">
+                                <div class="orc-high-card p-1 flex-1">
+                                    <div>
+                                        <div class="font-size-l text-nowrap">{{ row.unit | localUnit: true}}</div>
+                                        <div class="font-size-xs orc-outline-color text-nowrap">Mint unit</div>
+                                    </div>
+                                </div>
+                                <div class="orc-high-card p-1 flex-1">
+                                    <div>
+                                        <div class="font-size-l text-nowrap">{{ row.reserve | percent }}</div>
+                                        <div class="font-size-xs orc-outline-color text-nowrap">Coverage ratio</div>
+                                    </div>
+                                </div>
+                                <div class="orc-high-card p-1 flex-1">
+                                    <div>
+                                        <div class="font-size-l text-nowrap" [innerHTML]="row.fees | localAmount: row.unit : 'mint'"></div>
+                                        <div class="font-size-xs orc-outline-color text-nowrap">Fee revenue</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- <div class="flex flex-column flex-gap-1 p-t-2">
+                                <div>
+                                    <div class="font-size-l text-nowrap">{{ row.unit | localUnit: true}}</div>
+                                    <div class="font-size-xs orc-outline-color">Mint unit</div>
+                                </div>
+                                <div>
+                                    <div class="font-size-l text-nowrap" [innerHTML]="row.fees | localAmount: row.unit : 'mint'"></div>
+                                    <div class="font-size-xs orc-outline-color">Lifetime fee revenue</div>
+                                </div>
+                                <div>
+                                    <div class="font-size-l text-nowrap">{{ row.reserve | percent }}</div>
+                                    <div class="font-size-xs orc-outline-color">Coverage ratio</div>
+                                </div>
+                                <div>
+                                    <orc-mint-general-keyset
+                                        class="high-bg"
+                                        [active]="row.active"
+                                        [index]="row.derivation_path_index"
+                                        [input_fee_ppk]="row.input_fee_ppk"
+                                    ></orc-mint-general-keyset>
+                                    <div class="font-size-xs orc-outline-color">Active keyset</div>
+                                </div>
+                                <div>
+                                    <div class="font-size-l text-nowrap" [innerHTML]="34560 | localAmount: 'usd' : 'mint'"></div>
+                                    <div class="font-size-xs orc-outline-color">USD lightning send capacity</div>
+                                </div>
+                                <div>
+                                    <div class="font-size-l text-nowrap" [innerHTML]="3560 | localAmount: 'usd' : 'mint'"></div>
+                                    <div class="font-size-xs orc-outline-color">USD unspent ecash</div>
+                                </div>
+                            </div> -->
+                            
+                        </div>
+                    </div>
+                    
+                </mat-card-content>
+            </mat-card>
+        }
+    </div>
+
+	
+
+
+	<!-- <mat-card appearance="outlined" class="overflow-hidden">
 		<div class="p-h-1 balance-sheet-scroll-wrapper">
 			<table mat-table [dataSource]="rows()" class="orc-feature-table">
 				<ng-container matColumnDef="assets">
@@ -73,5 +231,5 @@
 				<tr mat-row *matRowDef="let row; columns: displayed_columns()"></tr>
 			</table>
 		</div>
-	</mat-card>
+	</mat-card> -->
 </div>

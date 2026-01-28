@@ -3,6 +3,7 @@ import {ChangeDetectionStrategy, Component, input, output, effect, signal} from 
 /* Application Dependencies */
 import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
 import {OrchardError} from '@client/modules/error/types/error.types';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Native Module Dependencies */
 import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
@@ -28,10 +29,10 @@ export class MintGeneralBalanceSheetComponent {
 	public lightning_errors = input<OrchardError[]>([]);
 	public lightning_loading = input.required<boolean>();
 	public loading = input.required<boolean>();
-	public device_desktop = input.required<boolean>();
+	public device_type = input.required<DeviceType>();
 
+	public expanded = signal<Record<string, boolean>>({});
 	public rows = signal<MintGeneralBalanceRow[]>([]);
-	public displayed_columns = signal<string[]>(['assets', 'liabilities', 'keyset', 'fees']);
 
 	constructor() {
 		effect(() => {
@@ -43,7 +44,6 @@ export class MintGeneralBalanceSheetComponent {
 	private init(): void {
 		const rows = this.getRows();
 		this.rows.set(rows);
-		if (rows[0]?.fees === null) this.displayed_columns.set(['assets', 'liabilities', 'keyset']);
 	}
 
 	private getAssetBalances(unit: MintUnit): number | null {
@@ -80,5 +80,10 @@ export class MintGeneralBalanceSheetComponent {
 			const currency_order: Record<string, number> = {btc: 1, sat: 2, msat: 3, usd: 4, eur: 5};
 			return (currency_order[a.unit.toLowerCase()] || 999) - (currency_order[b.unit.toLowerCase()] || 999);
 		});
+	}
+
+    /** Toggles the expanded state for a given unit row */
+	public toggleExpanded(unit: string): void {
+		this.expanded.update((state) => ({...state, [unit]: !state[unit]}));
 	}
 }

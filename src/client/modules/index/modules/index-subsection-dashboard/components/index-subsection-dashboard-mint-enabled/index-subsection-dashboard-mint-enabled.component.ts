@@ -6,6 +6,7 @@ import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
 import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
 import {OrchardError} from '@client/modules/error/types/error.types';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 
 type Liabilities = {
 	unit: string;
@@ -30,7 +31,7 @@ export class IndexSubsectionDashboardMintEnabledComponent {
 	public lightning_enabled = input.required<boolean>();
 	public lightning_errors = input.required<OrchardError[]>();
 	public lightning_loading = input.required<boolean>();
-	public device_desktop = input.required<boolean>();
+	public device_type = input.required<DeviceType>();
 
 	public navigate = output<string>();
 

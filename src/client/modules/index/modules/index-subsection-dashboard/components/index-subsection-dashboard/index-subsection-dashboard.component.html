@@ -112,7 +112,7 @@
 				[lightning_enabled]="enabled_lightning"
 				[lightning_errors]="errors_lightning"
 				[lightning_loading]="preparing_lightning"
-				[device_desktop]="device_type() === 'desktop'"
+				[device_type]="device_type()"
 				(navigate)="onNavigate($event)"
 			></orc-index-subsection-dashboard-mint-enabled>
 		} @else {

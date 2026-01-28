@@ -8,7 +8,7 @@
 			[lightning_errors]="errors_lightning"
 			[lightning_loading]="loading_lightning"
 			[loading]="loading_static_data"
-			[device_desktop]="device_type() === 'desktop'"
+			[device_type]="device_type()"
 			(navigate)="onNavigate('lightning')"
 		></orc-mint-general-balance-sheet>
 		<orc-mint-subsection-dashboard-connections

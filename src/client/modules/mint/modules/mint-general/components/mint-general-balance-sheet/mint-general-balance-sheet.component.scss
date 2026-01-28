@@ -1,4 +1,5 @@
 @use 'molecule/molecule';
+@use 'nucleus/nucleus';
 
 :host {
 	@extend %flex-grow;

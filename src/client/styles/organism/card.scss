@@ -1,0 +1,6 @@
+@use 'molecule/molecule';
+
+.orc-high-card {
+    @extend %orc-surface-container-high-bg;
+    @extend %orc-corner-small;
+}

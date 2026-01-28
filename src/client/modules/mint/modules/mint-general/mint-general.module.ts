@@ -6,6 +6,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatCardModule} from '@angular/material/card';
 import {MatTableModule} from '@angular/material/table';
 import {MatButtonModule} from '@angular/material/button';
+import {MatRippleModule} from '@angular/material/core';
 /* Application Dependencies */
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {OrcLocalModule} from '@client/modules/local/local.module';
@@ -24,6 +25,7 @@ import {MintGeneralBalanceSheetComponent} from './components/mint-general-balanc
 		MatCardModule,
 		MatTableModule,
 		MatButtonModule,
+		MatRippleModule,
 		OrcGraphicModule,
 		OrcLocalModule,
 		OrcErrorModule,
