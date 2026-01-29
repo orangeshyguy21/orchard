@@ -115,7 +115,7 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.enabled_taproot_assets = this.configService.config.taproot_assets.enabled;
 		this.version = this.configService.config.mode.version;
 		this.enabled_mint = this.configService.config.mint.enabled;
-        this.enabled_bitcoin_oracle = this.settingAppService.getSetting('bitcoin_oracle');
+		this.enabled_bitcoin_oracle = this.settingAppService.getSetting('bitcoin_oracle');
 	}
 
 	/* *******************************************************

@@ -28,6 +28,7 @@ export class MintGeneralBalanceSheetComponent {
 	public lightning_enabled = input.required<boolean>();
 	public lightning_errors = input<OrchardError[]>([]);
 	public lightning_loading = input.required<boolean>();
+	public bitcoin_oracle_enabled = input.required<boolean>();
 	public loading = input.required<boolean>();
 	public device_type = input.required<DeviceType>();
 
@@ -46,11 +47,11 @@ export class MintGeneralBalanceSheetComponent {
 		this.rows.set(rows);
 	}
 
-	private getAssetBalances(unit: MintUnit): number | null {
+	private getAssetBalances(unit: MintUnit): {balance: number | null, balance_oracle: number | null} {
 		const lightning_balance = this.lightning_balance();
-		if (unit === MintUnit.Eur || unit === MintUnit.Usd) return null;
-		if (lightning_balance) return lightning_balance.local_balance.sat;
-		return 0;
+		if (unit === MintUnit.Eur || unit === MintUnit.Usd) return {balance: null, balance_oracle: null};
+		if (lightning_balance) return {balance: lightning_balance.local_balance, balance_oracle: lightning_balance.local_balance_oracle};
+		return {balance: null, balance_oracle: null};
 	}
 
 	private getRows(): MintGeneralBalanceRow[] {
@@ -67,7 +68,7 @@ export class MintGeneralBalanceSheetComponent {
 			.filter((row) => row !== null)
 			.sort((a, b) => b.derivation_path_index - a.derivation_path_index)
 			.forEach((row) => {
-				const unit = row.unit.toLowerCase();
+				const unit = row.unit_mint.toLowerCase();
 				if (!rows_by_unit[unit]) {
 					rows_by_unit[unit] = row;
 					return;
@@ -78,11 +79,11 @@ export class MintGeneralBalanceSheetComponent {
 
 		return Object.values(rows_by_unit).sort((a, b) => {
 			const currency_order: Record<string, number> = {btc: 1, sat: 2, msat: 3, usd: 4, eur: 5};
-			return (currency_order[a.unit.toLowerCase()] || 999) - (currency_order[b.unit.toLowerCase()] || 999);
+			return (currency_order[a.unit_mint.toLowerCase()] || 999) - (currency_order[b.unit_mint.toLowerCase()] || 999);
 		});
 	}
 
-    /** Toggles the expanded state for a given unit row */
+	/** Toggles the expanded state for a given unit row */
 	public toggleExpanded(unit: string): void {
 		this.expanded.update((state) => ({...state, [unit]: !state[unit]}));
 	}

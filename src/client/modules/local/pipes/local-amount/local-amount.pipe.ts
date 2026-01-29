@@ -21,6 +21,8 @@ export class LocalAmountPipe implements PipeTransform {
 		const unit_lower = unit.toLowerCase();
 
 		switch (unit_lower) {
+			case 'msat':
+				return this.transformSat(Math.ceil(amount/1000), locale, currency.type_btc, abbreviate);
 			case 'sat':
 				return this.transformSat(amount, locale, currency.type_btc, abbreviate);
 			case 'btc':
@@ -78,7 +80,7 @@ export class LocalAmountPipe implements PipeTransform {
 		abbreviate: boolean = false,
 	): string {
 		let fiat_amount = amount;
-		if (section === 'mint') fiat_amount = LocalAmountPipe.getConvertedAmount(unit, amount);
+		if (section === 'mint' || section === undefined) fiat_amount = LocalAmountPipe.getConvertedAmount(unit, amount);
 		const fiat_amount_string = abbreviate
 			? this.abbreviateAmount(fiat_amount, locale)
 			: fiat_amount.toLocaleString(locale, {minimumFractionDigits: 2, maximumFractionDigits: 2});
@@ -120,6 +122,8 @@ export class LocalAmountPipe implements PipeTransform {
 		switch (unit.toLowerCase()) {
 			case 'sat':
 				return amount;
+			case 'msat':
+				return Math.ceil(amount / 1000);
 			case 'btc':
 				return amount;
 			case 'usd':

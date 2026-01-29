@@ -4,3 +4,8 @@
     @extend %orc-surface-container-high-bg;
     @extend %orc-corner-small;
 }
+
+.orc-primary-card{
+    @extend %orc-primary-container-bg;
+    @extend %orc-corner-small;
+}

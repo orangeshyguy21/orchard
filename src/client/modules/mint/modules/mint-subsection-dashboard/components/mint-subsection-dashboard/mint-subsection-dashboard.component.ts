@@ -90,7 +90,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public lightning_analytics_pre: LightningAnalytic[] = [];
 	public lightning_analytics_backfill_status: LightningAnalyticsBackfillStatus | null = null;
 	public locale!: string;
-    public enabled_bitcoin_oracle: boolean;
+	public enabled_bitcoin_oracle: boolean;
 	// derived data
 	public mint_genesis_time: number = 0;
 	// state
@@ -119,7 +119,6 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 
 	public device_type = signal<DeviceType>('desktop');
 
-
 	public tertiary_nav = computed(() => this.page_settings().tertiary_nav || []);
 	public type_balance_sheet = computed(() => this.page_settings().type.balance_sheet || ChartType.Totals);
 	public type_mints = computed(() => this.page_settings().type.mints || ChartType.Volume);
@@ -133,7 +132,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		private configService: ConfigService,
 		private mintService: MintService,
 		private settingDeviceService: SettingDeviceService,
-        private settingAppService: SettingAppService,
+		private settingAppService: SettingAppService,
 		private publicService: PublicService,
 		private lightningService: LightningService,
 		private aiService: AiService,
@@ -149,7 +148,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
 		this.mint_genesis_time = this.getMintGenesisTime();
 		this.page_settings = signal(this.getPageSettings());
-        this.enabled_bitcoin_oracle = this.settingAppService.getSetting('bitcoin_oracle');
+		this.enabled_bitcoin_oracle = this.settingAppService.getSetting('bitcoin_oracle');
 	}
 
 	/* *******************************************************
@@ -390,7 +389,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 
 	private async loadLightningAnalytics(): Promise<void> {
 		const timezone = this.settingDeviceService.getTimezone();
-        const interval = this.page_settings().interval as unknown as LightningAnalyticsInterval;
+		const interval = this.page_settings().interval as unknown as LightningAnalyticsInterval;
 		const args: LightningAnalyticsArgs = {
 			date_start: this.page_settings().date_start,
 			date_end: this.page_settings().date_end,
@@ -429,7 +428,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			this.loading_dynamic_data = true;
 			this.cdr.detectChanges();
 			await this.loadMintAnalytics();
-            if (this.lightning_enabled) await this.loadLightningAnalytics();
+			if (this.lightning_enabled) await this.loadLightningAnalytics();
 			this.loading_dynamic_data = false;
 			this.cdr.detectChanges();
 		} catch (error) {

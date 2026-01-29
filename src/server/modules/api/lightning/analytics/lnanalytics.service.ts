@@ -34,9 +34,7 @@ export class ApiLightningAnalyticsService {
 			Math.min(date_end, current_hour_start - 1),
 			metrics,
 		);
-		const all_data = cached.filter(
-			(d) => metrics.includes(d.metric as LightningAnalyticsMetric) && d.amount !== '0',
-		);
+		const all_data = cached.filter((d) => metrics.includes(d.metric as LightningAnalyticsMetric) && d.amount !== '0');
 
 		return this.aggregateByInterval(all_data, args.interval ?? LightningAnalyticsInterval.hour, args.timezone, date_start);
 	}

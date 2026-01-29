@@ -81,7 +81,7 @@ export class LightningService implements OnModuleInit {
 	}
 
 	async getLightningChannelBalance(): Promise<LightningChannelBalance> {
-		if (this.type === 'lnd') return this.makeGrpcRequest('ChannelBalance', {});
+		if (this.type === 'lnd') return this.lndService.mapLndChannelBalance(await this.makeGrpcRequest('ChannelBalance', {}));
 		if (this.type === 'cln') {
 			return this.clnService.mapClnChannelBalance(
 				await this.makeGrpcRequest('ListFunds', {}),

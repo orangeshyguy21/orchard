@@ -7,6 +7,7 @@
 			[lightning_enabled]="lightning_enabled"
 			[lightning_errors]="errors_lightning"
 			[lightning_loading]="loading_lightning"
+			[bitcoin_oracle_enabled]="enabled_bitcoin_oracle"
 			[loading]="loading_static_data"
 			[device_type]="device_type()"
 			(navigate)="onNavigate('lightning')"
@@ -80,8 +81,8 @@
 					[locale]="locale"
 					[mint_analytics]="mint_analytics_balances"
 					[mint_analytics_pre]="mint_analytics_balances_pre"
-                    [lightning_balance]="lightning_balance"
-                    [lightning_analytics_backfill_status]="lightning_analytics_backfill_status"
+					[lightning_balance]="lightning_balance"
+					[lightning_analytics_backfill_status]="lightning_analytics_backfill_status"
 					[lightning_analytics]="lightning_analytics"
 					[lightning_analytics_pre]="lightning_analytics_pre"
 					[page_settings]="page_settings()"
@@ -89,7 +90,7 @@
 					[selected_type]="type_balance_sheet()"
 					[loading]="loading_dynamic_data"
 					[lightning_enabled]="lightning_enabled"
-                    [device_mobile]="device_type() === 'mobile'"
+					[device_mobile]="device_type() === 'mobile'"
 				></orc-mint-subsection-dashboard-balance-chart>
 			</div>
 

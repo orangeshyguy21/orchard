@@ -29,17 +29,17 @@
 	@extend %flex;
 	@extend %flex-items-center;
 	@extend %flex-gap-0-5;
-    @extend %cursor-pointer;
+	@extend %cursor-pointer;
 }
 
 .legend-item-visual {
-    @extend %w-2-5;
-    @extend %border;
-    height: 10px;
-    border-width: 2px;
+	@extend %w-2-5;
+	@extend %border;
+	height: 10px;
+	border-width: 2px;
 
 	&.default {
-        @extend %border-solid;
+		@extend %border-solid;
 	}
 
 	&.dashed {
@@ -49,17 +49,17 @@
 
 .legend-item-label {
 	@extend %font-size-xs;
-    @extend %orc-outline-color;
+	@extend %orc-outline-color;
 
-    &.hidden-dataset {
-        text-decoration: line-through;
-        opacity: 0.5;
-    }
+	&.hidden-dataset {
+		text-decoration: line-through;
+		opacity: 0.5;
+	}
 }
 
 .mobile-legend {
 	@extend %h-1;
 	@extend %flex;
 	@extend %flex-items-center;
-    @extend %flex-justify-center;
+	@extend %flex-justify-center;
 }

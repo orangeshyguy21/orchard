@@ -47,13 +47,13 @@ export class IndexSubsectionDashboardLightningEnabledComponent implements OnChan
 	}
 
 	private getSatSummary(): ChannelSummary {
-		const local_balance = this.lightning_balance?.local_balance.sat || 0;
-		const remote_balance = this.lightning_balance?.remote_balance.sat || 0;
+		const local_balance = this.lightning_balance?.local_balance || 0;
+		const remote_balance = this.lightning_balance?.remote_balance || 0;
 		return {
 			size: local_balance + remote_balance,
 			recievable: remote_balance,
 			sendable: local_balance,
-			unit: 'sat',
+			unit: 'msat',
 			decimal_display: 0,
 		};
 	}

@@ -52,7 +52,7 @@ export class NavMobileComponent {
 	public abort = output<void>();
 	public showAgent = output<void>();
 
-    public show_oracle = signal<boolean>(false);
+	public show_oracle = signal<boolean>(false);
 
 	public mobile_pending_event_state = computed(() => {
 		const device_type = this.device_type();
@@ -60,8 +60,6 @@ export class NavMobileComponent {
 		if (device_type === 'mobile' && active_event?.type === 'PENDING') return true;
 		return false;
 	});
-
-
 
 	constructor(
 		private bottomSheet: MatBottomSheet,

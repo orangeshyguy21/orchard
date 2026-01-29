@@ -50,27 +50,13 @@ export const LIGHTNING_BALANCE_QUERY = `{
                 remote_balance
             }
         }
-        local_balance{
-            sat
-            msat
-        }
+        local_balance
+        local_balance_oracle
         pending_open_balance
-        pending_open_remote_balance{
-            sat
-            msat
-        }
-        remote_balance{
-            sat
-            msat
-        }
-        unsettled_local_balance{
-            sat
-            msat
-        }
-        unsettled_remote_balance{
-            sat
-            msat
-        }
+        pending_open_remote_balance
+        remote_balance
+        unsettled_local_balance
+        unsettled_remote_balance
     }
 }`;
 

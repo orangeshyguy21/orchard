@@ -12,7 +12,7 @@ import {LightningInfo, LightningChannelBalance, LightningRequest} from '@server/
 import {LightningAddresses} from '@server/modules/lightning/walletkit/lnwalletkit.types';
 import {LightningAddressType} from '@server/modules/lightning/lightning.enums';
 /* Local Dependencies */
-import {asBigIntMsat, msatToStrings, sumMsat, mapRequestType, mapRequestExpiry, mapRequestDescription} from './cln.helpers';
+import {asBigIntMsat, sumMsat, mapRequestType, mapRequestExpiry, mapRequestDescription} from './cln.helpers';
 
 @Injectable()
 export class ClnService {
@@ -197,12 +197,12 @@ export class ClnService {
 		return {
 			balance: (local_open_msat / BigInt(1000)).toString(),
 			pending_open_balance: (pending_local_msat / BigInt(1000)).toString(),
-			local_balance: msatToStrings(local_open_msat),
-			remote_balance: msatToStrings(remote_open_msat),
-			unsettled_local_balance: msatToStrings(unsettled_local_msat),
-			unsettled_remote_balance: msatToStrings(unsettled_remote_msat),
-			pending_open_local_balance: msatToStrings(pending_local_msat),
-			pending_open_remote_balance: msatToStrings(pending_remote_msat),
+			local_balance: local_open_msat.toString(),
+			remote_balance: remote_open_msat.toString(),
+			unsettled_local_balance: unsettled_local_msat.toString(),
+			unsettled_remote_balance: unsettled_remote_msat.toString(),
+			pending_open_local_balance: pending_local_msat.toString(),
+			pending_open_remote_balance: pending_remote_msat.toString(),
 			custom_channel_data: Buffer.alloc(0),
 		};
 	}

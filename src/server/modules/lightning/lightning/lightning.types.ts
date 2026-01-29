@@ -26,12 +26,12 @@ export type LightningInfo = {
 export type LightningChannelBalance = {
 	balance: string;
 	pending_open_balance: string;
-	local_balance: {sat: string; msat: string};
-	remote_balance: {sat: string; msat: string};
-	unsettled_local_balance: {sat: string; msat: string};
-	unsettled_remote_balance: {sat: string; msat: string};
-	pending_open_local_balance: {sat: string; msat: string};
-	pending_open_remote_balance: {sat: string; msat: string};
+	local_balance: string;
+	remote_balance: string;
+	unsettled_local_balance: string;
+	unsettled_remote_balance: string;
+	pending_open_local_balance: string;
+	pending_open_remote_balance: string;
 	custom_channel_data: Buffer;
 };
 

@@ -95,11 +95,11 @@ export class BitcoinRpcService implements OnModuleInit {
 		if (this.type === BitcoinType.CORE) return this.coreService.makeRpcRequest('getrawmempool', [true]);
 	}
 
-    /* *******************************************************
+	/* *******************************************************
 	    Transaction                      
 	******************************************************** */
 
-    public async getTransaction(txid: string): Promise<BitcoinRawTransaction> {
+	public async getTransaction(txid: string): Promise<BitcoinRawTransaction> {
 		if (this.type === BitcoinType.CORE) return this.coreService.makeRpcRequest('getrawtransaction', [txid, true]);
 	}
 

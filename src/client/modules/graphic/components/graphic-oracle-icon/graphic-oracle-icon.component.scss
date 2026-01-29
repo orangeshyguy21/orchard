@@ -1,0 +1,23 @@
+@use 'molecule/molecule';
+
+:host {
+	--icon-size: calc(var(--size) * 0.75);
+}
+
+.oracle-crystal-ball {
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	@extend %orc-corner-full;
+	border: 2px solid var(--mat-sys-outline);
+	width: var(--size);
+	height: var(--size);
+
+	mat-icon,
+	.icon {
+		font-size: var(--icon-size);
+		width: var(--icon-size);
+		height: var(--icon-size);
+        color: var(--mat-sys-outline);
+	}
+}

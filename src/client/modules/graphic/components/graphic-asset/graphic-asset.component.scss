@@ -3,13 +3,13 @@
 :host {
 	@extend %flex;
 
-    &.low-bg {
+	&.low-bg {
 		.graphic-asset-custody {
 			@extend %orc-surface-container-low-bg;
 		}
 	}
 
-    &.high-bg {
+	&.high-bg {
 		.graphic-asset-custody {
 			@extend %orc-surface-container-high-bg;
 		}

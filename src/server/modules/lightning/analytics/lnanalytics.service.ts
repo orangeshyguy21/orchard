@@ -94,8 +94,8 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 		if (date_end < date_start) return [];
 
 		const node_pubkey = await this.getNodePubkey();
-        const start_hour = DateTime.fromSeconds(date_start, {zone: 'UTC'}).startOf('hour').toSeconds();
-        const end_hour = DateTime.fromSeconds(date_end, {zone: 'UTC'}).startOf('hour').toSeconds();
+		const start_hour = DateTime.fromSeconds(date_start, {zone: 'UTC'}).startOf('hour').toSeconds();
+		const end_hour = DateTime.fromSeconds(date_end, {zone: 'UTC'}).startOf('hour').toSeconds();
 		const where: any = {
 			node_pubkey,
 			date: Between(start_hour, end_hour),
@@ -134,11 +134,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 	/**
 	 * Sums outgoing payments for a specific group_key (null = BTC only)
 	 */
-	private sumPaymentsOut(
-		payments: LightningPayment[],
-		group_key: string | null,
-		asset_to_group: Map<string, string>,
-	): bigint {
+	private sumPaymentsOut(payments: LightningPayment[], group_key: string | null, asset_to_group: Map<string, string>): bigint {
 		const succeeded = payments.filter((p) => p.status === 'succeeded');
 
 		if (group_key === null) {
@@ -156,17 +152,11 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 	/**
 	 * Sums incoming invoices for a specific group_key (null = BTC only)
 	 */
-	private sumInvoicesIn(
-		invoices: LightningInvoice[],
-		group_key: string | null,
-		asset_to_group: Map<string, string>,
-	): bigint {
+	private sumInvoicesIn(invoices: LightningInvoice[], group_key: string | null, asset_to_group: Map<string, string>): bigint {
 		const settled = invoices.filter((i) => i.state === 'settled');
 
 		if (group_key === null) {
-			return settled
-				.filter((i) => i.asset_balances.length === 0)
-				.reduce((sum, i) => sum + BigInt(i.amt_paid_msat), BigInt(0));
+			return settled.filter((i) => i.asset_balances.length === 0).reduce((sum, i) => sum + BigInt(i.amt_paid_msat), BigInt(0));
 		}
 
 		return settled
@@ -213,35 +203,21 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 	}
 
 	private buildTxTimestampMap(transactions: LightningTransaction[]): Map<string, number> {
-		return new Map(
-			transactions
-                .filter((tx) => tx.tx_hash && tx.time_stamp > 0)
-                .map((tx) => [tx.tx_hash, tx.time_stamp]),
-		);
+		return new Map(transactions.filter((tx) => tx.tx_hash && tx.time_stamp > 0).map((tx) => [tx.tx_hash, tx.time_stamp]));
 	}
 
 	/**
 	 * Builds a map from asset_id to group_key using channel data
 	 */
-	private buildAssetToGroupKeyMap(
-		channels: LightningChannel[],
-		closed_channels: LightningClosedChannel[],
-	): Map<string, string> {
-		return new Map(
-			[...channels, ...closed_channels]
-				.filter((c) => c.asset)
-				.map((c) => [c.asset!.asset_id, c.asset!.group_key]),
-		);
+	private buildAssetToGroupKeyMap(channels: LightningChannel[], closed_channels: LightningClosedChannel[]): Map<string, string> {
+		return new Map([...channels, ...closed_channels].filter((c) => c.asset).map((c) => [c.asset!.asset_id, c.asset!.group_key]));
 	}
 
 	/**
 	 * Builds a map from group_key to asset name using channel data
 	 * Prioritizes open channels (more likely to have full asset genesis data)
 	 */
-	private buildGroupKeyToNameMap(
-		channels: LightningChannel[],
-		closed_channels: LightningClosedChannel[],
-	): Map<string, string> {
+	private buildGroupKeyToNameMap(channels: LightningChannel[], closed_channels: LightningClosedChannel[]): Map<string, string> {
 		return new Map(
 			[...closed_channels, ...channels]
 				.filter((c) => c.asset?.group_key && c.asset.name)
@@ -539,7 +515,9 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 			const total_pending = Array.from(pending_bucket.values()).reduce((sum, arr) => sum + arr.length, 0);
 			if (total_pending > MAX_PENDING_RECORDS) {
 				this.logger.warn(`Pending bucket exceeded ${MAX_PENDING_RECORDS}, force-flushing oldest hours`);
-				const oldest_hours = Array.from(pending_bucket.keys()).sort((a, b) => a - b).slice(0, FORCE_FLUSH_COUNT);
+				const oldest_hours = Array.from(pending_bucket.keys())
+					.sort((a, b) => a - b)
+					.slice(0, FORCE_FLUSH_COUNT);
 				for (const hour of oldest_hours) {
 					await this.insertForwardMetrics(null, hour, pending_bucket.get(hour)!);
 					pending_bucket.delete(hour);
@@ -608,7 +586,9 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 		group_to_name: Map<string, string>,
 		data_type: 'payments' | 'invoices',
 	): Promise<void> {
-		const oldest_hours = Array.from(pending_bucket.keys()).sort((a, b) => a - b).slice(0, FORCE_FLUSH_COUNT);
+		const oldest_hours = Array.from(pending_bucket.keys())
+			.sort((a, b) => a - b)
+			.slice(0, FORCE_FLUSH_COUNT);
 		for (const hour of oldest_hours) {
 			const records = pending_bucket.get(hour)!;
 			if (data_type === 'payments') {
@@ -695,11 +675,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 	/**
 	 * Inserts forward fee metrics for a specific hour
 	 */
-	private async insertForwardMetrics(
-		manager: EntityManager | null,
-		hour: number,
-		forwards: LightningForward[],
-	): Promise<void> {
+	private async insertForwardMetrics(manager: EntityManager | null, hour: number, forwards: LightningForward[]): Promise<void> {
 		const node_pubkey = await this.getNodePubkey();
 		const repo = manager ? manager.getRepository(LightningAnalytics) : this.lightningAnalyticsRepository;
 
@@ -793,10 +769,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 		}
 
 		// Insert all metrics
-		const insert_metrics = async (
-			metrics_map: Map<number, Map<string, bigint>>,
-			metric: LightningAnalyticsMetric,
-		) => {
+		const insert_metrics = async (metrics_map: Map<number, Map<string, bigint>>, metric: LightningAnalyticsMetric) => {
 			for (const [hour, group_map] of Array.from(metrics_map.entries())) {
 				for (const [group_key, amount] of Array.from(group_map.entries())) {
 					await this.upsertMetric(this.lightningAnalyticsRepository, {

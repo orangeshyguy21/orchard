@@ -2,20 +2,7 @@
 import {Field, ObjectType, Float} from '@nestjs/graphql';
 /* Application Dependencies */
 import {LightningChannelBalance, LightningCustomChannels} from '@server/modules/lightning/lightning/lightning.types';
-
-@ObjectType()
-export class OrchardLightningBalanceAmount {
-	@Field(() => Float)
-	sat: number;
-
-	@Field(() => Float)
-	msat: number;
-
-	constructor(lnba: {sat: string; msat: string}) {
-		this.sat = parseFloat(lnba.sat);
-		this.msat = parseFloat(lnba.msat);
-	}
-}
+import {oracleConvertToUSDCents} from '@server/modules/bitcoin/utxoracle/utxoracle.helpers';
 
 @ObjectType()
 export class OrchardCustomChannel {
@@ -79,36 +66,40 @@ export class OrchardLightningBalance {
 	@Field(() => Float)
 	pending_open_balance: number;
 
-	@Field(() => OrchardLightningBalanceAmount)
-	local_balance: OrchardLightningBalanceAmount;
+	@Field(() => Float)
+	local_balance: number;
 
-	@Field(() => OrchardLightningBalanceAmount)
-	remote_balance: OrchardLightningBalanceAmount;
+    @Field(() => Float, {nullable: true})
+	local_balance_oracle: number;
 
-	@Field(() => OrchardLightningBalanceAmount)
-	unsettled_local_balance: OrchardLightningBalanceAmount;
+	@Field(() => Float)
+	remote_balance: number;
 
-	@Field(() => OrchardLightningBalanceAmount)
-	unsettled_remote_balance: OrchardLightningBalanceAmount;
+	@Field(() => Float)
+	unsettled_local_balance: number;
 
-	@Field(() => OrchardLightningBalanceAmount)
-	pending_open_local_balance: OrchardLightningBalanceAmount;
+	@Field(() => Float)
+	unsettled_remote_balance: number;
 
-	@Field(() => OrchardLightningBalanceAmount)
-	pending_open_remote_balance: OrchardLightningBalanceAmount;
+	@Field(() => Float)
+	pending_open_local_balance: number;
+
+	@Field(() => Float)
+	pending_open_remote_balance: number;
 
 	@Field(() => OrchardCustomChannelData)
 	custom_channel_data: OrchardCustomChannelData;
 
-	constructor(lnb: LightningChannelBalance) {
+	constructor(lnb: LightningChannelBalance, utx_oracle_price: number | null) {
 		this.balance = parseFloat(lnb.balance);
 		this.pending_open_balance = parseFloat(lnb.pending_open_balance);
-		this.local_balance = new OrchardLightningBalanceAmount(lnb.local_balance);
-		this.remote_balance = new OrchardLightningBalanceAmount(lnb.remote_balance);
-		this.unsettled_local_balance = new OrchardLightningBalanceAmount(lnb.unsettled_local_balance);
-		this.unsettled_remote_balance = new OrchardLightningBalanceAmount(lnb.unsettled_remote_balance);
-		this.pending_open_local_balance = new OrchardLightningBalanceAmount(lnb.pending_open_local_balance);
-		this.pending_open_remote_balance = new OrchardLightningBalanceAmount(lnb.pending_open_remote_balance);
+		this.local_balance = parseFloat(lnb.local_balance);
+        this.local_balance_oracle = oracleConvertToUSDCents(this.local_balance, utx_oracle_price, 'msat');
+		this.remote_balance = parseFloat(lnb.remote_balance);
+		this.unsettled_local_balance = parseFloat(lnb.unsettled_local_balance);
+		this.unsettled_remote_balance = parseFloat(lnb.unsettled_remote_balance);
+		this.pending_open_local_balance = parseFloat(lnb.pending_open_local_balance);
+		this.pending_open_remote_balance = parseFloat(lnb.pending_open_remote_balance);
 		this.custom_channel_data = new OrchardCustomChannelData(lnb.custom_channel_data);
 	}
 }

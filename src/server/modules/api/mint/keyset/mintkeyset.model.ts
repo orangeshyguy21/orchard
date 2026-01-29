@@ -4,6 +4,7 @@ import {Field, Int, ID, ObjectType} from '@nestjs/graphql';
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 import {CashuMintKeyset, CashuMintKeysetProofCount} from '@server/modules/cashu/mintdb/cashumintdb.types';
 import {MintUnit} from '@server/modules/cashu/cashu.enums';
+import {oracleConvertToUSDCents} from '@server/modules/bitcoin/utxoracle/utxoracle.helpers';
 
 @ObjectType()
 export class OrchardMintKeyset {
@@ -34,7 +35,10 @@ export class OrchardMintKeyset {
 	@Field(() => Int, {nullable: true})
 	fees_paid: number;
 
-	constructor(cashu_keyset: CashuMintKeyset) {
+	@Field(() => Int, {nullable: true})
+	fees_paid_oracle: number | null;
+
+	constructor(cashu_keyset: CashuMintKeyset, utx_oracle_price: number | null) {
 		this.id = cashu_keyset.id;
 		this.derivation_path = cashu_keyset.derivation_path;
 		this.derivation_path_index = cashu_keyset.derivation_path_index;
@@ -44,6 +48,7 @@ export class OrchardMintKeyset {
 		this.unit = cashu_keyset.unit;
 		this.input_fee_ppk = cashu_keyset.input_fee_ppk;
 		this.fees_paid = cashu_keyset.fees_paid;
+		this.fees_paid_oracle = oracleConvertToUSDCents(this.fees_paid, utx_oracle_price, cashu_keyset.unit);
 	}
 }
 

@@ -27,6 +27,7 @@ export class IndexSubsectionDashboardMintEnabledComponent {
 	public keysets = input.required<MintKeyset[]>();
 	public balances = input.required<MintBalance[]>();
 	public icon_data = input.required<string | null>();
+	public bitcoin_oracle_enabled = input.required<boolean>();
 	public lightning_balance = input.required<LightningBalance | null>();
 	public lightning_enabled = input.required<boolean>();
 	public lightning_errors = input.required<OrchardError[]>();

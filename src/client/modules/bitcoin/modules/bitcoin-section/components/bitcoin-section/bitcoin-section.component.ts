@@ -18,8 +18,7 @@ import {BitcoinBlockchainInfo} from '@client/modules/bitcoin/classes/bitcoin-blo
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BitcoinSectionComponent implements OnInit, OnDestroy {
-
-    public show_oracle: boolean;
+	public show_oracle: boolean;
 
 	public bitcoin_blockchain_info: WritableSignal<BitcoinBlockchainInfo | null> = signal(null);
 	public bitcoin_network_info: WritableSignal<BitcoinNetworkInfo | null> = signal(null);
@@ -34,8 +33,8 @@ export class BitcoinSectionComponent implements OnInit, OnDestroy {
 		private router: Router,
 		private route: ActivatedRoute,
 	) {
-        this.show_oracle = this.settingAppService.getSetting('bitcoin_oracle');
-    }
+		this.show_oracle = this.settingAppService.getSetting('bitcoin_oracle');
+	}
 
 	ngOnInit(): void {
 		this.bitcoinService.loadBitcoinNetworkInfo().subscribe({

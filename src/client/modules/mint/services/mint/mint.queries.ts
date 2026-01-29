@@ -126,6 +126,7 @@ export const MINT_KEYSETS_QUERY = `{
 		valid_from
 		valid_to
 		fees_paid
+		fees_paid_oracle
     }
 }`;
 

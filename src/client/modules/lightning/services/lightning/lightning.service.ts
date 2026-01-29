@@ -98,7 +98,7 @@ export class LightningService {
 		);
 	}
 
-    public clearAnalyticsCache(): void {
+	public clearAnalyticsCache(): void {
 		this.cache.clearCache(this.CACHE_KEYS.LIGHTNING_ANALYTICS);
 		this.cache.clearCache(this.CACHE_KEYS.LIGHTNING_ANALYTICS_PRE);
 	}
@@ -204,11 +204,7 @@ export class LightningService {
 				this.CACHE_KEYS.LIGHTNING_ANALYTICS_PRE,
 			);
 		}
-		return this.loadGenericLightningAnalytics(
-			args,
-			this.lightning_analytics_subject.value,
-			this.CACHE_KEYS.LIGHTNING_ANALYTICS,
-		);
+		return this.loadGenericLightningAnalytics(args, this.lightning_analytics_subject.value, this.CACHE_KEYS.LIGHTNING_ANALYTICS);
 	}
 
 	public loadLightningAnalyticsBackfillStatus(): Observable<LightningAnalyticsBackfillStatus> {

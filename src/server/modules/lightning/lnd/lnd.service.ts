@@ -8,7 +8,7 @@ import * as protoLoader from '@grpc/proto-loader';
 /* Application Dependencies */
 import {CredentialService} from '@server/modules/credential/credential.service';
 /* Native Dependencies */
-import {LightningRequest} from '@server/modules/lightning/lightning/lightning.types';
+import {LightningChannelBalance, LightningRequest} from '@server/modules/lightning/lightning/lightning.types';
 /* Local Dependencies */
 import {mapRequestType, mapRequestDescription, mapRequestExpiry} from './lnd.helpers';
 
@@ -94,6 +94,20 @@ export class LndService {
 			expiry: mapRequestExpiry(request),
 			description: mapRequestDescription(request?.description),
 			offer_quantity_max: null,
+		};
+	}
+
+	public mapLndChannelBalance(response: any): LightningChannelBalance {
+		return {
+			balance: response.balance,
+			pending_open_balance: response.pending_open_balance,
+			local_balance: response.local_balance?.msat ?? '0',
+			remote_balance: response.remote_balance?.msat ?? '0',
+			unsettled_local_balance: response.unsettled_local_balance?.msat ?? '0',
+			unsettled_remote_balance: response.unsettled_remote_balance?.msat ?? '0',
+			pending_open_local_balance: response.pending_open_local_balance?.msat ?? '0',
+			pending_open_remote_balance: response.pending_open_remote_balance?.msat ?? '0',
+			custom_channel_data: response.custom_channel_data,
 		};
 	}
 }

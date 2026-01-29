@@ -31,6 +31,7 @@ import {
 	getTooltipTitle,
 	getTooltipLabel,
 } from '@client/modules/chart/helpers/mint-chart-options.helpers';
+import {LocalAmountPipe} from '@client/modules/local/pipes/local-amount/local-amount.pipe';
 import {ChartService} from '@client/modules/chart/services/chart/chart.service';
 import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
 import {LightningAnalyticsBackfillStatus} from '@client/modules/lightning/classes/lightning-analytics-backfill-status.class';
@@ -63,24 +64,26 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 	public selected_type = input.required<ChartType | null | undefined>();
 	public loading = input.required<boolean>();
 	public lightning_enabled = input.required<boolean>();
-    public device_mobile = input.required<boolean>();
+	public device_mobile = input.required<boolean>();
 
 	public chart_type!: ChartJsType;
 	public chart_data = signal<ChartConfiguration['data']>({datasets: []});
 	public chart_options!: ChartConfiguration['options'];
 	public chart_plugins: Plugin[] = [];
 	public displayed = signal<boolean>(true);
-    public hidden_datasets = signal<Set<number>>(new Set());
+	public hidden_datasets = signal<Set<number>>(new Set());
 
-	public liability_datasets = computed(() =>
-		this.chart_data().datasets
-			?.map((d, i) => ({...d, _index: i}))
-			.filter((d) => (d as any)._type === 'liability') ?? []
+	public liability_datasets = computed(
+		() =>
+			this.chart_data()
+				.datasets?.map((d, i) => ({...d, _index: i}))
+				.filter((d) => (d as any)._type === 'liability') ?? [],
 	);
-	public asset_datasets = computed(() =>
-		this.chart_data().datasets
-			?.map((d, i) => ({...d, _index: i}))
-			.filter((d) => (d as any)._type === 'asset') ?? []
+	public asset_datasets = computed(
+		() =>
+			this.chart_data()
+				.datasets?.map((d, i) => ({...d, _index: i}))
+				.filter((d) => (d as any)._type === 'asset') ?? [],
 	);
 
 	private subscriptions: Subscription = new Subscription();
@@ -214,7 +217,7 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 		if (this.lightning_enabled() && (this.lightning_analytics().length > 0 || this.lightning_analytics_pre().length > 0)) {
 			const initial_outbound_msat = getInitialOutboundMsat(this.lightning_analytics_pre());
 			const raw_asset_data = getOutboundLiquidityData(timestamp_range, this.lightning_analytics(), initial_outbound_msat);
-			const live_balance_sat = this.lightning_balance()?.local_balance?.sat ?? null;
+			const live_balance_sat = LocalAmountPipe.getConvertedAmount('msat', this.lightning_balance()?.local_balance ?? 0);
 			const interval = this.page_settings().interval as unknown as LightningAnalyticsInterval;
 			const asset_data = correctLastPointWithLiveBalance(raw_asset_data, live_balance_sat, interval);
 			const asset_color = this.chartService.getAssetColor('sat', 0);
@@ -529,19 +532,19 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 		return Math.min(...all_x_values);
 	}
 
-    public toggleDataset(dataset: any): void {
-        const chart = this.chart?.chart;
-        if (!chart) return;
-        const index = dataset._index;
-        const is_visible = chart.isDatasetVisible(index);
-        chart.setDatasetVisibility(index, !is_visible);
-        chart.update();
-        this.hidden_datasets.update(set => {
-            const new_set = new Set(set);
-            is_visible ? new_set.add(index) : new_set.delete(index);
-            return new_set;
-        });
-    }
+	public toggleDataset(dataset: any): void {
+		const chart = this.chart?.chart;
+		if (!chart) return;
+		const index = dataset._index;
+		const is_visible = chart.isDatasetVisible(index);
+		chart.setDatasetVisibility(index, !is_visible);
+		chart.update();
+		this.hidden_datasets.update((set) => {
+			const new_set = new Set(set);
+			is_visible ? new_set.add(index) : new_set.delete(index);
+			return new_set;
+		});
+	}
 
 	ngOnDestroy(): void {
 		this.subscriptions.unsubscribe();

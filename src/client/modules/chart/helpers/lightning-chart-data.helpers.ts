@@ -11,15 +11,12 @@ type LightningAnalyticsGroup = Record<number, LightningAnalytic[]>;
  * Groups lightning analytics by timestamp
  */
 export function groupLightningAnalyticsByTimestamp(analytics: LightningAnalytic[]): LightningAnalyticsGroup {
-	return analytics.reduce(
-		(groups, analytic) => {
-			const timestamp = analytic.date;
-			groups[timestamp] = groups[timestamp] || [];
-			groups[timestamp].push(analytic);
-			return groups;
-		},
-		{} as LightningAnalyticsGroup,
-	);
+	return analytics.reduce((groups, analytic) => {
+		const timestamp = analytic.date;
+		groups[timestamp] = groups[timestamp] || [];
+		groups[timestamp].push(analytic);
+		return groups;
+	}, {} as LightningAnalyticsGroup);
 }
 
 /**
@@ -86,10 +83,7 @@ export function getOutboundLiquidityData(
  * Filters to only msat unit for sat calculations.
  * Returns array of {x: timestamp_ms, y: sat_amount} sorted by timestamp.
  */
-export function getOutboundLiquidityVolumeData(
-	unique_timestamps: number[],
-	analytics: LightningAnalytic[],
-): {x: number; y: number}[] {
+export function getOutboundLiquidityVolumeData(unique_timestamps: number[], analytics: LightningAnalytic[]): {x: number; y: number}[] {
 	// Filter to only msat unit for sat liquidity
 	const msat_analytics = analytics.filter((a) => a.unit === 'msat');
 	const grouped = groupLightningAnalyticsByTimestamp(msat_analytics);
@@ -127,11 +121,7 @@ export function getLightningTimeInterval(interval: LightningAnalyticsInterval): 
 /**
  * Gets all possible timestamps between start and end for the given interval
  */
-export function getLightningTimestamps(
-	first_timestamp: number,
-	last_timestamp: number,
-	interval: LightningAnalyticsInterval,
-): number[] {
+export function getLightningTimestamps(first_timestamp: number, last_timestamp: number, interval: LightningAnalyticsInterval): number[] {
 	const all_timestamps: number[] = [];
 	const time_unit = getLightningTimeInterval(interval);
 	let current_time = DateTime.fromSeconds(first_timestamp).startOf(time_unit).toSeconds();

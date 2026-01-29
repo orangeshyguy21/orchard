@@ -16,7 +16,7 @@ export class MintBalanceService {
 	private readonly logger = new Logger(MintBalanceService.name);
 
 	constructor(
-        private bitcoinUTXOracleService: BitcoinUTXOracleService,
+		private bitcoinUTXOracleService: BitcoinUTXOracleService,
 		private cashuMintDatabaseService: CashuMintDatabaseService,
 		private mintService: MintService,
 		private errorService: ErrorService,
@@ -26,7 +26,7 @@ export class MintBalanceService {
 		return this.mintService.withDbClient(async (client) => {
 			try {
 				const cashu_mint_balances: CashuMintBalance[] = await this.cashuMintDatabaseService.getMintBalances(client, keyset_id);
-                const utx_oracle_price = await this.bitcoinUTXOracleService.getOraclePrice();
+				const utx_oracle_price = await this.bitcoinUTXOracleService.getOraclePrice();
 				return cashu_mint_balances.map((cmb) => new OrchardMintBalance(cmb, utx_oracle_price?.price || null));
 			} catch (error) {
 				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
@@ -41,7 +41,8 @@ export class MintBalanceService {
 		return this.mintService.withDbClient(async (client) => {
 			try {
 				const cashu_mint_balances_issued: CashuMintBalance[] = await this.cashuMintDatabaseService.getMintBalancesIssued(client);
-				return cashu_mint_balances_issued.map((cmb) => new OrchardMintBalance(cmb, null));
+                const utx_oracle_price = await this.bitcoinUTXOracleService.getOraclePrice();
+				return cashu_mint_balances_issued.map((cmb) => new OrchardMintBalance(cmb, utx_oracle_price?.price || null));
 			} catch (error) {
 				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
@@ -56,7 +57,8 @@ export class MintBalanceService {
 			try {
 				const cashu_mint_balances_redeemed: CashuMintBalance[] =
 					await this.cashuMintDatabaseService.getMintBalancesRedeemed(client);
-				return cashu_mint_balances_redeemed.map((cmb) => new OrchardMintBalance(cmb, null));
+                const utx_oracle_price = await this.bitcoinUTXOracleService.getOraclePrice();
+				return cashu_mint_balances_redeemed.map((cmb) => new OrchardMintBalance(cmb, utx_oracle_price?.price || null));
 			} catch (error) {
 				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
