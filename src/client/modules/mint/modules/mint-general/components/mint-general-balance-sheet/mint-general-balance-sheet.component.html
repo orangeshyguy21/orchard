@@ -3,7 +3,7 @@
 
 	<div class="flex flex-column flex-gap-1">
 		@if (device_type() !== 'mobile') {
-			<div class="flex flex-justify-evenly p-r-2">
+			<div class="flex flex-justify-between p-r-2">
 				<div class="w-min-12 text-center font-size-xs">Assets</div>
 				<div class="w-min-12 text-center font-size-xs">Liabilities</div>
 				@if (device_type() === 'desktop') {
@@ -16,10 +16,10 @@
 			<mat-card appearance="outlined" class="relative overflow-hidden">
 				<mat-card-content class="orc-surface-container-low-bg cursor-pointer" matRipple (click)="toggleExpanded(row.unit_mint)">
 					<div class="flex flex-items-center flex-gap-1">
-						<div class="flex-grow flex flex-justify-evenly flex-gap-1" [class.flex-column]="device_type() === 'mobile'">
+						<div class="flex-grow flex flex-justify-between flex-gap-1" [class.flex-column]="device_type() === 'mobile'">
 							@if (lightning_enabled()) {
 								@if (!lightning_loading()) {
-									<div class="flex flex-row flex-gap-2">
+									<div class="flex-1 flex flex-row flex-gap-2">
 										@if (lightning_errors() && lightning_errors().length > 0) {
 											<div class="flex-1" animate.enter="orc-animation-fadein-fast">
 												@for (error of lightning_errors(); track error.code) {
@@ -45,14 +45,15 @@
 															Lightning send capacity
 														</div>
 													</div>
+                                                    @if (device_type() === 'desktop') {
+                                                        <span class="font-size-l orc-outline-color text-nowrap">{{ row.reserve }}x</span>
+                                                    }
 												} @else {
 													<span class="font-size-m orc-outline-color">
 														<mat-icon>check_indeterminate_small</mat-icon>
 													</span>
 												}
-                                                @if (device_type() === 'desktop') {
-                                                    <span class="font-size-l orc-outline-color text-nowrap">{{ row.reserve }}x</span>
-                                                }
+                                                
 											</div>
 										}
 										@if (device_type() === 'mobile') {
@@ -63,7 +64,7 @@
 							} @else {
 								<button mat-stroked-button (click)="navigate.emit()">Lightning Configuration</button>
 							}
-							<div class="flex flex-row flex-gap-2">
+							<div class="flex-1 flex flex-row flex-gap-2">
 								<div class="flex-1 flex flex-items-center flex-gap-2">
 									<orc-graphic-asset class="low-bg" [unit]="row.unit_mint" [height]="'2.5rem'" [custody]="'ecash'">
 									</orc-graphic-asset>
@@ -81,12 +82,14 @@
 							</div>
 
 							@if (device_type() === 'desktop') {
-								<orc-mint-general-keyset
-									class="high-bg"
-									[active]="row.active"
-									[index]="row.derivation_path_index"
-									[input_fee_ppk]="row.input_fee_ppk"
-								></orc-mint-general-keyset>
+                                <div>
+                                    <orc-mint-general-keyset
+                                        class="high-bg"
+                                        [active]="row.active"
+                                        [index]="row.derivation_path_index"
+                                        [input_fee_ppk]="row.input_fee_ppk"
+                                    ></orc-mint-general-keyset>
+                                </div>
 							}
 						</div>
 						<div>
@@ -123,12 +126,14 @@
 										<div class="font-size-xs orc-outline-color text-nowrap">Mint unit</div>
 									</div>
 								</div>
-								<div class="orc-high-card p-1 flex-1">
-									<div>
-										<div class="font-size-l text-nowrap">{{ row.reserve }}x</div>
-										<div class="font-size-xs orc-outline-color text-nowrap">Liability coverage</div>
-									</div>
-								</div>
+                                @if (row.assets !== null) {
+                                    <div class="orc-high-card p-1 flex-1">
+                                        <div>
+                                            <div class="font-size-l text-nowrap">{{ row.reserve }}x</div>
+                                            <div class="font-size-xs orc-outline-color text-nowrap">Liability coverage</div>
+                                        </div>
+                                    </div>
+                                }
 								<div class="orc-high-card p-1 flex-1">
 									<div>
 										<div class="font-size-l text-nowrap" [innerHTML]="row.fees | localAmount: row.unit_mint : 'mint'"></div>
