@@ -113,12 +113,12 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		return possible_units.map((unit) => ({value: unit, label: unit.toUpperCase()}));
 	}
 
-	private getMintGenesisTime(): number {
-		if (!this.mint_keysets || this.mint_keysets.length === 0) return 0;
-		return this.mint_keysets.reduce((oldest_time, keyset) => {
-			return keyset.valid_from < oldest_time || oldest_time === 0 ? keyset.valid_from : oldest_time;
-		}, 0);
-	}
+    private getMintGenesisTime(): number {
+        const valid_times = this.mint_keysets
+            ?.filter(keyset => keyset.valid_from != null)
+            .map(keyset => keyset.valid_from!) ?? [];
+        return valid_times.length > 0 ? Math.min(...valid_times) : 0;
+    }
 
 	/* *******************************************************
 		Subscriptions                      
@@ -290,7 +290,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		return (
 			this.mint_keysets
 				.filter((keyset) => keyset.unit === unit && keyset.active)
-				.sort((a, b) => a.valid_from - b.valid_from)
+				.sort((a, b) => (a.valid_from ?? 0) - (b.valid_from ?? 0))
 				.pop() ?? this.mint_keysets[0]
 		);
 	}

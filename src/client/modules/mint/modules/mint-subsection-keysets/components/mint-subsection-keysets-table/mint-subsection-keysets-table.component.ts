@@ -66,9 +66,8 @@ export class MintSubsectionKeysetsTableComponent {
 	private init(): void {
 		const status_filter = this.page_settings()?.status ?? [];
 		const units_filter = this.page_settings()?.units ?? [];
-
 		const keyset_rows = this.keysets()
-			.filter((keyset) => this.page_settings()?.date_end >= keyset.valid_from)
+            .filter((keyset) => keyset.valid_from == null || this.page_settings()?.date_end >= keyset.valid_from)
 			.filter((keyset) => !status_filter.length || status_filter.includes(keyset.active))
 			.filter((keyset) => !units_filter.length || units_filter.includes(keyset.unit))
 			.sort((a, b) => b.derivation_path_index - a.derivation_path_index)

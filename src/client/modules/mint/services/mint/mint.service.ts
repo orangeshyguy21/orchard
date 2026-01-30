@@ -2,7 +2,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 /* Vendor Dependencies */
-import {BehaviorSubject, catchError, map, Observable, of, shareReplay, tap, throwError} from 'rxjs';
+import {BehaviorSubject, catchError, map, Observable, of, shareReplay, switchMap, tap, throwError} from 'rxjs';
 /* Application Dependencies */
 import {getApiQuery} from '@client/modules/api/helpers/api.helpers';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
@@ -978,22 +978,15 @@ export class MintService {
 		);
 	}
 
-	public updateMintContact(contact_add: OrchardContact, contact_remove: OrchardContact): Observable<MintContactUpdateResponse> {
-		const query = getApiQuery(MINT_CONTACT_UPDATE_MUTATIONS, {
-			contact_add: {
-				method: contact_add.method,
-				info: contact_add.info,
-			},
-			contact_remove: {
-				method: contact_remove.method,
-				info: contact_remove.info,
-			},
-		});
-
-		return this.http.post<OrchardRes<MintContactUpdateResponse>>(this.apiService.api, query).pipe(
-			map((response) => {
-				if (response.errors) throw new OrchardErrors(response.errors);
-				return response.data;
+    public updateMintContact(contact_add: OrchardContact, contact_remove: OrchardContact): Observable<MintContactUpdateResponse> {
+		return this.removeMintContact(contact_remove).pipe(
+			switchMap((remove_response) => {
+				return this.addMintContact(contact_add).pipe(
+					map((add_response) => ({
+						mint_contact_remove: remove_response.mint_contact_remove,
+						mint_contact_add: add_response.mint_contact_add,
+					})),
+				);
 			}),
 			catchError((error) => {
 				console.error('Error updating mint contact:', error);

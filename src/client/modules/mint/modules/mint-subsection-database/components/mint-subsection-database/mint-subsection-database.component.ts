@@ -223,12 +223,12 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		return [];
 	}
 
-	private getMintGenesisTime(): number {
-		if (!this.mint_keysets || this.mint_keysets.length === 0) return 0;
-		return this.mint_keysets.reduce((oldest_time, keyset) => {
-			return keyset.valid_from < oldest_time || oldest_time === 0 ? keyset.valid_from : oldest_time;
-		}, 0);
-	}
+    private getMintGenesisTime(): number {
+        const valid_times = this.mint_keysets
+            ?.filter(keyset => keyset.valid_from != null)
+            .map(keyset => keyset.valid_from!) ?? [];
+        return valid_times.length > 0 ? Math.min(...valid_times) : 0;
+    }
 
 	/* *******************************************************
 		Data Down                     

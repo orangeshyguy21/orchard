@@ -267,7 +267,6 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 				}),
 			);
 		}
-		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		const mutation_parts: string[] = [];
 		const mutation_variables: Record<string, any> = {};
 		if (this.form_info.get('name')?.dirty) {
@@ -315,21 +314,21 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 		if (urls_array?.dirty) {
 			const new_urls = urls_array.value.filter(Boolean);
 			const old_urls = this.init_info.urls || [];
-			const urls_to_add = new_urls.filter((url: string) => !old_urls.includes(url));
-			urls_to_add.forEach((url: string, index: number) => {
-				const mutation_var = `url_add_${index}`;
+            const urls_to_remove = old_urls.filter((url) => !new_urls.includes(url));
+			urls_to_remove.forEach((url: string, index: number) => {
+				const mutation_var = `url_remove_${index}`;
 				mutation_parts.push(`
-					url_add_${index}: mint_url_add(mint_url_update: { url: $${mutation_var} }) {
+					url_remove_${index}: mint_url_remove(mint_url_update: { url: $${mutation_var} }) {
 						url
 					}
 				`);
 				mutation_variables[`${mutation_var}`] = url;
 			});
-			const urls_to_remove = old_urls.filter((url) => !new_urls.includes(url));
-			urls_to_remove.forEach((url: string, index: number) => {
-				const mutation_var = `url_remove_${index}`;
+			const urls_to_add = new_urls.filter((url: string) => !old_urls.includes(url));
+			urls_to_add.forEach((url: string, index: number) => {
+				const mutation_var = `url_add_${index}`;
 				mutation_parts.push(`
-					url_remove_${index}: mint_url_remove(mint_url_update: { url: $${mutation_var} }) {
+					url_add_${index}: mint_url_add(mint_url_update: { url: $${mutation_var} }) {
 						url
 					}
 				`);
@@ -341,6 +340,20 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 		if (contacts_array?.dirty) {
 			const new_contacts = contacts_array.value.filter((c: OrchardContact) => c.method && c.info);
 			const old_contacts = this.init_info.contact || [];
+            const contacts_to_remove = old_contacts.filter(
+				(old) => !new_contacts.some((contact: OrchardContact) => contact.method === old.method && contact.info === old.info),
+			);
+			contacts_to_remove.forEach((contact: OrchardContact, index: number) => {
+				const mutation_var = `contact_remove_${index}`;
+				mutation_parts.push(`
+					contact_remove_${index}: mint_contact_remove(mint_contact_update: { method: $${mutation_var}_method, info: $${mutation_var}_info }) {
+						method
+						info
+					}
+				`);
+				mutation_variables[`${mutation_var}_method`] = contact.method;
+				mutation_variables[`${mutation_var}_info`] = contact.info;
+			});
 			const contacts_to_add = new_contacts.filter(
 				(contact: OrchardContact) => !old_contacts.some((old) => old.method === contact.method && old.info === contact.info),
 			);
@@ -355,23 +368,11 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 				mutation_variables[`${mutation_var}_method`] = contact.method;
 				mutation_variables[`${mutation_var}_info`] = contact.info;
 			});
-			const contacts_to_remove = old_contacts.filter(
-				(old) => !new_contacts.some((contact: OrchardContact) => contact.method === old.method && contact.info === old.info),
-			);
-			contacts_to_remove.forEach((contact: OrchardContact, index: number) => {
-				const mutation_var = `contact_remove_${index}`;
-				mutation_parts.push(`
-					contact_remove_${index}: mint_contact_remove(mint_contact_update: { method: $${mutation_var}_method, info: $${mutation_var}_info }) {
-						method
-						info
-					}
-				`);
-				mutation_variables[`${mutation_var}_method`] = contact.method;
-				mutation_variables[`${mutation_var}_info`] = contact.info;
-			});
 		}
 
 		if (mutation_parts.length === 0) return;
+        console.log('mutation_parts', mutation_parts);
+        this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 
 		const mutation = `
 			mutation BulkMintUpdate(${Object.keys(mutation_variables)
