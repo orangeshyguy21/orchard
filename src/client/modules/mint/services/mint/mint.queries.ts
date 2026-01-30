@@ -281,18 +281,6 @@ mutation MintUrlRemove($mint_url_update: MintUrlUpdateInput!) {
 	}
 }`;
 
-export const MINT_CONTACT_UPDATE_MUTATIONS = `
-mutation MintContactUpdate($contact_add: MintContactUpdateInput!, $contact_remove: MintContactUpdateInput!) {
-	mint_contact_add(mint_contact_update: $contact_add) {
-		method
-		info
-	}
-	mint_contact_remove(mint_contact_update: $contact_remove) {
-		method
-		info
-	}
-}`;
-
 export const MINT_CONTACT_REMOVE_MUTATION = `
 mutation MintContactRemove($contact_remove: MintContactUpdateInput!) {
 	mint_contact_remove(mint_contact_update: $contact_remove) {

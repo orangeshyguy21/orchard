@@ -24,6 +24,7 @@ describe('MintSubsectionInfoFormUrlComponent', () => {
 		fixture.componentRef.setInput('form_array', form_group.get('urls') as FormArray);
 		fixture.componentRef.setInput('array_name', 'urls');
 		fixture.componentRef.setInput('control_index', 0);
+		fixture.componentRef.setInput('control_dirty', false);
 		fixture.componentRef.setInput('focused', false);
 		fixture.detectChanges();
 	});
