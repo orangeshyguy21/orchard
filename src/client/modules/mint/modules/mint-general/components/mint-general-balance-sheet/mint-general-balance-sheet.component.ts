@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, output, effect, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnChanges, SimpleChanges, input, output, signal} from '@angular/core';
 /* Application Dependencies */
 import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
 import {OrchardError} from '@client/modules/error/types/error.types';
@@ -35,11 +35,13 @@ export class MintGeneralBalanceSheetComponent {
 	public expanded = signal<Record<string, boolean>>({});
 	public rows = signal<MintGeneralBalanceRow[]>([]);
 
-	constructor() {
-		effect(() => {
-			if (this.loading() !== false) return;
+	ngOnChanges(changes: SimpleChanges): void {
+		if (changes['loading'] && !changes['loading'].firstChange && this.loading() === false) {
 			this.init();
-		});
+		}
+        if( changes['lightning_balance'] && !changes['lightning_balance'].firstChange && this.lightning_balance() !== null) {
+            this.init();
+        }
 	}
 
 	private init(): void {
@@ -61,7 +63,11 @@ export class MintGeneralBalanceSheetComponent {
 		if (!keysets) return [];
 		keysets
 			.map((keyset) => {
-				const liability_balance = balances.find((balance) => balance.keyset === keyset.id);
+				const liability_balance = balances.find((balance) => balance.keyset === keyset.id) ?? {
+					keyset: keyset.id,
+					balance: 0,
+					balance_oracle: 0,
+				};
 				const asset_balance = this.getAssetBalances(keyset.unit);
 				return new MintGeneralBalanceRow(liability_balance, asset_balance, keyset);
 			})
@@ -74,7 +80,9 @@ export class MintGeneralBalanceSheetComponent {
 					return;
 				}
 				rows_by_unit[unit].liabilities += row.liabilities;
+				if (row.liabilities_oracle !== null) rows_by_unit[unit].liabilities_oracle = (rows_by_unit[unit].liabilities_oracle ?? 0) + row.liabilities_oracle;
 				if (row.fees !== null) rows_by_unit[unit].fees = (rows_by_unit[unit].fees ?? 0) + row.fees;
+				if (row.fees_oracle !== null) rows_by_unit[unit].fees_oracle = (rows_by_unit[unit].fees_oracle ?? 0) + row.fees_oracle;
 			});
 
 		return Object.values(rows_by_unit).sort((a, b) => {

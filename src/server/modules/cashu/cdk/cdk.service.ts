@@ -164,7 +164,11 @@ export class CdkService {
 	}
 
 	public async getMintKeysets(client: CashuMintDatabase): Promise<CashuMintKeyset[]> {
-		const sql = 'SELECT * FROM keyset WHERE unit != ?;';
+		const sql = `
+            SELECT *, CAST(COALESCE(fee_collected, 0) AS INTEGER) AS fees_paid FROM keyset
+            LEFT JOIN keyset_amounts ON keyset_amounts.keyset_id = keyset.id
+            WHERE unit != ?;
+            `;
 		try {
 			return queryRows<CashuMintKeyset>(client, sql, ['auth']);
 		} catch (err) {

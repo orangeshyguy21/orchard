@@ -32,7 +32,7 @@ export class OrchardMintKeyset {
 	@Field(() => Int, {nullable: true})
 	input_fee_ppk: number;
 
-	@Field(() => Int, {nullable: true})
+	@Field(() => Int)
 	fees_paid: number;
 
 	@Field(() => Int, {nullable: true})
@@ -47,7 +47,7 @@ export class OrchardMintKeyset {
 		this.active = !!cashu_keyset.active;
 		this.unit = cashu_keyset.unit;
 		this.input_fee_ppk = cashu_keyset.input_fee_ppk;
-		this.fees_paid = cashu_keyset.fees_paid;
+		this.fees_paid = cashu_keyset.fees_paid ?? 0;
 		this.fees_paid_oracle = oracleConvertToUSDCents(this.fees_paid, utx_oracle_price, cashu_keyset.unit);
 	}
 }

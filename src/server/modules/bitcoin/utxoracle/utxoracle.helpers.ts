@@ -1,7 +1,8 @@
 /* Application Dependencies */
 import {MintUnit} from '@server/modules/cashu/cashu.enums';
 
-export function oracleConvertToUSDCents(amount_btc: number, price_usd: number | null, unit: string | MintUnit): number | null {
+export function oracleConvertToUSDCents(amount_btc: number | null, price_usd: number | null, unit: string | MintUnit): number | null {
+	if (amount_btc === null) return null;
 	if (price_usd === null) return null;
 	const unit_lower = unit.toLowerCase();
 	switch (unit_lower) {
