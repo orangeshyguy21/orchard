@@ -1,6 +1,8 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, output, signal} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, input, output, signal} from '@angular/core';
 import {FormGroup, FormArray} from '@angular/forms';
+/* Vendor Dependencies */
+import {Subscription} from 'rxjs';
 /* Application Dependencies */
 import {MintInfoRpc} from '@client/modules/mint/classes/mint-info-rpc.class';
 
@@ -11,7 +13,7 @@ import {MintInfoRpc} from '@client/modules/mint/classes/mint-info-rpc.class';
 	styleUrl: './mint-subsection-info-form-urls.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintSubsectionInfoFormUrlsComponent {
+export class MintSubsectionInfoFormUrlsComponent implements OnInit, OnDestroy {
 	public form_group = input.required<FormGroup>(); // form group containing the urls controls
 	public form_array = input.required<FormArray>(); // form array containing url entries
 	public array_name = input.required<keyof MintInfoRpc>(); // name of the form array to bind
@@ -24,6 +26,18 @@ export class MintSubsectionInfoFormUrlsComponent {
 
 	public added_index = signal<number | null>(null); // index of the newly added url
 	public help_status = signal<boolean>(false); // tracks if the help is visible
+
+	private subscription = new Subscription();
+
+	constructor(private cdr: ChangeDetectorRef) {}
+
+	ngOnInit(): void {
+		this.subscription.add(
+			this.form_array().events.subscribe(() => {
+				this.cdr.markForCheck();
+			}),
+		);
+	}
 
 	public onAddControl(): void {
 		this.added_index.set(this.form_array().length);
@@ -49,5 +63,9 @@ export class MintSubsectionInfoFormUrlsComponent {
 			array_name: this.array_name(),
 			control_index: index,
 		});
+	}
+
+	ngOnDestroy(): void {
+		this.subscription.unsubscribe();
 	}
 }

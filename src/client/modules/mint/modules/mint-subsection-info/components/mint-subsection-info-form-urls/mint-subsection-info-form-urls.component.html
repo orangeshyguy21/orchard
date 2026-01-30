@@ -25,6 +25,7 @@
 				[form_array]="form_array()"
 				[array_name]="'urls'"
 				[control_index]="$index"
+				[control_dirty]="form_array().at($index).dirty"
 				[focused]="added_index() === $index"
 				(update)="onControlUpdate($event)"
 				(cancel)="onControlCancel($event)"

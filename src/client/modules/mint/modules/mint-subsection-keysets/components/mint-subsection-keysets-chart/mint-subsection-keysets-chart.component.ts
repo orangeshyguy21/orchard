@@ -84,6 +84,7 @@ export class MintSubsectionKeysetsChartComponent implements OnDestroy {
 		const status_filter = settings?.status ?? [];
 		const units_filter = settings?.units ?? [];
 		const valid_keysets = this.keysets()
+			.filter((keyset) => keyset.valid_from !== null)
 			.filter((keyset) => !status_filter.length || status_filter.includes(keyset.active))
 			.filter((keyset) => !units_filter.length || units_filter.includes(keyset.unit));
 		const valid_keysets_ids = valid_keysets.map((keyset) => keyset.id);
@@ -145,7 +146,7 @@ export class MintSubsectionKeysetsChartComponent implements OnDestroy {
 			const keyset = keysets.find((k) => k.id === keyset_id);
 			const unit = keyset?.unit || '';
 			const keyset_genesis_time = keyset
-				? DateTime.fromSeconds(keyset.valid_from).startOf(time_interval).toSeconds()
+				? DateTime.fromSeconds(keyset.valid_from!).startOf(time_interval).toSeconds()
 				: timestamp_first;
 			const min_x = Math.max(keyset_genesis_time, timestamp_first);
 			const timestamp_range = getAllPossibleTimestamps(min_x, timestamp_last, interval);
@@ -169,7 +170,7 @@ export class MintSubsectionKeysetsChartComponent implements OnDestroy {
 					(k) => k.unit === keyset.unit && k.derivation_path_index === keyset.derivation_path_index + 1,
 				);
 				const successor_keyset_genesis_time = successor_keyset
-					? DateTime.fromSeconds(successor_keyset.valid_from).startOf(time_interval).toSeconds()
+					? DateTime.fromSeconds(successor_keyset.valid_from!).startOf(time_interval).toSeconds()
 					: timestamp_last;
 				const death_sentance = Math.min(successor_keyset_genesis_time, timestamp_last) * 1000;
 				const time_of_death_index = data_prepped.findIndex((d) => d.x >= death_sentance && d.y === 0);
@@ -301,11 +302,11 @@ export class MintSubsectionKeysetsChartComponent implements OnDestroy {
 		const config = this.chartService.getFormAnnotationConfig(false);
 		const annotations: Record<string, any> = {};
 		this.keysets()
-			.filter((keyset) => keyset.valid_from >= min_x_value && keyset.valid_from <= max_x_value)
+			.filter((keyset) => keyset.valid_from! >= min_x_value && keyset.valid_from! <= max_x_value)
 			.filter((keyset) => settings?.status.includes(keyset.active))
 			.filter((keyset) => settings?.units.includes(keyset.unit))
 			.forEach((keyset) => {
-				const milli_keyset_time = DateTime.fromSeconds(keyset.valid_from).startOf('day').toMillis();
+				const milli_keyset_time = DateTime.fromSeconds(keyset.valid_from!).startOf('day').toMillis();
 				const display_keyset = milli_keyset_time >= min_x_value ? true : false;
 				const label = this.getAnnotationLabel(keyset);
 				annotations[`keyset_${keyset.id}`] = {

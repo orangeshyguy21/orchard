@@ -35,7 +35,7 @@ export class MintSubsectionInfoFormContactComponent implements AfterViewInit {
 	@Input() array_name!: string;
 	@Input() subgroup_index!: number;
 	@Input() focused!: boolean;
-	@Input() init_method!: string;
+	@Input() init_method!: string | null;
 	public device_mobile = input.required<boolean>(); // whether the device is mobile
 
 	@Output() update = new EventEmitter<number>();
