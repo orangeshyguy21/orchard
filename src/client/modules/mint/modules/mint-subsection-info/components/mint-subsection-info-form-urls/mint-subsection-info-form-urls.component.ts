@@ -65,7 +65,7 @@ export class MintSubsectionInfoFormUrlsComponent implements OnInit, OnDestroy {
 		});
 	}
 
-    ngOnDestroy(): void {
+	ngOnDestroy(): void {
 		this.subscription.unsubscribe();
 	}
 }

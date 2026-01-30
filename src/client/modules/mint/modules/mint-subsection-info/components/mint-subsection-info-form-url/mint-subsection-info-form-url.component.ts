@@ -1,15 +1,5 @@
 /* Core Dependencies */
-import {
-	ChangeDetectionStrategy,
-	Component,
-	ElementRef,
-	AfterViewInit,
-	input,
-	output,
-	viewChild,
-	signal,
-	computed,
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ElementRef, AfterViewInit, input, output, viewChild, signal, computed} from '@angular/core';
 import {FormGroup, FormArray} from '@angular/forms';
 
 @Component({
@@ -24,7 +14,7 @@ export class MintSubsectionInfoFormUrlComponent implements AfterViewInit {
 	public form_array = input.required<FormArray>(); // form array containing url entries
 	public array_name = input.required<string>(); // name of the form array to bind
 	public control_index = input.required<number>(); // index of the control in the form array
-    public control_dirty = input.required<boolean>(); // tracks if the control is dirty
+	public control_dirty = input.required<boolean>(); // tracks if the control is dirty
 	public focused = input.required<boolean>(); // whether this control should be focused
 
 	public update = output<number>(); // emitted when the url is updated

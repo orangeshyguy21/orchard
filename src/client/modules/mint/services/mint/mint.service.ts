@@ -978,7 +978,7 @@ export class MintService {
 		);
 	}
 
-    public updateMintContact(contact_add: OrchardContact, contact_remove: OrchardContact): Observable<MintContactUpdateResponse> {
+	public updateMintContact(contact_add: OrchardContact, contact_remove: OrchardContact): Observable<MintContactUpdateResponse> {
 		return this.removeMintContact(contact_remove).pipe(
 			switchMap((remove_response) => {
 				return this.addMintContact(contact_add).pipe(

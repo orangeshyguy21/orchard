@@ -113,12 +113,10 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		return possible_units.map((unit) => ({value: unit, label: unit.toUpperCase()}));
 	}
 
-    private getMintGenesisTime(): number {
-        const valid_times = this.mint_keysets
-            ?.filter(keyset => keyset.valid_from != null)
-            .map(keyset => keyset.valid_from!) ?? [];
-        return valid_times.length > 0 ? Math.min(...valid_times) : 0;
-    }
+	private getMintGenesisTime(): number {
+		const valid_times = this.mint_keysets?.filter((keyset) => keyset.valid_from != null).map((keyset) => keyset.valid_from!) ?? [];
+		return valid_times.length > 0 ? Math.min(...valid_times) : 0;
+	}
 
 	/* *******************************************************
 		Subscriptions                      
