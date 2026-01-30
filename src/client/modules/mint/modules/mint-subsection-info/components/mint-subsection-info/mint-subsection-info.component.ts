@@ -371,7 +371,7 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 		}
 
 		if (mutation_parts.length === 0) return;
-		console.log('mutation_parts', mutation_parts);
+		if (this.hasDuplicateContactMethods()) return;
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 
 		const mutation = `
@@ -501,6 +501,7 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 	}
 
 	private addMintContact(control_value: OrchardContact): void {
+		if (this.hasDuplicateContactMethods()) return;
 		this.mintService.addMintContact(control_value).subscribe({
 			next: (response) => {
 				const contact = response.mint_contact_add;
@@ -518,6 +519,7 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 	}
 
 	private updateMintContact(control_index: number, control_value: OrchardContact, original_value: OrchardContact): void {
+		if (this.hasDuplicateContactMethods()) return;
 		this.mintService.updateMintContact(control_value, original_value).subscribe({
 			next: (response) => {
 				const contact = response.mint_contact_add;
@@ -570,8 +572,27 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 		);
 	}
 
+	/**
+	 * Checks if there are duplicate contact methods in the form array
+	 * @returns true if duplicates exist (and shows error), false otherwise
+	 */
+	private hasDuplicateContactMethods(): boolean {
+		const contact_methods = this.form_array_contacts.controls.map((control) => control.get('method')?.value);
+		const duplicate_methods = contact_methods.filter((method, index) => contact_methods.indexOf(method) !== index);
+		if (duplicate_methods.length > 0) {
+			this.eventService.registerEvent(
+				new EventData({
+					type: 'ERROR',
+					message: `Contact method already set: ${duplicate_methods[0]}`,
+				}),
+			);
+			return true;
+		}
+		return false;
+	}
+
 	/* *******************************************************
-		Actions Up                     
+		Actions Up
 	******************************************************** */
 
 	public onAddUrlControl(url: string | null = null): void {
