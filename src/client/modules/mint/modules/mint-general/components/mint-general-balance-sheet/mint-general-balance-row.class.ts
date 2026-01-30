@@ -14,7 +14,7 @@ export class MintGeneralBalanceRow {
 	input_fee_ppk: number;
 	active: boolean;
 	derivation_path_index: number;
-	first_seen: number;
+	first_seen: number | null;
 	assets: number | null;
     assets_oracle: number | null;
 	fees: number | null;

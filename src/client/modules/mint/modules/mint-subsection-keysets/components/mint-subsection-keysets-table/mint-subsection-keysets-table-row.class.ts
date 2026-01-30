@@ -9,7 +9,7 @@ export class MintSubsectionKeysetsTableRow {
 	id: string;
 	input_fee_ppk: number;
 	unit: string;
-	valid_from: number;
+	valid_from: number | null;
 	valid_to: number | null;
 	fees_paid: number | null;
 	balance: number;

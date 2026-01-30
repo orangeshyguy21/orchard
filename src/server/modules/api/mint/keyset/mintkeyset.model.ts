@@ -17,7 +17,7 @@ export class OrchardMintKeyset {
 	@Field(() => Int)
 	derivation_path_index: number;
 
-	@Field(() => UnixTimestamp)
+	@Field(() => UnixTimestamp, {nullable: true})
 	valid_from: number;
 
 	@Field(() => UnixTimestamp, {nullable: true})

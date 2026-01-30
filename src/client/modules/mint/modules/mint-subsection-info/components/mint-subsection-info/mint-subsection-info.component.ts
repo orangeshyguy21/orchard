@@ -267,7 +267,6 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 				}),
 			);
 		}
-		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		const mutation_parts: string[] = [];
 		const mutation_variables: Record<string, any> = {};
 		if (this.form_info.get('name')?.dirty) {
@@ -315,21 +314,21 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 		if (urls_array?.dirty) {
 			const new_urls = urls_array.value.filter(Boolean);
 			const old_urls = this.init_info.urls || [];
-			const urls_to_add = new_urls.filter((url: string) => !old_urls.includes(url));
-			urls_to_add.forEach((url: string, index: number) => {
-				const mutation_var = `url_add_${index}`;
-				mutation_parts.push(`
-					url_add_${index}: mint_url_add(mint_url_update: { url: $${mutation_var} }) {
-						url
-					}
-				`);
-				mutation_variables[`${mutation_var}`] = url;
-			});
 			const urls_to_remove = old_urls.filter((url) => !new_urls.includes(url));
 			urls_to_remove.forEach((url: string, index: number) => {
 				const mutation_var = `url_remove_${index}`;
 				mutation_parts.push(`
 					url_remove_${index}: mint_url_remove(mint_url_update: { url: $${mutation_var} }) {
+						url
+					}
+				`);
+				mutation_variables[`${mutation_var}`] = url;
+			});
+			const urls_to_add = new_urls.filter((url: string) => !old_urls.includes(url));
+			urls_to_add.forEach((url: string, index: number) => {
+				const mutation_var = `url_add_${index}`;
+				mutation_parts.push(`
+					url_add_${index}: mint_url_add(mint_url_update: { url: $${mutation_var} }) {
 						url
 					}
 				`);
@@ -341,20 +340,6 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 		if (contacts_array?.dirty) {
 			const new_contacts = contacts_array.value.filter((c: OrchardContact) => c.method && c.info);
 			const old_contacts = this.init_info.contact || [];
-			const contacts_to_add = new_contacts.filter(
-				(contact: OrchardContact) => !old_contacts.some((old) => old.method === contact.method && old.info === contact.info),
-			);
-			contacts_to_add.forEach((contact: OrchardContact, index: number) => {
-				const mutation_var = `contact_add_${index}`;
-				mutation_parts.push(`
-					contact_add_${index}: mint_contact_add(mint_contact_update: { method: $${mutation_var}_method, info: $${mutation_var}_info }) {
-						method
-						info
-					}
-				`);
-				mutation_variables[`${mutation_var}_method`] = contact.method;
-				mutation_variables[`${mutation_var}_info`] = contact.info;
-			});
 			const contacts_to_remove = old_contacts.filter(
 				(old) => !new_contacts.some((contact: OrchardContact) => contact.method === old.method && contact.info === old.info),
 			);
@@ -369,9 +354,25 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 				mutation_variables[`${mutation_var}_method`] = contact.method;
 				mutation_variables[`${mutation_var}_info`] = contact.info;
 			});
+			const contacts_to_add = new_contacts.filter(
+				(contact: OrchardContact) => !old_contacts.some((old) => old.method === contact.method && old.info === contact.info),
+			);
+			contacts_to_add.forEach((contact: OrchardContact, index: number) => {
+				const mutation_var = `contact_add_${index}`;
+				mutation_parts.push(`
+					contact_add_${index}: mint_contact_add(mint_contact_update: { method: $${mutation_var}_method, info: $${mutation_var}_info }) {
+						method
+						info
+					}
+				`);
+				mutation_variables[`${mutation_var}_method`] = contact.method;
+				mutation_variables[`${mutation_var}_info`] = contact.info;
+			});
 		}
 
 		if (mutation_parts.length === 0) return;
+		if (this.hasDuplicateContactMethods()) return;
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 
 		const mutation = `
 			mutation BulkMintUpdate(${Object.keys(mutation_variables)
@@ -500,6 +501,7 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 	}
 
 	private addMintContact(control_value: OrchardContact): void {
+		if (this.hasDuplicateContactMethods()) return;
 		this.mintService.addMintContact(control_value).subscribe({
 			next: (response) => {
 				const contact = response.mint_contact_add;
@@ -517,6 +519,7 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 	}
 
 	private updateMintContact(control_index: number, control_value: OrchardContact, original_value: OrchardContact): void {
+		if (this.hasDuplicateContactMethods()) return;
 		this.mintService.updateMintContact(control_value, original_value).subscribe({
 			next: (response) => {
 				const contact = response.mint_contact_add;
@@ -569,8 +572,27 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 		);
 	}
 
+	/**
+	 * Checks if there are duplicate contact methods in the form array
+	 * @returns true if duplicates exist (and shows error), false otherwise
+	 */
+	private hasDuplicateContactMethods(): boolean {
+		const contact_methods = this.form_array_contacts.controls.map((control) => control.get('method')?.value);
+		const duplicate_methods = contact_methods.filter((method, index) => contact_methods.indexOf(method) !== index);
+		if (duplicate_methods.length > 0) {
+			this.eventService.registerEvent(
+				new EventData({
+					type: 'ERROR',
+					message: `Contact method already set: ${duplicate_methods[0]}`,
+				}),
+			);
+			return true;
+		}
+		return false;
+	}
+
 	/* *******************************************************
-		Actions Up                     
+		Actions Up
 	******************************************************** */
 
 	public onAddUrlControl(url: string | null = null): void {
