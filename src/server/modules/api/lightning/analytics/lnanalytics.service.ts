@@ -2,7 +2,11 @@
 import {Injectable, Logger} from '@nestjs/common';
 /* Vendor Dependencies */
 import {DateTime} from 'luxon';
+/* Application Dependencies */
+import {UTXOracle} from '@server/modules/bitcoin/utxoracle/utxoracle.entity';
+import {findNearestOraclePrice, oracleConvertToUSDCents} from '@server/modules/bitcoin/utxoracle/utxoracle.helpers';
 /* Native Dependencies */
+import {BitcoinUTXOracleService} from '@server/modules/bitcoin/utxoracle/utxoracle.service';
 import {LightningAnalyticsService} from '@server/modules/lightning/analytics/lnanalytics.service';
 import {LightningAnalytics} from '@server/modules/lightning/analytics/lnanalytics.entity';
 import {LightningAnalyticsMetric, LightningAnalyticsInterval} from '@server/modules/lightning/analytics/lnanalytics.enums';
@@ -14,29 +18,30 @@ import {OrchardLightningAnalytics, OrchardLightningAnalyticsBackfillStatus} from
 export class ApiLightningAnalyticsService {
 	private readonly logger = new Logger(ApiLightningAnalyticsService.name);
 
-	constructor(private lightningAnalyticsService: LightningAnalyticsService) {}
+	constructor(
+        private bitcoinUTXOracleService: BitcoinUTXOracleService,
+        private lightningAnalyticsService: LightningAnalyticsService,
+    ) {}
 
 	/**
-	 * Gets analytics data, combining cached data with live data for current period
+	 * Gets analytics data
 	 */
 	async getAnalytics(tag: string, args: LightningAnalyticsArgs): Promise<OrchardLightningAnalytics[]> {
 		this.logger.debug(tag);
-
 		const now = DateTime.utc().toSeconds();
 		const current_hour_start = DateTime.fromSeconds(now, {zone: 'UTC'}).startOf('hour').toSeconds();
+        const interval = args.interval ?? LightningAnalyticsInterval.hour;
 		const date_start = args.date_start ?? 0;
 		const date_end = args.date_end ?? now;
 		const metrics = args.metrics ?? Object.values(LightningAnalyticsMetric);
-
-		// Get cached data
 		const cached = await this.lightningAnalyticsService.getCachedAnalytics(
 			date_start,
 			Math.min(date_end, current_hour_start - 1),
 			metrics,
 		);
 		const all_data = cached.filter((d) => metrics.includes(d.metric as LightningAnalyticsMetric) && d.amount !== '0');
-
-		return this.aggregateByInterval(all_data, args.interval ?? LightningAnalyticsInterval.hour, args.timezone, date_start);
+        const utx_oracle_map = await this.bitcoinUTXOracleService.getOraclePriceMap();
+		return this.aggregateByInterval(all_data, interval, utx_oracle_map, args.timezone, date_start);
 	}
 
 	/**
@@ -51,6 +56,7 @@ export class ApiLightningAnalyticsService {
 	private aggregateByInterval(
 		data: LightningAnalytics[],
 		interval: LightningAnalyticsInterval,
+        utx_oracle_map: Map<number, UTXOracle>,
 		timezone?: string,
 		date_start?: number,
 	): OrchardLightningAnalytics[] {
@@ -76,7 +82,11 @@ export class ApiLightningAnalyticsService {
 
 		return Array.from(buckets.values())
 			.sort((a, b) => a.date - b.date)
-			.map((b) => new OrchardLightningAnalytics(b.unit, b.metric, b.amount.toString(), b.date));
+			.map((b) => {
+                const nearest_price = findNearestOraclePrice(utx_oracle_map, b.date);
+                const amount_oracle = oracleConvertToUSDCents(Number(b.amount), nearest_price?.price, b.unit);
+                return new OrchardLightningAnalytics(b.unit, b.metric, b.amount.toString(), b.date, amount_oracle);
+            });
 	}
 
 	private getBucketDate(

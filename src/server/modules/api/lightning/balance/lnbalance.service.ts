@@ -7,6 +7,7 @@ import {ErrorService} from '@server/modules/error/error.service';
 import {BitcoinUTXOracleService} from '@server/modules/bitcoin/utxoracle/utxoracle.service';
 import {LightningService} from '@server/modules/lightning/lightning/lightning.service';
 import {LightningChannelBalance} from '@server/modules/lightning/lightning/lightning.types';
+import {oracleConvertToUSDCents} from '@server/modules/bitcoin/utxoracle/utxoracle.helpers';
 /* Local Dependencies */
 import {OrchardLightningBalance} from './lnbalance.model';
 

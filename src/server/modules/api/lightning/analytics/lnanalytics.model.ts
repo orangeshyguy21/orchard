@@ -16,14 +16,18 @@ export class OrchardLightningAnalytics {
 	@Field(() => String)
 	amount: string;
 
+    @Field(() => String, {nullable: true})
+	amount_oracle: string;
+
 	@Field(() => UnixTimestamp)
 	date: number;
 
-	constructor(unit: string, metric: LightningAnalyticsMetric, amount: string, date: number) {
+	constructor(unit: string, metric: LightningAnalyticsMetric, amount: string, date: number, amount_oracle: number | null) {
 		this.unit = unit;
 		this.metric = metric;
 		this.amount = amount;
 		this.date = date;
+        this.amount_oracle = amount_oracle?.toString() ?? null;
 	}
 }
 

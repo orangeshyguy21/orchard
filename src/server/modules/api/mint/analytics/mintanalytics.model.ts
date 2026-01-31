@@ -13,17 +13,21 @@ export class OrchardMintAnalytics {
 	@Field(() => Int)
 	amount: number;
 
+	@Field(() => Int, {nullable: true})
+	amount_oracle: number | null;
+
 	@Field(() => UnixTimestamp)
 	created_time: number;
 
 	@Field(() => Int)
 	operation_count: number;
 
-	constructor(cashu_mint_analytics: CashuMintAnalytics) {
+	constructor(cashu_mint_analytics: CashuMintAnalytics, amount_oracle: number | null) {
 		this.unit = cashu_mint_analytics.unit;
 		this.amount = cashu_mint_analytics.amount;
 		this.created_time = cashu_mint_analytics.created_time;
 		this.operation_count = cashu_mint_analytics.operation_count;
+        this.amount_oracle = amount_oracle;
 	}
 }
 
