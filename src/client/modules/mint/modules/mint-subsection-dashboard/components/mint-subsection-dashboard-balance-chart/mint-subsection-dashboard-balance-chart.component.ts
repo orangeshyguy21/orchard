@@ -100,6 +100,11 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 		if (changes['selected_type'] && !changes['selected_type'].firstChange) {
 			this.init();
 		}
+        if (changes['page_settings'] && !changes['page_settings'].firstChange) {
+            if (this.page_settings().oracle_used) {
+                console.log('USE CONVERTED PRICES');
+            }
+        }
 	}
 
 	private getRemoveSubscription(): Subscription {

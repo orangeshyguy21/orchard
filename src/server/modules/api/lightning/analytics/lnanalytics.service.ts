@@ -61,7 +61,11 @@ export class ApiLightningAnalyticsService {
 		date_start?: number,
 	): OrchardLightningAnalytics[] {
 		if (interval === LightningAnalyticsInterval.hour) {
-			return data.map((d) => new OrchardLightningAnalytics(d.unit, d.metric as LightningAnalyticsMetric, d.amount, d.date));
+			return data.map((d) => {
+                const nearest_price = findNearestOraclePrice(utx_oracle_map, d.date);
+                const amount_oracle = oracleConvertToUSDCents(Number(d.amount), nearest_price?.price, d.unit);
+                return new OrchardLightningAnalytics(d.unit, d.metric as LightningAnalyticsMetric, d.amount, d.date, amount_oracle);
+            });
 		}
 
 		const tz = timezone ?? 'UTC';

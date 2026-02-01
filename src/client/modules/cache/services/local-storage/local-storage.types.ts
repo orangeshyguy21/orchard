@@ -44,6 +44,7 @@ export type MintDashboardSettings = {
 	units: MintUnit[] | null;
 	interval: MintAnalyticsInterval | null;
 	tertiary_nav: string[] | null;
+    oracle_used: boolean | null;
 	type: {
 		balance_sheet: ChartType | null;
 		mints: ChartType | null;

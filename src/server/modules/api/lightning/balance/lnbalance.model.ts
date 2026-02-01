@@ -90,7 +90,7 @@ export class OrchardLightningBalance {
 	@Field(() => OrchardCustomChannelData)
 	custom_channel_data: OrchardCustomChannelData;
 
-	constructor(lnb: LightningChannelBalance, oracle_price: number | null) {
+	constructor(lnb: LightningChannelBalance, utx_oracle_price: number | null) {
 		this.balance = parseFloat(lnb.balance);
 		this.pending_open_balance = parseFloat(lnb.pending_open_balance);
 		this.local_balance = parseFloat(lnb.local_balance);
