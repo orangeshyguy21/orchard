@@ -100,11 +100,11 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 		if (changes['selected_type'] && !changes['selected_type'].firstChange) {
 			this.init();
 		}
-        if (changes['page_settings'] && !changes['page_settings'].firstChange) {
-            if (this.page_settings().oracle_used) {
-                console.log('USE CONVERTED PRICES');
-            }
-        }
+        // if (changes['page_settings'] && !changes['page_settings'].firstChange) {
+        //     if (this.page_settings().oracle_used) {
+        //         console.log('USE CONVERTED PRICES');
+        //     }
+        // }
 	}
 
 	private getRemoveSubscription(): Subscription {
@@ -120,6 +120,7 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 	}
 
 	private init(): void {
+        console.log('init balance chart', this.mint_analytics());
 		const has_mint_data = this.mint_analytics().length > 0 || this.mint_analytics_pre().length > 0;
 		const has_lightning_data = this.lightning_analytics().length > 0 || this.lightning_analytics_pre().length > 0;
 		if (!has_mint_data && !has_lightning_data) return;

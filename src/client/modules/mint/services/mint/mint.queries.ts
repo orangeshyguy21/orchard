@@ -135,6 +135,7 @@ query MintAnalyticsBalances($units: [MintUnit!], $date_start: UnixTimestamp, $da
 	mint_analytics_balances(units: $units, date_start: $date_start, date_end: $date_end, interval: $interval, timezone: $timezone) {
 		unit
 		amount
+        amount_oracle
 		created_time
 		operation_count
 	}

@@ -3,12 +3,14 @@ import {OrchardMintAnalytics, MintUnit, OrchardMintKeysetsAnalytics} from '@shar
 export class MintAnalytic implements OrchardMintAnalytics {
 	unit: MintUnit;
 	amount: number;
+    amount_oracle: number | null;
 	created_time: number;
 	operation_count: number;
 
 	constructor(oma: OrchardMintAnalytics) {
 		this.unit = oma.unit;
 		this.amount = oma.amount;
+        this.amount_oracle = oma.amount_oracle ?? null;
 		this.created_time = oma.created_time;
 		this.operation_count = oma.operation_count;
 	}
