@@ -15,8 +15,10 @@ import {
 	getRawData,
 	getAllPossibleTimestamps,
 	getTimeInterval,
-	getYAxisId,
+	convertChartDataWithOracle,
+	getYAxisIdWithOracle,
 } from '@client/modules/chart/helpers/mint-chart-data.helpers';
+import {eligibleForOracleConversion} from '@client/modules/bitcoin/helpers/oracle.helpers';
 import {
 	getOutboundLiquidityData,
 	getOutboundLiquidityVolumeData,
@@ -30,6 +32,7 @@ import {
 	getFiatYAxisConfig,
 	getTooltipTitle,
 	getTooltipLabel,
+	getOracleTooltipLabel,
 } from '@client/modules/chart/helpers/mint-chart-options.helpers';
 import {LocalAmountPipe} from '@client/modules/local/pipes/local-amount/local-amount.pipe';
 import {ChartService} from '@client/modules/chart/services/chart/chart.service';
@@ -101,11 +104,15 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 		if (changes['selected_type'] && !changes['selected_type'].firstChange) {
 			this.init();
 		}
-        // if (changes['page_settings'] && !changes['page_settings'].firstChange) {
-        //     if (this.page_settings().oracle_used) {
-        //         console.log('USE CONVERTED PRICES');
-        //     }
-        // }
+		if (changes['page_settings'] && !changes['page_settings'].firstChange) {
+			this.init();
+		}
+	}
+
+	private canUseOracle(): boolean {
+		const oracle_used = this.page_settings().oracle_used;
+		const oracle_map = this.bitcoin_oracle_price_map();
+		return !!(oracle_used && oracle_map && oracle_map.size > 0);
 	}
 
 	private getRemoveSubscription(): Subscription {
@@ -175,6 +182,9 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 	private getBalanceSheetTotalsData(): ChartConfiguration['data'] {
 		if (!this.page_settings()) return {datasets: []};
 
+		const can_use_oracle = this.canUseOracle();
+		const oracle_map = this.bitcoin_oracle_price_map();
+
 		const time_interval = getTimeInterval(this.page_settings().interval);
 		const timestamp_first = DateTime.fromSeconds(this.page_settings().date_start).startOf(time_interval).toSeconds();
 		const timestamp_last = DateTime.fromSeconds(this.page_settings().date_end).startOf(time_interval).toSeconds();
@@ -192,10 +202,11 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 
 		Object.entries(data_unit_groups_prepended).forEach(([unit, data], index) => {
 			const data_keyed_by_timestamp = getDataKeyedByTimestamp(data, 'amount');
-			const liability_data = getAmountData(timestamp_range, data_keyed_by_timestamp, unit, true);
+			const raw_liability_data = getAmountData(timestamp_range, data_keyed_by_timestamp, unit, true);
+			const liability_data = convertChartDataWithOracle(raw_liability_data, unit, oracle_map, can_use_oracle);
 			const color = this.chartService.getAssetColor(unit, index);
 			const muted_color = this.chartService.getMutedColor(color.border);
-			const yAxisID = getYAxisId(unit);
+			const yAxisID = getYAxisIdWithOracle(unit, can_use_oracle);
 
 			datasets.push({
 				data: liability_data,
@@ -225,7 +236,8 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 			const raw_asset_data = getOutboundLiquidityData(timestamp_range, this.lightning_analytics(), initial_outbound_msat);
 			const live_balance_sat = LocalAmountPipe.getConvertedAmount('msat', this.lightning_balance()?.local_balance ?? 0);
 			const interval = this.page_settings().interval as unknown as LightningAnalyticsInterval;
-			const asset_data = correctLastPointWithLiveBalance(raw_asset_data, live_balance_sat, interval);
+			const corrected_asset_data = correctLastPointWithLiveBalance(raw_asset_data, live_balance_sat, interval);
+			const asset_data = convertChartDataWithOracle(corrected_asset_data, 'sat', oracle_map, can_use_oracle);
 			const asset_color = this.chartService.getAssetColor('sat', 0);
 			const muted_asset_color = this.chartService.getMutedColor(asset_color.border);
 
@@ -246,7 +258,7 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 				pointHoverRadius: 4,
 				fill: false,
 				tension: 0.4,
-				yAxisID: 'ybtc',
+				yAxisID: getYAxisIdWithOracle('sat', can_use_oracle),
 			});
 		}
 
@@ -258,6 +270,9 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 	 */
 	private getBalanceSheetVolumeData(): ChartConfiguration['data'] {
 		if (!this.page_settings()) return {datasets: []};
+
+		const can_use_oracle = this.canUseOracle();
+		const oracle_map = this.bitcoin_oracle_price_map();
 
 		const time_interval = getTimeInterval(this.page_settings().interval);
 		const timestamp_first = DateTime.fromSeconds(this.page_settings().date_start).startOf(time_interval).toSeconds();
@@ -271,9 +286,10 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 
 		Object.entries(data_unit_groups).forEach(([unit, data], index) => {
 			const data_keyed_by_timestamp = getDataKeyedByTimestamp(data, 'amount');
-			const volume_data = getAmountData(timestamp_range, data_keyed_by_timestamp, unit, false);
+			const raw_volume_data = getAmountData(timestamp_range, data_keyed_by_timestamp, unit, false);
+			const volume_data = convertChartDataWithOracle(raw_volume_data, unit, oracle_map, can_use_oracle);
 			const color = this.chartService.getAssetColor(unit, index);
-			const yAxisID = getYAxisId(unit);
+			const yAxisID = getYAxisIdWithOracle(unit, can_use_oracle);
 
 			datasets.push({
 				data: volume_data,
@@ -289,7 +305,8 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 
 		// Asset dataset (lightning outbound - non cumulative) - outline style
 		if (this.lightning_enabled() && this.lightning_analytics().length > 0) {
-			const asset_data = getOutboundLiquidityVolumeData(timestamp_range, this.lightning_analytics());
+			const raw_asset_data = getOutboundLiquidityVolumeData(timestamp_range, this.lightning_analytics());
+			const asset_data = convertChartDataWithOracle(raw_asset_data, 'sat', oracle_map, can_use_oracle);
 			const asset_color = this.chartService.getAssetColor('sat', 0);
 
 			datasets.push({
@@ -301,7 +318,7 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 				borderWidth: 1,
 				borderSkipped: false,
 				borderRadius: 0,
-				yAxisID: 'ybtc',
+				yAxisID: getYAxisIdWithOracle('sat', can_use_oracle),
 			});
 		}
 
@@ -356,8 +373,15 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 		const data = this.chart_data();
 		if (!data || data.datasets.length === 0 || !this.page_settings) return {};
 
-		const units = data.datasets.map((item) => item.label);
-		const y_axis = getYAxis(units);
+		const can_use_oracle = this.canUseOracle();
+
+		// When oracle is used, BTC units become USD for axis purposes
+		const effective_units = data.datasets.map((item) => {
+			const label = item.label?.toLowerCase() ?? '';
+			if (can_use_oracle && eligibleForOracleConversion(label)) return 'usd';
+			return item.label;
+		});
+		const y_axis = getYAxis(effective_units);
 		const scales: ScaleChartOptions<'line'>['scales'] = {};
 		scales['x'] = getXAxisConfig(this.page_settings().interval, this.locale());
 
@@ -370,12 +394,15 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 			});
 		}
 		if (y_axis.includes('yfiat')) {
+			const is_only_axis = !y_axis.includes('ybtc');
 			scales['yfiat'] = getFiatYAxisConfig({
-				units,
-				show_grid: !y_axis.includes('ybtc'),
+				units: effective_units,
+				show_grid: is_only_axis,
 				grid_color: this.chartService.getGridColor(),
 				begin_at_zero: true,
 				locale: this.locale(),
+				position: is_only_axis ? 'left' : 'right',
+				is_cents: can_use_oracle,
 			});
 		}
 
@@ -413,7 +440,7 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 							}
 							return '';
 						},
-						label: (context: any) => getTooltipLabel(context, this.locale()),
+						label: (context: any) => getOracleTooltipLabel(context, this.locale(), can_use_oracle),
 						labelColor: (context: any) => ({
 							borderColor: context.dataset.borderColor,
 							backgroundColor: context.dataset.borderColor,

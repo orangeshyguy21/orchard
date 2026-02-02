@@ -130,9 +130,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public type_melts = computed(() => this.page_settings().type.melts || ChartType.Volume);
 	public type_swaps = computed(() => this.page_settings().type.swaps || ChartType.Volume);
 	public type_fee_revenue = computed(() => this.page_settings().type.fee_revenue || ChartType.Volume);
-    public loading_analytics = computed(() => {
-        return (!this.loading_mint() && !this.loading_bitcoin());
-    });
+    public loading_analytics = computed(() => this.loading_mint() || this.loading_bitcoin());
 
 	private subscriptions: Subscription = new Subscription();
 

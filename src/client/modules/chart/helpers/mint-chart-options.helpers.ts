@@ -1,12 +1,16 @@
 /* Vendor Dependencies */
 import {TimeUnit} from 'chart.js';
 import {DateTime} from 'luxon';
+/* Application Dependencies */
+import {eligibleForOracleConversion} from '@client/modules/bitcoin/helpers/oracle.helpers';
+import {OracleChartDataPoint} from '@client/modules/chart/helpers/mint-chart-data.helpers';
 /* Shared Dependencies */
 import {MintAnalyticsInterval} from '@shared/generated.types';
 
 function getFiatAxisLabel(units: (string | undefined)[]): string {
-	const has_usd = units.some((item) => item === 'USD');
-	const has_eur = units.some((item) => item === 'EUR');
+	const lower_units = units.map((u) => u?.toLowerCase());
+	const has_usd = lower_units.includes('usd');
+	const has_eur = lower_units.includes('eur');
 	if (has_usd && has_eur) return 'USD / EUR';
 	if (has_usd) return 'USD';
 	if (has_eur) return 'EUR';
@@ -162,26 +166,83 @@ export function getFiatYAxisConfig({
 	grid_color,
 	begin_at_zero,
 	locale,
+	position,
+	is_cents,
 }: {
 	units: (string | undefined)[];
 	show_grid: boolean;
 	grid_color: string;
 	begin_at_zero?: boolean;
 	locale?: string;
+	position?: 'left' | 'right';
+	is_cents?: boolean;
 }): any {
 	return {
-		position: 'right',
+		position: position ?? 'right',
 		title: {
 			display: true,
 			text: getFiatAxisLabel(units),
 		},
 		beginAtZero: begin_at_zero ?? false,
 		ticks: {
-			callback: (value: string | number) => formatAxisValue(Number(value), locale),
+			callback: (value: string | number) => {
+				const display_value = is_cents ? Number(value) / 100 : Number(value);
+				return formatAxisValue(display_value, locale);
+			},
 		},
 		grid: {
 			display: show_grid,
 			color: grid_color,
 		},
 	};
+}
+
+function formatTooltipValue(value: number, unit: string, locale: string): string {
+	switch (unit.toLowerCase()) {
+		case 'sat':
+			return `${value.toLocaleString(locale)} sat`;
+		case 'msat':
+			return `${value.toLocaleString(locale)} msat`;
+		case 'btc':
+			return `${value.toLocaleString(locale, {minimumFractionDigits: 8})} BTC`;
+		case 'usd':
+			return `$${(value / 100).toLocaleString(locale, {minimumFractionDigits: 2})}`;
+		case 'eur':
+			return `€${(value / 100).toLocaleString(locale, {minimumFractionDigits: 2})}`;
+		default:
+			return value.toLocaleString(locale);
+	}
+}
+
+/**
+ * Formats tooltip label showing both original BTC value and converted USD
+ * Example: "SAT: 100,000 sat ($42.50)"
+ */
+export function getOracleTooltipLabel(context: any, locale: string, oracle_used: boolean): string {
+	const label = context.dataset.label || '';
+	const raw_point = context.raw as OracleChartDataPoint;
+
+	if (raw_point && 'y_original' in raw_point) {
+		const original = raw_point.y_original;
+		const converted = raw_point.y_converted;
+		const unit = raw_point.unit;
+
+		const formatted_original = formatTooltipValue(original, unit, locale);
+
+		if (oracle_used && converted !== null && eligibleForOracleConversion(unit)) {
+			const usd_dollars = converted / 100;
+			const formatted_usd = usd_dollars.toLocaleString(locale, {
+				style: 'currency',
+				currency: 'USD',
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2,
+			});
+			return `${label}: ${formatted_original} (${formatted_usd})`;
+		}
+
+		return `${label}: ${formatted_original}`;
+	}
+
+	// Fallback for non-oracle data points
+	return `${label}: ${context.parsed.y.toLocaleString(locale)}`;
 }

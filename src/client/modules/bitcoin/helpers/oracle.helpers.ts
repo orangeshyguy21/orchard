@@ -3,6 +3,9 @@ import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle-price.class';
 
+export function eligibleForOracleConversion(unit: string): boolean {
+    return unit === 'sat' || unit === 'msat' || unit === 'btc';
+}
 
 export function oracleConvertToUSDCents(amount_btc: number | null, price_usd: number | null, unit: string): number | null {
 	if (amount_btc === null) return null;
@@ -20,14 +23,19 @@ export function oracleConvertToUSDCents(amount_btc: number | null, price_usd: nu
 	}
 }
 
-export function findNearestOraclePrice(oracle_map: Map<number, BitcoinOraclePrice>, target_timestamp: number): BitcoinOraclePrice | null {
+export function findNearestOraclePrice(oracle_map: Map<number, number>, target_timestamp: number): number | null {
     if (oracle_map.size === 0) return null;
     const target_day = DateTime.fromSeconds(target_timestamp).startOf('day').toSeconds();
     const exact_match = oracle_map.get(target_day);
     if (exact_match) return exact_match;
-    return Array.from(oracle_map.values()).reduce((nearest, price) => {
-        const nearest_diff = Math.abs(nearest.date - target_day);
-        const current_diff = Math.abs(price.date - target_day);
-        return current_diff < nearest_diff ? price : nearest;
-    }, Array.from(oracle_map.values())[0]);
+    let nearest_price: number | null = null;
+    let smallest_diff = Infinity;
+    for (const [timestamp, price] of oracle_map) {
+        const diff = Math.abs(timestamp - target_day);
+        if (diff < smallest_diff) {
+            smallest_diff = diff;
+            nearest_price = price;
+        }
+    }
+    return nearest_price;
 }

@@ -1,10 +1,19 @@
 /* Application Dependencies */
 import {MintAnalytic} from '@client/modules/mint/classes/mint-analytic.class';
 import {LocalAmountPipe} from '@client/modules/local/pipes/local-amount/local-amount.pipe';
+import {eligibleForOracleConversion, oracleConvertToUSDCents, findNearestOraclePrice} from '@client/modules/bitcoin/helpers/oracle.helpers';
 /* Vendor Dependencies */
 import {DateTime, DateTimeUnit} from 'luxon';
 /* Shared Dependencies */
 import {MintAnalyticsInterval} from '@shared/generated.types';
+
+export interface OracleChartDataPoint {
+	x: number;
+	y: number;
+	y_original: number;
+	y_converted: number | null;
+	unit: string;
+}
 
 type AnalyticsGroup = Record<string, MintAnalytic[]>;
 
@@ -128,4 +137,40 @@ export function getTimeInterval(interval: MintAnalyticsInterval): DateTimeUnit {
 	if (interval === MintAnalyticsInterval.Week) return 'week';
 	if (interval === MintAnalyticsInterval.Month) return 'month';
 	return 'day';
+}
+
+/**
+ * Converts chart data with oracle prices, storing both original and converted values
+ */
+export function convertChartDataWithOracle(
+	data: {x: number; y: number}[],
+	unit: string,
+	oracle_map: Map<number, number> | null,
+	use_oracle: boolean,
+): OracleChartDataPoint[] {
+	const is_eligible = eligibleForOracleConversion(unit);
+
+	return data.map((point) => {
+		const timestamp_seconds = point.x / 1000;
+		const oracle_price = oracle_map ? findNearestOraclePrice(oracle_map, timestamp_seconds) : null;
+		const converted = is_eligible ? oracleConvertToUSDCents(point.y, oracle_price, unit) : null;
+
+		return {
+			x: point.x,
+			y: use_oracle && converted !== null ? converted : point.y,
+			y_original: point.y,
+			y_converted: converted,
+			unit: unit.toLowerCase(),
+		};
+	});
+}
+
+/**
+ * Gets Y-axis ID considering oracle conversion state
+ * When oracle is used for BTC units, they map to yfiat (USD)
+ */
+export function getYAxisIdWithOracle(unit: string, oracle_used: boolean): string {
+	if (unit === 'usd' || unit === 'eur') return 'yfiat';
+	if (oracle_used && eligibleForOracleConversion(unit)) return 'yfiat';
+	return 'ybtc';
 }
