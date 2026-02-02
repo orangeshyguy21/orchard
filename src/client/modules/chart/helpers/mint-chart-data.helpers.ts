@@ -4,16 +4,10 @@ import {LocalAmountPipe} from '@client/modules/local/pipes/local-amount/local-am
 import {eligibleForOracleConversion, oracleConvertToUSDCents, findNearestOraclePrice} from '@client/modules/bitcoin/helpers/oracle.helpers';
 /* Vendor Dependencies */
 import {DateTime, DateTimeUnit} from 'luxon';
+/* Native Dependencies */
+import {OracleChartDataPoint} from '@client/modules/chart/types/chart.types';
 /* Shared Dependencies */
 import {MintAnalyticsInterval} from '@shared/generated.types';
-
-export interface OracleChartDataPoint {
-	x: number;
-	y: number;
-	y_original: number;
-	y_converted: number | null;
-	unit: string;
-}
 
 type AnalyticsGroup = Record<string, MintAnalytic[]>;
 

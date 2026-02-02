@@ -64,6 +64,7 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 	public lightning_analytics = input.required<LightningAnalytic[]>();
 	public lightning_analytics_pre = input.required<LightningAnalytic[]>();
 	public page_settings = input.required<NonNullableMintDashboardSettings>();
+    public oracle_used = input.required<boolean>();
 	public mint_genesis_time = input.required<number>();
 	public selected_type = input.required<ChartType | null | undefined>();
 	public loading = input.required<boolean>();
@@ -104,7 +105,7 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 		if (changes['selected_type'] && !changes['selected_type'].firstChange) {
 			this.init();
 		}
-		if (changes['page_settings'] && !changes['page_settings'].firstChange) {
+		if (changes['oracle_used'] && !changes['oracle_used'].firstChange) {
 			this.init();
 		}
 	}

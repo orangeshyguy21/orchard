@@ -90,6 +90,7 @@
 					[lightning_analytics]="lightning_analytics"
 					[lightning_analytics_pre]="lightning_analytics_pre"
 					[page_settings]="page_settings()"
+                    [oracle_used]="page_settings().oracle_used"
 					[mint_genesis_time]="mint_genesis_time"
 					[selected_type]="type_balance_sheet()"
 					[loading]="loading_analytics()"
@@ -113,9 +114,11 @@
 				</div>
 				<orc-mint-subsection-dashboard-chart
 					[locale]="locale"
+                    [bitcoin_oracle_price_map]="bitcoin_oracle_price_map()"
 					[mint_analytics]="mint_analytics_mints"
 					[mint_analytics_pre]="mint_analytics_mints_pre"
 					[page_settings]="page_settings()"
+                    [oracle_used]="page_settings().oracle_used"
 					[mint_genesis_time]="mint_genesis_time"
 					[selected_type]="type_mints()"
 					[loading]="loading_analytics()"
@@ -136,9 +139,11 @@
 				</div>
 				<orc-mint-subsection-dashboard-chart
 					[locale]="locale"
+                    [bitcoin_oracle_price_map]="bitcoin_oracle_price_map()"
 					[mint_analytics]="mint_analytics_melts"
 					[mint_analytics_pre]="mint_analytics_melts_pre"
 					[page_settings]="page_settings()"
+                    [oracle_used]="page_settings().oracle_used"
 					[mint_genesis_time]="mint_genesis_time"
 					[selected_type]="type_melts()"
 					[loading]="loading_analytics()"
@@ -159,9 +164,11 @@
 				</div>
 				<orc-mint-subsection-dashboard-chart
 					[locale]="locale"
+                    [bitcoin_oracle_price_map]="bitcoin_oracle_price_map()"
 					[mint_analytics]="mint_analytics_swaps"
 					[mint_analytics_pre]="mint_analytics_swaps_pre"
 					[page_settings]="page_settings()"
+                    [oracle_used]="page_settings().oracle_used"
 					[mint_genesis_time]="mint_genesis_time"
 					[selected_type]="type_swaps()"
 					[loading]="loading_analytics()"
@@ -188,9 +195,11 @@
 				<div class="relative">
 					<orc-mint-subsection-dashboard-chart
 						[locale]="locale"
+                        [bitcoin_oracle_price_map]="bitcoin_oracle_price_map()"
 						[mint_analytics]="mint_analytics_fees"
 						[mint_analytics_pre]="mint_analytics_fees_pre"
 						[page_settings]="page_settings()"
+                        [oracle_used]="page_settings().oracle_used"
 						[mint_genesis_time]="mint_genesis_time"
 						[selected_type]="type_fee_revenue()"
 						[loading]="loading_analytics()"

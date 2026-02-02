@@ -3,7 +3,7 @@ import {TimeUnit} from 'chart.js';
 import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {eligibleForOracleConversion} from '@client/modules/bitcoin/helpers/oracle.helpers';
-import {OracleChartDataPoint} from '@client/modules/chart/helpers/mint-chart-data.helpers';
+import {OracleChartDataPoint} from '@client/modules/chart/types/chart.types';
 /* Shared Dependencies */
 import {MintAnalyticsInterval} from '@shared/generated.types';
 

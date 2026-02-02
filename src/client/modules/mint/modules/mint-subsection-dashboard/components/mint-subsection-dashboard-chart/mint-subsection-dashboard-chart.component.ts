@@ -14,9 +14,11 @@ import {
 	getAmountData,
 	getRawData,
 	getAllPossibleTimestamps,
-	getYAxisId,
 	getTimeInterval,
+	convertChartDataWithOracle,
+	getYAxisIdWithOracle,
 } from '@client/modules/chart/helpers/mint-chart-data.helpers';
+import {eligibleForOracleConversion} from '@client/modules/bitcoin/helpers/oracle.helpers';
 import {
 	getXAxisConfig,
 	getYAxis,
@@ -24,6 +26,7 @@ import {
 	getFiatYAxisConfig,
 	getTooltipTitle,
 	getTooltipLabel,
+	getOracleTooltipLabel,
 	formatAxisValue,
 } from '@client/modules/chart/helpers/mint-chart-options.helpers';
 import {ChartService} from '@client/modules/chart/services/chart/chart.service';
@@ -42,9 +45,11 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy, OnChang
 	@ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
 	public locale = input.required<string>();
+    public bitcoin_oracle_price_map = input.required<Map<number, number> | null>();
 	public mint_analytics = input.required<MintAnalytic[]>();
 	public mint_analytics_pre = input.required<MintAnalytic[]>();
 	public page_settings = input.required<NonNullableMintDashboardSettings>();
+    public oracle_used = input.required<boolean>();
 	public mint_genesis_time = input.required<number>();
 	public selected_type = input.required<ChartType | null | undefined>();
 	public loading = input.required<boolean>();
@@ -69,6 +74,15 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy, OnChang
 		if (changes['selected_type'] && !changes['selected_type'].firstChange) {
 			this.init();
 		}
+		if (changes['oracle_used'] && !changes['oracle_used'].firstChange) {
+			this.init();
+		}
+	}
+
+	private canUseOracle(): boolean {
+		const oracle_used = this.page_settings().oracle_used;
+		const oracle_map = this.bitcoin_oracle_price_map();
+		return !!(oracle_used && oracle_map && oracle_map.size > 0);
 	}
 
 	private getRemoveSubscription(): Subscription {
@@ -133,6 +147,10 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy, OnChang
 		) {
 			return {datasets: []};
 		}
+
+		const can_use_oracle = this.canUseOracle();
+		const oracle_map = this.bitcoin_oracle_price_map();
+
 		const time_interval = getTimeInterval(this.page_settings().interval);
 		const timestamp_first = DateTime.fromSeconds(this.page_settings().date_start).startOf(time_interval).toSeconds();
 		const timestamp_last = DateTime.fromSeconds(this.page_settings().date_end).startOf(time_interval).toSeconds();
@@ -149,8 +167,9 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy, OnChang
 			const data_keyed_by_timestamp = getDataKeyedByTimestamp(data, 'amount');
 			const color = this.chartService.getAssetColor(unit, index);
 			const cumulative = this.chart_type === 'line';
-			const data_prepped = getAmountData(timestamp_range, data_keyed_by_timestamp, unit, cumulative);
-			const yAxisID = getYAxisId(unit);
+			const raw_data = getAmountData(timestamp_range, data_keyed_by_timestamp, unit, cumulative);
+			const data_prepped = convertChartDataWithOracle(raw_data, unit, oracle_map, can_use_oracle);
+			const yAxisID = getYAxisIdWithOracle(unit, can_use_oracle);
 
 			const muted_color = this.chartService.getMutedColor(color.border);
 			return {
@@ -179,8 +198,16 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy, OnChang
 
 	private getAmountChartOptions(): ChartConfiguration['options'] {
 		if (!this.chart_data || this.chart_data.datasets.length === 0 || !this.page_settings) return {};
-		const units = this.chart_data.datasets.map((item) => item.label);
-		const y_axis = getYAxis(units);
+
+		const can_use_oracle = this.canUseOracle();
+
+		// When oracle is used, BTC units become USD for axis purposes
+		const effective_units = this.chart_data.datasets.map((item) => {
+			const label = item.label?.toLowerCase() ?? '';
+			if (can_use_oracle && eligibleForOracleConversion(label)) return 'usd';
+			return item.label;
+		});
+		const y_axis = getYAxis(effective_units);
 		const scales: ScaleChartOptions<'line'>['scales'] = {};
 		scales['x'] = getXAxisConfig(this.page_settings().interval, this.locale());
 		if (y_axis.includes('ybtc')) {
@@ -192,12 +219,15 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy, OnChang
 			});
 		}
 		if (y_axis.includes('yfiat')) {
+			const is_only_axis = !y_axis.includes('ybtc');
 			scales['yfiat'] = getFiatYAxisConfig({
-				units,
-				show_grid: !y_axis.includes('ybtc'),
+				units: effective_units,
+				show_grid: is_only_axis,
 				grid_color: this.chartService.getGridColor(),
 				begin_at_zero: true,
 				locale: this.locale(),
+				position: is_only_axis ? 'left' : 'right',
+				is_cents: can_use_oracle,
 			});
 		}
 
@@ -218,7 +248,7 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy, OnChang
 					intersect: false,
 					callbacks: {
 						title: getTooltipTitle,
-						label: (context: any) => getTooltipLabel(context, this.locale()),
+						label: (context: any) => getOracleTooltipLabel(context, this.locale(), can_use_oracle),
 						labelColor: (context: any) => {
 							return {
 								borderColor: context.dataset.borderColor,
