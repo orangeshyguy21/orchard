@@ -26,7 +26,6 @@ import {
 	getFiatYAxisConfig,
 	getTooltipTitle,
 	getTooltipLabel,
-	getOracleTooltipLabel,
 	formatAxisValue,
 } from '@client/modules/chart/helpers/mint-chart-options.helpers';
 import {ChartService} from '@client/modules/chart/services/chart/chart.service';
@@ -248,7 +247,7 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy, OnChang
 					intersect: false,
 					callbacks: {
 						title: getTooltipTitle,
-						label: (context: any) => getOracleTooltipLabel(context, this.locale(), can_use_oracle),
+						label: (context: any) => this.chartService.formatOracleTooltipLabel(context, can_use_oracle),
 						labelColor: (context: any) => {
 							return {
 								borderColor: context.dataset.borderColor,

@@ -1,9 +1,6 @@
 /* Vendor Dependencies */
 import {TimeUnit} from 'chart.js';
 import {DateTime} from 'luxon';
-/* Application Dependencies */
-import {eligibleForOracleConversion} from '@client/modules/bitcoin/helpers/oracle.helpers';
-import {OracleChartDataPoint} from '@client/modules/chart/types/chart.types';
 /* Shared Dependencies */
 import {MintAnalyticsInterval} from '@shared/generated.types';
 
@@ -197,52 +194,3 @@ export function getFiatYAxisConfig({
 	};
 }
 
-function formatTooltipValue(value: number, unit: string, locale: string): string {
-	switch (unit.toLowerCase()) {
-		case 'sat':
-			return `${value.toLocaleString(locale)} sat`;
-		case 'msat':
-			return `${value.toLocaleString(locale)} msat`;
-		case 'btc':
-			return `${value.toLocaleString(locale, {minimumFractionDigits: 8})} BTC`;
-		case 'usd':
-			return `$${(value / 100).toLocaleString(locale, {minimumFractionDigits: 2})}`;
-		case 'eur':
-			return `€${(value / 100).toLocaleString(locale, {minimumFractionDigits: 2})}`;
-		default:
-			return value.toLocaleString(locale);
-	}
-}
-
-/**
- * Formats tooltip label showing both original BTC value and converted USD
- * Example: "SAT: 100,000 sat ($42.50)"
- */
-export function getOracleTooltipLabel(context: any, locale: string, oracle_used: boolean): string {
-	const label = context.dataset.label || '';
-	const raw_point = context.raw as OracleChartDataPoint;
-
-	if (raw_point && 'y_original' in raw_point) {
-		const original = raw_point.y_original;
-		const converted = raw_point.y_converted;
-		const unit = raw_point.unit;
-
-		const formatted_original = formatTooltipValue(original, unit, locale);
-
-		if (oracle_used && converted !== null && eligibleForOracleConversion(unit)) {
-			const usd_dollars = converted / 100;
-			const formatted_usd = usd_dollars.toLocaleString(locale, {
-				style: 'currency',
-				currency: 'USD',
-				minimumFractionDigits: 2,
-				maximumFractionDigits: 2,
-			});
-			return `${label}: ${formatted_original} (${formatted_usd})`;
-		}
-
-		return `${label}: ${formatted_original}`;
-	}
-
-	// Fallback for non-oracle data points
-	return `${label}: ${context.parsed.y.toLocaleString(locale)}`;
-}

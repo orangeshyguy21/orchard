@@ -32,7 +32,6 @@ import {
 	getFiatYAxisConfig,
 	getTooltipTitle,
 	getTooltipLabel,
-	getOracleTooltipLabel,
 } from '@client/modules/chart/helpers/mint-chart-options.helpers';
 import {LocalAmountPipe} from '@client/modules/local/pipes/local-amount/local-amount.pipe';
 import {ChartService} from '@client/modules/chart/services/chart/chart.service';
@@ -441,7 +440,7 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 							}
 							return '';
 						},
-						label: (context: any) => getOracleTooltipLabel(context, this.locale(), can_use_oracle),
+						label: (context: any) => this.chartService.formatOracleTooltipLabel(context, can_use_oracle),
 						labelColor: (context: any) => ({
 							borderColor: context.dataset.borderColor,
 							backgroundColor: context.dataset.borderColor,
