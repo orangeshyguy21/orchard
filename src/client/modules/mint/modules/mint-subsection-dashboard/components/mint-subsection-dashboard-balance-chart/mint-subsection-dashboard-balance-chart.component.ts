@@ -55,6 +55,7 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 	public locale = input.required<string>();
 	public mint_analytics = input.required<MintAnalytic[]>();
 	public mint_analytics_pre = input.required<MintAnalytic[]>();
+    public bitcoin_oracle_price_map = input.required<Map<number, number> | null>();
 	public lightning_balance = input.required<LightningBalance | null>();
 	public lightning_analytics_backfill_status = input.required<LightningAnalyticsBackfillStatus | null>();
 	public lightning_analytics = input.required<LightningAnalytic[]>();
@@ -120,7 +121,6 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 	}
 
 	private init(): void {
-        console.log('init balance chart', this.mint_analytics());
 		const has_mint_data = this.mint_analytics().length > 0 || this.mint_analytics_pre().length > 0;
 		const has_lightning_data = this.lightning_analytics().length > 0 || this.lightning_analytics_pre().length > 0;
 		if (!has_mint_data && !has_lightning_data) return;

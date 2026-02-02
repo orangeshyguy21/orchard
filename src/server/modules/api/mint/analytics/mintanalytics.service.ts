@@ -1,7 +1,6 @@
 /* Core Dependencies */
 import {Injectable, Logger} from '@nestjs/common';
 /* Application Dependencies */
-import {BitcoinUTXOracleService} from '@server/modules/bitcoin/utxoracle/utxoracle.service';
 import {CashuMintDatabaseService} from '@server/modules/cashu/mintdb/cashumintdb.service';
 import {CashuMintAnalytics, CashuMintKeysetsAnalytics} from '@server/modules/cashu/mintdb/cashumintdb.types';
 import {CashuMintAnalyticsArgs} from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
@@ -9,7 +8,6 @@ import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 import {MintService} from '@server/modules/api/mint/mint.service';
 import {ErrorService} from '@server/modules/error/error.service';
-import {findNearestOraclePrice, oracleConvertToUSDCents} from '@server/modules/bitcoin/utxoracle/utxoracle.helpers';
 /* Local Dependencies */
 import {OrchardMintAnalytics, OrchardMintKeysetsAnalytics} from './mintanalytics.model';
 
@@ -18,7 +16,6 @@ export class MintAnalyticsService {
 	private readonly logger = new Logger(MintAnalyticsService.name);
 
 	constructor(
-        private bitcoinUTXOracleService: BitcoinUTXOracleService,
 		private cashuMintDatabaseService: CashuMintDatabaseService,
 		private mintService: MintService,
 		private errorService: ErrorService,
@@ -31,12 +28,7 @@ export class MintAnalyticsService {
 					client,
 					args,
 				);
-                const utx_oracle_map = await this.bitcoinUTXOracleService.getOraclePriceMap();
-                return cashu_mint_analytics.map((cma) => {
-                    const nearest_price = findNearestOraclePrice(utx_oracle_map, cma.created_time);
-                    const amount_oracle = oracleConvertToUSDCents(cma.amount, nearest_price?.price, cma.unit);
-                    return new OrchardMintAnalytics(cma, amount_oracle);
-                });
+                return cashu_mint_analytics.map((cma) => new OrchardMintAnalytics(cma));
 			} catch (error) {
 				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
@@ -50,12 +42,7 @@ export class MintAnalyticsService {
 		return this.mintService.withDbClient(async (client) => {
 			try {
 				const cashu_mint_analytics: CashuMintAnalytics[] = await this.cashuMintDatabaseService.getMintAnalyticsMints(client, args);
-                const utx_oracle_map = await this.bitcoinUTXOracleService.getOraclePriceMap();
-				return cashu_mint_analytics.map((cma) => {
-                    const nearest_price = findNearestOraclePrice(utx_oracle_map, cma.created_time);
-                    const amount_oracle = oracleConvertToUSDCents(cma.amount, nearest_price?.price, cma.unit);
-                    return new OrchardMintAnalytics(cma, amount_oracle);
-                });
+				return cashu_mint_analytics.map((cma) => new OrchardMintAnalytics(cma));
 			} catch (error) {
 				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
@@ -69,12 +56,7 @@ export class MintAnalyticsService {
 		return this.mintService.withDbClient(async (client) => {
 			try {
 				const cashu_mint_analytics: CashuMintAnalytics[] = await this.cashuMintDatabaseService.getMintAnalyticsMelts(client, args);
-                const utx_oracle_map = await this.bitcoinUTXOracleService.getOraclePriceMap();
-				return cashu_mint_analytics.map((cma) => {
-                    const nearest_price = findNearestOraclePrice(utx_oracle_map, cma.created_time);
-                    const amount_oracle = oracleConvertToUSDCents(cma.amount, nearest_price?.price, cma.unit);
-                    return new OrchardMintAnalytics(cma, amount_oracle);
-                });
+				return cashu_mint_analytics.map((cma) => new OrchardMintAnalytics(cma));
 			} catch (error) {
 				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
@@ -88,12 +70,7 @@ export class MintAnalyticsService {
 		return this.mintService.withDbClient(async (client) => {
 			try {
 				const cashu_mint_analytics: CashuMintAnalytics[] = await this.cashuMintDatabaseService.getMintAnalyticsSwaps(client, args);
-                const utx_oracle_map = await this.bitcoinUTXOracleService.getOraclePriceMap();
-				return cashu_mint_analytics.map((cma) => {
-                    const nearest_price = findNearestOraclePrice(utx_oracle_map, cma.created_time);
-                    const amount_oracle = oracleConvertToUSDCents(cma.amount, nearest_price?.price, cma.unit);
-                    return new OrchardMintAnalytics(cma, amount_oracle);
-                });
+				return cashu_mint_analytics.map((cma) => new OrchardMintAnalytics(cma));
 			} catch (error) {
 				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
@@ -107,12 +84,7 @@ export class MintAnalyticsService {
 		return this.mintService.withDbClient(async (client) => {
 			try {
 				const cashu_mint_analytics: CashuMintAnalytics[] = await this.cashuMintDatabaseService.getMintAnalyticsFees(client, args);
-                const utx_oracle_map = await this.bitcoinUTXOracleService.getOraclePriceMap();
-				return cashu_mint_analytics.map((cma) => {
-                    const nearest_price = findNearestOraclePrice(utx_oracle_map, cma.created_time);
-                    const amount_oracle = oracleConvertToUSDCents(cma.amount, nearest_price?.price, cma.unit);
-                    return new OrchardMintAnalytics(cma, amount_oracle);
-                });
+				return cashu_mint_analytics.map((cma) => new OrchardMintAnalytics(cma));
 			} catch (error) {
 				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,

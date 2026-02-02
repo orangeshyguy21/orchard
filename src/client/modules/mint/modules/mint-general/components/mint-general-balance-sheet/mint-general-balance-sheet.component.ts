@@ -4,6 +4,7 @@ import {ChangeDetectionStrategy, Component, OnChanges, SimpleChanges, input, out
 import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
 import {OrchardError} from '@client/modules/error/types/error.types';
 import {DeviceType} from '@client/modules/layout/types/device.types';
+import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle-price.class';
 /* Native Module Dependencies */
 import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
@@ -19,7 +20,7 @@ import {MintUnit} from '@shared/generated.types';
 	styleUrl: './mint-general-balance-sheet.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintGeneralBalanceSheetComponent {
+export class MintGeneralBalanceSheetComponent implements OnChanges {
 	public navigate = output<void>();
 
 	public balances = input.required<MintBalance[]>();
@@ -29,6 +30,7 @@ export class MintGeneralBalanceSheetComponent {
 	public lightning_errors = input<OrchardError[]>([]);
 	public lightning_loading = input.required<boolean>();
 	public bitcoin_oracle_enabled = input.required<boolean>();
+    public bitcoin_oracle_price = input.required<BitcoinOraclePrice | null>();
 	public loading = input.required<boolean>();
 	public device_type = input.required<DeviceType>();
 
@@ -42,6 +44,9 @@ export class MintGeneralBalanceSheetComponent {
         if( changes['lightning_balance'] && !changes['lightning_balance'].firstChange && this.lightning_balance() !== null) {
             this.init();
         }
+        if( changes['bitcoin_oracle_price'] && !changes['bitcoin_oracle_price'].firstChange && this.bitcoin_oracle_price() !== null) {
+            this.init();
+        }
 	}
 
 	private init(): void {
@@ -49,11 +54,11 @@ export class MintGeneralBalanceSheetComponent {
 		this.rows.set(rows);
 	}
 
-	private getAssetBalances(unit: MintUnit): {balance: number | null, balance_oracle: number | null} {
+	private getAssetBalances(unit: MintUnit): number | null {
 		const lightning_balance = this.lightning_balance();
-		if (unit === MintUnit.Eur || unit === MintUnit.Usd) return {balance: null, balance_oracle: null};
-		if (lightning_balance) return {balance: lightning_balance.local_balance, balance_oracle: lightning_balance.local_balance_oracle};
-		return {balance: null, balance_oracle: null};
+		if (unit === MintUnit.Eur || unit === MintUnit.Usd) return null;
+		if (lightning_balance) return lightning_balance.local_balance;
+		return null;
 	}
 
 	private getRows(): MintGeneralBalanceRow[] {
@@ -69,7 +74,8 @@ export class MintGeneralBalanceSheetComponent {
 					balance_oracle: 0,
 				};
 				const asset_balance = this.getAssetBalances(keyset.unit);
-				return new MintGeneralBalanceRow(liability_balance, asset_balance, keyset);
+                const oracle_price = this.bitcoin_oracle_price()?.price ?? null;
+				return new MintGeneralBalanceRow(liability_balance, asset_balance, keyset, oracle_price);
 			})
 			.filter((row) => row !== null)
 			.sort((a, b) => b.derivation_path_index - a.derivation_path_index)

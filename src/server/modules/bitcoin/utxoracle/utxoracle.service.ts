@@ -16,7 +16,6 @@ export class BitcoinUTXOracleService {
 	private readonly DEFAULT_RECENT_BLOCKS = 144; // ~1 day of blocks
 	private readonly MIN_OUTPUT_BTC = 1e-5; // 0.00001 BTC
 	private readonly MAX_OUTPUT_BTC = 1e5; // 100,000 BTC
-    private oracle_cache: Map<number, UTXOracle> | null = null;
 
 
 	constructor(
@@ -40,7 +39,6 @@ export class BitcoinUTXOracleService {
 	 */
 	public async saveOraclePrice(date_timestamp: number, price: number): Promise<UTXOracle> {
 		const existing = await this.utxOracleRepository.findOne({where: {date: date_timestamp}});
-        this.oracle_cache = null;
 		if (existing) {
 			await this.utxOracleRepository.update(existing.id, {price});
 			return this.utxOracleRepository.findOne({where: {id: existing.id}});
@@ -81,19 +79,6 @@ export class BitcoinUTXOracleService {
 			},
 		});
 	}
-
-    /**
-     * Get a cached Map of oracle prices keyed by date (start of day UTC)
-     * Cache is invalidated when oracle data is modified
-     * @returns {Promise<Map<number, UTXOracle>>} Map of date -> oracle price for O(1) lookup
-     */
-    public async getOraclePriceMap(): Promise<Map<number, UTXOracle>> {
-        if (this.oracle_cache) return this.oracle_cache;
-        
-        const prices = await this.utxOracleRepository.find();
-        this.oracle_cache = new Map(prices.map(p => [p.date, p]));
-        return this.oracle_cache;
-    }
 
 	private async runRecentMode(options: UTXOracleRunOptions, progress: UTXOracleProgressTracker): Promise<UTXOracleResult> {
 		const report_connection = progress.createConnectionTracker();

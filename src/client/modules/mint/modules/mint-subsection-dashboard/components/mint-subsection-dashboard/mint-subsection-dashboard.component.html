@@ -6,8 +6,9 @@
 			[lightning_balance]="lightning_balance ? lightning_balance : null"
 			[lightning_enabled]="lightning_enabled"
 			[lightning_errors]="errors_lightning"
-			[lightning_loading]="loading_lightning"
-			[bitcoin_oracle_enabled]="enabled_bitcoin_oracle"
+			[lightning_loading]="loading_lightning()"
+			[bitcoin_oracle_enabled]="bitcoin_oracle_enabled"
+            [bitcoin_oracle_price]="bitcoin_oracle_price()"
 			[loading]="loading_static_data"
 			[device_type]="device_type()"
 			(navigate)="onNavigate('lightning')"
@@ -40,7 +41,7 @@
 					[loading]="loading_static_data"
 					[mint_genesis_time]="mint_genesis_time"
 					[device_desktop]="device_type() === 'desktop'"
-                    [bitcoin_oracle_enabled]="enabled_bitcoin_oracle"
+                    [bitcoin_oracle_enabled]="bitcoin_oracle_enabled"
 					(dateChange)="onDateChange($event)"
 					(unitsChange)="onUnitsChange($event)"
 					(intervalChange)="onIntervalChange($event)"
@@ -83,6 +84,7 @@
 					[locale]="locale"
 					[mint_analytics]="mint_analytics_balances"
 					[mint_analytics_pre]="mint_analytics_balances_pre"
+                    [bitcoin_oracle_price_map]="bitcoin_oracle_price_map()"
 					[lightning_balance]="lightning_balance"
 					[lightning_analytics_backfill_status]="lightning_analytics_backfill_status"
 					[lightning_analytics]="lightning_analytics"
@@ -90,7 +92,7 @@
 					[page_settings]="page_settings()"
 					[mint_genesis_time]="mint_genesis_time"
 					[selected_type]="type_balance_sheet()"
-					[loading]="loading_dynamic_data"
+					[loading]="loading_analytics()"
 					[lightning_enabled]="lightning_enabled"
 					[device_mobile]="device_type() === 'mobile'"
 				></orc-mint-subsection-dashboard-balance-chart>
@@ -116,7 +118,7 @@
 					[page_settings]="page_settings()"
 					[mint_genesis_time]="mint_genesis_time"
 					[selected_type]="type_mints()"
-					[loading]="loading_dynamic_data"
+					[loading]="loading_analytics()"
 				></orc-mint-subsection-dashboard-chart>
 			</div>
 			<div class="relative chart-melts">
@@ -139,7 +141,7 @@
 					[page_settings]="page_settings()"
 					[mint_genesis_time]="mint_genesis_time"
 					[selected_type]="type_melts()"
-					[loading]="loading_dynamic_data"
+					[loading]="loading_analytics()"
 				></orc-mint-subsection-dashboard-chart>
 			</div>
 			<div class="relative chart-swaps">
@@ -162,7 +164,7 @@
 					[page_settings]="page_settings()"
 					[mint_genesis_time]="mint_genesis_time"
 					[selected_type]="type_swaps()"
-					[loading]="loading_dynamic_data"
+					[loading]="loading_analytics()"
 				></orc-mint-subsection-dashboard-chart>
 			</div>
 			<div class="relative chart-fee-revenue">
@@ -191,10 +193,10 @@
 						[page_settings]="page_settings()"
 						[mint_genesis_time]="mint_genesis_time"
 						[selected_type]="type_fee_revenue()"
-						[loading]="loading_dynamic_data"
+						[loading]="loading_analytics()"
 					></orc-mint-subsection-dashboard-chart>
 
-					@if (!loading_dynamic_data) {
+					@if (!loading_analytics()) {
 						@if (mint_type === 'cdk') {
 							<div class="absolute top-0 right-0 bottom-0 left-0 flex flex-justify-center flex-items-center orc-surface-bg">
 								<div class="flex flex-column flex-items-center flex-gap-1">

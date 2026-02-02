@@ -11,12 +11,8 @@ export class OrchardMintBalance {
 	@Field(() => Int)
 	balance: number;
 
-	@Field(() => Int, {nullable: true})
-	balance_oracle: number | null;
-
-	constructor(cashu_mint_balance: CashuMintBalance, oracle_price: number | null) {
+	constructor(cashu_mint_balance: CashuMintBalance) {
 		this.keyset = cashu_mint_balance.keyset;
 		this.balance = cashu_mint_balance.balance;
-		this.balance_oracle = oracle_price;
 	}
 }

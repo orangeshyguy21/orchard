@@ -75,6 +75,7 @@ export class BitcoinService {
 		BITCOIN_BLOCKCHAIN_INFO: 'bitcoin-blockchain-info',
 		BITCOIN_NETWORK_INFO: 'bitcoin-network-info',
 		BITCOIN_ORACLE_PRICE: 'bitcoin-oracle-price',
+		BITCOIN_ORACLE_PRICE_MAP: 'bitcoin-oracle-price-map',
 	};
 
 	private readonly CACHE_DURATIONS = {
@@ -82,13 +83,18 @@ export class BitcoinService {
 		[this.CACHE_KEYS.BITCOIN_BLOCKCHAIN_INFO]: 30 * 60 * 1000, // 30 minutes
 		[this.CACHE_KEYS.BITCOIN_NETWORK_INFO]: 30 * 60 * 1000, // 30 minutes
 		[this.CACHE_KEYS.BITCOIN_ORACLE_PRICE]: 60 * 60 * 1000, // 60 minutes
+		[this.CACHE_KEYS.BITCOIN_ORACLE_PRICE_MAP]: 60 * 60 * 1000, // 60 minutes
 	};
+	private btco_rangekey: string = '';
 
 	/* Subjects for caching */
 	private readonly bitcoin_block_subject!: BehaviorSubject<BitcoinBlockCount | null>;
 	private readonly bitcoin_blockchain_info_subject: BehaviorSubject<BitcoinBlockchainInfo | null>;
 	private readonly bitcoin_network_info_subject: BehaviorSubject<BitcoinNetworkInfo | null>;
 	private readonly bitcoin_oracle_price_subject: BehaviorSubject<BitcoinOraclePrice | null>;
+    private readonly bitcoin_oracle_price_map_subject: BehaviorSubject<Map<number, number> | null>;
+
+
 	/* Observables for caching (rapid request caching) */
 	private bitcoin_blockchain_info_observable!: Observable<BitcoinBlockchainInfo> | null;
 	/* Observables for backfill */
@@ -117,6 +123,10 @@ export class BitcoinService {
 		this.bitcoin_oracle_price_subject = this.cache.createCache<BitcoinOraclePrice>(
 			this.CACHE_KEYS.BITCOIN_ORACLE_PRICE,
 			this.CACHE_DURATIONS[this.CACHE_KEYS.BITCOIN_ORACLE_PRICE],
+		);
+		this.bitcoin_oracle_price_map_subject = this.cache.createCache<Map<number, number>>(
+			this.CACHE_KEYS.BITCOIN_ORACLE_PRICE_MAP,
+			this.CACHE_DURATIONS[this.CACHE_KEYS.BITCOIN_ORACLE_PRICE_MAP],
 		);
 	}
 
@@ -310,6 +320,45 @@ export class BitcoinService {
 				return throwError(() => error);
 			}),
 		);
+	}
+
+	/**
+	 * Loads bitcoin oracle prices as a Map keyed by timestamp
+	 * Uses range-based caching - invalidates cache if date range changes
+	 */
+	public loadBitcoinOraclePriceMap(start_date: number, end_date: number): Observable<Map<number, number>> {
+		const range_key = `${start_date}-${end_date}`;
+
+		if (
+			this.btco_rangekey === range_key &&
+			this.bitcoin_oracle_price_map_subject.value &&
+			this.cache.isCacheValid(this.CACHE_KEYS.BITCOIN_ORACLE_PRICE_MAP)
+		) {
+			return of(this.bitcoin_oracle_price_map_subject.value);
+		}
+
+		if (this.btco_rangekey !== range_key) {
+			this.cache.clearCache(this.CACHE_KEYS.BITCOIN_ORACLE_PRICE_MAP);
+			this.btco_rangekey = range_key;
+		}
+
+		const query = getApiQuery(BITCOIN_ORACLE_PRICE_QUERY, {start_date, end_date});
+
+		return this.http.post<OrchardRes<BitcoinOraclePriceResponse>>(this.apiService.api, query).pipe(
+            map((response) => {
+                if (response.errors) throw new OrchardErrors(response.errors);
+                return response.data.bitcoin_oracle;
+            }),
+            map((prices) => new Map(prices.map((p) => [p.date, p.price]))),
+            tap((price_map) => {
+                this.cache.updateCache(this.CACHE_KEYS.BITCOIN_ORACLE_PRICE_MAP, price_map);
+                this.bitcoin_oracle_price_map_subject.next(price_map);
+            }),
+            catchError((error) => {
+                console.error('Error loading bitcoin oracle price map:', error);
+                return throwError(() => error);
+            }),
+        );
 	}
 
 	/**

@@ -111,7 +111,6 @@ query MintBalances($keyset_id: String) {
     mint_balances(keyset_id: $keyset_id) {
         balance
     	keyset
-        balance_oracle
     }
 }`;
 
@@ -126,7 +125,6 @@ export const MINT_KEYSETS_QUERY = `{
 		valid_from
 		valid_to
 		fees_paid
-		fees_paid_oracle
     }
 }`;
 
@@ -135,7 +133,6 @@ query MintAnalyticsBalances($units: [MintUnit!], $date_start: UnixTimestamp, $da
 	mint_analytics_balances(units: $units, date_start: $date_start, date_end: $date_end, interval: $interval, timezone: $timezone) {
 		unit
 		amount
-        amount_oracle
 		created_time
 		operation_count
 	}

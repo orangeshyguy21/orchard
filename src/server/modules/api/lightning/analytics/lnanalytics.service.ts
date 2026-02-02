@@ -2,11 +2,7 @@
 import {Injectable, Logger} from '@nestjs/common';
 /* Vendor Dependencies */
 import {DateTime} from 'luxon';
-/* Application Dependencies */
-import {UTXOracle} from '@server/modules/bitcoin/utxoracle/utxoracle.entity';
-import {findNearestOraclePrice, oracleConvertToUSDCents} from '@server/modules/bitcoin/utxoracle/utxoracle.helpers';
 /* Native Dependencies */
-import {BitcoinUTXOracleService} from '@server/modules/bitcoin/utxoracle/utxoracle.service';
 import {LightningAnalyticsService} from '@server/modules/lightning/analytics/lnanalytics.service';
 import {LightningAnalytics} from '@server/modules/lightning/analytics/lnanalytics.entity';
 import {LightningAnalyticsMetric, LightningAnalyticsInterval} from '@server/modules/lightning/analytics/lnanalytics.enums';
@@ -19,7 +15,6 @@ export class ApiLightningAnalyticsService {
 	private readonly logger = new Logger(ApiLightningAnalyticsService.name);
 
 	constructor(
-        private bitcoinUTXOracleService: BitcoinUTXOracleService,
         private lightningAnalyticsService: LightningAnalyticsService,
     ) {}
 
@@ -40,8 +35,7 @@ export class ApiLightningAnalyticsService {
 			metrics,
 		);
 		const all_data = cached.filter((d) => metrics.includes(d.metric as LightningAnalyticsMetric) && d.amount !== '0');
-        const utx_oracle_map = await this.bitcoinUTXOracleService.getOraclePriceMap();
-		return this.aggregateByInterval(all_data, interval, utx_oracle_map, args.timezone, date_start);
+		return this.aggregateByInterval(all_data, interval, args.timezone, date_start);
 	}
 
 	/**
@@ -56,15 +50,12 @@ export class ApiLightningAnalyticsService {
 	private aggregateByInterval(
 		data: LightningAnalytics[],
 		interval: LightningAnalyticsInterval,
-        utx_oracle_map: Map<number, UTXOracle>,
 		timezone?: string,
 		date_start?: number,
 	): OrchardLightningAnalytics[] {
 		if (interval === LightningAnalyticsInterval.hour) {
 			return data.map((d) => {
-                const nearest_price = findNearestOraclePrice(utx_oracle_map, d.date);
-                const amount_oracle = oracleConvertToUSDCents(Number(d.amount), nearest_price?.price, d.unit);
-                return new OrchardLightningAnalytics(d.unit, d.metric as LightningAnalyticsMetric, d.amount, d.date, amount_oracle);
+                return new OrchardLightningAnalytics(d.unit, d.metric as LightningAnalyticsMetric, d.amount, d.date);
             });
 		}
 
@@ -87,9 +78,7 @@ export class ApiLightningAnalyticsService {
 		return Array.from(buckets.values())
 			.sort((a, b) => a.date - b.date)
 			.map((b) => {
-                const nearest_price = findNearestOraclePrice(utx_oracle_map, b.date);
-                const amount_oracle = oracleConvertToUSDCents(Number(b.amount), nearest_price?.price, b.unit);
-                return new OrchardLightningAnalytics(b.unit, b.metric, b.amount.toString(), b.date, amount_oracle);
+                return new OrchardLightningAnalytics(b.unit, b.metric, b.amount.toString(), b.date);
             });
 	}
 
