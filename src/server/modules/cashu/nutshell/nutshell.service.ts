@@ -199,7 +199,7 @@ export class NutshellService {
 				request_lookup_id: row.checking_id,
 				paid_time: convertDateToUnixTimestamp(row.paid_time),
 				created_time: convertDateToUnixTimestamp(row.created_time),
-				payment_preimage: null,
+				payment_preimage: row.proof,
 				msat_to_pay: null,
 				payment_method: 'bolt11',
 			}));

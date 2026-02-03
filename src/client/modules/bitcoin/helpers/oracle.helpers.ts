@@ -1,7 +1,5 @@
 /* Vendor Dependencies */
 import {DateTime} from 'luxon';
-/* Application Dependencies */
-import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle-price.class';
 
 export function eligibleForOracleConversion(unit: string): boolean {
     return unit === 'sat' || unit === 'msat' || unit === 'btc';

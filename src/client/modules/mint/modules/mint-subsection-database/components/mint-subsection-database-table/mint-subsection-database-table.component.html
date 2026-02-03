@@ -7,7 +7,7 @@
 					<td mat-cell *matCellDef="let entity">
 						<div class="flex flex-items-center flex-gap-1">
 							<orc-graphic-asset [unit]="entity.unit" [height]="'1.5rem'"> </orc-graphic-asset>
-							<span class="text-sm"> {{ entity.unit }} </span>
+							<span class="text-sm"> {{ entity.unit | localUnit: true }} </span>
 						</div>
 					</td>
 				</ng-container>
@@ -111,6 +111,7 @@
 													[quote]="entity"
 													[loading]="loading_more()"
 													[lightning_request]="lightning_request()"
+													[bitcoin_oracle_amount]="bitcoin_oracle_amount()"
 													[device_desktop]="device_desktop()"
 													(setStatePaid)="setQuoteStatePaid.emit($event)"
 												></orc-mint-subsection-database-table-mint>
@@ -120,6 +121,7 @@
 													[quote]="entity"
 													[loading]="loading_more()"
 													[lightning_request]="lightning_request()"
+													[bitcoin_oracle_amount]="bitcoin_oracle_amount()"
 													[device_desktop]="device_desktop()"
 													(setStatePaid)="setQuoteStatePaid.emit($event)"
 												></orc-mint-subsection-database-table-melt>
@@ -128,6 +130,7 @@
 												<orc-mint-subsection-database-table-ecash
 													[group]="entity"
 													[keysets]="keysets()"
+                                                    [bitcoin_oracle_amount]="bitcoin_oracle_amount()"
 												></orc-mint-subsection-database-table-ecash>
 											}
 										}
