@@ -95,16 +95,15 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	public database_implementation!: string;
 	public lightning_request!: LightningRequest | null;
 
-
 	public device_type = signal<DeviceType>('desktop');
-    public bitcoin_oracle_amount = signal<number | null>(null);
+	public bitcoin_oracle_amount = signal<number | null>(null);
 
 	private active_event: EventData | null = null;
 	private subscriptions: Subscription = new Subscription();
 	private backup_encoded: string = '';
-    private bitcoin_oracle_enabled: boolean;
-    private lightning_enabled: boolean;
-    private bitcoin_oracle_price_map: Map<number, number> | null = null;
+	private bitcoin_oracle_enabled: boolean;
+	private lightning_enabled: boolean;
+	private bitcoin_oracle_price_map: Map<number, number> | null = null;
 
 	public get state_enabled(): boolean {
 		return (
@@ -115,27 +114,26 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	constructor(
 		private route: ActivatedRoute,
 		private configService: ConfigService,
-        private settingAppService: SettingAppService,
+		private settingAppService: SettingAppService,
 		private settingDeviceService: SettingDeviceService,
 		private eventService: EventService,
 		private mintService: MintService,
-        private bitcoinService: BitcoinService,
+		private bitcoinService: BitcoinService,
 		private lightningService: LightningService,
 		private aiService: AiService,
 		private breakpointObserver: BreakpointObserver,
 		private dialog: MatDialog,
 		private cdr: ChangeDetectorRef,
 	) {
-        this.lightning_enabled = this.configService.config.lightning.enabled;
-        this.bitcoin_oracle_enabled = this.settingAppService.getSetting('bitcoin_oracle');
-    }
+		this.lightning_enabled = this.configService.config.lightning.enabled;
+		this.bitcoin_oracle_enabled = this.settingAppService.getSetting('bitcoin_oracle');
+	}
 
 	/* *******************************************************
 	   Initalization                      
 	******************************************************** */
 
 	ngOnInit(): void {
-
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
 		this.unit_options = this.getUnitOptions();
 		this.form_backup.reset();
@@ -151,9 +149,9 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 			this.subscriptions.add(this.getAgentSubscription());
 			this.subscriptions.add(this.getToolSubscription());
 		}
-        if(this.bitcoin_oracle_enabled) {
-            this.subscriptions.add(this.getBitcoinOraclePriceMapSubscription());
-        }
+		if (this.bitcoin_oracle_enabled) {
+			this.subscriptions.add(this.getBitcoinOraclePriceMapSubscription());
+		}
 	}
 
 	/* *******************************************************
@@ -207,11 +205,13 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		});
 	}
 
-    private getBitcoinOraclePriceMapSubscription(): Subscription {
-        return this.bitcoinService.loadBitcoinOraclePriceMap(this.page_settings.date_start, this.page_settings.date_end).subscribe((price_map) => {
-            this.bitcoin_oracle_price_map = price_map;
-        });
-    }
+	private getBitcoinOraclePriceMapSubscription(): Subscription {
+		return this.bitcoinService
+			.loadBitcoinOraclePriceMap(this.page_settings.date_start, this.page_settings.date_end)
+			.subscribe((price_map) => {
+				this.bitcoin_oracle_price_map = price_map;
+			});
+	}
 
 	/* *******************************************************
 		Controls                      
@@ -428,15 +428,15 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		this.cdr.detectChanges();
 	}
 	public onMoreRequest(entity: MintMintQuote | MintMeltQuote | MintProofGroup | MintPromiseGroup): void {
-        if(this.bitcoin_oracle_enabled) {
-            this.calculateBitcoinOraclePrice(entity);
-        }
-        if ('request' in entity && this.lightning_enabled) {
-            const request: string = entity.request;
-            this.loading_more = true;
-            this.cdr.detectChanges();
-            this.getLightningRequest(request);
-        }
+		if (this.bitcoin_oracle_enabled) {
+			this.calculateBitcoinOraclePrice(entity);
+		}
+		if ('request' in entity && this.lightning_enabled) {
+			const request: string = entity.request;
+			this.loading_more = true;
+			this.cdr.detectChanges();
+			this.getLightningRequest(request);
+		}
 	}
 
 	public onSetQuoteStatePaid(quote: MintMintQuote | MintMeltQuote): void {
@@ -498,21 +498,21 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		});
 	}
 
-    /* *******************************************************
+	/* *******************************************************
 		Oracle Conversion                      
 	******************************************************** */
 
-    private calculateBitcoinOraclePrice(entity: MintMintQuote | MintMeltQuote | MintProofGroup | MintPromiseGroup): void {
-        if(!this.bitcoin_oracle_price_map) return;
-        if(!entity.amount) return;
-        if(!entity.unit) return;
-        if(!entity.created_time) return;
-        const amount = entity.amount;
-        const unit = entity.unit;
-        const price = findNearestOraclePrice(this.bitcoin_oracle_price_map, entity.created_time);
-        const usd_cents = oracleConvertToUSDCents(amount, price, unit);
-        this.bitcoin_oracle_amount.set(usd_cents);
-    }
+	private calculateBitcoinOraclePrice(entity: MintMintQuote | MintMeltQuote | MintProofGroup | MintPromiseGroup): void {
+		if (!this.bitcoin_oracle_price_map) return;
+		if (!entity.amount) return;
+		if (!entity.unit) return;
+		if (!entity.created_time) return;
+		const amount = entity.amount;
+		const unit = entity.unit;
+		const price = findNearestOraclePrice(this.bitcoin_oracle_price_map, entity.created_time);
+		const usd_cents = oracleConvertToUSDCents(amount, price, unit);
+		this.bitcoin_oracle_amount.set(usd_cents);
+	}
 
 	/* *******************************************************
 		Database Forms                

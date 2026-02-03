@@ -28,7 +28,7 @@ export class MintAnalyticsService {
 					client,
 					args,
 				);
-                return cashu_mint_analytics.map((cma) => new OrchardMintAnalytics(cma));
+				return cashu_mint_analytics.map((cma) => new OrchardMintAnalytics(cma));
 			} catch (error) {
 				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,

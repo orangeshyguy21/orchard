@@ -118,9 +118,9 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	};
 
 	public device_type = signal<DeviceType>('desktop');
-    public loading_mint = signal<boolean>(true);
-    public loading_bitcoin = signal<boolean>(false);
-    public loading_lightning = signal<boolean>(false);
+	public loading_mint = signal<boolean>(true);
+	public loading_bitcoin = signal<boolean>(false);
+	public loading_lightning = signal<boolean>(false);
 	public bitcoin_oracle_price = signal<BitcoinOraclePrice | null>(null);
 	public bitcoin_oracle_price_map = signal<Map<number, number> | null>(null);
 
@@ -130,7 +130,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public type_melts = computed(() => this.page_settings().type.melts || ChartType.Volume);
 	public type_swaps = computed(() => this.page_settings().type.swaps || ChartType.Volume);
 	public type_fee_revenue = computed(() => this.page_settings().type.fee_revenue || ChartType.Volume);
-    public loading_analytics = computed(() => this.loading_mint() || this.loading_bitcoin());
+	public loading_analytics = computed(() => this.loading_mint() || this.loading_bitcoin());
 
 	private subscriptions: Subscription = new Subscription();
 
@@ -140,7 +140,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		private settingDeviceService: SettingDeviceService,
 		private settingAppService: SettingAppService,
 		private publicService: PublicService,
-        private bitcoinService: BitcoinService,
+		private bitcoinService: BitcoinService,
 		private lightningService: LightningService,
 		private aiService: AiService,
 		private breakpointObserver: BreakpointObserver,
@@ -148,14 +148,14 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		private route: ActivatedRoute,
 		private cdr: ChangeDetectorRef,
 	) {
-        this.bitcoin_oracle_enabled = this.settingAppService.getSetting('bitcoin_oracle');
+		this.bitcoin_oracle_enabled = this.settingAppService.getSetting('bitcoin_oracle');
 		this.lightning_enabled = this.configService.config.lightning.enabled;
 		this.mint_type = this.configService.config.mint.type;
 		this.mint_info = this.route.snapshot.data['mint_info'];
 		this.mint_balances = this.route.snapshot.data['mint_balances'];
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
 		this.mint_genesis_time = this.getMintGenesisTime();
-		this.page_settings = signal(this.getPageSettings());		
+		this.page_settings = signal(this.getPageSettings());
 	}
 
 	/* *******************************************************
@@ -177,7 +177,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			this.subscriptions.add(this.getToolSubscription());
 		}
 		if (this.bitcoin_oracle_enabled) {
-            this.loading_bitcoin.set(true);
+			this.loading_bitcoin.set(true);
 			this.subscriptions.add(this.getBitcoinOraclePriceSubscription());
 			this.subscriptions.add(this.getBitcoinOraclePriceMapSubscription());
 		}
@@ -214,9 +214,9 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	}
 
 	private getBitcoinOraclePriceSubscription(): Subscription {
-        return this.bitcoinService.loadBitcoinOraclePrice().subscribe((price) => {
-            this.bitcoin_oracle_price.set(price);
-        });
+		return this.bitcoinService.loadBitcoinOraclePrice().subscribe((price) => {
+			this.bitcoin_oracle_price.set(price);
+		});
 	}
 
 	private getBitcoinOraclePriceMapSubscription(): Subscription {
@@ -224,7 +224,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		const end_date = this.page_settings().date_end;
 		return this.bitcoinService.loadBitcoinOraclePriceMap(start_date, end_date).subscribe((price_map) => {
 			this.bitcoin_oracle_price_map.set(price_map);
-            this.loading_bitcoin.set(false);
+			this.loading_bitcoin.set(false);
 		});
 	}
 
@@ -238,7 +238,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 				}),
 				catchError((error) => {
 					this.errors_lightning = error.errors;
-                    this.cdr.detectChanges();
+					this.cdr.detectChanges();
 					return EMPTY;
 				}),
 				finalize(() => {
@@ -481,7 +481,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			date_start: settings.date_start ?? this.getSelectedDateStart(),
 			date_end: settings.date_end ?? this.getSelectedDateEnd(),
 			tertiary_nav: settings.tertiary_nav ?? Object.values(NavTertiary),
-            oracle_used: (this.bitcoin_oracle_enabled) ? settings.oracle_used ?? false : false,
+			oracle_used: this.bitcoin_oracle_enabled ? (settings.oracle_used ?? false) : false,
 		};
 	}
 
@@ -548,12 +548,12 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.reloadDynamicData();
 	}
 
-    public onOracleUsedChange(event: boolean): void {
-        const current = this.page_settings();
-        const updated = {...current, oracle_used: event};
-        this.page_settings.set(updated);
-        this.settingDeviceService.setMintDashboardSettings(updated);
-    }
+	public onOracleUsedChange(event: boolean): void {
+		const current = this.page_settings();
+		const updated = {...current, oracle_used: event};
+		this.page_settings.set(updated);
+		this.settingDeviceService.setMintDashboardSettings(updated);
+	}
 
 	public onChartTypeChange(key: ChartKey, type: ChartType): void {
 		const current = this.page_settings();

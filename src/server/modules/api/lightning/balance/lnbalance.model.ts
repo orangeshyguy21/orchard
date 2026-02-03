@@ -69,7 +69,7 @@ export class OrchardLightningBalance {
 	@Field(() => Float)
 	local_balance: number;
 
-    @Field(() => Float, {nullable: true})
+	@Field(() => Float, {nullable: true})
 	local_balance_oracle: number;
 
 	@Field(() => Float)
@@ -94,7 +94,7 @@ export class OrchardLightningBalance {
 		this.balance = parseFloat(lnb.balance);
 		this.pending_open_balance = parseFloat(lnb.pending_open_balance);
 		this.local_balance = parseFloat(lnb.local_balance);
-        this.local_balance_oracle = oracleConvertToUSDCents(this.local_balance, utx_oracle_price, 'msat');
+		this.local_balance_oracle = oracleConvertToUSDCents(this.local_balance, utx_oracle_price, 'msat');
 		this.remote_balance = parseFloat(lnb.remote_balance);
 		this.unsettled_local_balance = parseFloat(lnb.unsettled_local_balance);
 		this.unsettled_remote_balance = parseFloat(lnb.unsettled_remote_balance);

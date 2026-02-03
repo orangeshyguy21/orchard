@@ -30,7 +30,7 @@ export class MintGeneralBalanceSheetComponent implements OnChanges {
 	public lightning_errors = input<OrchardError[]>([]);
 	public lightning_loading = input.required<boolean>();
 	public bitcoin_oracle_enabled = input.required<boolean>();
-    public bitcoin_oracle_price = input.required<BitcoinOraclePrice | null>();
+	public bitcoin_oracle_price = input.required<BitcoinOraclePrice | null>();
 	public loading = input.required<boolean>();
 	public device_type = input.required<DeviceType>();
 
@@ -41,12 +41,12 @@ export class MintGeneralBalanceSheetComponent implements OnChanges {
 		if (changes['loading'] && !changes['loading'].firstChange && this.loading() === false) {
 			this.init();
 		}
-        if( changes['lightning_balance'] && !changes['lightning_balance'].firstChange && this.lightning_balance() !== null) {
-            this.init();
-        }
-        if( changes['bitcoin_oracle_price'] && !changes['bitcoin_oracle_price'].firstChange && this.bitcoin_oracle_price() !== null) {
-            this.init();
-        }
+		if (changes['lightning_balance'] && !changes['lightning_balance'].firstChange && this.lightning_balance() !== null) {
+			this.init();
+		}
+		if (changes['bitcoin_oracle_price'] && !changes['bitcoin_oracle_price'].firstChange && this.bitcoin_oracle_price() !== null) {
+			this.init();
+		}
 	}
 
 	private init(): void {
@@ -74,7 +74,7 @@ export class MintGeneralBalanceSheetComponent implements OnChanges {
 					balance_oracle: 0,
 				};
 				const asset_balance = this.getAssetBalances(keyset.unit);
-                const oracle_price = this.bitcoin_oracle_price()?.price ?? null;
+				const oracle_price = this.bitcoin_oracle_price()?.price ?? null;
 				return new MintGeneralBalanceRow(liability_balance, asset_balance, keyset, oracle_price);
 			})
 			.filter((row) => row !== null)
@@ -86,7 +86,8 @@ export class MintGeneralBalanceSheetComponent implements OnChanges {
 					return;
 				}
 				rows_by_unit[unit].liabilities += row.liabilities;
-				if (row.liabilities_oracle !== null) rows_by_unit[unit].liabilities_oracle = (rows_by_unit[unit].liabilities_oracle ?? 0) + row.liabilities_oracle;
+				if (row.liabilities_oracle !== null)
+					rows_by_unit[unit].liabilities_oracle = (rows_by_unit[unit].liabilities_oracle ?? 0) + row.liabilities_oracle;
 				if (row.fees !== null) rows_by_unit[unit].fees = (rows_by_unit[unit].fees ?? 0) + row.fees;
 				if (row.fees_oracle !== null) rows_by_unit[unit].fees_oracle = (rows_by_unit[unit].fees_oracle ?? 0) + row.fees_oracle;
 			});

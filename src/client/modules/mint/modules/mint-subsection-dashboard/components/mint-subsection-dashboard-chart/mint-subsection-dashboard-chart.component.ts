@@ -44,11 +44,11 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy, OnChang
 	@ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
 	public locale = input.required<string>();
-    public bitcoin_oracle_price_map = input.required<Map<number, number> | null>();
+	public bitcoin_oracle_price_map = input.required<Map<number, number> | null>();
 	public mint_analytics = input.required<MintAnalytic[]>();
 	public mint_analytics_pre = input.required<MintAnalytic[]>();
 	public page_settings = input.required<NonNullableMintDashboardSettings>();
-    public oracle_used = input.required<boolean>();
+	public oracle_used = input.required<boolean>();
 	public mint_genesis_time = input.required<number>();
 	public selected_type = input.required<ChartType | null | undefined>();
 	public loading = input.required<boolean>();

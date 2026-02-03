@@ -92,8 +92,7 @@ export class BitcoinService {
 	private readonly bitcoin_blockchain_info_subject: BehaviorSubject<BitcoinBlockchainInfo | null>;
 	private readonly bitcoin_network_info_subject: BehaviorSubject<BitcoinNetworkInfo | null>;
 	private readonly bitcoin_oracle_price_subject: BehaviorSubject<BitcoinOraclePrice | null>;
-    private readonly bitcoin_oracle_price_map_subject: BehaviorSubject<Map<number, number> | null>;
-
+	private readonly bitcoin_oracle_price_map_subject: BehaviorSubject<Map<number, number> | null>;
 
 	/* Observables for caching (rapid request caching) */
 	private bitcoin_blockchain_info_observable!: Observable<BitcoinBlockchainInfo> | null;
@@ -345,20 +344,20 @@ export class BitcoinService {
 		const query = getApiQuery(BITCOIN_ORACLE_PRICE_QUERY, {start_date, end_date});
 
 		return this.http.post<OrchardRes<BitcoinOraclePriceResponse>>(this.apiService.api, query).pipe(
-            map((response) => {
-                if (response.errors) throw new OrchardErrors(response.errors);
-                return response.data.bitcoin_oracle;
-            }),
-            map((prices) => new Map(prices.map((p) => [p.date, p.price]))),
-            tap((price_map) => {
-                this.cache.updateCache(this.CACHE_KEYS.BITCOIN_ORACLE_PRICE_MAP, price_map);
-                this.bitcoin_oracle_price_map_subject.next(price_map);
-            }),
-            catchError((error) => {
-                console.error('Error loading bitcoin oracle price map:', error);
-                return throwError(() => error);
-            }),
-        );
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.bitcoin_oracle;
+			}),
+			map((prices) => new Map(prices.map((p) => [p.date, p.price]))),
+			tap((price_map) => {
+				this.cache.updateCache(this.CACHE_KEYS.BITCOIN_ORACLE_PRICE_MAP, price_map);
+				this.bitcoin_oracle_price_map_subject.next(price_map);
+			}),
+			catchError((error) => {
+				console.error('Error loading bitcoin oracle price map:', error);
+				return throwError(() => error);
+			}),
+		);
 	}
 
 	/**

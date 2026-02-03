@@ -7,6 +7,7 @@ import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
 import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
 import {OrchardError} from '@client/modules/error/types/error.types';
 import {DeviceType} from '@client/modules/layout/types/device.types';
+import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle-price.class';
 
 type Liabilities = {
 	unit: string;
@@ -28,6 +29,7 @@ export class IndexSubsectionDashboardMintEnabledComponent {
 	public balances = input.required<MintBalance[]>();
 	public icon_data = input.required<string | null>();
 	public bitcoin_oracle_enabled = input.required<boolean>();
+	public bitcoin_oracle_price = input.required<BitcoinOraclePrice | null>();
 	public lightning_balance = input.required<LightningBalance | null>();
 	public lightning_enabled = input.required<boolean>();
 	public lightning_errors = input.required<OrchardError[]>();

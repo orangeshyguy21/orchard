@@ -8,20 +8,19 @@ import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintUnit} from '@shared/generated.types';
 
 export class MintGeneralBalanceRow {
-    is_bitcoin: boolean;
-    unit_lightning: string;
+	is_bitcoin: boolean;
+	unit_lightning: string;
 	unit_mint: string;
 	liabilities: number;
-    liabilities_oracle: number | null;
+	liabilities_oracle: number | null;
 	input_fee_ppk: number;
 	active: boolean;
 	derivation_path_index: number;
 	first_seen: number | null;
 	assets: number | null;
-    assets_oracle: number | null;
+	assets_oracle: number | null;
 	fees: number | null;
-    fees_oracle: number | null;
-	
+	fees_oracle: number | null;
 
 	public get reserve(): number | null {
 		if (this.assets === null) return null;
@@ -33,17 +32,17 @@ export class MintGeneralBalanceRow {
 	}
 
 	constructor(balance: MintBalance | undefined, assets: number | null, keyset: MintKeyset, oracle_price: number | null) {
-        this.unit_lightning = 'msat';
+		this.unit_lightning = 'msat';
 		this.unit_mint = keyset.unit;
-        this.is_bitcoin = this.getIsBitcoin();
+		this.is_bitcoin = this.getIsBitcoin();
 		this.liabilities = balance?.balance ?? 0;
-        this.liabilities_oracle = oracleConvertToUSDCents(this.liabilities, oracle_price, this.unit_mint);
+		this.liabilities_oracle = oracleConvertToUSDCents(this.liabilities, oracle_price, this.unit_mint);
 		this.fees = keyset.fees_paid ?? null;
-        this.fees_oracle = oracleConvertToUSDCents(this.fees, oracle_price, this.unit_mint);
+		this.fees_oracle = oracleConvertToUSDCents(this.fees, oracle_price, this.unit_mint);
 		this.input_fee_ppk = keyset.input_fee_ppk;
 		this.active = keyset.active;
 		this.assets = assets;
-        this.assets_oracle = oracleConvertToUSDCents(this.assets, oracle_price, this.unit_lightning);
+		this.assets_oracle = oracleConvertToUSDCents(this.assets, oracle_price, this.unit_lightning);
 		this.derivation_path_index = keyset.derivation_path_index;
 		this.first_seen = keyset.valid_from;
 	}

@@ -16,7 +16,7 @@ export class LightningBalanceService {
 	private readonly logger = new Logger(LightningBalanceService.name);
 
 	constructor(
-        private bitcoinUTXOracleService: BitcoinUTXOracleService,
+		private bitcoinUTXOracleService: BitcoinUTXOracleService,
 		private lightningService: LightningService,
 		private errorService: ErrorService,
 	) {}
@@ -24,7 +24,7 @@ export class LightningBalanceService {
 	async getLightningChannelBalance(tag: string): Promise<OrchardLightningBalance> {
 		try {
 			const lcb: LightningChannelBalance = await this.lightningService.getLightningChannelBalance();
-            const utx_oracle_price = await this.bitcoinUTXOracleService.getOraclePrice();
+			const utx_oracle_price = await this.bitcoinUTXOracleService.getOraclePrice();
 			return new OrchardLightningBalance(lcb, utx_oracle_price?.price || null);
 		} catch (error) {
 			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {

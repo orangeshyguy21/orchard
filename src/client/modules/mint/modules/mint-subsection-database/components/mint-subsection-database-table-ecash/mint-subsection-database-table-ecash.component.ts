@@ -15,7 +15,7 @@ import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 export class MintSubsectionDatabaseTableEcashComponent implements OnInit {
 	public group = input.required<MintProofGroup | MintPromiseGroup>();
 	public keysets = input.required<MintKeyset[]>();
-    public bitcoin_oracle_amount = input.required<number | null>();
+	public bitcoin_oracle_amount = input.required<number | null>();
 
 	public group_amounts: {keyset: MintKeyset | undefined; notes: {amount: number; quantity: number}[]}[] = [];
 

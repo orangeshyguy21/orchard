@@ -13,7 +13,6 @@ export class OrchardMintAnalytics {
 	@Field(() => Int)
 	amount: number;
 
-
 	@Field(() => UnixTimestamp)
 	created_time: number;
 

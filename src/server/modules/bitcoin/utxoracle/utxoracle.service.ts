@@ -17,7 +17,6 @@ export class BitcoinUTXOracleService {
 	private readonly MIN_OUTPUT_BTC = 1e-5; // 0.00001 BTC
 	private readonly MAX_OUTPUT_BTC = 1e5; // 100,000 BTC
 
-
 	constructor(
 		private bitcoinRpcService: BitcoinRpcService,
 		@InjectRepository(UTXOracle)

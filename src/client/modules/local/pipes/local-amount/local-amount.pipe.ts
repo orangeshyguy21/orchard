@@ -22,7 +22,7 @@ export class LocalAmountPipe implements PipeTransform {
 
 		switch (unit_lower) {
 			case 'msat':
-				return this.transformSat(Math.ceil(amount/1000), locale, currency.type_btc, abbreviate);
+				return this.transformSat(Math.ceil(amount / 1000), locale, currency.type_btc, abbreviate);
 			case 'sat':
 				return this.transformSat(amount, locale, currency.type_btc, abbreviate);
 			case 'btc':

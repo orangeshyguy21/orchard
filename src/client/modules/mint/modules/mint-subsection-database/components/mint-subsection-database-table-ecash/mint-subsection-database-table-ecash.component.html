@@ -21,15 +21,15 @@
 						</div>
 					}
 				</div>
-                @if (bitcoin_oracle_amount()) {
-                    <div class="flex flex-column flex-gap-0-5">
-                        <div class="flex flex-items-center flex-gap-0-5">
-                            <orc-graphic-oracle-icon [size]="1.5"></orc-graphic-oracle-icon>
-                            <div class="orc-outline-color font-weight-extra-light">Oracle Amount</div>
-                        </div>
-                        <div class="text-nowrap" [innerHTML]="bitcoin_oracle_amount() | localAmount: 'usd'"></div>
-                    </div>
-                }
+				@if (bitcoin_oracle_amount()) {
+					<div class="flex flex-column flex-gap-0-5">
+						<div class="flex flex-items-center flex-gap-0-5">
+							<orc-graphic-oracle-icon [size]="1.5"></orc-graphic-oracle-icon>
+							<div class="orc-outline-color font-weight-extra-light">Oracle Amount</div>
+						</div>
+						<div class="text-nowrap" [innerHTML]="bitcoin_oracle_amount() | localAmount: 'usd'"></div>
+					</div>
+				}
 			</div>
 		}
 	</div>

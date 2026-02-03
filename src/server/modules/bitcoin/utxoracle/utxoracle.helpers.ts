@@ -21,13 +21,13 @@ export function oracleConvertToUSDCents(amount_btc: number | null, price_usd: nu
 }
 
 export function findNearestOraclePrice(oracle_map: Map<number, UTXOracle>, target_timestamp: number): UTXOracle | null {
-    if (oracle_map.size === 0) return null;
-    const target_day = DateTime.fromSeconds(target_timestamp).startOf('day').toSeconds();
-    const exact_match = oracle_map.get(target_day);
-    if (exact_match) return exact_match;
-    return Array.from(oracle_map.values()).reduce((nearest, price) => {
-        const nearest_diff = Math.abs(nearest.date - target_day);
-        const current_diff = Math.abs(price.date - target_day);
-        return current_diff < nearest_diff ? price : nearest;
-    }, Array.from(oracle_map.values())[0]);
+	if (oracle_map.size === 0) return null;
+	const target_day = DateTime.fromSeconds(target_timestamp).startOf('day').toSeconds();
+	const exact_match = oracle_map.get(target_day);
+	if (exact_match) return exact_match;
+	return Array.from(oracle_map.values()).reduce((nearest, price) => {
+		const nearest_diff = Math.abs(nearest.date - target_day);
+		const current_diff = Math.abs(price.date - target_day);
+		return current_diff < nearest_diff ? price : nearest;
+	}, Array.from(oracle_map.values())[0]);
 }

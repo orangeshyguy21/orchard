@@ -14,9 +14,7 @@ import {OrchardLightningAnalytics, OrchardLightningAnalyticsBackfillStatus} from
 export class ApiLightningAnalyticsService {
 	private readonly logger = new Logger(ApiLightningAnalyticsService.name);
 
-	constructor(
-        private lightningAnalyticsService: LightningAnalyticsService,
-    ) {}
+	constructor(private lightningAnalyticsService: LightningAnalyticsService) {}
 
 	/**
 	 * Gets analytics data
@@ -25,7 +23,7 @@ export class ApiLightningAnalyticsService {
 		this.logger.debug(tag);
 		const now = DateTime.utc().toSeconds();
 		const current_hour_start = DateTime.fromSeconds(now, {zone: 'UTC'}).startOf('hour').toSeconds();
-        const interval = args.interval ?? LightningAnalyticsInterval.hour;
+		const interval = args.interval ?? LightningAnalyticsInterval.hour;
 		const date_start = args.date_start ?? 0;
 		const date_end = args.date_end ?? now;
 		const metrics = args.metrics ?? Object.values(LightningAnalyticsMetric);
@@ -55,8 +53,8 @@ export class ApiLightningAnalyticsService {
 	): OrchardLightningAnalytics[] {
 		if (interval === LightningAnalyticsInterval.hour) {
 			return data.map((d) => {
-                return new OrchardLightningAnalytics(d.unit, d.metric as LightningAnalyticsMetric, d.amount, d.date);
-            });
+				return new OrchardLightningAnalytics(d.unit, d.metric as LightningAnalyticsMetric, d.amount, d.date);
+			});
 		}
 
 		const tz = timezone ?? 'UTC';
@@ -78,8 +76,8 @@ export class ApiLightningAnalyticsService {
 		return Array.from(buckets.values())
 			.sort((a, b) => a.date - b.date)
 			.map((b) => {
-                return new OrchardLightningAnalytics(b.unit, b.metric, b.amount.toString(), b.date);
-            });
+				return new OrchardLightningAnalytics(b.unit, b.metric, b.amount.toString(), b.date);
+			});
 	}
 
 	private getBucketDate(

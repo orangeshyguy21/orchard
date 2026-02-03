@@ -19,7 +19,7 @@ export class MintKeysetService {
 	private readonly logger = new Logger(MintKeysetService.name);
 
 	constructor(
-        private bitcoinUTXOracleService: BitcoinUTXOracleService,
+		private bitcoinUTXOracleService: BitcoinUTXOracleService,
 		private cashuMintDatabaseService: CashuMintDatabaseService,
 		private cashuMintRpcService: CashuMintRpcService,
 		private mintService: MintService,
@@ -30,7 +30,7 @@ export class MintKeysetService {
 		return this.mintService.withDbClient(async (client) => {
 			try {
 				const cashu_keysets: CashuMintKeyset[] = await this.cashuMintDatabaseService.getMintKeysets(client);
-                const utx_oracle_price = await this.bitcoinUTXOracleService.getOraclePrice();
+				const utx_oracle_price = await this.bitcoinUTXOracleService.getOraclePrice();
 				return cashu_keysets.map((ck) => new OrchardMintKeyset(ck, utx_oracle_price?.price || null));
 			} catch (error) {
 				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {

@@ -20,6 +20,7 @@ import {BitcoinBlock} from '@client/modules/bitcoin/classes/bitcoin-block.class'
 import {BitcoinTransaction} from '@client/modules/bitcoin/classes/bitcoin-transaction.class';
 import {BitcoinBlockTemplate} from '@client/modules/bitcoin/classes/bitcoin-block-template.class';
 import {BitcoinTransactionFeeEstimate} from '@client/modules/bitcoin/classes/bitcoin-transaction-fee-estimate.class';
+import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle-price.class';
 import {LightningInfo} from '@client/modules/lightning/classes/lightning-info.class';
 import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
 import {LightningAccount} from '@client/modules/lightning/classes/lightning-account.class';
@@ -47,6 +48,7 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public enabled_mint: boolean;
 	public enabled_ecash = false;
 	public device_type = signal<DeviceType>('desktop');
+	public bitcoin_oracle_price = signal<BitcoinOraclePrice | null>(null);
 
 	public loading_bitcoin: boolean = true;
 	public loading_lightning: boolean = true;
@@ -111,11 +113,11 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 		private cdr: ChangeDetectorRef,
 	) {
 		this.enabled_bitcoin = this.configService.config.bitcoin.enabled;
+		this.enabled_bitcoin_oracle = this.settingAppService.getSetting('bitcoin_oracle');
 		this.enabled_lightning = this.configService.config.lightning.enabled;
 		this.enabled_taproot_assets = this.configService.config.taproot_assets.enabled;
 		this.version = this.configService.config.mode.version;
 		this.enabled_mint = this.configService.config.mint.enabled;
-		this.enabled_bitcoin_oracle = this.settingAppService.getSetting('bitcoin_oracle');
 	}
 
 	/* *******************************************************
@@ -138,6 +140,9 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 		if (this.enabled_bitcoin) {
 			this.getBitcoin();
 			this.subscriptions.add(this.getBitcoinBlockSubscription());
+		}
+		if (this.enabled_bitcoin_oracle) {
+			this.subscriptions.add(this.getBitcoinOraclePriceSubscription());
 		}
 		this.cdr.detectChanges();
 	}
@@ -195,6 +200,12 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 					this.cdr.detectChanges();
 				},
 			});
+	}
+
+	private getBitcoinOraclePriceSubscription(): Subscription {
+		return this.bitcoinService.loadBitcoinOraclePrice().subscribe((price) => {
+			this.bitcoin_oracle_price.set(price);
+		});
 	}
 
 	private getBreakpointSubscription(): Subscription {

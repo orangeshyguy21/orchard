@@ -45,7 +45,7 @@ export class MintSubsectionDashboardControlComponent {
 	public dateChange = output<number[]>();
 	public unitsChange = output<MintUnit[]>();
 	public intervalChange = output<MintAnalyticsInterval>();
-    public oracleUsedChange = output<boolean>();
+	public oracleUsedChange = output<boolean>();
 
 	public filter_count = signal(0);
 
@@ -56,7 +56,7 @@ export class MintSubsectionDashboardControlComponent {
 		}),
 		units: new FormArray<FormControl<boolean>>([]),
 		interval: new FormControl<MintAnalyticsInterval | null>(null, [Validators.required]),
-        oracle_used: new FormControl<boolean | null>(null, [Validators.required]),
+		oracle_used: new FormControl<boolean | null>(null, [Validators.required]),
 	});
 
 	public unit_options!: UnitOption[];
@@ -143,7 +143,7 @@ export class MintSubsectionDashboardControlComponent {
 		this.setUnitFilters(settings.units);
 		this.panel.controls.interval.setValue(settings.interval);
 		this.panel.controls.oracle_used.setValue(settings.oracle_used);
-        this.updateFilterCount();
+		this.updateFilterCount();
 	}
 
 	/** Builds the FormArray controls based on unit_options */
@@ -202,13 +202,13 @@ export class MintSubsectionDashboardControlComponent {
 		this.intervalChange.emit(event.value);
 	}
 
-    public onOracleUsedChange(): void {
-        const is_valid = this.isValidChange();
+	public onOracleUsedChange(): void {
+		const is_valid = this.isValidChange();
 		if (!is_valid) return;
 		this.updateFilterCount();
-        const oracle_used = this.panel.controls.oracle_used.value ?? false;
-        this.oracleUsedChange.emit(oracle_used);
-    }
+		const oracle_used = this.panel.controls.oracle_used.value ?? false;
+		this.oracleUsedChange.emit(oracle_used);
+	}
 
 	private isValidChange(): boolean {
 		const settings = this.page_settings();
@@ -221,14 +221,14 @@ export class MintSubsectionDashboardControlComponent {
 		if (this.panel.controls.daterange.controls.date_end.value.toSeconds() !== settings.date_end) return true;
 		if (!this.areUnitsEqual(this.getSelectedUnits(), settings.units)) return true;
 		if (this.panel.controls.interval.value !== settings.interval) return true;
-        if (this.panel.controls.oracle_used.value !== settings.oracle_used) return true;
+		if (this.panel.controls.oracle_used.value !== settings.oracle_used) return true;
 		return false;
 	}
 
 	private updateFilterCount(): void {
-        let count = 0;
-        if (this.getSelectedUnits().length > 0) count++;
-        if (this.panel.controls.oracle_used.value) count++;
+		let count = 0;
+		if (this.getSelectedUnits().length > 0) count++;
+		if (this.panel.controls.oracle_used.value) count++;
 		this.filter_count.set(count);
 	}
 

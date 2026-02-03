@@ -119,7 +119,7 @@ export class LocalStorageService {
 				interval: null,
 				type: {balance_sheet: null, mints: null, melts: null, swaps: null, fee_revenue: null},
 				tertiary_nav: null,
-                oracle_used: null,
+				oracle_used: null,
 			};
 		return settings;
 	}

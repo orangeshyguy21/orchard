@@ -40,28 +40,28 @@
 						}
 					</div>
 				}
-                <div class="flex flex-column flex-gap-0-5">
+				<div class="flex flex-column flex-gap-0-5">
 					<div class="orc-outline-color font-weight-extra-light">Fee Reserve</div>
 					<div [innerHTML]="quote().fee_reserve | localAmount: quote().unit : 'mint'"></div>
 				</div>
-                @if (bitcoin_oracle_amount()) {
-                    <div class="flex flex-column flex-gap-0-5">
-                        <div class="flex flex-items-center flex-gap-0-5">
-                            <orc-graphic-oracle-icon [size]="1.5"></orc-graphic-oracle-icon>
-                            <div class="orc-outline-color font-weight-extra-light">Oracle Amount</div>
-                        </div>
-                        <div class="text-nowrap" [innerHTML]="bitcoin_oracle_amount() | localAmount: 'usd'"></div>
-                    </div>
-                }
+				@if (bitcoin_oracle_amount()) {
+					<div class="flex flex-column flex-gap-0-5">
+						<div class="flex flex-items-center flex-gap-0-5">
+							<orc-graphic-oracle-icon [size]="1.5"></orc-graphic-oracle-icon>
+							<div class="orc-outline-color font-weight-extra-light">Oracle Amount</div>
+						</div>
+						<div class="text-nowrap" [innerHTML]="bitcoin_oracle_amount() | localAmount: 'usd'"></div>
+					</div>
+				}
 				<div class="relative">
-                    <div
-                        class="orc-animation-feedback absolute top-0 flex flex-gap-0-25 flex-row flex-align-center orc-outline-color"
-                        [class.animation-visible]="copy_animation_state === 'visible'"
-                    >
-                        <div class="font-size-s text-nowrap">Copied</div>
-                        <mat-icon class="icon-sm">content_copy</mat-icon>
-                    </div>
-                </div>
+					<div
+						class="orc-animation-feedback absolute top-0 flex flex-gap-0-25 flex-row flex-align-center orc-outline-color"
+						[class.animation-visible]="copy_animation_state === 'visible'"
+					>
+						<div class="font-size-s text-nowrap">Copied</div>
+						<mat-icon class="icon-sm">content_copy</mat-icon>
+					</div>
+				</div>
 			</div>
 
 			<div class="flex flex-column flex-gap-1">
@@ -84,7 +84,7 @@
 						<div class="orc-outline-variant-color">Not Paid</div>
 					}
 				</div>
-                @if (lightning_request() && !loading()) {
+				@if (lightning_request() && !loading()) {
 					<div animate.enter="orc-animation-fadein-fast" class="flex flex-column flex-gap-1">
 						<div class="flex flex-column flex-gap-0-5">
 							<div class="orc-outline-color font-weight-extra-light text-nowrap">
@@ -101,7 +101,7 @@
 						</div>
 					</div>
 				}
-                <div class="flex flex-column flex-gap-0-5">
+				<div class="flex flex-column flex-gap-0-5">
 					<div class="orc-outline-color font-weight-extra-light">Payment Preimage</div>
 					@if (quote().payment_preimage) {
 						<div class="orc-text-button" (click)="onCopy(quote().payment_preimage)">{{ quote().payment_preimage }}</div>
@@ -112,12 +112,12 @@
 				@if (can_set_paid()) {
 					<div class="flex flex-column flex-gap-0-5">
 						<div class="orc-outline-color font-weight-extra-light p-t-0-5">Actions</div>
-                        <div class="flex">
-                            <button mat-stroked-button color="primary" (click)="onSetStatePaid($event)">
-                                <mat-icon class="mat-symbol-outline">credit_score</mat-icon>
-                                Set as Paid
-                            </button>
-                        </div>
+						<div class="flex">
+							<button mat-stroked-button color="primary" (click)="onSetStatePaid($event)">
+								<mat-icon class="mat-symbol-outline">credit_score</mat-icon>
+								Set as Paid
+							</button>
+						</div>
 					</div>
 				}
 			</div>

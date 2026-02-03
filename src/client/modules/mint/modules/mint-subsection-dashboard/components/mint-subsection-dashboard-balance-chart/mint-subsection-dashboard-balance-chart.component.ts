@@ -57,13 +57,13 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 	public locale = input.required<string>();
 	public mint_analytics = input.required<MintAnalytic[]>();
 	public mint_analytics_pre = input.required<MintAnalytic[]>();
-    public bitcoin_oracle_price_map = input.required<Map<number, number> | null>();
+	public bitcoin_oracle_price_map = input.required<Map<number, number> | null>();
 	public lightning_balance = input.required<LightningBalance | null>();
 	public lightning_analytics_backfill_status = input.required<LightningAnalyticsBackfillStatus | null>();
 	public lightning_analytics = input.required<LightningAnalytic[]>();
 	public lightning_analytics_pre = input.required<LightningAnalytic[]>();
 	public page_settings = input.required<NonNullableMintDashboardSettings>();
-    public oracle_used = input.required<boolean>();
+	public oracle_used = input.required<boolean>();
 	public mint_genesis_time = input.required<number>();
 	public selected_type = input.required<ChartType | null | undefined>();
 	public loading = input.required<boolean>();

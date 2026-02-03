@@ -9,7 +9,7 @@ import {LightningBalanceService} from './lnbalance.service';
 import {LightningBalanceResolver} from './lnbalance.resolver';
 
 @Module({
-	imports: [ BitcoinUTXOracleModule, LightningModule, ErrorModule],
+	imports: [BitcoinUTXOracleModule, LightningModule, ErrorModule],
 	providers: [LightningBalanceService, LightningBalanceResolver],
 })
 export class LightningBalanceModule {}
