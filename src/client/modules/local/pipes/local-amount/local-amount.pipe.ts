@@ -14,7 +14,7 @@ import {getCurrencySymbol} from '@client/modules/local/helpers/local.helpers';
 export class LocalAmountPipe implements PipeTransform {
 	constructor(private settingDeviceService: SettingDeviceService) {}
 
-	transform(amount: number | null, unit: string, section?: string, abbreviate: boolean = false): string {
+	transform(amount: number | null, unit: string, section?: string, abbreviate: boolean = false, unitless: boolean = false): string {
 		if (amount === null || amount === undefined) return '';
 		const locale = this.settingDeviceService.getLocale();
 		const currency = this.settingDeviceService.getCurrency();
@@ -22,17 +22,17 @@ export class LocalAmountPipe implements PipeTransform {
 
 		switch (unit_lower) {
 			case 'msat':
-				return this.transformSat(Math.ceil(amount / 1000), locale, currency.type_btc, abbreviate);
+				return this.transformSat(Math.ceil(amount / 1000), locale, currency.type_btc, abbreviate, unitless);
 			case 'sat':
-				return this.transformSat(amount, locale, currency.type_btc, abbreviate);
+				return this.transformSat(amount, locale, currency.type_btc, abbreviate, unitless);
 			case 'btc':
 				return this.transformBtc(amount, locale);
 			case 'usd':
-				return this.transformFiat(amount, unit, locale, currency.type_fiat, section, abbreviate);
+				return this.transformFiat(amount, unit, locale, currency.type_fiat, section, abbreviate, unitless);
 			case 'eur':
-				return this.transformFiat(amount, unit, locale, currency.type_fiat, section, abbreviate);
+				return this.transformFiat(amount, unit, locale, currency.type_fiat, section, abbreviate, unitless);
 			default:
-				return this.formatStandard(amount.toLocaleString(), unit);
+                return this.transformStandard(amount, locale, unit, abbreviate, unitless);
 		}
 	}
 
@@ -42,10 +42,10 @@ export class LocalAmountPipe implements PipeTransform {
 	private abbreviateAmount(value: number, locale: string): string {
 		const abs_value = Math.abs(value);
 		if (abs_value >= 1_000_000_000) {
-			return (value / 1_000_000_000).toLocaleString(locale, {maximumFractionDigits: 1}) + 'B';
+			return (value / 1_000_000_000).toLocaleString(locale, {maximumFractionDigits: 1}) + 'b';
 		}
 		if (abs_value >= 1_000_000) {
-			return (value / 1_000_000).toLocaleString(locale, {maximumFractionDigits: 1}) + 'M';
+			return (value / 1_000_000).toLocaleString(locale, {maximumFractionDigits: 1}) + 'm';
 		}
 		if (abs_value >= 1_000) {
 			return (value / 1_000).toLocaleString(locale, {maximumFractionDigits: 1}) + 'k';
@@ -53,8 +53,9 @@ export class LocalAmountPipe implements PipeTransform {
 		return value.toLocaleString(locale);
 	}
 
-	private transformSat(amount: number, locale: string, currency: CurrencyType, abbreviate: boolean): string {
+	private transformSat(amount: number, locale: string, currency: CurrencyType, abbreviate: boolean, unitless: boolean): string {
 		const sat_string = abbreviate ? this.abbreviateAmount(amount, locale) : amount.toLocaleString(locale);
+        if (unitless) return sat_string;
 		switch (currency) {
 			case CurrencyType.GLYPH:
 				return this.formatPreceding(sat_string, '₿');
@@ -78,12 +79,14 @@ export class LocalAmountPipe implements PipeTransform {
 		currency: CurrencyType,
 		section?: string,
 		abbreviate: boolean = false,
+        unitless: boolean = false,
 	): string {
 		let fiat_amount = amount;
 		if (section === 'mint' || section === undefined) fiat_amount = LocalAmountPipe.getConvertedAmount(unit, amount);
 		const fiat_amount_string = abbreviate
 			? this.abbreviateAmount(fiat_amount, locale)
 			: fiat_amount.toLocaleString(locale, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        if (unitless) return fiat_amount_string;
 		switch (currency) {
 			case CurrencyType.GLYPH:
 				return this.formatPreceding(fiat_amount_string, getCurrencySymbol(unit.toLowerCase()));
@@ -92,6 +95,11 @@ export class LocalAmountPipe implements PipeTransform {
 			default:
 				return this.formatStandard(fiat_amount_string, unit.toUpperCase());
 		}
+	}
+
+    private transformStandard(amount: number, locale: string, unit: string, abbreviate: boolean, unitless: boolean): string {
+		const amount_string = abbreviate ? this.abbreviateAmount(amount, locale) : amount.toLocaleString(locale);
+        return unitless ? amount_string : this.formatStandard(amount_string, unit);
 	}
 
 	private formatStandard(amount_string: string, unit: string): string {

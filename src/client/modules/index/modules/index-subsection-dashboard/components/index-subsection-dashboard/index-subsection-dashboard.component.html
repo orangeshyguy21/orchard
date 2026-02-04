@@ -62,10 +62,13 @@
 		@if (enabled_lightning) {
 			<orc-index-subsection-dashboard-lightning-enabled
 				[loading]="preparing_lightning"
+                [bitcoin_oracle_enabled]="enabled_bitcoin_oracle"
+				[bitcoin_oracle_price]="bitcoin_oracle_price()"
 				[lightning_info]="lightning_info!"
 				[lightning_balance]="lightning_balance!"
 				[taproot_assets]="taproot_assets!"
 				[enabled_taproot_assets]="enabled_taproot_assets"
+                [device_type]="device_type()"
 			></orc-index-subsection-dashboard-lightning-enabled>
 		} @else {
 			<orc-index-subsection-dashboard-lightning-disabled

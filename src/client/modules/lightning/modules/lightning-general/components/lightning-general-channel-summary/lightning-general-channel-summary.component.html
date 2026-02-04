@@ -1,114 +1,97 @@
-<!-- <div class="lightning-channel-table-container flex flex-column flex-gap-1">
-	<div class="title-l p-l-1">Channel Summary</div>
-	@if (data_source.data.length > 0) {
-		<mat-card appearance="outlined" class="overflow-hidden">
-			<div class="p-h-1 ln-channel-scroll-wrapper">
-				<table mat-table [dataSource]="data_source" class="orc-feature-table">
-					<ng-container matColumnDef="unit">
-						<th mat-header-cell *matHeaderCellDef></th>
-						<td mat-cell *matCellDef="let row">
-							<orc-graphic-asset [unit]="row.unit" [height]="'2rem'" [custody]="'lightning'" [asset_id]="row.asset_id">
-							</orc-graphic-asset>
-						</td>
-					</ng-container>
-
-					<ng-container matColumnDef="receive">
-						<th mat-header-cell *matHeaderCellDef></th>
-						<td mat-cell *matCellDef="let row">
-							<span class="text-nowrap font-size-m" [innerHTML]="row.recievable | localAmount: row.unit : 'lightning'"></span>
-						</td>
-					</ng-container>
-
-					<ng-container matColumnDef="channel">
-						<th mat-header-cell *matHeaderCellDef>
-							<div class="flex flex-justify-center relative h-1">
-								<div class="lightning-channels-divider">
-									<div class="title-capacity-receive font-size-xs text-nowrap orc-outline-color">Receive Capacity</div>
-									<div class="title-capacity-send font-size-xs text-nowrap orc-outline-color">Send Capacity</div>
-								</div>
-							</div>
-						</th>
-						<td mat-cell *matCellDef="let row" class="w-full">
-							<div class="p-v-1">
-								<orc-lightning-general-channel
-									[height]="'3rem'"
-									[size]="row.size"
-									[recievable]="row.recievable"
-									[sendable]="row.sendable"
-									[unit]="row.unit"
-									[asset_id]="row.asset_id"
-								></orc-lightning-general-channel>
-							</div>
-						</td>
-					</ng-container>
-
-					<ng-container matColumnDef="send">
-						<th mat-header-cell *matHeaderCellDef></th>
-						<td mat-cell *matCellDef="let row">
-							<span class="text-nowrap font-size-m" [innerHTML]="row.sendable | localAmount: row.unit : 'lightning'"></span>
-						</td>
-					</ng-container>
-
-					<tr mat-header-row *matHeaderRowDef="displayed_columns"></tr>
-					<tr mat-row *matRowDef="let row; columns: displayed_columns"></tr>
-				</table>
-			</div>
-		</mat-card>
-	} @else {
-		<div class="empty-ln-node">
-			<mat-icon class="icon-lg mat-symbol-outline orc-outline-color">flash_off</mat-icon>
-		</div>
-	}
-</div> -->
-
 <div class="lightning-channel-table-container flex flex-column flex-gap-1">
     <div class="title-l p-l-1">Channel Summary</div>
 
-    <div class="flex flex-column flex-gap-1">
+    <div class="channel-summary-list">
         @for (row of rows(); track row.unit) {
-            <mat-card appearance="outlined" class="relative overflow-hidden">
-                <mat-card-content class="orc-surface-container-low-bg cursor-pointer" matRipple (click)="toggleExpanded(row.unit)">
-                    <div class="flex flex-items-center flex-gap-1">
-                        <div class="flex-grow flex flex-justify-between flex-gap-1">
-                            <div class="flex flex-items-center flex-gap-2">
-                                <orc-graphic-asset class="low-bg" [unit]="row.unit" height="2.5rem" custody="lightning" [asset_id]="row.asset_id">
-                                </orc-graphic-asset>
-                                <div class="flex flex-column">
-                                    <span class="text-nowrap font-size-l" [innerHTML]="row.size | localAmount: row.unit : 'lightning'"></span>
-                                    <div class="font-size-xs orc-outline-color text-nowrap">
-                                        Total {{ row.unit === 'msat' ? 'bitcoin' : row.unit }} capacity
-                                    </div>
-                                </div>
+            <mat-card appearance="outlined" class="channel-summary-card relative overflow-hidden">
+                <mat-card-content class="channel-summary-row orc-surface-container-low-bg cursor-pointer" matRipple (click)="toggleExpanded(row.unit)">
+                    <div class="flex flex-items-center flex-gap-2">
+                        <orc-graphic-asset class="low-bg" [unit]="row.unit" height="2.5rem" custody="lightning" [asset_id]="row.asset_id">
+                        </orc-graphic-asset>
+                        <div class="flex flex-column">
+                            <span class="text-nowrap font-size-l" [innerHTML]="row.size | localAmount: row.unit : 'lightning'"></span>
+                            <div class="font-size-xs orc-outline-color text-nowrap">
+                                Total {{ row.unit === 'msat' ? 'bitcoin' : row.unit }} capacity
                             </div>
-                            <div class="flex-grow">
-                                <orc-lightning-general-channel
-									[size]="'4rem'"
-									[capacity]="row.size"
-									[remote]="row.remote"
-									[local]="row.local"
-									[unit]="row.unit"
-									[asset_id]="row.asset_id"
-								></orc-lightning-general-channel>
-                            </div>
-                        </div>
-                        <div>
-                            <button
-                                type="button"
-                                tabindex="-1"
-                                mat-icon-button
-                                class="orc-icon-button orc-animation-rotate-toggle"
-                                [class.animation-expanded]="expanded()[row.unit]"
-                            >
-                                <mat-icon>keyboard_arrow_down</mat-icon>
-                            </button>
                         </div>
                     </div>
+
+                    <orc-lightning-general-channel
+                        [size]="'4rem'"
+                        [display_mode]="device_type() === 'desktop' ? 'large' : 'small'"
+                        [capacity]="row.size"
+                        [remote]="row.remote"
+                        [local]="row.local"
+                        [unit]="row.unit"
+                        [asset_id]="row.asset_id"
+                    ></orc-lightning-general-channel>
+
+                    <button
+                        type="button"
+                        tabindex="-1"
+                        mat-icon-button
+                        class="orc-icon-button orc-animation-rotate-toggle"
+                        [class.animation-expanded]="expanded()[row.unit]"
+                    >
+                        <mat-icon>keyboard_arrow_down</mat-icon>
+                    </button>
                     
 
-                    <div class="orc-animation-expand-collapse" [class.animation-expanded]="expanded()[row.unit]">
+                    <div class="channel-details orc-animation-expand-collapse" [class.animation-expanded]="expanded()[row.unit]">
                         <div class="orc-animation-expand-collapse-inner p-t-1">
-                            hello expandion
+                            <div class="category-rule"></div>
+                            <div class="flex flex-row flex-gap-1 p-t-1 flex-wrap">
+                                <div class="orc-high-card p-1 flex-1">
+									<div>
+										<div class="font-size-l text-nowrap">{{ row.channel_count }}</div>
+										<div class="font-size-xs orc-outline-color text-nowrap">Channel count</div>
+									</div>
+								</div>
+								<div class="orc-high-card p-1 flex-1">
+									<div>
+										<div class="font-size-l text-nowrap" [innerHTML]="row.avg_channel_size | localAmount: row.unit : 'lightning'"></div>
+										<div class="font-size-xs orc-outline-color text-nowrap">Average channel size</div>
+									</div>
+								</div>
+                            </div>
+                            @if (row.is_bitcoin && bitcoin_oracle_enabled()) {
+								<div class="flex flex-column flex-gap-0-5 p-t-1">
+									<div class="flex flex-items-center flex-gap-0-5">
+										<orc-graphic-oracle-icon [size]="1.5"></orc-graphic-oracle-icon>
+										<div>Oracle</div>
+									</div>
 
+									<div class="orc-primary-card p-1 flex flex-row flex-gap-3 flex-wrap">
+										<div class="flex-1">
+											<div>
+												<div
+													class="font-size-l text-nowrap"
+													[innerHTML]="row.size_oracle | localAmount: 'usd'"
+												></div>
+												<div class="font-size-xs orc-outline-color text-nowrap">Total capacity</div>
+											</div>
+										</div>
+                                        <div class="flex-1">
+											<div>
+												<div
+													class="font-size-l text-nowrap"
+													[innerHTML]="row.local_oracle | localAmount: 'usd'"
+												></div>
+												<div class="font-size-xs orc-outline-color text-nowrap">Local capacity</div>
+											</div>
+										</div>
+										<div class="flex-1">
+											<div>
+												<div
+													class="font-size-l text-nowrap"
+													[innerHTML]="row.remote_oracle | localAmount: 'usd'"
+												></div>
+												<div class="font-size-xs orc-outline-color text-nowrap">Remote capacity</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							}
                         </div>
                     </div>
                 </mat-card-content>

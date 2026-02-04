@@ -1,5 +1,28 @@
 @use 'molecule/molecule';
 
+.channel-summary-list {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1rem 2rem; // row-gap | column-gap
+}
+
+.channel-summary-card {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+}
+
+.channel-summary-row {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+    align-items: center;
+
+    .channel-details {
+        grid-column: 1 / -1;
+    }
+}
+
 // .channel-table {
 // 	@extend %w-full;
 // 	@extend %border-collapse;

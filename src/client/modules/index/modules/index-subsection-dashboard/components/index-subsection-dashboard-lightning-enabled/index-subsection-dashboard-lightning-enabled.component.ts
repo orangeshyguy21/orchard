@@ -1,11 +1,13 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, OnChanges, SimpleChanges} from '@angular/core';
 /* Vendor Dependencies */
 import {MatTableDataSource} from '@angular/material/table';
 /* Application Dependencies */
 import {LightningInfo} from '@client/modules/lightning/classes/lightning-info.class';
 import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
 import {TaprootAssets} from '@client/modules/tapass/classes/taproot-assets.class';
+import { BitcoinOraclePrice } from '@client/modules/bitcoin/classes/bitcoin-oracle-price.class';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 
 type ChannelSummary = {
 	size: number;
@@ -24,11 +26,14 @@ type ChannelSummary = {
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IndexSubsectionDashboardLightningEnabledComponent implements OnChanges {
-	@Input() loading!: boolean;
-	@Input() enabled_taproot_assets!: boolean;
-	@Input() lightning_info!: LightningInfo | null;
-	@Input() lightning_balance!: LightningBalance | null;
-	@Input() taproot_assets!: TaprootAssets | null;
+	public loading = input.required<boolean>();
+	public bitcoin_oracle_enabled = input.required<boolean>();
+	public bitcoin_oracle_price = input.required<BitcoinOraclePrice | null>();
+	public enabled_taproot_assets = input.required<boolean>();
+	public lightning_info = input.required<LightningInfo | null>();
+	public lightning_balance = input.required<LightningBalance | null>();
+	public taproot_assets = input.required<TaprootAssets | null>();
+	public device_type = input.required<DeviceType>();
 
 	public displayed_columns = ['unit', 'receive', 'channel', 'send'];
 	public data_source!: MatTableDataSource<ChannelSummary>;
@@ -47,8 +52,8 @@ export class IndexSubsectionDashboardLightningEnabledComponent implements OnChan
 	}
 
 	private getSatSummary(): ChannelSummary {
-		const local_balance = this.lightning_balance?.local_balance || 0;
-		const remote_balance = this.lightning_balance?.remote_balance || 0;
+		const local_balance = this.lightning_balance()?.local_balance || 0;
+		const remote_balance = this.lightning_balance()?.remote_balance || 0;
 		return {
 			size: local_balance + remote_balance,
 			recievable: remote_balance,
@@ -59,14 +64,17 @@ export class IndexSubsectionDashboardLightningEnabledComponent implements OnChan
 	}
 
 	private getTaprootAssetsSummaries(): ChannelSummary[] | null {
-		if (!this.enabled_taproot_assets) return null;
-		if (!this.lightning_balance) return null;
-		if (!this.taproot_assets) return null;
+        const enabled_taproot_assets = this.enabled_taproot_assets();
+        const lightning_balance = this.lightning_balance(); 
+        const taproot_assets = this.taproot_assets();
+		if (!enabled_taproot_assets) return null;
+		if (!lightning_balance) return null;
+		if (!taproot_assets) return null;
 
-		const grouped_summaries = this.lightning_balance.custom_channel_data.open_channels.reduce(
+		const grouped_summaries = lightning_balance.custom_channel_data.open_channels.reduce(
 			(acc, channel) => {
 				const asset_id = channel.asset_id;
-				const asset = this.taproot_assets?.assets.find((asset) => asset.asset_genesis.asset_id === asset_id);
+				const asset = taproot_assets?.assets.find((asset) => asset.asset_genesis.asset_id === asset_id);
 				if (!acc[asset_id]) {
 					acc[asset_id] = {
 						size: 0,

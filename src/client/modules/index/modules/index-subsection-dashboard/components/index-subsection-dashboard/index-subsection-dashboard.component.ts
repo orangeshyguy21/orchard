@@ -208,9 +208,15 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	private getBreakpointSubscription(): Subscription {
+	public getBreakpointSubscription(): Subscription {
 		return this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium]).subscribe((result) => {
-			this.device_type.set(result.matches ? 'tablet' : 'desktop');
+			if (result.breakpoints[Breakpoints.XSmall]) {
+				this.device_type.set('mobile');
+			} else if (result.breakpoints[Breakpoints.Small] || result.breakpoints[Breakpoints.Medium]) {
+				this.device_type.set('tablet');
+			} else {
+				this.device_type.set('desktop');
+			}
 		});
 	}
 
