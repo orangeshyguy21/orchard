@@ -1,7 +1,7 @@
 <div class="lightning-channel-table-container flex flex-column flex-gap-1">
     <div class="title-l p-l-1">Channel Summary</div>
 
-    <div class="channel-summary-list">
+    <div class="channel-summary-list" [class.mobile]="device_type() === 'mobile'">
         @for (row of rows(); track row.unit) {
             <mat-card appearance="outlined" class="channel-summary-card relative overflow-hidden">
                 <mat-card-content class="channel-summary-row orc-surface-container-low-bg cursor-pointer" matRipple (click)="toggleExpanded(row.unit)">

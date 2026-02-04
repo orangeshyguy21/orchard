@@ -1,4 +1,4 @@
-<div class="flex flex-column" [class.tablet-view]="device_type() === 'tablet'">
+<div class="flex flex-column" [class.tablet-view]="device_type() !== 'desktop'">
 	<div class="sticky-section z-index-1">
 		<orc-index-subsection-dashboard-bitcoin-header
 			[enabled]="enabled_bitcoin"

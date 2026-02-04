@@ -2,16 +2,6 @@
 	<div class="title-l p-b-1 p-l-1">Balance Sheet</div>
 
 	<div class="flex flex-column flex-gap-1">
-		@if (device_type() !== 'mobile') {
-			<div class="flex flex-justify-between p-r-2">
-				<div class="w-min-12 text-center font-size-xs">Assets</div>
-				<div class="w-min-12 text-center font-size-xs">Liabilities</div>
-				@if (device_type() === 'desktop') {
-					<div class="w-min-12 text-center font-size-xs">Active Keyset</div>
-				}
-			</div>
-		}
-
 		@for (row of rows(); track row.unit_mint) {
 			<mat-card appearance="outlined" class="relative overflow-hidden">
 				<mat-card-content class="orc-surface-container-low-bg cursor-pointer" matRipple (click)="toggleExpanded(row.unit_mint)">
@@ -42,7 +32,7 @@
 															[innerHTML]="row.assets | localAmount: row.unit_lightning : 'lightning'"
 														></span>
 														<div class="font-size-xs orc-outline-color text-nowrap">
-															Lightning send capacity
+															Assets ● Lightning send capacity
 														</div>
 													</div>
 													@if (device_type() === 'desktop') {
@@ -55,9 +45,9 @@
 												}
 											</div>
 										}
-										@if (device_type() === 'mobile') {
+										<!-- @if (device_type() === 'mobile') {
 											<div class="flex-1 font-size-xs text-right">Assets</div>
-										}
+										} -->
 									</div>
 								}
 							} @else {
@@ -72,12 +62,12 @@
 											class="font-size-l text-nowrap"
 											[innerHTML]="row.liabilities | localAmount: row.unit_mint : 'mint'"
 										></span>
-										<div class="font-size-xs orc-outline-color text-nowrap">Unspent ecash</div>
+										<div class="font-size-xs orc-outline-color text-nowrap">Liabilities ● Unspent ecash</div>
 									</div>
 								</div>
-								@if (device_type() === 'mobile') {
+								<!-- @if (device_type() === 'mobile') {
 									<div class="flex-1 font-size-xs text-right">Liabilities</div>
-								}
+								} -->
 							</div>
 
 							@if (device_type() === 'desktop') {
