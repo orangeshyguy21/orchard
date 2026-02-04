@@ -4,77 +4,161 @@
 	@extend %relative;
 }
 
-.lightning-channel {
-	@extend %flex;
-	@extend %overflow-hidden;
-}
-
-.lightning-channel-recievable {
-	@extend %flex-justify-end;
-	border-top-left-radius: 0.25rem;
-	border-bottom-left-radius: 0.25rem;
-
-	.potential-border {
-		border-left: 1px dashed var(--mat-sys-outline);
-		border-top-left-radius: 0.25rem;
-		border-bottom-left-radius: 0.25rem;
-	}
-}
-
-.lightning-channel-sendable {
-	@extend %flex-justify-start;
-	border-top-right-radius: 0.25rem;
-	border-bottom-right-radius: 0.25rem;
-
-	.potential-border {
-		border-right: 1px dashed var(--mat-sys-outline);
-		border-top-right-radius: 0.25rem;
-		border-bottom-right-radius: 0.25rem;
-	}
-}
-
-.lightning-channel-filled {
-	@extend %h-full;
-}
-
-.lightning-channel-potential {
-	@extend %relative;
-	@extend %flex-grow;
-	@extend %h-full;
-}
-.potential-border {
-	@extend %absolute;
-	@extend %top-0;
-	@extend %left-0;
-	@extend %bottom-0;
-	@extend %right-0;
-	border-top: 1px dashed var(--mat-sys-outline);
-	border-bottom: 1px dashed var(--mat-sys-outline);
-}
-
-.lightning-channel-center {
-	@extend %relative;
-	@extend %w-0-25;
-
-	.center-border {
-		@extend %absolute;
-		top: -2rem;
-		@extend %left-0;
-		bottom: -2rem;
-		@extend %right-0;
-		background-color: var(--mat-sys-outline);
-		@extend %orc-corner-full;
-	}
-}
-
 .channel-btc {
-	@extend %orc-asset-btc-bg;
+    .channel-balance-point, .channel-tie {
+        @extend %orc-asset-btc-bg;
+    }
+    .balance-indicator {
+        fill: var(--orc-asset-btc);
+    }
 }
 
 .channel-tether {
-	@extend %orc-asset-tether-bg;
+    .channel-balance-point, .channel-tie {
+        @extend %orc-asset-tether-bg;
+    }
+    .balance-indicator {
+        fill: var(--orc-asset-tether);
+    }
 }
 
 .channel-unknown {
-	@extend %orc-surface-tint-bg;
+    .channel-balance-point, .channel-tie {
+        @extend %orc-surface-tint-bg;
+    }
+    .balance-indicator {
+        fill: var(--mat-sys-surface-tint);
+    }
 }
+
+.channel-vessel {
+    @extend %relative;
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-justify-center;
+}
+
+.channel-ring {
+    height: var(--ring-size);
+    width: var(--ring-size);
+}
+
+.channel-tie {
+    @extend %relative;
+    @extend %flex;
+    @extend %flex-items-center;
+    height: 2px;
+    border-radius: 1px;
+    flex: 1;
+    margin-left: calc(var(--ring-size) / -2);
+    margin-right: calc(var(--ring-size) / -2);
+}
+
+.channel-balance{
+    @extend %absolute;
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-justify-center;
+    left: calc(var(--ring-size) / 2);
+    right: calc(var(--ring-size) / 2);
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.channel-balance-point{
+    @extend %absolute;
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-justify-center;
+    height: 10px;
+    width: 10px;
+    @extend %orc-corner-full;
+
+    &:before{
+        content: '';
+        @extend %absolute;
+        @extend %orc-corner-full;
+        height: 50%;
+        width: 50%;
+        @extend %orc-surface-bg;
+    }
+}
+
+// .lightning-channel-container {
+// 	@extend %relative;
+// }
+
+// .lightning-channel {
+// 	@extend %flex;
+// 	@extend %overflow-hidden;
+// }
+
+// .lightning-channel-recievable {
+// 	@extend %flex-justify-end;
+// 	border-top-left-radius: 0.25rem;
+// 	border-bottom-left-radius: 0.25rem;
+
+// 	.potential-border {
+// 		border-left: 1px dashed var(--mat-sys-outline);
+// 		border-top-left-radius: 0.25rem;
+// 		border-bottom-left-radius: 0.25rem;
+// 	}
+// }
+
+// .lightning-channel-sendable {
+// 	@extend %flex-justify-start;
+// 	border-top-right-radius: 0.25rem;
+// 	border-bottom-right-radius: 0.25rem;
+
+// 	.potential-border {
+// 		border-right: 1px dashed var(--mat-sys-outline);
+// 		border-top-right-radius: 0.25rem;
+// 		border-bottom-right-radius: 0.25rem;
+// 	}
+// }
+
+// .lightning-channel-filled {
+// 	@extend %h-full;
+// }
+
+// .lightning-channel-potential {
+// 	@extend %relative;
+// 	@extend %flex-grow;
+// 	@extend %h-full;
+// }
+// .potential-border {
+// 	@extend %absolute;
+// 	@extend %top-0;
+// 	@extend %left-0;
+// 	@extend %bottom-0;
+// 	@extend %right-0;
+// 	border-top: 1px dashed var(--mat-sys-outline);
+// 	border-bottom: 1px dashed var(--mat-sys-outline);
+// }
+
+// .lightning-channel-center {
+// 	@extend %relative;
+// 	@extend %w-0-25;
+
+// 	.center-border {
+// 		@extend %absolute;
+// 		top: -2rem;
+// 		@extend %left-0;
+// 		bottom: -2rem;
+// 		@extend %right-0;
+// 		background-color: var(--mat-sys-outline);
+// 		@extend %orc-corner-full;
+// 	}
+// }
+
+// .channel-btc {
+// 	@extend %orc-asset-btc-bg;
+// }
+
+// .channel-tether {
+// 	@extend %orc-asset-tether-bg;
+// }
+
+// .channel-unknown {
+// 	@extend %orc-surface-tint-bg;
+// }

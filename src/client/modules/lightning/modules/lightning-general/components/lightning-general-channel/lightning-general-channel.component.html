@@ -1,4 +1,4 @@
-<div class="lightning-channel-container">
+<!-- <div class="lightning-channel-container">
 	<div class="flex flex-items-center">
 		<div class="flex-1 lightning-channel lightning-channel-recievable" [style.height]="height()">
 			<div class="lightning-channel-potential">
@@ -16,4 +16,41 @@
 			</div>
 		</div>
 	</div>
+</div> -->
+
+<div class="lightning-channel-container" [class]="channel_class()">
+    <div class="flex flex-items-center">
+        <div class="channel-vessel">
+            <svg viewBox="0 0 100 100" class="channel-ring">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="#666" stroke-width="2"
+                        stroke-dasharray="248 35" stroke-dashoffset="266" />
+                <circle cx="50" cy="50" [attr.r]="percentage_local() * 0.4" class="balance-indicator" />
+            </svg>
+        </div>
+
+        <div class="channel-middle flex-grow">
+            <div class="flex flex-justify-between flex-items-end h-0 p-b-0-25">
+                <div class="text-nowrap font-size-l p-l-0-5 p-r-1" [innerHTML]="local() | localAmount: unit() : 'lightning'"></div>
+                <div class="text-nowrap font-size-l p-r-0-5 p-l-1" [innerHTML]="remote() | localAmount: unit() : 'lightning'"></div>
+            </div>
+            <div class="channel-tie">
+                <div class="channel-balance">
+                    <div class="channel-balance-point" [style.left]="percentage_remote() + '%'"></div>
+                </div>
+            </div>
+            <div class="flex flex-justify-between flex-items-start h-0 p-t-0-25">
+                <div class="orc-outline-color p-l-0-5 p-r-1 font-size-xs">local capacity</div>
+                <div class="orc-outline-color p-r-0-5 p-l-1 font-size-xs">remote capacity</div>
+            </div>
+        </div>
+       
+
+        <div class="channel-vessel">
+            <svg viewBox="0 0 100 100" class="channel-ring">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="#666" stroke-width="2"
+                    stroke-dasharray="248 35" stroke-dashoffset="125" />
+                <circle cx="50" cy="50" [attr.r]="percentage_remote() * 0.4" class="balance-indicator" />
+            </svg>
+        </div>
+    </div>
 </div>

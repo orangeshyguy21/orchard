@@ -3,7 +3,6 @@ import {OrchardLightningBalance, OrchardCustomChannelData} from '@shared/generat
 export class LightningBalance implements OrchardLightningBalance {
 	public balance: number;
 	public local_balance: number;
-	public local_balance_oracle: number | null;
 	public pending_open_balance: number;
 	public pending_open_local_balance: number;
 	public pending_open_remote_balance: number;
@@ -15,7 +14,6 @@ export class LightningBalance implements OrchardLightningBalance {
 	constructor(olb: OrchardLightningBalance) {
 		this.balance = olb.balance;
 		this.local_balance = olb.local_balance;
-		this.local_balance_oracle = olb.local_balance_oracle ?? null;
 		this.pending_open_balance = olb.pending_open_balance;
 		this.pending_open_local_balance = olb.pending_open_local_balance;
 		this.pending_open_remote_balance = olb.pending_open_remote_balance;

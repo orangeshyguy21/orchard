@@ -4,10 +4,8 @@ import {Injectable, Logger} from '@nestjs/common';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 import {ErrorService} from '@server/modules/error/error.service';
-import {BitcoinUTXOracleService} from '@server/modules/bitcoin/utxoracle/utxoracle.service';
 import {LightningService} from '@server/modules/lightning/lightning/lightning.service';
 import {LightningChannelBalance} from '@server/modules/lightning/lightning/lightning.types';
-import {oracleConvertToUSDCents} from '@server/modules/bitcoin/utxoracle/utxoracle.helpers';
 /* Local Dependencies */
 import {OrchardLightningBalance} from './lnbalance.model';
 
@@ -16,7 +14,6 @@ export class LightningBalanceService {
 	private readonly logger = new Logger(LightningBalanceService.name);
 
 	constructor(
-		private bitcoinUTXOracleService: BitcoinUTXOracleService,
 		private lightningService: LightningService,
 		private errorService: ErrorService,
 	) {}
@@ -24,8 +21,7 @@ export class LightningBalanceService {
 	async getLightningChannelBalance(tag: string): Promise<OrchardLightningBalance> {
 		try {
 			const lcb: LightningChannelBalance = await this.lightningService.getLightningChannelBalance();
-			const utx_oracle_price = await this.bitcoinUTXOracleService.getOraclePrice();
-			return new OrchardLightningBalance(lcb, utx_oracle_price?.price || null);
+			return new OrchardLightningBalance(lcb);
 		} catch (error) {
 			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.LightningRpcActionError,

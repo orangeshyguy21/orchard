@@ -9,13 +9,16 @@ import {ConfigService} from '@client/modules/config/services/config.service';
 	templateUrl: './lightning-general-channel.component.html',
 	styleUrl: './lightning-general-channel.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
+	host: {
+		'[style.--ring-size]': 'size()',
+	},
 })
 export class LightningGeneralChannelComponent {
-	public height = input<string>('2rem');
-	public size = input<number>();
-	public recievable = input<number>();
-	public sendable = input<number>();
-	public unit = input<string>();
+	public size = input<string>('4rem');
+	public capacity = input.required<number>();
+	public remote = input.required<number>();
+	public local = input.required<number>();
+	public unit = input.required<string>();
 	public asset_id = input<string>();
 
 	public lower_unit = computed(() => {
@@ -30,18 +33,18 @@ export class LightningGeneralChannelComponent {
 		return 'channel-unknown';
 	});
 
-	public percentage_recievable = computed(() => {
-		const recievable = this.recievable();
-		const size = this.size();
-		if (!recievable || !size) return 0;
-		return (recievable / size) * 100;
+	public percentage_remote = computed(() => {
+		const remote = this.remote();
+		const capacity = this.capacity();
+		if (!remote || !capacity) return 0;
+		return (remote / capacity) * 100;
 	});
 
-	public percentage_sendable = computed(() => {
-		const sendable = this.sendable();
-		const size = this.size();
-		if (!sendable || !size) return 0;
-		return (sendable / size) * 100;
+	public percentage_local = computed(() => {
+		const local = this.local();
+		const capacity = this.capacity();
+		if (!local || !capacity) return 0;
+		return (local / capacity) * 100;
 	});
 
 	public taproot_asset_ids: Record<string, string>;

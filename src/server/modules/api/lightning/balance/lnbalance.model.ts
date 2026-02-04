@@ -2,7 +2,6 @@
 import {Field, ObjectType, Float} from '@nestjs/graphql';
 /* Application Dependencies */
 import {LightningChannelBalance, LightningCustomChannels} from '@server/modules/lightning/lightning/lightning.types';
-import {oracleConvertToUSDCents} from '@server/modules/bitcoin/utxoracle/utxoracle.helpers';
 
 @ObjectType()
 export class OrchardCustomChannel {
@@ -69,9 +68,6 @@ export class OrchardLightningBalance {
 	@Field(() => Float)
 	local_balance: number;
 
-	@Field(() => Float, {nullable: true})
-	local_balance_oracle: number;
-
 	@Field(() => Float)
 	remote_balance: number;
 
@@ -90,11 +86,10 @@ export class OrchardLightningBalance {
 	@Field(() => OrchardCustomChannelData)
 	custom_channel_data: OrchardCustomChannelData;
 
-	constructor(lnb: LightningChannelBalance, utx_oracle_price: number | null) {
+	constructor(lnb: LightningChannelBalance) {
 		this.balance = parseFloat(lnb.balance);
 		this.pending_open_balance = parseFloat(lnb.pending_open_balance);
 		this.local_balance = parseFloat(lnb.local_balance);
-		this.local_balance_oracle = oracleConvertToUSDCents(this.local_balance, utx_oracle_price, 'msat');
 		this.remote_balance = parseFloat(lnb.remote_balance);
 		this.unsettled_local_balance = parseFloat(lnb.unsettled_local_balance);
 		this.unsettled_remote_balance = parseFloat(lnb.unsettled_remote_balance);
