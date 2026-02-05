@@ -95,10 +95,38 @@ export class LightningService implements OnModuleInit {
 		if (this.type === 'cln') return this.clnService.mapClnRequest(await this.makeGrpcRequest('Decode', {string: request}));
 	}
 
-	/* ============================================
-	   Lightning History Methods
-	   Used for analytics and historical data queries
-	   ============================================ */
+    	/**
+	 * Gets currently open channels from the Lightning node
+	 */
+	async getChannels(): Promise<LightningChannel[]> {
+		if (this.type === 'lnd') return mapLndChannels(await this.makeGrpcRequest('ListChannels', {}));
+		if (this.type === 'cln') return mapClnChannels(await this.makeGrpcRequest('ListPeerChannels', {}));
+		return [];
+	}
+
+	/**
+	 * Gets closed channels from the Lightning node
+	 */
+	async getClosedChannels(): Promise<LightningClosedChannel[]> {
+		if (this.type === 'lnd') return mapLndClosedChannels(await this.makeGrpcRequest('ClosedChannels', {}));
+		if (this.type === 'cln') return mapClnClosedChannels(await this.makeGrpcRequest('ListClosedChannels', {}));
+		return [];
+	}
+
+	/**
+	 * Gets on-chain transactions from the Lightning node wallet
+	 * Used primarily for looking up funding transaction timestamps
+	 */
+	async getTransactions(): Promise<LightningTransaction[]> {
+		if (this.type === 'lnd') {
+			return mapLndTransactions(await this.makeGrpcRequest('GetTransactions', {}));
+		}
+		if (this.type === 'cln') {
+			const transactions = mapClnTransactions(await this.makeGrpcRequest('ListTransactions', {}));
+			return this.enrichClnTransactionTimestamps(transactions);
+		}
+		return [];
+	}
 
 	/**
 	 * Gets outgoing payments from the Lightning node
@@ -181,47 +209,6 @@ export class LightningService implements OnModuleInit {
 				request.limit = args.max_results;
 			}
 			return mapClnForwards(await this.makeGrpcRequest('ListForwards', request));
-		}
-		return [];
-	}
-
-	/**
-	 * Gets currently open channels from the Lightning node
-	 */
-	async getChannels(): Promise<LightningChannel[]> {
-		if (this.type === 'lnd') {
-			return mapLndChannels(await this.makeGrpcRequest('ListChannels', {}));
-		}
-		if (this.type === 'cln') {
-			return mapClnChannels(await this.makeGrpcRequest('ListPeerChannels', {}));
-		}
-		return [];
-	}
-
-	/**
-	 * Gets closed channels from the Lightning node
-	 */
-	async getClosedChannels(): Promise<LightningClosedChannel[]> {
-		if (this.type === 'lnd') {
-			return mapLndClosedChannels(await this.makeGrpcRequest('ClosedChannels', {}));
-		}
-		if (this.type === 'cln') {
-			return mapClnClosedChannels(await this.makeGrpcRequest('ListClosedChannels', {}));
-		}
-		return [];
-	}
-
-	/**
-	 * Gets on-chain transactions from the Lightning node wallet
-	 * Used primarily for looking up funding transaction timestamps
-	 */
-	async getTransactions(): Promise<LightningTransaction[]> {
-		if (this.type === 'lnd') {
-			return mapLndTransactions(await this.makeGrpcRequest('GetTransactions', {}));
-		}
-		if (this.type === 'cln') {
-			const transactions = mapClnTransactions(await this.makeGrpcRequest('ListTransactions', {}));
-			return this.enrichClnTransactionTimestamps(transactions);
 		}
 		return [];
 	}

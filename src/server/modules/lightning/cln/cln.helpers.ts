@@ -1,5 +1,5 @@
 /* Application Dependencies */
-import {LightningRequestType} from '@server/modules/lightning/lightning.enums';
+import {LightningRequestType, LightningChannelCloseType, LightningChannelOpenInitiator} from '@server/modules/lightning/lightning.enums';
 import {
 	LightningPayment,
 	LightningInvoice,
@@ -217,34 +217,34 @@ export function mapClnChannels(response: ClnListPeerChannelsResponse): Lightning
 /**
  * Maps CLN close cause to common close type
  */
-function mapClnCloseType(close_cause: ClnCloseCause): LightningClosedChannel['close_type'] {
+function mapClnCloseType(close_cause: ClnCloseCause): LightningChannelCloseType {
 	switch (close_cause) {
 		case ClnCloseCause.LOCAL:
 		case ClnCloseCause.USER:
-			return 'local_force';
+			return LightningChannelCloseType.LOCAL_FORCE;
 		case ClnCloseCause.REMOTE:
-			return 'remote_force';
+			return LightningChannelCloseType.REMOTE_FORCE;
 		case ClnCloseCause.PROTOCOL:
-			return 'cooperative';
+			return LightningChannelCloseType.COOPERATIVE;
 		case ClnCloseCause.ONCHAIN:
-			return 'breach';
+			return LightningChannelCloseType.BREACH;
 		case ClnCloseCause.UNKNOWN:
 		default:
-			return 'unknown';
+			return LightningChannelCloseType.UNKNOWN;
 	}
 }
 
 /**
  * Maps CLN opener to common initiator string
  */
-function mapClnInitiator(opener: ClnChannelSide): LightningClosedChannel['open_initiator'] {
+function mapClnInitiator(opener: ClnChannelSide): LightningChannelOpenInitiator {
 	switch (opener) {
 		case ClnChannelSide.LOCAL:
-			return 'local';
+			return LightningChannelOpenInitiator.LOCAL;
 		case ClnChannelSide.REMOTE:
-			return 'remote';
+			return LightningChannelOpenInitiator.REMOTE;
 		default:
-			return 'unknown';
+			return LightningChannelOpenInitiator.UNKNOWN;
 	}
 }
 

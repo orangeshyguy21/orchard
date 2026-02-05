@@ -16,6 +16,7 @@ import {
 	LightningClosedChannel,
 	LightningTransaction,
 } from '@server/modules/lightning/lightning/lightning.types';
+import {LightningChannelOpenInitiator} from '@server/modules/lightning/lightning.enums';
 /* Local Dependencies */
 import {LightningAnalytics} from './lnanalytics.entity';
 import {LightningAnalyticsMetric} from './lnanalytics.enums';
@@ -191,8 +192,8 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 		// LightningClosedChannel with known initiator
 		if ('open_initiator' in channel) {
 			const {open_initiator} = channel as LightningClosedChannel;
-			if (open_initiator === 'local') return capacity_msat;
-			if (open_initiator === 'remote') return BigInt(0);
+			if (open_initiator === LightningChannelOpenInitiator.LOCAL) return capacity_msat;
+			if (open_initiator === LightningChannelOpenInitiator.REMOTE) return BigInt(0);
 		}
 
 		// Fallback: use current/settled balance as approximation

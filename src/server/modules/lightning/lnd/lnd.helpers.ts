@@ -1,5 +1,5 @@
 /* Application Dependencies */
-import {LightningRequestType} from '@server/modules/lightning/lightning.enums';
+import {LightningRequestType, LightningChannelCloseType, LightningChannelOpenInitiator} from '@server/modules/lightning/lightning.enums';
 import {
 	LightningPayment,
 	LightningInvoice,
@@ -230,39 +230,39 @@ export function mapLndChannels(response: LndListChannelsResponse): LightningChan
 /**
  * Maps LND close type enum to common close type
  */
-function mapLndCloseType(close_type: LndClosureType): LightningClosedChannel['close_type'] {
+function mapLndCloseType(close_type: LndClosureType): LightningChannelCloseType {
 	switch (close_type) {
 		case LndClosureType.COOPERATIVE_CLOSE:
-			return 'cooperative';
+			return LightningChannelCloseType.COOPERATIVE;
 		case LndClosureType.LOCAL_FORCE_CLOSE:
-			return 'local_force';
+			return LightningChannelCloseType.LOCAL_FORCE;
 		case LndClosureType.REMOTE_FORCE_CLOSE:
-			return 'remote_force';
+			return LightningChannelCloseType.REMOTE_FORCE;
 		case LndClosureType.BREACH_CLOSE:
-			return 'breach';
+			return LightningChannelCloseType.BREACH;
 		case LndClosureType.FUNDING_CANCELED:
-			return 'funding_canceled';
+			return LightningChannelCloseType.FUNDING_CANCELED;
 		case LndClosureType.ABANDONED:
-			return 'abandoned';
+			return LightningChannelCloseType.ABANDONED;
 		default:
-			return 'unknown';
+			return LightningChannelCloseType.UNKNOWN;
 	}
 }
 
 /**
  * Maps LND initiator enum to common initiator
  */
-function mapLndInitiator(initiator: LndInitiator): LightningClosedChannel['open_initiator'] {
+function mapLndInitiator(initiator: LndInitiator): LightningChannelOpenInitiator {
 	switch (initiator) {
 		case LndInitiator.INITIATOR_LOCAL:
-			return 'local';
+			return LightningChannelOpenInitiator.LOCAL;
 		case LndInitiator.INITIATOR_REMOTE:
-			return 'remote';
+			return LightningChannelOpenInitiator.REMOTE;
 		case LndInitiator.INITIATOR_BOTH:
-			return 'both';
+			return LightningChannelOpenInitiator.BOTH;
 		case LndInitiator.INITIATOR_UNKNOWN:
 		default:
-			return 'unknown';
+			return LightningChannelOpenInitiator.UNKNOWN;
 	}
 }
 

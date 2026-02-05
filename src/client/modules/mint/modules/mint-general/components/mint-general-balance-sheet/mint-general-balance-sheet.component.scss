@@ -5,3 +5,56 @@
 	@extend %flex-grow;
 	@extend %w-min-0;
 }
+
+.balance-sheet-list {
+	display: grid;
+	grid-template-columns: 1fr 1fr auto;
+	gap: 1rem 2rem;
+
+	&.tablet {
+		grid-template-columns: 1fr 1fr auto;
+	}
+
+	&.mobile {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+}
+
+.balance-sheet-card {
+	display: grid;
+	grid-template-columns: subgrid;
+	grid-column: 1 / -1;
+
+	.mobile & {
+		display: block;
+	}
+}
+
+.balance-sheet-row {
+	display: grid;
+	grid-template-columns: subgrid;
+	grid-column: 1 / -1;
+	align-items: center;
+
+	> .toggle-cell {
+		justify-content: space-between;
+	}
+
+	.mobile & {
+		grid-template-columns: 1fr auto;
+		grid-template-areas:
+			"assets toggle"
+			"liabilities liabilities";
+		gap: 1rem;
+
+		> .assets-cell { grid-area: assets; }
+		> .liabilities-cell { grid-area: liabilities; }
+		> .toggle-cell { grid-area: toggle; }
+	}
+
+	.balance-sheet-details {
+		grid-column: 1 / -1;
+	}
+}

@@ -1,4 +1,4 @@
-import {LightningRequestType} from '@server/modules/lightning/lightning.enums';
+import {LightningRequestType, LightningChannelCloseType, LightningChannelOpenInitiator} from '@server/modules/lightning/lightning.enums';
 
 export type LightningInfo = {
 	version: string;
@@ -137,8 +137,8 @@ export type LightningClosedChannel = {
 	close_height: number; // block height of close (need to convert to timestamp)
 	settled_balance: string; // what we got back (sats)
 	time_locked_balance: string | null;
-	close_type: 'cooperative' | 'local_force' | 'remote_force' | 'breach' | 'funding_canceled' | 'abandoned' | 'unknown';
-	open_initiator: 'local' | 'remote' | 'both' | 'unknown';
+	close_type: LightningChannelCloseType;
+	open_initiator: LightningChannelOpenInitiator;
 	funding_txid: string; // for open timestamp lookup
 	closing_txid: string; // for close timestamp lookup
 	asset: LightningChannelAsset | null; // Taproot Asset data (null for regular BTC channels)
