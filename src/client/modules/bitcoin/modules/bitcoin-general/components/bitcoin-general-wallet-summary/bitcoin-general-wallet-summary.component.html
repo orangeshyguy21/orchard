@@ -1,0 +1,66 @@
+<div class="flex flex-column flex-gap-1">
+	<div class="title-l p-l-1">Hot Wallet</div>
+
+    <div class="wallet-summary-list">
+        @for (row of rows(); track row.unit) {
+            <mat-card appearance="outlined" class="wallet-summary-card relative overflow-hidden">
+                <mat-card-content class="wallet-summary-row orc-surface-container-low-bg cursor-pointer" matRipple (click)="toggleExpanded(row.unit)">
+                    @if (row.error_lightning || row.error_taproot_assets) {
+                        <div class="wallet-summary-error">
+                            @if (row.error_lightning) {
+                                <orc-error-resolve [error]="errors_lightning()[0]" mode="small"></orc-error-resolve>
+                            }
+                            @if (row.error_taproot_assets) {
+                                <orc-error-resolve [error]="errors_taproot_assets()[0]" mode="small"></orc-error-resolve>
+                            }
+                        </div>
+                    }@else {
+                        <div class="flex flex-items-center flex-gap-2">
+                            <orc-graphic-asset [unit]="row.unit" [height]="'2.5rem'" [custody]="'hot'" [asset_id]="row.asset_id">
+                            </orc-graphic-asset>
+                            <span
+                                class="text-nowrap font-size-l flex-grow"
+                                [innerHTML]="row.amount | localAmount: row.unit : 'bitcoin'"
+                            ></span>
+                        </div>
+                        <orc-bitcoin-general-utxo-stack class="low-bg" [unit]="row.unit" [coins]="row.utxos" [asset_id]="row.asset_id">
+                        </orc-bitcoin-general-utxo-stack>
+                    }
+                    
+                    <button
+                        type="button"
+                        tabindex="-1"
+                        mat-icon-button
+                        class="orc-icon-button orc-animation-rotate-toggle"
+                        [class.animation-expanded]="expanded()[row.unit]"
+                    >
+                        <mat-icon>keyboard_arrow_down</mat-icon>
+                    </button>
+
+                    <div class="channel-details orc-animation-expand-collapse" [class.animation-expanded]="expanded()[row.unit]">
+                        <div class="orc-animation-expand-collapse-inner p-t-1">
+                            <div class="category-rule"></div>
+                            @if (row.is_bitcoin && enabled_oracle()) {
+								<div class="flex flex-column flex-gap-0-5 p-t-1">
+                                    <div class="orc-primary-card p-1 flex flex-column flex-gap-1">
+                                        <div class="flex flex-items-center flex-gap-0-5">
+                                            <orc-graphic-oracle-icon [size]="1.5"></orc-graphic-oracle-icon>
+                                            <div class="orc-on-primary-container-color">Oracle</div>
+                                        </div>
+                                        <div>
+                                            <div
+                                                class="font-size-l text-nowrap"
+                                                [innerHTML]="row.amount_oracle | localAmount: 'usd'"
+                                            ></div>
+                                            <div class="font-size-xs orc-outline-color text-nowrap">Hot wallet value</div>
+                                        </div>
+                                    </div>
+								</div>
+							}
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        }
+    </div>
+</div>

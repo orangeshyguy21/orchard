@@ -29,7 +29,7 @@
 												[innerHTML]="row.assets | localAmount: row.unit_lightning : 'lightning'"
 											></span>
 											<div class="font-size-xs orc-outline-color text-nowrap">
-												Assets ● Lightning send capacity
+												Assets &nbsp;&nbsp;●&nbsp;&nbsp; Lightning send capacity
 											</div>
 										</div>
 										@if (device_type() === 'desktop') {
@@ -56,7 +56,7 @@
 								class="font-size-l text-nowrap"
 								[innerHTML]="row.liabilities | localAmount: row.unit_mint : 'mint'"
 							></span>
-							<div class="font-size-xs orc-outline-color text-nowrap">Liabilities ● Unspent ecash</div>
+							<div class="font-size-xs orc-outline-color text-nowrap">Liabilities &nbsp;&nbsp;●&nbsp;&nbsp; Unspent ecash</div>
 						</div>
 					</div>
 
@@ -125,40 +125,43 @@
 							</div>
 							@if (row.is_bitcoin && bitcoin_oracle_enabled()) {
 								<div class="flex flex-column flex-gap-0-5 p-t-1">
-									<div class="flex flex-items-center flex-gap-0-5">
-										<orc-graphic-oracle-icon [size]="1.5"></orc-graphic-oracle-icon>
-										<div>Oracle</div>
-									</div>
+									
 
-									<div class="orc-primary-card p-1 flex flex-row flex-gap-3 flex-wrap">
-										<div class="flex-1">
-											<div>
-												<div
-													class="font-size-l text-nowrap"
-													[innerHTML]="row.assets_oracle | localAmount: 'usd'"
-												></div>
-												<div class="font-size-xs orc-outline-color text-nowrap">Lightning send capacity</div>
-											</div>
-										</div>
-										<div class="flex-1">
-											<div>
-												<div
-													class="font-size-l text-nowrap"
-													[innerHTML]="row.liabilities_oracle | localAmount: 'usd'"
-												></div>
-												<div class="font-size-xs orc-outline-color text-nowrap">Unspent ecash</div>
-											</div>
-										</div>
-										<div class="flex-1">
-											<div>
-												<div
-													class="font-size-l text-nowrap"
-													[innerHTML]="row.fees_oracle | localAmount: 'usd'"
-												></div>
-												<div class="font-size-xs orc-outline-color text-nowrap">Fee revenue</div>
-											</div>
-										</div>
-									</div>
+                                    <div class="orc-primary-card p-1 flex flex-column flex-gap-1">
+                                        <div class="flex flex-items-center flex-gap-0-5">
+                                            <orc-graphic-oracle-icon [size]="1.5"></orc-graphic-oracle-icon>
+                                            <div class="orc-on-primary-container-color">Oracle</div>
+                                        </div>
+                                        <div class="flex flex-row flex-gap-3 flex-wrap">
+                                            <div class="flex-1">
+                                                <div>
+                                                    <div
+                                                        class="font-size-l text-nowrap"
+                                                        [innerHTML]="row.assets_oracle | localAmount: 'usd'"
+                                                    ></div>
+                                                    <div class="font-size-xs orc-outline-color text-nowrap">Assets &nbsp;&nbsp;●&nbsp;&nbsp; Lightning send capacity</div>
+                                                </div>
+                                            </div>
+                                            <div class="flex-1">
+                                                <div>
+                                                    <div
+                                                        class="font-size-l text-nowrap"
+                                                        [innerHTML]="row.liabilities_oracle | localAmount: 'usd'"
+                                                    ></div>
+                                                    <div class="font-size-xs orc-outline-color text-nowrap">Liabilities &nbsp;&nbsp;●&nbsp;&nbsp; Unspent ecash</div>
+                                                </div>
+                                            </div>
+                                            <div class="flex-1">
+                                                <div>
+                                                    <div
+                                                        class="font-size-l text-nowrap"
+                                                        [innerHTML]="row.fees_oracle | localAmount: 'usd'"
+                                                    ></div>
+                                                    <div class="font-size-xs orc-outline-color text-nowrap">Fee revenue</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 								</div>
 							}
 						</div>

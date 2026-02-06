@@ -1,5 +1,23 @@
 @use 'molecule/molecule';
 
+:host {
+	&.low-bg {
+		.coin-stacked {
+            &:before {
+                @extend %orc-surface-container-low-bg;
+            }
+        }
+	}
+
+	&.high-bg {
+		.coin-stacked {
+            &:before {
+                @extend %orc-surface-container-high-bg;
+            }
+		}
+	}
+}
+
 .bitcoin-utxo-stack-container {
 	@extend %relative; /* creates a stacking context */
 	@extend %z-index-0; /* ensures stacking context */

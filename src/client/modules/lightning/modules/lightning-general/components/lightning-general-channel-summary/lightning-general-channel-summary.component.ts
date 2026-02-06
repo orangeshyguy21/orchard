@@ -43,10 +43,6 @@ export class LightningGeneralChannelSummaryComponent implements OnInit {
 
 	ngOnInit(): void {
 		this.init();
-        console.log('lightning_info', this.lightning_info());
-        console.log('enabled_taproot_assets', this.enabled_taproot_assets());
-        console.log('lightning_balance', this.lightning_balance());
-        console.log('taproot_assets', this.taproot_assets());
 	}
 
 	private init(): void {

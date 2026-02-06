@@ -27,7 +27,6 @@ import {IndexSubsectionDashboardComponent} from './components/index-subsection-d
 import {IndexSubsectionDashboardBitcoinHeaderComponent} from './components/index-subsection-dashboard-bitcoin-header/index-subsection-dashboard-bitcoin-header.component';
 import {IndexSubsectionDashboardBitcoinDisabledComponent} from './components/index-subsection-dashboard-bitcoin-disabled/index-subsection-dashboard-bitcoin-disabled.component';
 import {IndexSubsectionDashboardBitcoinEnabledComponent} from './components/index-subsection-dashboard-bitcoin-enabled/index-subsection-dashboard-bitcoin-enabled.component';
-import {IndexSubsectionDashboardBitcoinEnabledHotwalletComponent} from './components/index-subsection-dashboard-bitcoin-enabled-hotwallet/index-subsection-dashboard-bitcoin-enabled-hotwallet.component';
 import {IndexSubsectionDashboardBitcoinEnabledInfoComponent} from './components/index-subsection-dashboard-bitcoin-enabled-info/index-subsection-dashboard-bitcoin-enabled-info.component';
 import {IndexSubsectionDashboardBitcoinEnabledBlockchainComponent} from './components/index-subsection-dashboard-bitcoin-enabled-blockchain/index-subsection-dashboard-bitcoin-enabled-blockchain.component';
 import {IndexSubsectionDashboardBitcoinEnabledSyncingComponent} from './components/index-subsection-dashboard-bitcoin-enabled-syncing/index-subsection-dashboard-bitcoin-enabled-syncing.component';
@@ -49,7 +48,6 @@ import {IndexSubsectionDashboardMintEnabledInfoComponent} from './components/ind
 		IndexSubsectionDashboardBitcoinHeaderComponent,
 		IndexSubsectionDashboardBitcoinDisabledComponent,
 		IndexSubsectionDashboardBitcoinEnabledComponent,
-		IndexSubsectionDashboardBitcoinEnabledHotwalletComponent,
 		IndexSubsectionDashboardBitcoinEnabledBlockchainComponent,
 		IndexSubsectionDashboardBitcoinEnabledInfoComponent,
 		IndexSubsectionDashboardBitcoinEnabledSyncingComponent,

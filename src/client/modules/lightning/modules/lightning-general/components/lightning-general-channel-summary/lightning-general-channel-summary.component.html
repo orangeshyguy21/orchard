@@ -56,40 +56,41 @@
                             </div>
                             @if (row.is_bitcoin && bitcoin_oracle_enabled()) {
 								<div class="flex flex-column flex-gap-0-5 p-t-1">
-									<div class="flex flex-items-center flex-gap-0-5">
-										<orc-graphic-oracle-icon [size]="1.5"></orc-graphic-oracle-icon>
-										<div>Oracle</div>
-									</div>
-
-									<div class="orc-primary-card p-1 flex flex-row flex-gap-3 flex-wrap">
-										<div class="flex-1">
-											<div>
-												<div
-													class="font-size-l text-nowrap"
-													[innerHTML]="row.size_oracle | localAmount: 'usd'"
-												></div>
-												<div class="font-size-xs orc-outline-color text-nowrap">Total capacity</div>
-											</div>
-										</div>
-                                        <div class="flex-1">
-											<div>
-												<div
-													class="font-size-l text-nowrap"
-													[innerHTML]="row.local_oracle | localAmount: 'usd'"
-												></div>
-												<div class="font-size-xs orc-outline-color text-nowrap">Local capacity</div>
-											</div>
-										</div>
-										<div class="flex-1">
-											<div>
-												<div
-													class="font-size-l text-nowrap"
-													[innerHTML]="row.remote_oracle | localAmount: 'usd'"
-												></div>
-												<div class="font-size-xs orc-outline-color text-nowrap">Remote capacity</div>
-											</div>
-										</div>
-									</div>
+                                    <div class="orc-primary-card p-1 flex flex-column flex-gap-1">
+                                        <div class="flex flex-items-center flex-gap-0-5">
+                                            <orc-graphic-oracle-icon [size]="1.5"></orc-graphic-oracle-icon>
+                                            <div class="orc-on-primary-container-color">Oracle</div>
+                                        </div>
+                                        <div class="flex flex-row flex-gap-3 flex-wrap">
+                                            <div class="flex-1">
+                                                <div>
+                                                    <div
+                                                        class="font-size-l text-nowrap"
+                                                        [innerHTML]="row.size_oracle | localAmount: 'usd'"
+                                                    ></div>
+                                                    <div class="font-size-xs orc-outline-color text-nowrap">Total capacity</div>
+                                                </div>
+                                            </div>
+                                            <div class="flex-1">
+                                                <div>
+                                                    <div
+                                                        class="font-size-l text-nowrap"
+                                                        [innerHTML]="row.local_oracle | localAmount: 'usd'"
+                                                    ></div>
+                                                    <div class="font-size-xs orc-outline-color text-nowrap">Local capacity</div>
+                                                </div>
+                                            </div>
+                                            <div class="flex-1">
+                                                <div>
+                                                    <div
+                                                        class="font-size-l text-nowrap"
+                                                        [innerHTML]="row.remote_oracle | localAmount: 'usd'"
+                                                    ></div>
+                                                    <div class="font-size-xs orc-outline-color text-nowrap">Remote capacity</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 								</div>
 							}
                         </div>

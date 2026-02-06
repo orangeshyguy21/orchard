@@ -16,6 +16,8 @@
 		@if (enabled_bitcoin) {
 			<orc-index-subsection-dashboard-bitcoin-enabled
 				[loading]="preparing_bitcoin"
+                [enabled_oracle]="enabled_bitcoin_oracle"
+                [bitcoin_oracle_price]="bitcoin_oracle_price()"
 				[enabled_lightning]="enabled_lightning"
 				[enabled_taproot_assets]="enabled_taproot_assets"
 				[blockcount]="bitcoin_blockcount ? bitcoin_blockcount.height : 0"

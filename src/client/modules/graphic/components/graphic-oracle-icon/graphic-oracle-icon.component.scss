@@ -9,7 +9,8 @@
 	@extend %flex-items-center;
 	@extend %flex-justify-center;
 	@extend %orc-corner-full;
-	border: 2px solid var(--mat-sys-outline);
+    // orc-on-primary-container-color
+	border: 1px solid var(--mat-sys-on-primary-container);
 	width: var(--size);
 	height: var(--size);
 
@@ -18,6 +19,6 @@
 		font-size: var(--icon-size);
 		width: var(--icon-size);
 		height: var(--icon-size);
-		color: var(--mat-sys-outline);
+		color: var(--mat-sys-on-primary-container);
 	}
 }
