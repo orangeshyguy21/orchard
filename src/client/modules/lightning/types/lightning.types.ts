@@ -2,6 +2,8 @@ import {
 	OrchardLightningInfo,
 	OrchardLightningBalance,
 	OrchardLightningAccount,
+	OrchardLightningChannel,
+	OrchardLightningClosedChannel,
 	OrchardLightningRequest,
 	OrchardLightningAnalytics,
 	OrchardLightningAnalyticsBackfillStatus,
@@ -19,6 +21,14 @@ export type LightningBalanceResponse = {
 
 export type LightningWalletResponse = {
 	lightning_wallet: OrchardLightningAccount[];
+};
+
+export type LightningChannelsResponse = {
+	lightning_channels: OrchardLightningChannel[];
+};
+
+export type LightningClosedChannelsResponse = {
+	lightning_closed_channels: OrchardLightningClosedChannel[];
 };
 
 export type LightningRequestResponse = {

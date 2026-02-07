@@ -6,7 +6,7 @@
             <mat-card appearance="outlined" class="channel-summary-card relative overflow-hidden">
                 <mat-card-content class="channel-summary-row orc-surface-container-low-bg cursor-pointer" matRipple (click)="toggleExpanded(row.unit)">
                     <div class="flex flex-items-center flex-gap-2">
-                        <orc-graphic-asset class="low-bg" [unit]="row.unit" height="2.5rem" custody="lightning" [asset_id]="row.asset_id">
+                        <orc-graphic-asset class="low-bg" [unit]="row.unit" height="2.5rem" custody="lightning" [group_key]="row.group_key">
                         </orc-graphic-asset>
                         <div class="flex flex-column">
                             <span class="text-nowrap font-size-l" [innerHTML]="row.size | localAmount: row.unit : 'lightning'"></span>
@@ -23,7 +23,7 @@
                         [remote]="row.remote"
                         [local]="row.local"
                         [unit]="row.unit"
-                        [asset_id]="row.asset_id"
+                        [group_key]="row.group_key"
                     ></orc-lightning-general-channel>
 
                     <button

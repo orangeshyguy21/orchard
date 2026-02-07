@@ -1,9 +1,9 @@
 <div class="graphic-asset-container">
 	<div class="relative">
 		@if (supported_taproot_asset()) {
-			<img src="taproot-assets/tether.svg" [style.height]="height" [style.width]="height" />
+			<img src="taproot-assets/tether.svg" [style.height]="height()" [style.width]="height()" />
 		} @else {
-			<div class="graphic-asset-unit" [class]="unit_class()" [style.height]="height" [style.width]="height">
+			<div class="graphic-asset-unit" [class]="unit_class()" [style.height]="height()" [style.width]="height()">
 				<mat-icon
 					class="graphic-asset-unit-icon"
 					[style.font-size]="unit_icon_size()"
@@ -14,7 +14,7 @@
 				</mat-icon>
 			</div>
 		}
-		@if (custody) {
+		@if (custody()) {
 			<div class="graphic-asset-custody">
 				<mat-icon
 					class="graphic-asset-custody-icon"

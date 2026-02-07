@@ -26,7 +26,7 @@ export type Config = {
 		enabled: boolean;
 	};
 	constants: {
-		taproot_asset_ids: {
+		taproot_group_keys: {
 			usdt: string;
 		};
 	};

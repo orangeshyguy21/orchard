@@ -28,6 +28,12 @@ export const TAP_ASSETS_QUERY = `{
                 genesis_point
                 output_index
             }
+            asset_group{
+                raw_group_key
+                tweaked_group_key
+                asset_witness
+                tapscript_root
+            }
         }
     }
 }`;

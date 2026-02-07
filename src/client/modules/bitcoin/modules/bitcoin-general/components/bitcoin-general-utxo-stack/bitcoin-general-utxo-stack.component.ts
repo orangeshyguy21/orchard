@@ -20,7 +20,7 @@ export class BitcoinGeneralUtxoStackComponent {
 	public asset_class = computed(() => {
 		const lower_unit = this.unit().toLowerCase();
         const asset_id = this.asset_id();
-		if (asset_id === this.taproot_asset_ids['usdt']) return 'utxo-asset-tether';
+		if (asset_id === this.taproot_group_keys['usdt']) return 'utxo-asset-tether';
 		if (lower_unit === 'sat' || lower_unit === 'msat' || lower_unit === 'btc') return 'utxo-asset-btc';
 		return 'utxo-asset-unknown';
 	});
@@ -28,7 +28,7 @@ export class BitcoinGeneralUtxoStackComponent {
 	public overflow_class = computed(() => {
 		const lower_unit = this.unit().toLowerCase();
         const asset_id = this.asset_id();
-		if (asset_id === this.taproot_asset_ids['usdt']) return 'utxo-overflow-tether';
+		if (asset_id === this.taproot_group_keys['usdt']) return 'utxo-overflow-tether';
 		if (lower_unit === 'sat' || lower_unit === 'msat' || lower_unit === 'btc') return 'utxo-overflow-btc';
 		return 'utxo-overflow-unknown';
 	});
@@ -39,9 +39,9 @@ export class BitcoinGeneralUtxoStackComponent {
 		return Array.from({length: count}, (_, i) => i);
 	});
 
-	private taproot_asset_ids: Record<string, string>;
+	private taproot_group_keys: Record<string, string>;
 
 	constructor(private configService: ConfigService) {
-		this.taproot_asset_ids = this.configService.config.constants.taproot_asset_ids;
+		this.taproot_group_keys = this.configService.config.constants.taproot_group_keys;
 	}
 }

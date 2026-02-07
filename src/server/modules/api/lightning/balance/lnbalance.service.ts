@@ -21,6 +21,8 @@ export class LightningBalanceService {
 	async getLightningChannelBalance(tag: string): Promise<OrchardLightningBalance> {
 		try {
 			const lcb: LightningChannelBalance = await this.lightningService.getLightningChannelBalance();
+			console.log('getLightningChannelBalance', JSON.stringify(new OrchardLightningBalance(lcb), null, 2));
+
 			return new OrchardLightningBalance(lcb);
 		} catch (error) {
 			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {

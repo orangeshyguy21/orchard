@@ -20,7 +20,7 @@ export class LightningGeneralChannelComponent {
 	public remote = input.required<number>();
 	public local = input.required<number>();
 	public unit = input.required<string>();
-	public asset_id = input<string>();
+	public group_key = input<string>();
 
 	public lower_unit = computed(() => {
 		return this.unit()?.toLowerCase();
@@ -30,7 +30,7 @@ export class LightningGeneralChannelComponent {
 		if (this.lower_unit() === 'sat') return 'channel-btc';
 		if (this.lower_unit() === 'msat') return 'channel-btc';
 		if (this.lower_unit() === 'btc') return 'channel-btc';
-		if (this.asset_id() === this.taproot_asset_ids['usdt']) return 'channel-tether';
+		if (this.group_key() === this.taproot_group_keys['usdt']) return 'channel-tether';
 		return 'channel-unknown';
 	});
 
@@ -52,9 +52,9 @@ export class LightningGeneralChannelComponent {
        return this.display_mode() === 'small' ? true : false;
     });
 
-	public taproot_asset_ids: Record<string, string>;
+	public taproot_group_keys: Record<string, string>;
 
 	constructor(private configService: ConfigService) {
-		this.taproot_asset_ids = this.configService.config.constants.taproot_asset_ids;
+		this.taproot_group_keys = this.configService.config.constants.taproot_group_keys;
 	}
 }

@@ -13,7 +13,7 @@ type TableRow = {
     amount_oracle: number | null;
 	decimal_display: number;
 	utxos: number;
-	asset_id?: string;
+	group_key?: string;
     error_lightning?: boolean;
     error_taproot_assets?: boolean;
     is_bitcoin: boolean;
@@ -98,24 +98,25 @@ export class BitcoinGeneralWalletSummaryComponent implements OnInit {
 
 	private getTaprootAssetsWalletBalance(): TableRow[] {
 		if (!this.enabled_taproot_assets()) return [];
+		console.log('getTaprootAssetsWalletBalance', this.taproot_assets());
 		const grouped_assets = this.taproot_assets().assets.reduce(
 			(acc, asset) => {
-				const asset_id = asset.asset_genesis.asset_id;
+				const asset_key = asset.asset_group?.tweaked_group_key || asset.asset_genesis.asset_id;
 				const amount = parseInt(asset.amount) / Math.pow(10, asset.decimal_display?.decimal_display || 0);
-				if (!acc[asset_id]) {
-					acc[asset_id] = {
+				if (!acc[asset_key]) {
+					acc[asset_key] = {
 						unit: asset.asset_genesis.name,
 						amount: 0,
                         amount_oracle: null,
 						decimal_display: asset.decimal_display?.decimal_display,
 						utxos: 0,
-						asset_id: asset.asset_genesis.asset_id,
+						group_key: asset_key,
                         error_taproot_assets: this.errors_taproot_assets().length > 0,
                         is_bitcoin: false,
 					};
 				}
-				acc[asset_id].amount += amount;
-				acc[asset_id].utxos++;
+				acc[asset_key].amount += amount;
+				acc[asset_key].utxos++;
 				return acc;
 			},
 			{} as Record<string, TableRow>,

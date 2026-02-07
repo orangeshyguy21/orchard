@@ -16,15 +16,15 @@
                         </div>
                     }@else {
                         <div class="flex flex-items-center flex-gap-2">
-                            <orc-graphic-asset [unit]="row.unit" [height]="'2.5rem'" [custody]="'hot'" [asset_id]="row.asset_id">
+                            <orc-graphic-asset class="low-bg" [unit]="row.unit" [height]="'2.5rem'" [custody]="'hot'" [group_key]="row.group_key">
                             </orc-graphic-asset>
                             <span
                                 class="text-nowrap font-size-l flex-grow"
                                 [innerHTML]="row.amount | localAmount: row.unit : 'bitcoin'"
                             ></span>
                         </div>
-                        <orc-bitcoin-general-utxo-stack class="low-bg" [unit]="row.unit" [coins]="row.utxos" [asset_id]="row.asset_id">
-                        </orc-bitcoin-general-utxo-stack>
+                        <!-- <orc-bitcoin-general-utxo-stack class="low-bg" [unit]="row.unit" [coins]="row.utxos" [asset_id]="row.asset_id">
+                        </orc-bitcoin-general-utxo-stack> -->
                     }
                     
                     <button

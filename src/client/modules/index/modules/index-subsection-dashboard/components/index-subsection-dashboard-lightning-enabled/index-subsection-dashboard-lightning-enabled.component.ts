@@ -5,6 +5,7 @@ import {MatTableDataSource} from '@angular/material/table';
 /* Application Dependencies */
 import {LightningInfo} from '@client/modules/lightning/classes/lightning-info.class';
 import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
+import {LightningChannel, LightningClosedChannel} from '@client/modules/lightning/classes/lightning-channel.class';
 import {TaprootAssets} from '@client/modules/tapass/classes/taproot-assets.class';
 import { BitcoinOraclePrice } from '@client/modules/bitcoin/classes/bitcoin-oracle-price.class';
 import {DeviceType} from '@client/modules/layout/types/device.types';
@@ -32,6 +33,8 @@ export class IndexSubsectionDashboardLightningEnabledComponent implements OnChan
 	public enabled_taproot_assets = input.required<boolean>();
 	public lightning_info = input.required<LightningInfo | null>();
 	public lightning_balance = input.required<LightningBalance | null>();
+	public lightning_channels = input.required<LightningChannel[] | null>();
+	public lightning_closed_channels = input.required<LightningClosedChannel[] | null>();
 	public taproot_assets = input.required<TaprootAssets | null>();
 	public device_type = input.required<DeviceType>();
 

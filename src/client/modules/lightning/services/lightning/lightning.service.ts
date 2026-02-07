@@ -13,6 +13,7 @@ import {ApiService} from '@client/modules/api/services/api/api.service';
 import {LightningInfo} from '@client/modules/lightning/classes/lightning-info.class';
 import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
 import {LightningAccount} from '@client/modules/lightning/classes/lightning-account.class';
+import {LightningChannel, LightningClosedChannel} from '@client/modules/lightning/classes/lightning-channel.class';
 import {LightningRequest} from '@client/modules/lightning/classes/lightning-request.class';
 import {LightningAnalytic} from '@client/modules/lightning/classes/lightning-analytic.class';
 import {LightningAnalyticsBackfillStatus} from '@client/modules/lightning/classes/lightning-analytics-backfill-status.class';
@@ -20,6 +21,8 @@ import {
 	LightningInfoResponse,
 	LightningBalanceResponse,
 	LightningWalletResponse,
+	LightningChannelsResponse,
+	LightningClosedChannelsResponse,
 	LightningRequestResponse,
 	LightningAnalyticsResponse,
 	LightningAnalyticsBackfillStatusResponse,
@@ -33,6 +36,8 @@ import {
 	LIGHTNING_BALANCE_QUERY,
 	LIGHTNING_WALLET_QUERY,
 	LIGHTNING_REQUEST_QUERY,
+    LIGHTNING_CHANNELS_QUERY,
+	LIGHTNING_CLOSED_CHANNELS_QUERY,
 	LIGHTNING_ANALYTICS_QUERY,
 	LIGHTNING_ANALYTICS_BACKFILL_STATUS_QUERY,
 } from './lightning.queries';
@@ -49,6 +54,8 @@ export class LightningService {
 		LIGHTNING_INFO: 'lightning-info',
 		LIGHTNING_BALANCE: 'lightning-balance',
 		LIGHTNING_ACCOUNTS: 'lightning-accounts',
+		LIGHTNING_CHANNELS: 'lightning-channels',
+		LIGHTNING_CLOSED_CHANNELS: 'lightning-closed-channels',
 		LIGHTNING_ANALYTICS: 'lightning-analytics',
 		LIGHTNING_ANALYTICS_PRE: 'lightning-analytics-pre',
 	};
@@ -57,6 +64,8 @@ export class LightningService {
 		[this.CACHE_KEYS.LIGHTNING_INFO]: 30 * 60 * 1000, // 30 minutes
 		[this.CACHE_KEYS.LIGHTNING_BALANCE]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.LIGHTNING_ACCOUNTS]: 5 * 60 * 1000, // 5 minutes
+		[this.CACHE_KEYS.LIGHTNING_CHANNELS]: 5 * 60 * 1000, // 5 minutes
+		[this.CACHE_KEYS.LIGHTNING_CLOSED_CHANNELS]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.LIGHTNING_ANALYTICS]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.LIGHTNING_ANALYTICS_PRE]: 5 * 60 * 1000, // 5 minutes
 	};
@@ -65,6 +74,8 @@ export class LightningService {
 	private readonly lightning_info_subject: BehaviorSubject<LightningInfo | null>;
 	private readonly lightning_balance_subject: BehaviorSubject<LightningBalance | null>;
 	private readonly lightning_accounts_subject: BehaviorSubject<LightningAccount[] | null>;
+	private readonly lightning_channels_subject: BehaviorSubject<LightningChannel[] | null>;
+	private readonly lightning_closed_channels_subject: BehaviorSubject<LightningClosedChannel[] | null>;
 	private readonly lightning_analytics_subject: BehaviorSubject<LightningAnalytic[] | null>;
 	private readonly lightning_analytics_pre_subject: BehaviorSubject<LightningAnalytic[] | null>;
 
@@ -87,6 +98,14 @@ export class LightningService {
 		this.lightning_accounts_subject = this.cache.createCache<LightningAccount[]>(
 			this.CACHE_KEYS.LIGHTNING_ACCOUNTS,
 			this.CACHE_DURATIONS[this.CACHE_KEYS.LIGHTNING_ACCOUNTS],
+		);
+		this.lightning_channels_subject = this.cache.createCache<LightningChannel[]>(
+			this.CACHE_KEYS.LIGHTNING_CHANNELS,
+			this.CACHE_DURATIONS[this.CACHE_KEYS.LIGHTNING_CHANNELS],
+		);
+		this.lightning_closed_channels_subject = this.cache.createCache<LightningClosedChannel[]>(
+			this.CACHE_KEYS.LIGHTNING_CLOSED_CHANNELS,
+			this.CACHE_DURATIONS[this.CACHE_KEYS.LIGHTNING_CLOSED_CHANNELS],
 		);
 		this.lightning_analytics_subject = this.cache.createCache<LightningAnalytic[]>(
 			this.CACHE_KEYS.LIGHTNING_ANALYTICS,
@@ -175,6 +194,54 @@ export class LightningService {
 			}),
 			catchError((error) => {
 				console.error('Error loading lightning wallet:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	public loadLightningChannels(): Observable<LightningChannel[]> {
+		if (this.lightning_channels_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.LIGHTNING_CHANNELS)) {
+			return of(this.lightning_channels_subject.value);
+		}
+
+		const query = getApiQuery(LIGHTNING_CHANNELS_QUERY);
+
+		return this.http.post<OrchardRes<LightningChannelsResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.lightning_channels;
+			}),
+			map((ln_channels) => ln_channels.map((channel) => new LightningChannel(channel))),
+			tap((ln_channels) => {
+				this.cache.updateCache(this.CACHE_KEYS.LIGHTNING_CHANNELS, ln_channels);
+				this.lightning_channels_subject.next(ln_channels);
+			}),
+			catchError((error) => {
+				console.error('Error loading lightning channels:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	public loadLightningClosedChannels(): Observable<LightningClosedChannel[]> {
+		if (this.lightning_closed_channels_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.LIGHTNING_CLOSED_CHANNELS)) {
+			return of(this.lightning_closed_channels_subject.value);
+		}
+
+		const query = getApiQuery(LIGHTNING_CLOSED_CHANNELS_QUERY);
+
+		return this.http.post<OrchardRes<LightningClosedChannelsResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.lightning_closed_channels;
+			}),
+			map((ln_closed_channels) => ln_closed_channels.map((channel) => new LightningClosedChannel(channel))),
+			tap((ln_closed_channels) => {
+				this.cache.updateCache(this.CACHE_KEYS.LIGHTNING_CLOSED_CHANNELS, ln_closed_channels);
+				this.lightning_closed_channels_subject.next(ln_closed_channels);
+			}),
+			catchError((error) => {
+				console.error('Error loading lightning closed channels:', error);
 				return throwError(() => error);
 			}),
 		);

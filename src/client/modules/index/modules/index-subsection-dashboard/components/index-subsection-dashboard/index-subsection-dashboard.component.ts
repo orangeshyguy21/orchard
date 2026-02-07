@@ -24,6 +24,7 @@ import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle
 import {LightningInfo} from '@client/modules/lightning/classes/lightning-info.class';
 import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
 import {LightningAccount} from '@client/modules/lightning/classes/lightning-account.class';
+import {LightningChannel, LightningClosedChannel} from '@client/modules/lightning/classes/lightning-channel.class';
 import {TaprootAssetInfo} from '@client/modules/tapass/classes/taproot-asset-info.class';
 import {TaprootAssets} from '@client/modules/tapass/classes/taproot-assets.class';
 import {MintInfo} from '@client/modules/mint/classes/mint-info.class';
@@ -71,6 +72,8 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public lightning_info!: LightningInfo | null;
 	public lightning_balance!: LightningBalance | null;
 	public lightning_accounts!: LightningAccount[] | null;
+	public lightning_channels!: LightningChannel[] | null;
+	public lightning_closed_channels!: LightningClosedChannel[] | null;
 	public taproot_assets_info!: TaprootAssetInfo | null;
 	public taproot_assets!: TaprootAssets | null;
 	public mint_info!: MintInfo | null;
@@ -302,12 +305,17 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 			info: this.lightningService.loadLightningInfo(),
 			balance: this.lightningService.loadLightningBalance(),
 			accounts: this.lightningService.loadLightningAccounts(),
+            channels: this.lightningService.loadLightningChannels(),
+            closed_channels: this.lightningService.loadLightningClosedChannels(),
 		})
 			.pipe(
-				tap(({info, balance, accounts}) => {
+				tap(({info, balance, accounts, channels, closed_channels}) => {
 					this.lightning_info = info;
 					this.lightning_balance = balance;
 					this.lightning_accounts = accounts;
+                    this.lightning_channels = channels;
+                    this.lightning_closed_channels = closed_channels;
+
 				}),
 				catchError((error) => {
 					this.errors_lightning = error.errors;

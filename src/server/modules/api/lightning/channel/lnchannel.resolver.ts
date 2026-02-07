@@ -18,7 +18,7 @@ export class LightningChannelResolver {
 		return await this.lightningChannelService.getLightningChannels(tag);
 	}
 
-	@Query(() => OrchardLightningClosedChannel)
+	@Query(() => [OrchardLightningClosedChannel])
 	async lightning_closed_channels(): Promise<OrchardLightningClosedChannel[]> {
 		const tag = 'GET { lightning_closed_channels }';
 		this.logger.debug(tag);

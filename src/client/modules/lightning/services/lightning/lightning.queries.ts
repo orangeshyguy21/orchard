@@ -93,6 +93,54 @@ query LightningAnalytics($date_start: UnixTimestamp, $date_end: UnixTimestamp, $
 	}
 }`;
 
+export const LIGHTNING_CHANNELS_QUERY = `{
+	lightning_channels{
+		channel_point
+		chan_id
+		capacity
+		local_balance
+		remote_balance
+		initiator
+		push_amount_sat
+		private
+		active
+		funding_txid
+		asset{
+			group_key
+			asset_id
+			name
+			local_balance
+			remote_balance
+			capacity
+			decimal_display
+		}
+	}
+}`;
+
+export const LIGHTNING_CLOSED_CHANNELS_QUERY = `{
+	lightning_closed_channels{
+		channel_point
+		chan_id
+		capacity
+		close_height
+		settled_balance
+		time_locked_balance
+		close_type
+		open_initiator
+		funding_txid
+		closing_txid
+		asset{
+			group_key
+			asset_id
+			name
+			local_balance
+			remote_balance
+			capacity
+			decimal_display
+		}
+	}
+}`;
+
 export const LIGHTNING_ANALYTICS_BACKFILL_STATUS_QUERY = `{
 	lightning_analytics_backfill_status {
 		is_running

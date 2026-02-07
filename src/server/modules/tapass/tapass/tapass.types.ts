@@ -32,6 +32,13 @@ export type TaprootAssetsUtxos = {
 	};
 };
 
+export type TaprootAssetGroup = {
+	raw_group_key: Buffer;
+	tweaked_group_key: Buffer;
+	asset_witness: Buffer;
+	tapscript_root: Buffer;
+};
+
 export type TaprootAsset = {
 	prev_witnesses: any[];
 	version: TaprootAssetVersion;
@@ -49,7 +56,7 @@ export type TaprootAsset = {
 	script_version: number;
 	script_key: Buffer;
 	script_key_is_local: boolean;
-	asset_group: null;
+	asset_group: TaprootAssetGroup | null;
 	chain_anchor: {
 		anchor_tx: Buffer;
 		anchor_block_hash: string;
