@@ -305,17 +305,16 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 			info: this.lightningService.loadLightningInfo(),
 			balance: this.lightningService.loadLightningBalance(),
 			accounts: this.lightningService.loadLightningAccounts(),
-            channels: this.lightningService.loadLightningChannels(),
-            closed_channels: this.lightningService.loadLightningClosedChannels(),
+			channels: this.lightningService.loadLightningChannels(),
+			closed_channels: this.lightningService.loadLightningClosedChannels(),
 		})
 			.pipe(
 				tap(({info, balance, accounts, channels, closed_channels}) => {
 					this.lightning_info = info;
 					this.lightning_balance = balance;
 					this.lightning_accounts = accounts;
-                    this.lightning_channels = channels;
-                    this.lightning_closed_channels = closed_channels;
-
+					this.lightning_channels = channels;
+					this.lightning_closed_channels = closed_channels;
 				}),
 				catchError((error) => {
 					this.errors_lightning = error.errors;

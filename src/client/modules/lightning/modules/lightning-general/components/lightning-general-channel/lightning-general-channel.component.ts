@@ -15,7 +15,7 @@ import {ConfigService} from '@client/modules/config/services/config.service';
 })
 export class LightningGeneralChannelComponent {
 	public size = input<string>('4rem');
-    public display_mode = input<'large' | 'small'>('large');
+	public display_mode = input<'large' | 'small'>('large');
 	public capacity = input.required<number>();
 	public remote = input.required<number>();
 	public local = input.required<number>();
@@ -48,9 +48,9 @@ export class LightningGeneralChannelComponent {
 		return (local / capacity) * 100;
 	});
 
-    public truncated = computed(() => {
-       return this.display_mode() === 'small' ? true : false;
-    });
+	public truncated = computed(() => {
+		return this.display_mode() === 'small' ? true : false;
+	});
 
 	public taproot_group_keys: Record<string, string>;
 

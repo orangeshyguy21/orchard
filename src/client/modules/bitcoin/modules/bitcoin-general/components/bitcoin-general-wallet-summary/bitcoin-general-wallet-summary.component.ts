@@ -10,24 +10,24 @@ import {oracleConvertToUSDCents} from '@client/modules/bitcoin/helpers/oracle.he
 type TableRow = {
 	unit: string;
 	amount: number;
-    amount_oracle: number | null;
+	amount_oracle: number | null;
 	decimal_display: number;
 	utxos: number;
 	group_key?: string;
-    error_lightning?: boolean;
-    error_taproot_assets?: boolean;
-    is_bitcoin: boolean;
+	error_lightning?: boolean;
+	error_taproot_assets?: boolean;
+	is_bitcoin: boolean;
 };
 
 @Component({
-  selector: 'orc-bitcoin-general-wallet-summary',
-  standalone: false,
-  templateUrl: './bitcoin-general-wallet-summary.component.html',
-  styleUrl: './bitcoin-general-wallet-summary.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+	selector: 'orc-bitcoin-general-wallet-summary',
+	standalone: false,
+	templateUrl: './bitcoin-general-wallet-summary.component.html',
+	styleUrl: './bitcoin-general-wallet-summary.component.scss',
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BitcoinGeneralWalletSummaryComponent implements OnInit {
-    public enabled_lightning = input.required<boolean>();
+	public enabled_lightning = input.required<boolean>();
 	public enabled_taproot_assets = input.required<boolean>();
 	public enabled_oracle = input.required<boolean>();
 	public bitcoin_oracle_price = input.required<BitcoinOraclePrice | null>();
@@ -37,7 +37,7 @@ export class BitcoinGeneralWalletSummaryComponent implements OnInit {
 	public taproot_assets = input.required<TaprootAssets>();
 
 	public rows = signal<TableRow[]>([]);
-    public expanded = signal<Record<string, boolean>>({});
+	public expanded = signal<Record<string, boolean>>({});
 
 	constructor() {}
 
@@ -56,16 +56,16 @@ export class BitcoinGeneralWalletSummaryComponent implements OnInit {
 
 	private getHotBalanceBitcoin(): TableRow | null {
 		if (!this.enabled_lightning()) return null;
-        const amount = this.getLightningWalletBalance();
-        const amount_oracle = this.getLightningWalletBalanceOracle(amount);
+		const amount = this.getLightningWalletBalance();
+		const amount_oracle = this.getLightningWalletBalanceOracle(amount);
 		return {
 			unit: 'sat',
 			amount: amount,
-            amount_oracle: amount_oracle,
+			amount_oracle: amount_oracle,
 			decimal_display: 0,
 			utxos: this.getLightningWalletUtxos(),
-            error_lightning: this.errors_lightning().length > 0,
-            is_bitcoin: true,
+			error_lightning: this.errors_lightning().length > 0,
+			is_bitcoin: true,
 		};
 	}
 
@@ -77,22 +77,26 @@ export class BitcoinGeneralWalletSummaryComponent implements OnInit {
 	private getLightningWalletBalance(): number {
 		if (!this.enabled_lightning()) return 0;
 		if (this.errors_lightning().length > 0) return 0;
-		return this.lightning_accounts().flatMap((account) => account.addresses).reduce((sum, address) => sum + address.balance, 0);
+		return this.lightning_accounts()
+			.flatMap((account) => account.addresses)
+			.reduce((sum, address) => sum + address.balance, 0);
 	}
 
-    private getLightningWalletBalanceOracle(amount: number): number | null {
-        if (!this.enabled_oracle()) return null;
-        const oracle_price = this.bitcoin_oracle_price()?.price || null;
-        return oracle_price ? oracleConvertToUSDCents(amount, oracle_price, 'sat') : null;
-    }
+	private getLightningWalletBalanceOracle(amount: number): number | null {
+		if (!this.enabled_oracle()) return null;
+		const oracle_price = this.bitcoin_oracle_price()?.price || null;
+		return oracle_price ? oracleConvertToUSDCents(amount, oracle_price, 'sat') : null;
+	}
 
 	private getLightningWalletUtxos(): number {
 		if (!this.enabled_lightning()) return 0;
 		if (this.errors_lightning().length > 0) return 0;
-		const unique_addresses = new Set(this.lightning_accounts()
-            .flatMap((account) => account.addresses)
-            .filter((address) => address.balance > 0)
-            .map((address) => address.address));
+		const unique_addresses = new Set(
+			this.lightning_accounts()
+				.flatMap((account) => account.addresses)
+				.filter((address) => address.balance > 0)
+				.map((address) => address.address),
+		);
 		return unique_addresses.size;
 	}
 
@@ -107,12 +111,12 @@ export class BitcoinGeneralWalletSummaryComponent implements OnInit {
 					acc[asset_key] = {
 						unit: asset.asset_genesis.name,
 						amount: 0,
-                        amount_oracle: null,
+						amount_oracle: null,
 						decimal_display: asset.decimal_display?.decimal_display,
 						utxos: 0,
 						group_key: asset_key,
-                        error_taproot_assets: this.errors_taproot_assets().length > 0,
-                        is_bitcoin: false,
+						error_taproot_assets: this.errors_taproot_assets().length > 0,
+						is_bitcoin: false,
 					};
 				}
 				acc[asset_key].amount += amount;
@@ -124,8 +128,7 @@ export class BitcoinGeneralWalletSummaryComponent implements OnInit {
 		return Object.values(grouped_assets);
 	}
 
-
-    /** Toggles the expanded state for a given unit row */
+	/** Toggles the expanded state for a given unit row */
 	public toggleExpanded(unit: string): void {
 		this.expanded.update((state) => ({...state, [unit]: !state[unit]}));
 	}

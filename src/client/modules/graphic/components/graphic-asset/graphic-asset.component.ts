@@ -14,7 +14,7 @@ export class GraphicAssetComponent {
 	public unit = input.required<string>();
 	public height = input<string>('2rem');
 	public custody = input<'ecash' | 'lightning' | 'hot' | 'cold' | null>(null);
-    public group_key = input<string | undefined>(undefined);
+	public group_key = input<string | undefined>(undefined);
 
 	public lower_unit = computed(() => {
 		return this.unit().toLowerCase();
@@ -46,7 +46,7 @@ export class GraphicAssetComponent {
 	});
 
 	public custody_icon = computed(() => {
-        const custody = this.custody();
+		const custody = this.custody();
 		if (!custody) return 'payments';
 		if (custody === 'ecash') return 'payments';
 		if (custody === 'lightning') return 'bolt';
@@ -62,13 +62,13 @@ export class GraphicAssetComponent {
 
 	public supported_taproot_asset = computed(() => {
 		const group_key = this.group_key();
-        if (!group_key) return false;
+		if (!group_key) return false;
 		return this.taproot_assets_map.has(group_key);
 	});
 
 	public taproot_asset_image = computed(() => {
-        const group_key = this.group_key();
-        if (!group_key) return '';
+		const group_key = this.group_key();
+		if (!group_key) return '';
 		return `taproot-assets/${this.taproot_assets_map.get(group_key)}`;
 	});
 

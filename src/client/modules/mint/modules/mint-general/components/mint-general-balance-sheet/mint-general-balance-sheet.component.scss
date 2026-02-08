@@ -45,13 +45,19 @@
 	.mobile & {
 		grid-template-columns: 1fr auto;
 		grid-template-areas:
-			"assets toggle"
-			"liabilities liabilities";
+			'assets toggle'
+			'liabilities liabilities';
 		gap: 1rem;
 
-		> .assets-cell { grid-area: assets; }
-		> .liabilities-cell { grid-area: liabilities; }
-		> .toggle-cell { grid-area: toggle; }
+		> .assets-cell {
+			grid-area: assets;
+		}
+		> .liabilities-cell {
+			grid-area: liabilities;
+		}
+		> .toggle-cell {
+			grid-area: toggle;
+		}
 	}
 
 	.balance-sheet-details {

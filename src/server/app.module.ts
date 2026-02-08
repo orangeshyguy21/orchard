@@ -17,7 +17,12 @@ import {TaskModule} from './modules/task/task.module';
 import {UnixTimestamp} from './modules/graphql/scalars/unixtimestamp.scalar';
 import {Timezone} from './modules/graphql/scalars/timezone.scalar';
 import {Base64} from './modules/graphql/scalars/base64.scalar';
-import {LightningAddressType, LightningRequestType, LightningChannelCloseType, LightningChannelOpenInitiator} from './modules/lightning/lightning.enums';
+import {
+	LightningAddressType,
+	LightningRequestType,
+	LightningChannelCloseType,
+	LightningChannelOpenInitiator,
+} from './modules/lightning/lightning.enums';
 import {TaprootAssetType, TaprootAssetVersion} from './modules/tapass/tapass.enums';
 import {MintAnalyticsInterval} from './modules/cashu/mintdb/cashumintdb.enums';
 import {LightningAnalyticsInterval, LightningAnalyticsMetric} from './modules/lightning/analytics/lnanalytics.enums';

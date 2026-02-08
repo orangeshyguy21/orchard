@@ -11,7 +11,6 @@ import {
 	TaprootAssetType,
 } from '@shared/generated.types';
 
-
 export class TaprootAssets implements OrchardTaprootAssets {
 	public assets: TaprootAsset[];
 	public unconfirmed_transfers: string;

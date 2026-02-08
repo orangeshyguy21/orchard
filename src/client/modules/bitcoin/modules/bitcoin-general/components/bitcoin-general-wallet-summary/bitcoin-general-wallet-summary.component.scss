@@ -1,28 +1,28 @@
 @use 'molecule/molecule';
 
 .wallet-summary-list {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: 1rem 2rem;
+	display: grid;
+	grid-template-columns: auto 1fr auto;
+	gap: 1rem 2rem;
 }
 
 .wallet-summary-card {
-    display: grid;
-    grid-template-columns: subgrid;
-    grid-column: 1 / -1;
+	display: grid;
+	grid-template-columns: subgrid;
+	grid-column: 1 / -1;
 }
 
 .wallet-summary-row {
-    display: grid;
-    grid-template-columns: subgrid;
-    grid-column: 1 / -1;
-    align-items: center;
+	display: grid;
+	grid-template-columns: subgrid;
+	grid-column: 1 / -1;
+	align-items: center;
 
-    .wallet-summary-error {
-        grid-column: 1 / -2;
-    }
+	.wallet-summary-error {
+		grid-column: 1 / -2;
+	}
 
-    .channel-details {
-        grid-column: 1 / -1;
-    }
+	.channel-details {
+		grid-column: 1 / -1;
+	}
 }

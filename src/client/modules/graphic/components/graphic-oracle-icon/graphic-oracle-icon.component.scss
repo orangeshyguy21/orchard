@@ -9,7 +9,7 @@
 	@extend %flex-items-center;
 	@extend %flex-justify-center;
 	@extend %orc-corner-full;
-    // orc-on-primary-container-color
+	// orc-on-primary-container-color
 	border: 1px solid var(--mat-sys-on-primary-container);
 	width: var(--size);
 	height: var(--size);

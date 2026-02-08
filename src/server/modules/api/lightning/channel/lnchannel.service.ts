@@ -30,15 +30,15 @@ export class LightningChannelService {
 		}
 	}
 
-    async getLightningClosedChannels(tag: string): Promise<OrchardLightningClosedChannel[]> {
-        try {
-            const closed_channels: LightningClosedChannel[] = await this.lightningService.getClosedChannels();
-            return closed_channels.map((c) => new OrchardLightningClosedChannel(c));
-        } catch (error) {
-            const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
-                errord: OrchardErrorCode.LightningRpcActionError,
-            });
-            throw new OrchardApiError(orchard_error);
-        }
-    }
+	async getLightningClosedChannels(tag: string): Promise<OrchardLightningClosedChannel[]> {
+		try {
+			const closed_channels: LightningClosedChannel[] = await this.lightningService.getClosedChannels();
+			return closed_channels.map((c) => new OrchardLightningClosedChannel(c));
+		} catch (error) {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
+				errord: OrchardErrorCode.LightningRpcActionError,
+			});
+			throw new OrchardApiError(orchard_error);
+		}
+	}
 }

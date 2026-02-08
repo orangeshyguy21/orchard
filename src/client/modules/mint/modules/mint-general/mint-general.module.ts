@@ -11,6 +11,7 @@ import {MatRippleModule} from '@angular/material/core';
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {OrcLocalModule} from '@client/modules/local/local.module';
 import {OrcErrorModule} from '@client/modules/error/error.module';
+import {OrcTimeModule} from '@client/modules/time/time.module';
 /* Local Dependencies */
 import {MintGeneralIconComponent} from './components/mint-general-icon/mint-general-icon.component';
 import {MintGeneralNameComponent} from './components/mint-general-name/mint-general-name.component';
@@ -29,6 +30,7 @@ import {MintGeneralBalanceSheetComponent} from './components/mint-general-balanc
 		OrcGraphicModule,
 		OrcLocalModule,
 		OrcErrorModule,
+        OrcTimeModule,
 	],
 	exports: [MintGeneralIconComponent, MintGeneralNameComponent, MintGeneralKeysetComponent, MintGeneralBalanceSheetComponent],
 })

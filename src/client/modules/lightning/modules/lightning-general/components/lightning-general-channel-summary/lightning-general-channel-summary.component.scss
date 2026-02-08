@@ -1,46 +1,56 @@
 @use 'molecule/molecule';
 
 .channel-summary-list {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: 1rem 2rem;
+	display: grid;
+	grid-template-columns: auto 1fr auto;
+	gap: 1rem 2rem;
 
-    &.mobile {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
+	&.mobile {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
 }
 
 .channel-summary-card {
-    display: grid;
-    grid-template-columns: subgrid;
-    grid-column: 1 / -1;
+	display: grid;
+	grid-template-columns: subgrid;
+	grid-column: 1 / -1;
 
-    .mobile & {
-        display: block;
-    }
+	.mobile & {
+		display: block;
+	}
 }
 
 .channel-summary-row {
-    display: grid;
-    grid-template-columns: subgrid;
-    grid-column: 1 / -1;
-    align-items: center;
+	display: grid;
+	grid-template-columns: subgrid;
+	grid-column: 1 / -1;
+	align-items: center;
 
-    .mobile & {
-        grid-template-columns: 1fr auto;
-        grid-template-areas:
-            "info toggle"
-            "channel channel";
-        gap: 1rem;
+	.mobile & {
+		grid-template-columns: 1fr auto;
+		grid-template-areas:
+			'info toggle'
+			'channel channel';
+		gap: 1rem;
 
-        > :nth-child(1) { grid-area: info; }
-        > orc-lightning-general-channel { grid-area: channel; }
-        > button { grid-area: toggle; }
-    }
+		> :nth-child(1) {
+			grid-area: info;
+		}
+		> orc-lightning-general-channel {
+			grid-area: channel;
+		}
+		> button {
+			grid-area: toggle;
+		}
+	}
 
-    .channel-details {
-        grid-column: 1 / -1;
-    }
+	.channel-details {
+		grid-column: 1 / -1;
+	}
+}
+
+.test {
+	border-bottom: 3px solid var(--orc-outline-color);
 }

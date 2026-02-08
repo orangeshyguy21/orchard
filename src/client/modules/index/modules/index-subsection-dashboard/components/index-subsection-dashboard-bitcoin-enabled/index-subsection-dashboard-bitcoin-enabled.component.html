@@ -8,16 +8,16 @@
 				></orc-index-subsection-dashboard-bitcoin-enabled-info>
 			</div>
 			<div class="panel panel-hotwallet">
-                <orc-bitcoin-general-wallet-summary
-                    [enabled_lightning]="enabled_lightning()"
-                    [enabled_taproot_assets]="enabled_taproot_assets()"
-                    [enabled_oracle]="enabled_oracle()"
-                    [bitcoin_oracle_price]="bitcoin_oracle_price()"
-                    [errors_lightning]="errors_lightning()"
-                    [errors_taproot_assets]="errors_taproot_assets()"
-                    [lightning_accounts]="lightning_accounts()"
-                    [taproot_assets]="taproot_assets()"
-                ></orc-bitcoin-general-wallet-summary>
+				<orc-bitcoin-general-wallet-summary
+					[enabled_lightning]="enabled_lightning()"
+					[enabled_taproot_assets]="enabled_taproot_assets()"
+					[enabled_oracle]="enabled_oracle()"
+					[bitcoin_oracle_price]="bitcoin_oracle_price()"
+					[errors_lightning]="errors_lightning()"
+					[errors_taproot_assets]="errors_taproot_assets()"
+					[lightning_accounts]="lightning_accounts()"
+					[taproot_assets]="taproot_assets()"
+				></orc-bitcoin-general-wallet-summary>
 			</div>
 			<div class="panel panel-blockchain">
 				@if (!blockchain_info()?.is_synced) {

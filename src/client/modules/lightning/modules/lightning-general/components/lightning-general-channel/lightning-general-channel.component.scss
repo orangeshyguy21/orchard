@@ -5,81 +5,84 @@
 }
 
 .channel-btc {
-    .channel-balance-point, .channel-tie {
-        @extend %orc-asset-btc-bg;
-    }
-    .balance-indicator {
-        fill: var(--orc-asset-btc);
-    }
+	.channel-balance-point,
+	.channel-tie {
+		@extend %orc-asset-btc-bg;
+	}
+	.balance-indicator {
+		fill: var(--orc-asset-btc);
+	}
 }
 
 .channel-tether {
-    .channel-balance-point, .channel-tie {
-        @extend %orc-asset-tether-bg;
-    }
-    .balance-indicator {
-        fill: var(--orc-asset-tether);
-    }
+	.channel-balance-point,
+	.channel-tie {
+		@extend %orc-asset-tether-bg;
+	}
+	.balance-indicator {
+		fill: var(--orc-asset-tether);
+	}
 }
 
 .channel-unknown {
-    .channel-balance-point, .channel-tie {
-        @extend %orc-surface-tint-bg;
-    }
-    .balance-indicator {
-        fill: var(--mat-sys-surface-tint);
-    }
+	.channel-balance-point,
+	.channel-tie {
+		@extend %orc-surface-tint-bg;
+	}
+	.balance-indicator {
+		fill: var(--mat-sys-surface-tint);
+	}
 }
 
 .channel-vessel {
-    @extend %relative;
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-justify-center;
+	@extend %relative;
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
 }
 
 .channel-ring {
-    height: var(--ring-size);
-    width: var(--ring-size);
+	height: var(--ring-size);
+	width: var(--ring-size);
 }
 
 .channel-tie {
-    @extend %relative;
-    @extend %flex;
-    @extend %flex-items-center;
-    height: 2px;
-    border-radius: 1px;
-    flex: 1;
-    margin-left: calc(var(--ring-size) / -2);
-    margin-right: calc(var(--ring-size) / -2);
+	@extend %relative;
+	@extend %flex;
+	@extend %flex-items-center;
+	height: 2px;
+	border-radius: 1px;
+	flex: 1;
+	margin-left: calc(var(--ring-size) / -2);
+	margin-right: calc(var(--ring-size) / -2);
 }
 
-.channel-balance{
-    @extend %absolute;
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-justify-center;
-    left: calc(var(--ring-size) / 2);
-    right: calc(var(--ring-size) / 2);
-    margin-left: 5px;
-    margin-right: 5px;
+.channel-balance {
+	@extend %absolute;
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	left: calc(var(--ring-size) / 2);
+	right: calc(var(--ring-size) / 2);
+	margin-left: 5px;
+	margin-right: 5px;
 }
 
-.channel-balance-point{
-    @extend %absolute;
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-justify-center;
-    height: 10px;
-    width: 10px;
-    @extend %orc-corner-full;
+.channel-balance-point {
+	@extend %absolute;
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	height: 10px;
+	width: 10px;
+	@extend %orc-corner-full;
 
-    &:before{
-        content: '';
-        @extend %absolute;
-        @extend %orc-corner-full;
-        height: 50%;
-        width: 50%;
-        @extend %orc-surface-bg;
-    }
+	&:before {
+		content: '';
+		@extend %absolute;
+		@extend %orc-corner-full;
+		height: 50%;
+		width: 50%;
+		@extend %orc-surface-bg;
+	}
 }

@@ -1,102 +1,127 @@
 <div class="lightning-channel-table-container flex flex-column flex-gap-1">
-    <div class="title-l p-l-1">Channel Summary</div>
+	<div class="title-l p-l-1">Channel Summary</div>
 
-    <div class="channel-summary-list" [class.mobile]="device_type() === 'mobile'">
-        @for (row of rows(); track row.unit) {
-            <mat-card appearance="outlined" class="channel-summary-card relative overflow-hidden">
-                <mat-card-content class="channel-summary-row orc-surface-container-low-bg cursor-pointer" matRipple (click)="toggleExpanded(row.unit)">
-                    <div class="flex flex-items-center flex-gap-2">
-                        <orc-graphic-asset class="low-bg" [unit]="row.unit" height="2.5rem" custody="lightning" [group_key]="row.group_key">
-                        </orc-graphic-asset>
-                        <div class="flex flex-column">
-                            <span class="text-nowrap font-size-l" [innerHTML]="row.size | localAmount: row.unit : 'lightning'"></span>
-                            <div class="font-size-xs orc-outline-color text-nowrap">
-                                Total {{ row.unit === 'msat' ? 'bitcoin' : row.unit }} capacity
-                            </div>
-                        </div>
-                    </div>
+	<div class="channel-summary-list" [class.mobile]="device_type() === 'mobile'">
+		@for (row of rows(); track row.unit) {
+			<mat-card appearance="outlined" class="channel-summary-card relative overflow-hidden">
+				<mat-card-content
+					class="channel-summary-row orc-surface-container-low-bg cursor-pointer"
+					matRipple
+					(click)="toggleExpanded(row.unit)"
+				>
+					<div class="flex flex-items-center flex-gap-2">
+						<orc-graphic-asset class="low-bg" [unit]="row.unit" height="2.5rem" custody="lightning" [group_key]="row.group_key">
+						</orc-graphic-asset>
+						<div class="flex flex-column">
+							<span class="text-nowrap font-size-l" [innerHTML]="row.size | localAmount: row.unit : 'lightning'"></span>
+							<div class="font-size-xs orc-outline-color text-nowrap">
+								Total {{ row.unit === 'msat' ? 'bitcoin' : row.unit }} capacity
+							</div>
+						</div>
+					</div>
 
-                    <orc-lightning-general-channel
-                        [size]="'4rem'"
-                        [display_mode]="device_type() === 'desktop' ? 'large' : 'small'"
-                        [capacity]="row.size"
-                        [remote]="row.remote"
-                        [local]="row.local"
-                        [unit]="row.unit"
-                        [group_key]="row.group_key"
-                    ></orc-lightning-general-channel>
+					<orc-lightning-general-channel
+						[size]="'4rem'"
+						[display_mode]="device_type() === 'desktop' ? 'large' : 'small'"
+						[capacity]="row.size"
+						[remote]="row.remote"
+						[local]="row.local"
+						[unit]="row.unit"
+						[group_key]="row.group_key"
+					></orc-lightning-general-channel>
 
-                    <button
-                        type="button"
-                        tabindex="-1"
-                        mat-icon-button
-                        class="orc-icon-button orc-animation-rotate-toggle"
-                        [class.animation-expanded]="expanded()[row.unit]"
-                    >
-                        <mat-icon>keyboard_arrow_down</mat-icon>
-                    </button>
-                    
+					<button
+						type="button"
+						tabindex="-1"
+						mat-icon-button
+						class="orc-icon-button orc-animation-rotate-toggle"
+						[class.animation-expanded]="expanded()[row.unit]"
+					>
+						<mat-icon>keyboard_arrow_down</mat-icon>
+					</button>
 
-                    <div class="channel-details orc-animation-expand-collapse" [class.animation-expanded]="expanded()[row.unit]">
-                        <div class="orc-animation-expand-collapse-inner p-t-1">
-                            <div class="category-rule"></div>
-                            <div class="flex flex-row flex-gap-1 p-t-1 flex-wrap">
-                                <div class="orc-high-card p-1 flex-1">
+					<div class="channel-details orc-animation-expand-collapse" [class.animation-expanded]="expanded()[row.unit]">
+						<div class="orc-animation-expand-collapse-inner p-t-1">
+							<div class="category-rule"></div>
+							<div class="flex flex-row flex-gap-1 p-t-1 flex-wrap">
+								<div class="orc-high-card p-1 flex-1">
 									<div>
 										<div class="font-size-l text-nowrap">{{ row.channel_count }}</div>
-										<div class="font-size-xs orc-outline-color text-nowrap">Channel count</div>
+										<div class="font-size-xs orc-outline-color text-nowrap">Open channel count</div>
 									</div>
 								</div>
 								<div class="orc-high-card p-1 flex-1">
 									<div>
-										<div class="font-size-l text-nowrap" [innerHTML]="row.avg_channel_size | localAmount: row.unit : 'lightning'"></div>
+										<div class="font-size-l text-nowrap">{{ row.channel_closed_count }}</div>
+										<div class="font-size-xs orc-outline-color text-nowrap">Closed channel count</div>
+									</div>
+								</div>
+								<div class="orc-high-card p-1 flex-1">
+									<div>
+										<div class="font-size-l text-nowrap">{{ row.channel_inactive_count }}</div>
+										<div class="font-size-xs orc-outline-color text-nowrap">Inactive channel count</div>
+									</div>
+								</div>
+								<div class="orc-high-card p-1 flex-1">
+									<div>
+										<div
+											class="font-size-l text-nowrap"
+											[innerHTML]="row.avg_channel_size | localAmount: row.unit : 'lightning'"
+										></div>
 										<div class="font-size-xs orc-outline-color text-nowrap">Average channel size</div>
 									</div>
 								</div>
-                            </div>
-                            @if (row.is_bitcoin && bitcoin_oracle_enabled()) {
+							</div>
+							@if (row.is_bitcoin && bitcoin_oracle_enabled()) {
 								<div class="flex flex-column flex-gap-0-5 p-t-1">
-                                    <div class="orc-primary-card p-1 flex flex-column flex-gap-1">
-                                        <div class="flex flex-items-center flex-gap-0-5">
-                                            <orc-graphic-oracle-icon [size]="1.5"></orc-graphic-oracle-icon>
-                                            <div class="orc-on-primary-container-color">Oracle</div>
-                                        </div>
-                                        <div class="flex flex-row flex-gap-3 flex-wrap">
-                                            <div class="flex-1">
-                                                <div>
-                                                    <div
-                                                        class="font-size-l text-nowrap"
-                                                        [innerHTML]="row.size_oracle | localAmount: 'usd'"
-                                                    ></div>
-                                                    <div class="font-size-xs orc-outline-color text-nowrap">Total capacity</div>
-                                                </div>
-                                            </div>
-                                            <div class="flex-1">
-                                                <div>
-                                                    <div
-                                                        class="font-size-l text-nowrap"
-                                                        [innerHTML]="row.local_oracle | localAmount: 'usd'"
-                                                    ></div>
-                                                    <div class="font-size-xs orc-outline-color text-nowrap">Local capacity</div>
-                                                </div>
-                                            </div>
-                                            <div class="flex-1">
-                                                <div>
-                                                    <div
-                                                        class="font-size-l text-nowrap"
-                                                        [innerHTML]="row.remote_oracle | localAmount: 'usd'"
-                                                    ></div>
-                                                    <div class="font-size-xs orc-outline-color text-nowrap">Remote capacity</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+									<div class="orc-primary-card flex flex-column">
+										<div class="orc-card-header flex flex-items-center flex-justify-between">
+											<div class="flex flex-items-center flex-gap-0-5">
+												<orc-graphic-oracle-icon [size]="1.5"></orc-graphic-oracle-icon>
+												<div class="orc-on-primary-container-color">Oracle</div>
+											</div>
+											<div>
+												<div class="font-size-xs orc-outline-color text-nowrap">
+													price from {{ bitcoin_oracle_price()?.date | timeUtc: 'date-only' }}
+												</div>
+											</div>
+										</div>
+										<div class="flex flex-row flex-gap-3 flex-wrap p-1">
+											<div class="flex-1">
+												<div>
+													<div
+														class="font-size-l text-nowrap"
+														[innerHTML]="row.size_oracle | localAmount: 'usd'"
+													></div>
+													<div class="font-size-xs orc-outline-color text-nowrap">Total capacity</div>
+												</div>
+											</div>
+											<div class="flex-1">
+												<div>
+													<div
+														class="font-size-l text-nowrap"
+														[innerHTML]="row.local_oracle | localAmount: 'usd'"
+													></div>
+													<div class="font-size-xs orc-outline-color text-nowrap">Local capacity</div>
+												</div>
+											</div>
+											<div class="flex-1">
+												<div>
+													<div
+														class="font-size-l text-nowrap"
+														[innerHTML]="row.remote_oracle | localAmount: 'usd'"
+													></div>
+													<div class="font-size-xs orc-outline-color text-nowrap">Remote capacity</div>
+												</div>
+											</div>
+										</div>
+									</div>
 								</div>
 							}
-                        </div>
-                    </div>
-                </mat-card-content>
-            </mat-card>
-        }
-    </div>
+						</div>
+					</div>
+				</mat-card-content>
+			</mat-card>
+		}
+	</div>
 </div>

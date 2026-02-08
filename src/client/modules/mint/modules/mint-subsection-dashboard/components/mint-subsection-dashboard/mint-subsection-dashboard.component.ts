@@ -233,7 +233,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			.loadLightningBalance()
 			.pipe(
 				tap((balance) => {
-                    console.log('getLightningBalance', balance);
+					console.log('getLightningBalance', balance);
 					this.lightning_balance = balance;
 					this.cdr.detectChanges();
 				}),

@@ -95,7 +95,7 @@ export class LightningService implements OnModuleInit {
 		if (this.type === 'cln') return this.clnService.mapClnRequest(await this.makeGrpcRequest('Decode', {string: request}));
 	}
 
-    	/**
+	/**
 	 * Gets currently open channels from the Lightning node
 	 */
 	async getChannels(): Promise<LightningChannel[]> {

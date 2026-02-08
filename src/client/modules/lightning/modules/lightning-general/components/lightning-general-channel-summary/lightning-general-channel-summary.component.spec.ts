@@ -6,7 +6,7 @@ import {OrcLightningGeneralModule} from '@client/modules/lightning/modules/light
 import {LightningGeneralChannelSummaryComponent} from './lightning-general-channel-summary.component';
 
 describe('LightningGeneralChannelSummaryComponent', () => {
-	    let component: LightningGeneralChannelSummaryComponent;
+	let component: LightningGeneralChannelSummaryComponent;
 	let fixture: ComponentFixture<LightningGeneralChannelSummaryComponent>;
 
 	beforeEach(async () => {

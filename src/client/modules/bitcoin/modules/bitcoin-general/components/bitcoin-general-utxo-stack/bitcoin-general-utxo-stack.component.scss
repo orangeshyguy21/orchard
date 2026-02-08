@@ -3,17 +3,17 @@
 :host {
 	&.low-bg {
 		.coin-stacked {
-            &:before {
-                @extend %orc-surface-container-low-bg;
-            }
-        }
+			&:before {
+				@extend %orc-surface-container-low-bg;
+			}
+		}
 	}
 
 	&.high-bg {
 		.coin-stacked {
-            &:before {
-                @extend %orc-surface-container-high-bg;
-            }
+			&:before {
+				@extend %orc-surface-container-high-bg;
+			}
 		}
 	}
 }
