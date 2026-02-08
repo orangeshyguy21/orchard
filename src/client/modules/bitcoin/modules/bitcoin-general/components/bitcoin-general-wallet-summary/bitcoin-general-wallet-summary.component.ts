@@ -7,17 +7,29 @@ import {OrchardError} from '@client/modules/error/types/error.types';
 import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle-price.class';
 import {oracleConvertToUSDCents} from '@client/modules/bitcoin/helpers/oracle.helpers';
 
-type TableRow = {
+type TableRow = TableRowBitcoin | TableRowTaprootAssets;
+
+type TableRowBitcoin = {
+	type: 'bitcoin';
 	unit: string;
 	amount: number;
 	amount_oracle: number | null;
+	utxos: number;
+	utxo_sizes: number[];
+	error?: boolean;
+};
+
+type TableRowTaprootAssets = {
+	type: 'taproot_assets';
+	unit: string;
+	group_key?: string;
+	amount: number;
 	decimal_display: number;
 	utxos: number;
 	utxo_sizes: number[];
-	group_key?: string;
-	error_lightning?: boolean;
-	error_taproot_assets?: boolean;
-	is_bitcoin: boolean;
+	error?: boolean;
+	asset_version: string;
+	asset_type: string;
 };
 
 @Component({
@@ -61,14 +73,13 @@ export class BitcoinGeneralWalletSummaryComponent implements OnInit {
 		const amount_oracle = this.getLightningWalletBalanceOracle(amount);
 		const utxos = this.getLightningWalletUtxos();
 		return {
+			type: 'bitcoin',
 			unit: 'sat',
 			amount: amount,
 			amount_oracle: amount_oracle,
-			decimal_display: 0,
 			utxos: utxos.size,
 			utxo_sizes: Array.from(utxos),
-			error_lightning: this.errors_lightning().length > 0,
-			is_bitcoin: true,
+			error: this.errors_lightning().length > 0,
 		};
 	}
 
@@ -111,15 +122,16 @@ export class BitcoinGeneralWalletSummaryComponent implements OnInit {
 				const amount = parseInt(asset.amount) / Math.pow(10, asset.decimal_display?.decimal_display || 0);
 				if (!acc[asset_key]) {
 					acc[asset_key] = {
+						type: 'taproot_assets',
 						unit: asset.asset_genesis.name,
 						amount: 0,
-						amount_oracle: null,
 						decimal_display: asset.decimal_display?.decimal_display,
 						utxos: 0,
 						utxo_sizes: [],
-						group_key: asset_key,
-						error_taproot_assets: this.errors_taproot_assets().length > 0,
-						is_bitcoin: false,
+						group_key: asset.asset_group?.tweaked_group_key,
+						error: this.errors_taproot_assets().length > 0,
+						asset_version: asset.version,
+						asset_type: asset.asset_genesis.asset_type,
 					};
 				}
 				acc[asset_key].amount += amount;

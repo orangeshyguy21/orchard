@@ -12,6 +12,7 @@ import {OrcErrorModule} from '@client/modules/error/error.module';
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {OrcTimeModule} from '@client/modules/time/time.module';
 import {OrcChartModule} from '@client/modules/chart/chart.module';
+import {OrcDataModule} from '@client/modules/data/data.module';
 /* Local Dependencies */
 import {BitcoinGeneralBlockComponent} from './components/bitcoin-general-block/bitcoin-general-block.component';
 import {BitcoinGeneralUtxoStackComponent} from './components/bitcoin-general-utxo-stack/bitcoin-general-utxo-stack.component';
@@ -40,6 +41,7 @@ import {BitcoinGeneralWalletSummaryComponent} from './components/bitcoin-general
 		OrcGraphicModule,
 		OrcTimeModule,
 		OrcChartModule,
+		OrcDataModule,
 	],
 	exports: [
 		BitcoinGeneralBlockComponent,

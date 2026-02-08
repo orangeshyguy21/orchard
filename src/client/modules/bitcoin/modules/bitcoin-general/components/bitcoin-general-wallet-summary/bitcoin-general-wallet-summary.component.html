@@ -9,12 +9,11 @@
 					matRipple
 					(click)="toggleExpanded(row.unit)"
 				>
-					@if (row.error_lightning || row.error_taproot_assets) {
+					@if (row.error) {
 						<div class="wallet-summary-error">
-							@if (row.error_lightning) {
+							@if (row.type === 'bitcoin') {
 								<orc-error-resolve [error]="errors_lightning()[0]" mode="small"></orc-error-resolve>
-							}
-							@if (row.error_taproot_assets) {
+							} @else {
 								<orc-error-resolve [error]="errors_taproot_assets()[0]" mode="small"></orc-error-resolve>
 							}
 						</div>
@@ -25,7 +24,7 @@
 								[unit]="row.unit"
 								[height]="'2.5rem'"
 								[custody]="'hot'"
-								[group_key]="row.group_key"
+								[group_key]="row.type === 'taproot_assets' ? row.group_key : undefined"
 							>
 							</orc-graphic-asset>
 							<span
@@ -33,7 +32,12 @@
 								[innerHTML]="row.amount | localAmount: row.unit : 'bitcoin'"
 							></span>
 						</div>
-						<orc-bitcoin-general-utxo-stack class="low-bg" [unit]="row.unit" [coins]="row.utxos" [group_key]="row.group_key">
+						<orc-bitcoin-general-utxo-stack
+							class="low-bg"
+							[unit]="row.unit"
+							[coins]="row.utxos"
+							[group_key]="row.type === 'taproot_assets' ? row.group_key : undefined"
+						>
 						</orc-bitcoin-general-utxo-stack>
 					}
 
@@ -62,8 +66,30 @@
 										<orc-chart-graphic-bars [bars]="row.utxo_sizes"></orc-chart-graphic-bars>
 									</div>
 								</div>
+								@if (row.type === 'taproot_assets') {
+									<div class="orc-high-card p-1 flex-1 relative flex flex-column flex-gap-1">
+										<div>
+											<div class="font-size-l text-nowrap">
+												@if (row.group_key) {
+													{{ row.group_key | dataTruncate: 12 : 6 : 6 }}
+												} @else {
+													<mat-icon>check_indeterminate_small</mat-icon>
+												}
+											</div>
+											<div class="font-size-xs orc-outline-color text-nowrap">Group key</div>
+										</div>
+										<div>
+											<div class="font-size-l text-nowrap">{{ row.asset_type }}</div>
+											<div class="font-size-xs orc-outline-color text-nowrap">Asset type</div>
+										</div>
+										<div>
+											<div class="font-size-l text-nowrap">{{ row.asset_version }}</div>
+											<div class="font-size-xs orc-outline-color text-nowrap">Asset version</div>
+										</div>
+									</div>
+								}
 							</div>
-							@if (row.is_bitcoin && enabled_oracle()) {
+							@if (row.type === 'bitcoin' && enabled_oracle()) {
 								<div class="flex flex-column flex-gap-0-5 p-t-1">
 									<div class="orc-primary-card flex flex-column">
 										<div class="orc-card-header flex flex-items-center flex-justify-between">
