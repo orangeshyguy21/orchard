@@ -50,6 +50,19 @@
 					<div class="channel-details orc-animation-expand-collapse" [class.animation-expanded]="expanded()[row.unit]">
 						<div class="orc-animation-expand-collapse-inner p-t-1">
 							<div class="category-rule"></div>
+							<div class="flex flex-row flex-gap-1 p-t-1 flex-wrap">
+								<div class="orc-high-card p-1 flex-1 relative">
+									<div class="relative z-index-1">
+										<div class="font-size-l text-nowrap">{{ row.utxos }}</div>
+										<div class="font-size-xs orc-outline-color text-nowrap">
+											{{ row.utxos === 1 ? 'UTXO' : 'UTXOs' }}
+										</div>
+									</div>
+									<div class="utxo-sizes-chart">
+										<orc-chart-graphic-bars [bars]="row.utxo_sizes"></orc-chart-graphic-bars>
+									</div>
+								</div>
+							</div>
 							@if (row.is_bitcoin && enabled_oracle()) {
 								<div class="flex flex-column flex-gap-0-5 p-t-1">
 									<div class="orc-primary-card flex flex-column">

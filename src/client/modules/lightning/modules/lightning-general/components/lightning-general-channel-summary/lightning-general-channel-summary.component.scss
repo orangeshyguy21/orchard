@@ -68,10 +68,10 @@
 .channel-sizes-chart {
 	@extend %absolute;
 	@extend %z-index-0;
-	top: 50%;
+	@extend %top-half;
 	@extend %right-0;
 	@extend %bottom-0;
-	left: 50%;
+	@extend %left-half;
 	opacity: 0.33;
 	@extend %overflow-hidden;
 	border-bottom-right-radius: 0.5rem;

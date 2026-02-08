@@ -13,6 +13,7 @@ type TableRow = {
 	amount_oracle: number | null;
 	decimal_display: number;
 	utxos: number;
+	utxo_sizes: number[];
 	group_key?: string;
 	error_lightning?: boolean;
 	error_taproot_assets?: boolean;
@@ -58,12 +59,14 @@ export class BitcoinGeneralWalletSummaryComponent implements OnInit {
 		if (!this.enabled_lightning()) return null;
 		const amount = this.getLightningWalletBalance();
 		const amount_oracle = this.getLightningWalletBalanceOracle(amount);
+		const utxos = this.getLightningWalletUtxos();
 		return {
 			unit: 'sat',
 			amount: amount,
 			amount_oracle: amount_oracle,
 			decimal_display: 0,
-			utxos: this.getLightningWalletUtxos(),
+			utxos: utxos.size,
+			utxo_sizes: Array.from(utxos),
 			error_lightning: this.errors_lightning().length > 0,
 			is_bitcoin: true,
 		};
@@ -88,21 +91,20 @@ export class BitcoinGeneralWalletSummaryComponent implements OnInit {
 		return oracle_price ? oracleConvertToUSDCents(amount, oracle_price, 'sat') : null;
 	}
 
-	private getLightningWalletUtxos(): number {
-		if (!this.enabled_lightning()) return 0;
-		if (this.errors_lightning().length > 0) return 0;
+	private getLightningWalletUtxos(): Set<number> {
+		if (!this.enabled_lightning()) return new Set();
+		if (this.errors_lightning().length > 0) return new Set();
 		const unique_addresses = new Set(
 			this.lightning_accounts()
 				.flatMap((account) => account.addresses)
 				.filter((address) => address.balance > 0)
-				.map((address) => address.address),
+				.map((address) => address.balance),
 		);
-		return unique_addresses.size;
+		return unique_addresses;
 	}
 
 	private getTaprootAssetsWalletBalance(): TableRow[] {
 		if (!this.enabled_taproot_assets()) return [];
-		console.log('getTaprootAssetsWalletBalance', this.taproot_assets());
 		const grouped_assets = this.taproot_assets().assets.reduce(
 			(acc, asset) => {
 				const asset_key = asset.asset_group?.tweaked_group_key || asset.asset_genesis.asset_id;
@@ -114,6 +116,7 @@ export class BitcoinGeneralWalletSummaryComponent implements OnInit {
 						amount_oracle: null,
 						decimal_display: asset.decimal_display?.decimal_display,
 						utxos: 0,
+						utxo_sizes: [],
 						group_key: asset_key,
 						error_taproot_assets: this.errors_taproot_assets().length > 0,
 						is_bitcoin: false,
@@ -121,6 +124,7 @@ export class BitcoinGeneralWalletSummaryComponent implements OnInit {
 				}
 				acc[asset_key].amount += amount;
 				acc[asset_key].utxos++;
+				acc[asset_key].utxo_sizes.push(amount);
 				return acc;
 			},
 			{} as Record<string, TableRow>,

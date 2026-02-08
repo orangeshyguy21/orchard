@@ -3,7 +3,6 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 /* Vendor Dependencies */
 import {MatIconModule} from '@angular/material/icon';
-import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatCardModule} from '@angular/material/card';
 import {MatButtonModule} from '@angular/material/button';
 import {MatRippleModule} from '@angular/material/core';
@@ -12,6 +11,7 @@ import {OrcLocalModule} from '@client/modules/local/local.module';
 import {OrcErrorModule} from '@client/modules/error/error.module';
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {OrcTimeModule} from '@client/modules/time/time.module';
+import {OrcChartModule} from '@client/modules/chart/chart.module';
 /* Local Dependencies */
 import {BitcoinGeneralBlockComponent} from './components/bitcoin-general-block/bitcoin-general-block.component';
 import {BitcoinGeneralUtxoStackComponent} from './components/bitcoin-general-utxo-stack/bitcoin-general-utxo-stack.component';
@@ -32,7 +32,6 @@ import {BitcoinGeneralWalletSummaryComponent} from './components/bitcoin-general
 	imports: [
 		CommonModule,
 		MatIconModule,
-		MatTooltipModule,
 		MatCardModule,
 		MatButtonModule,
 		MatRippleModule,
@@ -40,6 +39,7 @@ import {BitcoinGeneralWalletSummaryComponent} from './components/bitcoin-general
 		OrcErrorModule,
 		OrcGraphicModule,
 		OrcTimeModule,
+		OrcChartModule,
 	],
 	exports: [
 		BitcoinGeneralBlockComponent,

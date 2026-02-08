@@ -1,5 +1,5 @@
 <div class="bitcoin-utxo-stack-container">
-	<div class="flex flex-items-center" [matTooltip]="`${coins()} utxos`" matTooltipPosition="left">
+	<div class="flex flex-items-center">
 		@if (coins() > limiter) {
 			<mat-icon [class]="overflow_class()">add</mat-icon>
 		}
