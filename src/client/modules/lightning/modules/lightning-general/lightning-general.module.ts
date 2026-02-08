@@ -12,6 +12,7 @@ import {MatMenuModule} from '@angular/material/menu';
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {OrcLocalModule} from '@client/modules/local/local.module';
 import {OrcTimeModule} from '@client/modules/time/time.module';
+import {OrcChartModule} from '@client/modules/chart/chart.module';
 /* Local Dependencies */
 import {LightningGeneralChannelComponent} from './components/lightning-general-channel/lightning-general-channel.component';
 import {LightningGeneralChannelSummaryComponent} from './components/lightning-general-channel-summary/lightning-general-channel-summary.component';
@@ -29,6 +30,7 @@ import {LightningGeneralChannelSummaryComponent} from './components/lightning-ge
 		OrcGraphicModule,
 		OrcLocalModule,
 		OrcTimeModule,
+		OrcChartModule,
 	],
 	exports: [LightningGeneralChannelSummaryComponent],
 })

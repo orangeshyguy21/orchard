@@ -64,3 +64,15 @@
 		}
 	}
 }
+
+.channel-sizes-chart {
+	@extend %absolute;
+	@extend %z-index-0;
+	top: 50%;
+	@extend %right-0;
+	@extend %bottom-0;
+	left: 50%;
+	opacity: 0.33;
+	@extend %overflow-hidden;
+	border-bottom-right-radius: 0.5rem;
+}

@@ -17,6 +17,9 @@ type ChannelSummary = {
 	channel_count: number;
 	channel_closed_count: number;
 	channel_active_count: number;
+	channel_sizes: number[];
+	channel_active_sizes: number[];
+	channel_closed_sizes: number[];
 	avg_channel_size: number;
 	is_bitcoin: boolean;
 	size_oracle: number | null;
@@ -74,6 +77,9 @@ export class LightningGeneralChannelSummaryComponent implements OnInit {
 		const lightning_closed_channels = this.lightning_closed_channels();
 		const sat_channels = lightning_channels?.filter((channel) => !channel.asset);
 		const closed_sat_channels = lightning_closed_channels?.filter((channel) => !channel.asset);
+		const channel_sizes = sat_channels?.map((channel) => channel.capacity) || [];
+		const channel_active_sizes = sat_channels?.filter((channel) => channel.active).map((channel) => channel.capacity) || [];
+		const channel_closed_sizes = closed_sat_channels?.map((channel) => channel.capacity) || [];
 		if (!sat_channels) return [];
 		const summing_channels = active ? sat_channels?.filter((channel) => channel.active) : sat_channels;
 		const local_balance = summing_channels?.reduce((acc, channel) => acc + channel.local_balance || 0, 0);
@@ -96,6 +102,9 @@ export class LightningGeneralChannelSummaryComponent implements OnInit {
 				channel_count: channel_count,
 				channel_closed_count: closed_channel_count,
 				channel_active_count: active_channel_count,
+				channel_sizes,
+				channel_active_sizes,
+				channel_closed_sizes,
 				avg_channel_size: channel_count > 0 ? size / channel_count : 0,
 				is_bitcoin: true,
 				size_oracle,
@@ -117,6 +126,9 @@ export class LightningGeneralChannelSummaryComponent implements OnInit {
 		const asset_channels = lightning_channels.filter((channel) => channel.asset);
 		const closed_asset_channels = lightning_closed_channels?.filter((channel) => channel.asset);
 		const active_asset_channels = asset_channels.filter((channel) => channel.active);
+		const channel_sizes = asset_channels?.map((channel) => channel.capacity) || [];
+		const channel_active_sizes = active_asset_channels?.map((channel) => channel.capacity) || [];
+		const channel_closed_sizes = closed_asset_channels?.map((channel) => channel.capacity) || [];
 		const summing_channels = active ? active_asset_channels : asset_channels;
 		const grouped_summaries = summing_channels.reduce(
 			(acc, channel) => {
@@ -132,6 +144,9 @@ export class LightningGeneralChannelSummaryComponent implements OnInit {
 						channel_count: 0,
 						channel_closed_count: 0,
 						channel_active_count: 0,
+						channel_sizes,
+						channel_active_sizes,
+						channel_closed_sizes,
 						avg_channel_size: 0,
 						is_bitcoin: false,
 						size_oracle: null,

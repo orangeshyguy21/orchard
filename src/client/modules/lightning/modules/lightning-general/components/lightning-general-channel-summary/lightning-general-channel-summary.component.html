@@ -54,22 +54,37 @@
 						<div class="orc-animation-expand-collapse-inner p-t-1">
 							<div class="category-rule"></div>
 							<div class="flex flex-row flex-gap-1 p-t-1 flex-wrap">
-								<div class="orc-high-card p-1 flex-1">
-									<div>
+								<div class="orc-high-card p-1 flex-1 relative">
+									<div class="relative z-index-1">
 										<div class="font-size-l text-nowrap">{{ row.channel_count }}</div>
-										<div class="font-size-xs orc-outline-color text-nowrap">Channels</div>
+										<div class="font-size-xs orc-outline-color text-nowrap">
+											{{ row.channel_count === 1 ? 'Channel' : 'Channels' }}
+										</div>
+									</div>
+									<div class="channel-sizes-chart">
+										<orc-chart-graphic-bars [bars]="row.channel_sizes"></orc-chart-graphic-bars>
 									</div>
 								</div>
-								<div class="orc-high-card p-1 flex-1">
-									<div>
+								<div class="orc-high-card p-1 flex-1 relative">
+									<div class="relative z-index-1">
 										<div class="font-size-l text-nowrap">{{ row.channel_active_count }}</div>
-										<div class="font-size-xs orc-outline-color text-nowrap">Active channels</div>
+										<div class="font-size-xs orc-outline-color text-nowrap">
+											Active {{ row.channel_active_count === 1 ? 'channel' : 'channels' }}
+										</div>
+									</div>
+									<div class="channel-sizes-chart">
+										<orc-chart-graphic-bars [bars]="row.channel_active_sizes"></orc-chart-graphic-bars>
 									</div>
 								</div>
-								<div class="orc-high-card p-1 flex-1">
-									<div>
+								<div class="orc-high-card p-1 flex-1 relative">
+									<div class="relative z-index-1">
 										<div class="font-size-l text-nowrap">{{ row.channel_closed_count }}</div>
-										<div class="font-size-xs orc-outline-color text-nowrap">Closed channels</div>
+										<div class="font-size-xs orc-outline-color text-nowrap">
+											Closed {{ row.channel_closed_count === 1 ? 'channel' : 'channels' }}
+										</div>
+									</div>
+									<div class="channel-sizes-chart">
+										<orc-chart-graphic-bars [bars]="row.channel_closed_sizes"></orc-chart-graphic-bars>
 									</div>
 								</div>
 								<div class="orc-high-card p-1 flex-1">

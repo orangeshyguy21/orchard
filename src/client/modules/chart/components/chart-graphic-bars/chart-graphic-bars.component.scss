@@ -1,0 +1,21 @@
+@use 'molecule/molecule';
+
+:host {
+	@extend %block;
+	@extend %h-full;
+}
+
+.chart-graphic-bars-container {
+	@extend %h-full;
+	@extend %flex;
+	@extend %flex-row;
+	@extend %flex-items-end;
+	// gap: 0.25rem;
+	gap: 2px;
+}
+
+.chart-graphic-bar {
+	@extend %orc-outline-variant-bg;
+	border-top-right-radius: 2px;
+	border-top-left-radius: 2px;
+}
