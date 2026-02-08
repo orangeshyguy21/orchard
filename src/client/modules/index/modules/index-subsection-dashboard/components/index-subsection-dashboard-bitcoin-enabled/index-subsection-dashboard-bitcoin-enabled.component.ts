@@ -35,6 +35,7 @@ export class IndexSubsectionDashboardBitcoinEnabledComponent {
 	public txfee_estimate = input.required<BitcoinTransactionFeeEstimate | null>();
 	public lightning_accounts = input.required<LightningAccount[]>();
 	public taproot_assets = input.required<TaprootAssets>();
+	public errors_bitcoin = input.required<OrchardError[]>();
 	public errors_lightning = input.required<OrchardError[]>();
 	public errors_taproot_assets = input.required<OrchardError[]>();
 	public form_group = input.required<FormGroup>();

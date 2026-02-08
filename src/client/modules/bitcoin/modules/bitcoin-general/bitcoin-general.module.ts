@@ -20,6 +20,7 @@ import {BitcoinGeneralBlockPipe} from './pipes/bitcoin-general-block/bitcoin-gen
 import {BitcoinGeneralFeeratePipe} from './pipes/bitcoin-general-feerate/bitcoin-general-feerate.pipe';
 import {BitcoinGeneralLog2workPipe} from './pipes/bitcoin-general-log2work/bitcoin-general-log2work.pipe';
 import {BitcoinGeneralWalletSummaryComponent} from './components/bitcoin-general-wallet-summary/bitcoin-general-wallet-summary.component';
+import {BitcoinGeneralInfoComponent} from './components/bitcoin-general-info/bitcoin-general-info.component';
 
 @NgModule({
 	declarations: [
@@ -29,6 +30,7 @@ import {BitcoinGeneralWalletSummaryComponent} from './components/bitcoin-general
 		BitcoinGeneralFeeratePipe,
 		BitcoinGeneralLog2workPipe,
 		BitcoinGeneralWalletSummaryComponent,
+		BitcoinGeneralInfoComponent,
 	],
 	imports: [
 		CommonModule,
@@ -50,6 +52,7 @@ import {BitcoinGeneralWalletSummaryComponent} from './components/bitcoin-general
 		BitcoinGeneralFeeratePipe,
 		BitcoinGeneralLog2workPipe,
 		BitcoinGeneralWalletSummaryComponent,
+		BitcoinGeneralInfoComponent,
 	],
 })
 export class OrcBitcoinGeneralModule {}

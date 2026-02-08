@@ -8,10 +8,23 @@ import {GraphicOrchardLogoComponent} from './components/graphic-orchard-logo/gra
 import {GraphicAssetComponent} from './components/graphic-asset/graphic-asset.component';
 import {GraphicOracleComponent} from './components/graphic-oracle/graphic-oracle.component';
 import {GraphicOracleIconComponent} from './components/graphic-oracle-icon/graphic-oracle-icon.component';
+import {GraphicStatusComponent} from './components/graphic-status/graphic-status.component';
 
 @NgModule({
-	declarations: [GraphicOrchardLogoComponent, GraphicAssetComponent, GraphicOracleComponent, GraphicOracleIconComponent],
+	declarations: [
+		GraphicOrchardLogoComponent,
+		GraphicAssetComponent,
+		GraphicOracleComponent,
+		GraphicOracleIconComponent,
+		GraphicStatusComponent,
+	],
 	imports: [CommonModule, MatIconModule],
-	exports: [GraphicOrchardLogoComponent, GraphicAssetComponent, GraphicOracleComponent, GraphicOracleIconComponent],
+	exports: [
+		GraphicOrchardLogoComponent,
+		GraphicAssetComponent,
+		GraphicOracleComponent,
+		GraphicOracleIconComponent,
+		GraphicStatusComponent,
+	],
 })
 export class OrcGraphicModule {}

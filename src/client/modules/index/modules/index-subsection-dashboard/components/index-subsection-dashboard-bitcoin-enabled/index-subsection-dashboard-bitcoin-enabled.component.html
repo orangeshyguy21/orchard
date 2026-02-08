@@ -1,11 +1,12 @@
 <div class="bitcoin-enabled-container">
 	@if (!loading()) {
 		<div animate.enter="orc-animation-fadein" class="flex flex-wrap flex-gap-column-4 flex-gap-row-2">
-			<div class="panel panel-info">
-				<orc-index-subsection-dashboard-bitcoin-enabled-info
+			<div class="panel">
+				<orc-bitcoin-general-info
 					[blockchain_info]="blockchain_info()"
 					[blockcount]="blockcount()"
-				></orc-index-subsection-dashboard-bitcoin-enabled-info>
+					[error]="errors_bitcoin().length ? true : false"
+				></orc-bitcoin-general-info>
 			</div>
 			<div class="panel panel-hotwallet">
 				<orc-bitcoin-general-wallet-summary
