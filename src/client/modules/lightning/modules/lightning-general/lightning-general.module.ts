@@ -5,6 +5,8 @@ import {CommonModule} from '@angular/common';
 import {MatIconModule} from '@angular/material/icon';
 import {MatCardModule} from '@angular/material/card';
 import {MatButtonModule} from '@angular/material/button';
+import {MatRadioModule} from '@angular/material/radio';
+import {MatRippleModule} from '@angular/material/core';
 /* Application Dependencies */
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {OrcLocalModule} from '@client/modules/local/local.module';
@@ -15,7 +17,17 @@ import {LightningGeneralChannelSummaryComponent} from './components/lightning-ge
 
 @NgModule({
 	declarations: [LightningGeneralChannelComponent, LightningGeneralChannelSummaryComponent],
-	imports: [CommonModule, MatIconModule, MatCardModule, MatButtonModule, OrcGraphicModule, OrcLocalModule, OrcTimeModule],
-	exports: [LightningGeneralChannelComponent, LightningGeneralChannelSummaryComponent],
+	imports: [
+		CommonModule,
+		MatIconModule,
+		MatCardModule,
+		MatButtonModule,
+		MatRadioModule,
+		MatRippleModule,
+		OrcGraphicModule,
+		OrcLocalModule,
+		OrcTimeModule,
+	],
+	exports: [LightningGeneralChannelSummaryComponent],
 })
 export class OrcLightningGeneralModule {}

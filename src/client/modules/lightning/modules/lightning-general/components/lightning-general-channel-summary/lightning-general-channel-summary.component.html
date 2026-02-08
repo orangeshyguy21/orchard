@@ -7,6 +7,7 @@
 				<mat-card-content
 					class="channel-summary-row orc-surface-container-low-bg cursor-pointer"
 					matRipple
+					[matRippleDisabled]="disable_ripple()"
 					(click)="toggleExpanded(row.unit)"
 				>
 					<div class="flex flex-items-center flex-gap-2">
@@ -43,23 +44,43 @@
 					<div class="channel-details orc-animation-expand-collapse" [class.animation-expanded]="expanded()[row.unit]">
 						<div class="orc-animation-expand-collapse-inner p-t-1">
 							<div class="category-rule"></div>
-							<div class="flex flex-row flex-gap-1 p-t-1 flex-wrap">
-								<div class="orc-high-card p-1 flex-1">
-									<div>
-										<div class="font-size-l text-nowrap">{{ row.channel_count }}</div>
-										<div class="font-size-xs orc-outline-color text-nowrap">Open channel count</div>
+							<mat-radio-group
+								class="flex flex-row flex-gap-1 p-t-1 flex-wrap"
+								[value]="summary_type()[row.unit]"
+								(change)="setSummaryType(row.unit, $event.value)"
+							>
+								<div
+									class="orc-high-card p-1 flex-1"
+									matRipple
+									(pointerdown)="disable_ripple.set(true)"
+									(click)="$event.stopPropagation(); setSummaryType(row.unit, 'open')"
+								>
+									<div class="flex flex-items-center flex-justify-between">
+										<div>
+											<div class="font-size-l text-nowrap">{{ row.channel_count }}</div>
+											<div class="font-size-xs orc-outline-color text-nowrap">Channels</div>
+										</div>
+										<mat-radio-button value="open"></mat-radio-button>
+									</div>
+								</div>
+								<div
+									class="orc-high-card p-1 flex-1"
+									matRipple
+									(pointerdown)="disable_ripple.set(true)"
+									(click)="$event.stopPropagation(); setSummaryType(row.unit, 'active')"
+								>
+									<div class="flex flex-items-center flex-justify-between">
+										<div>
+											<div class="font-size-l text-nowrap">{{ row.channel_active_count }}</div>
+											<div class="font-size-xs orc-outline-color text-nowrap">Active channels</div>
+										</div>
+										<mat-radio-button value="active"></mat-radio-button>
 									</div>
 								</div>
 								<div class="orc-high-card p-1 flex-1">
 									<div>
 										<div class="font-size-l text-nowrap">{{ row.channel_closed_count }}</div>
-										<div class="font-size-xs orc-outline-color text-nowrap">Closed channel count</div>
-									</div>
-								</div>
-								<div class="orc-high-card p-1 flex-1">
-									<div>
-										<div class="font-size-l text-nowrap">{{ row.channel_inactive_count }}</div>
-										<div class="font-size-xs orc-outline-color text-nowrap">Inactive channel count</div>
+										<div class="font-size-xs orc-outline-color text-nowrap">Closed channels</div>
 									</div>
 								</div>
 								<div class="orc-high-card p-1 flex-1">
@@ -71,7 +92,7 @@
 										<div class="font-size-xs orc-outline-color text-nowrap">Average channel size</div>
 									</div>
 								</div>
-							</div>
+							</mat-radio-group>
 							@if (row.is_bitcoin && bitcoin_oracle_enabled()) {
 								<div class="flex flex-column flex-gap-0-5 p-t-1">
 									<div class="orc-primary-card flex flex-column">

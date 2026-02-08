@@ -1,7 +1,6 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, input, OnInit, signal} from '@angular/core';
 /* Application Dependencies */
-import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
 import {LightningInfo} from '@client/modules/lightning/classes/lightning-info.class';
 import {LightningChannel, LightningClosedChannel} from '@client/modules/lightning/classes/lightning-channel.class';
 import {TaprootAssets} from '@client/modules/tapass/classes/taproot-assets.class';
@@ -17,7 +16,7 @@ type ChannelSummary = {
 	group_key?: string;
 	channel_count: number;
 	channel_closed_count: number;
-	channel_inactive_count: number;
+	channel_active_count: number;
 	avg_channel_size: number;
 	is_bitcoin: boolean;
 	size_oracle: number | null;
@@ -44,6 +43,8 @@ export class LightningGeneralChannelSummaryComponent implements OnInit {
 
 	public rows = signal<ChannelSummary[]>([]);
 	public expanded = signal<Record<string, boolean>>({});
+	public summary_type = signal<Record<string, 'open' | 'active'>>({});
+	public disable_ripple = signal<boolean>(false);
 
 	ngOnInit(): void {
 		this.init();
@@ -54,6 +55,9 @@ export class LightningGeneralChannelSummaryComponent implements OnInit {
 		const sat_summary = this.getSatSummary();
 		const data = taproot_summaries ? [...sat_summary, ...taproot_summaries] : [...sat_summary];
 		this.rows.set(data);
+		this.rows().forEach((row) => {
+			this.summary_type.set({...this.summary_type(), [row.unit]: 'open'});
+		});
 	}
 
 	/**
@@ -70,7 +74,7 @@ export class LightningGeneralChannelSummaryComponent implements OnInit {
 		if (local_balance === 0 && remote_balance === 0) return [];
 		const channel_count = sat_channels?.length || 0;
 		const closed_channel_count = closed_sat_channels?.length || 0;
-		const inactive_channel_count = sat_channels?.filter((channel) => !channel.active).length || 0;
+		const active_channel_count = sat_channels?.filter((channel) => channel.active).length || 0;
 		const size = sat_channels?.reduce((acc, channel) => acc + channel.capacity || 0, 0);
 		const oracle_price = this.bitcoin_oracle_price()?.price || null;
 		const size_oracle = oracle_price ? oracleConvertToUSDCents(size, oracle_price, 'sat') : null;
@@ -84,7 +88,7 @@ export class LightningGeneralChannelSummaryComponent implements OnInit {
 				unit: 'sat',
 				channel_count: channel_count,
 				channel_closed_count: closed_channel_count,
-				channel_inactive_count: inactive_channel_count,
+				channel_active_count: active_channel_count,
 				avg_channel_size: channel_count > 0 ? size / channel_count : 0,
 				is_bitcoin: true,
 				size_oracle,
@@ -105,7 +109,7 @@ export class LightningGeneralChannelSummaryComponent implements OnInit {
 		if (!lightning_channels) return null;
 		const asset_channels = lightning_channels.filter((channel) => channel.asset);
 		const closed_asset_channels = lightning_closed_channels?.filter((channel) => channel.asset);
-		const inactive_asset_channels = asset_channels.filter((channel) => !channel.active);
+		const active_asset_channels = asset_channels.filter((channel) => channel.active);
 		const grouped_summaries = asset_channels.reduce(
 			(acc, channel) => {
 				const asset = channel.asset!;
@@ -119,7 +123,7 @@ export class LightningGeneralChannelSummaryComponent implements OnInit {
 						group_key: asset_key,
 						channel_count: 0,
 						channel_closed_count: 0,
-						channel_inactive_count: 0,
+						channel_active_count: 0,
 						avg_channel_size: 0,
 						is_bitcoin: false,
 						size_oracle: null,
@@ -145,10 +149,10 @@ export class LightningGeneralChannelSummaryComponent implements OnInit {
 			}
 		});
 
-		inactive_asset_channels?.forEach((channel) => {
+		active_asset_channels?.forEach((channel) => {
 			const asset_key = channel.asset!.group_key || channel.asset!.asset_id;
 			if (grouped_summaries[asset_key]) {
-				grouped_summaries[asset_key].channel_inactive_count += 1;
+				grouped_summaries[asset_key].channel_active_count += 1;
 			}
 		});
 
@@ -161,5 +165,13 @@ export class LightningGeneralChannelSummaryComponent implements OnInit {
 	/** Toggles the expanded state for a given unit row */
 	public toggleExpanded(unit: string): void {
 		this.expanded.update((state) => ({...state, [unit]: !state[unit]}));
+	}
+
+	/** Sets the summary type for a given unit row */
+	public setSummaryType(unit: string, type: 'open' | 'active'): void {
+		this.summary_type.update((state) => ({...state, [unit]: type}));
+		setTimeout(() => {
+			this.disable_ripple.set(false);
+		}, 100);
 	}
 }
