@@ -57,7 +57,7 @@ export class MintGeneralBalanceSheetComponent implements OnChanges {
 	private getAssetBalances(unit: MintUnit): number | null {
 		const lightning_balance = this.lightning_balance();
 		if (unit === MintUnit.Eur || unit === MintUnit.Usd) return null;
-		if (lightning_balance) return lightning_balance.local_balance;
+		if (lightning_balance) return lightning_balance.open.local_balance;
 		return null;
 	}
 

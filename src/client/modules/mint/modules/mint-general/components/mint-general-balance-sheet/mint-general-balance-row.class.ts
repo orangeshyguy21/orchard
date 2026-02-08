@@ -24,13 +24,13 @@ export class MintGeneralBalanceRow {
 		if (this.assets === null) return null;
 		const liabilities = LocalAmountPipe.getConvertedAmount(this.unit_mint, this.liabilities);
 		if (liabilities === 0) return null;
-		const multiple = Math.ceil(this.assets / 1000) / liabilities;
+		const multiple = Math.ceil(this.assets) / liabilities;
 		if (multiple < 5) return Math.round(multiple * 10) / 10;
 		return Math.round(multiple);
 	}
 
 	constructor(balance: MintBalance | undefined, assets: number | null, keyset: MintKeyset, oracle_price: number | null) {
-		this.unit_lightning = 'msat';
+		this.unit_lightning = 'sat';
 		this.unit_mint = keyset.unit;
 		this.is_bitcoin = eligibleForOracleConversion(this.unit_mint);
 		this.liabilities = balance?.balance ?? 0;

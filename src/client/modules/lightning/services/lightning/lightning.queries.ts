@@ -33,29 +33,39 @@ export const LIGHTNING_INFO_QUERY = `{
 
 export const LIGHTNING_BALANCE_QUERY = `{
     lightning_balance{
-        balance
-        custom_channel_data{
-            open_channels{
+        open{
+            capacity
+            local_balance
+            remote_balance
+            assets{
+                group_key
                 asset_id
-                chan_id
-                local_balance
                 name
-                remote_balance
-            }
-            pending_channels{
-                asset_id
-                chan_id
+                capacity
                 local_balance
-                name
                 remote_balance
+                decimal_display
             }
         }
-        local_balance
+        active{
+            capacity
+            local_balance
+            remote_balance
+            assets{
+                group_key
+                asset_id
+                name
+                capacity
+                local_balance
+                remote_balance
+                decimal_display
+            }
+        }
         pending_open_balance
-        pending_open_remote_balance
-        remote_balance
         unsettled_local_balance
         unsettled_remote_balance
+        pending_open_local_balance
+        pending_open_remote_balance
     }
 }`;
 
