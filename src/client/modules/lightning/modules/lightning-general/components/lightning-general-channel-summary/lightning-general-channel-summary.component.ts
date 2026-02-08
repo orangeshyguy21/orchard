@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, OnInit, signal, computed} from '@angular/core';
 /* Application Dependencies */
 import {LightningInfo} from '@client/modules/lightning/classes/lightning-info.class';
 import {LightningChannel, LightningClosedChannel} from '@client/modules/lightning/classes/lightning-channel.class';
@@ -41,41 +41,48 @@ export class LightningGeneralChannelSummaryComponent implements OnInit {
 	public bitcoin_oracle_price = input.required<BitcoinOraclePrice | null>();
 	public device_type = input.required<DeviceType>();
 
-	public rows = signal<ChannelSummary[]>([]);
+	private summaries: Record<string, ChannelSummary[]> = {
+		open: [],
+		active: [],
+	};
+
 	public expanded = signal<Record<string, boolean>>({});
-	public summary_type = signal<Record<string, 'open' | 'active'>>({});
-	public disable_ripple = signal<boolean>(false);
+	public summary_type = signal<'open' | 'active'>('open');
+
+	public rows = computed(() => {
+		return this.summaries[this.summary_type()];
+	});
 
 	ngOnInit(): void {
 		this.init();
 	}
 
 	private init(): void {
-		const taproot_summaries = this.getTaprootAssetsSummaries();
-		const sat_summary = this.getSatSummary();
-		const data = taproot_summaries ? [...sat_summary, ...taproot_summaries] : [...sat_summary];
-		this.rows.set(data);
-		this.rows().forEach((row) => {
-			this.summary_type.set({...this.summary_type(), [row.unit]: 'open'});
-		});
+		const sat_summary_open = this.getSatSummary(false);
+		const sat_summary_active = this.getSatSummary(true);
+		const taproot_summaries_open = this.getTaprootAssetsSummaries(false);
+		const taproot_summaries_active = this.getTaprootAssetsSummaries(true);
+		this.summaries['open'] = [...sat_summary_open, ...taproot_summaries_open];
+		this.summaries['active'] = [...sat_summary_active, ...taproot_summaries_active];
 	}
 
 	/**
 	 * Builds the sat/msat channel summary row
 	 */
-	private getSatSummary(): ChannelSummary[] {
+	private getSatSummary(active: boolean): ChannelSummary[] {
 		const lightning_channels = this.lightning_channels();
 		const lightning_closed_channels = this.lightning_closed_channels();
 		const sat_channels = lightning_channels?.filter((channel) => !channel.asset);
 		const closed_sat_channels = lightning_closed_channels?.filter((channel) => !channel.asset);
 		if (!sat_channels) return [];
-		const local_balance = sat_channels?.reduce((acc, channel) => acc + channel.local_balance || 0, 0);
-		const remote_balance = sat_channels?.reduce((acc, channel) => acc + channel.remote_balance || 0, 0);
+		const summing_channels = active ? sat_channels?.filter((channel) => channel.active) : sat_channels;
+		const local_balance = summing_channels?.reduce((acc, channel) => acc + channel.local_balance || 0, 0);
+		const remote_balance = summing_channels?.reduce((acc, channel) => acc + channel.remote_balance || 0, 0);
 		if (local_balance === 0 && remote_balance === 0) return [];
-		const channel_count = sat_channels?.length || 0;
+		const channel_count = summing_channels?.length || 0;
 		const closed_channel_count = closed_sat_channels?.length || 0;
-		const active_channel_count = sat_channels?.filter((channel) => channel.active).length || 0;
-		const size = sat_channels?.reduce((acc, channel) => acc + channel.capacity || 0, 0);
+		const active_channel_count = summing_channels?.filter((channel) => channel.active).length || 0;
+		const size = summing_channels?.reduce((acc, channel) => acc + channel.capacity || 0, 0);
 		const oracle_price = this.bitcoin_oracle_price()?.price || null;
 		const size_oracle = oracle_price ? oracleConvertToUSDCents(size, oracle_price, 'sat') : null;
 		const remote_oracle = oracle_price ? oracleConvertToUSDCents(remote_balance, oracle_price, 'sat') : null;
@@ -101,16 +108,17 @@ export class LightningGeneralChannelSummaryComponent implements OnInit {
 	/**
 	 * Builds channel summaries for taproot assets, grouped by group_key
 	 */
-	private getTaprootAssetsSummaries(): ChannelSummary[] | null {
+	private getTaprootAssetsSummaries(active: boolean): ChannelSummary[] {
 		const lightning_channels = this.lightning_channels();
 		const lightning_closed_channels = this.lightning_closed_channels();
 		const enabled_taproot_assets = this.enabled_taproot_assets();
-		if (!enabled_taproot_assets) return null;
-		if (!lightning_channels) return null;
+		if (!enabled_taproot_assets) return [];
+		if (!lightning_channels) return [];
 		const asset_channels = lightning_channels.filter((channel) => channel.asset);
 		const closed_asset_channels = lightning_closed_channels?.filter((channel) => channel.asset);
 		const active_asset_channels = asset_channels.filter((channel) => channel.active);
-		const grouped_summaries = asset_channels.reduce(
+		const summing_channels = active ? active_asset_channels : asset_channels;
+		const grouped_summaries = summing_channels.reduce(
 			(acc, channel) => {
 				const asset = channel.asset!;
 				const asset_key = asset.group_key || asset.asset_id;
@@ -165,13 +173,5 @@ export class LightningGeneralChannelSummaryComponent implements OnInit {
 	/** Toggles the expanded state for a given unit row */
 	public toggleExpanded(unit: string): void {
 		this.expanded.update((state) => ({...state, [unit]: !state[unit]}));
-	}
-
-	/** Sets the summary type for a given unit row */
-	public setSummaryType(unit: string, type: 'open' | 'active'): void {
-		this.summary_type.update((state) => ({...state, [unit]: type}));
-		setTimeout(() => {
-			this.disable_ripple.set(false);
-		}, 100);
 	}
 }

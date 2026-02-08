@@ -86,6 +86,7 @@ const ICONS = [
   'add_comment',
   'chat_bubble',
   'tune',
+  'graph_4'
 ];
 
 // Sort alphabetically and remove duplicates

@@ -50,3 +50,17 @@
 		grid-column: 1 / -1;
 	}
 }
+
+.rotate-90 {
+	transform: rotate(-90deg);
+}
+
+.active-summary-option {
+	@extend %orc-surface-variant-bg;
+
+	&.mat-mdc-menu-item {
+		&:hover {
+			@extend %orc-surface-variant-bg;
+		}
+	}
+}

@@ -7,6 +7,7 @@ import {MatCardModule} from '@angular/material/card';
 import {MatButtonModule} from '@angular/material/button';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatRippleModule} from '@angular/material/core';
+import {MatMenuModule} from '@angular/material/menu';
 /* Application Dependencies */
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {OrcLocalModule} from '@client/modules/local/local.module';
@@ -24,6 +25,7 @@ import {LightningGeneralChannelSummaryComponent} from './components/lightning-ge
 		MatButtonModule,
 		MatRadioModule,
 		MatRippleModule,
+		MatMenuModule,
 		OrcGraphicModule,
 		OrcLocalModule,
 		OrcTimeModule,
