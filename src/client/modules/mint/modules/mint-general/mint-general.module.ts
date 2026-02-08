@@ -30,7 +30,7 @@ import {MintGeneralBalanceSheetComponent} from './components/mint-general-balanc
 		OrcGraphicModule,
 		OrcLocalModule,
 		OrcErrorModule,
-        OrcTimeModule,
+		OrcTimeModule,
 	],
 	exports: [MintGeneralIconComponent, MintGeneralNameComponent, MintGeneralKeysetComponent, MintGeneralBalanceSheetComponent],
 })
