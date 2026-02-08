@@ -4,9 +4,6 @@
 			[enabled]="enabled_bitcoin"
 			[loading]="preparing_bitcoin"
 			[network_info]="bitcoin_network_info"
-			[blockchain_info]="bitcoin_blockchain_info"
-			[enabled_oracle]="enabled_bitcoin_oracle"
-			[error]="errors_bitcoin.length ? true : false"
 			[device_desktop]="device_type() === 'desktop'"
 		></orc-index-subsection-dashboard-bitcoin-header>
 		<div class="category-rule"></div>
@@ -34,6 +31,7 @@
 				[errors_taproot_assets]="errors_taproot_assets"
 				[form_group]="bitcoin_txfee_form"
 				[control_name]="'target'"
+				[device_type]="device_type()"
 				(target_change)="onTargetChange()"
 			></orc-index-subsection-dashboard-bitcoin-enabled>
 		} @else {

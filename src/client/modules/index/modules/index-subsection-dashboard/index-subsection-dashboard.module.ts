@@ -12,6 +12,7 @@ import {MatTableModule} from '@angular/material/table';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
+import {MatMenuModule} from '@angular/material/menu';
 /* Application Dependencies */
 import {OrcLocalModule} from '@client/modules/local/local.module';
 import {OrcDataModule} from '@client/modules/data/data.module';
@@ -82,6 +83,7 @@ import {IndexSubsectionDashboardMintEnabledInfoComponent} from './components/ind
 		MatProgressSpinnerModule,
 		MatFormFieldModule,
 		MatSelectModule,
+		MatMenuModule,
 		OrcLocalModule,
 		OrcDataModule,
 		OrcGraphicModule,

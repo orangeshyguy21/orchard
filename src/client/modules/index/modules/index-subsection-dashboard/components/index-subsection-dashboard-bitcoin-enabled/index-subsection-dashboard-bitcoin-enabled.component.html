@@ -6,7 +6,19 @@
 					[blockchain_info]="blockchain_info()"
 					[blockcount]="blockcount()"
 					[error]="errors_bitcoin().length ? true : false"
-				></orc-bitcoin-general-info>
+				>
+					<button
+						type="button"
+						class="text-nowrap z-index-0"
+						matFab
+						extended
+						[matMenuTriggerFor]="device_type() === 'mobile' ? null : desktopMenu"
+						(click)="onMenuClick()"
+					>
+						<mat-icon svgIcon="bitcoin_outline"></mat-icon>
+						Open Bitcoin
+					</button>
+				</orc-bitcoin-general-info>
 			</div>
 			<div class="panel panel-hotwallet">
 				<orc-bitcoin-general-wallet-summary
@@ -42,3 +54,10 @@
 		</div>
 	}
 </div>
+
+<mat-menu #desktopMenu="matMenu">
+	<!-- @for (item of items(); track item.navroute) {
+		<button mat-menu-item [routerLink]="item.navroute">{{ item.name }}</button>
+	} -->
+	<mat-card> what the? </mat-card>
+</mat-menu>

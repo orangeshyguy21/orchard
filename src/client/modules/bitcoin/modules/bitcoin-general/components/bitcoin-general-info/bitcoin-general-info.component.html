@@ -18,9 +18,12 @@
 					<div class="font-size-l">{{ blockcount() | bitcoinGeneralBlock }}</div>
 					<div class="font-size-xs orc-outline-color">Block height</div>
 				</div>
-				<div>
-					<div class="font-size-l">{{ blockchain_info()?.size_on_disk | dataBytes }}</div>
-					<div class="font-size-xs orc-outline-color">Chain weight</div>
+				<div class="flex flex-row flex-items-center flex-justify-between flex-gap-2">
+					<div>
+						<div class="font-size-l">{{ blockchain_info()?.size_on_disk | dataBytes }}</div>
+						<div class="font-size-xs orc-outline-color">Chain weight</div>
+					</div>
+					<ng-content></ng-content>
 				</div>
 			</div>
 		</mat-card-content>
