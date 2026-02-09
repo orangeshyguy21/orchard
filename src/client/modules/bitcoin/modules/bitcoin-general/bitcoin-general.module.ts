@@ -6,6 +6,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatCardModule} from '@angular/material/card';
 import {MatButtonModule} from '@angular/material/button';
 import {MatRippleModule} from '@angular/material/core';
+import {MatChipsModule} from '@angular/material/chips';
 /* Application Dependencies */
 import {OrcLocalModule} from '@client/modules/local/local.module';
 import {OrcErrorModule} from '@client/modules/error/error.module';
@@ -38,6 +39,7 @@ import {BitcoinGeneralInfoComponent} from './components/bitcoin-general-info/bit
 		MatCardModule,
 		MatButtonModule,
 		MatRippleModule,
+		MatChipsModule,
 		OrcLocalModule,
 		OrcErrorModule,
 		OrcGraphicModule,

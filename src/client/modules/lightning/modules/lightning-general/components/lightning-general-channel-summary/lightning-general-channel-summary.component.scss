@@ -76,3 +76,8 @@
 	@extend %overflow-hidden;
 	border-bottom-right-radius: 0.5rem;
 }
+
+.lightning-channel-summary-selector {
+	@extend %h-0;
+	padding-bottom: 1.5rem;
+}

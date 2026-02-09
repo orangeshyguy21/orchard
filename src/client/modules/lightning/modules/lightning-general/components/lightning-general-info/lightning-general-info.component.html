@@ -17,29 +17,33 @@
 				<div>
 					<mat-chip-set class="orc-medium-chip-set lightning-uris">
 						@for (connection of uris(); track connection.uri) {
-							<mat-chip matRipple>
-								<div class="cursor-pointer flex flex-items-center flex-gap-0-5">
+							<div class="flex flex-items-center">
+								<div class="p-l-0-5 orc-outline-color">
 									@if (connection.type === 'tor') {
 										<mat-icon svgIcon="tor"></mat-icon>
 									} @else {
 										<mat-icon>vpn_lock_2</mat-icon>
 									}
-									<span>{{ connection.label }}</span>
 								</div>
-							</mat-chip>
+								<mat-chip matRipple (click)="onUriClick(connection)">
+									<div class="cursor-pointer flex flex-items-center flex-gap-0-5">
+										<span>{{ connection.label }}</span>
+									</div>
+								</mat-chip>
+							</div>
 						}
 					</mat-chip-set>
 
-					<div class="font-size-xs orc-outline-color">Node connections</div>
+					<div class="font-size-xs orc-outline-color">Connections</div>
 				</div>
 				<div>
-					<div class="font-size-l">{{ open_channels() }}</div>
-					<div class="font-size-xs orc-outline-color">Channels</div>
+					<div class="font-size-l">{{ lightning_info()?.num_peers }}</div>
+					<div class="font-size-xs orc-outline-color">Peers</div>
 				</div>
 				<div class="flex flex-row flex-items-center flex-justify-between flex-gap-4">
 					<div>
-						<div class="font-size-l">{{ lightning_info()?.num_inactive_channels }}</div>
-						<div class="font-size-xs orc-outline-color">Inactive channels</div>
+						<div class="font-size-l">{{ open_channels() }}</div>
+						<div class="font-size-xs orc-outline-color">Channels</div>
 					</div>
 					<ng-content></ng-content>
 				</div>

@@ -15,6 +15,32 @@
 					</div>
 				</div>
 				<div>
+					<mat-chip-set class="orc-medium-chip-set lightning-uris">
+						@for (connection of uris(); track connection.uri) {
+							<div class="flex flex-items-center">
+								<div class="p-l-0-5 orc-outline-color">
+									@if (connection.type === 'tor') {
+										<mat-icon svgIcon="tor"></mat-icon>
+									} @else {
+										<mat-icon>vpn_lock_2</mat-icon>
+									}
+								</div>
+								<mat-chip matRipple (click)="onUriClick(connection)">
+									<div class="cursor-pointer flex flex-items-center flex-gap-0-5">
+										<span>{{ connection.label }}</span>
+									</div>
+								</mat-chip>
+							</div>
+						}
+					</mat-chip-set>
+
+					<div class="font-size-xs orc-outline-color">Connections</div>
+				</div>
+				<div>
+					<div class="font-size-l">{{ network_info()?.connections }}</div>
+					<div class="font-size-xs orc-outline-color">Peers</div>
+				</div>
+				<div>
 					<div class="font-size-l">{{ blockcount() | bitcoinGeneralBlock }}</div>
 					<div class="font-size-xs orc-outline-color">Block height</div>
 				</div>
