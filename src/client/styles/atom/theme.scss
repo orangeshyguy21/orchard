@@ -123,12 +123,26 @@
 	));
 }
 
+/* Specific Menu Overrides */
+.orc-card-menu {
+	@include mat.menu-overrides((
+		container-color: transparent,
+		container-elevation-shadow: none,
+	));
+}
+
 /* Specific Progress Bar Overrides */
 .orc-progress-bar{
 	@include mat.progress-bar-overrides((
 		track-height: 1rem,
 		active-indicator-height: 1rem,
 	));
+}
+
+.orc-medium-chip-set {
+    @include mat.chips-overrides((
+        container-height: 2rem,
+    ));
 }
 
 /****************************************

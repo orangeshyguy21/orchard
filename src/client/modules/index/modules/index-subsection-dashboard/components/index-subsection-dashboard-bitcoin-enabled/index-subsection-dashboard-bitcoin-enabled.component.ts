@@ -53,6 +53,7 @@ export class IndexSubsectionDashboardBitcoinEnabledComponent implements OnInit {
 	private menu_trigger = viewChild(MatMenuTrigger);
 
 	public items = signal<NavSecondaryItem[]>([]);
+	public bitcoin_hovered = signal(false);
 
 	public target_change = output<number>();
 

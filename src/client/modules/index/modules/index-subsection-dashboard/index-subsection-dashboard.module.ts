@@ -13,6 +13,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 import {MatMenuModule} from '@angular/material/menu';
+import {MatListModule} from '@angular/material/list';
 /* Application Dependencies */
 import {OrcLocalModule} from '@client/modules/local/local.module';
 import {OrcDataModule} from '@client/modules/data/data.module';
@@ -28,7 +29,6 @@ import {IndexSubsectionDashboardComponent} from './components/index-subsection-d
 import {IndexSubsectionDashboardBitcoinHeaderComponent} from './components/index-subsection-dashboard-bitcoin-header/index-subsection-dashboard-bitcoin-header.component';
 import {IndexSubsectionDashboardBitcoinDisabledComponent} from './components/index-subsection-dashboard-bitcoin-disabled/index-subsection-dashboard-bitcoin-disabled.component';
 import {IndexSubsectionDashboardBitcoinEnabledComponent} from './components/index-subsection-dashboard-bitcoin-enabled/index-subsection-dashboard-bitcoin-enabled.component';
-import {IndexSubsectionDashboardBitcoinEnabledInfoComponent} from './components/index-subsection-dashboard-bitcoin-enabled-info/index-subsection-dashboard-bitcoin-enabled-info.component';
 import {IndexSubsectionDashboardBitcoinEnabledBlockchainComponent} from './components/index-subsection-dashboard-bitcoin-enabled-blockchain/index-subsection-dashboard-bitcoin-enabled-blockchain.component';
 import {IndexSubsectionDashboardBitcoinEnabledSyncingComponent} from './components/index-subsection-dashboard-bitcoin-enabled-syncing/index-subsection-dashboard-bitcoin-enabled-syncing.component';
 import {IndexSubsectionDashboardLightningHeaderComponent} from './components/index-subsection-dashboard-lightning-header/index-subsection-dashboard-lightning-header.component';
@@ -50,7 +50,6 @@ import {IndexSubsectionDashboardMintEnabledInfoComponent} from './components/ind
 		IndexSubsectionDashboardBitcoinDisabledComponent,
 		IndexSubsectionDashboardBitcoinEnabledComponent,
 		IndexSubsectionDashboardBitcoinEnabledBlockchainComponent,
-		IndexSubsectionDashboardBitcoinEnabledInfoComponent,
 		IndexSubsectionDashboardBitcoinEnabledSyncingComponent,
 		IndexSubsectionDashboardLightningHeaderComponent,
 		IndexSubsectionDashboardLightningDisabledComponent,
@@ -84,6 +83,7 @@ import {IndexSubsectionDashboardMintEnabledInfoComponent} from './components/ind
 		MatFormFieldModule,
 		MatSelectModule,
 		MatMenuModule,
+		MatListModule,
 		OrcLocalModule,
 		OrcDataModule,
 		OrcGraphicModule,

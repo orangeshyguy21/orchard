@@ -1,0 +1,80 @@
+<div class="flex flex-column flex-gap-1">
+	<div class="title-l">Info</div>
+	<mat-card appearance="outlined" class="wallet-summary-card relative overflow-hidden">
+		<mat-card-content class="orc-surface-container-low-bg">
+			<div class="flex flex-column flex-gap-1">
+				<div class="flex flex-row flex-items-center flex-justify-between flex-gap-1">
+					<div class="flex flex-row flex-items-center flex-gap-1">
+						<div class="h-2 w-2 orc-corner-full" [style.background-color]="lightning_info()?.color"></div>
+						<div class="text-nowrap font-size-l">{{ lightning_info()?.alias }}</div>
+					</div>
+
+					<div class="flex flex-items-center flex-gap-0-5">
+						<orc-graphic-status [status]="status()" size="1rem"></orc-graphic-status>
+						<div class="orc-outline-color">{{ state() }}</div>
+					</div>
+				</div>
+				<div>
+					<mat-chip-set class="orc-medium-chip-set lightning-uris">
+						@for (connection of uris(); track connection.uri) {
+							<mat-chip matRipple>
+								<div class="cursor-pointer flex flex-items-center flex-gap-0-5">
+									@if (connection.type === 'tor') {
+										<mat-icon svgIcon="tor"></mat-icon>
+									} @else {
+										<mat-icon>vpn_lock_2</mat-icon>
+									}
+									<span>{{ connection.label }}</span>
+								</div>
+							</mat-chip>
+						}
+					</mat-chip-set>
+
+					<div class="font-size-xs orc-outline-color">Node connections</div>
+				</div>
+				<div>
+					<div class="font-size-l">{{ open_channels() }}</div>
+					<div class="font-size-xs orc-outline-color">Channels</div>
+				</div>
+				<div class="flex flex-row flex-items-center flex-justify-between flex-gap-4">
+					<div>
+						<div class="font-size-l">{{ lightning_info()?.num_inactive_channels }}</div>
+						<div class="font-size-xs orc-outline-color">Inactive channels</div>
+					</div>
+					<ng-content></ng-content>
+				</div>
+			</div>
+		</mat-card-content>
+	</mat-card>
+</div>
+
+<!-- <div class="flex flex-column flex-gap-1">
+	<div class="title-l">Info</div>
+	<div class="orc-info-table">
+		<table>
+			<tbody>
+				<tr>
+					<td class="font-weight-extra-light orc-outline-color">Node</td>
+					<td>
+						<div class="flex flex-items-center flex-gap-1">
+							<div class="h-2 w-2 orc-corner-full" [style.background-color]="lightning_info?.color"></div>
+							<div class="text-nowrap">{{ lightning_info?.alias }}</div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td class="font-weight-extra-light orc-outline-color text-nowrap">Channels active</td>
+					<td>{{ lightning_info?.num_active_channels }}</td>
+				</tr>
+				<tr>
+					<td class="font-weight-extra-light orc-outline-color text-nowrap">Channels inactive</td>
+					<td>{{ lightning_info?.num_inactive_channels }}</td>
+				</tr>
+				<tr>
+					<td class="font-weight-extra-light orc-outline-color text-nowrap">Channels pending</td>
+					<td>{{ lightning_info?.num_pending_channels }}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div> -->

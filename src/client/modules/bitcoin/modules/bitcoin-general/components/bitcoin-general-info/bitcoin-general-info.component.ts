@@ -27,13 +27,3 @@ export class BitcoinGeneralInfoComponent {
 		return 'active';
 	});
 }
-// public error = input.required<boolean>();
-// public device_desktop = input.required<boolean>();
-
-// public items = signal<NavSecondaryItem[]>([]);
-
-// public state = computed(() => {
-//     if (this.error()) return 'offline';
-//     if (this.blockchain_info()?.initialblockdownload) return 'syncing';
-//     return 'online';
-// });

@@ -21,6 +21,33 @@
     }
 }
 
+.orc-card-menu {
+    .mat-mdc-menu-content {
+        padding: 0;
+    }
+    .card-menu-item {
+        @extend %flex;
+        // @extend %flex-align-center;
+        @extend %p-1;
+        @extend %orc-corner-small;
+        gap: 0.75rem;
+        text-decoration: none;
+        color: inherit;
+        &:hover {
+            @extend %orc-surface-container-highest-bg;
+        }
+    }
+    .card-menu-icon {
+        @extend %flex;
+        // @extend %flex-align-center;
+        @extend %flex-justify-center;
+        @extend %orc-corner-medium;
+        @extend %orc-surface-container-high-bg;
+        @extend %w-2-5;
+        @extend %h-2-5;
+    }
+}
+
 .orc-filter-menu-rule{
     @extend %border;
     @extend %border-solid;

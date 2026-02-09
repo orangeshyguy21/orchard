@@ -13,9 +13,11 @@
 						matFab
 						extended
 						[matMenuTriggerFor]="device_type() === 'mobile' ? null : desktopMenu"
+						(mouseenter)="bitcoin_hovered.set(true)"
+						(mouseleave)="bitcoin_hovered.set(false)"
 						(click)="onMenuClick()"
 					>
-						<mat-icon svgIcon="bitcoin_outline"></mat-icon>
+						<mat-icon [svgIcon]="bitcoin_hovered() ? 'bitcoin' : 'bitcoin_outline'"></mat-icon>
 						Open Bitcoin
 					</button>
 				</orc-bitcoin-general-info>
@@ -55,9 +57,16 @@
 	}
 </div>
 
-<mat-menu #desktopMenu="matMenu">
-	<!-- @for (item of items(); track item.navroute) {
-		<button mat-menu-item [routerLink]="item.navroute">{{ item.name }}</button>
-	} -->
-	<mat-card> what the? </mat-card>
+<mat-menu #desktopMenu="matMenu" class="orc-card-menu">
+	<mat-card (click)="$event.stopPropagation()" class="w-min-12">
+		<div class="p-h-0-5">
+			<mat-nav-list>
+				@for (item of items(); track item.navroute) {
+					<a [routerLink]="item.navroute" mat-list-item>
+						<span matListItemTitle>{{ item.name }}</span>
+					</a>
+				}
+			</mat-nav-list>
+		</div>
+	</mat-card>
 </mat-menu>
