@@ -15,7 +15,7 @@
 					</div>
 				</div>
 				<div>
-					<mat-chip-set class="orc-medium-chip-set lightning-uris">
+					<mat-chip-set class="orc-medium-chip-set orc-pointer-chip-set lightning-uris">
 						@for (connection of uris(); track connection.uri) {
 							<div class="flex flex-items-center">
 								<div class="p-l-0-5 orc-outline-color">
@@ -26,7 +26,7 @@
 									}
 								</div>
 								<mat-chip matRipple (click)="onUriClick(connection)">
-									<div class="cursor-pointer flex flex-items-center flex-gap-0-5">
+									<div class="flex flex-items-center flex-gap-0-5">
 										<span>{{ connection.label }}</span>
 									</div>
 								</mat-chip>

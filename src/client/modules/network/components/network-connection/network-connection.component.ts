@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, inject, viewChild, ElementRef, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, computed, viewChild, ElementRef, OnInit} from '@angular/core';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
 /* Vendor Dependencies */
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
@@ -31,6 +31,10 @@ export class NetworkConnectionComponent implements OnInit {
 		image: new FormControl<boolean | null>(true, [Validators.required]),
 	});
 
+	public size = computed(() => {
+		return this.data.device_type === 'mobile' ? 295 : 395;
+	});
+
 	private readonly corner_squre_options: Record<string, CornerSquareType> = {
 		'0': 'extra-rounded',
 		'1': 'extra-rounded',
@@ -54,11 +58,10 @@ export class NetworkConnectionComponent implements OnInit {
 		const themeless_primary_color = this.themeService.extractThemeColor(qr_primary_color, ThemeType.DARK_MODE);
 		const themeless_corner_dot_color = this.themeService.extractThemeColor(qr_corner_dot_color, ThemeType.DARK_MODE);
 		const themeless_bg = this.themeService.getThemeColor('--mat-sys-on-secondary-container', ThemeType.DARK_MODE);
-		const size = this.data.device_type === 'mobile' ? 295 : 395;
 
 		this.qr_code = new QRCodeStyling({
-			width: size,
-			height: size,
+			width: this.size(),
+			height: this.size(),
 			type: 'svg',
 			data: this.data.uri,
 			image: this.data.image,

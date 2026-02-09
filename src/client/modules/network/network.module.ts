@@ -9,6 +9,8 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSliderModule} from '@angular/material/slider';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
+/* Application Dependencies */
+import {OrcButtonModule} from '@client/modules/button/button.module';
 /* Native Dependencies */
 import {NetworkConnectionComponent} from './components/network-connection/network-connection.component';
 
@@ -22,6 +24,7 @@ import {NetworkConnectionComponent} from './components/network-connection/networ
 		MatSliderModule,
 		MatIconModule,
 		MatButtonModule,
+		OrcButtonModule,
 	],
 	declarations: [NetworkConnectionComponent],
 	exports: [],

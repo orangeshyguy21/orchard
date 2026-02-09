@@ -149,6 +149,7 @@
 * Angular Material Unsupported Overrides
 ****************************************/
 
+/* Specific Form Field Overrides */
 :root {
 	.orc-cold-form-field {
 		.mdc-text-field--filled{
@@ -185,7 +186,6 @@
 		}
 	}
 }
-
 :root {
 	.orc-hot-form-field {
 		.mdc-text-field--filled{
@@ -203,7 +203,6 @@
 		}
 	}
 }
-
 :root {
 	.orc-array-form-field{
 		.mat-mdc-form-field-flex {
@@ -211,7 +210,6 @@
 		}
 	}
 }
-
 :root {
 	.orc-autogrow{
 		&.mat-mdc-form-field-textarea-control{
@@ -220,6 +218,7 @@
 	}
 }
 
+/* Specific Badge Overrides */
 :root {
 	mat-icon{
 		.mat-badge-content{
@@ -228,6 +227,7 @@
 	}
 }
 
+/* Specific Drawer Overrides */
 :root {
 	.mat-drawer.mat-drawer-end{
 		border-top-left-radius: 0rem;
@@ -239,6 +239,7 @@
 	}
 }
 
+/* Specific Accordion Overrides */
 :root {
 	.orc-fullscreen-accordion{
 		.mat-expansion-panel-header{
@@ -264,6 +265,7 @@
 	}
 }
 
+/* Specific Drag and Drop Overrides */
 :root {
 	/* Animate items as they're being sorted. */
 	.cdk-drop-list-dragging .cdk-drag {
@@ -276,11 +278,21 @@
 	}
 }
 
+/* Specific Filter Menu Overrides */
 :root {
     .orc-filter-menu{
         min-width: 18rem;
         .mat-mdc-menu-content{
             padding: 0;
+        }
+    }
+}
+
+/* Specific Chip Overrides */
+:root {
+    .orc-pointer-chip-set {
+        .mat-mdc-chip-action{
+            cursor: pointer;
         }
     }
 }

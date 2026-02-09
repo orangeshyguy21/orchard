@@ -1,12 +1,22 @@
-<!-- <h2 mat-dialog-title>{{ data.label }}</h2> -->
-<!-- <div mat-dialog-title> -->
-<div class="flex flex-items-center flex-gap-0-5 orc-text-button">
-	<div class="font-size-l">{{ data.label }}</div>
-	<mat-icon class="mat-symbol-outline">content_copy</mat-icon>
+<div mat-dialog-title>
+	<div class="flex flex-items-center flex-gap-0-5">
+		<div class="orc-outline-color flex">
+			@if (data.type === 'tor') {
+				<mat-icon class="icon-lg" svgIcon="tor"></mat-icon>
+			} @else {
+				<mat-icon class="icon-lg">vpn_lock_2</mat-icon>
+			}
+		</div>
+		<span class="title-l">{{ data.type | titlecase }} Connection</span>
+	</div>
 </div>
-<!-- </div> -->
 
 <mat-dialog-content>
+	<div class="flex flex-items-center flex-gap-0-5 p-b-1" [style.max-width]="this.size() + 'px'">
+		<orc-button-copy [text]="data.uri">
+			<span class="mega-string">{{ data.uri }}</span>
+		</orc-button-copy>
+	</div>
 	<div #qr_canvas></div>
 	<div class="p-h-1 p-t-1 flex flex-gap-2 flex-items-center" [formGroup]="qr_options">
 		<mat-slider class="w-full flex-grow" min="0" max="3" step="1" showTickMarks>

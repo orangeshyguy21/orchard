@@ -1,0 +1,7 @@
+@use 'molecule/molecule';
+
+.orc-pointer-chip-set {
+    .mat-mdc-chip-action{
+        @extend %cursor-pointer;
+    }
+}
