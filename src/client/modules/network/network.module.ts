@@ -23,7 +23,7 @@ import {NetworkConnectionComponent} from './components/network-connection/networ
 		MatIconModule,
 		MatButtonModule,
 	],
-	exports: [],
 	declarations: [NetworkConnectionComponent],
+	exports: [],
 })
 export class OrcNetworkModule {}

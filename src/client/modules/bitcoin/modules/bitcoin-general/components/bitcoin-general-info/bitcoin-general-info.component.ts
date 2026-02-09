@@ -61,7 +61,6 @@ export class BitcoinGeneralInfoComponent {
 	}
 
 	public onUriClick(uri: BitcoinUri): void {
-		console.log('uri', uri);
 		this.dialog.open(NetworkConnectionComponent, {
 			data: {
 				uri: uri.uri,

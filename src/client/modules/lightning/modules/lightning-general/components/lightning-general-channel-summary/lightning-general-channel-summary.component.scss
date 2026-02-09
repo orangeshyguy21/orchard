@@ -78,6 +78,7 @@
 }
 
 .lightning-channel-summary-selector {
+	@extend %z-index-0;
 	@extend %h-0;
 	padding-bottom: 1.5rem;
 }
