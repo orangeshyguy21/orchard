@@ -8,25 +8,19 @@ import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 /* Application Dependencies */
 import {ThemeService} from '@client/modules/settings/services/theme/theme.service';
 import {ThemeType} from '@client/modules/cache/services/local-storage/local-storage.types';
-import {DeviceType} from '@client/modules/layout/types/device.types';
+/* Native Dependencies */
+import {NetworkConnection} from '@client/modules/network/types/network-connection.type';
 
 @Component({
-	selector: 'orc-lightning-general-connection',
+	selector: 'orc-network-connection',
 	standalone: false,
-	templateUrl: './lightning-general-connection.component.html',
-	styleUrl: './lightning-general-connection.component.scss',
+	templateUrl: './network-connection.component.html',
+	styleUrl: './network-connection.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LightningGeneralConnectionComponent implements OnInit {
+export class NetworkConnectionComponent implements OnInit {
 	private themeService = inject(ThemeService);
-	public data = inject<{
-		uri: string;
-		type: string;
-		label: string;
-		color: string;
-		name: string;
-		device_type: DeviceType;
-	}>(MAT_DIALOG_DATA);
+	public data = inject<NetworkConnection>(MAT_DIALOG_DATA);
 
 	public qr_canvas = viewChild<ElementRef>('qr_canvas');
 
@@ -67,7 +61,7 @@ export class LightningGeneralConnectionComponent implements OnInit {
 			height: size,
 			type: 'svg',
 			data: this.data.uri,
-			image: this.createCircleSvg(this.data.color),
+			image: this.data.image,
 			shape: 'square',
 			margin: 0,
 			qrOptions: {
@@ -117,17 +111,11 @@ export class LightningGeneralConnectionComponent implements OnInit {
 	public onImageChange(event: MatSlideToggleChange): void {
 		if (this.qr_options.value.image === null || this.qr_options.value.image === undefined) return;
 		this.qr_code.update({
-			image: event.checked ? this.createCircleSvg(this.data.color) : undefined,
+			image: event.checked ? this.data.image : undefined,
 		});
 	}
 
-	/** Creates an SVG circle data URI for use as a QR code center image */
-	private createCircleSvg(color: string): string {
-		const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="${color}"/></svg>`;
-		return `data:image/svg+xml;base64,${btoa(svg)}`;
-	}
-
 	public download(): void {
-		this.qr_code.download({name: `${this.data.name} QR`, extension: 'png'});
+		this.qr_code.download({name: `${this.data.name}_qr`, extension: 'png'});
 	}
 }

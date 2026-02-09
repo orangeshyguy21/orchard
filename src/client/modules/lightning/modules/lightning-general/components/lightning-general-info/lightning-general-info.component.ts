@@ -6,7 +6,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {LightningInfo} from '@client/modules/lightning/classes/lightning-info.class';
 import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Components */
-import {LightningGeneralConnectionComponent} from '@client/modules/lightning/modules/lightning-general/components/lightning-general-connection/lightning-general-connection.component';
+import {NetworkConnectionComponent} from '@client/modules/network/components/network-connection/network-connection.component';
 
 type LightningUri = {
 	uri: string;
@@ -73,15 +73,21 @@ export class LightningGeneralInfoComponent {
 	}
 
 	public onUriClick(uri: LightningUri): void {
-		this.dialog.open(LightningGeneralConnectionComponent, {
+		this.dialog.open(NetworkConnectionComponent, {
 			data: {
 				uri: uri.uri,
 				type: uri.type,
 				label: uri.label,
-				color: this.lightning_info()?.color,
+				image: this.createCircleSvg(this.lightning_info()?.color ?? '#000000'),
 				name: this.lightning_info()?.alias,
 				device_type: this.device_type(),
 			},
 		});
+	}
+
+	/** Creates an SVG circle data URI for use as a QR code center image */
+	private createCircleSvg(color: string): string {
+		const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="${color}"/></svg>`;
+		return `data:image/svg+xml;base64,${btoa(svg)}`;
 	}
 }

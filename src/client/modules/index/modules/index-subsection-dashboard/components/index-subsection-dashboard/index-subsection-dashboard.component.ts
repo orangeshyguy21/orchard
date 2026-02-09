@@ -236,7 +236,6 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 				tap(({blockchain, network}) => {
 					this.bitcoin_blockchain_info = blockchain;
 					this.bitcoin_network_info = network;
-					console.log('network', network);
 				}),
 				catchError((error) => {
 					this.errors_bitcoin = error.errors;
