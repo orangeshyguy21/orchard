@@ -98,7 +98,6 @@
 			[enabled]="enabled_mint"
 			[loading]="preparing_mint"
 			[info]="mint_info!"
-			[error]="errors_mint.length ? true : false"
 			[device_desktop]="device_type() === 'desktop'"
 		></orc-index-subsection-dashboard-mint-header>
 		<div class="category-rule"></div>
@@ -117,6 +116,7 @@
 				[lightning_enabled]="enabled_lightning"
 				[lightning_errors]="errors_lightning"
 				[lightning_loading]="preparing_lightning"
+				[mint_errors]="errors_mint"
 				[bitcoin_oracle_enabled]="enabled_bitcoin_oracle"
 				[bitcoin_oracle_price]="bitcoin_oracle_price()"
 				[device_type]="device_type()"

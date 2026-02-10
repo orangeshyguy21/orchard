@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, inject, computed} from '@angular/core';
 import {Router} from '@angular/router';
 
 @Component({
@@ -8,20 +8,24 @@ import {Router} from '@angular/router';
 	templateUrl: './mint-general-icon.component.html',
 	styleUrl: './mint-general-icon.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
+	host: {
+		'[style.--size]': 'height()',
+	},
 })
 export class MintGeneralIconComponent {
-	@Input() icon_data!: string | null;
-	@Input() loading!: boolean;
-	@Input() error!: boolean;
+	private router = inject(Router);
 
-	public get state(): 'loading' | 'error' | 'icon' | 'unset' {
-		if (this.loading) return 'loading';
-		if (this.error) return 'error';
-		if (this.icon_data) return 'icon';
+	public icon_data = input.required<string | null>();
+	public loading = input.required<boolean>();
+	public error = input<boolean>(false);
+	public height = input<string>('2rem');
+
+	public state = computed<string>(() => {
+		if (this.loading()) return 'loading';
+		if (this.error()) return 'error';
+		if (this.icon_data()) return 'icon';
 		return 'unset';
-	}
-
-	constructor(private router: Router) {}
+	});
 
 	public onClick() {
 		this.router.navigate(['mint', 'info'], {

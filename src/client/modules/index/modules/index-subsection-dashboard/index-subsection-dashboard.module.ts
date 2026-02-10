@@ -41,7 +41,6 @@ import {IndexSubsectionDashboardMintDisabledComponent} from './components/index-
 import {IndexSubsectionDashboardEcashHeaderComponent} from './components/index-subsection-dashboard-ecash-header/index-subsection-dashboard-ecash-header.component';
 import {IndexSubsectionDashboardEcashDisabledComponent} from './components/index-subsection-dashboard-ecash-disabled/index-subsection-dashboard-ecash-disabled.component';
 import {IndexSubsectionDashboardEcashEnabledComponent} from './components/index-subsection-dashboard-ecash-enabled/index-subsection-dashboard-ecash-enabled.component';
-import {IndexSubsectionDashboardMintEnabledInfoComponent} from './components/index-subsection-dashboard-mint-enabled-info/index-subsection-dashboard-mint-enabled-info.component';
 
 @NgModule({
 	declarations: [
@@ -58,7 +57,6 @@ import {IndexSubsectionDashboardMintEnabledInfoComponent} from './components/ind
 		IndexSubsectionDashboardMintHeaderComponent,
 		IndexSubsectionDashboardMintDisabledComponent,
 		IndexSubsectionDashboardMintEnabledComponent,
-		IndexSubsectionDashboardMintEnabledInfoComponent,
 		IndexSubsectionDashboardEcashHeaderComponent,
 		IndexSubsectionDashboardEcashEnabledComponent,
 		IndexSubsectionDashboardEcashDisabledComponent,

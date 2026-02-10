@@ -142,6 +142,7 @@
 .orc-medium-chip-set {
     @include mat.chips-overrides((
         container-height: 2rem,
+        outline-color: var(--mat-sys-outline-variant),
     ));
 }
 
@@ -293,6 +294,11 @@
     .orc-pointer-chip-set {
         .mat-mdc-chip-action{
             cursor: pointer;
+        }
+    }
+    .orc-column-chip-set {
+        .mdc-evolution-chip-set__chips{
+            flex-direction: column;
         }
     }
 }

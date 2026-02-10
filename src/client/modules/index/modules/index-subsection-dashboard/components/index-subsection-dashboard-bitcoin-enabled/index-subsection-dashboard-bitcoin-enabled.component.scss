@@ -5,11 +5,11 @@
 	@extend %overflow-hidden;
 }
 
-.panel {
-	@extend %flex-grow;
-	@extend %flex-shrink-1;
-	@extend %w-min-0;
-}
+// .panel {
+// 	@extend %flex-grow;
+// 	@extend %flex-shrink-1;
+// 	@extend %w-min-0;
+// }
 
 .panel-blockchain {
 	@extend %flex;

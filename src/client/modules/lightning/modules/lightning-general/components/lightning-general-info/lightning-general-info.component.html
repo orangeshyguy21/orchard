@@ -1,11 +1,11 @@
 <div class="flex flex-column flex-gap-1">
 	<div class="title-l">Info</div>
-	<mat-card appearance="outlined" class="wallet-summary-card relative overflow-hidden">
+	<mat-card appearance="outlined" class="relative overflow-hidden w-min-24">
 		<mat-card-content class="orc-surface-container-low-bg">
 			<div class="flex flex-column flex-gap-1">
 				<div class="flex flex-row flex-items-center flex-justify-between flex-gap-1">
 					<div class="flex flex-row flex-items-center flex-gap-1">
-						<div class="h-2 w-2 orc-corner-full" [style.background-color]="lightning_info()?.color"></div>
+						<div class="h-2-5 w-2-5 orc-corner-full" [style.background-color]="lightning_info()?.color"></div>
 						<div class="text-nowrap font-size-l">{{ lightning_info()?.alias }}</div>
 					</div>
 
@@ -15,7 +15,7 @@
 					</div>
 				</div>
 				<div>
-					<mat-chip-set class="orc-medium-chip-set orc-pointer-chip-set lightning-uris">
+					<mat-chip-set class="orc-medium-chip-set orc-pointer-chip-set orc-column-chip-set">
 						@for (connection of uris(); track connection.uri) {
 							<div class="flex flex-items-center">
 								<div class="p-l-0-5 orc-outline-color">
@@ -51,34 +51,3 @@
 		</mat-card-content>
 	</mat-card>
 </div>
-
-<!-- <div class="flex flex-column flex-gap-1">
-	<div class="title-l">Info</div>
-	<div class="orc-info-table">
-		<table>
-			<tbody>
-				<tr>
-					<td class="font-weight-extra-light orc-outline-color">Node</td>
-					<td>
-						<div class="flex flex-items-center flex-gap-1">
-							<div class="h-2 w-2 orc-corner-full" [style.background-color]="lightning_info?.color"></div>
-							<div class="text-nowrap">{{ lightning_info?.alias }}</div>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td class="font-weight-extra-light orc-outline-color text-nowrap">Channels active</td>
-					<td>{{ lightning_info?.num_active_channels }}</td>
-				</tr>
-				<tr>
-					<td class="font-weight-extra-light orc-outline-color text-nowrap">Channels inactive</td>
-					<td>{{ lightning_info?.num_inactive_channels }}</td>
-				</tr>
-				<tr>
-					<td class="font-weight-extra-light orc-outline-color text-nowrap">Channels pending</td>
-					<td>{{ lightning_info?.num_pending_channels }}</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
-</div> -->

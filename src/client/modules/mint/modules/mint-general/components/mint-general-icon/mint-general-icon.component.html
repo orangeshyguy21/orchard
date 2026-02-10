@@ -1,5 +1,5 @@
 <div class="mint-icon-container">
-	@switch (state) {
+	@switch (state()) {
 		@case ('loading') {
 			<div class="mint-icon mint-icon-loading orc-animation-shimmer-high"></div>
 		}
@@ -10,9 +10,10 @@
 		}
 		@case ('icon') {
 			<img
-				[src]="icon_data"
+				[src]="icon_data()"
 				alt="Mint Icon"
-				class="h-2 cursor-pointer mint-icon-url"
+				class="cursor-pointer mint-icon-url"
+				[style.height]="height()"
 				(click)="onClick()"
 				animate.enter="orc-animation-fadein"
 			/>

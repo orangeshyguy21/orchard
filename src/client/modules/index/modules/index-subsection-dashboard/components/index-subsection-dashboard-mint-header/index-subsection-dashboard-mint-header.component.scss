@@ -5,6 +5,7 @@
 	@extend %flex;
 	@extend %flex-items-center;
 	@extend %flex-gap-0-5;
+	@extend %flex-justify-between;
 
 	&.tablet-header {
 		@extend %flex-gap-2;

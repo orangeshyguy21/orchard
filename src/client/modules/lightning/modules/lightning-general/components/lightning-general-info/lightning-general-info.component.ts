@@ -51,11 +51,7 @@ export class LightningGeneralInfoComponent {
 	});
 
 	public uris = computed(() => {
-		// const uris = this.lightning_info()?.uris ?? [];
-		const uris = [
-			'03864ef025fde8fb587d989186ce6a4a186895ee44a926bfc370e2c366597a3f8f@3.33.236.230:9735',
-			'03864ef025fde8fb587d989186ce6a4a186895ee44a926bfc370e2c366597a3f8f@of7husrflx7sforh3fw6yqlpwstee3wg5imvvmkp4bz6rbjxtg5nljad.onion:9735',
-		];
+		const uris = this.lightning_info()?.uris ?? [];
 		return uris.map((uri) => this.transformUri(uri));
 	});
 
