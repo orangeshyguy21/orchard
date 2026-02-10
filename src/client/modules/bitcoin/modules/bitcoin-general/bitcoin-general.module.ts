@@ -24,10 +24,12 @@ import {BitcoinGeneralFeeratePipe} from './pipes/bitcoin-general-feerate/bitcoin
 import {BitcoinGeneralLog2workPipe} from './pipes/bitcoin-general-log2work/bitcoin-general-log2work.pipe';
 import {BitcoinGeneralWalletSummaryComponent} from './components/bitcoin-general-wallet-summary/bitcoin-general-wallet-summary.component';
 import {BitcoinGeneralInfoComponent} from './components/bitcoin-general-info/bitcoin-general-info.component';
+import {BitcoinGeneralTreemapComponent} from './components/bitcoin-general-treemap/bitcoin-general-treemap.component';
 
 @NgModule({
 	declarations: [
 		BitcoinGeneralBlockComponent,
+		BitcoinGeneralTreemapComponent,
 		BitcoinGeneralUtxoStackComponent,
 		BitcoinGeneralBlockPipe,
 		BitcoinGeneralFeeratePipe,
@@ -53,6 +55,7 @@ import {BitcoinGeneralInfoComponent} from './components/bitcoin-general-info/bit
 	],
 	exports: [
 		BitcoinGeneralBlockComponent,
+		BitcoinGeneralTreemapComponent,
 		BitcoinGeneralUtxoStackComponent,
 		BitcoinGeneralBlockPipe,
 		BitcoinGeneralFeeratePipe,

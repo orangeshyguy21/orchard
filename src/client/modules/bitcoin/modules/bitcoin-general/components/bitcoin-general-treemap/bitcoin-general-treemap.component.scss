@@ -1,0 +1,12 @@
+@use 'molecule/molecule';
+
+:host {
+	@extend %flex;
+	@extend %w-full;
+	@extend %h-full;
+}
+
+.treemap-canvas {
+	@extend %w-full;
+	@extend %h-full;
+}

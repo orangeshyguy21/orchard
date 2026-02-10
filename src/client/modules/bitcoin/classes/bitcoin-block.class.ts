@@ -5,6 +5,7 @@ export class BitcoinBlock implements OrchardBitcoinBlock {
 	public hash: string;
 	public height: number;
 	public nTx: number;
+	public size: number;
 	public time: number;
 	public weight: number;
 	public feerate_low: number;
@@ -15,6 +16,7 @@ export class BitcoinBlock implements OrchardBitcoinBlock {
 		this.hash = obn.hash;
 		this.height = obn.height;
 		this.nTx = obn.nTx;
+		this.size = obn.size;
 		this.time = obn.time;
 		this.weight = obn.weight;
 		this.feerate_low = obn.feerate_low;

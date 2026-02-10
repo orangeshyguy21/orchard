@@ -6,27 +6,25 @@
 	}
 	<div class="block" [ngClass]="{'block-template': is_template()}">
 		<div class="block-content">
-			<div class="flex flex-column flex-gap-0-5 flex-align-center">
+			<div class="flex flex-column flex-gap-0-25 flex-justify-center flex-items-center">
+				<div class="block-min-feerate">
+					~{{ block()?.feerate_low | bitcoinGeneralFeerate: 'ceil1' }} <span class="block-detail-label">sat/vB</span>
+				</div>
 				<div class="block-feerange">
-					<div>{{ block()?.feerate_low | bitcoinGeneralFeerate }}</div>
-					<div>-</div>
-					<div>{{ block()?.feerate_high | bitcoinGeneralFeerate }}</div>
-					<div>sat/vB</div>
+					{{ block()?.feerate_low | bitcoinGeneralFeerate }} - {{ block()?.feerate_high | bitcoinGeneralFeerate }}
+					<span>sat/vB</span>
 				</div>
-
-				<div class="flex flex-justify-center orc-outline-color">
-					<div>{{ block()?.nTx | number }} {{ block()?.nTx === 1 ? 'transaction' : 'transactions' }}</div>
-				</div>
-
-				<div class="flex flex-justify-center orc-outline-color">
+				<div class="block-size">{{ block()?.size | dataBytes }}</div>
+				<div class="block-tx-count">{{ block()?.nTx | number }}<span class="block-detail-label"> txs</span></div>
+				<div class="block-time orc-outline-color">
 					@if (!is_template()) {
-						<div>{{ $any(this.block()).time | localTimeAgo }}</div>
+						{{ $any(this.block()).time | localTimeAgo }}
 					} @else {
-						<div>~ 10 minutes</div>
+						~10 min
 					}
 				</div>
 			</div>
 		</div>
-		<div class="block-fullness" [style.height]="fullness() | percent"></div>
+		<orc-bitcoin-general-treemap class="block-treemap" [rects]="treemap_rects()" [fullness]="fullness()"></orc-bitcoin-general-treemap>
 	</div>
 </div>

@@ -48,20 +48,38 @@
 	@extend %flex-justify-center;
 }
 
-.block-fullness {
+.block-treemap {
 	@extend %absolute;
 	@extend %z-index-1;
 	@extend %bottom-0;
+	@extend %top-0;
 	@extend %left-0;
 	@extend %right-0;
-	opacity: 0.05;
-	background: white;
+	@extend %overflow-hidden;
+	@extend %orc-corner-small;
+}
+
+.block-min-feerate {
+	@extend %font-size-l;
+	@extend %font-weight-semi-bold;
+}
+
+.block-detail-label {
+	@extend %font-size-xs;
+	@extend %font-weight-regular;
 }
 
 .block-feerange {
 	@extend %flex;
-	@extend %flex-gap-0-5;
+	@extend %flex-gap-0-25;
 	@extend %font-size-xs;
 	@extend %flex-justify-center;
-	@extend %orc-on-surface-variant-color;
+	@extend %orc-outline-color;
+	@extend %p-b-1;
+}
+
+.block-size,
+.block-tx-count,
+.block-time {
+	@extend %font-size-xs;
 }
