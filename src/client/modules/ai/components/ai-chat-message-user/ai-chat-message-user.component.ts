@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input, OnInit, ChangeDetectorRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, signal, OnInit} from '@angular/core';
 /* Vendor Dependencies */
 import {marked} from 'marked';
 /* Native Dependencies */
@@ -13,14 +13,12 @@ import {AiChatCompiledMessage} from '@client/modules/ai/classes/ai-chat-compiled
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AiChatMessageUserComponent implements OnInit {
-	@Input() public message!: AiChatCompiledMessage;
+	public message = input.required<AiChatCompiledMessage>();
+	public user_name = input.required<string>();
 
-	public marked_content!: string;
-
-	constructor(private readonly cdr: ChangeDetectorRef) {}
+	public marked_content = signal<string>('');
 
 	async ngOnInit(): Promise<void> {
-		this.marked_content = await marked.parse(this.message.content);
-		this.cdr.detectChanges();
+		this.marked_content.set(await marked.parse(this.message().content));
 	}
 }

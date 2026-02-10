@@ -14,6 +14,7 @@ import {MatIconModule} from '@angular/material/icon';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcLocalModule} from '@client/modules/local/local.module';
+import {OrcCrewModule} from '@client/modules/crew/crew.module';
 import {OrcAuthGeneralModule} from '@client/modules/auth/modules/auth-general/auth-general.module';
 import {pendingEventGuard} from '@client/modules/event/guards/pending-event.guard';
 /* Native Module Dependencies */
@@ -52,6 +53,7 @@ import {SettingsSubsectionUserUserPasswordDialogComponent} from './components/se
 		MatIconModule,
 		OrcFormModule,
 		OrcLocalModule,
+		OrcCrewModule,
 		OrcAuthGeneralModule,
 	],
 })

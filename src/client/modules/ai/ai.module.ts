@@ -14,6 +14,7 @@ import {MatCardModule} from '@angular/material/card';
 import {MatBadgeModule} from '@angular/material/badge';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
+import {OrcCrewModule} from '@client/modules/crew/crew.module';
 /* Local Dependencies */
 import {AiInputComponent} from './components/ai-input/ai-input.component';
 import {AiNavComponent} from './components/ai-nav/ai-nav.component';
@@ -64,6 +65,7 @@ import {AiChatMessageErrorComponent} from './components/ai-chat-message-error/ai
 		MatCardModule,
 		MatBadgeModule,
 		OrcFormModule,
+		OrcCrewModule,
 	],
 	exports: [AiNavComponent, AiChatLogComponent],
 })

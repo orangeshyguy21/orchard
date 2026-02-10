@@ -1,19 +1,26 @@
 <mat-card appearance="outlined" class="relative overflow-hidden">
 	<mat-card-content class="orc-surface-container-low-bg">
 		<div class="p-1 flex flex-row flex-gap-2 flex-wrap">
-			<div class="flex-1 flex-grow flex flex-column flex-gap-1">
-				<orc-settings-subsection-user-user-name
-					[form_group]="form_group_user_name()"
-					[control_name]="'name'"
-					[invalid]="form_group_user_name().get('name')?.invalid || false"
-					[dirty]="form_group_user_name().get('name')?.dirty || false"
-					(cancel)="cancel_user_name.emit($event)"
-					(submit)="submit_user_name.emit()"
-				></orc-settings-subsection-user-user-name>
-				<orc-settings-subsection-user-user-password
-					[device_type]="device_type()"
-					(save)="save_user_password.emit($event)"
-				></orc-settings-subsection-user-user-password>
+			<div class="flex-1 flex-grow flex flex-gap-2 flex-wrap">
+				<orc-crew-facehash
+					[name]="form_group_user_name().get('name')?.value || ''"
+					[enableBlink]="true"
+					size="3.5rem"
+				></orc-crew-facehash>
+				<div class="flex flex-column flex-gap-1">
+					<orc-settings-subsection-user-user-name
+						[form_group]="form_group_user_name()"
+						[control_name]="'name'"
+						[invalid]="form_group_user_name().get('name')?.invalid || false"
+						[dirty]="form_group_user_name().get('name')?.dirty || false"
+						(cancel)="cancel_user_name.emit($event)"
+						(submit)="submit_user_name.emit()"
+					></orc-settings-subsection-user-user-name>
+					<orc-settings-subsection-user-user-password
+						[device_type]="device_type()"
+						(save)="save_user_password.emit($event)"
+					></orc-settings-subsection-user-user-password>
+				</div>
 			</div>
 			<div class="flex-1 flex flex-justify-center">
 				<div class="flex-grow flex flex-column flex-gap-1 w-max-24 p-b-1">

@@ -16,6 +16,7 @@ export class AiChatLogComponent {
 	public active_chat = input.required<boolean>();
 	public revision = input.required<number>();
 	public agent_definition = input.required<AiAgentDefinition | null>();
+	public user_name = input.required<string>();
 
 	public clear = output<void>();
 	public close = output<void>();

@@ -1,4 +1,15 @@
 <div class="flex flex-column flex-items-center flex-gap-0-5 p-b-2">
+	<div class="flex flex-justify-center">
+		@if (form_group().get('name')?.value) {
+			<div animate.enter="orc-animation-fadein" class="flex">
+				<orc-crew-facehash [name]="form_group().get('name')?.value || ''" size="4rem"></orc-crew-facehash>
+			</div>
+		} @else {
+			<div animate.enter="orc-animation-fadein" class="flex">
+				<orc-graphic-orchard-logo [height]="'4rem'"></orc-graphic-orchard-logo>
+			</div>
+		}
+	</div>
 	<div class="title-l">Orchard Sign Up</div>
 	<div class="font-size-xs orc-outline-color">
 		Already have an account?
