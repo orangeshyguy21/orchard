@@ -1,10 +1,10 @@
-<div class="bitcoin-utxo-stack-container">
+<div class="bitcoin-utxo-stack-container" [style.min-width.rem]="stack_min_width()">
 	<div class="flex flex-items-center">
 		@if (coins() > limiter) {
 			<mat-icon [class]="overflow_class()">add</mat-icon>
 		}
 		@for (i of coin_array(); track i) {
-			<div class="coin-wrapper">
+			<div class="coin-wrapper" [style.--coin-idx]="i">
 				<div class="coin-stacked" [class]="asset_class()"></div>
 			</div>
 		}

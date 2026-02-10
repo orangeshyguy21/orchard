@@ -58,8 +58,16 @@
 	@extend %orc-surface-tint-color;
 }
 
+@keyframes utxo-fan-out {
+	from {
+		width: 0;
+	}
+}
+
 .coin-wrapper {
 	@extend %w-0-5;
+	animation: utxo-fan-out 0.3s ease-out both;
+	animation-delay: calc(var(--coin-idx, 0) * 60ms);
 }
 
 .coin-stacked {

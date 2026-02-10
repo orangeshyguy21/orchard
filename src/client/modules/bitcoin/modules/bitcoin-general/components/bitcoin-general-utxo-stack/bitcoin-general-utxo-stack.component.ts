@@ -39,6 +39,12 @@ export class BitcoinGeneralUtxoStackComponent {
 		return Array.from({length: count}, (_, i) => i);
 	});
 
+	/** Computes the min-width (in rem) to reserve space for the fully expanded stack */
+	public stack_min_width = computed(() => {
+		const icon_width = this.coins() > this.limiter ? 1.5 : 0;
+		return this.coin_array().length * 0.5 + 2 + icon_width;
+	});
+
 	private taproot_group_keys: Record<string, string>;
 
 	constructor(private configService: ConfigService) {
