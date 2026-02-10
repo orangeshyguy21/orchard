@@ -7,5 +7,6 @@ export type NetworkConnection = {
 	label: string;
 	image: string;
 	name: string;
+	section: string;
 	device_type: DeviceType;
 };

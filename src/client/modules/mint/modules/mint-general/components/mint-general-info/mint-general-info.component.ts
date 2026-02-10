@@ -68,6 +68,7 @@ export class MintGeneralInfoComponent {
 				label: uri.label,
 				image: this.icon_data(),
 				name: this.info()?.name ?? '',
+				section: 'mint',
 				device_type: this.device_type(),
 			},
 		});

@@ -68,6 +68,7 @@ export class BitcoinGeneralInfoComponent {
 				label: uri.label,
 				image: this.createBlockSvg('#000000'),
 				name: 'bitcoin_node',
+				section: 'bitcoin',
 				device_type: this.device_type(),
 			},
 		});

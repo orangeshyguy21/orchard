@@ -76,6 +76,7 @@ export class LightningGeneralInfoComponent {
 				label: uri.label,
 				image: this.createCircleSvg(this.lightning_info()?.color ?? '#000000'),
 				name: this.lightning_info()?.alias,
+				section: 'lightning',
 				device_type: this.device_type(),
 			},
 		});
