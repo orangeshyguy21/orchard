@@ -36,9 +36,9 @@
 												Assets &nbsp;&nbsp;●&nbsp;&nbsp; Lightning send capacity
 											</div>
 										</div>
-										@if (device_type() === 'desktop') {
+										<!-- @if (device_type() === 'desktop') {
 											<span class="font-size-l orc-outline-color text-nowrap">{{ row.reserve }}x</span>
-										}
+										} -->
 									} @else {
 										<span class="font-size-m orc-outline-color">
 											<mat-icon>check_indeterminate_small</mat-icon>
@@ -50,6 +50,16 @@
 							<button mat-stroked-button (click)="navigate.emit()">Lightning Configuration</button>
 						}
 					</div>
+
+					<!-- Visual Cell -->
+					@if (device_type() === 'desktop' && row.assets !== null && row.liabilities !== null) {
+						<orc-mint-general-balance-stacks
+							[unit]="row.unit_mint"
+							[assets]="row.assets"
+							[liabilities]="row.liabilities"
+							[reserve]="row.reserve"
+						></orc-mint-general-balance-stacks>
+					}
 
 					<!-- Liabilities Cell -->
 					<div class="liabilities-cell flex flex-items-center flex-gap-2">

@@ -123,6 +123,25 @@
 	));
 }
 
+.orc-bitcoin-progress-spinner{
+	@include mat.progress-spinner-overrides((
+		active-indicator-color: var(--orc-asset-btc),
+	));
+}
+
+.orc-usd-progress-spinner{
+	@include mat.progress-spinner-overrides((
+		active-indicator-color: var(--orc-asset-usd),
+	));
+}
+
+.orc-eur-progress-spinner{
+	@include mat.progress-spinner-overrides((
+		active-indicator-color: var(--orc-asset-eur),
+	));
+}
+
+
 /* Specific Menu Overrides */
 .orc-card-menu {
 	@include mat.menu-overrides((

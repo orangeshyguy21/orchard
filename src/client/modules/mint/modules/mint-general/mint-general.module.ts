@@ -19,6 +19,7 @@ import {MintGeneralNameComponent} from './components/mint-general-name/mint-gene
 import {MintGeneralKeysetComponent} from './components/mint-general-keyset/mint-general-keyset.component';
 import {MintGeneralBalanceSheetComponent} from './components/mint-general-balance-sheet/mint-general-balance-sheet.component';
 import {MintGeneralInfoComponent} from './components/mint-general-info/mint-general-info.component';
+import {MintGeneralBalanceStacksComponent} from './components/mint-general-balance-stacks/mint-general-balance-stacks.component';
 
 @NgModule({
 	declarations: [
@@ -27,6 +28,7 @@ import {MintGeneralInfoComponent} from './components/mint-general-info/mint-gene
 		MintGeneralKeysetComponent,
 		MintGeneralBalanceSheetComponent,
 		MintGeneralInfoComponent,
+		MintGeneralBalanceStacksComponent,
 	],
 	imports: [
 		CommonModule,

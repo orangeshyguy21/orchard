@@ -1,0 +1,75 @@
+@use 'molecule/molecule';
+
+$coin-gap: 3px;
+$coin-height: 3px;
+
+.mint-balance-stacks-container {
+	@extend %flex;
+	@extend %flex-row;
+	@extend %flex-justify-center;
+	@extend %flex-gap-2;
+	@extend %p-t-1;
+}
+
+.coin-bitcoin {
+	.coin {
+		@extend %orc-asset-btc-bg;
+	}
+}
+.coin-usd {
+	.coin {
+		@extend %orc-asset-usd-bg;
+	}
+}
+.coin-eur {
+	.coin {
+		@extend %orc-asset-eur-bg;
+	}
+}
+
+.stack-container {
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-justify-end;
+	@extend %flex-items-center;
+	@extend %flex-gap-0-5;
+}
+
+.stack {
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-items-center;
+	@extend %flex-justify-end;
+	gap: $coin-gap;
+}
+
+.coin-row {
+	@extend %flex;
+	@extend %flex-justify-center;
+	gap: $coin-gap;
+}
+
+.coin-group {
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-justify-end;
+	gap: $coin-gap;
+}
+
+.coin {
+	width: 32px;
+	height: $coin-height;
+}
+
+.divider-container {
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-justify-end;
+	@extend %flex-items-center;
+	@extend %flex-gap-0-5;
+}
+.divider {
+	width: 1px;
+	@extend %orc-outline-variant-bg;
+	height: ($coin-height + $coin-gap) * 9;
+}
