@@ -34,6 +34,19 @@
 	}
 }
 
+@keyframes circle-scale-in {
+	from {
+		transform: scale(0);
+	}
+}
+
+.balance-indicator {
+	transform-box: fill-box;
+	transform-origin: center;
+	animation: circle-scale-in 0.6s cubic-bezier(0.22, 1.36, 0.64, 1) both;
+	animation-delay: 150ms;
+}
+
 .channel-vessel {
 	@extend %relative;
 	@extend %flex;
