@@ -2,7 +2,7 @@
 	<div class="flex flex-justify-center">
 		@if (form_group().get('name')?.value) {
 			<div animate.enter="orc-animation-fadein" class="flex">
-				<orc-crew-facehash [name]="form_group().get('name')?.value || ''" size="4rem"></orc-crew-facehash>
+				<orc-crew-facehash [name]="form_group().get('name')?.value || ''" [enableBlink]="true" size="4rem"></orc-crew-facehash>
 			</div>
 		} @else {
 			<div animate.enter="orc-animation-fadein" class="flex">
