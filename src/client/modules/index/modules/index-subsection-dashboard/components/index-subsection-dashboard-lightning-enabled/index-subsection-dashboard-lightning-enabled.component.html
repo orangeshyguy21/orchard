@@ -1,16 +1,18 @@
 <div class="lightning-enabled-container">
 	@if (!loading()) {
 		<div animate.enter="orc-animation-fadein" class="flex flex-wrap flex-gap-column-4 flex-gap-row-2">
-			<orc-lightning-general-info
-				[lightning_info]="lightning_info()"
-				[error]="errors_lightning().length > 0"
-				[device_type]="device_type()"
-			>
-				<button type="button" class="orc-icon-button text-nowrap z-index-0" matFab extended [routerLink]="['/lightning']">
-					<mat-icon>bolt</mat-icon>
-					Open Lightning
-				</button>
-			</orc-lightning-general-info>
+			<div class="panel" [class.flex-grow]="device_type() !== 'desktop'">
+				<orc-lightning-general-info
+					[lightning_info]="lightning_info()"
+					[error]="errors_lightning().length > 0"
+					[device_type]="device_type()"
+				>
+					<button type="button" class="orc-icon-button text-nowrap z-index-0" matFab extended [routerLink]="['/lightning']">
+						<mat-icon>bolt</mat-icon>
+						Open Lightning
+					</button>
+				</orc-lightning-general-info>
+			</div>
 			<div class="flex-grow w-min-0">
 				<orc-lightning-general-channel-summary
 					[enabled_taproot_assets]="enabled_taproot_assets()"

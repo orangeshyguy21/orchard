@@ -1,25 +1,27 @@
 <div class="mint-enabled-container">
 	@if (!loading()) {
 		<div animate.enter="orc-animation-fadein" class="flex flex-wrap flex-gap-column-4 flex-gap-row-2">
-			<orc-mint-general-info
-				[loading]="loading()"
-				[icon_data]="icon_data()"
-				[info]="info()"
-				[error]="mint_errors().length > 0"
-				[device_type]="device_type()"
-			>
-				<button
-					type="button"
-					class="orc-icon-button text-nowrap z-index-0"
-					matFab
-					extended
-					[matMenuTriggerFor]="device_type() === 'mobile' ? null : desktopMenu"
-					(click)="onMenuClick()"
+			<div class="panel" [class.flex-grow]="device_type() !== 'desktop'">
+				<orc-mint-general-info
+					[loading]="loading()"
+					[icon_data]="icon_data()"
+					[info]="info()"
+					[error]="mint_errors().length > 0"
+					[device_type]="device_type()"
 				>
-					<mat-icon>account_balance</mat-icon>
-					Open Mint
-				</button>
-			</orc-mint-general-info>
+					<button
+						type="button"
+						class="orc-icon-button text-nowrap z-index-0"
+						matFab
+						extended
+						[matMenuTriggerFor]="device_type() === 'mobile' ? null : desktopMenu"
+						(click)="onMenuClick()"
+					>
+						<mat-icon>account_balance</mat-icon>
+						Open Mint
+					</button>
+				</orc-mint-general-info>
+			</div>
 
 			<div class="flex-grow w-min-0">
 				<orc-mint-general-balance-sheet

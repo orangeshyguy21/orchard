@@ -234,7 +234,7 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 		if (this.lightning_enabled() && (this.lightning_analytics().length > 0 || this.lightning_analytics_pre().length > 0)) {
 			const initial_outbound_msat = getInitialOutboundMsat(this.lightning_analytics_pre());
 			const raw_asset_data = getOutboundLiquidityData(timestamp_range, this.lightning_analytics(), initial_outbound_msat);
-			const live_balance_sat = LocalAmountPipe.getConvertedAmount('msat', this.lightning_balance()?.open.local_balance ?? 0);
+			const live_balance_sat = LocalAmountPipe.getConvertedAmount('sat', this.lightning_balance()?.open.local_balance ?? 0);
 			const interval = this.page_settings().interval as unknown as LightningAnalyticsInterval;
 			const corrected_asset_data = correctLastPointWithLiveBalance(raw_asset_data, live_balance_sat, interval);
 			const asset_data = convertChartDataWithOracle(corrected_asset_data, 'sat', oracle_map, can_use_oracle);
