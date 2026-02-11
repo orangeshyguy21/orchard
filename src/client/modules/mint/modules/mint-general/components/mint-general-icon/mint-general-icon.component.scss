@@ -1,5 +1,9 @@
 @use 'molecule/molecule';
 
+.mint-icon-container{
+    @extend %flex;
+}
+
 .mint-icon {
 	height: var(--size);
 	width: var(--size);

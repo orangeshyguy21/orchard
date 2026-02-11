@@ -3,7 +3,7 @@
 		<div animate.enter="orc-animation-fadein" class="flex flex-wrap flex-gap-column-4 flex-gap-row-2">
 			<div class="panel" [class.flex-grow]="device_type() !== 'desktop'">
 				<orc-mint-general-info
-					[loading]="loading()"
+					[loading]="loading_icon()"
 					[icon_data]="icon_data()"
 					[info]="info()"
 					[error]="mint_errors().length > 0"
