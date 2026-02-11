@@ -8,11 +8,6 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 import {MatDatepickerModule} from '@angular/material/datepicker';
-import {MatRippleModule} from '@angular/material/core';
-import {MatDialogModule} from '@angular/material/dialog';
-import {MatTooltipModule} from '@angular/material/tooltip';
-import {MatSliderModule} from '@angular/material/slider';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatButtonModule} from '@angular/material/button';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatMenuModule} from '@angular/material/menu';
@@ -27,9 +22,6 @@ import {MintSubsectionDashboardComponent} from './components/mint-subsection-das
 import {MintSubsectionDashboardChartComponent} from './components/mint-subsection-dashboard-chart/mint-subsection-dashboard-chart.component';
 import {MintSubsectionDashboardBalanceChartComponent} from './components/mint-subsection-dashboard-balance-chart/mint-subsection-dashboard-balance-chart.component';
 import {MintSubsectionDashboardControlComponent} from './components/mint-subsection-dashboard-control/mint-subsection-dashboard-control.component';
-import {MintSubsectionDashboardConnectionsComponent} from './components/mint-subsection-dashboard-connections/mint-subsection-dashboard-connections.component';
-import {MintSubsectionDashboardConnectionStatusComponent} from './components/mint-subsection-dashboard-connection-status/mint-subsection-dashboard-connection-status.component';
-import {MintSubsectionDashboardConnectionDialogComponent} from './components/mint-subsection-dashboard-connection-dialog/mint-subsection-dashboard-connection-dialog.component';
 
 @NgModule({
 	declarations: [
@@ -37,9 +29,6 @@ import {MintSubsectionDashboardConnectionDialogComponent} from './components/min
 		MintSubsectionDashboardChartComponent,
 		MintSubsectionDashboardBalanceChartComponent,
 		MintSubsectionDashboardControlComponent,
-		MintSubsectionDashboardConnectionsComponent,
-		MintSubsectionDashboardConnectionStatusComponent,
-		MintSubsectionDashboardConnectionDialogComponent,
 	],
 	imports: [
 		CoreRouterModule.forChild([
@@ -54,11 +43,6 @@ import {MintSubsectionDashboardConnectionDialogComponent} from './components/min
 		MatFormFieldModule,
 		MatSelectModule,
 		MatDatepickerModule,
-		MatRippleModule,
-		MatDialogModule,
-		MatTooltipModule,
-		MatSliderModule,
-		MatSlideToggleModule,
 		MatButtonModule,
 		MatButtonToggleModule,
 		MatMenuModule,
