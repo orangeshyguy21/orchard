@@ -14,3 +14,14 @@ query PublicUrlsGets($urls: [String!]!) {
 		has_data
 	}
 }`;
+
+export const PUBLIC_PORTS_GET_QUERY = `
+query PublicPortsGet($targets: [PublicPortInput!]!) {
+	public_ports(targets: $targets) {
+		host
+		port
+		reachable
+		error
+		latency_ms
+	}
+}`;

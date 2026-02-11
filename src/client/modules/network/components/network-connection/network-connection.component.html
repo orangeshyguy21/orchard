@@ -1,13 +1,17 @@
 <div mat-dialog-title>
 	<div class="flex flex-items-center flex-gap-0-5">
-		<div class="orc-outline-color flex">
-			@if (data.type === 'tor') {
-				<mat-icon class="icon-lg" svgIcon="tor"></mat-icon>
-			} @else {
-				<mat-icon class="icon-lg">vpn_lock_2</mat-icon>
-			}
-		</div>
-		<span class="title-l">{{ data.section | titlecase }} {{ data.type }} connection</span>
+        <div class=flex>
+            <orc-network-connection-status
+                [type]="data.type"
+                [status]="data.status"
+                size="lg"
+            ></orc-network-connection-status>
+        </div>
+        <div class="flex flex-column">
+            <div class="title-l">{{ data.section | titlecase }} {{ data.type }} connection</div>
+            <div class="font-size-xs orc-outline-color">{{ status_message() }}</div>
+        </div>
+		
 	</div>
 </div>
 

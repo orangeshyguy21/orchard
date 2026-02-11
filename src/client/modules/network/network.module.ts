@@ -13,6 +13,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {OrcButtonModule} from '@client/modules/button/button.module';
 /* Native Dependencies */
 import {NetworkConnectionComponent} from './components/network-connection/network-connection.component';
+import {NetworkConnectionStatusComponent} from './components/network-connection-status/network-connection-status.component';
 
 @NgModule({
 	imports: [
@@ -26,7 +27,7 @@ import {NetworkConnectionComponent} from './components/network-connection/networ
 		MatButtonModule,
 		OrcButtonModule,
 	],
-	declarations: [NetworkConnectionComponent],
-	exports: [],
+	declarations: [NetworkConnectionComponent, NetworkConnectionStatusComponent],
+	exports: [NetworkConnectionStatusComponent],
 })
 export class OrcNetworkModule {}

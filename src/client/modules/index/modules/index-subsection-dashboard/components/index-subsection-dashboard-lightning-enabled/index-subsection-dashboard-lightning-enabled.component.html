@@ -4,6 +4,7 @@
 			<div class="panel" [class.flex-grow]="device_type() !== 'desktop'">
 				<orc-lightning-general-info
 					[lightning_info]="lightning_info()"
+					[connections]="connections()"
 					[error]="errors_lightning().length > 0"
 					[device_type]="device_type()"
 				>

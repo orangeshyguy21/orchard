@@ -44,6 +44,7 @@ import {AiChatModule} from './ai/chat/aichat.module';
 // Image Endpoints
 import {PublicImageModule} from './public/image/image.module';
 import {PublicUrlModule} from './public/url/url.module';
+import {PublicPortModule} from './public/port/port.module';
 // Crew Endpoints
 import {CrewUserModule} from './crew/crewuser/crewuser.module';
 import {CrewInviteModule} from './crew/crewinvite/crewinvite.module';
@@ -87,6 +88,7 @@ import {ApiSettingModule} from './setting/setting.module';
 		AiChatModule,
 		PublicImageModule,
 		PublicUrlModule,
+		PublicPortModule,
 		CrewUserModule,
 		CrewInviteModule,
 		ApiSettingModule,

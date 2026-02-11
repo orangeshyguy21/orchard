@@ -18,12 +18,11 @@
 					<mat-chip-set class="orc-medium-chip-set orc-pointer-chip-set orc-column-chip-set">
 						@for (connection of uris(); track connection.uri) {
 							<div class="flex flex-items-center">
-								<div class="p-l-0-5 orc-outline-color">
-									@if (connection.type === 'tor') {
-										<mat-icon svgIcon="tor"></mat-icon>
-									} @else {
-										<mat-icon>vpn_lock_2</mat-icon>
-									}
+								<div class="p-l-0-5">
+									<orc-network-connection-status
+										[type]="connection.type"
+										[status]="connections_status_map().get(connection.uri.split('@')[1]) ?? null"
+									></orc-network-connection-status>
 								</div>
 								<mat-chip matRipple (click)="onUriClick(connection)">
 									<div class="flex flex-items-center flex-gap-0-5">

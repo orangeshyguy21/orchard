@@ -27,13 +27,13 @@ export class PublicUrlService {
 		try {
 			response = await this.fetchService.fetchWithProxy(url);
 		} catch {
-			return new OrchardPublicUrl(null, null, null, has_data);
+			return new OrchardPublicUrl(url, null, null, has_data);
 		}
 
 		try {
 			parsed_url = new URL(url);
 		} catch {
-			return new OrchardPublicUrl(null, null, null, has_data);
+			return new OrchardPublicUrl(url, null, null, has_data);
 		}
 
 		try {
@@ -51,6 +51,6 @@ export class PublicUrlService {
 			this.logger.warn('Failed to parse JSON:', error);
 		}
 
-		return new OrchardPublicUrl(response.url, response.status, ip_address, has_data);
+		return new OrchardPublicUrl(url, response.status, ip_address, has_data);
 	}
 }

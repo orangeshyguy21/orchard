@@ -18,6 +18,7 @@ import {OrchardError} from '@client/modules/error/types/error.types';
 import {NavService} from '@client/modules/nav/services/nav/nav.service';
 import {NavSecondaryItem} from '@client/modules/nav/types/nav-secondary-item.type';
 import {DeviceType} from '@client/modules/layout/types/device.types';
+import {PublicPort} from '@client/modules/public/classes/public-port.class';
 /* Components */
 import {NavMobileSheetMenuSubsectionComponent} from '@client/modules/nav/components/nav-mobile-sheet-menu-subsection/nav-mobile-sheet-menu-subsection.component';
 
@@ -49,6 +50,7 @@ export class IndexSubsectionDashboardBitcoinEnabledComponent implements OnInit {
 	public form_group = input.required<FormGroup>();
 	public control_name = input.required<string>();
 	public device_type = input.required<DeviceType>();
+	public connections = input<PublicPort[]>([]);
 
 	private menu_trigger = viewChild(MatMenuTrigger);
 

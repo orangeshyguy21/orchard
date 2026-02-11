@@ -7,6 +7,7 @@ import {TaprootAssets} from '@client/modules/tapass/classes/taproot-assets.class
 import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle-price.class';
 import {DeviceType} from '@client/modules/layout/types/device.types';
 import {OrchardError} from '@client/modules/error/types/error.types';
+import {PublicPort} from '@client/modules/public/classes/public-port.class';
 
 @Component({
 	selector: 'orc-index-subsection-dashboard-lightning-enabled',
@@ -25,5 +26,6 @@ export class IndexSubsectionDashboardLightningEnabledComponent {
 	public lightning_closed_channels = input.required<LightningClosedChannel[] | null>();
 	public taproot_assets = input.required<TaprootAssets | null>();
 	public device_type = input.required<DeviceType>();
+	public connections = input<PublicPort[]>([]);
 	public errors_lightning = input.required<OrchardError[]>();
 }

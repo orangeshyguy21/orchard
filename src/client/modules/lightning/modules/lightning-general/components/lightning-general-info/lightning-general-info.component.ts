@@ -5,6 +5,7 @@ import {MatDialog} from '@angular/material/dialog';
 /* Application Dependencies */
 import {LightningInfo} from '@client/modules/lightning/classes/lightning-info.class';
 import {DeviceType} from '@client/modules/layout/types/device.types';
+import {PublicPort} from '@client/modules/public/classes/public-port.class';
 /* Components */
 import {NetworkConnectionComponent} from '@client/modules/network/components/network-connection/network-connection.component';
 
@@ -27,6 +28,15 @@ export class LightningGeneralInfoComponent {
 	public lightning_info = input.required<LightningInfo | null>();
 	public error = input.required<boolean>();
 	public device_type = input.required<DeviceType>();
+	public connections = input<PublicPort[]>([]);
+
+	public connections_status_map = computed(() => {
+		const map = new Map<string, string>();
+		for (const result of this.connections()) {
+			map.set(`${result.host}:${result.port}`, result.connection_status);
+		}
+		return map;
+	});
 
 	public syncing = computed(() => {
 		return !this.lightning_info()?.synced_to_chain || !this.lightning_info()?.synced_to_graph;
@@ -69,6 +79,7 @@ export class LightningGeneralInfoComponent {
 	}
 
 	public onUriClick(uri: LightningUri): void {
+		const address = uri.uri.split('@')[1];
 		this.dialog.open(NetworkConnectionComponent, {
 			data: {
 				uri: uri.uri,
@@ -77,6 +88,7 @@ export class LightningGeneralInfoComponent {
 				image: this.createCircleSvg(this.lightning_info()?.color ?? '#000000'),
 				name: this.lightning_info()?.alias,
 				section: 'lightning',
+				status: this.connections_status_map().get(address) ?? null,
 				device_type: this.device_type(),
 			},
 		});

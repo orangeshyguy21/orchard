@@ -8,5 +8,6 @@ export type NetworkConnection = {
 	image: string;
 	name: string;
 	section: string;
+	status: string | null;
 	device_type: DeviceType;
 };

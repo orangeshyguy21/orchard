@@ -33,12 +33,9 @@
 												[innerHTML]="row.assets | localAmount: row.unit_lightning : 'lightning'"
 											></span>
 											<div class="font-size-xs orc-outline-color text-nowrap">
-												Assets &nbsp;&nbsp;●&nbsp;&nbsp; Lightning send capacity
+												Assets &nbsp;&nbsp;●&nbsp;&nbsp; Lightning local capacity
 											</div>
 										</div>
-										<!-- @if (device_type() === 'desktop') {
-											<span class="font-size-l orc-outline-color text-nowrap">{{ row.reserve }}x</span>
-										} -->
 									} @else {
 										<span class="font-size-m orc-outline-color">
 											<mat-icon>check_indeterminate_small</mat-icon>
@@ -161,7 +158,7 @@
 														[innerHTML]="row.assets_oracle | localAmount: 'usd'"
 													></div>
 													<div class="font-size-xs orc-outline-color text-nowrap">
-														Assets &nbsp;&nbsp;●&nbsp;&nbsp; Lightning send capacity
+														Assets &nbsp;&nbsp;●&nbsp;&nbsp; Lightning local capacity
 													</div>
 												</div>
 											</div>

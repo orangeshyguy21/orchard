@@ -31,6 +31,7 @@
 				[errors_taproot_assets]="errors_taproot_assets"
 				[form_group]="bitcoin_txfee_form"
 				[control_name]="'target'"
+				[connections]="bitcoin_connections()"
 				[device_type]="device_type()"
 				(target_change)="onTargetChange()"
 			></orc-index-subsection-dashboard-bitcoin-enabled>
@@ -70,6 +71,7 @@
 				[taproot_assets]="taproot_assets!"
 				[enabled_taproot_assets]="enabled_taproot_assets"
 				[errors_lightning]="errors_lightning"
+				[connections]="lightning_connections()"
 				[device_type]="device_type()"
 			></orc-index-subsection-dashboard-lightning-enabled>
 		} @else {
@@ -119,6 +121,7 @@
 				[mint_errors]="errors_mint"
 				[bitcoin_oracle_enabled]="enabled_bitcoin_oracle"
 				[bitcoin_oracle_price]="bitcoin_oracle_price()"
+				[connections]="mint_connections()"
 				[device_type]="device_type()"
 				(navigate)="onNavigate($event)"
 			></orc-index-subsection-dashboard-mint-enabled>

@@ -9,6 +9,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatRippleModule} from '@angular/material/core';
 import {MatChipsModule} from '@angular/material/chips';
 /* Application Dependencies */
+import {OrcNetworkModule} from '@client/modules/network/network.module';
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {OrcLocalModule} from '@client/modules/local/local.module';
 import {OrcErrorModule} from '@client/modules/error/error.module';
@@ -38,6 +39,7 @@ import {MintGeneralBalanceStacksComponent} from './components/mint-general-balan
 		MatButtonModule,
 		MatRippleModule,
 		MatChipsModule,
+		OrcNetworkModule,
 		OrcGraphicModule,
 		OrcLocalModule,
 		OrcErrorModule,
