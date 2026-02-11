@@ -6,7 +6,7 @@
 	(click)="onClick()"
 >
 	<div class="primary-nav-item-indicator">
-		<orc-nav-primary-status [size]="'small'" [enabled]="enabled()" [online]="online()" [syncing]="syncing()"></orc-nav-primary-status>
+		<orc-graphic-status [status]="status()"></orc-graphic-status>
 	</div>
 	<div class="primary-nav-item-icon">
 		@if (mode() === 'default') {

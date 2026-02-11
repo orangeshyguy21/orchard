@@ -29,12 +29,7 @@
 					></mat-icon>
 					<span>Bitcoin</span>
 				</div>
-				<orc-nav-primary-status
-					[size]="'small'"
-					[enabled]="data.enabled_bitcoin"
-					[online]="data.online_bitcoin"
-					[syncing]="data.syncing_bitcoin"
-				></orc-nav-primary-status>
+				<orc-graphic-status [status]="bitcoin_status"></orc-graphic-status>
 			</div>
 		</a>
 		<a
@@ -52,12 +47,7 @@
 					>
 					<span>Lightning</span>
 				</div>
-				<orc-nav-primary-status
-					[size]="'small'"
-					[enabled]="data.enabled_lightning"
-					[online]="data.online_lightning"
-					[syncing]="data.syncing_lightning"
-				></orc-nav-primary-status>
+				<orc-graphic-status [status]="lightning_status"></orc-graphic-status>
 			</div>
 		</a>
 		<a
@@ -75,7 +65,7 @@
 					>
 					<span>Mint</span>
 				</div>
-				<orc-nav-primary-status [size]="'small'" [enabled]="data.enabled_mint" [online]="data.online_mint"></orc-nav-primary-status>
+				<orc-graphic-status [status]="mint_status"></orc-graphic-status>
 			</div>
 		</a>
 		<a
@@ -93,7 +83,7 @@
 					>
 					<span>Ecash</span>
 				</div>
-				<orc-nav-primary-status [size]="'small'"></orc-nav-primary-status>
+				<orc-graphic-status></orc-graphic-status>
 			</div>
 		</a>
 		<a
@@ -111,7 +101,7 @@
 					>
 					<span>Settings</span>
 				</div>
-				<orc-nav-primary-status [size]="'small'"></orc-nav-primary-status>
+				<orc-graphic-status></orc-graphic-status>
 			</div>
 		</a>
 	</mat-nav-list>

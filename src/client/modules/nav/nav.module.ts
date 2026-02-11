@@ -21,7 +21,6 @@ import {NavPrimaryFooterComponent} from './components/nav-primary-footer/nav-pri
 import {NavPrimaryItemsComponent} from './components/nav-primary-items/nav-primary-items.component';
 import {NavPrimaryItemComponent} from './components/nav-primary-item/nav-primary-item.component';
 import {NavPrimaryToolComponent} from './components/nav-primary-tool/nav-primary-tool.component';
-import {NavPrimaryStatusComponent} from './components/nav-primary-status/nav-primary-status.component';
 import {NavSecondaryComponent} from './components/nav-secondary/nav-secondary.component';
 import {NavSecondaryItemComponent} from './components/nav-secondary-item/nav-secondary-item.component';
 import {NavSecondaryMoreComponent} from './components/nav-secondary-more/nav-secondary-more.component';
@@ -41,7 +40,6 @@ import {NavMobileSheetMenuSectionComponent} from './components/nav-mobile-sheet-
 		NavPrimaryItemsComponent,
 		NavPrimaryItemComponent,
 		NavPrimaryToolComponent,
-		NavPrimaryStatusComponent,
 		NavSecondaryComponent,
 		NavSecondaryItemComponent,
 		NavSecondaryMoreComponent,
@@ -69,7 +67,6 @@ import {NavMobileSheetMenuSectionComponent} from './components/nav-mobile-sheet-
 	],
 	exports: [
 		NavPrimaryComponent,
-		NavPrimaryStatusComponent,
 		NavSecondaryComponent,
 		NavSecondaryItemComponent,
 		NavSecondaryMoreComponent,

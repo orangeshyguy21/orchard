@@ -1,6 +1,7 @@
+/* Core Dependencies */
 import {ChangeDetectionStrategy, Component, computed, input} from '@angular/core';
-
-export type GraphicStatusState = 'inactive' | 'warning' | 'active' | 'loading' | null;
+/* Application Dependencies */
+import {GraphicStatusState} from '@client/modules/graphic/types/graphic-status.types';
 
 const STATUS_CLASS_MAP: Record<string, string> = {
 	inactive: 'trans-bg-medium orc-status-inactive-bg',
