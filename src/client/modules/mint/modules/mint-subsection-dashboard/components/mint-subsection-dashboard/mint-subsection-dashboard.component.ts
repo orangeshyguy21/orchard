@@ -24,6 +24,7 @@ import {SettingDeviceService} from '@client/modules/settings/services/setting-de
 import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
 import {PublicService} from '@client/modules/public/services/image/public.service';
+import {PublicImage} from '@client/modules/public/classes/public-image.class';
 import {LightningService} from '@client/modules/lightning/services/lightning/lightning.service';
 import {NonNullableMintDashboardSettings} from '@client/modules/settings/types/setting.types';
 import {PublicUrl} from '@client/modules/public/classes/public-url.class';
@@ -119,10 +120,12 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 
 	public device_type = signal<DeviceType>('desktop');
 	public loading_mint = signal<boolean>(true);
+    public loading_mint_icon = signal<boolean>(true);
 	public loading_bitcoin = signal<boolean>(false);
 	public loading_lightning = signal<boolean>(false);
 	public bitcoin_oracle_price = signal<BitcoinOraclePrice | null>(null);
 	public bitcoin_oracle_price_map = signal<Map<number, number> | null>(null);
+    public mint_icon_data = signal<string | null>(null);
 
 	public tertiary_nav = computed(() => this.page_settings().tertiary_nav || []);
 	public type_balance_sheet = computed(() => this.page_settings().type.balance_sheet || ChartType.Totals);
@@ -164,6 +167,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 
 	async ngOnInit(): Promise<void> {
 		this.initMintConnections();
+		this.setMintIcon();
 		this.orchardOptionalInit();
 		this.getMintFees();
 		await this.initAnalytics();
@@ -190,6 +194,20 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	private getMintGenesisTime(): number {
 		const valid_times = this.mint_keysets?.filter((keyset) => keyset.valid_from != null).map((keyset) => keyset.valid_from!) ?? [];
 		return valid_times.length > 0 ? Math.min(...valid_times) : 0;
+	}
+
+    private setMintIcon(): void {
+		if (!this.mint_info?.icon_url) {
+			this.mint_icon_data.set(null);
+			this.loading_mint_icon.set(false);
+			return;
+		}
+		this.publicService.getPublicImageData(this.mint_info?.icon_url).subscribe(
+			(image: PublicImage) => {
+				this.mint_icon_data.set(image.data);
+				this.loading_mint_icon.set(false);
+			},
+		);
 	}
 
 	/* *******************************************************

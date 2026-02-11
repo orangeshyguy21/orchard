@@ -80,7 +80,7 @@ export class MintGeneralInfoComponent {
 				uri: uri.uri,
 				type: uri.type,
 				label: uri.label,
-				image: this.icon_data(),
+				image: this.icon_data() ?? '/mint-icon-placeholder.png',
 				name: this.info()?.name ?? '',
 				section: 'mint',
 				status: this.connections_status_map().get(uri.origin) ?? null,
