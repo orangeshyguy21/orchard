@@ -23,8 +23,6 @@ export class IndexSubsectionCrewTableInviteComponent implements AfterViewInit {
 	public editInvite = output<Invite>();
 	public deleteInvite = output<Invite>();
 
-	public show_copy_token = signal(false);
-	public show_copy_url = signal(false);
 	public now = signal(DateTime.now().toSeconds());
 
 	public invite_url = computed(() => {
@@ -32,8 +30,6 @@ export class IndexSubsectionCrewTableInviteComponent implements AfterViewInit {
 	});
 
 	public qr_code!: QRCodeStyling;
-
-	private copy_timeout: any;
 
 	constructor(private themeService: ThemeService) {}
 
@@ -82,23 +78,5 @@ export class IndexSubsectionCrewTableInviteComponent implements AfterViewInit {
 		});
 
 		this.qr_code.append(this.qr_canvas.nativeElement);
-	}
-
-	public onCopyToken(): void {
-		navigator.clipboard.writeText(this.invite().token);
-		if (this.copy_timeout) clearTimeout(this.copy_timeout);
-		this.show_copy_token.set(true);
-		this.copy_timeout = setTimeout(() => {
-			this.show_copy_token.set(false);
-		}, 1000);
-	}
-
-	public onCopyUrl(): void {
-		navigator.clipboard.writeText(this.invite_url());
-		if (this.copy_timeout) clearTimeout(this.copy_timeout);
-		this.show_copy_url.set(true);
-		this.copy_timeout = setTimeout(() => {
-			this.show_copy_url.set(false);
-		}, 1000);
 	}
 }

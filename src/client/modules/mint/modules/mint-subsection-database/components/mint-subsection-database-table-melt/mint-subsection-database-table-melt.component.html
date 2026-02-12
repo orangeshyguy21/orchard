@@ -1,34 +1,37 @@
 <div class="mint-quote-container p-v-1">
 	<div class="flex flex-gap-2 flex-wrap">
 		<div class="flex-grow flex flex-items-center flex-justify-center">
-			<div class="qrcode-action orc-corner-medium">
-				<div
-					#qr_canvas
-					matRipple
-					[matRippleCentered]="false"
-					[matRippleDisabled]="false"
-					[matRippleUnbounded]="false"
-					(click)="onCopy(quote().request)"
-				></div>
+			<div class="qrcode-static orc-corner-medium">
+				<div #qr_canvas></div>
 			</div>
 		</div>
 		<div class="flex flex-gap-2 flex-wrap-reverse">
 			<div class="flex flex-column flex-gap-1">
 				<div class="flex flex-column flex-gap-0-5">
 					<div class="orc-outline-color font-weight-extra-light">Melt Quote ID</div>
-					<div class="mega-string orc-text-button" (click)="onCopy(quote().id)">{{ quote().id }}</div>
+					<orc-button-copy [text]="quote().id" size="sm">
+						<span class="mega-string">{{ quote().id }}</span>
+					</orc-button-copy>
 				</div>
 				<div class="flex flex-column flex-gap-0-5">
 					<div class="orc-outline-color font-weight-extra-light">Request Lookup ID</div>
-					<div class="mega-string orc-text-button" (click)="onCopy(quote().request_lookup_id)">
-						{{ quote().request_lookup_id }}
-					</div>
+					@if (quote().request_lookup_id) {
+						<orc-button-copy [text]="quote().request_lookup_id!" size="sm">
+							<span class="mega-string">{{ quote().request_lookup_id }}</span>
+						</orc-button-copy>
+					} @else {
+						<div class="orc-outline-variant-color">Null</div>
+					}
 				</div>
 				<div class="flex flex-column flex-gap-0-5">
 					<div class="orc-outline-color font-weight-extra-light">
 						{{ quote().payment_method == 'bolt11' ? 'Bolt 11 Invoice' : 'Bolt 12 Offer' }}
 					</div>
-					<div class="mega-string w-max-36 orc-text-button" (click)="onCopy(quote().request)">{{ quote().request }}</div>
+					<div class="w-max-36">
+						<orc-button-copy [text]="quote().request" size="sm">
+							<span class="mega-string">{{ quote().request }}</span>
+						</orc-button-copy>
+					</div>
 				</div>
 				@if (lightning_request() && !loading()) {
 					<div animate.enter="orc-animation-fadein-fast" class="flex flex-column flex-gap-1">
@@ -53,15 +56,6 @@
 						<div class="text-nowrap" [innerHTML]="bitcoin_oracle_amount() | localAmount: 'usd'"></div>
 					</div>
 				}
-				<div class="relative">
-					<div
-						class="orc-animation-feedback absolute top-0 flex flex-gap-0-25 flex-row flex-align-center orc-outline-color"
-						[class.animation-visible]="copy_animation_state === 'visible'"
-					>
-						<div class="font-size-s text-nowrap">Copied</div>
-						<mat-icon class="icon-sm">content_copy</mat-icon>
-					</div>
-				</div>
 			</div>
 
 			<div class="flex flex-column flex-gap-1">
@@ -104,7 +98,9 @@
 				<div class="flex flex-column flex-gap-0-5">
 					<div class="orc-outline-color font-weight-extra-light">Payment Preimage</div>
 					@if (quote().payment_preimage) {
-						<div class="orc-text-button" (click)="onCopy(quote().payment_preimage)">{{ quote().payment_preimage }}</div>
+						<orc-button-copy [text]="quote().payment_preimage!" size="sm">
+							<span class="mega-string">{{ quote().payment_preimage }}</span>
+						</orc-button-copy>
 					} @else {
 						<div class="orc-outline-variant-color">Null</div>
 					}

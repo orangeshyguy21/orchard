@@ -1,8 +1,6 @@
 @use 'molecule/molecule';
 
 .qrcode-action{
-    // @extend %orc-corner-medium;
-    // @extend %overflow-hidden;
     @extend %orc-on-secondary-container-bg;
     @extend %cursor-pointer;
     @extend %trans-bg-medium;
@@ -10,4 +8,10 @@
     &:hover {
         @extend %orc-secondary-bg;
     }
+}
+
+.qrcode-static{
+    @extend %orc-on-secondary-container-bg;
+    @extend %cursor-pointer;
+    @extend %trans-bg-medium;
 }

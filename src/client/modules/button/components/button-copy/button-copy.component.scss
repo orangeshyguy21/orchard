@@ -8,6 +8,21 @@
 	@extend %cursor-pointer;
 }
 
+.button-copy-action-wrapper {
+	@extend %relative;
+
+	&.small-copy {
+		// @extend %w-min-2;
+		min-width: 2rem;
+		.button-copy-action {
+			@extend %absolute;
+			@extend %border;
+			top: 50%;
+			transform: translate(0%, -50%);
+		}
+	}
+}
+
 .button-copy-action {
 	@extend %p-0-5;
 	@extend %border-0-125;

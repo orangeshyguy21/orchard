@@ -11,6 +11,8 @@ import {ChangeDetectionStrategy, Component, ElementRef, input, signal, computed,
 export class ButtonCopyComponent {
 	public text = input.required<string>();
 	public label = input<string | null>(null);
+	public size = input<string>('lg');
+
 	public copied = signal(false);
 
 	public display = computed(() => {
