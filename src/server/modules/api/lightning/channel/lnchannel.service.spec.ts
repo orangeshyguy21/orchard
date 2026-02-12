@@ -14,7 +14,10 @@ describe('LightningChannelService', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				LightningChannelService,
-				{provide: LightningService, useValue: {getChannels: jest.fn().mockResolvedValue([]), getClosedChannels: jest.fn().mockResolvedValue([])}},
+				{
+					provide: LightningService,
+					useValue: {getChannels: jest.fn().mockResolvedValue([]), getClosedChannels: jest.fn().mockResolvedValue([])},
+				},
 				{provide: ErrorService, useValue: {resolveError: jest.fn()}},
 			],
 		}).compile();
