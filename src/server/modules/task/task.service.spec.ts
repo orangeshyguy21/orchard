@@ -8,6 +8,7 @@ import {AuthService} from '@server/modules/auth/auth.service';
 import {SettingService} from '@server/modules/setting/setting.service';
 import {BitcoinRpcService} from '@server/modules/bitcoin/rpc/btcrpc.service';
 import {BitcoinUTXOracleService} from '@server/modules/bitcoin/utxoracle/utxoracle.service';
+import {LightningAnalyticsService} from '@server/modules/lightning/analytics/lnanalytics.service';
 /* Local Dependencies */
 import {TaskService} from './task.service';
 
@@ -43,6 +44,13 @@ describe('TaskService', () => {
 					useValue: {
 						runOracle: jest.fn(),
 						saveOraclePrice: jest.fn(),
+					},
+				},
+				{
+					provide: LightningAnalyticsService,
+					useValue: {
+						runStreamingBackfill: jest.fn(),
+						rescanRecentRecords: jest.fn(),
 					},
 				},
 				{

@@ -16,7 +16,8 @@ describe('AiChatMessageUserComponent', () => {
 
 		fixture = TestBed.createComponent(AiChatMessageUserComponent);
 		component = fixture.componentInstance;
-		(component as any).message = {role: 'user', content: 'Hello'} as any;
+		fixture.componentRef.setInput('message', {role: 'user', content: 'Hello'});
+		fixture.componentRef.setInput('user_name', 'Test User');
 		fixture.detectChanges();
 	});
 

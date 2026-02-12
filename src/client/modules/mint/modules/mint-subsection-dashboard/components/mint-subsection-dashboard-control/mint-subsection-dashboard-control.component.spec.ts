@@ -21,6 +21,7 @@ describe('MintSubsectionDashboardControlComponent', () => {
 		fixture.componentRef.setInput('loading', true);
 		fixture.componentRef.setInput('mint_genesis_time', 0);
 		fixture.componentRef.setInput('device_desktop', true);
+		fixture.componentRef.setInput('bitcoin_oracle_enabled', false);
 		fixture.detectChanges();
 	});
 

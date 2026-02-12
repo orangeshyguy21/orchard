@@ -1,8 +1,11 @@
 /* Core Dependencies */
 import {Test, TestingModule} from '@nestjs/testing';
 import {expect} from '@jest/globals';
+import {ConfigService} from '@nestjs/config';
 /* Application Dependencies */
 import {LightningService} from '@server/modules/lightning/lightning/lightning.service';
+import {CashuMintDatabaseService} from '@server/modules/cashu/mintdb/cashumintdb.service';
+import {MintService} from '@server/modules/api/mint/mint.service';
 import {ErrorService} from '@server/modules/error/error.service';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
@@ -19,7 +22,10 @@ describe('LightningInfoService', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				LightningInfoService,
-				{provide: LightningService, useValue: {getLightningInfo: jest.fn()}},
+				{provide: LightningService, useValue: {getLightningInfo: jest.fn(), getLightningRequest: jest.fn()}},
+				{provide: CashuMintDatabaseService, useValue: {getMintMintQuotes: jest.fn().mockResolvedValue([])}},
+				{provide: MintService, useValue: {withDbClient: jest.fn((fn: any) => fn({}))}},
+				{provide: ConfigService, useValue: {get: jest.fn().mockReturnValue(null)}},
 				{provide: ErrorService, useValue: {resolveError: jest.fn()}},
 			],
 		}).compile();

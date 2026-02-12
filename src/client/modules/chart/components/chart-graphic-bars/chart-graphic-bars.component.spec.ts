@@ -1,5 +1,8 @@
+/* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-
+/* Native Dependencies */
+import {OrcChartModule} from '@client/modules/chart/chart.module';
+/* Local Dependencies */
 import {ChartGraphicBarsComponent} from './chart-graphic-bars.component';
 
 describe('ChartGraphicBarsComponent', () => {
@@ -8,11 +11,12 @@ describe('ChartGraphicBarsComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [ChartGraphicBarsComponent],
+			imports: [OrcChartModule],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(ChartGraphicBarsComponent);
 		component = fixture.componentInstance;
+		fixture.componentRef.setInput('bars', []);
 		fixture.detectChanges();
 	});
 

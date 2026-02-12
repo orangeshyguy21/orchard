@@ -6,6 +6,7 @@ import {BitcoinRpcService} from '@server/modules/bitcoin/rpc/btcrpc.service';
 import {ErrorService} from '@server/modules/error/error.service';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
+import {LightningService} from '@server/modules/lightning/lightning/lightning.service';
 /* Local Dependencies */
 import {BitcoinNetworkService} from './btcnetwork.service';
 
@@ -20,8 +21,9 @@ describe('BitcoinNetworkService', () => {
 				BitcoinNetworkService,
 				{
 					provide: BitcoinRpcService,
-					useValue: {getBitcoinNetworkInfo: jest.fn()},
+					useValue: {getBitcoinNetworkInfo: jest.fn(), getBitcoinBlockchainInfo: jest.fn()},
 				},
+				{provide: LightningService, useValue: {isConfigured: jest.fn().mockReturnValue(false), getLightningInfo: jest.fn()}},
 				{provide: ErrorService, useValue: {resolveError: jest.fn()}},
 			],
 		}).compile();

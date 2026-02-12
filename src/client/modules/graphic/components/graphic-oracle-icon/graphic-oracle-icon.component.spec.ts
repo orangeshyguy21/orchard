@@ -1,5 +1,8 @@
+/* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-
+/* Native Dependencies */
+import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
+/* Local Dependencies */
 import {GraphicOracleIconComponent} from './graphic-oracle-icon.component';
 
 describe('GraphicOracleIconComponent', () => {
@@ -8,7 +11,7 @@ describe('GraphicOracleIconComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [GraphicOracleIconComponent],
+			imports: [OrcGraphicModule],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(GraphicOracleIconComponent);

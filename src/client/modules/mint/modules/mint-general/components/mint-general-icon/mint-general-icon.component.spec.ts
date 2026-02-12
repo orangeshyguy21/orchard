@@ -16,7 +16,9 @@ describe('MintGeneralIconComponent', () => {
 
 		fixture = TestBed.createComponent(MintGeneralIconComponent);
 		component = fixture.componentInstance;
-		component.error = true;
+		fixture.componentRef.setInput('icon_data', null);
+		fixture.componentRef.setInput('loading', false);
+		fixture.componentRef.setInput('error', true);
 		fixture.detectChanges();
 	});
 

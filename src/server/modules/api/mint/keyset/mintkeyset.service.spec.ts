@@ -6,6 +6,7 @@ import {MintService} from '@server/modules/api/mint/mint.service';
 /* Application Dependencies */
 import {CashuMintDatabaseService} from '@server/modules/cashu/mintdb/cashumintdb.service';
 import {CashuMintRpcService} from '@server/modules/cashu/mintrpc/cashumintrpc.service';
+import {BitcoinUTXOracleService} from '@server/modules/bitcoin/utxoracle/utxoracle.service';
 import {ErrorService} from '@server/modules/error/error.service';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
@@ -23,6 +24,7 @@ describe('MintKeysetService', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				MintKeysetService,
+				{provide: BitcoinUTXOracleService, useValue: {getOraclePrice: jest.fn().mockResolvedValue(null)}},
 				{provide: MintService, useValue: {withDbClient: jest.fn((fn: any) => fn({}))}},
 				{provide: CashuMintDatabaseService, useValue: {getMintKeysets: jest.fn(), getMintKeysetProofCounts: jest.fn()}},
 				{provide: CashuMintRpcService, useValue: {rotateNextKeyset: jest.fn()}},

@@ -18,8 +18,8 @@ describe('AiChatAvatarComponent', () => {
 
 		fixture = TestBed.createComponent(AiChatAvatarComponent);
 		component = fixture.componentInstance;
-		component.role = AiMessageRole.Assistant;
-		component.icon = 'person';
+		fixture.componentRef.setInput('role', AiMessageRole.Assistant);
+		fixture.componentRef.setInput('icon', 'person');
 		fixture.detectChanges();
 	});
 

@@ -19,7 +19,7 @@ describe('LightningBalanceService', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				LightningBalanceService,
-				{provide: LightningService, useValue: {getLightningChannelBalance: jest.fn()}},
+				{provide: LightningService, useValue: {getChannels: jest.fn().mockResolvedValue([]), getLightningChannelBalance: jest.fn()}},
 				{provide: ErrorService, useValue: {resolveError: jest.fn()}},
 			],
 		}).compile();

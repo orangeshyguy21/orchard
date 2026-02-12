@@ -51,7 +51,7 @@ describe('BitcoinBlockService', () => {
 	it('returns OrchardBitcoinBlockTemplate on getBlockTemplate', async () => {
 		bitcoinRpcService.getBitcoinBlockTemplate.mockResolvedValue({
 			height: 1,
-			transactions: [{txid: 'a', fee: 1, weight: 400, depends: []}],
+			transactions: [{txid: 'a', fee: 1, weight: 400, depends: [], data: 'aabb'}],
 		} as any);
 		const result = await bitcoinBlockService.getBlockTemplate('TAG');
 		expect(result).toBeInstanceOf(OrchardBitcoinBlockTemplate);

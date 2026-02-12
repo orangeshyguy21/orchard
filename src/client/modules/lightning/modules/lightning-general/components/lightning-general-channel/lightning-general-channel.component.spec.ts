@@ -12,14 +12,13 @@ describe('LightningGeneralChannelComponent', () => {
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
 			imports: [OrcLightningGeneralModule],
-			declarations: [LightningGeneralChannelComponent],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(LightningGeneralChannelComponent);
 		component = fixture.componentInstance;
-		fixture.componentRef.setInput('size', 100);
-		fixture.componentRef.setInput('recievable', 50);
-		fixture.componentRef.setInput('sendable', 50);
+		fixture.componentRef.setInput('capacity', 100);
+		fixture.componentRef.setInput('remote', 50);
+		fixture.componentRef.setInput('local', 50);
 		fixture.componentRef.setInput('unit', 'sat');
 		fixture.detectChanges();
 	});

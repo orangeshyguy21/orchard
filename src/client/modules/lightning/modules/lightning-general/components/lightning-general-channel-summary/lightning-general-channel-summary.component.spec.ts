@@ -16,6 +16,14 @@ describe('LightningGeneralChannelSummaryComponent', () => {
 
 		fixture = TestBed.createComponent(LightningGeneralChannelSummaryComponent);
 		component = fixture.componentInstance;
+		fixture.componentRef.setInput('lightning_info', null);
+		fixture.componentRef.setInput('lightning_channels', null);
+		fixture.componentRef.setInput('lightning_closed_channels', null);
+		fixture.componentRef.setInput('enabled_taproot_assets', false);
+		fixture.componentRef.setInput('taproot_assets', null);
+		fixture.componentRef.setInput('bitcoin_oracle_enabled', false);
+		fixture.componentRef.setInput('bitcoin_oracle_price', null);
+		fixture.componentRef.setInput('device_type', 'desktop');
 		fixture.detectChanges();
 	});
 

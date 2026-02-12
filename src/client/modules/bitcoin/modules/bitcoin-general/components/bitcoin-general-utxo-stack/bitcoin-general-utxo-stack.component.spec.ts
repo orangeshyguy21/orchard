@@ -18,7 +18,7 @@ describe('BitcoinGeneralUtxoStackComponent', () => {
 		component = fixture.componentInstance;
 		fixture.componentRef.setInput('unit', 'sat');
 		fixture.componentRef.setInput('coins', 0);
-		fixture.componentRef.setInput('asset_id', undefined);
+		fixture.componentRef.setInput('group_key', undefined);
 		fixture.detectChanges();
 	});
 
