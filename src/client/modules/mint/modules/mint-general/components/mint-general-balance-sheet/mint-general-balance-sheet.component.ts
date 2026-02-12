@@ -38,7 +38,7 @@ export class MintGeneralBalanceSheetComponent implements OnChanges {
 	public rows = signal<MintGeneralBalanceRow[]>([]);
 
 	ngOnChanges(changes: SimpleChanges): void {
-		if (changes['loading'] && !changes['loading'].firstChange && this.loading() === false) {
+		if (changes['loading'] && this.loading() === false) {
 			this.init();
 		}
 		if (changes['lightning_balance'] && !changes['lightning_balance'].firstChange && this.lightning_balance() !== null) {
