@@ -28,6 +28,7 @@ export const LIGHTNING_INFO_QUERY = `{
             is_required
             name
         }
+        backend
     }
 }`;
 

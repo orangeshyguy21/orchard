@@ -91,6 +91,7 @@ export class LndService {
 		return {
 			type: mapRequestType(),
 			valid: true,
+			destination: request?.destination || null,
 			expiry: mapRequestExpiry(request),
 			description: mapRequestDescription(request?.description),
 			offer_quantity_max: null,

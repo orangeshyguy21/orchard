@@ -6,33 +6,43 @@
 				<div class="flex flex-row flex-items-center flex-justify-between flex-gap-1">
 					<div class="flex flex-row flex-items-center flex-gap-0-5">
 						<mat-icon class="icon-lg orc-outline-color">deployed_code</mat-icon>
-						<div class="font-size-l">{{ blockchain_info()?.chain }}</div>
+                        <div class="flex flex-column">
+                            <div class="font-size-l">{{ blockchain_info()?.chain }}</div>
+                            @if (network_info()?.backend) {
+                                <div class="orc-outline-color flex flex-items-center flex-gap-0-25">
+                                    <mat-icon>link</mat-icon>
+                                    <div class="font-size-xs">Lightning backend</div>
+                                </div>
+                            }
+                        </div>
 					</div>
-
-					<div class="flex flex-items-center flex-gap-0-5">
-						<orc-graphic-status [status]="status()" size="1rem"></orc-graphic-status>
-						<div class="orc-outline-color">{{ state() }}</div>
-					</div>
+                    <div class="flex flex-items-center flex-gap-0-5">
+                        <orc-graphic-status [status]="status()" size="1rem"></orc-graphic-status>
+                        <div class="orc-outline-color">{{ state() }}</div>
+                    </div>
 				</div>
 				<div>
-					<mat-chip-set class="orc-medium-chip-set orc-pointer-chip-set orc-column-chip-set">
-						@for (connection of uris(); track connection.uri) {
-							<div class="flex flex-items-center">
-								<div class="p-l-0-5">
-									<orc-network-connection-status
-										[type]="connection.type"
-										[status]="connections_status_map().get(connection.uri) ?? null"
-									></orc-network-connection-status>
-								</div>
-								<mat-chip matRipple (click)="onUriClick(connection)">
-									<div class="cursor-pointer flex flex-items-center flex-gap-0-5">
-										<span>{{ connection.label }}</span>
-									</div>
-								</mat-chip>
-							</div>
-						}
-					</mat-chip-set>
-
+                    @if (uris().length > 0) {
+                        <mat-chip-set class="orc-medium-chip-set orc-pointer-chip-set orc-column-chip-set">
+                            @for (connection of uris(); track connection.uri) {
+                                <div class="flex flex-items-center">
+                                    <div class="p-l-0-5">
+                                        <orc-network-connection-status
+                                            [type]="connection.type"
+                                            [status]="connections_status_map().get(connection.uri) ?? null"
+                                        ></orc-network-connection-status>
+                                    </div>
+                                    <mat-chip matRipple (click)="onUriClick(connection)">
+                                        <div class="cursor-pointer flex flex-items-center flex-gap-0-5">
+                                            <span>{{ connection.label }}</span>
+                                        </div>
+                                    </mat-chip>
+                                </div>
+                            }
+                        </mat-chip-set>
+                    }@else {
+                        <mat-icon>check_indeterminate_small</mat-icon>
+                    }
 					<div class="font-size-xs orc-outline-color">Connections</div>
 				</div>
 				<div>

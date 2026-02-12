@@ -43,6 +43,7 @@ export type LightningCustomChannels = {
 export type LightningRequest = {
 	type: LightningRequestType;
 	valid: boolean;
+	destination: string | null;
 	expiry: number | null;
 	description: string | null;
 	offer_quantity_max: number | null;

@@ -263,9 +263,12 @@ export class ClnService {
 	}
 
 	public mapClnRequest(request: any): LightningRequest {
+		const payee = request?.payee;
+		const destination = payee ? (Buffer.isBuffer(payee) ? payee.toString('hex') : String(payee)) : null;
 		return {
 			type: mapRequestType(request?.item_type),
 			valid: request?.valid ?? false,
+			destination,
 			expiry: mapRequestExpiry(request),
 			description: mapRequestDescription(request?.description),
 			offer_quantity_max: request?.offer_quantity_max ?? null,

@@ -51,6 +51,7 @@ export const BITCOIN_NETWORK_INFO_QUERY = `{
         timeoffset
         version
         warnings
+        backend
     }
 }`;
 
