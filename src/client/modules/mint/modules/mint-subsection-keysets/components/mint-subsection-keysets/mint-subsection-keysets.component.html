@@ -22,7 +22,7 @@
 			@if (device_type() === 'desktop') {
 				<button
 					type="button"
-					class="text-nowrap"
+					class="text-nowrap orc-flat-fab"
 					matFab
 					extended
 					(click)="onRotation()"
@@ -34,7 +34,7 @@
 			} @else {
 				<button
 					type="button"
-					class="text-nowrap"
+					class="text-nowrap orc-flat-fab"
 					matFab
 					(click)="onRotation()"
 					(keydown.enter)="$event.preventDefault(); $event.stopPropagation()"

@@ -165,6 +165,20 @@
     ));
 }
 
+/* Specific Fab Overrides */
+.orc-flat-fab {
+	@include mat.fab-overrides((
+		container-elevation-shadow: var(--mat-sys-level0),
+		focus-container-elevation-shadow: var(--mat-sys-level0),
+		hover-container-elevation-shadow: var(--mat-sys-level0),
+		pressed-container-elevation-shadow: var(--mat-sys-level0),
+		extended-container-elevation-shadow: var(--mat-sys-level0),
+		extended-focus-container-elevation-shadow: var(--mat-sys-level0),
+		extended-hover-container-elevation-shadow: var(--mat-sys-level0),
+		extended-pressed-container-elevation-shadow: var(--mat-sys-level0),
+	));
+}
+
 /****************************************
 * Angular Material Unsupported Overrides
 ****************************************/
