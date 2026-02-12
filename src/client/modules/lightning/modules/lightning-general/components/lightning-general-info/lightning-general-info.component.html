@@ -6,21 +6,21 @@
 				<div class="flex flex-row flex-items-center flex-justify-between flex-gap-1">
 					<div class="flex flex-row flex-items-center flex-gap-1">
 						<div class="h-2-5 w-2-5 orc-corner-full" [style.background-color]="lightning_info()?.color"></div>
-                        <div class="flex flex-column">
-                            <div class="text-nowrap font-size-l">{{ lightning_info()?.alias }}</div>
-                            @if (lightning_info()?.backend) {
-                                <div class="orc-outline-color flex flex-items-center flex-gap-0-25">
-                                    <mat-icon>link</mat-icon>
-                                    <div class="font-size-xs">Mint backend</div>
-                                </div>
-                            }
-                        </div>
+						<div class="flex flex-column">
+							<div class="text-nowrap font-size-l">{{ lightning_info()?.alias }}</div>
+							@if (lightning_info()?.backend) {
+								<div class="orc-outline-color flex flex-items-center flex-gap-0-25">
+									<mat-icon>link</mat-icon>
+									<div class="font-size-xs">Mint backend</div>
+								</div>
+							}
+						</div>
 					</div>
 
-                    <div class="flex flex-items-center flex-gap-0-5">
-                        <orc-graphic-status [status]="status()" size="1rem"></orc-graphic-status>
-                        <div class="orc-outline-color">{{ state() }}</div>
-                    </div>
+					<div class="flex flex-items-center flex-gap-0-5">
+						<orc-graphic-status [status]="status()" size="1rem"></orc-graphic-status>
+						<div class="orc-outline-color">{{ state() }}</div>
+					</div>
 				</div>
 				<div>
 					<mat-chip-set class="orc-medium-chip-set orc-pointer-chip-set orc-column-chip-set">

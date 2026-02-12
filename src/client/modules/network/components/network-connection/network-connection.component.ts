@@ -35,18 +35,18 @@ export class NetworkConnectionComponent implements OnInit {
 		return this.data.device_type === 'mobile' ? 295 : 395;
 	});
 
-    public status_message = computed(() => {
-        switch (this.data.status) {
-            case 'active':
-                return 'Publicly reachable';
-            case 'inactive':
-                return 'Not reachable';
-            case 'warning':
-                return 'API offline';
-            default:
-                return 'Unknown status';
-        }
-    });
+	public status_message = computed(() => {
+		switch (this.data.status) {
+			case 'active':
+				return 'Publicly reachable';
+			case 'inactive':
+				return 'Not reachable';
+			case 'warning':
+				return 'API offline';
+			default:
+				return 'Unknown status';
+		}
+	});
 
 	private readonly corner_squre_options: Record<string, CornerSquareType> = {
 		'0': 'extra-rounded',

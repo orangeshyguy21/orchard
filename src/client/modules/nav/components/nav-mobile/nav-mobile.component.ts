@@ -6,7 +6,6 @@ import {MatBottomSheet} from '@angular/material/bottom-sheet';
 /* Application Dependencies */
 import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {EventData} from 'src/client/modules/event/classes/event-data.class';
-import {Setting} from '@client/modules/settings/classes/setting.class';
 import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Native Dependencies */
 import {NavService} from '@client/modules/nav/services/nav/nav.service';
@@ -14,8 +13,6 @@ import {NavService} from '@client/modules/nav/services/nav/nav.service';
 import {NavMobileSheetProfileComponent} from '../nav-mobile-sheet-profile/nav-mobile-sheet-profile.component';
 import {NavMobileSheetMenuSectionComponent} from '../nav-mobile-sheet-menu-section/nav-mobile-sheet-menu-section.component';
 import {NavMobileSheetMenuSubsectionComponent} from '../nav-mobile-sheet-menu-subsection/nav-mobile-sheet-menu-subsection.component';
-/* Shared Dependencies */
-import {SettingKey} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-nav-mobile',

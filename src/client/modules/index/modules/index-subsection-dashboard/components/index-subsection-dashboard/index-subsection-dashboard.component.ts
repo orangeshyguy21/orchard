@@ -71,20 +71,20 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public bitcoin_mempool!: BitcoinTransaction[] | null;
 	public bitcoin_block_template!: BitcoinBlockTemplate | null;
 	public bitcoin_txfee_estimate!: BitcoinTransactionFeeEstimate | null;
-    public bitcoin_connections =signal<PublicPort[]>([]);
+	public bitcoin_connections = signal<PublicPort[]>([]);
 	public lightning_info!: LightningInfo | null;
 	public lightning_balance!: LightningBalance | null;
 	public lightning_accounts!: LightningAccount[] | null;
 	public lightning_channels!: LightningChannel[] | null;
 	public lightning_closed_channels!: LightningClosedChannel[] | null;
-    public lightning_connections =signal<PublicPort[]>([]);
+	public lightning_connections = signal<PublicPort[]>([]);
 	public taproot_assets_info!: TaprootAssetInfo | null;
 	public taproot_assets!: TaprootAssets | null;
 	public mint_info!: MintInfo | null;
 	public mint_balances!: MintBalance[] | null;
 	public mint_keysets!: MintKeyset[] | null;
 	public mint_icon_data!: string | null;
-    public mint_connections =signal<PublicUrl[]>([]);
+	public mint_connections = signal<PublicUrl[]>([]);
 
 	public bitcoin_txfee_form: FormGroup = new FormGroup({
 		target: new FormControl(1),
@@ -403,10 +403,9 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 		const test_urls = this.mint_info.urls.map((url) => {
 			return `${url.replace(/\/$/, '')}${this.configService.config.mint.critical_path}`;
 		});
-		this.publicService.getPublicUrlsData(test_urls)
-            .subscribe((urls) => {
-                this.mint_connections.set(urls);
-            });
+		this.publicService.getPublicUrlsData(test_urls).subscribe((urls) => {
+			this.mint_connections.set(urls);
+		});
 	}
 
 	/** Tests Bitcoin node TCP port reachability */

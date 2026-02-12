@@ -47,7 +47,7 @@ import {MintFee} from '@client/modules/mint/classes/mint-fee.class';
 import {MintAnalytic} from '@client/modules/mint/classes/mint-analytic.class';
 import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
 /* Shared Dependencies */
-import {AiFunctionName, MintAnalyticsInterval, MintUnit, LightningAnalyticsInterval, SettingKey} from '@shared/generated.types';
+import {AiFunctionName, MintAnalyticsInterval, MintUnit, LightningAnalyticsInterval} from '@shared/generated.types';
 
 enum NavTertiary {
 	BalanceSheet = 'nav1',
@@ -120,12 +120,12 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 
 	public device_type = signal<DeviceType>('desktop');
 	public loading_mint = signal<boolean>(true);
-    public loading_mint_icon = signal<boolean>(true);
+	public loading_mint_icon = signal<boolean>(true);
 	public loading_bitcoin = signal<boolean>(false);
 	public loading_lightning = signal<boolean>(false);
 	public bitcoin_oracle_price = signal<BitcoinOraclePrice | null>(null);
 	public bitcoin_oracle_price_map = signal<Map<number, number> | null>(null);
-    public mint_icon_data = signal<string | null>(null);
+	public mint_icon_data = signal<string | null>(null);
 
 	public tertiary_nav = computed(() => this.page_settings().tertiary_nav || []);
 	public type_balance_sheet = computed(() => this.page_settings().type.balance_sheet || ChartType.Totals);
@@ -196,18 +196,16 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		return valid_times.length > 0 ? Math.min(...valid_times) : 0;
 	}
 
-    private setMintIcon(): void {
+	private setMintIcon(): void {
 		if (!this.mint_info?.icon_url) {
 			this.mint_icon_data.set(null);
 			this.loading_mint_icon.set(false);
 			return;
 		}
-		this.publicService.getPublicImageData(this.mint_info?.icon_url).subscribe(
-			(image: PublicImage) => {
-				this.mint_icon_data.set(image.data);
-				this.loading_mint_icon.set(false);
-			},
-		);
+		this.publicService.getPublicImageData(this.mint_info?.icon_url).subscribe((image: PublicImage) => {
+			this.mint_icon_data.set(image.data);
+			this.loading_mint_icon.set(false);
+		});
 	}
 
 	/* *******************************************************
