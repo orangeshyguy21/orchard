@@ -37,6 +37,7 @@ const ai = {
 };
 
 const constants = {
+	epoch_start: 1521072000,
 	taproot_group_keys: {
 		usdt: '02e7548544171496a6f2307326ea55fc98a1764f469ad8760b07ee7201c7206ff5',
 	},

@@ -249,7 +249,6 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			.loadLightningBalance()
 			.pipe(
 				tap((balance) => {
-					console.log('getLightningBalance', balance);
 					this.lightning_balance = balance;
 					this.cdr.detectChanges();
 				}),
@@ -331,7 +330,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		});
 		const analytics_balances_pre_obs = this.mintService.loadMintAnalyticsBalances({
 			units: this.page_settings().units,
-			date_start: 100000,
+			date_start: this.configService.config.constants.epoch_start,
 			date_end: this.page_settings().date_start - 1,
 			interval: MintAnalyticsInterval.Custom,
 			timezone: timezone,
@@ -345,7 +344,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		});
 		const analytics_mints_pre_obs = this.mintService.loadMintAnalyticsMints({
 			units: this.page_settings().units,
-			date_start: 100000,
+			date_start: this.configService.config.constants.epoch_start,
 			date_end: this.page_settings().date_start - 1,
 			interval: MintAnalyticsInterval.Custom,
 			timezone: timezone,
@@ -359,7 +358,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		});
 		const analytics_melts_pre_obs = this.mintService.loadMintAnalyticsMelts({
 			units: this.page_settings().units,
-			date_start: 100000,
+			date_start: this.configService.config.constants.epoch_start,
 			date_end: this.page_settings().date_start - 1,
 			interval: MintAnalyticsInterval.Custom,
 			timezone: timezone,
@@ -373,7 +372,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		});
 		const analytics_swaps_pre_obs = this.mintService.loadMintAnalyticsSwaps({
 			units: this.page_settings().units,
-			date_start: 100000,
+			date_start: this.configService.config.constants.epoch_start,
 			date_end: this.page_settings().date_start - 1,
 			interval: MintAnalyticsInterval.Custom,
 			timezone: timezone,
@@ -387,7 +386,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		});
 		const analytics_fees_pre_obs = this.mintService.loadMintAnalyticsFees({
 			units: this.page_settings().units,
-			date_start: 100000,
+			date_start: this.configService.config.constants.epoch_start,
 			date_end: this.page_settings().date_start - 1,
 			interval: MintAnalyticsInterval.Custom,
 			timezone: timezone,
@@ -444,7 +443,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 				this.lightningService.loadLightningAnalytics(args),
 				this.lightningService.loadLightningAnalytics({
 					...args,
-					date_start: 100000,
+					date_start: this.configService.config.constants.epoch_start,
 					date_end: this.page_settings().date_start - 1,
 					interval: LightningAnalyticsInterval.Custom,
 				}),

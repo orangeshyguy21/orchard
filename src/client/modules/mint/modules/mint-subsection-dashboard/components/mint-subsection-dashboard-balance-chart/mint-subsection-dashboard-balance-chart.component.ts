@@ -562,7 +562,8 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 	private findMinimumXValue(chartData: ChartConfiguration['data']): number {
 		if (!chartData?.datasets || chartData.datasets.length === 0) return 0;
 		const all_x_values = chartData.datasets.flatMap((dataset) => dataset.data.map((point: any) => point.x));
-		return Math.min(...all_x_values);
+		if (all_x_values.length === 0) return 0;
+		return all_x_values.reduce((min, val) => (val < min ? val : min), all_x_values[0]);
 	}
 
 	public toggleDataset(dataset: any): void {

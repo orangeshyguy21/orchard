@@ -196,7 +196,7 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy, OnChang
 	}
 
 	private getAmountChartOptions(): ChartConfiguration['options'] {
-		if (!this.chart_data || this.chart_data.datasets.length === 0 || !this.page_settings) return {};
+		if (!this.chart_data || this.chart_data.datasets.length === 0 || !this.page_settings()) return {};
 
 		const can_use_oracle = this.canUseOracle();
 

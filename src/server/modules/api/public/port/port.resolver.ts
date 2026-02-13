@@ -1,8 +1,6 @@
 /* Core Dependencies */
 import {Logger} from '@nestjs/common';
 import {Resolver, Query, Args} from '@nestjs/graphql';
-/* Application Dependencies */
-import {Public} from '@server/modules/auth/decorators/auth.decorator';
 /* Local Dependencies */
 import {PublicPortService} from './port.service';
 import {OrchardPublicPort} from './port.model';
@@ -14,7 +12,6 @@ export class PublicPortResolver {
 
 	constructor(private publicPortService: PublicPortService) {}
 
-	@Public()
 	@Query(() => [OrchardPublicPort])
 	async public_ports(@Args('targets', {type: () => [PublicPortInput]}) targets: PublicPortInput[]): Promise<OrchardPublicPort[]> {
 		this.logger.debug('GET { public_ports }');

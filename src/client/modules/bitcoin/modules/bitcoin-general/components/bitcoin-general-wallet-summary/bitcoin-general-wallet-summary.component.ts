@@ -77,8 +77,8 @@ export class BitcoinGeneralWalletSummaryComponent implements OnInit {
 			unit: 'sat',
 			amount: amount,
 			amount_oracle: amount_oracle,
-			utxos: utxos.size,
-			utxo_sizes: Array.from(utxos),
+			utxos: utxos.length,
+			utxo_sizes: utxos,
 			error: this.errors_lightning().length > 0,
 		};
 	}
@@ -102,16 +102,13 @@ export class BitcoinGeneralWalletSummaryComponent implements OnInit {
 		return oracle_price ? oracleConvertToUSDCents(amount, oracle_price, 'sat') : null;
 	}
 
-	private getLightningWalletUtxos(): Set<number> {
-		if (!this.enabled_lightning()) return new Set();
-		if (this.errors_lightning().length > 0) return new Set();
-		const unique_addresses = new Set(
-			this.lightning_accounts()
-				.flatMap((account) => account.addresses)
-				.filter((address) => address.balance > 0)
-				.map((address) => address.balance),
-		);
-		return unique_addresses;
+	private getLightningWalletUtxos(): number[] {
+		if (!this.enabled_lightning()) return [];
+		if (this.errors_lightning().length > 0) return [];
+		return this.lightning_accounts()
+			.flatMap((account) => account.addresses)
+			.filter((address) => address.balance > 0)
+			.map((address) => address.balance);
 	}
 
 	private getTaprootAssetsWalletBalance(): TableRow[] {

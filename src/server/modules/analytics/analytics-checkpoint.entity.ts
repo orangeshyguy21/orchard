@@ -26,10 +26,6 @@ export class AnalyticsCheckpoint {
 	@Column({type: 'integer', default: 0})
 	last_index: number;
 
-	// For timestamp-based pagination (optional)
-	@Column({type: 'integer', nullable: true})
-	last_timestamp: number | null;
-
 	// Last time this checkpoint was updated (unix timestamp)
 	@Column({type: 'integer'})
 	updated_at: number;

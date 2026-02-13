@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {Field, ObjectType} from '@nestjs/graphql';
+import {Field, Int, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 /* Native Dependencies */
@@ -35,9 +35,9 @@ export class OrchardLightningAnalyticsBackfillStatus {
 	@Field(() => UnixTimestamp, {nullable: true})
 	started_at?: number;
 
-	@Field(() => Number, {nullable: true})
+	@Field(() => Int, {nullable: true})
 	errors?: number;
 
-	@Field(() => Number, {nullable: true})
+	@Field(() => Int, {nullable: true})
 	hours_completed?: number;
 }

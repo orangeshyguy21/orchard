@@ -265,13 +265,9 @@ export class LightningService {
 
 	public loadLightningAnalytics(args: LightningAnalyticsArgs): Observable<LightningAnalytic[]> {
 		if (args.interval === LightningAnalyticsInterval.Custom) {
-			return this.loadGenericLightningAnalytics(
-				args,
-				this.lightning_analytics_pre_subject.value,
-				this.CACHE_KEYS.LIGHTNING_ANALYTICS_PRE,
-			);
+			return this.loadGenericLightningAnalytics(args, this.lightning_analytics_pre_subject, this.CACHE_KEYS.LIGHTNING_ANALYTICS_PRE);
 		}
-		return this.loadGenericLightningAnalytics(args, this.lightning_analytics_subject.value, this.CACHE_KEYS.LIGHTNING_ANALYTICS);
+		return this.loadGenericLightningAnalytics(args, this.lightning_analytics_subject, this.CACHE_KEYS.LIGHTNING_ANALYTICS);
 	}
 
 	public loadLightningAnalyticsBackfillStatus(): Observable<LightningAnalyticsBackfillStatus> {
@@ -292,11 +288,11 @@ export class LightningService {
 
 	private loadGenericLightningAnalytics(
 		args: LightningAnalyticsArgs,
-		subject_value: LightningAnalytic[] | null,
+		subject: BehaviorSubject<LightningAnalytic[] | null>,
 		cache_key: string,
 	): Observable<LightningAnalytic[]> {
-		if (subject_value && this.cache.isCacheValid(cache_key)) {
-			return of(subject_value);
+		if (subject.value && this.cache.isCacheValid(cache_key)) {
+			return of(subject.value);
 		}
 
 		const query = getApiQuery(LIGHTNING_ANALYTICS_QUERY, args);
@@ -309,6 +305,7 @@ export class LightningService {
 			map((lightning_analytics) => lightning_analytics.map((la) => new LightningAnalytic(la))),
 			tap((lightning_analytics) => {
 				this.cache.updateCache(cache_key, lightning_analytics);
+				subject.next(lightning_analytics);
 			}),
 			catchError((error) => {
 				console.error('Error loading lightning analytics:', error);

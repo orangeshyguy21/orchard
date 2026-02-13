@@ -82,13 +82,13 @@ export class LightningGeneralChannelSummaryComponent implements OnInit {
 		const channel_closed_sizes = closed_sat_channels?.map((channel) => channel.capacity) || [];
 		if (!sat_channels) return [];
 		const summing_channels = active ? sat_channels?.filter((channel) => channel.active) : sat_channels;
-		const local_balance = summing_channels?.reduce((acc, channel) => acc + channel.local_balance || 0, 0);
-		const remote_balance = summing_channels?.reduce((acc, channel) => acc + channel.remote_balance || 0, 0);
+		const local_balance = summing_channels?.reduce((acc, channel) => acc + (channel.local_balance ?? 0), 0);
+		const remote_balance = summing_channels?.reduce((acc, channel) => acc + (channel.remote_balance ?? 0), 0);
 		if (local_balance === 0 && remote_balance === 0) return [];
 		const channel_count = summing_channels?.length || 0;
 		const closed_channel_count = closed_sat_channels?.length || 0;
 		const active_channel_count = summing_channels?.filter((channel) => channel.active).length || 0;
-		const size = summing_channels?.reduce((acc, channel) => acc + channel.capacity || 0, 0);
+		const size = summing_channels?.reduce((acc, channel) => acc + (channel.capacity ?? 0), 0);
 		const oracle_price = this.bitcoin_oracle_price()?.price || null;
 		const size_oracle = oracle_price ? oracleConvertToUSDCents(size, oracle_price, 'sat') : null;
 		const remote_oracle = oracle_price ? oracleConvertToUSDCents(remote_balance, oracle_price, 'sat') : null;
@@ -126,9 +126,6 @@ export class LightningGeneralChannelSummaryComponent implements OnInit {
 		const asset_channels = lightning_channels.filter((channel) => channel.asset);
 		const closed_asset_channels = lightning_closed_channels?.filter((channel) => channel.asset);
 		const active_asset_channels = asset_channels.filter((channel) => channel.active);
-		const channel_sizes = asset_channels?.map((channel) => channel.capacity) || [];
-		const channel_active_sizes = active_asset_channels?.map((channel) => channel.capacity) || [];
-		const channel_closed_sizes = closed_asset_channels?.map((channel) => channel.capacity) || [];
 		const summing_channels = active ? active_asset_channels : asset_channels;
 		const grouped_summaries = summing_channels.reduce(
 			(acc, channel) => {
@@ -144,9 +141,16 @@ export class LightningGeneralChannelSummaryComponent implements OnInit {
 						channel_count: 0,
 						channel_closed_count: 0,
 						channel_active_count: 0,
-						channel_sizes,
-						channel_active_sizes,
-						channel_closed_sizes,
+						channel_sizes: asset_channels
+							.filter((c) => (c.asset!.group_key || c.asset!.asset_id) === asset_key)
+							.map((c) => c.capacity),
+						channel_active_sizes: active_asset_channels
+							.filter((c) => (c.asset!.group_key || c.asset!.asset_id) === asset_key)
+							.map((c) => c.capacity),
+						channel_closed_sizes:
+							closed_asset_channels
+								?.filter((c) => (c.asset!.group_key || c.asset!.asset_id) === asset_key)
+								.map((c) => c.capacity) || [],
 						avg_channel_size: 0,
 						is_bitcoin: false,
 						size_oracle: null,

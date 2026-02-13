@@ -51,7 +51,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 
 		try {
 			// Use streaming backfill which handles checkpoint-based resumption
-			this.runStreamingBackfill();
+			await this.runStreamingBackfill();
 		} catch (error) {
 			this.logger.error('Error during lightning analytics auto-backfill', error);
 		}
@@ -812,6 +812,10 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 	 * Call this daily to catch any lagging settlements.
 	 */
 	async rescanRecentRecords(): Promise<void> {
+		if (this.backfill_status.is_running) {
+			this.logger.warn('Backfill already running, skipping rescan');
+			return;
+		}
 		this.logger.log(`Resetting checkpoints to re-scan last ${RESCAN_RECORDS} records`);
 		const payments_checkpoint = await this.getCheckpoint('payments');
 		const invoices_checkpoint = await this.getCheckpoint('invoices');
