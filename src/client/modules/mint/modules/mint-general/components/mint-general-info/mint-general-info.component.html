@@ -35,17 +35,17 @@
 							}
 						</mat-chip-set>
 					} @else {
-                        <i class="font-size-l orc-outline-variant-color">No connections</i>
+						<i class="font-size-l orc-outline-variant-color">No connections</i>
 					}
 					<div class="font-size-xs orc-outline-color">Connections</div>
 				</div>
 				<div class="flex flex-row flex-items-center flex-justify-between flex-gap-2">
 					<div>
-                        @if (info()?.description) {
-						    <div class="font-size-l">{{ info()?.description }}</div>
-                        } @else {
-                            <i class="font-size-l orc-outline-variant-color">No description</i>
-                        }
+						@if (info()?.description) {
+							<div class="font-size-l">{{ info()?.description }}</div>
+						} @else {
+							<i class="font-size-l orc-outline-variant-color">No description</i>
+						}
 						<div class="font-size-xs orc-outline-color">Description</div>
 					</div>
 					<ng-content></ng-content>
