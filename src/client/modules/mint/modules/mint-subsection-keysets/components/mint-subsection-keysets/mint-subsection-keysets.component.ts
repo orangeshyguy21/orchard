@@ -69,7 +69,9 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	public form_keyset: FormGroup = new FormGroup({
 		unit: new FormControl(null, [Validators.required]),
 		input_fee_ppk: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(100000)]),
-		max_order: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(255)]),
+		amounts: new FormControl(null, [Validators.required]),
+        max_order: new FormControl(null),
+        default_amounts: new FormControl(true),
 	});
 	public device_type = signal<DeviceType>('desktop');
 
@@ -258,13 +260,18 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		this.form_keyset.markAsPristine();
 		const form_unit = unit ?? this.getDefaultUnit();
 		const form_input_fee_ppk = this.getKeysetInputFeePpk(form_unit);
-		const form_max_order = 32;
+		const form_amounts = Array.from({length: 32}, (_, i) => Math.pow(2, i));
 		this.keyset_out = this.getKeysetOut(form_unit);
 		this.form_keyset.patchValue({
 			unit: form_unit,
 			input_fee_ppk: form_input_fee_ppk,
-			max_order: form_max_order,
+            amounts: form_amounts,
+			max_order: 32,
+			default_amounts: true,
 		});
+        if( this.configService.config.mint.type === 'nutshell' ) {
+            this.form_keyset.get('default_amounts')?.disable();
+        }
 	}
 
 	private getDefaultUnit(): MintUnit {
@@ -303,8 +310,8 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 			);
 		}
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		const {unit, input_fee_ppk, max_order} = this.form_keyset.value;
-		this.mintService.rotateMintKeysets(unit, input_fee_ppk, max_order).subscribe({
+		const {unit, input_fee_ppk, amounts} = this.form_keyset.value;
+		this.mintService.rotateMintKeysets(unit, input_fee_ppk, amounts).subscribe({
 			next: () => {
 				this.eventService.registerEvent(
 					new EventData({
@@ -386,7 +393,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	private hireRotationAgent(agent: AiAgent, content: string | null): void {
 		let context = `* **Current Unit:** ${this.form_keyset.value.unit}\n`;
 		context += `* **Input Fee PPK:** ${this.form_keyset.value.input_fee_ppk}\n`;
-		context += `* **Max Order:** ${this.form_keyset.value.max_order}\n`;
+		context += `* **Amounts:** ${this.form_keyset.value.amounts}\n`;
 		context += `* **Available Units:** ${this.unit_options.map((unit) => unit.value).join(', ')}\n`;
 		this.aiService.openAiSocket(agent, content, context);
 	}
@@ -419,9 +426,9 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 				input_fee_ppk: tool_call.function.arguments.input_fee_ppk,
 			});
 		}
-		if (tool_call.function.name === AiFunctionName.MintKeysetRotationMaxOrderUpdate) {
+		if (tool_call.function.name === AiFunctionName.MintKeysetRotationAmountsUpdate) {
 			this.form_keyset.patchValue({
-				max_order: tool_call.function.arguments.max_order,
+				amounts: tool_call.function.arguments.amounts,
 			});
 		}
 	}

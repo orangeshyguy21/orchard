@@ -1,8 +1,10 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output, signal} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 /* Vendor Dependencies */
+import {MatChipEditedEvent, MatChipInputEvent} from '@angular/material/chips';
 import {MatSelectChange} from '@angular/material/select';
+import {COMMA, ENTER} from '@angular/cdk/keycodes';
 /* Native Dependencies */
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
@@ -16,28 +18,76 @@ import {MintUnit} from '@shared/generated.types';
 	styleUrl: './mint-subsection-keysets-form.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintSubsectionKeysetsFormComponent {
-	@Input() form_group!: FormGroup;
-	@Input() unit_options!: {value: string; label: string}[];
-	@Input() keyset_out!: MintKeyset;
-	@Input() keyset_out_balance!: MintBalance | undefined;
-	@Input() median_notes!: number;
+export class MintSubsectionKeysetsFormComponent {    
+	public readonly form_group = input.required<FormGroup>();
+	public readonly unit_options = input.required<{value: string; label: string}[]>();
+	public readonly keyset_out = input.required<MintKeyset>();
+	public readonly keyset_out_balance = input.required<MintBalance | undefined>();
+	public readonly median_notes = input.required<number>();
 
-	@Output() close = new EventEmitter<void>();
-	@Output() updateUnit = new EventEmitter<MintUnit>();
+	public readonly close = output<void>();
+	public readonly updateUnit = output<MintUnit>();
 
 	public help_unit = signal<boolean>(false);
 	public help_fee = signal<boolean>(true);
-	public help_max_order = signal<boolean>(true);
+	public help_amounts = signal<boolean>(true);
+
+	public readonly separatorKeysCodes = [ENTER, COMMA] as const;
 
 	public get keyset_in_fee_estimate(): number {
-		const fee_ppk = this.form_group.get('input_fee_ppk')?.value;
+		const fee_ppk = this.form_group().get('input_fee_ppk')?.value;
 		const median_notes = this.median_notes;
-		if (fee_ppk > 0 && median_notes === 0) return 1;
-		return Math.floor((median_notes * fee_ppk + 999) / 1000);
+		if (fee_ppk > 0 && median_notes() === 0) return 1;
+		return Math.floor((median_notes() * fee_ppk + 999) / 1000);
 	}
 
 	public onUnitChange(event: MatSelectChange): void {
 		this.updateUnit.emit(event.value);
+	}
+
+	/** Regenerates amounts as powers of 2 based on the slider value. */
+	public onMaxOrderChange(): void {
+		const max_order = this.form_group().get('max_order')?.value;
+		if (max_order == null || max_order < 1) return;
+		const amounts = Array.from({length: max_order}, (_, i) => Math.pow(2, i));
+		this.form_group().get('amounts')?.setValue(amounts);
+	}
+
+	/** Adds a new amount to the amounts form control. */
+	public addAmount(event: MatChipInputEvent): void {
+		const value = (event.value || '').trim();
+		const parsed = Number(value);
+		if (value && !isNaN(parsed) && parsed > 0) {
+			const amounts: number[] = [...(this.form_group().get('amounts')?.value ?? [])];
+			amounts.push(parsed);
+			this.form_group().get('amounts')?.setValue(amounts);
+		}
+		event.chipInput!.clear();
+	}
+
+	/** Removes an amount from the amounts form control. */
+	public removeAmount(amount: number): void {
+		const amounts: number[] = [...(this.form_group().get('amounts')?.value ?? [])];
+		const index = amounts.indexOf(amount);
+		if (index >= 0) {
+			amounts.splice(index, 1);
+			this.form_group().get('amounts')?.setValue(amounts);
+		}
+	}
+
+	/** Edits an existing amount in the amounts form control. */
+	public editAmount(amount: number, event: MatChipEditedEvent): void {
+		const value = event.value.trim();
+		const parsed = Number(value);
+		if (!value || isNaN(parsed) || parsed <= 0) {
+			this.removeAmount(amount);
+			return;
+		}
+		const amounts: number[] = [...(this.form_group().get('amounts')?.value ?? [])];
+		const index = amounts.indexOf(amount);
+		if (index >= 0) {
+			amounts[index] = parsed;
+			this.form_group().get('amounts')?.setValue(amounts);
+		}
 	}
 }

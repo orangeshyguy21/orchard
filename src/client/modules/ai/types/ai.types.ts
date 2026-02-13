@@ -60,7 +60,7 @@ export type AiFunction =
 	| AiFunctionUpdateMintKeysetStatus
 	| AiFunctionUpdateMintKeysetRotationUnit
 	| AiFunctionUpdateMintKeysetRotationInputFeePpk
-	| AiFunctionUpdateMintKeysetRotationMaxOrder
+	| AiFunctionUpdateMintKeysetRotationAmounts
 	| AiFunctionUpdateMintDatabaseDataType
 	| AiFunctionUpdateMintDatabaseStates
 	| AiFunctionUpdateMintBackupFilename;
@@ -299,10 +299,10 @@ export type AiFunctionUpdateMintKeysetRotationInputFeePpk = {
 	};
 };
 
-export type AiFunctionUpdateMintKeysetRotationMaxOrder = {
-	name: AiFunctionName.MintKeysetRotationMaxOrderUpdate;
+export type AiFunctionUpdateMintKeysetRotationAmounts = {
+	name: AiFunctionName.MintKeysetRotationAmountsUpdate;
 	arguments: {
-		max_order: number;
+		amounts: number[];
 	};
 };
 

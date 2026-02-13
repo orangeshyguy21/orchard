@@ -6,11 +6,11 @@
 					<mat-icon>close</mat-icon>
 				</button>
 			</div>
-			<div class="flex flex-gap-2 flex-wrap">
+			<div class="flex flex-gap-2 flex-items-center flex-wrap">
 				<div class="flex-1">
 					<form
 						class="flex-grow flex-1 flex flex-column flex-gap-1"
-						[formGroup]="form_group"
+						[formGroup]="form_group()"
 						(ngSubmit)="$event.preventDefault()"
 						(keydown.enter)="$event.preventDefault()"
 					>
@@ -25,7 +25,7 @@
 										>
 											<mat-label>Unit</mat-label>
 											<mat-select formControlName="unit" (selectionChange)="onUnitChange($event)">
-												@for (unit of unit_options; track unit.value) {
+												@for (unit of unit_options(); track unit.value) {
 													<mat-option [value]="unit.value">{{ unit.label }}</mat-option>
 												}
 											</mat-select>
@@ -81,13 +81,13 @@
 													<span
 														class="font-weight-bold"
 														[innerHTML]="
-															keyset_in_fee_estimate | localAmount: form_group.get('unit')?.value : 'mint'
+															keyset_in_fee_estimate | localAmount: form_group().get('unit')?.value : 'mint'
 														"
 													></span
 												></span>
 											</mat-hint>
 											<mat-error>
-												<orc-form-error [errors]="form_group.get('input_fee_ppk')?.errors">
+												<orc-form-error [errors]="form_group().get('input_fee_ppk')?.errors">
 													Invalid input fee PPK
 												</orc-form-error>
 											</mat-error>
@@ -119,47 +119,82 @@
 								</div>
 							</div>
 						</div>
-						<div class="flex flex-row flex-gap-1 flex-wrap">
-							<div>
-								<div class="flex flex-row flex-gap-0-5">
-									<div class="orc-small-form-field-wrapper">
-										<mat-form-field
-											appearance="fill"
-											hideRequiredMarker="true"
-											class="w-full orc-dynamic-form-field orc-hot-form-field"
-										>
-											<mat-label>Max order</mat-label>
-											<input type="text" matInput formControlName="max_order" placeholder="Ex. 32" />
-											<mat-hint class="font-size-xs orc-outline-color"
-												><span class="font-weight-bold">1 - 255</span> are allowed</mat-hint
-											>
-											<mat-error>
-												<orc-form-error [errors]="form_group.get('max_order')?.errors">
-													Invalid max order
-												</orc-form-error>
-											</mat-error>
-										</mat-form-field>
-									</div>
-									<div class="p-t-0-5">
-										<button
-											type="button"
-											tabindex="-1"
-											mat-icon-button
-											class="orc-icon-button"
-											(click)="help_max_order.set(!help_max_order())"
-										>
-											<mat-icon class="orc-outline-color">info</mat-icon>
-										</button>
-									</div>
-								</div>
-							</div>
+						<div>
+                            <!-- <div>
+                                <mat-checkbox [checked]="form_group().get('default_amounts')?.value">
+                                    Powers of 2
+                                </mat-checkbox>
+                            </div> -->
+                            <div class="title-form-section">
+                                <span>Ecash Amounts</span>
+                            </div>
+                            <div class="amount-slider">
+                                <div>
+                                    <!-- <mat-checkbox formControlName="default_amounts" [disabled]="mint_type === 'nutshell'">
+                                        <span class="font-size-s text-nowrap">Powers of 2</span>
+                                    </mat-checkbox> -->
+                                    <mat-checkbox formControlName="default_amounts">
+                                        <span class="font-size-s text-nowrap">Powers of 2</span>
+                                    </mat-checkbox>
+                                </div>
+                                <mat-slider min="1" max="255" step="1" showTickMarks discrete class="amount-slider">
+                                    <input matSliderThumb formControlName="max_order" (valueChange)="onMaxOrderChange()">
+                                </mat-slider>
+                            </div>
+                            <div class="flex flex-row flex-items-center flex-gap-0-5">
+                                <mat-form-field class="w-full">
+                                    <mat-chip-grid #chipGrid aria-label="Enter amounts" [disabled]="form_group().get('default_amounts')?.value">
+                                        @for (amount of form_group().get('amounts')?.value; track amount) {
+                                        <mat-chip-row
+                                            (removed)="removeAmount(amount)"
+                                            [editable]="!form_group().get('default_amounts')?.value"
+                                            (edited)="editAmount(amount, $event)"
+                                            [aria-description]="'press enter to edit ' + amount"
+                                        >
+                                            @if (!form_group().get('default_amounts')?.value) {
+                                                <button matChipEdit [attr.aria-label]="'edit ' + amount">
+                                                    <mat-icon>edit</mat-icon>
+                                                </button>
+                                            }
+                                            {{amount}}
+                                            @if (!form_group().get('default_amounts')?.value) {
+                                                <button matChipRemove [attr.aria-label]="'remove ' + amount">
+                                                    <mat-icon>cancel</mat-icon>
+                                                </button>
+                                            }
+                                        </mat-chip-row>
+                                        }
+                                    </mat-chip-grid>
+                                    @if (!form_group().get('default_amounts')?.value) {
+                                        <input
+                                            placeholder="New amount..."
+                                            [matChipInputFor]="chipGrid"
+                                            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                            [matChipInputAddOnBlur]="true"
+                                            (matChipInputTokenEnd)="addAmount($event)"
+                                        />
+                                    }
+                                </mat-form-field>
+                          
+                                <div class="p-t-0-5">
+                                    <button
+                                        type="button"
+                                        tabindex="-1"
+                                        mat-icon-button
+                                        class="orc-icon-button"
+                                        (click)="help_amounts.set(!help_amounts())"
+                                    >
+                                        <mat-icon class="orc-outline-color">info</mat-icon>
+                                    </button>
+                                </div>
+                            </div>
 
-							<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_max_order()">
+							<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_amounts()">
 								<div class="orc-animation-expand-collapse-inner">
 									<div class="flex p-b-1 w-max-18">
 										<orc-form-help-text class="orc-surface-container-high-bg">
 											<div>
-												The max order determines the range of ecash denominations that this keyset can create.
+												The ecash denomination amounts that this keyset can create.
 											</div>
 										</orc-form-help-text>
 									</div>
@@ -170,13 +205,13 @@
 				</div>
 				<div class="flex-1">
 					<orc-mint-subsection-keysets-rotation-preview
-						[keyset_in_unit]="form_group.get('unit')?.value"
-						[keyset_in_index]="keyset_out.derivation_path_index + 1"
-						[keyset_in_fee]="form_group.get('input_fee_ppk')?.value"
-						[keyset_out_unit]="keyset_out.unit"
-						[keyset_out_index]="keyset_out.derivation_path_index"
-						[keyset_out_fee]="keyset_out.input_fee_ppk"
-						[keyset_out_balance]="keyset_out_balance?.balance"
+						[keyset_in_unit]="form_group().get('unit')?.value"
+						[keyset_in_index]="keyset_out().derivation_path_index + 1"
+						[keyset_in_fee]="form_group().get('input_fee_ppk')?.value"
+						[keyset_out_unit]="keyset_out().unit"
+						[keyset_out_index]="keyset_out().derivation_path_index"
+						[keyset_out_fee]="keyset_out().input_fee_ppk"
+						[keyset_out_balance]="keyset_out_balance()?.balance"
 					></orc-mint-subsection-keysets-rotation-preview>
 				</div>
 			</div>

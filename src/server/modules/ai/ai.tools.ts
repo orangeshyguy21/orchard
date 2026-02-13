@@ -654,20 +654,21 @@ export const UpdateMintKeysetRotationInputFeePpkTool = {
 		},
 	},
 };
-export const UpdateMintKeysetRotationMaxOrderTool = {
+export const UpdateMintKeysetRotationAmountsTool = {
 	type: 'function',
 	function: {
-		name: 'MINT_KEYSET_ROTATION_MAX_ORDER_UPDATE',
-		description: 'This tool allows you to update the max order of the keyset rotation.',
+		name: 'MINT_KEYSET_ROTATION_AMOUNTS_UPDATE',
+		description: 'This tool allows you to update the ecash denomination amounts of the keyset rotation.',
 		parameters: {
 			type: 'object',
 			properties: {
-				max_order: {
-					type: 'number',
-					description: 'The max order of the keyset rotation',
+				amounts: {
+					type: 'array',
+					items: {type: 'number'},
+					description: 'The ecash denomination amounts for the keyset rotation',
 				},
 			},
-			required: ['max_order'],
+			required: ['amounts'],
 		},
 	},
 };

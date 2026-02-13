@@ -20,7 +20,7 @@
 | -------------- | ---------------------------------- | -------------------------- |
 | Bitcoin        | core (knots compatible)            | (^Satoshi:28.0.0)          |
 | Lightning      | lnd, cln                           | (^v0.19.0-beta), (^v25.02) |
-| Cashu Mint     | cdk, nutshell                      | (^v0.14.1), (^0.18.2)      |
+| Cashu Mint     | cdk, nutshell                      | (^v0.14.3), (^0.18.2)      |
 | Taproot Assets | tapd                               | (^v0.6.1-alpha)            |
 | AI             | ollama                             | (^0.13.1)                 |
 

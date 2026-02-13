@@ -31,7 +31,7 @@ import {
 	UpdateMintKeysetStatusTool,
 	UpdateMintKeysetRotationUnitTool,
 	UpdateMintKeysetRotationInputFeePpkTool,
-	UpdateMintKeysetRotationMaxOrderTool,
+	UpdateMintKeysetRotationAmountsTool,
 	UpdateMintDatabaseDataTypeTool,
 	UpdateMintDatabaseStatesTool,
 	UpdateMintBackupFilenameTool,
@@ -168,7 +168,7 @@ export const AI_AGENTS = {
 			content: `You are an agent designed to help rotate keysets in a cashu mint.
             You will be provided with the current state of the form along with the users request for changes`,
 		},
-		tools: [UpdateMintKeysetRotationUnitTool, UpdateMintKeysetRotationInputFeePpkTool, UpdateMintKeysetRotationMaxOrderTool],
+		tools: [UpdateMintKeysetRotationUnitTool, UpdateMintKeysetRotationInputFeePpkTool, UpdateMintKeysetRotationAmountsTool],
 	},
 	[AiAgent.MINT_DATABASE]: {
 		name: 'Mint Database',
