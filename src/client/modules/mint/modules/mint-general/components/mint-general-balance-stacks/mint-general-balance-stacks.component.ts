@@ -26,6 +26,7 @@ export class MintGeneralBalanceStacksComponent {
 	/** Calculates a stack size (1–18) based on the ratio of value to total */
 	private calcStackSize(value: number, counterpart: number): number {
 		if (!value || !counterpart) return 1;
+		if (value > counterpart) return 18;
 		const ratio = value / (value + counterpart);
 		const stack = ratio * 18;
 		return Math.max(1, Math.min(18, Math.ceil(stack)));
