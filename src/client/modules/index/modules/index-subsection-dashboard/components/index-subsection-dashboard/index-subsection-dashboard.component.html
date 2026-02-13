@@ -1,12 +1,9 @@
-<div class="flex flex-column" [class.tablet-view]="device_type() === 'tablet'">
+<div class="flex flex-column" [class.tablet-view]="device_type() !== 'desktop'">
 	<div class="sticky-section z-index-1">
 		<orc-index-subsection-dashboard-bitcoin-header
 			[enabled]="enabled_bitcoin"
 			[loading]="preparing_bitcoin"
 			[network_info]="bitcoin_network_info"
-			[blockchain_info]="bitcoin_blockchain_info"
-			[enabled_oracle]="enabled_bitcoin_oracle()"
-			[error]="errors_bitcoin.length ? true : false"
 			[device_desktop]="device_type() === 'desktop'"
 		></orc-index-subsection-dashboard-bitcoin-header>
 		<div class="category-rule"></div>
@@ -16,6 +13,8 @@
 		@if (enabled_bitcoin) {
 			<orc-index-subsection-dashboard-bitcoin-enabled
 				[loading]="preparing_bitcoin"
+				[enabled_oracle]="enabled_bitcoin_oracle"
+				[bitcoin_oracle_price]="bitcoin_oracle_price()"
 				[enabled_lightning]="enabled_lightning"
 				[enabled_taproot_assets]="enabled_taproot_assets"
 				[blockcount]="bitcoin_blockcount ? bitcoin_blockcount.height : 0"
@@ -27,10 +26,13 @@
 				[txfee_estimate]="bitcoin_txfee_estimate!"
 				[lightning_accounts]="lightning_accounts!"
 				[taproot_assets]="taproot_assets!"
+				[errors_bitcoin]="errors_bitcoin"
 				[errors_lightning]="errors_lightning"
 				[errors_taproot_assets]="errors_taproot_assets"
 				[form_group]="bitcoin_txfee_form"
 				[control_name]="'target'"
+				[connections]="bitcoin_connections()"
+				[device_type]="device_type()"
 				(target_change)="onTargetChange()"
 			></orc-index-subsection-dashboard-bitcoin-enabled>
 		} @else {
@@ -52,7 +54,6 @@
 			[enabled]="enabled_lightning"
 			[loading]="preparing_lightning"
 			[lightning_info]="lightning_info!"
-			[error]="errors_lightning.length ? true : false"
 			[device_desktop]="device_type() === 'desktop'"
 		></orc-index-subsection-dashboard-lightning-header>
 		<div class="category-rule"></div>
@@ -62,10 +63,16 @@
 		@if (enabled_lightning) {
 			<orc-index-subsection-dashboard-lightning-enabled
 				[loading]="preparing_lightning"
+				[bitcoin_oracle_enabled]="enabled_bitcoin_oracle"
+				[bitcoin_oracle_price]="bitcoin_oracle_price()"
 				[lightning_info]="lightning_info!"
-				[lightning_balance]="lightning_balance!"
+				[lightning_channels]="lightning_channels!"
+				[lightning_closed_channels]="lightning_closed_channels!"
 				[taproot_assets]="taproot_assets!"
 				[enabled_taproot_assets]="enabled_taproot_assets"
+				[errors_lightning]="errors_lightning"
+				[connections]="lightning_connections()"
+				[device_type]="device_type()"
 			></orc-index-subsection-dashboard-lightning-enabled>
 		} @else {
 			<orc-index-subsection-dashboard-lightning-disabled
@@ -93,7 +100,6 @@
 			[enabled]="enabled_mint"
 			[loading]="preparing_mint"
 			[info]="mint_info!"
-			[error]="errors_mint.length ? true : false"
 			[device_desktop]="device_type() === 'desktop'"
 		></orc-index-subsection-dashboard-mint-header>
 		<div class="category-rule"></div>
@@ -112,7 +118,11 @@
 				[lightning_enabled]="enabled_lightning"
 				[lightning_errors]="errors_lightning"
 				[lightning_loading]="preparing_lightning"
-				[device_desktop]="device_type() === 'desktop'"
+				[mint_errors]="errors_mint"
+				[bitcoin_oracle_enabled]="enabled_bitcoin_oracle"
+				[bitcoin_oracle_price]="bitcoin_oracle_price()"
+				[connections]="mint_connections()"
+				[device_type]="device_type()"
 				(navigate)="onNavigate($event)"
 			></orc-index-subsection-dashboard-mint-enabled>
 		} @else {

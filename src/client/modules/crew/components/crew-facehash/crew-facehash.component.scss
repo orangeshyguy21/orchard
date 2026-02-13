@@ -1,0 +1,74 @@
+@use 'molecule/molecule';
+
+:host {
+	display: inline-block;
+}
+
+.facehash {
+	@extend %relative;
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	@extend %overflow-hidden;
+	@extend %orc-corner-full;
+	container-type: size;
+}
+
+.facehash-gradient {
+	@extend %absolute;
+	inset: 0;
+	pointer-events: none;
+	z-index: 1;
+	background: radial-gradient(ellipse 100% 100% at 50% 50%, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
+}
+
+.facehash-face {
+	@extend %absolute;
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	inset: 0;
+	z-index: 2;
+
+	&.facehash-face-3d {
+		transform-style: preserve-3d;
+	}
+
+	&.facehash-face-interactive {
+		transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+}
+
+.facehash-eyes {
+	@extend %orc-surface-color;
+	width: 60%;
+	height: auto;
+	max-width: 90%;
+	max-height: 40%;
+}
+
+.facehash-initial {
+	@extend %orc-surface-color;
+	margin-top: 8%;
+	font-size: 26cqw;
+	line-height: 1;
+	font-weight: 500;
+	user-select: none;
+}
+
+.facehash-eye-blink {
+	animation: facehash-blink var(--blink-duration) ease-in-out var(--blink-delay) infinite;
+	transform-origin: center center;
+}
+
+@keyframes facehash-blink {
+	0%,
+	92%,
+	100% {
+		transform: scaleY(1);
+	}
+	96% {
+		transform: scaleY(0.05);
+	}
+}

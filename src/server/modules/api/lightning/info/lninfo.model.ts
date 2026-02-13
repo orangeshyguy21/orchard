@@ -66,7 +66,10 @@ export class OrchardLightningInfo {
 	@Field(() => Boolean)
 	store_final_htlc_resolutions: boolean;
 
-	constructor(ln_info: LightningInfo) {
+	@Field(() => Boolean)
+	backend: boolean;
+
+	constructor(ln_info: LightningInfo, backend: boolean = false) {
 		this.version = ln_info.version;
 		this.commit_hash = ln_info.commit_hash;
 		this.identity_pubkey = ln_info.identity_pubkey;
@@ -87,6 +90,7 @@ export class OrchardLightningInfo {
 		this.features = Object.entries(ln_info.features).map(([bit, feature]) => new OrchardLightningFeature(feature, bit));
 		this.require_htlc_interceptor = ln_info.require_htlc_interceptor;
 		this.store_final_htlc_resolutions = ln_info.store_final_htlc_resolutions;
+		this.backend = backend;
 	}
 }
 

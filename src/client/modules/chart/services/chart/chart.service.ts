@@ -7,6 +7,9 @@ import {Plugin} from 'chart.js';
 import {DataType} from '@client/modules/orchard/enums/data.enum';
 import {ThemeService} from '@client/modules/settings/services/theme/theme.service';
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
+import {CurrencyType} from '@client/modules/cache/services/local-storage/local-storage.types';
+import {eligibleForOracleConversion} from '@client/modules/bitcoin/helpers/oracle.helpers';
+import {OracleChartDataPoint} from '@client/modules/chart/types/chart.types';
 /* Shared Dependencies */
 import {MintQuoteState, MeltQuoteState} from '@shared/generated.types';
 
@@ -172,6 +175,39 @@ export class ChartService {
 	}
 
 	/**
+	 * Creates a diagonal stripe canvas pattern for chart fills
+	 */
+	public createStripePattern(color: string, stripe_width: number = 4, gap: number = 6, opacity: number = 0.3): CanvasPattern | string {
+		const canvas = document.createElement('canvas');
+		const size = stripe_width + gap;
+		canvas.width = size;
+		canvas.height = size;
+		const ctx = canvas.getContext('2d');
+		if (!ctx) return 'transparent';
+
+		const hex_color = color.startsWith('#') ? color : this.rgbToHex(color);
+		const stripe_color = this.hexToRgba(hex_color, opacity);
+
+		ctx.strokeStyle = stripe_color;
+		ctx.lineWidth = stripe_width;
+		ctx.beginPath();
+		ctx.moveTo(0, size);
+		ctx.lineTo(size, 0);
+		ctx.stroke();
+		ctx.beginPath();
+		ctx.moveTo(-size, size);
+		ctx.lineTo(size, -size);
+		ctx.stroke();
+		ctx.beginPath();
+		ctx.moveTo(0, size * 2);
+		ctx.lineTo(size * 2, 0);
+		ctx.stroke();
+
+		const pattern = ctx.createPattern(canvas, 'repeat');
+		return pattern || 'transparent';
+	}
+
+	/**
 	 * Creates a glow effect plugin for chart points
 	 */
 	public createGlowPlugin(border_color: string, opacity: number = 0.35, blur: number = 10): Plugin {
@@ -191,5 +227,76 @@ export class ChartService {
 				chart.ctx.restore();
 			},
 		};
+	}
+
+	/**
+	 * Formats an amount for display in chart tooltips, respecting user locale and currency preferences
+	 */
+	public formatTooltipAmount(amount: number, unit: string): string {
+		const locale = this.settingDeviceService.getLocale();
+		const currency = this.settingDeviceService.getCurrency();
+		const unit_lower = unit.toLowerCase();
+
+		switch (unit_lower) {
+			case 'msat':
+				return this.formatBtcAmount(Math.ceil(amount / 1000), locale, currency.type_btc);
+			case 'sat':
+				return this.formatBtcAmount(amount, locale, currency.type_btc);
+			case 'btc':
+				return this.formatBtcFull(amount, locale);
+			case 'usd':
+			case 'eur':
+				return this.formatFiatAmount(amount / 100, unit, locale, currency.type_fiat);
+			default:
+				return amount.toLocaleString(locale);
+		}
+	}
+
+	/**
+	 * Formats a tooltip label for oracle chart data points
+	 */
+	public formatOracleTooltipLabel(context: any, oracle_used: boolean): string {
+		const label = context.dataset.label || '';
+		const raw_point = context.raw as OracleChartDataPoint;
+
+		if (raw_point && 'y_original' in raw_point) {
+			const original = raw_point.y_original;
+			const converted = raw_point.y_converted;
+			const unit = raw_point.unit;
+
+			const formatted_original = this.formatTooltipAmount(original, unit);
+
+			if (oracle_used && converted !== null && eligibleForOracleConversion(unit)) {
+				const formatted_converted = this.formatFiatAmount(
+					converted / 100,
+					'usd',
+					this.settingDeviceService.getLocale(),
+					this.settingDeviceService.getCurrency().type_fiat,
+				);
+				return `${label}: ${formatted_original} (${formatted_converted})`;
+			}
+
+			return `${label}: ${formatted_original}`;
+		}
+
+		return `${label}: ${context.parsed.y.toLocaleString(this.settingDeviceService.getLocale())}`;
+	}
+
+	private formatBtcAmount(amount: number, locale: string, currency_type: CurrencyType): string {
+		const formatted = amount.toLocaleString(locale);
+		return currency_type === CurrencyType.GLYPH ? `₿${formatted}` : `${formatted} sat`;
+	}
+
+	private formatBtcFull(amount: number, locale: string): string {
+		return `${amount.toLocaleString(locale, {minimumFractionDigits: 8, maximumFractionDigits: 8})} BTC`;
+	}
+
+	private formatFiatAmount(amount: number, unit: string, locale: string, currency_type: CurrencyType): string {
+		const formatted = amount.toLocaleString(locale, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+		if (currency_type === CurrencyType.GLYPH) {
+			const symbol = unit.toLowerCase() === 'eur' ? '€' : '$';
+			return `${symbol}${formatted}`;
+		}
+		return `${formatted} ${unit.toUpperCase()}`;
 	}
 }

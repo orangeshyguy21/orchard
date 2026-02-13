@@ -18,7 +18,6 @@ describe('IndexSubsectionDashboardLightningHeaderComponent', () => {
 		component = fixture.componentInstance;
 		fixture.componentRef.setInput('enabled', true);
 		fixture.componentRef.setInput('loading', false);
-		fixture.componentRef.setInput('error', false);
 		fixture.componentRef.setInput('lightning_info', {version: 'v0.0.0', synced_to_chain: true, synced_to_graph: true});
 		fixture.componentRef.setInput('device_desktop', true);
 		fixture.detectChanges();

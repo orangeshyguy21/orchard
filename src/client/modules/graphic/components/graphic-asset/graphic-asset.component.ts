@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, Input, computed, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, input} from '@angular/core';
 /* Application Dependencies */
 import {ConfigService} from '@client/modules/config/services/config.service';
 
@@ -12,9 +12,9 @@ import {ConfigService} from '@client/modules/config/services/config.service';
 })
 export class GraphicAssetComponent {
 	public unit = input.required<string>();
-	@Input() height: string = '2rem';
-	@Input() custody!: 'ecash' | 'lightning' | 'hot' | 'cold';
-	@Input() asset_id!: string | undefined;
+	public height = input<string>('2rem');
+	public custody = input<'ecash' | 'lightning' | 'hot' | 'cold' | null>(null);
+	public group_key = input<string | undefined>(undefined);
 
 	public lower_unit = computed(() => {
 		return this.unit().toLowerCase();
@@ -31,7 +31,7 @@ export class GraphicAssetComponent {
 	});
 
 	public unit_icon_size = computed(() => {
-		const height_value = parseFloat(this.height);
+		const height_value = parseFloat(this.height());
 		return (isNaN(height_value) ? 2 : height_value) * 0.75 + 'rem';
 	});
 
@@ -46,30 +46,35 @@ export class GraphicAssetComponent {
 	});
 
 	public custody_icon = computed(() => {
-		if (!this.custody) return 'payments';
-		if (this.custody === 'ecash') return 'payments';
-		if (this.custody === 'lightning') return 'bolt';
-		if (this.custody === 'hot') return 'mode_heat';
-		if (this.custody === 'cold') return 'ac_unit';
+		const custody = this.custody();
+		if (!custody) return 'payments';
+		if (custody === 'ecash') return 'payments';
+		if (custody === 'lightning') return 'bolt';
+		if (custody === 'hot') return 'mode_heat';
+		if (custody === 'cold') return 'ac_unit';
 		return 'payments';
 	});
 
 	public custody_icon_size = computed(() => {
-		const height_value = parseFloat(this.height);
+		const height_value = parseFloat(this.height());
 		return (isNaN(height_value) ? 2 : height_value) * 0.7 + 'rem';
 	});
 
 	public supported_taproot_asset = computed(() => {
-		return this.taproot_assets_map.has(this.asset_id!);
+		const group_key = this.group_key();
+		if (!group_key) return false;
+		return this.taproot_assets_map.has(group_key);
 	});
 
 	public taproot_asset_image = computed(() => {
-		return `taproot-assets/${this.taproot_assets_map.get(this.asset_id!)}`;
+		const group_key = this.group_key();
+		if (!group_key) return '';
+		return `taproot-assets/${this.taproot_assets_map.get(group_key)}`;
 	});
 
 	private taproot_assets_map: Map<string, string>;
 
 	constructor(private configService: ConfigService) {
-		this.taproot_assets_map = new Map<string, string>([[this.configService.config.constants.taproot_asset_ids['usdt'], 'tether.svg']]);
+		this.taproot_assets_map = new Map<string, string>([[this.configService.config.constants.taproot_group_keys['usdt'], 'tether.svg']]);
 	}
 }

@@ -9,6 +9,7 @@ import {AuthService} from '@server/modules/auth/auth.service';
 import {SettingService} from '@server/modules/setting/setting.service';
 import {BitcoinRpcService} from '@server/modules/bitcoin/rpc/btcrpc.service';
 import {BitcoinUTXOracleService} from '@server/modules/bitcoin/utxoracle/utxoracle.service';
+import {LightningAnalyticsService} from '@server/modules/lightning/analytics/lnanalytics.service';
 import {BitcoinType} from '@server/modules/bitcoin/bitcoin.enums';
 import {SettingKey} from '@server/modules/setting/setting.enums';
 
@@ -21,6 +22,7 @@ export class TaskService {
 		private settingService: SettingService,
 		private bitcoinRpcService: BitcoinRpcService,
 		private bitcoinUTXOracleService: BitcoinUTXOracleService,
+		private lightningAnalyticsService: LightningAnalyticsService,
 		private configService: ConfigService,
 	) {}
 
@@ -86,6 +88,54 @@ export class TaskService {
 			this.logger.log(`Oracle job completed for ${date_str}: price=${result.central_price}`);
 		} catch (error) {
 			this.logger.error(`Error running daily oracle: ${error.message}`, error.stack);
+		}
+	}
+
+	/**
+	 * Update lightning analytics at 5 minutes past each hour
+	 * Uses streaming backfill which is checkpoint-based and works with both LND and CLN
+	 */
+	@Cron('5 * * * *', {
+		name: 'hourly-lightning-analytics',
+		timeZone: 'UTC',
+	})
+	async runHourlyLightningAnalytics() {
+		const lightning_type = this.configService.get<string>('lightning.type');
+		if (!lightning_type) {
+			this.logger.debug('Lightning not configured, skipping analytics job');
+			return;
+		}
+
+		this.logger.log('Starting lightning analytics update...');
+		try {
+			await this.lightningAnalyticsService.runStreamingBackfill();
+			this.logger.log('Lightning analytics update complete');
+		} catch (error) {
+			this.logger.error(`Error updating lightning analytics: ${error.message}`, error.stack);
+		}
+	}
+
+	/**
+	 * Daily rescan of recent lightning records to catch pending invoices/payments that settled
+	 * Runs at 3am UTC
+	 */
+	@Cron('0 3 * * *', {
+		name: 'daily-lightning-analytics-rescan',
+		timeZone: 'UTC',
+	})
+	async runDailyLightningAnalyticsRescan() {
+		const lightning_type = this.configService.get<string>('lightning.type');
+		if (!lightning_type) {
+			this.logger.debug('Lightning not configured, skipping analytics rescan');
+			return;
+		}
+
+		this.logger.log('Starting daily lightning analytics rescan...');
+		try {
+			await this.lightningAnalyticsService.rescanRecentRecords();
+			this.logger.log('Daily lightning analytics rescan complete');
+		} catch (error) {
+			this.logger.error(`Error during lightning analytics rescan: ${error.message}`, error.stack);
 		}
 	}
 }

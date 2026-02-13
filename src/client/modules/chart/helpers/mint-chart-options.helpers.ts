@@ -5,8 +5,9 @@ import {DateTime} from 'luxon';
 import {MintAnalyticsInterval} from '@shared/generated.types';
 
 function getFiatAxisLabel(units: (string | undefined)[]): string {
-	const has_usd = units.some((item) => item === 'USD');
-	const has_eur = units.some((item) => item === 'EUR');
+	const lower_units = units.map((u) => u?.toLowerCase());
+	const has_usd = lower_units.includes('usd');
+	const has_eur = lower_units.includes('eur');
 	if (has_usd && has_eur) return 'USD / EUR';
 	if (has_usd) return 'USD';
 	if (has_eur) return 'EUR';
@@ -162,22 +163,29 @@ export function getFiatYAxisConfig({
 	grid_color,
 	begin_at_zero,
 	locale,
+	position,
+	is_cents,
 }: {
 	units: (string | undefined)[];
 	show_grid: boolean;
 	grid_color: string;
 	begin_at_zero?: boolean;
 	locale?: string;
+	position?: 'left' | 'right';
+	is_cents?: boolean;
 }): any {
 	return {
-		position: 'right',
+		position: position ?? 'right',
 		title: {
 			display: true,
 			text: getFiatAxisLabel(units),
 		},
 		beginAtZero: begin_at_zero ?? false,
 		ticks: {
-			callback: (value: string | number) => formatAxisValue(Number(value), locale),
+			callback: (value: string | number) => {
+				const display_value = is_cents ? Number(value) / 100 : Number(value);
+				return formatAxisValue(display_value, locale);
+			},
 		},
 		grid: {
 			display: show_grid,

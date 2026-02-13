@@ -26,6 +26,7 @@ import {OrcDataModule} from '@client/modules/data/data.module';
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {OrcProgressModule} from '@client/modules/progress/progress.module';
+import {OrcButtonModule} from '@client/modules/button/button.module';
 import {OrcMintGeneralModule} from '@client/modules/mint/modules/mint-general/mint-general.module';
 import {OrcMintSectionGeneralModule} from '@client/modules/mint/modules/mint-section-general/mint-section-general.module';
 import {pendingEventGuard} from '@client/modules/event/guards/pending-event.guard';
@@ -89,6 +90,7 @@ import {MintSubsectionDatabaseDialogQuoteComponent} from './components/mint-subs
 		OrcFormModule,
 		OrcGraphicModule,
 		OrcProgressModule,
+		OrcButtonModule,
 		OrcMintGeneralModule,
 		OrcMintSectionGeneralModule,
 	],

@@ -1,14 +1,12 @@
 /* Core Dependencies */
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-/* Vendor Dependencies */
-import {MatIconModule} from '@angular/material/icon';
 /* Local Dependencies */
-import {CrewUserIconComponent} from './components/crew-user-icon/crew-user-icon.component';
+import {CrewFacehashComponent} from './components/crew-facehash/crew-facehash.component';
 
 @NgModule({
-	declarations: [CrewUserIconComponent],
-	imports: [CommonModule, MatIconModule],
-	exports: [CrewUserIconComponent],
+	declarations: [CrewFacehashComponent],
+	imports: [CommonModule],
+	exports: [CrewFacehashComponent],
 })
 export class OrcCrewModule {}

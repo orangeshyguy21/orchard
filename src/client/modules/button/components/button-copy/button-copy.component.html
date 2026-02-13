@@ -1,0 +1,12 @@
+<div class="button-copy-container orc-text-button orc-icon-button" (click)="onCopy()">
+	<div class="button-copy-label">
+		<ng-content></ng-content>
+	</div>
+	<div class="button-copy-action-wrapper" [class.small-copy]="size() === 'sm'">
+		<div class="button-copy-action" [class.copied]="copied()">
+			<mat-icon #iconRef class="mat-symbol-outline" [class.icon-sm]="size() === 'sm'">{{
+				copied() ? 'check' : 'content_copy'
+			}}</mat-icon>
+		</div>
+	</div>
+</div>

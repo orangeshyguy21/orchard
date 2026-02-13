@@ -1,8 +1,12 @@
 @use 'molecule/molecule';
 
+.mint-icon-container {
+	@extend %flex;
+}
+
 .mint-icon {
-	@extend %h-2;
-	@extend %w-2;
+	height: var(--size);
+	width: var(--size);
 	@extend %flex;
 	@extend %flex-items-center;
 	@extend %flex-justify-center;

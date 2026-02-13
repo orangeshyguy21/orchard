@@ -19,7 +19,6 @@ describe('IndexSubsectionDashboardMintHeaderComponent', () => {
 		fixture.componentRef.setInput('enabled', false);
 		fixture.componentRef.setInput('loading', true);
 		fixture.componentRef.setInput('info', {version: ''});
-		fixture.componentRef.setInput('error', false);
 		fixture.detectChanges();
 	});
 

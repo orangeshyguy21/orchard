@@ -200,7 +200,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 			timezone: timezone,
 		});
 		const analytics_keysets_pre_obs = this.mintService.loadMintAnalyticsKeysets({
-			date_start: 100000,
+			date_start: this.configService.config.constants.epoch_start,
 			date_end: this.page_settings.date_start - 1,
 			interval: MintAnalyticsInterval.Custom,
 			timezone: timezone,

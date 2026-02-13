@@ -5,13 +5,10 @@ import {Router, Event, ActivatedRoute, NavigationStart, NavigationEnd, Navigatio
 import {filter, Subscription} from 'rxjs';
 /* Application Dependencies */
 import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
-import {Setting} from '@client/modules/settings/classes/setting.class';
 /* Native Dependencies */
 import {BitcoinService} from '@client/modules/bitcoin/services/bitcoin/bitcoin.service';
 import {BitcoinNetworkInfo} from '@client/modules/bitcoin/classes/bitcoin-network-info.class';
 import {BitcoinBlockchainInfo} from '@client/modules/bitcoin/classes/bitcoin-blockchain-info.class';
-/* Shared Dependencies */
-import {SettingKey} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-bitcoin-section',
@@ -21,10 +18,11 @@ import {SettingKey} from '@shared/generated.types';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BitcoinSectionComponent implements OnInit, OnDestroy {
+	public show_oracle: boolean;
+
 	public bitcoin_blockchain_info: WritableSignal<BitcoinBlockchainInfo | null> = signal(null);
 	public bitcoin_network_info: WritableSignal<BitcoinNetworkInfo | null> = signal(null);
 	public active_sub_section: WritableSignal<string> = signal('');
-	public show_oracle: WritableSignal<boolean> = signal(false);
 	public overlayed: WritableSignal<boolean> = signal(false);
 
 	private subscriptions: Subscription = new Subscription();
@@ -34,7 +32,9 @@ export class BitcoinSectionComponent implements OnInit, OnDestroy {
 		private settingAppService: SettingAppService,
 		private router: Router,
 		private route: ActivatedRoute,
-	) {}
+	) {
+		this.show_oracle = this.settingAppService.getSetting('bitcoin_oracle');
+	}
 
 	ngOnInit(): void {
 		this.bitcoinService.loadBitcoinNetworkInfo().subscribe({
@@ -45,16 +45,7 @@ export class BitcoinSectionComponent implements OnInit, OnDestroy {
 				console.error(error);
 			},
 		});
-		this.settingAppService.loadSettings().subscribe({
-			next: (settings: Setting[]) => {
-				const oracle_setting = settings.find((setting: Setting) => setting.key === SettingKey.BitcoinOracle);
-				const oracle_enabled = oracle_setting ? this.settingAppService.parseSettingValue(oracle_setting) : false;
-				this.show_oracle.set(oracle_enabled);
-			},
-			error: (error) => {
-				console.error(error);
-			},
-		});
+
 		this.bitcoinService.loadBitcoinBlockchainInfo().subscribe();
 		this.subscriptions.add(this.getBitcoinBlockchainInfoSubscription());
 		this.subscriptions.add(this.getRouterSubscription());

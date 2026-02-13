@@ -1,5 +1,33 @@
 /* Application Dependencies */
-import {LightningRequestType} from '@server/modules/lightning/lightning.enums';
+import {LightningRequestType, LightningChannelCloseType, LightningChannelOpenInitiator} from '@server/modules/lightning/lightning.enums';
+import {
+	LightningPayment,
+	LightningInvoice,
+	LightningForward,
+	LightningChannel,
+	LightningClosedChannel,
+	LightningTransaction,
+} from '@server/modules/lightning/lightning/lightning.types';
+/* Local Dependencies */
+import {
+	ClnPay,
+	ClnPayStatus,
+	ClnInvoice,
+	ClnInvoiceStatus,
+	ClnForward,
+	ClnForwardStatus,
+	ClnChannel,
+	ClnChannelSide,
+	ClnClosedChannel,
+	ClnCloseCause,
+	ClnTransaction,
+	ClnListPaysResponse,
+	ClnListInvoicesResponse,
+	ClnListForwardsResponse,
+	ClnListPeerChannelsResponse,
+	ClnListClosedChannelsResponse,
+	ClnListTransactionsResponse,
+} from './cln.types';
 
 export function asBigIntMsat(v: any): bigint {
 	if (v == null) return BigInt(0);
@@ -49,4 +77,206 @@ export function mapRequestType(type: string): LightningRequestType {
 		default:
 			return LightningRequestType.UNKNOWN;
 	}
+}
+
+/* ============================================
+   CLN to Common Type Mapping Helpers
+   ============================================ */
+
+/**
+ * Converts Buffer to hex string
+ */
+function bufferToHex(buf: Buffer | undefined): string {
+	if (!buf || !Buffer.isBuffer(buf)) return '';
+	return buf.toString('hex');
+}
+
+/**
+ * Extracts msat value as string from CLN Amount object
+ */
+function extractMsat(amount: {msat: string} | undefined): string {
+	return amount?.msat ?? '0';
+}
+
+/**
+ * Maps CLN payment status to common status
+ */
+function mapClnPaymentStatus(status: ClnPayStatus): LightningPayment['status'] {
+	switch (status) {
+		case ClnPayStatus.COMPLETE:
+			return 'succeeded';
+		case ClnPayStatus.FAILED:
+			return 'failed';
+		case ClnPayStatus.PENDING:
+		default:
+			return 'pending';
+	}
+}
+
+/**
+ * Maps CLN ListPaysResponse to common LightningPayment[]
+ * Note: CLN does not support Taproot Assets, so asset_balances is always empty
+ */
+export function mapClnPayments(response: ClnListPaysResponse): LightningPayment[] {
+	const pays = response?.pays ?? [];
+	return pays.map((p: ClnPay) => ({
+		payment_hash: bufferToHex(p.payment_hash),
+		value_msat: extractMsat(p.amount_msat),
+		fee_msat: (BigInt(extractMsat(p.amount_sent_msat)) - BigInt(extractMsat(p.amount_msat))).toString(),
+		status: mapClnPaymentStatus(p.status),
+		creation_time: Number(p.created_at) || 0,
+		asset_balances: [], // CLN does not support Taproot Assets
+	}));
+}
+
+/**
+ * Maps CLN invoice status to common state
+ */
+function mapClnInvoiceState(status: ClnInvoiceStatus): LightningInvoice['state'] {
+	switch (status) {
+		case ClnInvoiceStatus.PAID:
+			return 'settled';
+		case ClnInvoiceStatus.EXPIRED:
+			return 'canceled';
+		case ClnInvoiceStatus.UNPAID:
+		default:
+			return 'open';
+	}
+}
+
+/**
+ * Maps CLN ListInvoicesResponse to common LightningInvoice[]
+ * Note: CLN does not support Taproot Assets, so asset_balances is always empty
+ */
+export function mapClnInvoices(response: ClnListInvoicesResponse): LightningInvoice[] {
+	const invoices = response?.invoices ?? [];
+	return invoices.map((i: ClnInvoice) => ({
+		payment_hash: bufferToHex(i.payment_hash),
+		value_msat: extractMsat(i.amount_msat),
+		amt_paid_msat: extractMsat(i.amount_received_msat),
+		state: mapClnInvoiceState(i.status),
+		creation_date: Number(i.created_index) || 0, // CLN doesn't have creation_date directly, use created_index or expires_at - expiry
+		settle_date: i.paid_at ? Number(i.paid_at) : null,
+		asset_balances: [], // CLN does not support Taproot Assets
+	}));
+}
+
+/**
+ * Maps CLN ListForwardsResponse to common LightningForward[]
+ * Only includes SETTLED forwards (completed routing events)
+ */
+export function mapClnForwards(response: ClnListForwardsResponse): LightningForward[] {
+	const forwards = response?.forwards ?? [];
+	return forwards
+		.filter((f: ClnForward) => f.status === ClnForwardStatus.SETTLED)
+		.map((f: ClnForward) => ({
+			timestamp: Math.floor(Number(f.received_time) || 0),
+			amt_in_msat: extractMsat(f.in_msat),
+			amt_out_msat: extractMsat(f.out_msat),
+			fee_msat: extractMsat(f.fee_msat),
+		}));
+}
+
+/**
+ * Extracts funding txid from CLN channel (Buffer to hex)
+ */
+function extractClnFundingTxid(funding_txid: Buffer | undefined): string {
+	if (!funding_txid || !Buffer.isBuffer(funding_txid)) return '';
+	// CLN returns txid in internal byte order, need to reverse for display
+	return Buffer.from(funding_txid).reverse().toString('hex');
+}
+
+/**
+ * Maps CLN channel opener to boolean (true = we opened)
+ */
+function mapClnOpener(opener: ClnChannelSide): boolean {
+	return opener === ClnChannelSide.LOCAL;
+}
+
+/**
+ * Maps CLN ListPeerChannelsResponse to common LightningChannel[]
+ * Note: CLN does not support Taproot Assets, so asset is always null
+ */
+export function mapClnChannels(response: ClnListPeerChannelsResponse): LightningChannel[] {
+	const channels = response?.channels ?? [];
+	return channels.map((c: ClnChannel) => ({
+		channel_point: `${extractClnFundingTxid(c.funding_txid)}:${c.funding_outnum ?? 0}`,
+		chan_id: c.short_channel_id ?? '',
+		capacity: (BigInt(extractMsat(c.total_msat)) / BigInt(1000)).toString(),
+		local_balance: (BigInt(extractMsat(c.to_us_msat)) / BigInt(1000)).toString(),
+		remote_balance: ((BigInt(extractMsat(c.total_msat)) - BigInt(extractMsat(c.to_us_msat))) / BigInt(1000)).toString(),
+		initiator: mapClnOpener(c.opener),
+		push_amount_sat: c.funding?.pushed_msat ? (BigInt(extractMsat(c.funding.pushed_msat)) / BigInt(1000)).toString() : null,
+		private: c.private ?? false,
+		active: c.peer_connected ?? false,
+		funding_txid: extractClnFundingTxid(c.funding_txid),
+		asset: null, // CLN does not support Taproot Assets
+	}));
+}
+
+/**
+ * Maps CLN close cause to common close type
+ */
+function mapClnCloseType(close_cause: ClnCloseCause): LightningChannelCloseType {
+	switch (close_cause) {
+		case ClnCloseCause.LOCAL:
+		case ClnCloseCause.USER:
+			return LightningChannelCloseType.LOCAL_FORCE;
+		case ClnCloseCause.REMOTE:
+			return LightningChannelCloseType.REMOTE_FORCE;
+		case ClnCloseCause.PROTOCOL:
+			return LightningChannelCloseType.COOPERATIVE;
+		case ClnCloseCause.ONCHAIN:
+			return LightningChannelCloseType.BREACH;
+		case ClnCloseCause.UNKNOWN:
+		default:
+			return LightningChannelCloseType.UNKNOWN;
+	}
+}
+
+/**
+ * Maps CLN opener to common initiator string
+ */
+function mapClnInitiator(opener: ClnChannelSide): LightningChannelOpenInitiator {
+	switch (opener) {
+		case ClnChannelSide.LOCAL:
+			return LightningChannelOpenInitiator.LOCAL;
+		case ClnChannelSide.REMOTE:
+			return LightningChannelOpenInitiator.REMOTE;
+		default:
+			return LightningChannelOpenInitiator.UNKNOWN;
+	}
+}
+
+/**
+ * Maps CLN ListClosedChannelsResponse to common LightningClosedChannel[]
+ * Note: CLN does not support Taproot Assets, so asset is always null
+ */
+export function mapClnClosedChannels(response: ClnListClosedChannelsResponse): LightningClosedChannel[] {
+	const channels = response?.closedchannels ?? [];
+	return channels.map((c: ClnClosedChannel) => ({
+		channel_point: `${extractClnFundingTxid(c.funding_txid)}:${c.funding_outnum ?? 0}`,
+		chan_id: c.short_channel_id ?? '',
+		capacity: (BigInt(extractMsat(c.total_msat)) / BigInt(1000)).toString(),
+		close_height: 0, // CLN doesn't provide close_height directly
+		settled_balance: (BigInt(extractMsat(c.final_to_us_msat)) / BigInt(1000)).toString(),
+		time_locked_balance: null, // CLN doesn't track this separately
+		close_type: mapClnCloseType(c.close_cause),
+		open_initiator: mapClnInitiator(c.opener),
+		funding_txid: extractClnFundingTxid(c.funding_txid),
+		closing_txid: c.last_commitment_txid ? extractClnFundingTxid(c.last_commitment_txid) : '',
+		asset: null, // CLN does not support Taproot Assets
+	}));
+}
+
+/**
+ * Maps CLN ListTransactionsResponse to common LightningTransaction[]
+ */
+export function mapClnTransactions(response: ClnListTransactionsResponse): LightningTransaction[] {
+	const transactions = response?.transactions ?? [];
+	return transactions.map((t: ClnTransaction) => ({
+		tx_hash: bufferToHex(Buffer.from(t.hash).reverse()), // Reverse for display order
+		time_stamp: 0, // Will be enriched from Bitcoin RPC or estimated
+		block_height: t.blockheight ?? undefined,
+	}));
 }

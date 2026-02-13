@@ -111,8 +111,8 @@ export class NutshellService {
 	}
 
 	public async getMintBalances(client: CashuMintDatabase, keyset_id?: string): Promise<CashuMintBalance[]> {
-		const where_clause = keyset_id ? `WHERE keyset = ?` : '';
-		const sql = `SELECT * FROM balance ${where_clause};`;
+		const where_clause = keyset_id ? `WHERE b.keyset = ?` : '';
+		const sql = `SELECT b.keyset, b.balance, k.unit FROM balance b LEFT JOIN keysets k ON k.id = b.keyset ${where_clause};`;
 		const params = keyset_id ? [keyset_id] : [];
 		try {
 			return queryRows<CashuMintBalance>(client, sql, params);
@@ -199,7 +199,7 @@ export class NutshellService {
 				request_lookup_id: row.checking_id,
 				paid_time: convertDateToUnixTimestamp(row.paid_time),
 				created_time: convertDateToUnixTimestamp(row.created_time),
-				payment_preimage: null,
+				payment_preimage: row.proof,
 				msat_to_pay: null,
 				payment_method: 'bolt11',
 			}));

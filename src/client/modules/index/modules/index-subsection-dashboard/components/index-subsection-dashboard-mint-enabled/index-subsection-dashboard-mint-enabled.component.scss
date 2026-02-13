@@ -3,3 +3,8 @@
 .mint-enabled-container {
 	min-height: 16rem;
 }
+
+.panel {
+	@extend %flex-shrink-1;
+	@extend %w-min-0;
+}

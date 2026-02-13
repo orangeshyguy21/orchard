@@ -3,6 +3,7 @@
 .index-bitcoin-header-container {
 	@extend %flex;
 	@extend %flex-items-center;
+	@extend %flex-justify-between;
 	@extend %flex-gap-0-5;
 
 	&.tablet-header {

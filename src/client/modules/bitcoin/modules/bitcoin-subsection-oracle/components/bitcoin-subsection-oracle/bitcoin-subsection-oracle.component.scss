@@ -34,7 +34,7 @@
 	@extend %p-v-1;
 	@extend %orc-corner-extra-large;
 	@extend %flex-gap-2;
-	left: 50%;
+	@extend %left-half;
 	transform: translateX(-50%);
 
 	&.mobile-latest-price {

@@ -12,6 +12,8 @@ import {MatTableModule} from '@angular/material/table';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatListModule} from '@angular/material/list';
 /* Application Dependencies */
 import {OrcLocalModule} from '@client/modules/local/local.module';
 import {OrcDataModule} from '@client/modules/data/data.module';
@@ -27,8 +29,6 @@ import {IndexSubsectionDashboardComponent} from './components/index-subsection-d
 import {IndexSubsectionDashboardBitcoinHeaderComponent} from './components/index-subsection-dashboard-bitcoin-header/index-subsection-dashboard-bitcoin-header.component';
 import {IndexSubsectionDashboardBitcoinDisabledComponent} from './components/index-subsection-dashboard-bitcoin-disabled/index-subsection-dashboard-bitcoin-disabled.component';
 import {IndexSubsectionDashboardBitcoinEnabledComponent} from './components/index-subsection-dashboard-bitcoin-enabled/index-subsection-dashboard-bitcoin-enabled.component';
-import {IndexSubsectionDashboardBitcoinEnabledHotwalletComponent} from './components/index-subsection-dashboard-bitcoin-enabled-hotwallet/index-subsection-dashboard-bitcoin-enabled-hotwallet.component';
-import {IndexSubsectionDashboardBitcoinEnabledInfoComponent} from './components/index-subsection-dashboard-bitcoin-enabled-info/index-subsection-dashboard-bitcoin-enabled-info.component';
 import {IndexSubsectionDashboardBitcoinEnabledBlockchainComponent} from './components/index-subsection-dashboard-bitcoin-enabled-blockchain/index-subsection-dashboard-bitcoin-enabled-blockchain.component';
 import {IndexSubsectionDashboardBitcoinEnabledSyncingComponent} from './components/index-subsection-dashboard-bitcoin-enabled-syncing/index-subsection-dashboard-bitcoin-enabled-syncing.component';
 import {IndexSubsectionDashboardLightningHeaderComponent} from './components/index-subsection-dashboard-lightning-header/index-subsection-dashboard-lightning-header.component';
@@ -41,7 +41,6 @@ import {IndexSubsectionDashboardMintDisabledComponent} from './components/index-
 import {IndexSubsectionDashboardEcashHeaderComponent} from './components/index-subsection-dashboard-ecash-header/index-subsection-dashboard-ecash-header.component';
 import {IndexSubsectionDashboardEcashDisabledComponent} from './components/index-subsection-dashboard-ecash-disabled/index-subsection-dashboard-ecash-disabled.component';
 import {IndexSubsectionDashboardEcashEnabledComponent} from './components/index-subsection-dashboard-ecash-enabled/index-subsection-dashboard-ecash-enabled.component';
-import {IndexSubsectionDashboardMintEnabledInfoComponent} from './components/index-subsection-dashboard-mint-enabled-info/index-subsection-dashboard-mint-enabled-info.component';
 
 @NgModule({
 	declarations: [
@@ -49,9 +48,7 @@ import {IndexSubsectionDashboardMintEnabledInfoComponent} from './components/ind
 		IndexSubsectionDashboardBitcoinHeaderComponent,
 		IndexSubsectionDashboardBitcoinDisabledComponent,
 		IndexSubsectionDashboardBitcoinEnabledComponent,
-		IndexSubsectionDashboardBitcoinEnabledHotwalletComponent,
 		IndexSubsectionDashboardBitcoinEnabledBlockchainComponent,
-		IndexSubsectionDashboardBitcoinEnabledInfoComponent,
 		IndexSubsectionDashboardBitcoinEnabledSyncingComponent,
 		IndexSubsectionDashboardLightningHeaderComponent,
 		IndexSubsectionDashboardLightningDisabledComponent,
@@ -60,7 +57,6 @@ import {IndexSubsectionDashboardMintEnabledInfoComponent} from './components/ind
 		IndexSubsectionDashboardMintHeaderComponent,
 		IndexSubsectionDashboardMintDisabledComponent,
 		IndexSubsectionDashboardMintEnabledComponent,
-		IndexSubsectionDashboardMintEnabledInfoComponent,
 		IndexSubsectionDashboardEcashHeaderComponent,
 		IndexSubsectionDashboardEcashEnabledComponent,
 		IndexSubsectionDashboardEcashDisabledComponent,
@@ -84,6 +80,8 @@ import {IndexSubsectionDashboardMintEnabledInfoComponent} from './components/ind
 		MatProgressSpinnerModule,
 		MatFormFieldModule,
 		MatSelectModule,
+		MatMenuModule,
+		MatListModule,
 		OrcLocalModule,
 		OrcDataModule,
 		OrcGraphicModule,

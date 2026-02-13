@@ -1,0 +1,33 @@
+<div mat-dialog-title>
+	<div class="flex flex-items-center flex-gap-0-5">
+		<div class="flex">
+			<orc-network-connection-status [type]="data.type" [status]="data.status" size="lg"></orc-network-connection-status>
+		</div>
+		<div class="flex flex-column">
+			<div class="title-l">{{ data.section | titlecase }} {{ data.type }} connection</div>
+			<div class="font-size-xs orc-outline-color">{{ status_message() }}</div>
+		</div>
+	</div>
+</div>
+
+<mat-dialog-content>
+	<div class="flex flex-items-center flex-gap-0-5 p-b-1" [style.max-width]="this.size() + 'px'">
+		<orc-button-copy [text]="data.uri">
+			<span class="mega-string">{{ data.uri }}</span>
+		</orc-button-copy>
+	</div>
+	<div #qr_canvas></div>
+	<div class="p-h-1 p-t-1 flex flex-gap-2 flex-items-center" [formGroup]="qr_options">
+		<mat-slider class="w-full flex-grow" min="0" max="3" step="1" showTickMarks>
+			<input matSliderThumb formControlName="style" (input)="onStyleChange()" />
+		</mat-slider>
+		<div>
+			<mat-slide-toggle formControlName="image" name="qr_logo" (change)="onImageChange($event)"></mat-slide-toggle>
+		</div>
+	</div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+	<button mat-stroked-button mat-dialog-close (click)="download()">Download</button>
+	<button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>

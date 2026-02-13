@@ -204,7 +204,6 @@ export class SettingsSubsectionDeviceComponent implements OnInit, AfterViewInit,
 	}
 
 	public onCurrencyChange(currency: CurrencyType | null, mode: keyof Currency): void {
-		console.log(currency, mode);
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
 		this.localStorageService.setCurrency({...this.localStorageService.getCurrency(), [mode]: currency});
 		this.settingDeviceService.setCurrency();

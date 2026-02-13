@@ -20,19 +20,20 @@ import {BitcoinBlock} from '@client/modules/bitcoin/classes/bitcoin-block.class'
 import {BitcoinTransaction} from '@client/modules/bitcoin/classes/bitcoin-transaction.class';
 import {BitcoinBlockTemplate} from '@client/modules/bitcoin/classes/bitcoin-block-template.class';
 import {BitcoinTransactionFeeEstimate} from '@client/modules/bitcoin/classes/bitcoin-transaction-fee-estimate.class';
+import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle-price.class';
 import {LightningInfo} from '@client/modules/lightning/classes/lightning-info.class';
 import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
 import {LightningAccount} from '@client/modules/lightning/classes/lightning-account.class';
+import {LightningChannel, LightningClosedChannel} from '@client/modules/lightning/classes/lightning-channel.class';
 import {TaprootAssetInfo} from '@client/modules/tapass/classes/taproot-asset-info.class';
 import {TaprootAssets} from '@client/modules/tapass/classes/taproot-assets.class';
 import {MintInfo} from '@client/modules/mint/classes/mint-info.class';
 import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {OrchardError} from '@client/modules/error/types/error.types';
-import {Setting} from '@client/modules/settings/classes/setting.class';
 import {DeviceType} from '@client/modules/layout/types/device.types';
-/* Shared Dependencies */
-import {SettingKey} from '@shared/generated.types';
+import {PublicPort} from '@client/modules/public/classes/public-port.class';
+import {PublicUrl} from '@client/modules/public/classes/public-url.class';
 
 @Component({
 	selector: 'orc-index-subsection-dashboard',
@@ -43,13 +44,14 @@ import {SettingKey} from '@shared/generated.types';
 })
 export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public enabled_bitcoin: boolean;
-	public enabled_bitcoin_oracle = signal<boolean>(false);
+	public enabled_bitcoin_oracle: boolean;
 	public enabled_lightning: boolean;
 	public enabled_taproot_assets: boolean;
 	public version: string;
 	public enabled_mint: boolean;
 	public enabled_ecash = false;
 	public device_type = signal<DeviceType>('desktop');
+	public bitcoin_oracle_price = signal<BitcoinOraclePrice | null>(null);
 
 	public loading_bitcoin: boolean = true;
 	public loading_lightning: boolean = true;
@@ -69,15 +71,20 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public bitcoin_mempool!: BitcoinTransaction[] | null;
 	public bitcoin_block_template!: BitcoinBlockTemplate | null;
 	public bitcoin_txfee_estimate!: BitcoinTransactionFeeEstimate | null;
+	public bitcoin_connections = signal<PublicPort[]>([]);
 	public lightning_info!: LightningInfo | null;
 	public lightning_balance!: LightningBalance | null;
 	public lightning_accounts!: LightningAccount[] | null;
+	public lightning_channels!: LightningChannel[] | null;
+	public lightning_closed_channels!: LightningClosedChannel[] | null;
+	public lightning_connections = signal<PublicPort[]>([]);
 	public taproot_assets_info!: TaprootAssetInfo | null;
 	public taproot_assets!: TaprootAssets | null;
 	public mint_info!: MintInfo | null;
 	public mint_balances!: MintBalance[] | null;
 	public mint_keysets!: MintKeyset[] | null;
 	public mint_icon_data!: string | null;
+	public mint_connections = signal<PublicUrl[]>([]);
 
 	public bitcoin_txfee_form: FormGroup = new FormGroup({
 		target: new FormControl(1),
@@ -114,6 +121,7 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 		private cdr: ChangeDetectorRef,
 	) {
 		this.enabled_bitcoin = this.configService.config.bitcoin.enabled;
+		this.enabled_bitcoin_oracle = this.settingAppService.getSetting('bitcoin_oracle');
 		this.enabled_lightning = this.configService.config.lightning.enabled;
 		this.enabled_taproot_assets = this.configService.config.taproot_assets.enabled;
 		this.version = this.configService.config.mode.version;
@@ -125,7 +133,6 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 	******************************************************** */
 
 	ngOnInit(): void {
-		this.getSettings();
 		this.orchardOptionalInit();
 		this.subscriptions.add(this.getBreakpointSubscription());
 	}
@@ -141,6 +148,9 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 		if (this.enabled_bitcoin) {
 			this.getBitcoin();
 			this.subscriptions.add(this.getBitcoinBlockSubscription());
+		}
+		if (this.enabled_bitcoin_oracle) {
+			this.subscriptions.add(this.getBitcoinOraclePriceSubscription());
 		}
 		this.cdr.detectChanges();
 	}
@@ -200,28 +210,27 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 			});
 	}
 
-	private getBreakpointSubscription(): Subscription {
+	private getBitcoinOraclePriceSubscription(): Subscription {
+		return this.bitcoinService.loadBitcoinOraclePrice().subscribe((price) => {
+			this.bitcoin_oracle_price.set(price);
+		});
+	}
+
+	public getBreakpointSubscription(): Subscription {
 		return this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium]).subscribe((result) => {
-			this.device_type.set(result.matches ? 'tablet' : 'desktop');
+			if (result.breakpoints[Breakpoints.XSmall]) {
+				this.device_type.set('mobile');
+			} else if (result.breakpoints[Breakpoints.Small] || result.breakpoints[Breakpoints.Medium]) {
+				this.device_type.set('tablet');
+			} else {
+				this.device_type.set('desktop');
+			}
 		});
 	}
 
 	/* *******************************************************
 		Data                      
 	******************************************************** */
-
-	private async getSettings(): Promise<void> {
-		this.settingAppService.loadSettings().subscribe({
-			next: (settings: Setting[]) => {
-				const oracle_setting = settings.find((setting: Setting) => setting.key === SettingKey.BitcoinOracle);
-				const oracle_enabled = oracle_setting ? this.settingAppService.parseSettingValue(oracle_setting) : false;
-				this.enabled_bitcoin_oracle.set(oracle_enabled);
-			},
-			error: (error) => {
-				console.error(error);
-			},
-		});
-	}
 
 	private getBitcoin(): void {
 		forkJoin({
@@ -232,6 +241,7 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 				tap(({blockchain, network}) => {
 					this.bitcoin_blockchain_info = blockchain;
 					this.bitcoin_network_info = network;
+					this.setBitcoinConnections();
 				}),
 				catchError((error) => {
 					this.errors_bitcoin = error.errors;
@@ -301,12 +311,17 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 			info: this.lightningService.loadLightningInfo(),
 			balance: this.lightningService.loadLightningBalance(),
 			accounts: this.lightningService.loadLightningAccounts(),
+			channels: this.lightningService.loadLightningChannels(),
+			closed_channels: this.lightningService.loadLightningClosedChannels(),
 		})
 			.pipe(
-				tap(({info, balance, accounts}) => {
+				tap(({info, balance, accounts, channels, closed_channels}) => {
 					this.lightning_info = info;
 					this.lightning_balance = balance;
 					this.lightning_accounts = accounts;
+					this.lightning_channels = channels;
+					this.lightning_closed_channels = closed_channels;
+					this.setLightningConnections();
 				}),
 				catchError((error) => {
 					this.errors_lightning = error.errors;
@@ -358,20 +373,63 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 				}),
 				catchError((error) => {
 					this.errors_mint = error.errors;
-					this.cdr.detectChanges();
 					return EMPTY;
 				}),
 				finalize(async () => {
 					this.loading_mint = false;
-					if (this.mint_info?.icon_url) {
-						const image = await firstValueFrom(this.publicService.getPublicImageData(this.mint_info?.icon_url));
-						this.mint_icon_data = image?.data ?? null;
-					}
-					this.loading_mint_icon = false;
+					this.setMintIcon();
+					this.setMintConnections();
 					this.cdr.detectChanges();
 				}),
 			)
 			.subscribe();
+	}
+
+	/* *******************************************************
+		Data Post                     
+	******************************************************** */
+
+	private async setMintIcon(): Promise<void> {
+		if (this.mint_info?.icon_url) {
+			const image = await firstValueFrom(this.publicService.getPublicImageData(this.mint_info?.icon_url));
+			this.mint_icon_data = image?.data ?? null;
+		}
+		this.loading_mint_icon = false;
+	}
+
+	private async setMintConnections(): Promise<void> {
+		if (!this.mint_info?.urls) return;
+		if (this.mint_info.urls.length === 0) return;
+		const test_urls = this.mint_info.urls.map((url) => {
+			return `${url.replace(/\/$/, '')}${this.configService.config.mint.critical_path}`;
+		});
+		this.publicService.getPublicUrlsData(test_urls).subscribe((urls) => {
+			this.mint_connections.set(urls);
+		});
+	}
+
+	/** Tests Bitcoin node TCP port reachability */
+	private setBitcoinConnections(): void {
+		const addresses = this.bitcoin_network_info?.localaddresses ?? [];
+		if (addresses.length === 0) return;
+		const targets = addresses.map((addr) => ({host: addr.address, port: addr.port}));
+		this.publicService.getPublicPortsData(targets).subscribe((results) => {
+			this.bitcoin_connections.set(results);
+		});
+	}
+
+	/** Tests Lightning node TCP port reachability */
+	private setLightningConnections(): void {
+		const uris = this.lightning_info?.uris ?? [];
+		if (uris.length === 0) return;
+		const targets = uris.map((uri) => {
+			const address_part = uri.split('@')[1];
+			const [host, port_str] = address_part.split(':');
+			return {host, port: parseInt(port_str, 10)};
+		});
+		this.publicService.getPublicPortsData(targets).subscribe((results) => {
+			this.lightning_connections.set(results);
+		});
 	}
 
 	/* *******************************************************

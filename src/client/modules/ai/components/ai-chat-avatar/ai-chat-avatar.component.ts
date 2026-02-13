@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, computed, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, input} from '@angular/core';
 /* Shared Dependencies */
 import {AiMessageRole} from '@shared/generated.types';
 
@@ -11,9 +11,9 @@ import {AiMessageRole} from '@shared/generated.types';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AiChatAvatarComponent {
-	@Input() public role!: AiMessageRole;
-	@Input() public icon!: string | null;
-	@Input() public section!: string | null;
+	public role = input.required<AiMessageRole>();
+	public icon = input<string | null>();
+	public section = input<string | null>();
 
 	private readonly map_role_class = {
 		[AiMessageRole.Assistant]: 'avatar-role-assistant',
@@ -24,6 +24,6 @@ export class AiChatAvatarComponent {
 	};
 
 	public role_class = computed(() => {
-		return this.map_role_class[this.role];
+		return this.map_role_class[this.role()];
 	});
 }

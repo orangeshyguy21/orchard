@@ -18,3 +18,20 @@ export enum LightningRequestType {
 	BOLT12_INVOICE_REQUEST = 'BOLT12_INVOICE_REQUEST',
 	UNKNOWN = 'UNKNOWN',
 }
+
+export enum LightningChannelCloseType {
+	COOPERATIVE = 'COOPERATIVE',
+	LOCAL_FORCE = 'LOCAL_FORCE',
+	REMOTE_FORCE = 'REMOTE_FORCE',
+	BREACH = 'BREACH',
+	FUNDING_CANCELED = 'FUNDING_CANCELED',
+	ABANDONED = 'ABANDONED',
+	UNKNOWN = 'UNKNOWN',
+}
+
+export enum LightningChannelOpenInitiator {
+	LOCAL = 'LOCAL',
+	REMOTE = 'REMOTE',
+	BOTH = 'BOTH',
+	UNKNOWN = 'UNKNOWN',
+}

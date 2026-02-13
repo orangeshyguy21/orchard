@@ -1,0 +1,40 @@
+@use 'molecule/molecule';
+
+.wallet-summary-list {
+	display: grid;
+	grid-template-columns: auto 1fr auto;
+	gap: 1rem 2rem;
+}
+
+.wallet-summary-card {
+	display: grid;
+	grid-template-columns: subgrid;
+	grid-column: 1 / -1;
+}
+
+.wallet-summary-row {
+	display: grid;
+	grid-template-columns: subgrid;
+	grid-column: 1 / -1;
+	align-items: center;
+
+	.wallet-summary-error {
+		grid-column: 1 / -2;
+	}
+
+	.channel-details {
+		grid-column: 1 / -1;
+	}
+}
+
+.utxo-sizes-chart {
+	@extend %absolute;
+	@extend %z-index-0;
+	@extend %top-half;
+	@extend %right-0;
+	@extend %bottom-0;
+	@extend %left-half;
+	opacity: 0.33;
+	@extend %overflow-hidden;
+	border-bottom-right-radius: 0.5rem;
+}

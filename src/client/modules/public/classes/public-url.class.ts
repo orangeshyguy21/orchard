@@ -7,11 +7,12 @@ export class PublicUrl implements OrchardPublicUrl {
 	ip_address: string | null;
 	has_data: boolean;
 
-	// public get state(): string {
-	//     if( this.status !== 200 ) return 'error';
-	//     if( this.status === 200 && this.has_data ) return 'connected';
-	//     return 'disconnected';
-	// }
+	/** Returns status string for use with NetworkConnectionStatusComponent */
+	public get connection_status(): string {
+		if (this.status !== 200) return 'inactive';
+		if (!this.has_data) return 'warning';
+		return 'active';
+	}
 
 	constructor(data: OrchardPublicUrl) {
 		this.url = data.url || null;

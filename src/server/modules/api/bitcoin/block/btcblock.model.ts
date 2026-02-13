@@ -21,6 +21,9 @@ export class OrchardBitcoinBlock {
 	@Field(() => Int)
 	nTx: number;
 
+	@Field(() => Int)
+	size: number;
+
 	@Field(() => Float)
 	weight: number;
 
@@ -36,6 +39,7 @@ export class OrchardBitcoinBlock {
 		this.time = obb.time;
 		this.chainwork = obb.chainwork;
 		this.nTx = obb.nTx;
+		this.size = obb.size;
 		this.weight = obb.weight;
 		const {fee_lowest, fee_highest} = this.calculateFeeRange(obb.tx);
 		this.feerate_low = fee_lowest;
@@ -134,6 +138,9 @@ export class OrchardBitcoinBlockTemplate {
 	nTx: number;
 
 	@Field(() => Int)
+	size: number;
+
+	@Field(() => Int)
 	weight: number;
 
 	@Field(() => Float)
@@ -145,6 +152,7 @@ export class OrchardBitcoinBlockTemplate {
 	constructor(obbt: BitcoinBlockTemplate) {
 		this.height = obbt.height;
 		this.nTx = obbt.transactions.length;
+		this.size = obbt.transactions.reduce((sum, tx) => sum + tx.data.length / 2, 0);
 		this.weight = this.calculateWeight(obbt.transactions);
 		const {feerate_low, feerate_high} = this.calculateFeerateRange(obbt.transactions);
 		this.feerate_low = feerate_low;

@@ -42,6 +42,17 @@
     }
 }
 
+/* Pulse */
+
+.orc-animation-pulse {
+    animation: pulsing 2s ease-in-out infinite;
+}
+
+@keyframes pulsing {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
 /* Fade */
 
 .orc-animation-fadein-fast {

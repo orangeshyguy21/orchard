@@ -7,7 +7,14 @@
 			<div class="mint-name-error" animate.enter="orc-animation-fadein">Mint Info Error</div>
 		}
 		@case ('name') {
-			<div class="orc-text-button-subtle text-nowrap" (click)="onClick()" animate.enter="orc-animation-fadein">{{ name() }}</div>
+			<div
+				class="orc-text-button-subtle text-nowrap"
+				[class.title-l]="size() === 'large'"
+				(click)="onClick()"
+				animate.enter="orc-animation-fadein"
+			>
+				{{ name() }}
+			</div>
 		}
 		@case ('unset') {
 			<i class="orc-outline-color" animate.enter="orc-animation-fadein">Untitled Mint</i>

@@ -1,21 +1,16 @@
 <div>
 	<div class="title-l p-b-1 p-l-1">Balance Sheet</div>
-	<mat-card appearance="outlined" class="overflow-hidden">
-		<div class="p-h-1 balance-sheet-scroll-wrapper">
-			<table mat-table [dataSource]="rows()" class="orc-feature-table">
-				<ng-container matColumnDef="liabilities">
-					<th mat-header-cell *matHeaderCellDef>Liabilities</th>
-					<td mat-cell *matCellDef="let row">
-						<div class="flex flex-items-center flex-gap-1">
-							<orc-graphic-asset [unit]="row.unit" [height]="'1.75rem'" [custody]="'ecash'"> </orc-graphic-asset>
-							<span class="font-size-m text-nowrap" [innerHTML]="row.liabilities | localAmount: row.unit : 'mint'"></span>
-						</div>
-					</td>
-				</ng-container>
 
-				<ng-container matColumnDef="assets">
-					<th mat-header-cell *matHeaderCellDef>Assets</th>
-					<td mat-cell *matCellDef="let row">
+	<div class="balance-sheet-list" [class.tablet]="device_type() === 'tablet'" [class.mobile]="device_type() === 'mobile'">
+		@for (row of rows(); track row.unit_mint) {
+			<mat-card appearance="outlined" class="balance-sheet-card relative overflow-hidden">
+				<mat-card-content
+					class="balance-sheet-row orc-surface-container-low-bg cursor-pointer"
+					matRipple
+					(click)="toggleExpanded(row.unit_mint)"
+				>
+					<!-- Assets Cell -->
+					<div class="assets-cell flex flex-items-center flex-gap-2">
 						@if (lightning_enabled()) {
 							@if (!lightning_loading()) {
 								@if (lightning_errors() && lightning_errors().length > 0) {
@@ -25,54 +20,178 @@
 										}
 									</div>
 								} @else {
-									<div animate.enter="orc-animation-fadein-fast" class="flex flex-items-center flex-gap-1">
-										<orc-graphic-asset [unit]="row.unit" [height]="'1.75rem'" [custody]="'lightning'">
-										</orc-graphic-asset>
-										@if (row.assets !== null) {
+									<orc-graphic-asset
+										class="low-bg"
+										[unit]="row.unit_mint"
+										[height]="'2.5rem'"
+										[custody]="'lightning'"
+									></orc-graphic-asset>
+									@if (row.assets !== null) {
+										<div class="flex flex-column">
 											<span
-												class="font-size-m text-nowrap"
-												[class.w-min-10]="device_desktop()"
-												[innerHTML]="row.assets | localAmount: row.unit : 'lightning'"
+												class="font-size-l text-nowrap"
+												[innerHTML]="row.assets | localAmount: row.unit_lightning : 'lightning'"
 											></span>
-											<span class="font-size-m font-weight-bold orc-outline-color text-nowrap">{{
-												row.reserve_ratio
-											}}</span>
-										} @else {
-											<span class="font-size-m orc-outline-color" [class.w-min-10]="device_desktop()">
-												<mat-icon>check_indeterminate_small</mat-icon>
-											</span>
-										}
-									</div>
+											<div class="font-size-xs orc-outline-color text-nowrap">
+												Assets &nbsp;&nbsp;●&nbsp;&nbsp; Lightning local capacity
+											</div>
+										</div>
+									} @else {
+										<span class="font-size-m orc-outline-color">
+											<mat-icon>check_indeterminate_small</mat-icon>
+										</span>
+									}
 								}
 							}
 						} @else {
 							<button mat-stroked-button (click)="navigate.emit()">Lightning Configuration</button>
 						}
-					</td>
-				</ng-container>
+					</div>
 
-				<ng-container matColumnDef="keyset">
-					<th mat-header-cell *matHeaderCellDef>Keyset</th>
-					<td mat-cell *matCellDef="let row">
-						<orc-mint-general-keyset
-							[active]="row.active"
-							[index]="row.derivation_path_index"
-							[input_fee_ppk]="row.input_fee_ppk"
+					<!-- Visual Cell -->
+					@if (device_type() === 'desktop' && row.assets !== null && row.liabilities !== null) {
+						<orc-mint-general-balance-stacks
+							[unit]="row.unit_mint"
+							[assets]="row.assets"
+							[liabilities]="row.liabilities"
+							[reserve]="row.reserve"
+						></orc-mint-general-balance-stacks>
+					} @else {
+						<div></div>
+					}
+
+					<!-- Liabilities Cell -->
+					<div class="liabilities-cell flex flex-items-center flex-gap-2">
+						<orc-graphic-asset class="low-bg" [unit]="row.unit_mint" [height]="'2.5rem'" [custody]="'ecash'">
+						</orc-graphic-asset>
+						<div class="flex flex-column">
+							<span
+								class="font-size-l text-nowrap"
+								[innerHTML]="row.liabilities | localAmount: row.unit_mint : 'mint'"
+							></span>
+							<div class="font-size-xs orc-outline-color text-nowrap">
+								Liabilities &nbsp;&nbsp;●&nbsp;&nbsp; Unspent ecash
+							</div>
+						</div>
+					</div>
+
+					<!-- Keyset + Toggle Cell (Desktop) / Toggle Cell (Tablet/Mobile) -->
+					<div class="toggle-cell flex flex-items-center flex-gap-1">
+						@if (device_type() === 'desktop') {
+							<div>
+								<orc-mint-general-keyset
+									class="high-bg"
+									[active]="row.active"
+									[index]="row.derivation_path_index"
+									[input_fee_ppk]="row.input_fee_ppk"
+								></orc-mint-general-keyset>
+								<div class="font-size-xs orc-outline-color text-nowrap p-l-0-5">Active keyset</div>
+							</div>
+						}
+						<button
+							type="button"
+							tabindex="-1"
+							mat-icon-button
+							class="orc-icon-button orc-animation-rotate-toggle"
+							[class.animation-expanded]="expanded()[row.unit_mint]"
 						>
-						</orc-mint-general-keyset>
-					</td>
-				</ng-container>
+							<mat-icon>keyboard_arrow_down</mat-icon>
+						</button>
+					</div>
 
-				<ng-container matColumnDef="fees">
-					<th mat-header-cell *matHeaderCellDef class="text-nowrap">Fee revenue</th>
-					<td mat-cell *matCellDef="let row">
-						<span class="font-size-m text-nowrap" [innerHTML]="row.fees | localAmount: row.unit : 'mint'"></span>
-					</td>
-				</ng-container>
-
-				<tr mat-header-row *matHeaderRowDef="displayed_columns()"></tr>
-				<tr mat-row *matRowDef="let row; columns: displayed_columns()"></tr>
-			</table>
-		</div>
-	</mat-card>
+					<div class="balance-sheet-details orc-animation-expand-collapse" [class.animation-expanded]="expanded()[row.unit_mint]">
+						<div class="orc-animation-expand-collapse-inner p-t-1">
+							<div class="category-rule"></div>
+							@if (device_type() !== 'desktop') {
+								<div class="p-t-1 flex flex-column flex-items-center flex-gap-0-5">
+									<orc-mint-general-keyset
+										class="high-bg"
+										[active]="row.active"
+										[index]="row.derivation_path_index"
+										[input_fee_ppk]="row.input_fee_ppk"
+									></orc-mint-general-keyset>
+									<div class="font-size-xs orc-outline-color">Active keyset</div>
+								</div>
+							}
+							<div class="flex flex-row flex-gap-1 p-t-1 flex-wrap">
+								<div class="orc-high-card p-1 flex-1">
+									<div>
+										<div class="font-size-l text-nowrap">{{ row.unit_mint | localUnit: true }}</div>
+										<div class="font-size-xs orc-outline-color text-nowrap">Mint unit</div>
+									</div>
+								</div>
+								@if (row.assets !== null) {
+									<div class="orc-high-card p-1 flex-1">
+										<div>
+											<div class="font-size-l text-nowrap">{{ row.reserve }}x</div>
+											<div class="font-size-xs orc-outline-color text-nowrap">Liability coverage</div>
+										</div>
+									</div>
+								}
+								<div class="orc-high-card p-1 flex-1">
+									<div>
+										<div
+											class="font-size-l text-nowrap"
+											[innerHTML]="row.fees | localAmount: row.unit_mint : 'mint'"
+										></div>
+										<div class="font-size-xs orc-outline-color text-nowrap">Fee revenue</div>
+									</div>
+								</div>
+							</div>
+							@if (row.is_bitcoin && bitcoin_oracle_enabled()) {
+								<div class="flex flex-column flex-gap-0-5 p-t-1">
+									<div class="orc-primary-card flex flex-column">
+										<div class="orc-card-header flex flex-items-center flex-justify-between">
+											<div class="flex flex-items-center flex-gap-0-5">
+												<orc-graphic-oracle-icon [size]="1.5"></orc-graphic-oracle-icon>
+												<div class="orc-on-primary-container-color">Oracle</div>
+											</div>
+											<div>
+												<div class="font-size-xs orc-outline-color text-nowrap">
+													price from {{ bitcoin_oracle_price()?.date | timeUtc: 'date-only' }}
+												</div>
+											</div>
+										</div>
+										<div class="p-1 flex flex-row flex-gap-3 flex-wrap">
+											<div class="flex-1">
+												<div>
+													<div
+														class="font-size-l text-nowrap"
+														[innerHTML]="row.assets_oracle | localAmount: 'usd'"
+													></div>
+													<div class="font-size-xs orc-outline-color text-nowrap">
+														Assets &nbsp;&nbsp;●&nbsp;&nbsp; Lightning local capacity
+													</div>
+												</div>
+											</div>
+											<div class="flex-1">
+												<div>
+													<div
+														class="font-size-l text-nowrap"
+														[innerHTML]="row.liabilities_oracle | localAmount: 'usd'"
+													></div>
+													<div class="font-size-xs orc-outline-color text-nowrap">
+														Liabilities &nbsp;&nbsp;●&nbsp;&nbsp; Unspent ecash
+													</div>
+												</div>
+											</div>
+											<div class="flex-1">
+												<div>
+													<div
+														class="font-size-l text-nowrap"
+														[innerHTML]="row.fees_oracle | localAmount: 'usd'"
+													></div>
+													<div class="font-size-xs orc-outline-color text-nowrap">Fee revenue</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							}
+						</div>
+					</div>
+				</mat-card-content>
+			</mat-card>
+		}
+	</div>
 </div>

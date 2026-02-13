@@ -16,7 +16,7 @@ describe('IndexSubsectionDashboardLightningEnabledComponent', () => {
 
 		fixture = TestBed.createComponent(IndexSubsectionDashboardLightningEnabledComponent);
 		component = fixture.componentInstance;
-		component.loading = true;
+		fixture.componentRef.setInput('loading', true);
 		fixture.detectChanges();
 	});
 

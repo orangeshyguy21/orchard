@@ -10,7 +10,7 @@ export class DataBytesPipe implements PipeTransform {
 	transform(bytes: number | null | undefined): string {
 		if (bytes === 0 || bytes === null || bytes === undefined) return '0 B';
 
-		const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+		const units = ['B', 'kB', 'MB', 'GB', 'TB'];
 		const k = 1024;
 		const i = Math.floor(Math.log(bytes) / Math.log(k));
 

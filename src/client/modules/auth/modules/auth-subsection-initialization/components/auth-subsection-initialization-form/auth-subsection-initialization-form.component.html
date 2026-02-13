@@ -1,4 +1,15 @@
 <div class="flex flex-column flex-items-center flex-gap-0-5 p-b-2">
+	<div class="flex flex-justify-center">
+		@if (form_group().get('name')?.value) {
+			<div animate.enter="orc-animation-fadein" class="flex">
+				<orc-crew-facehash [name]="form_group().get('name')?.value || ''" [enableBlink]="true" size="4rem"></orc-crew-facehash>
+			</div>
+		} @else {
+			<div animate.enter="orc-animation-fadein" class="flex">
+				<orc-graphic-orchard-logo [height]="'4rem'"></orc-graphic-orchard-logo>
+			</div>
+		}
+	</div>
 	<div class="title-l">Orchard Setup</div>
 	<div class="font-size-xs orc-outline-color text-center">Setup the admin user for your Orchard using your secret setup key</div>
 </div>
@@ -65,7 +76,7 @@
 </mat-card>
 
 <div class="flex flex-justify-center p-t-2">
-	<button type="button" matFab extended class="orc-icon-button" [disabled]="form_group().invalid" (click)="submit.emit()">
+	<button type="button" matFab extended class="orc-icon-button orc-flat-fab" [disabled]="form_group().invalid" (click)="submit.emit()">
 		<mat-icon>save</mat-icon>
 		Start
 	</button>

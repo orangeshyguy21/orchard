@@ -21,8 +21,10 @@ describe('MintGeneralBalanceSheetComponent', () => {
 		fixture.componentRef.setInput('lightning_balance', null);
 		fixture.componentRef.setInput('lightning_enabled', false);
 		fixture.componentRef.setInput('lightning_loading', false);
+		fixture.componentRef.setInput('bitcoin_oracle_enabled', false);
+		fixture.componentRef.setInput('bitcoin_oracle_price', null);
 		fixture.componentRef.setInput('loading', true);
-		fixture.componentRef.setInput('device_desktop', true);
+		fixture.componentRef.setInput('device_type', 'desktop');
 		fixture.detectChanges();
 	});
 

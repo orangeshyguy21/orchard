@@ -22,8 +22,10 @@ import {MatDialog} from '@angular/material/dialog';
 /* Application Dependencies */
 import {NonNullableMintDatabaseSettings} from '@client/modules/settings/types/setting.types';
 import {ConfigService} from '@client/modules/config/services/config.service';
+import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {EventService} from '@client/modules/event/services/event/event.service';
+import {BitcoinService} from '@client/modules/bitcoin/services/bitcoin/bitcoin.service';
 import {LightningService} from '@client/modules/lightning/services/lightning/lightning.service';
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
 import {EventData} from '@client/modules/event/classes/event-data.class';
@@ -33,11 +35,14 @@ import {AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {LightningRequest} from '@client/modules/lightning/classes/lightning-request.class';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {DeviceType} from '@client/modules/layout/types/device.types';
+import {oracleConvertToUSDCents, findNearestOraclePrice} from '@client/modules/bitcoin/helpers/oracle.helpers';
 /* Native Dependencies */
 import {MintService} from '@client/modules/mint/services/mint/mint.service';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class';
 import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
+import {MintProofGroup} from '@client/modules/mint/classes/mint-proof-group.class';
+import {MintPromiseGroup} from '@client/modules/mint/classes/mint-promise-group.class';
 import {MintDataType} from '@client/modules/mint/enums/data-type.enum';
 import {MintSubsectionDatabaseData} from '@client/modules/mint/modules/mint-subsection-database/classes/mint-subsection-database-data.class';
 import {MintSubsectionDatabaseDialogQuoteComponent} from '@client/modules/mint/modules/mint-subsection-database/components/mint-subsection-database-dialog-quote/mint-subsection-database-dialog-quote.component';
@@ -89,11 +94,16 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	public database_timestamp!: number;
 	public database_implementation!: string;
 	public lightning_request!: LightningRequest | null;
+
 	public device_type = signal<DeviceType>('desktop');
+	public bitcoin_oracle_amount = signal<number | null>(null);
 
 	private active_event: EventData | null = null;
 	private subscriptions: Subscription = new Subscription();
 	private backup_encoded: string = '';
+	private bitcoin_oracle_enabled: boolean;
+	private lightning_enabled: boolean;
+	private bitcoin_oracle_price_map: Map<number, number> | null = null;
 
 	public get state_enabled(): boolean {
 		return (
@@ -104,15 +114,20 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	constructor(
 		private route: ActivatedRoute,
 		private configService: ConfigService,
+		private settingAppService: SettingAppService,
 		private settingDeviceService: SettingDeviceService,
 		private eventService: EventService,
 		private mintService: MintService,
+		private bitcoinService: BitcoinService,
 		private lightningService: LightningService,
 		private aiService: AiService,
 		private breakpointObserver: BreakpointObserver,
 		private dialog: MatDialog,
 		private cdr: ChangeDetectorRef,
-	) {}
+	) {
+		this.lightning_enabled = this.configService.config.lightning.enabled;
+		this.bitcoin_oracle_enabled = this.settingAppService.getSetting('bitcoin_oracle');
+	}
 
 	/* *******************************************************
 	   Initalization                      
@@ -133,6 +148,9 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		if (this.configService.config.ai.enabled) {
 			this.subscriptions.add(this.getAgentSubscription());
 			this.subscriptions.add(this.getToolSubscription());
+		}
+		if (this.bitcoin_oracle_enabled) {
+			this.subscriptions.add(this.getBitcoinOraclePriceMapSubscription());
 		}
 	}
 
@@ -185,6 +203,14 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 				this.device_type.set('desktop');
 			}
 		});
+	}
+
+	private getBitcoinOraclePriceMapSubscription(): Subscription {
+		return this.bitcoinService
+			.loadBitcoinOraclePriceMap(this.page_settings.date_start, this.page_settings.date_end)
+			.subscribe((price_map) => {
+				this.bitcoin_oracle_price_map = price_map;
+			});
 	}
 
 	/* *******************************************************
@@ -401,10 +427,16 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		this.eventService.registerEvent(null);
 		this.cdr.detectChanges();
 	}
-	public onMoreRequest(request: string): void {
-		this.loading_more = true;
-		this.cdr.detectChanges();
-		this.getLightningRequest(request);
+	public onMoreRequest(entity: MintMintQuote | MintMeltQuote | MintProofGroup | MintPromiseGroup): void {
+		if (this.bitcoin_oracle_enabled) {
+			this.calculateBitcoinOraclePrice(entity);
+		}
+		if ('request' in entity && this.lightning_enabled) {
+			const request: string = entity.request;
+			this.loading_more = true;
+			this.cdr.detectChanges();
+			this.getLightningRequest(request);
+		}
 	}
 
 	public onSetQuoteStatePaid(quote: MintMintQuote | MintMeltQuote): void {
@@ -464,6 +496,22 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 				);
 			},
 		});
+	}
+
+	/* *******************************************************
+		Oracle Conversion                      
+	******************************************************** */
+
+	private calculateBitcoinOraclePrice(entity: MintMintQuote | MintMeltQuote | MintProofGroup | MintPromiseGroup): void {
+		if (!this.bitcoin_oracle_price_map) return;
+		if (!entity.amount) return;
+		if (!entity.unit) return;
+		if (!entity.created_time) return;
+		const amount = entity.amount;
+		const unit = entity.unit;
+		const price = findNearestOraclePrice(this.bitcoin_oracle_price_map, entity.created_time);
+		const usd_cents = oracleConvertToUSDCents(amount, price, unit);
+		this.bitcoin_oracle_amount.set(usd_cents);
 	}
 
 	/* *******************************************************

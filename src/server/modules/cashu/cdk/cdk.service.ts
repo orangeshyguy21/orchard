@@ -118,11 +118,13 @@ export class CdkService {
 				${keyset_id ? 'AND keyset_id = ?' : ''}
 				GROUP BY keyset_id
 			)
-			SELECT 
+			SELECT
 				COALESCE(i.keyset_id, r.keyset_id) AS keyset,
-				COALESCE(i.issued_amount, 0) - COALESCE(r.redeemed_amount, 0) AS balance
+				COALESCE(i.issued_amount, 0) - COALESCE(r.redeemed_amount, 0) AS balance,
+				k.unit
 			FROM issued i
 			FULL OUTER JOIN redeemed r ON i.keyset_id = r.keyset_id
+			LEFT JOIN keyset k ON k.id = COALESCE(i.keyset_id, r.keyset_id)
 			ORDER BY keyset;
 		`;
 
@@ -162,7 +164,11 @@ export class CdkService {
 	}
 
 	public async getMintKeysets(client: CashuMintDatabase): Promise<CashuMintKeyset[]> {
-		const sql = 'SELECT * FROM keyset WHERE unit != ?;';
+		const sql = `
+            SELECT *, CAST(COALESCE(fee_collected, 0) AS INTEGER) AS fees_paid FROM keyset
+            LEFT JOIN keyset_amounts ON keyset_amounts.keyset_id = keyset.id
+            WHERE unit != ?;
+            `;
 		try {
 			return queryRows<CashuMintKeyset>(client, sql, ['auth']);
 		} catch (err) {

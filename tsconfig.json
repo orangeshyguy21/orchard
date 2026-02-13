@@ -1,9 +1,3 @@
 {
-  "files": [],
-  "references": [
-    {"path": "./tsconfig.client.json"},
-    {"path": "./tsconfig.client.spec.json"},
-    {"path": "./tsconfig.server.json"},
-    {"path": "./tsconfig.server.spec.json"}
-  ]
+  "extends": "./tsconfig.client.json"
 }

@@ -33,7 +33,7 @@
 								type="button"
 								matFab
 								extended
-								class="orc-icon-button text-nowrap"
+								class="orc-icon-button orc-flat-fab text-nowrap"
 								(click)="onCreate()"
 								(keydown.enter)="$event.preventDefault(); $event.stopPropagation()"
 							>
@@ -45,7 +45,7 @@
 							<button
 								type="button"
 								matFab
-								class="orc-icon-button text-nowrap"
+								class="orc-icon-button orc-flat-fab text-nowrap"
 								(click)="onCreate()"
 								(keydown.enter)="$event.preventDefault(); $event.stopPropagation()"
 							>
@@ -130,6 +130,7 @@
 				[loading]="loading_dynamic_data"
 				[lightning_request]="lightning_request"
 				[loading_more]="loading_more"
+				[bitcoin_oracle_amount]="bitcoin_oracle_amount()"
 				[device_desktop]="device_type() === 'desktop'"
 				(updateRequest)="onMoreRequest($event)"
 				(setQuoteStatePaid)="onSetQuoteStatePaid($event)"

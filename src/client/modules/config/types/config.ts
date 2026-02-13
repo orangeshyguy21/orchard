@@ -26,7 +26,8 @@ export type Config = {
 		enabled: boolean;
 	};
 	constants: {
-		taproot_asset_ids: {
+		epoch_start: number;
+		taproot_group_keys: {
 			usdt: string;
 		};
 	};

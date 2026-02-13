@@ -17,9 +17,15 @@ import {TaskModule} from './modules/task/task.module';
 import {UnixTimestamp} from './modules/graphql/scalars/unixtimestamp.scalar';
 import {Timezone} from './modules/graphql/scalars/timezone.scalar';
 import {Base64} from './modules/graphql/scalars/base64.scalar';
-import {LightningAddressType, LightningRequestType} from './modules/lightning/lightning.enums';
+import {
+	LightningAddressType,
+	LightningRequestType,
+	LightningChannelCloseType,
+	LightningChannelOpenInitiator,
+} from './modules/lightning/lightning.enums';
 import {TaprootAssetType, TaprootAssetVersion} from './modules/tapass/tapass.enums';
 import {MintAnalyticsInterval} from './modules/cashu/mintdb/cashumintdb.enums';
+import {LightningAnalyticsInterval, LightningAnalyticsMetric} from './modules/lightning/analytics/lnanalytics.enums';
 import {MintUnit, MintQuoteState, MeltQuoteState, MintProofState} from './modules/cashu/cashu.enums';
 import {AiAgent, AiMessageRole, AiFunctionName} from './modules/ai/ai.enums';
 import {UserRole} from './modules/user/user.enums';
@@ -38,6 +44,10 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 	registerEnumType(TaprootAssetVersion, {name: 'TaprootAssetVersion'});
 	registerEnumType(LightningAddressType, {name: 'LightningAddressType'});
 	registerEnumType(LightningRequestType, {name: 'LightningRequestType'});
+	registerEnumType(LightningChannelCloseType, {name: 'LightningChannelCloseType'});
+	registerEnumType(LightningChannelOpenInitiator, {name: 'LightningChannelOpenInitiator'});
+	registerEnumType(LightningAnalyticsInterval, {name: 'LightningAnalyticsInterval'});
+	registerEnumType(LightningAnalyticsMetric, {name: 'LightningAnalyticsMetric'});
 	registerEnumType(AiAgent, {name: 'AiAgent'});
 	registerEnumType(AiMessageRole, {name: 'AiMessageRole'});
 	registerEnumType(AiFunctionName, {name: 'AiFunctionName'});

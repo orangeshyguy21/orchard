@@ -1,0 +1,5 @@
+<div class="chart-graphic-bars-container">
+	@for (bar of relative_bars(); track $index) {
+		<div class="chart-graphic-bar flex-1" [style.height.%]="bar"></div>
+	}
+</div>

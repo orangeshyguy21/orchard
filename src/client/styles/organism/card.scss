@@ -1,0 +1,20 @@
+@use 'molecule/molecule';
+@use 'nucleus/nucleus';
+
+.orc-high-card {
+    @extend %orc-surface-container-high-bg;
+    @extend %orc-corner-small;
+}
+
+.orc-primary-card{
+    @extend %orc-primary-container-bg;
+    @extend %orc-corner-small;
+}
+
+.orc-card-header{
+    @extend %p-h-1;
+    @extend %p-v-0-5;
+    @extend %orc-outline-border-bottom;
+    @extend %border-bottom-solid;
+    @extend %border-bottom;
+}

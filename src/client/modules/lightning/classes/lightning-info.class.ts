@@ -21,6 +21,7 @@ export class LightningInfo implements OrchardLightningInfo {
 	public testnet: boolean;
 	public uris: string[];
 	public version: string;
+	public backend: boolean;
 
 	constructor(oli: OrchardLightningInfo) {
 		this.alias = oli.alias;
@@ -43,5 +44,6 @@ export class LightningInfo implements OrchardLightningInfo {
 		this.testnet = oli.testnet;
 		this.uris = oli.uris;
 		this.version = oli.version;
+		this.backend = oli.backend;
 	}
 }

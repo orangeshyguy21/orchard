@@ -24,6 +24,7 @@ import {MatMenuModule} from '@angular/material/menu';
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcLocalModule} from '@client/modules/local/local.module';
 import {OrcCrewModule} from '@client/modules/crew/crew.module';
+import {OrcButtonModule} from '@client/modules/button/button.module';
 /* Local Dependencies */
 import {IndexSubsectionCrewComponent} from './components/index-subsection-crew/index-subsection-crew.component';
 import {IndexSubsectionCrewControlComponent} from './components/index-subsection-crew-control/index-subsection-crew-control.component';
@@ -77,6 +78,7 @@ import {IndexSubsectionCrewTableUserComponent} from './components/index-subsecti
 		OrcFormModule,
 		OrcLocalModule,
 		OrcCrewModule,
+		OrcButtonModule,
 	],
 })
 export class OrcIndexSubsectionCrewModule {}

@@ -2,6 +2,18 @@
 
 :host {
 	@extend %flex;
+
+	&.low-bg {
+		.graphic-asset-custody {
+			@extend %orc-surface-container-low-bg;
+		}
+	}
+
+	&.high-bg {
+		.graphic-asset-custody {
+			@extend %orc-surface-container-high-bg;
+		}
+	}
 }
 
 .graphic-asset-unit {

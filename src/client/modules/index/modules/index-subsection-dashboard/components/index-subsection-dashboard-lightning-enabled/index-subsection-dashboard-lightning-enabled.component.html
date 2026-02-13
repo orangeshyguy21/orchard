@@ -1,15 +1,36 @@
 <div class="lightning-enabled-container">
-	@if (!loading) {
+	@if (!loading()) {
 		<div animate.enter="orc-animation-fadein" class="flex flex-wrap flex-gap-column-4 flex-gap-row-2">
-			<orc-index-subsection-dashboard-lightning-enabled-info
-				[lightning_info]="lightning_info"
-			></orc-index-subsection-dashboard-lightning-enabled-info>
+			<div class="panel" [class.flex-grow]="device_type() !== 'desktop'">
+				<orc-lightning-general-info
+					[lightning_info]="lightning_info()"
+					[connections]="connections()"
+					[error]="errors_lightning().length > 0"
+					[device_type]="device_type()"
+				>
+					<button
+						type="button"
+						class="orc-icon-button text-nowrap z-index-0 orc-flat-fab"
+						matFab
+						extended
+						[routerLink]="['/lightning']"
+					>
+						<mat-icon>bolt</mat-icon>
+						Open Lightning
+					</button>
+				</orc-lightning-general-info>
+			</div>
 			<div class="flex-grow w-min-0">
-				<orc-lightning-general-channel-table
-					[enabled_taproot_assets]="enabled_taproot_assets"
-					[lightning_balance]="lightning_balance"
-					[taproot_assets]="taproot_assets"
-				></orc-lightning-general-channel-table>
+				<orc-lightning-general-channel-summary
+					[enabled_taproot_assets]="enabled_taproot_assets()"
+					[bitcoin_oracle_enabled]="bitcoin_oracle_enabled()"
+					[bitcoin_oracle_price]="bitcoin_oracle_price()"
+					[lightning_info]="lightning_info()"
+					[lightning_channels]="lightning_channels()"
+					[lightning_closed_channels]="lightning_closed_channels()"
+					[taproot_assets]="taproot_assets()"
+					[device_type]="device_type()"
+				></orc-lightning-general-channel-summary>
 			</div>
 		</div>
 	}

@@ -1,0 +1,52 @@
+<div class="flex flex-column flex-gap-1">
+	<div class="title-l">Info</div>
+	<mat-card appearance="outlined" class="relative overflow-hidden w-min-24">
+		<mat-card-content class="orc-surface-container-low-bg">
+			<div class="flex flex-column flex-gap-1">
+				<div class="flex flex-row flex-items-center flex-justify-between flex-gap-1">
+					<div class="flex flex-row flex-items-center flex-gap-1">
+						<orc-mint-general-icon [loading]="loading()" [icon_data]="icon_data()" [height]="'2.5rem'"> </orc-mint-general-icon>
+						<orc-mint-general-name [name]="info() ? info()?.name : null" [loading]="loading()" [size]="'large'">
+						</orc-mint-general-name>
+					</div>
+
+					<div class="flex flex-items-center flex-gap-0-5">
+						<orc-graphic-status [status]="status()" size="1rem"></orc-graphic-status>
+						<div class="orc-outline-color">{{ state() }}</div>
+					</div>
+				</div>
+				<div>
+					@if (uris().length > 0) {
+						<mat-chip-set class="orc-medium-chip-set orc-pointer-chip-set orc-column-chip-set">
+							@for (connection of uris(); track connection.uri) {
+								<div class="flex flex-items-center">
+									<div class="p-l-0-5">
+										<orc-network-connection-status
+											[type]="connection.type"
+											[status]="connections_status_map().get(connection.origin) ?? null"
+										></orc-network-connection-status>
+									</div>
+									<mat-chip matRipple (click)="onUriClick(connection)">
+										<div class="cursor-pointer flex flex-items-center flex-gap-0-5">
+											<span>{{ connection.label }}</span>
+										</div>
+									</mat-chip>
+								</div>
+							}
+						</mat-chip-set>
+					} @else {
+						<mat-icon>check_indeterminate_small</mat-icon>
+					}
+					<div class="font-size-xs orc-outline-color">Connections</div>
+				</div>
+				<div class="flex flex-row flex-items-center flex-justify-between flex-gap-2">
+					<div>
+						<div class="font-size-l">{{ info()?.description }}</div>
+						<div class="font-size-xs orc-outline-color">Description</div>
+					</div>
+					<ng-content></ng-content>
+				</div>
+			</div>
+		</mat-card-content>
+	</mat-card>
+</div>

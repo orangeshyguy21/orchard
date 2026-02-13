@@ -50,6 +50,15 @@
 
 <mat-menu #filter_menu="matMenu" yPosition="below" class="orc-sticky-menu orc-filter-menu">
 	<orc-form-filter-menu (click)="$event.stopPropagation()" (clear)="onClearFilter()" (close)="onCloseFilter()">
+		@if (bitcoin_oracle_enabled()) {
+			<div class="orc-filter-menu-section">
+				<div>Oracle</div>
+				<div class="filter-options">
+					<mat-checkbox [formControl]="panel.controls.oracle_used" (change)="onOracleUsedChange()"> Convert prices </mat-checkbox>
+				</div>
+			</div>
+			<div class="orc-filter-menu-rule"></div>
+		}
 		@if (!device_desktop()) {
 			<form [formGroup]="panel">
 				<div formGroupName="daterange" class="p-1">

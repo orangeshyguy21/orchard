@@ -1,8 +1,8 @@
 <div class="ai-chat-message-system-container">
 	<div class="orc-ai-chat-message">
-		<orc-ai-chat-avatar [role]="message.role" [icon]="'person'"> </orc-ai-chat-avatar>
+		<orc-crew-facehash [name]="user_name()"></orc-crew-facehash>
 		<div class="orc-ai-chat-message-content">
-			<div class="orc-ai-marked" [innerHTML]="marked_content"></div>
+			<div class="orc-ai-marked" [innerHTML]="marked_content()"></div>
 		</div>
 	</div>
 </div>

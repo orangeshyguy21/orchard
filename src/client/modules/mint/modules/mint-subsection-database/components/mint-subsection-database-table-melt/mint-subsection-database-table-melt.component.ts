@@ -1,15 +1,5 @@
 /* Core Dependencies */
-import {
-	ChangeDetectionStrategy,
-	Component,
-	ElementRef,
-	input,
-	computed,
-	AfterViewInit,
-	ViewChild,
-	ChangeDetectorRef,
-	output,
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ElementRef, input, computed, AfterViewInit, ViewChild, output} from '@angular/core';
 /* Vendor Dependencies */
 import QRCodeStyling from 'qr-code-styling';
 import {DateTime} from 'luxon';
@@ -40,12 +30,12 @@ export class MintSubsectionDatabaseTableMeltComponent implements AfterViewInit {
 	public quote = input.required<MintMeltQuote>();
 	public loading = input.required<boolean>();
 	public lightning_request = input<LightningRequest | null>(null);
+	public bitcoin_oracle_amount = input.required<number | null>();
 	public device_desktop = input.required<boolean>();
 
 	public setStatePaid = output<MintMeltQuote>();
 
 	public qr_code!: QRCodeStyling;
-	public copy_animation_state: 'visible' | 'hidden' = 'hidden';
 
 	public can_set_paid = computed(() => {
 		return this.quote().state === MeltQuoteState.Unpaid;
@@ -76,12 +66,7 @@ export class MintSubsectionDatabaseTableMeltComponent implements AfterViewInit {
 		return '';
 	});
 
-	private copy_timeout: any;
-
-	constructor(
-		private themeService: ThemeService,
-		private cdr: ChangeDetectorRef,
-	) {}
+	constructor(private themeService: ThemeService) {}
 
 	ngAfterViewInit(): void {
 		this.initQR();
@@ -122,18 +107,6 @@ export class MintSubsectionDatabaseTableMeltComponent implements AfterViewInit {
 		});
 
 		this.qr_code.append(this.qr_canvas.nativeElement);
-	}
-
-	public onCopy(value: string | null): void {
-		if (!value) return;
-		navigator.clipboard.writeText(value);
-		if (this.copy_timeout) clearTimeout(this.copy_timeout);
-		this.copy_animation_state = 'visible';
-		this.cdr.detectChanges();
-		this.copy_timeout = setTimeout(() => {
-			this.copy_animation_state = 'hidden';
-			this.cdr.detectChanges();
-		}, 1000);
 	}
 
 	public onSetStatePaid(event: Event): void {

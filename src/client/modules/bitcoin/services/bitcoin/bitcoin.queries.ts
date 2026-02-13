@@ -51,6 +51,7 @@ export const BITCOIN_NETWORK_INFO_QUERY = `{
         timeoffset
         version
         warnings
+        backend
     }
 }`;
 
@@ -61,6 +62,7 @@ query BitcoinBlock($hash: String!) {
         hash
         height
         nTx
+        size
         time
         weight
         feerate_low
@@ -106,6 +108,7 @@ query BitcoinTransactionFeeEstimates($targets: [Int!]!) {
 export const BITCOIN_BLOCK_TEMPLATE_QUERY = `{
     bitcoin_block_template{
         height
+        size
         weight
         nTx
         feerate_low

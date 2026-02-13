@@ -22,12 +22,12 @@
 			<div>
 				<div class="flex flex-items-center flex-gap-0-5 relative">
 					@if (device_type() === 'desktop') {
-						<button type="button" matFab extended class="orc-icon-button text-nowrap" (click)="onBackfill()">
+						<button type="button" matFab extended class="orc-icon-button orc-flat-fab text-nowrap" (click)="onBackfill()">
 							<mat-icon>history</mat-icon>
 							Backfill Prices
 						</button>
 					} @else {
-						<button type="button" matFab class="orc-icon-button text-nowrap" (click)="onBackfill()">
+						<button type="button" matFab class="orc-icon-button orc-flat-fab text-nowrap" (click)="onBackfill()">
 							<mat-icon>history</mat-icon>
 						</button>
 					}

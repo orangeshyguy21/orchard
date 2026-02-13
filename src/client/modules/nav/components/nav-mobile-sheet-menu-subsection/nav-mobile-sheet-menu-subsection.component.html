@@ -15,12 +15,7 @@
 			<span>{{ data.name }}</span>
 		</div>
 		<div class="nav-mobile-sheet-section-status">
-			<orc-nav-primary-status
-				[size]="'medium'"
-				[enabled]="data.enabled"
-				[online]="data.online"
-				[syncing]="data.syncing"
-			></orc-nav-primary-status>
+			<orc-graphic-status size="1rem" [status]="status"></orc-graphic-status>
 		</div>
 	</div>
 	<mat-nav-list>

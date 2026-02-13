@@ -3,31 +3,65 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 /* Vendor Dependencies */
 import {MatIconModule} from '@angular/material/icon';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatCardModule} from '@angular/material/card';
+import {MatButtonModule} from '@angular/material/button';
+import {MatRippleModule} from '@angular/material/core';
+import {MatChipsModule} from '@angular/material/chips';
+import {MatDialogModule} from '@angular/material/dialog';
 /* Application Dependencies */
 import {OrcLocalModule} from '@client/modules/local/local.module';
+import {OrcErrorModule} from '@client/modules/error/error.module';
+import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
+import {OrcTimeModule} from '@client/modules/time/time.module';
+import {OrcChartModule} from '@client/modules/chart/chart.module';
+import {OrcDataModule} from '@client/modules/data/data.module';
+import {OrcNetworkModule} from '@client/modules/network/network.module';
 /* Local Dependencies */
 import {BitcoinGeneralBlockComponent} from './components/bitcoin-general-block/bitcoin-general-block.component';
 import {BitcoinGeneralUtxoStackComponent} from './components/bitcoin-general-utxo-stack/bitcoin-general-utxo-stack.component';
 import {BitcoinGeneralBlockPipe} from './pipes/bitcoin-general-block/bitcoin-general-block.pipe';
 import {BitcoinGeneralFeeratePipe} from './pipes/bitcoin-general-feerate/bitcoin-general-feerate.pipe';
 import {BitcoinGeneralLog2workPipe} from './pipes/bitcoin-general-log2work/bitcoin-general-log2work.pipe';
+import {BitcoinGeneralWalletSummaryComponent} from './components/bitcoin-general-wallet-summary/bitcoin-general-wallet-summary.component';
+import {BitcoinGeneralInfoComponent} from './components/bitcoin-general-info/bitcoin-general-info.component';
+import {BitcoinGeneralTreemapComponent} from './components/bitcoin-general-treemap/bitcoin-general-treemap.component';
 
 @NgModule({
 	declarations: [
 		BitcoinGeneralBlockComponent,
+		BitcoinGeneralTreemapComponent,
 		BitcoinGeneralUtxoStackComponent,
 		BitcoinGeneralBlockPipe,
 		BitcoinGeneralFeeratePipe,
 		BitcoinGeneralLog2workPipe,
+		BitcoinGeneralWalletSummaryComponent,
+		BitcoinGeneralInfoComponent,
 	],
-	imports: [CommonModule, MatIconModule, MatTooltipModule, OrcLocalModule],
+	imports: [
+		CommonModule,
+		MatIconModule,
+		MatCardModule,
+		MatButtonModule,
+		MatRippleModule,
+		MatChipsModule,
+		MatDialogModule,
+		OrcLocalModule,
+		OrcErrorModule,
+		OrcGraphicModule,
+		OrcTimeModule,
+		OrcChartModule,
+		OrcDataModule,
+		OrcNetworkModule,
+	],
 	exports: [
 		BitcoinGeneralBlockComponent,
+		BitcoinGeneralTreemapComponent,
 		BitcoinGeneralUtxoStackComponent,
 		BitcoinGeneralBlockPipe,
 		BitcoinGeneralFeeratePipe,
 		BitcoinGeneralLog2workPipe,
+		BitcoinGeneralWalletSummaryComponent,
+		BitcoinGeneralInfoComponent,
 	],
 })
 export class OrcBitcoinGeneralModule {}

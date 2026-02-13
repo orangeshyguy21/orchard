@@ -1,12 +1,11 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, output, effect, computed} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output, effect, computed, signal} from '@angular/core';
 import {Router} from '@angular/router';
 /* Vendor Dependencies */
 import {MatBottomSheet} from '@angular/material/bottom-sheet';
 /* Application Dependencies */
 import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {EventData} from 'src/client/modules/event/classes/event-data.class';
-import {Setting} from '@client/modules/settings/classes/setting.class';
 import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Native Dependencies */
 import {NavService} from '@client/modules/nav/services/nav/nav.service';
@@ -14,8 +13,6 @@ import {NavService} from '@client/modules/nav/services/nav/nav.service';
 import {NavMobileSheetProfileComponent} from '../nav-mobile-sheet-profile/nav-mobile-sheet-profile.component';
 import {NavMobileSheetMenuSectionComponent} from '../nav-mobile-sheet-menu-section/nav-mobile-sheet-menu-section.component';
 import {NavMobileSheetMenuSubsectionComponent} from '../nav-mobile-sheet-menu-subsection/nav-mobile-sheet-menu-subsection.component';
-/* Shared Dependencies */
-import {SettingKey} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-nav-mobile',
@@ -52,14 +49,14 @@ export class NavMobileComponent {
 	public abort = output<void>();
 	public showAgent = output<void>();
 
+	public show_oracle = signal<boolean>(false);
+
 	public mobile_pending_event_state = computed(() => {
 		const device_type = this.device_type();
 		const active_event = this.active_event();
 		if (device_type === 'mobile' && active_event?.type === 'PENDING') return true;
 		return false;
 	});
-
-	private show_oracle: boolean = false;
 
 	constructor(
 		private bottomSheet: MatBottomSheet,
@@ -94,7 +91,7 @@ export class NavMobileComponent {
 
 	public onMenuSubsectionClick() {
 		const items = this.navService.getMenuItems(this.active_section());
-		if (this.active_section() === 'bitcoin' && this.show_oracle) {
+		if (this.active_section() === 'bitcoin' && this.show_oracle()) {
 			items.push({
 				name: 'Oracle',
 				navroute: 'bitcoin/oracle',
@@ -128,12 +125,7 @@ export class NavMobileComponent {
 	}
 
 	private getOracleEnabled(): void {
-		this.settingAppService.loadSettings().subscribe({
-			next: (settings: Setting[]) => {
-				const oracle_setting = settings.find((setting: Setting) => setting.key === SettingKey.BitcoinOracle);
-				this.show_oracle = oracle_setting ? this.settingAppService.parseSettingValue(oracle_setting) : false;
-			},
-		});
+		this.show_oracle.set(this.settingAppService.getSetting('bitcoin_oracle'));
 	}
 
 	private getSectionEnabled(section: string): boolean {

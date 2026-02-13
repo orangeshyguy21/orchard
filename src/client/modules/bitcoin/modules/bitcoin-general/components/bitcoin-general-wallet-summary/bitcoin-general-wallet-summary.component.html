@@ -1,0 +1,119 @@
+<div class="flex flex-column flex-gap-1">
+	<div class="title-l p-l-1">Hot Wallet</div>
+
+	<div class="wallet-summary-list">
+		@for (row of rows(); track row.unit) {
+			<mat-card appearance="outlined" class="wallet-summary-card relative overflow-hidden">
+				<mat-card-content
+					class="wallet-summary-row orc-surface-container-low-bg cursor-pointer"
+					matRipple
+					(click)="toggleExpanded(row.unit)"
+				>
+					@if (row.error) {
+						<div class="wallet-summary-error">
+							@if (row.type === 'bitcoin') {
+								<orc-error-resolve [error]="errors_lightning()[0]" mode="small"></orc-error-resolve>
+							} @else {
+								<orc-error-resolve [error]="errors_taproot_assets()[0]" mode="small"></orc-error-resolve>
+							}
+						</div>
+					} @else {
+						<div class="flex flex-items-center flex-gap-2">
+							<orc-graphic-asset
+								class="low-bg"
+								[unit]="row.unit"
+								[height]="'2.5rem'"
+								[custody]="'hot'"
+								[group_key]="row.type === 'taproot_assets' ? row.group_key : undefined"
+							>
+							</orc-graphic-asset>
+							<span
+								class="text-nowrap font-size-l flex-grow"
+								[innerHTML]="row.amount | localAmount: row.unit : 'bitcoin'"
+							></span>
+						</div>
+						<orc-bitcoin-general-utxo-stack
+							class="low-bg"
+							[unit]="row.unit"
+							[coins]="row.utxos"
+							[group_key]="row.type === 'taproot_assets' ? row.group_key : undefined"
+						>
+						</orc-bitcoin-general-utxo-stack>
+					}
+
+					<button
+						type="button"
+						tabindex="-1"
+						mat-icon-button
+						class="orc-icon-button orc-animation-rotate-toggle"
+						[class.animation-expanded]="expanded()[row.unit]"
+					>
+						<mat-icon>keyboard_arrow_down</mat-icon>
+					</button>
+
+					<div class="channel-details orc-animation-expand-collapse" [class.animation-expanded]="expanded()[row.unit]">
+						<div class="orc-animation-expand-collapse-inner p-t-1">
+							<div class="category-rule"></div>
+							<div class="flex flex-row flex-gap-1 p-t-1 flex-wrap">
+								<div class="orc-high-card p-1 flex-1 relative">
+									<div class="relative z-index-1">
+										<div class="font-size-l text-nowrap">{{ row.utxos }}</div>
+										<div class="font-size-xs orc-outline-color text-nowrap">
+											{{ row.utxos === 1 ? 'UTXO' : 'UTXOs' }}
+										</div>
+									</div>
+									<div class="utxo-sizes-chart">
+										<orc-chart-graphic-bars [bars]="row.utxo_sizes"></orc-chart-graphic-bars>
+									</div>
+								</div>
+								@if (row.type === 'taproot_assets') {
+									<div class="orc-high-card p-1 flex-1 relative flex flex-column flex-gap-1">
+										<div>
+											<div class="font-size-l text-nowrap">
+												@if (row.group_key) {
+													{{ row.group_key | dataTruncate: 12 : 6 : 6 }}
+												} @else {
+													<mat-icon>check_indeterminate_small</mat-icon>
+												}
+											</div>
+											<div class="font-size-xs orc-outline-color text-nowrap">Group key</div>
+										</div>
+										<div>
+											<div class="font-size-l text-nowrap">{{ row.asset_type }}</div>
+											<div class="font-size-xs orc-outline-color text-nowrap">Asset type</div>
+										</div>
+										<div>
+											<div class="font-size-l text-nowrap">{{ row.asset_version }}</div>
+											<div class="font-size-xs orc-outline-color text-nowrap">Asset version</div>
+										</div>
+									</div>
+								}
+							</div>
+							@if (row.type === 'bitcoin' && enabled_oracle()) {
+								<div class="flex flex-column flex-gap-0-5 p-t-1">
+									<div class="orc-primary-card flex flex-column">
+										<div class="orc-card-header flex flex-items-center flex-justify-between">
+											<div class="flex flex-items-center flex-gap-0-5">
+												<orc-graphic-oracle-icon [size]="1.5"></orc-graphic-oracle-icon>
+												<div class="orc-on-primary-container-color">Oracle</div>
+											</div>
+											<div>
+												<div class="font-size-xs orc-outline-color text-nowrap">
+													price from {{ bitcoin_oracle_price()?.date | timeUtc: 'date-only' }}
+												</div>
+											</div>
+										</div>
+										<div class="p-1">
+											<div class="font-size-l text-nowrap" [innerHTML]="row.amount_oracle | localAmount: 'usd'"></div>
+											<div class="font-size-xs orc-outline-color text-nowrap">Hot wallet value</div>
+										</div>
+									</div>
+								</div>
+							}
+						</div>
+					</div>
+				</mat-card-content>
+			</mat-card>
+		}
+	</div>
+</div>

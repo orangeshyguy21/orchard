@@ -1,0 +1,12 @@
+@if (type() === 'tor') {
+	<mat-icon
+		svgIcon="tor"
+		class="trans-color-medium"
+		[ngClass]="[status_class(), size_class()]"
+		[class.orc-animation-pulse]="!status()"
+	></mat-icon>
+} @else {
+	<mat-icon class="trans-color-medium" [ngClass]="[status_class(), size_class()]" [class.orc-animation-pulse]="!status()">{{
+		icon()
+	}}</mat-icon>
+}

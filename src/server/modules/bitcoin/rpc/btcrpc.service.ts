@@ -9,6 +9,7 @@ import {
 	BitcoinBlockchainInfo,
 	BitcoinNetworkInfo,
 	BitcoinBlock,
+	BitcoinRawTransaction,
 	BitcoinTransaction,
 	BitcoinFeeEstimate,
 	BitcoinBlockTemplate,
@@ -95,6 +96,14 @@ export class BitcoinRpcService implements OnModuleInit {
 	}
 
 	/* *******************************************************
+	    Transaction                      
+	******************************************************** */
+
+	public async getTransaction(txid: string): Promise<BitcoinRawTransaction> {
+		if (this.type === BitcoinType.CORE) return this.coreService.makeRpcRequest('getrawtransaction', [txid, true]);
+	}
+
+	/* *******************************************************
 	   Mining                      
 	******************************************************** */
 
@@ -116,10 +125,33 @@ export class BitcoinRpcService implements OnModuleInit {
 	}
 
 	/* *******************************************************
-	   Utilities                      
+	   Utilities
 	******************************************************** */
 
 	public async getBitcoinFeeEstimate(target: number): Promise<BitcoinFeeEstimate> {
 		if (this.type === BitcoinType.CORE) return this.coreService.makeRpcRequest('estimatesmartfee', [target]);
+	}
+
+	/**
+	 * Gets the timestamp for a block at a given height
+	 * @param height Block height
+	 * @returns Unix timestamp of the block, or null if unavailable
+	 */
+	public async getBlockTimestamp(height: number): Promise<number | null> {
+		if (this.type !== BitcoinType.CORE) return null;
+		try {
+			const hash = await this.getBitcoinBlockHash(height);
+			const header = await this.getBitcoinBlockHeader(hash);
+			return header?.time ?? null;
+		} catch {
+			return null;
+		}
+	}
+
+	/**
+	 * Checks if Bitcoin RPC is configured and available
+	 */
+	public isConfigured(): boolean {
+		return this.type === BitcoinType.CORE;
 	}
 }

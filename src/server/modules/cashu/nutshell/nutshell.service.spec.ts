@@ -238,12 +238,12 @@ describe('NutshellService', () => {
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([]);
 		await nutshellService.getMintBalances({} as any);
 		let call = (helpers.queryRows as jest.Mock).mock.calls.pop();
-		expect(call[1]).toContain('SELECT * FROM balance');
+		expect(call[1]).toContain('FROM balance');
 		expect(call[2]).toEqual([]);
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([]);
 		await nutshellService.getMintBalances({} as any, 'K1');
 		call = (helpers.queryRows as jest.Mock).mock.calls.pop();
-		expect(call[1]).toContain('WHERE keyset = ?');
+		expect(call[1]).toContain('WHERE b.keyset = ?');
 		expect(call[2]).toEqual(['K1']);
 		(helpers.queryRows as jest.Mock).mockImplementationOnce(() => {
 			throw new Error('badsql');
@@ -298,7 +298,7 @@ describe('NutshellService', () => {
 			{states: ['PAID']},
 			expect.any(Object),
 		);
-		expect(out[0]).toMatchObject({id: 'q1', request_lookup_id: 'c1', payment_preimage: null, msat_to_pay: null});
+		expect(out[0]).toMatchObject({id: 'q1', request_lookup_id: 'c1', payment_preimage: undefined, msat_to_pay: null});
 		(helpers.queryRows as jest.Mock).mockImplementationOnce(() => {
 			throw new Error('err2');
 		});

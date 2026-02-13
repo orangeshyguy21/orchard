@@ -17,6 +17,7 @@ export class BitcoinNetworkInfo implements OrchardBitcoinNetworkInfo {
 	public timeoffset: number;
 	public version: number;
 	public warnings: string[];
+	public backend: boolean;
 
 	constructor(obn: OrchardBitcoinNetworkInfo) {
 		this.connections = obn.connections;
@@ -35,5 +36,6 @@ export class BitcoinNetworkInfo implements OrchardBitcoinNetworkInfo {
 		this.timeoffset = obn.timeoffset;
 		this.version = obn.version;
 		this.warnings = obn.warnings;
+		this.backend = obn.backend;
 	}
 }

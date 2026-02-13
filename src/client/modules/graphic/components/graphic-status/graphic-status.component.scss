@@ -1,0 +1,7 @@
+@use 'molecule/molecule';
+
+.indicator-circle {
+	@extend %orc-corner-full;
+	height: var(--status-size);
+	width: var(--status-size);
+}

@@ -1,0 +1,164 @@
+<div class="lightning-channel-table-container flex flex-column flex-gap-1">
+	<div class="flex flex-justify-between flex-items-center">
+		<div class="title-l p-l-1">Channel Summary</div>
+		<div class="flex">
+			<div class="lightning-channel-summary-selector">
+				<button matButton type="button" [matMenuTriggerFor]="channel_summary_menu">
+					<mat-icon class="rotate-90">graph_4</mat-icon>
+					<span class="text-nowrap font-size-s">{{ summary_type() === 'open' ? 'All' : 'Active' }} channels</span>
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="channel-summary-list" [class.mobile]="device_type() === 'mobile'">
+		@for (row of rows(); track row.unit) {
+			<mat-card appearance="outlined" class="channel-summary-card relative overflow-hidden">
+				<mat-card-content
+					class="channel-summary-row orc-surface-container-low-bg cursor-pointer"
+					matRipple
+					(click)="toggleExpanded(row.unit)"
+				>
+					<div class="flex flex-items-center flex-gap-2">
+						<orc-graphic-asset class="low-bg" [unit]="row.unit" height="2.5rem" custody="lightning" [group_key]="row.group_key">
+						</orc-graphic-asset>
+						<div class="flex flex-column">
+							<span class="text-nowrap font-size-l" [innerHTML]="row.size | localAmount: row.unit : 'lightning'"></span>
+							<div class="font-size-xs orc-outline-color text-nowrap">
+								Total {{ row.unit === 'msat' ? 'bitcoin' : row.unit }} capacity
+							</div>
+						</div>
+					</div>
+
+					<orc-lightning-general-channel
+						[size]="'4rem'"
+						[display_mode]="device_type() === 'desktop' ? 'large' : 'small'"
+						[capacity]="row.size"
+						[remote]="row.remote"
+						[local]="row.local"
+						[unit]="row.unit"
+						[group_key]="row.group_key"
+					></orc-lightning-general-channel>
+
+					<button
+						type="button"
+						tabindex="-1"
+						mat-icon-button
+						class="orc-icon-button orc-animation-rotate-toggle"
+						[class.animation-expanded]="expanded()[row.unit]"
+					>
+						<mat-icon>keyboard_arrow_down</mat-icon>
+					</button>
+
+					<div class="channel-details orc-animation-expand-collapse" [class.animation-expanded]="expanded()[row.unit]">
+						<div class="orc-animation-expand-collapse-inner p-t-1">
+							<div class="category-rule"></div>
+							<div class="flex flex-row flex-gap-1 p-t-1 flex-wrap">
+								<div class="orc-high-card p-1 flex-1 relative">
+									<div class="relative z-index-1">
+										<div class="font-size-l text-nowrap">{{ row.channel_count }}</div>
+										<div class="font-size-xs orc-outline-color text-nowrap">
+											{{ row.channel_count === 1 ? 'Channel' : 'Channels' }}
+										</div>
+									</div>
+									<div class="channel-sizes-chart">
+										<orc-chart-graphic-bars [bars]="row.channel_sizes"></orc-chart-graphic-bars>
+									</div>
+								</div>
+								<div class="orc-high-card p-1 flex-1 relative">
+									<div class="relative z-index-1">
+										<div class="font-size-l text-nowrap">{{ row.channel_active_count }}</div>
+										<div class="font-size-xs orc-outline-color text-nowrap">
+											Active {{ row.channel_active_count === 1 ? 'channel' : 'channels' }}
+										</div>
+									</div>
+									<div class="channel-sizes-chart">
+										<orc-chart-graphic-bars [bars]="row.channel_active_sizes"></orc-chart-graphic-bars>
+									</div>
+								</div>
+								<div class="orc-high-card p-1 flex-1 relative">
+									<div class="relative z-index-1">
+										<div class="font-size-l text-nowrap">{{ row.channel_closed_count }}</div>
+										<div class="font-size-xs orc-outline-color text-nowrap">
+											Closed {{ row.channel_closed_count === 1 ? 'channel' : 'channels' }}
+										</div>
+									</div>
+									<div class="channel-sizes-chart">
+										<orc-chart-graphic-bars [bars]="row.channel_closed_sizes"></orc-chart-graphic-bars>
+									</div>
+								</div>
+								<div class="orc-high-card p-1 flex-1">
+									<div>
+										<div
+											class="font-size-l text-nowrap"
+											[innerHTML]="row.avg_channel_size | localAmount: row.unit : 'lightning'"
+										></div>
+										<div class="font-size-xs orc-outline-color text-nowrap">Average channel size</div>
+									</div>
+								</div>
+							</div>
+
+							@if (row.is_bitcoin && bitcoin_oracle_enabled()) {
+								<div class="flex flex-column flex-gap-0-5 p-t-1">
+									<div class="orc-primary-card flex flex-column">
+										<div class="orc-card-header flex flex-items-center flex-justify-between">
+											<div class="flex flex-items-center flex-gap-0-5">
+												<orc-graphic-oracle-icon [size]="1.5"></orc-graphic-oracle-icon>
+												<div class="orc-on-primary-container-color">Oracle</div>
+											</div>
+											<div>
+												<div class="font-size-xs orc-outline-color text-nowrap">
+													price from {{ bitcoin_oracle_price()?.date | timeUtc: 'date-only' }}
+												</div>
+											</div>
+										</div>
+										<div class="flex flex-row flex-gap-3 flex-wrap p-1">
+											<div class="flex-1">
+												<div>
+													<div
+														class="font-size-l text-nowrap"
+														[innerHTML]="row.size_oracle | localAmount: 'usd'"
+													></div>
+													<div class="font-size-xs orc-outline-color text-nowrap">Total capacity</div>
+												</div>
+											</div>
+											<div class="flex-1">
+												<div>
+													<div
+														class="font-size-l text-nowrap"
+														[innerHTML]="row.local_oracle | localAmount: 'usd'"
+													></div>
+													<div class="font-size-xs orc-outline-color text-nowrap">Local capacity</div>
+												</div>
+											</div>
+											<div class="flex-1">
+												<div>
+													<div
+														class="font-size-l text-nowrap"
+														[innerHTML]="row.remote_oracle | localAmount: 'usd'"
+													></div>
+													<div class="font-size-xs orc-outline-color text-nowrap">Remote capacity</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							}
+						</div>
+					</div>
+				</mat-card-content>
+			</mat-card>
+		}
+	</div>
+</div>
+
+<mat-menu #channel_summary_menu="matMenu" yPosition="below" xPosition="before">
+	<button mat-menu-item [class.active-summary-option]="summary_type() === 'open'" (click)="summary_type.set('open')">
+		<mat-icon>{{ summary_type() === 'open' ? 'check' : '' }}</mat-icon>
+		All channels
+	</button>
+	<button mat-menu-item [class.active-summary-option]="summary_type() === 'active'" (click)="summary_type.set('active')">
+		<mat-icon>{{ summary_type() === 'active' ? 'check' : '' }}</mat-icon>
+		Active channels
+	</button>
+</mat-menu>

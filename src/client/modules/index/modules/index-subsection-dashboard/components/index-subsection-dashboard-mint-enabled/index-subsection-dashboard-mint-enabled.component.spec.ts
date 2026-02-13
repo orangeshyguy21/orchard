@@ -1,5 +1,6 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {provideRouter} from '@angular/router';
 /* Native Dependencies */
 import {OrcIndexSubsectionDashboardModule} from '@client/modules/index/modules/index-subsection-dashboard/index-subsection-dashboard.module';
 /* Local Dependencies */
@@ -12,6 +13,7 @@ describe('IndexSubsectionDashboardMintEnabledComponent', () => {
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
 			imports: [OrcIndexSubsectionDashboardModule],
+			providers: [provideRouter([])],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(IndexSubsectionDashboardMintEnabledComponent);
@@ -26,7 +28,10 @@ describe('IndexSubsectionDashboardMintEnabledComponent', () => {
 		fixture.componentRef.setInput('lightning_enabled', false);
 		fixture.componentRef.setInput('lightning_errors', []);
 		fixture.componentRef.setInput('lightning_loading', false);
-		fixture.componentRef.setInput('device_desktop', true);
+		fixture.componentRef.setInput('bitcoin_oracle_enabled', false);
+		fixture.componentRef.setInput('bitcoin_oracle_price', null);
+		fixture.componentRef.setInput('mint_errors', []);
+		fixture.componentRef.setInput('device_type', 'desktop');
 		fixture.detectChanges();
 	});
 

@@ -2,13 +2,12 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 /* Vendor Dependencies */
-import {Observable, map, tap, catchError, throwError, BehaviorSubject, of} from 'rxjs';
+import {Observable, map, tap, catchError, throwError} from 'rxjs';
 /* Application Dependencies */
 import {getApiQuery} from '@client/modules/api/helpers/api.helpers';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {OrchardRes} from '@client/modules/api/types/api.types';
 import {ApiService} from '@client/modules/api/services/api/api.service';
-import {CacheService} from '@client/modules/cache/services/cache/cache.service';
 /* Native Dependencies */
 import {Setting} from '@client/modules/settings/classes/setting.class';
 import {SettingsResponse, SettingUpdateResponse} from '@client/modules/settings/types/setting-app.types';
@@ -17,40 +16,24 @@ import {SETTINGS_QUERY, SETTING_UPDATE_MUTATION} from './setting-app.queries';
 /* Shared Dependencies */
 import {SettingKey, SettingValue} from '@shared/generated.types';
 
+export interface ParsedAppSettings {
+	bitcoin_oracle: boolean;
+}
+
 @Injectable({
 	providedIn: 'root',
 })
 export class SettingAppService {
-	public get settings$(): Observable<Setting[] | null> {
-		return this.settings_subject.asObservable();
-	}
-
-	public readonly CACHE_KEYS = {
-		SETTINGS: 'settings',
+	private parsed_settings: ParsedAppSettings = {
+		bitcoin_oracle: false,
 	};
-
-	private readonly CACHE_DURATIONS = {
-		[this.CACHE_KEYS.SETTINGS]: 60 * 60 * 1000, // 60 minutes
-	};
-
-	private readonly settings_subject: BehaviorSubject<Setting[] | null>;
 
 	constructor(
 		private http: HttpClient,
 		private apiService: ApiService,
-		private cache: CacheService,
-	) {
-		this.settings_subject = this.cache.createCache<Setting[]>(this.CACHE_KEYS.SETTINGS, this.CACHE_DURATIONS[this.CACHE_KEYS.SETTINGS]);
-	}
-
-	public clearSettingsCache() {
-		this.cache.clearCache(this.CACHE_KEYS.SETTINGS);
-	}
+	) {}
 
 	public loadSettings(): Observable<Setting[]> {
-		if (this.settings_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.SETTINGS)) {
-			return of(this.settings_subject.value);
-		}
 		const query = getApiQuery(SETTINGS_QUERY);
 		return this.http.post<OrchardRes<SettingsResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
@@ -59,8 +42,7 @@ export class SettingAppService {
 			}),
 			map((settings) => settings.map((setting) => new Setting(setting))),
 			tap((settings) => {
-				this.cache.updateCache(this.CACHE_KEYS.SETTINGS, settings);
-				this.settings_subject.next(settings);
+				this.updateParsedSettings(settings);
 			}),
 			catchError((error) => {
 				return throwError(() => error);
@@ -76,6 +58,9 @@ export class SettingAppService {
 				return response.data.setting_update;
 			}),
 			map((setting) => new Setting(setting)),
+			tap((updated_setting) => {
+				this.updateParsedSettings([updated_setting]);
+			}),
 			catchError((error) => {
 				return throwError(() => error);
 			}),
@@ -105,5 +90,30 @@ export class SettingAppService {
 			default:
 				return setting.value;
 		}
+	}
+
+	/**
+	 * Get a specific parsed setting value
+	 */
+	public getSetting<K extends keyof ParsedAppSettings>(key: K): ParsedAppSettings[K] {
+		return this.parsed_settings[key];
+	}
+
+	/**
+	 * Get a copy of all parsed settings
+	 */
+	public getParsedSettings(): ParsedAppSettings {
+		return {...this.parsed_settings};
+	}
+
+	/**
+	 * Update the parsed settings cache from raw settings
+	 */
+	private updateParsedSettings(settings: Setting[]): void {
+		const bitcoin_oracle = settings.find((s) => s.key === SettingKey.BitcoinOracle);
+
+		this.parsed_settings = {
+			bitcoin_oracle: bitcoin_oracle ? this.parseSettingValue(bitcoin_oracle) : false,
+		};
 	}
 }

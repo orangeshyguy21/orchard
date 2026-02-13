@@ -22,7 +22,7 @@
 							<orc-ai-chat-message-system [message]="message"> </orc-ai-chat-message-system>
 						}
 						@case ('USER') {
-							<orc-ai-chat-message-user [message]="message"> </orc-ai-chat-message-user>
+							<orc-ai-chat-message-user [message]="message" [user_name]="user_name()"> </orc-ai-chat-message-user>
 						}
 						@case ('ASSISTANT') {
 							<orc-ai-chat-message-assistant

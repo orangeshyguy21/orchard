@@ -7,7 +7,6 @@ import {ErrorService} from '@server/modules/error/error.service';
 import {TaprootAssetsService} from '@server/modules/tapass/tapass/tapass.service';
 import {TaprootAssetsUtxos, TaprootAssets} from '@server/modules/tapass/tapass/tapass.types';
 /* Local Dependencies */
-// import { OrchardTaprootAssetsInfo } from './tapinfo.model';
 import {OrchardTaprootAssets, OrchardTaprootAssetsUtxo} from './tapasset.model';
 
 @Injectable()

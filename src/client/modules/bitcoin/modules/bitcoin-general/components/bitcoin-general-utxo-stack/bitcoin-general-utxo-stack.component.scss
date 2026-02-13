@@ -1,5 +1,23 @@
 @use 'molecule/molecule';
 
+:host {
+	&.low-bg {
+		.coin-stacked {
+			&:before {
+				@extend %orc-surface-container-low-bg;
+			}
+		}
+	}
+
+	&.high-bg {
+		.coin-stacked {
+			&:before {
+				@extend %orc-surface-container-high-bg;
+			}
+		}
+	}
+}
+
 .bitcoin-utxo-stack-container {
 	@extend %relative; /* creates a stacking context */
 	@extend %z-index-0; /* ensures stacking context */
@@ -40,8 +58,16 @@
 	@extend %orc-surface-tint-color;
 }
 
+@keyframes utxo-fan-out {
+	from {
+		width: 0;
+	}
+}
+
 .coin-wrapper {
 	@extend %w-0-5;
+	animation: utxo-fan-out 0.3s ease-out both;
+	animation-delay: calc(var(--coin-idx, 0) * 60ms);
 }
 
 .coin-stacked {

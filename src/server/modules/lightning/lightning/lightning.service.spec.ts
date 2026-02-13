@@ -2,6 +2,8 @@
 import {Test, TestingModule} from '@nestjs/testing';
 import {expect} from '@jest/globals';
 import {ConfigService} from '@nestjs/config';
+/* Application Dependencies */
+import {BitcoinRpcService} from '@server/modules/bitcoin/rpc/btcrpc.service';
 /* Native Dependencies */
 import {LndService} from '@server/modules/lightning/lnd/lnd.service';
 import {ClnService} from '@server/modules/lightning/cln/cln.service';
@@ -20,6 +22,7 @@ describe('LightningService', () => {
 			providers: [
 				LightningService,
 				{provide: ConfigService, useValue: {get: jest.fn()}},
+				{provide: BitcoinRpcService, useValue: {getBitcoinBlockchainInfo: jest.fn()}},
 				{provide: LndService, useValue: {initializeLightningClient: jest.fn(), mapLndRequest: jest.fn()}},
 				{
 					provide: ClnService,

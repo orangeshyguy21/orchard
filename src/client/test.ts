@@ -35,7 +35,8 @@ import {provideHttpClientTesting} from '@angular/common/http/testing';
 		enabled: false,
 	},
 	constants: {
-		taproot_asset_ids: {
+		epoch_start: 1521072000,
+		taproot_group_keys: {
 			usdt: '594ad28f56e02a3cbeef62166c92317fea911730392ea715ff756a398a8ffc4e',
 		},
 	},

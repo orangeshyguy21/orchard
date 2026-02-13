@@ -19,6 +19,8 @@ import {LightningInfoModule} from './lightning/info/lninfo.module';
 import {LightningBalanceModule} from './lightning/balance/lnbalance.module';
 import {LightningWalletModule} from './lightning/wallet/lnwallet.module';
 import {LightningRequestModule} from './lightning/request/lnrequest.module';
+import {LightningChannelModule} from './lightning/channel/lnchannel.module';
+import {ApiLightningAnalyticsModule} from './lightning/analytics/lnanalytics.module';
 // Taproot Assets Endpoints
 import {TaprootAssetsInfoModule} from './tapass/info/tapinfo.module';
 import {TaprootAssetsAssetModule} from './tapass/asset/tapasset.module';
@@ -42,6 +44,7 @@ import {AiChatModule} from './ai/chat/aichat.module';
 // Image Endpoints
 import {PublicImageModule} from './public/image/image.module';
 import {PublicUrlModule} from './public/url/url.module';
+import {PublicPortModule} from './public/port/port.module';
 // Crew Endpoints
 import {CrewUserModule} from './crew/crewuser/crewuser.module';
 import {CrewInviteModule} from './crew/crewinvite/crewinvite.module';
@@ -64,6 +67,8 @@ import {ApiSettingModule} from './setting/setting.module';
 		LightningBalanceModule,
 		LightningWalletModule,
 		LightningRequestModule,
+		LightningChannelModule,
+		ApiLightningAnalyticsModule,
 		TaprootAssetsInfoModule,
 		TaprootAssetsAssetModule,
 		MintInfoModule,
@@ -83,6 +88,7 @@ import {ApiSettingModule} from './setting/setting.module';
 		AiChatModule,
 		PublicImageModule,
 		PublicUrlModule,
+		PublicPortModule,
 		CrewUserModule,
 		CrewInviteModule,
 		ApiSettingModule,

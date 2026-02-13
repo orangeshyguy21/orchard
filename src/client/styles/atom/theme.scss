@@ -123,6 +123,33 @@
 	));
 }
 
+.orc-bitcoin-progress-spinner{
+	@include mat.progress-spinner-overrides((
+		active-indicator-color: var(--orc-asset-btc),
+	));
+}
+
+.orc-usd-progress-spinner{
+	@include mat.progress-spinner-overrides((
+		active-indicator-color: var(--orc-asset-usd),
+	));
+}
+
+.orc-eur-progress-spinner{
+	@include mat.progress-spinner-overrides((
+		active-indicator-color: var(--orc-asset-eur),
+	));
+}
+
+
+/* Specific Menu Overrides */
+.orc-card-menu {
+	@include mat.menu-overrides((
+		container-color: transparent,
+		container-elevation-shadow: none,
+	));
+}
+
 /* Specific Progress Bar Overrides */
 .orc-progress-bar{
 	@include mat.progress-bar-overrides((
@@ -131,10 +158,32 @@
 	));
 }
 
+.orc-medium-chip-set {
+    @include mat.chips-overrides((
+        container-height: 2rem,
+        outline-color: var(--mat-sys-outline-variant),
+    ));
+}
+
+/* Specific Fab Overrides */
+.orc-flat-fab {
+	@include mat.fab-overrides((
+		container-elevation-shadow: var(--mat-sys-level0),
+		focus-container-elevation-shadow: var(--mat-sys-level0),
+		hover-container-elevation-shadow: var(--mat-sys-level0),
+		pressed-container-elevation-shadow: var(--mat-sys-level0),
+		extended-container-elevation-shadow: var(--mat-sys-level0),
+		extended-focus-container-elevation-shadow: var(--mat-sys-level0),
+		extended-hover-container-elevation-shadow: var(--mat-sys-level0),
+		extended-pressed-container-elevation-shadow: var(--mat-sys-level0),
+	));
+}
+
 /****************************************
 * Angular Material Unsupported Overrides
 ****************************************/
 
+/* Specific Form Field Overrides */
 :root {
 	.orc-cold-form-field {
 		.mdc-text-field--filled{
@@ -171,7 +220,6 @@
 		}
 	}
 }
-
 :root {
 	.orc-hot-form-field {
 		.mdc-text-field--filled{
@@ -189,7 +237,6 @@
 		}
 	}
 }
-
 :root {
 	.orc-array-form-field{
 		.mat-mdc-form-field-flex {
@@ -197,7 +244,6 @@
 		}
 	}
 }
-
 :root {
 	.orc-autogrow{
 		&.mat-mdc-form-field-textarea-control{
@@ -206,6 +252,7 @@
 	}
 }
 
+/* Specific Badge Overrides */
 :root {
 	mat-icon{
 		.mat-badge-content{
@@ -214,6 +261,7 @@
 	}
 }
 
+/* Specific Drawer Overrides */
 :root {
 	.mat-drawer.mat-drawer-end{
 		border-top-left-radius: 0rem;
@@ -225,6 +273,7 @@
 	}
 }
 
+/* Specific Accordion Overrides */
 :root {
 	.orc-fullscreen-accordion{
 		.mat-expansion-panel-header{
@@ -250,6 +299,7 @@
 	}
 }
 
+/* Specific Drag and Drop Overrides */
 :root {
 	/* Animate items as they're being sorted. */
 	.cdk-drop-list-dragging .cdk-drag {
@@ -262,11 +312,26 @@
 	}
 }
 
+/* Specific Filter Menu Overrides */
 :root {
     .orc-filter-menu{
         min-width: 18rem;
         .mat-mdc-menu-content{
             padding: 0;
+        }
+    }
+}
+
+/* Specific Chip Overrides */
+:root {
+    .orc-pointer-chip-set {
+        .mat-mdc-chip-action{
+            cursor: pointer;
+        }
+    }
+    .orc-column-chip-set {
+        .mdc-evolution-chip-set__chips{
+            flex-direction: column;
         }
     }
 }

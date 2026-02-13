@@ -1,11 +1,28 @@
 <div class="mint-enabled-container">
 	@if (!loading()) {
 		<div animate.enter="orc-animation-fadein" class="flex flex-wrap flex-gap-column-4 flex-gap-row-2">
-			<orc-index-subsection-dashboard-mint-enabled-info
-				[loading]="loading_icon()"
-				[icon_data]="icon_data()"
-				[info]="info()"
-			></orc-index-subsection-dashboard-mint-enabled-info>
+			<div class="panel" [class.flex-grow]="device_type() !== 'desktop'">
+				<orc-mint-general-info
+					[loading]="loading_icon()"
+					[icon_data]="icon_data()"
+					[info]="info()"
+					[error]="mint_errors().length > 0"
+					[device_type]="device_type()"
+					[connections]="connections()"
+				>
+					<button
+						type="button"
+						class="orc-icon-button text-nowrap z-index-0 orc-flat-fab"
+						matFab
+						extended
+						[matMenuTriggerFor]="device_type() === 'mobile' ? null : desktopMenu"
+						(click)="onMenuClick()"
+					>
+						<mat-icon>account_balance</mat-icon>
+						Open Mint
+					</button>
+				</orc-mint-general-info>
+			</div>
 
 			<div class="flex-grow w-min-0">
 				<orc-mint-general-balance-sheet
@@ -16,10 +33,26 @@
 					[lightning_errors]="lightning_errors()"
 					[lightning_loading]="lightning_loading()"
 					[loading]="loading()"
-					[device_desktop]="device_desktop()"
+					[device_type]="device_type()"
+					[bitcoin_oracle_enabled]="bitcoin_oracle_enabled()"
+					[bitcoin_oracle_price]="bitcoin_oracle_price()"
 					(navigate)="navigate.emit('lightning')"
 				></orc-mint-general-balance-sheet>
 			</div>
 		</div>
 	}
 </div>
+
+<mat-menu #desktopMenu="matMenu" class="orc-card-menu">
+	<mat-card (click)="$event.stopPropagation()" class="w-min-12">
+		<div class="p-h-0-5">
+			<mat-nav-list>
+				@for (item of items(); track item.navroute) {
+					<a [routerLink]="item.navroute" mat-list-item>
+						<span matListItemTitle>{{ item.name }}</span>
+					</a>
+				}
+			</mat-nav-list>
+		</div>
+	</mat-card>
+</mat-menu>

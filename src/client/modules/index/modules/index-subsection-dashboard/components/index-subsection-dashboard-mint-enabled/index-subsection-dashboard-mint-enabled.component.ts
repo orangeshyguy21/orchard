@@ -1,11 +1,21 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, output, effect, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output, effect, signal, viewChild, inject} from '@angular/core';
+/* Vendor Dependencies */
+import {MatMenuTrigger} from '@angular/material/menu';
+import {MatBottomSheet} from '@angular/material/bottom-sheet';
 /* Application Dependencies */
 import {MintInfo} from '@client/modules/mint/classes/mint-info.class';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
 import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
 import {OrchardError} from '@client/modules/error/types/error.types';
+import {DeviceType} from '@client/modules/layout/types/device.types';
+import {PublicUrl} from '@client/modules/public/classes/public-url.class';
+import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle-price.class';
+import {NavService} from '@client/modules/nav/services/nav/nav.service';
+import {NavSecondaryItem} from '@client/modules/nav/types/nav-secondary-item.type';
+/* Components */
+import {NavMobileSheetMenuSubsectionComponent} from '@client/modules/nav/components/nav-mobile-sheet-menu-subsection/nav-mobile-sheet-menu-subsection.component';
 
 type Liabilities = {
 	unit: string;
@@ -20,20 +30,30 @@ type Liabilities = {
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IndexSubsectionDashboardMintEnabledComponent {
+	private bottomSheet = inject(MatBottomSheet);
+	private navService = inject(NavService);
+
 	public loading = input.required<boolean>();
 	public loading_icon = input.required<boolean>();
 	public info = input.required<MintInfo | null>();
 	public keysets = input.required<MintKeyset[]>();
 	public balances = input.required<MintBalance[]>();
 	public icon_data = input.required<string | null>();
+	public bitcoin_oracle_enabled = input.required<boolean>();
+	public bitcoin_oracle_price = input.required<BitcoinOraclePrice | null>();
 	public lightning_balance = input.required<LightningBalance | null>();
 	public lightning_enabled = input.required<boolean>();
 	public lightning_errors = input.required<OrchardError[]>();
 	public lightning_loading = input.required<boolean>();
-	public device_desktop = input.required<boolean>();
+	public mint_errors = input.required<OrchardError[]>();
+	public device_type = input.required<DeviceType>();
+	public connections = input<PublicUrl[]>([]);
+
+	private menu_trigger = viewChild(MatMenuTrigger);
 
 	public navigate = output<string>();
 
+	public items = signal<NavSecondaryItem[]>([]);
 	public liabilities = signal<Liabilities[] | null>(null);
 
 	constructor() {
@@ -41,6 +61,11 @@ export class IndexSubsectionDashboardMintEnabledComponent {
 			if (!this.loading()) return;
 			this.init();
 		});
+	}
+
+	ngOnInit(): void {
+		const items = this.navService.getMenuItems('mint');
+		this.items.set(items);
 	}
 
 	private init(): void {
@@ -69,5 +94,28 @@ export class IndexSubsectionDashboardMintEnabledComponent {
 		);
 
 		return Object.values(grouped_liabilities);
+	}
+
+	public onMenuClick() {
+		this.device_type() === 'mobile' ? this.openMobileMenu() : this.openDesktopMenu();
+	}
+
+	private openDesktopMenu(): void {
+		this.menu_trigger()?.openMenu();
+	}
+
+	private openMobileMenu(): void {
+		this.bottomSheet.open(NavMobileSheetMenuSubsectionComponent, {
+			autoFocus: false,
+			data: {
+				items: this.items(),
+				active_sub_section: '',
+				enabled: true,
+				online: this.mint_errors().length === 0,
+				syncing: false,
+				icon: 'bitcoin',
+				name: 'Bitcoin',
+			},
+		});
 	}
 }

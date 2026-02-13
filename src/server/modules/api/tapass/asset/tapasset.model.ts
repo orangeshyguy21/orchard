@@ -1,7 +1,7 @@
 /* Core Dependencies */
 import {Field, Int, Float, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
-import {TaprootAssetsUtxos, TaprootAsset, TaprootAssets} from '@server/modules/tapass/tapass/tapass.types';
+import {TaprootAssetsUtxos, TaprootAsset, TaprootAssets, TaprootAssetGroup} from '@server/modules/tapass/tapass/tapass.types';
 import {TaprootAssetType, TaprootAssetVersion} from '@server/modules/tapass/tapass.enums';
 import {Base64} from '@server/modules/graphql/scalars/base64.scalar';
 
@@ -42,6 +42,28 @@ export class OrchardTaprootAssetGenesis {
 }
 
 @ObjectType()
+export class OrchardTaprootAssetGroup {
+	@Field(() => Base64)
+	raw_group_key: string;
+
+	@Field(() => Base64)
+	tweaked_group_key: string;
+
+	@Field(() => Base64)
+	asset_witness: string;
+
+	@Field(() => Base64)
+	tapscript_root: string;
+
+	constructor(group: TaprootAssetGroup) {
+		this.raw_group_key = group.raw_group_key.toString('base64');
+		this.tweaked_group_key = group.tweaked_group_key.toString('base64');
+		this.asset_witness = group.asset_witness.toString('base64');
+		this.tapscript_root = group.tapscript_root.toString('base64');
+	}
+}
+
+@ObjectType()
 export class OrchardTaprootAsset {
 	@Field(() => TaprootAssetVersion)
 	version: TaprootAssetVersion;
@@ -49,8 +71,8 @@ export class OrchardTaprootAsset {
 	@Field(() => String)
 	amount: string;
 
-	@Field(() => String, {nullable: true})
-	asset_group: string;
+	@Field(() => OrchardTaprootAssetGroup, {nullable: true})
+	asset_group: OrchardTaprootAssetGroup | null;
 
 	@Field(() => Boolean)
 	is_spent: boolean;
@@ -67,7 +89,7 @@ export class OrchardTaprootAsset {
 	constructor(asset: TaprootAsset) {
 		this.version = asset.version;
 		this.amount = asset.amount;
-		this.asset_group = asset.asset_group;
+		this.asset_group = asset.asset_group ? new OrchardTaprootAssetGroup(asset.asset_group) : null;
 		this.is_spent = asset.is_spent;
 		this.is_burn = asset.is_burn;
 		this.asset_genesis = new OrchardTaprootAssetGenesis(asset.asset_genesis);

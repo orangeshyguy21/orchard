@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, computed} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, computed, inject} from '@angular/core';
 import {Router} from '@angular/router';
 
 @Component({
@@ -10,9 +10,12 @@ import {Router} from '@angular/router';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintGeneralNameComponent {
+	private router = inject(Router);
+
 	public name = input<string | null>();
 	public loading = input<boolean>();
 	public error = input<boolean>();
+	public size = input<'medium' | 'large'>('medium');
 
 	public state = computed<string>(() => {
 		if (this.loading()) return 'loading';
@@ -20,8 +23,6 @@ export class MintGeneralNameComponent {
 		if (this.name()) return 'name';
 		return 'unset';
 	});
-
-	constructor(private router: Router) {}
 
 	public onClick() {
 		this.router.navigate(['mint', 'info'], {

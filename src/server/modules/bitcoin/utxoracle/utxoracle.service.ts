@@ -38,7 +38,6 @@ export class BitcoinUTXOracleService {
 	 */
 	public async saveOraclePrice(date_timestamp: number, price: number): Promise<UTXOracle> {
 		const existing = await this.utxOracleRepository.findOne({where: {date: date_timestamp}});
-
 		if (existing) {
 			await this.utxOracleRepository.update(existing.id, {price});
 			return this.utxOracleRepository.findOne({where: {id: existing.id}});

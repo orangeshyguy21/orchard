@@ -97,7 +97,10 @@ export class OrchardBitcoinNetworkInfo {
 	@Field(() => [String])
 	warnings: string[];
 
-	constructor(bni: BitcoinNetworkInfo) {
+	@Field(() => Boolean)
+	backend: boolean;
+
+	constructor(bni: BitcoinNetworkInfo, backend: boolean = false) {
 		this.version = bni.version;
 		this.subversion = bni.subversion;
 		this.protocolversion = bni.protocolversion;
@@ -114,5 +117,6 @@ export class OrchardBitcoinNetworkInfo {
 		this.incrementalfee = bni.incrementalfee;
 		this.localaddresses = bni.localaddresses;
 		this.warnings = Array.isArray(bni.warnings) ? bni.warnings : [bni.warnings];
+		this.backend = backend;
 	}
 }

@@ -1,6 +1,8 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, input, computed, signal} from '@angular/core';
 import {Router} from '@angular/router';
+/* Application Dependencies */
+import {GraphicStatusState} from '@client/modules/graphic/types/graphic-status.types';
 
 @Component({
 	selector: 'orc-nav-primary-item',
@@ -18,6 +20,14 @@ export class NavPrimaryItemComponent {
 	public enabled = input<boolean>(false);
 	public online = input<boolean>(false);
 	public syncing = input<boolean>(false);
+
+	public status = computed<GraphicStatusState>(() => {
+		if (!this.enabled()) return null;
+		if (this.online() === false) return 'inactive';
+		if (this.syncing() === true) return 'warning';
+		if (this.online() === true) return 'active';
+		return 'loading';
+	});
 
 	public moused = signal<boolean>(false);
 

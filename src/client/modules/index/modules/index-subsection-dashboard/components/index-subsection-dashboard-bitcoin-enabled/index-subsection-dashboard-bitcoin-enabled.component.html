@@ -1,37 +1,57 @@
 <div class="bitcoin-enabled-container">
-	@if (!loading) {
+	@if (!loading()) {
 		<div animate.enter="orc-animation-fadein" class="flex flex-wrap flex-gap-column-4 flex-gap-row-2">
-			<div class="panel panel-info">
-				<orc-index-subsection-dashboard-bitcoin-enabled-info
-					[blockchain_info]="blockchain_info"
-					[blockcount]="blockcount"
-				></orc-index-subsection-dashboard-bitcoin-enabled-info>
+			<div class="panel" [class.flex-grow]="device_type() !== 'desktop'">
+				<orc-bitcoin-general-info
+					[blockchain_info]="blockchain_info()"
+					[blockcount]="blockcount()"
+					[network_info]="network_info()"
+					[connections]="connections()"
+					[device_type]="device_type()"
+					[error]="errors_bitcoin().length ? true : false"
+				>
+					<button
+						type="button"
+						class="text-nowrap z-index-0 orc-flat-fab"
+						matFab
+						extended
+						[matMenuTriggerFor]="device_type() === 'mobile' ? null : desktopMenu"
+						(mouseenter)="bitcoin_hovered.set(true)"
+						(mouseleave)="bitcoin_hovered.set(false)"
+						(click)="onMenuClick()"
+					>
+						<mat-icon [svgIcon]="bitcoin_hovered() ? 'bitcoin' : 'bitcoin_outline'"></mat-icon>
+						Open Bitcoin
+					</button>
+				</orc-bitcoin-general-info>
 			</div>
-			<div class="panel panel-hotwallet">
-				<orc-index-subsection-dashboard-bitcoin-enabled-hotwallet
-					[enabled_lightning]="enabled_lightning"
-					[enabled_taproot_assets]="enabled_taproot_assets"
-					[errors_lightning]="errors_lightning"
-					[errors_taproot_assets]="errors_taproot_assets"
-					[lightning_accounts]="lightning_accounts"
-					[taproot_assets]="taproot_assets"
-				></orc-index-subsection-dashboard-bitcoin-enabled-hotwallet>
+			<div class="flex-grow">
+				<orc-bitcoin-general-wallet-summary
+					[enabled_lightning]="enabled_lightning()"
+					[enabled_taproot_assets]="enabled_taproot_assets()"
+					[enabled_oracle]="enabled_oracle()"
+					[bitcoin_oracle_price]="bitcoin_oracle_price()"
+					[errors_lightning]="errors_lightning()"
+					[errors_taproot_assets]="errors_taproot_assets()"
+					[lightning_accounts]="lightning_accounts()"
+					[taproot_assets]="taproot_assets()"
+				></orc-bitcoin-general-wallet-summary>
 			</div>
 			<div class="panel panel-blockchain">
-				@if (!blockchain_info?.is_synced) {
+				@if (!blockchain_info()?.is_synced) {
 					<orc-index-subsection-dashboard-bitcoin-enabled-syncing
-						[blockchain_info]="blockchain_info"
-						[block]="block"
+						[blockchain_info]="blockchain_info()"
+						[block]="block()"
 					></orc-index-subsection-dashboard-bitcoin-enabled-syncing>
 				} @else {
 					<orc-index-subsection-dashboard-bitcoin-enabled-blockchain
-						[block]="block"
-						[block_height]="blockcount"
-						[block_template]="block_template"
-						[mempool]="mempool"
-						[txfee_estimate]="txfee_estimate"
-						[form_group]="form_group"
-						[control_name]="control_name"
+						[block]="block()"
+						[block_height]="blockcount()"
+						[block_template]="block_template()"
+						[mempool]="mempool()"
+						[txfee_estimate]="txfee_estimate()"
+						[form_group]="form_group()"
+						[control_name]="control_name()"
 						(target_change)="target_change.emit($event)"
 					></orc-index-subsection-dashboard-bitcoin-enabled-blockchain>
 				}
@@ -39,3 +59,17 @@
 		</div>
 	}
 </div>
+
+<mat-menu #desktopMenu="matMenu" class="orc-card-menu">
+	<mat-card (click)="$event.stopPropagation()" class="w-min-12">
+		<div class="p-h-0-5">
+			<mat-nav-list>
+				@for (item of items(); track item.navroute) {
+					<a [routerLink]="item.navroute" mat-list-item>
+						<span matListItemTitle>{{ item.name }}</span>
+					</a>
+				}
+			</mat-nav-list>
+		</div>
+	</mat-card>
+</mat-menu>
