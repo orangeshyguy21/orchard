@@ -130,9 +130,6 @@
                             </div>
                             <div class="amount-slider">
                                 <div>
-                                    <!-- <mat-checkbox formControlName="default_amounts" [disabled]="mint_type === 'nutshell'">
-                                        <span class="font-size-s text-nowrap">Powers of 2</span>
-                                    </mat-checkbox> -->
                                     <mat-checkbox formControlName="default_amounts">
                                         <span class="font-size-s text-nowrap">Powers of 2</span>
                                     </mat-checkbox>
@@ -156,7 +153,7 @@
                                                     <mat-icon>edit</mat-icon>
                                                 </button>
                                             }
-                                            {{amount}}
+                                            {{ form_group().get('default_amounts')?.value ? (amount | number) : amount }}
                                             @if (!form_group().get('default_amounts')?.value) {
                                                 <button matChipRemove [attr.aria-label]="'remove ' + amount">
                                                     <mat-icon>cancel</mat-icon>
