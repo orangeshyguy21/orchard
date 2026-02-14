@@ -155,7 +155,7 @@ export class OrchardNuts {
 
 @ObjectType()
 export class OrchardMintInfo {
-	@Field()
+	@Field({nullable: true})
 	name: string;
 
 	@Field({nullable: true})

@@ -75,7 +75,7 @@ export class CdkService {
 				defaults: true,
 				oneofs: true,
 			});
-			const mint_proto: any = grpc.loadPackageDefinition(package_definition).cdk_mint_rpc;
+			const mint_proto: any = grpc.loadPackageDefinition(package_definition).cdk_mint_management_v1;
 			let credentials: grpc.ChannelCredentials;
 			let channel_options: Record<string, any> | undefined = undefined;
 

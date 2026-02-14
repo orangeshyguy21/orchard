@@ -2,7 +2,7 @@
 import {Injectable, Logger, OnModuleInit} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
 /* Vendor Dependencies */
-import {ServiceError, status} from '@grpc/grpc-js';
+import {Metadata, ServiceError, status} from '@grpc/grpc-js';
 /* Application Dependencies */
 import {CdkService} from '@server/modules/cashu/cdk/cdk.service';
 import {NutshellService} from '@server/modules/cashu/nutshell/nutshell.service';
@@ -15,6 +15,7 @@ import {CashuMintInfoRpc} from './cashumintrpc.types';
 export class CashuMintRpcService implements OnModuleInit {
 	private readonly logger = new Logger(CashuMintRpcService.name);
 	private grpc_client: any = null;
+	private grpc_metadata: Metadata = new Metadata();
 	private type: MintType;
 
 	constructor(
@@ -29,7 +30,10 @@ export class CashuMintRpcService implements OnModuleInit {
 	}
 
 	private initializeGrpcClient() {
-		if (this.type === 'cdk') this.grpc_client = this.cdkService.initializeGrpcClient();
+		if (this.type === 'cdk') {
+			this.grpc_client = this.cdkService.initializeGrpcClient();
+			this.grpc_metadata.set('x-cdk-protocol-version', '1.0.0');
+		}
 		if (this.type === 'nutshell') this.grpc_client = this.nutshellService.initializeGrpcClient();
 	}
 
@@ -38,7 +42,7 @@ export class CashuMintRpcService implements OnModuleInit {
 
 		return new Promise((resolve, reject) => {
 			if (!(method in this.grpc_client)) reject(OrchardErrorCode.MintSupportError);
-			this.grpc_client[method](request, (error: ServiceError | null, response: any) => {
+			this.grpc_client[method](request, this.grpc_metadata, (error: ServiceError | null, response: any) => {
 				if (error) {
 					this.logger.debug(`gRPC error: ${error.message}`);
 

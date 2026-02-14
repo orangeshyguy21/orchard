@@ -33,7 +33,9 @@ $analytics-offset: 86px;
 
 .mint-analytic-title {
 	@extend %orc-surface-bg;
-	@extend %p-1;
+    @extend %p-r-1;
+    @extend %p-t-1;
+    @extend %p-b-1;
 	@extend %orc-corner-extra-large-bottom;
 }
 

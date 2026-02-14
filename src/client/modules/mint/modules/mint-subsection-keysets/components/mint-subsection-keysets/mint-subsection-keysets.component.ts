@@ -269,9 +269,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 			max_order: 32,
 			default_amounts: true,
 		});
-        if( this.configService.config.mint.type === 'nutshell' ) {
-            this.form_keyset.get('default_amounts')?.disable();
-        }
+        this.form_keyset.get('default_amounts')?.disable();
 	}
 
 	private getDefaultUnit(): MintUnit {

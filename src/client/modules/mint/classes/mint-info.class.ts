@@ -1,7 +1,7 @@
 import {OrchardContact, OrchardMintInfo, OrchardNuts} from '@shared/generated.types';
 
 export class MintInfo implements OrchardMintInfo {
-	name: string;
+	name: string | null;
 	pubkey: string | null;
 	version: string;
 	description: string | null;
@@ -14,7 +14,7 @@ export class MintInfo implements OrchardMintInfo {
 	nuts: OrchardNuts;
 
 	constructor(omi: OrchardMintInfo) {
-		this.name = omi.name;
+		this.name = omi.name ?? null;
 		this.pubkey = omi.pubkey ?? null;
 		this.version = omi.version;
 		this.description = omi.description ?? null;
