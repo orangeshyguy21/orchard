@@ -1,10 +1,9 @@
 /* Core Dependencies */
-import {Field, Int, ID, ObjectType} from '@nestjs/graphql';
+import {Field, Int, Float, ID, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 import {CashuMintKeyset, CashuMintKeysetProofCount} from '@server/modules/cashu/mintdb/cashumintdb.types';
 import {MintUnit} from '@server/modules/cashu/cashu.enums';
-import {oracleConvertToUSDCents} from '@server/modules/bitcoin/utxoracle/utxoracle.helpers';
 
 @ObjectType()
 export class OrchardMintKeyset {
@@ -35,10 +34,11 @@ export class OrchardMintKeyset {
 	@Field(() => Int)
 	fees_paid: number;
 
-	@Field(() => Int, {nullable: true})
-	fees_paid_oracle: number | null;
+	@Field(() => [Float], {nullable: true})
+	amounts: number[];
 
-	constructor(cashu_keyset: CashuMintKeyset, utx_oracle_price: number | null) {
+
+	constructor(cashu_keyset: CashuMintKeyset) {
 		this.id = cashu_keyset.id;
 		this.derivation_path = cashu_keyset.derivation_path;
 		this.derivation_path_index = cashu_keyset.derivation_path_index;
@@ -48,7 +48,7 @@ export class OrchardMintKeyset {
 		this.unit = cashu_keyset.unit;
 		this.input_fee_ppk = cashu_keyset.input_fee_ppk;
 		this.fees_paid = cashu_keyset.fees_paid ?? 0;
-		this.fees_paid_oracle = oracleConvertToUSDCents(this.fees_paid, utx_oracle_price, cashu_keyset.unit);
+		this.amounts = typeof cashu_keyset.amounts === 'string' ? JSON.parse(cashu_keyset.amounts) : cashu_keyset.amounts ?? [];
 	}
 }
 
@@ -60,8 +60,8 @@ export class OrchardMintKeysetRotation {
 	@Field()
 	unit: string;
 
-	@Field(() => Int, {nullable: true})
-	max_order: number;
+	@Field(() => [Float], {nullable: true})
+	amounts: number[];
 
 	@Field(() => Int, {nullable: true})
 	input_fee_ppk: number;

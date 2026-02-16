@@ -12,13 +12,11 @@
 				}
 				<div class="flex flex-wrap flex-gap-1">
 					@for (note of group_amount.notes; track note.amount) {
-						<div class="note-box">
-							<mat-icon class="mat-symbol-outline">payments</mat-icon>
-							<div class="text-nowrap" [innerHTML]="note.amount | localAmount: group().unit : 'mint'"></div>
-							@for (_ of [].constructor(note.quantity); track _; let i = $index) {
-								<div class="stacked-note" [class]="'stack-height-' + (i <= 3 ? i : 'high')"></div>
-							}
-						</div>
+						<orc-ecash-general-note
+							[amount]="note.amount"
+							[unit]="group().unit"
+							[quantity]="note.quantity"
+						></orc-ecash-general-note>
 					}
 				</div>
 				@if (bitcoin_oracle_amount()) {

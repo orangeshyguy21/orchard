@@ -32,6 +32,7 @@ export type CashuMintKeyset = {
 	unit: MintUnit;
 	input_fee_ppk: number | null;
 	fees_paid: number | null;
+	amounts: number[];
 };
 
 export type CashuMintMintQuote = {

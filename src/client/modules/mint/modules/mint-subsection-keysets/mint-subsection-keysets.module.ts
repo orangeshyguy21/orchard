@@ -23,7 +23,9 @@ import {BaseChartDirective as ChartJsBaseChartDirective} from 'ng2-charts';
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcLocalModule} from '@client/modules/local/local.module';
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
+import {OrcDataModule} from '@client/modules/data/data.module';
 import {OrcMintGeneralModule} from '@client/modules/mint/modules/mint-general/mint-general.module';
+import {OrcEcashGeneralModule} from '@client/modules/ecash/modules/ecash-general/ecash-general.module';
 import {pendingEventGuard} from '@client/modules/event/guards/pending-event.guard';
 /* Local Dependencies */
 import {MintSubsectionKeysetsComponent} from './components/mint-subsection-keysets/mint-subsection-keysets.component';
@@ -70,7 +72,9 @@ import {MintSubsectionKeysetsRotationPreviewComponent} from './components/mint-s
 		OrcFormModule,
 		OrcLocalModule,
 		OrcGraphicModule,
+		OrcDataModule,
 		OrcMintGeneralModule,
+        OrcEcashGeneralModule,
 	],
 	exports: [],
 })

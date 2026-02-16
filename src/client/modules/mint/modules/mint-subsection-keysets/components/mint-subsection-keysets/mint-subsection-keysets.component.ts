@@ -95,6 +95,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 
 	ngOnInit(): void {
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
+        console.log(this.mint_keysets);
 		this.unit_options = this.getUnitOptions();
 		this.resetForm();
 		this.initKeysetsAnalytics();
@@ -269,7 +270,9 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 			max_order: 32,
 			default_amounts: true,
 		});
-        this.form_keyset.get('default_amounts')?.disable();
+        if(this.configService.config.mint.type === 'nutshell') {
+            this.form_keyset.get('default_amounts')?.disable();
+        }
 	}
 
 	private getDefaultUnit(): MintUnit {

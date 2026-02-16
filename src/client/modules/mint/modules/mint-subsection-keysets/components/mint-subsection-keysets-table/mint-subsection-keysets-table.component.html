@@ -15,20 +15,24 @@
 						<td mat-cell *matCellDef="let keyset">
 							<div class="flex flex-items-center flex-gap-1 p-v-1">
 								<orc-graphic-asset [unit]="keyset.unit" [height]="'1.5rem'"> </orc-graphic-asset>
-								<div [class.w-min-12]="device_type() === 'desktop'">
-									<orc-mint-general-keyset
-										[active]="keyset.active"
-										[index]="keyset.derivation_path_index"
-										[input_fee_ppk]="keyset.input_fee_ppk"
-									>
-									</orc-mint-general-keyset>
-								</div>
-								@if (device_type() === 'desktop') {
-									<span class="text-sm orc-outline-variant-color"> {{ keyset.id }} </span>
-								}
+								<orc-mint-general-keyset
+                                    [active]="keyset.active"
+                                    [index]="keyset.derivation_path_index"
+                                    [input_fee_ppk]="keyset.input_fee_ppk"
+                                ></orc-mint-general-keyset>
 							</div>
 						</td>
 					</ng-container>
+
+                    <ng-container matColumnDef="id"> 
+                        <th mat-header-cell *matHeaderCellDef class="keyset-table-sticky-header">ID</th>
+                        <td mat-cell *matCellDef="let keyset">
+                             <div class="flex flex-items-center flex-gap-0-5">
+                                <orc-mint-general-keyset-version [id]="keyset.id"></orc-mint-general-keyset-version>
+                                <span class="text-sm"> {{ keyset.id  | dataTruncate: 16 : 12 : 12 }} </span>
+                             </div>
+                        </td>
+                    </ng-container>
 
 					<ng-container matColumnDef="input_fee_ppk">
 						<th mat-header-cell *matHeaderCellDef mat-sort-header class="keyset-table-sticky-header text-nowrap">Fee rate</th>
@@ -109,20 +113,20 @@
 								<div class="more-entity-content flex-gap-1 flex-column">
 									<div class="p-v-1 flex flex-gap-1 flex-row flex-wrap">
 										<div class="flex-1 flex flex-column flex-gap-1">
-											<div class="flex flex-gap-1">
-												<div class="w-6 orc-outline-color font-weight-extra-light">Keyset ID:</div>
-												<div class="text-nowrap">{{ keyset.id }}</div>
+											<div class="flex flex-column flex-gap-0-5">
+												<div class="orc-outline-color font-weight-extra-light text-nowrap">Keyset ID</div>
+												<div class="mega-string w-max-24 w-min-10">{{ keyset.id }}</div>
 											</div>
-											<div class="flex flex-gap-1">
-												<div class="w-6 orc-outline-color font-weight-extra-light">Fee rate:</div>
+											<div class="flex flex-column flex-gap-0-5">
+												<div class="orc-outline-color font-weight-extra-light">Fee rate</div>
 												@if (keyset.input_fee_ppk > 0) {
 													<div class="text-nowrap">{{ keyset.input_fee_ppk }} ppk</div>
 												} @else {
 													<div class="text-nowrap orc-outline-color">No fee</div>
 												}
 											</div>
-											<div class="flex flex-gap-1">
-												<div class="w-6 orc-outline-color font-weight-extra-light">Created:</div>
+											<div class="flex flex-column flex-gap-0-5">
+												<div class="orc-outline-color font-weight-extra-light">Created</div>
 												<div class="text-nowrap">
 													@if (keyset.valid_from !== null) {
 														{{ keyset.valid_from | localTime: 'date-only' }}
@@ -135,28 +139,28 @@
 											</div>
 										</div>
 										<div class="flex-1 flex flex-column flex-gap-1">
-											<div class="flex flex-gap-1">
-												<div class="w-6 orc-outline-color font-weight-extra-light">Balance:</div>
+											<div class="flex flex-column flex-gap-0-5">
+												<div class="orc-outline-color font-weight-extra-light">Balance</div>
 												<span
 													class="font-size-m w-min-10 text-nowrap"
 													[innerHTML]="keyset.balance | localAmount: keyset.unit : 'mint'"
 												></span>
 											</div>
-											<div class="flex flex-gap-1">
-												<div class="w-6 orc-outline-color font-weight-extra-light text-nowrap">Fee Revenue:</div>
+											<div class="flex flex-column flex-gap-0-5">
+												<div class="orc-outline-color font-weight-extra-light text-nowrap">Fee Revenue</div>
 												<div
 													class="font-size-m w-min-10 text-nowrap"
 													[innerHTML]="keyset.fees_paid | localAmount: keyset.unit : 'mint'"
 												></div>
 											</div>
-											<div class="flex flex-gap-1">
-												<div class="w-6 orc-outline-color font-weight-extra-light">Proofs:</div>
+											<div class="flex flex-column flex-gap-0-5">
+												<div class="orc-outline-color font-weight-extra-light">Proofs</div>
 												<div class="font-size-m w-min-10">{{ keyset.proof_count | number: '1.0-0' }}</div>
 											</div>
 											@if (keyset.active) {
 												<div class="flex flex-gap-1">
-													<div class="flex flex-items-center">
-														<div class="w-6 orc-outline-color font-weight-extra-light">Actions:</div>
+													<div class="flex flex-column flex-gap-0-5">
+														<div class="orc-outline-color font-weight-extra-light">Actions</div>
 														<button mat-stroked-button color="primary" (click)="rotateKeyset.emit(keyset.unit)">
 															<mat-icon class="mat-symbol-outline">switch_access_shortcut_add</mat-icon>
 															Rotate keyset
@@ -166,6 +170,14 @@
 											}
 										</div>
 									</div>
+                                    <div class="flex flex-column flex-gap-0-5 p-b-1">
+                                        <div class="orc-outline-color font-weight-extra-light text-nowrap">Ecash Amounts</div>
+                                        <div class="flex flex-wrap flex-gap-0-5">
+                                            @for (amount of keyset.amounts; track amount) {
+                                                <orc-ecash-general-note [amount]="amount" [unit]="keyset.unit"></orc-ecash-general-note>
+                                            }
+                                        </div>
+                                    </div>
 								</div>
 							</div>
 						</td>
@@ -191,3 +203,9 @@
 		}
 	</mat-card>
 </div>
+
+
+<!-- 						<div class="flex flex-column flex-gap-0-5">
+							<div class="orc-outline-color font-weight-extra-light">Created Time</div>
+							<div class="text-nowrap">{{ quote().created_time | localTime: 'medium' }}</div>
+						</div> -->

@@ -28,6 +28,7 @@ import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {OrcProgressModule} from '@client/modules/progress/progress.module';
 import {OrcButtonModule} from '@client/modules/button/button.module';
 import {OrcMintGeneralModule} from '@client/modules/mint/modules/mint-general/mint-general.module';
+import {OrcEcashGeneralModule} from '@client/modules/ecash/modules/ecash-general/ecash-general.module';
 import {OrcMintSectionGeneralModule} from '@client/modules/mint/modules/mint-section-general/mint-section-general.module';
 import {pendingEventGuard} from '@client/modules/event/guards/pending-event.guard';
 /* Local Dependencies */
@@ -93,6 +94,7 @@ import {MintSubsectionDatabaseDialogQuoteComponent} from './components/mint-subs
 		OrcButtonModule,
 		OrcMintGeneralModule,
 		OrcMintSectionGeneralModule,
+		OrcEcashGeneralModule,
 	],
 	exports: [],
 })

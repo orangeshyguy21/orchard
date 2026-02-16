@@ -185,15 +185,15 @@ export class CashuMintRpcService implements OnModuleInit {
 
 	async rotateNextKeyset({
 		unit,
-		max_order,
+		amounts,
 		input_fee_ppk,
 	}: {
 		unit: string;
-		max_order?: number;
+		amounts?: number[];
 		input_fee_ppk?: number;
-	}): Promise<{id: string; unit: string; max_order: number; input_fee_ppk: number}> {
+	}): Promise<{id: string; unit: string; amounts: number[]; input_fee_ppk: number}> {
 		const request: any = {unit};
-		if (max_order !== undefined) request.max_order = max_order;
+		if (amounts !== undefined) request.amounts = amounts;
 		if (input_fee_ppk !== undefined) request.input_fee_ppk = input_fee_ppk;
 		return this.makeGrpcRequest('RotateNextKeyset', request);
 	}

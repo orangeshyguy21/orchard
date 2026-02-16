@@ -109,6 +109,8 @@
     // Border Specific
     #{$c}orc-outline-border-bottom { border-bottom-color: var(--mat-sys-outline); }
     #{$c}orc-outline-border-right { border-right-color: var(--mat-sys-outline); }
+    #{$c}orc-outline-variant-border-bottom { border-bottom-color: var(--mat-sys-outline-variant); }
+    #{$c}orc-outline-variant-border-right { border-right-color: var(--mat-sys-outline-variant); }
 
     // Shadows
     #{$c}orc-level0 { box-shadow: var(--mat-sys-level0); }

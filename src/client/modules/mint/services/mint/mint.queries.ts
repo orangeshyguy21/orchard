@@ -125,6 +125,7 @@ export const MINT_KEYSETS_QUERY = `{
 		valid_from
 		valid_to
 		fees_paid
+		amounts
     }
 }`;
 
@@ -333,7 +334,7 @@ mutation MintRotateKeyset($mint_rotate_keyset: MintRotateKeysetInput!) {
 	mint_rotate_keyset(mint_rotate_keyset: $mint_rotate_keyset) {
 		unit
 		input_fee_ppk
-		max_order
+		amounts
 	}
 }`;
 

@@ -42,7 +42,7 @@ export class MintSubsectionKeysetsTableComponent {
 		const device_type = this.device_type();
 		if (device_type === 'mobile') return ['keyset'];
 		if (device_type === 'tablet') return ['keyset', 'input_fee_ppk', 'valid_from', 'balance'];
-		return ['keyset', 'input_fee_ppk', 'valid_from', 'balance', 'fees', 'proofs', 'actions'];
+		return ['keyset', 'id', 'input_fee_ppk', 'valid_from', 'balance', 'fees', 'proofs', 'actions'];
 	});
 
 	constructor() {

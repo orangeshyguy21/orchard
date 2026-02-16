@@ -265,18 +265,18 @@ describe('CashuMintRpcService', () => {
 
 	it('rotateNextKeyset sends unit and optional fields when provided', async () => {
 		const client: any = {
-			RotateNextKeyset: jest.fn((req: any, cb: any) => cb(null, {id: '1', unit: 'sat', max_order: 1, input_fee_ppk: 2})),
+			RotateNextKeyset: jest.fn((req: any, cb: any) => cb(null, {id: '1', unit: 'sat', amounts: [1, 2, 4], input_fee_ppk: 2})),
 		};
 		(cdkService.initializeGrpcClient as jest.Mock).mockReturnValue(client);
 		configService.get.mockReturnValue('cdk');
 		await cashuMintRpcService.onModuleInit();
 		await cashuMintRpcService.rotateNextKeyset({unit: 'sat'});
 		expect(client.RotateNextKeyset).toHaveBeenCalledWith({unit: 'sat'}, expect.any(Function));
-		await cashuMintRpcService.rotateNextKeyset({unit: 'sat', max_order: 10});
-		expect(client.RotateNextKeyset).toHaveBeenCalledWith({unit: 'sat', max_order: 10}, expect.any(Function));
+		await cashuMintRpcService.rotateNextKeyset({unit: 'sat', amounts: [1, 2, 4, 8]});
+		expect(client.RotateNextKeyset).toHaveBeenCalledWith({unit: 'sat', amounts: [1, 2, 4, 8]}, expect.any(Function));
 		await cashuMintRpcService.rotateNextKeyset({unit: 'sat', input_fee_ppk: 5});
 		expect(client.RotateNextKeyset).toHaveBeenCalledWith({unit: 'sat', input_fee_ppk: 5}, expect.any(Function));
-		await cashuMintRpcService.rotateNextKeyset({unit: 'sat', max_order: 10, input_fee_ppk: 5});
-		expect(client.RotateNextKeyset).toHaveBeenCalledWith({unit: 'sat', max_order: 10, input_fee_ppk: 5}, expect.any(Function));
+		await cashuMintRpcService.rotateNextKeyset({unit: 'sat', amounts: [1, 2, 4, 8], input_fee_ppk: 5});
+		expect(client.RotateNextKeyset).toHaveBeenCalledWith({unit: 'sat', amounts: [1, 2, 4, 8], input_fee_ppk: 5}, expect.any(Function));
 	});
 });

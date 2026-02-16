@@ -1,7 +1,6 @@
 /* Core Dependencies */
 import {Injectable, Logger} from '@nestjs/common';
 /* Application Dependencies */
-import {BitcoinUTXOracleService} from '@server/modules/bitcoin/utxoracle/utxoracle.service';
 import {CashuMintDatabaseService} from '@server/modules/cashu/mintdb/cashumintdb.service';
 import {CashuMintRpcService} from '@server/modules/cashu/mintrpc/cashumintrpc.service';
 import {CashuMintKeyset, CashuMintKeysetProofCount} from '@server/modules/cashu/mintdb/cashumintdb.types';
@@ -19,7 +18,6 @@ export class MintKeysetService {
 	private readonly logger = new Logger(MintKeysetService.name);
 
 	constructor(
-		private bitcoinUTXOracleService: BitcoinUTXOracleService,
 		private cashuMintDatabaseService: CashuMintDatabaseService,
 		private cashuMintRpcService: CashuMintRpcService,
 		private mintService: MintService,
@@ -30,8 +28,7 @@ export class MintKeysetService {
 		return this.mintService.withDbClient(async (client) => {
 			try {
 				const cashu_keysets: CashuMintKeyset[] = await this.cashuMintDatabaseService.getMintKeysets(client);
-				const utx_oracle_price = await this.bitcoinUTXOracleService.getOraclePrice();
-				return cashu_keysets.map((ck) => new OrchardMintKeyset(ck, utx_oracle_price?.price || null));
+				return cashu_keysets.map((ck) => new OrchardMintKeyset(ck));
 			} catch (error) {
 				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,

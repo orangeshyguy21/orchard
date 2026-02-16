@@ -1,0 +1,8 @@
+<div class="ecash-note-box">
+	<div class="text-nowrap" [innerHTML]="amount() | localAmount: unit() : 'mint'"></div>
+	@if (quantity(); as quantity) {
+		@for (_ of [].constructor(quantity); track _; let i = $index) {
+			<div class="stacked-note" [class]="'stack-height-' + (i <= 3 ? i : 'high')"></div>
+		}
+	}
+</div>
