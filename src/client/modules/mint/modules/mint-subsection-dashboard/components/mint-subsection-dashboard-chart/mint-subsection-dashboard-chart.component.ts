@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, OnDestroy, OnChanges, SimpleChanges, ViewChild, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, OnDestroy, OnChanges, SimpleChanges, ViewChild, signal, computed} from '@angular/core';
 /* Vendor Dependencies */
 import {BaseChartDirective} from 'ng2-charts';
 import {ChartConfiguration, ScaleChartOptions, ChartType as ChartJsType, Plugin} from 'chart.js';
@@ -59,6 +59,11 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy, OnChang
 	public chart_plugins: Plugin[] = [];
 	public displayed = signal<boolean>(true);
 
+    public has_data = computed(() => {
+        return this.chart_data?.datasets?.length > 0
+            && (this.mint_analytics().length > 0 || this.mint_analytics_pre().length > 0);
+    });
+    
 	private subscriptions: Subscription = new Subscription();
 
 	constructor(private chartService: ChartService) {
