@@ -235,7 +235,7 @@ export class CashuMintDatabaseService implements OnModuleInit {
 
 	public async getMintAnalyticsFees(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
 		if (this.type === 'nutshell') return this.nutshellService.getMintAnalyticsFees(client, args);
-		if (this.type === 'cdk') return [];
+		if (this.type === 'cdk') return this.cdkService.getMintAnalyticsFees(client, args);
 	}
 
 	public async getMintAnalyticsKeysets(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintKeysetsAnalytics[]> {

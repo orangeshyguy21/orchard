@@ -745,6 +745,77 @@ export class CdkService {
 		}
 	}
 
+	/** Retrieves fee analytics from completed_operations, grouped by time interval and unit. */
+	public async getMintAnalyticsFees(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
+		const interval = args?.interval || MintAnalyticsInterval.day;
+		const timezone = args?.timezone || 'UTC';
+		const {where_conditions, params} = getAnalyticsConditions({
+			args: args,
+			time_column: 'completed_at',
+			db_type: client.type,
+			time_is_epoch_seconds: true,
+		});
+		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
+		const time_group_sql = getAnalyticsTimeGroupSql({
+			interval: interval,
+			timezone: timezone,
+			time_column: 'completed_at',
+			group_by: 'unit',
+			db_type: client.type,
+			time_is_epoch_seconds: true,
+		});
+
+		const sql = `
+			WITH ops_with_unit AS (
+				SELECT
+					co.completed_at,
+					co.fee_collected,
+					COALESCE(bs_k.unit, p_k.unit) AS unit
+				FROM completed_operations co
+				LEFT JOIN (
+					SELECT operation_id, keyset_id FROM blind_signature GROUP BY operation_id
+				) bs ON bs.operation_id = co.operation_id
+				LEFT JOIN keyset bs_k ON bs_k.id = bs.keyset_id
+				LEFT JOIN (
+					SELECT operation_id, keyset_id FROM proof GROUP BY operation_id
+				) p ON p.operation_id = co.operation_id
+				LEFT JOIN keyset p_k ON p_k.id = p.keyset_id
+			)
+			SELECT
+				${time_group_sql} AS time_group,
+				unit,
+				SUM(fee_collected) AS amount,
+				COUNT(*) AS operation_count,
+				MIN(completed_at) as min_created_time
+			FROM
+				ops_with_unit
+				${where_clause}
+			GROUP BY
+				time_group, unit
+			ORDER BY
+				min_created_time;`;
+
+		try {
+			const rows = await queryRows<CdkMintAnalytics>(client, sql, params);
+			return rows.map((row) => {
+				const timestamp = getAnalyticsTimeGroupStamp({
+					min_created_time: row.min_created_time,
+					time_group: row.time_group,
+					interval: interval,
+					timezone: timezone,
+				});
+				return {
+					unit: row.unit,
+					amount: row.amount,
+					created_time: timestamp,
+					operation_count: row.operation_count,
+				};
+			});
+		} catch (err) {
+			throw err;
+		}
+	}
+
 	public async getMintAnalyticsKeysets(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintKeysetsAnalytics[]> {
 		const interval = args?.interval || MintAnalyticsInterval.day;
 		const timezone = args?.timezone || 'UTC';
