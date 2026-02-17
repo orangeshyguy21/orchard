@@ -53,6 +53,7 @@ import {
 	MintDatabaseRestoreResponse,
 	MintProofGroupStatsResponse,
 	MintFeesResponse,
+	MintMonitorResponse,
 } from '@client/modules/mint/types/mint.types';
 import {ApiService} from '@client/modules/api/services/api/api.service';
 import {CacheService} from '@client/modules/cache/services/cache/cache.service';
@@ -77,6 +78,7 @@ import {
 	MINT_QUOTE_TTLS_QUERY,
 	MINT_BALANCES_QUERY,
 	MINT_KEYSETS_QUERY,
+	MINT_MONITOR_QUERY,
 	MINT_ANALYTICS_BALANCES_QUERY,
 	MINT_ANALYTICS_MINTS_QUERY,
 	MINT_ANALYTICS_MELTS_QUERY,
@@ -828,6 +830,21 @@ export class MintService {
 			}),
 			catchError((error) => {
 				console.error('Error loading mint proof group stats:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	public loadMintMonitor() {
+		const query = getApiQuery(MINT_MONITOR_QUERY, {});
+
+		return this.http.post<OrchardRes<MintMonitorResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error loading mint monitor snapshot:', error);
 				return throwError(() => error);
 			}),
 		);

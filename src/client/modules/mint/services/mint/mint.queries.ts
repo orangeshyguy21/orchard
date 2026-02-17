@@ -128,6 +128,25 @@ export const MINT_KEYSETS_QUERY = `{
     }
 }`;
 
+export const MINT_MONITOR_QUERY = `{
+	mint_monitor {
+		db_entries_total
+		mint_quotes_total
+		melt_quotes_total
+		proof_groups_total
+		promise_groups_total
+		request_count_recent
+		recent_window_hours
+		disk_free_bytes
+		disk_total_bytes
+		cpu_cores
+		cpu_load_1m
+		cpu_load_5m
+		cpu_load_15m
+		cpu_usage_percent
+	}
+}`;
+
 export const MINT_ANALYTICS_BALANCES_QUERY = `
 query MintAnalyticsBalances($units: [MintUnit!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $interval: MintAnalyticsInterval, $timezone: Timezone) {
 	mint_analytics_balances(units: $units, date_start: $date_start, date_end: $date_end, interval: $interval, timezone: $timezone) {
