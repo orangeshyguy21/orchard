@@ -70,6 +70,7 @@
 		[page_settings]="page_settings"
 		[mint_genesis_time]="mint_genesis_time"
 		[loading]="loading_dynamic_data"
+		[highlighted_keyset_id]="highlighted_keyset_id()"
 	></orc-mint-subsection-keysets-chart>
 
 	<orc-mint-subsection-keysets-table
@@ -81,5 +82,6 @@
 		[device_type]="device_type()"
 		[loading]="loading_dynamic_data"
 		(rotateKeyset)="onRotationUnit($event)"
+		(highlightChange)="onHighlightChange($event)"
 	></orc-mint-subsection-keysets-table>
 </div>

@@ -74,6 +74,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
         default_amounts: new FormControl(true),
 	});
 	public device_type = signal<DeviceType>('desktop');
+	public highlighted_keyset_id = signal<string | null>(null);
 
 	private active_event: EventData | null = null;
 	private subscriptions: Subscription = new Subscription();
@@ -227,6 +228,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		try {
 			this.mintService.clearKeysetsCache();
 			this.loading_dynamic_data = true;
+			this.highlighted_keyset_id.set(null);
 			this.cdr.detectChanges();
 			this.interval = this.getAnalyticsInterval();
 			const timezone = this.settingDeviceService.getTimezone();
@@ -455,6 +457,14 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		this.page_settings.status = event;
 		this.settingDeviceService.setMintKeysetsSettings(this.page_settings);
 		this.reloadDynamicData();
+	}
+
+	/**
+	 * Handles highlight change from table row hover or toggle
+	 * @param keyset_id - the keyset ID to highlight, or null to clear
+	 */
+	public onHighlightChange(keyset_id: string | null): void {
+		this.highlighted_keyset_id.set(keyset_id);
 	}
 
 	public onRotation(): void {

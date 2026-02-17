@@ -34,6 +34,7 @@ export class MintSubsectionKeysetsTableComponent {
 	readonly device_type = input.required<DeviceType>();
 
 	readonly rotateKeyset = output<MintUnit>();
+	readonly highlightChange = output<string | null>();
 
 	readonly data_source = signal(new MatTableDataSource<MintSubsectionKeysetsTableRow>([]));
 	public more_entity = signal<MintKeyset | null>(null); // currently expanded row entity
@@ -82,10 +83,26 @@ export class MintSubsectionKeysetsTableComponent {
 	}
 
 	/**
-	 * Toggles the expanded detail row for a quote entity
-	 * @param entity - the quote to toggle
+	 * Toggles the expanded detail row for an entity
+	 * @param entity - the keyset to toggle
 	 */
 	public toggleMore(entity: MintKeyset): void {
 		this.more_entity.set(this.more_entity() === entity ? null : entity);
+		this.highlightChange.emit(this.more_entity()?.id ?? null);
+	}
+
+	/**
+	 * Emits highlight for the hovered row
+	 * @param entity - the hovered keyset row
+	 */
+	public onRowHover(entity: MintSubsectionKeysetsTableRow): void {
+		this.highlightChange.emit(entity.id);
+	}
+
+	/**
+	 * Reverts highlight to expanded row on mouse leave, or clears it
+	 */
+	public onRowLeave(): void {
+		this.highlightChange.emit(this.more_entity()?.id ?? null);
 	}
 }
