@@ -166,7 +166,12 @@ export class NutshellService {
 			date_end: 'created_time',
 			states: 'state',
 		};
-		const {sql, params} = buildDynamicQuery(client.type, 'mint_quotes', args, field_mappings);
+		const {sql, params} = buildDynamicQuery({
+			db_type: client.type,
+			table_name: 'mint_quotes',
+			args,
+			field_mappings,
+		});
 		try {
 			const rows = await queryRows<NutshellMintMintQuote>(client, sql, params);
 			return rows.map((row) => ({
@@ -192,7 +197,12 @@ export class NutshellService {
 			date_end: 'created_time',
 			states: 'state',
 		};
-		const {sql, params} = buildDynamicQuery(client.type, 'melt_quotes', args, field_mappings);
+		const {sql, params} = buildDynamicQuery({
+			db_type: client.type,
+			table_name: 'melt_quotes',
+			args,
+			field_mappings,
+		});
 		try {
 			const rows = await queryRows<NutshellMintMeltQuote>(client, sql, params);
 			return rows.map((row) => ({
@@ -228,7 +238,14 @@ export class NutshellService {
 			LEFT JOIN keysets k ON k.id = p.id`;
 
 		const group_by = 'p.created, k.unit, p.id';
-		const {sql, params} = buildDynamicQuery(client.type, 'proofs_used', args, field_mappings, select_statement, group_by);
+		const {sql, params} = buildDynamicQuery({
+			db_type: client.type,
+			table_name: 'proofs_used',
+			args,
+			field_mappings,
+			select_statement,
+			group_by,
+		});
 		try {
 			const rows = await queryRows<NutshellMintEcash>(client, sql, params);
 			const groups = {};
@@ -280,7 +297,14 @@ export class NutshellService {
 			LEFT JOIN keysets k ON k.id = p.id`;
 
 		const group_by = 'p.created, k.unit, p.id';
-		const {sql, params} = buildDynamicQuery(client.type, 'promises', args, field_mappings, select_statement, group_by);
+		const {sql, params} = buildDynamicQuery({
+			db_type: client.type,
+			table_name: 'promises',
+			args,
+			field_mappings,
+			select_statement,
+			group_by,
+		});
 		try {
 			const rows = await queryRows<NutshellMintEcash>(client, sql, params);
 			const groups = {};
@@ -319,7 +343,12 @@ export class NutshellService {
 			date_end: 'created_time',
 			states: 'state',
 		};
-		const {sql, params} = buildCountQuery(client.type, 'melt_quotes', args, field_mappings);
+		const {sql, params} = buildCountQuery({
+			db_type: client.type,
+			table_name: 'melt_quotes',
+			args,
+			field_mappings,
+		});
 		try {
 			const row = await queryRow<CashuMintCount>(client, sql, params);
 			return row.count;
@@ -335,7 +364,12 @@ export class NutshellService {
 			date_end: 'created_time',
 			states: 'state',
 		};
-		const {sql, params} = buildCountQuery(client.type, 'mint_quotes', args, field_mappings);
+		const {sql, params} = buildCountQuery({
+			db_type: client.type,
+			table_name: 'mint_quotes',
+			args,
+			field_mappings,
+		});
 		try {
 			const row = await queryRow<CashuMintCount>(client, sql, params);
 			return row.count;
@@ -361,7 +395,14 @@ export class NutshellService {
 				LEFT JOIN keysets k ON k.id = p.id`;
 
 		const group_by = 'p.created, k.unit';
-		const {sql, params} = buildCountQuery(client.type, 'proofs_used', args, field_mappings, select_statement, group_by);
+		const {sql, params} = buildCountQuery({
+			db_type: client.type,
+			table_name: 'proofs_used',
+			args,
+			field_mappings,
+			select_statement,
+			group_by,
+		});
 		const final_sql = sql.replace(';', ') subquery;');
 		try {
 			const row = await queryRow<CashuMintCount>(client, final_sql, params);
@@ -388,7 +429,14 @@ export class NutshellService {
 				LEFT JOIN keysets k ON k.id = p.id`;
 
 		const group_by = 'p.created, k.unit';
-		const {sql, params} = buildCountQuery(client.type, 'promises', args, field_mappings, select_statement, group_by);
+		const {sql, params} = buildCountQuery({
+			db_type: client.type,
+			table_name: 'promises',
+			args,
+			field_mappings,
+			select_statement,
+			group_by,
+		});
 		const final_sql = sql.replace(';', ') subquery;');
 		try {
 			const row = await queryRow<CashuMintCount>(client, final_sql, params);
@@ -424,7 +472,14 @@ export class NutshellService {
 			WHERE pu.melt_quote IS NULL`;
 
 		const group_by = 'pu.created';
-		const {sql, params} = buildDynamicQuery(client.type, 'proofs_used', args, field_mappings, select_statement, group_by);
+		const {sql, params} = buildDynamicQuery({
+			db_type: client.type,
+			table_name: 'proofs_used',
+			args,
+			field_mappings,
+			select_statement,
+			group_by,
+		});
 		try {
 			const rows = await queryRows<CashuMintSwap & {keyset_ids: string}>(client, sql, params);
 			return rows.map((row) => ({
@@ -453,7 +508,14 @@ export class NutshellService {
 				WHERE pu.melt_quote IS NULL`;
 
 		const group_by = 'pu.created';
-		const {sql, params} = buildCountQuery(client.type, 'proofs_used', args, field_mappings, select_statement, group_by);
+		const {sql, params} = buildCountQuery({
+			db_type: client.type,
+			table_name: 'proofs_used',
+			args,
+			field_mappings,
+			select_statement,
+			group_by,
+		});
 		const final_sql = sql.replace(';', ') subquery;');
 		try {
 			const row = await queryRow<CashuMintCount>(client, final_sql, params);

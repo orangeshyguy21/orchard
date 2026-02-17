@@ -5,26 +5,22 @@ import {CashuMintAnalyticsArgs} from './cashumintdb.interfaces';
 import {CashuMintDatabase} from './cashumintdb.types';
 import {MintDatabaseType} from './cashumintdb.enums';
 
+interface BuildQueryOptions {
+	db_type: MintDatabaseType;
+	table_name: string;
+	args?: Record<string, any>;
+	field_mappings?: Record<string, string>;
+	select_statement?: string;
+	group_by?: string;
+	time_is_epoch_seconds?: boolean;
+}
+
 /**
  * Builds a dynamic SQL query with parameters based on provided arguments
- * @param table_name The database table to query
- * @param args Optional filtering arguments
- * @param field_mappings Maps argument fields to database columns
- * @param select_statement Optional custom SELECT statement (defaults to SELECT * FROM table_name)
- * @param group_by Optional GROUP BY clause
  * @returns Object containing SQL query string and parameters array
  */
-export function buildDynamicQuery(
-	db_type: MintDatabaseType,
-	table_name: string,
-	args?: Record<string, any>,
-	field_mappings?: Record<string, string>,
-	select_statement?: string,
-	group_by?: string,
-): {
-	sql: string;
-	params: any[];
-} {
+export function buildDynamicQuery(options: BuildQueryOptions): {sql: string; params: any[]} {
+	const {db_type, table_name, args, field_mappings, select_statement, group_by, time_is_epoch_seconds} = options;
 	let sql = select_statement || `SELECT * FROM ${table_name}`;
 	const conditions: string[] = [];
 	const params: any[] = [];
@@ -34,7 +30,7 @@ export function buildDynamicQuery(
 
 	if (args && field_mappings) {
 		Object.entries(args).forEach(([arg_key, arg_value]) => {
-			processQueryArgument(db_type, arg_key, arg_value, field_mappings, conditions, params);
+			processQueryArgument(db_type, arg_key, arg_value, field_mappings, conditions, params, time_is_epoch_seconds);
 		});
 	}
 
@@ -46,23 +42,18 @@ export function buildDynamicQuery(
 	return {sql: sql + ';', params};
 }
 
-export function buildCountQuery(
-	db_type: MintDatabaseType,
-	table_name: string,
-	args?: Record<string, any>,
-	field_mappings?: Record<string, string>,
-	select_statement?: string,
-	group_by?: string,
-): {
-	sql: string;
-	params: any[];
-} {
+/**
+ * Builds a count SQL query with parameters based on provided arguments
+ * @returns Object containing SQL query string and parameters array
+ */
+export function buildCountQuery(options: BuildQueryOptions): {sql: string; params: any[]} {
+	const {db_type, table_name, args, field_mappings, select_statement, group_by, time_is_epoch_seconds} = options;
 	let sql = select_statement || `SELECT COUNT(*) AS count FROM ${table_name}`;
 	const conditions: string[] = [];
 	const params: any[] = [];
 	if (args && field_mappings) {
 		Object.entries(args).forEach(([arg_key, arg_value]) => {
-			processQueryArgument(db_type, arg_key, arg_value, field_mappings, conditions, params);
+			processQueryArgument(db_type, arg_key, arg_value, field_mappings, conditions, params, time_is_epoch_seconds);
 		});
 	}
 	if (conditions.length > 0) sql += ` WHERE ${conditions.join(' AND ')}`;
@@ -86,6 +77,7 @@ export function processQueryArgument(
 	field_mappings: Record<string, string>,
 	conditions: string[],
 	params: any[],
+	time_is_epoch_seconds?: boolean,
 ): void {
 	if (arg_value === undefined) return;
 	if (!(arg_key in field_mappings)) return;
@@ -100,12 +92,12 @@ export function processQueryArgument(
 	// Handle date range start
 	else if (arg_key === 'date_start') {
 		conditions.push(`${db_field} >= ?`);
-		params.push(convertDateArgument(arg_value, db_type));
+		params.push(time_is_epoch_seconds ? arg_value : convertDateArgument(arg_value, db_type));
 	}
 	// Handle date range end
 	else if (arg_key === 'date_end') {
 		conditions.push(`${db_field} <= ?`);
-		params.push(convertDateArgument(arg_value, db_type));
+		params.push(time_is_epoch_seconds ? arg_value : convertDateArgument(arg_value, db_type));
 	}
 	// Handle regular equality comparison
 	else if (arg_value !== null) {

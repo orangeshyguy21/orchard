@@ -273,12 +273,12 @@ describe('NutshellService', () => {
 			{quote: 'q2', checking_id: 'c2', state: 'PENDING', paid_time: 'pt', created_time: 'ct', amount: 7},
 		]);
 		const out = await nutshellService.getMintMintQuotes({type: 'sqlite'} as any, {states: ['ISSUED']} as any);
-		expect(helpers.buildDynamicQuery).toHaveBeenCalledWith(
-			MintDatabaseType.sqlite,
-			'mint_quotes',
-			{states: ['ISSUED']},
-			expect.any(Object),
-		);
+		expect(helpers.buildDynamicQuery).toHaveBeenCalledWith({
+			db_type: MintDatabaseType.sqlite,
+			table_name: 'mint_quotes',
+			args: {states: ['ISSUED']},
+			field_mappings: expect.any(Object),
+		});
 		expect(out[0]).toMatchObject({id: 'q1', request_lookup_id: 'c1', amount_paid: 5, amount_issued: 5});
 		expect(out[0].issued_time).toBe(1);
 		expect(out[1].issued_time).toBeNull();
@@ -292,12 +292,12 @@ describe('NutshellService', () => {
 		(helpers.buildDynamicQuery as jest.Mock).mockReturnValueOnce({sql: 'S2', params: ['P2']});
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([{quote: 'q1', checking_id: 'c1', paid_time: 'pt', created_time: 'ct'}]);
 		const out = await nutshellService.getMintMeltQuotes({type: 'postgres'} as any, {states: ['PAID']} as any);
-		expect(helpers.buildDynamicQuery).toHaveBeenCalledWith(
-			MintDatabaseType.postgres,
-			'melt_quotes',
-			{states: ['PAID']},
-			expect.any(Object),
-		);
+		expect(helpers.buildDynamicQuery).toHaveBeenCalledWith({
+			db_type: MintDatabaseType.postgres,
+			table_name: 'melt_quotes',
+			args: {states: ['PAID']},
+			field_mappings: expect.any(Object),
+		});
 		expect(out[0]).toMatchObject({id: 'q1', request_lookup_id: 'c1', payment_preimage: undefined, msat_to_pay: null});
 		(helpers.queryRows as jest.Mock).mockImplementationOnce(() => {
 			throw new Error('err2');
