@@ -457,3 +457,18 @@ mutation MintNut05QuoteUpdate($mint_nut05_quote_update: MintNut05QuoteUpdateInpu
 		state
 	}
 }`;
+
+export const MINT_SWAPS_DATA_QUERY = `
+query MintSwaps($units: [MintUnit!], $id_keysets: [String!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $page: Int, $page_size: Int) {
+	mint_swaps(units: $units, id_keysets: $id_keysets, date_start: $date_start, date_end: $date_end, page: $page, page_size: $page_size) {
+		operation_id
+		keyset_ids
+		unit
+		amount
+		created_time
+		fee
+	}
+	mint_count_swaps(units: $units, id_keysets: $id_keysets, date_start: $date_start, date_end: $date_end) {
+		count
+	}
+}`;

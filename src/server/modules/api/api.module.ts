@@ -34,6 +34,7 @@ import {MintMeltQuoteModule} from './mint/meltquote/mintmeltquote.module';
 import {MintMintQuoteModule} from './mint/mintquote/mintmintquote.module';
 import {MintPromiseModule} from './mint/promise/mintpromise.module';
 import {MintProofModule} from './mint/proof/mintproof.module';
+import {MintSwapModule} from './mint/swap/mintswap.module';
 import {MintAnalyticsModule} from './mint/analytics/mintanalytics.module';
 import {MintCountModule} from './mint/count/mintcount.module';
 import {MintFeeModule} from './mint/fee/mintfee.module';
@@ -80,6 +81,7 @@ import {ApiSettingModule} from './setting/setting.module';
 		MintMintQuoteModule,
 		MintPromiseModule,
 		MintProofModule,
+		MintSwapModule,
 		MintAnalyticsModule,
 		MintCountModule,
 		MintFeeModule,

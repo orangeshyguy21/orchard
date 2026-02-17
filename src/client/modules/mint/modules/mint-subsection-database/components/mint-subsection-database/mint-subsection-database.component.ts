@@ -41,8 +41,9 @@ import {MintService} from '@client/modules/mint/services/mint/mint.service';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class';
 import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
-import {MintProofGroup} from '@client/modules/mint/classes/mint-proof-group.class';
-import {MintPromiseGroup} from '@client/modules/mint/classes/mint-promise-group.class';
+import {MintSwap} from '@client/modules/mint/classes/mint-swap.class';
+// import {MintProofGroup} from '@client/modules/mint/classes/mint-proof-group.class';
+// import {MintPromiseGroup} from '@client/modules/mint/classes/mint-promise-group.class';
 import {MintDataType} from '@client/modules/mint/enums/data-type.enum';
 import {MintSubsectionDatabaseData} from '@client/modules/mint/modules/mint-subsection-database/classes/mint-subsection-database-data.class';
 import {MintSubsectionDatabaseDialogQuoteComponent} from '@client/modules/mint/modules/mint-subsection-database/components/mint-subsection-database-dialog-quote/mint-subsection-database-dialog-quote.component';
@@ -107,7 +108,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 
 	public get state_enabled(): boolean {
 		return (
-			this.data?.type === DataType.MintMints || this.data?.type === DataType.MintMelts || this.data?.type === DataType.MintProofGroups
+			this.data?.type === DataType.MintMints || this.data?.type === DataType.MintMelts
 		);
 	}
 
@@ -244,8 +245,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	private getDefaultStates(type: MintDataType): string[] {
 		if (type === MintDataType.MintMints) return Object.values(MintQuoteState);
 		if (type === MintDataType.MintMelts) return Object.values(MeltQuoteState);
-		if (type === MintDataType.MintProofGroups) return Object.values(MintProofState);
-		if (type === MintDataType.MintPromiseGroups) return [];
+        if (type === MintDataType.MintSwaps) return [];
 		return [];
 	}
 
@@ -273,8 +273,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	private async getDynamicData(): Promise<void> {
 		if (this.page_settings.type === MintDataType.MintMints) return this.getMintsData();
 		if (this.page_settings.type === MintDataType.MintMelts) return this.getMeltsData();
-		if (this.page_settings.type === MintDataType.MintProofGroups) return this.getProofsData();
-		if (this.page_settings.type === MintDataType.MintPromiseGroups) return this.getPromisesData();
+        if (this.page_settings.type === MintDataType.MintSwaps) return this.getSwapsData();
 	}
 
 	private async getMintsData(): Promise<void> {
@@ -313,40 +312,21 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		this.count = mint_melt_quotes_data.count;
 	}
 
-	private async getProofsData(): Promise<void> {
-		const mint_proof_groups_data = await lastValueFrom(
-			this.mintService.getMintProofGroupsData({
-				date_start: this.page_settings.date_start,
-				date_end: this.page_settings.date_end,
-				units: this.page_settings.units.length > 0 ? this.page_settings.units : undefined,
-				states: this.page_settings.states.length > 0 ? (this.page_settings.states as MintProofState[]) : undefined,
-				page: this.page_settings.page,
-				page_size: this.page_settings.page_size,
-			}),
-		);
-		this.data = {
-			type: DataType.MintProofGroups,
-			source: new MatTableDataSource(mint_proof_groups_data.mint_proof_groups),
-		};
-		this.count = mint_proof_groups_data.count;
-	}
+    private async getSwapsData(): Promise<void> {
+        const mint_swaps_data = await lastValueFrom(
+            this.mintService.getMintSwapsData({
+                date_start: this.page_settings.date_start,
+                date_end: this.page_settings.date_end,
+                units: this.page_settings.units.length > 0 ? this.page_settings.units : undefined,
+            }),
+        );
 
-	private async getPromisesData(): Promise<void> {
-		const mint_promise_groups_data = await lastValueFrom(
-			this.mintService.getMintPromiseGroupsData({
-				date_start: this.page_settings.date_start,
-				date_end: this.page_settings.date_end,
-				units: this.page_settings.units.length > 0 ? this.page_settings.units : undefined,
-				page: this.page_settings.page,
-				page_size: this.page_settings.page_size,
-			}),
-		);
-		this.data = {
-			type: DataType.MintPromiseGroups,
-			source: new MatTableDataSource(mint_promise_groups_data.mint_promise_groups),
-		};
-		this.count = mint_promise_groups_data.count;
-	}
+        this.data = {
+            type: DataType.MintSwaps,
+            source: new MatTableDataSource(mint_swaps_data.mint_swaps),
+        };
+        this.count = mint_swaps_data.count;
+    }
 
 	private async reloadDynamicData(): Promise<void> {
 		try {
@@ -427,7 +407,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		this.eventService.registerEvent(null);
 		this.cdr.detectChanges();
 	}
-	public onMoreRequest(entity: MintMintQuote | MintMeltQuote | MintProofGroup | MintPromiseGroup): void {
+	public onMoreRequest(entity: MintMintQuote | MintMeltQuote | MintSwap): void {
 		if (this.bitcoin_oracle_enabled) {
 			this.calculateBitcoinOraclePrice(entity);
 		}
@@ -502,7 +482,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		Oracle Conversion                      
 	******************************************************** */
 
-	private calculateBitcoinOraclePrice(entity: MintMintQuote | MintMeltQuote | MintProofGroup | MintPromiseGroup): void {
+	private calculateBitcoinOraclePrice(entity: MintMintQuote | MintMeltQuote | MintSwap): void {
 		if (!this.bitcoin_oracle_price_map) return;
 		if (!entity.amount) return;
 		if (!entity.unit) return;

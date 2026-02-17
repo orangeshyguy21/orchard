@@ -33,8 +33,7 @@ import {ChartService} from '@client/modules/chart/services/chart/chart.service';
 import {MintSubsectionDatabaseData} from '@client/modules/mint/modules/mint-subsection-database/classes/mint-subsection-database-data.class';
 import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class';
 import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
-import {MintProofGroup} from '@client/modules/mint/classes/mint-proof-group.class';
-import {MintPromiseGroup} from '@client/modules/mint/classes/mint-promise-group.class';
+import {MintSwap} from '@client/modules/mint/classes/mint-swap.class';
 
 @Component({
 	selector: 'orc-mint-subsection-database-chart',
@@ -68,12 +67,8 @@ export class MintSubsectionDatabaseChartComponent implements OnChanges, OnDestro
 		if (this.data.type === DataType.MintMelts) return this.data.source.filteredData;
 		return [];
 	}
-	public get proofs_data(): MintProofGroup[] {
-		if (this.data.type === DataType.MintProofGroups) return this.data.source.filteredData;
-		return [];
-	}
-	public get promises_data(): MintPromiseGroup[] {
-		if (this.data.type === DataType.MintPromiseGroups) return this.data.source.filteredData;
+    public get swaps_data(): MintSwap[] {
+		if (this.data.type === DataType.MintSwaps) return this.data.source.filteredData;
 		return [];
 	}
 
@@ -119,8 +114,7 @@ export class MintSubsectionDatabaseChartComponent implements OnChanges, OnDestro
 	private getChartData(): ChartConfiguration['data'] {
 		if (this.data.type === DataType.MintMints) return this.getMintsData();
 		if (this.data.type === DataType.MintMelts) return this.getMeltsData();
-		if (this.data.type === DataType.MintProofGroups) return this.getProofsData();
-		if (this.data.type === DataType.MintPromiseGroups) return this.getPromisesData();
+        if (this.data.type === DataType.MintSwaps) return this.getSwapsData();
 		return {datasets: []};
 	}
 
@@ -154,38 +148,23 @@ export class MintSubsectionDatabaseChartComponent implements OnChanges, OnDestro
 		return this.getDatasets(data_unit_groups);
 	}
 
-	private getProofsData(): ChartConfiguration['data'] {
+    private getSwapsData(): ChartConfiguration['data'] {
 		if (!this.page_settings) return {datasets: []};
 		if (!this.data?.source || this.data?.source.data.length === 0) return {datasets: []};
-		const data_unit_groups = this.proofs_data.reduce(
+		const data_unit_groups = this.swaps_data.reduce(
 			(groups, entity) => {
 				const unit = entity.unit;
 				groups[unit] = groups[unit] || [];
 				groups[unit].push(entity);
 				return groups;
 			},
-			{} as Record<string, MintProofGroup[]>,
-		);
-		return this.getDatasets(data_unit_groups);
-	}
-
-	private getPromisesData(): ChartConfiguration['data'] {
-		if (!this.page_settings) return {datasets: []};
-		if (!this.data?.source || this.data?.source.data.length === 0) return {datasets: []};
-		const data_unit_groups = this.promises_data.reduce(
-			(groups, entity) => {
-				const unit = entity.unit;
-				groups[unit] = groups[unit] || [];
-				groups[unit].push(entity);
-				return groups;
-			},
-			{} as Record<string, MintPromiseGroup[]>,
+			{} as Record<string, MintSwap[]>,
 		);
 		return this.getDatasets(data_unit_groups);
 	}
 
 	private getDatasets(
-		data_unit_groups: Record<string, MintMintQuote[] | MintMeltQuote[] | MintProofGroup[] | MintPromiseGroup[]>,
+		data_unit_groups: Record<string, MintMintQuote[] | MintMeltQuote[] | MintSwap[]>,
 	): ChartConfiguration['data'] {
 		const datasets = Object.entries(data_unit_groups).map(([unit, data], index) => {
 			const color = this.chartService.getAssetColor(unit, index);
@@ -220,7 +199,7 @@ export class MintSubsectionDatabaseChartComponent implements OnChanges, OnDestro
 		return {datasets};
 	}
 
-	private getEffectiveAmount(entity: MintMintQuote | MintMeltQuote | MintProofGroup | MintPromiseGroup): number {
+	private getEffectiveAmount(entity: MintMintQuote | MintMeltQuote | MintSwap): number {
 		if (entity instanceof MintMintQuote) return entity.amount_paid;
 		return entity.amount;
 	}

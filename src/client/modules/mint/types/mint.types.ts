@@ -8,6 +8,7 @@ import {
 	OrchardMintMeltQuote,
 	OrchardMintProofGroup,
 	OrchardMintPromiseGroup,
+    OrchardMintSwap,
 	OrchardMintKeysetsAnalytics,
 	MintUnit,
 	MintAnalyticsInterval,
@@ -71,6 +72,11 @@ export type MintAnalyticsSwapsResponse = {
 	mint_analytics_swaps: OrchardMintAnalytics[];
 };
 
+export type MintSwapsDataResponse = {
+	mint_swaps: OrchardMintSwap[];
+	mint_count_swaps: OrchardMintCount;
+};
+
 export type MintAnalyticsFeesResponse = {
 	mint_analytics_fees: OrchardMintAnalytics[];
 };
@@ -128,6 +134,15 @@ export type MintProofGroupsArgs = {
 };
 
 export type MintPromiseGroupsArgs = {
+	units?: MintUnit[];
+	id_keysets?: string[];
+	date_start?: number;
+	date_end?: number;
+	page?: number;
+	page_size?: number;
+};
+
+export type MintSwapsArgs = {
 	units?: MintUnit[];
 	id_keysets?: string[];
 	date_start?: number;
@@ -247,3 +262,4 @@ export type MintNut04QuoteUpdateResponse = {
 export type MintNut05QuoteUpdateResponse = {
 	mint_nut05_quote_update: OrchardMintNut05QuoteUpdate;
 };
+

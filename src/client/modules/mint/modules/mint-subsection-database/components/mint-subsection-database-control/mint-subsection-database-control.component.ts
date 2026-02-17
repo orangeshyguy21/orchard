@@ -292,15 +292,13 @@ export class MintSubsectionDatabaseControlComponent {
 	private getTypeLabel(type: MintDataType): string {
 		if (type === MintDataType.MintMints) return 'Mints';
 		if (type === MintDataType.MintMelts) return 'Melts';
-		if (type === MintDataType.MintProofGroups) return 'Ecash Used';
-		if (type === MintDataType.MintPromiseGroups) return 'Ecash Issued';
+        if (type === MintDataType.MintSwaps) return 'Swaps';
 		return 'Unknown';
 	}
 	private getTypeHelper(type: MintDataType): string {
 		if (type === MintDataType.MintMints) return 'Mint deposits';
 		if (type === MintDataType.MintMelts) return 'Mint withdrawals';
-		if (type === MintDataType.MintProofGroups) return 'Ecash burned by the mint';
-		if (type === MintDataType.MintPromiseGroups) return 'Ecash issued by the mint';
+        if (type === MintDataType.MintSwaps) return 'Mint internal swaps';
 		return 'n/a';
 	}
 

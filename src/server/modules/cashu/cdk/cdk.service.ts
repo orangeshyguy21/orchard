@@ -16,6 +16,7 @@ import {
 	CashuMintMintQuote,
 	CashuMintProofGroup,
 	CashuMintPromiseGroup,
+    CashuMintSwap,
 	CashuMintAnalytics,
 	CashuMintKeysetsAnalytics,
 	CashuMintCount,
@@ -28,6 +29,7 @@ import {
 	CashuMintProofsArgs,
 	CashuMintPromiseArgs,
 	CashuMintKeysetProofsArgs,
+    CashuMintSwapsArgs,
 } from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
 import {
 	buildDynamicQuery,
@@ -467,6 +469,68 @@ export class CdkService {
 			GROUP BY keyset_id;`;
 		try {
 			return queryRows<CashuMintKeysetProofCount>(client, sql, [...params]);
+		} catch (err) {
+			throw err;
+		}
+	}
+
+	public async getMintCountSwaps(client: CashuMintDatabase, args?: CashuMintSwapsArgs): Promise<number> {
+		const swap_args = {...args, operation_kind: 'swap'};
+		const field_mappings = {
+			units: 'k.unit',
+			id_keysets: 'bs.keyset_id',
+			date_start: 'co.completed_at',
+			date_end: 'co.completed_at',
+			operation_kind: 'co.operation_kind',
+		};
+
+		const select_statement = `
+			SELECT COUNT(*) AS count
+			FROM completed_operations co
+			LEFT JOIN (
+				SELECT operation_id, keyset_id FROM blind_signature GROUP BY operation_id
+			) bs ON bs.operation_id = co.operation_id
+			LEFT JOIN keyset k ON k.id = bs.keyset_id`;
+
+		const {sql, params} = buildCountQuery(MintDatabaseType.sqlite, 'completed_operations', swap_args, field_mappings, select_statement);
+		try {
+			const row = await queryRow<CashuMintCount>(client, sql, params);
+			return row.count;
+		} catch (err) {
+			throw err;
+		}
+	}
+
+	public async getMintSwaps(client: CashuMintDatabase, args?: CashuMintSwapsArgs): Promise<CashuMintSwap[]> {
+		const swap_args = {...args, operation_kind: 'swap'};
+		const field_mappings = {
+			units: 'k.unit',
+			id_keysets: 'bs.keyset_id',
+			date_start: 'co.completed_at',
+			date_end: 'co.completed_at',
+			operation_kind: 'co.operation_kind',
+		};
+
+		const select_statement = `
+			SELECT
+				co.operation_id,
+				GROUP_CONCAT(DISTINCT bs.keyset_id) AS keyset_ids,
+				k.unit,
+				co.total_redeemed AS amount,
+				co.completed_at AS created_time,
+				co.fee_collected AS fee
+			FROM completed_operations co
+			LEFT JOIN blind_signature bs ON bs.operation_id = co.operation_id
+			LEFT JOIN keyset k ON k.id = bs.keyset_id`;
+
+		const group_by = 'co.operation_id';
+		const {sql, params} = buildDynamicQuery(MintDatabaseType.sqlite, 'completed_operations', swap_args, field_mappings, select_statement, group_by);
+		try {
+			const rows = await queryRows<CashuMintSwap & {keyset_ids: string}>(client, sql, params);
+			return rows.map((row) => ({
+				...row,
+				keyset_ids: row.keyset_ids ? row.keyset_ids.split(',') : [],
+			}));
 		} catch (err) {
 			throw err;
 		}

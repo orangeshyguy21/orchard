@@ -186,6 +186,7 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 
 	private getBitcoinBlockchainSubscription(): Subscription {
 		this.bitcoin_polling_active = true;
+        console.log('setting loading_bitcoin to false in getBitcoinBlockchainSubscription');
 		this.loading_bitcoin = false;
 		this.cdr.detectChanges();
 		return timer(0, 5000)

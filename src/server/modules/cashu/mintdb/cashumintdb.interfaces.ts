@@ -23,6 +23,15 @@ export interface CashuMintMeltQuotesArgs {
 	page_size?: number;
 }
 
+export interface CashuMintSwapsArgs {
+	date_start?: number;
+	date_end?: number;
+	units?: MintUnit[];
+	id_keysets?: string[];
+	page?: number;
+	page_size?: number;
+}
+
 export interface CashuMintPromiseArgs {
 	date_start?: number;
 	date_end?: number;

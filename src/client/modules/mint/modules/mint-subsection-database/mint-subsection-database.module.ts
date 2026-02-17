@@ -44,6 +44,7 @@ import {MintSubsectionDatabaseTableMintBolt12Component} from './components/mint-
 import {MintSubsectionDatabaseTableMeltComponent} from './components/mint-subsection-database-table-melt/mint-subsection-database-table-melt.component';
 import {MintSubsectionDatabaseTableEcashComponent} from './components/mint-subsection-database-table-ecash/mint-subsection-database-table-ecash.component';
 import {MintSubsectionDatabaseDialogQuoteComponent} from './components/mint-subsection-database-dialog-quote/mint-subsection-database-dialog-quote.component';
+import { MintSubsectionDatabaseTableSwapComponent } from './components/mint-subsection-database-table-swap/mint-subsection-database-table-swap.component';
 
 @NgModule({
 	declarations: [
@@ -59,6 +60,7 @@ import {MintSubsectionDatabaseDialogQuoteComponent} from './components/mint-subs
 		MintSubsectionDatabaseTableMeltComponent,
 		MintSubsectionDatabaseTableEcashComponent,
 		MintSubsectionDatabaseDialogQuoteComponent,
+  MintSubsectionDatabaseTableSwapComponent,
 	],
 	imports: [
 		CoreRouterModule.forChild([

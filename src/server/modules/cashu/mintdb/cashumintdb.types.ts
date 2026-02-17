@@ -66,6 +66,15 @@ export type CashuMintMeltQuote = {
 	payment_method: string;
 };
 
+export type CashuMintSwap = {
+    operation_id: string | null;
+    keyset_ids: string[];
+    unit: MintUnit;
+    amount: number;
+    created_time: number;
+    fee: number;
+}
+
 export type CashuMintProofGroup = {
 	amount: number;
 	created_time: number;

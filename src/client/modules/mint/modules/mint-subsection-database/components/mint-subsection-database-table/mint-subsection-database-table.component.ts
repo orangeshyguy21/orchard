@@ -10,8 +10,7 @@ import {MintSubsectionDatabaseData} from '@client/modules/mint/modules/mint-subs
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class';
 import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
-import {MintProofGroup} from '@client/modules/mint/classes/mint-proof-group.class';
-import {MintPromiseGroup} from '@client/modules/mint/classes/mint-promise-group.class';
+import {MintSwap} from '@client/modules/mint/classes/mint-swap.class';
 /* Shared Dependencies */
 import {MintQuoteState, MeltQuoteState} from '@shared/generated.types';
 
@@ -36,7 +35,7 @@ export class MintSubsectionDatabaseTableComponent {
 	public bitcoin_oracle_amount = input.required<number | null>(); // bitcoin oracle amount for oracle conversion
 
 	/* Outputs */
-	public updateRequest = output<MintMintQuote | MintMeltQuote | MintProofGroup | MintPromiseGroup>(); // emits request string for invoice updates
+	public updateRequest = output<MintMintQuote | MintMeltQuote | MintSwap>(); // emits request string for invoice updates
 	public setQuoteStatePaid = output<MintMintQuote | MintMeltQuote>(); // emits quote to mark as paid
 
 	/* State */
@@ -76,13 +75,9 @@ export class MintSubsectionDatabaseTableComponent {
 			return ['unit', 'amount', 'request', 'state', 'created_time', 'actions'];
 		}
 
-		if (data_type === 'MintProofGroups') {
-			if (mobile) return ['unit', 'amount', 'ecash', 'state'];
-			return ['unit', 'amount', 'ecash', 'state', 'created_time'];
-		}
-		if (data_type === 'MintPromiseGroups') {
-			if (mobile) return ['unit', 'amount', 'ecash'];
-			return ['unit', 'amount', 'ecash', 'created_time'];
+        if (data_type === 'MintSwaps') {
+			if (mobile) return ['unit', 'amount', 'created_time'];
+			return ['unit', 'amount', 'fee', 'created_time'];
 		}
 		if (mobile) return ['unit', 'amount', 'state'];
 		return ['unit', 'amount', 'request', 'state', 'created_time'];
