@@ -119,6 +119,7 @@
 		[loading]="loading_dynamic_data"
 		[state_enabled]="state_enabled"
 		[device_mobile]="device_type() === 'mobile'"
+		[highlighted_entity_id]="highlighted_entity_id()"
 	></orc-mint-subsection-database-chart>
 
 	<div class="mint-data-table">
@@ -134,6 +135,7 @@
 				[device_desktop]="device_type() === 'desktop'"
 				(updateRequest)="onMoreRequest($event)"
 				(setQuoteStatePaid)="onSetQuoteStatePaid($event)"
+				(highlightChange)="onHighlightChange($event)"
 			></orc-mint-subsection-database-table>
 
 			@if (!loading_dynamic_data && data.source.data.length === 0) {

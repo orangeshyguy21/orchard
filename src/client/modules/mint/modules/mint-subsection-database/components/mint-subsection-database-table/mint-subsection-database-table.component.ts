@@ -37,9 +37,10 @@ export class MintSubsectionDatabaseTableComponent {
 	/* Outputs */
 	public updateRequest = output<MintMintQuote | MintMeltQuote | MintSwap>(); // emits request string for invoice updates
 	public setQuoteStatePaid = output<MintMintQuote | MintMeltQuote>(); // emits quote to mark as paid
+	public highlightChange = output<string | null>(); // emits entity id on row toggle, null on collapse
 
 	/* State */
-	public more_entity!: MintMintQuote | MintMeltQuote | null; // currently expanded row entity
+	public more_entity!: MintMintQuote | MintMeltQuote | MintSwap | null; // currently expanded row entity
 	public MintQuoteState = MintQuoteState;
 	public MeltQuoteState = MeltQuoteState;
 
@@ -84,12 +85,28 @@ export class MintSubsectionDatabaseTableComponent {
 	}
 
 	/**
-	 * Toggles the expanded detail row for a quote entity
-	 * @param entity - the quote to toggle
+	 * Toggles the expanded detail row for an entity
+	 * @param entity - the entity to toggle
 	 */
-	public toggleMore(entity: MintMintQuote | MintMeltQuote): void {
+	public toggleMore(entity: MintMintQuote | MintMeltQuote | MintSwap): void {
 		this.more_entity = this.more_entity === entity ? null : entity;
+		this.highlightChange.emit(this.more_entity?.id ?? null);
 		if (this.more_entity) this.updateRequest.emit(this.more_entity);
+	}
+
+	/**
+	 * Emits highlight for the hovered row
+	 * @param entity - the hovered entity
+	 */
+	public onRowHover(entity: MintMintQuote | MintMeltQuote | MintSwap): void {
+		this.highlightChange.emit(entity.id);
+	}
+
+	/**
+	 * Reverts highlight to expanded row on mouse leave, or clears it
+	 */
+	public onRowLeave(): void {
+		this.highlightChange.emit(this.more_entity?.id ?? null);
 	}
 
 	/**

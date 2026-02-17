@@ -52,6 +52,7 @@ export class MintSubsectionDatabaseChartComponent implements OnChanges, OnDestro
 	@Input() public mint_genesis_time!: number;
 	@Input() public loading!: boolean;
 	@Input() public state_enabled!: boolean;
+	@Input() public highlighted_entity_id: string | null = null;
 	public readonly device_mobile = input.required<boolean>();
 
 	public chart_type!: ChartJsType;
@@ -88,6 +89,9 @@ export class MintSubsectionDatabaseChartComponent implements OnChanges, OnDestro
 		}
 		if (changes['filter'] && !changes['filter'].firstChange) {
 			this.chart_data = this.getChartData();
+		}
+		if (changes['highlighted_entity_id'] && !changes['highlighted_entity_id'].firstChange) {
+			this.updateChartHighlight();
 		}
 	}
 
@@ -168,23 +172,25 @@ export class MintSubsectionDatabaseChartComponent implements OnChanges, OnDestro
 	): ChartConfiguration['data'] {
 		const datasets = Object.entries(data_unit_groups).map(([unit, data], index) => {
 			const color = this.chartService.getAssetColor(unit, index);
-			const custom_opacity = this.chartService.hexToRgba(color.border, 0.75);
+			const active_color = this.chartService.hexToRgba(color.border, 0.75);
+			const dimmed_color = this.chartService.hexToRgba(color.border, 0.15);
 			const data_prepped = data.map((entity) => ({
 				x: (entity.created_time ?? 0) * 1000,
 				y: LocalAmountPipe.getConvertedAmount(unit, this.getEffectiveAmount(entity)),
 				state: 'state' in entity ? entity.state : undefined,
+				entity_id: entity.id,
 			}));
 			const yAxisID = getYAxisId(unit);
 			return {
 				data: data_prepped,
 				label: unit.toUpperCase(),
-				backgroundColor: custom_opacity,
-				borderColor: custom_opacity,
-				pointBackgroundColor: custom_opacity,
-				pointBorderColor: custom_opacity,
+				backgroundColor: (context: any) => this.getPointColor(context, active_color, dimmed_color),
+				borderColor: (context: any) => this.getPointColor(context, active_color, dimmed_color),
+				pointBackgroundColor: (context: any) => this.getPointColor(context, active_color, dimmed_color),
+				pointBorderColor: (context: any) => this.getPointColor(context, active_color, dimmed_color),
 				pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
-				pointHoverBorderColor: custom_opacity,
-				pointRadius: 3,
+				pointHoverBorderColor: active_color,
+				pointRadius: (context: any) => this.getPointRadius(context, 3),
 				pointHoverRadius: 4,
 				pointStyle: (context: any) => {
 					const entity = data[context.dataIndex];
@@ -197,6 +203,39 @@ export class MintSubsectionDatabaseChartComponent implements OnChanges, OnDestro
 		});
 
 		return {datasets};
+	}
+
+	/**
+	 * Updates chart visual highlight state without rebuilding datasets
+	 */
+	private updateChartHighlight(): void {
+		if (!this.chart?.chart) return;
+		this.chart.chart.update();
+	}
+
+	/**
+	 * Returns the appropriate color for a data point based on highlight state
+	 * @param context - Chart.js scriptable context
+	 * @param active_color - color when point is highlighted or no highlight active
+	 * @param dimmed_color - color when point is dimmed
+	 */
+	private getPointColor(context: any, active_color: string, dimmed_color: string): string {
+		if (!this.highlighted_entity_id) return active_color;
+		const point = context.dataset.data[context.dataIndex];
+		if (!point) return dimmed_color;
+		return point.entity_id === this.highlighted_entity_id ? active_color : dimmed_color;
+	}
+
+	/**
+	 * Returns the appropriate radius for a data point based on highlight state
+	 * @param context - Chart.js scriptable context
+	 * @param default_radius - normal point radius
+	 */
+	private getPointRadius(context: any, default_radius: number): number {
+		if (!this.highlighted_entity_id) return default_radius;
+		const point = context.dataset.data[context.dataIndex];
+		if (!point) return default_radius;
+        return point.entity_id === this.highlighted_entity_id ? default_radius * 1.5 : default_radius;
 	}
 
 	private getEffectiveAmount(entity: MintMintQuote | MintMeltQuote | MintSwap): number {

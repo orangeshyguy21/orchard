@@ -165,6 +165,8 @@
 					class="entity-row"
 					[class.expanded]="more_entity === row"
 					(click)="toggleMore(row)"
+					(mouseenter)="onRowHover(row)"
+					(mouseleave)="onRowLeave()"
 				></tr>
 				<tr mat-row *matRowDef="let row; columns: ['more_detail']" class="more-entity-row"></tr>
 			</table>

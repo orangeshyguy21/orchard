@@ -98,6 +98,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 
 	public device_type = signal<DeviceType>('desktop');
 	public bitcoin_oracle_amount = signal<number | null>(null);
+	public highlighted_entity_id = signal<string | null>(null);
 
 	private active_event: EventData | null = null;
 	private subscriptions: Subscription = new Subscription();
@@ -331,6 +332,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	private async reloadDynamicData(): Promise<void> {
 		try {
 			this.loading_dynamic_data = true;
+			this.highlighted_entity_id.set(null);
 			this.cdr.detectChanges();
 			await this.getDynamicData();
 			this.loading_dynamic_data = false;
@@ -407,6 +409,14 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		this.eventService.registerEvent(null);
 		this.cdr.detectChanges();
 	}
+	/**
+	 * Handles highlight change from table row hover or toggle
+	 * @param entity_id - the entity ID to highlight, or null to clear
+	 */
+	public onHighlightChange(entity_id: string | null): void {
+		this.highlighted_entity_id.set(entity_id);
+	}
+
 	public onMoreRequest(entity: MintMintQuote | MintMeltQuote | MintSwap): void {
 		if (this.bitcoin_oracle_enabled) {
 			this.calculateBitcoinOraclePrice(entity);
