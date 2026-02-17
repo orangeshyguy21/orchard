@@ -1,5 +1,7 @@
 /* Core Dependencies */
 import {InputType, Field, Int} from '@nestjs/graphql';
+/* Application Dependencies */
+import {MintUnit} from '@server/modules/cashu/cashu.enums';
 
 @InputType()
 export class MintNut04UpdateInput {
@@ -29,4 +31,19 @@ export class MintNut04QuoteUpdateInput {
 
 	@Field()
 	state: string;
+}
+
+@InputType()
+export class MintNut04AdminIssueInput {
+	@Field(() => Int)
+	amount: number;
+
+	@Field(() => MintUnit)
+	unit: MintUnit;
+
+	@Field({defaultValue: 'bolt11'})
+	method: string;
+
+	@Field({nullable: true})
+	description?: string;
 }

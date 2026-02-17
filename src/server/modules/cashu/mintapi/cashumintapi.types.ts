@@ -1,4 +1,4 @@
-import {MintUnit} from '@server/modules/cashu/cashu.enums';
+import {MintUnit, MintQuoteState} from '@server/modules/cashu/cashu.enums';
 
 export type CashuMintInfo = {
 	name: string;
@@ -93,4 +93,20 @@ export type CashuNutSupported = {
 export type CashuCachedEndpoint = {
 	method: string;
 	path: string;
+};
+
+export type CashuMintNut04QuoteCreateRequest = {
+	amount: number;
+	unit: MintUnit;
+	description?: string;
+};
+
+export type CashuMintNut04QuoteCreateResponse = {
+	quote: string;
+	request: string;
+	amount?: number;
+	unit?: MintUnit;
+	state?: MintQuoteState;
+	paid?: boolean;
+	expiry?: number;
 };

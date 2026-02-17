@@ -92,3 +92,35 @@ export class OrchardMintNut04QuoteUpdate {
 	@Field()
 	state: string;
 }
+
+@ObjectType()
+export class OrchardMintNut04AdminIssue {
+	@Field()
+	quote_id: string;
+
+	@Field({nullable: true})
+	request?: string;
+
+	@Field(() => Int)
+	amount: number;
+
+	@Field(() => MintUnit)
+	unit: MintUnit;
+
+	@Field(() => MintQuoteState)
+	state: MintQuoteState;
+
+	constructor(data: {
+		quote_id: string;
+		request?: string;
+		amount: number;
+		unit: MintUnit;
+		state: MintQuoteState;
+	}) {
+		this.quote_id = data.quote_id;
+		this.request = data.request;
+		this.amount = data.amount;
+		this.unit = data.unit;
+		this.state = data.state;
+	}
+}

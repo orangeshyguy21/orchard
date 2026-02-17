@@ -244,6 +244,16 @@ export type MintNut04QuoteUpdateResponse = {
 	mint_nut04_quote_update: OrchardMintNut04QuoteUpdate;
 };
 
+export type MintNut04AdminIssueResponse = {
+	mint_nut04_admin_issue: {
+		quote_id: string;
+		request?: string;
+		amount: number;
+		unit: MintUnit;
+		state: MintQuoteState;
+	};
+};
+
 export type MintNut05QuoteUpdateResponse = {
 	mint_nut05_quote_update: OrchardMintNut05QuoteUpdate;
 };

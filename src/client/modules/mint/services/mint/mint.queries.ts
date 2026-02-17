@@ -449,6 +449,17 @@ mutation MintNut04QuoteUpdate($mint_nut04_quote_update: MintNut04QuoteUpdateInpu
 	}
 }`;
 
+export const MINT_NUT04_ADMIN_ISSUE_MUTATION = `
+mutation MintNut04AdminIssue($mint_nut04_admin_issue: MintNut04AdminIssueInput!) {
+	mint_nut04_admin_issue(mint_nut04_admin_issue: $mint_nut04_admin_issue) {
+		quote_id
+		request
+		amount
+		unit
+		state
+	}
+}`;
+
 export const MINT_NUT05_QUOTE_UPDATE_MUTATION = `
 mutation MintNut05QuoteUpdate($mint_nut05_quote_update: MintNut05QuoteUpdateInput!) {
 	mint_nut05_quote_update(mint_nut05_quote_update: $mint_nut05_quote_update) {

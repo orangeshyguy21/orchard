@@ -85,4 +85,28 @@ describe('CashuMintApiService', () => {
 			headers: {'Content-Type': 'application/json'},
 		});
 	});
+
+	it('creates a mint quote for nut04', async () => {
+		configService.get.mockReturnValue('https://mint');
+		const json = jest.fn().mockResolvedValue({quote: 'q1', request: 'lnbc1...'});
+		fetchService.fetchWithProxy.mockResolvedValue({ok: true, status: 200, json} as any);
+
+		const out = await cashuMintApiService.createMintNut04Quote('bolt11', {amount: 21, unit: 'sat' as any});
+		expect(fetchService.fetchWithProxy).toHaveBeenCalledWith('https://mint/v1/mint/quote/bolt11', {
+			method: 'POST',
+			headers: {'Content-Type': 'application/json'},
+			body: JSON.stringify({amount: 21, unit: 'sat'}),
+		});
+		expect(out).toEqual({quote: 'q1', request: 'lnbc1...'});
+	});
+
+	it('throws when quote creation returns non-200 status', async () => {
+		configService.get.mockReturnValue('https://mint');
+		const text = jest.fn().mockResolvedValue('bad request');
+		fetchService.fetchWithProxy.mockResolvedValue({ok: false, status: 400, text} as any);
+
+		await expect(cashuMintApiService.createMintNut04Quote('bolt11', {amount: 21, unit: 'sat' as any})).rejects.toThrow(
+			'Mint API quote creation failed (400): bad request',
+		);
+	});
 });
