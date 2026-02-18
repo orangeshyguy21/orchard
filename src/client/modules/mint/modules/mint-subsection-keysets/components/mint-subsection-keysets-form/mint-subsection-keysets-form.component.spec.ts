@@ -7,31 +7,34 @@ import {OrcMintSubsectionKeysetsModule} from '@client/modules/mint/modules/mint-
 import {MintSubsectionKeysetsFormComponent} from './mint-subsection-keysets-form.component';
 
 describe('MintSubsectionKeysetsFormComponent', () => {
-    let component: MintSubsectionKeysetsFormComponent;
-    let fixture: ComponentFixture<MintSubsectionKeysetsFormComponent>;
+	let component: MintSubsectionKeysetsFormComponent;
+	let fixture: ComponentFixture<MintSubsectionKeysetsFormComponent>;
 
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
-            imports: [OrcMintSubsectionKeysetsModule],
-        }).compileComponents();
+	beforeEach(async () => {
+		await TestBed.configureTestingModule({
+			imports: [OrcMintSubsectionKeysetsModule],
+		}).compileComponents();
 
-        fixture = TestBed.createComponent(MintSubsectionKeysetsFormComponent);
-        component = fixture.componentInstance;
-        fixture.componentRef.setInput('form_group', new FormGroup({
-            unit: new FormControl('sat', [Validators.required]),
-            input_fee_ppk: new FormControl(0, [Validators.required]),
-            max_order: new FormControl(0, [Validators.required]),
-            default_amounts: new FormControl(true),
-            amounts: new FormControl([1, 2, 4, 8]),
-        }));
-        fixture.componentRef.setInput('unit_options', [{value: 'sat', label: 'sat'}]);
-        fixture.componentRef.setInput('keyset_out', {unit: 'sat', derivation_path_index: 0, input_fee_ppk: 0});
-        fixture.componentRef.setInput('keyset_out_balance', {balance: 0});
-        fixture.componentRef.setInput('median_notes', 0);
-        fixture.detectChanges();
-    });
+		fixture = TestBed.createComponent(MintSubsectionKeysetsFormComponent);
+		component = fixture.componentInstance;
+		fixture.componentRef.setInput(
+			'form_group',
+			new FormGroup({
+				unit: new FormControl('sat', [Validators.required]),
+				input_fee_ppk: new FormControl(0, [Validators.required]),
+				max_order: new FormControl(0, [Validators.required]),
+				default_amounts: new FormControl(true),
+				amounts: new FormControl([1, 2, 4, 8]),
+			}),
+		);
+		fixture.componentRef.setInput('unit_options', [{value: 'sat', label: 'sat'}]);
+		fixture.componentRef.setInput('keyset_out', {unit: 'sat', derivation_path_index: 0, input_fee_ppk: 0});
+		fixture.componentRef.setInput('keyset_out_balance', {balance: 0});
+		fixture.componentRef.setInput('median_notes', 0);
+		fixture.detectChanges();
+	});
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+	it('should create', () => {
+		expect(component).toBeTruthy();
+	});
 });

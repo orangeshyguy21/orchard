@@ -69,7 +69,9 @@ describe('CashuMintRpcService', () => {
 
 	it('maps UNAVAILABLE and INTERNAL errors correctly', async () => {
 		const client = {
-			GetInfo: jest.fn((req: any, _metadata: any, cb: any) => cb({code: 14, message: '14 UNAVAILABLE', details: 'Service unavailable'}, null)),
+			GetInfo: jest.fn((req: any, _metadata: any, cb: any) =>
+				cb({code: 14, message: '14 UNAVAILABLE', details: 'Service unavailable'}, null),
+			),
 		};
 		(cdkService.initializeGrpcClient as jest.Mock).mockReturnValue(client);
 		configService.get.mockReturnValue('cdk');
@@ -91,7 +93,9 @@ describe('CashuMintRpcService', () => {
 	it('maps UNIMPLEMENTED to MintSupportError and logs', async () => {
 		const debug_spy = jest.spyOn(Logger.prototype, 'debug').mockImplementation(() => {});
 		const client = {
-			GetInfo: jest.fn((req: any, _metadata: any, cb: any) => cb({code: 12, message: '12 UNIMPLEMENTED', details: 'Not implemented'}, null)),
+			GetInfo: jest.fn((req: any, _metadata: any, cb: any) =>
+				cb({code: 12, message: '12 UNIMPLEMENTED', details: 'Not implemented'}, null),
+			),
 		};
 		(cdkService.initializeGrpcClient as jest.Mock).mockReturnValue(client);
 		configService.get.mockReturnValue('cdk');
@@ -239,7 +243,11 @@ describe('CashuMintRpcService', () => {
 			expect.any(Function),
 		);
 		await cashuMintRpcService.updateNut05({unit: 'sat', method: 'bolt11', amountless: true});
-		expect(client.UpdateNut05).toHaveBeenCalledWith({unit: 'sat', method: 'bolt11', options: {amountless: true}}, expect.any(Object), expect.any(Function));
+		expect(client.UpdateNut05).toHaveBeenCalledWith(
+			{unit: 'sat', method: 'bolt11', options: {amountless: true}},
+			expect.any(Object),
+			expect.any(Function),
+		);
 	});
 
 	it('updateQuoteTtl sends only provided fields', async () => {
@@ -268,7 +276,9 @@ describe('CashuMintRpcService', () => {
 
 	it('rotateNextKeyset sends unit and optional fields when provided', async () => {
 		const client: any = {
-			RotateNextKeyset: jest.fn((req: any, _metadata: any, cb: any) => cb(null, {id: '1', unit: 'sat', amounts: [1, 2, 4], input_fee_ppk: 2})),
+			RotateNextKeyset: jest.fn((req: any, _metadata: any, cb: any) =>
+				cb(null, {id: '1', unit: 'sat', amounts: [1, 2, 4], input_fee_ppk: 2}),
+			),
 		};
 		(cdkService.initializeGrpcClient as jest.Mock).mockReturnValue(client);
 		configService.get.mockReturnValue('cdk');
@@ -276,10 +286,18 @@ describe('CashuMintRpcService', () => {
 		await cashuMintRpcService.rotateNextKeyset({unit: 'sat'});
 		expect(client.RotateNextKeyset).toHaveBeenCalledWith({unit: 'sat'}, expect.any(Object), expect.any(Function));
 		await cashuMintRpcService.rotateNextKeyset({unit: 'sat', amounts: [1, 2, 4, 8]});
-		expect(client.RotateNextKeyset).toHaveBeenCalledWith({unit: 'sat', amounts: [1, 2, 4, 8]}, expect.any(Object), expect.any(Function));
+		expect(client.RotateNextKeyset).toHaveBeenCalledWith(
+			{unit: 'sat', amounts: [1, 2, 4, 8]},
+			expect.any(Object),
+			expect.any(Function),
+		);
 		await cashuMintRpcService.rotateNextKeyset({unit: 'sat', input_fee_ppk: 5});
 		expect(client.RotateNextKeyset).toHaveBeenCalledWith({unit: 'sat', input_fee_ppk: 5}, expect.any(Object), expect.any(Function));
 		await cashuMintRpcService.rotateNextKeyset({unit: 'sat', amounts: [1, 2, 4, 8], input_fee_ppk: 5});
-		expect(client.RotateNextKeyset).toHaveBeenCalledWith({unit: 'sat', amounts: [1, 2, 4, 8], input_fee_ppk: 5}, expect.any(Object), expect.any(Function));
+		expect(client.RotateNextKeyset).toHaveBeenCalledWith(
+			{unit: 'sat', amounts: [1, 2, 4, 8], input_fee_ppk: 5},
+			expect.any(Object),
+			expect.any(Function),
+		);
 	});
 });

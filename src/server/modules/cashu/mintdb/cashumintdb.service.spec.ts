@@ -185,7 +185,7 @@ describe('CashuMintDatabaseService', () => {
 			['getMintAnalyticsMints', 'getMintAnalyticsMints'],
 			['getMintAnalyticsMelts', 'getMintAnalyticsMelts'],
 			['getMintAnalyticsSwaps', 'getMintAnalyticsSwaps'],
-		['getMintAnalyticsFees', 'getMintAnalyticsFees'],
+			['getMintAnalyticsFees', 'getMintAnalyticsFees'],
 		];
 		cdk_map.forEach(([_, c_method]) => {
 			(cdkService[c_method as any] as any) = jest.fn().mockResolvedValue('cdk');
