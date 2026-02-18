@@ -1,15 +1,15 @@
 @use 'molecule/molecule';
 
 mat-form-field {
-    align-self: flex-start;
+	align-self: flex-start;
 }
 
 .amount-slider {
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-gap-0-5;
-    padding-right: 3rem;
-    mat-slider {
-        @extend %w-full;
-    }
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-gap-0-5;
+	padding-right: 3rem;
+	mat-slider {
+		@extend %w-full;
+	}
 }

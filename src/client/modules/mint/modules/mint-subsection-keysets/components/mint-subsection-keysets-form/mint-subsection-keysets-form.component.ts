@@ -18,7 +18,7 @@ import {MintUnit} from '@shared/generated.types';
 	styleUrl: './mint-subsection-keysets-form.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MintSubsectionKeysetsFormComponent {    
+export class MintSubsectionKeysetsFormComponent {
 	public readonly form_group = input.required<FormGroup>();
 	public readonly unit_options = input.required<{value: string; label: string}[]>();
 	public readonly keyset_out = input.required<MintKeyset>();

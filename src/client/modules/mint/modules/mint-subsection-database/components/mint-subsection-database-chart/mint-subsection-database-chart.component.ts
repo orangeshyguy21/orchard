@@ -68,7 +68,7 @@ export class MintSubsectionDatabaseChartComponent implements OnChanges, OnDestro
 		if (this.data.type === DataType.MintMelts) return this.data.source.filteredData;
 		return [];
 	}
-    public get swaps_data(): MintSwap[] {
+	public get swaps_data(): MintSwap[] {
 		if (this.data.type === DataType.MintSwaps) return this.data.source.filteredData;
 		return [];
 	}
@@ -118,7 +118,7 @@ export class MintSubsectionDatabaseChartComponent implements OnChanges, OnDestro
 	private getChartData(): ChartConfiguration['data'] {
 		if (this.data.type === DataType.MintMints) return this.getMintsData();
 		if (this.data.type === DataType.MintMelts) return this.getMeltsData();
-        if (this.data.type === DataType.MintSwaps) return this.getSwapsData();
+		if (this.data.type === DataType.MintSwaps) return this.getSwapsData();
 		return {datasets: []};
 	}
 
@@ -152,7 +152,7 @@ export class MintSubsectionDatabaseChartComponent implements OnChanges, OnDestro
 		return this.getDatasets(data_unit_groups);
 	}
 
-    private getSwapsData(): ChartConfiguration['data'] {
+	private getSwapsData(): ChartConfiguration['data'] {
 		if (!this.page_settings) return {datasets: []};
 		if (!this.data?.source || this.data?.source.data.length === 0) return {datasets: []};
 		const data_unit_groups = this.swaps_data.reduce(
@@ -167,9 +167,7 @@ export class MintSubsectionDatabaseChartComponent implements OnChanges, OnDestro
 		return this.getDatasets(data_unit_groups);
 	}
 
-	private getDatasets(
-		data_unit_groups: Record<string, MintMintQuote[] | MintMeltQuote[] | MintSwap[]>,
-	): ChartConfiguration['data'] {
+	private getDatasets(data_unit_groups: Record<string, MintMintQuote[] | MintMeltQuote[] | MintSwap[]>): ChartConfiguration['data'] {
 		const datasets = Object.entries(data_unit_groups).map(([unit, data], index) => {
 			const color = this.chartService.getAssetColor(unit, index);
 			const active_color = this.chartService.hexToRgba(color.border, 0.75);
@@ -235,7 +233,7 @@ export class MintSubsectionDatabaseChartComponent implements OnChanges, OnDestro
 		if (!this.highlighted_entity_id) return default_radius;
 		const point = context.dataset.data[context.dataIndex];
 		if (!point) return default_radius;
-        return point.entity_id === this.highlighted_entity_id ? default_radius * 1.5 : default_radius;
+		return point.entity_id === this.highlighted_entity_id ? default_radius * 1.5 : default_radius;
 	}
 
 	private getEffectiveAmount(entity: MintMintQuote | MintMeltQuote | MintSwap): number {

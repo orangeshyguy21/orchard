@@ -74,8 +74,8 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		unit: new FormControl(null, [Validators.required]),
 		input_fee_ppk: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(100000)]),
 		amounts: new FormControl(null, [Validators.required]),
-        max_order: new FormControl(null),
-        default_amounts: new FormControl(true),
+		max_order: new FormControl(null),
+		default_amounts: new FormControl(true),
 	});
 	public device_type = signal<DeviceType>('desktop');
 	public highlighted_keyset_id = signal<string | null>(null);
@@ -107,7 +107,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 
 	ngOnInit(): void {
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
-        console.log(this.mint_keysets);
+		console.log(this.mint_keysets);
 		this.unit_options = this.getUnitOptions();
 		this.resetForm();
 		this.initKeysetsAnalytics();
@@ -290,13 +290,13 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		this.form_keyset.patchValue({
 			unit: form_unit,
 			input_fee_ppk: form_input_fee_ppk,
-            amounts: form_amounts,
+			amounts: form_amounts,
 			max_order: 32,
 			default_amounts: true,
 		});
-        if(this.configService.config.mint.type === 'nutshell') {
-            this.form_keyset.get('default_amounts')?.disable();
-        }
+		if (this.configService.config.mint.type === 'nutshell') {
+			this.form_keyset.get('default_amounts')?.disable();
+		}
 	}
 
 	private getDefaultUnit(): MintUnit {

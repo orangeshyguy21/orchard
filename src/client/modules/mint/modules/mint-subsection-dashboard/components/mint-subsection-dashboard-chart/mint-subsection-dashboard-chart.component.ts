@@ -59,11 +59,10 @@ export class MintSubsectionDashboardChartComponent implements OnDestroy, OnChang
 	public chart_plugins: Plugin[] = [];
 	public displayed = signal<boolean>(true);
 
-    public has_data = computed(() => {
-        return this.chart_data?.datasets?.length > 0
-            && (this.mint_analytics().length > 0 || this.mint_analytics_pre().length > 0);
-    });
-    
+	public has_data = computed(() => {
+		return this.chart_data?.datasets?.length > 0 && (this.mint_analytics().length > 0 || this.mint_analytics_pre().length > 0);
+	});
+
 	private subscriptions: Subscription = new Subscription();
 
 	constructor(private chartService: ChartService) {

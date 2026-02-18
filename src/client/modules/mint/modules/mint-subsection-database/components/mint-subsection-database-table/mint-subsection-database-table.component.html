@@ -16,30 +16,21 @@
 					<th mat-header-cell *matHeaderCellDef mat-sort-header class="data-table-sticky-header">Amount</th>
 					<td mat-cell *matCellDef="let entity">
 						@if (entity.amount) {
-							<span
-								class="text-nowrap"
-								[innerHTML]="entity.amount | localAmount: entity.unit : 'mint'"
-							></span>
+							<span class="text-nowrap" [innerHTML]="entity.amount | localAmount: entity.unit : 'mint'"></span>
 						} @else {
-							<span
-								class="text-nowrap"
-								[innerHTML]="entity.amount_paid | localAmount: entity.unit : 'mint'"
-							></span>
+							<span class="text-nowrap" [innerHTML]="entity.amount_paid | localAmount: entity.unit : 'mint'"></span>
 						}
 					</td>
 				</ng-container>
 
-                <ng-container matColumnDef="fee">
+				<ng-container matColumnDef="fee">
 					<th mat-header-cell *matHeaderCellDef mat-sort-header class="data-table-sticky-header">Fee</th>
 					<td mat-cell *matCellDef="let entity">
-                        @if (entity.fee !== null) {
-                            <span
-                                class="text-nowrap"
-                                [innerHTML]="entity.fee | localAmount: entity.unit : 'mint'"
-                            ></span>
-                        }@else {
-                            <span class="text-nowrap orc-outline-variant-color">unavailable for Nutshell</span>
-                        }
+						@if (entity.fee !== null) {
+							<span class="text-nowrap" [innerHTML]="entity.fee | localAmount: entity.unit : 'mint'"></span>
+						} @else {
+							<span class="text-nowrap orc-outline-variant-color">unavailable for Nutshell</span>
+						}
 					</td>
 				</ng-container>
 
@@ -139,12 +130,12 @@
 													(setStatePaid)="setQuoteStatePaid.emit($event)"
 												></orc-mint-subsection-database-table-melt>
 											}
-                                            @case ('MintSwaps') {
+											@case ('MintSwaps') {
 												<orc-mint-subsection-database-table-swap
 													[swap]="entity"
 													[keysets]="keysets()"
 													[bitcoin_oracle_data]="bitcoin_oracle_data()"
-                                                    [device_desktop]="device_desktop()"
+													[device_desktop]="device_desktop()"
 												></orc-mint-subsection-database-table-swap>
 											}
 										}

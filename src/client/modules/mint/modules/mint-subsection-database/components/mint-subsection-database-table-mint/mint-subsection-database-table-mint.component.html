@@ -37,11 +37,12 @@
 					<div class="flex flex-column flex-gap-0-5">
 						<div class="flex flex-items-center flex-gap-0-5">
 							<orc-graphic-oracle-icon [size]="2"></orc-graphic-oracle-icon>
-                            <div class="flex flex-column flex-gap-0-25">
-                                <div class="orc-outline-color font-weight-extra-light">Oracle Amount</div>
-                                <div class="font-size-xs orc-outline-color font-weight-extra-light text-nowrap">{{ data.date | timeUtc: 'date-only' }}</div>
-                            </div>
-							
+							<div class="flex flex-column flex-gap-0-25">
+								<div class="orc-outline-color font-weight-extra-light">Oracle Amount</div>
+								<div class="font-size-xs orc-outline-color font-weight-extra-light text-nowrap">
+									{{ data.date | timeUtc: 'date-only' }}
+								</div>
+							</div>
 						</div>
 						<div class="text-nowrap" [innerHTML]="data.price_cents | localAmount: 'usd'"></div>
 					</div>

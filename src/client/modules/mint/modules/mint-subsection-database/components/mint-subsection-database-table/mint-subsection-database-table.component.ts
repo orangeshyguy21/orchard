@@ -32,7 +32,7 @@ export class MintSubsectionDatabaseTableComponent {
 	public loading_more = input.required<boolean>(); // loading state for expanded row details
 	public lightning_request = input.required<LightningRequest | null>(); // lightning request for invoice lookup
 	public device_desktop = input.required<boolean>(); // mobile view flag
-	public bitcoin_oracle_data = input.required<{price_cents:number, date:number} | null>(); // bitcoin oracle data for oracle conversion
+	public bitcoin_oracle_data = input.required<{price_cents: number; date: number} | null>(); // bitcoin oracle data for oracle conversion
 
 	/* Outputs */
 	public updateRequest = output<MintMintQuote | MintMeltQuote | MintSwap>(); // emits request string for invoice updates
@@ -76,7 +76,7 @@ export class MintSubsectionDatabaseTableComponent {
 			return ['unit', 'amount', 'request', 'state', 'created_time', 'actions'];
 		}
 
-        if (data_type === 'MintSwaps') {
+		if (data_type === 'MintSwaps') {
 			if (mobile) return ['unit', 'amount', 'created_time'];
 			return ['unit', 'amount', 'fee', 'created_time'];
 		}

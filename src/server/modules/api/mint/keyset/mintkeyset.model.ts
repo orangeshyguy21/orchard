@@ -37,7 +37,6 @@ export class OrchardMintKeyset {
 	@Field(() => [Float], {nullable: true})
 	amounts: number[];
 
-
 	constructor(cashu_keyset: CashuMintKeyset) {
 		this.id = cashu_keyset.id;
 		this.derivation_path = cashu_keyset.derivation_path;
@@ -48,7 +47,7 @@ export class OrchardMintKeyset {
 		this.unit = cashu_keyset.unit;
 		this.input_fee_ppk = cashu_keyset.input_fee_ppk;
 		this.fees_paid = cashu_keyset.fees_paid ?? 0;
-		this.amounts = typeof cashu_keyset.amounts === 'string' ? JSON.parse(cashu_keyset.amounts) : cashu_keyset.amounts ?? [];
+		this.amounts = typeof cashu_keyset.amounts === 'string' ? JSON.parse(cashu_keyset.amounts) : (cashu_keyset.amounts ?? []);
 	}
 }
 

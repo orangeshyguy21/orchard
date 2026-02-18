@@ -76,7 +76,7 @@ import {MintSubsectionKeysetsRotationPreviewComponent} from './components/mint-s
 		OrcGraphicModule,
 		OrcDataModule,
 		OrcMintGeneralModule,
-        OrcEcashGeneralModule,
+		OrcEcashGeneralModule,
 	],
 	exports: [],
 })

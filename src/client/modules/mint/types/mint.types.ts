@@ -8,7 +8,7 @@ import {
 	OrchardMintMeltQuote,
 	OrchardMintProofGroup,
 	OrchardMintPromiseGroup,
-    OrchardMintSwap,
+	OrchardMintSwap,
 	OrchardMintKeysetsAnalytics,
 	MintUnit,
 	MintAnalyticsInterval,
@@ -262,4 +262,3 @@ export type MintNut04QuoteUpdateResponse = {
 export type MintNut05QuoteUpdateResponse = {
 	mint_nut05_quote_update: OrchardMintNut05QuoteUpdate;
 };
-

@@ -455,9 +455,7 @@ export class NutshellService {
 		};
 
 		const concat_keyset_ids =
-			client.type === MintDatabaseType.postgres
-				? `STRING_AGG(DISTINCT pu.id, ',')`
-				: `GROUP_CONCAT(DISTINCT pu.id)`;
+			client.type === MintDatabaseType.postgres ? `STRING_AGG(DISTINCT pu.id, ',')` : `GROUP_CONCAT(DISTINCT pu.id)`;
 
 		const select_statement = `
 			SELECT

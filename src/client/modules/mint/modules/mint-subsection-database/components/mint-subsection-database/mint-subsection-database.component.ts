@@ -48,7 +48,7 @@ import {MintDataType} from '@client/modules/mint/enums/data-type.enum';
 import {MintSubsectionDatabaseData} from '@client/modules/mint/modules/mint-subsection-database/classes/mint-subsection-database-data.class';
 import {MintSubsectionDatabaseDialogQuoteComponent} from '@client/modules/mint/modules/mint-subsection-database/components/mint-subsection-database-dialog-quote/mint-subsection-database-dialog-quote.component';
 /* Shared Dependencies */
-import {MintUnit, MintQuoteState, MeltQuoteState, MintProofState, AiAgent, AiFunctionName} from '@shared/generated.types';
+import {MintUnit, MintQuoteState, MeltQuoteState, AiAgent, AiFunctionName} from '@shared/generated.types';
 
 enum FormMode {
 	CREATE = 'CREATE',
@@ -97,7 +97,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	public lightning_request!: LightningRequest | null;
 
 	public device_type = signal<DeviceType>('desktop');
-	public bitcoin_oracle_data = signal<{price_cents:number, date:number} | null>(null);
+	public bitcoin_oracle_data = signal<{price_cents: number; date: number} | null>(null);
 	public highlighted_entity_id = signal<string | null>(null);
 
 	private active_event: EventData | null = null;
@@ -108,9 +108,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	private bitcoin_oracle_price_map: Map<number, number> | null = null;
 
 	public get state_enabled(): boolean {
-		return (
-			this.data?.type === DataType.MintMints || this.data?.type === DataType.MintMelts
-		);
+		return this.data?.type === DataType.MintMints || this.data?.type === DataType.MintMelts;
 	}
 
 	constructor(
@@ -246,7 +244,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	private getDefaultStates(type: MintDataType): string[] {
 		if (type === MintDataType.MintMints) return Object.values(MintQuoteState);
 		if (type === MintDataType.MintMelts) return Object.values(MeltQuoteState);
-        if (type === MintDataType.MintSwaps) return [];
+		if (type === MintDataType.MintSwaps) return [];
 		return [];
 	}
 
@@ -274,7 +272,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	private async getDynamicData(): Promise<void> {
 		if (this.page_settings.type === MintDataType.MintMints) return this.getMintsData();
 		if (this.page_settings.type === MintDataType.MintMelts) return this.getMeltsData();
-        if (this.page_settings.type === MintDataType.MintSwaps) return this.getSwapsData();
+		if (this.page_settings.type === MintDataType.MintSwaps) return this.getSwapsData();
 	}
 
 	private async getMintsData(): Promise<void> {
@@ -313,21 +311,21 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		this.count = mint_melt_quotes_data.count;
 	}
 
-    private async getSwapsData(): Promise<void> {
-        const mint_swaps_data = await lastValueFrom(
-            this.mintService.getMintSwapsData({
-                date_start: this.page_settings.date_start,
-                date_end: this.page_settings.date_end,
-                units: this.page_settings.units.length > 0 ? this.page_settings.units : undefined,
-            }),
-        );
+	private async getSwapsData(): Promise<void> {
+		const mint_swaps_data = await lastValueFrom(
+			this.mintService.getMintSwapsData({
+				date_start: this.page_settings.date_start,
+				date_end: this.page_settings.date_end,
+				units: this.page_settings.units.length > 0 ? this.page_settings.units : undefined,
+			}),
+		);
 
-        this.data = {
-            type: DataType.MintSwaps,
-            source: new MatTableDataSource(mint_swaps_data.mint_swaps),
-        };
-        this.count = mint_swaps_data.count;
-    }
+		this.data = {
+			type: DataType.MintSwaps,
+			source: new MatTableDataSource(mint_swaps_data.mint_swaps),
+		};
+		this.count = mint_swaps_data.count;
+	}
 
 	private async reloadDynamicData(): Promise<void> {
 		try {
@@ -501,9 +499,9 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		const unit = entity.unit;
 		const oracle_price = findNearestOraclePrice(this.bitcoin_oracle_price_map, entity.created_time);
 		const price = oracle_price?.price || null;
-        const date = oracle_price?.date || null;
+		const date = oracle_price?.date || null;
 		const usd_cents = oracleConvertToUSDCents(amount, price, unit);
-        const data = (usd_cents && date) ? {price_cents: usd_cents, date: date} : null;
+		const data = usd_cents && date ? {price_cents: usd_cents, date: date} : null;
 		this.bitcoin_oracle_data.set(data);
 	}
 

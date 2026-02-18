@@ -16,7 +16,7 @@ import {
 	CashuMintMintQuote,
 	CashuMintProofGroup,
 	CashuMintPromiseGroup,
-    CashuMintSwap,
+	CashuMintSwap,
 	CashuMintAnalytics,
 	CashuMintKeysetsAnalytics,
 	CashuMintCount,
@@ -29,7 +29,7 @@ import {
 	CashuMintProofsArgs,
 	CashuMintPromiseArgs,
 	CashuMintKeysetProofsArgs,
-    CashuMintSwapsArgs,
+	CashuMintSwapsArgs,
 } from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
 import {
 	buildDynamicQuery,
@@ -570,9 +570,7 @@ export class CdkService {
 		};
 
 		const concat_keyset_ids =
-			client.type === MintDatabaseType.postgres
-				? `STRING_AGG(DISTINCT bs.keyset_id, ',')`
-				: `GROUP_CONCAT(DISTINCT bs.keyset_id)`;
+			client.type === MintDatabaseType.postgres ? `STRING_AGG(DISTINCT bs.keyset_id, ',')` : `GROUP_CONCAT(DISTINCT bs.keyset_id)`;
 
 		const select_statement = `
 			SELECT

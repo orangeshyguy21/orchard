@@ -24,7 +24,7 @@ import {
 	CashuMintKeysetsAnalytics,
 	CashuMintProofGroup,
 	CashuMintPromiseGroup,
-    CashuMintSwap,
+	CashuMintSwap,
 	CashuMintFee,
 	CashuMintKeysetProofCount,
 } from './cashumintdb.types';
@@ -170,7 +170,7 @@ export class CashuMintDatabaseService implements OnModuleInit {
 		if (this.type === 'cdk') return this.cdkService.getMintMeltQuotes(client, args);
 	}
 
-    public async getMintSwaps(client: CashuMintDatabase, args?: CashuMintSwapsArgs): Promise<CashuMintSwap[]> {
+	public async getMintSwaps(client: CashuMintDatabase, args?: CashuMintSwapsArgs): Promise<CashuMintSwap[]> {
 		if (this.type === 'nutshell') return this.nutshellService.getMintSwaps(client, args);
 		if (this.type === 'cdk') return this.cdkService.getMintSwaps(client, args);
 	}

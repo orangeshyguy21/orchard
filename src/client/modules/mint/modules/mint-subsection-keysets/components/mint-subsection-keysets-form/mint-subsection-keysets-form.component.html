@@ -120,79 +120,81 @@
 							</div>
 						</div>
 						<div>
-                            <!-- <div>
+							<!-- <div>
                                 <mat-checkbox [checked]="form_group().get('default_amounts')?.value">
                                     Powers of 2
                                 </mat-checkbox>
                             </div> -->
-                            <div class="title-form-section">
-                                <span>Ecash Amounts</span>
-                            </div>
-                            <div class="amount-slider">
-                                <div>
-                                    <mat-checkbox formControlName="default_amounts">
-                                        <span class="font-size-s text-nowrap">Powers of 2</span>
-                                    </mat-checkbox>
-                                </div>
-                                <mat-slider min="1" max="255" step="1" showTickMarks discrete class="amount-slider">
-                                    <input matSliderThumb formControlName="max_order" (valueChange)="onMaxOrderChange()">
-                                </mat-slider>
-                            </div>
-                            <div class="flex flex-row flex-items-center flex-gap-0-5">
-                                <mat-form-field class="w-full">
-                                    <mat-chip-grid #chipGrid aria-label="Enter amounts" [disabled]="form_group().get('default_amounts')?.value">
-                                        @for (amount of form_group().get('amounts')?.value; track amount) {
-                                        <mat-chip-row
-                                            (removed)="removeAmount(amount)"
-                                            [editable]="!form_group().get('default_amounts')?.value"
-                                            (edited)="editAmount(amount, $event)"
-                                            [aria-description]="'press enter to edit ' + amount"
-                                        >
-                                            @if (!form_group().get('default_amounts')?.value) {
-                                                <button matChipEdit [attr.aria-label]="'edit ' + amount">
-                                                    <mat-icon>edit</mat-icon>
-                                                </button>
-                                            }
-                                            {{ form_group().get('default_amounts')?.value ? (amount | number) : amount }}
-                                            @if (!form_group().get('default_amounts')?.value) {
-                                                <button matChipRemove [attr.aria-label]="'remove ' + amount">
-                                                    <mat-icon>cancel</mat-icon>
-                                                </button>
-                                            }
-                                        </mat-chip-row>
-                                        }
-                                    </mat-chip-grid>
-                                    @if (!form_group().get('default_amounts')?.value) {
-                                        <input
-                                            placeholder="New amount..."
-                                            [matChipInputFor]="chipGrid"
-                                            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                                            [matChipInputAddOnBlur]="true"
-                                            (matChipInputTokenEnd)="addAmount($event)"
-                                        />
-                                    }
-                                </mat-form-field>
-                          
-                                <div class="p-t-0-5">
-                                    <button
-                                        type="button"
-                                        tabindex="-1"
-                                        mat-icon-button
-                                        class="orc-icon-button"
-                                        (click)="help_amounts.set(!help_amounts())"
-                                    >
-                                        <mat-icon class="orc-outline-color">info</mat-icon>
-                                    </button>
-                                </div>
-                            </div>
+							<div class="title-form-section">
+								<span>Ecash Amounts</span>
+							</div>
+							<div class="amount-slider">
+								<div>
+									<mat-checkbox formControlName="default_amounts">
+										<span class="font-size-s text-nowrap">Powers of 2</span>
+									</mat-checkbox>
+								</div>
+								<mat-slider min="1" max="255" step="1" showTickMarks discrete class="amount-slider">
+									<input matSliderThumb formControlName="max_order" (valueChange)="onMaxOrderChange()" />
+								</mat-slider>
+							</div>
+							<div class="flex flex-row flex-items-center flex-gap-0-5">
+								<mat-form-field class="w-full">
+									<mat-chip-grid
+										#chipGrid
+										aria-label="Enter amounts"
+										[disabled]="form_group().get('default_amounts')?.value"
+									>
+										@for (amount of form_group().get('amounts')?.value; track amount) {
+											<mat-chip-row
+												(removed)="removeAmount(amount)"
+												[editable]="!form_group().get('default_amounts')?.value"
+												(edited)="editAmount(amount, $event)"
+												[aria-description]="'press enter to edit ' + amount"
+											>
+												@if (!form_group().get('default_amounts')?.value) {
+													<button matChipEdit [attr.aria-label]="'edit ' + amount">
+														<mat-icon>edit</mat-icon>
+													</button>
+												}
+												{{ form_group().get('default_amounts')?.value ? (amount | number) : amount }}
+												@if (!form_group().get('default_amounts')?.value) {
+													<button matChipRemove [attr.aria-label]="'remove ' + amount">
+														<mat-icon>cancel</mat-icon>
+													</button>
+												}
+											</mat-chip-row>
+										}
+									</mat-chip-grid>
+									@if (!form_group().get('default_amounts')?.value) {
+										<input
+											placeholder="New amount..."
+											[matChipInputFor]="chipGrid"
+											[matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+											[matChipInputAddOnBlur]="true"
+											(matChipInputTokenEnd)="addAmount($event)"
+										/>
+									}
+								</mat-form-field>
+
+								<div class="p-t-0-5">
+									<button
+										type="button"
+										tabindex="-1"
+										mat-icon-button
+										class="orc-icon-button"
+										(click)="help_amounts.set(!help_amounts())"
+									>
+										<mat-icon class="orc-outline-color">info</mat-icon>
+									</button>
+								</div>
+							</div>
 
 							<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_amounts()">
 								<div class="orc-animation-expand-collapse-inner">
 									<div class="flex p-b-1 w-max-18">
 										<orc-form-help-text class="orc-surface-container-high-bg">
-											<div>
-												The ecash denomination amounts that this keyset can create.
-											</div>
+											<div>The ecash denomination amounts that this keyset can create.</div>
 										</orc-form-help-text>
 									</div>
 								</div>

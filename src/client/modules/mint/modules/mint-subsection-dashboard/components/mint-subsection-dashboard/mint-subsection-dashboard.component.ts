@@ -117,7 +117,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		fee_revenue: [ChartType.Totals, ChartType.Volume],
 	};
 
-    public mint_fee_revenue = signal<boolean>(false);
+	public mint_fee_revenue = signal<boolean>(false);
 	public device_type = signal<DeviceType>('desktop');
 	public loading_mint = signal<boolean>(true);
 	public loading_mint_icon = signal<boolean>(true);

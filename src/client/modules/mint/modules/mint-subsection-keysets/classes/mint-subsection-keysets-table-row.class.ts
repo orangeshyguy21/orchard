@@ -14,7 +14,7 @@ export class MintSubsectionKeysetsTableRow {
 	fees_paid: number | null;
 	balance: number;
 	proof_count: number;
-    amounts: number[] | null;
+	amounts: number[] | null;
 
 	constructor(
 		keyset: MintKeyset,
@@ -32,7 +32,7 @@ export class MintSubsectionKeysetsTableRow {
 		this.fees_paid = keyset.fees_paid;
 		this.balance = this.getBalance(keyset_analytics, keyset_analytics_pre);
 		this.proof_count = keyset_proof_count?.count ?? 0;
-        this.amounts = keyset.amounts;
+		this.amounts = keyset.amounts;
 	}
 
 	private getBalance(keyset_analytics: MintAnalyticKeyset[], keyset_analytics_pre: MintAnalyticKeyset[]): number {

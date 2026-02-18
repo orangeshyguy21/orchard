@@ -1,52 +1,49 @@
 <div class="mint-swap-container p-v-1">
 	<div class="flex flex-row flex-gap-2 flex-wrap">
-        <div class="flex-1 flex flex-column flex-gap-0-5">
-            <div class="orc-outline-color font-weight-extra-light text-nowrap">
-                Operation ID
-            </div>
-            @if (swap().operation_id) {
-                <div class="text-nowrap">{{ swap().operation_id }}</div>
-            } @else {
-                <div class="text-nowrap orc-outline-variant-color">unavailable for Nutshell</div>
-            }
-        </div>
-        <div class="flex-1 flex flex-column flex-gap-0-5">
-            <div class="orc-outline-color font-weight-extra-light text-nowrap">
-                Operation keysets
-            </div>
-            <div class="flex flex-row flex-gap-1 flex-wrap">
-                @for (keyset of involved_keysets(); track keyset.id) {
-                    <orc-mint-general-keyset
-                        [active]="keyset.active"
-                        [index]="keyset.derivation_path_index"
-                        [input_fee_ppk]="keyset.input_fee_ppk"
-                    ></orc-mint-general-keyset>
-                }
-            </div>
-        </div>
+		<div class="flex-1 flex flex-column flex-gap-0-5">
+			<div class="orc-outline-color font-weight-extra-light text-nowrap">Operation ID</div>
+			@if (swap().operation_id) {
+				<div class="text-nowrap">{{ swap().operation_id }}</div>
+			} @else {
+				<div class="text-nowrap orc-outline-variant-color">unavailable for Nutshell</div>
+			}
+		</div>
+		<div class="flex-1 flex flex-column flex-gap-0-5">
+			<div class="orc-outline-color font-weight-extra-light text-nowrap">Operation keysets</div>
+			<div class="flex flex-row flex-gap-1 flex-wrap">
+				@for (keyset of involved_keysets(); track keyset.id) {
+					<orc-mint-general-keyset
+						[active]="keyset.active"
+						[index]="keyset.derivation_path_index"
+						[input_fee_ppk]="keyset.input_fee_ppk"
+					></orc-mint-general-keyset>
+				}
+			</div>
+		</div>
 
-        @if (!device_desktop()) {
-            <div class="flex-1 flex flex-column flex-gap-0-5">
-                <div class="orc-outline-color font-weight-extra-light text-nowrap">Fee</div>
-                @if (swap().fee !== null) {
-                    <div class="text-nowrap" [innerHTML]="swap().fee | localAmount: swap().unit : 'mint'"></div>
-                } @else {
-                    <div class="text-nowrap orc-outline-variant-color">unavailable for Nutshell</div>
-                }
-            </div>
-        }
-        @if (bitcoin_oracle_data(); as data) {
-            <div class="flex flex-column flex-gap-0-5">
-                <div class="flex flex-items-center flex-gap-0-5">
-                    <orc-graphic-oracle-icon [size]="2"></orc-graphic-oracle-icon>
-                    <div class="flex flex-column flex-gap-0-25">
-                        <div class="orc-outline-color font-weight-extra-light">Oracle Amount</div>
-                        <div class="font-size-xs orc-outline-color font-weight-extra-light text-nowrap">{{ data.date | timeUtc: 'date-only' }}</div>
-                    </div>
-                    
-                </div>
-                <div class="text-nowrap" [innerHTML]="data.price_cents | localAmount: 'usd'"></div>
-            </div>
-        }
+		@if (!device_desktop()) {
+			<div class="flex-1 flex flex-column flex-gap-0-5">
+				<div class="orc-outline-color font-weight-extra-light text-nowrap">Fee</div>
+				@if (swap().fee !== null) {
+					<div class="text-nowrap" [innerHTML]="swap().fee | localAmount: swap().unit : 'mint'"></div>
+				} @else {
+					<div class="text-nowrap orc-outline-variant-color">unavailable for Nutshell</div>
+				}
+			</div>
+		}
+		@if (bitcoin_oracle_data(); as data) {
+			<div class="flex flex-column flex-gap-0-5">
+				<div class="flex flex-items-center flex-gap-0-5">
+					<orc-graphic-oracle-icon [size]="2"></orc-graphic-oracle-icon>
+					<div class="flex flex-column flex-gap-0-25">
+						<div class="orc-outline-color font-weight-extra-light">Oracle Amount</div>
+						<div class="font-size-xs orc-outline-color font-weight-extra-light text-nowrap">
+							{{ data.date | timeUtc: 'date-only' }}
+						</div>
+					</div>
+				</div>
+				<div class="text-nowrap" [innerHTML]="data.price_cents | localAmount: 'usd'"></div>
+			</div>
+		}
 	</div>
 </div>

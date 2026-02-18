@@ -142,9 +142,8 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnChanges, On
 		const span_days = (max_time - min_time) / (1000 * 60 * 60 * 24);
 		const time_unit = span_days > 90 ? 'month' : span_days > 21 ? 'week' : 'day';
 		const step_size = 1;
-		const use_log_scale = this.stats().min > 0
-			? this.stats().max / this.stats().min >= 100
-			: this.stats().max - this.stats().min >= 1000;
+		const use_log_scale =
+			this.stats().min > 0 ? this.stats().max / this.stats().min >= 100 : this.stats().max - this.stats().min >= 1000;
 
 		const scales: any = {};
 		scales['x'] = {

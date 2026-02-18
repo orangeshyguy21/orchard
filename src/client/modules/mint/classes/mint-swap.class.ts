@@ -2,7 +2,7 @@
 import {OrchardMintSwap, MintUnit} from '@shared/generated.types';
 
 export class MintSwap implements OrchardMintSwap {
-    public id: string;
+	public id: string;
 	public operation_id: string | null;
 	public keyset_ids: string[];
 	public unit: MintUnit;
@@ -11,7 +11,7 @@ export class MintSwap implements OrchardMintSwap {
 	public fee: number | null;
 
 	constructor(swap: OrchardMintSwap) {
-        this.id = crypto.randomUUID();
+		this.id = crypto.randomUUID();
 		this.operation_id = swap.operation_id || null;
 		this.keyset_ids = swap.keyset_ids;
 		this.unit = swap.unit;

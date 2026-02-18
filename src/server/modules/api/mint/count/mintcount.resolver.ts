@@ -63,7 +63,7 @@ export class MintCountResolver {
 		return await this.mintCountService.getMintCountPromiseGroups(tag, {id_keysets, units, date_start, date_end});
 	}
 
-    @Query(() => OrchardMintCount)
+	@Query(() => OrchardMintCount)
 	async mint_count_swaps(
 		@Args('units', {type: () => [MintUnit], nullable: true}) units?: MintUnit[],
 		@Args('id_keysets', {type: () => [String], nullable: true}) id_keysets?: string[],

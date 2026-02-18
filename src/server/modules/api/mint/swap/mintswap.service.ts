@@ -24,10 +24,7 @@ export class MintSwapService {
 	async getMintSwaps(tag: string, args?: CashuMintSwapsArgs): Promise<OrchardMintSwap[]> {
 		return this.mintService.withDbClient(async (client) => {
 			try {
-				const cashu_mint_swaps: CashuMintSwap[] = await this.cashuMintDatabaseService.getMintSwaps(
-					client,
-					args,
-				);
+				const cashu_mint_swaps: CashuMintSwap[] = await this.cashuMintDatabaseService.getMintSwaps(client, args);
 				return cashu_mint_swaps.map((cmp) => new OrchardMintSwap(cmp));
 			} catch (error) {
 				console.error('Error getting mint swaps:', error);

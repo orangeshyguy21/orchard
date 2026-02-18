@@ -11,7 +11,7 @@
 	@extend %w-min-3;
 	@extend %border;
 	@extend %border-solid;
-    @extend %orc-outline-color;
+	@extend %orc-outline-color;
 	@extend %orc-corner-extra-small;
 	@extend %orc-outline-variant-border;
 
@@ -22,10 +22,10 @@
 		@extend %orc-corner-extra-small;
 		@extend %border-bottom;
 		@extend %border-bottom-solid;
-        @extend %orc-outline-variant-border-bottom;
+		@extend %orc-outline-variant-border-bottom;
 		@extend %border-right;
 		@extend %border-right-solid;
-        @extend %orc-outline-variant-border-right;
+		@extend %orc-outline-variant-border-right;
 	}
 
 	.stack-height-1 {
