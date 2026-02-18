@@ -107,7 +107,6 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 
 	ngOnInit(): void {
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
-		console.log(this.mint_keysets);
 		this.unit_options = this.getUnitOptions();
 		this.resetForm();
 		this.initKeysetsAnalytics();

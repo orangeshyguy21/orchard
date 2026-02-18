@@ -78,7 +78,7 @@ describe('CdkService', () => {
 		const loadSync = jest.spyOn(require('@grpc/proto-loader'), 'loadSync').mockReturnValue({} as any);
 		const loadPackageDefinition = jest
 			.spyOn(grpc, 'loadPackageDefinition')
-			.mockReturnValue({cdk_mint_rpc: {CdkMint: jest.fn()}} as any);
+			.mockReturnValue({cdk_mint_management_v1: {CdkMint: jest.fn()}} as any);
 		cdkService.initializeGrpcClient();
 		expect(createSsl).toHaveBeenCalled();
 		expect(loadSync).toHaveBeenCalled();
@@ -108,7 +108,7 @@ describe('CdkService', () => {
 		credentialService.loadPemOrPath.mockReturnValue(Buffer.from('x'));
 		jest.spyOn(grpc.credentials, 'createSsl').mockReturnValue({} as any);
 		jest.spyOn(require('@grpc/proto-loader'), 'loadSync').mockReturnValue({} as any);
-		jest.spyOn(grpc, 'loadPackageDefinition').mockReturnValue({cdk_mint_rpc: {CdkMint: CdkMintMock}} as any);
+		jest.spyOn(grpc, 'loadPackageDefinition').mockReturnValue({cdk_mint_management_v1: {CdkMint: CdkMintMock}} as any);
 		cdkService.initializeGrpcClient();
 		expect(CdkMintMock).toHaveBeenCalled();
 		const args = CdkMintMock.mock.calls[0];
@@ -136,7 +136,7 @@ describe('CdkService', () => {
 		const createInsecure = jest.spyOn(grpc.credentials, 'createInsecure').mockReturnValue({} as any);
 		const createSsl = jest.spyOn(grpc.credentials, 'createSsl').mockReturnValue({} as any);
 		jest.spyOn(require('@grpc/proto-loader'), 'loadSync').mockReturnValue({} as any);
-		jest.spyOn(grpc, 'loadPackageDefinition').mockReturnValue({cdk_mint_rpc: {CdkMint: CdkMintMock}} as any);
+		jest.spyOn(grpc, 'loadPackageDefinition').mockReturnValue({cdk_mint_management_v1: {CdkMint: CdkMintMock}} as any);
 		const client = cdkService.initializeGrpcClient();
 		expect(client).toBeDefined();
 		expect(createInsecure).toHaveBeenCalled();
@@ -319,20 +319,20 @@ describe('CdkService', () => {
 		(helpers.queryRows as jest.Mock).mockResolvedValue([]);
 		await cdkService.getMintBalances({} as any, 'kid');
 		call = (helpers.queryRows as jest.Mock).mock.calls[(helpers.queryRows as jest.Mock).mock.calls.length - 1];
-		expect(call[1]).toContain('WHERE keyset_id = ?');
-		expect(call[1]).toContain('AND keyset_id = ?');
-		expect(call[2]).toEqual(['kid', 'kid']);
+		expect(call[1]).toContain('WHERE ka.keyset_id = ?');
+		expect(call[2]).toEqual(['kid']);
 
 		(helpers.queryRows as jest.Mock).mockResolvedValue([]);
 		await cdkService.getMintBalancesIssued({} as any);
 		call = (helpers.queryRows as jest.Mock).mock.calls[(helpers.queryRows as jest.Mock).mock.calls.length - 1];
-		expect(call[1]).toContain('FROM blind_signature');
+		expect(call[1]).toContain('total_issued AS balance');
+		expect(call[1]).toContain('FROM keyset_amounts');
 
 		(helpers.queryRows as jest.Mock).mockResolvedValue([]);
 		await cdkService.getMintBalancesRedeemed({} as any);
 		call = (helpers.queryRows as jest.Mock).mock.calls[(helpers.queryRows as jest.Mock).mock.calls.length - 1];
-		expect(call[1]).toContain('FROM proof');
-		expect(call[1]).toContain("WHERE state = 'SPENT'");
+		expect(call[1]).toContain('total_redeemed AS balance');
+		expect(call[1]).toContain('FROM keyset_amounts');
 
 		(helpers.queryRows as jest.Mock).mockResolvedValue([]);
 		await cdkService.getMintKeysets({} as any);

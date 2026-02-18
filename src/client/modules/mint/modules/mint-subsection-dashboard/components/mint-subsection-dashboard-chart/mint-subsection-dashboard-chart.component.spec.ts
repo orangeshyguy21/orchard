@@ -16,13 +16,15 @@ describe('MintSubsectionDashboardChartComponent', () => {
 
 		fixture = TestBed.createComponent(MintSubsectionDashboardChartComponent);
 		component = fixture.componentInstance;
-		component.locale = 'en-US' as any;
-		component.mint_analytics = [] as any;
-		component.mint_analytics_pre = [] as any;
-		component.page_settings = undefined as any;
-		component.mint_genesis_time = 0 as any;
-		component.selected_type = undefined as any;
-		component.loading = true as any;
+		fixture.componentRef.setInput('locale', 'en-US');
+		fixture.componentRef.setInput('bitcoin_oracle_price_map', null);
+		fixture.componentRef.setInput('mint_analytics', []);
+		fixture.componentRef.setInput('mint_analytics_pre', []);
+		fixture.componentRef.setInput('page_settings', undefined);
+		fixture.componentRef.setInput('oracle_used', false);
+		fixture.componentRef.setInput('mint_genesis_time', 0);
+		fixture.componentRef.setInput('selected_type', undefined);
+		fixture.componentRef.setInput('loading', true);
 		fixture.detectChanges();
 	});
 
