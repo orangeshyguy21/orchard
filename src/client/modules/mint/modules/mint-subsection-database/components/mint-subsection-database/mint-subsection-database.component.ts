@@ -97,7 +97,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	public lightning_request!: LightningRequest | null;
 
 	public device_type = signal<DeviceType>('desktop');
-	public bitcoin_oracle_amount = signal<number | null>(null);
+	public bitcoin_oracle_data = signal<{price_cents:number, date:number} | null>(null);
 	public highlighted_entity_id = signal<string | null>(null);
 
 	private active_event: EventData | null = null;
@@ -499,9 +499,12 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		if (!entity.created_time) return;
 		const amount = entity.amount;
 		const unit = entity.unit;
-		const price = findNearestOraclePrice(this.bitcoin_oracle_price_map, entity.created_time);
+		const oracle_price = findNearestOraclePrice(this.bitcoin_oracle_price_map, entity.created_time);
+		const price = oracle_price?.price || null;
+        const date = oracle_price?.date || null;
 		const usd_cents = oracleConvertToUSDCents(amount, price, unit);
-		this.bitcoin_oracle_amount.set(usd_cents);
+        const data = (usd_cents && date) ? {price_cents: usd_cents, date: date} : null;
+		this.bitcoin_oracle_data.set(data);
 	}
 
 	/* *******************************************************

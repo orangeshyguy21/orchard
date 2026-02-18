@@ -30,6 +30,7 @@ export class MintSwapService {
 				);
 				return cashu_mint_swaps.map((cmp) => new OrchardMintSwap(cmp));
 			} catch (error) {
+				console.error('Error getting mint swaps:', error);
 				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});

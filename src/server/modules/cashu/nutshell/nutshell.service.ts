@@ -42,7 +42,7 @@ import {
 	queryRows,
 	queryRow,
 } from '@server/modules/cashu/mintdb/cashumintdb.helpers';
-import {MintAnalyticsInterval} from '@server/modules/cashu/mintdb/cashumintdb.enums';
+import {MintAnalyticsInterval, MintDatabaseType} from '@server/modules/cashu/mintdb/cashumintdb.enums';
 /* Local Dependencies */
 import {
 	NutshellMintMintQuote,
@@ -454,24 +454,23 @@ export class NutshellService {
 			date_end: 'pu.created',
 		};
 
+		const concat_keyset_ids =
+			client.type === MintDatabaseType.postgres
+				? `STRING_AGG(DISTINCT pu.id, ',')`
+				: `GROUP_CONCAT(DISTINCT pu.id)`;
+
 		const select_statement = `
 			SELECT
 				NULL AS operation_id,
-				GROUP_CONCAT(DISTINCT pu.id) AS keyset_ids,
+				${concat_keyset_ids} AS keyset_ids,
 				k.unit,
 				SUM(pu.amount) AS amount,
 				pu.created AS created_time,
-				SUM(pu.amount) - COALESCE(pr.issued_amount, 0) AS fee
-			FROM proofs_used pu
-			LEFT JOIN keysets k ON k.id = pu.id
-			LEFT JOIN (
-				SELECT created, SUM(amount) AS issued_amount
-				FROM promises
-				GROUP BY created
-			) pr ON pr.created = pu.created
-			WHERE pu.melt_quote IS NULL`;
+				NULL AS fee
+			FROM (SELECT * FROM proofs_used WHERE melt_quote IS NULL) pu
+			LEFT JOIN keysets k ON k.id = pu.id`;
 
-		const group_by = 'pu.created';
+		const group_by = 'pu.created, k.unit';
 		const {sql, params} = buildDynamicQuery({
 			db_type: client.type,
 			table_name: 'proofs_used',
@@ -503,9 +502,8 @@ export class NutshellService {
 		const select_statement = `
 			SELECT COUNT(*) AS count FROM (
 				SELECT pu.created
-				FROM proofs_used pu
-				LEFT JOIN keysets k ON k.id = pu.id
-				WHERE pu.melt_quote IS NULL`;
+				FROM (SELECT * FROM proofs_used WHERE melt_quote IS NULL) pu
+				LEFT JOIN keysets k ON k.id = pu.id`;
 
 		const group_by = 'pu.created';
 		const {sql, params} = buildCountQuery({

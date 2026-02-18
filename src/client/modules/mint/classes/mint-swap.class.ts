@@ -8,7 +8,7 @@ export class MintSwap implements OrchardMintSwap {
 	public unit: MintUnit;
 	public amount: number;
 	public created_time: number;
-	public fee: number;
+	public fee: number | null;
 
 	constructor(swap: OrchardMintSwap) {
         this.id = crypto.randomUUID();
@@ -17,6 +17,6 @@ export class MintSwap implements OrchardMintSwap {
 		this.unit = swap.unit;
 		this.amount = swap.amount;
 		this.created_time = swap.created_time;
-		this.fee = swap.fee;
+		this.fee = swap.fee || null;
 	}
 }

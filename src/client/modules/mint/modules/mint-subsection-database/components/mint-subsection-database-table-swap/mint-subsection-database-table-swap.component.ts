@@ -14,7 +14,7 @@ import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 export class MintSubsectionDatabaseTableSwapComponent {
 	public swap = input.required<MintSwap>();
 	public keysets = input.required<MintKeyset[]>();
-	public bitcoin_oracle_amount = input.required<number | null>();
+	public bitcoin_oracle_data = input.required<{price_cents:number, date:number} | null>();
 	public device_desktop = input.required<boolean>();
 
     public involved_keysets = computed(() => {

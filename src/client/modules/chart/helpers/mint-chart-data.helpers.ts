@@ -147,7 +147,8 @@ export function convertChartDataWithOracle(
 	return data.map((point) => {
 		const timestamp_seconds = point.x / 1000;
 		const oracle_price = oracle_map ? findNearestOraclePrice(oracle_map, timestamp_seconds) : null;
-		const converted = is_eligible ? oracleConvertToUSDCents(point.y, oracle_price, unit) : null;
+        const price = oracle_price?.price || null;
+		const converted = is_eligible ? oracleConvertToUSDCents(point.y, price, unit) : null;
 
 		return {
 			x: point.x,

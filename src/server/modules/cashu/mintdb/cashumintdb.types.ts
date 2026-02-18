@@ -72,7 +72,7 @@ export type CashuMintSwap = {
     unit: MintUnit;
     amount: number;
     created_time: number;
-    fee: number;
+    fee: number | null;
 }
 
 export type CashuMintProofGroup = {

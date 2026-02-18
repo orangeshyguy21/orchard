@@ -22,8 +22,8 @@ export class OrchardMintSwap {
 	@Field(() => UnixTimestamp)
 	created_time: number;
 
-	@Field(() => Int)
-	fee: number;
+	@Field(() => Int, {nullable: true})
+	fee: number | null;
 
 	constructor(swap: CashuMintSwap) {
 		this.operation_id = swap.operation_id;

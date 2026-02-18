@@ -32,7 +32,7 @@ export class MintSubsectionDatabaseTableComponent {
 	public loading_more = input.required<boolean>(); // loading state for expanded row details
 	public lightning_request = input.required<LightningRequest | null>(); // lightning request for invoice lookup
 	public device_desktop = input.required<boolean>(); // mobile view flag
-	public bitcoin_oracle_amount = input.required<number | null>(); // bitcoin oracle amount for oracle conversion
+	public bitcoin_oracle_data = input.required<{price_cents:number, date:number} | null>(); // bitcoin oracle data for oracle conversion
 
 	/* Outputs */
 	public updateRequest = output<MintMintQuote | MintMeltQuote | MintSwap>(); // emits request string for invoice updates
