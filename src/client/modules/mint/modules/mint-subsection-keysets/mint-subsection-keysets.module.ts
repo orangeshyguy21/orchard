@@ -22,6 +22,7 @@ import {BaseChartDirective as ChartJsBaseChartDirective} from 'ng2-charts';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcLocalModule} from '@client/modules/local/local.module';
+import {OrcTimeModule} from '@client/modules/time/time.module';
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {OrcDataModule} from '@client/modules/data/data.module';
 import {OrcMintGeneralModule} from '@client/modules/mint/modules/mint-general/mint-general.module';
@@ -71,6 +72,7 @@ import {MintSubsectionKeysetsRotationPreviewComponent} from './components/mint-s
 		ChartJsBaseChartDirective,
 		OrcFormModule,
 		OrcLocalModule,
+		OrcTimeModule,
 		OrcGraphicModule,
 		OrcDataModule,
 		OrcMintGeneralModule,

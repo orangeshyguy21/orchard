@@ -81,7 +81,9 @@
 		[page_settings]="page_settings"
 		[device_type]="device_type()"
 		[loading]="loading_dynamic_data"
+		[bitcoin_oracle_data]="bitcoin_oracle_data()"
 		(rotateKeyset)="onRotationUnit($event)"
 		(highlightChange)="onHighlightChange($event)"
+		(moreRequest)="onMoreRequest($event)"
 	></orc-mint-subsection-keysets-table>
 </div>

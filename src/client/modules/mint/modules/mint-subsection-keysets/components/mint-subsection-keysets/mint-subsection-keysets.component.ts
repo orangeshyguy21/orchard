@@ -18,21 +18,25 @@ import {lastValueFrom, forkJoin, Subscription} from 'rxjs';
 import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {ConfigService} from '@client/modules/config/services/config.service';
+import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {EventService} from '@client/modules/event/services/event/event.service';
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
+import {BitcoinService} from '@client/modules/bitcoin/services/bitcoin/bitcoin.service';
 import {EventData} from '@client/modules/event/classes/event-data.class';
 import {AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {NonNullableMintKeysetsSettings} from '@client/modules/settings/types/setting.types';
 import {ComponentCanDeactivate} from '@client/modules/routing/interfaces/routing.interfaces';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {DeviceType} from '@client/modules/layout/types/device.types';
+import {eligibleForOracleConversion, oracleConvertToUSDCents, findNearestOraclePrice} from '@client/modules/bitcoin/helpers/oracle.helpers';
 /* Native Dependencies */
 import {MintService} from '@client/modules/mint/services/mint/mint.service';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
 import {MintAnalyticKeyset} from '@client/modules/mint/classes/mint-analytic.class';
 import {MintKeysetProofCount} from '@client/modules/mint/classes/mint-keyset-proof-count.class';
+import {MintSubsectionKeysetsTableRow} from '@client/modules/mint/modules/mint-subsection-keysets/classes/mint-subsection-keysets-table-row.class';
 /* Shared Dependencies */
 import {MintUnit, MintAnalyticsInterval, AiFunctionName, AiAgent} from '@shared/generated.types';
 
@@ -75,20 +79,27 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	});
 	public device_type = signal<DeviceType>('desktop');
 	public highlighted_keyset_id = signal<string | null>(null);
+	public bitcoin_oracle_data = signal<{balance_cents: number; fees_cents: number; date: number} | null>(null);
 
 	private active_event: EventData | null = null;
 	private subscriptions: Subscription = new Subscription();
+	private bitcoin_oracle_enabled: boolean;
+	private bitcoin_oracle_price_map: Map<number, number> | null = null;
 
 	constructor(
 		public route: ActivatedRoute,
 		private configService: ConfigService,
+		private settingAppService: SettingAppService,
 		private settingDeviceService: SettingDeviceService,
 		private eventService: EventService,
 		private aiService: AiService,
 		private mintService: MintService,
+		private bitcoinService: BitcoinService,
 		private cdr: ChangeDetectorRef,
 		private breakpointObserver: BreakpointObserver,
-	) {}
+	) {
+		this.bitcoin_oracle_enabled = this.settingAppService.getSetting('bitcoin_oracle');
+	}
 
 	/* *******************************************************
 	   Initalization                      
@@ -109,6 +120,9 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		if (this.configService.config.ai.enabled) {
 			this.subscriptions.add(this.getAgentSubscription());
 			this.subscriptions.add(this.getToolSubscription());
+		}
+		if (this.bitcoin_oracle_enabled) {
+			this.subscriptions.add(this.getBitcoinOraclePriceMapSubscription());
 		}
 	}
 
@@ -157,6 +171,14 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		return this.aiService.tool_calls$.subscribe((tool_call: AiChatToolCall) => {
 			this.executeAgentFunction(tool_call);
 		});
+	}
+
+	private getBitcoinOraclePriceMapSubscription(): Subscription {
+		return this.bitcoinService
+			.loadBitcoinOraclePriceMap(this.page_settings.date_start, this.page_settings.date_end)
+			.subscribe((price_map) => {
+				this.bitcoin_oracle_price_map = price_map;
+			});
 	}
 
 	public getBreakpointSubscription(): Subscription {
@@ -482,6 +504,12 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		this.cdr.detectChanges();
 	}
 
+	public onMoreRequest(keyset: MintSubsectionKeysetsTableRow): void {
+		if (this.bitcoin_oracle_enabled) {
+			this.calculateBitcoinOraclePrice(keyset);
+		}
+	}
+
 	public onUpdateUnit(unit: MintUnit): void {
 		this.keyset_out = this.getKeysetOut(unit);
 		this.getMintKeysetBalance();
@@ -489,7 +517,23 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	}
 
 	/* *******************************************************
-		Clean Up                      
+		Oracle Conversion
+	******************************************************** */
+
+	private calculateBitcoinOraclePrice(keyset: MintSubsectionKeysetsTableRow): void {
+		if (!this.bitcoin_oracle_price_map) return;
+		if (!eligibleForOracleConversion(keyset.unit)) return;
+		const oracle_price = findNearestOraclePrice(this.bitcoin_oracle_price_map, this.page_settings.date_end);
+		const price = oracle_price?.price || null;
+		const date = oracle_price?.date || null;
+		const balance_cents = oracleConvertToUSDCents(keyset.balance, price, keyset.unit);
+		const fees_cents = oracleConvertToUSDCents(keyset.fees_paid, price, keyset.unit);
+		const data = balance_cents !== null && fees_cents !== null && date ? {balance_cents, fees_cents, date} : null;
+		this.bitcoin_oracle_data.set(data);
+	}
+
+	/* *******************************************************
+		Clean Up
 	******************************************************** */
 
 	ngOnDestroy(): void {

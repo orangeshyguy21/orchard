@@ -175,6 +175,49 @@
                                                 </div>
                                             </div>
                                         }
+                                        @if (bitcoin_oracle_data(); as oracle) {
+                                            <div class="flex flex-column flex-gap-0-5 p-t-1">
+                                                <div class="orc-primary-card flex flex-column">
+                                                    <div class="orc-card-header flex flex-items-center flex-justify-between">
+                                                        <div class="flex flex-items-center flex-gap-0-5">
+                                                            <orc-graphic-oracle-icon [size]="1.5"></orc-graphic-oracle-icon>
+                                                            <div class="orc-on-primary-container-color">Oracle</div>
+                                                        </div>
+                                                        <div>
+                                                            <div class="font-size-xs orc-outline-color text-nowrap">
+                                                                price from {{ oracle.date | timeUtc: 'date-only' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="p-1 flex flex-row flex-gap-3 flex-wrap">
+                                                        <div class="flex-1">
+                                                            <div class="flex flex-column flex-gap-0-5">
+                                                                <div class="orc-outline-color font-weight-extra-light text-nowrap">
+                                                                    Balance
+                                                                </div>
+                                                                <div
+                                                                    class="text-nowrap"
+                                                                    [innerHTML]="oracle.balance_cents | localAmount: 'usd'"
+                                                                ></div>
+                                                                
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-1">
+                                                            <div class="flex flex-column flex-gap-0-5">
+                                                                <div class="orc-outline-color font-weight-extra-light text-nowrap">
+                                                                    Fee revenue
+                                                                </div>
+                                                                <div
+                                                                    class="text-nowrap"
+                                                                    [innerHTML]="oracle.fees_cents | localAmount: 'usd'"
+                                                                ></div>
+                                                               
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
                                         <div class="flex flex-column flex-gap-0-5">
                                             <div class="orc-outline-color font-weight-extra-light text-nowrap">Ecash Amounts</div>
                                             <div class="flex flex-wrap flex-gap-0-5">
@@ -183,6 +226,30 @@
                                                 }
                                             </div>
                                         </div>
+                                        <!-- @if (bitcoin_oracle_data(); as oracle) {
+                                            <div class="flex flex-gap-2 flex-wrap">
+                                                <div class="flex flex-column flex-gap-0-5">
+                                                    <div class="flex flex-items-center flex-gap-0-5">
+                                                        <orc-graphic-oracle-icon [size]="2"></orc-graphic-oracle-icon>
+                                                        <div class="flex flex-column flex-gap-0-25">
+                                                            <div class="orc-outline-color font-weight-extra-light">Oracle Balance</div>
+                                                            <div class="font-size-xs orc-outline-color font-weight-extra-light text-nowrap">{{ oracle.date | timeUtc: 'date-only' }}</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-nowrap" [innerHTML]="oracle.balance_cents | localAmount: 'usd'"></div>
+                                                </div>
+                                                <div class="flex flex-column flex-gap-0-5">
+                                                    <div class="flex flex-items-center flex-gap-0-5">
+                                                        <orc-graphic-oracle-icon [size]="2"></orc-graphic-oracle-icon>
+                                                        <div class="flex flex-column flex-gap-0-25">
+                                                            <div class="orc-outline-color font-weight-extra-light text-nowrap">Oracle Fee Revenue</div>
+                                                            <div class="font-size-xs orc-outline-color font-weight-extra-light text-nowrap">{{ oracle.date | timeUtc: 'date-only' }}</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-nowrap" [innerHTML]="oracle.fees_cents | localAmount: 'usd'"></div>
+                                                </div>
+                                            </div>
+                                        } -->
                                     </div>
 								</div>
 							</div>
