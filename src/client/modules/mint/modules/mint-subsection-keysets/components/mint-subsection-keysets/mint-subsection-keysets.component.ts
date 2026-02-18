@@ -76,6 +76,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		amounts: new FormControl(null, [Validators.required]),
 		max_order: new FormControl(null),
 		default_amounts: new FormControl(true),
+        keyset_v2: new FormControl(true),
 	});
 	public device_type = signal<DeviceType>('desktop');
 	public highlighted_keyset_id = signal<string | null>(null);
@@ -292,6 +293,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 			amounts: form_amounts,
 			max_order: 32,
 			default_amounts: true,
+            keyset_v2: true,
 		});
 		if (this.configService.config.mint.type === 'nutshell') {
 			this.form_keyset.get('default_amounts')?.disable();

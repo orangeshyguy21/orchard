@@ -31,6 +31,7 @@ export class MintSubsectionKeysetsFormComponent {
 	public help_unit = signal<boolean>(false);
 	public help_fee = signal<boolean>(true);
 	public help_amounts = signal<boolean>(true);
+    public advanced = signal<boolean>(false);
 
 	public readonly separatorKeysCodes = [ENTER, COMMA] as const;
 

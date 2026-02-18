@@ -6,6 +6,7 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
+import {MatRippleModule} from '@angular/material/core';
 /* Native Dependencies */
 import {FormAutogrowDirective} from '@client/modules/form/directives/form-autogrow/form-autogrow.directive';
 import {FormNumberSeparatorDirective} from './directives/form-number-separator/form-number-separator.directive';
@@ -14,6 +15,7 @@ import {FormArrayAddItemComponent} from './components/form-array-add-item/form-a
 import {FormHelpTextComponent} from './components/form-help-text/form-help-text.component';
 import {FormFilterMenuComponent} from './components/form-filter-menu/form-filter-menu.component';
 import {FormErrorComponent} from './components/form-error/form-error.component';
+import {FormToggleComponent} from './components/form-toggle/form-toggle.component';
 
 @NgModule({
 	declarations: [
@@ -24,8 +26,9 @@ import {FormErrorComponent} from './components/form-error/form-error.component';
 		FormHelpTextComponent,
 		FormFilterMenuComponent,
 		FormErrorComponent,
+		FormToggleComponent,
 	],
-	imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatButtonModule, MatIconModule],
+	imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatButtonModule, MatIconModule, MatRippleModule],
 	exports: [
 		FormAutogrowDirective,
 		FormNumberSeparatorDirective,
@@ -34,6 +37,7 @@ import {FormErrorComponent} from './components/form-error/form-error.component';
 		FormHelpTextComponent,
 		FormFilterMenuComponent,
 		FormErrorComponent,
+		FormToggleComponent,
 	],
 })
 export class OrcFormModule {}

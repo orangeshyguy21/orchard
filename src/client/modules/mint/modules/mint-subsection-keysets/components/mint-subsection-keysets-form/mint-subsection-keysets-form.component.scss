@@ -13,3 +13,24 @@ mat-form-field {
 		@extend %w-full;
 	}
 }
+
+
+.keyset-version-sticker {
+    @extend %absolute;
+    @extend %top-1;
+    @extend %left-1;
+    @extend %font-size-3;
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-gap-0-5;
+    opacity: 0.1;
+}
+
+.keyset-version-label {
+    @extend %h-full;
+    @extend %flex;
+    @extend %flex-column;
+    @extend %flex-gap-0-25;
+    @extend %flex-items-center;
+    @extend %flex-justify-center;
+}
