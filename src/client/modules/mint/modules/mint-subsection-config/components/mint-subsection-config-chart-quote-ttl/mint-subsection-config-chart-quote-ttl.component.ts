@@ -142,7 +142,9 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnChanges, On
 		const span_days = (max_time - min_time) / (1000 * 60 * 60 * 24);
 		const time_unit = span_days > 90 ? 'month' : span_days > 21 ? 'week' : 'day';
 		const step_size = 1;
-		const use_log_scale = this.stats().max / this.stats().min >= 100;
+		const use_log_scale = this.stats().min > 0
+			? this.stats().max / this.stats().min >= 100
+			: this.stats().max - this.stats().min >= 1000;
 
 		const scales: any = {};
 		scales['x'] = {
@@ -162,7 +164,7 @@ export class MintSubsectionConfigChartQuoteTtlComponent implements OnChanges, On
 		};
 		scales['y'] = {
 			type: use_log_scale ? 'logarithmic' : 'linear',
-			min: use_log_scale ? 1 : undefined,
+			min: use_log_scale ? Math.min(1, this.quote_ttl()) : undefined,
 			display: false,
 			beginAtZero: !use_log_scale,
 		};
