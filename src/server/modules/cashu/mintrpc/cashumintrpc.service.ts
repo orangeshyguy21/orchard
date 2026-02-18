@@ -187,14 +187,17 @@ export class CashuMintRpcService implements OnModuleInit {
 		unit,
 		amounts,
 		input_fee_ppk,
+		keyset_v2,
 	}: {
 		unit: string;
 		amounts?: number[];
 		input_fee_ppk?: number;
+		keyset_v2?: boolean;
 	}): Promise<{id: string; unit: string; amounts: number[]; input_fee_ppk: number}> {
 		const request: any = {unit};
 		if (amounts !== undefined) request.amounts = amounts;
 		if (input_fee_ppk !== undefined) request.input_fee_ppk = input_fee_ppk;
+		if (keyset_v2 !== undefined) request.use_keyset_v2 = keyset_v2;
 		return this.makeGrpcRequest('RotateNextKeyset', request);
 	}
 }

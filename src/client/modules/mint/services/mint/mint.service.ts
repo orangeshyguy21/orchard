@@ -1094,8 +1094,8 @@ export class MintService {
 		);
 	}
 
-	public rotateMintKeysets(unit: string, input_fee_ppk: number, amounts: number[]): Observable<MintKeysetRotationResponse> {
-		const query = getApiQuery(MINT_KEYSETS_ROTATION_MUTATION, {mint_rotate_keyset: {unit, input_fee_ppk, amounts}});
+	public rotateMintKeysets(unit: string, input_fee_ppk: number, amounts: number[], keyset_v2: boolean): Observable<MintKeysetRotationResponse> {
+		const query = getApiQuery(MINT_KEYSETS_ROTATION_MUTATION, {mint_rotate_keyset: {unit, input_fee_ppk, amounts, keyset_v2}});
 
 		return this.http.post<OrchardRes<MintKeysetRotationResponse>>(this.apiService.api, query).pipe(
 			map((response) => {

@@ -11,4 +11,7 @@ export class MintRotateKeysetInput {
 
 	@Field(() => Int, {nullable: true})
 	input_fee_ppk: number;
+
+	@Field({nullable: true})
+	keyset_v2?: boolean;
 }
