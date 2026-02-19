@@ -8,3 +8,29 @@
 	@extend %border;
 	@extend %orc-outline-border;
 }
+
+.theme-sticker {
+    @extend %absolute;
+    @extend %top-0;
+    @extend %left-0;
+    @extend %right-0;
+    @extend %bottom-0;
+    @extend %font-size-3;
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-justify-center;
+    opacity: 0.1;
+
+    mat-icon {
+        scale: 1.5;
+    }
+}
+
+.theme-label {
+    @extend %h-full;
+    @extend %flex;
+    @extend %flex-column;
+    @extend %flex-gap-0-25;
+    @extend %flex-items-center;
+    @extend %flex-justify-center;
+}
