@@ -32,6 +32,7 @@ export type CashuMintKeyset = {
 	unit: MintUnit;
 	input_fee_ppk: number | null;
 	fees_paid: number | null;
+	amounts: number[];
 };
 
 export type CashuMintMintQuote = {
@@ -63,6 +64,15 @@ export type CashuMintMeltQuote = {
 	created_time: number;
 	paid_time: number | null;
 	payment_method: string;
+};
+
+export type CashuMintSwap = {
+	operation_id: string | null;
+	keyset_ids: string[];
+	unit: MintUnit;
+	amount: number;
+	created_time: number;
+	fee: number | null;
 };
 
 export type CashuMintProofGroup = {

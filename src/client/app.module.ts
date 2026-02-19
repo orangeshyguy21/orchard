@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {NgModule, inject, provideAppInitializer} from '@angular/core';
+import {LOCALE_ID, NgModule, inject, provideAppInitializer} from '@angular/core';
 import {RouterOutlet as CoreRouterOutlet} from '@angular/router';
 import {BrowserModule as CoreBrowserModule} from '@angular/platform-browser';
 import {provideHttpClient, withInterceptors} from '@angular/common/http';
@@ -34,6 +34,19 @@ import {AppComponent} from './app.component';
 	declarations: [AppComponent],
 	imports: [CoreRouterOutlet, CoreBrowserModule, MatProgressSpinnerModule, OrcRoutingModule],
 	providers: [
+		{
+			provide: LOCALE_ID,
+			useFactory: () => {
+				try {
+					const item = localStorage.getItem('v0.setting.locale');
+					if (item) {
+						const locale = JSON.parse(item);
+						if (locale?.code) return locale.code;
+					}
+				} catch {}
+				return Intl.DateTimeFormat().resolvedOptions().locale;
+			},
+		},
 		provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
 		provideLuxonDateAdapter(),
 		provideAppInitializer(() => {

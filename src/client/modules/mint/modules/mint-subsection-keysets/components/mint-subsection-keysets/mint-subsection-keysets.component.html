@@ -50,6 +50,7 @@
 		<div class="orc-animation-collapsible-inner">
 			<div class="mint-keyset-form-target" #keyset_form></div>
 			<orc-mint-subsection-keysets-form
+				[mint_type]="mint_type"
 				[form_group]="form_keyset"
 				[unit_options]="unit_options"
 				[keyset_out]="keyset_out"
@@ -70,6 +71,7 @@
 		[page_settings]="page_settings"
 		[mint_genesis_time]="mint_genesis_time"
 		[loading]="loading_dynamic_data"
+		[highlighted_keyset_id]="highlighted_keyset_id()"
 	></orc-mint-subsection-keysets-chart>
 
 	<orc-mint-subsection-keysets-table
@@ -80,6 +82,9 @@
 		[page_settings]="page_settings"
 		[device_type]="device_type()"
 		[loading]="loading_dynamic_data"
+		[bitcoin_oracle_data]="bitcoin_oracle_data()"
 		(rotateKeyset)="onRotationUnit($event)"
+		(highlightChange)="onHighlightChange($event)"
+		(moreRequest)="onMoreRequest($event)"
 	></orc-mint-subsection-keysets-table>
 </div>

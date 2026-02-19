@@ -15,6 +15,7 @@
     #{$c}orc-surface-container-lowest-bg { background-color: var(--mat-sys-surface-container-lowest); }
     #{$c}orc-surface-bright-bg { background-color: var(--mat-sys-surface-bright); }
     #{$c}orc-surface-tint-bg { background-color: var(--mat-sys-surface-tint); }
+    #{$c}orc-secondary-container-bg { background-color: var(--mat-sys-secondary-container); }
     #{$c}orc-on-surface-variant-bg { background-color: var(--mat-sys-on-surface-variant); }
     #{$c}orc-on-secondary-container-bg { background-color: var(--mat-sys-on-secondary-container); }
     #{$c}orc-on-primary-bg { background-color: var(--mat-sys-on-primary); }
@@ -109,6 +110,8 @@
     // Border Specific
     #{$c}orc-outline-border-bottom { border-bottom-color: var(--mat-sys-outline); }
     #{$c}orc-outline-border-right { border-right-color: var(--mat-sys-outline); }
+    #{$c}orc-outline-variant-border-bottom { border-bottom-color: var(--mat-sys-outline-variant); }
+    #{$c}orc-outline-variant-border-right { border-right-color: var(--mat-sys-outline-variant); }
 
     // Shadows
     #{$c}orc-level0 { box-shadow: var(--mat-sys-level0); }

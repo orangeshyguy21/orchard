@@ -41,13 +41,14 @@ import {MintService} from '@client/modules/mint/services/mint/mint.service';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class';
 import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
-import {MintProofGroup} from '@client/modules/mint/classes/mint-proof-group.class';
-import {MintPromiseGroup} from '@client/modules/mint/classes/mint-promise-group.class';
+import {MintSwap} from '@client/modules/mint/classes/mint-swap.class';
+// import {MintProofGroup} from '@client/modules/mint/classes/mint-proof-group.class';
+// import {MintPromiseGroup} from '@client/modules/mint/classes/mint-promise-group.class';
 import {MintDataType} from '@client/modules/mint/enums/data-type.enum';
 import {MintSubsectionDatabaseData} from '@client/modules/mint/modules/mint-subsection-database/classes/mint-subsection-database-data.class';
 import {MintSubsectionDatabaseDialogQuoteComponent} from '@client/modules/mint/modules/mint-subsection-database/components/mint-subsection-database-dialog-quote/mint-subsection-database-dialog-quote.component';
 /* Shared Dependencies */
-import {MintUnit, MintQuoteState, MeltQuoteState, MintProofState, AiAgent, AiFunctionName} from '@shared/generated.types';
+import {MintUnit, MintQuoteState, MeltQuoteState, AiAgent, AiFunctionName} from '@shared/generated.types';
 
 enum FormMode {
 	CREATE = 'CREATE',
@@ -96,7 +97,8 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	public lightning_request!: LightningRequest | null;
 
 	public device_type = signal<DeviceType>('desktop');
-	public bitcoin_oracle_amount = signal<number | null>(null);
+	public bitcoin_oracle_data = signal<{price_cents: number; date: number} | null>(null);
+	public highlighted_entity_id = signal<string | null>(null);
 
 	private active_event: EventData | null = null;
 	private subscriptions: Subscription = new Subscription();
@@ -106,9 +108,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	private bitcoin_oracle_price_map: Map<number, number> | null = null;
 
 	public get state_enabled(): boolean {
-		return (
-			this.data?.type === DataType.MintMints || this.data?.type === DataType.MintMelts || this.data?.type === DataType.MintProofGroups
-		);
+		return this.data?.type === DataType.MintMints || this.data?.type === DataType.MintMelts;
 	}
 
 	constructor(
@@ -244,8 +244,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	private getDefaultStates(type: MintDataType): string[] {
 		if (type === MintDataType.MintMints) return Object.values(MintQuoteState);
 		if (type === MintDataType.MintMelts) return Object.values(MeltQuoteState);
-		if (type === MintDataType.MintProofGroups) return Object.values(MintProofState);
-		if (type === MintDataType.MintPromiseGroups) return [];
+		if (type === MintDataType.MintSwaps) return [];
 		return [];
 	}
 
@@ -273,8 +272,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	private async getDynamicData(): Promise<void> {
 		if (this.page_settings.type === MintDataType.MintMints) return this.getMintsData();
 		if (this.page_settings.type === MintDataType.MintMelts) return this.getMeltsData();
-		if (this.page_settings.type === MintDataType.MintProofGroups) return this.getProofsData();
-		if (this.page_settings.type === MintDataType.MintPromiseGroups) return this.getPromisesData();
+		if (this.page_settings.type === MintDataType.MintSwaps) return this.getSwapsData();
 	}
 
 	private async getMintsData(): Promise<void> {
@@ -313,44 +311,28 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		this.count = mint_melt_quotes_data.count;
 	}
 
-	private async getProofsData(): Promise<void> {
-		const mint_proof_groups_data = await lastValueFrom(
-			this.mintService.getMintProofGroupsData({
+	private async getSwapsData(): Promise<void> {
+		const mint_swaps_data = await lastValueFrom(
+			this.mintService.getMintSwapsData({
 				date_start: this.page_settings.date_start,
 				date_end: this.page_settings.date_end,
 				units: this.page_settings.units.length > 0 ? this.page_settings.units : undefined,
-				states: this.page_settings.states.length > 0 ? (this.page_settings.states as MintProofState[]) : undefined,
 				page: this.page_settings.page,
 				page_size: this.page_settings.page_size,
 			}),
 		);
-		this.data = {
-			type: DataType.MintProofGroups,
-			source: new MatTableDataSource(mint_proof_groups_data.mint_proof_groups),
-		};
-		this.count = mint_proof_groups_data.count;
-	}
 
-	private async getPromisesData(): Promise<void> {
-		const mint_promise_groups_data = await lastValueFrom(
-			this.mintService.getMintPromiseGroupsData({
-				date_start: this.page_settings.date_start,
-				date_end: this.page_settings.date_end,
-				units: this.page_settings.units.length > 0 ? this.page_settings.units : undefined,
-				page: this.page_settings.page,
-				page_size: this.page_settings.page_size,
-			}),
-		);
 		this.data = {
-			type: DataType.MintPromiseGroups,
-			source: new MatTableDataSource(mint_promise_groups_data.mint_promise_groups),
+			type: DataType.MintSwaps,
+			source: new MatTableDataSource(mint_swaps_data.mint_swaps),
 		};
-		this.count = mint_promise_groups_data.count;
+		this.count = mint_swaps_data.count;
 	}
 
 	private async reloadDynamicData(): Promise<void> {
 		try {
 			this.loading_dynamic_data = true;
+			this.highlighted_entity_id.set(null);
 			this.cdr.detectChanges();
 			await this.getDynamicData();
 			this.loading_dynamic_data = false;
@@ -427,7 +409,15 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		this.eventService.registerEvent(null);
 		this.cdr.detectChanges();
 	}
-	public onMoreRequest(entity: MintMintQuote | MintMeltQuote | MintProofGroup | MintPromiseGroup): void {
+	/**
+	 * Handles highlight change from table row hover or toggle
+	 * @param entity_id - the entity ID to highlight, or null to clear
+	 */
+	public onHighlightChange(entity_id: string | null): void {
+		this.highlighted_entity_id.set(entity_id);
+	}
+
+	public onMoreRequest(entity: MintMintQuote | MintMeltQuote | MintSwap): void {
 		if (this.bitcoin_oracle_enabled) {
 			this.calculateBitcoinOraclePrice(entity);
 		}
@@ -502,16 +492,19 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		Oracle Conversion                      
 	******************************************************** */
 
-	private calculateBitcoinOraclePrice(entity: MintMintQuote | MintMeltQuote | MintProofGroup | MintPromiseGroup): void {
+	private calculateBitcoinOraclePrice(entity: MintMintQuote | MintMeltQuote | MintSwap): void {
 		if (!this.bitcoin_oracle_price_map) return;
 		if (!entity.amount) return;
 		if (!entity.unit) return;
 		if (!entity.created_time) return;
 		const amount = entity.amount;
 		const unit = entity.unit;
-		const price = findNearestOraclePrice(this.bitcoin_oracle_price_map, entity.created_time);
+		const oracle_price = findNearestOraclePrice(this.bitcoin_oracle_price_map, entity.created_time);
+		const price = oracle_price?.price || null;
+		const date = oracle_price?.date || null;
 		const usd_cents = oracleConvertToUSDCents(amount, price, unit);
-		this.bitcoin_oracle_amount.set(usd_cents);
+		const data = usd_cents && date ? {price_cents: usd_cents, date: date} : null;
+		this.bitcoin_oracle_data.set(data);
 	}
 
 	/* *******************************************************

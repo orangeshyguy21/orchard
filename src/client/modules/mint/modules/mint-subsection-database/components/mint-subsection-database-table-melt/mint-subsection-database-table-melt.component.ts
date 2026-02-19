@@ -30,7 +30,7 @@ export class MintSubsectionDatabaseTableMeltComponent implements AfterViewInit {
 	public quote = input.required<MintMeltQuote>();
 	public loading = input.required<boolean>();
 	public lightning_request = input<LightningRequest | null>(null);
-	public bitcoin_oracle_amount = input.required<number | null>();
+	public bitcoin_oracle_data = input.required<{price_cents: number; date: number} | null>();
 	public device_desktop = input.required<boolean>();
 
 	public setStatePaid = output<MintMeltQuote>();

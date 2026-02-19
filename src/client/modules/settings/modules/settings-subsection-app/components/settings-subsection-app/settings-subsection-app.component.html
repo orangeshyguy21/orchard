@@ -10,6 +10,7 @@
 	</div>
 	<div class="settings-box">
 		<orc-settings-subsection-app-bitcoin
+			[bitcoin_enabled]="bitcoin_enabled"
 			[form_group]="form_bitcoin"
 			[oracle_price]="bitcoin_oracle_price()"
 			(update_oracle)="onUpdateBitcoinOracle()"

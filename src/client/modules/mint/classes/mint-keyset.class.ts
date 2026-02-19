@@ -11,6 +11,7 @@ export class MintKeyset implements OrchardMintKeyset {
 	valid_from: number | null;
 	valid_to: number | null;
 	fees_paid: number;
+	amounts: number[] | null;
 
 	constructor(omk: OrchardMintKeyset) {
 		this.id = omk.id;
@@ -22,5 +23,6 @@ export class MintKeyset implements OrchardMintKeyset {
 		this.valid_from = omk.valid_from ?? null;
 		this.valid_to = omk.valid_to ?? null;
 		this.fees_paid = omk.fees_paid;
+		this.amounts = omk.amounts ?? null;
 	}
 }

@@ -100,7 +100,6 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public loading_static_data: boolean = true;
 
 	public errors_lightning: OrchardError[] = [];
-	public mint_fee_revenue: boolean = false;
 	// charts
 	public page_settings: WritableSignal<NonNullableMintDashboardSettings>;
 	public tertiary_nav_items: Record<NavTertiary, NavTertiaryItem> = {
@@ -118,6 +117,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		fee_revenue: [ChartType.Totals, ChartType.Volume],
 	};
 
+	public mint_fee_revenue = signal<boolean>(false);
 	public device_type = signal<DeviceType>('desktop');
 	public loading_mint = signal<boolean>(true);
 	public loading_mint_icon = signal<boolean>(true);
@@ -171,7 +171,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.orchardOptionalInit();
 		this.getMintFees();
 		await this.initAnalytics();
-		this.mint_fee_revenue = this.getMintFeeRevenueState();
+		this.mint_fee_revenue.set(this.getMintFeeRevenueState());
 		this.subscriptions.add(this.getBreakpointSubscription());
 	}
 

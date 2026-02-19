@@ -7,6 +7,7 @@ import {
 	CashuMintMeltQuotesArgs,
 	CashuMintProofsArgs,
 	CashuMintPromiseArgs,
+	CashuMintSwapsArgs,
 } from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
@@ -71,6 +72,20 @@ export class MintCountService {
 		return this.mintService.withDbClient(async (client) => {
 			try {
 				const count: number = await this.cashuMintDatabaseService.getMintCountPromiseGroups(client, args);
+				return new OrchardMintCount(count);
+			} catch (error) {
+				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
+					errord: OrchardErrorCode.MintDatabaseSelectError,
+				});
+				throw new OrchardApiError(orchard_error);
+			}
+		});
+	}
+
+	async getMintCountSwaps(tag: string, args?: CashuMintSwapsArgs): Promise<OrchardMintCount> {
+		return this.mintService.withDbClient(async (client) => {
+			try {
+				const count: number = await this.cashuMintDatabaseService.getMintCountSwaps(client, args);
 				return new OrchardMintCount(count);
 			} catch (error) {
 				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {

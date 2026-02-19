@@ -96,7 +96,7 @@ export class LightningGeneralInfoComponent {
 
 	/** Creates an SVG circle data URI for use as a QR code center image */
 	private createCircleSvg(color: string): string {
-		const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="${color}"/></svg>`;
+		const svg = `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="${color}"/></svg>`;
 		return `data:image/svg+xml;base64,${btoa(svg)}`;
 	}
 }

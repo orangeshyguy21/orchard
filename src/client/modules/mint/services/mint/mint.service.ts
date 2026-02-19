@@ -19,6 +19,7 @@ import {
 	MintMeltQuotesArgs,
 	MintProofGroupsArgs,
 	MintPromiseGroupsArgs,
+	MintSwapsArgs,
 	MintKeysetProofCountsArgs,
 	MintAnalyticsBalancesResponse,
 	MintAnalyticsMintsResponse,
@@ -49,6 +50,7 @@ import {
 	MintMeltQuotesDataResponse,
 	MintProofGroupsDataResponse,
 	MintPromiseGroupsDataResponse,
+	MintSwapsDataResponse,
 	MintDatabaseBackupResponse,
 	MintDatabaseRestoreResponse,
 	MintProofGroupStatsResponse,
@@ -66,6 +68,7 @@ import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class'
 import {MintProofGroup} from '@client/modules/mint/classes/mint-proof-group.class';
 import {MintPromiseGroup} from '@client/modules/mint/classes/mint-promise-group.class';
 import {MintAnalytic, MintAnalyticKeyset} from '@client/modules/mint/classes/mint-analytic.class';
+import {MintSwap} from '@client/modules/mint/classes/mint-swap.class';
 import {MintFee} from '@client/modules/mint/classes/mint-fee.class';
 import {MintKeysetProofCount} from '@client/modules/mint/classes/mint-keyset-proof-count.class';
 /* Shared Dependencies */
@@ -90,6 +93,7 @@ import {
 	MINT_MELT_QUOTES_DATA_QUERY,
 	MINT_PROOF_GROUPS_DATA_QUERY,
 	MINT_PROMISE_GROUPS_DATA_QUERY,
+	MINT_SWAPS_DATA_QUERY,
 	MINT_NAME_MUTATION,
 	MINT_DESCRIPTION_MUTATION,
 	MINT_DESCRIPTION_LONG_MUTATION,
@@ -818,6 +822,27 @@ export class MintService {
 		);
 	}
 
+	public getMintSwapsData(args: MintSwapsArgs) {
+		const query = getApiQuery(MINT_SWAPS_DATA_QUERY, args);
+
+		return this.http.post<OrchardRes<MintSwapsDataResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			map((mint_swaps_data) => {
+				return {
+					mint_swaps: mint_swaps_data.mint_swaps.map((swap) => new MintSwap(swap)),
+					count: mint_swaps_data.mint_count_swaps.count,
+				};
+			}),
+			catchError((error) => {
+				console.error('Error loading mint swaps data:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
 	public getMintProofGroupStats(unit: MintUnit) {
 		const query = getApiQuery(MINT_PROOF_GROUP_STATS_QUERY, {unit});
 
@@ -1069,8 +1094,13 @@ export class MintService {
 		);
 	}
 
-	public rotateMintKeysets(unit: string, input_fee_ppk: number, max_order: number): Observable<MintKeysetRotationResponse> {
-		const query = getApiQuery(MINT_KEYSETS_ROTATION_MUTATION, {mint_rotate_keyset: {unit, input_fee_ppk, max_order}});
+	public rotateMintKeysets(
+		unit: string,
+		input_fee_ppk: number,
+		amounts: number[],
+		keyset_v2: boolean,
+	): Observable<MintKeysetRotationResponse> {
+		const query = getApiQuery(MINT_KEYSETS_ROTATION_MUTATION, {mint_rotate_keyset: {unit, input_fee_ppk, amounts, keyset_v2}});
 
 		return this.http.post<OrchardRes<MintKeysetRotationResponse>>(this.apiService.api, query).pipe(
 			map((response) => {

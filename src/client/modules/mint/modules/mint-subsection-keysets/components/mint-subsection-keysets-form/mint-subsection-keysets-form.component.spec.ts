@@ -17,15 +17,21 @@ describe('MintSubsectionKeysetsFormComponent', () => {
 
 		fixture = TestBed.createComponent(MintSubsectionKeysetsFormComponent);
 		component = fixture.componentInstance;
-		component.form_group = new FormGroup({
-			unit: new FormControl('sat', [Validators.required]),
-			input_fee_ppk: new FormControl(0, [Validators.required]),
-			max_order: new FormControl(0, [Validators.required]),
-		});
-		component.unit_options = [{value: 'sat', label: 'sat'}];
-		component.keyset_out = {unit: 'sat', derivation_path_index: 0, input_fee_ppk: 0} as any;
-		component.keyset_out_balance = {balance: 0} as any;
-		component.median_notes = 0;
+		fixture.componentRef.setInput('mint_type', 'cdk');
+		fixture.componentRef.setInput(
+			'form_group',
+			new FormGroup({
+				unit: new FormControl('sat', [Validators.required]),
+				input_fee_ppk: new FormControl(0, [Validators.required]),
+				max_order: new FormControl(0, [Validators.required]),
+				default_amounts: new FormControl(true),
+				amounts: new FormControl([1, 2, 4, 8]),
+			}),
+		);
+		fixture.componentRef.setInput('unit_options', [{value: 'sat', label: 'sat'}]);
+		fixture.componentRef.setInput('keyset_out', {unit: 'sat', derivation_path_index: 0, input_fee_ppk: 0});
+		fixture.componentRef.setInput('keyset_out_balance', {balance: 0});
+		fixture.componentRef.setInput('median_notes', 0);
 		fixture.detectChanges();
 	});
 

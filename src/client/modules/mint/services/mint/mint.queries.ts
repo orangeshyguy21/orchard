@@ -125,6 +125,7 @@ export const MINT_KEYSETS_QUERY = `{
 		valid_from
 		valid_to
 		fees_paid
+		amounts
     }
 }`;
 
@@ -333,7 +334,7 @@ mutation MintRotateKeyset($mint_rotate_keyset: MintRotateKeysetInput!) {
 	mint_rotate_keyset(mint_rotate_keyset: $mint_rotate_keyset) {
 		unit
 		input_fee_ppk
-		max_order
+		amounts
 	}
 }`;
 
@@ -454,5 +455,20 @@ mutation MintNut05QuoteUpdate($mint_nut05_quote_update: MintNut05QuoteUpdateInpu
 	mint_nut05_quote_update(mint_nut05_quote_update: $mint_nut05_quote_update) {
 		quote_id
 		state
+	}
+}`;
+
+export const MINT_SWAPS_DATA_QUERY = `
+query MintSwaps($units: [MintUnit!], $id_keysets: [String!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $page: Int, $page_size: Int) {
+	mint_swaps(units: $units, id_keysets: $id_keysets, date_start: $date_start, date_end: $date_end, page: $page, page_size: $page_size) {
+		operation_id
+		keyset_ids
+		unit
+		amount
+		created_time
+		fee
+	}
+	mint_count_swaps(units: $units, id_keysets: $id_keysets, date_start: $date_start, date_end: $date_end) {
+		count
 	}
 }`;

@@ -3,7 +3,6 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output, SimpleC
 import {FormControl} from '@angular/forms';
 /* Vendor Dependencies */
 import {MatCheckboxChange} from '@angular/material/checkbox';
-import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 /* Application Dependencies */
 import {Theme, ThemeType} from '@client/modules/cache/services/local-storage/local-storage.types';
 
@@ -47,10 +46,11 @@ export class SettingsSubsectionDeviceThemeComponent {
 		const display_type = type === null ? this.prefers_light_theme : this.translateThemeToChecked(type);
 		this.theme_control.setValue(display_type);
 	}
-	public onThemeChange(event: MatSlideToggleChange) {
-		const value = this.translateCheckedToTheme(event.checked);
+	public onThemeChange(event: boolean) {
+		this.theme_control.setValue(event);
+		const value = this.translateCheckedToTheme(event);
 		this.themeChange.emit(value);
-		if (event.checked !== this.prefers_light_theme) return this.system_default_control.setValue(false);
+		if (event !== this.prefers_light_theme) return this.system_default_control.setValue(false);
 	}
 
 	public onSystemDefaultChange(event: MatCheckboxChange) {

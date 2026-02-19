@@ -1,0 +1,26 @@
+@use 'molecule/molecule';
+
+.oracle-sticker {
+	@extend %absolute;
+	@extend %left-1;
+	top: 50%;
+	transform: translateY(-50%);
+	@extend %font-size-3;
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	opacity: 0.1;
+
+	mat-icon {
+		scale: 1.5;
+	}
+}
+
+.oracle-label {
+	@extend %h-full;
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-gap-0-25;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+}

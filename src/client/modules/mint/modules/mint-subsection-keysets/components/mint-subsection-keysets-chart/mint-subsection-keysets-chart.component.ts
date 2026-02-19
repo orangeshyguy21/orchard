@@ -43,6 +43,7 @@ export class MintSubsectionKeysetsChartComponent implements OnDestroy {
 	public readonly page_settings = input<NonNullableMintKeysetsSettings>();
 	public readonly mint_genesis_time = input.required<number>();
 	public readonly loading = input.required<boolean>();
+	public readonly highlighted_keyset_id = input<string | null>(null);
 
 	/* State */
 	public readonly chart_type = signal<ChartJsType>('line');
@@ -52,6 +53,7 @@ export class MintSubsectionKeysetsChartComponent implements OnDestroy {
 	public readonly displayed = signal<boolean>(true);
 
 	private subscriptions: Subscription = new Subscription();
+	private dataset_styles = new Map<string, {muted_color: string; color_hex: string; is_active: boolean; bg_color: any}>();
 
 	constructor(private chartService: ChartService) {
 		this.subscriptions.add(this.getRemoveSubscription());
@@ -64,6 +66,12 @@ export class MintSubsectionKeysetsChartComponent implements OnDestroy {
 			setTimeout(() => {
 				this.chart()?.chart?.resize();
 			}, 50);
+		});
+
+		/* Effect: React to highlight changes */
+		effect(() => {
+			this.highlighted_keyset_id();
+			this.updateChartHighlight();
 		});
 	}
 
@@ -181,10 +189,14 @@ export class MintSubsectionKeysetsChartComponent implements OnDestroy {
 			const is_active = keyset?.active ?? true;
 			const muted_color = this.chartService.getMutedColor(color.border);
 
+			const bg_color = is_active ? (context: any) => this.chartService.createAreaGradient(context, color.border) : color.bg;
+			this.dataset_styles.set(keyset_id, {muted_color, color_hex: color.border, is_active, bg_color});
+
 			return {
 				data: data_prepped,
 				label: label,
-				backgroundColor: is_active ? (context: any) => this.chartService.createAreaGradient(context, color.border) : color.bg,
+				keyset_id: keyset_id,
+				backgroundColor: bg_color,
 				borderColor: muted_color,
 				borderWidth: 2,
 				borderRadius: 3,
@@ -228,6 +240,35 @@ export class MintSubsectionKeysetsChartComponent implements OnDestroy {
 			}
 		}
 		return analytics;
+	}
+
+	/**
+	 * Dims non-highlighted datasets or restores all to original styles
+	 */
+	private updateChartHighlight(): void {
+		const chart = this.chart()?.chart;
+		if (!chart) return;
+		const highlighted_id = this.highlighted_keyset_id();
+
+		chart.data.datasets.forEach((dataset: any) => {
+			const styles = this.dataset_styles.get(dataset.keyset_id);
+			if (!styles) return;
+
+			if (!highlighted_id || dataset.keyset_id === highlighted_id) {
+				dataset.borderColor = styles.muted_color;
+				dataset.pointBackgroundColor = styles.muted_color;
+				dataset.pointBorderColor = styles.muted_color;
+				dataset.backgroundColor = styles.bg_color;
+			} else {
+				const dimmed = this.chartService.hexToRgba(styles.color_hex, 0.1);
+				dataset.borderColor = dimmed;
+				dataset.pointBackgroundColor = dimmed;
+				dataset.pointBorderColor = dimmed;
+				dataset.backgroundColor = 'transparent';
+			}
+		});
+
+		chart.update();
 	}
 
 	private getChartOptions(valid_keysets_ids: string[], data: ChartConfiguration['data']): ChartConfiguration['options'] {

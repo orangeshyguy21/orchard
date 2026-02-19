@@ -1,10 +1,11 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, HostListener, WritableSignal, signal, effect, OnInit, OnDestroy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, HostListener, WritableSignal, signal, effect, inject, OnInit, OnDestroy} from '@angular/core';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 /* Vendor Dependencies */
 import {Subscription, firstValueFrom} from 'rxjs';
 /* Application Dependencies */
+import {ConfigService} from '@client/modules/config/services/config.service';
 import {SettingAppService, ParsedAppSettings} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {EventService} from '@client/modules/event/services/event/event.service';
 import {BitcoinService} from '@client/modules/bitcoin/services/bitcoin/bitcoin.service';
@@ -23,6 +24,12 @@ import {SettingKey} from '@shared/generated.types';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
+	private configService = inject(ConfigService);
+	private settingAppService = inject(SettingAppService);
+	private eventService = inject(EventService);
+	private bitcoinService = inject(BitcoinService);
+	private breakpointObserver = inject(BreakpointObserver);
+
 	@HostListener('window:beforeunload')
 	canDeactivate(): boolean {
 		return this.active_event?.type !== 'PENDING';
@@ -31,6 +38,7 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 	public form_bitcoin: FormGroup = new FormGroup({
 		oracle_enabled: new FormControl(false, [Validators.required]),
 	});
+	public bitcoin_enabled = this.configService.config.bitcoin.enabled;
 	public bitcoin_oracle_price = signal<BitcoinOraclePrice | null>(null);
 	public device_type = signal<DeviceType>('desktop');
 
@@ -39,12 +47,7 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 	private dirty_count: WritableSignal<number> = signal(0);
 	private initial_settings!: ParsedAppSettings;
 
-	constructor(
-		private settingAppService: SettingAppService,
-		private eventService: EventService,
-		private bitcoinService: BitcoinService,
-		private breakpointObserver: BreakpointObserver,
-	) {
+	constructor() {
 		effect(() => {
 			this.createPendingEvent(this.dirty_count());
 		});

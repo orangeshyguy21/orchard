@@ -12,6 +12,7 @@ import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsSubsectionAppBitcoinComponent {
+	public bitcoin_enabled = input.required<boolean>();
 	public form_group = input.required<FormGroup>();
 	public oracle_price = input.required<BitcoinOraclePrice | null>();
 	public update_oracle = output<void>();

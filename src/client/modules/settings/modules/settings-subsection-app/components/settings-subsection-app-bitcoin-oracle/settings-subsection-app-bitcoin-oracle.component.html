@@ -1,24 +1,63 @@
 <div class="flex flex-gap-2 p-l-1 flex-wrap">
-	<div class="flex-1">
-		<div [formGroup]="form_group()" class="flex flex-column">
-			<div class="p-t-1 flex flex-items-center flex-grow flex-gap-1" animate.enter="orc-animation-fadein">
-				<mat-slide-toggle [formControlName]="control_name()" name="oracle_enabled" (change)="update.emit()"> </mat-slide-toggle>
-				<div class="font-size-s text-nowrap">Price Oracle Enabled</div>
-				<button type="button" tabindex="-1" mat-icon-button class="orc-icon-button" (click)="help_status.set(!help_status())">
-					<mat-icon class="orc-outline-color">info</mat-icon>
-				</button>
-			</div>
-			<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
-				<div class="orc-animation-expand-collapse-inner">
-					<div class="flex p-t-2 p-b-1 w-max-18">
-						<orc-form-help-text class="orc-surface-container-high-bg">
-							A task runs daily at 12:00 AM UTC to calcualte the previous days price using only data from your bitcoin node
-						</orc-form-help-text>
+	<div [formGroup]="form_group()" class="flex-1 flex flex-column">
+		<div class="flex flex-items-center flex-grow flex-gap-1" animate.enter="orc-animation-fadein">
+			<div class="flex flex-items-center flex-grow flex-gap-1">
+				<orc-form-toggle
+					class="flex-1 w-min-10 h-min-6"
+					[selected]="!form_group().get(control_name())?.value"
+					(click)="toggleOracle(false)"
+				>
+					<div class="oracle-sticker">
+						<mat-icon class="icon-lg">money_off</mat-icon>
 					</div>
+					<div class="oracle-label">
+						<div class="font-size-s">Disabled</div>
+						<div class="font-size-xs orc-outline-color">No price data</div>
+					</div>
+				</orc-form-toggle>
+				<orc-form-toggle
+					class="flex-1 w-min-10 h-min-6"
+					[selected]="form_group().get(control_name())?.value"
+					[disabled]="!bitcoin_enabled()"
+					(click)="toggleOracle(true)"
+				>
+					<div class="oracle-sticker">
+						<orc-graphic-oracle-icon [size]="4"></orc-graphic-oracle-icon>
+					</div>
+					<div class="oracle-label">
+						<div class="font-size-s">Enabled</div>
+						<div class="font-size-xs orc-outline-color">Price data available</div>
+					</div>
+				</orc-form-toggle>
+			</div>
+
+			<button type="button" tabindex="-1" mat-icon-button class="orc-icon-button" (click)="help_status.set(!help_status())">
+				<mat-icon class="orc-outline-color">info</mat-icon>
+			</button>
+		</div>
+		<div class="orc-animation-expand-collapse" [class.animation-expanded]="help_status()">
+			<div class="orc-animation-expand-collapse-inner">
+				<div class="flex p-t-2 p-b-1 w-max-36">
+					<orc-form-help-text class="orc-surface-container-high-bg">
+						@if (!bitcoin_enabled()) {
+							<span class="orc-status-warning-color">Bitcoin service must be configured to use the oracle</span>
+							<br /><br />
+						}
+						<span
+							>Perfect privacy with zero trusted third parties. A task runs daily at 12:00 AM UTC to calcualte the previous
+							days price using only data from your bitcoin node.</span
+						>
+						<br /><br />
+						<span
+							>Adapted for Orchard from the open source
+							<span class="orc-text-button" (click)="onExternalLink('https://utxo.live')">UTXOracle</span></span
+						>
+					</orc-form-help-text>
 				</div>
 			</div>
 		</div>
 	</div>
+
 	<div class="flex-1 flex flex-justify-center">
 		@if (oracle_price()) {
 			<div animate.enter="orc-animation-fadein" class="flex flex-gap-0-5 flex-column flex-justify-center flex-items-center">

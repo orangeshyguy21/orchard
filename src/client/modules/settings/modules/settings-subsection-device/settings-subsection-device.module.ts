@@ -10,7 +10,6 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatSelectModule} from '@angular/material/select';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatIconModule} from '@angular/material/icon';
 import {MatCardModule} from '@angular/material/card';
 import {MatMenuModule} from '@angular/material/menu';
@@ -57,7 +56,6 @@ import {SettingsSubsectionDeviceCurrencyComponent} from './components/settings-s
 		MatChipsModule,
 		MatCheckboxModule,
 		MatSelectModule,
-		MatSlideToggleModule,
 		MatIconModule,
 		MatCardModule,
 		MatMenuModule,

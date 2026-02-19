@@ -10,8 +10,7 @@ import {MintSubsectionDatabaseData} from '@client/modules/mint/modules/mint-subs
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class';
 import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
-import {MintProofGroup} from '@client/modules/mint/classes/mint-proof-group.class';
-import {MintPromiseGroup} from '@client/modules/mint/classes/mint-promise-group.class';
+import {MintSwap} from '@client/modules/mint/classes/mint-swap.class';
 /* Shared Dependencies */
 import {MintQuoteState, MeltQuoteState} from '@shared/generated.types';
 
@@ -33,14 +32,15 @@ export class MintSubsectionDatabaseTableComponent {
 	public loading_more = input.required<boolean>(); // loading state for expanded row details
 	public lightning_request = input.required<LightningRequest | null>(); // lightning request for invoice lookup
 	public device_desktop = input.required<boolean>(); // mobile view flag
-	public bitcoin_oracle_amount = input.required<number | null>(); // bitcoin oracle amount for oracle conversion
+	public bitcoin_oracle_data = input.required<{price_cents: number; date: number} | null>(); // bitcoin oracle data for oracle conversion
 
 	/* Outputs */
-	public updateRequest = output<MintMintQuote | MintMeltQuote | MintProofGroup | MintPromiseGroup>(); // emits request string for invoice updates
+	public updateRequest = output<MintMintQuote | MintMeltQuote | MintSwap>(); // emits request string for invoice updates
 	public setQuoteStatePaid = output<MintMintQuote | MintMeltQuote>(); // emits quote to mark as paid
+	public highlightChange = output<string | null>(); // emits entity id on row toggle, null on collapse
 
 	/* State */
-	public more_entity!: MintMintQuote | MintMeltQuote | null; // currently expanded row entity
+	public more_entity!: MintMintQuote | MintMeltQuote | MintSwap | null; // currently expanded row entity
 	public MintQuoteState = MintQuoteState;
 	public MeltQuoteState = MeltQuoteState;
 
@@ -76,25 +76,37 @@ export class MintSubsectionDatabaseTableComponent {
 			return ['unit', 'amount', 'request', 'state', 'created_time', 'actions'];
 		}
 
-		if (data_type === 'MintProofGroups') {
-			if (mobile) return ['unit', 'amount', 'ecash', 'state'];
-			return ['unit', 'amount', 'ecash', 'state', 'created_time'];
-		}
-		if (data_type === 'MintPromiseGroups') {
-			if (mobile) return ['unit', 'amount', 'ecash'];
-			return ['unit', 'amount', 'ecash', 'created_time'];
+		if (data_type === 'MintSwaps') {
+			if (mobile) return ['unit', 'amount', 'created_time'];
+			return ['unit', 'amount', 'fee', 'created_time'];
 		}
 		if (mobile) return ['unit', 'amount', 'state'];
 		return ['unit', 'amount', 'request', 'state', 'created_time'];
 	}
 
 	/**
-	 * Toggles the expanded detail row for a quote entity
-	 * @param entity - the quote to toggle
+	 * Toggles the expanded detail row for an entity
+	 * @param entity - the entity to toggle
 	 */
-	public toggleMore(entity: MintMintQuote | MintMeltQuote): void {
+	public toggleMore(entity: MintMintQuote | MintMeltQuote | MintSwap): void {
 		this.more_entity = this.more_entity === entity ? null : entity;
+		this.highlightChange.emit(this.more_entity?.id ?? null);
 		if (this.more_entity) this.updateRequest.emit(this.more_entity);
+	}
+
+	/**
+	 * Emits highlight for the hovered row
+	 * @param entity - the hovered entity
+	 */
+	public onRowHover(entity: MintMintQuote | MintMeltQuote | MintSwap): void {
+		this.highlightChange.emit(entity.id);
+	}
+
+	/**
+	 * Reverts highlight to expanded row on mouse leave, or clears it
+	 */
+	public onRowLeave(): void {
+		this.highlightChange.emit(this.more_entity?.id ?? null);
 	}
 
 	/**

@@ -1,0 +1,13 @@
+<mat-dialog-content>
+	<div class="flex flex-column flex-gap-1 flex-items-center p-2">
+		<div class="icon-circle">
+			<mat-icon class="mat-symbol-outline orc-warning-color icon-lg">open_in_new</mat-icon>
+		</div>
+		<div class="text-center">You are about to leave the app<br />and be redirected to an external site.</div>
+		<div class="font-size-s orc-outline-color text-center word-break-all">{{ data.link }}</div>
+	</div>
+</mat-dialog-content>
+<mat-dialog-actions>
+	<button mat-button mat-dialog-close>Cancel</button>
+	<button mat-button (click)="onProceed()">Proceed</button>
+</mat-dialog-actions>

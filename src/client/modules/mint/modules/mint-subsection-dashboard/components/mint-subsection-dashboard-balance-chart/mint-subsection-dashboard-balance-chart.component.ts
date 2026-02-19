@@ -156,6 +156,7 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 		if (this.chart_options?.plugins) this.chart_options.plugins.annotation = this.getAnnotations();
 		setTimeout(() => {
 			this.chart?.chart?.resize();
+			this.applyHiddenDatasets();
 		});
 		setTimeout(() => {
 			this.displayed.set(true);
@@ -578,6 +579,22 @@ export class MintSubsectionDashboardBalanceChartComponent implements OnDestroy, 
 			is_visible ? new_set.add(index) : new_set.delete(index);
 			return new_set;
 		});
+	}
+
+	/**
+	 * Reapplies hidden dataset visibility to the Chart.js instance after data refresh
+	 */
+	private applyHiddenDatasets(): void {
+		const chart = this.chart?.chart;
+		if (!chart) return;
+		const hidden = this.hidden_datasets();
+		if (hidden.size === 0) return;
+		hidden.forEach((index) => {
+			if (index < chart.data.datasets.length) {
+				chart.setDatasetVisibility(index, false);
+			}
+		});
+		chart.update();
 	}
 
 	ngOnDestroy(): void {

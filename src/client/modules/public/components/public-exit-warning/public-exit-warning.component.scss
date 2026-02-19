@@ -1,0 +1,11 @@
+@use 'molecule/molecule';
+
+.icon-circle {
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	@extend %orc-surface-container-high-bg;
+	@extend %orc-corner-full;
+	height: 5rem;
+	width: 5rem;
+}

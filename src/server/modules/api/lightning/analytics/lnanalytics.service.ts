@@ -2,6 +2,10 @@
 import {Injectable, Logger} from '@nestjs/common';
 /* Vendor Dependencies */
 import {DateTime} from 'luxon';
+/* Application Dependencies */
+import {OrchardErrorCode} from '@server/modules/error/error.types';
+import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
+import {ErrorService} from '@server/modules/error/error.service';
 /* Native Dependencies */
 import {LightningAnalyticsService} from '@server/modules/lightning/analytics/lnanalytics.service';
 import {LightningAnalytics} from '@server/modules/lightning/analytics/lnanalytics.entity';
@@ -14,35 +18,50 @@ import {OrchardLightningAnalytics, OrchardLightningAnalyticsBackfillStatus} from
 export class ApiLightningAnalyticsService {
 	private readonly logger = new Logger(ApiLightningAnalyticsService.name);
 
-	constructor(private lightningAnalyticsService: LightningAnalyticsService) {}
+	constructor(
+		private lightningAnalyticsService: LightningAnalyticsService,
+		private errorService: ErrorService,
+	) {}
 
 	/**
 	 * Gets analytics data
 	 */
 	async getAnalytics(tag: string, args: LightningAnalyticsArgs): Promise<OrchardLightningAnalytics[]> {
-		this.logger.debug(tag);
-		const now = DateTime.utc().toSeconds();
-		const current_hour_start = DateTime.fromSeconds(now, {zone: 'UTC'}).startOf('hour').toSeconds();
-		const interval = args.interval ?? LightningAnalyticsInterval.hour;
-		const date_start = args.date_start ?? 0;
-		const date_end = args.date_end ?? now;
-		const metrics = args.metrics ?? Object.values(LightningAnalyticsMetric);
-		const cached = await this.lightningAnalyticsService.getCachedAnalytics(
-			date_start,
-			Math.min(date_end, current_hour_start - 1),
-			metrics,
-		);
-		const all_data = cached.filter((d) => metrics.includes(d.metric as LightningAnalyticsMetric) && d.amount !== '0');
-		return this.aggregateByInterval(all_data, interval, args.timezone, date_start);
+		try {
+			const now = DateTime.utc().toSeconds();
+			const current_hour_start = DateTime.fromSeconds(now, {zone: 'UTC'}).startOf('hour').toSeconds();
+			const interval = args.interval ?? LightningAnalyticsInterval.hour;
+			const date_start = args.date_start ?? 0;
+			const date_end = args.date_end ?? now;
+			const metrics = args.metrics ?? Object.values(LightningAnalyticsMetric);
+			const cached = await this.lightningAnalyticsService.getCachedAnalytics(
+				date_start,
+				Math.min(date_end, current_hour_start - 1),
+				metrics,
+			);
+			const all_data = cached.filter((d) => metrics.includes(d.metric as LightningAnalyticsMetric) && d.amount !== '0');
+			return this.aggregateByInterval(all_data, interval, args.timezone, date_start);
+		} catch (error) {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
+				errord: OrchardErrorCode.LightningRpcActionError,
+			});
+			throw new OrchardApiError(orchard_error);
+		}
 	}
 
 	/**
 	 * Gets the current backfill status
 	 */
 	getBackfillStatus(tag: string): OrchardLightningAnalyticsBackfillStatus {
-		this.logger.debug(tag);
-		const status = this.lightningAnalyticsService.getBackfillStatus();
-		return status as OrchardLightningAnalyticsBackfillStatus;
+		try {
+			const status = this.lightningAnalyticsService.getBackfillStatus();
+			return status as OrchardLightningAnalyticsBackfillStatus;
+		} catch (error) {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
+				errord: OrchardErrorCode.LightningRpcActionError,
+			});
+			throw new OrchardApiError(orchard_error);
+		}
 	}
 
 	private aggregateByInterval(

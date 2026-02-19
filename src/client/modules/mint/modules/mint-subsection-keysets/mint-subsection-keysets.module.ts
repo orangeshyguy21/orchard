@@ -16,12 +16,17 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatChipsModule} from '@angular/material/chips';
+import {MatSliderModule} from '@angular/material/slider';
 import {BaseChartDirective as ChartJsBaseChartDirective} from 'ng2-charts';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcLocalModule} from '@client/modules/local/local.module';
+import {OrcTimeModule} from '@client/modules/time/time.module';
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
+import {OrcDataModule} from '@client/modules/data/data.module';
 import {OrcMintGeneralModule} from '@client/modules/mint/modules/mint-general/mint-general.module';
+import {OrcEcashGeneralModule} from '@client/modules/ecash/modules/ecash-general/ecash-general.module';
 import {pendingEventGuard} from '@client/modules/event/guards/pending-event.guard';
 /* Local Dependencies */
 import {MintSubsectionKeysetsComponent} from './components/mint-subsection-keysets/mint-subsection-keysets.component';
@@ -61,12 +66,17 @@ import {MintSubsectionKeysetsRotationPreviewComponent} from './components/mint-s
 		MatMenuModule,
 		MatCheckboxModule,
 		MatTooltipModule,
+		MatChipsModule,
+		MatSliderModule,
 		MatSortModule,
 		ChartJsBaseChartDirective,
 		OrcFormModule,
 		OrcLocalModule,
+		OrcTimeModule,
 		OrcGraphicModule,
+		OrcDataModule,
 		OrcMintGeneralModule,
+		OrcEcashGeneralModule,
 	],
 	exports: [],
 })

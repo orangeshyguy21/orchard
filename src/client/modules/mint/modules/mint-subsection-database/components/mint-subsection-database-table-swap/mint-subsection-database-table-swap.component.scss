@@ -1,0 +1,5 @@
+@use 'molecule/molecule';
+
+.mint-swap-container {
+	@extend %w-full;
+}

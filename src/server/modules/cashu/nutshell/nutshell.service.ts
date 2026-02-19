@@ -18,6 +18,7 @@ import {
 	CashuMintKeysetsAnalytics,
 	CashuMintProofGroup,
 	CashuMintPromiseGroup,
+	CashuMintSwap,
 	CashuMintCount,
 	CashuMintFee,
 	CashuMintKeysetProofCount,
@@ -29,6 +30,7 @@ import {
 	CashuMintProofsArgs,
 	CashuMintPromiseArgs,
 	CashuMintKeysetProofsArgs,
+	CashuMintSwapsArgs,
 } from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
 import {
 	buildDynamicQuery,
@@ -40,7 +42,7 @@ import {
 	queryRows,
 	queryRow,
 } from '@server/modules/cashu/mintdb/cashumintdb.helpers';
-import {MintAnalyticsInterval} from '@server/modules/cashu/mintdb/cashumintdb.enums';
+import {MintAnalyticsInterval, MintDatabaseType} from '@server/modules/cashu/mintdb/cashumintdb.enums';
 /* Local Dependencies */
 import {
 	NutshellMintMintQuote,
@@ -164,7 +166,12 @@ export class NutshellService {
 			date_end: 'created_time',
 			states: 'state',
 		};
-		const {sql, params} = buildDynamicQuery(client.type, 'mint_quotes', args, field_mappings);
+		const {sql, params} = buildDynamicQuery({
+			db_type: client.type,
+			table_name: 'mint_quotes',
+			args,
+			field_mappings,
+		});
 		try {
 			const rows = await queryRows<NutshellMintMintQuote>(client, sql, params);
 			return rows.map((row) => ({
@@ -190,7 +197,12 @@ export class NutshellService {
 			date_end: 'created_time',
 			states: 'state',
 		};
-		const {sql, params} = buildDynamicQuery(client.type, 'melt_quotes', args, field_mappings);
+		const {sql, params} = buildDynamicQuery({
+			db_type: client.type,
+			table_name: 'melt_quotes',
+			args,
+			field_mappings,
+		});
 		try {
 			const rows = await queryRows<NutshellMintMeltQuote>(client, sql, params);
 			return rows.map((row) => ({
@@ -226,7 +238,14 @@ export class NutshellService {
 			LEFT JOIN keysets k ON k.id = p.id`;
 
 		const group_by = 'p.created, k.unit, p.id';
-		const {sql, params} = buildDynamicQuery(client.type, 'proofs_used', args, field_mappings, select_statement, group_by);
+		const {sql, params} = buildDynamicQuery({
+			db_type: client.type,
+			table_name: 'proofs_used',
+			args,
+			field_mappings,
+			select_statement,
+			group_by,
+		});
 		try {
 			const rows = await queryRows<NutshellMintEcash>(client, sql, params);
 			const groups = {};
@@ -278,7 +297,14 @@ export class NutshellService {
 			LEFT JOIN keysets k ON k.id = p.id`;
 
 		const group_by = 'p.created, k.unit, p.id';
-		const {sql, params} = buildDynamicQuery(client.type, 'promises', args, field_mappings, select_statement, group_by);
+		const {sql, params} = buildDynamicQuery({
+			db_type: client.type,
+			table_name: 'promises',
+			args,
+			field_mappings,
+			select_statement,
+			group_by,
+		});
 		try {
 			const rows = await queryRows<NutshellMintEcash>(client, sql, params);
 			const groups = {};
@@ -317,7 +343,12 @@ export class NutshellService {
 			date_end: 'created_time',
 			states: 'state',
 		};
-		const {sql, params} = buildCountQuery(client.type, 'melt_quotes', args, field_mappings);
+		const {sql, params} = buildCountQuery({
+			db_type: client.type,
+			table_name: 'melt_quotes',
+			args,
+			field_mappings,
+		});
 		try {
 			const row = await queryRow<CashuMintCount>(client, sql, params);
 			return row.count;
@@ -333,7 +364,12 @@ export class NutshellService {
 			date_end: 'created_time',
 			states: 'state',
 		};
-		const {sql, params} = buildCountQuery(client.type, 'mint_quotes', args, field_mappings);
+		const {sql, params} = buildCountQuery({
+			db_type: client.type,
+			table_name: 'mint_quotes',
+			args,
+			field_mappings,
+		});
 		try {
 			const row = await queryRow<CashuMintCount>(client, sql, params);
 			return row.count;
@@ -359,7 +395,14 @@ export class NutshellService {
 				LEFT JOIN keysets k ON k.id = p.id`;
 
 		const group_by = 'p.created, k.unit';
-		const {sql, params} = buildCountQuery(client.type, 'proofs_used', args, field_mappings, select_statement, group_by);
+		const {sql, params} = buildCountQuery({
+			db_type: client.type,
+			table_name: 'proofs_used',
+			args,
+			field_mappings,
+			select_statement,
+			group_by,
+		});
 		const final_sql = sql.replace(';', ') subquery;');
 		try {
 			const row = await queryRow<CashuMintCount>(client, final_sql, params);
@@ -386,7 +429,89 @@ export class NutshellService {
 				LEFT JOIN keysets k ON k.id = p.id`;
 
 		const group_by = 'p.created, k.unit';
-		const {sql, params} = buildCountQuery(client.type, 'promises', args, field_mappings, select_statement, group_by);
+		const {sql, params} = buildCountQuery({
+			db_type: client.type,
+			table_name: 'promises',
+			args,
+			field_mappings,
+			select_statement,
+			group_by,
+		});
+		const final_sql = sql.replace(';', ') subquery;');
+		try {
+			const row = await queryRow<CashuMintCount>(client, final_sql, params);
+			return row.count;
+		} catch (err) {
+			throw err;
+		}
+	}
+
+	public async getMintSwaps(client: CashuMintDatabase, args?: CashuMintSwapsArgs): Promise<CashuMintSwap[]> {
+		const field_mappings = {
+			units: 'k.unit',
+			id_keysets: 'pu.id',
+			date_start: 'pu.created',
+			date_end: 'pu.created',
+		};
+
+		const concat_keyset_ids =
+			client.type === MintDatabaseType.postgres ? `STRING_AGG(DISTINCT pu.id, ',')` : `GROUP_CONCAT(DISTINCT pu.id)`;
+
+		const select_statement = `
+			SELECT
+				NULL AS operation_id,
+				${concat_keyset_ids} AS keyset_ids,
+				k.unit,
+				SUM(pu.amount) AS amount,
+				pu.created AS created_time,
+				NULL AS fee
+			FROM (SELECT * FROM proofs_used WHERE melt_quote IS NULL) pu
+			LEFT JOIN keysets k ON k.id = pu.id`;
+
+		const group_by = 'pu.created, k.unit';
+		const {sql, params} = buildDynamicQuery({
+			db_type: client.type,
+			table_name: 'proofs_used',
+			args,
+			field_mappings,
+			select_statement,
+			group_by,
+		});
+		try {
+			const rows = await queryRows<CashuMintSwap & {keyset_ids: string}>(client, sql, params);
+			return rows.map((row) => ({
+				...row,
+				keyset_ids: row.keyset_ids ? row.keyset_ids.split(',') : [],
+				created_time: convertDateToUnixTimestamp(row.created_time),
+			}));
+		} catch (err) {
+			throw err;
+		}
+	}
+
+	public async getMintCountSwaps(client: CashuMintDatabase, args?: CashuMintSwapsArgs): Promise<number> {
+		const field_mappings = {
+			units: 'k.unit',
+			id_keysets: 'pu.id',
+			date_start: 'pu.created',
+			date_end: 'pu.created',
+		};
+
+		const select_statement = `
+			SELECT COUNT(*) AS count FROM (
+				SELECT pu.created
+				FROM (SELECT * FROM proofs_used WHERE melt_quote IS NULL) pu
+				LEFT JOIN keysets k ON k.id = pu.id`;
+
+		const group_by = 'pu.created';
+		const {sql, params} = buildCountQuery({
+			db_type: client.type,
+			table_name: 'proofs_used',
+			args,
+			field_mappings,
+			select_statement,
+			group_by,
+		});
 		const final_sql = sql.replace(';', ') subquery;');
 		try {
 			const row = await queryRow<CashuMintCount>(client, final_sql, params);

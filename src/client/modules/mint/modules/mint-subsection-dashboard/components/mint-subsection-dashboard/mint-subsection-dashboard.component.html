@@ -26,7 +26,7 @@
 	<div class="mint-analytic-control-panel">
 		<div class="flex flex-justify-between flex-gap-1 flex-items-end">
 			@if (device_type() === 'desktop') {
-				<div class="title-l p-1">Nutalytics</div>
+				<div class="title-l p-b-1">Nutalytics</div>
 			}
 			@if (page_settings()) {
 				<orc-mint-subsection-dashboard-control
@@ -205,15 +205,7 @@
 					></orc-mint-subsection-dashboard-chart>
 
 					@if (!loading_analytics()) {
-						@if (mint_type === 'cdk') {
-							<div class="absolute top-0 right-0 bottom-0 left-0 flex flex-justify-center flex-items-center orc-surface-bg">
-								<div class="flex flex-column flex-items-center flex-gap-1">
-									<div><mat-icon class="icon-lg orc-outline-color mat-symbol-outline">block</mat-icon></div>
-									<div class="font-size-s orc-outline-color">Fee analytics not available for CDK</div>
-								</div>
-							</div>
-						}
-						@if (mint_type === 'nutshell' && mint_fees.length === 0 && mint_fee_revenue) {
+						@if (mint_type === 'nutshell' && mint_fees.length === 0 && mint_fee_revenue()) {
 							<div class="absolute top-0 right-0 bottom-0 left-0 flex flex-justify-center flex-items-center orc-surface-bg">
 								<div class="flex flex-column flex-items-center flex-gap-1">
 									<div><mat-icon class="icon-lg orc-outline-color">sound_detection_dog_barking</mat-icon></div>
@@ -221,7 +213,7 @@
 								</div>
 							</div>
 						}
-						@if (mint_type === 'nutshell' && mint_fees.length === 0 && !mint_fee_revenue) {
+						@if (mint_fees.length === 0 && !mint_fee_revenue()) {
 							<div class="absolute top-0 right-0 bottom-0 left-0 flex flex-justify-center flex-items-center orc-surface-bg">
 								<div class="flex flex-column flex-items-center flex-gap-1">
 									<div><mat-icon class="icon-lg orc-outline-color">money_off</mat-icon></div>

@@ -1,14 +1,17 @@
 /* Core Dependencies */
-import {InputType, Field, Int} from '@nestjs/graphql';
+import {InputType, Field, Int, Float} from '@nestjs/graphql';
 
 @InputType()
 export class MintRotateKeysetInput {
 	@Field()
 	unit: string;
 
-	@Field(() => Int, {nullable: true})
-	max_order: number;
+	@Field(() => [Float], {nullable: true})
+	amounts: number[];
 
 	@Field(() => Int, {nullable: true})
 	input_fee_ppk: number;
+
+	@Field({nullable: true})
+	keyset_v2?: boolean;
 }

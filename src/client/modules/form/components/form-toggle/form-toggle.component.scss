@@ -1,0 +1,36 @@
+@use 'molecule/molecule';
+@use 'nucleus/nucleus';
+
+:host {
+	@extend %flex;
+}
+
+.form-toggle {
+	@extend %relative;
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-1;
+	@extend %cursor-pointer;
+	@extend %orc-corner-medium;
+	@extend %orc-surface-container-bg;
+	@extend %trans-bg-border-color-fast;
+	@extend %p-1;
+	border: 1px solid var(--mat-sys-outline-variant);
+	font: inherit;
+	color: inherit;
+
+	&:hover:not(.selected):not(:disabled) {
+		@extend %orc-surface-container-high-bg;
+	}
+
+	&.selected {
+		@extend %orc-secondary-container-bg;
+		border-color: var(--mat-sys-primary);
+		@extend %orc-level1;
+	}
+
+	&:disabled {
+		cursor: default;
+		opacity: 0.38;
+	}
+}
