@@ -29,13 +29,15 @@ export function findNearestOraclePrice(oracle_map: Map<number, number>, target_t
 	const exact_match = oracle_map.get(target_day);
 	if (exact_match) return new BitcoinOraclePrice({date: target_day, price: exact_match});
 	let nearest_price: number | null = null;
+	let nearest_date: number = target_day;
 	let smallest_diff = Infinity;
 	for (const [timestamp, price] of oracle_map) {
 		const diff = Math.abs(timestamp - target_day);
 		if (diff < smallest_diff) {
 			smallest_diff = diff;
 			nearest_price = price;
+			nearest_date = timestamp;
 		}
 	}
-	return nearest_price ? new BitcoinOraclePrice({date: target_day, price: nearest_price}) : null;
+	return nearest_price !== null ? new BitcoinOraclePrice({date: nearest_date, price: nearest_price}) : null;
 }

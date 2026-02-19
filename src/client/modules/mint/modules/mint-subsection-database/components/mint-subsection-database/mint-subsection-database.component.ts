@@ -317,6 +317,8 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 				date_start: this.page_settings.date_start,
 				date_end: this.page_settings.date_end,
 				units: this.page_settings.units.length > 0 ? this.page_settings.units : undefined,
+				page: this.page_settings.page,
+				page_size: this.page_settings.page_size,
 			}),
 		);
 

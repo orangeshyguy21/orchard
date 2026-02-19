@@ -12,11 +12,11 @@ export class MintSwap implements OrchardMintSwap {
 
 	constructor(swap: OrchardMintSwap) {
 		this.id = crypto.randomUUID();
-		this.operation_id = swap.operation_id || null;
+		this.operation_id = swap.operation_id ?? null;
 		this.keyset_ids = swap.keyset_ids;
 		this.unit = swap.unit;
 		this.amount = swap.amount;
 		this.created_time = swap.created_time;
-		this.fee = swap.fee || null;
+		this.fee = swap.fee ?? null;
 	}
 }
