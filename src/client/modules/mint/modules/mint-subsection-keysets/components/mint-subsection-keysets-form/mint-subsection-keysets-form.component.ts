@@ -19,6 +19,7 @@ import {MintUnit} from '@shared/generated.types';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintSubsectionKeysetsFormComponent {
+	public readonly mint_type = input.required<string>();
 	public readonly form_group = input.required<FormGroup>();
 	public readonly unit_options = input.required<{value: string; label: string}[]>();
 	public readonly keyset_out = input.required<MintKeyset>();

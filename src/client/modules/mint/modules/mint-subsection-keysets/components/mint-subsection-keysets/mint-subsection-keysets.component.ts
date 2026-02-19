@@ -55,6 +55,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 
 	@ViewChild('keyset_form', {static: false}) keyset_form!: ElementRef;
 
+    public mint_type: string;
 	public mint_keysets: MintKeyset[] = [];
 	public locale!: string;
 	public interval!: MintAnalyticsInterval;
@@ -70,14 +71,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	public keyset_out!: MintKeyset;
 	public keyset_out_balance!: MintBalance;
 	public median_notes!: number;
-	public form_keyset: FormGroup = new FormGroup({
-		unit: new FormControl(null, [Validators.required]),
-		input_fee_ppk: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(100000)]),
-		amounts: new FormControl(null, [Validators.required]),
-		max_order: new FormControl(null),
-		default_amounts: new FormControl(true),
-        keyset_v2: new FormControl(true),
-	});
+    public form_keyset: FormGroup;
 	public device_type = signal<DeviceType>('desktop');
 	public highlighted_keyset_id = signal<string | null>(null);
 	public bitcoin_oracle_data = signal<{balance_cents: number; fees_cents: number; date: number} | null>(null);
@@ -100,6 +94,15 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		private breakpointObserver: BreakpointObserver,
 	) {
 		this.bitcoin_oracle_enabled = this.settingAppService.getSetting('bitcoin_oracle');
+        this.mint_type = this.configService.config.mint.type;
+        this.form_keyset = new FormGroup({
+            unit: new FormControl(null, [Validators.required]),
+            input_fee_ppk: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(100000)]),
+            amounts: new FormControl(null, [Validators.required]),
+            max_order: new FormControl(null),
+            default_amounts: new FormControl(true),
+            keyset_v2: new FormControl(this.mint_type === 'nutshell' ? false : true),
+        });
 	}
 
 	/* *******************************************************
@@ -293,9 +296,9 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 			amounts: form_amounts,
 			max_order: 32,
 			default_amounts: true,
-            keyset_v2: true,
+            keyset_v2: this.mint_type === 'nutshell' ? false : true,
 		});
-		if (this.configService.config.mint.type === 'nutshell') {
+		if (this.mint_type === 'nutshell') {
 			this.form_keyset.get('default_amounts')?.disable();
 		}
 	}

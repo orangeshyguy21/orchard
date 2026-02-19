@@ -10,4 +10,5 @@ import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 })
 export class FormToggleComponent {
 	public readonly selected = input<boolean>(false);
+	public readonly disabled = input<boolean>(false);
 }

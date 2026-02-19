@@ -153,6 +153,7 @@
                                             <orc-form-toggle
                                                 class="flex-1 h-min-6"
                                                 [selected]="form_group().get('keyset_v2')?.value"
+                                                [disabled]="mint_type() === 'nutshell'"
                                                 (click)="form_group().get('keyset_v2')?.setValue(true)"
                                             >
                                                 <div class="keyset-version-sticker">
