@@ -6,7 +6,7 @@
 }
 
 .form-toggle {
-    @extend %relative;
+	@extend %relative;
 	@extend %flex;
 	@extend %flex-column;
 	@extend %flex-1;
@@ -30,7 +30,7 @@
 	}
 
 	&:disabled {
-        cursor: default;
+		cursor: default;
 		opacity: 0.38;
 	}
 }

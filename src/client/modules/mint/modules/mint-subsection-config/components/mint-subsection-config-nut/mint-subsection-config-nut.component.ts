@@ -13,8 +13,8 @@ import {PublicExitWarningComponent} from '@client/modules/public/components/publ
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintSubsectionConfigNutComponent {
-    private dialog = inject(MatDialog);
-    
+	private dialog = inject(MatDialog);
+
 	public nut_index = input.required<string>();
 	public supported = input.required<boolean>();
 

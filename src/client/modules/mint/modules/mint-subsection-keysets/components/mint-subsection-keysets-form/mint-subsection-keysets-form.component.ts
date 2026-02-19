@@ -32,11 +32,11 @@ export class MintSubsectionKeysetsFormComponent {
 	public help_unit = signal<boolean>(false);
 	public help_fee = signal<boolean>(true);
 	public help_amounts = signal<boolean>(false);
-    public advanced = signal<boolean>(false);
+	public advanced = signal<boolean>(false);
 
-    public readonly keyset_v2_desc = computed(() => {
-        return this.mint_type() === 'nutshell' ? 'Unsupported in Nutshell' : '33 byte keyset IDs';
-    });
+	public readonly keyset_v2_desc = computed(() => {
+		return this.mint_type() === 'nutshell' ? 'Unsupported in Nutshell' : '33 byte keyset IDs';
+	});
 
 	public readonly separatorKeysCodes = [ENTER, COMMA] as const;
 

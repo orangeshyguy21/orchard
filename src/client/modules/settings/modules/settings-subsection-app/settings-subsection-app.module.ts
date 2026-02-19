@@ -39,8 +39,8 @@ import {SettingsSubsectionAppBitcoinOracleComponent} from './components/settings
 		MatButtonModule,
 		OrcFormModule,
 		OrcTimeModule,
-        OrcPublicModule,
-        OrcGraphicModule,
+		OrcPublicModule,
+		OrcGraphicModule,
 	],
 })
 export class OrcSettingsSubsectionAppModule {}

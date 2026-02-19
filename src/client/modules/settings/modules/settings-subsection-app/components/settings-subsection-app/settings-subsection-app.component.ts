@@ -24,11 +24,11 @@ import {SettingKey} from '@shared/generated.types';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
-    private configService = inject(ConfigService);
-    private settingAppService = inject(SettingAppService);
-    private eventService = inject(EventService);
-    private bitcoinService = inject(BitcoinService);
-    private breakpointObserver = inject(BreakpointObserver);
+	private configService = inject(ConfigService);
+	private settingAppService = inject(SettingAppService);
+	private eventService = inject(EventService);
+	private bitcoinService = inject(BitcoinService);
+	private breakpointObserver = inject(BreakpointObserver);
 
 	@HostListener('window:beforeunload')
 	canDeactivate(): boolean {
@@ -38,7 +38,7 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 	public form_bitcoin: FormGroup = new FormGroup({
 		oracle_enabled: new FormControl(false, [Validators.required]),
 	});
-    public bitcoin_enabled = this.configService.config.bitcoin.enabled;
+	public bitcoin_enabled = this.configService.config.bitcoin.enabled;
 	public bitcoin_oracle_price = signal<BitcoinOraclePrice | null>(null);
 	public device_type = signal<DeviceType>('desktop');
 

@@ -16,13 +16,13 @@ import {PublicExitWarningComponent} from '@client/modules/public/components/publ
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsSubsectionAppBitcoinOracleComponent {
-    private readonly dialog = inject(MatDialog);
+	private readonly dialog = inject(MatDialog);
 
 	public bitcoin_enabled = input.required<boolean>();
 	public form_group = input.required<FormGroup>();
 	public control_name = input.required<string>();
 	public oracle_price = input.required<BitcoinOraclePrice | null>();
-    
+
 	public update = output<void>();
 
 	public help_status = signal<boolean>(true);

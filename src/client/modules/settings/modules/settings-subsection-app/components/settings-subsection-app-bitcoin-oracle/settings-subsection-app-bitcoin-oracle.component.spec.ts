@@ -23,6 +23,7 @@ describe('SettingsSubsectionAppBitcoinOracleComponent', () => {
 			bitcoin_oracle_enabled: new FormControl(false),
 		});
 
+		fixture.componentRef.setInput('bitcoin_enabled', false);
 		fixture.componentRef.setInput('form_group', mock_form_group);
 		fixture.componentRef.setInput('control_name', 'bitcoin_oracle_enabled');
 		fixture.componentRef.setInput('oracle_price', null);

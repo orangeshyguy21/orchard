@@ -17,6 +17,7 @@ describe('MintSubsectionKeysetsFormComponent', () => {
 
 		fixture = TestBed.createComponent(MintSubsectionKeysetsFormComponent);
 		component = fixture.componentInstance;
+		fixture.componentRef.setInput('mint_type', 'cdk');
 		fixture.componentRef.setInput(
 			'form_group',
 			new FormGroup({
