@@ -129,7 +129,7 @@
                         <div class="orc-animation-expand-collapse" [class.animation-expanded]="advanced()">
                             <div class="orc-animation-expand-collapse-inner">
                                 <div class="category-rule"></div>
-                                <div class="flex flex-column flex-gap-1 p-t-1">
+                                <div class="flex flex-column flex-gap-2 p-t-1">
                                     <div>
                                         <div class="title-form-section p-b-1">
                                             <span>Keyset Version</span>
@@ -162,7 +162,7 @@
                                                 </div>
                                                 <div class="keyset-version-label">
                                                     <div class="font-size-s">New standard</div>
-                                                    <div class="font-size-xs orc-outline-color">33 byte keyset IDs</div>
+                                                    <div class="font-size-xs orc-outline-color">{{ keyset_v2_desc() }}</div>
                                                 </div>
                                             </orc-form-toggle>
                                         </div>

@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, output, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output, signal, computed} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 /* Vendor Dependencies */
 import {MatChipEditedEvent, MatChipInputEvent} from '@angular/material/chips';
@@ -31,8 +31,12 @@ export class MintSubsectionKeysetsFormComponent {
 
 	public help_unit = signal<boolean>(false);
 	public help_fee = signal<boolean>(true);
-	public help_amounts = signal<boolean>(true);
+	public help_amounts = signal<boolean>(false);
     public advanced = signal<boolean>(false);
+
+    public readonly keyset_v2_desc = computed(() => {
+        return this.mint_type() === 'nutshell' ? 'Unsupported in Nutshell' : '33 byte keyset IDs';
+    });
 
 	public readonly separatorKeysCodes = [ENTER, COMMA] as const;
 
