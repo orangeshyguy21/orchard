@@ -11,6 +11,8 @@ import {MatButtonModule} from '@angular/material/button';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcTimeModule} from '@client/modules/time/time.module';
+import {OrcPublicModule} from '@client/modules/public/public.module';
+import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {pendingEventGuard} from '@client/modules/event/guards/pending-event.guard';
 /* Native Module Dependencies */
 import {SettingsSubsectionAppComponent} from './components/settings-subsection-app/settings-subsection-app.component';
@@ -37,6 +39,8 @@ import {SettingsSubsectionAppBitcoinOracleComponent} from './components/settings
 		MatButtonModule,
 		OrcFormModule,
 		OrcTimeModule,
+        OrcPublicModule,
+        OrcGraphicModule,
 	],
 })
 export class OrcSettingsSubsectionAppModule {}

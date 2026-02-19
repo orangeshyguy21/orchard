@@ -53,7 +53,6 @@ export class SettingsSubsectionDeviceThemeComponent {
 		if (event !== this.prefers_light_theme) return this.system_default_control.setValue(false);
 	}
 
-
 	public onSystemDefaultChange(event: MatCheckboxChange) {
 		if (event.checked) {
 			this.themeChange.emit(null);

@@ -19,6 +19,7 @@ import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {OrcNavModule} from '@client/modules/nav/nav.module';
 import {OrcLocalModule} from '@client/modules/local/local.module';
+import {OrcPublicModule} from '@client/modules/public/public.module';
 import {OrcMintSectionGeneralModule} from '@client/modules/mint/modules/mint-section-general/mint-section-general.module';
 /* Application Dependencies */
 import {pendingEventGuard} from '@client/modules/event/guards/pending-event.guard';
@@ -89,6 +90,7 @@ import {MintSubsectionConfigFormLimitHintComponent} from './components/mint-subs
 		OrcGraphicModule,
 		OrcNavModule,
 		OrcLocalModule,
+		OrcPublicModule,
 		OrcMintSectionGeneralModule,
 	],
 	exports: [],

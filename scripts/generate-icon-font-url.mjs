@@ -88,6 +88,7 @@ const ICONS = [
   'tune',
   'graph_4',
   'link',
+  'open_in_new',
 ];
 
 // Sort alphabetically and remove duplicates
