@@ -500,8 +500,8 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	}
 
 	private translateQuoteTtl(quote_ttl: number | null, to_seconds: boolean = true): number | null {
-		const factor = to_seconds ? 1 / 1000 : 1000;
-		return quote_ttl !== null ? quote_ttl * factor : null;
+		if (quote_ttl === null) return null;
+		return to_seconds ? quote_ttl / 1000 : quote_ttl * 1000;
 	}
 
 	private createPendingEvent(count: number): void {
