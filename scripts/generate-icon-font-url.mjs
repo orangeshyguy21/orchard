@@ -44,6 +44,7 @@ const ICONS = [
   'history',
   'info',
   'key',
+  'vpn_key',
   'keyboard_arrow_down',
   'language',
   'light_mode',
