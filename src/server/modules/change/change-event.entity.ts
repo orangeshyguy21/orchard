@@ -1,7 +1,7 @@
 /* Vendor Dependencies */
 import {Entity, Column, PrimaryGeneratedColumn, OneToMany} from 'typeorm';
 /* Local Dependencies */
-import {ChangeActorType, ChangeSection, ChangeAction, ChangeStatus} from './change.enums';
+import {ChangeActorType, ChangeSection, ChangeEntityType, ChangeAction, ChangeStatus} from './change.enums';
 import {ChangeDetail} from './change-detail.entity';
 
 @Entity('change_events')
@@ -24,8 +24,8 @@ export class ChangeEvent {
     @Column({type: 'text', nullable: true, length: 100})
     section_id: string | null;
 
-    @Column({type: 'text', length: 100})
-    entity_type: string;
+    @Column({type: 'text'})
+    entity_type: ChangeEntityType;
 
     @Column({type: 'text', nullable: true, length: 100})
     entity_id: string | null;

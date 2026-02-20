@@ -5,6 +5,7 @@ import {Resolver, Query, Mutation, Args} from '@nestjs/graphql';
 import {Roles} from '@server/modules/auth/decorators/auth.decorator';
 import {UserRole} from '@server/modules/user/user.enums';
 import {LogChange} from '@server/modules/change/change.decorator';
+import {ChangeAction} from '@server/modules/change/change.enums';
 /* Local Dependencies */
 import {MintInfoService} from './mintinfo.service';
 import {MintInfoInterceptor} from './mintinfo.interceptor';
@@ -42,8 +43,9 @@ export class MintInfoResolver {
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@UseInterceptors(MintInfoInterceptor)
 	@LogChange({
+        action: ChangeAction.UPDATE,
 		field: 'name',
-		arg_key: 'name',
+		arg_keys: ['name'],
 		old_value_key: 'name',
 	})
 	@Mutation(() => OrchardMintNameUpdate)
@@ -56,6 +58,13 @@ export class MintInfoResolver {
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@UseInterceptors(MintInfoInterceptor)
+	@LogChange({
+		action: ChangeAction.UPDATE,
+		field: 'icon_url',
+		arg_keys: ['icon_url'],
+		old_value_key: 'icon_url',
+	})
 	@Mutation(() => OrchardMintIconUpdate)
 	async mint_icon_update(
 		@Args('icon_url') icon_url: string,
@@ -66,6 +75,13 @@ export class MintInfoResolver {
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@UseInterceptors(MintInfoInterceptor)
+	@LogChange({
+		action: ChangeAction.UPDATE,
+		field: 'description',
+		arg_keys: ['description'],
+		old_value_key: 'description',
+	})
 	@Mutation(() => OrchardMintDescriptionUpdate)
 	async mint_short_description_update(
 		@Args('description') description: string,
@@ -76,6 +92,13 @@ export class MintInfoResolver {
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@UseInterceptors(MintInfoInterceptor)
+	@LogChange({
+		action: ChangeAction.UPDATE,
+		field: 'description_long',
+		arg_keys: ['description'],
+		old_value_key: 'description_long',
+	})
 	@Mutation(() => OrchardMintDescriptionUpdate)
 	async mint_long_description_update(
 		@Args('description') description: string,
@@ -86,6 +109,13 @@ export class MintInfoResolver {
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@UseInterceptors(MintInfoInterceptor)
+	@LogChange({
+		action: ChangeAction.UPDATE,
+		field: 'motd',
+		arg_keys: ['motd'],
+		old_value_key: 'motd',
+	})
 	@Mutation(() => OrchardMintMotdUpdate)
 	async mint_motd_update(
 		@Args('motd', {nullable: true}) motd: string,
@@ -96,6 +126,12 @@ export class MintInfoResolver {
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@UseInterceptors(MintInfoInterceptor)
+	@LogChange({
+		action: ChangeAction.CREATE,
+		field: 'url',
+		arg_keys: ['url'],
+	})
 	@Mutation(() => OrchardMintUrlUpdate)
 	async mint_url_add(
 		@Args('url') url: string,
@@ -106,6 +142,12 @@ export class MintInfoResolver {
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@UseInterceptors(MintInfoInterceptor)
+	@LogChange({
+		action: ChangeAction.DELETE,
+		field: 'url',
+		arg_keys: ['url'],
+	})
 	@Mutation(() => OrchardMintUrlUpdate)
 	async mint_url_remove(
 		@Args('url') url: string,
@@ -116,6 +158,12 @@ export class MintInfoResolver {
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@UseInterceptors(MintInfoInterceptor)
+	@LogChange({
+		action: ChangeAction.CREATE,
+		field: 'contact',
+		arg_keys: ['method', 'info'],
+	})
 	@Mutation(() => OrchardMintContactUpdate)
 	async mint_contact_add(
 		@Args('method') method: string,
@@ -127,6 +175,12 @@ export class MintInfoResolver {
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@UseInterceptors(MintInfoInterceptor)
+	@LogChange({
+		action: ChangeAction.DELETE,
+		field: 'contact',
+		arg_keys: ['method', 'info'],
+	})
 	@Mutation(() => OrchardMintContactUpdate)
 	async mint_contact_remove(
 		@Args('method') method: string,

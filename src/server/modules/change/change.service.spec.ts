@@ -8,7 +8,7 @@ import {Repository, SelectQueryBuilder} from 'typeorm';
 import {ChangeService} from './change.service';
 import {ChangeEvent} from './change-event.entity';
 import {ChangeDetail} from './change-detail.entity';
-import {ChangeActorType, ChangeSection, ChangeAction, ChangeStatus, ChangeDetailStatus} from './change.enums';
+import {ChangeActorType, ChangeSection, ChangeEntityType, ChangeAction, ChangeStatus, ChangeDetailStatus} from './change.enums';
 import {CreateChangeEventInput} from './change.interfaces';
 
 /**
@@ -38,7 +38,7 @@ describe('ChangeService', () => {
         timestamp: 1700000000,
         section: ChangeSection.SETTINGS,
         section_id: null,
-        entity_type: 'setting',
+        entity_type: ChangeEntityType.INFO,
         entity_id: 'bitcoin.oracle',
         action: ChangeAction.UPDATE,
         status: ChangeStatus.SUCCESS,
@@ -96,7 +96,7 @@ describe('ChangeService', () => {
                 actor_id: 'user-uuid-1',
                 timestamp: 1700000000,
                 section: ChangeSection.SETTINGS,
-                entity_type: 'setting',
+                entity_type: ChangeEntityType.INFO,
                 entity_id: 'bitcoin.oracle',
                 action: ChangeAction.UPDATE,
                 status: ChangeStatus.SUCCESS,
@@ -130,7 +130,7 @@ describe('ChangeService', () => {
                 actor_id: 'system',
                 timestamp: 1700000000,
                 section: ChangeSection.MINT,
-                entity_type: 'keyset',
+                entity_type: ChangeEntityType.INFO,
                 entity_id: 'keyset-1',
                 action: ChangeAction.CREATE,
                 status: ChangeStatus.SUCCESS,

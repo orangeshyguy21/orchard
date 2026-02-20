@@ -1,11 +1,14 @@
 /* Core Dependencies */
 import {SetMetadata} from '@nestjs/common';
+/* Application Dependencies */
+import {ChangeAction} from '@server/modules/change/change.enums';
 
 export const CHANGE_LOG_KEY = 'change_log';
 
 export interface ChangeLogMetadata {
     field: string;
-    arg_key: string;
+    action: ChangeAction;
+    arg_keys?: string[];
     old_value_key?: string;
 }
 

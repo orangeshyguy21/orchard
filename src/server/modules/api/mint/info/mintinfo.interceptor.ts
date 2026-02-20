@@ -8,7 +8,7 @@ import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {ChangeService} from '@server/modules/change/change.service';
 import {CHANGE_LOG_KEY, ChangeLogMetadata} from '@server/modules/change/change.decorator';
-import {ChangeActorType, ChangeSection, ChangeAction, ChangeStatus, ChangeDetailStatus} from '@server/modules/change/change.enums';
+import {ChangeActorType, ChangeSection, ChangeEntityType, ChangeAction, ChangeStatus, ChangeDetailStatus} from '@server/modules/change/change.enums';
 import {CashuMintRpcService} from '@server/modules/cashu/mintrpc/cashumintrpc.service';
 
 @Injectable()
@@ -29,17 +29,9 @@ export class MintInfoInterceptor implements NestInterceptor {
         const ctx = gql_context.getContext();
         const args = gql_context.getArgs();
         const user_id: string = ctx.req.user?.id ?? 'unknown';
-        const new_value: string | null = args[metadata.arg_key] ?? null;
-
-        let old_value: string | null = null;
-        if (metadata.old_value_key) {
-            try {
-                const mint_info = await this.cashuMintRpcService.getMintInfo();
-                old_value = (mint_info as any)[metadata.old_value_key] ?? null;
-            } catch (_error) {
-                this.logger.warn(`Failed to fetch old value for change history [${metadata.field}]`);
-            }
-        }
+        const arg_value = this.extractArgValue(args, metadata.arg_keys);
+        const new_value = metadata.action !== ChangeAction.DELETE ? arg_value : null;
+        const old_value = metadata.action === ChangeAction.DELETE ? arg_value : await this.fetchOldValue(metadata);
 
         return next.handle().pipe(
             tap(() => {
@@ -55,6 +47,34 @@ export class MintInfoInterceptor implements NestInterceptor {
                 throw error;
             }),
         );
+    }
+
+    /**
+     * Extract a joined value from resolver args
+     * @param {Record<string, any>} args - The resolver arguments
+     * @param {string[]} arg_keys - Keys to extract and join
+     * @returns {string | null} The extracted value
+     */
+    private extractArgValue(args: Record<string, any>, arg_keys?: string[]): string | null {
+        if (!arg_keys?.length) return null;
+        if (arg_keys.length === 1) return args[arg_keys[0]] ?? null;
+        return JSON.stringify(Object.fromEntries(arg_keys.map((key) => [key, args[key]])));
+    }
+
+    /**
+     * Fetch old value from mint info for UPDATE actions
+     * @param {ChangeLogMetadata} metadata - The change log configuration
+     * @returns {Promise<string | null>} The previous value
+     */
+    private async fetchOldValue(metadata: ChangeLogMetadata): Promise<string | null> {
+        if (metadata.action !== ChangeAction.UPDATE || !metadata.old_value_key) return null;
+        try {
+            const mint_info = await this.cashuMintRpcService.getMintInfo();
+            return (mint_info as any)[metadata.old_value_key] ?? null;
+        } catch (_error) {
+            this.logger.warn(`Failed to fetch old value for change history [${metadata.field}]`);
+            return null;
+        }
     }
 
     /**
@@ -81,9 +101,9 @@ export class MintInfoInterceptor implements NestInterceptor {
             timestamp: Math.floor(DateTime.now().toSeconds()),
             section: ChangeSection.MINT,
             section_id: null,
-            entity_type: 'info',
+            entity_type: ChangeEntityType.INFO,
             entity_id: null,
-            action: ChangeAction.UPDATE,
+            action: metadata.action,
             status,
             details: [{
                 field: metadata.field,

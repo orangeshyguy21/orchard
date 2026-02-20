@@ -2,7 +2,7 @@
 import {Field, ID, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
-import {ChangeActorType, ChangeSection, ChangeAction, ChangeStatus, ChangeDetailStatus} from '@server/modules/change/change.enums';
+import {ChangeActorType, ChangeSection, ChangeEntityType, ChangeAction, ChangeStatus, ChangeDetailStatus} from '@server/modules/change/change.enums';
 import {ChangeEvent} from '@server/modules/change/change-event.entity';
 import {ChangeDetail} from '@server/modules/change/change-detail.entity';
 
@@ -60,8 +60,8 @@ export class OrchardChangeEvent {
     @Field({nullable: true})
     section_id: string | null;
 
-    @Field()
-    entity_type: string;
+    @Field(() => ChangeEntityType)
+    entity_type: ChangeEntityType;
 
     @Field({nullable: true})
     entity_id: string | null;

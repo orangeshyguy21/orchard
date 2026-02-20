@@ -1,5 +1,5 @@
 /* Local Dependencies */
-import {ChangeActorType, ChangeSection, ChangeAction, ChangeStatus, ChangeDetailStatus} from './change.enums';
+import {ChangeActorType, ChangeSection, ChangeEntityType, ChangeAction, ChangeStatus, ChangeDetailStatus} from './change.enums';
 
 export interface CreateChangeEventInput {
     actor_type: ChangeActorType;
@@ -7,7 +7,7 @@ export interface CreateChangeEventInput {
     timestamp: number;
     section: ChangeSection;
     section_id?: string | null;
-    entity_type: string;
+    entity_type: ChangeEntityType;
     entity_id?: string | null;
     action: ChangeAction;
     status: ChangeStatus;
@@ -26,7 +26,7 @@ export interface CreateChangeDetailInput {
 export interface ChangeEventFilters {
     section?: ChangeSection;
     actor_type?: ChangeActorType;
-    entity_type?: string;
+    entity_type?: ChangeEntityType;
     action?: ChangeAction;
     status?: ChangeStatus;
     date_start?: number;

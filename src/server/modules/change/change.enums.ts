@@ -13,6 +13,16 @@ export enum ChangeSection {
     SETTINGS = 'settings',
 }
 
+export enum ChangeEntityType {
+    INFO = 'info',
+    QUOTE = 'quote',
+    QUOTE_TTL = 'quote_ttl',
+    NUT04 = 'nut04',
+    NUT05 = 'nut05',
+    KEYSET = 'keyset',
+    DATABASE = 'database',
+}
+
 export enum ChangeAction {
     CREATE = 'create',
     UPDATE = 'update',

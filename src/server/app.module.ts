@@ -31,7 +31,7 @@ import {AiAgent, AiMessageRole, AiFunctionName} from './modules/ai/ai.enums';
 import {UserRole} from './modules/user/user.enums';
 import {SettingKey, SettingValue} from './modules/setting/setting.enums';
 import {UTXOracleProgressStatus} from './modules/bitcoin/utxoracle/utxoracle.enums';
-import {ChangeActorType, ChangeSection, ChangeAction, ChangeStatus, ChangeDetailStatus} from './modules/change/change.enums';
+import {ChangeActorType, ChangeSection, ChangeEntityType, ChangeAction, ChangeStatus, ChangeDetailStatus} from './modules/change/change.enums';
 /* Application Configuration */
 import {config} from './config/configuration';
 
@@ -58,6 +58,7 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 	registerEnumType(UTXOracleProgressStatus, {name: 'UTXOracleProgressStatus'});
 	registerEnumType(ChangeActorType, {name: 'ChangeActorType'});
 	registerEnumType(ChangeSection, {name: 'ChangeSection'});
+	registerEnumType(ChangeEntityType, {name: 'ChangeEntityType'});
 	registerEnumType(ChangeAction, {name: 'ChangeAction'});
 	registerEnumType(ChangeStatus, {name: 'ChangeStatus'});
 	registerEnumType(ChangeDetailStatus, {name: 'ChangeDetailStatus'});

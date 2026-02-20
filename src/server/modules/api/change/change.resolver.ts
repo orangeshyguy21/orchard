@@ -3,7 +3,7 @@ import {Logger} from '@nestjs/common';
 import {Resolver, Query, Args, Int} from '@nestjs/graphql';
 /* Application Dependencies */
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
-import {ChangeActorType, ChangeSection, ChangeAction, ChangeStatus} from '@server/modules/change/change.enums';
+import {ChangeActorType, ChangeSection, ChangeEntityType, ChangeAction, ChangeStatus} from '@server/modules/change/change.enums';
 /* Local Dependencies */
 import {ApiChangeService} from './change.service';
 import {OrchardChangeEvent} from './change.model';
@@ -20,7 +20,7 @@ export class ChangeResolver {
         @Args('actor_type', {type: () => ChangeActorType, nullable: true}) actor_type?: ChangeActorType,
         @Args('action', {type: () => ChangeAction, nullable: true}) action?: ChangeAction,
         @Args('status', {type: () => ChangeStatus, nullable: true}) status?: ChangeStatus,
-        @Args('entity_type', {type: () => String, nullable: true}) entity_type?: string,
+        @Args('entity_type', {type: () => ChangeEntityType, nullable: true}) entity_type?: ChangeEntityType,
         @Args('date_start', {type: () => UnixTimestamp, nullable: true}) date_start?: number,
         @Args('date_end', {type: () => UnixTimestamp, nullable: true}) date_end?: number,
         @Args('page', {type: () => Int, nullable: true}) page?: number,
