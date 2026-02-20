@@ -23,6 +23,34 @@
 		></orc-mint-general-balance-sheet>
 	</div>
 
+	<div class="mint-monitor-panel p-1 m-b-1">
+		<div class="mint-monitor-title">Mint Monitor</div>
+		@if (loading_monitor()) {
+			<div class="font-size-s orc-outline-color">Loading monitor snapshot...</div>
+		} @else if (mint_monitor) {
+			<div class="mint-monitor-grid font-size-s">
+				<div>
+					<div class="orc-outline-color">DB entries</div>
+					<div class="font-weight-semi-bold">{{ mint_monitor.db_entries_total | number: '1.0-0' }}</div>
+				</div>
+				<div>
+					<div class="orc-outline-color">Requests ({{ mint_monitor.recent_window_hours }}h)</div>
+					<div class="font-weight-semi-bold">{{ mint_monitor.request_count_recent | number: '1.0-0' }}</div>
+				</div>
+				<div>
+					<div class="orc-outline-color">Disk free</div>
+					<div class="font-weight-semi-bold">{{ mint_monitor.disk_free_bytes / 1073741824 | number: '1.1-1' }} GB</div>
+				</div>
+				<div>
+					<div class="orc-outline-color">CPU usage</div>
+					<div class="font-weight-semi-bold">{{ mint_monitor.cpu_usage_percent | number: '1.0-1' }}%</div>
+				</div>
+			</div>
+		} @else {
+			<div class="font-size-s orc-outline-color">Monitor snapshot unavailable.</div>
+		}
+	</div>
+
 	<div class="mint-analytic-control-panel">
 		<div class="flex flex-justify-between flex-gap-1 flex-items-end">
 			@if (device_type() === 'desktop') {

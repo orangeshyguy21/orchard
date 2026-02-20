@@ -38,6 +38,7 @@ import {OrchardError} from '@client/modules/error/types/error.types';
 import {NavTertiaryItem} from '@client/modules/nav/types/nav-tertiary-item.type';
 import {DeviceType} from '@client/modules/layout/types/device.types';
 import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle-price.class';
+import {OrchardMintMonitor} from '@client/modules/mint/types/mint.types';
 /* Native Dependencies */
 import {MintService} from '@client/modules/mint/services/mint/mint.service';
 import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
@@ -85,6 +86,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public mint_analytics_swaps_pre: MintAnalytic[] = [];
 	public mint_analytics_fees: MintAnalytic[] = [];
 	public mint_analytics_fees_pre: MintAnalytic[] = [];
+	public mint_monitor: OrchardMintMonitor | null = null;
 	public mint_connections: PublicUrl[] = [];
 	public lightning_enabled: boolean;
 	public lightning_balance: LightningBalance | null = null;
@@ -121,6 +123,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public device_type = signal<DeviceType>('desktop');
 	public loading_mint = signal<boolean>(true);
 	public loading_mint_icon = signal<boolean>(true);
+	public loading_monitor = signal<boolean>(true);
 	public loading_bitcoin = signal<boolean>(false);
 	public loading_lightning = signal<boolean>(false);
 	public bitcoin_oracle_price = signal<BitcoinOraclePrice | null>(null);
@@ -311,6 +314,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			this.loading_static_data = false;
 			this.cdr.detectChanges();
 			await this.loadMintAnalytics();
+			await this.loadMintMonitor();
 			if (this.lightning_enabled) await this.loadLightningAnalytics();
 			this.loading_mint.set(false);
 			this.cdr.detectChanges();
@@ -455,6 +459,19 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.lightning_analytics_backfill_status = backfill_status;
 	}
 
+	private async loadMintMonitor(): Promise<void> {
+		try {
+			this.loading_monitor.set(true);
+			const response = await lastValueFrom(this.mintService.loadMintMonitor());
+			this.mint_monitor = response.mint_monitor;
+		} catch (error) {
+			console.error('Error loading mint monitor snapshot:', error);
+			this.mint_monitor = null;
+		} finally {
+			this.loading_monitor.set(false);
+		}
+	}
+
 	private applyMintFees(analytics_fees: MintAnalytic[], analytics_fees_pre: MintAnalytic[]): MintAnalytic[] {
 		if (analytics_fees_pre.length > 0) return analytics_fees;
 		if (analytics_fees.length === 0) return analytics_fees;
@@ -470,6 +487,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			this.loading_mint.set(true);
 			this.cdr.detectChanges();
 			await this.loadMintAnalytics();
+			await this.loadMintMonitor();
 			if (this.lightning_enabled) await this.loadLightningAnalytics();
 			this.loading_mint.set(false);
 			this.cdr.detectChanges();
