@@ -9,8 +9,8 @@ import {UserRole} from '@server/modules/user/user.enums';
 /* Local Dependencies */
 import {MintMintQuoteService} from './mintmintquote.service';
 import {OrchardMintMintQuote} from './mintmintquote.model';
-import {MintNut04UpdateInput, MintNut04QuoteUpdateInput} from './mintmintquote.input';
-import {OrchardMintNut04Update, OrchardMintNut04QuoteUpdate} from './mintmintquote.model';
+import {MintNut04UpdateInput, MintNut04QuoteUpdateInput, MintNut04AdminIssueInput} from './mintmintquote.input';
+import {OrchardMintNut04Update, OrchardMintNut04QuoteUpdate, OrchardMintNut04AdminIssue} from './mintmintquote.model';
 
 @Resolver()
 export class MintMintQuoteResolver {
@@ -48,5 +48,15 @@ export class MintMintQuoteResolver {
 		const tag = 'MUTATION { mint_nut04_quote_update }';
 		this.logger.debug(tag);
 		return await this.mintMintQuoteService.updateMintNut04Quote(tag, mint_nut04_quote_update);
+	}
+
+	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@Mutation(() => OrchardMintNut04AdminIssue)
+	async mint_nut04_admin_issue(
+		@Args('mint_nut04_admin_issue') mint_nut04_admin_issue: MintNut04AdminIssueInput,
+	): Promise<OrchardMintNut04AdminIssue> {
+		const tag = 'MUTATION { mint_nut04_admin_issue }';
+		this.logger.debug(tag);
+		return await this.mintMintQuoteService.adminIssueMintNut04Quote(tag, mint_nut04_admin_issue);
 	}
 }

@@ -42,6 +42,7 @@ import {
 	MintContactAddResponse,
 	MintQuoteTtlUpdateResponse,
 	MintNut04UpdateResponse,
+	MintNut04AdminIssueResponse,
 	MintNut05UpdateResponse,
 	MintNut04QuoteUpdateResponse,
 	MintNut05QuoteUpdateResponse,
@@ -106,6 +107,7 @@ import {
 	MINT_CONTACT_ADD_MUTATION,
 	MINT_QUOTE_TTL_MUTATION,
 	MINT_NUT04_UPDATE_MUTATION,
+	MINT_NUT04_ADMIN_ISSUE_MUTATION,
 	MINT_NUT05_UPDATE_MUTATION,
 	MINT_NUT04_QUOTE_UPDATE_MUTATION,
 	MINT_NUT05_QUOTE_UPDATE_MUTATION,
@@ -1154,6 +1156,33 @@ export class MintService {
 			}),
 			catchError((error) => {
 				console.error('Error updating mint:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	public adminIssueMintNut04Quote(
+		amount: number,
+		unit: MintUnit,
+		method: string = 'bolt11',
+		description?: string,
+	): Observable<MintNut04AdminIssueResponse> {
+		const query = getApiQuery(MINT_NUT04_ADMIN_ISSUE_MUTATION, {
+			mint_nut04_admin_issue: {
+				amount,
+				unit,
+				method,
+				description: description?.trim() ? description.trim() : undefined,
+			},
+		});
+
+		return this.http.post<OrchardRes<MintNut04AdminIssueResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			catchError((error) => {
+				console.error('Error issuing mint quote without payment:', error);
 				return throwError(() => error);
 			}),
 		);

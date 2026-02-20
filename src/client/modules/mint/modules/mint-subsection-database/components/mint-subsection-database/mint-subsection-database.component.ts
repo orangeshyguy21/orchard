@@ -53,6 +53,7 @@ import {MintUnit, MintQuoteState, MeltQuoteState, AiAgent, AiFunctionName} from 
 enum FormMode {
 	CREATE = 'CREATE',
 	RESTORE = 'RESTORE',
+	ISSUE = 'ISSUE',
 }
 
 @Component({
@@ -70,6 +71,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 
 	@ViewChild('backup_form', {static: false}) backup_form!: ElementRef;
 	@ViewChild('restore_form', {static: false}) restore_form!: ElementRef;
+	@ViewChild('issue_form', {static: false}) issue_form!: ElementRef;
 
 	public page_settings!: NonNullableMintDatabaseSettings;
 	public filter: string = '';
@@ -88,6 +90,12 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	public form_restore: FormGroup = new FormGroup({
 		file: new FormControl(null, [Validators.required]),
 		filebase64: new FormControl(null, [Validators.required]),
+	});
+	public form_issue: FormGroup = new FormGroup({
+		amount: new FormControl<number | null>(null, [Validators.required, Validators.min(1)]),
+		unit: new FormControl<MintUnit | null>(null, [Validators.required]),
+		method: new FormControl<string>('bolt11', [Validators.required]),
+		description: new FormControl<string>(''),
 	});
 	public unit_options!: {value: string; label: string}[];
 	public state_options!: string[];
@@ -398,6 +406,9 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	public onRestore(): void {
 		this.form_mode !== FormMode.RESTORE ? this.initRestoreBackup() : this.onClose();
 	}
+	public onIssue(): void {
+		this.form_mode !== FormMode.ISSUE ? this.initIssueEcash() : this.onClose();
+	}
 	public onRefresh(): void {
 		this.reloadDynamicData();
 	}
@@ -405,6 +416,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	public onClose(): void {
 		this.form_backup.reset();
 		this.form_restore.reset();
+		this.form_issue.reset({amount: null, unit: this.form_issue.get('unit')?.value, method: 'bolt11', description: ''});
 		this.form_mode = null;
 		this.eventService.registerEvent(null);
 		this.cdr.detectChanges();
@@ -533,6 +545,62 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 			behavior: 'smooth',
 			block: 'start',
 			inline: 'nearest',
+		});
+	}
+
+	private initIssueEcash(): void {
+		this.form_mode = FormMode.ISSUE;
+		const default_unit = (this.unit_options?.[0]?.value as MintUnit | undefined) ?? MintUnit.sat;
+		this.form_issue.patchValue({
+			unit: default_unit,
+			method: 'bolt11',
+		});
+		this.issue_form.nativeElement.scrollIntoView({
+			behavior: 'smooth',
+			block: 'start',
+			inline: 'nearest',
+		});
+	}
+
+	public onIssueSubmit(): void {
+		if (this.form_issue.invalid) {
+			this.eventService.registerEvent(
+				new EventData({
+					type: 'WARNING',
+					message: 'Amount and unit are required',
+				}),
+			);
+			return;
+		}
+
+		const amount = Number(this.form_issue.get('amount')?.value);
+		const unit = this.form_issue.get('unit')?.value as MintUnit;
+		const method = this.form_issue.get('method')?.value || 'bolt11';
+		const description = this.form_issue.get('description')?.value || undefined;
+
+		this.mintService.adminIssueMintNut04Quote(amount, unit, method, description).subscribe({
+			next: (response) => {
+				const issued = response.mint_nut04_admin_issue;
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'SUCCESS',
+						message: `Issued ${issued.amount} ${issued.unit} (quote ${issued.quote_id})`,
+					}),
+				);
+				this.form_mode = null;
+				this.form_issue.reset({amount: null, unit, method: 'bolt11', description: ''});
+				this.page_settings.type = MintDataType.MintMints;
+				this.reloadDynamicData();
+				this.cdr.detectChanges();
+			},
+			error: (errors: OrchardErrors) => {
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'ERROR',
+						message: errors.errors[0].getFullError(),
+					}),
+				);
+			},
 		});
 	}
 
