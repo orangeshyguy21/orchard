@@ -307,8 +307,8 @@ mutation MintQuoteTtl($mint_quote_ttl_update: MintQuoteTtlUpdateInput!) {
 }`;
 
 export const MINT_NUT04_UPDATE_MUTATION = `
-mutation MintNut04Update($mint_nut04_update: MintNut04UpdateInput!) {
-	mint_nut04_update(mint_nut04_update: $mint_nut04_update) {
+mutation MintNut04Update($unit: String!, $method: String!, $disabled: Boolean, $min_amount: Int, $max_amount: Int, $description: Boolean) {
+	mint_nut04_update(unit: $unit, method: $method, disabled: $disabled, min_amount: $min_amount, max_amount: $max_amount, description: $description) {
 		unit
 		method
 		max_amount
@@ -319,8 +319,8 @@ mutation MintNut04Update($mint_nut04_update: MintNut04UpdateInput!) {
 }`;
 
 export const MINT_NUT05_UPDATE_MUTATION = `
-mutation MintNut05Update($mint_nut05_update: MintNut05UpdateInput!) {
-	mint_nut05_update(mint_nut05_update: $mint_nut05_update) {
+mutation MintNut05Update($unit: String!, $method: String!, $disabled: Boolean, $min_amount: Int, $max_amount: Int) {
+	mint_nut05_update(unit: $unit, method: $method, disabled: $disabled, min_amount: $min_amount, max_amount: $max_amount) {
 		unit
 		method
 		max_amount
@@ -443,16 +443,16 @@ query MintFees($limit: Int) {
 }`;
 
 export const MINT_NUT04_QUOTE_UPDATE_MUTATION = `
-mutation MintNut04QuoteUpdate($mint_nut04_quote_update: MintNut04QuoteUpdateInput!) {
-	mint_nut04_quote_update(mint_nut04_quote_update: $mint_nut04_quote_update) {
+mutation MintNut04QuoteUpdate($quote_id: String!, $state: String!) {
+	mint_nut04_quote_update(quote_id: $quote_id, state: $state) {
 		quote_id
 		state
 	}
 }`;
 
 export const MINT_NUT05_QUOTE_UPDATE_MUTATION = `
-mutation MintNut05QuoteUpdate($mint_nut05_quote_update: MintNut05QuoteUpdateInput!) {
-	mint_nut05_quote_update(mint_nut05_quote_update: $mint_nut05_quote_update) {
+mutation MintNut05QuoteUpdate($quote_id: String!, $state: String!) {
+	mint_nut05_quote_update(quote_id: $quote_id, state: $state) {
 		quote_id
 		state
 	}

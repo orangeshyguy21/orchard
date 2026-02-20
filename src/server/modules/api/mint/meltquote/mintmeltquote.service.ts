@@ -11,7 +11,6 @@ import {MintService} from '@server/modules/api/mint/mint.service';
 import {ErrorService} from '@server/modules/error/error.service';
 /* Local Dependencies */
 import {OrchardMintMeltQuote, OrchardMintNut05Update, OrchardMintNut05QuoteUpdate} from './mintmeltquote.model';
-import {MintNut05UpdateInput, MintNut05QuoteUpdateInput} from './mintmeltquote.input';
 
 @Injectable()
 export class MintMeltQuoteService {
@@ -38,10 +37,17 @@ export class MintMeltQuoteService {
 		});
 	}
 
-	async updateMintNut05(tag: string, mint_nut05_update: MintNut05UpdateInput): Promise<OrchardMintNut05Update> {
+	async updateMintNut05(
+		tag: string,
+		unit: string,
+		method: string,
+		disabled?: boolean,
+		min_amount?: number,
+		max_amount?: number,
+	): Promise<OrchardMintNut05Update> {
 		try {
-			await this.cashuMintRpcService.updateNut05(mint_nut05_update);
-			return mint_nut05_update;
+			await this.cashuMintRpcService.updateNut05({unit, method, disabled, min_amount, max_amount});
+			return {unit, method, disabled, min_amount, max_amount};
 		} catch (error) {
 			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintRpcActionError,
@@ -50,10 +56,10 @@ export class MintMeltQuoteService {
 		}
 	}
 
-	async updateMintNut05Quote(tag: string, mint_nut05_quote_update: MintNut05QuoteUpdateInput): Promise<OrchardMintNut05QuoteUpdate> {
+	async updateMintNut05Quote(tag: string, quote_id: string, state: string): Promise<OrchardMintNut05QuoteUpdate> {
 		try {
-			await this.cashuMintRpcService.updateNut05Quote(mint_nut05_quote_update);
-			return mint_nut05_quote_update;
+			await this.cashuMintRpcService.updateNut05Quote({quote_id, state});
+			return {quote_id, state};
 		} catch (error) {
 			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintRpcActionError,

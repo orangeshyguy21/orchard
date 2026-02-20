@@ -100,7 +100,7 @@ export class MintInfoInterceptor implements NestInterceptor {
             actor_id: user_id,
             timestamp: Math.floor(DateTime.now().toSeconds()),
             section: ChangeSection.MINT,
-            section_id: null,
+            section_id: '1',
             entity_type: ChangeEntityType.INFO,
             entity_id: null,
             action: metadata.action,

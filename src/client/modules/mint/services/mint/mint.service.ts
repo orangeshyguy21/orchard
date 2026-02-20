@@ -1065,7 +1065,7 @@ export class MintService {
 	}
 
 	public updateMintNut04(unit: string, method: string, key: string, value: any): Observable<MintNut04UpdateResponse> {
-		const query = getApiQuery(MINT_NUT04_UPDATE_MUTATION, {mint_nut04_update: {unit, method, [key]: value}});
+		const query = getApiQuery(MINT_NUT04_UPDATE_MUTATION, {unit, method, [key]: value});
 
 		return this.http.post<OrchardRes<MintNut04UpdateResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
@@ -1080,7 +1080,7 @@ export class MintService {
 	}
 
 	public updateMintNut05(unit: string, method: string, key: string, value: any): Observable<MintNut05UpdateResponse> {
-		const query = getApiQuery(MINT_NUT05_UPDATE_MUTATION, {mint_nut05_update: {unit, method, [key]: value}});
+		const query = getApiQuery(MINT_NUT05_UPDATE_MUTATION, {unit, method, [key]: value});
 
 		return this.http.post<OrchardRes<MintNut05UpdateResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
@@ -1160,7 +1160,7 @@ export class MintService {
 	}
 
 	public updateMintNut04Quote(quote_id: string, state: string): Observable<MintNut04QuoteUpdateResponse> {
-		const query = getApiQuery(MINT_NUT04_QUOTE_UPDATE_MUTATION, {mint_nut04_quote_update: {quote_id, state}});
+		const query = getApiQuery(MINT_NUT04_QUOTE_UPDATE_MUTATION, {quote_id, state});
 
 		return this.http.post<OrchardRes<MintNut04QuoteUpdateResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
@@ -1175,7 +1175,7 @@ export class MintService {
 	}
 
 	public updateMintNut05Quote(quote_id: string, state: string): Observable<MintNut05QuoteUpdateResponse> {
-		const query = getApiQuery(MINT_NUT05_QUOTE_UPDATE_MUTATION, {mint_nut05_quote_update: {quote_id, state}});
+		const query = getApiQuery(MINT_NUT05_QUOTE_UPDATE_MUTATION, {quote_id, state});
 
 		return this.http.post<OrchardRes<MintNut05QuoteUpdateResponse>>(this.apiService.api, query).pipe(
 			map((response) => {

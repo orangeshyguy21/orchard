@@ -1,15 +1,17 @@
 /* Core Dependencies */
-import {Logger} from '@nestjs/common';
+import {Logger, UseInterceptors} from '@nestjs/common';
 import {Resolver, Query, Args, Mutation, Int} from '@nestjs/graphql';
 /* Application Dependencies */
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 import {MintUnit, MintQuoteState} from '@server/modules/cashu/cashu.enums';
 import {Roles} from '@server/modules/auth/decorators/auth.decorator';
 import {UserRole} from '@server/modules/user/user.enums';
+import {LogChange} from '@server/modules/change/change.decorator';
+import {ChangeAction} from '@server/modules/change/change.enums';
 /* Local Dependencies */
 import {MintMintQuoteService} from './mintmintquote.service';
+import {MintMintQuoteInterceptor} from './mintmintquote.interceptor';
 import {OrchardMintMintQuote} from './mintmintquote.model';
-import {MintNut04UpdateInput, MintNut04QuoteUpdateInput} from './mintmintquote.input';
 import {OrchardMintNut04Update, OrchardMintNut04QuoteUpdate} from './mintmintquote.model';
 
 @Resolver()
@@ -33,20 +35,38 @@ export class MintMintQuoteResolver {
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@UseInterceptors(MintMintQuoteInterceptor)
+	@LogChange({
+		action: ChangeAction.UPDATE,
+		field: 'nut04',
+	})
 	@Mutation(() => OrchardMintNut04Update)
-	async mint_nut04_update(@Args('mint_nut04_update') mint_nut04_update: MintNut04UpdateInput): Promise<OrchardMintNut04Update> {
+	async mint_nut04_update(
+		@Args('unit') unit: string,
+		@Args('method') method: string,
+		@Args('disabled', {nullable: true}) disabled: boolean,
+		@Args('min_amount', {type: () => Int, nullable: true}) min_amount: number,
+		@Args('max_amount', {type: () => Int, nullable: true}) max_amount: number,
+		@Args('description', {nullable: true}) description: boolean,
+	): Promise<OrchardMintNut04Update> {
 		const tag = 'MUTATION { mint_nut04_update }';
 		this.logger.debug(tag);
-		return await this.mintMintQuoteService.updateMintNut04(tag, mint_nut04_update);
+		return await this.mintMintQuoteService.updateMintNut04(tag, unit, method, disabled, min_amount, max_amount, description);
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@UseInterceptors(MintMintQuoteInterceptor)
+	@LogChange({
+		action: ChangeAction.UPDATE,
+		field: 'nut04_quote',
+	})
 	@Mutation(() => OrchardMintNut04QuoteUpdate)
 	async mint_nut04_quote_update(
-		@Args('mint_nut04_quote_update') mint_nut04_quote_update: MintNut04QuoteUpdateInput,
+		@Args('quote_id') quote_id: string,
+		@Args('state') state: string,
 	): Promise<OrchardMintNut04QuoteUpdate> {
 		const tag = 'MUTATION { mint_nut04_quote_update }';
 		this.logger.debug(tag);
-		return await this.mintMintQuoteService.updateMintNut04Quote(tag, mint_nut04_quote_update);
+		return await this.mintMintQuoteService.updateMintNut04Quote(tag, quote_id, state);
 	}
 }
