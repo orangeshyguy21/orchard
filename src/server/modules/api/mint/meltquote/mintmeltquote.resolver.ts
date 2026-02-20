@@ -1,13 +1,16 @@
 /* Core Dependencies */
-import {Logger} from '@nestjs/common';
+import {Logger, UseInterceptors} from '@nestjs/common';
 import {Resolver, Query, Mutation, Args, Int} from '@nestjs/graphql';
 /* Application Dependencies */
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 import {MintUnit, MeltQuoteState} from '@server/modules/cashu/cashu.enums';
 import {Roles} from '@server/modules/auth/decorators/auth.decorator';
 import {UserRole} from '@server/modules/user/user.enums';
+import {LogChange} from '@server/modules/change/change.decorator';
+import {ChangeAction} from '@server/modules/change/change.enums';
 /* Local Dependencies */
 import {MintMeltQuoteService} from './mintmeltquote.service';
+import {MintMeltQuoteInterceptor} from './mintmeltquote.interceptor';
 import {OrchardMintMeltQuote} from './mintmeltquote.model';
 import {OrchardMintNut05Update, OrchardMintNut05QuoteUpdate} from './mintmeltquote.model';
 
@@ -32,6 +35,11 @@ export class MintMeltQuoteResolver {
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@UseInterceptors(MintMeltQuoteInterceptor)
+	@LogChange({
+		action: ChangeAction.UPDATE,
+		field: 'nut05',
+	})
 	@Mutation(() => OrchardMintNut05Update)
 	async mint_nut05_update(
 		@Args('unit') unit: string,
@@ -40,13 +48,17 @@ export class MintMeltQuoteResolver {
 		@Args('min_amount', {type: () => Int, nullable: true}) min_amount: number,
 		@Args('max_amount', {type: () => Int, nullable: true}) max_amount: number,
 	): Promise<OrchardMintNut05Update> {
-        console.log('mint_nut05_update', unit, method, disabled, min_amount, max_amount);
 		const tag = 'MUTATION { mint_nut05_update }';
 		this.logger.debug(tag);
 		return await this.mintMeltQuoteService.updateMintNut05(tag, unit, method, disabled, min_amount, max_amount);
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@UseInterceptors(MintMeltQuoteInterceptor)
+	@LogChange({
+		action: ChangeAction.UPDATE,
+		field: 'nut05_quote',
+	})
 	@Mutation(() => OrchardMintNut05QuoteUpdate)
 	async mint_nut05_quote_update(
 		@Args('quote_id') quote_id: string,

@@ -175,6 +175,11 @@ export class CashuMintDatabaseService implements OnModuleInit {
 		if (this.type === 'cdk') return this.cdkService.getMintMeltQuotes(client, args);
 	}
 
+	public async getMintMeltQuote(client: CashuMintDatabase, quote_id: string): Promise<CashuMintMeltQuote | null> {
+		if (this.type === 'nutshell') return this.nutshellService.getMintMeltQuote(client, quote_id);
+		if (this.type === 'cdk') return this.cdkService.getMintMeltQuote(client, quote_id);
+	}
+
 	public async getMintSwaps(client: CashuMintDatabase, args?: CashuMintSwapsArgs): Promise<CashuMintSwap[]> {
 		if (this.type === 'nutshell') return this.nutshellService.getMintSwaps(client, args);
 		if (this.type === 'cdk') return this.cdkService.getMintSwaps(client, args);

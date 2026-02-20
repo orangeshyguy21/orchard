@@ -156,7 +156,6 @@ export class CashuMintRpcService implements OnModuleInit {
 		max_amount?: number;
 		amountless?: boolean;
 	}): Promise<{}> {
-        console.log('updateNut05', unit, method, disabled, min_amount, max_amount, amountless);
 		const request: any = {unit, method};
 		if (disabled !== undefined) request.disabled = disabled;
 		if (min_amount !== undefined) request.min_amount = min_amount;

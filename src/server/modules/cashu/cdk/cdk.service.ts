@@ -246,6 +246,16 @@ export class CdkService {
 		}
 	}
 
+	public async getMintMeltQuote(client: CashuMintDatabase, quote_id: string): Promise<CashuMintMeltQuote | null> {
+		const sql = `SELECT * FROM melt_quote WHERE id = ?`;
+		try {
+			const row = await queryRow<CashuMintMeltQuote | undefined>(client, sql, [quote_id]);
+			return row ?? null;
+		} catch (err) {
+			throw err;
+		}
+	}
+
 	public async getMintMeltQuotes(client: CashuMintDatabase, args?: CashuMintMeltQuotesArgs): Promise<CashuMintMeltQuote[]> {
 		const field_mappings = {
 			units: 'unit',

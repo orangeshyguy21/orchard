@@ -15,8 +15,8 @@ import {CashuMintDatabaseService} from '@server/modules/cashu/mintdb/cashumintdb
 import {MintService} from '@server/modules/api/mint/mint.service';
 
 @Injectable()
-export class MintMintQuoteInterceptor implements NestInterceptor {
-    private readonly logger = new Logger(MintMintQuoteInterceptor.name);
+export class MintMeltQuoteInterceptor implements NestInterceptor {
+    private readonly logger = new Logger(MintMeltQuoteInterceptor.name);
 
     constructor(
         private reflector: Reflector,
@@ -66,12 +66,12 @@ export class MintMintQuoteInterceptor implements NestInterceptor {
         metadata: ChangeLogMetadata,
         args: Record<string, any>,
     ): Promise<{entity_type: ChangeEntityType; entity_id: string | null; details: CreateChangeDetailInput[]}> {
-        if (metadata.field === 'nut04') {
-            const old_method = await this.fetchOldNut04Method(args.unit, args.method);
+        if (metadata.field === 'nut05') {
+            const old_method = await this.fetchOldNut05Method(args.unit, args.method);
             return {
-                entity_type: ChangeEntityType.NUT04,
+                entity_type: ChangeEntityType.NUT05,
                 entity_id: `${args.unit}:${args.method}`,
-                details: this.buildNut04ChangeDetails(args, old_method),
+                details: this.buildNut05ChangeDetails(args, old_method),
             };
         }
         const old_state = await this.fetchOldQuoteState(args.quote_id);
@@ -88,51 +88,51 @@ export class MintMintQuoteInterceptor implements NestInterceptor {
     }
 
     /**
-     * Fetch current quote state for old value comparison
+     * Fetch current melt quote state for old value comparison
      * @param {string} quote_id - The quote ID to look up
      * @returns {Promise<string | null>} The current quote state
      */
     private async fetchOldQuoteState(quote_id: string): Promise<string | null> {
         try {
             return await this.mintService.withDbClient(async (client) => {
-                const quote = await this.cashuMintDatabaseService.getMintMintQuote(client, quote_id);
+                const quote = await this.cashuMintDatabaseService.getMintMeltQuote(client, quote_id);
                 return quote?.state ?? null;
             });
         } catch (_error) {
-            this.logger.warn('Failed to fetch old quote state for change history');
+            this.logger.warn('Failed to fetch old melt quote state for change history');
             return null;
         }
     }
 
     /**
-     * Fetch current nut04 method config for old value comparison
+     * Fetch current nut05 method config for old value comparison
      * @param {string} unit - The unit to match
      * @param {string} method - The method to match
      * @returns {Promise<Record<string, any> | null>} The current method config
      */
-    private async fetchOldNut04Method(unit: string, method: string): Promise<Record<string, any> | null> {
+    private async fetchOldNut05Method(unit: string, method: string): Promise<Record<string, any> | null> {
         try {
             const mint_info = await this.cashuMintApiService.getMintInfo();
-            const nut04 = mint_info?.nuts?.[4];
-            if (!nut04) return null;
-            const matched_method = Object.values(nut04.methods ?? []).find((m) => m.unit === unit && m.method === method);
+            const nut05 = mint_info?.nuts?.[5];
+            if (!nut05) return null;
+            const matched_method = Object.values(nut05.methods ?? []).find((m) => m.unit === unit && m.method === method);
             if (!matched_method) return null;
-            return {...matched_method, disabled: nut04.disabled};
+            return {...matched_method, disabled: nut05.disabled};
         } catch (_error) {
-            this.logger.warn('Failed to fetch old nut04 method config for change history');
+            this.logger.warn('Failed to fetch old nut05 method config for change history');
             return null;
         }
     }
 
     /**
-     * Build change detail entries for each modified nut04 field
+     * Build change detail entries for each modified nut05 field
      * @param {Record<string, any>} args - The resolver arguments
      * @param {Record<string, any> | null} old_method - The previous method config
      * @returns {CreateChangeDetailInput[]} The change details
      */
-    private buildNut04ChangeDetails(args: Record<string, any>, old_method: Record<string, any> | null): CreateChangeDetailInput[] {
+    private buildNut05ChangeDetails(args: Record<string, any>, old_method: Record<string, any> | null): CreateChangeDetailInput[] {
         const details: CreateChangeDetailInput[] = [];
-        const fields = ['disabled', 'min_amount', 'max_amount', 'description'];
+        const fields = ['disabled', 'min_amount', 'max_amount'];
         for (const field of fields) {
             if (args[field] === undefined || args[field] === null) continue;
             details.push({
