@@ -11,7 +11,6 @@ import {MintService} from '@server/modules/api/mint/mint.service';
 import {ErrorService} from '@server/modules/error/error.service';
 /* Local Dependencies */
 import {OrchardMintKeyset, OrchardMintKeysetRotation, OrchardMintKeysetProofCount} from './mintkeyset.model';
-import {MintRotateKeysetInput} from './mintkeyset.input';
 
 @Injectable()
 export class MintKeysetService {
@@ -55,7 +54,10 @@ export class MintKeysetService {
 		});
 	}
 
-	async mintRotateKeyset(tag: string, mint_rotate_keyset: MintRotateKeysetInput): Promise<OrchardMintKeysetRotation> {
+	async mintRotateKeyset(
+		tag: string,
+		mint_rotate_keyset: {unit: string; amounts?: number[]; input_fee_ppk?: number; keyset_v2?: boolean},
+	): Promise<OrchardMintKeysetRotation> {
 		try {
 			return await this.cashuMintRpcService.rotateNextKeyset(mint_rotate_keyset);
 		} catch (error) {
