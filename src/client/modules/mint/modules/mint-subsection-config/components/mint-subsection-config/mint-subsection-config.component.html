@@ -139,11 +139,11 @@
 					<!-- NUT 05 ENABLED -->
 					<orc-mint-subsection-config-form-enabled
 						[nut]="'nut5'"
+						[enabled]="form_melting.get('enabled')?.value"
 						[form_group]="form_melting"
 						[device_desktop]="device_type() === 'desktop'"
 						(update)="onEnabledUpdate($event)"
-					>
-					</orc-mint-subsection-config-form-enabled>
+					></orc-mint-subsection-config-form-enabled>
 
 					<!-- NUT 05 QUOTE TTL -->
 					<div class="sticky-config z-index-1">
