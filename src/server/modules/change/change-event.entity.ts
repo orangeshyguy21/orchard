@@ -27,8 +27,8 @@ export class ChangeEvent {
     @Column({type: 'text', length: 100})
     entity_type: string;
 
-    @Column({type: 'text', length: 100})
-    entity_id: string;
+    @Column({type: 'text', nullable: true, length: 100})
+    entity_id: string | null;
 
     @Column({type: 'text'})
     action: ChangeAction;

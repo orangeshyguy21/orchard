@@ -97,15 +97,15 @@ describe('MintInfoService', () => {
 	});
 
 	it('update operations call RPC and return inputs', async () => {
-		await mintInfoService.updateMintName('TAG', {name: 'x'} as any);
-		await mintInfoService.updateMintIcon('TAG', {icon_url: 'u'} as any);
-		await mintInfoService.updateMintShortDescription('TAG', {description: 's'} as any);
-		await mintInfoService.updateMintLongDescription('TAG', {description: 'l'} as any);
-		await mintInfoService.updateMintMotd('TAG', {motd: 'm'} as any);
-		await mintInfoService.addMintUrl('TAG', {url: 'u'} as any);
-		await mintInfoService.removeMintUrl('TAG', {url: 'u'} as any);
-		await mintInfoService.addMintContact('TAG', {method: 'm', info: 'i'} as any);
-		await mintInfoService.removeMintContact('TAG', {method: 'm', info: 'i'} as any);
+		await mintInfoService.updateMintName('TAG', 'x');
+		await mintInfoService.updateMintIcon('TAG', 'u');
+		await mintInfoService.updateMintShortDescription('TAG', 's');
+		await mintInfoService.updateMintLongDescription('TAG', 'l');
+		await mintInfoService.updateMintMotd('TAG', 'm');
+		await mintInfoService.addMintUrl('TAG', 'u');
+		await mintInfoService.removeMintUrl('TAG', 'u');
+		await mintInfoService.addMintContact('TAG', 'm', 'i');
+		await mintInfoService.removeMintContact('TAG', 'm', 'i');
 		expect(mintRpcService.updateName).toHaveBeenCalled();
 		expect(mintRpcService.updateIconUrl).toHaveBeenCalled();
 		expect(mintRpcService.updateShortDescription).toHaveBeenCalled();

@@ -883,7 +883,7 @@ export class MintService {
 	}
 
 	public updateMintName(name: string): Observable<MintNameUpdateResponse> {
-		const query = getApiQuery(MINT_NAME_MUTATION, {mint_name_update: {name}});
+		const query = getApiQuery(MINT_NAME_MUTATION, {name});
 
 		return this.http.post<OrchardRes<MintNameUpdateResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
@@ -898,7 +898,7 @@ export class MintService {
 	}
 
 	public updateMintDescription(description: string): Observable<MintDescriptionUpdateResponse> {
-		const query = getApiQuery(MINT_DESCRIPTION_MUTATION, {mint_desc_update: {description}});
+		const query = getApiQuery(MINT_DESCRIPTION_MUTATION, {description});
 
 		return this.http.post<OrchardRes<MintDescriptionUpdateResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
@@ -913,7 +913,7 @@ export class MintService {
 	}
 
 	public updateMintDescriptionLong(description: string): Observable<MintDescriptionLongUpdateResponse> {
-		const query = getApiQuery(MINT_DESCRIPTION_LONG_MUTATION, {mint_desc_update: {description}});
+		const query = getApiQuery(MINT_DESCRIPTION_LONG_MUTATION, {description});
 
 		return this.http.post<OrchardRes<MintDescriptionLongUpdateResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
@@ -928,7 +928,7 @@ export class MintService {
 	}
 
 	public updateMintIcon(icon_url: string): Observable<MintIconUrlUpdateResponse> {
-		const query = getApiQuery(MINT_ICON_MUTATION, {mint_icon_update: {icon_url}});
+		const query = getApiQuery(MINT_ICON_MUTATION, {icon_url});
 
 		return this.http.post<OrchardRes<MintIconUrlUpdateResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
@@ -943,7 +943,7 @@ export class MintService {
 	}
 
 	public updateMintMotd(motd: string): Observable<MintMotdUpdateResponse> {
-		const query = getApiQuery(MINT_MOTD_MUTATION, {mint_motd_update: {motd}});
+		const query = getApiQuery(MINT_MOTD_MUTATION, {motd});
 
 		return this.http.post<OrchardRes<MintMotdUpdateResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
@@ -958,7 +958,7 @@ export class MintService {
 	}
 
 	public updateMintUrl(url_add: string, url_remove: string): Observable<MintUrlUpdateResponse> {
-		const query = getApiQuery(MINT_URL_UPDATE_MUTATIONS, {url_add: {url: url_add}, url_remove: {url: url_remove}});
+		const query = getApiQuery(MINT_URL_UPDATE_MUTATIONS, {url_add, url_remove});
 
 		return this.http.post<OrchardRes<MintUrlUpdateResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
@@ -973,7 +973,7 @@ export class MintService {
 	}
 
 	public addMintUrl(url: string): Observable<MintUrlAddResponse> {
-		const query = getApiQuery(MINT_URL_ADD_MUTATION, {mint_url_update: {url}});
+		const query = getApiQuery(MINT_URL_ADD_MUTATION, {url});
 
 		return this.http.post<OrchardRes<MintUrlAddResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
@@ -988,7 +988,7 @@ export class MintService {
 	}
 
 	public removeMintUrl(url: string): Observable<MintUrlRemoveResponse> {
-		const query = getApiQuery(MINT_URL_REMOVE_MUTATION, {mint_url_update: {url}});
+		const query = getApiQuery(MINT_URL_REMOVE_MUTATION, {url});
 
 		return this.http.post<OrchardRes<MintUrlRemoveResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
@@ -1020,7 +1020,7 @@ export class MintService {
 	}
 
 	public removeMintContact(contact: OrchardContact): Observable<MintContactRemoveResponse> {
-		const query = getApiQuery(MINT_CONTACT_REMOVE_MUTATION, {contact_remove: {method: contact.method, info: contact.info}});
+		const query = getApiQuery(MINT_CONTACT_REMOVE_MUTATION, {method: contact.method, info: contact.info});
 
 		return this.http.post<OrchardRes<MintContactRemoveResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
@@ -1035,7 +1035,7 @@ export class MintService {
 	}
 
 	public addMintContact(contact: OrchardContact): Observable<MintContactAddResponse> {
-		const query = getApiQuery(MINT_CONTACT_ADD_MUTATION, {contact_add: {method: contact.method, info: contact.info}});
+		const query = getApiQuery(MINT_CONTACT_ADD_MUTATION, {method: contact.method, info: contact.info});
 
 		return this.http.post<OrchardRes<MintContactAddResponse>>(this.apiService.api, query).pipe(
 			map((response) => {

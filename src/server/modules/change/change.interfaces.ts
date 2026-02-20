@@ -8,7 +8,7 @@ export interface CreateChangeEventInput {
     section: ChangeSection;
     section_id?: string | null;
     entity_type: string;
-    entity_id: string;
+    entity_id?: string | null;
     action: ChangeAction;
     status: ChangeStatus;
     details: CreateChangeDetailInput[];

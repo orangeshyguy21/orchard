@@ -63,8 +63,8 @@ export class OrchardChangeEvent {
     @Field()
     entity_type: string;
 
-    @Field()
-    entity_id: string;
+    @Field({nullable: true})
+    entity_id: string | null;
 
     @Field(() => ChangeAction)
     action: ChangeAction;
