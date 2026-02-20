@@ -51,8 +51,8 @@ import {CrewUserModule} from './crew/crewuser/crewuser.module';
 import {CrewInviteModule} from './crew/crewinvite/crewinvite.module';
 // Setting Endpoints
 import {ApiSettingModule} from './setting/setting.module';
-// Change Endpoints
-import {ApiChangeModule} from './change/change.module';
+// Event Endpoints
+import {ApiEventLogModule} from './event/event.module';
 
 @Module({
 	imports: [
@@ -96,7 +96,7 @@ import {ApiChangeModule} from './change/change.module';
 		CrewUserModule,
 		CrewInviteModule,
 		ApiSettingModule,
-		ApiChangeModule,
+		ApiEventLogModule,
 	],
 })
 export class ApiModule {}

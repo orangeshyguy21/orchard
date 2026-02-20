@@ -4,29 +4,29 @@ import {InjectRepository} from '@nestjs/typeorm';
 /* Vendor Dependencies */
 import {Repository} from 'typeorm';
 /* Local Dependencies */
-import {ChangeEvent} from './change-event.entity';
-import {ChangeDetail} from './change-detail.entity';
-import {CreateChangeEventInput, ChangeEventFilters} from './change.interfaces';
+import {EventLog} from './event.entity';
+import {EventLogDetail} from './event-detail.entity';
+import {CreateEventLogInput, EventLogFilters} from './event.interfaces';
 
 @Injectable()
-export class ChangeService {
-    private readonly logger = new Logger(ChangeService.name);
+export class EventLogService {
+    private readonly logger = new Logger(EventLogService.name);
 
     constructor(
-        @InjectRepository(ChangeEvent)
-        private changeEventRepository: Repository<ChangeEvent>,
-        @InjectRepository(ChangeDetail)
-        private changeDetailRepository: Repository<ChangeDetail>,
+        @InjectRepository(EventLog)
+        private eventRepository: Repository<EventLog>,
+        @InjectRepository(EventLogDetail)
+        private eventDetailRepository: Repository<EventLogDetail>,
     ) {}
 
     /**
-     * Create a new change event with details
-     * @param {CreateChangeEventInput} input - The change event data with details
-     * @returns {Promise<ChangeEvent>} The created change event
+     * Create a new event log with details
+     * @param {CreateEventLogInput} input - The event log data with details
+     * @returns {Promise<EventLog>} The created event log
      */
-    public async createChangeEvent(input: CreateChangeEventInput): Promise<ChangeEvent> {
+    public async createEvent(input: CreateEventLogInput): Promise<EventLog> {
         const details = input.details.map((detail) =>
-            this.changeDetailRepository.create({
+            this.eventDetailRepository.create({
                 field: detail.field,
                 old_value: detail.old_value ?? null,
                 new_value: detail.new_value ?? null,
@@ -35,7 +35,7 @@ export class ChangeService {
                 error_message: detail.error_message ?? null,
             }),
         );
-        const event = this.changeEventRepository.create({
+        const event = this.eventRepository.create({
             actor_type: input.actor_type,
             actor_id: input.actor_id,
             timestamp: input.timestamp,
@@ -43,22 +43,22 @@ export class ChangeService {
             section_id: input.section_id ?? null,
             entity_type: input.entity_type,
             entity_id: input.entity_id,
-            action: input.action,
+            type: input.type,
             status: input.status,
             details,
         });
-        const saved_event = await this.changeEventRepository.save(event);
-        this.logger.debug(`Created change event: ${saved_event.id} [${input.section}/${input.entity_type}/${input.action}]`);
+        const saved_event = await this.eventRepository.save(event);
+        this.logger.debug(`Created event log: ${saved_event.id} [${input.section}/${input.entity_type}/${input.type}]`);
         return saved_event;
     }
 
     /**
-     * Get change events with optional filters
-     * @param {ChangeEventFilters} filters - Optional filters for querying events
-     * @returns {Promise<ChangeEvent[]>} The matching change events
+     * Get event logs with optional filters
+     * @param {EventLogFilters} filters - Optional filters for querying events
+     * @returns {Promise<EventLog[]>} The matching event logs
      */
-    public async getChangeEvents(filters: ChangeEventFilters = {}): Promise<ChangeEvent[]> {
-        const query = this.changeEventRepository.createQueryBuilder('event').leftJoinAndSelect('event.details', 'detail');
+    public async getEvents(filters: EventLogFilters = {}): Promise<EventLog[]> {
+        const query = this.eventRepository.createQueryBuilder('event').leftJoinAndSelect('event.details', 'detail');
         if (filters.section) {
             query.andWhere('event.section = :section', {section: filters.section});
         }
@@ -68,8 +68,8 @@ export class ChangeService {
         if (filters.entity_type) {
             query.andWhere('event.entity_type = :entity_type', {entity_type: filters.entity_type});
         }
-        if (filters.action) {
-            query.andWhere('event.action = :action', {action: filters.action});
+        if (filters.type) {
+            query.andWhere('event.type = :type', {type: filters.type});
         }
         if (filters.status) {
             query.andWhere('event.status = :status', {status: filters.status});
@@ -88,12 +88,12 @@ export class ChangeService {
     }
 
     /**
-     * Get a single change event with its details
-     * @param {string} id - The change event ID
-     * @returns {Promise<ChangeEvent | null>} The change event with details, or null
+     * Get a single event log with its details
+     * @param {string} id - The event log ID
+     * @returns {Promise<EventLog | null>} The event log with details, or null
      */
-    public async getChangeEventWithDetails(id: string): Promise<ChangeEvent | null> {
-        return this.changeEventRepository.findOne({
+    public async getEventWithDetails(id: string): Promise<EventLog | null> {
+        return this.eventRepository.findOne({
             where: {id},
             relations: ['details'],
         });

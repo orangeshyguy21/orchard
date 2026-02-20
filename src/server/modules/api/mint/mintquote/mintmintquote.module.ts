@@ -6,14 +6,14 @@ import {CashuMintRpcModule} from '@server/modules/cashu/mintrpc/cashumintrpc.mod
 import {CashuMintApiModule} from '@server/modules/cashu/mintapi/cashumintapi.module';
 import {MintService} from '@server/modules/api/mint/mint.service';
 import {ErrorModule} from '@server/modules/error/error.module';
-import {ChangeModule} from '@server/modules/change/change.module';
+import {EventLogModule} from '@server/modules/event/event.module';
 /* Local Dependencies */
 import {MintMintQuoteService} from './mintmintquote.service';
 import {MintMintQuoteResolver} from './mintmintquote.resolver';
 import {MintMintQuoteInterceptor} from './mintmintquote.interceptor';
 
 @Module({
-	imports: [CashuMintDatabaseModule, CashuMintRpcModule, CashuMintApiModule, ErrorModule, ChangeModule],
+	imports: [CashuMintDatabaseModule, CashuMintRpcModule, CashuMintApiModule, ErrorModule, EventLogModule],
 	providers: [MintMintQuoteResolver, MintMintQuoteService, MintService, MintMintQuoteInterceptor],
 })
 export class MintMintQuoteModule {}

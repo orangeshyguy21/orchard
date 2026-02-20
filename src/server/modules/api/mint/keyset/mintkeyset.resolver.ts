@@ -5,8 +5,8 @@ import {Resolver, Query, Mutation, Args, Int, Float} from '@nestjs/graphql';
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 import {Roles} from '@server/modules/auth/decorators/auth.decorator';
 import {UserRole} from '@server/modules/user/user.enums';
-import {LogChange} from '@server/modules/change/change.decorator';
-import {ChangeAction} from '@server/modules/change/change.enums';
+import {LogEvent} from '@server/modules/event/event.decorator';
+import {EventLogType} from '@server/modules/event/event.enums';
 /* Local Dependencies */
 import {MintKeysetService} from './mintkeyset.service';
 import {OrchardMintKeyset, OrchardMintKeysetProofCount} from './mintkeyset.model';
@@ -39,7 +39,7 @@ export class MintKeysetResolver {
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@UseInterceptors(MintKeysetInterceptor)
-	@LogChange({field: 'keyset', action: ChangeAction.CREATE})
+	@LogEvent({field: 'keyset', type: EventLogType.CREATE})
 	@Mutation(() => OrchardMintKeysetRotation)
 	async mint_rotate_keyset(
 		@Args('unit') unit: string,

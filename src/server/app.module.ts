@@ -31,7 +31,7 @@ import {AiAgent, AiMessageRole, AiFunctionName} from './modules/ai/ai.enums';
 import {UserRole} from './modules/user/user.enums';
 import {SettingKey, SettingValue} from './modules/setting/setting.enums';
 import {UTXOracleProgressStatus} from './modules/bitcoin/utxoracle/utxoracle.enums';
-import {ChangeActorType, ChangeSection, ChangeEntityType, ChangeAction, ChangeStatus, ChangeDetailStatus} from './modules/change/change.enums';
+import {EventLogActorType, EventLogSection, EventLogEntityType, EventLogType, EventLogStatus, EventLogDetailStatus} from './modules/event/event.enums';
 /* Application Configuration */
 import {config} from './config/configuration';
 
@@ -56,12 +56,12 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 	registerEnumType(SettingKey, {name: 'SettingKey'});
 	registerEnumType(SettingValue, {name: 'SettingValue'});
 	registerEnumType(UTXOracleProgressStatus, {name: 'UTXOracleProgressStatus'});
-	registerEnumType(ChangeActorType, {name: 'ChangeActorType'});
-	registerEnumType(ChangeSection, {name: 'ChangeSection'});
-	registerEnumType(ChangeEntityType, {name: 'ChangeEntityType'});
-	registerEnumType(ChangeAction, {name: 'ChangeAction'});
-	registerEnumType(ChangeStatus, {name: 'ChangeStatus'});
-	registerEnumType(ChangeDetailStatus, {name: 'ChangeDetailStatus'});
+	registerEnumType(EventLogActorType, {name: 'EventLogActorType'});
+	registerEnumType(EventLogSection, {name: 'EventLogSection'});
+	registerEnumType(EventLogEntityType, {name: 'EventLogEntityType'});
+	registerEnumType(EventLogType, {name: 'EventLogType'});
+	registerEnumType(EventLogStatus, {name: 'EventLogStatus'});
+	registerEnumType(EventLogDetailStatus, {name: 'EventLogDetailStatus'});
 
 	const path = configService.get('server.path');
 	const is_production = configService.get('mode.production');

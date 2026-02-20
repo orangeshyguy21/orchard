@@ -5,43 +5,43 @@ import {getRepositoryToken} from '@nestjs/typeorm';
 /* Vendor Dependencies */
 import {Repository, SelectQueryBuilder} from 'typeorm';
 /* Local Dependencies */
-import {ChangeService} from './change.service';
-import {ChangeEvent} from './change-event.entity';
-import {ChangeDetail} from './change-detail.entity';
-import {ChangeActorType, ChangeSection, ChangeEntityType, ChangeAction, ChangeStatus, ChangeDetailStatus} from './change.enums';
-import {CreateChangeEventInput} from './change.interfaces';
+import {EventLogService} from './event.service';
+import {EventLog} from './event.entity';
+import {EventLogDetail} from './event-detail.entity';
+import {EventLogActorType, EventLogSection, EventLogEntityType, EventLogType, EventLogStatus, EventLogDetailStatus} from './event.enums';
+import {CreateEventLogInput} from './event.interfaces';
 
 /**
- * Test suite for ChangeService
- * Tests all public methods for change event management
+ * Test suite for EventLogService
+ * Tests all public methods for event log management
  */
-describe('ChangeService', () => {
-    let service: ChangeService;
-    let _event_repository: Repository<ChangeEvent>;
-    let _detail_repository: Repository<ChangeDetail>;
+describe('EventLogService', () => {
+    let service: EventLogService;
+    let _event_repository: Repository<EventLog>;
+    let _detail_repository: Repository<EventLogDetail>;
 
-    const mock_detail: ChangeDetail = {
+    const mock_detail: EventLogDetail = {
         id: 'detail-uuid-1',
-        change_event: {} as ChangeEvent,
+        event: {} as EventLog,
         field: 'name',
         old_value: 'old',
         new_value: 'new',
-        status: ChangeDetailStatus.SUCCESS,
+        status: EventLogDetailStatus.SUCCESS,
         error_code: null,
         error_message: null,
     };
 
-    const mock_event: ChangeEvent = {
+    const mock_event: EventLog = {
         id: 'event-uuid-1',
-        actor_type: ChangeActorType.USER,
+        actor_type: EventLogActorType.USER,
         actor_id: 'user-uuid-1',
         timestamp: 1700000000,
-        section: ChangeSection.SETTINGS,
+        section: EventLogSection.SETTINGS,
         section_id: null,
-        entity_type: ChangeEntityType.INFO,
+        entity_type: EventLogEntityType.INFO,
         entity_id: 'bitcoin.oracle',
-        action: ChangeAction.UPDATE,
-        status: ChangeStatus.SUCCESS,
+        type: EventLogType.UPDATE,
+        status: EventLogStatus.SUCCESS,
         details: [mock_detail],
     };
 
@@ -61,21 +61,21 @@ describe('ChangeService', () => {
 
         const module: TestingModule = await Test.createTestingModule({
             providers: [
-                ChangeService,
+                EventLogService,
                 {
-                    provide: getRepositoryToken(ChangeEvent),
+                    provide: getRepositoryToken(EventLog),
                     useValue: mock_event_repository,
                 },
                 {
-                    provide: getRepositoryToken(ChangeDetail),
+                    provide: getRepositoryToken(EventLogDetail),
                     useValue: mock_detail_repository,
                 },
             ],
         }).compile();
 
-        service = module.get<ChangeService>(ChangeService);
-        _event_repository = module.get<Repository<ChangeEvent>>(getRepositoryToken(ChangeEvent));
-        _detail_repository = module.get<Repository<ChangeDetail>>(getRepositoryToken(ChangeDetail));
+        service = module.get<EventLogService>(EventLogService);
+        _event_repository = module.get<Repository<EventLog>>(getRepositoryToken(EventLog));
+        _detail_repository = module.get<Repository<EventLogDetail>>(getRepositoryToken(EventLogDetail));
     });
 
     /**
@@ -86,26 +86,26 @@ describe('ChangeService', () => {
     });
 
     /**
-     * Test createChangeEvent method
+     * Test createEvent method
      */
-    describe('createChangeEvent', () => {
-        it('should create a change event with details', async () => {
+    describe('createEvent', () => {
+        it('should create an event log with details', async () => {
             // arrange
-            const input: CreateChangeEventInput = {
-                actor_type: ChangeActorType.USER,
+            const input: CreateEventLogInput = {
+                actor_type: EventLogActorType.USER,
                 actor_id: 'user-uuid-1',
                 timestamp: 1700000000,
-                section: ChangeSection.SETTINGS,
-                entity_type: ChangeEntityType.INFO,
+                section: EventLogSection.SETTINGS,
+                entity_type: EventLogEntityType.INFO,
                 entity_id: 'bitcoin.oracle',
-                action: ChangeAction.UPDATE,
-                status: ChangeStatus.SUCCESS,
+                type: EventLogType.UPDATE,
+                status: EventLogStatus.SUCCESS,
                 details: [
                     {
                         field: 'name',
                         old_value: 'old',
                         new_value: 'new',
-                        status: ChangeDetailStatus.SUCCESS,
+                        status: EventLogDetailStatus.SUCCESS,
                     },
                 ],
             };
@@ -114,7 +114,7 @@ describe('ChangeService', () => {
             mock_event_repository.save.mockResolvedValue(mock_event);
 
             // act
-            const result = await service.createChangeEvent(input);
+            const result = await service.createEvent(input);
 
             // assert
             expect(result).toEqual(mock_event);
@@ -125,20 +125,20 @@ describe('ChangeService', () => {
 
         it('should handle nullable fields with defaults', async () => {
             // arrange
-            const input: CreateChangeEventInput = {
-                actor_type: ChangeActorType.SYSTEM,
+            const input: CreateEventLogInput = {
+                actor_type: EventLogActorType.SYSTEM,
                 actor_id: 'system',
                 timestamp: 1700000000,
-                section: ChangeSection.MINT,
-                entity_type: ChangeEntityType.INFO,
+                section: EventLogSection.MINT,
+                entity_type: EventLogEntityType.INFO,
                 entity_id: 'keyset-1',
-                action: ChangeAction.CREATE,
-                status: ChangeStatus.SUCCESS,
+                type: EventLogType.CREATE,
+                status: EventLogStatus.SUCCESS,
                 details: [
                     {
                         field: 'active',
                         new_value: 'true',
-                        status: ChangeDetailStatus.SUCCESS,
+                        status: EventLogDetailStatus.SUCCESS,
                     },
                 ],
             };
@@ -147,7 +147,7 @@ describe('ChangeService', () => {
             mock_event_repository.save.mockResolvedValue(mock_event);
 
             // act
-            await service.createChangeEvent(input);
+            await service.createEvent(input);
 
             // assert
             expect(mock_detail_repository.create).toHaveBeenCalledWith(
@@ -165,10 +165,10 @@ describe('ChangeService', () => {
     });
 
     /**
-     * Test getChangeEvents method
+     * Test getEvents method
      */
-    describe('getChangeEvents', () => {
-        let mock_query_builder: Partial<SelectQueryBuilder<ChangeEvent>>;
+    describe('getEvents', () => {
+        let mock_query_builder: Partial<SelectQueryBuilder<EventLog>>;
 
         beforeEach(() => {
             mock_query_builder = {
@@ -184,7 +184,7 @@ describe('ChangeService', () => {
 
         it('should return all events without filters', async () => {
             // act
-            const result = await service.getChangeEvents();
+            const result = await service.getEvents();
 
             // assert
             expect(result).toEqual([mock_event]);
@@ -195,15 +195,15 @@ describe('ChangeService', () => {
 
         it('should apply section filter', async () => {
             // act
-            await service.getChangeEvents({section: ChangeSection.BITCOIN});
+            await service.getEvents({section: EventLogSection.BITCOIN});
 
             // assert
-            expect(mock_query_builder.andWhere).toHaveBeenCalledWith('event.section = :section', {section: ChangeSection.BITCOIN});
+            expect(mock_query_builder.andWhere).toHaveBeenCalledWith('event.section = :section', {section: EventLogSection.BITCOIN});
         });
 
         it('should apply pagination', async () => {
             // act
-            await service.getChangeEvents({page: 1, page_size: 10});
+            await service.getEvents({page: 1, page_size: 10});
 
             // assert
             expect(mock_query_builder.skip).toHaveBeenCalledWith(10);
@@ -212,10 +212,10 @@ describe('ChangeService', () => {
 
         it('should apply multiple filters', async () => {
             // act
-            await service.getChangeEvents({
-                section: ChangeSection.SETTINGS,
-                actor_type: ChangeActorType.USER,
-                action: ChangeAction.UPDATE,
+            await service.getEvents({
+                section: EventLogSection.SETTINGS,
+                actor_type: EventLogActorType.USER,
+                type: EventLogType.UPDATE,
             });
 
             // assert
@@ -224,15 +224,15 @@ describe('ChangeService', () => {
     });
 
     /**
-     * Test getChangeEventWithDetails method
+     * Test getEventWithDetails method
      */
-    describe('getChangeEventWithDetails', () => {
+    describe('getEventWithDetails', () => {
         it('should return event with details', async () => {
             // arrange
             mock_event_repository.findOne.mockResolvedValue(mock_event);
 
             // act
-            const result = await service.getChangeEventWithDetails('event-uuid-1');
+            const result = await service.getEventWithDetails('event-uuid-1');
 
             // assert
             expect(result).toEqual(mock_event);
@@ -247,7 +247,7 @@ describe('ChangeService', () => {
             mock_event_repository.findOne.mockResolvedValue(null);
 
             // act
-            const result = await service.getChangeEventWithDetails('nonexistent');
+            const result = await service.getEventWithDetails('nonexistent');
 
             // assert
             expect(result).toBeNull();

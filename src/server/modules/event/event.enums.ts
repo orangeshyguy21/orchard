@@ -1,10 +1,10 @@
-export enum ChangeActorType {
+export enum EventLogActorType {
     USER = 'user',
     SYSTEM = 'system',
     AGENT = 'agent',
 }
 
-export enum ChangeSection {
+export enum EventLogSection {
     BITCOIN = 'bitcoin',
     LIGHTNING = 'lightning',
     MINT = 'mint',
@@ -13,7 +13,7 @@ export enum ChangeSection {
     SETTINGS = 'settings',
 }
 
-export enum ChangeEntityType {
+export enum EventLogEntityType {
     INFO = 'info',
     QUOTE = 'quote',
     QUOTE_TTL = 'quote_ttl',
@@ -23,20 +23,20 @@ export enum ChangeEntityType {
     DATABASE = 'database',
 }
 
-export enum ChangeAction {
+export enum EventLogType {
     CREATE = 'create',
     UPDATE = 'update',
     DELETE = 'delete',
     EXECUTE = 'execute',
 }
 
-export enum ChangeStatus {
+export enum EventLogStatus {
     SUCCESS = 'success',
     PARTIAL = 'partial',
     ERROR = 'error',
 }
 
-export enum ChangeDetailStatus {
+export enum EventLogDetailStatus {
     SUCCESS = 'success',
     ERROR = 'error',
 }

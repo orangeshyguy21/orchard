@@ -4,14 +4,14 @@ import {Module} from '@nestjs/common';
 import {CashuMintApiModule} from '@server/modules/cashu/mintapi/cashumintapi.module';
 import {CashuMintRpcModule} from '@server/modules/cashu/mintrpc/cashumintrpc.module';
 import {ErrorModule} from '@server/modules/error/error.module';
-import {ChangeModule} from '@server/modules/change/change.module';
+import {EventLogModule} from '@server/modules/event/event.module';
 /* Local Dependencies */
 import {MintInfoService} from './mintinfo.service';
 import {MintInfoResolver} from './mintinfo.resolver';
 import {MintInfoInterceptor} from './mintinfo.interceptor';
 
 @Module({
-	imports: [CashuMintApiModule, CashuMintRpcModule, ErrorModule, ChangeModule],
+	imports: [CashuMintApiModule, CashuMintRpcModule, ErrorModule, EventLogModule],
 	providers: [MintInfoResolver, MintInfoService, MintInfoInterceptor],
 })
 export class MintInfoModule {}

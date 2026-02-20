@@ -6,9 +6,9 @@ import {GqlExecutionContext} from '@nestjs/graphql';
 import {Observable, tap, catchError} from 'rxjs';
 import {DateTime} from 'luxon';
 /* Application Dependencies */
-import {ChangeService} from '@server/modules/change/change.service';
-import {CHANGE_LOG_KEY, ChangeLogMetadata} from '@server/modules/change/change.decorator';
-import {ChangeActorType, ChangeSection, ChangeEntityType, ChangeAction, ChangeStatus, ChangeDetailStatus} from '@server/modules/change/change.enums';
+import {EventLogService} from '@server/modules/event/event.service';
+import {EVENT_LOG_KEY, EventLogMetadata} from '@server/modules/event/event.decorator';
+import {EventLogActorType, EventLogSection, EventLogEntityType, EventLogType, EventLogStatus, EventLogDetailStatus} from '@server/modules/event/event.enums';
 import {CashuMintRpcService} from '@server/modules/cashu/mintrpc/cashumintrpc.service';
 
 @Injectable()
@@ -17,12 +17,12 @@ export class MintInfoInterceptor implements NestInterceptor {
 
     constructor(
         private reflector: Reflector,
-        private changeService: ChangeService,
+        private eventLogService: EventLogService,
         private cashuMintRpcService: CashuMintRpcService,
     ) {}
 
     async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
-        const metadata = this.reflector.get<ChangeLogMetadata>(CHANGE_LOG_KEY, context.getHandler());
+        const metadata = this.reflector.get<EventLogMetadata>(EVENT_LOG_KEY, context.getHandler());
         if (!metadata) return next.handle();
 
         const gql_context = GqlExecutionContext.create(context);
@@ -30,17 +30,17 @@ export class MintInfoInterceptor implements NestInterceptor {
         const args = gql_context.getArgs();
         const user_id: string = ctx.req.user?.id ?? 'unknown';
         const arg_value = this.extractArgValue(args, metadata.arg_keys);
-        const new_value = metadata.action !== ChangeAction.DELETE ? arg_value : null;
-        const old_value = metadata.action === ChangeAction.DELETE ? arg_value : await this.fetchOldValue(metadata);
+        const new_value = metadata.type !== EventLogType.DELETE ? arg_value : null;
+        const old_value = metadata.type === EventLogType.DELETE ? arg_value : await this.fetchOldValue(metadata);
 
         return next.handle().pipe(
             tap(() => {
-                this.logChange(metadata, user_id, old_value, new_value, ChangeStatus.SUCCESS);
+                this.logEvent(metadata, user_id, old_value, new_value, EventLogStatus.SUCCESS);
             }),
             catchError((error) => {
                 const error_code = error?.extensions?.code ? String(error.extensions.code) : null;
                 const error_message = error?.extensions?.details ?? error?.message ?? null;
-                this.logChange(metadata, user_id, old_value, new_value, ChangeStatus.ERROR, {
+                this.logEvent(metadata, user_id, old_value, new_value, EventLogStatus.ERROR, {
                     error_code,
                     error_message,
                 });
@@ -62,48 +62,48 @@ export class MintInfoInterceptor implements NestInterceptor {
     }
 
     /**
-     * Fetch old value from mint info for UPDATE actions
-     * @param {ChangeLogMetadata} metadata - The change log configuration
+     * Fetch old value from mint info for UPDATE type events
+     * @param {EventLogMetadata} metadata - The event log configuration
      * @returns {Promise<string | null>} The previous value
      */
-    private async fetchOldValue(metadata: ChangeLogMetadata): Promise<string | null> {
-        if (metadata.action !== ChangeAction.UPDATE || !metadata.old_value_key) return null;
+    private async fetchOldValue(metadata: EventLogMetadata): Promise<string | null> {
+        if (metadata.type !== EventLogType.UPDATE || !metadata.old_value_key) return null;
         try {
             const mint_info = await this.cashuMintRpcService.getMintInfo();
             return (mint_info as any)[metadata.old_value_key] ?? null;
         } catch (_error) {
-            this.logger.warn(`Failed to fetch old value for change history [${metadata.field}]`);
+            this.logger.warn(`Failed to fetch old value for event history [${metadata.field}]`);
             return null;
         }
     }
 
     /**
-     * Fire-and-forget a change event to the change history
-     * @param {ChangeLogMetadata} metadata - The change log configuration
+     * Fire-and-forget an event log to the event history
+     * @param {EventLogMetadata} metadata - The event log configuration
      * @param {string} user_id - The actor ID
      * @param {string | null} old_value - The previous value
      * @param {string | null} new_value - The new value
-     * @param {ChangeStatus} status - Success or error
+     * @param {EventLogStatus} status - Success or error
      * @param {object} error - Optional error details
      */
-    private logChange(
-        metadata: ChangeLogMetadata,
+    private logEvent(
+        metadata: EventLogMetadata,
         user_id: string,
         old_value: string | null,
         new_value: string | null,
-        status: ChangeStatus,
+        status: EventLogStatus,
         error?: {error_code: string | null; error_message: string | null},
     ): void {
-        const detail_status = status === ChangeStatus.SUCCESS ? ChangeDetailStatus.SUCCESS : ChangeDetailStatus.ERROR;
-        this.changeService.createChangeEvent({
-            actor_type: ChangeActorType.USER,
+        const detail_status = status === EventLogStatus.SUCCESS ? EventLogDetailStatus.SUCCESS : EventLogDetailStatus.ERROR;
+        this.eventLogService.createEvent({
+            actor_type: EventLogActorType.USER,
             actor_id: user_id,
             timestamp: Math.floor(DateTime.now().toSeconds()),
-            section: ChangeSection.MINT,
+            section: EventLogSection.MINT,
             section_id: '1',
-            entity_type: ChangeEntityType.INFO,
+            entity_type: EventLogEntityType.INFO,
             entity_id: null,
-            action: metadata.action,
+            type: metadata.type,
             status,
             details: [{
                 field: metadata.field,
@@ -113,6 +113,6 @@ export class MintInfoInterceptor implements NestInterceptor {
                 error_code: error?.error_code ?? null,
                 error_message: error?.error_message ?? null,
             }],
-        }).catch((err) => this.logger.warn(`Failed to log change event [${metadata.field}]: ${err}`));
+        }).catch((err) => this.logger.warn(`Failed to log event [${metadata.field}]: ${err}`));
     }
 }

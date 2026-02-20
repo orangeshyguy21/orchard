@@ -8,13 +8,13 @@ import {Setting} from '../modules/setting/setting.entity';
 import {UTXOracle} from '../modules/bitcoin/utxoracle/utxoracle.entity';
 import {AnalyticsCheckpoint} from '../modules/analytics/analytics-checkpoint.entity';
 import {LightningAnalytics} from '../modules/lightning/analytics/lnanalytics.entity';
-import {ChangeEvent} from '../modules/change/change-event.entity';
-import {ChangeDetail} from '../modules/change/change-detail.entity';
+import {EventLog} from '../modules/event/event.entity';
+import {EventLogDetail} from '../modules/event/event-detail.entity';
 
 export const AppDataSource = new DataSource({
 	type: 'better-sqlite3',
 	database: process.env.DATABASE_DIR ? `${process.env.DATABASE_DIR}/orchard.db` : 'data/orchard.db',
-	entities: [User, Invite, TokenBlacklist, Setting, UTXOracle, AnalyticsCheckpoint, LightningAnalytics, ChangeEvent, ChangeDetail],
+	entities: [User, Invite, TokenBlacklist, Setting, UTXOracle, AnalyticsCheckpoint, LightningAnalytics, EventLog, EventLogDetail],
 	migrations: ['src/server/database/migrations/*.ts'],
 	synchronize: false,
 });

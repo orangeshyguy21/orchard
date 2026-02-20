@@ -6,10 +6,10 @@ import {GqlExecutionContext} from '@nestjs/graphql';
 import {Observable, tap, catchError} from 'rxjs';
 import {DateTime} from 'luxon';
 /* Application Dependencies */
-import {ChangeService} from '@server/modules/change/change.service';
-import {CHANGE_LOG_KEY, ChangeLogMetadata} from '@server/modules/change/change.decorator';
-import {ChangeActorType, ChangeSection, ChangeEntityType, ChangeStatus, ChangeDetailStatus} from '@server/modules/change/change.enums';
-import {CreateChangeDetailInput} from '@server/modules/change/change.interfaces';
+import {EventLogService} from '@server/modules/event/event.service';
+import {EVENT_LOG_KEY, EventLogMetadata} from '@server/modules/event/event.decorator';
+import {EventLogActorType, EventLogSection, EventLogEntityType, EventLogStatus, EventLogDetailStatus} from '@server/modules/event/event.enums';
+import {CreateEventLogDetailInput} from '@server/modules/event/event.interfaces';
 import {CashuMintApiService} from '@server/modules/cashu/mintapi/cashumintapi.service';
 import {CashuMintDatabaseService} from '@server/modules/cashu/mintdb/cashumintdb.service';
 import {MintService} from '@server/modules/api/mint/mint.service';
@@ -20,14 +20,14 @@ export class MintMintQuoteInterceptor implements NestInterceptor {
 
     constructor(
         private reflector: Reflector,
-        private changeService: ChangeService,
+        private eventLogService: EventLogService,
         private cashuMintApiService: CashuMintApiService,
         private cashuMintDatabaseService: CashuMintDatabaseService,
         private mintService: MintService,
     ) {}
 
     async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
-        const metadata = this.reflector.get<ChangeLogMetadata>(CHANGE_LOG_KEY, context.getHandler());
+        const metadata = this.reflector.get<EventLogMetadata>(EVENT_LOG_KEY, context.getHandler());
         if (!metadata) return next.handle();
 
         const gql_context = GqlExecutionContext.create(context);
@@ -38,51 +38,51 @@ export class MintMintQuoteInterceptor implements NestInterceptor {
 
         return next.handle().pipe(
             tap(() => {
-                this.logChange(metadata, user_id, entity_type, entity_id, details, ChangeStatus.SUCCESS);
+                this.logEvent(metadata, user_id, entity_type, entity_id, details, EventLogStatus.SUCCESS);
             }),
             catchError((error) => {
-                this.logger.error(`Error logging change event [${metadata.field}]: ${error}`);
+                this.logger.error(`Error logging event [${metadata.field}]: ${error}`);
                 const error_code = error?.extensions?.code ? String(error.extensions.code) : null;
                 const error_message = error?.extensions?.details ?? error?.message ?? null;
                 const error_details = details.map((detail) => ({
                     ...detail,
-                    status: ChangeDetailStatus.ERROR,
+                    status: EventLogDetailStatus.ERROR,
                     error_code,
                     error_message,
                 }));
-                this.logChange(metadata, user_id, entity_type, entity_id, error_details, ChangeStatus.ERROR);
+                this.logEvent(metadata, user_id, entity_type, entity_id, error_details, EventLogStatus.ERROR);
                 throw error;
             }),
         );
     }
 
     /**
-     * Build entity info and change details based on the mutation type
-     * @param {ChangeLogMetadata} metadata - The change log configuration
+     * Build entity info and event details based on the mutation type
+     * @param {EventLogMetadata} metadata - The event log configuration
      * @param {Record<string, any>} args - The resolver arguments
-     * @returns {Promise<{entity_type: ChangeEntityType; entity_id: string | null; details: CreateChangeDetailInput[]}>} The log payload
+     * @returns {Promise<{entity_type: EventLogEntityType; entity_id: string | null; details: CreateEventLogDetailInput[]}>} The log payload
      */
     private async buildLogPayload(
-        metadata: ChangeLogMetadata,
+        metadata: EventLogMetadata,
         args: Record<string, any>,
-    ): Promise<{entity_type: ChangeEntityType; entity_id: string | null; details: CreateChangeDetailInput[]}> {
+    ): Promise<{entity_type: EventLogEntityType; entity_id: string | null; details: CreateEventLogDetailInput[]}> {
         if (metadata.field === 'nut04') {
             const old_method = await this.fetchOldNut04Method(args.unit, args.method);
             return {
-                entity_type: ChangeEntityType.NUT04,
+                entity_type: EventLogEntityType.NUT04,
                 entity_id: `${args.unit}:${args.method}`,
-                details: this.buildNut04ChangeDetails(args, old_method),
+                details: this.buildNut04EventDetails(args, old_method),
             };
         }
         const old_state = await this.fetchOldQuoteState(args.quote_id);
         return {
-            entity_type: ChangeEntityType.QUOTE,
+            entity_type: EventLogEntityType.QUOTE,
             entity_id: args.quote_id ?? null,
             details: [{
                 field: 'state',
                 old_value: old_state,
                 new_value: String(args.state),
-                status: ChangeDetailStatus.SUCCESS,
+                status: EventLogDetailStatus.SUCCESS,
             }],
         };
     }
@@ -99,7 +99,7 @@ export class MintMintQuoteInterceptor implements NestInterceptor {
                 return quote?.state ?? null;
             });
         } catch (_error) {
-            this.logger.warn('Failed to fetch old quote state for change history');
+            this.logger.warn('Failed to fetch old quote state for event history');
             return null;
         }
     }
@@ -119,19 +119,19 @@ export class MintMintQuoteInterceptor implements NestInterceptor {
             if (!matched_method) return null;
             return {...matched_method, disabled: nut04.disabled};
         } catch (_error) {
-            this.logger.warn('Failed to fetch old nut04 method config for change history');
+            this.logger.warn('Failed to fetch old nut04 method config for event history');
             return null;
         }
     }
 
     /**
-     * Build change detail entries for each modified nut04 field
+     * Build event detail entries for each modified nut04 field
      * @param {Record<string, any>} args - The resolver arguments
      * @param {Record<string, any> | null} old_method - The previous method config
-     * @returns {CreateChangeDetailInput[]} The change details
+     * @returns {CreateEventLogDetailInput[]} The event details
      */
-    private buildNut04ChangeDetails(args: Record<string, any>, old_method: Record<string, any> | null): CreateChangeDetailInput[] {
-        const details: CreateChangeDetailInput[] = [];
+    private buildNut04EventDetails(args: Record<string, any>, old_method: Record<string, any> | null): CreateEventLogDetailInput[] {
+        const details: CreateEventLogDetailInput[] = [];
         const fields = ['disabled', 'min_amount', 'max_amount', 'description'];
         for (const field of fields) {
             if (args[field] === undefined || args[field] === null) continue;
@@ -139,41 +139,41 @@ export class MintMintQuoteInterceptor implements NestInterceptor {
                 field,
                 old_value: old_method?.[field] != null ? String(old_method[field]) : null,
                 new_value: String(args[field]),
-                status: ChangeDetailStatus.SUCCESS,
+                status: EventLogDetailStatus.SUCCESS,
             });
         }
         return details;
     }
 
     /**
-     * Fire-and-forget a change event to the change history
-     * @param {ChangeLogMetadata} metadata - The change log configuration
+     * Fire-and-forget an event log to the event history
+     * @param {EventLogMetadata} metadata - The event log configuration
      * @param {string} user_id - The actor ID
-     * @param {ChangeEntityType} entity_type - The entity type
+     * @param {EventLogEntityType} entity_type - The entity type
      * @param {string | null} entity_id - The entity identifier
-     * @param {CreateChangeDetailInput[]} details - The change details
-     * @param {ChangeStatus} status - Success or error
+     * @param {CreateEventLogDetailInput[]} details - The event details
+     * @param {EventLogStatus} status - Success or error
      */
-    private logChange(
-        metadata: ChangeLogMetadata,
+    private logEvent(
+        metadata: EventLogMetadata,
         user_id: string,
-        entity_type: ChangeEntityType,
+        entity_type: EventLogEntityType,
         entity_id: string | null,
-        details: CreateChangeDetailInput[],
-        status: ChangeStatus,
+        details: CreateEventLogDetailInput[],
+        status: EventLogStatus,
     ): void {
         if (details.length === 0) return;
-        this.changeService.createChangeEvent({
-            actor_type: ChangeActorType.USER,
+        this.eventLogService.createEvent({
+            actor_type: EventLogActorType.USER,
             actor_id: user_id,
             timestamp: Math.floor(DateTime.now().toSeconds()),
-            section: ChangeSection.MINT,
+            section: EventLogSection.MINT,
             section_id: '1',
             entity_type,
             entity_id,
-            action: metadata.action,
+            type: metadata.type,
             status,
             details,
-        }).catch((err) => this.logger.warn(`Failed to log change event [${metadata.field}]: ${err}`));
+        }).catch((err) => this.logger.warn(`Failed to log event [${metadata.field}]: ${err}`));
     }
 }

@@ -4,8 +4,8 @@ import {Resolver, Query, Mutation, Args} from '@nestjs/graphql';
 /* Application Dependencies */
 import {Roles} from '@server/modules/auth/decorators/auth.decorator';
 import {UserRole} from '@server/modules/user/user.enums';
-import {LogChange} from '@server/modules/change/change.decorator';
-import {ChangeAction} from '@server/modules/change/change.enums';
+import {LogEvent} from '@server/modules/event/event.decorator';
+import {EventLogType} from '@server/modules/event/event.enums';
 /* Local Dependencies */
 import {MintInfoService} from './mintinfo.service';
 import {MintInfoInterceptor} from './mintinfo.interceptor';
@@ -42,8 +42,8 @@ export class MintInfoResolver {
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@UseInterceptors(MintInfoInterceptor)
-	@LogChange({
-        action: ChangeAction.UPDATE,
+	@LogEvent({
+        type: EventLogType.UPDATE,
 		field: 'name',
 		arg_keys: ['name'],
 		old_value_key: 'name',
@@ -59,8 +59,8 @@ export class MintInfoResolver {
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@UseInterceptors(MintInfoInterceptor)
-	@LogChange({
-		action: ChangeAction.UPDATE,
+	@LogEvent({
+		type: EventLogType.UPDATE,
 		field: 'icon_url',
 		arg_keys: ['icon_url'],
 		old_value_key: 'icon_url',
@@ -76,8 +76,8 @@ export class MintInfoResolver {
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@UseInterceptors(MintInfoInterceptor)
-	@LogChange({
-		action: ChangeAction.UPDATE,
+	@LogEvent({
+		type: EventLogType.UPDATE,
 		field: 'description',
 		arg_keys: ['description'],
 		old_value_key: 'description',
@@ -93,8 +93,8 @@ export class MintInfoResolver {
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@UseInterceptors(MintInfoInterceptor)
-	@LogChange({
-		action: ChangeAction.UPDATE,
+	@LogEvent({
+		type: EventLogType.UPDATE,
 		field: 'description_long',
 		arg_keys: ['description'],
 		old_value_key: 'description_long',
@@ -110,8 +110,8 @@ export class MintInfoResolver {
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@UseInterceptors(MintInfoInterceptor)
-	@LogChange({
-		action: ChangeAction.UPDATE,
+	@LogEvent({
+		type: EventLogType.UPDATE,
 		field: 'motd',
 		arg_keys: ['motd'],
 		old_value_key: 'motd',
@@ -127,8 +127,8 @@ export class MintInfoResolver {
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@UseInterceptors(MintInfoInterceptor)
-	@LogChange({
-		action: ChangeAction.CREATE,
+	@LogEvent({
+		type: EventLogType.CREATE,
 		field: 'url',
 		arg_keys: ['url'],
 	})
@@ -143,8 +143,8 @@ export class MintInfoResolver {
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@UseInterceptors(MintInfoInterceptor)
-	@LogChange({
-		action: ChangeAction.DELETE,
+	@LogEvent({
+		type: EventLogType.DELETE,
 		field: 'url',
 		arg_keys: ['url'],
 	})
@@ -159,8 +159,8 @@ export class MintInfoResolver {
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@UseInterceptors(MintInfoInterceptor)
-	@LogChange({
-		action: ChangeAction.CREATE,
+	@LogEvent({
+		type: EventLogType.CREATE,
 		field: 'contact',
 		arg_keys: ['method', 'info'],
 	})
@@ -176,8 +176,8 @@ export class MintInfoResolver {
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@UseInterceptors(MintInfoInterceptor)
-	@LogChange({
-		action: ChangeAction.DELETE,
+	@LogEvent({
+		type: EventLogType.DELETE,
 		field: 'contact',
 		arg_keys: ['method', 'info'],
 	})

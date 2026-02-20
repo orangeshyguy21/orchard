@@ -1,17 +1,17 @@
 /* Vendor Dependencies */
 import {Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn} from 'typeorm';
 /* Local Dependencies */
-import {ChangeDetailStatus} from './change.enums';
-import {ChangeEvent} from './change-event.entity';
+import {EventLogDetailStatus} from './event.enums';
+import {EventLog} from './event.entity';
 
-@Entity('change_details')
-export class ChangeDetail {
+@Entity('event_details')
+export class EventLogDetail {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @ManyToOne(() => ChangeEvent, (event) => event.details, {onDelete: 'CASCADE'})
-    @JoinColumn({name: 'change_event_id'})
-    change_event: ChangeEvent;
+    @ManyToOne(() => EventLog, (event) => event.details, {onDelete: 'CASCADE'})
+    @JoinColumn({name: 'event_id'})
+    event: EventLog;
 
     @Column({type: 'text', length: 100})
     field: string;
@@ -22,8 +22,8 @@ export class ChangeDetail {
     @Column({type: 'text', nullable: true})
     new_value: string | null;
 
-    @Column({type: 'text', default: ChangeDetailStatus.SUCCESS})
-    status: ChangeDetailStatus;
+    @Column({type: 'text', default: EventLogDetailStatus.SUCCESS})
+    status: EventLogDetailStatus;
 
     @Column({type: 'text', nullable: true, length: 50})
     error_code: string | null;

@@ -6,8 +6,8 @@ import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scala
 import {MintUnit, MeltQuoteState} from '@server/modules/cashu/cashu.enums';
 import {Roles} from '@server/modules/auth/decorators/auth.decorator';
 import {UserRole} from '@server/modules/user/user.enums';
-import {LogChange} from '@server/modules/change/change.decorator';
-import {ChangeAction} from '@server/modules/change/change.enums';
+import {LogEvent} from '@server/modules/event/event.decorator';
+import {EventLogType} from '@server/modules/event/event.enums';
 /* Local Dependencies */
 import {MintMeltQuoteService} from './mintmeltquote.service';
 import {MintMeltQuoteInterceptor} from './mintmeltquote.interceptor';
@@ -36,8 +36,8 @@ export class MintMeltQuoteResolver {
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@UseInterceptors(MintMeltQuoteInterceptor)
-	@LogChange({
-		action: ChangeAction.UPDATE,
+	@LogEvent({
+		type: EventLogType.UPDATE,
 		field: 'nut05',
 	})
 	@Mutation(() => OrchardMintNut05Update)
@@ -55,8 +55,8 @@ export class MintMeltQuoteResolver {
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@UseInterceptors(MintMeltQuoteInterceptor)
-	@LogChange({
-		action: ChangeAction.UPDATE,
+	@LogEvent({
+		type: EventLogType.UPDATE,
 		field: 'nut05_quote',
 	})
 	@Mutation(() => OrchardMintNut05QuoteUpdate)

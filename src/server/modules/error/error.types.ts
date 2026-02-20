@@ -51,8 +51,8 @@ export enum OrchardErrorCode {
 	InviteInvalidError = 80003,
 	// Settings Level Errors
 	SettingError = 90001,
-	// Change Level Errors
-	ChangeError = 100001,
+	// Event Log Level Errors
+	EventLogError = 100001,
 }
 
 export const OrchardErrorMessages: Record<string, string> = {
@@ -94,5 +94,5 @@ export const OrchardErrorMessages: Record<string, string> = {
 	[OrchardErrorCode.InviteNoAdminError]: 'InviteNoAdminError',
 	[OrchardErrorCode.InviteInvalidError]: 'InviteInvalidError',
 	[OrchardErrorCode.SettingError]: 'SettingError',
-	[OrchardErrorCode.ChangeError]: 'ChangeError',
+	[OrchardErrorCode.EventLogError]: 'EventLogError',
 };

@@ -4,8 +4,8 @@ import {Resolver, Query, Args, Mutation} from '@nestjs/graphql';
 /* Application Dependencies */
 import {Roles} from '@server/modules/auth/decorators/auth.decorator';
 import {UserRole} from '@server/modules/user/user.enums';
-import {LogChange} from '@server/modules/change/change.decorator';
-import {ChangeAction} from '@server/modules/change/change.enums';
+import {LogEvent} from '@server/modules/event/event.decorator';
+import {EventLogType} from '@server/modules/event/event.enums';
 /* Local Dependencies */
 import {MintQuoteService} from './mintquote.service';
 import {MintQuoteInterceptor} from './mintquote.interceptor';
@@ -27,8 +27,8 @@ export class MintQuoteResolver {
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@UseInterceptors(MintQuoteInterceptor)
-	@LogChange({
-		action: ChangeAction.UPDATE,
+	@LogEvent({
+		type: EventLogType.UPDATE,
 		field: 'quote_ttl',
 	})
 	@Mutation(() => OrchardMintQuoteTtls)

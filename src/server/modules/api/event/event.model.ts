@@ -2,12 +2,12 @@
 import {Field, ID, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
-import {ChangeActorType, ChangeSection, ChangeEntityType, ChangeAction, ChangeStatus, ChangeDetailStatus} from '@server/modules/change/change.enums';
-import {ChangeEvent} from '@server/modules/change/change-event.entity';
-import {ChangeDetail} from '@server/modules/change/change-detail.entity';
+import {EventLogActorType, EventLogSection, EventLogEntityType, EventLogType, EventLogStatus, EventLogDetailStatus} from '@server/modules/event/event.enums';
+import {EventLog} from '@server/modules/event/event.entity';
+import {EventLogDetail} from '@server/modules/event/event-detail.entity';
 
 @ObjectType()
-export class OrchardChangeDetail {
+export class OrchardEventLogDetail {
     @Field(() => ID)
     id: string;
 
@@ -20,8 +20,8 @@ export class OrchardChangeDetail {
     @Field({nullable: true})
     new_value: string | null;
 
-    @Field(() => ChangeDetailStatus)
-    status: ChangeDetailStatus;
+    @Field(() => EventLogDetailStatus)
+    status: EventLogDetailStatus;
 
     @Field({nullable: true})
     error_code: string | null;
@@ -29,7 +29,7 @@ export class OrchardChangeDetail {
     @Field({nullable: true})
     error_message: string | null;
 
-    constructor(detail: ChangeDetail) {
+    constructor(detail: EventLogDetail) {
         this.id = detail.id;
         this.field = detail.field;
         this.old_value = detail.old_value;
@@ -41,12 +41,12 @@ export class OrchardChangeDetail {
 }
 
 @ObjectType()
-export class OrchardChangeEvent {
+export class OrchardEventLog {
     @Field(() => ID)
     id: string;
 
-    @Field(() => ChangeActorType)
-    actor_type: ChangeActorType;
+    @Field(() => EventLogActorType)
+    actor_type: EventLogActorType;
 
     @Field()
     actor_id: string;
@@ -54,28 +54,28 @@ export class OrchardChangeEvent {
     @Field(() => UnixTimestamp)
     timestamp: number;
 
-    @Field(() => ChangeSection)
-    section: ChangeSection;
+    @Field(() => EventLogSection)
+    section: EventLogSection;
 
     @Field({nullable: true})
     section_id: string | null;
 
-    @Field(() => ChangeEntityType)
-    entity_type: ChangeEntityType;
+    @Field(() => EventLogEntityType)
+    entity_type: EventLogEntityType;
 
     @Field({nullable: true})
     entity_id: string | null;
 
-    @Field(() => ChangeAction)
-    action: ChangeAction;
+    @Field(() => EventLogType)
+    type: EventLogType;
 
-    @Field(() => ChangeStatus)
-    status: ChangeStatus;
+    @Field(() => EventLogStatus)
+    status: EventLogStatus;
 
-    @Field(() => [OrchardChangeDetail])
-    details: OrchardChangeDetail[];
+    @Field(() => [OrchardEventLogDetail])
+    details: OrchardEventLogDetail[];
 
-    constructor(event: ChangeEvent) {
+    constructor(event: EventLog) {
         this.id = event.id;
         this.actor_type = event.actor_type;
         this.actor_id = event.actor_id;
@@ -84,8 +84,8 @@ export class OrchardChangeEvent {
         this.section_id = event.section_id;
         this.entity_type = event.entity_type;
         this.entity_id = event.entity_id;
-        this.action = event.action;
+        this.type = event.type;
         this.status = event.status;
-        this.details = (event.details ?? []).map((detail) => new OrchardChangeDetail(detail));
+        this.details = (event.details ?? []).map((detail) => new OrchardEventLogDetail(detail));
     }
 }

@@ -6,10 +6,10 @@ import {GqlExecutionContext} from '@nestjs/graphql';
 import {Observable, tap, catchError} from 'rxjs';
 import {DateTime} from 'luxon';
 /* Application Dependencies */
-import {ChangeService} from '@server/modules/change/change.service';
-import {CHANGE_LOG_KEY, ChangeLogMetadata} from '@server/modules/change/change.decorator';
-import {ChangeActorType, ChangeSection, ChangeEntityType, ChangeAction, ChangeStatus, ChangeDetailStatus} from '@server/modules/change/change.enums';
-import {CreateChangeDetailInput} from '@server/modules/change/change.interfaces';
+import {EventLogService} from '@server/modules/event/event.service';
+import {EVENT_LOG_KEY, EventLogMetadata} from '@server/modules/event/event.decorator';
+import {EventLogActorType, EventLogSection, EventLogEntityType, EventLogType, EventLogStatus, EventLogDetailStatus} from '@server/modules/event/event.enums';
+import {CreateEventLogDetailInput} from '@server/modules/event/event.interfaces';
 import {CashuMintDatabaseService} from '@server/modules/cashu/mintdb/cashumintdb.service';
 import {CashuMintKeyset} from '@server/modules/cashu/mintdb/cashumintdb.types';
 import {MintService} from '@server/modules/api/mint/mint.service';
@@ -22,13 +22,13 @@ export class MintKeysetInterceptor implements NestInterceptor {
 
     constructor(
         private reflector: Reflector,
-        private changeService: ChangeService,
+        private eventLogService: EventLogService,
         private cashuMintDatabaseService: CashuMintDatabaseService,
         private mintService: MintService,
     ) {}
 
     async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
-        const metadata = this.reflector.get<ChangeLogMetadata>(CHANGE_LOG_KEY, context.getHandler());
+        const metadata = this.reflector.get<EventLogMetadata>(EVENT_LOG_KEY, context.getHandler());
         if (!metadata) return next.handle();
 
         const gql_context = GqlExecutionContext.create(context);
@@ -38,22 +38,22 @@ export class MintKeysetInterceptor implements NestInterceptor {
 
         return next.handle().pipe(
             tap((result: OrchardMintKeysetRotation) => {
-                this.logRotation(metadata, user_id, args, result, ChangeStatus.SUCCESS);
+                this.logRotation(metadata, user_id, args, result, EventLogStatus.SUCCESS);
             }),
             catchError((error) => {
                 this.logger.error(`Error during keyset rotation [${metadata.field}]: ${error}`);
                 const error_code = error?.extensions?.code ? String(error.extensions.code) : null;
                 const error_message = error?.extensions?.details ?? error?.message ?? null;
-                const error_details: CreateChangeDetailInput[] = [
+                const error_details: CreateEventLogDetailInput[] = [
                     {
                         field: 'unit',
                         new_value: String(args.unit),
-                        status: ChangeDetailStatus.ERROR,
+                        status: EventLogDetailStatus.ERROR,
                         error_code,
                         error_message,
                     },
                 ];
-                this.logChange(metadata, user_id, ChangeAction.CREATE, null, error_details, ChangeStatus.ERROR);
+                this.logEvent(metadata, user_id, EventLogType.CREATE, null, error_details, EventLogStatus.ERROR);
                 throw error;
             }),
         );
@@ -61,47 +61,47 @@ export class MintKeysetInterceptor implements NestInterceptor {
 
     /**
      * Log both the old keyset deactivation and new keyset creation after a successful rotation
-     * @param {ChangeLogMetadata} metadata - The change log configuration
+     * @param {EventLogMetadata} metadata - The event log configuration
      * @param {string} user_id - The actor ID
      * @param {Record<string, any>} args - The resolver arguments
      * @param {OrchardMintKeysetRotation} result - The mutation result containing the new keyset
-     * @param {ChangeStatus} status - Success or error
+     * @param {EventLogStatus} status - Success or error
      */
     private async logRotation(
-        metadata: ChangeLogMetadata,
+        metadata: EventLogMetadata,
         user_id: string,
         args: Record<string, any>,
         result: OrchardMintKeysetRotation,
-        status: ChangeStatus,
+        status: EventLogStatus,
     ): Promise<void> {
         const keysets = await this.fetchKeysets();
         const old_keyset = this.findOldKeyset(keysets, result);
 
         if (old_keyset) {
-            this.logChange(
+            this.logEvent(
                 metadata,
                 user_id,
-                ChangeAction.UPDATE,
+                EventLogType.UPDATE,
                 old_keyset.id,
-                [{field: 'active', old_value: 'true', new_value: 'false', status: ChangeDetailStatus.SUCCESS}],
+                [{field: 'active', old_value: 'true', new_value: 'false', status: EventLogDetailStatus.SUCCESS}],
                 status,
             );
         }
 
-        const create_details: CreateChangeDetailInput[] = [
-            {field: 'unit', new_value: String(result.unit), status: ChangeDetailStatus.SUCCESS},
+        const create_details: CreateEventLogDetailInput[] = [
+            {field: 'unit', new_value: String(result.unit), status: EventLogDetailStatus.SUCCESS},
         ];
         if (result.amounts != null) {
-            create_details.push({field: 'amounts', new_value: JSON.stringify(result.amounts), status: ChangeDetailStatus.SUCCESS});
+            create_details.push({field: 'amounts', new_value: JSON.stringify(result.amounts), status: EventLogDetailStatus.SUCCESS});
         }
         if (result.input_fee_ppk != null) {
-            create_details.push({field: 'input_fee_ppk', new_value: String(result.input_fee_ppk), status: ChangeDetailStatus.SUCCESS});
+            create_details.push({field: 'input_fee_ppk', new_value: String(result.input_fee_ppk), status: EventLogDetailStatus.SUCCESS});
         }
         if (args.keyset_v2 != null) {
-            create_details.push({field: 'keyset_v2', new_value: String(args.keyset_v2), status: ChangeDetailStatus.SUCCESS});
+            create_details.push({field: 'keyset_v2', new_value: String(args.keyset_v2), status: EventLogDetailStatus.SUCCESS});
         }
 
-        this.logChange(metadata, user_id, ChangeAction.CREATE, result.id, create_details, status);
+        this.logEvent(metadata, user_id, EventLogType.CREATE, result.id, create_details, status);
     }
 
     /**
@@ -114,7 +114,7 @@ export class MintKeysetInterceptor implements NestInterceptor {
                 return this.cashuMintDatabaseService.getMintKeysets(client);
             });
         } catch (_error) {
-            this.logger.warn('Failed to fetch keysets for change history');
+            this.logger.warn('Failed to fetch keysets for event history');
             return [];
         }
     }
@@ -133,36 +133,36 @@ export class MintKeysetInterceptor implements NestInterceptor {
     }
 
     /**
-     * Fire-and-forget a change event to the change history
-     * @param {ChangeLogMetadata} metadata - The change log configuration
+     * Fire-and-forget an event log to the event history
+     * @param {EventLogMetadata} metadata - The event log configuration
      * @param {string} user_id - The actor ID
-     * @param {ChangeAction} action - The action type (CREATE or UPDATE)
+     * @param {EventLogType} type - The event type (CREATE or UPDATE)
      * @param {string | null} entity_id - The entity identifier
-     * @param {CreateChangeDetailInput[]} details - The change details
-     * @param {ChangeStatus} status - Success or error
+     * @param {CreateEventLogDetailInput[]} details - The event details
+     * @param {EventLogStatus} status - Success or error
      */
-    private logChange(
-        metadata: ChangeLogMetadata,
+    private logEvent(
+        metadata: EventLogMetadata,
         user_id: string,
-        action: ChangeAction,
+        type: EventLogType,
         entity_id: string | null,
-        details: CreateChangeDetailInput[],
-        status: ChangeStatus,
+        details: CreateEventLogDetailInput[],
+        status: EventLogStatus,
     ): void {
         if (details.length === 0) return;
-        this.changeService
-            .createChangeEvent({
-                actor_type: ChangeActorType.USER,
+        this.eventLogService
+            .createEvent({
+                actor_type: EventLogActorType.USER,
                 actor_id: user_id,
                 timestamp: Math.floor(DateTime.now().toSeconds()),
-                section: ChangeSection.MINT,
+                section: EventLogSection.MINT,
                 section_id: '1',
-                entity_type: ChangeEntityType.KEYSET,
+                entity_type: EventLogEntityType.KEYSET,
                 entity_id,
-                action,
+                type,
                 status,
                 details,
             })
-            .catch((err) => this.logger.warn(`Failed to log change event [${metadata.field}]: ${err}`));
+            .catch((err) => this.logger.warn(`Failed to log event [${metadata.field}]: ${err}`));
     }
 }
