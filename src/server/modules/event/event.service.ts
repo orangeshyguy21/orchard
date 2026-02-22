@@ -65,6 +65,9 @@ export class EventLogService {
         if (filters.actor_type) {
             query.andWhere('event.actor_type = :actor_type', {actor_type: filters.actor_type});
         }
+        if (filters.actor_id) {
+            query.andWhere('event.actor_id = :actor_id', {actor_id: filters.actor_id});
+        }
         if (filters.entity_type) {
             query.andWhere('event.entity_type = :entity_type', {entity_type: filters.entity_type});
         }

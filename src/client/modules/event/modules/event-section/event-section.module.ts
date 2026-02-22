@@ -2,6 +2,8 @@
 import {NgModule} from '@angular/core';
 import {CommonModule as CoreCommonModule} from '@angular/common';
 import {RouterModule as CoreRouterModule} from '@angular/router';
+/* Application Dependencies */
+import {OrcNavModule} from '@client/modules/nav/nav.module';
 /* Local Dependencies */
 import {EventSectionComponent} from './components/event-section/event-section.component';
 
@@ -32,6 +34,7 @@ import {EventSectionComponent} from './components/event-section/event-section.co
 			},
 		]),
 		CoreCommonModule,
+        OrcNavModule,
 	],
 })
 export class OrcEventSectionModule {}

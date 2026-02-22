@@ -18,6 +18,7 @@ export class EventLogResolver {
     async event_logs(
         @Args('section', {type: () => EventLogSection, nullable: true}) section?: EventLogSection,
         @Args('actor_type', {type: () => EventLogActorType, nullable: true}) actor_type?: EventLogActorType,
+        @Args('actor_id', {type: () => String, nullable: true}) actor_id?: string,
         @Args('type', {type: () => EventLogType, nullable: true}) type?: EventLogType,
         @Args('status', {type: () => EventLogStatus, nullable: true}) status?: EventLogStatus,
         @Args('entity_type', {type: () => EventLogEntityType, nullable: true}) entity_type?: EventLogEntityType,
@@ -31,6 +32,7 @@ export class EventLogResolver {
         return await this.eventLogService.getEventLogs(tag, {
             section,
             actor_type,
+            actor_id,
             type,
             status,
             entity_type,

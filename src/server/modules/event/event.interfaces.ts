@@ -26,6 +26,7 @@ export interface CreateEventLogDetailInput {
 export interface EventLogFilters {
     section?: EventLogSection;
     actor_type?: EventLogActorType;
+    actor_id?: string;
     entity_type?: EventLogEntityType;
     type?: EventLogType;
     status?: EventLogStatus;

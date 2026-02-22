@@ -1,4 +1,7 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+/* Core Dependencies */
+import {ChangeDetectionStrategy, Component, signal, inject} from '@angular/core';
+/* Application Dependencies */
+import {ConfigService} from '@client/modules/config/services/config.service';
 
 @Component({
 	selector: 'orc-event-section',
@@ -8,5 +11,8 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EventSectionComponent {
-	constructor() {}
+    private readonly configService = inject(ConfigService);
+    
+    public readonly version = signal<string>(this.configService.config.mode.version);
+
 }
