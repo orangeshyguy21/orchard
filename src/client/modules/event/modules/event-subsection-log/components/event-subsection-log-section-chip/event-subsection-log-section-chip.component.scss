@@ -1,0 +1,20 @@
+@use 'molecule/molecule';
+
+.event-section-chip-container{
+    @extend %flex;
+    @extend %flex-row;
+    @extend %flex-items-center;
+    @extend %flex-gap-0-5;
+    @extend %orc-surface-container-low-bg;
+    @extend %orc-corner-full;
+    @extend %p-0-25;
+}
+
+.event-section-chip-icon{
+    @extend %flex;
+    @extend %flex-row;
+    @extend %flex-items-center;
+    @extend %orc-surface-container-high-bg;
+    @extend %orc-corner-full;
+    @extend %p-0-5;
+}

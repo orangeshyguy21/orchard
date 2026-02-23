@@ -1,0 +1,13 @@
+@use 'molecule/molecule';
+
+.event-type-container{
+    @extend %flex;
+    @extend %flex-row;
+    @extend %flex-items-center;
+    @extend %orc-corner-full;
+    @extend %p-0-25;
+
+    mat-icon{
+        transform: scale(0.8);
+    }
+}

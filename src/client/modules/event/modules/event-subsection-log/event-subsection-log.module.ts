@@ -24,6 +24,10 @@ import {EventSubsectionLogComponent} from './components/event-subsection-log/eve
 import {EventSubsectionLogControlComponent} from './components/event-subsection-log-control/event-subsection-log-control.component';
 import {EventSubsectionLogTableComponent} from './components/event-subsection-log-table/event-subsection-log-table.component';
 import {EventSubsectionLogTableDetailComponent} from './components/event-subsection-log-table-detail/event-subsection-log-table-detail.component';
+import { EventSubsectionLogSectionChipComponent } from './components/event-subsection-log-section-chip/event-subsection-log-section-chip.component';
+import { EventSubsectionLogEventIconComponent } from './components/event-subsection-log-event-icon/event-subsection-log-event-icon.component';
+import {EventLogEventPipe} from './pipes/event-log-event/event-log-event.pipe';
+import {EventLogDetailsPipe} from './pipes/event-log-details/event-log-details.pipe';
 
 @NgModule({
     declarations: [
@@ -31,6 +35,10 @@ import {EventSubsectionLogTableDetailComponent} from './components/event-subsect
         EventSubsectionLogControlComponent,
         EventSubsectionLogTableComponent,
         EventSubsectionLogTableDetailComponent,
+        EventSubsectionLogSectionChipComponent,
+        EventSubsectionLogEventIconComponent,
+        EventLogEventPipe,
+        EventLogDetailsPipe,
     ],
     imports: [
         CoreRouterModule.forChild([

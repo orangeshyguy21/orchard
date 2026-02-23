@@ -1,0 +1,12 @@
+<div class="event-section-chip-container">
+    <div class="event-section-chip-icon">
+       @if (icon_type() === 'svg') {
+            <mat-icon [svgIcon]="icon()"></mat-icon>
+       } @else {
+            <mat-icon class="mat-symbol-outline">{{ icon() }}</mat-icon>
+       }
+    </div>
+    <div class="p-r-1">
+        <div class="font-size-xs orc-outline-color font-weight-bold">{{ section() }}</div>
+    </div>
+</div>

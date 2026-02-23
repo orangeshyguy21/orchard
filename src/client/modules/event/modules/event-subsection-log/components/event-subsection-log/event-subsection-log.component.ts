@@ -38,6 +38,7 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
     public readonly users = signal<User[]>([]);
     public readonly error = signal<boolean>(false);
     public readonly count = signal<number>(0);
+    public readonly id_user = signal<string | null>(null);
 
     private readonly loading_users = signal<boolean>(true);
     private readonly loading_events = signal<boolean>(true);
@@ -48,6 +49,7 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.page_settings = this.getPageSettings();
         this.subscriptions.add(this.getBreakpointSubscription());
+        this.subscriptions.add(this.getUserSubscription());
         this.loadUsers();
         this.loadData();
     }
@@ -87,8 +89,22 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
     }
 
     /* *******************************************************
-        Breakpoint
-    ******************************************************** */
+		Subscriptions                      
+	******************************************************** */
+
+	private getUserSubscription(): Subscription {
+		return this.crewService.user$.subscribe({
+			next: (user: User | null) => {
+				if (user === undefined || user === null) return;
+				this.id_user.set(user.id);
+			},
+			error: (error) => {
+				console.error(error);
+				this.id_user.set(null);
+			},
+		});
+	}
+
 
     /** Subscribes to viewport breakpoints for responsive layout */
     private getBreakpointSubscription(): Subscription {

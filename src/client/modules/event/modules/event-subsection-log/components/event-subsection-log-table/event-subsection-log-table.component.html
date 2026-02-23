@@ -7,14 +7,12 @@
                 <ng-container matColumnDef="actor">
                     <th mat-header-cell *matHeaderCellDef class="data-table-sticky-header">Actor</th>
                     <td mat-cell *matCellDef="let entity">
-                        <div class="flex flex-items-center flex-gap-0-5">
+                        <div class="flex flex-items-center flex-gap-0-5 p-v-0-5">
                             @if (entity.actor_type === EventLogActorType.User) {
                                 @if (findUser(entity.actor_id); as user) {
-                                    <orc-crew-facehash [name]="user.name"></orc-crew-facehash>
-                                    <div class="flex flex-column flex-gap-0-25">
-                                        <span class="font-size-s">{{ user.name }}</span>
-                                        <span class="font-size-xs orc-outline-color font-weight-bold">{{ user.role }}</span>
-                                    </div>
+                                    <orc-crew-member-chip [name]="user.name" [role]="user.role">
+                                        <orc-crew-facehash [name]="user.name" [enableBlink]="id_user() === user.id"></orc-crew-facehash>
+                                    </orc-crew-member-chip>
                                 } @else {
                                     <mat-icon class="icon-sm mat-symbol-outline">person</mat-icon>
                                     <span class="font-size-s orc-outline-color">{{ entity.actor_id | dataTruncate: 20: 8: 8 }}</span>
@@ -32,35 +30,27 @@
                     <th mat-header-cell *matHeaderCellDef class="data-table-sticky-header">Section</th>
                     <td mat-cell *matCellDef="let entity">
                         <div class="flex">
-                            <div class="label-state label-default">{{ entity.section }}</div>
+                            <orc-event-subsection-log-section-chip [section]="entity.section"></orc-event-subsection-log-section-chip>
                         </div>
                     </td>
                 </ng-container>
 
-                <!-- Change Column -->
-                <ng-container matColumnDef="change">
-                    <th mat-header-cell *matHeaderCellDef class="data-table-sticky-header">Change</th>
+                <!-- Event Column -->
+                <ng-container matColumnDef="event">
+                    <th mat-header-cell *matHeaderCellDef class="data-table-sticky-header">Event</th>
                     <td mat-cell *matCellDef="let entity">
                         <div class="flex flex-items-center flex-gap-0-5 flex-wrap">
-                            <span class="font-size-s text-uppercase font-weight-medium">{{ entity.type }}</span>
-                            <span class="font-size-xs orc-outline-color">{{ entity.entity_type }}</span>
-                            <div class="flex">
-                                <div [ngClass]="{
-                                    'label-state': true,
-                                    'label-success': entity.status === EventLogStatus.Success,
-                                    'label-warning': entity.status === EventLogStatus.Partial,
-                                    'label-error': entity.status === EventLogStatus.Error
-                                }">{{ entity.status }}</div>
-                            </div>
+                            <orc-event-subsection-log-event-icon [type]="entity.type" [status]="entity.status"></orc-event-subsection-log-event-icon>
+                            <span class="font-size-s font-weight-medium">{{ entity.entity_type | eventLogEvent: entity.type }}</span>
                         </div>
                     </td>
                 </ng-container>
 
-                <!-- Change Summary Column -->
-                <ng-container matColumnDef="change_summary">
-                    <th mat-header-cell *matHeaderCellDef class="data-table-sticky-header">Summary</th>
+                <!-- Details Column -->
+                <ng-container matColumnDef="details">
+                    <th mat-header-cell *matHeaderCellDef class="data-table-sticky-header">Details</th>
                     <td mat-cell *matCellDef="let entity">
-                        <span class="font-size-s orc-outline-color">{{ entity.details.length }} {{ entity.details.length === 1 ? 'field' : 'fields' }}</span>
+                        <span class="font-size-s">{{ entity.details.length | eventLogDetails: entity.type }}</span>
                     </td>
                 </ng-container>
 

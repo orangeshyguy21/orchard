@@ -25,6 +25,7 @@ export class EventSubsectionLogTableComponent {
     public readonly loading = input.required<boolean>();
     public readonly error = input.required<boolean>();
     public readonly users = input.required<User[]>();
+    public readonly id_user = input.required<string | null>();
     public readonly device_desktop = input.required<boolean>();
 
     /* State */
@@ -32,12 +33,13 @@ export class EventSubsectionLogTableComponent {
 
     /* Responsive columns */
     public readonly displayed_columns = computed(() => {
-        if (!this.device_desktop()) return ['actor', 'change', 'timestamp'];
-        return ['actor', 'section', 'change', 'change_summary', 'timestamp'];
+        if (!this.device_desktop()) return ['actor', 'event', 'timestamp'];
+        return ['actor', 'section', 'event', 'details', 'timestamp'];
     });
 
     /** Finds user by actor_id for display */
     public findUser(actor_id: string): User | undefined {
+        console.log('findUser', actor_id);
         return this.users().find((u) => u.id === actor_id);
     }
 
