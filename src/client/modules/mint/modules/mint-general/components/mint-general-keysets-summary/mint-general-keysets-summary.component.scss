@@ -1,0 +1,21 @@
+@use 'molecule/molecule';
+@use 'nucleus/nucleus';
+
+.keysets-shimmer {
+    height: 8rem;
+    @extend %orc-corner-small;
+}
+
+.keysets-ratio-bar {
+    @extend %orc-surface-container-high-bg;
+    @extend %orc-corner-full;
+    height: 0.375rem;
+    width: 100%;
+}
+
+.keysets-ratio-fill {
+    @extend %orc-corner-full;
+    height: 100%;
+    background: var(--orc-status-active);
+    transition: width 300ms ease-in-out;
+}

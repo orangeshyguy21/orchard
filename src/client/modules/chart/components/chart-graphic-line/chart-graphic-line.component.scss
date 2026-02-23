@@ -1,0 +1,23 @@
+@use 'molecule/molecule';
+
+:host {
+	@extend %block;
+	@extend %h-full;
+}
+
+.chart-graphic-line-svg {
+	width: 100%;
+	height: 100%;
+}
+
+.chart-graphic-line-area {
+	fill: var(--orc-outline-variant);
+	opacity: 0.3;
+}
+
+.chart-graphic-line-stroke {
+	fill: none;
+	stroke: var(--orc-outline-variant);
+	stroke-width: 2;
+	vector-effect: non-scaling-stroke;
+}

@@ -1,0 +1,46 @@
+@use 'molecule/molecule';
+@use 'nucleus/nucleus';
+
+.health-shimmer {
+    height: 12rem;
+    @extend %orc-corner-small;
+}
+
+.health-sparkline {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.25rem;
+    height: 2rem;
+}
+
+.health-sparkline-bar {
+    flex: 1;
+    min-height: 2px;
+    border-radius: 2px 2px 0 0;
+    background: var(--orc-primary);
+    transition: height 300ms ease-in-out;
+}
+
+.health-card-chart {
+    @extend %absolute;
+    @extend %z-index-0;
+    @extend %top-half;
+    @extend %right-0;
+    @extend %bottom-0;
+    @extend %left-half;
+    @extend %overflow-hidden;
+    opacity: 0.33;
+    border-bottom-right-radius: 0.5rem;
+}
+
+.health-progress-ring {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: conic-gradient(
+        var(--orc-status-active) calc(var(--progress) * 1%),
+        var(--mat-sys-surface-container-high) 0
+    );
+    mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
+}

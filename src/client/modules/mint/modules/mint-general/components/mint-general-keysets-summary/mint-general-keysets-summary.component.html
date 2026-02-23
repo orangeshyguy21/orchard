@@ -1,0 +1,52 @@
+<div class="flex flex-column flex-gap-1">
+	<div class="title-l">Keysets</div>
+	<mat-card appearance="outlined" class="relative overflow-hidden">
+		<mat-card-content class="orc-surface-container-low-bg">
+			@if (loading()) {
+				<div class="keysets-shimmer orc-animation-shimmer-highest"></div>
+			} @else {
+				<div class="flex flex-column flex-gap-1">
+					<div class="flex flex-row flex-items-center flex-gap-1">
+						<div class="flex flex-column flex-grow flex-gap-0-25">
+							<div class="flex flex-row flex-items-center flex-gap-0-5">
+								<span class="font-size-l font-weight-semi-bold">{{ active_count() }}</span>
+								<span class="font-size-s orc-outline-color">active</span>
+								<span class="font-size-s orc-outline-variant-color">/</span>
+								<span class="font-size-s orc-outline-color">{{ inactive_count() }} inactive</span>
+							</div>
+							<div class="keysets-ratio-bar">
+								<div class="keysets-ratio-fill" [style.width.%]="active_ratio()"></div>
+							</div>
+						</div>
+					</div>
+
+					<div>
+						<mat-chip-set class="orc-medium-chip-set">
+							@for (unit of units_in_use(); track unit) {
+								<mat-chip class="keyset-unit-chip" [class]="'keyset-unit-' + unit.toLowerCase()">
+									{{ unit | uppercase }}
+								</mat-chip>
+							}
+						</mat-chip-set>
+						<div class="font-size-xs orc-outline-color">Units</div>
+					</div>
+
+					<div class="flex flex-row flex-gap-1 flex-wrap">
+						<div class="orc-high-card p-0-5 p-h-1 flex-1">
+							<div class="font-size-l font-weight-semi-bold text-nowrap">
+								{{ total_blind_sigs() | number }}
+							</div>
+							<div class="font-size-xs orc-outline-color">Blind sigs</div>
+						</div>
+						<div class="orc-high-card p-0-5 p-h-1 flex-1">
+							<div class="font-size-l font-weight-semi-bold text-nowrap">
+								{{ total_proof_count() | number }}
+							</div>
+							<div class="font-size-xs orc-outline-color">Proofs</div>
+						</div>
+					</div>
+				</div>
+			}
+		</mat-card-content>
+	</mat-card>
+</div>

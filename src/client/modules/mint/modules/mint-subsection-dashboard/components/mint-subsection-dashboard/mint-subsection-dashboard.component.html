@@ -1,5 +1,5 @@
 <div class="mint-dashboard-container">
-	<div class="mint-dashboard-header p-b-1">
+	<div class="mint-dashboard-row p-b-1">
 		<orc-mint-general-info
 			[loading]="loading_mint_icon()"
 			[icon_data]="mint_icon_data()"
@@ -8,6 +8,33 @@
 			[device_type]="device_type()"
 			[connections]="mint_connections"
 		></orc-mint-general-info>
+		<orc-mint-general-config-summary
+			[info]="mint_info"
+			[quote_ttls]="mint_quote_ttls"
+			[loading]="loading_summary()"
+		></orc-mint-general-config-summary>
+	</div>
+
+	<div class="mint-dashboard-row p-b-1">
+		<orc-mint-general-keysets-summary
+			[keysets]="mint_keysets"
+			[proof_counts]="mint_keyset_proof_counts"
+			[loading]="loading_summary()"
+		></orc-mint-general-keysets-summary>
+		<orc-mint-general-health
+			[pulse]="mint_pulse"
+			[sparkline_data]="sparkline_data()"
+			[mint_count_7d]="mint_count_7d()"
+			[melt_count_7d]="melt_count_7d()"
+			[swap_count_7d]="swap_count_7d()"
+			[mint_sparkline_7d]="mint_sparkline_7d()"
+			[melt_sparkline_7d]="melt_sparkline_7d()"
+			[swap_sparkline_7d]="swap_sparkline_7d()"
+			[loading]="loading_summary()"
+		></orc-mint-general-health>
+	</div>
+
+	<div class="mint-dashboard-row-full p-b-1">
 		<orc-mint-general-balance-sheet
 			[balances]="mint_balances"
 			[keysets]="mint_keysets"

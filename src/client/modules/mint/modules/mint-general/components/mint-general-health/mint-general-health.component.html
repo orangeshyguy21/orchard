@@ -1,0 +1,89 @@
+<div class="flex flex-column flex-gap-1">
+	<div class="title-l">Pulse</div>
+	<mat-card appearance="outlined" class="relative overflow-hidden">
+		<mat-card-content class="orc-surface-container-low-bg">
+			@if (loading()) {
+				<div class="health-shimmer orc-animation-shimmer-highest"></div>
+			} @else {
+				<div class="flex flex-column flex-gap-1">
+					<div class="flex flex-items-center flex-gap-0-5">
+						<span class="font-size-l font-weight-semi-bold">{{ total_activity_7d() }}</span>
+						<span class="font-size-s orc-outline-color">ops (7d)</span>
+					</div>
+
+					<div class="flex flex-row flex-gap-1 flex-wrap">
+						<div class="orc-high-card p-0-5 p-h-1 flex-1 relative">
+							<div class="relative z-index-1">
+								<div class="font-size-l font-weight-semi-bold">{{ mint_count_7d() }}</div>
+								<div class="font-size-xs orc-outline-color">Mints</div>
+							</div>
+							<div class="health-card-chart">
+								<orc-chart-graphic-line [points]="mint_sparkline_7d()"></orc-chart-graphic-line>
+							</div>
+						</div>
+						<div class="orc-high-card p-0-5 p-h-1 flex-1 relative">
+							<div class="relative z-index-1">
+								<div class="font-size-l font-weight-semi-bold">{{ melt_count_7d() }}</div>
+								<div class="font-size-xs orc-outline-color">Melts</div>
+							</div>
+							<div class="health-card-chart">
+								<orc-chart-graphic-line [points]="melt_sparkline_7d()"></orc-chart-graphic-line>
+							</div>
+						</div>
+						<div class="orc-high-card p-0-5 p-h-1 flex-1 relative">
+							<div class="relative z-index-1">
+								<div class="font-size-l font-weight-semi-bold">{{ swap_count_7d() }}</div>
+								<div class="font-size-xs orc-outline-color">Swaps</div>
+							</div>
+							<div class="health-card-chart">
+								<orc-chart-graphic-line [points]="swap_sparkline_7d()"></orc-chart-graphic-line>
+							</div>
+						</div>
+					</div>
+
+					@if (sparkline_data().length > 0) {
+						<div>
+							<div class="health-sparkline">
+								@for (value of sparkline_data(); track $index) {
+									<div
+										class="health-sparkline-bar"
+										[style.height.%]="getBarHeight(value)"
+									></div>
+								}
+							</div>
+							<div class="font-size-xs orc-outline-color">7-day trend</div>
+						</div>
+					}
+
+					<div class="flex flex-row flex-gap-1 flex-wrap">
+						<div class="orc-high-card p-0-5 p-h-1 flex-1">
+							<div class="flex flex-items-center flex-gap-0-5">
+								<div class="health-progress-ring" [style.--progress]="mint_success_rate()"></div>
+								<div>
+									<div class="font-size-l font-weight-semi-bold">{{ mint_success_rate() }}%</div>
+									<div class="font-size-xs orc-outline-color">Mint success</div>
+								</div>
+							</div>
+						</div>
+						<div class="orc-high-card p-0-5 p-h-1 flex-1">
+							<div class="flex flex-items-center flex-gap-0-5">
+								<div class="health-progress-ring" [style.--progress]="melt_success_rate()"></div>
+								<div>
+									<div class="font-size-l font-weight-semi-bold">{{ melt_success_rate() }}%</div>
+									<div class="font-size-xs orc-outline-color">Melt success</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="flex flex-items-center flex-gap-0-5">
+						<mat-icon class="icon-sm orc-outline-color">history</mat-icon>
+						<span class="font-size-s orc-outline-color">
+							Last activity: {{ formatRelativeTime(last_activity_time()) }}
+						</span>
+					</div>
+				</div>
+			}
+		</mat-card-content>
+	</mat-card>
+</div>

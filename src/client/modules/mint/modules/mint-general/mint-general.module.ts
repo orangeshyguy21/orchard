@@ -14,6 +14,7 @@ import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {OrcLocalModule} from '@client/modules/local/local.module';
 import {OrcErrorModule} from '@client/modules/error/error.module';
 import {OrcTimeModule} from '@client/modules/time/time.module';
+import {OrcChartModule} from '@client/modules/chart/chart.module';
 /* Local Dependencies */
 import {MintGeneralIconComponent} from './components/mint-general-icon/mint-general-icon.component';
 import {MintGeneralNameComponent} from './components/mint-general-name/mint-general-name.component';
@@ -22,6 +23,9 @@ import {MintGeneralBalanceSheetComponent} from './components/mint-general-balanc
 import {MintGeneralInfoComponent} from './components/mint-general-info/mint-general-info.component';
 import {MintGeneralBalanceStacksComponent} from './components/mint-general-balance-stacks/mint-general-balance-stacks.component';
 import {MintGeneralKeysetVersionComponent} from './components/mint-general-keyset-version/mint-general-keyset-version.component';
+import {MintGeneralKeysetsSummaryComponent} from './components/mint-general-keysets-summary/mint-general-keysets-summary.component';
+import {MintGeneralConfigSummaryComponent} from './components/mint-general-config-summary/mint-general-config-summary.component';
+import {MintGeneralHealthComponent} from './components/mint-general-health/mint-general-health.component';
 
 @NgModule({
 	declarations: [
@@ -32,6 +36,9 @@ import {MintGeneralKeysetVersionComponent} from './components/mint-general-keyse
 		MintGeneralInfoComponent,
 		MintGeneralBalanceStacksComponent,
 		MintGeneralKeysetVersionComponent,
+		MintGeneralKeysetsSummaryComponent,
+		MintGeneralConfigSummaryComponent,
+		MintGeneralHealthComponent,
 	],
 	imports: [
 		CommonModule,
@@ -46,6 +53,7 @@ import {MintGeneralKeysetVersionComponent} from './components/mint-general-keyse
 		OrcLocalModule,
 		OrcErrorModule,
 		OrcTimeModule,
+		OrcChartModule,
 	],
 	exports: [
 		MintGeneralIconComponent,
@@ -54,6 +62,9 @@ import {MintGeneralKeysetVersionComponent} from './components/mint-general-keyse
 		MintGeneralBalanceSheetComponent,
 		MintGeneralInfoComponent,
 		MintGeneralKeysetVersionComponent,
+		MintGeneralKeysetsSummaryComponent,
+		MintGeneralConfigSummaryComponent,
+		MintGeneralHealthComponent,
 	],
 })
 export class OrcMintGeneralModule {}

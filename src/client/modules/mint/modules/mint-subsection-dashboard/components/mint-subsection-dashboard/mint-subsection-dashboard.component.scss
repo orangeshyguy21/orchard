@@ -9,10 +9,20 @@ $analytics-offset: 86px;
 	@extend %p-1;
 }
 
-.mint-dashboard-header {
+.mint-dashboard-row {
 	@extend %flex;
 	@extend %flex-gap-2;
 	@extend %flex-wrap;
+
+	> * {
+		flex: 1 1 18rem;
+		min-width: 0;
+	}
+}
+
+.mint-dashboard-row-full {
+	@extend %flex;
+	@extend %flex-gap-2;
 }
 
 .mint-analytic-control-panel {

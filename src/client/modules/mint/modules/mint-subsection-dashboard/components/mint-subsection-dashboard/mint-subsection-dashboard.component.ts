@@ -45,6 +45,9 @@ import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintInfo} from '@client/modules/mint/classes/mint-info.class';
 import {MintFee} from '@client/modules/mint/classes/mint-fee.class';
 import {MintAnalytic} from '@client/modules/mint/classes/mint-analytic.class';
+import {MintKeysetProofCount} from '@client/modules/mint/classes/mint-keyset-proof-count.class';
+import {MintQuoteTtls} from '@client/modules/mint/classes/mint-quote-ttls.class';
+import {MintPulse} from '@client/modules/mint/classes/mint-pulse.class';
 import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
 /* Shared Dependencies */
 import {AiFunctionName, MintAnalyticsInterval, MintUnit, LightningAnalyticsInterval} from '@shared/generated.types';
@@ -98,6 +101,10 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	// state
 	public mint_type!: string;
 	public loading_static_data: boolean = true;
+	// summary card data
+	public mint_keyset_proof_counts: MintKeysetProofCount[] = [];
+	public mint_quote_ttls: MintQuoteTtls | null = null;
+	public mint_pulse: MintPulse | null = null;
 
 	public errors_lightning: OrchardError[] = [];
 	// charts
@@ -134,6 +141,14 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public type_swaps = computed(() => this.page_settings().type.swaps || ChartType.Volume);
 	public type_fee_revenue = computed(() => this.page_settings().type.fee_revenue || ChartType.Volume);
 	public loading_analytics = computed(() => this.loading_mint() || this.loading_bitcoin());
+	public loading_summary = signal<boolean>(true);
+	public sparkline_data = signal<number[]>([]);
+	public mint_count_7d = signal<number>(0);
+	public melt_count_7d = signal<number>(0);
+	public swap_count_7d = signal<number>(0);
+	public mint_sparkline_7d = signal<number[]>([]);
+	public melt_sparkline_7d = signal<number[]>([]);
+	public swap_sparkline_7d = signal<number[]>([]);
 
 	private subscriptions: Subscription = new Subscription();
 
@@ -170,6 +185,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.setMintIcon();
 		this.orchardOptionalInit();
 		this.getMintFees();
+		this.initSummaryCards();
 		await this.initAnalytics();
 		this.mint_fee_revenue.set(this.getMintFeeRevenueState());
 		this.subscriptions.add(this.getBreakpointSubscription());
@@ -206,6 +222,84 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			this.mint_icon_data.set(image.data);
 			this.loading_mint_icon.set(false);
 		});
+	}
+
+	/** Loads data for the summary cards in parallel with analytics. */
+	private initSummaryCards(): void {
+		const timezone = this.settingDeviceService.getTimezone();
+		const now = Math.floor(DateTime.now().toSeconds());
+		const seven_days_ago = Math.floor(DateTime.now().minus({days: 7}).startOf('day').toSeconds());
+
+		forkJoin([
+			this.mintService.loadMintKeysetProofCounts({}),
+			this.mintService.getMintQuoteTtls(),
+			this.mintService.getMintPulse(),
+			this.mintService.loadMintAnalyticsMints({
+				units: [],
+				date_start: seven_days_ago,
+				date_end: now,
+				interval: MintAnalyticsInterval.Day,
+				timezone: timezone,
+			}),
+			this.mintService.loadMintAnalyticsMelts({
+				units: [],
+				date_start: seven_days_ago,
+				date_end: now,
+				interval: MintAnalyticsInterval.Day,
+				timezone: timezone,
+			}),
+			this.mintService.loadMintAnalyticsSwaps({
+				units: [],
+				date_start: seven_days_ago,
+				date_end: now,
+				interval: MintAnalyticsInterval.Day,
+				timezone: timezone,
+			}),
+		])
+			.pipe(
+				catchError((error) => {
+					console.error('Error loading summary cards:', error);
+					this.loading_summary.set(false);
+					this.cdr.detectChanges();
+					return EMPTY;
+				}),
+			)
+			.subscribe(([proof_counts, quote_ttls, pulse, sparkline_mints, sparkline_melts, sparkline_swaps]) => {
+				this.mint_keyset_proof_counts = proof_counts;
+				this.mint_quote_ttls = quote_ttls;
+				this.mint_pulse = pulse;
+				this.sparkline_data.set(this.buildSparklineData(sparkline_mints, sparkline_melts, sparkline_swaps));
+				this.mint_count_7d.set(sparkline_mints.reduce((sum, a) => sum + a.operation_count, 0));
+				this.melt_count_7d.set(sparkline_melts.reduce((sum, a) => sum + a.operation_count, 0));
+				this.swap_count_7d.set(sparkline_swaps.reduce((sum, a) => sum + a.operation_count, 0));
+				this.mint_sparkline_7d.set(this.buildDailySparkline(sparkline_mints));
+				this.melt_sparkline_7d.set(this.buildDailySparkline(sparkline_melts));
+				this.swap_sparkline_7d.set(this.buildDailySparkline(sparkline_swaps));
+				this.loading_summary.set(false);
+				this.cdr.detectChanges();
+			});
+	}
+
+	/** Aggregates analytics data into daily operation counts for the sparkline. */
+	private buildSparklineData(mints: MintAnalytic[], melts: MintAnalytic[], swaps: MintAnalytic[]): number[] {
+		const day_map = new Map<number, number>();
+		for (const analytic of [...mints, ...melts, ...swaps]) {
+			const current = day_map.get(analytic.created_time) ?? 0;
+			day_map.set(analytic.created_time, current + analytic.operation_count);
+		}
+		const sorted_keys = Array.from(day_map.keys()).sort((a, b) => a - b);
+		return sorted_keys.map((key) => day_map.get(key) ?? 0);
+	}
+
+	/** Aggregates a single analytics type into daily operation counts. */
+	private buildDailySparkline(analytics: MintAnalytic[]): number[] {
+		const day_map = new Map<number, number>();
+		for (const analytic of analytics) {
+			const current = day_map.get(analytic.created_time) ?? 0;
+			day_map.set(analytic.created_time, current + analytic.operation_count);
+		}
+		const sorted_keys = Array.from(day_map.keys()).sort((a, b) => a - b);
+		return sorted_keys.map((key) => day_map.get(key) ?? 0);
 	}
 
 	/* *******************************************************

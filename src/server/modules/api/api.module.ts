@@ -38,6 +38,7 @@ import {MintSwapModule} from './mint/swap/mintswap.module';
 import {MintAnalyticsModule} from './mint/analytics/mintanalytics.module';
 import {MintCountModule} from './mint/count/mintcount.module';
 import {MintFeeModule} from './mint/fee/mintfee.module';
+import {MintPulseModule} from './mint/pulse/mintpulse.module';
 // AI Endpoints
 import {AiModelModule} from './ai/model/aimodel.module';
 import {AiAgentModule} from './ai/agent/aiagent.module';
@@ -84,6 +85,7 @@ import {ApiSettingModule} from './setting/setting.module';
 		MintSwapModule,
 		MintAnalyticsModule,
 		MintCountModule,
+		MintPulseModule,
 		MintFeeModule,
 		AiModelModule,
 		AiAgentModule,

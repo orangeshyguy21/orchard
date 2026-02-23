@@ -55,6 +55,7 @@ import {
 	MintDatabaseRestoreResponse,
 	MintProofGroupStatsResponse,
 	MintFeesResponse,
+	MintPulseResponse,
 } from '@client/modules/mint/types/mint.types';
 import {ApiService} from '@client/modules/api/services/api/api.service';
 import {CacheService} from '@client/modules/cache/services/cache/cache.service';
@@ -71,6 +72,7 @@ import {MintAnalytic, MintAnalyticKeyset} from '@client/modules/mint/classes/min
 import {MintSwap} from '@client/modules/mint/classes/mint-swap.class';
 import {MintFee} from '@client/modules/mint/classes/mint-fee.class';
 import {MintKeysetProofCount} from '@client/modules/mint/classes/mint-keyset-proof-count.class';
+import {MintPulse} from '@client/modules/mint/classes/mint-pulse.class';
 /* Shared Dependencies */
 import {MintAnalyticsInterval, OrchardContact, MintUnit} from '@shared/generated.types';
 /* Local Dependencies */
@@ -114,6 +116,7 @@ import {
 	MINT_DATABASE_RESTORE_MUTATION,
 	MINT_PROOF_GROUP_STATS_QUERY,
 	MINT_FEES_QUERY,
+	MINT_PULSE_QUERY,
 } from './mint.queries';
 
 @Injectable({
@@ -354,6 +357,23 @@ export class MintService {
 			map((mintQuoteTtls) => new MintQuoteTtls(mintQuoteTtls)),
 			catchError((error) => {
 				console.error('Error loading mint quote ttls:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	/** Fetches aggregated mint pulse/health metrics. */
+	public getMintPulse(): Observable<MintPulse> {
+		const query = getApiQuery(MINT_PULSE_QUERY);
+
+		return this.http.post<OrchardRes<MintPulseResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.mint_pulse;
+			}),
+			map((mint_pulse) => new MintPulse(mint_pulse)),
+			catchError((error) => {
+				console.error('Error loading mint pulse:', error);
 				return throwError(() => error);
 			}),
 		);

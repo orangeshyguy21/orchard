@@ -442,6 +442,32 @@ query MintFees($limit: Int) {
 	}
 }`;
 
+export const MINT_PULSE_QUERY = `{
+	mint_pulse{
+		current_24h{
+			mint_count
+			melt_count
+			swap_count
+		}
+		previous_24h{
+			mint_count
+			melt_count
+			swap_count
+		}
+		mint_quote_rate{
+			total
+			completed
+		}
+		melt_quote_rate{
+			total
+			completed
+		}
+		last_mint_time
+		last_melt_time
+		last_swap_time
+	}
+}`;
+
 export const MINT_NUT04_QUOTE_UPDATE_MUTATION = `
 mutation MintNut04QuoteUpdate($mint_nut04_quote_update: MintNut04QuoteUpdateInput!) {
 	mint_nut04_quote_update(mint_nut04_quote_update: $mint_nut04_quote_update) {

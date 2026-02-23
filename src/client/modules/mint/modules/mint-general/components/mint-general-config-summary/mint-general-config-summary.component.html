@@ -1,0 +1,58 @@
+<div class="flex flex-column flex-gap-1">
+	<div class="title-l">Config</div>
+	<mat-card appearance="outlined" class="relative overflow-hidden">
+		<mat-card-content class="orc-surface-container-low-bg">
+			@if (loading()) {
+				<div class="config-shimmer orc-animation-shimmer-highest"></div>
+			} @else {
+				<div class="flex flex-column flex-gap-1">
+					<div class="config-nut-grid">
+						@for (nut of nut_grid(); track nut.num) {
+							<div class="config-nut-item flex flex-column flex-items-center">
+								<orc-graphic-status [status]="nut.status" size="0.5rem"></orc-graphic-status>
+								<span class="font-size-xs font-weight-semi-bold">{{ nut.num }}</span>
+							</div>
+						}
+					</div>
+					<div class="font-size-xs orc-outline-color">NUT Specifications</div>
+
+					<div class="flex flex-row flex-gap-1 flex-wrap">
+						<div class="orc-high-card p-0-5 p-h-1 flex-1">
+							<div class="flex flex-items-center flex-gap-0-5">
+								<orc-graphic-status [status]="minting_disabled() ? 'inactive' : 'active'" size="0.5rem">
+								</orc-graphic-status>
+								<span class="font-size-s">
+									Minting {{ minting_disabled() ? 'off' : 'on' }}
+								</span>
+							</div>
+						</div>
+						<div class="orc-high-card p-0-5 p-h-1 flex-1">
+							<div class="flex flex-items-center flex-gap-0-5">
+								<orc-graphic-status [status]="melting_disabled() ? 'inactive' : 'active'" size="0.5rem">
+								</orc-graphic-status>
+								<span class="font-size-s">
+									Melting {{ melting_disabled() ? 'off' : 'on' }}
+								</span>
+							</div>
+						</div>
+					</div>
+
+					<div class="flex flex-row flex-gap-1 flex-wrap">
+						<div class="orc-high-card p-0-5 p-h-1 flex-1">
+							<div class="font-size-l font-weight-semi-bold text-nowrap">
+								{{ formatTtl(quote_ttls()?.mint_ttl ?? null) }}
+							</div>
+							<div class="font-size-xs orc-outline-color">Mint quote TTL</div>
+						</div>
+						<div class="orc-high-card p-0-5 p-h-1 flex-1">
+							<div class="font-size-l font-weight-semi-bold text-nowrap">
+								{{ formatTtl(quote_ttls()?.melt_ttl ?? null) }}
+							</div>
+							<div class="font-size-xs orc-outline-color">Melt quote TTL</div>
+						</div>
+					</div>
+				</div>
+			}
+		</mat-card-content>
+	</mat-card>
+</div>

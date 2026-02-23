@@ -1,0 +1,6 @@
+@if (polyline_points()) {
+	<svg viewBox="0 0 100 100" preserveAspectRatio="none" class="chart-graphic-line-svg">
+		<polygon [attr.points]="area_points()" class="chart-graphic-line-area" />
+		<polyline [attr.points]="polyline_points()" class="chart-graphic-line-stroke" />
+	</svg>
+}
