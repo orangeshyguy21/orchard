@@ -19,17 +19,15 @@ const TYPE_PAST: Record<EventLogType, string> = {
     pure: true,
 })
 export class EventLogDetailsPipe implements PipeTransform {
-    /** Transforms event log details into summary strings (e.g. "sat bolt11 max_amount updated") */
-    transform(details: EventLogDetail[], entity_id: string | null, type: EventLogType): string[] {
+    /** Transforms a single event log detail into a summary string (e.g. "sat bolt11 max_amount updated") */
+    transform(detail: EventLogDetail, entity_id: string | null, type: EventLogType): string {
         const verb = TYPE_PAST[type] ?? type.toLowerCase();
-        return details.map((detail) => {
-            const parts: string[] = [];
-            if (entity_id) {
-                parts.push(entity_id.replaceAll(':', ' '));
-            }
-            parts.push(detail.field);
-            parts.push(verb);
-            return parts.join(' ');
-        });
+        const parts: string[] = [];
+        if (entity_id) {
+            parts.push(entity_id.replaceAll(':', ' '));
+        }
+        parts.push(detail.field);
+        parts.push(verb);
+        return parts.join(' ');
     }
 }

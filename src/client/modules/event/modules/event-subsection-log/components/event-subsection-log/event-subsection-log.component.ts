@@ -39,6 +39,7 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
     public readonly error = signal<boolean>(false);
     public readonly count = signal<number>(0);
     public readonly id_user = signal<string | null>(null);
+    public readonly locale = signal<string>(this.settingDeviceService.getLocale());
 
     private readonly loading_users = signal<boolean>(true);
     private readonly loading_events = signal<boolean>(true);

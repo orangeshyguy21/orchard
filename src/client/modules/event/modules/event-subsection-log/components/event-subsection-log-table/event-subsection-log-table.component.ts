@@ -8,7 +8,7 @@ import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Native Dependencies */
 import {EventLog} from '@client/modules/event/classes/event-log.class';
 /* Shared Dependencies */
-import {EventLogActorType, EventLogStatus} from '@shared/generated.types';
+import {EventLogActorType, EventLogDetailStatus, EventLogStatus} from '@shared/generated.types';
 
 @Component({
     selector: 'orc-event-subsection-log-table',
@@ -19,6 +19,7 @@ import {EventLogActorType, EventLogStatus} from '@shared/generated.types';
 })
 export class EventSubsectionLogTableComponent {
     public readonly EventLogActorType = EventLogActorType;
+    public readonly EventLogDetailStatus = EventLogDetailStatus;
     public readonly EventLogStatus = EventLogStatus;
 
     /* Inputs */

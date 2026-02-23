@@ -5,9 +5,10 @@
     @extend %flex-row;
     @extend %flex-items-center;
     @extend %orc-corner-full;
-    @extend %p-0-25;
+    @extend %p-0-5;
+    @extend %orc-surface-container-high-bg;
 
     mat-icon{
-        transform: scale(0.8);
+        // transform: scale(0.9);
     }
 }

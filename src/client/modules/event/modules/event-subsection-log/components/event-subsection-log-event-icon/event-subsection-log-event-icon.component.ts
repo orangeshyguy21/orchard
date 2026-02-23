@@ -17,18 +17,10 @@ export class EventSubsectionLogEventIconComponent {
 
     public readonly icon = computed(() => {
         const type = this.type();
-        if (type === EventLogType.Create) return 'add';
+        if (type === EventLogType.Create) return 'add_circle';
         if (type === EventLogType.Delete) return 'delete_forever';
         if (type === EventLogType.Execute) return 'play_arrow';
         if (type === EventLogType.Update) return 'edit';
         return 'edit';
-    });
-
-    public readonly status_color = computed(() => {
-        const status = this.status();
-        if (status === EventLogStatus.Success) return 'orc-tertiary-container-bg';
-        if (status === EventLogStatus.Partial) return 'orc-on-warning-bg';
-        if (status === EventLogStatus.Error) return 'orc-on-error-bg';
-        return 'orc-tertiary-container-bg';
     });
 }

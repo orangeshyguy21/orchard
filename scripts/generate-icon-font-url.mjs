@@ -95,6 +95,7 @@ const ICONS = [
   'chevron_left',
   'chevron_right',
   'arrow_forward',
+  'add_circle',
 ];
 
 // Sort alphabetically and remove duplicates

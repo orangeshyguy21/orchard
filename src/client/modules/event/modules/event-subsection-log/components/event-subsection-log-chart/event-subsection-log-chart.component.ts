@@ -41,6 +41,7 @@ export class EventSubsectionLogChartComponent implements OnChanges, OnDestroy {
     public readonly events = input.required<EventLog[]>();
     public readonly date_start = input.required<number>();
     public readonly date_end = input.required<number>();
+    public readonly locale = input.required<string>();
     public readonly loading = input.required<boolean>();
     public readonly page_index = input.required<number>();
     public readonly page_size = input.required<number>();
@@ -54,6 +55,7 @@ export class EventSubsectionLogChartComponent implements OnChanges, OnDestroy {
     public chart_data!: ChartConfiguration<'bubble'>['data'];
     public chart_options!: ChartConfiguration<'bubble'>['options'];
     public displayed = signal<boolean>(true);
+    private current_interval: BucketInterval = 'day';
 
     public readonly has_data = computed(() => {
         return this.events().length > 0;
@@ -120,11 +122,11 @@ export class EventSubsectionLogChartComponent implements OnChanges, OnDestroy {
     private init(): void {
         const events = this.events();
         if (events.length === 0) return;
-        const interval = this.getBucketInterval(this.date_start(), this.date_end());
-        const buckets = this.bucketEvents(events, interval);
+        this.current_interval = this.getBucketInterval(this.date_start(), this.date_end());
+        const buckets = this.bucketEvents(events, this.current_interval);
         const max_count = Math.max(...buckets.map((b) => b.total));
         this.chart_data = this.buildChartData(buckets, max_count);
-        this.chart_options = this.buildChartOptions(interval);
+        this.chart_options = this.buildChartOptions(this.current_interval);
         setTimeout(() => this.chart?.chart?.resize());
     }
 
@@ -174,10 +176,84 @@ export class EventSubsectionLogChartComponent implements OnChanges, OnDestroy {
 
     /** Returns dot color based on success/error ratio, matching event icon status colors */
     private getDotColor(bucket: EventTimelineBucket): string {
-        let token = '--mat-sys-tertiary-container';
-        if (bucket.success === 0 && bucket.partial === 0) token = '--mat-sys-error';
-        else if (bucket.error > 0 || bucket.partial > 0) token = '--orc-on-warning-bg';
+        let token = '--orc-status-active';
+        if (bucket.success === 0 && bucket.partial === 0) token = '--orc-status-inactive';
+        else if (bucket.error > 0 || bucket.partial > 0) token = '--orc-status-warning';
+        const hex = this.chartService.getGridColor(token);
+        return this.chartService.hexToRgba(hex, 0.6);
+    }
+
+    /* *******************************************************
+        Tooltip
+    ******************************************************** */
+
+    /** Returns the hex color for a given status token */
+    private getStatusColor(token: string): string {
         return this.chartService.getGridColor(token);
+    }
+
+    /** Formats bucket timestamp using Luxon with the global locale */
+    private formatBucketTimestamp(timestamp: number): string {
+        const dt = DateTime.fromSeconds(timestamp);
+        if (this.current_interval === 'hour') return dt.toLocaleString(DateTime.DATETIME_MED);
+        return dt.toLocaleString(DateTime.DATE_MED);
+    }
+
+    /** Renders a custom HTML tooltip with colored status dots */
+    private renderTooltip(context: any): void {
+        const {chart, tooltip} = context;
+        let el = chart.canvas.parentNode.querySelector('[data-chart-tooltip]') as HTMLDivElement | null;
+
+        if (!el) {
+            el = document.createElement('div');
+            el.setAttribute('data-chart-tooltip', '');
+            Object.assign(el.style, {
+                position: 'absolute',
+                pointerEvents: 'none',
+                transform: 'translate(-50%, -100%)',
+                marginTop: '-0.5rem',
+                padding: '0.375rem 0.625rem',
+                background: 'var(--mat-sys-surface-container-highest)',
+                color: 'var(--mat-sys-on-surface)',
+                fontSize: '0.75rem',
+                lineHeight: '1.4',
+                whiteSpace: 'nowrap',
+                borderRadius: 'var(--mat-sys-corner-extra-small)',
+                transition: 'opacity 0.15s ease',
+                zIndex: '10',
+            });
+            chart.canvas.parentNode.appendChild(el);
+        }
+
+        if (tooltip.opacity === 0) {
+            el.style.opacity = '0';
+            return;
+        }
+
+        const point = tooltip.dataPoints?.[0]?.raw as BubblePointMeta | undefined;
+        if (!point) return;
+
+        const b = point.bucket;
+        const active_color = this.getStatusColor('--orc-status-active');
+        const inactive_color = this.getStatusColor('--orc-status-inactive');
+        const warning_color = this.getStatusColor('--orc-status-warning');
+        const outline_color = this.getStatusColor('--mat-sys-outline');
+
+        const dot = (color: string) =>
+            `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${color};margin-right:6px;"></span>`;
+
+        const lines: string[] = [
+            `<div style="color:${outline_color};margin-bottom:2px;">${this.formatBucketTimestamp(b.timestamp)}</div>`,
+            `<div style="margin-bottom:4px;">${b.total} event${b.total !== 1 ? 's' : ''}</div>`,
+        ];
+        if (b.success > 0) lines.push(`<div>${dot(active_color)}${b.success} success</div>`);
+        if (b.error > 0) lines.push(`<div>${dot(inactive_color)}${b.error} failed</div>`);
+        if (b.partial > 0) lines.push(`<div>${dot(warning_color)}${b.partial} partial</div>`);
+
+        el.innerHTML = lines.join('');
+        el.style.opacity = '1';
+        el.style.left = tooltip.caretX + 'px';
+        el.style.top = tooltip.caretY + 'px';
     }
 
     /* *******************************************************
@@ -223,7 +299,11 @@ export class EventSubsectionLogChartComponent implements OnChanges, OnDestroy {
                     max: this.date_end() * 1000,
                     time: {
                         unit: time_unit,
-                        tooltipFormat: interval === 'hour' ? 'MMM d, h:mm a' : 'MMM d, yyyy',
+                    },
+                    adapters: {
+                        date: {
+                            locale: this.locale(),
+                        },
                     },
                     ticks: {
                         maxRotation: 0,
@@ -243,18 +323,8 @@ export class EventSubsectionLogChartComponent implements OnChanges, OnDestroy {
             plugins: {
                 legend: {display: false},
                 tooltip: {
-                    enabled: true,
-                    callbacks: {
-                        label: (context: any) => {
-                            const point = context.raw as BubblePointMeta;
-                            const b = point.bucket;
-                            const parts = [`${b.total} event${b.total !== 1 ? 's' : ''}`];
-                            if (b.success > 0) parts.push(`${b.success} success`);
-                            if (b.error > 0) parts.push(`${b.error} failed`);
-                            if (b.partial > 0) parts.push(`${b.partial} partial`);
-                            return parts.join(', ');
-                        },
-                    },
+                    enabled: false,
+                    external: (context: any) => this.renderTooltip(context),
                 },
             },
         };

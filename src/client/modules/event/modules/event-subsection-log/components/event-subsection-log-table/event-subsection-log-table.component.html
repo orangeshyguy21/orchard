@@ -51,8 +51,14 @@
                     <th mat-header-cell *matHeaderCellDef class="data-table-sticky-header">Details</th>
                     <td mat-cell *matCellDef="let entity">
                         <div class="flex flex-column flex-gap-0-25">
-                            @for (summary of entity.details | eventLogDetails: entity.entity_id: entity.type; track $index) {
-                                <div class="font-size-xs orc-outline-color">{{ summary }}</div>
+                            @for (detail of entity.details; track detail.id) {
+                                <div class="flex flex-items-center flex-gap-0-5">
+                                    <orc-graphic-status
+                                        [status]="detail.status === EventLogDetailStatus.Success ? 'active' : 'inactive'"
+                                        size="0.5rem"
+                                    ></orc-graphic-status>
+                                    <div class="font-size-xs orc-outline-color">{{ detail | eventLogDetails: entity.entity_id: entity.type }}</div>
+                                </div>
                             }
                         </div>
                     </td>
