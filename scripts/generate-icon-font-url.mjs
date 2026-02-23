@@ -94,6 +94,7 @@ const ICONS = [
   'last_page',
   'chevron_left',
   'chevron_right',
+  'arrow_forward',
 ];
 
 // Sort alphabetically and remove duplicates

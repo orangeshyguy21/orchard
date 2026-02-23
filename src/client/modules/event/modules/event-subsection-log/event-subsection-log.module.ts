@@ -19,6 +19,7 @@ import {OrcDataModule} from '@client/modules/data/data.module';
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcCrewModule} from '@client/modules/crew/crew.module';
 import {OrcButtonModule} from '@client/modules/button/button.module';
+import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {BaseChartDirective} from 'ng2-charts';
 /* Local Dependencies */
 import {EventSubsectionLogComponent} from './components/event-subsection-log/event-subsection-log.component';
@@ -66,6 +67,7 @@ import {EventLogDetailsPipe} from './pipes/event-log-details/event-log-details.p
         OrcFormModule,
         OrcCrewModule,
         OrcButtonModule,
+        OrcGraphicModule,
         BaseChartDirective,
     ],
     exports: [],
