@@ -1,0 +1,65 @@
+<div class="event-log-detail-container p-v-1">
+    <div class="flex flex-column flex-gap-1">
+        <!-- Event metadata -->
+        <div class="flex flex-gap-2 flex-wrap">
+            <div class="flex flex-column flex-gap-0-5">
+                <div class="orc-outline-color font-weight-extra-light">Event ID</div>
+                <orc-button-copy [text]="event_log().id" size="sm">
+                    <span class="mega-string">{{ event_log().id }}</span>
+                </orc-button-copy>
+            </div>
+            @if (!device_desktop()) {
+                <div class="flex flex-column flex-gap-0-5">
+                    <div class="orc-outline-color font-weight-extra-light">Section</div>
+                    <div class="flex">
+                        <div class="label-state label-default">{{ event_log().section }}</div>
+                    </div>
+                </div>
+            }
+            <div class="flex flex-column flex-gap-0-5">
+                <div class="orc-outline-color font-weight-extra-light">Timestamp</div>
+                <div class="text-nowrap">{{ event_log().timestamp | localTime: 'long' }}</div>
+            </div>
+            @if (event_log().entity_id) {
+                <div class="flex flex-column flex-gap-0-5">
+                    <div class="orc-outline-color font-weight-extra-light">Entity ID</div>
+                    <orc-button-copy [text]="event_log().entity_id!" size="sm">
+                        <span class="mega-string">{{ event_log().entity_id }}</span>
+                    </orc-button-copy>
+                </div>
+            }
+        </div>
+
+        <!-- Detail list -->
+        <div class="flex flex-column flex-gap-0-5 p-t-0-5">
+            <div class="orc-outline-color font-weight-extra-light">Changes ({{ event_log().details.length }})</div>
+            @for (detail of event_log().details; track detail.id) {
+                <div class="detail-row flex flex-items-center flex-gap-1 p-v-0-25" [class.detail-error]="detail.status === EventLogDetailStatus.Error">
+                    <div class="detail-field font-weight-medium font-size-s">{{ detail.field }}</div>
+                    <div class="flex flex-items-center flex-gap-0-5 flex-grow">
+                        @if (detail.old_value) {
+                            <span class="detail-old-value font-size-s orc-outline-color">{{ detail.old_value }}</span>
+                            <mat-icon class="icon-xs orc-outline-color">arrow_forward</mat-icon>
+                        }
+                        <span class="font-size-s">{{ detail.new_value ?? '(null)' }}</span>
+                    </div>
+                    <div class="flex">
+                        <div [ngClass]="{
+                            'label-state': true,
+                            'label-success': detail.status === EventLogDetailStatus.Success,
+                            'label-default': detail.status === EventLogDetailStatus.Error
+                        }">{{ detail.status }}</div>
+                    </div>
+                </div>
+                @if (detail.status === EventLogDetailStatus.Error && detail.error_message) {
+                    <div class="font-size-xs orc-status-warning-color p-l-1">
+                        @if (detail.error_code) {
+                            <span class="font-weight-medium">{{ detail.error_code }}:</span>
+                        }
+                        {{ detail.error_message }}
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>

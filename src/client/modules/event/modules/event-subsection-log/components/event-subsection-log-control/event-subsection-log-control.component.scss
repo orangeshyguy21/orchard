@@ -1,0 +1,9 @@
+@use 'molecule/molecule';
+
+.event-log-control-container {
+    @extend %p-b-1;
+}
+
+.mobile-form-field {
+    width: 11rem;
+}

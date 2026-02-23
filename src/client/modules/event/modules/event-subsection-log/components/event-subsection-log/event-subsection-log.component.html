@@ -1,104 +1,46 @@
 <div class="event-subsection-log-container p-h-1">
-
-    <!-- $section: EventLogSection
-    $actor_type: EventLogActorType
-    $actor_id: String
-    $type: EventLogType
-    $status: EventLogStatus
-    $entity_type: EventLogEntityType
-    $date_start: UnixTimestamp
-    $date_end: UnixTimestamp
-    $page: Int
-    $page_size: Int -->
-
     <div class="event-log-control p-t-1">
-		<div class="flex flex-justify-between flex-gap-2 flex-items-start">
-            control
-			<!-- @if (page_settings) {
-				<orc-mint-subsection-database-control
-					class="flex-grow"
-					[page_settings]="page_settings"
-					[filter]="filter"
-					[unit_options]="unit_options"
-					[state_options]="state_options"
-					[state_enabled]="state_enabled"
-					[date_start]="page_settings.date_start"
-					[date_end]="page_settings.date_end"
-					[units]="page_settings.units"
-					[type]="page_settings.type"
-					[states]="page_settings.states"
-					[loading]="loading_static_data"
-					[mint_genesis_time]="mint_genesis_time"
-					[keysets]="mint_keysets"
-					[device_desktop]="device_type() === 'desktop'"
-					(dateChange)="onDateChange($event)"
-					(typeChange)="onTypeChange($event)"
-					(unitsChange)="onUnitsChange($event)"
-					(statesChange)="onStatesChange($event)"
-					(filterChange)="onFilterChange($event)"
-				></orc-mint-subsection-database-control>
-			}
-			<div>
-				<div class="flex flex-items-center flex-gap-0-5 relative">
-					@switch (device_type()) {
-						@case ('desktop') {
-							<button
-								type="button"
-								matFab
-								extended
-								class="orc-icon-button orc-flat-fab text-nowrap"
-								(click)="onCreate()"
-								(keydown.enter)="$event.preventDefault(); $event.stopPropagation()"
-							>
-								<mat-icon>database</mat-icon>
-								Create Backup
-							</button>
-						}
-						@case ('tablet') {
-							<button
-								type="button"
-								matFab
-								class="orc-icon-button orc-flat-fab text-nowrap"
-								(click)="onCreate()"
-								(keydown.enter)="$event.preventDefault(); $event.stopPropagation()"
-							>
-								<mat-icon>database</mat-icon>
-							</button>
-						}
-					}
+        <div class="flex flex-justify-between flex-gap-2 flex-items-start">
+            @if (page_settings) {
+                <orc-event-subsection-log-control
+                    class="flex-grow"
+                    [date_start]="page_settings.date_start"
+                    [date_end]="page_settings.date_end"
+                    [section]="page_settings.section"
+                    [actor_type]="page_settings.actor_type"
+                    [type]="page_settings.type"
+                    [status]="page_settings.status"
+                    [device_desktop]="device_type() === 'desktop'"
+                    (dateChange)="onDateChange($event)"
+                    (sectionChange)="onSectionChange($event)"
+                    (actorTypeChange)="onActorTypeChange($event)"
+                    (typeChange)="onTypeChange($event)"
+                    (statusChange)="onStatusChange($event)"
+                ></orc-event-subsection-log-control>
+            }
+        </div>
+        <div class="category-rule"></div>
+    </div>
 
-					<button mat-icon-button type="button" class="orc-icon-button" [matMenuTriggerFor]="advanced_menu">
-						<mat-icon>more_vert</mat-icon>
-					</button>
+    <orc-event-subsection-log-table
+        [data_source]="data_source"
+        [loading]="loading()"
+        [error]="error()"
+        [users]="users()"
+        [device_desktop]="device_type() === 'desktop'"
+    ></orc-event-subsection-log-table>
 
-					<mat-menu #advanced_menu="matMenu" yPosition="below" class="orc-sticky-menu orc-more-menu">
-						@if (device_type() === 'mobile') {
-							<button mat-menu-item (click)="onCreate()">
-								<div class="flex flex-items-center flex-gap-0-5">
-									<mat-icon>database</mat-icon>
-									<span>Create Backup</span>
-								</div>
-							</button>
-						}
-						<button mat-menu-item (click)="onRestore()">
-							<div class="flex flex-items-center flex-gap-0-5">
-								<mat-icon>restore</mat-icon>
-								<span>Restore Backup</span>
-							</div>
-						</button>
-						<button mat-menu-item (click)="onRefresh()">
-							<div class="flex flex-items-center flex-gap-0-5">
-								<mat-icon>refresh</mat-icon>
-								<span>Refresh Data</span>
-							</div>
-						</button>
-					</mat-menu>
-				</div>
-			</div> -->
-		</div>
-		<div class="category-rule"></div>
-	</div>
-	<mat-icon class="icon-lg">save_clock</mat-icon>
-	<div>{{ event_logs().length }} event logs</div>
-	<div><pre>{{ event_logs() | json }}</pre></div>
+    <div class="data-table-sticky-footer p-h-1">
+        <div class="category-rule"></div>
+        <mat-paginator
+            class="orc-feature-paginator"
+            (page)="onPage($event)"
+            [hidePageSize]="device_type() === 'mobile'"
+            [length]="count()"
+            [pageSize]="page_settings.page_size ?? 100"
+            [pageSizeOptions]="[10, 25, 50, 100, 250, 500]"
+            [pageIndex]="page_settings.page ?? 0"
+            showFirstLastButtons
+        ></mat-paginator>
+    </div>
 </div>

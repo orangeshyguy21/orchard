@@ -1,0 +1,19 @@
+@use 'molecule/molecule';
+
+.event-log-detail-container {
+    @extend %flex;
+    @extend %flex-column;
+    @extend %w-full;
+}
+
+.detail-row {
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.detail-field {
+    min-width: 10rem;
+}
+
+.detail-old-value {
+    text-decoration: line-through;
+}

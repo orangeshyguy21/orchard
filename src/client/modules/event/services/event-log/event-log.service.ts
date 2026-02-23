@@ -9,13 +9,14 @@ import {ApiService} from '@client/modules/api/services/api/api.service';
 import {OrchardRes} from '@client/modules/api/types/api.types';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {getApiQuery} from '@client/modules/api/helpers/api.helpers';
-import {OrchardEventLog, QueryEvent_LogsArgs} from '@shared/generated.types';
+import {OrchardEventLog, OrchardCommonCount, QueryEvent_LogsArgs} from '@shared/generated.types';
 /* Local Dependencies */
 import {EventLog} from '../../classes/event-log.class';
-import {EVENT_LOGS_QUERY} from './event-log.queries';
+import {EVENT_LOGS_DATA_QUERY} from './event-log.queries';
 
-interface EventLogsResponse {
+interface EventLogsDataResponse {
     event_logs: OrchardEventLog[];
+    event_log_count: OrchardCommonCount;
 }
 
 @Injectable({
@@ -28,19 +29,22 @@ export class EventLogService {
     ) {}
 
     /**
-     * Fetch event logs with optional filters.
+     * Fetch event logs with count for pagination.
      * @param {QueryEvent_LogsArgs} filters - Optional GraphQL filter args
-     * @returns {Observable<EventLog[]>} The fetched event logs as client-side class instances
+     * @returns {Observable<{event_logs: EventLog[]; count: number}>} The fetched event logs and total count
      */
-    public getEventLogs(filters?: QueryEvent_LogsArgs): Observable<EventLog[]> {
-        const query = getApiQuery(EVENT_LOGS_QUERY, filters);
+    public getEventLogsData(filters?: QueryEvent_LogsArgs): Observable<{event_logs: EventLog[]; count: number}> {
+        const query = getApiQuery(EVENT_LOGS_DATA_QUERY, filters);
 
-        return this.http.post<OrchardRes<EventLogsResponse>>(this.apiService.api, query).pipe(
+        return this.http.post<OrchardRes<EventLogsDataResponse>>(this.apiService.api, query).pipe(
             map((response) => {
                 if (response.errors) throw new OrchardErrors(response.errors);
-                return response.data.event_logs;
+                return response.data;
             }),
-            map((logs) => logs.map((log) => new EventLog(log))),
+            map((data) => ({
+                event_logs: data.event_logs.map((log) => new EventLog(log)),
+                count: data.event_log_count.count,
+            })),
             catchError((error) => {
                 console.error('Error loading event logs:', error);
                 return throwError(() => error);

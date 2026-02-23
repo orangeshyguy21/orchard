@@ -1,5 +1,5 @@
-export const EVENT_LOGS_QUERY = `
-query EventLogs(
+export const EVENT_LOGS_DATA_QUERY = `
+query EventLogsData(
     $section: EventLogSection
     $actor_type: EventLogActorType
     $actor_id: String
@@ -42,5 +42,17 @@ query EventLogs(
             error_code
             error_message
         }
+    }
+    event_log_count(
+        section: $section
+        actor_type: $actor_type
+        actor_id: $actor_id
+        type: $type
+        status: $status
+        entity_type: $entity_type
+        date_start: $date_start
+        date_end: $date_end
+    ) {
+        count
     }
 }`;

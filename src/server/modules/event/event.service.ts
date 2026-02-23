@@ -91,6 +91,40 @@ export class EventLogService {
     }
 
     /**
+     * Get total count of event logs matching filters (excludes pagination)
+     * @param {EventLogFilters} filters - Optional filters for counting events
+     * @returns {Promise<number>} The count of matching event logs
+     */
+    public async getEventCount(filters: EventLogFilters = {}): Promise<number> {
+        const query = this.eventRepository.createQueryBuilder('event');
+        if (filters.section) {
+            query.andWhere('event.section = :section', {section: filters.section});
+        }
+        if (filters.actor_type) {
+            query.andWhere('event.actor_type = :actor_type', {actor_type: filters.actor_type});
+        }
+        if (filters.actor_id) {
+            query.andWhere('event.actor_id = :actor_id', {actor_id: filters.actor_id});
+        }
+        if (filters.entity_type) {
+            query.andWhere('event.entity_type = :entity_type', {entity_type: filters.entity_type});
+        }
+        if (filters.type) {
+            query.andWhere('event.type = :type', {type: filters.type});
+        }
+        if (filters.status) {
+            query.andWhere('event.status = :status', {status: filters.status});
+        }
+        if (filters.date_start) {
+            query.andWhere('event.timestamp >= :date_start', {date_start: filters.date_start});
+        }
+        if (filters.date_end) {
+            query.andWhere('event.timestamp <= :date_end', {date_end: filters.date_end});
+        }
+        return query.getCount();
+    }
+
+    /**
      * Get a single event log with its details
      * @param {string} id - The event log ID
      * @returns {Promise<EventLog | null>} The event log with details, or null

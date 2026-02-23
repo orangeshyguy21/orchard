@@ -1,1 +1,118 @@
-<p>event-subsection-log-control works!</p>
+<div class="event-log-control-container">
+    <form [formGroup]="panel" class="panel-form orc-animation-form-reaction" [class.animation-invalid]="height_state === 'invalid'">
+        <div class="flex flex-col flex-gap-1">
+            <div>
+                <mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic" [class.mobile-form-field]="!device_desktop()">
+                    <mat-label>Section</mat-label>
+                    <mat-select formControlName="section" (selectionChange)="onSectionChange($event)">
+                        <mat-option [value]="null">All Sections</mat-option>
+                        @for (s of section_options; track s) {
+                            <mat-option [value]="s">{{ s }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            @if (device_desktop()) {
+                <div formGroupName="daterange">
+                    <mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
+                        <mat-label>Date range</mat-label>
+                        <mat-date-range-input [rangePicker]="picker">
+                            <input
+                                matStartDate
+                                formControlName="date_start"
+                                placeholder="Start date"
+                                (blur)="onDateChange()"
+                                (keyup.enter)="onDateChange()"
+                            />
+                            <input
+                                matEndDate
+                                formControlName="date_end"
+                                placeholder="End date"
+                                (blur)="onDateChange()"
+                                (keyup.enter)="onDateChange()"
+                            />
+                        </mat-date-range-input>
+                        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-date-range-picker #picker (closed)="onDateChange()"></mat-date-range-picker>
+                        <mat-error class="font-size-xs">Invalid date range</mat-error>
+                    </mat-form-field>
+                </div>
+            }
+            <div class="p-t-0-5">
+                <button matButton type="button" [matMenuTriggerFor]="filter_menu">
+                    <mat-icon>tune</mat-icon>
+                    <span class="text-nowrap font-size-s">Filters {{ filter_count() > 0 ? `(${filter_count()})` : '' }}</span>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<mat-menu #filter_menu="matMenu" yPosition="below" class="orc-sticky-menu orc-filter-menu">
+    <orc-form-filter-menu (click)="$event.stopPropagation()" (clear)="onClearFilter()" (close)="onCloseFilter()">
+        <form [formGroup]="panel">
+            @if (!device_desktop()) {
+                <div formGroupName="daterange" class="p-1">
+                    <mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
+                        <mat-label>Date range</mat-label>
+                        <mat-date-range-input [rangePicker]="mobile_picker">
+                            <input
+                                matStartDate
+                                formControlName="date_start"
+                                placeholder="Start date"
+                                (blur)="onDateChange()"
+                                (keyup.enter)="onDateChange()"
+                            />
+                            <input
+                                matEndDate
+                                formControlName="date_end"
+                                placeholder="End date"
+                                (blur)="onDateChange()"
+                                (keyup.enter)="onDateChange()"
+                            />
+                        </mat-date-range-input>
+                        <mat-datepicker-toggle matIconSuffix [for]="mobile_picker"></mat-datepicker-toggle>
+                        <mat-date-range-picker #mobile_picker (closed)="onDateChange()"></mat-date-range-picker>
+                        <mat-error class="font-size-xs">Invalid date range</mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="orc-filter-menu-rule"></div>
+            }
+            <div class="orc-filter-menu-section">
+                <div>Actor Type</div>
+                <mat-form-field subscriptSizing="dynamic">
+                    <mat-select formControlName="actor_type" (selectionChange)="onActorTypeChange($event)">
+                        <mat-option [value]="null">All</mat-option>
+                        @for (at of actor_type_options; track at) {
+                            <mat-option [value]="at">{{ at }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="orc-filter-menu-rule"></div>
+            <div class="orc-filter-menu-section">
+                <div>Type</div>
+                <mat-form-field subscriptSizing="dynamic">
+                    <mat-select formControlName="type" (selectionChange)="onTypeChange($event)">
+                        <mat-option [value]="null">All</mat-option>
+                        @for (t of type_options; track t) {
+                            <mat-option [value]="t">{{ t }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="orc-filter-menu-rule"></div>
+            <div class="orc-filter-menu-section">
+                <div>Status</div>
+                <mat-form-field subscriptSizing="dynamic">
+                    <mat-select formControlName="status" (selectionChange)="onStatusChange($event)">
+                        <mat-option [value]="null">All</mat-option>
+                        @for (s of status_options; track s) {
+                            <mat-option [value]="s">{{ s }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </form>
+    </orc-form-filter-menu>
+</mat-menu>
