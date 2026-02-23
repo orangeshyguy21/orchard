@@ -4,6 +4,7 @@ import {ChangeDetectionStrategy, Component, computed, input} from '@angular/core
 import {MatTableDataSource} from '@angular/material/table';
 /* Application Dependencies */
 import {User} from '@client/modules/crew/classes/user.class';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Native Dependencies */
 import {EventLog} from '@client/modules/event/classes/event-log.class';
 /* Shared Dependencies */
@@ -26,15 +27,19 @@ export class EventSubsectionLogTableComponent {
     public readonly error = input.required<boolean>();
     public readonly users = input.required<User[]>();
     public readonly id_user = input.required<string | null>();
-    public readonly device_desktop = input.required<boolean>();
+    public readonly device_type = input.required<DeviceType>();
 
-    /* State */
     public more_entity: EventLog | null = null;
 
-    /* Responsive columns */
     public readonly displayed_columns = computed(() => {
-        if (!this.device_desktop()) return ['actor', 'event', 'timestamp'];
+        if (this.device_type() === 'mobile') return ['actor', 'event', 'timestamp'];
+        if (this.device_type() === 'tablet') return ['actor', 'section', 'event', 'timestamp'];
         return ['actor', 'section', 'event', 'details', 'timestamp'];
+    });
+    public readonly event_time_type = computed(() => {
+        if (this.device_type() === 'desktop') return 'medium';
+        if (this.device_type() === 'tablet') return 'short';
+        return 'date-only';
     });
 
     /** Finds user by actor_id for display */

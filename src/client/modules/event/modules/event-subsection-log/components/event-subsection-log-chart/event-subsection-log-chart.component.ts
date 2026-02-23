@@ -34,6 +34,8 @@ interface BubblePointMeta extends BubbleDataPoint {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EventSubsectionLogChartComponent implements OnChanges, OnDestroy {
+    private readonly chartService = inject(ChartService);
+    
     @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
     public readonly events = input.required<EventLog[]>();
@@ -57,12 +59,11 @@ export class EventSubsectionLogChartComponent implements OnChanges, OnDestroy {
         return this.events().length > 0;
     });
 
-    private readonly chartService = inject(ChartService);
     private subscriptions = new Subscription();
 
     constructor() {
-        this.subscriptions.add(this.chartService.onResizeStart().subscribe(() => this.displayed.set(false)));
-        this.subscriptions.add(this.chartService.onResizeEnd().subscribe(() => this.displayed.set(true)));
+        this.subscriptions.add(this.getRemoveSubscription());
+        this.subscriptions.add(this.getAddSubscription());
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -74,9 +75,18 @@ export class EventSubsectionLogChartComponent implements OnChanges, OnDestroy {
         }
     }
 
-    ngOnDestroy(): void {
-        this.subscriptions.unsubscribe();
-    }
+    private getRemoveSubscription(): Subscription {
+		return this.chartService.onResizeStart().subscribe(() => {
+            console.log('onResizeStart');
+			this.displayed.set(false);
+		});
+	}
+	private getAddSubscription(): Subscription {
+		return this.chartService.onResizeEnd().subscribe(() => {
+            console.log('onResizeEnd');
+			this.displayed.set(true);
+		});
+	}
 
     /* *******************************************************
         Pagination
@@ -178,7 +188,7 @@ export class EventSubsectionLogChartComponent implements OnChanges, OnDestroy {
     private buildChartData(buckets: EventTimelineBucket[], max_count: number): ChartConfiguration<'bubble'>['data'] {
         const data: BubblePointMeta[] = buckets.map((bucket) => ({
             x: bucket.timestamp * 1000,
-            y: -0.5,
+            y: 0,
             r: this.getDotRadius(bucket.total, max_count),
             bucket,
         }));
@@ -248,5 +258,9 @@ export class EventSubsectionLogChartComponent implements OnChanges, OnDestroy {
                 },
             },
         };
+    }
+    
+    ngOnDestroy(): void {
+        this.subscriptions.unsubscribe();
     }
 }

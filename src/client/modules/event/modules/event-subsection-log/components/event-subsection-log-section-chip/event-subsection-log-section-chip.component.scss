@@ -1,5 +1,9 @@
 @use 'molecule/molecule';
 
+:host {
+    @extend %flex;
+}
+
 .event-section-chip-container{
     @extend %flex;
     @extend %flex-row;
