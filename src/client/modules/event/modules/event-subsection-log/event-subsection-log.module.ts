@@ -19,9 +19,11 @@ import {OrcDataModule} from '@client/modules/data/data.module';
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcCrewModule} from '@client/modules/crew/crew.module';
 import {OrcButtonModule} from '@client/modules/button/button.module';
+import {BaseChartDirective} from 'ng2-charts';
 /* Local Dependencies */
 import {EventSubsectionLogComponent} from './components/event-subsection-log/event-subsection-log.component';
 import {EventSubsectionLogControlComponent} from './components/event-subsection-log-control/event-subsection-log-control.component';
+import {EventSubsectionLogChartComponent} from './components/event-subsection-log-chart/event-subsection-log-chart.component';
 import {EventSubsectionLogTableComponent} from './components/event-subsection-log-table/event-subsection-log-table.component';
 import {EventSubsectionLogTableDetailComponent} from './components/event-subsection-log-table-detail/event-subsection-log-table-detail.component';
 import { EventSubsectionLogSectionChipComponent } from './components/event-subsection-log-section-chip/event-subsection-log-section-chip.component';
@@ -33,6 +35,7 @@ import {EventLogDetailsPipe} from './pipes/event-log-details/event-log-details.p
     declarations: [
         EventSubsectionLogComponent,
         EventSubsectionLogControlComponent,
+        EventSubsectionLogChartComponent,
         EventSubsectionLogTableComponent,
         EventSubsectionLogTableDetailComponent,
         EventSubsectionLogSectionChipComponent,
@@ -63,6 +66,7 @@ import {EventLogDetailsPipe} from './pipes/event-log-details/event-log-details.p
         OrcFormModule,
         OrcCrewModule,
         OrcButtonModule,
+        BaseChartDirective,
     ],
     exports: [],
 })

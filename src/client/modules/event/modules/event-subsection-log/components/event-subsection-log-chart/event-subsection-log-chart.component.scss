@@ -1,0 +1,28 @@
+@use 'molecule/molecule';
+
+:host {
+    @extend %flex;
+}
+
+.chart-container {
+    @extend %flex;
+    @extend %flex-items-center;
+    @extend %flex-grow;
+    @extend %flex-gap-0-25;
+}
+
+.chart-canvas-container {
+    @extend %flex;
+    @extend %flex-grow;
+    height: 125px;
+}
+
+.chart-pagination {
+    @extend %flex;
+    @extend %flex-items-center;
+
+    button {
+        @extend %orc-outline-color;
+        transform: scale(0.8);
+    }
+}

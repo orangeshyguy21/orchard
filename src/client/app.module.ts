@@ -10,6 +10,7 @@ import {provideCharts} from 'ng2-charts';
 import {
 	LineController,
 	BarController,
+	BubbleController,
 	LinearScale,
 	TimeSeriesScale,
 	CategoryScale,
@@ -57,6 +58,7 @@ import {AppComponent} from './app.component';
 			registerables: [
 				LineController,
 				BarController,
+				BubbleController,
 				LinearScale,
 				TimeSeriesScale,
 				CategoryScale,

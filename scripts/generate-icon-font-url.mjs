@@ -90,6 +90,10 @@ const ICONS = [
   'graph_4',
   'link',
   'open_in_new',
+  'first_page',
+  'last_page',
+  'chevron_left',
+  'chevron_right',
 ];
 
 // Sort alphabetically and remove duplicates

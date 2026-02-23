@@ -214,4 +214,11 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
         this.settingDeviceService.setEventLogSettings(this.page_settings);
         this.loadData();
     }
+
+    /** Handles chart pagination page change */
+    public onChartPage(page_index: number): void {
+        this.page_settings.page = page_index;
+        this.settingDeviceService.setEventLogSettings(this.page_settings);
+        this.loadData();
+    }
 }

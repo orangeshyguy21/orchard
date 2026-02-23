@@ -22,6 +22,17 @@
         <div class="category-rule"></div>
     </div>
 
+    <orc-event-subsection-log-chart
+        [events]="data_source.data"
+        [date_start]="page_settings.date_start ?? 0"
+        [date_end]="page_settings.date_end ?? 0"
+        [loading]="loading()"
+        [page_index]="page_settings.page ?? 0"
+        [page_size]="page_settings.page_size ?? 100"
+        [count]="count()"
+        (pageChange)="onChartPage($event)"
+    ></orc-event-subsection-log-chart>
+
     <orc-event-subsection-log-table
         [data_source]="data_source"
         [id_user]="id_user()"
