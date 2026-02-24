@@ -132,6 +132,20 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
 		});
 	}
 
+	/** Subscribes to agent requests from the AI input */
+	private getAgentSubscription(): Subscription {
+		return this.aiService.agent_requests$.subscribe(({agent: _agent, content}) => {
+			this.hireEventLogAgent(content);
+		});
+	}
+
+	/** Subscribes to tool calls from the AI response */
+	private getToolSubscription(): Subscription {
+		return this.aiService.tool_calls$.subscribe((tool_call: AiChatToolCall) => {
+			this.executeAgentFunction(tool_call);
+		});
+	}
+
 	/* *******************************************************
         Data
     ******************************************************** */
@@ -248,20 +262,6 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
 	   Agent
 	******************************************************** */
 
-	/** Subscribes to agent requests from the AI input */
-	private getAgentSubscription(): Subscription {
-		return this.aiService.agent_requests$.subscribe(({agent: _agent, content}) => {
-			this.hireEventLogAgent(content);
-		});
-	}
-
-	/** Subscribes to tool calls from the AI response */
-	private getToolSubscription(): Subscription {
-		return this.aiService.tool_calls$.subscribe((tool_call: AiChatToolCall) => {
-			this.executeAgentFunction(tool_call);
-		});
-	}
-
 	/** Opens the AI socket with current form context */
 	private hireEventLogAgent(content: string | null): void {
 		const section_options = Object.values(EventLogSection);
@@ -277,7 +277,9 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
 		context += `* **Available Sections:** ${section_options.join(', ')}\n`;
 		context += `* **Available Types:** ${type_options.join(', ')}\n`;
 		context += `* **Available Statuses:** ${status_options.join(', ')}\n`;
-		context += `* **Available Users:** ${this.users().map((u) => `${u.name} (${u.id})`).join(', ')}`;
+		context += `* **Available Users:** ${this.users()
+			.map((u) => `${u.name} (${u.id})`)
+			.join(', ')}`;
 		this.aiService.openAiSocket(AiAgent.EventLog, content, context);
 	}
 
@@ -297,9 +299,7 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
 			if (valid) this.onSectionsChange(tool_call.function.arguments.sections as EventLogSection[]);
 		}
 		if (tool_call.function.name === AiFunctionName.EventLogTypesUpdate) {
-			const valid = tool_call.function.arguments.types.every((t: string) =>
-				Object.values(EventLogType).includes(t as EventLogType),
-			);
+			const valid = tool_call.function.arguments.types.every((t: string) => Object.values(EventLogType).includes(t as EventLogType));
 			if (valid) this.onTypesChange(tool_call.function.arguments.types as EventLogType[]);
 		}
 		if (tool_call.function.name === AiFunctionName.EventLogStatusesUpdate) {

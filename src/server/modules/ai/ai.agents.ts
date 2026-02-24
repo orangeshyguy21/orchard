@@ -185,12 +185,7 @@ export const AI_AGENTS = {
 			content: `You are an agent designed to help explore the database of a cashu mint.
             You will be provided with the current state of the form along with the users request for changes`,
 		},
-		tools: [
-			UpdateDateRangeTool,
-			UpdateMintAnalyticsUnitsTool,
-			UpdateMintDatabaseDataTypeTool,
-			UpdateMintDatabaseStatesTool,
-		],
+		tools: [UpdateDateRangeTool, UpdateMintAnalyticsUnitsTool, UpdateMintDatabaseDataTypeTool, UpdateMintDatabaseStatesTool],
 	},
 	[AiAgent.MINT_BACKUP]: {
 		name: 'Mint Backup',
