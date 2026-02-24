@@ -12,6 +12,7 @@ const ENTITY_TYPE_LABELS: Record<EventLogEntityType, string> = {
     [EventLogEntityType.Nut05]: 'Nut05',
     [EventLogEntityType.Quote]: 'Quote',
     [EventLogEntityType.QuoteTtl]: 'Quote TTL',
+    [EventLogEntityType.Setting]: 'Setting',
 };
 
 /** Maps EventLogType enum values to past-tense display strings */

@@ -21,6 +21,7 @@ export enum EventLogEntityType {
     NUT05 = 'nut05',
     KEYSET = 'keyset',
     DATABASE = 'database',
+    SETTING = 'setting',
 }
 
 export enum EventLogType {
