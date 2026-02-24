@@ -2,7 +2,7 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 /* Vendor Dependencies */
-import {Repository} from 'typeorm';
+import {Repository, SelectQueryBuilder} from 'typeorm';
 /* Local Dependencies */
 import {EventLog} from './event.entity';
 import {EventLogDetail} from './event-detail.entity';
@@ -59,30 +59,7 @@ export class EventLogService {
 	 */
 	public async getEvents(filters: EventLogFilters = {}): Promise<EventLog[]> {
 		const query = this.eventRepository.createQueryBuilder('event').leftJoinAndSelect('event.details', 'detail');
-		if (filters.sections && filters.sections.length > 0) {
-			query.andWhere('event.section IN (:...sections)', {sections: filters.sections});
-		}
-		if (filters.actor_types && filters.actor_types.length > 0) {
-			query.andWhere('event.actor_type IN (:...actor_types)', {actor_types: filters.actor_types});
-		}
-		if (filters.actor_ids && filters.actor_ids.length > 0) {
-			query.andWhere('event.actor_id IN (:...actor_ids)', {actor_ids: filters.actor_ids});
-		}
-		if (filters.entity_types && filters.entity_types.length > 0) {
-			query.andWhere('event.entity_type IN (:...entity_types)', {entity_types: filters.entity_types});
-		}
-		if (filters.types && filters.types.length > 0) {
-			query.andWhere('event.type IN (:...types)', {types: filters.types});
-		}
-		if (filters.statuses && filters.statuses.length > 0) {
-			query.andWhere('event.status IN (:...statuses)', {statuses: filters.statuses});
-		}
-		if (filters.date_start) {
-			query.andWhere('event.timestamp >= :date_start', {date_start: filters.date_start});
-		}
-		if (filters.date_end) {
-			query.andWhere('event.timestamp <= :date_end', {date_end: filters.date_end});
-		}
+		this.applyFilters(query, filters);
 		query.orderBy('event.timestamp', 'DESC');
 		if (filters.page !== undefined && filters.page_size !== undefined) {
 			query.skip(filters.page * filters.page_size).take(filters.page_size);
@@ -97,6 +74,16 @@ export class EventLogService {
 	 */
 	public async getEventCount(filters: EventLogFilters = {}): Promise<number> {
 		const query = this.eventRepository.createQueryBuilder('event');
+		this.applyFilters(query, filters);
+		return query.getCount();
+	}
+
+	/**
+	 * Apply shared filter conditions to a query builder
+	 * @param {SelectQueryBuilder<EventLog>} query - The query builder to apply filters to
+	 * @param {EventLogFilters} filters - The filters to apply
+	 */
+	private applyFilters(query: SelectQueryBuilder<EventLog>, filters: EventLogFilters): void {
 		if (filters.sections && filters.sections.length > 0) {
 			query.andWhere('event.section IN (:...sections)', {sections: filters.sections});
 		}
@@ -121,7 +108,6 @@ export class EventLogService {
 		if (filters.date_end) {
 			query.andWhere('event.timestamp <= :date_end', {date_end: filters.date_end});
 		}
-		return query.getCount();
 	}
 
 	/**

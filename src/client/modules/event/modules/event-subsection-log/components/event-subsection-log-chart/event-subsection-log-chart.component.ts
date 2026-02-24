@@ -91,13 +91,11 @@ export class EventSubsectionLogChartComponent implements OnChanges, OnDestroy {
 
 	private getRemoveSubscription(): Subscription {
 		return this.chartService.onResizeStart().subscribe(() => {
-			console.log('onResizeStart');
 			this.displayed.set(false);
 		});
 	}
 	private getAddSubscription(): Subscription {
 		return this.chartService.onResizeEnd().subscribe(() => {
-			console.log('onResizeEnd');
 			this.displayed.set(true);
 		});
 	}
