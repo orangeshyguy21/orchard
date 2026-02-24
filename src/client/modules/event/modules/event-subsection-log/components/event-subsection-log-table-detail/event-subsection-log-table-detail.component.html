@@ -1,14 +1,16 @@
 <div class="event-log-detail-container p-v-1">
     <div class="flex flex-column flex-gap-1">
-        <div class="flex flex-items-center flex-gap-1 flex-wrap">
-            <div class="flex-1">
-                <div class="flex flex-column flex-gap-0-5">
-                    <div class="orc-outline-color font-weight-extra-light">Identifier</div>
-                    <span class="mega-string font-size-s">{{ event_log().entity_id | dataTruncate: 20: 8: 8 }}</span>
+        <div class="flex flex-items-start flex-gap-1 flex-wrap">
+            @if (event_log().entity_id){
+                <div class="flex-1 w-min-10">
+                    <div class="flex flex-column flex-gap-0-5">
+                        <div class="orc-outline-color font-weight-extra-light">Identifier</div>
+                        <span class="mega-string font-size-s">{{ event_log().entity_id | dataTruncate: 20: 8: 8 }}</span>
+                    </div>
                 </div>
-            </div>
+            }
             @if (device_type() === 'tablet' || device_type() === 'mobile') {
-                <div class="flex-1">
+                <div class="flex-1 w-min-10">
                     <div class="flex flex-column flex-gap-0-5">
                         <div class="orc-outline-color font-weight-extra-light">Time</div>
                         <span class="text-nowrap font-size-s">{{ event_log().timestamp | localTime: 'medium' }}</span>
@@ -16,7 +18,14 @@
                 </div>
             }
             @if (device_type() === 'mobile'){
-                <div class="flex-1">
+                @if (user(); as user) {
+                    <div class="flex-1 w-min-10">
+                        <orc-crew-member-chip [name]="user.name" [role]="user.role">
+                            <orc-crew-facehash [name]="user.name" [enableBlink]="id_user() === user.id"></orc-crew-facehash>
+                        </orc-crew-member-chip>
+                    </div>
+                }
+                <div class="flex-1 w-min-10">
                     <orc-event-subsection-log-section-chip [section]="event_log().section"></orc-event-subsection-log-section-chip>
                 </div>
             }

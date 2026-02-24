@@ -3,7 +3,9 @@
         <ng-content></ng-content>
         <div >{{ name() }}</div>
     </div>
-    <div class="p-r-1">
-        <div class="font-size-xs orc-outline-color font-weight-bold">{{ role() }}</div>
-    </div>
+    @if (!hide_role()) {
+        <div class="p-r-1">
+            <div class="font-size-xs orc-outline-color font-weight-bold">{{ role() }}</div>
+        </div>
+    }
 </div>

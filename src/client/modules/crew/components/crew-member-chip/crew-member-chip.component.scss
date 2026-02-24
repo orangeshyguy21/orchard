@@ -1,5 +1,9 @@
 @use 'molecule/molecule';
 
+:host {
+    @extend %flex;
+}
+
 .crew-member-chip-container{
     @extend %flex;
     @extend %flex-row;

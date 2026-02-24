@@ -10,9 +10,13 @@
                         <div class="flex flex-items-center flex-gap-0-5 p-v-0-5">
                             @if (entity.actor_type === EventLogActorType.User) {
                                 @if (findUser(entity.actor_id); as user) {
-                                    <orc-crew-member-chip [name]="user.name" [role]="user.role">
+                                    @if (device_type() !== 'mobile') {
+                                        <orc-crew-member-chip [name]="user.name" [role]="user.role" [hide_role]="device_type() !== 'desktop'">
+                                            <orc-crew-facehash [name]="user.name" [enableBlink]="id_user() === user.id"></orc-crew-facehash>
+                                        </orc-crew-member-chip>
+                                    }@else {
                                         <orc-crew-facehash [name]="user.name" [enableBlink]="id_user() === user.id"></orc-crew-facehash>
-                                    </orc-crew-member-chip>
+                                    }
                                 } @else {
                                     <mat-icon class="icon-sm mat-symbol-outline">person</mat-icon>
                                     <span class="font-size-s orc-outline-color">{{ entity.actor_id | dataTruncate: 20: 8: 8 }}</span>
@@ -30,7 +34,7 @@
                     <th mat-header-cell *matHeaderCellDef class="data-table-sticky-header">Section</th>
                     <td mat-cell *matCellDef="let entity">
                         <div class="flex">
-                            <orc-event-subsection-log-section-chip [section]="entity.section"></orc-event-subsection-log-section-chip>
+                            <orc-event-subsection-log-section-chip [section]="entity.section" [icon_only]="device_type() !== 'desktop'"></orc-event-subsection-log-section-chip>
                         </div>
                     </td>
                 </ng-container>
@@ -39,7 +43,7 @@
                 <ng-container matColumnDef="event">
                     <th mat-header-cell *matHeaderCellDef class="data-table-sticky-header">Event</th>
                     <td mat-cell *matCellDef="let entity">
-                        <div class="flex flex-items-center flex-gap-0-5">
+                        <div class="flex flex-items-center flex-gap-0-5 p-v-0-5">
                             <orc-event-subsection-log-event-icon [type]="entity.type" [status]="entity.status"></orc-event-subsection-log-event-icon>
                             <span class="font-size-s font-weight-medium">{{ entity.entity_type | eventLogEvent: entity.type }}</span>
                         </div>
@@ -81,6 +85,8 @@
                                     <div class="w-full" animate.enter="orc-animation-fadein">
                                         <orc-event-subsection-log-table-detail
                                             [event_log]="entity"
+                                            [user]="findUser(entity.actor_id)"
+                                            [id_user]="id_user()"
                                             [device_type]="device_type()"
                                         ></orc-event-subsection-log-table-detail>
                                     </div>

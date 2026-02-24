@@ -18,10 +18,11 @@
                 (statusesChange)="onStatusesChange($event)"
                 (resetFilter)="onResetFilter()"
             ></orc-event-subsection-log-control>
-            <div class="font-weight-bold title-l p-b-1">
-                {{ data_source.data.length }} {{ data_source.data.length === 1 ? 'Event' : 'Events' }}
-            </div>
-
+            @if (device_type() !== 'mobile') {
+                <div class="font-weight-bold font-size-l p-b-1 orc-outline-color">
+                    {{ data_source.data.length }} {{ data_source.data.length === 1 ? 'Event' : 'Events' }}
+                </div>
+            }
         </div>
         <div class="category-rule"></div>
     </div>

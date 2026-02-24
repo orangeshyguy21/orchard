@@ -6,7 +6,9 @@
             <mat-icon class="mat-symbol-outline">{{ icon() }}</mat-icon>
        }
     </div>
-    <div class="p-r-1">
-        <div class="font-size-xs orc-outline-color font-weight-bold">{{ section() }}</div>
-    </div>
+    @if (!icon_only()) {
+        <div class="p-r-1">
+            <div class="font-size-xs orc-outline-color font-weight-bold">{{ section() }}</div>
+        </div>
+    }
 </div>

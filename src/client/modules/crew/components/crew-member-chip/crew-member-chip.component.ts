@@ -13,4 +13,5 @@ import { UserRole } from '@shared/generated.types';
 export class CrewMemberChipComponent {
     public readonly name = input.required<string>();
     public readonly role = input.required<UserRole>();
+    public readonly hide_role = input<boolean>(false);
 }

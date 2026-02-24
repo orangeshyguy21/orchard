@@ -2,6 +2,7 @@
 import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 /* Application Dependencies */
 import {DeviceType} from '@client/modules/layout/types/device.types';
+import {User} from '@client/modules/crew/classes/user.class';
 /* Native Dependencies */
 import {EventLog} from '@client/modules/event/classes/event-log.class';
 /* Shared Dependencies */
@@ -19,5 +20,7 @@ export class EventSubsectionLogTableDetailComponent {
 
     public readonly event_log = input.required<EventLog>();
     public readonly device_type = input.required<DeviceType>();
+    public readonly user = input.required<User | undefined>();
+    public readonly id_user = input.required<string | null>();
 
 }

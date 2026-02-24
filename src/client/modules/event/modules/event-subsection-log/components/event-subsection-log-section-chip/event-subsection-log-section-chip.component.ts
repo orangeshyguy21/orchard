@@ -13,6 +13,7 @@ import {EventLogSection} from '@shared/generated.types';
 export class EventSubsectionLogSectionChipComponent {
 
     public readonly section = input.required<EventLogSection>();
+    public readonly icon_only = input<boolean>(false);
 
     public readonly icon_type = computed(() => {
         const section = this.section();
