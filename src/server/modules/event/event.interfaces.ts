@@ -24,12 +24,12 @@ export interface CreateEventLogDetailInput {
 }
 
 export interface EventLogFilters {
-    section?: EventLogSection;
-    actor_type?: EventLogActorType;
-    actor_id?: string;
-    entity_type?: EventLogEntityType;
-    type?: EventLogType;
-    status?: EventLogStatus;
+    sections?: EventLogSection[];
+    actor_types?: EventLogActorType[];
+    actor_ids?: string[];
+    entity_types?: EventLogEntityType[];
+    types?: EventLogType[];
+    statuses?: EventLogStatus[];
     date_start?: number;
     date_end?: number;
     page?: number;

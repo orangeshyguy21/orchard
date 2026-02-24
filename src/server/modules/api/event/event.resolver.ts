@@ -17,12 +17,12 @@ export class EventLogResolver {
 
     @Query(() => [OrchardEventLog])
     async event_logs(
-        @Args('section', {type: () => EventLogSection, nullable: true}) section?: EventLogSection,
-        @Args('actor_type', {type: () => EventLogActorType, nullable: true}) actor_type?: EventLogActorType,
-        @Args('actor_id', {type: () => String, nullable: true}) actor_id?: string,
-        @Args('type', {type: () => EventLogType, nullable: true}) type?: EventLogType,
-        @Args('status', {type: () => EventLogStatus, nullable: true}) status?: EventLogStatus,
-        @Args('entity_type', {type: () => EventLogEntityType, nullable: true}) entity_type?: EventLogEntityType,
+        @Args('sections', {type: () => [EventLogSection], nullable: true}) sections?: EventLogSection[],
+        @Args('actor_types', {type: () => [EventLogActorType], nullable: true}) actor_types?: EventLogActorType[],
+        @Args('actor_ids', {type: () => [String], nullable: true}) actor_ids?: string[],
+        @Args('types', {type: () => [EventLogType], nullable: true}) types?: EventLogType[],
+        @Args('statuses', {type: () => [EventLogStatus], nullable: true}) statuses?: EventLogStatus[],
+        @Args('entity_types', {type: () => [EventLogEntityType], nullable: true}) entity_types?: EventLogEntityType[],
         @Args('date_start', {type: () => UnixTimestamp, nullable: true}) date_start?: number,
         @Args('date_end', {type: () => UnixTimestamp, nullable: true}) date_end?: number,
         @Args('page', {type: () => Int, nullable: true}) page?: number,
@@ -31,12 +31,12 @@ export class EventLogResolver {
         const tag = 'GET { event_logs }';
         this.logger.debug(tag);
         return await this.eventLogService.getEventLogs(tag, {
-            section,
-            actor_type,
-            actor_id,
-            type,
-            status,
-            entity_type,
+            sections,
+            actor_types,
+            actor_ids,
+            types,
+            statuses,
+            entity_types,
             date_start,
             date_end,
             page,
@@ -46,24 +46,24 @@ export class EventLogResolver {
 
     @Query(() => OrchardCommonCount)
     async event_log_count(
-        @Args('section', {type: () => EventLogSection, nullable: true}) section?: EventLogSection,
-        @Args('actor_type', {type: () => EventLogActorType, nullable: true}) actor_type?: EventLogActorType,
-        @Args('actor_id', {type: () => String, nullable: true}) actor_id?: string,
-        @Args('type', {type: () => EventLogType, nullable: true}) type?: EventLogType,
-        @Args('status', {type: () => EventLogStatus, nullable: true}) status?: EventLogStatus,
-        @Args('entity_type', {type: () => EventLogEntityType, nullable: true}) entity_type?: EventLogEntityType,
+        @Args('sections', {type: () => [EventLogSection], nullable: true}) sections?: EventLogSection[],
+        @Args('actor_types', {type: () => [EventLogActorType], nullable: true}) actor_types?: EventLogActorType[],
+        @Args('actor_ids', {type: () => [String], nullable: true}) actor_ids?: string[],
+        @Args('types', {type: () => [EventLogType], nullable: true}) types?: EventLogType[],
+        @Args('statuses', {type: () => [EventLogStatus], nullable: true}) statuses?: EventLogStatus[],
+        @Args('entity_types', {type: () => [EventLogEntityType], nullable: true}) entity_types?: EventLogEntityType[],
         @Args('date_start', {type: () => UnixTimestamp, nullable: true}) date_start?: number,
         @Args('date_end', {type: () => UnixTimestamp, nullable: true}) date_end?: number,
     ): Promise<OrchardCommonCount> {
         const tag = 'GET { event_log_count }';
         this.logger.debug(tag);
         return await this.eventLogService.getEventLogCount(tag, {
-            section,
-            actor_type,
-            actor_id,
-            type,
-            status,
-            entity_type,
+            sections,
+            actor_types,
+            actor_ids,
+            types,
+            statuses,
+            entity_types,
             date_start,
             date_end,
         });

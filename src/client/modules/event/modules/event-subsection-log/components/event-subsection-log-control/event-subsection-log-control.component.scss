@@ -4,6 +4,12 @@
     @extend %p-b-1;
 }
 
+.filter-options {
+    @extend %flex;
+    @extend %flex-column;
+    @extend %flex-gap-0-5;
+}
+
 .mobile-form-field {
     width: 11rem;
 }

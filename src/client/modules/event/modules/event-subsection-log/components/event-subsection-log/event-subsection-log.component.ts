@@ -16,7 +16,7 @@ import {User} from '@client/modules/crew/classes/user.class';
 import {EventLogService} from '@client/modules/event/services/event-log/event-log.service';
 import {EventLog} from '@client/modules/event/classes/event-log.class';
 /* Shared Dependencies */
-import {EventLogSection, EventLogActorType, EventLogType, EventLogStatus, QueryEvent_LogsArgs} from '@shared/generated.types';
+import {EventLogSection, EventLogType, EventLogStatus, QueryEvent_LogsArgs} from '@shared/generated.types';
 
 @Component({
     selector: 'orc-event-subsection-log',
@@ -67,11 +67,11 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
     private getPageSettings(): AllEventLogSettings {
         const settings = this.settingDeviceService.getEventLogSettings();
         return {
-            section: settings.section ?? null,
-            actor_type: settings.actor_type ?? null,
-            actor_id: settings.actor_id ?? null,
-            type: settings.type ?? null,
-            status: settings.status ?? null,
+            sections: settings.sections ?? [],
+            actor_types: settings.actor_types ?? [],
+            actor_ids: settings.actor_ids ?? [],
+            types: settings.types ?? [],
+            statuses: settings.statuses ?? [],
             date_start: settings.date_start ?? this.getDefaultDateStart(),
             date_end: settings.date_end ?? this.getDefaultDateEnd(),
             page: settings.page ?? 0,
@@ -141,11 +141,10 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
         this.loading_events.set(true);
         this.error.set(false);
         const filters: QueryEvent_LogsArgs = {
-            section: this.page_settings.section ?? undefined,
-            actor_type: this.page_settings.actor_type ?? undefined,
-            actor_id: this.page_settings.actor_id ?? undefined,
-            type: this.page_settings.type ?? undefined,
-            status: this.page_settings.status ?? undefined,
+            sections: this.page_settings.sections.length > 0 ? this.page_settings.sections : undefined,
+            actor_ids: this.page_settings.actor_ids.length > 0 ? this.page_settings.actor_ids : undefined,
+            types: this.page_settings.types.length > 0 ? this.page_settings.types : undefined,
+            statuses: this.page_settings.statuses.length > 0 ? this.page_settings.statuses : undefined,
             date_start: this.page_settings.date_start ?? undefined,
             date_end: this.page_settings.date_end ?? undefined,
             page: this.page_settings.page ?? undefined,
@@ -167,33 +166,33 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
         Actions Up
     ******************************************************** */
 
-    /** Handles section filter change */
-    public onSectionChange(section: EventLogSection | null): void {
-        this.page_settings.section = section;
+    /** Handles sections filter change */
+    public onSectionsChange(sections: EventLogSection[]): void {
+        this.page_settings.sections = sections;
         this.page_settings.page = 0;
         this.settingDeviceService.setEventLogSettings(this.page_settings);
         this.loadData();
     }
 
-    /** Handles actor type filter change */
-    public onActorTypeChange(actor_type: EventLogActorType | null): void {
-        this.page_settings.actor_type = actor_type;
+    /** Handles actor ids filter change */
+    public onActorIdsChange(actor_ids: string[]): void {
+        this.page_settings.actor_ids = actor_ids;
         this.page_settings.page = 0;
         this.settingDeviceService.setEventLogSettings(this.page_settings);
         this.loadData();
     }
 
-    /** Handles change type filter change */
-    public onTypeChange(type: EventLogType | null): void {
-        this.page_settings.type = type;
+    /** Handles types filter change */
+    public onTypesChange(types: EventLogType[]): void {
+        this.page_settings.types = types;
         this.page_settings.page = 0;
         this.settingDeviceService.setEventLogSettings(this.page_settings);
         this.loadData();
     }
 
-    /** Handles status filter change */
-    public onStatusChange(status: EventLogStatus | null): void {
-        this.page_settings.status = status;
+    /** Handles statuses filter change */
+    public onStatusesChange(statuses: EventLogStatus[]): void {
+        this.page_settings.statuses = statuses;
         this.page_settings.page = 0;
         this.settingDeviceService.setEventLogSettings(this.page_settings);
         this.loadData();

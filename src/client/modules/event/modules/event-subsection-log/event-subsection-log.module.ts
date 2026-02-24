@@ -13,6 +13,9 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from '@angular/material/select';
 import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatChipsModule} from '@angular/material/chips';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
 /* Application Dependencies */
 import {OrcLocalModule} from '@client/modules/local/local.module';
 import {OrcDataModule} from '@client/modules/data/data.module';
@@ -62,6 +65,9 @@ import {EventLogDetailsPipe} from './pipes/event-log-details/event-log-details.p
         MatInputModule,
         MatSelectModule,
         MatDatepickerModule,
+        MatCheckboxModule,
+        MatChipsModule,
+        MatAutocompleteModule,
         OrcLocalModule,
         OrcDataModule,
         OrcFormModule,

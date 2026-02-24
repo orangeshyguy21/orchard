@@ -59,23 +59,23 @@ export class EventLogService {
      */
     public async getEvents(filters: EventLogFilters = {}): Promise<EventLog[]> {
         const query = this.eventRepository.createQueryBuilder('event').leftJoinAndSelect('event.details', 'detail');
-        if (filters.section) {
-            query.andWhere('event.section = :section', {section: filters.section});
+        if (filters.sections && filters.sections.length > 0) {
+            query.andWhere('event.section IN (:...sections)', {sections: filters.sections});
         }
-        if (filters.actor_type) {
-            query.andWhere('event.actor_type = :actor_type', {actor_type: filters.actor_type});
+        if (filters.actor_types && filters.actor_types.length > 0) {
+            query.andWhere('event.actor_type IN (:...actor_types)', {actor_types: filters.actor_types});
         }
-        if (filters.actor_id) {
-            query.andWhere('event.actor_id = :actor_id', {actor_id: filters.actor_id});
+        if (filters.actor_ids && filters.actor_ids.length > 0) {
+            query.andWhere('event.actor_id IN (:...actor_ids)', {actor_ids: filters.actor_ids});
         }
-        if (filters.entity_type) {
-            query.andWhere('event.entity_type = :entity_type', {entity_type: filters.entity_type});
+        if (filters.entity_types && filters.entity_types.length > 0) {
+            query.andWhere('event.entity_type IN (:...entity_types)', {entity_types: filters.entity_types});
         }
-        if (filters.type) {
-            query.andWhere('event.type = :type', {type: filters.type});
+        if (filters.types && filters.types.length > 0) {
+            query.andWhere('event.type IN (:...types)', {types: filters.types});
         }
-        if (filters.status) {
-            query.andWhere('event.status = :status', {status: filters.status});
+        if (filters.statuses && filters.statuses.length > 0) {
+            query.andWhere('event.status IN (:...statuses)', {statuses: filters.statuses});
         }
         if (filters.date_start) {
             query.andWhere('event.timestamp >= :date_start', {date_start: filters.date_start});
@@ -97,23 +97,23 @@ export class EventLogService {
      */
     public async getEventCount(filters: EventLogFilters = {}): Promise<number> {
         const query = this.eventRepository.createQueryBuilder('event');
-        if (filters.section) {
-            query.andWhere('event.section = :section', {section: filters.section});
+        if (filters.sections && filters.sections.length > 0) {
+            query.andWhere('event.section IN (:...sections)', {sections: filters.sections});
         }
-        if (filters.actor_type) {
-            query.andWhere('event.actor_type = :actor_type', {actor_type: filters.actor_type});
+        if (filters.actor_types && filters.actor_types.length > 0) {
+            query.andWhere('event.actor_type IN (:...actor_types)', {actor_types: filters.actor_types});
         }
-        if (filters.actor_id) {
-            query.andWhere('event.actor_id = :actor_id', {actor_id: filters.actor_id});
+        if (filters.actor_ids && filters.actor_ids.length > 0) {
+            query.andWhere('event.actor_id IN (:...actor_ids)', {actor_ids: filters.actor_ids});
         }
-        if (filters.entity_type) {
-            query.andWhere('event.entity_type = :entity_type', {entity_type: filters.entity_type});
+        if (filters.entity_types && filters.entity_types.length > 0) {
+            query.andWhere('event.entity_type IN (:...entity_types)', {entity_types: filters.entity_types});
         }
-        if (filters.type) {
-            query.andWhere('event.type = :type', {type: filters.type});
+        if (filters.types && filters.types.length > 0) {
+            query.andWhere('event.type IN (:...types)', {types: filters.types});
         }
-        if (filters.status) {
-            query.andWhere('event.status = :status', {status: filters.status});
+        if (filters.statuses && filters.statuses.length > 0) {
+            query.andWhere('event.status IN (:...statuses)', {statuses: filters.statuses});
         }
         if (filters.date_start) {
             query.andWhere('event.timestamp >= :date_start', {date_start: filters.date_start});

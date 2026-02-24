@@ -1,23 +1,23 @@
 export const EVENT_LOGS_DATA_QUERY = `
 query EventLogsData(
-    $section: EventLogSection
-    $actor_type: EventLogActorType
-    $actor_id: String
-    $type: EventLogType
-    $status: EventLogStatus
-    $entity_type: EventLogEntityType
+    $sections: [EventLogSection!]
+    $actor_types: [EventLogActorType!]
+    $actor_ids: [String!]
+    $types: [EventLogType!]
+    $statuses: [EventLogStatus!]
+    $entity_types: [EventLogEntityType!]
     $date_start: UnixTimestamp
     $date_end: UnixTimestamp
     $page: Int
     $page_size: Int
 ) {
     event_logs(
-        section: $section
-        actor_type: $actor_type
-        actor_id: $actor_id
-        type: $type
-        status: $status
-        entity_type: $entity_type
+        sections: $sections
+        actor_types: $actor_types
+        actor_ids: $actor_ids
+        types: $types
+        statuses: $statuses
+        entity_types: $entity_types
         date_start: $date_start
         date_end: $date_end
         page: $page
@@ -44,12 +44,12 @@ query EventLogsData(
         }
     }
     event_log_count(
-        section: $section
-        actor_type: $actor_type
-        actor_id: $actor_id
-        type: $type
-        status: $status
-        entity_type: $entity_type
+        sections: $sections
+        actor_types: $actor_types
+        actor_ids: $actor_ids
+        types: $types
+        statuses: $statuses
+        entity_types: $entity_types
         date_start: $date_start
         date_end: $date_end
     ) {

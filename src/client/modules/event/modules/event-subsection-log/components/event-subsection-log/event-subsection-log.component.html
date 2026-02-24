@@ -1,23 +1,26 @@
 <div class="event-subsection-log-container p-h-1">
     <div class="event-log-control p-t-1">
-        <div class="flex flex-justify-between flex-gap-2 flex-items-start">
-            @if (page_settings) {
-                <orc-event-subsection-log-control
-                    class="flex-grow"
-                    [date_start]="page_settings.date_start"
-                    [date_end]="page_settings.date_end"
-                    [section]="page_settings.section"
-                    [actor_type]="page_settings.actor_type"
-                    [type]="page_settings.type"
-                    [status]="page_settings.status"
-                    [device_desktop]="device_type() === 'desktop'"
-                    (dateChange)="onDateChange($event)"
-                    (sectionChange)="onSectionChange($event)"
-                    (actorTypeChange)="onActorTypeChange($event)"
-                    (typeChange)="onTypeChange($event)"
-                    (statusChange)="onStatusChange($event)"
-                ></orc-event-subsection-log-control>
-            }
+        <div class="flex flex-justify-between flex-gap-2 flex-items-center">
+            <orc-event-subsection-log-control
+                class="flex-grow"
+                [date_start]="page_settings.date_start"
+                [date_end]="page_settings.date_end"
+                [sections]="page_settings.sections"
+                [actor_ids]="page_settings.actor_ids"
+                [types]="page_settings.types"
+                [statuses]="page_settings.statuses"
+                [users]="users()"
+                [device_desktop]="device_type() === 'desktop'"
+                (dateChange)="onDateChange($event)"
+                (sectionsChange)="onSectionsChange($event)"
+                (actorIdsChange)="onActorIdsChange($event)"
+                (typesChange)="onTypesChange($event)"
+                (statusesChange)="onStatusesChange($event)"
+            ></orc-event-subsection-log-control>
+            <div class="font-weight-bold title-l p-b-1">
+                {{ data_source.data.length }} {{ data_source.data.length === 1 ? 'Event' : 'Events' }}
+            </div>
+
         </div>
         <div class="category-rule"></div>
     </div>

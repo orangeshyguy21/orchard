@@ -62,11 +62,11 @@ export type NonNullableSettingsDeviceSettings = {
 
 /* Page: Event Log */
 export type AllEventLogSettings = EventLogSettings & {
-	section: EventLogSection | null;
-	actor_type: EventLogActorType | null;
-	actor_id: string | null;
-	type: EventLogType | null;
-	status: EventLogStatus | null;
+	sections: EventLogSection[];
+	actor_types: EventLogActorType[];
+	actor_ids: string[];
+	types: EventLogType[];
+	statuses: EventLogStatus[];
 	date_end: number | null;
 	page: number | null;
 };

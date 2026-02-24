@@ -1,43 +1,33 @@
 <div class="event-log-control-container">
     <form [formGroup]="panel" class="panel-form orc-animation-form-reaction" [class.animation-invalid]="height_state === 'invalid'">
         <div class="flex flex-col flex-gap-1">
-            <div>
-                <mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic" [class.mobile-form-field]="!device_desktop()">
-                    <mat-label>Section</mat-label>
-                    <mat-select formControlName="section" (selectionChange)="onSectionChange($event)">
-                        <mat-option [value]="null">All Sections</mat-option>
-                        @for (s of section_options; track s) {
-                            <mat-option [value]="s">{{ s }}</mat-option>
-                        }
-                    </mat-select>
+            
+
+            <div formGroupName="daterange">
+                <mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
+                    <mat-label>Date range</mat-label>
+                    <mat-date-range-input [rangePicker]="picker">
+                        <input
+                            matStartDate
+                            formControlName="date_start"
+                            placeholder="Start date"
+                            (blur)="onDateChange()"
+                            (keyup.enter)="onDateChange()"
+                        />
+                        <input
+                            matEndDate
+                            formControlName="date_end"
+                            placeholder="End date"
+                            (blur)="onDateChange()"
+                            (keyup.enter)="onDateChange()"
+                        />
+                    </mat-date-range-input>
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-date-range-picker #picker (closed)="onDateChange()"></mat-date-range-picker>
+                    <mat-error class="font-size-xs">Invalid date range</mat-error>
                 </mat-form-field>
             </div>
-            @if (device_desktop()) {
-                <div formGroupName="daterange">
-                    <mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic">
-                        <mat-label>Date range</mat-label>
-                        <mat-date-range-input [rangePicker]="picker">
-                            <input
-                                matStartDate
-                                formControlName="date_start"
-                                placeholder="Start date"
-                                (blur)="onDateChange()"
-                                (keyup.enter)="onDateChange()"
-                            />
-                            <input
-                                matEndDate
-                                formControlName="date_end"
-                                placeholder="End date"
-                                (blur)="onDateChange()"
-                                (keyup.enter)="onDateChange()"
-                            />
-                        </mat-date-range-input>
-                        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                        <mat-date-range-picker #picker (closed)="onDateChange()"></mat-date-range-picker>
-                        <mat-error class="font-size-xs">Invalid date range</mat-error>
-                    </mat-form-field>
-                </div>
-            }
+
             <div class="p-t-0-5">
                 <button matButton type="button" [matMenuTriggerFor]="filter_menu">
                     <mat-icon>tune</mat-icon>
@@ -79,39 +69,74 @@
                 <div class="orc-filter-menu-rule"></div>
             }
             <div class="orc-filter-menu-section">
-                <div>Actor Type</div>
+                <div class="p-b-0-5">User</div>
                 <mat-form-field subscriptSizing="dynamic">
-                    <mat-select formControlName="actor_type" (selectionChange)="onActorTypeChange($event)">
-                        <mat-option [value]="null">All</mat-option>
-                        @for (at of actor_type_options; track at) {
-                            <mat-option [value]="at">{{ at }}</mat-option>
+                    <mat-chip-grid #userChipGrid aria-label="User filter">
+                        @for (user of selected_users(); track user.id) {
+                            <mat-chip-row (removed)="onUserRemove(user)">
+                                <orc-crew-facehash matChipAvatar [name]="user.name" size="1rem" [interactive]="false" [showInitial]="false"></orc-crew-facehash>
+                                {{ user.name }}
+                                <button matChipRemove aria-label="Remove user">
+                                    <mat-icon>cancel</mat-icon>
+                                </button>
+                            </mat-chip-row>
                         }
-                    </mat-select>
+                    </mat-chip-grid>
+                    <input
+                        placeholder="Search users..."
+                        #user_input
+                        [formControl]="user_search_control"
+                        [matChipInputFor]="userChipGrid"
+                        [matAutocomplete]="userAuto"
+                        [matChipInputSeparatorKeyCodes]="separator_codes"
+                        (matChipInputTokenEnd)="onUserAdd($event)"
+                        (focus)="onUserInputFocus()"
+                        (blur)="onUserInputBlur()"
+                    />
+                    <mat-autocomplete #userAuto="matAutocomplete" (optionSelected)="onUserSelected($event); user_input.value = ''">
+                        @for (user of filtered_users | async; track user.id) {
+                            <mat-option [value]="user.id">
+                                <div class="flex flex-items-center flex-gap-0-5">
+                                    <orc-crew-facehash [name]="user.name" size="1rem" [interactive]="false" [showInitial]="false"></orc-crew-facehash>
+                                    <span>{{ user.name }}</span>
+                                </div>
+                            </mat-option>
+                        }
+                    </mat-autocomplete>
                 </mat-form-field>
             </div>
             <div class="orc-filter-menu-rule"></div>
             <div class="orc-filter-menu-section">
-                <div>Type</div>
-                <mat-form-field subscriptSizing="dynamic">
-                    <mat-select formControlName="type" (selectionChange)="onTypeChange($event)">
-                        <mat-option [value]="null">All</mat-option>
-                        @for (t of type_options; track t) {
-                            <mat-option [value]="t">{{ t }}</mat-option>
-                        }
-                    </mat-select>
-                </mat-form-field>
+                <div>Event Status</div>
+                <div class="filter-options">
+                    @for (s of status_options; track s; let i = $index) {
+                        <mat-checkbox [formControl]="panel.controls.statuses.at(i)" (change)="onStatusesChange()">
+                            {{ s }}
+                        </mat-checkbox>
+                    }
+                </div>
             </div>
             <div class="orc-filter-menu-rule"></div>
             <div class="orc-filter-menu-section">
-                <div>Status</div>
-                <mat-form-field subscriptSizing="dynamic">
-                    <mat-select formControlName="status" (selectionChange)="onStatusChange($event)">
-                        <mat-option [value]="null">All</mat-option>
-                        @for (s of status_options; track s) {
-                            <mat-option [value]="s">{{ s }}</mat-option>
-                        }
-                    </mat-select>
-                </mat-form-field>
+                <div>Section</div>
+                <div class="filter-options">
+                    @for (s of section_options; track s; let i = $index) {
+                        <mat-checkbox [formControl]="panel.controls.sections.at(i)" (change)="onSectionsChange()">
+                            {{ s }}
+                        </mat-checkbox>
+                    }
+                </div>
+            </div>
+            <div class="orc-filter-menu-rule"></div>
+            <div class="orc-filter-menu-section">
+                <div>Event Type</div>
+                <div class="filter-options">
+                    @for (t of type_options; track t; let i = $index) {
+                        <mat-checkbox [formControl]="panel.controls.types.at(i)" (change)="onTypesChange()">
+                            {{ t }}
+                        </mat-checkbox>
+                    }
+                </div>
             </div>
         </form>
     </orc-form-filter-menu>

@@ -193,12 +193,12 @@ describe('EventLogService', () => {
             expect(mock_query_builder.andWhere).not.toHaveBeenCalled();
         });
 
-        it('should apply section filter', async () => {
+        it('should apply sections filter', async () => {
             // act
-            await service.getEvents({section: EventLogSection.BITCOIN});
+            await service.getEvents({sections: [EventLogSection.BITCOIN]});
 
             // assert
-            expect(mock_query_builder.andWhere).toHaveBeenCalledWith('event.section = :section', {section: EventLogSection.BITCOIN});
+            expect(mock_query_builder.andWhere).toHaveBeenCalledWith('event.section IN (:...sections)', {sections: [EventLogSection.BITCOIN]});
         });
 
         it('should apply pagination', async () => {
@@ -213,9 +213,9 @@ describe('EventLogService', () => {
         it('should apply multiple filters', async () => {
             // act
             await service.getEvents({
-                section: EventLogSection.SETTINGS,
-                actor_type: EventLogActorType.USER,
-                type: EventLogType.UPDATE,
+                sections: [EventLogSection.SETTINGS],
+                actor_types: [EventLogActorType.USER],
+                types: [EventLogType.UPDATE],
             });
 
             // assert

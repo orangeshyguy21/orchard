@@ -1,15 +1,18 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, effect, input, output, signal, viewChild} from '@angular/core';
-import {FormGroup, FormControl, Validators} from '@angular/forms';
+import {FormGroup, FormControl, FormArray, Validators} from '@angular/forms';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 /* Vendor Dependencies */
 import {DateTime} from 'luxon';
+import {ENTER, COMMA} from '@angular/cdk/keycodes';
 import {MatMenuTrigger} from '@angular/material/menu';
-import {MatSelectChange} from '@angular/material/select';
+import {MatChipInputEvent} from '@angular/material/chips';
+import {MatAutocompleteSelectedEvent, MatAutocompleteTrigger} from '@angular/material/autocomplete';
+import {Observable, map, startWith} from 'rxjs';
 /* Application Dependencies */
-import {AllEventLogSettings} from '@client/modules/settings/types/setting.types';
+import {User} from '@client/modules/crew/classes/user.class';
 /* Shared Dependencies */
-import {EventLogSection, EventLogActorType, EventLogType, EventLogStatus} from '@shared/generated.types';
+import {EventLogSection, EventLogType, EventLogStatus} from '@shared/generated.types';
 
 @Component({
     selector: 'orc-event-subsection-log-control',
@@ -22,36 +25,43 @@ export class EventSubsectionLogControlComponent {
     /* Inputs */
     public readonly date_start = input<number | null>();
     public readonly date_end = input<number | null>();
-    public readonly section = input<EventLogSection | null>();
-    public readonly actor_type = input<EventLogActorType | null>();
-    public readonly type = input<EventLogType | null>();
-    public readonly status = input<EventLogStatus | null>();
+    public readonly sections = input<EventLogSection[]>([]);
+    public readonly actor_ids = input<string[]>([]);
+    public readonly types = input<EventLogType[]>([]);
+    public readonly statuses = input<EventLogStatus[]>([]);
+    public readonly users = input<User[]>([]);
     public readonly device_desktop = input<boolean>();
 
     /* Outputs */
     public readonly dateChange = output<number[]>();
-    public readonly sectionChange = output<EventLogSection | null>();
-    public readonly actorTypeChange = output<EventLogActorType | null>();
-    public readonly typeChange = output<EventLogType | null>();
-    public readonly statusChange = output<EventLogStatus | null>();
+    public readonly sectionsChange = output<EventLogSection[]>();
+    public readonly actorIdsChange = output<string[]>();
+    public readonly typesChange = output<EventLogType[]>();
+    public readonly statusesChange = output<EventLogStatus[]>();
 
     private readonly filter_menu_trigger = viewChild(MatMenuTrigger);
+    private readonly user_auto_trigger = viewChild(MatAutocompleteTrigger);
 
     /* Form */
     public readonly panel = new FormGroup({
-        section: new FormControl<EventLogSection | null>(null),
-        actor_type: new FormControl<EventLogActorType | null>(null),
-        type: new FormControl<EventLogType | null>(null),
-        status: new FormControl<EventLogStatus | null>(null),
+        sections: new FormArray<FormControl<boolean>>([]),
+        actor_ids: new FormControl<string[]>([], {nonNullable: true}),
+        types: new FormArray<FormControl<boolean>>([]),
+        statuses: new FormArray<FormControl<boolean>>([]),
         daterange: new FormGroup({
             date_start: new FormControl<DateTime | null>(null, [Validators.required]),
             date_end: new FormControl<DateTime | null>(null, [Validators.required]),
         }),
     });
 
+    /* User chip autocomplete */
+    public readonly separator_codes: number[] = [ENTER, COMMA];
+    public readonly user_search_control = new FormControl('');
+    public filtered_users: Observable<User[]>;
+    public readonly selected_users = signal<User[]>([]);
+
     /* Enum options */
     public readonly section_options = Object.values(EventLogSection);
-    public readonly actor_type_options = Object.values(EventLogActorType);
     public readonly type_options = Object.values(EventLogType);
     public readonly status_options = Object.values(EventLogStatus);
 
@@ -68,7 +78,18 @@ export class EventSubsectionLogControlComponent {
             ?.statusChanges.pipe(takeUntilDestroyed())
             .subscribe(() => {});
 
-        /* Sync inputs to form */
+        /* Initialize user autocomplete filtering */
+        this.filtered_users = this.user_search_control.valueChanges.pipe(
+            startWith(''),
+            map((value) => this.filterUsers(value || '')),
+        );
+
+        /* Build checkbox FormArrays */
+        this.buildSectionFilters();
+        this.buildTypeFilters();
+        this.buildStatusFilters();
+
+        /* Sync date inputs to form */
         effect(() => {
             const ds = this.date_start();
             if (ds) this.panel.controls.daterange.controls.date_start.setValue(DateTime.fromSeconds(ds), {emitEvent: false});
@@ -77,22 +98,169 @@ export class EventSubsectionLogControlComponent {
             const de = this.date_end();
             if (de) this.panel.controls.daterange.controls.date_end.setValue(DateTime.fromSeconds(de), {emitEvent: false});
         });
+
+        /* Sync checkbox inputs to form */
         effect(() => {
-            const s = this.section();
-            this.panel.controls.section.setValue(s ?? null, {emitEvent: false});
+            const sections = this.sections();
+            if (this.areArraysEqual(this.getSelectedSections(), sections)) return;
+            this.setSectionFilters(sections);
+            this.updateFilterCount();
         });
         effect(() => {
-            const at = this.actor_type();
-            this.panel.controls.actor_type.setValue(at ?? null, {emitEvent: false});
+            const types = this.types();
+            if (this.areArraysEqual(this.getSelectedTypes(), types)) return;
+            this.setTypeFilters(types);
+            this.updateFilterCount();
         });
         effect(() => {
-            const t = this.type();
-            this.panel.controls.type.setValue(t ?? null, {emitEvent: false});
+            const statuses = this.statuses();
+            if (this.areArraysEqual(this.getSelectedStatuses(), statuses)) return;
+            this.setStatusFilters(statuses);
+            this.updateFilterCount();
         });
+
+        /* Sync actor_ids input to form and selected_users signal */
         effect(() => {
-            const s = this.status();
-            this.panel.controls.status.setValue(s ?? null, {emitEvent: false});
+            const ids = this.actor_ids();
+            const all_users = this.users();
+            const matched = ids.map((id) => all_users.find((u) => u.id === id)).filter((u): u is User => !!u);
+            this.selected_users.set(matched);
+            this.panel.controls.actor_ids.setValue(ids, {emitEvent: false});
+            this.updateFilterCount();
         });
+    }
+
+    /* *******************************************************
+        Section Filters
+    ******************************************************** */
+
+    /** Builds the FormArray controls for section checkboxes */
+    private buildSectionFilters(): void {
+        this.panel.controls.sections.clear();
+        this.section_options.forEach(() => {
+            this.panel.controls.sections.push(new FormControl(false, {nonNullable: true}));
+        });
+    }
+
+    /** Sets the FormArray values based on selected sections */
+    private setSectionFilters(selected: EventLogSection[]): void {
+        this.section_options.forEach((option, index) => {
+            this.panel.controls.sections.at(index).setValue(selected.includes(option));
+        });
+    }
+
+    /** Gets the selected sections from the FormArray */
+    public getSelectedSections(): EventLogSection[] {
+        return this.section_options.filter((_, index) => this.panel.controls.sections.at(index).value);
+    }
+
+    /* *******************************************************
+        Type Filters
+    ******************************************************** */
+
+    /** Builds the FormArray controls for type checkboxes */
+    private buildTypeFilters(): void {
+        this.panel.controls.types.clear();
+        this.type_options.forEach(() => {
+            this.panel.controls.types.push(new FormControl(false, {nonNullable: true}));
+        });
+    }
+
+    /** Sets the FormArray values based on selected types */
+    private setTypeFilters(selected: EventLogType[]): void {
+        this.type_options.forEach((option, index) => {
+            this.panel.controls.types.at(index).setValue(selected.includes(option));
+        });
+    }
+
+    /** Gets the selected types from the FormArray */
+    public getSelectedTypes(): EventLogType[] {
+        return this.type_options.filter((_, index) => this.panel.controls.types.at(index).value);
+    }
+
+    /* *******************************************************
+        Status Filters
+    ******************************************************** */
+
+    /** Builds the FormArray controls for status checkboxes */
+    private buildStatusFilters(): void {
+        this.panel.controls.statuses.clear();
+        this.status_options.forEach(() => {
+            this.panel.controls.statuses.push(new FormControl(false, {nonNullable: true}));
+        });
+    }
+
+    /** Sets the FormArray values based on selected statuses */
+    private setStatusFilters(selected: EventLogStatus[]): void {
+        this.status_options.forEach((option, index) => {
+            this.panel.controls.statuses.at(index).setValue(selected.includes(option));
+        });
+    }
+
+    /** Gets the selected statuses from the FormArray */
+    public getSelectedStatuses(): EventLogStatus[] {
+        return this.status_options.filter((_, index) => this.panel.controls.statuses.at(index).value);
+    }
+
+    /* *******************************************************
+        User Chip Autocomplete
+    ******************************************************** */
+
+    /** Filters users for autocomplete based on search input */
+    private filterUsers(value: string): User[] {
+        const filter_value = value.toLowerCase();
+        const selected_ids = this.selected_users().map((u) => u.id);
+        return this.users().filter((user) => {
+            if (selected_ids.includes(user.id)) return false;
+            return user.name.toLowerCase().includes(filter_value);
+        });
+    }
+
+    /** Handles chip input token end */
+    public onUserAdd(_event: MatChipInputEvent): void {
+        this.user_search_control.setValue('');
+    }
+
+    /** Handles removing a selected user chip */
+    public onUserRemove(user: User): void {
+        const updated = this.selected_users().filter((u) => u.id !== user.id);
+        this.selected_users.set(updated);
+        const ids = updated.map((u) => u.id);
+        this.panel.controls.actor_ids.setValue(ids);
+        this.actorIdsChange.emit(ids);
+        this.updateFilterCount();
+        this.refreshUserAutocomplete();
+    }
+
+    /** Handles autocomplete selection */
+    public onUserSelected(event: MatAutocompleteSelectedEvent): void {
+        const user_id = event.option.value;
+        const user = this.users().find((u) => u.id === user_id);
+        if (!user) return;
+        const updated = [...this.selected_users(), user];
+        this.selected_users.set(updated);
+        const ids = updated.map((u) => u.id);
+        this.panel.controls.actor_ids.setValue(ids);
+        this.actorIdsChange.emit(ids);
+        this.user_search_control.setValue('');
+        event.option.deselect();
+        this.updateFilterCount();
+        setTimeout(() => this.refreshUserAutocomplete());
+    }
+
+    /** Triggers autocomplete filtering on focus so the panel appears immediately */
+    public onUserInputFocus(): void {
+        this.refreshUserAutocomplete();
+    }
+
+    /** Closes autocomplete panel on blur (needed because stopPropagation on filter menu blocks outside-click detection) */
+    public onUserInputBlur(): void {
+        setTimeout(() => this.user_auto_trigger()?.closePanel());
+    }
+
+    /** Refreshes the filtered users observable */
+    private refreshUserAutocomplete(): void {
+        this.user_search_control.setValue(this.user_search_control.value);
     }
 
     /* *******************************************************
@@ -109,37 +277,36 @@ export class EventSubsectionLogControlComponent {
         this.dateChange.emit([Math.floor(ds.startOf('day').toSeconds()), Math.floor(de.endOf('day').toSeconds())]);
     }
 
-    /** Handles section select change */
-    public onSectionChange(event: MatSelectChange): void {
-        this.sectionChange.emit(event.value);
+    /** Handles section checkbox change */
+    public onSectionsChange(): void {
+        this.updateFilterCount();
+        this.sectionsChange.emit(this.getSelectedSections());
     }
 
-    /** Handles actor type select change */
-    public onActorTypeChange(event: MatSelectChange): void {
-        this.actorTypeChange.emit(event.value);
+    /** Handles type checkbox change */
+    public onTypesChange(): void {
         this.updateFilterCount();
+        this.typesChange.emit(this.getSelectedTypes());
     }
 
-    /** Handles change type select change */
-    public onTypeChange(event: MatSelectChange): void {
-        this.typeChange.emit(event.value);
+    /** Handles status checkbox change */
+    public onStatusesChange(): void {
         this.updateFilterCount();
-    }
-
-    /** Handles status select change */
-    public onStatusChange(event: MatSelectChange): void {
-        this.statusChange.emit(event.value);
-        this.updateFilterCount();
+        this.statusesChange.emit(this.getSelectedStatuses());
     }
 
     /** Clears all filters in the menu */
     public onClearFilter(): void {
-        this.panel.controls.actor_type.setValue(null);
-        this.panel.controls.type.setValue(null);
-        this.panel.controls.status.setValue(null);
-        this.actorTypeChange.emit(null);
-        this.typeChange.emit(null);
-        this.statusChange.emit(null);
+        this.setSectionFilters([]);
+        this.setTypeFilters([]);
+        this.setStatusFilters([]);
+        this.selected_users.set([]);
+        this.panel.controls.actor_ids.setValue([]);
+        this.user_search_control.setValue('');
+        this.sectionsChange.emit([]);
+        this.typesChange.emit([]);
+        this.statusesChange.emit([]);
+        this.actorIdsChange.emit([]);
         this.filter_count.set(0);
     }
 
@@ -148,12 +315,25 @@ export class EventSubsectionLogControlComponent {
         this.filter_menu_trigger()?.closeMenu();
     }
 
+    /* *******************************************************
+        Helpers
+    ******************************************************** */
+
     /** Counts active filter groups for badge display */
     private updateFilterCount(): void {
         let count = 0;
-        if (this.panel.controls.actor_type.value) count++;
-        if (this.panel.controls.type.value) count++;
-        if (this.panel.controls.status.value) count++;
+        if (this.getSelectedSections().length > 0) count++;
+        if (this.getSelectedTypes().length > 0) count++;
+        if (this.getSelectedStatuses().length > 0) count++;
+        if (this.selected_users().length > 0) count++;
         this.filter_count.set(count);
+    }
+
+    /** Compares two string arrays for equality */
+    private areArraysEqual(a: string[], b: string[]): boolean {
+        if (a.length !== b.length) return false;
+        const sorted_a = [...a].sort();
+        const sorted_b = [...b].sort();
+        return sorted_a.every((item, index) => item === sorted_b[index]);
     }
 }

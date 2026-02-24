@@ -208,7 +208,7 @@ export class SettingDeviceService {
         } as AllEventLogSettings;
     }
     public setEventLogSettings(settings: AllEventLogSettings): void {
-        const {date_end, page, section, actor_type, actor_id, type, status, ...long_settings} = settings;
+        const {date_end, page, sections, actor_types, actor_ids, types, statuses, ...long_settings} = settings;
         this.localStorageService.setEventLogSettings(long_settings);
         this.event_log_short_settings = {
             date_end: date_end,
