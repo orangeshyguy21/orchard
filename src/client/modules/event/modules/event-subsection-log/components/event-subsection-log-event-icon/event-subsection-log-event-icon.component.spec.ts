@@ -10,22 +10,22 @@ import {EventLogType, EventLogStatus} from '@shared/generated.types';
 import {EventSubsectionLogEventIconComponent} from './event-subsection-log-event-icon.component';
 
 describe('EventSubsectionLogEventIconComponent', () => {
-    let component: EventSubsectionLogEventIconComponent;
-    let fixture: ComponentFixture<EventSubsectionLogEventIconComponent>;
+	let component: EventSubsectionLogEventIconComponent;
+	let fixture: ComponentFixture<EventSubsectionLogEventIconComponent>;
 
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
-            imports: [OrcEventSubsectionLogModule, MatIconTestingModule],
-        }).compileComponents();
+	beforeEach(async () => {
+		await TestBed.configureTestingModule({
+			imports: [OrcEventSubsectionLogModule, MatIconTestingModule],
+		}).compileComponents();
 
-        fixture = TestBed.createComponent(EventSubsectionLogEventIconComponent);
-        component = fixture.componentInstance;
-        fixture.componentRef.setInput('type', EventLogType.Update);
-        fixture.componentRef.setInput('status', EventLogStatus.Success);
-        fixture.detectChanges();
-    });
+		fixture = TestBed.createComponent(EventSubsectionLogEventIconComponent);
+		component = fixture.componentInstance;
+		fixture.componentRef.setInput('type', EventLogType.Update);
+		fixture.componentRef.setInput('status', EventLogStatus.Success);
+		fixture.detectChanges();
+	});
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+	it('should create', () => {
+		expect(component).toBeTruthy();
+	});
 });

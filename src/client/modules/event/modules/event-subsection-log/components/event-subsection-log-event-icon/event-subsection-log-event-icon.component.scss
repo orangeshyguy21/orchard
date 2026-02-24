@@ -1,14 +1,14 @@
 @use 'molecule/molecule';
 
-.event-type-container{
-    @extend %flex;
-    @extend %flex-row;
-    @extend %flex-items-center;
-    @extend %orc-corner-full;
-    @extend %p-0-5;
-    @extend %orc-surface-container-high-bg;
+.event-type-container {
+	@extend %flex;
+	@extend %flex-row;
+	@extend %flex-items-center;
+	@extend %orc-corner-full;
+	@extend %p-0-5;
+	@extend %orc-surface-container-high-bg;
 
-    mat-icon{
-        // transform: scale(0.9);
-    }
+	mat-icon {
+		// transform: scale(0.9);
+	}
 }

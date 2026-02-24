@@ -6,10 +6,10 @@ import {EventLogType} from '@server/modules/event/event.enums';
 export const EVENT_LOG_KEY = 'event_log';
 
 export interface EventLogMetadata {
-    field: string;
-    type: EventLogType;
-    arg_keys?: string[];
-    old_value_key?: string;
+	field: string;
+	type: EventLogType;
+	arg_keys?: string[];
+	old_value_key?: string;
 }
 
 /**

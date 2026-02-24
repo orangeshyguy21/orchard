@@ -47,7 +47,14 @@ describe('MintMintQuoteService', () => {
 
 	it('updateMintNut04 returns input and calls RPC', async () => {
 		const result = await mintMintQuoteService.updateMintNut04('TAG', 'sat', 'bolt11');
-		expect(result).toEqual({unit: 'sat', method: 'bolt11', disabled: undefined, min_amount: undefined, max_amount: undefined, description: undefined});
+		expect(result).toEqual({
+			unit: 'sat',
+			method: 'bolt11',
+			disabled: undefined,
+			min_amount: undefined,
+			max_amount: undefined,
+			description: undefined,
+		});
 		expect(mintRpcService.updateNut04).toHaveBeenCalled();
 	});
 

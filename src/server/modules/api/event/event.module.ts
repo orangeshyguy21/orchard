@@ -8,7 +8,7 @@ import {EventLogResolver} from './event.resolver';
 import {ApiEventLogService} from './event.service';
 
 @Module({
-    imports: [ErrorModule, EventLogModule],
-    providers: [EventLogResolver, ApiEventLogService],
+	imports: [ErrorModule, EventLogModule],
+	providers: [EventLogResolver, ApiEventLogService],
 })
 export class ApiEventLogModule {}

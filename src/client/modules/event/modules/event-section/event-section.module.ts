@@ -34,7 +34,7 @@ import {EventSectionComponent} from './components/event-section/event-section.co
 			},
 		]),
 		CoreCommonModule,
-        OrcNavModule,
+		OrcNavModule,
 	],
 })
 export class OrcEventSectionModule {}

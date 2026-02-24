@@ -3,10 +3,10 @@ import {Field, Int, ObjectType} from '@nestjs/graphql';
 
 @ObjectType()
 export class OrchardCommonCount {
-    @Field(() => Int)
-    count: number;
+	@Field(() => Int)
+	count: number;
 
-    constructor(count: number) {
-        this.count = count;
-    }
+	constructor(count: number) {
+		this.count = count;
+	}
 }

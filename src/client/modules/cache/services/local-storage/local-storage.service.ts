@@ -15,7 +15,7 @@ import {
 	MintDatabaseSettings,
 	MintConfigSettings,
 	SettingsDeviceSettings,
-    EventLogSettings,
+	EventLogSettings,
 } from './local-storage.types';
 
 @Injectable({
@@ -41,8 +41,8 @@ export class LocalStorageService {
 		MINT_DATABASE_KEY: 'v1.mint.database.settings',
 		/* Settings Settings */
 		SETTINGS_DEVICE_KEY: 'v1.settings.device.settings',
-        /* Event Log Settings */
-        EVENT_LOG_KEY: 'v0.event.log.settings',
+		/* Event Log Settings */
+		EVENT_LOG_KEY: 'v0.event.log.settings',
 	};
 
 	constructor() {}

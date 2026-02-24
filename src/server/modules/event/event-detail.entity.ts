@@ -6,28 +6,28 @@ import {EventLog} from './event.entity';
 
 @Entity('event_details')
 export class EventLogDetail {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+	@PrimaryGeneratedColumn('uuid')
+	id: string;
 
-    @ManyToOne(() => EventLog, (event) => event.details, {onDelete: 'CASCADE'})
-    @JoinColumn({name: 'event_id'})
-    event: EventLog;
+	@ManyToOne(() => EventLog, (event) => event.details, {onDelete: 'CASCADE'})
+	@JoinColumn({name: 'event_id'})
+	event: EventLog;
 
-    @Column({type: 'text', length: 100})
-    field: string;
+	@Column({type: 'text', length: 100})
+	field: string;
 
-    @Column({type: 'text', nullable: true})
-    old_value: string | null;
+	@Column({type: 'text', nullable: true})
+	old_value: string | null;
 
-    @Column({type: 'text', nullable: true})
-    new_value: string | null;
+	@Column({type: 'text', nullable: true})
+	new_value: string | null;
 
-    @Column({type: 'text', default: EventLogDetailStatus.SUCCESS})
-    status: EventLogDetailStatus;
+	@Column({type: 'text', default: EventLogDetailStatus.SUCCESS})
+	status: EventLogDetailStatus;
 
-    @Column({type: 'text', nullable: true, length: 50})
-    error_code: string | null;
+	@Column({type: 'text', nullable: true, length: 50})
+	error_code: string | null;
 
-    @Column({type: 'text', nullable: true, length: 500})
-    error_message: string | null;
+	@Column({type: 'text', nullable: true, length: 500})
+	error_message: string | null;
 }

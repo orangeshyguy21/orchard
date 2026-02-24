@@ -2,43 +2,43 @@
 @use 'nucleus/nucleus';
 
 .event-log-detail-container {
-    @extend %flex;
-    @extend %flex-column;
-    @extend %w-full;
+	@extend %flex;
+	@extend %flex-column;
+	@extend %w-full;
 }
 
 .detail-card {
-    @extend %flex;
-    @extend %flex-column;
-    @extend %overflow-hidden;
-    @extend %w-min-18;
-    // min-width: 15rem;
+	@extend %flex;
+	@extend %flex-column;
+	@extend %overflow-hidden;
+	@extend %w-min-18;
+	// min-width: 15rem;
 }
 
 .detail-card-header {
-    @extend %p-h-1;
-    @extend %p-v-0-5;
-    border-bottom: 1px solid var(--mat-sys-outline-variant);
+	@extend %p-h-1;
+	@extend %p-v-0-5;
+	border-bottom: 1px solid var(--mat-sys-outline-variant);
 }
 
 .detail-arrow-icon {
-    @extend %orc-outline-color;
-    font-size: 1rem;
-    width: 1rem;
-    height: 1rem;
+	@extend %orc-outline-color;
+	font-size: 1rem;
+	width: 1rem;
+	height: 1rem;
 }
 
 .detail-old-value {
-    text-decoration: line-through;
-    opacity: 0.7;
+	text-decoration: line-through;
+	opacity: 0.7;
 }
 
 .detail-error {
-    @extend %flex;
-    @extend %flex-column;
-    @extend %flex-gap-0-25;
-    @extend %p-0-5;
-    @extend %orc-corner-extra-small;
-    background: color-mix(in srgb, var(--orc-status-inactive) 10%, transparent);
-    color: var(--orc-status-inactive);
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-gap-0-25;
+	@extend %p-0-5;
+	@extend %orc-corner-extra-small;
+	background: color-mix(in srgb, var(--orc-status-inactive) 10%, transparent);
+	color: var(--orc-status-inactive);
 }

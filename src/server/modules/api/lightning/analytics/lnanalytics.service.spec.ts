@@ -6,10 +6,8 @@ import {LightningAnalyticsService} from '@server/modules/lightning/analytics/lna
 import {ErrorService} from '@server/modules/error/error.service';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
-import {LightningAnalyticsMetric} from '@server/modules/lightning/analytics/lnanalytics.enums';
 /* Local Dependencies */
 import {ApiLightningAnalyticsService} from './lnanalytics.service';
-import {OrchardLightningAnalyticsBackfillStatus} from './lnanalytics.model';
 
 describe('ApiLightningAnalyticsService', () => {
 	let service: ApiLightningAnalyticsService;

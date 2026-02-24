@@ -1,15 +1,15 @@
 @use 'molecule/molecule';
 
 .event-log-control-container {
-    @extend %p-b-1;
+	@extend %p-b-1;
 }
 
 .filter-options {
-    @extend %flex;
-    @extend %flex-column;
-    @extend %flex-gap-0-5;
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-gap-0-5;
 }
 
 .mobile-form-field {
-    width: 11rem;
+	width: 11rem;
 }

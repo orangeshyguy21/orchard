@@ -8,22 +8,22 @@ import {UserRole} from '@shared/generated.types';
 import {CrewMemberChipComponent} from './crew-member-chip.component';
 
 describe('CrewMemberChipComponent', () => {
-    let component: CrewMemberChipComponent;
-    let fixture: ComponentFixture<CrewMemberChipComponent>;
+	let component: CrewMemberChipComponent;
+	let fixture: ComponentFixture<CrewMemberChipComponent>;
 
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
-            imports: [OrcCrewModule],
-        }).compileComponents();
+	beforeEach(async () => {
+		await TestBed.configureTestingModule({
+			imports: [OrcCrewModule],
+		}).compileComponents();
 
-        fixture = TestBed.createComponent(CrewMemberChipComponent);
-        component = fixture.componentInstance;
-        fixture.componentRef.setInput('name', 'Alice');
-        fixture.componentRef.setInput('role', UserRole.Admin);
-        fixture.detectChanges();
-    });
+		fixture = TestBed.createComponent(CrewMemberChipComponent);
+		component = fixture.componentInstance;
+		fixture.componentRef.setInput('name', 'Alice');
+		fixture.componentRef.setInput('role', UserRole.Admin);
+		fixture.detectChanges();
+	});
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+	it('should create', () => {
+		expect(component).toBeTruthy();
+	});
 });

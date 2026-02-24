@@ -6,20 +6,20 @@ import {OrcFormModule} from '@client/modules/form/form.module';
 import {FormToggleComponent} from './form-toggle.component';
 
 describe('FormToggleComponent', () => {
-    let component: FormToggleComponent;
-    let fixture: ComponentFixture<FormToggleComponent>;
+	let component: FormToggleComponent;
+	let fixture: ComponentFixture<FormToggleComponent>;
 
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
-            imports: [OrcFormModule],
-        }).compileComponents();
+	beforeEach(async () => {
+		await TestBed.configureTestingModule({
+			imports: [OrcFormModule],
+		}).compileComponents();
 
-        fixture = TestBed.createComponent(FormToggleComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
+		fixture = TestBed.createComponent(FormToggleComponent);
+		component = fixture.componentInstance;
+		fixture.detectChanges();
+	});
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+	it('should create', () => {
+		expect(component).toBeTruthy();
+	});
 });

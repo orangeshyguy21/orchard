@@ -6,21 +6,21 @@ import {OrcNetworkModule} from '@client/modules/network/network.module';
 import {NetworkConnectionStatusComponent} from './network-connection-status.component';
 
 describe('NetworkConnectionStatusComponent', () => {
-    let component: NetworkConnectionStatusComponent;
-    let fixture: ComponentFixture<NetworkConnectionStatusComponent>;
+	let component: NetworkConnectionStatusComponent;
+	let fixture: ComponentFixture<NetworkConnectionStatusComponent>;
 
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
-            imports: [OrcNetworkModule],
-        }).compileComponents();
+	beforeEach(async () => {
+		await TestBed.configureTestingModule({
+			imports: [OrcNetworkModule],
+		}).compileComponents();
 
-        fixture = TestBed.createComponent(NetworkConnectionStatusComponent);
-        component = fixture.componentInstance;
-        fixture.componentRef.setInput('type', 'insecure');
-        fixture.detectChanges();
-    });
+		fixture = TestBed.createComponent(NetworkConnectionStatusComponent);
+		component = fixture.componentInstance;
+		fixture.componentRef.setInput('type', 'insecure');
+		fixture.detectChanges();
+	});
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+	it('should create', () => {
+		expect(component).toBeTruthy();
+	});
 });

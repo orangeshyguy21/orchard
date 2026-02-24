@@ -8,8 +8,8 @@ import {EventLogDetail} from './event-detail.entity';
 import {EventLogService} from './event.service';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([EventLog, EventLogDetail])],
-    providers: [EventLogService],
-    exports: [EventLogService],
+	imports: [TypeOrmModule.forFeature([EventLog, EventLogDetail])],
+	providers: [EventLogService],
+	exports: [EventLogService],
 })
 export class EventLogModule {}

@@ -16,7 +16,7 @@ export class MintGeneralKeysetVersionComponent {
 		return 'V2';
 	});
 
-    public icon = computed(() => {
-        return this.version() === 'V2' ? 'vpn_key' : 'key';
-    });
+	public icon = computed(() => {
+		return this.version() === 'V2' ? 'vpn_key' : 'key';
+	});
 }

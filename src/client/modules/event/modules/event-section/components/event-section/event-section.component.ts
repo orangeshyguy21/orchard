@@ -11,8 +11,7 @@ import {ConfigService} from '@client/modules/config/services/config.service';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EventSectionComponent {
-    private readonly configService = inject(ConfigService);
-    
-    public readonly version = signal<string>(this.configService.config.mode.version);
+	private readonly configService = inject(ConfigService);
 
+	public readonly version = signal<string>(this.configService.config.mode.version);
 }

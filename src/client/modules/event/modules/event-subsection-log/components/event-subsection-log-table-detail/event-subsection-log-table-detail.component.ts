@@ -9,18 +9,17 @@ import {EventLog} from '@client/modules/event/classes/event-log.class';
 import {EventLogDetailStatus} from '@shared/generated.types';
 
 @Component({
-    selector: 'orc-event-subsection-log-table-detail',
-    standalone: false,
-    templateUrl: './event-subsection-log-table-detail.component.html',
-    styleUrl: './event-subsection-log-table-detail.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
+	selector: 'orc-event-subsection-log-table-detail',
+	standalone: false,
+	templateUrl: './event-subsection-log-table-detail.component.html',
+	styleUrl: './event-subsection-log-table-detail.component.scss',
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EventSubsectionLogTableDetailComponent {
-    public readonly EventLogDetailStatus = EventLogDetailStatus;
+	public readonly EventLogDetailStatus = EventLogDetailStatus;
 
-    public readonly event_log = input.required<EventLog>();
-    public readonly device_type = input.required<DeviceType>();
-    public readonly user = input.required<User | undefined>();
-    public readonly id_user = input.required<string | null>();
-
+	public readonly event_log = input.required<EventLog>();
+	public readonly device_type = input.required<DeviceType>();
+	public readonly user = input.required<User | undefined>();
+	public readonly id_user = input.required<string | null>();
 }

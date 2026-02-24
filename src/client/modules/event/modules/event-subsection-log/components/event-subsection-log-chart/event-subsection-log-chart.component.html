@@ -1,25 +1,25 @@
 <div class="chart-container">
-    <div class="chart-pagination">
-        <button mat-icon-button [disabled]="page_index() === 0" (click)="onFirst()">
-            <mat-icon class="mat-symbol-outline">first_page</mat-icon>
-        </button>
-        <button mat-icon-button [disabled]="page_index() === 0" (click)="onPrev()">
-            <mat-icon class="mat-symbol-outline">chevron_left</mat-icon>
-        </button>
-    </div>
+	<div class="chart-pagination">
+		<button mat-icon-button [disabled]="page_index() === 0" (click)="onFirst()">
+			<mat-icon class="mat-symbol-outline">first_page</mat-icon>
+		</button>
+		<button mat-icon-button [disabled]="page_index() === 0" (click)="onPrev()">
+			<mat-icon class="mat-symbol-outline">chevron_left</mat-icon>
+		</button>
+	</div>
 
-    <div class="chart-canvas-container">
-        @if (displayed() && has_data() && !loading()) {
-            <canvas baseChart [type]="chart_type" [data]="chart_data" [options]="chart_options"></canvas>
-        }
-    </div>
+	<div class="chart-canvas-container">
+		@if (displayed() && has_data() && !loading()) {
+			<canvas baseChart [type]="chart_type" [data]="chart_data" [options]="chart_options"></canvas>
+		}
+	</div>
 
-    <div class="chart-pagination">
-        <button mat-icon-button [disabled]="page_index() >= page_count() - 1" (click)="onNext()">
-            <mat-icon class="mat-symbol-outline">chevron_right</mat-icon>
-        </button>
-        <button mat-icon-button [disabled]="page_index() >= page_count() - 1" (click)="onLast()">
-            <mat-icon class="mat-symbol-outline">last_page</mat-icon>
-        </button>
-    </div>
+	<div class="chart-pagination">
+		<button mat-icon-button [disabled]="page_index() >= page_count() - 1" (click)="onNext()">
+			<mat-icon class="mat-symbol-outline">chevron_right</mat-icon>
+		</button>
+		<button mat-icon-button [disabled]="page_index() >= page_count() - 1" (click)="onLast()">
+			<mat-icon class="mat-symbol-outline">last_page</mat-icon>
+		</button>
+	</div>
 </div>

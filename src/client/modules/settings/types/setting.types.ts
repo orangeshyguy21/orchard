@@ -6,7 +6,7 @@ import {
 	MintDatabaseSettings,
 	MintConfigSettings,
 	SettingsDeviceSettings,
-    EventLogSettings,
+	EventLogSettings,
 } from '@client/modules/cache/services/local-storage/local-storage.types';
 /* Shared Dependencies */
 import {EventLogSection, EventLogActorType, EventLogType, EventLogStatus} from '@shared/generated.types';

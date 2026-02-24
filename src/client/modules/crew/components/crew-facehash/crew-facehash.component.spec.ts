@@ -6,21 +6,21 @@ import {OrcCrewModule} from '@client/modules/crew/crew.module';
 import {CrewFacehashComponent} from './crew-facehash.component';
 
 describe('CrewFacehashComponent', () => {
-    let component: CrewFacehashComponent;
-    let fixture: ComponentFixture<CrewFacehashComponent>;
+	let component: CrewFacehashComponent;
+	let fixture: ComponentFixture<CrewFacehashComponent>;
 
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
-            imports: [OrcCrewModule],
-        }).compileComponents();
+	beforeEach(async () => {
+		await TestBed.configureTestingModule({
+			imports: [OrcCrewModule],
+		}).compileComponents();
 
-        fixture = TestBed.createComponent(CrewFacehashComponent);
-        component = fixture.componentInstance;
-        fixture.componentRef.setInput('name', 'Alice');
-        fixture.detectChanges();
-    });
+		fixture = TestBed.createComponent(CrewFacehashComponent);
+		component = fixture.componentInstance;
+		fixture.componentRef.setInput('name', 'Alice');
+		fixture.detectChanges();
+	});
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+	it('should create', () => {
+		expect(component).toBeTruthy();
+	});
 });

@@ -8,56 +8,56 @@ import {AuthService} from '@client/modules/auth/services/auth/auth.service';
 import {authInterceptor} from './auth.interceptor';
 
 describe('authInterceptor', () => {
-    let http: HttpClient;
-    let httpTesting: HttpTestingController;
-    let authServiceSpy: jasmine.SpyObj<AuthService>;
+	let http: HttpClient;
+	let httpTesting: HttpTestingController;
+	let authServiceSpy: jasmine.SpyObj<AuthService>;
 
-    beforeEach(() => {
-        authServiceSpy = jasmine.createSpyObj('AuthService', ['getAuthHeaders']);
+	beforeEach(() => {
+		authServiceSpy = jasmine.createSpyObj('AuthService', ['getAuthHeaders']);
 
-        TestBed.configureTestingModule({
-            providers: [
-                provideHttpClient(withInterceptors([authInterceptor])),
-                provideHttpClientTesting(),
-                {provide: AuthService, useValue: authServiceSpy},
-            ],
-        });
+		TestBed.configureTestingModule({
+			providers: [
+				provideHttpClient(withInterceptors([authInterceptor])),
+				provideHttpClientTesting(),
+				{provide: AuthService, useValue: authServiceSpy},
+			],
+		});
 
-        http = TestBed.inject(HttpClient);
-        httpTesting = TestBed.inject(HttpTestingController);
-    });
+		http = TestBed.inject(HttpClient);
+		httpTesting = TestBed.inject(HttpTestingController);
+	});
 
-    afterEach(() => {
-        httpTesting.verify();
-    });
+	afterEach(() => {
+		httpTesting.verify();
+	});
 
-    it('should add Authorization header when auth headers exist', () => {
-        authServiceSpy.getAuthHeaders.and.returnValue({Authorization: 'Bearer token123'});
+	it('should add Authorization header when auth headers exist', () => {
+		authServiceSpy.getAuthHeaders.and.returnValue({Authorization: 'Bearer token123'});
 
-        http.get('/api/test').subscribe();
+		http.get('/api/test').subscribe();
 
-        const req = httpTesting.expectOne('/api/test');
-        expect(req.request.headers.get('Authorization')).toBe('Bearer token123');
-        req.flush({});
-    });
+		const req = httpTesting.expectOne('/api/test');
+		expect(req.request.headers.get('Authorization')).toBe('Bearer token123');
+		req.flush({});
+	});
 
-    it('should not modify request when no auth headers exist', () => {
-        authServiceSpy.getAuthHeaders.and.returnValue({});
+	it('should not modify request when no auth headers exist', () => {
+		authServiceSpy.getAuthHeaders.and.returnValue({});
 
-        http.get('/api/test').subscribe();
+		http.get('/api/test').subscribe();
 
-        const req = httpTesting.expectOne('/api/test');
-        expect(req.request.headers.has('Authorization')).toBeFalse();
-        req.flush({});
-    });
+		const req = httpTesting.expectOne('/api/test');
+		expect(req.request.headers.has('Authorization')).toBeFalse();
+		req.flush({});
+	});
 
-    it('should not overwrite existing Authorization header', () => {
-        authServiceSpy.getAuthHeaders.and.returnValue({Authorization: 'Bearer new-token'});
+	it('should not overwrite existing Authorization header', () => {
+		authServiceSpy.getAuthHeaders.and.returnValue({Authorization: 'Bearer new-token'});
 
-        http.get('/api/test', {headers: {Authorization: 'Bearer existing-token'}}).subscribe();
+		http.get('/api/test', {headers: {Authorization: 'Bearer existing-token'}}).subscribe();
 
-        const req = httpTesting.expectOne('/api/test');
-        expect(req.request.headers.get('Authorization')).toBe('Bearer existing-token');
-        req.flush({});
-    });
+		const req = httpTesting.expectOne('/api/test');
+		expect(req.request.headers.get('Authorization')).toBe('Bearer existing-token');
+		req.flush({});
+	});
 });

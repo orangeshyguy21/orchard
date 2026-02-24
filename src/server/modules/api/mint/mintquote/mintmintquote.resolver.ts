@@ -61,10 +61,7 @@ export class MintMintQuoteResolver {
 		field: 'nut04_quote',
 	})
 	@Mutation(() => OrchardMintNut04QuoteUpdate)
-	async mint_nut04_quote_update(
-		@Args('quote_id') quote_id: string,
-		@Args('state') state: string,
-	): Promise<OrchardMintNut04QuoteUpdate> {
+	async mint_nut04_quote_update(@Args('quote_id') quote_id: string, @Args('state') state: string): Promise<OrchardMintNut04QuoteUpdate> {
 		const tag = 'MUTATION { mint_nut04_quote_update }';
 		this.logger.debug(tag);
 		return await this.mintMintQuoteService.updateMintNut04Quote(tag, quote_id, state);

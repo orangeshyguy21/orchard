@@ -13,7 +13,7 @@ import {
 	AllMintKeysetsSettings,
 	AllMintConfigSettings,
 	AllSettingsDeviceSettings,
-    AllEventLogSettings,
+	AllEventLogSettings,
 } from '@client/modules/settings/types/setting.types';
 
 @Injectable({
@@ -33,10 +33,10 @@ export class SettingDeviceService {
 		date_end: null,
 		page: null,
 	};
-    public event_log_short_settings: Record<string, number | null> = {
-        date_end: null,
-        page: null,
-    };
+	public event_log_short_settings: Record<string, number | null> = {
+		date_end: null,
+		page: null,
+	};
 
 	/* In-memory cache for frequently accessed settings */
 	private cached_locale: string | null = null;
@@ -199,20 +199,20 @@ export class SettingDeviceService {
 		this.localStorageService.setSettingsDeviceSettings(settings);
 	}
 
-    /* Page: Event Log */
-    public getEventLogSettings(): AllEventLogSettings {
-        const long_term_settings = this.localStorageService.getEventLogSettings();
-        return {
-            ...long_term_settings,
-            ...this.event_log_short_settings,
-        } as AllEventLogSettings;
-    }
-    public setEventLogSettings(settings: AllEventLogSettings): void {
-        const {date_end, page, sections, actor_types, actor_ids, types, statuses, ...long_settings} = settings;
-        this.localStorageService.setEventLogSettings(long_settings);
-        this.event_log_short_settings = {
-            date_end: date_end,
-            page: page,
-        };
-    }
+	/* Page: Event Log */
+	public getEventLogSettings(): AllEventLogSettings {
+		const long_term_settings = this.localStorageService.getEventLogSettings();
+		return {
+			...long_term_settings,
+			...this.event_log_short_settings,
+		} as AllEventLogSettings;
+	}
+	public setEventLogSettings(settings: AllEventLogSettings): void {
+		const {date_end, page, sections, actor_types, actor_ids, types, statuses, ...long_settings} = settings;
+		this.localStorageService.setEventLogSettings(long_settings);
+		this.event_log_short_settings = {
+			date_end: date_end,
+			page: page,
+		};
+	}
 }

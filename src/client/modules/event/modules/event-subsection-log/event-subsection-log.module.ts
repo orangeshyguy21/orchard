@@ -30,52 +30,52 @@ import {EventSubsectionLogControlComponent} from './components/event-subsection-
 import {EventSubsectionLogChartComponent} from './components/event-subsection-log-chart/event-subsection-log-chart.component';
 import {EventSubsectionLogTableComponent} from './components/event-subsection-log-table/event-subsection-log-table.component';
 import {EventSubsectionLogTableDetailComponent} from './components/event-subsection-log-table-detail/event-subsection-log-table-detail.component';
-import { EventSubsectionLogSectionChipComponent } from './components/event-subsection-log-section-chip/event-subsection-log-section-chip.component';
-import { EventSubsectionLogEventIconComponent } from './components/event-subsection-log-event-icon/event-subsection-log-event-icon.component';
+import {EventSubsectionLogSectionChipComponent} from './components/event-subsection-log-section-chip/event-subsection-log-section-chip.component';
+import {EventSubsectionLogEventIconComponent} from './components/event-subsection-log-event-icon/event-subsection-log-event-icon.component';
 import {EventLogEventPipe} from './pipes/event-log-event/event-log-event.pipe';
 import {EventLogDetailsPipe} from './pipes/event-log-details/event-log-details.pipe';
 
 @NgModule({
-    declarations: [
-        EventSubsectionLogComponent,
-        EventSubsectionLogControlComponent,
-        EventSubsectionLogChartComponent,
-        EventSubsectionLogTableComponent,
-        EventSubsectionLogTableDetailComponent,
-        EventSubsectionLogSectionChipComponent,
-        EventSubsectionLogEventIconComponent,
-        EventLogEventPipe,
-        EventLogDetailsPipe,
-    ],
-    imports: [
-        CoreRouterModule.forChild([
-            {
-                path: '',
-                component: EventSubsectionLogComponent,
-            },
-        ]),
-        CoreCommonModule,
-        CoreReactiveFormsModule,
-        MatIconModule,
-        MatMenuModule,
-        MatTableModule,
-        MatPaginatorModule,
-        MatButtonModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatSelectModule,
-        MatDatepickerModule,
-        MatCheckboxModule,
-        MatChipsModule,
-        MatAutocompleteModule,
-        OrcLocalModule,
-        OrcDataModule,
-        OrcFormModule,
-        OrcCrewModule,
-        OrcButtonModule,
-        OrcGraphicModule,
-        BaseChartDirective,
-    ],
-    exports: [],
+	declarations: [
+		EventSubsectionLogComponent,
+		EventSubsectionLogControlComponent,
+		EventSubsectionLogChartComponent,
+		EventSubsectionLogTableComponent,
+		EventSubsectionLogTableDetailComponent,
+		EventSubsectionLogSectionChipComponent,
+		EventSubsectionLogEventIconComponent,
+		EventLogEventPipe,
+		EventLogDetailsPipe,
+	],
+	imports: [
+		CoreRouterModule.forChild([
+			{
+				path: '',
+				component: EventSubsectionLogComponent,
+			},
+		]),
+		CoreCommonModule,
+		CoreReactiveFormsModule,
+		MatIconModule,
+		MatMenuModule,
+		MatTableModule,
+		MatPaginatorModule,
+		MatButtonModule,
+		MatFormFieldModule,
+		MatInputModule,
+		MatSelectModule,
+		MatDatepickerModule,
+		MatCheckboxModule,
+		MatChipsModule,
+		MatAutocompleteModule,
+		OrcLocalModule,
+		OrcDataModule,
+		OrcFormModule,
+		OrcCrewModule,
+		OrcButtonModule,
+		OrcGraphicModule,
+		BaseChartDirective,
+	],
+	exports: [],
 })
 export class OrcEventSubsectionLogModule {}

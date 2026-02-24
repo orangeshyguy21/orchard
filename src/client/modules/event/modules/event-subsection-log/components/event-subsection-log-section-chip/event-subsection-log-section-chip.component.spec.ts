@@ -8,21 +8,21 @@ import {EventLogSection} from '@shared/generated.types';
 import {EventSubsectionLogSectionChipComponent} from './event-subsection-log-section-chip.component';
 
 describe('EventSubsectionLogSectionChipComponent', () => {
-    let component: EventSubsectionLogSectionChipComponent;
-    let fixture: ComponentFixture<EventSubsectionLogSectionChipComponent>;
+	let component: EventSubsectionLogSectionChipComponent;
+	let fixture: ComponentFixture<EventSubsectionLogSectionChipComponent>;
 
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
-            imports: [OrcEventSubsectionLogModule],
-        }).compileComponents();
+	beforeEach(async () => {
+		await TestBed.configureTestingModule({
+			imports: [OrcEventSubsectionLogModule],
+		}).compileComponents();
 
-        fixture = TestBed.createComponent(EventSubsectionLogSectionChipComponent);
-        component = fixture.componentInstance;
-        fixture.componentRef.setInput('section', EventLogSection.Settings);
-        fixture.detectChanges();
-    });
+		fixture = TestBed.createComponent(EventSubsectionLogSectionChipComponent);
+		component = fixture.componentInstance;
+		fixture.componentRef.setInput('section', EventLogSection.Settings);
+		fixture.detectChanges();
+	});
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+	it('should create', () => {
+		expect(component).toBeTruthy();
+	});
 });

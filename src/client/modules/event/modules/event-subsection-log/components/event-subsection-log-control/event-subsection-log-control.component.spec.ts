@@ -8,20 +8,20 @@ import {OrcEventSubsectionLogModule} from '@client/modules/event/modules/event-s
 import {EventSubsectionLogControlComponent} from './event-subsection-log-control.component';
 
 describe('EventSubsectionLogControlComponent', () => {
-    let component: EventSubsectionLogControlComponent;
-    let fixture: ComponentFixture<EventSubsectionLogControlComponent>;
+	let component: EventSubsectionLogControlComponent;
+	let fixture: ComponentFixture<EventSubsectionLogControlComponent>;
 
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
-            imports: [OrcEventSubsectionLogModule, MatIconTestingModule],
-        }).compileComponents();
+	beforeEach(async () => {
+		await TestBed.configureTestingModule({
+			imports: [OrcEventSubsectionLogModule, MatIconTestingModule],
+		}).compileComponents();
 
-        fixture = TestBed.createComponent(EventSubsectionLogControlComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
+		fixture = TestBed.createComponent(EventSubsectionLogControlComponent);
+		component = fixture.componentInstance;
+		fixture.detectChanges();
+	});
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+	it('should create', () => {
+		expect(component).toBeTruthy();
+	});
 });

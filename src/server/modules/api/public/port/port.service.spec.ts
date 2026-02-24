@@ -11,10 +11,7 @@ describe('PublicPortService', () => {
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [
-				PublicPortService,
-				{provide: ConfigService, useValue: {get: jest.fn().mockReturnValue(null)}},
-			],
+			providers: [PublicPortService, {provide: ConfigService, useValue: {get: jest.fn().mockReturnValue(null)}}],
 		}).compile();
 
 		service = module.get<PublicPortService>(PublicPortService);

@@ -15,40 +15,40 @@ import {EventLog} from '../../classes/event-log.class';
 import {EVENT_LOGS_DATA_QUERY} from './event-log.queries';
 
 interface EventLogsDataResponse {
-    event_logs: OrchardEventLog[];
-    event_log_count: OrchardCommonCount;
+	event_logs: OrchardEventLog[];
+	event_log_count: OrchardCommonCount;
 }
 
 @Injectable({
-    providedIn: 'root',
+	providedIn: 'root',
 })
 export class EventLogService {
-    constructor(
-        private http: HttpClient,
-        private apiService: ApiService,
-    ) {}
+	constructor(
+		private http: HttpClient,
+		private apiService: ApiService,
+	) {}
 
-    /**
-     * Fetch event logs with count for pagination.
-     * @param {QueryEvent_LogsArgs} filters - Optional GraphQL filter args
-     * @returns {Observable<{event_logs: EventLog[]; count: number}>} The fetched event logs and total count
-     */
-    public getEventLogsData(filters?: QueryEvent_LogsArgs): Observable<{event_logs: EventLog[]; count: number}> {
-        const query = getApiQuery(EVENT_LOGS_DATA_QUERY, filters);
+	/**
+	 * Fetch event logs with count for pagination.
+	 * @param {QueryEvent_LogsArgs} filters - Optional GraphQL filter args
+	 * @returns {Observable<{event_logs: EventLog[]; count: number}>} The fetched event logs and total count
+	 */
+	public getEventLogsData(filters?: QueryEvent_LogsArgs): Observable<{event_logs: EventLog[]; count: number}> {
+		const query = getApiQuery(EVENT_LOGS_DATA_QUERY, filters);
 
-        return this.http.post<OrchardRes<EventLogsDataResponse>>(this.apiService.api, query).pipe(
-            map((response) => {
-                if (response.errors) throw new OrchardErrors(response.errors);
-                return response.data;
-            }),
-            map((data) => ({
-                event_logs: data.event_logs.map((log) => new EventLog(log)),
-                count: data.event_log_count.count,
-            })),
-            catchError((error) => {
-                console.error('Error loading event logs:', error);
-                return throwError(() => error);
-            }),
-        );
-    }
+		return this.http.post<OrchardRes<EventLogsDataResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data;
+			}),
+			map((data) => ({
+				event_logs: data.event_logs.map((log) => new EventLog(log)),
+				count: data.event_log_count.count,
+			})),
+			catchError((error) => {
+				console.error('Error loading event logs:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
 }

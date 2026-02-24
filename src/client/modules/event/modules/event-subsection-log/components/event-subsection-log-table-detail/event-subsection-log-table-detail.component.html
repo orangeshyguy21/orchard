@@ -1,87 +1,87 @@
 <div class="event-log-detail-container p-v-1">
-    <div class="flex flex-column flex-gap-1">
-        <div class="flex flex-items-start flex-gap-1 flex-wrap">
-            @if (event_log().entity_id){
-                <div class="flex-1 w-min-10">
-                    <div class="flex flex-column flex-gap-0-5">
-                        <div class="orc-outline-color font-weight-extra-light">Identifier</div>
-                        <span class="mega-string font-size-s">{{ event_log().entity_id | dataTruncate: 20: 8: 8 }}</span>
-                    </div>
-                </div>
-            }
-            @if (device_type() === 'tablet' || device_type() === 'mobile') {
-                <div class="flex-1 w-min-10">
-                    <div class="flex flex-column flex-gap-0-5">
-                        <div class="orc-outline-color font-weight-extra-light">Time</div>
-                        <span class="text-nowrap font-size-s">{{ event_log().timestamp | localTime: 'medium' }}</span>
-                    </div>
-                </div>
-            }
-            @if (device_type() === 'mobile'){
-                @if (user(); as user) {
-                    <div class="flex-1 w-min-10">
-                        <orc-crew-member-chip [name]="user.name" [role]="user.role">
-                            <orc-crew-facehash [name]="user.name" [enableBlink]="id_user() === user.id"></orc-crew-facehash>
-                        </orc-crew-member-chip>
-                    </div>
-                }
-                <div class="flex-1 w-min-10">
-                    <orc-event-subsection-log-section-chip [section]="event_log().section"></orc-event-subsection-log-section-chip>
-                </div>
-            }
-        </div>
+	<div class="flex flex-column flex-gap-1">
+		<div class="flex flex-items-start flex-gap-1 flex-wrap">
+			@if (event_log().entity_id) {
+				<div class="flex-1 w-min-10">
+					<div class="flex flex-column flex-gap-0-5">
+						<div class="orc-outline-color font-weight-extra-light">Identifier</div>
+						<span class="mega-string font-size-s">{{ event_log().entity_id | dataTruncate: 20 : 8 : 8 }}</span>
+					</div>
+				</div>
+			}
+			@if (device_type() === 'tablet' || device_type() === 'mobile') {
+				<div class="flex-1 w-min-10">
+					<div class="flex flex-column flex-gap-0-5">
+						<div class="orc-outline-color font-weight-extra-light">Time</div>
+						<span class="text-nowrap font-size-s">{{ event_log().timestamp | localTime: 'medium' }}</span>
+					</div>
+				</div>
+			}
+			@if (device_type() === 'mobile') {
+				@if (user(); as user) {
+					<div class="flex-1 w-min-10">
+						<orc-crew-member-chip [name]="user.name" [role]="user.role">
+							<orc-crew-facehash [name]="user.name" [enableBlink]="id_user() === user.id"></orc-crew-facehash>
+						</orc-crew-member-chip>
+					</div>
+				}
+				<div class="flex-1 w-min-10">
+					<orc-event-subsection-log-section-chip [section]="event_log().section"></orc-event-subsection-log-section-chip>
+				</div>
+			}
+		</div>
 
-        <div class="flex flex-row flex-justify-center flex-gap-1 flex-wrap">
-            @for (detail of event_log().details; track detail.id) {
-                <div class="orc-low-card detail-card">
-                    <div class="flex flex-items-center flex-justify-between flex-gap-0-5 detail-card-header">
-                        <div class="flex flex-items-center flex-gap-0-5">
-                            <orc-graphic-status
-                                [status]="detail.status === EventLogDetailStatus.Success ? 'active' : 'inactive'"
-                                size="0.5rem"
-                            ></orc-graphic-status>
-                            <span class="font-weight-semi-bold font-size-s">{{ detail.field }}</span>
-                        </div>
-                        
-                        <span class="font-size-xs orc-outline-color font-weight-extra-light">
-                            {{ detail.status === EventLogDetailStatus.Success ? 'Success' : 'Error' }}
-                        </span>
-                    </div>
+		<div class="flex flex-row flex-justify-center flex-gap-1 flex-wrap">
+			@for (detail of event_log().details; track detail.id) {
+				<div class="orc-low-card detail-card">
+					<div class="flex flex-items-center flex-justify-between flex-gap-0-5 detail-card-header">
+						<div class="flex flex-items-center flex-gap-0-5">
+							<orc-graphic-status
+								[status]="detail.status === EventLogDetailStatus.Success ? 'active' : 'inactive'"
+								size="0.5rem"
+							></orc-graphic-status>
+							<span class="font-weight-semi-bold font-size-s">{{ detail.field }}</span>
+						</div>
 
-                    <div class="p-1 flex flex-column flex-gap-0-5">
-                        @if (detail.old_value !== null && detail.new_value !== null) {
-                            <div class="flex flex-column flex-gap-0-5">
-                                <div class="flex-wrap flex flex-items-center flex-gap-0-5">
-                                    <span class="detail-old-value font-size-s orc-outline-color">{{ detail.old_value }}</span>
-                                    <mat-icon class="detail-arrow-icon font-size-s">arrow_forward</mat-icon>
-                                    <span class="font-size-s">{{ detail.new_value }}</span>
-                                </div>
-                            </div>
-                        } @else if (detail.new_value !== null) {
-                            <div class="flex-wrap flex flex-items-center flex-gap-0-5">
-                                <span class="font-size-xs orc-outline-color font-weight-extra-light">Created</span>
-                                <span class="font-size-s">{{ detail.new_value }}</span>
-                            </div>
-                        } @else if (detail.old_value !== null) {
-                            <div class="flex-wrap flex flex-items-center flex-gap-0-5">
-                                <span class="font-size-xs orc-outline-color font-weight-extra-light">Deleted</span>
-                                <span class="detail-old-value font-size-s orc-outline-color">{{ detail.old_value }}</span>
-                            </div>
-                        }
+						<span class="font-size-xs orc-outline-color font-weight-extra-light">
+							{{ detail.status === EventLogDetailStatus.Success ? 'Success' : 'Error' }}
+						</span>
+					</div>
 
-                        @if (detail.error_code || detail.error_message) {
-                            <div class="detail-error">
-                                @if (detail.error_code) {
-                                    <span class="font-size-xs font-weight-semi-bold">{{ detail.error_code }}</span>
-                                }
-                                @if (detail.error_message) {
-                                    <span class="font-size-xs">{{ detail.error_message }}</span>
-                                }
-                            </div>
-                        }
-                    </div>
-                </div>
-            }
-        </div>
-    </div>
+					<div class="p-1 flex flex-column flex-gap-0-5">
+						@if (detail.old_value !== null && detail.new_value !== null) {
+							<div class="flex flex-column flex-gap-0-5">
+								<div class="flex-wrap flex flex-items-center flex-gap-0-5">
+									<span class="detail-old-value font-size-s orc-outline-color">{{ detail.old_value }}</span>
+									<mat-icon class="detail-arrow-icon font-size-s">arrow_forward</mat-icon>
+									<span class="font-size-s">{{ detail.new_value }}</span>
+								</div>
+							</div>
+						} @else if (detail.new_value !== null) {
+							<div class="flex-wrap flex flex-items-center flex-gap-0-5">
+								<span class="font-size-xs orc-outline-color font-weight-extra-light">Created</span>
+								<span class="font-size-s">{{ detail.new_value }}</span>
+							</div>
+						} @else if (detail.old_value !== null) {
+							<div class="flex-wrap flex flex-items-center flex-gap-0-5">
+								<span class="font-size-xs orc-outline-color font-weight-extra-light">Deleted</span>
+								<span class="detail-old-value font-size-s orc-outline-color">{{ detail.old_value }}</span>
+							</div>
+						}
+
+						@if (detail.error_code || detail.error_message) {
+							<div class="detail-error">
+								@if (detail.error_code) {
+									<span class="font-size-xs font-weight-semi-bold">{{ detail.error_code }}</span>
+								}
+								@if (detail.error_message) {
+									<span class="font-size-xs">{{ detail.error_message }}</span>
+								}
+							</div>
+						}
+					</div>
+				</div>
+			}
+		</div>
+	</div>
 </div>

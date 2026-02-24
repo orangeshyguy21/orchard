@@ -1,31 +1,30 @@
 @use 'molecule/molecule';
 
 :host {
-    @extend %flex;
+	@extend %flex;
 }
 
 .chart-container {
-    @extend %flex;
-    @extend %flex-items-center;
-    @extend %flex-grow;
-    @extend %flex-gap-0-25;
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-grow;
+	@extend %flex-gap-0-25;
 }
 
 .chart-canvas-container {
-    @extend %flex;
-    @extend %flex-grow;
-    @extend %relative;
-    @extend %overflow-visible;
-    height: 125px;
+	@extend %flex;
+	@extend %flex-grow;
+	@extend %relative;
+	@extend %overflow-visible;
+	height: 125px;
 }
 
 .chart-pagination {
-    @extend %flex;
-    @extend %flex-items-center;
+	@extend %flex;
+	@extend %flex-items-center;
 
-    button {
-        @extend %orc-outline-color;
-        transform: scale(0.8);
-    }
+	button {
+		@extend %orc-outline-color;
+		transform: scale(0.8);
+	}
 }
-

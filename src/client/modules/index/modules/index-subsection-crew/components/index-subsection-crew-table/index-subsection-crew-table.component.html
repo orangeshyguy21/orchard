@@ -7,9 +7,9 @@
 					<td mat-cell *matCellDef="let entity">
 						<div class="flex flex-items-center flex-gap-1 p-v-0-5">
 							@if (entity.name) {
-                                <orc-crew-member-chip [name]="entity.name" [role]="entity.role">
-                                    <orc-crew-facehash [name]="entity.name" [enableBlink]="id_user() === entity.id"></orc-crew-facehash>
-                                </orc-crew-member-chip>
+								<orc-crew-member-chip [name]="entity.name" [role]="entity.role">
+									<orc-crew-facehash [name]="entity.name" [enableBlink]="id_user() === entity.id"></orc-crew-facehash>
+								</orc-crew-member-chip>
 							} @else {
 								<div class="crew-icon invite-icon">
 									<mat-icon>confirmation_number</mat-icon>
