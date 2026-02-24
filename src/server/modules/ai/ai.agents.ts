@@ -2,6 +2,7 @@
 import {AiAgent} from './ai.enums';
 import {
 	UpdateSearchTool,
+	UpdateDateRangeTool,
 	UpdateCrewStatesTool,
 	UpdateCrewRolesTool,
 	UpdateCrewInviteRoleTool,
@@ -9,7 +10,6 @@ import {
 	UpdateCrewInviteExpirationTool,
 	UpdateCrewLabelTool,
 	UpdateCrewUserActiveTool,
-	UpdateMintAnalyticsDateRangeTool,
 	UpdateMintAnalyticsUnitsTool,
 	UpdateMintAnalyticsIntervalTool,
 	UpdateMintNameTool,
@@ -35,7 +35,12 @@ import {
 	UpdateMintDatabaseDataTypeTool,
 	UpdateMintDatabaseStatesTool,
 	UpdateMintBackupFilenameTool,
-} from './ai.tools';
+	UpdateEventLogSectionsTool,
+	UpdateEventLogTypesTool,
+	UpdateEventLogStatusesTool,
+	UpdateEventLogActorIdsTool,
+	ResetEventLogFiltersTool,
+} from './tools';
 
 export const AI_AGENTS = {
 	[AiAgent.DEFAULT]: {
@@ -102,7 +107,7 @@ export const AI_AGENTS = {
 			role: 'system',
 			content: 'You are an agent designed to help adjust parameters used to explore mint analytics.',
 		},
-		tools: [UpdateMintAnalyticsDateRangeTool, UpdateMintAnalyticsUnitsTool, UpdateMintAnalyticsIntervalTool],
+		tools: [UpdateDateRangeTool, UpdateMintAnalyticsUnitsTool, UpdateMintAnalyticsIntervalTool],
 	},
 	[AiAgent.MINT_INFO]: {
 		name: 'Mint Info Agent',
@@ -156,7 +161,7 @@ export const AI_AGENTS = {
 			content: `You are an agent designed to help explore data related to mint keysets.
             You will be provided with the current state of the form along with the users request for changes`,
 		},
-		tools: [UpdateMintAnalyticsDateRangeTool, UpdateMintAnalyticsUnitsTool, UpdateMintKeysetStatusTool],
+		tools: [UpdateDateRangeTool, UpdateMintAnalyticsUnitsTool, UpdateMintKeysetStatusTool],
 	},
 	[AiAgent.MINT_KEYSET_ROTATION]: {
 		name: 'Mint Keyset Rotation',
@@ -181,7 +186,7 @@ export const AI_AGENTS = {
             You will be provided with the current state of the form along with the users request for changes`,
 		},
 		tools: [
-			UpdateMintAnalyticsDateRangeTool,
+			UpdateDateRangeTool,
 			UpdateMintAnalyticsUnitsTool,
 			UpdateMintDatabaseDataTypeTool,
 			UpdateMintDatabaseStatesTool,
@@ -198,5 +203,24 @@ export const AI_AGENTS = {
             You will be provided with the current state of the form along with the users request for changes`,
 		},
 		tools: [UpdateMintBackupFilenameTool],
+	},
+	[AiAgent.EVENT_LOG]: {
+		name: 'Event Log Agent',
+		icon: 'spa',
+		section: 'settings',
+		description: 'Control the filters of the event log',
+		system_message: {
+			role: 'system',
+			content: `You are an agent designed to help explore and filter event logs.
+            You will be provided with the current state of the form along with the users request for changes`,
+		},
+		tools: [
+			UpdateDateRangeTool,
+			UpdateEventLogSectionsTool,
+			UpdateEventLogTypesTool,
+			UpdateEventLogStatusesTool,
+			UpdateEventLogActorIdsTool,
+			ResetEventLogFiltersTool,
+		],
 	},
 };

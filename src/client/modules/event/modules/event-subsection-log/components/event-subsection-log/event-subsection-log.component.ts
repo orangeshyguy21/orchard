@@ -9,14 +9,17 @@ import {MatTableDataSource} from '@angular/material/table';
 /* Application Dependencies */
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {AllEventLogSettings} from '@client/modules/settings/types/setting.types';
+import {ConfigService} from '@client/modules/config/services/config.service';
 import {DeviceType} from '@client/modules/layout/types/device.types';
 import {CrewService} from '@client/modules/crew/services/crew/crew.service';
 import {User} from '@client/modules/crew/classes/user.class';
+import {AiService} from '@client/modules/ai/services/ai/ai.service';
+import {AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 /* Native Dependencies */
 import {EventLogService} from '@client/modules/event/services/event-log/event-log.service';
 import {EventLog} from '@client/modules/event/classes/event-log.class';
 /* Shared Dependencies */
-import {EventLogSection, EventLogType, EventLogStatus, QueryEvent_LogsArgs} from '@shared/generated.types';
+import {EventLogSection, EventLogType, EventLogStatus, AiAgent, AiFunctionName, QueryEvent_LogsArgs} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-event-subsection-log',
@@ -28,7 +31,9 @@ import {EventLogSection, EventLogType, EventLogStatus, QueryEvent_LogsArgs} from
 export class EventSubsectionLogComponent implements OnInit, OnDestroy {
 	private readonly eventLogService = inject(EventLogService);
 	private readonly settingDeviceService = inject(SettingDeviceService);
+	private readonly configService = inject(ConfigService);
 	private readonly crewService = inject(CrewService);
+	private readonly aiService = inject(AiService);
 	private readonly breakpointObserver = inject(BreakpointObserver);
 
 	public page_settings!: AllEventLogSettings;
@@ -51,8 +56,16 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
 		this.page_settings = this.getPageSettings();
 		this.subscriptions.add(this.getBreakpointSubscription());
 		this.subscriptions.add(this.getUserSubscription());
+		this.orchardOptionalInit();
 		this.loadUsers();
 		this.loadData();
+	}
+
+	orchardOptionalInit(): void {
+		if (this.configService.config.ai.enabled) {
+			this.subscriptions.add(this.getAgentSubscription());
+			this.subscriptions.add(this.getToolSubscription());
+		}
 	}
 
 	ngOnDestroy(): void {
@@ -229,5 +242,79 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
 		this.page_settings.page = page_index;
 		this.settingDeviceService.setEventLogSettings(this.page_settings);
 		this.loadData();
+	}
+
+	/* *******************************************************
+	   Agent
+	******************************************************** */
+
+	/** Subscribes to agent requests from the AI input */
+	private getAgentSubscription(): Subscription {
+		return this.aiService.agent_requests$.subscribe(({agent: _agent, content}) => {
+			this.hireEventLogAgent(content);
+		});
+	}
+
+	/** Subscribes to tool calls from the AI response */
+	private getToolSubscription(): Subscription {
+		return this.aiService.tool_calls$.subscribe((tool_call: AiChatToolCall) => {
+			this.executeAgentFunction(tool_call);
+		});
+	}
+
+	/** Opens the AI socket with current form context */
+	private hireEventLogAgent(content: string | null): void {
+		const section_options = Object.values(EventLogSection);
+		const type_options = Object.values(EventLogType);
+		const status_options = Object.values(EventLogStatus);
+		let context = `* **Current Date:** ${DateTime.now().toFormat('yyyy-MM-dd')}\n`;
+		context += `* **Date Start:** ${DateTime.fromSeconds(this.page_settings.date_start!).toFormat('yyyy-MM-dd')}\n`;
+		context += `* **Date End:** ${DateTime.fromSeconds(this.page_settings.date_end!).toFormat('yyyy-MM-dd')}\n`;
+		context += `* **Sections:** ${this.page_settings.sections.length > 0 ? this.page_settings.sections.join(', ') : 'all'}\n`;
+		context += `* **Types:** ${this.page_settings.types.length > 0 ? this.page_settings.types.join(', ') : 'all'}\n`;
+		context += `* **Statuses:** ${this.page_settings.statuses.length > 0 ? this.page_settings.statuses.join(', ') : 'all'}\n`;
+		context += `* **Actor IDs:** ${this.page_settings.actor_ids.length > 0 ? this.page_settings.actor_ids.join(', ') : 'all'}\n`;
+		context += `* **Available Sections:** ${section_options.join(', ')}\n`;
+		context += `* **Available Types:** ${type_options.join(', ')}\n`;
+		context += `* **Available Statuses:** ${status_options.join(', ')}\n`;
+		context += `* **Available Users:** ${this.users().map((u) => `${u.name} (${u.id})`).join(', ')}`;
+		this.aiService.openAiSocket(AiAgent.EventLog, content, context);
+	}
+
+	/** Executes the tool call from the AI agent */
+	private executeAgentFunction(tool_call: AiChatToolCall): void {
+		if (tool_call.function.name === AiFunctionName.DateRangeUpdate) {
+			const range = [
+				DateTime.fromFormat(tool_call.function.arguments.date_start, 'yyyy-MM-dd').toSeconds(),
+				DateTime.fromFormat(tool_call.function.arguments.date_end, 'yyyy-MM-dd').toSeconds(),
+			];
+			this.onDateChange(range);
+		}
+		if (tool_call.function.name === AiFunctionName.EventLogSectionsUpdate) {
+			const valid = tool_call.function.arguments.sections.every((s: string) =>
+				Object.values(EventLogSection).includes(s as EventLogSection),
+			);
+			if (valid) this.onSectionsChange(tool_call.function.arguments.sections as EventLogSection[]);
+		}
+		if (tool_call.function.name === AiFunctionName.EventLogTypesUpdate) {
+			const valid = tool_call.function.arguments.types.every((t: string) =>
+				Object.values(EventLogType).includes(t as EventLogType),
+			);
+			if (valid) this.onTypesChange(tool_call.function.arguments.types as EventLogType[]);
+		}
+		if (tool_call.function.name === AiFunctionName.EventLogStatusesUpdate) {
+			const valid = tool_call.function.arguments.statuses.every((s: string) =>
+				Object.values(EventLogStatus).includes(s as EventLogStatus),
+			);
+			if (valid) this.onStatusesChange(tool_call.function.arguments.statuses as EventLogStatus[]);
+		}
+		if (tool_call.function.name === AiFunctionName.EventLogActorIdsUpdate) {
+			const available_ids = this.users().map((u) => u.id);
+			const valid = tool_call.function.arguments.actor_ids.every((id: string) => available_ids.includes(id));
+			if (valid) this.onActorIdsChange(tool_call.function.arguments.actor_ids);
+		}
+		if (tool_call.function.name === AiFunctionName.EventLogResetFilters) {
+			this.onResetFilter();
+		}
 	}
 }
