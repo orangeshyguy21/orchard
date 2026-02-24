@@ -37,7 +37,7 @@ export type AiFunction =
 	| AiFunctionUpdateCrewInviteExpiration
 	| AiFunctionUpdateCrewLabel
 	| AiFunctionUpdateCrewUserActive
-	| AiFunctionUpdateMintAnalyticsDateRange
+	| AiFunctionUpdateDateRange
 	| AiFunctionUpdateMintAnalyticsUnits
 	| AiFunctionUpdateMintAnalyticsInterval
 	| AiFunctionUpdateMintAnalyticsType
@@ -63,7 +63,12 @@ export type AiFunction =
 	| AiFunctionUpdateMintKeysetRotationAmounts
 	| AiFunctionUpdateMintDatabaseDataType
 	| AiFunctionUpdateMintDatabaseStates
-	| AiFunctionUpdateMintBackupFilename;
+	| AiFunctionUpdateMintBackupFilename
+	| AiFunctionUpdateEventLogSections
+	| AiFunctionUpdateEventLogTypes
+	| AiFunctionUpdateEventLogStatuses
+	| AiFunctionUpdateEventLogActorIds
+	| AiFunctionResetEventLogFilters;
 
 export type AiFunctionUpdateSearch = {
 	name: AiFunctionName.UpdateSearch;
@@ -121,8 +126,8 @@ export type AiFunctionUpdateCrewUserActive = {
 	};
 };
 
-export type AiFunctionUpdateMintAnalyticsDateRange = {
-	name: AiFunctionName.MintAnalyticsDateRangeUpdate;
+export type AiFunctionUpdateDateRange = {
+	name: AiFunctionName.DateRangeUpdate;
 	arguments: {
 		date_start: string;
 		date_end: string;
@@ -325,4 +330,37 @@ export type AiFunctionUpdateMintBackupFilename = {
 	arguments: {
 		filename: string;
 	};
+};
+
+export type AiFunctionUpdateEventLogSections = {
+	name: AiFunctionName.EventLogSectionsUpdate;
+	arguments: {
+		sections: string[];
+	};
+};
+
+export type AiFunctionUpdateEventLogTypes = {
+	name: AiFunctionName.EventLogTypesUpdate;
+	arguments: {
+		types: string[];
+	};
+};
+
+export type AiFunctionUpdateEventLogStatuses = {
+	name: AiFunctionName.EventLogStatusesUpdate;
+	arguments: {
+		statuses: string[];
+	};
+};
+
+export type AiFunctionUpdateEventLogActorIds = {
+	name: AiFunctionName.EventLogActorIdsUpdate;
+	arguments: {
+		actor_ids: string[];
+	};
+};
+
+export type AiFunctionResetEventLogFilters = {
+	name: AiFunctionName.EventLogResetFilters;
+	arguments: Record<string, never>;
 };

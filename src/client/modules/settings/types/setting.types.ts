@@ -6,7 +6,10 @@ import {
 	MintDatabaseSettings,
 	MintConfigSettings,
 	SettingsDeviceSettings,
+	EventLogSettings,
 } from '@client/modules/cache/services/local-storage/local-storage.types';
+/* Shared Dependencies */
+import {EventLogSection, EventLogActorType, EventLogType, EventLogStatus} from '@shared/generated.types';
 
 /* Page: Bitcoin Oracle */
 export type AllBitcoinOracleSettings = BitcoinOracleSettings & {
@@ -55,4 +58,15 @@ export type NonNullableMintDatabaseSettings = {
 export type AllSettingsDeviceSettings = SettingsDeviceSettings;
 export type NonNullableSettingsDeviceSettings = {
 	[K in keyof AllSettingsDeviceSettings]: NonNullable<AllSettingsDeviceSettings[K]>;
+};
+
+/* Page: Event Log */
+export type AllEventLogSettings = EventLogSettings & {
+	sections: EventLogSection[];
+	actor_types: EventLogActorType[];
+	actor_ids: string[];
+	types: EventLogType[];
+	statuses: EventLogStatus[];
+	date_end: number | null;
+	page: number | null;
 };

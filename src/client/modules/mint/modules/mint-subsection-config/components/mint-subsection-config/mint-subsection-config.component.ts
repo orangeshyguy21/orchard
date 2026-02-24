@@ -500,8 +500,8 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	}
 
 	private translateQuoteTtl(quote_ttl: number | null, to_seconds: boolean = true): number | null {
-		const factor = to_seconds ? 1 / 1000 : 1000;
-		return quote_ttl !== null ? quote_ttl * factor : null;
+		if (quote_ttl === null) return null;
+		return to_seconds ? quote_ttl / 1000 : quote_ttl * 1000;
 	}
 
 	private createPendingEvent(count: number): void {
@@ -692,9 +692,24 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 				if (method_group.get('max_amount')?.dirty) method_update['max_amount'] = method_group.get('max_amount')?.value;
 				if (method_group.get('description')?.dirty) method_update['description'] = method_group.get('description')?.value;
 				if (Object.keys(method_update).length > 2) {
-					const var_name = `nut04_update_${unit}_${method}`;
+					const var_prefix = `nut04_${unit}_${method}`;
+					const field_type_map: Record<string, string> = {
+						unit: 'String!',
+						method: 'String!',
+						disabled: 'Boolean',
+						min_amount: 'Int',
+						max_amount: 'Int',
+						description: 'Boolean',
+					};
+					const args_list: string[] = [];
+					for (const [field, value] of Object.entries(method_update)) {
+						const var_name = `${var_prefix}_${field}`;
+						mutation_types[var_name] = field_type_map[field];
+						mutation_values[var_name] = value;
+						args_list.push(`${field}: $${var_name}`);
+					}
 					mutation_parts.push(`
-						mint_nut04_update_${unit}_${method}: mint_nut04_update(mint_nut04_update: $${var_name}) {
+						mint_nut04_update_${unit}_${method}: mint_nut04_update(${args_list.join(', ')}) {
 							unit
 							method
 							max_amount
@@ -703,8 +718,6 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 							disabled
 						}
 					`);
-					mutation_types[var_name] = 'MintNut04UpdateInput!';
-					mutation_values[var_name] = method_update;
 				}
 			});
 		});
@@ -721,9 +734,23 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 				if (method_group.get('min_amount')?.dirty) method_update['min_amount'] = method_group.get('min_amount')?.value;
 				if (method_group.get('max_amount')?.dirty) method_update['max_amount'] = method_group.get('max_amount')?.value;
 				if (Object.keys(method_update).length > 2) {
-					const var_name = `nut05_update_${unit}_${method}`;
+					const var_prefix = `nut05_${unit}_${method}`;
+					const field_type_map: Record<string, string> = {
+						unit: 'String!',
+						method: 'String!',
+						disabled: 'Boolean',
+						min_amount: 'Int',
+						max_amount: 'Int',
+					};
+					const args_list: string[] = [];
+					for (const [field, value] of Object.entries(method_update)) {
+						const var_name = `${var_prefix}_${field}`;
+						mutation_types[var_name] = field_type_map[field];
+						mutation_values[var_name] = value;
+						args_list.push(`${field}: $${var_name}`);
+					}
 					mutation_parts.push(`
-						mint_nut05_update_${unit}_${method}: mint_nut05_update(mint_nut05_update: $${var_name}) {
+						mint_nut05_update_${unit}_${method}: mint_nut05_update(${args_list.join(', ')}) {
 							unit
 							method
 							max_amount
@@ -731,8 +758,6 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 							disabled
 						}
 					`);
-					mutation_types[var_name] = 'MintNut05UpdateInput!';
-					mutation_values[var_name] = method_update;
 				}
 			});
 		});

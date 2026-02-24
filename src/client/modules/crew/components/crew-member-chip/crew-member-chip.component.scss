@@ -1,0 +1,26 @@
+@use 'molecule/molecule';
+
+:host {
+	@extend %flex;
+}
+
+.crew-member-chip-container {
+	@extend %flex;
+	@extend %flex-row;
+	@extend %flex-items-center;
+	@extend %flex-gap-0-5;
+	@extend %orc-surface-container-low-bg;
+	@extend %orc-corner-full;
+	@extend %p-0-25;
+}
+
+.crew-member-chip-badge {
+	@extend %flex;
+	@extend %flex-row;
+	@extend %flex-items-center;
+	@extend %flex-gap-0-5;
+	@extend %orc-surface-container-high-bg;
+	@extend %orc-corner-full;
+	@extend %p-0-25;
+	@extend %p-r-1;
+}

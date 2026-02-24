@@ -1,4 +1,64 @@
-<div class="event-subsection-log-container p-1">
-	<mat-icon class="icon-lg">save_clock</mat-icon>
-	<div>Event Log Coming Soon!</div>
+<div class="event-subsection-log-container p-h-1">
+	<div class="event-log-control p-t-1">
+		<div class="flex flex-justify-between flex-gap-2 flex-items-center">
+			<orc-event-subsection-log-control
+				class="flex-grow"
+				[date_start]="page_settings.date_start"
+				[date_end]="page_settings.date_end"
+				[sections]="page_settings.sections"
+				[actor_ids]="page_settings.actor_ids"
+				[types]="page_settings.types"
+				[statuses]="page_settings.statuses"
+				[users]="users()"
+				[device_desktop]="device_type() === 'desktop'"
+				(dateChange)="onDateChange($event)"
+				(sectionsChange)="onSectionsChange($event)"
+				(actorIdsChange)="onActorIdsChange($event)"
+				(typesChange)="onTypesChange($event)"
+				(statusesChange)="onStatusesChange($event)"
+				(resetFilter)="onResetFilter()"
+			></orc-event-subsection-log-control>
+			@if (device_type() !== 'mobile') {
+				<div class="font-weight-bold font-size-l p-b-1 orc-outline-color">
+					{{ data_source.data.length }} {{ data_source.data.length === 1 ? 'Event' : 'Events' }}
+				</div>
+			}
+		</div>
+		<div class="category-rule"></div>
+	</div>
+
+	<orc-event-subsection-log-chart
+		[events]="data_source.data"
+		[date_start]="page_settings.date_start ?? 0"
+		[date_end]="page_settings.date_end ?? 0"
+		[locale]="locale()"
+		[loading]="loading()"
+		[page_index]="page_settings.page ?? 0"
+		[page_size]="page_settings.page_size ?? 100"
+		[count]="count()"
+		(pageChange)="onChartPage($event)"
+	></orc-event-subsection-log-chart>
+
+	<orc-event-subsection-log-table
+		[data_source]="data_source"
+		[id_user]="id_user()"
+		[loading]="loading()"
+		[error]="error()"
+		[users]="users()"
+		[device_type]="device_type()"
+	></orc-event-subsection-log-table>
+
+	<div class="data-table-sticky-footer p-h-1">
+		<div class="category-rule"></div>
+		<mat-paginator
+			class="orc-feature-paginator"
+			(page)="onPage($event)"
+			[hidePageSize]="device_type() === 'mobile'"
+			[length]="count()"
+			[pageSize]="page_settings.page_size ?? 100"
+			[pageSizeOptions]="[10, 25, 50, 100, 250, 500]"
+			[pageIndex]="page_settings.page ?? 0"
+			showFirstLastButtons
+		></mat-paginator>
+	</div>
 </div>

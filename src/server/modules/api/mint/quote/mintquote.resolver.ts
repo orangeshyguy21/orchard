@@ -1,11 +1,14 @@
 /* Core Dependencies */
-import {Logger} from '@nestjs/common';
+import {Logger, UseInterceptors} from '@nestjs/common';
 import {Resolver, Query, Args, Mutation} from '@nestjs/graphql';
 /* Application Dependencies */
 import {Roles} from '@server/modules/auth/decorators/auth.decorator';
 import {UserRole} from '@server/modules/user/user.enums';
+import {LogEvent} from '@server/modules/event/event.decorator';
+import {EventLogType} from '@server/modules/event/event.enums';
 /* Local Dependencies */
 import {MintQuoteService} from './mintquote.service';
+import {MintQuoteInterceptor} from './mintquote.interceptor';
 import {OrchardMintQuoteTtls} from './mintquote.model';
 import {MintQuoteTtlUpdateInput} from './mintquote.input';
 
@@ -23,6 +26,11 @@ export class MintQuoteResolver {
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@UseInterceptors(MintQuoteInterceptor)
+	@LogEvent({
+		type: EventLogType.UPDATE,
+		field: 'quote_ttl',
+	})
 	@Mutation(() => OrchardMintQuoteTtls)
 	async mint_quote_ttl_update(
 		@Args('mint_quote_ttl_update') mint_quote_ttl_update: MintQuoteTtlUpdateInput,

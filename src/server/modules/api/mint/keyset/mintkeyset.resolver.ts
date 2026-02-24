@@ -1,15 +1,17 @@
 /* Core Dependencies */
-import {Logger} from '@nestjs/common';
-import {Resolver, Query, Mutation, Args} from '@nestjs/graphql';
+import {Logger, UseInterceptors} from '@nestjs/common';
+import {Resolver, Query, Mutation, Args, Int, Float} from '@nestjs/graphql';
 /* Application Dependencies */
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 import {Roles} from '@server/modules/auth/decorators/auth.decorator';
 import {UserRole} from '@server/modules/user/user.enums';
+import {LogEvent} from '@server/modules/event/event.decorator';
+import {EventLogType} from '@server/modules/event/event.enums';
 /* Local Dependencies */
 import {MintKeysetService} from './mintkeyset.service';
 import {OrchardMintKeyset, OrchardMintKeysetProofCount} from './mintkeyset.model';
 import {OrchardMintKeysetRotation} from './mintkeyset.model';
-import {MintRotateKeysetInput} from './mintkeyset.input';
+import {MintKeysetInterceptor} from './mintkeyset.interceptor';
 
 @Resolver()
 export class MintKeysetResolver {
@@ -36,10 +38,17 @@ export class MintKeysetResolver {
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@UseInterceptors(MintKeysetInterceptor)
+	@LogEvent({field: 'keyset', type: EventLogType.CREATE})
 	@Mutation(() => OrchardMintKeysetRotation)
-	async mint_rotate_keyset(@Args('mint_rotate_keyset') mint_rotate_keyset: MintRotateKeysetInput): Promise<OrchardMintKeysetRotation> {
+	async mint_rotate_keyset(
+		@Args('unit') unit: string,
+		@Args('amounts', {type: () => [Float], nullable: true}) amounts?: number[],
+		@Args('input_fee_ppk', {type: () => Int, nullable: true}) input_fee_ppk?: number,
+		@Args('keyset_v2', {nullable: true}) keyset_v2?: boolean,
+	): Promise<OrchardMintKeysetRotation> {
 		const tag = 'MUTATION { mint_rotate_keyset }';
 		this.logger.debug(tag);
-		return await this.mintKeysetService.mintRotateKeyset(tag, mint_rotate_keyset);
+		return await this.mintKeysetService.mintRotateKeyset(tag, {unit, amounts, input_fee_ppk, keyset_v2});
 	}
 }

@@ -224,75 +224,75 @@ query MintKeysetProofCounts($date_start: UnixTimestamp, $date_end: UnixTimestamp
 }`;
 
 export const MINT_NAME_MUTATION = `
-mutation MintName($mint_name_update: MintNameUpdateInput!) {
-	mint_name_update(mint_name_update: $mint_name_update) {
+mutation MintName($name: String) {
+	mint_name_update(name: $name) {
 		name
 	}
 }`;
 
 export const MINT_DESCRIPTION_MUTATION = `
-mutation MintDescription($mint_desc_update: MintDescriptionUpdateInput!) {
-	mint_short_description_update(mint_desc_update: $mint_desc_update) {
+mutation MintDescription($description: String!) {
+	mint_short_description_update(description: $description) {
 		description
 	}
 }`;
 
 export const MINT_DESCRIPTION_LONG_MUTATION = `
-mutation MintDescriptionLong($mint_desc_update: MintDescriptionUpdateInput!) {
-	mint_long_description_update(mint_desc_update: $mint_desc_update) {
+mutation MintDescriptionLong($description: String!) {
+	mint_long_description_update(description: $description) {
 		description
 	}
 }`;
 
 export const MINT_ICON_MUTATION = `
-mutation MintIcon($mint_icon_update: MintIconUpdateInput!) {
-	mint_icon_update(mint_icon_update: $mint_icon_update) {
+mutation MintIcon($icon_url: String!) {
+	mint_icon_update(icon_url: $icon_url) {
 		icon_url
 	}
 }`;
 
 export const MINT_MOTD_MUTATION = `
-mutation MintMotd($mint_motd_update: MintMotdUpdateInput!) {
-	mint_motd_update(mint_motd_update: $mint_motd_update) {
+mutation MintMotd($motd: String) {
+	mint_motd_update(motd: $motd) {
 		motd
 	}
 }`;
 
 export const MINT_URL_UPDATE_MUTATIONS = `
-mutation MintUrlUpdate($url_add: MintUrlUpdateInput!, $url_remove: MintUrlUpdateInput!) {
-	mint_url_add(mint_url_update: $url_add) {
+mutation MintUrlUpdate($url_add: String!, $url_remove: String!) {
+	mint_url_add(url: $url_add) {
 		url
 	}
-	mint_url_remove(mint_url_update: $url_remove) {
+	mint_url_remove(url: $url_remove) {
 		url
 	}
 }`;
 
 export const MINT_URL_ADD_MUTATION = `
-mutation MintUrlAdd($mint_url_update: MintUrlUpdateInput!) {
-	mint_url_add(mint_url_update: $mint_url_update) {
+mutation MintUrlAdd($url: String!) {
+	mint_url_add(url: $url) {
 		url
 	}
 }`;
 
 export const MINT_URL_REMOVE_MUTATION = `
-mutation MintUrlRemove($mint_url_update: MintUrlUpdateInput!) {
-	mint_url_remove(mint_url_update: $mint_url_update) {
+mutation MintUrlRemove($url: String!) {
+	mint_url_remove(url: $url) {
 		url
 	}
 }`;
 
 export const MINT_CONTACT_REMOVE_MUTATION = `
-mutation MintContactRemove($contact_remove: MintContactUpdateInput!) {
-	mint_contact_remove(mint_contact_update: $contact_remove) {
+mutation MintContactRemove($method: String!, $info: String!) {
+	mint_contact_remove(method: $method, info: $info) {
 		method
 		info
 	}
 }`;
 
 export const MINT_CONTACT_ADD_MUTATION = `
-mutation MintContactAdd($contact_add: MintContactUpdateInput!) {
-	mint_contact_add(mint_contact_update: $contact_add) {
+mutation MintContactAdd($method: String!, $info: String!) {
+	mint_contact_add(method: $method, info: $info) {
 		method
 		info
 	}
@@ -307,8 +307,8 @@ mutation MintQuoteTtl($mint_quote_ttl_update: MintQuoteTtlUpdateInput!) {
 }`;
 
 export const MINT_NUT04_UPDATE_MUTATION = `
-mutation MintNut04Update($mint_nut04_update: MintNut04UpdateInput!) {
-	mint_nut04_update(mint_nut04_update: $mint_nut04_update) {
+mutation MintNut04Update($unit: String!, $method: String!, $disabled: Boolean, $min_amount: Int, $max_amount: Int, $description: Boolean) {
+	mint_nut04_update(unit: $unit, method: $method, disabled: $disabled, min_amount: $min_amount, max_amount: $max_amount, description: $description) {
 		unit
 		method
 		max_amount
@@ -319,8 +319,8 @@ mutation MintNut04Update($mint_nut04_update: MintNut04UpdateInput!) {
 }`;
 
 export const MINT_NUT05_UPDATE_MUTATION = `
-mutation MintNut05Update($mint_nut05_update: MintNut05UpdateInput!) {
-	mint_nut05_update(mint_nut05_update: $mint_nut05_update) {
+mutation MintNut05Update($unit: String!, $method: String!, $disabled: Boolean, $min_amount: Int, $max_amount: Int) {
+	mint_nut05_update(unit: $unit, method: $method, disabled: $disabled, min_amount: $min_amount, max_amount: $max_amount) {
 		unit
 		method
 		max_amount
@@ -330,8 +330,8 @@ mutation MintNut05Update($mint_nut05_update: MintNut05UpdateInput!) {
 }`;
 
 export const MINT_KEYSETS_ROTATION_MUTATION = `
-mutation MintRotateKeyset($mint_rotate_keyset: MintRotateKeysetInput!) {
-	mint_rotate_keyset(mint_rotate_keyset: $mint_rotate_keyset) {
+mutation MintRotateKeyset($unit: String!, $amounts: [Float!], $input_fee_ppk: Int, $keyset_v2: Boolean) {
+	mint_rotate_keyset(unit: $unit, amounts: $amounts, input_fee_ppk: $input_fee_ppk, keyset_v2: $keyset_v2) {
 		unit
 		input_fee_ppk
 		amounts
@@ -443,16 +443,16 @@ query MintFees($limit: Int) {
 }`;
 
 export const MINT_NUT04_QUOTE_UPDATE_MUTATION = `
-mutation MintNut04QuoteUpdate($mint_nut04_quote_update: MintNut04QuoteUpdateInput!) {
-	mint_nut04_quote_update(mint_nut04_quote_update: $mint_nut04_quote_update) {
+mutation MintNut04QuoteUpdate($quote_id: String!, $state: String!) {
+	mint_nut04_quote_update(quote_id: $quote_id, state: $state) {
 		quote_id
 		state
 	}
 }`;
 
 export const MINT_NUT05_QUOTE_UPDATE_MUTATION = `
-mutation MintNut05QuoteUpdate($mint_nut05_quote_update: MintNut05QuoteUpdateInput!) {
-	mint_nut05_quote_update(mint_nut05_quote_update: $mint_nut05_quote_update) {
+mutation MintNut05QuoteUpdate($quote_id: String!, $state: String!) {
+	mint_nut05_quote_update(quote_id: $quote_id, state: $state) {
 		quote_id
 		state
 	}

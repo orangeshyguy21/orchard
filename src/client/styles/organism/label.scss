@@ -38,6 +38,11 @@
         @extend %orc-on-warning-color;
     }
 
+    &.label-error{
+        @extend %orc-error-bg;
+        @extend %orc-on-error-color;
+    }
+
     &.label-default{
         @extend %orc-surface-container-highest-bg;
     }

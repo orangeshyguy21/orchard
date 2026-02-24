@@ -190,6 +190,47 @@ export class NutshellService {
 		}
 	}
 
+	public async getMintMintQuote(client: CashuMintDatabase, quote_id: string): Promise<CashuMintMintQuote | null> {
+		const sql = `SELECT * FROM mint_quotes WHERE quote = ?`;
+		try {
+			const row = await queryRow<NutshellMintMintQuote | undefined>(client, sql, [quote_id]);
+			if (!row) return null;
+			return {
+				...row,
+				id: row.quote,
+				request_lookup_id: row.checking_id,
+				issued_time: row.state === 'ISSUED' ? convertDateToUnixTimestamp(row.paid_time) : null,
+				created_time: convertDateToUnixTimestamp(row.created_time),
+				paid_time: convertDateToUnixTimestamp(row.paid_time),
+				amount_paid: row.amount,
+				amount_issued: row.amount,
+				payment_method: 'bolt11',
+			};
+		} catch (err) {
+			throw err;
+		}
+	}
+
+	public async getMintMeltQuote(client: CashuMintDatabase, quote_id: string): Promise<CashuMintMeltQuote | null> {
+		const sql = `SELECT * FROM melt_quotes WHERE quote = ?`;
+		try {
+			const row = await queryRow<NutshellMintMeltQuote | undefined>(client, sql, [quote_id]);
+			if (!row) return null;
+			return {
+				...row,
+				id: row.quote,
+				request_lookup_id: row.checking_id,
+				paid_time: convertDateToUnixTimestamp(row.paid_time),
+				created_time: convertDateToUnixTimestamp(row.created_time),
+				payment_preimage: row.proof,
+				msat_to_pay: null,
+				payment_method: 'bolt11',
+			};
+		} catch (err) {
+			throw err;
+		}
+	}
+
 	public async getMintMeltQuotes(client: CashuMintDatabase, args?: CashuMintMeltQuotesArgs): Promise<CashuMintMeltQuote[]> {
 		const field_mappings = {
 			units: 'unit',

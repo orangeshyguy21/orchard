@@ -19,14 +19,6 @@ import {
 	OrchardMintUrlUpdate,
 	OrchardMintContactUpdate,
 } from './mintinfo.model';
-import {
-	MintNameUpdateInput,
-	MintIconUpdateInput,
-	MintDescriptionUpdateInput,
-	MintMotdUpdateInput,
-	MintUrlUpdateInput,
-	MintContactUpdateInput,
-} from './mintinfo.input';
 
 @Injectable()
 export class MintInfoService {
@@ -62,10 +54,10 @@ export class MintInfoService {
 		}
 	}
 
-	async updateMintName(tag: string, mint_name_update: MintNameUpdateInput): Promise<OrchardMintNameUpdate> {
+	async updateMintName(tag: string, name: string): Promise<OrchardMintNameUpdate> {
 		try {
-			await this.cashuMintRpcService.updateName(mint_name_update);
-			return mint_name_update;
+			await this.cashuMintRpcService.updateName({name});
+			return {name};
 		} catch (error) {
 			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintRpcActionError,
@@ -74,10 +66,10 @@ export class MintInfoService {
 		}
 	}
 
-	async updateMintIcon(tag: string, mint_icon_update: MintIconUpdateInput): Promise<OrchardMintIconUpdate> {
+	async updateMintIcon(tag: string, icon_url: string): Promise<OrchardMintIconUpdate> {
 		try {
-			await this.cashuMintRpcService.updateIconUrl(mint_icon_update);
-			return mint_icon_update;
+			await this.cashuMintRpcService.updateIconUrl({icon_url});
+			return {icon_url};
 		} catch (error) {
 			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintRpcActionError,
@@ -86,10 +78,10 @@ export class MintInfoService {
 		}
 	}
 
-	async updateMintShortDescription(tag: string, mint_desc_update: MintDescriptionUpdateInput): Promise<OrchardMintDescriptionUpdate> {
+	async updateMintShortDescription(tag: string, description: string): Promise<OrchardMintDescriptionUpdate> {
 		try {
-			await this.cashuMintRpcService.updateShortDescription(mint_desc_update);
-			return mint_desc_update;
+			await this.cashuMintRpcService.updateShortDescription({description});
+			return {description};
 		} catch (error) {
 			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintRpcActionError,
@@ -98,10 +90,10 @@ export class MintInfoService {
 		}
 	}
 
-	async updateMintLongDescription(tag: string, mint_desc_update: MintDescriptionUpdateInput): Promise<OrchardMintDescriptionUpdate> {
+	async updateMintLongDescription(tag: string, description: string): Promise<OrchardMintDescriptionUpdate> {
 		try {
-			await this.cashuMintRpcService.updateLongDescription(mint_desc_update);
-			return mint_desc_update;
+			await this.cashuMintRpcService.updateLongDescription({description});
+			return {description};
 		} catch (error) {
 			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintRpcActionError,
@@ -110,10 +102,10 @@ export class MintInfoService {
 		}
 	}
 
-	async updateMintMotd(tag: string, mint_motd_update: MintMotdUpdateInput): Promise<OrchardMintMotdUpdate> {
+	async updateMintMotd(tag: string, motd: string): Promise<OrchardMintMotdUpdate> {
 		try {
-			await this.cashuMintRpcService.updateMotd(mint_motd_update);
-			return mint_motd_update;
+			await this.cashuMintRpcService.updateMotd({motd});
+			return {motd};
 		} catch (error) {
 			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintRpcActionError,
@@ -122,10 +114,10 @@ export class MintInfoService {
 		}
 	}
 
-	async addMintUrl(tag: string, mint_url_update: MintUrlUpdateInput): Promise<OrchardMintUrlUpdate> {
+	async addMintUrl(tag: string, url: string): Promise<OrchardMintUrlUpdate> {
 		try {
-			await this.cashuMintRpcService.addUrl(mint_url_update);
-			return mint_url_update;
+			await this.cashuMintRpcService.addUrl({url});
+			return {url};
 		} catch (error) {
 			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintRpcActionError,
@@ -134,10 +126,10 @@ export class MintInfoService {
 		}
 	}
 
-	async removeMintUrl(tag: string, mint_url_update: MintUrlUpdateInput): Promise<OrchardMintUrlUpdate> {
+	async removeMintUrl(tag: string, url: string): Promise<OrchardMintUrlUpdate> {
 		try {
-			await this.cashuMintRpcService.removeUrl(mint_url_update);
-			return mint_url_update;
+			await this.cashuMintRpcService.removeUrl({url});
+			return {url};
 		} catch (error) {
 			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintRpcActionError,
@@ -146,10 +138,10 @@ export class MintInfoService {
 		}
 	}
 
-	async addMintContact(tag: string, mint_contact_update: MintContactUpdateInput): Promise<OrchardMintContactUpdate> {
+	async addMintContact(tag: string, method: string, info: string): Promise<OrchardMintContactUpdate> {
 		try {
-			await this.cashuMintRpcService.addContact(mint_contact_update);
-			return mint_contact_update;
+			await this.cashuMintRpcService.addContact({method, info});
+			return {method, info};
 		} catch (error) {
 			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintRpcActionError,
@@ -158,10 +150,10 @@ export class MintInfoService {
 		}
 	}
 
-	async removeMintContact(tag: string, mint_contact_update: MintContactUpdateInput): Promise<OrchardMintContactUpdate> {
+	async removeMintContact(tag: string, method: string, info: string): Promise<OrchardMintContactUpdate> {
 		try {
-			await this.cashuMintRpcService.removeContact(mint_contact_update);
-			return mint_contact_update;
+			await this.cashuMintRpcService.removeContact({method, info});
+			return {method, info};
 		} catch (error) {
 			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.MintRpcActionError,

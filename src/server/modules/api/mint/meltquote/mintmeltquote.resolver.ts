@@ -1,15 +1,17 @@
 /* Core Dependencies */
-import {Logger} from '@nestjs/common';
+import {Logger, UseInterceptors} from '@nestjs/common';
 import {Resolver, Query, Mutation, Args, Int} from '@nestjs/graphql';
 /* Application Dependencies */
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 import {MintUnit, MeltQuoteState} from '@server/modules/cashu/cashu.enums';
 import {Roles} from '@server/modules/auth/decorators/auth.decorator';
 import {UserRole} from '@server/modules/user/user.enums';
+import {LogEvent} from '@server/modules/event/event.decorator';
+import {EventLogType} from '@server/modules/event/event.enums';
 /* Local Dependencies */
 import {MintMeltQuoteService} from './mintmeltquote.service';
+import {MintMeltQuoteInterceptor} from './mintmeltquote.interceptor';
 import {OrchardMintMeltQuote} from './mintmeltquote.model';
-import {MintNut05UpdateInput, MintNut05QuoteUpdateInput} from './mintmeltquote.input';
 import {OrchardMintNut05Update, OrchardMintNut05QuoteUpdate} from './mintmeltquote.model';
 
 @Resolver()
@@ -33,20 +35,34 @@ export class MintMeltQuoteResolver {
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@UseInterceptors(MintMeltQuoteInterceptor)
+	@LogEvent({
+		type: EventLogType.UPDATE,
+		field: 'nut05',
+	})
 	@Mutation(() => OrchardMintNut05Update)
-	async mint_nut05_update(@Args('mint_nut05_update') mint_nut05_update: MintNut05UpdateInput): Promise<OrchardMintNut05Update> {
+	async mint_nut05_update(
+		@Args('unit') unit: string,
+		@Args('method') method: string,
+		@Args('disabled', {nullable: true}) disabled: boolean,
+		@Args('min_amount', {type: () => Int, nullable: true}) min_amount: number,
+		@Args('max_amount', {type: () => Int, nullable: true}) max_amount: number,
+	): Promise<OrchardMintNut05Update> {
 		const tag = 'MUTATION { mint_nut05_update }';
 		this.logger.debug(tag);
-		return await this.mintMeltQuoteService.updateMintNut05(tag, mint_nut05_update);
+		return await this.mintMeltQuoteService.updateMintNut05(tag, unit, method, disabled, min_amount, max_amount);
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@UseInterceptors(MintMeltQuoteInterceptor)
+	@LogEvent({
+		type: EventLogType.UPDATE,
+		field: 'nut05_quote',
+	})
 	@Mutation(() => OrchardMintNut05QuoteUpdate)
-	async mint_nut05_quote_update(
-		@Args('mint_nut05_quote_update') mint_nut05_quote_update: MintNut05QuoteUpdateInput,
-	): Promise<OrchardMintNut05QuoteUpdate> {
+	async mint_nut05_quote_update(@Args('quote_id') quote_id: string, @Args('state') state: string): Promise<OrchardMintNut05QuoteUpdate> {
 		const tag = 'MUTATION { mint_nut05_quote_update }';
 		this.logger.debug(tag);
-		return await this.mintMeltQuoteService.updateMintNut05Quote(tag, mint_nut05_quote_update);
+		return await this.mintMeltQuoteService.updateMintNut05Quote(tag, quote_id, state);
 	}
 }

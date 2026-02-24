@@ -15,6 +15,7 @@ import {
 	MintDatabaseSettings,
 	MintConfigSettings,
 	SettingsDeviceSettings,
+	EventLogSettings,
 } from './local-storage.types';
 
 @Injectable({
@@ -40,6 +41,8 @@ export class LocalStorageService {
 		MINT_DATABASE_KEY: 'v1.mint.database.settings',
 		/* Settings Settings */
 		SETTINGS_DEVICE_KEY: 'v1.settings.device.settings',
+		/* Event Log Settings */
+		EVENT_LOG_KEY: 'v0.event.log.settings',
 	};
 
 	constructor() {}
@@ -143,6 +146,11 @@ export class LocalStorageService {
 		if (!settings) return {tertiary_nav: null};
 		return settings;
 	}
+	getEventLogSettings(): EventLogSettings {
+		const settings = this.getItem<EventLogSettings>(this.STORAGE_KEYS.EVENT_LOG_KEY);
+		if (!settings) return {date_start: null, page_size: null};
+		return settings;
+	}
 
 	setAuthToken(token: string | null): void {
 		this.setItem(this.STORAGE_KEYS.AUTH_TOKEN_KEY, token);
@@ -182,6 +190,9 @@ export class LocalStorageService {
 	}
 	setSettingsDeviceSettings(settings: SettingsDeviceSettings): void {
 		this.setItem(this.STORAGE_KEYS.SETTINGS_DEVICE_KEY, settings);
+	}
+	setEventLogSettings(settings: EventLogSettings): void {
+		this.setItem(this.STORAGE_KEYS.EVENT_LOG_KEY, settings);
 	}
 
 	/**

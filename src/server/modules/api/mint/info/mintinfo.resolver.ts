@@ -1,11 +1,14 @@
 /* Core Dependencies */
-import {Logger} from '@nestjs/common';
+import {Logger, UseInterceptors} from '@nestjs/common';
 import {Resolver, Query, Mutation, Args} from '@nestjs/graphql';
 /* Application Dependencies */
 import {Roles} from '@server/modules/auth/decorators/auth.decorator';
 import {UserRole} from '@server/modules/user/user.enums';
+import {LogEvent} from '@server/modules/event/event.decorator';
+import {EventLogType} from '@server/modules/event/event.enums';
 /* Local Dependencies */
 import {MintInfoService} from './mintinfo.service';
+import {MintInfoInterceptor} from './mintinfo.interceptor';
 import {
 	OrchardMintInfo,
 	OrchardMintInfoRpc,
@@ -16,14 +19,6 @@ import {
 	OrchardMintUrlUpdate,
 	OrchardMintContactUpdate,
 } from './mintinfo.model';
-import {
-	MintNameUpdateInput,
-	MintIconUpdateInput,
-	MintDescriptionUpdateInput,
-	MintMotdUpdateInput,
-	MintUrlUpdateInput,
-	MintContactUpdateInput,
-} from './mintinfo.input';
 
 @Resolver()
 export class MintInfoResolver {
@@ -46,78 +41,133 @@ export class MintInfoResolver {
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@UseInterceptors(MintInfoInterceptor)
+	@LogEvent({
+		type: EventLogType.UPDATE,
+		field: 'name',
+		arg_keys: ['name'],
+		old_value_key: 'name',
+	})
 	@Mutation(() => OrchardMintNameUpdate)
-	async mint_name_update(@Args('mint_name_update') mint_name_update: MintNameUpdateInput): Promise<OrchardMintNameUpdate> {
+	async mint_name_update(@Args('name', {nullable: true}) name: string): Promise<OrchardMintNameUpdate> {
 		const tag = 'MUTATION { mint_name_update }';
 		this.logger.debug(tag);
-		return await this.mintInfoService.updateMintName(tag, mint_name_update);
+		return await this.mintInfoService.updateMintName(tag, name);
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@UseInterceptors(MintInfoInterceptor)
+	@LogEvent({
+		type: EventLogType.UPDATE,
+		field: 'icon_url',
+		arg_keys: ['icon_url'],
+		old_value_key: 'icon_url',
+	})
 	@Mutation(() => OrchardMintIconUpdate)
-	async mint_icon_update(@Args('mint_icon_update') mint_icon_update: MintIconUpdateInput): Promise<OrchardMintIconUpdate> {
+	async mint_icon_update(@Args('icon_url') icon_url: string): Promise<OrchardMintIconUpdate> {
 		const tag = 'MUTATION { mint_icon_update }';
 		this.logger.debug(tag);
-		return await this.mintInfoService.updateMintIcon(tag, mint_icon_update);
+		return await this.mintInfoService.updateMintIcon(tag, icon_url);
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@UseInterceptors(MintInfoInterceptor)
+	@LogEvent({
+		type: EventLogType.UPDATE,
+		field: 'description',
+		arg_keys: ['description'],
+		old_value_key: 'description',
+	})
 	@Mutation(() => OrchardMintDescriptionUpdate)
-	async mint_short_description_update(
-		@Args('mint_desc_update') mint_desc_update: MintDescriptionUpdateInput,
-	): Promise<OrchardMintDescriptionUpdate> {
+	async mint_short_description_update(@Args('description') description: string): Promise<OrchardMintDescriptionUpdate> {
 		const tag = 'MUTATION { mint_short_description_update }';
 		this.logger.debug(tag);
-		return await this.mintInfoService.updateMintShortDescription(tag, mint_desc_update);
+		return await this.mintInfoService.updateMintShortDescription(tag, description);
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@UseInterceptors(MintInfoInterceptor)
+	@LogEvent({
+		type: EventLogType.UPDATE,
+		field: 'description_long',
+		arg_keys: ['description'],
+		old_value_key: 'description_long',
+	})
 	@Mutation(() => OrchardMintDescriptionUpdate)
-	async mint_long_description_update(
-		@Args('mint_desc_update') mint_desc_update: MintDescriptionUpdateInput,
-	): Promise<OrchardMintDescriptionUpdate> {
+	async mint_long_description_update(@Args('description') description: string): Promise<OrchardMintDescriptionUpdate> {
 		const tag = 'MUTATION { mint_long_description_update }';
 		this.logger.debug(tag);
-		return await this.mintInfoService.updateMintLongDescription(tag, mint_desc_update);
+		return await this.mintInfoService.updateMintLongDescription(tag, description);
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@UseInterceptors(MintInfoInterceptor)
+	@LogEvent({
+		type: EventLogType.UPDATE,
+		field: 'motd',
+		arg_keys: ['motd'],
+		old_value_key: 'motd',
+	})
 	@Mutation(() => OrchardMintMotdUpdate)
-	async mint_motd_update(@Args('mint_motd_update') mint_motd_update: MintMotdUpdateInput): Promise<OrchardMintMotdUpdate> {
+	async mint_motd_update(@Args('motd', {nullable: true}) motd: string): Promise<OrchardMintMotdUpdate> {
 		const tag = 'MUTATION { mint_motd_update }';
 		this.logger.debug(tag);
-		return await this.mintInfoService.updateMintMotd(tag, mint_motd_update);
+		return await this.mintInfoService.updateMintMotd(tag, motd);
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@UseInterceptors(MintInfoInterceptor)
+	@LogEvent({
+		type: EventLogType.CREATE,
+		field: 'url',
+		arg_keys: ['url'],
+	})
 	@Mutation(() => OrchardMintUrlUpdate)
-	async mint_url_add(@Args('mint_url_update') mint_url_update: MintUrlUpdateInput): Promise<OrchardMintUrlUpdate> {
+	async mint_url_add(@Args('url') url: string): Promise<OrchardMintUrlUpdate> {
 		const tag = 'MUTATION { mint_url_add }';
 		this.logger.debug(tag);
-		return await this.mintInfoService.addMintUrl(tag, mint_url_update);
+		return await this.mintInfoService.addMintUrl(tag, url);
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@UseInterceptors(MintInfoInterceptor)
+	@LogEvent({
+		type: EventLogType.DELETE,
+		field: 'url',
+		arg_keys: ['url'],
+	})
 	@Mutation(() => OrchardMintUrlUpdate)
-	async mint_url_remove(@Args('mint_url_update') mint_url_update: MintUrlUpdateInput): Promise<OrchardMintUrlUpdate> {
+	async mint_url_remove(@Args('url') url: string): Promise<OrchardMintUrlUpdate> {
 		const tag = 'MUTATION { mint_url_remove }';
 		this.logger.debug(tag);
-		return await this.mintInfoService.removeMintUrl(tag, mint_url_update);
+		return await this.mintInfoService.removeMintUrl(tag, url);
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@UseInterceptors(MintInfoInterceptor)
+	@LogEvent({
+		type: EventLogType.CREATE,
+		field: 'contact',
+		arg_keys: ['method', 'info'],
+	})
 	@Mutation(() => OrchardMintContactUpdate)
-	async mint_contact_add(@Args('mint_contact_update') mint_contact_update: MintContactUpdateInput): Promise<OrchardMintContactUpdate> {
+	async mint_contact_add(@Args('method') method: string, @Args('info') info: string): Promise<OrchardMintContactUpdate> {
 		const tag = 'MUTATION { mint_contact_add }';
 		this.logger.debug(tag);
-		return await this.mintInfoService.addMintContact(tag, mint_contact_update);
+		return await this.mintInfoService.addMintContact(tag, method, info);
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@UseInterceptors(MintInfoInterceptor)
+	@LogEvent({
+		type: EventLogType.DELETE,
+		field: 'contact',
+		arg_keys: ['method', 'info'],
+	})
 	@Mutation(() => OrchardMintContactUpdate)
-	async mint_contact_remove(@Args('mint_contact_update') mint_contact_update: MintContactUpdateInput): Promise<OrchardMintContactUpdate> {
+	async mint_contact_remove(@Args('method') method: string, @Args('info') info: string): Promise<OrchardMintContactUpdate> {
 		const tag = 'MUTATION { mint_contact_remove }';
 		this.logger.debug(tag);
-		return await this.mintInfoService.removeMintContact(tag, mint_contact_update);
+		return await this.mintInfoService.removeMintContact(tag, method, info);
 	}
 }

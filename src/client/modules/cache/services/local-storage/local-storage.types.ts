@@ -1,8 +1,8 @@
-/* Shared Dependencies */
-import {MintUnit, MintAnalyticsInterval} from '@shared/generated.types';
 /* Application Dependencies */
 import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
 import {MintDataType} from '@client/modules/mint/enums/data-type.enum';
+/* Shared Dependencies */
+import {MintUnit, MintAnalyticsInterval} from '@shared/generated.types';
 
 export type Timezone = {
 	tz: string | null;
@@ -73,4 +73,9 @@ export type MintDatabaseSettings = {
 
 export type SettingsDeviceSettings = {
 	tertiary_nav: string[] | null;
+};
+
+export type EventLogSettings = {
+	date_start: number | null;
+	page_size: number | null;
 };

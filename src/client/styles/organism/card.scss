@@ -1,6 +1,11 @@
 @use 'molecule/molecule';
 @use 'nucleus/nucleus';
 
+.orc-low-card {
+    @extend %orc-surface-container-low-bg;
+    @extend %orc-corner-small;
+}
+
 .orc-high-card {
     @extend %orc-surface-container-high-bg;
     @extend %orc-corner-small;

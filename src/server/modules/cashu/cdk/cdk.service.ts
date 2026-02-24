@@ -225,6 +225,37 @@ export class CdkService {
 		}
 	}
 
+	public async getMintMintQuote(client: CashuMintDatabase, quote_id: string): Promise<CashuMintMintQuote | null> {
+		const state_case = `
+			CASE
+				WHEN amount_paid = 0 AND amount_issued = 0 THEN 'UNPAID'
+				WHEN amount_paid > amount_issued THEN 'PAID'
+				ELSE 'ISSUED'
+			END
+		`;
+		const sql = `
+			SELECT id, amount, unit, request, request_lookup_id, pubkey, created_time,
+				amount_paid, amount_issued, lower(payment_method) AS payment_method,
+				${state_case} AS state
+			FROM mint_quote WHERE id = ?`;
+		try {
+			const row = await queryRow<CashuMintMintQuote | undefined>(client, sql, [quote_id]);
+			return row ?? null;
+		} catch (err) {
+			throw err;
+		}
+	}
+
+	public async getMintMeltQuote(client: CashuMintDatabase, quote_id: string): Promise<CashuMintMeltQuote | null> {
+		const sql = `SELECT * FROM melt_quote WHERE id = ?`;
+		try {
+			const row = await queryRow<CashuMintMeltQuote | undefined>(client, sql, [quote_id]);
+			return row ?? null;
+		} catch (err) {
+			throw err;
+		}
+	}
+
 	public async getMintMeltQuotes(client: CashuMintDatabase, args?: CashuMintMeltQuotesArgs): Promise<CashuMintMeltQuote[]> {
 		const field_mappings = {
 			units: 'unit',

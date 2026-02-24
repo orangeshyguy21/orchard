@@ -44,6 +44,7 @@ const ICONS = [
   'history',
   'info',
   'key',
+  'vpn_key',
   'keyboard_arrow_down',
   'language',
   'light_mode',
@@ -89,6 +90,12 @@ const ICONS = [
   'graph_4',
   'link',
   'open_in_new',
+  'first_page',
+  'last_page',
+  'chevron_left',
+  'chevron_right',
+  'arrow_forward',
+  'add_circle',
 ];
 
 // Sort alphabetically and remove duplicates

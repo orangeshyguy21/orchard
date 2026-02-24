@@ -1,5 +1,5 @@
 /* Local Dependencies */
-import {UpdateMintNameTool} from './ai.tools';
+import {UpdateMintNameTool} from './tools';
 import {AiMessageRole, AiFunctionName} from './ai.enums';
 
 export type AiModel = {

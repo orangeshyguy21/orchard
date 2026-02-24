@@ -23,6 +23,7 @@ export default [
         ignoreRestSiblings: true,
         varsIgnorePattern: '^_',
         argsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_',
       }],
       // ensure all “unsafe/any” rules are off
       '@typescript-eslint/no-unsafe-argument': 'off',
