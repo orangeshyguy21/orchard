@@ -198,6 +198,16 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
         this.loadData();
     }
 
+    /** Handles reset filter */
+    public onResetFilter(): void {
+        this.page_settings.actor_ids = [];
+        this.page_settings.sections = [];
+        this.page_settings.types = [];
+        this.page_settings.statuses = [];
+        this.settingDeviceService.setEventLogSettings(this.page_settings);
+        this.loadData();
+    }
+
     /** Handles date range filter change */
     public onDateChange(event: number[]): void {
         this.page_settings.date_start = event[0];

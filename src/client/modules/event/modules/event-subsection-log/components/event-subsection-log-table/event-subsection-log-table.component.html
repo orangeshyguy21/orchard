@@ -57,7 +57,7 @@
                                         [status]="detail.status === EventLogDetailStatus.Success ? 'active' : 'inactive'"
                                         size="0.5rem"
                                     ></orc-graphic-status>
-                                    <div class="font-size-xs orc-outline-color">{{ detail | eventLogDetails: entity.entity_id: entity.type }}</div>
+                                    <div class="font-size-xs orc-outline-color">{{ detail | eventLogDetails: entity.type }}</div>
                                 </div>
                             }
                         </div>
@@ -103,7 +103,8 @@
         </div>
     } @else if (!loading() && !error() && data_source().data.length === 0) {
         <div class="flex flex-items-center flex-justify-center h-min-18" animate.enter="orc-animation-fadein">
-            <mat-icon class="icon-lg mat-symbol-outline orc-outline-variant-color">event_busy</mat-icon>
+            <!-- <mat-icon class="icon-lg mat-symbol-outline orc-outline-variant-color">event_busy</mat-icon> -->
+            <div class="font-size-l orc-outline-color">No events</div>
         </div>
     } @else if (error()) {
         <div class="flex flex-items-center flex-justify-center h-min-18" animate.enter="orc-animation-fadein">

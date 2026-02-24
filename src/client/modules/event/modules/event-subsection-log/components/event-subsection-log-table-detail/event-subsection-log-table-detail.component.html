@@ -1,23 +1,28 @@
 <div class="event-log-detail-container p-v-1">
     <div class="flex flex-column flex-gap-1">
-
-        @if (device_type() === 'tablet' || device_type() === 'mobile') {
-            <div class="flex flex-items-center">
-                @if (device_type() === 'mobile'){
-                    <div class="flex-1">
-                        <orc-event-subsection-log-section-chip [section]="event_log().section"></orc-event-subsection-log-section-chip>
-                    </div>
-                }
+        <div class="flex flex-items-center flex-gap-1 flex-wrap">
+            <div class="flex-1">
+                <div class="flex flex-column flex-gap-0-5">
+                    <div class="orc-outline-color font-weight-extra-light">Identifier</div>
+                    <span class="mega-string font-size-s">{{ event_log().entity_id | dataTruncate: 20: 8: 8 }}</span>
+                </div>
+            </div>
+            @if (device_type() === 'tablet' || device_type() === 'mobile') {
                 <div class="flex-1">
                     <div class="flex flex-column flex-gap-0-5">
                         <div class="orc-outline-color font-weight-extra-light">Time</div>
                         <span class="text-nowrap font-size-s">{{ event_log().timestamp | localTime: 'medium' }}</span>
                     </div>
                 </div>
-            </div>
-        }
+            }
+            @if (device_type() === 'mobile'){
+                <div class="flex-1">
+                    <orc-event-subsection-log-section-chip [section]="event_log().section"></orc-event-subsection-log-section-chip>
+                </div>
+            }
+        </div>
 
-        <div class="flex flex-row flex-justify-center flex-gap-1">
+        <div class="flex flex-row flex-justify-center flex-gap-1 flex-wrap">
             @for (detail of event_log().details; track detail.id) {
                 <div class="orc-low-card detail-card">
                     <div class="flex flex-items-center flex-justify-between flex-gap-0-5 detail-card-header">

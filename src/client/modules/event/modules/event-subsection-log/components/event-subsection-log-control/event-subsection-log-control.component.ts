@@ -38,6 +38,7 @@ export class EventSubsectionLogControlComponent {
     public readonly actorIdsChange = output<string[]>();
     public readonly typesChange = output<EventLogType[]>();
     public readonly statusesChange = output<EventLogStatus[]>();
+    public readonly resetFilter = output<void>();
 
     private readonly filter_menu_trigger = viewChild(MatMenuTrigger);
     private readonly user_auto_trigger = viewChild(MatAutocompleteTrigger);
@@ -255,7 +256,7 @@ export class EventSubsectionLogControlComponent {
 
     /** Closes autocomplete panel on blur (needed because stopPropagation on filter menu blocks outside-click detection) */
     public onUserInputBlur(): void {
-        setTimeout(() => this.user_auto_trigger()?.closePanel());
+        setTimeout(() => this.user_auto_trigger()?.closePanel(), 200);
     }
 
     /** Refreshes the filtered users observable */
@@ -303,10 +304,7 @@ export class EventSubsectionLogControlComponent {
         this.selected_users.set([]);
         this.panel.controls.actor_ids.setValue([]);
         this.user_search_control.setValue('');
-        this.sectionsChange.emit([]);
-        this.typesChange.emit([]);
-        this.statusesChange.emit([]);
-        this.actorIdsChange.emit([]);
+        this.resetFilter.emit();
         this.filter_count.set(0);
     }
 

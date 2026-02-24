@@ -16,6 +16,7 @@
                 (actorIdsChange)="onActorIdsChange($event)"
                 (typesChange)="onTypesChange($event)"
                 (statusesChange)="onStatusesChange($event)"
+                (resetFilter)="onResetFilter()"
             ></orc-event-subsection-log-control>
             <div class="font-weight-bold title-l p-b-1">
                 {{ data_source.data.length }} {{ data_source.data.length === 1 ? 'Event' : 'Events' }}

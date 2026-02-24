@@ -45,7 +45,6 @@ export class EventSubsectionLogTableComponent {
 
     /** Finds user by actor_id for display */
     public findUser(actor_id: string): User | undefined {
-        console.log('findUser', actor_id);
         return this.users().find((u) => u.id === actor_id);
     }
 
