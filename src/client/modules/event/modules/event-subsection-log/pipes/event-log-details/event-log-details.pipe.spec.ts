@@ -1,7 +1,22 @@
 /* Shared Dependencies */
-import {EventLogType} from '@shared/generated.types';
+import {EventLogType, EventLogDetailStatus} from '@shared/generated.types';
+/* Application Dependencies */
+import {EventLogDetail} from '@client/modules/event/classes/event-log.class';
 /* Local Dependencies */
 import {EventLogDetailsPipe} from './event-log-details.pipe';
+
+/** Creates a minimal EventLogDetail for testing */
+function createDetail(field: string): EventLogDetail {
+    return new EventLogDetail({
+        id: '1',
+        field,
+        old_value: null,
+        new_value: null,
+        status: EventLogDetailStatus.Success,
+        error_code: null,
+        error_message: null,
+    });
+}
 
 describe('EventLogDetailsPipe', () => {
     const pipe = new EventLogDetailsPipe();
@@ -10,28 +25,28 @@ describe('EventLogDetailsPipe', () => {
         expect(pipe).toBeTruthy();
     });
 
-    it('should use singular form for count of 1', () => {
-        expect(pipe.transform(1, EventLogType.Update)).toBe('1 update');
-        expect(pipe.transform(1, EventLogType.Create)).toBe('1 create');
+    it('should format detail with update type', () => {
+        const detail = createDetail('max_amount');
+        expect(pipe.transform(detail, EventLogType.Update)).toBe('max_amount updated');
     });
 
-    it('should use plural form for count greater than 1', () => {
-        expect(pipe.transform(2, EventLogType.Update)).toBe('2 updates');
-        expect(pipe.transform(5, EventLogType.Delete)).toBe('5 deletes');
+    it('should format detail with create type', () => {
+        const detail = createDetail('unit');
+        expect(pipe.transform(detail, EventLogType.Create)).toBe('unit set');
     });
 
-    it('should handle all event types', () => {
-        expect(pipe.transform(3, EventLogType.Create)).toBe('3 creates');
-        expect(pipe.transform(3, EventLogType.Delete)).toBe('3 deletes');
-        expect(pipe.transform(3, EventLogType.Execute)).toBe('3 executes');
-        expect(pipe.transform(3, EventLogType.Update)).toBe('3 updates');
+    it('should format detail with delete type', () => {
+        const detail = createDetail('keyset');
+        expect(pipe.transform(detail, EventLogType.Delete)).toBe('keyset deleted');
     });
 
-    it('should handle zero count', () => {
-        expect(pipe.transform(0, EventLogType.Update)).toBe('0 updates');
+    it('should format detail with execute type', () => {
+        const detail = createDetail('rotation');
+        expect(pipe.transform(detail, EventLogType.Execute)).toBe('rotation executed');
     });
 
-    it('should fall back to raw enum value for unknown type', () => {
-        expect(pipe.transform(2, 'UNKNOWN' as EventLogType)).toBe('2 UNKNOWN');
+    it('should fall back to lowercase enum value for unknown type', () => {
+        const detail = createDetail('something');
+        expect(pipe.transform(detail, 'UNKNOWN' as EventLogType)).toBe('something unknown');
     });
 });
