@@ -255,6 +255,27 @@ export type MintFeesResponse = {
 	mint_fees: OrchardMintFee[];
 };
 
+export type OrchardMintMonitor = {
+	db_entries_total: number;
+	mint_quotes_total: number;
+	melt_quotes_total: number;
+	proof_groups_total: number;
+	promise_groups_total: number;
+	request_count_recent: number;
+	recent_window_hours: number;
+	disk_free_bytes: number;
+	disk_total_bytes: number;
+	cpu_cores: number;
+	cpu_load_1m: number;
+	cpu_load_5m: number;
+	cpu_load_15m: number;
+	cpu_usage_percent: number;
+};
+
+export type MintMonitorResponse = {
+	mint_monitor: OrchardMintMonitor;
+};
+
 export type MintNut04QuoteUpdateResponse = {
 	mint_nut04_quote_update: OrchardMintNut04QuoteUpdate;
 };
