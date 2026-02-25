@@ -10,6 +10,7 @@ import {MatMenuTrigger} from '@angular/material/menu';
 /* Application Dependencies */
 import {NonNullableMintDashboardSettings} from '@client/modules/settings/types/setting.types';
 import {DateRangePreset} from '@client/modules/form/types/form-daterange.types';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Native Dependencies */
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 /* Shared Dependencies */
@@ -41,7 +42,7 @@ export class MintSubsectionDashboardControlComponent {
 	public keysets = input.required<MintKeyset[]>();
 	public loading = input.required<boolean>();
 	public mint_genesis_time = input.required<number>();
-	public device_desktop = input.required<boolean>();
+	public device_type = input.required<DeviceType>();
 	public bitcoin_oracle_enabled = input.required<boolean>();
 
 	public dateChange = output<number[]>();

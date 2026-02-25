@@ -17,6 +17,8 @@ import {Overlay, OverlayRef} from '@angular/cdk/overlay';
 import {TemplatePortal} from '@angular/cdk/portal';
 import {DateRange, MatCalendarCellClassFunction} from '@angular/material/datepicker';
 import {DateTime} from 'luxon';
+/* Application Dependencies */
+import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Native Dependencies */
 import {FormScrollCalendarComponent} from '@client/modules/form/components/form-scroll-calendar/form-scroll-calendar.component';
 import {DateRangePreset, DATE_RANGE_PRESET_OPTIONS, DateRangePresetOption} from '@client/modules/form/types/form-daterange.types';
@@ -35,6 +37,7 @@ export class FormDaterangeScrollPickerComponent implements OnDestroy {
     public min = input<DateTime | null>(null);
     public max = input<DateTime | null>(null);
     public dateClass = input<MatCalendarCellClassFunction<DateTime>>(() => '');
+    public device_type = input<DeviceType>('desktop');
 
     public presetChange = output<DateRangePreset>();
     public dateRangeChange = output<DateRange<DateTime>>();

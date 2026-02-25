@@ -4,6 +4,8 @@ import {ChangeDetectionStrategy, Component, input, output, signal, computed, vie
 import {DateRange, DefaultMatCalendarRangeStrategy, MAT_DATE_RANGE_SELECTION_STRATEGY, MatCalendarCellClassFunction, MatMonthView} from '@angular/material/datepicker';
 import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {DateTime, Info} from 'luxon';
+/* Application Dependencies */
+import {DeviceType} from '@client/modules/layout/types/device.types';
 
 @Component({
     selector: 'orc-form-scroll-calendar',
@@ -21,14 +23,15 @@ export class FormScrollCalendarComponent implements AfterViewInit {
     public min = input<DateTime | null>(null);
     public max = input<DateTime | null>(null);
     public date_class = input<MatCalendarCellClassFunction<DateTime>>(() => '');
+    public device_type = input<DeviceType>('desktop');
 
     public selectedChange = output<DateRange<DateTime>>();
 
     public viewport = viewChild<CdkVirtualScrollViewport>('viewport');
     public month_views = viewChildren(MatMonthView);
 
-    public readonly month_height = 256;
-    public readonly weekday_labels: string[] = Info.weekdays('short');
+    public month_height = computed(() => (this.device_type() === 'mobile' ? 200 : 256));
+    public weekday_labels = computed(() => Info.weekdays(this.device_type() === 'mobile' ? 'narrow' : 'short'));
     public months: DateTime[] = [];
 
     public range_start = signal<DateTime | null>(null);

@@ -28,6 +28,11 @@
     @extend %overflow-hidden;
     width: 440px;
     height: 400px;
+
+    @media (max-width: 599px) {
+        width: 320px;
+        height: 360px;
+    }
 }
 
 .preset-column {
@@ -38,6 +43,12 @@
     @extend %overflow-y-auto;
     @extend %p-0-5;
     width: 140px;
+
+    @media (max-width: 599px) {
+        width: 110px;
+        padding: 0.25rem; // %p-0-25
+        font-size: 0.75rem; // %font-size-xs
+    }
 }
 
 .calendar-column {

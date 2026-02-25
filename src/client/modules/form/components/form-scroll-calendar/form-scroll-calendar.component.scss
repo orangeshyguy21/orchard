@@ -26,6 +26,10 @@
     @extend %flex-shrink-0;
     grid-template-columns: repeat(7, 1fr);
     padding: 0.5rem 1rem 0.5rem 0.5rem;
+
+    @media (max-width: 599px) {
+        padding: 0.25rem 0.5rem 0.25rem 0.25rem; // %p-0-25
+    }
 }
 
 .weekday-cell {
@@ -48,6 +52,11 @@
     @extend %orc-on-surface-color;
     font-size: 0.8rem;
     padding: 0.5rem 0.5rem 0.125rem;
+
+    @media (max-width: 599px) {
+        font-size: 0.75rem; // %font-size-xs
+        padding: 0.25rem 0.25rem 0.125rem;
+    }
 }
 
 .today-button {

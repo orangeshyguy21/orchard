@@ -40,7 +40,7 @@
 					[keysets]="mint_keysets"
 					[loading]="loading_static_data"
 					[mint_genesis_time]="mint_genesis_time"
-					[device_desktop]="device_type() === 'desktop'"
+					[device_type]="device_type()"
 					[bitcoin_oracle_enabled]="bitcoin_oracle_enabled"
 					(dateChange)="onDateChange($event)"
 					(presetChange)="onPresetChange($event)"
