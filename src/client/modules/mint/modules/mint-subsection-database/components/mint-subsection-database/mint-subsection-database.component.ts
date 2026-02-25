@@ -35,6 +35,8 @@ import {AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {LightningRequest} from '@client/modules/lightning/classes/lightning-request.class';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {DeviceType} from '@client/modules/layout/types/device.types';
+import {DateRangePreset} from '@client/modules/form/types/form-daterange.types';
+import {resolveDateRangePreset} from '@client/modules/form/helpers/form-daterange.helpers';
 import {oracleConvertToUSDCents, findNearestOraclePrice} from '@client/modules/bitcoin/helpers/oracle.helpers';
 /* Native Dependencies */
 import {MintService} from '@client/modules/mint/services/mint/mint.service';
@@ -220,10 +222,15 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	private getPageSettings(): NonNullableMintDatabaseSettings {
 		const settings = this.settingDeviceService.getMintDatabaseSettings();
 		const type = settings.type ?? MintDataType.MintMints;
+		const date_preset = settings.date_preset ?? null;
+		const resolved_dates = date_preset
+			? resolveDateRangePreset(date_preset, this.mint_genesis_time)
+			: null;
 		return {
 			type: type,
-			date_start: settings.date_start ?? this.mint_genesis_time,
-			date_end: settings.date_end ?? this.getDefaultDateEnd(),
+			date_start: resolved_dates?.date_start ?? settings.date_start ?? this.mint_genesis_time,
+			date_end: resolved_dates?.date_end ?? settings.date_end ?? this.getDefaultDateEnd(),
+			date_preset,
 			page: settings.page ?? 1,
 			page_size: settings.page_size ?? 100,
 			units: settings.units ?? [],
@@ -355,6 +362,16 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 	public onDateChange(event: number[]): void {
 		this.page_settings.date_start = event[0];
 		this.page_settings.date_end = event[1];
+		this.page_settings.date_preset = null;
+		this.settingDeviceService.setMintDatabaseSettings(this.page_settings);
+		this.reloadDynamicData();
+	}
+
+	public onPresetChange(preset: DateRangePreset): void {
+		const {date_start, date_end} = resolveDateRangePreset(preset, this.mint_genesis_time);
+		this.page_settings.date_start = date_start;
+		this.page_settings.date_end = date_end;
+		this.page_settings.date_preset = preset;
 		this.settingDeviceService.setMintDatabaseSettings(this.page_settings);
 		this.reloadDynamicData();
 	}

@@ -69,6 +69,7 @@ export type MintKeysetsSettings = {
 
 export type MintDatabaseSettings = {
 	date_start: number | null;
+	date_preset: DateRangePreset | null;
 	type: MintDataType | null;
 	units: MintUnit[] | null;
 	states: string[] | null;

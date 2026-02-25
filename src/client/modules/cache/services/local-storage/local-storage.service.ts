@@ -139,7 +139,7 @@ export class LocalStorageService {
 	}
 	getMintDatabaseSettings(): MintDatabaseSettings {
 		const settings = this.getItem<MintDatabaseSettings>(this.STORAGE_KEYS.MINT_DATABASE_KEY);
-		if (!settings) return {date_start: null, type: null, units: null, states: null};
+		if (!settings) return {date_start: null, date_preset: null, type: null, units: null, states: null};
 		return settings;
 	}
 	getSettingsDeviceSettings(): SettingsDeviceSettings {
