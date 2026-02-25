@@ -1,40 +1,46 @@
+@use 'molecule/molecule';
+@use 'nucleus/nucleus';
+
 :host {
+    @extend %flex;
+    @extend %flex-items-center;
     display: inline-flex;
-    align-items: center;
 }
 
 .picker-toggle {
-    color: var(--mat-sys-on-surface-variant);
-    transition: color 0.2s;
+    @extend %orc-on-surface-variant-color;
+    @extend %trans-color-fast;
 
     &.is-open,
     &:hover {
-        color: var(--mat-sys-primary);
+        @extend %orc-primary-color;
     }
 }
 
 .picker-panel {
-    display: flex;
+    @extend %flex;
+    @extend %orc-surface-container-bg;
+    @extend %border;
+    @extend %border-solid;
+    @extend %orc-outline-variant-border;
+    @extend %orc-corner-large;
+    @extend %orc-level3;
+    @extend %overflow-hidden;
     width: 440px;
     height: 400px;
-    background: var(--mat-sys-surface-container);
-    border: 1px solid var(--mat-sys-outline-variant);
-    border-radius: 0.75rem;
-    box-shadow:
-        0 8px 24px rgba(0, 0, 0, 0.2),
-        0 2px 8px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
 }
 
 .preset-column {
+    @extend %flex-shrink-0;
+    @extend %border-right;
+    @extend %border-right-solid;
+    @extend %orc-outline-variant-border;
+    @extend %overflow-y-auto;
+    @extend %p-0-5;
     width: 140px;
-    flex-shrink: 0;
-    border-right: 1px solid var(--mat-sys-outline-variant);
-    overflow-y: auto;
-    padding: 0.5rem 0.5rem;
 }
 
 .calendar-column {
-    flex: 1;
-    min-width: 0;
+    @extend %flex-1;
+    @extend %w-min-0;
 }

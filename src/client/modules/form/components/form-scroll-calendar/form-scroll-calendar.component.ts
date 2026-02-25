@@ -12,6 +12,9 @@ import {DateTime, Info} from 'luxon';
     styleUrl: './form-scroll-calendar.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: MAT_DATE_RANGE_SELECTION_STRATEGY, useClass: DefaultMatCalendarRangeStrategy}],
+    host: {
+        class: 'orc-scroll-calendar',
+    },
 })
 export class FormScrollCalendarComponent implements AfterViewInit {
     public selected = input<DateRange<DateTime> | null>(null);
