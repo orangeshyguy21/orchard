@@ -19,6 +19,7 @@ import {
 	LightningClosedChannel,
 	LightningTransaction,
 	LightningHistoryArgs,
+	LightningPaginatedResult,
 } from './lightning.types';
 import {
 	mapLndPayments,
@@ -132,7 +133,7 @@ export class LightningService implements OnModuleInit {
 	 * Gets outgoing payments from the Lightning node
 	 * @param args Optional filtering and pagination arguments
 	 */
-	async getPayments(args?: LightningHistoryArgs): Promise<LightningPayment[]> {
+	async getPayments(args?: LightningHistoryArgs): Promise<LightningPaginatedResult<LightningPayment>> {
 		if (this.type === 'lnd') {
 			const request = {
 				include_incomplete: true,
@@ -152,16 +153,16 @@ export class LightningService implements OnModuleInit {
 				request.start = args?.index_offset ?? 0;
 				request.limit = args.max_results;
 			}
-			return mapClnPayments(await this.makeGrpcRequest('ListPays', request));
+			return mapClnPayments(await this.makeGrpcRequest('ListPays', request), args?.index_offset ?? 0);
 		}
-		return [];
+		return {data: [], last_offset: 0};
 	}
 
 	/**
 	 * Gets incoming invoices from the Lightning node
 	 * @param args Optional filtering and pagination arguments
 	 */
-	async getInvoices(args?: LightningHistoryArgs): Promise<LightningInvoice[]> {
+	async getInvoices(args?: LightningHistoryArgs): Promise<LightningPaginatedResult<LightningInvoice>> {
 		if (this.type === 'lnd') {
 			const request = {
 				index_offset: args?.index_offset ? String(args.index_offset) : '0',
@@ -180,16 +181,16 @@ export class LightningService implements OnModuleInit {
 				request.start = args?.index_offset ?? 0;
 				request.limit = args.max_results;
 			}
-			return mapClnInvoices(await this.makeGrpcRequest('ListInvoices', request));
+			return mapClnInvoices(await this.makeGrpcRequest('ListInvoices', request), args?.index_offset ?? 0);
 		}
-		return [];
+		return {data: [], last_offset: 0};
 	}
 
 	/**
 	 * Gets forwarding events (routing) from the Lightning node
 	 * @param args Optional filtering and pagination arguments
 	 */
-	async getForwards(args?: LightningHistoryArgs): Promise<LightningForward[]> {
+	async getForwards(args?: LightningHistoryArgs): Promise<LightningPaginatedResult<LightningForward>> {
 		if (this.type === 'lnd') {
 			const request = {
 				start_time: args?.start_time,
@@ -208,9 +209,9 @@ export class LightningService implements OnModuleInit {
 				request.start = args?.index_offset ?? 0;
 				request.limit = args.max_results;
 			}
-			return mapClnForwards(await this.makeGrpcRequest('ListForwards', request));
+			return mapClnForwards(await this.makeGrpcRequest('ListForwards', request), args?.index_offset ?? 0);
 		}
-		return [];
+		return {data: [], last_offset: 0};
 	}
 
 	/**
@@ -329,10 +330,10 @@ export class LightningService implements OnModuleInit {
 		let offset = 0;
 
 		while (true) {
-			const batch = await this.getPayments({...args, index_offset: offset, max_results: batch_size});
-			all_payments.push(...batch);
-			if (batch.length < batch_size) break;
-			offset += batch.length;
+			const result = await this.getPayments({...args, index_offset: offset, max_results: batch_size});
+			all_payments.push(...result.data);
+			if (result.data.length < batch_size) break;
+			offset = result.last_offset;
 		}
 
 		return all_payments;
@@ -347,10 +348,10 @@ export class LightningService implements OnModuleInit {
 		let offset = 0;
 
 		while (true) {
-			const batch = await this.getInvoices({...args, index_offset: offset, max_results: batch_size});
-			all_invoices.push(...batch);
-			if (batch.length < batch_size) break;
-			offset += batch.length;
+			const result = await this.getInvoices({...args, index_offset: offset, max_results: batch_size});
+			all_invoices.push(...result.data);
+			if (result.data.length < batch_size) break;
+			offset = result.last_offset;
 		}
 
 		return all_invoices;
@@ -365,10 +366,10 @@ export class LightningService implements OnModuleInit {
 		let offset = 0;
 
 		while (true) {
-			const batch = await this.getForwards({...args, index_offset: offset, max_results: batch_size});
-			all_forwards.push(...batch);
-			if (batch.length < batch_size) break;
-			offset += batch.length;
+			const result = await this.getForwards({...args, index_offset: offset, max_results: batch_size});
+			all_forwards.push(...result.data);
+			if (result.data.length < batch_size) break;
+			offset = result.last_offset;
 		}
 
 		return all_forwards;

@@ -7,6 +7,7 @@ import {
 	LightningChannel,
 	LightningClosedChannel,
 	LightningTransaction,
+	LightningPaginatedResult,
 } from '@server/modules/lightning/lightning/lightning.types';
 /* Local Dependencies */
 import {
@@ -114,19 +115,23 @@ function mapClnPaymentStatus(status: ClnPayStatus): LightningPayment['status'] {
 }
 
 /**
- * Maps CLN ListPaysResponse to common LightningPayment[]
+ * Maps CLN ListPaysResponse to common LightningPayment[] with pagination info
  * Note: CLN does not support Taproot Assets, so asset_balances is always empty
+ * CLN uses sequential position-based offsets, so last_offset = start + count
  */
-export function mapClnPayments(response: ClnListPaysResponse): LightningPayment[] {
+export function mapClnPayments(response: ClnListPaysResponse, index_offset: number = 0): LightningPaginatedResult<LightningPayment> {
 	const pays = response?.pays ?? [];
-	return pays.map((p: ClnPay) => ({
-		payment_hash: bufferToHex(p.payment_hash),
-		value_msat: extractMsat(p.amount_msat),
-		fee_msat: (BigInt(extractMsat(p.amount_sent_msat)) - BigInt(extractMsat(p.amount_msat))).toString(),
-		status: mapClnPaymentStatus(p.status),
-		creation_time: Number(p.created_at) || 0,
-		asset_balances: [], // CLN does not support Taproot Assets
-	}));
+	return {
+		data: pays.map((p: ClnPay) => ({
+			payment_hash: bufferToHex(p.payment_hash),
+			value_msat: extractMsat(p.amount_msat),
+			fee_msat: (BigInt(extractMsat(p.amount_sent_msat)) - BigInt(extractMsat(p.amount_msat))).toString(),
+			status: mapClnPaymentStatus(p.status),
+			creation_time: Number(p.created_at) || 0,
+			asset_balances: [], // CLN does not support Taproot Assets
+		})),
+		last_offset: index_offset + pays.length,
+	};
 }
 
 /**
@@ -145,29 +150,34 @@ function mapClnInvoiceState(status: ClnInvoiceStatus): LightningInvoice['state']
 }
 
 /**
- * Maps CLN ListInvoicesResponse to common LightningInvoice[]
+ * Maps CLN ListInvoicesResponse to common LightningInvoice[] with pagination info
  * Note: CLN does not support Taproot Assets, so asset_balances is always empty
+ * CLN uses sequential position-based offsets, so last_offset = start + count
  */
-export function mapClnInvoices(response: ClnListInvoicesResponse): LightningInvoice[] {
+export function mapClnInvoices(response: ClnListInvoicesResponse, index_offset: number = 0): LightningPaginatedResult<LightningInvoice> {
 	const invoices = response?.invoices ?? [];
-	return invoices.map((i: ClnInvoice) => ({
-		payment_hash: bufferToHex(i.payment_hash),
-		value_msat: extractMsat(i.amount_msat),
-		amt_paid_msat: extractMsat(i.amount_received_msat),
-		state: mapClnInvoiceState(i.status),
-		creation_date: Number(i.created_index) || 0, // CLN doesn't have creation_date directly, use created_index or expires_at - expiry
-		settle_date: i.paid_at ? Number(i.paid_at) : null,
-		asset_balances: [], // CLN does not support Taproot Assets
-	}));
+	return {
+		data: invoices.map((i: ClnInvoice) => ({
+			payment_hash: bufferToHex(i.payment_hash),
+			value_msat: extractMsat(i.amount_msat),
+			amt_paid_msat: extractMsat(i.amount_received_msat),
+			state: mapClnInvoiceState(i.status),
+			creation_date: Number(i.created_index) || 0, // CLN doesn't have creation_date directly, use created_index or expires_at - expiry
+			settle_date: i.paid_at ? Number(i.paid_at) : null,
+			asset_balances: [], // CLN does not support Taproot Assets
+		})),
+		last_offset: index_offset + invoices.length,
+	};
 }
 
 /**
- * Maps CLN ListForwardsResponse to common LightningForward[]
+ * Maps CLN ListForwardsResponse to common LightningForward[] with pagination info
  * Only includes SETTLED forwards (completed routing events)
+ * CLN uses sequential position-based offsets, so last_offset = start + count
  */
-export function mapClnForwards(response: ClnListForwardsResponse): LightningForward[] {
+export function mapClnForwards(response: ClnListForwardsResponse, index_offset: number = 0): LightningPaginatedResult<LightningForward> {
 	const forwards = response?.forwards ?? [];
-	return forwards
+	const data = forwards
 		.filter((f: ClnForward) => f.status === ClnForwardStatus.SETTLED)
 		.map((f: ClnForward) => ({
 			timestamp: Math.floor(Number(f.received_time) || 0),
@@ -175,6 +185,10 @@ export function mapClnForwards(response: ClnListForwardsResponse): LightningForw
 			amt_out_msat: extractMsat(f.out_msat),
 			fee_msat: extractMsat(f.fee_msat),
 		}));
+	return {
+		data,
+		last_offset: index_offset + forwards.length,
+	};
 }
 
 /**

@@ -163,3 +163,13 @@ export type LightningHistoryArgs = {
 	index_offset?: number;
 	max_results?: number;
 };
+
+/**
+ * Paginated result wrapper for Lightning history queries.
+ * LND uses non-sequential indices (payment_index, add_index, etc.),
+ * so callers must use last_offset to advance pagination rather than batch length.
+ */
+export type LightningPaginatedResult<T> = {
+	data: T[];
+	last_offset: number; // last index in the result set — use as next index_offset
+};

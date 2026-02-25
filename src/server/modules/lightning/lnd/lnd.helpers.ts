@@ -9,6 +9,7 @@ import {
 	LightningTransaction,
 	LightningChannelAsset,
 	LightningAssetBalance,
+	LightningPaginatedResult,
 } from '@server/modules/lightning/lightning/lightning.types';
 /* Local Dependencies */
 import {
@@ -67,18 +68,21 @@ function mapLndPaymentStatus(status: LndPaymentStatus): LightningPayment['status
 }
 
 /**
- * Maps LND ListPaymentsResponse to common LightningPayment[]
+ * Maps LND ListPaymentsResponse to common LightningPayment[] with pagination info
  */
-export function mapLndPayments(response: LndListPaymentsResponse): LightningPayment[] {
+export function mapLndPayments(response: LndListPaymentsResponse): LightningPaginatedResult<LightningPayment> {
 	const payments = response?.payments ?? [];
-	return payments.map((p: LndPayment) => ({
-		payment_hash: p.payment_hash ?? '',
-		value_msat: p.value_msat ?? '0',
-		fee_msat: p.fee_msat ?? '0',
-		status: mapLndPaymentStatus(p.status),
-		creation_time: Math.floor(Number(p.creation_time_ns ?? 0) / 1_000_000_000),
-		asset_balances: extractPaymentAssetBalances(p.htlcs),
-	}));
+	return {
+		data: payments.map((p: LndPayment) => ({
+			payment_hash: p.payment_hash ?? '',
+			value_msat: p.value_msat ?? '0',
+			fee_msat: p.fee_msat ?? '0',
+			status: mapLndPaymentStatus(p.status),
+			creation_time: Math.floor(Number(p.creation_time_ns ?? 0) / 1_000_000_000),
+			asset_balances: extractPaymentAssetBalances(p.htlcs),
+		})),
+		last_offset: Number(response?.last_index_offset ?? 0),
+	};
 }
 
 /**
@@ -99,32 +103,38 @@ function mapLndInvoiceState(state: LndInvoiceState): LightningInvoice['state'] {
 }
 
 /**
- * Maps LND ListInvoicesResponse to common LightningInvoice[]
+ * Maps LND ListInvoicesResponse to common LightningInvoice[] with pagination info
  */
-export function mapLndInvoices(response: LndListInvoicesResponse): LightningInvoice[] {
+export function mapLndInvoices(response: LndListInvoicesResponse): LightningPaginatedResult<LightningInvoice> {
 	const invoices = response?.invoices ?? [];
-	return invoices.map((i: LndInvoice) => ({
-		payment_hash: Buffer.isBuffer(i.r_hash) ? i.r_hash.toString('hex') : '',
-		value_msat: i.value_msat ?? '0',
-		amt_paid_msat: i.amt_paid_msat ?? '0',
-		state: mapLndInvoiceState(i.state),
-		creation_date: Number(i.creation_date ?? 0),
-		settle_date: i.settle_date ? Number(i.settle_date) : null,
-		asset_balances: extractInvoiceAssetBalances(i.htlcs),
-	}));
+	return {
+		data: invoices.map((i: LndInvoice) => ({
+			payment_hash: Buffer.isBuffer(i.r_hash) ? i.r_hash.toString('hex') : '',
+			value_msat: i.value_msat ?? '0',
+			amt_paid_msat: i.amt_paid_msat ?? '0',
+			state: mapLndInvoiceState(i.state),
+			creation_date: Number(i.creation_date ?? 0),
+			settle_date: i.settle_date ? Number(i.settle_date) : null,
+			asset_balances: extractInvoiceAssetBalances(i.htlcs),
+		})),
+		last_offset: Number(response?.last_index_offset ?? 0),
+	};
 }
 
 /**
- * Maps LND ForwardingHistoryResponse to common LightningForward[]
+ * Maps LND ForwardingHistoryResponse to common LightningForward[] with pagination info
  */
-export function mapLndForwards(response: LndForwardingHistoryResponse): LightningForward[] {
+export function mapLndForwards(response: LndForwardingHistoryResponse): LightningPaginatedResult<LightningForward> {
 	const events = response?.forwarding_events ?? [];
-	return events.map((e: LndForwardingEvent) => ({
-		timestamp: Math.floor(Number(e.timestamp_ns ?? 0) / 1_000_000_000),
-		amt_in_msat: e.amt_in_msat ?? '0',
-		amt_out_msat: e.amt_out_msat ?? '0',
-		fee_msat: e.fee_msat ?? '0',
-	}));
+	return {
+		data: events.map((e: LndForwardingEvent) => ({
+			timestamp: Math.floor(Number(e.timestamp_ns ?? 0) / 1_000_000_000),
+			amt_in_msat: e.amt_in_msat ?? '0',
+			amt_out_msat: e.amt_out_msat ?? '0',
+			fee_msat: e.fee_msat ?? '0',
+		})),
+		last_offset: Number(response?.last_offset_index ?? 0),
+	};
 }
 
 /**
