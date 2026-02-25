@@ -149,7 +149,7 @@ export class LocalStorageService {
 	}
 	getEventLogSettings(): EventLogSettings {
 		const settings = this.getItem<EventLogSettings>(this.STORAGE_KEYS.EVENT_LOG_KEY);
-		if (!settings) return {date_start: null, page_size: null};
+		if (!settings) return {date_start: null, date_preset: null, page_size: null};
 		return settings;
 	}
 

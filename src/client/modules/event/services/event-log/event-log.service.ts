@@ -9,14 +9,18 @@ import {ApiService} from '@client/modules/api/services/api/api.service';
 import {OrchardRes} from '@client/modules/api/types/api.types';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {getApiQuery} from '@client/modules/api/helpers/api.helpers';
-import {OrchardEventLog, OrchardCommonCount, QueryEvent_LogsArgs} from '@shared/generated.types';
+import {OrchardEventLog, OrchardCommonCount, OrchardCommonGenesis, QueryEvent_LogsArgs} from '@shared/generated.types';
 /* Local Dependencies */
 import {EventLog} from '../../classes/event-log.class';
-import {EVENT_LOGS_DATA_QUERY} from './event-log.queries';
+import {EVENT_LOGS_DATA_QUERY, EVENT_LOG_GENESIS_QUERY} from './event-log.queries';
 
 interface EventLogsDataResponse {
 	event_logs: OrchardEventLog[];
 	event_log_count: OrchardCommonCount;
+}
+
+interface EventLogGenesisResponse {
+	event_log_genesis: OrchardCommonGenesis;
 }
 
 @Injectable({
@@ -47,6 +51,25 @@ export class EventLogService {
 			})),
 			catchError((error) => {
 				console.error('Error loading event logs:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	/**
+	 * Fetch the earliest event timestamp (genesis).
+	 * @returns {Observable<number>} The earliest event timestamp, or 0 if no events exist
+	 */
+	public getGenesis(): Observable<number> {
+		const query = getApiQuery(EVENT_LOG_GENESIS_QUERY);
+
+		return this.http.post<OrchardRes<EventLogGenesisResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.event_log_genesis.timestamp;
+			}),
+			catchError((error) => {
+				console.error('Error loading event log genesis:', error);
 				return throwError(() => error);
 			}),
 		);

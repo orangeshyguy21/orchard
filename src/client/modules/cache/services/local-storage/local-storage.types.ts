@@ -81,5 +81,6 @@ export type SettingsDeviceSettings = {
 
 export type EventLogSettings = {
 	date_start: number | null;
+	date_preset: DateRangePreset | null;
 	page_size: number | null;
 };

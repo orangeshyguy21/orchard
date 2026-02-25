@@ -56,3 +56,10 @@ query EventLogsData(
         count
     }
 }`;
+
+export const EVENT_LOG_GENESIS_QUERY = `
+query EventLogGenesis {
+    event_log_genesis {
+        timestamp
+    }
+}`;

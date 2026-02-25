@@ -7,6 +7,7 @@ import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 import {EventLogFilters} from '@server/modules/event/event.interfaces';
 import {OrchardCommonCount} from '@server/modules/api/common/entity-count.model';
+import {OrchardCommonGenesis} from '@server/modules/api/common/entity-genesis.model';
 /* Local Dependencies */
 import {OrchardEventLog} from './event.model';
 
@@ -47,6 +48,23 @@ export class ApiEventLogService {
 		try {
 			const count = await this.eventLogService.getEventCount(filters);
 			return new OrchardCommonCount(count);
+		} catch (error) {
+			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
+				errord: OrchardErrorCode.EventLogError,
+			});
+			throw new OrchardApiError(orchard_error);
+		}
+	}
+
+	/**
+	 * Get the earliest event timestamp
+	 * @param {string} tag - Logging tag
+	 * @returns {Promise<OrchardCommonGenesis>} The genesis timestamp
+	 */
+	async getGenesisTimestamp(tag: string): Promise<OrchardCommonGenesis> {
+		try {
+			const timestamp = await this.eventLogService.getGenesisTimestamp();
+			return new OrchardCommonGenesis(timestamp);
 		} catch (error) {
 			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.EventLogError,

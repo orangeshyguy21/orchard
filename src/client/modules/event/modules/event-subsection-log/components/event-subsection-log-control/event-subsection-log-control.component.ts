@@ -8,9 +8,12 @@ import {ENTER, COMMA} from '@angular/cdk/keycodes';
 import {MatMenuTrigger} from '@angular/material/menu';
 import {MatChipInputEvent} from '@angular/material/chips';
 import {MatAutocompleteSelectedEvent, MatAutocompleteTrigger} from '@angular/material/autocomplete';
+import {DateRange} from '@angular/material/datepicker';
 import {Observable, map, startWith} from 'rxjs';
 /* Application Dependencies */
 import {User} from '@client/modules/crew/classes/user.class';
+import {DateRangePreset} from '@client/modules/form/types/form-daterange.types';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Shared Dependencies */
 import {EventLogSection, EventLogType, EventLogStatus} from '@shared/generated.types';
 
@@ -30,10 +33,12 @@ export class EventSubsectionLogControlComponent {
 	public readonly types = input<EventLogType[]>([]);
 	public readonly statuses = input<EventLogStatus[]>([]);
 	public readonly users = input<User[]>([]);
-	public readonly device_desktop = input<boolean>();
+	public readonly device_type = input.required<DeviceType>();
+	public readonly date_preset = input<DateRangePreset | null>(null);
 
 	/* Outputs */
 	public readonly dateChange = output<number[]>();
+	public readonly presetChange = output<DateRangePreset>();
 	public readonly sectionsChange = output<EventLogSection[]>();
 	public readonly actorIdsChange = output<string[]>();
 	public readonly typesChange = output<EventLogType[]>();
@@ -267,6 +272,21 @@ export class EventSubsectionLogControlComponent {
 	/* *******************************************************
         Events
     ******************************************************** */
+
+	/** Handles preset selection — emits the preset key for the parent to resolve */
+	public onPresetChange(preset: DateRangePreset): void {
+		this.presetChange.emit(preset);
+	}
+
+	/** Handles calendar date range selection — updates form controls and emits */
+	public onDateRangeChange(range: DateRange<DateTime>): void {
+		if (range.start) this.panel.controls.daterange.controls.date_start.setValue(range.start);
+		if (range.end) this.panel.controls.daterange.controls.date_end.setValue(range.end);
+		const ds = this.panel.controls.daterange.controls.date_start.value;
+		const de = this.panel.controls.daterange.controls.date_end.value;
+		if (!ds || !de) return;
+		this.dateChange.emit([Math.floor(ds.startOf('day').toSeconds()), Math.floor(de.endOf('day').toSeconds())]);
+	}
 
 	/** Emits date range change when both dates are valid */
 	public onDateChange(): void {

@@ -1,5 +1,6 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, signal, computed} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 /* Vendor Dependencies */
 import {DateTime} from 'luxon';
@@ -11,6 +12,8 @@ import {SettingDeviceService} from '@client/modules/settings/services/setting-de
 import {AllEventLogSettings} from '@client/modules/settings/types/setting.types';
 import {ConfigService} from '@client/modules/config/services/config.service';
 import {DeviceType} from '@client/modules/layout/types/device.types';
+import {DateRangePreset} from '@client/modules/form/types/form-daterange.types';
+import {resolveDateRangePreset} from '@client/modules/form/helpers/form-daterange.helpers';
 import {CrewService} from '@client/modules/crew/services/crew/crew.service';
 import {User} from '@client/modules/crew/classes/user.class';
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
@@ -35,6 +38,7 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
 	private readonly crewService = inject(CrewService);
 	private readonly aiService = inject(AiService);
 	private readonly breakpointObserver = inject(BreakpointObserver);
+	private readonly route = inject(ActivatedRoute);
 
 	public page_settings!: AllEventLogSettings;
 	public data_source = new MatTableDataSource<EventLog>([]);
@@ -46,6 +50,8 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
 	public readonly id_user = signal<string | null>(null);
 	public readonly locale = signal<string>(this.settingDeviceService.getLocale());
 
+	private genesis_timestamp = 0;
+
 	private readonly loading_users = signal<boolean>(true);
 	private readonly loading_events = signal<boolean>(true);
 	public readonly loading = computed(() => this.loading_users() || this.loading_events());
@@ -53,6 +59,7 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
 	private subscriptions = new Subscription();
 
 	ngOnInit(): void {
+		this.genesis_timestamp = this.route.snapshot.data['event_log_genesis'] ?? 0;
 		this.page_settings = this.getPageSettings();
 		this.subscriptions.add(this.getBreakpointSubscription());
 		this.subscriptions.add(this.getUserSubscription());
@@ -79,14 +86,23 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
 	/** Merges long-term and short-term settings with defaults */
 	private getPageSettings(): AllEventLogSettings {
 		const settings = this.settingDeviceService.getEventLogSettings();
+		let date_start = settings.date_start ?? this.getDefaultDateStart();
+		let date_end = settings.date_end ?? this.getDefaultDateEnd();
+		const date_preset = settings.date_preset ?? null;
+		if (date_preset) {
+			const resolved = resolveDateRangePreset(date_preset, this.genesis_timestamp);
+			date_start = resolved.date_start;
+			date_end = resolved.date_end;
+		}
 		return {
 			sections: settings.sections ?? [],
 			actor_types: settings.actor_types ?? [],
 			actor_ids: settings.actor_ids ?? [],
 			types: settings.types ?? [],
 			statuses: settings.statuses ?? [],
-			date_start: settings.date_start ?? this.getDefaultDateStart(),
-			date_end: settings.date_end ?? this.getDefaultDateEnd(),
+			date_start,
+			date_end,
+			date_preset,
 			page: settings.page ?? 0,
 			page_size: settings.page_size ?? 100,
 		};
@@ -238,6 +254,18 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
 	public onDateChange(event: number[]): void {
 		this.page_settings.date_start = event[0];
 		this.page_settings.date_end = event[1];
+		this.page_settings.date_preset = null;
+		this.page_settings.page = 0;
+		this.settingDeviceService.setEventLogSettings(this.page_settings);
+		this.loadData();
+	}
+
+	/** Handles preset selection — resolves the preset and reloads */
+	public onPresetChange(preset: DateRangePreset): void {
+		const {date_start, date_end} = resolveDateRangePreset(preset, this.genesis_timestamp);
+		this.page_settings.date_start = date_start;
+		this.page_settings.date_end = date_end;
+		this.page_settings.date_preset = preset;
 		this.page_settings.page = 0;
 		this.settingDeviceService.setEventLogSettings(this.page_settings);
 		this.loadData();
