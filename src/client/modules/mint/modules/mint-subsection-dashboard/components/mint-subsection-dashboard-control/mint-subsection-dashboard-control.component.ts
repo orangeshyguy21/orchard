@@ -4,11 +4,12 @@ import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 /* Vendor Dependencies */
 import {MatSelectChange} from '@angular/material/select';
-import {MatCalendarCellClassFunction} from '@angular/material/datepicker';
+import {DateRange, MatCalendarCellClassFunction} from '@angular/material/datepicker';
 import {DateTime} from 'luxon';
 import {MatMenuTrigger} from '@angular/material/menu';
 /* Application Dependencies */
 import {NonNullableMintDashboardSettings} from '@client/modules/settings/types/setting.types';
+import {DateRangePreset} from '@client/modules/form/types/form-daterange.types';
 /* Native Dependencies */
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 /* Shared Dependencies */
@@ -34,6 +35,7 @@ export class MintSubsectionDashboardControlComponent {
 	public page_settings = input.required<NonNullableMintDashboardSettings>();
 	public date_start = input<number>();
 	public date_end = input<number>();
+	public date_preset = input<string | null>(null);
 	public units = input<MintUnit[]>();
 	public interval = input<MintAnalyticsInterval>();
 	public keysets = input.required<MintKeyset[]>();
@@ -43,6 +45,7 @@ export class MintSubsectionDashboardControlComponent {
 	public bitcoin_oracle_enabled = input.required<boolean>();
 
 	public dateChange = output<number[]>();
+	public presetChange = output<DateRangePreset>();
 	public unitsChange = output<MintUnit[]>();
 	public intervalChange = output<MintAnalyticsInterval>();
 	public oracleUsedChange = output<boolean>();
@@ -174,6 +177,17 @@ export class MintSubsectionDashboardControlComponent {
 		const sorted_a = [...a].sort();
 		const sorted_b = [...b].sort();
 		return sorted_a.every((unit, index) => unit === sorted_b[index]);
+	}
+
+	/** Handles preset selection — emits the preset key for the parent to resolve */
+	public onPresetChange(preset: DateRangePreset): void {
+		this.presetChange.emit(preset);
+	}
+
+	/** Handles calendar date range selection — updates form controls and emits */
+	public onDateRangeChange(range: DateRange<DateTime>): void {
+		if (range.start) this.panel.controls.daterange.controls.date_start.setValue(range.start);
+		if (range.end) this.panel.controls.daterange.controls.date_end.setValue(range.end);
 	}
 
 	public onDateChange(): void {

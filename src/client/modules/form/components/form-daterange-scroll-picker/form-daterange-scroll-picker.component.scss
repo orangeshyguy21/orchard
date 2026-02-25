@@ -1,0 +1,40 @@
+:host {
+    display: inline-flex;
+    align-items: center;
+}
+
+.picker-toggle {
+    color: var(--mat-sys-on-surface-variant);
+    transition: color 0.2s;
+
+    &.is-open,
+    &:hover {
+        color: var(--mat-sys-primary);
+    }
+}
+
+.picker-panel {
+    display: flex;
+    width: 440px;
+    height: 400px;
+    background: var(--mat-sys-surface-container);
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 0.75rem;
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.2),
+        0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.preset-column {
+    width: 140px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--mat-sys-outline-variant);
+    overflow-y: auto;
+    padding: 0.5rem 0.5rem;
+}
+
+.calendar-column {
+    flex: 1;
+    min-width: 0;
+}

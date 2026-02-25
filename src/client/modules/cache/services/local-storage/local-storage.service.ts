@@ -118,6 +118,7 @@ export class LocalStorageService {
 		if (!settings)
 			return {
 				date_start: null,
+				date_preset: null,
 				units: null,
 				interval: null,
 				type: {balance_sheet: null, mints: null, melts: null, swaps: null, fee_revenue: null},

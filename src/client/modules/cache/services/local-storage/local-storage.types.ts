@@ -41,6 +41,7 @@ export type BitcoinOracleSettings = {
 
 export type MintDashboardSettings = {
 	date_start: number | null;
+	date_preset: string | null;
 	units: MintUnit[] | null;
 	interval: MintAnalyticsInterval | null;
 	tertiary_nav: string[] | null;

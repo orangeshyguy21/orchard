@@ -2,9 +2,8 @@
 @use 'nucleus/nucleus';
 
 // this needs to be generalized, whole file needs orc prefixes
-button.mint-genesis-date-class {
+button.mint-genesis-date-class > .mat-calendar-body-cell-content {
     outline: 1px solid var(--mat-sys-outline);
-    border-radius: 50%;
 }
 
 .form-suffix-text{
