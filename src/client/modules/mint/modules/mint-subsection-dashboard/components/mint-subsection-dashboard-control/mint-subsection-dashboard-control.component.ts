@@ -36,7 +36,7 @@ export class MintSubsectionDashboardControlComponent {
 	public page_settings = input.required<NonNullableMintDashboardSettings>();
 	public date_start = input<number>();
 	public date_end = input<number>();
-	public date_preset = input<string | null>(null);
+	public date_preset = input<DateRangePreset | null>(null);
 	public units = input<MintUnit[]>();
 	public interval = input<MintAnalyticsInterval>();
 	public keysets = input.required<MintKeyset[]>();

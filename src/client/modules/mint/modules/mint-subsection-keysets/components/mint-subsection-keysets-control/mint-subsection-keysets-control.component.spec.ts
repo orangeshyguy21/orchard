@@ -17,10 +17,10 @@ describe('MintSubsectionKeysetsControlComponent', () => {
 		fixture = TestBed.createComponent(MintSubsectionKeysetsControlComponent);
 		component = fixture.componentInstance;
 		fixture.componentRef.setInput('loading', true);
-		fixture.componentRef.setInput('page_settings', {date_start: 0, date_end: 0, units: [], status: []});
+		fixture.componentRef.setInput('page_settings', {date_start: 0, date_end: 0, date_preset: null, units: [], status: []});
 		fixture.componentRef.setInput('keysets', []);
 		fixture.componentRef.setInput('mint_genesis_time', 0);
-		fixture.componentRef.setInput('device_desktop', true);
+		fixture.componentRef.setInput('device_type', 'desktop');
 		fixture.detectChanges();
 	});
 

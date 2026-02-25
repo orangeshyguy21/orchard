@@ -134,7 +134,7 @@ export class LocalStorageService {
 	}
 	getMintKeysetsSettings(): MintKeysetsSettings {
 		const settings = this.getItem<MintKeysetsSettings>(this.STORAGE_KEYS.MINT_KEYSETS_KEY);
-		if (!settings) return {date_start: null, units: null, status: null};
+		if (!settings) return {date_start: null, date_preset: null, units: null, status: null};
 		return settings;
 	}
 	getMintDatabaseSettings(): MintDatabaseSettings {

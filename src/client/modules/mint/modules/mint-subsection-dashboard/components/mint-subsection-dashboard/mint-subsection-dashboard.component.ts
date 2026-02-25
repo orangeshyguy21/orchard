@@ -486,9 +486,9 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 
 	private getPageSettings(): NonNullableMintDashboardSettings {
 		const settings = this.settingDeviceService.getMintDashboardSettings();
-		const date_preset = settings.date_preset ?? '';
+		const date_preset = settings.date_preset ?? null;
 		const resolved_dates = date_preset
-			? resolveDateRangePreset(date_preset as DateRangePreset, this.mint_genesis_time)
+			? resolveDateRangePreset(date_preset, this.mint_genesis_time)
 			: null;
 		return {
 			type: {
@@ -549,7 +549,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 
 	public onDateChange(event: number[]): void {
 		const current = this.page_settings();
-		const updated = {...current, date_start: event[0], date_end: event[1], date_preset: ''};
+		const updated = {...current, date_start: event[0], date_end: event[1], date_preset: null};
 		this.page_settings.set(updated);
 		this.settingDeviceService.setMintDashboardSettings(updated);
 		this.reloadDynamicData();
