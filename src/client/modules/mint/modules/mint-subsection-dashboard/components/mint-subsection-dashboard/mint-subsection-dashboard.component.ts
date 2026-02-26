@@ -157,6 +157,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.lightning_enabled = this.configService.config.lightning.enabled;
 		this.mint_type = this.configService.config.mint.type;
 		this.mint_info = this.route.snapshot.data['mint_info'];
+        console.log('mint_info', this.mint_info);
 		this.mint_balances = this.route.snapshot.data['mint_balances'];
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
 		this.mint_genesis_time = this.getMintGenesisTime();

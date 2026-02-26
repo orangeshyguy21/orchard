@@ -30,7 +30,6 @@ import {OrcButtonModule} from '@client/modules/button/button.module';
 import {OrcTimeModule} from '@client/modules/time/time.module';
 import {OrcMintGeneralModule} from '@client/modules/mint/modules/mint-general/mint-general.module';
 import {OrcEcashGeneralModule} from '@client/modules/ecash/modules/ecash-general/ecash-general.module';
-import {OrcMintSectionGeneralModule} from '@client/modules/mint/modules/mint-section-general/mint-section-general.module';
 import {pendingEventGuard} from '@client/modules/event/guards/pending-event.guard';
 /* Local Dependencies */
 import {MintSubsectionDatabaseComponent} from './components/mint-subsection-database/mint-subsection-database.component';
@@ -97,7 +96,6 @@ import {MintSubsectionDatabaseTableSwapComponent} from './components/mint-subsec
 		OrcButtonModule,
 		OrcTimeModule,
 		OrcMintGeneralModule,
-		OrcMintSectionGeneralModule,
 		OrcEcashGeneralModule,
 	],
 	exports: [],
