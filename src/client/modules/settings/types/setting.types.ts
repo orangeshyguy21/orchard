@@ -16,8 +16,8 @@ export type AllBitcoinOracleSettings = BitcoinOracleSettings & {
 	date_end: number | null;
 };
 export type NonNullableBitcoinOracleSettings = {
-	[K in keyof AllBitcoinOracleSettings]: NonNullable<AllBitcoinOracleSettings[K]>;
-};
+	[K in keyof Omit<AllBitcoinOracleSettings, 'date_preset'>]: NonNullable<AllBitcoinOracleSettings[K]>;
+} & Pick<AllBitcoinOracleSettings, 'date_preset'>;
 
 /* Page: Mint Dashboard */
 export type AllMintDashboardSettings = MintDashboardSettings & {

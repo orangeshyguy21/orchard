@@ -15,9 +15,12 @@ import {FormGroup, FormControl, Validators} from '@angular/forms';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 /* Vendor Dependencies */
 import {DateTime} from 'luxon';
+import {DateRange} from '@angular/material/datepicker';
 import {Subscription} from 'rxjs';
 /* Application Dependencies */
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
+import {DateRangePreset} from '@client/modules/form/types/form-daterange.types';
+import {resolveDateRangePreset} from '@client/modules/form/helpers/form-daterange.helpers';
 import {EventService} from '@client/modules/event/services/event/event.service';
 import {ConfigService} from '@client/modules/config/services/config.service';
 import {NonNullableBitcoinOracleSettings} from '@client/modules/settings/types/setting.types';
@@ -108,7 +111,6 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 	ngOnInit(): void {
 		this.enabled_ai.set(this.configService.config.ai.enabled);
 		this.locale.set(this.settingDeviceService.getLocale());
-		this.subscriptions.add(this.getControlSubscription());
 		this.subscriptions.add(this.getBackfillSubscription());
 		this.subscriptions.add(this.getEventSubscription());
 		this.subscriptions.add(this.getBackfillProgressSubscription());
@@ -119,12 +121,18 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 		this.getOracleData();
 	}
 
+	/** Merges long-term and short-term settings with defaults */
 	private getPageSettings(): NonNullableBitcoinOracleSettings {
 		const settings = this.settingDeviceService.getBitcoinOracleSettings();
-		return {
-			date_start: settings.date_start ?? Math.floor(DateTime.utc().minus({days: 14}).startOf('day').toSeconds()),
-			date_end: settings.date_end ?? Math.floor(DateTime.utc().startOf('day').toSeconds()),
-		};
+		let date_start = settings.date_start ?? Math.floor(DateTime.utc().minus({days: 14}).startOf('day').toSeconds());
+		let date_end = settings.date_end ?? Math.floor(DateTime.utc().startOf('day').toSeconds());
+		const date_preset = settings.date_preset ?? null;
+		if (date_preset) {
+			const resolved = resolveDateRangePreset(date_preset, Math.floor(this.min_date().toSeconds()));
+			date_start = resolved.date_start;
+			date_end = resolved.date_end;
+		}
+		return {date_start, date_end, date_preset};
 	}
 
 	private initializeControl(): void {
@@ -137,18 +145,6 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 	/* *******************************************************
 		Subscriptions                      
 	******************************************************** */
-
-	private getControlSubscription(): Subscription {
-		return this.control.valueChanges.subscribe(() => {
-			if (this.control.invalid) return;
-			const new_date_start = Math.floor(
-				this.control.get('daterange')?.get('date_start')?.value?.toUTC().startOf('day').toSeconds() ?? 0,
-			);
-			const new_date_end = Math.floor(this.control.get('daterange')?.get('date_end')?.value?.toUTC().startOf('day').toSeconds() ?? 0);
-			if (new_date_start === this.page_settings.date_start && new_date_end === this.page_settings.date_end) return;
-			this.updateRange(new_date_start, new_date_end);
-		});
-	}
 
 	/**
 	 * Subscribe to backfill form changes and handle:
@@ -307,8 +303,34 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 	}
 
 	/* *******************************************************
-		Actions Up                     
+		Actions Up
 	******************************************************** */
+
+	/** Handles preset selection — resolves the preset and reloads */
+	public onPresetChange(preset: DateRangePreset): void {
+		const {date_start, date_end} = resolveDateRangePreset(preset, Math.floor(this.min_date().toSeconds()));
+		this.control.get('daterange')?.get('date_start')?.setValue(DateTime.fromSeconds(date_start, {zone: 'utc'}));
+		this.control.get('daterange')?.get('date_end')?.setValue(DateTime.fromSeconds(date_end, {zone: 'utc'}));
+		this.page_settings.date_preset = preset;
+		this.updateRange(date_start, date_end);
+	}
+
+	/** Handles calendar date range selection from the scroll picker */
+	public onDateRangeChange(range: DateRange<DateTime>): void {
+		if (range.start) this.control.get('daterange')?.get('date_start')?.setValue(range.start);
+		if (range.end) this.control.get('daterange')?.get('date_end')?.setValue(range.end);
+		if (!range.start || !range.end) return;
+		const date_start = Math.floor(range.start.toUTC().startOf('day').toSeconds());
+		const date_end = Math.floor(range.end.toUTC().startOf('day').toSeconds());
+		this.page_settings.date_preset = null;
+		this.updateRange(date_start, date_end);
+	}
+
+	/** Handles manual text input date changes */
+	public onDateInputChange(dates: [number, number]): void {
+		this.page_settings.date_preset = null;
+		this.updateRange(dates[0], dates[1]);
+	}
 
 	public onBackfill(): void {
 		!this.form_open() ? this.openForm() : this.onCloseForm();

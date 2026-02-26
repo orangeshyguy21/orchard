@@ -110,7 +110,7 @@ export class LocalStorageService {
 	}
 	getBitcoinOracleSettings(): BitcoinOracleSettings {
 		const settings = this.getItem<BitcoinOracleSettings>(this.STORAGE_KEYS.BITCOIN_ORACLE_KEY);
-		if (!settings) return {date_start: null};
+		if (!settings) return {date_start: null, date_preset: null};
 		return settings;
 	}
 	getMintDashboardSettings(): MintDashboardSettings {

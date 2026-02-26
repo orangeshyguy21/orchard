@@ -38,6 +38,7 @@ export enum CurrencyType {
 
 export type BitcoinOracleSettings = {
 	date_start: number | null;
+	date_preset: DateRangePreset | null;
 };
 
 export type MintDashboardSettings = {
