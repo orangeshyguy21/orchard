@@ -1,0 +1,28 @@
+<button #triggerButton mat-icon-button type="button" (click)="togglePanel()" class="picker-toggle" [class.is-open]="is_open()">
+	<mat-icon>date_range</mat-icon>
+</button>
+
+<ng-template #panelTemplate>
+	<div class="picker-panel">
+		<div class="preset-column">
+			<mat-nav-list>
+				@for (option of preset_options; track option.value) {
+					<a mat-list-item (click)="onPresetSelected(option.value)" [activated]="active_preset() === option.value">
+						{{ option.label }}
+					</a>
+				}
+			</mat-nav-list>
+		</div>
+		<div class="calendar-column">
+			<orc-form-scroll-calendar
+				#scrollCalendar
+				[selected]="current_range()"
+				[min]="min()"
+				[max]="max()"
+				[date_class]="dateClass()"
+				[device_type]="device_type()"
+				(selectedChange)="onCalendarRangeChange($event)"
+			></orc-form-scroll-calendar>
+		</div>
+	</div>
+</ng-template>

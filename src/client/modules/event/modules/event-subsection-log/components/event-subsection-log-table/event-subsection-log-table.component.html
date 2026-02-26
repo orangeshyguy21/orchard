@@ -120,8 +120,7 @@
 		</div>
 	} @else if (!loading() && !error() && data_source().data.length === 0) {
 		<div class="flex flex-items-center flex-justify-center h-min-18" animate.enter="orc-animation-fadein">
-			<!-- <mat-icon class="icon-lg mat-symbol-outline orc-outline-variant-color">event_busy</mat-icon> -->
-			<div class="font-size-l orc-outline-color">No events</div>
+			<mat-icon class="icon-lg mat-symbol-outline orc-outline-variant-color">file_save_off</mat-icon>
 		</div>
 	} @else if (error()) {
 		<div class="flex flex-items-center flex-justify-center h-min-18" animate.enter="orc-animation-fadein">

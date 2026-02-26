@@ -33,6 +33,7 @@ describe('BitcoinSubsectionOracleControlComponent', () => {
 		fixture.componentRef.setInput('form_group', mock_form_group);
 		fixture.componentRef.setInput('min_date', min_date);
 		fixture.componentRef.setInput('max_date', max_date);
+		fixture.componentRef.setInput('device_type', 'desktop');
 
 		fixture.detectChanges();
 	});

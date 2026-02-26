@@ -4,11 +4,13 @@ import {FormGroup, FormControl, FormArray, Validators} from '@angular/forms';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 /* Vendor Dependencies */
 import {DateTime} from 'luxon';
-import {MatCalendarCellClassFunction} from '@angular/material/datepicker';
+import {DateRange, MatCalendarCellClassFunction} from '@angular/material/datepicker';
 import {MatMenuTrigger} from '@angular/material/menu';
 import {MatSelectChange} from '@angular/material/select';
 /* Application Dependencies */
 import {NonNullableMintDatabaseSettings} from '@client/modules/settings/types/setting.types';
+import {DateRangePreset} from '@client/modules/form/types/form-daterange.types';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 import {MintDataType} from '@client/modules/mint/enums/data-type.enum';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 /* Shared Dependencies */
@@ -36,16 +38,18 @@ export class MintSubsectionDatabaseControlComponent {
 	public readonly state_enabled = input.required<boolean>();
 	public readonly date_start = input<number>();
 	public readonly date_end = input<number>();
+	public readonly date_preset = input<DateRangePreset | null>(null);
 	public readonly type = input<MintDataType>();
 	public readonly states = input<string[]>();
 	public readonly units = input<MintUnit[]>();
 	public readonly loading = input.required<boolean>();
 	public readonly mint_genesis_time = input.required<number>();
 	public readonly keysets = input.required<MintKeyset[]>();
-	public readonly device_desktop = input<boolean>();
+	public readonly device_type = input.required<DeviceType>();
 
 	/* Outputs */
 	public readonly dateChange = output<number[]>();
+	public readonly presetChange = output<DateRangePreset>();
 	public readonly typeChange = output<MintDataType>();
 	public readonly unitsChange = output<MintUnit[]>();
 	public readonly statesChange = output<string[]>();
@@ -216,6 +220,18 @@ export class MintSubsectionDatabaseControlComponent {
 		return sorted_a.every((state, index) => state === sorted_b[index]);
 	}
 
+	/** Handles preset selection — emits the preset key for the parent to resolve */
+	public onPresetChange(preset: DateRangePreset): void {
+		this.presetChange.emit(preset);
+	}
+
+	/** Handles calendar date range selection — updates form controls and emits */
+	public onDateRangeChange(range: DateRange<DateTime>): void {
+		if (range.start) this.panel.controls.daterange.controls.date_start.setValue(range.start);
+		if (range.end) this.panel.controls.daterange.controls.date_end.setValue(range.end);
+		this.onDateChange();
+	}
+
 	public onDateChange(): void {
 		if (this.panel.invalid) return;
 		const is_valid = this.isValidChange();
@@ -268,7 +284,7 @@ export class MintSubsectionDatabaseControlComponent {
 		this.filter_menu_trigger()?.closeMenu();
 	}
 
-	public genesisClass: MatCalendarCellClassFunction<DateTime> = (cellDate, view) => {
+	public genesis_class: MatCalendarCellClassFunction<DateTime> = (cellDate, view) => {
 		if (view !== 'month') return '';
 		const genesis_time = this.mint_genesis_time();
 		const unix_seconds = cellDate.toSeconds();

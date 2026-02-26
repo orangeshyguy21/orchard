@@ -18,6 +18,7 @@ describe('EventSubsectionLogControlComponent', () => {
 
 		fixture = TestBed.createComponent(EventSubsectionLogControlComponent);
 		component = fixture.componentInstance;
+		fixture.componentRef.setInput('device_type', 'desktop');
 		fixture.detectChanges();
 	});
 

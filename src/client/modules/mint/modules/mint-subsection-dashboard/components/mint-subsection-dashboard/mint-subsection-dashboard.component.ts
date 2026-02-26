@@ -38,6 +38,8 @@ import {OrchardError} from '@client/modules/error/types/error.types';
 import {NavTertiaryItem} from '@client/modules/nav/types/nav-tertiary-item.type';
 import {DeviceType} from '@client/modules/layout/types/device.types';
 import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle-price.class';
+import {DateRangePreset} from '@client/modules/form/types/form-daterange.types';
+import {resolveDateRangePreset} from '@client/modules/form/helpers/form-daterange.helpers';
 /* Native Dependencies */
 import {MintService} from '@client/modules/mint/services/mint/mint.service';
 import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
@@ -484,6 +486,8 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 
 	private getPageSettings(): NonNullableMintDashboardSettings {
 		const settings = this.settingDeviceService.getMintDashboardSettings();
+		const date_preset = settings.date_preset ?? null;
+		const resolved_dates = date_preset ? resolveDateRangePreset(date_preset, this.mint_genesis_time) : null;
 		return {
 			type: {
 				balance_sheet: settings.type?.balance_sheet ?? ChartType.Totals,
@@ -494,8 +498,9 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			},
 			interval: settings.interval ?? MintAnalyticsInterval.Day,
 			units: settings.units ?? [],
-			date_start: settings.date_start ?? this.getSelectedDateStart(),
-			date_end: settings.date_end ?? this.getSelectedDateEnd(),
+			date_start: resolved_dates?.date_start ?? settings.date_start ?? this.getSelectedDateStart(),
+			date_end: resolved_dates?.date_end ?? settings.date_end ?? this.getSelectedDateEnd(),
+			date_preset,
 			tertiary_nav: settings.tertiary_nav ?? Object.values(NavTertiary),
 			oracle_used: this.bitcoin_oracle_enabled ? (settings.oracle_used ?? false) : false,
 		};
@@ -542,7 +547,16 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 
 	public onDateChange(event: number[]): void {
 		const current = this.page_settings();
-		const updated = {...current, date_start: event[0], date_end: event[1]};
+		const updated = {...current, date_start: event[0], date_end: event[1], date_preset: null};
+		this.page_settings.set(updated);
+		this.settingDeviceService.setMintDashboardSettings(updated);
+		this.reloadDynamicData();
+	}
+
+	public onPresetChange(preset: DateRangePreset): void {
+		const {date_start, date_end} = resolveDateRangePreset(preset, this.mint_genesis_time);
+		const current = this.page_settings();
+		const updated = {...current, date_start, date_end, date_preset: preset};
 		this.page_settings.set(updated);
 		this.settingDeviceService.setMintDashboardSettings(updated);
 		this.reloadDynamicData();

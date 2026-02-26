@@ -3,11 +3,13 @@ import {ChangeDetectionStrategy, Component, effect, input, output, signal, untra
 import {FormControl, FormGroup, FormArray, Validators} from '@angular/forms';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 /* Vendor Dependencies */
-import {MatCalendarCellClassFunction} from '@angular/material/datepicker';
+import {DateRange, MatCalendarCellClassFunction} from '@angular/material/datepicker';
 import {MatMenuTrigger} from '@angular/material/menu';
 import {DateTime} from 'luxon';
 /* Application Dependencies */
 import {NonNullableMintKeysetsSettings} from '@client/modules/settings/types/setting.types';
+import {DateRangePreset} from '@client/modules/form/types/form-daterange.types';
+import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Native Dependencies */
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 /* Shared Dependencies */
@@ -34,15 +36,17 @@ export class MintSubsectionKeysetsControlComponent {
 	public readonly page_settings = input.required<NonNullableMintKeysetsSettings>();
 	public readonly date_start = input<number>();
 	public readonly date_end = input<number>();
+	public readonly date_preset = input<DateRangePreset | null>(null);
 	public readonly units = input<MintUnit[]>();
 	public readonly status = input<boolean[]>();
 	public readonly keysets = input.required<MintKeyset[]>();
 	public readonly loading = input.required<boolean>();
 	public readonly mint_genesis_time = input.required<number>();
-	public readonly device_desktop = input.required<boolean>();
+	public readonly device_type = input.required<DeviceType>();
 
 	/* Outputs */
 	public readonly dateChange = output<number[]>();
+	public readonly presetChange = output<DateRangePreset>();
 	public readonly unitsChange = output<MintUnit[]>();
 	public readonly statusChange = output<boolean[]>();
 
@@ -184,6 +188,18 @@ export class MintSubsectionKeysetsControlComponent {
 		const sorted_a = [...a].sort();
 		const sorted_b = [...b].sort();
 		return sorted_a.every((status, index) => status === sorted_b[index]);
+	}
+
+	/** Handles preset selection — emits the preset key for the parent to resolve */
+	public onPresetChange(preset: DateRangePreset): void {
+		this.presetChange.emit(preset);
+	}
+
+	/** Handles calendar date range selection — updates form controls and emits */
+	public onDateRangeChange(range: DateRange<DateTime>): void {
+		if (range.start) this.panel.controls.daterange.controls.date_start.setValue(range.start);
+		if (range.end) this.panel.controls.daterange.controls.date_end.setValue(range.end);
+		this.onDateChange();
 	}
 
 	public onDateChange(): void {

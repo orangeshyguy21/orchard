@@ -335,3 +335,59 @@
         }
     }
 }
+
+/* Specific Scroll Calendar Overrides */
+:root {
+	.orc-scroll-calendar {
+		mat-month-view {
+			display: block;
+		}
+
+		.mat-calendar-table {
+			width: 100%;
+			border-collapse: collapse;
+			table-layout: fixed;
+		}
+
+		.mat-calendar-table-header {
+			display: none;
+		}
+
+		.mat-calendar-body-label {
+			visibility: hidden;
+			padding: 0 !important;
+			height: 0;
+			line-height: 0;
+			font-size: 0;
+		}
+
+		.mat-calendar-body-cell {
+			text-align: center;
+			padding: 0;
+			height: 34px;
+
+			&::before,
+			&::after,
+			.mat-calendar-body-cell-preview {
+				top: 0 !important;
+				height: 100% !important;
+			}
+		}
+
+		.mat-calendar-body-cell-content {
+			width: 34px !important;
+			height: 100% !important;
+			top: 0 !important;
+			left: 50% !important;
+			transform: translateX(-50%);
+			line-height: 34px;
+			border-radius: 50%;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			box-sizing: border-box;
+			padding: 0;
+			cursor: pointer;
+		}
+	}
+}

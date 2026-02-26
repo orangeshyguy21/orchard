@@ -6,6 +6,11 @@
 					[form_group]="control"
 					[min_date]="min_date()"
 					[max_date]="max_date()"
+					[device_type]="device_type()"
+					[date_preset]="page_settings.date_preset"
+					(presetChange)="onPresetChange($event)"
+					(dateRangeChange)="onDateRangeChange($event)"
+					(dateInputChange)="onDateInputChange($event)"
 				></orc-bitcoin-subsection-oracle-control>
 				@if (device_type() === 'desktop') {
 					<div class="p-b-1" animate.enter="orc-animation-fadein">

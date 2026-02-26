@@ -1,7 +1,7 @@
 <div class="mint-analytic-control-panel-container">
 	<form [formGroup]="panel" class="panel-form orc-animation-form-reaction" [class.animation-invalid]="height_state === 'invalid'">
 		<div class="flex flex-col flex-gap-1">
-			@if (device_desktop()) {
+			@if (device_type() === 'desktop') {
 				<div formGroupName="daterange">
 					<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic" class="big-form-field">
 						<mat-label>Date range</mat-label>
@@ -21,8 +21,18 @@
 								(keyup.enter)="onDateChange()"
 							/>
 						</mat-date-range-input>
-						<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-						<mat-date-range-picker #picker [dateClass]="genesis_class" (closed)="onDateChange()"></mat-date-range-picker>
+						<orc-form-daterange-scroll-picker
+							matIconSuffix
+							[date_start]="panel.controls.daterange.controls.date_start.value"
+							[date_end]="panel.controls.daterange.controls.date_end.value"
+							[active_preset]="date_preset()"
+							[device_type]="device_type()"
+							[dateClass]="genesis_class"
+							(presetChange)="onPresetChange($event)"
+							(dateRangeChange)="onDateRangeChange($event)"
+							(closed)="onDateChange()"
+						></orc-form-daterange-scroll-picker>
+						<mat-date-range-picker #picker></mat-date-range-picker>
 						<mat-error class="font-size-xs">Invalid date range</mat-error>
 					</mat-form-field>
 				</div>
@@ -59,12 +69,12 @@
 			</div>
 			<div class="orc-filter-menu-rule"></div>
 		}
-		@if (!device_desktop()) {
+		@if (device_type() !== 'desktop') {
 			<form [formGroup]="panel">
 				<div formGroupName="daterange" class="p-1">
 					<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic" class="w-full">
 						<mat-label>Date range</mat-label>
-						<mat-date-range-input [rangePicker]="picker">
+						<mat-date-range-input [rangePicker]="mobile_picker">
 							<input
 								matStartDate
 								formControlName="date_start"
@@ -80,8 +90,18 @@
 								(keyup.enter)="onDateChange()"
 							/>
 						</mat-date-range-input>
-						<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-						<mat-date-range-picker #picker [dateClass]="genesis_class" (closed)="onDateChange()"></mat-date-range-picker>
+						<orc-form-daterange-scroll-picker
+							matIconSuffix
+							[date_start]="panel.controls.daterange.controls.date_start.value"
+							[date_end]="panel.controls.daterange.controls.date_end.value"
+							[active_preset]="date_preset()"
+							[device_type]="device_type()"
+							[dateClass]="genesis_class"
+							(presetChange)="onPresetChange($event)"
+							(dateRangeChange)="onDateRangeChange($event)"
+							(closed)="onDateChange()"
+						></orc-form-daterange-scroll-picker>
+						<mat-date-range-picker #mobile_picker></mat-date-range-picker>
 						<mat-error class="font-size-xs">Invalid date range</mat-error>
 					</mat-form-field>
 				</div>

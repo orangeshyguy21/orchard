@@ -111,6 +111,15 @@ export class EventLogService {
 	}
 
 	/**
+	 * Get the earliest event timestamp
+	 * @returns {Promise<number>} The earliest timestamp, or 0 if no events exist
+	 */
+	public async getGenesisTimestamp(): Promise<number> {
+		const result = await this.eventRepository.createQueryBuilder('event').select('MIN(event.timestamp)', 'min').getRawOne();
+		return result?.min ?? 0;
+	}
+
+	/**
 	 * Get a single event log with its details
 	 * @param {string} id - The event log ID
 	 * @returns {Promise<EventLog | null>} The event log with details, or null

@@ -65,7 +65,7 @@ import {BitcoinSubsectionOracleRunProgressSummaryComponent} from './components/b
 		{
 			provide: MAT_LUXON_DATE_ADAPTER_OPTIONS,
 			useValue: {
-				defaultOutputCalendar: 'utc',
+				useUtc: true,
 			},
 		},
 	],

@@ -4,10 +4,19 @@
 			<mat-form-field hideRequiredMarker="true" subscriptSizing="dynamic" class="bitcoin-oracle-daterange">
 				<mat-label>UTC Date range</mat-label>
 				<mat-date-range-input [rangePicker]="picker" [max]="max_date()" [min]="min_date()">
-					<input matStartDate formControlName="date_start" placeholder="Start date" />
-					<input matEndDate formControlName="date_end" placeholder="End date" />
+					<input matStartDate formControlName="date_start" placeholder="Start date" (dateChange)="onDateInputChange()" />
+					<input matEndDate formControlName="date_end" placeholder="End date" (dateChange)="onDateInputChange()" />
 				</mat-date-range-input>
-				<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+				<orc-form-daterange-scroll-picker
+					matIconSuffix
+					[date_start]="form_group().get('daterange')?.get('date_start')?.value"
+					[date_end]="form_group().get('daterange')?.get('date_end')?.value"
+					[active_preset]="date_preset()"
+					[device_type]="device_type()"
+					(presetChange)="presetChange.emit($event)"
+					(dateRangeChange)="dateRangeChange.emit($event)"
+					(closed)="onDateInputChange()"
+				></orc-form-daterange-scroll-picker>
 				<mat-date-range-picker #picker></mat-date-range-picker>
 				<mat-error class="font-size-xs">Invalid date range</mat-error>
 			</mat-form-field>

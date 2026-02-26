@@ -203,6 +203,14 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 		return BigInt(0);
 	}
 
+	/**
+	 * Computes the initial remote balance when a channel was opened
+	 */
+	private computeInitialRemoteBalance(channel: LightningChannel | LightningClosedChannel): bigint {
+		const capacity_msat = this.satToMsat(channel.capacity);
+		return capacity_msat - this.computeInitialLocalBalance(channel);
+	}
+
 	private buildTxTimestampMap(transactions: LightningTransaction[]): Map<string, number> {
 		return new Map(transactions.filter((tx) => tx.tx_hash && tx.time_stamp > 0).map((tx) => [tx.tx_hash, tx.time_stamp]));
 	}
@@ -342,7 +350,8 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 		const group_to_name = this.buildGroupKeyToNameMap(channels, closed_channels);
 
 		while (true) {
-			const batch = await this.lightningService.getPayments({index_offset: offset, max_results: BATCH_SIZE});
+			const result = await this.lightningService.getPayments({index_offset: offset, max_results: BATCH_SIZE});
+			const batch = result.data;
 
 			if (batch.length === 0) {
 				await this.flushPaymentBuckets(pending_bucket, asset_to_group, group_to_name);
@@ -384,7 +393,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 				await this.forceFlushOldestHours(pending_bucket, asset_to_group, group_to_name, 'payments');
 			}
 
-			offset += batch.length;
+			offset = result.last_offset;
 
 			if (batch.length < BATCH_SIZE) {
 				await this.flushPaymentBuckets(pending_bucket, asset_to_group, group_to_name);
@@ -411,7 +420,8 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 		const group_to_name = this.buildGroupKeyToNameMap(channels, closed_channels);
 
 		while (true) {
-			const batch = await this.lightningService.getInvoices({index_offset: offset, max_results: BATCH_SIZE});
+			const result = await this.lightningService.getInvoices({index_offset: offset, max_results: BATCH_SIZE});
+			const batch = result.data;
 
 			if (batch.length === 0) {
 				await this.flushInvoiceBuckets(pending_bucket, asset_to_group, group_to_name);
@@ -454,7 +464,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 				await this.forceFlushOldestHours(pending_bucket, asset_to_group, group_to_name, 'invoices');
 			}
 
-			offset += batch.length;
+			offset = result.last_offset;
 
 			if (batch.length < BATCH_SIZE) {
 				await this.flushInvoiceBuckets(pending_bucket, asset_to_group, group_to_name);
@@ -478,7 +488,8 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 		const pending_bucket: Map<number, LightningForward[]> = new Map();
 
 		while (true) {
-			const batch = await this.lightningService.getForwards({index_offset: offset, max_results: BATCH_SIZE});
+			const result = await this.lightningService.getForwards({index_offset: offset, max_results: BATCH_SIZE});
+			const batch = result.data;
 
 			if (batch.length === 0) {
 				await this.flushForwardBuckets(pending_bucket);
@@ -525,7 +536,7 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 				}
 			}
 
-			offset += batch.length;
+			offset = result.last_offset;
 
 			if (batch.length < BATCH_SIZE) {
 				await this.flushForwardBuckets(pending_bucket);
@@ -729,6 +740,8 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 		// Aggregate metrics: Map<hour, Map<group_key, amount>>
 		const opens_by_hour: Map<number, Map<string, bigint>> = new Map();
 		const closes_by_hour: Map<number, Map<string, bigint>> = new Map();
+		const opens_remote_by_hour: Map<number, Map<string, bigint>> = new Map();
+		const closes_remote_by_hour: Map<number, Map<string, bigint>> = new Map();
 
 		// Helper to accumulate into nested map
 		const accumulate = (map: Map<number, Map<string, bigint>>, hour: number, group_key: string, amount: bigint) => {
@@ -746,10 +759,12 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 
 			// BTC balance (empty string = BTC group_key)
 			accumulate(opens_by_hour, hour, '', this.computeInitialLocalBalance(channel));
+			accumulate(opens_remote_by_hour, hour, '', this.computeInitialRemoteBalance(channel));
 
 			// Asset balance (only for Taproot Asset channels)
 			if (channel.asset?.group_key) {
 				accumulate(opens_by_hour, hour, channel.asset.group_key, BigInt(channel.asset.local_balance));
+				accumulate(opens_remote_by_hour, hour, channel.asset.group_key, BigInt(channel.asset.remote_balance));
 			}
 		}
 
@@ -762,10 +777,18 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 
 			// BTC balance
 			accumulate(closes_by_hour, hour, '', this.satToMsat(channel.settled_balance));
+			const remote_close = this.satToMsat(channel.capacity) - this.satToMsat(channel.settled_balance);
+			accumulate(closes_remote_by_hour, hour, '', remote_close);
 
 			// Asset balance
 			if (channel.asset?.group_key) {
 				accumulate(closes_by_hour, hour, channel.asset.group_key, BigInt(channel.asset.local_balance));
+				accumulate(
+					closes_remote_by_hour,
+					hour,
+					channel.asset.group_key,
+					BigInt(channel.asset.capacity) - BigInt(channel.asset.local_balance),
+				);
 			}
 		}
 
@@ -787,6 +810,8 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 
 		await insert_metrics(opens_by_hour, LightningAnalyticsMetric.channel_opens);
 		await insert_metrics(closes_by_hour, LightningAnalyticsMetric.channel_closes);
+		await insert_metrics(opens_remote_by_hour, LightningAnalyticsMetric.channel_opens_remote);
+		await insert_metrics(closes_remote_by_hour, LightningAnalyticsMetric.channel_closes_remote);
 	}
 
 	/**

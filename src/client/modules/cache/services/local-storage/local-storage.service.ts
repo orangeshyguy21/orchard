@@ -110,7 +110,7 @@ export class LocalStorageService {
 	}
 	getBitcoinOracleSettings(): BitcoinOracleSettings {
 		const settings = this.getItem<BitcoinOracleSettings>(this.STORAGE_KEYS.BITCOIN_ORACLE_KEY);
-		if (!settings) return {date_start: null};
+		if (!settings) return {date_start: null, date_preset: null};
 		return settings;
 	}
 	getMintDashboardSettings(): MintDashboardSettings {
@@ -118,6 +118,7 @@ export class LocalStorageService {
 		if (!settings)
 			return {
 				date_start: null,
+				date_preset: null,
 				units: null,
 				interval: null,
 				type: {balance_sheet: null, mints: null, melts: null, swaps: null, fee_revenue: null},
@@ -133,12 +134,12 @@ export class LocalStorageService {
 	}
 	getMintKeysetsSettings(): MintKeysetsSettings {
 		const settings = this.getItem<MintKeysetsSettings>(this.STORAGE_KEYS.MINT_KEYSETS_KEY);
-		if (!settings) return {date_start: null, units: null, status: null};
+		if (!settings) return {date_start: null, date_preset: null, units: null, status: null};
 		return settings;
 	}
 	getMintDatabaseSettings(): MintDatabaseSettings {
 		const settings = this.getItem<MintDatabaseSettings>(this.STORAGE_KEYS.MINT_DATABASE_KEY);
-		if (!settings) return {date_start: null, type: null, units: null, states: null};
+		if (!settings) return {date_start: null, date_preset: null, type: null, units: null, states: null};
 		return settings;
 	}
 	getSettingsDeviceSettings(): SettingsDeviceSettings {
@@ -148,7 +149,7 @@ export class LocalStorageService {
 	}
 	getEventLogSettings(): EventLogSettings {
 		const settings = this.getItem<EventLogSettings>(this.STORAGE_KEYS.EVENT_LOG_KEY);
-		if (!settings) return {date_start: null, page_size: null};
+		if (!settings) return {date_start: null, date_preset: null, page_size: null};
 		return settings;
 	}
 

@@ -16,17 +16,16 @@ export type AllBitcoinOracleSettings = BitcoinOracleSettings & {
 	date_end: number | null;
 };
 export type NonNullableBitcoinOracleSettings = {
-	[K in keyof AllBitcoinOracleSettings]: NonNullable<AllBitcoinOracleSettings[K]>;
-};
+	[K in keyof Omit<AllBitcoinOracleSettings, 'date_preset'>]: NonNullable<AllBitcoinOracleSettings[K]>;
+} & Pick<AllBitcoinOracleSettings, 'date_preset'>;
 
 /* Page: Mint Dashboard */
 export type AllMintDashboardSettings = MintDashboardSettings & {
-	date_start: number | null;
 	date_end: number | null;
 };
 export type NonNullableMintDashboardSettings = {
-	[K in keyof AllMintDashboardSettings]: NonNullable<AllMintDashboardSettings[K]>;
-};
+	[K in keyof Omit<AllMintDashboardSettings, 'date_preset'>]: NonNullable<AllMintDashboardSettings[K]>;
+} & Pick<AllMintDashboardSettings, 'date_preset'>;
 
 /* Page: Mint Config */
 export type AllMintConfigSettings = MintConfigSettings;
@@ -36,23 +35,21 @@ export type NonNullableMintConfigSettings = {
 
 /* Page: Mint Keysets */
 export type AllMintKeysetsSettings = MintKeysetsSettings & {
-	date_start: number | null;
 	date_end: number | null;
 };
 export type NonNullableMintKeysetsSettings = {
-	[K in keyof AllMintKeysetsSettings]: NonNullable<AllMintKeysetsSettings[K]>;
-};
+	[K in keyof Omit<AllMintKeysetsSettings, 'date_preset'>]: NonNullable<AllMintKeysetsSettings[K]>;
+} & Pick<AllMintKeysetsSettings, 'date_preset'>;
 
 /* Page: Mint Database */
 export type AllMintDatabaseSettings = MintDatabaseSettings & {
-	date_start: number | null;
 	date_end: number | null;
 	page: number | null;
 	page_size: number | null;
 };
 export type NonNullableMintDatabaseSettings = {
-	[K in keyof AllMintDatabaseSettings]: NonNullable<AllMintDatabaseSettings[K]>;
-};
+	[K in keyof Omit<AllMintDatabaseSettings, 'date_preset'>]: NonNullable<AllMintDatabaseSettings[K]>;
+} & Pick<AllMintDatabaseSettings, 'date_preset'>;
 
 /* Page: Settings Device */
 export type AllSettingsDeviceSettings = SettingsDeviceSettings;

@@ -96,6 +96,8 @@ const ICONS = [
   'chevron_right',
   'arrow_forward',
   'add_circle',
+  'date_range',
+  'file_save_off',
 ];
 
 // Sort alphabetically and remove duplicates

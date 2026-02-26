@@ -5,6 +5,7 @@ import {Resolver, Query, Args, Int} from '@nestjs/graphql';
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 import {EventLogActorType, EventLogSection, EventLogEntityType, EventLogType, EventLogStatus} from '@server/modules/event/event.enums';
 import {OrchardCommonCount} from '@server/modules/api/common/entity-count.model';
+import {OrchardCommonGenesis} from '@server/modules/api/common/entity-genesis.model';
 /* Local Dependencies */
 import {ApiEventLogService} from './event.service';
 import {OrchardEventLog} from './event.model';
@@ -67,5 +68,12 @@ export class EventLogResolver {
 			date_start,
 			date_end,
 		});
+	}
+
+	@Query(() => OrchardCommonGenesis)
+	async event_log_genesis(): Promise<OrchardCommonGenesis> {
+		const tag = 'GET { event_log_genesis }';
+		this.logger.debug(tag);
+		return await this.eventLogService.getGenesisTimestamp(tag);
 	}
 }

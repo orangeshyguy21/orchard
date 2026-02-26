@@ -33,7 +33,8 @@
     "migration:generate": "NODE_ENV=development ts-node --project tsconfig.server.json -r tsconfig-paths/register node_modules/typeorm/cli.js migration:generate -d src/server/database/data-source.ts",
     "migration:run": "NODE_ENV=development ts-node --project tsconfig.server.json -r tsconfig-paths/register node_modules/typeorm/cli.js migration:run -d src/server/database/data-source.ts",
     "migration:revert": "NODE_ENV=development ts-node --project tsconfig.server.json -r tsconfig-paths/register node_modules/typeorm/cli.js migration:revert -d src/server/database/data-source.ts",
-    "migration:show": "NODE_ENV=development ts-node --project tsconfig.server.json -r tsconfig-paths/register node_modules/typeorm/cli.js migration:show -d src/server/database/data-source.ts"
+    "migration:show": "NODE_ENV=development ts-node --project tsconfig.server.json -r tsconfig-paths/register node_modules/typeorm/cli.js migration:show -d src/server/database/data-source.ts",
+    "debug:ln-analytics": "npx ts-node -r tsconfig-paths/register --project tsconfig.server.json scripts/debug-ln-analytics.ts"
   },
   "dependencies": {
     "@angular/animations": "^21.1.4",

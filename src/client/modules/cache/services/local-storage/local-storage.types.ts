@@ -1,6 +1,7 @@
 /* Application Dependencies */
 import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
 import {MintDataType} from '@client/modules/mint/enums/data-type.enum';
+import {DateRangePreset} from '@client/modules/form/types/form-daterange.types';
 /* Shared Dependencies */
 import {MintUnit, MintAnalyticsInterval} from '@shared/generated.types';
 
@@ -37,10 +38,12 @@ export enum CurrencyType {
 
 export type BitcoinOracleSettings = {
 	date_start: number | null;
+	date_preset: DateRangePreset | null;
 };
 
 export type MintDashboardSettings = {
 	date_start: number | null;
+	date_preset: DateRangePreset | null;
 	units: MintUnit[] | null;
 	interval: MintAnalyticsInterval | null;
 	tertiary_nav: string[] | null;
@@ -60,12 +63,14 @@ export type MintConfigSettings = {
 
 export type MintKeysetsSettings = {
 	date_start: number | null;
+	date_preset: DateRangePreset | null;
 	units: MintUnit[] | null;
 	status: boolean[] | null;
 };
 
 export type MintDatabaseSettings = {
 	date_start: number | null;
+	date_preset: DateRangePreset | null;
 	type: MintDataType | null;
 	units: MintUnit[] | null;
 	states: string[] | null;
@@ -77,5 +82,6 @@ export type SettingsDeviceSettings = {
 
 export type EventLogSettings = {
 	date_start: number | null;
+	date_preset: DateRangePreset | null;
 	page_size: number | null;
 };
