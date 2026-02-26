@@ -131,7 +131,6 @@ export class FormDaterangeScrollPickerComponent implements OnDestroy {
 		this.presetChange.emit(preset);
 		this.destroyOverlay();
 		this.is_open.set(false);
-		this.closed.emit();
 	}
 
 	/** Handles calendar range selection */
@@ -139,7 +138,6 @@ export class FormDaterangeScrollPickerComponent implements OnDestroy {
 		this.dateRangeChange.emit(range);
 		this.destroyOverlay();
 		this.is_open.set(false);
-		this.closed.emit();
 	}
 
 	/** Destroys the overlay ref and cleans up subscriptions */

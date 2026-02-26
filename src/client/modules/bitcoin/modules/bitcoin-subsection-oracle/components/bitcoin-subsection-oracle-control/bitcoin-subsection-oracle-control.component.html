@@ -15,6 +15,7 @@
 					[device_type]="device_type()"
 					(presetChange)="presetChange.emit($event)"
 					(dateRangeChange)="dateRangeChange.emit($event)"
+					(closed)="onDateInputChange()"
 				></orc-form-daterange-scroll-picker>
 				<mat-date-range-picker #picker></mat-date-range-picker>
 				<mat-error class="font-size-xs">Invalid date range</mat-error>

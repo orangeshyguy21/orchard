@@ -4,8 +4,11 @@ import {DateTime} from 'luxon';
 import {DateRangePreset} from '@client/modules/form/types/form-daterange.types';
 
 /** Resolves a preset to unix-second timestamps for date_start and date_end */
-export function resolveDateRangePreset(preset: DateRangePreset, genesis_time: number = 0): {date_start: number; date_end: number} {
-	const now = DateTime.now();
+export function resolveDateRangePreset(
+	preset: DateRangePreset,
+	genesis_time: number = 0,
+	now: DateTime = DateTime.now(),
+): {date_start: number; date_end: number} {
 	const end_of_today = Math.floor(now.endOf('day').toSeconds());
 	switch (preset) {
 		case DateRangePreset.Last7Days:

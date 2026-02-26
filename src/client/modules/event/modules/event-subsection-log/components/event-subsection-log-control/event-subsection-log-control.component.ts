@@ -288,14 +288,17 @@ export class EventSubsectionLogControlComponent {
 		this.dateChange.emit([Math.floor(ds.startOf('day').toSeconds()), Math.floor(de.endOf('day').toSeconds())]);
 	}
 
-	/** Emits date range change when both dates are valid */
+	/** Emits date range change when both dates are valid and changed */
 	public onDateChange(): void {
 		const daterange = this.panel.controls.daterange;
 		if (daterange.invalid) return;
 		const ds = daterange.controls.date_start.value;
 		const de = daterange.controls.date_end.value;
 		if (!ds || !de) return;
-		this.dateChange.emit([Math.floor(ds.startOf('day').toSeconds()), Math.floor(de.endOf('day').toSeconds())]);
+		const new_start = Math.floor(ds.startOf('day').toSeconds());
+		const new_end = Math.floor(de.endOf('day').toSeconds());
+		if (new_start === this.date_start() && new_end === this.date_end()) return;
+		this.dateChange.emit([new_start, new_end]);
 	}
 
 	/** Handles section checkbox change */

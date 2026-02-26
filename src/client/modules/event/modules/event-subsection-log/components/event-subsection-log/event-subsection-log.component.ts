@@ -252,6 +252,7 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
 
 	/** Handles date range filter change */
 	public onDateChange(event: number[]): void {
+		if (event[0] === this.page_settings.date_start && event[1] === this.page_settings.date_end) return;
 		this.page_settings.date_start = event[0];
 		this.page_settings.date_end = event[1];
 		this.page_settings.date_preset = null;

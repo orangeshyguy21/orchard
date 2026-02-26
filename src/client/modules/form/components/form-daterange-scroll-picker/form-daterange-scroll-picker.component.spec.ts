@@ -142,13 +142,13 @@ describe('FormDaterangeScrollPickerComponent', () => {
 			expect(component.is_open()).toBe(false);
 		});
 
-		it('should emit closed event', () => {
+		it('should not emit closed event', () => {
 			const spy = jasmine.createSpy('closed');
 			component.closed.subscribe(spy);
 
 			component.openPanel();
 			component.onPresetSelected(DateRangePreset.ThisYear);
-			expect(spy).toHaveBeenCalled();
+			expect(spy).not.toHaveBeenCalled();
 		});
 	});
 
@@ -168,6 +168,16 @@ describe('FormDaterangeScrollPickerComponent', () => {
 			component.openPanel();
 			component.onCalendarRangeChange(range);
 			expect(component.is_open()).toBe(false);
+		});
+
+		it('should not emit closed event', () => {
+			const spy = jasmine.createSpy('closed');
+			component.closed.subscribe(spy);
+
+			const range = new DateRange<DateTime>(DateTime.now().minus({days: 7}), DateTime.now());
+			component.openPanel();
+			component.onCalendarRangeChange(range);
+			expect(spy).not.toHaveBeenCalled();
 		});
 	});
 

@@ -189,6 +189,7 @@ export class MintSubsectionDashboardControlComponent {
 	public onDateRangeChange(range: DateRange<DateTime>): void {
 		if (range.start) this.panel.controls.daterange.controls.date_start.setValue(range.start);
 		if (range.end) this.panel.controls.daterange.controls.date_end.setValue(range.end);
+		this.onDateChange();
 	}
 
 	public onDateChange(): void {

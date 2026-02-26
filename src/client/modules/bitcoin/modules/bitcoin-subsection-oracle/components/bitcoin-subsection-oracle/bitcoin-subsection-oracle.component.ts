@@ -128,7 +128,7 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 		let date_end = settings.date_end ?? Math.floor(DateTime.utc().startOf('day').toSeconds());
 		const date_preset = settings.date_preset ?? null;
 		if (date_preset) {
-			const resolved = resolveDateRangePreset(date_preset, Math.floor(this.min_date().toSeconds()));
+			const resolved = resolveDateRangePreset(date_preset, Math.floor(this.min_date().toSeconds()), DateTime.utc());
 			date_start = resolved.date_start;
 			date_end = resolved.date_end;
 		}
@@ -308,7 +308,7 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 
 	/** Handles preset selection — resolves the preset and reloads */
 	public onPresetChange(preset: DateRangePreset): void {
-		const {date_start, date_end} = resolveDateRangePreset(preset, Math.floor(this.min_date().toSeconds()));
+		const {date_start, date_end} = resolveDateRangePreset(preset, Math.floor(this.min_date().toSeconds()), DateTime.utc());
 		this.control
 			.get('daterange')
 			?.get('date_start')
@@ -334,6 +334,7 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 
 	/** Handles manual text input date changes */
 	public onDateInputChange(dates: [number, number]): void {
+		if (dates[0] === this.page_settings.date_start && dates[1] === this.page_settings.date_end) return;
 		this.page_settings.date_preset = null;
 		this.updateRange(dates[0], dates[1]);
 	}

@@ -28,6 +28,7 @@
 						[device_type]="device_type()"
 						(presetChange)="onPresetChange($event)"
 						(dateRangeChange)="onDateRangeChange($event)"
+						(closed)="onDateChange()"
 					></orc-form-daterange-scroll-picker>
 					<mat-date-range-picker #picker></mat-date-range-picker>
 					<mat-error class="font-size-xs">Invalid date range</mat-error>
@@ -75,6 +76,7 @@
 							[device_type]="device_type()"
 							(presetChange)="onPresetChange($event)"
 							(dateRangeChange)="onDateRangeChange($event)"
+							(closed)="onDateChange()"
 						></orc-form-daterange-scroll-picker>
 						<mat-date-range-picker #mobile_picker></mat-date-range-picker>
 						<mat-error class="font-size-xs">Invalid date range</mat-error>
