@@ -550,6 +550,42 @@ export class NutshellService {
 		}
 	}
 
+	/** Returns the most recent mint quote timestamp (epoch seconds), or null if none exist. */
+	public async getMintLastMintQuoteTime(client: CashuMintDatabase): Promise<number | null> {
+		const sql = `SELECT MAX(created_time) AS last_time FROM mint_quotes;`;
+		try {
+			const row = await queryRow<{last_time: string | number | null}>(client, sql);
+			if (!row?.last_time) return null;
+			return convertDateToUnixTimestamp(row.last_time as any) ?? null;
+		} catch (err) {
+			throw err;
+		}
+	}
+
+	/** Returns the most recent melt quote timestamp (epoch seconds), or null if none exist. */
+	public async getMintLastMeltQuoteTime(client: CashuMintDatabase): Promise<number | null> {
+		const sql = `SELECT MAX(created_time) AS last_time FROM melt_quotes;`;
+		try {
+			const row = await queryRow<{last_time: string | number | null}>(client, sql);
+			if (!row?.last_time) return null;
+			return convertDateToUnixTimestamp(row.last_time as any) ?? null;
+		} catch (err) {
+			throw err;
+		}
+	}
+
+	/** Returns the most recent swap timestamp (epoch seconds), or null if none exist. */
+	public async getMintLastSwapTime(client: CashuMintDatabase): Promise<number | null> {
+		const sql = `SELECT MAX(created) AS last_time FROM proofs_used WHERE melt_quote IS NULL;`;
+		try {
+			const row = await queryRow<{last_time: string | number | null}>(client, sql);
+			if (!row?.last_time) return null;
+			return convertDateToUnixTimestamp(row.last_time as any) ?? null;
+		} catch (err) {
+			throw err;
+		}
+	}
+
 	/* Analytics */
 
 	public async getMintAnalyticsBalances(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {

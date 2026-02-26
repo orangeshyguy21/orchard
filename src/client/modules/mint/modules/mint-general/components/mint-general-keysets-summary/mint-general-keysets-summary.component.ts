@@ -14,6 +14,7 @@ import {MintKeysetProofCount} from '@client/modules/mint/classes/mint-keyset-pro
 export class MintGeneralKeysetsSummaryComponent {
 	public keysets = input.required<MintKeyset[]>();
 	public proof_counts = input.required<MintKeysetProofCount[]>();
+	public database_size = input<number | null>(null);
 	public loading = input.required<boolean>();
 
 	/** Number of active keysets. */
@@ -39,4 +40,14 @@ export class MintGeneralKeysetsSummaryComponent {
 
 	/** Total proof count across all keysets. */
 	public total_proof_count = computed(() => this.proof_counts().reduce((sum, pc) => sum + pc.count, 0));
+
+	/** Database size formatted as a human-readable string. */
+	public formatted_database_size = computed(() => {
+		const size = this.database_size();
+		if (size === null) return null;
+		if (size < 1024) return `${size} B`;
+		if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
+		if (size < 1024 * 1024 * 1024) return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+		return `${(size / (1024 * 1024 * 1024)).toFixed(1)} GB`;
+	});
 }

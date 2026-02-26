@@ -30,6 +30,8 @@ export class MintPulse {
 	public last_mint_time: number | null;
 	public last_melt_time: number | null;
 	public last_swap_time: number | null;
+	public avg_mint_time: number | null;
+	public avg_melt_time: number | null;
 
 	constructor(omp: OrchardMintPulse) {
 		this.current_24h = new MintPulseActivity(omp.current_24h);
@@ -39,5 +41,7 @@ export class MintPulse {
 		this.last_mint_time = omp.last_mint_time ?? null;
 		this.last_melt_time = omp.last_melt_time ?? null;
 		this.last_swap_time = omp.last_swap_time ?? null;
+		this.avg_mint_time = omp.avg_mint_time ?? null;
+		this.avg_melt_time = omp.avg_melt_time ?? null;
 	}
 }

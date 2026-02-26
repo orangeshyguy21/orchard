@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {Field, ObjectType} from '@nestjs/graphql';
+import {Field, Int, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
 import {Base64} from '@server/modules/graphql/scalars/base64.scalar';
 
@@ -20,5 +20,15 @@ export class OrchardMintDatabaseRestore {
 
 	constructor(success: boolean) {
 		this.success = success;
+	}
+}
+
+@ObjectType()
+export class OrchardMintDatabaseSize {
+	@Field(() => Int, {nullable: true})
+	size: number | null;
+
+	constructor(size: number | null) {
+		this.size = size;
 	}
 }

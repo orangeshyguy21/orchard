@@ -7,7 +7,7 @@ import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.cla
 import {MintService} from '@server/modules/api/mint/mint.service';
 import {ErrorService} from '@server/modules/error/error.service';
 /* Local Dependencies */
-import {OrchardMintDatabaseBackup, OrchardMintDatabaseRestore} from './mintdatabase.model';
+import {OrchardMintDatabaseBackup, OrchardMintDatabaseRestore, OrchardMintDatabaseSize} from './mintdatabase.model';
 
 @Injectable()
 export class MintDatabaseService {
@@ -28,6 +28,21 @@ export class MintDatabaseService {
 			} catch (error) {
 				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseBackupError,
+				});
+				throw new OrchardApiError(orchard_error);
+			}
+		});
+	}
+
+	/** Returns the mint database size in bytes. */
+	async getMintDatabaseSize(tag: string): Promise<OrchardMintDatabaseSize> {
+		return this.mintService.withDbClient(async (client) => {
+			try {
+				const size = await this.cashuMintDatabaseService.getMintDatabaseSize(client);
+				return new OrchardMintDatabaseSize(size);
+			} catch (error) {
+				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
+					errord: OrchardErrorCode.MintDatabaseSelectError,
 				});
 				throw new OrchardApiError(orchard_error);
 			}

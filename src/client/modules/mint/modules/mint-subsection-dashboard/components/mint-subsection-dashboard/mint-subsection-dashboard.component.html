@@ -10,7 +10,6 @@
 		></orc-mint-general-info>
 		<orc-mint-general-config-summary
 			[info]="mint_info"
-			[quote_ttls]="mint_quote_ttls"
 			[loading]="loading_summary()"
 		></orc-mint-general-config-summary>
 	</div>
@@ -19,6 +18,7 @@
 		<orc-mint-general-keysets-summary
 			[keysets]="mint_keysets"
 			[proof_counts]="mint_keyset_proof_counts"
+			[database_size]="mint_database_size"
 			[loading]="loading_summary()"
 		></orc-mint-general-keysets-summary>
 		<orc-mint-general-health

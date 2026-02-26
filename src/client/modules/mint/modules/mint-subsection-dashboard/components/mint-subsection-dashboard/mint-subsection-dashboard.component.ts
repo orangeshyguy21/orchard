@@ -105,6 +105,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public mint_keyset_proof_counts: MintKeysetProofCount[] = [];
 	public mint_quote_ttls: MintQuoteTtls | null = null;
 	public mint_pulse: MintPulse | null = null;
+	public mint_database_size: number | null = null;
 
 	public errors_lightning: OrchardError[] = [];
 	// charts
@@ -255,6 +256,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 				interval: MintAnalyticsInterval.Day,
 				timezone: timezone,
 			}),
+			this.mintService.getMintDatabaseSize(),
 		])
 			.pipe(
 				catchError((error) => {
@@ -264,10 +266,11 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 					return EMPTY;
 				}),
 			)
-			.subscribe(([proof_counts, quote_ttls, pulse, sparkline_mints, sparkline_melts, sparkline_swaps]) => {
+			.subscribe(([proof_counts, quote_ttls, pulse, sparkline_mints, sparkline_melts, sparkline_swaps, database_size]) => {
 				this.mint_keyset_proof_counts = proof_counts;
 				this.mint_quote_ttls = quote_ttls;
 				this.mint_pulse = pulse;
+				this.mint_database_size = database_size;
 				this.sparkline_data.set(this.buildSparklineData(sparkline_mints, sparkline_melts, sparkline_swaps));
 				this.mint_count_7d.set(sparkline_mints.reduce((sum, a) => sum + a.operation_count, 0));
 				this.melt_count_7d.set(sparkline_melts.reduce((sum, a) => sum + a.operation_count, 0));

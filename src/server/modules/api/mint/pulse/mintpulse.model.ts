@@ -58,6 +58,12 @@ export class OrchardMintPulse {
 	@Field(() => UnixTimestamp, {nullable: true})
 	last_swap_time: number | null;
 
+	@Field(() => Int, {nullable: true})
+	avg_mint_time: number | null;
+
+	@Field(() => Int, {nullable: true})
+	avg_melt_time: number | null;
+
 	constructor(
 		current_24h: OrchardMintPulseActivity,
 		previous_24h: OrchardMintPulseActivity,
@@ -66,6 +72,8 @@ export class OrchardMintPulse {
 		last_mint_time: number | null,
 		last_melt_time: number | null,
 		last_swap_time: number | null,
+		avg_mint_time: number | null,
+		avg_melt_time: number | null,
 	) {
 		this.current_24h = current_24h;
 		this.previous_24h = previous_24h;
@@ -74,5 +82,7 @@ export class OrchardMintPulse {
 		this.last_mint_time = last_mint_time;
 		this.last_melt_time = last_melt_time;
 		this.last_swap_time = last_swap_time;
+		this.avg_mint_time = avg_mint_time;
+		this.avg_melt_time = avg_melt_time;
 	}
 }

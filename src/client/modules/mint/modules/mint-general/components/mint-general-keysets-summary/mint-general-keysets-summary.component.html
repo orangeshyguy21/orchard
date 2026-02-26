@@ -45,6 +45,18 @@
 							<div class="font-size-xs orc-outline-color">Proofs</div>
 						</div>
 					</div>
+
+					@if (formatted_database_size()) {
+						<div class="orc-high-card p-0-5 p-h-1">
+							<div class="flex flex-items-center flex-gap-0-5">
+								<mat-icon class="font-size-l orc-outline-color">database</mat-icon>
+								<div>
+									<div class="font-size-l font-weight-semi-bold">{{ formatted_database_size() }}</div>
+									<div class="font-size-xs orc-outline-color">Database size</div>
+								</div>
+							</div>
+						</div>
+					}
 				</div>
 			}
 		</mat-card-content>

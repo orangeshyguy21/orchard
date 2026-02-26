@@ -1,19 +1,27 @@
 /* Core Dependencies */
 import {Logger} from '@nestjs/common';
-import {Resolver, Mutation, Args} from '@nestjs/graphql';
+import {Resolver, Mutation, Query, Args} from '@nestjs/graphql';
 /* Application Dependencies */
 import {Roles} from '@server/modules/auth/decorators/auth.decorator';
 import {UserRole} from '@server/modules/user/user.enums';
 import {Base64} from '@server/modules/graphql/scalars/base64.scalar';
 /* Local Dependencies */
 import {MintDatabaseService} from './mintdatabase.service';
-import {OrchardMintDatabaseBackup, OrchardMintDatabaseRestore} from './mintdatabase.model';
+import {OrchardMintDatabaseBackup, OrchardMintDatabaseRestore, OrchardMintDatabaseSize} from './mintdatabase.model';
 
 @Resolver()
 export class MintDatabaseResolver {
 	private readonly logger = new Logger(MintDatabaseResolver.name);
 
 	constructor(private mintDatabaseService: MintDatabaseService) {}
+
+	@Roles(UserRole.ADMIN, UserRole.MANAGER)
+	@Query(() => OrchardMintDatabaseSize)
+	async mint_database_size(): Promise<OrchardMintDatabaseSize> {
+		const tag = 'GET { mint_database_size }';
+		this.logger.debug(tag);
+		return await this.mintDatabaseService.getMintDatabaseSize(tag);
+	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)
 	@Mutation(() => OrchardMintDatabaseBackup)

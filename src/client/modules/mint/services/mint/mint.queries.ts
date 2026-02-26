@@ -465,6 +465,8 @@ export const MINT_PULSE_QUERY = `{
 		last_mint_time
 		last_melt_time
 		last_swap_time
+		avg_mint_time
+		avg_melt_time
 	}
 }`;
 
@@ -481,6 +483,12 @@ mutation MintNut05QuoteUpdate($mint_nut05_quote_update: MintNut05QuoteUpdateInpu
 	mint_nut05_quote_update(mint_nut05_quote_update: $mint_nut05_quote_update) {
 		quote_id
 		state
+	}
+}`;
+
+export const MINT_DATABASE_SIZE_QUERY = `{
+	mint_database_size{
+		size
 	}
 }`;
 

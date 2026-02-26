@@ -10,6 +10,8 @@ import {ErrorService} from '@server/modules/error/error.service';
 /* Local Dependencies */
 import {OrchardMintPulse, OrchardMintPulseActivity, OrchardMintPulseQuoteRate} from './mintpulse.model';
 
+type TimePair = {created: number; completed: number | null};
+
 @Injectable()
 export class MintPulseService {
 	private readonly logger = new Logger(MintPulseService.name);
@@ -39,6 +41,11 @@ export class MintPulseService {
 					issued_mint_quotes,
 					total_melt_quotes,
 					paid_melt_quotes,
+					last_mint_time,
+					last_melt_time,
+					last_swap_time,
+					completed_mint_quotes,
+					completed_melt_quotes,
 				] = await Promise.all([
 					this.cashuMintDatabaseService.getMintCountMintQuotes(client, {
 						date_start: twenty_four_hours_ago,
@@ -72,14 +79,50 @@ export class MintPulseService {
 					this.cashuMintDatabaseService.getMintCountMeltQuotes(client, {
 						states: [MeltQuoteState.PAID],
 					}),
+					this.cashuMintDatabaseService.getMintLastMintQuoteTime(client).catch((e) => {
+						this.logger.warn(`Failed to get last mint quote time: ${e?.message ?? e}`);
+						return null;
+					}),
+					this.cashuMintDatabaseService.getMintLastMeltQuoteTime(client).catch((e) => {
+						this.logger.warn(`Failed to get last melt quote time: ${e?.message ?? e}`);
+						return null;
+					}),
+					this.cashuMintDatabaseService.getMintLastSwapTime(client).catch((e) => {
+						this.logger.warn(`Failed to get last swap time: ${e?.message ?? e}`);
+						return null;
+					}),
+					this.cashuMintDatabaseService.getMintMintQuotes(client, {
+						states: [MintQuoteState.ISSUED],
+					}).catch((e) => {
+						this.logger.warn(`Failed to get completed mint quotes: ${e?.message ?? e}`);
+						return [];
+					}),
+					this.cashuMintDatabaseService.getMintMeltQuotes(client, {
+						states: [MeltQuoteState.PAID],
+					}).catch((e) => {
+						this.logger.warn(`Failed to get completed melt quotes: ${e?.message ?? e}`);
+						return [];
+					}),
 				]);
 
 				const current_24h = new OrchardMintPulseActivity(current_mint_count, current_melt_count, current_swap_count);
 				const previous_24h = new OrchardMintPulseActivity(previous_mint_count, previous_melt_count, previous_swap_count);
 				const mint_quote_rate = new OrchardMintPulseQuoteRate(total_mint_quotes, issued_mint_quotes);
 				const melt_quote_rate = new OrchardMintPulseQuoteRate(total_melt_quotes, paid_melt_quotes);
+				const avg_mint_time = this.computeAvgTime(completed_mint_quotes.map(q => ({created: q.created_time, completed: q.paid_time})));
+				const avg_melt_time = this.computeAvgTime(completed_melt_quotes.map(q => ({created: q.created_time, completed: q.paid_time})));
 
-				return new OrchardMintPulse(current_24h, previous_24h, mint_quote_rate, melt_quote_rate, null, null, null);
+				return new OrchardMintPulse(
+					current_24h,
+					previous_24h,
+					mint_quote_rate,
+					melt_quote_rate,
+					last_mint_time,
+					last_melt_time,
+					last_swap_time,
+					avg_mint_time,
+					avg_melt_time,
+				);
 			} catch (error) {
 				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,
@@ -87,5 +130,13 @@ export class MintPulseService {
 				throw new OrchardApiError(orchard_error);
 			}
 		});
+	}
+
+	/** Computes average time difference in milliseconds from creation to completion, rounded to nearest integer. */
+	private computeAvgTime(pairs: TimePair[]): number | null {
+		const valid_pairs = pairs.filter(p => p.completed !== null && p.completed > p.created);
+		if (valid_pairs.length === 0) return null;
+		const total = valid_pairs.reduce((sum, p) => sum + (p.completed - p.created), 0);
+		return Math.round((total / valid_pairs.length) * 1000);
 	}
 }

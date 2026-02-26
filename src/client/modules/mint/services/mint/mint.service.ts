@@ -56,6 +56,7 @@ import {
 	MintProofGroupStatsResponse,
 	MintFeesResponse,
 	MintPulseResponse,
+	MintDatabaseSizeResponse,
 } from '@client/modules/mint/types/mint.types';
 import {ApiService} from '@client/modules/api/services/api/api.service';
 import {CacheService} from '@client/modules/cache/services/cache/cache.service';
@@ -114,6 +115,7 @@ import {
 	MINT_KEYSETS_ROTATION_MUTATION,
 	MINT_DATABASE_BACKUP_MUTATION,
 	MINT_DATABASE_RESTORE_MUTATION,
+	MINT_DATABASE_SIZE_QUERY,
 	MINT_PROOF_GROUP_STATS_QUERY,
 	MINT_FEES_QUERY,
 	MINT_PULSE_QUERY,
@@ -1160,6 +1162,22 @@ export class MintService {
 			catchError((error) => {
 				console.error('Error restoring mint database backup:', error);
 				return throwError(() => error);
+			}),
+		);
+	}
+
+	/** Fetches the mint database size in bytes. */
+	public getMintDatabaseSize(): Observable<number | null> {
+		const query = getApiQuery(MINT_DATABASE_SIZE_QUERY);
+
+		return this.http.post<OrchardRes<MintDatabaseSizeResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.mint_database_size.size ?? null;
+			}),
+			catchError((error) => {
+				console.error('Error loading mint database size:', error);
+				return of(null);
 			}),
 		);
 	}

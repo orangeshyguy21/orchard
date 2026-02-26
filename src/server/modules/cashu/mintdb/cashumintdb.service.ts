@@ -223,6 +223,21 @@ export class CashuMintDatabaseService implements OnModuleInit {
 		if (this.type === 'cdk') return this.cdkService.getMintKeysetProofCounts(client, args);
 	}
 
+	public async getMintLastMintQuoteTime(client: CashuMintDatabase): Promise<number | null> {
+		if (this.type === 'nutshell') return this.nutshellService.getMintLastMintQuoteTime(client);
+		if (this.type === 'cdk') return this.cdkService.getMintLastMintQuoteTime(client);
+	}
+
+	public async getMintLastMeltQuoteTime(client: CashuMintDatabase): Promise<number | null> {
+		if (this.type === 'nutshell') return this.nutshellService.getMintLastMeltQuoteTime(client);
+		if (this.type === 'cdk') return this.cdkService.getMintLastMeltQuoteTime(client);
+	}
+
+	public async getMintLastSwapTime(client: CashuMintDatabase): Promise<number | null> {
+		if (this.type === 'nutshell') return this.nutshellService.getMintLastSwapTime(client);
+		if (this.type === 'cdk') return this.cdkService.getMintLastSwapTime(client);
+	}
+
 	/* Analytics */
 
 	public async getMintAnalyticsBalances(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {
@@ -253,6 +268,19 @@ export class CashuMintDatabaseService implements OnModuleInit {
 	public async getMintAnalyticsKeysets(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintKeysetsAnalytics[]> {
 		if (this.type === 'nutshell') return this.nutshellService.getMintAnalyticsKeysets(client, args);
 		if (this.type === 'cdk') return this.cdkService.getMintAnalyticsKeysets(client, args);
+	}
+
+	/** Returns the database size in bytes. */
+	public async getMintDatabaseSize(client: CashuMintDatabase): Promise<number | null> {
+		if (client.type === MintDatabaseType.sqlite) {
+			const stats = await fs.stat(this.database);
+			return stats.size;
+		}
+		if (client.type === MintDatabaseType.postgres) {
+			const result = await client.database.query('SELECT pg_database_size(current_database()) AS size;');
+			return result.rows[0]?.size ?? null;
+		}
+		return null;
 	}
 
 	/* Implementation Agnostic */

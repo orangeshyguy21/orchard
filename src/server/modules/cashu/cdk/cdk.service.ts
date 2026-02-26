@@ -605,6 +605,39 @@ export class CdkService {
 		}
 	}
 
+	/** Returns the most recent mint quote timestamp (epoch seconds), or null if none exist. */
+	public async getMintLastMintQuoteTime(client: CashuMintDatabase): Promise<number | null> {
+		const sql = `SELECT MAX(created_time) AS last_time FROM mint_quote;`;
+		try {
+			const row = await queryRow<{last_time: number | null}>(client, sql);
+			return row?.last_time ?? null;
+		} catch (err) {
+			throw err;
+		}
+	}
+
+	/** Returns the most recent melt quote timestamp (epoch seconds), or null if none exist. */
+	public async getMintLastMeltQuoteTime(client: CashuMintDatabase): Promise<number | null> {
+		const sql = `SELECT MAX(created_time) AS last_time FROM melt_quote;`;
+		try {
+			const row = await queryRow<{last_time: number | null}>(client, sql);
+			return row?.last_time ?? null;
+		} catch (err) {
+			throw err;
+		}
+	}
+
+	/** Returns the most recent swap timestamp (epoch seconds), or null if none exist. */
+	public async getMintLastSwapTime(client: CashuMintDatabase): Promise<number | null> {
+		const sql = `SELECT MAX(completed_at) AS last_time FROM completed_operations WHERE operation_kind = 'swap';`;
+		try {
+			const row = await queryRow<{last_time: number | null}>(client, sql);
+			return row?.last_time ?? null;
+		} catch (err) {
+			throw err;
+		}
+	}
+
 	/* Analytics */
 
 	public async getMintAnalyticsBalances(client: CashuMintDatabase, args?: CashuMintAnalyticsArgs): Promise<CashuMintAnalytics[]> {

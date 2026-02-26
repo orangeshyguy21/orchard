@@ -34,6 +34,7 @@ import {
 	OrchardMintFee,
 	OrchardMintKeysetProofCount,
 	OrchardMintPulse,
+	OrchardMintDatabaseSize,
 } from '@shared/generated.types';
 
 export type MintInfoResponse = {
@@ -266,4 +267,8 @@ export type MintNut05QuoteUpdateResponse = {
 
 export type MintPulseResponse = {
 	mint_pulse: OrchardMintPulse;
+};
+
+export type MintDatabaseSizeResponse = {
+	mint_database_size: OrchardMintDatabaseSize;
 };

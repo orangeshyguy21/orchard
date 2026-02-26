@@ -37,18 +37,55 @@
 						</div>
 					</div>
 
-					<div class="flex flex-row flex-gap-1 flex-wrap">
-						<div class="orc-high-card p-0-5 p-h-1 flex-1">
-							<div class="font-size-l font-weight-semi-bold text-nowrap">
-								{{ formatTtl(quote_ttls()?.mint_ttl ?? null) }}
-							</div>
-							<div class="font-size-xs orc-outline-color">Mint quote TTL</div>
+					<div class="flex flex-row flex-gap-1">
+						<div class="flex-1 flex flex-column flex-gap-0-5">
+							@if (minting_limits().length > 0) {
+								<div class="font-size-xs orc-outline-color">Minting Limits</div>
+								@for (limit of minting_limits(); track limit.method + limit.unit) {
+									<div class="orc-high-card p-0-5 p-h-1">
+										<div class="flex flex-items-center flex-gap-0-5 p-b-0-25">
+											<orc-graphic-asset [unit]="limit.unit" [height]="'1rem'"></orc-graphic-asset>
+											<span class="font-size-xs font-weight-semi-bold">{{ limit.method_label }}</span>
+										</div>
+										<div class="limit-range">
+											<div class="limit-range-end limit-range-min">
+												<div class="font-size-xs orc-outline-color" [innerHTML]="limit.min_amount !== null ? (limit.min_amount | localAmount: limit.unit : 'mint') : '--'"></div>
+											</div>
+											<div class="limit-range-bar">
+												<div class="limit-range-track"></div>
+											</div>
+											<div class="limit-range-end limit-range-max">
+												<div class="font-size-m font-weight-semi-bold" [innerHTML]="limit.max_amount !== null ? (limit.max_amount | localAmount: limit.unit : 'mint') : '--'"></div>
+											</div>
+										</div>
+									</div>
+								}
+							}
 						</div>
-						<div class="orc-high-card p-0-5 p-h-1 flex-1">
-							<div class="font-size-l font-weight-semi-bold text-nowrap">
-								{{ formatTtl(quote_ttls()?.melt_ttl ?? null) }}
-							</div>
-							<div class="font-size-xs orc-outline-color">Melt quote TTL</div>
+
+						<div class="flex-1 flex flex-column flex-gap-0-5">
+							@if (melting_limits().length > 0) {
+								<div class="font-size-xs orc-outline-color">Melting Limits</div>
+								@for (limit of melting_limits(); track limit.method + limit.unit) {
+									<div class="orc-high-card p-0-5 p-h-1">
+										<div class="flex flex-items-center flex-gap-0-5 p-b-0-25">
+											<orc-graphic-asset [unit]="limit.unit" [height]="'1rem'"></orc-graphic-asset>
+											<span class="font-size-xs font-weight-semi-bold">{{ limit.method_label }}</span>
+										</div>
+										<div class="limit-range">
+											<div class="limit-range-end limit-range-min">
+												<div class="font-size-xs orc-outline-color" [innerHTML]="limit.min_amount !== null ? (limit.min_amount | localAmount: limit.unit : 'mint') : '--'"></div>
+											</div>
+											<div class="limit-range-bar">
+												<div class="limit-range-track"></div>
+											</div>
+											<div class="limit-range-end limit-range-max">
+												<div class="font-size-m font-weight-semi-bold" [innerHTML]="limit.max_amount !== null ? (limit.max_amount | localAmount: limit.unit : 'mint') : '--'"></div>
+											</div>
+										</div>
+									</div>
+								}
+							}
 						</div>
 					</div>
 				</div>

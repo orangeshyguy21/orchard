@@ -18,7 +18,6 @@ describe('MintGeneralConfigSummaryComponent', () => {
 		component = fixture.componentInstance;
 		fixture.componentRef.setInput('loading', false);
 		fixture.componentRef.setInput('info', null);
-		fixture.componentRef.setInput('quote_ttls', null);
 		fixture.detectChanges();
 	});
 

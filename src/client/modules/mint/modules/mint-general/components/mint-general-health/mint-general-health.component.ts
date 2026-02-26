@@ -38,31 +38,35 @@ export class MintGeneralHealthComponent {
 		return Math.round((p.melt_quote_rate.completed / p.melt_quote_rate.total) * 100);
 	});
 
-	/** Most recent activity timestamp across all operation types. */
-	public last_activity_time = computed<number | null>(() => {
+	/** Most recent activity timestamp across mint, melt, and swap. */
+	public last_activity_time = computed(() => {
 		const p = this.pulse();
 		if (!p) return null;
 		const times = [p.last_mint_time, p.last_melt_time, p.last_swap_time].filter((t): t is number => t !== null);
 		return times.length > 0 ? Math.max(...times) : null;
 	});
 
+	/** Average mint quote completion time in seconds. */
+	public avg_mint_time = computed(() => this.pulse()?.avg_mint_time ?? null);
+
+	/** Average melt quote completion time in seconds. */
+	public avg_melt_time = computed(() => this.pulse()?.avg_melt_time ?? null);
+
+	/** Formats milliseconds to a human-readable duration string. */
+	public formatDuration(ms: number | null): string {
+		if (ms === null) return '--';
+		if (ms < 1000) return `${ms}ms`;
+		const seconds = Math.floor(ms / 1000);
+		if (seconds < 60) return `${seconds}s`;
+		if (seconds < 3600) return `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
+		return `${Math.floor(seconds / 3600)}h ${Math.floor((seconds % 3600) / 60)}m`;
+	}
+
 	/** Maximum value in the sparkline data for scaling bars. */
 	public sparkline_max = computed(() => {
 		const data = this.sparkline_data();
 		return data.length > 0 ? Math.max(...data) : 0;
 	});
-
-	/** Formats a unix timestamp into a relative time string. */
-	public formatRelativeTime(timestamp: number | null): string {
-		if (!timestamp) return 'No activity';
-		const now = Math.floor(Date.now() / 1000);
-		const diff = now - timestamp;
-		if (diff < 0) return 'Just now';
-		if (diff < 60) return `${diff}s ago`;
-		if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-		if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-		return `${Math.floor(diff / 86400)}d ago`;
-	}
 
 	/** Calculates bar height percentage for sparkline visualization. */
 	public getBarHeight(value: number): number {

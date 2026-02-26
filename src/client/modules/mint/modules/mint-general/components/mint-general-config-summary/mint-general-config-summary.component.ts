@@ -3,12 +3,20 @@ import {ChangeDetectionStrategy, Component, computed, input} from '@angular/core
 /* Application Dependencies */
 import {GraphicStatusState} from '@client/modules/graphic/types/graphic-status.types';
 import {MintInfo} from '@client/modules/mint/classes/mint-info.class';
-import {MintQuoteTtls} from '@client/modules/mint/classes/mint-quote-ttls.class';
+import {OrchardNut4Method, OrchardNut5Method} from '@shared/generated.types';
 
 type NutGridItem = {
 	num: number;
 	label: string;
 	status: GraphicStatusState;
+};
+
+type MethodLimit = {
+	method: string;
+	method_label: string;
+	unit: string;
+	min_amount: number | null;
+	max_amount: number | null;
 };
 
 @Component({
@@ -20,7 +28,6 @@ type NutGridItem = {
 })
 export class MintGeneralConfigSummaryComponent {
 	public info = input.required<MintInfo | null>();
-	public quote_ttls = input.required<MintQuoteTtls | null>();
 	public loading = input.required<boolean>();
 
 	/** Grid of NUT specifications with their support status. */
@@ -50,12 +57,35 @@ export class MintGeneralConfigSummaryComponent {
 	/** Whether melting is disabled. */
 	public melting_disabled = computed(() => this.info()?.nuts?.nut5?.disabled ?? false);
 
-	/** Formats TTL seconds to a human-readable string. */
-	public formatTtl(seconds: number | null): string {
-		if (!seconds) return '--';
-		if (seconds < 60) return `${seconds}s`;
-		if (seconds < 3600) return `${Math.floor(seconds / 60)}m`;
-		return `${Math.floor(seconds / 3600)}h`;
+	/** Minting method limits from NUT4. */
+	public minting_limits = computed<MethodLimit[]>(() => {
+		return this.mapMethodLimits(this.info()?.nuts?.nut4?.methods);
+	});
+
+	/** Melting method limits from NUT5. */
+	public melting_limits = computed<MethodLimit[]>(() => {
+		return this.mapMethodLimits(this.info()?.nuts?.nut5?.methods);
+	});
+
+	/** Maps NUT4/NUT5 methods to MethodLimit rows. */
+	private mapMethodLimits(methods: (OrchardNut4Method | OrchardNut5Method)[] | undefined): MethodLimit[] {
+		if (!methods) return [];
+		return methods.map(m => ({
+			method: m.method,
+			method_label: this.getMethodLabel(m.method),
+			unit: m.unit,
+			min_amount: m.min_amount ?? null,
+			max_amount: m.max_amount ?? null,
+		}));
+	}
+
+	/** Returns a human-readable label for a payment method. */
+	private getMethodLabel(method: string): string {
+		switch (method) {
+			case 'bolt11': return 'Bolt 11';
+			case 'bolt12': return 'Bolt 12';
+			default: return method;
+		}
 	}
 
 	/** Determines NUT4 (minting) status. */
