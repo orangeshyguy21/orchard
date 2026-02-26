@@ -309,8 +309,14 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 	/** Handles preset selection — resolves the preset and reloads */
 	public onPresetChange(preset: DateRangePreset): void {
 		const {date_start, date_end} = resolveDateRangePreset(preset, Math.floor(this.min_date().toSeconds()));
-		this.control.get('daterange')?.get('date_start')?.setValue(DateTime.fromSeconds(date_start, {zone: 'utc'}));
-		this.control.get('daterange')?.get('date_end')?.setValue(DateTime.fromSeconds(date_end, {zone: 'utc'}));
+		this.control
+			.get('daterange')
+			?.get('date_start')
+			?.setValue(DateTime.fromSeconds(date_start, {zone: 'utc'}));
+		this.control
+			.get('daterange')
+			?.get('date_end')
+			?.setValue(DateTime.fromSeconds(date_end, {zone: 'utc'}));
 		this.page_settings.date_preset = preset;
 		this.updateRange(date_start, date_end);
 	}

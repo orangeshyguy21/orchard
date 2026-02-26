@@ -2,56 +2,56 @@
 @use 'nucleus/nucleus';
 
 :host {
-    @extend %flex;
-    @extend %flex-items-center;
-    display: inline-flex;
+	@extend %flex;
+	@extend %flex-items-center;
+	display: inline-flex;
 }
 
 .picker-toggle {
-    @extend %orc-on-surface-variant-color;
-    @extend %trans-color-fast;
+	@extend %orc-on-surface-variant-color;
+	@extend %trans-color-fast;
 
-    &.is-open,
-    &:hover {
-        @extend %orc-primary-color;
-    }
+	&.is-open,
+	&:hover {
+		@extend %orc-primary-color;
+	}
 }
 
 .picker-panel {
-    @extend %flex;
-    @extend %orc-surface-container-bg;
-    @extend %border;
-    @extend %border-solid;
-    @extend %orc-outline-variant-border;
-    @extend %orc-corner-large;
-    @extend %orc-level3;
-    @extend %overflow-hidden;
-    width: 440px;
-    height: 400px;
+	@extend %flex;
+	@extend %orc-surface-container-bg;
+	@extend %border;
+	@extend %border-solid;
+	@extend %orc-outline-variant-border;
+	@extend %orc-corner-large;
+	@extend %orc-level3;
+	@extend %overflow-hidden;
+	width: 440px;
+	height: 400px;
 
-    @media (max-width: 599px) {
-        width: 320px;
-        height: 360px;
-    }
+	@media (max-width: 599px) {
+		width: 320px;
+		height: 360px;
+	}
 }
 
 .preset-column {
-    @extend %flex-shrink-0;
-    @extend %border-right;
-    @extend %border-right-solid;
-    @extend %orc-outline-variant-border;
-    @extend %overflow-y-auto;
-    @extend %p-0-5;
-    width: 140px;
+	@extend %flex-shrink-0;
+	@extend %border-right;
+	@extend %border-right-solid;
+	@extend %orc-outline-variant-border;
+	@extend %overflow-y-auto;
+	@extend %p-0-5;
+	width: 140px;
 
-    @media (max-width: 599px) {
-        width: 110px;
-        padding: 0.25rem; // %p-0-25
-        font-size: 0.75rem; // %font-size-xs
-    }
+	@media (max-width: 599px) {
+		width: 110px;
+		padding: 0.25rem; // %p-0-25
+		font-size: 0.75rem; // %font-size-xs
+	}
 }
 
 .calendar-column {
-    @extend %flex-1;
-    @extend %w-min-0;
+	@extend %flex-1;
+	@extend %w-min-0;
 }

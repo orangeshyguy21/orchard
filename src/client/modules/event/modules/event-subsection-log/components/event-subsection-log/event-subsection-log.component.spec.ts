@@ -1,5 +1,6 @@
 /* Core Dependencies */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {provideRouter} from '@angular/router';
 /* Native Dependencies */
 import {OrcEventSubsectionLogModule} from '@client/modules/event/modules/event-subsection-log/event-subsection-log.module';
 /* Local Dependencies */
@@ -12,6 +13,7 @@ describe('EventSubsectionLogComponent', () => {
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
 			imports: [OrcEventSubsectionLogModule],
+			providers: [provideRouter([])],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(EventSubsectionLogComponent);

@@ -4,8 +4,19 @@
 			<div class="weekday-cell">{{ day }}</div>
 		}
 	</div>
-	<cdk-virtual-scroll-viewport #viewport [itemSize]="month_height()" class="month-viewport" (mouseleave)="onViewportLeave()" (wheel)="onWheel($event)">
-		<div *cdkVirtualFor="let month of months; trackBy: trackByMonth" class="month-item" [style.height.px]="month_height()" (mouseover)="onCellHover($event, month)">
+	<cdk-virtual-scroll-viewport
+		#viewport
+		[itemSize]="month_height()"
+		class="month-viewport"
+		(mouseleave)="onViewportLeave()"
+		(wheel)="onWheel($event)"
+	>
+		<div
+			*cdkVirtualFor="let month of months; trackBy: trackByMonth"
+			class="month-item"
+			[style.height.px]="month_height()"
+			(mouseover)="onCellHover($event, month)"
+		>
 			<div class="month-label">{{ month.toFormat('MMMM yyyy') }}</div>
 			<mat-month-view
 				[activeDate]="month"

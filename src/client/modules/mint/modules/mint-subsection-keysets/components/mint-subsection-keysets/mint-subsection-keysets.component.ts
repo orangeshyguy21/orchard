@@ -396,9 +396,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	private getPageSettings(): NonNullableMintKeysetsSettings {
 		const settings = this.settingDeviceService.getMintKeysetsSettings();
 		const date_preset = settings.date_preset ?? null;
-		const resolved_dates = date_preset
-			? resolveDateRangePreset(date_preset, this.mint_genesis_time)
-			: null;
+		const resolved_dates = date_preset ? resolveDateRangePreset(date_preset, this.mint_genesis_time) : null;
 		return {
 			units: settings.units ?? [],
 			date_start: resolved_dates?.date_start ?? settings.date_start ?? this.mint_genesis_time,

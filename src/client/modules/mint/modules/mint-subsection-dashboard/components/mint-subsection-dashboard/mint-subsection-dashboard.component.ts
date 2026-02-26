@@ -487,9 +487,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	private getPageSettings(): NonNullableMintDashboardSettings {
 		const settings = this.settingDeviceService.getMintDashboardSettings();
 		const date_preset = settings.date_preset ?? null;
-		const resolved_dates = date_preset
-			? resolveDateRangePreset(date_preset, this.mint_genesis_time)
-			: null;
+		const resolved_dates = date_preset ? resolveDateRangePreset(date_preset, this.mint_genesis_time) : null;
 		return {
 			type: {
 				balance_sheet: settings.type?.balance_sheet ?? ChartType.Totals,

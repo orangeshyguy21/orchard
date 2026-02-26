@@ -783,7 +783,12 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 			// Asset balance
 			if (channel.asset?.group_key) {
 				accumulate(closes_by_hour, hour, channel.asset.group_key, BigInt(channel.asset.local_balance));
-				accumulate(closes_remote_by_hour, hour, channel.asset.group_key, BigInt(channel.asset.capacity) - BigInt(channel.asset.local_balance));
+				accumulate(
+					closes_remote_by_hour,
+					hour,
+					channel.asset.group_key,
+					BigInt(channel.asset.capacity) - BigInt(channel.asset.local_balance),
+				);
 			}
 		}
 

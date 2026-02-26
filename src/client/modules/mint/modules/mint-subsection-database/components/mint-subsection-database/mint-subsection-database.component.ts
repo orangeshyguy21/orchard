@@ -223,9 +223,7 @@ export class MintSubsectionDatabaseComponent implements ComponentCanDeactivate, 
 		const settings = this.settingDeviceService.getMintDatabaseSettings();
 		const type = settings.type ?? MintDataType.MintMints;
 		const date_preset = settings.date_preset ?? null;
-		const resolved_dates = date_preset
-			? resolveDateRangePreset(date_preset, this.mint_genesis_time)
-			: null;
+		const resolved_dates = date_preset ? resolveDateRangePreset(date_preset, this.mint_genesis_time) : null;
 		return {
 			type: type,
 			date_start: resolved_dates?.date_start ?? settings.date_start ?? this.mint_genesis_time,
