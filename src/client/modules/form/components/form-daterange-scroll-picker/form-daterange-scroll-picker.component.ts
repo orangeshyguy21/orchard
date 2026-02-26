@@ -14,6 +14,7 @@ import {
 } from '@angular/core';
 /* Vendor Dependencies */
 import {Overlay, OverlayRef} from '@angular/cdk/overlay';
+import {Subscription} from 'rxjs';
 import {TemplatePortal} from '@angular/cdk/portal';
 import {DateRange, MatCalendarCellClassFunction} from '@angular/material/datepicker';
 import {DateTime} from 'luxon';
@@ -55,6 +56,7 @@ export class FormDaterangeScrollPickerComponent implements OnDestroy {
 	});
 
 	private overlay_ref: OverlayRef | null = null;
+	private overlay_subs: Subscription[] = [];
 	private overlay: Overlay;
 	private view_container_ref: ViewContainerRef;
 	private element_ref: ElementRef;
@@ -103,12 +105,14 @@ export class FormDaterangeScrollPickerComponent implements OnDestroy {
 		this.overlay_ref.attach(portal);
 		this.is_open.set(true);
 
-		this.overlay_ref.backdropClick().subscribe(() => this.closePanel());
-		this.overlay_ref.keydownEvents().subscribe((event) => {
-			if (event.key === 'Escape') {
-				this.closePanel();
-			}
-		});
+		this.overlay_subs.push(
+			this.overlay_ref.backdropClick().subscribe(() => this.closePanel()),
+			this.overlay_ref.keydownEvents().subscribe((event) => {
+				if (event.key === 'Escape') {
+					this.closePanel();
+				}
+			}),
+		);
 
 		setTimeout(() => {
 			this.scroll_calendar()?.initFromSelection();
@@ -138,8 +142,10 @@ export class FormDaterangeScrollPickerComponent implements OnDestroy {
 		this.closed.emit();
 	}
 
-	/** Destroys the overlay ref */
+	/** Destroys the overlay ref and cleans up subscriptions */
 	private destroyOverlay(): void {
+		this.overlay_subs.forEach((s) => s.unsubscribe());
+		this.overlay_subs = [];
 		if (this.overlay_ref) {
 			this.overlay_ref.dispose();
 			this.overlay_ref = null;

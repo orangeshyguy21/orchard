@@ -283,7 +283,7 @@ export class MintSubsectionDatabaseControlComponent {
 		this.filter_menu_trigger()?.closeMenu();
 	}
 
-	public genesisClass: MatCalendarCellClassFunction<DateTime> = (cellDate, view) => {
+	public genesis_class: MatCalendarCellClassFunction<DateTime> = (cellDate, view) => {
 		if (view !== 'month') return '';
 		const genesis_time = this.mint_genesis_time();
 		const unix_seconds = cellDate.toSeconds();
