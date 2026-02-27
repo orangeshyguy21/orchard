@@ -11,21 +11,21 @@
 		</div>
 	</div>
 
-	<mat-card appearance="outlined" class="relative overflow-hidden w-min-24">
+	<mat-card appearance="outlined" class="relative overflow-hidden mint-activity-card">
 		<mat-card-content class="orc-surface-container-low-bg">
 			@if (loading()) {
-				<div class="flex flex-justify-center flex-items-center activity-loading">
-					<mat-icon class="orc-outline-color">hourglass_empty</mat-icon>
+				<div class="flex flex-justify-center flex-items-center activity-loading" animate.enter="orc-animation-fadein" animate.leave="orc-animation-fadeout">
+					<mat-progress-spinner mode="indeterminate" diameter="30"></mat-progress-spinner>
 				</div>
 			} @else if (error()) {
-				<div class="flex flex-justify-center flex-items-center activity-loading">
+				<div class="flex flex-justify-center flex-items-center activity-loading" animate.enter="orc-animation-fadein" animate.leave="orc-animation-fadeout">
 					<div class="flex flex-column flex-items-center flex-gap-0-5">
 						<mat-icon class="orc-outline-color">error_outline</mat-icon>
 						<span class="font-size-s orc-outline-color">Failed to load activity</span>
 					</div>
 				</div>
 			} @else if (summary()) {
-				<div class="flex flex-column flex-gap-1">
+				<div class="flex flex-column flex-gap-1" animate.enter="orc-animation-fadein-slow" animate.leave="orc-animation-fadeout">
 					<!-- Top summary: Operations + Volume -->
 					<div class="flex flex-row flex-gap-1">
 						<div class="flex-1 orc-high-card p-0-5 p-h-1">

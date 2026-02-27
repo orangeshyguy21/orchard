@@ -63,6 +63,10 @@
 	animation: fadein 300ms ease-in both;
 }
 
+.orc-animation-fadein-slow {
+	animation: fadein 800ms ease-in both;
+}
+
 .orc-animation-fadeout-fast {
 	animation: fadeout 150ms ease-out both;
 }

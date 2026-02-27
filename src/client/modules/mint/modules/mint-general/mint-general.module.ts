@@ -9,6 +9,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatRippleModule} from '@angular/material/core';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatMenuModule} from '@angular/material/menu';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {BaseChartDirective as ChartJsBaseChartDirective} from 'ng2-charts';
 /* Application Dependencies */
 import {OrcNetworkModule} from '@client/modules/network/network.module';
@@ -54,6 +55,7 @@ import {MintGeneralActivityComponent} from './components/mint-general-activity/m
 		MatRippleModule,
 		MatChipsModule,
 		MatMenuModule,
+		MatProgressSpinnerModule,
 		ChartJsBaseChartDirective,
 		OrcNetworkModule,
 		OrcGraphicModule,
