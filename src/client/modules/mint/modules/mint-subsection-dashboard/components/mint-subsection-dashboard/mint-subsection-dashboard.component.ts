@@ -46,6 +46,7 @@ import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintInfo} from '@client/modules/mint/classes/mint-info.class';
 import {MintFee} from '@client/modules/mint/classes/mint-fee.class';
+import {MintKeysetCount} from '@client/modules/mint/classes/mint-keyset-count.class';
 import {MintAnalytic} from '@client/modules/mint/classes/mint-analytic.class';
 import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
 /* Shared Dependencies */
@@ -76,6 +77,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public mint_info: MintInfo | null = null;
 	public mint_balances: MintBalance[] = [];
 	public mint_keysets: MintKeyset[] = [];
+	public mint_keyset_counts: MintKeysetCount[] = [];
 	public mint_fees: MintFee[] = [];
 	public mint_analytics_balances: MintAnalytic[] = [];
 	public mint_analytics_balances_pre: MintAnalytic[] = [];
@@ -157,9 +159,9 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.lightning_enabled = this.configService.config.lightning.enabled;
 		this.mint_type = this.configService.config.mint.type;
 		this.mint_info = this.route.snapshot.data['mint_info'];
-        console.log('mint_info', this.mint_info);
 		this.mint_balances = this.route.snapshot.data['mint_balances'];
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
+		this.mint_keyset_counts = this.route.snapshot.data['mint_keyset_counts'];
 		this.mint_genesis_time = this.getMintGenesisTime();
 		this.page_settings = signal(this.getPageSettings());
 	}

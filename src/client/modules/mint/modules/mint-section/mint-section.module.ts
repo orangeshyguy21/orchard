@@ -117,6 +117,7 @@ const mintQuoteTtlsResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, st
 							mint_info: mintInfoResolver,
 							mint_balances: mintBalancesResolver,
 							mint_keysets: mintKeysetsResolver,
+							mint_keyset_counts: mintKeysetCountsResolver,
 						},
 						canActivate: [enabledGuard],
 						data: {

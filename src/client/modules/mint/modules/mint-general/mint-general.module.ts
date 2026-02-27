@@ -24,6 +24,7 @@ import {MintGeneralBalanceStacksComponent} from './components/mint-general-balan
 import {MintGeneralKeysetVersionComponent} from './components/mint-general-keyset-version/mint-general-keyset-version.component';
 import {MintGeneralConfigComponent} from './components/mint-general-config/mint-general-config.component';
 import {MintGeneralPaymentMethodComponent} from './components/mint-general-payment-method/mint-general-payment-method.component';
+import { MintGeneralKeysetsComponent } from './components/mint-general-keysets/mint-general-keysets.component';
 
 @NgModule({
 	declarations: [
@@ -36,6 +37,7 @@ import {MintGeneralPaymentMethodComponent} from './components/mint-general-payme
 		MintGeneralKeysetVersionComponent,
 		MintGeneralConfigComponent,
 		MintGeneralPaymentMethodComponent,
+        MintGeneralKeysetsComponent,
 	],
 	imports: [
 		CommonModule,
@@ -60,6 +62,7 @@ import {MintGeneralPaymentMethodComponent} from './components/mint-general-payme
 		MintGeneralKeysetVersionComponent,
 		MintGeneralConfigComponent,
 		MintGeneralPaymentMethodComponent,
+        MintGeneralKeysetsComponent,
 	],
 })
 export class OrcMintGeneralModule {}

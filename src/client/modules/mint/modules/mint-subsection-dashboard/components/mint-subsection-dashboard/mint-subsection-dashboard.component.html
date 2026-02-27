@@ -15,6 +15,14 @@
                 <orc-mint-general-config [info]="mint_info"></orc-mint-general-config>
             </div>
         </div>
+        <div class="flex flex-row flex-gap-2 flex-wrap">
+            <div class="flex-1">
+                <orc-mint-general-keysets [keysets]="mint_keysets" [keysets_counts]="mint_keyset_counts"></orc-mint-general-keysets>
+            </div>
+            <div class="flex-1">
+                todo
+            </div>
+        </div>
         <div class="flex p-b-1">
             <orc-mint-general-balance-sheet
                 [balances]="mint_balances"
