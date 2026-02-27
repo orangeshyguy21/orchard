@@ -1,0 +1,48 @@
+@use 'molecule/molecule';
+@use 'nucleus/nucleus';
+
+.mint-activity-period-selector {
+	@extend %z-index-0;
+	@extend %h-0;
+	padding-bottom: 1.5rem;
+}
+
+
+.sparkline-card {
+	@extend %overflow-hidden;
+    @extend %flex;
+    @extend %flex-column;
+}
+
+.sparkline-chart {
+	flex-grow: 1;
+	min-height: 3.5rem;
+	position: relative;
+
+	canvas {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 100% !important;
+		height: 100% !important;
+	}
+}
+
+.activity-loading {
+	min-height: 12rem;
+}
+
+.delta {
+	@extend %flex;
+	@extend %flex-items-center;
+    @extend %font-weight-semi-bold;
+	gap: 0.15rem;
+}
+
+.delta-positive {
+	color: var(--orc-status-active);
+}
+
+.delta-negative {
+	color: var(--orc-status-inactive);
+}

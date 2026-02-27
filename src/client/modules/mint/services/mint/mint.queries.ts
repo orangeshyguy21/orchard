@@ -466,6 +466,33 @@ mutation MintNut05QuoteUpdate($quote_id: String!, $state: String!) {
 	}
 }`;
 
+export const MINT_ACTIVITY_SUMMARY_QUERY = `
+query MintActivitySummary($period: MintActivityPeriod!, $timezone: Timezone) {
+	mint_activity_summary(period: $period, timezone: $timezone) {
+		total_operations
+		total_operations_delta
+		total_volume
+		total_volume_delta
+		mint_count
+		mint_count_delta
+		mint_sparkline { created_time amount }
+		melt_count
+		melt_count_delta
+		melt_sparkline { created_time amount }
+		swap_count
+		swap_count_delta
+		swap_sparkline { created_time amount }
+		mint_completed_pct
+		mint_completed_pct_delta
+		mint_avg_time
+		mint_avg_time_delta
+		melt_completed_pct
+		melt_completed_pct_delta
+		melt_avg_time
+		melt_avg_time_delta
+	}
+}`;
+
 export const MINT_SWAPS_DATA_QUERY = `
 query MintSwaps($units: [MintUnit!], $id_keysets: [String!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $page: Int, $page_size: Int) {
 	mint_swaps(units: $units, id_keysets: $id_keysets, date_start: $date_start, date_end: $date_end, page: $page, page_size: $page_size) {

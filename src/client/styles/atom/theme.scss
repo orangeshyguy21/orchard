@@ -141,6 +141,18 @@
 	));
 }
 
+.orc-status-active-progress-spinner{
+	@include mat.progress-spinner-overrides((
+		active-indicator-color: var(--orc-status-active),
+	));
+}
+
+.orc-status-inactive-progress-spinner{
+	@include mat.progress-spinner-overrides((
+		active-indicator-color: var(--orc-status-inactive),
+	));
+}
+
 
 /* Specific Menu Overrides */
 .orc-card-menu {

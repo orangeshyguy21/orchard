@@ -49,9 +49,10 @@ import {MintFee} from '@client/modules/mint/classes/mint-fee.class';
 import {MintKeysetCount} from '@client/modules/mint/classes/mint-keyset-count.class';
 import {MintDatabaseInfo} from '@client/modules/mint/classes/mint-database-info.class';
 import {MintAnalytic} from '@client/modules/mint/classes/mint-analytic.class';
+import {MintActivitySummary} from '@client/modules/mint/classes/mint-activity-summary.class';
 import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
 /* Shared Dependencies */
-import {AiFunctionName, MintAnalyticsInterval, MintUnit, LightningAnalyticsInterval} from '@shared/generated.types';
+import {AiFunctionName, MintAnalyticsInterval, MintActivityPeriod, MintUnit, LightningAnalyticsInterval} from '@shared/generated.types';
 
 enum NavTertiary {
 	BalanceSheet = 'nav1',
@@ -132,6 +133,10 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public bitcoin_oracle_price = signal<BitcoinOraclePrice | null>(null);
 	public bitcoin_oracle_price_map = signal<Map<number, number> | null>(null);
 	public mint_icon_data = signal<string | null>(null);
+	public activity_summary = signal<MintActivitySummary | null>(null);
+	public loading_activity = signal<boolean>(true);
+	public error_activity = signal<boolean>(false);
+	public selected_activity_period = signal<MintActivityPeriod>(MintActivityPeriod.Week);
 
 	public tertiary_nav = computed(() => this.page_settings().tertiary_nav || []);
 	public type_balance_sheet = computed(() => this.page_settings().type.balance_sheet || ChartType.Totals);
@@ -178,6 +183,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.setMintIcon();
 		this.orchardOptionalInit();
 		this.getMintFees();
+		this.loadActivitySummary(MintActivityPeriod.Week);
 		await this.initAnalytics();
 		this.mint_fee_revenue.set(this.getMintFeeRevenueState());
 		this.subscriptions.add(this.getBreakpointSubscription());
@@ -469,6 +475,33 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		if (this.mint_fees.length === 0) return analytics_fees;
 		analytics_fees[0].amount += this.mint_fees[0].keyset_fees_paid;
 		return analytics_fees;
+	}
+
+	private loadActivitySummary(period: MintActivityPeriod): void {
+		this.loading_activity.set(true);
+		this.error_activity.set(false);
+		const timezone = this.settingDeviceService.getTimezone();
+		this.mintService
+			.loadMintActivitySummary(period, timezone)
+			.pipe(
+				tap((summary) => {
+					this.activity_summary.set(summary);
+				}),
+				catchError(() => {
+					this.error_activity.set(true);
+					return EMPTY;
+				}),
+				finalize(() => {
+					this.loading_activity.set(false);
+				}),
+			)
+			.subscribe();
+	}
+
+	public onActivityPeriodChange(period: MintActivityPeriod): void {
+		this.selected_activity_period.set(period);
+		this.mintService.clearActivityCache();
+		this.loadActivitySummary(period);
 	}
 
 	private async reloadDynamicData(): Promise<void> {

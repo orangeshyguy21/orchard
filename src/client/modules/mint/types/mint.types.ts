@@ -10,6 +10,7 @@ import {
 	OrchardMintPromiseGroup,
 	OrchardMintSwap,
 	OrchardMintKeysetsAnalytics,
+	OrchardMintActivitySummary,
 	MintUnit,
 	MintAnalyticsInterval,
 	MintQuoteState,
@@ -35,6 +36,10 @@ import {
 	OrchardMintFee,
 	OrchardMintKeysetCount,
 } from '@shared/generated.types';
+
+export type MintActivitySummaryResponse = {
+	mint_activity_summary: OrchardMintActivitySummary;
+};
 
 export type MintInfoResponse = {
 	mint_info: OrchardMintInfo;

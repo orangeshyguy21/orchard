@@ -20,7 +20,12 @@
                 <orc-mint-general-keysets [keysets]="mint_keysets" [keysets_counts]="mint_keyset_counts" [database_info]="mint_database_info"></orc-mint-general-keysets>
             </div>
             <div class="flex-1">
-                todo
+                <orc-mint-general-activity
+                    [summary]="activity_summary()"
+                    [loading]="loading_activity()"
+                    [error]="error_activity()"
+                    (period_change)="onActivityPeriodChange($event)"
+                ></orc-mint-general-activity>
             </div>
         </div>
         <div class="flex p-b-1">

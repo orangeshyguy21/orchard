@@ -56,6 +56,7 @@ import {
 	MintDatabaseRestoreResponse,
 	MintProofGroupStatsResponse,
 	MintFeesResponse,
+	MintActivitySummaryResponse,
 } from '@client/modules/mint/types/mint.types';
 import {ApiService} from '@client/modules/api/services/api/api.service';
 import {CacheService} from '@client/modules/cache/services/cache/cache.service';
@@ -73,8 +74,9 @@ import {MintSwap} from '@client/modules/mint/classes/mint-swap.class';
 import {MintFee} from '@client/modules/mint/classes/mint-fee.class';
 import {MintKeysetCount} from '@client/modules/mint/classes/mint-keyset-count.class';
 import {MintDatabaseInfo} from '@client/modules/mint/classes/mint-database-info.class';
+import {MintActivitySummary} from '@client/modules/mint/classes/mint-activity-summary.class';
 /* Shared Dependencies */
-import {MintAnalyticsInterval, OrchardContact, MintUnit} from '@shared/generated.types';
+import {MintAnalyticsInterval, MintActivityPeriod, OrchardContact, MintUnit} from '@shared/generated.types';
 /* Local Dependencies */
 import {
 	MINT_INFO_QUERY,
@@ -117,6 +119,7 @@ import {
 	MINT_DATABASE_RESTORE_MUTATION,
 	MINT_PROOF_GROUP_STATS_QUERY,
 	MINT_FEES_QUERY,
+	MINT_ACTIVITY_SUMMARY_QUERY,
 } from './mint.queries';
 
 @Injectable({
@@ -148,6 +151,7 @@ export class MintService {
 		MINT_MELT_QUOTES: 'mint-melt-quotes',
 		MINT_FEES: 'mint-fees',
 		MINT_DATABASE_INFO: 'mint-database-info',
+		MINT_ACTIVITY_SUMMARY: 'mint-activity-summary',
 	};
 
 	private readonly CACHE_DURATIONS = {
@@ -171,6 +175,7 @@ export class MintService {
 		[this.CACHE_KEYS.MINT_MELT_QUOTES]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.MINT_FEES]: 60 * 60 * 1000, // 60 minutes
 		[this.CACHE_KEYS.MINT_DATABASE_INFO]: 60 * 60 * 1000, // 60 minutes
+		[this.CACHE_KEYS.MINT_ACTIVITY_SUMMARY]: 5 * 60 * 1000, // 5 minutes
 	};
 
 	/* Subjects for caching */
@@ -194,6 +199,7 @@ export class MintService {
 	private readonly mint_melt_quotes_subject: BehaviorSubject<MintMeltQuote[] | null>;
 	private readonly mint_fees_subject: BehaviorSubject<MintFee[] | null>;
 	private readonly mint_database_info_subject: BehaviorSubject<MintDatabaseInfo | null>;
+	private readonly mint_activity_summary_subject: BehaviorSubject<MintActivitySummary | null>;
 
 	/* Observables for caching (rapid request caching) */
 	private mint_info_observable!: Observable<MintInfo> | null;
@@ -283,6 +289,10 @@ export class MintService {
 			this.CACHE_KEYS.MINT_DATABASE_INFO,
 			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_DATABASE_INFO],
 		);
+		this.mint_activity_summary_subject = this.cache.createCache<MintActivitySummary>(
+			this.CACHE_KEYS.MINT_ACTIVITY_SUMMARY,
+			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_ACTIVITY_SUMMARY],
+		);
 	}
 
 	public clearInfoCache() {
@@ -300,6 +310,10 @@ export class MintService {
 		this.cache.clearCache(this.CACHE_KEYS.MINT_ANALYTICS_PRE_SWAPS);
 		this.cache.clearCache(this.CACHE_KEYS.MINT_ANALYTICS_FEES);
 		this.cache.clearCache(this.CACHE_KEYS.MINT_ANALYTICS_PRE_FEES);
+	}
+
+	public clearActivityCache() {
+		this.cache.clearCache(this.CACHE_KEYS.MINT_ACTIVITY_SUMMARY);
 	}
 
 	public clearKeysetsCache() {
@@ -887,6 +901,30 @@ export class MintService {
 			}),
 			catchError((error) => {
 				console.error('Error loading mint fees:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	public loadMintActivitySummary(period: MintActivityPeriod, timezone?: string): Observable<MintActivitySummary> {
+		if (this.mint_activity_summary_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.MINT_ACTIVITY_SUMMARY)) {
+			return of(this.mint_activity_summary_subject.value);
+		}
+
+		const query = getApiQuery(MINT_ACTIVITY_SUMMARY_QUERY, {period, timezone});
+
+		return this.http.post<OrchardRes<MintActivitySummaryResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.mint_activity_summary;
+			}),
+			map((summary) => new MintActivitySummary(summary)),
+			tap((summary) => {
+				this.cache.updateCache(this.CACHE_KEYS.MINT_ACTIVITY_SUMMARY, summary);
+				this.mint_activity_summary_subject.next(summary);
+			}),
+			catchError((error) => {
+				console.error('Error loading mint activity summary:', error);
 				return throwError(() => error);
 			}),
 		);
