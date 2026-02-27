@@ -50,15 +50,15 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
 	public readonly id_user = signal<string | null>(null);
 	public readonly locale = signal<string>(this.settingDeviceService.getLocale());
 
-    public readonly loading = computed(() => this.loading_users() || this.loading_events());
+	public readonly loading = computed(() => this.loading_users() || this.loading_events());
 
 	private readonly loading_users = signal<boolean>(true);
 	private readonly loading_events = signal<boolean>(true);
 
-    private genesis_timestamp = 0;
+	private genesis_timestamp = 0;
 	private subscriptions = new Subscription();
 
-    /* *******************************************************
+	/* *******************************************************
         Initialize
     ******************************************************** */
 
@@ -347,11 +347,11 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
 		}
 	}
 
-    /* *******************************************************
+	/* *******************************************************
         Destroy
     ******************************************************** */
 
-    ngOnDestroy(): void {
+	ngOnDestroy(): void {
 		this.subscriptions.unsubscribe();
 	}
 }

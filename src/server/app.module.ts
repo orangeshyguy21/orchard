@@ -5,6 +5,7 @@ import {GraphQLModule, registerEnumType} from '@nestjs/graphql';
 import {ApolloDriver, ApolloDriverConfig} from '@nestjs/apollo';
 /* Vendor Dependencies */
 import {TypeOrmModule} from '@nestjs/typeorm';
+import {DataSource, DataSourceOptions} from 'typeorm';
 import {ScheduleModule} from '@nestjs/schedule';
 /* Application Modules */
 import {SecurityModule} from './modules/security/security.module';
@@ -122,6 +123,14 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 				migrations: process.env.SCHEMA_ONLY ? [] : ['dist/database/migrations/*.js'],
 				migrationsRun: process.env.SCHEMA_ONLY ? false : configService.get('mode.production'),
 			}),
+			dataSourceFactory: async (options: DataSourceOptions) => {
+				const data_source = new DataSource(options);
+				await data_source.initialize();
+				if (options.synchronize && !options.migrationsRun) {
+					await data_source.runMigrations({fake: true});
+				}
+				return data_source;
+			},
 		}),
 		ScheduleModule.forRoot(),
 		SecurityModule,

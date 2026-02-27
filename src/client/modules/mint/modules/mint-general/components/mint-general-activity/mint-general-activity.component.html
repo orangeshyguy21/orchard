@@ -14,11 +14,19 @@
 	<mat-card appearance="outlined" class="relative overflow-hidden mint-activity-card">
 		<mat-card-content class="orc-surface-container-low-bg">
 			@if (loading()) {
-				<div class="flex flex-justify-center flex-items-center activity-loading" animate.enter="orc-animation-fadein" animate.leave="orc-animation-fadeout">
+				<div
+					class="flex flex-justify-center flex-items-center activity-loading"
+					animate.enter="orc-animation-fadein"
+					animate.leave="orc-animation-fadeout"
+				>
 					<mat-progress-spinner mode="indeterminate" diameter="30"></mat-progress-spinner>
 				</div>
 			} @else if (error()) {
-				<div class="flex flex-justify-center flex-items-center activity-loading" animate.enter="orc-animation-fadein" animate.leave="orc-animation-fadeout">
+				<div
+					class="flex flex-justify-center flex-items-center activity-loading"
+					animate.enter="orc-animation-fadein"
+					animate.leave="orc-animation-fadeout"
+				>
 					<div class="flex flex-column flex-items-center flex-gap-0-5">
 						<mat-icon class="orc-outline-color">error_outline</mat-icon>
 						<span class="font-size-s orc-outline-color">Failed to load activity</span>
