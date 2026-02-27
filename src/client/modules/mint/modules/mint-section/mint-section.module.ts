@@ -69,6 +69,15 @@ const mintKeysetCountsResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot,
 	);
 };
 
+const mintDatabaseInfoResolver: ResolveFn<any> = (_route: ActivatedRouteSnapshot, _state: RouterStateSnapshot) => {
+	const mintService = inject(MintService);
+	return mintService.loadMintDatabaseInfo().pipe(
+		catchError(() => {
+			return of(null);
+		}),
+	);
+};
+
 const mintInfoRpcResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
 	const mintService = inject(MintService);
 	const router = inject(Router);
@@ -118,6 +127,7 @@ const mintQuoteTtlsResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, st
 							mint_balances: mintBalancesResolver,
 							mint_keysets: mintKeysetsResolver,
 							mint_keyset_counts: mintKeysetCountsResolver,
+							mint_database_info: mintDatabaseInfoResolver,
 						},
 						canActivate: [enabledGuard],
 						data: {

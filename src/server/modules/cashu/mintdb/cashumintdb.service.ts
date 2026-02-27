@@ -27,6 +27,7 @@ import {
 	CashuMintSwap,
 	CashuMintFee,
 	CashuMintKeysetCount,
+	CashuMintDatabaseInfo,
 } from './cashumintdb.types';
 import {
 	CashuMintAnalyticsArgs,
@@ -266,6 +267,16 @@ export class CashuMintDatabaseService implements OnModuleInit {
 	}
 
 	/* Implementation Agnostic */
+
+	/** Returns the size and type of the mint database. */
+	public async getMintDatabaseInfo(client: CashuMintDatabase): Promise<CashuMintDatabaseInfo> {
+		if (client.type === MintDatabaseType.sqlite) {
+			const stat = await fs.stat(this.database);
+			return {size: stat.size, type: 'sqlite'};
+		}
+		const result = await client.database.query('SELECT pg_database_size(current_database()) AS size;');
+		return {size: Number(result.rows[0].size), type: 'postgres'};
+	}
 
 	public async createBackup(client: CashuMintDatabase): Promise<Buffer> {
 		if (client.type === MintDatabaseType.sqlite) return this.createBackupSqlite(client);

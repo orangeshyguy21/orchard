@@ -14,6 +14,7 @@ import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {OrcLocalModule} from '@client/modules/local/local.module';
 import {OrcErrorModule} from '@client/modules/error/error.module';
 import {OrcTimeModule} from '@client/modules/time/time.module';
+import {OrcDataModule} from '@client/modules/data/data.module';
 /* Local Dependencies */
 import {MintGeneralIconComponent} from './components/mint-general-icon/mint-general-icon.component';
 import {MintGeneralNameComponent} from './components/mint-general-name/mint-general-name.component';
@@ -52,6 +53,7 @@ import { MintGeneralKeysetsComponent } from './components/mint-general-keysets/m
 		OrcLocalModule,
 		OrcErrorModule,
 		OrcTimeModule,
+		OrcDataModule,
 	],
 	exports: [
 		MintGeneralIconComponent,

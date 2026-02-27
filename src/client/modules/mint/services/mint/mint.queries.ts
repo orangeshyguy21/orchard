@@ -411,6 +411,13 @@ query MintPromiseGroups($units: [MintUnit!], $id_keysets: [String!], $date_start
 	}
 }`;
 
+export const MINT_DATABASE_INFO_QUERY = `{
+	mint_database_info {
+		size
+		type
+	}
+}`;
+
 export const MINT_DATABASE_BACKUP_MUTATION = `
 mutation MintDatabaseBackup {
 	mint_database_backup {

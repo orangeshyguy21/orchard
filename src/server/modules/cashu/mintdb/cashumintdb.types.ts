@@ -122,3 +122,8 @@ export type CashuMintKeysetCount = {
 	proof_count: number;
 	promise_count: number;
 };
+
+export type CashuMintDatabaseInfo = {
+	size: number;
+	type: string;
+};

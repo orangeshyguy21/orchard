@@ -47,6 +47,7 @@ import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintInfo} from '@client/modules/mint/classes/mint-info.class';
 import {MintFee} from '@client/modules/mint/classes/mint-fee.class';
 import {MintKeysetCount} from '@client/modules/mint/classes/mint-keyset-count.class';
+import {MintDatabaseInfo} from '@client/modules/mint/classes/mint-database-info.class';
 import {MintAnalytic} from '@client/modules/mint/classes/mint-analytic.class';
 import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
 /* Shared Dependencies */
@@ -78,6 +79,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public mint_balances: MintBalance[] = [];
 	public mint_keysets: MintKeyset[] = [];
 	public mint_keyset_counts: MintKeysetCount[] = [];
+	public mint_database_info: MintDatabaseInfo | null = null;
 	public mint_fees: MintFee[] = [];
 	public mint_analytics_balances: MintAnalytic[] = [];
 	public mint_analytics_balances_pre: MintAnalytic[] = [];
@@ -162,6 +164,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.mint_balances = this.route.snapshot.data['mint_balances'];
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
 		this.mint_keyset_counts = this.route.snapshot.data['mint_keyset_counts'];
+		this.mint_database_info = this.route.snapshot.data['mint_database_info'] ?? null;
 		this.mint_genesis_time = this.getMintGenesisTime();
 		this.page_settings = signal(this.getPageSettings());
 	}

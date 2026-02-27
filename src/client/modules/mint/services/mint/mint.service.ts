@@ -51,6 +51,7 @@ import {
 	MintProofGroupsDataResponse,
 	MintPromiseGroupsDataResponse,
 	MintSwapsDataResponse,
+	MintDatabaseInfoResponse,
 	MintDatabaseBackupResponse,
 	MintDatabaseRestoreResponse,
 	MintProofGroupStatsResponse,
@@ -71,6 +72,7 @@ import {MintAnalytic, MintAnalyticKeyset} from '@client/modules/mint/classes/min
 import {MintSwap} from '@client/modules/mint/classes/mint-swap.class';
 import {MintFee} from '@client/modules/mint/classes/mint-fee.class';
 import {MintKeysetCount} from '@client/modules/mint/classes/mint-keyset-count.class';
+import {MintDatabaseInfo} from '@client/modules/mint/classes/mint-database-info.class';
 /* Shared Dependencies */
 import {MintAnalyticsInterval, OrchardContact, MintUnit} from '@shared/generated.types';
 /* Local Dependencies */
@@ -110,6 +112,7 @@ import {
 	MINT_NUT04_QUOTE_UPDATE_MUTATION,
 	MINT_NUT05_QUOTE_UPDATE_MUTATION,
 	MINT_KEYSETS_ROTATION_MUTATION,
+	MINT_DATABASE_INFO_QUERY,
 	MINT_DATABASE_BACKUP_MUTATION,
 	MINT_DATABASE_RESTORE_MUTATION,
 	MINT_PROOF_GROUP_STATS_QUERY,
@@ -144,6 +147,7 @@ export class MintService {
 		MINT_MINT_QUOTES: 'mint-mint-quotes',
 		MINT_MELT_QUOTES: 'mint-melt-quotes',
 		MINT_FEES: 'mint-fees',
+		MINT_DATABASE_INFO: 'mint-database-info',
 	};
 
 	private readonly CACHE_DURATIONS = {
@@ -166,6 +170,7 @@ export class MintService {
 		[this.CACHE_KEYS.MINT_MINT_QUOTES]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.MINT_MELT_QUOTES]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.MINT_FEES]: 60 * 60 * 1000, // 60 minutes
+		[this.CACHE_KEYS.MINT_DATABASE_INFO]: 60 * 60 * 1000, // 60 minutes
 	};
 
 	/* Subjects for caching */
@@ -188,6 +193,7 @@ export class MintService {
 	private readonly mint_mint_quotes_subject: BehaviorSubject<MintMintQuote[] | null>;
 	private readonly mint_melt_quotes_subject: BehaviorSubject<MintMeltQuote[] | null>;
 	private readonly mint_fees_subject: BehaviorSubject<MintFee[] | null>;
+	private readonly mint_database_info_subject: BehaviorSubject<MintDatabaseInfo | null>;
 
 	/* Observables for caching (rapid request caching) */
 	private mint_info_observable!: Observable<MintInfo> | null;
@@ -272,6 +278,10 @@ export class MintService {
 		this.mint_fees_subject = this.cache.createCache<MintFee[]>(
 			this.CACHE_KEYS.MINT_FEES,
 			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_FEES],
+		);
+		this.mint_database_info_subject = this.cache.createCache<MintDatabaseInfo>(
+			this.CACHE_KEYS.MINT_DATABASE_INFO,
+			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_DATABASE_INFO],
 		);
 	}
 
@@ -1109,6 +1119,29 @@ export class MintService {
 			}),
 			catchError((error) => {
 				console.error('Error rotating mint keysets:', error);
+				return throwError(() => error);
+			}),
+		);
+	}
+
+	public loadMintDatabaseInfo(): Observable<MintDatabaseInfo> {
+		if (this.mint_database_info_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.MINT_DATABASE_INFO)) {
+			return of(this.mint_database_info_subject.value);
+		}
+
+		const query = getApiQuery(MINT_DATABASE_INFO_QUERY);
+
+		return this.http.post<OrchardRes<MintDatabaseInfoResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.mint_database_info;
+			}),
+			map((info) => new MintDatabaseInfo(info)),
+			tap((info) => {
+				this.cache.updateCache(this.CACHE_KEYS.MINT_DATABASE_INFO, info);
+			}),
+			catchError((error) => {
+				console.error('Error loading mint database info:', error);
 				return throwError(() => error);
 			}),
 		);

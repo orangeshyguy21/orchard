@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 /* Native Dependencies */
 import { MintKeyset } from '@client/modules/mint/classes/mint-keyset.class';
 import { MintKeysetCount } from '@client/modules/mint/classes/mint-keyset-count.class';
+import { MintDatabaseInfo } from '@client/modules/mint/classes/mint-database-info.class';
 /* Shared Dependencies */
 import { MintUnit } from '@shared/generated.types';
 
@@ -16,9 +17,7 @@ import { MintUnit } from '@shared/generated.types';
 export class MintGeneralKeysetsComponent {
     public keysets = input.required<MintKeyset[]>();
     public keysets_counts = input.required<MintKeysetCount[]>();
-
-    /** Stubbed database size. */
-    public database_size: string = '-- MB';
+    public database_info = input<MintDatabaseInfo | null>(null);
 
     /** Number of active keysets. */
     public active_count = computed(() => {

@@ -29,6 +29,7 @@ import {
 	OrchardMintNut05QuoteUpdate,
 	OrchardMintKeysetRotation,
 	OrchardMintDatabaseBackup,
+	OrchardMintDatabaseInfo,
 	OrchardMintDatabaseRestore,
 	OrchardMintProofGroupStats,
 	OrchardMintFee,
@@ -237,6 +238,10 @@ export type MintProofGroupsDataResponse = {
 export type MintPromiseGroupsDataResponse = {
 	mint_promise_groups: OrchardMintPromiseGroup[];
 	mint_count_promise_groups: OrchardMintCount;
+};
+
+export type MintDatabaseInfoResponse = {
+	mint_database_info: OrchardMintDatabaseInfo;
 };
 
 export type MintDatabaseBackupResponse = {

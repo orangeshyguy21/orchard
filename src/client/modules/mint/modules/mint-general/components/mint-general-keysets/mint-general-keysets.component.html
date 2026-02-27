@@ -66,8 +66,8 @@
                     <div class="flex flex-items-center flex-gap-0-5">
                         <mat-icon class="orc-outline-color">database</mat-icon>
                         <div>
-                            <div class="font-size-l font-weight-semi-bold">{{ database_size }}</div>
-                            <div class="font-size-xs orc-outline-color">Database size</div>
+                            <div class="font-size-l font-weight-semi-bold">{{ database_info()?.size | dataBytes }}</div>
+                            <div class="font-size-xs orc-outline-color">{{ database_info()?.type | titlecase }} database size</div>
                         </div>
                     </div>
                 </div>
