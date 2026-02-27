@@ -57,7 +57,7 @@ export class MintGeneralActivityComponent implements OnChanges {
 	}
 
 	ngOnChanges(changes: SimpleChanges): void {
-		if( changes['loading'] && !changes['loading'].firstChange) {
+		if (changes['loading'] && !changes['loading'].firstChange) {
 			if (this.loading() === false) this.initCharts();
 		}
 	}
@@ -80,7 +80,6 @@ export class MintGeneralActivityComponent implements OnChanges {
 	/** Builds chart data for the three sparklines */
 	private initCharts(): void {
 		const data = this.summary()!;
-        console.log('initCharts', data);
 		this.mint_chart_data = this.buildSparklineData(data.mint_sparkline, data.mint_count_delta);
 		this.melt_chart_data = this.buildSparklineData(data.melt_sparkline, data.melt_count_delta);
 		this.swap_chart_data = this.buildSparklineData(data.swap_sparkline, data.swap_count_delta);

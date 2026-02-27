@@ -1,50 +1,54 @@
 <div class="mint-dashboard-container">
-    <div class="flex flex-column flex-gap-2">
-        <div class="flex flex-row flex-gap-2 flex-wrap">
-            <div class="flex-1">
-                <orc-mint-general-info
-                    [loading]="loading_mint_icon()"
-                    [icon_data]="mint_icon_data()"
-                    [info]="mint_info"
-                    [error]="false"
-                    [device_type]="device_type()"
-                    [connections]="mint_connections"
-                ></orc-mint-general-info>
-            </div>
-            <div class="flex-1">
-                <orc-mint-general-config [info]="mint_info"></orc-mint-general-config>
-            </div>
-        </div>
-        <div class="flex flex-row flex-gap-2 flex-wrap">
-            <div class="flex-1">
-                <orc-mint-general-keysets [keysets]="mint_keysets" [keysets_counts]="mint_keyset_counts" [database_info]="mint_database_info"></orc-mint-general-keysets>
-            </div>
-            <div class="flex-1">
-                <orc-mint-general-activity
-                    [summary]="activity_summary()"
-                    [loading]="loading_activity()"
-                    [error]="error_activity()"
-                    (period_change)="onActivityPeriodChange($event)"
-                ></orc-mint-general-activity>
-            </div>
-        </div>
-        <div class="flex p-b-1">
-            <orc-mint-general-balance-sheet
-                [balances]="mint_balances"
-                [keysets]="mint_keysets"
-                [lightning_balance]="lightning_balance ? lightning_balance : null"
-                [lightning_enabled]="lightning_enabled"
-                [lightning_errors]="errors_lightning"
-                [lightning_loading]="loading_lightning()"
-                [bitcoin_oracle_enabled]="bitcoin_oracle_enabled"
-                [bitcoin_oracle_price]="bitcoin_oracle_price()"
-                [loading]="loading_static_data"
-                [device_type]="device_type()"
-                (navigate)="onNavigate('lightning')"
-            ></orc-mint-general-balance-sheet>
-        </div>
-    </div>
-    
+	<div class="flex flex-column flex-gap-2">
+		<div class="flex flex-row flex-gap-2 flex-wrap">
+			<div class="flex-1">
+				<orc-mint-general-info
+					[loading]="loading_mint_icon()"
+					[icon_data]="mint_icon_data()"
+					[info]="mint_info"
+					[error]="false"
+					[device_type]="device_type()"
+					[connections]="mint_connections"
+				></orc-mint-general-info>
+			</div>
+			<div class="flex-1">
+				<orc-mint-general-config [info]="mint_info"></orc-mint-general-config>
+			</div>
+		</div>
+		<div class="flex flex-row flex-gap-2 flex-wrap">
+			<div class="flex-1">
+				<orc-mint-general-keysets
+					[keysets]="mint_keysets"
+					[keysets_counts]="mint_keyset_counts"
+					[database_info]="mint_database_info"
+				></orc-mint-general-keysets>
+			</div>
+			<div class="flex-1">
+				<orc-mint-general-activity
+					[summary]="activity_summary()"
+					[loading]="loading_activity()"
+					[error]="error_activity()"
+					(period_change)="onActivityPeriodChange($event)"
+				></orc-mint-general-activity>
+			</div>
+		</div>
+		<div class="flex p-b-1">
+			<orc-mint-general-balance-sheet
+				[balances]="mint_balances"
+				[keysets]="mint_keysets"
+				[lightning_balance]="lightning_balance ? lightning_balance : null"
+				[lightning_enabled]="lightning_enabled"
+				[lightning_errors]="errors_lightning"
+				[lightning_loading]="loading_lightning()"
+				[bitcoin_oracle_enabled]="bitcoin_oracle_enabled"
+				[bitcoin_oracle_price]="bitcoin_oracle_price()"
+				[loading]="loading_static_data"
+				[device_type]="device_type()"
+				(navigate)="onNavigate('lightning')"
+			></orc-mint-general-balance-sheet>
+		</div>
+	</div>
+
 	<!-- <div class="mint-dashboard-header p-b-1">
 		<orc-mint-general-info
 			[loading]="loading_mint_icon()"

@@ -2,12 +2,12 @@
 	<div class="flex flex-justify-between flex-items-center">
 		<div class="title-l">Activity</div>
 		<div class="flex">
-            <div class="mint-activity-period-selector">
-                <button matButton type="button" [matMenuTriggerFor]="period_menu">
-                    <mat-icon>calendar_today</mat-icon>
-                    <span class="font-size-s">{{ period_label() }}</span>
-                </button>
-            </div>
+			<div class="mint-activity-period-selector">
+				<button matButton type="button" [matMenuTriggerFor]="period_menu">
+					<mat-icon>calendar_today</mat-icon>
+					<span class="font-size-s">{{ period_label() }}</span>
+				</button>
+			</div>
 		</div>
 	</div>
 
@@ -27,28 +27,32 @@
 			} @else if (summary()) {
 				<div class="flex flex-column flex-gap-1">
 					<!-- Top summary: Operations + Volume -->
-                    <div class="flex flex-row flex-gap-1">
-                        <div class="flex-1 orc-high-card p-0-5 p-h-1">
-                            <div class="flex flex-justify-between flex-items-start">
-                                <div>
-                                    <span class="font-size-xl font-weight-semi-bold">{{ summary()!.total_operations | number }}</span>
-                                    <div class="font-size-xs orc-outline-color">Operations</div>
-                                </div>
-                                <ng-container *ngTemplateOutlet="deltaRef; context: { $implicit: summary()!.total_operations_delta }"></ng-container>
-                            </div>
-                        </div>
-                        <div class="flex-1 orc-high-card p-0-5 p-h-1">
-                            <div class="flex flex-justify-between flex-items-start">
-                                <div>
-                                    <span class="font-size-xl font-weight-semi-bold">{{ summary()!.total_volume | number }}</span>
-                                    <div class="font-size-xs orc-outline-color">Volume</div>
-                                </div>
-                                <div>
-                                    <ng-container *ngTemplateOutlet="deltaRef; context: { $implicit: summary()!.total_volume_delta }"></ng-container>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+					<div class="flex flex-row flex-gap-1">
+						<div class="flex-1 orc-high-card p-0-5 p-h-1">
+							<div class="flex flex-justify-between flex-items-start">
+								<div>
+									<span class="font-size-xl font-weight-semi-bold">{{ summary()!.total_operations | number }}</span>
+									<div class="font-size-xs orc-outline-color">Operations</div>
+								</div>
+								<ng-container
+									*ngTemplateOutlet="deltaRef; context: {$implicit: summary()!.total_operations_delta}"
+								></ng-container>
+							</div>
+						</div>
+						<div class="flex-1 orc-high-card p-0-5 p-h-1">
+							<div class="flex flex-justify-between flex-items-start">
+								<div>
+									<span class="font-size-xl font-weight-semi-bold">{{ summary()!.total_volume | number }}</span>
+									<div class="font-size-xs orc-outline-color">Volume</div>
+								</div>
+								<div>
+									<ng-container
+										*ngTemplateOutlet="deltaRef; context: {$implicit: summary()!.total_volume_delta}"
+									></ng-container>
+								</div>
+							</div>
+						</div>
+					</div>
 
 					<!-- Sparkline cards: 3 in a row -->
 					<div class="flex flex-row flex-gap-1">
@@ -60,7 +64,9 @@
 										<div class="font-size-l font-weight-semi-bold">{{ summary()!.mint_count | number }}</div>
 										<div class="font-size-xs orc-outline-color">Mints</div>
 									</div>
-									<ng-container *ngTemplateOutlet="deltaRef; context: { $implicit: summary()!.mint_count_delta }"></ng-container>
+									<ng-container
+										*ngTemplateOutlet="deltaRef; context: {$implicit: summary()!.mint_count_delta}"
+									></ng-container>
 								</div>
 							</div>
 							@if (mint_chart_data) {
@@ -78,7 +84,9 @@
 										<div class="font-size-l font-weight-semi-bold">{{ summary()!.melt_count | number }}</div>
 										<div class="font-size-xs orc-outline-color">Melts</div>
 									</div>
-									<ng-container *ngTemplateOutlet="deltaRef; context: { $implicit: summary()!.melt_count_delta }"></ng-container>
+									<ng-container
+										*ngTemplateOutlet="deltaRef; context: {$implicit: summary()!.melt_count_delta}"
+									></ng-container>
 								</div>
 							</div>
 							@if (melt_chart_data) {
@@ -96,7 +104,9 @@
 										<div class="font-size-l font-weight-semi-bold">{{ summary()!.swap_count | number }}</div>
 										<div class="font-size-xs orc-outline-color">Swaps</div>
 									</div>
-									<ng-container *ngTemplateOutlet="deltaRef; context: { $implicit: summary()!.swap_count_delta }"></ng-container>
+									<ng-container
+										*ngTemplateOutlet="deltaRef; context: {$implicit: summary()!.swap_count_delta}"
+									></ng-container>
 								</div>
 							</div>
 							@if (swap_chart_data) {
@@ -113,15 +123,19 @@
 							<div class="flex flex-justify-between flex-items-center">
 								<div class="flex flex-items-center flex-gap-0-5">
 									<orc-progress-circle
-                                        [value]="summary()!.mint_completed_pct"
-                                        [diameter]="40"
-                                        [stroke_width]="3"
-                                        progress_color="orc-status-active-progress-spinner"
-								    ></orc-progress-circle>
+										[value]="summary()!.mint_completed_pct"
+										[diameter]="40"
+										[stroke_width]="3"
+										progress_color="orc-status-active-progress-spinner"
+									></orc-progress-circle>
 									<div>
 										<div class="flex flex-items-center flex-gap-1">
-											<div class="font-size-l font-weight-semi-bold">{{ summary()!.mint_completed_pct | number:'1.0-0' }}%</div>
-                                            <ng-container *ngTemplateOutlet="deltaRef; context: { $implicit: summary()!.mint_completed_pct_delta }"></ng-container>
+											<div class="font-size-l font-weight-semi-bold">
+												{{ summary()!.mint_completed_pct | number: '1.0-0' }}%
+											</div>
+											<ng-container
+												*ngTemplateOutlet="deltaRef; context: {$implicit: summary()!.mint_completed_pct_delta}"
+											></ng-container>
 										</div>
 										<div class="font-size-xs orc-outline-color">Mints completed</div>
 									</div>
@@ -137,15 +151,19 @@
 							<div class="flex flex-justify-between flex-items-center">
 								<div class="flex flex-items-center flex-gap-0-5">
 									<orc-progress-circle
-                                        [value]="summary()!.melt_completed_pct"
-                                        [diameter]="40"
-                                        [stroke_width]="3"
-                                        progress_color="orc-status-active-progress-spinner"
-                                    ></orc-progress-circle>
+										[value]="summary()!.melt_completed_pct"
+										[diameter]="40"
+										[stroke_width]="3"
+										progress_color="orc-status-active-progress-spinner"
+									></orc-progress-circle>
 									<div>
 										<div class="flex flex-items-center flex-gap-1">
-											<div class="font-size-l font-weight-semi-bold">{{ summary()!.melt_completed_pct | number:'1.0-0' }}%</div>
-                                            <ng-container *ngTemplateOutlet="deltaRef; context: { $implicit: summary()!.melt_completed_pct_delta }"></ng-container>
+											<div class="font-size-l font-weight-semi-bold">
+												{{ summary()!.melt_completed_pct | number: '1.0-0' }}%
+											</div>
+											<ng-container
+												*ngTemplateOutlet="deltaRef; context: {$implicit: summary()!.melt_completed_pct_delta}"
+											></ng-container>
 										</div>
 										<div class="font-size-xs orc-outline-color">Melts completed</div>
 									</div>
@@ -165,7 +183,8 @@
 
 <ng-template #deltaRef let-value>
 	<span class="font-size-xs delta" [class.delta-positive]="value >= 0" [class.delta-negative]="value < 0">
-		<span class="font-size-xs">{{ value >= 0 ? '▲' : '▼' }}</span>{{ value | dataAbs | number:'1.0-0' }}%
+		<span class="font-size-xs">{{ value >= 0 ? '▲' : '▼' }}</span
+		>{{ value | dataAbs | number: '1.0-0' }}%
 	</span>
 </ng-template>
 

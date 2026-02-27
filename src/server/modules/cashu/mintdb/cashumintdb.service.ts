@@ -226,10 +226,7 @@ export class CashuMintDatabaseService implements OnModuleInit {
 		if (this.type === 'cdk') throw OrchardErrorCode.MintSupportError;
 	}
 
-	public async getMintKeysetCounts(
-		client: CashuMintDatabase,
-		args?: CashuMintKeysetCountsArgs,
-	): Promise<CashuMintKeysetCount[]> {
+	public async getMintKeysetCounts(client: CashuMintDatabase, args?: CashuMintKeysetCountsArgs): Promise<CashuMintKeysetCount[]> {
 		if (this.type === 'nutshell') return this.nutshellService.getMintKeysetCounts(client, args);
 		if (this.type === 'cdk') return this.cdkService.getMintKeysetCounts(client, args);
 	}

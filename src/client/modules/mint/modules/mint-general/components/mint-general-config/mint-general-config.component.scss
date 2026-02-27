@@ -1,44 +1,39 @@
 @use 'molecule/molecule';
 
 .nut-card {
-    @extend %flex;
-    @extend %flex-column;
-    @extend %flex-items-center;
-    @extend %flex-gap-0-25;
-    @extend %p-0-25;
-    min-width: 1.75rem;
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-items-center;
+	@extend %flex-gap-0-25;
+	@extend %p-0-25;
+	min-width: 1.75rem;
 }
 
-
 .limit-range {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
 }
 
 .limit-range-end {
-    flex-shrink: 0;
-    white-space: nowrap;
+	flex-shrink: 0;
+	white-space: nowrap;
 }
 
 .limit-range-min {
-    opacity: 0.6;
+	opacity: 0.6;
 }
 
 .limit-range-bar {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    min-width: 1.5rem;
+	flex: 1;
+	display: flex;
+	align-items: center;
+	min-width: 1.5rem;
 }
 
 .limit-range-track {
-    width: 100%;
-    height: 2px;
-    border-radius: 1px;
-    background: linear-gradient(
-        to right,
-        var(--mat-sys-outline-variant),
-        var(--mat-sys-primary)
-    );
+	width: 100%;
+	height: 2px;
+	border-radius: 1px;
+	background: linear-gradient(to right, var(--mat-sys-outline-variant), var(--mat-sys-primary));
 }

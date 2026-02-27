@@ -21,6 +21,7 @@ jest.mock('@server/modules/cashu/mintdb/cashumintdb.helpers', () => ({
 	convertDateToUnixTimestamp: jest.fn().mockImplementation((d: any) => (typeof d === 'number' ? d : 1)),
 	queryRows: jest.fn(),
 	queryRow: jest.fn().mockResolvedValue({count: 1}),
+	mergeKeysetCounts: jest.fn().mockReturnValue([]),
 }));
 import * as helpers from '@server/modules/cashu/mintdb/cashumintdb.helpers';
 

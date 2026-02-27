@@ -7,22 +7,21 @@
 	padding-bottom: 1.5rem;
 }
 
-
 .sparkline-card {
 	@extend %overflow-hidden;
-    @extend %flex;
-    @extend %flex-column;
-    @extend %relative;
-    min-height: 7rem;
+	@extend %flex;
+	@extend %flex-column;
+	@extend %relative;
+	min-height: 7rem;
 }
 
 .sparkline-chart {
 	flex-grow: 1;
 	position: absolute;
-    top: 2rem;
-    right: 0;
-    bottom: 0;
-    left: 0;
+	top: 2rem;
+	right: 0;
+	bottom: 0;
+	left: 0;
 
 	canvas {
 		width: 100% !important;
@@ -37,7 +36,7 @@
 .delta {
 	@extend %flex;
 	@extend %flex-items-center;
-    @extend %font-weight-semi-bold;
+	@extend %font-weight-semi-bold;
 	gap: 0.15rem;
 }
 

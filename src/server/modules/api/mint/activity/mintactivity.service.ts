@@ -54,11 +54,7 @@ export class MintActivityService {
 	 * Fetches raw quotes/swaps for two consecutive periods and computes
 	 * all activity summary metrics in application code.
 	 */
-	public async getMintActivitySummary(
-		tag: string,
-		period: MintActivityPeriod,
-		timezone?: string,
-	): Promise<OrchardMintActivitySummary> {
+	public async getMintActivitySummary(tag: string, period: MintActivityPeriod, timezone?: string): Promise<OrchardMintActivitySummary> {
 		return this.mintService.withDbClient(async (client) => {
 			try {
 				const now = Math.floor(Date.now() / 1000);
@@ -120,7 +116,14 @@ export class MintActivityService {
 
 		summary.mint_count = cur_mint.count;
 		summary.mint_count_delta = this.computeDelta(cur_mint.count, pri_mint.count);
-		summary.mint_sparkline = this.buildSparkline(current.mints, period_start, period_end, bucket_seconds, timezone, (q) => q.amount_issued);
+		summary.mint_sparkline = this.buildSparkline(
+			current.mints,
+			period_start,
+			period_end,
+			bucket_seconds,
+			timezone,
+			(q) => q.amount_issued,
+		);
 
 		summary.melt_count = cur_melt.count;
 		summary.melt_count_delta = this.computeDelta(cur_melt.count, pri_melt.count);

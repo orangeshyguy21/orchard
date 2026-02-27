@@ -19,7 +19,7 @@ export class MintDatabaseService {
 		private errorService: ErrorService,
 	) {}
 
-    async getMintDatabaseInfo(tag: string): Promise<OrchardMintDatabaseInfo> {
+	async getMintDatabaseInfo(tag: string): Promise<OrchardMintDatabaseInfo> {
 		return this.mintService.withDbClient(async (client) => {
 			try {
 				const info = await this.cashuMintDatabaseService.getMintDatabaseInfo(client);

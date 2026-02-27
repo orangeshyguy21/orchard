@@ -745,9 +745,7 @@ export class MintService {
 				if (response.errors) throw new OrchardErrors(response.errors);
 				return response.data.mint_keyset_counts;
 			}),
-			map((mint_keyset_counts) =>
-				mint_keyset_counts.map((mint_keyset_count) => new MintKeysetCount(mint_keyset_count)),
-			),
+			map((mint_keyset_counts) => mint_keyset_counts.map((mint_keyset_count) => new MintKeysetCount(mint_keyset_count))),
 			tap((mint_keyset_counts) => {
 				this.cache.updateCache(this.CACHE_KEYS.MINT_KEYSET_COUNTS, mint_keyset_counts);
 			}),

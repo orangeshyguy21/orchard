@@ -18,6 +18,7 @@ jest.mock('@server/modules/cashu/mintdb/cashumintdb.helpers', () => ({
 	getAnalyticsTimeGroupSql: jest.fn().mockReturnValue('TIME_GROUP'),
 	queryRows: jest.fn(),
 	queryRow: jest.fn().mockResolvedValue({count: 1}),
+	mergeKeysetCounts: jest.fn().mockReturnValue([]),
 	extractRequestString: jest.fn().mockImplementation((s: string) => s?.replace(/^.*:/, '')),
 }));
 import * as helpers from '@server/modules/cashu/mintdb/cashumintdb.helpers';

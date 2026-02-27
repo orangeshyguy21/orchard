@@ -655,6 +655,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	}
 
 	private updateTertiaryNav(): void {
+		if (!this.chart_container) return;
 		const tertiary_nav = this.page_settings()
 			.tertiary_nav.map((area) => `"${area}"`)
 			.join(' ');
