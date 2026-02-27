@@ -1,7 +1,7 @@
 /* Native Dependencies */
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintAnalyticKeyset} from '@client/modules/mint/classes/mint-analytic.class';
-import {MintKeysetProofCount} from '@client/modules/mint/classes/mint-keyset-proof-count.class';
+import {MintKeysetCount} from '@client/modules/mint/classes/mint-keyset-count.class';
 
 export class MintSubsectionKeysetsTableRow {
 	active: boolean;
@@ -14,13 +14,14 @@ export class MintSubsectionKeysetsTableRow {
 	fees_paid: number | null;
 	balance: number;
 	proof_count: number;
+	promise_count: number;
 	amounts: number[] | null;
 
 	constructor(
 		keyset: MintKeyset,
 		keyset_analytics: MintAnalyticKeyset[],
 		keyset_analytics_pre: MintAnalyticKeyset[],
-		keyset_proof_count: MintKeysetProofCount | undefined,
+		keyset_count: MintKeysetCount | undefined,
 	) {
 		this.active = keyset.active;
 		this.derivation_path_index = keyset.derivation_path_index;
@@ -31,7 +32,8 @@ export class MintSubsectionKeysetsTableRow {
 		this.valid_to = keyset.valid_to;
 		this.fees_paid = keyset.fees_paid;
 		this.balance = this.getBalance(keyset_analytics, keyset_analytics_pre);
-		this.proof_count = keyset_proof_count?.count ?? 0;
+		this.proof_count = keyset_count?.proof_count ?? 0;
+		this.promise_count = keyset_count?.promise_count ?? 0;
 		this.amounts = keyset.amounts;
 	}
 

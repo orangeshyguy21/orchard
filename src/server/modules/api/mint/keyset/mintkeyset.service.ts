@@ -3,14 +3,14 @@ import {Injectable, Logger} from '@nestjs/common';
 /* Application Dependencies */
 import {CashuMintDatabaseService} from '@server/modules/cashu/mintdb/cashumintdb.service';
 import {CashuMintRpcService} from '@server/modules/cashu/mintrpc/cashumintrpc.service';
-import {CashuMintKeyset, CashuMintKeysetProofCount} from '@server/modules/cashu/mintdb/cashumintdb.types';
-import {CashuMintKeysetProofsArgs} from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
+import {CashuMintKeyset, CashuMintKeysetCount} from '@server/modules/cashu/mintdb/cashumintdb.types';
+import {CashuMintKeysetCountsArgs} from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 import {MintService} from '@server/modules/api/mint/mint.service';
 import {ErrorService} from '@server/modules/error/error.service';
 /* Local Dependencies */
-import {OrchardMintKeyset, OrchardMintKeysetRotation, OrchardMintKeysetProofCount} from './mintkeyset.model';
+import {OrchardMintKeyset, OrchardMintKeysetRotation, OrchardMintKeysetCount} from './mintkeyset.model';
 
 @Injectable()
 export class MintKeysetService {
@@ -37,14 +37,11 @@ export class MintKeysetService {
 		});
 	}
 
-	async getMintKeysetProofCounts(tag: string, args?: CashuMintKeysetProofsArgs): Promise<OrchardMintKeysetProofCount[]> {
+	async getMintKeysetCounts(tag: string, args?: CashuMintKeysetCountsArgs): Promise<OrchardMintKeysetCount[]> {
 		return this.mintService.withDbClient(async (client) => {
 			try {
-				const cashu_keyset_proof_counts: CashuMintKeysetProofCount[] = await this.cashuMintDatabaseService.getMintKeysetProofCounts(
-					client,
-					args,
-				);
-				return cashu_keyset_proof_counts.map((ckpc) => new OrchardMintKeysetProofCount(ckpc));
+				const cashu_keyset_counts: CashuMintKeysetCount[] = await this.cashuMintDatabaseService.getMintKeysetCounts(client, args);
+				return cashu_keyset_counts.map((ckc) => new OrchardMintKeysetCount(ckc));
 			} catch (error) {
 				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 					errord: OrchardErrorCode.MintDatabaseSelectError,

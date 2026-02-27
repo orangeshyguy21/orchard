@@ -37,7 +37,7 @@ import {MintService} from '@client/modules/mint/services/mint/mint.service';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
 import {MintAnalyticKeyset} from '@client/modules/mint/classes/mint-analytic.class';
-import {MintKeysetProofCount} from '@client/modules/mint/classes/mint-keyset-proof-count.class';
+import {MintKeysetCount} from '@client/modules/mint/classes/mint-keyset-count.class';
 import {MintSubsectionKeysetsTableRow} from '@client/modules/mint/modules/mint-subsection-keysets/classes/mint-subsection-keysets-table-row.class';
 /* Shared Dependencies */
 import {MintUnit, MintAnalyticsInterval, AiFunctionName, AiAgent} from '@shared/generated.types';
@@ -67,7 +67,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	public loading_dynamic_data: boolean = true;
 	public keysets_analytics: MintAnalyticKeyset[] = [];
 	public keysets_analytics_pre: MintAnalyticKeyset[] = [];
-	public keysets_proof_counts: MintKeysetProofCount[] = [];
+	public keysets_counts: MintKeysetCount[] = [];
 	public keysets_rotation: boolean = false;
 	public unit_options!: {value: string; label: string}[];
 	public keyset_out!: MintKeyset;
@@ -236,19 +236,19 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 			interval: MintAnalyticsInterval.Custom,
 			timezone: timezone,
 		});
-		const keyset_proof_counts_obs = this.mintService.loadMintKeysetProofCounts({
+		const keyset_counts_obs = this.mintService.loadMintKeysetCounts({
 			date_start: this.page_settings.date_start,
 			date_end: this.page_settings.date_end,
 			id_keysets: this.mint_keysets.map((keyset) => keyset.id),
 		});
 
-		const [analytics_keysets, analytics_keysets_pre, keysets_proof_counts] = await lastValueFrom(
-			forkJoin([analytics_keysets_obs, analytics_keysets_pre_obs, keyset_proof_counts_obs]),
+		const [analytics_keysets, analytics_keysets_pre, keysets_counts] = await lastValueFrom(
+			forkJoin([analytics_keysets_obs, analytics_keysets_pre_obs, keyset_counts_obs]),
 		);
 
 		this.keysets_analytics = analytics_keysets;
 		this.keysets_analytics_pre = analytics_keysets_pre;
-		this.keysets_proof_counts = keysets_proof_counts;
+		this.keysets_counts = keysets_counts;
 	}
 
 	private async reloadDynamicData(): Promise<void> {

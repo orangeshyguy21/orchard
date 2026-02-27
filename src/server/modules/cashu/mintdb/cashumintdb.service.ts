@@ -26,7 +26,7 @@ import {
 	CashuMintPromiseGroup,
 	CashuMintSwap,
 	CashuMintFee,
-	CashuMintKeysetProofCount,
+	CashuMintKeysetCount,
 } from './cashumintdb.types';
 import {
 	CashuMintAnalyticsArgs,
@@ -34,7 +34,7 @@ import {
 	CashuMintProofsArgs,
 	CashuMintPromiseArgs,
 	CashuMintMeltQuotesArgs,
-	CashuMintKeysetProofsArgs,
+	CashuMintKeysetCountsArgs,
 	CashuMintSwapsArgs,
 } from './cashumintdb.interfaces';
 import {MintDatabaseType} from './cashumintdb.enums';
@@ -225,12 +225,12 @@ export class CashuMintDatabaseService implements OnModuleInit {
 		if (this.type === 'cdk') throw OrchardErrorCode.MintSupportError;
 	}
 
-	public async getMintKeysetProofCounts(
+	public async getMintKeysetCounts(
 		client: CashuMintDatabase,
-		args?: CashuMintKeysetProofsArgs,
-	): Promise<CashuMintKeysetProofCount[]> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintKeysetProofCounts(client, args);
-		if (this.type === 'cdk') return this.cdkService.getMintKeysetProofCounts(client, args);
+		args?: CashuMintKeysetCountsArgs,
+	): Promise<CashuMintKeysetCount[]> {
+		if (this.type === 'nutshell') return this.nutshellService.getMintKeysetCounts(client, args);
+		if (this.type === 'cdk') return this.cdkService.getMintKeysetCounts(client, args);
 	}
 
 	/* Analytics */

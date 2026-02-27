@@ -19,7 +19,7 @@ describe('MintSubsectionKeysetsTableComponent', () => {
 		fixture.componentRef.setInput('keysets', []);
 		fixture.componentRef.setInput('keysets_analytics', []);
 		fixture.componentRef.setInput('keysets_analytics_pre', []);
-		fixture.componentRef.setInput('keysets_proof_counts', []);
+		fixture.componentRef.setInput('keysets_counts', []);
 		fixture.componentRef.setInput('page_settings', {date_end: 0, status: [], units: []});
 		fixture.componentRef.setInput('loading', true);
 		fixture.componentRef.setInput('device_type', 'desktop');

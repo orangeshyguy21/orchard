@@ -215,11 +215,12 @@ query MintAnalyticsKeysets($date_start: UnixTimestamp, $date_end: UnixTimestamp,
 	}
 }`;
 
-export const MINT_KEYSET_PROOF_COUNTS_QUERY = `
-query MintKeysetProofCounts($date_start: UnixTimestamp, $date_end: UnixTimestamp, $id_keysets: [String!]) {
-	mint_keyset_proof_counts(date_start: $date_start, date_end: $date_end, id_keysets: $id_keysets) {
+export const MINT_KEYSET_COUNTS_QUERY = `
+query MintKeysetCounts($date_start: UnixTimestamp, $date_end: UnixTimestamp, $id_keysets: [String!]) {
+	mint_keyset_counts(date_start: $date_start, date_end: $date_end, id_keysets: $id_keysets) {
 		id
-		count
+		proof_count
+		promise_count
 	}
 }`;
 

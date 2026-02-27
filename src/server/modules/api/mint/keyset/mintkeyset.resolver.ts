@@ -9,8 +9,7 @@ import {LogEvent} from '@server/modules/event/event.decorator';
 import {EventLogType} from '@server/modules/event/event.enums';
 /* Local Dependencies */
 import {MintKeysetService} from './mintkeyset.service';
-import {OrchardMintKeyset, OrchardMintKeysetProofCount} from './mintkeyset.model';
-import {OrchardMintKeysetRotation} from './mintkeyset.model';
+import {OrchardMintKeyset, OrchardMintKeysetCount, OrchardMintKeysetRotation} from './mintkeyset.model';
 import {MintKeysetInterceptor} from './mintkeyset.interceptor';
 
 @Resolver()
@@ -26,15 +25,15 @@ export class MintKeysetResolver {
 		return await this.mintKeysetService.getMintKeysets(tag);
 	}
 
-	@Query(() => [OrchardMintKeysetProofCount])
-	async mint_keyset_proof_counts(
+	@Query(() => [OrchardMintKeysetCount])
+	async mint_keyset_counts(
 		@Args('date_start', {type: () => UnixTimestamp, nullable: true}) date_start?: number,
 		@Args('date_end', {type: () => UnixTimestamp, nullable: true}) date_end?: number,
 		@Args('id_keysets', {type: () => [String], nullable: true}) id_keysets?: string[],
-	): Promise<OrchardMintKeysetProofCount[]> {
-		const tag = 'GET { mint_keyset_proof_counts }';
+	): Promise<OrchardMintKeysetCount[]> {
+		const tag = 'GET { mint_keyset_counts }';
 		this.logger.debug(tag);
-		return await this.mintKeysetService.getMintKeysetProofCounts(tag, {date_start, date_end, id_keysets});
+		return await this.mintKeysetService.getMintKeysetCounts(tag, {date_start, date_end, id_keysets});
 	}
 
 	@Roles(UserRole.ADMIN, UserRole.MANAGER)

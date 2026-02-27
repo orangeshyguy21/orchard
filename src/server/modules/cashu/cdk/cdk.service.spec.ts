@@ -278,18 +278,22 @@ describe('CdkService', () => {
 		expect(promise_call[1]).toBe('SELECT 9) subquery;');
 	});
 
-	it('getMintKeysetProofCounts builds optional WHERE clause', async () => {
+	it('getMintKeysetCounts builds optional WHERE clause and queries both tables', async () => {
 		(helpers.getAnalyticsConditions as jest.Mock).mockReturnValueOnce({where_conditions: [], params: []});
-		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([]);
-		await cdkService.getMintKeysetProofCounts({} as any);
-		const first_sql = (helpers.queryRows as jest.Mock).mock.calls[(helpers.queryRows as jest.Mock).mock.calls.length - 1][1];
-		expect(first_sql).not.toContain('WHERE ');
+		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([]).mockResolvedValueOnce([]);
+		(helpers.mergeKeysetCounts as jest.Mock).mockReturnValueOnce([]);
+		await cdkService.getMintKeysetCounts({} as any);
+		const calls = (helpers.queryRows as jest.Mock).mock.calls;
+		expect(calls[calls.length - 2][1]).toContain('FROM proof');
+		expect(calls[calls.length - 1][1]).toContain('FROM blind_signature');
 
 		(helpers.getAnalyticsConditions as jest.Mock).mockReturnValueOnce({where_conditions: ['created_time > ?'], params: [1]});
-		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([]);
-		await cdkService.getMintKeysetProofCounts({} as any, {date_start: 1} as any);
-		const second_sql = (helpers.queryRows as jest.Mock).mock.calls[(helpers.queryRows as jest.Mock).mock.calls.length - 1][1];
-		expect(second_sql).toContain('WHERE created_time > ?');
+		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([]).mockResolvedValueOnce([]);
+		(helpers.mergeKeysetCounts as jest.Mock).mockReturnValueOnce([]);
+		await cdkService.getMintKeysetCounts({} as any, {date_start: 1} as any);
+		const last_calls = (helpers.queryRows as jest.Mock).mock.calls;
+		expect(last_calls[last_calls.length - 2][1]).toContain('WHERE created_time > ?');
+		expect(last_calls[last_calls.length - 1][1]).toContain('WHERE created_time > ?');
 	});
 
 	it('analytics methods map rows with created_time from stamp', async () => {

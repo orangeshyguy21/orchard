@@ -373,13 +373,15 @@ describe('NutshellService', () => {
 		await expect(nutshellService.getMintFees({} as any)).rejects.toThrow('fee');
 	});
 
-	it('getMintKeysetProofCounts builds WHERE when conditions exist and passes params', async () => {
+	it('getMintKeysetCounts builds WHERE when conditions exist and queries both tables', async () => {
 		(helpers.getAnalyticsConditions as jest.Mock).mockReturnValueOnce({where_conditions: ['unit = ?'], params: ['sat']});
-		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([]);
-		await nutshellService.getMintKeysetProofCounts({type: 'sqlite'} as any, {units: ['sat']} as any);
-		const call = (helpers.queryRows as jest.Mock).mock.calls.pop();
-		expect(call[1]).toContain('WHERE unit = ?');
-		expect(call[2]).toEqual(['sat']);
+		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([]).mockResolvedValueOnce([]);
+		(helpers.mergeKeysetCounts as jest.Mock).mockReturnValueOnce([]);
+		await nutshellService.getMintKeysetCounts({type: 'sqlite'} as any, {units: ['sat']} as any);
+		const calls = (helpers.queryRows as jest.Mock).mock.calls;
+		expect(calls[calls.length - 2][1]).toContain('FROM proofs_used');
+		expect(calls[calls.length - 1][1]).toContain('FROM promises');
+		expect(calls[calls.length - 2][1]).toContain('WHERE unit = ?');
 	});
 
 	it('getMintAnalyticsBalances applies defaults and override to stamp, calls helpers', async () => {

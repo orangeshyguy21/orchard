@@ -2,7 +2,7 @@
 import {DateTime} from 'luxon';
 /* Local Dependencies */
 import {CashuMintAnalyticsArgs} from './cashumintdb.interfaces';
-import {CashuMintDatabase} from './cashumintdb.types';
+import {CashuMintDatabase, CashuMintKeysetCount} from './cashumintdb.types';
 import {MintDatabaseType} from './cashumintdb.enums';
 
 interface BuildQueryOptions {
@@ -243,6 +243,24 @@ export function getAnalyticsTimeGroupStamp({
 	if (interval === 'custom') return convertDateToUnixTimestamp(min_created_time);
 	const datetime = DateTime.fromFormat(time_group, 'yyyy-MM-dd', {zone: timezone}).startOf('day');
 	return Math.floor(datetime.toSeconds());
+}
+
+/**
+ * Merges proof count and promise count rows by keyset ID
+ * @param proof_rows - array of keyset id + count from proof query
+ * @param promise_rows - array of keyset id + count from promise query
+ * @returns merged CashuMintKeysetCount array
+ */
+export function mergeKeysetCounts(
+	proof_rows: {id: string; count: number}[],
+	promise_rows: {id: string; count: number}[],
+): CashuMintKeysetCount[] {
+	const keyset_ids = Array.from(new Set(proof_rows.map((r) => r.id).concat(promise_rows.map((r) => r.id))));
+	return keyset_ids.map((id) => ({
+		id,
+		proof_count: proof_rows.find((r) => r.id === id)?.count ?? 0,
+		promise_count: promise_rows.find((r) => r.id === id)?.count ?? 0,
+	}));
 }
 
 export async function queryRows<T>(client: CashuMintDatabase, sql: string, params?: any[]): Promise<T[]> {

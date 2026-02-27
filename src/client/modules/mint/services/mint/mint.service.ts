@@ -20,14 +20,14 @@ import {
 	MintProofGroupsArgs,
 	MintPromiseGroupsArgs,
 	MintSwapsArgs,
-	MintKeysetProofCountsArgs,
+	MintKeysetCountsArgs,
 	MintAnalyticsBalancesResponse,
 	MintAnalyticsMintsResponse,
 	MintAnalyticsMeltsResponse,
 	MintAnalyticsSwapsResponse,
 	MintAnalyticsFeesResponse,
 	MintAnalyticsKeysetsResponse,
-	MintKeysetProofCountsResponse,
+	MintKeysetCountsResponse,
 	MintInfoRpcResponse,
 	MintNameUpdateResponse,
 	MintDescriptionUpdateResponse,
@@ -70,7 +70,7 @@ import {MintPromiseGroup} from '@client/modules/mint/classes/mint-promise-group.
 import {MintAnalytic, MintAnalyticKeyset} from '@client/modules/mint/classes/mint-analytic.class';
 import {MintSwap} from '@client/modules/mint/classes/mint-swap.class';
 import {MintFee} from '@client/modules/mint/classes/mint-fee.class';
-import {MintKeysetProofCount} from '@client/modules/mint/classes/mint-keyset-proof-count.class';
+import {MintKeysetCount} from '@client/modules/mint/classes/mint-keyset-count.class';
 /* Shared Dependencies */
 import {MintAnalyticsInterval, OrchardContact, MintUnit} from '@shared/generated.types';
 /* Local Dependencies */
@@ -88,7 +88,7 @@ import {
 	MINT_MINT_QUOTES_QUERY,
 	MINT_MELT_QUOTES_QUERY,
 	MINT_ANALYTICS_KEYSETS_QUERY,
-	MINT_KEYSET_PROOF_COUNTS_QUERY,
+	MINT_KEYSET_COUNTS_QUERY,
 	MINT_MINT_QUOTES_DATA_QUERY,
 	MINT_MELT_QUOTES_DATA_QUERY,
 	MINT_PROOF_GROUPS_DATA_QUERY,
@@ -140,7 +140,7 @@ export class MintService {
 		MINT_ANALYTICS_PRE_FEES: 'mint-analytics-pre-fees',
 		MINT_ANALYTICS_KEYSETS: 'mint-analytics-keysets',
 		MINT_ANALYTICS_PRE_KEYSETS: 'mint-analytics-pre-keysets',
-		MINT_KEYSET_PROOF_COUNTS: 'mint-keyset-proof-counts',
+		MINT_KEYSET_COUNTS: 'mint-keyset-counts',
 		MINT_MINT_QUOTES: 'mint-mint-quotes',
 		MINT_MELT_QUOTES: 'mint-melt-quotes',
 		MINT_FEES: 'mint-fees',
@@ -162,7 +162,7 @@ export class MintService {
 		[this.CACHE_KEYS.MINT_ANALYTICS_PRE_FEES]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.MINT_ANALYTICS_KEYSETS]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.MINT_ANALYTICS_PRE_KEYSETS]: 5 * 60 * 1000, // 5 minutes
-		[this.CACHE_KEYS.MINT_KEYSET_PROOF_COUNTS]: 5 * 60 * 1000, // 5 minutes
+		[this.CACHE_KEYS.MINT_KEYSET_COUNTS]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.MINT_MINT_QUOTES]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.MINT_MELT_QUOTES]: 5 * 60 * 1000, // 5 minutes
 		[this.CACHE_KEYS.MINT_FEES]: 60 * 60 * 1000, // 60 minutes
@@ -184,7 +184,7 @@ export class MintService {
 	private readonly mint_analytics_pre_fees_subject: BehaviorSubject<MintAnalytic[] | null>;
 	private readonly mint_analytics_keysets_subject: BehaviorSubject<MintAnalyticKeyset[] | null>;
 	private readonly mint_analytics_pre_keysets_subject: BehaviorSubject<MintAnalyticKeyset[] | null>;
-	private readonly mint_keyset_proof_counts_subject: BehaviorSubject<MintKeysetProofCount[] | null>;
+	private readonly mint_keyset_counts_subject: BehaviorSubject<MintKeysetCount[] | null>;
 	private readonly mint_mint_quotes_subject: BehaviorSubject<MintMintQuote[] | null>;
 	private readonly mint_melt_quotes_subject: BehaviorSubject<MintMeltQuote[] | null>;
 	private readonly mint_fees_subject: BehaviorSubject<MintFee[] | null>;
@@ -257,9 +257,9 @@ export class MintService {
 			this.CACHE_KEYS.MINT_ANALYTICS_PRE_KEYSETS,
 			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_ANALYTICS_PRE_KEYSETS],
 		);
-		this.mint_keyset_proof_counts_subject = this.cache.createCache<MintKeysetProofCount[]>(
-			this.CACHE_KEYS.MINT_KEYSET_PROOF_COUNTS,
-			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_KEYSET_PROOF_COUNTS],
+		this.mint_keyset_counts_subject = this.cache.createCache<MintKeysetCount[]>(
+			this.CACHE_KEYS.MINT_KEYSET_COUNTS,
+			this.CACHE_DURATIONS[this.CACHE_KEYS.MINT_KEYSET_COUNTS],
 		);
 		this.mint_mint_quotes_subject = this.cache.createCache<MintMintQuote[]>(
 			this.CACHE_KEYS.MINT_MINT_QUOTES,
@@ -296,7 +296,7 @@ export class MintService {
 		this.cache.clearCache(this.CACHE_KEYS.MINT_KEYSETS);
 		this.cache.clearCache(this.CACHE_KEYS.MINT_ANALYTICS_KEYSETS);
 		this.cache.clearCache(this.CACHE_KEYS.MINT_ANALYTICS_PRE_KEYSETS);
-		this.cache.clearCache(this.CACHE_KEYS.MINT_KEYSET_PROOF_COUNTS);
+		this.cache.clearCache(this.CACHE_KEYS.MINT_KEYSET_COUNTS);
 	}
 
 	public loadMintInfo(): Observable<MintInfo> {
@@ -709,23 +709,23 @@ export class MintService {
 		);
 	}
 
-	public loadMintKeysetProofCounts(args: MintKeysetProofCountsArgs) {
-		if (this.mint_keyset_proof_counts_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.MINT_KEYSET_PROOF_COUNTS)) {
-			return of(this.mint_keyset_proof_counts_subject.value);
+	public loadMintKeysetCounts(args: MintKeysetCountsArgs) {
+		if (this.mint_keyset_counts_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.MINT_KEYSET_COUNTS)) {
+			return of(this.mint_keyset_counts_subject.value);
 		}
 
-		const query = getApiQuery(MINT_KEYSET_PROOF_COUNTS_QUERY, args);
+		const query = getApiQuery(MINT_KEYSET_COUNTS_QUERY, args);
 
-		return this.http.post<OrchardRes<MintKeysetProofCountsResponse>>(this.apiService.api, query).pipe(
+		return this.http.post<OrchardRes<MintKeysetCountsResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
-				return response.data.mint_keyset_proof_counts;
+				return response.data.mint_keyset_counts;
 			}),
-			map((mint_keyset_proof_counts) =>
-				mint_keyset_proof_counts.map((mint_keyset_proof_count) => new MintKeysetProofCount(mint_keyset_proof_count)),
+			map((mint_keyset_counts) =>
+				mint_keyset_counts.map((mint_keyset_count) => new MintKeysetCount(mint_keyset_count)),
 			),
-			tap((mint_keyset_proof_counts) => {
-				this.cache.updateCache(this.CACHE_KEYS.MINT_KEYSET_PROOF_COUNTS, mint_keyset_proof_counts);
+			tap((mint_keyset_counts) => {
+				this.cache.updateCache(this.CACHE_KEYS.MINT_KEYSET_COUNTS, mint_keyset_counts);
 			}),
 			catchError((error) => {
 				console.error('Error loading mint keyset proof counts:', error);

@@ -32,7 +32,7 @@ import {
 	OrchardMintDatabaseRestore,
 	OrchardMintProofGroupStats,
 	OrchardMintFee,
-	OrchardMintKeysetProofCount,
+	OrchardMintKeysetCount,
 } from '@shared/generated.types';
 
 export type MintInfoResponse = {
@@ -93,8 +93,8 @@ export type MintAnalyticsKeysetsResponse = {
 	mint_analytics_keysets: OrchardMintKeysetsAnalytics[];
 };
 
-export type MintKeysetProofCountsResponse = {
-	mint_keyset_proof_counts: OrchardMintKeysetProofCount[];
+export type MintKeysetCountsResponse = {
+	mint_keyset_counts: OrchardMintKeysetCount[];
 };
 
 export type MintAnalyticsArgs = {
@@ -151,7 +151,7 @@ export type MintSwapsArgs = {
 	page_size?: number;
 };
 
-export type MintKeysetProofCountsArgs = {
+export type MintKeysetCountsArgs = {
 	date_start?: number;
 	date_end?: number;
 	id_keysets?: string[];

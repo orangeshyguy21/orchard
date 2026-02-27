@@ -12,7 +12,7 @@ import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 /* Local Dependencies */
 import {MintKeysetService} from './mintkeyset.service';
-import {OrchardMintKeyset, OrchardMintKeysetProofCount} from './mintkeyset.model';
+import {OrchardMintKeyset, OrchardMintKeysetCount} from './mintkeyset.model';
 
 describe('MintKeysetService', () => {
 	let mintKeysetService: MintKeysetService;
@@ -26,7 +26,7 @@ describe('MintKeysetService', () => {
 				MintKeysetService,
 				{provide: BitcoinUTXOracleService, useValue: {getOraclePrice: jest.fn().mockResolvedValue(null)}},
 				{provide: MintService, useValue: {withDbClient: jest.fn((fn: any) => fn({}))}},
-				{provide: CashuMintDatabaseService, useValue: {getMintKeysets: jest.fn(), getMintKeysetProofCounts: jest.fn()}},
+				{provide: CashuMintDatabaseService, useValue: {getMintKeysets: jest.fn(), getMintKeysetCounts: jest.fn()}},
 				{provide: CashuMintRpcService, useValue: {rotateNextKeyset: jest.fn()}},
 				{provide: ErrorService, useValue: {resolveError: jest.fn()}},
 			],
@@ -48,10 +48,10 @@ describe('MintKeysetService', () => {
 		expect(result[0]).toBeInstanceOf(OrchardMintKeyset);
 	});
 
-	it('getMintKeysetProofCounts returns OrchardMintKeysetProofCount[]', async () => {
-		mintDbService.getMintKeysetProofCounts.mockResolvedValue([{id: 'k', count: 1}] as any);
-		const result = await mintKeysetService.getMintKeysetProofCounts('TAG', {} as any);
-		expect(result[0]).toBeInstanceOf(OrchardMintKeysetProofCount);
+	it('getMintKeysetCounts returns OrchardMintKeysetCount[]', async () => {
+		mintDbService.getMintKeysetCounts.mockResolvedValue([{id: 'k', proof_count: 1, promise_count: 2}] as any);
+		const result = await mintKeysetService.getMintKeysetCounts('TAG', {} as any);
+		expect(result[0]).toBeInstanceOf(OrchardMintKeysetCount);
 	});
 
 	it('mintRotateKeyset returns input on success', async () => {

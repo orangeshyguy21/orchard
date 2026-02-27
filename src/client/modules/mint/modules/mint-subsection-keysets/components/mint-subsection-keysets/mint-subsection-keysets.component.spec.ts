@@ -16,7 +16,7 @@ describe('MintSubsectionKeysetsComponent', () => {
 	beforeEach(async () => {
 		const mint_service_stub = {
 			loadMintAnalyticsKeysets: () => of([]),
-			loadMintKeysetProofCounts: () => of([]),
+			loadMintKeysetCounts: () => of([]),
 		};
 		await TestBed.configureTestingModule({
 			imports: [OrcMintSubsectionKeysetsModule],

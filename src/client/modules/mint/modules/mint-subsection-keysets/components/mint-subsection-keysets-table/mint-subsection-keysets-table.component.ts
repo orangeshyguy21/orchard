@@ -9,7 +9,7 @@ import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Native Dependencies */
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintAnalyticKeyset} from '@client/modules/mint/classes/mint-analytic.class';
-import {MintKeysetProofCount} from '@client/modules/mint/classes/mint-keyset-proof-count.class';
+import {MintKeysetCount} from '@client/modules/mint/classes/mint-keyset-count.class';
 import {MintSubsectionKeysetsTableRow} from '@client/modules/mint/modules/mint-subsection-keysets/classes/mint-subsection-keysets-table-row.class';
 /* Shared Dependencies */
 import {MintUnit} from '@shared/generated.types';
@@ -27,7 +27,7 @@ export class MintSubsectionKeysetsTableComponent {
 	readonly keysets = input.required<MintKeyset[]>();
 	readonly keysets_analytics = input.required<MintAnalyticKeyset[]>();
 	readonly keysets_analytics_pre = input.required<MintAnalyticKeyset[]>();
-	readonly keysets_proof_counts = input.required<MintKeysetProofCount[]>();
+	readonly keysets_counts = input.required<MintKeysetCount[]>();
 	readonly page_settings = input.required<NonNullableMintKeysetsSettings>();
 	readonly loading = input.required<boolean>();
 	readonly device_type = input.required<DeviceType>();
@@ -44,7 +44,7 @@ export class MintSubsectionKeysetsTableComponent {
 		const device_type = this.device_type();
 		if (device_type === 'mobile') return ['keyset'];
 		if (device_type === 'tablet') return ['keyset', 'input_fee_ppk', 'valid_from', 'balance'];
-		return ['keyset', 'id', 'input_fee_ppk', 'valid_from', 'balance', 'fees', 'proofs', 'actions'];
+		return ['keyset', 'id', 'input_fee_ppk', 'valid_from', 'balance', 'fees_paid', 'proof_count', 'promise_count', 'actions'];
 	});
 
 	constructor() {
@@ -76,8 +76,8 @@ export class MintSubsectionKeysetsTableComponent {
 			.map((keyset) => {
 				const keyset_analytics = this.keysets_analytics().filter((analytic) => analytic.keyset_id === keyset.id);
 				const keyset_analytics_pre = this.keysets_analytics_pre().filter((analytic) => analytic.keyset_id === keyset.id);
-				const keyset_proof_count = this.keysets_proof_counts().find((proof_count) => proof_count.id === keyset.id);
-				return new MintSubsectionKeysetsTableRow(keyset, keyset_analytics, keyset_analytics_pre, keyset_proof_count);
+				const keyset_count = this.keysets_counts().find((kc) => kc.id === keyset.id);
+				return new MintSubsectionKeysetsTableRow(keyset, keyset_analytics, keyset_analytics_pre, keyset_count);
 			});
 
 		this.data_source.set(new MatTableDataSource(keyset_rows));
