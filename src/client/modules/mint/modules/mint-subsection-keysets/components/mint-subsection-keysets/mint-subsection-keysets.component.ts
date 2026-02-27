@@ -113,6 +113,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 
 	ngOnInit(): void {
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
+		this.keysets_counts = this.route.snapshot.data['mint_keyset_counts'];
 		this.unit_options = this.getUnitOptions();
 		this.resetForm();
 		this.initKeysetsAnalytics();
@@ -236,19 +237,12 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 			interval: MintAnalyticsInterval.Custom,
 			timezone: timezone,
 		});
-		const keyset_counts_obs = this.mintService.loadMintKeysetCounts({
-			date_start: this.page_settings.date_start,
-			date_end: this.page_settings.date_end,
-			id_keysets: this.mint_keysets.map((keyset) => keyset.id),
-		});
-
-		const [analytics_keysets, analytics_keysets_pre, keysets_counts] = await lastValueFrom(
-			forkJoin([analytics_keysets_obs, analytics_keysets_pre_obs, keyset_counts_obs]),
+		const [analytics_keysets, analytics_keysets_pre] = await lastValueFrom(
+			forkJoin([analytics_keysets_obs, analytics_keysets_pre_obs]),
 		);
 
 		this.keysets_analytics = analytics_keysets;
 		this.keysets_analytics_pre = analytics_keysets_pre;
-		this.keysets_counts = keysets_counts;
 	}
 
 	private async reloadDynamicData(): Promise<void> {
