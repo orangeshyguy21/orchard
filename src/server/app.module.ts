@@ -24,7 +24,7 @@ import {
 	LightningChannelOpenInitiator,
 } from './modules/lightning/lightning.enums';
 import {TaprootAssetType, TaprootAssetVersion} from './modules/tapass/tapass.enums';
-import {MintAnalyticsInterval} from './modules/cashu/mintdb/cashumintdb.enums';
+import {MintAnalyticsInterval, MintActivityPeriod} from './modules/cashu/mintdb/cashumintdb.enums';
 import {LightningAnalyticsInterval, LightningAnalyticsMetric} from './modules/lightning/analytics/lnanalytics.enums';
 import {MintUnit, MintQuoteState, MeltQuoteState, MintProofState} from './modules/cashu/cashu.enums';
 import {AiAgent, AiMessageRole, AiFunctionName} from './modules/ai/ai.enums';
@@ -48,6 +48,7 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 	registerEnumType(MeltQuoteState, {name: 'MeltQuoteState'});
 	registerEnumType(MintProofState, {name: 'MintProofState'});
 	registerEnumType(MintAnalyticsInterval, {name: 'MintAnalyticsInterval'});
+	registerEnumType(MintActivityPeriod, {name: 'MintActivityPeriod'});
 	registerEnumType(TaprootAssetType, {name: 'TaprootAssetType'});
 	registerEnumType(TaprootAssetVersion, {name: 'TaprootAssetVersion'});
 	registerEnumType(LightningAddressType, {name: 'LightningAddressType'});

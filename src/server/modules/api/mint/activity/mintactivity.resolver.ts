@@ -1,0 +1,26 @@
+/* Core Dependencies */
+import {Logger} from '@nestjs/common';
+import {Resolver, Query, Args} from '@nestjs/graphql';
+/* Application Dependencies */
+import {MintActivityPeriod} from '@server/modules/cashu/mintdb/cashumintdb.enums';
+import {Timezone, TimezoneType} from '@server/modules/graphql/scalars/timezone.scalar';
+/* Local Dependencies */
+import {OrchardMintActivitySummary} from './mintactivity.model';
+import {MintActivityService} from './mintactivity.service';
+
+@Resolver()
+export class MintActivityResolver {
+	private readonly logger = new Logger(MintActivityResolver.name);
+
+	constructor(private mintActivityService: MintActivityService) {}
+
+	@Query(() => OrchardMintActivitySummary)
+	async mint_activity_summary(
+		@Args('period', {type: () => MintActivityPeriod}) period: MintActivityPeriod,
+		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
+	): Promise<OrchardMintActivitySummary> {
+		const tag = 'GET { mint_activity_summary }';
+		this.logger.debug(tag);
+		return await this.mintActivityService.getMintActivitySummary(tag, period, timezone);
+	}
+}
