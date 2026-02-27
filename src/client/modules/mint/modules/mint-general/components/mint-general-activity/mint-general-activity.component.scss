@@ -12,17 +12,19 @@
 	@extend %overflow-hidden;
     @extend %flex;
     @extend %flex-column;
+    @extend %relative;
+    min-height: 7rem;
 }
 
 .sparkline-chart {
 	flex-grow: 1;
-	min-height: 3.5rem;
-	position: relative;
+	position: absolute;
+    top: 2rem;
+    right: 0;
+    bottom: 0;
+    left: 0;
 
 	canvas {
-		position: absolute;
-		bottom: 0;
-		left: 0;
 		width: 100% !important;
 		height: 100% !important;
 	}

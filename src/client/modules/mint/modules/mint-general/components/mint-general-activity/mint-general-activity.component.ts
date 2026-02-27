@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, computed, input, output, signal, OnChanges} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, input, output, signal, OnChanges, SimpleChanges} from '@angular/core';
 /* Vendor Dependencies */
 import {ChartConfiguration} from 'chart.js';
 /* Application Dependencies */
@@ -43,18 +43,6 @@ export class MintGeneralActivityComponent implements OnChanges {
 		return option?.label ?? '7 days';
 	});
 
-	// public mint_progress_color = computed(() => {
-	// 	const summary = this.summary();
-	// 	if (!summary) return '';
-	// 	return summary.mint_completed_pct_delta >= 0 ? 'orc-status-active-progress-spinner' : 'orc-status-inactive-progress-spinner';
-	// });
-
-	// public melt_progress_color = computed(() => {
-	// 	const summary = this.summary();
-	// 	if (!summary) return '';
-	// 	return summary.melt_completed_pct_delta >= 0 ? 'orc-status-active-progress-spinner' : 'orc-status-inactive-progress-spinner';
-	// });
-
 	public mint_chart_data: ChartConfiguration<'line'>['data'] | null = null;
 	public melt_chart_data: ChartConfiguration<'line'>['data'] | null = null;
 	public swap_chart_data: ChartConfiguration<'line'>['data'] | null = null;
@@ -68,8 +56,10 @@ export class MintGeneralActivityComponent implements OnChanges {
 		this.sparkline_options = this.buildSparklineOptions();
 	}
 
-	ngOnChanges(): void {
-		if (this.summary()) this.initCharts();
+	ngOnChanges(changes: SimpleChanges): void {
+		if( changes['loading'] && !changes['loading'].firstChange) {
+			if (this.loading() === false) this.initCharts();
+		}
 	}
 
 	/** Handles period selection from the mat-menu */
@@ -78,16 +68,10 @@ export class MintGeneralActivityComponent implements OnChanges {
 		this.period_change.emit(period);
 	}
 
-	// /** Formats a delta value for display */
-	// public formatDelta(delta: number): string {
-	// 	if (delta === 0) return '0%';
-	// 	const sign = delta > 0 ? '+' : '';
-	// 	return `${sign}${delta.toFixed(1)}%`;
-	// }
-
 	/** Formats seconds into a human-readable duration */
 	public formatDuration(seconds: number): string {
 		if (seconds === 0) return '0s';
+		if (seconds < 5) return `${Math.round(seconds * 1000)}ms`;
 		if (seconds < 60) return `${Math.round(seconds)}s`;
 		if (seconds < 3600) return `${Math.round(seconds / 60)}m`;
 		return `${(seconds / 3600).toFixed(1)}h`;
@@ -96,6 +80,7 @@ export class MintGeneralActivityComponent implements OnChanges {
 	/** Builds chart data for the three sparklines */
 	private initCharts(): void {
 		const data = this.summary()!;
+        console.log('initCharts', data);
 		this.mint_chart_data = this.buildSparklineData(data.mint_sparkline, data.mint_count_delta);
 		this.melt_chart_data = this.buildSparklineData(data.melt_sparkline, data.melt_count_delta);
 		this.swap_chart_data = this.buildSparklineData(data.swap_sparkline, data.swap_count_delta);
@@ -111,9 +96,8 @@ export class MintGeneralActivityComponent implements OnChanges {
 					data: buckets.map((b) => b.amount),
 					tension: 0.4,
 					fill: true,
-					backgroundColor: (ctx: any) => this.chartService.createAreaGradient(ctx, color, 0.3, 0),
-					borderColor: color,
-					borderWidth: 1.5,
+					backgroundColor: (ctx: any) => this.chartService.createAreaGradient(ctx, color, 0.5, 0),
+					borderWidth: 0,
 					pointRadius: 0,
 				},
 			],

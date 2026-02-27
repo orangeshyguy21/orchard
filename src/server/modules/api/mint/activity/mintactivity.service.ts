@@ -199,7 +199,7 @@ export class MintActivityService {
 
 	/** Computes percentage delta between current and prior values */
 	private computeDelta(current: number, prior: number): number {
-		if (prior === 0) return 0;
+		if (prior === 0) return current > 0 ? 100 : 0;
 		return ((current - prior) / prior) * 100;
 	}
 
