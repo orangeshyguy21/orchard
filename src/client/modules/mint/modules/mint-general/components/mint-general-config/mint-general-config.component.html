@@ -20,7 +20,7 @@
                         <div class="flex flex-items-center flex-gap-0-5">
                             <orc-graphic-status [status]="minting_status()" size="0.5rem"></orc-graphic-status>
                             <span class="font-size-s">
-                                Minting {{ minting_status() === 'inactive' ? 'off' : 'on' }}
+                                Minting {{ minting_status() === 'inactive' ? 'disabled' : 'enabled' }}
                             </span>
                         </div>
                     </div>
@@ -28,7 +28,7 @@
                         <div class="flex flex-items-center flex-gap-0-5">
                             <orc-graphic-status [status]="melting_status()" size="0.5rem"></orc-graphic-status>
                             <span class="font-size-s">
-                                Melting {{ melting_status() === 'inactive' ? 'off' : 'on' }}
+                                Melting {{ melting_status() === 'inactive' ? 'disabled' : 'enabled' }}
                             </span>
                         </div>
                     </div>
