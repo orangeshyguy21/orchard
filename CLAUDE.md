@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+@AGENTS.md
+
 ## Project Overview
 
 Orchard is a web application for Cashu mint management with support for Bitcoin, Lightning (lnd, cln), Cashu mints (cdk, nutshell), Taproot Assets (tapd), and AI (ollama).
@@ -77,16 +79,8 @@ npm run migration:revert      # Revert last migration
 - ESLint: TypeScript with unused vars enforcement (prefix unused with `_`)
 - Angular components use OnPush change detection and SCSS styling
 
-## Instructions for Claude
-- Always fully type your code
-- For classes & services use PascalCase 
-- For functions use camelCase
-- For variables use snake_case
-- For css class names use kebab-case
-- In Angular, use modern signals, inputs, and outputs
-- In Angular, services are defined in the constructor
-- In Angular, always use pure css and modern angular animation techniques
-- When writing scss, always try to use the global style system designed to inherit commont styles for consistency. For ex: @extend %flex;
-- Include JSDoc comments for functions
-- Keep your code DRY and avoid deep nesting and triangles of doom.
-- Patterns in the front end should be data down and actions up.
+## Angular-Specific Instructions
+- Use modern signals, inputs, and outputs
+- Services and dependencies are injected using `inject()` (not constructor injection)
+- Always use pure CSS and modern Angular animation techniques
+- When writing SCSS, always try to use the global style system designed to inherit common styles for consistency. For ex: `@extend %flex;`
