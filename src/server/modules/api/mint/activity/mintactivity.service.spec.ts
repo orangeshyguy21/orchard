@@ -118,6 +118,7 @@ describe('MintActivityService', () => {
 		expect(result.melt_completed_pct).toBe(0);
 		expect(result.mint_avg_time).toBe(0);
 		expect(result.melt_avg_time).toBe(0);
+		expect(result.warnings).toEqual([]);
 	});
 
 	it('fetches correct date ranges for each period', async () => {
@@ -265,6 +266,31 @@ describe('MintActivityService', () => {
 		const result = await mintActivityService.getMintActivitySummary('TAG', MintActivityPeriod.week, 'UTC');
 		const total_melt_volume = result.melt_sparkline.reduce((sum, b) => sum + b.amount, 0);
 		expect(total_melt_volume).toBe(300);
+	});
+
+	it('populates warnings when query results hit the row limit', async () => {
+		const mint_quotes = Array.from({length: 500}, (_, i) => makeMintQuote({id: `mq${i}`}));
+		const melt_quotes = Array.from({length: 500}, (_, i) => makeMeltQuote({id: `lq${i}`}));
+		const swaps = Array.from({length: 500}, (_, i) => makeSwap({operation_id: `sw${i}`}));
+
+		mintDbService.getMintMintQuotes.mockResolvedValueOnce(mint_quotes).mockResolvedValueOnce([]);
+		mintDbService.getMintMeltQuotes.mockResolvedValueOnce(melt_quotes).mockResolvedValueOnce([]);
+		mintDbService.getMintSwaps.mockResolvedValueOnce(swaps).mockResolvedValueOnce([]);
+
+		const result = await mintActivityService.getMintActivitySummary('TAG', MintActivityPeriod.week);
+		expect(result.warnings).toHaveLength(3);
+		expect(result.warnings[0]).toContain('Mint quote');
+		expect(result.warnings[1]).toContain('Melt quote');
+		expect(result.warnings[2]).toContain('Swap');
+	});
+
+	it('returns no warnings when results are under the row limit', async () => {
+		mintDbService.getMintMintQuotes.mockResolvedValueOnce([makeMintQuote()]).mockResolvedValueOnce([]);
+		mintDbService.getMintMeltQuotes.mockResolvedValueOnce([makeMeltQuote()]).mockResolvedValueOnce([]);
+		mintDbService.getMintSwaps.mockResolvedValueOnce([makeSwap()]).mockResolvedValueOnce([]);
+
+		const result = await mintActivityService.getMintActivitySummary('TAG', MintActivityPeriod.week);
+		expect(result.warnings).toEqual([]);
 	});
 
 	it('wraps database errors via ErrorService and throws OrchardApiError', async () => {

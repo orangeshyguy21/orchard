@@ -1,6 +1,6 @@
 import {OrchardMintDatabaseInfo} from '@shared/generated.types';
 
-export class MintDatabaseInfo {
+export class MintDatabaseInfo implements OrchardMintDatabaseInfo {
 	public size: number;
 	public type: string;
 

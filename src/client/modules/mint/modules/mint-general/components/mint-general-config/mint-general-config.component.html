@@ -53,16 +53,20 @@
 												"
 											></div>
 										</div>
-										<div class="limit-range-bar">
-											<div class="limit-range-track"></div>
-										</div>
-										<div class="limit-range-end limit-range-max">
-											<div
-												class="font-size-m font-weight-semi-bold"
-												[innerHTML]="
-													limit.max_amount !== null ? (limit.max_amount | localAmount: limit.unit : 'mint') : '--'
-												"
-											></div>
+										<div class="limit-range-fill">
+											<div class="limit-range-bar" [style.width.%]="getTrackWidthPercent(limit)">
+												<div class="limit-range-track"></div>
+											</div>
+											<div class="limit-range-end limit-range-max">
+												<div
+													class="font-size-m font-weight-semi-bold"
+													[innerHTML]="
+														limit.max_amount !== null
+															? (limit.max_amount | localAmount: limit.unit : 'mint')
+															: '--'
+													"
+												></div>
+											</div>
 										</div>
 									</div>
 								</div>
@@ -91,16 +95,20 @@
 												"
 											></div>
 										</div>
-										<div class="limit-range-bar">
-											<div class="limit-range-track"></div>
-										</div>
-										<div class="limit-range-end limit-range-max">
-											<div
-												class="font-size-m font-weight-semi-bold"
-												[innerHTML]="
-													limit.max_amount !== null ? (limit.max_amount | localAmount: limit.unit : 'mint') : '--'
-												"
-											></div>
+										<div class="limit-range-fill">
+											<div class="limit-range-bar" [style.width.%]="getTrackWidthPercent(limit)">
+												<div class="limit-range-track"></div>
+											</div>
+											<div class="limit-range-end limit-range-max">
+												<div
+													class="font-size-m font-weight-semi-bold"
+													[innerHTML]="
+														limit.max_amount !== null
+															? (limit.max_amount | localAmount: limit.unit : 'mint')
+															: '--'
+													"
+												></div>
+											</div>
 										</div>
 									</div>
 								</div>

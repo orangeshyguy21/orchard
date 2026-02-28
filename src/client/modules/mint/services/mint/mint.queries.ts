@@ -490,6 +490,7 @@ query MintActivitySummary($period: MintActivityPeriod!, $timezone: Timezone) {
 		melt_completed_pct_delta
 		melt_avg_time
 		melt_avg_time_delta
+		warnings
 	}
 }`;
 

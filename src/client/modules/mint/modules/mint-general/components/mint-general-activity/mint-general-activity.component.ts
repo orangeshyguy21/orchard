@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, computed, input, output, signal, OnChanges, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, input, output, signal, OnChanges, SimpleChanges} from '@angular/core';
 /* Vendor Dependencies */
 import {ChartConfiguration} from 'chart.js';
 /* Application Dependencies */
@@ -24,20 +24,29 @@ type PeriodOption = {
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintGeneralActivityComponent implements OnChanges {
+	// ── Injected dependencies ──
+	private readonly chartService = inject(ChartService);
+	private readonly themeService = inject(ThemeService);
+	private readonly settingDeviceService = inject(SettingDeviceService);
+
+	// ── Inputs / Outputs ──
 	public summary = input.required<MintActivitySummary | null>();
 	public loading = input<boolean>(false);
 	public error = input<boolean>(false);
 
 	public period_change = output<MintActivityPeriod>();
 
+	// ── Public signals ──
 	public selected_period = signal<MintActivityPeriod>(MintActivityPeriod.Week);
 
+	// ── Public properties ──
 	public period_options: PeriodOption[] = [
 		{value: MintActivityPeriod.Day, label: '24 hours'},
 		{value: MintActivityPeriod.ThreeDay, label: '3 days'},
 		{value: MintActivityPeriod.Week, label: '7 days'},
 	];
 
+	// ── Public computed signals ──
 	public period_label = computed(() => {
 		const option = this.period_options.find((o) => o.value === this.selected_period());
 		return option?.label ?? '7 days';
@@ -46,15 +55,7 @@ export class MintGeneralActivityComponent implements OnChanges {
 	public mint_chart_data: ChartConfiguration<'line'>['data'] | null = null;
 	public melt_chart_data: ChartConfiguration<'line'>['data'] | null = null;
 	public swap_chart_data: ChartConfiguration<'line'>['data'] | null = null;
-	public sparkline_options: ChartConfiguration<'line'>['options'];
-
-	constructor(
-		private chartService: ChartService,
-		private themeService: ThemeService,
-		private settingDeviceService: SettingDeviceService,
-	) {
-		this.sparkline_options = this.buildSparklineOptions();
-	}
+	public sparkline_options: ChartConfiguration<'line'>['options'] = this.buildSparklineOptions();
 
 	ngOnChanges(changes: SimpleChanges): void {
 		if (changes['loading'] && !changes['loading'].firstChange) {

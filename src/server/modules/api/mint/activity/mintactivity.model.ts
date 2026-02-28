@@ -8,7 +8,7 @@ export class OrchardMintActivityBucket {
 	@Field(() => UnixTimestamp)
 	created_time: number;
 
-	@Field(() => Int)
+	@Field(() => Float)
 	amount: number;
 }
 
@@ -20,7 +20,7 @@ export class OrchardMintActivitySummary {
 	@Field(() => Float)
 	total_operations_delta: number;
 
-	@Field(() => Int)
+	@Field(() => Float)
 	total_volume: number;
 
 	@Field(() => Float)
@@ -76,4 +76,7 @@ export class OrchardMintActivitySummary {
 
 	@Field(() => Float)
 	melt_avg_time_delta: number;
+
+	@Field(() => [String])
+	warnings: string[];
 }

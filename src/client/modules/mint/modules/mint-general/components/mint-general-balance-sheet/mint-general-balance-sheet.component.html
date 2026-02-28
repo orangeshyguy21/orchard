@@ -29,7 +29,7 @@
 									@if (row.assets !== null) {
 										<div class="flex flex-column">
 											<span
-												class="font-size-l text-nowrap"
+												class="font-size-xl font-weight-semi-bold text-nowrap"
 												[innerHTML]="row.assets | localAmount: row.unit_lightning : 'lightning'"
 											></span>
 											<div class="font-size-xs orc-outline-color text-nowrap">
@@ -66,7 +66,7 @@
 						</orc-graphic-asset>
 						<div class="flex flex-column">
 							<span
-								class="font-size-l text-nowrap"
+								class="font-size-xl font-weight-semi-bold text-nowrap"
 								[innerHTML]="row.liabilities | localAmount: row.unit_mint : 'mint'"
 							></span>
 							<div class="font-size-xs orc-outline-color text-nowrap">

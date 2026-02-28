@@ -21,6 +21,18 @@
 	min-height: 7rem;
 }
 
+.sparkline-watermark {
+	@extend %absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 5rem;
+	width: 5rem;
+	height: 5rem;
+	opacity: 0.05;
+	pointer-events: none;
+}
+
 .sparkline-chart {
 	@extend %flex-grow;
 	@extend %absolute;
@@ -57,4 +69,14 @@
 
 .delta-negative {
 	@extend %orc-status-inactive-color;
+}
+
+.activity-warning {
+	@extend %flex;
+	@extend %flex-column;
+	@extend %flex-gap-0-25;
+	@extend %p-0-5;
+	@extend %orc-corner-extra-small;
+	background: color-mix(in srgb, var(--orc-status-warning) 10%, transparent);
+	color: var(--orc-status-warning);
 }

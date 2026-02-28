@@ -14,6 +14,9 @@ import {ErrorService} from '@server/modules/error/error.service';
 /* Local Dependencies */
 import {OrchardMintActivitySummary, OrchardMintActivityBucket} from './mintactivity.model';
 
+/** Row limit passed to each activity query — used to detect truncation */
+const ACTIVITY_ROW_LIMIT = 500;
+
 /** Maps period enum to duration in seconds */
 const PERIOD_SECONDS: Record<MintActivityPeriod, number> = {
 	[MintActivityPeriod.day]: 86400,
@@ -62,14 +65,20 @@ export class MintActivityService {
 				const current_start = now - period_seconds;
 				const prior_start = now - period_seconds * 2;
 
+				const query_args = {page_size: ACTIVITY_ROW_LIMIT};
 				const [current_mints, prior_mints, current_melts, prior_melts, current_swaps, prior_swaps] = await Promise.all([
-					this.cashuMintDatabaseService.getMintMintQuotes(client, {date_start: current_start, date_end: now}),
-					this.cashuMintDatabaseService.getMintMintQuotes(client, {date_start: prior_start, date_end: current_start}),
-					this.cashuMintDatabaseService.getMintMeltQuotes(client, {date_start: current_start, date_end: now}),
-					this.cashuMintDatabaseService.getMintMeltQuotes(client, {date_start: prior_start, date_end: current_start}),
-					this.cashuMintDatabaseService.getMintSwaps(client, {date_start: current_start, date_end: now}),
-					this.cashuMintDatabaseService.getMintSwaps(client, {date_start: prior_start, date_end: current_start}),
+					this.cashuMintDatabaseService.getMintMintQuotes(client, {date_start: current_start, date_end: now, ...query_args}),
+					this.cashuMintDatabaseService.getMintMintQuotes(client, {date_start: prior_start, date_end: current_start, ...query_args}),
+					this.cashuMintDatabaseService.getMintMeltQuotes(client, {date_start: current_start, date_end: now, ...query_args}),
+					this.cashuMintDatabaseService.getMintMeltQuotes(client, {date_start: prior_start, date_end: current_start, ...query_args}),
+					this.cashuMintDatabaseService.getMintSwaps(client, {date_start: current_start, date_end: now, ...query_args}),
+					this.cashuMintDatabaseService.getMintSwaps(client, {date_start: prior_start, date_end: current_start, ...query_args}),
 				]);
+
+				const warnings: string[] = [];
+				if (current_mints.length >= ACTIVITY_ROW_LIMIT) warnings.push('Mint quote data may be incomplete due to high volume');
+				if (current_melts.length >= ACTIVITY_ROW_LIMIT) warnings.push('Melt quote data may be incomplete due to high volume');
+				if (current_swaps.length >= ACTIVITY_ROW_LIMIT) warnings.push('Swap data may be incomplete due to high volume');
 
 				return this.buildSummary(
 					{mints: current_mints, melts: current_melts, swaps: current_swaps},
@@ -78,6 +87,7 @@ export class MintActivityService {
 					now,
 					period,
 					timezone || 'UTC',
+					warnings,
 				);
 			} catch (error) {
 				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
@@ -96,6 +106,7 @@ export class MintActivityService {
 		period_end: number,
 		period: MintActivityPeriod,
 		timezone: string,
+		warnings: string[],
 	): OrchardMintActivitySummary {
 		const cur_mint = this.computeMintQuoteStats(current.mints);
 		const pri_mint = this.computeMintQuoteStats(prior.mints);
@@ -144,6 +155,8 @@ export class MintActivityService {
 		summary.melt_completed_pct_delta = this.computeDelta(cur_melt.completed_pct, pri_melt.completed_pct);
 		summary.melt_avg_time = cur_melt.avg_time;
 		summary.melt_avg_time_delta = this.computeDelta(cur_melt.avg_time, pri_melt.avg_time);
+
+		summary.warnings = warnings;
 
 		return summary;
 	}

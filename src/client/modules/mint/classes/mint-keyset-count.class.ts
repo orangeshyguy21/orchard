@@ -1,6 +1,6 @@
 import {OrchardMintKeysetCount} from '@shared/generated.types';
 
-export class MintKeysetCount {
+export class MintKeysetCount implements OrchardMintKeysetCount {
 	public id: string;
 	public proof_count: number;
 	public promise_count: number;

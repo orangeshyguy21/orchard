@@ -54,6 +54,29 @@ export class MintGeneralConfigComponent {
 		return this.mapMethodLimits(this.info()?.nuts?.nut5?.methods);
 	});
 
+	/** Per-unit maximum max_amount across all minting and melting limits. Null means unlimited (skip scaling). */
+	private max_by_unit = computed<Map<string, number | null>>(() => {
+		const all_limits = [...this.minting_limits(), ...this.melting_limits()];
+		const result = new Map<string, number | null>();
+		all_limits.forEach((limit) => {
+			const current = result.get(limit.unit);
+			if (limit.max_amount === null) {
+				result.set(limit.unit, null);
+			} else if (current !== null) {
+				result.set(limit.unit, Math.max(current ?? 0, limit.max_amount));
+			}
+		});
+		return result;
+	});
+
+	/** Returns the track width percentage for a limit, scaled relative to the largest max_amount in its unit. */
+	public getTrackWidthPercent(limit: MethodLimit): number {
+		if (limit.max_amount === null) return 100;
+		const unit_max = this.max_by_unit().get(limit.unit);
+		if (unit_max === null || unit_max === undefined || unit_max === 0) return 100;
+		return Math.max(5, (limit.max_amount / unit_max) * 100);
+	}
+
 	/** Derives a status string from a nut number and its value. */
 	private getNutStatus(number: number, nut: unknown): GraphicStatusState {
 		if (nut == null || typeof nut !== 'object') return number === 4 || number === 5 ? 'inactive' : 'disabled';

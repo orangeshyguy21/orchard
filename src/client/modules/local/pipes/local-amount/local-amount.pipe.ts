@@ -117,12 +117,14 @@ export class LocalAmountPipe implements PipeTransform {
 
 	private formatPreceding(amount_string: string, unit: string): string {
 		return `
+        <span class="orc-amount-preceding">
             <span class="orc-unit">
                 ${unit}
             </span>
             <span class="orc-amount">
                 ${amount_string}
             </span>
+        </span>
         `;
 	}
 

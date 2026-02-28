@@ -51,7 +51,7 @@
 							<div class="flex flex-justify-between flex-items-start">
 								<div>
 									<span class="font-size-xl font-weight-semi-bold">{{ summary()!.total_volume | number }}</span>
-									<div class="font-size-xs orc-outline-color">Volume</div>
+									<div class="font-size-xs orc-outline-color">Unit volume</div>
 								</div>
 								<div>
 									<ng-container
@@ -66,6 +66,7 @@
 					<div class="flex flex-row flex-gap-1">
 						<!-- Mints -->
 						<div class="orc-high-card flex-1 sparkline-card">
+							<mat-icon class="sparkline-watermark">payments</mat-icon>
 							<div class="p-0-5 p-h-1">
 								<div class="flex flex-justify-between flex-items-start">
 									<div>
@@ -86,6 +87,7 @@
 
 						<!-- Melts -->
 						<div class="orc-high-card flex-1 sparkline-card">
+							<mat-icon class="sparkline-watermark">mode_heat</mat-icon>
 							<div class="p-0-5 p-h-1">
 								<div class="flex flex-justify-between flex-items-start">
 									<div>
@@ -106,6 +108,7 @@
 
 						<!-- Swaps -->
 						<div class="orc-high-card flex-1 sparkline-card">
+							<mat-icon class="sparkline-watermark">swap_calls</mat-icon>
 							<div class="p-0-5 p-h-1">
 								<div class="flex flex-justify-between flex-items-start">
 									<div>
@@ -183,6 +186,14 @@
 							</div>
 						</div>
 					</div>
+
+					@if (summary()!.warnings.length > 0) {
+						<div class="activity-warning">
+							@for (warning of summary()!.warnings; track warning) {
+								<span class="font-size-xs">{{ warning }}</span>
+							}
+						</div>
+					}
 				</div>
 			}
 		</mat-card-content>

@@ -1,8 +1,8 @@
 import {OrchardMintActivitySummary, OrchardMintActivityBucket} from '@shared/generated.types';
 
 export class MintActivityBucket implements OrchardMintActivityBucket {
-	created_time: number;
-	amount: number;
+	public created_time: number;
+	public amount: number;
 
 	constructor(bucket: OrchardMintActivityBucket) {
 		this.created_time = bucket.created_time;
@@ -11,27 +11,28 @@ export class MintActivityBucket implements OrchardMintActivityBucket {
 }
 
 export class MintActivitySummary implements OrchardMintActivitySummary {
-	total_operations: number;
-	total_operations_delta: number;
-	total_volume: number;
-	total_volume_delta: number;
-	mint_count: number;
-	mint_count_delta: number;
-	mint_sparkline: MintActivityBucket[];
-	melt_count: number;
-	melt_count_delta: number;
-	melt_sparkline: MintActivityBucket[];
-	swap_count: number;
-	swap_count_delta: number;
-	swap_sparkline: MintActivityBucket[];
-	mint_completed_pct: number;
-	mint_completed_pct_delta: number;
-	mint_avg_time: number;
-	mint_avg_time_delta: number;
-	melt_completed_pct: number;
-	melt_completed_pct_delta: number;
-	melt_avg_time: number;
-	melt_avg_time_delta: number;
+	public total_operations: number;
+	public total_operations_delta: number;
+	public total_volume: number;
+	public total_volume_delta: number;
+	public mint_count: number;
+	public mint_count_delta: number;
+	public mint_sparkline: MintActivityBucket[];
+	public melt_count: number;
+	public melt_count_delta: number;
+	public melt_sparkline: MintActivityBucket[];
+	public swap_count: number;
+	public swap_count_delta: number;
+	public swap_sparkline: MintActivityBucket[];
+	public mint_completed_pct: number;
+	public mint_completed_pct_delta: number;
+	public mint_avg_time: number;
+	public mint_avg_time_delta: number;
+	public melt_completed_pct: number;
+	public melt_completed_pct_delta: number;
+	public melt_avg_time: number;
+	public melt_avg_time_delta: number;
+	public warnings: string[];
 
 	constructor(data: OrchardMintActivitySummary) {
 		this.total_operations = data.total_operations;
@@ -55,5 +56,6 @@ export class MintActivitySummary implements OrchardMintActivitySummary {
 		this.melt_completed_pct_delta = data.melt_completed_pct_delta;
 		this.melt_avg_time = data.melt_avg_time;
 		this.melt_avg_time_delta = data.melt_avg_time_delta;
+		this.warnings = data.warnings;
 	}
 }

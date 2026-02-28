@@ -37,6 +37,7 @@ function buildMockSummary(overrides: Partial<MintActivitySummary> = {}): MintAct
 		melt_completed_pct_delta: -3,
 		melt_avg_time: 45,
 		melt_avg_time_delta: 5,
+		warnings: [],
 		...overrides,
 	});
 }
