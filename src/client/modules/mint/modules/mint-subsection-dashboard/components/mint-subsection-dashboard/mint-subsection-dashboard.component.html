@@ -1,5 +1,5 @@
 <div class="mint-dashboard-container">
-	<div class="flex flex-column flex-gap-2">
+	<div class="flex flex-column flex-gap-2" [class.p-h-1]="device_type() === 'desktop'">
 		<div class="flex flex-row flex-gap-2 flex-wrap">
 			<div class="flex-1">
 				<orc-mint-general-info

@@ -63,12 +63,12 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public loading_mint: boolean = true;
 	public loading_mint_icon: boolean = true;
 	public loading_mint_activity = signal<boolean>(true);
-	
+
 	public errors_bitcoin: OrchardError[] = [];
 	public errors_lightning: OrchardError[] = [];
 	public errors_taproot_assets: OrchardError[] = [];
 	public errors_mint: OrchardError[] = [];
-    public error_mint_activity = signal<boolean>(false);
+	public error_mint_activity = signal<boolean>(false);
 
 	public bitcoin_blockchain_info!: BitcoinBlockchainInfo | null;
 	public bitcoin_network_info!: BitcoinNetworkInfo | null;

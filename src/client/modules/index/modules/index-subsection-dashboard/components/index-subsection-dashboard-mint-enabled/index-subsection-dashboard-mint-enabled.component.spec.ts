@@ -32,6 +32,7 @@ describe('IndexSubsectionDashboardMintEnabledComponent', () => {
 		fixture.componentRef.setInput('bitcoin_oracle_price', null);
 		fixture.componentRef.setInput('mint_errors', []);
 		fixture.componentRef.setInput('device_type', 'desktop');
+		fixture.componentRef.setInput('activity_summary', null);
 		fixture.detectChanges();
 	});
 

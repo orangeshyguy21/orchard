@@ -68,9 +68,17 @@ export class MintActivityService {
 				const query_args = {page_size: ACTIVITY_ROW_LIMIT};
 				const [current_mints, prior_mints, current_melts, prior_melts, current_swaps, prior_swaps] = await Promise.all([
 					this.cashuMintDatabaseService.getMintMintQuotes(client, {date_start: current_start, date_end: now, ...query_args}),
-					this.cashuMintDatabaseService.getMintMintQuotes(client, {date_start: prior_start, date_end: current_start, ...query_args}),
+					this.cashuMintDatabaseService.getMintMintQuotes(client, {
+						date_start: prior_start,
+						date_end: current_start,
+						...query_args,
+					}),
 					this.cashuMintDatabaseService.getMintMeltQuotes(client, {date_start: current_start, date_end: now, ...query_args}),
-					this.cashuMintDatabaseService.getMintMeltQuotes(client, {date_start: prior_start, date_end: current_start, ...query_args}),
+					this.cashuMintDatabaseService.getMintMeltQuotes(client, {
+						date_start: prior_start,
+						date_end: current_start,
+						...query_args,
+					}),
 					this.cashuMintDatabaseService.getMintSwaps(client, {date_start: current_start, date_end: now, ...query_args}),
 					this.cashuMintDatabaseService.getMintSwaps(client, {date_start: prior_start, date_end: current_start, ...query_args}),
 				]);

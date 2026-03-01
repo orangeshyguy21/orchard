@@ -49,7 +49,9 @@
 											<div
 												class="font-size-xs orc-outline-color"
 												[innerHTML]="
-													limit.min_amount !== null ? (limit.min_amount | localAmount: limit.unit : 'mint') : (1 | localAmount: limit.unit : 'mint') 
+													limit.min_amount !== null
+														? (limit.min_amount | localAmount: limit.unit : 'mint')
+														: (1 | localAmount: limit.unit : 'mint')
 												"
 											></div>
 										</div>
@@ -91,7 +93,9 @@
 											<div
 												class="font-size-xs orc-outline-color"
 												[innerHTML]="
-													limit.min_amount !== null ? (limit.min_amount | localAmount: limit.unit : 'mint') : (1 | localAmount: limit.unit : 'mint')
+													limit.min_amount !== null
+														? (limit.min_amount | localAmount: limit.unit : 'mint')
+														: (1 | localAmount: limit.unit : 'mint')
 												"
 											></div>
 										</div>

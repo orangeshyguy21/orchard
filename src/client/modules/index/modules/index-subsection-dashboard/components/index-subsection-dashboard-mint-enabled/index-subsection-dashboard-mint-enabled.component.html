@@ -2,38 +2,38 @@
 	@if (!loading()) {
 		<div animate.enter="orc-animation-fadein" class="flex flex-wrap flex-gap-column-4 flex-gap-row-2">
 			<div class="flex-grow flex flex-wrap flex-gap-column-4 flex-gap-row-2">
-                <div class="flex-1">
-                    <orc-mint-general-info
-                        [loading]="loading_icon()"
-                        [icon_data]="icon_data()"
-                        [info]="info()"
-                        [error]="mint_errors().length > 0"
-                        [device_type]="device_type()"
-                        [connections]="connections()"
-                    >
-                        <button
-                            type="button"
-                            class="orc-icon-button text-nowrap z-index-0 orc-flat-fab"
-                            matFab
-                            extended
-                            [matMenuTriggerFor]="device_type() === 'mobile' ? null : desktopMenu"
-                            (click)="onMenuClick()"
-                        >
-                            <mat-icon>account_balance</mat-icon>
-                            Open Mint
-                        </button>
-                    </orc-mint-general-info>
-                </div>
-                <div class="flex-1">
-                    <orc-mint-general-activity
-                        [summary]="activity_summary()"
-                        [loading]="loading_activity()"
-                        [error]="error_activity()"
-                        (period_change)="period_change.emit($event)"
-                    ></orc-mint-general-activity>
-                </div>
-            </div>
-            
+				<div class="flex-1">
+					<orc-mint-general-info
+						[loading]="loading_icon()"
+						[icon_data]="icon_data()"
+						[info]="info()"
+						[error]="mint_errors().length > 0"
+						[device_type]="device_type()"
+						[connections]="connections()"
+					>
+						<button
+							type="button"
+							class="orc-icon-button text-nowrap z-index-0 orc-flat-fab"
+							matFab
+							extended
+							[matMenuTriggerFor]="device_type() === 'mobile' ? null : desktopMenu"
+							(click)="onMenuClick()"
+						>
+							<mat-icon>account_balance</mat-icon>
+							Open Mint
+						</button>
+					</orc-mint-general-info>
+				</div>
+				<div class="flex-1">
+					<orc-mint-general-activity
+						[summary]="activity_summary()"
+						[loading]="loading_activity()"
+						[error]="error_activity()"
+						(period_change)="period_change.emit($event)"
+					></orc-mint-general-activity>
+				</div>
+			</div>
+
 			<div class="flex-grow w-min-0">
 				<orc-mint-general-balance-sheet
 					[balances]="balances()"

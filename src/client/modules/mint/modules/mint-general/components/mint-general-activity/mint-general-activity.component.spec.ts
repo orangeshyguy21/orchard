@@ -61,15 +61,15 @@ describe('MintGeneralActivityComponent', () => {
 		expect(component).toBeTruthy();
 	});
 
-	it('should default to Week period', () => {
-		expect(component.selected_period()).toBe(MintActivityPeriod.Week);
+	it('should default to Day period', () => {
+		expect(component.selected_period()).toBe(MintActivityPeriod.Day);
 	});
 
 	it('should compute period_label from selected_period', () => {
-		expect(component.period_label()).toBe('7 days');
-
-		component.selected_period.set(MintActivityPeriod.Day);
 		expect(component.period_label()).toBe('24 hours');
+
+		component.selected_period.set(MintActivityPeriod.Week);
+		expect(component.period_label()).toBe('7 days');
 
 		component.selected_period.set(MintActivityPeriod.ThreeDay);
 		expect(component.period_label()).toBe('3 days');
