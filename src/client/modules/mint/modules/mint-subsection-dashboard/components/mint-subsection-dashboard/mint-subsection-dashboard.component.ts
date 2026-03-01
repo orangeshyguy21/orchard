@@ -183,7 +183,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.setMintIcon();
 		this.orchardOptionalInit();
 		this.getMintFees();
-		this.loadActivitySummary(MintActivityPeriod.Week);
+		this.loadActivitySummary(MintActivityPeriod.Day);
 		await this.initAnalytics();
 		this.mint_fee_revenue.set(this.getMintFeeRevenueState());
 		this.subscriptions.add(this.getBreakpointSubscription());

@@ -177,7 +177,7 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.loading_mint_icon = this.enabled_mint ? true : false;
 		if (this.enabled_mint) {
 			this.getMint();
-			this.loadMintActivitySummary(MintActivityPeriod.Week);
+			this.loadMintActivitySummary(MintActivityPeriod.Day);
 		}
 		this.cdr.detectChanges();
 	}

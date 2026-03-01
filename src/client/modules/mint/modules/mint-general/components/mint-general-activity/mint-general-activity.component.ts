@@ -37,7 +37,7 @@ export class MintGeneralActivityComponent implements OnChanges {
 	public period_change = output<MintActivityPeriod>();
 
 	// ── Public signals ──
-	public selected_period = signal<MintActivityPeriod>(MintActivityPeriod.Week);
+	public selected_period = signal<MintActivityPeriod>(MintActivityPeriod.Day);
 
 	// ── Public properties ──
 	public period_options: PeriodOption[] = [
