@@ -80,7 +80,8 @@ export class MintGeneralActivityComponent implements OnChanges {
 
 	/** Builds chart data for the three sparklines */
 	private initCharts(): void {
-		const data = this.summary()!;
+		const data = this.summary();
+		if (!data) return;
 		this.mint_chart_data = this.buildSparklineData(data.mint_sparkline, data.mint_count_delta);
 		this.melt_chart_data = this.buildSparklineData(data.melt_sparkline, data.melt_count_delta);
 		this.swap_chart_data = this.buildSparklineData(data.swap_sparkline, data.swap_count_delta);

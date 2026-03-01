@@ -255,11 +255,13 @@ export function mergeKeysetCounts(
 	proof_rows: {id: string; count: number}[],
 	promise_rows: {id: string; count: number}[],
 ): CashuMintKeysetCount[] {
+	const proof_map = new Map(proof_rows.map((r) => [r.id, r.count]));
+	const promise_map = new Map(promise_rows.map((r) => [r.id, r.count]));
 	const keyset_ids = Array.from(new Set(proof_rows.map((r) => r.id).concat(promise_rows.map((r) => r.id))));
 	return keyset_ids.map((id) => ({
 		id,
-		proof_count: proof_rows.find((r) => r.id === id)?.count ?? 0,
-		promise_count: promise_rows.find((r) => r.id === id)?.count ?? 0,
+		proof_count: proof_map.get(id) ?? 0,
+		promise_count: promise_map.get(id) ?? 0,
 	}));
 }
 
