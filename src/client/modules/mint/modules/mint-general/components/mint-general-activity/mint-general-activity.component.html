@@ -188,7 +188,7 @@
 					</div>
 
 					@if (summary()!.warnings.length > 0) {
-						<div class="activity-warning">
+						<div class="orc-warning-card">
 							@for (warning of summary()!.warnings; track warning) {
 								<span class="font-size-xs">{{ warning }}</span>
 							}
