@@ -40,6 +40,8 @@ lerna-debug.log*
 .settings/
 *.sublime-workspace
 .claude/*
+!.claude/launch.json
+!.claude/start.sh
 
 # IDE - VSCode
 .vscode/*

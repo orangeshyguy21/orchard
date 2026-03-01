@@ -1,0 +1,17 @@
+{
+    "version": "0.0.1",
+    "configurations": [
+        {
+            "name": "server",
+            "runtimeExecutable": ".claude/start.sh",
+            "runtimeArgs": ["run", "start:server"],
+            "port": 3322
+        },
+        {
+            "name": "client",
+            "runtimeExecutable": ".claude/start.sh",
+            "runtimeArgs": ["run", "start:client", "--", "--port", "4201"],
+            "port": 4201
+        }
+    ]
+}
