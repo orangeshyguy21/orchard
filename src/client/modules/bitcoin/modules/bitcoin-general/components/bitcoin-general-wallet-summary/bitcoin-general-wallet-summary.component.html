@@ -57,7 +57,7 @@
 							<div class="flex flex-row flex-gap-1 p-t-1 flex-wrap">
 								<div class="orc-high-card p-1 flex-1 relative">
 									<div class="relative z-index-1">
-										<div class="font-size-l text-nowrap">{{ row.utxos }}</div>
+										<div class="font-size-l text-nowrap font-weight-semi-bold">{{ row.utxos }}</div>
 										<div class="font-size-xs orc-outline-color text-nowrap">
 											{{ row.utxos === 1 ? 'UTXO' : 'UTXOs' }}
 										</div>
@@ -104,7 +104,7 @@
 											</div>
 										</div>
 										<div class="p-1">
-											<div class="font-size-l text-nowrap" [innerHTML]="row.amount_oracle | localAmount: 'usd'"></div>
+											<div class="font-size-l text-nowrap font-weight-semi-bold" [innerHTML]="row.amount_oracle | localAmount: 'usd'"></div>
 											<div class="font-size-xs orc-outline-color text-nowrap">Hot wallet value</div>
 										</div>
 									</div>
