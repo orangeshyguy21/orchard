@@ -1,0 +1,20 @@
+@use 'molecule/molecule';
+
+.keyset-bar {
+	@extend %w-full;
+	height: 4px;
+	border-radius: 2px;
+	background: var(--mat-sys-outline-variant);
+	overflow: hidden;
+}
+
+.keyset-bar-sm {
+	height: 3px;
+}
+
+.keyset-bar-fill {
+	height: 100%;
+	border-radius: 2px;
+	background: var(--orc-status-active);
+	transition: width 0.3s ease;
+}

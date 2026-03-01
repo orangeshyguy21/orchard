@@ -10,6 +10,7 @@ import {
 	OrchardMintPromiseGroup,
 	OrchardMintSwap,
 	OrchardMintKeysetsAnalytics,
+	OrchardMintActivitySummary,
 	MintUnit,
 	MintAnalyticsInterval,
 	MintQuoteState,
@@ -29,11 +30,16 @@ import {
 	OrchardMintNut05QuoteUpdate,
 	OrchardMintKeysetRotation,
 	OrchardMintDatabaseBackup,
+	OrchardMintDatabaseInfo,
 	OrchardMintDatabaseRestore,
 	OrchardMintProofGroupStats,
 	OrchardMintFee,
-	OrchardMintKeysetProofCount,
+	OrchardMintKeysetCount,
 } from '@shared/generated.types';
+
+export type MintActivitySummaryResponse = {
+	mint_activity_summary: OrchardMintActivitySummary;
+};
 
 export type MintInfoResponse = {
 	mint_info: OrchardMintInfo;
@@ -93,8 +99,8 @@ export type MintAnalyticsKeysetsResponse = {
 	mint_analytics_keysets: OrchardMintKeysetsAnalytics[];
 };
 
-export type MintKeysetProofCountsResponse = {
-	mint_keyset_proof_counts: OrchardMintKeysetProofCount[];
+export type MintKeysetCountsResponse = {
+	mint_keyset_counts: OrchardMintKeysetCount[];
 };
 
 export type MintAnalyticsArgs = {
@@ -151,7 +157,7 @@ export type MintSwapsArgs = {
 	page_size?: number;
 };
 
-export type MintKeysetProofCountsArgs = {
+export type MintKeysetCountsArgs = {
 	date_start?: number;
 	date_end?: number;
 	id_keysets?: string[];
@@ -237,6 +243,10 @@ export type MintProofGroupsDataResponse = {
 export type MintPromiseGroupsDataResponse = {
 	mint_promise_groups: OrchardMintPromiseGroup[];
 	mint_count_promise_groups: OrchardMintCount;
+};
+
+export type MintDatabaseInfoResponse = {
+	mint_database_info: OrchardMintDatabaseInfo;
 };
 
 export type MintDatabaseBackupResponse = {

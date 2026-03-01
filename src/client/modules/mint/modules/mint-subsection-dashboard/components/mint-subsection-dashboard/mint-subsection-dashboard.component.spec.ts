@@ -16,7 +16,12 @@ describe('MintSubsectionDashboardComponent', () => {
 		await TestBed.configureTestingModule({
 			imports: [OrcMintSubsectionDashboardModule, MatIconTestingModule],
 			declarations: [MintSubsectionDashboardComponent],
-			providers: [{provide: ActivatedRoute, useValue: {snapshot: {data: {mint_info: null, mint_balances: [], mint_keysets: []}}}}],
+			providers: [
+				{
+					provide: ActivatedRoute,
+					useValue: {snapshot: {data: {mint_info: null, mint_balances: [], mint_keysets: [], mint_keyset_counts: []}}},
+				},
+			],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(MintSubsectionDashboardComponent);

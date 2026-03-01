@@ -23,7 +23,10 @@
 						<orc-graphic-asset class="low-bg" [unit]="row.unit" height="2.5rem" custody="lightning" [group_key]="row.group_key">
 						</orc-graphic-asset>
 						<div class="flex flex-column">
-							<span class="text-nowrap font-size-l" [innerHTML]="row.size | localAmount: row.unit : 'lightning'"></span>
+							<span
+								class="text-nowrap font-size-xl font-weight-semi-bold"
+								[innerHTML]="row.size | localAmount: row.unit : 'lightning'"
+							></span>
 							<div class="font-size-xs orc-outline-color text-nowrap">
 								Total {{ row.unit === 'msat' ? 'bitcoin' : row.unit }} capacity
 							</div>
@@ -56,7 +59,7 @@
 							<div class="flex flex-row flex-gap-1 p-t-1 flex-wrap">
 								<div class="orc-high-card p-1 flex-1 relative">
 									<div class="relative z-index-1">
-										<div class="font-size-l text-nowrap">{{ row.channel_count }}</div>
+										<div class="font-size-l text-nowrap font-weight-semi-bold">{{ row.channel_count }}</div>
 										<div class="font-size-xs orc-outline-color text-nowrap">
 											{{ row.channel_count === 1 ? 'Channel' : 'Channels' }}
 										</div>
@@ -67,7 +70,7 @@
 								</div>
 								<div class="orc-high-card p-1 flex-1 relative">
 									<div class="relative z-index-1">
-										<div class="font-size-l text-nowrap">{{ row.channel_active_count }}</div>
+										<div class="font-size-l text-nowrap font-weight-semi-bold">{{ row.channel_active_count }}</div>
 										<div class="font-size-xs orc-outline-color text-nowrap">
 											Active {{ row.channel_active_count === 1 ? 'channel' : 'channels' }}
 										</div>
@@ -78,7 +81,7 @@
 								</div>
 								<div class="orc-high-card p-1 flex-1 relative">
 									<div class="relative z-index-1">
-										<div class="font-size-l text-nowrap">{{ row.channel_closed_count }}</div>
+										<div class="font-size-l text-nowrap font-weight-semi-bold">{{ row.channel_closed_count }}</div>
 										<div class="font-size-xs orc-outline-color text-nowrap">
 											Closed {{ row.channel_closed_count === 1 ? 'channel' : 'channels' }}
 										</div>
@@ -90,7 +93,7 @@
 								<div class="orc-high-card p-1 flex-1">
 									<div>
 										<div
-											class="font-size-l text-nowrap"
+											class="font-size-l text-nowrap font-weight-semi-bold"
 											[innerHTML]="row.avg_channel_size | localAmount: row.unit : 'lightning'"
 										></div>
 										<div class="font-size-xs orc-outline-color text-nowrap">Average channel size</div>
@@ -116,7 +119,7 @@
 											<div class="flex-1">
 												<div>
 													<div
-														class="font-size-l text-nowrap"
+														class="font-size-l text-nowrap font-weight-semi-bold"
 														[innerHTML]="row.size_oracle | localAmount: 'usd'"
 													></div>
 													<div class="font-size-xs orc-outline-color text-nowrap">Total capacity</div>
@@ -125,7 +128,7 @@
 											<div class="flex-1">
 												<div>
 													<div
-														class="font-size-l text-nowrap"
+														class="font-size-l text-nowrap font-weight-semi-bold"
 														[innerHTML]="row.local_oracle | localAmount: 'usd'"
 													></div>
 													<div class="font-size-xs orc-outline-color text-nowrap">Local capacity</div>
@@ -134,7 +137,7 @@
 											<div class="flex-1">
 												<div>
 													<div
-														class="font-size-l text-nowrap"
+														class="font-size-l text-nowrap font-weight-semi-bold"
 														[innerHTML]="row.remote_oracle | localAmount: 'usd'"
 													></div>
 													<div class="font-size-xs orc-outline-color text-nowrap">Remote capacity</div>

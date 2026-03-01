@@ -105,7 +105,7 @@ export class LightningGeneralChannelSummaryComponent implements OnInit {
 				channel_sizes,
 				channel_active_sizes,
 				channel_closed_sizes,
-				avg_channel_size: channel_count > 0 ? size / channel_count : 0,
+				avg_channel_size: channel_count > 0 ? Math.round(size / channel_count) : 0,
 				is_bitcoin: true,
 				size_oracle,
 				remote_oracle,
@@ -185,7 +185,7 @@ export class LightningGeneralChannelSummaryComponent implements OnInit {
 
 		return Object.values(grouped_summaries).map((summary) => ({
 			...summary,
-			avg_channel_size: summary.channel_count > 0 ? summary.size / summary.channel_count : 0,
+			avg_channel_size: summary.channel_count > 0 ? Math.round(summary.size / summary.channel_count) : 0,
 		}));
 	}
 

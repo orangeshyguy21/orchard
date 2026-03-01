@@ -1,0 +1,81 @@
+<div class="flex flex-column flex-gap-1">
+	<div class="title-l">Keysets</div>
+	<mat-card appearance="outlined" class="relative overflow-hidden w-min-24">
+		<mat-card-content class="orc-surface-container-low-bg">
+			<div class="flex flex-column flex-gap-1">
+				<!-- Active / Inactive summary with bar -->
+				<div class="flex flex-column flex-gap-0-5">
+					<div class="flex flex-items-center flex-gap-0-25">
+						<span class="font-size-l font-weight-semi-bold">{{ active_count() }}</span>
+						<span class="font-size-s orc-outline-color">active</span>
+						<span class="font-size-s orc-outline-color">/</span>
+						<span class="font-size-s orc-outline-color">{{ inactive_count() }} inactive</span>
+					</div>
+					<div class="keyset-bar">
+						<div class="keyset-bar-fill" [style.width.%]="active_percentage()"></div>
+					</div>
+				</div>
+
+				<!-- Units chip set -->
+				<div class="flex flex-column flex-gap-0-25">
+					<mat-chip-set>
+						@for (unit of unique_units(); track unit) {
+							<mat-chip>{{ unit | uppercase }}</mat-chip>
+						}
+					</mat-chip-set>
+					<div class="font-size-xs orc-outline-color">Units</div>
+				</div>
+
+				<!-- Blind sigs + Proofs row -->
+				<div class="flex flex-row flex-gap-1 flex-wrap">
+					<!-- Blind sigs card -->
+					<div class="orc-high-card p-0-5 p-h-1 flex-1">
+						<div class="flex flex-column flex-gap-0-5">
+							<div class="flex flex-justify-between flex-items-end">
+								<div>
+									<div class="font-size-l font-weight-semi-bold">{{ total_promises() | number }}</div>
+									<div class="font-size-xs orc-outline-color">Blind sigs</div>
+								</div>
+								<div class="font-size-xs orc-outline-color">
+									{{ active_promises_percentage() | number: '1.0-0' }}% active keysets
+								</div>
+							</div>
+							<div class="keyset-bar keyset-bar-sm">
+								<div class="keyset-bar-fill" [style.width.%]="active_promises_percentage()"></div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Proofs card -->
+					<div class="orc-high-card p-0-5 p-h-1 flex-1">
+						<div class="flex flex-column flex-gap-0-5">
+							<div class="flex flex-justify-between flex-items-end">
+								<div>
+									<div class="font-size-l font-weight-semi-bold">{{ total_proofs() | number }}</div>
+									<div class="font-size-xs orc-outline-color">Proofs</div>
+								</div>
+								<div class="font-size-xs orc-outline-color">
+									{{ active_proofs_percentage() | number: '1.0-0' }}% active keysets
+								</div>
+							</div>
+							<div class="keyset-bar keyset-bar-sm">
+								<div class="keyset-bar-fill" [style.width.%]="active_proofs_percentage()"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Database size card -->
+				<div class="orc-high-card p-0-5 p-h-1">
+					<div class="flex flex-items-center flex-gap-0-5">
+						<mat-icon class="orc-outline-color">database</mat-icon>
+						<div>
+							<div class="font-size-l font-weight-semi-bold">{{ database_info()?.size | dataBytes }}</div>
+							<div class="font-size-xs orc-outline-color">{{ database_info()?.type | titlecase }} database size</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</mat-card-content>
+	</mat-card>
+</div>

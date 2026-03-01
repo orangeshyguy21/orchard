@@ -21,6 +21,10 @@
 	@extend %p-v-0-5;
 }
 
+.keyset-status {
+	@extend %flex;
+}
+
 .keyset-active {
 	@extend %orc-status-active-color;
 }

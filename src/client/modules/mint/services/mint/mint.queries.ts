@@ -215,11 +215,12 @@ query MintAnalyticsKeysets($date_start: UnixTimestamp, $date_end: UnixTimestamp,
 	}
 }`;
 
-export const MINT_KEYSET_PROOF_COUNTS_QUERY = `
-query MintKeysetProofCounts($date_start: UnixTimestamp, $date_end: UnixTimestamp, $id_keysets: [String!]) {
-	mint_keyset_proof_counts(date_start: $date_start, date_end: $date_end, id_keysets: $id_keysets) {
+export const MINT_KEYSET_COUNTS_QUERY = `
+query MintKeysetCounts($date_start: UnixTimestamp, $date_end: UnixTimestamp, $id_keysets: [String!]) {
+	mint_keyset_counts(date_start: $date_start, date_end: $date_end, id_keysets: $id_keysets) {
 		id
-		count
+		proof_count
+		promise_count
 	}
 }`;
 
@@ -410,6 +411,13 @@ query MintPromiseGroups($units: [MintUnit!], $id_keysets: [String!], $date_start
 	}
 }`;
 
+export const MINT_DATABASE_INFO_QUERY = `{
+	mint_database_info {
+		size
+		type
+	}
+}`;
+
 export const MINT_DATABASE_BACKUP_MUTATION = `
 mutation MintDatabaseBackup {
 	mint_database_backup {
@@ -455,6 +463,34 @@ mutation MintNut05QuoteUpdate($quote_id: String!, $state: String!) {
 	mint_nut05_quote_update(quote_id: $quote_id, state: $state) {
 		quote_id
 		state
+	}
+}`;
+
+export const MINT_ACTIVITY_SUMMARY_QUERY = `
+query MintActivitySummary($period: MintActivityPeriod!, $timezone: Timezone) {
+	mint_activity_summary(period: $period, timezone: $timezone) {
+		total_operations
+		total_operations_delta
+		total_volume
+		total_volume_delta
+		mint_count
+		mint_count_delta
+		mint_sparkline { created_time amount }
+		melt_count
+		melt_count_delta
+		melt_sparkline { created_time amount }
+		swap_count
+		swap_count_delta
+		swap_sparkline { created_time amount }
+		mint_completed_pct
+		mint_completed_pct_delta
+		mint_avg_time
+		mint_avg_time_delta
+		melt_completed_pct
+		melt_completed_pct_delta
+		melt_avg_time
+		melt_avg_time_delta
+		warnings
 	}
 }`;
 

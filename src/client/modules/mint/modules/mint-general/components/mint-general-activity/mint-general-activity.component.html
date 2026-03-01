@@ -1,0 +1,217 @@
+<div class="flex flex-column flex-gap-1">
+	<div class="flex flex-justify-between flex-items-center">
+		<div class="title-l">Activity</div>
+		<div class="flex">
+			<div class="mint-activity-period-selector">
+				<button matButton type="button" [matMenuTriggerFor]="period_menu">
+					<mat-icon>calendar_today</mat-icon>
+					<span class="font-size-s">{{ period_label() }}</span>
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<mat-card appearance="outlined" class="relative overflow-hidden mint-activity-card">
+		<mat-card-content class="orc-surface-container-low-bg">
+			@if (loading()) {
+				<div
+					class="flex flex-justify-center flex-items-center activity-loading"
+					animate.enter="orc-animation-fadein"
+					animate.leave="orc-animation-fadeout"
+				>
+					<mat-progress-spinner mode="indeterminate" diameter="30"></mat-progress-spinner>
+				</div>
+			} @else if (error()) {
+				<div
+					class="flex flex-justify-center flex-items-center activity-loading"
+					animate.enter="orc-animation-fadein"
+					animate.leave="orc-animation-fadeout"
+				>
+					<div class="flex flex-column flex-items-center flex-gap-0-5">
+						<mat-icon class="orc-outline-color">error_outline</mat-icon>
+						<span class="font-size-s orc-outline-color">Failed to load activity</span>
+					</div>
+				</div>
+			} @else if (summary()) {
+				<div class="flex flex-column flex-gap-1" animate.enter="orc-animation-fadein-slow" animate.leave="orc-animation-fadeout">
+					<!-- Top summary: Operations + Volume -->
+					<div class="flex flex-row flex-gap-1">
+						<div class="flex-1 orc-high-card p-0-5 p-h-1">
+							<div class="flex flex-justify-between flex-items-start">
+								<div>
+									<span class="font-size-xl font-weight-semi-bold">{{ summary()!.total_operations | number }}</span>
+									<div class="font-size-xs orc-outline-color">Operations</div>
+								</div>
+								<ng-container
+									*ngTemplateOutlet="deltaRef; context: {$implicit: summary()!.total_operations_delta}"
+								></ng-container>
+							</div>
+						</div>
+						<div class="flex-1 orc-high-card p-0-5 p-h-1">
+							<div class="flex flex-justify-between flex-items-start">
+								<div>
+									<span class="font-size-xl font-weight-semi-bold">{{ summary()!.total_volume | number }}</span>
+									<div class="font-size-xs orc-outline-color">Unit volume</div>
+								</div>
+								<div>
+									<ng-container
+										*ngTemplateOutlet="deltaRef; context: {$implicit: summary()!.total_volume_delta}"
+									></ng-container>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Sparkline cards: 3 in a row -->
+					<div class="flex flex-row flex-gap-1">
+						<!-- Mints -->
+						<div class="orc-high-card flex-1 sparkline-card">
+							<mat-icon class="sparkline-watermark">payments</mat-icon>
+							<div class="p-0-5 p-h-1">
+								<div class="flex flex-justify-between flex-items-start">
+									<div>
+										<div class="font-size-l font-weight-semi-bold">{{ summary()!.mint_count | number }}</div>
+										<div class="font-size-xs orc-outline-color">Mints</div>
+									</div>
+									<ng-container
+										*ngTemplateOutlet="deltaRef; context: {$implicit: summary()!.mint_count_delta}"
+									></ng-container>
+								</div>
+							</div>
+							@if (mint_chart_data) {
+								<div class="sparkline-chart">
+									<canvas baseChart type="line" [data]="mint_chart_data" [options]="sparkline_options"></canvas>
+								</div>
+							}
+						</div>
+
+						<!-- Melts -->
+						<div class="orc-high-card flex-1 sparkline-card">
+							<mat-icon class="sparkline-watermark">mode_heat</mat-icon>
+							<div class="p-0-5 p-h-1">
+								<div class="flex flex-justify-between flex-items-start">
+									<div>
+										<div class="font-size-l font-weight-semi-bold">{{ summary()!.melt_count | number }}</div>
+										<div class="font-size-xs orc-outline-color">Melts</div>
+									</div>
+									<ng-container
+										*ngTemplateOutlet="deltaRef; context: {$implicit: summary()!.melt_count_delta}"
+									></ng-container>
+								</div>
+							</div>
+							@if (melt_chart_data) {
+								<div class="sparkline-chart">
+									<canvas baseChart type="line" [data]="melt_chart_data" [options]="sparkline_options"></canvas>
+								</div>
+							}
+						</div>
+
+						<!-- Swaps -->
+						<div class="orc-high-card flex-1 sparkline-card">
+							<mat-icon class="sparkline-watermark">swap_calls</mat-icon>
+							<div class="p-0-5 p-h-1">
+								<div class="flex flex-justify-between flex-items-start">
+									<div>
+										<div class="font-size-l font-weight-semi-bold">{{ summary()!.swap_count | number }}</div>
+										<div class="font-size-xs orc-outline-color">Swaps</div>
+									</div>
+									<ng-container
+										*ngTemplateOutlet="deltaRef; context: {$implicit: summary()!.swap_count_delta}"
+									></ng-container>
+								</div>
+							</div>
+							@if (swap_chart_data) {
+								<div class="sparkline-chart">
+									<canvas baseChart type="line" [data]="swap_chart_data" [options]="sparkline_options"></canvas>
+								</div>
+							}
+						</div>
+					</div>
+
+					<!-- Completion rates with circular progress -->
+					<div class="flex flex-row flex-gap-1 flex-wrap">
+						<div class="orc-high-card p-0-5 p-h-1 flex-1">
+							<div class="flex flex-justify-between flex-items-center flex-gap-2">
+								<div class="flex flex-items-center flex-gap-0-5">
+									<orc-progress-circle
+										[value]="summary()!.mint_completed_pct"
+										[diameter]="40"
+										[stroke_width]="3"
+										progress_color="orc-status-active-progress-spinner"
+									></orc-progress-circle>
+									<div>
+										<div class="flex flex-items-center flex-gap-1">
+											<div class="font-size-l font-weight-semi-bold">
+												{{ summary()!.mint_completed_pct | number: '1.0-0' }}%
+											</div>
+											<ng-container
+												*ngTemplateOutlet="deltaRef; context: {$implicit: summary()!.mint_completed_pct_delta}"
+											></ng-container>
+										</div>
+										<div class="font-size-xs orc-outline-color">Mints completed</div>
+									</div>
+								</div>
+								<div class="text-right">
+									<div class="font-size-m font-weight-semi-bold">{{ formatDuration(summary()!.mint_avg_time) }}</div>
+									<div class="font-size-xs orc-outline-color">avg time</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="orc-high-card p-0-5 p-h-1 flex-1">
+							<div class="flex flex-justify-between flex-items-center flex-gap-2">
+								<div class="flex flex-items-center flex-gap-0-5">
+									<orc-progress-circle
+										[value]="summary()!.melt_completed_pct"
+										[diameter]="40"
+										[stroke_width]="3"
+										progress_color="orc-status-active-progress-spinner"
+									></orc-progress-circle>
+									<div>
+										<div class="flex flex-items-center flex-gap-1">
+											<div class="font-size-l font-weight-semi-bold">
+												{{ summary()!.melt_completed_pct | number: '1.0-0' }}%
+											</div>
+											<ng-container
+												*ngTemplateOutlet="deltaRef; context: {$implicit: summary()!.melt_completed_pct_delta}"
+											></ng-container>
+										</div>
+										<div class="font-size-xs orc-outline-color">Melts completed</div>
+									</div>
+								</div>
+								<div class="text-right">
+									<div class="font-size-m font-weight-semi-bold">{{ formatDuration(summary()!.melt_avg_time) }}</div>
+									<div class="font-size-xs orc-outline-color">avg time</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					@if (summary()!.warnings.length > 0) {
+						<div class="orc-warning-card">
+							@for (warning of summary()!.warnings; track warning) {
+								<span class="font-size-xs">{{ warning }}</span>
+							}
+						</div>
+					}
+				</div>
+			}
+		</mat-card-content>
+	</mat-card>
+</div>
+
+<ng-template #deltaRef let-value>
+	<span class="font-size-xs delta" [class.delta-positive]="value >= 0" [class.delta-negative]="value < 0">
+		<span class="font-size-xs">{{ value >= 0 ? '▲' : '▼' }}</span
+		>{{ value | dataAbs | number: '1.0-0' }}%
+	</span>
+</ng-template>
+
+<mat-menu #period_menu="matMenu" yPosition="below" xPosition="before">
+	@for (option of period_options; track option.value) {
+		<button mat-menu-item [class.active-period-option]="option.value === selected_period()" (click)="onPeriodChange(option.value)">
+			<mat-icon>{{ option.value === selected_period() ? 'check' : '' }}</mat-icon>
+			{{ option.label }}
+		</button>
+	}
+</mat-menu>

@@ -98,6 +98,8 @@ const ICONS = [
   'add_circle',
   'date_range',
   'file_save_off',
+  'calendar_today',
+  'swap_calls',
 ];
 
 // Sort alphabetically and remove duplicates

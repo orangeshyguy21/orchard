@@ -26,7 +26,8 @@ import {
 	CashuMintPromiseGroup,
 	CashuMintSwap,
 	CashuMintFee,
-	CashuMintKeysetProofCount,
+	CashuMintKeysetCount,
+	CashuMintDatabaseInfo,
 } from './cashumintdb.types';
 import {
 	CashuMintAnalyticsArgs,
@@ -34,7 +35,7 @@ import {
 	CashuMintProofsArgs,
 	CashuMintPromiseArgs,
 	CashuMintMeltQuotesArgs,
-	CashuMintKeysetProofsArgs,
+	CashuMintKeysetCountsArgs,
 	CashuMintSwapsArgs,
 } from './cashumintdb.interfaces';
 import {MintDatabaseType} from './cashumintdb.enums';
@@ -225,12 +226,9 @@ export class CashuMintDatabaseService implements OnModuleInit {
 		if (this.type === 'cdk') throw OrchardErrorCode.MintSupportError;
 	}
 
-	public async getMintKeysetProofCounts(
-		client: CashuMintDatabase,
-		args?: CashuMintKeysetProofsArgs,
-	): Promise<CashuMintKeysetProofCount[]> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintKeysetProofCounts(client, args);
-		if (this.type === 'cdk') return this.cdkService.getMintKeysetProofCounts(client, args);
+	public async getMintKeysetCounts(client: CashuMintDatabase, args?: CashuMintKeysetCountsArgs): Promise<CashuMintKeysetCount[]> {
+		if (this.type === 'nutshell') return this.nutshellService.getMintKeysetCounts(client, args);
+		if (this.type === 'cdk') return this.cdkService.getMintKeysetCounts(client, args);
 	}
 
 	/* Analytics */
@@ -266,6 +264,16 @@ export class CashuMintDatabaseService implements OnModuleInit {
 	}
 
 	/* Implementation Agnostic */
+
+	/** Returns the size and type of the mint database. */
+	public async getMintDatabaseInfo(client: CashuMintDatabase): Promise<CashuMintDatabaseInfo> {
+		if (client.type === MintDatabaseType.sqlite) {
+			const stat = await fs.stat(this.database);
+			return {size: stat.size, type: 'sqlite'};
+		}
+		const result = await client.database.query('SELECT pg_database_size(current_database()) AS size;');
+		return {size: Number(result.rows[0].size), type: 'postgres'};
+	}
 
 	public async createBackup(client: CashuMintDatabase): Promise<Buffer> {
 		if (client.type === MintDatabaseType.sqlite) return this.createBackupSqlite(client);

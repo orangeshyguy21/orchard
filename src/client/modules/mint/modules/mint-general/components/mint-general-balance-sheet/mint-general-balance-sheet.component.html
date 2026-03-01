@@ -29,7 +29,7 @@
 									@if (row.assets !== null) {
 										<div class="flex flex-column">
 											<span
-												class="font-size-l text-nowrap"
+												class="font-size-xl font-weight-semi-bold text-nowrap"
 												[innerHTML]="row.assets | localAmount: row.unit_lightning : 'lightning'"
 											></span>
 											<div class="font-size-xs orc-outline-color text-nowrap">
@@ -49,15 +49,17 @@
 					</div>
 
 					<!-- Visual Cell -->
-					@if (device_type() === 'desktop' && row.assets !== null && row.liabilities !== null) {
-						<orc-mint-general-balance-stacks
-							[unit]="row.unit_mint"
-							[assets]="row.assets"
-							[liabilities]="row.liabilities"
-							[reserve]="row.reserve"
-						></orc-mint-general-balance-stacks>
-					} @else {
-						<div></div>
+					@if (device_type() === 'desktop') {
+						@if (row.assets !== null && row.liabilities !== null) {
+							<orc-mint-general-balance-stacks
+								[unit]="row.unit_mint"
+								[assets]="row.assets"
+								[liabilities]="row.liabilities"
+								[reserve]="row.reserve"
+							></orc-mint-general-balance-stacks>
+						} @else {
+							<div></div>
+						}
 					}
 
 					<!-- Liabilities Cell -->
@@ -66,7 +68,7 @@
 						</orc-graphic-asset>
 						<div class="flex flex-column">
 							<span
-								class="font-size-l text-nowrap"
+								class="font-size-xl font-weight-semi-bold text-nowrap"
 								[innerHTML]="row.liabilities | localAmount: row.unit_mint : 'mint'"
 							></span>
 							<div class="font-size-xs orc-outline-color text-nowrap">
@@ -116,14 +118,16 @@
 							<div class="flex flex-row flex-gap-1 p-t-1 flex-wrap">
 								<div class="orc-high-card p-1 flex-1">
 									<div>
-										<div class="font-size-l text-nowrap">{{ row.unit_mint | localUnit: true }}</div>
+										<div class="font-size-l text-nowrap font-weight-semi-bold">
+											{{ row.unit_mint | localUnit: true }}
+										</div>
 										<div class="font-size-xs orc-outline-color text-nowrap">Mint unit</div>
 									</div>
 								</div>
 								@if (row.assets !== null) {
 									<div class="orc-high-card p-1 flex-1">
 										<div>
-											<div class="font-size-l text-nowrap">{{ row.reserve }}x</div>
+											<div class="font-size-l text-nowrap font-weight-semi-bold">{{ row.reserve }}x</div>
 											<div class="font-size-xs orc-outline-color text-nowrap">Liability coverage</div>
 										</div>
 									</div>
@@ -131,7 +135,7 @@
 								<div class="orc-high-card p-1 flex-1">
 									<div>
 										<div
-											class="font-size-l text-nowrap"
+											class="font-size-l text-nowrap font-weight-semi-bold"
 											[innerHTML]="row.fees | localAmount: row.unit_mint : 'mint'"
 										></div>
 										<div class="font-size-xs orc-outline-color text-nowrap">Fee revenue</div>
@@ -156,7 +160,7 @@
 											<div class="flex-1">
 												<div>
 													<div
-														class="font-size-l text-nowrap"
+														class="font-size-l text-nowrap font-weight-semi-bold"
 														[innerHTML]="row.assets_oracle | localAmount: 'usd'"
 													></div>
 													<div class="font-size-xs orc-outline-color text-nowrap">
@@ -167,7 +171,7 @@
 											<div class="flex-1">
 												<div>
 													<div
-														class="font-size-l text-nowrap"
+														class="font-size-l text-nowrap font-weight-semi-bold"
 														[innerHTML]="row.liabilities_oracle | localAmount: 'usd'"
 													></div>
 													<div class="font-size-xs orc-outline-color text-nowrap">
@@ -178,7 +182,7 @@
 											<div class="flex-1">
 												<div>
 													<div
-														class="font-size-l text-nowrap"
+														class="font-size-l text-nowrap font-weight-semi-bold"
 														[innerHTML]="row.fees_oracle | localAmount: 'usd'"
 													></div>
 													<div class="font-size-xs orc-outline-color text-nowrap">Fee revenue</div>

@@ -1,0 +1,72 @@
+@use 'molecule/molecule';
+@use 'nucleus/nucleus';
+
+.mint-activity-card {
+	min-height: 18rem;
+	@extend %relative;
+	@extend %orc-surface-container-low-bg;
+}
+
+.mint-activity-period-selector {
+	@extend %z-index-0;
+	@extend %h-0;
+	padding-bottom: 1.5rem;
+}
+
+.sparkline-card {
+	@extend %overflow-hidden;
+	@extend %flex;
+	@extend %flex-column;
+	@extend %relative;
+	min-height: 7rem;
+}
+
+.sparkline-watermark {
+	@extend %absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 5rem;
+	width: 5rem;
+	height: 5rem;
+	opacity: 0.05;
+	pointer-events: none;
+}
+
+.sparkline-chart {
+	@extend %flex-grow;
+	@extend %absolute;
+	top: 2rem;
+	@extend %right-0;
+	@extend %bottom-0;
+	@extend %left-0;
+
+	canvas {
+		width: 100% !important;
+		height: 100% !important;
+	}
+}
+
+.activity-loading {
+	@extend %absolute;
+	@extend %top-0;
+	@extend %right-0;
+	@extend %bottom-0;
+	@extend %left-0;
+	@extend %orc-surface-container-low-bg;
+}
+
+.delta {
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %font-weight-semi-bold;
+	gap: 0.25rem;
+}
+
+.delta-positive {
+	@extend %orc-status-active-color;
+}
+
+.delta-negative {
+	@extend %orc-status-inactive-color;
+}

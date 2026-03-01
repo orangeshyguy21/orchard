@@ -7,6 +7,7 @@ import {MatBottomSheet} from '@angular/material/bottom-sheet';
 import {MintInfo} from '@client/modules/mint/classes/mint-info.class';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
+import {MintActivitySummary} from '@client/modules/mint/classes/mint-activity-summary.class';
 import {LightningBalance} from '@client/modules/lightning/classes/lightning-balance.class';
 import {OrchardError} from '@client/modules/error/types/error.types';
 import {DeviceType} from '@client/modules/layout/types/device.types';
@@ -14,6 +15,8 @@ import {PublicUrl} from '@client/modules/public/classes/public-url.class';
 import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle-price.class';
 import {NavService} from '@client/modules/nav/services/nav/nav.service';
 import {NavSecondaryItem} from '@client/modules/nav/types/nav-secondary-item.type';
+/* Shared Dependencies */
+import {MintActivityPeriod} from '@shared/generated.types';
 /* Components */
 import {NavMobileSheetMenuSubsectionComponent} from '@client/modules/nav/components/nav-mobile-sheet-menu-subsection/nav-mobile-sheet-menu-subsection.component';
 
@@ -48,10 +51,14 @@ export class IndexSubsectionDashboardMintEnabledComponent {
 	public mint_errors = input.required<OrchardError[]>();
 	public device_type = input.required<DeviceType>();
 	public connections = input<PublicUrl[]>([]);
+	public activity_summary = input.required<MintActivitySummary | null>();
+	public loading_activity = input<boolean>(false);
+	public error_activity = input<boolean>(false);
 
 	private menu_trigger = viewChild(MatMenuTrigger);
 
 	public navigate = output<string>();
+	public period_change = output<MintActivityPeriod>();
 
 	public items = signal<NavSecondaryItem[]>([]);
 	public liabilities = signal<Liabilities[] | null>(null);

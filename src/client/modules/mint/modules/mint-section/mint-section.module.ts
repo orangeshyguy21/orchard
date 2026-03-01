@@ -56,6 +56,28 @@ const mintKeysetsResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, stat
 	);
 };
 
+const mintKeysetCountsResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+	const mintService = inject(MintService);
+	const router = inject(Router);
+	const errorService = inject(ErrorService);
+	return mintService.loadMintKeysetCounts({}).pipe(
+		catchError((error) => {
+			errorService.resolve_errors.push(error);
+			router.navigate(['mint', 'error'], {state: {error, target: state.url, sub_section: route.data['sub_section']}});
+			return of([]);
+		}),
+	);
+};
+
+const mintDatabaseInfoResolver: ResolveFn<any> = (_route: ActivatedRouteSnapshot, _state: RouterStateSnapshot) => {
+	const mintService = inject(MintService);
+	return mintService.loadMintDatabaseInfo().pipe(
+		catchError(() => {
+			return of(null);
+		}),
+	);
+};
+
 const mintInfoRpcResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
 	const mintService = inject(MintService);
 	const router = inject(Router);
@@ -104,6 +126,8 @@ const mintQuoteTtlsResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, st
 							mint_info: mintInfoResolver,
 							mint_balances: mintBalancesResolver,
 							mint_keysets: mintKeysetsResolver,
+							mint_keyset_counts: mintKeysetCountsResolver,
+							mint_database_info: mintDatabaseInfoResolver,
 						},
 						canActivate: [enabledGuard],
 						data: {
@@ -156,6 +180,7 @@ const mintQuoteTtlsResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, st
 						title: 'Orchard | Mint Keysets',
 						resolve: {
 							mint_keysets: mintKeysetsResolver,
+							mint_keyset_counts: mintKeysetCountsResolver,
 						},
 						canActivate: [enabledGuard],
 						data: {

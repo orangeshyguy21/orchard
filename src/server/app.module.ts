@@ -5,6 +5,7 @@ import {GraphQLModule, registerEnumType} from '@nestjs/graphql';
 import {ApolloDriver, ApolloDriverConfig} from '@nestjs/apollo';
 /* Vendor Dependencies */
 import {TypeOrmModule} from '@nestjs/typeorm';
+import {DataSource, DataSourceOptions} from 'typeorm';
 import {ScheduleModule} from '@nestjs/schedule';
 /* Application Modules */
 import {SecurityModule} from './modules/security/security.module';
@@ -24,7 +25,7 @@ import {
 	LightningChannelOpenInitiator,
 } from './modules/lightning/lightning.enums';
 import {TaprootAssetType, TaprootAssetVersion} from './modules/tapass/tapass.enums';
-import {MintAnalyticsInterval} from './modules/cashu/mintdb/cashumintdb.enums';
+import {MintAnalyticsInterval, MintActivityPeriod} from './modules/cashu/mintdb/cashumintdb.enums';
 import {LightningAnalyticsInterval, LightningAnalyticsMetric} from './modules/lightning/analytics/lnanalytics.enums';
 import {MintUnit, MintQuoteState, MeltQuoteState, MintProofState} from './modules/cashu/cashu.enums';
 import {AiAgent, AiMessageRole, AiFunctionName} from './modules/ai/ai.enums';
@@ -48,6 +49,7 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 	registerEnumType(MeltQuoteState, {name: 'MeltQuoteState'});
 	registerEnumType(MintProofState, {name: 'MintProofState'});
 	registerEnumType(MintAnalyticsInterval, {name: 'MintAnalyticsInterval'});
+	registerEnumType(MintActivityPeriod, {name: 'MintActivityPeriod'});
 	registerEnumType(TaprootAssetType, {name: 'TaprootAssetType'});
 	registerEnumType(TaprootAssetVersion, {name: 'TaprootAssetVersion'});
 	registerEnumType(LightningAddressType, {name: 'LightningAddressType'});
@@ -121,6 +123,14 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 				migrations: process.env.SCHEMA_ONLY ? [] : ['dist/database/migrations/*.js'],
 				migrationsRun: process.env.SCHEMA_ONLY ? false : configService.get('mode.production'),
 			}),
+			dataSourceFactory: async (options: DataSourceOptions) => {
+				const data_source = new DataSource(options);
+				await data_source.initialize();
+				if (options.synchronize && !options.migrationsRun) {
+					await data_source.runMigrations({fake: true});
+				}
+				return data_source;
+			},
 		}),
 		ScheduleModule.forRoot(),
 		SecurityModule,

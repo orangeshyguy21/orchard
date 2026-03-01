@@ -32,13 +32,3 @@
 	text-decoration: line-through;
 	opacity: 0.7;
 }
-
-.detail-error {
-	@extend %flex;
-	@extend %flex-column;
-	@extend %flex-gap-0-25;
-	@extend %p-0-5;
-	@extend %orc-corner-extra-small;
-	background: color-mix(in srgb, var(--orc-status-inactive) 10%, transparent);
-	color: var(--orc-status-inactive);
-}

@@ -46,10 +46,13 @@ import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintInfo} from '@client/modules/mint/classes/mint-info.class';
 import {MintFee} from '@client/modules/mint/classes/mint-fee.class';
+import {MintKeysetCount} from '@client/modules/mint/classes/mint-keyset-count.class';
+import {MintDatabaseInfo} from '@client/modules/mint/classes/mint-database-info.class';
 import {MintAnalytic} from '@client/modules/mint/classes/mint-analytic.class';
+import {MintActivitySummary} from '@client/modules/mint/classes/mint-activity-summary.class';
 import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
 /* Shared Dependencies */
-import {AiFunctionName, MintAnalyticsInterval, MintUnit, LightningAnalyticsInterval} from '@shared/generated.types';
+import {AiFunctionName, MintAnalyticsInterval, MintActivityPeriod, MintUnit, LightningAnalyticsInterval} from '@shared/generated.types';
 
 enum NavTertiary {
 	BalanceSheet = 'nav1',
@@ -76,6 +79,8 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public mint_info: MintInfo | null = null;
 	public mint_balances: MintBalance[] = [];
 	public mint_keysets: MintKeyset[] = [];
+	public mint_keyset_counts: MintKeysetCount[] = [];
+	public mint_database_info: MintDatabaseInfo | null = null;
 	public mint_fees: MintFee[] = [];
 	public mint_analytics_balances: MintAnalytic[] = [];
 	public mint_analytics_balances_pre: MintAnalytic[] = [];
@@ -128,6 +133,10 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public bitcoin_oracle_price = signal<BitcoinOraclePrice | null>(null);
 	public bitcoin_oracle_price_map = signal<Map<number, number> | null>(null);
 	public mint_icon_data = signal<string | null>(null);
+	public activity_summary = signal<MintActivitySummary | null>(null);
+	public loading_activity = signal<boolean>(true);
+	public error_activity = signal<boolean>(false);
+	public selected_activity_period = signal<MintActivityPeriod>(MintActivityPeriod.Week);
 
 	public tertiary_nav = computed(() => this.page_settings().tertiary_nav || []);
 	public type_balance_sheet = computed(() => this.page_settings().type.balance_sheet || ChartType.Totals);
@@ -159,6 +168,8 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.mint_info = this.route.snapshot.data['mint_info'];
 		this.mint_balances = this.route.snapshot.data['mint_balances'];
 		this.mint_keysets = this.route.snapshot.data['mint_keysets'];
+		this.mint_keyset_counts = this.route.snapshot.data['mint_keyset_counts'];
+		this.mint_database_info = this.route.snapshot.data['mint_database_info'] ?? null;
 		this.mint_genesis_time = this.getMintGenesisTime();
 		this.page_settings = signal(this.getPageSettings());
 	}
@@ -172,6 +183,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.setMintIcon();
 		this.orchardOptionalInit();
 		this.getMintFees();
+		this.loadActivitySummary(MintActivityPeriod.Day);
 		await this.initAnalytics();
 		this.mint_fee_revenue.set(this.getMintFeeRevenueState());
 		this.subscriptions.add(this.getBreakpointSubscription());
@@ -465,6 +477,33 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		return analytics_fees;
 	}
 
+	private loadActivitySummary(period: MintActivityPeriod): void {
+		this.loading_activity.set(true);
+		this.error_activity.set(false);
+		const timezone = this.settingDeviceService.getTimezone();
+		this.mintService
+			.loadMintActivitySummary(period, timezone)
+			.pipe(
+				tap((summary) => {
+					this.activity_summary.set(summary);
+				}),
+				catchError(() => {
+					this.error_activity.set(true);
+					return EMPTY;
+				}),
+				finalize(() => {
+					this.loading_activity.set(false);
+				}),
+			)
+			.subscribe();
+	}
+
+	public onActivityPeriodChange(period: MintActivityPeriod): void {
+		this.selected_activity_period.set(period);
+		this.mintService.clearActivityCache();
+		this.loadActivitySummary(period);
+	}
+
 	private async reloadDynamicData(): Promise<void> {
 		try {
 			this.mintService.clearDasbhoardCache();
@@ -616,6 +655,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	}
 
 	private updateTertiaryNav(): void {
+		if (!this.chart_container) return;
 		const tertiary_nav = this.page_settings()
 			.tertiary_nav.map((area) => `"${area}"`)
 			.join(' ');

@@ -38,6 +38,7 @@ import {MintSwapModule} from './mint/swap/mintswap.module';
 import {MintAnalyticsModule} from './mint/analytics/mintanalytics.module';
 import {MintCountModule} from './mint/count/mintcount.module';
 import {MintFeeModule} from './mint/fee/mintfee.module';
+import {MintActivityModule} from './mint/activity/mintactivity.module';
 // AI Endpoints
 import {AiModelModule} from './ai/model/aimodel.module';
 import {AiAgentModule} from './ai/agent/aiagent.module';
@@ -87,6 +88,7 @@ import {ApiEventLogModule} from './event/event.module';
 		MintAnalyticsModule,
 		MintCountModule,
 		MintFeeModule,
+		MintActivityModule,
 		AiModelModule,
 		AiAgentModule,
 		AiChatModule,

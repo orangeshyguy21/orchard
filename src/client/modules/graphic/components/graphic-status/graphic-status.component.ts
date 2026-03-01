@@ -7,6 +7,8 @@ const STATUS_CLASS_MAP: Record<string, string> = {
 	inactive: 'trans-bg-medium orc-status-inactive-bg',
 	warning: 'trans-bg-medium orc-status-warning-bg',
 	active: 'trans-bg-medium orc-status-active-bg',
+	disabled: 'trans-bg-medium orc-outline-variant-bg',
+	enabled: 'trans-bg-medium orc-primary-bg',
 	loading: 'orc-animation-shimmer-highest',
 };
 

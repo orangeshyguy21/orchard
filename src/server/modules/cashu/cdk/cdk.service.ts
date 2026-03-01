@@ -20,7 +20,7 @@ import {
 	CashuMintAnalytics,
 	CashuMintKeysetsAnalytics,
 	CashuMintCount,
-	CashuMintKeysetProofCount,
+	CashuMintKeysetCount,
 } from '@server/modules/cashu/mintdb/cashumintdb.types';
 import {
 	CashuMintMintQuotesArgs,
@@ -28,7 +28,7 @@ import {
 	CashuMintMeltQuotesArgs,
 	CashuMintProofsArgs,
 	CashuMintPromiseArgs,
-	CashuMintKeysetProofsArgs,
+	CashuMintKeysetCountsArgs,
 	CashuMintSwapsArgs,
 } from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
 import {
@@ -37,6 +37,7 @@ import {
 	getAnalyticsTimeGroupStamp,
 	getAnalyticsConditions,
 	getAnalyticsTimeGroupSql,
+	mergeKeysetCounts,
 	queryRows,
 	queryRow,
 	extractRequestString,
@@ -535,7 +536,7 @@ export class CdkService {
 		}
 	}
 
-	public getMintKeysetProofCounts(client: CashuMintDatabase, args?: CashuMintKeysetProofsArgs): Promise<CashuMintKeysetProofCount[]> {
+	public async getMintKeysetCounts(client: CashuMintDatabase, args?: CashuMintKeysetCountsArgs): Promise<CashuMintKeysetCount[]> {
 		const {where_conditions, params} = getAnalyticsConditions({
 			args: args,
 			time_column: 'created_time',
@@ -543,14 +544,14 @@ export class CdkService {
 			time_is_epoch_seconds: true,
 		});
 		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
-		const sql = `SELECT 
-			keyset_id AS id,
-			COUNT(*) AS count 
-			FROM proof
-			${where_clause}
-			GROUP BY keyset_id;`;
+		const proof_sql = `SELECT keyset_id AS id, COUNT(*) AS count FROM proof ${where_clause} GROUP BY keyset_id;`;
+		const promise_sql = `SELECT keyset_id AS id, COUNT(*) AS count FROM blind_signature ${where_clause} GROUP BY keyset_id;`;
 		try {
-			return queryRows<CashuMintKeysetProofCount>(client, sql, [...params]);
+			const [proof_rows, promise_rows] = await Promise.all([
+				queryRows<{id: string; count: number}>(client, proof_sql, [...params]),
+				queryRows<{id: string; count: number}>(client, promise_sql, [...params]),
+			]);
+			return mergeKeysetCounts(proof_rows, promise_rows);
 		} catch (err) {
 			throw err;
 		}
