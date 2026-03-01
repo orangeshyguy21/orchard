@@ -8,6 +8,7 @@ import {tap, catchError, finalize, EMPTY, forkJoin, Subscription, firstValueFrom
 /* Application Dependencies */
 import {ConfigService} from '@client/modules/config/services/config.service';
 import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
+import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {BitcoinService} from '@client/modules/bitcoin/services/bitcoin/bitcoin.service';
 import {LightningService} from '@client/modules/lightning/services/lightning/lightning.service';
 import {TaprootAssetsService} from '@client/modules/tapass/services/taproot-assets.service';
@@ -30,10 +31,13 @@ import {TaprootAssets} from '@client/modules/tapass/classes/taproot-assets.class
 import {MintInfo} from '@client/modules/mint/classes/mint-info.class';
 import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
+import {MintActivitySummary} from '@client/modules/mint/classes/mint-activity-summary.class';
 import {OrchardError} from '@client/modules/error/types/error.types';
 import {DeviceType} from '@client/modules/layout/types/device.types';
 import {PublicPort} from '@client/modules/public/classes/public-port.class';
 import {PublicUrl} from '@client/modules/public/classes/public-url.class';
+/* Shared Dependencies */
+import {MintActivityPeriod} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-index-subsection-dashboard',
@@ -58,11 +62,13 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public loading_taproot_assets: boolean = true;
 	public loading_mint: boolean = true;
 	public loading_mint_icon: boolean = true;
-
+	public loading_mint_activity = signal<boolean>(true);
+	
 	public errors_bitcoin: OrchardError[] = [];
 	public errors_lightning: OrchardError[] = [];
 	public errors_taproot_assets: OrchardError[] = [];
 	public errors_mint: OrchardError[] = [];
+    public error_mint_activity = signal<boolean>(false);
 
 	public bitcoin_blockchain_info!: BitcoinBlockchainInfo | null;
 	public bitcoin_network_info!: BitcoinNetworkInfo | null;
@@ -83,6 +89,7 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public mint_info!: MintInfo | null;
 	public mint_balances!: MintBalance[] | null;
 	public mint_keysets!: MintKeyset[] | null;
+	public mint_activity_summary = signal<MintActivitySummary | null>(null);
 	public mint_icon_data!: string | null;
 	public mint_connections = signal<PublicUrl[]>([]);
 
@@ -111,6 +118,7 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 	constructor(
 		private configService: ConfigService,
 		private settingAppService: SettingAppService,
+		private settingDeviceService: SettingDeviceService,
 		private bitcoinService: BitcoinService,
 		private lightningService: LightningService,
 		private taprootAssetsService: TaprootAssetsService,
@@ -167,7 +175,10 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 	private initMint(): void {
 		this.loading_mint = this.enabled_mint ? true : false;
 		this.loading_mint_icon = this.enabled_mint ? true : false;
-		if (this.enabled_mint) this.getMint();
+		if (this.enabled_mint) {
+			this.getMint();
+			this.loadMintActivitySummary(MintActivityPeriod.Week);
+		}
 		this.cdr.detectChanges();
 	}
 
@@ -385,8 +396,30 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 			.subscribe();
 	}
 
+	/** Loads the mint activity summary for the given period */
+	private loadMintActivitySummary(period: MintActivityPeriod): void {
+		this.loading_mint_activity.set(true);
+		this.error_mint_activity.set(false);
+		const timezone = this.settingDeviceService.getTimezone();
+		this.mintService
+			.loadMintActivitySummary(period, timezone)
+			.pipe(
+				tap((summary) => {
+					this.mint_activity_summary.set(summary);
+				}),
+				catchError(() => {
+					this.error_mint_activity.set(true);
+					return EMPTY;
+				}),
+				finalize(() => {
+					this.loading_mint_activity.set(false);
+				}),
+			)
+			.subscribe();
+	}
+
 	/* *******************************************************
-		Data Post                     
+		Data Post
 	******************************************************** */
 
 	private async setMintIcon(): Promise<void> {
@@ -442,6 +475,11 @@ export class IndexSubsectionDashboardComponent implements OnInit, OnDestroy {
 
 	public onTargetChange(): void {
 		this.getBitcoinFeeEstimate();
+	}
+
+	public onMintActivityPeriodChange(period: MintActivityPeriod): void {
+		this.mintService.clearActivityCache();
+		this.loadMintActivitySummary(period);
 	}
 
 	/* *******************************************************

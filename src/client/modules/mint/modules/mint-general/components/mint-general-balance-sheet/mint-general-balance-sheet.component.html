@@ -49,15 +49,17 @@
 					</div>
 
 					<!-- Visual Cell -->
-					@if (device_type() === 'desktop' && row.assets !== null && row.liabilities !== null) {
-						<orc-mint-general-balance-stacks
-							[unit]="row.unit_mint"
-							[assets]="row.assets"
-							[liabilities]="row.liabilities"
-							[reserve]="row.reserve"
-						></orc-mint-general-balance-stacks>
-					} @else {
-						<div></div>
+					@if (device_type() === 'desktop') {
+						@if (row.assets !== null && row.liabilities !== null) {
+							<orc-mint-general-balance-stacks
+								[unit]="row.unit_mint"
+								[assets]="row.assets"
+								[liabilities]="row.liabilities"
+								[reserve]="row.reserve"
+							></orc-mint-general-balance-stacks>
+						} @else {
+							<div></div>
+						}
 					}
 
 					<!-- Liabilities Cell -->

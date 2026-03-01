@@ -203,6 +203,7 @@ export class MintService {
 
 	/* Observables for caching (rapid request caching) */
 	private mint_info_observable!: Observable<MintInfo> | null;
+	private cached_activity_period: MintActivityPeriod | null = null;
 
 	constructor(
 		private http: HttpClient,
@@ -313,6 +314,7 @@ export class MintService {
 	}
 
 	public clearActivityCache() {
+		this.cached_activity_period = null;
 		this.cache.clearCache(this.CACHE_KEYS.MINT_ACTIVITY_SUMMARY);
 	}
 
@@ -905,6 +907,10 @@ export class MintService {
 	}
 
 	public loadMintActivitySummary(period: MintActivityPeriod, timezone?: string): Observable<MintActivitySummary> {
+		if (period !== this.cached_activity_period) {
+			this.clearActivityCache();
+		}
+
 		if (this.mint_activity_summary_subject.value && this.cache.isCacheValid(this.CACHE_KEYS.MINT_ACTIVITY_SUMMARY)) {
 			return of(this.mint_activity_summary_subject.value);
 		}
@@ -918,6 +924,7 @@ export class MintService {
 			}),
 			map((summary) => new MintActivitySummary(summary)),
 			tap((summary) => {
+				this.cached_activity_period = period;
 				this.cache.updateCache(this.CACHE_KEYS.MINT_ACTIVITY_SUMMARY, summary);
 				this.mint_activity_summary_subject.next(summary);
 			}),

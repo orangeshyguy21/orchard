@@ -122,8 +122,12 @@
 				[bitcoin_oracle_enabled]="enabled_bitcoin_oracle"
 				[bitcoin_oracle_price]="bitcoin_oracle_price()"
 				[connections]="mint_connections()"
+				[activity_summary]="mint_activity_summary()"
+				[loading_activity]="loading_mint_activity()"
+				[error_activity]="error_mint_activity()"
 				[device_type]="device_type()"
 				(navigate)="onNavigate($event)"
+				(period_change)="onMintActivityPeriodChange($event)"
 			></orc-index-subsection-dashboard-mint-enabled>
 		} @else {
 			<orc-index-subsection-dashboard-mint-disabled (navigate)="onNavigate('mint')"></orc-index-subsection-dashboard-mint-disabled>
