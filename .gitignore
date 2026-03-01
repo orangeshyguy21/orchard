@@ -74,6 +74,7 @@ pids
 /libpeerconnection.log
 testem.log
 /typings
+/review
 
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
