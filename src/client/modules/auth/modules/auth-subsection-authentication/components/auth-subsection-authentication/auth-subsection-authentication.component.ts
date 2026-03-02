@@ -4,8 +4,9 @@ import {FormGroup, FormControl, Validators, ValidationErrors} from '@angular/for
 import {Router} from '@angular/router';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 /* Vendor Dependencies */
-import {Subscription} from 'rxjs';
+import {Subscription, switchMap, catchError, of} from 'rxjs';
 /* Application Dependencies */
+import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {CrewService} from '@client/modules/crew/services/crew/crew.service';
 import {ThemeType} from '@client/modules/cache/services/local-storage/local-storage.types';
@@ -40,6 +41,7 @@ export class AuthSubsectionAuthenticationComponent implements OnInit, OnDestroy 
 
 	constructor(
 		private readonly authService: AuthService,
+		private readonly settingAppService: SettingAppService,
 		private readonly settingDeviceService: SettingDeviceService,
 		private readonly crewService: CrewService,
 		private readonly router: Router,
@@ -86,14 +88,17 @@ export class AuthSubsectionAuthenticationComponent implements OnInit, OnDestroy 
 		this.validateForm();
 		if (this.form_auth.invalid) return;
 		this.crewService.clearUserCache();
-		this.authService.authenticate(this.form_auth.value.name, this.form_auth.value.password).subscribe({
-			next: () => {
-				this.openInterior();
-			},
-			error: (error) => {
-				this.errorControl(error);
-			},
-		});
+		this.authService
+			.authenticate(this.form_auth.value.name, this.form_auth.value.password)
+			.pipe(switchMap(() => this.settingAppService.loadSettings().pipe(catchError(() => of(null)))))
+			.subscribe({
+				next: () => {
+					this.openInterior();
+				},
+				error: (error) => {
+					this.errorControl(error);
+				},
+			});
 	}
 
 	private validateForm(): void {
