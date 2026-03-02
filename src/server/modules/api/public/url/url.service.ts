@@ -11,7 +11,7 @@ import {OrchardPublicUrl} from './url.model';
 export class PublicUrlService {
 	private readonly logger = new Logger(PublicUrlService.name);
 
-    private readonly FETCH_TIMEOUT = 15000;
+	private readonly FETCH_TIMEOUT = 15000;
 
 	constructor(private fetchService: FetchService) {}
 
@@ -27,7 +27,7 @@ export class PublicUrlService {
 		let has_data: boolean = false;
 
 		try {
-            response = await this.fetchService.fetchWithProxy(url, {signal: AbortSignal.timeout(this.FETCH_TIMEOUT)});
+			response = await this.fetchService.fetchWithProxy(url, {signal: AbortSignal.timeout(this.FETCH_TIMEOUT)});
 		} catch {
 			return new OrchardPublicUrl(url, null, null, has_data);
 		}
