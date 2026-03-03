@@ -78,14 +78,15 @@ export class LightningGeneralInfoComponent {
 		};
 	}
 
-	public onUriClick(uri: LightningUri): void {
+	public async onUriClick(uri: LightningUri): Promise<void> {
 		const address = uri.uri.split('@')[1];
+		const image = await this.createCirclePng(this.lightning_info()?.color ?? '#000000');
 		this.dialog.open(NetworkConnectionComponent, {
 			data: {
 				uri: uri.uri,
 				type: uri.type,
 				label: uri.label,
-				image: this.createCircleSvg(this.lightning_info()?.color ?? '#000000'),
+				image,
 				name: this.lightning_info()?.alias,
 				section: 'lightning',
 				status: this.connections_status_map().get(address) ?? null,
@@ -98,5 +99,22 @@ export class LightningGeneralInfoComponent {
 	private createCircleSvg(color: string): string {
 		const svg = `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="${color}"/></svg>`;
 		return `data:image/svg+xml;base64,${btoa(svg)}`;
+	}
+
+	/** Rasterizes a circle SVG to a PNG data URI for QR code compatibility */
+	private createCirclePng(color: string, size: number = 128): Promise<string> {
+		const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="${color}"/></svg>`;
+		return new Promise((resolve) => {
+			const img = new Image();
+			img.onload = () => {
+				const canvas = document.createElement('canvas');
+				canvas.width = size;
+				canvas.height = size;
+				const ctx = canvas.getContext('2d')!;
+				ctx.drawImage(img, 0, 0, size, size);
+				resolve(canvas.toDataURL('image/png'));
+			};
+			img.src = `data:image/svg+xml;base64,${btoa(svg)}`;
+		});
 	}
 }
