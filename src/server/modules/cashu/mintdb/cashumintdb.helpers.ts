@@ -300,8 +300,12 @@ export function convertSqlToType(sql: string, db_type: MintDatabaseType): string
  * @param date_arg The date to convert
  * @returns The Unix timestamp in seconds
  */
-export function convertDateToUnixTimestamp(date_arg: number | Date): number | null {
+export function convertDateToUnixTimestamp(date_arg: number | string | Date): number | null {
 	if (typeof date_arg === 'number') return date_arg;
+	if (typeof date_arg === 'string') {
+		const parsed = Number(date_arg);
+		return isNaN(parsed) ? null : parsed;
+	}
 	if (date_arg instanceof Date) return DateTime.fromJSDate(date_arg).toSeconds();
 	return null;
 }
