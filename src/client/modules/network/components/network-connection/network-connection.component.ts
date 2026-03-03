@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, inject, computed, viewChild, ElementRef, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, computed, viewChild, ElementRef, AfterViewInit} from '@angular/core';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
 /* Vendor Dependencies */
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
@@ -18,7 +18,7 @@ import {NetworkConnection} from '@client/modules/network/types/network-connectio
 	styleUrl: './network-connection.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NetworkConnectionComponent implements OnInit {
+export class NetworkConnectionComponent implements AfterViewInit {
 	private themeService = inject(ThemeService);
 	public data = inject<NetworkConnection>(MAT_DIALOG_DATA);
 
@@ -61,7 +61,7 @@ export class NetworkConnectionComponent implements OnInit {
 		'3': 'square',
 	};
 
-	ngOnInit(): void {
+	ngAfterViewInit(): void {
 		this.initQR();
 	}
 
