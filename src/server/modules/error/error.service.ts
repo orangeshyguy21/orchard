@@ -13,8 +13,8 @@ export class ErrorService {
 		tag: string,
 		{errord}: {errord: OrchardErrorCode},
 	): {code: OrchardErrorCode; details?: string} {
-		// logger.error(tag);
-		// logger.debug(`${tag}: ${error}`);
+		logger.error(tag);
+		logger.debug(`${tag}: ${error}`);
 		const normalized = this.normalizeError(error);
 		const matching_key = Object.keys(OrchardErrorMessages).find((key) => !isNaN(Number(key)) && normalized.code === Number(key));
 		return {
