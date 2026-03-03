@@ -1,5 +1,5 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, OnInit, signal, computed} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, signal, computed, effect} from '@angular/core';
 /* Application Dependencies */
 import {LightningInfo} from '@client/modules/lightning/classes/lightning-info.class';
 import {LightningChannel, LightningClosedChannel} from '@client/modules/lightning/classes/lightning-channel.class';
@@ -34,7 +34,7 @@ type ChannelSummary = {
 	styleUrl: './lightning-general-channel-summary.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LightningGeneralChannelSummaryComponent implements OnInit {
+export class LightningGeneralChannelSummaryComponent {
 	public lightning_info = input.required<LightningInfo | null>();
 	public lightning_channels = input.required<LightningChannel[] | null>();
 	public lightning_closed_channels = input.required<LightningClosedChannel[] | null>();
@@ -44,20 +44,22 @@ export class LightningGeneralChannelSummaryComponent implements OnInit {
 	public bitcoin_oracle_price = input.required<BitcoinOraclePrice | null>();
 	public device_type = input.required<DeviceType>();
 
-	private summaries: Record<string, ChannelSummary[]> = {
+	private summaries = signal<Record<string, ChannelSummary[]>>({
 		open: [],
 		active: [],
-	};
+	});
 
 	public expanded = signal<Record<string, boolean>>({});
 	public summary_type = signal<'open' | 'active'>('open');
 
 	public rows = computed(() => {
-		return this.summaries[this.summary_type()];
+		return this.summaries()[this.summary_type()];
 	});
 
-	ngOnInit(): void {
-		this.init();
+	constructor() {
+		effect(() => {
+			this.init();
+		});
 	}
 
 	private init(): void {
@@ -65,8 +67,10 @@ export class LightningGeneralChannelSummaryComponent implements OnInit {
 		const sat_summary_active = this.getSatSummary(true);
 		const taproot_summaries_open = this.getTaprootAssetsSummaries(false);
 		const taproot_summaries_active = this.getTaprootAssetsSummaries(true);
-		this.summaries['open'] = [...sat_summary_open, ...taproot_summaries_open];
-		this.summaries['active'] = [...sat_summary_active, ...taproot_summaries_active];
+		this.summaries.set({
+			open: [...sat_summary_open, ...taproot_summaries_open],
+			active: [...sat_summary_active, ...taproot_summaries_active],
+		});
 	}
 
 	/**
