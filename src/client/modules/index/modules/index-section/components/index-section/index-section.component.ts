@@ -51,9 +51,9 @@ export class IndexSectionComponent implements OnInit, OnDestroy {
 				if (segments[0] === undefined || segments[0] === 'crew') this.overlayed.set(true);
 			}
 			if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
-                setTimeout(() => {
-                    this.overlayed.set(false);
-                });
+				setTimeout(() => {
+					this.overlayed.set(false);
+				});
 			}
 		});
 	}

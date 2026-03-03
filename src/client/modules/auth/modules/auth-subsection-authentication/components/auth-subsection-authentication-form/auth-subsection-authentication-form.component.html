@@ -1,6 +1,6 @@
 <div class="flex flex-column flex-items-center flex-gap-0-5 p-b-2">
-    <div class="flex flex-justify-center">
-        @if (form_group().get('name')?.value) {
+	<div class="flex flex-justify-center">
+		@if (form_group().get('name')?.value) {
 			<div animate.enter="orc-animation-fadein" class="flex">
 				<orc-crew-facehash [name]="form_group().get('name')?.value || ''" [enableBlink]="true" size="4rem"></orc-crew-facehash>
 			</div>
