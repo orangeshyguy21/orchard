@@ -104,4 +104,3 @@ export function getInitialOutboundMsat(analytics_pre: LightningAnalytic[]): numb
 	const msat_analytics = analytics_pre.filter((a) => a.unit === 'msat');
 	return calculateOutboundLiquidity(msat_analytics);
 }
-

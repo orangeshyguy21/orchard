@@ -141,9 +141,30 @@ export class MintActivityService {
 		summary.melt_avg_time_delta = this.computeDelta(summary.melt_avg_time, pri_melt_avg);
 
 		const bucket_seconds = BUCKET_SECONDS[period];
-		summary.mint_sparkline = this.buildCacheSparkline(current, MintAnalyticsMetric.mints_amount, period_start, period_end, bucket_seconds, timezone);
-		summary.melt_sparkline = this.buildCacheSparkline(current, MintAnalyticsMetric.melts_amount, period_start, period_end, bucket_seconds, timezone);
-		summary.swap_sparkline = this.buildCacheSparkline(current, MintAnalyticsMetric.swaps_amount, period_start, period_end, bucket_seconds, timezone);
+		summary.mint_sparkline = this.buildCacheSparkline(
+			current,
+			MintAnalyticsMetric.mints_amount,
+			period_start,
+			period_end,
+			bucket_seconds,
+			timezone,
+		);
+		summary.melt_sparkline = this.buildCacheSparkline(
+			current,
+			MintAnalyticsMetric.melts_amount,
+			period_start,
+			period_end,
+			bucket_seconds,
+			timezone,
+		);
+		summary.swap_sparkline = this.buildCacheSparkline(
+			current,
+			MintAnalyticsMetric.swaps_amount,
+			period_start,
+			period_end,
+			bucket_seconds,
+			timezone,
+		);
 
 		summary.warnings = [];
 

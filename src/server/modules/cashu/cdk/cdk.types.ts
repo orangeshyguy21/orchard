@@ -15,4 +15,3 @@ export type CdkMintPromise = {
 	unit: MintUnit;
 	amounts: string;
 };
-

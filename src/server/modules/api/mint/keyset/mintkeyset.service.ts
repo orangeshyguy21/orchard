@@ -39,7 +39,10 @@ export class MintKeysetService {
 		});
 	}
 
-	async getMintKeysetCounts(tag: string, args?: {date_start?: number; date_end?: number; id_keysets?: string[]}): Promise<OrchardMintKeysetCount[]> {
+	async getMintKeysetCounts(
+		tag: string,
+		args?: {date_start?: number; date_end?: number; id_keysets?: string[]},
+	): Promise<OrchardMintKeysetCount[]> {
 		try {
 			const cached = await this.cashuMintAnalyticsService.getCachedAnalytics({
 				date_start: args?.date_start,
@@ -59,9 +62,7 @@ export class MintKeysetService {
 				keyset_map.set(row.keyset_id, entry);
 			}
 
-			let results = Array.from(keyset_map.entries()).map(
-				([id, counts]) => new OrchardMintKeysetCount({id, ...counts}),
-			);
+			let results = Array.from(keyset_map.entries()).map(([id, counts]) => new OrchardMintKeysetCount({id, ...counts}));
 
 			if (args?.id_keysets?.length) {
 				const id_set = new Set(args.id_keysets);

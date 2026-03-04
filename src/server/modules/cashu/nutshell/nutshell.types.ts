@@ -38,4 +38,3 @@ export type NutshellMintEcash = {
 	unit: MintUnit;
 	amounts: string;
 };
-

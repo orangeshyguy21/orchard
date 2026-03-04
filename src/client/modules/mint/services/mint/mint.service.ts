@@ -473,57 +473,85 @@ export class MintService {
 
 	public loadMintAnalyticsBalances(args: MintAnalyticsArgs): Observable<MintAnalytic[]> {
 		return this.loadMintAnalyticsGeneric(
-			args, MINT_ANALYTICS_BALANCES_QUERY, 'mint_analytics_balances',
-			this.mint_analytics_balances_subject, this.mint_analytics_pre_balances_subject,
-			this.CACHE_KEYS.MINT_ANALYTICS_BALANCES, this.CACHE_KEYS.MINT_ANALYTICS_PRE_BALANCES,
+			args,
+			MINT_ANALYTICS_BALANCES_QUERY,
+			'mint_analytics_balances',
+			this.mint_analytics_balances_subject,
+			this.mint_analytics_pre_balances_subject,
+			this.CACHE_KEYS.MINT_ANALYTICS_BALANCES,
+			this.CACHE_KEYS.MINT_ANALYTICS_PRE_BALANCES,
 		);
 	}
 
 	public loadMintAnalyticsMints(args: MintAnalyticsArgs): Observable<MintAnalytic[]> {
 		return this.loadMintAnalyticsGeneric(
-			args, MINT_ANALYTICS_MINTS_QUERY, 'mint_analytics_mints',
-			this.mint_analytics_mints_subject, this.mint_analytics_pre_mints_subject,
-			this.CACHE_KEYS.MINT_ANALYTICS_MINTS, this.CACHE_KEYS.MINT_ANALYTICS_PRE_MINTS,
+			args,
+			MINT_ANALYTICS_MINTS_QUERY,
+			'mint_analytics_mints',
+			this.mint_analytics_mints_subject,
+			this.mint_analytics_pre_mints_subject,
+			this.CACHE_KEYS.MINT_ANALYTICS_MINTS,
+			this.CACHE_KEYS.MINT_ANALYTICS_PRE_MINTS,
 		);
 	}
 
 	public loadMintAnalyticsMelts(args: MintAnalyticsArgs): Observable<MintAnalytic[]> {
 		return this.loadMintAnalyticsGeneric(
-			args, MINT_ANALYTICS_MELTS_QUERY, 'mint_analytics_melts',
-			this.mint_analytics_melts_subject, this.mint_analytics_pre_melts_subject,
-			this.CACHE_KEYS.MINT_ANALYTICS_MELTS, this.CACHE_KEYS.MINT_ANALYTICS_PRE_MELTS,
+			args,
+			MINT_ANALYTICS_MELTS_QUERY,
+			'mint_analytics_melts',
+			this.mint_analytics_melts_subject,
+			this.mint_analytics_pre_melts_subject,
+			this.CACHE_KEYS.MINT_ANALYTICS_MELTS,
+			this.CACHE_KEYS.MINT_ANALYTICS_PRE_MELTS,
 		);
 	}
 
 	public loadMintAnalyticsSwaps(args: MintAnalyticsArgs): Observable<MintAnalytic[]> {
 		return this.loadMintAnalyticsGeneric(
-			args, MINT_ANALYTICS_SWAPS_QUERY, 'mint_analytics_swaps',
-			this.mint_analytics_swaps_subject, this.mint_analytics_pre_swaps_subject,
-			this.CACHE_KEYS.MINT_ANALYTICS_SWAPS, this.CACHE_KEYS.MINT_ANALYTICS_PRE_SWAPS,
+			args,
+			MINT_ANALYTICS_SWAPS_QUERY,
+			'mint_analytics_swaps',
+			this.mint_analytics_swaps_subject,
+			this.mint_analytics_pre_swaps_subject,
+			this.CACHE_KEYS.MINT_ANALYTICS_SWAPS,
+			this.CACHE_KEYS.MINT_ANALYTICS_PRE_SWAPS,
 		);
 	}
 
 	public loadMintAnalyticsFees(args: MintAnalyticsArgs): Observable<MintAnalytic[]> {
 		return this.loadMintAnalyticsGeneric(
-			args, MINT_ANALYTICS_FEES_QUERY, 'mint_analytics_fees',
-			this.mint_analytics_fees_subject, this.mint_analytics_pre_fees_subject,
-			this.CACHE_KEYS.MINT_ANALYTICS_FEES, this.CACHE_KEYS.MINT_ANALYTICS_PRE_FEES,
+			args,
+			MINT_ANALYTICS_FEES_QUERY,
+			'mint_analytics_fees',
+			this.mint_analytics_fees_subject,
+			this.mint_analytics_pre_fees_subject,
+			this.CACHE_KEYS.MINT_ANALYTICS_FEES,
+			this.CACHE_KEYS.MINT_ANALYTICS_PRE_FEES,
 		);
 	}
 
 	public loadMintAnalyticsProofs(args: MintAnalyticsArgs): Observable<MintAnalytic[]> {
 		return this.loadMintAnalyticsGeneric(
-			args, MINT_ANALYTICS_PROOFS_QUERY, 'mint_analytics_proofs',
-			this.mint_analytics_proofs_subject, this.mint_analytics_pre_proofs_subject,
-			this.CACHE_KEYS.MINT_ANALYTICS_PROOFS, this.CACHE_KEYS.MINT_ANALYTICS_PRE_PROOFS,
+			args,
+			MINT_ANALYTICS_PROOFS_QUERY,
+			'mint_analytics_proofs',
+			this.mint_analytics_proofs_subject,
+			this.mint_analytics_pre_proofs_subject,
+			this.CACHE_KEYS.MINT_ANALYTICS_PROOFS,
+			this.CACHE_KEYS.MINT_ANALYTICS_PRE_PROOFS,
 		);
 	}
 
 	public loadMintAnalyticsPromises(args: MintAnalyticsArgs): Observable<MintAnalytic[]> {
 		return this.loadMintAnalyticsGeneric(
-			args, MINT_ANALYTICS_PROMISES_QUERY, 'mint_analytics_promises',
-			this.mint_analytics_promises_subject, this.mint_analytics_pre_promises_subject,
-			this.CACHE_KEYS.MINT_ANALYTICS_PROMISES, this.CACHE_KEYS.MINT_ANALYTICS_PRE_PROMISES,
+			args,
+			MINT_ANALYTICS_PROMISES_QUERY,
+			'mint_analytics_promises',
+			this.mint_analytics_promises_subject,
+			this.mint_analytics_pre_promises_subject,
+			this.CACHE_KEYS.MINT_ANALYTICS_PROMISES,
+			this.CACHE_KEYS.MINT_ANALYTICS_PRE_PROMISES,
 		);
 	}
 

@@ -46,5 +46,3 @@ export interface CashuMintProofsArgs {
 	page?: number;
 	page_size?: number;
 }
-
-

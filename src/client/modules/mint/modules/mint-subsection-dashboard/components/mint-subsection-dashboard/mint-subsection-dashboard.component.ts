@@ -332,10 +332,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			this.updateTertiaryNav();
 			this.loading_static_data = false;
 			this.cdr.detectChanges();
-			await Promise.all([
-				this.loadMintAnalytics(),
-				this.lightning_enabled ? this.loadLightningAnalytics() : Promise.resolve(),
-			]);
+			await Promise.all([this.loadMintAnalytics(), this.lightning_enabled ? this.loadLightningAnalytics() : Promise.resolve()]);
 			this.loading_mint.set(false);
 			this.cdr.detectChanges();
 		} catch (error) {
@@ -368,9 +365,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			this.mintService.loadMintAnalyticsProofs.bind(this.mintService),
 			this.mintService.loadMintAnalyticsPromises.bind(this.mintService),
 		];
-		const results = await lastValueFrom(
-			forkJoin(loaders.flatMap((load) => [load(base_args), load(pre_args)])),
-		);
+		const results = await lastValueFrom(forkJoin(loaders.flatMap((load) => [load(base_args), load(pre_args)])));
 
 		this.mint_analytics_balances = results[0];
 		this.mint_analytics_balances_pre = results[1];
@@ -454,10 +449,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			this.lightningService.clearAnalyticsCache();
 			this.loading_mint.set(true);
 			this.cdr.detectChanges();
-			await Promise.all([
-				this.loadMintAnalytics(),
-				this.lightning_enabled ? this.loadLightningAnalytics() : Promise.resolve(),
-			]);
+			await Promise.all([this.loadMintAnalytics(), this.lightning_enabled ? this.loadLightningAnalytics() : Promise.resolve()]);
 			this.loading_mint.set(false);
 			this.cdr.detectChanges();
 		} catch (error) {

@@ -157,7 +157,7 @@ export class CashuMintDatabaseService implements OnModuleInit {
 		if (this.type === 'cdk') return this.cdkService.getKeysets(client);
 	}
 
-    public async getFees(client: CashuMintDatabase, limit?: number): Promise<CashuMintFee[]> {
+	public async getFees(client: CashuMintDatabase, limit?: number): Promise<CashuMintFee[]> {
 		if (this.type === 'nutshell') return this.nutshellService.getFees(client, limit);
 		if (this.type === 'cdk') throw OrchardErrorCode.MintSupportError;
 	}

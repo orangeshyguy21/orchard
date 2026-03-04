@@ -341,5 +341,4 @@ describe('NutshellService', () => {
 		});
 		await expect(nutshellService.getFees({} as any)).rejects.toThrow('fee');
 	});
-
 });
