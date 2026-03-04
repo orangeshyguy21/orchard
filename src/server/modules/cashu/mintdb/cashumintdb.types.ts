@@ -123,6 +123,21 @@ export type CashuMintKeysetCount = {
 	promise_count: number;
 };
 
+export type CashuMintProof = {
+	amount: number;
+	keyset_id: string;
+	unit: MintUnit;
+	state: MintProofState;
+	created_time: number;
+};
+
+export type CashuMintPromise = {
+	amount: number;
+	keyset_id: string;
+	unit: MintUnit;
+	created_time: number;
+};
+
 export type CashuMintDatabaseInfo = {
 	size: number;
 	type: string;

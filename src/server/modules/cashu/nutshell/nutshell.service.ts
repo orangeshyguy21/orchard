@@ -7,6 +7,7 @@ import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 /* Application Dependencies */
 import {CredentialService} from '@server/modules/credential/credential.service';
+import {MintUnit, MintProofState} from '@server/modules/cashu/cashu.enums';
 /* Native Dependencies */
 import {
 	CashuMintDatabase,
@@ -18,6 +19,8 @@ import {
 	CashuMintKeysetsAnalytics,
 	CashuMintProofGroup,
 	CashuMintPromiseGroup,
+	CashuMintProof,
+	CashuMintPromise,
 	CashuMintSwap,
 	CashuMintCount,
 	CashuMintFee,
@@ -376,6 +379,77 @@ export class NutshellService {
 		} catch (err) {
 			throw err;
 		}
+	}
+
+	public async listProofs(client: CashuMintDatabase, args?: CashuMintProofsArgs): Promise<CashuMintProof[]> {
+		const field_mappings = {
+			units: 'k.unit',
+			id_keysets: 'p.id',
+			date_start: 'p.created',
+			date_end: 'p.created',
+		};
+
+		const select_statement = `
+			SELECT
+				p.amount,
+				p.id AS keyset_id,
+				k.unit,
+				p.created AS created_time
+			FROM proofs_used p
+			LEFT JOIN keysets k ON k.id = p.id`;
+
+		const {sql, params} = buildDynamicQuery({
+			db_type: client.type,
+			table_name: 'proofs_used',
+			args,
+			field_mappings,
+			select_statement,
+		});
+		const rows = await queryRows<{amount: number; keyset_id: string; unit: MintUnit; created_time: number | string}>(
+			client,
+			sql,
+			params,
+		);
+		return rows.map((row) => ({
+			...row,
+			created_time: convertDateToUnixTimestamp(row.created_time),
+			state: MintProofState.SPENT,
+		}));
+	}
+
+	public async listPromises(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<CashuMintPromise[]> {
+		const field_mappings = {
+			units: 'k.unit',
+			id_keysets: 'p.id',
+			date_start: 'p.created',
+			date_end: 'p.created',
+		};
+
+		const select_statement = `
+			SELECT
+				p.amount,
+				p.id AS keyset_id,
+				k.unit,
+				p.created AS created_time
+			FROM promises p
+			LEFT JOIN keysets k ON k.id = p.id`;
+
+		const {sql, params} = buildDynamicQuery({
+			db_type: client.type,
+			table_name: 'promises',
+			args,
+			field_mappings,
+			select_statement,
+		});
+		const rows = await queryRows<{amount: number; keyset_id: string; unit: MintUnit; created_time: number | string}>(
+			client,
+			sql,
+			params,
+		);
+		return rows.map((row) => ({
+			...row,
+			created_time: convertDateToUnixTimestamp(row.created_time),
+		}));
 	}
 
 	public async getMintCountMeltQuotes(client: CashuMintDatabase, args?: CashuMintMeltQuotesArgs): Promise<number> {

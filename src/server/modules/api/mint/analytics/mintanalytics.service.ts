@@ -1,113 +1,256 @@
 /* Core Dependencies */
 import {Injectable, Logger} from '@nestjs/common';
+/* Vendor Dependencies */
+import {DateTime} from 'luxon';
 /* Application Dependencies */
-import {CashuMintDatabaseService} from '@server/modules/cashu/mintdb/cashumintdb.service';
-import {CashuMintAnalytics, CashuMintKeysetsAnalytics} from '@server/modules/cashu/mintdb/cashumintdb.types';
-import {CashuMintAnalyticsArgs} from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
+import {CashuMintAnalyticsService} from '@server/modules/cashu/mintanalytics/mintanalytics.service';
+import {MintAnalytics} from '@server/modules/cashu/mintanalytics/mintanalytics.entity';
+import {MintAnalyticsMetric} from '@server/modules/cashu/mintanalytics/mintanalytics.enums';
+import {AnalyticsInterval} from '@server/modules/analytics/analytics.enums';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
-import {MintService} from '@server/modules/api/mint/mint.service';
 import {ErrorService} from '@server/modules/error/error.service';
 /* Local Dependencies */
-import {OrchardMintAnalytics, OrchardMintKeysetsAnalytics} from './mintanalytics.model';
+import {OrchardMintAnalytics, OrchardMintKeysetsAnalytics, OrchardMintAnalyticsBackfillStatus} from './mintanalytics.model';
+import {MintAnalyticsApiArgs} from './mintanalytics.interfaces';
 
 @Injectable()
 export class MintAnalyticsService {
 	private readonly logger = new Logger(MintAnalyticsService.name);
 
 	constructor(
-		private cashuMintDatabaseService: CashuMintDatabaseService,
-		private mintService: MintService,
+		private cashuMintAnalyticsService: CashuMintAnalyticsService,
 		private errorService: ErrorService,
 	) {}
 
-	async getMintAnalyticsBalances(tag: string, args: CashuMintAnalyticsArgs): Promise<OrchardMintAnalytics[]> {
-		return this.mintService.withDbClient(async (client) => {
-			try {
-				const cashu_mint_analytics: CashuMintAnalytics[] = await this.cashuMintDatabaseService.getMintAnalyticsBalances(
-					client,
-					args,
-				);
-				return cashu_mint_analytics.map((cma) => new OrchardMintAnalytics(cma));
-			} catch (error) {
-				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
-					errord: OrchardErrorCode.MintDatabaseSelectError,
-				});
-				throw new OrchardApiError(orchard_error);
+	/* *******************************************************
+		Analytics Queries
+	******************************************************** */
+
+	/** Gets balance analytics (issued - redeemed per unit per bucket) */
+	async getMintAnalyticsBalances(tag: string, args: MintAnalyticsApiArgs): Promise<OrchardMintAnalytics[]> {
+		try {
+			const {interval, date_start, cached_end} = this.resolveQueryParams(args);
+			const cached = await this.cashuMintAnalyticsService.getCachedAnalytics({
+				date_start,
+				date_end: cached_end,
+				metrics: [MintAnalyticsMetric.issued_amount, MintAnalyticsMetric.redeemed_amount],
+				units: args.units?.map((u) => String(u)),
+			});
+			const issued = cached.filter((d) => d.metric === MintAnalyticsMetric.issued_amount);
+			const redeemed = cached.filter((d) => d.metric === MintAnalyticsMetric.redeemed_amount);
+			const agg_issued = this.aggregateByInterval(issued, interval, args.timezone, date_start);
+			const agg_redeemed = this.aggregateByInterval(redeemed, interval, args.timezone, date_start);
+
+			const redeemed_map = new Map<string, bigint>();
+			for (const r of agg_redeemed) {
+				redeemed_map.set(`${r.unit}:${r.date}`, BigInt(r.amount));
 			}
-		});
+
+			return agg_issued
+				.map((i) => {
+					const redeemed_amount = redeemed_map.get(`${i.unit}:${i.date}`) ?? BigInt(0);
+					const balance = BigInt(i.amount) - redeemed_amount;
+					return new OrchardMintAnalytics(i.unit, balance.toString(), i.date);
+				})
+				.filter((d) => d.amount !== '0');
+		} catch (error) {
+			throw this.handleError(tag, error);
+		}
 	}
 
-	async getMintAnalyticsMints(tag: string, args: CashuMintAnalyticsArgs): Promise<OrchardMintAnalytics[]> {
-		return this.mintService.withDbClient(async (client) => {
-			try {
-				const cashu_mint_analytics: CashuMintAnalytics[] = await this.cashuMintDatabaseService.getMintAnalyticsMints(client, args);
-				return cashu_mint_analytics.map((cma) => new OrchardMintAnalytics(cma));
-			} catch (error) {
-				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
-					errord: OrchardErrorCode.MintDatabaseSelectError,
-				});
-				throw new OrchardApiError(orchard_error);
-			}
-		});
+	/** Gets mint quote analytics */
+	async getMintAnalyticsMints(tag: string, args: MintAnalyticsApiArgs): Promise<OrchardMintAnalytics[]> {
+		return this.getMetricAnalytics(tag, args, [MintAnalyticsMetric.mints_amount]);
 	}
 
-	async getMintAnalyticsMelts(tag: string, args: CashuMintAnalyticsArgs): Promise<OrchardMintAnalytics[]> {
-		return this.mintService.withDbClient(async (client) => {
-			try {
-				const cashu_mint_analytics: CashuMintAnalytics[] = await this.cashuMintDatabaseService.getMintAnalyticsMelts(client, args);
-				return cashu_mint_analytics.map((cma) => new OrchardMintAnalytics(cma));
-			} catch (error) {
-				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
-					errord: OrchardErrorCode.MintDatabaseSelectError,
-				});
-				throw new OrchardApiError(orchard_error);
-			}
-		});
+	/** Gets melt quote analytics */
+	async getMintAnalyticsMelts(tag: string, args: MintAnalyticsApiArgs): Promise<OrchardMintAnalytics[]> {
+		return this.getMetricAnalytics(tag, args, [MintAnalyticsMetric.melts_amount]);
 	}
 
-	async getMintAnalyticsSwaps(tag: string, args: CashuMintAnalyticsArgs): Promise<OrchardMintAnalytics[]> {
-		return this.mintService.withDbClient(async (client) => {
-			try {
-				const cashu_mint_analytics: CashuMintAnalytics[] = await this.cashuMintDatabaseService.getMintAnalyticsSwaps(client, args);
-				return cashu_mint_analytics.map((cma) => new OrchardMintAnalytics(cma));
-			} catch (error) {
-				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
-					errord: OrchardErrorCode.MintDatabaseSelectError,
-				});
-				throw new OrchardApiError(orchard_error);
-			}
-		});
+	/** Gets swap analytics */
+	async getMintAnalyticsSwaps(tag: string, args: MintAnalyticsApiArgs): Promise<OrchardMintAnalytics[]> {
+		return this.getMetricAnalytics(tag, args, [MintAnalyticsMetric.swaps_amount]);
 	}
 
-	async getMintAnalyticsFees(tag: string, args: CashuMintAnalyticsArgs): Promise<OrchardMintAnalytics[]> {
-		return this.mintService.withDbClient(async (client) => {
-			try {
-				const cashu_mint_analytics: CashuMintAnalytics[] = await this.cashuMintDatabaseService.getMintAnalyticsFees(client, args);
-				return cashu_mint_analytics.map((cma) => new OrchardMintAnalytics(cma));
-			} catch (error) {
-				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
-					errord: OrchardErrorCode.MintDatabaseSelectError,
-				});
-				throw new OrchardApiError(orchard_error);
-			}
-		});
+	/** Gets fee analytics */
+	async getMintAnalyticsFees(tag: string, args: MintAnalyticsApiArgs): Promise<OrchardMintAnalytics[]> {
+		return this.getMetricAnalytics(tag, args, [MintAnalyticsMetric.fees_amount]);
 	}
 
-	async getMintAnalyticsKeysets(tag: string, args: CashuMintAnalyticsArgs): Promise<OrchardMintKeysetsAnalytics[]> {
-		return this.mintService.withDbClient(async (client) => {
-			try {
-				const cashu_mint_analytics: CashuMintKeysetsAnalytics[] = await this.cashuMintDatabaseService.getMintAnalyticsKeysets(
-					client,
-					args,
-				);
-				return cashu_mint_analytics.map((cma) => new OrchardMintKeysetsAnalytics(cma));
-			} catch (error) {
-				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
-					errord: OrchardErrorCode.MintDatabaseSelectError,
-				});
-				throw new OrchardApiError(orchard_error);
+	/** Gets proof (redeemed) analytics */
+	async getMintAnalyticsProofs(tag: string, args: MintAnalyticsApiArgs): Promise<OrchardMintAnalytics[]> {
+		return this.getMetricAnalytics(tag, args, [MintAnalyticsMetric.redeemed_amount]);
+	}
+
+	/** Gets promise (issued) analytics */
+	async getMintAnalyticsPromises(tag: string, args: MintAnalyticsApiArgs): Promise<OrchardMintAnalytics[]> {
+		return this.getMetricAnalytics(tag, args, [MintAnalyticsMetric.issued_amount]);
+	}
+
+	/** Gets keyset-level analytics */
+	async getMintAnalyticsKeysets(tag: string, args: MintAnalyticsApiArgs): Promise<OrchardMintKeysetsAnalytics[]> {
+		try {
+			const {interval, date_start, cached_end} = this.resolveQueryParams(args);
+			const cached = await this.cashuMintAnalyticsService.getCachedAnalytics({
+				date_start,
+				date_end: cached_end,
+				metrics: [MintAnalyticsMetric.keyset_issued, MintAnalyticsMetric.keyset_redeemed],
+			});
+			const keyset_data = cached.filter((d) => d.keyset_id !== '' && d.amount !== '0');
+			return this.aggregateKeysetsByInterval(keyset_data, interval, args.timezone, date_start);
+		} catch (error) {
+			throw this.handleError(tag, error);
+		}
+	}
+
+	/* *******************************************************
+		Backfill Status
+	******************************************************** */
+
+	/** Gets the current backfill status */
+	getBackfillStatus(tag: string): OrchardMintAnalyticsBackfillStatus {
+		try {
+			const status = this.cashuMintAnalyticsService.getBackfillStatus();
+			return status as OrchardMintAnalyticsBackfillStatus;
+		} catch (error) {
+			throw this.handleError(tag, error);
+		}
+	}
+
+	/* *******************************************************
+		Helpers
+	******************************************************** */
+
+	/** Fetches cached data for specific metrics, filters zeros, aggregates by interval */
+	private async getMetricAnalytics(
+		tag: string,
+		args: MintAnalyticsApiArgs,
+		metrics: MintAnalyticsMetric[],
+	): Promise<OrchardMintAnalytics[]> {
+		try {
+			const {interval, date_start, cached_end} = this.resolveQueryParams(args);
+			const cached = await this.cashuMintAnalyticsService.getCachedAnalytics({
+				date_start,
+				date_end: cached_end,
+				metrics,
+				units: args.units?.map((u) => String(u)),
+			});
+			const filtered = cached.filter((d) => d.amount !== '0');
+			return this.aggregateByInterval(filtered, interval, args.timezone, date_start);
+		} catch (error) {
+			throw this.handleError(tag, error);
+		}
+	}
+
+	/** Resolves common query parameters with defaults */
+	private resolveQueryParams(args: MintAnalyticsApiArgs) {
+		const now = DateTime.utc().toSeconds();
+		const current_hour_start = DateTime.fromSeconds(now, {zone: 'UTC'}).startOf('hour').toSeconds();
+		return {
+			interval: args.interval ?? AnalyticsInterval.hour,
+			date_start: args.date_start ?? 0,
+			date_end: args.date_end ?? now,
+			cached_end: Math.min(args.date_end ?? now, current_hour_start - 1),
+		};
+	}
+
+	/** Aggregates hourly cache data into the requested interval */
+	private aggregateByInterval(
+		data: MintAnalytics[],
+		interval: AnalyticsInterval,
+		timezone?: string,
+		date_start?: number,
+	): OrchardMintAnalytics[] {
+		if (interval === AnalyticsInterval.hour) {
+			return data.map((d) => new OrchardMintAnalytics(d.unit, d.amount, d.date));
+		}
+
+		const tz = timezone ?? 'UTC';
+		type Bucket = {unit: string; amount: bigint; date: number};
+
+		const buckets = data.reduce((acc, d) => {
+			const bucket_date = this.getBucketDate(d.date, interval, tz, date_start, data);
+			const key = interval === AnalyticsInterval.custom ? d.unit : `${d.unit}:${bucket_date}`;
+			const existing = acc.get(key);
+
+			if (existing) {
+				existing.amount += BigInt(d.amount);
+			} else {
+				acc.set(key, {unit: d.unit, amount: BigInt(d.amount), date: bucket_date});
 			}
+			return acc;
+		}, new Map<string, Bucket>());
+
+		return Array.from(buckets.values())
+			.sort((a, b) => a.date - b.date)
+			.map((b) => new OrchardMintAnalytics(b.unit, b.amount.toString(), b.date));
+	}
+
+	/** Aggregates keyset-level data by interval */
+	private aggregateKeysetsByInterval(
+		data: MintAnalytics[],
+		interval: AnalyticsInterval,
+		timezone?: string,
+		date_start?: number,
+	): OrchardMintKeysetsAnalytics[] {
+		if (interval === AnalyticsInterval.hour) {
+			return data.map((d) => new OrchardMintKeysetsAnalytics(d.keyset_id, d.amount, d.date));
+		}
+
+		const tz = timezone ?? 'UTC';
+		type Bucket = {keyset_id: string; amount: bigint; date: number};
+
+		const buckets = data.reduce((acc, d) => {
+			const bucket_date = this.getBucketDate(d.date, interval, tz, date_start, data);
+			const key = interval === AnalyticsInterval.custom ? `${d.keyset_id}:${d.metric}` : `${d.keyset_id}:${d.metric}:${bucket_date}`;
+			const existing = acc.get(key);
+
+			if (existing) {
+				existing.amount += BigInt(d.amount);
+			} else {
+				acc.set(key, {keyset_id: d.keyset_id, amount: BigInt(d.amount), date: bucket_date});
+			}
+			return acc;
+		}, new Map<string, Bucket>());
+
+		return Array.from(buckets.values())
+			.sort((a, b) => a.date - b.date)
+			.map((b) => new OrchardMintKeysetsAnalytics(b.keyset_id, b.amount.toString(), b.date));
+	}
+
+	/** Computes the interval bucket start date */
+	private getBucketDate(
+		date: number,
+		interval: AnalyticsInterval,
+		timezone: string,
+		date_start?: number,
+		data?: MintAnalytics[],
+	): number {
+		if (interval === AnalyticsInterval.custom) {
+			return date_start ?? (data?.length ? Math.min(...data.map((d) => d.date)) : 0);
+		}
+
+		const dt = DateTime.fromSeconds(date, {zone: timezone});
+
+		switch (interval) {
+			case AnalyticsInterval.day:
+				return dt.startOf('day').toSeconds();
+			case AnalyticsInterval.week:
+				return dt.startOf('week').toSeconds();
+			case AnalyticsInterval.month:
+				return dt.startOf('month').toSeconds();
+			default:
+				return dt.startOf('hour').toSeconds();
+		}
+	}
+
+	/** Wraps errors in OrchardApiError */
+	private handleError(tag: string, error: unknown): OrchardApiError {
+		const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
+			errord: OrchardErrorCode.MintDatabaseSelectError,
 		});
+		return new OrchardApiError(orchard_error);
 	}
 }

@@ -25,8 +25,10 @@ import {
 	LightningChannelOpenInitiator,
 } from './modules/lightning/lightning.enums';
 import {TaprootAssetType, TaprootAssetVersion} from './modules/tapass/tapass.enums';
-import {MintAnalyticsInterval, MintActivityPeriod} from './modules/cashu/mintdb/cashumintdb.enums';
-import {LightningAnalyticsInterval, LightningAnalyticsMetric} from './modules/lightning/analytics/lnanalytics.enums';
+import {MintActivityPeriod} from './modules/cashu/mintdb/cashumintdb.enums';
+import {AnalyticsInterval} from './modules/analytics/analytics.enums';
+import {MintAnalyticsMetric} from './modules/cashu/mintanalytics/mintanalytics.enums';
+import {LightningAnalyticsMetric} from './modules/lightning/analytics/lnanalytics.enums';
 import {MintUnit, MintQuoteState, MeltQuoteState, MintProofState} from './modules/cashu/cashu.enums';
 import {AiAgent, AiMessageRole, AiFunctionName} from './modules/ai/ai.enums';
 import {UserRole} from './modules/user/user.enums';
@@ -48,7 +50,7 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 	registerEnumType(MintQuoteState, {name: 'MintQuoteState'});
 	registerEnumType(MeltQuoteState, {name: 'MeltQuoteState'});
 	registerEnumType(MintProofState, {name: 'MintProofState'});
-	registerEnumType(MintAnalyticsInterval, {name: 'MintAnalyticsInterval'});
+	registerEnumType(AnalyticsInterval, {name: 'AnalyticsInterval'});
 	registerEnumType(MintActivityPeriod, {name: 'MintActivityPeriod'});
 	registerEnumType(TaprootAssetType, {name: 'TaprootAssetType'});
 	registerEnumType(TaprootAssetVersion, {name: 'TaprootAssetVersion'});
@@ -56,8 +58,8 @@ function initializeGraphQL(configService: ConfigService): ApolloDriverConfig {
 	registerEnumType(LightningRequestType, {name: 'LightningRequestType'});
 	registerEnumType(LightningChannelCloseType, {name: 'LightningChannelCloseType'});
 	registerEnumType(LightningChannelOpenInitiator, {name: 'LightningChannelOpenInitiator'});
-	registerEnumType(LightningAnalyticsInterval, {name: 'LightningAnalyticsInterval'});
 	registerEnumType(LightningAnalyticsMetric, {name: 'LightningAnalyticsMetric'});
+	registerEnumType(MintAnalyticsMetric, {name: 'MintAnalyticsMetric'});
 	registerEnumType(AiAgent, {name: 'AiAgent'});
 	registerEnumType(AiMessageRole, {name: 'AiMessageRole'});
 	registerEnumType(AiFunctionName, {name: 'AiFunctionName'});

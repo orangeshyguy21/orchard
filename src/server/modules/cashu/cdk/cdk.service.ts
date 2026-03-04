@@ -16,6 +16,8 @@ import {
 	CashuMintMintQuote,
 	CashuMintProofGroup,
 	CashuMintPromiseGroup,
+	CashuMintProof,
+	CashuMintPromise,
 	CashuMintSwap,
 	CashuMintAnalytics,
 	CashuMintKeysetsAnalytics,
@@ -401,6 +403,64 @@ export class CdkService {
 		} catch (err) {
 			throw err;
 		}
+	}
+
+	public async listProofs(client: CashuMintDatabase, args?: CashuMintProofsArgs): Promise<CashuMintProof[]> {
+		const field_mappings = {
+			states: 'p.state',
+			units: 'k.unit',
+			id_keysets: 'p.keyset_id',
+			date_start: 'p.created_time',
+			date_end: 'p.created_time',
+		};
+
+		const select_statement = `
+			SELECT
+				p.amount,
+				p.keyset_id,
+				k.unit,
+				p.state,
+				p.created_time
+			FROM proof p
+			LEFT JOIN keyset k ON k.id = p.keyset_id`;
+
+		const {sql, params} = buildDynamicQuery({
+			db_type: client.type,
+			table_name: 'proof',
+			args,
+			field_mappings,
+			select_statement,
+			time_is_epoch_seconds: true,
+		});
+		return queryRows<CashuMintProof>(client, sql, params);
+	}
+
+	public async listPromises(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<CashuMintPromise[]> {
+		const field_mappings = {
+			units: 'k.unit',
+			id_keysets: 'bs.keyset_id',
+			date_start: 'bs.created_time',
+			date_end: 'bs.created_time',
+		};
+
+		const select_statement = `
+			SELECT
+				bs.amount,
+				bs.keyset_id,
+				k.unit,
+				bs.created_time
+			FROM blind_signature bs
+			LEFT JOIN keyset k ON k.id = bs.keyset_id`;
+
+		const {sql, params} = buildDynamicQuery({
+			db_type: client.type,
+			table_name: 'blind_signature',
+			args,
+			field_mappings,
+			select_statement,
+			time_is_epoch_seconds: true,
+		});
+		return queryRows<CashuMintPromise>(client, sql, params);
 	}
 
 	public async getMintCountMintQuotes(client: CashuMintDatabase, args?: CashuMintMintQuotesArgs): Promise<number> {

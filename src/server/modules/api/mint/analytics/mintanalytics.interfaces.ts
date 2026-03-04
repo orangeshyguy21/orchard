@@ -1,0 +1,12 @@
+/* Application Dependencies */
+import {AnalyticsInterval} from '@server/modules/analytics/analytics.enums';
+import {MintUnit} from '@server/modules/cashu/cashu.enums';
+import {TimezoneType} from '@server/modules/graphql/scalars/timezone.scalar';
+
+export interface MintAnalyticsApiArgs {
+	date_start?: number;
+	date_end?: number;
+	interval?: AnalyticsInterval;
+	timezone?: TimezoneType;
+	units?: MintUnit[];
+}

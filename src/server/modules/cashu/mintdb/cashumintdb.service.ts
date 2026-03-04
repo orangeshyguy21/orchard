@@ -24,6 +24,8 @@ import {
 	CashuMintKeysetsAnalytics,
 	CashuMintProofGroup,
 	CashuMintPromiseGroup,
+	CashuMintProof,
+	CashuMintPromise,
 	CashuMintSwap,
 	CashuMintFee,
 	CashuMintKeysetCount,
@@ -194,6 +196,16 @@ export class CashuMintDatabaseService implements OnModuleInit {
 	public async getMintPromiseGroups(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<CashuMintPromiseGroup[]> {
 		if (this.type === 'nutshell') return this.nutshellService.getMintPromiseGroups(client, args);
 		if (this.type === 'cdk') return this.cdkService.getMintPromiseGroups(client, args);
+	}
+
+	public async listProofs(client: CashuMintDatabase, args?: CashuMintProofsArgs): Promise<CashuMintProof[]> {
+		if (this.type === 'nutshell') return this.nutshellService.listProofs(client, args);
+		if (this.type === 'cdk') return this.cdkService.listProofs(client, args);
+	}
+
+	public async listPromises(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<CashuMintPromise[]> {
+		if (this.type === 'nutshell') return this.nutshellService.listPromises(client, args);
+		if (this.type === 'cdk') return this.cdkService.listPromises(client, args);
 	}
 
 	public async getMintCountMintQuotes(client: CashuMintDatabase, args?: CashuMintMintQuotesArgs): Promise<number> {

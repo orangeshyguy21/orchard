@@ -1,8 +1,7 @@
 /* Core Dependencies */
 import {Test, TestingModule} from '@nestjs/testing';
 /* Application Dependencies */
-import {CashuMintDatabaseService} from '@server/modules/cashu/mintdb/cashumintdb.service';
-import {MintService} from '@server/modules/api/mint/mint.service';
+import {CashuMintAnalyticsService} from '@server/modules/cashu/mintanalytics/mintanalytics.service';
 import {ErrorService} from '@server/modules/error/error.service';
 /* Local Dependencies */
 import {MintAnalyticsService} from './mintanalytics.service';
@@ -15,17 +14,12 @@ describe('MintAnalyticsService', () => {
 			providers: [
 				MintAnalyticsService,
 				{
-					provide: CashuMintDatabaseService,
+					provide: CashuMintAnalyticsService,
 					useValue: {
-						getMintAnalyticsBalances: jest.fn(),
-						getMintAnalyticsMints: jest.fn(),
-						getMintAnalyticsMelts: jest.fn(),
-						getMintAnalyticsSwaps: jest.fn(),
-						getMintAnalyticsFees: jest.fn(),
-						getMintAnalyticsKeysets: jest.fn(),
+						getCachedAnalytics: jest.fn().mockResolvedValue([]),
+						getBackfillStatus: jest.fn().mockReturnValue({is_running: false}),
 					},
 				},
-				{provide: MintService, useValue: {withDbClient: jest.fn((fn: any) => fn({}))}},
 				{provide: ErrorService, useValue: {resolveError: jest.fn()}},
 			],
 		}).compile();

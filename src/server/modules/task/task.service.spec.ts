@@ -9,6 +9,7 @@ import {SettingService} from '@server/modules/setting/setting.service';
 import {BitcoinRpcService} from '@server/modules/bitcoin/rpc/btcrpc.service';
 import {BitcoinUTXOracleService} from '@server/modules/bitcoin/utxoracle/utxoracle.service';
 import {LightningAnalyticsService} from '@server/modules/lightning/analytics/lnanalytics.service';
+import {CashuMintAnalyticsService} from '@server/modules/cashu/mintanalytics/mintanalytics.service';
 /* Local Dependencies */
 import {TaskService} from './task.service';
 
@@ -50,6 +51,13 @@ describe('TaskService', () => {
 					provide: LightningAnalyticsService,
 					useValue: {
 						runStreamingBackfill: jest.fn(),
+						rescanRecentRecords: jest.fn(),
+					},
+				},
+				{
+					provide: CashuMintAnalyticsService,
+					useValue: {
+						runBackfill: jest.fn(),
 						rescanRecentRecords: jest.fn(),
 					},
 				},

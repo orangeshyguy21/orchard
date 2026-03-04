@@ -4,8 +4,10 @@ import {Resolver, Query, Args} from '@nestjs/graphql';
 /* Application Dependencies */
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
 import {Timezone, TimezoneType} from '@server/modules/graphql/scalars/timezone.scalar';
+/* Application Dependencies */
+import {AnalyticsInterval} from '@server/modules/analytics/analytics.enums';
 /* Native Dependencies */
-import {LightningAnalyticsInterval, LightningAnalyticsMetric} from '@server/modules/lightning/analytics/lnanalytics.enums';
+import {LightningAnalyticsMetric} from '@server/modules/lightning/analytics/lnanalytics.enums';
 /* Local Dependencies */
 import {OrchardLightningAnalytics, OrchardLightningAnalyticsBackfillStatus} from './lnanalytics.model';
 import {ApiLightningAnalyticsService} from './lnanalytics.service';
@@ -20,7 +22,7 @@ export class LightningAnalyticsResolver {
 	async lightning_analytics(
 		@Args('date_start', {type: () => UnixTimestamp, nullable: true}) date_start?: number,
 		@Args('date_end', {type: () => UnixTimestamp, nullable: true}) date_end?: number,
-		@Args('interval', {type: () => LightningAnalyticsInterval, nullable: true}) interval?: LightningAnalyticsInterval,
+		@Args('interval', {type: () => AnalyticsInterval, nullable: true}) interval?: AnalyticsInterval,
 		@Args('timezone', {type: () => Timezone, nullable: true}) timezone?: TimezoneType,
 		@Args('metrics', {type: () => [LightningAnalyticsMetric], nullable: true}) metrics?: LightningAnalyticsMetric[],
 	): Promise<OrchardLightningAnalytics[]> {

@@ -9,7 +9,8 @@ import {ErrorService} from '@server/modules/error/error.service';
 /* Native Dependencies */
 import {LightningAnalyticsService} from '@server/modules/lightning/analytics/lnanalytics.service';
 import {LightningAnalytics} from '@server/modules/lightning/analytics/lnanalytics.entity';
-import {LightningAnalyticsMetric, LightningAnalyticsInterval} from '@server/modules/lightning/analytics/lnanalytics.enums';
+import {LightningAnalyticsMetric} from '@server/modules/lightning/analytics/lnanalytics.enums';
+import {AnalyticsInterval} from '@server/modules/analytics/analytics.enums';
 import {LightningAnalyticsArgs} from '@server/modules/lightning/analytics/lnanalytics.interfaces';
 /* Local Dependencies */
 import {OrchardLightningAnalytics, OrchardLightningAnalyticsBackfillStatus} from './lnanalytics.model';
@@ -30,7 +31,7 @@ export class ApiLightningAnalyticsService {
 		try {
 			const now = DateTime.utc().toSeconds();
 			const current_hour_start = DateTime.fromSeconds(now, {zone: 'UTC'}).startOf('hour').toSeconds();
-			const interval = args.interval ?? LightningAnalyticsInterval.hour;
+			const interval = args.interval ?? AnalyticsInterval.hour;
 			const date_start = args.date_start ?? 0;
 			const date_end = args.date_end ?? now;
 			const metrics = args.metrics ?? Object.values(LightningAnalyticsMetric);
@@ -66,11 +67,11 @@ export class ApiLightningAnalyticsService {
 
 	private aggregateByInterval(
 		data: LightningAnalytics[],
-		interval: LightningAnalyticsInterval,
+		interval: AnalyticsInterval,
 		timezone?: string,
 		date_start?: number,
 	): OrchardLightningAnalytics[] {
-		if (interval === LightningAnalyticsInterval.hour) {
+		if (interval === AnalyticsInterval.hour) {
 			return data.map((d) => {
 				return new OrchardLightningAnalytics(d.unit, d.metric as LightningAnalyticsMetric, d.amount, d.date);
 			});
@@ -81,7 +82,7 @@ export class ApiLightningAnalyticsService {
 
 		const buckets = data.reduce((acc, d) => {
 			const bucket_date = this.getBucketDate(d.date, interval, tz, date_start, data);
-			const key = interval === LightningAnalyticsInterval.custom ? `${d.unit}:${d.metric}` : `${d.unit}:${d.metric}:${bucket_date}`;
+			const key = interval === AnalyticsInterval.custom ? `${d.unit}:${d.metric}` : `${d.unit}:${d.metric}:${bucket_date}`;
 			const existing = acc.get(key);
 
 			if (existing) {
@@ -101,23 +102,23 @@ export class ApiLightningAnalyticsService {
 
 	private getBucketDate(
 		date: number,
-		interval: LightningAnalyticsInterval,
+		interval: AnalyticsInterval,
 		timezone: string,
 		date_start?: number,
 		data?: LightningAnalytics[],
 	): number {
-		if (interval === LightningAnalyticsInterval.custom) {
+		if (interval === AnalyticsInterval.custom) {
 			return date_start ?? (data?.length ? Math.min(...data.map((d) => d.date)) : 0);
 		}
 
 		const dt = DateTime.fromSeconds(date, {zone: timezone});
 
 		switch (interval) {
-			case LightningAnalyticsInterval.day:
+			case AnalyticsInterval.day:
 				return dt.startOf('day').toSeconds();
-			case LightningAnalyticsInterval.week:
+			case AnalyticsInterval.week:
 				return dt.startOf('week').toSeconds();
-			case LightningAnalyticsInterval.month:
+			case AnalyticsInterval.month:
 				return dt.startOf('month').toSeconds();
 			default:
 				return dt.startOf('hour').toSeconds();

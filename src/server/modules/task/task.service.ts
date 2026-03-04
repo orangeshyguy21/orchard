@@ -10,6 +10,7 @@ import {SettingService} from '@server/modules/setting/setting.service';
 import {BitcoinRpcService} from '@server/modules/bitcoin/rpc/btcrpc.service';
 import {BitcoinUTXOracleService} from '@server/modules/bitcoin/utxoracle/utxoracle.service';
 import {LightningAnalyticsService} from '@server/modules/lightning/analytics/lnanalytics.service';
+import {CashuMintAnalyticsService} from '@server/modules/cashu/mintanalytics/mintanalytics.service';
 import {BitcoinType} from '@server/modules/bitcoin/bitcoin.enums';
 import {SettingKey} from '@server/modules/setting/setting.enums';
 
@@ -23,6 +24,7 @@ export class TaskService {
 		private bitcoinRpcService: BitcoinRpcService,
 		private bitcoinUTXOracleService: BitcoinUTXOracleService,
 		private lightningAnalyticsService: LightningAnalyticsService,
+		private cashuMintAnalyticsService: CashuMintAnalyticsService,
 		private configService: ConfigService,
 	) {}
 
@@ -136,6 +138,54 @@ export class TaskService {
 			this.logger.log('Daily lightning analytics rescan complete');
 		} catch (error) {
 			this.logger.error(`Error during lightning analytics rescan: ${error.message}`, error.stack);
+		}
+	}
+
+	/**
+	 * Update cashu mint analytics at 5 minutes past each hour
+	 * Uses streaming backfill which is checkpoint-based
+	 */
+	@Cron('5 * * * *', {
+		name: 'hourly-cashu-mint-analytics',
+		timeZone: 'UTC',
+	})
+	async runHourlyCashuMintAnalytics() {
+		const cashu_type = this.configService.get<string>('cashu.type');
+		if (!cashu_type) {
+			this.logger.debug('Cashu not configured, skipping mint analytics job');
+			return;
+		}
+
+		this.logger.log('Starting cashu mint analytics update...');
+		try {
+			await this.cashuMintAnalyticsService.runBackfill();
+			this.logger.log('Cashu mint analytics update complete');
+		} catch (error) {
+			this.logger.error(`Error updating cashu mint analytics: ${error.message}`, error.stack);
+		}
+	}
+
+	/**
+	 * Daily rescan of recent cashu mint records to catch state changes (UNPAID → PAID → ISSUED)
+	 * Runs at 3:15am UTC
+	 */
+	@Cron('15 3 * * *', {
+		name: 'daily-cashu-mint-analytics-rescan',
+		timeZone: 'UTC',
+	})
+	async runDailyCashuMintAnalyticsRescan() {
+		const cashu_type = this.configService.get<string>('cashu.type');
+		if (!cashu_type) {
+			this.logger.debug('Cashu not configured, skipping mint analytics rescan');
+			return;
+		}
+
+		this.logger.log('Starting daily cashu mint analytics rescan...');
+		try {
+			await this.cashuMintAnalyticsService.rescanRecentRecords();
+			this.logger.log('Daily cashu mint analytics rescan complete');
+		} catch (error) {
+			this.logger.error(`Error during cashu mint analytics rescan: ${error.message}`, error.stack);
 		}
 	}
 }
