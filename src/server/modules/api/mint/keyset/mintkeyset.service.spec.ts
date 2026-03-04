@@ -46,7 +46,7 @@ describe('MintKeysetService', () => {
 				MintKeysetService,
 				{provide: BitcoinUTXOracleService, useValue: {getOraclePrice: jest.fn().mockResolvedValue(null)}},
 				{provide: MintService, useValue: {withDbClient: jest.fn((fn: any) => fn({}))}},
-				{provide: CashuMintDatabaseService, useValue: {getMintKeysets: jest.fn(), getMintKeysetCounts: jest.fn()}},
+				{provide: CashuMintDatabaseService, useValue: {getKeysets: jest.fn(), getMintKeysetCounts: jest.fn()}},
 				{provide: CashuMintAnalyticsService, useValue: {getCachedAnalytics: jest.fn().mockResolvedValue([])}},
 				{provide: CashuMintRpcService, useValue: {rotateNextKeyset: jest.fn()}},
 				{provide: ErrorService, useValue: {resolveError: jest.fn()}},
@@ -65,7 +65,7 @@ describe('MintKeysetService', () => {
 	});
 
 	it('getMintKeysets returns OrchardMintKeyset[]', async () => {
-		mintDbService.getMintKeysets.mockResolvedValue([{id: 'k'}] as any);
+		mintDbService.getKeysets.mockResolvedValue([{id: 'k'}] as any);
 		const result = await mintKeysetService.getMintKeysets('TAG');
 		expect(result[0]).toBeInstanceOf(OrchardMintKeyset);
 	});
@@ -141,7 +141,7 @@ describe('MintKeysetService', () => {
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError (db)', async () => {
-		mintDbService.getMintKeysets.mockRejectedValue(new Error('boom'));
+		mintDbService.getKeysets.mockRejectedValue(new Error('boom'));
 		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.MintDatabaseSelectError});
 		await expect(mintKeysetService.getMintKeysets('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
 		const calls = errorService.resolveError.mock.calls;

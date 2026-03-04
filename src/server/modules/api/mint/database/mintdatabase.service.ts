@@ -22,7 +22,7 @@ export class MintDatabaseService {
 	async getMintDatabaseInfo(tag: string): Promise<OrchardMintDatabaseInfo> {
 		return this.mintService.withDbClient(async (client) => {
 			try {
-				const info = await this.cashuMintDatabaseService.getMintDatabaseInfo(client);
+				const info = await this.cashuMintDatabaseService.getDatabaseInfo(client);
 				return new OrchardMintDatabaseInfo(info);
 			} catch (error) {
 				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {

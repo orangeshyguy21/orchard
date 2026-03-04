@@ -138,59 +138,64 @@ export class CashuMintDatabaseService implements OnModuleInit {
 		}
 	}
 
-	public async getMintBalances(client: CashuMintDatabase, keyset_id?: string): Promise<CashuMintBalance[]> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintBalances(client, keyset_id);
-		if (this.type === 'cdk') return this.cdkService.getMintBalances(client, keyset_id);
+	public async getBalances(client: CashuMintDatabase, keyset_id?: string): Promise<CashuMintBalance[]> {
+		if (this.type === 'nutshell') return this.nutshellService.getBalances(client, keyset_id);
+		if (this.type === 'cdk') return this.cdkService.getBalances(client, keyset_id);
 	}
 
-	public async getMintBalancesIssued(client: CashuMintDatabase): Promise<CashuMintBalance[]> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintBalancesIssued(client);
-		if (this.type === 'cdk') return this.cdkService.getMintBalancesIssued(client);
+	public async getBalancesIssued(client: CashuMintDatabase): Promise<CashuMintBalance[]> {
+		if (this.type === 'nutshell') return this.nutshellService.getBalancesIssued(client);
+		if (this.type === 'cdk') return this.cdkService.getBalancesIssued(client);
 	}
 
-	public async getMintBalancesRedeemed(client: CashuMintDatabase): Promise<CashuMintBalance[]> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintBalancesRedeemed(client);
-		if (this.type === 'cdk') return this.cdkService.getMintBalancesRedeemed(client);
+	public async getBalancesRedeemed(client: CashuMintDatabase): Promise<CashuMintBalance[]> {
+		if (this.type === 'nutshell') return this.nutshellService.getBalancesRedeemed(client);
+		if (this.type === 'cdk') return this.cdkService.getBalancesRedeemed(client);
 	}
 
-	public async getMintKeysets(client: CashuMintDatabase): Promise<CashuMintKeyset[]> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintKeysets(client);
-		if (this.type === 'cdk') return this.cdkService.getMintKeysets(client);
+	public async getKeysets(client: CashuMintDatabase): Promise<CashuMintKeyset[]> {
+		if (this.type === 'nutshell') return this.nutshellService.getKeysets(client);
+		if (this.type === 'cdk') return this.cdkService.getKeysets(client);
 	}
 
-	public async getMintMintQuotes(client: CashuMintDatabase, args?: CashuMintMintQuotesArgs): Promise<CashuMintMintQuote[]> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintMintQuotes(client, args);
-		if (this.type === 'cdk') return this.cdkService.getMintMintQuotes(client, args);
+    public async getFees(client: CashuMintDatabase, limit?: number): Promise<CashuMintFee[]> {
+		if (this.type === 'nutshell') return this.nutshellService.getFees(client, limit);
+		if (this.type === 'cdk') throw OrchardErrorCode.MintSupportError;
 	}
 
-	public async getMintMintQuote(client: CashuMintDatabase, quote_id: string): Promise<CashuMintMintQuote | null> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintMintQuote(client, quote_id);
-		if (this.type === 'cdk') return this.cdkService.getMintMintQuote(client, quote_id);
+	public async listMintQuotes(client: CashuMintDatabase, args?: CashuMintMintQuotesArgs): Promise<CashuMintMintQuote[]> {
+		if (this.type === 'nutshell') return this.nutshellService.listMintQuotes(client, args);
+		if (this.type === 'cdk') return this.cdkService.listMintQuotes(client, args);
 	}
 
-	public async getMintMeltQuotes(client: CashuMintDatabase, args?: CashuMintMeltQuotesArgs): Promise<CashuMintMeltQuote[]> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintMeltQuotes(client, args);
-		if (this.type === 'cdk') return this.cdkService.getMintMeltQuotes(client, args);
+	public async lookupMintQuote(client: CashuMintDatabase, quote_id: string): Promise<CashuMintMintQuote | null> {
+		if (this.type === 'nutshell') return this.nutshellService.lookupMintQuote(client, quote_id);
+		if (this.type === 'cdk') return this.cdkService.lookupMintQuote(client, quote_id);
 	}
 
-	public async getMintMeltQuote(client: CashuMintDatabase, quote_id: string): Promise<CashuMintMeltQuote | null> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintMeltQuote(client, quote_id);
-		if (this.type === 'cdk') return this.cdkService.getMintMeltQuote(client, quote_id);
+	public async listMeltQuotes(client: CashuMintDatabase, args?: CashuMintMeltQuotesArgs): Promise<CashuMintMeltQuote[]> {
+		if (this.type === 'nutshell') return this.nutshellService.listMeltQuotes(client, args);
+		if (this.type === 'cdk') return this.cdkService.listMeltQuotes(client, args);
 	}
 
-	public async getMintSwaps(client: CashuMintDatabase, args?: CashuMintSwapsArgs): Promise<CashuMintSwap[]> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintSwaps(client, args);
-		if (this.type === 'cdk') return this.cdkService.getMintSwaps(client, args);
+	public async lookupMeltQuote(client: CashuMintDatabase, quote_id: string): Promise<CashuMintMeltQuote | null> {
+		if (this.type === 'nutshell') return this.nutshellService.lookupMeltQuote(client, quote_id);
+		if (this.type === 'cdk') return this.cdkService.lookupMeltQuote(client, quote_id);
 	}
 
-	public async getMintProofGroups(client: CashuMintDatabase, args?: CashuMintProofsArgs): Promise<CashuMintProofGroup[]> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintProofGroups(client, args);
-		if (this.type === 'cdk') return this.cdkService.getMintProofGroups(client, args);
+	public async listSwaps(client: CashuMintDatabase, args?: CashuMintSwapsArgs): Promise<CashuMintSwap[]> {
+		if (this.type === 'nutshell') return this.nutshellService.listSwaps(client, args);
+		if (this.type === 'cdk') return this.cdkService.listSwaps(client, args);
 	}
 
-	public async getMintPromiseGroups(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<CashuMintPromiseGroup[]> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintPromiseGroups(client, args);
-		if (this.type === 'cdk') return this.cdkService.getMintPromiseGroups(client, args);
+	public async listProofGroups(client: CashuMintDatabase, args?: CashuMintProofsArgs): Promise<CashuMintProofGroup[]> {
+		if (this.type === 'nutshell') return this.nutshellService.listProofGroups(client, args);
+		if (this.type === 'cdk') return this.cdkService.listProofGroups(client, args);
+	}
+
+	public async listPromiseGroups(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<CashuMintPromiseGroup[]> {
+		if (this.type === 'nutshell') return this.nutshellService.listPromiseGroups(client, args);
+		if (this.type === 'cdk') return this.cdkService.listPromiseGroups(client, args);
 	}
 
 	public async listProofs(client: CashuMintDatabase, args?: CashuMintProofsArgs): Promise<CashuMintProof[]> {
@@ -203,40 +208,35 @@ export class CashuMintDatabaseService implements OnModuleInit {
 		if (this.type === 'cdk') return this.cdkService.listPromises(client, args);
 	}
 
-	public async getMintCountMintQuotes(client: CashuMintDatabase, args?: CashuMintMintQuotesArgs): Promise<number> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintCountMintQuotes(client, args);
-		if (this.type === 'cdk') return this.cdkService.getMintCountMintQuotes(client, args);
+	public async countMintQuotes(client: CashuMintDatabase, args?: CashuMintMintQuotesArgs): Promise<number> {
+		if (this.type === 'nutshell') return this.nutshellService.countMintQuotes(client, args);
+		if (this.type === 'cdk') return this.cdkService.countMintQuotes(client, args);
 	}
 
-	public async getMintCountMeltQuotes(client: CashuMintDatabase, args?: CashuMintMeltQuotesArgs): Promise<number> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintCountMeltQuotes(client, args);
-		if (this.type === 'cdk') return this.cdkService.getMintCountMeltQuotes(client, args);
+	public async countMeltQuotes(client: CashuMintDatabase, args?: CashuMintMeltQuotesArgs): Promise<number> {
+		if (this.type === 'nutshell') return this.nutshellService.countMeltQuotes(client, args);
+		if (this.type === 'cdk') return this.cdkService.countMeltQuotes(client, args);
 	}
 
-	public async getMintCountProofGroups(client: CashuMintDatabase, args?: CashuMintProofsArgs): Promise<number> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintCountProofGroups(client, args);
-		if (this.type === 'cdk') return this.cdkService.getMintCountProofGroups(client, args);
+	public async countProofGroups(client: CashuMintDatabase, args?: CashuMintProofsArgs): Promise<number> {
+		if (this.type === 'nutshell') return this.nutshellService.countProofGroups(client, args);
+		if (this.type === 'cdk') return this.cdkService.countProofGroups(client, args);
 	}
 
-	public async getMintCountPromiseGroups(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<number> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintCountPromiseGroups(client, args);
-		if (this.type === 'cdk') return this.cdkService.getMintCountPromiseGroups(client, args);
+	public async countPromiseGroups(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<number> {
+		if (this.type === 'nutshell') return this.nutshellService.countPromiseGroups(client, args);
+		if (this.type === 'cdk') return this.cdkService.countPromiseGroups(client, args);
 	}
 
-	public async getMintCountSwaps(client: CashuMintDatabase, args?: CashuMintSwapsArgs): Promise<number> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintCountSwaps(client, args);
-		if (this.type === 'cdk') return this.cdkService.getMintCountSwaps(client, args);
-	}
-
-	public async getMintFees(client: CashuMintDatabase, limit?: number): Promise<CashuMintFee[]> {
-		if (this.type === 'nutshell') return this.nutshellService.getMintFees(client, limit);
-		if (this.type === 'cdk') throw OrchardErrorCode.MintSupportError;
+	public async countSwaps(client: CashuMintDatabase, args?: CashuMintSwapsArgs): Promise<number> {
+		if (this.type === 'nutshell') return this.nutshellService.countSwaps(client, args);
+		if (this.type === 'cdk') return this.cdkService.countSwaps(client, args);
 	}
 
 	/* Implementation Agnostic */
 
 	/** Returns the size and type of the mint database. */
-	public async getMintDatabaseInfo(client: CashuMintDatabase): Promise<CashuMintDatabaseInfo> {
+	public async getDatabaseInfo(client: CashuMintDatabase): Promise<CashuMintDatabaseInfo> {
 		if (client.type === MintDatabaseType.sqlite) {
 			const stat = await fs.stat(this.database);
 			return {size: stat.size, type: 'sqlite'};

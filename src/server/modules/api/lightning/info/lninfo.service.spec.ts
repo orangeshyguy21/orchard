@@ -23,7 +23,7 @@ describe('LightningInfoService', () => {
 			providers: [
 				LightningInfoService,
 				{provide: LightningService, useValue: {getLightningInfo: jest.fn(), getLightningRequest: jest.fn()}},
-				{provide: CashuMintDatabaseService, useValue: {getMintMintQuotes: jest.fn().mockResolvedValue([])}},
+				{provide: CashuMintDatabaseService, useValue: {listMintQuotes: jest.fn().mockResolvedValue([])}},
 				{provide: MintService, useValue: {withDbClient: jest.fn((fn: any) => fn({}))}},
 				{provide: ConfigService, useValue: {get: jest.fn().mockReturnValue(null)}},
 				{provide: ErrorService, useValue: {resolveError: jest.fn()}},

@@ -103,7 +103,7 @@ export class MintMeltQuoteInterceptor implements NestInterceptor {
 	private async fetchOldQuoteState(quote_id: string): Promise<string | null> {
 		try {
 			return await this.mintService.withDbClient(async (client) => {
-				const quote = await this.cashuMintDatabaseService.getMintMeltQuote(client, quote_id);
+				const quote = await this.cashuMintDatabaseService.lookupMeltQuote(client, quote_id);
 				return quote?.state ?? null;
 			});
 		} catch (_error) {

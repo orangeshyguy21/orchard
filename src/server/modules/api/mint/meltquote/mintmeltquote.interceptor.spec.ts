@@ -81,7 +81,7 @@ describe('MintMeltQuoteInterceptor', () => {
 				},
 				{
 					provide: CashuMintDatabaseService,
-					useValue: {getMintMeltQuote: jest.fn()},
+					useValue: {lookupMeltQuote: jest.fn()},
 				},
 				{
 					provide: MintService,
@@ -242,7 +242,7 @@ describe('MintMeltQuoteInterceptor', () => {
 		it('should log quote state change with correct entity type and id', async () => {
 			// arrange
 			reflector.get.mockReturnValue(quote_metadata);
-			cashuMintDatabaseService.getMintMeltQuote.mockResolvedValue({state: 'UNPAID'} as any);
+			cashuMintDatabaseService.lookupMeltQuote.mockResolvedValue({state: 'UNPAID'} as any);
 			const context = createMockContext({quote_id: 'quote-456', state: 'PAID'});
 			const handler = createMockCallHandler({});
 

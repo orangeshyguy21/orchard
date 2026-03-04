@@ -169,48 +169,48 @@ describe('CdkService', () => {
 		expect(error_spy).toHaveBeenCalled();
 	});
 
-	it('getMintMeltQuotes maps request using extractRequestString', async () => {
+	it('listMeltQuotes maps request using extractRequestString', async () => {
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
 			{id: 'q1', request: 'bolt11:lnbc123', unit: 'sat', state: 'PAID', created_time: 1},
 		]);
-		const out = await cdkService.getMintMeltQuotes({} as any);
+		const out = await cdkService.listMeltQuotes({} as any);
 		expect(out[0].request).toBe('lnbc123');
 	});
 
-	it('getMintMeltQuotes leaves request unchanged when extractRequestString falsy', async () => {
+	it('listMeltQuotes leaves request unchanged when extractRequestString falsy', async () => {
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
 			{id: 'q1', request: 'nostr:xyz', unit: 'sat', state: 'PAID', created_time: 1},
 		]);
 		(helpers.extractRequestString as jest.Mock).mockReturnValueOnce('');
-		const out = await cdkService.getMintMeltQuotes({} as any);
+		const out = await cdkService.listMeltQuotes({} as any);
 		expect(out[0].request).toBe('nostr:xyz');
 	});
 
-	it('getMintMeltQuotes propagates query error', async () => {
+	it('listMeltQuotes propagates query error', async () => {
 		(helpers.queryRows as jest.Mock).mockRejectedValueOnce(new Error('fail'));
-		await expect(cdkService.getMintMeltQuotes({} as any)).rejects.toThrow('fail');
+		await expect(cdkService.listMeltQuotes({} as any)).rejects.toThrow('fail');
 	});
 
-	it('getMintProofGroups groups amounts and sums', async () => {
+	it('listProofGroups groups amounts and sums', async () => {
 		(helpers.buildDynamicQuery as jest.Mock).mockReturnValue({sql: 'SQL', params: []});
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
 			{created_time: 10, keyset_id: 'k1', unit: 'sat', state: 'SPENT', amounts: '[1,2]'},
 			{created_time: 10, keyset_id: 'k2', unit: 'sat', state: 'SPENT', amounts: '[3]'},
 		]);
-		const out = await cdkService.getMintProofGroups({} as any);
+		const out = await cdkService.listProofGroups({} as any);
 		expect(out).toHaveLength(1);
 		expect(out[0].amount).toBe(6);
 		expect(out[0].keyset_ids).toEqual(['k1', 'k2']);
 	});
 
-	it('getMintProofGroups supports array amounts, multiple groups and empty input', async () => {
+	it('listProofGroups supports array amounts, multiple groups and empty input', async () => {
 		(helpers.buildDynamicQuery as jest.Mock).mockReturnValue({sql: 'SQL', params: []});
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
 			{created_time: 10, keyset_id: 'k1', unit: 'sat', state: 'SPENT', amounts: [1]},
 			{created_time: 10, keyset_id: 'k2', unit: 'sat', state: 'SPENT', amounts: '[2]'},
 			{created_time: 11, keyset_id: 'k9', unit: 'sat', state: 'SPENT', amounts: '[3]'},
 		]);
-		const out = await cdkService.getMintProofGroups({} as any);
+		const out = await cdkService.listProofGroups({} as any);
 		expect(out).toHaveLength(2);
 		const g1 = out.find((g) => g.created_time === 10);
 		expect(g1.amount).toBe(3);
@@ -218,89 +218,89 @@ describe('CdkService', () => {
 		expect(g2.amount).toBe(3);
 
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([]);
-		const empty = await cdkService.getMintProofGroups({} as any);
+		const empty = await cdkService.listProofGroups({} as any);
 		expect(empty).toEqual([]);
 	});
 
-	it('getMintProofGroups rejects on invalid JSON amounts', async () => {
+	it('listProofGroups rejects on invalid JSON amounts', async () => {
 		(helpers.buildDynamicQuery as jest.Mock).mockReturnValue({sql: 'SQL', params: []});
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
 			{created_time: 10, keyset_id: 'k1', unit: 'sat', state: 'SPENT', amounts: 'not-json'},
 		]);
-		await expect(cdkService.getMintProofGroups({} as any)).rejects.toThrow();
+		await expect(cdkService.listProofGroups({} as any)).rejects.toThrow();
 	});
 
-	it('getMintPromiseGroups groups by created_time and sums', async () => {
+	it('listPromiseGroups groups by created_time and sums', async () => {
 		(helpers.buildDynamicQuery as jest.Mock).mockReturnValue({sql: 'SQL', params: []});
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
 			{created_time: 10, keyset_id: 'k1', unit: 'sat', amounts: '[1,2]'},
 			{created_time: 10, keyset_id: 'k2', unit: 'sat', amounts: [3]},
 		]);
-		const out = await cdkService.getMintPromiseGroups({} as any);
+		const out = await cdkService.listPromiseGroups({} as any);
 		expect(out).toHaveLength(1);
 		expect(out[0].amount).toBe(6);
 		expect(out[0].keyset_ids).toEqual(['k1', 'k2']);
 	});
 
-	it('getMintPromiseGroups handles empty and invalid JSON cases', async () => {
+	it('listPromiseGroups handles empty and invalid JSON cases', async () => {
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([]);
-		const empty = await cdkService.getMintPromiseGroups({} as any);
+		const empty = await cdkService.listPromiseGroups({} as any);
 		expect(empty).toEqual([]);
 
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([{created_time: 10, keyset_id: 'k1', unit: 'sat', amounts: 'bad-json'}]);
-		await expect(cdkService.getMintPromiseGroups({} as any)).rejects.toThrow();
+		await expect(cdkService.listPromiseGroups({} as any)).rejects.toThrow();
 	});
 
-	it('getMintCountMintQuotes and getMintCountMeltQuotes return row.count', async () => {
+	it('countMintQuotes and countMeltQuotes return row.count', async () => {
 		(helpers.buildCountQuery as jest.Mock).mockReturnValueOnce({sql: 'SELECT 1;', params: ['a']});
 		(helpers.queryRow as jest.Mock).mockResolvedValueOnce({count: 7});
-		await expect(cdkService.getMintCountMintQuotes({} as any)).resolves.toBe(7);
+		await expect(cdkService.countMintQuotes({} as any)).resolves.toBe(7);
 
 		(helpers.buildCountQuery as jest.Mock).mockReturnValueOnce({sql: 'SELECT 2;', params: ['b']});
 		(helpers.queryRow as jest.Mock).mockResolvedValueOnce({count: 5});
-		await expect(cdkService.getMintCountMeltQuotes({} as any)).resolves.toBe(5);
+		await expect(cdkService.countMeltQuotes({} as any)).resolves.toBe(5);
 	});
 
-	it('getMintCountProofGroups and getMintCountPromiseGroups wrap SQL into subquery', async () => {
+	it('countProofGroups and countPromiseGroups wrap SQL into subquery', async () => {
 		(helpers.buildCountQuery as jest.Mock).mockReturnValueOnce({sql: 'SELECT 1;', params: []});
 		(helpers.queryRow as jest.Mock).mockResolvedValueOnce({count: 3});
-		await cdkService.getMintCountProofGroups({} as any);
+		await cdkService.countProofGroups({} as any);
 		const proof_call = (helpers.queryRow as jest.Mock).mock.calls[(helpers.queryRow as jest.Mock).mock.calls.length - 1];
 		expect(proof_call[1]).toBe('SELECT 1) subquery;');
 
 		(helpers.buildCountQuery as jest.Mock).mockReturnValueOnce({sql: 'SELECT 9;', params: []});
 		(helpers.queryRow as jest.Mock).mockResolvedValueOnce({count: 9});
-		await cdkService.getMintCountPromiseGroups({} as any);
+		await cdkService.countPromiseGroups({} as any);
 		const promise_call = (helpers.queryRow as jest.Mock).mock.calls[(helpers.queryRow as jest.Mock).mock.calls.length - 1];
 		expect(promise_call[1]).toBe('SELECT 9) subquery;');
 	});
 
 	it('balances and keysets pass-through queries', async () => {
 		(helpers.queryRows as jest.Mock).mockResolvedValue([]);
-		await cdkService.getMintBalances({} as any);
+		await cdkService.getBalances({} as any);
 		let call = (helpers.queryRows as jest.Mock).mock.calls[(helpers.queryRows as jest.Mock).mock.calls.length - 1];
 		expect(call[2]).toEqual([]);
 
 		(helpers.queryRows as jest.Mock).mockResolvedValue([]);
-		await cdkService.getMintBalances({} as any, 'kid');
+		await cdkService.getBalances({} as any, 'kid');
 		call = (helpers.queryRows as jest.Mock).mock.calls[(helpers.queryRows as jest.Mock).mock.calls.length - 1];
 		expect(call[1]).toContain('WHERE ka.keyset_id = ?');
 		expect(call[2]).toEqual(['kid']);
 
 		(helpers.queryRows as jest.Mock).mockResolvedValue([]);
-		await cdkService.getMintBalancesIssued({} as any);
+		await cdkService.getBalancesIssued({} as any);
 		call = (helpers.queryRows as jest.Mock).mock.calls[(helpers.queryRows as jest.Mock).mock.calls.length - 1];
 		expect(call[1]).toContain('total_issued AS balance');
 		expect(call[1]).toContain('FROM keyset_amounts');
 
 		(helpers.queryRows as jest.Mock).mockResolvedValue([]);
-		await cdkService.getMintBalancesRedeemed({} as any);
+		await cdkService.getBalancesRedeemed({} as any);
 		call = (helpers.queryRows as jest.Mock).mock.calls[(helpers.queryRows as jest.Mock).mock.calls.length - 1];
 		expect(call[1]).toContain('total_redeemed AS balance');
 		expect(call[1]).toContain('FROM keyset_amounts');
 
 		(helpers.queryRows as jest.Mock).mockResolvedValue([]);
-		await cdkService.getMintKeysets({} as any);
+		await cdkService.getKeysets({} as any);
 		call = (helpers.queryRows as jest.Mock).mock.calls[(helpers.queryRows as jest.Mock).mock.calls.length - 1];
 		expect(call[1]).toContain('unit != ?');
 		expect(call[2]).toEqual(['auth']);

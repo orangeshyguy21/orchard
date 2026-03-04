@@ -27,7 +27,7 @@ export class MintProofService {
 	async getMintProofGroups(tag: string, args?: CashuMintProofsArgs): Promise<OrchardMintProofGroup[]> {
 		return this.mintService.withDbClient(async (client) => {
 			try {
-				const cashu_mint_pgs: CashuMintProofGroup[] = await this.cashuMintDatabaseService.getMintProofGroups(client, args);
+				const cashu_mint_pgs: CashuMintProofGroup[] = await this.cashuMintDatabaseService.listProofGroups(client, args);
 				return cashu_mint_pgs.map((cpg) => new OrchardMintProofGroup(cpg));
 			} catch (error) {
 				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
@@ -41,7 +41,7 @@ export class MintProofService {
 	async getMintProofGroupStats(tag: string, unit: MintUnit): Promise<OrchardMintProofGroupStats> {
 		return this.mintService.withDbClient(async (client) => {
 			try {
-				const cashu_mint_pgs: CashuMintProofGroup[] = await this.cashuMintDatabaseService.getMintProofGroups(client, {
+				const cashu_mint_pgs: CashuMintProofGroup[] = await this.cashuMintDatabaseService.listProofGroups(client, {
 					units: [unit],
 					states: [MintProofState.SPENT],
 					page: 1,

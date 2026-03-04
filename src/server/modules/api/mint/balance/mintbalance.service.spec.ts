@@ -22,7 +22,7 @@ describe('MintBalanceService', () => {
 				MintBalanceService,
 				{
 					provide: CashuMintDatabaseService,
-					useValue: {getMintBalances: jest.fn(), getMintBalancesIssued: jest.fn(), getMintBalancesRedeemed: jest.fn()},
+					useValue: {getBalances: jest.fn(), getBalancesIssued: jest.fn(), getBalancesRedeemed: jest.fn()},
 				},
 				{provide: MintService, useValue: {withDbClient: jest.fn((fn) => fn({}))}},
 				{provide: ErrorService, useValue: {resolveError: jest.fn()}},
@@ -39,25 +39,25 @@ describe('MintBalanceService', () => {
 	});
 
 	it('getMintBalances maps to OrchardMintBalance[]', async () => {
-		mintDbService.getMintBalances.mockResolvedValue([{keyset: 'k', balance: 1}] as any);
+		mintDbService.getBalances.mockResolvedValue([{keyset: 'k', balance: 1}] as any);
 		const result = await mintBalanceService.getMintBalances('TAG', 'k');
 		expect(result[0]).toBeInstanceOf(OrchardMintBalance);
 	});
 
 	it('getIssuedMintBalances maps to OrchardMintBalance[]', async () => {
-		mintDbService.getMintBalancesIssued.mockResolvedValue([{keyset: 'k', balance: 1}] as any);
+		mintDbService.getBalancesIssued.mockResolvedValue([{keyset: 'k', balance: 1}] as any);
 		const result = await mintBalanceService.getIssuedMintBalances('TAG');
 		expect(result[0]).toBeInstanceOf(OrchardMintBalance);
 	});
 
 	it('getRedeemedMintBalances maps to OrchardMintBalance[]', async () => {
-		mintDbService.getMintBalancesRedeemed.mockResolvedValue([{keyset: 'k', balance: 1}] as any);
+		mintDbService.getBalancesRedeemed.mockResolvedValue([{keyset: 'k', balance: 1}] as any);
 		const result = await mintBalanceService.getRedeemedMintBalances('TAG');
 		expect(result[0]).toBeInstanceOf(OrchardMintBalance);
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError', async () => {
-		mintDbService.getMintBalances.mockRejectedValue(new Error('boom'));
+		mintDbService.getBalances.mockRejectedValue(new Error('boom'));
 		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.MintDatabaseSelectError});
 		await expect(mintBalanceService.getMintBalances('MY_TAG', 'k')).rejects.toBeInstanceOf(OrchardApiError);
 	});

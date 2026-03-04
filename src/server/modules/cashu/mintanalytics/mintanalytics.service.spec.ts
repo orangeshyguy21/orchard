@@ -32,9 +32,9 @@ describe('CashuMintAnalyticsService', () => {
 					provide: CashuMintDatabaseService,
 					useValue: {
 						getMintDatabase: jest.fn(),
-						getMintMintQuotes: jest.fn(),
-						getMintMeltQuotes: jest.fn(),
-						getMintSwaps: jest.fn(),
+						listMintQuotes: jest.fn(),
+						listMeltQuotes: jest.fn(),
+						listSwaps: jest.fn(),
 						listProofs: jest.fn(),
 						listPromises: jest.fn(),
 					},
@@ -107,9 +107,9 @@ describe('CashuMintAnalyticsService', () => {
 			type: 'sqlite',
 			database: {close: jest.fn()},
 		} as any);
-		cashuMintDatabaseService.getMintMintQuotes.mockResolvedValue([]);
-		cashuMintDatabaseService.getMintMeltQuotes.mockResolvedValue([]);
-		cashuMintDatabaseService.getMintSwaps.mockResolvedValue([]);
+		cashuMintDatabaseService.listMintQuotes.mockResolvedValue([]);
+		cashuMintDatabaseService.listMeltQuotes.mockResolvedValue([]);
+		cashuMintDatabaseService.listSwaps.mockResolvedValue([]);
 		cashuMintDatabaseService.listProofs.mockResolvedValue([]);
 		cashuMintDatabaseService.listPromises.mockResolvedValue([]);
 

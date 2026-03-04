@@ -118,7 +118,7 @@ export class MintKeysetInterceptor implements NestInterceptor {
 	private async fetchKeysets(): Promise<CashuMintKeyset[]> {
 		try {
 			return await this.mintService.withDbClient(async (client) => {
-				return this.cashuMintDatabaseService.getMintKeysets(client);
+				return this.cashuMintDatabaseService.getKeysets(client);
 			});
 		} catch (_error) {
 			this.logger.warn('Failed to fetch keysets for event history');

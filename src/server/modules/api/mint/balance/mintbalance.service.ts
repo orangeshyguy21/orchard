@@ -23,7 +23,7 @@ export class MintBalanceService {
 	async getMintBalances(tag: string, keyset_id?: string): Promise<OrchardMintBalance[]> {
 		return this.mintService.withDbClient(async (client) => {
 			try {
-				const cashu_mint_balances: CashuMintBalance[] = await this.cashuMintDatabaseService.getMintBalances(client, keyset_id);
+				const cashu_mint_balances: CashuMintBalance[] = await this.cashuMintDatabaseService.getBalances(client, keyset_id);
 				return cashu_mint_balances.map((cmb) => new OrchardMintBalance(cmb));
 			} catch (error) {
 				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
@@ -37,7 +37,7 @@ export class MintBalanceService {
 	async getIssuedMintBalances(tag: string): Promise<OrchardMintBalance[]> {
 		return this.mintService.withDbClient(async (client) => {
 			try {
-				const cashu_mint_balances_issued: CashuMintBalance[] = await this.cashuMintDatabaseService.getMintBalancesIssued(client);
+				const cashu_mint_balances_issued: CashuMintBalance[] = await this.cashuMintDatabaseService.getBalancesIssued(client);
 				return cashu_mint_balances_issued.map((cmb) => new OrchardMintBalance(cmb));
 			} catch (error) {
 				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
@@ -52,7 +52,7 @@ export class MintBalanceService {
 		return this.mintService.withDbClient(async (client) => {
 			try {
 				const cashu_mint_balances_redeemed: CashuMintBalance[] =
-					await this.cashuMintDatabaseService.getMintBalancesRedeemed(client);
+					await this.cashuMintDatabaseService.getBalancesRedeemed(client);
 				return cashu_mint_balances_redeemed.map((cmb) => new OrchardMintBalance(cmb));
 			} catch (error) {
 				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {

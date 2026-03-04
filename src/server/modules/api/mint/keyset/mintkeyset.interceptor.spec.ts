@@ -95,7 +95,7 @@ describe('MintKeysetInterceptor', () => {
 				},
 				{
 					provide: CashuMintDatabaseService,
-					useValue: {getMintKeysets: jest.fn()},
+					useValue: {getKeysets: jest.fn()},
 				},
 				{
 					provide: MintService,
@@ -142,7 +142,7 @@ describe('MintKeysetInterceptor', () => {
 		it('should log TWO events: UPDATE for old keyset and CREATE for new keyset', async () => {
 			// arrange
 			reflector.get.mockReturnValue(mock_metadata);
-			cashuMintDatabaseService.getMintKeysets.mockResolvedValue([mock_old_keyset, mock_new_keyset] as any);
+			cashuMintDatabaseService.getKeysets.mockResolvedValue([mock_old_keyset, mock_new_keyset] as any);
 			const context = createMockContext({unit: 'sat'});
 			const handler = createMockCallHandler(mock_rotation_result);
 
@@ -195,7 +195,7 @@ describe('MintKeysetInterceptor', () => {
 		it('should include keyset_v2 detail when provided in args', async () => {
 			// arrange
 			reflector.get.mockReturnValue(mock_metadata);
-			cashuMintDatabaseService.getMintKeysets.mockResolvedValue([mock_old_keyset, mock_new_keyset] as any);
+			cashuMintDatabaseService.getKeysets.mockResolvedValue([mock_old_keyset, mock_new_keyset] as any);
 			const context = createMockContext({unit: 'sat', keyset_v2: true});
 			const handler = createMockCallHandler(mock_rotation_result);
 
@@ -215,7 +215,7 @@ describe('MintKeysetInterceptor', () => {
 		it('should omit amounts and input_fee_ppk when null in result', async () => {
 			// arrange
 			reflector.get.mockReturnValue(mock_metadata);
-			cashuMintDatabaseService.getMintKeysets.mockResolvedValue([mock_old_keyset, mock_new_keyset] as any);
+			cashuMintDatabaseService.getKeysets.mockResolvedValue([mock_old_keyset, mock_new_keyset] as any);
 			const context = createMockContext({unit: 'sat'});
 			const minimal_result = {id: 'new-keyset-002', unit: 'sat', amounts: null, input_fee_ppk: null};
 			const handler = createMockCallHandler(minimal_result);
@@ -234,7 +234,7 @@ describe('MintKeysetInterceptor', () => {
 		it('should skip UPDATE event when old keyset not found', async () => {
 			// arrange
 			reflector.get.mockReturnValue(mock_metadata);
-			cashuMintDatabaseService.getMintKeysets.mockResolvedValue([mock_new_keyset] as any);
+			cashuMintDatabaseService.getKeysets.mockResolvedValue([mock_new_keyset] as any);
 			const context = createMockContext({unit: 'sat'});
 			const handler = createMockCallHandler(mock_rotation_result);
 
@@ -248,7 +248,7 @@ describe('MintKeysetInterceptor', () => {
 			expect(eventLogService.createEvent).toHaveBeenCalledWith(expect.objectContaining({type: EventLogType.CREATE}));
 		});
 
-		it('should handle getMintKeysets failure gracefully and still log CREATE', async () => {
+		it('should handle getKeysets failure gracefully and still log CREATE', async () => {
 			// arrange
 			reflector.get.mockReturnValue(mock_metadata);
 			mintService.withDbClient.mockRejectedValue(new Error('DB error'));
@@ -306,7 +306,7 @@ describe('MintKeysetInterceptor', () => {
 		it('should not break mutation when createEvent fails', async () => {
 			// arrange
 			reflector.get.mockReturnValue(mock_metadata);
-			cashuMintDatabaseService.getMintKeysets.mockResolvedValue([mock_old_keyset, mock_new_keyset] as any);
+			cashuMintDatabaseService.getKeysets.mockResolvedValue([mock_old_keyset, mock_new_keyset] as any);
 			eventLogService.createEvent.mockRejectedValue(new Error('DB write failed'));
 			const context = createMockContext({unit: 'sat'});
 			const handler = createMockCallHandler(mock_rotation_result);

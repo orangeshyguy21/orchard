@@ -20,7 +20,7 @@ describe('MintPromiseService', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				MintPromiseService,
-				{provide: CashuMintDatabaseService, useValue: {getMintPromiseGroups: jest.fn()}},
+				{provide: CashuMintDatabaseService, useValue: {listPromiseGroups: jest.fn()}},
 				{provide: MintService, useValue: {withDbClient: jest.fn((fn: any) => fn({}))}},
 				{provide: ErrorService, useValue: {resolveError: jest.fn()}},
 			],
@@ -36,13 +36,13 @@ describe('MintPromiseService', () => {
 	});
 
 	it('getMintPromiseGroups returns OrchardMintPromiseGroup[]', async () => {
-		mintDbService.getMintPromiseGroups.mockResolvedValue([{amounts: [[1]]}] as any);
+		mintDbService.listPromiseGroups.mockResolvedValue([{amounts: [[1]]}] as any);
 		const result = await mintPromiseService.getMintPromiseGroups('TAG', {} as any);
 		expect(result[0]).toBeInstanceOf(OrchardMintPromiseGroup);
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError', async () => {
-		mintDbService.getMintPromiseGroups.mockRejectedValue(new Error('boom'));
+		mintDbService.listPromiseGroups.mockRejectedValue(new Error('boom'));
 		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.MintDatabaseSelectError});
 		await expect(mintPromiseService.getMintPromiseGroups('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
 	});

@@ -115,19 +115,19 @@ export class CashuMintAnalyticsService implements OnApplicationBootstrap {
 			await this.streamAndBucket<CashuMintMintQuote>(
 				current_hour,
 				'mint_quotes',
-				(opts) => this.cashuMintDatabaseService.getMintMintQuotes(client, opts),
+				(opts) => this.cashuMintDatabaseService.listMintQuotes(client, opts),
 				(h, records) => this.insertMintQuoteMetrics(h, records),
 			);
 			await this.streamAndBucket<CashuMintMeltQuote>(
 				current_hour,
 				'melt_quotes',
-				(opts) => this.cashuMintDatabaseService.getMintMeltQuotes(client, opts),
+				(opts) => this.cashuMintDatabaseService.listMeltQuotes(client, opts),
 				(h, records) => this.insertMeltQuoteMetrics(h, records),
 			);
 			await this.streamAndBucket<CashuMintSwap>(
 				current_hour,
 				'swaps',
-				(opts) => this.cashuMintDatabaseService.getMintSwaps(client, opts),
+				(opts) => this.cashuMintDatabaseService.listSwaps(client, opts),
 				(h, records) => this.insertSwapMetrics(h, records),
 			);
 			await this.streamAndBucket<CashuMintProof>(

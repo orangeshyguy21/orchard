@@ -23,10 +23,10 @@ describe('MintCountService', () => {
 				{
 					provide: CashuMintDatabaseService,
 					useValue: {
-						getMintCountMintQuotes: jest.fn(),
-						getMintCountMeltQuotes: jest.fn(),
-						getMintCountProofGroups: jest.fn(),
-						getMintCountPromiseGroups: jest.fn(),
+						countMintQuotes: jest.fn(),
+						countMeltQuotes: jest.fn(),
+						countProofGroups: jest.fn(),
+						countPromiseGroups: jest.fn(),
 					},
 				},
 				{provide: MintService, useValue: {withDbClient: jest.fn((fn: any) => fn({}))}},
@@ -44,32 +44,32 @@ describe('MintCountService', () => {
 	});
 
 	it('getMintCountMintQuotes returns OrchardMintCount', async () => {
-		mintDbService.getMintCountMintQuotes.mockResolvedValue(5 as any);
+		mintDbService.countMintQuotes.mockResolvedValue(5 as any);
 		const result = await mintCountService.getMintCountMintQuotes('TAG', {} as any);
 		expect(result).toBeInstanceOf(OrchardMintCount);
 		expect(result.count).toBe(5);
 	});
 
 	it('getMintCountMeltQuotes returns OrchardMintCount', async () => {
-		mintDbService.getMintCountMeltQuotes.mockResolvedValue(2 as any);
+		mintDbService.countMeltQuotes.mockResolvedValue(2 as any);
 		const result = await mintCountService.getMintCountMeltQuotes('TAG', {} as any);
 		expect(result.count).toBe(2);
 	});
 
 	it('getMintCountProofGroups returns OrchardMintCount', async () => {
-		mintDbService.getMintCountProofGroups.mockResolvedValue(3 as any);
+		mintDbService.countProofGroups.mockResolvedValue(3 as any);
 		const result = await mintCountService.getMintCountProofGroups('TAG', {} as any);
 		expect(result.count).toBe(3);
 	});
 
 	it('getMintCountPromiseGroups returns OrchardMintCount', async () => {
-		mintDbService.getMintCountPromiseGroups.mockResolvedValue(4 as any);
+		mintDbService.countPromiseGroups.mockResolvedValue(4 as any);
 		const result = await mintCountService.getMintCountPromiseGroups('TAG', {} as any);
 		expect(result.count).toBe(4);
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError', async () => {
-		mintDbService.getMintCountMintQuotes.mockRejectedValue(new Error('boom'));
+		mintDbService.countMintQuotes.mockRejectedValue(new Error('boom'));
 		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.MintDatabaseSelectError});
 		await expect(mintCountService.getMintCountMintQuotes('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
 	});

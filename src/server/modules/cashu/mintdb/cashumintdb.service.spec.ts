@@ -74,9 +74,9 @@ describe('CashuMintDatabaseService', () => {
 		});
 		await cashuMintDatabaseService.onModuleInit();
 		// Indirectly verify via method dispatch that type/database were set
-		(nutshellService.getMintBalances as any) = jest.fn().mockResolvedValue([{keyset: 'k', balance: 1}]);
+		(nutshellService.getBalances as any) = jest.fn().mockResolvedValue([{keyset: 'k', balance: 1}]);
 		const db = {type: MintDatabaseType.sqlite, database: {}} as any;
-		const out = await cashuMintDatabaseService.getMintBalances(db);
+		const out = await cashuMintDatabaseService.getBalances(db);
 		expect(out[0].balance).toBe(1);
 	});
 
@@ -107,43 +107,43 @@ describe('CashuMintDatabaseService', () => {
 	});
 
 	it('delegates by type for balances', async () => {
-		(nutshellService.getMintBalances as any) = jest.fn().mockResolvedValue([{keyset: 'k', balance: 1}]);
-		(cdkService.getMintBalances as any) = jest.fn().mockResolvedValue([{keyset: 'k', balance: 2}]);
+		(nutshellService.getBalances as any) = jest.fn().mockResolvedValue([{keyset: 'k', balance: 1}]);
+		(cdkService.getBalances as any) = jest.fn().mockResolvedValue([{keyset: 'k', balance: 2}]);
 		configService.get.mockImplementation((k: string) => (k === 'cashu.type' ? 'nutshell' : 'x'));
 		await cashuMintDatabaseService.onModuleInit();
-		const out1 = await cashuMintDatabaseService.getMintBalances({} as any);
+		const out1 = await cashuMintDatabaseService.getBalances({} as any);
 		expect(out1[0].balance).toBe(1);
 		configService.get.mockImplementation((k: string) => (k === 'cashu.type' ? 'cdk' : 'x'));
 		await cashuMintDatabaseService.onModuleInit();
-		const out2 = await cashuMintDatabaseService.getMintBalances({} as any);
+		const out2 = await cashuMintDatabaseService.getBalances({} as any);
 		expect(out2[0].balance).toBe(2);
 	});
 
-	it('getMintFees delegates for nutshell and errors for cdk', async () => {
-		(nutshellService.getMintFees as any) = jest.fn().mockResolvedValue([]);
+	it('getFees delegates for nutshell and errors for cdk', async () => {
+		(nutshellService.getFees as any) = jest.fn().mockResolvedValue([]);
 		configService.get.mockImplementation((k: string) => (k === 'cashu.type' ? 'nutshell' : 'x'));
 		await cashuMintDatabaseService.onModuleInit();
-		await expect(cashuMintDatabaseService.getMintFees({} as any)).resolves.toEqual([]);
+		await expect(cashuMintDatabaseService.getFees({} as any)).resolves.toEqual([]);
 		configService.get.mockImplementation((k: string) => (k === 'cashu.type' ? 'cdk' : 'x'));
 		await cashuMintDatabaseService.onModuleInit();
-		await expect(cashuMintDatabaseService.getMintFees({} as any)).rejects.toBe(OrchardErrorCode.MintSupportError);
+		await expect(cashuMintDatabaseService.getFees({} as any)).rejects.toBe(OrchardErrorCode.MintSupportError);
 	});
 
 	it('delegates remaining getters to correct services', async () => {
 		const client = {} as any;
 		const args = {a: 1} as any;
 		const nutshell_map: Array<[keyof CashuMintDatabaseService, keyof NutshellService]> = [
-			['getMintBalancesIssued', 'getMintBalancesIssued'],
-			['getMintBalancesRedeemed', 'getMintBalancesRedeemed'],
-			['getMintKeysets', 'getMintKeysets'],
-			['getMintMintQuotes', 'getMintMintQuotes'],
-			['getMintMeltQuotes', 'getMintMeltQuotes'],
-			['getMintProofGroups', 'getMintProofGroups'],
-			['getMintPromiseGroups', 'getMintPromiseGroups'],
-			['getMintCountMintQuotes', 'getMintCountMintQuotes'],
-			['getMintCountMeltQuotes', 'getMintCountMeltQuotes'],
-			['getMintCountProofGroups', 'getMintCountProofGroups'],
-			['getMintCountPromiseGroups', 'getMintCountPromiseGroups'],
+			['getBalancesIssued', 'getBalancesIssued'],
+			['getBalancesRedeemed', 'getBalancesRedeemed'],
+			['getKeysets', 'getKeysets'],
+			['listMintQuotes', 'listMintQuotes'],
+			['listMeltQuotes', 'listMeltQuotes'],
+			['listProofGroups', 'listProofGroups'],
+			['listPromiseGroups', 'listPromiseGroups'],
+			['countMintQuotes', 'countMintQuotes'],
+			['countMeltQuotes', 'countMeltQuotes'],
+			['countProofGroups', 'countProofGroups'],
+			['countPromiseGroups', 'countPromiseGroups'],
 		];
 
 		// Nutshell
@@ -163,17 +163,17 @@ describe('CashuMintDatabaseService', () => {
 			(nutshellService[n_method as any] as any) = jest.fn();
 		});
 		const cdk_map: Array<[keyof CashuMintDatabaseService, keyof CdkService]> = [
-			['getMintBalancesIssued', 'getMintBalancesIssued'],
-			['getMintBalancesRedeemed', 'getMintBalancesRedeemed'],
-			['getMintKeysets', 'getMintKeysets'],
-			['getMintMintQuotes', 'getMintMintQuotes'],
-			['getMintMeltQuotes', 'getMintMeltQuotes'],
-			['getMintProofGroups', 'getMintProofGroups'],
-			['getMintPromiseGroups', 'getMintPromiseGroups'],
-			['getMintCountMintQuotes', 'getMintCountMintQuotes'],
-			['getMintCountMeltQuotes', 'getMintCountMeltQuotes'],
-			['getMintCountProofGroups', 'getMintCountProofGroups'],
-			['getMintCountPromiseGroups', 'getMintCountPromiseGroups'],
+			['getBalancesIssued', 'getBalancesIssued'],
+			['getBalancesRedeemed', 'getBalancesRedeemed'],
+			['getKeysets', 'getKeysets'],
+			['listMintQuotes', 'listMintQuotes'],
+			['listMeltQuotes', 'listMeltQuotes'],
+			['listProofGroups', 'listProofGroups'],
+			['listPromiseGroups', 'listPromiseGroups'],
+			['countMintQuotes', 'countMintQuotes'],
+			['countMeltQuotes', 'countMeltQuotes'],
+			['countProofGroups', 'countProofGroups'],
+			['countPromiseGroups', 'countPromiseGroups'],
 		];
 		cdk_map.forEach(([_, c_method]) => {
 			(cdkService[c_method as any] as any) = jest.fn().mockResolvedValue('cdk');

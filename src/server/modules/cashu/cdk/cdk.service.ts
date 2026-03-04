@@ -98,7 +98,7 @@ export class CdkService {
 		}
 	}
 
-	public async getMintBalances(client: CashuMintDatabase, keyset_id?: string): Promise<CashuMintBalance[]> {
+	public async getBalances(client: CashuMintDatabase, keyset_id?: string): Promise<CashuMintBalance[]> {
 		const where_clause = keyset_id ? 'WHERE ka.keyset_id = ?' : '';
 		const sql = `
 			SELECT
@@ -119,7 +119,7 @@ export class CdkService {
 		}
 	}
 
-	public async getMintBalancesIssued(client: CashuMintDatabase): Promise<CashuMintBalance[]> {
+	public async getBalancesIssued(client: CashuMintDatabase): Promise<CashuMintBalance[]> {
 		const sql = `
 			SELECT keyset_id AS keyset, total_issued AS balance
 			FROM keyset_amounts
@@ -131,7 +131,7 @@ export class CdkService {
 		}
 	}
 
-	public async getMintBalancesRedeemed(client: CashuMintDatabase): Promise<CashuMintBalance[]> {
+	public async getBalancesRedeemed(client: CashuMintDatabase): Promise<CashuMintBalance[]> {
 		const sql = `
 			SELECT keyset_id AS keyset, total_redeemed AS balance
 			FROM keyset_amounts
@@ -143,7 +143,7 @@ export class CdkService {
 		}
 	}
 
-	public async getMintKeysets(client: CashuMintDatabase): Promise<CashuMintKeyset[]> {
+	public async getKeysets(client: CashuMintDatabase): Promise<CashuMintKeyset[]> {
 		const sql = `
             SELECT *, CAST(COALESCE(fee_collected, 0) AS INTEGER) AS fees_paid FROM keyset
             LEFT JOIN keyset_amounts ON keyset_amounts.keyset_id = keyset.id
@@ -156,7 +156,7 @@ export class CdkService {
 		}
 	}
 
-	public async getMintMintQuotes(client: CashuMintDatabase, args?: CashuMintMintQuotesArgs): Promise<CashuMintMintQuote[]> {
+	public async listMintQuotes(client: CashuMintDatabase, args?: CashuMintMintQuotesArgs): Promise<CashuMintMintQuote[]> {
 		const field_mappings = {
 			units: 'unit',
 			date_start: 'created_time',
@@ -219,7 +219,7 @@ export class CdkService {
 		}
 	}
 
-	public async getMintMintQuote(client: CashuMintDatabase, quote_id: string): Promise<CashuMintMintQuote | null> {
+	public async lookupMintQuote(client: CashuMintDatabase, quote_id: string): Promise<CashuMintMintQuote | null> {
 		const state_case = `
 			CASE
 				WHEN amount_paid = 0 AND amount_issued = 0 THEN 'UNPAID'
@@ -240,7 +240,7 @@ export class CdkService {
 		}
 	}
 
-	public async getMintMeltQuote(client: CashuMintDatabase, quote_id: string): Promise<CashuMintMeltQuote | null> {
+	public async lookupMeltQuote(client: CashuMintDatabase, quote_id: string): Promise<CashuMintMeltQuote | null> {
 		const sql = `SELECT * FROM melt_quote WHERE id = ?`;
 		try {
 			const row = await queryRow<CashuMintMeltQuote | undefined>(client, sql, [quote_id]);
@@ -250,7 +250,7 @@ export class CdkService {
 		}
 	}
 
-	public async getMintMeltQuotes(client: CashuMintDatabase, args?: CashuMintMeltQuotesArgs): Promise<CashuMintMeltQuote[]> {
+	public async listMeltQuotes(client: CashuMintDatabase, args?: CashuMintMeltQuotesArgs): Promise<CashuMintMeltQuote[]> {
 		const field_mappings = {
 			units: 'unit',
 			date_start: 'created_time',
@@ -275,7 +275,7 @@ export class CdkService {
 		}
 	}
 
-	public async getMintProofGroups(client: CashuMintDatabase, args?: CashuMintProofsArgs): Promise<CashuMintProofGroup[]> {
+	public async listProofGroups(client: CashuMintDatabase, args?: CashuMintProofsArgs): Promise<CashuMintProofGroup[]> {
 		const field_mappings = {
 			states: 'p.state',
 			units: 'k.unit',
@@ -337,7 +337,7 @@ export class CdkService {
 		}
 	}
 
-	public async getMintPromiseGroups(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<CashuMintPromiseGroup[]> {
+	public async listPromiseGroups(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<CashuMintPromiseGroup[]> {
 		const field_mappings = {
 			units: 'k.unit',
 			id_keysets: 'bs.keyset_id',
@@ -454,7 +454,7 @@ export class CdkService {
 		return queryRows<CashuMintPromise>(client, sql, params);
 	}
 
-	public async getMintCountMintQuotes(client: CashuMintDatabase, args?: CashuMintMintQuotesArgs): Promise<number> {
+	public async countMintQuotes(client: CashuMintDatabase, args?: CashuMintMintQuotesArgs): Promise<number> {
 		const field_mappings = {
 			units: 'unit',
 			date_start: 'created_time',
@@ -495,7 +495,7 @@ export class CdkService {
 		}
 	}
 
-	public async getMintCountMeltQuotes(client: CashuMintDatabase, args?: CashuMintMeltQuotesArgs): Promise<number> {
+	public async countMeltQuotes(client: CashuMintDatabase, args?: CashuMintMeltQuotesArgs): Promise<number> {
 		const field_mappings = {
 			units: 'unit',
 			date_start: 'created_time',
@@ -517,7 +517,7 @@ export class CdkService {
 		}
 	}
 
-	public async getMintCountProofGroups(client: CashuMintDatabase, args?: CashuMintProofsArgs): Promise<number> {
+	public async countProofGroups(client: CashuMintDatabase, args?: CashuMintProofsArgs): Promise<number> {
 		const field_mappings = {
 			states: 'p.state',
 			units: 'k.unit',
@@ -553,7 +553,7 @@ export class CdkService {
 		}
 	}
 
-	public async getMintCountPromiseGroups(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<number> {
+	public async countPromiseGroups(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<number> {
 		const field_mappings = {
 			units: 'k.unit',
 			id_keysets: 'bs.keyset_id',
@@ -587,7 +587,7 @@ export class CdkService {
 		}
 	}
 
-	public async getMintCountSwaps(client: CashuMintDatabase, args?: CashuMintSwapsArgs): Promise<number> {
+	public async countSwaps(client: CashuMintDatabase, args?: CashuMintSwapsArgs): Promise<number> {
 		const swap_args = {...args, operation_kind: 'swap'};
 		const field_mappings = {
 			units: 'k.unit',
@@ -621,7 +621,7 @@ export class CdkService {
 		}
 	}
 
-	public async getMintSwaps(client: CashuMintDatabase, args?: CashuMintSwapsArgs): Promise<CashuMintSwap[]> {
+	public async listSwaps(client: CashuMintDatabase, args?: CashuMintSwapsArgs): Promise<CashuMintSwap[]> {
 		const swap_args = {...args, operation_kind: 'swap'};
 		const field_mappings = {
 			units: 'k.unit',

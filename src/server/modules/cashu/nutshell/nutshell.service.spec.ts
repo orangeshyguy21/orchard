@@ -201,24 +201,24 @@ describe('NutshellService', () => {
 		expect(logger_log).toHaveBeenCalledTimes(1);
 	});
 
-	it('getMintKeysets converts dates and derives path index', async () => {
+	it('getKeysets converts dates and derives path index', async () => {
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
 			{valid_from: '2024-01-01', valid_to: '2024-01-02', derivation_path: "m/86'/0'/0'"},
 		]);
-		const out = await nutshellService.getMintKeysets({} as any);
+		const out = await nutshellService.getKeysets({} as any);
 		expect(out[0].valid_from).toBe(1);
 		expect(out[0].valid_to).toBe(1);
 		expect(out[0].derivation_path_index).toBe(0);
 	});
 
-	it('getMintKeysets handles null path index and prime suffix; passes auth filter and logs on error', async () => {
+	it('getKeysets handles null path index and prime suffix; passes auth filter and logs on error', async () => {
 		(helpers.queryRows as jest.Mock)
 			.mockResolvedValueOnce([
 				{valid_from: 'x', valid_to: 'y', derivation_path: undefined},
 				{valid_from: 'x', valid_to: 'y', derivation_path: "m/86'/0'/1'"},
 			])
 			.mockRejectedValueOnce(new Error('fail'));
-		const out = await nutshellService.getMintKeysets({} as any);
+		const out = await nutshellService.getKeysets({} as any);
 		expect(out[0].derivation_path_index).toBeNull();
 		expect(out[1].derivation_path_index).toBe(1);
 		// verify auth param applied
@@ -226,49 +226,49 @@ describe('NutshellService', () => {
 		expect(call[2]).toEqual(['auth']);
 		// error path
 		const logger_error = jest.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined as any);
-		await expect(nutshellService.getMintKeysets({} as any)).rejects.toThrow('fail');
+		await expect(nutshellService.getKeysets({} as any)).rejects.toThrow('fail');
 		expect(logger_error).toHaveBeenCalled();
 	});
 
-	it('getMintBalances builds SQL with and without keyset_id and propagates errors', async () => {
+	it('getBalances builds SQL with and without keyset_id and propagates errors', async () => {
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([]);
-		await nutshellService.getMintBalances({} as any);
+		await nutshellService.getBalances({} as any);
 		let call = (helpers.queryRows as jest.Mock).mock.calls.pop();
 		expect(call[1]).toContain('FROM balance');
 		expect(call[2]).toEqual([]);
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([]);
-		await nutshellService.getMintBalances({} as any, 'K1');
+		await nutshellService.getBalances({} as any, 'K1');
 		call = (helpers.queryRows as jest.Mock).mock.calls.pop();
 		expect(call[1]).toContain('WHERE b.keyset = ?');
 		expect(call[2]).toEqual(['K1']);
 		(helpers.queryRows as jest.Mock).mockImplementationOnce(() => {
 			throw new Error('badsql');
 		});
-		await expect(nutshellService.getMintBalances({} as any)).rejects.toThrow('badsql');
+		await expect(nutshellService.getBalances({} as any)).rejects.toThrow('badsql');
 	});
 
-	it('getMintBalancesIssued and Redeemed query correct tables and propagate errors', async () => {
+	it('getBalancesIssued and Redeemed query correct tables and propagate errors', async () => {
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([]);
-		await nutshellService.getMintBalancesIssued({} as any);
+		await nutshellService.getBalancesIssued({} as any);
 		let call = (helpers.queryRows as jest.Mock).mock.calls.pop();
 		expect(call[1]).toBe('SELECT * FROM balance_issued;');
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([]);
-		await nutshellService.getMintBalancesRedeemed({} as any);
+		await nutshellService.getBalancesRedeemed({} as any);
 		call = (helpers.queryRows as jest.Mock).mock.calls.pop();
 		expect(call[1]).toBe('SELECT * FROM balance_redeemed;');
 		(helpers.queryRows as jest.Mock).mockImplementationOnce(() => {
 			throw new Error('oops');
 		});
-		await expect(nutshellService.getMintBalancesIssued({} as any)).rejects.toThrow('oops');
+		await expect(nutshellService.getBalancesIssued({} as any)).rejects.toThrow('oops');
 	});
 
-	it('getMintMintQuotes maps fields and uses buildDynamicQuery', async () => {
+	it('listMintQuotes maps fields and uses buildDynamicQuery', async () => {
 		(helpers.buildDynamicQuery as jest.Mock).mockReturnValueOnce({sql: 'S', params: ['P']});
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
 			{quote: 'q1', checking_id: 'c1', state: 'ISSUED', paid_time: 'pt', created_time: 'ct', amount: 5},
 			{quote: 'q2', checking_id: 'c2', state: 'PENDING', paid_time: 'pt', created_time: 'ct', amount: 7},
 		]);
-		const out = await nutshellService.getMintMintQuotes({type: 'sqlite'} as any, {states: ['ISSUED']} as any);
+		const out = await nutshellService.listMintQuotes({type: 'sqlite'} as any, {states: ['ISSUED']} as any);
 		expect(helpers.buildDynamicQuery).toHaveBeenCalledWith({
 			db_type: MintDatabaseType.sqlite,
 			table_name: 'mint_quotes',
@@ -281,13 +281,13 @@ describe('NutshellService', () => {
 		(helpers.queryRows as jest.Mock).mockImplementationOnce(() => {
 			throw new Error('err');
 		});
-		await expect(nutshellService.getMintMintQuotes({type: 'sqlite'} as any)).rejects.toThrow('err');
+		await expect(nutshellService.listMintQuotes({type: 'sqlite'} as any)).rejects.toThrow('err');
 	});
 
-	it('getMintMeltQuotes maps fields and uses buildDynamicQuery', async () => {
+	it('listMeltQuotes maps fields and uses buildDynamicQuery', async () => {
 		(helpers.buildDynamicQuery as jest.Mock).mockReturnValueOnce({sql: 'S2', params: ['P2']});
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([{quote: 'q1', checking_id: 'c1', paid_time: 'pt', created_time: 'ct'}]);
-		const out = await nutshellService.getMintMeltQuotes({type: 'postgres'} as any, {states: ['PAID']} as any);
+		const out = await nutshellService.listMeltQuotes({type: 'postgres'} as any, {states: ['PAID']} as any);
 		expect(helpers.buildDynamicQuery).toHaveBeenCalledWith({
 			db_type: MintDatabaseType.postgres,
 			table_name: 'melt_quotes',
@@ -298,15 +298,15 @@ describe('NutshellService', () => {
 		(helpers.queryRows as jest.Mock).mockImplementationOnce(() => {
 			throw new Error('err2');
 		});
-		await expect(nutshellService.getMintMeltQuotes({type: 'sqlite'} as any)).rejects.toThrow('err2');
+		await expect(nutshellService.listMeltQuotes({type: 'sqlite'} as any)).rejects.toThrow('err2');
 	});
 
-	it('getMintProofGroups groups by created and unit, aggregates amounts, handles array/string', async () => {
+	it('listProofGroups groups by created and unit, aggregates amounts, handles array/string', async () => {
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
 			{created: 't', id: 'k1', unit: 'sat', amounts: '[1,2]'},
 			{created: 't', id: 'k2', unit: 'sat', amounts: [3]},
 		]);
-		const out = await nutshellService.getMintProofGroups({type: 'sqlite'} as any, {} as any);
+		const out = await nutshellService.listProofGroups({type: 'sqlite'} as any, {} as any);
 		expect(out).toHaveLength(1);
 		expect(out[0].amount).toBe(6);
 		expect(out[0].state).toBe('SPENT');
@@ -314,59 +314,59 @@ describe('NutshellService', () => {
 		(helpers.queryRows as jest.Mock).mockImplementationOnce(() => {
 			throw new Error('pg');
 		});
-		await expect(nutshellService.getMintProofGroups({type: 'sqlite'} as any)).rejects.toThrow('pg');
+		await expect(nutshellService.listProofGroups({type: 'sqlite'} as any)).rejects.toThrow('pg');
 	});
 
-	it('getMintPromiseGroups groups and aggregates amounts', async () => {
+	it('listPromiseGroups groups and aggregates amounts', async () => {
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
 			{created: 't', id: 'k1', unit: 'sat', amounts: '[1,2]'},
 			{created: 't', id: 'k2', unit: 'sat', amounts: [3]},
 		]);
-		const out = await nutshellService.getMintPromiseGroups({type: 'sqlite'} as any, {} as any);
+		const out = await nutshellService.listPromiseGroups({type: 'sqlite'} as any, {} as any);
 		expect(out).toHaveLength(1);
 		expect(out[0].amount).toBe(6);
 		expect(out[0].keyset_ids).toEqual(['k1', 'k2']);
 		(helpers.queryRows as jest.Mock).mockImplementationOnce(() => {
 			throw new Error('prom');
 		});
-		await expect(nutshellService.getMintPromiseGroups({type: 'sqlite'} as any)).rejects.toThrow('prom');
+		await expect(nutshellService.listPromiseGroups({type: 'sqlite'} as any)).rejects.toThrow('prom');
 	});
 
 	it('count methods return row.count and proof/promise group wrap subquery', async () => {
 		(helpers.buildCountQuery as jest.Mock).mockReturnValueOnce({sql: 'SELECT x FROM melt_quotes;', params: ['a']});
 		(helpers.queryRow as jest.Mock).mockResolvedValueOnce({count: 3});
-		await expect(nutshellService.getMintCountMeltQuotes({type: 'sqlite'} as any, {} as any)).resolves.toBe(3);
+		await expect(nutshellService.countMeltQuotes({type: 'sqlite'} as any, {} as any)).resolves.toBe(3);
 
 		(helpers.buildCountQuery as jest.Mock).mockReturnValueOnce({sql: 'SELECT x FROM mint_quotes;', params: ['b']});
 		(helpers.queryRow as jest.Mock).mockResolvedValueOnce({count: 4});
-		await expect(nutshellService.getMintCountMintQuotes({type: 'sqlite'} as any, {} as any)).resolves.toBe(4);
+		await expect(nutshellService.countMintQuotes({type: 'sqlite'} as any, {} as any)).resolves.toBe(4);
 
 		(helpers.buildCountQuery as jest.Mock).mockReturnValueOnce({sql: 'SELECT ... FROM proofs_used;', params: ['c']});
 		(helpers.queryRow as jest.Mock).mockResolvedValueOnce({count: 5});
-		await nutshellService.getMintCountProofGroups({type: 'sqlite'} as any, {} as any);
+		await nutshellService.countProofGroups({type: 'sqlite'} as any, {} as any);
 		let call = (helpers.queryRow as jest.Mock).mock.calls.pop();
 		expect(call[1]).toContain(') subquery;');
 
 		(helpers.buildCountQuery as jest.Mock).mockReturnValueOnce({sql: 'SELECT ... FROM promises;', params: ['d']});
 		(helpers.queryRow as jest.Mock).mockResolvedValueOnce({count: 6});
-		await nutshellService.getMintCountPromiseGroups({type: 'sqlite'} as any, {} as any);
+		await nutshellService.countPromiseGroups({type: 'sqlite'} as any, {} as any);
 		call = (helpers.queryRow as jest.Mock).mock.calls.pop();
 		expect(call[1]).toContain(') subquery;');
 	});
 
-	it('getMintFees uses default/custom limit and propagates errors', async () => {
+	it('getFees uses default/custom limit and propagates errors', async () => {
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([]);
-		await nutshellService.getMintFees({} as any);
+		await nutshellService.getFees({} as any);
 		let call = (helpers.queryRows as jest.Mock).mock.calls.pop();
 		expect(call[2]).toEqual([1]);
 		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([]);
-		await nutshellService.getMintFees({} as any, 10);
+		await nutshellService.getFees({} as any, 10);
 		call = (helpers.queryRows as jest.Mock).mock.calls.pop();
 		expect(call[2]).toEqual([10]);
 		(helpers.queryRows as jest.Mock).mockImplementationOnce(() => {
 			throw new Error('fee');
 		});
-		await expect(nutshellService.getMintFees({} as any)).rejects.toThrow('fee');
+		await expect(nutshellService.getFees({} as any)).rejects.toThrow('fee');
 	});
 
 });

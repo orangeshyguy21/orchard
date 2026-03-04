@@ -24,7 +24,7 @@ export class MintPromiseService {
 	async getMintPromiseGroups(tag: string, args?: CashuMintPromiseArgs): Promise<OrchardMintPromiseGroup[]> {
 		return this.mintService.withDbClient(async (client) => {
 			try {
-				const cashu_mint_promise_groups: CashuMintPromiseGroup[] = await this.cashuMintDatabaseService.getMintPromiseGroups(
+				const cashu_mint_promise_groups: CashuMintPromiseGroup[] = await this.cashuMintDatabaseService.listPromiseGroups(
 					client,
 					args,
 				);

@@ -105,7 +105,7 @@ export class NutshellService {
 		}
 	}
 
-	public async getMintBalances(client: CashuMintDatabase, keyset_id?: string): Promise<CashuMintBalance[]> {
+	public async getBalances(client: CashuMintDatabase, keyset_id?: string): Promise<CashuMintBalance[]> {
 		const where_clause = keyset_id ? `WHERE b.keyset = ?` : '';
 		const sql = `SELECT b.keyset, b.balance, k.unit FROM balance b LEFT JOIN keysets k ON k.id = b.keyset ${where_clause};`;
 		const params = keyset_id ? [keyset_id] : [];
@@ -116,7 +116,7 @@ export class NutshellService {
 		}
 	}
 
-	public async getMintBalancesIssued(client: CashuMintDatabase): Promise<CashuMintBalance[]> {
+	public async getBalancesIssued(client: CashuMintDatabase): Promise<CashuMintBalance[]> {
 		const sql = 'SELECT * FROM balance_issued;';
 		try {
 			return queryRows<CashuMintBalance>(client, sql);
@@ -125,7 +125,7 @@ export class NutshellService {
 		}
 	}
 
-	public async getMintBalancesRedeemed(client: CashuMintDatabase): Promise<CashuMintBalance[]> {
+	public async getBalancesRedeemed(client: CashuMintDatabase): Promise<CashuMintBalance[]> {
 		const sql = 'SELECT * FROM balance_redeemed;';
 		try {
 			return queryRows<CashuMintBalance>(client, sql);
@@ -134,7 +134,7 @@ export class NutshellService {
 		}
 	}
 
-	public async getMintKeysets(client: CashuMintDatabase): Promise<CashuMintKeyset[]> {
+	public async getKeysets(client: CashuMintDatabase): Promise<CashuMintKeyset[]> {
 		const sql = 'SELECT * FROM keysets WHERE unit != ?;';
 		try {
 			const rows = await queryRows<CashuMintKeyset>(client, sql, ['auth']);
@@ -152,7 +152,7 @@ export class NutshellService {
 		}
 	}
 
-	public async getMintMintQuotes(client: CashuMintDatabase, args?: CashuMintMintQuotesArgs): Promise<CashuMintMintQuote[]> {
+	public async listMintQuotes(client: CashuMintDatabase, args?: CashuMintMintQuotesArgs): Promise<CashuMintMintQuote[]> {
 		const field_mappings = {
 			units: 'unit',
 			date_start: 'created_time',
@@ -183,7 +183,7 @@ export class NutshellService {
 		}
 	}
 
-	public async getMintMintQuote(client: CashuMintDatabase, quote_id: string): Promise<CashuMintMintQuote | null> {
+	public async lookupMintQuote(client: CashuMintDatabase, quote_id: string): Promise<CashuMintMintQuote | null> {
 		const sql = `SELECT * FROM mint_quotes WHERE quote = ?`;
 		try {
 			const row = await queryRow<NutshellMintMintQuote | undefined>(client, sql, [quote_id]);
@@ -204,7 +204,7 @@ export class NutshellService {
 		}
 	}
 
-	public async getMintMeltQuote(client: CashuMintDatabase, quote_id: string): Promise<CashuMintMeltQuote | null> {
+	public async lookupMeltQuote(client: CashuMintDatabase, quote_id: string): Promise<CashuMintMeltQuote | null> {
 		const sql = `SELECT * FROM melt_quotes WHERE quote = ?`;
 		try {
 			const row = await queryRow<NutshellMintMeltQuote | undefined>(client, sql, [quote_id]);
@@ -224,7 +224,7 @@ export class NutshellService {
 		}
 	}
 
-	public async getMintMeltQuotes(client: CashuMintDatabase, args?: CashuMintMeltQuotesArgs): Promise<CashuMintMeltQuote[]> {
+	public async listMeltQuotes(client: CashuMintDatabase, args?: CashuMintMeltQuotesArgs): Promise<CashuMintMeltQuote[]> {
 		const field_mappings = {
 			units: 'unit',
 			date_start: 'created_time',
@@ -254,7 +254,7 @@ export class NutshellService {
 		}
 	}
 
-	public async getMintProofGroups(client: CashuMintDatabase, args?: CashuMintProofsArgs): Promise<CashuMintProofGroup[]> {
+	public async listProofGroups(client: CashuMintDatabase, args?: CashuMintProofsArgs): Promise<CashuMintProofGroup[]> {
 		const field_mappings = {
 			units: 'k.unit',
 			id_keysets: 'p.id',
@@ -313,7 +313,7 @@ export class NutshellService {
 		}
 	}
 
-	public async getMintPromiseGroups(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<CashuMintPromiseGroup[]> {
+	public async listPromiseGroups(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<CashuMintPromiseGroup[]> {
 		const field_mappings = {
 			units: 'k.unit',
 			id_keysets: 'p.id',
@@ -441,7 +441,7 @@ export class NutshellService {
 		}));
 	}
 
-	public async getMintCountMeltQuotes(client: CashuMintDatabase, args?: CashuMintMeltQuotesArgs): Promise<number> {
+	public async countMeltQuotes(client: CashuMintDatabase, args?: CashuMintMeltQuotesArgs): Promise<number> {
 		const field_mappings = {
 			units: 'unit',
 			date_start: 'created_time',
@@ -462,7 +462,7 @@ export class NutshellService {
 		}
 	}
 
-	public async getMintCountMintQuotes(client: CashuMintDatabase, args?: CashuMintMintQuotesArgs): Promise<number> {
+	public async countMintQuotes(client: CashuMintDatabase, args?: CashuMintMintQuotesArgs): Promise<number> {
 		const field_mappings = {
 			units: 'unit',
 			date_start: 'created_time',
@@ -483,7 +483,7 @@ export class NutshellService {
 		}
 	}
 
-	public async getMintCountProofGroups(client: CashuMintDatabase, args?: CashuMintProofsArgs): Promise<number> {
+	public async countProofGroups(client: CashuMintDatabase, args?: CashuMintProofsArgs): Promise<number> {
 		const field_mappings = {
 			units: 'k.unit',
 			id_keysets: 'p.id',
@@ -517,7 +517,7 @@ export class NutshellService {
 		}
 	}
 
-	public async getMintCountPromiseGroups(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<number> {
+	public async countPromiseGroups(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<number> {
 		const field_mappings = {
 			units: 'k.unit',
 			id_keysets: 'p.id',
@@ -551,7 +551,7 @@ export class NutshellService {
 		}
 	}
 
-	public async getMintSwaps(client: CashuMintDatabase, args?: CashuMintSwapsArgs): Promise<CashuMintSwap[]> {
+	public async listSwaps(client: CashuMintDatabase, args?: CashuMintSwapsArgs): Promise<CashuMintSwap[]> {
 		const field_mappings = {
 			units: 'k.unit',
 			id_keysets: 'pu.id',
@@ -594,7 +594,7 @@ export class NutshellService {
 		}
 	}
 
-	public async getMintCountSwaps(client: CashuMintDatabase, args?: CashuMintSwapsArgs): Promise<number> {
+	public async countSwaps(client: CashuMintDatabase, args?: CashuMintSwapsArgs): Promise<number> {
 		const field_mappings = {
 			units: 'k.unit',
 			id_keysets: 'pu.id',
@@ -626,7 +626,7 @@ export class NutshellService {
 		}
 	}
 
-	public async getMintFees(client: CashuMintDatabase, limit: number = 1): Promise<CashuMintFee[]> {
+	public async getFees(client: CashuMintDatabase, limit: number = 1): Promise<CashuMintFee[]> {
 		const sql = `SELECT * FROM balance_log ORDER BY time ASC LIMIT ?;`;
 		try {
 			return queryRows<CashuMintFee>(client, sql, [limit]);
