@@ -230,27 +230,6 @@ describe('CdkService', () => {
 		await expect(cdkService.listProofGroups({} as any)).rejects.toThrow();
 	});
 
-	it('listPromiseGroups groups by created_time and sums', async () => {
-		(helpers.buildDynamicQuery as jest.Mock).mockReturnValue({sql: 'SQL', params: []});
-		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
-			{created_time: 10, keyset_id: 'k1', unit: 'sat', amounts: '[1,2]'},
-			{created_time: 10, keyset_id: 'k2', unit: 'sat', amounts: [3]},
-		]);
-		const out = await cdkService.listPromiseGroups({} as any);
-		expect(out).toHaveLength(1);
-		expect(out[0].amount).toBe(6);
-		expect(out[0].keyset_ids).toEqual(['k1', 'k2']);
-	});
-
-	it('listPromiseGroups handles empty and invalid JSON cases', async () => {
-		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([]);
-		const empty = await cdkService.listPromiseGroups({} as any);
-		expect(empty).toEqual([]);
-
-		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([{created_time: 10, keyset_id: 'k1', unit: 'sat', amounts: 'bad-json'}]);
-		await expect(cdkService.listPromiseGroups({} as any)).rejects.toThrow();
-	});
-
 	it('countMintQuotes and countMeltQuotes return row.count', async () => {
 		(helpers.buildCountQuery as jest.Mock).mockReturnValueOnce({sql: 'SELECT 1;', params: ['a']});
 		(helpers.queryRow as jest.Mock).mockResolvedValueOnce({count: 7});
@@ -259,20 +238,6 @@ describe('CdkService', () => {
 		(helpers.buildCountQuery as jest.Mock).mockReturnValueOnce({sql: 'SELECT 2;', params: ['b']});
 		(helpers.queryRow as jest.Mock).mockResolvedValueOnce({count: 5});
 		await expect(cdkService.countMeltQuotes({} as any)).resolves.toBe(5);
-	});
-
-	it('countProofGroups and countPromiseGroups wrap SQL into subquery', async () => {
-		(helpers.buildCountQuery as jest.Mock).mockReturnValueOnce({sql: 'SELECT 1;', params: []});
-		(helpers.queryRow as jest.Mock).mockResolvedValueOnce({count: 3});
-		await cdkService.countProofGroups({} as any);
-		const proof_call = (helpers.queryRow as jest.Mock).mock.calls[(helpers.queryRow as jest.Mock).mock.calls.length - 1];
-		expect(proof_call[1]).toBe('SELECT 1) subquery;');
-
-		(helpers.buildCountQuery as jest.Mock).mockReturnValueOnce({sql: 'SELECT 9;', params: []});
-		(helpers.queryRow as jest.Mock).mockResolvedValueOnce({count: 9});
-		await cdkService.countPromiseGroups({} as any);
-		const promise_call = (helpers.queryRow as jest.Mock).mock.calls[(helpers.queryRow as jest.Mock).mock.calls.length - 1];
-		expect(promise_call[1]).toBe('SELECT 9) subquery;');
 	});
 
 	it('balances and keysets pass-through queries', async () => {

@@ -32,7 +32,6 @@ import {MintDatabaseModule} from './mint/database/mintdatabase.module';
 import {MintQuoteModule} from './mint/quote/mintquote.module';
 import {MintMeltQuoteModule} from './mint/meltquote/mintmeltquote.module';
 import {MintMintQuoteModule} from './mint/mintquote/mintmintquote.module';
-import {MintPromiseModule} from './mint/promise/mintpromise.module';
 import {MintProofModule} from './mint/proof/mintproof.module';
 import {MintSwapModule} from './mint/swap/mintswap.module';
 import {MintAnalyticsModule} from './mint/analytics/mintanalytics.module';
@@ -82,7 +81,6 @@ import {ApiEventLogModule} from './event/event.module';
 		MintQuoteModule,
 		MintMeltQuoteModule,
 		MintMintQuoteModule,
-		MintPromiseModule,
 		MintProofModule,
 		MintSwapModule,
 		MintAnalyticsModule,

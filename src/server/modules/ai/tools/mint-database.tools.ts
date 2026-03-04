@@ -8,9 +8,8 @@ export const UpdateMintDatabaseDataTypeTool = {
 			properties: {
 				type: {
 					type: 'string',
-					enum: ['MintMints', 'MintMelts', 'MintProofGroups', 'MintPromiseGroups'],
-					description:
-						'The type of data to display. MintProofGroups is displayed as Ecash Used. MintPromiseGroups is displayed as Ecash Held.',
+					enum: ['MintMints', 'MintMelts', 'MintSwaps'],
+					description: 'The type of data to display.',
 				},
 			},
 			required: ['type'],
@@ -29,10 +28,10 @@ export const UpdateMintDatabaseStatesTool = {
 				states: {
 					type: 'array',
 					description:
-						'The states to display for the selected data type. The valid states for MintMints are: ISSUED, PAID, PENDING, UNPAID. The valid states for MintMelts are: PAID, PENDING, UNPAID. The valid states for MintProofGroups are: SPENT. MintPromiseGroups has no states.',
+						'The states to display for the selected data type. The valid states for MintMints are: ISSUED, PAID, PENDING, UNPAID. The valid states for MintMelts are: PAID, PENDING, UNPAID.',
 					items: {
 						type: 'string',
-						enum: ['ISSUED', 'PAID', 'PENDING', 'UNPAID', 'SPENT'],
+						enum: ['ISSUED', 'PAID', 'PENDING', 'UNPAID'],
 					},
 				},
 			},

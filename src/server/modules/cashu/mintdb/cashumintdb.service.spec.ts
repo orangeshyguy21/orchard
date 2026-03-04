@@ -139,11 +139,8 @@ describe('CashuMintDatabaseService', () => {
 			['listMintQuotes', 'listMintQuotes'],
 			['listMeltQuotes', 'listMeltQuotes'],
 			['listProofGroups', 'listProofGroups'],
-			['listPromiseGroups', 'listPromiseGroups'],
 			['countMintQuotes', 'countMintQuotes'],
 			['countMeltQuotes', 'countMeltQuotes'],
-			['countProofGroups', 'countProofGroups'],
-			['countPromiseGroups', 'countPromiseGroups'],
 		];
 
 		// Nutshell
@@ -169,11 +166,8 @@ describe('CashuMintDatabaseService', () => {
 			['listMintQuotes', 'listMintQuotes'],
 			['listMeltQuotes', 'listMeltQuotes'],
 			['listProofGroups', 'listProofGroups'],
-			['listPromiseGroups', 'listPromiseGroups'],
 			['countMintQuotes', 'countMintQuotes'],
 			['countMeltQuotes', 'countMeltQuotes'],
-			['countProofGroups', 'countProofGroups'],
-			['countPromiseGroups', 'countPromiseGroups'],
 		];
 		cdk_map.forEach(([_, c_method]) => {
 			(cdkService[c_method as any] as any) = jest.fn().mockResolvedValue('cdk');

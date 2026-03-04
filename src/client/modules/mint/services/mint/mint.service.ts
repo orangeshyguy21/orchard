@@ -17,8 +17,6 @@ import {
 	MintAnalyticsArgs,
 	MintMintQuotesArgs,
 	MintMeltQuotesArgs,
-	MintProofGroupsArgs,
-	MintPromiseGroupsArgs,
 	MintSwapsArgs,
 	MintKeysetCountsArgs,
 	MintAnalyticsBackfillStatusResponse,
@@ -44,8 +42,6 @@ import {
 	MintKeysetRotationResponse,
 	MintMintQuotesDataResponse,
 	MintMeltQuotesDataResponse,
-	MintProofGroupsDataResponse,
-	MintPromiseGroupsDataResponse,
 	MintSwapsDataResponse,
 	MintDatabaseInfoResponse,
 	MintDatabaseBackupResponse,
@@ -63,8 +59,6 @@ import {MintBalance} from '@client/modules/mint/classes/mint-balance.class';
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 import {MintMintQuote} from '@client/modules/mint/classes/mint-mint-quote.class';
 import {MintMeltQuote} from '@client/modules/mint/classes/mint-melt-quote.class';
-import {MintProofGroup} from '@client/modules/mint/classes/mint-proof-group.class';
-import {MintPromiseGroup} from '@client/modules/mint/classes/mint-promise-group.class';
 import {MintAnalytic, MintAnalyticKeyset} from '@client/modules/mint/classes/mint-analytic.class';
 import {MintAnalyticsBackfillStatus} from '@client/modules/mint/classes/mint-analytics-backfill-status.class';
 import {MintSwap} from '@client/modules/mint/classes/mint-swap.class';
@@ -95,8 +89,6 @@ import {
 	MINT_KEYSET_COUNTS_QUERY,
 	MINT_MINT_QUOTES_DATA_QUERY,
 	MINT_MELT_QUOTES_DATA_QUERY,
-	MINT_PROOF_GROUPS_DATA_QUERY,
-	MINT_PROMISE_GROUPS_DATA_QUERY,
 	MINT_SWAPS_DATA_QUERY,
 	MINT_NAME_MUTATION,
 	MINT_DESCRIPTION_MUTATION,
@@ -736,52 +728,6 @@ export class MintService {
 			}),
 			catchError((error) => {
 				console.error('Error loading mint melt quotes data:', error);
-				return throwError(() => error);
-			}),
-		);
-	}
-
-	public getMintProofGroupsData(args: MintProofGroupsArgs) {
-		const query = getApiQuery(MINT_PROOF_GROUPS_DATA_QUERY, args);
-
-		return this.http.post<OrchardRes<MintProofGroupsDataResponse>>(this.apiService.api, query).pipe(
-			map((response) => {
-				if (response.errors) throw new OrchardErrors(response.errors);
-				return response.data;
-			}),
-			map((mint_proof_groups_data) => {
-				return {
-					mint_proof_groups: mint_proof_groups_data.mint_proof_groups.map(
-						(mint_proof_group) => new MintProofGroup(mint_proof_group),
-					),
-					count: mint_proof_groups_data.mint_count_proof_groups.count,
-				};
-			}),
-			catchError((error) => {
-				console.error('Error loading mint proof groups data:', error);
-				return throwError(() => error);
-			}),
-		);
-	}
-
-	public getMintPromiseGroupsData(args: MintPromiseGroupsArgs) {
-		const query = getApiQuery(MINT_PROMISE_GROUPS_DATA_QUERY, args);
-
-		return this.http.post<OrchardRes<MintPromiseGroupsDataResponse>>(this.apiService.api, query).pipe(
-			map((response) => {
-				if (response.errors) throw new OrchardErrors(response.errors);
-				return response.data;
-			}),
-			map((mint_promise_groups_data) => {
-				return {
-					mint_promise_groups: mint_promise_groups_data.mint_promise_groups.map(
-						(mint_promise_group) => new MintPromiseGroup(mint_promise_group),
-					),
-					count: mint_promise_groups_data.mint_count_promise_groups.count,
-				};
-			}),
-			catchError((error) => {
-				console.error('Error loading mint promise groups data:', error);
 				return throwError(() => error);
 			}),
 		);

@@ -9,8 +9,6 @@ import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 /* Local Dependencies */
 import {MintProofService} from './mintproof.service';
-import {OrchardMintProofGroup} from './mintproof.model';
-
 describe('MintProofService', () => {
 	let mintProofService: MintProofService;
 	let mintDbService: jest.Mocked<CashuMintDatabaseService>;
@@ -35,12 +33,6 @@ describe('MintProofService', () => {
 		expect(mintProofService).toBeDefined();
 	});
 
-	it('getMintProofGroups returns OrchardMintProofGroup[]', async () => {
-		mintDbService.listProofGroups.mockResolvedValue([{amounts: [[]]}] as any);
-		const result = await mintProofService.getMintProofGroups('TAG', {} as any);
-		expect(result[0]).toBeInstanceOf(OrchardMintProofGroup);
-	});
-
 	it('getMintProofGroupStats returns median count', async () => {
 		mintDbService.listProofGroups.mockResolvedValue([{amounts: [[1, 2, 3]]}] as any);
 		const result = await mintProofService.getMintProofGroupStats('TAG', 'sat' as any);
@@ -50,7 +42,7 @@ describe('MintProofService', () => {
 	it('wraps errors via resolveError and throws OrchardApiError', async () => {
 		mintDbService.listProofGroups.mockRejectedValue(new Error('boom'));
 		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.MintDatabaseSelectError});
-		await expect(mintProofService.getMintProofGroups('MY_TAG')).rejects.toBeInstanceOf(OrchardApiError);
+		await expect(mintProofService.getMintProofGroupStats('MY_TAG', 'sat' as any)).rejects.toBeInstanceOf(OrchardApiError);
 		const calls = errorService.resolveError.mock.calls;
 		const [, , tag_arg, code_arg] = calls[calls.length - 1];
 		expect(tag_arg).toBe('MY_TAG');

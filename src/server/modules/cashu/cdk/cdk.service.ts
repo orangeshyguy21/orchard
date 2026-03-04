@@ -15,7 +15,6 @@ import {
 	CashuMintMeltQuote,
 	CashuMintMintQuote,
 	CashuMintProofGroup,
-	CashuMintPromiseGroup,
 	CashuMintProof,
 	CashuMintPromise,
 	CashuMintSwap,
@@ -37,7 +36,7 @@ import {
 } from '@server/modules/cashu/mintdb/cashumintdb.helpers';
 import {MintDatabaseType} from '@server/modules/cashu/mintdb/cashumintdb.enums';
 /* Local Dependencies */
-import {CdkMintProof, CdkMintPromise} from './cdk.types';
+import {CdkMintProof} from './cdk.types';
 
 @Injectable()
 export class CdkService {
@@ -337,65 +336,6 @@ export class CdkService {
 		}
 	}
 
-	public async listPromiseGroups(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<CashuMintPromiseGroup[]> {
-		const field_mappings = {
-			units: 'k.unit',
-			id_keysets: 'bs.keyset_id',
-			date_start: 'bs.created_time',
-			date_end: 'bs.created_time',
-		};
-
-		const select_statement = `
-			SELECT 
-				bs.created_time,
-				bs.keyset_id,
-				k.unit,
-				json_group_array(bs.amount) as amounts
-			FROM blind_signature bs
-			LEFT JOIN keyset k ON k.id = bs.keyset_id`;
-
-		const group_by = 'bs.created_time, k.unit, bs.keyset_id';
-
-		const {sql, params} = buildDynamicQuery({
-			db_type: client.type,
-			table_name: 'blind_signature',
-			args,
-			field_mappings,
-			select_statement,
-			group_by,
-			time_is_epoch_seconds: true,
-		});
-		try {
-			const rows = await queryRows<CdkMintPromise>(client, sql, params);
-			const groups = {};
-			rows.forEach((row) => {
-				const key = `${row.created_time}_${row.unit}`;
-				const amounts = Array.isArray(row.amounts) ? row.amounts : JSON.parse(row.amounts);
-				if (!groups[key]) {
-					groups[key] = {
-						created_time: row.created_time,
-						unit: row.unit,
-						keysets: [],
-						amounts: [],
-					};
-				}
-				groups[key].keysets.push(row.keyset_id);
-				groups[key].amounts.push(amounts);
-			});
-
-			const promise_groups: CashuMintPromiseGroup[] = Object.values(groups).map((group: any) => ({
-				amount: group.amounts.flat().reduce((sum, amount) => sum + amount, 0),
-				created_time: group.created_time,
-				keyset_ids: group.keysets,
-				unit: group.unit,
-				amounts: group.amounts,
-			}));
-			return promise_groups;
-		} catch (err) {
-			throw err;
-		}
-	}
-
 	public async listProofs(client: CashuMintDatabase, args?: CashuMintProofsArgs): Promise<CashuMintProof[]> {
 		const field_mappings = {
 			states: 'p.state',
@@ -511,76 +451,6 @@ export class CdkService {
 		});
 		try {
 			const row = await queryRow<CashuMintCount>(client, sql, params);
-			return row.count;
-		} catch (err) {
-			throw err;
-		}
-	}
-
-	public async countProofGroups(client: CashuMintDatabase, args?: CashuMintProofsArgs): Promise<number> {
-		const field_mappings = {
-			states: 'p.state',
-			units: 'k.unit',
-			id_keysets: 'p.keyset_id',
-			date_start: 'p.created_time',
-			date_end: 'p.created_time',
-		};
-
-		const select_statement = `
-			SELECT COUNT(*) AS count FROM (
-				SELECT 
-					p.created_time,
-					k.unit,
-					p.state
-				FROM proof p
-				LEFT JOIN keyset k ON k.id = p.keyset_id`;
-		const group_by = 'p.created_time, k.unit, p.state';
-		const {sql, params} = buildCountQuery({
-			db_type: client.type,
-			table_name: 'proof',
-			args,
-			field_mappings,
-			select_statement,
-			group_by,
-			time_is_epoch_seconds: true,
-		});
-		const final_sql = sql.replace(';', ') subquery;');
-		try {
-			const row = await queryRow<CashuMintCount>(client, final_sql, params);
-			return row.count;
-		} catch (err) {
-			throw err;
-		}
-	}
-
-	public async countPromiseGroups(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<number> {
-		const field_mappings = {
-			units: 'k.unit',
-			id_keysets: 'bs.keyset_id',
-			date_start: 'bs.created_time',
-			date_end: 'bs.created_time',
-		};
-
-		const select_statement = `
-			SELECT COUNT(*) AS count FROM (
-				SELECT 
-					bs.created_time,
-					k.unit
-				FROM blind_signature bs
-				LEFT JOIN keyset k ON k.id = bs.keyset_id`;
-		const group_by = 'bs.created_time, k.unit';
-		const {sql, params} = buildCountQuery({
-			db_type: client.type,
-			table_name: 'blind_signature',
-			args,
-			field_mappings,
-			select_statement,
-			group_by,
-			time_is_epoch_seconds: true,
-		});
-		const final_sql = sql.replace(';', ') subquery;');
-		try {
-			const row = await queryRow<CashuMintCount>(client, final_sql, params);
 			return row.count;
 		} catch (err) {
 			throw err;

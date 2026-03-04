@@ -16,7 +16,6 @@ import {
 	CashuMintMeltQuote,
 	CashuMintMintQuote,
 	CashuMintProofGroup,
-	CashuMintPromiseGroup,
 	CashuMintProof,
 	CashuMintPromise,
 	CashuMintSwap,
@@ -313,63 +312,6 @@ export class NutshellService {
 		}
 	}
 
-	public async listPromiseGroups(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<CashuMintPromiseGroup[]> {
-		const field_mappings = {
-			units: 'k.unit',
-			id_keysets: 'p.id',
-			date_start: 'p.created',
-			date_end: 'p.created',
-		};
-
-		const select_statement = `
-			SELECT 
-				p.created,
-				p.id,
-				k.unit,
-				json_group_array(p.amount) as amounts
-			FROM promises p
-			LEFT JOIN keysets k ON k.id = p.id`;
-
-		const group_by = 'p.created, k.unit, p.id';
-		const {sql, params} = buildDynamicQuery({
-			db_type: client.type,
-			table_name: 'promises',
-			args,
-			field_mappings,
-			select_statement,
-			group_by,
-		});
-		try {
-			const rows = await queryRows<NutshellMintEcash>(client, sql, params);
-			const groups = {};
-			rows.forEach((row) => {
-				const created_time = convertDateToUnixTimestamp(row.created);
-				const key = `${created_time}_${row.unit}`;
-				const amounts = Array.isArray(row.amounts) ? row.amounts : JSON.parse(row.amounts);
-				if (!groups[key]) {
-					groups[key] = {
-						created_time: created_time,
-						unit: row.unit,
-						keysets: [],
-						amounts: [],
-					};
-				}
-				groups[key].keysets.push(row.id);
-				groups[key].amounts.push(amounts);
-			});
-
-			return Object.values(groups).map((group: any) => ({
-				amount: group.amounts.flat().reduce((sum, amount) => sum + amount, 0),
-				created_time: group.created_time,
-				keyset_ids: group.keysets,
-				unit: group.unit,
-				amounts: group.amounts,
-			}));
-		} catch (err) {
-			throw err;
-		}
-	}
-
 	public async listProofs(client: CashuMintDatabase, args?: CashuMintProofsArgs): Promise<CashuMintProof[]> {
 		const field_mappings = {
 			units: 'k.unit',
@@ -477,74 +419,6 @@ export class NutshellService {
 		});
 		try {
 			const row = await queryRow<CashuMintCount>(client, sql, params);
-			return row.count;
-		} catch (err) {
-			throw err;
-		}
-	}
-
-	public async countProofGroups(client: CashuMintDatabase, args?: CashuMintProofsArgs): Promise<number> {
-		const field_mappings = {
-			units: 'k.unit',
-			id_keysets: 'p.id',
-			date_start: 'p.created',
-			date_end: 'p.created',
-		};
-
-		const select_statement = `
-			SELECT COUNT(*) AS count FROM (
-				SELECT 
-					p.created,
-					k.unit
-				FROM proofs_used p
-				LEFT JOIN keysets k ON k.id = p.id`;
-
-		const group_by = 'p.created, k.unit';
-		const {sql, params} = buildCountQuery({
-			db_type: client.type,
-			table_name: 'proofs_used',
-			args,
-			field_mappings,
-			select_statement,
-			group_by,
-		});
-		const final_sql = sql.replace(';', ') subquery;');
-		try {
-			const row = await queryRow<CashuMintCount>(client, final_sql, params);
-			return row.count;
-		} catch (err) {
-			throw err;
-		}
-	}
-
-	public async countPromiseGroups(client: CashuMintDatabase, args?: CashuMintPromiseArgs): Promise<number> {
-		const field_mappings = {
-			units: 'k.unit',
-			id_keysets: 'p.id',
-			date_start: 'p.created',
-			date_end: 'p.created',
-		};
-
-		const select_statement = `
-			SELECT COUNT(*) AS count FROM (
-				SELECT 
-					p.created,
-					k.unit
-				FROM promises p
-				LEFT JOIN keysets k ON k.id = p.id`;
-
-		const group_by = 'p.created, k.unit';
-		const {sql, params} = buildCountQuery({
-			db_type: client.type,
-			table_name: 'promises',
-			args,
-			field_mappings,
-			select_statement,
-			group_by,
-		});
-		const final_sql = sql.replace(';', ') subquery;');
-		try {
-			const row = await queryRow<CashuMintCount>(client, final_sql, params);
 			return row.count;
 		} catch (err) {
 			throw err;

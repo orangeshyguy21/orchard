@@ -406,35 +406,6 @@ query MintMeltQuotes($units: [MintUnit!], $states: [MeltQuoteState!], $date_star
 	}
 }`;
 
-export const MINT_PROOF_GROUPS_DATA_QUERY = `
-query MintProofGroups($units: [MintUnit!], $id_keysets: [String!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $states: [MintProofState!], $page: Int, $page_size: Int) {
-	mint_proof_groups(units: $units, id_keysets: $id_keysets, date_start: $date_start, date_end: $date_end, states: $states, page: $page, page_size: $page_size) {
-		amount
-		created_time
-		keyset_ids
-		state
-		unit
-		amounts
-	}
-	mint_count_proof_groups(units: $units, id_keysets: $id_keysets, date_start: $date_start, date_end: $date_end, states: $states) {
-		count
-	}
-}`;
-
-export const MINT_PROMISE_GROUPS_DATA_QUERY = `
-query MintPromiseGroups($units: [MintUnit!], $id_keysets: [String!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $page: Int, $page_size: Int) {
-	mint_promise_groups(units: $units, id_keysets: $id_keysets, date_start: $date_start, date_end: $date_end, page: $page, page_size: $page_size) {
-		amount
-		created_time
-		keyset_ids
-		unit
-		amounts
-	}
-	mint_count_promise_groups(units: $units, id_keysets: $id_keysets, date_start: $date_start, date_end: $date_end) {
-		count
-	}
-}`;
-
 export const MINT_DATABASE_INFO_QUERY = `{
 	mint_database_info {
 		size

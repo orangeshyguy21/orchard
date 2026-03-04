@@ -25,8 +25,6 @@ describe('MintCountService', () => {
 					useValue: {
 						countMintQuotes: jest.fn(),
 						countMeltQuotes: jest.fn(),
-						countProofGroups: jest.fn(),
-						countPromiseGroups: jest.fn(),
 					},
 				},
 				{provide: MintService, useValue: {withDbClient: jest.fn((fn: any) => fn({}))}},
@@ -54,18 +52,6 @@ describe('MintCountService', () => {
 		mintDbService.countMeltQuotes.mockResolvedValue(2 as any);
 		const result = await mintCountService.getMintCountMeltQuotes('TAG', {} as any);
 		expect(result.count).toBe(2);
-	});
-
-	it('getMintCountProofGroups returns OrchardMintCount', async () => {
-		mintDbService.countProofGroups.mockResolvedValue(3 as any);
-		const result = await mintCountService.getMintCountProofGroups('TAG', {} as any);
-		expect(result.count).toBe(3);
-	});
-
-	it('getMintCountPromiseGroups returns OrchardMintCount', async () => {
-		mintDbService.countPromiseGroups.mockResolvedValue(4 as any);
-		const result = await mintCountService.getMintCountPromiseGroups('TAG', {} as any);
-		expect(result.count).toBe(4);
 	});
 
 	it('wraps errors via resolveError and throws OrchardApiError', async () => {

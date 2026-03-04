@@ -84,14 +84,6 @@ export type CashuMintProofGroup = {
 	amounts: number[][];
 };
 
-export type CashuMintPromiseGroup = {
-	amount: number;
-	created_time: number;
-	keyset_ids: string[];
-	unit: MintUnit;
-	amounts: number[][];
-};
-
 export type CashuMintCount = {
 	count: number;
 };

@@ -317,22 +317,7 @@ describe('NutshellService', () => {
 		await expect(nutshellService.listProofGroups({type: 'sqlite'} as any)).rejects.toThrow('pg');
 	});
 
-	it('listPromiseGroups groups and aggregates amounts', async () => {
-		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
-			{created: 't', id: 'k1', unit: 'sat', amounts: '[1,2]'},
-			{created: 't', id: 'k2', unit: 'sat', amounts: [3]},
-		]);
-		const out = await nutshellService.listPromiseGroups({type: 'sqlite'} as any, {} as any);
-		expect(out).toHaveLength(1);
-		expect(out[0].amount).toBe(6);
-		expect(out[0].keyset_ids).toEqual(['k1', 'k2']);
-		(helpers.queryRows as jest.Mock).mockImplementationOnce(() => {
-			throw new Error('prom');
-		});
-		await expect(nutshellService.listPromiseGroups({type: 'sqlite'} as any)).rejects.toThrow('prom');
-	});
-
-	it('count methods return row.count and proof/promise group wrap subquery', async () => {
+	it('count methods return row.count', async () => {
 		(helpers.buildCountQuery as jest.Mock).mockReturnValueOnce({sql: 'SELECT x FROM melt_quotes;', params: ['a']});
 		(helpers.queryRow as jest.Mock).mockResolvedValueOnce({count: 3});
 		await expect(nutshellService.countMeltQuotes({type: 'sqlite'} as any, {} as any)).resolves.toBe(3);
@@ -340,18 +325,6 @@ describe('NutshellService', () => {
 		(helpers.buildCountQuery as jest.Mock).mockReturnValueOnce({sql: 'SELECT x FROM mint_quotes;', params: ['b']});
 		(helpers.queryRow as jest.Mock).mockResolvedValueOnce({count: 4});
 		await expect(nutshellService.countMintQuotes({type: 'sqlite'} as any, {} as any)).resolves.toBe(4);
-
-		(helpers.buildCountQuery as jest.Mock).mockReturnValueOnce({sql: 'SELECT ... FROM proofs_used;', params: ['c']});
-		(helpers.queryRow as jest.Mock).mockResolvedValueOnce({count: 5});
-		await nutshellService.countProofGroups({type: 'sqlite'} as any, {} as any);
-		let call = (helpers.queryRow as jest.Mock).mock.calls.pop();
-		expect(call[1]).toContain(') subquery;');
-
-		(helpers.buildCountQuery as jest.Mock).mockReturnValueOnce({sql: 'SELECT ... FROM promises;', params: ['d']});
-		(helpers.queryRow as jest.Mock).mockResolvedValueOnce({count: 6});
-		await nutshellService.countPromiseGroups({type: 'sqlite'} as any, {} as any);
-		call = (helpers.queryRow as jest.Mock).mock.calls.pop();
-		expect(call[1]).toContain(') subquery;');
 	});
 
 	it('getFees uses default/custom limit and propagates errors', async () => {

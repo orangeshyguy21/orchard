@@ -2,13 +2,7 @@
 import {Injectable, Logger} from '@nestjs/common';
 /* Application Dependencies */
 import {CashuMintDatabaseService} from '@server/modules/cashu/mintdb/cashumintdb.service';
-import {
-	CashuMintMintQuotesArgs,
-	CashuMintMeltQuotesArgs,
-	CashuMintProofsArgs,
-	CashuMintPromiseArgs,
-	CashuMintSwapsArgs,
-} from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
+import {CashuMintMintQuotesArgs, CashuMintMeltQuotesArgs, CashuMintSwapsArgs} from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 import {MintService} from '@server/modules/api/mint/mint.service';
@@ -44,34 +38,6 @@ export class MintCountService {
 		return this.mintService.withDbClient(async (client) => {
 			try {
 				const count: number = await this.cashuMintDatabaseService.countMeltQuotes(client, args);
-				return new OrchardMintCount(count);
-			} catch (error) {
-				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
-					errord: OrchardErrorCode.MintDatabaseSelectError,
-				});
-				throw new OrchardApiError(orchard_error);
-			}
-		});
-	}
-
-	async getMintCountProofGroups(tag: string, args?: CashuMintProofsArgs): Promise<OrchardMintCount> {
-		return this.mintService.withDbClient(async (client) => {
-			try {
-				const count: number = await this.cashuMintDatabaseService.countProofGroups(client, args);
-				return new OrchardMintCount(count);
-			} catch (error) {
-				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
-					errord: OrchardErrorCode.MintDatabaseSelectError,
-				});
-				throw new OrchardApiError(orchard_error);
-			}
-		});
-	}
-
-	async getMintCountPromiseGroups(tag: string, args?: CashuMintPromiseArgs): Promise<OrchardMintCount> {
-		return this.mintService.withDbClient(async (client) => {
-			try {
-				const count: number = await this.cashuMintDatabaseService.countPromiseGroups(client, args);
 				return new OrchardMintCount(count);
 			} catch (error) {
 				const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
