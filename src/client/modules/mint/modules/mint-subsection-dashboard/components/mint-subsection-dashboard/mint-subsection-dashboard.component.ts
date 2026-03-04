@@ -60,11 +60,10 @@ enum NavTertiary {
 	Melts = 'nav3',
 	Swaps = 'nav4',
 	FeeRevenue = 'nav5',
-	Proofs = 'nav6',
-	Promises = 'nav7',
+	Ecash = 'nav6',
 }
 
-type ChartKey = 'balance_sheet' | 'mints' | 'melts' | 'swaps' | 'fee_revenue' | 'proofs' | 'promises';
+type ChartKey = 'balance_sheet' | 'mints' | 'melts' | 'swaps' | 'fee_revenue' | 'ecash';
 
 @Component({
 	selector: 'orc-mint-subsection-dashboard',
@@ -74,7 +73,7 @@ type ChartKey = 'balance_sheet' | 'mints' | 'melts' | 'swaps' | 'fee_revenue' | 
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
-	@ViewChildren('nav1,nav2,nav3,nav4,nav5,nav6,nav7') nav_elements!: QueryList<ElementRef>;
+	@ViewChildren('nav1,nav2,nav3,nav4,nav5,nav6') nav_elements!: QueryList<ElementRef>;
 	@ViewChild('chart_container', {static: false}) chart_container!: ElementRef;
 
 	// data
@@ -121,8 +120,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		[NavTertiary.Melts]: {title: 'Melts'},
 		[NavTertiary.Swaps]: {title: 'Swaps'},
 		[NavTertiary.FeeRevenue]: {title: 'Fee Revenue'},
-		[NavTertiary.Proofs]: {title: 'Proofs'},
-		[NavTertiary.Promises]: {title: 'Promises'},
+		[NavTertiary.Ecash]: {title: 'Ecash Counts'},
 	};
 	public chart_type_options: Record<string, ChartType[]> = {
 		balance_sheet: [ChartType.Totals, ChartType.Volume],
@@ -130,8 +128,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		melts: [ChartType.Totals, ChartType.Volume],
 		swaps: [ChartType.Totals, ChartType.Volume],
 		fee_revenue: [ChartType.Totals, ChartType.Volume],
-		proofs: [ChartType.Totals, ChartType.Volume],
-		promises: [ChartType.Totals, ChartType.Volume],
+		ecash: [ChartType.Totals, ChartType.Volume],
 	};
 
 	public mint_fee_revenue = signal<boolean>(false);
@@ -154,8 +151,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public type_melts = computed(() => this.page_settings().type.melts || ChartType.Volume);
 	public type_swaps = computed(() => this.page_settings().type.swaps || ChartType.Volume);
 	public type_fee_revenue = computed(() => this.page_settings().type.fee_revenue || ChartType.Volume);
-	public type_proofs = computed(() => this.page_settings().type.proofs || ChartType.Volume);
-	public type_promises = computed(() => this.page_settings().type.promises || ChartType.Volume);
+	public type_ecash = computed(() => this.page_settings().type.ecash || ChartType.Totals);
 	public loading_analytics = computed(() => this.loading_mint() || this.loading_bitcoin());
 
 	private subscriptions: Subscription = new Subscription();
@@ -484,8 +480,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 				melts: settings.type?.melts ?? ChartType.Volume,
 				swaps: settings.type?.swaps ?? ChartType.Volume,
 				fee_revenue: settings.type?.fee_revenue ?? ChartType.Volume,
-				proofs: settings.type?.proofs ?? ChartType.Volume,
-				promises: settings.type?.promises ?? ChartType.Volume,
+				ecash: settings.type?.ecash ?? ChartType.Totals,
 			},
 			interval: settings.interval ?? AnalyticsInterval.Day,
 			units: settings.units ?? [],

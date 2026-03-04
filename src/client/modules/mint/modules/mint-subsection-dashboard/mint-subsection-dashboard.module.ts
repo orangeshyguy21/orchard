@@ -21,6 +21,7 @@ import {OrcMintGeneralModule} from '@client/modules/mint/modules/mint-general/mi
 import {MintSubsectionDashboardComponent} from './components/mint-subsection-dashboard/mint-subsection-dashboard.component';
 import {MintSubsectionDashboardChartComponent} from './components/mint-subsection-dashboard-chart/mint-subsection-dashboard-chart.component';
 import {MintSubsectionDashboardBalanceChartComponent} from './components/mint-subsection-dashboard-balance-chart/mint-subsection-dashboard-balance-chart.component';
+import {MintSubsectionDashboardEcashChartComponent} from './components/mint-subsection-dashboard-ecash-chart/mint-subsection-dashboard-ecash-chart.component';
 import {MintSubsectionDashboardControlComponent} from './components/mint-subsection-dashboard-control/mint-subsection-dashboard-control.component';
 
 @NgModule({
@@ -28,6 +29,7 @@ import {MintSubsectionDashboardControlComponent} from './components/mint-subsect
 		MintSubsectionDashboardComponent,
 		MintSubsectionDashboardChartComponent,
 		MintSubsectionDashboardBalanceChartComponent,
+		MintSubsectionDashboardEcashChartComponent,
 		MintSubsectionDashboardControlComponent,
 	],
 	imports: [

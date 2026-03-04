@@ -54,8 +54,7 @@ export type MintDashboardSettings = {
 		melts: ChartType | null;
 		swaps: ChartType | null;
 		fee_revenue: ChartType | null;
-		proofs: ChartType | null;
-		promises: ChartType | null;
+		ecash: ChartType | null;
 	};
 };
 

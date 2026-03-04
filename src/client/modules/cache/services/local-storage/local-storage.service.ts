@@ -121,7 +121,7 @@ export class LocalStorageService {
 				date_preset: null,
 				units: null,
 				interval: null,
-				type: {balance_sheet: null, mints: null, melts: null, swaps: null, fee_revenue: null, proofs: null, promises: null},
+				type: {balance_sheet: null, mints: null, melts: null, swaps: null, fee_revenue: null, ecash: null},
 				tertiary_nav: null,
 				oracle_used: null,
 			};
