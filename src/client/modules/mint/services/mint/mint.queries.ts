@@ -180,6 +180,7 @@ query MintAnalyticsProofs($units: [MintUnit!], $date_start: UnixTimestamp, $date
 		unit
 		amount
 		date
+		count
 	}
 }`;
 
@@ -189,6 +190,7 @@ query MintAnalyticsPromises($units: [MintUnit!], $date_start: UnixTimestamp, $da
 		unit
 		amount
 		date
+		count
 	}
 }`;
 

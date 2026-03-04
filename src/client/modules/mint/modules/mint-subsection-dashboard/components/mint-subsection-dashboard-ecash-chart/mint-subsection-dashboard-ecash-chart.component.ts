@@ -11,7 +11,7 @@ import {
 	groupAnalyticsByUnit,
 	prependData,
 	getDataKeyedByTimestamp,
-	getAmountData,
+	getCountData,
 	getAllPossibleTimestamps,
 	getTimeInterval,
 } from '@client/modules/chart/helpers/mint-chart-data.helpers';
@@ -198,8 +198,8 @@ export class MintSubsectionDashboardEcashChartComponent implements OnDestroy, On
 
 			// Proofs dataset
 			if (proofs_by_unit[unit]) {
-				const data_keyed = getDataKeyedByTimestamp(proofs_by_unit[unit], 'amount');
-				const chart_data = getAmountData(timestamp_range, data_keyed, unit, cumulative);
+				const data_keyed = getDataKeyedByTimestamp(proofs_by_unit[unit], 'count');
+				const chart_data = getCountData(timestamp_range, data_keyed, cumulative);
 				datasets.push(
 					is_line
 						? this.buildLineTotalsDataset(chart_data, unit, 'proof', color, muted_color)
@@ -209,8 +209,8 @@ export class MintSubsectionDashboardEcashChartComponent implements OnDestroy, On
 
 			// Promises dataset
 			if (promises_by_unit[unit]) {
-				const data_keyed = getDataKeyedByTimestamp(promises_by_unit[unit], 'amount');
-				const chart_data = getAmountData(timestamp_range, data_keyed, unit, cumulative);
+				const data_keyed = getDataKeyedByTimestamp(promises_by_unit[unit], 'count');
+				const chart_data = getCountData(timestamp_range, data_keyed, cumulative);
 				datasets.push(
 					is_line
 						? this.buildLinePromiseDataset(chart_data, unit, color, muted_color)

@@ -79,14 +79,14 @@ export class MintAnalyticsService {
 		return this.getMetricAnalytics(tag, args, [MintAnalyticsMetric.fees_amount]);
 	}
 
-	/** Gets proof (redeemed) analytics */
+	/** Gets proof (redeemed) count analytics */
 	async getMintAnalyticsProofs(tag: string, args: MintAnalyticsApiArgs): Promise<OrchardMintAnalytics[]> {
-		return this.getMetricAnalytics(tag, args, [MintAnalyticsMetric.redeemed_amount]);
+		return this.getMetricAnalytics(tag, args, [MintAnalyticsMetric.redeemed_amount], true);
 	}
 
-	/** Gets promise (issued) analytics */
+	/** Gets promise (issued) count analytics */
 	async getMintAnalyticsPromises(tag: string, args: MintAnalyticsApiArgs): Promise<OrchardMintAnalytics[]> {
-		return this.getMetricAnalytics(tag, args, [MintAnalyticsMetric.issued_amount]);
+		return this.getMetricAnalytics(tag, args, [MintAnalyticsMetric.issued_amount], true);
 	}
 
 	/** Gets keyset-level analytics */
@@ -128,6 +128,7 @@ export class MintAnalyticsService {
 		tag: string,
 		args: MintAnalyticsApiArgs,
 		metrics: MintAnalyticsMetric[],
+		include_count?: boolean,
 	): Promise<OrchardMintAnalytics[]> {
 		try {
 			const {interval, date_start, cached_end} = this.resolveQueryParams(args);
@@ -138,7 +139,7 @@ export class MintAnalyticsService {
 				units: args.units?.map((u) => String(u)),
 			});
 			const filtered = cached.filter((d) => d.amount !== '0');
-			return this.aggregateByInterval(filtered, interval, args.timezone, date_start);
+			return this.aggregateByInterval(filtered, interval, args.timezone, date_start, include_count);
 		} catch (error) {
 			throw this.handleError(tag, error);
 		}
@@ -162,13 +163,14 @@ export class MintAnalyticsService {
 		interval: AnalyticsInterval,
 		timezone?: string,
 		date_start?: number,
+		include_count?: boolean,
 	): OrchardMintAnalytics[] {
 		if (interval === AnalyticsInterval.hour) {
-			return data.map((d) => new OrchardMintAnalytics(d.unit, d.amount, d.date));
+			return data.map((d) => new OrchardMintAnalytics(d.unit, d.amount, d.date, include_count ? d.count : undefined));
 		}
 
 		const tz = timezone ?? 'UTC';
-		type Bucket = {unit: string; amount: bigint; date: number};
+		type Bucket = {unit: string; amount: bigint; date: number; count: number};
 
 		const buckets = data.reduce((acc, d) => {
 			const bucket_date = this.getBucketDate(d.date, interval, tz, date_start, data);
@@ -177,15 +179,16 @@ export class MintAnalyticsService {
 
 			if (existing) {
 				existing.amount += BigInt(d.amount);
+				existing.count += d.count;
 			} else {
-				acc.set(key, {unit: d.unit, amount: BigInt(d.amount), date: bucket_date});
+				acc.set(key, {unit: d.unit, amount: BigInt(d.amount), date: bucket_date, count: d.count});
 			}
 			return acc;
 		}, new Map<string, Bucket>());
 
 		return Array.from(buckets.values())
 			.sort((a, b) => a.date - b.date)
-			.map((b) => new OrchardMintAnalytics(b.unit, b.amount.toString(), b.date));
+			.map((b) => new OrchardMintAnalytics(b.unit, b.amount.toString(), b.date, include_count ? b.count : undefined));
 	}
 
 	/** Aggregates keyset-level data by interval */

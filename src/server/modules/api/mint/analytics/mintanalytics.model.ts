@@ -15,10 +15,14 @@ export class OrchardMintAnalytics {
 	@Field(() => UnixTimestamp)
 	date: number;
 
-	constructor(unit: string, amount: string, date: number) {
+	@Field(() => Int, {nullable: true})
+	count?: number;
+
+	constructor(unit: string, amount: string, date: number, count?: number) {
 		this.unit = unit;
 		this.amount = amount;
 		this.date = date;
+		this.count = count;
 	}
 }
 

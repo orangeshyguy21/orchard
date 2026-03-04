@@ -4,11 +4,13 @@ export class MintAnalytic implements OrchardMintAnalytics {
 	unit: MintUnit;
 	amount: string;
 	date: number;
+	count?: number | null;
 
 	constructor(oma: OrchardMintAnalytics) {
 		this.unit = oma.unit;
 		this.amount = oma.amount;
 		this.date = oma.date;
+		this.count = oma.count;
 	}
 }
 

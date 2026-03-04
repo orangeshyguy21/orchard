@@ -51,6 +51,9 @@ export function prependData(analytics: AnalyticsGroup, preceding_data: MintAnaly
 			analytics_for_unit.unshift(preceding_item);
 		} else {
 			matching_datapoint.amount = String(BigInt(matching_datapoint.amount) + BigInt(preceding_item.amount));
+			if (matching_datapoint.count != null && preceding_item.count != null) {
+				matching_datapoint.count = matching_datapoint.count + preceding_item.count;
+			}
 		}
 	}
 	return analytics;
@@ -107,6 +110,23 @@ export function getAmountData(
 		return {
 			x: timestamp * 1000,
 			y: cumulative ? running_sum : LocalAmountPipe.getConvertedAmount(unit, val),
+		};
+	});
+}
+
+/** Converts keyed count data into chart point format without unit conversion */
+export function getCountData(
+	unique_timestamps: number[],
+	data_keyed_by_timestamp: Record<number, number>,
+	cumulative: boolean,
+): {x: number; y: number}[] {
+	let running_sum = 0;
+	return unique_timestamps.map((timestamp) => {
+		const val = data_keyed_by_timestamp[timestamp] || 0;
+		running_sum += val;
+		return {
+			x: timestamp * 1000,
+			y: cumulative ? running_sum : val,
 		};
 	});
 }
