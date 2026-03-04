@@ -188,87 +188,63 @@ export class MintSubsectionDashboardEcashChartComponent implements OnDestroy, On
 		cumulative: boolean,
 	): any[] {
 		const datasets: any[] = [];
-		const all_units = new Set([...Object.keys(proofs_by_unit), ...Object.keys(promises_by_unit)]);
+		const all_units = [...new Set([...Object.keys(proofs_by_unit), ...Object.keys(promises_by_unit)])];
 		const is_line = cumulative;
 
+		// Promises (blind sigs) first — they sit at the bottom of the stack
 		let unit_index = 0;
 		for (const unit of all_units) {
-			const color = this.chartService.getAssetColor(unit, unit_index);
-			const muted_color = this.chartService.getMutedColor(color.border);
-
-			// Proofs dataset
-			if (proofs_by_unit[unit]) {
-				const data_keyed = getDataKeyedByTimestamp(proofs_by_unit[unit], 'count');
-				const chart_data = getCountData(timestamp_range, data_keyed, cumulative);
-				datasets.push(
-					is_line
-						? this.buildLineTotalsDataset(chart_data, unit, 'proof', color, muted_color)
-						: this.buildBarVolumeDataset(chart_data, unit, 'proof', color),
-				);
-			}
-
-			// Promises dataset
 			if (promises_by_unit[unit]) {
+				const color = this.chartService.getAssetColor(unit, unit_index);
+				const muted_color = this.chartService.getMutedColor(color.border);
 				const data_keyed = getDataKeyedByTimestamp(promises_by_unit[unit], 'count');
 				const chart_data = getCountData(timestamp_range, data_keyed, cumulative);
+				const fill: string | boolean = datasets.length === 0 ? 'origin' : '-1';
 				datasets.push(
 					is_line
-						? this.buildLinePromiseDataset(chart_data, unit, color, muted_color)
+						? this.buildLinePromiseDataset(chart_data, unit, color, muted_color, fill)
 						: this.buildBarPromiseDataset(chart_data, unit, color),
 				);
 			}
+			unit_index++;
+		}
 
+		// Proofs second — they sit on top of the stack
+		unit_index = 0;
+		for (const unit of all_units) {
+			if (proofs_by_unit[unit]) {
+				const color = this.chartService.getAssetColor(unit, unit_index);
+				const muted_color = this.chartService.getMutedColor(color.border);
+				const data_keyed = getDataKeyedByTimestamp(proofs_by_unit[unit], 'count');
+				const chart_data = getCountData(timestamp_range, data_keyed, cumulative);
+				const fill: string | boolean = datasets.length === 0 ? 'origin' : '-1';
+				datasets.push(
+					is_line
+						? this.buildLineTotalsDataset(chart_data, unit, 'proof', color, muted_color, fill)
+						: this.buildBarVolumeDataset(chart_data, unit, 'proof', color),
+				);
+			}
 			unit_index++;
 		}
 
 		return datasets;
 	}
 
-	/** Builds a solid area line dataset for proofs (totals mode) */
+	/** Builds a dashed area line dataset for proofs (totals mode) */
 	private buildLineTotalsDataset(
 		data: {x: number; y: number}[],
 		unit: string,
 		type: string,
 		color: {bg: string; border: string},
 		muted_color: string,
+		fill: string | boolean,
 	): any {
 		return {
 			data,
 			label: unit.toUpperCase(),
 			_type: type,
 			_unit: unit,
-			stack: unit,
-			backgroundColor: (context: any) => this.chartService.createAreaGradient(context, color.border),
-			borderColor: muted_color,
-			borderWidth: 2,
-			borderRadius: 0,
-			pointBackgroundColor: muted_color,
-			pointBorderColor: muted_color,
-			pointBorderWidth: 2,
-			pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
-			pointHoverBorderColor: color.border,
-			pointHoverBorderWidth: 3,
-			pointRadius: 0,
-			pointHoverRadius: 4,
-			fill: true,
-			tension: 0.4,
-			yAxisID: 'y',
-		};
-	}
-
-	/** Builds a dashed area line dataset for promises (totals mode) */
-	private buildLinePromiseDataset(
-		data: {x: number; y: number}[],
-		unit: string,
-		color: {bg: string; border: string},
-		muted_color: string,
-	): any {
-		return {
-			data,
-			label: unit.toUpperCase(),
-			_type: 'promise',
-			_unit: unit,
-			stack: unit,
+			stack: 'counts',
 			backgroundColor: (context: any) => this.chartService.createAreaGradient(context, color.border, 0.01, 0.1),
 			borderColor: muted_color,
 			borderWidth: 2,
@@ -282,7 +258,39 @@ export class MintSubsectionDashboardEcashChartComponent implements OnDestroy, On
 			pointHoverBorderWidth: 3,
 			pointRadius: 0,
 			pointHoverRadius: 4,
-			fill: true,
+			fill,
+			tension: 0.4,
+			yAxisID: 'y',
+		};
+	}
+
+	/** Builds a solid area line dataset for promises (totals mode) */
+	private buildLinePromiseDataset(
+		data: {x: number; y: number}[],
+		unit: string,
+		color: {bg: string; border: string},
+		muted_color: string,
+		fill: string | boolean,
+	): any {
+		return {
+			data,
+			label: unit.toUpperCase(),
+			_type: 'promise',
+			_unit: unit,
+			stack: 'counts',
+			backgroundColor: (context: any) => this.chartService.createAreaGradient(context, color.border),
+			borderColor: muted_color,
+			borderWidth: 2,
+			borderRadius: 0,
+			pointBackgroundColor: muted_color,
+			pointBorderColor: muted_color,
+			pointBorderWidth: 2,
+			pointHoverBackgroundColor: this.chartService.getPointHoverBackgroundColor(),
+			pointHoverBorderColor: color.border,
+			pointHoverBorderWidth: 3,
+			pointRadius: 0,
+			pointHoverRadius: 4,
+			fill,
 			tension: 0.4,
 			yAxisID: 'y',
 		};
@@ -295,7 +303,7 @@ export class MintSubsectionDashboardEcashChartComponent implements OnDestroy, On
 			label: unit.toUpperCase(),
 			_type: type,
 			_unit: unit,
-			stack: unit,
+			stack: 'counts',
 			backgroundColor: (context: any) => this.chartService.createAreaGradient(context, color.border),
 			borderColor: color.border,
 			borderWidth: 1,
@@ -311,7 +319,7 @@ export class MintSubsectionDashboardEcashChartComponent implements OnDestroy, On
 			label: unit.toUpperCase(),
 			_type: 'promise',
 			_unit: unit,
-			stack: unit,
+			stack: 'counts',
 			backgroundColor: this.chartService.createStripePattern(color.border),
 			borderColor: color.border,
 			borderWidth: 1,

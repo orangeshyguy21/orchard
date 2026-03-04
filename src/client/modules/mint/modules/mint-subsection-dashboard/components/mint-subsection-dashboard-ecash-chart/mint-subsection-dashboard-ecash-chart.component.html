@@ -1,11 +1,11 @@
 <div class="mint-ecash-chart-container">
 	@if (!device_mobile()) {
 		<div class="flex flex-justify-evenly flex-gap-1">
-			@if (proof_datasets().length > 0) {
+			@if (promise_datasets().length > 0) {
 				<div class="flex flex-items-center flex-gap-2">
-					<div class="font-weight-light font-size-xs">Proofs</div>
+					<div class="font-weight-light font-size-xs">Blind Signatures</div>
 					<div class="flex flex-items-center flex-justify-center flex-gap-1">
-						@for (dataset of proof_datasets(); track dataset.label) {
+						@for (dataset of promise_datasets(); track dataset.label) {
 							<div class="legend-item" (click)="toggleDataset(dataset)">
 								<div class="legend-item-visual default" [style.border-color]="dataset.borderColor"></div>
 								<div class="legend-item-label" [class.hidden-dataset]="hidden_datasets().has(dataset._index)">
@@ -16,11 +16,11 @@
 					</div>
 				</div>
 			}
-			@if (promise_datasets().length > 0) {
+			@if (proof_datasets().length > 0) {
 				<div class="flex flex-items-center flex-gap-2">
-					<div class="font-weight-light font-size-xs">Blind Signatures</div>
+					<div class="font-weight-light font-size-xs">Proofs</div>
 					<div class="flex flex-items-center flex-justify-center flex-gap-1">
-						@for (dataset of promise_datasets(); track dataset.label) {
+						@for (dataset of proof_datasets(); track dataset.label) {
 							<div class="legend-item" (click)="toggleDataset(dataset)">
 								<div class="legend-item-visual dashed" [style.border-color]="dataset.borderColor"></div>
 								<div class="legend-item-label" [class.hidden-dataset]="hidden_datasets().has(dataset._index)">
@@ -58,10 +58,10 @@
 <mat-menu #legend_menu="matMenu" yPosition="below">
 	<div class="flex flex-column flex-gap-1 p-1">
 		<div class="flex flex-column flex-gap-0-5">
-			<div class="font-weight-light font-size-xs">Proofs</div>
+			<div class="font-weight-light font-size-xs">Blind Signatures</div>
 			<div class="category-rule"></div>
 			<div class="flex flex-column flex-gap-1">
-				@for (dataset of proof_datasets(); track dataset.label) {
+				@for (dataset of promise_datasets(); track dataset.label) {
 					<div class="legend-item" (click)="toggleDataset(dataset)">
 						<div class="legend-item-visual default" [style.border-color]="dataset.borderColor"></div>
 						<div class="legend-item-label" [class.hidden-dataset]="hidden_datasets().has(dataset._index)">
@@ -72,10 +72,10 @@
 			</div>
 		</div>
 		<div class="flex flex-column flex-gap-0-5">
-			<div class="font-weight-light font-size-xs">Blind Signatures</div>
+			<div class="font-weight-light font-size-xs">Proofs</div>
 			<div class="category-rule"></div>
 			<div class="flex flex-column flex-gap-1">
-				@for (dataset of promise_datasets(); track dataset.label) {
+				@for (dataset of proof_datasets(); track dataset.label) {
 					<div class="legend-item" (click)="toggleDataset(dataset)">
 						<div class="legend-item-visual dashed" [style.border-color]="dataset.borderColor"></div>
 						<div class="legend-item-label" [class.hidden-dataset]="hidden_datasets().has(dataset._index)">
