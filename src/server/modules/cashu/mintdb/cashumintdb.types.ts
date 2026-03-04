@@ -117,12 +117,6 @@ export type CashuMintFee = {
 	time: number;
 };
 
-export type CashuMintKeysetCount = {
-	id: string;
-	proof_count: number;
-	promise_count: number;
-};
-
 export type CashuMintProof = {
 	amount: number;
 	keyset_id: string;

@@ -18,7 +18,6 @@ jest.mock('@server/modules/cashu/mintdb/cashumintdb.helpers', () => ({
 	getAnalyticsTimeGroupSql: jest.fn().mockReturnValue('TIME_GROUP'),
 	queryRows: jest.fn(),
 	queryRow: jest.fn().mockResolvedValue({count: 1}),
-	mergeKeysetCounts: jest.fn().mockReturnValue([]),
 	extractRequestString: jest.fn().mockImplementation((s: string) => s?.replace(/^.*:/, '')),
 }));
 import * as helpers from '@server/modules/cashu/mintdb/cashumintdb.helpers';
@@ -277,24 +276,6 @@ describe('CdkService', () => {
 		await cdkService.getMintCountPromiseGroups({} as any);
 		const promise_call = (helpers.queryRow as jest.Mock).mock.calls[(helpers.queryRow as jest.Mock).mock.calls.length - 1];
 		expect(promise_call[1]).toBe('SELECT 9) subquery;');
-	});
-
-	it('getMintKeysetCounts builds optional WHERE clause and queries both tables', async () => {
-		(helpers.getAnalyticsConditions as jest.Mock).mockReturnValueOnce({where_conditions: [], params: []});
-		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([]).mockResolvedValueOnce([]);
-		(helpers.mergeKeysetCounts as jest.Mock).mockReturnValueOnce([]);
-		await cdkService.getMintKeysetCounts({} as any);
-		const calls = (helpers.queryRows as jest.Mock).mock.calls;
-		expect(calls[calls.length - 2][1]).toContain('FROM proof');
-		expect(calls[calls.length - 1][1]).toContain('FROM blind_signature');
-
-		(helpers.getAnalyticsConditions as jest.Mock).mockReturnValueOnce({where_conditions: ['created_time > ?'], params: [1]});
-		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([]).mockResolvedValueOnce([]);
-		(helpers.mergeKeysetCounts as jest.Mock).mockReturnValueOnce([]);
-		await cdkService.getMintKeysetCounts({} as any, {date_start: 1} as any);
-		const last_calls = (helpers.queryRows as jest.Mock).mock.calls;
-		expect(last_calls[last_calls.length - 2][1]).toContain('WHERE created_time > ?');
-		expect(last_calls[last_calls.length - 1][1]).toContain('WHERE created_time > ?');
 	});
 
 	it('analytics methods map rows with created_time from stamp', async () => {

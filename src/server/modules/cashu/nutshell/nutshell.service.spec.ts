@@ -21,7 +21,6 @@ jest.mock('@server/modules/cashu/mintdb/cashumintdb.helpers', () => ({
 	convertDateToUnixTimestamp: jest.fn().mockImplementation((d: any) => (typeof d === 'number' ? d : 1)),
 	queryRows: jest.fn(),
 	queryRow: jest.fn().mockResolvedValue({count: 1}),
-	mergeKeysetCounts: jest.fn().mockReturnValue([]),
 }));
 import * as helpers from '@server/modules/cashu/mintdb/cashumintdb.helpers';
 
@@ -372,17 +371,6 @@ describe('NutshellService', () => {
 			throw new Error('fee');
 		});
 		await expect(nutshellService.getMintFees({} as any)).rejects.toThrow('fee');
-	});
-
-	it('getMintKeysetCounts builds WHERE when conditions exist and queries both tables', async () => {
-		(helpers.getAnalyticsConditions as jest.Mock).mockReturnValueOnce({where_conditions: ['unit = ?'], params: ['sat']});
-		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([]).mockResolvedValueOnce([]);
-		(helpers.mergeKeysetCounts as jest.Mock).mockReturnValueOnce([]);
-		await nutshellService.getMintKeysetCounts({type: 'sqlite'} as any, {units: ['sat']} as any);
-		const calls = (helpers.queryRows as jest.Mock).mock.calls;
-		expect(calls[calls.length - 2][1]).toContain('FROM proofs_used');
-		expect(calls[calls.length - 1][1]).toContain('FROM promises');
-		expect(calls[calls.length - 2][1]).toContain('WHERE unit = ?');
 	});
 
 	it('getMintAnalyticsBalances applies defaults and override to stamp, calls helpers', async () => {

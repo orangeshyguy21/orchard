@@ -59,8 +59,3 @@ export interface CashuMintAnalyticsArgs {
 	timezone?: TimezoneType;
 }
 
-export interface CashuMintKeysetCountsArgs {
-	date_start?: number;
-	date_end?: number;
-	id_keysets?: string[];
-}

@@ -2,7 +2,7 @@
 import {Field, Int, Float, ID, ObjectType} from '@nestjs/graphql';
 /* Application Dependencies */
 import {UnixTimestamp} from '@server/modules/graphql/scalars/unixtimestamp.scalar';
-import {CashuMintKeyset, CashuMintKeysetCount} from '@server/modules/cashu/mintdb/cashumintdb.types';
+import {CashuMintKeyset} from '@server/modules/cashu/mintdb/cashumintdb.types';
 import {MintUnit} from '@server/modules/cashu/cashu.enums';
 
 @ObjectType()
@@ -77,7 +77,7 @@ export class OrchardMintKeysetCount {
 	@Field(() => Int)
 	promise_count: number;
 
-	constructor(cashu_keyset_count: CashuMintKeysetCount) {
+	constructor(cashu_keyset_count: {id: string; proof_count: number; promise_count: number}) {
 		this.id = cashu_keyset_count.id;
 		this.proof_count = cashu_keyset_count.proof_count;
 		this.promise_count = cashu_keyset_count.promise_count;

@@ -24,7 +24,6 @@ import {
 	CashuMintSwap,
 	CashuMintCount,
 	CashuMintFee,
-	CashuMintKeysetCount,
 } from '@server/modules/cashu/mintdb/cashumintdb.types';
 import {
 	CashuMintAnalyticsArgs,
@@ -32,7 +31,6 @@ import {
 	CashuMintMeltQuotesArgs,
 	CashuMintProofsArgs,
 	CashuMintPromiseArgs,
-	CashuMintKeysetCountsArgs,
 	CashuMintSwapsArgs,
 } from '@server/modules/cashu/mintdb/cashumintdb.interfaces';
 import {
@@ -42,7 +40,6 @@ import {
 	getAnalyticsTimeGroupSql,
 	buildCountQuery,
 	convertDateToUnixTimestamp,
-	mergeKeysetCounts,
 	queryRows,
 	queryRow,
 } from '@server/modules/cashu/mintdb/cashumintdb.helpers';
@@ -641,26 +638,6 @@ export class NutshellService {
 		const sql = `SELECT * FROM balance_log ORDER BY time ASC LIMIT ?;`;
 		try {
 			return queryRows<CashuMintFee>(client, sql, [limit]);
-		} catch (err) {
-			throw err;
-		}
-	}
-
-	public async getMintKeysetCounts(client: CashuMintDatabase, args?: CashuMintKeysetCountsArgs): Promise<CashuMintKeysetCount[]> {
-		const {where_conditions, params} = getAnalyticsConditions({
-			args: args,
-			time_column: 'created',
-			db_type: client.type,
-		});
-		const where_clause = where_conditions.length > 0 ? `WHERE ${where_conditions.join(' AND ')}` : '';
-		const proof_sql = `SELECT id, COUNT(*) AS count FROM proofs_used ${where_clause} GROUP BY id;`;
-		const promise_sql = `SELECT id, COUNT(*) AS count FROM promises ${where_clause} GROUP BY id;`;
-		try {
-			const [proof_rows, promise_rows] = await Promise.all([
-				queryRows<{id: string; count: number}>(client, proof_sql, [...params]),
-				queryRows<{id: string; count: number}>(client, promise_sql, [...params]),
-			]);
-			return mergeKeysetCounts(proof_rows, promise_rows);
 		} catch (err) {
 			throw err;
 		}

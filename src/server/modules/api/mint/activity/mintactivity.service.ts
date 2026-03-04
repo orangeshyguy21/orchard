@@ -191,7 +191,7 @@ export class MintActivityService {
 			if (row.metric !== metric) continue;
 			const adjusted = row.date + tz_offset;
 			const key = Math.floor(adjusted / bucket_seconds) * bucket_seconds - tz_offset;
-			buckets.set(key, (buckets.get(key) ?? 0) + Number(BigInt(row.amount)));
+			buckets.set(key, (buckets.get(key) ?? 0) + Number(row.amount));
 		}
 
 		return Array.from(buckets.entries())
