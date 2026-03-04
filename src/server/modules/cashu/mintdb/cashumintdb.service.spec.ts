@@ -144,11 +144,6 @@ describe('CashuMintDatabaseService', () => {
 			['getMintCountMeltQuotes', 'getMintCountMeltQuotes'],
 			['getMintCountProofGroups', 'getMintCountProofGroups'],
 			['getMintCountPromiseGroups', 'getMintCountPromiseGroups'],
-			['getMintAnalyticsBalances', 'getMintAnalyticsBalances'],
-			['getMintAnalyticsMints', 'getMintAnalyticsMints'],
-			['getMintAnalyticsMelts', 'getMintAnalyticsMelts'],
-			['getMintAnalyticsSwaps', 'getMintAnalyticsSwaps'],
-			['getMintAnalyticsFees', 'getMintAnalyticsFees'],
 		];
 
 		// Nutshell
@@ -179,11 +174,6 @@ describe('CashuMintDatabaseService', () => {
 			['getMintCountMeltQuotes', 'getMintCountMeltQuotes'],
 			['getMintCountProofGroups', 'getMintCountProofGroups'],
 			['getMintCountPromiseGroups', 'getMintCountPromiseGroups'],
-			['getMintAnalyticsBalances', 'getMintAnalyticsBalances'],
-			['getMintAnalyticsMints', 'getMintAnalyticsMints'],
-			['getMintAnalyticsMelts', 'getMintAnalyticsMelts'],
-			['getMintAnalyticsSwaps', 'getMintAnalyticsSwaps'],
-			['getMintAnalyticsFees', 'getMintAnalyticsFees'],
 		];
 		cdk_map.forEach(([_, c_method]) => {
 			(cdkService[c_method as any] as any) = jest.fn().mockResolvedValue('cdk');
@@ -195,15 +185,6 @@ describe('CashuMintDatabaseService', () => {
 			expect(cdkService[c_method as any]).toHaveBeenCalled();
 			expect(result).toBe('cdk');
 		}
-	});
-
-	it('getMintAnalyticsFees delegates to cdkService for cdk', async () => {
-		(cdkService.getMintAnalyticsFees as any) = jest.fn().mockResolvedValue([{value: 1}]);
-		configService.get.mockImplementation((k: string) => (k === 'cashu.type' ? 'cdk' : 'x'));
-		await cashuMintDatabaseService.onModuleInit();
-		const out = await cashuMintDatabaseService.getMintAnalyticsFees({} as any);
-		expect(cdkService.getMintAnalyticsFees).toHaveBeenCalled();
-		expect(out).toEqual([{value: 1}]);
 	});
 
 	describe('backups and restores', () => {

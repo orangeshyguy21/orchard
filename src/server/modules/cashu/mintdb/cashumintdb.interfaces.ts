@@ -1,9 +1,5 @@
-/* Application Dependencies */
-import {TimezoneType} from '@server/modules/graphql/scalars/timezone.scalar';
 /* Native Dependencies */
 import {MintUnit, MintQuoteState, MeltQuoteState, MintProofState} from '@server/modules/cashu/cashu.enums';
-/* Local Dependencies */
-import {MintAnalyticsInterval} from './cashumintdb.enums';
 
 export interface CashuMintMintQuotesArgs {
 	date_start?: number;
@@ -51,11 +47,4 @@ export interface CashuMintProofsArgs {
 	page_size?: number;
 }
 
-export interface CashuMintAnalyticsArgs {
-	date_start?: number;
-	date_end?: number;
-	units?: MintUnit[];
-	interval?: MintAnalyticsInterval;
-	timezone?: TimezoneType;
-}
 

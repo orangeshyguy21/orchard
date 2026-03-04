@@ -16,17 +16,3 @@ export type CdkMintPromise = {
 	amounts: string;
 };
 
-export type CdkMintAnalytics = {
-	time_group: string;
-	unit: MintUnit;
-	amount: number;
-	operation_count: number;
-	min_created_time: number;
-};
-
-export type CdkMintKeysetsAnalytics = {
-	time_group: string;
-	keyset_id: string;
-	amount: number;
-	min_created_time: number;
-};

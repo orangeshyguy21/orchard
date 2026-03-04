@@ -13,9 +13,6 @@ jest.mock('@server/modules/cashu/mintdb/cashumintdb.helpers', () => ({
 	__esModule: true,
 	buildDynamicQuery: jest.fn().mockReturnValue({sql: 'SQL', params: []}),
 	buildCountQuery: jest.fn().mockReturnValue({sql: 'COUNTSQL', params: []}),
-	getAnalyticsTimeGroupStamp: jest.fn().mockReturnValue(1234567890),
-	getAnalyticsConditions: jest.fn().mockReturnValue({where_conditions: [], params: []}),
-	getAnalyticsTimeGroupSql: jest.fn().mockReturnValue('TIME_GROUP'),
 	queryRows: jest.fn(),
 	queryRow: jest.fn().mockResolvedValue({count: 1}),
 	extractRequestString: jest.fn().mockImplementation((s: string) => s?.replace(/^.*:/, '')),
@@ -276,24 +273,6 @@ describe('CdkService', () => {
 		await cdkService.getMintCountPromiseGroups({} as any);
 		const promise_call = (helpers.queryRow as jest.Mock).mock.calls[(helpers.queryRow as jest.Mock).mock.calls.length - 1];
 		expect(promise_call[1]).toBe('SELECT 9) subquery;');
-	});
-
-	it('analytics methods map rows with created_time from stamp', async () => {
-		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
-			{unit: 'sat', amount: 10, operation_count: 2, time_group: '2024-01-01', min_created_time: 100},
-		]);
-		const mints = await cdkService.getMintAnalyticsMints({type: 'sqlite'} as any);
-		expect(mints[0]).toMatchObject({unit: 'sat', amount: 10, operation_count: 2, created_time: 1234567890});
-	});
-
-	it('getMintAnalyticsSwaps appends quote_id IS NULL to WHERE', async () => {
-		(helpers.getAnalyticsConditions as jest.Mock).mockReturnValueOnce({where_conditions: ['unit = ?'], params: ['sat']});
-		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
-			{unit: 'sat', amount: 1, operation_count: 1, time_group: '2024-01-01', min_created_time: 1},
-		]);
-		await cdkService.getMintAnalyticsSwaps({type: 'sqlite'} as any, {units: ['sat']} as any);
-		const sql = (helpers.queryRows as jest.Mock).mock.calls[(helpers.queryRows as jest.Mock).mock.calls.length - 1][1];
-		expect(sql).toContain('quote_id IS NULL');
 	});
 
 	it('balances and keysets pass-through queries', async () => {

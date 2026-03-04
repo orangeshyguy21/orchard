@@ -6,7 +6,6 @@ import {Logger} from '@nestjs/common';
 /* Application Dependencies */
 import {CredentialService} from '@server/modules/credential/credential.service';
 import {MintDatabaseType} from '@server/modules/cashu/mintdb/cashumintdb.enums';
-import {MintAnalyticsInterval} from '@server/modules/cashu/mintdb/cashumintdb.enums';
 /* Local Dependencies */
 import {NutshellService} from './nutshell.service';
 import * as grpc from '@grpc/grpc-js';
@@ -15,9 +14,6 @@ jest.mock('@server/modules/cashu/mintdb/cashumintdb.helpers', () => ({
 	__esModule: true,
 	buildDynamicQuery: jest.fn().mockReturnValue({sql: 'SQL', params: []}),
 	buildCountQuery: jest.fn().mockReturnValue({sql: 'COUNTSQL', params: []}),
-	getAnalyticsTimeGroupStamp: jest.fn().mockReturnValue(1234567890),
-	getAnalyticsConditions: jest.fn().mockReturnValue({where_conditions: [], params: []}),
-	getAnalyticsTimeGroupSql: jest.fn().mockReturnValue('TIME_GROUP'),
 	convertDateToUnixTimestamp: jest.fn().mockImplementation((d: any) => (typeof d === 'number' ? d : 1)),
 	queryRows: jest.fn(),
 	queryRow: jest.fn().mockResolvedValue({count: 1}),
@@ -373,46 +369,4 @@ describe('NutshellService', () => {
 		await expect(nutshellService.getMintFees({} as any)).rejects.toThrow('fee');
 	});
 
-	it('getMintAnalyticsBalances applies defaults and override to stamp, calls helpers', async () => {
-		(helpers.getAnalyticsConditions as jest.Mock).mockReturnValue({where_conditions: [], params: []});
-		(helpers.getAnalyticsTimeGroupSql as jest.Mock).mockReturnValue('TG');
-		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
-			{unit: 'sat', amount: 2, operation_count: 3, time_group: '2024-01-01', min_created_time: 100},
-		]);
-		const out_default = await nutshellService.getMintAnalyticsBalances({type: 'sqlite'} as any, undefined as any);
-		expect(out_default[0]).toMatchObject({unit: 'sat', amount: 2, operation_count: 3, created_time: 1234567890});
-		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
-			{unit: 'sat', amount: 5, operation_count: 7, time_group: '2024-02-01', min_created_time: 200},
-		]);
-		await nutshellService.getMintAnalyticsBalances({type: 'sqlite'} as any, {interval: 'month', timezone: 'America/New_York'} as any);
-		expect(helpers.getAnalyticsTimeGroupSql).toHaveBeenLastCalledWith({
-			interval: MintAnalyticsInterval.month,
-			timezone: 'America/New_York',
-			time_column: 'created',
-			group_by: 'unit',
-			db_type: MintDatabaseType.sqlite,
-		});
-	});
-
-	it('getMintAnalyticsSwaps injects melt_quote IS NULL and stamps output', async () => {
-		(helpers.getAnalyticsConditions as jest.Mock).mockReturnValue({where_conditions: [], params: []});
-		(helpers.getAnalyticsTimeGroupSql as jest.Mock).mockReturnValue('TG');
-		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
-			{unit: 'sat', amount: 10, operation_count: 1, time_group: '2024-01', min_created_time: 100},
-		]);
-		await nutshellService.getMintAnalyticsSwaps({type: 'sqlite'} as any, {} as any);
-		const call = (helpers.queryRows as jest.Mock).mock.calls.pop();
-		expect(call[1]).toContain('melt_quote IS NULL');
-	});
-
-	it('getMintAnalyticsFees uses custom interval fee calculation and stamps output', async () => {
-		(helpers.getAnalyticsConditions as jest.Mock).mockReturnValue({where_conditions: [], params: []});
-		(helpers.getAnalyticsTimeGroupSql as jest.Mock).mockReturnValue('TG');
-		(helpers.queryRows as jest.Mock).mockResolvedValueOnce([
-			{unit: 'sat', amount: 1, operation_count: 1, time_group: '2024-01', min_created_time: 100},
-		]);
-		await nutshellService.getMintAnalyticsFees({type: 'sqlite'} as any, {interval: 'custom'} as any);
-		const call = (helpers.queryRows as jest.Mock).mock.calls.pop();
-		expect(call[1]).toContain('MAX(keyset_fees_paid) AS amount');
-	});
 });
