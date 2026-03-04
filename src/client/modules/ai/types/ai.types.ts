@@ -8,7 +8,7 @@ import {
 	OrchardAiAgent,
 	AiFunctionName,
 	MintUnit,
-	MintAnalyticsInterval,
+	AnalyticsInterval,
 	OrchardAiChatStream,
 } from '@shared/generated.types';
 
@@ -39,7 +39,7 @@ export type AiFunction =
 	| AiFunctionUpdateCrewUserActive
 	| AiFunctionUpdateDateRange
 	| AiFunctionUpdateMintAnalyticsUnits
-	| AiFunctionUpdateMintAnalyticsInterval
+	| AiFunctionUpdateAnalyticsInterval
 	| AiFunctionUpdateMintAnalyticsType
 	| AiFunctionUpdateMintName
 	| AiFunctionUpdateMintDescription
@@ -141,10 +141,10 @@ export type AiFunctionUpdateMintAnalyticsUnits = {
 	};
 };
 
-export type AiFunctionUpdateMintAnalyticsInterval = {
+export type AiFunctionUpdateAnalyticsInterval = {
 	name: AiFunctionName.MintAnalyticsIntervalUpdate;
 	arguments: {
-		interval: MintAnalyticsInterval;
+		interval: AnalyticsInterval;
 	};
 };
 

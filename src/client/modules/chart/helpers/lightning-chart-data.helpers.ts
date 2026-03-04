@@ -1,9 +1,7 @@
 /* Application Dependencies */
 import {LightningAnalytic} from '@client/modules/lightning/classes/lightning-analytic.class';
-/* Vendor Dependencies */
-import {DateTime, DateTimeUnit} from 'luxon';
 /* Shared Dependencies */
-import {LightningAnalyticsMetric, LightningAnalyticsInterval} from '@shared/generated.types';
+import {LightningAnalyticsMetric} from '@shared/generated.types';
 
 type LightningAnalyticsGroup = Record<number, LightningAnalytic[]>;
 
@@ -107,63 +105,3 @@ export function getInitialOutboundMsat(analytics_pre: LightningAnalytic[]): numb
 	return calculateOutboundLiquidity(msat_analytics);
 }
 
-/**
- * Gets the time interval unit for a given lightning analytics interval
- */
-export function getLightningTimeInterval(interval: LightningAnalyticsInterval): DateTimeUnit {
-	if (!interval) return 'day';
-	if (interval === LightningAnalyticsInterval.Week) return 'week';
-	if (interval === LightningAnalyticsInterval.Month) return 'month';
-	if (interval === LightningAnalyticsInterval.Hour) return 'hour';
-	return 'day';
-}
-
-/**
- * Gets all possible timestamps between start and end for the given interval
- */
-export function getLightningTimestamps(first_timestamp: number, last_timestamp: number, interval: LightningAnalyticsInterval): number[] {
-	const all_timestamps: number[] = [];
-	const time_unit = getLightningTimeInterval(interval);
-	let current_time = DateTime.fromSeconds(first_timestamp).startOf(time_unit).toSeconds();
-
-	while (current_time <= last_timestamp) {
-		all_timestamps.push(current_time);
-		current_time = getNextLightningTimestamp(current_time, interval);
-	}
-
-	const last_valid = DateTime.fromSeconds(last_timestamp).startOf(time_unit).toSeconds();
-	if (!all_timestamps.includes(last_valid)) {
-		all_timestamps.push(last_valid);
-	}
-
-	return all_timestamps;
-}
-
-/**
- * Gets the next timestamp based on interval
- */
-function getNextLightningTimestamp(timestamp: number, interval: LightningAnalyticsInterval): number {
-	if (interval === LightningAnalyticsInterval.Hour) return DateTime.fromSeconds(timestamp).plus({hours: 1}).toSeconds();
-	if (interval === LightningAnalyticsInterval.Day) return DateTime.fromSeconds(timestamp).plus({days: 1}).toSeconds();
-	if (interval === LightningAnalyticsInterval.Week) return DateTime.fromSeconds(timestamp).plus({weeks: 1}).toSeconds();
-	if (interval === LightningAnalyticsInterval.Month) return DateTime.fromSeconds(timestamp).plus({months: 1}).toSeconds();
-	return DateTime.fromSeconds(timestamp).plus({days: 1}).toSeconds();
-}
-
-/**
- * Corrects the last data point with the real-time lightning balance if it's at the current period start.
- * The analytics data for the current period may be incomplete, so we use the live balance instead.
- */
-export function correctLastPointWithLiveBalance(
-	data: {x: number; y: number}[],
-	live_balance_sat: number | null,
-	interval: LightningAnalyticsInterval,
-): {x: number; y: number}[] {
-	if (data.length === 0 || live_balance_sat === null) return data;
-	const last_point = data[data.length - 1];
-	const last_timestamp_sec = last_point.x / 1000;
-	const time_unit = getLightningTimeInterval(interval);
-	const current_period_start = DateTime.now().startOf(time_unit).toSeconds();
-	if (last_timestamp_sec !== current_period_start) return data;
-	return [...data.slice(0, -1), {x: last_point.x, y: live_balance_sat}];
-}

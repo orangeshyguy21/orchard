@@ -35,7 +35,7 @@ export class LocalStorageService {
 		/* Bitcoin Oracle Settings */
 		BITCOIN_ORACLE_KEY: 'v0.bitcoin.oracle.settings',
 		/* Mint Settings */
-		MINT_DASHBOARD_KEY: 'v2.mint.dashboard.settings',
+		MINT_DASHBOARD_KEY: 'v3.mint.dashboard.settings',
 		MINT_CONFIG_KEY: 'v0.mint.config.settings',
 		MINT_KEYSETS_KEY: 'v1.mint.keysets.settings',
 		MINT_DATABASE_KEY: 'v1.mint.database.settings',
@@ -121,7 +121,7 @@ export class LocalStorageService {
 				date_preset: null,
 				units: null,
 				interval: null,
-				type: {balance_sheet: null, mints: null, melts: null, swaps: null, fee_revenue: null},
+				type: {balance_sheet: null, mints: null, melts: null, swaps: null, fee_revenue: null, proofs: null, promises: null},
 				tertiary_nav: null,
 				oracle_used: null,
 			};

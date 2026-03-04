@@ -130,52 +130,74 @@ export const MINT_KEYSETS_QUERY = `{
 }`;
 
 export const MINT_ANALYTICS_BALANCES_QUERY = `
-query MintAnalyticsBalances($units: [MintUnit!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $interval: MintAnalyticsInterval, $timezone: Timezone) {
+query MintAnalyticsBalances($units: [MintUnit!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $interval: AnalyticsInterval, $timezone: Timezone) {
 	mint_analytics_balances(units: $units, date_start: $date_start, date_end: $date_end, interval: $interval, timezone: $timezone) {
 		unit
 		amount
-		created_time
-		operation_count
+		date
 	}
 }`;
 
 export const MINT_ANALYTICS_MINTS_QUERY = `
-query MintAnalyticsMints($units: [MintUnit!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $interval: MintAnalyticsInterval, $timezone: Timezone) {
+query MintAnalyticsMints($units: [MintUnit!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $interval: AnalyticsInterval, $timezone: Timezone) {
 	mint_analytics_mints(units: $units, date_start: $date_start, date_end: $date_end, interval: $interval, timezone: $timezone) {
 		unit
 		amount
-		created_time
-		operation_count
+		date
 	}
 }`;
 
 export const MINT_ANALYTICS_MELTS_QUERY = `
-query MintAnalyticsMelts($units: [MintUnit!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $interval: MintAnalyticsInterval, $timezone: Timezone) {
+query MintAnalyticsMelts($units: [MintUnit!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $interval: AnalyticsInterval, $timezone: Timezone) {
 	mint_analytics_melts(units: $units, date_start: $date_start, date_end: $date_end, interval: $interval, timezone: $timezone) {
 		unit
 		amount
-		created_time
-		operation_count
+		date
 	}
 }`;
 
 export const MINT_ANALYTICS_SWAPS_QUERY = `
-query MintAnalyticsSwaps($units: [MintUnit!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $interval: MintAnalyticsInterval, $timezone: Timezone) {
+query MintAnalyticsSwaps($units: [MintUnit!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $interval: AnalyticsInterval, $timezone: Timezone) {
 	mint_analytics_swaps(units: $units, date_start: $date_start, date_end: $date_end, interval: $interval, timezone: $timezone) {
 		unit
 		amount
-		created_time
-		operation_count
+		date
 	}
 }`;
 
 export const MINT_ANALYTICS_FEES_QUERY = `
-query MintAnalyticsFees($units: [MintUnit!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $interval: MintAnalyticsInterval, $timezone: Timezone) {
+query MintAnalyticsFees($units: [MintUnit!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $interval: AnalyticsInterval, $timezone: Timezone) {
 	mint_analytics_fees(units: $units, date_start: $date_start, date_end: $date_end, interval: $interval, timezone: $timezone) {
 		unit
 		amount
-		created_time
-		operation_count
+		date
+	}
+}`;
+
+export const MINT_ANALYTICS_PROOFS_QUERY = `
+query MintAnalyticsProofs($units: [MintUnit!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $interval: AnalyticsInterval, $timezone: Timezone) {
+	mint_analytics_proofs(units: $units, date_start: $date_start, date_end: $date_end, interval: $interval, timezone: $timezone) {
+		unit
+		amount
+		date
+	}
+}`;
+
+export const MINT_ANALYTICS_PROMISES_QUERY = `
+query MintAnalyticsPromises($units: [MintUnit!], $date_start: UnixTimestamp, $date_end: UnixTimestamp, $interval: AnalyticsInterval, $timezone: Timezone) {
+	mint_analytics_promises(units: $units, date_start: $date_start, date_end: $date_end, interval: $interval, timezone: $timezone) {
+		unit
+		amount
+		date
+	}
+}`;
+
+export const MINT_ANALYTICS_BACKFILL_STATUS_QUERY = `{
+	mint_analytics_backfill_status {
+		is_running
+		started_at
+		errors
+		hours_completed
 	}
 }`;
 
@@ -207,10 +229,10 @@ query MintMeltQuotes($units: [MintUnit!], $states: [MeltQuoteState!], $date_star
 }`;
 
 export const MINT_ANALYTICS_KEYSETS_QUERY = `
-query MintAnalyticsKeysets($date_start: UnixTimestamp, $date_end: UnixTimestamp, $interval: MintAnalyticsInterval, $timezone: Timezone) {
+query MintAnalyticsKeysets($date_start: UnixTimestamp, $date_end: UnixTimestamp, $interval: AnalyticsInterval, $timezone: Timezone) {
 	mint_analytics_keysets(date_start: $date_start, date_end: $date_end, interval: $interval, timezone: $timezone) {
 		amount
-		created_time
+		date
 		keyset_id
 	}
 }`;

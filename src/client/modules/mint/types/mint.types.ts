@@ -12,7 +12,8 @@ import {
 	OrchardMintKeysetsAnalytics,
 	OrchardMintActivitySummary,
 	MintUnit,
-	MintAnalyticsInterval,
+	AnalyticsInterval,
+	OrchardMintAnalyticsBackfillStatus,
 	MintQuoteState,
 	MeltQuoteState,
 	MintProofState,
@@ -95,6 +96,18 @@ export type MintMeltQuotesResponse = {
 	mint_melt_quotes: OrchardMintMeltQuote[];
 };
 
+export type MintAnalyticsProofsResponse = {
+	mint_analytics_proofs: OrchardMintAnalytics[];
+};
+
+export type MintAnalyticsPromisesResponse = {
+	mint_analytics_promises: OrchardMintAnalytics[];
+};
+
+export type MintAnalyticsBackfillStatusResponse = {
+	mint_analytics_backfill_status: OrchardMintAnalyticsBackfillStatus;
+};
+
 export type MintAnalyticsKeysetsResponse = {
 	mint_analytics_keysets: OrchardMintKeysetsAnalytics[];
 };
@@ -107,7 +120,7 @@ export type MintAnalyticsArgs = {
 	units?: MintUnit[];
 	date_start?: number;
 	date_end?: number;
-	interval?: MintAnalyticsInterval;
+	interval?: AnalyticsInterval;
 	timezone?: string;
 };
 

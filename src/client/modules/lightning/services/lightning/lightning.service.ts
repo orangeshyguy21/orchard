@@ -29,7 +29,7 @@ import {
 	LightningAnalyticsArgs,
 } from '@client/modules/lightning/types/lightning.types';
 /* Shared Dependencies */
-import {LightningAnalyticsInterval} from '@shared/generated.types';
+import {AnalyticsInterval} from '@shared/generated.types';
 /* Local Dependencies */
 import {
 	LIGHTNING_INFO_QUERY,
@@ -264,7 +264,7 @@ export class LightningService {
 	}
 
 	public loadLightningAnalytics(args: LightningAnalyticsArgs): Observable<LightningAnalytic[]> {
-		if (args.interval === LightningAnalyticsInterval.Custom) {
+		if (args.interval === AnalyticsInterval.Custom) {
 			return this.loadGenericLightningAnalytics(args, this.lightning_analytics_pre_subject, this.CACHE_KEYS.LIGHTNING_ANALYTICS_PRE);
 		}
 		return this.loadGenericLightningAnalytics(args, this.lightning_analytics_subject, this.CACHE_KEYS.LIGHTNING_ANALYTICS);

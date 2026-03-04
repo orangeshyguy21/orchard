@@ -14,7 +14,7 @@ import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Native Dependencies */
 import {MintKeyset} from '@client/modules/mint/classes/mint-keyset.class';
 /* Shared Dependencies */
-import {MintAnalyticsInterval, MintUnit} from '@shared/generated.types';
+import {AnalyticsInterval, MintUnit} from '@shared/generated.types';
 
 type UnitOption = {
 	label: string;
@@ -22,7 +22,7 @@ type UnitOption = {
 };
 type IntervalOption = {
 	label: string;
-	value: MintAnalyticsInterval;
+	value: AnalyticsInterval;
 };
 
 @Component({
@@ -38,7 +38,7 @@ export class MintSubsectionDashboardControlComponent {
 	public date_end = input<number>();
 	public date_preset = input<DateRangePreset | null>(null);
 	public units = input<MintUnit[]>();
-	public interval = input<MintAnalyticsInterval>();
+	public interval = input<AnalyticsInterval>();
 	public keysets = input.required<MintKeyset[]>();
 	public loading = input.required<boolean>();
 	public mint_genesis_time = input.required<number>();
@@ -48,7 +48,7 @@ export class MintSubsectionDashboardControlComponent {
 	public dateChange = output<number[]>();
 	public presetChange = output<DateRangePreset>();
 	public unitsChange = output<MintUnit[]>();
-	public intervalChange = output<MintAnalyticsInterval>();
+	public intervalChange = output<AnalyticsInterval>();
 	public oracleUsedChange = output<boolean>();
 
 	public filter_count = signal(0);
@@ -59,15 +59,16 @@ export class MintSubsectionDashboardControlComponent {
 			date_end: new FormControl<DateTime | null>(null, [Validators.required]),
 		}),
 		units: new FormArray<FormControl<boolean>>([]),
-		interval: new FormControl<MintAnalyticsInterval | null>(null, [Validators.required]),
+		interval: new FormControl<AnalyticsInterval | null>(null, [Validators.required]),
 		oracle_used: new FormControl<boolean | null>(null, [Validators.required]),
 	});
 
 	public unit_options!: UnitOption[];
 	public interval_options: IntervalOption[] = [
-		{label: 'Day', value: MintAnalyticsInterval.Day},
-		{label: 'Week', value: MintAnalyticsInterval.Week},
-		{label: 'Month', value: MintAnalyticsInterval.Month},
+		{label: 'Hour', value: AnalyticsInterval.Hour},
+		{label: 'Day', value: AnalyticsInterval.Day},
+		{label: 'Week', value: AnalyticsInterval.Week},
+		{label: 'Month', value: AnalyticsInterval.Month},
 	];
 	public genesis_class: MatCalendarCellClassFunction<DateTime> = (cellDate, view) => {
 		if (view !== 'month') return '';

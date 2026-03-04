@@ -52,7 +52,7 @@ import {MintAnalytic} from '@client/modules/mint/classes/mint-analytic.class';
 import {MintActivitySummary} from '@client/modules/mint/classes/mint-activity-summary.class';
 import {ChartType} from '@client/modules/mint/enums/chart-type.enum';
 /* Shared Dependencies */
-import {AiFunctionName, MintAnalyticsInterval, MintActivityPeriod, MintUnit, LightningAnalyticsInterval} from '@shared/generated.types';
+import {AiFunctionName, AnalyticsInterval, MintActivityPeriod, MintUnit} from '@shared/generated.types';
 
 enum NavTertiary {
 	BalanceSheet = 'nav1',
@@ -60,9 +60,11 @@ enum NavTertiary {
 	Melts = 'nav3',
 	Swaps = 'nav4',
 	FeeRevenue = 'nav5',
+	Proofs = 'nav6',
+	Promises = 'nav7',
 }
 
-type ChartKey = 'balance_sheet' | 'mints' | 'melts' | 'swaps' | 'fee_revenue';
+type ChartKey = 'balance_sheet' | 'mints' | 'melts' | 'swaps' | 'fee_revenue' | 'proofs' | 'promises';
 
 @Component({
 	selector: 'orc-mint-subsection-dashboard',
@@ -72,7 +74,7 @@ type ChartKey = 'balance_sheet' | 'mints' | 'melts' | 'swaps' | 'fee_revenue';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
-	@ViewChildren('nav1,nav2,nav3,nav4,nav5') nav_elements!: QueryList<ElementRef>;
+	@ViewChildren('nav1,nav2,nav3,nav4,nav5,nav6,nav7') nav_elements!: QueryList<ElementRef>;
 	@ViewChild('chart_container', {static: false}) chart_container!: ElementRef;
 
 	// data
@@ -92,6 +94,10 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public mint_analytics_swaps_pre: MintAnalytic[] = [];
 	public mint_analytics_fees: MintAnalytic[] = [];
 	public mint_analytics_fees_pre: MintAnalytic[] = [];
+	public mint_analytics_proofs: MintAnalytic[] = [];
+	public mint_analytics_proofs_pre: MintAnalytic[] = [];
+	public mint_analytics_promises: MintAnalytic[] = [];
+	public mint_analytics_promises_pre: MintAnalytic[] = [];
 	public mint_connections: PublicUrl[] = [];
 	public lightning_enabled: boolean;
 	public lightning_balance: LightningBalance | null = null;
@@ -115,13 +121,17 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		[NavTertiary.Melts]: {title: 'Melts'},
 		[NavTertiary.Swaps]: {title: 'Swaps'},
 		[NavTertiary.FeeRevenue]: {title: 'Fee Revenue'},
+		[NavTertiary.Proofs]: {title: 'Proofs'},
+		[NavTertiary.Promises]: {title: 'Promises'},
 	};
 	public chart_type_options: Record<string, ChartType[]> = {
-		balance_sheet: [ChartType.Totals, ChartType.Volume, ChartType.Operations],
-		mints: [ChartType.Totals, ChartType.Volume, ChartType.Operations],
-		melts: [ChartType.Totals, ChartType.Volume, ChartType.Operations],
-		swaps: [ChartType.Totals, ChartType.Volume, ChartType.Operations],
+		balance_sheet: [ChartType.Totals, ChartType.Volume],
+		mints: [ChartType.Totals, ChartType.Volume],
+		melts: [ChartType.Totals, ChartType.Volume],
+		swaps: [ChartType.Totals, ChartType.Volume],
 		fee_revenue: [ChartType.Totals, ChartType.Volume],
+		proofs: [ChartType.Totals, ChartType.Volume],
+		promises: [ChartType.Totals, ChartType.Volume],
 	};
 
 	public mint_fee_revenue = signal<boolean>(false);
@@ -144,6 +154,8 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	public type_melts = computed(() => this.page_settings().type.melts || ChartType.Volume);
 	public type_swaps = computed(() => this.page_settings().type.swaps || ChartType.Volume);
 	public type_fee_revenue = computed(() => this.page_settings().type.fee_revenue || ChartType.Volume);
+	public type_proofs = computed(() => this.page_settings().type.proofs || ChartType.Volume);
+	public type_promises = computed(() => this.page_settings().type.promises || ChartType.Volume);
 	public loading_analytics = computed(() => this.loading_mint() || this.loading_bitcoin());
 
 	private subscriptions: Subscription = new Subscription();
@@ -324,8 +336,10 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			this.updateTertiaryNav();
 			this.loading_static_data = false;
 			this.cdr.detectChanges();
-			await this.loadMintAnalytics();
-			if (this.lightning_enabled) await this.loadLightningAnalytics();
+			await Promise.all([
+				this.loadMintAnalytics(),
+				this.lightning_enabled ? this.loadLightningAnalytics() : Promise.resolve(),
+			]);
 			this.loading_mint.set(false);
 			this.cdr.detectChanges();
 		} catch (error) {
@@ -335,121 +349,55 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 
 	private async loadMintAnalytics(): Promise<void> {
 		const timezone = this.settingDeviceService.getTimezone();
-		const analytics_balances_obs = this.mintService.loadMintAnalyticsBalances({
+		const base_args = {
 			units: this.page_settings().units,
 			date_start: this.page_settings().date_start,
 			date_end: this.page_settings().date_end,
 			interval: this.page_settings().interval,
-			timezone: timezone,
-		});
-		const analytics_balances_pre_obs = this.mintService.loadMintAnalyticsBalances({
+			timezone,
+		};
+		const pre_args = {
 			units: this.page_settings().units,
 			date_start: this.configService.config.constants.epoch_start,
 			date_end: this.page_settings().date_start - 1,
-			interval: MintAnalyticsInterval.Custom,
-			timezone: timezone,
-		});
-		const analytics_mints_obs = this.mintService.loadMintAnalyticsMints({
-			units: this.page_settings().units,
-			date_start: this.page_settings().date_start,
-			date_end: this.page_settings().date_end,
-			interval: this.page_settings().interval,
-			timezone: timezone,
-		});
-		const analytics_mints_pre_obs = this.mintService.loadMintAnalyticsMints({
-			units: this.page_settings().units,
-			date_start: this.configService.config.constants.epoch_start,
-			date_end: this.page_settings().date_start - 1,
-			interval: MintAnalyticsInterval.Custom,
-			timezone: timezone,
-		});
-		const analytics_melts_obs = this.mintService.loadMintAnalyticsMelts({
-			units: this.page_settings().units,
-			date_start: this.page_settings().date_start,
-			date_end: this.page_settings().date_end,
-			interval: this.page_settings().interval,
-			timezone: timezone,
-		});
-		const analytics_melts_pre_obs = this.mintService.loadMintAnalyticsMelts({
-			units: this.page_settings().units,
-			date_start: this.configService.config.constants.epoch_start,
-			date_end: this.page_settings().date_start - 1,
-			interval: MintAnalyticsInterval.Custom,
-			timezone: timezone,
-		});
-		const analytics_swaps_obs = this.mintService.loadMintAnalyticsSwaps({
-			units: this.page_settings().units,
-			date_start: this.page_settings().date_start,
-			date_end: this.page_settings().date_end,
-			interval: this.page_settings().interval,
-			timezone: timezone,
-		});
-		const analytics_swaps_pre_obs = this.mintService.loadMintAnalyticsSwaps({
-			units: this.page_settings().units,
-			date_start: this.configService.config.constants.epoch_start,
-			date_end: this.page_settings().date_start - 1,
-			interval: MintAnalyticsInterval.Custom,
-			timezone: timezone,
-		});
-		const analytics_fees_obs = this.mintService.loadMintAnalyticsFees({
-			units: this.page_settings().units,
-			date_start: this.page_settings().date_start,
-			date_end: this.page_settings().date_end,
-			interval: this.page_settings().interval,
-			timezone: timezone,
-		});
-		const analytics_fees_pre_obs = this.mintService.loadMintAnalyticsFees({
-			units: this.page_settings().units,
-			date_start: this.configService.config.constants.epoch_start,
-			date_end: this.page_settings().date_start - 1,
-			interval: MintAnalyticsInterval.Custom,
-			timezone: timezone,
-		});
-		const [
-			analytics_balances,
-			analytics_balances_pre,
-			analytics_mints,
-			analytics_mints_pre,
-			analytics_melts,
-			analytics_melts_pre,
-			analytics_swaps,
-			analytics_swaps_pre,
-			analytics_fees,
-			analytics_fees_pre,
-		] = await lastValueFrom(
-			forkJoin([
-				analytics_balances_obs,
-				analytics_balances_pre_obs,
-				analytics_mints_obs,
-				analytics_mints_pre_obs,
-				analytics_melts_obs,
-				analytics_melts_pre_obs,
-				analytics_swaps_obs,
-				analytics_swaps_pre_obs,
-				analytics_fees_obs,
-				analytics_fees_pre_obs,
-			]),
+			interval: AnalyticsInterval.Custom,
+			timezone,
+		};
+		const loaders = [
+			this.mintService.loadMintAnalyticsBalances.bind(this.mintService),
+			this.mintService.loadMintAnalyticsMints.bind(this.mintService),
+			this.mintService.loadMintAnalyticsMelts.bind(this.mintService),
+			this.mintService.loadMintAnalyticsSwaps.bind(this.mintService),
+			this.mintService.loadMintAnalyticsFees.bind(this.mintService),
+			this.mintService.loadMintAnalyticsProofs.bind(this.mintService),
+			this.mintService.loadMintAnalyticsPromises.bind(this.mintService),
+		];
+		const results = await lastValueFrom(
+			forkJoin(loaders.flatMap((load) => [load(base_args), load(pre_args)])),
 		);
 
-		this.mint_analytics_balances = analytics_balances;
-		this.mint_analytics_balances_pre = analytics_balances_pre;
-		this.mint_analytics_mints = analytics_mints;
-		this.mint_analytics_mints_pre = analytics_mints_pre;
-		this.mint_analytics_melts = analytics_melts;
-		this.mint_analytics_melts_pre = analytics_melts_pre;
-		this.mint_analytics_swaps = analytics_swaps;
-		this.mint_analytics_swaps_pre = analytics_swaps_pre;
-		this.mint_analytics_fees = this.applyMintFees(analytics_fees, analytics_fees_pre);
-		this.mint_analytics_fees_pre = analytics_fees_pre;
+		this.mint_analytics_balances = results[0];
+		this.mint_analytics_balances_pre = results[1];
+		this.mint_analytics_mints = results[2];
+		this.mint_analytics_mints_pre = results[3];
+		this.mint_analytics_melts = results[4];
+		this.mint_analytics_melts_pre = results[5];
+		this.mint_analytics_swaps = results[6];
+		this.mint_analytics_swaps_pre = results[7];
+		this.mint_analytics_fees = this.applyMintFees(results[8], results[9]);
+		this.mint_analytics_fees_pre = results[9];
+		this.mint_analytics_proofs = results[10];
+		this.mint_analytics_proofs_pre = results[11];
+		this.mint_analytics_promises = results[12];
+		this.mint_analytics_promises_pre = results[13];
 	}
 
 	private async loadLightningAnalytics(): Promise<void> {
 		const timezone = this.settingDeviceService.getTimezone();
-		const interval = this.page_settings().interval as unknown as LightningAnalyticsInterval;
 		const args: LightningAnalyticsArgs = {
 			date_start: this.page_settings().date_start,
 			date_end: this.page_settings().date_end,
-			interval: interval,
+			interval: this.page_settings().interval,
 			timezone: timezone,
 		};
 		const [analytics, analytics_pre, backfill_status] = await lastValueFrom(
@@ -459,7 +407,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 					...args,
 					date_start: this.configService.config.constants.epoch_start,
 					date_end: this.page_settings().date_start - 1,
-					interval: LightningAnalyticsInterval.Custom,
+					interval: AnalyticsInterval.Custom,
 				}),
 				this.lightningService.loadLightningAnalyticsBackfillStatus(),
 			]),
@@ -473,7 +421,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		if (analytics_fees_pre.length > 0) return analytics_fees;
 		if (analytics_fees.length === 0) return analytics_fees;
 		if (this.mint_fees.length === 0) return analytics_fees;
-		analytics_fees[0].amount += this.mint_fees[0].keyset_fees_paid;
+		analytics_fees[0].amount = String(BigInt(analytics_fees[0].amount) + BigInt(this.mint_fees[0].keyset_fees_paid));
 		return analytics_fees;
 	}
 
@@ -510,8 +458,10 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 			this.lightningService.clearAnalyticsCache();
 			this.loading_mint.set(true);
 			this.cdr.detectChanges();
-			await this.loadMintAnalytics();
-			if (this.lightning_enabled) await this.loadLightningAnalytics();
+			await Promise.all([
+				this.loadMintAnalytics(),
+				this.lightning_enabled ? this.loadLightningAnalytics() : Promise.resolve(),
+			]);
 			this.loading_mint.set(false);
 			this.cdr.detectChanges();
 		} catch (error) {
@@ -534,8 +484,10 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 				melts: settings.type?.melts ?? ChartType.Volume,
 				swaps: settings.type?.swaps ?? ChartType.Volume,
 				fee_revenue: settings.type?.fee_revenue ?? ChartType.Volume,
+				proofs: settings.type?.proofs ?? ChartType.Volume,
+				promises: settings.type?.promises ?? ChartType.Volume,
 			},
-			interval: settings.interval ?? MintAnalyticsInterval.Day,
+			interval: settings.interval ?? AnalyticsInterval.Day,
 			units: settings.units ?? [],
 			date_start: resolved_dates?.date_start ?? settings.date_start ?? this.getSelectedDateStart(),
 			date_end: resolved_dates?.date_end ?? settings.date_end ?? this.getSelectedDateEnd(),
@@ -609,7 +561,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		this.reloadDynamicData();
 	}
 
-	public onIntervalChange(event: MintAnalyticsInterval): void {
+	public onIntervalChange(event: AnalyticsInterval): void {
 		const current = this.page_settings();
 		const updated = {...current, interval: event};
 		this.page_settings.set(updated);

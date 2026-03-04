@@ -123,6 +123,8 @@
 					[loading]="loading_analytics()"
 					[lightning_enabled]="lightning_enabled"
 					[device_mobile]="device_type() === 'mobile'"
+					[mint_balances]="mint_balances"
+					[mint_keysets]="mint_keysets"
 				></orc-mint-subsection-dashboard-balance-chart>
 			</div>
 
@@ -251,6 +253,61 @@
 						}
 					}
 				</div>
+			</div>
+			<div class="relative chart-proofs">
+				<div class="chart-target nav6" #nav6></div>
+				<div class="mint-analytic-header z-index-1">
+					<div class="mint-analytic-title">Proofs &nbsp;&nbsp;<small>received</small></div>
+					<div class="flex">
+						<div class="mint-analytic-selector">
+							<button matButton type="button" [matMenuTriggerFor]="chart_type_menu" [matMenuTriggerData]="{chart: 'proofs'}">
+								<mat-icon>bar_chart</mat-icon>
+								<span class="text-nowrap font-size-s">{{ type_proofs() | titlecase }}</span>
+							</button>
+						</div>
+					</div>
+				</div>
+				<orc-mint-subsection-dashboard-chart
+					[locale]="locale"
+					[bitcoin_oracle_price_map]="bitcoin_oracle_price_map()"
+					[mint_analytics]="mint_analytics_proofs"
+					[mint_analytics_pre]="mint_analytics_proofs_pre"
+					[page_settings]="page_settings()"
+					[oracle_used]="page_settings().oracle_used"
+					[mint_genesis_time]="mint_genesis_time"
+					[selected_type]="type_proofs()"
+					[loading]="loading_analytics()"
+				></orc-mint-subsection-dashboard-chart>
+			</div>
+			<div class="relative chart-promises">
+				<div class="chart-target nav7" #nav7></div>
+				<div class="mint-analytic-header z-index-1">
+					<div class="mint-analytic-title">Promises &nbsp;&nbsp;<small>issued</small></div>
+					<div class="flex">
+						<div class="mint-analytic-selector">
+							<button
+								matButton
+								type="button"
+								[matMenuTriggerFor]="chart_type_menu"
+								[matMenuTriggerData]="{chart: 'promises'}"
+							>
+								<mat-icon>bar_chart</mat-icon>
+								<span class="text-nowrap font-size-s">{{ type_promises() | titlecase }}</span>
+							</button>
+						</div>
+					</div>
+				</div>
+				<orc-mint-subsection-dashboard-chart
+					[locale]="locale"
+					[bitcoin_oracle_price_map]="bitcoin_oracle_price_map()"
+					[mint_analytics]="mint_analytics_promises"
+					[mint_analytics_pre]="mint_analytics_promises_pre"
+					[page_settings]="page_settings()"
+					[oracle_used]="page_settings().oracle_used"
+					[mint_genesis_time]="mint_genesis_time"
+					[selected_type]="type_promises()"
+					[loading]="loading_analytics()"
+				></orc-mint-subsection-dashboard-chart>
 			</div>
 		</div>
 		@if (device_type() === 'desktop') {

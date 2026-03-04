@@ -40,7 +40,7 @@ import {MintAnalyticKeyset} from '@client/modules/mint/classes/mint-analytic.cla
 import {MintKeysetCount} from '@client/modules/mint/classes/mint-keyset-count.class';
 import {MintSubsectionKeysetsTableRow} from '@client/modules/mint/modules/mint-subsection-keysets/classes/mint-subsection-keysets-table-row.class';
 /* Shared Dependencies */
-import {MintUnit, MintAnalyticsInterval, AiFunctionName, AiAgent} from '@shared/generated.types';
+import {MintUnit, AnalyticsInterval, AiFunctionName, AiAgent} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-subsection-keysets',
@@ -60,7 +60,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 	public mint_type: string;
 	public mint_keysets: MintKeyset[] = [];
 	public locale!: string;
-	public interval!: MintAnalyticsInterval;
+	public interval!: AnalyticsInterval;
 	public mint_genesis_time: number = 0;
 	public page_settings!: NonNullableMintKeysetsSettings;
 	public loading_static_data: boolean = true;
@@ -216,15 +216,15 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		this.cdr.detectChanges();
 	}
 
-	private getAnalyticsInterval(): MintAnalyticsInterval {
+	private getAnalyticsInterval(): AnalyticsInterval {
 		const effective_date_start = Math.max(this.page_settings.date_start, this.mint_genesis_time);
 		const days_diff = DateTime.fromSeconds(this.page_settings.date_end).diff(DateTime.fromSeconds(effective_date_start), 'days').days;
-		if (days_diff <= 90) return MintAnalyticsInterval.Day;
-		if (days_diff <= 365) return MintAnalyticsInterval.Week;
-		return MintAnalyticsInterval.Month;
+		if (days_diff <= 90) return AnalyticsInterval.Day;
+		if (days_diff <= 365) return AnalyticsInterval.Week;
+		return AnalyticsInterval.Month;
 	}
 
-	private async loadKeysetsAnalytics(timezone: string, interval: MintAnalyticsInterval): Promise<void> {
+	private async loadKeysetsAnalytics(timezone: string, interval: AnalyticsInterval): Promise<void> {
 		const analytics_keysets_obs = this.mintService.loadMintAnalyticsKeysets({
 			date_start: this.page_settings.date_start,
 			date_end: this.page_settings.date_end,
@@ -234,7 +234,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		const analytics_keysets_pre_obs = this.mintService.loadMintAnalyticsKeysets({
 			date_start: this.configService.config.constants.epoch_start,
 			date_end: this.page_settings.date_start - 1,
-			interval: MintAnalyticsInterval.Custom,
+			interval: AnalyticsInterval.Custom,
 			timezone: timezone,
 		});
 		const [analytics_keysets, analytics_keysets_pre] = await lastValueFrom(
