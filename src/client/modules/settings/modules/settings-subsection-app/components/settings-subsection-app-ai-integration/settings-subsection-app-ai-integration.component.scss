@@ -24,3 +24,44 @@
 	@extend %flex-items-center;
 	@extend %flex-justify-center;
 }
+
+.ai-vendor-label {
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-gap-0-5;
+    @extend %p-b-0-5;
+}
+
+.ai-vendor-text {
+	@extend %flex;
+	@extend %flex-column;
+    @extend %text-left;
+    @extend %flex-gap-0-25;
+}
+
+.ai-vendor-label-name {
+	@extend %font-size-s;
+    @extend %font-weight-semi-bold;
+}
+
+.ai-vendor-label-desc {
+	@extend %font-size-xs;
+	@extend %orc-outline-color;
+}
+
+.ai-vendor-logo {
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
+	width: 2rem;
+	height: 2rem;
+	border-radius: 50%;
+	background: white;
+	flex-shrink: 0;
+
+	img {
+		width: 1.5rem;
+		height: 1.5rem;
+		object-fit: contain;
+	}
+}

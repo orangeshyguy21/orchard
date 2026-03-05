@@ -43,6 +43,40 @@
 				</div>
 			</div>
 		</div>
+        <div class="balance-sheet-details orc-animation-expand-collapse" [class.animation-expanded]="form_group().get('enabled')?.value">
+            <div class="orc-animation-expand-collapse-inner p-t-1">
+                <mat-tab-group>
+                    <mat-tab>
+                        <ng-template mat-tab-label>
+                            <div class="ai-vendor-label">
+                                <div class="ai-vendor-logo">
+                                    <img src="ollama.png" alt="Ollama" />
+                                </div>
+                                <div class="ai-vendor-text">
+                                    <span class="ai-vendor-label-name">Ollama</span>
+                                    <span class="ai-vendor-label-desc">Local AI models</span>
+                                </div>
+                            </div>
+                        </ng-template>
+                        Content 1
+                    </mat-tab>
+                    <mat-tab>
+                        <ng-template mat-tab-label>
+                            <div class="ai-vendor-label">
+                                <div class="ai-vendor-logo">
+                                    <img src="openrouter.png" alt="OpenRouter" />
+                                </div>
+                                <div class="ai-vendor-text">
+                                    <span class="ai-vendor-label-name">OpenRouter</span>
+                                    <span class="ai-vendor-label-desc">Cloud AI routing</span>
+                                </div>
+                            </div>
+                        </ng-template>
+                        Content 2
+                    </mat-tab>
+                </mat-tab-group>
+            </div>
+        </div>
 	</div>
 
 	<div class="flex-1 flex flex-justify-center">
