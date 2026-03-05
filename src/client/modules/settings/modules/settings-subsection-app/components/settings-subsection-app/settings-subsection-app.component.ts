@@ -143,6 +143,7 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 	******************************************************** */
 
 	private initSettingForms(settings: ParsedAppSettings): void {
+        console.log('initSettingForms', settings);
 		this.form_bitcoin.patchValue({
 			oracle_enabled: settings.bitcoin_oracle,
 		});

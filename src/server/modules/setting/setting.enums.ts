@@ -7,4 +7,9 @@ export enum SettingValue {
 
 export enum SettingKey {
 	BITCOIN_ORACLE = 'bitcoin.oracle',
+    AI_ENABLED = 'ai.enabled',
+    AI_VENDOR = 'ai.vendor',
+    AI_OLLAMA_API = 'ai.ollama.api',
+    AI_OPENROUTER_KEY = 'ai.openrouter.key',
+    AI_SERVER_MODEL = 'ai.server.model',
 }

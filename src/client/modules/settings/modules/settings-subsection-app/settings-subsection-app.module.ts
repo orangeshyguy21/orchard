@@ -20,9 +20,15 @@ import {pendingEventGuard} from '@client/modules/event/guards/pending-event.guar
 import {SettingsSubsectionAppComponent} from './components/settings-subsection-app/settings-subsection-app.component';
 import {SettingsSubsectionAppBitcoinComponent} from './components/settings-subsection-app-bitcoin/settings-subsection-app-bitcoin.component';
 import {SettingsSubsectionAppBitcoinOracleComponent} from './components/settings-subsection-app-bitcoin-oracle/settings-subsection-app-bitcoin-oracle.component';
+import {SettingsSubsectionAppAiComponent} from './components/settings-subsection-app-ai/settings-subsection-app-ai.component';
 
 @NgModule({
-	declarations: [SettingsSubsectionAppComponent, SettingsSubsectionAppBitcoinComponent, SettingsSubsectionAppBitcoinOracleComponent],
+	declarations: [
+		SettingsSubsectionAppComponent,
+		SettingsSubsectionAppBitcoinComponent,
+		SettingsSubsectionAppBitcoinOracleComponent,
+		SettingsSubsectionAppAiComponent,
+	],
 	imports: [
 		[
 			CoreRouterModule.forChild([
