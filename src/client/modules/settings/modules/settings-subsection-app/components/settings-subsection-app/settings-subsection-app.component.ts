@@ -64,6 +64,9 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 		}),
 		form_ai: new FormGroup({
 			enabled: new FormControl(false, [Validators.required]),
+			vendor: new FormControl('ollama'),
+			ollama_api: new FormControl('http://localhost:11434'),
+			openrouter_key: new FormControl(''),
 		}),
 	});
 	public bitcoin_enabled = this.configService.config.bitcoin.enabled;
@@ -79,6 +82,17 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 	private readonly setting_key_map: Record<string, SettingKey> = {
 		'form_bitcoin.oracle_enabled': SettingKey.BitcoinOracle,
 		'form_ai.enabled': SettingKey.AiEnabled,
+		'form_ai.vendor': SettingKey.AiVendor,
+		'form_ai.ollama_api': SettingKey.AiOllamaApi,
+		'form_ai.openrouter_key': SettingKey.AiOpenrouterKey,
+	};
+
+	private readonly initial_value_map: Record<string, keyof ParsedAppSettings> = {
+		'form_bitcoin.oracle_enabled': 'bitcoin_oracle',
+		'form_ai.enabled': 'ai_enabled',
+		'form_ai.vendor': 'ai_vendor',
+		'form_ai.ollama_api': 'ai_ollama_api',
+		'form_ai.openrouter_key': 'ai_openrouter_key',
 	};
 
 	private active_event: EventData | null = null;
@@ -94,6 +108,7 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 	ngOnInit(): void {
 		this.subscriptions.add(this.getEventSubscription());
 		this.subscriptions.add(this.getBreakpointSubscription());
+		this.subscriptions.add(this.getFormChangesSubscription());
 		this.page_settings.set(this.getPageSettings());
 		this.getSettings();
 	}
@@ -135,8 +150,20 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 	}
 
 	private getBreakpointSubscription(): Subscription {
-		return this.breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).subscribe((result) => {
-			this.device_type.set(result.matches ? 'desktop' : 'tablet');
+		return this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium]).subscribe((result) => {
+			if (result.breakpoints[Breakpoints.XSmall]) {
+				this.device_type.set('mobile');
+			} else if (result.breakpoints[Breakpoints.Small] || result.breakpoints[Breakpoints.Medium]) {
+				this.device_type.set('tablet');
+			} else {
+				this.device_type.set('desktop');
+			}
+		});
+	}
+
+	private getFormChangesSubscription(): Subscription {
+		return this.form_app_settings.valueChanges.subscribe(() => {
+			this.evaluateDirtyCount();
 		});
 	}
 
@@ -158,6 +185,9 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 		});
 		this.form_ai.patchValue({
 			enabled: settings.ai_enabled,
+			vendor: settings.ai_vendor,
+			ollama_api: settings.ai_ollama_api,
+			openrouter_key: settings.ai_openrouter_key,
 		});
 	}
 
@@ -237,6 +267,61 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 		this.form_app_settings.markAsPristine();
 		this.form_app_settings.markAsUntouched();
 		this.evaluateDirtyCount();
+	}
+
+	/** Submit a single control value to the server */
+	public onSubmit(form: FormGroup, event: string): void {
+		const group_name = this.getFormGroupName(form);
+		if (!group_name) return;
+		const path = `${group_name}.${event}`;
+		const setting_key = this.setting_key_map[path];
+		const control = form.get(event);
+		if (!setting_key || !control) return;
+		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
+		this.settingAppService.updateSettings([setting_key], [control.value.toString()]).subscribe({
+			next: () => {
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'SUCCESS',
+						message: 'Setting updated!',
+					}),
+				);
+				control.markAsPristine();
+				control.markAsUntouched();
+				this.evaluateDirtyCount();
+				this.getSettings();
+			},
+			error: (errors: OrchardErrors) => {
+				this.eventService.registerEvent(
+					new EventData({
+						type: 'ERROR',
+						message: errors.errors[0].getFullError(),
+					}),
+				);
+			},
+		});
+	}
+
+	/** Reset a single control to its initial value */
+	public onCancel(form: FormGroup, event: string): void {
+		const group_name = this.getFormGroupName(form);
+		if (!group_name) return;
+		const path = `${group_name}.${event}`;
+		const initial_key = this.initial_value_map[path];
+		const initial_settings = this.initial_settings();
+		const control = form.get(event);
+		if (!initial_key || !initial_settings || !control) return;
+		control.setValue(initial_settings[initial_key]);
+		control.markAsPristine();
+		control.markAsUntouched();
+		this.evaluateDirtyCount();
+	}
+
+	private getFormGroupName(form: FormGroup): string | null {
+		for (const [key, group] of Object.entries(this.form_app_settings.controls)) {
+			if (group === form) return key;
+		}
+		return null;
 	}
 
 	/* *******************************************************

@@ -10,6 +10,8 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatTabsModule} from '@angular/material/tabs';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcTimeModule} from '@client/modules/time/time.module';
@@ -51,6 +53,8 @@ import {SettingsSubsectionAppAiIntegrationComponent} from './components/settings
 		MatButtonModule,
 		MatMenuModule,
 		MatTabsModule,
+		MatFormFieldModule,
+		MatInputModule,
 		OrcFormModule,
 		OrcTimeModule,
 		OrcPublicModule,

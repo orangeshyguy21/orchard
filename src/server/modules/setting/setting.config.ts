@@ -15,4 +15,28 @@ export const DEFAULT_SETTINGS: Setting[] = [
 		value_type: SettingValue.BOOLEAN,
 		description: 'Whether AI features are enabled',
 	},
+    {
+        key: SettingKey.AI_VENDOR,
+        value: 'ollama',
+        value_type: SettingValue.STRING,
+        description: 'The AI vendor used for AI features',
+    },
+    {
+        key: SettingKey.AI_OLLAMA_API,
+        value: 'http://localhost:11434',
+        value_type: SettingValue.STRING,
+        description: 'The Ollama API key',
+    },
+    {
+        key: SettingKey.AI_OPENROUTER_KEY,
+        value: '',
+        value_type: SettingValue.STRING,
+        description: 'The OpenRouter API key',
+    },
+    {
+        key: SettingKey.AI_SERVER_MODEL,
+        value: '',
+        value_type: SettingValue.STRING,
+        description: 'The server model to use',
+    },
 ];

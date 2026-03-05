@@ -1,5 +1,6 @@
 @use 'molecule/molecule';
 
+
 .ai-sticker {
 	@extend %absolute;
 	@extend %left-1;
@@ -30,6 +31,7 @@
 	@extend %flex-items-center;
 	@extend %flex-gap-0-5;
     @extend %p-b-0-5;
+    @extend %p-t-0-5;
 }
 
 .ai-vendor-text {
@@ -64,4 +66,25 @@
 		height: 1.5rem;
 		object-fit: contain;
 	}
+}
+
+.agent-card {
+    @extend %flex-grow;
+    @extend %p-2;
+}
+
+.mobile-agent {
+	@extend %flex-grow;
+	@extend %flex-justify-center;
+	@extend %w-full;
+}
+
+.agent-clamp {
+	height: 12rem;
+	width: 13rem;
+	@extend %p-t-1;
+	@extend %overflow-hidden;
+	@extend %flex;
+	@extend %flex-items-center;
+	@extend %flex-justify-center;
 }

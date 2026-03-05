@@ -19,6 +19,9 @@ import {SettingKey, SettingValue} from '@shared/generated.types';
 export interface ParsedAppSettings {
 	bitcoin_oracle: boolean;
 	ai_enabled: boolean;
+	ai_vendor: string;
+	ai_ollama_api: string;
+	ai_openrouter_key: string;
 }
 
 @Injectable({
@@ -28,6 +31,9 @@ export class SettingAppService {
 	private parsed_settings: ParsedAppSettings = {
 		bitcoin_oracle: false,
 		ai_enabled: false,
+		ai_vendor: 'ollama',
+		ai_ollama_api: 'http://localhost:11434',
+		ai_openrouter_key: '',
 	};
 
 	constructor(
@@ -120,8 +126,14 @@ export class SettingAppService {
 	private updateParsedSettings(settings: Setting[]): void {
 		const bitcoin_oracle = settings.find((s) => s.key === SettingKey.BitcoinOracle);
 		const ai_enabled = settings.find((s) => s.key === SettingKey.AiEnabled);
+		const ai_vendor = settings.find((s) => s.key === SettingKey.AiVendor);
+		const ai_ollama_api = settings.find((s) => s.key === SettingKey.AiOllamaApi);
+		const ai_openrouter_key = settings.find((s) => s.key === SettingKey.AiOpenrouterKey);
 
 		if (bitcoin_oracle) this.parsed_settings.bitcoin_oracle = this.parseSettingValue(bitcoin_oracle);
 		if (ai_enabled) this.parsed_settings.ai_enabled = this.parseSettingValue(ai_enabled);
+		if (ai_vendor) this.parsed_settings.ai_vendor = this.parseSettingValue(ai_vendor);
+		if (ai_ollama_api) this.parsed_settings.ai_ollama_api = this.parseSettingValue(ai_ollama_api);
+		if (ai_openrouter_key) this.parsed_settings.ai_openrouter_key = this.parseSettingValue(ai_openrouter_key);
 	}
 }

@@ -4,7 +4,12 @@
 		<orc-settings-subsection-app-ai-integration 
             [ai_enabled]="ai_enabled()"
             [form_group]="form_group()"
-            (update)="update.emit()">
+            [device_type]="device_type()"
+            [invalid_ollama_api]="form_group().get('ollama_api')?.invalid || false"
+            [dirty_ollama_api]="form_group().get('ollama_api')?.dirty || false"
+            (update)="update.emit()"
+            (submit)="submit.emit('ollama_api')"
+            (cancel)="cancel.emit('ollama_api')">
         </orc-settings-subsection-app-ai-integration>
 	</mat-card-content>
 </mat-card>
