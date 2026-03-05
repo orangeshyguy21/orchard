@@ -13,6 +13,7 @@ import {
 	AllMintKeysetsSettings,
 	AllMintConfigSettings,
 	AllSettingsDeviceSettings,
+	AllSettingsAppSettings,
 	AllEventLogSettings,
 } from '@client/modules/settings/types/setting.types';
 
@@ -189,6 +190,14 @@ export class SettingDeviceService {
 			date_end: date_end,
 			page: page,
 		};
+	}
+
+	/* Page: Settings App */
+	public getSettingsAppSettings(): AllSettingsAppSettings {
+		return this.localStorageService.getSettingsAppSettings();
+	}
+	public setSettingsAppSettings(settings: AllSettingsAppSettings): void {
+		this.localStorageService.setSettingsAppSettings(settings);
 	}
 
 	/* Page: Settings Device */

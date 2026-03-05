@@ -81,6 +81,10 @@ export type SettingsDeviceSettings = {
 	tertiary_nav: string[] | null;
 };
 
+export type SettingsAppSettings = {
+	tertiary_nav: string[] | null;
+};
+
 export type EventLogSettings = {
 	date_start: number | null;
 	date_preset: DateRangePreset | null;

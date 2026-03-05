@@ -1,5 +1,19 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, HostListener, WritableSignal, signal, effect, inject, OnInit, OnDestroy} from '@angular/core';
+import {
+	ChangeDetectionStrategy,
+	Component,
+	HostListener,
+	WritableSignal,
+	signal,
+	effect,
+	inject,
+	OnInit,
+	AfterViewInit,
+	OnDestroy,
+	ElementRef,
+	viewChild,
+	viewChildren,
+} from '@angular/core';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 /* Vendor Dependencies */
@@ -7,14 +21,22 @@ import {Subscription, firstValueFrom} from 'rxjs';
 /* Application Dependencies */
 import {ConfigService} from '@client/modules/config/services/config.service';
 import {SettingAppService, ParsedAppSettings} from '@client/modules/settings/services/setting-app/setting-app.service';
+import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {EventService} from '@client/modules/event/services/event/event.service';
 import {BitcoinService} from '@client/modules/bitcoin/services/bitcoin/bitcoin.service';
 import {EventData} from '@client/modules/event/classes/event-data.class';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle-price.class';
 import {DeviceType} from '@client/modules/layout/types/device.types';
+import {NavTertiaryItem} from '@client/modules/nav/types/nav-tertiary-item.type';
+import {NonNullableSettingsAppSettings} from '@client/modules/settings/types/setting.types';
 /* Shared Dependencies */
 import {SettingKey} from '@shared/generated.types';
+
+enum NavTertiary {
+	Bitcoin = 'nav1',
+	AI = 'nav2',
+}
 
 @Component({
 	selector: 'orc-settings-subsection-app',
@@ -23,12 +45,16 @@ import {SettingKey} from '@shared/generated.types';
 	styleUrl: './settings-subsection-app.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
+export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, OnDestroy {
 	private configService = inject(ConfigService);
 	private settingAppService = inject(SettingAppService);
+	private settingDeviceService = inject(SettingDeviceService);
 	private eventService = inject(EventService);
 	private bitcoinService = inject(BitcoinService);
 	private breakpointObserver = inject(BreakpointObserver);
+
+	readonly nav_elements = viewChildren<ElementRef>('nav1,nav2');
+	readonly settings_container = viewChild<ElementRef>('settings_container');
 
 	@HostListener('window:beforeunload')
 	canDeactivate(): boolean {
@@ -41,6 +67,12 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 	public bitcoin_enabled = this.configService.config.bitcoin.enabled;
 	public bitcoin_oracle_price = signal<BitcoinOraclePrice | null>(null);
 	public device_type = signal<DeviceType>('desktop');
+	public page_settings = signal<NonNullableSettingsAppSettings | null>(null);
+
+	readonly tertiary_nav_items: Record<NavTertiary, NavTertiaryItem> = {
+		[NavTertiary.Bitcoin]: {title: 'Bitcoin'},
+		[NavTertiary.AI]: {title: 'AI'},
+	};
 
 	private active_event: EventData | null = null;
 	private subscriptions: Subscription = new Subscription();
@@ -56,8 +88,24 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 	ngOnInit(): void {
 		this.subscriptions.add(this.getEventSubscription());
 		this.subscriptions.add(this.getBreakpointSubscription());
+		this.page_settings.set(this.getPageSettings());
 		this.getSettings();
 		this.getBitcoinOracle();
+	}
+
+	ngAfterViewInit(): void {
+		this.updateTertiaryNav();
+	}
+
+	/* *******************************************************
+		Settings
+	******************************************************** */
+
+	private getPageSettings(): NonNullableSettingsAppSettings {
+		const settings = this.settingDeviceService.getSettingsAppSettings();
+		return {
+			tertiary_nav: settings.tertiary_nav ?? Object.values(NavTertiary),
+		};
 	}
 
 	private getSettings(): void {
@@ -69,6 +117,10 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 		const bitcoin_oracle_price = await firstValueFrom(this.bitcoinService.loadBitcoinOraclePrice());
 		this.bitcoin_oracle_price.set(bitcoin_oracle_price);
 	}
+
+	/* *******************************************************
+		Subscriptions
+	******************************************************** */
 
 	private getEventSubscription(): Subscription {
 		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
@@ -85,6 +137,10 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 			this.device_type.set(result.matches ? 'desktop' : 'tablet');
 		});
 	}
+
+	/* *******************************************************
+		Forms
+	******************************************************** */
 
 	private initSettingForms(settings: ParsedAppSettings): void {
 		this.form_bitcoin.patchValue({
@@ -154,6 +210,43 @@ export class SettingsSubsectionAppComponent implements OnInit, OnDestroy {
 		this.form_bitcoin.get('oracle_enabled')?.markAsUntouched();
 		this.evaluateDirtyCount();
 	}
+
+	/* *******************************************************
+		Tertiary Nav
+	******************************************************** */
+
+	public onTertiaryNavChange(event: string[]): void {
+		this.page_settings.update((settings) => (settings ? {...settings, tertiary_nav: event} : null));
+		const current = this.page_settings();
+		if (current) this.settingDeviceService.setSettingsAppSettings(current);
+		this.updateTertiaryNav();
+	}
+
+	public onTertiaryNavSelect(event: string): void {
+		this.scrollToSettings(event as NavTertiary);
+	}
+
+	private updateTertiaryNav(): void {
+		const settings = this.page_settings();
+		const container = this.settings_container();
+		if (!settings || !container) return;
+		const tertiary_nav = settings.tertiary_nav.map((area) => `"${area}"`).join(' ');
+		container.nativeElement.style.gridTemplateAreas = `${tertiary_nav}`;
+	}
+
+	private scrollToSettings(nav_item: NavTertiary): void {
+		const target_element = this.nav_elements().find((el) => el.nativeElement.classList.contains(nav_item));
+		if (!target_element?.nativeElement) return;
+		target_element.nativeElement.scrollIntoView({
+			behavior: 'smooth',
+			block: 'start',
+			inline: 'nearest',
+		});
+	}
+
+	/* *******************************************************
+		Destroy
+	******************************************************** */
 
 	ngOnDestroy(): void {
 		this.subscriptions.unsubscribe();

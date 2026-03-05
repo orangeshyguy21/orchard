@@ -15,6 +15,7 @@ import {
 	MintDatabaseSettings,
 	MintConfigSettings,
 	SettingsDeviceSettings,
+	SettingsAppSettings,
 	EventLogSettings,
 } from './local-storage.types';
 
@@ -41,6 +42,7 @@ export class LocalStorageService {
 		MINT_DATABASE_KEY: 'v1.mint.database.settings',
 		/* Settings Settings */
 		SETTINGS_DEVICE_KEY: 'v1.settings.device.settings',
+		SETTINGS_APP_KEY: 'v0.settings.app.settings',
 		/* Event Log Settings */
 		EVENT_LOG_KEY: 'v0.event.log.settings',
 	};
@@ -147,6 +149,11 @@ export class LocalStorageService {
 		if (!settings) return {tertiary_nav: null};
 		return settings;
 	}
+	getSettingsAppSettings(): SettingsAppSettings {
+		const settings = this.getItem<SettingsAppSettings>(this.STORAGE_KEYS.SETTINGS_APP_KEY);
+		if (!settings) return {tertiary_nav: null};
+		return settings;
+	}
 	getEventLogSettings(): EventLogSettings {
 		const settings = this.getItem<EventLogSettings>(this.STORAGE_KEYS.EVENT_LOG_KEY);
 		if (!settings) return {date_start: null, date_preset: null, page_size: null};
@@ -191,6 +198,9 @@ export class LocalStorageService {
 	}
 	setSettingsDeviceSettings(settings: SettingsDeviceSettings): void {
 		this.setItem(this.STORAGE_KEYS.SETTINGS_DEVICE_KEY, settings);
+	}
+	setSettingsAppSettings(settings: SettingsAppSettings): void {
+		this.setItem(this.STORAGE_KEYS.SETTINGS_APP_KEY, settings);
 	}
 	setEventLogSettings(settings: EventLogSettings): void {
 		this.setItem(this.STORAGE_KEYS.EVENT_LOG_KEY, settings);
