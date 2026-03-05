@@ -15,6 +15,7 @@ import {OrcTimeModule} from '@client/modules/time/time.module';
 import {OrcPublicModule} from '@client/modules/public/public.module';
 import {OrcGraphicModule} from '@client/modules/graphic/graphic.module';
 import {OrcNavModule} from '@client/modules/nav/nav.module';
+import {OrcProgressModule} from '@client/modules/progress/progress.module';
 import {pendingEventGuard} from '@client/modules/event/guards/pending-event.guard';
 /* Native Module Dependencies */
 import {SettingsSubsectionAppComponent} from './components/settings-subsection-app/settings-subsection-app.component';
@@ -51,6 +52,7 @@ import {SettingsSubsectionAppAiComponent} from './components/settings-subsection
 		OrcPublicModule,
 		OrcGraphicModule,
 		OrcNavModule,
+		OrcProgressModule,
 	],
 })
 export class OrcSettingsSubsectionAppModule {}

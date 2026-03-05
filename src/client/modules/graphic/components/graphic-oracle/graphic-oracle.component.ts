@@ -12,6 +12,7 @@ import {UtxOracleProgressStatus} from '@shared/generated.types';
 })
 export class GraphicOracleComponent {
 	public surface = input<boolean>(false);
+	public active = input<boolean>(false);
 	public height = input.required<string>();
 	public running = input.required<boolean>();
 	public status = input.required<UtxOracleProgressStatus | null>();

@@ -21,8 +21,9 @@
 			<div class="settings-box">
 				<orc-settings-subsection-app-bitcoin
 					[bitcoin_enabled]="bitcoin_enabled"
+					[bitcoin_oracle_enabled]="initial_settings()?.bitcoin_oracle ?? false"
 					[form_group]="form_bitcoin"
-					[oracle_price]="bitcoin_oracle_price()"
+					[device_type]="device_type()"
 					(update_oracle)="onUpdateBitcoinOracle()"
 				></orc-settings-subsection-app-bitcoin>
 			</div>

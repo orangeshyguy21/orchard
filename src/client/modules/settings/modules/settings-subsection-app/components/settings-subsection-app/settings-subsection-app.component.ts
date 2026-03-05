@@ -17,16 +17,14 @@ import {
 import {FormGroup, FormControl, Validators} from '@angular/forms';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 /* Vendor Dependencies */
-import {Subscription, firstValueFrom} from 'rxjs';
+import {Subscription} from 'rxjs';
 /* Application Dependencies */
 import {ConfigService} from '@client/modules/config/services/config.service';
 import {SettingAppService, ParsedAppSettings} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {EventService} from '@client/modules/event/services/event/event.service';
-import {BitcoinService} from '@client/modules/bitcoin/services/bitcoin/bitcoin.service';
 import {EventData} from '@client/modules/event/classes/event-data.class';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
-import {BitcoinOraclePrice} from '@client/modules/bitcoin/classes/bitcoin-oracle-price.class';
 import {DeviceType} from '@client/modules/layout/types/device.types';
 import {NavTertiaryItem} from '@client/modules/nav/types/nav-tertiary-item.type';
 import {NonNullableSettingsAppSettings} from '@client/modules/settings/types/setting.types';
@@ -50,7 +48,6 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 	private settingAppService = inject(SettingAppService);
 	private settingDeviceService = inject(SettingDeviceService);
 	private eventService = inject(EventService);
-	private bitcoinService = inject(BitcoinService);
 	private breakpointObserver = inject(BreakpointObserver);
 
 	readonly nav_elements = viewChildren<ElementRef>('nav1,nav2');
@@ -65,9 +62,9 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 		oracle_enabled: new FormControl(false, [Validators.required]),
 	});
 	public bitcoin_enabled = this.configService.config.bitcoin.enabled;
-	public bitcoin_oracle_price = signal<BitcoinOraclePrice | null>(null);
 	public device_type = signal<DeviceType>('desktop');
 	public page_settings = signal<NonNullableSettingsAppSettings | null>(null);
+    public initial_settings = signal<ParsedAppSettings | null>(null);
 
 	readonly tertiary_nav_items: Record<NavTertiary, NavTertiaryItem> = {
 		[NavTertiary.Bitcoin]: {title: 'Bitcoin'},
@@ -77,7 +74,7 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 	private active_event: EventData | null = null;
 	private subscriptions: Subscription = new Subscription();
 	private dirty_count: WritableSignal<number> = signal(0);
-	private initial_settings!: ParsedAppSettings;
+
 
 	constructor() {
 		effect(() => {
@@ -90,7 +87,6 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 		this.subscriptions.add(this.getBreakpointSubscription());
 		this.page_settings.set(this.getPageSettings());
 		this.getSettings();
-		this.getBitcoinOracle();
 	}
 
 	ngAfterViewInit(): void {
@@ -109,13 +105,10 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 	}
 
 	private getSettings(): void {
-		this.initial_settings = this.settingAppService.getParsedSettings();
-		this.initSettingForms(this.initial_settings);
-	}
-
-	private async getBitcoinOracle(): Promise<void> {
-		const bitcoin_oracle_price = await firstValueFrom(this.bitcoinService.loadBitcoinOraclePrice());
-		this.bitcoin_oracle_price.set(bitcoin_oracle_price);
+		this.initial_settings.set(this.settingAppService.getParsedSettings());
+        const initial_settings = this.initial_settings();
+        if (!initial_settings) return;
+		this.initSettingForms(initial_settings);
 	}
 
 	/* *******************************************************
@@ -206,7 +199,8 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 	}
 
 	private onUnconfirmedEvent(): void {
-		this.initSettingForms(this.initial_settings);
+        const initial_settings = this.initial_settings();
+        if( initial_settings ) this.initSettingForms(initial_settings);
 		this.form_bitcoin.get('oracle_enabled')?.markAsPristine();
 		this.form_bitcoin.get('oracle_enabled')?.markAsUntouched();
 		this.evaluateDirtyCount();
