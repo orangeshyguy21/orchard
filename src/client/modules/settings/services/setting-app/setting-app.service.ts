@@ -10,9 +10,9 @@ import {OrchardRes} from '@client/modules/api/types/api.types';
 import {ApiService} from '@client/modules/api/services/api/api.service';
 /* Native Dependencies */
 import {Setting} from '@client/modules/settings/classes/setting.class';
-import {SettingsResponse, SettingUpdateResponse} from '@client/modules/settings/types/setting-app.types';
+import {SettingsResponse, SettingsUpdateResponse} from '@client/modules/settings/types/setting-app.types';
 /* Local Dependencies */
-import {SETTINGS_QUERY, SETTING_UPDATE_MUTATION} from './setting-app.queries';
+import {SETTINGS_QUERY, SETTINGS_UPDATE_MUTATION} from './setting-app.queries';
 /* Shared Dependencies */
 import {SettingKey, SettingValue} from '@shared/generated.types';
 
@@ -27,7 +27,7 @@ export interface ParsedAppSettings {
 export class SettingAppService {
 	private parsed_settings: ParsedAppSettings = {
 		bitcoin_oracle: false,
-        ai_enabled: false,
+		ai_enabled: false,
 	};
 
 	constructor(
@@ -52,16 +52,22 @@ export class SettingAppService {
 		);
 	}
 
-	public updateSetting(key: SettingKey, value: string): Observable<Setting> {
-		const query = getApiQuery(SETTING_UPDATE_MUTATION, {key, value});
-		return this.http.post<OrchardRes<SettingUpdateResponse>>(this.apiService.api, query).pipe(
+	/**
+	 * Update multiple settings in a single request
+	 * @param {SettingKey[]} keys - The setting keys to update
+	 * @param {string[]} values - The new values for the settings
+	 * @returns {Observable<Setting[]>} The updated settings
+	 */
+	public updateSettings(keys: SettingKey[], values: string[]): Observable<Setting[]> {
+		const query = getApiQuery(SETTINGS_UPDATE_MUTATION, {keys, values});
+		return this.http.post<OrchardRes<SettingsUpdateResponse>>(this.apiService.api, query).pipe(
 			map((response) => {
 				if (response.errors) throw new OrchardErrors(response.errors);
-				return response.data.setting_update;
+				return response.data.settings_update;
 			}),
-			map((setting) => new Setting(setting)),
-			tap((updated_setting) => {
-				this.updateParsedSettings([updated_setting]);
+			map((settings) => settings.map((setting) => new Setting(setting))),
+			tap((updated_settings) => {
+				this.updateParsedSettings(updated_settings);
 			}),
 			catchError((error) => {
 				return throwError(() => error);
@@ -113,11 +119,9 @@ export class SettingAppService {
 	 */
 	private updateParsedSettings(settings: Setting[]): void {
 		const bitcoin_oracle = settings.find((s) => s.key === SettingKey.BitcoinOracle);
-        const ai_enabled = settings.find((s) => s.key === SettingKey.AiEnabled);
+		const ai_enabled = settings.find((s) => s.key === SettingKey.AiEnabled);
 
-		this.parsed_settings = {
-			bitcoin_oracle: bitcoin_oracle ? this.parseSettingValue(bitcoin_oracle) : false,
-            ai_enabled: ai_enabled ? this.parseSettingValue(ai_enabled) : false,
-		};
+		if (bitcoin_oracle) this.parsed_settings.bitcoin_oracle = this.parseSettingValue(bitcoin_oracle);
+		if (ai_enabled) this.parsed_settings.ai_enabled = this.parseSettingValue(ai_enabled);
 	}
 }

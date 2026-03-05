@@ -69,17 +69,21 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 	public bitcoin_enabled = this.configService.config.bitcoin.enabled;
 	public device_type = signal<DeviceType>('desktop');
 	public page_settings = signal<NonNullableSettingsAppSettings | null>(null);
-    public initial_settings = signal<ParsedAppSettings | null>(null);
+	public initial_settings = signal<ParsedAppSettings | null>(null);
 
 	readonly tertiary_nav_items: Record<NavTertiary, NavTertiaryItem> = {
 		[NavTertiary.Bitcoin]: {title: 'Bitcoin'},
 		[NavTertiary.AI]: {title: 'AI'},
 	};
 
+	private readonly setting_key_map: Record<string, SettingKey> = {
+		'form_bitcoin.oracle_enabled': SettingKey.BitcoinOracle,
+		'form_ai.enabled': SettingKey.AiEnabled,
+	};
+
 	private active_event: EventData | null = null;
 	private subscriptions: Subscription = new Subscription();
 	private dirty_count: WritableSignal<number> = signal(0);
-
 
 	constructor() {
 		effect(() => {
@@ -111,8 +115,8 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 
 	private getSettings(): void {
 		this.initial_settings.set(this.settingAppService.getParsedSettings());
-        const initial_settings = this.initial_settings();
-        if (!initial_settings) return;
+		const initial_settings = this.initial_settings();
+		if (!initial_settings) return;
 		this.initSettingForms(initial_settings);
 	}
 
@@ -193,8 +197,18 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 				}),
 			);
 		}
+		const keys: SettingKey[] = [];
+		const values: string[] = [];
+		for (const [path, setting_key] of Object.entries(this.setting_key_map)) {
+			const control = this.form_app_settings.get(path);
+			if (control?.dirty) {
+				keys.push(setting_key);
+				values.push(control.value.toString());
+			}
+		}
+		if (keys.length === 0) return;
 		this.eventService.registerEvent(new EventData({type: 'SAVING'}));
-		this.settingAppService.updateSetting(SettingKey.BitcoinOracle, this.form_bitcoin.value.oracle_enabled.toString()).subscribe({
+		this.settingAppService.updateSettings(keys, values).subscribe({
 			next: () => {
 				this.eventService.registerEvent(
 					new EventData({

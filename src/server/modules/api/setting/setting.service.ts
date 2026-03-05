@@ -30,10 +30,11 @@ export class ApiSettingService {
 		}
 	}
 
-	async updateSetting(tag: string, key: SettingKey, value: string): Promise<OrchardSetting> {
+	async updateSettings(tag: string, keys: SettingKey[], values: string[]): Promise<OrchardSetting[]> {
 		try {
-			const setting = await this.settingService.updateSetting(key, value);
-			return new OrchardSetting(setting);
+			if (keys.length !== values.length) throw OrchardErrorCode.SettingError;
+			const settings = await this.settingService.updateSettings(keys, values);
+			return settings.map((setting) => new OrchardSetting(setting));
 		} catch (error) {
 			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.SettingError,

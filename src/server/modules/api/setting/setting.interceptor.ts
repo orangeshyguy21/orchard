@@ -36,39 +36,47 @@ export class SettingInterceptor implements NestInterceptor {
 		const ctx = gql_context.getContext();
 		const args = gql_context.getArgs();
 		const user_id: string = ctx.req.user?.id ?? 'unknown';
-		const key: SettingKey = args.key;
-		const new_value: string | null = args.value ?? null;
-		const old_value = await this.fetchOldValue(key);
+		const keys: SettingKey[] = args.keys ?? [];
+		const values: string[] = args.values ?? [];
+		const old_values = await this.fetchOldValues(keys);
 
 		return next.handle().pipe(
 			tap(() => {
-				this.logEvent(metadata, user_id, key, old_value, new_value, EventLogStatus.SUCCESS);
+				for (let i = 0; i < keys.length; i++) {
+					this.logEvent(metadata, user_id, keys[i], old_values[i], values[i] ?? null, EventLogStatus.SUCCESS);
+				}
 			}),
 			catchError((error) => {
 				const error_code = error?.extensions?.code ? String(error.extensions.code) : null;
 				const error_message = error?.extensions?.details ?? error?.message ?? null;
-				this.logEvent(metadata, user_id, key, old_value, new_value, EventLogStatus.ERROR, {
-					error_code,
-					error_message,
-				});
+				for (let i = 0; i < keys.length; i++) {
+					this.logEvent(metadata, user_id, keys[i], old_values[i], values[i] ?? null, EventLogStatus.ERROR, {
+						error_code,
+						error_message,
+					});
+				}
 				throw error;
 			}),
 		);
 	}
 
 	/**
-	 * Fetch old value from the settings database for UPDATE type events
-	 * @param {SettingKey} key - The setting key to look up
-	 * @returns {Promise<string | null>} The previous value
+	 * Fetch old values from the settings database for UPDATE type events
+	 * @param {SettingKey[]} keys - The setting keys to look up
+	 * @returns {Promise<(string | null)[]>} The previous values
 	 */
-	private async fetchOldValue(key: SettingKey): Promise<string | null> {
-		try {
-			const setting = await this.settingService.getSetting(key);
-			return setting?.value ?? null;
-		} catch (_error) {
-			this.logger.warn(`Failed to fetch old value for setting [${key}]`);
-			return null;
+	private async fetchOldValues(keys: SettingKey[]): Promise<(string | null)[]> {
+		const results: (string | null)[] = [];
+		for (const key of keys) {
+			try {
+				const setting = await this.settingService.getSetting(key);
+				results.push(setting?.value ?? null);
+			} catch (_error) {
+				this.logger.warn(`Failed to fetch old value for setting [${key}]`);
+				results.push(null);
+			}
 		}
+		return results;
 	}
 
 	/**

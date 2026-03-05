@@ -172,10 +172,10 @@ describe('SettingService', () => {
 	});
 
 	/**
-	 * Test updateSetting method
+	 * Test updateSettings method
 	 */
-	describe('updateSetting', () => {
-		it('should update a setting value', async () => {
+	describe('updateSettings', () => {
+		it('should update a single setting value', async () => {
 			// arrange
 			const updated_value = 'false';
 			const updated_setting = {...mock_setting, value: updated_value};
@@ -183,10 +183,11 @@ describe('SettingService', () => {
 			mock_repository.save.mockResolvedValue(updated_setting);
 
 			// act
-			const result = await service.updateSetting(SettingKey.BITCOIN_ORACLE, updated_value);
+			const result = await service.updateSettings([SettingKey.BITCOIN_ORACLE], [updated_value]);
 
 			// assert
-			expect(result.value).toBe(updated_value);
+			expect(result).toHaveLength(1);
+			expect(result[0].value).toBe(updated_value);
 			expect(mock_repository.findOne).toHaveBeenCalledWith({
 				where: {key: SettingKey.BITCOIN_ORACLE},
 			});
@@ -196,12 +197,40 @@ describe('SettingService', () => {
 			});
 		});
 
+		it('should update multiple settings', async () => {
+			// arrange
+			const mock_ai_setting: Setting = {
+				key: SettingKey.AI_ENABLED,
+				value: 'false',
+				value_type: SettingValue.BOOLEAN,
+				description: 'Whether AI is enabled',
+			};
+			mock_repository.findOne
+				.mockResolvedValueOnce(mock_setting)
+				.mockResolvedValueOnce(mock_ai_setting);
+			mock_repository.save
+				.mockResolvedValueOnce({...mock_setting, value: 'false'})
+				.mockResolvedValueOnce({...mock_ai_setting, value: 'true'});
+
+			// act
+			const result = await service.updateSettings(
+				[SettingKey.BITCOIN_ORACLE, SettingKey.AI_ENABLED],
+				['false', 'true'],
+			);
+
+			// assert
+			expect(result).toHaveLength(2);
+			expect(result[0].value).toBe('false');
+			expect(result[1].value).toBe('true');
+			expect(mock_repository.save).toHaveBeenCalledTimes(2);
+		});
+
 		it('should throw error when setting does not exist', async () => {
 			// arrange
 			mock_repository.findOne.mockResolvedValue(null);
 
 			// act & assert
-			await expect(service.updateSetting(SettingKey.BITCOIN_ORACLE, 'false')).rejects.toThrow(
+			await expect(service.updateSettings([SettingKey.BITCOIN_ORACLE], ['false'])).rejects.toThrow(
 				`Setting with key ${SettingKey.BITCOIN_ORACLE} not found`,
 			);
 			expect(mock_repository.findOne).toHaveBeenCalledWith({
@@ -218,10 +247,10 @@ describe('SettingService', () => {
 			mock_repository.save.mockResolvedValue(updated_setting);
 
 			// act
-			const result = await service.updateSetting(SettingKey.BITCOIN_ORACLE, updated_value);
+			const result = await service.updateSettings([SettingKey.BITCOIN_ORACLE], [updated_value]);
 
 			// assert
-			expect(result.value).toBe(updated_value);
+			expect(result[0].value).toBe(updated_value);
 			expect(mock_repository.save).toHaveBeenCalled();
 		});
 
@@ -232,7 +261,7 @@ describe('SettingService', () => {
 			mock_repository.save.mockResolvedValue({...mock_setting, value: new_value});
 
 			// act
-			await service.updateSetting(SettingKey.BITCOIN_ORACLE, new_value);
+			await service.updateSettings([SettingKey.BITCOIN_ORACLE], [new_value]);
 
 			// assert
 			expect(mock_repository.save).toHaveBeenCalledTimes(1);

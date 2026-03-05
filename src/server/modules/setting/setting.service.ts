@@ -64,12 +64,26 @@ export class SettingService implements OnModuleInit {
 	}
 
 	/**
+	 * Update multiple settings by key
+	 * @param {SettingKey[]} keys - The setting keys to update
+	 * @param {string[]} values - The new values for the settings
+	 * @returns {Promise<Setting[]>} The updated settings
+	 */
+	public async updateSettings(keys: SettingKey[], values: string[]): Promise<Setting[]> {
+		const results: Setting[] = [];
+		for (let i = 0; i < keys.length; i++) {
+			results.push(await this.updateSetting(keys[i], values[i]));
+		}
+		return results;
+	}
+
+	/**
 	 * Update a setting by key
 	 * @param {SettingKey} key - The setting key to update
 	 * @param {string} value - The new value for the setting
 	 * @returns {Promise<Setting>} The updated setting
 	 */
-	public async updateSetting(key: SettingKey, value: string): Promise<Setting> {
+	private async updateSetting(key: SettingKey, value: string): Promise<Setting> {
 		const setting = await this.settingRepository.findOne({
 			where: {key},
 		});

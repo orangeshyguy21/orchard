@@ -4,6 +4,11 @@
 			<div class="font-size-s">Orchard Settings</div>
 		</div>
 		<div nav-secondary-items>
+            <orc-nav-secondary-item
+				name="Application"
+				navroute="settings/app"
+				[active]="active_sub_section() === 'app'"
+			></orc-nav-secondary-item>
 			<orc-nav-secondary-item
 				name="Device"
 				navroute="settings/device"
@@ -13,11 +18,6 @@
 				name="User"
 				navroute="settings/user"
 				[active]="active_sub_section() === 'user'"
-			></orc-nav-secondary-item>
-			<orc-nav-secondary-item
-				name="Application"
-				navroute="settings/app"
-				[active]="active_sub_section() === 'app'"
 			></orc-nav-secondary-item>
 		</div>
 		<div nav-secondary-toolbar class="nav-secondary-toolbar">

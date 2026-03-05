@@ -8,5 +8,11 @@ export const DEFAULT_SETTINGS: Setting[] = [
 		value: 'false',
 		value_type: SettingValue.BOOLEAN,
 		description: 'Whether the bitcoin oracle is enabled',
-	}
+	},
+	{
+		key: SettingKey.AI_ENABLED,
+		value: 'false',
+		value_type: SettingValue.BOOLEAN,
+		description: 'Whether AI features are enabled',
+	},
 ];

@@ -9,9 +9,9 @@ export const SETTINGS_QUERY = `
     }
 `;
 
-export const SETTING_UPDATE_MUTATION = `
-    mutation SettingUpdate($key: SettingKey!, $value: String!) {
-        setting_update(key: $key, value: $value) {
+export const SETTINGS_UPDATE_MUTATION = `
+    mutation SettingsUpdate($keys: [SettingKey!]!, $values: [String!]!) {
+        settings_update(keys: $keys, values: $values) {
             key
             value
             description
