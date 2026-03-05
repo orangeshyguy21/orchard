@@ -42,6 +42,7 @@ import {MintActivityModule} from './mint/activity/mintactivity.module';
 import {AiModelModule} from './ai/model/aimodel.module';
 import {AiAgentModule} from './ai/agent/aiagent.module';
 import {AiChatModule} from './ai/chat/aichat.module';
+import {AiHealthModule} from './ai/health/aihealth.module';
 // Image Endpoints
 import {PublicImageModule} from './public/image/image.module';
 import {PublicUrlModule} from './public/url/url.module';
@@ -90,6 +91,7 @@ import {ApiEventLogModule} from './event/event.module';
 		AiModelModule,
 		AiAgentModule,
 		AiChatModule,
+		AiHealthModule,
 		PublicImageModule,
 		PublicUrlModule,
 		PublicPortModule,
