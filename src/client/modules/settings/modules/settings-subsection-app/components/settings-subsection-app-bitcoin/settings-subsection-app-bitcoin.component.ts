@@ -62,7 +62,6 @@ export class SettingsSubsectionAppBitcoinComponent implements OnInit, OnDestroy 
 		this.oracle_running.set(true);
 		this.oracle_progress.set(0);
 		this.oracle_status.set(null);
-        console.log('yesterday', yesterday);
 		this.bitcoinService.openBackfillSocket(yesterday);
 	}
 

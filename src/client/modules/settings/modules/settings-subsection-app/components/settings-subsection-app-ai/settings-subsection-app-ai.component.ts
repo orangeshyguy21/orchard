@@ -1,4 +1,6 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+/* Core Dependencies */
+import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
+import {FormGroup} from '@angular/forms';
 
 @Component({
 	selector: 'orc-settings-subsection-app-ai',
@@ -7,4 +9,9 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 	styleUrl: './settings-subsection-app-ai.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsSubsectionAppAiComponent {}
+export class SettingsSubsectionAppAiComponent {
+	public ai_enabled = input.required<boolean>();
+	public form_group = input.required<FormGroup>();
+
+    public update = output<void>();
+}

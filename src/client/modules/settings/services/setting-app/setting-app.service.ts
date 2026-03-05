@@ -18,6 +18,7 @@ import {SettingKey, SettingValue} from '@shared/generated.types';
 
 export interface ParsedAppSettings {
 	bitcoin_oracle: boolean;
+	ai_enabled: boolean;
 }
 
 @Injectable({
@@ -26,6 +27,7 @@ export interface ParsedAppSettings {
 export class SettingAppService {
 	private parsed_settings: ParsedAppSettings = {
 		bitcoin_oracle: false,
+        ai_enabled: false,
 	};
 
 	constructor(
@@ -111,9 +113,11 @@ export class SettingAppService {
 	 */
 	private updateParsedSettings(settings: Setting[]): void {
 		const bitcoin_oracle = settings.find((s) => s.key === SettingKey.BitcoinOracle);
+        const ai_enabled = settings.find((s) => s.key === SettingKey.AiEnabled);
 
 		this.parsed_settings = {
 			bitcoin_oracle: bitcoin_oracle ? this.parseSettingValue(bitcoin_oracle) : false,
+            ai_enabled: ai_enabled ? this.parseSettingValue(ai_enabled) : false,
 		};
 	}
 }

@@ -1,6 +1,10 @@
-<div class="font-size-xs orc-outline-color p-b-0-5">AI Integration</div>
+<div class="font-size-xs orc-outline-color p-b-0-5">AI integration allowing agents in the app and on your server</div>
 <mat-card appearance="outlined" class="relative overflow-hidden">
 	<mat-card-content class="orc-surface-container-low-bg">
-		todo
+		<orc-settings-subsection-app-ai-integration 
+            [ai_enabled]="ai_enabled()"
+            [form_group]="form_group()"
+            (update)="update.emit()">
+        </orc-settings-subsection-app-ai-integration>
 	</mat-card-content>
 </mat-card>

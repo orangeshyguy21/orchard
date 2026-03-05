@@ -58,8 +58,13 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 		return this.active_event?.type !== 'PENDING';
 	}
 
-	public form_bitcoin: FormGroup = new FormGroup({
-		oracle_enabled: new FormControl(false, [Validators.required]),
+	public form_app_settings: FormGroup = new FormGroup({
+		form_bitcoin: new FormGroup({
+			oracle_enabled: new FormControl(false, [Validators.required]),
+		}),
+		form_ai: new FormGroup({
+			enabled: new FormControl(false, [Validators.required]),
+		}),
 	});
 	public bitcoin_enabled = this.configService.config.bitcoin.enabled;
 	public device_type = signal<DeviceType>('desktop');
@@ -135,22 +140,36 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 		Forms
 	******************************************************** */
 
+	public get form_bitcoin(): FormGroup {
+		return this.form_app_settings.get('form_bitcoin') as FormGroup;
+	}
+
+	public get form_ai(): FormGroup {
+		return this.form_app_settings.get('form_ai') as FormGroup;
+	}
+
 	private initSettingForms(settings: ParsedAppSettings): void {
-        console.log('initSettingForms', settings);
 		this.form_bitcoin.patchValue({
 			oracle_enabled: settings.bitcoin_oracle,
 		});
+		this.form_ai.patchValue({
+			enabled: settings.ai_enabled,
+		});
 	}
 
-	public onUpdateBitcoinOracle(): void {
+	public onUpdate(): void {
 		this.evaluateDirtyCount();
 	}
 
 	private evaluateDirtyCount(): void {
-		const contrtol_count = Object.keys(this.form_bitcoin.controls)
-			.filter((key) => this.form_bitcoin.get(key) instanceof FormControl)
-			.filter((key) => this.form_bitcoin.get(key)?.dirty).length;
-		this.dirty_count.set(contrtol_count);
+		let control_count = 0;
+		Object.keys(this.form_app_settings.controls).forEach((group_key) => {
+			const group = this.form_app_settings.get(group_key) as FormGroup;
+			control_count += Object.keys(group.controls)
+				.filter((key) => group.get(key) instanceof FormControl)
+				.filter((key) => group.get(key)?.dirty).length;
+		});
+		this.dirty_count.set(control_count);
 	}
 
 	private createPendingEvent(count: number): void {
@@ -166,7 +185,7 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 	}
 
 	private onConfirmedEvent(): void {
-		if (this.form_bitcoin.invalid) {
+		if (this.form_app_settings.invalid) {
 			return this.eventService.registerEvent(
 				new EventData({
 					type: 'WARNING',
@@ -183,7 +202,7 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 						message: 'Settings updated!',
 					}),
 				);
-				this.form_bitcoin.markAsPristine();
+				this.form_app_settings.markAsPristine();
 				this.evaluateDirtyCount();
 				this.getSettings();
 			},
@@ -199,10 +218,10 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 	}
 
 	private onUnconfirmedEvent(): void {
-        const initial_settings = this.initial_settings();
-        if( initial_settings ) this.initSettingForms(initial_settings);
-		this.form_bitcoin.get('oracle_enabled')?.markAsPristine();
-		this.form_bitcoin.get('oracle_enabled')?.markAsUntouched();
+		const initial_settings = this.initial_settings();
+		if (initial_settings) this.initSettingForms(initial_settings);
+		this.form_app_settings.markAsPristine();
+		this.form_app_settings.markAsUntouched();
 		this.evaluateDirtyCount();
 	}
 

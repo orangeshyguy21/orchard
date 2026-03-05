@@ -22,6 +22,7 @@ import {SettingsSubsectionAppComponent} from './components/settings-subsection-a
 import {SettingsSubsectionAppBitcoinComponent} from './components/settings-subsection-app-bitcoin/settings-subsection-app-bitcoin.component';
 import {SettingsSubsectionAppBitcoinOracleComponent} from './components/settings-subsection-app-bitcoin-oracle/settings-subsection-app-bitcoin-oracle.component';
 import {SettingsSubsectionAppAiComponent} from './components/settings-subsection-app-ai/settings-subsection-app-ai.component';
+import {SettingsSubsectionAppAiIntegrationComponent} from './components/settings-subsection-app-ai-integration/settings-subsection-app-ai-integration.component';
 
 @NgModule({
 	declarations: [
@@ -29,6 +30,7 @@ import {SettingsSubsectionAppAiComponent} from './components/settings-subsection
 		SettingsSubsectionAppBitcoinComponent,
 		SettingsSubsectionAppBitcoinOracleComponent,
 		SettingsSubsectionAppAiComponent,
+		SettingsSubsectionAppAiIntegrationComponent,
 	],
 	imports: [
 		[
