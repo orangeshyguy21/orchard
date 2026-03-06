@@ -7,7 +7,7 @@
 	@extend %flex-basis-0;
 	@extend %orc-corner-large;
 	@extend %flex-gap-0-5;
-	padding: 0.5rem;
-	background-color: var(--mat-sys-surface);
-	overflow: hidden;
+    @extend %p-0-5;
+    @extend %orc-surface-bg;
+    @extend %overflow-hidden;
 }
