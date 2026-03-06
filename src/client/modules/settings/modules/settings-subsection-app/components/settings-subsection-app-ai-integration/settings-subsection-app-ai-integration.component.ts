@@ -3,6 +3,8 @@ import {ChangeDetectionStrategy, Component, computed, input, output, signal, vie
 import {FormGroup} from '@angular/forms';
 /* Application Dependencies */
 import {DeviceType} from '@client/modules/layout/types/device.types';
+import {AiHealth} from '@client/modules/ai/classes/ai-health.class';
+import {GraphicStatusState} from '@client/modules/graphic/types/graphic-status.types';
 
 @Component({
 	selector: 'orc-settings-subsection-app-ai-integration',
@@ -13,7 +15,9 @@ import {DeviceType} from '@client/modules/layout/types/device.types';
 })
 export class SettingsSubsectionAppAiIntegrationComponent {
 	public ai_enabled = input.required<boolean>();
+	public ai_health = input.required<AiHealth | null>();
 	public form_group = input.required<FormGroup>();
+    public selected_vendor = input.required<string>();
     public device_type = input.required<DeviceType>();
     public invalid_ollama_api = input<boolean>(false);
     public invalid_openrouter_key = input<boolean>(false);
@@ -34,9 +38,20 @@ export class SettingsSubsectionAppAiIntegrationComponent {
     public key_view = signal<boolean>(false);
 
 	public readonly selected_tab_index = computed(() => {
-		const vendor = this.form_group().get('vendor')?.value;
+		const vendor = this.selected_vendor();
 		return vendor === 'openrouter' ? 1 : 0;
 	});
+    public readonly show_health = computed(() => {
+        const ai_health = this.ai_health();
+        if (!ai_health) return false;
+        if (ai_health.vendor === this.selected_vendor()) return true;
+        return false;
+    });
+    public readonly health_status = computed(() => {
+        const ai_health = this.ai_health();
+        if (!ai_health) return 'inactive';
+        return ai_health.status ? 'active' : 'inactive';
+    });
 
     public hot_ollama_api = computed(() => {
 		return this.focused_ollama_api() || this.dirty_ollama_api();

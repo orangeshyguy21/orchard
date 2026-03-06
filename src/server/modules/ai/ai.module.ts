@@ -2,11 +2,12 @@
 import {Module} from '@nestjs/common';
 /* Application Dependencies */
 import {FetchModule} from '@server/modules/fetch/fetch.module';
+import {SettingModule} from '@server/modules/setting/setting.module';
 /* Local Dependencies */
 import {AiService} from './ai.service';
 
 @Module({
-	imports: [FetchModule],
+	imports: [FetchModule, SettingModule],
 	providers: [AiService],
 	exports: [AiService],
 })

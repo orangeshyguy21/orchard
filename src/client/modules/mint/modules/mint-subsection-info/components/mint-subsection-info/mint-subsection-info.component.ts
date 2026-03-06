@@ -18,6 +18,7 @@ import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 import {Subscription} from 'rxjs';
 /* Application Dependencies */
 import {ConfigService} from '@client/modules/config/services/config.service';
+import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {MintService} from '@client/modules/mint/services/mint/mint.service';
 import {MintInfoRpc} from '@client/modules/mint/classes/mint-info-rpc.class';
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
@@ -72,6 +73,7 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 
 	constructor(
 		private configService: ConfigService,
+		private settingAppService: SettingAppService,
 		public mintService: MintService,
 		public route: ActivatedRoute,
 		public aiService: AiService,
@@ -119,7 +121,7 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 	}
 
 	orchardOptionalInit(): void {
-		if (this.configService.config.ai.enabled) {
+		if (this.settingAppService.getSetting('ai_enabled')) {
 			this.subscriptions.add(this.getAgentSubscription());
 			this.subscriptions.add(this.getToolSubscription());
 		}

@@ -198,7 +198,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 	}
 
 	orchardOptionalInit(): void {
-		if (this.configService.config.ai.enabled) {
+		if (this.settingAppService.getSetting('ai_enabled')) {
 			this.subscriptions.add(this.getAgentSubscription());
 			this.subscriptions.add(this.getToolSubscription());
 		}

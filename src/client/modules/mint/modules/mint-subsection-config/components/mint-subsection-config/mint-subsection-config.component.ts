@@ -22,6 +22,7 @@ import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 import {Subscription, lastValueFrom, forkJoin} from 'rxjs';
 /* Application Dependencies */
 import {ConfigService} from '@client/modules/config/services/config.service';
+import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {EventService} from '@client/modules/event/services/event/event.service';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {OrchardValidators} from '@client/modules/form/validators';
@@ -189,6 +190,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 
 	constructor(
 		private configService: ConfigService,
+		private settingAppService: SettingAppService,
 		public mintService: MintService,
 		public route: ActivatedRoute,
 		public eventService: EventService,
@@ -232,7 +234,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 	}
 
 	orchardOptionalInit(): void {
-		if (this.configService.config.ai.enabled) {
+		if (this.settingAppService.getSetting('ai_enabled')) {
 			this.subscriptions.add(this.getAgentSubscription());
 			this.subscriptions.add(this.getToolSubscription());
 		}

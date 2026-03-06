@@ -14,14 +14,15 @@ import {getApiQuery} from '@client/modules/api/helpers/api.helpers';
 import {OrchardErrors} from '@client/modules/error/classes/error.class';
 import {OrchardRes} from '@client/modules/api/types/api.types';
 /* Native Dependencies */
-import {AiChatResponse, AiModelResponse, AiAgentResponse, AiChatAbortResponse} from '@client/modules/ai/types/ai.types';
+import {AiChatResponse, AiHealthResponse, AiModelResponse, AiAgentResponse, AiChatAbortResponse} from '@client/modules/ai/types/ai.types';
 import {AiChatChunk, AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
+import {AiHealth} from '@client/modules/ai/classes/ai-health.class';
 import {AiModel} from '@client/modules/ai/classes/ai-model.class';
 import {AiChatCompiledMessage} from '@client/modules/ai/classes/ai-chat-compiled-message.class';
 import {AiChatConversation} from '@client/modules/ai/classes/ai-chat-conversation.class';
 import {AiAgentDefinition} from '@client/modules/ai/classes/ai-agent-definition.class';
 /* Local Dependencies */
-import {AI_CHAT_SUBSCRIPTION, AI_MODELS_QUERY, AI_AGENT_QUERY, AI_CHAT_ABORT_MUTATION} from './ai.queries';
+import {AI_CHAT_SUBSCRIPTION, AI_HEALTH_QUERY, AI_MODELS_QUERY, AI_AGENT_QUERY, AI_CHAT_ABORT_MUTATION} from './ai.queries';
 /* Shared Dependencies */
 import {AiAgent, AiMessageRole} from '@shared/generated.types';
 
@@ -168,6 +169,22 @@ export class AiService {
 		});
 		this.subscription_id = null;
 		this.active_subject.next(false);
+	}
+
+	public getAiHealth(): Observable<AiHealth> {
+		const query = getApiQuery(AI_HEALTH_QUERY);
+
+		return this.http.post<OrchardRes<AiHealthResponse>>(this.apiService.api, query).pipe(
+			map((response) => {
+				if (response.errors) throw new OrchardErrors(response.errors);
+				return response.data.ai_health;
+			}),
+			map((ai_health) => new AiHealth(ai_health)),
+			catchError((error) => {
+				console.error('Error loading ai health:', error);
+				return throwError(() => error);
+			}),
+		);
 	}
 
 	public getAiModels(): Observable<AiModel[]> {

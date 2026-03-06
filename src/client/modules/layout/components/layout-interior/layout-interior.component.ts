@@ -19,6 +19,7 @@ import {MatSidenav} from '@angular/material/sidenav';
 /* Application Dependencies */
 import {ConfigService} from '@client/modules/config/services/config.service';
 import {CrewService} from '@client/modules/crew/services/crew/crew.service';
+import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
 import {BitcoinService} from '@client/modules/bitcoin/services/bitcoin/bitcoin.service';
 import {LightningService} from '@client/modules/lightning/services/lightning/lightning.service';
@@ -98,6 +99,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	constructor(
 		private configService: ConfigService,
 		private crewService: CrewService,
+		private settingAppService: SettingAppService,
 		private settingDeviceService: SettingDeviceService,
 		private bitcoinService: BitcoinService,
 		private lightningService: LightningService,
@@ -110,7 +112,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		private route: ActivatedRoute,
 		private cdr: ChangeDetectorRef,
 	) {
-		this.ai_enabled.set(this.configService.config.ai.enabled);
+        this.ai_enabled.set(this.settingAppService.getSetting('ai_enabled'));
 		this.enabled_bitcoin.set(this.configService.config.bitcoin.enabled);
 		this.enabled_lightning.set(this.configService.config.lightning.enabled);
 		this.enabled_mint.set(this.configService.config.mint.enabled);

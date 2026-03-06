@@ -4,4 +4,29 @@
 	@extend %orc-corner-full;
 	height: var(--status-size);
 	width: var(--status-size);
+
+	&.glow {
+		@extend %relative;
+		@extend %z-index-0;
+
+		&::before,
+		&::after {
+			@extend %pseudo-element;
+			@extend %absolute;
+			@extend %inset-0;
+			border-radius: inherit;
+			background: inherit;
+			z-index: -1;
+		}
+
+		&::before {
+			transform: scale(1.2);
+			opacity: 0.3;
+		}
+
+		&::after {
+			transform: scale(1.4);
+			opacity: 0.15;
+		}
+	}
 }

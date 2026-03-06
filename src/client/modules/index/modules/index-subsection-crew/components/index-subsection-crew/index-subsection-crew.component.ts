@@ -10,6 +10,7 @@ import {MatDialog} from '@angular/material/dialog';
 /* Application Dependencies */
 import {EventService} from '@client/modules/event/services/event/event.service';
 import {ConfigService} from '@client/modules/config/services/config.service';
+import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {CrewService} from '@client/modules/crew/services/crew/crew.service';
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
 import {EventData} from '@client/modules/event/classes/event-data.class';
@@ -103,6 +104,7 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 	constructor(
 		private eventService: EventService,
 		private configService: ConfigService,
+		private settingAppService: SettingAppService,
 		private crewService: CrewService,
 		private aiService: AiService,
 		private dialog: MatDialog,
@@ -130,7 +132,7 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 	}
 
 	orchardOptionalInit(): void {
-		if (this.configService.config.ai.enabled) {
+		if (this.settingAppService.getSetting('ai_enabled')) {
 			this.subscriptions.add(this.getAgentSubscription());
 			this.subscriptions.add(this.getToolSubscription());
 		}

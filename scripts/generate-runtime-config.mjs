@@ -32,10 +32,6 @@ const mint = {
 	database_type: process.env['MINT_DATABASE']?.match(/postgres(ql)?:\/\//) ? 'postgres' : 'sqlite',
 };
 
-const ai = {
-	enabled: process.env['AI_API'] ? true : false,
-};
-
 const constants = {
 	epoch_start: 1521072000,
 	taproot_group_keys: {
@@ -50,7 +46,6 @@ const runtime_config = {
 	lightning,
 	taproot_assets,
 	mint,
-	ai,
 	constants,
 };
 

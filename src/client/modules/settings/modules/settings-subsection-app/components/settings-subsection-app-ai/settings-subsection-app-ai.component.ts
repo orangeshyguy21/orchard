@@ -1,8 +1,10 @@
 /* Core Dependencies */
-import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output, inject, effect, signal} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 /* Application Dependencies */
+import {AiService} from '@client/modules/ai/services/ai/ai.service';
 import {DeviceType} from '@client/modules/layout/types/device.types';
+import {AiHealth} from '@client/modules/ai/classes/ai-health.class';
 
 @Component({
 	selector: 'orc-settings-subsection-app-ai',
@@ -12,6 +14,8 @@ import {DeviceType} from '@client/modules/layout/types/device.types';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsSubsectionAppAiComponent {
+    private readonly aiService = inject(AiService);
+
 	public ai_enabled = input.required<boolean>();
 	public form_group = input.required<FormGroup>();
     public device_type = input.required<DeviceType>();
@@ -19,4 +23,21 @@ export class SettingsSubsectionAppAiComponent {
     public update = output<void>();
     public submit = output<string>();
     public cancel = output<string>();
+
+    public ai_health = signal<AiHealth | null>(null);
+
+    constructor() {
+        effect(() => {
+            const ai_enabled = this.ai_enabled();
+            if (ai_enabled) this.getAiHealth();
+        });
+    }
+
+    private getAiHealth(): void {
+        this.aiService.getAiHealth().subscribe({
+            next: (health: AiHealth) => {
+                this.ai_health.set(health);
+            },
+        });
+    }
 }

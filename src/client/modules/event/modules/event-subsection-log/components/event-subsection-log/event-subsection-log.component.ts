@@ -9,6 +9,7 @@ import {PageEvent} from '@angular/material/paginator';
 import {MatTableDataSource} from '@angular/material/table';
 /* Application Dependencies */
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
+import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {AllEventLogSettings} from '@client/modules/settings/types/setting.types';
 import {ConfigService} from '@client/modules/config/services/config.service';
 import {DeviceType} from '@client/modules/layout/types/device.types';
@@ -35,6 +36,7 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
 	private readonly eventLogService = inject(EventLogService);
 	private readonly settingDeviceService = inject(SettingDeviceService);
 	private readonly configService = inject(ConfigService);
+	private readonly settingAppService = inject(SettingAppService);
 	private readonly crewService = inject(CrewService);
 	private readonly aiService = inject(AiService);
 	private readonly breakpointObserver = inject(BreakpointObserver);
@@ -73,7 +75,7 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
 	}
 
 	orchardOptionalInit(): void {
-		if (this.configService.config.ai.enabled) {
+		if (this.settingAppService.getSetting('ai_enabled')) {
 			this.subscriptions.add(this.getAgentSubscription());
 			this.subscriptions.add(this.getToolSubscription());
 		}

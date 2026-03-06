@@ -19,6 +19,7 @@ import {DateRange} from '@angular/material/datepicker';
 import {Subscription} from 'rxjs';
 /* Application Dependencies */
 import {SettingDeviceService} from '@client/modules/settings/services/setting-device/setting-device.service';
+import {SettingAppService} from '@client/modules/settings/services/setting-app/setting-app.service';
 import {DateRangePreset} from '@client/modules/form/types/form-daterange.types';
 import {resolveDateRangePreset} from '@client/modules/form/helpers/form-daterange.helpers';
 import {EventService} from '@client/modules/event/services/event/event.service';
@@ -89,6 +90,7 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 		private settingDeviceService: SettingDeviceService,
 		private eventService: EventService,
 		private configService: ConfigService,
+		private settingAppService: SettingAppService,
 		private breakpointObserver: BreakpointObserver,
 	) {
 		effect(() => {
@@ -109,7 +111,7 @@ export class BitcoinSubsectionOracleComponent implements OnInit, OnDestroy {
 	******************************************************** */
 
 	ngOnInit(): void {
-		this.enabled_ai.set(this.configService.config.ai.enabled);
+		this.enabled_ai.set(this.settingAppService.getSetting('ai_enabled'));
 		this.locale.set(this.settingDeviceService.getLocale());
 		this.subscriptions.add(this.getBackfillSubscription());
 		this.subscriptions.add(this.getEventSubscription());

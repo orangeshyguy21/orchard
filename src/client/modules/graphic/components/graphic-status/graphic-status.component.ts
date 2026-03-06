@@ -25,6 +25,7 @@ const STATUS_CLASS_MAP: Record<string, string> = {
 export class GraphicStatusComponent {
 	public size = input<string>('0.5rem');
 	public status = input<GraphicStatusState>(null);
+	public glow = input<boolean>(false);
 
 	public indicator_class = computed(() => STATUS_CLASS_MAP[this.status() ?? ''] ?? '');
 }

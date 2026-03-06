@@ -1,9 +1,10 @@
 /* Core Dependencies */
 import {Injectable} from '@nestjs/common';
-import {ConfigService} from '@nestjs/config';
 import {Readable} from 'stream';
 /* Application Dependencies */
 import {FetchService} from '@server/modules/fetch/fetch.service';
+import {SettingService} from '@server/modules/setting/setting.service';
+import {SettingKey} from '@server/modules/setting/setting.enums';
 /* Local Dependencies */
 import {AiModel, AiMessage} from './ai.types';
 import {AI_AGENTS} from './ai.agents';
@@ -11,18 +12,39 @@ import {AiAgent} from './ai.enums';
 
 @Injectable()
 export class AiService {
-	private base_url: string;
 	private chat_timeout: number = 60000;
 
 	constructor(
-		private configService: ConfigService,
 		private fetchService: FetchService,
-	) {
-		this.base_url = this.configService.get('ai.api');
+		private settingService: SettingService,
+	) {}
+
+	/**
+	 * Resolve the base URL for the configured AI vendor
+	 * @returns {Promise<string>} The base URL for API calls
+	 */
+	private async getBaseUrl(): Promise<string> {
+		const vendor_setting = await this.settingService.getSetting(SettingKey.AI_VENDOR);
+		const vendor = vendor_setting?.value ?? '';
+		if (vendor === 'openrouter') {
+			throw new Error('OpenRouter integration is not yet implemented');
+		}
+		const api_setting = await this.settingService.getSetting(SettingKey.AI_OLLAMA_API);
+		const base_url = api_setting?.value ?? '';
+		if (!base_url) {
+			throw new Error('Ollama API endpoint is not configured');
+		}
+		return base_url;
 	}
 
+	/**
+	 * Fetch available models from the AI vendor
+	 * @returns {Promise<AiModel[]>} List of available models
+	 */
 	async getModels(): Promise<AiModel[]> {
-		const response = await this.fetchService.fetchWithProxy(`${this.base_url}/api/tags`, {
+		const base_url = await this.getBaseUrl();
+        console.log('base_url', base_url);
+		const response = await this.fetchService.fetchWithProxy(`${base_url}/api/tags`, {
 			method: 'GET',
 			headers: {'Content-Type': 'application/json'},
 		});
@@ -30,19 +52,28 @@ export class AiService {
 		return data.models;
 	}
 
+	/**
+	 * Stream a chat completion from the AI vendor
+	 * @param {string} model - The model identifier to use
+	 * @param {AiAgent | null} agent - The agent preset (defaults to DEFAULT)
+	 * @param {AiMessage[]} messages - The conversation messages
+	 * @param {AbortSignal} [signal] - Optional abort signal
+	 * @returns {Promise<ReadableStream<Uint8Array>>} Streaming response
+	 */
 	async streamChat(
 		model: string,
 		agent: AiAgent | null,
 		messages: AiMessage[],
 		signal?: AbortSignal,
 	): Promise<ReadableStream<Uint8Array>> {
+		const base_url = await this.getBaseUrl();
 		if (!agent) agent = AiAgent.DEFAULT;
 		const tools = AI_AGENTS[agent].tools;
 		const system_message = AI_AGENTS[agent].system_message;
 		const timeout_signal = AbortSignal.timeout(this.chat_timeout);
 		const combined_signal = signal ? AbortSignal.any([signal, timeout_signal]) : timeout_signal;
 
-		const response = await this.fetchService.fetchWithProxy(`${this.base_url}/api/chat`, {
+		const response = await this.fetchService.fetchWithProxy(`${base_url}/api/chat`, {
 			method: 'POST',
 			headers: {'Content-Type': 'application/json'},
 			body: JSON.stringify({

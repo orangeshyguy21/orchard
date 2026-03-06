@@ -73,6 +73,16 @@ export const AI_AGENT_QUERY = `
     }
 `;
 
+export const AI_HEALTH_QUERY = `
+    query AiHealth {
+        ai_health {
+            message
+            status
+            vendor
+        }
+    }
+`;
+
 export const AI_CHAT_ABORT_MUTATION = `
     mutation AiChatAbort($id: String!) {
         ai_chat_abort(id: $id) {

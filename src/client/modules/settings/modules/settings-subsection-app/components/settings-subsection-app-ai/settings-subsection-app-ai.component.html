@@ -3,7 +3,9 @@
 	<mat-card-content class="orc-surface-container-low-bg">
 		<orc-settings-subsection-app-ai-integration 
             [ai_enabled]="ai_enabled()"
+            [ai_health]="ai_health()"
             [form_group]="form_group()"
+            [selected_vendor]="form_group().get('vendor')?.value"
             [device_type]="device_type()"
             [invalid_ollama_api]="form_group().get('ollama_api')?.invalid || false"
             [dirty_ollama_api]="form_group().get('ollama_api')?.dirty || false"

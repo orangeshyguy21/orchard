@@ -264,9 +264,11 @@ export class SettingsSubsectionAppComponent implements OnInit, AfterViewInit, On
 	private onUnconfirmedEvent(): void {
 		const initial_settings = this.initial_settings();
 		if (initial_settings) this.initSettingForms(initial_settings);
-		this.form_app_settings.markAsPristine();
-		this.form_app_settings.markAsUntouched();
-		this.evaluateDirtyCount();
+        setTimeout(() => {
+            this.form_app_settings.markAsPristine();
+            this.form_app_settings.markAsUntouched();
+            this.evaluateDirtyCount();
+        }, 100);
 	}
 
 	/** Submit a single control value to the server */

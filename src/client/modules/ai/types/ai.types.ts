@@ -4,6 +4,7 @@ import {MintDataType} from '@client/modules/mint/enums/data-type.enum';
 /* Shared Dependencies */
 import {
 	OrchardAiChatChunk,
+	OrchardAiHealth,
 	OrchardAiModel,
 	OrchardAiAgent,
 	AiFunctionName,
@@ -22,6 +23,10 @@ export type AiModelResponse = {
 
 export type AiAgentResponse = {
 	ai_agent: OrchardAiAgent;
+};
+
+export type AiHealthResponse = {
+	ai_health: OrchardAiHealth;
 };
 
 export type AiChatAbortResponse = {
