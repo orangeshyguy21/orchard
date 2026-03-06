@@ -1,7 +1,7 @@
 <div class="flex flex-gap-2 p-1 flex-wrap flex-items-start">
 	<div [formGroup]="form_group()" class="flex-1 flex flex-column">
 		<div class="flex flex-items-center flex-grow flex-gap-1" animate.enter="orc-animation-fadein">
-			<div class="flex flex-items-center flex-grow flex-gap-1">
+			<orc-form-toggle-group>
 				<orc-form-toggle
 					class="flex-1 w-min-10 h-min-6"
 					[selected]="!form_group().get('enabled')?.value"
@@ -12,7 +12,7 @@
 					</div>
 					<div class="ai-label">
 						<div class="font-size-s">Disabled</div>
-						<div class="font-size-xs orc-outline-color">No price data</div>
+						<div class="font-size-xs orc-outline-color">standard application</div>
 					</div>
 				</orc-form-toggle>
 				<orc-form-toggle
@@ -25,10 +25,10 @@
 					</div>
 					<div class="ai-label">
 						<div class="font-size-s">Enabled</div>
-						<div class="font-size-xs orc-outline-color">Price data available</div>
+						<div class="font-size-xs orc-outline-color">agents available</div>
 					</div>
 				</orc-form-toggle>
-			</div>
+			</orc-form-toggle-group>
 
 			<button type="button" tabindex="-1" mat-icon-button class="orc-icon-button" (click)="help_status.set(!help_status())">
 				<mat-icon class="orc-outline-color">info</mat-icon>
@@ -45,7 +45,6 @@
 		</div>
         <div class="balance-sheet-details orc-animation-expand-collapse" [class.animation-expanded]="form_group().get('enabled')?.value">
             <div class="orc-animation-expand-collapse-inner p-t-1">
-                {{ selected_vendor() }}
                 <mat-tab-group class="p-t-1" [selectedIndex]="selected_tab_index()" (selectedIndexChange)="onVendorTabChange($event)">
                     <mat-tab>
                         <ng-template mat-tab-label>

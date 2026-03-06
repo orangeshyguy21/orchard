@@ -1,0 +1,13 @@
+@use 'molecule/molecule';
+
+:host {
+	@extend %flex;
+	@extend %flex-grow;
+	@extend %flex-shrink-1;
+	@extend %flex-basis-0;
+	@extend %orc-corner-medium;
+	@extend %flex-gap-0-5;
+	padding: 0.5rem;
+	background-color: var(--mat-sys-surface);
+	overflow: hidden;
+}

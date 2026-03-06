@@ -21,6 +21,7 @@ import {FormHelpTextComponent} from './components/form-help-text/form-help-text.
 import {FormFilterMenuComponent} from './components/form-filter-menu/form-filter-menu.component';
 import {FormErrorComponent} from './components/form-error/form-error.component';
 import {FormToggleComponent} from './components/form-toggle/form-toggle.component';
+import {FormToggleGroupComponent} from './components/form-toggle-group/form-toggle-group.component';
 import {FormScrollCalendarComponent} from './components/form-scroll-calendar/form-scroll-calendar.component';
 import {FormDaterangeScrollPickerComponent} from './components/form-daterange-scroll-picker/form-daterange-scroll-picker.component';
 
@@ -34,6 +35,7 @@ import {FormDaterangeScrollPickerComponent} from './components/form-daterange-sc
 		FormFilterMenuComponent,
 		FormErrorComponent,
 		FormToggleComponent,
+		FormToggleGroupComponent,
 		FormScrollCalendarComponent,
 		FormDaterangeScrollPickerComponent,
 	],
@@ -59,6 +61,7 @@ import {FormDaterangeScrollPickerComponent} from './components/form-daterange-sc
 		FormFilterMenuComponent,
 		FormErrorComponent,
 		FormToggleComponent,
+		FormToggleGroupComponent,
 		FormScrollCalendarComponent,
 		FormDaterangeScrollPickerComponent,
 	],
