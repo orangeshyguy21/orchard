@@ -50,10 +50,11 @@ export class AiChatService {
 				return false;
 			}
 			this.logger.debug(`Error streaming chat`, error);
-			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
+			this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.AiError,
 			});
-			throw new OrchardApiError(orchard_error);
+			const error_message = error instanceof Error ? error.message : 'An unknown error occurred';
+			this.event_emitter.emit('ai.chat.update', new OrchardAiChatChunk(this.getChunkErrorJSON(error_message), ai_chat.id));
 		}
 	}
 

@@ -5,7 +5,6 @@ import {expect} from '@jest/globals';
 import {AiService} from '@server/modules/ai/ai.service';
 import {ErrorService} from '@server/modules/error/error.service';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
-import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 /* Local Dependencies */
 import {AiChatService} from './aichat.service';
 
@@ -55,16 +54,22 @@ describe('AiChatService', () => {
 		expect(received.length).toBe(2);
 	});
 
-	it('wraps errors via resolveError and throws OrchardApiError for stream errors', async () => {
+	it('emits error chunk and calls resolveError on stream errors', async () => {
 		async function* mockErrorGenerator() {
 			throw new Error('boom');
 		}
 
 		(aiService.streamChat as jest.Mock).mockReturnValue(mockErrorGenerator());
 		errorService.resolveError.mockReturnValue({code: OrchardErrorCode.AiError});
-		await expect(aiChatService.streamChat('MY_TAG', {id: '1', model: 'm', agent: null, messages: []} as any)).rejects.toBeInstanceOf(
-			OrchardApiError,
-		);
+
+		const received: any[] = [];
+		aiChatService.onChatUpdate((chunk) => received.push(chunk));
+
+		await aiChatService.streamChat('MY_TAG', {id: '1', model: 'm', agent: null, messages: []} as any);
+
+		expect(received.length).toBe(1);
+		expect(received[0].message.content).toBe('boom');
+		expect(received[0].done).toBe(true);
 		const calls = errorService.resolveError.mock.calls;
 		const [, , tag_arg, code_arg] = calls[calls.length - 1];
 		expect(tag_arg).toBe('MY_TAG');
