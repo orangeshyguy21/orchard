@@ -11,6 +11,8 @@ import {LightningAnalytics} from '../modules/lightning/analytics/lnanalytics.ent
 import {MintAnalytics} from '../modules/cashu/mintanalytics/mintanalytics.entity';
 import {EventLog} from '../modules/event/event.entity';
 import {EventLogDetail} from '../modules/event/event-detail.entity';
+import {Agent} from '../modules/ai/agent/agent.entity';
+import {AgentRun} from '../modules/ai/agent/agent-run.entity';
 
 export const AppDataSource = new DataSource({
 	type: 'better-sqlite3',
@@ -26,6 +28,8 @@ export const AppDataSource = new DataSource({
 		MintAnalytics,
 		EventLog,
 		EventLogDetail,
+		Agent,
+		AgentRun,
 	],
 	migrations: ['src/server/database/migrations/*.ts'],
 	synchronize: false,

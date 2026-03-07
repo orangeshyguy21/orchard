@@ -2,7 +2,7 @@
 import {ChangeDetectionStrategy, Component, input, output, signal} from '@angular/core';
 /* Native Dependencies */
 import {AiChatConversation} from '@client/modules/ai/classes/ai-chat-conversation.class';
-import {AiAgentDefinition} from '@client/modules/ai/classes/ai-agent-definition.class';
+import {AiAssistantDefinition} from '@client/modules/ai/classes/ai-assistant-definition.class';
 
 @Component({
 	selector: 'orc-ai-chat-log',
@@ -15,7 +15,7 @@ export class AiChatLogComponent {
 	public conversation = input.required<AiChatConversation | null>();
 	public active_chat = input.required<boolean>();
 	public revision = input.required<number>();
-	public agent_definition = input.required<AiAgentDefinition | null>();
+	public assistant_definition = input.required<AiAssistantDefinition | null>();
 	public user_name = input.required<string>();
 
 	public clear = output<void>();

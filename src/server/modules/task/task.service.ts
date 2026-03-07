@@ -11,6 +11,7 @@ import {BitcoinRpcService} from '@server/modules/bitcoin/rpc/btcrpc.service';
 import {BitcoinUTXOracleService} from '@server/modules/bitcoin/utxoracle/utxoracle.service';
 import {LightningAnalyticsService} from '@server/modules/lightning/analytics/lnanalytics.service';
 import {CashuMintAnalyticsService} from '@server/modules/cashu/mintanalytics/mintanalytics.service';
+import {AgentService} from '@server/modules/ai/agent/agent.service';
 import {BitcoinType} from '@server/modules/bitcoin/bitcoin.enums';
 import {SettingKey} from '@server/modules/setting/setting.enums';
 
@@ -26,6 +27,7 @@ export class TaskService {
 		private lightningAnalyticsService: LightningAnalyticsService,
 		private cashuMintAnalyticsService: CashuMintAnalyticsService,
 		private configService: ConfigService,
+		private agentService: AgentService,
 	) {}
 
 	/**
@@ -186,6 +188,24 @@ export class TaskService {
 			this.logger.log('Daily cashu mint analytics rescan complete');
 		} catch (error) {
 			this.logger.error(`Error during cashu mint analytics rescan: ${error.message}`, error.stack);
+		}
+	}
+
+	/**
+	 * Clean up old agent runs, keeping the last 100 per agent
+	 * Runs daily at 4 AM UTC
+	 */
+	@Cron('0 4 * * *', {
+		name: 'cleanup-agent-runs',
+		timeZone: 'UTC',
+	})
+	async cleanupAgentRuns() {
+		this.logger.log('Starting agent run cleanup...');
+		try {
+			await this.agentService.cleanupOldRuns();
+			this.logger.log('Agent run cleanup complete');
+		} catch (error) {
+			this.logger.error(`Error cleaning up agent runs: ${error.message}`);
 		}
 	}
 }

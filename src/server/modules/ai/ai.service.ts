@@ -7,8 +7,8 @@ import {SettingService} from '@server/modules/setting/setting.service';
 import {SettingKey} from '@server/modules/setting/setting.enums';
 /* Local Dependencies */
 import {AiModel, AiMessage} from './ai.types';
-import {AI_AGENTS} from './ai.agents';
-import {AiAgent} from './ai.enums';
+import {AI_ASSISTANTS} from './assistant/ai.assistants';
+import {AiAssistant} from './assistant/ai.assistant.enums';
 
 @Injectable()
 export class AiService {
@@ -43,7 +43,6 @@ export class AiService {
 	 */
 	async getModels(): Promise<AiModel[]> {
 		const base_url = await this.getBaseUrl();
-        console.log('base_url', base_url);
 		const response = await this.fetchService.fetchWithProxy(`${base_url}/api/tags`, {
 			method: 'GET',
 			headers: {'Content-Type': 'application/json'},
@@ -55,21 +54,21 @@ export class AiService {
 	/**
 	 * Stream a chat completion from the AI vendor
 	 * @param {string} model - The model identifier to use
-	 * @param {AiAgent | null} agent - The agent preset (defaults to DEFAULT)
+	 * @param {AiAssistant | null} assistant - The assistant preset (defaults to DEFAULT)
 	 * @param {AiMessage[]} messages - The conversation messages
 	 * @param {AbortSignal} [signal] - Optional abort signal
 	 * @returns {Promise<ReadableStream<Uint8Array>>} Streaming response
 	 */
 	async streamChat(
 		model: string,
-		agent: AiAgent | null,
+		assistant: AiAssistant | null,
 		messages: AiMessage[],
 		signal?: AbortSignal,
 	): Promise<ReadableStream<Uint8Array>> {
 		const base_url = await this.getBaseUrl();
-		if (!agent) agent = AiAgent.DEFAULT;
-		const tools = AI_AGENTS[agent].tools;
-		const system_message = AI_AGENTS[agent].system_message;
+		if (!assistant) assistant = AiAssistant.DEFAULT;
+		const tools = AI_ASSISTANTS[assistant].tools;
+		const system_message = AI_ASSISTANTS[assistant].system_message;
 		const timeout_signal = AbortSignal.timeout(this.chat_timeout);
 		const combined_signal = signal ? AbortSignal.any([signal, timeout_signal]) : timeout_signal;
 

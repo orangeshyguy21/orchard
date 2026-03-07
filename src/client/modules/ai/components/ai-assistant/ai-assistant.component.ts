@@ -1,19 +1,19 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 /* Native Dependencies */
-import {AiAgentDefinition} from '@client/modules/ai/classes/ai-agent-definition.class';
+import {AiAssistantDefinition} from '@client/modules/ai/classes/ai-assistant-definition.class';
 /* Shared Dependencies */
 import {AiMessageRole} from '@shared/generated.types';
 
 @Component({
-	selector: 'orc-ai-agent',
+	selector: 'orc-ai-assistant',
 	standalone: false,
-	templateUrl: './ai-agent.component.html',
-	styleUrl: './ai-agent.component.scss',
+	templateUrl: './ai-assistant.component.html',
+	styleUrl: './ai-assistant.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AiAgentComponent {
-	@Input() public agent!: AiAgentDefinition | null;
+export class AiAssistantComponent {
+	@Input() public assistant!: AiAssistantDefinition | null;
 
 	public role = AiMessageRole.Assistant;
 }

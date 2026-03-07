@@ -1,7 +1,8 @@
 /* Core Dependencies */
 import {InputType, Field} from '@nestjs/graphql';
 /* Application Dependencies */
-import {AiAgent, AiMessageRole} from '@server/modules/ai/ai.enums';
+import {AiAssistant} from '@server/modules/ai/assistant/ai.assistant.enums';
+import {AiMessageRole} from '@server/modules/ai/ai.enums';
 
 @InputType()
 export class AiChatMessageInput {
@@ -26,8 +27,8 @@ export class AiChatInput {
 	@Field()
 	auth: string;
 
-	@Field(() => AiAgent, {nullable: true})
-	agent: AiAgent | null;
+	@Field(() => AiAssistant, {nullable: true})
+	assistant: AiAssistant | null;
 
 	@Field(() => [AiChatMessageInput])
 	messages: AiChatMessageInput[];

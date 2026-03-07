@@ -6,7 +6,7 @@ import {
 	OrchardAiChatChunk,
 	OrchardAiHealth,
 	OrchardAiModel,
-	OrchardAiAgent,
+	OrchardAiAssistant,
 	AiFunctionName,
 	MintUnit,
 	AnalyticsInterval,
@@ -21,8 +21,8 @@ export type AiModelResponse = {
 	ai_models: OrchardAiModel[];
 };
 
-export type AiAgentResponse = {
-	ai_agent: OrchardAiAgent;
+export type AiAssistantResponse = {
+	ai_assistant: OrchardAiAssistant;
 };
 
 export type AiHealthResponse = {

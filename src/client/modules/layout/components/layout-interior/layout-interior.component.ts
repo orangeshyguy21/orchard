@@ -37,11 +37,11 @@ import {AiChatChunk} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {AiModel} from '@client/modules/ai/classes/ai-model.class';
 import {AiChatConversation} from '@client/modules/ai/classes/ai-chat-conversation.class';
 import {AiChatCompiledMessage} from '@client/modules/ai/classes/ai-chat-compiled-message.class';
-import {AiAgentDefinition} from '@client/modules/ai/classes/ai-agent-definition.class';
+import {AiAssistantDefinition} from '@client/modules/ai/classes/ai-assistant-definition.class';
 /* Native Dependencies */
 import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Shared Dependencies */
-import {AiAgent, AiMessageRole} from '@shared/generated.types';
+import {AiAssistant, AiMessageRole} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-layout-interior',
@@ -66,7 +66,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	public active_chat = signal<boolean>(false);
 	public active_section = signal<string>('');
 	public active_sub_section = signal<string>('');
-	public active_agent = signal<AiAgent>(AiAgent.Default);
+	public active_assistant = signal<AiAssistant>(AiAssistant.Default);
 	public active_event = signal<EventData | null>(null);
 	public enabled_bitcoin = signal<boolean>(false);
 	public enabled_lightning = signal<boolean>(false);
@@ -78,14 +78,14 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	public syncing_lightning = signal<boolean>(false);
 	public block_count = signal<number>(0);
 
-	public ai_agent_definition = signal<AiAgentDefinition | null>(null);
+	public ai_assistant_definition = signal<AiAssistantDefinition | null>(null);
 	public overlayed = signal(false);
-	public show_mobile_agent = signal(false);
+	public show_mobile_assistant = signal(false);
 	public device_type = signal<DeviceType>('desktop');
 
 	public desktop_nav_open = computed(() => this.device_type() === 'desktop');
 	public ai_sidenav_mode = computed(() => (this.device_type() === 'desktop' ? 'side' : 'over'));
-	public show_mobile_nav = computed(() => !this.desktop_nav_open() && !this.show_mobile_agent());
+	public show_mobile_nav = computed(() => !this.desktop_nav_open() && !this.show_mobile_assistant());
 
 	public ai_actionable = computed(() => {
 		if (this.active_chat()) return true;
@@ -149,7 +149,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		}
 		// if taproot go get the ids
 		if (this.ai_enabled()) {
-			this.subscriptions.add(this.getAgentSubscription());
+			this.subscriptions.add(this.getAssistantSubscription());
 			this.subscriptions.add(this.getActiveAiSubscription());
 			this.subscriptions.add(this.getAiMessagesSubscription());
 			this.subscriptions.add(this.getAiConversationSubscription());
@@ -173,7 +173,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 			const route_data = this.getRouteData(event);
 			this.setSection(route_data);
 			this.setSubSection(route_data);
-			this.setAgent(route_data);
+			this.setAssistant(route_data);
 			this.onClearConversation();
 		});
 	}
@@ -219,7 +219,7 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 			} else {
 				this.device_type.set('desktop');
 			}
-			if (this.desktop_nav_open()) this.show_mobile_agent.set(false);
+			if (this.desktop_nav_open()) this.show_mobile_assistant.set(false);
 		});
 	}
 
@@ -285,9 +285,9 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	private getAgentSubscription(): Subscription {
-		return this.aiService.agent_requests$.subscribe(({agent, content}) => {
-			if (agent === AiAgent.Default) this.aiService.openAiSocket(agent, content);
+	private getAssistantSubscription(): Subscription {
+		return this.aiService.assistant_requests$.subscribe(({assistant, content}) => {
+			if (assistant === AiAssistant.Default) this.aiService.openAiSocket(assistant, content);
 		});
 	}
 
@@ -366,12 +366,12 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	}
 
 	/* *******************************************************
-	   Agent                      
+	   Assistant                      
 	******************************************************** */
 
-	private setAgent(route_data: ActivatedRouteSnapshot['data'] | null): void {
+	private setAssistant(route_data: ActivatedRouteSnapshot['data'] | null): void {
 		if (!route_data) return;
-		this.active_agent.set(route_data['agent'] || AiAgent.Default);
+		this.active_assistant.set(route_data['assistant'] || AiAssistant.Default);
 	}
 
 	private getModels(): void {
@@ -394,8 +394,8 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	private startChat() {
 		if (!this.ai_user_content.value) return;
-		const agent = this.active_agent() || AiAgent.Default;
-		this.aiService.requestAgent(agent, this.ai_user_content.value);
+		const assistant = this.active_assistant() || AiAssistant.Default;
+		this.aiService.requestAssistant(assistant, this.ai_user_content.value);
 		this.ai_user_content.reset();
 	}
 
@@ -442,9 +442,9 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	private openChatLog(): void {
 		this.sidenav.open();
-		const resolved_agent = this.ai_conversation()?.agent || this.active_agent();
-		this.aiService.getAiAgent(resolved_agent).subscribe((agent: AiAgentDefinition) => {
-			this.ai_agent_definition.set(agent);
+		const resolved_assistant = this.ai_conversation()?.assistant || this.active_assistant();
+		this.aiService.getAiAssistant(resolved_assistant).subscribe((assistant: AiAssistantDefinition) => {
+			this.ai_assistant_definition.set(assistant);
 		});
 	}
 
@@ -452,12 +452,12 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		this.sidenav.close();
 	}
 
-	public onShowAgent(): void {
-		this.show_mobile_agent.set(true);
+	public onShowAssistant(): void {
+		this.show_mobile_assistant.set(true);
 	}
 
-	public onHideAgent(): void {
-		this.show_mobile_agent.set(false);
+	public onHideAssistant(): void {
+		this.show_mobile_assistant.set(false);
 		if (this.active_event()?.type === 'PENDING') this.onCancelPendingEvent();
 	}
 

@@ -25,7 +25,7 @@ import {StateOption, RoleOption} from '@client/modules/index/modules/index-subse
 import {IndexSubsectionCrewDialogUserComponent} from '@client/modules/index/modules/index-subsection-crew/components/index-subsection-crew-dialog-user/index-subsection-crew-dialog-user.component';
 import {IndexSubsectionCrewDialogInviteComponent} from '@client/modules/index/modules/index-subsection-crew/components/index-subsection-crew-dialog-invite/index-subsection-crew-dialog-invite.component';
 /* Shared Dependencies */
-import {UserRole, AiAgent, AiFunctionName} from '@shared/generated.types';
+import {UserRole, AiAssistant, AiFunctionName} from '@shared/generated.types';
 
 export enum CrewFormType {
 	INVITE_CREATE = 'INVITE_CREATE',
@@ -133,7 +133,7 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 
 	orchardOptionalInit(): void {
 		if (this.settingAppService.getSetting('ai_enabled')) {
-			this.subscriptions.add(this.getAgentSubscription());
+			this.subscriptions.add(this.getAssistantSubscription());
 			this.subscriptions.add(this.getToolSubscription());
 		}
 	}
@@ -192,28 +192,28 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	private getAgentSubscription(): Subscription {
-		return this.aiService.agent_requests$.subscribe(({agent, content}) => {
+	private getAssistantSubscription(): Subscription {
+		return this.aiService.assistant_requests$.subscribe(({assistant, content}) => {
 			const form_type = this.getActiveFormType();
 			const form_group = this.getActiveFormGroup();
-			if (!form_group) return this.hireAnalyticsAgent(agent, content);
+			if (!form_group) return this.hireAnalyticsAssistant(assistant, content);
 			switch (form_type) {
 				case CrewFormType.INVITE_CREATE:
-					return this.hireInviteAgent(AiAgent.IndexCrewInvite, form_group, content);
+					return this.hireInviteAssistant(AiAssistant.IndexCrewInvite, form_group, content);
 				case CrewFormType.INVITE_EDIT:
-					return this.hireInviteAgent(AiAgent.IndexCrewInvite, form_group, content);
+					return this.hireInviteAssistant(AiAssistant.IndexCrewInvite, form_group, content);
 				case CrewFormType.USER_EDIT:
-					return this.hireUserAgent(AiAgent.IndexCrewUser, content);
+					return this.hireUserAssistant(AiAssistant.IndexCrewUser, content);
 				case CrewFormType.NONE:
 				default:
-					return this.hireAnalyticsAgent(agent, content);
+					return this.hireAnalyticsAssistant(assistant, content);
 			}
 		});
 	}
 
 	private getToolSubscription(): Subscription {
 		return this.aiService.tool_calls$.subscribe((tool_call: AiChatToolCall) => {
-			this.executeAgentFunction(tool_call);
+			this.executeAssistantFunction(tool_call);
 		});
 	}
 
@@ -709,31 +709,31 @@ export class IndexSubsectionCrewComponent implements OnInit, OnDestroy {
 		AI                     
 	******************************************************** */
 
-	private hireAnalyticsAgent(agent: AiAgent, content: string | null): void {
+	private hireAnalyticsAssistant(assistant: AiAssistant, content: string | null): void {
 		let context = `* **Current Search:** ${this.panel.get('filter')?.value || ''}\n`;
 		context += `* **Current State:** ${this.panel.get('state')?.value || []}\n`;
 		context += `* **Current Role:** ${this.panel.get('role')?.value || []}\n`;
-		this.aiService.openAiSocket(agent, content, context);
+		this.aiService.openAiSocket(assistant, content, context);
 	}
 
-	private hireInviteAgent(agent: AiAgent, form: FormGroup, content: string | null): void {
+	private hireInviteAssistant(assistant: AiAssistant, form: FormGroup, content: string | null): void {
 		let context = `* **Current Date:** ${DateTime.now().toISO()}\n`;
 		context += `* **Current Label:** ${form.get('label')?.value || ''}\n`;
 		context += `* **Current Role:** ${form.get('role')?.value || UserRole.Reader}\n`;
 		context += `* **Current Expiration Enabled:** ${form.get('expiration_enabled')?.value || true}\n`;
 		context += `* **Current Expiration Date:** ${form.get('expiration_date')?.value || null}\n`;
 		context += `* **Current Expiration Time:** ${form.get('expiration_time')?.value || null}\n`;
-		this.aiService.openAiSocket(agent, content, context);
+		this.aiService.openAiSocket(assistant, content, context);
 	}
 
-	private hireUserAgent(agent: AiAgent, content: string | null): void {
+	private hireUserAssistant(assistant: AiAssistant, content: string | null): void {
 		let context = `* **Current Label:** ${this.form_user_edit.get('label')?.value || ''}\n`;
 		context += `* **Current Role:** ${this.form_user_edit.get('role')?.value || UserRole.Reader}\n`;
 		context += `* **Current Active:** ${this.form_user_edit.get('active')?.value || true}\n`;
-		this.aiService.openAiSocket(agent, content, context);
+		this.aiService.openAiSocket(assistant, content, context);
 	}
 
-	private executeAgentFunction(tool_call: AiChatToolCall): void {
+	private executeAssistantFunction(tool_call: AiChatToolCall): void {
 		if (tool_call.function.name === AiFunctionName.UpdateSearch) {
 			this.panel.get('filter')?.setValue(tool_call.function.arguments.search);
 			this.applyFilters();

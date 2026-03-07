@@ -7,11 +7,12 @@ import {BitcoinUTXOracleModule} from '@server/modules/bitcoin/utxoracle/utxoracl
 import {BitcoinRpcModule} from '@server/modules/bitcoin/rpc/btcrpc.module';
 import {LightningAnalyticsModule} from '@server/modules/lightning/analytics/lnanalytics.module';
 import {CashuMintAnalyticsModule} from '@server/modules/cashu/mintanalytics/mintanalytics.module';
+import {AgentModule} from '@server/modules/ai/agent/agent.module';
 /* Local Dependencies */
 import {TaskService} from './task.service';
 
 @Module({
-	imports: [AuthModule, SettingModule, BitcoinUTXOracleModule, BitcoinRpcModule, LightningAnalyticsModule, CashuMintAnalyticsModule],
+	imports: [AuthModule, SettingModule, BitcoinUTXOracleModule, BitcoinRpcModule, LightningAnalyticsModule, CashuMintAnalyticsModule, AgentModule],
 	providers: [TaskService],
 })
 export class TaskModule {}

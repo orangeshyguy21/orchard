@@ -3,17 +3,17 @@ import {AiChatMessage} from '@client/modules/ai/classes/ai-chat-chunk.class';
 /* Local Dependencies */
 import {AiChatCompiledMessage} from './ai-chat-compiled-message.class';
 /* Shared Dependencies */
-import {AiAgent} from '@shared/generated.types';
+import {AiAssistant} from '@shared/generated.types';
 
 export class AiChatConversation {
 	public id: string;
 	public messages: AiChatCompiledMessage[];
-	public agent: AiAgent;
+	public assistant: AiAssistant;
 
-	constructor(id: string, messages: AiChatCompiledMessage[], agent: AiAgent) {
+	constructor(id: string, messages: AiChatCompiledMessage[], assistant: AiAssistant) {
 		this.id = id;
 		this.messages = messages;
-		this.agent = agent;
+		this.assistant = assistant;
 	}
 
 	public getMessages(): AiChatMessage[] {

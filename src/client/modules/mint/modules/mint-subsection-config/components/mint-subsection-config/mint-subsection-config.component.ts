@@ -235,7 +235,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 
 	orchardOptionalInit(): void {
 		if (this.settingAppService.getSetting('ai_enabled')) {
-			this.subscriptions.add(this.getAgentSubscription());
+			this.subscriptions.add(this.getAssistantSubscription());
 			this.subscriptions.add(this.getToolSubscription());
 		}
 	}
@@ -394,8 +394,8 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		});
 	}
 
-	private getAgentSubscription(): Subscription {
-		return this.aiService.agent_requests$.subscribe(({agent, content}) => {
+	private getAssistantSubscription(): Subscription {
+		return this.aiService.assistant_requests$.subscribe(({assistant, content}) => {
 			const form_value = this.form_config.value;
 			let context = `# Mint Configuration\n\n`;
 			context += `## Minting\n`;
@@ -412,13 +412,13 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 				const bolt11 = form_value.melting.sat.bolt11;
 				context += `* **SAT/BOLT11:** ${bolt11.min_amount} - ${bolt11.max_amount}\n`;
 			}
-			this.aiService.openAiSocket(agent, content, context);
+			this.aiService.openAiSocket(assistant, content, context);
 		});
 	}
 
 	private getToolSubscription(): Subscription {
 		return this.aiService.tool_calls$.subscribe((tool_call: AiChatToolCall) => {
-			this.executeAgentFunction(tool_call);
+			this.executeAssistantFunction(tool_call);
 		});
 	}
 
@@ -864,7 +864,7 @@ export class MintSubsectionConfigComponent implements ComponentCanDeactivate, On
 		AI                      
 	******************************************************** */
 
-	private executeAgentFunction(tool_call: AiChatToolCall): void {
+	private executeAssistantFunction(tool_call: AiChatToolCall): void {
 		if (tool_call.function.name === AiFunctionName.MintEnabledUpdate) {
 			const operation = tool_call.function.arguments.operation;
 			const enabled = tool_call.function.arguments.enabled;

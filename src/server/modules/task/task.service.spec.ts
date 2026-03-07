@@ -10,6 +10,7 @@ import {BitcoinRpcService} from '@server/modules/bitcoin/rpc/btcrpc.service';
 import {BitcoinUTXOracleService} from '@server/modules/bitcoin/utxoracle/utxoracle.service';
 import {LightningAnalyticsService} from '@server/modules/lightning/analytics/lnanalytics.service';
 import {CashuMintAnalyticsService} from '@server/modules/cashu/mintanalytics/mintanalytics.service';
+import {AgentService} from '@server/modules/ai/agent/agent.service';
 /* Local Dependencies */
 import {TaskService} from './task.service';
 
@@ -65,6 +66,12 @@ describe('TaskService', () => {
 					provide: ConfigService,
 					useValue: {
 						get: jest.fn(),
+					},
+				},
+				{
+					provide: AgentService,
+					useValue: {
+						cleanupOldRuns: jest.fn(),
 					},
 				},
 			],

@@ -4,7 +4,6 @@ import {FormGroup} from '@angular/forms';
 /* Application Dependencies */
 import {DeviceType} from '@client/modules/layout/types/device.types';
 import {AiHealth} from '@client/modules/ai/classes/ai-health.class';
-import {GraphicStatusState} from '@client/modules/graphic/types/graphic-status.types';
 
 @Component({
 	selector: 'orc-settings-subsection-app-ai-integration',

@@ -40,7 +40,7 @@ import {MintFeeModule} from './mint/fee/mintfee.module';
 import {MintActivityModule} from './mint/activity/mintactivity.module';
 // AI Endpoints
 import {AiModelModule} from './ai/model/aimodel.module';
-import {AiAgentModule} from './ai/agent/aiagent.module';
+import {AiAssistantModule} from './ai/assistant/aiassistant.module';
 import {AiChatModule} from './ai/chat/aichat.module';
 import {AiHealthModule} from './ai/health/aihealth.module';
 // Image Endpoints
@@ -89,7 +89,7 @@ import {ApiEventLogModule} from './event/event.module';
 		MintFeeModule,
 		MintActivityModule,
 		AiModelModule,
-		AiAgentModule,
+		AiAssistantModule,
 		AiChatModule,
 		AiHealthModule,
 		PublicImageModule,

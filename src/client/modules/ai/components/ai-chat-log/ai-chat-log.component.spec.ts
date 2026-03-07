@@ -20,7 +20,8 @@ describe('AiChatLogComponent', () => {
 		fixture.componentRef.setInput('conversation', {messages: []});
 		fixture.componentRef.setInput('active_chat', false);
 		fixture.componentRef.setInput('revision', 0);
-		fixture.componentRef.setInput('agent_definition', null);
+		fixture.componentRef.setInput('assistant_definition', null);
+		fixture.componentRef.setInput('user_name', '');
 		fixture.detectChanges();
 	});
 

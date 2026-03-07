@@ -4,6 +4,8 @@ import {ConfigService} from '@nestjs/config';
 /* Application Dependencies */
 import {FetchService} from '@server/modules/fetch/fetch.service';
 /* Local Dependencies */
+import {SettingService} from '@server/modules/setting/setting.service';
+/* Local Dependencies */
 import {AiService} from './ai.service';
 
 describe('AiService', () => {
@@ -15,6 +17,7 @@ describe('AiService', () => {
 				AiService,
 				{provide: ConfigService, useValue: {get: jest.fn()}},
 				{provide: FetchService, useValue: {fetchWithProxy: jest.fn()}},
+				{provide: SettingService, useValue: {getSetting: jest.fn()}},
 			],
 		}).compile();
 

@@ -29,7 +29,7 @@ export class AiChatService {
 			const controller = new AbortController();
 			this.active_streams.set(ai_chat.id, controller);
 			const signal = controller.signal;
-			const body = await this.aiService.streamChat(ai_chat.model, ai_chat.agent, ai_chat.messages, signal);
+			const body = await this.aiService.streamChat(ai_chat.model, ai_chat.assistant, ai_chat.messages, signal);
 			if (!body) throw new OrchardApiError(OrchardErrorCode.AiError);
 			const reader = body.getReader();
 			const decoder = new TextDecoder();

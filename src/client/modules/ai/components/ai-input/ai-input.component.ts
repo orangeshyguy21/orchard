@@ -2,7 +2,7 @@
 import {ChangeDetectionStrategy, Component, computed, effect, ElementRef, input, output, viewChild} from '@angular/core';
 import {FormControl} from '@angular/forms';
 /* Shared Dependencies */
-import {AiAgent} from '@shared/generated.types';
+import {AiAssistant} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-ai-input',
@@ -13,7 +13,7 @@ import {AiAgent} from '@shared/generated.types';
 })
 export class AiInputComponent {
 	public active_chat = input.required<boolean>();
-	public active_agent = input.required<AiAgent>();
+	public active_assistant = input.required<AiAssistant>();
 	public model = input.required<string | null>();
 	public content = input.required<FormControl>();
 	public focus = input<boolean>(false);
@@ -22,7 +22,7 @@ export class AiInputComponent {
 
 	public input_el = viewChild<ElementRef<HTMLTextAreaElement>>('inputEl');
 
-	public placeholder = computed(() => (this.active_chat() ? 'Generating...' : 'Message agent...'));
+	public placeholder = computed(() => (this.active_chat() ? 'Generating...' : 'Message assistant...'));
 
 	constructor() {
 		effect(() => {

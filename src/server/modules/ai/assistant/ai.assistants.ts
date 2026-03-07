@@ -1,5 +1,5 @@
 /* Local Dependencies */
-import {AiAgent} from './ai.enums';
+import {AiAssistant} from './ai.assistant.enums';
 import {
 	UpdateSearchTool,
 	UpdateDateRangeTool,
@@ -42,8 +42,8 @@ import {
 	ResetEventLogFiltersTool,
 } from './tools';
 
-export const AI_AGENTS = {
-	[AiAgent.DEFAULT]: {
+export const AI_ASSISTANTS = {
+	[AiAssistant.DEFAULT]: {
 		name: 'Orchard Agent',
 		icon: 'spa',
 		section: null,
@@ -54,7 +54,7 @@ export const AI_AGENTS = {
 		},
 		tools: [],
 	},
-	[AiAgent.INDEX_CREW]: {
+	[AiAssistant.INDEX_CREW]: {
 		name: 'Crew Agent',
 		icon: 'spa',
 		section: 'index',
@@ -66,7 +66,7 @@ export const AI_AGENTS = {
 		},
 		tools: [UpdateSearchTool, UpdateCrewStatesTool, UpdateCrewRolesTool],
 	},
-	[AiAgent.INDEX_CREW_INVITE]: {
+	[AiAssistant.INDEX_CREW_INVITE]: {
 		name: 'Crew Invite Agent',
 		icon: 'spa',
 		section: 'index',
@@ -85,7 +85,7 @@ export const AI_AGENTS = {
 		},
 		tools: [UpdateCrewInviteRoleTool, UpdateCrewLabelTool, UpdateCrewInviteExpirationEnabledTool, UpdateCrewInviteExpirationTool],
 	},
-	[AiAgent.INDEX_CREW_USER]: {
+	[AiAssistant.INDEX_CREW_USER]: {
 		name: 'Crew User Agent',
 		icon: 'spa',
 		section: 'index',
@@ -98,7 +98,7 @@ export const AI_AGENTS = {
 		},
 		tools: [UpdateCrewUserActiveTool, UpdateCrewInviteRoleTool, UpdateCrewLabelTool],
 	},
-	[AiAgent.MINT_DASHBOARD]: {
+	[AiAssistant.MINT_DASHBOARD]: {
 		name: 'Mint Dashboard Agent',
 		icon: 'spa',
 		section: 'mint',
@@ -109,7 +109,7 @@ export const AI_AGENTS = {
 		},
 		tools: [UpdateDateRangeTool, UpdateMintAnalyticsUnitsTool, UpdateMintAnalyticsIntervalTool],
 	},
-	[AiAgent.MINT_INFO]: {
+	[AiAssistant.MINT_INFO]: {
 		name: 'Mint Info Agent',
 		icon: 'spa',
 		section: 'mint',
@@ -133,7 +133,7 @@ export const AI_AGENTS = {
 			RemoveMintContactTool,
 		],
 	},
-	[AiAgent.MINT_CONFIG]: {
+	[AiAssistant.MINT_CONFIG]: {
 		name: 'Mint Config',
 		icon: 'spa',
 		section: 'mint',
@@ -151,7 +151,7 @@ export const AI_AGENTS = {
 			UpdateMintMethodDescriptionTool,
 		],
 	},
-	[AiAgent.MINT_KEYSETS]: {
+	[AiAssistant.MINT_KEYSETS]: {
 		name: 'Mint Keysets',
 		icon: 'spa',
 		section: 'mint',
@@ -163,7 +163,7 @@ export const AI_AGENTS = {
 		},
 		tools: [UpdateDateRangeTool, UpdateMintAnalyticsUnitsTool, UpdateMintKeysetStatusTool],
 	},
-	[AiAgent.MINT_KEYSET_ROTATION]: {
+	[AiAssistant.MINT_KEYSET_ROTATION]: {
 		name: 'Mint Keyset Rotation',
 		icon: 'spa',
 		section: 'mint',
@@ -175,7 +175,7 @@ export const AI_AGENTS = {
 		},
 		tools: [UpdateMintKeysetRotationUnitTool, UpdateMintKeysetRotationInputFeePpkTool, UpdateMintKeysetRotationAmountsTool],
 	},
-	[AiAgent.MINT_DATABASE]: {
+	[AiAssistant.MINT_DATABASE]: {
 		name: 'Mint Database',
 		icon: 'spa',
 		section: 'mint',
@@ -187,7 +187,7 @@ export const AI_AGENTS = {
 		},
 		tools: [UpdateDateRangeTool, UpdateMintAnalyticsUnitsTool, UpdateMintDatabaseDataTypeTool, UpdateMintDatabaseStatesTool],
 	},
-	[AiAgent.MINT_BACKUP]: {
+	[AiAssistant.MINT_BACKUP]: {
 		name: 'Mint Backup',
 		icon: 'spa',
 		section: 'mint',
@@ -199,7 +199,7 @@ export const AI_AGENTS = {
 		},
 		tools: [UpdateMintBackupFilenameTool],
 	},
-	[AiAgent.EVENT_LOG]: {
+	[AiAssistant.EVENT_LOG]: {
 		name: 'Event Log Agent',
 		icon: 'spa',
 		section: 'settings',

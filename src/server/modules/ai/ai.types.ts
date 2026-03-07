@@ -1,5 +1,4 @@
 /* Local Dependencies */
-import {UpdateMintNameTool} from './tools';
 import {AiMessageRole, AiFunctionName} from './ai.enums';
 
 export type AiModel = {
@@ -27,6 +26,12 @@ export type AiMessage = {
 	tool_calls?: AiToolCall[];
 };
 
+export type AiToolParameters = {
+	type: string;
+	properties: Record<string, unknown>;
+	required: string[];
+};
+
 export type AiTool = {
 	type: string;
 	function: AiToolFunction;
@@ -35,12 +40,12 @@ export type AiTool = {
 export type AiToolFunction = {
 	name: string;
 	description: string;
-	parameters: (typeof UpdateMintNameTool)['function']['parameters'];
+	parameters: AiToolParameters;
 };
 
 export type AiToolCall = {
 	function: {
 		name: AiFunctionName;
-		arguments: (typeof UpdateMintNameTool)['function']['parameters'];
+		arguments: AiToolParameters;
 	};
 };

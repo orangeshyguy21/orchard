@@ -135,7 +135,7 @@ describe('SettingInterceptor', () => {
 				description: 'Whether the bitcoin oracle is enabled',
 			} as any);
 
-			const context = createMockContext({key: SettingKey.BITCOIN_ORACLE, value: 'true'});
+			const context = createMockContext({keys: [SettingKey.BITCOIN_ORACLE], values: ['true']});
 			const handler = createMockCallHandler({key: SettingKey.BITCOIN_ORACLE, value: 'true'});
 
 			// act
@@ -183,7 +183,7 @@ describe('SettingInterceptor', () => {
 			} as any);
 
 			const mock_error = {message: 'Update failed', extensions: {code: 'SETTING_ERROR', details: 'Invalid value'}};
-			const context = createMockContext({key: SettingKey.BITCOIN_ORACLE, value: 'invalid'});
+			const context = createMockContext({keys: [SettingKey.BITCOIN_ORACLE], values: ['invalid']});
 			const handler: CallHandler = {
 				handle: jest.fn().mockReturnValue(throwError(() => mock_error)),
 			};
@@ -219,7 +219,7 @@ describe('SettingInterceptor', () => {
 			reflector.get.mockReturnValue(mock_metadata);
 			settingService.getSetting.mockRejectedValue(new Error('DB error'));
 
-			const context = createMockContext({key: SettingKey.BITCOIN_ORACLE, value: 'true'});
+			const context = createMockContext({keys: [SettingKey.BITCOIN_ORACLE], values: ['true']});
 			const handler = createMockCallHandler({});
 
 			// act
@@ -255,7 +255,7 @@ describe('SettingInterceptor', () => {
 			} as any);
 			eventLogService.createEvent.mockRejectedValue(new Error('Logging failed'));
 
-			const context = createMockContext({key: SettingKey.BITCOIN_ORACLE, value: 'true'});
+			const context = createMockContext({keys: [SettingKey.BITCOIN_ORACLE], values: ['true']});
 			const expected_result = {key: SettingKey.BITCOIN_ORACLE, value: 'true'};
 			const handler = createMockCallHandler(expected_result);
 

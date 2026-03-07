@@ -3,17 +3,17 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} fr
 /* Native Dependencies */
 import {formatToolName} from '@client/modules/ai/helpers/tool-name-format';
 /* Shared Dependencies */
-import {OrchardAiAgentTool} from '@shared/generated.types';
+import {OrchardAiAssistantTool} from '@shared/generated.types';
 
 @Component({
-	selector: 'orc-ai-agent-definition-tool',
+	selector: 'orc-ai-assistant-definition-tool',
 	standalone: false,
-	templateUrl: './ai-agent-definition-tool.component.html',
-	styleUrl: './ai-agent-definition-tool.component.scss',
+	templateUrl: './ai-assistant-definition-tool.component.html',
+	styleUrl: './ai-assistant-definition-tool.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AiAgentDefinitionToolComponent implements OnInit {
-	@Input() public tool!: OrchardAiAgentTool;
+export class AiAssistantDefinitionToolComponent implements OnInit {
+	@Input() public tool!: OrchardAiAssistantTool;
 
 	public tool_name!: string;
 	public tool_expanded: boolean = false;

@@ -54,14 +54,14 @@
 				[block_count]="block_count()"
 				[device_type]="device_type()"
 				[user_name]="user_name()"
-				(showAgent)="onShowAgent()"
+				(showAssistant)="onShowAssistant()"
 				(save)="onSavePendingEvent()"
 				(cancel)="onCancelPendingEvent()"
 				(abort)="onAbortSubscribedEvent()"
 			></orc-nav-mobile>
 			@if (ai_enabled()) {
 				<orc-ai-nav
-					[active_agent]="active_agent()"
+					[active_assistant]="active_assistant()"
 					[active_chat]="active_chat()"
 					[model]="ai_model()"
 					[model_options]="ai_models()"
@@ -72,13 +72,13 @@
 					[message_length]="ai_conversation()?.messages?.length"
 					[log_open]="sidenav ? sidenav.opened : false"
 					[device_type]="device_type()"
-					[mobile_agent]="show_mobile_agent()"
+					[mobile_assistant]="show_mobile_assistant()"
 					[opened]="!show_mobile_nav()"
 					[event_pending]="active_event()?.type === 'PENDING'"
 					(command)="onCommand()"
 					(modelChange)="onModelChange($event)"
 					(toggleLog)="onToggleLog()"
-					(hideAgent)="onHideAgent()"
+					(hideAssistant)="onHideAssistant()"
 				>
 					<orc-event-general-nav-tool
 						navroute="event"
@@ -93,12 +93,12 @@
 			}
 		</div>
 	</div>
-	<mat-sidenav #aiSidenav [mode]="ai_sidenav_mode()" position="end" class="ai-sidenav" [class.mobile-agent]="!desktop_nav_open()">
+	<mat-sidenav #aiSidenav [mode]="ai_sidenav_mode()" position="end" class="ai-sidenav" [class.mobile-assistant]="!desktop_nav_open()">
 		<orc-ai-chat-log
 			[conversation]="ai_conversation()"
 			[active_chat]="active_chat()"
 			[revision]="ai_revision()"
-			[agent_definition]="ai_agent_definition()"
+			[assistant_definition]="ai_assistant_definition()"
 			[user_name]="user_name()"
 			(clear)="onClearConversation()"
 			(close)="closeChatLog()"

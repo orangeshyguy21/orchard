@@ -15,7 +15,7 @@ import {MintService} from '@client/modules/mint/services/mint/mint.service';
 /* Local Dependencies */
 import {MintSectionComponent} from './components/mint-section/mint-section.component';
 /* Shared Dependencies */
-import {AiAgent} from '@shared/generated.types';
+import {AiAssistant} from '@shared/generated.types';
 
 const mintInfoResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
 	const mintService = inject(MintService);
@@ -133,7 +133,7 @@ const mintQuoteTtlsResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, st
 						data: {
 							section: 'mint',
 							sub_section: 'dashboard',
-							agent: AiAgent.MintDashboard,
+							assistant: AiAssistant.MintDashboard,
 						},
 					},
 					{
@@ -150,7 +150,7 @@ const mintQuoteTtlsResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, st
 						data: {
 							section: 'mint',
 							sub_section: 'info',
-							agent: AiAgent.MintInfo,
+							assistant: AiAssistant.MintInfo,
 						},
 					},
 					{
@@ -168,7 +168,7 @@ const mintQuoteTtlsResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, st
 						data: {
 							section: 'mint',
 							sub_section: 'config',
-							agent: AiAgent.MintConfig,
+							assistant: AiAssistant.MintConfig,
 						},
 					},
 					{
@@ -186,7 +186,7 @@ const mintQuoteTtlsResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, st
 						data: {
 							section: 'mint',
 							sub_section: 'keysets',
-							agent: AiAgent.MintKeysets,
+							assistant: AiAssistant.MintKeysets,
 						},
 					},
 					{
@@ -203,7 +203,7 @@ const mintQuoteTtlsResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, st
 						data: {
 							section: 'mint',
 							sub_section: 'database',
-							agent: AiAgent.MintDatabase,
+							assistant: AiAssistant.MintDatabase,
 						},
 					},
 					{

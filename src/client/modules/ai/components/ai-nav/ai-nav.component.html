@@ -1,7 +1,7 @@
-<div class="ai-nav-container" [class.collapsed]="!opened()" [class.mobile-agent]="mobile_agent()">
+<div class="ai-nav-container" [class.collapsed]="!opened()" [class.mobile-assistant]="mobile_assistant()">
 	<div class="ai-user-input">
 		<orc-ai-input
-			[active_agent]="active_agent()"
+			[active_assistant]="active_assistant()"
 			[active_chat]="active_chat()"
 			[model]="model()"
 			[content]="content()"
@@ -18,8 +18,8 @@
 			(modelChange)="modelChange.emit($event)"
 		></orc-ai-model>
 
-		@if (mobile_agent()) {
-			<button mat-icon-button type="button" (click)="onHideAgent()" class="orc-icon-button">
+		@if (mobile_assistant()) {
+			<button mat-icon-button type="button" (click)="onHideAssistant()" class="orc-icon-button">
 				<mat-icon class="orc-outline-color">{{ event_pending() ? 'cancel' : 'close' }}</mat-icon>
 			</button>
 			<ng-content></ng-content>

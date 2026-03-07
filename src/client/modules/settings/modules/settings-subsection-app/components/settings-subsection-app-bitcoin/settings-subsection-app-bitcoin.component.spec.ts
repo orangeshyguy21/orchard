@@ -24,8 +24,9 @@ describe('SettingsSubsectionAppBitcoinComponent', () => {
 		});
 
 		fixture.componentRef.setInput('bitcoin_enabled', false);
+		fixture.componentRef.setInput('bitcoin_oracle_enabled', false);
 		fixture.componentRef.setInput('form_group', mock_form_group);
-		fixture.componentRef.setInput('oracle_price', null);
+		fixture.componentRef.setInput('device_type', 'desktop');
 
 		fixture.detectChanges();
 	});

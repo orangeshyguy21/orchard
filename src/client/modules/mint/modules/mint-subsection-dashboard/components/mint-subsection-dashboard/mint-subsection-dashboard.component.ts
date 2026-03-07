@@ -199,7 +199,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 
 	orchardOptionalInit(): void {
 		if (this.settingAppService.getSetting('ai_enabled')) {
-			this.subscriptions.add(this.getAgentSubscription());
+			this.subscriptions.add(this.getAssistantSubscription());
 			this.subscriptions.add(this.getToolSubscription());
 		}
 		if (this.bitcoin_oracle_enabled) {
@@ -234,20 +234,20 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		Subscriptions                      
 	******************************************************** */
 
-	private getAgentSubscription(): Subscription {
-		return this.aiService.agent_requests$.subscribe(({agent, content}) => {
+	private getAssistantSubscription(): Subscription {
+		return this.aiService.assistant_requests$.subscribe(({assistant, content}) => {
 			let context = `* **Current Date:** ${DateTime.now().toFormat('yyyy-MM-dd')}\n`;
 			context += `* **Date Start:** ${DateTime.fromSeconds(this.page_settings().date_start).toFormat('yyyy-MM-dd')}\n`;
 			context += `* **Date End:** ${DateTime.fromSeconds(this.page_settings().date_end).toFormat('yyyy-MM-dd')}\n`;
 			context += `* **Interval:** ${this.page_settings().interval}\n`;
 			context += `* **Units:** ${this.page_settings().units.join(', ')}\n`;
-			this.aiService.openAiSocket(agent, content, context);
+			this.aiService.openAiSocket(assistant, content, context);
 		});
 	}
 
 	private getToolSubscription(): Subscription {
 		return this.aiService.tool_calls$.subscribe((tool_call: AiChatToolCall) => {
-			this.executeAgentFunction(tool_call);
+			this.executeAssistantFunction(tool_call);
 		});
 	}
 
@@ -503,7 +503,7 @@ export class MintSubsectionDashboardComponent implements OnInit, OnDestroy {
 		AI                    
 	******************************************************** */
 
-	private executeAgentFunction(tool_call: AiChatToolCall): void {
+	private executeAssistantFunction(tool_call: AiChatToolCall): void {
 		if (tool_call.function.name === AiFunctionName.DateRangeUpdate) {
 			const range = [
 				DateTime.fromFormat(tool_call.function.arguments.date_start, 'yyyy-MM-dd').toSeconds(),

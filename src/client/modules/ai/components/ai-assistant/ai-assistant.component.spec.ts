@@ -3,21 +3,21 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 /* Native Dependencies */
 import {OrcAiModule} from '@client/modules/ai/ai.module';
 /* Local Dependencies */
-import {AiAgentComponent} from './ai-agent.component';
+import {AiAssistantComponent} from './ai-assistant.component';
 
-describe('AiAgentComponent', () => {
-	let component: AiAgentComponent;
-	let fixture: ComponentFixture<AiAgentComponent>;
+describe('AiAssistantComponent', () => {
+	let component: AiAssistantComponent;
+	let fixture: ComponentFixture<AiAssistantComponent>;
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
 			imports: [OrcAiModule],
-			declarations: [AiAgentComponent],
+			declarations: [AiAssistantComponent],
 		}).compileComponents();
 
-		fixture = TestBed.createComponent(AiAgentComponent);
+		fixture = TestBed.createComponent(AiAssistantComponent);
 		component = fixture.componentInstance;
-		component.agent = {name: 'Agent', icon: 'smart_toy', section: 'ai'} as any;
+		component.assistant = {name: 'Assistant', icon: 'smart_toy', section: 'ai'} as any;
 		fixture.detectChanges();
 	});
 

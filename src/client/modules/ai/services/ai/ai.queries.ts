@@ -46,9 +46,9 @@ export const AI_MODELS_QUERY = `
     }
 `;
 
-export const AI_AGENT_QUERY = `
-    query AiAgent($agent: AiAgent!) {
-        ai_agent(agent: $agent) {
+export const AI_ASSISTANT_QUERY = `
+    query AiAssistant($assistant: AiAssistant!) {
+        ai_assistant(assistant: $assistant) {
             name
             description
             icon

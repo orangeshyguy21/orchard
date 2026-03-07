@@ -23,7 +23,7 @@ import {AiChatToolCall} from '@client/modules/ai/classes/ai-chat-chunk.class';
 import {EventLogService} from '@client/modules/event/services/event-log/event-log.service';
 import {EventLog} from '@client/modules/event/classes/event-log.class';
 /* Shared Dependencies */
-import {EventLogSection, EventLogType, EventLogStatus, AiAgent, AiFunctionName, QueryEvent_LogsArgs} from '@shared/generated.types';
+import {EventLogSection, EventLogType, EventLogStatus, AiAssistant, AiFunctionName, QueryEvent_LogsArgs} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-event-subsection-log',
@@ -76,7 +76,7 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
 
 	orchardOptionalInit(): void {
 		if (this.settingAppService.getSetting('ai_enabled')) {
-			this.subscriptions.add(this.getAgentSubscription());
+			this.subscriptions.add(this.getAssistantSubscription());
 			this.subscriptions.add(this.getToolSubscription());
 		}
 	}
@@ -150,17 +150,17 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	/** Subscribes to agent requests from the AI input */
-	private getAgentSubscription(): Subscription {
-		return this.aiService.agent_requests$.subscribe(({agent: _agent, content}) => {
-			this.hireEventLogAgent(content);
+	/** Subscribes to assistant requests from the AI input */
+	private getAssistantSubscription(): Subscription {
+		return this.aiService.assistant_requests$.subscribe(({assistant: _assistant, content}) => {
+			this.hireEventLogAssistant(content);
 		});
 	}
 
 	/** Subscribes to tool calls from the AI response */
 	private getToolSubscription(): Subscription {
 		return this.aiService.tool_calls$.subscribe((tool_call: AiChatToolCall) => {
-			this.executeAgentFunction(tool_call);
+			this.executeAssistantFunction(tool_call);
 		});
 	}
 
@@ -290,11 +290,11 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
 	}
 
 	/* *******************************************************
-	   Agent
+	   Assistant
 	******************************************************** */
 
 	/** Opens the AI socket with current form context */
-	private hireEventLogAgent(content: string | null): void {
+	private hireEventLogAssistant(content: string | null): void {
 		const section_options = Object.values(EventLogSection);
 		const type_options = Object.values(EventLogType);
 		const status_options = Object.values(EventLogStatus);
@@ -311,11 +311,11 @@ export class EventSubsectionLogComponent implements OnInit, OnDestroy {
 		context += `* **Available Users:** ${this.users()
 			.map((u) => `${u.name} (${u.id})`)
 			.join(', ')}`;
-		this.aiService.openAiSocket(AiAgent.EventLog, content, context);
+		this.aiService.openAiSocket(AiAssistant.EventLog, content, context);
 	}
 
-	/** Executes the tool call from the AI agent */
-	private executeAgentFunction(tool_call: AiChatToolCall): void {
+	/** Executes the tool call from the AI assistant */
+	private executeAssistantFunction(tool_call: AiChatToolCall): void {
 		if (tool_call.function.name === AiFunctionName.DateRangeUpdate) {
 			const range = [
 				DateTime.fromFormat(tool_call.function.arguments.date_start, 'yyyy-MM-dd').toSeconds(),

@@ -122,7 +122,7 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 
 	orchardOptionalInit(): void {
 		if (this.settingAppService.getSetting('ai_enabled')) {
-			this.subscriptions.add(this.getAgentSubscription());
+			this.subscriptions.add(this.getAssistantSubscription());
 			this.subscriptions.add(this.getToolSubscription());
 		}
 	}
@@ -131,8 +131,8 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 		Subscriptions                      
 	******************************************************** */
 
-	private getAgentSubscription(): Subscription {
-		return this.aiService.agent_requests$.subscribe(({agent, content}) => {
+	private getAssistantSubscription(): Subscription {
+		return this.aiService.assistant_requests$.subscribe(({assistant, content}) => {
 			const form_value = this.form_info.value;
 			let context = `* **Name:** ${form_value.name || 'Not set'}\n`;
 			context += `* **Description:** ${form_value.description || 'Not set'}\n`;
@@ -155,13 +155,13 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 			} else {
 				context += `  * No contacts configured\n`;
 			}
-			this.aiService.openAiSocket(agent, content, context);
+			this.aiService.openAiSocket(assistant, content, context);
 		});
 	}
 
 	private getToolSubscription(): Subscription {
 		return this.aiService.tool_calls$.subscribe((tool_call: AiChatToolCall) => {
-			this.executeAgentFunction(tool_call);
+			this.executeAssistantFunction(tool_call);
 		});
 	}
 
@@ -678,7 +678,7 @@ export class MintSubsectionInfoComponent implements ComponentCanDeactivate, OnIn
 		AI                    
 	******************************************************** */
 
-	private executeAgentFunction(tool_call: AiChatToolCall): void {
+	private executeAssistantFunction(tool_call: AiChatToolCall): void {
 		if (tool_call.function.name === AiFunctionName.MintNameUpdate) {
 			this.form_info.get('name')?.setValue(tool_call.function.arguments.name);
 			this.form_info.get('name')?.markAsDirty();

@@ -40,7 +40,7 @@ import {MintAnalyticKeyset} from '@client/modules/mint/classes/mint-analytic.cla
 import {MintKeysetCount} from '@client/modules/mint/classes/mint-keyset-count.class';
 import {MintSubsectionKeysetsTableRow} from '@client/modules/mint/modules/mint-subsection-keysets/classes/mint-subsection-keysets-table-row.class';
 /* Shared Dependencies */
-import {MintUnit, AnalyticsInterval, AiFunctionName, AiAgent} from '@shared/generated.types';
+import {MintUnit, AnalyticsInterval, AiFunctionName, AiAssistant} from '@shared/generated.types';
 
 @Component({
 	selector: 'orc-mint-subsection-keysets',
@@ -124,7 +124,7 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 
 	orchardOptionalInit(): void {
 		if (this.settingAppService.getSetting('ai_enabled')) {
-			this.subscriptions.add(this.getAgentSubscription());
+			this.subscriptions.add(this.getAssistantSubscription());
 			this.subscriptions.add(this.getToolSubscription());
 		}
 		if (this.bitcoin_oracle_enabled) {
@@ -167,15 +167,15 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		});
 	}
 
-	private getAgentSubscription(): Subscription {
-		return this.aiService.agent_requests$.subscribe(({agent, content}) => {
-			this.keysets_rotation ? this.hireRotationAgent(AiAgent.MintKeysetRotation, content) : this.hireAnalyticsAgent(agent, content);
+	private getAssistantSubscription(): Subscription {
+		return this.aiService.assistant_requests$.subscribe(({assistant, content}) => {
+			this.keysets_rotation ? this.hireRotationAssistant(AiAssistant.MintKeysetRotation, content) : this.hireAnalyticsAssistant(assistant, content);
 		});
 	}
 
 	private getToolSubscription(): Subscription {
 		return this.aiService.tool_calls$.subscribe((tool_call: AiChatToolCall) => {
-			this.executeAgentFunction(tool_call);
+			this.executeAssistantFunction(tool_call);
 		});
 	}
 
@@ -409,24 +409,24 @@ export class MintSubsectionKeysetsComponent implements ComponentCanDeactivate, O
 		AI                     
 	******************************************************** */
 
-	private hireAnalyticsAgent(agent: AiAgent, content: string | null): void {
+	private hireAnalyticsAssistant(assistant: AiAssistant, content: string | null): void {
 		let context = `* **Current Date:** ${DateTime.now().toFormat('yyyy-MM-dd')}\n`;
 		context += `* **Date Start:** ${DateTime.fromSeconds(this.page_settings.date_start).toFormat('yyyy-MM-dd')}\n`;
 		context += `* **Date End:** ${DateTime.fromSeconds(this.page_settings.date_end).toFormat('yyyy-MM-dd')}\n`;
 		context += `* **Units:** ${this.page_settings.units}\n`;
 		context += `* **Status:** ${this.page_settings.status}\n`;
 		context += `* **Available Units:** ${this.unit_options.map((unit) => unit.value).join(', ')}\n`;
-		this.aiService.openAiSocket(agent, content, context);
+		this.aiService.openAiSocket(assistant, content, context);
 	}
-	private hireRotationAgent(agent: AiAgent, content: string | null): void {
+	private hireRotationAssistant(assistant: AiAssistant, content: string | null): void {
 		let context = `* **Current Unit:** ${this.form_keyset.value.unit}\n`;
 		context += `* **Input Fee PPK:** ${this.form_keyset.value.input_fee_ppk}\n`;
 		context += `* **Amounts:** ${this.form_keyset.value.amounts}\n`;
 		context += `* **Available Units:** ${this.unit_options.map((unit) => unit.value).join(', ')}\n`;
-		this.aiService.openAiSocket(agent, content, context);
+		this.aiService.openAiSocket(assistant, content, context);
 	}
 
-	private executeAgentFunction(tool_call: AiChatToolCall): void {
+	private executeAssistantFunction(tool_call: AiChatToolCall): void {
 		if (tool_call.function.name === AiFunctionName.DateRangeUpdate) {
 			const range = [
 				DateTime.fromFormat(tool_call.function.arguments.date_start, 'yyyy-MM-dd').toSeconds(),

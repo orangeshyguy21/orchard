@@ -5,22 +5,22 @@ import {ErrorService} from '@server/modules/error/error.service';
 import {OrchardErrorCode} from '@server/modules/error/error.types';
 import {OrchardApiError} from '@server/modules/graphql/classes/orchard-error.class';
 /* Native Dependencies */
-import {AiAgent} from '@server/modules/ai/ai.enums';
-import {AI_AGENTS} from '@server/modules/ai/ai.agents';
+import {AiAssistant} from '@server/modules/ai/assistant/ai.assistant.enums';
+import {AI_ASSISTANTS} from '@server/modules/ai/assistant/ai.assistants';
 /* Local Dependencies */
-import {OrchardAiAgent} from './aiagent.model';
+import {OrchardAiAssistant} from './aiassistant.model';
 
 @Injectable()
-export class AiAgentService {
-	private readonly logger = new Logger(AiAgentService.name);
+export class AiAssistantService {
+	private readonly logger = new Logger(AiAssistantService.name);
 
 	constructor(private errorService: ErrorService) {}
 
-	async getAgent(tag: string, agent_name: AiAgent): Promise<OrchardAiAgent> {
+	async getAssistant(tag: string, assistant_name: AiAssistant): Promise<OrchardAiAssistant> {
 		try {
-			const agent = AI_AGENTS[agent_name];
-			if (!agent) throw OrchardErrorCode.AiAgentNotFoundError;
-			return new OrchardAiAgent(agent);
+			const assistant = AI_ASSISTANTS[assistant_name];
+			if (!assistant) throw OrchardErrorCode.AiAssistantNotFoundError;
+			return new OrchardAiAssistant(assistant);
 		} catch (error) {
 			const orchard_error = this.errorService.resolveError(this.logger, error, tag, {
 				errord: OrchardErrorCode.AiError,
