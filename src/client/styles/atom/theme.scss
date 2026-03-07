@@ -348,6 +348,15 @@
     }
 }
 
+/* Specific Menu Button Overrides */
+:root {
+	.orc-menu-button-full {
+		.mat-mdc-menu-item-text {
+			width: 100%;
+		}
+	}
+}
+
 /* Specific Scroll Calendar Overrides */
 :root {
 	.orc-scroll-calendar {

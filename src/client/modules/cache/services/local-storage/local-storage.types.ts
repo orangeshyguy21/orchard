@@ -90,3 +90,8 @@ export type EventLogSettings = {
 	date_preset: DateRangePreset | null;
 	page_size: number | null;
 };
+
+export type AiFavorites = {
+	ollama: string[];
+	openrouter: string[];
+};

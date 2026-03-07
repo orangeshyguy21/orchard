@@ -38,6 +38,7 @@ import {AiModel} from '@client/modules/ai/classes/ai-model.class';
 import {AiChatConversation} from '@client/modules/ai/classes/ai-chat-conversation.class';
 import {AiChatCompiledMessage} from '@client/modules/ai/classes/ai-chat-compiled-message.class';
 import {AiAssistantDefinition} from '@client/modules/ai/classes/ai-assistant-definition.class';
+import {AiFavorites} from '@client/modules/cache/services/local-storage/local-storage.types';
 /* Native Dependencies */
 import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Shared Dependencies */
@@ -63,6 +64,8 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	public ai_revision = signal<number>(0);
 	public ai_tool_calls = signal<number>(0);
 	public ai_model = signal<string | null>(null);
+	public ai_vendor = signal<string>('ollama');
+	public ai_favorites = signal<AiFavorites>({ollama: [], openrouter: []});
 	public active_chat = signal<boolean>(false);
 	public active_section = signal<string>('');
 	public active_sub_section = signal<string>('');
@@ -113,6 +116,8 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 		private cdr: ChangeDetectorRef,
 	) {
         this.ai_enabled.set(this.settingAppService.getSetting('ai_enabled'));
+		this.ai_vendor.set(this.settingAppService.getSetting('ai_vendor'));
+		this.ai_favorites.set(this.settingDeviceService.getAiFavorites());
 		this.enabled_bitcoin.set(this.configService.config.bitcoin.enabled);
 		this.enabled_lightning.set(this.configService.config.lightning.enabled);
 		this.enabled_mint.set(this.configService.config.mint.enabled);
@@ -317,8 +322,17 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 	private getEventSubscription(): Subscription {
 		return this.eventService.getActiveEvent().subscribe((event_data: EventData | null) => {
 			this.active_event.set(event_data);
-			if (this.active_section() === 'settings') this.ai_model.set(this.settingDeviceService.getModel());
-			this.cdr.detectChanges();
+			if (this.active_section() === 'settings') {
+                const vendor = this.settingAppService.getSetting('ai_vendor');
+                const model = this.settingDeviceService.getModel();
+                const new_vendor = this.settingAppService.getSetting('ai_vendor');
+                const new_model = this.settingDeviceService.getModel();
+                if( model !== new_model) this.ai_model.set(new_model);
+                if( vendor !== new_vendor){
+                    this.ai_vendor.set(new_vendor);
+                    this.getModels();
+                }
+			}
 		});
 	}
 
@@ -376,6 +390,9 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 
 	private getModels(): void {
 		this.aiService.getAiModels().subscribe((models: AiModel[]) => {
+            // const vendors = [...new Set(models.map(m => m.model.split('/')[0]))];
+            // console.log('vendors', vendors, vendors.length);
+            console.log('models', models, models.length);
 			this.ai_models.set(models);
 		});
 	}
@@ -415,6 +432,11 @@ export class LayoutInteriorComponent implements OnInit, OnDestroy {
 				message: 'Model updated!',
 			}),
 		);
+	}
+
+	public onFavoritesChange(favorites: AiFavorites): void {
+		this.ai_favorites.set(favorites);
+		this.settingDeviceService.setAiFavorites(favorites);
 	}
 
 	public onClearConversation(): void {

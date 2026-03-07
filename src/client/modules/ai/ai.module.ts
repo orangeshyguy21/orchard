@@ -3,6 +3,8 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ReactiveFormsModule} from '@angular/forms';
 /* Vendors Dependencies */
+import {OverlayModule} from '@angular/cdk/overlay';
+import {PortalModule} from '@angular/cdk/portal';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatIconModule} from '@angular/material/icon';
@@ -12,6 +14,8 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import {MatTableModule} from '@angular/material/table';
 import {MatCardModule} from '@angular/material/card';
 import {MatBadgeModule} from '@angular/material/badge';
+import {MatListModule} from '@angular/material/list';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
 /* Application Dependencies */
 import {OrcFormModule} from '@client/modules/form/form.module';
 import {OrcCrewModule} from '@client/modules/crew/crew.module';
@@ -55,6 +59,8 @@ import {AiChatMessageErrorComponent} from './components/ai-chat-message-error/ai
 	imports: [
 		CommonModule,
 		ReactiveFormsModule,
+		OverlayModule,
+		PortalModule,
 		MatFormFieldModule,
 		MatInputModule,
 		MatIconModule,
@@ -64,6 +70,8 @@ import {AiChatMessageErrorComponent} from './components/ai-chat-message-error/ai
 		MatTableModule,
 		MatCardModule,
 		MatBadgeModule,
+		MatListModule,
+		MatAutocompleteModule,
 		OrcFormModule,
 		OrcCrewModule,
 	],

@@ -1,11 +1,13 @@
 /* Core Dependencies */
 import {ChangeDetectionStrategy, Component, input, output, signal, effect} from '@angular/core';
 import {FormControl} from '@angular/forms';
+/* Application Dependencies */
+import {DeviceType} from '@client/modules/layout/types/device.types';
+import {AiFavorites} from '@client/modules/cache/services/local-storage/local-storage.types';
 /* Native Dependencies */
 import {AiService} from '@client/modules/ai/services/ai/ai.service';
 import {AiModel} from '@client/modules/ai/classes/ai-model.class';
 import {AiChatConversation} from '@client/modules/ai/classes/ai-chat-conversation.class';
-import {DeviceType} from '@client/modules/layout/types/device.types';
 /* Shared Dependencies */
 import {AiAssistant} from '@shared/generated.types';
 
@@ -25,6 +27,8 @@ export class AiNavComponent {
 	public active_chat = input.required<boolean>();
 	public model = input.required<string | null>();
 	public model_options = input.required<AiModel[]>();
+	public vendor = input<string>('ollama');
+	public favorites = input<AiFavorites>({ollama: [], openrouter: []});
 	public actionable = input.required<boolean>();
 	public content = input.required<FormControl>();
 	public conversation = input.required<AiChatConversation | null>();
@@ -39,6 +43,7 @@ export class AiNavComponent {
 	/* Outputs */
 	public command = output<void>();
 	public modelChange = output<string>();
+	public favoritesChange = output<AiFavorites>();
 	public toggleLog = output<void>();
 	public hideAssistant = output<void>();
 

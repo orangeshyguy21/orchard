@@ -5,7 +5,7 @@ import {DateAdapter} from '@angular/material/core';
 import {Settings} from 'luxon';
 /* Application Dependencies */
 import {LocalStorageService} from '@client/modules/cache/services/local-storage/local-storage.service';
-import {ThemeType, CurrencyType, Currency} from '@client/modules/cache/services/local-storage/local-storage.types';
+import {ThemeType, CurrencyType, Currency, AiFavorites} from '@client/modules/cache/services/local-storage/local-storage.types';
 import {
 	AllBitcoinOracleSettings,
 	AllMintDashboardSettings,
@@ -104,6 +104,14 @@ export class SettingDeviceService {
 	}
 	public setModel(model: string | null): void {
 		this.localStorageService.setModel({model: model});
+	}
+
+	/* AI Favorites */
+	public getAiFavorites(): AiFavorites {
+		return this.localStorageService.getAiFavorites();
+	}
+	public setAiFavorites(favorites: AiFavorites): void {
+		this.localStorageService.setAiFavorites(favorites);
 	}
 
 	/* Currency */

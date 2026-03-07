@@ -1,21 +1,31 @@
-@if (device_mobile()) {
-	<button mat-icon-button type="button" [matMenuTriggerFor]="model_menu" class="orc-icon-button">
+@if (device_type() === 'mobile') {
+	<button mat-icon-button type="button" (click)="togglePanel()" class="orc-icon-button" [class.is-open]="is_open()">
 		<mat-icon class="orc-outline-color">spa</mat-icon>
 	</button>
 } @else {
-	<button mat-button type="button" [matMenuTriggerFor]="model_menu">
+	<button mat-button type="button" (click)="togglePanel()" [class.is-open]="is_open()">
 		<div class="orc-outline-color font-size-xs">{{ model() }}</div>
 	</button>
 }
 
-<mat-menu #model_menu="matMenu" yPosition="above" class="orc-bottom-nav-menu">
-	@for (option of model_options(); track option.model) {
-		<button mat-menu-item [class.active-model-option]="option.model === model()" (click)="modelChange.emit(option.model)">
-			<div class="flex flex-items-center flex-gap-1 font-weight-light">
-				<div class="orc-outline-color w-min-3">{{ option.ollama?.parameter_size || option.openrouter?.family }}</div>
-				<div class="flex-grow text-nowrap">{{ option.name }}</div>
-				<mat-icon>{{ option.model === model() ? 'check' : '' }}</mat-icon>
-			</div>
-		</button>
-	}
-</mat-menu>
+<ng-template #panelTemplate>
+	<div class="model-panel orc-menu-button-full" [class.mobile]="device_type() === 'mobile'">
+		<mat-form-field class="search-field">
+			<mat-icon matPrefix class="orc-outline-color">search</mat-icon>
+			<input matInput type="text" placeholder="Search models..." [formControl]="search_control" />
+		</mat-form-field>
+		<div class="model-list">
+			@for (option of displayed_models(); track option.model) {
+				<button mat-menu-item [class.active-model-option]="option.model === model()" (click)="selectModel(option.model)">
+					<div class="flex flex-items-center flex-gap-1 font-weight-light">
+                        <div class="ai-vendor-logo">
+                            <img src="ollama.png" alt="Ollama" />
+                        </div>
+						<div class="flex-grow">{{ option.name }}</div>
+						<mat-icon [class.ai-favorite]="favorite_ids().has(option.model) && option.model !== model()">{{ option.model === model() ? 'check' : favorite_ids().has(option.model) ? 'star' : '' }}</mat-icon>
+					</div>
+				</button>
+			}
+		</div>
+	</div>
+</ng-template>

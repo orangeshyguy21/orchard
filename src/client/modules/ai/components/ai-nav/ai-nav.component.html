@@ -14,8 +14,11 @@
 		<orc-ai-model
 			[model]="model()"
 			[model_options]="model_options()"
-			[device_mobile]="device_type() === 'mobile'"
+			[device_type]="device_type()"
+			[vendor]="vendor()"
+			[favorites]="favorites()"
 			(modelChange)="modelChange.emit($event)"
+			(favoritesChange)="favoritesChange.emit($event)"
 		></orc-ai-model>
 
 		@if (mobile_assistant()) {

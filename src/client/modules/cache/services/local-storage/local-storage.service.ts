@@ -17,6 +17,7 @@ import {
 	SettingsDeviceSettings,
 	SettingsAppSettings,
 	EventLogSettings,
+	AiFavorites,
 } from './local-storage.types';
 
 @Injectable({
@@ -43,6 +44,8 @@ export class LocalStorageService {
 		/* Settings Settings */
 		SETTINGS_DEVICE_KEY: 'v1.settings.device.settings',
 		SETTINGS_APP_KEY: 'v0.settings.app.settings',
+		/* AI Settings */
+		AI_FAVORITES_KEY: 'v0.setting.ai_favorites',
 		/* Event Log Settings */
 		EVENT_LOG_KEY: 'v0.event.log.settings',
 	};
@@ -154,6 +157,11 @@ export class LocalStorageService {
 		if (!settings) return {tertiary_nav: null};
 		return settings;
 	}
+	getAiFavorites(): AiFavorites {
+		const favorites = this.getItem<AiFavorites>(this.STORAGE_KEYS.AI_FAVORITES_KEY);
+		if (!favorites) return {ollama: [], openrouter: []};
+		return favorites;
+	}
 	getEventLogSettings(): EventLogSettings {
 		const settings = this.getItem<EventLogSettings>(this.STORAGE_KEYS.EVENT_LOG_KEY);
 		if (!settings) return {date_start: null, date_preset: null, page_size: null};
@@ -201,6 +209,9 @@ export class LocalStorageService {
 	}
 	setSettingsAppSettings(settings: SettingsAppSettings): void {
 		this.setItem(this.STORAGE_KEYS.SETTINGS_APP_KEY, settings);
+	}
+	setAiFavorites(favorites: AiFavorites): void {
+		this.setItem(this.STORAGE_KEYS.AI_FAVORITES_KEY, favorites);
 	}
 	setEventLogSettings(settings: EventLogSettings): void {
 		this.setItem(this.STORAGE_KEYS.EVENT_LOG_KEY, settings);

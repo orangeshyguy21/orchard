@@ -65,6 +65,8 @@
 					[active_chat]="active_chat()"
 					[model]="ai_model()"
 					[model_options]="ai_models()"
+					[vendor]="ai_vendor()"
+					[favorites]="ai_favorites()"
 					[actionable]="ai_actionable()"
 					[content]="ai_user_content"
 					[conversation]="ai_conversation()"
@@ -77,6 +79,7 @@
 					[event_pending]="active_event()?.type === 'PENDING'"
 					(command)="onCommand()"
 					(modelChange)="onModelChange($event)"
+					(favoritesChange)="onFavoritesChange($event)"
 					(toggleLog)="onToggleLog()"
 					(hideAssistant)="onHideAssistant()"
 				>
