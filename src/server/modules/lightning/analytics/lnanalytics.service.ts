@@ -151,6 +151,42 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 	}
 
 	/**
+	 * Sums failed payments for a specific group_key (null = BTC only)
+	 */
+	private sumPaymentsFailed(payments: LightningPayment[], group_key: string | null, asset_to_group: Map<string, string>): bigint {
+		const failed = payments.filter((p) => p.status === 'failed');
+
+		if (group_key === null) {
+			return failed
+				.filter((p) => p.asset_balances.length === 0)
+				.reduce((sum, p) => sum + BigInt(p.value_msat), BigInt(0));
+		}
+
+		return failed
+			.flatMap((p) => p.asset_balances)
+			.filter((ab) => asset_to_group.get(ab.asset_id) === group_key)
+			.reduce((sum, ab) => sum + BigInt(ab.amount), BigInt(0));
+	}
+
+	/**
+	 * Sums pending (in-flight) payments for a specific group_key (null = BTC only)
+	 */
+	private sumPaymentsPending(payments: LightningPayment[], group_key: string | null, asset_to_group: Map<string, string>): bigint {
+		const pending = payments.filter((p) => p.status === 'pending');
+
+		if (group_key === null) {
+			return pending
+				.filter((p) => p.asset_balances.length === 0)
+				.reduce((sum, p) => sum + BigInt(p.value_msat), BigInt(0));
+		}
+
+		return pending
+			.flatMap((p) => p.asset_balances)
+			.filter((ab) => asset_to_group.get(ab.asset_id) === group_key)
+			.reduce((sum, ab) => sum + BigInt(ab.amount), BigInt(0));
+	}
+
+	/**
 	 * Sums incoming invoices for a specific group_key (null = BTC only)
 	 */
 	private sumInvoicesIn(invoices: LightningInvoice[], group_key: string | null, asset_to_group: Map<string, string>): bigint {
@@ -626,25 +662,32 @@ export class LightningAnalyticsService implements OnApplicationBootstrap {
 		const repo = manager ? manager.getRepository(LightningAnalytics) : this.lightningAnalyticsRepository;
 
 		// BTC metrics
-		await this.upsertMetric(repo, {
-			node_pubkey,
-			group_key: '',
-			unit: 'msat',
-			metric: LightningAnalyticsMetric.payments_out,
-			hour,
-			amount: this.sumPaymentsOut(payments, null, asset_to_group),
-		});
+		const btc_metrics: {metric: LightningAnalyticsMetric; amount: bigint}[] = [
+			{metric: LightningAnalyticsMetric.payments_out, amount: this.sumPaymentsOut(payments, null, asset_to_group)},
+			{metric: LightningAnalyticsMetric.payments_failed, amount: this.sumPaymentsFailed(payments, null, asset_to_group)},
+			{metric: LightningAnalyticsMetric.payments_pending, amount: this.sumPaymentsPending(payments, null, asset_to_group)},
+		];
+		for (const {metric, amount} of btc_metrics) {
+			await this.upsertMetric(repo, {node_pubkey, group_key: '', unit: 'msat', metric, hour, amount});
+		}
 
 		// Asset metrics per group
 		for (const group_key of Array.from(this.collectGroupKeys(payments, asset_to_group))) {
-			await this.upsertMetric(repo, {
-				node_pubkey,
-				group_key,
-				unit: group_to_name.get(group_key) || group_key,
-				metric: LightningAnalyticsMetric.payments_out,
-				hour,
-				amount: this.sumPaymentsOut(payments, group_key, asset_to_group),
-			});
+			const asset_metrics: {metric: LightningAnalyticsMetric; amount: bigint}[] = [
+				{metric: LightningAnalyticsMetric.payments_out, amount: this.sumPaymentsOut(payments, group_key, asset_to_group)},
+				{metric: LightningAnalyticsMetric.payments_failed, amount: this.sumPaymentsFailed(payments, group_key, asset_to_group)},
+				{metric: LightningAnalyticsMetric.payments_pending, amount: this.sumPaymentsPending(payments, group_key, asset_to_group)},
+			];
+			for (const {metric, amount} of asset_metrics) {
+				await this.upsertMetric(repo, {
+					node_pubkey,
+					group_key,
+					unit: group_to_name.get(group_key) || group_key,
+					metric,
+					hour,
+					amount,
+				});
+			}
 		}
 	}
 
